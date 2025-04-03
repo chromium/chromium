@@ -25,6 +25,9 @@ mojom::ErrorPtr CreateError(mojom::Error::Code error_code,
                             const std::string& error_message,
                             std::string_view label = "");
 
+// Return true if `status` is NULL, otherwise release `status` and return false.
+bool IsSuccess(OrtStatus* status);
+
 }  // namespace webnn::ort
 
 #endif  // SERVICES_WEBNN_ORT_UTILS_ORT_H_

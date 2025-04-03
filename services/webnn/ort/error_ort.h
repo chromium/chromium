@@ -14,17 +14,6 @@
 
 namespace webnn::ort {
 
-#define CHECK_STATUS(expr)                                           \
-  do {                                                               \
-    const OrtApi* ort_api_local = GetOrtApi();                       \
-    OrtStatus* onnx_status = (expr);                                 \
-    if (onnx_status != NULL) {                                       \
-      std::string msg = ort_api_local->GetErrorMessage(onnx_status); \
-      ort_api_local->ReleaseStatus(onnx_status);                     \
-      NOTREACHED() << "[WebNN] Ort Status: " << msg;                 \
-    }                                                                \
-  } while (0);
-
 #define CALL_ORT_FUNC(ort_call)                                      \
   ([&]() -> ort::ScopedOrtStatus {                                   \
     ort::ScopedOrtStatus status(ort_call);                           \

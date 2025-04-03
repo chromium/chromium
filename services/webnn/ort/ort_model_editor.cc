@@ -38,33 +38,33 @@ ScopedOrtValueInfo CreateOrtValueInfo(std::string_view name,
                                       base::span<const int64_t> shape,
                                       ONNXTensorElementDataType data_type) {
   ScopedOrtTensorTypeAndShapeInfo tensor_type_and_shape_info;
-  CHECK_STATUS(GetOrtApi()->CreateTensorTypeAndShapeInfo(
+  CHECK(IsSuccess(GetOrtApi()->CreateTensorTypeAndShapeInfo(
       ScopedOrtTensorTypeAndShapeInfo::Receiver(tensor_type_and_shape_info)
-          .get()));
-  CHECK_STATUS(GetOrtApi()->SetTensorElementType(
-      tensor_type_and_shape_info.get(), data_type));
-  CHECK_STATUS(GetOrtApi()->SetDimensions(tensor_type_and_shape_info.get(),
-                                          shape.data(), shape.size()));
+          .get())));
+  CHECK(IsSuccess(GetOrtApi()->SetTensorElementType(
+      tensor_type_and_shape_info.get(), data_type)));
+  CHECK(IsSuccess(GetOrtApi()->SetDimensions(tensor_type_and_shape_info.get(),
+                                             shape.data(), shape.size())));
 
   ScopedOrtTypeInfo type_info;
-  CHECK_STATUS(GetOrtModelEditorApi()->CreateTensorTypeInfo(
+  CHECK(IsSuccess(GetOrtModelEditorApi()->CreateTensorTypeInfo(
       tensor_type_and_shape_info.get(),
-      ScopedOrtTypeInfo::Receiver(type_info).get()));
+      ScopedOrtTypeInfo::Receiver(type_info).get())));
 
   ScopedOrtValueInfo value_info;
-  CHECK_STATUS(GetOrtModelEditorApi()->CreateValueInfo(
+  CHECK(IsSuccess(GetOrtModelEditorApi()->CreateValueInfo(
       name.data(), type_info.get(),
-      ScopedOrtValueInfo::Receiver(value_info).get()));
+      ScopedOrtValueInfo::Receiver(value_info).get())));
   return value_info;
 }
 
 OrtModelEditor::OrtModelEditor() : model_info_(std::make_unique<ModelInfo>()) {
   // WebNN constants are in CPU memory.
-  CHECK_STATUS(GetOrtApi()->CreateCpuMemoryInfo(
+  CHECK(IsSuccess(GetOrtApi()->CreateCpuMemoryInfo(
       OrtDeviceAllocator, OrtMemTypeDefault,
-      ScopedOrtMemoryInfo::Receiver(memory_info_).get()));
-  CHECK_STATUS(GetOrtModelEditorApi()->CreateGraph(
-      ScopedOrtGraph::Receiver(graph_).get()));
+      ScopedOrtMemoryInfo::Receiver(memory_info_).get())));
+  CHECK(IsSuccess(GetOrtModelEditorApi()->CreateGraph(
+      ScopedOrtGraph::Receiver(graph_).get())));
 }
 
 OrtModelEditor::~OrtModelEditor() = default;
@@ -156,42 +156,42 @@ ScopedOrtOpAttr OrtModelEditor::CreateAttribute(std::string_view name,
                                                 OrtOpAttrData data) {
   ScopedOrtOpAttr attribute;
   if (absl::holds_alternative<int64_t>(data)) {
-    CHECK_STATUS(
+    CHECK(IsSuccess(
         GetOrtApi()->CreateOpAttr(name.data(), &absl::get<int64_t>(data),
                                   /*len=*/1, OrtOpAttrType::ORT_OP_ATTR_INT,
-                                  ScopedOrtOpAttr::Receiver(attribute).get()));
+                                  ScopedOrtOpAttr::Receiver(attribute).get())));
   } else if (absl::holds_alternative<float>(data)) {
-    CHECK_STATUS(
+    CHECK(IsSuccess(
         GetOrtApi()->CreateOpAttr(name.data(), &absl::get<float>(data),
                                   /*len=*/1, OrtOpAttrType::ORT_OP_ATTR_FLOAT,
-                                  ScopedOrtOpAttr::Receiver(attribute).get()));
+                                  ScopedOrtOpAttr::Receiver(attribute).get())));
   } else if (absl::holds_alternative<std::string_view>(data)) {
     std::string_view string_data = absl::get<std::string_view>(data);
-    CHECK_STATUS(GetOrtApi()->CreateOpAttr(
+    CHECK(IsSuccess(GetOrtApi()->CreateOpAttr(
         name.data(), string_data.data(), string_data.size(),
         OrtOpAttrType::ORT_OP_ATTR_STRING,
-        ScopedOrtOpAttr::Receiver(attribute).get()));
+        ScopedOrtOpAttr::Receiver(attribute).get())));
   } else if (absl::holds_alternative<base::span<const int64_t>>(data)) {
     base::span<const int64_t> ints_data =
         absl::get<base::span<const int64_t>>(data);
-    CHECK_STATUS(GetOrtApi()->CreateOpAttr(
+    CHECK(IsSuccess(GetOrtApi()->CreateOpAttr(
         name.data(), ints_data.data(), ints_data.size(),
         OrtOpAttrType::ORT_OP_ATTR_INTS,
-        ScopedOrtOpAttr::Receiver(attribute).get()));
+        ScopedOrtOpAttr::Receiver(attribute).get())));
   } else if (absl::holds_alternative<base::span<const float>>(data)) {
     base::span<const float> floats_data =
         absl::get<base::span<const float>>(data);
-    CHECK_STATUS(GetOrtApi()->CreateOpAttr(
+    CHECK(IsSuccess(GetOrtApi()->CreateOpAttr(
         name.data(), floats_data.data(), floats_data.size(),
         OrtOpAttrType::ORT_OP_ATTR_FLOATS,
-        ScopedOrtOpAttr::Receiver(attribute).get()));
+        ScopedOrtOpAttr::Receiver(attribute).get())));
   } else if (absl::holds_alternative<base::span<const char*>>(data)) {
     base::span<const char*> strings_data =
         absl::get<base::span<const char*>>(data);
-    CHECK_STATUS(GetOrtApi()->CreateOpAttr(
+    CHECK(IsSuccess(GetOrtApi()->CreateOpAttr(
         name.data(), strings_data.data(), strings_data.size(),
         OrtOpAttrType::ORT_OP_ATTR_STRINGS,
-        ScopedOrtOpAttr::Receiver(attribute).get()));
+        ScopedOrtOpAttr::Receiver(attribute).get())));
   }
   return attribute;
 }
@@ -208,13 +208,13 @@ void OrtModelEditor::AddNode(std::string_view op_type,
 
   // Node will own the attributes.
   ScopedOrtNode node;
-  CHECK_STATUS(GetOrtModelEditorApi()->CreateNode(
+  CHECK(IsSuccess(GetOrtModelEditorApi()->CreateNode(
       op_type.data(), kOrtDomainName, node_name.data(), inputs.data(),
       inputs.size(), outputs.data(), outputs.size(), attr_ptrs.data(),
-      attr_ptrs.size(), ScopedOrtNode::Receiver(node).get()));
+      attr_ptrs.size(), ScopedOrtNode::Receiver(node).get())));
   // Graph will own the node.
-  CHECK_STATUS(
-      GetOrtModelEditorApi()->AddNodeToGraph(graph_.get(), node.release()));
+  CHECK(IsSuccess(
+      GetOrtModelEditorApi()->AddNodeToGraph(graph_.get(), node.release())));
 }
 
 std::unique_ptr<OrtModelEditor::ModelInfo>
@@ -225,28 +225,28 @@ OrtModelEditor::BuildAndTakeModelInfo() {
   for (auto& input : inputs_) {
     graph_inputs.push_back(input.release());
   }
-  CHECK_STATUS(GetOrtModelEditorApi()->SetGraphInputs(
-      graph_.get(), graph_inputs.data(), graph_inputs.size()));
+  CHECK(IsSuccess(GetOrtModelEditorApi()->SetGraphInputs(
+      graph_.get(), graph_inputs.data(), graph_inputs.size())));
 
   std::vector<OrtValueInfo*> graph_outputs;
   graph_outputs.reserve(outputs_.size());
   for (auto& output : outputs_) {
     graph_outputs.push_back(output.release());
   }
-  CHECK_STATUS(GetOrtModelEditorApi()->SetGraphOutputs(
-      graph_.get(), graph_outputs.data(), graph_outputs.size()));
+  CHECK(IsSuccess(GetOrtModelEditorApi()->SetGraphOutputs(
+      graph_.get(), graph_outputs.data(), graph_outputs.size())));
 
   std::array<const char*, 2> domain_names = {kOrtDomainName, kMSDomainName};
   std::array<int32_t, 2> opset_versions = {kOrtOpsetVersion,
                                            kEPContextOpsetVersion};
 
-  CHECK_STATUS(GetOrtModelEditorApi()->CreateModel(
+  CHECK(IsSuccess(GetOrtModelEditorApi()->CreateModel(
       domain_names.data(), opset_versions.data(), domain_names.size(),
-      ScopedOrtModel::Receiver(model_info_->model).get()));
+      ScopedOrtModel::Receiver(model_info_->model).get())));
 
   // Model will own the graph.
-  CHECK_STATUS(GetOrtModelEditorApi()->AddGraphToModel(model_info_->model.get(),
-                                                       graph_.release()));
+  CHECK(IsSuccess(GetOrtModelEditorApi()->AddGraphToModel(
+      model_info_->model.get(), graph_.release())));
 
   return std::move(model_info_);
 }

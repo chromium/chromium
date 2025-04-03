@@ -73,4 +73,15 @@ mojom::ErrorPtr CreateError(mojom::Error::Code error_code,
                            base::StrCat({kBackendName, error_message}));
 }
 
+bool IsSuccess(OrtStatus* status) {
+  if (status == NULL) {
+    return true;
+  }
+  LOG(ERROR) << "[WebNN] ORT status error code: "
+             << GetOrtApi()->GetErrorCode(status)
+             << " error message: " << GetOrtApi()->GetErrorMessage(status);
+  GetOrtApi()->ReleaseStatus(status);
+  return false;
+}
+
 }  // namespace webnn::ort

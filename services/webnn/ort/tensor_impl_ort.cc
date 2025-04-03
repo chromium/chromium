@@ -54,8 +54,8 @@ TensorImplOrt::Create(
   // Initialize the tensor with zeros, otherwise, reading uninitialized memory
   // will get random values.
   void* ort_tensor_raw_data = nullptr;
-  CHECK_STATUS(
-      GetOrtApi()->GetTensorMutableData(tensor.get(), &ort_tensor_raw_data));
+  CHECK(IsSuccess(
+      GetOrtApi()->GetTensorMutableData(tensor.get(), &ort_tensor_raw_data)));
   CHECK(ort_tensor_raw_data);
   size_t tensor_size = tensor_info->descriptor.PackedByteLength();
   std::memset(ort_tensor_raw_data, 0, tensor_size);
@@ -107,9 +107,9 @@ void TensorImplOrt::ReadTensorImpl(ReadTensorCallback callback) {
              ReadTensorCallback read_tensor_result_callback,
              base::OnceClosure completion_closure) {
             void* ort_tensor_raw_data = nullptr;
-            CHECK_STATUS(GetOrtApi()->GetTensorMutableData(
+            CHECK(IsSuccess(GetOrtApi()->GetTensorMutableData(
                 buffer_state->GetSharedLockedResource().tensor(),
-                &ort_tensor_raw_data));
+                &ort_tensor_raw_data)));
             CHECK(ort_tensor_raw_data);
             // SAFETY: ORT guarantees that it has allocated enough memory to
             // store tensor.
@@ -146,9 +146,9 @@ void TensorImplOrt::WriteTensorImpl(mojo_base::BigBuffer src_buffer) {
              mojo_base::BigBuffer src_buffer,
              base::OnceClosure completion_closure) {
             void* ort_tensor_raw_data = nullptr;
-            CHECK_STATUS(GetOrtApi()->GetTensorMutableData(
+            CHECK(IsSuccess(GetOrtApi()->GetTensorMutableData(
                 buffer_state->GetExclusivelyLockedResource()->tensor(),
-                &ort_tensor_raw_data));
+                &ort_tensor_raw_data)));
             CHECK(ort_tensor_raw_data);
             UNSAFE_BUFFERS(
                 base::span(static_cast<uint8_t*>(ort_tensor_raw_data),

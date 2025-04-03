@@ -116,10 +116,10 @@ class GraphImplOrt::ComputeResources {
     }
 
     const OrtApi* ort_api = GetOrtApi();
-    CHECK_STATUS(ort_api->Run(session_->GetSession(), nullptr,
-                              input_names.data(), input_tensors.data(),
-                              input_names.size(), output_names.data(),
-                              output_names.size(), output_tensors.data()));
+    CHECK(IsSuccess(ort_api->Run(session_->GetSession(), nullptr,
+                                 input_names.data(), input_tensors.data(),
+                                 input_names.size(), output_names.data(),
+                                 output_names.size(), output_tensors.data())));
   }
 
  private:
