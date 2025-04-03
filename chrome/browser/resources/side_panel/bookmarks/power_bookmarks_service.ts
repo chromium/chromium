@@ -10,6 +10,7 @@ import {ClientId as PageImageServiceClientId} from '//resources/cr_components/pa
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
+import type {BookmarksTreeNode} from './bookmarks.mojom-webui.js';
 import type {BookmarksApiProxy} from './bookmarks_api_proxy.js';
 import {BookmarksApiProxyImpl} from './bookmarks_api_proxy.js';
 
@@ -75,6 +76,36 @@ export function getFolderDescendants(
     });
   }
   return expanded;
+}
+
+// Transforms Bookmarks Mojo object into the Bookmarks extensions API version.
+// TODO(crbug.com/380806881): Consider using the mojo object throughout the code
+// instead of the extensions object. If so, this function would be removed.
+function toExtensionsBookmarkTreeNode(mojoNode: BookmarksTreeNode):
+    chrome.bookmarks.BookmarkTreeNode {
+  const extensionNode: chrome.bookmarks.BookmarkTreeNode = {
+    id: mojoNode.id,
+    parentId: mojoNode.parentId,
+    title: mojoNode.title,
+    index: mojoNode.index,
+  };
+
+  if (mojoNode.url && mojoNode.url.length !== 0) {
+    extensionNode.url = mojoNode.url;
+  } else if (mojoNode.children) {
+    extensionNode.children =
+        mojoNode.children.map(child => toExtensionsBookmarkTreeNode(child));
+  }
+
+  if (mojoNode.dateAdded !== null) {
+    extensionNode.dateAdded = mojoNode.dateAdded;
+  }
+
+  if (mojoNode.dateLastUsed !== null) {
+    extensionNode.dateLastUsed = mojoNode.dateLastUsed;
+  }
+
+  return extensionNode;
 }
 
 // Compares bookmarks based on the newest dateAdded of the bookmark
@@ -176,8 +207,13 @@ export class PowerBookmarksService {
   startListening() {
     this.bookmarksApi_.getActiveUrl().then(
         url => this.delegate_.setCurrentUrl(url));
-    this.bookmarksApi_.getFolders().then(folders => {
-      this.folders_ = folders;
+
+    this.bookmarksApi_.getAllBookmarks().then((result: {
+                                                nodes: BookmarksTreeNode[],
+                                              }) => {
+      this.folders_ =
+          result.nodes.map((node) => toExtensionsBookmarkTreeNode(node));
+
       this.addListener_(
           'onChanged',
           (id: string, changedInfo: chrome.bookmarks.ChangeInfo) =>

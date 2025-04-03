@@ -7,6 +7,7 @@ import type {ClickModifiers} from 'chrome://resources/mojo/ui/base/mojom/window_
 
 import type {ActionSource, SortOrder, ViewType} from './bookmarks.mojom-webui.js';
 import {BookmarksPageHandlerFactory, BookmarksPageHandlerRemote} from './bookmarks.mojom-webui.js';
+import type {BookmarksTreeNode} from './bookmarks.mojom-webui.js';
 
 let instance: BookmarksApiProxy|null = null;
 
@@ -33,7 +34,6 @@ export interface BookmarksApiProxy {
       newParentId: string|undefined): void;
   deleteBookmarks(ids: string[]): Promise<void>;
   getActiveUrl(): Promise<string|undefined>;
-  getFolders(): Promise<chrome.bookmarks.BookmarkTreeNode[]>;
   openBookmark(
       id: string, depth: number, clickModifiers: ClickModifiers,
       source: ActionSource): void;
@@ -44,6 +44,7 @@ export interface BookmarksApiProxy {
   showContextMenu(id: string, x: number, y: number, source: ActionSource): void;
   showUi(): void;
   undo(): void;
+  getAllBookmarks(): Promise<{nodes: BookmarksTreeNode[]}>;
 }
 
 export class BookmarksApiProxyImpl implements BookmarksApiProxy {
@@ -155,15 +156,6 @@ export class BookmarksApiProxyImpl implements BookmarksApiProxy {
     });
   }
 
-  getFolders() {
-    return chrome.bookmarks.getTree().then(results => {
-      if (results[0] && results[0].children) {
-        return results[0].children;
-      }
-      return [];
-    });
-  }
-
   openBookmark(
       id: string, depth: number, clickModifiers: ClickModifiers,
       source: ActionSource) {
@@ -197,6 +189,11 @@ export class BookmarksApiProxyImpl implements BookmarksApiProxy {
 
   undo() {
     chrome.bookmarkManagerPrivate.undo();
+  }
+
+  // Asynchronously gets the list of non empty permanent bookmark nodes.
+  getAllBookmarks(): Promise<{nodes: BookmarksTreeNode[]}> {
+    return this.handler.getAllBookmarks();
   }
 
   static getInstance(): BookmarksApiProxy {

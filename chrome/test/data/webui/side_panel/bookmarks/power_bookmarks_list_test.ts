@@ -5,6 +5,7 @@
 import 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_list.js';
 
 import {ActionSource, SortOrder, ViewType} from 'chrome://bookmarks-side-panel.top-chrome/bookmarks.mojom-webui.js';
+import type {BookmarksTreeNode} from 'chrome://bookmarks-side-panel.top-chrome/bookmarks.mojom-webui.js';
 import {BookmarksApiProxyImpl} from 'chrome://bookmarks-side-panel.top-chrome/bookmarks_api_proxy.js';
 import type {PowerBookmarkRowElement} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmark_row.js';
 import {NESTED_BOOKMARKS_BASE_MARGIN, NESTED_BOOKMARKS_MARGIN_PER_DEPTH} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmark_row.js';
@@ -29,44 +30,64 @@ import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {TestBookmarksApiProxy} from './test_bookmarks_api_proxy.js';
 
-const FOLDERS: chrome.bookmarks.BookmarkTreeNode[] = [
+const FOLDERS: BookmarksTreeNode[] = [
   {
     id: '1',
     parentId: '0',
+    index: 0,
     title: 'Bookmarks Bar',
+    url: null,
+    dateAdded: null,
+    dateLastUsed: null,
     children: [],
   },
   {
     id: '2',
     parentId: '0',
     title: 'Other Bookmarks',
+    index: 1,
+    url: null,
+    dateAdded: null,
+    dateLastUsed: null,
     children: [
       {
         id: '3',
         parentId: '2',
+        index: 0,
         title: 'First child bookmark',
         url: 'http://child/bookmark/1/',
         dateAdded: 1,
+        dateLastUsed: null,
+        children: null,
       },
       {
         id: '4',
         parentId: '2',
+        index: 1,
         title: 'Second child bookmark',
         url: 'http://child/bookmark/2/',
         dateAdded: 3,
+        dateLastUsed: null,
+        children: null,
       },
       {
         id: '5',
         parentId: '2',
+        index: 2,
         title: 'Child folder',
+        url: null,
         dateAdded: 2,
+        dateLastUsed: null,
         children: [
           {
             id: '6',
             parentId: '5',
+            index: 0,
             title: 'Nested bookmark',
             url: 'http://nested/bookmark/',
             dateAdded: 4,
+            dateLastUsed: null,
+            children: null,
           },
         ],
       },
@@ -174,7 +195,7 @@ suite('General', () => {
     parentElement.appendChild(powerBookmarksList);
     document.body.appendChild(parentElement);
 
-    await bookmarksApi.whenCalled('getFolders');
+    await bookmarksApi.whenCalled('getAllBookmarks');
     await waitAfterNextRender(powerBookmarksList);
     flush();
   }
@@ -185,7 +206,7 @@ suite('General', () => {
     metrics = fakeMetricsPrivate();
 
     bookmarksApi = new TestBookmarksApiProxy();
-    bookmarksApi.setFolders(structuredClone(FOLDERS));
+    bookmarksApi.setAllBookmarks(structuredClone(FOLDERS));
     BookmarksApiProxyImpl.setInstance(bookmarksApi);
 
     priceTrackingProxy.reset();
@@ -227,7 +248,7 @@ suite('General', () => {
   });
 
   test('GetsAndShowsTopLevelBookmarks', () => {
-    assertEquals(1, bookmarksApi.getCallCount('getFolders'));
+    assertEquals(1, bookmarksApi.getCallCount('getAllBookmarks'));
     assertEquals(FOLDERS[1]!.children!.length + 1, getBookmarks().length);
   });
 
@@ -948,7 +969,7 @@ suite('TransportMode', () => {
     parentElement.appendChild(powerBookmarksList);
     document.body.appendChild(parentElement);
 
-    await bookmarksApi.whenCalled('getFolders');
+    await bookmarksApi.whenCalled('getAllBookmarks');
     await waitAfterNextRender(powerBookmarksList);
     flush();
   }
@@ -957,7 +978,7 @@ suite('TransportMode', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     bookmarksApi = new TestBookmarksApiProxy();
-    bookmarksApi.setFolders(structuredClone(FOLDERS));
+    bookmarksApi.setAllBookmarks(structuredClone(FOLDERS));
     BookmarksApiProxyImpl.setInstance(bookmarksApi);
 
     priceTrackingProxy.reset();
@@ -1107,7 +1128,7 @@ suite('TreeView', () => {
     parentElement.appendChild(powerBookmarksList);
     document.body.appendChild(parentElement);
 
-    await bookmarksApi.whenCalled('getFolders');
+    await bookmarksApi.whenCalled('getAllBookmarks');
     await waitAfterNextRender(powerBookmarksList);
     flush();
   }
@@ -1116,7 +1137,7 @@ suite('TreeView', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     bookmarksApi = new TestBookmarksApiProxy();
-    bookmarksApi.setFolders(structuredClone(FOLDERS));
+    bookmarksApi.setAllBookmarks(structuredClone(FOLDERS));
     BookmarksApiProxyImpl.setInstance(bookmarksApi);
 
     priceTrackingProxy.reset();

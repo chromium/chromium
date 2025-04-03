@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {ActionSource, SortOrder, ViewType} from 'chrome://bookmarks-side-panel.top-chrome/bookmarks.mojom-webui.js';
+import type {ActionSource, BookmarksTreeNode, SortOrder, ViewType} from 'chrome://bookmarks-side-panel.top-chrome/bookmarks.mojom-webui.js';
 import type {BookmarksApiProxy} from 'chrome://bookmarks-side-panel.top-chrome/bookmarks_api_proxy.js';
 import type {ClickModifiers} from 'chrome://resources/mojo/ui/base/mojom/window_open_disposition.mojom-webui.js';
 import {FakeChromeEvent} from 'chrome://webui-test/fake_chrome_event.js';
@@ -10,7 +10,7 @@ import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestBookmarksApiProxy extends TestBrowserProxy implements
     BookmarksApiProxy {
-  private folders_: chrome.bookmarks.BookmarkTreeNode[] = [];
+  private allBookmarks_: BookmarksTreeNode[] = [];
   callbackRouter: {
     onChanged: FakeChromeEvent,
     onChildrenReordered: FakeChromeEvent,
@@ -24,7 +24,6 @@ export class TestBookmarksApiProxy extends TestBrowserProxy implements
   constructor() {
     super([
       'getActiveUrl',
-      'getFolders',
       'bookmarkCurrentTabInFolder',
       'openBookmark',
       'cutBookmark',
@@ -48,6 +47,7 @@ export class TestBookmarksApiProxy extends TestBrowserProxy implements
       'showContextMenu',
       'showUi',
       'undo',
+      'getAllBookmarks',
     ]);
 
     this.callbackRouter = {
@@ -66,11 +66,6 @@ export class TestBookmarksApiProxy extends TestBrowserProxy implements
     return Promise.resolve('http://www.test.com');
   }
 
-  getFolders() {
-    this.methodCalled('getFolders');
-    return Promise.resolve(this.folders_);
-  }
-
   bookmarkCurrentTabInFolder() {
     this.methodCalled('bookmarkCurrentTabInFolder');
   }
@@ -79,10 +74,6 @@ export class TestBookmarksApiProxy extends TestBrowserProxy implements
       id: string, depth: number, clickModifiers: ClickModifiers,
       source: ActionSource) {
     this.methodCalled('openBookmark', id, depth, clickModifiers, source);
-  }
-
-  setFolders(folders: chrome.bookmarks.BookmarkTreeNode[]) {
-    this.folders_ = folders;
   }
 
   contextMenuOpenBookmarkInNewTab(ids: string[], source: ActionSource) {
@@ -175,5 +166,14 @@ export class TestBookmarksApiProxy extends TestBrowserProxy implements
 
   undo() {
     this.methodCalled('undo');
+  }
+
+  setAllBookmarks(allBookmarks: BookmarksTreeNode[]) {
+    this.allBookmarks_ = allBookmarks;
+  }
+
+  getAllBookmarks(): Promise<{nodes: BookmarksTreeNode[]}> {
+    this.methodCalled('getAllBookmarks');
+    return Promise.resolve({nodes: this.allBookmarks_});
   }
 }

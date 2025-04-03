@@ -4,12 +4,18 @@
 
 #include "chrome/browser/ui/webui/side_panel/bookmarks/bookmarks_page_handler.h"
 
+#include <algorithm>
+
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/bookmarks/bookmark_parent_folder_children.h"
+#include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
@@ -25,12 +31,14 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/webui/bookmarks/bookmark_prefs.h"
 #include "chrome/browser/ui/webui/commerce/shopping_list_context_menu_controller.h"
+#include "chrome/browser/ui/webui/side_panel/bookmarks/bookmarks.mojom.h"
 #include "chrome/browser/ui/webui/side_panel/bookmarks/bookmarks_side_panel_ui.h"
 #include "chrome/browser/ui/webui/side_panel/reading_list/reading_list_ui.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
+#include "components/bookmarks/managed/managed_bookmark_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/strings/grit/components_strings.h"
@@ -175,12 +183,113 @@ std::unique_ptr<BookmarkContextMenu> ContextMenuFromNodes(
                                  shopping_list_controller);
 }
 
+// Temporary helper function for `GetPermanentFolderSidePanelID`.
+std::string GetPermanentFolderStringId(
+    const bookmarks::BookmarkNode* permanent_node) {
+  if (!permanent_node) {
+    return "-1";
+  }
+
+  CHECK(permanent_node->is_permanent_node());
+  return base::ToString(permanent_node->id());
+}
+
+// TODO(crbug.com/380806881): Currently returns the local node to align with the
+// resources passed in `BookmarksSidePanelUI` and to keep all operations on
+// local nodes work as intended. When the migration of all parent node id
+// computation support the merged node, then a neutral fixed Id can be used to
+// represent the permanent merged folders.
+std::string GetPermanentFolderSidePanelID(
+    const BookmarkMergedSurfaceService& merged_surface_bookmarks,
+    BookmarkParentFolder::PermanentFolderType folder_type) {
+  const bookmarks::BookmarkModel* bookmark_model =
+      merged_surface_bookmarks.bookmark_model();
+  CHECK(bookmark_model);
+
+  switch (folder_type) {
+    case BookmarkParentFolder::PermanentFolderType::kBookmarkBarNode:
+      return GetPermanentFolderStringId(bookmark_model->bookmark_bar_node());
+    case BookmarkParentFolder::PermanentFolderType::kOtherNode:
+      return GetPermanentFolderStringId(bookmark_model->other_node());
+    case BookmarkParentFolder::PermanentFolderType::kMobileNode:
+      return GetPermanentFolderStringId(bookmark_model->mobile_node());
+    case BookmarkParentFolder::PermanentFolderType::kManagedNode:
+      const bookmarks::ManagedBookmarkService* managed_bookmark_service =
+          merged_surface_bookmarks.managed_bookmark_service();
+      const bookmarks::BookmarkNode* managed_node =
+          managed_bookmark_service ? managed_bookmark_service->managed_node()
+                                   : nullptr;
+      return GetPermanentFolderStringId(managed_node);
+  }
+}
+
+// Returns the correct ID of the folder used in Ui. Can either return itself if
+// it is a regular folder, or return the merged Id if it is a permanent folder
+// (that are merged in the Ui).
+std::string GetFolderSidePanelID(
+    const BookmarkMergedSurfaceService& merged_surface_bookmarks,
+    const BookmarkParentFolder& folder) {
+  std::optional<BookmarkParentFolder::PermanentFolderType> folder_type =
+      folder.as_permanent_folder();
+  if (folder_type.has_value()) {
+    return GetPermanentFolderSidePanelID(merged_surface_bookmarks,
+                                         folder_type.value());
+  }
+
+  return base::ToString(folder.as_non_permanent_folder()->id());
+}
+
+std::vector<side_panel::mojom::BookmarksTreeNodePtr> ConstructMojoChildNodes(
+    const BookmarkMergedSurfaceService& bookmark_merged_surface,
+    const BookmarkParentFolder& parent,
+    const BookmarkParentFolderChildren& children) {
+  std::vector<side_panel::mojom::BookmarksTreeNodePtr> mojo_nodes;
+  for (const bookmarks::BookmarkNode* node : children) {
+    side_panel::mojom::BookmarksTreeNodePtr mojo_node =
+        side_panel::mojom::BookmarksTreeNode::New();
+    mojo_node->title = base::UTF16ToUTF8(node->GetTitle());
+    mojo_node->id = base::ToString(node->id());
+    mojo_node->parent_id =
+        GetFolderSidePanelID(bookmark_merged_surface, parent);
+    mojo_node->index = bookmark_merged_surface.GetIndexOf(node);
+    mojo_node->date_added = node->date_added().InSecondsFSinceUnixEpoch();
+    mojo_node->date_last_used =
+        node->date_last_used().InSecondsFSinceUnixEpoch();
+    if (node->is_folder()) {
+      BookmarkParentFolder sub_parent_folder =
+          BookmarkParentFolder::FromFolderNode(node);
+      mojo_node->children = ConstructMojoChildNodes(
+          bookmark_merged_surface, sub_parent_folder,
+          bookmark_merged_surface.GetChildren(sub_parent_folder));
+    } else {
+      mojo_node->url = node->url().spec();
+    }
+    mojo_nodes.push_back(std::move(mojo_node));
+  }
+  return mojo_nodes;
+}
+
 }  // namespace
 
 BookmarksPageHandler::BookmarksPageHandler(
     mojo::PendingReceiver<side_panel::mojom::BookmarksPageHandler> receiver,
-    BookmarksSidePanelUI* bookmarks_ui)
-    : receiver_(this, std::move(receiver)), bookmarks_ui_(bookmarks_ui) {}
+    BookmarksSidePanelUI* bookmarks_ui,
+    BookmarkMergedSurfaceService* bookmark_merged_surface)
+    : receiver_(this, std::move(receiver)),
+      bookmarks_ui_(bookmarks_ui),
+      bookmark_merged_surface_(bookmark_merged_surface) {
+  CHECK(bookmark_merged_surface_);
+  Browser* browser = chrome::FindLastActive();
+  if (!browser) {
+    return;
+  }
+
+  if (!bookmark_merged_surface_->loaded()) {
+    scoped_bookmark_merged_service_observation_.Observe(
+        bookmark_merged_surface_);
+    return;
+  }
+}
 
 BookmarksPageHandler::~BookmarksPageHandler() = default;
 
@@ -349,4 +458,110 @@ void BookmarksPageHandler::ShowUI() {
   if (embedder) {
     embedder->ShowUI();
   }
+}
+
+void BookmarksPageHandler::BookmarkMergedSurfaceServiceLoaded() {
+  scoped_bookmark_merged_service_observation_.Reset();
+  if (get_all_bookmarks_callback_) {
+    SendAllBookmarks(std::move(get_all_bookmarks_callback_));
+  }
+}
+
+void BookmarksPageHandler::GetAllBookmarks(GetAllBookmarksCallback callback) {
+  if (!bookmark_merged_surface_->loaded()) {
+    // Temporarily store the resulting callback to be executed upon bookmarks
+    // load.
+    get_all_bookmarks_callback_ = std::move(callback);
+    return;
+  }
+
+  SendAllBookmarks(std::move(callback));
+}
+
+void BookmarksPageHandler::SendAllBookmarks(GetAllBookmarksCallback callback) {
+  CHECK(bookmark_merged_surface_->loaded());
+
+  const std::vector<BookmarkParentFolder> permanent_folders{
+      BookmarkParentFolder::BookmarkBarFolder(),
+      BookmarkParentFolder::OtherFolder(),
+      BookmarkParentFolder::MobileFolder(),
+      BookmarkParentFolder::ManagedFolder(),
+  };
+
+  std::vector<side_panel::mojom::BookmarksTreeNodePtr> mojo_nodes;
+  int permanent_folder_side_panel_index = 0;
+  // Prepare all non empty permanent nodes using a merged view.
+  for (const BookmarkParentFolder& folder : permanent_folders) {
+    const auto& underlying_nodes =
+        bookmark_merged_surface_->GetUnderlyingNodes(folder);
+    CHECK(!underlying_nodes.empty());
+
+    // TODO(crbug.com/401176689): This causes the Mobile/ManagedBookmark folders
+    // not to be pushed if empty. Upon sign in/sync event, if the Mobile
+    // Bookmarks gets populated while the SidePanel is showing, the added node
+    // would not find its parent in the displayed nodes.
+    // This would apply to all folders that are not showing visible if empty.
+    bool any_visible = std::ranges::any_of(
+        underlying_nodes,
+        [](const bookmarks::BookmarkNode* node) { return node->IsVisible(); });
+    if (!any_visible) {
+      continue;
+    }
+
+    // TODO(crbug.com/380806881): Temporarily relies on the fact that the last
+    // node is the local one, because the Ui does assumptions on the local
+    // permanent IDs to perform some special operations on the permanent
+    // folders.
+    // This allows existing usages of local node manipulation to keep working
+    // properly during the transition of all the calls.
+    // Once the migration of all the calls to the merged mapping computation is
+    // done, we would be able to introduce a new Side Panel ID system for merged
+    // permanent folders IDs to stop relying on the assumption that the merged
+    // Id is the local Id node.
+    const bookmarks::BookmarkNode* local_node = underlying_nodes.back();
+
+    side_panel::mojom::BookmarksTreeNodePtr mojo_node =
+        side_panel::mojom::BookmarksTreeNode::New();
+    mojo_node->title = base::UTF16ToUTF8(local_node->GetTitle());
+    std::optional<BookmarkParentFolder::PermanentFolderType> folder_type =
+        folder.as_permanent_folder();
+    CHECK(folder_type.has_value());
+    mojo_node->id = GetPermanentFolderSidePanelID(*bookmark_merged_surface_,
+                                                  folder_type.value());
+    mojo_node->parent_id = base::ToString(local_node->parent()->id());
+    mojo_node->index = permanent_folder_side_panel_index++;
+    mojo_node->children =
+        ConstructMojoChildNodes(*bookmark_merged_surface_, folder,
+                                bookmark_merged_surface_->GetChildren(folder));
+
+    // Given that this node represents a merge of two folders, we compute the
+    // max of the nodes for each attribute.
+    mojo_node->date_added =
+        (*std::max_element(underlying_nodes.begin(), underlying_nodes.end(),
+                           [](const bookmarks::BookmarkNode* first,
+                              const bookmarks::BookmarkNode* second) {
+                             return first->date_added() > second->date_added();
+                           }))
+            ->date_added()
+            .InSecondsFSinceUnixEpoch();
+    mojo_node->date_last_used =
+        (*std::max_element(underlying_nodes.begin(), underlying_nodes.end(),
+                           [](const bookmarks::BookmarkNode* first,
+                              const bookmarks::BookmarkNode* second) {
+                             return first->date_last_used() >
+                                    second->date_last_used();
+                           }))
+            ->date_last_used()
+            .InSecondsFSinceUnixEpoch();
+
+    mojo_nodes.push_back(std::move(mojo_node));
+  }
+
+  std::move(callback).Run(std::move(mojo_nodes));
+}
+
+std::string GetFolderSidePanelIDForTesting(
+    const BookmarkMergedSurfaceService& merged_surface_bookmarks,
+    const BookmarkParentFolder& folder) {
+  return GetFolderSidePanelID(merged_surface_bookmarks, folder);
 }
