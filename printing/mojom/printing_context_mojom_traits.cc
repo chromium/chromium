@@ -155,8 +155,9 @@ bool StructTraits<
   // so only want to apply this if the type was for `kCustomMargins`.
   if (data.margin_type() == printing::mojom::MarginType::kCustomMargins) {
     printing::PageMargins requested_margins;
-    if (!data.ReadRequestedCustomMarginsInPoints(&requested_margins))
+    if (!data.ReadRequestedCustomMarginsInMicrons(&requested_margins)) {
       return false;
+    }
     out->SetCustomMargins(requested_margins);
   }
 
