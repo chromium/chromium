@@ -97,7 +97,7 @@ class AffiliationBackend : public FacetManagerHost,
       std::vector<FacetURI> facet_uris) const;
   std::vector<std::string> GetPSLExtensions() const;
   void UpdateAffiliationsAndBranding(const std::vector<FacetURI>& facets,
-                                     base::OnceClosure callback);
+                                     base::OnceClosure update_complete_closure);
 
   // Deletes the cache database file at |db_path|, and all auxiliary files. The
   // database must be closed before calling this.

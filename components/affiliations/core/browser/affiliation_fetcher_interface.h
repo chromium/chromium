@@ -38,6 +38,8 @@ class AffiliationFetcherInterface {
     FetchResult& operator=(FetchResult&& other);
     ~FetchResult();
 
+    bool IsSuccessful() const;
+
     std::optional<ParsedFetchResponse> data;
     int network_status;
     std::optional<net::HttpStatusCode> http_status_code;

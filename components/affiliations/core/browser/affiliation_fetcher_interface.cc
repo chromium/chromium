@@ -24,6 +24,10 @@ AffiliationFetcherInterface::FetchResult::operator=(FetchResult&& other) =
 
 AffiliationFetcherInterface::FetchResult::~FetchResult() = default;
 
+bool AffiliationFetcherInterface::FetchResult::IsSuccessful() const {
+  return http_status_code == net::HTTP_OK && data;
+}
+
 // ParsedFetchResponse
 AffiliationFetcherInterface::ParsedFetchResponse::ParsedFetchResponse() =
     default;

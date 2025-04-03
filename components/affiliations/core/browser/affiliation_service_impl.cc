@@ -243,7 +243,7 @@ void AffiliationServiceImpl::OnFetchFinished(
     AffiliationFetcherInterface::FetchResult fetch_result) {
   // Handle the successful case only. On failure the fetch will be discarded
   // without retries.
-  if (net::HTTP_OK == fetch_result.http_status_code && fetch_result.data) {
+  if (fetch_result.IsSuccessful()) {
     change_password_urls_[fetch_info.requested_facet] =
         fetch_info.GetChangePasswordURL(fetch_result.data.value());
   }
