@@ -10,6 +10,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -19,7 +20,6 @@
 #include "base/values.h"
 #include "components/network_time/time_tracker/time_tracker.h"
 #include "crypto/hash.h"
-#include "crypto/sha2.h"
 #include "net/base/features.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_errors.h"
@@ -1033,10 +1033,7 @@ void AddIntermediatesToIssuerSource(X509Certificate* x509_cert,
 //               in the delegate's PathInfo).
 void AppendPublicKeyHashes(const bssl::der::Input& spki_bytes,
                            HashValueVector* hashes) {
-  HashValue sha256(HASH_VALUE_SHA256);
-  crypto::SHA256HashString(spki_bytes.AsStringView(), sha256.data(),
-                           crypto::kSHA256Length);
-  hashes->push_back(sha256);
+  hashes->emplace_back(crypto::hash::Sha256(spki_bytes));
 }
 
 // Appends the SubjectPublicKeyInfo hashes for all certificates in

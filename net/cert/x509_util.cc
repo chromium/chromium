@@ -10,6 +10,7 @@
 #include <memory>
 #include <string_view>
 
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
@@ -17,9 +18,9 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "crypto/hash.h"
 #include "crypto/openssl_util.h"
 #include "crypto/rsa_private_key.h"
-#include "crypto/sha2.h"
 #include "net/base/hash_value.h"
 #include "net/cert/asn1_util.h"
 #include "net/cert/time_conversions.h"
@@ -513,8 +514,7 @@ bool CalculateSha256SpkiHash(const CRYPTO_BUFFER* buffer, HashValue* hash) {
   if (!asn1::ExtractSPKIFromDERCert(CryptoBufferAsStringPiece(buffer), &spki)) {
     return false;
   }
-  *hash = HashValue(HASH_VALUE_SHA256);
-  crypto::SHA256HashString(spki, hash->data(), hash->size());
+  *hash = HashValue(crypto::hash::Sha256(base::as_byte_span(spki)));
   return true;
 }
 

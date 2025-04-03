@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "net/cert/known_roots.h"
 
 #include <string.h>
@@ -26,12 +21,12 @@ namespace {
 struct HashValueToRootCertDataComp {
   bool operator()(const HashValue& hash, const RootCertData& root_cert) {
     DCHECK_EQ(HASH_VALUE_SHA256, hash.tag());
-    return memcmp(hash.data(), root_cert.sha256_spki_hash, 32) < 0;
+    return hash.span() < root_cert.sha256_spki_hash;
   }
 
   bool operator()(const RootCertData& root_cert, const HashValue& hash) {
     DCHECK_EQ(HASH_VALUE_SHA256, hash.tag());
-    return memcmp(root_cert.sha256_spki_hash, hash.data(), 32) < 0;
+    return root_cert.sha256_spki_hash < hash.span();
   }
 };
 
