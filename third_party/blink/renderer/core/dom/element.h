@@ -1746,6 +1746,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
  private:
   friend class AXObject;
+  friend class KeyboardEventManager;
   struct AffectedByPseudoStateChange;
 
   template <typename Functor>

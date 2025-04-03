@@ -1541,50 +1541,6 @@ bool Element::InterestLost(Element& interest_target) {
 }
 
 void Element::DefaultEventHandler(Event& event) {
-  if (Element* target = interestTargetElement()) {
-    CHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
-        GetDocument().GetExecutionContext()));
-    if (auto* keyboard_event = DynamicTo<KeyboardEvent>(event);
-        keyboard_event && event.type() == event_type_names::kKeydown) {
-      const int modifiers =
-          keyboard_event->GetModifiers() & blink::WebInputEvent::kKeyModifiers;
-      if (keyboard_event->key() == keywords::kArrowUp &&
-          modifiers == WebInputEvent::kAltKey && !HasInterest()) {
-        bool should_trigger_interest = true;
-        if (Element* current_interest_element =
-                GetDocument().KeyboardInterestTargetElement();
-            current_interest_element && current_interest_element != this &&
-            current_interest_element->HasInterest()) {
-          // We are gaining interest in a different element, but we haven't lost
-          // interest in the old element yet. Do that now.
-          if (!GainOrLoseInterest(
-                  current_interest_element,
-                  current_interest_element->interestTargetElement(),
-                  /*interest_gained*/ false)) {
-            // The `loseinterest` event to the old target was cancelled.
-            should_trigger_interest = false;
-          } else if (target != interestTargetElement()) {
-            // The event handler above changed the target
-            should_trigger_interest = false;
-          }
-        }
-        if (should_trigger_interest) {
-          if (GainOrLoseInterest(this, target, /*interest_gained*/ true)) {
-            event.SetDefaultHandled();
-            GetDocument().SetKeyboardInterestTargetElement(this);
-            return;
-          }
-        }
-      } else if (keyboard_event->key() == keywords::kEscape && !modifiers &&
-                 HasInterest()) {
-        if (GainOrLoseInterest(this, target, /*interest_gained*/ false)) {
-          event.SetDefaultHandled();
-          GetDocument().SetKeyboardInterestTargetElement(nullptr);
-          return;
-        }
-      }
-    }
-  }
   ContainerNode::DefaultEventHandler(event);
 }
 
@@ -6904,31 +6860,47 @@ void Element::Focus(const FocusParams& params) {
   }
 }
 
-void Element::SetFocused(bool received, mojom::blink::FocusType focus_type) {
+void Element::SetFocused(bool now_focused, mojom::blink::FocusType focus_type) {
   // Recurse up author shadow trees to mark shadow hosts if it matches :focus.
   // TODO(kochi): Handle UA shadows which marks multiple nodes as focused such
   // as <input type="date"> the same way as author shadow.
   if (ShadowRoot* root = ContainingShadowRoot()) {
     if (!root->IsUserAgent()) {
-      OwnerShadowHost()->SetFocused(received, focus_type);
+      OwnerShadowHost()->SetFocused(now_focused, focus_type);
     }
   }
 
   // We'd like to invalidate :focus style for kPage even if element's focus
   // state has not been changed, because the element might have been focused
   // while the page was inactive.
-  if (IsFocused() == received && focus_type != mojom::blink::FocusType::kPage) {
+  if (IsFocused() == now_focused &&
+      focus_type != mojom::blink::FocusType::kPage) {
     return;
   }
 
   if (focus_type == mojom::blink::FocusType::kMouse) {
     GetDocument().SetHadKeyboardEvent(false);
   }
-  GetDocument().UserActionElements().SetFocused(this, received);
+  GetDocument().UserActionElements().SetFocused(this, now_focused);
 
   FocusStateChanged();
 
-  if (GetLayoutObject() || received) {
+  // Handle interest invokers for focus gained or lost.
+  if (RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
+          GetDocument().GetExecutionContext())) {
+    if (interestTargetElement()) {
+      if (now_focused) {
+        ScheduleInterestGainedTask();
+      } else {
+        ScheduleInterestLostTask();
+      }
+    } else if (auto* invoker = GetInterestInvoker();
+               invoker && invoker->HasInterest() && !now_focused) {
+      invoker->ScheduleInterestLostTask();
+    }
+  }
+
+  if (GetLayoutObject() || now_focused) {
     return;
   }
 
@@ -10578,7 +10550,8 @@ bool Element::GainOrLoseInterest(Element* invoker,
   // may have changed since invoker and target were passed.
   if (!invoker || !target || !invoker->IsInTreeScope() ||
       !invoker->GetDocument().IsActive() ||
-      invoker->interestTargetElement() != target) {
+      invoker->interestTargetElement() != target ||
+      (!interest_gained && target->GetInterestInvoker() != invoker)) {
     return false;
   }
 
@@ -10625,8 +10598,10 @@ bool Element::GainOrLoseInterest(Element* invoker,
         .EnsureInterestInvokerTargetData()
         .setInterestInvoker(invoker);
     invoker->PseudoStateChanged(CSSSelector::kPseudoHasInterest);
+    DCHECK(!invoker->GetDocument().CurrentInterestTargetElements().Contains(
+        invoker));
+    invoker->GetDocument().CurrentInterestTargetElements().insert(invoker);
   } else {
-    CHECK_EQ(target->GetInterestInvoker(), invoker);
     if (!invoker->InterestLost(*target)) {
       return false;  // event was cancelled.
     }
@@ -10635,6 +10610,9 @@ bool Element::GainOrLoseInterest(Element* invoker,
         targets_invoker && targets_invoker == invoker) {
       target->EnsureElementRareData().RemoveInterestInvokerTargetData();
       invoker->PseudoStateChanged(CSSSelector::kPseudoHasInterest);
+      DCHECK(invoker->GetDocument().CurrentInterestTargetElements().Contains(
+          invoker));
+      invoker->GetDocument().CurrentInterestTargetElements().erase(invoker);
     }
   }
   return true;
@@ -10664,9 +10642,7 @@ void Element::ScheduleInterestGainedTask() {
       FROM_HERE,
       WTF::BindOnce(
           [](Element* invoker, Element* target) {
-            if (GainOrLoseInterest(invoker, target, /*interest_gained*/ true)) {
-              invoker->GetDocument().SetKeyboardInterestTargetElement(nullptr);
-            }
+            GainOrLoseInterest(invoker, target, /*interest_gained*/ true);
           },
           WrapWeakPersistent(this), WrapWeakPersistent(target)),
       base::Seconds(show_delay_seconds)));

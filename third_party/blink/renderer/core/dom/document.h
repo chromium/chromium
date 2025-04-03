@@ -1694,10 +1694,7 @@ class CORE_EXPORT Document : public ContainerNode,
     return all_open_dialogs_;
   }
 
-  void SetKeyboardInterestTargetElement(Element*);
-  Member<Element> KeyboardInterestTargetElement() const {
-    return keyboard_interest_target_element_;
-  }
+  HeapLinkedHashSet<Member<Element>>& CurrentInterestTargetElements();
 
   // https://crbug.com/1453291
   // The DOM Parts API:
@@ -2817,10 +2814,12 @@ class CORE_EXPORT Document : public ContainerNode,
   // The ordered list of currently-open dialogs, in order they were opened.
   HeapLinkedHashSet<Member<HTMLDialogElement>> all_open_dialogs_;
 
-  // If there was a keyboard-activated element with the `interesttarget`
-  // attribute, it will be stored here, so that when other elements are shown
-  // interest, this element can first "lose interest".
-  Member<Element> keyboard_interest_target_element_;
+  // The current list of elements in the document that have interest (in the
+  // `interesttarget` sense). This is used to "lose" interest if the keyboard
+  // activation key (ESC) or other actions should cause a loss of interest.
+  // This collection holds the *invokers* (the elements with `interesttarget`)
+  // and not the *targets* of those invokers.
+  HeapLinkedHashSet<Member<Element>> current_interest_target_elements_;
 
   Member<DocumentPartRoot> document_part_root_;
 
