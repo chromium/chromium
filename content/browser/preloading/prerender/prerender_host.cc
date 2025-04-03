@@ -102,6 +102,7 @@ bool PrerenderHost::AreHttpRequestHeadersCompatible(
     const std::string& prerender_headers_str,
     PreloadingTriggerType trigger_type,
     const std::string& histogram_suffix,
+    bool allow_x_header_mismatch,
     PrerenderCancellationReason& reason) {
   net::HttpRequestHeaders prerender_headers;
   prerender_headers.AddHeadersFromString(prerender_headers_str);
@@ -153,6 +154,29 @@ bool PrerenderHost::AreHttpRequestHeadersCompatible(
   // Don't need to handle "viewport-height" as it is not defined in the specs.
   prerender_headers.RemoveHeader("sec-ch-viewport-height");
   potential_activation_headers.RemoveHeader("sec-ch-viewport-height");
+
+  // Allow mismatches on `X-` headers. Currently this is allowed only on the
+  // WebView.
+  // TODO(crbug.com/40244149): Expand this to other platforms and non-x-headers.
+  if (allow_x_header_mismatch) {
+    std::set<std::string> headers_to_be_removed;
+    for (net::HttpRequestHeaders::Iterator it(prerender_headers);
+         it.GetNext();) {
+      if (it.name().starts_with("X-") || it.name().starts_with("x-")) {
+        headers_to_be_removed.insert(it.name());
+      }
+    }
+    for (net::HttpRequestHeaders::Iterator it(potential_activation_headers);
+         it.GetNext();) {
+      if (it.name().starts_with("X-") || it.name().starts_with("x-")) {
+        headers_to_be_removed.insert(it.name());
+      }
+    }
+    for (const std::string& name : headers_to_be_removed) {
+      prerender_headers.RemoveHeader(name);
+      potential_activation_headers.RemoveHeader(name);
+    }
+  }
 
   return PrerenderHost::IsActivationHeaderMatch(potential_activation_headers,
                                                 prerender_headers, reason);
@@ -792,18 +816,17 @@ bool PrerenderHost::AreInitialPrerenderNavigationParamsCompatibleWithNavigation(
     return false;
   }
 
-  // Relaxes checks for initiator and transition type. This logic is intended to
-  // be used for WebView, as WebView is intended to host embedder-trusted
-  // contests.
-  bool allow_initiator_and_transition_mismatch =
+  // Relaxes checks for initiator, transition type, and headers. This logic is
+  // intended to be used for WebView, as WebView is intended to host
+  // embedder-trusted contests.
+  bool allow_partial_mismatch =
       web_contents_->GetDelegate()->ShouldAllowPartialParamMismatchOfPrerender2(
           navigation_request);
   // Compare BeginNavigationParams.
   ActivationNavigationParamsMatch result =
       AreBeginNavigationParamsCompatibleWithNavigation(
           navigation_request.common_params().url,
-          navigation_request.begin_params(),
-          allow_initiator_and_transition_mismatch, reason);
+          navigation_request.begin_params(), allow_partial_mismatch, reason);
   if (result != ActivationNavigationParamsMatch::kOk) {
     RecordPrerenderActivationNavigationParamsMatch(result,
                                                    GetHistogramSuffix());
@@ -812,8 +835,7 @@ bool PrerenderHost::AreInitialPrerenderNavigationParamsCompatibleWithNavigation(
 
   // Compare CommonNavigationParams.
   result = AreCommonNavigationParamsCompatibleWithNavigation(
-      navigation_request.common_params(),
-      allow_initiator_and_transition_mismatch);
+      navigation_request.common_params(), allow_partial_mismatch);
   if (result != ActivationNavigationParamsMatch::kOk) {
     RecordPrerenderActivationNavigationParamsMatch(result,
                                                    GetHistogramSuffix());
@@ -838,16 +860,15 @@ PrerenderHost::ActivationNavigationParamsMatch
 PrerenderHost::AreBeginNavigationParamsCompatibleWithNavigation(
     const GURL& potential_activation_url,
     const blink::mojom::BeginNavigationParams& potential_activation,
-    bool allow_initiator_and_transition_mismatch,
+    bool allow_partial_mismatch,
     PrerenderCancellationReason& reason) {
   CHECK(begin_params_);
 
   // TODO(https://crbug.com/340416082): Check details of security properties,
   // update the check to appropriate form and remove differences among all
   // platforms.
-  if (!allow_initiator_and_transition_mismatch &&
-      (potential_activation.initiator_frame_token !=
-       begin_params_->initiator_frame_token)) {
+  if (!allow_partial_mismatch && (potential_activation.initiator_frame_token !=
+                                  begin_params_->initiator_frame_token)) {
     return ActivationNavigationParamsMatch::kInitiatorFrameToken;
   }
 
@@ -866,7 +887,8 @@ PrerenderHost::AreBeginNavigationParamsCompatibleWithNavigation(
                                        activation_additional_headers_str,
 #endif  // BUILDFLAG(IS_ANDROID)
                                        begin_params_->headers, trigger_type(),
-                                       GetHistogramSuffix(), reason)) {
+                                       GetHistogramSuffix(),
+                                       allow_partial_mismatch, reason)) {
     return ActivationNavigationParamsMatch::kHttpRequestHeader;
   }
 
@@ -949,7 +971,7 @@ PrerenderHost::AreBeginNavigationParamsCompatibleWithNavigation(
 PrerenderHost::ActivationNavigationParamsMatch
 PrerenderHost::AreCommonNavigationParamsCompatibleWithNavigation(
     const blink::mojom::CommonNavigationParams& potential_activation,
-    bool allow_initiator_and_transition_mismatch) {
+    bool allow_partial_mismatch) {
   // The CommonNavigationParams::url field is expected to match both initial and
   // activation prerender navigations, as the PrerenderHost selection would have
   // already checked for matching values. Adding a CHECK here to be safe.
@@ -972,9 +994,8 @@ PrerenderHost::AreCommonNavigationParamsCompatibleWithNavigation(
   // TODO(https://crbug.com/340416082): Check details of security properties,
   // update the check to appropriate form and remove differences among all
   // platforms.
-  if (!allow_initiator_and_transition_mismatch &&
-      (potential_activation.initiator_origin !=
-       common_params_->initiator_origin)) {
+  if (!allow_partial_mismatch && (potential_activation.initiator_origin !=
+                                  common_params_->initiator_origin)) {
     return ActivationNavigationParamsMatch::kInitiatorOrigin;
   }
 
@@ -984,7 +1005,7 @@ PrerenderHost::AreCommonNavigationParamsCompatibleWithNavigation(
   // history entry (e.g., a renderer-initiated navigation to the current URL).
   int32_t potential_activation_transition =
       potential_activation.transition & ~ui::PAGE_TRANSITION_CLIENT_REDIRECT;
-  if (!allow_initiator_and_transition_mismatch &&
+  if (!allow_partial_mismatch &&
       (potential_activation_transition != common_params_->transition)) {
     RecordPrerenderActivationTransition(potential_activation_transition,
                                         GetHistogramSuffix());
