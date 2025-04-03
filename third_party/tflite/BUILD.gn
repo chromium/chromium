@@ -359,6 +359,14 @@ tflite_litert_deps = [
   "//third_party/ruy",
 ]
 
+# TODO(crbug.com/408009602): Remove this source_set after migration.
+source_set("tflite_litert_impl") {
+}
+
+# TODO(crbug.com/408009602): Remove this source_set after migration.
+source_set("tflite_litert_impl_standalone") {
+}
+
 source_set("tflite_litert") {
   sources = tflite_litert_sources
 
