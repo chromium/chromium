@@ -521,7 +521,6 @@ static_library("test_support") {
     "//components/reporting/storage:test_support",
     "//components/reporting/util:status_macros",
     "//components/reporting/util:test_callbacks_support",
-    "//components/safe_browsing/content/renderer/phishing_classifier:unit_tests_support",
     "//components/safe_browsing/core/browser/db:v4_database",
     "//components/safe_browsing/core/common",
     "//components/security_interstitials/content:security_interstitial_page",
@@ -1170,6 +1169,10 @@ static_library("test_support") {
       "../browser/enterprise/signin/mock_user_policy_oidc_signin_service.h",
     ]
   }
+
+  if (safe_browsing_mode != 0) {
+    deps += [ "//components/safe_browsing/content/renderer/phishing_classifier:unit_tests_support" ]
+  }
 }
 
 if (is_android) {
@@ -1639,7 +1642,6 @@ if (is_android) {
       "../renderer/autofill/password_generation_test_utils.cc",
       "../renderer/autofill/password_generation_test_utils.h",
       "../renderer/commerce/commerce_web_extractor_browsertest.cc",
-      "../renderer/safe_browsing/phishing_classifier_browsertest.cc",
       "../renderer/wallet/boarding_pass_extractor_browsertest.cc",
       "android/browsertests_apk/android_browsertests_jni_onload.cc",
       "base/android/android_browser_test_browsertest_android.cc",
@@ -1753,7 +1755,6 @@ if (is_android) {
       "//components/privacy_sandbox/privacy_sandbox_attestations/proto:proto",
       "//components/qr_code_generator:bitmap_generator",
       "//components/safe_browsing/content/common:interfaces",
-      "//components/safe_browsing/content/renderer/phishing_classifier:phishing_classifier",
       "//components/safe_browsing/core/browser/db:v4_database",
       "//components/safe_browsing/core/common",
       "//components/safe_browsing/core/common/fbs:client_model",
@@ -1922,9 +1923,13 @@ if (is_android) {
     }
 
     if (safe_browsing_mode != 0) {
+      sources +=
+          [ "../renderer/safe_browsing/phishing_classifier_browsertest.cc" ]
+
       deps += [
         "//components/safe_browsing/content/browser:client_side_detection",
         "//components/safe_browsing/content/browser:client_side_detection_service",
+        "//components/safe_browsing/content/renderer/phishing_classifier:phishing_classifier",
       ]
     }
   }
@@ -2464,8 +2469,6 @@ if (!is_android) {
       "//components/safe_browsing/content/common:interfaces",
       "//components/safe_browsing/content/common:interfaces_shared_cpp_sources",
       "//components/safe_browsing/content/renderer",
-      "//components/safe_browsing/content/renderer/phishing_classifier",
-      "//components/safe_browsing/content/renderer/phishing_classifier:unit_tests_support",
       "//components/safe_browsing/core/browser:verdict_cache_manager",
       "//components/safe_browsing/core/browser/db:test_database_manager",
       "//components/safe_browsing/core/browser/db:v4_database",
@@ -3799,6 +3802,8 @@ if (!is_android) {
       deps += [
         "//components/safe_browsing/content/browser:client_side_detection",
         "//components/safe_browsing/content/browser:client_side_detection_service",
+        "//components/safe_browsing/content/renderer/phishing_classifier",
+        "//components/safe_browsing/content/renderer/phishing_classifier:unit_tests_support",
       ]
     }
 
