@@ -734,9 +734,6 @@ void InstalledLoader::RecordExtensionsMetrics(Profile* profile,
     if (Manifest::IsUnpackedLocation(location))
       continue;
 
-    UMA_HISTOGRAM_ENUMERATION("Extensions.ManifestVersion",
-                              extension->manifest_version(),
-                              kMaxManifestVersion);
     if (should_record_incremented_metrics) {
       UMA_HISTOGRAM_ENUMERATION("Extensions.ManifestVersion2",
                                 extension->manifest_version(),

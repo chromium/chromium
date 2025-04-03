@@ -3851,19 +3851,6 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
-<histogram name="Extensions.ManifestVersion" units="units"
-    expires_after="2023-07-07">
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <summary>
-    The manifest version of each loaded extension.
-
-    Histogram is in the process of being removed in favor of its incremented
-    version that emits only on profile open for &quot;user&quot; profiles
-    (profiles where people can install extensions, specifically profiles that
-    can have non-component extensions installed).
-  </summary>
-</histogram>
-
 <histogram name="Extensions.ManifestVersion2" units="units"
     expires_after="never">
 <!-- expires-never: Monitoring extension usage. -->
