@@ -34,7 +34,6 @@ source_set("tab_resumption") {
     "//ios/chrome/browser/content_suggestions/ui_bundled:constants",
     "//ios/chrome/browser/content_suggestions/ui_bundled:metrics",
     "//ios/chrome/browser/content_suggestions/ui_bundled:public",
-    "//ios/chrome/browser/content_suggestions/ui_bundled/impression_limits:impression_limits",
     "//ios/chrome/browser/content_suggestions/ui_bundled/magic_stack:public",
     "//ios/chrome/browser/content_suggestions/ui_bundled/shop_card:shop_card_data",
     "//ios/chrome/browser/favicon/model",

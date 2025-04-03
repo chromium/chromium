@@ -51,7 +51,6 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_metrics_recorder.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_view_controller.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_view_controller_audience.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/impression_limits/impression_limit_service_factory.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_collection_view.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_collection_view_audience.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_module_container_delegate.h"
@@ -380,8 +379,6 @@ using segmentation_platform::TipIdentifier;
                  identityManager:identityManager
                          browser:self.browser
         optimizationGuideService:OptimizationGuideServiceFactory::GetForProfile(
-                                     profile)
-          impressionLimitService:ImpressionLimitServiceFactory::GetForProfile(
                                      profile)];
     _tabResumptionMediator.NTPActionsDelegate = self.NTPActionsDelegate;
     _tabResumptionMediator.contentSuggestionsMetricsRecorder =

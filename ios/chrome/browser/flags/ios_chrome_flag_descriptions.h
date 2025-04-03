@@ -732,9 +732,6 @@ extern const char kSharedHighlightingIOSDescription[];
 extern const char kShopCardName[];
 extern const char kShopCardDescription[];
 
-extern const char kShopCardImpressionLimitsName[];
-extern const char kShopCardImpressionLimitsDescription[];
-
 extern const char kSetUpListInFirstRunName[];
 extern const char kSetUpListInFirstRunNameDescription[];
 

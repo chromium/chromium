@@ -22,8 +22,6 @@ size_t kMaxLengthTabURL = 2 * 1024;
 const char kTabResumptionDisabledPref[] = "tab_resumption.disabled";
 const char kTabResumptionLastOpenedTabURLPref[] =
     "tab_resumption.last_opened_tab_url";
-const char kTabResumptionWithPriceDropUrlImpressions[] =
-    "tab_resumption.price_drop.url_impressions";
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   // TODO(crbug.com/395840133): Remove `kTabResumptionDisabledPref` registration
@@ -36,7 +34,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
                                std::string());
   // Added 02/2025
   registry->RegisterBooleanPref(kTabResumptionDisabledPref, false);
-  registry->RegisterDictionaryPref(kTabResumptionWithPriceDropUrlImpressions);
 }
 
 bool IsTabResumptionDisabled(PrefService* prefs) {
