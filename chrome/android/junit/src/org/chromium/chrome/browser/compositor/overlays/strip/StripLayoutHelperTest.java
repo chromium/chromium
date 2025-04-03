@@ -97,6 +97,8 @@ import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderDele
 import org.chromium.chrome.browser.compositor.overlays.strip.reorder.TabDragSource;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
+import org.chromium.chrome.browser.dragdrop.ChromeDropDataAndroid;
+import org.chromium.chrome.browser.dragdrop.ChromeTabDropDataAndroid;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
@@ -139,6 +141,8 @@ import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.dragdrop.DragDropGlobalState;
+import org.chromium.ui.dragdrop.DragDropGlobalState.TrackerToken;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.shadows.ShadowAppCompatResources;
 import org.chromium.ui.util.XrUtils;
@@ -2228,6 +2232,7 @@ public class StripLayoutHelperTest {
 
     @Test
     public void testOnLongPress_OffTab() {
+        setupDragDropState();
         onLongPress_OffTab();
     }
 
@@ -2359,6 +2364,7 @@ public class StripLayoutHelperTest {
     public void testTabOutline_ForegroundedTabInGroup_TabDroppedOntoDestinationStrip_Show() {
         XrUtils.setXrDeviceForTesting(true);
         // Setup with 3 tabs and select the first tab.
+        setupDragDropState();
         initializeTest(false, false, 0, 3);
         mStripLayoutHelper.onSizeChanged(
                 SCREEN_WIDTH_LANDSCAPE,
@@ -2928,6 +2934,7 @@ public class StripLayoutHelperTest {
     public void testBottomIndicatorWidth_TabHoveredOntoTabGroup() {
         XrUtils.setXrDeviceForTesting(true);
         // Arrange
+        setupDragDropState();
         int tabCount = 6;
         initializeTest(false, false, 0, tabCount);
         groupTabs(0, 2);
@@ -4311,6 +4318,9 @@ public class StripLayoutHelperTest {
 
     @Test
     public void testPlaceholderStripLayout_ReorderBeforeTabStateInitialized() {
+        // Setup drag drop state.
+        setupDragDropState();
+
         // Create StripLayoutHelper and mark that after tabs finish restoring, there will be five
         // tabs, where the third tab will be the active tab.
         mStripLayoutHelper = createStripLayoutHelper(false, false);
@@ -4744,6 +4754,7 @@ public class StripLayoutHelperTest {
     @Test
     public void testGetTabIndexForTabDrop_OnStartGap() {
         // Setup with 3 tabs.
+        setupDragDropState();
         initializeTest(false, false, 1, 3);
         mStripLayoutHelper.onSizeChanged(
                 SCREEN_WIDTH_LANDSCAPE,
@@ -4797,6 +4808,7 @@ public class StripLayoutHelperTest {
     @Test
     public void testHandleDragEnter() {
         // Setup with 5 tabs.
+        setupDragDropState();
         initializeTest(false, false, 1, 5);
         mStripLayoutHelper.onSizeChanged(
                 SCREEN_WIDTH_LANDSCAPE,
@@ -4836,6 +4848,7 @@ public class StripLayoutHelperTest {
     @Test
     public void testUpdateReorderPositionForTabDrop() {
         // Setup with 4 tabs.
+        setupDragDropState();
         initializeTest(false, false, 1, 3);
         mStripLayoutHelper.onSizeChanged(
                 SCREEN_WIDTH_LANDSCAPE,
@@ -4880,6 +4893,7 @@ public class StripLayoutHelperTest {
     @Test
     public void testUpdateReorderPositionForTabDrop_StartAndEndGap() {
         // Setup with 3 tabs.
+        setupDragDropState();
         initializeTest(false, false, 1, 3);
         mStripLayoutHelper.onSizeChanged(
                 SCREEN_WIDTH_LANDSCAPE,
@@ -5668,5 +5682,14 @@ public class StripLayoutHelperTest {
                 63,
                 mStripLayoutHelper.getNewTabButton().getTouchTargetBounds().bottom,
                 0f);
+    }
+
+    private void setupDragDropState() {
+        ChromeDropDataAndroid dropData =
+                new ChromeTabDropDataAndroid.Builder().withTab(mTab).build();
+        TrackerToken dragTrackerToken =
+                DragDropGlobalState.store(
+                        /* dragSourceInstanceId= */ 1, dropData, /* dragShadowBuilder= */ null);
+        TabDragSource.setDragTrackerTokenForTesting(dragTrackerToken);
     }
 }
