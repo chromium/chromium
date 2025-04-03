@@ -938,10 +938,8 @@ public class ChromeTabbedActivity extends ChromeActivity {
         builder.registerPane(
                 PaneId.INCOGNITO_TAB_SWITCHER,
                 LazyOneshotSupplier.fromSupplier(() -> createTabSwitcherPane(true)));
-        if (TabUiFeatureUtilities.isTabGroupPaneEnabled()) {
-            builder.registerPane(
-                    PaneId.TAB_GROUPS, LazyOneshotSupplier.fromSupplier(this::createTabGroupsPane));
-        }
+        builder.registerPane(
+                PaneId.TAB_GROUPS, LazyOneshotSupplier.fromSupplier(this::createTabGroupsPane));
         if (ChromeFeatureList.sCrossDeviceTabPaneAndroid.isEnabled()) {
             builder.registerPane(
                     PaneId.CROSS_DEVICE,

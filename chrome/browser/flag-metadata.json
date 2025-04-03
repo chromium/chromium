@@ -8804,7 +8804,8 @@
     "owners": [ "gambard@chromium.org", "bling-flags@google.com" ],
     "expiry_milestone": 142
   },
-  { "name": "tab-group-entry-points-android",
+  {
+    "name": "tab-group-entry-points-android",
     "owners": [ "mfiaz@google.com", "clank-tab-dev@google.com" ],
     "expiry_milestone": 143
   },
@@ -8814,11 +8815,7 @@
     "expiry_milestone": 140
   },
   {
-    "name": "tab-group-pane-android",
-    "owners": [ "skym@chromium.org", "clank-tab-dev@google.com" ],
-    "expiry_milestone": 140
-  },
-  { "name": "tab-group-parity-bottom-sheet-android",
+    "name": "tab-group-parity-bottom-sheet-android",
     "owners": [ "mfiaz@google.com", "clank-tab-dev@google.com" ],
     "expiry_milestone": 140
   },

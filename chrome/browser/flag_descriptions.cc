@@ -4954,12 +4954,6 @@ const char kHistoryPaneAndroidName[] = "History Pane Android";
 const char kHistoryPaneAndroidDescription[] =
     "Enables showing a new pane in the hub that displays History.";
 
-const char kTabGroupPaneAndroidName[] = "Tab Group Pane Android";
-const char kTabGroupPaneAndroidDescription[] =
-    "Enables showing a new pane in the hub that displays and allows "
-    "interactions with tab groups. These groups may be currently opened in the "
-    "tab mode or currently hidden.";
-
 const char kTabGroupSyncAndroidName[] = "Tab Group Sync on Android";
 const char kTabGroupSyncAndroidDescription[] =
     "Enables syncing of tab groups on Android with other devices.";

@@ -54,7 +54,6 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
@@ -1750,7 +1749,7 @@ class TabListMediator implements TabListNotificationHandler {
         // A tab is deemed a tab group card representation if it is part of a tab group and
         // based in the tab switcher.
         boolean isTabGroup = isTabInTabGroup(tab) && mActionsOnAllRelatedTabs;
-        if (ChromeFeatureList.sTabGroupPaneAndroid.isEnabled() && isTabGroup) {
+        if (isTabGroup) {
             return new TabActionButtonData(
                     TabActionButtonData.TabActionButtonType.OVERFLOW,
                     getTabGroupOverflowMenuClickListener());
@@ -2702,41 +2701,22 @@ class TabListMediator implements TabListNotificationHandler {
         String colorDesc = mActivity.getResources().getString(colorDescRes);
         return (context) -> {
             Resources res = context.getResources();
-            if (ChromeFeatureList.sTabGroupPaneAndroid.isEnabled()) {
-                String descriptionTitle = title;
-                if (TextUtils.isEmpty(descriptionTitle)) {
-                    descriptionTitle =
-                            TabGroupTitleUtils.getDefaultTitle(mActivity, numOfRelatedTabs);
-                }
-                if (!TabUiUtils.isDataSharingFunctionalityEnabled() || !hasCollaboration(tab)) {
-                    return res.getString(
-                            R.string
-                                    .accessibility_open_tab_group_overflow_menu_with_group_name_with_color,
-                            descriptionTitle,
-                            colorDesc);
-                } else {
-                    return res.getString(
-                            R.string
-                                    .accessibility_open_shared_tab_group_overflow_menu_with_group_name_with_color,
-                            descriptionTitle,
-                            colorDesc);
-                }
+            String descriptionTitle = title;
+            if (TextUtils.isEmpty(descriptionTitle)) {
+                descriptionTitle = TabGroupTitleUtils.getDefaultTitle(mActivity, numOfRelatedTabs);
+            }
+            if (!TabUiUtils.isDataSharingFunctionalityEnabled() || !hasCollaboration(tab)) {
+                return res.getString(
+                        R.string
+                                .accessibility_open_tab_group_overflow_menu_with_group_name_with_color,
+                        descriptionTitle,
+                        colorDesc);
             } else {
-                if (TextUtils.isEmpty(title)) {
-                    return res.getQuantityString(
-                            R.plurals.accessibility_close_tab_group_button_with_color,
-                            numOfRelatedTabs,
-                            numOfRelatedTabs,
-                            colorDesc);
-                } else {
-                    return res.getQuantityString(
-                            R.plurals
-                                    .accessibility_close_tab_group_button_with_group_name_with_color,
-                            numOfRelatedTabs,
-                            title,
-                            numOfRelatedTabs,
-                            colorDesc);
-                }
+                return res.getString(
+                        R.string
+                                .accessibility_open_shared_tab_group_overflow_menu_with_group_name_with_color,
+                        descriptionTitle,
+                        colorDesc);
             }
         };
     }

@@ -9697,10 +9697,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
-    {"tab-group-pane-android", flag_descriptions::kTabGroupPaneAndroidName,
-     flag_descriptions::kTabGroupPaneAndroidDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(tab_groups::kTabGroupPaneAndroid)},
-
     {"tab-group-entry-points-android",
      flag_descriptions::kTabGroupEntryPointsAndroidName,
      flag_descriptions::kTabGroupEntryPointsAndroidDescription, kOsAndroid,

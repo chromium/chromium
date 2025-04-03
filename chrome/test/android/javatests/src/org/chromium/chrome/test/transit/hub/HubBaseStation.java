@@ -30,7 +30,6 @@ import org.chromium.base.test.transit.TravelException;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.hub.R;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -82,16 +81,9 @@ public abstract class HubBaseStation extends Station<ChromeTabbedActivity> {
         elements.declareView(HUB_MENU_BUTTON);
 
         // TODO(crbug.com/386819654): Add a member of type ViewElement representing tab group pane
-        if (ChromeFeatureList.sTabGroupPaneAndroid.isEnabled()) {
-            mRegularTabsButton = elements.declareView(REGULAR_TOGGLE_TAB_BUTTON);
-            if (mIncognitoTabsExist) {
-                mIncognitoTabsButton = elements.declareView(INCOGNITO_TOGGLE_TAB_BUTTON);
-            }
-        } else {
-            if (mIncognitoTabsExist) {
-                mRegularTabsButton = elements.declareView(REGULAR_TOGGLE_TAB_BUTTON);
-                mIncognitoTabsButton = elements.declareView(INCOGNITO_TOGGLE_TAB_BUTTON);
-            }
+        mRegularTabsButton = elements.declareView(REGULAR_TOGGLE_TAB_BUTTON);
+        if (mIncognitoTabsExist) {
+            mIncognitoTabsButton = elements.declareView(INCOGNITO_TOGGLE_TAB_BUTTON);
         }
 
         elements.declareEnterCondition(
