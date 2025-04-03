@@ -2911,11 +2911,10 @@
     //  - Events disabled for the open web: M127 (July 23, 2024)
     //  - Reminder email sent to all Origin trial registrants: December 12, 2024
     //  - Origin trial disabled: M135 (April 1, 2025)
-    //  - Enterprise policy disabled: {not yet}
-    //  - Flag/code can be removed: {2 milestones after EP removal}
+    //  - Enterprise policy disabled: M137 (May 20, 2025)
+    //  - Flag/code can be removed: M139
     {
       name: "MutationEvents",
-      public: true,
     },
     {
       name: "NavigateEventCanTransition",
