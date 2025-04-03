@@ -82,13 +82,14 @@ export class CategoriesElement extends CategoriesElementBase {
     };
   }
 
-  protected collections_: BackgroundCollection[] = [];
-  private selectedCategory_: SelectedCategory = {type: CategoryType.NONE};
-  private theme_: Theme|null = null;
-  protected isClassicChromeSelected_: boolean = false;
-  protected isLocalImageSelected_: boolean = false;
-  protected isWallpaperSearchSelected_: boolean = false;
-  protected wallpaperSearchEnabled_: boolean =
+  protected accessor collections_: BackgroundCollection[] = [];
+  private accessor selectedCategory_:
+      SelectedCategory = {type: CategoryType.NONE};
+  private accessor theme_: Theme|null = null;
+  protected accessor isClassicChromeSelected_: boolean = false;
+  protected accessor isLocalImageSelected_: boolean = false;
+  protected accessor isWallpaperSearchSelected_: boolean = false;
+  protected accessor wallpaperSearchEnabled_: boolean =
       loadTimeData.getBoolean('wallpaperSearchEnabled');
   protected imageErrorDetectionEnabled_: boolean =
       loadTimeData.getBoolean('imageErrorDetectionEnabled');

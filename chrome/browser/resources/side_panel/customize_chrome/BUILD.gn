@@ -80,7 +80,6 @@ build_webui("build") {
   ]
 
   ts_composite = true
-  ts_tsconfig_base = "//tools/typescript/tsconfig_base_lit_legacy.json"
   ts_deps = [
     "../shared:build_ts",
     "//third_party/lit/v3_0:build_ts",

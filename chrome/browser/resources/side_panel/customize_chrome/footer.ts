@@ -36,7 +36,7 @@ export class FooterElement extends CrLitElement {
     };
   }
 
-  protected show_: boolean = false;
+  protected accessor show_: boolean = false;
 
   private setShow_(show: boolean) {
     recordCustomizeChromeAction(
