@@ -105,4 +105,12 @@ public class MenuButtonCoordinatorTest {
         mMenuButtonCoordinator.onEnterKeyPress();
         verify(mAppMenuButtonHelper, times(1)).onEnterKeyPress(mImageButton);
     }
+
+    @Test
+    public void testSetHighlight() {
+        mAppMenuSupplier.set(mAppMenuCoordinator);
+
+        mMenuButtonCoordinator.highlightMenuItemOnShow(R.id.close_all_tabs_menu_id);
+        verify(mAppMenuButtonHelper).highlightMenuItemOnShow(R.id.close_all_tabs_menu_id);
+    }
 }
