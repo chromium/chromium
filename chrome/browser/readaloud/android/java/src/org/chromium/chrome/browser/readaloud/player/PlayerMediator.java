@@ -18,6 +18,7 @@ import org.chromium.base.Callback;
 import org.chromium.chrome.browser.readaloud.ReadAloudMetrics;
 import org.chromium.chrome.browser.readaloud.ReadAloudPrefs;
 import org.chromium.chrome.modules.readaloud.Playback;
+import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackMode;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackVoice;
 import org.chromium.chrome.modules.readaloud.PlaybackListener;
 import org.chromium.chrome.modules.readaloud.contentjs.Highlighter.Mode;
@@ -228,6 +229,11 @@ class PlayerMediator implements InteractionHandler {
     }
 
     // InteractionHandler implementation
+    @Override
+    public void onPlaybackModeChanged(PlaybackMode playbackMode) {
+        mDelegate.setPlaybackModeAndApplyToPlayback(playbackMode);
+    }
+
     @Override
     public void onPlayPauseClick() {
         if (mPlayback == null) {
