@@ -61,6 +61,8 @@ std::string CdmKeyInformation::KeyStatusToString(KeyStatus key_status) {
       return "KEY_STATUS_PENDING";
     case RELEASED:
       return "RELEASED";
+    case USABLE_IN_FUTURE:
+      return "USABLE_IN_FUTURE";
   }
 
   NOTREACHED();

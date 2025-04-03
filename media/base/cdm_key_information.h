@@ -24,7 +24,8 @@ struct MEDIA_EXPORT CdmKeyInformation {
     OUTPUT_DOWNSCALED = 4,
     KEY_STATUS_PENDING = 5,
     RELEASED = 6,
-    KEY_STATUS_MAX = RELEASED
+    USABLE_IN_FUTURE = 7,
+    KEY_STATUS_MAX = USABLE_IN_FUTURE
   };
 
   // Default constructor needed for passing this type through IPC. Regular
