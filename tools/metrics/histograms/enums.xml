@@ -13849,6 +13849,8 @@ from previous Chrome versions.
   <int value="-154071189"
       label="AdaptiveButtonInTopToolbarPageSummary:disabled"/>
   <int value="-154039932" label="ExtensionManifestV2Unsupported:disabled"/>
+  <int value="-153533510"
+      label="ZeroCopyRBPPartialRasterWithGpuCompositor:enabled"/>
   <int value="-153299083" label="NewProfilePicker:disabled"/>
   <int value="-152677714" label="AsmJsToWebAssembly:enabled"/>
   <int value="-152632720" label="RuntimeHostPermissions:enabled"/>
@@ -14690,6 +14692,8 @@ from previous Chrome versions.
   <int value="174759256" label="LockScreenMediaControls:enabled"/>
   <int value="174917935" label="ReengagementNotification:disabled"/>
   <int value="175254474" label="SpectreVariant2Mitigation:enabled"/>
+  <int value="175564245"
+      label="ZeroCopyRBPPartialRasterWithGpuCompositor:disabled"/>
   <int value="176284157" label="HistoryOptInEntryPoints:enabled"/>
   <int value="176329316" label="MediaAppImageMantisReimagine:disabled"/>
   <int value="176401620" label="TabGroupParityAndroid:enabled"/>

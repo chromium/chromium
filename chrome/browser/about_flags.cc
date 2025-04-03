@@ -11985,12 +11985,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chrome::android::kAndroidSurfaceColorUpdate)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if !BUILDFLAG(IS_ANDROID)
-    {"enable-lens-search-side-panel-new-feedback",
-     flag_descriptions::kLensSearchSidePanelNewFeedbackName,
-     flag_descriptions::kLensSearchSidePanelNewFeedbackDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(lens::features::kLensSearchSidePanelNewFeedback)},
-#endif  // !BUILDFLAG(IS_ANDROID)
+    {"zero-copy-rbp-partial-raster-with-gpu-compositor",
+     flag_descriptions::kZeroCopyRBPPartialRasterWithGpuCompositorName,
+     flag_descriptions::kZeroCopyRBPPartialRasterWithGpuCompositorDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(features::kZeroCopyRBPPartialRasterWithGpuCompositor)},
 
     // Add new entries above this line.
 

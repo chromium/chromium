@@ -2457,6 +2457,9 @@ extern const char kWebXrIncubationsDescription[];
 extern const char kZeroCopyName[];
 extern const char kZeroCopyDescription[];
 
+extern const char kZeroCopyRBPPartialRasterWithGpuCompositorName[];
+extern const char kZeroCopyRBPPartialRasterWithGpuCompositorDescription[];
+
 extern const char kEnableVulkanName[];
 extern const char kEnableVulkanDescription[];
 

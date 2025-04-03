@@ -4193,6 +4193,11 @@ const char kZeroCopyName[] = "Zero-copy rasterizer";
 const char kZeroCopyDescription[] =
     "Raster threads write directly to GPU memory associated with tiles.";
 
+const char kZeroCopyRBPPartialRasterWithGpuCompositorName[] =
+    "Zero-copy partial raster with GPU compositor";
+const char kZeroCopyRBPPartialRasterWithGpuCompositorDescription[] =
+    "Has zero-copy raster do partial raster when used with the GPU compositor";
+
 const char kEnableVulkanName[] = "Vulkan";
 const char kEnableVulkanDescription[] = "Use vulkan as the graphics backend.";
 
