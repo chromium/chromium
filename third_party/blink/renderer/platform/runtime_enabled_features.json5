@@ -2697,10 +2697,17 @@
       status: "experimental",
     },
     {
-      // Add sourceLine and sourceColumn to PerformanceScriptTiming
+      // Enable retrieving sourceLine and sourceColumn in LoAF implementation.
       // https://issues.chromium.org/issues/391417815
       name: "LongAnimationFrameSourceLineColumn",
-      status: "experimental",
+      status: "test",
+      implied_by: ["LongAnimationFrameSourceLineColumnInterface"],
+    },
+    {
+      // Add sourceLine and sourceColumn to PerformanceScriptTiming
+      // https://issues.chromium.org/issues/391417815
+      name: "LongAnimationFrameSourceLineColumnInterface",
+      status: "test",
     },
     {
       // Long press on a link selects the link text instead of bringing up
