@@ -197,7 +197,8 @@ bool TabModelJniBridge::IsTabInTabGroup(TabAndroid* tab) {
     return false;
   }
   JNIEnv* env = base::android::AttachCurrentThread();
-  return Java_TabModelJniBridge_isTabInTabGroup(env, tab->GetJavaObject());
+  return Java_TabModelJniBridge_isTabInTabGroupLegacy(env,
+                                                      tab->GetJavaObject());
 }
 
 void TabModelJniBridge::AddObserver(TabModelObserver* observer) {
