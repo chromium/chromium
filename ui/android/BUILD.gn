@@ -834,6 +834,7 @@ android_library("ui_unit_device_javatests") {
   resources_package = "org.chromium.ui"
 
   sources = [
+    "java/src/org/chromium/ui/UiUtilsTest.java",
     "java/src/org/chromium/ui/listmenu/ListMenuButtonTest.java",
     "java/src/org/chromium/ui/widget/TextViewWithTightWrapTest.java",
     "javatests/src/org/chromium/ui/animation/RenderTestAnimationUtils.java",
