@@ -121,16 +121,8 @@ TEST_F(CredentialProviderPromoCoordinatorTest,
 
 // Tests that tapping the primary CTA in both the first and second step of the
 // promo will result in two primary actions being recorded correctly.
-// TODO(crbug.com/404244113): Fails on device.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_CredentialProviderPromoTwoStepPrimaryActionRecorded \
-  CredentialProviderPromoTwoStepPrimaryActionRecorded
-#else
-#define MAYBE_CredentialProviderPromoTwoStepPrimaryActionRecorded \
-  DISABLED_CredentialProviderPromoTwoStepPrimaryActionRecorded
-#endif
 TEST_F(CredentialProviderPromoCoordinatorTest,
-       MAYBE_CredentialProviderPromoTwoStepPrimaryActionRecorded) {
+       CredentialProviderPromoTwoStepPrimaryActionRecorded) {
   // Disable the Passkeys M2 feature.
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(kIOSPasskeysM2);
