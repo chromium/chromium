@@ -1153,8 +1153,8 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTest, Log) {
   // variable as a captureless lambda can be converted to a function pointer.
   static base::NoDestructor<std::vector<std::string>> captured_logs;
   CHECK_EQ(nullptr, logging::GetLogMessageHandler());
-  logging::SetLogMessageHandler([](int severity, std::string_view file,
-                                   int line, size_t message_start,
+  logging::SetLogMessageHandler([](int severity, const char* file, int line,
+                                   size_t message_start,
                                    const std::string& str) {
     captured_logs->push_back(str);
     return true;
@@ -1196,8 +1196,8 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestDebugOff, NoLog) {
   // variable as a captureless lambda can be converted to a function pointer.
   static base::NoDestructor<std::vector<std::string>> captured_logs;
   CHECK_EQ(nullptr, logging::GetLogMessageHandler());
-  logging::SetLogMessageHandler([](int severity, std::string_view file,
-                                   int line, size_t message_start,
+  logging::SetLogMessageHandler([](int severity, const char* file, int line,
+                                   size_t message_start,
                                    const std::string& str) {
     captured_logs->push_back(str);
     return true;
