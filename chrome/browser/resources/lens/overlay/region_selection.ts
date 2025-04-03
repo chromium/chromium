@@ -69,20 +69,20 @@ export class RegionSelectionElement extends PolymerElement {
     };
   }
 
-  private canvasHeight: number;
-  private canvasWidth: number;
-  private canvasPhysicalHeight: number;
-  private canvasPhysicalWidth: number;
+  declare private canvasHeight: number;
+  declare private canvasWidth: number;
+  declare private canvasPhysicalHeight: number;
+  declare private canvasPhysicalWidth: number;
   private context: CanvasRenderingContext2D;
   // The data URI of the current overlay screenshot.
-  private screenshotDataUri: string;
+  declare private screenshotDataUri: string;
   // The overlay theme.
-  private theme: OverlayTheme;
+  declare private theme: OverlayTheme;
   // The bounds of the parent element. This is updated by the parent to avoid
   // this class needing to call getBoundingClientRect()
-  private selectionOverlayRect: DOMRect;
+  declare private selectionOverlayRect: DOMRect;
   // Shader hex colors.
-  private shaderLayerColorHexes: string[];
+  declare private shaderLayerColorHexes: string[];
   private browserProxy: BrowserProxy = BrowserProxyImpl.getInstance();
 
   // The tap region dimensions are the height and width that the region should

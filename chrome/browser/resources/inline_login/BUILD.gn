@@ -17,7 +17,6 @@ build_webui("build") {
   non_web_component_files = [ "inline_login_browser_proxy.ts" ]
 
   ts_composite = true
-  ts_tsconfig_base = "//tools/typescript/tsconfig_base_polymer_legacy.json"
   ts_definitions = [
     "//chrome/browser/resources/gaia_auth_host/authenticator.d.ts",
     "//chrome/browser/resources/gaia_auth_host/saml_password_attributes.d.ts",

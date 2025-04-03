@@ -45,7 +45,7 @@ export class SearchboxGhostLoaderElement extends
         reflectToAttribute: true,
       },
       pageContentType: {
-        type: String,
+        type: Number,
         value: PageContentType.kUnknown,
       },
       ghostLoaderPrimaryMessage: {
@@ -57,13 +57,13 @@ export class SearchboxGhostLoaderElement extends
 
   // Whether the autocomplete stop timer has triggered. If it has, we should
   // hide the ghost loader. We also show the error text in this case.
-  private showErrorState: boolean;
-  private showContextualSearchboxLoadingState: boolean;
+  declare private showErrorState: boolean;
+  declare private showContextualSearchboxLoadingState: boolean;
   // What the current page content type is.
-  private pageContentType: PageContentType;
+  declare private pageContentType: PageContentType;
   private browserProxy: BrowserProxy = BrowserProxyImpl.getInstance();
   private listenerIds: number[];
-  private ghostLoaderPrimaryMessage: string;
+  declare private ghostLoaderPrimaryMessage: string;
 
   override connectedCallback() {
     super.connectedCallback();
