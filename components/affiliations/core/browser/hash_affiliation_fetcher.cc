@@ -8,9 +8,15 @@
 #include <utility>
 
 #include "base/functional/callback_forward.h"
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/affiliations/core/browser/affiliation_api.pb.h"
+#include "components/affiliations/core/browser/affiliation_fetcher_interface.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/affiliations/core/browser/lookup_affiliation_response_parser.h"
 #include "components/variations/net/variations_http_headers.h"
@@ -114,9 +120,8 @@ affiliation_pb::LookupAffiliationMask CreateLookupMask(
 }  // namespace
 
 HashAffiliationFetcher::HashAffiliationFetcher(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    AffiliationFetcherDelegate* delegate)
-    : url_loader_factory_(std::move(url_loader_factory)), delegate_(delegate) {}
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    : url_loader_factory_(std::move(url_loader_factory)) {}
 
 HashAffiliationFetcher::~HashAffiliationFetcher() {
   // Run the callback in case the fetcher is destroyed before fetching the
@@ -124,10 +129,6 @@ HashAffiliationFetcher::~HashAffiliationFetcher() {
   if (result_callback_) {
     std::move(result_callback_).Run(AffiliationFetcherInterface::FetchResult());
   }
-}
-
-AffiliationFetcherDelegate* HashAffiliationFetcher::delegate() const {
-  return delegate_;
 }
 
 void HashAffiliationFetcher::StartRequest(
@@ -230,7 +231,7 @@ void HashAffiliationFetcher::FinalizeRequest(
 
 bool HashAffiliationFetcher::ParseResponse(
     const std::string& serialized_response,
-    AffiliationFetcherDelegate::Result* result) const {
+    AffiliationFetcherInterface::ParsedFetchResponse* result) const {
   // This function parses the response protocol buffer message for a list of
   // equivalence classes, and stores them into |results| after performing some
   // validation and sanitization steps to make sure that the contract of
@@ -259,10 +260,6 @@ bool HashAffiliationFetcher::ParseResponse(
 void HashAffiliationFetcher::OnSimpleLoaderComplete(
     std::unique_ptr<std::string> response_body) {
   CHECK(result_callback_);
-  // Temporarily create a local copy of the callback to make sure we can run it
-  // even if this fetcher is destroyed in OnFetch[Succeeded|Failed].
-  // This will be removed after the delegate logic is also removed.
-  auto callback_local_copy = std::move(result_callback_);
   FetchResult fetch_result;
   fetch_result.network_status = simple_url_loader_->NetError();
   base::TimeDelta fetch_time = fetch_timer_.Elapsed();
@@ -287,9 +284,7 @@ void HashAffiliationFetcher::OnSimpleLoaderComplete(
     base::UmaHistogramSparse(
         "PasswordManager.AffiliationFetcher.FetchErrorCode",
         -simple_url_loader_->NetError());
-    // TODO(crbug.com/371938601): clean up delegate.
-    delegate_->OnFetchFailed(this);
-    std::move(callback_local_copy).Run(std::move(fetch_result));
+    std::move(result_callback_).Run(std::move(fetch_result));
     return;
   }
 
@@ -298,16 +293,11 @@ void HashAffiliationFetcher::OnSimpleLoaderComplete(
     LogFetchResult(AffiliationFetchOutcome::kSuccess, fetch_time,
                    response_body->size());
     fetch_result.data = result_data;
-    // TODO(crbug.com/371938601): clean up delegate.
-    delegate_->OnFetchSucceeded(
-        this, std::make_unique<ParsedFetchResponse>(result_data));
-    std::move(callback_local_copy).Run(std::move(fetch_result));
+    std::move(result_callback_).Run(std::move(fetch_result));
   } else {
     LogFetchResult(AffiliationFetchOutcome::kMalformed, fetch_time,
                    response_body->size());
-    // TODO(crbug.com/371938601): clean up delegate.
-    delegate_->OnMalformedResponse(this);
-    std::move(callback_local_copy).Run(std::move(fetch_result));
+    std::move(result_callback_).Run(std::move(fetch_result));
   }
 }
 

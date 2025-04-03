@@ -76,7 +76,7 @@ void AffiliationBackend::Initialize(
   url_loader_factory_ = network::SharedURLLoaderFactory::Create(
       std::move(pending_url_loader_factory));
   fetcher_manager_ = std::make_unique<AffiliationFetcherManager>(
-      std::move(url_loader_factory_), this);
+      std::move(url_loader_factory_));
 }
 
 void AffiliationBackend::GetAffiliationsAndBranding(

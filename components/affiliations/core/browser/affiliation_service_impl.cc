@@ -187,7 +187,7 @@ void AffiliationServiceImpl::Init(
     const base::FilePath& db_path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   fetcher_manager_ =
-      std::make_unique<AffiliationFetcherManager>(url_loader_factory_, this);
+      std::make_unique<AffiliationFetcherManager>(url_loader_factory_);
   backend_ = std::make_unique<AffiliationBackend>(
       backend_task_runner_, base::DefaultClock::GetInstance(),
       base::DefaultTickClock::GetInstance());

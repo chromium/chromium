@@ -23,7 +23,6 @@ class AffiliationFetcherInterface {
     ParsedFetchResponse& operator=(const ParsedFetchResponse& other);
     ParsedFetchResponse& operator=(ParsedFetchResponse&& other);
     ~ParsedFetchResponse();
-    bool operator==(const ParsedFetchResponse& other) const = default;
 
     std::vector<AffiliatedFacets> affiliations;
     std::vector<GroupedFacets> groupings;
