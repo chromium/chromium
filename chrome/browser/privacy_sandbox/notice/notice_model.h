@@ -39,7 +39,14 @@ class Notice {
   // TODO(crbug.com/392612108): Include view group information.
  public:
   explicit Notice(NoticeId notice_id);
-  Notice(const Notice& other);
+  // Delete copy constructor and copy assignment operator
+  Notice(const Notice&) = delete;
+  Notice& operator=(const Notice&) = delete;
+
+  // Delete move constructor and move assignment operator
+  Notice(Notice&&) = delete;
+  Notice& operator=(Notice&&) = delete;
+
   virtual ~Notice();
 
   // Sets Apis that need to be eligible or previously fulfilled to see this

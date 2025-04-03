@@ -7,6 +7,7 @@
 #include "components/privacy_sandbox/privacy_sandbox_notice_storage.h"
 
 namespace privacy_sandbox {
+
 using notice::mojom::PrivacySandboxNoticeEvent;
 
 // NoticeApi class definitions.
@@ -59,7 +60,6 @@ bool NoticeApi::IsFulfilled() {
 
 // Notice class definitions.
 Notice::Notice(NoticeId notice_id) : notice_id_(notice_id) {}
-Notice::Notice(const Notice& other) = default;
 Notice::~Notice() = default;
 
 const std::vector<raw_ptr<NoticeApi>>& Notice::GetTargetApis() {
