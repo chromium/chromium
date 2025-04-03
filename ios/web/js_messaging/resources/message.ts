@@ -8,7 +8,7 @@
  */
 
 import {getFrameId, registerFrame} from '//ios/web/public/js_messaging/resources/frame_id.js';
-import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 
 /**
  * Registers this frame with the native code and forwards the message to any
@@ -35,7 +35,7 @@ function getExistingFrames() {
   }
 }
 
-gCrWeb.message = {
+gCrWebLegacy.message = {
   getFrameId,
   getExistingFrames,
 };

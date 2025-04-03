@@ -10,7 +10,7 @@
 import '//components/autofill/ios/form_util/resources/create_fill_namespace.js';
 
 import * as fillConstants from '//components/autofill/ios/form_util/resources/fill_constants.js';
-import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 
 // Extends the Element to add the ability to access its properties
 // via the [] notation.
@@ -27,19 +27,19 @@ const elementMap = new Map();
  * Stores the next available ID for forms and fields. By convention, 0 means
  * null, so we start at 1 and increment from there.
  */
-document[gCrWeb.fill.ID_SYMBOL] = 1;
+document[gCrWebLegacy.fill.ID_SYMBOL] = 1;
 
 /**
  * @param element Form or form input element.
  */
-gCrWeb.fill.setUniqueIDIfNeeded = function(element: IndexableElement): void {
+gCrWebLegacy.fill.setUniqueIDIfNeeded = function(element: IndexableElement): void {
   try {
-    const uniqueIDSymbol = gCrWeb.fill.ID_SYMBOL;
+    const uniqueIDSymbol = gCrWebLegacy.fill.ID_SYMBOL;
     if (typeof element[uniqueIDSymbol] === 'undefined') {
       const elementID = document[uniqueIDSymbol]!++;
       element[uniqueIDSymbol] = elementID;
 
-      //  Store a copy of the ID in the DOM. gCrWeb.fill.getUniqueID will use
+      //  Store a copy of the ID in the DOM. gCrWebLegacy.fill.getUniqueID will use
       //  the DOM copy when running in the page content world.
       element.setAttribute(
           fillConstants.UNIQUE_ID_ATTRIBUTE, elementID.toString());
@@ -54,7 +54,7 @@ gCrWeb.fill.setUniqueIDIfNeeded = function(element: IndexableElement): void {
  * @param id Unique ID.
  * @return element Form or form input element.
  */
-gCrWeb.fill.getElementByUniqueID = function(id: number): Element|null {
+gCrWebLegacy.fill.getElementByUniqueID = function(id: number): Element|null {
   try {
     return elementMap.get(id).deref();
   } catch (e) {

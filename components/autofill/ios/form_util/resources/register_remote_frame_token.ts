@@ -11,7 +11,7 @@
 // Requires functions from child_frame_registration_lib.ts.
 
 import {setRemoteFrameToken} from '//components/autofill/ios/form_util/resources/fill_util.js';
-import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {generateRandomId} from '//ios/web/public/js_messaging/resources/utils.js';
 
 function registerRemoteToken(): void {
@@ -21,7 +21,7 @@ function registerRemoteToken(): void {
   // browser layer uses remote tokens to map page content world frames to their
   // isolated world counter parts, which is where the rest of Autofill lives.
   setRemoteFrameToken(remoteFrameToken);
-  gCrWeb.remoteFrameRegistration.registerSelfWithRemoteToken(remoteFrameToken);
+  gCrWebLegacy.remoteFrameRegistration.registerSelfWithRemoteToken(remoteFrameToken);
 }
 
 

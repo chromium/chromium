@@ -4,7 +4,7 @@
 
 import '//components/autofill/ios/form_util/resources/create_fill_namespace.js';
 
-import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 
 declare type FormControlElement =
     HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
@@ -83,4 +83,4 @@ export {
   UNIQUE_ID_ATTRIBUTE,
 };
 
-gCrWeb.fill.ID_SYMBOL = ID_SYMBOL;
+gCrWebLegacy.fill.ID_SYMBOL = ID_SYMBOL;
