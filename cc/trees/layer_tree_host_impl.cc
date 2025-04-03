@@ -3070,39 +3070,56 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
 
   viz::CompositorFrameMetadata metadata = MakeCompositorFrameMetadata();
 
-  ViewTransitionRequest::ViewTransitionElementMap view_transition_element_map;
-  const auto& capture_view_transition_tokens =
-      active_tree_->GetCaptureViewTransitionTokens();
-  for (RenderSurfaceImpl* render_surface : *frame->render_surface_list) {
-    const auto& view_transition_element_resource_id =
-        render_surface->OwningEffectNode()->view_transition_element_resource_id;
-    if (!view_transition_element_resource_id.IsValid()) {
-      continue;
+  // Don't compute transition directives in TreesInViz mode because
+  // the requests will be sent over to viz to compute them.
+  // If we call TakeViewTransitionRequests() here, it will clear the requests
+  // and send none to viz.
+  if (!use_layer_context_for_display_) {
+    ViewTransitionRequest::ViewTransitionElementMap view_transition_element_map;
+    const auto& capture_view_transition_tokens =
+        active_tree_->GetCaptureViewTransitionTokens();
+    for (RenderSurfaceImpl* render_surface : *frame->render_surface_list) {
+      const auto& view_transition_element_resource_id =
+          render_surface->OwningEffectNode()
+              ->view_transition_element_resource_id;
+      if (!view_transition_element_resource_id.IsValid()) {
+        continue;
+      }
+
+      DCHECK(!base::Contains(view_transition_element_map,
+                             view_transition_element_resource_id))
+          << "Cannot map " << view_transition_element_resource_id.ToString()
+          << " to render pass "
+          << render_surface->render_pass_id().GetUnsafeValue()
+          << "; It already maps to render pass "
+          << view_transition_element_map[view_transition_element_resource_id]
+                 .GetUnsafeValue();
+
+      if (view_transition_element_resource_id.MatchesToken(
+              capture_view_transition_tokens)) {
+        view_transition_element_map[view_transition_element_resource_id] =
+            render_surface->view_transition_capture_render_pass_id();
+      } else {
+        view_transition_element_map[view_transition_element_resource_id] =
+            render_surface->render_pass_id();
+      }
     }
 
-    DCHECK(!base::Contains(view_transition_element_map,
-                           view_transition_element_resource_id))
-        << "Cannot map " << view_transition_element_resource_id.ToString()
-        << " to render pass "
-        << render_surface->render_pass_id().GetUnsafeValue()
-        << "; It already maps to render pass "
-        << view_transition_element_map[view_transition_element_resource_id]
-               .GetUnsafeValue();
-
-    if (view_transition_element_resource_id.MatchesToken(
-            capture_view_transition_tokens)) {
-      view_transition_element_map[view_transition_element_resource_id] =
-          render_surface->view_transition_capture_render_pass_id();
-    } else {
-      view_transition_element_map[view_transition_element_resource_id] =
-          render_surface->render_pass_id();
+    auto display_color_spaces = GetDisplayColorSpaces();
+    for (auto& request : active_tree_->TakeViewTransitionRequests(
+             /*should_set_needs_update_draw_properties=*/true)) {
+      metadata.transition_directives.push_back(request->ConstructDirective(
+          view_transition_element_map, display_color_spaces));
     }
-  }
-
-  auto display_color_spaces = GetDisplayColorSpaces();
-  for (auto& request : active_tree_->TakeViewTransitionRequests()) {
-    metadata.transition_directives.push_back(request->ConstructDirective(
-        view_transition_element_map, display_color_spaces));
+  } else {
+    // In TreesInViz mode, we call TakeViewTransitionRequest() later in
+    // VizLayerContext::UpdateDisplayTreeFrom(), but we still want to set
+    // the flag here to avoid changing the flow of computing. Also, we will
+    // skip setting the flag when TakeViewTransitionRequest() is called later
+    // to avoid triggering a DCHECK.
+    if (active_tree_->HasViewTransitionRequests()) {
+      active_tree_->set_needs_update_draw_properties();
+    }
   }
 
   PopulateMetadataContentColorUsage(frame, &metadata);

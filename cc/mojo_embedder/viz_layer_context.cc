@@ -793,6 +793,36 @@ viz::mojom::AnimationPtr SerializeAnimation(cc::Animation& animation) {
   return wire;
 }
 
+viz::mojom::ViewTransitionRequestPtr SerializeViewTransitionRequest(
+    const cc::ViewTransitionRequest& request) {
+  auto wire = viz::mojom::ViewTransitionRequest::New();
+  switch (request.type()) {
+    case cc::ViewTransitionRequest::Type::kSave:
+      wire->type = viz::mojom::CompositorFrameTransitionDirectiveType::kSave;
+      break;
+    case cc::ViewTransitionRequest::Type::kAnimateRenderer:
+      wire->type =
+          viz::mojom::CompositorFrameTransitionDirectiveType::kAnimateRenderer;
+      break;
+    case cc::ViewTransitionRequest::Type::kRelease:
+      wire->type = viz::mojom::CompositorFrameTransitionDirectiveType::kRelease;
+      break;
+  }
+  wire->transition_token = request.token();
+  wire->maybe_cross_frame_sink = request.maybe_cross_frame_sink();
+  wire->sequence_id = request.sequence_id();
+  if (request.type() == cc::ViewTransitionRequest::Type::kSave &&
+      !request.capture_resource_ids().empty()) {
+    wire->capture_resource_ids.reserve(request.capture_resource_ids().size());
+    for (const auto& id : request.capture_resource_ids()) {
+      wire->capture_resource_ids.push_back(id);
+    }
+  } else {
+    DCHECK(request.capture_resource_ids().empty());
+  }
+  return wire;
+}
+
 }  // namespace
 
 VizLayerContext::VizLayerContext(viz::mojom::CompositorFrameSink& frame_sink,
@@ -827,6 +857,7 @@ void VizLayerContext::UpdateDisplayTreeFrom(
   update->device_viewport = tree.GetDeviceViewport();
   update->device_scale_factor = tree.device_scale_factor();
   update->painted_device_scale_factor = tree.painted_device_scale_factor();
+  update->display_color_spaces = tree.display_color_spaces();
   if (tree.local_surface_id_from_parent().is_valid()) {
     update->local_surface_id_from_parent = tree.local_surface_id_from_parent();
   }
@@ -884,6 +915,16 @@ void VizLayerContext::UpdateDisplayTreeFrom(
       update->surface_ranges->push_back(surface_range);
     }
     tree.set_needs_surface_ranges_sync(false);
+  }
+  if (tree.HasViewTransitionRequests()) {
+    auto requests = tree.TakeViewTransitionRequests(
+        /*should_set_needs_update_draw_properties=*/false);
+    update->view_transition_requests.emplace();
+    update->view_transition_requests->reserve(requests.size());
+    for (const auto& request : requests) {
+      auto data = SerializeViewTransitionRequest(*request);
+      update->view_transition_requests->push_back(std::move(data));
+    }
   }
 
   if (base::FeatureList::IsEnabled(features::kTreeAnimationsInViz)) {

@@ -65,10 +65,6 @@
 # TODO(crbug.com/404940699) Fix missing frame submit to Viz after commit request
 -LayerTreeHostTestBeginFrameAcks.RunMultiThread_DelegatingRenderer
 
-# TODO(crbug.com/404941217) Fix submitted frame.metadata.transition_directives
--LayerTreeHostTestViewTransitionsPropagatedToMetadata.RunMultiThread_DelegatingRenderer
--LayerTreeHostTestViewTransitionsPropagatedToMetadata.RunSingleThread_DelegatingRenderer
-
 # TODO (crbug.com/404940328) Fix LayerTreeHostTestInvisibleLayersSkipRenderPass
 -LayerTreeHostTestInvisibleLayersSkipRenderPass.RunSingleThread_DelegatingRenderer
 -LayerTreeHostTestInvisibleLayersSkipRenderPass.RunMultiThread_DelegatingRenderer

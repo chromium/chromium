@@ -590,6 +590,36 @@ base::expected<void, std::string> DeserializeTiling(
   return base::ok();
 }
 
+void DeserializeViewTransitionRequests(
+    cc::LayerTreeImpl& layers,
+    std::vector<mojom::ViewTransitionRequestPtr>& wire_data) {
+  for (auto& wire : wire_data) {
+    std::unique_ptr<cc::ViewTransitionRequest> request;
+    switch (wire->type) {
+      case mojom::CompositorFrameTransitionDirectiveType::kSave:
+        // Callback is not used at all in
+        // ViewTransitionRequest::ConstructDirective, therefore it's not
+        // wired in mojom::ViewTransitionRequest to viz, and here we just use
+        // a placeholder.
+        request = cc::ViewTransitionRequest::CreateCapture(
+            wire->transition_token, wire->maybe_cross_frame_sink,
+            wire->capture_resource_ids,
+            cc::ViewTransitionRequest::ViewTransitionCaptureCallback());
+        break;
+      case mojom::CompositorFrameTransitionDirectiveType::kAnimateRenderer:
+        request = cc::ViewTransitionRequest::CreateAnimateRenderer(
+            wire->transition_token, wire->maybe_cross_frame_sink);
+        break;
+      case mojom::CompositorFrameTransitionDirectiveType::kRelease:
+        request = cc::ViewTransitionRequest::CreateRelease(
+            wire->transition_token, wire->maybe_cross_frame_sink);
+        break;
+    }
+    request->set_sequence_id(wire->sequence_id);
+    layers.AddViewTransitionRequest(std::move(request));
+  }
+}
+
 gfx::StepsTimingFunction::StepPosition DeserializeTimingStepPosition(
     mojom::TimingStepPosition step_position) {
   switch (step_position) {
@@ -1185,6 +1215,11 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
     layers.SetSurfaceRanges(surface_ranges);
   }
 
+  if (update->view_transition_requests) {
+    DeserializeViewTransitionRequests(layers,
+                                      *(update->view_transition_requests));
+  }
+
   RETURN_IF_ERROR(
       CreateOrUpdateLayers(*this, update->layers, update->layer_order, layers));
 
@@ -1232,6 +1267,7 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
     return base::unexpected("Invalid painted device scale factor");
   }
   layers.set_painted_device_scale_factor(update->painted_device_scale_factor);
+  layers.SetDisplayColorSpaces(update->display_color_spaces);
   if (update->local_surface_id_from_parent) {
     layers.SetLocalSurfaceIdFromParent(*update->local_surface_id_from_parent);
   }
