@@ -54,8 +54,8 @@ suite('<bookmarks-router>', function() {
     store.data.selectedFolder = '2';
     store.notifyObservers();
     await microtasksFinished();
-
     assertEquals('chrome://bookmarks/?id=2', window.location.href);
+
     store.data.selectedFolder = '1';
     store.notifyObservers();
     await microtasksFinished();
@@ -83,6 +83,68 @@ suite('<bookmarks-router>', function() {
     const action = store.lastAction as SelectFolderAction;
     assertEquals('select-folder', action.name);
     assertEquals('1', action.id);
+  });
+});
+
+suite('<bookmarks-router-account-and-local>', function() {
+  let store: TestStore;
+
+  function navigateTo(route: string) {
+    window.history.replaceState({}, '', route);
+    window.dispatchEvent(new CustomEvent('popstate'));
+  }
+
+  setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    const nodes = testTree(
+        createFolder('1', [createItem('11', {syncing: true})], {
+          syncing: true,
+          folderType: chrome.bookmarks.FolderType.BOOKMARKS_BAR,
+        }),
+        createFolder('2', [createItem('21', {syncing: false})], {
+          syncing: false,
+          folderType: chrome.bookmarks.FolderType.BOOKMARKS_BAR,
+        }));
+    store = new TestStore({
+      nodes: nodes,
+      folderOpenState: getAllFoldersOpenState(nodes),
+      selectedFolder: 'account_heading',
+      search: {
+        term: '',
+      },
+    });
+    store.replaceSingleton();
+
+    const router = new BookmarksRouter();
+    router.initialize();
+  });
+
+  test('selected folder updates from route', function() {
+    navigateTo('/?id=local_heading');
+    const action = store.lastAction as SelectFolderAction;
+    assertEquals('select-folder', action.name);
+    assertEquals('local_heading', action.id);
+  });
+
+  test('route updates from ID', async function() {
+    store.data.selectedFolder = '2';
+    store.notifyObservers();
+    await microtasksFinished();
+    assertEquals('chrome://bookmarks/?id=2', window.location.href);
+
+    store.data.selectedFolder = 'account_heading';
+    store.notifyObservers();
+    await microtasksFinished();
+    // Selecting account bookmarks root clears route.
+    assertEquals('chrome://bookmarks/', window.location.href);
+  });
+
+  test('account bookmarks root selected with empty route', function() {
+    navigateTo('/?id=2');
+    navigateTo('/');
+    const action = store.lastAction as SelectFolderAction;
+    assertEquals('select-folder', action.name);
+    assertEquals('account_heading', action.id);
   });
 });
 
