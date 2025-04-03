@@ -196,9 +196,10 @@ std::optional<PhysicalRect> PerformBubblingScrollIntoView(
   HeapHashSet<Member<const LayoutBox>> stop_at;
   if (const LayoutObject* halt_object =
           container ? current_box->CommonAncestor(*container) : nullptr) {
-    for (const LayoutBox* halt_box = halt_object->EnclosingBox(); halt_box;
-         halt_box = halt_box->ParentBox()) {
-      stop_at.insert(halt_box);
+    for (; halt_object; halt_object = halt_object->Parent()) {
+      if (const LayoutBox* halt_box = DynamicTo<LayoutBox>(halt_object)) {
+        stop_at.insert(halt_box);
+      }
     }
   }
   while (current_box) {
