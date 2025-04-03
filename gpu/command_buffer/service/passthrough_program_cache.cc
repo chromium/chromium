@@ -44,13 +44,11 @@ bool g_blob_cache_funcs_set = false;
 
 PassthroughProgramCache::PassthroughProgramCache(
     size_t max_cache_size_bytes,
-    bool disable_gpu_shader_disk_cache,
-    ValueAddedHook* value_added_hook)
+    bool disable_gpu_shader_disk_cache)
     : ProgramCache(max_cache_size_bytes),
       disable_gpu_shader_disk_cache_(disable_gpu_shader_disk_cache),
       curr_size_bytes_(0),
-      store_(ProgramLRUCache::NO_AUTO_EVICT),
-      value_added_hook_(value_added_hook) {
+      store_(ProgramLRUCache::NO_AUTO_EVICT) {
   gl::GLDisplayEGL* gl_display = gl::GLSurfaceEGL::GetGLDisplayEGL();
   EGLDisplay egl_display = gl_display->GetDisplay();
 
@@ -174,10 +172,6 @@ void PassthroughProgramCache::Set(Key&& key,
       std::string key_string_64 = base::Base64Encode(key_string);
       std::string value_string_64 = base::Base64Encode(value_string);
       callback_with_fallback.Run(key_string_64, value_string_64);
-    }
-
-    if (value_added_hook_) {
-      value_added_hook_->OnValueAddedToCache(key, value);
     }
 
     store_.Put(key, ProgramCacheValue(std::move(value), this));
