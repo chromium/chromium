@@ -46,7 +46,7 @@ export function getHtml(this: PowerBookmarkRowElement) {
   ${this.showTrailingIcon_() ? html`
     ${this.isPriceTracked ? html`
     <sp-list-item-badge slot="badges"
-        .updated="${this.showDiscountedPrice_(this.bookmark)}">
+        ?was-updated="${this.showDiscountedPrice_(this.bookmark)}">
       <cr-icon icon="bookmarks:price-tracking"></cr-icon>
       <div>
         ${this.getCurrentPrice_(this.bookmark)}

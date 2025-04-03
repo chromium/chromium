@@ -22,6 +22,7 @@ build_webui("build") {
     "sp_empty_state.css",
     "sp_footer.css",
     "sp_heading.css",
+    "sp_list_item_badge.css",
     "sp_shared_style.css",
     "sp_shared_style_lit.css",
     "sp_shared_vars.css",
