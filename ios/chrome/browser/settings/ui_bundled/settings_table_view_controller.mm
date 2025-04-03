@@ -1781,6 +1781,9 @@ struct EnhancedSafeBrowsingActivePromoData
   // Default search engine is enabled and set by policy.
   const std::string* status =
       dict.FindStringByDottedPath(DefaultSearchManager::kShortName);
+  if (!status) {
+    return @"";
+  }
   return base::SysUTF8ToNSString(*status);
 }
 
