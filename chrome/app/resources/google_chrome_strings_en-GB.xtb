@@ -61,6 +61,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1786044937610313874">Shortcuts open in Chrome</translation>
 <translation id="178701303897325119">This extension is no longer supported. Chrome recommends that you remove it instead.</translation>
 <translation id="1812689907177901597">By turning this off, you can sign in to Google sites such as Gmail, without signing in to Chrome</translation>
+<translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome recommends pausing the tab that's slowing your browser}other{Chrome recommends pausing the tabs that are slowing your browser}}</translation>
 <translation id="1838374766361614909">Clear search</translation>
 <translation id="1860536484129686729">Chrome needs permission to access your camera for this site</translation>
 <translation id="1873233029667955273">Google Chrome isn't your default browser</translation>
@@ -258,6 +259,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="4281844954008187215">Terms of Service</translation>
 <translation id="4293420128516039005">Sign in to sync and personalise Chrome across your devices</translation>
 <translation id="430327780270213103">Allow extension to show access requests in the Chrome toolbar</translation>
+<translation id="4326552909330437744">{NUM_TABS,plural, =1{Chrome recommends pausing the tab that's slowing your browser}other{Chrome recommends pausing the tabs that are slowing your browser}}</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">To get personalisation and other features, include Chrome in Web &amp; App Activity and linked Google services</translation>
 <translation id="4334294535648607276">Download complete.</translation>

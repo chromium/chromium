@@ -61,6 +61,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="1786044937610313874">Zástupci se otevírají v Chromu</translation>
 <translation id="178701303897325119">Toto rozšíření už není podporováno. Chrome vám doporučuje odstranit ho.</translation>
 <translation id="1812689907177901597">Pokud tuto možnost vypnete, budete se moci přihlásit k většině webů Google, jako je Gmail, aniž byste se přihlásili do Chromu</translation>
+<translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome doporučuje pozastavit kartu, která ho zpomaluje}few{Chrome doporučuje pozastavit karty, které ho zpomalují}many{Chrome doporučuje pozastavit karty, které ho zpomalují}other{Chrome doporučuje pozastavit karty, které ho zpomalují}}</translation>
 <translation id="1838374766361614909">Vymazat vyhledávání</translation>
 <translation id="1860536484129686729">Chrome pro tento web potřebuje oprávnění k přístupu k fotoaparátu</translation>
 <translation id="1873233029667955273">Google Chrome není vaším výchozím prohlížečem</translation>
@@ -161,6 +162,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – přihlášení k síti – Chrome</translation>
 <translation id="2970681950995291301">Pokud z Chromu chcete odebrat svůj účet Google, odhlaste se z Chromu na stránce Nastavení</translation>
 <translation id="2994465299455873643">Poskytuje šifrovací služby a bezpečný způsob obnovení prohlížeče <ph name="BROWSER_NAME" />, pokud zastará. Když je tato služba vypnutá, může <ph name="BROWSER_NAME" /> ztratit přístup k šifrovaným datům a také se <ph name="BROWSER_NAME" /> nemusí dokázat obnovit.</translation>
+<translation id="3003694935412297923">Všechny úkoly</translation>
 <translation id="3018957014024118866">Smazat také data z Chromu (<ph name="URL" />)</translation>
 <translation id="3019382870990049182">Spustit znovu a aktualizovat &amp;ChromeOS Flex</translation>
 <translation id="3037838751736561277">Google Chrome je v režimu na pozadí.</translation>
@@ -257,6 +259,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="4281844954008187215">Smluvní podmínky</translation>
 <translation id="4293420128516039005">Po přihlášení si budete moci Chrome synchronizovat a upravit na různých zařízeních</translation>
 <translation id="430327780270213103">Povolit rozšíření zobrazovat na liště prohlížeče Chrome žádosti o přístup</translation>
+<translation id="4326552909330437744">{NUM_TABS,plural, =1{Chrome doporučuje pozastavit kartu, která ho zpomaluje}few{Chrome doporučuje pozastavit karty, které ho zpomalují}many{Chrome doporučuje pozastavit karty, které ho zpomalují}other{Chrome doporučuje pozastavit karty, které ho zpomalují}}</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">Pokud chcete získat personalizaci a další funkce, zahrňte Chrome do Aktivity na webu a v aplikacích a do propojených služeb Google</translation>
 <translation id="4334294535648607276">Stahování bylo dokončeno.</translation>
@@ -275,6 +278,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="4567424176335768812">Jste přihlášeni pomocí účtu <ph name="USER_EMAIL_ADDRESS" />. Nyní můžete přistupovat ke všem svým záložkám, historii a dalším nastavením ve všech přihlášených zařízeních.</translation>
 <translation id="4571503333518166079">Přejít na nastavení oznámení prohlížeče Chrome</translation>
 <translation id="459622048091363950">Až bude mít Chrome přístup, budou vás weby moci požádat o přístup.</translation>
+<translation id="4598116752460667024">Vyhledejte libovolný proces ze seznamu.</translation>
 <translation id="4600710005438004015">Chrome nebylo možné aktualizovat na nejnovější verzi. Nemáte proto k dispozici nové funkce a opravy zabezpečení.</translation>
 <translation id="4624065194742029982">Anonymní režim prohlížeče Chrome</translation>
 <translation id="4627412468266359539">Volitelné: Pomozte se zlepšováním funkcí a výkonu systému ChromeOS Flex tím, že budete do Googlu automaticky odesílat diagnostická data a údaje o využití.</translation>
@@ -470,6 +474,7 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="7193885263065350793">Když prohlížeč Chrome <ph name="TIMEOUT_DURATION" /> není používán, vaše organizace ho zavře.</translation>
 <translation id="7242029209006116544">Přihlašujete se pomocí spravovaného účtu a poskytujete jeho správci kontrolu nad vaším profilem Google Chrome. Vaše údaje prohlížeče Chrome, například aplikace, záložky, historie, hesla a jiná nastavení, budou trvale přidružena k účtu <ph name="USER_NAME" />. Tyto údaje budete moci smazat pomocí Hlavního panelu v Účtech Google, ale nebudete je moci přidružit k jinému účtu. Pokud chcete uchovat existující údaje Chrome odděleně, můžete vytvořit nový profil. <ph name="LEARN_MORE" /></translation>
 <translation id="7285616922384953075">Chrome spravuje organizace <ph name="MANAGER" /></translation>
+<translation id="7288567540154601580">Karty a rozšíření</translation>
 <translation id="7296210096911315575">Důležité informace o použití a bezpečnosti</translation>
 <translation id="7302361266603927550">Některá data prohlížeče Chrome ještě nebyla uložena do vašeho účtu Google. Zkuste s odhlášením několik minut počkat. Pokud se teď odhlásíte, tato data budou smazána.</translation>
 <translation id="7308322188646931570">Aby bylo možné stahovat soubory, potřebuje Chrome přístup k úložišti</translation>

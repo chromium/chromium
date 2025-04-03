@@ -733,7 +733,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="4460861538906892109">{ITEMS_COUNT,plural, =1{1 preferito}other{# preferiti}}</translation>
 <translation id="4478161224666880173">Puoi usare il tuo account <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> su questo sito. Per continuare, accedi a <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="4479972344484327217">Installazione di <ph name="MODULE" /> per Chrome…</translation>
-<translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{Preferito salvato in "<ph name="FOLDER_NAME" />". Viene salvato solo su questo dispositivo.}other{Preferiti salvati in "<ph name="FOLDER_NAME" />". Vengono salvati solo su questo dispositivo.}}</translation>
 <translation id="4484496141267039529">Nessuna connessione. Riprova più tardi.</translation>
 <translation id="4487967297491345095">Tutti i dati delle app di Chrome saranno eliminati definitivamente. Sono inclusi tutti i file, le impostazioni, gli account, i database e così via.</translation>
 <translation id="4494806687727322324">Il salvataggio delle password è stato attivato dall'amministratore</translation>
@@ -1331,7 +1330,6 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="7063006564040364415">Impossibile collegarsi al server di sincronizzazione.</translation>
 <translation id="7071521146534760487">Gestisci account</translation>
 <translation id="707155805709242880">Scegli qui sotto i dati da sincronizzare</translation>
-<translation id="707702207692430409">{BOOKMARK_COUNT,plural, =1{Preferito salvato nella cartella "<ph name="FOLDER_NAME" />" nel tuo account <ph name="ACCOUNT_EMAIL" />.}other{Preferiti salvati nella cartella "<ph name="FOLDER_NAME" />" nel tuo account <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="7077143737582773186">Scheda SD</translation>
 <translation id="7078916049958741685">Elimina i tuoi dati di Chrome anche da questo dispositivo</translation>
 <translation id="7085332316435785646">Scegli se includere la cronologia di Chrome per esperienze ancora più personalizzate nei servizi Google</translation>

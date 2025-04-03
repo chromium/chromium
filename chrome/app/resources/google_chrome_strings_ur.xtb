@@ -61,6 +61,7 @@
 <translation id="1786044937610313874">‏Chrome میں شارٹ کٹس کھلتے ہیں</translation>
 <translation id="178701303897325119">‏یہ ایکسٹینشنز اب مزید تعاون یافتہ نہیں ہے۔ اس کے بجائے Chrome تجویز کرتا ہے کہ آپ اسے ہٹا دیں</translation>
 <translation id="1812689907177901597">‏اسے آف کر کے، آپ Chrome میں سائن ان کیے بغیر Gmail جیسی Google سائٹس میں سائن ان کر سکتے ہیں</translation>
+<translation id="1821644463306970002">{NUM_TABS,plural, =1{‏‫Chrome آپ کے براؤزر کی رفتار کو کم کرنے والے ٹیب کو روکنے کی تجویز دیتا ہے}other{‏‫Chrome آپ کے براؤزر کی رفتار کو کم کرنے والے ٹیبز کو روکنے کی تجویز دیتا ہے}}</translation>
 <translation id="1838374766361614909">تلاش صاف کریں</translation>
 <translation id="1860536484129686729">‏Chrome کو اس سائٹ کیلئے آپ کے کیمرے تک رسائی کی اجازت درکار ہے</translation>
 <translation id="1873233029667955273">‏Google Chrome آپ کا ڈیفالٹ براؤزر نہیں ہے</translation>
@@ -259,6 +260,7 @@
 <translation id="4281844954008187215">سروس کی شرائط</translation>
 <translation id="4293420128516039005">‏اپنے آلات پر Chrome کو مطابقت پذیر اور ذاتی نوعیت کا بنانے کے لیے سائن ان کریں</translation>
 <translation id="430327780270213103">‏ایکسٹینشن کو Chrome ٹول بار میں رسائی کی درخواستیں دکھانے کی اجازت دیں</translation>
+<translation id="4326552909330437744">{NUM_TABS,plural, =1{‏‫Chrome آپ کے براؤزر کی رفتار کو کم کرنے والے ٹیب کو روکنے کی تجویز دیتا ہے}other{‏‫Chrome آپ کے براؤزر کی رفتار کو کم کرنے والے ٹیبز کو روکنے کی تجویز دیتا ہے}}</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)‎</translation>
 <translation id="4329315893554541805">‏ذاتی نوعيت سازی اور ديگر خصوصيات حاصل کرنے کے ليے ويب اور ايپ سرگرمی اور لنک کردہ Google سروسز ميں Chrome شامل کريں</translation>
 <translation id="4334294535648607276">ڈاؤن لوڈ مکمل ہوگیا۔</translation>

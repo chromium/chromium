@@ -213,6 +213,7 @@ Jika Anda menghapusnya, semua orang akan segera kehilangan akses ke grup tab "<p
 <translation id="8820741577754260431">Lihat diskon di tab</translation>
 <translation id="8887921976452567404">Tab dan grup yang ditutup dapat dibuka kembali dari bagian Tab terbaru dan bagian Grup tab.</translation>
 <translation id="8915916167043355778">Tutup semua</translation>
+<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Pindahkan ke jendela baru}other{Pindahkan ke jendela lain}}</translation>
 <translation id="9090098097337832354">Informasi tentang toko ini ditutup</translation>
 <translation id="9114502155681725011">Buka menu tindakan grup tab untuk grup tab <ph name="TITLE_OF_GROUP" />, warna <ph name="COLOR_NAME" />.</translation>
 <translation id="9169141410816678175">Semua orang akan langsung kehilangan akses ke grup tab "<ph name="GROUP_NAME" />", dan grup tersebut akan dihapus dari semua perangkat</translation>

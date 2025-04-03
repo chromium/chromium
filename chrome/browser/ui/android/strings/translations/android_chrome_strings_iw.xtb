@@ -17,6 +17,7 @@
 <translation id="1052842760770519282">חלק מהסיסמאות שלך לא זמינות</translation>
 <translation id="1058669287135776095">אין לך חיבור לאינטרנט. צריך לבדוק את החיבור לאינטרנט ולנסות שוב.</translation>
 <translation id="10614374240317010">פריטים שאף פעם לא יישמרו</translation>
+<translation id="1070689840697074178">‏אפשר להוריד קובצי PDF כאן</translation>
 <translation id="107147699690128016">שינוי של סיומת הקובץ עשוי לגרום לכך שהקובץ ייפתח באפליקציה אחרת. מצב זה עלול לסכן את המכשיר.</translation>
 <translation id="1080365971383768617">סיסמאות בכל המכשירים</translation>
 <translation id="1087176310396019910">ספאם אפשרי</translation>
@@ -732,7 +733,6 @@
 <translation id="4460861538906892109">{ITEMS_COUNT,plural, =1{סימנייה אחת}one{‫# סימניות}two{‫# סימניות}other{‫# סימניות}}</translation>
 <translation id="4478161224666880173">אפשר להשתמש בחשבון <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> באתר הזה. כדי להמשיך עליך להיכנס אל <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="4479972344484327217">‏מתבצעת התקנה של <ph name="MODULE" /> ל-Chrome…</translation>
-<translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{הסימנייה נשמרה בתיקייה ’<ph name="FOLDER_NAME" />‘. היא שמורה רק במכשיר הזה.}one{הסימניות נשמרו בתיקייה ’<ph name="FOLDER_NAME" />‘. הן שמורות רק במכשיר הזה.}two{הסימניות נשמרו בתיקייה ’<ph name="FOLDER_NAME" />‘. הן שמורות רק במכשיר הזה.}other{הסימניות נשמרו בתיקייה ’<ph name="FOLDER_NAME" />‘. הן שמורות רק במכשיר הזה.}}</translation>
 <translation id="4484496141267039529">אין חיבור. כדאי לנסות שוב מאוחר יותר.</translation>
 <translation id="4487967297491345095">‏כל נתוני היישומים של Chrome יימחקו לצמיתות, כולל כל הקבצים, ההגדרות, החשבונות, מסדי הנתונים וכו'</translation>
 <translation id="4494806687727322324">האפשרות לשמור סיסמאות הופעלה על ידי האדמין</translation>
@@ -936,6 +936,7 @@
 <translation id="539881862970320163">מוצגת הצעה לסיסמה חזקה. המקלדת מוסתרת.</translation>
 <translation id="5409881200985013443">לשלוח את <ph name="ONE_TIME_CODE" /> באמצעות <ph name="CLIENT_NAME" />?</translation>
 <translation id="5410300144953132176">‫<ph name="OWNER_FULL_NAME" />‏ (<ph name="OWNER_EMAIL" />) רוצה לצרף אותך לקבוצת כרטיסיות. לפני שמצטרפים, חשוב לדעת שכל מי שיש לו את הקישור יכול לערוך את כל הכרטיסיות. תוקף הקישור יפוג בעוד 48 שעות.</translation>
+<translation id="5412388166586147626">‏לא הצלחנו לפתוח את העוזר האישי מבוסס ה-AI. אפשר לנסות שוב.</translation>
 <translation id="5414836363063783498">בתהליך אימות…</translation>
 <translation id="5415871492522952905">ההיסטוריה והכרטיסיות יופיעו בכל המכשירים שלך, כך שתהיה לך אפשרות להמשיך מהמקום שבו הפסקת.</translation>
 <translation id="542073632571549028">הגישה של <ph name="MEMBER_FULL_NAME" /> ‏(<ph name="EMAIL" />) לקבוצת הכרטיסיות בשם '<ph name="GROUP_NAME" />' תאבד באופן מיידי</translation>
@@ -955,6 +956,7 @@
 <translation id="5456381639095306749">הורדת דף זה</translation>
 <translation id="5458366071038729214">כאן יוצגו האתרים שיתווספו למעקב</translation>
 <translation id="5468068603361015296">רוצה להוריד את <ph name="FILE_NAME" /> בכל זאת?</translation>
+<translation id="5471273988133666918">לא ניתן להעביר את הכרטיסייה <ph name="TAB_TITLE" /></translation>
 <translation id="548278423535722844">פתיחה באפליקציית מפות</translation>
 <translation id="5492637351392383067">הצפנה במכשיר</translation>
 <translation id="549660026907543296">הצטרפות בתור <ph name="MEMBER_FULL_NAME" /></translation>
@@ -1328,7 +1330,6 @@
 <translation id="7063006564040364415">לא ניתן היה להתחבר אל שרת הסנכרון.</translation>
 <translation id="7071521146534760487">ניהול חשבון</translation>
 <translation id="707155805709242880">יש לבחור למטה מה לסנכרן</translation>
-<translation id="707702207692430409">{BOOKMARK_COUNT,plural, =1{הסימנייה נשמרה בתיקייה ‘<ph name="FOLDER_NAME" />‘ בחשבון שלך, <ph name="ACCOUNT_EMAIL" />.}one{הסימניות נשמרו בתיקייה ’<ph name="FOLDER_NAME" />‘ בחשבון שלך, <ph name="ACCOUNT_EMAIL" />.}two{הסימניות נשמרו בתיקייה ’<ph name="FOLDER_NAME" />‘ בחשבון שלך, <ph name="ACCOUNT_EMAIL" />.}other{הסימניות נשמרו בתיקייה ’<ph name="FOLDER_NAME" />‘ בחשבון שלך, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="7077143737582773186">‏כרטיס SD</translation>
 <translation id="7078916049958741685">‏צריך למחוק גם את נתוני Chrome מהמכשיר הזה</translation>
 <translation id="7085332316435785646">‏בוחרים אם לכלול את ההיסטוריה ב-Chrome להתאמה אישית מדויקת יותר בשירותי Google</translation>

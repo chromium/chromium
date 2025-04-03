@@ -735,7 +735,6 @@
 <translation id="4460861538906892109">{ITEMS_COUNT,plural, =1{1 బుక్‌మార్క్}other{# బుక్‌మార్క్‌లు}}</translation>
 <translation id="4478161224666880173">మీరు ఈ సైట్‌లోని మీ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ఖాతాను ఉపయోగించవచ్చు. కొనసాగించడానికి, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />‌కు సైన్ ఇన్ చేయండి.</translation>
 <translation id="4479972344484327217">Chromeలో <ph name="MODULE" /> ఇన్‌స్టాల్ చేయబడుతోంది…</translation>
-<translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{బుక్‌మార్క్ "<ph name="FOLDER_NAME" />"‌లో సేవ్ అయ్యింది. ఇది ఈ పరికరంలో మాత్రమే సేవ్ అవుతుంది.}other{బుక్‌మార్క్‌లు "<ph name="FOLDER_NAME" />"‌లో సేవ్ అయ్యాయి. ఇవి ఈ పరికరంలో మాత్రమే సేవ్ అవుతాయి.}}</translation>
 <translation id="4484496141267039529">కనెక్షన్ లేదు. తర్వాత మళ్లీ ట్రై చేయండి.</translation>
 <translation id="4487967297491345095">Chrome యాప్‌ డేటా మొత్తం శాశ్వతంగా తొలగించబడుతుంది. డేటాలో అన్ని ఫైళ్లు, సెట్టింగ్‌లు, ఖాతాలు, డేటాబేస్‌లు మొదలైనవి ఉంటాయి.</translation>
 <translation id="4494806687727322324">మీ అడ్మినిస్ట్రేటర్, పాస్‌వర్డ్‌ను సేవ్ చేసే ఫీచర్‌ను ఆన్ చేశారు</translation>
@@ -942,6 +941,7 @@
 <translation id="539881862970320163">శక్తివంతమైన పాస్‌వర్డ్‌ను సూచించడం జరిగింది. కీబోర్డ్ దాచబడింది.</translation>
 <translation id="5409881200985013443"><ph name="CLIENT_NAME" />లో <ph name="ONE_TIME_CODE" />ను సమర్పించాలా?</translation>
 <translation id="5410300144953132176">మీరు ట్యాబ్ గ్రూప్‌లో చేరాలని, <ph name="OWNER_FULL_NAME" /> (<ph name="OWNER_EMAIL" />) కోరుకుంటున్నారు. లింక్ ఉన్న ఎవరైనా అన్ని ట్యాబ్‌లను ఎడిట్ చేయగలరు, కాబట్టి జాగ్రత్తగా చేరండి. లింక్ గడువు 48 గంటలలో ముగుస్తుంది.</translation>
+<translation id="5412388166586147626">AI అసిస్టెంట్‌ను తెరవడం సాధ్యపడలేదు. మళ్లీ ట్రై చేయండి.</translation>
 <translation id="5414836363063783498">ధృవీకరిస్తోంది...</translation>
 <translation id="5415871492522952905">మీరు మీ అన్ని పరికరాలలో మీ హిస్టరీ, ట్యాబ్‌లను కలిగి ఉంటారు కాబట్టి మీరు చేస్తున్న పనిని కొనసాగించవచ్చు</translation>
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) వెంటనే "<ph name="GROUP_NAME" />" ట్యాబ్ గ్రూప్‌నకు యాక్సెస్‌ను కోల్పోతారు</translation>
@@ -1334,7 +1334,6 @@
 <translation id="7063006564040364415">సింక్ సర్వర్‌కు కనెక్ట్ చేయడం సాధ్యపడలేదు.</translation>
 <translation id="7071521146534760487">ఖాతాను నిర్వహిస్తుంది</translation>
 <translation id="707155805709242880">దేనిని సింక్ చేయాలో దిగువున ఎంచుకోండి</translation>
-<translation id="707702207692430409">{BOOKMARK_COUNT,plural, =1{బుక్‌మార్క్ మీ <ph name="ACCOUNT_EMAIL" /> ఖాతాలోని "<ph name="FOLDER_NAME" />"లో సేవ్ అయ్యింది.}other{బుక్‌మార్క్‌లు మీ <ph name="ACCOUNT_EMAIL" /> ఖాతాలోని "<ph name="FOLDER_NAME" />"లో సేవ్ అయ్యాయి.}}</translation>
 <translation id="7077143737582773186">SD కార్డ్</translation>
 <translation id="7078916049958741685">అలాగే, ఈ పరికరం నుండి మీ Chrome డేటాను కూడా తొలగించండి</translation>
 <translation id="7085332316435785646">Google సర్వీస్‌లలో మరింత వ్యక్తిగతీకరించిన అనుభవం కోసం Chrome హిస్టరీని చేర్చాలో, లేదో ఎంచుకోండి</translation>

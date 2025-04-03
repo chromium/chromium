@@ -518,11 +518,13 @@
 <translation id="3439276997620616816">Та саяхны табуудаа эндээс олно</translation>
 <translation id="3443221991560634068">Одоогийн хуудсыг дахин ачаалах</translation>
 <translation id="3444179773590444986">Сайтуудад зориулсан бараан загварын талаар cанал хүсэлт хуваалцах уу?</translation>
+<translation id="3448874648066942074">ХОУ-ыг ашиглан хуудсыг хураангуйлах</translation>
 <translation id="3452832259067974318">Таны нууцлалыг хамгаалахын тулд Chrome таныг нууц үгийг энэ талбарт автоматаар бөглөхгүй.</translation>
 <translation id="3467081767799433066">Сайтууд зарынхаа гүйцэтгэлийг хэмжихийн тулд зарын хэмжилтийн тусламжтай таныг сайтад зочилсны дараа худалдан авалт хийсэн эсэх зэрэг хязгаарлагдмал төрлийн өгөгдлийг хоорондоо хуваалцдаг.</translation>
 <translation id="3474624961160222204"><ph name="NAME" />-р үргэлжлүүлэх</translation>
 <translation id="3478363558367712427">Та хайлтын системээ сонгох боломжтой</translation>
 <translation id="3479552764303398839">Одоо биш</translation>
+<translation id="3482805106082349287">Гар, дуу хоолой, Нууцлалтай горим, камерыг ашиглан хайна уу</translation>
 <translation id="3487903178221457900">Экспортолсон файлд апп зэрэг бусад зүйл хандах боломжтой байж болзошгүй. Таныг экспортолсны дараа нууц үгийг тань Chrome-с устгадаг.</translation>
 <translation id="3488199663160411179">нэр</translation>
 <translation id="3493531032208478708">Санал болгосон агуулгын талаар <ph name="BEGIN_LINK" />дэлгэрэнгүй үзэх<ph name="END_LINK" /></translation>
@@ -733,7 +735,6 @@
 <translation id="4460861538906892109">{ITEMS_COUNT,plural, =1{1 хавчуурга}other{# хавчуурга}}</translation>
 <translation id="4478161224666880173">Та энэ сайтад <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> бүртгэлээ ашиглах боломжтой. Үргэлжлүүлэхийн тулд <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-д нэвтэрнэ үү.</translation>
 <translation id="4479972344484327217"><ph name="MODULE" />-г Chrome-д суулгаж байна…</translation>
-<translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{Хавчуургыг "<ph name="FOLDER_NAME" />"-д хадгалсан. Үүнийг зөвхөн энэ төхөөрөмжид хадгалсан.}other{Хавчуургуудыг "<ph name="FOLDER_NAME" />"-д хадгалсан. Үүнийг зөвхөн энэ төхөөрөмжид хадгалсан.}}</translation>
 <translation id="4484496141267039529">Холболт алга. Дараа дахин оролдоно уу.</translation>
 <translation id="4487967297491345095">Chrome-н бүх аппын өгөгдлийг бүрмөсөн устгана. Үүнд бүх файл, тохиргоо, бүртгэл, өгөгдлийн сан орно.</translation>
 <translation id="4494806687727322324">Нууц үг хадгалахыг танай администратор асаасан</translation>
@@ -784,6 +785,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="4698061626562952596">Идэвхгүй табуудаа эндээс хянана уу</translation>
 <translation id="4699172675775169585">Кэшлсэн дүрс ба файл</translation>
 <translation id="4710167854527459075">Шинээр нь эрэмбэлэх</translation>
+<translation id="4718044610319080485">ХОУ-ы туслахыг дуудна</translation>
 <translation id="4719927025381752090">Орчуулахыг санал болгох</translation>
 <translation id="4720556299488643018">Захиалгаа цуцлах</translation>
 <translation id="4732120983431207637">Stack Unwinder</translation>
@@ -899,6 +901,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="5174700554036517242">Табыг анхны өндөр лүү нь буцаасан</translation>
 <translation id="5180063720319462041">Хуудсыг <ph name="TARGET_LANGUAGE" /> руу орчуулсан</translation>
 <translation id="5191251636205085390">Гуравдагч талын күүкиг орлох зорилготой шинэ технологийн талаар мэдэж авч мөн хянаарай</translation>
+<translation id="5197649123261764478">Хавчуургадаа хялбархан хандана уу</translation>
 <translation id="5204967432542742771">Нууц үгээ оруулна уу</translation>
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{Файл татаж байна…}other{# файл татаж байна…}}</translation>
 <translation id="5210286577605176222">Өмнөх табад очих</translation>
@@ -928,6 +931,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="5328542107300944283"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-р ашиглах</translation>
 <translation id="5342314432463739672">Зөвшөөрлийн хүсэлт</translation>
 <translation id="534580735623577507"><ph name="TIME_PERIOD" />-н ямар ч сайт байхгүй</translation>
+<translation id="5354716139000094027">ХОУ-ыг ашиглан хураангуйлах</translation>
 <translation id="5355191726083956201">Сайжруулсан хамгаалалт асаалттай байна</translation>
 <translation id="5375374982898812658">Та “<ph name="GROUP_NAME" />” табын бүлэгт хандах эрхээ тэр даруй алдах ба уг бүлгийг таны бүх төхөөрөмжөөс устгана</translation>
 <translation id="5375577065097716013">Google Lens-р зураг хайх <ph name="BEGIN_NEW" />Шинэ<ph name="END_NEW" /></translation>
@@ -937,6 +941,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="539881862970320163">Сайн нууц үг санал болгосон. Гарыг нуусан.</translation>
 <translation id="5409881200985013443"><ph name="CLIENT_NAME" /> дээр <ph name="ONE_TIME_CODE" />-г илгээх үү?</translation>
 <translation id="5410300144953132176"><ph name="OWNER_FULL_NAME" /> (<ph name="OWNER_EMAIL" />) таныг табын бүлэгт нэгдэхийг хүсэж байна. Холбоостой дурын хүн бүх табыг засах боломжтой тул болгоомжтой нэгдээрэй. Холбоосны хугацаа 48 цагийн дараа дуусна.</translation>
+<translation id="5412388166586147626">ХОУ-ы туслахыг нээж чадсангүй. Дахин оролдоно уу.</translation>
 <translation id="5414836363063783498">Баталгаажуулж байна ...</translation>
 <translation id="5415871492522952905">Таны түүх, табууд бүх төхөөрөмж дээр тань байх бөгөөд ингэснээр та хийж байсан зүйлээ үргэлжлүүлэх боломжтой</translation>
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) “<ph name="GROUP_NAME" />” табын бүлэгт хандах эрхээ тэр даруй алдана</translation>
@@ -971,6 +976,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="5556459405103347317">Дахин ачаал</translation>
 <translation id="555671485580955310">Түүх, табуудыг синк хийх</translation>
 <translation id="555816257274242153">Үнэ хянахыг зогсоосон</translation>
+<translation id="5561445479436807659">Хөгжилтэй Dino тоглоом тоглоорой</translation>
 <translation id="5561549206367097665">Сүлжээг хүлээж байна...</translation>
 <translation id="5568069709869097550">Нэвтрэх боломжгүй</translation>
 <translation id="557018954714092179">Шинэ фолдер үүсгэх</translation>
@@ -1330,7 +1336,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="7063006564040364415">Синхийн сервер лүү холбогдож чадсангүй.</translation>
 <translation id="7071521146534760487">Бүртгэл удирдах</translation>
 <translation id="707155805709242880">Доор юуг синк хийхээ сонгох</translation>
-<translation id="707702207692430409">{BOOKMARK_COUNT,plural, =1{Хавчуургыг таны <ph name="ACCOUNT_EMAIL" /> бүртгэлийн "<ph name="FOLDER_NAME" />"-д хадгалсан.}other{Хавчуургуудыг таны <ph name="ACCOUNT_EMAIL" /> бүртгэлийн "<ph name="FOLDER_NAME" />"-д хадгалсан.}}</translation>
 <translation id="7077143737582773186">SD Карт</translation>
 <translation id="7078916049958741685">Chrome-н өгөгдлөө мөн энэ төхөөрөмжөөс устгах</translation>
 <translation id="7085332316435785646">Google-н үйлчилгээнүүдэд илүү хувийн болгосон туршлага авахын тулд Chrome-н түүхийг багтаах эсэхээ сонгоно уу</translation>
@@ -1518,6 +1523,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="7913993612870913335">{FILE_COUNT,plural, =1{Танай байгууллагаас 1-ийг блоклосон}other{Танай байгууллагаас #-г блоклосон}}</translation>
 <translation id="7914399737746719723">Аппыг суулгасан</translation>
 <translation id="7919123827536834358">Эдгээр хэлийг автоматаар орчуулах</translation>
+<translation id="7921782882718083488">Энэ хуудсыг хураангуйлах</translation>
 <translation id="7926975587469166629">Картын хоч</translation>
 <translation id="7929962904089429003">Цэс нээх</translation>
 <translation id="7934668619883965330">Файлыг татах боломжгүй. Файл форматыг дэмждэггүй.</translation>
@@ -1674,6 +1680,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="8540136935098276800">Зөв форматтай URL оруулна уу</translation>
 <translation id="854522910157234410">Энэ хуудсыг нээх</translation>
 <translation id="8547025137714087639">{ARCHIVED_TAB_COUNT,plural, =1{Идэвхгүй таб (1)}other{Идэвхгүй табууд (#)}}</translation>
+<translation id="8547466829003330976">ХОУ-ыг ашиглан PDF-г хянах</translation>
 <translation id="8551513938758868521">Таныг Chrome-с гарах үед Нууцлалтай табуудыг түгжинэ</translation>
 <translation id="8559961053328923750">Chrome нь зарын гүйцэтгэлийг хэмжихийн тулд хөтчөөр дамжуулан сайтуудын хуваалцаж болох нийт өгөгдлийн хэмжээг хязгаарладаг</translation>
 <translation id="8559990750235505898">Хуудсыг бусад хэлээр орчуулахыг санал болгох</translation>
@@ -1771,6 +1778,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="9022871169049522985">Сайтууд болон сурталчлагчид зарынхаа гүйцэтгэлийг хэмжих боломжтой</translation>
 <translation id="9035378196785279980">Дараах руу зөөх\u2026</translation>
 <translation id="9042893549633094279">Нууцлал, аюулгүй байдал</translation>
+<translation id="9047347135558855162">Chrome-д түргэн хайж эхэлнэ үү</translation>
 <translation id="9050666287014529139">Нэвтрэх хэллэг</translation>
 <translation id="9055497320631373736">Сайтыг боломжит сайтуудад буцааж нэмсэн</translation>
 <translation id="9057030985451135243">Хуваалцсан табын бүлгүүдийн талаар мэдэж авах</translation>

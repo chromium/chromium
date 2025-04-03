@@ -19,6 +19,7 @@
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> मिनिटापूर्वी तयार केला आहे}other{<ph name="NUM_MINS_MANY" /> मिनिटांपूर्वी तयार केला आहे}}</translation>
 <translation id="1499635324672558517">सर्व गुप्त टॅब बंद करायचे आहेत का?</translation>
 <translation id="1501480321619201731">गट हटवा</translation>
+<translation id="1505526451013346974"><ph name="TITLE_OF_GROUP" /> मध्ये जोडा</translation>
 <translation id="1555130319947370107">निळा</translation>
 <translation id="161042844686301425">निळसर</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> टॅब गटबद्ध केले आहेत</translation>
@@ -213,6 +214,7 @@
 <translation id="8820741577754260431">तुमच्या टॅबवर कमी झालेली किंमत पहा</translation>
 <translation id="8887921976452567404">तुमचे बंद केलेले टॅब आणि गट अलीकडील टॅब विभाग व टॅब गट विभागामधून पुन्हा उघडले जाऊ शकतात.</translation>
 <translation id="8915916167043355778">सर्व बंद करा</translation>
+<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{नवीन विंडोवर हलवा}other{इतर विंडोवर हलवा}}</translation>
 <translation id="9090098097337832354">या स्टोअरसंबंधित माहिती बंद केली</translation>
 <translation id="9114502155681725011"><ph name="TITLE_OF_GROUP" /> या टॅब गटासाठी टॅब गट अ‍ॅक्‍शन मेनू उघडा, <ph name="COLOR_NAME" /> रंग.</translation>
 <translation id="9169141410816678175">सर्वजण लगेच "<ph name="GROUP_NAME" />" टॅब गटाचा अ‍ॅक्सेस गमवतील आणि तो सर्व डिव्हाइसवरून हटवला जाईल</translation>

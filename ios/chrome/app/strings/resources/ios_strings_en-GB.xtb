@@ -105,6 +105,7 @@
 <translation id="1411386976162024013">Lens visual search</translation>
 <translation id="1417474386970818917">Sign out and delete</translation>
 <translation id="1426410128494586442">Yes</translation>
+<translation id="1429187656584513419">Open Passwords</translation>
 <translation id="1430915738399379752">Print</translation>
 <translation id="1436671784520050284">Continue setup</translation>
 <translation id="143681031165817424">Address saved only on this device</translation>
@@ -591,6 +592,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3530206579861815432">Quickly find open and recently closed tabs across your synced devices.</translation>
 <translation id="3530767473765895035">Manage accounts on this device…</translation>
 <translation id="3533436815740441613">New tab</translation>
+<translation id="3533860663366814939">Open Autofill &amp; Password settings</translation>
 <translation id="3547356470684043247">Read customer evaluations of products, services or experiences to help inform your decisions with reviews.</translation>
 <translation id="3557336313807607643">Add to contacts</translation>
 <translation id="355765753469272474">Undo</translation>
@@ -1513,6 +1515,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7431851541687113774">Turn off address detection</translation>
 <translation id="7431991332293347422">Control how your browsing history is used to personalise Search and more</translation>
 <translation id="7435356471928173109">Turned off by your administrator</translation>
+<translation id="7437712592381799950">You can swipe up to see more content tailored to you.</translation>
 <translation id="7438481509621345350">You'll now see stories from <ph name="CHANNEL_NAME" /> when you open a new tab.</translation>
 <translation id="7451023311965289370">{count,plural, =1{Bookmark saved to ‘{title}’}other{Bookmarks saved to ‘{title}’}}</translation>
 <translation id="7451404862887877229">Tap 'Privacy and security' and then 'Safe Browsing'</translation>
@@ -1616,6 +1619,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="784934925303690534">Time range</translation>
 <translation id="7851858861565204677">Other devices</translation>
 <translation id="7853202427316060426">Activity</translation>
+<translation id="7854006015462979438">Open General</translation>
 <translation id="7859988229622350291">Never translate</translation>
 <translation id="7863211248337747225">Get the app</translation>
 <translation id="7865127013871431856">Translate options</translation>

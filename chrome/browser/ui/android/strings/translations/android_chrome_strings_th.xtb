@@ -735,7 +735,6 @@
 <translation id="4460861538906892109">{ITEMS_COUNT,plural, =1{บุ๊กมาร์ก 1 รายการ}other{บุ๊กมาร์ก # รายการ}}</translation>
 <translation id="4478161224666880173">คุณใช้บัญชี <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ในเว็บไซต์นี้ได้ หากต้องการดำเนินการต่อ โปรดลงชื่อเข้าใช้ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4479972344484327217">กำลังติดตั้ง <ph name="MODULE" /> สำหรับ Chrome…</translation>
-<translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{บันทึกบุ๊กมาร์กไปยัง "<ph name="FOLDER_NAME" />" แล้ว ระบบจะบันทึกไว้ในอุปกรณ์นี้เท่านั้น}other{บันทึกบุ๊กมาร์กไปยัง "<ph name="FOLDER_NAME" />" แล้ว ระบบจะบันทึกไว้ในอุปกรณ์นี้เท่านั้น}}</translation>
 <translation id="4484496141267039529">ไม่มีการเชื่อมต่อ ลองอีกครั้งในภายหลัง</translation>
 <translation id="4487967297491345095">ระบบจะลบข้อมูลแอปทั้งหมดของ Chrome อย่างถาวร ซึ่งรวมถึงไฟล์ทั้งหมด การตั้งค่า บัญชี ฐานข้อมูล และอื่นๆ</translation>
 <translation id="4494806687727322324">ผู้ดูแลระบบของคุณเปิดการบันทึกรหัสผ่าน</translation>
@@ -1337,7 +1336,6 @@
 <translation id="7063006564040364415">ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์การซิงค์</translation>
 <translation id="7071521146534760487">จัดการบัญชี</translation>
 <translation id="707155805709242880">เลือกข้อมูลที่จะซิงค์ด้านล่าง</translation>
-<translation id="707702207692430409">{BOOKMARK_COUNT,plural, =1{บันทึกบุ๊กมาร์กไปยัง "<ph name="FOLDER_NAME" />" ในบัญชี <ph name="ACCOUNT_EMAIL" /> ของคุณแล้ว}other{บันทึกบุ๊กมาร์กไปยัง "<ph name="FOLDER_NAME" />" ในบัญชี <ph name="ACCOUNT_EMAIL" /> ของคุณแล้ว}}</translation>
 <translation id="7077143737582773186">การ์ด SD</translation>
 <translation id="7078916049958741685">ลบข้อมูล Chrome ของคุณออกจากอุปกรณ์นี้ด้วย</translation>
 <translation id="7085332316435785646">เลือกว่าจะรวมประวัติการเข้าชมใน Chrome เพื่อรับประสบการณ์ที่ปรับเปลี่ยนในแบบของคุณมากขึ้นในบริการของ Google หรือไม่</translation>

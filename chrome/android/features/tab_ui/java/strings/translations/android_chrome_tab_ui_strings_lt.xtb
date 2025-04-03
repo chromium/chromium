@@ -19,6 +19,7 @@ Jei ją ištrinsite, visi iš karto neteks prieigos prie skirtukų grupės „<p
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Sukurta prieš <ph name="NUM_MINS_ONE" /> minutę}one{Sukurta prieš <ph name="NUM_MINS_MANY" /> minutę}few{Sukurta prieš <ph name="NUM_MINS_MANY" /> minutes}many{Sukurta prieš <ph name="NUM_MINS_MANY" /> minutės}other{Sukurta prieš <ph name="NUM_MINS_MANY" /> minučių}}</translation>
 <translation id="1499635324672558517">Uždaryti visus inkognito skirtukus?</translation>
 <translation id="1501480321619201731">Ištrinti grupę</translation>
+<translation id="1505526451013346974">Pridėti prie „<ph name="TITLE_OF_GROUP" />“</translation>
 <translation id="1555130319947370107">Mėlyna</translation>
 <translation id="161042844686301425">Žydra</translation>
 <translation id="1645759014353344461">Sugrupuota tiek skirtukų: <ph name="TABS_COUNT_MANY" /></translation>

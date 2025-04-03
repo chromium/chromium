@@ -105,6 +105,7 @@
 <translation id="1411386976162024013">‏חיפוש חזותי ב-Lens</translation>
 <translation id="1417474386970818917">יציאה מהחשבון ומחיקה</translation>
 <translation id="1426410128494586442">כן</translation>
+<translation id="1429187656584513419">פתיחת "סיסמאות"</translation>
 <translation id="1430915738399379752">הדפסה</translation>
 <translation id="1436671784520050284">להמשך ההגדרה</translation>
 <translation id="143681031165817424">הכתובת נשמרה רק במכשיר הזה</translation>
@@ -591,6 +592,7 @@
 <translation id="3530206579861815432">איתור מהיר של כרטיסיות פתוחות וכאלה שנסגרו לאחרונה בכל המכשירים המסונכרנים.</translation>
 <translation id="3530767473765895035">ניהול החשבונות במכשיר הזה…</translation>
 <translation id="3533436815740441613">כרטיסייה חדשה</translation>
+<translation id="3533860663366814939">פתיחת ההגדרות של המילוי האוטומטי והסיסמאות</translation>
 <translation id="3547356470684043247">כדאי לקרוא הערכות של לקוחות לגבי מוצרים, שירותים או חוויית השימוש. על סמך ביקורות כאלה ניתן לקבל החלטות מושכלות יותר</translation>
 <translation id="3557336313807607643">הוספה לאנשי הקשר</translation>
 <translation id="355765753469272474">ביטול</translation>
@@ -1361,6 +1363,7 @@
 <translation id="6680416467695217368">התאמה אישית של התפריט</translation>
 <translation id="6681586159478273915">חיפוש קולי</translation>
 <translation id="6681791404926413601">{count,plural, =1{אפשרות אחת ({count}) לאמצעי תשלום זמינה מעל המקלדת.}one{‫{count} אפשרויות לאמצעי תשלום זמינות מעל המקלדת.}two{‫{count} אפשרויות לאמצעי תשלום זמינות מעל המקלדת.}other{‫{count} אפשרויות לאמצעי תשלום זמינות מעל המקלדת.}}</translation>
+<translation id="6682680306647339111">התזכורת הוסרה</translation>
 <translation id="6684262542644248484">נכנסים לחשבון באתר כלשהו</translation>
 <translation id="6685259053455152195">קיצורי דרך לשינויים מהירים בהגדרות ולשימוש בתכונות דרך סרגל הכתובות.</translation>
 <translation id="6689685206615181381">רק המצב הפרטי זמין</translation>
@@ -1377,6 +1380,7 @@
 <translation id="6746338529702829275">בדיקה של נתוני החשבון</translation>
 <translation id="6755200887046212842">נהל חשבונות</translation>
 <translation id="6755733078693946548">גישה לסיסמאות ולמפתחות הגישה מכל אפליקציה</translation>
+<translation id="6759709389246683070">אפשר ללחוץ לחיצה ארוכה על הכרטיסייה הזו כדי להגדיר תזכורת לחזור אליה מאוחר יותר</translation>
 <translation id="6761393919622941301">אודיו</translation>
 <translation id="6779455296366983087">נתוני הגלישה יימחקו</translation>
 <translation id="6790502149545262384">בקרוב יוצגו סטוריז מהאתר <ph name="CHANNEL_NAME" /> בפתיחת כרטיסייה חדשה.</translation>
@@ -1513,6 +1517,7 @@
 <translation id="7431851541687113774">השבתת זיהוי הכתובת</translation>
 <translation id="7431991332293347422">קביעת אופן השימוש בהיסטוריית הגלישה להתאמה אישית של החיפוש ועוד</translation>
 <translation id="7435356471928173109">מנהל המערכת כיבה את התכונה הזו</translation>
+<translation id="7437712592381799950">אפשר להחליק למעלה כדי לראות עוד תוכן מותאם אישית.</translation>
 <translation id="7438481509621345350">בפתיחת כרטיסייה חדשה, יוצגו לך סטוריז מהאתר <ph name="CHANNEL_NAME" />.</translation>
 <translation id="7451023311965289370">{count,plural, =1{הסימנייה נשמרה בתיקייה ’{title}‘}one{הסימניות נשמרו בתיקייה ‘{title}‘}two{הסימניות נשמרו בתיקייה ‘{title}‘}other{הסימניות נשמרו בתיקייה ‘{title}‘}}</translation>
 <translation id="7451404862887877229">לוחצים על 'פרטיות ואבטחה' ואז על 'גלישה בטוחה'</translation>
@@ -1616,6 +1621,7 @@
 <translation id="784934925303690534">טווח זמן</translation>
 <translation id="7851858861565204677">מכשירים אחרים</translation>
 <translation id="7853202427316060426">פעילות</translation>
+<translation id="7854006015462979438">פתיחת המידע הכללי</translation>
 <translation id="7859988229622350291">אין לתרגם אף פעם</translation>
 <translation id="7863211248337747225">להורדת האפליקציה</translation>
 <translation id="7865127013871431856">אפשרויות תרגום</translation>
@@ -1683,6 +1689,7 @@
 <translation id="8084285576995584326">‏שליטה בנתונים שלך בחשבון Google</translation>
 <translation id="809543534949702122">חיפוש בהיסטוריה</translation>
 <translation id="8095985449280932182">{COUNT,plural, =1{כרטיסיות שלא משתמשים בהן מועברות לכאן אחרי יום אחד ({COUNT})}one{כרטיסיות שלא משתמשים בהן מועברות לכאן אחרי {COUNT} ימים}two{כרטיסיות שלא משתמשים בהן מועברות לכאן אחרי יומיים ({COUNT})}other{כרטיסיות שלא משתמשים בהן מועברות לכאן אחרי {COUNT} ימים}}</translation>
+<translation id="8096559642098770318">אפשר להגדיר תזכורת בכרטיסייה כדי לחזור שוב לאתר הזה בעתיד</translation>
 <translation id="8101409298456377967">ניתן ליצור, לנהל ולשמור סיסמאות כדי להיכנס בקלות לאתרים ולאפליקציות. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="8102130909719902723">ח</translation>
 <translation id="8114753159095730575">יש קובץ זמין להורדה. האפשרויות זמינות בחלק התחתון של המסך.</translation>
@@ -1737,6 +1744,7 @@
 <translation id="8299417921174340354">כדי שניתן יהיה להשתמש בסיסמאות, יש להגדיר תחילה קוד גישה במכשיר.</translation>
 <translation id="8307481894409578819">לא ניתן להעלות את הקובץ הזה</translation>
 <translation id="8319076807703933069">חיפוש חדש</translation>
+<translation id="8319282042900445670">הוגדרה תזכורת לשעה <ph name="TIME" />, בתאריך <ph name="DATE" /></translation>
 <translation id="8320212361750431956">פעילות אחרונה</translation>
 <translation id="8325455175867928593">הסתרת האפשרות "ביקורות על סמך תחומי העניין שלך"</translation>
 <translation id="833647236762414178">אפשר ליצור, לשמור ולנהל סיסמאות ומפתחות גישה כדי להיכנס בקלות לאתרים ולאפליקציות. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
@@ -1843,6 +1851,7 @@
 <translation id="8723088494871522141">הסתרת האפשרות "ביקורות על מוצרים שיכולים לעניין אותך"</translation>
 <translation id="872371143724482722">{COUNT,plural, =1{כרטיסייה אחת ({COUNT})}one{‫{COUNT} כרטיסיות}two{‫{COUNT} כרטיסיות}other{‫{COUNT} כרטיסיות}}</translation>
 <translation id="8725066075913043281">ניסיון חוזר</translation>
+<translation id="8726523474917941818">שליחת תזכורת</translation>
 <translation id="8728922029615312208">סגירת הכול</translation>
 <translation id="8730621377337864115">בוצע</translation>
 <translation id="87371078663613140">בודקים את האפשרויות בסרגל התפריטים</translation>
@@ -1887,6 +1896,7 @@
 <translation id="8879604564928138696">אפשר ללחוץ לחיצה כפולה כדי לנסות</translation>
 <translation id="8879952635974818770">תוכן מותאם אישית</translation>
 <translation id="8887595428614802520">סגירה של כל הכרטיסיות והקבוצות</translation>
+<translation id="8888595487174963247">הסרת תזכורת</translation>
 <translation id="8891031436559779793">תישלח אליך התראה אם תהיה ירידה במחיר באתר כלשהו.</translation>
 <translation id="8893208530912252670">סרטונים</translation>
 <translation id="8898822736010347272">‏שולח ל-Google כתובות URL של חלק מהדפים שאליהם נכנסת, פרטים מוגבלים לגבי המערכת וחלק מתוכן הדפים. פעולה זו עוזרת לזהות איומים חדשים ולהגן על כל המשתמשים באינטרנט.</translation>
@@ -1952,6 +1962,7 @@
 <translation id="9130317582644834675">הסתרה של 'הגדלת הטקסט'</translation>
 <translation id="913036870884277353">פתיחת קישורים באפליקציות אחרות בקלות</translation>
 <translation id="9137013805542155359">הצגת מקור</translation>
+<translation id="9144230693397287797">קבלת עדכונים לגבי תזכורות שהגדרת וכרטיסיות ממכשירים אחרים</translation>
 <translation id="914781932147356857">סימון הכול…</translation>
 <translation id="9148126808321036104">כניסה חוזרת</translation>
 <translation id="9159628751968616911">שליחת דף האינטרנט</translation>

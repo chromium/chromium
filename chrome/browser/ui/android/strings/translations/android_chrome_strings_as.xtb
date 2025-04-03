@@ -735,7 +735,6 @@
 <translation id="4460861538906892109">{ITEMS_COUNT,plural, =1{১ টা বুকমাৰ্ক}one{# টা বুকমাৰ্ক}other{# টা বুকমাৰ্ক}}</translation>
 <translation id="4478161224666880173">আপুনি এইটো ছাইটত আপোনাৰ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> একাউণ্টটো ব্যৱহাৰ কৰিব পাৰে। অব্যাহত ৰাখিবলৈ, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />ত ছাইন ইন কৰক।</translation>
 <translation id="4479972344484327217">Chromeৰ বাবে <ph name="MODULE" /> ইনষ্টল কৰি থকা হৈছে…</translation>
-<translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{বুকমাৰ্কটো "<ph name="FOLDER_NAME" />"ত ছেভ কৰা হৈছে। এইটো কেৱল এই ডিভাইচটোত ছেভ কৰা হৈছে।}one{বুকমাৰ্কসমূহ "<ph name="FOLDER_NAME" />"ত ছেভ কৰা হৈছে। এয়া কেৱল এই ডিভাইচটোত ছেভ কৰা হৈছে।}other{বুকমাৰ্কসমূহ "<ph name="FOLDER_NAME" />"ত ছেভ কৰা হৈছে। এয়া কেৱল এই ডিভাইচটোত ছেভ কৰা হৈছে।}}</translation>
 <translation id="4484496141267039529">ইণ্টাৰনেট সংযোগ নাই। পাছত পুনৰ চেষ্টা কৰক।</translation>
 <translation id="4487967297491345095">সকলো Chrome এপৰ ডেটা স্থায়ীভাৱে মচা হ'ব। ইয়াত সকলো ফাইল, ছেটিং, একাউণ্ট, ডেটাবেছ ইত্যাদি অন্তর্ভুক্ত হয়।</translation>
 <translation id="4494806687727322324">আপোনাৰ প্ৰশাসকে পাছৱৰ্ড ছেভ কৰাৰ সুবিধাটো অন কৰিছে</translation>
@@ -942,6 +941,7 @@
 <translation id="539881862970320163">বিশ্বস্ত পাছৱৰ্ড দিবলৈ পৰামৰ্শ দিয়া হৈছে। কীব’ৰ্ড লুকুওৱা হৈছে।</translation>
 <translation id="5409881200985013443"><ph name="CLIENT_NAME" />ত <ph name="ONE_TIME_CODE" /> দাখিল কৰিবনে?</translation>
 <translation id="5410300144953132176"><ph name="OWNER_FULL_NAME" /> (<ph name="OWNER_EMAIL" />)এ আপুনি এটা টেবৰ গোটত যোগদান কৰাটো বিচাৰে। লিংকটো থকা সকলোৱে আটাইবোৰ টেব সম্পাদনা কৰিব পাৰে, গতিকে সাৱধানে যোগদান কৰক। লিংকটোৰ ম্যাদ ৪৮ ঘণ্টাত উকলিব।</translation>
+<translation id="5412388166586147626">AI সহায়ক খুলিব পৰা নগ’ল। পুনৰ চেষ্টা কৰক।</translation>
 <translation id="5414836363063783498">সত্যাপন কৰি থকা হৈছে…</translation>
 <translation id="5415871492522952905">আপোনাৰ আটাইবোৰ ডিভাইচতে আপোনাৰ ইতিহাস আৰু টেবসমূহ থাকিব, যাতে আপুনি কৰি থকা কামটো অব্যাহত ৰাখিব পাৰে</translation>
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />)এ লগে লগে “<ph name="GROUP_NAME" />” টেবৰ গোটৰ এক্সেছ হেৰুৱাব</translation>
@@ -1336,7 +1336,6 @@
 <translation id="7063006564040364415">ছিংক ছাৰ্ভাৰৰ সৈতে সংযোগ কৰিব পৰা নগ'ল।</translation>
 <translation id="7071521146534760487">একাউণ্ট পৰিচালনা কৰক</translation>
 <translation id="707155805709242880">কি ছিংক কৰিব লাগে তলত বাছনি কৰক</translation>
-<translation id="707702207692430409">{BOOKMARK_COUNT,plural, =1{আপোনাৰ একাউণ্টত "<ph name="FOLDER_NAME" />"ত বুকমাৰ্ক ছেভ কৰা হৈছে, <ph name="ACCOUNT_EMAIL" />।}one{আপোনাৰ একাউণ্টত "<ph name="FOLDER_NAME" />"ত বুকমাৰ্ক ছেভ কৰা হৈছে, <ph name="ACCOUNT_EMAIL" />।}other{আপোনাৰ একাউণ্টত "<ph name="FOLDER_NAME" />"ত বুকমাৰ্ক ছেভ কৰা হৈছে, <ph name="ACCOUNT_EMAIL" />।}}</translation>
 <translation id="7077143737582773186">এছডি কাৰ্ড</translation>
 <translation id="7078916049958741685">লগতে এই ডিভাইচটোৰ পৰা আপোনাৰ Chrome ডেটাও মচক</translation>
 <translation id="7085332316435785646">Google সেৱাসমূহত অধিক ব্যক্তিগতকৃত অভিজ্ঞতা লাভ কৰিবলৈ Chromeৰ ইতিহাস অন্তৰ্ভুক্ত কৰিবনে নকৰে সেয়া বাছনি কৰক</translation>

@@ -17,6 +17,7 @@
 <translation id="1052842760770519282">तपाईंका केही पासवर्डहरू एक्सेस गर्न मिल्दैन</translation>
 <translation id="1058669287135776095">तपाईं अफलाइन हुनुहुन्छ। इन्टरनेट जाँच्नुहोस् र फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="10614374240317010">कहिले पनि बचत नगर्नुहोस्</translation>
+<translation id="1070689840697074178">तपाईं यहाँबाट PDF फाइलहरू डाउनलोड गर्न सक्नुहुन्छ</translation>
 <translation id="107147699690128016">तपाईंले फाइलको एक्स्टेन्सन परिवर्तन गर्नुभयो भने यो फाइल कुनै अर्को एपमा खुल्न सक्छ जुन तपाईंको डिभाइसका लागि हानिकारक पनि हुन सक्छ।</translation>
 <translation id="1080365971383768617">तपाईंका सबै डिभाइसहरूमा पासवर्ड सेभ गर्ने सुविधा</translation>
 <translation id="1087176310396019910">स्प्याम हुन सक्छ</translation>
@@ -288,6 +289,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="2362083820973145409"><ph name="USER_NAME" /> का रूपमा साइन इन गरिएको छ। <ph name="USER_EMAIL" />। सेटिङ खोल्छ।</translation>
 <translation id="2363734411417672757">थप पेजहरू प्रिलोड गरिएका छन्। अन्य साइट वा एपहरूले अनुरोध गरेका खण्डमा पेजहरू Google का सर्भरमार्फत प्रिलोड गरिन सक्छन्।</translation>
 <translation id="2366554533468315977">वेबमा यो सामानको विगतका मूल्य</translation>
+<translation id="2367818124433749493">विकासकर्ताका लागि सर्टकटहरू</translation>
 <translation id="2385605401818128172">तपाईं थुप्रै नोटिफिकेसनहरू पठाउने साइटहरूको समीक्षा गर्न र भविष्यमा ती साइटबाट थप नोटिफिकेसनहरू प्राप्त गर्न छाड्न सक्नुहुन्छ</translation>
 <translation id="2386938421315164605">विषयहरू लुकाउनुहोस् तथा देखाउनुहोस्</translation>
 <translation id="2390510615457643724">तपाईं <ph name="FILE_NAME" /><ph name="FILE_SIZE" /> फेरि डाउनलोड गर्न चाहनुहुन्छ?</translation>
@@ -731,7 +733,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="4460861538906892109">{ITEMS_COUNT,plural, =1{एउटा बुकमार्क}other{# वटा बुकमार्क}}</translation>
 <translation id="4478161224666880173">तपाईं यो साइटमा <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> खाता प्रयोग गर्न सक्नुहुन्छ। जारी राख्न <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> मा साइन इन गर्नुहोस्।</translation>
 <translation id="4479972344484327217">Chrome को <ph name="MODULE" /> स्थापना गरिँदै…</translation>
-<translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{यो बुकमार्क "<ph name="FOLDER_NAME" />" मा सेभ गरिएको छ। यो बुकमार्क यो डिभाइसमा मात्र सेभ गरिएको छ।}other{यी बुकमार्कहरू "<ph name="FOLDER_NAME" />" मा सेभ गरिएका छन्। यी बुकमार्क यो डिभाइसमा मात्र सेभ गरिएका छन्।}}</translation>
 <translation id="4484496141267039529">इन्टरनेट छैन। पछि फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="4487967297491345095">Chrome का एप सम्बन्धी सबै डेटा सदाका लागि मेटिने छन्। यस अन्तर्गत सबै फाइल, सेटिङ, खाता, डेटाबेसहरू आदि पर्दछन्।</translation>
 <translation id="4494806687727322324">तपाईंका एड्मिनले पासवर्ड सेभ गर्ने सुविधा अन गर्नुभएको छ</translation>
@@ -953,6 +954,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="5456381639095306749">पृष्ठ डाउनलोड गर्नुहोस्</translation>
 <translation id="5458366071038729214">तपाईं आफूले फलो गरेका साइटहरू यहाँ भेट्टाउनु हुने छ</translation>
 <translation id="5468068603361015296">तपाईं जे भए पनि <ph name="FILE_NAME" /> डाउनलोड गर्न चाहनुहुन्छ?</translation>
+<translation id="5471273988133666918">ट्याब <ph name="TAB_TITLE" /> सार्न मिल्दैन</translation>
 <translation id="548278423535722844">नक्सा एपमा खोल्नुहोस्</translation>
 <translation id="5492637351392383067">डिभाइसमै चल्ने इन्क्रिप्सन</translation>
 <translation id="549660026907543296"><ph name="MEMBER_FULL_NAME" /> का रूपमा सामेल हुनुहोस्</translation>
@@ -1129,6 +1131,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="6295158916970320988">सबै साइटहरू</translation>
 <translation id="6296366034485697675">एक्स्पोर्ट गर्नुहोस् र मेटाउनुहोस्</translation>
 <translation id="629730747756840877">खाता</translation>
+<translation id="6301526076346731664">विकासकर्ताका टुलहरू खोल्नुहोस्</translation>
 <translation id="6303969859164067831">साइन आउट गरी सिंक प्रक्रिया निष्क्रिय पार्नुहोस्</translation>
 <translation id="6307241780749477694">यो डिभाइसमा भएका आफ्ना सबै पासवर्ड प्राप्त गर्न आफ्नो पहिचान पुष्टि गर्नुहोस्</translation>
 <translation id="6312687380483398334">वेब एपहरू (मौन)</translation>
@@ -1325,7 +1328,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="7063006564040364415">समक्रमण सर्भरमा जडान गर्न सकेन।</translation>
 <translation id="7071521146534760487">खाता व्यवस्थापन गर्नुहोस्</translation>
 <translation id="707155805709242880">तल सिंक गरिनु पर्ने कुराहरू चयन गर्नुहोस्</translation>
-<translation id="707702207692430409">{BOOKMARK_COUNT,plural, =1{यो बुकमार्क तपाईंको खाता <ph name="ACCOUNT_EMAIL" /> मा भएको "<ph name="FOLDER_NAME" />" मा सेभ गरिएको छ।}other{यी बुकमार्कहरू तपाईंको खाता <ph name="ACCOUNT_EMAIL" /> मा भएको "<ph name="FOLDER_NAME" />" मा सेभ गरिए।}}</translation>
 <translation id="7077143737582773186">SD कार्ड</translation>
 <translation id="7078916049958741685">यो डिभाइबाट मेरो Chrome को डेटा पनि मेटाउनुहोस्</translation>
 <translation id="7085332316435785646">Google का सेवाहरूमा आफ्नो आवश्यकताअनुसारका सुविधाहरू पाउन Chrome को ब्राउजिङ इतिहास समावेश गर्ने कि नगर्ने भन्ने कुरा छनौट गर्नुहोस्</translation>

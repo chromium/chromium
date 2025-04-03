@@ -2629,7 +2629,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2790112944253231361">A modificat această filă</translation>
 <translation id="2790750268015892264">Aplicațiile web izolate nu pot controla cititoarele de carduri inteligente. Aplicațiile nu vor avea acces la carduri inteligente.</translation>
 <translation id="2791529110887957050">Elimină Linux</translation>
-<translation id="279182647442890396">Ștergi informațiile?</translation>
 <translation id="2791952154587244007">A apărut o eroare. Aplicația de tip chioșc nu se va putea lansa automat pe acest dispozitiv.</translation>
 <translation id="2792465461386711506">Activează Sincronizarea Chrome pentru a vedea filele Chrome recente pe telefon</translation>
 <translation id="2792697226874849938">Imagine pentru restricție</translation>
@@ -4087,6 +4086,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3820749202859700794">Curbură eliptică SECG secp521r1 (cunoscută și sub numele de NIST P-521)</translation>
 <translation id="3821074617718452587">Notificări de la Phone Hub</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{O extensie a fost aprobată}few{# extensii au fost aprobate}other{# de extensii au fost aprobate}}</translation>
+<translation id="3822426549715448461">ZZ</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Pentru Linux, se recomandă un spațiu de cel puțin <ph name="INSTALL_SIZE" />.</translation>
 <translation id="3824621460022590830">Indicativul de înregistrare a dispozitivului nu este valid. Contactează proprietarul dispozitivului ori administratorul. Cod de eroare: <ph name="ERROR_CODE" />.</translation>
@@ -4616,6 +4616,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4203769790323223880">Folosirea camerei foto nu este permisă</translation>
 <translation id="4204415812590935863">Momentan, nu se poate crea o temă.</translation>
 <translation id="4205157409548006256">A apărut o eroare la configurarea Linux.</translation>
+<translation id="4205643719206044108">Pentru a oferi sugestii, site-urile pe care le accesezi și conținutul paginilor se trimit la Google</translation>
 <translation id="4206144641569145248">Extraterestru</translation>
 <translation id="4206323443866416204">Raport de feedback</translation>
 <translation id="4206585797409671301">Are permisiunea de a afișa solicitări</translation>
@@ -6983,6 +6984,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5916655001090539219">Citire automată</translation>
 <translation id="5916664084637901428">Activat</translation>
 <translation id="59174027418879706">Activat</translation>
+<translation id="5919305207330938913">Toate datele colectate vor fi folosite conform <ph name="BEGIN_LINK" />Politicii de confidențialitate<ph name="END_LINK" /> Google.</translation>
 <translation id="5920543303088087579">Conectarea la această rețea este dezactivată de administrator</translation>
 <translation id="5922963926582976524">Deconectează rețeaua hotspoturilor instantanee</translation>
 <translation id="5924047253200400718">Obține ajutor <ph name="SCANNING_STATUS" /></translation>
@@ -7494,6 +7496,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6283438600881103103">Vei fi deconectat(ă) automat.
 <ph name="DOMAIN" /> solicită să nu scoți cardul inteligent din dispozitiv.</translation>
 <translation id="628352644014831790">4 secunde</translation>
+<translation id="6283823201263716145">Dispozitivele în modul demonstrativ trimit automat la Google rapoarte de blocare, precum și date de diagnosticare și de utilizare, pentru a contribui la îmbunătățirea funcțiilor și a performanței.</translation>
 <translation id="6285120108426285413">Fișierul <ph name="FILE_NAME" /> nu este descărcat de obicei și ar putea fi periculos.</translation>
 <translation id="6285770818046456882">Dispozitivul care îți trimitea fișiere a anulat transferul</translation>
 <translation id="628699625505156622">Folosește locația. Permite aplicațiilor, site-urilor și serviciilor ChromeOS și Android cu permisiune pentru locație să folosească locația acestui dispozitiv. Precizia locației afișează locația mai precisă pentru aplicațiile și serviciile Android. În acest scop, Google prelucrează periodic informații despre senzorii dispozitivului și semnalele wireless de la acesta, pentru a externaliza spre public locațiile semnalelor wireless. Acestea se folosesc fără a identifica persoane, pentru a îmbunătăți precizia locației și serviciile bazate pe locație și pentru a îmbunătăți, a oferi și a întreține serviciile Google în scopul intereselor legitime ale companiei Google și ale terților de a deservi nevoile utilizatorilor. <ph name="BEGIN_LINK1" />Află mai multe despre folosirea locației<ph name="END_LINK1" /></translation>
@@ -8757,6 +8760,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7199452998289813782">Întrerupe proiectarea pe <ph name="DEVICE_NAME" /></translation>
 <translation id="720110658997053098">Menține permanent acest dispozitiv în modul chioșc</translation>
 <translation id="7201118060536064622">„<ph name="DELETED_ITEM_NAME" />” a fost șters</translation>
+<translation id="7201336084980086208">Completarea automată poate oferi opțiunea de a salva informații când trimiți formulare, cum ar fi numărul permisului de conducere sau al pașaportului</translation>
 <translation id="7201420661433230412">Afișați fișierele</translation>
 <translation id="7201432510117121839">Proiectarea conținutului audio de pe computer nu este acceptată pe acest dispozitiv</translation>
 <translation id="7201535955609308429">Așteaptă cât timp confirmarea este în curs</translation>
@@ -9358,6 +9362,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7641720519047586765">Cheia de acces a fost ștearsă de pe acest site</translation>
 <translation id="764178579712141045">S-a adăugat <ph name="USER_EMAIL" /></translation>
 <translation id="7642778300616172920">Ascunde conținutul sensibil</translation>
+<translation id="7643117827468520640">Consultă aceste condiții</translation>
 <translation id="7643842463591647490">{0,plural, =1{# fereastră deschisă}few{# ferestre deschise}other{# de ferestre deschise}}</translation>
 <translation id="7643932971554933646">Permiți ca site-ul să vadă fișierele?</translation>
 <translation id="7644953783774050577">Nu selectați nimic</translation>

@@ -1015,6 +1015,7 @@
 <translation id="2742870351467570537">Supprimer les éléments sélectionnés</translation>
 <translation id="2743512410823092182">Ressources et équipement pour DJ</translation>
 <translation id="2743934314332613923">Mettre à jour le permis de conduire?</translation>
+<translation id="2759299890026163685">Assurez-vous d'avoir une connexion Internet stable avant de réessayer</translation>
 <translation id="2759825833388495838">remplissez votre mot de passe dans <ph name="APP_NAME" /></translation>
 <translation id="2764001903315068341">Bandes dessinées</translation>
 <translation id="2765217105034171413">Petit</translation>
@@ -1279,6 +1280,7 @@
 <translation id="323107829343500871">Entrez le code de vérification de carte (CVC) pour <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Toujours détecter le contenu important sur ce site</translation>
 <translation id="323585066388831737">Rouge clair</translation>
+<translation id="3235902901585019063">Les fichiers locaux seront supprimés le <ph name="DATE_TIME" />. Assurez-vous que toutes les données professionnelles ou personnelles critiques sont stockées en externe.</translation>
 <translation id="3236212803136366317">Avantages de la carte</translation>
 <translation id="3238395604961564389">Ouvrir le lien dans une fenêtre de navigation privée</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur la touche Tabulation, puis sur la touche Entrée pour personnaliser le style de votre navigateur</translation>
@@ -1757,6 +1759,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4031179711345676612">Le microphone est autorisé</translation>
 <translation id="4036753017940930924">Lots et terrains</translation>
 <translation id="4039506337798853114">Pour afficher votre curseur, appuyez sur |<ph name="ACCELERATOR" />|</translation>
+<translation id="4045226534284799755">Connectez-vous à votre compte Microsoft avant de réessayer</translation>
 <translation id="4045441967987592849">Rouvrir</translation>
 <translation id="4047351652147966654">18 po x 24 po</translation>
 <translation id="404831776305217138">L'URL de mise à jour de l'extension avec l'ID « <ph name="EXTENSION_ID" /> » n'est pas valide ou utilise un schéma non compatible. Les schémas compatibles sont: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> et <ph name="FILE_SCHEME" />.</translation>
@@ -1777,6 +1780,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4073797364926776829">Affichez la carte</translation>
 <translation id="4075732493274867456">Le client et le serveur ne prennent pas en charge une version habituelle du protocole SSL et de la suite de chiffrement.</translation>
 <translation id="4079302484614802869">La configuration du mandataire est réglée à l'utilisation d'une adresse URL de script .pac, et non des serveurs mandataires fixes.</translation>
+<translation id="4080855220442581440">zoomer et faire défiler les onglets partagés</translation>
 <translation id="4082333119419111506">Papier (préimprimé)</translation>
 <translation id="4082393374666368382">Paramètres - Gestion</translation>
 <translation id="4084219288110917128">Enveloppe C1</translation>
@@ -2209,6 +2213,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4834250788637067901">Modes de paiement, offres et adresses utilisant Google Pay</translation>
 <translation id="4840250757394056958">Afficher votre historique de Chrome</translation>
 <translation id="484462545196658690">Auto</translation>
+<translation id="4844937814014739139">Zoomer et faire défiler les onglets partagés</translation>
 <translation id="484671803914931257">Bénéficiez d'un rabais sur <ph name="MERCHANT_NAME" /> et d'autres</translation>
 <translation id="484988093836683706">Utiliser le déverrouillage de l'appareil</translation>
 <translation id="4850886885716139402">Affichage</translation>
@@ -2502,6 +2507,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="5344522958567249764">Gérer la confidentialité des annonces</translation>
 <translation id="5344579389779391559">L'accès à cette page peut engendrer des frais</translation>
 <translation id="5345249337934847112">Papier (couché épais)</translation>
+<translation id="5348330584842140856">Ce fichier n'a pas été déplacé parce qu'il n'existe plus</translation>
 <translation id="5349543692327946794">Étiquettes (jet d'encre)</translation>
 <translation id="5351548097010183514">Fournitures et matériaux de construction</translation>
 <translation id="5354143049423063163">Fonds spéculatifs</translation>
@@ -2766,6 +2772,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="5826507051599432481">Nom commun (CN)</translation>
 <translation id="5830698870816298009">mouvement et utilisation de la caméra</translation>
 <translation id="583281660410589416">Inconnu</translation>
+<translation id="5837220895135257862">Libérez de l'espace dans <ph name="CLOUD_PROVIDER" /> avant de réessayer</translation>
 <translation id="5838278095973806738">Nous vous déconseillons d'entrer des données sensibles sur ce site (par exemple, des mots de passe ou des cartes de crédit), car elles pourraient être volées par des pirates.</translation>
 <translation id="5838732667866024867">Vous pouvez utiliser la flèche vers la gauche ou la droite pour consulter les changements de prix sur le graphique</translation>
 <translation id="5840318881868981258">Dans votre compte Google, <ph name="ACCOUNT" /></translation>
@@ -4025,6 +4032,7 @@ Détails supplémentaires :
 <translation id="799149739215780103">Reliure</translation>
 <translation id="7992044431894087211">Le partage d'écran avec <ph name="APPLICATION_TITLE" /> a repris</translation>
 <translation id="7995512525968007366">Non spécifié</translation>
+<translation id="7997855386298213183">onglets partagés</translation>
 <translation id="800218591365569300">Essayez de fermer d'autres onglets ou programmes pour libérer de la mémoire.</translation>
 <translation id="8002230960325005199">Voir les sites connexes dans un nouvel onglet</translation>
 <translation id="8003046808285812021">« <ph name="SEARCH_TERMS" /> »</translation>

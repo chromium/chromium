@@ -1014,6 +1014,7 @@
 <translation id="2742870351467570537">移除選取的項目</translation>
 <translation id="2743512410823092182">DJ 資源與設備</translation>
 <translation id="2743934314332613923">要更新駕照嗎？</translation>
+<translation id="2759299890026163685">請確認網路連線穩定，然後再試一次</translation>
 <translation id="2759825833388495838">在「<ph name="APP_NAME" />」中填入密碼</translation>
 <translation id="2764001903315068341">漫畫</translation>
 <translation id="2765217105034171413">小</translation>
@@ -1277,6 +1278,7 @@
 <translation id="323107829343500871">輸入 <ph name="CREDIT_CARD" /> 的信用卡驗證碼</translation>
 <translation id="3234666976984236645">一律偵測這個網站的重要內容</translation>
 <translation id="323585066388831737">淺紅色</translation>
+<translation id="3235902901585019063">本機檔案將於 <ph name="DATE_TIME" /> 刪除。請務必將任何重要業務或個人資料儲存到外部位置。</translation>
 <translation id="3236212803136366317">卡片福利</translation>
 <translation id="3238395604961564389">在無痕視窗中開啟連結</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />；按下 Tab 鍵再按下 Enter 鍵即可自訂瀏覽器外觀</translation>
@@ -1755,6 +1757,7 @@
 <translation id="4031179711345676612">可使用麥克風</translation>
 <translation id="4036753017940930924">租賃土地</translation>
 <translation id="4039506337798853114">如要顯示游標，請按下 |<ph name="ACCELERATOR" />| 鍵</translation>
+<translation id="4045226534284799755">請先登入 Microsoft 帳戶，然後再試一次</translation>
 <translation id="4045441967987592849">重新開啟</translation>
 <translation id="4047351652147966654">18 x 24 吋</translation>
 <translation id="404831776305217138">擴充功能 ID「<ph name="EXTENSION_ID" />」的更新網址無效，或採用不支援的網路通訊協定。支援的網路通訊協定為：<ph name="HTTP_SCHEME" />、<ph name="HTTPS_SCHEME" /> 和 <ph name="FILE_SCHEME" />。</translation>
@@ -1775,6 +1778,7 @@
 <translation id="4073797364926776829">查看卡片</translation>
 <translation id="4075732493274867456">用戶端和伺服器不支援一般 SSL 通訊協定版本或加密套件。</translation>
 <translation id="4079302484614802869">Proxy 設定已設為使用 .pac 指令碼網址，而非固定的 Proxy 伺服器。</translation>
+<translation id="4080855220442581440">捲動及縮放已分享的分頁</translation>
 <translation id="4082333119419111506">紙 (預先印刷)</translation>
 <translation id="4082393374666368382">設定 - 管理</translation>
 <translation id="4084219288110917128">Envelope C1</translation>
@@ -2043,6 +2047,7 @@
 <translation id="4521280267704259211">Envelope Monarch</translation>
 <translation id="4521916730539354575">左匣</translation>
 <translation id="4522570452068850558">詳細資料</translation>
+<translation id="4523580145196408446">已連結</translation>
 <translation id="4523643381056109546">廣告看板</translation>
 <translation id="4524138615196389145">現在就開始使用 WebAuthn，加快卡片驗證速度</translation>
 <translation id="45243788195988825">封鎖「<ph name="TOPIC" />」</translation>
@@ -2207,6 +2212,7 @@
 <translation id="4834250788637067901">儲存在 Google Pay 的付款方式、優惠和地址資訊</translation>
 <translation id="4840250757394056958">查看 Chrome 歷史記錄</translation>
 <translation id="484462545196658690">自動</translation>
+<translation id="4844937814014739139">捲動及縮放已分享的分頁</translation>
 <translation id="484671803914931257">取得 <ph name="MERCHANT_NAME" /> 和其他商家的折扣</translation>
 <translation id="484988093836683706">使用裝置解鎖功能</translation>
 <translation id="4850886885716139402">檢視</translation>
@@ -2500,6 +2506,7 @@
 <translation id="5344522958567249764">管理廣告隱私權設定</translation>
 <translation id="5344579389779391559">進入接下來的頁面後，系統可能會向您收費</translation>
 <translation id="5345249337934847112">紙 (厚塗布紙)</translation>
+<translation id="5348330584842140856">這個檔案已不存在，因此無法移動</translation>
 <translation id="5349543692327946794">標籤 (省墨)</translation>
 <translation id="5351548097010183514">建築材料與用品</translation>
 <translation id="5354143049423063163">避險基金</translation>
@@ -2764,6 +2771,7 @@
 <translation id="5826507051599432481">一般名稱 (CN)</translation>
 <translation id="5830698870816298009">使用及調整攝影機</translation>
 <translation id="583281660410589416">未知</translation>
+<translation id="5837220895135257862">請先釋出「<ph name="CLOUD_PROVIDER" />」中的空間，然後再試一次</translation>
 <translation id="5838278095973806738">請勿在這個網站上輸入任何機密資訊 (例如密碼或信用卡號碼)，以免遭到攻擊者竊取。</translation>
 <translation id="5838732667866024867">你可以使用向左/向右鍵查看圖表上的價格異動</translation>
 <translation id="5840318881868981258">更新 Google 帳戶 (<ph name="ACCOUNT" />) 中的密碼</translation>
@@ -3115,6 +3123,7 @@
 <translation id="6405181733356710802">要繼續使用「<ph name="APP_NAME" />」嗎？</translation>
 <translation id="6410264514553301377">輸入 <ph name="CREDIT_CARD" /> 的到期日和信用卡驗證碼</translation>
 <translation id="6411107829285739505">A4 x 8</translation>
+<translation id="6412543105195503444">家長核准對話方塊</translation>
 <translation id="6414010576370319452">肌膚與指甲保養</translation>
 <translation id="6415778972515849510">Chromium 可協助你保護 Google 帳戶並變更密碼。</translation>
 <translation id="6416877227920300343">EDP</translation>
@@ -4024,6 +4033,7 @@
 <translation id="799149739215780103">裝訂</translation>
 <translation id="7992044431894087211">已重新啟用與「<ph name="APPLICATION_TITLE" />」分享螢幕畫面的功能</translation>
 <translation id="7995512525968007366">未指定</translation>
+<translation id="7997855386298213183">已分享的分頁</translation>
 <translation id="800218591365569300">嘗試關閉其他分頁或程式，以釋出記憶體。</translation>
 <translation id="8002230960325005199">在新分頁中查看相關網站</translation>
 <translation id="8003046808285812021">「<ph name="SEARCH_TERMS" />」</translation>

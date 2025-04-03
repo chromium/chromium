@@ -735,7 +735,6 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="4460861538906892109">{ITEMS_COUNT,plural, =1{1 bookmark}one{# bookmark}other{# na bookmark}}</translation>
 <translation id="4478161224666880173">Magagamit mo ang iyong <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> account sa site na ito. Para magpatuloy, mag-sign in sa <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="4479972344484327217">Ini-install ang <ph name="MODULE" /> para sa Chrome…</translation>
-<translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{Na-save ang bookmark sa "<ph name="FOLDER_NAME" />." Naka-save lang ito sa device na ito.}one{Na-save ang mga bookmark sa "<ph name="FOLDER_NAME" />." Naka-save lang ito sa device na ito.}other{Na-save ang mga bookmark sa "<ph name="FOLDER_NAME" />." Naka-save lang ito sa device na ito.}}</translation>
 <translation id="4484496141267039529">Walang koneksyon. Subukan ulit sa ibang pagkakataon.</translation>
 <translation id="4487967297491345095">Permanenteng ide-delete ang lahat ng data ng app ng Chrome. Kabilang dito ang lahat ng file, setting, account, database, atbp.</translation>
 <translation id="4494806687727322324">In-on ng iyong administrator ang pag-save ng password</translation>
@@ -1336,7 +1335,6 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="7063006564040364415">Hindi makakonekta sa server ng pag-sync.</translation>
 <translation id="7071521146534760487">Pamahalaan ang account</translation>
 <translation id="707155805709242880">Piliin kung ano ang isi-sync sa ibaba</translation>
-<translation id="707702207692430409">{BOOKMARK_COUNT,plural, =1{Na-save ang bookmark sa "<ph name="FOLDER_NAME" />" sa iyong account na <ph name="ACCOUNT_EMAIL" />.}one{Na-save ang mga bookmark sa "<ph name="FOLDER_NAME" />" sa iyong account na <ph name="ACCOUNT_EMAIL" />.}other{Na-save ang mga bookmark sa "<ph name="FOLDER_NAME" />" sa iyong account na <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="7077143737582773186">SD Card</translation>
 <translation id="7078916049958741685">I-delete din ang iyong data sa Chrome sa device na ito</translation>
 <translation id="7085332316435785646">Piliin kung isasama ang history ng Chrome para sa mas naka-personalize na mga karanasan sa mga serbisyo ng Google</translation>

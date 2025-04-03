@@ -105,6 +105,7 @@
 <translation id="1411386976162024013">Lens-en irudi bidezko bilaketa</translation>
 <translation id="1417474386970818917">Amaitu saioa eta ezabatu</translation>
 <translation id="1426410128494586442">Bai</translation>
+<translation id="1429187656584513419">Ireki Passwords (pasahitzak)</translation>
 <translation id="1430915738399379752">Inprimatu</translation>
 <translation id="1436671784520050284">Jarraitu konfiguratzen</translation>
 <translation id="143681031165817424">Gailu honetan baino ez da gorde helbidea</translation>
@@ -591,6 +592,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="3530206579861815432">Aurkitu bizkor sinkronizatutako gailuetan irekita dauzkazun edo duela gutxi itxi dituzun fitxak.</translation>
 <translation id="3530767473765895035">Kudeatu gailuko kontuak…</translation>
 <translation id="3533436815740441613">Fitxa berria</translation>
+<translation id="3533860663366814939">Ireki Autofill &amp; Password settings (betetze automatikoaren eta pasahitzen ezarpenak)</translation>
 <translation id="3547356470684043247">Irakurri bezeroek produktuei, zerbitzuei edo esperientziei buruz bidali dituzten balorazioak, erabakiak hartzeko informazio gehiago izan dezazun</translation>
 <translation id="3557336313807607643">Gehitu kontaktuetan</translation>
 <translation id="355765753469272474">Desegin</translation>
@@ -1513,6 +1515,7 @@ Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webgune
 <translation id="7431851541687113774">Desaktibatu helbideak hautemateko eginbidea</translation>
 <translation id="7431991332293347422">Kontrolatu arakatze-historia nola erabiltzen den Bilaketa eta beste zerbitzu batzuk pertsonalizatzeko</translation>
 <translation id="7435356471928173109">Administratzaileak desaktibatu du</translation>
+<translation id="7437712592381799950">Zuretzat egokitutako eduki gehiago ikusteko, pasatu hatza gora.</translation>
 <translation id="7438481509621345350">Aurrerantzean, <ph name="CHANNEL_NAME" /> webguneko istorioak ikusiko dituzu fitxa berri bat irekitzean.</translation>
 <translation id="7451023311965289370">{count,plural, =1{Gorde da laster-marka hemen: "{title}"}other{Gorde dira laster-markak hemen: "{title}"}}</translation>
 <translation id="7451404862887877229">Sakatu Pribatutasuna eta segurtasuna eta, gero, Arakatze segurua.</translation>
@@ -1616,6 +1619,7 @@ Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webgune
 <translation id="784934925303690534">Denbora tartea</translation>
 <translation id="7851858861565204677">Beste gailu batzuk</translation>
 <translation id="7853202427316060426">Jarduerak</translation>
+<translation id="7854006015462979438">Ireki General (orokorra)</translation>
 <translation id="7859988229622350291">Ez itzuli edukirik hizkuntza hauetako batean badago:</translation>
 <translation id="7863211248337747225">Lortu aplikazioa</translation>
 <translation id="7865127013871431856">Itzultzeko aukerak</translation>

@@ -1382,7 +1382,7 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="193565226207940518">Támogatási eszköz</translation>
 <translation id="1935995810530254458">Másolás mindenképpen</translation>
 <translation id="1936157145127842922">Megjelenítés mappában</translation>
-<translation id="1936344977780165685">{PAGES,plural, =1{Oldal felvéve olvasólistára}other{Oldalak felvéve az olvasólistára}}</translation>
+<translation id="1936344977780165685">{PAGES,plural, =1{Oldal felvéve az olvasólistára}other{Oldalak felvéve az olvasólistára}}</translation>
 <translation id="1936931585862840749">Számmal jelezze, hogy hány példányt szeretne nyomtatni (1–<ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Nem lehet importálni a tároló <ph name="ARCHITECTURE_CONTAINER" /> architektúratípusát, ugyanis az eszköz architektúrájának típusa <ph name="ARCHITECTURE_DEVICE" />. Megpróbálhatja helyreállítani ezt a tárolót egy másik eszközön, vagy a Fájlok alkalmazás megnyitásával hozzáférhet a tároló lemezképében lévő fájlokhoz.</translation>
 <translation id="1938351510777341717">Külső parancs</translation>
@@ -2640,7 +2640,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2790112944253231361">Módosította ezt a lapot</translation>
 <translation id="2790750268015892264">Az izolált internetes alkalmazások nem vezérelhetik az intelligenskártya-olvasókat. Az alkalmazások nem férnek hozzá egyetlen intelligens kártyához sem.</translation>
 <translation id="2791529110887957050">A Linux eltávolítása</translation>
-<translation id="279182647442890396">Törli az információt?</translation>
 <translation id="2791952154587244007">Hiba történt. A kioszkalkalmazások nem fognak automatikusan elindulni ezen az eszközön.</translation>
 <translation id="2792465461386711506">Kapcsolja be a Chrome-szinkronizálást a telefonján nemrég megnyitott Chrome-lapok megtekintéséhez</translation>
 <translation id="2792697226874849938">Korlátozás képe</translation>

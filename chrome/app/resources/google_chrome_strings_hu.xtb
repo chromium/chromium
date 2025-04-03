@@ -157,6 +157,7 @@
 <translation id="2945997411976714835">Telepítési hiba: Nem sikerült elindítani a telepítést.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Hálózati bejelentkezés – Chrome</translation>
 <translation id="2970681950995291301">Ha el szeretné távolítani Google-fiókját a Chrome-ból, jelentkezzen ki a Chrome-ból a Beállítások oldalon</translation>
+<translation id="2991167882679440829">A Google-fiókjába mentett jelszavai és egyéb Chrome-adatai el lesznek távolítva erről az eszközről. Ha újra használni szeretné őket a Chrome-ban, jelentkezzen be újra.</translation>
 <translation id="2994465299455873643">Titkosítási szolgáltatásokat, valamint elavulás esetén biztonságos módot kínál a(z) <ph name="BROWSER_NAME" /> helyreállítására. Ha ez a szolgáltatás le van tiltva, a <ph name="BROWSER_NAME" /> elveszítheti a titkosított adatokhoz való hozzáférést, és a <ph name="BROWSER_NAME" /> nem tudja magát helyreállítani.</translation>
 <translation id="3003694935412297923">Az összes feladat</translation>
 <translation id="3018957014024118866">Az adatok a Chrome-ból is legyenek törölve (<ph name="URL" />)</translation>

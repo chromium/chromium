@@ -2641,7 +2641,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2790112944253231361">Mengubah tab ini</translation>
 <translation id="2790750268015892264">Aplikasi Web Terisolasi tidak dapat mengontrol pembaca kartu smart. Aplikasi tidak akan mendapatkan akses ke kartu smart apa pun.</translation>
 <translation id="2791529110887957050">Hapus Linux</translation>
-<translation id="279182647442890396">Hapus info?</translation>
 <translation id="2791952154587244007">Terjadi error. Aplikasi kios tidak akan dapat diluncurkan secara otomatis di perangkat ini.</translation>
 <translation id="2792465461386711506">Aktifkan Sinkronisasi Chrome untuk melihat tab Chrome terbaru di ponsel Anda</translation>
 <translation id="2792697226874849938">Gambar batasan</translation>
@@ -4100,6 +4099,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3820749202859700794">Kurva eliptis SECG secp521r1 (alias NIST P-521)</translation>
 <translation id="3821074617718452587">Notifikasi Phone Hub</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Ekstensi telah disetujui}other{# ekstensi telah disetujui}}</translation>
+<translation id="3822426549715448461">HH</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Sebaiknya sediakan ruang minimal <ph name="INSTALL_SIZE" /> untuk Linux.</translation>
 <translation id="3824621460022590830">Token pendaftaran perangkat tidak valid. Hubungi pemilik atau administrator perangkat Anda. Kode error: <ph name="ERROR_CODE" />.</translation>
@@ -4629,6 +4629,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4203769790323223880">Kamera tidak diizinkan</translation>
 <translation id="4204415812590935863">Tidak dapat membuat tema untuk saat ini.</translation>
 <translation id="4205157409548006256">Terjadi error saat mengonfigurasi Linux.</translation>
+<translation id="4205643719206044108">Untuk memberikan saran, situs yang Anda kunjungi dan konten halaman dibagikan ke Google</translation>
 <translation id="4206144641569145248">Alien</translation>
 <translation id="4206323443866416204">Laporan Masukan</translation>
 <translation id="4206585797409671301">Diizinkan menampilkan permintaan</translation>
@@ -6998,6 +6999,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="5916655001090539219">Pembacaan otomatis</translation>
 <translation id="5916664084637901428">Aktif</translation>
 <translation id="59174027418879706">Diaktifkan</translation>
+<translation id="5919305207330938913">Semua data yang dikumpulkan akan digunakan sesuai dengan <ph name="BEGIN_LINK" />Kebijakan Privasi<ph name="END_LINK" /> Google.</translation>
 <translation id="5920543303088087579">Koneksi ke jaringan ini tidak diizinkan oleh administrator</translation>
 <translation id="5922963926582976524">Putuskan koneksi jaringan Hotspot instan</translation>
 <translation id="5924047253200400718">Dapatkan bantuan<ph name="SCANNING_STATUS" /></translation>
@@ -7509,6 +7511,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6283438600881103103">Anda akan otomatis logout sekarang.
 <ph name="DOMAIN" /> mengharuskan Anda tetap memasang kartu smart.</translation>
 <translation id="628352644014831790">4 detik</translation>
+<translation id="6283823201263716145">Perangkat Mode Demo otomatis mengirimkan laporan error serta data penggunaan dan diagnostik ke Google untuk membantu meningkatkan fitur dan performa.</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> tidak biasa didownload dan mungkin berbahaya.</translation>
 <translation id="6285770818046456882">Perangkat yang berbagi dengan Anda membatalkan transfer</translation>
 <translation id="628699625505156622">Gunakan lokasi. Izinkan aplikasi, situs, dan layanan ChromeOS serta Android yang memiliki izin akses lokasi untuk menggunakan lokasi perangkat ini. Akurasi Lokasi memberikan lokasi yang lebih akurat untuk aplikasi dan layanan Android. Agar dapat melakukannya, Google secara berkala memproses informasi tentang sensor perangkat dan sinyal nirkabel dari perangkat ini untuk melakukan crowdsource lokasi sinyal nirkabel. Hal ini digunakan tanpa mengidentifikasi individu mana pun untuk meningkatkan akurasi lokasi serta layanan yang berbasis lokasi, serta untuk meningkatkan, menyediakan, dan mengelola layanan Google berdasarkan kepentingan sah Google dan pihak ketiga untuk melayani kebutuhan pengguna. <ph name="BEGIN_LINK1" />Pelajari lebih lanjut cara menggunakan lokasi<ph name="END_LINK1" /></translation>
@@ -8770,6 +8773,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7199452998289813782">Jeda transmisi ke <ph name="DEVICE_NAME" /></translation>
 <translation id="720110658997053098">Simpan perangkat ini dalam mode kios secara permanen</translation>
 <translation id="7201118060536064622">'<ph name="DELETED_ITEM_NAME" />' dihapus</translation>
+<translation id="7201336084980086208">Isi otomatis dapat menawarkan penyimpanan info saat Anda mengirimkan formulir, seperti nomor surat izin mengemudi atau paspor Anda</translation>
 <translation id="7201420661433230412">Lihat file</translation>
 <translation id="7201432510117121839">Mentransmisikan audio desktop tidak didukung di perangkat ini</translation>
 <translation id="7201535955609308429">Harap tunggu, proses verifikasi sedang berlangsung</translation>
@@ -9370,6 +9374,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7641720519047586765">Kunci sandi ini dihapus dari situs ini</translation>
 <translation id="764178579712141045"><ph name="USER_EMAIL" /> ditambahkan</translation>
 <translation id="7642778300616172920">Sembunyikan konten sensitif</translation>
+<translation id="7643117827468520640">Tinjau persyaratan ini</translation>
 <translation id="7643842463591647490">{0,plural, =1{# jendela dibuka}other{# jendela dibuka}}</translation>
 <translation id="7643932971554933646">Izinkan situs melihat file?</translation>
 <translation id="7644953783774050577">Tak satu pun</translation>

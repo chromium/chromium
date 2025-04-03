@@ -1016,6 +1016,7 @@
 <translation id="2742870351467570537">নির্বাচিত আইটেমগুলি সরান</translation>
 <translation id="2743512410823092182">ডিজে রিসোর্স ও সরঞ্জাম</translation>
 <translation id="2743934314332613923">ড্রাইভিং লাইসেন্স সম্পর্কিত তথ্য আপডেট করুন?</translation>
+<translation id="2759299890026163685">আবার চেষ্টা করার আগে নিশ্চিত করুন যে আপনার স্থিতিশীল ইন্টারনেট কানেকশন আছে</translation>
 <translation id="2759825833388495838"><ph name="APP_NAME" />-এ আপনার পাসওয়ার্ড পূরণ করুন</translation>
 <translation id="2764001903315068341">কমিক্স</translation>
 <translation id="2765217105034171413">ক্ষুদ্র</translation>
@@ -1280,6 +1281,7 @@
 <translation id="323107829343500871"><ph name="CREDIT_CARD" />-এর CVC লিখুন</translation>
 <translation id="3234666976984236645">এই সাইটে সবসময় গুরুত্বপূর্ণ কন্টেন্ট শনাক্ত করুন</translation>
 <translation id="323585066388831737">হালকা লাল</translation>
+<translation id="3235902901585019063">স্থানীয় ফাইল <ph name="DATE_TIME" />-এ মুছে দেওয়া হবে। কোনও গুরুত্বপূর্ণ ব্যবসা সম্পর্কিত বা ব্যক্তিগত ডেটা বাইরে থেকে সেভ করা হয়েছে কিনা তা নিশ্চিত করুন।</translation>
 <translation id="3236212803136366317">কার্ডের বিভিন্ন সুবিধা</translation>
 <translation id="3238395604961564389">লিঙ্কটি ছদ্মবেশী উইন্ডোতে খুলুন</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, আপনার ব্রাউজার কেমন দেখাবে তা কাস্টমাইজ করতে Tab প্রেস করার পর Enter প্রেস করুন</translation>
@@ -1758,6 +1760,7 @@
 <translation id="4031179711345676612">মাইক্রোফোন ব্যবহারের অনুমতি দেওয়া হয়েছে</translation>
 <translation id="4036753017940930924">প্লট ও জমি</translation>
 <translation id="4039506337798853114">আপনার কার্সর দেখাতে, |<ph name="ACCELERATOR" />| প্রেস করুন</translation>
+<translation id="4045226534284799755">আবার চেষ্টা করার আগে নিজের Microsoft অ্যাকাউন্টে সাইন-ইন করুন</translation>
 <translation id="4045441967987592849">আবার খুলুন</translation>
 <translation id="4047351652147966654">১৮ x ২৪ ইঞ্চি</translation>
 <translation id="404831776305217138">"<ph name="EXTENSION_ID" />" আইডি যুক্ত এক্সটেনশনের আপডেট URL ভুল বা এতে ব্যবহারযোগ্য নয় এমন স্কিম ব্যবহার করা হচ্ছে। ব্যবহারযোগ্য স্কিমগুলি হল: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> এবং <ph name="FILE_SCHEME" />।</translation>
@@ -1778,6 +1781,7 @@
 <translation id="4073797364926776829">কার্ড দেখুন</translation>
 <translation id="4075732493274867456">ক্লায়েন্ট ও সার্ভারটি কোনো অভিন্ন SSL প্রোটোকল সংস্করণ বা সাইফার স্যুট সমর্থন করে না।</translation>
 <translation id="4079302484614802869">প্রক্সি কনফিগারেশনটি .pac স্ক্রিপ্ট URL-এ ব্যবহার করাতে সেট থাকে স্থির প্রক্সি সার্ভারগুলিতে নয়৷</translation>
+<translation id="4080855220442581440">শেয়ার করা ট্যাব স্ক্রল ও জুম করা</translation>
 <translation id="4082333119419111506">পেপার (প্রিপ্রিন্টেড)</translation>
 <translation id="4082393374666368382">সেটিংস - ম্যানেজমেন্ট</translation>
 <translation id="4084219288110917128">এনভেলপ C1</translation>
@@ -2210,6 +2214,7 @@
 <translation id="4834250788637067901">Google Pay-এর সাথে যুক্ত পেমেন্ট পদ্ধতি, অফার ও ঠিকানা</translation>
 <translation id="4840250757394056958">আপনার Chrome ইতিহাস দেখুন</translation>
 <translation id="484462545196658690">অটো</translation>
+<translation id="4844937814014739139">শেয়ার করা ট্যাব স্ক্রল ও জুম করা</translation>
 <translation id="484671803914931257"><ph name="MERCHANT_NAME" />-এ ডিসকাউন্ট পান এবং আরও অনেক কিছু</translation>
 <translation id="484988093836683706">ডিভাইস আনলক ব্যবহার করুন</translation>
 <translation id="4850886885716139402">দেখুন</translation>
@@ -2503,6 +2508,7 @@
 <translation id="5344522958567249764">বিজ্ঞাপন সংক্রান্ত গোপনীয়তা ম্যানেজ করুন</translation>
 <translation id="5344579389779391559">এই পৃষ্ঠাতে আপনাকে চার্জ করা হতে পারে</translation>
 <translation id="5345249337934847112">পেপার (হেভিওয়েট কোটেড)</translation>
+<translation id="5348330584842140856">এই ফাইলটি আর নেই বলে এটি সরানো যায়নি</translation>
 <translation id="5349543692327946794">লেবেল (ইঙ্কজেট)</translation>
 <translation id="5351548097010183514">বাড়ির তৈরির উপকরণ ও যোগান</translation>
 <translation id="5354143049423063163">হেজ ফান্ড</translation>
@@ -2767,6 +2773,7 @@
 <translation id="5826507051599432481">কমন নেম (CN)</translation>
 <translation id="5830698870816298009">ক্যামেরার ব্যবহার এবং গতিবিধি</translation>
 <translation id="583281660410589416">অজানা</translation>
+<translation id="5837220895135257862">আবার চেষ্টা করার আগে <ph name="CLOUD_PROVIDER" />-এ স্পেস খালি করুন</translation>
 <translation id="5838278095973806738">এই সাইটে আপনার কোনো সংবেদনশীল তথ্য দেওয়া উচিত হবে না (উদাহরণস্বরূপ, পাসওয়ার্ড বা ক্রেডিট কার্ড) কারণ আক্রমণকারীরা এগুলি চুরি করতে পারে।</translation>
 <translation id="5838732667866024867">গ্রাফে দামের পরিবর্তন পর্যালোচনা করতে বাঁ/ডানদিকের তীরচিহ্ন ব্যবহার করতে পারবেন</translation>
 <translation id="5840318881868981258">আপনার Google অ্যাকাউন্টে, <ph name="ACCOUNT" /></translation>
@@ -4026,6 +4033,7 @@
 <translation id="799149739215780103">বাঁধাই</translation>
 <translation id="7992044431894087211"><ph name="APPLICATION_TITLE" />-এর সাথে আবার স্ক্রিন শেয়ার করা চালু করা হয়েছে</translation>
 <translation id="7995512525968007366">নির্দিষ্ট করে উল্লেখ করা নেই</translation>
+<translation id="7997855386298213183">শেয়ার করা ট্যাব</translation>
 <translation id="800218591365569300">মেমরি ফাঁকা করতে অন্যান্য ট্যাব বা প্রোগ্রাম বন্ধ করার চেষ্টা করুন।</translation>
 <translation id="8002230960325005199">নতুন ট্যাবে সম্পর্কিত সাইট দেখুন</translation>
 <translation id="8003046808285812021">“<ph name="SEARCH_TERMS" />”</translation>
@@ -4100,6 +4108,7 @@
 <translation id="812020627659652807">এখন ফাইল মুছুন</translation>
 <translation id="8120720167840853945">এই নীতি, অন্য কোনও নীতির ডিফল্ট অ্যাকশন কন্ট্রোল করছে না।</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" আপনার কম্পিউটার বা নেটওয়ার্কে সঠিক ভাবে ইনস্টল করা হয়নি। আপনার IT প্রশাসককে এই সমস্যাটি সমাধান করতে বলুন।</translation>
+<translation id="8130113808541743942">এতে সরান...</translation>
 <translation id="8131740175452115882">নিশ্চিত হন</translation>
 <translation id="8133495915926741232">পছন্দমতো বিজ্ঞাপন দেখানোর জন্য কোনও বিষয়ের কোন কোন বিস্তারিত বিভাগ ব্যবহার করা যেতে পারে তা বেছে নিন। কোনও বিস্তারিত বিভাগ বন্ধ করে দেওয়া হলে, এটির সাথে সম্পর্কিত বিষয়ও ব্লক করা হবে। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="8134058435519644366">রিক্রুটমেন্ট ও স্টাফিং</translation>

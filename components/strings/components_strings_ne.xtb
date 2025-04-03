@@ -1015,6 +1015,7 @@
 <translation id="2742870351467570537">चयन गरिएका वस्तुहरू हटाउनुहोस्</translation>
 <translation id="2743512410823092182">डिजेसम्बन्धी स्रोत साधन र उपकरण</translation>
 <translation id="2743934314332613923">सवारी चालक अनुमति पत्रसम्बन्धी जानकारी अपडेट गर्ने हो?</translation>
+<translation id="2759299890026163685">फेरि प्रयास गर्नुअघि आफ्नो इन्टरनेट कनेक्सन स्थिर छ भन्ने कुरा सुनिश्चित गर्नुहोस्</translation>
 <translation id="2759825833388495838"><ph name="APP_NAME" /> मा आफ्नो पासवर्ड भर्नुहोस्</translation>
 <translation id="2764001903315068341">कमिक्स</translation>
 <translation id="2765217105034171413">सानो</translation>
@@ -1276,6 +1277,7 @@
 <translation id="323107829343500871"><ph name="CREDIT_CARD" /> को CVC प्रविष्टि गर्नुहोस्</translation>
 <translation id="3234666976984236645">सधैं यस साइटमा महत्वपूर्ण सामग्री पत्ता लगाउनुहोस्</translation>
 <translation id="323585066388831737">हल्का रातो</translation>
+<translation id="3235902901585019063">डिभाइसमा भण्डारण गरिएका फाइलहरू <ph name="DATE_TIME" /> मा मेटाइने छन्। अति महत्त्वपूर्ण प्रकृतिका सबै व्यावसायिक वा व्यक्तिगत जानकारी बाह्य रूपमा भण्डारण गरिएका छन् भन्ने कुरा सुनिश्चित गर्नुहोस्।</translation>
 <translation id="3236212803136366317">कार्डका लाभहरू</translation>
 <translation id="3238395604961564389">यो लिंक इन्कोग्निटो विन्डोमा खोल्नुहोस्</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, तपाईं आफ्नो ब्राउजरको स्वरूप कस्टमाइज गर्न चाहनुहुन्छ भने Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
@@ -1754,6 +1756,7 @@
 <translation id="4031179711345676612">माइक्रोफोन प्रयोग गर्ने अनुमति छ</translation>
 <translation id="4036753017940930924">प्लट तथा जग्गा</translation>
 <translation id="4039506337798853114">आफ्नो कर्सर देखाउन |<ph name="ACCELERATOR" />| थिच्नुहोस्</translation>
+<translation id="4045226534284799755">फेरि प्रयास गर्नुअघि आफ्नो Microsoft खातामा साइन इन गर्नुहोस्</translation>
 <translation id="4045441967987592849">फेरि खोल्नुहोस्</translation>
 <translation id="4047351652147966654">१८ x २४ इन्च</translation>
 <translation id="404831776305217138">ID "<ph name="EXTENSION_ID" />" भएको एक्स्टेन्सनको अपडेट URL अवैध छ वा 
@@ -1775,6 +1778,7 @@
 <translation id="4073797364926776829">कार्ड हेर्नुहोस्</translation>
 <translation id="4075732493274867456">ग्राहक र सर्भरले एउटा साधारण SSL प्रोटोकल संस्करण वा साइफर सुइटलाई समर्थन गर्दैनन्।</translation>
 <translation id="4079302484614802869">प्रोक्सी विन्यासले .प्याक स्क्रिप्ट युआरएल प्रयोग गर्न सेट गरिएको छ, निश्चित प्रोक्सी सर्भरहरू होइन।</translation>
+<translation id="4080855220442581440">सेयर गरिएका ट्याबहरू स्क्रोल र जुम गर्ने</translation>
 <translation id="4082333119419111506">पेपर (प्रिप्रिन्टेड)</translation>
 <translation id="4082393374666368382">सेटिङहरू - व्यवस्थापन</translation>
 <translation id="4084219288110917128">Envelope C1</translation>
@@ -2207,6 +2211,7 @@
 <translation id="4834250788637067901">Google Pay प्रयोग गर्दा इम्पोर्ट गरिने भुक्तानी विधि, अफर र ठेगानाहरू</translation>
 <translation id="4840250757394056958">Chrome को ब्राउजिङ इतिहास हेर्नुहोस्</translation>
 <translation id="484462545196658690">स्वतः</translation>
+<translation id="4844937814014739139">सेयर गरिएका ट्याबहरू स्क्रोल र जुम गर्ने</translation>
 <translation id="484671803914931257"><ph name="MERCHANT_NAME" /> र अन्य स्टोरहरूमा छुट प्राप्त गर्नुहोस्</translation>
 <translation id="484988093836683706">डिभाइस अनलक प्रयोग गर्नुहोस्</translation>
 <translation id="4850886885716139402">हेर्नुहोस्</translation>
@@ -2500,6 +2505,7 @@
 <translation id="5344522958567249764">विज्ञापनको गोपनीयतासम्बन्धी सेटिङ व्यवस्थापन गर्नुहोस्</translation>
 <translation id="5344579389779391559">यो पृष्ठले तपाईंलाई पैसा तिराउने प्रयास गर्न सक्छ</translation>
 <translation id="5345249337934847112">पेपर (हेभीवेट कोटेड)</translation>
+<translation id="5348330584842140856">यो फाइल अब उपलब्ध नभएकाले यसलाई सार्न सकिएन</translation>
 <translation id="5349543692327946794">लेबल (इङ्कजेट)</translation>
 <translation id="5351548097010183514">निर्माण सामग्री तथा आपूर्ति</translation>
 <translation id="5354143049423063163">हेज फन्डहरू</translation>
@@ -2764,6 +2770,7 @@
 <translation id="5826507051599432481">साझा नाम (CN)</translation>
 <translation id="5830698870816298009">क्यामेराको प्रयोग र हलचल</translation>
 <translation id="583281660410589416">अज्ञात</translation>
+<translation id="5837220895135257862">फेरि प्रयास गर्नुअघि <ph name="CLOUD_PROVIDER" /> मा ठाउँ खाली गर्नुहोस्</translation>
 <translation id="5838278095973806738">आक्रमणकारीहरूले चोरी गर्न सक्ने हुनाले तपाईँले यस साइटमा कुनै संवेदनशील जानकारी (उदाहरणका लागि पासवर्ड वा क्रेडिट कार्ड) प्रविष्ट गर्नु हुँदैन।</translation>
 <translation id="5838732667866024867">तपाईं मूल्यमा भएका परिवर्तनहरू ग्राफमा हेर्न लेफ्ट/राइट एरो प्रयोग गर्न सक्नुहुन्छ</translation>
 <translation id="5840318881868981258">तपाईंको Google खाता <ph name="ACCOUNT" /> मा</translation>
@@ -4023,6 +4030,7 @@
 <translation id="799149739215780103">बाइन्ड</translation>
 <translation id="7992044431894087211"><ph name="APPLICATION_TITLE" /> सँग स्क्रिन सेयर गर्ने कार्य सुचारु भएको छ</translation>
 <translation id="7995512525968007366">तोकिएको छैन</translation>
+<translation id="7997855386298213183">सेयर गरिएका ट्याबहरू</translation>
 <translation id="800218591365569300">मेमोरी खाली गर्न अन्य ट्याब वा प्रोग्रामहरू बन्द गरी हेर्नुहोस्।</translation>
 <translation id="8002230960325005199">सम्बन्धित साइटहरू नयाँ ट्याबमा हेर्नुहोस्</translation>
 <translation id="8003046808285812021">“<ph name="SEARCH_TERMS" />”</translation>
@@ -4097,6 +4105,7 @@
 <translation id="812020627659652807">अहिले नै फाइल मेटाउनुहोस्</translation>
 <translation id="8120720167840853945">यो नीतिले अन्य कुनै पनि नीतिको स्वचालित कारबाही नियन्त्रण गरिरहेको छैन।</translation>
 <translation id="8127301229239896662">तपाईंको कम्प्युटर वा नेटवर्कमा "<ph name="SOFTWARE_NAME" />" सही ढङ्गले स्थापना भएन। आफ्नो IT प्रशासकलाई यो समस्या समाधान गर्न लगाउनुहोस्‌।</translation>
+<translation id="8130113808541743942">सारेर यहाँ लैजानुहोस्...</translation>
 <translation id="8131740175452115882">निश्चित</translation>
 <translation id="8133495915926741232">विज्ञापनहरू पर्सनलाइज गर्न कुन कुन बृहत् विषयहरू प्रयोग गर्न दिने भन्ने कुरा छनौट गर्नुहोस्। तपाईंले कुनै बृहत् विषय अफ गर्नुभयो भने त्यससँग सम्बन्धित विषयहरू पनि ब्लक हुने छन्। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="8134058435519644366">भर्ती तथा नियक्ति गर्ने सेवा</translation>

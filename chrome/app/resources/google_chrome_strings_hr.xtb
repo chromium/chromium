@@ -157,6 +157,7 @@
 <translation id="2945997411976714835">Pogreška instalacije: nije uspjelo pokretanje programa za instalaciju.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Prijava na mrežu – Chrome</translation>
 <translation id="2970681950995291301">Da biste uklonili svoj Google račun iz Chromea, odjavite se iz Chromea na stranici Postavke</translation>
+<translation id="2991167882679440829">Vaše zaporke i drugi podaci iz Chromea koje ste spremili na Google račun uklonit će se s ovog uređaja. Da biste ih ponovo upotrebljavali u Chromeu, ponovo se prijavite.</translation>
 <translation id="2994465299455873643">Pruža usluge šifriranja i siguran način za oporavak preglednika <ph name="BROWSER_NAME" /> ako zastari. Ako se ta usluga onemogući, <ph name="BROWSER_NAME" /> može izgubiti pristup šifriranim podacima i <ph name="BROWSER_NAME" /> se možda neće moći oporaviti.</translation>
 <translation id="3003694935412297923">Svi zadaci</translation>
 <translation id="3018957014024118866">Izbriši i podatke iz Chromea (<ph name="URL" />)</translation>

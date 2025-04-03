@@ -2640,7 +2640,6 @@
 <translation id="2790112944253231361">已變更此分頁</translation>
 <translation id="2790750268015892264">「隔離的網絡應用程式」無法控制智能讀卡器，因此無法存取任何智能卡。</translation>
 <translation id="2791529110887957050">移除 Linux</translation>
-<translation id="279182647442890396">要刪除資料嗎？</translation>
 <translation id="2791952154587244007">發生錯誤，系統無法在這部裝置上自動啟動 Kiosk 應用程式。</translation>
 <translation id="2792465461386711506">打開 Chrome 同步功能嚟睇返最近透過手機開啟嘅 Chrome 分頁</translation>
 <translation id="2792697226874849938">限制圖片</translation>
@@ -4097,6 +4096,7 @@
 <translation id="3820749202859700794">SECG 橢圓曲線 secp521r1 (亦稱為 NIST P-521)</translation>
 <translation id="3821074617718452587">Phone Hub 通知</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{已核准 1 個擴充程式}other{已核准 # 個擴充程式}}</translation>
+<translation id="3822426549715448461">DD</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Linux 需要至少 <ph name="INSTALL_SIZE" /> 的空間。</translation>
 <translation id="3824621460022590830">裝置註冊憑證無效。請聯絡您的裝置擁有者或管理員。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
@@ -4623,6 +4623,7 @@
 <translation id="4203769790323223880">唔批准用攝錄機</translation>
 <translation id="4204415812590935863">目前無法建立主題。</translation>
 <translation id="4205157409548006256">設定 Linux 時發生錯誤。</translation>
+<translation id="4205643719206044108">你造訪的網站和網頁內容會分享給 Google，以提供建議</translation>
 <translation id="4206144641569145248">外星人</translation>
 <translation id="4206323443866416204">意見反映報告</translation>
 <translation id="4206585797409671301">允許咗顯示要求</translation>
@@ -6988,6 +6989,7 @@
 <translation id="5916655001090539219">自動朗讀</translation>
 <translation id="5916664084637901428">開啟</translation>
 <translation id="59174027418879706">已啟用</translation>
+<translation id="5919305207330938913">我們會根據 Google 的《<ph name="BEGIN_LINK" />私隱權政策<ph name="END_LINK" />》使用所有收集到的資料。</translation>
 <translation id="5920543303088087579">您的管理員已停用連線至此網絡的權限</translation>
 <translation id="5922963926582976524">解除與「即時熱點」網絡的連線</translation>
 <translation id="5924047253200400718">查看說明<ph name="SCANNING_STATUS" /></translation>
@@ -7498,6 +7500,7 @@
 <translation id="6283438600881103103">系統會立即自動將您登出。
 <ph name="DOMAIN" /> 需要您繼續插入智能卡。</translation>
 <translation id="628352644014831790">4 秒</translation>
+<translation id="6283823201263716145">處於「示範模式」的裝置會自動將當機報告、診斷和使用資料傳送給 Google，協助提升功能和效能。</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> 不常下載，代表此檔案可能不安全。</translation>
 <translation id="6285770818046456882">正在與您分享的裝置現已取消傳輸</translation>
 <translation id="628699625505156622">使用位置資料。允許有位置權限的 ChromeOS 和 Android 應用程式、網站和服務使用此裝置的位置。「定位精確度」為 Android 應用程式和服務提供更精確的位置。為此，Google 會定期處理你裝置的感應器資料和無線訊號，協助尋找無線訊號位置。這些資料不會識別任何人士的身分，而會用於改善定位精確度和適地性服務，並按照 Google 和第三方合法權益來改善、提供和維護 Google 的服務，以滿足使用者的需要。<ph name="BEGIN_LINK1" />進一步瞭解如何使用位置設定<ph name="END_LINK1" /></translation>
@@ -8759,6 +8762,7 @@
 <translation id="7199452998289813782">暫停投放去 <ph name="DEVICE_NAME" /></translation>
 <translation id="720110658997053098">讓此裝置永久使用 Kiosk 模式</translation>
 <translation id="7201118060536064622">已刪除「<ph name="DELETED_ITEM_NAME" />」</translation>
+<translation id="7201336084980086208">你提交表單時，自動填入功能可詢問是否要儲存資訊，例如駕照或護照的號碼</translation>
 <translation id="7201420661433230412">查看檔案</translation>
 <translation id="7201432510117121839">此裝置不支援投放桌面電腦音訊</translation>
 <translation id="7201535955609308429">正在驗證，請稍候</translation>
@@ -9359,6 +9363,7 @@
 <translation id="7641720519047586765">密鑰已從此網站刪除</translation>
 <translation id="764178579712141045">已新增 <ph name="USER_EMAIL" /></translation>
 <translation id="7642778300616172920">隱藏敏感內容</translation>
+<translation id="7643117827468520640">請詳閱這些條款</translation>
 <translation id="7643842463591647490">{0,plural, =1{# 個開啟的視窗}other{# 個開啟的視窗}}</translation>
 <translation id="7643932971554933646">要讓網站查看檔案嗎？</translation>
 <translation id="7644953783774050577">全部不選取</translation>

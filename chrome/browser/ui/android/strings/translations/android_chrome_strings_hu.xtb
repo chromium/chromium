@@ -733,7 +733,6 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="4460861538906892109">{ITEMS_COUNT,plural, =1{1 könyvjelző}other{# könyvjelző}}</translation>
 <translation id="4478161224666880173">Ezen a webhelyen használhatja <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-fiókját. A folytatáshoz jelentkezzen be a(z) <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> e-mail-címhez tartozó fiókba.</translation>
 <translation id="4479972344484327217">A(z) <ph name="MODULE" /> telepítése a Chrome-hoz…</translation>
-<translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{Könyvjelző mentve ide: „<ph name="FOLDER_NAME" />”. Csak erre az eszközre lesz mentve.}other{Könyvjelzők mentve ide: „<ph name="FOLDER_NAME" />”. Csak erre az eszközre lesznek mentve.}}</translation>
 <translation id="4484496141267039529">Nincs kapcsolat. Próbálja újra később.</translation>
 <translation id="4487967297491345095">A Chrome összes alkalmazásadata véglegesen törlődik, beleértve a fájlokat, beállításokat, fiókokat, adatbázisokat stb.</translation>
 <translation id="4494806687727322324">A rendszergazda bekapcsolta a jelszavak mentését</translation>
@@ -1331,7 +1330,6 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="7063006564040364415">Nem sikerült csatlakozni a szinkronizálószerverhez.</translation>
 <translation id="7071521146534760487">Fiók kezelése</translation>
 <translation id="707155805709242880">Alább válassza ki a szinkronizálni kívánt elemeket</translation>
-<translation id="707702207692430409">{BOOKMARK_COUNT,plural, =1{A könyvjelző el lett mentve <ph name="ACCOUNT_EMAIL" /> fiókja következő mappájába: „<ph name="FOLDER_NAME" />”.}other{A könyvjelzők el lettek mentve <ph name="ACCOUNT_EMAIL" /> fiókja következő mappájába: „<ph name="FOLDER_NAME" />”.}}</translation>
 <translation id="7077143737582773186">SD-kártya</translation>
 <translation id="7078916049958741685">Az Ön Chrome-adatai is törlődjenek erről az eszközről</translation>
 <translation id="7085332316435785646">Válassza ki, hogy szeretné-e használni a Chrome-előzményeket személyre szabott élmények biztosításához a Google-szolgáltatásokban.</translation>

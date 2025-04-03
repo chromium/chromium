@@ -735,7 +735,6 @@
 <translation id="4460861538906892109">{ITEMS_COUNT,plural, =1{‫۱ نشانک}one{‫# نشانک}other{‫# نشانک}}</translation>
 <translation id="4478161224666880173">می‌توانید از حساب <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> در این سایت استفاده کنید. برای ادامه دادن، به <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> وارد شوید.</translation>
 <translation id="4479972344484327217">‏درحال نصب <ph name="MODULE" /> برای Chrome…</translation>
-<translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{نشانک در «<ph name="FOLDER_NAME" />» ذخیره شد. این نشانک فقط در این دستگاه ذخیره شده است.}one{نشانک در «<ph name="FOLDER_NAME" />» ذخیره شد. این نشانک فقط در این دستگاه ذخیره شده است.}other{نشانک در «<ph name="FOLDER_NAME" />» ذخیره شد. این نشانک فقط در این دستگاه ذخیره شده است.}}</translation>
 <translation id="4484496141267039529">اتصال برقرار نیست. بعداً دوباره امتحان کنید.</translation>
 <translation id="4487967297491345095">‏همه داده‌های برنامه Chrome به‌طور دائم حذف خواهند شد. این داده‌ها شامل همه فایل‌ها، تنظیمات، حساب‌ها، پایگاه‌های داده و غیره می‌شود.</translation>
 <translation id="4494806687727322324">سرپرستتان ذخیره گذرواژه را روشن کرده است</translation>
@@ -942,6 +941,7 @@
 <translation id="539881862970320163">گذرواژه قوی‌ای پیشنهاد شد. صفحه‌کلید پنهان است.</translation>
 <translation id="5409881200985013443"><ph name="ONE_TIME_CODE" /> در <ph name="CLIENT_NAME" /> ارسال شود؟</translation>
 <translation id="5410300144953132176">‫<ph name="OWNER_FULL_NAME" />‏ (<ph name="OWNER_EMAIL" />) از شما می‌خواهد به یک گروه برگه بپیوندید. هر کسی پیوند را داشته باشد می‌تواند همه برگه‌ها را ویرایش کند، پس بااحتیاط بپیوندید. پیوند ظرف ۴۸ ساعت منقضی می‌شود.</translation>
+<translation id="5412388166586147626">دستیار هوش مصنوعی باز نشد. دوباره امتحان کنید.</translation>
 <translation id="5414836363063783498">در حال تأیید کردن…</translation>
 <translation id="5415871492522952905">سابقه و برگه‌هایتان را در همه دستگاه‌هایتان دراختیار خواهید داشت تا بتوانید به کاری که انجام می‌دادید ادامه دهید</translation>
 <translation id="542073632571549028">‫<ph name="MEMBER_FULL_NAME" />‏ (<ph name="EMAIL" />) دسترسی به گروه برگه «<ph name="GROUP_NAME" />» را فوراً ازدست می‌دهد</translation>
@@ -1336,7 +1336,6 @@
 <translation id="7063006564040364415">اتصال به سرور همگام‌سازی ممکن نیست.</translation>
 <translation id="7071521146534760487">مدیریت حساب</translation>
 <translation id="707155805709242880">آنچه را باید همگام‌سازی شود در زیر انتخاب کنید</translation>
-<translation id="707702207692430409">{BOOKMARK_COUNT,plural, =1{نشانک در «<ph name="FOLDER_NAME" />» در حساب شما (<ph name="ACCOUNT_EMAIL" />) ذخیره شد.}one{نشانک در «<ph name="FOLDER_NAME" />» در حساب شما (<ph name="ACCOUNT_EMAIL" />) ذخیره شد.}other{نشانک در «<ph name="FOLDER_NAME" />» در حساب شما (<ph name="ACCOUNT_EMAIL" />) ذخیره شد.}}</translation>
 <translation id="7077143737582773186">‏کارت SD</translation>
 <translation id="7078916049958741685">‏داده‌های Chrome شما نیز از این دستگاه حذف شود</translation>
 <translation id="7085332316435785646">‏انتخاب کنید که آیا سابقه Chrome برای تجربه‌های شخصی‌شده‌تر در سرویس‌های Google لحاظ شود یا نه</translation>

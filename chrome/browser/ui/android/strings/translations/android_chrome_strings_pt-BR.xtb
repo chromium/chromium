@@ -289,6 +289,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="2362083820973145409">Login feito como <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Abre as configurações.</translation>
 <translation id="2363734411417672757">Mais páginas são pré-carregadas. As páginas podem ser pré-carregadas por servidores do Google quando solicitadas por outros sites ou apps.</translation>
 <translation id="2366554533468315977">Histórico de preços na Web deste produto</translation>
+<translation id="2367818124433749493">Atalhos para desenvolvedores</translation>
 <translation id="2385605401818128172">Você pode revisar os sites que enviam muitas notificações e impedir que eles continuem fazendo isso</translation>
 <translation id="2386938421315164605">Ocultar e exibir temas</translation>
 <translation id="2390510615457643724">Quer baixar <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) novamente?</translation>
@@ -732,7 +733,6 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="4460861538906892109">{ITEMS_COUNT,plural, =1{1 favorito}one{# favorito}other{# favoritos}}</translation>
 <translation id="4478161224666880173">Você pode usar a conta <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> neste site. Para continuar, faça login em <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="4479972344484327217">Instalando <ph name="MODULE" /> para o Chrome…</translation>
-<translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{Favorito salvo em "<ph name="FOLDER_NAME" />". Ele fica salvo apenas neste dispositivo.}one{Favorito salvo em "<ph name="FOLDER_NAME" />". Ele fica salvo apenas neste dispositivo.}other{Favoritos salvos em "<ph name="FOLDER_NAME" />". Eles ficam salvos apenas neste dispositivo.}}</translation>
 <translation id="4484496141267039529">Sem conexão. Tente novamente mais tarde.</translation>
 <translation id="4487967297491345095">Todos os dados de app Chrome serão excluídos permanentemente. Isso inclui todos os arquivos, configurações, contas, bancos de dados etc.</translation>
 <translation id="4494806687727322324">O salvamento de senhas foi ativado pelo administrador</translation>
@@ -1133,6 +1133,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6295158916970320988">Todos os sites</translation>
 <translation id="6296366034485697675">Exportar e excluir</translation>
 <translation id="629730747756840877">Conta</translation>
+<translation id="6301526076346731664">Abrir as ferramentas para desenvolvedores</translation>
 <translation id="6303969859164067831">Sair e desativar a sincronização</translation>
 <translation id="6307241780749477694">Confirme sua identidade para acessar todas as suas senhas neste dispositivo</translation>
 <translation id="6312687380483398334">Apps da Web (silenciosos)</translation>
@@ -1329,7 +1330,6 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="7063006564040364415">Não foi possível conectar ao servidor de sincronização.</translation>
 <translation id="7071521146534760487">Gerenciar conta</translation>
 <translation id="707155805709242880">Escolha o que será sincronizado abaixo</translation>
-<translation id="707702207692430409">{BOOKMARK_COUNT,plural, =1{Favorito salvo em "<ph name="FOLDER_NAME" />" na conta <ph name="ACCOUNT_EMAIL" />.}one{Favorito salvo em "<ph name="FOLDER_NAME" />" na conta <ph name="ACCOUNT_EMAIL" />.}other{Favoritos salvos em "<ph name="FOLDER_NAME" />" na conta <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="7077143737582773186">Cartão SD</translation>
 <translation id="7078916049958741685">Excluir também seus dados do Chrome deste dispositivo</translation>
 <translation id="7085332316435785646">Escolha se você quer incluir o histórico do Chrome para ter experiências mais personalizadas nos Serviços do Google</translation>
@@ -1825,7 +1825,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="938850635132480979">Erro: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Inserir senha</translation>
 <translation id="95817756606698420">O Chrome pode usar o <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> para fazer pesquisas na China. É possível alterar essa opção nas <ph name="BEGIN_LINK" />Configurações<ph name="END_LINK" />.</translation>
-<translation id="961856697154696964">Excluir dados de navegação</translation>
+<translation id="961856697154696964">Excluir dados de naveg.</translation>
 <translation id="966131775676567255">Excluindo dados da conta</translation>
 <translation id="96681097142096641">Ver página simplificada?</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> minutos restantes</translation>

@@ -733,7 +733,6 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="4460861538906892109">{ITEMS_COUNT,plural, =1{1 kirjanmerkki}other{# kirjanmerkkiä}}</translation>
 <translation id="4478161224666880173">Voit käyttää <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ‐tiliä tällä sivustolla. Jatka kirjautumalla tilille <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="4479972344484327217">Asennetaan <ph name="MODULE" /> Chromeen…</translation>
-<translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{Kirjanmerkki tallennettu kansioon "<ph name="FOLDER_NAME" />". Se tallennetaan vain tälle laitteelle.}other{Kirjanmerkit tallennettu kansioon "<ph name="FOLDER_NAME" />". Se tallennetaan vain tälle laitteelle.}}</translation>
 <translation id="4484496141267039529">Ei yhteyttä. Yritä myöhemmin uudelleen.</translation>
 <translation id="4487967297491345095">Kaikki Chromen sovellustiedot, mukaan lukien tiedostot, asetukset, tilit ja tietokannat, poistetaan pysyvästi.</translation>
 <translation id="4494806687727322324">Järjestelmänvalvoja on laittanut salasanojen tallennuksen päälle</translation>
@@ -1330,7 +1329,6 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="7063006564040364415">Synkronointipalvelimeen ei saada yhteyttä.</translation>
 <translation id="7071521146534760487">Hallinnoi tiliä</translation>
 <translation id="707155805709242880">Valitse synkronoitava sisältö alta</translation>
-<translation id="707702207692430409">{BOOKMARK_COUNT,plural, =1{Kirjanmerkki tallennettu tilin <ph name="ACCOUNT_EMAIL" /> kansioon "<ph name="FOLDER_NAME" />"}other{Kirjanmerkit tallennettu tilin <ph name="ACCOUNT_EMAIL" /> kansioon "<ph name="FOLDER_NAME" />"}}</translation>
 <translation id="7077143737582773186">Secure Digital</translation>
 <translation id="7078916049958741685">Poista myös Chrome-data tältä laitteelta</translation>
 <translation id="7085332316435785646">Valitse, käytetäänkö Chrome-historiaa personoituun kokemukseen Google-palveluissa</translation>

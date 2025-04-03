@@ -17,6 +17,7 @@
 <translation id="1052842760770519282">ଆପଣଙ୍କର କିଛି ପାସୱାର୍ଡ ଆକ୍ସେସ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="1058669287135776095">ଆପଣ ଅଫଲାଇନ ଅଛନ୍ତି। ଆପଣଙ୍କ ଇଣ୍ଟରନେଟ କନେକ୍ସନକୁ ଯାଞ୍ଚ କରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="10614374240317010">ଆଦୌ ସେଭ୍‍ କରାଯାଇନାହିଁ</translation>
+<translation id="1070689840697074178">ଆପଣ ଏଠାରେ PDFଗୁଡ଼ିକୁ ଡାଉନଲୋଡ କରିପାରିବେ</translation>
 <translation id="107147699690128016">ଯଦି ଆପଣ ଫାଇଲ୍‍ର ଏକ୍ସଟେନ୍‍ସନ୍ ବଦଳାନ୍ତି, ତେବେ ଫାଇଲ୍‍ଟି ଏକ ଭିନ୍ନ ଆପ୍ଲିକେସନ୍‍‍ରେ ଖୋଲିପାରେ ଏବଂ ଆପଣଙ୍କର ଡିଭାଇସ୍ ପାଇଁ ଏକ ସମ୍ଭାବ୍ୟ ବିପଦ ହୋଇପାରେ।</translation>
 <translation id="1080365971383768617">ଆପଣଙ୍କ ସମସ୍ତ ଡିଭାଇସରେ ଥିବା ପାସୱାର୍ଡଗୁଡ଼ିକ</translation>
 <translation id="1087176310396019910">ସମ୍ଭାବ୍ୟ ସ୍ପାମ</translation>
@@ -732,7 +733,6 @@
 <translation id="4460861538906892109">{ITEMS_COUNT,plural, =1{1 ବୁକମାର୍କ}other{# ବୁକମାର୍କ}}</translation>
 <translation id="4478161224666880173">ଏହି ସାଇଟରେ ଆପଣ ଆପଣଙ୍କ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ଆକାଉଣ୍ଟ ବ୍ୟବହାର କରିପାରିବେ। ଜାରି ରଖିବାକୁ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />ରେ ସାଇନ ଇନ କରନ୍ତୁ।</translation>
 <translation id="4479972344484327217">Chrome ପାଇଁ <ph name="MODULE" /> ଇନ୍‍ଷ୍ଟଲ୍‍ କରାଯାଉଛି …</translation>
-<translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{"<ph name="FOLDER_NAME" />"ରେ ବୁକମାର୍କ ସେଭ କରାଯାଇଛି। ଏହାକୁ କେବଳ ଏହି ଡିଭାଇସରେ ସେଭ କରାଯାଏ।}other{"<ph name="FOLDER_NAME" />"ରେ ବୁକମାର୍କଗୁଡ଼ିକ ସେଭ କରାଯାଇଛି। ସେଗୁଡ଼ିକୁ କେବଳ ଏହି ଡିଭାଇସରେ ସେଭ କରାଯାଏ।}}</translation>
 <translation id="4484496141267039529">କୌଣସି ସଂଯୋଗ ନାହିଁ। ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="4487967297491345095">Chromeର ସମସ୍ତ ଆପ୍ ଡାଟା ସ୍ଥାୟୀ ଭାବରେ ଡିଲିଟ୍ ହୋଇଯିବ। ଏଥିରେ ସମସ୍ତ ଫାଇଲ୍, ସେଟିଂସ୍, ଡାଟାବେସ୍, ଇତ୍ୟାଦି ଅନ୍ତର୍ଭୁକ୍ତ ଅଛି।</translation>
 <translation id="4494806687727322324">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା ପାସୱାର୍ଡ ସେଭ କରିବା ଚାଲୁ କରାଯାଇଛି</translation>
@@ -955,6 +955,7 @@
 <translation id="5456381639095306749">ପୃଷ୍ଠା ଡାଉନ୍‌ଲୋଡ୍ କରନ୍ତୁ</translation>
 <translation id="5458366071038729214">ଆପଣ ଅନୁସରଣ କରୁଥିବା ସାଇଟଗୁଡ଼ିକୁ ଏଠାରେ ଦେଖିବେ</translation>
 <translation id="5468068603361015296">ଆପଣ ଯେ କୌଣସି ମତେ <ph name="FILE_NAME" />କୁ ଡାଉନଲୋଡ୍ କରିବାକୁ ଚାହାଁନ୍ତି କି?</translation>
+<translation id="5471273988133666918"><ph name="TAB_TITLE" /> ଟାବକୁ ମୁଭ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="548278423535722844">ମ୍ୟାପ୍ସ ଆପ୍‌ରେ ଖୋଲନ୍ତୁ</translation>
 <translation id="5492637351392383067">ଅନ-ଡିଭାଇସ ଏନକ୍ରିପସନ</translation>
 <translation id="549660026907543296"><ph name="MEMBER_FULL_NAME" /> ଭାବେ ଯୋଗ ଦିଅନ୍ତୁ</translation>
@@ -1328,7 +1329,6 @@
 <translation id="7063006564040364415">ସିଙ୍କ ସର୍ଭର ସହ ସଂଯୋଗ କରାଯାଇପାରିଲା ନାହିଁ।</translation>
 <translation id="7071521146534760487">ଆକାଉଣ୍ଟ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="707155805709242880">କଣ ସିଙ୍କ୍ କରିବେ ତାହା ତଳେ ବାଛନ୍ତୁ</translation>
-<translation id="707702207692430409">{BOOKMARK_COUNT,plural, =1{ଆପଣଙ୍କ ଆକାଉଣ୍ଟ, <ph name="ACCOUNT_EMAIL" />ରେ ଥିବା "<ph name="FOLDER_NAME" />"ରେ ବୁକମାର୍କ ସେଭ କରାଯାଇଛି।}other{ଆପଣଙ୍କ ଆକାଉଣ୍ଟ, <ph name="ACCOUNT_EMAIL" />ରେ ଥିବା "<ph name="FOLDER_NAME" />"ରେ ବୁକମାର୍କଗୁଡ଼ିକ ସେଭ କରାଯାଇଛି।}}</translation>
 <translation id="7077143737582773186">SD କାର୍ଡ</translation>
 <translation id="7078916049958741685">ଏହି ଡିଭାଇସରୁ ଆପଣଙ୍କର Chrome ଡାଟାକୁ ମଧ୍ୟ ଡିଲିଟ କରନ୍ତୁ</translation>
 <translation id="7085332316435785646">Google ସେବାଗୁଡ଼ିକରେ ପର୍ସନାଲାଇଜ କରାଯାଇଥିବା ଅଧିକ ଅନୁଭୂତି ପାଇଁ Chrome ଇତିହାସକୁ ଅନ୍ତର୍ଭୁକ୍ତ କରିବେ ନା ନାହିଁ ବାଛନ୍ତୁ</translation>

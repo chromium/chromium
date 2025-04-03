@@ -1212,7 +1212,7 @@
 <translation id="3121994479408824897">Перейти на страницу <ph name="DOMAIN" /></translation>
 <translation id="3122696783148405307">Показать результаты за последние 30 дней</translation>
 <translation id="3126023634486644099">Этикетки (самоклеящиеся)</translation>
-<translation id="3133565499688974786">Теперь <ph name="SEARCH_ENGINE_NAME" /> – поисковая система по умолчанию.</translation>
+<translation id="3133565499688974786">Теперь поисковая система по умолчанию – <ph name="SEARCH_ENGINE_NAME" />.</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> – Поиск по разделу "<ph name="KEYWORD_SHORT_NAME" />"</translation>
 <translation id="3137507986424712703">{COUNT,plural, =0{Нет}=1{данные для входа в 1 аккаунт}one{данные для входа в # аккаунт}few{данные для входа в # аккаунта}many{данные для входа в # аккаунтов}other{данные для входа в # аккаунта}}</translation>
 <translation id="3140646734028448730">Услуги для бизнеса</translation>
@@ -2048,6 +2048,7 @@
 <translation id="4521280267704259211">Конверт Monarch</translation>
 <translation id="4521916730539354575">Левый лоток</translation>
 <translation id="4522570452068850558">Сведения</translation>
+<translation id="4523580145196408446">Привязано</translation>
 <translation id="4523643381056109546">Вывески</translation>
 <translation id="4524138615196389145">Подтверждайте карты быстрее с помощью WebAuthn</translation>
 <translation id="45243788195988825">Заблокировать тему "<ph name="TOPIC" />"</translation>
@@ -3123,6 +3124,7 @@
 <translation id="6405181733356710802">Открыть приложение "<ph name="APP_NAME" />"?</translation>
 <translation id="6410264514553301377">Введите срок действия и CVC-код карты <ph name="CREDIT_CARD" /></translation>
 <translation id="6411107829285739505">A4x8</translation>
+<translation id="6412543105195503444">Диалоговое окно одобрения родителями</translation>
 <translation id="6414010576370319452">Уход за кожей и ногтями</translation>
 <translation id="6415778972515849510">Защитите свой аккаунт Google и смените пароль с помощью Chromium.</translation>
 <translation id="6416877227920300343">EDP</translation>
@@ -4107,6 +4109,7 @@
 <translation id="812020627659652807">Удалить сейчас</translation>
 <translation id="8120720167840853945">Это правило не определяет действие по умолчанию для других правил.</translation>
 <translation id="8127301229239896662">Программа "<ph name="SOFTWARE_NAME" />" была установлена неправильно. Обратитесь за помощью к системному администратору.</translation>
+<translation id="8130113808541743942">Выберите, куда переместить</translation>
 <translation id="8131740175452115882">Подтвердить</translation>
 <translation id="8133495915926741232">Укажите, какие категории тем могут использоваться для персонализации рекламы. Если отключить категорию, будут заблокированы все связанные с ней темы. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="8134058435519644366">Набор персонала и трудоустройство</translation>

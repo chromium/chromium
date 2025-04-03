@@ -17,6 +17,7 @@
 <translation id="1052842760770519282">Some of your passwords aren't accessible</translation>
 <translation id="1058669287135776095">You’re offline. Check your Internet connection and try again.</translation>
 <translation id="10614374240317010">Never saved</translation>
+<translation id="1070689840697074178">You can download PDFs here</translation>
 <translation id="107147699690128016">If you change the file extension, the file may open in a different application and potentially be a hazard to your device.</translation>
 <translation id="1080365971383768617">Passwords on all of your devices</translation>
 <translation id="1087176310396019910">Possible spam</translation>
@@ -288,6 +289,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2362083820973145409">Signed in as <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Opens settings.</translation>
 <translation id="2363734411417672757">More pages are preloaded. Pages may be preloaded through Google servers when requested by other sites or apps.</translation>
 <translation id="2366554533468315977">Price history across the web for this option</translation>
+<translation id="2367818124433749493">Developer shortcuts</translation>
 <translation id="2385605401818128172">You can review sites that send a lot of notifications and stop them from sending more in the future</translation>
 <translation id="2386938421315164605">Hide and unhide topics</translation>
 <translation id="2390510615457643724">Do you want to download <ph name="FILE_NAME" /><ph name="FILE_SIZE" /> again?</translation>
@@ -731,7 +733,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="4460861538906892109">{ITEMS_COUNT,plural, =1{1 bookmark}other{# bookmarks}}</translation>
 <translation id="4478161224666880173">You can use your <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> account on this site. To continue, sign in to <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="4479972344484327217">Installing <ph name="MODULE" /> for Chrome…</translation>
-<translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{Bookmark saved to ‘<ph name="FOLDER_NAME" />’. It is only saved to this device.}other{Bookmarks saved to ‘<ph name="FOLDER_NAME" />’. They are only saved to this device.}}</translation>
 <translation id="4484496141267039529">No connection. Try again later.</translation>
 <translation id="4487967297491345095">All Chrome’s app data will be deleted permanently. This includes all files, settings, accounts, databases, etc.</translation>
 <translation id="4494806687727322324">Password saving has been turned on by your administrator</translation>
@@ -954,6 +955,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5456381639095306749">Download page</translation>
 <translation id="5458366071038729214">You'll find the sites that you follow here</translation>
 <translation id="5468068603361015296">Do you want to download <ph name="FILE_NAME" /> anyway?</translation>
+<translation id="5471273988133666918">Tab <ph name="TAB_TITLE" /> can't be moved</translation>
 <translation id="548278423535722844">Open in maps app</translation>
 <translation id="5492637351392383067">On-device encryption</translation>
 <translation id="549660026907543296">Join as <ph name="MEMBER_FULL_NAME" /></translation>
@@ -1130,6 +1132,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6295158916970320988">All sites</translation>
 <translation id="6296366034485697675">Export and delete</translation>
 <translation id="629730747756840877">Account</translation>
+<translation id="6301526076346731664">Open Developer tools</translation>
 <translation id="6303969859164067831">Sign out and turn off sync</translation>
 <translation id="6307241780749477694">Verify that it's you to get all your passwords on this device</translation>
 <translation id="6312687380483398334">Web apps (quiet)</translation>
@@ -1326,7 +1329,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7063006564040364415">Could not connect to the sync server.</translation>
 <translation id="7071521146534760487">Manage account</translation>
 <translation id="707155805709242880">Choose what to sync below</translation>
-<translation id="707702207692430409">{BOOKMARK_COUNT,plural, =1{Bookmark saved to ‘<ph name="FOLDER_NAME" />’ in your account, <ph name="ACCOUNT_EMAIL" />.}other{Bookmarks saved to ‘<ph name="FOLDER_NAME" />’ in your account, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="7077143737582773186">SD card</translation>
 <translation id="7078916049958741685">Also delete your Chrome data from this device</translation>
 <translation id="7085332316435785646">Choose whether to include Chrome history for more personalised experiences in Google services</translation>

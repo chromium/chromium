@@ -735,7 +735,6 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="4460861538906892109">{ITEMS_COUNT,plural, =1{1 obeleživač}one{# obeleživač}few{# obeleživača}other{# obeleživača}}</translation>
 <translation id="4478161224666880173">Možete da koristite <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> nalog na ovom sajtu. Da biste nastavili, prijavite se na <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="4479972344484327217">Instalira se <ph name="MODULE" /> za Chrome…</translation>
-<translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{Obeleživač je sačuvan u folderu <ph name="FOLDER_NAME" />. Čuva se samo na ovom uređaju.}one{Obeleživači su sačuvani u folderu<ph name="FOLDER_NAME" />. Čuvaju se samo na ovom uređaju.}few{Obeleživači su sačuvani u folderu<ph name="FOLDER_NAME" />. Čuvaju se samo na ovom uređaju.}other{Obeleživači su sačuvani u folderu<ph name="FOLDER_NAME" />. Čuvaju se samo na ovom uređaju.}}</translation>
 <translation id="4484496141267039529">Nema internet veze. Probajte ponovo kasnije.</translation>
 <translation id="4487967297491345095">Svi podaci Chrome aplikacija će biti trajno izbrisani. To obuhvata sve datoteke, podešavanja, naloge, baze podataka itd.</translation>
 <translation id="4494806687727322324">Administrator je uključio čuvanje lozinki</translation>
@@ -1337,7 +1336,6 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="7063006564040364415">Nije moguće povezivanje sa serverom za sinhronizaciju.</translation>
 <translation id="7071521146534760487">Upravljajte nalogom</translation>
 <translation id="707155805709242880">Odaberite stavke za sinhronizaciju u nastavku</translation>
-<translation id="707702207692430409">{BOOKMARK_COUNT,plural, =1{Obeleživač je sačuvan u folderu <ph name="FOLDER_NAME" /> na nalogu, <ph name="ACCOUNT_EMAIL" />.}one{Obeleživači su sačuvani u folderu<ph name="FOLDER_NAME" /> na nalogu, <ph name="ACCOUNT_EMAIL" />.}few{Obeleživači su sačuvani u folderu<ph name="FOLDER_NAME" /> na nalogu, <ph name="ACCOUNT_EMAIL" />.}other{Obeleživači su sačuvani u folderu<ph name="FOLDER_NAME" /> na nalogu, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="7077143737582773186">SD kartica</translation>
 <translation id="7078916049958741685">Izbrišite Chrome podatke i sa ovog uređaja</translation>
 <translation id="7085332316435785646">Odaberite da li ćete uvrstiti istoriju Chrome-a radi personalizovanijih doživljaja u Google uslugama</translation>

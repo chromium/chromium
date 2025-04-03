@@ -1015,6 +1015,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2742870351467570537">Hiq artikujt e zgjedhur</translation>
 <translation id="2743512410823092182">Burime dhe pajisje për DJ</translation>
 <translation id="2743934314332613923">Të përditësohet leja e drejtimit?</translation>
+<translation id="2759299890026163685">Sigurohu që të kesh një lidhje të qëndrueshme interneti para se të provosh përsëri</translation>
 <translation id="2759825833388495838">të plotësojë fjalëkalimin tënd në <ph name="APP_NAME" /></translation>
 <translation id="2764001903315068341">Librat komikë</translation>
 <translation id="2765217105034171413">E vogël</translation>
@@ -1279,6 +1280,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="323107829343500871">Shkruaj kodin CVC për <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Zbulo gjithmonë përmbajtje të rëndësishme në këtë sajt</translation>
 <translation id="323585066388831737">E kuqe e çelur</translation>
+<translation id="3235902901585019063">Skedarët lokalë do të fshihen më <ph name="DATE_TIME" />. Sigurohu që të dhënat kritike personale ose të biznesit të ruhen në nivel të jashtëm.</translation>
 <translation id="3236212803136366317">Përfitimet e kartave</translation>
 <translation id="3238395604961564389">Hape lidhjen në një dritare të fshehtë</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Shtyp "Tab" dhe më pas "Enter" për të personalizuar pamjen e shfletuesit tënd</translation>
@@ -1757,6 +1759,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4031179711345676612">Mikrofoni lejohet</translation>
 <translation id="4036753017940930924">Parcela dhe toka</translation>
 <translation id="4039506337798853114">Për të shfaqur kursorin, shtyp |<ph name="ACCELERATOR" />|</translation>
+<translation id="4045226534284799755">Identifikohu në llogarinë tënde të Microsoft para se të provosh përsëri</translation>
 <translation id="4045441967987592849">Rihap</translation>
 <translation id="4047351652147966654">18 x 24 inç</translation>
 <translation id="404831776305217138">URL-ja e përditësimit për shtesën me ID "<ph name="EXTENSION_ID" />" është e pavlefshme ose përdor një skemë që nuk mbështetet. Skemat e mbështetura janë: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> dhe <ph name="FILE_SCHEME" />.</translation>
@@ -1777,6 +1780,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4073797364926776829">Shiko kartën</translation>
 <translation id="4075732493274867456">Klienti dhe serveri nuk mbështesin një version të zakonshëm të protokollit SSL ose një paketë të shifrimit.</translation>
 <translation id="4079302484614802869">Konfigurimi i përfaqësuesit është caktuar të përdorë një shkrim URL-je .pac, jo serverë të fiksuar përfaqësues.</translation>
+<translation id="4080855220442581440">lëvizja dhe zmadhimi në skedat e ndara</translation>
 <translation id="4082333119419111506">Letër (e printuar paraprakisht)</translation>
 <translation id="4082393374666368382">Cilësimet - Menaxhimi</translation>
 <translation id="4084219288110917128">Zarf C1</translation>
@@ -2209,6 +2213,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4834250788637067901">Mënyrat e pagesës, ofertat dhe adresat që përdorin Google Pay</translation>
 <translation id="4840250757394056958">Shiko historikun tënd të Chrome</translation>
 <translation id="484462545196658690">Automatike</translation>
+<translation id="4844937814014739139">Lëvizja dhe zmadhimi në skedat e ndara</translation>
 <translation id="484671803914931257">Merr zbritje në <ph name="MERCHANT_NAME" /> dhe të tjera</translation>
 <translation id="484988093836683706">Përdor shkyçjen e pajisjes</translation>
 <translation id="4850886885716139402">Pamja</translation>
@@ -2502,6 +2507,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5344522958567249764">Menaxho privatësinë e reklamave</translation>
 <translation id="5344579389779391559">Kjo faqe mund të përpiqet të të tarifojë në para</translation>
 <translation id="5345249337934847112">Letër (e rëndë dhe e veshur)</translation>
+<translation id="5348330584842140856">Ky skedar nuk u zhvendos sepse nuk ekziston më</translation>
 <translation id="5349543692327946794">Etiketa (inkjet)</translation>
 <translation id="5351548097010183514">Materiale dhe furnizime ndërtimi</translation>
 <translation id="5354143049423063163">Fonde spekulative</translation>
@@ -2766,6 +2772,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5826507051599432481">Emri i zakonshëm (CN)</translation>
 <translation id="5830698870816298009">Përdorimi dhe lëvizja e kamerës</translation>
 <translation id="583281660410589416">E panjohur</translation>
+<translation id="5837220895135257862">Liro hapësirë në "<ph name="CLOUD_PROVIDER" />" para se të provosh përsëri</translation>
 <translation id="5838278095973806738">Nuk duhet të futësh asnjë informacion delikat në këtë sajt (p.sh. fjalëkalimet ose karta krediti) pasi mund të vidhet nga sulmuesit.</translation>
 <translation id="5838732667866024867">Mund të përdorësh shigjetën majtas/djathtas për të shqyrtuar ndryshimet e çmimeve në grafik</translation>
 <translation id="5840318881868981258">Në "Llogarinë tënde të Google", <ph name="ACCOUNT" /></translation>
@@ -4024,6 +4031,7 @@ Detaje shtesë:
 <translation id="799149739215780103">Lidhje</translation>
 <translation id="7992044431894087211">U riaktivizua ndarja e ekranit me <ph name="APPLICATION_TITLE" /></translation>
 <translation id="7995512525968007366">Nuk është specifikuar</translation>
+<translation id="7997855386298213183">skedave të ndara</translation>
 <translation id="800218591365569300">Provo të mbyllësh skedat ose programet e tjera për të liruar memorien.</translation>
 <translation id="8002230960325005199">Shiko sajtet e lidhura në një skedë të re</translation>
 <translation id="8003046808285812021">"<ph name="SEARCH_TERMS" />"</translation>
@@ -4098,6 +4106,7 @@ Detaje shtesë:
 <translation id="812020627659652807">Fshi skedarët tani</translation>
 <translation id="8120720167840853945">Kjo politikë nuk po e kontrollon sjelljen e parazgjedhur të asnjë politike tjetër.</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" nuk është instaluar mirë në kompjuter ose në rrjet. Kërkoji administratorit të TI-së që të zgjidhë këtë problem.</translation>
+<translation id="8130113808541743942">Zhvendos te...</translation>
 <translation id="8131740175452115882">Konfirmo</translation>
 <translation id="8133495915926741232">Zgjidh se cilat kategori të gjera të temave mund të përdoren për të ndihmuar në personalizimin e reklamave. Çaktivizimi i një kategorie më të gjerë do të bllokojë gjithashtu temat e ngjashme. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="8134058435519644366">Rekrutimi i personelit</translation>

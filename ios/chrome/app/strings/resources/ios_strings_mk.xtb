@@ -105,6 +105,7 @@
 <translation id="1411386976162024013">Визуелно пребарување на Lens</translation>
 <translation id="1417474386970818917">Одјави се и избриши</translation>
 <translation id="1426410128494586442">Да</translation>
+<translation id="1429187656584513419">Отворете Passwords</translation>
 <translation id="1430915738399379752">Печати</translation>
 <translation id="1436671784520050284">Продолжи со поставувањето</translation>
 <translation id="143681031165817424">Адресата е зачувана само на овој уред</translation>
@@ -591,6 +592,7 @@
 <translation id="3530206579861815432">Брзо пронајдете отворени и неодамна затворени картички низ вашите синхронизирани уреди.</translation>
 <translation id="3530767473765895035">Управувајте со сметките на уредов…</translation>
 <translation id="3533436815740441613">Нова картичка</translation>
+<translation id="3533860663366814939">Отворете ги поставките за Autofill &amp; Password</translation>
 <translation id="3547356470684043247">Читајте рецензии од клиенти за производите, услугите или доживувањата за полесно да одлучувате</translation>
 <translation id="3557336313807607643">Додај во контакти</translation>
 <translation id="355765753469272474">Врати</translation>
@@ -1513,6 +1515,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7431851541687113774">Исклучете го откривањето адреса</translation>
 <translation id="7431991332293347422">Контролирајте како вашата историја на прелистување се користи за персонализирање на „Пребарувањето“ и друго</translation>
 <translation id="7435356471928173109">Исклучено од администраторот</translation>
+<translation id="7437712592381799950">Може да повлечете нагоре за да видите повеќе содржини приспособени за вас.</translation>
 <translation id="7438481509621345350">Сега ќе гледате стории од <ph name="CHANNEL_NAME" /> при отворање нова картичка.</translation>
 <translation id="7451023311965289370">{count,plural, =1{Обележувачот е зачуван во „{title}“}one{Обележувачите се зачувани во „{title}“}other{Обележувачите се зачувани во „{title}“}}</translation>
 <translation id="7451404862887877229">Допрете „Приватност и безбедност“, па „Безбедно прелистување“</translation>
@@ -1616,6 +1619,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="784934925303690534">Временски период</translation>
 <translation id="7851858861565204677">Други уреди</translation>
 <translation id="7853202427316060426">Активност</translation>
+<translation id="7854006015462979438">Отворете General</translation>
 <translation id="7859988229622350291">Никогаш не преведувај</translation>
 <translation id="7863211248337747225">Преземете ја апликацијата</translation>
 <translation id="7865127013871431856">Опции за „Преведи“</translation>

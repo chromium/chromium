@@ -36,6 +36,7 @@
 <translation id="1121850836842642159">相片和圖片</translation>
 <translation id="1126696498560056882">管理此裝置上的帳戶</translation>
 <translation id="1126809382673880764">無法防範危險網站、下載檔案和擴充程式。您仍可在其他 Google 服務 (例如 Gmail 和搜尋) 中使用「安全瀏覽」功能 (如有)。</translation>
+<translation id="1136104150802877429">顯示產品評論</translation>
 <translation id="1142371195993008685">關閉「<ph name="FEATURE_NAME" />」通知</translation>
 <translation id="1147031633655575115">已使用「<ph name="USER" />」的身分登入</translation>
 <translation id="1149401351239820326">到期月份</translation>
@@ -285,6 +286,7 @@
 <translation id="2148799636999124959">使用已儲存的密碼快速登入網站和應用程式。</translation>
 <translation id="2149968176347646218">連線不安全</translation>
 <translation id="2149973817440762519">編輯書籤</translation>
+<translation id="2155663190508912427">1 個月後刪除</translation>
 <translation id="2161446265348023004">切換至已開啟的視窗</translation>
 <translation id="2164946989711475905">登入…</translation>
 <translation id="2175927920773552910">二維條碼</translation>
@@ -667,6 +669,7 @@
 <translation id="3909222758573607742">將密碼和其他項目儲存至帳戶</translation>
 <translation id="3913463964270756493">隱藏「使用『Google 智能鏡頭』搜尋畫面內容」</translation>
 <translation id="3914640181019354363">偵測地址</translation>
+<translation id="391904960191284041">產品評論</translation>
 <translation id="3921585859122905677">網址列位置</translation>
 <translation id="3922185497376658606">預先載入網頁</translation>
 <translation id="3922395466317605522">自訂選單</translation>
@@ -729,6 +732,7 @@
 <translation id="4152011295694446843">您可在此查看書籤</translation>
 <translation id="4154753961803534698">透過相機搜尋</translation>
 <translation id="4158491215857439601">密碼管理工具</translation>
+<translation id="4159430626587776301">查看最近瀏覽產品的評論</translation>
 <translation id="4161488339191275792">建立分頁群組來整理已開啟的分頁</translation>
 <translation id="4163699139741158298">{count,plural, =1{書籤已儲存至「{title}」，且只會儲存至此裝置。}other{{count} 個書籤已儲存至「{title}」，且只會儲存至此裝置。}}</translation>
 <translation id="4164514562270305824">自動刪除下載項目</translation>
@@ -788,6 +792,7 @@
 <translation id="4389019817280890563">輕按即可變更語言。</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{1 天後}other{{COUNT} 天後}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 個分頁}other{# 個分頁}}</translation>
+<translation id="4404790787924017676">取得追蹤產品的降價快訊</translation>
 <translation id="4405320213589929829">使用網頁上的地址，取得當地資訊和路線。</translation>
 <translation id="441218095371040430">使用鍵盤</translation>
 <translation id="4415276339145661267">管理您的 Google 帳戶</translation>
@@ -930,6 +935,7 @@
 <translation id="496392417432935267">已在其他視窗開啟</translation>
 <translation id="4971735654804503942">對危險網站、下載檔案及擴充程式提供更快速的主動式保護功能。密碼外洩時系統會發出警告。需要將瀏覽資料傳送給 Google。</translation>
 <translation id="4979397965658815378">登入 Google 帳戶後，您即可在任何裝置上存取自己的書籤、密碼、記錄和其他設定</translation>
+<translation id="4985921635659180565">檔案排定刪除時間後就無法取消。</translation>
 <translation id="498624032394115435">任何擁有連結的人均可編輯所有分頁。</translation>
 <translation id="4989065233040279145">選擇「<ph name="FILENAME" />」的儲存位置</translation>
 <translation id="4992255726304765516">分頁群組顏色係<ph name="COLOR" /></translation>
@@ -1205,6 +1211,7 @@
 <translation id="6140600850356225166">要求在無痕模式中開啟其他應用程式的連結</translation>
 <translation id="6140948187512243695">顯示詳細資料</translation>
 <translation id="6144589619057374135">在無痕模式中開啟 ${url}</translation>
+<translation id="6147279996212084542">說明</translation>
 <translation id="6151006591088192882">用 <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> 解鎖無痕式分頁</translation>
 <translation id="6152340033632117531">閒置</translation>
 <translation id="6152406514676263192">系統會根據您的興趣同步最相關的內容。</translation>
@@ -1250,6 +1257,7 @@
 <translation id="6316141353357700666">從顯示清單中選取要使用的密碼。</translation>
 <translation id="6321526113093607004">新增至「書籤」</translation>
 <translation id="6331836477476466332">更強大、安全的瀏覽器</translation>
+<translation id="6335744088476213315">這張資訊卡會顯示你最近瀏覽過的產品，只要追蹤感興趣的項目，就能收到降價快訊</translation>
 <translation id="6337234675334993532">加密</translation>
 <translation id="633809752005859102">發生嚴重錯誤。我們會盡快修正。</translation>
 <translation id="6339793034470834130">如要使用「網絡檢查工具」，請透過連接線連線至電腦的 Safari，並從「開發」選單存取 iPhone。您可透過電腦，在 Safari 設定的「進階」部分中啟用「開發」選單。</translation>
@@ -1363,6 +1371,7 @@
 <translation id="6680416467695217368">自訂選單</translation>
 <translation id="6681586159478273915">語音搜尋</translation>
 <translation id="6681791404926413601">{count,plural, =1{鍵盤上方顯示 {count} 個付款方法選項。}other{鍵盤上方顯示 {count} 個付款方法選項。}}</translation>
+<translation id="6682680306647339111">提醒已移除</translation>
 <translation id="6684262542644248484">登入網站</translation>
 <translation id="6685259053455152195">運用捷徑快速修改設定及使用網址列的功能。</translation>
 <translation id="6689685206615181381">只能使用無痕模式</translation>
@@ -1379,6 +1388,7 @@
 <translation id="6746338529702829275">查看帳戶資料</translation>
 <translation id="6755200887046212842">管理帳戶</translation>
 <translation id="6755733078693946548">透過任何應用程式存取密碼和密鑰</translation>
+<translation id="6759709389246683070">按住此分頁即可設定提醒，方便日後再次瀏覽</translation>
 <translation id="6761393919622941301">音訊</translation>
 <translation id="6779455296366983087">系統將刪除瀏覽資料</translation>
 <translation id="6790502149545262384">不久後，您將會在開啟新分頁時看到 <ph name="CHANNEL_NAME" /> 的內容。</translation>
@@ -1540,6 +1550,7 @@
 <translation id="7512075701202892785">你現可將喜愛的瀏覽器設定為 iPad 預設瀏覽器</translation>
 <translation id="7512909159512473473">輸入密碼短語…</translation>
 <translation id="7514365320538308">下載</translation>
+<translation id="7522948500476882302">下載檔案時，可以選擇在 1 個月後自動刪除</translation>
 <translation id="7524055474074101597">在多款應用程式中使用您的密碼和其他資料。</translation>
 <translation id="75362970626182391">新分頁群組</translation>
 <translation id="7537586195939242955">抱歉，目前無法將您的票證安裝至 Passbook。</translation>
@@ -1687,6 +1698,7 @@
 <translation id="8084285576995584326">控制 Google 帳戶資料</translation>
 <translation id="809543534949702122">在記錄中搜尋</translation>
 <translation id="8095985449280932182">{COUNT,plural, =1{未使用的分頁將於 {COUNT} 天後移到這裡}other{未使用的分頁將於 {COUNT} 天後移到這裡}}</translation>
+<translation id="8096559642098770318">你可設定分頁提醒，方便日後再次查看此網站</translation>
 <translation id="8101409298456377967">建立、儲存及管理密碼，讓您輕鬆登入網站和應用程式。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="8102130909719902723">新</translation>
 <translation id="8114753159095730575">您可以下載檔案。可用選項喺螢幕底部附近。</translation>
@@ -1741,6 +1753,7 @@
 <translation id="8299417921174340354">如要使用密碼，您必須先在裝置上設定密碼。</translation>
 <translation id="8307481894409578819">無法上載這個檔案</translation>
 <translation id="8319076807703933069">新搜尋</translation>
+<translation id="8319282042900445670">提醒時間已設定為 <ph name="DATE" /><ph name="TIME" /></translation>
 <translation id="8320212361750431956">近期活動</translation>
 <translation id="8325455175867928593">隱藏「按興趣顯示的評論」</translation>
 <translation id="833647236762414178">建立、儲存及管理密碼和密鑰，輕鬆登入網站和應用程式。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
@@ -1780,6 +1793,7 @@
 <translation id="8487667956631253959">開</translation>
 <translation id="8487700953926739672">可離線使用</translation>
 <translation id="8490629238792920282">無法建立連結</translation>
+<translation id="8501469528283376592">自動刪除下載內容</translation>
 <translation id="8503813439785031346">用戶名稱</translation>
 <translation id="8505361906966222822">儲存位置…</translation>
 <translation id="850600235656508448">以無痕模式開啟</translation>
@@ -1847,6 +1861,7 @@
 <translation id="8723088494871522141">隱藏「為你推薦的產品評論」</translation>
 <translation id="872371143724482722">{COUNT,plural, =1{{COUNT} 個分頁}other{{COUNT} 個分頁}}</translation>
 <translation id="8725066075913043281">再試一次</translation>
+<translation id="8726523474917941818">提醒</translation>
 <translation id="8728922029615312208">全部關閉</translation>
 <translation id="8730621377337864115">完成</translation>
 <translation id="87371078663613140">瀏覽選單列中的選項</translation>
@@ -1891,6 +1906,7 @@
 <translation id="8879604564928138696">㩒兩下就可以試用</translation>
 <translation id="8879952635974818770">個人化內容</translation>
 <translation id="8887595428614802520">關閉所有分頁和群組</translation>
+<translation id="8888595487174963247">移除提醒</translation>
 <translation id="8891031436559779793">如果產品在任何網站上降價，你會收到通知。</translation>
 <translation id="8893208530912252670">影片</translation>
 <translation id="8898822736010347272">向 Google 傳送部分您瀏覽網頁的網址、特定的系統資料及部分網頁內容，以協助探索新威脅，並保護所有網絡使用者。</translation>
@@ -1956,6 +1972,7 @@
 <translation id="9130317582644834675">隱藏「縮放文字」</translation>
 <translation id="913036870884277353">輕鬆開啟其他應用程式中的連結。</translation>
 <translation id="9137013805542155359">顯示原文</translation>
+<translation id="9144230693397287797">接收你在其他裝置上設定的提醒和分頁最新動態</translation>
 <translation id="914781932147356857">標示全部…</translation>
 <translation id="9148126808321036104">重新登入</translation>
 <translation id="9159628751968616911">傳送網頁</translation>

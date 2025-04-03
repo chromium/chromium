@@ -61,6 +61,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="1786044937610313874">Kortpaaie maak oop in Chrome</translation>
 <translation id="178701303897325119">Hierdie uitbreiding word nie meer gesteun nie. Chrome beveel aan dat jy dit eerder verwyder.</translation>
 <translation id="1812689907177901597">Deur dit af te skakel, kan jy by Google-werwe soos Gmail aanmeld sonder om by Chrome aan te meld</translation>
+<translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome beveel aan dat jy die oortjie wat jou blaaier stadig maak, onderbreek}other{Chrome beveel aan dat jy die oortjies wat jou blaaier stadig maak, onderbreek}}</translation>
 <translation id="1838374766361614909">Vee soektog uit</translation>
 <translation id="1860536484129686729">Chrome het toestemming nodig om toegang te kry tot jou kamera vir hierdie werf</translation>
 <translation id="1873233029667955273">Google Chrome is nie jou verstekblaaier nie</translation>
@@ -258,6 +259,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="4281844954008187215">Diensbepalings</translation>
 <translation id="4293420128516039005">Meld aan om Chrome op al jou toestelle te sinkroniseer en personaliseer</translation>
 <translation id="430327780270213103">Laat uitbreiding toe om toegangversoeke op die Chrome-nutsbalk te wys</translation>
+<translation id="4326552909330437744">{NUM_TABS,plural, =1{Chrome beveel aan dat jy die oortjie wat jou blaaier stadig maak, onderbreek}other{Chrome beveel aan dat jy die oortjies wat jou blaaier stadig maak, onderbreek}}</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">Sluit Chrome by Web- en Appaktiwiteit en gekoppelde Google-dienste in om personalisering en ander kenmerke te kry</translation>
 <translation id="4334294535648607276">Aflaai is voltooi.</translation>

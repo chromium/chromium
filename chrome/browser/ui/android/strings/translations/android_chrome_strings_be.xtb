@@ -289,6 +289,7 @@
 <translation id="2362083820973145409">Вы ўвайшлі як <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Кнопка адкрывае налады.</translation>
 <translation id="2363734411417672757">Перадзагружаецца больш старонак. Перадзагрузка можа ажыццяўляцца праз серверы Google па запыце іншых сайтаў ці праграм.</translation>
 <translation id="2366554533468315977">Гісторыя змянення цаны на гэты тавар у інтэрнэце</translation>
+<translation id="2367818124433749493">Спалучэнні клавіш для распрацоўшчыкаў</translation>
 <translation id="2385605401818128172">Вы можаце праглядзець сайты, які адпраўляюць зашмат апавяшчэнняў, і адклікаць дазвол на адпраўку новых апавяшчэнняў</translation>
 <translation id="2386938421315164605">Хавайце і рабіце бачнымі тэмы</translation>
 <translation id="2390510615457643724">Спампаваць файл "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />) зноў?</translation>
@@ -734,7 +735,6 @@
 <translation id="4460861538906892109">{ITEMS_COUNT,plural, =1{1 закладка}one{# закладка}few{# закладкі}many{# закладак}other{# закладкі}}</translation>
 <translation id="4478161224666880173">Вы можаце выкарыстоўваць уліковы запіс <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> на гэтым вэб-сайце. Каб працягнуць, увайдзіце ва ўліковы запіс <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="4479972344484327217">Усталёўваецца <ph name="MODULE" /> для Chrome…</translation>
-<translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{Закладка захавана ў папцы "<ph name="FOLDER_NAME" />" толькі на гэтай прыладзе.}one{Закладкі захаваны ў папцы "<ph name="FOLDER_NAME" />" толькі на гэтай прыладзе.}few{Закладкі захаваны ў папцы "<ph name="FOLDER_NAME" />" толькі на гэтай прыладзе.}many{Закладкі захаваны ў папцы "<ph name="FOLDER_NAME" />" толькі на гэтай прыладзе.}other{Закладкі захаваны ў папцы "<ph name="FOLDER_NAME" />" толькі на гэтай прыладзе.}}</translation>
 <translation id="4484496141267039529">Няма падключэння. Паўтарыце спробу пазней.</translation>
 <translation id="4487967297491345095">Усе даныя праграмы Chrome будуць назаўсёды выдалены. Гэта датычыцца ўсіх файлаў, налад, уліковых запісаў, баз даных і г. д.</translation>
 <translation id="4494806687727322324">Адміністратар уключыў магчымасць захоўваць паролі</translation>
@@ -941,6 +941,7 @@
 <translation id="539881862970320163">Прапанаваны надзейны пароль. Клавіятура схавана.</translation>
 <translation id="5409881200985013443">Адправіць код <ph name="ONE_TIME_CODE" /> на прыладу "<ph name="CLIENT_NAME" />"?</translation>
 <translation id="5410300144953132176"><ph name="OWNER_FULL_NAME" /> (<ph name="OWNER_EMAIL" />) прапануе вам далучыцца да групы ўкладак. Любы карыстальнік, які мае спасылку, можа рэдагаваць усе ўкладкі, таму будзьце асцярожныя пры далучэнні. Тэрмін дзеяння спасылкі скончыцца праз 48 гадз.</translation>
+<translation id="5412388166586147626">Не ўдалося выклікаць AI-памочніка. Паўтарыце спробу.</translation>
 <translation id="5414836363063783498">Ідзе праверка…</translation>
 <translation id="5415871492522952905">Гісторыя і ўкладкі будуць захоўвацца на ўсіх вашых прыладах, каб вы заўжды маглі працягнуць рабіць на любой з гэтых прылад тое, што перад гэтым рабілі на іншай</translation>
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) адразу страціць доступ да групы ўкладак "<ph name="GROUP_NAME" />"</translation>
@@ -1138,6 +1139,7 @@
 <translation id="6295158916970320988">Усе сайты</translation>
 <translation id="6296366034485697675">Экспартаваць і выдаліць</translation>
 <translation id="629730747756840877">Уліковы запіс</translation>
+<translation id="6301526076346731664">Адкрыць інструменты распрацоўшчыка</translation>
 <translation id="6303969859164067831">Выйсці і выключыць сінхранізацыю</translation>
 <translation id="6307241780749477694">Каб атрымаць доступ да ўсіх пароляў на гэтай прыладзе, спраўдзіце сваю асобу</translation>
 <translation id="6312687380483398334">Вэб-праграмы (бязгучныя)</translation>
@@ -1334,7 +1336,6 @@
 <translation id="7063006564040364415">Не ўдалося падключыцца да сервера сінхранізацыі.</translation>
 <translation id="7071521146534760487">Кіраваць уліковым запісам</translation>
 <translation id="707155805709242880">Выберыце, што сінхранізаваць</translation>
-<translation id="707702207692430409">{BOOKMARK_COUNT,plural, =1{Закладка захавана ў папцы "<ph name="FOLDER_NAME" />" ва ўліковым запісе <ph name="ACCOUNT_EMAIL" />.}one{Закладкі захаваны ў папцы "<ph name="FOLDER_NAME" />" ва ўліковым запісе <ph name="ACCOUNT_EMAIL" />.}few{Закладкі захаваны ў папцы "<ph name="FOLDER_NAME" />" ва ўліковым запісе <ph name="ACCOUNT_EMAIL" />.}many{Закладкі захаваны ў папцы "<ph name="FOLDER_NAME" />" ва ўліковым запісе <ph name="ACCOUNT_EMAIL" />.}other{Закладкі захаваны ў папцы "<ph name="FOLDER_NAME" />" ва ўліковым запісе <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="7077143737582773186">SD-карта</translation>
 <translation id="7078916049958741685">Таксама выдаліць даныя Chrome з гэтай прылады</translation>
 <translation id="7085332316435785646">Выберыце, ці выкарыстоўваць гісторыю Chrome для персаналізацыі сэрвісаў Google</translation>

@@ -97,6 +97,7 @@
 <translation id="1377508275003315939">પાસવર્ડ</translation>
 <translation id="1381022135873211423">{count,plural, =1{{count}માંથી {position} નંબરનું ઍડ્રેસ}one{{count}માંથી {position} નંબરનું ઍડ્રેસ}other{{count}માંથી {position} નંબરનું ઍડ્રેસ}}</translation>
 <translation id="1383876407941801731">શોધો</translation>
+<translation id="1385168997509105202">તમે તરત જ “<ph name="GROUP_NAME" />" ટૅબના ગ્રૂપનો ઍક્સેસ ગુમાવશો અને <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) Googleની બધી સેવાઓમાં તમારી સાથે ક્રિયાપ્રતિક્રિયા કરી શકશે નહીં.</translation>
 <translation id="138618066238211776"><ph name="USER_NAME" /> તરીકે ચાલુ રાખો</translation>
 <translation id="138692594145659985">કાર્ડ સાચવવા માટેના વિકલ્પો</translation>
 <translation id="1396260204083880024"><ph name="USER_NAME" /> તરીકે સાઇન ઇન થયા. <ph name="USER_EMAIL" />. એકાઉન્ટ મેનૂ ખોલો.</translation>
@@ -512,6 +513,7 @@
 <translation id="3124568093781685165">તમારા પાસવર્ડ તમારા કુટુંબ સાથે શેર કરો</translation>
 <translation id="3130863904455712965">ઇતિહાસ અને વધુ</translation>
 <translation id="313283613037595347">નવી છૂપી ટૅબ બનાવો.</translation>
+<translation id="3136739222562075778">આ કાર્ડ તમારા ખુલ્લા ટૅબમાં પ્રોડક્ટ પરની કિંમતમાંના ઘટાડા બતાવે છે</translation>
 <translation id="3138611310073113613">પસંદગી કાઢી નાખો</translation>
 <translation id="3140825265190223781">સાચવેલા પાસવર્ડ અને પાસકી</translation>
 <translation id="3143515551205905069">સિંક કરવાનું રદ કરો</translation>
@@ -988,6 +990,7 @@
 <translation id="5197255632782567636">ઇન્ટરનેટ</translation>
 <translation id="5200894869889836319">પરવાનગીઓ સેટ કરવાના વિકલ્પો</translation>
 <translation id="5203051773066903947">દાખલ કરો</translation>
+<translation id="5205750905107419335"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) તરત જ “<ph name="GROUP_NAME" />" ટૅબના ગ્રૂપનો ઍક્સેસ ગુમાવશે અને તેઓ Googleની બધી સેવાઓમાં તમારી સાથે ક્રિયાપ્રતિક્રિયા કરી શકશે નહીં.</translation>
 <translation id="5206453674369664567">સાઇન આઉટ કરો અને ડેટા સાફ કરો</translation>
 <translation id="5210365745912300556">ટૅબ બંધ કરો</translation>
 <translation id="5211488077761630279">"<ph name="SITE_NAME" />"ને તમારા <ph name="PERMISSION" />નો ઉપયોગ કરવાની મંજૂરી આપીએ?</translation>
@@ -1069,6 +1072,7 @@
 <translation id="5567439033041178034">વધુ જાણો</translation>
 <translation id="5572648434713976849">ઍડ્રેસ બારમાં તમે બહેતર સૂચનો મેળવશો</translation>
 <translation id="5576885723883013398">નવી વિન્ડો</translation>
+<translation id="5578543325423650885"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) તરત જ “<ph name="GROUP_NAME" />" ટૅબના ગ્રૂપનો ઍક્સેસ ગુમાવશે.</translation>
 <translation id="5578795271662203820">આ છબી માટે <ph name="SEARCH_ENGINE" /> માં શોધો</translation>
 <translation id="5579012242779565775">વાંચન સૂચિ છુપાવો</translation>
 <translation id="5585019845078534178">કાર્ડ્સ</translation>
@@ -1371,6 +1375,7 @@
 <translation id="6680416467695217368">મેનૂ કસ્ટમાઇઝ કરો</translation>
 <translation id="6681586159478273915">વૉઇસ શોધ</translation>
 <translation id="6681791404926413601">{count,plural, =1{તમારા કીબોર્ડ પર ચુકવણી પદ્ધતિ માટે {count} વિકલ્પ ઉપલબ્ધ છે.}one{તમારા કીબોર્ડ પર ચુકવણી પદ્ધતિ માટે {count} વિકલ્પ ઉપલબ્ધ છે.}other{તમારા કીબોર્ડ પર ચુકવણી પદ્ધતિ માટે {count} વિકલ્પ ઉપલબ્ધ છે.}}</translation>
+<translation id="6682680306647339111">રિમાઇન્ડર કાઢી નાખ્યું</translation>
 <translation id="6684262542644248484">વેબસાઇટ પર સાઇન ઇન કરો</translation>
 <translation id="6685259053455152195">સેટિંગમાં ઝડપથી ફેરફાર કરવા અને ઍડ્રેસ બારમાંથી સુવિધાઓનો ઉપયોગ કરવા માટે શૉર્ટકટ.</translation>
 <translation id="6689685206615181381">ફક્ત છૂપો મોડ ઉપલબ્ધ છે</translation>
@@ -1387,6 +1392,7 @@
 <translation id="6746338529702829275">તમારો એકાઉન્ટ ડેટા રિવ્યૂ કરો</translation>
 <translation id="6755200887046212842">એકાઉન્ટ્સનું સંચાલન કરો</translation>
 <translation id="6755733078693946548">કોઈપણ ઍપમાંથી પાસવર્ડ અને પાસકી ઍક્સેસ કરો</translation>
+<translation id="6759709389246683070">પછીથી ફરી મુલાકાત લેવા માટે રિમાઇન્ડર સેટ કરવા માટે તમે આ ટૅબને ટચ કરીને થોડીવાર દબાવી રાખી શકો છો</translation>
 <translation id="6761393919622941301">ઑડિયો</translation>
 <translation id="6779455296366983087">તમારો બ્રાઉઝિંગ ડેટા ડિલીટ કરવામાં આવશે</translation>
 <translation id="6790502149545262384">ટૂંક સમયમાં, જ્યારે તમે નવું ટૅબ ખોલશો ત્યારે તમને <ph name="CHANNEL_NAME" /> પરથી સ્ટોરી દેખાશે.</translation>
@@ -1696,6 +1702,7 @@
 <translation id="8084285576995584326">તમારા Google એકાઉન્ટનો ડેટા નિયંત્રિત કરો</translation>
 <translation id="809543534949702122">શોધ ઇતિહાસ</translation>
 <translation id="8095985449280932182">{COUNT,plural, =1{તમે ઉપયોગ ન કરતા હો તેવા ટૅબને {COUNT} દિવસ પછી અહી ખસેડવામાં આવે છે}one{તમે ઉપયોગ ન કરતા હો તેવા ટૅબને {COUNT} દિવસ પછી અહી ખસેડવામાં આવે છે}other{તમે ઉપયોગ ન કરતા હો તેવા ટૅબને {COUNT} દિવસ પછી અહી ખસેડવામાં આવે છે}}</translation>
+<translation id="8096559642098770318">ભવિષ્યમાં આ સાઇટ ફરીથી જોવા માટે તમે ટૅબ રિમાઇન્ડર સેટ કરી શકો છો</translation>
 <translation id="8101409298456377967">તમારા પાસવર્ડ બનાવો, સાચવો અને મેનેજ કરો, જેથી તમે સાઇટ અને ઍપમાં સરળતાથી સાઇન ઇન કરી શકો. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="8102130909719902723">નવો</translation>
 <translation id="8114753159095730575">ફાઇલ ડાઉનલોડ માટે ઉપલબ્ધ છે. સ્ક્રીનના તળિયે વિકલ્પો ઉપલબ્ધ છે.</translation>
@@ -1750,6 +1757,7 @@
 <translation id="8299417921174340354">પાસવર્ડનો ઉપયોગ કરવા માટે, તમારે પહેલા તમારા ડિવાઇસ પર પાસકોડ સેટ કરવો આવશ્યક છે.</translation>
 <translation id="8307481894409578819">આ ફાઇલ અપલોડ કરી શકતા નથી</translation>
 <translation id="8319076807703933069">નવી શોધ</translation>
+<translation id="8319282042900445670"><ph name="TIME" />, <ph name="DATE" /> માટે રિમાઇન્ડર સેટ કર્યું</translation>
 <translation id="8320212361750431956">તાજેતરની ઍક્ટિવિટી</translation>
 <translation id="8325455175867928593">"તમારી રુચિઓ પર આધારિત રિવ્યૂ" છુપાવો</translation>
 <translation id="833647236762414178">સાઇટ અને ઍપમાં સરળતાથી સાઇન ઇન કરવા માટે, તમારા પાસવર્ડ અને પાસકી બનાવો, તેને સાચવો અને મેનેજ કરો. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
@@ -1857,6 +1865,7 @@
 <translation id="8723088494871522141">"તમારા માટે પ્રોડક્ટના રિવ્યૂ" છુપાવો</translation>
 <translation id="872371143724482722">{COUNT,plural, =1{{COUNT} ટૅબ}one{{COUNT} ટૅબ}other{{COUNT} ટૅબ}}</translation>
 <translation id="8725066075913043281">ફરી પ્રયાસ કરો</translation>
+<translation id="8726523474917941818">યાદ કરાવો</translation>
 <translation id="8728922029615312208">બધા બંધ કરો</translation>
 <translation id="8730621377337864115">થઈ ગયું</translation>
 <translation id="87371078663613140">મેનૂ બારના વિકલ્પો વિશે શોધખોળ કરો</translation>
@@ -1901,6 +1910,7 @@
 <translation id="8879604564928138696">અજમાવવા માટે બે વાર ટૅપ કરો</translation>
 <translation id="8879952635974818770">મનગમતું બનાવેલું કન્ટેન્ટ</translation>
 <translation id="8887595428614802520">બધા ટૅબ અને ગ્રૂપ બંધ કરો</translation>
+<translation id="8888595487174963247">રિમાઇન્ડર કાઢી નાખો</translation>
 <translation id="8891031436559779793">જો કોઈપણ સાઇટ પર કિંમતમાં ઘટાડો થાય, તો તમને નોટિફિકેશન મળશે.</translation>
 <translation id="8893208530912252670">વીડિયો</translation>
 <translation id="8898822736010347272">વેબ પરના નવા જોખમો શોધી કાઢવા અને દરેક વ્યક્તિની સુરક્ષિતતામાં સહાય કરવા માટે, તમે મુલાકાત લેતા અમુક પેજના URLs, સિસ્ટમની મર્યાદિત માહિતી અને પેજનું અમુક કન્ટેન્ટ Googleને મોકલે છે.</translation>
@@ -1966,6 +1976,7 @@
 <translation id="9130317582644834675">'ટેક્સ્ટ નાની-મોટી કરો' છુપાવો</translation>
 <translation id="913036870884277353">અન્ય ઍપમાં સરળતાથી લિંક ખોલો.</translation>
 <translation id="9137013805542155359">મૂળ બતાવો</translation>
+<translation id="9144230693397287797">તમે સેટ કરેલા રિમાઇન્ડર અને અન્ય ડિવાઇસ પરથી ટૅબ માટે અપડેટ મેળવો</translation>
 <translation id="914781932147356857">તમામને માર્ક કરો…</translation>
 <translation id="9148126808321036104">ફરીથી સાઇન ઇન કરો </translation>
 <translation id="9159628751968616911">વેબપેજ મોકલો</translation>

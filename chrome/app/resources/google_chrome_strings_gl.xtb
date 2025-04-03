@@ -61,6 +61,7 @@
 <translation id="1786044937610313874">Os atallos ábrense en Chrome</translation>
 <translation id="178701303897325119">Xa non se admite esta extensión. Chrome recomenda que a quites.</translation>
 <translation id="1812689907177901597">Ao desactivar esta opción, podes iniciar sesión nos sitios de Google, como Gmail, sen iniciar sesión en Chrome</translation>
+<translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome recomenda pór en pausa a pestana que fai que o navegador vaia máis lento}other{Chrome recomenda pór en pausa as pestanas que fan que o navegador vaia máis lento}}</translation>
 <translation id="1838374766361614909">Borrar busca</translation>
 <translation id="1860536484129686729">Chrome necesita permiso de acceso á cámara neste sitio</translation>
 <translation id="1873233029667955273">Google Chrome non é o teu navegador predeterminado</translation>
@@ -187,6 +188,7 @@
 <translation id="3282568296779691940">Iniciar sesión en Chrome</translation>
 <translation id="3286538390144397061">Reiniciar agora</translation>
 <translation id="3292333338048274092">Terás que reiniciar Chrome.</translation>
+<translation id="3327226547491422998">Máis adiante Chrome pode preguntarche se queres usar a información gardada para autocompletar formularios por ti</translation>
 <translation id="3360895254066713204">Axudante de Chrome</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome reiniciarase agora}=1{Chrome reiniciarase en 1 segundo}other{Chrome reiniciarase en # segundos}}</translation>
 <translation id="3396977131400919238">Produciuse un erro no sistema operativo durante a instalación. Volve descargar Google Chrome.</translation>
@@ -258,6 +260,7 @@
 <translation id="4281844954008187215">Condicións de servizo</translation>
 <translation id="4293420128516039005">Inicia sesión para sincronizar e personalizar Chrome nos teus dispositivos</translation>
 <translation id="430327780270213103">Permitir que a extensión mostre solicitudes de acceso na barra de ferramentas de Chrome</translation>
+<translation id="4326552909330437744">{NUM_TABS,plural, =1{Chrome recomenda pór en pausa a pestana que fai que o navegador vaia máis lento}other{Chrome recomenda pór en pausa as pestanas que fan que o navegador vaia máis lento}}</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">Para beneficiarte da personalización e doutras función, inclúe Chrome en Actividade web e das aplicacións e servizos de Google vinculados</translation>
 <translation id="4334294535648607276">Descarga completa.</translation>
@@ -404,6 +407,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="6251759518630934363">Analiza máis datos de sitios que a protección estándar para avisarte sobre os que sexan perigosos (mesmo sobre os que Google non coñeza ata ese momento). Se queres, podes omitir as advertencias de Chrome.</translation>
 <translation id="6277547788421725101">O teu pai ou nai desactivou en Chrome a opción Permisos para sitios, aplicacións e extensións</translation>
 <translation id="627882678981830918">Personalizar e controlar Chrome. Define Chrome como o navegador predeterminado.</translation>
+<translation id="6288580400488258237">Define Google Chrome como o teu navegador predeterminado e fíxao na túa barra de tarefas</translation>
 <translation id="6291089322031436445">Aplicacións de Chrome Dev</translation>
 <translation id="6291549208091401781">Google Chrome xa está instalado para todos os usuarios no teu ordenador.</translation>
 <translation id="6319856120645568262">Chrome necesita permiso para analizar o que te rodea e facer un seguimento das mans</translation>

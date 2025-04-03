@@ -735,7 +735,6 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="4460861538906892109">{ITEMS_COUNT,plural, =1{1 penanda halaman}other{# penanda halaman}}</translation>
 <translation id="4478161224666880173">Anda boleh menggunakan akaun <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> pada laman ini. Untuk meneruskan proses ini, log masuk ke <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="4479972344484327217">Memasang <ph name="MODULE" /> untuk Chrome…</translation>
-<translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{Penanda halaman disimpan pada "<ph name="FOLDER_NAME" />" dan hanya disimpan pada peranti ini.}other{Penanda halaman disimpan pada "<ph name="FOLDER_NAME" />" dan hanya disimpan pada peranti ini.}}</translation>
 <translation id="4484496141267039529">Tiada sambungan. Cuba lagi nanti.</translation>
 <translation id="4487967297491345095">Semua data apl Chrome akan dipadamkan selama-lamanya. Ini termasuk semua fail, tetapan, akaun, pangkalan data dan sebagainya.</translation>
 <translation id="4494806687727322324">Penyimpanan kata laluan dihidupkan oleh pentadbir anda</translation>
@@ -1337,7 +1336,6 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="7063006564040364415">Tidak dapat bersambung ke pelayan yang disegerakkan.</translation>
 <translation id="7071521146534760487">Urus akaun</translation>
 <translation id="707155805709242880">Pilih data yang hendak disegerakkan di bawah</translation>
-<translation id="707702207692430409">{BOOKMARK_COUNT,plural, =1{Penanda halaman disimpan pada "<ph name="FOLDER_NAME" />" dalam akaun anda, <ph name="ACCOUNT_EMAIL" />.}other{Penanda halaman disimpan pada "<ph name="FOLDER_NAME" />" dalam akaun anda, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="7077143737582773186">Kad SD</translation>
 <translation id="7078916049958741685">Padamkan juga data Chrome anda daripada peranti ini</translation>
 <translation id="7085332316435785646">Pilih sama ada untuk memasukkan sejarah Chrome untuk mendapatkan pengalaman yang lebih diperibadikan dalam Perkhidmatan Google</translation>

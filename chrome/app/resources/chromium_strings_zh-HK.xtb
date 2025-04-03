@@ -151,6 +151,7 @@
 <translation id="2977470724722393594">Chromium 已是最新版本</translation>
 <translation id="2977506796191543575">如果有網站試圖盜取您的密碼，或當您下載有害檔案時，Chromium 亦可能將網址 (包括部分網頁內容) 傳送至「安全瀏覽」功能</translation>
 <translation id="2981563588585023386">如要按家長所選設定加強網上安全，請登入 Chromium</translation>
+<translation id="3003694935412297923">所有工作</translation>
 <translation id="3013473503895162900">在 Chromium 中的新分頁開啟 <ph name="URL" />。</translation>
 <translation id="3032706164202344641">Chromium 無法檢查密碼，請稍後再試。</translation>
 <translation id="3032787606318309379">正在新增至 Chromium…</translation>
@@ -170,6 +171,7 @@
 <translation id="3179665906251668410">在 Chromium 無痕式視窗中開啟連結(&amp;G)</translation>
 <translation id="3185330573522821672">自訂您的新 Chromium 設定檔</translation>
 <translation id="3224847870593914902">如要從 Chromium 中移除 Google 帳戶，請前往「設定」頁面登出 Chromium</translation>
+<translation id="3234316605225071811">Chromium 稍後會詢問你，是否要使用已儲存的資訊自動填寫表單</translation>
 <translation id="3258596308407688501">Chromium 無法讀取及寫入數據目錄：
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -266,6 +268,7 @@
 <translation id="4570813286784708942">「安全瀏覽」功能已關閉，系統無法驗證此檔案，因此 Chromium 已禁止下載</translation>
 <translation id="4594305310729380060">儲存至此裝置的「密碼管理工具」中</translation>
 <translation id="459535195905078186">Chromium 應用程式</translation>
+<translation id="4598116752460667024">搵清單入面嘅任何程序。</translation>
 <translation id="4613863813562375431">Chromium 作業系統版本</translation>
 <translation id="4621240073146040695">即將更新至最新版本！重新啟動 Chromium 即可完成更新程序。</translation>
 <translation id="4665829708273112819">警告：Chromium 無法阻止擴充程式記錄您的瀏覽活動。如要在無痕模式中停用這個擴充程式，請取消選取這個選項。</translation>
@@ -433,6 +436,7 @@
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6873893289264747459">Chromium 發現「<ph name="EXTENSION_NAME" />」含有惡意軟件</translation>
 <translation id="6896758677409633944">複製</translation>
+<translation id="6901631050894301805">將 Chromium 設為預設瀏覽器，並釘選到工作列</translation>
 <translation id="6929417474050522668">在試用期間，「廣告評估」允許您瀏覽的網站向 Chromium 要求資料，以便評估廣告的效益。「廣告評估」會透過盡量減少在網站之間傳送的資料，從而限制跨網站追蹤功能。</translation>
 <translation id="6940431691900807093">您日後瀏覽的網站可向 Chromium 要求查看您的興趣，以便向您顯示個人化廣告。Chromium 最多可分享 3 個感興趣的主題。</translation>
 <translation id="6964305034639999644">在 Chromium 無痕式視窗中開啟連結(&amp;G)</translation>
@@ -457,6 +461,7 @@
 <translation id="7223968959479464213">工作管理員 - Chromium</translation>
 <translation id="7246575524853130370">Chromium 推測您有以下興趣</translation>
 <translation id="7274695763216404502">已固定！你可透過工具列再次使用「圖片搜尋」</translation>
+<translation id="7288567540154601580">分頁和擴充程式</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium 建議你移除此擴充程式}other{Chromium 建議你移除這些擴充程式}}</translation>
 <translation id="7309928523159922338">「廣告評估」允許您瀏覽的網站向 Chromium 要求資料，以便評估廣告的效益。「廣告評估」會透過盡量減少在網站之間傳送的資料，從而限制跨網站追蹤功能。</translation>
 <translation id="731795002583552498">正在更新 Chromium</translation>

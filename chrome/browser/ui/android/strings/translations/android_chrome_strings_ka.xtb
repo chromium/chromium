@@ -735,7 +735,6 @@
 <translation id="4460861538906892109">{ITEMS_COUNT,plural, =1{1 სანიშნე}other{# სანიშნე}}</translation>
 <translation id="4478161224666880173">ამ საიტზე შეგიძლიათ თქვენი <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ანგარიშის გამოყენება. გასაგრძელებლად შედით <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-ში.</translation>
 <translation id="4479972344484327217">ინსტალირდება <ph name="MODULE" /> Chrome-ისთვის…</translation>
-<translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{სანიშნე შეინახა „<ph name="FOLDER_NAME" />“-ში. ის შენახულია მხოლოდ ამ მოწყობილობაზე.}other{სანიშნეები შეინახა „<ph name="FOLDER_NAME" />“-ში. ისინი შენახულია მხოლოდ ამ მოწყობილობაზე.}}</translation>
 <translation id="4484496141267039529">კავშირი არ არის. ცადეთ მოგვიანებით.</translation>
 <translation id="4487967297491345095">Chrome-ში არსებული აპების მონაცემები სამუდამოდ წაიშლება. მათ შორის, აპებთან დაკავშირებული ყველა ფაილი, პარამეტრი, ანგარიში, მონაცემთა ბაზა და ა.შ.</translation>
 <translation id="4494806687727322324">პაროლის შენახვა ჩართულია თქვენი ადმინისტრატორის მიერ</translation>
@@ -942,6 +941,7 @@
 <translation id="539881862970320163">შემოთავაზებულია ძლიერი პაროლი. კლავიატურა დამალულია.</translation>
 <translation id="5409881200985013443">გსურთ, გადაუგზავნოთ <ph name="ONE_TIME_CODE" /> <ph name="CLIENT_NAME" />-ს?</translation>
 <translation id="5410300144953132176"><ph name="OWNER_FULL_NAME" /> (<ph name="OWNER_EMAIL" />) გთხოვთ, რომ გაწევრიანდეთ ჩანართების ჯგუფში. ყველას, ვისაც აქვს წვდომა ბმულზე, შეუძლია ნებისმიერი ჩანართის რედაქტირება, შესაბამისად გაწევრიანებისას გამოიჩინეთ სიფრთხილე. ბმულს მოქმედების ვადა ეწურება 48 საათში.</translation>
+<translation id="5412388166586147626">AI ასისტენტის გახსნა ვერ მოხერხდა. ცადეთ ხელახლა.</translation>
 <translation id="5414836363063783498">დადასტურება…</translation>
 <translation id="5415871492522952905">თქვენს ყველა მოწყობილობაზე გექნებათ ისტორია და ჩანართები, რომ მიტოვებული საქმის გაგრძელება შეძლოთ</translation>
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) მყისიერად დაკარგავს წვდომას „<ph name="GROUP_NAME" />“-ის ჩანართების ჯგუფზე</translation>
@@ -1336,7 +1336,6 @@
 <translation id="7063006564040364415">ვერ ვუკავშირდებით სინქრონიზაციის სერვერს.</translation>
 <translation id="7071521146534760487">ანგარიშის მართვა</translation>
 <translation id="707155805709242880">ქვემოთ აირჩიეთ, რის სინქრონიზაცია გსურთ</translation>
-<translation id="707702207692430409">{BOOKMARK_COUNT,plural, =1{სანიშნე შეინახა „<ph name="FOLDER_NAME" />“-ში თქვენს ანგარიშში (<ph name="ACCOUNT_EMAIL" />).}other{სანიშნეები შეინახა „<ph name="FOLDER_NAME" />“-ში თქვენს ანგარიშში (<ph name="ACCOUNT_EMAIL" />).}}</translation>
 <translation id="7077143737582773186">SD ბარათი</translation>
 <translation id="7078916049958741685">თქვენი Chrome მონაცემების გასუფთავება ამ მოწყობილობიდანაც</translation>
 <translation id="7085332316435785646">აირჩიეთ, დაერთოს თუ არა Chrome ისტორია, Google სერვისებში უფრო პერსონალიზებული ფუნქციებით რომ ისარგებლოთ</translation>

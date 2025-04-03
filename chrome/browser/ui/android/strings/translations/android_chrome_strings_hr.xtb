@@ -735,7 +735,6 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="4460861538906892109">{ITEMS_COUNT,plural, =1{1 oznaka}one{# oznaka}few{# oznake}other{# oznaka}}</translation>
 <translation id="4478161224666880173">Na ovoj web-lokaciji možete upotrebljavati račun <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />. Da biste nastavili, prijavite se na račun <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="4479972344484327217">Instalira se <ph name="MODULE" /> za Chrome…</translation>
-<translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{Oznaka je spremljena u mapu <ph name="FOLDER_NAME" />. Sprema se samo na ovom uređaju.}one{Oznake su spremljene u mapu <ph name="FOLDER_NAME" />. Sprema se samo na ovom uređaju.}few{Oznake su spremljene u mapu <ph name="FOLDER_NAME" />. Sprema se samo na ovom uređaju.}other{Oznake su spremljene u mapu <ph name="FOLDER_NAME" />. Sprema se samo na ovom uređaju.}}</translation>
 <translation id="4484496141267039529">Niste povezani. Pokušajte ponovo kasnije.</translation>
 <translation id="4487967297491345095">Svi Chromeovi podaci aplikacije trajno će se izbrisati. To uključuje sve datoteke, postavke, račune, baze podataka i slično.</translation>
 <translation id="4494806687727322324">Administrator je uključio spremanje zaporki</translation>
@@ -1337,7 +1336,6 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="7063006564040364415">Nije uspjelo povezivanje s poslužiteljem za sinkronizaciju.</translation>
 <translation id="7071521146534760487">Upravljanje računom</translation>
 <translation id="707155805709242880">U nastavku odaberite što ćete sinkronizirati</translation>
-<translation id="707702207692430409">{BOOKMARK_COUNT,plural, =1{Oznaka je spremljena u mapu <ph name="FOLDER_NAME" /> na vašem računu, <ph name="ACCOUNT_EMAIL" />.}one{Oznake su spremljene u mapu <ph name="FOLDER_NAME" /> na vašem računu, <ph name="ACCOUNT_EMAIL" />.}few{Oznake su spremljene u mapu <ph name="FOLDER_NAME" /> na vašem računu, <ph name="ACCOUNT_EMAIL" />.}other{Oznake su spremljene u mapu <ph name="FOLDER_NAME" /> na vašem računu, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="7077143737582773186">SD kartica</translation>
 <translation id="7078916049958741685">Izbriši podatke iz Chromea i s ovog uređaja</translation>
 <translation id="7085332316435785646">Odaberite želite li uključiti povijest na Chromeu za prilagođenije doživljaje na Googleovim uslugama</translation>

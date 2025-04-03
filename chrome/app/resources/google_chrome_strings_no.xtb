@@ -57,6 +57,7 @@
 <translation id="1786044937610313874">Snarveier åpnes i Chrome</translation>
 <translation id="178701303897325119">Denne utvidelsen støttes ikke lenger. Chrome anbefaler at du fjerner den i stedet.</translation>
 <translation id="1812689907177901597">Ved å slå dette av kan du logge på Google-sider, som Gmail, uten å logge på Chrome</translation>
+<translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome anbefaler at du setter fanen som gjør nettleseren treg, på pause}other{Chrome anbefaler at du setter fanene som gjør nettleseren treg, på pause}}</translation>
 <translation id="1838374766361614909">Fjern søket</translation>
 <translation id="1860536484129686729">Chrome trenger tilgang til kameraet ditt for dette nettstedet</translation>
 <translation id="1873233029667955273">Google Chrome er ikke standardnettleseren din</translation>
@@ -156,7 +157,9 @@
 <translation id="2945997411976714835">Installasjonsfeil: Installasjonsprosessen kunne ikke startes.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – nettverkspålogging – Chrome</translation>
 <translation id="2970681950995291301">For å fjerne Google-kontoen din fra Chrome, logg av Chrome på Innstillinger-siden</translation>
+<translation id="2991167882679440829">Passordene dine og andre Chrome-data som du har lagret i Google-kontoen din, blir fjernet fra denne enheten. For å bruke dem i Chrome igjen, logg på igjen.</translation>
 <translation id="2994465299455873643">Leverer krypteringstjenester og en sikker måte å gjenopprette <ph name="BROWSER_NAME" /> på hvis den blir utdatert. Hvis denne tjenesten er deaktivert, kan <ph name="BROWSER_NAME" /> miste tilgangen til krypterte data, og <ph name="BROWSER_NAME" /> kan kanskje ikke gjenopprette seg selv.</translation>
+<translation id="3003694935412297923">Alle gjøremål</translation>
 <translation id="3018957014024118866">Slett også data fra Chrome (<ph name="URL" />)</translation>
 <translation id="3019382870990049182">Start på nytt for å oppdatere &amp;ChromeOS Flex</translation>
 <translation id="3037838751736561277">Google Chrome er i bakgrunnsmodus.</translation>
@@ -183,6 +186,7 @@
 <translation id="3282568296779691940">Logg på Chrome</translation>
 <translation id="3286538390144397061">Start på nytt nå</translation>
 <translation id="3292333338048274092">Deretter må du starte Chrome på nytt.</translation>
+<translation id="3327226547491422998">Senere kan Chrome spørre om du vil bruke lagret informasjon til å autofylle skjemaer</translation>
 <translation id="3360895254066713204">Chrome-hjelper</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome startes på nytt nå}=1{Chrome startes på nytt om 1 sekund}other{Chrome startes på nytt om # sekunder}}</translation>
 <translation id="3396977131400919238">Det oppsto en feil i operativsystemet under installeringen. Last ned Google Chrome på nytt.</translation>
@@ -254,6 +258,7 @@
 <translation id="4281844954008187215">Vilkår for bruk</translation>
 <translation id="4293420128516039005">Logg på for å synkronisere og gi Chrome et personlig preg på alle enhetene dine</translation>
 <translation id="430327780270213103">Tillat at utvidelsen viser tilgangsforespørsler på Chrome-verktøylinjen</translation>
+<translation id="4326552909330437744">{NUM_TABS,plural, =1{Chrome anbefaler at du setter fanen som gjør nettleseren treg, på pause}other{Chrome anbefaler at du setter fanene som gjør nettleseren treg, på pause}}</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS – inn)</translation>
 <translation id="4329315893554541805">For å få personlig tilpasning og andre funksjoner må du inkludere Chrome i Nett- og appaktivitet og tilknyttede Google-tjenester</translation>
 <translation id="4334294535648607276">Nedlastingen er fullført.</translation>
@@ -272,6 +277,7 @@
 <translation id="4567424176335768812">Du er logget på som <ph name="USER_EMAIL_ADDRESS" />. Nå kan du bruke bokmerkene, loggen og andre innstillinger på alle enhetene du er logget på.</translation>
 <translation id="4571503333518166079">Gå til innstillingene for Chrome-varsler</translation>
 <translation id="459622048091363950">Når Chrome har fått tilgang, kan nettsteder spørre deg om tilgang.</translation>
+<translation id="4598116752460667024">Søk etter en prosess på listen.</translation>
 <translation id="4600710005438004015">Chrome kunne ikke oppdateres til den nyeste versjonen, så du går glipp av nye funksjoner og sikkerhetsforbedringer.</translation>
 <translation id="4624065194742029982">Chrome Inkognito</translation>
 <translation id="4627412468266359539">Valgfritt: Bidra til å gjøre funksjonene og ytelsen til ChromeOS Flex bedre ved å sende diagnostikk og bruksdata automatisk til Google.</translation>
@@ -396,6 +402,7 @@
 <translation id="6251759518630934363">Advarer deg om farlige nettsteder, også nettsteder som Google ikke kjenner til fra før, ved å analysere mer data fra nettsteder enn ved standardbeskyttelse. Du kan velge å hoppe over Chrome-advarsler.</translation>
 <translation id="6277547788421725101">Forelderen din har slått av «Tillatelser for nettsteder, apper og utvidelser» for Chrome</translation>
 <translation id="627882678981830918">Tilpass og kontroller Chrome. Angi Chrome som standard.</translation>
+<translation id="6288580400488258237">Bruk Google Chrome som standardnettleser, og fest den til oppgavelinjen</translation>
 <translation id="6291089322031436445">Chrome Dev-apper</translation>
 <translation id="6291549208091401781">Google Chrome er allerede installert for alle brukerne på datamaskinen din.</translation>
 <translation id="6319856120645568262">Chrome trenger tillatelse til å kartlegge omgivelsene dine og spore hendene dine</translation>
@@ -463,6 +470,7 @@
 <translation id="7193885263065350793">Organisasjonen din lukker Chrome når den ikke har vært i bruk på <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">Du er i ferd med å logge deg på med en administrert konto og gir administratoren kontroll over Chrome-profilen din. Chrome-dataene dine, som apper, bokmerker, loggen, passord og andre innstillinger, blir permanent knyttet til <ph name="USER_NAME" />. Du kan slette disse dataene via kontooversikten for Google, men du kan ikke knytte disse dataene til en annen konto. Du kan velge om du vil opprette en ny profil for å holde de eksisterende Chrome-dataene dine atskilte. <ph name="LEARN_MORE" /></translation>
 <translation id="7285616922384953075"><ph name="MANAGER" /> administrerer Chrome</translation>
+<translation id="7288567540154601580">Faner og utvidelser</translation>
 <translation id="7296210096911315575">Viktig informasjon om bruk og sikkerhet</translation>
 <translation id="7302361266603927550">Noen av Chrome-dataene dine er ikke lagret i Google-kontoen din ennå. Prøv å vente i noen minutter før du logger av. Hvis du logger av nå, blir disse dataene slettet.</translation>
 <translation id="7308322188646931570">Chrome må ha lagringstilgang for å laste ned filer</translation>

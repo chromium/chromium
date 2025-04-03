@@ -61,6 +61,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="1786044937610313874">Genvägar öppnas i Chrome</translation>
 <translation id="178701303897325119">Detta tillägg stöds inte längre. Vi rekommenderar att du tar bort det i stället.</translation>
 <translation id="1812689907177901597">Om du inaktiverar detta kan du logga in på Googles webbplatser, till exempel Gmail, utan att logga in i Chrome</translation>
+<translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome rekommenderar att du pausar fliken som saktar ned webbläsaren}other{Chrome rekommenderar att du pausar flikarna som saktar ned webbläsaren}}</translation>
 <translation id="1838374766361614909">Rensa sökning</translation>
 <translation id="1860536484129686729">Du behöver ge Chrome behörighet att använda kameran på webbplatsen</translation>
 <translation id="1873233029667955273">Google Chrome är inte din standardwebbläsare</translation>
@@ -260,6 +261,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="4281844954008187215">Användarvillkor</translation>
 <translation id="4293420128516039005">Genom att logga in kan du synkronisera och anpassa Chrome på alla enheter du använder</translation>
 <translation id="430327780270213103">Tillåt att tillägg visar åtkomstförfrågningar i verktygsfältet i Chrome</translation>
+<translation id="4326552909330437744">{NUM_TABS,plural, =1{Chrome rekommenderar att du pausar fliken som saktar ned webbläsaren}other{Chrome rekommenderar att du pausar flikarna som saktar ned webbläsaren}}</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-in)</translation>
 <translation id="4329315893554541805">Om du vill få tillgång till anpassning och andra funktioner kan du ta med Chrome i webb- och appaktiviteten och de länkade Google-tjänsterna</translation>
 <translation id="4334294535648607276">Nedladdningen har slutförts.</translation>

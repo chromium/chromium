@@ -735,7 +735,6 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="4460861538906892109">{ITEMS_COUNT,plural, =1{Alamisho 1}other{Alamisho #}}</translation>
 <translation id="4478161224666880173">Unaweza kutumia akaunti yako ya <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> kwenye tovuti hii. Ili uendelee, ingia katika akaunti ukitumia <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="4479972344484327217">Inasakinisha <ph name="MODULE" /> kwenye Chrome…</translation>
-<translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{Alamisho imehifadhiwa kwenye "<ph name="FOLDER_NAME" />". Imehifadhiwa kwenye kifaa hiki pekee.}other{Alamisho zimehifadhiwa kwenye "<ph name="FOLDER_NAME" />". Zimehifadhiwa kwenye kifaa hiki pekee.}}</translation>
 <translation id="4484496141267039529">Hakuna muunganisho. Jaribu tena baadaye.</translation>
 <translation id="4487967297491345095">Data yote ya programu ya Chrome itafutwa kabisa. Hii ni pamoja na faili, mipangilio, akaunti, hifadhidata zote, n.k.</translation>
 <translation id="4494806687727322324">Msimamizi wako amewasha kipengee cha kuhifadhi nenosiri</translation>
@@ -1337,7 +1336,6 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="7063006564040364415">Haikuweza kuunganisha kwenye seva ya usawazishaji.</translation>
 <translation id="7071521146534760487">Dhibiti akaunti</translation>
 <translation id="707155805709242880">Chagua unachotaka kusawazisha hapo chini</translation>
-<translation id="707702207692430409">{BOOKMARK_COUNT,plural, =1{Alamisho imehifadhiwa kwenye "<ph name="FOLDER_NAME" />" katika akaunti yako, <ph name="ACCOUNT_EMAIL" />.}other{Alamisho zimehifadhiwa kwenye "<ph name="FOLDER_NAME" />" katika akaunti yako, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="7077143737582773186">Kadi ya SD</translation>
 <translation id="7078916049958741685">Pia, futa data yako ya Chrome kwenye kifaa hiki</translation>
 <translation id="7085332316435785646">Chagua iwapo ungependa kujumuisha historia kwenye Chrome ili upate hali ya utumiaji inayokufaa zaidi katika huduma za Google</translation>

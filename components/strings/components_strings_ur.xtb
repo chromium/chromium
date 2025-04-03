@@ -1015,6 +1015,7 @@
 <translation id="2742870351467570537">منتخب کردہ آئٹمز ہٹائیں</translation>
 <translation id="2743512410823092182">‏DJ کے وسائل اور ساز و سامان</translation>
 <translation id="2743934314332613923">ڈرائیونگ لائسنس کی معلومات اپ ڈیٹ کریں؟</translation>
+<translation id="2759299890026163685">دوبارہ کوشش کرنے سے پہلے یہ یقینی بنائیں کہ آپ کا انٹرنیٹ کنکشن مستحکم ہے</translation>
 <translation id="2759825833388495838"><ph name="APP_NAME" /> پر اپنا پاس ورڈ پُر کریں</translation>
 <translation id="2764001903315068341">کامکس</translation>
 <translation id="2765217105034171413">چھوٹا</translation>
@@ -1280,6 +1281,7 @@
 <translation id="323107829343500871">‏<ph name="CREDIT_CARD" /> کا CVC درج کریں</translation>
 <translation id="3234666976984236645">اس سائٹ پر اہم مواد کا ہمیشہ پتا لگائیں</translation>
 <translation id="323585066388831737">ہلکا سرخ</translation>
+<translation id="3235902901585019063">مقامی فائلز کو <ph name="DATE_TIME" /> کو حذف کر دیا جائے گا۔ یہ یقینی بنائیں کہ کسی بھی اہم کاروباری یا ذاتی ڈیٹا کو بیرونی طور پر اسٹور کیا گیا ہے۔</translation>
 <translation id="3236212803136366317">کارڈ کے فوائد</translation>
 <translation id="3238395604961564389">لنک کو پوشیدگی ونڈو میں کھولیں</translation>
 <translation id="3240683217920639535">‏<ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />، اپنے براؤزر کی شکل کو حسب ضرورت بنانے کیلئے ٹیب پھر Enter دبائیں</translation>
@@ -1758,6 +1760,7 @@
 <translation id="4031179711345676612">مائیکروفون اجازت یافتہ ہے</translation>
 <translation id="4036753017940930924">لاٹ اور زمین</translation>
 <translation id="4039506337798853114">اپنا کرسر دکھانے کے لیے، |<ph name="ACCELERATOR" />| کو دبائیں</translation>
+<translation id="4045226534284799755">‏دوبارہ کوشش کرنے سے پہلے، اپنے Microsoft اکاؤنٹ میں سائن ان کریں</translation>
 <translation id="4045441967987592849">دوبارہ کھولیں</translation>
 <translation id="4047351652147966654">‏‎18 x 24 انچ</translation>
 <translation id="404831776305217138">‏ID "<ph name="EXTENSION_ID" />" کے ساتھ ایکسٹینشن کے لیے اپ ڈیٹ URL غلط ہے یا ایک غیر تعاون یافتہ اسکیم استعمال کرتا ہے۔ تعاون یافتہ اسکیمیں: <ph name="HTTP_SCHEME" />، <ph name="HTTPS_SCHEME" /> اور <ph name="FILE_SCHEME" /> ہیں۔</translation>
@@ -1778,6 +1781,7 @@
 <translation id="4073797364926776829">کارڈ دیکھیں</translation>
 <translation id="4075732493274867456">‏کلائنٹ اور سرور عام SSL پروٹوکول ورژن یا سائفر سوئٹ کا تعاون نہیں کرتے ہیں۔</translation>
 <translation id="4079302484614802869">‏پراکسی کنفیگریشن مقررہ پراکسی سرورز نہیں بلکہ ایک ‎.pac اسکرپٹ URL استعمال کرنے کیلئے سیٹ ہے۔</translation>
+<translation id="4080855220442581440">اشتراک کردہ ٹیبز کو اسکرول اور زوم کرنا</translation>
 <translation id="4082333119419111506">کاغذ (پری پرنٹڈ)</translation>
 <translation id="4082393374666368382">ترتیبات، نظم و نسق</translation>
 <translation id="4084219288110917128">‏C1 لفافہ</translation>
@@ -2211,6 +2215,7 @@
 <translation id="4834250788637067901">‏Google Pay استعمال کرنے والے ادائیگی کے طریقے، پیشکشیں اور پتے</translation>
 <translation id="4840250757394056958">‏اپنے Chrome کی سرگزشت دیکھیں</translation>
 <translation id="484462545196658690">خودکار</translation>
+<translation id="4844937814014739139">اشتراک کردہ ٹیبز کو اسکرول اور زوم کرنا</translation>
 <translation id="484671803914931257"><ph name="MERCHANT_NAME" /> اور مزید پر رعایت حاصل کریں</translation>
 <translation id="484988093836683706">آلے کو غیر مقفل کرنے کی خصوصیت کا استعمال کریں</translation>
 <translation id="4850886885716139402">دیکھیں</translation>
@@ -2504,6 +2509,7 @@
 <translation id="5344522958567249764">اشتہارات کی رازداری کا نظم کریں</translation>
 <translation id="5344579389779391559">یہ صفحہ آپ سے رقم چارج کرنے کی کوشش کر سکتا ہے</translation>
 <translation id="5345249337934847112">کاغذ (ہیوی ویٹ کوٹیڈ)</translation>
+<translation id="5348330584842140856">اس فائل کو منتقل نہیں کیا گیا کیونکہ اب یہ موجود نہیں ہے</translation>
 <translation id="5349543692327946794">لیبلز (انک جیٹ)</translation>
 <translation id="5351548097010183514">تعمیراتی مٹیریل اور سپلائیز</translation>
 <translation id="5354143049423063163">باڑ لگانے کے فنڈز</translation>
@@ -2768,6 +2774,7 @@
 <translation id="5826507051599432481">‏عام نام (CN)</translation>
 <translation id="5830698870816298009">کیمرے کا استعمال اور نقل و حرکت</translation>
 <translation id="583281660410589416">نامعلوم</translation>
+<translation id="5837220895135257862">دوبارہ کوشش کرنے سے پہلے <ph name="CLOUD_PROVIDER" /> میں جگہ خالی کریں</translation>
 <translation id="5838278095973806738">اس سائٹ پر آپ کو کوئی حساس معلومات (مثلاً، پاس ورڈز یا کریڈٹ کارڈز) درج نہیں کرنا چاہیے، کیوںکہ اسے حملہ آور چوری کر سکتے ہیں۔</translation>
 <translation id="5838732667866024867">آپ گراف پر قیمت کی تبدیلیوں کا جائزہ لینے کے لیے بائیں/دائیں تیر کا استعمال کر سکتے ہیں</translation>
 <translation id="5840318881868981258">‏آپ کے Google اکاؤنٹ میں، <ph name="ACCOUNT" /></translation>
@@ -4029,6 +4036,7 @@
 <translation id="799149739215780103">باندھیں</translation>
 <translation id="7992044431894087211"><ph name="APPLICATION_TITLE" /> کے ساتھ اسکرین کے اشتراک کو دوبارہ شروع کر دیا گیا</translation>
 <translation id="7995512525968007366">متعین نہیں ہے</translation>
+<translation id="7997855386298213183">اشتراک کردہ ٹیبز</translation>
 <translation id="800218591365569300">میموری خالی کرنے کیلئے دیگر ٹیبز یا پروگرامز کو بند کرنے کی کوشش کریں۔</translation>
 <translation id="8002230960325005199">ایک نئے ٹیب میں متعلقہ سائٹس دیکھیں</translation>
 <translation id="8003046808285812021">"<ph name="SEARCH_TERMS" />"</translation>
@@ -4103,6 +4111,7 @@
 <translation id="812020627659652807">ابھی فائلز حذف کریں</translation>
 <translation id="8120720167840853945">یہ پالیسی کسی بھی دوسری پالیسیوں کے ڈیفالٹ برتاؤ کو کنٹرول نہیں کر رہی ہے۔</translation>
 <translation id="8127301229239896662">‏"<ph name="SOFTWARE_NAME" />" آپ کے کمپیوٹر یا نیٹ ورک پر مناسب طریقے سے انسٹال نہیں ہوا تھا۔ اس مسئلے کو حل کرنے کے لیے اپنے IT منتظم سے کہیں۔</translation>
+<translation id="8130113808541743942">اس میں منتقل کریں...</translation>
 <translation id="8131740175452115882">تصدیق کریں</translation>
 <translation id="8133495915926741232">منتخب کریں کہ اشتہارات کو ذاتی نوعیت کا بنانے میں مدد کے لیے موضوعات کے کون سے وسیع زمرے استعمال کیے جا سکتے ہیں۔ ایک وسیع زمرہ کو آف کرنے سے اس سے متعلقہ موضوعات بھی مسدود ہو جائیں گے۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="8134058435519644366">تقرری اور عملہ سازی</translation>

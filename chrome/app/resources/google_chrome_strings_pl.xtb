@@ -57,6 +57,7 @@
 <translation id="1786044937610313874">Skróty otwierają się w Chrome</translation>
 <translation id="178701303897325119">To rozszerzenie nie jest już obsługiwane. Chrome zaleca jego usunięcie.</translation>
 <translation id="1812689907177901597">Jeśli wyłączysz tę opcję, możesz logować się na stronach Google takich jak Gmail bez logowania się w Chrome</translation>
+<translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome zaleca wstrzymanie karty, która spowalnia przeglądarkę}few{Chrome zaleca wstrzymanie kart, które spowalniają przeglądarkę}many{Chrome zaleca wstrzymanie kart, które spowalniają przeglądarkę}other{Chrome zaleca wstrzymanie kart, które spowalniają przeglądarkę}}</translation>
 <translation id="1838374766361614909">Wyczyść wyszukiwanie</translation>
 <translation id="1860536484129686729">Chrome potrzebuje uprawnień dostępu do aparatu na tej stronie</translation>
 <translation id="1873233029667955273">Google Chrome nie jest domyślną przeglądarką</translation>
@@ -255,6 +256,7 @@
 <translation id="4281844954008187215">Warunki korzystania z usługi</translation>
 <translation id="4293420128516039005">Zaloguj się, by synchronizować dane Chrome i korzystać z własnych ustawień przeglądarki na wielu urządzeniach</translation>
 <translation id="430327780270213103">Zezwalaj rozszerzeniu na wyświetlanie próśb o dostęp na pasku narzędzi Chrome</translation>
+<translation id="4326552909330437744">{NUM_TABS,plural, =1{Chrome zaleca wstrzymanie karty, która spowalnia przeglądarkę}few{Chrome zaleca wstrzymanie kart, które spowalniają przeglądarkę}many{Chrome zaleca wstrzymanie kart, które spowalniają przeglądarkę}other{Chrome zaleca wstrzymanie kart, które spowalniają przeglądarkę}}</translation>
 <translation id="4328355335528187361">Wersja deweloperska Google Chrome (mDNS-In)</translation>
 <translation id="4329315893554541805">Aby korzystać z personalizacji i innych funkcji, uwzględnij Chrome w Aktywności w internecie i aplikacjach oraz w połączonych usługach Google</translation>
 <translation id="4334294535648607276">Pobieranie ukończone.</translation>

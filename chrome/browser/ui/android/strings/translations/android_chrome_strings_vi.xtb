@@ -735,7 +735,6 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="4460861538906892109">{ITEMS_COUNT,plural, =1{1 dấu trang}other{# dấu trang}}</translation>
 <translation id="4478161224666880173">Bạn có thể sử dụng tài khoản <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> trên trang web này. Để tiếp tục, hãy đăng nhập vào <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="4479972344484327217">Đang cài đặt <ph name="MODULE" /> cho Chrome…</translation>
-<translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{Đã lưu dấu trang vào "<ph name="FOLDER_NAME" />". Dấu trang chỉ được lưu vào thiết bị này.}other{Đã lưu dấu trang vào "<ph name="FOLDER_NAME" />". Dấu trang chỉ được lưu vào thiết bị này.}}</translation>
 <translation id="4484496141267039529">Không có kết nối. Hãy thử lại sau.</translation>
 <translation id="4487967297491345095">Tất cả dữ liệu của ứng dụng Chrome sẽ bị xóa vĩnh viễn, bao gồm tất cả các tệp, các tùy chọn cài đặt, tài khoản, cơ sở dữ liệu, v.v.</translation>
 <translation id="4494806687727322324">Quản trị viên đã bật tính năng lưu mật khẩu</translation>
@@ -1336,7 +1335,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7063006564040364415">Không thể kết nối với máy chủ đồng bộ hóa.</translation>
 <translation id="7071521146534760487">Quản lý tài khoản</translation>
 <translation id="707155805709242880">Chọn loại dữ liệu sẽ đồng bộ hóa ở bên dưới</translation>
-<translation id="707702207692430409">{BOOKMARK_COUNT,plural, =1{Đã lưu dấu trang vào "<ph name="FOLDER_NAME" />" trong tài khoản <ph name="ACCOUNT_EMAIL" /> của bạn.}other{Đã lưu dấu trang vào "<ph name="FOLDER_NAME" />" trong tài khoản <ph name="ACCOUNT_EMAIL" /> của bạn.}}</translation>
 <translation id="7077143737582773186">Thẻ SD</translation>
 <translation id="7078916049958741685">Xoá cả dữ liệu Chrome khỏi thiết bị này</translation>
 <translation id="7085332316435785646">Chọn xem có bao gồm nhật ký duyệt web trên Chrome hay không để mang lại trải nghiệm phù hợp hơn trong các dịch vụ của Google</translation>

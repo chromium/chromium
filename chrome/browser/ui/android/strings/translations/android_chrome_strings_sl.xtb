@@ -733,7 +733,6 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="4460861538906892109">{ITEMS_COUNT,plural, =1{1 zaznamek}one{# zaznamek}two{# zaznamka}few{# zaznamki}other{# zaznamkov}}</translation>
 <translation id="4478161224666880173">Na tem spletnem mestu lahko uporabite račun za <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />. Če želite nadaljevati, se prijavite v račun za <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="4479972344484327217">Nameščanje modula <ph name="MODULE" /> za Chrome …</translation>
-<translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{Zaznamek je shranjen v mapi »<ph name="FOLDER_NAME" />«. Shranjen je samo v tej napravi.}one{Zaznamki so shranjeni v mapi »<ph name="FOLDER_NAME" />«. Shranjeni so samo v tej napravi.}two{Zaznamki so shranjeni v mapi »<ph name="FOLDER_NAME" />«. Shranjeni so samo v tej napravi.}few{Zaznamki so shranjeni v mapi »<ph name="FOLDER_NAME" />«. Shranjeni so samo v tej napravi.}other{Zaznamki so shranjeni v mapi »<ph name="FOLDER_NAME" />«. Shranjeni so samo v tej napravi.}}</translation>
 <translation id="4484496141267039529">Ni povezave. Poskusite pozneje.</translation>
 <translation id="4487967297491345095">Vsi podatki aplikacije Chrome bodo trajno izbrisani, vključno z vsemi datotekami, nastavitvami, računi, zbirkami podatkov ipd.</translation>
 <translation id="4494806687727322324">Skrbnik je vklopil shranjevanje gesel</translation>
@@ -1330,7 +1329,6 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="7063006564040364415">Povezave s strežnikom za sinhronizacijo ni bilo mogoče vzpostaviti.</translation>
 <translation id="7071521146534760487">Upravljanje računa</translation>
 <translation id="707155805709242880">Spodaj izberite, kaj želite sinhronizirati.</translation>
-<translation id="707702207692430409">{BOOKMARK_COUNT,plural, =1{Zaznamek je shranjen v mapi »<ph name="FOLDER_NAME" />« v vašem računu, <ph name="ACCOUNT_EMAIL" />.}one{Zaznamki so shranjeni v mapi »<ph name="FOLDER_NAME" />« v vašem računu, <ph name="ACCOUNT_EMAIL" />.}two{Zaznamki so shranjeni v mapi »<ph name="FOLDER_NAME" />« v vašem računu, <ph name="ACCOUNT_EMAIL" />.}few{Zaznamki so shranjeni v mapi »<ph name="FOLDER_NAME" />« v vašem računu, <ph name="ACCOUNT_EMAIL" />.}other{Zaznamki so shranjeni v mapi »<ph name="FOLDER_NAME" />« v vašem računu, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="7077143737582773186">SD kartica</translation>
 <translation id="7078916049958741685">Prav tako izbriši podatke v Chromu iz te naprave</translation>
 <translation id="7085332316435785646">Izberite, ali želite, da je zaradi osebno bolj prilagojenih izkušenj v Googlovih storitvah vključena zgodovina v Chromu.</translation>

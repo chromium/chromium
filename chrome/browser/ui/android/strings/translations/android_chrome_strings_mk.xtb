@@ -17,6 +17,7 @@
 <translation id="1052842760770519282">Не може да се пристапи до некои од вашите лозинки</translation>
 <translation id="1058669287135776095">Офлајн сте. Проверете ја интернет-врската и обидете се повторно.</translation>
 <translation id="10614374240317010">Никогаш не е зачувано</translation>
+<translation id="1070689840697074178">Може да преземате PDF-датотеки овде</translation>
 <translation id="107147699690128016">Ако ја промените наставката на датотеката, таа може да се отвори во друга апликација и да стане потенцијална опасност за вашиот уред.</translation>
 <translation id="1080365971383768617">Лозинки на сите ваши уреди</translation>
 <translation id="1087176310396019910">Можен спам</translation>
@@ -288,6 +289,7 @@
 <translation id="2362083820973145409">Најавени сте како: <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Ги отвора поставките.</translation>
 <translation id="2363734411417672757">Вчитани се повеќе страници однапред. Страниците може да се вчитуваат однапред преку серверите на Google кога тоа го бараат други сајтови или апликации.</translation>
 <translation id="2366554533468315977">Историја на цени на интернет за опцијава</translation>
+<translation id="2367818124433749493">Кратенки за програмери</translation>
 <translation id="2385605401818128172">Сајтовите што испраќаат многу известувања може да ги прегледате и да сопрете да испраќаат уште известувања во иднина</translation>
 <translation id="2386938421315164605">Сокривајте и прикажувајте теми</translation>
 <translation id="2390510615457643724">Дали сакате да ја преземете датотеката <ph name="FILE_NAME" /> <ph name="FILE_SIZE" /> повторно?</translation>
@@ -731,7 +733,6 @@
 <translation id="4460861538906892109">{ITEMS_COUNT,plural, =1{1 обележувач}one{# обележувач}other{# обележувачи}}</translation>
 <translation id="4478161224666880173">Може да ја користите вашата сметка на <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> на сајтов. За да продолжите, најавете се на <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="4479972344484327217">Се инсталира <ph name="MODULE" /> за Chrome…</translation>
-<translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{Обележувачот е зачуван во папката „<ph name="FOLDER_NAME" />“ што е зачувана е само на овој уред.}one{Обележувачите се зачувани во папката „<ph name="FOLDER_NAME" />“ што е зачувана е само на овој уред.}other{Обележувачите се зачувани во папката „<ph name="FOLDER_NAME" />“ што е зачувана е само на овој уред.}}</translation>
 <translation id="4484496141267039529">Нема интернет-врска. Обидете се повторно подоцна.</translation>
 <translation id="4487967297491345095">Сите податоци од апликациите на Chrome ќе се избришат трајно. Тука спаѓаат сите датотеки, поставки, сметки, бази на податоци итн.</translation>
 <translation id="4494806687727322324">Администраторот го вклучил зачувувањето лозинки</translation>
@@ -954,6 +955,7 @@
 <translation id="5456381639095306749">Преземете ја страницата</translation>
 <translation id="5458366071038729214">Сајтовите што ги следите ќе ги најдете тука</translation>
 <translation id="5468068603361015296">Дали сепак сакате да ја преземете <ph name="FILE_NAME" />?</translation>
+<translation id="5471273988133666918">Картичката <ph name="TAB_TITLE" /> не може да се премести</translation>
 <translation id="548278423535722844">Отвори во апликацијата „Карти“</translation>
 <translation id="5492637351392383067">Шифрирање на уредот</translation>
 <translation id="549660026907543296">Придружете се како <ph name="MEMBER_FULL_NAME" /></translation>
@@ -1130,6 +1132,7 @@
 <translation id="6295158916970320988">Сите локации</translation>
 <translation id="6296366034485697675">Извези и избриши</translation>
 <translation id="629730747756840877">Сметка</translation>
+<translation id="6301526076346731664">Отвори „Алатки за програмери“</translation>
 <translation id="6303969859164067831">Одјавете се и исклучете ја синхронизацијата</translation>
 <translation id="6307241780749477694">Потврдете дека сте вие за да ги добиете сите ваши лозинки на уредов</translation>
 <translation id="6312687380483398334">Веб-апликации (тивки)</translation>
@@ -1326,7 +1329,6 @@
 <translation id="7063006564040364415">Не може да се поврзе на серверот за синхронизација.</translation>
 <translation id="7071521146534760487">Управувајте со сметката</translation>
 <translation id="707155805709242880">Одберете што да се синхронизира подолу</translation>
-<translation id="707702207692430409">{BOOKMARK_COUNT,plural, =1{Обележувачот е зачуван во папката „<ph name="FOLDER_NAME" />“ во вашата сметка, <ph name="ACCOUNT_EMAIL" />.}one{Обележувачите се зачувани во папката „<ph name="FOLDER_NAME" />“ во вашата сметка, <ph name="ACCOUNT_EMAIL" />.}other{Обележувачите се зачувани во папката „<ph name="FOLDER_NAME" />“ во вашата сметка, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="7077143737582773186">SD-картичка</translation>
 <translation id="7078916049958741685">Избришете ги и вашите податоци од Chrome од уредов</translation>
 <translation id="7085332316435785646">Изберете дали да се опфати историјата на Chrome за поперсонализирани доживувања во услугите на Google</translation>

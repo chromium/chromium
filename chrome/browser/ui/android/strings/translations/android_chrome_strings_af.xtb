@@ -17,6 +17,7 @@
 <translation id="1052842760770519282">Sommige van jou wagwoorde is nie toeganklik nie</translation>
 <translation id="1058669287135776095">Jy is vanlyn. Gaan jou internetverbinding na en probeer weer.</translation>
 <translation id="10614374240317010">Nooit gestoor nie</translation>
+<translation id="1070689840697074178">Jy kan PDF’s hier aflaai</translation>
 <translation id="107147699690128016">As jy die lêeruitbreiding verander, sal die lêer dalk in 'n ander program oopmaak en sal dit potensieel skadelik wees vir jou toestel.</translation>
 <translation id="1080365971383768617">Wagwoorde op al jou toestelle</translation>
 <translation id="1087176310396019910">Moontlike strooipos</translation>
@@ -288,6 +289,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="2362083820973145409">Aangemeld as <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Maak instellings oop.</translation>
 <translation id="2363734411417672757">Meer bladsye word vooraf gelaai. Bladsye kan vooraf deur Google-bedieners gelaai word wanneer hulle deur ander werwe of apps versoek word.</translation>
 <translation id="2366554533468315977">Prysgeskiedenis oral op die web vir hierdie opsie</translation>
+<translation id="2367818124433749493">Kortpaaie vir ontwikkelaars</translation>
 <translation id="2385605401818128172">Jy kan hierdie werwe wat baie kennisgewings stuur, nagaan en keer dat hulle in die toekoms nog stuur</translation>
 <translation id="2386938421315164605">Versteek en wys onderwerpe</translation>
 <translation id="2390510615457643724">Wil jy <ph name="FILE_NAME" /><ph name="FILE_SIZE" /> weer aflaai?</translation>
@@ -731,7 +733,6 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="4460861538906892109">{ITEMS_COUNT,plural, =1{1 boekmerk}other{# boekmerke}}</translation>
 <translation id="4478161224666880173">Jy kan jou <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-rekening op hierdie werf gebruik. Meld aan by <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> om voort te gaan.</translation>
 <translation id="4479972344484327217">Installeer tans <ph name="MODULE" /> vir Chrome …</translation>
-<translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{Boekmerk is in “<ph name="FOLDER_NAME" />” gestoor. Dit is net op hierdie toestel gestoor.}other{Boekmerke is in “<ph name="FOLDER_NAME" />” gestoor. Dit is net op hierdie toestel gestoor.}}</translation>
 <translation id="4484496141267039529">Geen verbinding nie. Probeer later weer.</translation>
 <translation id="4487967297491345095">Al Chrome se programdata sal permanent uitgevee word. Dit sluit in alle lêers, instellings, rekeninge, databasisse, ens.</translation>
 <translation id="4494806687727322324">Die stoor van wagwoorde is deur jou administrateur aangeskakel</translation>
@@ -954,6 +955,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="5456381639095306749">Laai bladsy af</translation>
 <translation id="5458366071038729214">Jy sal werwe wat jy volg hier kry</translation>
 <translation id="5468068603361015296">Wil jy <ph name="FILE_NAME" /> in elk geval aflaai?</translation>
+<translation id="5471273988133666918"><ph name="TAB_TITLE" />-oortjie kan nie geskuif word nie</translation>
 <translation id="548278423535722844">Maak in kaarteprogram oop</translation>
 <translation id="5492637351392383067">Enkripsie op toestel</translation>
 <translation id="549660026907543296">Sluit aan as <ph name="MEMBER_FULL_NAME" /></translation>
@@ -1130,6 +1132,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="6295158916970320988">Alle werwe</translation>
 <translation id="6296366034485697675">Voer uit en vee uit</translation>
 <translation id="629730747756840877">Rekening</translation>
+<translation id="6301526076346731664">Maak Ontwikkelaarnutsgoed oop</translation>
 <translation id="6303969859164067831">Meld af en skakel sinkronisering af</translation>
 <translation id="6307241780749477694">Verifieer dat dit jy is om al jou wagwoorde op hierdie toestel te kry</translation>
 <translation id="6312687380483398334">Webprogramme (stil)</translation>
@@ -1326,7 +1329,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="7063006564040364415">Kon nie aan die sinkroniseringbediener koppel nie.</translation>
 <translation id="7071521146534760487">Bestuur rekening</translation>
 <translation id="707155805709242880">Kies hieronder wat om te sinkroniseer</translation>
-<translation id="707702207692430409">{BOOKMARK_COUNT,plural, =1{Boekmerk is in “<ph name="FOLDER_NAME" />” in jou rekening, <ph name="ACCOUNT_EMAIL" />, gestoor.}other{Boekmerke is in “<ph name="FOLDER_NAME" />” in jou rekening, <ph name="ACCOUNT_EMAIL" />, gestoor.}}</translation>
 <translation id="7077143737582773186">SD-kaart</translation>
 <translation id="7078916049958741685">Vee ook jou Chrome-data op hierdie toestel uit</translation>
 <translation id="7085332316435785646">Kies of jy Chrome-geskiedenis wil insluit vir meer gepersonaliseerde ervarings in Google-dienste</translation>

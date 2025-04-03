@@ -97,6 +97,7 @@
 <translation id="1377508275003315939">パスワード</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position}/{count} 件の住所}other{{position}/{count} 件の住所}}</translation>
 <translation id="1383876407941801731">検索</translation>
+<translation id="1385168997509105202">あなたは「<ph name="GROUP_NAME" />」タブグループに直ちにアクセスできなくなり、<ph name="USER_NAME" />（<ph name="USER_EMAIL" />）さんは Google サービスであなたとやり取りできなくなります。</translation>
 <translation id="138618066238211776"><ph name="USER_NAME" /> として続行</translation>
 <translation id="138692594145659985">カードの保存オプション</translation>
 <translation id="1396260204083880024"><ph name="USER_NAME" />（<ph name="USER_EMAIL" />）としてログインしています。アカウント メニューを開きます。</translation>
@@ -512,6 +513,7 @@
 <translation id="3124568093781685165">家族とパスワードを共有する</translation>
 <translation id="3130863904455712965">履歴、その他</translation>
 <translation id="313283613037595347">新しいシークレット タブを作成します。</translation>
+<translation id="3136739222562075778">このカードには、開いているタブの商品の値下げ情報が表示されます</translation>
 <translation id="3138611310073113613">選択を破棄</translation>
 <translation id="3140825265190223781">保存済みのパスワードとパスキー</translation>
 <translation id="3143515551205905069">同期をキャンセル</translation>
@@ -988,6 +990,7 @@
 <translation id="5197255632782567636">インターネット</translation>
 <translation id="5200894869889836319">権限設定のオプション</translation>
 <translation id="5203051773066903947">入力</translation>
+<translation id="5205750905107419335"><ph name="USER_NAME" />（<ph name="USER_EMAIL" />）さんは「<ph name="GROUP_NAME" />」タブグループに直ちにアクセスできなくなり、Google サービスであなたとやり取りできなくなります。</translation>
 <translation id="5206453674369664567">ログアウトしてデータを削除</translation>
 <translation id="5210365745912300556">タブを閉じる</translation>
 <translation id="5211488077761630279">「<ph name="SITE_NAME" />」に <ph name="PERMISSION" /> の使用を許可しますか？</translation>
@@ -1069,6 +1072,7 @@
 <translation id="5567439033041178034">詳しく見る</translation>
 <translation id="5572648434713976849">より関連性の高い候補がアドレスバーに表示されます</translation>
 <translation id="5576885723883013398">新しいウィンドウを開く</translation>
+<translation id="5578543325423650885"><ph name="USER_NAME" />（<ph name="USER_EMAIL" />）さんは「<ph name="GROUP_NAME" />」タブグループに直ちにアクセスできなくなります。</translation>
 <translation id="5578795271662203820">この画像を <ph name="SEARCH_ENGINE" /> で検索</translation>
 <translation id="5579012242779565775">リーディング リストを非表示</translation>
 <translation id="5585019845078534178">カード</translation>

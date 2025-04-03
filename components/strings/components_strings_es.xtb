@@ -2049,6 +2049,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4521280267704259211">Sobre Monarch</translation>
 <translation id="4521916730539354575">Bandeja izquierda</translation>
 <translation id="4522570452068850558">Detalles</translation>
+<translation id="4523580145196408446">Vinculado</translation>
 <translation id="4523643381056109546">Rotulación y letreros</translation>
 <translation id="4524138615196389145">A partir de ahora, puedes confirmar tus tarjetas más rápido con WebAuthn</translation>
 <translation id="45243788195988825">Bloquear <ph name="TOPIC" /></translation>
@@ -3124,6 +3125,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6405181733356710802">¿Ir a <ph name="APP_NAME" />?</translation>
 <translation id="6410264514553301377">Introduce la fecha de vencimiento y el código CVC de la tarjeta <ph name="CREDIT_CARD" /></translation>
 <translation id="6411107829285739505">A4x8</translation>
+<translation id="6412543105195503444">Cuadro de diálogo de aprobación parental</translation>
 <translation id="6414010576370319452">Cuidado de la piel y las uñas</translation>
 <translation id="6415778972515849510">Chromium puede ayudarte a proteger tu cuenta de Google y a cambiar tu contraseña.</translation>
 <translation id="6416877227920300343">EDP</translation>
@@ -4108,6 +4110,7 @@ Más información:
 <translation id="812020627659652807">Eliminar archivos ahora</translation>
 <translation id="8120720167840853945">Esta política no controla el comportamiento predeterminado de otras políticas.</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" no se ha instalado correctamente en tu ordenador o red. Ponte en contacto con el administrador de TI para resolver el problema.</translation>
+<translation id="8130113808541743942">Mover a...</translation>
 <translation id="8131740175452115882">Confirmar</translation>
 <translation id="8133495915926741232">Elige qué categorías amplias de temas se pueden usar para personalizar los anuncios. Si desactivas una categoría más amplia, también se bloquearán los temas relacionados con ella. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="8134058435519644366">Contratación y selección de personal</translation>

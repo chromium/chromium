@@ -17,6 +17,7 @@
 <translation id="1052842760770519282">Některá z vašich hesel nejsou přístupná</translation>
 <translation id="1058669287135776095">Jste offline. Zkontrolujte připojení k internetu a zkuste to znovu.</translation>
 <translation id="10614374240317010">Nikdy se neukládají</translation>
+<translation id="1070689840697074178">Tady si soubory PDF můžete stáhnout</translation>
 <translation id="107147699690128016">Pokud změníte příponu souboru, může se soubor otevřít v jiné aplikaci a potenciálně může být rizikem pro vaše zařízení.</translation>
 <translation id="1080365971383768617">Hesla ve všech vašich zařízeních</translation>
 <translation id="1087176310396019910">Možný spam</translation>
@@ -732,7 +733,6 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="4460861538906892109">{ITEMS_COUNT,plural, =1{1 záložka}few{# záložky}many{# záložky}other{# záložek}}</translation>
 <translation id="4478161224666880173">Na tomto webu můžete použít účet <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />. Pokud chcete pokračovat, přihlaste se k účtu <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="4479972344484327217">Instalace modulu <ph name="MODULE" /> pro Chrome…</translation>
-<translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{Záložka byla uložena do „<ph name="FOLDER_NAME" />“. Je uložena pouze na tomto zařízení.}few{Záložky byly uloženy do složky „<ph name="FOLDER_NAME" />“. Jsou uloženy pouze na tomto zařízení.}many{Záložky byly uloženy do složky „<ph name="FOLDER_NAME" />“. Jsou uloženy pouze na tomto zařízení.}other{Záložky byly uloženy do složky „<ph name="FOLDER_NAME" />“. Jsou uloženy pouze na tomto zařízení.}}</translation>
 <translation id="4484496141267039529">Nejste připojeni. Zkuste to později.</translation>
 <translation id="4487967297491345095">Všechna data aplikace Chrome budou trvale smazána. Zahrnuje to soubory, nastavení, účty, databáze apod.</translation>
 <translation id="4494806687727322324">Administrátor ukládání hesel zapnul</translation>
@@ -936,6 +936,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="539881862970320163">Bylo navrženo silné heslo. Klávesnice je skrytá.</translation>
 <translation id="5409881200985013443">Odeslat v klientu <ph name="CLIENT_NAME" /> kód <ph name="ONE_TIME_CODE" />?</translation>
 <translation id="5410300144953132176"><ph name="OWNER_FULL_NAME" /> (<ph name="OWNER_EMAIL" />) vás zve do skupiny karet. Kdokoli s odkazem může upravovat všechny karty, proto si to dobře rozmyslete. Platnost odkazu vyprší za 48 hodin.</translation>
+<translation id="5412388166586147626">AI asistenta se nepodařilo otevřít. Zkuste to znovu.</translation>
 <translation id="5414836363063783498">Ověřování…</translation>
 <translation id="5415871492522952905">Svou historii a karty budete mít na všech svých zařízeních, abyste mohli pokračovat v tom, co jste dělali</translation>
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) hned přijde o přístup ke skupině karet <ph name="GROUP_NAME" /></translation>
@@ -955,6 +956,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="5456381639095306749">Stáhnout stránku</translation>
 <translation id="5458366071038729214">Zde najdete weby, které sledujete</translation>
 <translation id="5468068603361015296">Chcete soubor <ph name="FILE_NAME" /> přesto stáhnout?</translation>
+<translation id="5471273988133666918">Kartu <ph name="TAB_TITLE" /> nelze přesunout</translation>
 <translation id="548278423535722844">Otevřít v mapové aplikaci</translation>
 <translation id="5492637351392383067">Šifrování v zařízení</translation>
 <translation id="549660026907543296">Přidat se jako <ph name="MEMBER_FULL_NAME" /></translation>
@@ -1328,7 +1330,6 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="7063006564040364415">K synchronizačnímu serveru se nelze připojit.</translation>
 <translation id="7071521146534760487">Spravovat účet</translation>
 <translation id="707155805709242880">Níže zvolte typy dat, která chcete synchronizovat</translation>
-<translation id="707702207692430409">{BOOKMARK_COUNT,plural, =1{Záložka byla uložena do složky „<ph name="FOLDER_NAME" />“ ve vašem účtu <ph name="ACCOUNT_EMAIL" />.}few{Záložky byly uloženy do složky „<ph name="FOLDER_NAME" />“ ve vašem účtu <ph name="ACCOUNT_EMAIL" />.}many{Záložky byly uloženy do složky „<ph name="FOLDER_NAME" />“ ve vašem účtu <ph name="ACCOUNT_EMAIL" />.}other{Záložky byly uloženy do složky „<ph name="FOLDER_NAME" />“ ve vašem účtu <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="7077143737582773186">SD karta</translation>
 <translation id="7078916049958741685">Vymazat data prohlížeče Chrome také z tohoto zařízení</translation>
 <translation id="7085332316435785646">Zvolte, zda pro lépe personalizované prostředí ve službách Google chcete zahrnout historii Chromu</translation>

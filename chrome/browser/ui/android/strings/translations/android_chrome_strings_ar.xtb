@@ -734,7 +734,6 @@
 <translation id="4460861538906892109">{ITEMS_COUNT,plural, =1{إشارة مرجعية واحدة}zero{‫# إشارة مرجعية}two{إشارتان مرجعيتان}few{‫# إشارات مرجعية}many{‫# إشارة مرجعية}other{‫# إشارة مرجعية}}</translation>
 <translation id="4478161224666880173">يمكنك استخدام حسابك على <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> على هذا الموقع الإلكتروني. للمتابعة، سجِّل الدخول إلى <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="4479972344484327217">‏جارٍ تثبيت <ph name="MODULE" /> لمتصفِّح Chrome…</translation>
-<translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{تم حفظ الإشارة المرجعية في "<ph name="FOLDER_NAME" />" على هذا الجهاز فقط.}zero{تم حفظ الإشارات المرجعية في "<ph name="FOLDER_NAME" />" على هذا الجهاز فقط.}two{تم حفظ الإشارتَين المرجعيتَين في "<ph name="FOLDER_NAME" />" على هذا الجهاز فقط.}few{تم حفظ الإشارات المرجعية في "<ph name="FOLDER_NAME" />" على هذا الجهاز فقط.}many{تم حفظ الإشارات المرجعية في "<ph name="FOLDER_NAME" />" على هذا الجهاز فقط.}other{تم حفظ الإشارات المرجعية في "<ph name="FOLDER_NAME" />" على هذا الجهاز فقط.}}</translation>
 <translation id="4484496141267039529">لا يتوفّر اتصال بالإنترنت. يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="4487967297491345095">‏سيتم حذف جميع بيانات تطبيق Chrome نهائيًا. ويشمل ذلك جميع الملفات والإعدادات والحسابات وقواعد البيانات وما إلى ذلك.</translation>
 <translation id="4494806687727322324">فعَّل المشرف ميزة "حفظ كلمات المرور".</translation>
@@ -938,6 +937,7 @@
 <translation id="539881862970320163">تم اقتراح كلمة مرور قوية. لوحة المفاتيح مخفية.</translation>
 <translation id="5409881200985013443">هل تريد إرسال <ph name="ONE_TIME_CODE" /> إلى <ph name="CLIENT_NAME" />؟</translation>
 <translation id="5410300144953132176">تلقّيت دعوة من "<ph name="OWNER_FULL_NAME" />" ‏(<ph name="OWNER_EMAIL" />) للانضمام إلى مجموعة علامات تبويب. يمكن لأيّ مستخدم لديه الرابط تعديل جميع علامات التبويب، لذا يُرجى توخّي الحذر عند الانضمام. وتنتهي صلاحية الرابط بعد 48 ساعة.</translation>
+<translation id="5412388166586147626">تعذَّر فتح المساعد المستند إلى الذكاء الاصطناعي. يُرجى إعادة المحاولة.</translation>
 <translation id="5414836363063783498">جارٍ التحقق...</translation>
 <translation id="5415871492522952905">سيظهر لك كلّ من سجلّ التصفّح وعلامات التبويب على جميع أجهزتك لتتمكّن من مواصلة التصفّح من حيث توقفت</translation>
 <translation id="542073632571549028">سيفقد حساب "<ph name="MEMBER_FULL_NAME" />" ‏(<ph name="EMAIL" />) على الفور إمكانية الوصول إلى مجموعة علامات التبويب "<ph name="GROUP_NAME" />"</translation>
@@ -1330,7 +1330,6 @@
 <translation id="7063006564040364415">تعذر الاتصال بخادم المزامنة.</translation>
 <translation id="7071521146534760487">إدارة الحساب</translation>
 <translation id="707155805709242880">اختَر ما تريد مزامنته أدناه</translation>
-<translation id="707702207692430409">{BOOKMARK_COUNT,plural, =1{تم حفظ الإشارة المرجعية في "<ph name="FOLDER_NAME" />" ضِمن حسابك (<ph name="ACCOUNT_EMAIL" />).}zero{تم حفظ الإشارات المرجعية في "<ph name="FOLDER_NAME" />" ضِمن حسابك (<ph name="ACCOUNT_EMAIL" />).}two{تم حفظ الإشارتَين المرجعيتَين في "<ph name="FOLDER_NAME" />" ضِمن حسابك (<ph name="ACCOUNT_EMAIL" />).}few{تم حفظ الإشارات المرجعية في "<ph name="FOLDER_NAME" />" ضِمن حسابك (<ph name="ACCOUNT_EMAIL" />).}many{تم حفظ الإشارات المرجعية في "<ph name="FOLDER_NAME" />" ضِمن حسابك (<ph name="ACCOUNT_EMAIL" />).}other{تم حفظ الإشارات المرجعية في "<ph name="FOLDER_NAME" />" ضِمن حسابك (<ph name="ACCOUNT_EMAIL" />).}}</translation>
 <translation id="7077143737582773186">‏بطاقة SD</translation>
 <translation id="7078916049958741685">‏حذف بيانات Chrome من هذا الجهاز أيضًا</translation>
 <translation id="7085332316435785646">‏اختَر ما إذا كنت تريد تضمين سجلّ Chrome للحصول على تجارب أكثر تخصيصًا في خدمات Google.</translation>

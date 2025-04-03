@@ -114,6 +114,15 @@ Ten en cuenta que en <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> y <ph 
 <translation id="1065175969514496951">Si se define esta política, se permite acceder a las URLs incluidas en la lista, las cuales se consideran excepciones de <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />, durante la autenticación (por ejemplo, en la pantalla de inicio de sesión y en la de bloqueo). Consulta la descripción de la política para conocer el formato de las entradas de esta lista. Por ejemplo, si se le asigna el valor <ph name="WILDCARD_VALUE" /> a <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />, se bloquearán todas las solicitudes, y esta política se podrá usar para permitir el acceso a una lista limitada de URLs. También se puede usar para abrir excepciones de determinados esquemas, subdominios de otros dominios, puertos o rutas específicas usando el formato especificado en https://support.google.com/chrome/a?p=url_blocklist_filter_format. El filtro más específico determinará si una URL está bloqueada o permitida. La política <ph name="DEVICE_AUTHENTICATION_URL_ALLOWLIST_POLICY_NAME" /> prevalece frente a <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />. Esta política está limitada a 1000 entradas.
 
 Si no se define esta política, no se permitirán excepciones de <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />.</translation>
+<translation id="1065501094422559251">Esta política controla la configuración de código dinámico de <ph name="PRODUCT_NAME" />.
+
+Inhabilitar el código dinámico mejora la seguridad de <ph name="PRODUCT_NAME" />, ya que impide que código dinámico potencialmente hostil y código de terceros hagan cambios en el comportamiento de <ph name="PRODUCT_NAME" />. Sin embargo, podría causar problemas de compatibilidad con el software de terceros (por ejemplo, algunos controladores de impresoras) que se debe ejecutar en el proceso del navegador.
+
+Si a esta política se le asigna el valor 0 (predeterminado) o no se define, <ph name="PRODUCT_NAME" /> usará la configuración predeterminada.
+
+Si se le asigna el valor 1 (DisabledForBrowser), se impedirá que el proceso del navegador <ph name="PRODUCT_NAME" /> cree código dinámico.
+
+Nota: Consulta más información sobre las políticas de mitigación de procesos en la página https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies.</translation>
 <translation id="1068801725746725727">Habilitar la recepción de encuestas sobre Navegación segura</translation>
 <translation id="107045325503547419">Depender del proceso de lanzamiento de la función.</translation>
 <translation id="1073983258515362346">Enviar información sobre la retroiluminación de un dispositivo.
@@ -7722,6 +7731,15 @@ NOTA: El comportamiento predeterminado de los dispositivos de usuarios particula
       2) La configuración regional del sistema.
       3) La configuración regional de respaldo (en-US).</translation>
 <translation id="6493089139124468815">Permitir a los sitios que soliciten al usuario utilizar el permiso de portapapeles de sitios</translation>
+<translation id="6493557163786346587">Si estableces esta política, podrás definir una lista de patrones de URL donde se especifique qué sitios no pueden pedir a los usuarios que les permitan acceder a un puerto serie.
+
+Si no se establece la política, <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> se aplicará a todos los sitios, si se ha definido. Si no, se aplicará la configuración personal del usuario.
+
+En el caso de los patrones de URL que no se incluyan en la política, tendrá preferencia la política <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" /> (si esta los incluye), la política <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> (si se ha establecido) o los ajustes personales de los usuarios, en ese orden.
+
+Si los patrones de URL entran en conflicto con la política <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />, esta política tendrá prioridad.
+
+Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="6493918190032622602">Versión mínima permitida de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="6495337487202227251">Ten en cuenta que esta política está obsoleta y se eliminará de la versión 85 de <ph name="PRODUCT_OS_NAME" />. Utiliza <ph name="SCREEN_LOCK_DELAYS_POLICY_NAME" /> en su lugar.
 
@@ -10268,6 +10286,15 @@ Nota: Esta política es una solución temporal para dejar de usar las APIs de pa
 <translation id="8371178326720637170">Permite que las extensiones gestionadas usen la API Enterprise Hardware Platform</translation>
 <translation id="8373176843640227330">Inhabilitar los informes sobre el Bluetooth del dispositivo</translation>
 <translation id="8375817202037102567">Bloquear el acceso de escritura a archivos y directorios en estos sitios web</translation>
+<translation id="837805585374308454">Si estableces esta política, podrás definir una lista de patrones de URL donde se especifique qué sitios pueden pedir a los usuarios que les permitan acceder a un puerto serie.
+
+Si no se establece la política, <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> se aplicará a todos los sitios, si se ha definido. Si no se ha definido, se aplicará la configuración personal del usuario.
+
+En el caso de los patrones de URL que no se incluyan en la política, tendrá preferencia la política <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" /> (si esta los incluye), la política <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> (si se ha establecido) o los ajustes personales de los usuarios, en ese orden.
+
+Si los patrones de URL entran en conflicto con la política <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" />, estos se ignorarán.
+
+Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="8378266419596669629">Bloquear el permiso de fuentes locales en estos sitios</translation>
 <translation id="8379281645427937253">Una lista de certificados TLS en los que <ph name="PRODUCT_NAME" /> debería confiar para autenticar el servidor.
 Los certificados deben estar codificados en Base64.</translation>

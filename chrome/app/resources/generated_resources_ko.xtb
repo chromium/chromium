@@ -2643,7 +2643,6 @@
 <translation id="2790112944253231361">이 탭이 변경되었습니다.</translation>
 <translation id="2790750268015892264">분리형 웹 앱에서는 스마트 카드 리더를 제어할 수 없습니다. 앱이 스마트 카드에 액세스할 수 없습니다.</translation>
 <translation id="2791529110887957050">Linux 삭제</translation>
-<translation id="279182647442890396">정보를 삭제하시겠습니까?</translation>
 <translation id="2791952154587244007">오류가 발생했습니다. 이 기기에서 키오스크 애플리케이션을 자동 실행할 수 없습니다.</translation>
 <translation id="2792465461386711506">휴대전화의 최근 Chrome 탭을 보려면 Chrome 동기화를 사용 설정하세요</translation>
 <translation id="2792697226874849938">제한 이미지</translation>
@@ -4102,6 +4101,7 @@
 <translation id="3820749202859700794">SECG 타원 곡선 secp521r1(또는 NIST P-521)</translation>
 <translation id="3821074617718452587">휴대전화 허브 알림</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{확장 프로그램 1개 승인됨}other{확장 프로그램 #개 승인됨}}</translation>
+<translation id="3822426549715448461">2자리</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Linux를 사용하려면 최소 <ph name="INSTALL_SIZE" />의 여유 공간이 권장됩니다.</translation>
 <translation id="3824621460022590830">기기 등록 토큰이 잘못되었습니다. 기기 소유자 또는 관리자에게 문의하세요. 오류 코드: <ph name="ERROR_CODE" /></translation>
@@ -4629,6 +4629,7 @@
 <translation id="4203769790323223880">카메라가 허용되지 않음</translation>
 <translation id="4204415812590935863">지금은 테마를 만들 수 없습니다</translation>
 <translation id="4205157409548006256">Linux를 설정하는 중에 오류가 발생했습니다.</translation>
+<translation id="4205643719206044108">추천을 제공하기 위해 방문한 사이트 및 페이지 콘텐츠가 Google과 공유됩니다.</translation>
 <translation id="4206144641569145248">외계인</translation>
 <translation id="4206323443866416204">의견 보고서</translation>
 <translation id="4206585797409671301">요청 표시가 허용됨</translation>
@@ -6999,6 +7000,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5916655001090539219">자동 읽기</translation>
 <translation id="5916664084637901428">사용</translation>
 <translation id="59174027418879706">사용 가능</translation>
+<translation id="5919305207330938913">수집된 모든 데이터는 Google <ph name="BEGIN_LINK" />개인정보처리방침<ph name="END_LINK" />에 따라 사용됩니다.</translation>
 <translation id="5920543303088087579">관리자가 이 네트워크에 연결할 수 없도록 설정했습니다.</translation>
 <translation id="5922963926582976524">인스턴트 핫스팟 네트워크 연결 해제</translation>
 <translation id="5924047253200400718">도움말 보기<ph name="SCANNING_STATUS" /></translation>
@@ -7510,6 +7512,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6283438600881103103">지금 자동으로 로그아웃됩니다.
 <ph name="DOMAIN" />에서 스마트 카드를 삽입해 둔 상태로 둘 것을 요청합니다.</translation>
 <translation id="628352644014831790">4초</translation>
+<translation id="6283823201263716145">데모 모드 기기는 기능 및 성능 개선을 위해 비정상 종료 보고서와 함께 진단 및 사용 데이터를 Google에 자동으로 전송합니다.</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" />은(는) 위험할 수 있으므로 다운로드하지 않습니다.</translation>
 <translation id="6285770818046456882">나와 공유 중인 기기에서 전송을 취소했습니다.</translation>
 <translation id="628699625505156622">위치를 사용합니다. 위치 정보 액세스 권한이 있는 ChromeOS 및 Android 앱, 웹사이트, 서비스가 이 기기의 위치를 사용하도록 허용합니다. 위치 정확도는 Android 앱 및 서비스에 대해 더 정확한 위치 정보를 제공합니다. 이를 위해 Google은 기기 센서 및 기기의 무선 신호에 대한 정보를 주기적으로 처리하여 무선 신호 위치 정보를 크라우드소싱합니다. 이러한 정보는 개인의 신원을 밝히지 않고 사용되며, 위치 정확도와 위치 기반 서비스를 개선하고, 사용자의 요구사항 충족을 목적으로 Google 및 서드 파티의 적법한 이익에 따라 Google 서비스를 개선, 제공, 유지하는 데 사용됩니다. <ph name="BEGIN_LINK1" />위치 사용 자세히 알아보기<ph name="END_LINK1" /></translation>
@@ -8771,6 +8774,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7199452998289813782"><ph name="DEVICE_NAME" /> 기기로 전송 일시중지</translation>
 <translation id="720110658997053098">이 기기를 키오스크 모드로 영구 고정</translation>
 <translation id="7201118060536064622">'<ph name="DELETED_ITEM_NAME" />' 삭제됨</translation>
+<translation id="7201336084980086208">자동 완성 기능은 양식을 제출할 때 운전면허증 또는 여권 번호 등의 정보를 저장할지 묻는 메시지를 표시할 수 있습니다.</translation>
 <translation id="7201420661433230412">파일 보기</translation>
 <translation id="7201432510117121839">이 기기에서는 데스크톱 오디오를 전송할 수 없습니다</translation>
 <translation id="7201535955609308429">확인을 진행하는 동안 잠시 기다려 주세요</translation>
@@ -9371,6 +9375,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7641720519047586765">이 사이트에서 패스키가 삭제되었습니다</translation>
 <translation id="764178579712141045"><ph name="USER_EMAIL" /> 추가됨</translation>
 <translation id="7642778300616172920">민감한 내용 숨기기</translation>
+<translation id="7643117827468520640">약관 검토</translation>
 <translation id="7643842463591647490">{0,plural, =1{열린 창 #개}other{열린 창 #개}}</translation>
 <translation id="7643932971554933646">사이트가 파일을 보도록 허용하시겠습니까?</translation>
 <translation id="7644953783774050577">선택 안함</translation>

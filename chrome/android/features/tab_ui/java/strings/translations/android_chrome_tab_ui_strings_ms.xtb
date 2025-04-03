@@ -19,6 +19,7 @@ Jika anda memadamkan kumpulan, semua orang akan kehilangan akses kepada kumpulan
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Dibuat <ph name="NUM_MINS_ONE" /> minit yang lalu}other{Dibuat <ph name="NUM_MINS_MANY" /> minit yang lalu}}</translation>
 <translation id="1499635324672558517">Tutup semua tab Inkognito?</translation>
 <translation id="1501480321619201731">Padamkan kumpulan</translation>
+<translation id="1505526451013346974">Tambahkan pada <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1555130319947370107">Biru</translation>
 <translation id="161042844686301425">Sian</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> tab dihimpunkan</translation>
