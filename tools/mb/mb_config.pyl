@@ -321,6 +321,7 @@
 
     'android_release_trybot_remoteexec': [
       'android', 'release_trybot_remoteexec', 'strip_debug_info', 'reclient',
+      'android_fastbuild',
     ],
 
     'asan_lsan_release_trybot_remoteexec': [
