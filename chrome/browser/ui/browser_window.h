@@ -256,6 +256,14 @@ class BrowserWindow : public ui::BaseWindow,
   // Sets the starred state for the current tab.
   virtual void SetStarredState(bool is_starred) = 0;
 
+  // Checks if the browser popup is a tab modal popup.
+  virtual bool IsTabModalPopup() const = 0;
+
+  // Sets whether the browser popup is a tab modal popup. Tab modal popups, used
+  // by autofill features, intentionally disable save card prompts because they
+  // are not intended for saving new card details.
+  virtual void SetIsTabModalPopup(bool is_tab_modal_popup) = 0;
+
   // Called when the active tab changes.  Subclasses which implement
   // TabStripModelObserver should implement this instead of ActiveTabChanged();
   // the Browser will call this method while processing that one.
