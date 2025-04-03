@@ -1610,21 +1610,6 @@
             ]
         }
     ],
-    "AutofillAddressFieldSwapping": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillAddressFieldSwapping"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillAddressSuggestionsOnTyping": [
         {
             "platforms": [

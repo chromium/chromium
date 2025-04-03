@@ -1847,7 +1847,6 @@ TEST_F(BrowserAutofillManagerTest,
   autofill_field->set_autofilled_type(autofill_field->Type().GetStorableType());
 
   OnAskForValuesToFill(form, firstname_field);
-#if !BUILDFLAG(IS_IOS)
   // Test that we sent the right values to the external delegate.
   external_delegate()->CheckSuggestions(
       firstname_field.global_id(),
@@ -1857,15 +1856,6 @@ TEST_F(BrowserAutofillManagerTest,
                   SuggestionType::kAddressFieldByFieldFilling),
        CreateSeparator(), CreateUndoOrClearFormSuggestion(),
        CreateManageAddressesSuggestion()});
-#else
-  // Test that we sent the right values to the external delegate.
-  external_delegate()->CheckSuggestions(
-      firstname_field.global_id(),
-      {Suggestion("Elvis", "3734 Elvis Presley Blvd.", kAddressEntryIcon,
-                  SuggestionType::kAddressEntry),
-       CreateSeparator(), CreateUndoOrClearFormSuggestion(),
-       CreateManageAddressesSuggestion()});
-#endif  // !BUILDFLAG(IS_IOS)
 }
 
 // Test that we return no suggestions when the form has no relevant fields.
@@ -3044,7 +3034,6 @@ TEST_F(BrowserAutofillManagerTest, GetFieldSuggestionsWithDuplicateValues) {
   autofill_field->set_autofilled_type(autofill_field->Type().GetStorableType());
   field.set_value(u"Elvis");
   OnAskForValuesToFill(form, field);
-#if !BUILDFLAG(IS_IOS)
   // Test that we sent the right values to the external delegate.
   external_delegate()->CheckSuggestions(
       field.global_id(),
@@ -3054,15 +3043,6 @@ TEST_F(BrowserAutofillManagerTest, GetFieldSuggestionsWithDuplicateValues) {
                   SuggestionType::kAddressFieldByFieldFilling),
        CreateSeparator(), CreateUndoOrClearFormSuggestion(),
        CreateManageAddressesSuggestion()});
-#else
-  // Test that we sent the right values to the external delegate.
-  external_delegate()->CheckSuggestions(
-      field.global_id(),
-      {Suggestion("Elvis", "3734 Elvis Presley Blvd.", kAddressEntryIcon,
-                  SuggestionType::kAddressEntry),
-       CreateSeparator(), CreateUndoOrClearFormSuggestion(),
-       CreateManageAddressesSuggestion()});
-#endif  // !BUILDFLAG(IS_IOS)
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
