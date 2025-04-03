@@ -128,18 +128,21 @@ export class BookmarksApiProxyImpl implements BookmarksApiProxy {
     // provided without the other.
     if (newTitle !== undefined && newUrl !== undefined) {
       ids.forEach(id => {
+        // TODO(crbug.com/408181043): Keeping this extensions call as an
+        // exception since this dialog will not be used anymore after Butter for
+        // Bookmarks will be launched.
         chrome.bookmarks.update(id, {title: newTitle, url: newUrl});
       });
     }
     if (newParentId) {
       ids.forEach(id => {
-        chrome.bookmarks.move(id, {parentId: newParentId});
+        this.handler.moveBookmark(BigInt(id), newParentId);
       });
     }
   }
 
   deleteBookmarks(ids: string[]) {
-    return chrome.bookmarkManagerPrivate.removeTrees(ids);
+    return this.handler.removeBookmarks(ids.map(id => BigInt(id)));
   }
 
   getActiveUrl() {
@@ -158,7 +161,7 @@ export class BookmarksApiProxyImpl implements BookmarksApiProxy {
   }
 
   renameBookmark(id: string, title: string) {
-    chrome.bookmarks.update(id, {title: title});
+    this.handler.renameBookmark(BigInt(id), title);
   }
 
   setSortOrder(sortOrder: SortOrder) {
@@ -178,7 +181,7 @@ export class BookmarksApiProxyImpl implements BookmarksApiProxy {
   }
 
   undo() {
-    chrome.bookmarkManagerPrivate.undo();
+    this.handler.undo();
   }
 
   // Asynchronously gets the list of non empty permanent bookmark nodes.

@@ -65,6 +65,11 @@ class BookmarksPageHandler : public side_panel::mojom::BookmarksPageHandler,
                     int32_t parent_folder_depth,
                     ui::mojom::ClickModifiersPtr click_modifiers,
                     side_panel::mojom::ActionSource source) override;
+  void Undo() override;
+  void RenameBookmark(int64_t node_id, const std::string& new_title) override;
+  void MoveBookmark(int64_t node_id, const std::string& folder_id) override;
+  void RemoveBookmarks(const std::vector<int64_t>& node_ids,
+                       RemoveBookmarksCallback callback) override;
   void SetSortOrder(side_panel::mojom::SortOrder sort_order) override;
   void SetViewType(side_panel::mojom::ViewType view_type) override;
   void ShowContextMenu(const std::string& id,

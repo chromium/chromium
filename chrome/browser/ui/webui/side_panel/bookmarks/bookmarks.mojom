@@ -125,6 +125,25 @@ interface BookmarksPageHandler {
                ui.mojom.ClickModifiers click_modifiers,
                ActionSource source);
 
+  // Triggers the undo from the BookmarkModel.
+  Undo();
+
+  // Renames the bookmark with `node_id` with `new_title`. The id should map to
+  // a regular non permanent node as those are the only ones that can be
+  // renamed.
+  RenameBookmark(int64 node_id, string new_title);
+
+  // Moves the bookmark with `node_id` into the `folder_id` folder.
+  // `folder_id` can be a merged Side Panel ID. `node_id` should map to a
+  // regular non permanent node.
+  MoveBookmark(int64 node_id, string folder_id);
+
+  // Removes the boomkarks with id in `node_ids`. All bookmarks are expected to
+  // map to a regular non permanent node. If some of the nodes are folders, it
+  // will remove all children as well.
+  // Result callback is called when all nodes are removed, it contains no data.
+  RemoveBookmarks(array<int64> node_ids) => ();
+
   // Called when the sort option has been updated and the profile pref should be
   // updated.
   SetSortOrder(SortOrder sort_order);

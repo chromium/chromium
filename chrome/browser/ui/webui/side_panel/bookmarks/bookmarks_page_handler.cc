@@ -39,14 +39,17 @@
 #include "chrome/browser/ui/webui/side_panel/bookmarks/bookmarks.mojom.h"
 #include "chrome/browser/ui/webui/side_panel/bookmarks/bookmarks_side_panel_ui.h"
 #include "chrome/browser/ui/webui/side_panel/reading_list/reading_list_ui.h"
+#include "chrome/browser/undo/bookmark_undo_service_factory.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
+#include "components/bookmarks/browser/scoped_group_bookmark_actions.h"
 #include "components/bookmarks/managed/managed_bookmark_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/undo/bookmark_undo_service.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
@@ -484,10 +487,8 @@ void BookmarksPageHandler::OpenBookmark(
     return;
   }
 
-  bookmarks::BookmarkModel* bookmark_model =
-      BookmarkModelFactory::GetForBrowserContext(browser->profile());
-  const bookmarks::BookmarkNode* bookmark_node =
-      bookmarks::GetBookmarkNodeByID(bookmark_model, node_id);
+  const bookmarks::BookmarkNode* bookmark_node = bookmarks::GetBookmarkNodeByID(
+      bookmark_merged_surface_->bookmark_model(), node_id);
   if (!bookmark_node) {
     return;
   }
@@ -505,6 +506,77 @@ void BookmarksPageHandler::OpenBookmark(
       parent_folder_depth > 0 ? BookmarkLaunchLocation::kSidePanelSubfolder
                               : BookmarkLaunchLocation::kSidePanelFolder,
       profile_metrics::GetBrowserProfileType(browser->profile()));
+}
+
+void BookmarksPageHandler::Undo() {
+  Browser* browser = chrome::FindLastActive();
+  if (!browser) {
+    return;
+  }
+
+  BookmarkUndoServiceFactory::GetForProfile(browser->profile())
+      ->undo_manager()
+      ->Undo();
+}
+
+void BookmarksPageHandler::RenameBookmark(int64_t node_id,
+                                          const std::string& new_title) {
+  bookmarks::BookmarkModel* model = bookmark_merged_surface_->bookmark_model();
+  const bookmarks::BookmarkNode* node_to_rename =
+      bookmarks::GetBookmarkNodeByID(model, node_id);
+  if (!node_to_rename) {
+    return;
+  }
+
+  // Using extensions metrics recording as this action was previously done
+  // through the extensions API.
+  model->SetTitle(node_to_rename, base::UTF8ToUTF16(new_title),
+                  bookmarks::metrics::BookmarkEditSource::kExtension);
+}
+
+void BookmarksPageHandler::MoveBookmark(int64_t node_id,
+                                        const std::string& folder_id) {
+  Browser* browser = chrome::FindLastActive();
+  if (!browser) {
+    return;
+  }
+
+  std::optional<BookmarkParentFolder> parent =
+      GetBookmarkParentFolderFromSidePanel(*bookmark_merged_surface_,
+                                           folder_id);
+  if (!parent) {
+    return;
+  }
+
+  const bookmarks::BookmarkNode* node_to_move = bookmarks::GetBookmarkNodeByID(
+      bookmark_merged_surface_->bookmark_model(), node_id);
+  bookmark_merged_surface_->Move(
+      node_to_move, *parent,
+      bookmark_merged_surface_->GetChildrenCount(*parent), browser);
+}
+
+void BookmarksPageHandler::RemoveBookmarks(const std::vector<int64_t>& node_ids,
+                                           RemoveBookmarksCallback callback) {
+  bookmarks::BookmarkModel* model = bookmark_merged_surface_->bookmark_model();
+  bookmarks::ScopedGroupBookmarkActions group_deletes(model);
+  for (int64_t node_id : node_ids) {
+    const bookmarks::BookmarkNode* node_to_remove =
+        bookmarks::GetBookmarkNodeByID(model, node_id);
+    // TODO(crbug.com/407986687): Investigate if this is the correct behavior.
+    // This fixes the issue when `node_ids` contain both parent and children at
+    // the same time. This is possible when using the compact view with tree
+    // view. Undo may not be working as expected.
+    if (!node_to_remove) {
+      continue;
+    }
+    // Using extensions metrics recording as this action was previously done
+    // through the extensions API.
+    model->Remove(node_to_remove,
+                  bookmarks::metrics::BookmarkEditSource::kExtension,
+                  FROM_HERE);
+  }
+
+  std::move(callback).Run();
 }
 
 void BookmarksPageHandler::SetSortOrder(
