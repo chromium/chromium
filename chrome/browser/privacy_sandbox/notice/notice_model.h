@@ -107,8 +107,15 @@ class Consent : public Notice {
 class NoticeApi {
  public:
   NoticeApi();
-  NoticeApi(const NoticeApi& other) = delete;
-  ~NoticeApi();
+  // Delete copy constructor and copy assignment operator
+  NoticeApi(const NoticeApi&) = delete;
+  NoticeApi& operator=(const NoticeApi&) = delete;
+
+  // Delete move constructor and move assignment operator
+  NoticeApi(NoticeApi&&) = delete;
+  NoticeApi& operator=(NoticeApi&&) = delete;
+
+  virtual ~NoticeApi();
 
   // Accessors.
   const std::vector<Notice*>& GetLinkedNotices();
