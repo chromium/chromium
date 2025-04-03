@@ -45,7 +45,6 @@ chrome.test.runTests([
     assert(fontSelect);
     const initialFont = Ink2Manager.getInstance().getCurrentText().font;
     chrome.test.assertEq(initialFont, fontSelect.value);
-    chrome.test.assertEq(initialFont, fontSelect.style.fontFamily);
 
     const whenChanged =
         eventToPromise('text-changed', Ink2Manager.getInstance());
@@ -57,7 +56,6 @@ chrome.test.runTests([
     chrome.test.assertEq(newValue, changedEvent.detail.font);
     await microtasksFinished();
     chrome.test.assertEq(newValue, fontSelect.value);
-    chrome.test.assertEq(newValue, fontSelect.style.fontFamily);
 
     chrome.test.succeed();
   },

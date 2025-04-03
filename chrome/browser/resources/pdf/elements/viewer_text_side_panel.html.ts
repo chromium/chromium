@@ -15,8 +15,7 @@ export function getHtml(this: ViewerTextSidePanelElement) {
   return html`<!--_html_template_start_-->
     <div class="side-panel-content">
       <h2>Font</h2>
-      <select class="md-select" style="font-family: '${this.currentFont}';"
-          @change="${this.onFontSelected}"=>
+      <select class="md-select" @change="${this.onFontSelected}">
         ${this.fonts.map(font => html`
           <option value="${font}" ?selected="${this.isSelectedFont(font)}">
             ${font}

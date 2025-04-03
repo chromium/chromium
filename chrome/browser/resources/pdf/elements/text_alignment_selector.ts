@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {AnnotationText} from '../constants.js';
@@ -35,6 +36,13 @@ export class TextAlignmentSelectorElement extends
   }
 
   protected currentAlignment_: TextAlignment = TextAlignment.LEFT;
+
+  override focus() {
+    const selectedButton = this.shadowRoot.querySelector<HTMLElement>(
+        'selectable-icon-button[checked]');
+    assert(selectedButton);
+    selectedButton.focus();
+  }
 
   protected onSelectedAlignmentChanged_(e: CustomEvent<{value: string}>) {
     const newAlignment = e.detail.value as TextAlignment;

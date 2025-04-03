@@ -15,6 +15,7 @@ import './elements/viewer_password_dialog.js';
 // <if expr="enable_pdf_ink2">
 import './elements/viewer_bottom_toolbar.js';
 import './elements/viewer_side_panel.js';
+import './elements/viewer_text_bottom_toolbar.js';
 import './elements/viewer_text_side_panel.js';
 // </if>
 import './elements/viewer_pdf_sidenav.js';
