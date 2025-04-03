@@ -248,8 +248,6 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest) {
 
   std::unique_ptr<FormStructure> form_structure =
       std::make_unique<FormStructure>(form);
-  form_structure->set_submission_event(
-      SubmissionIndicatorEvent::HTML_FORM_SUBMISSION);
   for (const std::unique_ptr<AutofillField>& fs_field : *form_structure) {
     fs_field->set_host_form_signature(form_structure->form_signature());
   }
@@ -288,6 +286,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest) {
                                    EMAIL_ADDRESS,
                                    PHONE_HOME_WHOLE_NUMBER};
   options.observed_submission = true;
+  options.submission_event = SubmissionIndicatorEvent::HTML_FORM_SUBMISSION;
 
   EXPECT_THAT(EncodeUploadRequest(*form_structure, options),
               ElementsAre(WithoutMetadataSerializesSameAs(upload)));
@@ -301,8 +300,6 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest) {
   }
 
   form_structure = std::make_unique<FormStructure>(form);
-  form_structure->set_submission_event(
-      SubmissionIndicatorEvent::HTML_FORM_SUBMISSION);
   ASSERT_EQ(form_structure->field_count(), possible_field_types.size());
   for (size_t i = 0; i < form_structure->field_count(); ++i) {
     form_structure->field(i)->set_host_form_signature(

@@ -732,8 +732,8 @@ std::vector<AutofillUploadContents> EncodeUploadRequest(
   }
 
   auto triggering_event =
-      (form.submission_event() != mojom::SubmissionIndicatorEvent::NONE)
-          ? form.submission_event()
+      (options.submission_event != mojom::SubmissionIndicatorEvent::NONE)
+          ? options.submission_event
           : ToSubmissionIndicatorEvent(form.submission_source());
 
   DCHECK(mojom::IsKnownEnumValue(triggering_event));

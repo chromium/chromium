@@ -269,14 +269,6 @@ class FormStructure {
   // Returns whether the form comes from an HTML form with a <form> tag.
   bool is_form_element() const;
 
-  void set_submission_event(mojom::SubmissionIndicatorEvent submission_event) {
-    submission_event_ = submission_event;
-  }
-
-  mojom::SubmissionIndicatorEvent submission_event() const {
-    return submission_event_;
-  }
-
   base::TimeTicks form_parsed_timestamp() const {
     return form_parsed_timestamp_;
   }
@@ -419,11 +411,6 @@ class FormStructure {
 
   // The titles of form's buttons.
   ButtonTitleList button_titles_;
-
-  // The type of the event that was taken as an indication that the form has
-  // been successfully submitted.
-  mojom::SubmissionIndicatorEvent submission_event_ =
-      mojom::SubmissionIndicatorEvent::NONE;
 
   // The source URL (excluding the query parameters and fragment identifiers).
   GURL source_url_;

@@ -37,11 +37,25 @@ struct EncodeUploadRequestOptions {
   EncodeUploadRequestOptions& operator=(EncodeUploadRequestOptions&&);
   ~EncodeUploadRequestOptions();
 
+  // The randomized encoder to use to encode form metadata during upload.
+  // If this is nullptr, no randomized metadata is sent.
   std::unique_ptr<RandomizedEncoder> encoder;
+
+  // The type of the event that was taken as an indication that the form has
+  // been successfully submitted.
+  mojom::SubmissionIndicatorEvent submission_event =
+      mojom::SubmissionIndicatorEvent::NONE;
+
+  // The signatures of forms recently submitted on the same origin within a
+  // small period of time.
   FormStructure::FormAssociations form_associations;
+
   FieldTypeSet available_field_types;
+
   std::optional<FormSignature> login_form_signature;
+
   bool observed_submission = false;
+
   std::map<FieldGlobalId, Field> fields;
 };
 

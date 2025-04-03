@@ -454,10 +454,10 @@ bool VotesUploader::UploadPasswordVote(
   // re-uses credentials, a vote about the saved form is sent. If the user saves
   // credentials, the observed and pending forms are the same.
   FormStructure form_structure(form_to_upload.form_data);
-  form_structure.set_submission_event(submitted_form.submission_event);
 
   autofill::EncodeUploadRequestOptions options;
   options.encoder = RandomizedEncoder::Create(client_->GetPrefs());
+  options.submission_event = submitted_form.submission_event;
   options.login_form_signature = login_form_signature;
   options.observed_submission = true;
 
@@ -564,10 +564,10 @@ void VotesUploader::UploadFirstLoginVotes(
   }
 
   FormStructure form_structure(form_to_upload.form_data);
-  form_structure.set_submission_event(form_to_upload.submission_event);
 
   autofill::EncodeUploadRequestOptions options;
   options.encoder = RandomizedEncoder::Create(client_->GetPrefs());
+  options.submission_event = form_to_upload.submission_event;
   options.observed_submission = true;
 
   FieldTypeMap field_types;
