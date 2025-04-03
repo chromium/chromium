@@ -93,6 +93,11 @@ PrivacySandboxNoticeService::PrivacySandboxNoticeService(Profile* profile)
   CHECK(notice_storage_);
   CHECK(catalog_);
 
+#if !BUILDFLAG(IS_ANDROID)
+  desktop_view_manager_ = std::make_unique<DesktopViewManager>();
+  CHECK(desktop_view_manager_);
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   PopulateNoticeCatalog(catalog_);
 }
 
@@ -146,5 +151,11 @@ PrefService* PrivacySandboxNoticeService::GetPrefService() {
 NoticeCatalog* PrivacySandboxNoticeService::GetCatalog() {
   return catalog_.get();
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+DesktopViewManager* PrivacySandboxNoticeService::GetDesktopViewManager() {
+  return desktop_view_manager_.get();
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace privacy_sandbox

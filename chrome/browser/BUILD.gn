@@ -4021,6 +4021,8 @@ static_library("browser") {
       "preloading/preview/preview_tab.h",
       "preloading/preview/preview_zoom_controller.cc",
       "preloading/preview/preview_zoom_controller.h",
+      "privacy_sandbox/notice/desktop_view_manager.cc",
+      "privacy_sandbox/notice/desktop_view_manager.h",
       "privacy_sandbox/privacy_sandbox_queue_manager.cc",
       "privacy_sandbox/privacy_sandbox_queue_manager.h",
       "privacy_sandbox/privacy_sandbox_survey_desktop_controller.cc",
