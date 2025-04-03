@@ -59,6 +59,10 @@ MaliciousContentStatus GetMaliciousContentStatus(
     case SB_THREAT_TYPE_ENTERPRISE_PASSWORD_REUSE:
     case SB_THREAT_TYPE_BILLING:
       return security_state::MALICIOUS_CONTENT_STATUS_BILLING;
+    case SB_THREAT_TYPE_MANAGED_POLICY_WARN:
+      return security_state::MALICIOUS_CONTENT_STATUS_MANAGED_POLICY_WARN;
+    case SB_THREAT_TYPE_MANAGED_POLICY_BLOCK:
+      return security_state::MALICIOUS_CONTENT_STATUS_MANAGED_POLICY_BLOCK;
     case DEPRECATED_SB_THREAT_TYPE_URL_PASSWORD_PROTECTION_PHISHING:
     case DEPRECATED_SB_THREAT_TYPE_URL_CLIENT_SIDE_MALWARE:
     case SB_THREAT_TYPE_URL_BINARY_MALWARE:
@@ -72,8 +76,6 @@ MaliciousContentStatus GetMaliciousContentStatus(
     case SB_THREAT_TYPE_SUSPICIOUS_SITE:
     case SB_THREAT_TYPE_APK_DOWNLOAD:
     case SB_THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST:
-    case SB_THREAT_TYPE_MANAGED_POLICY_WARN:
-    case SB_THREAT_TYPE_MANAGED_POLICY_BLOCK:
       // These threat types are not currently associated with
       // interstitials, and thus resources with these threat types are
       // not ever whitelisted or pending whitelisting.
