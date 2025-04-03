@@ -89,20 +89,20 @@ std::vector<std::u16string> ClipboardIOS::GetStandardFormats(
   std::vector<std::u16string> types;
   if (IsFormatAvailable(ClipboardFormatType::PlainTextType(), buffer,
                         data_dst)) {
-    types.push_back(base::UTF8ToUTF16(kMimeTypePlainText));
+    types.push_back(kMimeTypePlainText16);
   }
   if (IsFormatAvailable(ClipboardFormatType::HtmlType(), buffer, data_dst)) {
-    types.push_back(base::UTF8ToUTF16(kMimeTypeHtml));
+    types.push_back(kMimeTypeHtml16);
   }
   if (IsFormatAvailable(ClipboardFormatType::SvgType(), buffer, data_dst)) {
-    types.push_back(base::UTF8ToUTF16(kMimeTypeSvg));
+    types.push_back(kMimeTypeSvg16);
   }
   if (IsFormatAvailable(ClipboardFormatType::RtfType(), buffer, data_dst)) {
-    types.push_back(base::UTF8ToUTF16(kMimeTypeRtf));
+    types.push_back(kMimeTypeRtf16);
   }
   if (IsFormatAvailable(ClipboardFormatType::FilenamesType(), buffer,
                         data_dst)) {
-    types.push_back(base::UTF8ToUTF16(kMimeTypeUriList));
+    types.push_back(kMimeTypeUriList16);
   }
   return types;
 }

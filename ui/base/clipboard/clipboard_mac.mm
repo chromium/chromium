@@ -217,23 +217,28 @@ std::vector<std::u16string> ClipboardMac::GetStandardFormats(
     const DataTransferEndpoint* data_dst) const {
   std::vector<std::u16string> types;
   NSPasteboard* pb = GetPasteboard();
-  if (IsFormatAvailable(ClipboardFormatType::PlainTextType(), buffer, data_dst))
-    types.push_back(base::UTF8ToUTF16(kMimeTypePlainText));
-  if (IsFormatAvailable(ClipboardFormatType::HtmlType(), buffer, data_dst))
-    types.push_back(base::UTF8ToUTF16(kMimeTypeHtml));
-  if (IsFormatAvailable(ClipboardFormatType::SvgType(), buffer, data_dst))
-    types.push_back(base::UTF8ToUTF16(kMimeTypeSvg));
-  if (IsFormatAvailable(ClipboardFormatType::RtfType(), buffer, data_dst))
-    types.push_back(base::UTF8ToUTF16(kMimeTypeRtf));
+  if (IsFormatAvailable(ClipboardFormatType::PlainTextType(), buffer,
+                        data_dst)) {
+    types.push_back(kMimeTypePlainText16);
+  }
+  if (IsFormatAvailable(ClipboardFormatType::HtmlType(), buffer, data_dst)) {
+    types.push_back(kMimeTypeHtml16);
+  }
+  if (IsFormatAvailable(ClipboardFormatType::SvgType(), buffer, data_dst)) {
+    types.push_back(kMimeTypeSvg16);
+  }
+  if (IsFormatAvailable(ClipboardFormatType::RtfType(), buffer, data_dst)) {
+    types.push_back(kMimeTypeRtf16);
+  }
   if (IsFormatAvailable(ClipboardFormatType::FilenamesType(), buffer,
                         data_dst)) {
-    types.push_back(base::UTF8ToUTF16(kMimeTypeUriList));
+    types.push_back(kMimeTypeUriList16);
   } else if (pb && [NSImage canInitWithPasteboard:pb]) {
     // Finder Cmd+C places both file and icon onto the clipboard
     // (http://crbug.com/553686), so ignore images if we have detected files.
     // This means that if an image is present with file content, we will always
     // ignore the image, but this matches observable Safari behavior.
-    types.push_back(base::UTF8ToUTF16(kMimeTypePng));
+    types.push_back(kMimeTypePng16);
   }
   return types;
 }

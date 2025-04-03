@@ -51,14 +51,18 @@ void MockClipboardHost::GetSequenceNumber(ui::ClipboardBuffer clipboard_buffer,
 
 std::vector<std::u16string> MockClipboardHost::ReadStandardFormatNames() {
   std::vector<std::u16string> types;
-  if (!plain_text_.empty())
-    types.push_back(base::ASCIIToUTF16(ui::kMimeTypePlainText));
-  if (!html_text_.empty())
-    types.push_back(base::ASCIIToUTF16(ui::kMimeTypeHtml));
-  if (!svg_text_.empty())
-    types.push_back(base::ASCIIToUTF16(ui::kMimeTypeSvg));
-  if (!png_.empty())
-    types.push_back(base::ASCIIToUTF16(ui::kMimeTypePng));
+  if (!plain_text_.empty()) {
+    types.push_back(ui::kMimeTypePlainText16);
+  }
+  if (!html_text_.empty()) {
+    types.push_back(ui::kMimeTypeHtml16);
+  }
+  if (!svg_text_.empty()) {
+    types.push_back(ui::kMimeTypeSvg16);
+  }
+  if (!png_.empty()) {
+    types.push_back(ui::kMimeTypePng16);
+  }
   for (auto& it : custom_data_) {
     CHECK(!base::Contains(types, it.first));
     types.push_back(it.first);
@@ -212,7 +216,7 @@ void MockClipboardHost::WriteUnsanitizedCustomFormat(
   // Append the "web " prefix since it is removed by the clipboard writer during
   // write.
   std::u16string web_format =
-      base::StrCat({base::ASCIIToUTF16(ui::kWebClipboardFormatPrefix), format});
+      base::StrCat({ui::kWebClipboardFormatPrefix16, format});
   unsanitized_custom_data_map_[web_format] = std::move(data_copy);
 }
 

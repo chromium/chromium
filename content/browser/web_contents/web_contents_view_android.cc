@@ -469,9 +469,9 @@ bool WebContentsViewAndroid::OnDragEvent(const ui::DragEventAndroid& event) {
     case JNI_DragEvent::ACTION_DRAG_ENTERED: {
       drag_metadata_.clear();
       for (const std::u16string& mime_type : event.mime_types()) {
-        if (mime_type == base::ASCIIToUTF16(ui::kMimeTypePlainText) ||
-            mime_type == base::ASCIIToUTF16(ui::kMimeTypeHtml) ||
-            mime_type == base::ASCIIToUTF16(ui::kMimeTypeMozillaUrl)) {
+        if (mime_type == ui::kMimeTypePlainText16 ||
+            mime_type == ui::kMimeTypeHtml16 ||
+            mime_type == ui::kMimeTypeMozillaUrl16) {
           drag_metadata_.push_back(DropData::Metadata::CreateForMimeType(
               DropData::Kind::STRING, mime_type));
         } else {

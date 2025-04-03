@@ -425,8 +425,8 @@ std::vector<std::u16string> ClipboardOzone::GetStandardFormats(
          mime_type == kMimeTypeLinuxText || mime_type == kMimeTypeLinuxString ||
          mime_type == kMimeTypeUtf8PlainText ||
          mime_type == kMimeTypeLinuxUtf8String) &&
-        !base::Contains(types, base::UTF8ToUTF16(kMimeTypePlainText))) {
-      types.push_back(base::UTF8ToUTF16(kMimeTypePlainText));
+        !base::Contains(types, kMimeTypePlainText16)) {
+      types.push_back(kMimeTypePlainText16);
       continue;
     }
   }
