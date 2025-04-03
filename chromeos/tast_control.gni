@@ -96,6 +96,9 @@ tast_disabled_tests_from_chrome_all = [
   #b/400849446
   "network.ARCCreateWifiInShillByCmd.manual_proxy",
 
+  # b/408102591
+  "network.ARCEAPWifiProvisioning.eap_wifi_tls",
+
   # b/404605466, Failing on reven-vmtest, blocking uprev.
   "flex.HWIS",
 
