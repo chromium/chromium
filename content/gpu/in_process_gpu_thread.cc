@@ -25,7 +25,7 @@
 #include "base/android/jni_android.h"
 #endif
 
-#if BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_IOS_TVOS)
 #include "gpu/ipc/common/ios/be_layer_hierarchy_transport.h"
 #endif
 
@@ -38,7 +38,7 @@ BASE_FEATURE(kInProcessGpuUseIOThread,
 
 }  // namespace
 
-#if BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_IOS_TVOS)
 class InProcessGpuThread::BELayerHierarchyTransportImpl
     : public gpu::BELayerHierarchyTransport {
  public:
@@ -88,7 +88,7 @@ void InProcessGpuThread::Init() {
   io_thread_type = base::ThreadType::kDisplayCritical;
 #endif
 
-#if BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_IOS_TVOS)
   be_layer_transport_ =
       std::make_unique<InProcessGpuThread::BELayerHierarchyTransportImpl>();
 #endif
