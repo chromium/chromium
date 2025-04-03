@@ -57,6 +57,8 @@ source_set("unit_tests") {
     "page_action_model_unittest.cc",
     "page_action_observer_unittest.cc",
     "page_action_view_unittest.cc",
+    "test_support/fake_tab_interface.cc",
+    "test_support/fake_tab_interface.h",
     "test_support/mock_page_action_model.cc",
     "test_support/mock_page_action_model.h",
     "test_support/page_action_properties.cc",
