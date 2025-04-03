@@ -31,6 +31,11 @@ ActorCoordinator::~ActorCoordinator() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
+// static
+void ActorCoordinator::RegisterWithProfile(Profile* profile) {
+  InitActionBlocklist(profile);
+}
+
 void ActorCoordinator::Act(TabInterface& tab,
                            const BrowserAction& action,
                            ActionResultCallback callback) {

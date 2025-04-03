@@ -44,7 +44,9 @@ void OnGetContextFromFocusedTab(
 
 }  // namespace
 
-GlicActorController::GlicActorController() = default;
+GlicActorController::GlicActorController(Profile* profile) {
+  actor::ActorCoordinator::RegisterWithProfile(profile);
+}
 
 GlicActorController::~GlicActorController() = default;
 

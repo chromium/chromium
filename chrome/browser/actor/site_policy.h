@@ -11,7 +11,12 @@ namespace tabs {
 class TabInterface;
 }
 
+class Profile;
+
 namespace actor {
+
+// Called during initialization of the given profile, to load the blocklist.
+void InitActionBlocklist(Profile* profile);
 
 using DecisionCallback = base::OnceCallback<void(/*may_act=*/bool)>;
 
