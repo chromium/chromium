@@ -169,6 +169,8 @@ void IdentityDialogController::OnAccountSelected(
     const content::IdentityRequestAccount::LoginState& login_state) {
   CHECK(on_account_selection_);
 
+  CollectTrainingData(UserAction::kSuccess);
+
   // We only allow dismiss after account selection on active modes and not on
   // passive mode.
   // TODO(crbug.com/335886093): Figure out whether users can cancel after
@@ -180,8 +182,6 @@ void IdentityDialogController::OnAccountSelected(
   std::move(on_account_selection_)
       .Run(idp_config_url, account_id,
            login_state == content::IdentityRequestAccount::LoginState::kSignIn);
-
-  CollectTrainingData(UserAction::kSuccess);
 }
 
 void IdentityDialogController::OnDismiss(DismissReason dismiss_reason) {
@@ -191,15 +191,18 @@ void IdentityDialogController::OnDismiss(DismissReason dismiss_reason) {
     return;
   }
 
-  on_account_selection_.Reset();
-  std::move(on_dismiss_).Run(dismiss_reason);
-
   if (dismiss_reason == DismissReason::kCloseButton ||
       dismiss_reason == DismissReason::kSwipe) {
     CollectTrainingData(UserAction::kClosed);
-    return;
+  } else {
+    CollectTrainingData(UserAction::kIgnored);
   }
-  CollectTrainingData(UserAction::kIgnored);
+
+  on_account_selection_.Reset();
+  std::move(on_dismiss_).Run(dismiss_reason);
+
+  // Do not access member variables from this point onwards because
+  // |on_dismiss_| may have destroyed this object.
 }
 
 std::string IdentityDialogController::GetTitle() const {
