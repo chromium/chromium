@@ -1969,10 +1969,6 @@ BASE_FEATURE(kOpenAllUrlsOrFilesOnDrop,
              "OpenAllUrlsOrFilesOnDrop",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kOptimizeLoadingDataUrls,
-             "OptimizeLoadingDataUrls",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kOriginAgentClusterDefaultEnabled,
              "OriginAgentClusterDefaultEnable",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -2421,10 +2417,6 @@ BASE_FEATURE(kSharedStorageSelectURLSavedQueries,
 
 BASE_FEATURE(kSharedStorageAPIEnableWALForDatabase,
              "SharedStorageAPIEnableWALForDatabase",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kSimplifyLoadingTransparentPlaceholderImage,
-             "SimplifyLoadingTransparentPlaceholderImage",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 const char kSkipTouchEventFilterTypeParamName[] = "type";

@@ -4308,7 +4308,7 @@ enum WebFeature {
   kFoldableAPIs = 4938,
   kSnapEvent = 4939,
   kStaticPropertyInAnimation = 4940,
-  kSimplifyLoadingTransparentPlaceholderImage = 4941,
+  kOBSOLETE_SimplifyLoadingTransparentPlaceholderImage = 4941,
   kIdentityDigitalCredentialsSuccess = 4942,
   kOBSOLETE_V8DeviceProperties_UniqueId_AttributeGetter = 4943,
   // The items above roughly this point are available in the M125 branch.

@@ -703,9 +703,8 @@ class PLATFORM_EXPORT ResourceFetcher
   bool allow_stale_resources_ : 1;
   bool image_fetched_ : 1;
   bool stale_while_revalidate_enabled_ : 1;
-  const bool transparent_image_optimization_enabled_ : 1;
   bool speculative_decode_in_flight_ : 1;
-  // 26 bits left (decrease the count when you add bit fields above)
+  // 27 bits left (decrease the count when you add bit fields above)
 
   static constexpr uint32_t kKeepaliveInflightBytesQuota = 64 * 1024;
 
