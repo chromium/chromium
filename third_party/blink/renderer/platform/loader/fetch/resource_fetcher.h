@@ -562,8 +562,7 @@ class PLATFORM_EXPORT ResourceFetcher
                               RevalidationPolicyForMetrics,
                               const FetchParameters&,
                               const ResourceFactory&,
-                              bool is_static_data,
-                              bool same_top_frame_site_resource_cached) const;
+                              bool is_static_data) const;
 
   void ScheduleStaleRevalidate(Resource* stale_resource);
   void RevalidateStaleResource(Resource* stale_resource);

@@ -1190,8 +1190,7 @@ void ResourceFetcher::UpdateMemoryCacheStats(
     RevalidationPolicyForMetrics policy,
     const FetchParameters& params,
     const ResourceFactory& factory,
-    bool is_static_data,
-    bool same_top_frame_site_resource_cached) const {
+    bool is_static_data) const {
   // Do not count static data or data not associated with the MemoryCache.
   if (is_static_data || !IsMainThread()) {
     return;
@@ -1446,7 +1445,6 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
     }
   }
 
-  bool same_top_frame_site_resource_cached = false;
   bool in_cached_resources_map = cached_resources_map_.Contains(
       MemoryCache::RemoveFragmentIdentifierIfNeeded(params.Url()));
 
@@ -1474,12 +1472,6 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
       if (resource) {
         policy = DetermineRevalidationPolicy(resource_type, params, *resource,
                                              is_static_data);
-        scoped_refptr<const SecurityOrigin> top_frame_origin =
-            resource_request.TopFrameOrigin();
-        if (top_frame_origin) {
-          same_top_frame_site_resource_cached =
-              resource->AppendTopFrameSiteForMetrics(*top_frame_origin);
-        }
       }
     }
   }
@@ -1490,7 +1482,7 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
 
   UpdateMemoryCacheStats(
       resource, MapToPolicyForMetrics(policy, resource, defer_policy), params,
-      factory, is_static_data, same_top_frame_site_resource_cached);
+      factory, is_static_data);
 
   switch (policy) {
     case RevalidationPolicy::kReload:
