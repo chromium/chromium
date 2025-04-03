@@ -1757,7 +1757,7 @@ int StyleBuilderConverter::ConvertBorderWidth(StyleResolverState& state,
 }
 
 Superellipse StyleBuilderConverter::ConvertCornerShape(
-    StyleResolverState& state,
+    const StyleResolverState& state,
     const CSSValue& value) {
   if (const auto* keyword = DynamicTo<CSSIdentifierValue>(value)) {
     switch (keyword->GetValueID()) {

@@ -53,6 +53,7 @@
 #include "third_party/blink/renderer/core/animation/css_shadow_list_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_shape_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_size_list_interpolation_type.h"
+#include "third_party/blink/renderer/core/animation/css_superellipse_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_text_indent_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_time_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_transform_interpolation_type.h"
@@ -218,6 +219,13 @@ const InterpolationTypes& CSSInterpolationTypesMap::Get(
       case CSSPropertyID::kZIndex:
         applicable_types->push_back(
             std::make_unique<CSSNumberInterpolationType>(property));
+        break;
+      case CSSPropertyID::kCornerTopLeftShape:
+      case CSSPropertyID::kCornerTopRightShape:
+      case CSSPropertyID::kCornerBottomLeftShape:
+      case CSSPropertyID::kCornerBottomRightShape:
+        applicable_types->push_back(
+            std::make_unique<CSSSuperellipseInterpolationType>(property));
         break;
       case CSSPropertyID::kLineHeight:
       case CSSPropertyID::kTabSize:

@@ -166,6 +166,8 @@ blink_core_sources("animation") {
     "css_shape_interpolation_type.h",
     "css_size_list_interpolation_type.cc",
     "css_size_list_interpolation_type.h",
+    "css_superellipse_interpolation_type.cc",
+    "css_superellipse_interpolation_type.h",
     "css_text_indent_interpolation_type.cc",
     "css_text_indent_interpolation_type.h",
     "css_time_interpolation_type.cc",
