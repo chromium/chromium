@@ -420,8 +420,7 @@ gfx::Range TabStripModel::InsertDetachedTabGroupAt(
   CHECK(!group_model_->ContainsTabGroup(group->collection_->GetTabGroupId()));
 
   // Notify tab is added to model.
-  for (size_t i = 0; i < group->collection_->ChildCount(); i++) {
-    tabs::TabModel* tab = group->collection_->GetTabAtIndex(i);
+  for (tabs::TabModel* tab : group->collection_->GetTabsRecursive()) {
     tab->OnAddedToModel(this);
   }
 
@@ -518,17 +517,15 @@ std::unique_ptr<DetachedTabGroup> TabStripModel::DetachTabGroupImpl(
 
   // Remove the group collection.
   std::unique_ptr<tabs::TabGroupTabCollection> group_collection =
-      contents_data_->unpinned_collection()->RemoveGroup(
-          contents_data_->unpinned_collection()->GetTabGroupCollection(
-              group_id));
+      contents_data_->RemoveGroup(
+          contents_data_->GetTabGroupCollection(group_id));
 
   // Send group detach notification.
   OnTabGroupDetached(group_collection.get());
   group_model_->RemoveTabGroup(group_id, base::PassKey<TabStripModel>());
 
   // Notify tab is removed from model
-  for (size_t i = 0; i < group_collection->ChildCount(); i++) {
-    tabs::TabModel* tab = group_collection->GetTabAtIndex(i);
+  for (tabs::TabModel* tab : group_collection->GetTabsRecursive()) {
     tab->OnRemovedFromModel();
   }
 
@@ -567,8 +564,7 @@ gfx::Range TabStripModel::InsertDetachedTabGroupImpl(
       detached_group->collection_->GetTabGroupId();
   tabs::TabGroupTabCollection* group_collection =
       detached_group->collection_.get();
-  for (size_t i = 0; i < group_collection->ChildCount(); i++) {
-    tabs::TabModel* tab = group_collection->GetTabAtIndex(i);
+  for (tabs::TabModel* tab : group_collection->GetTabsRecursive()) {
     delegate()->WillAddWebContents(tab->GetContents());
   }
 
@@ -597,8 +593,7 @@ gfx::Range TabStripModel::InsertDetachedTabGroupImpl(
 
   ValidateTabStripModel();
 
-  for (size_t i = 0; i < group_collection->ChildCount(); i++) {
-    tabs::TabModel* tab = group_collection->GetTabAtIndex(i);
+  for (tabs::TabModel* tab : group_collection->GetTabsRecursive()) {
     tab->DidInsert(base::PassKey<TabStripModel>());
   }
 
@@ -1419,10 +1414,17 @@ void TabStripModel::SwapTabsInSplit(split_tabs::SplitTabId split_id) {
       GetTabsAndIndicesInSplit(split_id);
 
   CHECK_EQ(initial_tabs_with_indices.size(), 2u);
-  MoveTabToIndexImpl(initial_tabs_with_indices[0].second,
-                     initial_tabs_with_indices[0].second + 1,
-                     GetTabGroupForTab(initial_tabs_with_indices[0].second),
-                     IsTabPinned(initial_tabs_with_indices[0].second), false);
+  int index_of_first_tab_in_split = initial_tabs_with_indices[0].second;
+  MoveTabToIndexImpl(index_of_first_tab_in_split,
+                     index_of_first_tab_in_split + 1,
+                     GetTabGroupForTab(index_of_first_tab_in_split),
+                     IsTabPinned(index_of_first_tab_in_split), false);
+  // TODO(crbug.com/392950857): After split tab collections are supported,
+  // rewrite this using collections. For now, since MoveTabToIndexImpl doesn't
+  // support split ids, manually set the split id of the second tab to be the
+  // first's.
+  GetTabModelAtIndex(index_of_first_tab_in_split + 1)
+      ->set_split(GetTabModelAtIndex(index_of_first_tab_in_split)->GetSplit());
 
   std::vector<std::pair<tabs::TabInterface*, int>> final_tabs_with_indices =
       GetTabsAndIndicesInSplit(split_id);

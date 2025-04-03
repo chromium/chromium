@@ -100,6 +100,9 @@ class TabModel final : public TabInterface, public TabStripModelObserver {
   // tab hierarchy, maintaining consistent organization.
   void OnReparented(TabCollection* parent, base::PassKey<TabCollection>);
 
+  // Must be called whenever any of this tab's ancestors change.
+  void OnAncestorChanged(base::PassKey<TabCollection>);
+
   // Called by TabStripModel when a tab is going to be backgrounded (any
   // operation that makes the tab no longer visible, including removal from the
   // TabStripModel). Not called if TabStripModel is being destroyed.
@@ -166,6 +169,9 @@ class TabModel final : public TabInterface, public TabStripModelObserver {
   // soon_to_be_owning_model_ is removed. TabInterface logic can only be invoked
   // in contexts where a model exists.
   TabStripModel* GetModelForTabInterface() const;
+
+  // Updates the tab's properties based on all of its ancestor collections.
+  void UpdateProperties();
 
   // Tracks whether a tab-modal UI is showing.
   class ScopedTabModalUIImpl : public ScopedTabModalUI {
