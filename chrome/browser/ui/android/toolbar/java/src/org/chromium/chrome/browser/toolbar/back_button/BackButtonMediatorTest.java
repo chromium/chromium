@@ -181,6 +181,16 @@ public class BackButtonMediatorTest {
     }
 
     @Test
+    public void testTabChangesToNonInteractive_shouldKeepEnabledButton() {
+        mTab.setCanGoBack(true);
+        mTabSupplier.set(mTab);
+        verifyEnabled(mModel);
+
+        mTabSupplier.set(null);
+        verifyEnabled(mModel);
+    }
+
+    @Test
     public void testLoadingStartedCanGoBack_shouldEnableButton() {
         mTab.setCanGoBack(true);
         mTabSupplier.set(mTab);

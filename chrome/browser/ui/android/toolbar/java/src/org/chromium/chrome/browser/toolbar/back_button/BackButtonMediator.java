@@ -76,7 +76,12 @@ class BackButtonMediator implements ThemeColorProvider.TintObserver {
                 new TabSupplierObserver(tabSupplier, /* shouldTrigger= */ true) {
                     @Override
                     protected void onObservingDifferentTab(Tab tab) {
+                        // ActivityTabProvider returns null for non-interactive tabs, e.g. tab
+                        // switcher, and we actually want to keep the most recent tab.
+                        // Skipping null to keep recent.
+                        if (tab == null) return;
                         mCurrentTab = tab;
+
                         updateButtonEnabledState();
                     }
 

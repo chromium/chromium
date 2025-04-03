@@ -57,6 +57,8 @@ public class BackButtonCoordinator {
         final var model =
                 new PropertyModel.Builder(BackButtonProperties.ALL_KEYS)
                         .with(BackButtonProperties.TINT_COLOR_LIST, iconColorList)
+                        .with(BackButtonProperties.IS_ENABLED, view.isEnabled())
+                        .with(BackButtonProperties.IS_FOCUSABLE, view.isFocusable())
                         .build();
         mMediator =
                 new BackButtonMediator(
