@@ -31,6 +31,16 @@ namespace autofill {
 //   program_logo         The url of the logo icon for the card.
 //   loyalty_card_number  A string representation of the unmasked loyalty card
 //                        number suffix.
+// -----------------------------------------------------------------------------
+// loyalty_card_merchant_domain
+//                      Contains the mapping of merchant domains and card linked
+//                      offers.
+//
+//   loyalty_card_id    Identifies the relevant loyalty card. Matches the
+//                      `loyalty_card_id` in the loyalty_cards table.
+//   merchant_domain    List of full origins for merchant websites on which
+//                      this card would apply.
+// -----------------------------------------------------------------------------
 class ValuablesTable : public WebDatabaseTable {
  public:
   ValuablesTable();
@@ -68,6 +78,7 @@ class ValuablesTable : public WebDatabaseTable {
 
  private:
   bool InitLoyaltyCardsTable();
+  bool InitLoyaltyCardMerchantDomainTable();
 
   // Renames the database table from `loyalty_card` to `loyalty_cards` and
   // renames the following columns:

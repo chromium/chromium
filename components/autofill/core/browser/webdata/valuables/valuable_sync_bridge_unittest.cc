@@ -42,7 +42,7 @@ constexpr char kInvalidId[] = "";
 LoyaltyCard TestLoyaltyCard(std::string_view id) {
   return LoyaltyCard(ValuableId(std::string(id)), "merchant_name",
                      "program_name", GURL("http://foobar.com/logo.png"),
-                     "card_number");
+                     "card_number", {GURL("https://domain.example")});
 }
 
 std::vector<LoyaltyCard> ExtractLoyaltyCardsFromDataBatch(
@@ -283,6 +283,7 @@ TEST_F(ValuableSyncBridgeTest,
   loyalty_card->mutable_program_logo()->assign("program_logo");
   loyalty_card->mutable_merchant_name()->assign("merchant_name");
   loyalty_card->mutable_loyalty_card_number()->assign("card_number");
+  *loyalty_card->add_merchant_domains() = "https://www.domain.example";
 
   EXPECT_EQ(bridge()
                 .TrimAllSupportedFieldsFromRemoteSpecifics(specifics)
@@ -309,6 +310,7 @@ TEST_F(ValuableSyncBridgeTest,
   loyalty_card->mutable_program_logo()->assign("program_logo");
   loyalty_card->mutable_merchant_name()->assign("merchant_name");
   loyalty_card->mutable_loyalty_card_number()->assign("card_number");
+  *loyalty_card->add_merchant_domains() = "https://www.domain.example";
 
   EXPECT_EQ(bridge()
                 .TrimAllSupportedFieldsFromRemoteSpecifics(

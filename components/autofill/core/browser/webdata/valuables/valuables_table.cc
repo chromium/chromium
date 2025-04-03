@@ -7,6 +7,7 @@
 #include <optional>
 #include <string_view>
 
+#include "base/strings/strcat.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/data_model/valuables/valuable_types.h"
 #include "components/autofill/core/browser/webdata/autofill_table_utils.h"
@@ -26,16 +27,45 @@ constexpr std::string_view kLoyaltyCardProgramName = "program_name";
 constexpr std::string_view kLoyaltyCardProgramLogo = "program_logo";
 constexpr std::string_view kLoyaltyCardNumber = "loyalty_card_number";
 
+constexpr std::string_view kLoyaltyCardMerchantDomainTable =
+    "loyalty_card_merchant_domain";
+constexpr std::string_view kMerchantDomain = "merchant_domain";
+
+// Returns the merchant domains for the loyalty card identified by
+// `loyalty_card_id`.
+std::vector<GURL> GetMerchantDomainsForLoyaltyCardId(
+    sql::Database* db,
+    const ValuableId& loyalty_card_id) {
+  std::vector<GURL> merchant_domains;
+  sql::Statement s_card_merchant_domain;
+  SelectBuilder(db, s_card_merchant_domain, kLoyaltyCardMerchantDomainTable,
+                {kLoyaltyCardId, kMerchantDomain},
+                base::StrCat({"WHERE ", kLoyaltyCardId, " = ?"}));
+  s_card_merchant_domain.BindString(0, loyalty_card_id.value());
+  while (s_card_merchant_domain.Step()) {
+    const std::string merchant_domain = s_card_merchant_domain.ColumnString(1);
+    if (!merchant_domain.empty()) {
+      merchant_domains.emplace_back(merchant_domain);
+    }
+  }
+  return merchant_domains;
+}
+
 // Expects that `s` is pointing to a query result containing `kLoyaltyCardId`,
 // `kLoyaltyCardMerchantName`, `kLoyaltyCardProgramName`,
-// `kLoyaltyCardProgramLogo` and `kUnmaskedLoyaltyCardSuffix` in that order.
+// `kLoyaltyCardProgramLogo` and `kLoyaltyCardNumber` in that order.
 // Constructs a `LoyaltyCard` from that data.
-std::optional<LoyaltyCard> LoyaltyCardFromStatement(sql::Statement& s) {
-  LoyaltyCard card(/*loyalty_card_id=*/ValuableId(s.ColumnString(0)),
-                   /*merchant_name=*/s.ColumnString(1),
-                   /*program_name=*/s.ColumnString(2),
-                   /*program_logo=*/GURL(s.ColumnStringView(3)),
-                   /*loyalty_card_number=*/s.ColumnString(4));
+std::optional<LoyaltyCard> LoyaltyCardFromStatement(sql::Database* db,
+                                                    sql::Statement& s) {
+  ValuableId loyalty_card_id = ValuableId(s.ColumnString(0));
+  LoyaltyCard card(
+      /*loyalty_card_id=*/loyalty_card_id,
+      /*merchant_name=*/s.ColumnString(1),
+      /*program_name=*/s.ColumnString(2),
+      /*program_logo=*/GURL(s.ColumnStringView(3)),
+      /*loyalty_card_number=*/s.ColumnString(4),
+      /*merchant_domains=*/
+      GetMerchantDomainsForLoyaltyCardId(db, loyalty_card_id));
   // Ignore invalid loyalty cards, for more information see
   // `LoyaltyCard::IsValid()`. Loyalty cards coming from sync should be valid,
   // so this situation should not happen.
@@ -63,7 +93,7 @@ WebDatabaseTable::TypeKey ValuablesTable::GetTypeKey() const {
 }
 
 bool ValuablesTable::CreateTablesIfNecessary() {
-  return InitLoyaltyCardsTable();
+  return InitLoyaltyCardsTable() && InitLoyaltyCardMerchantDomainTable();
 }
 
 bool ValuablesTable::InitLoyaltyCardsTable() {
@@ -73,6 +103,12 @@ bool ValuablesTable::InitLoyaltyCardsTable() {
                                  {kLoyaltyCardProgramName, "TEXT NOT NULL"},
                                  {kLoyaltyCardProgramLogo, "TEXT NOT NULL"},
                                  {kLoyaltyCardNumber, "TEXT NOT NULL"}});
+}
+
+bool ValuablesTable::InitLoyaltyCardMerchantDomainTable() {
+  return CreateTableIfNotExists(
+      db(), kLoyaltyCardMerchantDomainTable,
+      {{kLoyaltyCardId, "VARCHAR"}, {kMerchantDomain, "VARCHAR"}});
 }
 
 bool ValuablesTable::MigrateToVersion138() {
@@ -111,7 +147,8 @@ std::vector<LoyaltyCard> ValuablesTable::GetLoyaltyCards() const {
        kLoyaltyCardProgramLogo, kLoyaltyCardNumber});
   std::vector<LoyaltyCard> result;
   while (query.Step()) {
-    if (auto loyalty_card = LoyaltyCardFromStatement(query)) {
+    if (std::optional<LoyaltyCard> loyalty_card =
+            LoyaltyCardFromStatement(db(), query)) {
       result.emplace_back(std::move(*loyalty_card));
     }
   }
@@ -122,6 +159,7 @@ bool ValuablesTable::SetLoyaltyCards(
     const std::vector<LoyaltyCard>& loyalty_cards) const {
   // Remove the existing set of loyalty cards.
   bool response = Delete(db(), kLoyaltyCardsTable);
+  response &= Delete(db(), kLoyaltyCardMerchantDomainTable);
 
   sql::Statement insert_cards;
   InsertBuilder(
@@ -145,6 +183,17 @@ bool ValuablesTable::SetLoyaltyCards(
     insert_cards.BindString(index++, loyalty_card.loyalty_card_number());
     response &= insert_cards.Run();
     insert_cards.Reset(/*clear_bound_vars=*/true);
+
+    for (const GURL& merchant_domain : loyalty_card.merchant_domains()) {
+      // Insert new loyalty_card_merchant_domain values.
+      sql::Statement insert_card_merchant_domains;
+      InsertBuilder(db(), insert_card_merchant_domains,
+                    kLoyaltyCardMerchantDomainTable,
+                    {kLoyaltyCardId, kMerchantDomain}, /*or_replace=*/true);
+      insert_card_merchant_domains.BindString(0, loyalty_card.id().value());
+      insert_card_merchant_domains.BindString(1, merchant_domain.spec());
+      response &= insert_card_merchant_domains.Run();
+    }
   }
   return response;
 }
@@ -156,10 +205,10 @@ std::optional<LoyaltyCard> ValuablesTable::GetLoyaltyCardById(
       db(), query, kLoyaltyCardsTable,
       {kLoyaltyCardId, kLoyaltyCardMerchantName, kLoyaltyCardProgramName,
        kLoyaltyCardProgramLogo, kLoyaltyCardNumber},
-      "WHERE loyalty_card_id=?");
+      base::StrCat({"WHERE ", kLoyaltyCardId, " = ?"}));
   query.BindString(0, loyalty_card_id.value());
   if (query.is_valid() && query.Step()) {
-    return LoyaltyCardFromStatement(query);
+    return LoyaltyCardFromStatement(db(), query);
   }
   return std::nullopt;
 }

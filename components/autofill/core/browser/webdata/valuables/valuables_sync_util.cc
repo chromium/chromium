@@ -22,6 +22,10 @@ AutofillValuableSpecifics CreateSpecificsFromLoyaltyCard(
   loyalty_card->set_program_name(card.program_name());
   loyalty_card->set_program_logo(card.program_logo().possibly_invalid_spec());
   loyalty_card->set_loyalty_card_number(card.loyalty_card_number());
+  for (const GURL& merchant_domain : card.merchant_domains()) {
+    *loyalty_card->add_merchant_domains() = merchant_domain.spec();
+  }
+
   return specifics;
 }
 
@@ -29,11 +33,13 @@ LoyaltyCard CreateAutofillLoyaltyCardFromSpecifics(
     const AutofillValuableSpecifics& specifics) {
   // Since the specifics are guaranteed to be valid by `IsEntityDataValid()`,
   // the conversion will succeed.
-  return LoyaltyCard(ValuableId(specifics.id()),
-                     specifics.loyalty_card().merchant_name(),
-                     specifics.loyalty_card().program_name(),
-                     GURL(specifics.loyalty_card().program_logo()),
-                     specifics.loyalty_card().loyalty_card_number());
+  const auto& repeated_domains = specifics.loyalty_card().merchant_domains();
+  std::vector<GURL> domains(repeated_domains.begin(), repeated_domains.end());
+  return LoyaltyCard(
+      ValuableId(specifics.id()), specifics.loyalty_card().merchant_name(),
+      specifics.loyalty_card().program_name(),
+      GURL(specifics.loyalty_card().program_logo()),
+      specifics.loyalty_card().loyalty_card_number(), std::move(domains));
 }
 
 std::unique_ptr<syncer::EntityData> CreateEntityDataFromLoyaltyCard(
@@ -66,6 +72,7 @@ AutofillValuableSpecifics TrimAutofillValuableSpecificsDataForCaching(
   trimmed_specifics.mutable_loyalty_card()->clear_program_name();
   trimmed_specifics.mutable_loyalty_card()->clear_program_logo();
   trimmed_specifics.mutable_loyalty_card()->clear_loyalty_card_number();
+  trimmed_specifics.mutable_loyalty_card()->clear_merchant_domains();
   trimmed_specifics.clear_valuable_data();
   return trimmed_specifics;
 }
