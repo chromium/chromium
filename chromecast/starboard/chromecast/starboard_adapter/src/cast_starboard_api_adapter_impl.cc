@@ -24,31 +24,25 @@ namespace {
 CastStarboardApiAdapterImpl* g_instance = nullptr;
 std::mutex g_instance_mutex;
 
-void DeleteInstance() {
-  std::unique_lock<std::mutex> lock(g_instance_mutex);
-  if (g_instance) {
-    delete g_instance;
-  }
-}
-
 }  // namespace
 
 CastStarboardApiAdapter* CastStarboardApiAdapter::GetInstance() {
-  // Perform a lazy check, if this is already initialized we can skip checking
-  // inits.
+  std::unique_lock<std::mutex> lock(g_instance_mutex);
   if (!g_instance) {
-    // If we do not have an instance, we must re-validate once we have acquired
-    // the mutex that it was not already constructed.
-    std::unique_lock<std::mutex> lock(g_instance_mutex);
     // The instance is assigned by the class's constructor.
-    if (!g_instance) {
-      new CastStarboardApiAdapterImpl();
+    new CastStarboardApiAdapterImpl();
 
-      // Since OzonePlatform* is always orphaned, a handle to CastStarboardApi
-      // is still held by CastEglPlatformStarboard rather than being cleaned up
-      // by the last Unsubscribe. Artificially clean it up at process exit.
-      base::AtExitManager::RegisterTask(base::BindOnce(DeleteInstance));
-    }
+    // We use an AtExitManager as a signal that the runtime is shutting down.
+    // Note that this callback is not guaranteed to run after all other cast
+    // code has been shut down. For example, the media_thread_ in
+    // CastContentBrowserClient is sometimes destructed after AtExitManager runs
+    // its callbacks (meaning StarboardApiWrapperBase or other media code may
+    // still be subscribed).
+    //
+    // base::Unretained is safe because the AtExitManager is responsible for
+    // deleting g_instance.
+    base::AtExitManager::RegisterTask(base::BindOnce(
+        &CastStarboardApiAdapterImpl::Release, base::Unretained(g_instance)));
   }
 
   return g_instance;
@@ -60,13 +54,7 @@ CastStarboardApiAdapterImpl::CastStarboardApiAdapterImpl()
   g_instance = this;
 }
 
-CastStarboardApiAdapterImpl::~CastStarboardApiAdapterImpl() {
-  if (initialized_) {
-    Release();
-  }
-
-  g_instance = nullptr;
-}
+CastStarboardApiAdapterImpl::~CastStarboardApiAdapterImpl() = default;
 
 SbEglNativeDisplayType CastStarboardApiAdapterImpl::GetEglNativeDisplayType() {
   return SB_EGL_DEFAULT_DISPLAY;
@@ -82,9 +70,11 @@ void CastStarboardApiAdapterImpl::SbEventHandleInternal(const SbEvent* event) {
   // need to be checked here for some types before propagating.
   switch (event->type) {
     case kSbEventTypeStart:
+      LOG(INFO) << "Received kSbEventTypeStart event";
       init_p_.set_value(true);
       break;
     case kSbEventTypeStop:
+      LOG(INFO) << "Received kSbEventTypeStop event";
       init_p_.set_value(false);
       break;
     default:
@@ -98,6 +88,7 @@ void CastStarboardApiAdapterImpl::SbEventHandleInternal(const SbEvent* event) {
 }
 
 void CastStarboardApiAdapterImpl::Initialize() {
+  LOG(INFO) << "CastStarboardApiAdapterImpl::Initialize";
   init_p_ = {};
 
 #if SB_API_VERSION >= 15
@@ -114,11 +105,18 @@ void CastStarboardApiAdapterImpl::Initialize() {
 }
 
 void CastStarboardApiAdapterImpl::Release() {
+  LOG(INFO) << "CastStarboardApiAdapterImpl::Release";
   {
     std::lock_guard<decltype(lock_)> lock(lock_);
-    subscribers_.clear();
+    released_ = true;
+    if (!subscribers_.empty()) {
+      LOG(WARNING) << "Not stopping Starboard yet, because there are still "
+                   << subscribers_.size() << " subscribers.";
+      return;
+    }
   }
 
+  LOG(INFO) << "Stopping Starboard";
   init_p_ = {};
 #if SB_API_VERSION >= 15
   SbSystemRequestStop(0);
@@ -127,11 +125,20 @@ void CastStarboardApiAdapterImpl::Release() {
 #endif  // SB_API_VERSION >= 15
   init_f_ = init_p_.get_future();
   initialized_ = init_f_.get();
+
+  std::unique_lock<std::mutex> lock(g_instance_mutex);
+  delete g_instance;
+  g_instance = nullptr;
 }
 
 void CastStarboardApiAdapterImpl::Subscribe(void* context,
                                             CastStarboardApiAdapterImplCB cb) {
+  LOG(INFO) << "CastStarboardApiAdapterImpl::Subscribe, context=" << context;
+
   std::lock_guard<decltype(lock_)> lock(lock_);
+  CHECK(!released_)
+      << "Subscribe should not be called after the AtExitManager has run";
+
   if (!initialized_) {
     Initialize();
   }
@@ -139,13 +146,23 @@ void CastStarboardApiAdapterImpl::Subscribe(void* context,
 }
 
 void CastStarboardApiAdapterImpl::Unsubscribe(void* context) {
+  LOG(INFO) << "CastStarboardApiAdapterImpl::Unsubscribe, context=" << context;
+
+  bool do_release = false;
   {
     std::lock_guard<decltype(lock_)> lock(lock_);
     subscribers_.erase(context);
+    if (released_ && subscribers_.empty()) {
+      do_release = true;
+    }
   }
-  // Defer Release() until the destructor is called.
-  // This helps simplify the complexity around Unsubscribe and AtExit calls
-  // calling at the same time.
+
+  // Release() must be called while lock_ is not held.
+  if (do_release) {
+    LOG(INFO) << "The last subscriber unsubscribed after Release(). Retrying "
+                 "Release().";
+    Release();
+  }
 }
 
 SbWindow CastStarboardApiAdapterImpl::GetWindow(

@@ -26,12 +26,22 @@ class CastStarboardApiAdapterImpl : public CastStarboardApiAdapter {
   // events to the singleton instance via SbEventHandleInternal.
   static void SbEventHandle(const SbEvent* event);
 
+ private:
+  // CastStarboardApiAdapter needs to construct and delete instances of this
+  // class.
+  friend CastStarboardApiAdapter;
+
   CastStarboardApiAdapterImpl();
   ~CastStarboardApiAdapterImpl() override;
 
- private:
   void SbEventHandleInternal(const SbEvent* event);
   void Initialize();
+
+  // Signals that the runtime is shutting down, and that this object should be
+  // destructed if there are no remaining subscribers.
+  //
+  // If there are remaining subscribers, the object will be destructed once the
+  // last subscriber unsubscribes.
   void Release();
 
   // CastStarboardApiAdapter implementation:
@@ -50,6 +60,10 @@ class CastStarboardApiAdapterImpl : public CastStarboardApiAdapter {
   std::mutex lock_;
   bool initialized_;
   std::unordered_map<void*, CastStarboardApiAdapterImplCB> subscribers_;
+
+  // Tracks whether Release() has been called (meaning the runtime is shutting
+  // down).
+  bool released_ = false;
 };
 
 }  // namespace chromecast
