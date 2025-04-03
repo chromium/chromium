@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.2.1](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v3.2.0...chromium-bidi-v3.2.1) (2025-04-02)
+
+
+### Bug Fixes
+
+* preload scripts order ([#3271](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3271)) ([43d84a7](https://github.com/GoogleChromeLabs/chromium-bidi/commit/43d84a75d154d76a0b8e3cd3f35b7d01e176da14))
+
 ## [3.2.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v3.1.0...chromium-bidi-v3.2.0) (2025-03-31)
 
 
