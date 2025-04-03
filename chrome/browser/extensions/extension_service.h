@@ -353,8 +353,6 @@ class ExtensionService : public ExtensionServiceInterface,
   // Returns profile_ as a BrowserContext.
   content::BrowserContext* GetBrowserContext() const;
 
-  bool block_extensions() const { return block_extensions_; }
-
   Profile* profile() { return profile_; }
 
   ComponentLoader* component_loader() { return component_loader_.get(); }
@@ -370,10 +368,6 @@ class ExtensionService : public ExtensionServiceInterface,
   // TODO(crbug.com/404941806): Delete this method and use the KeyedService
   // directly.
   ExtensionAllowlist* allowlist() { return allowlist_; }
-
-  const std::set<std::string>& disable_flag_exempted_extensions() const {
-    return disable_flag_exempted_extensions_;
-  }
 
   //////////////////////////////////////////////////////////////////////////////
   // For Testing
@@ -488,10 +482,6 @@ class ExtensionService : public ExtensionServiceInterface,
   // Sets of enabled/disabled/terminated/blocklisted extensions. Not owned.
   raw_ptr<ExtensionRegistry> registry_ = nullptr;
 
-  // Set of allowlisted enabled extensions loaded from the
-  // --disable-extensions-except command line flag.
-  std::set<std::string> disable_flag_exempted_extensions_;
-
   // Hold the set of pending extensions. Not owned.
   raw_ptr<PendingExtensionManager> pending_extension_manager_ = nullptr;
 
@@ -515,9 +505,6 @@ class ExtensionService : public ExtensionServiceInterface,
   // Used for specially handling external extensions that are installed the
   // first time.
   bool is_first_run_ = false;
-
-  // Set to true if extensions are all to be blocked.
-  bool block_extensions_ = false;
 
   // The controller for the UI that alerts the user about any blocklisted
   // extensions. Not owned.

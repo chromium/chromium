@@ -218,12 +218,8 @@ class StubExtensionRegistrarDelegate : public ExtensionRegistrar::Delegate {
       const ExtensionId& extension_id,
       const base::FilePath& path,
       ExtensionRegistrar::LoadErrorBehavior load_error_behavior) override {}
-  bool CanAddExtension(const Extension* extension) override { return true; }
   bool CanEnableExtension(const Extension* extension) override { return true; }
   bool CanDisableExtension(const Extension* extension) override { return true; }
-  bool ShouldBlockExtension(const Extension* extension) override {
-    return false;
-  }
   void GrantActivePermissions(const Extension* extension) override {}
 };
 

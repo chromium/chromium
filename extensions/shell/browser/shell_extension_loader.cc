@@ -126,10 +126,6 @@ void ShellExtensionLoader::FinishExtensionReload(
   keep_alive_requester_.StopTrackingReload(old_extension_id);
 }
 
-bool ShellExtensionLoader::CanAddExtension(const Extension* extension) {
-  return true;
-}
-
 void ShellExtensionLoader::PreAddExtension(const Extension* extension,
                                            const Extension* old_extension) {
   if (old_extension)
@@ -186,10 +182,6 @@ bool ShellExtensionLoader::CanEnableExtension(const Extension* extension) {
 
 bool ShellExtensionLoader::CanDisableExtension(const Extension* extension) {
   // Extensions cannot be disabled by the user.
-  return false;
-}
-
-bool ShellExtensionLoader::ShouldBlockExtension(const Extension* extension) {
   return false;
 }
 

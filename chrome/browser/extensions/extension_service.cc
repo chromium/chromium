@@ -215,7 +215,6 @@ ExtensionService::ExtensionService(
       extension_registrar_delegate_(
           std::make_unique<ChromeExtensionRegistrarDelegate>(
               profile_,
-              this,
               component_loader_.get())),
       extension_registrar_(ExtensionRegistrar::Get(profile)),
       omaha_attributes_handler_(extension_prefs,
@@ -409,7 +408,7 @@ void ExtensionService::LoadExtensionsFromCommandLineFlag(
           base::FilePath(t.token_piece()), &extension_id,
           false /*only-allow-apps*/);
       if (switch_name == ::switches::kDisableExtensionsExcept) {
-        disable_flag_exempted_extensions_.insert(extension_id);
+        extension_registrar_->AddDisableFlagExemptedExtension(extension_id);
       }
     }
   }
@@ -565,20 +564,16 @@ void ExtensionService::DisableUserExtensionsExcept(
 // Extensions that are not locked, components or forced by policy should be
 // locked. Extensions are no longer considered enabled or disabled. Blocklisted
 // extensions are now considered both blocklisted and locked.
+// TODO(crbug.com/408049386): Migrate callers to ExtensionRegistrar.
 void ExtensionService::BlockAllExtensions() {
-  if (block_extensions_) {
-    return;
-  }
-  block_extensions_ = true;
-
   extension_registrar_->BlockAllExtensions();
 }
 
 // All locked extensions should revert to being either enabled or disabled
 // as appropriate.
+// TODO(crbug.com/408049386): Migrate callers to ExtensionRegistrar and use a
+// delegate to access `external_install_manager_` (or inline the call).
 void ExtensionService::UnblockAllExtensions() {
-  block_extensions_ = false;
-
   extension_registrar_->UnblockAllExtensions();
 
   // While extensions are blocked, we won't display any external install

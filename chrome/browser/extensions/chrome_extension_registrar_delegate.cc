@@ -13,7 +13,6 @@
 #include "chrome/browser/extensions/delayed_install_manager.h"
 #include "chrome/browser/extensions/extension_assets_manager.h"
 #include "chrome/browser/extensions/extension_disabled_ui.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_special_storage_policy.h"
 #include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/browser/extensions/installed_loader.h"
@@ -74,11 +73,9 @@ bool SkipDeleteExtensionDir(const Extension& extension,
 
 ChromeExtensionRegistrarDelegate::ChromeExtensionRegistrarDelegate(
     Profile* profile,
-    ExtensionService* extension_service,
     ComponentLoader* component_loader)
     : profile_(profile),
       system_(ExtensionSystem::Get(profile_)),
-      extension_service_(extension_service),
       extension_prefs_(ExtensionPrefs::Get(profile_)),
       registry_(ExtensionRegistry::Get(profile_)),
       delayed_install_manager_(DelayedInstallManager::Get(profile_)),
@@ -270,7 +267,7 @@ void ChromeExtensionRegistrarDelegate::LoadExtensionForReload(
     CHECK(!path.empty()) << "ExtensionRegistrar should never ask to load an "
                             "unknown extension with no path";
     scoped_refptr<UnpackedInstaller> unpacked_installer =
-        UnpackedInstaller::Create(extension_service_);
+        UnpackedInstaller::Create(profile_);
     unpacked_installer->set_be_noisy_on_failure(load_error_behavior ==
                                                 LoadErrorBehavior::kNoisy);
     unpacked_installer->set_completion_callback(base::BindOnce(
@@ -291,22 +288,6 @@ void ChromeExtensionRegistrarDelegate::ShowExtensionDisabledError(
 
 void ChromeExtensionRegistrarDelegate::FinishDelayedInstallationsIfAny() {
   delayed_install_manager_->MaybeFinishDelayedInstallations();
-}
-
-bool ChromeExtensionRegistrarDelegate::CanAddExtension(
-    const Extension* extension) {
-  // TODO(jstritar): We may be able to get rid of this branch by overriding the
-  // default extension state to DISABLED when the --disable-extensions flag
-  // is set (http://crbug.com/29067).
-  std::set<std::string> disable_flag_exempted_extensions =
-      extension_service_->disable_flag_exempted_extensions();
-  if (!extension_registrar_->extensions_enabled() &&
-      !Manifest::ShouldAlwaysLoadExtension(extension->location(),
-                                           extension->is_theme()) &&
-      disable_flag_exempted_extensions.count(extension->id()) == 0) {
-    return false;
-  }
-  return true;
 }
 
 bool ChromeExtensionRegistrarDelegate::CanEnableExtension(
@@ -338,19 +319,6 @@ bool ChromeExtensionRegistrarDelegate::CanDisableExtension(
 
   return system_->management_policy()->UserMayModifySettings(extension,
                                                              nullptr);
-}
-
-bool ChromeExtensionRegistrarDelegate::ShouldBlockExtension(
-    const Extension* extension) {
-  if (!extension_service_->block_extensions()) {
-    return false;
-  }
-
-  // Blocked extensions aren't marked as such in prefs, thus if
-  // |block_extensions_| is true then CanBlockExtension() must be called with an
-  // Extension object. If |extension| is not loaded, assume it should be
-  // blocked.
-  return !extension || extension_registrar_->CanBlockExtension(extension);
 }
 
 void ChromeExtensionRegistrarDelegate::GrantActivePermissions(

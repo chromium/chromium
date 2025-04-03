@@ -20,14 +20,12 @@ class ComponentLoader;
 class DelayedInstallManager;
 class ExtensionPrefs;
 class ExtensionRegistry;
-class ExtensionService;
 class ExtensionSystem;
 
 // The ExtensionRegistrar::Delegate for the //chrome/browser layer.
 class ChromeExtensionRegistrarDelegate : public ExtensionRegistrar::Delegate {
  public:
   ChromeExtensionRegistrarDelegate(Profile* profile,
-                                   ExtensionService* extension_service,
                                    ComponentLoader* component_loader);
   ChromeExtensionRegistrarDelegate(const ChromeExtensionRegistrarDelegate&) =
       delete;
@@ -61,10 +59,8 @@ class ChromeExtensionRegistrarDelegate : public ExtensionRegistrar::Delegate {
   void ShowExtensionDisabledError(const Extension* extension,
                                   bool is_remote_install) override;
   void FinishDelayedInstallationsIfAny() override;
-  bool CanAddExtension(const Extension* extension) override;
   bool CanEnableExtension(const Extension* extension) override;
   bool CanDisableExtension(const Extension* extension) override;
-  bool ShouldBlockExtension(const Extension* extension) override;
   void GrantActivePermissions(const Extension* extension) override;
 
  private:
@@ -93,7 +89,6 @@ class ChromeExtensionRegistrarDelegate : public ExtensionRegistrar::Delegate {
   raw_ptr<Profile> profile_ = nullptr;
 
   raw_ptr<ExtensionSystem> system_ = nullptr;
-  raw_ptr<ExtensionService> extension_service_ = nullptr;
   raw_ptr<ExtensionPrefs> extension_prefs_ = nullptr;
   raw_ptr<ExtensionRegistry> registry_ = nullptr;
   raw_ptr<ExtensionRegistrar> extension_registrar_ = nullptr;

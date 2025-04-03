@@ -6,6 +6,7 @@
 #define EXTENSIONS_BROWSER_EXTENSION_REGISTRAR_H_
 
 #include <memory>
+#include <set>
 
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
@@ -112,16 +113,10 @@ class ExtensionRegistrar : public KeyedService, public ProcessManagerObserver {
     // extensions ready to be installed.
     virtual void FinishDelayedInstallationsIfAny() = 0;
 
-    // Returns true if |extension| can be added.
-    virtual bool CanAddExtension(const Extension* extension) = 0;
-
     // Returns true if the extension is allowed to be enabled or disabled,
     // respectively.
     virtual bool CanEnableExtension(const Extension* extension) = 0;
     virtual bool CanDisableExtension(const Extension* extension) = 0;
-
-    // Returns true if the extension should be blocked.
-    virtual bool ShouldBlockExtension(const Extension* extension) = 0;
 
     // Updates the `extension`s granted permissions lists to include all
     // permissions in the `extensions`s manifest.
@@ -328,11 +323,19 @@ class ExtensionRegistrar : public KeyedService, public ProcessManagerObserver {
   // extension.
   void GrantPermissionsAndEnableExtension(const Extension& extension);
 
+  // Adds to the set of allowlisted enabled extensions loaded from the
+  // --disable-extensions-except command line flag.
+  void AddDisableFlagExemptedExtension(const ExtensionId& extension_id);
+
   // Simple accessors.
   bool extensions_enabled() const { return extensions_enabled_; }
   const base::FilePath& install_directory() const { return install_directory_; }
   const base::FilePath& unpacked_install_directory() const {
     return unpacked_install_directory_;
+  }
+
+  void set_extensions_enabled_for_test(bool value) {
+    extensions_enabled_ = value;
   }
 
  private:
@@ -367,6 +370,12 @@ class ExtensionRegistrar : public KeyedService, public ProcessManagerObserver {
   // ProcessManagerObserver overrides
   void OnStartedTrackingServiceWorkerInstance(
       const WorkerId& worker_id) override;
+
+  // Returns true if `extension` can be added.
+  bool CanAddExtension(const Extension* extension) const;
+
+  // Returns true if `extension` should be blocked.
+  bool ShouldBlockExtension(const Extension* extension) const;
 
   const raw_ptr<content::BrowserContext> browser_context_;
 
@@ -411,6 +420,13 @@ class ExtensionRegistrar : public KeyedService, public ProcessManagerObserver {
   // Store the paths of extensions that failed to reload. We use this to retry
   // reload.
   std::set<base::FilePath> failed_to_reload_unpacked_extensions_;
+
+  // Set of allowlisted enabled extensions loaded from the
+  // --disable-extensions-except command line flag.
+  std::set<ExtensionId> disable_flag_exempted_extensions_;
+
+  // Set to true if extensions are all to be blocked.
+  bool block_extensions_ = false;
 
   base::ScopedObservation<ProcessManager, ProcessManagerObserver>
       process_manager_observation_{this};
