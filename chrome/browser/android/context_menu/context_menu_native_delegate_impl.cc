@@ -17,10 +17,11 @@
 #include "components/embedder_support/android/contextmenu/context_menu_image_format.h"
 #include "components/lens/lens_metadata.mojom.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/buildflags.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "ui/gfx/android/java_bitmap.h"
 
-#if BUILDFLAG(IS_DESKTOP_ANDROID)
+#if BUILDFLAG(ENABLE_DEVTOOLS_FRONTEND)
 #include "chrome/browser/devtools/devtools_window.h"
 #endif
 
@@ -141,7 +142,7 @@ void ContextMenuNativeDelegateImpl::InspectElement(
     const base::android::JavaParamRef<jobject>& jrender_frame_host,
     jint x,
     jint y) {
-#if BUILDFLAG(IS_DESKTOP_ANDROID)
+#if BUILDFLAG(ENABLE_DEVTOOLS_FRONTEND)
   auto* render_frame_host =
       content::RenderFrameHost::FromJavaRenderFrameHost(jrender_frame_host);
   if (!render_frame_host) {

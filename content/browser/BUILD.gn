@@ -11,6 +11,7 @@ import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
 import("//chromeos/ash/components/assistant/assistant.gni")
 import("//components/viz/common/debugger/viz_debugger.gni")
+import("//content/browser/devtools/features.gni")
 import("//content/common/features.gni")
 import("//content/public/common/features.gni")
 import("//content/public/common/zygote/features.gni")
@@ -1238,9 +1239,9 @@ source_set("browser") {
     "interest_group/debuggable_auction_worklet.h",
     "interest_group/debuggable_auction_worklet_tracker.cc",
     "interest_group/debuggable_auction_worklet_tracker.h",
-    "interest_group/dwa_auction_metrics.h",
-    "interest_group/dwa_auction_metrics.cc",
     "interest_group/devtools_enums.h",
+    "interest_group/dwa_auction_metrics.cc",
+    "interest_group/dwa_auction_metrics.h",
     "interest_group/for_debugging_only_report_util.cc",
     "interest_group/for_debugging_only_report_util.h",
     "interest_group/header_direct_from_seller_signals.cc",
@@ -3535,7 +3536,7 @@ source_set("browser") {
     ]
   }
 
-  if ((!is_android || is_desktop_android) && !is_ios && !is_fuchsia) {
+  if (enable_devtools_frontend) {
     sources += [
       # Devtools frontend not included in mobile Android and iOS
       "devtools/devtools_frontend_host_impl.cc",
