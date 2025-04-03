@@ -32,7 +32,7 @@ CRATE_NAME="$1"
 
 CRATE_DIR=$( find "${VENDOR_DIR}" -maxdepth 1 \
                                   -type d \
-                                  -name "${CRATE_NAME}-[0-9]*"
+                                  -name "${CRATE_NAME}-v[0-9]*"
            )
 if [[ -z "$CRATE_DIR" ]]; then
   CRATE_DIR="${VENDOR_DIR}/${CRATE_NAME}"
