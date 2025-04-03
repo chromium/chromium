@@ -344,20 +344,20 @@ std::vector<std::u16string> ClipboardWin::GetStandardFormats(
   std::vector<std::u16string> types;
   if (::IsClipboardFormatAvailable(
           ClipboardFormatType::PlainTextAType().ToFormatEtc().cfFormat))
-    types.push_back(base::UTF8ToUTF16(kMimeTypeText));
+    types.push_back(base::UTF8ToUTF16(kMimeTypePlainText));
   if (::IsClipboardFormatAvailable(
           ClipboardFormatType::HtmlType().ToFormatEtc().cfFormat))
-    types.push_back(base::UTF8ToUTF16(kMimeTypeHTML));
+    types.push_back(base::UTF8ToUTF16(kMimeTypeHtml));
   if (::IsClipboardFormatAvailable(
           ClipboardFormatType::SvgType().ToFormatEtc().cfFormat))
     types.push_back(base::UTF8ToUTF16(kMimeTypeSvg));
   if (::IsClipboardFormatAvailable(
           ClipboardFormatType::RtfType().ToFormatEtc().cfFormat))
-    types.push_back(base::UTF8ToUTF16(kMimeTypeRTF));
+    types.push_back(base::UTF8ToUTF16(kMimeTypeRtf));
   if (::IsClipboardFormatAvailable(CF_DIB))
-    types.push_back(base::UTF8ToUTF16(kMimeTypePNG));
+    types.push_back(base::UTF8ToUTF16(kMimeTypePng));
   if (ReadFilenamesAvailable())
-    types.push_back(base::UTF8ToUTF16(kMimeTypeURIList));
+    types.push_back(base::UTF8ToUTF16(kMimeTypeUriList));
   return types;
 }
 

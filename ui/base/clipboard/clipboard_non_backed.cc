@@ -591,23 +591,23 @@ std::vector<std::u16string> ClipboardNonBacked::GetStandardFormats(
   std::vector<std::u16string> types;
   if (IsFormatAvailable(ClipboardFormatType::PlainTextType(), buffer,
                         data_dst)) {
-    types.push_back(base::UTF8ToUTF16(kMimeTypeText));
+    types.push_back(base::UTF8ToUTF16(kMimeTypePlainText));
   }
   if (IsFormatAvailable(ClipboardFormatType::HtmlType(), buffer, data_dst)) {
-    types.push_back(base::UTF8ToUTF16(kMimeTypeHTML));
+    types.push_back(base::UTF8ToUTF16(kMimeTypeHtml));
   }
   if (IsFormatAvailable(ClipboardFormatType::SvgType(), buffer, data_dst)) {
     types.push_back(base::UTF8ToUTF16(kMimeTypeSvg));
   }
   if (IsFormatAvailable(ClipboardFormatType::RtfType(), buffer, data_dst)) {
-    types.push_back(base::UTF8ToUTF16(kMimeTypeRTF));
+    types.push_back(base::UTF8ToUTF16(kMimeTypeRtf));
   }
   if (IsFormatAvailable(ClipboardFormatType::BitmapType(), buffer, data_dst)) {
-    types.push_back(base::UTF8ToUTF16(kMimeTypePNG));
+    types.push_back(base::UTF8ToUTF16(kMimeTypePng));
   }
   if (IsFormatAvailable(ClipboardFormatType::FilenamesType(), buffer,
                         data_dst)) {
-    types.push_back(base::UTF8ToUTF16(kMimeTypeURIList));
+    types.push_back(base::UTF8ToUTF16(kMimeTypeUriList));
   }
   return types;
 }

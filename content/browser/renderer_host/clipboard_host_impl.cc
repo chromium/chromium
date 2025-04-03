@@ -185,7 +185,7 @@ void ClipboardHostImpl::ReadAvailableTypes(
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   if (file_type_only) {
-    types = {base::UTF8ToUTF16(ui::kMimeTypeURIList)};
+    types = {base::UTF8ToUTF16(ui::kMimeTypeUriList)};
   } else {
     clipboard->ReadAvailableTypes(clipboard_buffer, data_endpoint.get(),
                                   &types);

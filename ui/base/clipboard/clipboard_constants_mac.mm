@@ -8,7 +8,7 @@
 
 namespace ui {
 
-NSString* const kUTTypeChromiumImageAndHTML = @"org.chromium.image-html";
+NSString* const kUTTypeChromiumImageAndHtml = @"org.chromium.image-html";
 
 NSString* const kUTTypeChromiumInitiatedDrag =
     @"org.chromium.chromium-initiated-drag";
@@ -32,7 +32,7 @@ NSString* const kUTTypeConfidentialData = @"org.nspasteboard.ConcealedType";
 // https://sbgsmedia.in/2014/08/28/362ed8bfea200a683234e28c31b8b2bd.pdf). This
 // UTType constant is still used by WebKit; see
 // https://github.com/WebKit/WebKit/search?q=WebURLNamePboardType
-NSString* const kUTTypeURLName = @"public.url-name";
+NSString* const kUTTypeUrlName = @"public.url-name";
 
 // aka "NeXT smart paste pasteboard type". This constant is still used by
 // WebKit; see https://github.com/WebKit/WebKit/search?q=WebSmartPastePboardType
@@ -41,9 +41,9 @@ NSString* const kUTTypeWebKitWebSmartPaste =
 
 // aka "WebURLsWithTitlesPboardType". This constant is still used by WebKit; see
 // https://github.com/WebKit/WebKit/search?q=WebURLsWithTitlesPboardType
-NSString* const kUTTypeWebKitWebURLsWithTitles =
+NSString* const kUTTypeWebKitWebUrlsWithTitles =
     @"dyn.ah62d4rv4gu8zs3pcnzme2641rf4guzdmsv0gn64uqm10c6xenv61a3k";
 
-NSString* const kUTTypeChromiumSourceURL = @"org.chromium.source-url";
+NSString* const kUTTypeChromiumSourceUrl = @"org.chromium.source-url";
 
 }  // namespace ui

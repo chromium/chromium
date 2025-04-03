@@ -8,18 +8,18 @@
 
 namespace ui {
 
-const char kMimeTypeText[] = "text/plain";
-const char kMimeTypeTextUtf8[] = "text/plain;charset=utf-8";
+const char kMimeTypePlainText[] = "text/plain";
+const char kMimeTypeUtf8PlainText[] = "text/plain;charset=utf-8";
 // Used for file:// URLs.
-const char kMimeTypeURIList[] = "text/uri-list";
+const char kMimeTypeUriList[] = "text/uri-list";
 // Used for site URL bookmarks.
-const char kMimeTypeMozillaURL[] = "text/x-moz-url";
-const char kMimeTypeDownloadURL[] = "downloadurl";
-const char kMimeTypeHTML[] = "text/html";
-const char kMimeTypeHTMLUtf8[] = "text/html;charset=utf-8";
+const char kMimeTypeMozillaUrl[] = "text/x-moz-url";
+const char kMimeTypeDownloadUrl[] = "downloadurl";
+const char kMimeTypeHtml[] = "text/html";
+const char kMimeTypeUtf8Html[] = "text/html;charset=utf-8";
 const char kMimeTypeSvg[] = "image/svg+xml";
-const char kMimeTypeRTF[] = "text/rtf";
-const char kMimeTypePNG[] = "image/png";
+const char kMimeTypeRtf[] = "text/rtf";
+const char kMimeTypePng[] = "image/png";
 // Used for image drag & drop on X11 and Wayland.
 const char kMimeTypeOctetStream[] = "application/octet-stream";
 // Used for window dragging on some platforms.
@@ -44,7 +44,7 @@ const char kMimeTypeWebkitSmartPaste[] = "chromium/x-webkit-paste";
 #endif  // BUILDFLAG(IS_APPLE)
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-const char kMimeTypeImageURI[] = "image-uri";
+const char kMimeTypeImageUri[] = "image-uri";
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 const int kMaxRegisteredClipboardFormats = 100;

@@ -20,20 +20,22 @@ namespace ui {
 
 // ----- PLATFORM NEUTRAL MIME TYPES -----
 
-COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES) extern const char kMimeTypeText[];
-COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES) extern const char kMimeTypeTextUtf8[];
-COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES) extern const char kMimeTypeURIList[];
+COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES)
+extern const char kMimeTypePlainText[];
+COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES)
+extern const char kMimeTypeUtf8PlainText[];
+COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES) extern const char kMimeTypeUriList[];
 // Non-standard type for downloading files after drop events. Only works on
 // Windows. See https://crbug.com/860557 and https://crbug.com/425170.
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES)
-extern const char kMimeTypeDownloadURL[];
+extern const char kMimeTypeDownloadUrl[];
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES)
-extern const char kMimeTypeMozillaURL[];
-COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES) extern const char kMimeTypeHTML[];
-COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES) extern const char kMimeTypeHTMLUtf8[];
+extern const char kMimeTypeMozillaUrl[];
+COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES) extern const char kMimeTypeHtml[];
+COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES) extern const char kMimeTypeUtf8Html[];
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES) extern const char kMimeTypeSvg[];
-COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES) extern const char kMimeTypeRTF[];
-COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES) extern const char kMimeTypePNG[];
+COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES) extern const char kMimeTypeRtf[];
+COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES) extern const char kMimeTypePng[];
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES)
 extern const char kMimeTypeOctetStream[];
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES)
@@ -76,7 +78,7 @@ extern const char kMimeTypeWebkitSmartPaste[];
 // put it on as this Chrome-only type. External apps won't see HTML but
 // Chrome will know enough to read it as HTML. <http://crbug.com/55879>
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES)
-extern NSString* const kUTTypeChromiumImageAndHTML;
+extern NSString* const kUTTypeChromiumImageAndHtml;
 
 // Data type always placed on dragging pasteboards. There is never any data
 // associated with this type; it's only used to ensure that Chromium supports
@@ -115,7 +117,7 @@ COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES)
 extern NSString* const kUTTypeConfidentialData;
 
 // A publicly-used type for the name of a URL.
-COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES) extern NSString* const kUTTypeURLName;
+COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES) extern NSString* const kUTTypeUrlName;
 
 // A type specifying that WebKit or a WebKit-derived browser engine like Blink
 // was the last to write to the pasteboard. There's no data associated with this
@@ -125,11 +127,11 @@ extern NSString* const kUTTypeWebKitWebSmartPaste;
 
 // A type used by WebKit to add an array of URLs with titles to the clipboard.
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES)
-extern NSString* const kUTTypeWebKitWebURLsWithTitles;
+extern NSString* const kUTTypeWebKitWebUrlsWithTitles;
 
 // A type used to track the source URL of data put in the clipboard.
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES)
-extern NSString* const kUTTypeChromiumSourceURL;
+extern NSString* const kUTTypeChromiumSourceUrl;
 
 #endif  // BUILDFLAG(IS_APPLE)
 
@@ -137,7 +139,7 @@ extern NSString* const kUTTypeChromiumSourceURL;
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES)
-extern const char kMimeTypeImageURI[];
+extern const char kMimeTypeImageUri[];
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 // ----- OTHER RELATED CONSTANTS -----

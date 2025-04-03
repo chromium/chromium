@@ -232,17 +232,17 @@ std::vector<DropData::Metadata> DropDataToMetaData(const DropData& drop_data) {
   std::vector<DropData::Metadata> metadata;
   if (drop_data.text) {
     metadata.push_back(DropData::Metadata::CreateForMimeType(
-        DropData::Kind::STRING, base::ASCIIToUTF16(ui::kMimeTypeText)));
+        DropData::Kind::STRING, base::ASCIIToUTF16(ui::kMimeTypePlainText)));
   }
 
   if (drop_data.url.is_valid()) {
     metadata.push_back(DropData::Metadata::CreateForMimeType(
-        DropData::Kind::STRING, base::ASCIIToUTF16(ui::kMimeTypeURIList)));
+        DropData::Kind::STRING, base::ASCIIToUTF16(ui::kMimeTypeUriList)));
   }
 
   if (drop_data.html) {
     metadata.push_back(DropData::Metadata::CreateForMimeType(
-        DropData::Kind::STRING, base::ASCIIToUTF16(ui::kMimeTypeHTML)));
+        DropData::Kind::STRING, base::ASCIIToUTF16(ui::kMimeTypeHtml)));
   }
 
   // On Aura, filenames are available before drop.

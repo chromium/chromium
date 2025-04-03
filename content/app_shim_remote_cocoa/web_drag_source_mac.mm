@@ -99,7 +99,7 @@
   // URL (and title).
   if (_dropData.url.is_valid()) {
     [writableTypes addObject:NSPasteboardTypeURL];
-    [writableTypes addObject:ui::kUTTypeURLName];
+    [writableTypes addObject:ui::kUTTypeUrlName];
   }
 
   // File.
@@ -175,7 +175,7 @@
                       [_fileType conformsToType:UTTypeImage];
   if (hasHTMLData) {
     if (hasImageData) {
-      [writableTypes addObject:ui::kUTTypeChromiumImageAndHTML];
+      [writableTypes addObject:ui::kUTTypeChromiumImageAndHtml];
     } else {
       [writableTypes addObject:NSPasteboardTypeHTML];
     }
@@ -196,7 +196,7 @@
 - (id)pasteboardPropertyListForType:(NSPasteboardType)type {
   // HTML.
   if ([type isEqualToString:NSPasteboardTypeHTML] ||
-      [type isEqualToString:ui::kUTTypeChromiumImageAndHTML]) {
+      [type isEqualToString:ui::kUTTypeChromiumImageAndHtml]) {
     DCHECK(_dropData.html && !_dropData.html->empty());
 
     // NSPasteboardTypeHTML requires the character set to be declared.
@@ -224,7 +224,7 @@
   }
 
   // URL title.
-  if ([type isEqualToString:ui::kUTTypeURLName]) {
+  if ([type isEqualToString:ui::kUTTypeUrlName]) {
     return base::SysUTF16ToNSString(_dropData.url_title);
   }
 
