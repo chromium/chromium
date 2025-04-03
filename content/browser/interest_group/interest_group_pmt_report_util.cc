@@ -111,8 +111,8 @@ std::optional<std::vector<uint8_t>> EncryptPayloadWithHpke(
 // PrivateModelTrainingRequest
 PrivateModelTrainingRequest::PrivateModelTrainingRequest(
     auction_worklet::mojom::PrivateModelTrainingRequestDataPtr pmt_request_data,
-    const url::Origin reporting_origin,
-    const BiddingAndAuctionServerKey public_key)
+    url::Origin reporting_origin,
+    BiddingAndAuctionServerKey public_key)
     : PrivateModelTrainingRequest(std::move(pmt_request_data),
                                   std::move(reporting_origin),
                                   std::move(public_key),
@@ -121,13 +121,13 @@ PrivateModelTrainingRequest::PrivateModelTrainingRequest(
 
 PrivateModelTrainingRequest::PrivateModelTrainingRequest(
     auction_worklet::mojom::PrivateModelTrainingRequestDataPtr pmt_request_data,
-    const url::Origin reporting_origin,
-    const BiddingAndAuctionServerKey public_key,
-    const base::Uuid report_id,
-    const base::Time scheduled_report_time)
+    url::Origin reporting_origin,
+    BiddingAndAuctionServerKey public_key,
+    base::Uuid report_id,
+    base::Time scheduled_report_time)
     : shared_info_(std::move(report_id),
                    std::move(reporting_origin),
-                   std::move(scheduled_report_time)),
+                   scheduled_report_time),
       pmt_request_data_(std::move(pmt_request_data)),
       public_key_(std::move(public_key)) {}
 
@@ -241,12 +241,12 @@ cbor::Value::MapValue PrivateModelTrainingRequest::GetSharedInfoCborMap() {
 
 // Shared Info
 PrivateModelTrainingRequest::SharedInfo::SharedInfo(
-    const base::Uuid report_id,
-    const url::Origin reporting_origin,
-    const base::Time scheduled_report_time)
+    base::Uuid report_id,
+    url::Origin reporting_origin,
+    base::Time scheduled_report_time)
     : report_id(std::move(report_id)),
       reporting_origin(std::move(reporting_origin)),
-      scheduled_report_time(std::move(scheduled_report_time)) {}
+      scheduled_report_time(scheduled_report_time) {}
 PrivateModelTrainingRequest::SharedInfo::~SharedInfo() = default;
 PrivateModelTrainingRequest::SharedInfo::SharedInfo(const SharedInfo&) =
     default;

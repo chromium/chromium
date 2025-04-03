@@ -62,15 +62,15 @@ class CONTENT_EXPORT PrivateModelTrainingRequest {
   PrivateModelTrainingRequest(
       auction_worklet::mojom::PrivateModelTrainingRequestDataPtr
           pmt_request_data,
-      const url::Origin reporting_origin,
-      const BiddingAndAuctionServerKey public_key,
-      const base::Uuid report_id,
-      const base::Time scheduled_report_time);
+      url::Origin reporting_origin,
+      BiddingAndAuctionServerKey public_key,
+      base::Uuid report_id,
+      base::Time scheduled_report_time);
 
   struct SharedInfo {
-    SharedInfo(const base::Uuid report_id,
-               const url::Origin reporting_origin,
-               const base::Time scheduled_report_time);
+    SharedInfo(base::Uuid report_id,
+               url::Origin reporting_origin,
+               base::Time scheduled_report_time);
     ~SharedInfo();
     SharedInfo(const SharedInfo&);
     SharedInfo(SharedInfo&&);
