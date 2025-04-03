@@ -24254,6 +24254,15 @@ should be able to be added at any place in this file.
   <description>User pressed 'New Window' in the app menu.</description>
 </action>
 
+<action name="MobileMenuNtpCustomization">
+  <owner>hanxi@chromium.org</owner>
+  <owner>yanlinghu@google.com</owner>
+  <owner>clank-start@google.com</owner>
+  <description>
+    User pressed 'Customize new tab page' in the app menu.
+  </description>
+</action>
+
 <action name="MobileMenuOpenTabs">
   <obsolete>This action was renamed to MobileMenuRecentTabs.</obsolete>
   <owner>aurimas@chromium.org</owner>

@@ -168,6 +168,7 @@ import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.ntp.NewTabPageUma;
 import org.chromium.chrome.browser.ntp.NewTabPageUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationMetricsUtils;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.paint_preview.StartupPaintPreviewHelper;
@@ -3292,6 +3293,9 @@ public class ChromeTabbedActivity extends ChromeActivity {
         } else if (id == R.id.ntp_customization_id) {
             new NtpCustomizationCoordinator(this, mRootUiCoordinator.getBottomSheetController())
                     .showBottomSheet();
+            NtpCustomizationMetricsUtils.recordOpenBottomSheetEntry(
+                    NtpCustomizationCoordinator.EntryPointType.MAIN_MENU);
+            RecordUserAction.record("MobileMenuNtpCustomization");
         } else if (id == R.id.toggle_bookmark_bar) {
             BookmarkBarUtils.toggleSettingEnabled(this, getProfileProviderSupplier());
         } else {

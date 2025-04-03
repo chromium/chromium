@@ -101,6 +101,7 @@ public class NtpCustomizationMediator {
         if (shouldRequestShowContent) {
             mBottomSheetController.requestShowContent(mBottomSheetContent, /* animate= */ true);
         }
+        NtpCustomizationMetricsUtils.recordBottomSheetShown(type);
     }
 
     /** Handles system back press and back button clicks on the bottom sheet. */

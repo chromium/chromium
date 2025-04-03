@@ -15,6 +15,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ntp_customization/NtpCustomizationBottomSheetContent.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/NtpCustomizationCoordinator.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/NtpCustomizationMediator.java",
+    "java/src/org/chromium/chrome/browser/ntp_customization/NtpCustomizationMetricsUtils.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/NtpCustomizationUtils.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/NtpCustomizationViewProperties.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/ntp_cards/NtpCardsCoordinator.java",
@@ -25,6 +26,7 @@ android_library("java") {
   deps = [
     ":java_resources",
     "//base:log_java",
+    "//base:metrics_java",
     "//base:supplier_java",
     "//chrome/browser/feed/android:java",
     "//chrome/browser/magic_stack/android:java",
@@ -76,6 +78,7 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/ntp_customization/NtpCustomizationBottomSheetContentUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ntp_customization/NtpCustomizationCoordinatorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ntp_customization/NtpCustomizationMediatorUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/ntp_customization/NtpCustomizationMetricsUtilsUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ntp_customization/NtpCustomizationUtilsUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ntp_customization/ntp_cards/NtpCardsCoordinatorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ntp_customization/ntp_cards/NtpCardsListContainerViewUnitTest.java",

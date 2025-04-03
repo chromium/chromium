@@ -37,7 +37,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -140,7 +140,7 @@ public class NtpCustomizationMediatorUnitTest {
     @SmallTest
     public void testShowBottomSheet() {
         // Verifies that setDisplayChild() is called and mCurrentBottomSheet is set correctly.
-        @ModuleDelegate.ModuleType int bottomSheetType = BottomSheetType.NTP_CARDS;
+        @BottomSheetType int bottomSheetType = NTP_CARDS;
         int viewFlipperIndex = 2;
         mViewFlipperMap.put(bottomSheetType, viewFlipperIndex);
 
@@ -148,6 +148,24 @@ public class NtpCustomizationMediatorUnitTest {
 
         verify(mViewFlipperPropertyModel).set(eq(LAYOUT_TO_DISPLAY), eq(viewFlipperIndex));
         assertEquals(bottomSheetType, (int) mMediator.getCurrentBottomSheetForTesting());
+    }
+
+    @Test
+    @SmallTest
+    public void testMetricsInShowBottomSheet() {
+        String histogramName = "NewTabPage.Customization.BottomSheet.Shown";
+        @BottomSheetType int[] bottomSheetTypes = new int[] {NTP_CARDS, MAIN};
+
+        for (int i = 0; i < bottomSheetTypes.length; i++) {
+            @BottomSheetType int type = bottomSheetTypes[i];
+            mViewFlipperMap.put(type, i);
+            mMediator.showBottomSheet(type);
+
+            HistogramWatcher histogramWatcher =
+                    HistogramWatcher.newSingleRecordWatcher(histogramName, type);
+            NtpCustomizationMetricsUtils.recordBottomSheetShown(type);
+            histogramWatcher.assertExpected();
+        }
     }
 
     @Test

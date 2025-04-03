@@ -46,6 +46,15 @@ public class NtpCustomizationCoordinator {
         int MAIN = 0;
         int NTP_CARDS = 1;
         int DISCOVER_FEED = 2;
+        int NUM_ENTRIES = 3;
+    }
+
+    @IntDef({EntryPointType.MAIN_MENU, EntryPointType.TOOL_BAR})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface EntryPointType {
+        int MAIN_MENU = 0;
+        int TOOL_BAR = 1;
+        int NUM_ENTRIES = 2;
     }
 
     public NtpCustomizationCoordinator(
@@ -112,7 +121,7 @@ public class NtpCustomizationCoordinator {
                     if (mNtpCardsCoordinator == null) {
                         mNtpCardsCoordinator = new NtpCardsCoordinator(mContext, mDelegate);
                     }
-                    mMediator.showBottomSheet(BottomSheetType.NTP_CARDS);
+                    mMediator.showBottomSheet(NTP_CARDS);
                 };
             case DISCOVER_FEED:
                 return null;
