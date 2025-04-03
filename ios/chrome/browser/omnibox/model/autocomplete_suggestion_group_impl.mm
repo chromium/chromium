@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_suggestion_group_impl.h"
+#import "ios/chrome/browser/omnibox/model/autocomplete_suggestion_group_impl.h"
 
 @implementation AutocompleteSuggestionGroupImpl
 

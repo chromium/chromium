@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_suggestion.h"
+#import "ios/chrome/browser/omnibox/model/autocomplete_suggestion.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_pedal.h"
 
 /// A wrapper for an OmniboxPedal that exposes AutocompleteSuggestion-compatible

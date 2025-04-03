@@ -140,6 +140,7 @@ source_set("popup_ui") {
     "//ios/chrome/browser/download/model",
     "//ios/chrome/browser/favicon/ui_bundled",
     "//ios/chrome/browser/net/model:crurl",
+    "//ios/chrome/browser/omnibox/model:ui_bundled_interface",
     "//ios/chrome/browser/omnibox/public:features",
     "//ios/chrome/browser/omnibox/ui_bundled:omnibox_popup_shared",
     "//ios/chrome/browser/omnibox/ui_bundled:omnibox_util",
@@ -185,8 +186,6 @@ source_set("popup_icon") {
 
 source_set("popup_internal") {
   sources = [
-    "autocomplete_suggestion_group_impl.h",
-    "autocomplete_suggestion_group_impl.mm",
     "omnibox_icon_formatter.h",
     "omnibox_icon_formatter.mm",
   ]
@@ -211,7 +210,6 @@ source_set("popup_internal") {
 source_set("popup_ui_protocols") {
   sources = [
     "autocomplete_result_consumer.h",
-    "autocomplete_suggestion.h",
     "content_providing.h",
     "omnibox_icon.h",
     "omnibox_pedal.h",

@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_POPUP_AUTOCOMPLETE_SUGGESTION_GROUP_IMPL_H_
-#define IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_POPUP_AUTOCOMPLETE_SUGGESTION_GROUP_IMPL_H_
+#ifndef IOS_CHROME_BROWSER_OMNIBOX_MODEL_AUTOCOMPLETE_SUGGESTION_GROUP_IMPL_H_
+#define IOS_CHROME_BROWSER_OMNIBOX_MODEL_AUTOCOMPLETE_SUGGESTION_GROUP_IMPL_H_
 
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_suggestion.h"
+#import "ios/chrome/browser/omnibox/model/autocomplete_suggestion.h"
 
 // A basic implementation of AutocompleteSuggestionGroup
 @interface AutocompleteSuggestionGroupImpl
@@ -47,4 +47,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_POPUP_AUTOCOMPLETE_SUGGESTION_GROUP_IMPL_H_
+#endif  // IOS_CHROME_BROWSER_OMNIBOX_MODEL_AUTOCOMPLETE_SUGGESTION_GROUP_IMPL_H_

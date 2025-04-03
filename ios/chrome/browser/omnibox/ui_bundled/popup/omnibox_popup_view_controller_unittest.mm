@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_popup_view_controller.h"
 
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_suggestion_group_impl.h"
+#import "ios/chrome/browser/omnibox/model/autocomplete_suggestion_group_impl.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/popup_match_preview_delegate.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"

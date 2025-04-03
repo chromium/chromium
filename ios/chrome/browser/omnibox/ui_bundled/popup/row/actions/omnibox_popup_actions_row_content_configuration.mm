@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/row/actions/omnibox_popup_actions_row_content_configuration.h"
 
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_suggestion.h"
+#import "ios/chrome/browser/omnibox/model/autocomplete_suggestion.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/row/actions/omnibox_popup_actions_row_content_view.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/row/actions/omnibox_popup_actions_row_delegate.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/row/actions/suggest_action.h"

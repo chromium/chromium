@@ -5,8 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_POPUP_PEDAL_SECTION_EXTRACTOR_H_
 #define IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_POPUP_PEDAL_SECTION_EXTRACTOR_H_
 
+#import "ios/chrome/browser/omnibox/model/autocomplete_suggestion.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_result_consumer.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_suggestion.h"
 
 @protocol PopupMatchPreviewDelegate;
 @class AutocompleteMatchFormatter;
