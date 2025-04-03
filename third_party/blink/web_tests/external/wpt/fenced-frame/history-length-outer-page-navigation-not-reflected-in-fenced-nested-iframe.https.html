@@ -4,7 +4,7 @@
 <script src="resources/utils.js"></script>
 <script src="resources/history-length-test-helper.js"></script>
 <script src="/common/utils.js"></script>
-<title>Test fenced frames can't see outer page history length</title>
+<title>Test iframes in fenced frames can't see outer page history length</title>
 
 <body>
 <script>
@@ -38,13 +38,13 @@ promise_test(async () => {
       "resources/history-length-outer-page-navigation-" +
       "not-reflected-in-fenced-inner.html",
       [fenced_history_length_key, outer_page_ready_for_next_navigation_key,
-       embed_scope_fenced_frame, "outer_page::fenced_frame"])
+       embed_scope_fenced_frame, "outer_page::fenced_frame::iframe"])
   );
 
   // Wait for the fenced frame to report 'history.length'
   let result = await nextValueFromServer(fenced_history_length_key);
   assert_equals(result, "PASS > " + " history.length: 1", kAssertionDesc);
 }, "history.length should not reflect navigations within outer page in " +
-  "fenced frame");
+  "an iframe nested within a fenced frame");
 </script>
 </body>
