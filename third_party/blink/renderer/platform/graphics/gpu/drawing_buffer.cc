@@ -680,8 +680,8 @@ void DrawingBuffer::MailboxReleasedGpu(scoped_refptr<ColorBuffer> color_buffer,
   if (color_buffer == front_color_buffer_)
     front_color_buffer_ = nullptr;
 
-  if (destruction_in_progress_ || color_buffer->size != size_ ||
-      color_buffer->format != color_buffer_format_ ||
+  if (destruction_in_progress_ || color_buffer->shared_image->size() != size_ ||
+      color_buffer->shared_image->format() != color_buffer_format_ ||
       color_buffer->shared_image->color_space() != color_space_ ||
       gl_->GetGraphicsResetStatusKHR() != GL_NO_ERROR || lost_resource ||
       is_hidden_) {
@@ -771,7 +771,7 @@ DrawingBuffer::CreateOrRecycleColorBuffer() {
   if (!recycled_color_buffer_queue_.empty()) {
     scoped_refptr<ColorBuffer> recycled =
         recycled_color_buffer_queue_.TakeLast();
-    DCHECK(recycled->size == size_);
+    DCHECK(recycled->shared_image->size() == size_);
     DCHECK(recycled->shared_image->color_space() == color_space_);
     recycled->BeginAccess(recycled->receive_sync_token, /*readonly=*/false);
     return recycled;
@@ -835,9 +835,6 @@ DrawingBuffer::ColorBuffer::ColorBuffer(
     std::unique_ptr<gpu::SharedImageTexture> shared_image_texture)
     : owning_thread_ref(base::PlatformThread::CurrentRef()),
       drawing_buffer(std::move(drawing_buffer)),
-      size(shared_image->size()),
-      format(shared_image->format()),
-      alpha_type(shared_image->alpha_type()),
       shared_image(std::move(shared_image)),
       shared_image_texture_(std::move(shared_image_texture)) {
   CHECK(this->shared_image);
@@ -1013,7 +1010,7 @@ void DrawingBuffer::CopyStagingTextureToBackColorBufferIfNeeded() {
   // from the requested format to the SharedImage-supported format.
   const GLboolean do_flip_y = GL_FALSE;
   const GLboolean do_premultiply_alpha =
-      back_color_buffer_->alpha_type == kPremul_SkAlphaType &&
+      back_color_buffer_->shared_image->alpha_type() == kPremul_SkAlphaType &&
       requested_alpha_type_ == kUnpremul_SkAlphaType;
   const GLboolean do_unpremultiply_alpha = GL_FALSE;
   gl_->CopySubTextureCHROMIUM(
@@ -1043,11 +1040,11 @@ bool DrawingBuffer::CopyToPlatformInternal(gpu::InterfaceBase* dst_interface,
   SkAlphaType src_alpha_type = kUnknown_SkAlphaType;
   if (src_buffer == kFrontBuffer && front_color_buffer_) {
     src_color_buffer = front_color_buffer_;
-    src_alpha_type = src_color_buffer->alpha_type;
+    src_alpha_type = src_color_buffer->shared_image->alpha_type();
     produce_sync_token = src_color_buffer->produce_sync_token;
   } else {
     src_color_buffer = back_color_buffer_;
-    src_alpha_type = src_color_buffer->alpha_type;
+    src_alpha_type = src_color_buffer->shared_image->alpha_type();
     need_restore_access = true;
     if (staging_texture_) {
       // The source for the copy must be a SharedImage that is accessible to
@@ -1083,7 +1080,7 @@ bool DrawingBuffer::CopyToPlatformInternal(gpu::InterfaceBase* dst_interface,
 
   std::optional<gpu::SyncToken> sync_token =
       copy_function(src_color_buffer->shared_image, produce_sync_token,
-                    src_alpha_type, src_color_buffer->size);
+                    src_alpha_type, src_color_buffer->shared_image->size());
 
   if (need_restore_access) {
     src_color_buffer->BeginAccess(sync_token.value_or(gpu::SyncToken()),
@@ -1759,7 +1756,8 @@ sk_sp<SkData> DrawingBuffer::PaintRenderingResultsToDataArray(
   SkColorType color_type = kRGBA_8888_SkColorType;
   base::CheckedNumeric<size_t> row_bytes = 4;
   if (RuntimeEnabledFeatures::WebGLDrawingBufferStorageEnabled() &&
-      back_color_buffer_->format == viz::SinglePlaneFormat::kRGBA_F16) {
+      back_color_buffer_->shared_image->format() ==
+          viz::SinglePlaneFormat::kRGBA_F16) {
     color_type = kRGBA_F16_SkColorType;
     row_bytes *= 2;
   }

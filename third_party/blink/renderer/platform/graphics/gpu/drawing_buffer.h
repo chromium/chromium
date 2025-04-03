@@ -432,9 +432,6 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
     // by the beginDestruction method, which will eventually drain all of its
     // ColorBuffers.
     base::WeakPtr<DrawingBuffer> drawing_buffer;
-    const gfx::Size size;
-    const viz::SharedImageFormat format;
-    const SkAlphaType alpha_type;
 
     // The shared image used to send this buffer to the compositor.
     scoped_refptr<gpu::ClientSharedImage> shared_image;
