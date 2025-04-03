@@ -295,8 +295,9 @@ TEST_F(AutofillStructuredAddressAddressComponent,
   TestCompoundNameAddressComponent compound_name;
   EXPECT_TRUE(compound_name.SetValueForType(NAME_FIRST, u"First1-First2",
                                             VerificationStatus::kObserved));
-  EXPECT_TRUE(compound_name.SetValueForTypeAndResetSubstructure(
-      NAME_MIDDLE, u"Middle", VerificationStatus::kObserved));
+  EXPECT_TRUE(compound_name.SetValueForType(NAME_MIDDLE, u"Middle",
+                                            VerificationStatus::kObserved,
+                                            /*invalidate_child_nodes=*/true));
   EXPECT_TRUE(compound_name.SetValueForType(NAME_LAST, u"LAST",
                                             VerificationStatus::kObserved));
   EXPECT_TRUE(compound_name.CompleteFullTree());
@@ -1179,8 +1180,9 @@ TEST_F(AutofillStructuredAddressAddressComponent,
   EXPECT_EQ(compound_component.GetValueForType(NAME_LAST), last_name);
 
   // Change the value of FULL_NAME and invalidate all child and ancestor nodes.
-  compound_component.SetValueForTypeAndResetSubstructure(
-      NAME_FULL, u"Oh' Brian", VerificationStatus::kObserved);
+  compound_component.SetValueForType(NAME_FULL, u"Oh' Brian",
+                                     VerificationStatus::kObserved,
+                                     /*invalidate_child_nodes=*/true);
   EXPECT_EQ(compound_component.GetValueForType(CREDIT_CARD_NAME_FULL),
             full_name);
   EXPECT_EQ(compound_component.GetValueForType(NAME_FIRST), std::u16string());
