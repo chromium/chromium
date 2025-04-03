@@ -352,6 +352,18 @@ bool CheckSettingsAndCapabilitiesCompatibility(
     }
   }
 
+  if (base::FeatureList::IsEnabled(
+          printing::features::kApiPrintingMarginsAndScale)) {
+    if (settings.print_scaling() !=
+            printing::mojom::PrintScalingType::kUnknownPrintScalingType &&
+        !base::Contains(capabilities.print_scaling_types,
+                        settings.print_scaling())) {
+      LOG(ERROR) << "Print scaling '" << settings.print_scaling()
+                 << "' is not compatible with printer capabilities";
+      return false;
+    }
+  }
+
   const printing::PrintSettings::RequestedMedia& requested_media =
       settings.requested_media();
   return std::ranges::any_of(

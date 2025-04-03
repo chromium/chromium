@@ -533,4 +533,78 @@ TEST(PrintingApiUtilsTest,
       CheckSettingsAndCapabilitiesCompatibility(*settings, capabilities));
 }
 
+TEST(PrintingApiUtilsTest,
+     CheckSettingsAndCapabilitiesCompatibility_PrintScaling) {
+  std::unique_ptr<printing::PrintSettings> settings = ConstructPrintSettings();
+  printing::PrinterSemanticCapsAndDefaults capabilities =
+      ConstructPrinterCapabilities();
+  capabilities.print_scaling_types.clear();
+
+  const std::vector<printing::mojom::PrintScalingType> kScalingTypes = {
+      printing::mojom::PrintScalingType::kUnknownPrintScalingType,
+      printing::mojom::PrintScalingType::kAuto,
+      printing::mojom::PrintScalingType::kAutoFit,
+      printing::mojom::PrintScalingType::kFit,
+      printing::mojom::PrintScalingType::kFill,
+      printing::mojom::PrintScalingType::kNone,
+  };
+
+  // Test with feature disabled - all types should pass as check is skipped.
+  for (const auto& scaling_type : kScalingTypes) {
+    settings->set_print_scaling(scaling_type);
+    EXPECT_TRUE(
+        CheckSettingsAndCapabilitiesCompatibility(*settings, capabilities));
+  }
+
+  // Re-enable feature for further tests.
+  base::test::ScopedFeatureList feature_list(
+      printing::features::kApiPrintingMarginsAndScale);
+
+  capabilities.print_scaling_types.clear();
+  // Capabilities have no print scaling types, so all types except unknown
+  // should fail.
+  for (const auto& scaling_type : kScalingTypes) {
+    settings->set_print_scaling(scaling_type);
+    if (scaling_type ==
+        printing::mojom::PrintScalingType::kUnknownPrintScalingType) {
+      EXPECT_TRUE(
+          CheckSettingsAndCapabilitiesCompatibility(*settings, capabilities));
+    } else {
+      EXPECT_FALSE(
+          CheckSettingsAndCapabilitiesCompatibility(*settings, capabilities));
+    }
+  }
+
+  // Add all scaling types to capabilities
+  capabilities.print_scaling_types = kScalingTypes;
+
+  // Now all types should pass
+  for (const auto& scaling_type : kScalingTypes) {
+    settings->set_print_scaling(scaling_type);
+    EXPECT_TRUE(
+        CheckSettingsAndCapabilitiesCompatibility(*settings, capabilities));
+  }
+
+  // Test selective support - only kFit and kAuto are supported
+  capabilities.print_scaling_types = {printing::mojom::PrintScalingType::kFit,
+                                      printing::mojom::PrintScalingType::kAuto};
+
+  // Test each scaling type against the selective support
+  for (const auto& scaling_type : kScalingTypes) {
+    settings->set_print_scaling(scaling_type);
+    // Unknown type and supported types should pass.
+    if (scaling_type == printing::mojom::PrintScalingType::kFit ||
+        scaling_type == printing::mojom::PrintScalingType::kAuto ||
+        scaling_type ==
+            printing::mojom::PrintScalingType::kUnknownPrintScalingType) {
+      EXPECT_TRUE(
+          CheckSettingsAndCapabilitiesCompatibility(*settings, capabilities));
+    } else {
+      // Other types should fail as they are not supported.
+      EXPECT_FALSE(
+          CheckSettingsAndCapabilitiesCompatibility(*settings, capabilities));
+    }
+  }
+}
+
 }  // namespace extensions
