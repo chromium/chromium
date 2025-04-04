@@ -1749,6 +1749,7 @@ crbug.com/528062 [ Win ] http/tests/security/XFrameOptions/x-frame-options-cache
 # By about a quarter or less of a pixel.
 crbug.com/997202 [ Mac ] virtual/text-antialias/international/bdo-bidi-width.html [ Failure ]
 
+crbug.com/599670 [ Win ] http/tests/devtools/resource-parameters-ipv6.js [ Crash Failure Pass ]
 crbug.com/472330 fast/borders/border-image-outset-split-inline-vertical-lr.html [ Failure ]
 crbug.com/472330 fast/writing-mode/box-shadow-vertical-lr.html [ Failure ]
 crbug.com/472330 fast/writing-mode/box-shadow-vertical-rl.html [ Failure ]
@@ -9059,12 +9060,6 @@ crbug.com/405231143 [ Mac ] external/wpt/clear-site-data/clear-cache-partitionin
 
 # Gardener 2025-03-21
 crbug.com/405231143 [ Win11-arm64 ] external/wpt/clear-site-data/clear-cache-partitioning.https.html [ Failure ]
-
-# TODO(crbug.com/375515693): Re-enable after landing CL.
-crbug.com/375515693 http/tests/devtools/resource-har-conversion.js [ Failure Pass ]
-crbug.com/375515693 http/tests/devtools/resource-har-headers.js [ Failure Pass ]
-crbug.com/375515693 http/tests/devtools/resource-parameters-ipv6.js [ Crash Failure Pass ]
-crbug.com/375515693 http/tests/devtools/resource-parameters.js [ Failure Pass ]
 
 crbug.com/403071968 external/wpt/css/css-images/gradient/gradient-infinity-003.html [ Failure ]
 
