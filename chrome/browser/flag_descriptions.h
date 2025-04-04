@@ -1367,6 +1367,11 @@ extern const char kInProductHelpDemoModeChoiceDescription[];
 extern const char kInProductHelpSnoozeName[];
 extern const char kInProductHelpSnoozeDescription[];
 
+#if BUILDFLAG(IS_ANDROID)
+extern const char kInputOnVizName[];
+extern const char kInputOnVizDescription[];
+#endif
+
 #if !BUILDFLAG(IS_ANDROID)
 extern const char kUserEducationExperienceVersion2Name[];
 extern const char kUserEducationExperienceVersion2Description[];

@@ -114,6 +114,7 @@
 #include "components/history_clusters/core/features.h"
 #include "components/history_clusters/core/on_device_clustering_features.h"
 #include "components/history_embeddings/history_embeddings_features.h"
+#include "components/input/features.h"
 #include "components/invalidation/impl/invalidation_switches.h"
 #include "components/language/core/common/language_experiments.h"
 #include "components/lens/buildflags.h"
@@ -11974,6 +11975,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kZeroCopyRBPPartialRasterWithGpuCompositorDescription,
      kOsAll,
      FEATURE_VALUE_TYPE(features::kZeroCopyRBPPartialRasterWithGpuCompositor)},
+
+#if BUILDFLAG(IS_ANDROID)
+    {"input-on-viz", flag_descriptions::kInputOnVizName,
+     flag_descriptions::kInputOnVizDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(input::features::kInputOnViz)},
+#endif  // BUILDFLAG(IS_ANDROID)
 
     // Add new entries above this line.
 

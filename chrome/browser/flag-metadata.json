@@ -5419,6 +5419,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "input-on-viz",
+    "owners": [ "woa-performance-team@google.com", "amanvr@google.com", "jonross@chromium.org", "kartarsingh@google.com", "nuskos@chromium.org" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "insecure-download-warnings",
     "owners": [ "jdeblasio@chromium.org", "trusty-transport@chromium.org" ],
     "expiry_milestone": 120

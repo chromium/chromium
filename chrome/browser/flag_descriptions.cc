@@ -2387,6 +2387,13 @@ const char kInProductHelpSnoozeName[] = "In-Product Help Snooze";
 const char kInProductHelpSnoozeDescription[] =
     "Enables the snooze button on In-Product Help.";
 
+#if BUILDFLAG(IS_ANDROID)
+const char kInputOnVizName[] = "Enable InputOnViz";
+const char kInputOnVizDescription[] =
+    "The Flag only has affect on Android V(15)+. It enables input on "
+    "web contents to be handled by Viz process in most scenarios.";
+#endif
+
 #if !BUILDFLAG(IS_ANDROID)
 const char kUserEducationExperienceVersion2Name[] =
     "User Education Experience Version 2";

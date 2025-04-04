@@ -13576,6 +13576,7 @@ from previous Chrome versions.
       label="AutofillSaveCreditCardUsesStrikeSystemV2:enabled"/>
   <int value="-268357961" label="enable-feature-policy"/>
   <int value="-268224644" label="DeferTabSwitcherLayoutCreation:disabled"/>
+  <int value="-266570446" label="InputOnViz:enabled"/>
   <int value="-265765164" label="FeedFollowUiUpdate:disabled"/>
   <int value="-265697837" label="PhoneHub:disabled"/>
   <int value="-265475987" label="NtpWallpaperSearchButton:disabled"/>
@@ -19796,6 +19797,7 @@ from previous Chrome versions.
   <int value="2119575519" label="ComposeUiRefinement:enabled"/>
   <int value="2119964154" label="enable-download-resumption"/>
   <int value="2120179658" label="FeedHeaderRemoval:enabled"/>
+  <int value="2120317212" label="InputOnViz:disabled"/>
   <int value="2120363312" label="QuickDim:enabled"/>
   <int value="2120659210" label="BackForwardCache:enabled"/>
   <int value="2121056855" label="IncreaseInputAudioBufferSize:disabled"/>
