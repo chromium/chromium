@@ -391,7 +391,8 @@ void OnLanguageSwitchedCallback(
 // (`switch_locale` is empty) or after a locale switch otherwise.
 void TriggerShowLoginWizardFinish(
     std::string switch_locale,
-    std::unique_ptr<ShowLoginWizardSwitchLanguageCallbackData> data) {
+    std::unique_ptr<ShowLoginWizardSwitchLanguageCallbackData> data,
+    bool login_input_methods_only) {
   if (switch_locale.empty()) {
     ShowLoginWizardFinish(data->first_screen, data->startup_manifest);
   } else {
@@ -400,9 +401,10 @@ void TriggerShowLoginWizardFinish(
 
     // Load locale keyboards here. Hardware layout would be automatically
     // enabled.
-    locale_util::SwitchLanguage(
-        switch_locale, true, true /* login_layouts_only */, std::move(callback),
-        ProfileManager::GetActiveUserProfile());
+    locale_util::SwitchLanguage(switch_locale,
+                                /*enable_locale_keyboard_layouts=*/true,
+                                login_input_methods_only, std::move(callback),
+                                ProfileManager::GetActiveUserProfile());
   }
 }
 
@@ -1205,7 +1207,8 @@ void ShowLoginWizard(OobeScreenId first_screen) {
       input_method::InputMethodManager::Get();
 
   if (g_browser_process && g_browser_process->local_state()) {
-    manager->GetActiveIMEState()->SetInputMethodLoginDefault();
+    manager->GetActiveIMEState()->SetInputMethodLoginDefault(
+        /*is_in_oobe_context=*/true);
   }
 
   system::InputDeviceSettings::Get()->SetNaturalScroll(
@@ -1266,7 +1269,8 @@ void ShowLoginWizard(OobeScreenId first_screen) {
     std::unique_ptr<ShowLoginWizardSwitchLanguageCallbackData> data =
         std::make_unique<ShowLoginWizardSwitchLanguageCallbackData>(
             first_screen, nullptr);
-    TriggerShowLoginWizardFinish(switch_locale, std::move(data));
+    TriggerShowLoginWizardFinish(switch_locale, std::move(data),
+                                 /*login_input_methods_only=*/true);
     return;
   }
 
@@ -1293,7 +1297,8 @@ void ShowLoginWizard(OobeScreenId first_screen) {
                                                     startup_manifest));
 
   if (!current_locale.empty() || locale.empty()) {
-    TriggerShowLoginWizardFinish(std::string(), std::move(data));
+    TriggerShowLoginWizardFinish(std::string(), std::move(data),
+                                 /*login_input_methods_only=*/false);
     return;
   }
 
@@ -1304,7 +1309,8 @@ void ShowLoginWizard(OobeScreenId first_screen) {
   prefs->SetString(language::prefs::kApplicationLocale, locale);
   StartupUtils::SetInitialLocale(locale);
 
-  TriggerShowLoginWizardFinish(locale, std::move(data));
+  TriggerShowLoginWizardFinish(locale, std::move(data),
+                               /*login_input_methods_only=*/false);
 }
 
 void SwitchWebUItoMojo() {

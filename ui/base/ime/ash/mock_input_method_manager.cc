@@ -43,7 +43,11 @@ bool MockInputMethodManager::State::EnableInputMethod(
 
 void MockInputMethodManager::State::EnableLoginLayouts(
     const std::string& language_code,
-    const std::vector<std::string>& initial_layout) {}
+    const std::vector<std::string>& initial_layouts) {}
+
+void MockInputMethodManager::State::EnableOobeInputMethods(
+    const std::string& language_code,
+    const std::vector<std::string>& initial_input_methods) {}
 
 void MockInputMethodManager::State::DisableNonLockScreenLayouts() {}
 
@@ -78,7 +82,8 @@ size_t MockInputMethodManager::State::GetNumEnabledInputMethods() const {
 void MockInputMethodManager::State::SetEnabledExtensionImes(
     base::span<const std::string> ids) {}
 
-void MockInputMethodManager::State::SetInputMethodLoginDefault() {}
+void MockInputMethodManager::State::SetInputMethodLoginDefault(
+    bool is_in_oobe_context) {}
 
 void MockInputMethodManager::State::SetInputMethodLoginDefaultFromVPD(
     const std::string& locale,

@@ -124,8 +124,7 @@ void SetGaiaInputMethods(const AccountId& account_id) {
     lock_screen_utils::EnforceDevicePolicyInputMethods(std::string());
     std::vector<std::string> input_method_ids;
     if (gaia_ime_state->GetAllowedInputMethodIds().empty()) {
-      input_method_ids =
-          imm->GetInputMethodUtil()->GetHardwareLoginInputMethodIds();
+      input_method_ids = imm->GetInputMethodUtil()->GetHardwareInputMethodIds();
     } else {
       input_method_ids = gaia_ime_state->GetAllowedInputMethodIds();
     }
@@ -139,7 +138,7 @@ void SetGaiaInputMethods(const AccountId& account_id) {
     PushFrontImIfNotExists(owner_input_method_id, &input_method_ids);
     PushFrontImIfNotExists(system_input_method_id, &input_method_ids);
 
-    gaia_ime_state->EnableLoginLayouts(
+    gaia_ime_state->EnableOobeInputMethods(
         g_browser_process->GetApplicationLocale(), input_method_ids);
 
     if (!system_input_method_id.empty()) {
