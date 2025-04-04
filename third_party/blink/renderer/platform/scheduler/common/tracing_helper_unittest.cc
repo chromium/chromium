@@ -28,7 +28,8 @@ perfetto::StaticString SignOfInt(int value) {
 
 // TODO(kraynov): TraceableCounter tests.
 
-TEST(TracingHelperTest, TraceableState) {
+// TODO(crbug.com/408328552): Re-enable this test
+TEST(TracingHelperTest, DISABLED_TraceableState) {
   TraceableVariableController controller;
   TraceableState<int, "renderer.scheduler"> state(
       0, perfetto::NamedTrack("State"), &controller, SignOfInt);
@@ -60,8 +61,7 @@ TEST(TracingHelperTest, TraceableState) {
                                      std::vector<std::string>{"negative"}));
 }
 
-// TODO(crbug.com/408328552): Re-enable this test
-TEST(TracingHelperTest, DISABLED_TraceableStateOperators) {
+TEST(TracingHelperTest, TraceableStateOperators) {
   TraceableVariableController controller;
   TraceableState<int, TRACE_DISABLED_BY_DEFAULT("renderer.scheduler.debug")> x(
       -1, perfetto::NamedTrack("X"), &controller, SignOfInt);
