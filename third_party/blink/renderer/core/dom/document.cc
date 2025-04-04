@@ -710,39 +710,6 @@ void Document::MarkTopLevelFormsDirty() {
   top_level_forms_.MarkDirty();
 }
 
-ExplicitlySetAttrElementsMap* Document::GetExplicitlySetAttrElementsMap(
-    const Element* element) {
-  DCHECK(element);
-  DCHECK(element->GetDocument() == this);
-  auto add_result =
-      element_explicitly_set_attr_elements_map_.insert(element, nullptr);
-  if (add_result.is_new_entry) {
-    add_result.stored_value->value =
-        MakeGarbageCollected<ExplicitlySetAttrElementsMap>();
-  }
-  return add_result.stored_value->value.Get();
-}
-
-bool Document::HasExplicitlySetAttrElements(const Element* element) const {
-  auto it = element_explicitly_set_attr_elements_map_.find(element);
-  if (it == element_explicitly_set_attr_elements_map_.end()) {
-    return false;
-  }
-  return !it->value->empty();
-}
-
-void Document::MoveElementExplicitlySetAttrElementsMapToNewDocument(
-    const Element* element,
-    Document& new_document) {
-  DCHECK(element);
-  auto it = element_explicitly_set_attr_elements_map_.find(element);
-  if (it != element_explicitly_set_attr_elements_map_.end()) {
-    new_document.element_explicitly_set_attr_elements_map_.insert(element,
-                                                                  it->value);
-    element_explicitly_set_attr_elements_map_.erase(it);
-  }
-}
-
 CachedAttrAssociatedElementsMap* Document::GetCachedAttrAssociatedElementsMap(
     Element* element) {
   DCHECK(element);
@@ -8982,7 +8949,6 @@ void Document::Trace(Visitor* visitor) const {
   visitor->Trace(mime_handler_view_before_unload_event_listener_);
   visitor->Trace(cookie_jar_);
   visitor->Trace(fragment_directive_);
-  visitor->Trace(element_explicitly_set_attr_elements_map_);
   visitor->Trace(element_cached_attr_associated_elements_map_);
   visitor->Trace(display_lock_document_state_);
   visitor->Trace(render_blocking_resource_manager_);

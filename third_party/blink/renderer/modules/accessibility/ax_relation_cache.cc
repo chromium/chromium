@@ -290,8 +290,8 @@ bool AXRelationCache::IsAriaOwned(const AXObject* child, bool check) const {
         *object_cache_, child->GetElement());
     if (parent->GetNode() != natural_parent) {
       std::ostringstream msg;
-      msg << "Unowned child should have natural parent:" << "\n* Child: "
-          << child << "\n* Actual parent: " << parent
+      msg << "Unowned child should have natural parent:"
+          << "\n* Child: " << child << "\n* Actual parent: " << parent
           << "\n* Natural ax parent: " << object_cache_->Get(natural_parent)
           << "\n* Natural dom parent: " << natural_parent << " #"
           << natural_parent->GetDomNodeId() << "\n* Owners to update:";
@@ -331,9 +331,9 @@ void AXRelationCache::GetExplicitlySetElementsForAttr(
     const Element& source,
     const QualifiedName& attr_name,
     HeapVector<Member<Element>>& target_elements) {
-  if (source.HasExplicitlySetAttrAssociatedElements(attr_name)) {
-    GCedHeapLinkedHashSet<WeakMember<Element>>* explicitly_set_elements =
-        source.GetExplicitlySetElementsForAttr(attr_name);
+  if (auto* explicitly_set_elements =
+          source.GetExplicitlySetElementsForAttr(attr_name);
+      explicitly_set_elements) {
     for (const WeakMember<Element>& element : *explicitly_set_elements) {
       target_elements.push_back(element);
     }
@@ -858,8 +858,8 @@ void AXRelationCache::ValidatedAriaOwnedChildren(
     } else if (ValidatedAriaOwner(child) == owner) {
       validated_owned_children_result.push_back(child);
       DCHECK(IsAriaOwned(child))
-          << "Owned child not in owned child map:" << "\n* Owner = " << owner
-          << "\n* Child = " << child;
+          << "Owned child not in owned child map:"
+          << "\n* Owner = " << owner << "\n* Child = " << child;
     }
   }
 }
@@ -1127,8 +1127,9 @@ AXObject* AXRelationCache::GetOrCreateAriaOwnerFor(Node* node, AXObject* obj) {
     DCHECK(!obj->IsDetached());
   AXObject* obj_for_node = object_cache_->Get(node);
   DCHECK(!obj || obj_for_node == obj)
-      << "Object and node did not match:" << "\n* node = " << node
-      << "\n* obj = " << obj << "\n* obj_for_node = " << obj_for_node;
+      << "Object and node did not match:"
+      << "\n* node = " << node << "\n* obj = " << obj
+      << "\n* obj_for_node = " << obj_for_node;
 #endif
 
   // Look for any new aria-owns relations.

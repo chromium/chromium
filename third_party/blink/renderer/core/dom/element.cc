@@ -1012,6 +1012,15 @@ void Element::SetBooleanAttribute(const QualifiedName& name, bool value) {
   }
 }
 
+bool Element::HasAnyExplicitlySetAttrAssociatedElements() const {
+  if (ElementRareDataVector* data = GetElementRareData()) {
+    const ExplicitlySetAttrElementsMap* element_attribute_map =
+        data->GetExplicitlySetElementsForAttr();
+    return element_attribute_map && !element_attribute_map->map.empty();
+  }
+  return false;
+}
+
 bool Element::HasExplicitlySetAttrAssociatedElements(
     const QualifiedName& name) const {
   return GetExplicitlySetElementsForAttr(name);
@@ -1019,21 +1028,31 @@ bool Element::HasExplicitlySetAttrAssociatedElements(
 
 GCedHeapLinkedHashSet<WeakMember<Element>>*
 Element::GetExplicitlySetElementsForAttr(const QualifiedName& name) const {
-  ExplicitlySetAttrElementsMap* element_attribute_map =
-      GetDocument().GetExplicitlySetAttrElementsMap(this);
-  auto it = element_attribute_map->find(name);
-  if (it == element_attribute_map->end()) {
-    return nullptr;
+  if (ElementRareDataVector* data = GetElementRareData()) {
+    const ExplicitlySetAttrElementsMap* element_attribute_map =
+        data->GetExplicitlySetElementsForAttr();
+    if (!element_attribute_map) {
+      return nullptr;
+    }
+    auto it = element_attribute_map->map.find(name);
+    if (it == element_attribute_map->map.end()) {
+      return nullptr;
+    }
+    const auto& elements = it->value;
+    return elements->size() ? elements : nullptr;
   }
-  const auto& elements = it->value;
-  return elements->size() ? elements : nullptr;
+  return nullptr;
 }
 
 void Element::SynchronizeContentAttributeAndElementReference(
     const QualifiedName& name) {
-  ExplicitlySetAttrElementsMap* element_attribute_map =
-      GetDocument().GetExplicitlySetAttrElementsMap(this);
-  element_attribute_map->erase(name);
+  if (ElementRareDataVector* data = GetElementRareData()) {
+    ExplicitlySetAttrElementsMap* element_attribute_map =
+        data->GetExplicitlySetElementsForAttr();
+    if (element_attribute_map) {
+      element_attribute_map->map.erase(name);
+    }
+  }
 }
 
 void Element::SetElementAttribute(const QualifiedName& name, Element* element) {
@@ -1041,20 +1060,28 @@ void Element::SetElementAttribute(const QualifiedName& name, Element* element) {
       << " Element attributes must be added to IsElementReflectionAttribute. "
          "name: "
       << name;
-  ExplicitlySetAttrElementsMap* explicitly_set_attr_elements_map =
-      GetDocument().GetExplicitlySetAttrElementsMap(this);
+  if (!element && (!GetElementRareData() ||
+                   !GetElementRareData()->GetExplicitlySetElementsForAttr())) {
+    // Nothing to do for explicitly set attributes below,
+    // so don't ensure the map; just remove the attribute.
+    removeAttribute(name);
+    return;
+  }
+
+  ExplicitlySetAttrElementsMap& explicitly_set_attr_elements_map =
+      EnsureElementRareData().EnsureExplicitlySetElementsForAttr();
 
   // If the reflected element is explicitly null then we remove the content
   // attribute and the explicitly set attr-element.
   if (!element) {
-    explicitly_set_attr_elements_map->erase(name);
+    explicitly_set_attr_elements_map.map.erase(name);
     removeAttribute(name);
     return;
   }
 
   setAttribute(name, g_empty_atom);
 
-  auto result = explicitly_set_attr_elements_map->insert(name, nullptr);
+  auto result = explicitly_set_attr_elements_map.map.insert(name, nullptr);
   if (result.is_new_entry) {
     result.stored_value->value =
         MakeGarbageCollected<GCedHeapLinkedHashSet<WeakMember<Element>>>();
@@ -1298,13 +1325,13 @@ void Element::SetElementArrayAttribute(
     const GCedHeapVector<Member<Element>>* given_elements) {
   // https://html.spec.whatwg.org/multipage/common-dom-interfaces.html#reflecting-content-attributes-in-idl-attributes:element-3
 
-  ExplicitlySetAttrElementsMap* element_attribute_map =
-      GetDocument().GetExplicitlySetAttrElementsMap(this);
+  ExplicitlySetAttrElementsMap& element_attribute_map =
+      EnsureElementRareData().EnsureExplicitlySetElementsForAttr();
 
   if (!given_elements) {
     // 1. If the given value is null:
     //   1. Set this's explicitly set attr-elements to null.
-    element_attribute_map->erase(name);
+    element_attribute_map.map.erase(name);
     //   2. Run this's delete the content attribute.
     removeAttribute(name);
     return;
@@ -1321,13 +1348,13 @@ void Element::SetElementArrayAttribute(
   // In practice, we're fetching elements from element_attribute_map, clearing
   // the previous value if necessary to get an empty list, and then populating
   // the list.
-  auto it = element_attribute_map->find(name);
+  auto it = element_attribute_map.map.find(name);
   GCedHeapLinkedHashSet<WeakMember<Element>>* stored_elements =
-      it != element_attribute_map->end() ? it->value : nullptr;
+      it != element_attribute_map.map.end() ? it->value : nullptr;
   if (!stored_elements) {
     stored_elements =
         MakeGarbageCollected<GCedHeapLinkedHashSet<WeakMember<Element>>>();
-    element_attribute_map->Set(name, stored_elements);
+    element_attribute_map.map.Set(name, stored_elements);
   } else {
     stored_elements->clear();
   }
@@ -1341,7 +1368,7 @@ void Element::SetElementArrayAttribute(
   // |setAttribute| will call through to |AttributeChanged| which calls
   // |SynchronizeContentAttributeAndElementReference| erasing the entry for
   // |name| from the map.
-  element_attribute_map->Set(name, stored_elements);
+  element_attribute_map.map.Set(name, stored_elements);
 
   // |HandleAttributeChanged| must be called after updating the attribute map.
   if (isConnected()) {
