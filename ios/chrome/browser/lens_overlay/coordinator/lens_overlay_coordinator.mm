@@ -676,7 +676,7 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
                               kBottomSheetDismissed];
       break;
     case SheetDimensionState::kLarge:
-      [self disableSelectionInteraction:YES];
+      [self disableSelectionInteraction:NO];
       break;
     case SheetDimensionState::kConsent:
       break;

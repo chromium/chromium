@@ -23,8 +23,18 @@ NSString* const kPeakSheetDetentIdentifier = @"kPeakSheetDetentIdentifier";
 NSString* const kInfoMessageSheetDetentIdentifier =
     @"kInfoMessageSheetDetentIdentifier";
 
+// The identifier for the custom large detent.
+NSString* const kCustomLargeDetentIdentifier = @"kCustomLargeDetentIdentifier";
+
 // The detent height in points for the 'peak' state of the bottom sheet.
 const CGFloat kPeakDetentHeight = 100.0;
+
+// TODO(crbug.com/408391355): Remove once real value is surfaced to Chromium.
+// Height of the HUD elements header bar in the selection UI.
+const CGFloat kHUDHeaderHeight = 54.0;
+
+// The ammount of obstruction (in points) on top of the HUD header.
+const CGFloat kHUDObstructionAmmount = 8.0;
 
 // The percentage of the screen that will be covered by the bottom sheet in
 // translate mode.
@@ -157,8 +167,7 @@ const CGFloat kTranslateSheetHeightRatio = 0.33;
 
 - (void)requestMaximizeBottomSheet {
   [_sheet animateChanges:^{
-    _sheet.selectedDetentIdentifier =
-        UISheetPresentationControllerDetentIdentifierLarge;
+    _sheet.selectedDetentIdentifier = kCustomLargeDetentIdentifier;
   }];
   [self reportDimensionChangeIfNeeded:NO];
 }
@@ -206,19 +215,22 @@ const CGFloat kTranslateSheetHeightRatio = 0.33;
 
 - (BOOL)isInLargeDetent {
   NSString* identifier = _sheet.selectedDetentIdentifier;
-  return [identifier
-      isEqualToString:UISheetPresentationControllerDetentIdentifierLarge];
+  return [identifier isEqualToString:kCustomLargeDetentIdentifier];
 }
 
 - (CGFloat)windowHeight {
   return _window.frame.size.height;
 }
 
+- (CGFloat)windowSafeAreaHeight {
+  return _window.safeAreaLayoutGuide.layoutFrame.size.height;
+}
+
 - (void)setDetentsForState:(SheetDetentState)state {
   switch (state) {
     case SheetDetentStateUnrestrictedMovement:
       _sheet.detents = @[ [self mediumDetent], [self largeDetent] ];
-      _sheet.largestUndimmedDetentIdentifier = [self largeDetent].identifier;
+      _sheet.largestUndimmedDetentIdentifier = kCustomLargeDetentIdentifier;
       _sheet.selectedDetentIdentifier = [self mediumDetent].identifier;
       break;
     case SheetDetentStatePeakEnabled:
@@ -261,7 +273,17 @@ const CGFloat kTranslateSheetHeightRatio = 0.33;
 }
 
 - (UISheetPresentationControllerDetent*)largeDetent {
-  return [UISheetPresentationControllerDetent largeDetent];
+  __weak __typeof(self) weakSelf = self;
+  auto heightResolver = ^CGFloat(
+      id<UISheetPresentationControllerDetentResolutionContext> context) {
+    return MAX([weakSelf windowSafeAreaHeight] - kHUDHeaderHeight +
+                   kHUDObstructionAmmount,
+               0);
+  };
+
+  return [UISheetPresentationControllerDetent
+      customDetentWithIdentifier:kCustomLargeDetentIdentifier
+                        resolver:heightResolver];
 }
 
 - (UISheetPresentationControllerDetent*)mediumDetent {
