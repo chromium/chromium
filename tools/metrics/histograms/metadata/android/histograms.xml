@@ -902,8 +902,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     Recorded when a user navigates to a URL by a navigation gesture or a
     navigation button and then a backfalsing event happens. Recorded for both
-    swipes and clicks in both 3-button mode and gesture navigation mode. Android
-    only.
+    swipes and clicks in both 3-button mode and gesture navigation mode.
   </summary>
 </histogram>
 
@@ -999,6 +998,20 @@ chromium-metrics-reviews@google.com.
     <variant name=".SeparateTask"
         summary="custom tab is from a separate task."/>
   </token>
+</histogram>
+
+<histogram name="Android.BackPress.StrictBackfalsing"
+    enum="NavigationDirection" expires_after="2025-07-27">
+  <owner>eleanorlee@google.com</owner>
+  <owner>lazzzis@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
+  <summary>
+    Another version of Android.BackPress.Backfalsing2 with strict definition of
+    &quot;Backfalsing&quot;. Recorded when a user navigates to a URL by a
+    navigation gesture or a navigation button and then a backfalsing event
+    happens within **3 seconds**. Recorded for both swipes and clicks in both
+    3-button mode and gesture navigation mode.
+  </summary>
 </histogram>
 
 <histogram name="Android.BackPress.SwipeEdge{Type}" enum="SwipeEdge"

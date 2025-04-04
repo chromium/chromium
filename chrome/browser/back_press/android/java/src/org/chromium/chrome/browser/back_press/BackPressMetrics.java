@@ -35,6 +35,8 @@ public class BackPressMetrics {
     private static final String INCORRECT_EDGE_SWIPE_COUNT_CHAINED_HISTOGRAM =
             "Android.BackPress.IncorrectEdgeSwipe.CountChained";
     private static final String BACK_FALSING_HISTOGRAM = "Android.BackPress.Backfalsing2";
+    private static final String STRICT_BACK_FALSING_HISTOGRAM =
+            "Android.BackPress.StrictBackfalsing";
 
     @IntDef({
         PredictiveGestureNavPhase.ACTIVATED,
@@ -95,6 +97,16 @@ public class BackPressMetrics {
     public static void recordBackFalsing(@NavigationDirection int navigationDirection) {
         RecordHistogram.recordEnumeratedHistogram(
                 BACK_FALSING_HISTOGRAM, navigationDirection, NavigationDirection.NUM_ENTRIES);
+    }
+
+    /**
+     * @param navigationDirection The direction of the navigation.
+     */
+    public static void recordStrictBackFalsing(@NavigationDirection int navigationDirection) {
+        RecordHistogram.recordEnumeratedHistogram(
+                STRICT_BACK_FALSING_HISTOGRAM,
+                navigationDirection,
+                NavigationDirection.NUM_ENTRIES);
     }
 
     /**
