@@ -165,7 +165,7 @@ class TabGroupSyncDelegateBrowserTest : public InProcessBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
                        GetBrowserWithTabGroupId) {
-  EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
+  ASSERT_EQ(browser()->tab_strip_model()->count(), 1);
 
   LocalTabGroupID group_id = browser()->tab_strip_model()->AddToNewGroup({0});
   EXPECT_EQ(browser(), SavedTabGroupUtils::GetBrowserWithTabGroupId(group_id));
@@ -174,7 +174,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
 IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
                        UngroupingTabIsRemovedFromSavedGroup) {
   chrome::AddTabAt(browser(), GURL("https://google.com"), 1, false);
-  EXPECT_EQ(browser()->tab_strip_model()->count(), 2);
+  ASSERT_EQ(browser()->tab_strip_model()->count(), 2);
 
   LocalTabGroupID group_id =
       browser()->tab_strip_model()->AddToNewGroup({0, 1});
@@ -186,23 +186,23 @@ IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
           ->GetTabFeatures()
           ->saved_tab_group_web_contents_listener();
 
-  EXPECT_TRUE(listener->saved_group());
+  ASSERT_TRUE(listener->saved_group());
   EXPECT_EQ(listener->saved_group()->local_group_id(), group_id);
-  EXPECT_TRUE(model_->Contains(group_id));
+  ASSERT_TRUE(model_->Contains(group_id));
   EXPECT_EQ(model_->Get(group_id)->saved_tabs().size(), 2u);
 
   // Move the first tab outside the group.
   browser()->tab_strip_model()->MoveWebContentsAt(0, 0, true, std::nullopt);
 
   EXPECT_FALSE(listener->saved_group());
-  EXPECT_TRUE(model_->Contains(group_id));
+  ASSERT_TRUE(model_->Contains(group_id));
   EXPECT_EQ(model_->Get(group_id)->saved_tabs().size(), 1u);
 }
 
 IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
                        AddingTabToGroupAddsItToSavedGroup) {
   chrome::AddTabAt(browser(), GURL("https://google.com"), 1, false);
-  EXPECT_EQ(browser()->tab_strip_model()->count(), 2);
+  ASSERT_EQ(browser()->tab_strip_model()->count(), 2);
   LocalTabGroupID group_id = browser()->tab_strip_model()->AddToNewGroup({1});
 
   SavedTabGroupWebContentsListener* listener =
@@ -213,14 +213,14 @@ IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
           ->saved_tab_group_web_contents_listener();
 
   EXPECT_FALSE(listener->saved_group());
-  EXPECT_TRUE(model_->Contains(group_id));
+  ASSERT_TRUE(model_->Contains(group_id));
   EXPECT_EQ(model_->Get(group_id)->saved_tabs().size(), 1u);
 
   // Move the first tab inside the group.
   browser()->tab_strip_model()->MoveWebContentsAt(0, 0, true, group_id);
 
-  EXPECT_TRUE(listener->saved_group());
-  EXPECT_TRUE(model_->Contains(group_id));
+  ASSERT_TRUE(listener->saved_group());
+  ASSERT_TRUE(model_->Contains(group_id));
   EXPECT_EQ(model_->Get(group_id)->saved_tabs().size(), 2u);
 }
 
@@ -228,13 +228,13 @@ IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
                        AlreadyOpenedGroupIsFocused) {
   // Create 2 tabs; Add 1 to a tab group.
   chrome::AddTabAt(browser(), GURL("https://google.com"), 1, true);
-  EXPECT_EQ(browser()->tab_strip_model()->count(), 2);
+  ASSERT_EQ(browser()->tab_strip_model()->count(), 2);
 
   LocalTabGroupID group_id = browser()->tab_strip_model()->AddToNewGroup({0});
-  EXPECT_TRUE(model_->Contains(group_id));
+  ASSERT_TRUE(model_->Contains(group_id));
 
   std::optional<SavedTabGroup> saved_group = service_->GetGroup(group_id);
-  EXPECT_TRUE(saved_group);
+  ASSERT_TRUE(saved_group);
 
   base::Uuid sync_id = saved_group->saved_guid();
 
@@ -254,14 +254,14 @@ IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
   // Create 3 tabs; Add 2 to a tab group.
   chrome::AddTabAt(browser(), GURL("https://google.com"), 1, true);
   chrome::AddTabAt(browser(), GURL("https://google.com"), 2, true);
-  EXPECT_EQ(browser()->tab_strip_model()->count(), 3);
+  ASSERT_EQ(browser()->tab_strip_model()->count(), 3);
 
   LocalTabGroupID group_id =
       browser()->tab_strip_model()->AddToNewGroup({1, 2});
-  EXPECT_TRUE(model_->Contains(group_id));
+  ASSERT_TRUE(model_->Contains(group_id));
 
   std::optional<SavedTabGroup> saved_group = service_->GetGroup(group_id);
-  EXPECT_TRUE(saved_group);
+  ASSERT_TRUE(saved_group);
 
   base::Uuid sync_id = saved_group->saved_guid();
 
@@ -332,8 +332,6 @@ IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
   ASSERT_TRUE(
       browser()->tab_strip_model()->group_model()->ContainsTabGroup(local_id));
 
-  TabGroup* tab_group =
-      browser()->tab_strip_model()->group_model()->GetTabGroup(local_id);
   std::optional<SavedTabGroup> saved_group = service_->GetGroup(local_id);
   ASSERT_TRUE(saved_group);
 
@@ -352,7 +350,11 @@ IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
   WaitUntilCallbackReceived();
 
   // Verify that the new tabs were added to the group in the correct order.
-  const gfx::Range tab_range = tab_group->ListTabs();
+  const gfx::Range tab_range = browser()
+                                   ->tab_strip_model()
+                                   ->group_model()
+                                   ->GetTabGroup(local_id)
+                                   ->ListTabs();
   ASSERT_EQ(tab_range.length(), 3u);
   EXPECT_EQ(browser()->tab_strip_model()->GetWebContentsAt(0)->GetURL(),
             GURL("http://www.google.com/1"));
@@ -448,7 +450,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
 IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
                        RemoveTabFromSyncRemovesLocalTab) {
   chrome::AddTabAt(browser(), GURL("chrome://newtab"), 1, false);
-  EXPECT_EQ(browser()->tab_strip_model()->count(), 2);
+  ASSERT_EQ(browser()->tab_strip_model()->count(), 2);
 
   // Create a new tab group with two tabs.
   LocalTabGroupID local_id =
@@ -466,10 +468,12 @@ IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
   WaitUntilCallbackReceived();
 
   // Verify that the first tab was removed from the group.
-  EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
-  TabGroup* tab_group =
-      browser()->tab_strip_model()->group_model()->GetTabGroup(local_id);
-  const gfx::Range tab_range = tab_group->ListTabs();
+  ASSERT_EQ(browser()->tab_strip_model()->count(), 1);
+  const gfx::Range tab_range = browser()
+                                   ->tab_strip_model()
+                                   ->group_model()
+                                   ->GetTabGroup(local_id)
+                                   ->ListTabs();
   ASSERT_EQ(tab_range.length(), 1u);
 
   EXPECT_EQ(browser()->tab_strip_model()->GetWebContentsAt(0)->GetURL(),
@@ -479,7 +483,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
 IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
                        RemoveLastTabFromSyncKeepsGroupAndAddsPendingNTP) {
   chrome::AddTabAt(browser(), GURL("chrome://history"), 1, false);
-  EXPECT_EQ(browser()->tab_strip_model()->count(), 2);
+  ASSERT_EQ(browser()->tab_strip_model()->count(), 2);
 
   // Create a new tab group with a tab.
   LocalTabGroupID local_id = browser()->tab_strip_model()->AddToNewGroup({1});
@@ -496,10 +500,12 @@ IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
   WaitUntilCallbackReceived();
 
   // Verify the last tab is still open in the tab group.
-  EXPECT_EQ(browser()->tab_strip_model()->count(), 2);
-  TabGroup* tab_group =
-      browser()->tab_strip_model()->group_model()->GetTabGroup(local_id);
-  const gfx::Range tab_range = tab_group->ListTabs();
+  ASSERT_EQ(browser()->tab_strip_model()->count(), 2);
+  const gfx::Range tab_range = browser()
+                                   ->tab_strip_model()
+                                   ->group_model()
+                                   ->GetTabGroup(local_id)
+                                   ->ListTabs();
   ASSERT_EQ(tab_range.length(), 1u);
 
   // Verify the chrome://history tab has a pending ntp entry in the saved group.
@@ -510,7 +516,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
 IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
                        RemoveGroupFromSyncRemovesLocalTabGroup) {
   chrome::AddTabAt(browser(), GURL("chrome://newtab"), 0, false);
-  EXPECT_EQ(browser()->tab_strip_model()->count(), 2);
+  ASSERT_EQ(browser()->tab_strip_model()->count(), 2);
 
   // Create a new tab group with 1 tab.
   LocalTabGroupID local_id = browser()->tab_strip_model()->AddToNewGroup({1});
@@ -527,7 +533,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
   }));
 
   // Verify that the tab_group was removed from the browser..
-  EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
+  ASSERT_EQ(browser()->tab_strip_model()->count(), 1);
   EXPECT_FALSE(
       browser()->tab_strip_model()->group_model()->ContainsTabGroup(local_id));
   EXPECT_FALSE(model_->Contains(local_id));
@@ -536,12 +542,12 @@ IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
 IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
                        TabReorderedLocallyUpdateSavedTabGroupTabOrder) {
   chrome::AddTabAt(browser(), GURL("https://google.com"), 1, false);
-  EXPECT_EQ(browser()->tab_strip_model()->count(), 2);
+  ASSERT_EQ(browser()->tab_strip_model()->count(), 2);
   LocalTabGroupID group_id =
       browser()->tab_strip_model()->AddToNewGroup({0, 1});
 
   const SavedTabGroup* saved_group = model_->Get(group_id);
-  EXPECT_TRUE(saved_group);
+  ASSERT_TRUE(saved_group);
 
   LocalTabID first_tab_id =
       browser()->tab_strip_model()->GetTabAtIndex(0)->GetHandle().raw_value();
@@ -567,12 +573,12 @@ IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest, ReorderDiscardedTab) {
   chrome::AddTabAt(browser(), GURL("https://google.com"), 1, false);
-  EXPECT_EQ(browser()->tab_strip_model()->count(), 2);
+  ASSERT_EQ(browser()->tab_strip_model()->count(), 2);
   LocalTabGroupID group_id =
       browser()->tab_strip_model()->AddToNewGroup({0, 1});
 
   const SavedTabGroup* saved_group = model_->Get(group_id);
-  EXPECT_TRUE(saved_group);
+  ASSERT_TRUE(saved_group);
 
   LocalTabID first_tab_id =
       browser()->tab_strip_model()->GetTabAtIndex(0)->GetHandle().raw_value();
@@ -600,7 +606,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
   chrome::AddTabAt(browser(), GURL("https://google.com"), 1, false);
   chrome::AddTabAt(browser(), GURL("https://google.com"), 2, false);
 
-  EXPECT_EQ(browser()->tab_strip_model()->count(), 3);
+  ASSERT_EQ(browser()->tab_strip_model()->count(), 3);
   LocalTabGroupID group_id_1 = browser()->tab_strip_model()->AddToNewGroup({0});
   LocalTabGroupID group_id_2 = browser()->tab_strip_model()->AddToNewGroup({1});
   LocalTabGroupID group_id_3 = browser()->tab_strip_model()->AddToNewGroup({2});
@@ -621,12 +627,12 @@ IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
 IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
                        ReorderTabFromSyncReordersLocalTab) {
   chrome::AddTabAt(browser(), GURL("https://google.com"), 1, false);
-  EXPECT_EQ(browser()->tab_strip_model()->count(), 2);
+  ASSERT_EQ(browser()->tab_strip_model()->count(), 2);
   LocalTabGroupID group_id =
       browser()->tab_strip_model()->AddToNewGroup({0, 1});
 
   const SavedTabGroup* saved_group = model_->Get(group_id);
-  EXPECT_TRUE(saved_group);
+  ASSERT_TRUE(saved_group);
 
   LocalTabID first_tab_id =
       browser()->tab_strip_model()->GetTabAtIndex(0)->GetHandle().raw_value();
