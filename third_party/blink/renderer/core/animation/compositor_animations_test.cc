@@ -482,9 +482,6 @@ class AnimationCompositorAnimationsTest : public PaintTestConfigurations,
       bool IsNeutral() const final { return true; }
       bool IsRevert() const final { return false; }
       bool IsRevertLayer() const final { return false; }
-      PropertySpecificKeyframe* CloneWithOffset(double) const final {
-        NOTREACHED();
-      }
       bool PopulateCompositorKeyframeValue(
           const PropertyHandle&,
           Element&,
