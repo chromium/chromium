@@ -72,7 +72,9 @@ struct AttributionSimulationEvent {
     int64_t request_id;
   };
 
-  using Data = std::variant<StartRequest, Response, EndRequest>;
+  struct Navigation {};
+
+  using Data = std::variant<StartRequest, Response, EndRequest, Navigation>;
 
   base::Time time;
   Data data;
@@ -100,6 +102,7 @@ struct AttributionInteropConfig {
   double max_event_level_epsilon = 0;
   uint32_t max_trigger_state_cardinality = 0;
   bool needs_cross_app_web = false;
+  bool needs_delivery_after_new_navigation = false;
   std::vector<url::Origin> aggregation_coordinator_origins;
 
   AttributionInteropConfig();
