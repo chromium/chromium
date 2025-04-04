@@ -63,14 +63,14 @@ class MockPinnedToolbarActionsModel : public PinnedToolbarActionsModel {
  public:
   explicit MockPinnedToolbarActionsModel(Profile* profile)
       : PinnedToolbarActionsModel(profile) {}
-  MOCK_METHOD(bool, Contains, (const actions::ActionId& action_id), (const));
+  MOCK_METHOD(bool, Contains, (actions::ActionId action_id), (const));
   MOCK_METHOD(const std::vector<actions::ActionId>&,
               PinnedActionIds,
               (),
               (const));
   MOCK_METHOD(void,
               UpdatePinnedState,
-              (const actions::ActionId& action_id, const bool should_pin));
+              (actions::ActionId action_id, const bool should_pin));
   MOCK_METHOD(void, ResetToDefault, ());
 
   MOCK_METHOD(void, AddObserver, (PinnedToolbarActionsModel::Observer*));

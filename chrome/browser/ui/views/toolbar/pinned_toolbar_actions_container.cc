@@ -368,13 +368,12 @@ views::View::DropCallback PinnedToolbarActionsContainer::GetDropCallback(
                         std::move(cleanup));
 }
 
-void PinnedToolbarActionsContainer::OnActionAddedLocally(
-    const actions::ActionId& id) {
+void PinnedToolbarActionsContainer::OnActionAddedLocally(actions::ActionId id) {
   RecordPinnedActionsCount(model_->PinnedActionIds().size());
 }
 
 void PinnedToolbarActionsContainer::OnActionRemovedLocally(
-    const actions::ActionId& id) {
+    actions::ActionId id) {
   RecordPinnedActionsCount(model_->PinnedActionIds().size());
 }
 
@@ -426,13 +425,13 @@ bool PinnedToolbarActionsContainer::CanStartDragForView(
 }
 
 actions::ActionItem* PinnedToolbarActionsContainer::GetActionItemFor(
-    const actions::ActionId& id) {
+    actions::ActionId id) {
   return actions::ActionManager::Get().FindAction(
       id, browser_view_->browser()->browser_actions()->root_action_item());
 }
 
 PinnedActionToolbarButton* PinnedToolbarActionsContainer::AddPoppedOutButtonFor(
-    const actions::ActionId& id) {
+    actions::ActionId id) {
   CHECK(GetActionItemFor(id));
   auto popped_out_button = CreateOrGetButtonForAction(id);
   auto* button = popped_out_button.get();
@@ -442,7 +441,7 @@ PinnedActionToolbarButton* PinnedToolbarActionsContainer::AddPoppedOutButtonFor(
 }
 
 void PinnedToolbarActionsContainer::MaybeRemovePoppedOutButtonFor(
-    const actions::ActionId& id) {
+    actions::ActionId id) {
   const auto iter = std::ranges::find(
       popped_out_buttons_, id,
       [](PinnedActionToolbarButton* button) { return button->GetActionId(); });
@@ -475,7 +474,7 @@ PinnedToolbarActionsContainer::CreatePermanentButtonFor(actions::ActionId id) {
 }
 
 void PinnedToolbarActionsContainer::AddPinnedActionButtonFor(
-    const actions::ActionId& id) {
+    actions::ActionId id) {
   // Pinned buttons shouldn't appear in web apps.
   if (browser_view_->browser() && browser_view_->browser()->app_controller()) {
     return;
@@ -505,7 +504,7 @@ void PinnedToolbarActionsContainer::AddPinnedActionButtonFor(
 }
 
 void PinnedToolbarActionsContainer::RemovePinnedActionButtonFor(
-    const actions::ActionId& id) {
+    actions::ActionId id) {
   const auto iter = std::ranges::find(
       pinned_buttons_, id,
       [](PinnedActionToolbarButton* button) { return button->GetActionId(); });
@@ -525,7 +524,7 @@ void PinnedToolbarActionsContainer::RemovePinnedActionButtonFor(
 }
 
 PinnedActionToolbarButton* PinnedToolbarActionsContainer::GetPinnedButtonFor(
-    const actions::ActionId& id) {
+    actions::ActionId id) {
   const auto iter = std::ranges::find(
       pinned_buttons_, id,
       [](PinnedActionToolbarButton* button) { return button->GetActionId(); });
@@ -533,7 +532,7 @@ PinnedActionToolbarButton* PinnedToolbarActionsContainer::GetPinnedButtonFor(
 }
 
 PinnedActionToolbarButton* PinnedToolbarActionsContainer::GetPoppedOutButtonFor(
-    const actions::ActionId& id) {
+    actions::ActionId id) {
   const auto iter = std::ranges::find(
       popped_out_buttons_, id,
       [](PinnedActionToolbarButton* button) { return button->GetActionId(); });
@@ -541,7 +540,7 @@ PinnedActionToolbarButton* PinnedToolbarActionsContainer::GetPoppedOutButtonFor(
 }
 
 PinnedActionToolbarButton* PinnedToolbarActionsContainer::GetButtonFor(
-    const actions::ActionId& id) {
+    actions::ActionId id) {
   if (auto* pinned_button = GetPinnedButtonFor(id)) {
     return pinned_button;
   }
@@ -576,7 +575,7 @@ void PinnedToolbarActionsContainer::RemoveButton(
   }
 }
 
-bool PinnedToolbarActionsContainer::IsOverflowed(const actions::ActionId& id) {
+bool PinnedToolbarActionsContainer::IsOverflowed(actions::ActionId id) {
   const auto* const pinned_button = GetPinnedButtonFor(id);
   // TODO(pengchaocai): Support popped out buttons overflow.
   // TODO(crbug.com/40949386): If this container is not visible treat the
@@ -618,20 +617,18 @@ bool PinnedToolbarActionsContainer::ShouldAnyButtonsOverflow(
   return false;
 }
 
-bool PinnedToolbarActionsContainer::IsActionPinned(
-    const actions::ActionId& id) {
+bool PinnedToolbarActionsContainer::IsActionPinned(actions::ActionId id) {
   PinnedActionToolbarButton* button = GetPinnedButtonFor(id);
   return button != nullptr;
 }
 
-bool PinnedToolbarActionsContainer::IsActionPoppedOut(
-    const actions::ActionId& id) {
+bool PinnedToolbarActionsContainer::IsActionPoppedOut(actions::ActionId id) {
   PinnedActionToolbarButton* button = GetPoppedOutButtonFor(id);
   return button != nullptr;
 }
 
 bool PinnedToolbarActionsContainer::IsActionPinnedOrPoppedOut(
-    const actions::ActionId& id) {
+    actions::ActionId id) {
   return IsActionPinned(id) || IsActionPoppedOut(id);
 }
 
@@ -690,7 +687,7 @@ void PinnedToolbarActionsContainer::UpdateViews() {
 
   // 1. Remove buttons for actions in the UI that are not present in the
   // model.
-  for (const actions::ActionId& id : old_ids) {
+  for (actions::ActionId id : old_ids) {
     if (base::Contains(new_ids, id)) {
       continue;
     }
@@ -704,7 +701,7 @@ void PinnedToolbarActionsContainer::UpdateViews() {
   }
 
   // 2. Add buttons for actions that are in the model but not in the UI.
-  for (const actions::ActionId& id : new_ids) {
+  for (actions::ActionId id : new_ids) {
     if (base::Contains(old_ids, id)) {
       continue;
     }
@@ -732,7 +729,7 @@ void PinnedToolbarActionsContainer::SetActionButtonIconVisibility(
 }
 
 void PinnedToolbarActionsContainer::MovePinnedAction(
-    const actions::ActionId& action_id,
+    actions::ActionId action_id,
     size_t index,
     base::ScopedClosureRunner cleanup,
     const ui::DropTargetEvent& event,
@@ -758,7 +755,7 @@ void PinnedToolbarActionsContainer::MovePinnedAction(
 }
 
 void PinnedToolbarActionsContainer::DragDropCleanup(
-    const actions::ActionId& dragged_action_id) {
+    actions::ActionId dragged_action_id) {
   ReorderViews();
   GetAnimatingLayoutManager()->PostOrQueueAction(base::BindOnce(
       &PinnedToolbarActionsContainer::SetActionButtonIconVisibility,
