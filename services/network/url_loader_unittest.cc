@@ -99,7 +99,6 @@
 #include "net/url_request/url_request_job.h"
 #include "net/url_request/url_request_test_job.h"
 #include "net/url_request/url_request_test_util.h"
-#include "services/network/attribution/attribution_request_helper.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/ip_address_space_util.h"
@@ -682,7 +681,6 @@ struct URLLoaderOptions {
         std::move(trust_token_observer), std::move(url_loader_network_observer),
         std::move(devtools_observer), std::move(device_bound_session_observer),
         std::move(accept_ch_frame_observer),
-        std::move(attribution_request_helper),
         shared_storage_writable_eligible);
   }
 
@@ -696,7 +694,6 @@ struct URLLoaderOptions {
   std::unique_ptr<TrustTokenRequestHelperFactory> trust_token_helper_factory;
   raw_ptr<SharedDictionaryManager> shared_dictionary_manager;
   std::unique_ptr<SharedDictionaryAccessChecker> shared_dictionary_checker;
-  std::unique_ptr<AttributionRequestHelper> attribution_request_helper;
   mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer =
       mojo::NullRemote();
   mojo::PendingRemote<mojom::TrustTokenAccessObserver> trust_token_observer =
@@ -6964,42 +6961,6 @@ TEST_P(URLLoaderSyncOrAsyncTrustTokenOperationTest,
       trust_token_observer.observed_tokens(),
       testing::ElementsAre(MatchesTrustTokenDetails(
           test_server()->GetOrigin(), test_server()->GetOrigin(), false)));
-}
-
-TEST_P(URLLoaderSyncOrAsyncTrustTokenOperationTest,
-       HandlesTrustTokenFollowedByAttribution) {
-  ResourceRequest request = CreateTrustTokenResourceRequest();
-
-  base::RunLoop delete_run_loop;
-
-  mojo::PendingRemote<mojom::URLLoader> loader_remote;
-  std::unique_ptr<URLLoader> url_loader;
-
-  // Request must come from a valid origin for verification operation to run.
-  context().mutable_factory_params().isolation_info =
-      net::IsolationInfo::CreateForInternalRequest(url::Origin::Create(
-          GURL("https://valid-destination-origin.example")));
-
-  URLLoaderOptions url_loader_options;
-
-  // Hook trust token helper
-  url_loader_options.trust_token_helper_factory =
-      std::make_unique<MockTrustTokenRequestHelperFactory>(
-          /*on_begin=*/mojom::TrustTokenOperationStatus::kOk,
-          /*on_finalize=*/mojom::TrustTokenOperationStatus::kOk, GetParam(),
-          &outbound_trust_token_operation_was_successful_);
-
-  // Hook attribution helper
-  url_loader_options.attribution_request_helper =
-      AttributionRequestHelper::CreateForTesting();
-
-  url_loader = url_loader_options.MakeURLLoader(
-      context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
-      loader_remote.InitWithNewPipeAndPassReceiver(), request,
-      client()->CreateRemote());
-
-  client()->RunUntilComplete();
-  delete_run_loop.Run();
 }
 
 // When a request's associated Trust Tokens operation's Begin step fails, the

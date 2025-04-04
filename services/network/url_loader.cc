@@ -668,7 +668,6 @@ URLLoader::URLLoader(
     mojo::PendingRemote<mojom::DeviceBoundSessionAccessObserver>
         device_bound_session_observer,
     mojo::PendingRemote<mojom::AcceptCHFrameObserver> accept_ch_frame_observer,
-    std::unique_ptr<AttributionRequestHelper> attribution_request_helper,
     bool shared_storage_writable_eligible)
     : url_request_context_(context.GetUrlRequestContext()),
       network_context_client_(context.GetNetworkContextClient()),
@@ -715,7 +714,6 @@ URLLoader::URLLoader(
       trust_token_helper_factory_(std::move(trust_token_helper_factory)),
       storage_access_api_status_(request.storage_access_api_status),
       shared_dictionary_checker_(std::move(shared_dictionary_checker)),
-      attribution_request_helper_(std::move(attribution_request_helper)),
       origin_access_list_(context.GetOriginAccessList()),
       cookie_observer_remote_(std::move(cookie_observer)),
       cookie_observer_(PtrOrFallback(cookie_observer_remote_,
@@ -1216,24 +1214,10 @@ void URLLoader::ProcessOutboundSharedStorageInterceptor() {
   ScheduleStart();
 }
 
-// TODO(crbug.com/40254265): Parallelize Private State Tokens and
-// Attribution operations.
-void URLLoader::ProcessOutboundAttributionInterceptor() {
-  if (!attribution_request_helper_) {
-    ProcessOutboundSharedStorageInterceptor();
-    return;
-  }
-
-  attribution_request_helper_->Begin(
-      *url_request_,
-      base::BindOnce(&URLLoader::ProcessOutboundSharedStorageInterceptor,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
 void URLLoader::ProcessOutboundTrustTokenInterceptor(
     const ResourceRequest& request) {
   if (!request.trust_token_params) {
-    ProcessOutboundAttributionInterceptor();
+    ProcessOutboundSharedStorageInterceptor();
     return;
   }
 
@@ -1357,7 +1341,7 @@ void URLLoader::OnDoneBeginningTrustTokenOperation(
           header_pair.key, header_pair.value, /*overwrite=*/true);
     }
 
-    ProcessOutboundAttributionInterceptor();
+    ProcessOutboundSharedStorageInterceptor();
   } else if (status == mojom::TrustTokenOperationStatus::kAlreadyExists ||
              status == mojom::TrustTokenOperationStatus::
                            kOperationSuccessfullyFulfilledLocally) {
@@ -1950,8 +1934,8 @@ void URLLoader::OnReceivedRedirect(net::URLRequest* url_request,
 
   ad_auction_event_record_request_helper_.HandleResponse(*url_request_);
 
-  ProcessInboundAttributionInterceptorOnReceivedRedirect(redirect_info,
-                                                         std::move(response));
+  ProcessInboundSharedStorageInterceptorOnReceivedRedirect(redirect_info,
+                                                           std::move(response));
 }
 
 void URLLoader::ProcessInboundSharedStorageInterceptorOnReceivedRedirect(
@@ -1966,22 +1950,6 @@ void URLLoader::ProcessInboundSharedStorageInterceptorOnReceivedRedirect(
                                         redirect_info, response_index))) {
     ContinueOnReceiveRedirect(redirect_info, response_index);
   }
-}
-
-void URLLoader::ProcessInboundAttributionInterceptorOnReceivedRedirect(
-    const net::RedirectInfo& redirect_info,
-    mojom::URLResponseHeadPtr response) {
-  if (!attribution_request_helper_) {
-    ProcessInboundSharedStorageInterceptorOnReceivedRedirect(
-        redirect_info, std::move(response));
-    return;
-  }
-
-  attribution_request_helper_->OnReceiveRedirect(
-      *url_request_, std::move(response), redirect_info,
-      base::BindOnce(
-          &URLLoader::ProcessInboundSharedStorageInterceptorOnReceivedRedirect,
-          weak_ptr_factory_.GetWeakPtr(), redirect_info));
 }
 
 void URLLoader::ContinueOnReceiveRedirect(
@@ -2155,19 +2123,6 @@ void URLLoader::ProcessInboundSharedStorageInterceptorOnResponseStarted() {
   }
 }
 
-void URLLoader::ProcessInboundAttributionInterceptorOnResponseStarted() {
-  if (!attribution_request_helper_) {
-    ProcessInboundSharedStorageInterceptorOnResponseStarted();
-    return;
-  }
-
-  attribution_request_helper_->Finalize(
-      *response_,
-      base::BindOnce(
-          &URLLoader::ProcessInboundSharedStorageInterceptorOnResponseStarted,
-          weak_ptr_factory_.GetWeakPtr()));
-}
-
 void URLLoader::OnResponseStarted(net::URLRequest* url_request, int net_error) {
   DCHECK(url_request == url_request_.get());
   has_received_response_ = true;
@@ -2206,7 +2161,7 @@ void URLLoader::OnResponseStarted(net::URLRequest* url_request, int net_error) {
     return;
   }
 
-  ProcessInboundAttributionInterceptorOnResponseStarted();
+  ProcessInboundSharedStorageInterceptorOnResponseStarted();
 }
 
 void URLLoader::OnDoneFinalizingTrustTokenOperation(
@@ -2221,7 +2176,7 @@ void URLLoader::OnDoneFinalizingTrustTokenOperation(
     return;
   }
 
-  ProcessInboundAttributionInterceptorOnResponseStarted();
+  ProcessInboundSharedStorageInterceptorOnResponseStarted();
 }
 
 void URLLoader::MaybeSendTrustTokenOperationResultToDevTools() {

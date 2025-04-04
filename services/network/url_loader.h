@@ -38,7 +38,6 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/url_request.h"
 #include "services/network/ad_auction/event_record_request_helper.h"
-#include "services/network/attribution/attribution_request_helper.h"
 #include "services/network/keepalive_statistics_recorder.h"
 #include "services/network/network_service.h"
 #include "services/network/partial_decoder.h"
@@ -181,7 +180,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
           device_bound_session_access_observer,
       mojo::PendingRemote<mojom::AcceptCHFrameObserver>
           accept_ch_frame_observer,
-      std::unique_ptr<AttributionRequestHelper> attribution_request_helper,
       bool shared_storage_writable_eligible);
 
   URLLoader(const URLLoader&) = delete;
@@ -467,46 +465,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
       const ::net::RedirectInfo& redirect_info,
       mojom::URLResponseHeadPtr response);
   void ProcessInboundSharedStorageInterceptorOnResponseStarted();
-
-  // A request where `attribution_request_helper_` is defined will (assuming
-  // preconditions pass and operations are successful) have one
-  // `AttributionRequestHelper::Begin` executed against the request, one
-  // `AttributionRequestHelper::OnReceiveRedirect` per redirection received and
-  // one `AttributionRequestHelper::Finalize` executed against its response.
-  //
-  // Outbound control flow:
-  //
-  // Start in `ProcessOutboundAttributionInterceptor`
-  // - If `attribution_request_helper_` is not defined, immediately
-  //   calls `ScheduleStart`.
-  // - Otherwise:
-  //   - Execute `AttributionRequestHelper::Begin`
-  //   - On Begin's callback, calls `ScheduleStart`
-  //
-  // Redirection control flow:
-  //
-  // Start in `ProcessInboundAttributionInterceptorOnReceivedRedirect`
-  //  - If `attribution_request_helper_` is not defined, immediately
-  //    calls`ProcessInboundAttributionInterceptorOnReceivedRedirect`.
-  // - Otherwise:
-  //   - Execute `AttributionRequestHelper::OnReceiveRedirect`
-  //   - On OnReceiveRedirect's callback, calls
-  //   `ProcessInboundAttributionInterceptorOnReceivedRedirect`
-  //
-  // Inbound control flow:
-  //
-  // Start in `ProcessInboundAttributionInterceptorOnResponseStarted`
-  //  - If `attribution_request_helper_` is not defined, immediately
-  //    calls`ProcessInboundSharedStorageInterceptorOnResponseStarted`.
-  // - Otherwise:
-  //   - Execute `AttributionRequestHelper::Finalize`
-  //   - On Finalize's callback, calls
-  //   `ProcessInboundSharedStorageInterceptorOnResponseStarted`
-  void ProcessOutboundAttributionInterceptor();
-  void ProcessInboundAttributionInterceptorOnReceivedRedirect(
-      const ::net::RedirectInfo& redirect_info,
-      mojom::URLResponseHeadPtr response);
-  void ProcessInboundAttributionInterceptorOnResponseStarted();
 
   // Continuation of `OnReceivedRedirect` after possibly asynchronously
   // concluding the request's Attribution and/or Shared Storage operations.
@@ -843,11 +801,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // This is used to determine whether it is allowed to use a dictionary when
   // there is a matching shared dictionary for the request.
   std::unique_ptr<SharedDictionaryAccessChecker> shared_dictionary_checker_;
-
-  // Request helper responsible for orchestrating Attribution operations
-  // (https://github.com/WICG/attribution-reporting-api). Only set if the
-  // request is related to attribution.
-  std::unique_ptr<AttributionRequestHelper> attribution_request_helper_;
 
   // The `SharedStorageRequestHelper` takes a callback to trigger
   // `ContinueOnReceiveRedirect()`. To prevent re-entrancy, however, this
