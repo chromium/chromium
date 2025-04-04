@@ -117,6 +117,7 @@
 #include "services/network/shared_dictionary/shared_dictionary_storage.h"
 #include "services/network/shared_storage/shared_storage_request_helper.h"
 #include "services/network/slop_bucket.h"
+#include "services/network/ssl_private_key_proxy.h"
 #include "services/network/throttling/scoped_throttling_token.h"
 #include "services/network/trust_tokens/trust_token_request_helper.h"
 #include "services/network/url_loader_factory.h"
@@ -168,66 +169,6 @@ enum class StorageAccessRedirectKind {
 void RecordStorageAccessRedirectMetric(StorageAccessRedirectKind kind) {
   base::UmaHistogramEnumeration("Net.HttpJob.StorageAccessRedirect", kind);
 }
-
-class SSLPrivateKeyInternal : public net::SSLPrivateKey {
- public:
-  SSLPrivateKeyInternal(
-      const std::string& provider_name,
-      const std::vector<uint16_t>& algorithm_preferences,
-      mojo::PendingRemote<mojom::SSLPrivateKey> ssl_private_key)
-      : provider_name_(provider_name),
-        algorithm_preferences_(algorithm_preferences),
-        ssl_private_key_(std::move(ssl_private_key)) {
-    ssl_private_key_.set_disconnect_handler(
-        base::BindOnce(&SSLPrivateKeyInternal::HandleSSLPrivateKeyError,
-                       base::Unretained(this)));
-  }
-
-  SSLPrivateKeyInternal(const SSLPrivateKeyInternal&) = delete;
-  SSLPrivateKeyInternal& operator=(const SSLPrivateKeyInternal&) = delete;
-
-  // net::SSLPrivateKey:
-  std::string GetProviderName() override { return provider_name_; }
-
-  std::vector<uint16_t> GetAlgorithmPreferences() override {
-    return algorithm_preferences_;
-  }
-
-  void Sign(uint16_t algorithm,
-            base::span<const uint8_t> input,
-            net::SSLPrivateKey::SignCallback callback) override {
-    std::vector<uint8_t> input_vector(input.begin(), input.end());
-    if (!ssl_private_key_ || !ssl_private_key_.is_connected()) {
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE,
-          base::BindOnce(std::move(callback),
-                         net::ERR_SSL_CLIENT_AUTH_CERT_NO_PRIVATE_KEY,
-                         input_vector));
-      return;
-    }
-
-    ssl_private_key_->Sign(algorithm, input_vector,
-                           base::BindOnce(&SSLPrivateKeyInternal::Callback,
-                                          this, std::move(callback)));
-  }
-
- private:
-  ~SSLPrivateKeyInternal() override = default;
-
-  void HandleSSLPrivateKeyError() { ssl_private_key_.reset(); }
-
-  void Callback(net::SSLPrivateKey::SignCallback callback,
-                int32_t net_error,
-                const std::vector<uint8_t>& input) {
-    DCHECK_LE(net_error, 0);
-    DCHECK_NE(net_error, net::ERR_IO_PENDING);
-    std::move(callback).Run(static_cast<net::Error>(net_error), input);
-  }
-
-  std::string provider_name_;
-  std::vector<uint16_t> algorithm_preferences_;
-  mojo::Remote<mojom::SSLPrivateKey> ssl_private_key_;
-};
 
 bool ShouldNotifyAboutCookie(net::CookieInclusionStatus status) {
   // Notify about cookies actually used, and those blocked by preferences ---
@@ -2793,7 +2734,7 @@ void URLLoader::ContinueWithCertificate(
     const std::vector<uint16_t>& algorithm_preferences,
     mojo::PendingRemote<mojom::SSLPrivateKey> ssl_private_key) {
   client_cert_responder_receiver_.reset();
-  auto key = base::MakeRefCounted<SSLPrivateKeyInternal>(
+  auto key = base::MakeRefCounted<SSLPrivateKeyProxy>(
       provider_name, algorithm_preferences, std::move(ssl_private_key));
   url_request_->ContinueWithCertificate(std::move(x509_certificate),
                                         std::move(key));

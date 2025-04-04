@@ -183,6 +183,8 @@ component("network_service") {
     "ssl_config_service_mojo.h",
     "ssl_config_type_converter.cc",
     "ssl_config_type_converter.h",
+    "ssl_private_key_proxy.cc",
+    "ssl_private_key_proxy.h",
     "stringify_enum.h",
     "tcp_bound_socket.cc",
     "tcp_bound_socket.h",
