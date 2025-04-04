@@ -205,6 +205,23 @@ void GlicMetrics::OnGlicWindowOpen(bool attached,
       .SetAttached(attached)
       .SetInvocationSource(static_cast<int64_t>(source))
       .Record(ukm::UkmRecorder::Get());
+
+  const base::Time last_dismissed_time =
+      profile_->GetPrefs()->GetTime(prefs::kGlicWindowLastDismissedTime);
+  if (!last_dismissed_time.is_null()) {
+    base::TimeDelta elapsed_time_from_last_session =
+        base::Time::Now() - last_dismissed_time;
+    base::UmaHistogramCounts10M(
+        "Glic.PanelWebUi.ElapsedTimeBetweenSessions",
+        base::saturated_cast<int>(elapsed_time_from_last_session.InSeconds()));
+  }
+
+  // Update the last dismissed timestamp. The pref might not get updated on
+  // ungraceful shutdowns. As such, by updating the pref on opening the Glic
+  // window, the dismissal timestamp will get approximated by the opening
+  // timestamp, instead of the previously dismissal timestamp.
+  profile_->GetPrefs()->SetTime(prefs::kGlicWindowLastDismissedTime,
+                                base::Time::Now());
 }
 
 void GlicMetrics::OnGlicWindowOpenAndReady() {
@@ -278,6 +295,8 @@ void GlicMetrics::OnGlicWindowClose() {
   attach_change_count_ = 0;
 
   glic_window_size_timer_.Stop();
+  profile_->GetPrefs()->SetTime(prefs::kGlicWindowLastDismissedTime,
+                                base::Time::Now());
 }
 
 void GlicMetrics::SetControllers(GlicWindowController* window_controller,
