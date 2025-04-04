@@ -23,21 +23,6 @@ import org.chromium.ui.base.WindowAndroid;
 @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
 @NullMarked
 public class InputTransferHandler implements WindowAndroid.SelectionHandlesObserver {
-    // TODO(crbug.com/365985685): Remove `Delegate` once overscroll controller works with input
-    // coming on Viz. Since that is the only use case it covers.
-    public static interface Delegate {
-        // To give embedders an option to stop input transfer to Viz.
-        public default boolean canTransferInputToViz() {
-            return true;
-        }
-
-        // Called before `InputTransferHandler` is being removed from
-        // `SurfaceInputTransferHandlerMap`, giving the `Delegate` a chance to remove itself from
-        // various observer queues.
-        public default void destroy() {}
-    }
-    ;
-
     private static @Nullable Integer sInitialBrowserToken;
 
     private InputTransferToken mBrowserToken;
