@@ -264,13 +264,6 @@ bool CanvasResourceHost::IsResourceValid() {
     return true;
   }
 
-  if (resource_provider_ &&
-      resource_provider_->GetType() == CanvasResourceProvider::kBitmap) {
-    if (preferred_2d_raster_mode_ == RasterModeHint::kPreferCPU) {
-      return true;
-    }
-  }
-
   if (IsContextLost()) {
     return false;
   }
