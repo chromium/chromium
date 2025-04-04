@@ -53,11 +53,12 @@ int ComputeDialogTitleId(ChromeSignoutConfirmationPromptVariant variant) {
 int ComputeDialogSubtitleId(ChromeSignoutConfirmationPromptVariant variant) {
   switch (variant) {
     case ChromeSignoutConfirmationPromptVariant::kNoUnsyncedData:
-      return IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_NO_UNSYNCED_BODY;
+      return IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_NO_UNSYNCED_DATA_BODY;
     case ChromeSignoutConfirmationPromptVariant::kUnsyncedData:
       return IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_UNSYNCED_BODY;
     case ChromeSignoutConfirmationPromptVariant::kUnsyncedDataWithReauthButton:
-      return IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_VERIFY_BODY;
+      // TODO(crbug.com/407942423): Add a better string for this case.
+      return IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_UNSYNCED_BODY;
     case ChromeSignoutConfirmationPromptVariant::kProfileWithParentalControls:
       return IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_KIDS_BODY;
     default:
@@ -72,7 +73,7 @@ int ComputeAcceptButtonLabelId(ChromeSignoutConfirmationPromptVariant variant) {
     case ChromeSignoutConfirmationPromptVariant::kUnsyncedData:
       return IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_DELETE_AND_SIGNOUT_BUTTON;
     case ChromeSignoutConfirmationPromptVariant::kUnsyncedDataWithReauthButton:
-      return IDS_PROFILES_VERIFY_ACCOUNT_BUTTON;
+      return IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_SIGNOUT_BUTTON;
     case ChromeSignoutConfirmationPromptVariant::kProfileWithParentalControls:
       return IDS_SCREEN_LOCK_SIGN_OUT;
     default:
@@ -87,7 +88,7 @@ int ComputeCancelButtonLabelId(ChromeSignoutConfirmationPromptVariant variant) {
     case ChromeSignoutConfirmationPromptVariant::kUnsyncedData:
       return IDS_CANCEL;
     case ChromeSignoutConfirmationPromptVariant::kUnsyncedDataWithReauthButton:
-      return IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_SIGNOUT_BUTTON;
+      return IDS_PROFILES_VERIFY_ACCOUNT_BUTTON;
     case ChromeSignoutConfirmationPromptVariant::kProfileWithParentalControls:
       return IDS_CANCEL;
     default:
@@ -190,20 +191,15 @@ void SignoutConfirmationHandler::UpdateViewHeight(uint32_t height) {
 }
 
 void SignoutConfirmationHandler::Accept(bool uninstall_account_extensions) {
-  ChromeSignoutConfirmationChoice ok_choice =
-      (variant_ ==
-       ChromeSignoutConfirmationPromptVariant::kUnsyncedDataWithReauthButton)
-          ? ChromeSignoutConfirmationChoice::kCancelSignoutAndReauth
-          : ChromeSignoutConfirmationChoice::kSignout;
-
-  FinishAndCloseDialog(ok_choice, uninstall_account_extensions);
+  FinishAndCloseDialog(ChromeSignoutConfirmationChoice::kSignout,
+                       uninstall_account_extensions);
 }
 
 void SignoutConfirmationHandler::Cancel(bool uninstall_account_extensions) {
   ChromeSignoutConfirmationChoice cancel_choice =
       (variant_ ==
        ChromeSignoutConfirmationPromptVariant::kUnsyncedDataWithReauthButton)
-          ? ChromeSignoutConfirmationChoice::kSignout
+          ? ChromeSignoutConfirmationChoice::kCancelSignoutAndReauth
           : ChromeSignoutConfirmationChoice::kCancelSignout;
   FinishAndCloseDialog(cancel_choice, uninstall_account_extensions);
 }

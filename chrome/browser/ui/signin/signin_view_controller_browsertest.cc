@@ -217,8 +217,9 @@ class SigninViewControllerBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
-                       SignoutOrReauthWithPrompt_Reauth) {
+IN_PROC_BROWSER_TEST_F(
+    SigninViewControllerBrowserTest,
+    SignoutOrReauthWithPromptForPersistentErrorState_Reauth) {
   // Setup a primary account in error state.
   AccountInfo primary_account_info = SetPrimaryAccount();
   ASSERT_TRUE(
@@ -239,7 +240,8 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
 
   // Click "Verify it's you".
   base::HistogramTester histogram_tester;
-  signout_confirmation_ui->AcceptDialogForTesting();
+  // Note: This is the cancel action.
+  signout_confirmation_ui->CancelDialogForTesting();
   VerifySignoutPromptHistogram(
       histogram_tester,
       ChromeSignoutConfirmationPromptVariant::kUnsyncedDataWithReauthButton,
@@ -250,6 +252,47 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(tab);
   EXPECT_TRUE(IsSigninTab(tab));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SigninViewControllerBrowserTest,
+    SignoutOrReauthWithPromptForPersistentErrorState_SignOutWithUnsyncedData) {
+  // Setup a primary account in error state.
+  AccountInfo primary_account_info = SetPrimaryAccount();
+  ASSERT_TRUE(
+      GetProfile()->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+  identity_test_env()->UpdatePersistentErrorOfRefreshTokenForAccount(
+      primary_account_info.account_id,
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+              CREDENTIALS_REJECTED_BY_SERVER));
+
+  // Add pending sync data.
+  AddUnsyncedData();
+
+  // Trigger the Chrome signout action.
+  SignoutConfirmationUI* signout_confirmation_ui =
+      TriggerSignoutAndWaitForConfirmationPrompt();
+  ASSERT_TRUE(signout_confirmation_ui);
+
+  // Click "Sign Out Anyway".
+  base::HistogramTester histogram_tester;
+  // Note: This is the accept action.
+  signout_confirmation_ui->AcceptDialogForTesting();
+  VerifySignoutPromptHistogram(
+      histogram_tester,
+      ChromeSignoutConfirmationPromptVariant::kUnsyncedDataWithReauthButton,
+      ChromeSignoutConfirmationChoice::kSignout);
+
+  // User was signed out.
+  EXPECT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+
+  // The tab was navigated to the signout page.
+  content::WebContents* tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(tab);
+  EXPECT_TRUE(IsSignoutTab(tab));
 }
 
 IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
