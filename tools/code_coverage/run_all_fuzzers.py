@@ -79,8 +79,8 @@ class EngineRunner(abc.ABC):
     pass
 
   def _run_command(self, cmd: Sequence[str], env: Mapping[str, str],
-                   timeout: float, annotation: str):
-    _run_and_log(cmd, env, timeout, annotation)
+                   timeout: float, annotation: str) -> bool:
+    return _run_and_log(cmd, env, timeout, annotation)
 
 
 @dataclasses.dataclass
