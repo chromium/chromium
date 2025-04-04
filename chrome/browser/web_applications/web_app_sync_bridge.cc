@@ -127,11 +127,6 @@ BASE_FEATURE(kDeleteBadWebAppSyncEntitites,
              "DeleteBadWebAppSyncEntitites",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// A feature to enable the migration from shortcut apps to diy apps.
-BASE_FEATURE(kMigrateShortcutsToDiy,
-             "MigrateShortcutsToDiy",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 std::unique_ptr<syncer::EntityData> CreateSyncEntityData(const WebApp& app) {
   // The Sync System doesn't allow empty entity_data name.
   DCHECK(!app.untranslated_name().empty());
@@ -581,9 +576,7 @@ void WebAppSyncBridge::OnDatabaseOpened(
 
   // Do database migrations to ensure apps are valid before notifying anything
   // else that the sync bridge is ready.
-  if (base::FeatureList::IsEnabled(kMigrateShortcutsToDiy)) {
-    EnsureShortcutAppToDiyAppMigration();
-  }
+  EnsureShortcutAppToDiyAppMigration();
   EnsureAppsHaveUserDisplayModeForCurrentPlatform();
   EnsurePartiallyInstalledAppsHaveCorrectStatus();
 

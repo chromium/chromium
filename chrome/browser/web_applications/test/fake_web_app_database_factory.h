@@ -39,13 +39,16 @@ class FakeWebAppDatabaseFactory : public AbstractWebAppDatabaseFactory {
   // AbstractWebAppDatabaseFactory interface implementation.
   syncer::OnceDataTypeStoreFactory GetStoreFactory() override;
   bool IsSyncingApps() override;
+  FakeWebAppDatabaseFactory* AsFakeWebAppDatabaseFactory() override;
 
   proto::DatabaseMetadata ReadMetadata();
   Registry ReadRegistry();
 
   std::set<webapps::AppId> ReadAllAppIds();
 
+  void WriteMetadata(const proto::DatabaseMetadata& metadata);
   void WriteProtos(const std::vector<std::unique_ptr<proto::WebApp>>& protos);
+  void WriteProtos(const std::vector<proto::WebApp>& protos);
   void WriteRegistry(const Registry& registry);
 
   void set_is_syncing_apps(bool is_syncing_apps) {

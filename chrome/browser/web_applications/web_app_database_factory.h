@@ -11,12 +11,14 @@
 class Profile;
 
 namespace web_app {
+class FakeWebAppDatabaseFactory;
 
 class AbstractWebAppDatabaseFactory {
  public:
   virtual ~AbstractWebAppDatabaseFactory() = default;
   virtual syncer::OnceDataTypeStoreFactory GetStoreFactory() = 0;
   virtual bool IsSyncingApps() = 0;
+  virtual FakeWebAppDatabaseFactory* AsFakeWebAppDatabaseFactory();
 };
 
 class WebAppDatabaseFactory : public AbstractWebAppDatabaseFactory {
