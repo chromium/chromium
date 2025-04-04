@@ -1265,6 +1265,7 @@ PA_ALWAYS_INLINE void PartitionAllocFreeForRefCounting(uintptr_t slot_start) {
 
   // Iterating over the entire slot can be really expensive.
 #if PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON)
+#if !PA_BUILDFLAG(IS_IOS)
   auto hook = PartitionAllocHooks::GetQuarantineOverrideHook();
   // If we have a hook the object segment is not necessarily filled
   // with |kQuarantinedByte|.
@@ -1275,6 +1276,7 @@ PA_ALWAYS_INLINE void PartitionAllocFreeForRefCounting(uintptr_t slot_start) {
       PA_DCHECK(object[i] == kQuarantinedByte);
     }
   }
+#endif  //  !PA_BUILDFLAG(IS_IOS)
   DebugMemset(SlotStartAddr2Ptr(slot_start), kFreedByte,
               slot_span->GetUtilizedSlotSize());
 #endif  // PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON)
