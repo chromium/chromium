@@ -468,17 +468,19 @@ void AuthenticationService::PerformFirstTimeProfileInitializationIfNecessary() {
     // Nothing to do if the current profile is the personal profile.
     return;
   }
-  NSArray<id<SystemIdentity>>* identities_for_profile =
-      account_manager_service_->GetAllIdentities();
-  // TODO(crbug.com/375605572): Evaluate if there is no race condition with
-  // this CHECK.
-  CHECK_EQ(identities_for_profile.count, 1ul);
   if (HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
     // Nothing to do if the profile is already signed in.
     return;
   }
-  // TODO(crbug.com/375605572): Need to set the right access point.
-  SignIn(identities_for_profile[0], signin_metrics::AccessPoint::kUnknown);
+  NSArray<id<SystemIdentity>>* identities_for_profile =
+      account_manager_service_->GetAllIdentities();
+  // TODO(crbug.com/375605482): Evaluate if there is no race condition with
+  // this CHECK.
+  CHECK_EQ(identities_for_profile.count, 1ul, base::NotFatalUntil::M142);
+  if (identities_for_profile.count > 0) {
+    // TODO(crbug.com/375605482): Need to set the right access point.
+    SignIn(identities_for_profile[0], signin_metrics::AccessPoint::kUnknown);
+  }
 }
 
 id<RefreshAccessTokenError> AuthenticationService::GetCachedMDMError(
