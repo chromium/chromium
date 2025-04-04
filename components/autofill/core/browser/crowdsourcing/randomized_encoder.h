@@ -21,13 +21,6 @@ namespace autofill {
 // in go/autofill-metadata-upload (Google internal link).
 class RandomizedEncoder {
  public:
-  struct EncodingInfo {
-    AutofillRandomizedValue_EncodingType encoding_type;
-    size_t chunk_length_in_bytes;
-    size_t bit_offset;
-    size_t bit_stride;
-  };
-
   // Form-level data-type identifiers.
   static constexpr char kFormId[] = "form-id";
   static constexpr char kFormName[] = "form-name";
@@ -86,11 +79,9 @@ class RandomizedEncoder {
                                std::u16string_view data_value) const;
 
   AutofillRandomizedValue_EncodingType encoding_type() const {
-    DCHECK(encoding_info_);
-    return encoding_info_
-               ? encoding_info_->encoding_type
-               : AutofillRandomizedValue_EncodingType_UNSPECIFIED_ENCODING_TYPE;
+    return encoding_type_;
   }
+
   bool AnonymousUrlCollectionIsEnabled() const {
     return anonymous_url_collection_is_enabled_;
   }
@@ -116,8 +107,16 @@ class RandomizedEncoder {
                     std::string_view data_type) const;
 
  private:
+  struct EncodingInfo {
+    size_t chunk_length_in_bytes;
+    size_t bit_offset;
+    size_t bit_stride;
+  };
+
+  const EncodingInfo& encoding_info() const;
+
   std::string seed_;
-  raw_ptr<const EncodingInfo> encoding_info_;
+  AutofillRandomizedValue_EncodingType encoding_type_;
   bool anonymous_url_collection_is_enabled_;
 };
 
