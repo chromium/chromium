@@ -71,7 +71,7 @@ LoginView::LoginView(const std::u16string& authority,
       .AddRows(1, views::TableLayout::kFixedSize)
       .AddPaddingRow(views::TableLayout::kFixedSize,
                      ChromeLayoutProvider::Get()->GetDistanceMetric(
-                         DISTANCE_CONTROL_LIST_VERTICAL))
+                         views::DISTANCE_CONTROL_LIST_VERTICAL))
       .AddRows(1, views::TableLayout::kFixedSize);
   auto* username_label =
       fields_container->AddChildView(std::make_unique<views::Label>(

@@ -84,20 +84,17 @@ BubbleDialogModelHost::FieldType GetFieldTypeForField(
 int GetFieldTopMargin(LayoutProvider* layout_provider,
                       const BubbleDialogModelHost::FieldType& field_type,
                       const BubbleDialogModelHost::FieldType& last_field_type) {
-  DCHECK(layout_provider);
   // Menu item preceded by non-menu item should have margin
   if (field_type == BubbleDialogModelHost::FieldType::kMenuItem &&
       last_field_type == BubbleDialogModelHost::FieldType::kMenuItem) {
     return 0;
   }
-  if (field_type == BubbleDialogModelHost::FieldType::kControl &&
-      last_field_type == BubbleDialogModelHost::FieldType::kControl) {
-    // TODO(pbos): Move DISTANCE_CONTROL_LIST_VERTICAL to views::LayoutProvider
-    // and replace "12" here.
-    return 12;
-  }
+  const bool is_control_list =
+      field_type == BubbleDialogModelHost::FieldType::kControl &&
+      last_field_type == BubbleDialogModelHost::FieldType::kControl;
   return layout_provider->GetDistanceMetric(
-      DISTANCE_UNRELATED_CONTROL_VERTICAL);
+      is_control_list ? DISTANCE_CONTROL_LIST_VERTICAL
+                      : DISTANCE_UNRELATED_CONTROL_VERTICAL);
 }
 
 int GetDialogTopMargins(LayoutProvider* layout_provider,
@@ -478,12 +475,11 @@ class BubbleDialogModelHostContentsView final : public DialogModelSectionHost {
             model_field, GetPassKey()),
         model_field->label());
     item->SetImageModel(Button::STATE_NORMAL, model_field->icon());
-    // TODO(pbos): Move DISTANCE_CONTROL_LIST_VERTICAL to
-    // views::LayoutProvider and replace "12" here. See below for another "12"
-    // use that also needs to be replaced.
-    item->SetBorder(views::CreateEmptyBorder(
-        gfx::Insets::VH(12 / 2, LayoutProvider::Get()->GetDistanceMetric(
-                                    DISTANCE_BUTTON_HORIZONTAL_PADDING))));
+    const auto* const layout_provider = LayoutProvider::Get();
+    item->SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(
+        layout_provider->GetDistanceMetric(DISTANCE_CONTROL_LIST_VERTICAL) / 2,
+        layout_provider->GetDistanceMetric(
+            DISTANCE_BUTTON_HORIZONTAL_PADDING))));
 
     item->SetEnabled(model_field->is_enabled());
     item->SetProperty(kElementIdentifierKey, model_field->id());

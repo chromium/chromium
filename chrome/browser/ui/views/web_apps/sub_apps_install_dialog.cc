@@ -39,7 +39,7 @@ int GetDistanceMetric(int metric) {
 ui::ImageModel GetInstallAppIcon() {
   return ui::ImageModel::FromVectorIcon(
       omnibox::kInstallDesktopIcon, ui::kColorIcon,
-      GetDistanceMetric(DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE));
+      GetDistanceMetric(views::DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE));
 }
 
 std::u16string DialogTitle(int num_sub_apps) {
@@ -118,7 +118,7 @@ std::unique_ptr<views::ScrollView> CreateSubAppsListView(
 
   sub_app_list->SetOrientation(views::BoxLayout::Orientation::kVertical);
   sub_app_list->SetBetweenChildSpacing(
-      GetDistanceMetric(DISTANCE_CONTROL_LIST_VERTICAL));
+      GetDistanceMetric(views::DISTANCE_CONTROL_LIST_VERTICAL));
   sub_app_list->SetInsideBorderInsets(gfx::Insets().set_left(
       GetDistanceMetric(views::DISTANCE_UNRELATED_CONTROL_HORIZONTAL)));
 

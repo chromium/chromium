@@ -83,6 +83,8 @@ int LayoutProvider::GetDistanceMetric(int metric) const {
   DCHECK_LT(metric, VIEWS_DISTANCE_END);
 
   switch (static_cast<DistanceMetric>(metric)) {
+    case DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE:
+      return 20;
     case DISTANCE_BUBBLE_PREFERRED_WIDTH:
       return kSmallDialogWidth;
     case DISTANCE_BUTTON_HORIZONTAL_PADDING:
@@ -91,6 +93,8 @@ int LayoutProvider::GetDistanceMetric(int metric) const {
       return 112;
     case DISTANCE_CLOSE_BUTTON_MARGIN:
       return 20;
+    case DISTANCE_CONTROL_LIST_VERTICAL:
+      return 12;
     case DISTANCE_CONTROL_VERTICAL_TEXT_PADDING:
       return 10;
     case DISTANCE_TABLE_VERTICAL_TEXT_PADDING:

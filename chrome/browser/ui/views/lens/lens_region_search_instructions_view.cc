@@ -83,7 +83,7 @@ void LensRegionSearchInstructionsView::Init() {
           views::kDragGeneralSelectionIcon,
           kColorFeatureLensPromoBubbleForeground,
           layout_provider->GetDistanceMetric(
-              DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE)));
+              views::DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE)));
   AddChildView(std::move(selection_icon_view));
 
   gfx::Font default_font;

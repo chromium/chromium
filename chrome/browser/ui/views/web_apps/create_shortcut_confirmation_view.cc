@@ -95,9 +95,9 @@ CreateShortcutConfirmationView::CreateShortcutConfirmationView(
                  views::TableLayout::kFixedSize,
                  views::TableLayout::ColumnSize::kFixed, textfield_width, 0)
       .AddRows(1, views::TableLayout::kFixedSize)
-      .AddPaddingRow(
-          views::TableLayout::kFixedSize,
-          layout_provider->GetDistanceMetric(DISTANCE_CONTROL_LIST_VERTICAL))
+      .AddPaddingRow(views::TableLayout::kFixedSize,
+                     layout_provider->GetDistanceMetric(
+                         views::DISTANCE_CONTROL_LIST_VERTICAL))
       .AddRows(ShowRadioButtons() ? 3 : 1, views::TableLayout::kFixedSize);
 
   gfx::Size image_size(web_app::kWebAppIconSmall, web_app::kWebAppIconSmall);
