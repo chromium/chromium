@@ -11,6 +11,8 @@
 #include "testing/gtest/include/gtest/gtest-death-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace tabs {
+
 namespace {
 class TestClass : public SupportsHandles<TestClass> {};
 }  // namespace
@@ -58,3 +60,5 @@ TEST_F(SupportsHandlesTest, FailsOnRolloverSigned) {
   SetCounter<TestClass>(TestClass::Handle::NullValue - 1);
   EXPECT_DEATH_IF_SUPPORTED(TestClass c, "");
 }
+
+}  // namespace tabs

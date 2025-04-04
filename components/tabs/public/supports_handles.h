@@ -59,6 +59,8 @@
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 
+namespace tabs {
+
 // Inherit from this type to have your class support handles. Objects that
 // support handles cannot be copyable or assignable:
 // ```
@@ -214,5 +216,7 @@ template <typename T>
 T* SupportsHandles<T>::Handle::Get() const {
   return internal::HandleHelper<T>::GetInstance().LookupObject(raw_value_);
 }
+
+}  // namespace tabs
 
 #endif  // COMPONENTS_TABS_PUBLIC_SUPPORTS_HANDLES_H_
