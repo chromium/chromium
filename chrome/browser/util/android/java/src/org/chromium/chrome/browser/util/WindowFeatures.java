@@ -4,14 +4,16 @@
 
 package org.chromium.chrome.browser.util;
 
-import androidx.annotation.Nullable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** Datatype for describing initial window positioning requirements used in addNewContents calls. */
+@NullMarked
 public final class WindowFeatures {
-    @Nullable public final Integer left;
-    @Nullable public final Integer top;
-    @Nullable public final Integer width;
-    @Nullable public final Integer height;
+    public final @Nullable Integer left;
+    public final @Nullable Integer top;
+    public final @Nullable Integer width;
+    public final @Nullable Integer height;
 
     public WindowFeatures() {
         this(null, null, null, null);

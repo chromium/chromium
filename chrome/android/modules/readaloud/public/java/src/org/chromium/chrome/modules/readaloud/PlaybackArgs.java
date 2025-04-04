@@ -5,8 +5,10 @@
 package org.chromium.chrome.modules.readaloud;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -14,6 +16,7 @@ import java.util.List;
 import java.util.Locale;
 
 /** Encapsulates information about the playback being requested. */
+@NullMarked
 public class PlaybackArgs {
     /** TODO(basiaz): Delete after source lands e2e */
     private final String mUrl;
@@ -23,8 +26,8 @@ public class PlaybackArgs {
     /* if false, the surce is plain text rather than url of a website. */
     private final boolean mIsSourceUrl;
 
-    @Nullable private final String mLanguage;
-    @Nullable private final List<PlaybackVoice> mVoices;
+    private final @Nullable String mLanguage;
+    private final List<PlaybackVoice> mVoices;
     private final long mDateModifiedMsSinceEpoch;
 
     /* The playback mode. Still unused. */
@@ -138,9 +141,9 @@ public class PlaybackArgs {
         }
 
         private final String mLanguage;
-        @Nullable private final String mAccentRegionCode;
+        private final @Nullable String mAccentRegionCode;
         private final String mVoiceId;
-        private final String mDisplayName;
+        private final @Nullable String mDisplayName;
 
         private final @Pitch int mPitch;
         private final @Tone int mTone;
@@ -161,7 +164,7 @@ public class PlaybackArgs {
                 String language,
                 @Nullable String accentRegionCode,
                 String voiceId,
-                String displayName,
+                @Nullable String displayName,
                 @Pitch int pitch,
                 @Tone int tone) {
             mLanguage = language;
@@ -208,19 +211,17 @@ public class PlaybackArgs {
             return mVoiceId;
         }
 
-        @Nullable
-        public String getAccentRegionCode() {
+        public @Nullable String getAccentRegionCode() {
             return mAccentRegionCode;
         }
 
         // TODO(iwells): Remove this method when it is no longer called internally.
-        @Nullable
-        public String getDescription() {
+
+        public @Nullable String getDescription() {
             return mDisplayName;
         }
 
-        @Nullable
-        public String getDisplayName() {
+        public @Nullable String getDisplayName() {
             return mDisplayName;
         }
 
@@ -258,7 +259,7 @@ public class PlaybackArgs {
     public PlaybackArgs(
             String url,
             @Nullable String language,
-            @Nullable List<PlaybackVoice> voices,
+            List<PlaybackVoice> voices,
             long dateModifiedMsSinceEpoch) {
         this(url, true, language, voices, dateModifiedMsSinceEpoch);
     }
@@ -267,7 +268,7 @@ public class PlaybackArgs {
             String mSource,
             boolean isUrl,
             @Nullable String language,
-            @Nullable List<PlaybackVoice> voices,
+            List<PlaybackVoice> voices,
             long dateModifiedMsSinceEpoch) {
         this(mSource, isUrl, language, voices, dateModifiedMsSinceEpoch, PlaybackMode.UNSPECIFIED);
     }
@@ -276,7 +277,7 @@ public class PlaybackArgs {
             String mSource,
             boolean isUrl,
             @Nullable String language,
-            @Nullable List<PlaybackVoice> voices,
+            List<PlaybackVoice> voices,
             long dateModifiedMsSinceEpoch,
             PlaybackMode playbackMode) {
         this.mUrl = mSource;
@@ -304,17 +305,12 @@ public class PlaybackArgs {
         return mIsSourceUrl;
     }
 
-    /**
-     * Returns the language to request the audio in. If not set, the default is
-     * used.
-     */
-    @Nullable
-    public String getLanguage() {
+    /** Returns the language to request the audio in. If not set, the default is used. */
+    public @Nullable String getLanguage() {
         return mLanguage;
     }
 
     /** Returns the list of voices that may be used for synthesis. */
-    @Nullable
     public List<PlaybackVoice> getVoices() {
         return mVoices;
     }
