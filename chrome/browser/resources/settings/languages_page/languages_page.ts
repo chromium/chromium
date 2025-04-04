@@ -126,9 +126,7 @@ export class SettingsLanguagesPageElement extends
    */
   private onAddLanguagesClick_(e: Event) {
     e.preventDefault();
-    if (this.languages === undefined) {
-      return;
-    }
+    assert(this.languages);
     this.languageSettingsMetricsProxy_.recordPageImpressionMetric(
         LanguageSettingsPageImpressionType.ADD_LANGUAGE);
     this.addLanguagesDialogLanguages_ = this.languages.supported.filter(
@@ -167,7 +165,7 @@ export class SettingsLanguagesPageElement extends
    * @return True if there is at least one available language.
    */
   private canEnableSomeSupportedLanguage_(languages?: LanguagesModel): boolean {
-    return languages === undefined || languages.supported.some(language => {
+    return languages !== undefined && languages.supported.some(language => {
       return this.languageHelper.canEnableLanguage(language);
     });
   }
