@@ -5858,8 +5858,23 @@ chromium-metrics-reviews@google.com.
   <owner>jkarlin@chromium.org</owner>
   <owner>src/net/base/registry_controlled_domains/OWNERS</owner>
   <summary>
+    Replaced by a sampled version of this histogram,
+    Net.RegistryControlledDomains.GetDomainAndRegistry.CacheHit.Sampled, in
+    M137.
+
     Whether a call to GetDomainAndRegistry was served from the cache or not.
     Recorded on all calls to GetDomainAndRegistry.
+  </summary>
+</histogram>
+
+<histogram
+    name="Net.RegistryControlledDomains.GetDomainAndRegistry.CacheHit.Sampled"
+    enum="BooleanCacheHit" expires_after="2026-04-04">
+  <owner>jkarlin@chromium.org</owner>
+  <owner>src/net/base/registry_controlled_domains/OWNERS</owner>
+  <summary>
+    Whether a call to GetDomainAndRegistry was served from the cache or not.
+    Recorded on a sampled (0.00001) subset of calls to GetDomainAndRegistry.
   </summary>
 </histogram>
 
