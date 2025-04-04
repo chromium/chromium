@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/animation/css_interpolation_types_map.h"
+#include "third_party/blink/renderer/core/animation/interpolation_types_map.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/permissions_policy/document_policy.h"
@@ -15,7 +15,7 @@
 
 namespace blink {
 
-TEST(CSSInterpolationTypesMapTest, RegisteredCustomProperty) {
+TEST(InterpolationTypesMapTest, RegisteredCustomProperty) {
   test::TaskEnvironment task_environment;
   auto* execution_context = MakeGarbageCollected<NullExecutionContext>();
   execution_context->SetUpSecurityContextForTesting();
@@ -34,8 +34,8 @@ TEST(CSSInterpolationTypesMapTest, RegisteredCustomProperty) {
   PropertyRegistry* registry = MakeGarbageCollected<PropertyRegistry>();
   registry->RegisterProperty(property_name, *registration);
 
-  CSSInterpolationTypesMap map1(nullptr, *document1);
-  CSSInterpolationTypesMap map2(registry, *document2);
+  InterpolationTypesMap map1(nullptr, *document1);
+  InterpolationTypesMap map2(registry, *document2);
 
   PropertyHandle handle(property_name);
   auto& types1 = map1.Get(handle);

@@ -157,7 +157,7 @@
     // - interpolable
     // The interpolable flag indicates whether a property can be animated
     // smoothly. If this flag is set, the property should also be added to the
-    // switch statements in CSSPropertyEquality and CSSInterpolationTypesMap.
+    // switch statements in CSSPropertyEquality and InterpolationTypesMap.
     interpolable: {
       default: false,
       valid_type: "bool",

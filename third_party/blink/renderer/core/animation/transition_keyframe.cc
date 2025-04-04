@@ -9,8 +9,8 @@
 #include "third_party/blink/renderer/core/animation/animation_utils.h"
 #include "third_party/blink/renderer/core/animation/compositor_animations.h"
 #include "third_party/blink/renderer/core/animation/css_interpolation_environment.h"
-#include "third_party/blink/renderer/core/animation/css_interpolation_types_map.h"
 #include "third_party/blink/renderer/core/animation/interpolation_type.h"
+#include "third_party/blink/renderer/core/animation/interpolation_types_map.h"
 #include "third_party/blink/renderer/core/animation/pairwise_interpolation_value.h"
 #include "third_party/blink/renderer/core/animation/property_handle.h"
 #include "third_party/blink/renderer/core/animation/transition_interpolation.h"
@@ -65,7 +65,7 @@ void TransitionKeyframe::AddKeyframePropertiesToV8Object(
   StyleResolverState state(document, *element);
   state.SetStyle(document.GetStyleResolver().InitialStyle());
   state.EnsureParentStyle();
-  CSSInterpolationTypesMap map(document.GetPropertyRegistry(), document);
+  InterpolationTypesMap map(document.GetPropertyRegistry(), document);
   CSSInterpolationEnvironment environment(map, state);
   value_->GetType().Apply(value_->GetInterpolableValue(),
                           value_->GetNonInterpolableValue(), environment);

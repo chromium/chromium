@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/animation/css_interpolation_types_map.h"
+#include "third_party/blink/renderer/core/animation/interpolation_types_map.h"
 
 #include <memory>
 #include <utility>
@@ -72,9 +72,8 @@
 
 namespace blink {
 
-CSSInterpolationTypesMap::CSSInterpolationTypesMap(
-    const PropertyRegistry* registry,
-    const Document& document)
+InterpolationTypesMap::InterpolationTypesMap(const PropertyRegistry* registry,
+                                             const Document& document)
     : document_(document), registry_(registry) {}
 
 static const PropertyRegistration* GetRegistration(
@@ -87,7 +86,7 @@ static const PropertyRegistration* GetRegistration(
   return registry->Registration(property.CustomPropertyName());
 }
 
-const InterpolationTypes& CSSInterpolationTypesMap::Get(
+const InterpolationTypes& InterpolationTypesMap::Get(
     const PropertyHandle& property) const {
   using ApplicableTypesMap =
       HashMap<PropertyHandle, std::unique_ptr<const InterpolationTypes>>;
@@ -101,8 +100,9 @@ const InterpolationTypes& CSSInterpolationTypesMap::Get(
   // map is shared between documents, the registered type may be different in
   // the different documents.
   if (registry_ && property.IsCSSCustomProperty()) {
-    if (const auto* registration = GetRegistration(registry_, property))
+    if (const auto* registration = GetRegistration(registry_, property)) {
       return registration->GetInterpolationTypes();
+    }
   }
   bool reduce_motion = document_.ShouldForceReduceMotion();
 
@@ -111,8 +111,9 @@ const InterpolationTypes& CSSInterpolationTypesMap::Get(
                     : all_applicable_types_map;
 
   auto entry = applicable_types_map.find(property);
-  if (entry != applicable_types_map.end())
+  if (entry != applicable_types_map.end()) {
     return *entry->value;
+  }
 
   std::unique_ptr<InterpolationTypes> applicable_types =
       std::make_unique<InterpolationTypes>();
@@ -454,7 +455,7 @@ const InterpolationTypes& CSSInterpolationTypesMap::Get(
   return *add_result.stored_value->value;
 }
 
-size_t CSSInterpolationTypesMap::Version() const {
+size_t InterpolationTypesMap::Version() const {
   return registry_ ? registry_->Version() : 0;
 }
 
@@ -520,8 +521,7 @@ CreateInterpolationTypeForCSSSyntax(const CSSSyntaxComponent syntax,
   }
 }
 
-InterpolationTypes
-CSSInterpolationTypesMap::CreateInterpolationTypesForCSSSyntax(
+InterpolationTypes InterpolationTypesMap::CreateInterpolationTypesForCSSSyntax(
     const AtomicString& property_name,
     const CSSSyntaxDefinition& definition,
     const PropertyRegistration& registration) {
@@ -536,8 +536,9 @@ CSSInterpolationTypesMap::CreateInterpolationTypesForCSSSyntax(
     std::unique_ptr<CSSInterpolationType> interpolation_type =
         CreateInterpolationTypeForCSSSyntax(component, property, registration);
 
-    if (!interpolation_type)
+    if (!interpolation_type) {
       continue;
+    }
 
     if (component.IsRepeatable() &&
         (component.GetType() != CSSSyntaxType::kTransformFunction ||
