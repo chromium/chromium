@@ -647,8 +647,7 @@ TEST_P(PDFiumOnDemandSearchifierTest, UpdateWithUnloadedPage) {
   EXPECT_TRUE(future.Wait());
   EXPECT_EQ(performed_ocrs(), 1);
 
-  // TODO(crbug.com/c/407950121): Page one should have one image.
-  EXPECT_EQ(page1.GetImageObjectIndices().size(), 0u);
+  EXPECT_EQ(page1.GetImageObjectIndices().size(), 1u);
 }
 
 INSTANTIATE_TEST_SUITE_P(All, PDFiumOnDemandSearchifierTest, testing::Bool());
