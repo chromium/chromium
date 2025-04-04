@@ -107,6 +107,7 @@ export class SettingsStylusElement extends SettingsStylusElementBase {
 
   private appChoices_: NoteAppInfo[];
   private browserProxy_: DevicePageBrowserProxy;
+  private readonly hasInternalStylus_: boolean;
   private selectedApp_: NoteAppInfo|null;
   private waitingForAndroid_: boolean;
 

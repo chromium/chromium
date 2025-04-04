@@ -139,6 +139,8 @@ export class SettingsKeyboardElement extends SettingsKeyboardElementBase {
     Setting.kShowDiacritic,
   ]);
 
+  private readonly autoRepeatDelays_: number[];
+  private readonly autoRepeatIntervals_: number[];
   private browserProxy_: DevicePageBrowserProxy;
   private hasAssistantKey_: boolean;
   private hasLauncherKey_: boolean;

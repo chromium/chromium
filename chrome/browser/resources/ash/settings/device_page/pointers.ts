@@ -51,7 +51,7 @@ export class SettingsPointersElement extends SettingsPointersElementBase {
 
       hasHapticTouchpad: Boolean,
 
-      swapPrimaryOptions: {
+      swapPrimaryOptions_: {
         readOnly: true,
         type: Array,
         value() {
@@ -144,7 +144,13 @@ export class SettingsPointersElement extends SettingsPointersElementBase {
     Setting.kMouseSpeed,
   ]);
 
-  private isDeviceSettingsSplitEnabled_: boolean;
+  private readonly hapticClickSensitivityValues_:
+      Array<{value: number, ariaValue: number}>;
+  private readonly isDeviceSettingsSplitEnabled_: boolean;
+  private readonly sensitivityValues_: number[];
+  private showHeadings_: boolean;
+  private subsectionClass_: string;
+  private swapPrimaryOptions_: Array<{value: boolean, name: string}>;
 
   /**
    * Headings should only be visible if more than one subsection is present.

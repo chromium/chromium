@@ -207,7 +207,12 @@ export class SettingsPowerElement extends SettingsPowerElementBase {
   private lidClosedPref_: chrome.settingsPrivate.PrefObject<boolean>;
   private isExternalPowerUSB_: boolean;
   private isExternalPowerAC_: boolean;
+  private powerSourceLabel_: string;
+  private powerSourceName_: string;
   private powerSources_: PowerSource[]|undefined;
+  private shouldAcIdleSelectBeDisabled_: boolean;
+  private shouldBatteryIdleSelectBeDisabled_: boolean;
+  private showPowerSourceDropdown_: boolean;
   private selectedPowerSourceId_: string;
   private batterySaverFeatureEnabled_: boolean;
 

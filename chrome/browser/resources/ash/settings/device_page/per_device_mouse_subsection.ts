@@ -117,7 +117,7 @@ export class SettingsPerDeviceMouseSubsectionElement extends
         value: true,
       },
 
-      swapPrimaryOptions: {
+      swapPrimaryOptions_: {
         readOnly: true,
         type: Array,
         value() {
@@ -192,14 +192,6 @@ export class SettingsPerDeviceMouseSubsectionElement extends
         },
         readOnly: true,
       },
-
-      deviceImageDataUrl: {
-        type: String,
-      },
-
-      bluetoothDevice: {
-        type: Object,
-      },
     };
   }
 
@@ -273,6 +265,9 @@ export class SettingsPerDeviceMouseSubsectionElement extends
   private isLastDevice: boolean;
   private customizationRestriction: CustomizationRestriction;
   private currentMouseChanged: boolean;
+  private readonly allowScrollSettings_: boolean;
+  private readonly sensitivityValues_: number[];
+  private readonly swapPrimaryOptions_: Array<{value: boolean, name: string}>;
 
   private showCustomizeButtonRow(): boolean {
     return (this.customizationRestriction !==

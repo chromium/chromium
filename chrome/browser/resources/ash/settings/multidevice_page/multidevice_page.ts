@@ -240,6 +240,7 @@ export class SettingsMultidevicePageElement extends
   private browserProxy_: MultiDeviceBrowserProxy;
   private featureToBeEnabledOnceAuthenticated_: MultiDeviceFeature|null;
   private isChromeosScreenLockEnabled_: boolean;
+  private readonly isNameEnabled_: boolean;
   private isNearbyShareSupported_: boolean;
   private isPasswordDialogShowing_: boolean;
   private isPhoneScreenLockEnabled_: boolean;

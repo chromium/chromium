@@ -127,7 +127,7 @@ export class SettingsPerDeviceTouchpadSubsectionElement extends
         },
       },
 
-      simulateRightClickOptions: {
+      simulateRightClickOptions_: {
         readOnly: true,
         type: Array,
         value() {
@@ -271,6 +271,11 @@ export class SettingsPerDeviceTouchpadSubsectionElement extends
   isAltClickAndSixPackCustomizationEnabled: boolean;
   protected mice: Mouse[];
   private mouseSettingsObserverReceiver: MouseSettingsObserverReceiver;
+  private readonly hapticClickSensitivityValues_:
+      Array<{value: number, ariaValue: number}>;
+  private readonly sensitivityValues_: number[];
+  private readonly simulateRightClickOptions_:
+      Array<{value: number, name: string}>;
 
   constructor() {
     super();

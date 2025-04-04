@@ -190,7 +190,8 @@ export class SettingsGoogleDriveSubpageElement extends
 
   private updateContentCacheSizeInterval_: number;
 
-  private isDriveFsBulkPinningEnabled_: boolean;
+  private readonly isDriveFsBulkPinningEnabled_: boolean;
+  private readonly isDriveFsMirrorSyncEnabled_: boolean;
 
   /**
    * Returns the browser proxy page handler (to invoke functions).
