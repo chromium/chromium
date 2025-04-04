@@ -736,6 +736,10 @@ inline constexpr char kReminderNotifications[] = "ios.notifications.reminders";
 inline constexpr char kMigrateWidgetsPrefs[] =
     "ios.widgets.update_to_support_mim";
 
+// A boolean specifying whether provisional notifications are allowed by policy.
+inline constexpr char kProvisionalNotificationsAllowedByPolicy[] =
+    "ios.notifications.provisional.allowed_by_policy";
+
 }  // namespace prefs
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_PREFS_PREF_NAMES_H_

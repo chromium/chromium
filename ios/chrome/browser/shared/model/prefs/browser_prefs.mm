@@ -979,6 +979,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   registry->RegisterIntegerPref(prefs::kChromeDataRegionSetting, 0);
 
+  registry->RegisterBooleanPref(prefs::kProvisionalNotificationsAllowedByPolicy,
+                                true);
+
   // Deprecated 05/2024.
   registry->RegisterBooleanPref(kAutologinEnabled, true);
   registry->RegisterListPref(kReverseAutologinRejectedEmailList);
