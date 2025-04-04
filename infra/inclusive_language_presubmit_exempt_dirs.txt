@@ -209,7 +209,7 @@ extensions/common/manifest_handlers 1 1
 extensions/shell/common 1 1
 google_apis/gaia 1 1
 gpu/config 1 1
-infra 5 3
+infra 4 2
 infra/config/generated/luci 1 1
 infra/config/generators 2 1
 infra/config/gn_args 1 1
@@ -826,6 +826,7 @@ tools/metrics/actions 1 1
 tools/metrics/histograms 11 2
 tools/metrics/histograms/metadata/gpu 1 1
 tools/metrics/ukm 1 1
+tools/nix/npins 1 1
 tools/perf 29 8
 tools/perf/cli_tools/update_wpr 2 1
 tools/perf/core 13 4
