@@ -571,7 +571,8 @@ DeserializeTileContents(mojom::TileContents& wire) {
 
 base::expected<void, std::string> DeserializeTiling(
     cc::TileDisplayLayerImpl& layer,
-    mojom::Tiling& wire) {
+    mojom::Tiling& wire,
+    bool is_incremental_update) {
   const float scale_key =
       std::max(wire.raster_scale.x(), wire.raster_scale.y());
   auto& tiling = layer.GetOrCreateTilingFromScaleKey(scale_key);
@@ -585,7 +586,7 @@ base::expected<void, std::string> DeserializeTiling(
     tiling.SetTileContents(
         cc::TileIndex{base::saturated_cast<int>(wire_tile->column_index),
                       base::saturated_cast<int>(wire_tile->row_index)},
-        std::move(contents));
+        std::move(contents), is_incremental_update);
   }
   return base::ok();
 }
@@ -1235,8 +1236,9 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
       if (layer->GetLayerType() != cc::mojom::LayerType::kTileDisplay) {
         return base::unexpected("Invalid tile update");
       }
-      RETURN_IF_ERROR(DeserializeTiling(
-          static_cast<cc::TileDisplayLayerImpl&>(*layer), *tiling));
+      RETURN_IF_ERROR(
+          DeserializeTiling(static_cast<cc::TileDisplayLayerImpl&>(*layer),
+                            *tiling, /*is_incremental_update=*/false));
     }
   }
 
@@ -1342,8 +1344,9 @@ void LayerContextImpl::UpdateDisplayTiling(mojom::TilingPtr tiling) {
       return;
     }
 
-    auto result = DeserializeTiling(
-        static_cast<cc::TileDisplayLayerImpl&>(*layer), *tiling);
+    auto result =
+        DeserializeTiling(static_cast<cc::TileDisplayLayerImpl&>(*layer),
+                          *tiling, /*is_incremental_update=*/true);
     if (!result.has_value()) {
       receiver_.ReportBadMessage(result.error());
       return;
