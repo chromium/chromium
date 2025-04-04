@@ -253,7 +253,7 @@ void AffiliationServiceImpl::GetAffiliationsAndBranding(
     const FacetURI& facet_uri,
     ResultCallback result_callback) {
   PostToBackend(&AffiliationBackend::GetAffiliationsAndBranding, facet_uri,
-                StrategyOnCacheMiss::FAIL, std::move(result_callback),
+                std::move(result_callback),
                 base::SequencedTaskRunner::GetCurrentDefault());
 }
 

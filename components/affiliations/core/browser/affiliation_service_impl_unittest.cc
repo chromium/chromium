@@ -56,8 +56,6 @@ constexpr char kOneExampleChangePasswordURL[] =
 constexpr char k2ExampleURL[] = "https://2.example.com";
 constexpr char k2ExampleChangePasswordURL[] = "https://2.example.com/pwd";
 
-using StrategyOnCacheMiss = AffiliationService::StrategyOnCacheMiss;
-
 constexpr char kTestFacetURIAlpha1[] = "https://one.alpha.example.com";
 constexpr char kTestFacetURIAlpha2[] = "https://two.alpha.example.com";
 constexpr char kTestFacetURIAlpha3[] = "https://three.alpha.example.com";

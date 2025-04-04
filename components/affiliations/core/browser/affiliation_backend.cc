@@ -72,7 +72,6 @@ void AffiliationBackend::Initialize(
 
 void AffiliationBackend::GetAffiliationsAndBranding(
     const FacetURI& facet_uri,
-    StrategyOnCacheMiss cache_miss_strategy,
     AffiliationService::ResultCallback callback,
     const scoped_refptr<base::TaskRunner>& callback_task_runner) {
   TRACE_EVENT0("passwords", "AffiliationBackend::GetAffiliationsAndBranding");
@@ -80,8 +79,8 @@ void AffiliationBackend::GetAffiliationsAndBranding(
 
   FacetManager* facet_manager = GetOrCreateFacetManager(facet_uri);
   DCHECK(facet_manager);
-  facet_manager->GetAffiliationsAndBranding(
-      cache_miss_strategy, std::move(callback), callback_task_runner);
+  facet_manager->GetAffiliationsAndBranding(std::move(callback),
+                                            callback_task_runner);
 
   if (facet_manager->CanBeDiscarded())
     facet_managers_.erase(facet_uri);
@@ -341,7 +340,7 @@ void AffiliationBackend::ProcessSuccessfulFetch(
       if (facet_manager_it == facet_managers_.end())
         continue;
       FacetManager* facet_manager = facet_manager_it->second.get();
-      facet_manager->OnFetchSucceeded(affiliation);
+      facet_manager->UpdateLastFetchTime(affiliation.last_update_time);
       if (facet_manager->CanBeDiscarded())
         facet_managers_.erase(facet.uri);
     }
@@ -363,8 +362,6 @@ void AffiliationBackend::RetryRequestIfNeeded() {
 
   // Trigger a retry if a fetch is still needed.
   for (const auto& facet_manager_pair : facet_managers_) {
-    // Notify all fetchers about failure to finish single attempt fetches.
-    facet_manager_pair.second->OnFetchFailed();
     if (facet_manager_pair.second->DoesRequireFetch()) {
       throttler_->SignalNetworkRequestNeeded();
       return;
