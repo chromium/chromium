@@ -126,10 +126,12 @@ export class SettingsLanguagesPageElement extends
    */
   private onAddLanguagesClick_(e: Event) {
     e.preventDefault();
+    if (this.languages === undefined) {
+      return;
+    }
     this.languageSettingsMetricsProxy_.recordPageImpressionMetric(
         LanguageSettingsPageImpressionType.ADD_LANGUAGE);
-
-    this.addLanguagesDialogLanguages_ = this.languages!.supported.filter(
+    this.addLanguagesDialogLanguages_ = this.languages.supported.filter(
         language => this.languageHelper.canEnableLanguage(language));
     this.showAddLanguagesDialog_ = true;
   }
