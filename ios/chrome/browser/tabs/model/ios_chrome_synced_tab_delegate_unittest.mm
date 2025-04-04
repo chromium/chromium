@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/sessions/model/ios_chrome_session_tab_helper.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -167,6 +168,15 @@ TEST_F(IOSChromeSyncedTabDelegateTest,
   system_identity_manager->AddIdentity(identity);
   AuthenticationService* authentication_service =
       AuthenticationServiceFactory::GetForProfile(profile);
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    // With multi-profile, `profile` is considered to be the personal profile,
+    // and the managed account gets assigned to a separate managed profile. Move
+    // it into the personal profile so that signin becomes possible.
+    GetApplicationContext()
+        ->GetAccountProfileMapper()
+        ->MoveManagedAccountToPersonalProfileForTesting(
+            GaiaId(identity.gaiaID));
+  }
   authentication_service->SignIn(identity,
                                  signin_metrics::AccessPoint::kUnknown);
 
