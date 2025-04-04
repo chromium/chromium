@@ -9170,12 +9170,6 @@ const ComputedStyle* Element::StyleForPseudoElement(
     return result;
   }
 
-  // We use the originating DOM element when resolving style for ::transition*
-  // pseudo elements instead of the element's direct ancestor (which could
-  // itself be a pseudo element).
-  DCHECK(!IsTransitionPseudoElement(GetPseudoId()) ||
-         (GetDocument().documentElement() == this));
-
   StyleRequest style_request = request;
   if (PseudoElement::IsLayoutSiblingOfOriginatingElement(pseudo_id)) {
     CHECK(request.parent_override);
