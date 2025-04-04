@@ -13,7 +13,7 @@
 edition = "2018"
 rust-version = "1.67.0"
 name = "flate2"
-version = "1.1.0"
+version = "1.1.1"
 authors = [
     "Alex Crichton <alex@alexcrichton.com>",
     "Josh Triplett <josh@joshtriplett.org>",
@@ -212,7 +212,7 @@ version = "1.1.16"
 optional = true
 
 [dependencies.libz-rs-sys]
-version = "0.4.2"
+version = "0.5.0"
 features = [
     "std",
     "rust-allocator",
@@ -226,7 +226,7 @@ optional = true
 default-features = false
 
 [dependencies.miniz_oxide]
-version = "0.8.4"
+version = "0.8.5"
 features = ["with-alloc"]
 optional = true
 default-features = false
@@ -239,6 +239,6 @@ default-features = false
 version = "0.9"
 
 [target.'cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))'.dependencies.miniz_oxide]
-version = "0.8.4"
+version = "0.8.5"
 features = ["with-alloc"]
 default-features = false

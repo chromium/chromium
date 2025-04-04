@@ -670,7 +670,7 @@ third_party/rust/chromium_crates_io/vendor/displaydoc-v0_2 2 1
 third_party/rust/chromium_crates_io/vendor/displaydoc-v0_2/src 2 1
 third_party/rust/chromium_crates_io/vendor/either-v1/.github/workflows 1 1
 third_party/rust/chromium_crates_io/vendor/equivalent-v1/.github/workflows 1 1
-third_party/rust/chromium_crates_io/vendor/flate2-v1 33 2
+third_party/rust/chromium_crates_io/vendor/flate2-v1 1 1
 third_party/rust/chromium_crates_io/vendor/getrandom-v0_2 5 1
 third_party/rust/chromium_crates_io/vendor/hashbrown-v0_15 1 1
 third_party/rust/chromium_crates_io/vendor/hashbrown-v0_15/src 1 1
