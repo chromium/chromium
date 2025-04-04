@@ -51,6 +51,8 @@ source_set("internal") {
   visibility = [ ":service" ]
 
   sources = [
+    "internal/ax_tree_fixing_optimization_guide_service.cc",
+    "internal/ax_tree_fixing_optimization_guide_service.h",
     "internal/ax_tree_fixing_screen_ai_service.cc",
     "internal/ax_tree_fixing_screen_ai_service.h",
     "internal/ax_tree_fixing_screenshotter.cc",
