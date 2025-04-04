@@ -838,7 +838,7 @@ void CopySharedImageToTextureINTERNAL(GLuint texture,
                                       GLint src_y,
                                       GLsizei width,
                                       GLsizei height,
-                                      GLboolean flip_y,
+                                      GLboolean is_dst_origin_top_left,
                                       const GLbyte* src_mailbox) override;
 GLboolean ReadbackARGBImagePixelsINTERNAL(const GLbyte* mailbox,
                                           const void* dst_color_space,

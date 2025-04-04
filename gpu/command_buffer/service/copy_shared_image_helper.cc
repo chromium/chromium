@@ -97,7 +97,7 @@ sk_sp<SkSurface> CreateSkSurfaceWrappingGLTexture(
     GLenum type,
     GLsizei width,
     GLsizei height,
-    GLboolean flip_y) {
+    GrSurfaceOrigin dst_origin) {
   CHECK_NE(texture_id, 0u);
   CHECK(shared_context_state->GrContextIsGL());
   GrGLTextureInfo texture_info;
@@ -112,9 +112,7 @@ sk_sp<SkSurface> CreateSkSurfaceWrappingGLTexture(
   GrDirectContext* direct_context = shared_context_state->gr_context();
   CHECK(direct_context);
   return SkSurfaces::WrapBackendTexture(
-      direct_context, backend_texture,
-      flip_y ? GrSurfaceOrigin::kBottomLeft_GrSurfaceOrigin
-             : GrSurfaceOrigin::kTopLeft_GrSurfaceOrigin,
+      direct_context, backend_texture, dst_origin,
       /*sampleCnt=*/1, GetCompatibleSurfaceColorType(texture_info.fFormat),
       dest_color_space, nullptr);
 }
@@ -435,7 +433,7 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImageToGLTexture(
     GLint src_y,
     GLsizei width,
     GLsizei height,
-    GLboolean flip_y,
+    GrSurfaceOrigin dst_origin,
     const volatile GLbyte* src_mailbox) {
   Mailbox source_mailbox = Mailbox::FromVolatile(
       reinterpret_cast<const volatile Mailbox*>(src_mailbox)[0]);
@@ -447,7 +445,7 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImageToGLTexture(
 
   sk_sp<SkSurface> dest_surface = CreateSkSurfaceWrappingGLTexture(
       shared_context_state_, dest_texture_id, target, internal_format, type,
-      width, height, flip_y);
+      width, height, dst_origin);
 
   if (!dest_surface) {
     return base::unexpected<GLError>(

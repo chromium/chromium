@@ -1454,13 +1454,11 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
 
     // Copy shared image to gl texture for hardware video decode with
     // multiplanar shared image formats.
-
-    // TODO(crbug.com/378688985): Plumb origin to the service size.
-    const bool flip_y = dst_origin != kTopLeft_GrSurfaceOrigin;
+    const bool is_dst_origin_top_left = dst_origin == kTopLeft_GrSurfaceOrigin;
     destination_gl->CopySharedImageToTextureINTERNAL(
         texture, target, internal_format, type, video_frame->visible_rect().x(),
         video_frame->visible_rect().y(), video_frame->visible_rect().width(),
-        video_frame->visible_rect().height(), flip_y,
+        video_frame->visible_rect().height(), is_dst_origin_top_left,
         shared_image->mailbox().name);
 
     SynchronizeVideoFrameRead(std::move(video_frame), destination_gl,

@@ -3137,7 +3137,7 @@ void CopySharedImageToTextureINTERNALImmediate(GLuint texture,
                                                GLint src_y,
                                                GLsizei width,
                                                GLsizei height,
-                                               GLboolean flip_y,
+                                               GLboolean is_dst_origin_top_left,
                                                const GLbyte* src_mailbox) {
   const uint32_t size =
       gles2::cmds::CopySharedImageToTextureINTERNALImmediate::ComputeSize();
@@ -3146,7 +3146,7 @@ void CopySharedImageToTextureINTERNALImmediate(GLuint texture,
           gles2::cmds::CopySharedImageToTextureINTERNALImmediate>(size);
   if (c) {
     c->Init(texture, target, internal_format, type, src_x, src_y, width, height,
-            flip_y, src_mailbox);
+            is_dst_origin_top_left, src_mailbox);
   }
 }
 
