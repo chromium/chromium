@@ -22,6 +22,12 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="PNaClTranslatorType">
+  <variant name="" summary="All translator types"/>
+  <variant name=".LLC" summary="LLC-based translator"/>
+  <variant name=".Subzero" summary="Subzero-based translator"/>
+</variants>
+
 <histogram name="NaCl.Client.Helper.InitState" enum="NaClHelperStatus"
     expires_after="2025-06-08">
   <owner>dschuff@chromium.org</owner>
@@ -172,43 +178,43 @@ chromium-metrics-reviews@google.com.
   <summary>The time a NaCl module ran without crashing, at shutdown.</summary>
 </histogram>
 
-<histogram name="NaCl.Options.PNaCl.OptLevel" enum="PNaClOptionsOptLevelEnum"
-    expires_after="2025-06-08">
+<histogram name="NaCl.Options.PNaCl.OptLevel{PNaClTranslatorType}"
+    enum="PNaClOptionsOptLevelEnum" expires_after="2025-06-08">
   <owner>dschuff@chromium.org</owner>
   <owner>fabiansommer@chromium.org</owner>
   <summary>
     The optimization level set for the initial Portable Native Client
-    translation from bitcode to native code.
+    translation from bitcode to native code. {PNaClTranslatorType}
   </summary>
 </histogram>
 
-<histogram name="NaCl.Perf.PNaClCache.IsHit" enum="PNaClTranslationCacheEnum"
-    expires_after="2025-06-08">
+<histogram name="NaCl.Perf.PNaClCache.IsHit{PNaClTranslatorType}"
+    enum="PNaClTranslationCacheEnum" expires_after="2025-06-08">
   <owner>dschuff@chromium.org</owner>
   <owner>fabiansommer@chromium.org</owner>
   <summary>
     Did the Portable Native Client translation cache find an executable
-    translated from bitcode?
+    translated from bitcode? {PNaClTranslatorType}
   </summary>
 </histogram>
 
-<histogram name="NaCl.Perf.PNaClLoadTime.CompileKBPerSec" units="KB/s"
-    expires_after="2025-06-08">
+<histogram name="NaCl.Perf.PNaClLoadTime.CompileKBPerSec{PNaClTranslatorType}"
+    units="KB/s" expires_after="2025-06-08">
   <owner>dschuff@chromium.org</owner>
   <owner>fabiansommer@chromium.org</owner>
   <summary>
     The rate for compiling a Portable Native Client bitcode file to an object
-    file in Kilobytes per second.
+    file in Kilobytes per second. {PNaClTranslatorType}
   </summary>
 </histogram>
 
-<histogram name="NaCl.Perf.PNaClLoadTime.CompileTime" units="ms"
-    expires_after="2025-06-08">
+<histogram name="NaCl.Perf.PNaClLoadTime.CompileTime{PNaClTranslatorType}"
+    units="ms" expires_after="2025-06-08">
   <owner>dschuff@chromium.org</owner>
   <owner>fabiansommer@chromium.org</owner>
   <summary>
     The time it took to compile a Portable Native Client bitcode file to an
-    object file.
+    object file. {PNaClTranslatorType}
   </summary>
 </histogram>
 
@@ -222,12 +228,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NaCl.Perf.PNaClLoadTime.LoadCompiler" units="ms"
-    expires_after="2025-06-08">
+<histogram name="NaCl.Perf.PNaClLoadTime.LoadCompiler{PNaClTranslatorType}"
+    units="ms" expires_after="2025-06-08">
   <owner>dschuff@chromium.org</owner>
   <owner>fabiansommer@chromium.org</owner>
   <summary>
     The time it took to load and validate the Portable Native Client compiler.
+    {PNaClTranslatorType}
   </summary>
 </histogram>
 
@@ -240,35 +247,39 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NaCl.Perf.PNaClLoadTime.PctCompiledWhenFullyDownloaded"
+<histogram
+    name="NaCl.Perf.PNaClLoadTime.PctCompiledWhenFullyDownloaded{PNaClTranslatorType}"
     units="%" expires_after="2025-06-08">
   <owner>dschuff@chromium.org</owner>
   <owner>fabiansommer@chromium.org</owner>
   <summary>
     The percentage of a Portable Native Client application that is compiled by
     the time the application is fully downloaded (compile and download happen in
-    parallel).
+    parallel). {PNaClTranslatorType}
   </summary>
 </histogram>
 
-<histogram name="NaCl.Perf.PNaClLoadTime.TotalUncachedKBPerSec" units="KB/s"
-    expires_after="2025-06-08">
+<histogram
+    name="NaCl.Perf.PNaClLoadTime.TotalUncachedKBPerSec{PNaClTranslatorType}"
+    units="KB/s" expires_after="2025-06-08">
   <owner>dschuff@chromium.org</owner>
   <owner>fabiansommer@chromium.org</owner>
   <summary>
     The rate for completely translating a Portable Native Client bitcode file
     into a Native Client executable and caching the result in Kilobytes per
-    second.
+    second. {PNaClTranslatorType}
   </summary>
 </histogram>
 
-<histogram name="NaCl.Perf.PNaClLoadTime.TotalUncachedTime" units="ms"
-    expires_after="2025-06-08">
+<histogram
+    name="NaCl.Perf.PNaClLoadTime.TotalUncachedTime{PNaClTranslatorType}"
+    units="ms" expires_after="2025-06-08">
   <owner>dschuff@chromium.org</owner>
   <owner>fabiansommer@chromium.org</owner>
   <summary>
     The total time it took to completely translate a Portable Native Client
     bitcode file into a Native Client executable, and cache the result.
+    {PNaClTranslatorType}
   </summary>
 </histogram>
 
@@ -302,24 +313,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NaCl.Perf.Size.PexeNexeSizePct" units="%"
+<histogram name="NaCl.Perf.Size.PexeNexeSizePct{PNaClTranslatorType}" units="%"
     expires_after="2025-06-08">
   <owner>dschuff@chromium.org</owner>
   <owner>fabiansommer@chromium.org</owner>
   <summary>
     The size of the main .pexe bitcode file divided by the size of the .nexe
     that is the result of translating the bitcode file, times 100.
+    {PNaClTranslatorType}
   </summary>
 </histogram>
 
-<histogram name="NaCl.Perf.Size.PNaClTranslatedNexe" units="KB"
-    expires_after="2025-06-08">
+<histogram name="NaCl.Perf.Size.PNaClTranslatedNexe{PNaClTranslatorType}"
+    units="KB" expires_after="2025-06-08">
   <owner>dschuff@chromium.org</owner>
   <owner>fabiansommer@chromium.org</owner>
   <summary>
     The size of the main .nexe file that is the result of translating a Portable
     Native Client .pexe bitcode file. This reflects the amount of cache
-    consumed.
+    consumed. {PNaClTranslatorType}
   </summary>
 </histogram>
 

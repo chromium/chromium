@@ -1133,23 +1133,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="PasswordManager.FillingAssistance"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="PNaClTranslatorTypes" separator=".">
-  <suffix name="" label="All translator types"/>
-  <suffix name="LLC" label="LLC-based translator"/>
-  <suffix name="Subzero" label="Subzero-based translator"/>
-  <affected-histogram name="NaCl.Options.PNaCl.OptLevel"/>
-  <affected-histogram name="NaCl.Perf.PNaClCache.IsHit"/>
-  <affected-histogram name="NaCl.Perf.PNaClLoadTime.CompileKBPerSec"/>
-  <affected-histogram name="NaCl.Perf.PNaClLoadTime.CompileTime"/>
-  <affected-histogram name="NaCl.Perf.PNaClLoadTime.LoadCompiler"/>
-  <affected-histogram
-      name="NaCl.Perf.PNaClLoadTime.PctCompiledWhenFullyDownloaded"/>
-  <affected-histogram name="NaCl.Perf.PNaClLoadTime.TotalUncachedKBPerSec"/>
-  <affected-histogram name="NaCl.Perf.PNaClLoadTime.TotalUncachedTime"/>
-  <affected-histogram name="NaCl.Perf.Size.PexeNexeSizePct"/>
-  <affected-histogram name="NaCl.Perf.Size.PNaClTranslatedNexe"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="PowerConsumptionTimes" separator=".">
   <suffix name="All" label="Sampled once per minute."/>
   <suffix name="DuringStartup"
