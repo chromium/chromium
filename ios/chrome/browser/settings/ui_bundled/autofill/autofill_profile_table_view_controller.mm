@@ -901,6 +901,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
     return;
   }
 
+  base::RecordAction(base::UserMetricsAction("AddAddressManually_Opened"));
+
   autofill::AddressDataManager& addressDataManager =
       _personalDataManager->address_data_manager();
 

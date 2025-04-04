@@ -2555,6 +2555,33 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="AddAddressManually_AddressSaved">
+  <owner>sinhasourav@google.com</owner>
+  <owner>bling-transactions@google.com</owner>
+  <description>
+    Recorded when the user taps on &quot;Save&quot; button to save a new address
+    from scratch manually. iOS only.
+  </description>
+</action>
+
+<action name="AddAddressManually_Opened">
+  <owner>sinhasourav@google.com</owner>
+  <owner>bling-transactions@google.com</owner>
+  <description>
+    Recorded when the user opens a surface for manually adding a new address.
+    iOS only.
+  </description>
+</action>
+
+<action name="AddressInfobar_AddressSaved">
+  <owner>sinhasourav@google.com</owner>
+  <owner>bling-transactions@google.com</owner>
+  <description>
+    Recorded when the user taps on &quot;Save&quot; button to save a new address
+    through an infobar. iOS only.
+  </description>
+</action>
+
 <action name="AddSupervisionDialog_AttemptedSignoutAfterEnrollment">
   <owner>tobyhuang@chromium.org</owner>
   <owner>michaelpg@chromium.org</owner>
