@@ -260,10 +260,6 @@ bool CanvasResourceHost::IsResourceValid() {
     return true;
   }
 
-  if (!cc_layer_) {
-    return true;
-  }
-
   if (IsContextLost()) {
     return false;
   }
