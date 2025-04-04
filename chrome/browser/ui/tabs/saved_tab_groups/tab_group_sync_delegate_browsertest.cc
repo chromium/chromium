@@ -56,7 +56,8 @@ namespace {
 
 using testing::NotNull;
 
-// THIS TEST MIGHT NEED TO BE DELETED
+// Tests desktop behaviors for the SavedTabGroups feature such as performing
+// local changes and simulating sync events.
 class TabGroupSyncDelegateBrowserTest : public InProcessBrowserTest,
                                         public TabGroupSyncService::Observer {
  public:
