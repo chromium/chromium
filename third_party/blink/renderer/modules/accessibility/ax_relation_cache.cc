@@ -152,7 +152,7 @@ void AXRelationCache::CheckRelationsCached(Element& element) {
   }
 
   // Check aria-labelledby, aria-describedby.
-  for (const QualifiedName& attribute : GetTextRelationAttributes()) {
+  for (const auto& [attribute, filter] : GetTextRelationAttributes()) {
     Vector<AtomicString> text_relation_ids;
     HeapVector<Member<Element>> text_relation_elements;
     GetRelationTargets(element, attribute, text_relation_ids,
@@ -455,20 +455,27 @@ void AXRelationCache::UpdateReverseElementAttributeRelations(
   }
 }
 
-base::span<QualifiedName> AXRelationCache::GetTextRelationAttributes() {
+base::span<std::pair<QualifiedName, uint32_t>>
+AXRelationCache::GetTextRelationAttributes() {
   // Avoid issues with commas within the type name in DEFINE_STATIC_LOCAL().
-  using QualifiedNameArray = std::array<QualifiedName, 3>;
+  using QualifiedNameArray = std::array<std::pair<QualifiedName, uint32_t>, 3>;
   DEFINE_STATIC_LOCAL(
       QualifiedNameArray, text_attributes,
-      ({html_names::kAriaLabelledbyAttr, html_names::kAriaLabeledbyAttr,
-        html_names::kAriaDescribedbyAttr}));
+      ({{html_names::kAriaLabelledbyAttr,
+         Element::FilterForAttribute(html_names::kAriaLabelledbyAttr)},
+        {html_names::kAriaLabeledbyAttr,
+         Element::FilterForAttribute(html_names::kAriaLabeledbyAttr)},
+        {html_names::kAriaDescribedbyAttr,
+         Element::FilterForAttribute(html_names::kAriaDescribedbyAttr)}}));
   return text_attributes;
 }
 
 void AXRelationCache::UpdateReverseTextRelations(Element& source) {
-  base::span<QualifiedName> text_attributes = GetTextRelationAttributes();
-  for (const QualifiedName& attribute : text_attributes) {
-    UpdateReverseTextRelations(source, attribute);
+  for (const auto& [attribute, filter] : GetTextRelationAttributes()) {
+    if (source.CouldHaveAttributeWithPrecomputedFilter(filter) ||
+        source.GetElementInternals()) {
+      UpdateReverseTextRelations(source, attribute);
+    }
   }
 }
 
@@ -538,32 +545,48 @@ void AXRelationCache::UpdateReverseElementAttributeTextRelations(
 }
 
 void AXRelationCache::UpdateReverseActiveDescendantRelations(Element& source) {
-  UpdateReverseSingleRelation(source, html_names::kAriaActivedescendantAttr,
-                              aria_activedescendant_id_map_,
-                              aria_activedescendant_node_map_);
+  if (source.CouldHaveAttribute(html_names::kAriaActivedescendantAttr) ||
+      source.GetElementInternals()) {
+    UpdateReverseSingleRelation(source, html_names::kAriaActivedescendantAttr,
+                                aria_activedescendant_id_map_,
+                                aria_activedescendant_node_map_);
+  }
 }
 
 void AXRelationCache::UpdateReverseOwnsRelations(Element& source) {
-  UpdateReverseRelations(source, html_names::kAriaOwnsAttr, aria_owns_id_map_,
-                         aria_owns_node_map_);
+  if (source.CouldHaveAttribute(html_names::kAriaOwnsAttr) ||
+      source.GetElementInternals()) {
+    UpdateReverseRelations(source, html_names::kAriaOwnsAttr, aria_owns_id_map_,
+                           aria_owns_node_map_);
+  }
 }
 
-base::span<QualifiedName> AXRelationCache::GetOtherRelationAttributes() {
+base::span<std::pair<QualifiedName, uint32_t>>
+AXRelationCache::GetOtherRelationAttributes() {
   // Avoid issues with commas within the type name in DEFINE_STATIC_LOCAL().
-  using QualifiedNameArray = std::array<QualifiedName, 5>;
+  using QualifiedNameArray = std::array<std::pair<QualifiedName, uint32_t>, 5>;
   DEFINE_STATIC_LOCAL(
       QualifiedNameArray, attributes,
-      ({html_names::kAriaControlsAttr, html_names::kAriaDetailsAttr,
-        html_names::kAriaErrormessageAttr, html_names::kAriaFlowtoAttr,
-        html_names::kAriaActionsAttr}));
+      ({{html_names::kAriaControlsAttr,
+         Element::FilterForAttribute(html_names::kAriaControlsAttr)},
+        {html_names::kAriaDetailsAttr,
+         Element::FilterForAttribute(html_names::kAriaDetailsAttr)},
+        {html_names::kAriaErrormessageAttr,
+         Element::FilterForAttribute(html_names::kAriaErrormessageAttr)},
+        {html_names::kAriaFlowtoAttr,
+         Element::FilterForAttribute(html_names::kAriaFlowtoAttr)},
+        {html_names::kAriaActionsAttr,
+         Element::FilterForAttribute(html_names::kAriaActionsAttr)}}));
   return attributes;
 }
 
 void AXRelationCache::UpdateReverseOtherRelations(Element& source) {
-  base::span<QualifiedName> attributes = GetOtherRelationAttributes();
-  for (const QualifiedName& attribute : attributes) {
-    UpdateReverseRelations(source, attribute, aria_other_relations_id_map_,
-                           aria_other_relations_node_map_);
+  for (const auto& [attribute, filter] : GetOtherRelationAttributes()) {
+    if (source.CouldHaveAttributeWithPrecomputedFilter(filter) ||
+        source.GetElementInternals()) {
+      UpdateReverseRelations(source, attribute, aria_other_relations_id_map_,
+                             aria_other_relations_node_map_);
+    }
   }
 }
 
