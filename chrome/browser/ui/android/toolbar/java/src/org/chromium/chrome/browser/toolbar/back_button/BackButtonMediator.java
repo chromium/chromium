@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.toolbar.back_button;
 
 import android.animation.ObjectAnimator;
 import android.content.res.ColorStateList;
+import android.view.View;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.VisibleForTesting;
@@ -167,6 +168,24 @@ class BackButtonMediator implements ThemeColorProvider.TintObserver {
      */
     public void setVisibility(boolean isVisible) {
         mModel.set(BackButtonProperties.IS_VISIBLE, isVisible);
+    }
+
+    /**
+     * Checks whether view is focusable or not.
+     *
+     * @return true - view is focusable, false - view is not focusable.
+     */
+    public boolean isFocusable() {
+        return mModel.get(BackButtonProperties.IS_FOCUSABLE);
+    }
+
+    /**
+     * Sets a key event listener on the view.
+     *
+     * @param listener {@link View.OnKeyListener}
+     */
+    public void setOnKeyListener(View.OnKeyListener listener) {
+        mModel.set(BackButtonProperties.KEY_LISTENER, listener);
     }
 
     /**

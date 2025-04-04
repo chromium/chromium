@@ -114,6 +114,33 @@ public class BackButtonCoordinator {
     }
 
     /**
+     * Checks whether view is focusable or not.
+     *
+     * @return true - view is focusable, false - view is not focusable.
+     */
+    public boolean isFocusable() {
+        return mMediator.isFocusable();
+    }
+
+    /**
+     * Requests current view to gain focus.
+     *
+     * @return true - if view successfully gained focus, false - if view failed to gain focus.
+     */
+    public boolean focus() {
+        return mView.requestFocus();
+    }
+
+    /**
+     * Sets a key event listener on back button.
+     *
+     * @param listener {@link View.OnKeyListener}
+     */
+    public void setOnKeyListener(View.OnKeyListener listener) {
+        mMediator.setOnKeyListener(listener);
+    }
+
+    /**
      * Cleans up coordinator resources and unsubscribes from external events. An instance can't be
      * used after this method is called.
      */

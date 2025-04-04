@@ -54,6 +54,9 @@ class BackButtonViewBinder {
                         listener.run();
                         return true;
                     });
+        } else if (key == BackButtonProperties.KEY_LISTENER) {
+            final var listener = model.get(BackButtonProperties.KEY_LISTENER);
+            button.setOnKeyListener(listener);
         } else if (key == BackButtonProperties.IS_ENABLED) {
             button.setEnabled(model.get(BackButtonProperties.IS_ENABLED));
         } else if (key == BackButtonProperties.IS_FOCUSABLE) {

@@ -55,8 +55,8 @@ import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbar
 import org.chromium.chrome.browser.toolbar.top.NavigationPopup.HistoryDelegate;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
+import org.chromium.chrome.browser.util.KeyNavigationUtil;
 import org.chromium.components.browser_ui.styles.ChromeColors;
-import org.chromium.components.browser_ui.util.KeyboardNavigationListener;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -167,85 +167,85 @@ public class ToolbarTablet extends ToolbarLayout
         super.onNativeLibraryReady();
         mHomeButton.setOnClickListener(this);
         mHomeButton.setOnKeyListener(
-                new KeyboardNavigationListener() {
-                    @Override
-                    public View getNextFocusForward() {
-                        if (mBackButton.isFocusable()) {
-                            return findViewById(R.id.back_button);
+                (view, keyCode, keyEvent) -> {
+                    if (KeyNavigationUtil.isTab(keyEvent)) {
+                        if (mBackButtonCoordinator.isFocusable()) {
+                            return mBackButtonCoordinator.focus();
                         } else if (mForwardButton.isFocusable()) {
-                            return findViewById(R.id.forward_button);
+                            return mForwardButton.requestFocus();
                         } else {
-                            return findViewById(R.id.refresh_button);
+                            return findViewById(R.id.refresh_button).requestFocus();
                         }
                     }
 
-                    @Override
-                    public View getNextFocusBackward() {
-                        return findViewById(R.id.menu_button);
+                    if (KeyNavigationUtil.isBackwardTab(keyEvent)) {
+                        return findViewById(R.id.menu_button).requestFocus();
                     }
+
+                    return false;
                 });
 
-        mBackButton.setOnKeyListener(
-                new KeyboardNavigationListener() {
-                    @Override
-                    public View getNextFocusForward() {
+        mBackButtonCoordinator.setOnKeyListener(
+                (view, keyCode, keyEvent) -> {
+                    if (KeyNavigationUtil.isTab(keyEvent)) {
                         if (mForwardButton.isFocusable()) {
-                            return findViewById(R.id.forward_button);
+                            return findViewById(R.id.forward_button).requestFocus();
                         } else {
-                            return findViewById(R.id.refresh_button);
+                            return findViewById(R.id.refresh_button).requestFocus();
                         }
                     }
 
-                    @Override
-                    public View getNextFocusBackward() {
+                    if (KeyNavigationUtil.isBackwardTab(keyEvent)) {
                         if (mHomeButton.getVisibility() == VISIBLE) {
-                            return findViewById(R.id.home_button);
+                            return findViewById(R.id.home_button).requestFocus();
                         } else {
-                            return findViewById(R.id.menu_button);
+                            return findViewById(R.id.menu_button).requestFocus();
                         }
                     }
+
+                    return false;
                 });
 
         mForwardButton.setOnClickListener(this);
         mForwardButton.setLongClickable(true);
         mForwardButton.setOnKeyListener(
-                new KeyboardNavigationListener() {
-                    @Override
-                    public View getNextFocusForward() {
-                        return findViewById(R.id.refresh_button);
+                (view, keyCode, keyEvent) -> {
+                    if (KeyNavigationUtil.isTab(keyEvent)) {
+                        return findViewById(R.id.refresh_button).requestFocus();
                     }
 
-                    @Override
-                    public View getNextFocusBackward() {
-                        if (mBackButton.isFocusable()) {
-                            return mBackButton;
+                    if (KeyNavigationUtil.isBackwardTab(keyEvent)) {
+                        if (mBackButtonCoordinator.isFocusable()) {
+                            return mBackButtonCoordinator.focus();
                         } else if (mHomeButton.getVisibility() == VISIBLE) {
-                            return findViewById(R.id.home_button);
+                            return findViewById(R.id.home_button).requestFocus();
                         } else {
-                            return findViewById(R.id.menu_button);
+                            return findViewById(R.id.menu_button).requestFocus();
                         }
                     }
+
+                    return false;
                 });
 
         mReloadButtonCoordinator.setOnKeyListener(
-                new KeyboardNavigationListener() {
-                    @Override
-                    public View getNextFocusForward() {
-                        return findViewById(R.id.url_bar);
+                (view, keyCode, keyEvent) -> {
+                    if (KeyNavigationUtil.isTab(keyEvent)) {
+                        return findViewById(R.id.url_bar).requestFocus();
                     }
 
-                    @Override
-                    public View getNextFocusBackward() {
+                    if (KeyNavigationUtil.isBackwardTab(keyEvent)) {
                         if (mForwardButton.isFocusable()) {
-                            return mForwardButton;
-                        } else if (mBackButton.isFocusable()) {
-                            return mBackButton;
+                            return mForwardButton.requestFocus();
+                        } else if (mBackButtonCoordinator.isFocusable()) {
+                            return mBackButtonCoordinator.focus();
                         } else if (mHomeButton.getVisibility() == VISIBLE) {
-                            return findViewById(R.id.home_button);
+                            return findViewById(R.id.home_button).requestFocus();
                         } else {
-                            return findViewById(R.id.menu_button);
+                            return findViewById(R.id.menu_button).requestFocus();
                         }
                     }
+
+                    return false;
                 });
 
         mBookmarkButton.setOnClickListener(this);
@@ -253,21 +253,21 @@ public class ToolbarTablet extends ToolbarLayout
 
         getMenuButtonCoordinator()
                 .setOnKeyListener(
-                        new KeyboardNavigationListener() {
-                            @Override
-                            public View getNextFocusForward() {
-                                return getCurrentTabView();
+                        (view, keyCode, keyEvent) -> {
+                            if (KeyNavigationUtil.isTab(keyEvent)) {
+                                return getCurrentTabView().requestFocus();
                             }
 
-                            @Override
-                            public View getNextFocusBackward() {
-                                return findViewById(R.id.url_bar);
+                            if (KeyNavigationUtil.isBackwardTab(keyEvent)) {
+                                return findViewById(R.id.url_bar).requestFocus();
                             }
 
-                            @Override
-                            protected boolean handleEnterKeyPress() {
+                            if (KeyNavigationUtil.isActionUp(keyEvent)
+                                    && KeyNavigationUtil.isEnter(keyEvent)) {
                                 return getMenuButtonCoordinator().onEnterKeyPress();
                             }
+
+                            return false;
                         });
 
         mSaveOfflineButton.setOnClickListener(this);
