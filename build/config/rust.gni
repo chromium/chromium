@@ -265,7 +265,12 @@ if (is_linux || is_chromeos) {
     assert(false, "Architecture not supported")
   }
 } else if (is_ios) {
-  if (current_cpu == "arm64") {
+  if (current_cpu == "arm64e") {
+    assert(target_platform == "iphoneos",
+           "unsupported target_platform=$target_platform")
+    rust_abi_target = "arm64e-apple-ios"
+    cargo_target_abi = ""
+  } else if (current_cpu == "arm64") {
     if (target_platform == "iphoneos") {
       if (target_environment == "simulator") {
         rust_abi_target = "aarch64-apple-ios-sim"
@@ -358,6 +363,8 @@ if (current_cpu == "x86") {
   rust_target_arch = "arm"
 } else if (current_cpu == "arm64") {
   rust_target_arch = "aarch64"
+} else if (current_cpu == "arm64e") {
+  rust_target_arch = "arm64e"
 } else if (current_cpu == "mipsel") {
   rust_target_arch = "mips"
 } else if (current_cpu == "mips64el") {
