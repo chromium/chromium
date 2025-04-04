@@ -361,6 +361,25 @@ TEST_F(AIPageContentAgentTest, Image) {
                 gfx::Rect(0, 0, 10, 30));
 }
 
+TEST_F(AIPageContentAgentTest, ImageWithAriaLabel) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <img aria-label='hello'></img>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+  auto content = GetAIPageContentWithActionableElements();
+
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  const auto& root = *content->root_node;
+  EXPECT_EQ(root.children_nodes.size(), 1u);
+
+  auto& image_node = *root.children_nodes[0];
+  EXPECT_EQ("hello", image_node.content_attributes->label);
+}
+
 TEST_F(AIPageContentAgentTest, ImageNoAltText) {
   frame_test_helpers::LoadHTMLString(
       helper_.LocalMainFrame(),

@@ -483,6 +483,9 @@ bool ConvertAttributes(
     ConvertTableRowData(*mojom_attributes.table_row_data,
                         proto_attributes->mutable_table_row_data());
   }
+  if (mojom_attributes.label) {
+    proto_attributes->set_label(*mojom_attributes.label);
+  }
 
   for (const auto& annotated_role : mojom_attributes.annotated_roles) {
     proto_attributes->add_annotated_roles(ConvertAnnotatedRole(annotated_role));

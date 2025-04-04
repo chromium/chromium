@@ -914,8 +914,29 @@ AIPageContentAgent::ContentBuilder::MaybeGenerateContentNode(
   }
 
   AddNodeGeometry(object, attributes);
+  AddLabel(object, attributes);
 
   return content_node;
+}
+
+void AIPageContentAgent::ContentBuilder::AddLabel(
+    const LayoutObject& object,
+    mojom::blink::AIPageContentAttributes& attributes) const {
+  if (!options_->enable_experimental_actionable_data) {
+    return;
+  }
+
+  auto* element = DynamicTo<Element>(object.GetNode());
+  if (!element) {
+    return;
+  }
+
+  // TODO(khushalsagar): Look at `AXNodeObject::TextAlternative` which has other
+  // sources for this.
+  const auto& value = element->FastGetAttribute(html_names::kAriaLabelAttr);
+  if (!value.GetString().ContainsOnlyWhitespaceOrEmpty()) {
+    attributes.label = value;
+  }
 }
 
 void AIPageContentAgent::ContentBuilder::AddAnnotatedRoles(
