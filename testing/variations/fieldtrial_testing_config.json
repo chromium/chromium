@@ -22820,16 +22820,18 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "DataSharingEnabled",
                     "params": {
                         "show_send_feedback": "true"
                     },
                     "enable_features": [
-                        "DataSharing",
-                        "DeferMediaLoadInBackgroundTab",
-                        "EnableTabTitleSanitization",
-                        "EnableUrlRestriction",
-                        "SyncSharedTabGroupDataInTransportMode"
+                        "DataSharing"
+                    ]
+                },
+                {
+                    "name": "JoinOnlyEnabled",
+                    "enable_features": [
+                        "DataSharingJoinOnly"
                     ]
                 }
             ]
