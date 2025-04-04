@@ -1218,7 +1218,7 @@ void InlineCursor::MoveToNextInlineLeafOnLine() {
   MoveTo(cursor);
   DCHECK(!cursor.Current() || cursor.Current().IsInlineLeaf())
       << "Must return an empty or inline leaf position, returned: "
-      << cursor.CurrentMutableLayoutObject();
+      << cursor.Current().GetLayoutObject();
 }
 
 void InlineCursor::MoveToNextLine() {

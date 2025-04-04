@@ -568,7 +568,7 @@ LogicalRect InkOverflow::ComputeDecorationOverflow(
       fragment_item->IsGeneratedText()) {
     return accumulated_bound;
   }
-  const LayoutObject* layout_object = cursor.CurrentMutableLayoutObject();
+  const LayoutObject* layout_object = cursor.Current().GetLayoutObject();
   DCHECK(layout_object);
   Text* text_node = DynamicTo<Text>(layout_object->GetNode());
   // ::first-letter passes the IsGeneratedText check but has no text node.
