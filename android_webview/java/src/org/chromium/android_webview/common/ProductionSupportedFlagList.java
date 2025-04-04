@@ -1076,6 +1076,9 @@ public final class ProductionSupportedFlagList {
                 NetworkServiceFeatures.INCREASE_COOKIE_ACCESS_CACHE_SIZE,
                 "When enabled, keep more cookies in the cache to be able to skip redundant access"
                         + " notifications."),
+        Flag.baseFeature(
+                MediaFeatures.MULTI_BUFFER_NEVER_DEFER,
+                "Controls behavior of network deferrals during media src=file playbacks."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
