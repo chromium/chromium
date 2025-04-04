@@ -896,8 +896,8 @@ void InterestGroupManagerImpl::OnLoadedNextInterestGroupAdAuctionData(
 
 void InterestGroupManagerImpl::OnInterestGroupAdAuctionDataLoadComplete(
     AdAuctionDataLoaderState state) {
-  if (blink::features::kFledgeEnableFilteringDebugReportStartingFrom.Get() !=
-      base::Milliseconds(0)) {
+  if (base::FeatureList::IsEnabled(
+          blink::features::kFledgeSampleDebugReports)) {
     caching_storage_.GetDebugReportLockoutAndAllCooldowns(
         base::BindOnce(&InterestGroupManagerImpl::OnAdAuctionDataLoadComplete,
                        weak_factory_.GetWeakPtr(), std::move(state)));
