@@ -62114,6 +62114,19 @@
         {}
        ]
       ],
+      "root-element-creates-stacking-context.html": [
+       "be7b027ee791d8d83d6fcecae60654eb22ff960c",
+       [
+        null,
+        [
+         [
+          "/css/CSS2/stacking-context/root-element-creates-stacking-context-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "zindex-affects-block-in-inline.html": [
        "5a5c9e3dcca6171910f85790e13dc754acda58e0",
        [
@@ -164708,6 +164721,19 @@
         ],
         {}
        ]
+      ],
+      "mask-under-border-radius.html": [
+       "a33e71ae121953a386bacb06f6f1b5dee4ee22c0",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square-only.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
       ]
      },
      "mask-svg-content": {
@@ -173388,6 +173414,19 @@
        [
         [
          "/css/css-overflow/reference/ref-if-there-is-no-red.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "nested-scroll-markers-under-content-visibility-auto.html": [
+      "0cb62fec70e8e4e83fffec54b1bd1a1a13de1c13",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/nested-scroll-markers-under-content-visibility-auto-ref.html",
          "=="
         ]
        ],
@@ -301192,7 +301231,7 @@
      "the-button-element": {
       "interest-target": {
        "interesttarget-keyboard-invalidation.tentative.html": [
-        "a7b9724d9c86039fec346cf6207afce7771696db",
+        "f6d572a2ef216481ba78e1c6365d71926f0da003",
         [
          null,
          [
@@ -327763,6 +327802,10 @@
       ],
       "opacity-transition-change-parent-stacking-context-ref.html": [
        "65138c9a66713e1ed8c2f649751deb1ceb22eac3",
+       []
+      ],
+      "root-element-creates-stacking-context-ref.html": [
+       "9bb42041498c4a5b2b86e6b282ec49e603a0880b",
        []
       ],
       "zindex-affects-block-in-inline-ref.html": [
@@ -354702,6 +354745,10 @@
        ]
       }
      },
+     "nested-scroll-markers-under-content-visibility-auto-ref.html": [
+      "afb2d5d65a29e428aefb6b16cc3e6ada95a0603e",
+      []
+     ],
      "overflow-alignment-001-ref.html": [
       "5a89c88467eccda859bbec0c09d421afd2a61613",
       []
@@ -357137,7 +357184,7 @@
       []
      ],
      "WEB_FEATURES.yml": [
-      "6a5a916d1824d51e9378a3358a49d6ce15be1f95",
+      "780cca251d664a8428fff3fc70c208d19ecb0420",
       []
      ],
      "active-selection-051-ref.html": [
@@ -357751,6 +357798,10 @@
       []
      ],
      "parsing": {
+      "WEB_FEATURES.yml": [
+       "2a5edba05a17bf646d5bc2f302dbe6594a8143d5",
+       []
+      ],
       "marker-supported-properties-expected.txt": [
        "b1cca16990138276c8de5f9247093c812506d071",
        []
@@ -382966,6 +383017,10 @@
       "1b63235b7cdffe9ebb43bfac3a01d5220e1519fb",
       []
      ],
+     "history-length-test-helper.js": [
+      "0dc2e37db9cad611186124c7d6bd91f581e6039b",
+      []
+     ],
      "ignore-child-fenced-frame-onload-event-inner.html": [
       "4fe496f29c84806d0fa41c4d23851cd4878214c6",
       []
@@ -404284,7 +404339,7 @@
        ],
        "resources": {
         "invoker-utils.js": [
-         "b89a14ee16c57815ce9fd9ea051612f00407fddc",
+         "67d2aa841c97fef3025fe8981fbfcf63d66146dc",
          []
         ]
        }
@@ -406407,6 +406462,10 @@
     ],
     "META.yml": [
      "bfca09eadfa361255d89f89bee31af839c3dda0d",
+     []
+    ],
+    "figure-name-no-figcaption.tentative-expected.txt": [
+     "cd4f901e186af223063542a25c25f4b1cf77835b",
      []
     ],
     "roles-contextual-expected.txt": [
@@ -429191,10 +429250,6 @@
      "the-audiocontext-interface": {
       "WEB_FEATURES.yml": [
        "51e62e2c98405e89671f23dd36dba550cb0789a3",
-       []
-      ],
-      "audiocontext-sinkid-constructor.https-expected.txt": [
-       "140e85b03e68827f622e2f7193fd057dc293f8bd",
        []
       ],
       "audiocontext-suspend-resume-expected.txt": [
@@ -561583,8 +561638,15 @@
       {}
      ]
     ],
+    "history-length-outer-page-navigation-not-reflected-in-fenced-nested-iframe.https.html": [
+     "5bb727a34a70d40ad7c3b4745aad43f9b15329de",
+     [
+      null,
+      {}
+     ]
+    ],
     "history-length-outer-page-navigation-not-reflected-in-fenced.https.html": [
-     "da643040316e93407d7b9edc333c6227ae6015ce",
+     "818ed5f795acc3f75d63f892810d1b23f198577c",
      [
       null,
       {}
@@ -651829,7 +651891,7 @@
         ]
        ],
        "interesttarget-keyboard-behavior.tentative.html": [
-        "93930140b3d4f3e93355362b0924240dc8c4b11d",
+        "3ae653400d1b590337e13122acc76fbd57b3f8df",
         [
          null,
          {
@@ -657495,6 +657557,15 @@
    "html-aam": {
     "dir-role.tentative.html": [
      "e5c374b90c2b86def16b1a29b4d4fd49fa6a0323",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "figure-name-no-figcaption.tentative.html": [
+     "f75074efb6bf5380b00fab8dc18da479ee8efca2",
      [
       null,
       {
@@ -747516,7 +747587,7 @@
        ]
       ],
       "audiocontext-sinkid-constructor.https.html": [
-       "d2dc54aee6a7f93e846244e1f3ab88c3774cf917",
+       "6e1bdb22d52f3da2f57c10103291575af2695faa",
        [
         null,
         {}
