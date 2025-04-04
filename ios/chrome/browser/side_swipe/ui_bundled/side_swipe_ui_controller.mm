@@ -345,15 +345,19 @@ const CGFloat kIpadTabSwipeDistance = 100;
          belowSubview:[_sideSwipeUIControllerDelegate topToolbarView]];
   }
 
+  if (!_pageSideSwipeView) {
+    [self completeSideSwipeAnimationWithNavigation:canNavigate
+                                         direction:direction];
+    return;
+  }
+
   __weak SideSwipeUIController* weakSelf = self;
   [_pageSideSwipeView
       animateHorizontalPanWithDirection:direction
                       completionHandler:^{
-                        if (canNavigate) {
-                          [weakSelf handleOverThresholdCompletion:direction];
-                        } else {
-                          [weakSelf handleUnderThresholdCompletion];
-                        }
+                        [weakSelf
+                            completeSideSwipeAnimationWithNavigation:canNavigate
+                                                           direction:direction];
                       }];
 }
 
@@ -380,6 +384,18 @@ const CGFloat kIpadTabSwipeDistance = 100;
 
   [_sideSwipeUIControllerDelegate
       updateAccessoryViewsForSideSwipeWithVisibility:YES];
+}
+
+// Handles the completion of a side swipe animation.
+- (void)completeSideSwipeAnimationWithNavigation:(BOOL)canNavigate
+                                       direction:
+                                           (UISwipeGestureRecognizerDirection)
+                                               direction {
+  if (canNavigate) {
+    [self handleOverThresholdCompletion:direction];
+  } else {
+    [self handleUnderThresholdCompletion];
+  }
 }
 
 - (void)handleCurtainCompletion {
@@ -667,7 +683,11 @@ const CGFloat kIpadTabSwipeDistance = 100;
 
 // Returns YES, if the the whole page should be swiped.
 - (BOOL)swipingFullScreenContent:(UISwipeGestureRecognizerDirection)direction {
-  return [self.navigationDelegate isSwipingToAnOverlay:direction];
+  /// Check if the swipe is intended to reveal an overlay and if a snapshot for
+  /// that overlay exists.
+  return
+      [self.navigationDelegate isSwipingToAnOverlay:direction] &&
+      [self.navigationDelegate swipeNavigationSnapshotForDirection:direction];
 }
 
 // Creates and returns a view, showing a `snapshotImage` on fullscreen.

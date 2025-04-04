@@ -971,6 +971,11 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
   id<PageSideSwipeCommands> pageSideSwipeHandler =
       HandlerForProtocol(dispatcher, PageSideSwipeCommands);
 
+  /// Record a snapshot of the current viewport before navigating to the URL.
+  if (_associatedTabHelper) {
+    _associatedTabHelper->RecordViewportSnaphot();
+  }
+
   UIImage* viewportSnapshot =
       _associatedTabHelper ? _associatedTabHelper->GetViewportSnapshot() : nil;
 
