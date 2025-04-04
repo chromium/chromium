@@ -146,6 +146,19 @@ signout_confirmation::mojom::ExtensionInfoPtr OnExtensionIconLoaded(
 
   return extension_info_mojo;
 }
+
+bool HasAccountExtensions(Profile* profile) {
+  if (!extensions::sync_util::IsSyncingExtensionsInTransportMode(profile)) {
+    return false;
+  }
+
+  extensions::AccountExtensionTracker* tracker =
+      extensions::AccountExtensionTracker::Get(profile);
+  std::vector<const extensions::Extension*> account_extensions =
+      tracker->GetSignedInAccountExtensions();
+  return !account_extensions.empty();
+}
+
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  //  namespace
@@ -204,6 +217,12 @@ void SignoutConfirmationHandler::FinishAndCloseDialog(
     ChromeSignoutConfirmationChoice choice,
     bool uninstall_account_extensions) {
   RecordChromeSignoutConfirmationPromptMetrics(variant_, choice);
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  if (browser_ && HasAccountExtensions(browser_->profile())) {
+    RecordAccountExtensionsSignoutChoice(choice, !uninstall_account_extensions);
+  }
+#endif
+
   std::move(completion_callback_).Run(choice, uninstall_account_extensions);
   if (browser_) {
     browser_->signin_view_controller()->CloseModalSignin();
