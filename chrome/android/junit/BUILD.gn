@@ -1102,6 +1102,7 @@ if (is_android) {
   robolectric_library(
       "chrome_junit_tests_org.chromium.chrome.browser.tabmodel") {
     sources = [
+      "//chrome/android/java/src/org/chromium/chrome/browser/tabmodel/TabCollectionTabModelImplUnitTest.java",
       "//chrome/android/java/src/org/chromium/chrome/browser/tabmodel/TabModelRemoverUnitTest.java",
       "//chrome/android/java/src/org/chromium/chrome/browser/tabmodel/TabRemoverImplUnitTest.java",
       "//chrome/android/java/src/org/chromium/chrome/browser/tabmodel/TabUngrouperImplUnitTest.java",
