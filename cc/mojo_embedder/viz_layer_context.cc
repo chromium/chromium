@@ -156,6 +156,8 @@ void ComputePropertyTreeNodeUpdate(
       old_node->subtree_size == new_node.subtree_size &&
       old_node->blend_mode == new_node.blend_mode &&
       old_node->target_id == new_node.target_id &&
+      old_node->view_transition_element_resource_id ==
+          new_node.view_transition_element_resource_id &&
       old_node->has_copy_request == new_node.has_copy_request &&
       old_node->filters == new_node.filters &&
       old_node->backdrop_filters == new_node.backdrop_filters &&
@@ -206,6 +208,8 @@ void ComputePropertyTreeNodeUpdate(
   wire->subtree_size = new_node.subtree_size;
   wire->blend_mode = base::checked_cast<uint32_t>(new_node.blend_mode);
   wire->target_id = new_node.target_id;
+  wire->view_transition_element_resource_id =
+      new_node.view_transition_element_resource_id;
   wire->copy_output_requests = std::move(copy_requests);
   wire->filters = new_node.filters;
   wire->backdrop_filters = new_node.backdrop_filters;
