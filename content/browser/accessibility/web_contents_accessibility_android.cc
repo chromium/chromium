@@ -1259,8 +1259,7 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
       node->CanScrollLeft(), node->CanScrollRight(), node->IsClickable(),
       node->IsTextField(), node->IsEnabled(), node->IsFocusable(),
       node->IsFocused(), node->IsCollapsed(), node->IsExpanded(),
-      node->HasNonEmptyValue(),
-      !!node->GetTextContentLengthUTF16() || !node->GetContainerTitle().empty(),
+      node->HasNonEmptyValue(), !node->GetAccessibleNameUTF16().empty(),
       node->IsSeekControl(), node->IsFormDescendant());
 
   Java_AccessibilityNodeInfoBuilder_setAccessibilityNodeInfoBaseAttributes(
@@ -1312,6 +1311,10 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
         base::android::ConvertUTF16ToJavaString(env,
                                                 node->GetStateDescription()),
         base::android::ConvertUTF16ToJavaString(env, node->GetContainerTitle()),
+        base::android::ConvertUTF16ToJavaString(env,
+                                                node->GetContentDescription()),
+        base::android::ConvertUTF16ToJavaString(
+            env, node->GetSupplementalDescription()),
         node->GetTextSize(), node->GetTextStyle(), node->GetTextColor(),
         node->GetTextBackgroundColor(),
         GetCanonicalJNIString(env, node->GetFontFamily()), node->IsSubscript(),
@@ -1330,8 +1333,11 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
         suggestion_starts_java, suggestion_ends_java, suggestion_text_java,
         base::android::ConvertUTF16ToJavaString(env,
                                                 node->GetStateDescription()),
+        base::android::ConvertUTF16ToJavaString(env, node->GetContainerTitle()),
         base::android::ConvertUTF16ToJavaString(env,
-                                                node->GetContainerTitle()));
+                                                node->GetContentDescription()),
+        base::android::ConvertUTF16ToJavaString(
+            env, node->GetSupplementalDescription()));
   }
 
   std::u16string element_id;
