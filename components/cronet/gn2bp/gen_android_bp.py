@@ -1201,6 +1201,14 @@ def create_proto_modules(blueprint, gn, target):
     """
   assert (target.type == 'proto_library')
 
+  if any(output.endswith('.descriptor') for output in target.outputs):
+    # One example of a proto descriptor generator target is:
+    #   //base/tracing/protos:chrome_track_event_gen
+    # These targets require special logic since they generate a descriptor file
+    # instead of C++ code. But it looks like Cronet works just fine without
+    # them, so let's just ignore them to avoid the unnecessary complexity.
+    return ()
+
   original_args = target.args
 
   def get_value_arg(arg_name):
@@ -1232,30 +1240,6 @@ def create_proto_modules(blueprint, gn, target):
   sources = {gn_utils.label_to_path(src) for src in target.sources}
   absolute_sources = sorted(
       [f"external/cronet/{IMPORT_CHANNEL}/{src}" for src in sources])
-
-  # Descriptor targets only generate a single target.
-  if any(output.endswith('.descriptor') for output in target.outputs):
-    out = '{}.bin'.format(target_module_name)
-
-    cmd += ['--descriptor_set_out=$(out)']
-    cmd += absolute_sources
-
-    descriptor_module = Module('cc_genrule', target_module_name, target.name)
-    descriptor_module.cmd = cmd
-    descriptor_module.out = [out]
-    descriptor_module.tools = tools
-    blueprint.add_module(descriptor_module)
-
-    # Recursively extract the .proto files of all the dependencies and
-    # add them to srcs.
-    descriptor_module.srcs.update(
-        gn_utils.label_to_path(src) for src in target.sources)
-    for dep in target.proto_deps:
-      current_target = gn.get_target(dep)
-      descriptor_module.srcs.update(
-          gn_utils.label_to_path(src) for src in current_target.sources)
-
-    return descriptor_module
 
   # We create two genrules for each proto target: one for the headers and
   # another for the sources. This is because the module that depends on the
