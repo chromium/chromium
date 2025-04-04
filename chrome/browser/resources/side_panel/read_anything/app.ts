@@ -1811,11 +1811,14 @@ export class AppElement extends AppElementBase {
       this.wordBoundaryState.speechUtteranceStartIndex = substringIndex;
       const utteranceTextForWordBoundary =
           utteranceText.substring(substringIndex);
-      // Don't use the word boundary if it's going to cause a TTS engine issue.
-      if (utteranceTextForWordBoundary.trim().length === 0) {
-        this.playText(utteranceText);
+      // If we paused right at the end of the sentence, no need to speak the
+      // ending punctuation.
+      if (isInvalidHighlightForWordHighlighting(
+              utteranceTextForWordBoundary.trim())) {
+        chrome.readingMode.movePositionToNextGranularity();
+        return this.highlightAndPlayMessage(isInterrupted);
       } else {
-        this.playText(utteranceText.substring(substringIndex));
+        this.playText(utteranceTextForWordBoundary);
       }
     } else {
       this.playText(utteranceText);
