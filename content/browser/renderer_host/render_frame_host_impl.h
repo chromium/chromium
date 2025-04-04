@@ -4252,7 +4252,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // This runs when fetches to cross-partition, same-origin Blob URL checks for
   // storage access
-  void DoesDocumentHaveStorageAccess(base::OnceCallback<void(bool)> callback);
+  bool DoesDocumentHaveStorageAccess();
 
   // For frames and main thread worklets we use a navigation-associated
   // interface and bind `receiver` to a `BlobURLStore` instance, which

@@ -12750,10 +12750,8 @@ void RenderFrameHostImpl::ReportBlockingCrossPartitionBlobURL(
       std::move(details)));
 }
 
-void RenderFrameHostImpl::DoesDocumentHaveStorageAccess(
-    base::OnceCallback<void(bool)> callback) {
-  std::move(callback).Run(
-      StorageAccessHandle::DoesDocumentHaveStorageAccess(this));
+bool RenderFrameHostImpl::DoesDocumentHaveStorageAccess() {
+  return StorageAccessHandle::DoesDocumentHaveStorageAccess(this);
 }
 
 void RenderFrameHostImpl::BindBlobUrlStoreAssociatedReceiver(
@@ -12767,8 +12765,14 @@ void RenderFrameHostImpl::BindBlobUrlStoreAssociatedReceiver(
       base::BindRepeating(
           &RenderFrameHostImpl::ReportBlockingCrossPartitionBlobURL,
           weak_ptr_factory_.GetWeakPtr()),
-      base::BindRepeating(&RenderFrameHostImpl::DoesDocumentHaveStorageAccess,
-                          weak_ptr_factory_.GetWeakPtr()),
+      base::BindRepeating(
+          [](base::WeakPtr<RenderFrameHostImpl> frame) -> bool {
+            if (!frame) {
+              return false;
+            }
+            return frame->DoesDocumentHaveStorageAccess();
+          },
+          weak_ptr_factory_.GetWeakPtr()),
       !(GetContentClient()->browser()->IsBlobUrlPartitioningEnabled(
           GetBrowserContext())));
 }

@@ -29,22 +29,20 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobURLStoreImpl
  public:
   // `partitioning_blob_url_closure` runs when the storage_key check fails
   // in `BlobURLStoreImpl::ResolveAsURLLoaderFactory`.
-  BlobURLStoreImpl(const blink::StorageKey& storage_key,
-                   const url::Origin& renderer_origin,
-                   int render_process_host_id,
-                   base::WeakPtr<BlobUrlRegistry> registry,
-                   BlobURLValidityCheckBehavior validity_check_options =
-                       BlobURLValidityCheckBehavior::DEFAULT,
-                   base::RepeatingCallback<void(
-                       const GURL&,
-                       std::optional<blink::mojom::PartitioningBlobURLInfo>)>
-                       partitioning_blob_url_closure = base::DoNothing(),
-                   base::RepeatingCallback<void(base::OnceCallback<void(bool)>)>
-                       storage_access_check_closure = base::BindRepeating(
-                           [](base::OnceCallback<void(bool)> callback) {
-                             std::move(callback).Run(false);
-                           }),
-                   bool partitioning_disabled_by_policy = false);
+  BlobURLStoreImpl(
+      const blink::StorageKey& storage_key,
+      const url::Origin& renderer_origin,
+      int render_process_host_id,
+      base::WeakPtr<BlobUrlRegistry> registry,
+      BlobURLValidityCheckBehavior validity_check_options =
+          BlobURLValidityCheckBehavior::DEFAULT,
+      base::RepeatingCallback<
+          void(const GURL&,
+               std::optional<blink::mojom::PartitioningBlobURLInfo>)>
+          partitioning_blob_url_closure = base::DoNothing(),
+      base::RepeatingCallback<bool()> storage_access_check_closure =
+          base::BindRepeating([]() -> bool { return false; }),
+      bool partitioning_disabled_by_policy = false);
 
   BlobURLStoreImpl(const BlobURLStoreImpl&) = delete;
   BlobURLStoreImpl& operator=(const BlobURLStoreImpl&) = delete;
@@ -108,8 +106,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobURLStoreImpl
       void(const GURL&, std::optional<blink::mojom::PartitioningBlobURLInfo>)>
       partitioning_blob_url_closure_;
 
-  base::RepeatingCallback<void(base::OnceCallback<void(bool)>)>
-      storage_access_check_callback_;
+  base::RepeatingCallback<bool()> storage_access_check_callback_;
 
   const bool partitioning_disabled_by_policy_;
 
