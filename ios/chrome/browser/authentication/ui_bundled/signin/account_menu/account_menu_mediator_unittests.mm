@@ -44,6 +44,8 @@
 
 namespace {
 
+using ::testing::IsNull;
+
 const FakeSystemIdentity* kPrimaryIdentity = [FakeSystemIdentity fakeIdentity1];
 const FakeSystemIdentity* kSecondaryIdentity =
     [FakeSystemIdentity fakeIdentity2];
@@ -283,7 +285,7 @@ TEST_P(AccountMenuMediatorTest, TestRemoveSecondaryIdentity) {
     base::RepeatingClosure closure = run_loop.QuitClosure();
     fake_system_identity_manager_->ForgetIdentity(
         kSecondaryIdentity, base::BindOnce(^(NSError* error) {
-          EXPECT_THAT(error, testing::IsNull());
+          EXPECT_THAT(error, IsNull());
           closure.Run();
         }));
     run_loop.Run();
@@ -410,7 +412,7 @@ TEST_P(AccountMenuMediatorTest, TestNoError) {
       return;
     }
   }
-  EXPECT_THAT([mediator_ accountErrorUIInfo], testing::IsNull());
+  EXPECT_THAT([mediator_ accountErrorUIInfo], IsNull());
 }
 
 // Tests the result of TestError when passphrase is required.
@@ -706,6 +708,49 @@ TEST_P(AccountMenuMediatorTest, TestViewControllerWantToBeClosed) {
   OCMExpect([consumer_mock_ setUserInteractionsEnabled:NO]);
   [mediator_
       viewControllerWantsToBeClosed:(AccountMenuViewController*)consumer_mock_];
+}
+
+// Tests that the consumer is not notified to update the error section multiple
+// times if the underlying error does not change.
+TEST_P(AccountMenuMediatorTest, TestErrorSectionUptadedOnceForSameError) {
+  if (!@available(iOS 17, *)) {
+    if (GetParam() == kWithSeparateProfiles) {
+      // Separate profiles are only available in iOS 17+.
+      return;
+    }
+  }
+
+  SignInAndSetPassphraseRequired();
+
+  // The error has not changed. The consumer should not be notified again.
+  OCMReject([consumer_mock_ updateErrorSection:[OCMArg any]]);
+  test_sync_service_->FireStateChanged();
+}
+
+// Tests that the consumer is notified to update the error section if the
+// underlying error is resolved.
+TEST_P(AccountMenuMediatorTest, TestErrorSectionUpdatedWhenErrorCleared) {
+  if (!@available(iOS 17, *)) {
+    if (GetParam() == kWithSeparateProfiles) {
+      // Separate profiles are only available in iOS 17+.
+      return;
+    }
+  }
+  test_sync_service_->SetSignedIn(signin::ConsentLevel::kSignin);
+  constexpr char kSyncPassphrase[] = "passphrase";
+  test_sync_service_->GetUserSettings()->SetPassphraseRequired(kSyncPassphrase);
+
+  OCMExpect([consumer_mock_ updateErrorSection:[OCMArg any]]);
+  test_sync_service_->FireStateChanged();
+  EXPECT_EQ([mediator_ accountErrorUIInfo].errorType,
+            syncer::SyncService::UserActionableError::kNeedsPassphrase);
+
+  // Resolve the error. The consumer should be notified.
+  OCMExpect([consumer_mock_ updateErrorSection:[OCMArg any]]);
+  test_sync_service_->GetUserSettings()->SetDecryptionPassphrase(
+      kSyncPassphrase);
+  test_sync_service_->FireStateChanged();
+  EXPECT_THAT([mediator_ accountErrorUIInfo], IsNull());
 }
 
 INSTANTIATE_TEST_SUITE_P(,
