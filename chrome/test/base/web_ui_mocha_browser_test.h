@@ -6,6 +6,7 @@
 #define CHROME_TEST_BASE_WEB_UI_MOCHA_BROWSER_TEST_H_
 
 #include <string>
+#include <tuple>
 
 #include "build/build_config.h"
 #include "chrome/test/base/platform_browser_test.h"
@@ -22,6 +23,20 @@ class Profile;
 namespace content {
 class WebContents;
 }  // namespace content
+
+// The result of a single JS test.
+struct SubTestResult {
+  SubTestResult();
+  SubTestResult(const SubTestResult& other);
+  SubTestResult(SubTestResult&& other);
+  SubTestResult& operator=(SubTestResult&& other);
+
+  ~SubTestResult();
+
+  std::string name;
+  testing::TimeInMillis duration;
+  std::optional<std::string> failure_reason;
+};
 
 // Interface for reporting SubTestResults. Can be mocked.
 class SubTestReporter {
@@ -47,8 +62,8 @@ namespace webui {
 void CanonicalizeTestName(std::string* test_name);
 
 // Receive messages from JS.
-bool ProcessMessagesFromJsTest(content::WebContents* web_contents,
-                               const SubTestReporter* sub_test_reporter);
+std::tuple<bool, std::vector<SubTestResult>> ProcessMessagesFromJsTest(
+    content::WebContents* web_contents);
 
 }  // namespace webui
 

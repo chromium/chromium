@@ -5,6 +5,7 @@
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 
 #include <string>
+#include <tuple>
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -20,19 +21,8 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest-spi.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-class MockSubTestReporter : public SubTestReporter {
- public:
-  MOCK_METHOD(void,
-              Report,
-              (std::string_view name,
-               testing::TimeInMillis elapsed_time,
-               std::optional<std::string_view> failure_message),
-              (const, override));
-};
 
 // For unit testing private methods of WebUIMochaBrowserTest.
 using WebUIMochaUnitTest = WebUIMochaBrowserTest;
@@ -44,15 +34,17 @@ IN_PROC_BROWSER_TEST_F(WebUIMochaUnitTest, CanonicalizeTestName) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIMochaUnitTest, ProcessMessagesFromJsTest) {
-  MockSubTestReporter mock_sub_test_reporter;
-  EXPECT_CALL(mock_sub_test_reporter, Report).Times(2);
-
   auto* web_contents = chrome_test_utils::GetActiveWebContents(this);
 
+  bool success;
+  std::vector<SubTestResult> results;
   base::RunLoop run_loop;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindLambdaForTesting([&]() {
-        webui::ProcessMessagesFromJsTest(web_contents, &mock_sub_test_reporter);
+        std::tuple<bool, std::vector<SubTestResult>> t =
+            webui::ProcessMessagesFromJsTest(web_contents);
+        success = std::get<0>(t);
+        results = std::move(std::get<1>(t));
         run_loop.Quit();
       }));
 
@@ -70,6 +62,10 @@ IN_PROC_BROWSER_TEST_F(WebUIMochaUnitTest, ProcessMessagesFromJsTest) {
   )"));
 
   run_loop.Run();
+  EXPECT_EQ(success, true);
+  EXPECT_EQ(results.size(), 2ul);
+  EXPECT_EQ(results[0].name, "test1");
+  EXPECT_EQ(results[1].name, "test2");
 }
 
 // Test that code coverage metrics are reported from WebUIMochaBrowserTest

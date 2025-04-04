@@ -37,6 +37,20 @@
 #include "chrome/test/base/ui_test_utils.h"
 #endif
 
+SubTestResult::SubTestResult() = default;
+SubTestResult::SubTestResult(const SubTestResult& other) = default;
+SubTestResult::SubTestResult(SubTestResult&& other)
+    : name(std::move(other.name)),
+      duration(other.duration),
+      failure_reason(std::move(other.failure_reason)) {}
+SubTestResult& SubTestResult::operator=(SubTestResult&& other) {
+  name = std::move(other.name);
+  duration = other.duration;
+  failure_reason = std::move(other.failure_reason);
+  return *this;
+}
+SubTestResult::~SubTestResult() = default;
+
 namespace webui {
 
 void CanonicalizeTestName(std::string* test_name) {
@@ -51,35 +65,36 @@ void CanonicalizeTestName(std::string* test_name) {
       '_');
 }
 
-bool ProcessMessagesFromJsTest(content::WebContents* web_contents,
-                               const SubTestReporter* sub_test_reporter) {
+std::tuple<bool, std::vector<SubTestResult>> ProcessMessagesFromJsTest(
+    content::WebContents* web_contents) {
   content::DOMMessageQueue message_queue(web_contents);
+  std::vector<SubTestResult> results;
   std::string message;
   while (message_queue.WaitForMessage(&message)) {
     if (message == "\"SUCCESS\"") {
-      return true;
+      return std::make_tuple(true, results);
     } else if (message == "\"FAILURE\"") {
-      return false;
+      return std::make_tuple(false, results);
     }
-    // Deserialize JSON from JS and record a SubTestResult.
-    if (sub_test_reporter) {
-      std::optional<base::Value> msg = base::JSONReader::Read(message);
 
-      std::string* test_name = msg->GetDict().FindString("fullTitle");
-      std::string canonicalized_test_name = *test_name;
-      CanonicalizeTestName(&canonicalized_test_name);
+    std::optional<base::Value> msg = base::JSONReader::Read(message);
 
-      std::optional<int> duration = msg->GetDict().FindInt("duration");
+    SubTestResult sub_test_result;
+    std::string* test_name = msg->GetDict().FindString("fullTitle");
+    CHECK(test_name);
+    sub_test_result.name = *test_name;
+    CanonicalizeTestName(&sub_test_result.name);
 
-      std::string* failure_reason = msg->GetDict().FindString("failureReason");
-      std::optional<std::string> optional_failure_reason;
-      if (failure_reason) {
-        optional_failure_reason.emplace(*failure_reason);
-      }
+    std::optional<int> duration = msg->GetDict().FindInt("duration");
+    CHECK(duration);
+    sub_test_result.duration = *duration;
 
-      sub_test_reporter->Report(canonicalized_test_name, *duration,
-                                optional_failure_reason);
+    std::string* failure_reason = msg->GetDict().FindString("failureReason");
+    if (failure_reason) {
+      sub_test_result.failure_reason.emplace(*failure_reason);
     }
+
+    results.push_back(std::move(sub_test_result));
   }
   NOTREACHED();
 }
@@ -223,8 +238,16 @@ testing::AssertionResult WebUIMochaBrowserTest::RunTestOnWebContents(
   }
 
   // Receive messages from JS.
-  bool success =
-      webui::ProcessMessagesFromJsTest(web_contents, sub_test_reporter_.get());
+  auto [success, sub_test_results] =
+      webui::ProcessMessagesFromJsTest(web_contents);
+
+  // Report individual JS test results if reporting is enabled.
+  if (sub_test_reporter_) {
+    for (const auto& sub_test_result : sub_test_results) {
+      sub_test_reporter_->Report(sub_test_result.name, sub_test_result.duration,
+                                 sub_test_result.failure_reason);
+    }
+  }
 
 #if !BUILDFLAG(IS_ANDROID)
   // Report code coverage metrics.
