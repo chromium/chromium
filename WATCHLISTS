@@ -2391,16 +2391,20 @@
                   '|third_party/blink/renderer/modules/webshare/',
     },
     'webauthn': {
-        'filepath': 'chrome/android/java/src/org/chromium/chrome/browser/webauth/'\
-      '|chrome/android/javatests/src/org/chromium/chrome/browser/webauth/'\
-                    '|chrome/browser/ui/webauthn/'\
-                    '|chrome/browser/ui/views/webauthn/'\
-                    '|chrome/browser/webauthn/'\
-                    '|content/browser/webauth/'\
-                    '|device/fido/'\
-                    '|third_party/blink/public/mojom/webauthn/'\
-                    '|third_party/blink/web_tests/external/wpt/webauthn/'\
-                    '|third_party/microsoft_webauthn/',
+      'filepath': 'chrome/android/javatests/src/org/chromium/chrome/browser/webauth/'\
+                  '|chrome/browser/ui/webauthn/'\
+                  '|chrome/browser/ui/views/webauthn/'\
+                  '|chrome/browser/webauthn/'\
+                  '|components/sync/protocol/webauthn_credential_specifics.proto'\
+                  '|components/webauthn/'\
+                  '|content/browser/webauth/'\
+                  '|device/fido/'\
+                  '|third_party/blink/public/mojom/webauthn/'\
+                  '|third_party/blink/renderer/modules/credentialmanagement/authentication'\
+                  '|third_party/blink/renderer/modules/credentialmanagement/authenticator'\
+                  '|third_party/blink/renderer/modules/credentialmanagement/public_key'\
+                  '|third_party/blink/web_tests/external/wpt/webauthn/'\
+                  '|third_party/microsoft_webauthn/',
     },
     'webcodecs': {
         'filepath': 'third_party/blink/renderer/modules/webcodecs/',
