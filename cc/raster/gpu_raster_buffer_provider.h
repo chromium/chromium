@@ -135,9 +135,6 @@ class CC_EXPORT GpuRasterBufferProvider : public RasterBufferProvider {
     base::TimeTicks creation_time_;
   };
 
-  bool ShouldUnpremultiplyAndDitherResource(
-      viz::SharedImageFormat format) const;
-
   const raw_ptr<viz::RasterContextProvider> compositor_context_provider_;
   const raw_ptr<viz::RasterContextProvider> worker_context_provider_;
   const viz::SharedImageFormat tile_format_;
