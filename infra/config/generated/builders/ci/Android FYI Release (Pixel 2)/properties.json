@@ -16,8 +16,11 @@
                 "config": "base_config"
               },
               "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
                 "build_config": "Release",
-                "config": "main_builder_rel_mb",
+                "config": "main_builder",
                 "target_arch": "arm",
                 "target_bits": 32,
                 "target_platform": "android"
@@ -48,8 +51,11 @@
                 "config": "base_config"
               },
               "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
                 "build_config": "Release",
-                "config": "main_builder_rel_mb",
+                "config": "main_builder",
                 "target_arch": "arm",
                 "target_bits": 32,
                 "target_platform": "android"
