@@ -2658,8 +2658,13 @@ TEST_F(AutocompleteControllerTest, UpdateAssociatedKeywords) {
 
   auto test = [&](const std::u16string input_text,
                   const std::u16string input_keyword,
-                  std::vector<MatchData> match_datas) {
+                  std::vector<MatchData> match_datas,
+                  bool is_zero_suggest = false) {
     controller_.input_ = FakeAutocompleteController::CreateInput(input_text);
+    if (is_zero_suggest) {
+      controller_.input_.set_focus_type(
+          metrics::OmniboxFocusType::INTERACTION_FOCUS);
+    }
     AutocompleteResult result;
     for (const auto& match_data : match_datas) {
       AutocompleteMatch match;
@@ -2742,4 +2747,11 @@ TEST_F(AutocompleteControllerTest, UpdateAssociatedKeywords) {
       test(u"input", u"",
            {{u"keywo"}, {u"keyword_0_underscore"}, {u"keyword_0 space"}}),
       testing::ElementsAreArray({u"", u"", u"keyword_0"}));
+
+  EXPECT_THAT(test(u"", u"",
+                   {{u"keywo", AutocompleteMatchType::Type::NAVSUGGEST},
+                    {u"keyword_0_underscore"},
+                    {u"keyword_0 space"}},
+                   /*is_zero_suggest=*/true),
+              testing::ElementsAreArray({u"", u"", u""}));
 }

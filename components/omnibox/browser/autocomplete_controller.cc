@@ -1667,20 +1667,28 @@ void AutocompleteController::UpdateAssociatedKeywords(
   TemplateURL* input_text_keyword_turl =
       template_url_service_->GetTemplateURLForKeyword(input_text_keyword);
 
-  // Cache added keywords to avoid showing duplicate keywords.
-  std::set<std::u16string> keywords;
+  // Cache added keywords to avoid showing the tab-to-search hint for the same
+  // keyword on different matches.
+  std::set<std::u16string> added_keywords;
 
   auto add_keyword = [&](AutocompleteMatch& match,
                          const std::u16string& keyword_text,
                          const std::u16string& keyword) {
     // There shouldn't be duplicate keywords.
-    CHECK(!keywords.count(keyword));
-    keywords.insert(keyword);
+    CHECK(!added_keywords.count(keyword));
+    added_keywords.insert(keyword);
     match.associated_keyword = std::make_unique<AutocompleteMatch>(
         keyword_provider_->CreateVerbatimMatch(keyword_text, keyword, input_));
   };
 
   for (AutocompleteMatch& match : *result) {
+    // In order to keep zero suggest UI minimal, zero suggest should never have
+    // attached keywords. The matches eligible for an associated keywords
+    // should be treated as URL suggestions.
+    if (input_.IsZeroSuggest()) {
+      return;
+    }
+
     // Clear any keyword the match may have from previous passes.
     match.associated_keyword.reset();
 
@@ -1688,17 +1696,19 @@ void AutocompleteController::UpdateAssociatedKeywords(
     // then continued typing), don't attach a keyword chip to it.
     std::u16string explicit_keyword(
         match.GetSubstitutingExplicitlyInvokedKeyword(template_url_service_));
-    if (!explicit_keyword.empty() && !keywords.count(explicit_keyword)) {
+    if (!explicit_keyword.empty()) {
       // Also prevent other matches showing a keyword chip for the keyword the
       // user is already in.
-      keywords.insert(explicit_keyword);
+      added_keywords.insert(explicit_keyword);
       continue;
     }
 
-    // When the input text matches a keyword, tab-to-search on the default
-    // match should select that keyword, even if the match inline-autocompletes
-    // to a different keyword.
-    if (!input_text_keyword.empty() && !keywords.count(input_text_keyword) &&
+    // When the input text matches a keyword, even if the match inline-
+    // autocompletes to a different keyword, offer tab-to-search keyword hint
+    // on the match, except for starter packed keywords or those featured by
+    // policy.
+    if (!input_text_keyword.empty() &&
+        !added_keywords.count(input_text_keyword) &&
         input_text_keyword_turl->starter_pack_id() == 0 &&
         !input_text_keyword_turl->featured_by_policy()) {
       add_keyword(match, input_text_keyword, input_text_keyword);
@@ -1719,8 +1729,9 @@ void AutocompleteController::UpdateAssociatedKeywords(
       continue;
     }
 
-    // Add keyword hints for typical matches.
-    if (!match_text_keyword.empty() && !keywords.count(match_text_keyword) &&
+    // Add keyword hints for non-FeaturedKeyword matches.
+    if (!match_text_keyword.empty() &&
+        !added_keywords.count(match_text_keyword) &&
         match_text_keyword_turl->starter_pack_id() == 0 &&
         !match_text_keyword_turl->featured_by_policy()) {
       add_keyword(match, match.fill_into_edit, match_text_keyword);
