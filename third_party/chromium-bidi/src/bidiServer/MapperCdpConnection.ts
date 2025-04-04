@@ -143,33 +143,21 @@ export class MapperServerCdpConnection {
 
     const browserClient = await cdpConnection.createBrowserSession();
 
-    // Run mapper in the first open tab.
-    const targets = (await cdpConnection.sendCommand(
-      'Target.getTargets',
-      {},
-    )) as Protocol.Target.GetTargetsResponse;
-    const mapperTabTargetId = targets.targetInfos.filter(
-      (target) => target.type === 'page',
-    )[0]!.targetId;
+    const {targetId: mapperTargetId} = await browserClient.sendCommand(
+      'Target.createTarget',
+      {
+        url: 'about:blank#MAPPER_TARGET',
+        hidden: !verbose,
+        background: true,
+      } as any,
+    );
 
     const {sessionId: mapperSessionId} = await browserClient.sendCommand(
       'Target.attachToTarget',
-      {targetId: mapperTabTargetId, flatten: true},
+      {targetId: mapperTargetId, flatten: true},
     );
 
     const mapperCdpClient = cdpConnection.getCdpClient(mapperSessionId);
-
-    // Click on the body to interact with the page in order to "beforeunload" being
-    // triggered when the tab is closed.
-    await mapperCdpClient.sendCommand('Runtime.evaluate', {
-      expression: 'document.body.click()',
-      userGesture: true,
-    });
-
-    // Create and activate new tab with a blank page.
-    await browserClient.sendCommand('Target.createTarget', {
-      url: 'about:blank',
-    });
 
     const bidiSession = new SimpleTransport(
       async (message) => await this.#sendMessage(mapperCdpClient, message),
@@ -191,7 +179,7 @@ export class MapperServerCdpConnection {
 
     await browserClient.sendCommand('Target.exposeDevToolsProtocol', {
       bindingName: 'cdp',
-      targetId: mapperTabTargetId,
+      targetId: mapperTargetId,
       inheritPermissions: true,
     });
 
@@ -213,7 +201,7 @@ export class MapperServerCdpConnection {
 
     // TODO: handle errors in all these evaluate calls!
     await mapperCdpClient.sendCommand('Runtime.evaluate', {
-      expression: `window.runMapperInstance('${mapperTabTargetId}')`,
+      expression: `window.runMapperInstance('${mapperTargetId}')`,
       awaitPromise: true,
     });
 
