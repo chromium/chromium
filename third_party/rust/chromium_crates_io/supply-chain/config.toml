@@ -323,7 +323,7 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."num-traits:0.2.19"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."once_cell:1.21.1"]
+[policy."once_cell:1.21.3"]
 criteria = []
 
 [policy."png:0.18.0-rc"]
