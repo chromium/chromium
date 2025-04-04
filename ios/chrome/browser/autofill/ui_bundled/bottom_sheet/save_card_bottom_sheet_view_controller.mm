@@ -57,7 +57,7 @@ CGFloat const kGooglePayLogoHeight = 32;
   // iOS-specific symbol is used to get an optimized image with better
   // resolution.
   return MakeSymbolMulticolor(
-      CustomSymbolWithPointSize(kGooglePaySymbol, kGooglePayLogoHeight));
+      CustomSymbolWithPointSize(kGooglePaySymbol, kGooglePayIconHeight));
 #endif
   return _aboveTitleImage;
 }
