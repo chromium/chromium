@@ -4036,23 +4036,6 @@ const FeatureEntry::FeatureVariation kDiscountsVariationsOnAndroid[] = {
      std::size(kDiscountIconOnAndroidUseAlternateColor), nullptr}};
 #endif  // BUILDFLAG(IS_ANDROID)
 
-const FeatureEntry::FeatureParam
-    kSecurePaymentConfirmationNetworkAndIssuerIcons_Inline[] = {
-        {"spc_network_and_issuer_icons_option", "inline"}};
-const FeatureEntry::FeatureParam
-    kSecurePaymentConfirmationNetworkAndIssuerIcons_Rows[] = {
-        {"spc_network_and_issuer_icons_option", "rows"}};
-
-const FeatureEntry::FeatureVariation
-    kSecurePaymentConfirmationNetworkAndIssuerIconsOptions[] = {
-        {"inline with title",
-         kSecurePaymentConfirmationNetworkAndIssuerIcons_Inline,
-         std::size(kSecurePaymentConfirmationNetworkAndIssuerIcons_Inline),
-         nullptr},
-        {"as table rows", kSecurePaymentConfirmationNetworkAndIssuerIcons_Rows,
-         std::size(kSecurePaymentConfirmationNetworkAndIssuerIcons_Rows),
-         nullptr}};
-
 const FeatureEntry::FeatureParam kSkiaGraphite_ValidationEnabled[] = {
     {"dawn_skip_validation", "false"}};
 const FeatureEntry::FeatureParam kSkiaGraphite_ValidationDisabled[] = {
@@ -6034,10 +6017,8 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::
          kSecurePaymentConfirmationNetworkAndIssuerIconsDescription,
      kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         blink::features::kSecurePaymentConfirmationNetworkAndIssuerIcons,
-         kSecurePaymentConfirmationNetworkAndIssuerIconsOptions,
-         "SecurePaymentConfirmationNetworkAndIssuerIcons")},
+     FEATURE_VALUE_TYPE(
+         blink::features::kSecurePaymentConfirmationNetworkAndIssuerIcons)},
     {"enable-secure-payment-confirmation-browser-bound-key",
      flag_descriptions::kSecurePaymentConfirmationBrowserBoundKeysName,
      flag_descriptions::kSecurePaymentConfirmationBrowserBoundKeysDescription,
