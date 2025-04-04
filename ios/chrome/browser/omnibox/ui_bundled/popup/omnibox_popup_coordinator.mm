@@ -34,7 +34,6 @@
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_popup_presenter.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_popup_view_controller.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_popup_view_ios.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/pedal_section_extractor.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"

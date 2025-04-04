@@ -36,7 +36,6 @@
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_view_ios.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_popup_coordinator.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_popup_view_ios.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/pedal_section_extractor.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/text_field_view_containing.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/zero_suggest_prefetch_helper.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"

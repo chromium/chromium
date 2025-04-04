@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/pedal_section_extractor.h"
+#import "ios/chrome/browser/omnibox/model/pedal_section_extractor.h"
 
 #import "base/test/ios/wait_util.h"
 #import "components/omnibox/browser/actions/omnibox_pedal_concepts.h"

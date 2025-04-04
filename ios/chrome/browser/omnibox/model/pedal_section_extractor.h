@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_POPUP_PEDAL_SECTION_EXTRACTOR_H_
-#define IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_POPUP_PEDAL_SECTION_EXTRACTOR_H_
+#ifndef IOS_CHROME_BROWSER_OMNIBOX_MODEL_PEDAL_SECTION_EXTRACTOR_H_
+#define IOS_CHROME_BROWSER_OMNIBOX_MODEL_PEDAL_SECTION_EXTRACTOR_H_
 
 #import "ios/chrome/browser/omnibox/model/autocomplete_suggestion.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_result_consumer.h"
@@ -35,4 +35,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_POPUP_PEDAL_SECTION_EXTRACTOR_H_
+#endif  // IOS_CHROME_BROWSER_OMNIBOX_MODEL_PEDAL_SECTION_EXTRACTOR_H_

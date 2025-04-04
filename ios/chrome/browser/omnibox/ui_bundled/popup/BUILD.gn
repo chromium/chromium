@@ -37,8 +37,6 @@ source_set("popup") {
     "omnibox_popup_provider.h",
     "omnibox_popup_view_ios.h",
     "omnibox_popup_view_ios.mm",
-    "pedal_section_extractor.h",
-    "pedal_section_extractor.mm",
     "pedal_suggestion_wrapper.h",
     "pedal_suggestion_wrapper.mm",
   ]
@@ -220,7 +218,6 @@ source_set("unit_tests") {
   sources = [
     "omnibox_popup_mediator_unittest.mm",
     "omnibox_popup_view_controller_unittest.mm",
-    "pedal_section_extractor_unittest.mm",
   ]
   deps = [
     ":popup",
