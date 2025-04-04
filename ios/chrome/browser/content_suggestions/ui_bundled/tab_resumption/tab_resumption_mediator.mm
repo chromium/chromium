@@ -32,6 +32,7 @@
 #import "components/url_formatter/elide_url.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_metrics_recorder.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/impression_limits/impression_limit_service.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_data.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/tab_resumption_commands.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/tab_resumption_constants.h"
@@ -91,6 +92,7 @@ bool ShouldShowItemImmediately() {
 
 // Salient images should come from gstatic.com.
 const char kGStatic[] = ".gstatic.com";
+const int kMaxImpressionLimit = 3;
 
 NSString* GetFormattedPrice(payments::CurrencyFormatter* formatter,
                             long price_micros) {
@@ -201,6 +203,10 @@ void ConfigureTabResumptionItemForShopCard(
   }
 }
 
+bool IsShopCardImpressionLimitsEnabled() {
+  return base::FeatureList::IsEnabled(commerce::kShopCardImpressionLimits);
+}
+
 }  // namespace
 
 // Call through to OptimizationGuide's OnDemand API which is a restricted
@@ -280,14 +286,16 @@ class TabResumptionMediatorProxy {
   BOOL _currentlyTopModule;
   PrefBackedBoolean* _tabResumptionDisabled;
   raw_ptr<OptimizationGuideService> _optimizationGuideService;
+  raw_ptr<ImpressionLimitService> _impressionLimitService;
 }
 
-- (instancetype)initWithLocalState:(PrefService*)localState
-                       prefService:(PrefService*)prefService
-                   identityManager:(signin::IdentityManager*)identityManager
-                           browser:(Browser*)browser
-          optimizationGuideService:
-              (OptimizationGuideService*)optimizationGuideService {
+- (instancetype)
+          initWithLocalState:(PrefService*)localState
+                 prefService:(PrefService*)prefService
+             identityManager:(signin::IdentityManager*)identityManager
+                     browser:(Browser*)browser
+    optimizationGuideService:(OptimizationGuideService*)optimizationGuideService
+      impressionLimitService:(ImpressionLimitService*)impressionLimitService {
   self = [super init];
   if (self) {
     CHECK(IsTabResumptionEnabled());
@@ -330,6 +338,7 @@ class TabResumptionMediatorProxy {
       _optimizationGuideService->RegisterOptimizationTypes(
           {optimization_guide::proto::PRICE_TRACKING});
     }
+    _impressionLimitService = impressionLimitService;
   }
   return self;
 }
@@ -438,6 +447,15 @@ class TabResumptionMediatorProxy {
       recordTabResumptionImpressionWithCustomization:
           static_cast<TabResumptionItem*>(magicStackModule).shopCardData
                                              atIndex:index];
+
+  TabResumptionItem* item = static_cast<TabResumptionItem*>(magicStackModule);
+  if (IsShopCardImpressionLimitsEnabled() && index == 0 &&
+      _impressionLimitService && item.shopCardData &&
+      item.shopCardData.shopCardItemType == ShopCardItemType::kPriceDropOnTab) {
+    _impressionLimitService->LogImpressionForURL(
+        self.itemConfig.tabURL,
+        tab_resumption_prefs::kTabResumptionWithPriceDropUrlImpressions);
+  }
 }
 
 #pragma mark - Boolean Observer
@@ -559,6 +577,18 @@ class TabResumptionMediatorProxy {
                                          url:(const GURL&)resumptionURL {
   if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm3 ||
       commerce::kShopCardVariation.Get() == commerce::kShopCardArm4) {
+    if (IsShopCardImpressionLimitsEnabled() && _impressionLimitService &&
+        commerce::kShopCardVariation.Get() == commerce::kShopCardArm3) {
+      // TODO(crbug.com/408252386) Add unit tests for impression count
+      // integration.
+      std::optional<int> count = _impressionLimitService->GetImpressionCount(
+          resumptionURL,
+          tab_resumption_prefs::kTabResumptionWithPriceDropUrlImpressions);
+      if (count.has_value() && count.value() > kMaxImpressionLimit) {
+        return;
+      }
+    }
+
     __weak __typeof(self) weakSelf = self;
     TabResumptionMediatorProxy::CanApplyOptimizationOnDemand(
         _optimizationGuideService, resumptionURL,

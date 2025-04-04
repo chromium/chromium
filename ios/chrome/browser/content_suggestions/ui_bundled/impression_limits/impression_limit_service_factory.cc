@@ -41,6 +41,6 @@ ImpressionLimitServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* state) const {
   ProfileIOS* profile = ProfileIOS::FromBrowserState(state);
   return std::make_unique<ImpressionLimitService>(
-      ios::HistoryServiceFactory::GetForProfile(
-          profile, ServiceAccessType::EXPLICIT_ACCESS));
+      profile->GetPrefs(), ios::HistoryServiceFactory::GetForProfile(
+                               profile, ServiceAccessType::EXPLICIT_ACCESS));
 }

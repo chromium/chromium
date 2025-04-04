@@ -9410,6 +9410,7 @@ from previous Chrome versions.
   <int value="-1878958319" label="ScrollableTabStripButtons:disabled"/>
   <int value="-1878244826" label="LensOverlayTranslateButton:disabled"/>
   <int value="-1877733239" label="LensOverlayImageContextMenuActions:disabled"/>
+  <int value="-1877458140" label="ShopCardImpressionLimits:enabled"/>
   <int value="-1877422414" label="FlexFirmwareUpdate:disabled"/>
   <int value="-1877005823" label="ZeroSuggestInMemoryCaching:enabled"/>
   <int value="-1876955850" label="EnablePciguardUi:enabled"/>
@@ -11749,6 +11750,7 @@ from previous Chrome versions.
   <int value="-980475527" label="DevToolsTabTarget:disabled"/>
   <int value="-980317085" label="EnablePasswordsAccountStorage:disabled"/>
   <int value="-980260493" label="NTPSnippets:disabled"/>
+  <int value="-980260396" label="ShopCardImpressionLimits:disabled"/>
   <int value="-980054107" label="DestroyProfileOnBrowserClose:enabled"/>
   <int value="-979438173" label="EcheSWAMeasureLatency:disabled"/>
   <int value="-979313250" label="enable-google-branded-context-menu"/>

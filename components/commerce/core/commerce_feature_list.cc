@@ -189,6 +189,11 @@ BASE_FEATURE(kPriceTrackingPromo,
 // reviews, etc.
 BASE_FEATURE(kShopCard, "ShopCard", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Impression limits on ShopCards
+BASE_FEATURE(kShopCardImpressionLimits,
+             "ShopCardImpressionLimits",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kProductSpecifications,
              "ProductSpecifications",
              base::FEATURE_DISABLED_BY_DEFAULT);
