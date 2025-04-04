@@ -6844,6 +6844,10 @@ chromium-metrics-reviews@google.com.
                  power."/>
     <variant name=".Audio.All"
         summary="Watch time for all media with only an audio track."/>
+    <variant name=".Audio.AutoPipMediaPlayback"
+        summary="Watch time for all media with only an audio track on a
+                 window opened due to auto picture in picture for media
+                 playback."/>
     <variant name=".Audio.Background.AC"
         summary="Background watch time for all media with only an audio track
                  on AC power."/>
@@ -6897,6 +6901,10 @@ chromium-metrics-reviews@google.com.
                  on AC power."/>
     <variant name=".AudioVideo.All"
         summary="Watch time for all media with both an audio and video track."/>
+    <variant name=".AudioVideo.AutoPipMediaPlayback"
+        summary="Watch time for all media with both an audio and video track
+                 on a window opened due to auto picture in picture for media
+                 playback."/>
     <variant name=".AudioVideo.Background.AC"
         summary="Background watch time for all media with both an audio and
                  video track on AC power."/>
