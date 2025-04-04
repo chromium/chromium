@@ -4798,7 +4798,11 @@ GraphBuilderCoreml::AddOperationForQuantizeLinear(
   CHECK(context_properties_.data_type_limits.quantize_linear_zero_point
             .data_types.Has(zero_point_operand_data_type));
 
-  // TODO(crbug.com/338529226): These params must all be constant tensors.
+  if (zero_point_operand_data_type == OperandDataType::kInt32 ||
+      zero_point_operand_data_type == OperandDataType::kUint32) {
+    return AddOperationForQuantizeLinearEmulate(operation, block);
+  }
+
   if (!constant_operands_->contains(operation.zero_point_operand_id) ||
       !constant_operands_->contains(operation.scale_operand_id)) {
     return AddOperationForQuantizeLinearEmulate(operation, block);
