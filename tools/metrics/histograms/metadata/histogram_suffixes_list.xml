@@ -536,30 +536,6 @@ chromium-metrics-reviews@google.com.
       name="PasswordManager.LeakDetection.DialogDismissalReason"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="MixedContentDownloadDownloadSecurity" separator=".">
-  <suffix name="DownloadInsecure" label=""/>
-  <suffix name="DownloadSecure" label=""/>
-  <affected-histogram
-      name="Download.InsecureBlocking.Extensions.InitiatorInferredInsecure"/>
-  <affected-histogram
-      name="Download.InsecureBlocking.Extensions.InitiatorInferredSecure"/>
-  <affected-histogram
-      name="Download.InsecureBlocking.Extensions.InitiatorInsecure"/>
-  <affected-histogram
-      name="Download.InsecureBlocking.Extensions.InitiatorSecure"/>
-  <affected-histogram
-      name="Download.InsecureBlocking.Extensions.InitiatorUnknown"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="MixedContentDownloadInitiatorSecurity" separator=".">
-  <suffix base="true" name="InitiatorInferredInsecure" label=""/>
-  <suffix base="true" name="InitiatorInferredSecure" label=""/>
-  <suffix base="true" name="InitiatorInsecure" label=""/>
-  <suffix base="true" name="InitiatorSecure" label=""/>
-  <suffix base="true" name="InitiatorUnknown" label=""/>
-  <affected-histogram name="Download.InsecureBlocking.Extensions"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="NavigationFrameType" separator=".">
   <suffix name="MainFrame" label="Navigation in the main frame."/>
   <suffix name="Subframe" label="Navigation in a subframe."/>
