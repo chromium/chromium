@@ -65,8 +65,6 @@ source_set("tab_group_service") {
     "//components/keyed_service/core",
     "//ios/chrome/browser/collaboration/model:features",
     "//ios/chrome/browser/ntp/model",
-    "//ios/chrome/browser/share_kit/model",
-    "//ios/chrome/browser/share_kit/model:factory",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/shared/model/url:constants",

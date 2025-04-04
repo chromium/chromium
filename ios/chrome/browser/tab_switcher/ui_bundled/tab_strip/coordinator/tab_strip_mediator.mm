@@ -25,7 +25,6 @@
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
-#import "ios/chrome/browser/share_kit/model/share_kit_service.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -274,8 +273,6 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
 
   // Used to get info about saved groups and to mutate them.
   raw_ptr<tab_groups::TabGroupSyncService> _tabGroupSyncService;
-  // The share kit service.
-  raw_ptr<ShareKitService> _shareKitService;
   // A service to get activity messages for a shared tab group.
   raw_ptr<collaboration::messaging::MessagingBackendService> _messagingService;
   // The bridge between the C++ MessagingBackendService observer and this
@@ -300,8 +297,7 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
         messagingService:
             (collaboration::messaging::MessagingBackendService*)messagingService
     collaborationService:
-        (collaboration::CollaborationService*)collaborationService
-         shareKitService:(ShareKitService*)shareKitService {
+        (collaboration::CollaborationService*)collaborationService {
   if ((self = [super init])) {
     CHECK(browserList);
     _browserList = browserList;
@@ -309,7 +305,6 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
     _tabGroupSyncService = tabGroupSyncService;
     _consumer = consumer;
     _messagingService = messagingService;
-    _shareKitService = shareKitService;
     if (_messagingService) {
       _messagingBackendServiceBridge =
           std::make_unique<MessagingBackendServiceBridge>(self);
@@ -873,8 +868,8 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   BOOL displayAlert = NO;
   const TabGroup* group = self.webStateList->GetGroupOfWebStateAt(index);
   if (group) {
-    BOOL isSharedGroup = tab_groups::utils::IsTabGroupShared(
-        group, _tabGroupSyncService, _shareKitService);
+    BOOL isSharedGroup =
+        tab_groups::utils::IsTabGroupShared(group, _tabGroupSyncService);
     displayAlert = group->range().count() == 1 && isSharedGroup;
   }
 

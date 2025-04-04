@@ -432,8 +432,8 @@ constexpr CGFloat kFacePileAvatarSize = 20;
 // shared tab group visible.
 - (void)presentForegroundIPHIfNeeded {
   const TabGroup* tabGroup = [self currentTabGroup];
-  if (!tabGroup || !tab_groups::utils::IsTabGroupShared(
-                       tabGroup, _tabGroupSyncService, _shareKitService)) {
+  if (!tabGroup ||
+      !tab_groups::utils::IsTabGroupShared(tabGroup, _tabGroupSyncService)) {
     return;
   }
   if (_tracker->WouldTriggerHelpUI(
@@ -498,8 +498,8 @@ constexpr CGFloat kFacePileAvatarSize = 20;
 
 // Updates the sharing state for the given `tabGroup`.
 - (void)updateTabGroupSharingState:(const TabGroup*)tabGroup {
-  BOOL shared = tab_groups::utils::IsTabGroupShared(
-      tabGroup, _tabGroupSyncService, _shareKitService);
+  BOOL shared =
+      tab_groups::utils::IsTabGroupShared(tabGroup, _tabGroupSyncService);
   if (!shared) {
     [_consumer setSharingState:SharingState::kNotShared];
     return;

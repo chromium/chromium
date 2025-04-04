@@ -13,7 +13,6 @@
 class Browser;
 class BrowserList;
 class ProfileIOS;
-class ShareKitService;
 enum class TabGroupActionType;
 @protocol TabStripCommands;
 @protocol TabStripConsumer;
@@ -71,7 +70,6 @@ class WebStateID;
             (collaboration::messaging::MessagingBackendService*)messagingService
     collaborationService:
         (collaboration::CollaborationService*)collaborationService
-         shareKitService:(ShareKitService*)shareKitService
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
