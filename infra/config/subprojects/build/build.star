@@ -601,9 +601,9 @@ This builder measures build performance for Android developer builds, by simulat
         ),
     ),
     gn_args = {
-        "ninja": gn_args.config(configs = ["android_developer", "remoteexec", "no_siso"]),
-        "siso_reproxy": gn_args.config(configs = ["android_developer", "remoteexec"]),
-        "siso_native": gn_args.config(configs = ["android_developer", "remoteexec", "no_reclient"]),
+        "ninja": gn_args.config(configs = ["android_developer", "android_fastbuild", "remoteexec", "no_siso"]),
+        "siso_reproxy": gn_args.config(configs = ["android_developer", "android_fastbuild", "remoteexec"]),
+        "siso_native": gn_args.config(configs = ["android_developer", "android_fastbuild", "remoteexec", "no_reclient"]),
     },
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
