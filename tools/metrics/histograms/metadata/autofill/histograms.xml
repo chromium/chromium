@@ -263,6 +263,9 @@ chromium-metrics-reviews@google.com.
 <variants name="Autofill.ProgressDialog.FlowType">
   <variant name="3dsFetchVirtualCard"
       summary="Progress dialog after the VCN 3DS pop-up has closed"/>
+  <variant name="CardInfoRetrievalEnrolledUnmask"
+      summary="Progress dialog for for cards enrolled in CardInfoRetrieval
+               unmask flow"/>
   <variant name="ServerCardUnmask"
       summary="Progress dialog for the credit card risk-based unmask flow"/>
   <variant name="ServerIbanUnmask"
