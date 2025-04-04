@@ -694,6 +694,7 @@ source_set("ip_protection_probabilistic_reveal_token_manager") {
     ":ip_protection_telemetry",
     "//base",
     "//net",
+    "//services/network/public/cpp",
   ]
 }
 

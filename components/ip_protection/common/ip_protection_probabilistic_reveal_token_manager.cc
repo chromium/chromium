@@ -11,6 +11,7 @@
 #include <string>
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -22,7 +23,7 @@
 #include "components/ip_protection/common/ip_protection_probabilistic_reveal_token_data_storage.h"
 #include "components/ip_protection/common/ip_protection_probabilistic_reveal_token_fetcher.h"
 #include "components/ip_protection/common/ip_protection_telemetry.h"
-#include "net/base/features.h"
+#include "services/network/public/cpp/network_switches.h"
 
 namespace {
 
@@ -65,9 +66,9 @@ std::optional<base::FilePath> GetDBPath(
     std::optional<base::FilePath> data_directory) {
   if (!data_directory.has_value()) {
     // The data directory will be nullopt if the
-    // `IpPrivacyStoreProbabilisticRevealTokens` feature is disabled. In this
-    // case, we pass nullopt to the storage class. This will prevent tokens from
-    // being written to disk even if StoreTokenOutcome() is called.
+    // `StoreProbabilisticRevealTokens` switch is disabled. In this case, we
+    // pass nullopt to the storage class. This will prevent tokens from being
+    // written to disk even if StoreTokenOutcome() is called.
     return std::nullopt;
   }
   return data_directory->Append(kDatabaseName);
@@ -234,7 +235,8 @@ IpProtectionProbabilisticRevealTokenManager::GetToken(
 
 void IpProtectionProbabilisticRevealTokenManager::StoreTokenOutcomeIfEnabled(
     TryGetProbabilisticRevealTokensOutcome outcome) {
-  if (net::features::kIpPrivacyStoreProbabilisticRevealTokens.Get()) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          network::switches::kStoreProbabilisticRevealTokens)) {
     storage_
         .AsyncCall(
             &IpProtectionProbabilisticRevealTokenDataStorage::StoreTokenOutcome)
