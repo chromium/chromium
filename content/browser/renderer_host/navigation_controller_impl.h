@@ -474,6 +474,15 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
     return in_navigate_to_pending_entry_;
   }
 
+  // This flag is set from RenderFrameHostImpl::SendBeforeUnload() to
+  // investigate whether kAvoidUnnecessaryBeforeUnloadCheckSync feature is safe
+  // to enable or not (see: https://crbug.com/40361673,
+  // https://crbug.com/396998476).
+  void set_can_be_in_navigate_to_pending_entry(
+      const bool can_be_in_navigate_to_pending_entry) {
+    can_be_in_navigate_to_pending_entry_ = can_be_in_navigate_to_pending_entry;
+  }
+
   // Whether to maintain a session history with just one entry.
   //
   // This returns true for a prerendering page and for fenced frames.
@@ -898,6 +907,16 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       FrameNavigationEntry* target_entry,
       const std::string& navigation_api_key);
 
+  // When navigation starts, the `can_be_in_navigate_to_pending_entry` flag has
+  // to be false. This is because kAvoidUnnecessaryBeforeUnloadCheckSync feature
+  // will stop using PostTask for the legacy beforeunload code in the near
+  // future. When kAvoidUnnecessaryBeforeUnloadCheckSync is enabled,
+  // `RenderFrameHostImpl::ProcessBeforeUnloadCompletedFromFrame()` and
+  // `Navigator::BeforeUnloadCompleted()` can run in the scope of
+  // `in_navigate_to_pending_entry_` == true, and it might end up crashing on
+  // CHECK(!in_navigate_to_pending_entry_).
+  void CheckPotentialNavigationReentrancy();
+
   // ---------------------------------------------------------------------------
 
   // The FrameTree this instance belongs to. Each FrameTree gets its own
@@ -964,6 +983,17 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
 
   // Prevent unsafe re-entrant calls to NavigateToPendingEntry.
   bool in_navigate_to_pending_entry_ = false;
+
+  // A flag to investigate whether kAvoidUnnecessaryBeforeUnloadCheckSync
+  // feature is safe to enable or not (see: https://crbug.com/40361673,
+  // https://crbug.com/396998476).
+  //
+  // This flag is true if the above `in_navigate_to_pending_entry_` flag is true
+  // when RenderFrameHostImpl::SendBeforeUnload() runs, and on top of that, when
+  // we intend to continue navigation synchronously without posting a task when
+  // the kRunBeforeUnloadClosureOnStack or
+  // kAvoidUnnecessaryBeforeUnloadCheckSync is enabled.
+  bool can_be_in_navigate_to_pending_entry_ = false;
 
   // Used to find the appropriate SessionStorageNamespace for the storage
   // partition of a NavigationEntry.

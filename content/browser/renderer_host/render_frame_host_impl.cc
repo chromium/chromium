@@ -354,6 +354,10 @@ BASE_FEATURE(kDoNotEvictOnAXLocationChange,
              "DoNotEvictOnAXLocationChange",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kRunBeforeUnloadClosureOnStackInvestigation,
+             "RunBeforeUnloadClosureOnStackInvestigation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
 
 namespace content {
@@ -991,6 +995,16 @@ GURL GetLastDocumentURL(
   // For all other navigations, the document URL should be the same as the URL
   // that is used to commit.
   return params.url;
+}
+
+bool IsRunBeforeUnloadClosureOnStackInvestigationEnabled() {
+  static const bool kEnabled =
+      GetContentClient()
+          ->browser()
+          ->SupportsAvoidUnnecessaryBeforeUnloadCheckSync() &&
+      base::FeatureList::IsEnabled(
+          features::kRunBeforeUnloadClosureOnStackInvestigation);
+  return kEnabled;
 }
 
 // Returns true if `host` has the Window Management permission granted.
@@ -16349,6 +16363,37 @@ void RenderFrameHostImpl::SendBeforeUnload(
       },
       rfh, for_legacy);
   if (for_legacy) {
+    // We would like to synchronously continue navigation without the following
+    // PostTask in the future to improve performance if the frame being
+    // navigated (and all child frames) do not have beforeunload handlers.
+    // However, as described in
+    // `ContentBrowserClient::SupportsAvoidUnnecessaryBeforeUnloadCheckSync()`,
+    // this can result in re-entrancy issues on navigation. The re-entrancy is
+    // checked by NavigationController's `in_navigate_to_pending_entry` flag.
+    // While this flag is true, we prohibit starting another navigation
+    // synchronously while the existing navigation is still being processed on
+    // the stack (CHECK(!in_navigate_to_pending_entry_)).
+    //
+    // The following `is_eligible_for_avoid_unnecessary_beforeunload` flag is
+    // used to allow synchronous continuation of navigation when the
+    // kRunBeforeUnloadClosureOnStack or kAvoidUnnecessaryBeforeUnloadCheckSync
+    // feature is enabled.
+    //
+    // The following `can_be_in_navigate_to_pending_entry` flag is used to
+    // investigate whether it is safe to do so, by checking whether the CHECK
+    // would've failed if we continue synchronously instead of posting a task.
+    // This flag is only used when both kRunBeforeUnloadClosureOnStack and
+    // kAvoidUnnecessaryBeforeUnloadCheckSync are disabled.
+    const bool is_eligible_for_avoid_unnecessary_beforeunload =
+        is_waiting_for_beforeunload_completion_ &&
+        unload_ack_is_for_navigation_ &&
+        GetContentClient()
+            ->browser()
+            ->SupportsAvoidUnnecessaryBeforeUnloadCheckSync();
+    const bool can_be_in_navigate_to_pending_entry =
+        IsRunBeforeUnloadClosureOnStackInvestigationEnabled() &&
+        is_eligible_for_avoid_unnecessary_beforeunload &&
+        frame_tree()->controller().in_navigate_to_pending_entry();
     // Use a high-priority task to continue the navigation. This is safe as it
     // happens early in the navigation flow and shouldn't race with any other
     // tasks associated with this navigation.
@@ -16357,18 +16402,33 @@ void RenderFrameHostImpl::SendBeforeUnload(
             FROM_HERE,
             base::BindOnce(
                 [](blink::mojom::LocalFrame::BeforeUnloadCallback callback,
-                   base::TimeTicks start_time, base::TimeTicks end_time) {
+                   base::TimeTicks start_time, base::TimeTicks end_time,
+                   base::WeakPtr<NavigationControllerImpl>
+                       navigation_controller,
+                   const bool can_be_in_navigate_to_pending_entry) {
                   // Measures the time a posted task spends in the queue before
                   // execution. Recorded only when `for_legacy` is true.
                   base::UmaHistogramTimes(
                       "Navigation.OnBeforeUnloadOverheadTime."
                       "NoBeforeUnloadHandlerRegistered",
                       base::TimeTicks::Now() - end_time);
+                  if (can_be_in_navigate_to_pending_entry &&
+                      navigation_controller) {
+                    navigation_controller
+                        ->set_can_be_in_navigate_to_pending_entry(true);
+                  }
                   std::move(callback).Run(/*proceed=*/true, start_time,
                                           end_time);
+                  if (can_be_in_navigate_to_pending_entry &&
+                      navigation_controller) {
+                    navigation_controller
+                        ->set_can_be_in_navigate_to_pending_entry(false);
+                  }
                 },
                 std::move(before_unload_closure),
-                send_before_unload_start_time_, base::TimeTicks::Now()));
+                send_before_unload_start_time_, base::TimeTicks::Now(),
+                frame_tree()->controller().GetWeakPtr(),
+                can_be_in_navigate_to_pending_entry));
     return;
   }
   auto scope = MakeUrgentMessageScopeIfNeeded();

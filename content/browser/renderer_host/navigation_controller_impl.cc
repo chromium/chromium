@@ -2613,6 +2613,9 @@ void NavigationControllerImpl::DiscardPendingEntry(bool was_failure) {
   // when the tab is being destroyed for shutdown, since it won't return to
   // NavigateToEntry in that case.)  http://crbug.com/347742.
   CHECK(!in_navigate_to_pending_entry_ || frame_tree_->IsBeingDestroyed());
+  if (!frame_tree_->IsBeingDestroyed()) {
+    CheckPotentialNavigationReentrancy();
+  }
 
   if (was_failure && pending_entry_) {
     failed_pending_entry_id_ = pending_entry_->GetUniqueID();
@@ -3380,6 +3383,7 @@ NavigationControllerImpl::NavigateToExistingPendingEntry(
   // This call does not support re-entrancy.  See http://crbug.com/347742.
   CHECK(!in_navigate_to_pending_entry_);
   in_navigate_to_pending_entry_ = true;
+  CheckPotentialNavigationReentrancy();
 
   // If the navigation-reentrancy is caused by calling
   // NavigateToExistingPendingEntry twice, this will note the previous call's
@@ -3803,6 +3807,7 @@ base::WeakPtr<NavigationHandle> NavigationControllerImpl::NavigateWithoutEntry(
   // This call does not support re-entrancy.  See http://crbug.com/347742.
   CHECK(!in_navigate_to_pending_entry_);
   in_navigate_to_pending_entry_ = true;
+  CheckPotentialNavigationReentrancy();
 
   // It is not possible to delete the pending NavigationEntry while navigating
   // to it. Grab a reference to delay potential deletion until the end of this
@@ -5025,6 +5030,18 @@ void NavigationControllerImpl::DidChangeReferrerPolicy(
   // in the navigation API when the referrer policy changes.
   entry->set_protect_url_in_navigation_api(
       ShouldProtectUrlInNavigationApi(referrer_policy));
+}
+
+void NavigationControllerImpl::CheckPotentialNavigationReentrancy() {
+  // DumpWithoutCrashing will be reported just once in one Chrome session since
+  // we want to avoid too many reports.
+  static bool has_dumped_without_crashing = false;
+  if (can_be_in_navigate_to_pending_entry_ && !has_dumped_without_crashing) {
+    has_dumped_without_crashing = true;
+    // This DumpWithoutCrashing is an investigation code for
+    // https://crbug.com/396998476.
+    base::debug::DumpWithoutCrashing();
+  }
 }
 
 }  // namespace content
