@@ -494,10 +494,9 @@
         android:windowSoftInputMode="adjustResize">
       <intent-filter>  # DIFF-ANCHOR: a5330430
         <action android:name="android.intent.action.MAIN"/>
-        <category android:name="android.intent.category.XR"/>
         <category android:name="org.khronos.openxr.intent.category.IMMERSIVE_HMD"/>
       </intent-filter>  # DIFF-ANCHOR: a5330430
-      <property android:name="android.window.PROPERTY_ACTIVITY_STARTS_IN_IMMERSIVE_XR" android:value="true"/>
+      <property android:name="android.window.PROPERTY_XR_ACTIVITY_START_MODE" android:value="XR_ACTIVITY_START_MODE_HOME_SPACE"/>
     </activity>  # DIFF-ANCHOR: 5d3091ca
     <activity-alias  # DIFF-ANCHOR: 9da0e5b6
         android:name="com.google.android.apps.chrome.IntentDispatcher"

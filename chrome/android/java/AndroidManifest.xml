@@ -1195,11 +1195,10 @@ by a child template that "extends" this file.
             android:label="WebXR"
             android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"
             tools:ignore="NonResizeableActivity,DiscouragedApi">
-            <property android:name="android.window.PROPERTY_ACTIVITY_STARTS_IN_IMMERSIVE_XR"
-                android:value="true" />
+            <property android:name="android.window.PROPERTY_XR_ACTIVITY_START_MODE"
+                android:value="XR_ACTIVITY_START_MODE_HOME_SPACE" />
             <intent-filter>
               <action android:name="android.intent.action.MAIN" />
-              <category android:name="android.intent.category.XR" />
               <category android:name="org.khronos.openxr.intent.category.IMMERSIVE_HMD" />
             </intent-filter>
           </activity>
