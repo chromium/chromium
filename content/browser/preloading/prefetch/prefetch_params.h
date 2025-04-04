@@ -121,6 +121,9 @@ bool PrefetchBrowserInitiatedTriggersEnabled();
 
 size_t GetPrefetchDataPipeTeeBodySizeLimit();
 
+// Returns true iff we should use `PrefetchScheduler`.
+CONTENT_EXPORT bool UsePrefetchScheduler();
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_PARAMS_H_
