@@ -100,6 +100,12 @@ void MobileFriendlinessChecker::NotifyPaintBegin() {
   DCHECK(frame_view_->GetFrame().Client()->IsLocalFrameClientImpl());
   DCHECK(frame_view_->GetFrame().IsOutermostMainFrame());
 
+  if (!frame_view_->GetLayoutView()
+           ->FirstFragment()
+           .HasLocalBorderBoxProperties()) {
+    return;
+  }
+
   ignore_beyond_viewport_scope_count_ =
       frame_view_->LayoutViewport()->MaximumScrollOffset().x() == 0 &&
       frame_view_->GetPage()
