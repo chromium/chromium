@@ -3,9 +3,8 @@
 # found in the LICENSE file.
 WITH
 # Get swarming task IDs of builds that occurred between lookback dates.
-build_task_ids AS (
+try_builders AS (
   SELECT
-    b.infra.backend.task.id.id build_task_id,
     b.builder.builder try_builder,
     b.start_time,
   FROM
@@ -25,7 +24,7 @@ builds_per_hour_and_day_count AS (
     TIMESTAMP_TRUNC(b.start_time, DAY, 'America/Los_Angeles') day,
     EXTRACT(HOUR FROM b.start_time AT TIME ZONE 'America/Los_Angeles') hour,
     COUNT(*) hour_count,
-  FROM build_task_ids b
+  FROM try_builders b
   WHERE
     EXTRACT(
       DAYOFWEEK FROM b.start_time AT TIME ZONE 'America/Los_Angeles') > 1

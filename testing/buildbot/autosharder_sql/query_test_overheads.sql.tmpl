@@ -20,6 +20,7 @@ WITH
     # Get all the triggered swarming test tasks for each build
     deduped_tasks AS (
       SELECT DISTINCT
+        task_id,
         request.parent_task_id AS parent_task_id,
         (
           SELECT
@@ -45,11 +46,11 @@ WITH
             WHERE STARTS_WITH(tag, 'normally_assigned_shard_count:')
           )
           AS INT64) AS normally_assigned_shard_count,
-        TIMESTAMP_DIFF(c.end_time, c.start_time, SECOND)
+        TIMESTAMP_DIFF(c.end_time, c.start_time, MILLISECOND) / 1000
           running_duration_sec,  # Includes task setup time
-        TIMESTAMP_DIFF(c.end_time, c.start_time, SECOND) - c.duration task_setup_duration_sec,
+        TIMESTAMP_DIFF(c.end_time, c.start_time, MILLISECOND) / 1000 - c.duration task_setup_duration_sec,
         c.start_time
-      FROM `{tasks_project}`.{tasks_dataset}.task_results_summary_flat c
+      FROM `{tasks_project}`.{tasks_dataset}.task_results_summary c
       WHERE
         request.parent_task_id IS NOT NULL
         # Ignore all retry and flakiness step level runs

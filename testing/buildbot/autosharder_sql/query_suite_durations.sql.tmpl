@@ -22,6 +22,7 @@ build_task_ids AS (
 ),
 deduped_tasks AS (
   SELECT DISTINCT
+    task_id,
     request.parent_task_id AS parent_task_id,
     (
       SELECT SPLIT(tag, ':')[offset(1)]
