@@ -551,6 +551,11 @@ class HttpStreamPool::AttemptManager
   ResolveErrorInfo resolve_error_info_;
   ConnectionAttempts connection_attempts_;
 
+  // TODO(crbug.com/403373872): Remove below fields once we identify the cause
+  // of the bug.
+  std::vector<ServiceEndpoint> unusable_endpoints_for_tcp_based_attempt_;
+  std::vector<IPEndPoint> aborted_endpoints_for_tcp_based_attempt_;
+
   // An error code to notify jobs when `this` cannot make any further progress.
   // Set to an error from service endpoint resolution failure, the last stream
   // attempt failure, network change events, or QUIC task failure.

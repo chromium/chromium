@@ -615,6 +615,7 @@ HttpStreamPool::AttemptManager::GetSSLConfig(InFlightAttempt* attempt) {
   const bool svcb_optional = IsSvcbOptional();
   for (auto& endpoint : service_endpoint_request_->GetEndpointResults()) {
     if (!IsEndpointUsableForTcpBasedAttempt(endpoint, svcb_optional)) {
+      unusable_endpoints_for_tcp_based_attempt_.emplace_back(endpoint);
       continue;
     }
     const std::vector<IPEndPoint>& ip_endpoints =
@@ -627,6 +628,7 @@ HttpStreamPool::AttemptManager::GetSSLConfig(InFlightAttempt* attempt) {
     }
   }
 
+  aborted_endpoints_for_tcp_based_attempt_.emplace_back(attempt->ip_endpoint());
   attempt->set_is_aborted(true);
   return base::unexpected(TlsStreamAttempt::GetSSLConfigError::kAbort);
 }
@@ -1352,10 +1354,18 @@ void HttpStreamPool::AttemptManager::MaybeAttemptConnection(
           ConnectionAttempts connection_attempts = connection_attempts_;
           std::vector<ServiceEndpoint> endpoints =
               service_endpoint_request_->GetEndpointResults();
+          std::vector<ServiceEndpoint> unusable_endpoints =
+              unusable_endpoints_for_tcp_based_attempt_;
+          std::vector<IPEndPoint> aborted_endpoints =
+              aborted_endpoints_for_tcp_based_attempt_;
           base::debug::Alias(&is_svcb_optional);
           base::debug::Alias(&connection_attempts_);
           base::debug::Alias(&endpoints);
           base::debug::Alias(endpoints.data());
+          base::debug::Alias(&unusable_endpoints);
+          base::debug::Alias(unusable_endpoints.data());
+          base::debug::Alias(&aborted_endpoints);
+          base::debug::Alias(aborted_endpoints.data());
           DEBUG_ALIAS_FOR_GURL(url_buf, stream_key().destination().GetURL());
           NOTREACHED();
         }
