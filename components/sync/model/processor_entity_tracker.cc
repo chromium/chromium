@@ -242,6 +242,15 @@ bool ProcessorEntityTracker::HasLocalChanges() const {
   return false;
 }
 
+bool ProcessorEntityTracker::HasUnsyncedChanges() const {
+  for (const auto& [client_tag_hash, entity] : entities_) {
+    if (entity->IsUnsynced()) {
+      return true;
+    }
+  }
+  return false;
+}
+
 size_t ProcessorEntityTracker::size() const {
   return entities_.size();
 }

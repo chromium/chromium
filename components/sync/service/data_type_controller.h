@@ -132,6 +132,9 @@ class DataTypeController {
   // changes that are waiting to be committed.
   // May be invoked at any time; if the model isn't loaded yet or is in an error
   // state, this should typically return "false".
+  // Note: This must only be called if in transport-only mode, or if stopped.
+  // TODO(crbug.com/401470426): Rename this to better reflect that it's only
+  // called in transport-only mode.
   void HasUnsyncedData(base::OnceCallback<void(bool)> callback);
 
   // Returns a Value::List representing all nodes for this data type through
