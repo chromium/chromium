@@ -430,7 +430,8 @@ public class AiAssistantServiceUnitTest {
                 activity -> {
                     var service = AiAssistantService.getInstance();
                     initializeAiAssistantService(activity, service);
-                    fulfillAccountCapabilities(false);
+                    fulfillAccountCapabilities(
+                            /* isParentSupervised= */ false, /* isEnterprise= */ false);
                     service.showAi(activity, mTab);
                     ShadowLooper.idleMainLooper();
 
@@ -440,6 +441,36 @@ public class AiAssistantServiceUnitTest {
                             JUnitTestGURLs.URL_2.getSpec(),
                             pageContents);
                     assertLaunchRequestHasClientInfo(mLaunchRequestCaptor.getValue(), clientEmail);
+                });
+    }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_PAGE_SUMMARY
+                    + ":attach_client_info/true")
+    public void showAi_enterpriseDisables() {
+        var activityScenario = mActivityScenarioRule.getScenario();
+
+        ServiceLoaderUtil.setInstanceForTesting(
+                SystemAiProviderFactory.class, mSystemAiProviderFactory);
+        setSystemAiProviderAsAvailableWithAllFeatures();
+        var pageContents = "Page contents for URL_2";
+        var clientEmail = "foo@bar.com";
+        setInnerTextExtractionResult(pageContents);
+        setClientEmail(clientEmail);
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.URL_2);
+
+        activityScenario.onActivity(
+                activity -> {
+                    var service = AiAssistantService.getInstance();
+                    initializeAiAssistantService(activity, service);
+                    fulfillAccountCapabilities(
+                            /* isParentSupervised= */ false, /* isEnterprise= */ true);
+                    service.showAi(activity, mTab);
+
+                    ShadowLooper.idleMainLooper();
+
+                    verify(mSystemAiProvider, never()).launch(any(), any());
                 });
     }
 
@@ -463,7 +494,8 @@ public class AiAssistantServiceUnitTest {
                 activity -> {
                     var service = AiAssistantService.getInstance();
                     initializeAiAssistantService(activity, service);
-                    fulfillAccountCapabilities(true);
+                    fulfillAccountCapabilities(
+                            /* isParentSupervised= */ true, /* isEnterprise= */ false);
 
                     service.showAi(activity, mTab);
 
@@ -506,11 +538,14 @@ public class AiAssistantServiceUnitTest {
         mPausedExecutorService.runAll();
     }
 
-    private void fulfillAccountCapabilities(boolean isParentSupervised) {
+    private void fulfillAccountCapabilities(boolean isParentSupervised, boolean isEnterprise) {
         HashMap<String, Boolean> capabilities = new HashMap<>();
         capabilities.put(
                 AccountCapabilitiesConstants.IS_SUBJECT_TO_PARENTAL_CONTROLS_CAPABILITY_NAME,
                 isParentSupervised);
+        capabilities.put(
+                AccountCapabilitiesConstants.IS_SUBJECT_TO_ENTERPRISE_POLICIES_CAPABILITY_NAME,
+                isEnterprise);
         mCapabilitiesPromise.fulfill(new AccountCapabilities(capabilities));
         ShadowLooper.idleMainLooper();
     }
