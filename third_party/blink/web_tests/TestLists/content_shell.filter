@@ -597,7 +597,6 @@ external/wpt/html/interaction/focus/the-autofocus-attribute/queue-non-focusable.
 external/wpt/html/links/stylesheet/quirk-origin-check-recursive-import.html
 external/wpt/html/rendering/non-replaced-elements/form-controls/select-sizing-001.html
 external/wpt/html/rendering/non-replaced-elements/form-controls/text-transform.html
-external/wpt/html/rendering/non-replaced-elements/tables/table-background-print.html
 external/wpt/html/rendering/pixel-length-attributes.html
 external/wpt/html/rendering/widgets/baseline-alignment-and-overflow.tentative.html
 external/wpt/html/rendering/widgets/input-time-content-size.html
@@ -846,13 +845,10 @@ external/wpt/workers/postMessage_block.https.html
 # Tests that exhibit antialiasing differences only on headless shell, not on
 # content_shell, when run under Fontations.
 # See crbug.com/397880053 and crbug.com/339041663.
-external/wpt/css/css-anchor-position/anchor-position-005-print.html
 external/wpt/css/css-break/*
-external/wpt/css/css-grid/grid-fragmentation-between-rows-001-print.tentative.html
 external/wpt/css/css-multicol/*
 external/wpt/css/css-overflow/keyboard-scroll.html
 external/wpt/css/css-page/*
-external/wpt/css/css-position/sticky/position-sticky-offset-print.html
 external/wpt/css/css-shapes/shape-outside/shape-box/shape-outside-border-box-001.html
 external/wpt/css/css-shapes/shape-outside/shape-box/shape-outside-border-box-002.html
 external/wpt/css/css-shapes/shape-outside/shape-box/shape-outside-border-box-003.html
@@ -899,10 +895,7 @@ external/wpt/css/css-shapes/spec-examples/shape-outside-014.html
 external/wpt/css/css-shapes/spec-examples/shape-outside-015.html
 external/wpt/css/css-shapes/spec-examples/shape-outside-016.html
 external/wpt/css/css-shapes/spec-examples/shape-outside-017.html
-external/wpt/css/css-values/viewport-units-001-print.html
-external/wpt/css/printing/*
-external/wpt/html/rendering/non-replaced-elements/tables/table-row-pagination-002-print.html
-external/wpt/html/semantics/embedded-content/the-object-element/object-image-display-none-loading-for-print.html
+external/wpt/css/printing/input-file-print.html
 
 virtual/atomic-move-range-preservation/external/wpt/dom/nodes/moveBefore/selection-preserve.html
 virtual/backface-visibility-interop/external/wpt/css/css-transforms/backface-visibility-001.html
@@ -937,7 +930,6 @@ virtual/fenced-frame-mparch/external/wpt/fenced-frame/permission-api-denied.http
 virtual/fenced-frame-mparch/external/wpt/fenced-frame/resize-lock*
 virtual/fractional-scroll-offsets/external/wpt/css/css-position/sticky/position-sticky-inline.html
 virtual/fractional-scroll-offsets/external/wpt/css/css-position/sticky/position-sticky-large-top*
-virtual/fractional-scroll-offsets/external/wpt/css/css-position/sticky/position-sticky-offset-print.html
 virtual/generic-sensor-extra-classes/external/wpt/ambient-light/AmbientLightSensor-iframe-access.https.html
 virtual/generic-sensor-extra-classes/external/wpt/magnetometer/Magnetometer-iframe-access.https.html
 virtual/gpu-rasterization/external/wpt/css/css-images/object-fit-*
@@ -988,9 +980,9 @@ virtual/scalefactor200/external/wpt/css/filter-effects/filtered-html-is-not-cont
 virtual/scalefactor200/external/wpt/css/filter-effects/clip-under-filter-*
 virtual/scalefactor200/external/wpt/css/filter-effects/effect-reference-on-span.html
 virtual/scalefactor200/external/wpt/css/filter-effects/repaint-added-backdrop-filter.html
-virtual/scalefactor200/external/wpt/css/printing/*
+virtual/scalefactor200/external/wpt/css/printing/input-file-print.html
 virtual/scalefactor200/external/wpt/largest-contentful-paint/animated/observe-cross-origin-tao-animated-image.tentative.html
-virtual/scalefactor200/external/wpt/largest-contentful-paint/image-not-fully-visible.html 
+virtual/scalefactor200/external/wpt/largest-contentful-paint/image-not-fully-visible.html
 virtual/scalefactor200/external/wpt/largest-contentful-paint/multiple-image-same-src.html
 virtual/scalefactor200/external/wpt/largest-contentful-paint/video-data-uri.html
 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/select-tabindex-order.tentative.html
