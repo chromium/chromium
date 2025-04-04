@@ -9861,6 +9861,26 @@
             ]
         }
     ],
+    "FedCmSegmentationPlatform": [
+        {
+            "platforms": [
+                "android",
+                "android_weblayer",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "SegmentationPlatform",
+                    "enable_features": [
+                        "FedCmSegmentationPlatform"
+                    ]
+                }
+            ]
+        }
+    ],
     "FeedLoadingPlaceholder": [
         {
             "platforms": [
