@@ -181,6 +181,8 @@ public class FullscreenAlertDialog extends AlertDialog {
                 super.setView(automotiveLayout);
             } else if (mEdgeToEdgeLayout != null) {
                 super.setView(mEdgeToEdgeLayout.wrapContentView(view));
+            } else {
+                super.setView(view);
             }
             return this;
         }
