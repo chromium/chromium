@@ -9068,3 +9068,25 @@ crbug.com/407374335 [ Debug ] virtual/scalefactor200/external/wpt/largest-conten
 
 # Gardener 2025-04-02
 crbug.com/407865639 external/wpt/css/css-grid/grid-extrinsically-sized-mutations.html [ Failure Pass ]
+
+# Recent WebNN test failures on Mac14 which need to be investigated:
+crbug.com/407486638 [ Mac14 ] virtual/webnn-service-on-npu/external/wpt/webnn/conformance_tests/gru.https.any.html?npu [ Failure Pass ]
+crbug.com/407486638 [ Mac14-arm64 ] virtual/webnn-service-on-npu/external/wpt/webnn/conformance_tests/gru.https.any.html?npu [ Failure Pass ]
+crbug.com/407484797 [ Mac14 ] virtual/webnn-service-on-npu/external/wpt/webnn/conformance_tests/identity.https.any.sharedworker.html?npu [ Failure Pass ]
+crbug.com/407484797 [ Mac14-arm64 ] virtual/webnn-service-on-npu/external/wpt/webnn/conformance_tests/identity.https.any.sharedworker.html?npu [ Failure Pass ]
+crbug.com/405200218 [ Mac14 ] virtual/webnn-service-on-npu/external/wpt/webnn/conformance_tests/reduce_l1.https.any.html?npu [ Failure Pass ]
+crbug.com/405200218 [ Mac14-arm64 ] virtual/webnn-service-on-npu/external/wpt/webnn/conformance_tests/reduce_l1.https.any.html?npu [ Failure Pass ]
+crbug.com/405358121 [ Mac14 ] virtual/webnn-service-on-npu/external/wpt/webnn/conformance_tests/reduce_l2.https.any.html?npu [ Failure Pass ]
+crbug.com/405358121 [ Mac14-arm64 ] virtual/webnn-service-on-npu/external/wpt/webnn/conformance_tests/reduce_l2.https.any.html?npu [ Failure Pass ]
+crbug.com/405292565 [ Mac14 ] virtual/webnn-service-on-npu/external/wpt/webnn/conformance_tests/reduce_max.https.any.html?npu [ Failure Pass ]
+crbug.com/405292565 [ Mac14-arm64 ] virtual/webnn-service-on-npu/external/wpt/webnn/conformance_tests/reduce_max.https.any.html?npu [ Failure Pass ]
+crbug.com/405413286 [ Mac14 ] virtual/webnn-service-on-npu/external/wpt/webnn/conformance_tests/reduce_mean.https.any.html?npu [ Failure Pass ]
+crbug.com/405413286 [ Mac14-arm64 ] virtual/webnn-service-on-npu/external/wpt/webnn/conformance_tests/reduce_mean.https.any.html?npu [ Failure Pass ]
+crbug.com/405212903 [ Mac14 ] virtual/webnn-service-on-npu/external/wpt/webnn/conformance_tests/reduce_min.https.any.html?npu [ Failure Pass ]
+crbug.com/405212903 [ Mac14-arm64 ] virtual/webnn-service-on-npu/external/wpt/webnn/conformance_tests/reduce_min.https.any.html?npu [ Failure Pass ]
+crbug.com/407481538 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/identity.https.any.html?gpu [ Failure Pass ]
+crbug.com/407481538 [ Mac14-arm64 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/identity.https.any.html?gpu [ Failure Pass ]
+crbug.com/407477500 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/reduce_product.https.any.html?gpu [ Failure Pass ]
+crbug.com/407477500 [ Mac14-arm64 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/reduce_product.https.any.html?gpu [ Failure Pass ]
+crbug.com/407478938 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/transpose.https.any.html?gpu [ Failure Pass ]
+crbug.com/407478938 [ Mac14-arm64 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/transpose.https.any.html?gpu [ Failure Pass ]
