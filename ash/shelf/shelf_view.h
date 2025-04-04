@@ -520,6 +520,7 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   // Overridden from ShellObserver:
   void OnShelfAlignmentChanged(aura::Window* root_window,
                                ShelfAlignment old_alignment) override;
+  void OnPinnedStateChanged(aura::Window* pinned_window) override;
 
   // ShelfObserver:
   void OnShelfAutoHideBehaviorChanged() override;

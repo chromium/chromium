@@ -10,6 +10,7 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/shelf/shelf_component.h"
+#include "ash/shell_observer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/message_center/message_center.h"
@@ -57,6 +58,7 @@ class WmModeButtonTray;
 // on secondary monitors at the login screen).
 class ASH_EXPORT StatusAreaWidget : public SessionObserver,
                                     public ShelfComponent,
+                                    public ShellObserver,
                                     public views::ViewObserver,
                                     public views::Widget {
  public:
@@ -100,6 +102,9 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
   gfx::Rect GetTargetBounds() const override;
   void UpdateLayout(bool animate) override;
   void UpdateTargetBoundsForGesture(int shelf_position) override;
+
+  // ShellObserver:
+  void OnPinnedStateChanged(aura::Window* pinned_window) override;
 
   // Called by shelf layout manager when a locale change has been detected.
   void HandleLocaleChange();
