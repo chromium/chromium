@@ -1578,6 +1578,8 @@ IN_PROC_BROWSER_TEST_P(
                  {https_server()->GetURL("a.test",
                                          "/fenced_frames/title1.html"),
                   {}}}),
+            ResolveSelectURLToConfig(),
+            /*saved_query=*/std::string(),
             /*worklet_id=*/0)}});
 }
 
@@ -1872,6 +1874,8 @@ IN_PROC_BROWSER_TEST_P(
                     https_server()
                         ->GetURL("a.test", "/fenced_frames/report2.html")
                         .spec()}}}}),
+            ResolveSelectURLToConfig(),
+            /*saved_query=*/std::string(),
             /*worklet_id=*/0)}});
 }
 
@@ -1981,6 +1985,8 @@ IN_PROC_BROWSER_TEST_P(
                     https_server()
                         ->GetURL("a.test", "/fenced_frames/report1.html")
                         .spec()}}}}),
+            ResolveSelectURLToConfig(),
+            /*saved_query=*/std::string(),
             /*worklet_id=*/0)}});
 }
 
@@ -2105,6 +2111,8 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
                  {https_server()->GetURL("b.test",
                                          "/fenced_frames/title2.html"),
                   {}}}),
+            ResolveSelectURLToConfig(),
+            /*saved_query=*/std::string(),
             /*worklet_id=*/0)}});
 }
 
@@ -2245,6 +2253,8 @@ IN_PROC_BROWSER_TEST_P(
                 {{https_server()->GetURL("a.test",
                                          "/fenced_frames/title0.html"),
                   {}}}),
+            ResolveSelectURLToConfig(),
+            /*saved_query=*/std::string(),
             /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kSelectURL, MainFrameId(),
         origin_str,
@@ -2256,6 +2266,8 @@ IN_PROC_BROWSER_TEST_P(
                 {{https_server()->GetURL("a.test",
                                          "/fenced_frames/title0.html"),
                   {}}}),
+            ResolveSelectURLToConfig(),
+            /*saved_query=*/std::string(),
             /*worklet_id=*/0)}});
 }
 
@@ -2377,6 +2389,8 @@ IN_PROC_BROWSER_TEST_P(
                 {{https_server()->GetURL("a.test",
                                          "/fenced_frames/title0.html"),
                   {}}}),
+            ResolveSelectURLToConfig(),
+            /*saved_query=*/std::string(),
             /*worklet_id=*/0)}});
 }
 
@@ -2479,6 +2493,8 @@ IN_PROC_BROWSER_TEST_P(
                 {{https_server()->GetURL("a.test",
                                          "/fenced_frames/title0.html"),
                   {}}}),
+            ResolveSelectURLToConfig(),
+            /*saved_query=*/std::string(),
             /*worklet_id=*/0)}});
 }
 
@@ -2693,6 +2709,8 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
                 {{https_server()->GetURL("a.test",
                                          "/fenced_frames/title0.html"),
                   {}}}),
+            ResolveSelectURLToConfig(),
+            /*saved_query=*/std::string(),
             /*worklet_id=*/0)}});
 }
 
@@ -2901,6 +2919,8 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
                 {{https_server()->GetURL("a.test",
                                          "/fenced_frames/title0.html"),
                   {}}}),
+            ResolveSelectURLToConfig(),
+            /*saved_query=*/std::string(),
             /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForRunForTesting(
@@ -3017,6 +3037,8 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
                 {{https_server()->GetURL("a.test",
                                          "/fenced_frames/title0.html"),
                   {}}}),
+            ResolveSelectURLToConfig(),
+            /*saved_query=*/std::string(),
             /*worklet_id=*/0)}});
 }
 
@@ -3127,6 +3149,8 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
                 {{https_server()->GetURL("a.test",
                                          "/fenced_frames/title0.html"),
                   {}}}),
+            ResolveSelectURLToConfig(),
+            /*saved_query=*/std::string(),
             /*worklet_id=*/0)}});
 }
 
@@ -3231,6 +3255,8 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
                   {{"", https_server()
                             ->GetURL("a.test", "/fenced_frames/report1.html")
                             .spec()}}}}),
+            ResolveSelectURLToConfig(),
+            /*saved_query=*/std::string(),
             /*worklet_id=*/0)}});
 }
 

@@ -30,9 +30,11 @@
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/shared_storage/shared_storage_browsertest_base.h"
 #include "content/browser/shared_storage/shared_storage_document_service_impl.h"
+#include "content/browser/shared_storage/shared_storage_event_params.h"
 #include "content/browser/shared_storage/shared_storage_features.h"
 #include "content/browser/shared_storage/shared_storage_runtime_manager.h"
 #include "content/browser/shared_storage/shared_storage_worklet_host.h"
+#include "content/browser/shared_storage/test_shared_storage_observer.h"
 #include "content/browser/shared_storage/test_shared_storage_runtime_manager.h"
 #include "content/browser/shared_storage/test_shared_storage_worklet_host.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -74,6 +76,12 @@ namespace content {
 
 using testing::Pair;
 using testing::UnorderedElementsAre;
+using SharedStorageReportingMap = base::flat_map<std::string, ::GURL>;
+using SharedStorageUrlSpecWithMetadata =
+    SharedStorageEventParams::SharedStorageUrlSpecWithMetadata;
+using Access = TestSharedStorageObserver::Access;
+using AccessScope = blink::SharedStorageAccessScope;
+using AccessMethod = TestSharedStorageObserver::AccessMethod;
 
 namespace {
 
@@ -2961,6 +2969,30 @@ class SharedStorageSelectURLSavedQueryBrowserTest
     EXPECT_EQ(num_new_messages, 2);
   }
 
+  std::vector<SharedStorageUrlSpecWithMetadata> GetExpectedUrlsWithMetadata(
+      const std::string& host,
+      size_t num_urls) {
+    std::vector<SharedStorageUrlSpecWithMetadata> expected_urls_with_metadata;
+    for (size_t i = 0; i < num_urls; ++i) {
+      expected_urls_with_metadata.push_back(
+          {https_server()->GetURL(
+               host, base::StrCat({"/fenced_frames/title",
+                                   base::NumberToString(i), ".html"})),
+           {{"click", https_server()
+                          ->GetURL(host, base::StrCat({"/fenced_frames/report",
+                                                       base::NumberToString(i),
+                                                       ".html"}))
+                          .spec()},
+            {"mouse interaction",
+             https_server()
+                 ->GetURL(host,
+                          base::StrCat({"/fenced_frames/report",
+                                        base::NumberToString(i + 1), ".html"}))
+                 .spec()}}});
+    }
+    return expected_urls_with_metadata;
+  }
+
  private:
   base::test::ScopedFeatureList select_url_limit_feature_list_;
   base::test::ScopedFeatureList select_url_saved_query_feature_;
@@ -3030,6 +3062,57 @@ IN_PROC_BROWSER_TEST_F(SharedStorageSelectURLSavedQueryBrowserTest,
       blink::SharedStorageSelectUrlBudgetStatus::
           kInsufficientSitePageloadBudget,
       1);
+
+  std::string origin_str = url::Origin::Create(main_url).Serialize();
+
+  std::vector<SharedStorageUrlSpecWithMetadata> expected_urls_with_metadata =
+      GetExpectedUrlsWithMetadata("a.test", /*num_urls=*/8);
+
+  std::vector<Access> expected_accesses;
+  expected_accesses.push_back(
+      {AccessScope::kWindow, AccessMethod::kAddModule, MainFrameId(),
+       origin_str,
+       SharedStorageEventParams::CreateForAddModule(
+           https_server()->GetURL("a.test", "/shared_storage/simple_module.js"),
+           /*worklet_id=*/0)});
+  for (int call = 0; call < call_limit; call++) {
+    expected_accesses.push_back(
+        {AccessScope::kWindow, AccessMethod::kSelectURL, MainFrameId(),
+         origin_str,
+         SharedStorageEventParams::CreateForSelectURLForTesting(
+             "test-url-selection-operation", /*keep_alive=*/true,
+             SharedStorageEventParams::PrivateAggregationConfigWrapper(),
+             blink::CloneableMessage(), expected_urls_with_metadata,
+             ResolveSelectURLToConfig(),
+             /*saved_query=*/
+             base::StrCat({"query", base::NumberToString(call)}),
+             /*worklet_id=*/0)});
+  }
+  expected_accesses.push_back(
+      {AccessScope::kWindow, AccessMethod::kSelectURL, MainFrameId(),
+       origin_str,
+       SharedStorageEventParams::CreateForSelectURLForTesting(
+           "test-url-selection-operation", /*keep_alive=*/true,
+           SharedStorageEventParams::PrivateAggregationConfigWrapper(),
+           blink::CloneableMessage(), expected_urls_with_metadata,
+           ResolveSelectURLToConfig(),
+           /*saved_query=*/std::string(),
+           /*worklet_id=*/0)});
+  for (int call = 0; call < call_limit; call++) {
+    expected_accesses.push_back(
+        {AccessScope::kWindow, AccessMethod::kSelectURL, MainFrameId(),
+         origin_str,
+         SharedStorageEventParams::CreateForSelectURLForTesting(
+             "test-url-selection-operation", /*keep_alive=*/true,
+             SharedStorageEventParams::PrivateAggregationConfigWrapper(),
+             blink::CloneableMessage(), expected_urls_with_metadata,
+             ResolveSelectURLToConfig(),
+             /*saved_query=*/
+             base::StrCat({"query", base::NumberToString(call)}),
+             /*worklet_id=*/0)});
+  }
+
+  ExpectAccessObserved(expected_accesses);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -3118,6 +3201,71 @@ IN_PROC_BROWSER_TEST_F(
       blink::SharedStorageSelectUrlBudgetStatus::
           kInsufficientSitePageloadBudget,
       1);
+
+  std::vector<Access> expected_accesses;
+  for (int call = 0; call < call_limit; call++) {
+    std::string host =
+        base::StrCat({"subdomain", base::NumberToString(call), ".b.test"});
+    expected_accesses.push_back(
+        {AccessScope::kWindow, AccessMethod::kAddModule, MainFrameId(),
+         https_server()->GetOrigin(host).Serialize(),
+         SharedStorageEventParams::CreateForAddModule(
+             https_server()->GetURL(host, "/shared_storage/simple_module.js"),
+             /*worklet_id=*/call)});
+    expected_accesses.push_back(
+        {AccessScope::kWindow, AccessMethod::kSelectURL, MainFrameId(),
+         https_server()->GetOrigin(host).Serialize(),
+         SharedStorageEventParams::CreateForSelectURLForTesting(
+             "test-url-selection-operation", /*keep_alive=*/true,
+             SharedStorageEventParams::PrivateAggregationConfigWrapper(),
+             blink::CloneableMessage(),
+             GetExpectedUrlsWithMetadata(host, /*num_urls=*/8),
+             ResolveSelectURLToConfig(),
+             /*saved_query=*/
+             base::StrCat({"query", base::NumberToString(call)}),
+             /*worklet_id=*/call)});
+  }
+  expected_accesses.push_back(
+      {AccessScope::kWindow, AccessMethod::kAddModule, MainFrameId(),
+       https_server()->GetOrigin("b.test").Serialize(),
+       SharedStorageEventParams::CreateForAddModule(
+           https_server()->GetURL("b.test", "/shared_storage/simple_module.js"),
+           /*worklet_id=*/call_limit)});
+  expected_accesses.push_back(
+      {AccessScope::kWindow, AccessMethod::kSelectURL, MainFrameId(),
+       https_server()->GetOrigin("b.test").Serialize(),
+       SharedStorageEventParams::CreateForSelectURLForTesting(
+           "test-url-selection-operation", /*keep_alive=*/true,
+           SharedStorageEventParams::PrivateAggregationConfigWrapper(),
+           blink::CloneableMessage(),
+           GetExpectedUrlsWithMetadata("b.test", /*num_urls=*/8),
+           ResolveSelectURLToConfig(),
+           /*saved_query=*/std::string(),
+           /*worklet_id=*/call_limit)});
+  for (int call = 0; call < call_limit; call++) {
+    std::string host =
+        base::StrCat({"subdomain", base::NumberToString(call), ".b.test"});
+    expected_accesses.push_back(
+        {AccessScope::kWindow, AccessMethod::kAddModule, MainFrameId(),
+         https_server()->GetOrigin(host).Serialize(),
+         SharedStorageEventParams::CreateForAddModule(
+             https_server()->GetURL(host, "/shared_storage/simple_module.js"),
+             /*worklet_id=*/call_limit + 1 + call)});
+    expected_accesses.push_back(
+        {AccessScope::kWindow, AccessMethod::kSelectURL, MainFrameId(),
+         https_server()->GetOrigin(host).Serialize(),
+         SharedStorageEventParams::CreateForSelectURLForTesting(
+             "test-url-selection-operation", /*keep_alive=*/true,
+             SharedStorageEventParams::PrivateAggregationConfigWrapper(),
+             blink::CloneableMessage(),
+             GetExpectedUrlsWithMetadata(host, /*num_urls=*/8),
+             ResolveSelectURLToConfig(),
+             /*saved_query=*/
+             base::StrCat({"query", base::NumberToString(call)}),
+             /*worklet_id=*/call_limit + 1 + call)});
+  }
+
+  ExpectAccessObserved(expected_accesses);
 }
 
 class SharedStorageContextBrowserTest

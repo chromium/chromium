@@ -3365,6 +3365,8 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
                 SharedStorageEventParams::SharedStorageUrlSpecWithMetadata>(
                 {{https_server()->GetURL(host, "/fenced_frames/title0.html"),
                   {}}}),
+            /*resolve_to_config=*/true,
+            /*saved_query=*/std::string(),
             /*worklet_id=*/0)}});
 }
 

@@ -89,6 +89,8 @@ class CONTENT_EXPORT SharedStorageEventParams {
           private_aggregation_config,
       const blink::CloneableMessage& serialized_data,
       std::vector<SharedStorageUrlSpecWithMetadata> urls_with_metadata,
+      bool resolve_to_config,
+      std::string saved_query,
       int worklet_id);
   static SharedStorageEventParams CreateForSelectURLForTesting(
       const std::string& operation_name,
@@ -96,6 +98,8 @@ class CONTENT_EXPORT SharedStorageEventParams {
       PrivateAggregationConfigWrapper config_wrapper,
       const blink::CloneableMessage& serialized_data,
       std::vector<SharedStorageUrlSpecWithMetadata> urls_with_metadata,
+      bool resolve_to_config,
+      std::string saved_query,
       int worklet_id);
 
   static SharedStorageEventParams CreateForSet(
@@ -126,6 +130,8 @@ class CONTENT_EXPORT SharedStorageEventParams {
   std::optional<std::string> serialized_data;
   std::optional<std::vector<SharedStorageUrlSpecWithMetadata>>
       urls_with_metadata;
+  std::optional<bool> resolve_to_config;
+  std::optional<std::string> saved_query;
   std::optional<std::string> key;
   std::optional<std::string> value;
   std::optional<bool> ignore_if_present;
@@ -142,6 +148,8 @@ class CONTENT_EXPORT SharedStorageEventParams {
       std::optional<std::string> serialized_data,
       std::optional<std::vector<SharedStorageUrlSpecWithMetadata>>
           urls_with_metadata,
+      std::optional<bool> resolve_to_config,
+      std::optional<std::string> saved_query,
       std::optional<std::string> key,
       std::optional<std::string> value,
       std::optional<bool> ignore_if_present,
@@ -160,6 +168,8 @@ class CONTENT_EXPORT SharedStorageEventParams {
       const blink::CloneableMessage& serialized_data,
       std::optional<std::vector<SharedStorageUrlSpecWithMetadata>>
           urls_with_metadata,
+      std::optional<bool> resolve_to_config,
+      std::optional<std::string> saved_query,
       int worklet_id);
   static SharedStorageEventParams CreateForWorkletOperationForTesting(
       const std::string& operation_name,
@@ -168,6 +178,8 @@ class CONTENT_EXPORT SharedStorageEventParams {
       const blink::CloneableMessage& serialized_data,
       std::optional<std::vector<SharedStorageUrlSpecWithMetadata>>
           urls_with_metadata,
+      std::optional<bool> resolve_to_config,
+      std::optional<std::string> saved_query,
       int worklet_id);
 
   static SharedStorageEventParams CreateForModifierMethod(

@@ -302,6 +302,8 @@ SharedStorageEventParams::SharedStorageEventParams(
     std::optional<std::string> serialized_data,
     std::optional<std::vector<SharedStorageUrlSpecWithMetadata>>
         urls_with_metadata,
+    std::optional<bool> resolve_to_config,
+    std::optional<std::string> saved_query,
     std::optional<std::string> key,
     std::optional<std::string> value,
     std::optional<bool> ignore_if_present,
@@ -313,6 +315,8 @@ SharedStorageEventParams::SharedStorageEventParams(
       private_aggregation_config(std::move(private_aggregation_config)),
       serialized_data(std::move(serialized_data)),
       urls_with_metadata(std::move(urls_with_metadata)),
+      resolve_to_config(resolve_to_config),
+      saved_query(std::move(saved_query)),
       key(std::move(key)),
       value(std::move(value)),
       ignore_if_present(ignore_if_present),
@@ -344,7 +348,8 @@ SharedStorageEventParams SharedStorageEventParams::CreateForRun(
     int worklet_id) {
   return SharedStorageEventParams::CreateForWorkletOperation(
       operation_name, keep_alive, private_aggregation_config, serialized_data,
-      /*urls_with_metadata=*/std::nullopt, worklet_id);
+      /*urls_with_metadata=*/std::nullopt, /*resolve_to_config=*/std::nullopt,
+      /*saved_query=*/std::nullopt, worklet_id);
 }
 
 // static
@@ -356,7 +361,8 @@ SharedStorageEventParams SharedStorageEventParams::CreateForRunForTesting(
     int worklet_id) {
   return SharedStorageEventParams::CreateForWorkletOperationForTesting(
       operation_name, keep_alive, std::move(config_wrapper), serialized_data,
-      /*urls_with_metadata=*/std::nullopt, worklet_id);
+      /*urls_with_metadata=*/std::nullopt, /*resolve_to_config=*/std::nullopt,
+      /*saved_query=*/std::nullopt, worklet_id);
 }
 
 // static
@@ -366,10 +372,13 @@ SharedStorageEventParams SharedStorageEventParams::CreateForSelectURL(
     const blink::mojom::PrivateAggregationConfigPtr& private_aggregation_config,
     const blink::CloneableMessage& serialized_data,
     std::vector<SharedStorageUrlSpecWithMetadata> urls_with_metadata,
+    bool resolve_to_config,
+    std::string saved_query,
     int worklet_id) {
   return SharedStorageEventParams::CreateForWorkletOperation(
       operation_name, keep_alive, private_aggregation_config, serialized_data,
-      std::move(urls_with_metadata), worklet_id);
+      std::move(urls_with_metadata), resolve_to_config, std::move(saved_query),
+      worklet_id);
 }
 
 // static
@@ -379,10 +388,13 @@ SharedStorageEventParams SharedStorageEventParams::CreateForSelectURLForTesting(
     PrivateAggregationConfigWrapper config_wrapper,
     const blink::CloneableMessage& serialized_data,
     std::vector<SharedStorageUrlSpecWithMetadata> urls_with_metadata,
+    bool resolve_to_config,
+    std::string saved_query,
     int worklet_id) {
   return SharedStorageEventParams::CreateForWorkletOperationForTesting(
       operation_name, keep_alive, std::move(config_wrapper), serialized_data,
-      std::move(urls_with_metadata), worklet_id);
+      std::move(urls_with_metadata), resolve_to_config, std::move(saved_query),
+      worklet_id);
 }
 
 // static
@@ -441,6 +453,8 @@ SharedStorageEventParams SharedStorageEventParams::CreateForWorkletCreation(
       /*private_aggregation_config=*/std::nullopt,
       /*serialized_data=*/std::nullopt,
       /*urls_with_metadata=*/std::nullopt,
+      /*resolve_to_config=*/std::nullopt,
+      /*saved_query=*/std::nullopt,
       /*key=*/std::nullopt,
       /*value=*/std::nullopt,
       /*ignore_if_present=*/std::nullopt, worklet_id);
@@ -454,13 +468,15 @@ SharedStorageEventParams SharedStorageEventParams::CreateForWorkletOperation(
     const blink::CloneableMessage& serialized_data,
     std::optional<std::vector<SharedStorageUrlSpecWithMetadata>>
         urls_with_metadata,
+    std::optional<bool> resolve_to_config,
+    std::optional<std::string> saved_query,
     int worklet_id) {
   return SharedStorageEventParams(
       /*script_source_url=*/std::nullopt,
       /*data_origin=*/std::nullopt, operation_name, keep_alive,
       PrivateAggregationConfigWrapper(private_aggregation_config),
       MaybeTruncateSerializedData(serialized_data),
-      std::move(urls_with_metadata),
+      std::move(urls_with_metadata), resolve_to_config, std::move(saved_query),
       /*key=*/std::nullopt,
       /*value=*/std::nullopt,
       /*ignore_if_present=*/std::nullopt, worklet_id);
@@ -475,6 +491,8 @@ SharedStorageEventParams::CreateForWorkletOperationForTesting(
     const blink::CloneableMessage& serialized_data,
     std::optional<std::vector<SharedStorageUrlSpecWithMetadata>>
         urls_with_metadata,
+    std::optional<bool> resolve_to_config,
+    std::optional<std::string> saved_query,
     int worklet_id) {
   return SharedStorageEventParams(
       /*script_source_url=*/std::nullopt,
@@ -482,7 +500,7 @@ SharedStorageEventParams::CreateForWorkletOperationForTesting(
       /*private_aggregation_config=*/
       std::make_optional(std::move(config_wrapper)),
       MaybeTruncateSerializedData(serialized_data),
-      std::move(urls_with_metadata),
+      std::move(urls_with_metadata), resolve_to_config, std::move(saved_query),
       /*key=*/std::nullopt,
       /*value=*/std::nullopt,
       /*ignore_if_present=*/std::nullopt, worklet_id);
@@ -501,7 +519,9 @@ SharedStorageEventParams SharedStorageEventParams::CreateForModifierMethod(
       /*keep_alive=*/std::nullopt,
       /*private_aggregation_config=*/std::nullopt,
       /*serialized_data*/ std::nullopt,
-      /*urls_with_metadata=*/std::nullopt, std::move(key), std::move(value),
+      /*urls_with_metadata=*/std::nullopt,
+      /*resolve_to_config=*/std::nullopt,
+      /*saved_query=*/std::nullopt, std::move(key), std::move(value),
       ignore_if_present, worklet_id);
 }
 
@@ -515,7 +535,9 @@ bool operator==(const SharedStorageEventParams& lhs,
          lhs.private_aggregation_config == rhs.private_aggregation_config &&
          !!lhs.serialized_data == !!rhs.serialized_data &&
          lhs.urls_with_metadata == rhs.urls_with_metadata &&
-         lhs.key == rhs.key && lhs.value == rhs.value &&
+         lhs.resolve_to_config == rhs.resolve_to_config &&
+         lhs.saved_query == rhs.saved_query && lhs.key == rhs.key &&
+         lhs.value == rhs.value &&
          lhs.ignore_if_present == rhs.ignore_if_present &&
          lhs.worklet_id == rhs.worklet_id;
 }
@@ -534,6 +556,9 @@ std::ostream& operator<<(std::ostream& os,
      << SerializeAndEscapeOptionalString(params.serialized_data)
      << "; URLs With Metadata: "
      << SerializeOptionalUrlsWithMetadata(params.urls_with_metadata)
+     << "; Resolve to Config: "
+     << SerializeOptionalBool(params.resolve_to_config)
+     << "; Saved Query: " << SerializeOptionalString(params.saved_query)
      << "; Key: " << SerializeOptionalString(params.key)
      << "; Value: " << SerializeOptionalString(params.value)
      << "; Ignore If Present: "
