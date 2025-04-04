@@ -1586,7 +1586,7 @@ impl Parser<'_> {
             .filter(|arg_id| {
                 matcher.check_explicit(arg_id, &crate::builder::ArgPredicate::IsPresent)
             })
-            .filter(|n| self.cmd.find(n).map(|a| !a.is_hide_set()).unwrap_or(true))
+            .filter(|n| self.cmd.find(n).map(|a| !a.is_hide_set()).unwrap_or(false))
             .cloned()
             .collect();
 
