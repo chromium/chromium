@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_web_contents_listener.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_action_context_desktop.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_delegate_desktop.h"
+#include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_bar.h"
 #include "chrome/common/channel_info.h"
@@ -326,6 +327,135 @@ IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
   EXPECT_EQ(
       0u, browser()->tab_strip_model()->group_model()->ListTabGroups().size());
   EXPECT_FALSE(service->GetGroup(sync_id)->local_group_id().has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
+                       OpeningNewTabFromSyncOpensInLocalGroup) {
+  service_->AddObserver(this);
+
+  // Create a new tab group with one tab. The tab group should be saved.
+  LocalTabGroupID local_id = browser()->tab_strip_model()->AddToNewGroup({0});
+  ASSERT_TRUE(
+      browser()->tab_strip_model()->group_model()->ContainsTabGroup(local_id));
+
+  TabGroup* tab_group =
+      browser()->tab_strip_model()->group_model()->GetTabGroup(local_id);
+  std::optional<tab_groups::SavedTabGroup> saved_group =
+      service_->GetGroup(local_id);
+  ASSERT_TRUE(saved_group);
+
+  SavedTabGroupTab tab_1(GURL("http://www.google.com/1"), u"title 1",
+                         saved_group->saved_guid(),
+                         /*position=*/0);
+
+  SavedTabGroupTab tab_2(GURL("http://www.google.com/2"), u"title 2",
+                         saved_group->saved_guid(),
+                         /*position=*/2);
+
+  model_->AddTabToGroupFromSync(saved_group->saved_guid(), std::move(tab_1));
+  WaitUntilCallbackReceived();
+
+  model_->AddTabToGroupFromSync(saved_group->saved_guid(), std::move(tab_2));
+  WaitUntilCallbackReceived();
+
+  // Verify that the new tabs were added to the group in the correct order.
+  const gfx::Range tab_range = tab_group->ListTabs();
+  ASSERT_EQ(tab_range.length(), 3u);
+  EXPECT_EQ(browser()->tab_strip_model()->GetWebContentsAt(0)->GetURL(),
+            GURL("http://www.google.com/1"));
+  EXPECT_EQ(browser()->tab_strip_model()->GetWebContentsAt(1)->GetURL(),
+            GURL("about:blank"));
+  EXPECT_EQ(browser()->tab_strip_model()->GetWebContentsAt(2)->GetURL(),
+            GURL("http://www.google.com/2"));
+}
+
+IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
+                       NavigatedTabFromSyncNavigatesLocalTab) {
+  service_->AddObserver(this);
+
+  // Create a new tab group with one tab.
+  LocalTabGroupID local_id = browser()->tab_strip_model()->AddToNewGroup({0});
+  ASSERT_TRUE(
+      browser()->tab_strip_model()->group_model()->ContainsTabGroup(local_id));
+  ASSERT_TRUE(model_->Contains(local_id));
+
+  // Simulate a sync navigation.
+  GURL url_to_navigate_to = GURL("https://www.google.com/1");
+  browser()
+      ->tab_strip_model()
+      ->GetTabAtIndex(0)
+      ->GetTabFeatures()
+      ->saved_tab_group_web_contents_listener()
+      ->NavigateToUrlForTest(url_to_navigate_to);
+
+  EXPECT_EQ(browser()->tab_strip_model()->GetWebContentsAt(0)->GetURL(),
+            url_to_navigate_to);
+}
+
+IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
+                       SimulateLocalThenSyncTabNavigations) {
+  service_->AddObserver(this);
+
+  // Create a new tab group with one tab. The tab group should be saved.
+  LocalTabGroupID local_id = browser()->tab_strip_model()->AddToNewGroup({0});
+  ASSERT_TRUE(
+      browser()->tab_strip_model()->group_model()->ContainsTabGroup(local_id));
+  ASSERT_TRUE(model_->Contains(local_id));
+
+  // Perform a local navigation.
+  GURL first_url_to_navigate_to = GURL("https://www.google.com/1");
+  browser()
+      ->tab_strip_model()
+      ->GetWebContentsAt(0)
+      ->GetController()
+      .LoadURLWithParams(content::NavigationController::LoadURLParams(
+          first_url_to_navigate_to));
+  EXPECT_EQ(browser()->tab_strip_model()->GetWebContentsAt(0)->GetURL(),
+            first_url_to_navigate_to);
+
+  // Perform a sync navigation.
+  GURL second_url_to_navigate_to = GURL("https://www.google.com/2");
+  browser()
+      ->tab_strip_model()
+      ->GetTabAtIndex(0)
+      ->GetTabFeatures()
+      ->saved_tab_group_web_contents_listener()
+      ->NavigateToUrlForTest(second_url_to_navigate_to);
+  EXPECT_EQ(browser()->tab_strip_model()->GetWebContentsAt(0)->GetURL(),
+            second_url_to_navigate_to);
+}
+
+IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
+                       SimulateSyncThenLocalTabNavigations) {
+  service_->AddObserver(this);
+
+  // Create a new tab group with one tab. The tab group should be saved.
+  LocalTabGroupID local_id = browser()->tab_strip_model()->AddToNewGroup({0});
+  ASSERT_TRUE(
+      browser()->tab_strip_model()->group_model()->ContainsTabGroup(local_id));
+  ASSERT_TRUE(model_->Contains(local_id));
+
+  // Perform a local navigation.
+  GURL first_url_to_navigate_to = GURL("https://www.google.com/1");
+  browser()
+      ->tab_strip_model()
+      ->GetTabAtIndex(0)
+      ->GetTabFeatures()
+      ->saved_tab_group_web_contents_listener()
+      ->NavigateToUrlForTest(first_url_to_navigate_to);
+  EXPECT_EQ(browser()->tab_strip_model()->GetWebContentsAt(0)->GetURL(),
+            first_url_to_navigate_to);
+
+  // Perform a sync navigation.
+  GURL second_url_to_navigate_to = GURL("https://www.google.com/2");
+  browser()
+      ->tab_strip_model()
+      ->GetWebContentsAt(0)
+      ->GetController()
+      .LoadURLWithParams(content::NavigationController::LoadURLParams(
+          second_url_to_navigate_to));
+  EXPECT_EQ(browser()->tab_strip_model()->GetWebContentsAt(0)->GetURL(),
+            second_url_to_navigate_to);
 }
 
 IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
