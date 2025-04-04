@@ -131,6 +131,11 @@ class VIEWS_EXPORT WidgetDelegate {
     std::u16string title;
   };
 
+  class RegisterWillCloseCallbackPassKey {
+   public:
+    RegisterWillCloseCallbackPassKey() = default;
+  };
+
   WidgetDelegate();
   WidgetDelegate(const WidgetDelegate&) = delete;
   WidgetDelegate& operator=(const WidgetDelegate&) = delete;
@@ -407,9 +412,12 @@ class VIEWS_EXPORT WidgetDelegate {
   void RegisterWindowClosingCallback(base::OnceClosure callback);
   void RegisterDeleteDelegateCallback(base::OnceClosure callback);
 
-  // DEPRECATED. Don't use this. See Widget::MakeCloseSynchronous() for
-  // details.
-  void RegisterWindowWillCloseCallback(base::OnceClosure callback);
+  // DEPRECATED: Instead of using this to perform actions just before close, use
+  // the CLIENT_OWNS_WIDGET ownership model for the Widget, then call
+  // `Widget::MakeCloseSynchronous()` with a client callback that will do the
+  // desired "on close" actions and delete the Widget.
+  void RegisterWindowWillCloseCallback(RegisterWillCloseCallbackPassKey,
+                                       base::OnceClosure callback);
 
   void SetClientViewFactory(ClientViewFactory factory);
   void SetNonClientFrameViewFactory(NonClientFrameViewFactory factory);

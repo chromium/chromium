@@ -532,6 +532,7 @@ void WidgetDelegate::RegisterWidgetInitializedCallback(
 }
 
 void WidgetDelegate::RegisterWindowWillCloseCallback(
+    RegisterWillCloseCallbackPassKey,
     base::OnceClosure callback) {
   window_will_close_callbacks_.emplace_back(std::move(callback));
 }
