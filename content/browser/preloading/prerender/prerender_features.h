@@ -45,6 +45,18 @@ CONTENT_EXPORT extern const base::FeatureParam<size_t>
 CONTENT_EXPORT extern const base::FeatureParam<bool>
     kPrerender2FallbackPrefetchUseBlockUntilHeadTimetout;
 
+enum class Prerender2FallbackPrefetchSchedulerPolicy {
+  // Do not use `PrefetchScheduler` code path.
+  kNotUse,
+  // Prioritize prefetch ahead of prerender.
+  kPrioritize,
+  // Burst prefetch ahead of prerender.
+  kBurst,
+};
+CONTENT_EXPORT extern const base::FeatureParam<
+    Prerender2FallbackPrefetchSchedulerPolicy>
+    kPrerender2FallbackPrefetchSchedulerPolicy;
+
 // This feature was used to launch Prerender2 support for No-Vary-Search header.
 // This work has finished and the old implementation was deleted. Now this flag
 // is just for injecting parameters through field trials as an umberella

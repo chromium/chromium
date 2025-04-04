@@ -41,12 +41,16 @@ enum class PrefetchPriority {
   kBase = 0,
   // For tests. Do not use outside tests.
   kHighTest = 1,
+  // Priority for prefetch ahead of prerender.
+  kHighAheadOfPrerender = 2,
   // It's a threshold for burst. Do not use it in
   // `PrefetchQueue::CalculatePriority()`. For burst, see a comment of
   // `PrefetchScheduler`.
   kBurstThreshold = 10,
   // For tests. Do not use outside tests.
   kBurstTest = 11,
+  // Burst priority for prefetch ahead of prerender.
+  kBurstAheadOfPrerender = 12,
 };
 
 // Priority queue for prefetches
