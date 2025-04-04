@@ -17,7 +17,10 @@
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_web_contents_listener.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_action_context_desktop.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_delegate_desktop.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_bar.h"
@@ -146,6 +149,137 @@ class TabGroupSyncDelegateBrowserTest : public InProcessBrowserTest,
   base::OnceClosure quit_;
   bool callback_received_ = false;
 };
+
+IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
+                       GetBrowserWithTabGroupId) {
+  service_->AddObserver(this);
+  EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
+
+  LocalTabGroupID group_id = browser()->tab_strip_model()->AddToNewGroup({0});
+  EXPECT_EQ(browser(),
+            tab_groups::SavedTabGroupUtils::GetBrowserWithTabGroupId(group_id));
+}
+
+IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
+                       UngroupingTabIsRemovedFromSavedGroup) {
+  service_->AddObserver(this);
+  chrome::AddTabAt(browser(), GURL("https://google.com"), 1, false);
+  EXPECT_EQ(browser()->tab_strip_model()->count(), 2);
+
+  LocalTabGroupID group_id =
+      browser()->tab_strip_model()->AddToNewGroup({0, 1});
+
+  tab_groups::SavedTabGroupWebContentsListener* listener =
+      browser()
+          ->tab_strip_model()
+          ->GetTabAtIndex(0)
+          ->GetTabFeatures()
+          ->saved_tab_group_web_contents_listener();
+
+  EXPECT_TRUE(listener->saved_group());
+  EXPECT_EQ(listener->saved_group()->local_group_id(), group_id);
+  EXPECT_TRUE(model_->Contains(group_id));
+  EXPECT_EQ(model_->Get(group_id)->saved_tabs().size(), 2u);
+
+  // Move the first tab outside the group.
+  browser()->tab_strip_model()->MoveWebContentsAt(0, 0, true, std::nullopt);
+
+  EXPECT_FALSE(listener->saved_group());
+  EXPECT_TRUE(model_->Contains(group_id));
+  EXPECT_EQ(model_->Get(group_id)->saved_tabs().size(), 1u);
+}
+
+IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
+                       AddingTabToGroupAddsItToSavedGroup) {
+  service_->AddObserver(this);
+  chrome::AddTabAt(browser(), GURL("https://google.com"), 1, false);
+  EXPECT_EQ(browser()->tab_strip_model()->count(), 2);
+  LocalTabGroupID group_id = browser()->tab_strip_model()->AddToNewGroup({1});
+
+  tab_groups::SavedTabGroupWebContentsListener* listener =
+      browser()
+          ->tab_strip_model()
+          ->GetTabAtIndex(0)
+          ->GetTabFeatures()
+          ->saved_tab_group_web_contents_listener();
+
+  EXPECT_FALSE(listener->saved_group());
+  EXPECT_TRUE(model_->Contains(group_id));
+  EXPECT_EQ(model_->Get(group_id)->saved_tabs().size(), 1u);
+
+  // Move the first tab inside the group.
+  browser()->tab_strip_model()->MoveWebContentsAt(0, 0, true, group_id);
+
+  EXPECT_TRUE(listener->saved_group());
+  EXPECT_TRUE(model_->Contains(group_id));
+  EXPECT_EQ(model_->Get(group_id)->saved_tabs().size(), 2u);
+}
+
+IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
+                       AlreadyOpenedGroupIsFocused) {
+  // Create 2 tabs; Add 1 to a tab group.
+  service_->AddObserver(this);
+  chrome::AddTabAt(browser(), GURL("https://google.com"), 1, true);
+  EXPECT_EQ(browser()->tab_strip_model()->count(), 2);
+
+  LocalTabGroupID group_id = browser()->tab_strip_model()->AddToNewGroup({0});
+  EXPECT_TRUE(model_->Contains(group_id));
+
+  std::optional<tab_groups::SavedTabGroup> saved_group =
+      service_->GetGroup(group_id);
+  EXPECT_TRUE(saved_group);
+
+  base::Uuid sync_id = saved_group->saved_guid();
+
+  // Attempt to open the group again.
+  EXPECT_EQ(browser()->tab_strip_model()->active_index(), 1);
+  std::optional<LocalTabGroupID> opened_group_id = service_->OpenTabGroup(
+      sync_id, std::make_unique<tab_groups::TabGroupActionContextDesktop>(
+                   browser(), tab_groups::OpeningSource::kOpenedFromRevisitUi));
+
+  EXPECT_TRUE(opened_group_id);
+  EXPECT_EQ(opened_group_id, group_id);
+  EXPECT_EQ(browser()->tab_strip_model()->active_index(), 0);
+}
+
+IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
+                       AlreadyOpenedGroupsActiveTabDoesNotChange) {
+  // Create 3 tabs; Add 2 to a tab group.
+  service_->AddObserver(this);
+  chrome::AddTabAt(browser(), GURL("https://google.com"), 1, true);
+  chrome::AddTabAt(browser(), GURL("https://google.com"), 2, true);
+  EXPECT_EQ(browser()->tab_strip_model()->count(), 3);
+
+  LocalTabGroupID group_id =
+      browser()->tab_strip_model()->AddToNewGroup({1, 2});
+  EXPECT_TRUE(model_->Contains(group_id));
+
+  std::optional<tab_groups::SavedTabGroup> saved_group =
+      service_->GetGroup(group_id);
+  EXPECT_TRUE(saved_group);
+
+  base::Uuid sync_id = saved_group->saved_guid();
+
+  // Attempt to open the group again and ensure the 2nd tab in the group is
+  // still the active tab.
+  EXPECT_EQ(browser()->tab_strip_model()->active_index(), 2);
+  std::optional<LocalTabGroupID> opened_group_id = service_->OpenTabGroup(
+      sync_id, std::make_unique<tab_groups::TabGroupActionContextDesktop>(
+                   browser(), tab_groups::OpeningSource::kOpenedFromRevisitUi));
+  EXPECT_TRUE(opened_group_id);
+  EXPECT_EQ(opened_group_id, group_id);
+  EXPECT_EQ(browser()->tab_strip_model()->active_index(), 2);
+
+  // Activate a tab not in the group and attempt to open the group again. Expect
+  // that the active tab becomes the first tab in the group.
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  opened_group_id = service_->OpenTabGroup(
+      sync_id, std::make_unique<tab_groups::TabGroupActionContextDesktop>(
+                   browser(), tab_groups::OpeningSource::kOpenedFromRevisitUi));
+  EXPECT_TRUE(opened_group_id);
+  EXPECT_EQ(opened_group_id, group_id);
+  EXPECT_EQ(browser()->tab_strip_model()->active_index(), 1);
+}
 
 IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
                        RemovedGroupFromSyncClosedLocallyIfOpen) {
