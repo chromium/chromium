@@ -337,8 +337,8 @@ void BrowserActions::InitializeBrowserActions() {
               },
               base::Unretained(browser)))
           .SetActionId(kActionZoomNormal)
-          .SetText(l10n_util::GetStringUTF16((IDS_ZOOM_NORMAL)))
-          .SetTooltipText(l10n_util::GetStringUTF16((IDS_TOOLTIP_ZOOM)))
+          .SetText(l10n_util::GetStringUTF16(IDS_ZOOM_NORMAL))
+          .SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_ZOOM))
           .SetImage(ui::ImageModel::FromVectorIcon(kZoomInIcon))
           .SetProperty(views::kElementIdentifierKey, kActionItemZoomElementId)
           .Build());
