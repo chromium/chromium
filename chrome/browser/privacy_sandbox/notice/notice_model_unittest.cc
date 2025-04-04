@@ -5,8 +5,14 @@
 #include "chrome/browser/privacy_sandbox/notice/notice_model.h"
 
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "chrome/browser/privacy_sandbox/notice/notice_features.h"
+#include "chrome/browser/privacy_sandbox/notice/notice_model.h"
+#include "components/prefs/scoped_user_pref_update.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_notice.mojom.h"
+#include "components/privacy_sandbox/privacy_sandbox_notice_storage.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest-death-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -28,7 +34,17 @@ namespace {
 
 class NoticeTest : public testing::Test {
  public:
-  NoticeTest() : catalog_(std::make_unique<NoticeCatalog>()) {}
+  NoticeTest()
+      : catalog_(std::make_unique<NoticeCatalog>()),
+        task_env_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    PrivacySandboxNoticeStorage::RegisterProfilePrefs(prefs()->registry());
+  }
+
+  TestingPrefServiceSimple* prefs() { return &prefs_; }
+
+  PrivacySandboxNoticeStorage* notice_storage() {
+    return notice_storage_.get();
+  }
 
   Notice* RegisterAndRetrieveNotice(PrivacySandboxNotice notice) {
     return catalog_->RegisterAndRetrieveNewNotice(
@@ -44,6 +60,9 @@ class NoticeTest : public testing::Test {
 
  private:
   std::unique_ptr<NoticeCatalog> catalog_;
+  TestingPrefServiceSimple prefs_;
+  base::test::TaskEnvironment task_env_;
+  std::unique_ptr<PrivacySandboxNoticeStorage> notice_storage_;
 };
 
 TEST_F(NoticeTest, NoticeIsFulfillmentEventCorrect) {
@@ -72,17 +91,122 @@ TEST_F(NoticeTest, NoEligibilityCallbackReturnsNotEligible) {
   EXPECT_EQ(api->GetEligibilityLevel(), EligibilityLevel::kNotEligible);
 }
 
+TEST_F(NoticeTest, VerifyWasFulfilledRetFalseNoPrefs) {
+  Notice* notice =
+      notice_catalog()
+          ->RegisterAndRetrieveNewNotice(
+              &Make<Notice>,
+              {PrivacySandboxNotice::kProtectedAudienceMeasurementNotice,
+               SurfaceType::kDesktopNewTab})
+          ->SetFeature(&kProtectedAudienceMeasurementNoticeModalFeature);
+
+  EXPECT_FALSE(notice->WasFulfilled(notice_storage(), prefs()));
+}
+
+TEST_F(NoticeTest, VerifyWasFulfilledRetFalseInvalidAction) {
+  Notice* notice =
+      notice_catalog()
+          ->RegisterAndRetrieveNewNotice(
+              &Make<Notice>,
+              {PrivacySandboxNotice::kProtectedAudienceMeasurementNotice,
+               SurfaceType::kDesktopNewTab})
+          ->SetFeature(&kProtectedAudienceMeasurementNoticeModalFeature);
+
+  notice_storage()->SetNoticeShown(
+      prefs(), notice->GetFeature()->name,
+      base::Time::FromMillisecondsSinceUnixEpoch(100));
+  notice_storage()->SetNoticeActionTaken(
+      prefs(), notice->GetFeature()->name, PrivacySandboxNoticeEvent::kOptIn,
+      base::Time::FromMillisecondsSinceUnixEpoch(200));
+
+  EXPECT_FALSE(notice->WasFulfilled(notice_storage(), prefs()));
+}
+
+TEST_F(NoticeTest, VerifyWasFulfilledRetTrue) {
+  Notice* notice =
+      notice_catalog()
+          ->RegisterAndRetrieveNewNotice(
+              &Make<Notice>,
+              {PrivacySandboxNotice::kProtectedAudienceMeasurementNotice,
+               SurfaceType::kDesktopNewTab})
+          ->SetFeature(&kProtectedAudienceMeasurementNoticeModalFeature);
+
+  notice_storage()->SetNoticeShown(
+      prefs(), notice->GetFeature()->name,
+      base::Time::FromMillisecondsSinceUnixEpoch(100));
+  notice_storage()->SetNoticeActionTaken(
+      prefs(), notice->GetFeature()->name, PrivacySandboxNoticeEvent::kAck,
+      base::Time::FromMillisecondsSinceUnixEpoch(200));
+
+  EXPECT_TRUE(notice->WasFulfilled(notice_storage(), prefs()));
+}
+
+TEST_F(NoticeTest, VerifyWasFulfilledRetTrueMultipleActions) {
+  Notice* notice =
+      notice_catalog()
+          ->RegisterAndRetrieveNewNotice(
+              &Make<Notice>,
+              {PrivacySandboxNotice::kProtectedAudienceMeasurementNotice,
+               SurfaceType::kDesktopNewTab})
+          ->SetFeature(&kProtectedAudienceMeasurementNoticeModalFeature);
+
+  notice_storage()->SetNoticeShown(
+      prefs(), notice->GetFeature()->name,
+      base::Time::FromMillisecondsSinceUnixEpoch(100));
+  notice_storage()->SetNoticeActionTaken(
+      prefs(), notice->GetFeature()->name, PrivacySandboxNoticeEvent::kAck,
+      base::Time::FromMillisecondsSinceUnixEpoch(200));
+  notice_storage()->SetNoticeShown(
+      prefs(), notice->GetFeature()->name,
+      base::Time::FromMillisecondsSinceUnixEpoch(250));
+  notice_storage()->SetNoticeActionTaken(
+      prefs(), notice->GetFeature()->name, PrivacySandboxNoticeEvent::kOptIn,
+      base::Time::FromMillisecondsSinceUnixEpoch(300));
+
+  EXPECT_TRUE(notice->WasFulfilled(notice_storage(), prefs()));
+}
+
+TEST_F(NoticeTest, VerifyWasFulfilledRetTrueEndsWithShown) {
+  Notice* notice =
+      notice_catalog()
+          ->RegisterAndRetrieveNewNotice(
+              &Make<Notice>,
+              {PrivacySandboxNotice::kProtectedAudienceMeasurementNotice,
+               SurfaceType::kDesktopNewTab})
+          ->SetFeature(&kProtectedAudienceMeasurementNoticeModalFeature);
+
+  notice_storage()->SetNoticeShown(
+      prefs(), notice->GetFeature()->name,
+      base::Time::FromMillisecondsSinceUnixEpoch(100));
+  notice_storage()->SetNoticeActionTaken(
+      prefs(), notice->GetFeature()->name, PrivacySandboxNoticeEvent::kAck,
+      base::Time::FromMillisecondsSinceUnixEpoch(200));
+  notice_storage()->SetNoticeShown(
+      prefs(), notice->GetFeature()->name,
+      base::Time::FromMillisecondsSinceUnixEpoch(250));
+
+  EXPECT_TRUE(notice->WasFulfilled(notice_storage(), prefs()));
+}
+
 TEST_F(NoticeTest, SetEligibilityCallbackReturnsNoticeEligibilitySuccessfully) {
   NoticeApi* api =
       notice_catalog()->RegisterAndRetrieveNewApi()->SetEligibilityCallback(
           base::BindRepeating([]() -> EligibilityLevel {
             return EligibilityLevel::kEligibleNotice;
           }));
-  RegisterAndRetrieveNotice(PrivacySandboxNotice::kTopicsConsentNotice)
-      ->SetTargetApis({api});
-  // TODO(crbug.com/392612108): Once WasFulfilled is implemented, change this
-  // value.
-  EXPECT_FALSE(api->IsFulfilled());
+  Notice* notice =
+      RegisterAndRetrieveNotice(
+          PrivacySandboxNotice::kProtectedAudienceMeasurementNotice)
+          ->SetTargetApis({api})
+          ->SetFeature(&kProtectedAudienceMeasurementNoticeModalFeature);
+
+  notice_storage()->SetNoticeShown(
+      prefs(), notice->GetFeature()->name,
+      base::Time::FromMillisecondsSinceUnixEpoch(100));
+  notice_storage()->SetNoticeActionTaken(
+      prefs(), notice->GetFeature()->name, PrivacySandboxNoticeEvent::kAck,
+      base::Time::FromMillisecondsSinceUnixEpoch(200));
+  EXPECT_TRUE(api->IsFulfilled(notice_storage(), prefs()));
 }
 
 TEST_F(NoticeTest,
@@ -92,11 +216,19 @@ TEST_F(NoticeTest,
           base::BindRepeating([]() -> EligibilityLevel {
             return EligibilityLevel::kEligibleConsent;
           }));
-  RegisterAndRetrieveConsent(PrivacySandboxNotice::kTopicsConsentNotice)
-      ->SetTargetApis({api});
-  // TODO(crbug.com/392612108): Once WasFulfilled is implemented, change this
-  // value.
-  EXPECT_FALSE(api->IsFulfilled());
+  Notice* notice =
+      RegisterAndRetrieveConsent(PrivacySandboxNotice::kTopicsConsentNotice)
+          ->SetTargetApis({api})
+          ->SetFeature(&kProtectedAudienceMeasurementNoticeModalFeature);
+
+  notice_storage()->SetNoticeShown(
+      prefs(), notice->GetFeature()->name,
+      base::Time::FromMillisecondsSinceUnixEpoch(100));
+  notice_storage()->SetNoticeActionTaken(
+      prefs(), notice->GetFeature()->name, PrivacySandboxNoticeEvent::kOptIn,
+      base::Time::FromMillisecondsSinceUnixEpoch(200));
+
+  EXPECT_TRUE(api->IsFulfilled(notice_storage(), prefs()));
 }
 
 TEST_F(NoticeTest, ConsentEligibilityWithNoticeTypeReturnsNotFulfilled) {
@@ -105,11 +237,20 @@ TEST_F(NoticeTest, ConsentEligibilityWithNoticeTypeReturnsNotFulfilled) {
           base::BindRepeating([]() -> EligibilityLevel {
             return EligibilityLevel::kEligibleConsent;
           }));
-  RegisterAndRetrieveNotice(PrivacySandboxNotice::kTopicsConsentNotice)
-      ->SetTargetApis({api});
-  // TODO(crbug.com/392612108): Once WasFulfilled is implemented, change this
-  // value.
-  EXPECT_FALSE(api->IsFulfilled());
+  Notice* notice =
+      RegisterAndRetrieveNotice(
+          PrivacySandboxNotice::kProtectedAudienceMeasurementNotice)
+          ->SetTargetApis({api})
+          ->SetFeature(&kProtectedAudienceMeasurementNoticeModalFeature);
+
+  notice_storage()->SetNoticeShown(
+      prefs(), notice->GetFeature()->name,
+      base::Time::FromMillisecondsSinceUnixEpoch(100));
+  notice_storage()->SetNoticeActionTaken(
+      prefs(), notice->GetFeature()->name, PrivacySandboxNoticeEvent::kOptIn,
+      base::Time::FromMillisecondsSinceUnixEpoch(200));
+
+  EXPECT_FALSE(api->IsFulfilled(notice_storage(), prefs()));
 }
 
 class ResultCallbackTest
@@ -228,7 +369,6 @@ TEST_F(NoticeCatalogNoticeTest, RegisterNewNoticeGroupSuccessfully) {
 
 TEST_F(NoticeCatalogNoticeTest,
        VerifyFeatureSetCorrectlyDuringNoticeGroupRegistration) {
-  NoticeCatalog catalog;
   NoticeApi* target_api = notice_catalog()->RegisterAndRetrieveNewApi();
 
   notice_catalog()->RegisterNoticeGroup(
