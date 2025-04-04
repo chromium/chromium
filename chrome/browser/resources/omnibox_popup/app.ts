@@ -63,9 +63,10 @@ export class OmniboxPopupAppElement extends CrLitElement {
     };
   }
 
-  canShowSecondarySide: boolean = canShowSecondarySideMediaQueryList.matches;
-  hasSecondarySide: boolean = false;
-  protected result_: AutocompleteResult|null = null;
+  accessor canShowSecondarySide: boolean =
+      canShowSecondarySideMediaQueryList.matches;
+  accessor hasSecondarySide: boolean = false;
+  protected accessor result_: AutocompleteResult|null = null;
 
   private callbackRouter_: PageCallbackRouter;
   private autocompleteResultChangedListenerId_: number|null = null;

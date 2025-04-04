@@ -40,8 +40,8 @@ export class SpListItemBadgeElement extends CrLitElement {
     };
   }
 
-  actionable: boolean = false;
-  wasUpdated: boolean = false;
+  accessor actionable: boolean = false;
+  accessor wasUpdated: boolean = false;
 
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
