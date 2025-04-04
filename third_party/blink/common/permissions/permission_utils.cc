@@ -313,6 +313,14 @@ std::optional<PermissionType> PermissionDescriptorInfoToPermissionType(
       return PermissionType::WEB_APP_INSTALLATION;
     case PermissionName::LOCAL_NETWORK_ACCESS:
       return PermissionType::LOCAL_NETWORK_ACCESS;
+    case PermissionName::VR:
+      return PermissionType::VR;
+    case PermissionName::AR:
+      return PermissionType::AR;
+    case PermissionName::HAND_TRACKING:
+      return PermissionType::HAND_TRACKING;
+    case PermissionName::WEB_PRINTING:
+      return PermissionType::WEB_PRINTING;
     default:
       NOTREACHED();
   }
