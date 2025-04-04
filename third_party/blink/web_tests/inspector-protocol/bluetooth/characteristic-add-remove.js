@@ -68,7 +68,6 @@
   // Start the test.
   const {result: {characteristicId: measurementIntervalCharacteristicId}} =
       await bp.BluetoothEmulation.addCharacteristic({
-        address: helper.peripheralAddress(),
         serviceId: heartRateServiceId,
         characteristicUuid:
             BluetoothHelper.MEASUREMENT_INTERVAL_CHARACTERISTIC_UUID,
@@ -84,7 +83,6 @@
 
   const {result: {characteristicId: dateTimeCharacteristicId}} =
       await bp.BluetoothEmulation.addCharacteristic({
-        address: helper.peripheralAddress(),
         serviceId: heartRateServiceId,
         characteristicUuid: BluetoothHelper.DATE_TIME_CHARACTERISTIC_UUID,
         properties: {
@@ -96,8 +94,6 @@
           getCharacteristics, BluetoothHelper.HEART_RATE_SERVICE_UUID)}`);
 
   await bp.BluetoothEmulation.removeCharacteristic({
-    address: helper.peripheralAddress(),
-    serviceId: heartRateServiceId,
     characteristicId: dateTimeCharacteristicId
   });
   testRunner.log(`After removing date time characteristic: ${
@@ -105,8 +101,6 @@
           getCharacteristics, BluetoothHelper.HEART_RATE_SERVICE_UUID)}`);
 
   await bp.BluetoothEmulation.removeCharacteristic({
-    address: helper.peripheralAddress(),
-    serviceId: heartRateServiceId,
     characteristicId: measurementIntervalCharacteristicId
   });
   testRunner.log(`After removing measurement interval characteristic: ${

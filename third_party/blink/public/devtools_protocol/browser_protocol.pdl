@@ -13339,18 +13339,15 @@ experimental domain BluetoothEmulation
       # An identifier that uniquely represents this service.
       string serviceId
 
-  # Removes the service respresented by |serviceId| from the peripheral with
-  # |address|.
+  # Removes the service respresented by |serviceId| from the simulated central.
   command removeService
     parameters
-      string address
       string serviceId
 
   # Adds a characteristic with |characteristicUuid| and |properties| to the
-  # service represented by |serviceId| in the peripheral with |address|.
+  # service represented by |serviceId|.
   command addCharacteristic
     parameters
-      string address
       string serviceId
       string characteristicUuid
       CharacteristicProperties properties
@@ -13359,34 +13356,24 @@ experimental domain BluetoothEmulation
       string characteristicId
 
   # Removes the characteristic respresented by |characteristicId| from the
-  # service respresented by |serviceId| in the peripheral with |address|.
+  # simulated central.
   command removeCharacteristic
     parameters
-      string address
-      string serviceId
       string characteristicId
 
   # Adds a descriptor with |descriptorUuid| to the characteristic respresented
-  # by |characteristicId| in the service represented by |serviceId| of the
-  # peripheral with |address|.
+  # by |characteristicId|.
   command addDescriptor
     parameters
-      string address
-      string serviceId
       string characteristicId
       string descriptorUuid
     returns
       # An identifier that uniquely represents this descriptor.
       string descriptorId
 
-  # Removes the descriptor with |descriptorId| from the characteristic
-  # respresented by |characteristicId| in the service represented by |serviceId|
-  # of the peripheral with |address|.
+  # Removes the descriptor with |descriptorId| from the simulated central.
   command removeDescriptor
     parameters
-      string address
-      string serviceId
-      string characteristicId
       string descriptorId
 
   # Event for when a GATT operation of |type| to the peripheral with |address|

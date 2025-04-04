@@ -14,7 +14,6 @@
 
   // Start the test.
   const result = await bp.BluetoothEmulation.addCharacteristic({
-    address: helper.peripheralAddress(),
     serviceId: heartRateServiceId,
     characteristicUuid: 'abc',
     properties: {
