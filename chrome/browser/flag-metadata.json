@@ -1939,11 +1939,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "defer-renderer-tasks-after-input",
-    "owners": [ "shaseley@google.com" ],
-    "expiry_milestone": 135
-  },
-  {
     "name": "delay-media-sink-discovery",
     "owners": [
       "muyaoxu@google.com",

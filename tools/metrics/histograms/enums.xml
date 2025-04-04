@@ -14468,7 +14468,6 @@ from previous Chrome versions.
   <int value="88127181" label="NotebookLmAppPreinstall:enabled"/>
   <int value="88437020" label="FeaturePolicy:enabled"/>
   <int value="88863813" label="DesktopPWAsDetailedInstallDialog:enabled"/>
-  <int value="89036875" label="DeferRendererTasksAfterInput:disabled"/>
   <int value="89357752" label="PdfXfaSupport:enabled"/>
   <int value="89748527" label="AllowLegacyMV2Extensions:enabled"/>
   <int value="89758831" label="FontAccessChooser:enabled"/>
@@ -15572,7 +15571,6 @@ from previous Chrome versions.
   <int value="506153966" label="WebAppSyncGeneratedIconUpdateFix:disabled"/>
   <int value="507206806" label="OmniboxExpandedLayout:enabled"/>
   <int value="508272289" label="SharedHighlightingAmp:disabled"/>
-  <int value="509197340" label="DeferRendererTasksAfterInput:enabled"/>
   <int value="510066229"
       label="AutofillEnforceMinRequiredFieldsForQuery:enabled"/>
   <int value="510493780" label="EnableCertManagementUIV2:enabled"/>

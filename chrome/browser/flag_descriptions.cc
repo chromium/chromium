@@ -385,13 +385,6 @@ const char kDeprecateUnloadDescription[] =
     "explicitly disabled by Permissions-Policy, even during the gradual "
     "rollout of their deprecation.";
 
-const char kDeferRendererTasksAfterInputName[] =
-    "Defer Renderer Tasks After Input";
-const char kDeferRendererTasksAfterInputDescription[] =
-    "If enabled, tasks in the renderer will be deferred after discrete input "
-    "events, e.g. keypress, until after the subsequent frame. The associated "
-    "policy controls which tasks types can be deferred.";
-
 #if !BUILDFLAG(IS_ANDROID)
 const char kDevToolsAutomaticWorkspaceFoldersName[] =
     "DevTools Automatic Workspace Folders";

@@ -3889,50 +3889,6 @@ const FeatureEntry::FeatureVariation
          std::size(kVisitedURLRankingDomainDeduplicationIncludePathQueryParam),
          nullptr}};
 
-const FeatureEntry::FeatureParam
-    kDeferRendererTasksAfterInputMinimalTypesPolicyParam[] = {
-        {blink::features::kDeferRendererTasksAfterInputPolicyParamName,
-         blink::features::kDeferRendererTasksAfterInputMinimalTypesPolicyName}};
-const FeatureEntry::FeatureParam
-    kDeferRendererTasksAfterInputNonUserBlockingDeferrableTypesPolicyParam[] = {
-        {blink::features::kDeferRendererTasksAfterInputPolicyParamName,
-         blink::features::
-             kDeferRendererTasksAfterInputNonUserBlockingDeferrableTypesPolicyName}};
-const FeatureEntry::FeatureParam
-    kDeferRendererTasksAfterInputAllDeferrableTypesPolicyParam[] = {
-        {blink::features::kDeferRendererTasksAfterInputPolicyParamName,
-         blink::features::
-             kDeferRendererTasksAfterInputAllDeferrableTypesPolicyName}};
-const FeatureEntry::FeatureParam
-    kDeferRendererTasksAfterInputNonUserBlockingTypesPolicyParam[] = {
-        {blink::features::kDeferRendererTasksAfterInputPolicyParamName,
-         blink::features::
-             kDeferRendererTasksAfterInputNonUserBlockingTypesPolicyName}};
-const FeatureEntry::FeatureParam
-    kDeferRendererTasksAfterInputAllTypesPolicyParam[] = {
-        {blink::features::kDeferRendererTasksAfterInputPolicyParamName,
-         blink::features::kDeferRendererTasksAfterInputAllTypesPolicyName}};
-
-const FeatureEntry::FeatureVariation kDeferRendererTasksAfterInputVariations[] = {
-    {"with a minimal subset of tasks types",
-     kDeferRendererTasksAfterInputMinimalTypesPolicyParam,
-     std::size(kDeferRendererTasksAfterInputMinimalTypesPolicyParam), nullptr},
-    {"with existing non-user-blocking 'deferrable' task types",
-     kDeferRendererTasksAfterInputNonUserBlockingDeferrableTypesPolicyParam,
-     std::size(
-         kDeferRendererTasksAfterInputNonUserBlockingDeferrableTypesPolicyParam),
-     nullptr},
-    {"with non-user-blocking task types",
-     kDeferRendererTasksAfterInputNonUserBlockingTypesPolicyParam,
-     std::size(kDeferRendererTasksAfterInputNonUserBlockingTypesPolicyParam),
-     nullptr},
-    {"with all existing 'deferrable' task types",
-     kDeferRendererTasksAfterInputAllDeferrableTypesPolicyParam,
-     std::size(kDeferRendererTasksAfterInputAllDeferrableTypesPolicyParam),
-     nullptr},
-    {"with all task types", kDeferRendererTasksAfterInputAllTypesPolicyParam,
-     std::size(kDeferRendererTasksAfterInputAllTypesPolicyParam), nullptr}};
-
 // LINT.IfChange(AutofillUploadCardRequestTimeouts)
 const FeatureEntry::FeatureParam
     kAutofillUploadCardRequestTimeout_6Point5Seconds[] = {
@@ -10849,14 +10805,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAll,
      FEATURE_VALUE_TYPE(visited_url_ranking::features::
                             kVisitedURLRankingHistoryVisibilityScoreFilter)},
-
-    {"defer-renderer-tasks-after-input",
-     flag_descriptions::kDeferRendererTasksAfterInputName,
-     flag_descriptions::kDeferRendererTasksAfterInputDescription, kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         blink::features::kDeferRendererTasksAfterInput,
-         kDeferRendererTasksAfterInputVariations,
-         "DeferRendererTasksAfterInput")},
 
     {"autofill-upload-card-request-timeout",
      flag_descriptions::kAutofillUploadCardRequestTimeoutName,

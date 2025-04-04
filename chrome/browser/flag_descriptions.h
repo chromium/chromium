@@ -249,9 +249,6 @@ extern const char kHistorySyncAlternativeIllustrationDescription[];
 extern const char kDeprecateUnloadName[];
 extern const char kDeprecateUnloadDescription[];
 
-extern const char kDeferRendererTasksAfterInputName[];
-extern const char kDeferRendererTasksAfterInputDescription[];
-
 #if BUILDFLAG(IS_CHROMEOS)
 extern const char kDemoModeComponentUpdaterTestTagName[];
 extern const char kDemoModeComponentUpdaterTestTagDescription[];
