@@ -71,10 +71,7 @@ struct CORE_EXPORT PhysicalRect {
     return {offset.left + size.width, offset.top + size.height};
   }
 
-  constexpr bool operator==(const PhysicalRect& other) const {
-    return offset == other.offset && size == other.size;
-  }
-  bool operator!=(const PhysicalRect& other) const { return !(*this == other); }
+  constexpr bool operator==(const PhysicalRect& other) const = default;
 
   PhysicalRect operator+(const PhysicalOffset& other) const {
     return {offset + other, size};

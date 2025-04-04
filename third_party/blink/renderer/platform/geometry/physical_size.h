@@ -39,6 +39,8 @@ struct PLATFORM_EXPORT PhysicalSize {
   LayoutUnit width;
   LayoutUnit height;
 
+  constexpr bool operator==(const PhysicalSize& other) const = default;
+
   PhysicalSize operator+(const PhysicalSize& other) const {
     return PhysicalSize{this->width + other.width, this->height + other.height};
   }
@@ -62,13 +64,6 @@ struct PLATFORM_EXPORT PhysicalSize {
   PhysicalSize operator*(float scale) const {
     return PhysicalSize(LayoutUnit(this->width * scale),
                         LayoutUnit(this->height * scale));
-  }
-
-  constexpr bool operator==(const PhysicalSize& other) const {
-    return std::tie(other.width, other.height) == std::tie(width, height);
-  }
-  constexpr bool operator!=(const PhysicalSize& other) const {
-    return !(*this == other);
   }
 
   constexpr bool IsEmpty() const {

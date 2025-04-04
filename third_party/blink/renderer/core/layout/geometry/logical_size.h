@@ -39,13 +39,7 @@ struct CORE_EXPORT LogicalSize {
   LayoutUnit inline_size;
   LayoutUnit block_size;
 
-  constexpr bool operator==(const LogicalSize& other) const {
-    return std::tie(other.inline_size, other.block_size) ==
-           std::tie(inline_size, block_size);
-  }
-  constexpr bool operator!=(const LogicalSize& other) const {
-    return !(*this == other);
-  }
+  constexpr bool operator==(const LogicalSize& other) const = default;
 
   LogicalSize operator*(float scale) const {
     return LogicalSize(LayoutUnit(inline_size * scale),
