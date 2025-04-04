@@ -218,6 +218,11 @@ public class SemanticColorUtils {
         return resolve(R.attr.colorSurfaceContainer, context);
     }
 
+    /** Returns the semantic color values that correspond to colorSurfaceContainerHigh. */
+    public static @ColorInt int getColorSurfaceContainerHigh(Context context) {
+        return resolve(R.attr.colorSurfaceContainerHigh, context);
+    }
+
     /** Returns the semantic color values that correspond to colorSurfaceContainerHighest. */
     public static @ColorInt int getColorSurfaceContainerHighest(Context context) {
         return resolve(R.attr.colorSurfaceContainerHighest, context);
