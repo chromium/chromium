@@ -28,6 +28,7 @@ build_webui("build") {
     "icons.html.ts",
     "main.ts",
     "webview.ts",
+    "observable.ts",
   ]
 
   webui_context_type = "trusted"

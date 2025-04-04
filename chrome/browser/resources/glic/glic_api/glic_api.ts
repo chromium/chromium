@@ -94,29 +94,6 @@ export declare interface GlicWebClient {
   notifyPanelWasClosed?(): Promise<void>;
 
   /**
-   * The user has requested activation of the web client.
-   * The attachedToWindowId identifies the browser window to which the
-   * panel is attached to. It is undefined if it is detached.
-   *
-   * Note: The returned promise is currently not used in the browser.
-   *
-   * @deprecated: Not supported anymore and will eventually be removed.
-   */
-  notifyPanelOpened?(attachedToWindowId: string|undefined): Promise<void>;
-
-  /**
-   * The user has closed the web client window. The window may be activated
-   * again later.
-   *
-   * The promise being resolved indicates the web client has stored any needed
-   * information and stopped accepting the user's input.
-   *
-   * @deprecated: Not supported anymore and will eventually be removed.
-   */
-  notifyPanelClosed?(): Promise<void>;
-
-
-  /**
    * The web client should resolve the promise after verifying the app is
    * responsive.
    *
