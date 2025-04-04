@@ -158,12 +158,6 @@ class SimilarSourceHeuristic : public GroupingHeuristics::Heuristic {
         // Not group tabs already grouped.
         continue;
       }
-      if (tab_launch_package_name &&
-          !tab_launch_package_name->str_val.empty()) {
-        // Assign a cluster ID based on hash of the package name.
-        result[i] = base::FastHash(tab_launch_package_name->str_val);
-        continue;
-      }
       if (tab_parent_id && tab_id) {
         tab_id_to_parent_id_map[tab_id->float_val] = tab_parent_id->float_val;
         tab_id_to_tab_index_map[tab_id->float_val] = i;
