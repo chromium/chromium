@@ -10,13 +10,29 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/location.h"
 #include "base/logging.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/test/bind.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/test_switches.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest-spi.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+class MockSubTestReporter : public SubTestReporter {
+ public:
+  MOCK_METHOD(void,
+              Report,
+              (std::string_view name,
+               testing::TimeInMillis elapsed_time,
+               std::optional<std::string_view> failure_message),
+              (const, override));
+};
 
 // For unit testing private methods of WebUIMochaBrowserTest.
 using WebUIMochaUnitTest = WebUIMochaBrowserTest;
@@ -25,6 +41,35 @@ IN_PROC_BROWSER_TEST_F(WebUIMochaUnitTest, CanonicalizeTestName) {
   std::string name("a b!c");
   webui::CanonicalizeTestName(&name);
   ASSERT_THAT(name, testing::MatchesRegex("[A-Za-z0-9_]{5}"));
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIMochaUnitTest, ProcessMessagesFromJsTest) {
+  MockSubTestReporter mock_sub_test_reporter;
+  EXPECT_CALL(mock_sub_test_reporter, Report).Times(2);
+
+  auto* web_contents = chrome_test_utils::GetActiveWebContents(this);
+
+  base::RunLoop run_loop;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        webui::ProcessMessagesFromJsTest(web_contents, &mock_sub_test_reporter);
+        run_loop.Quit();
+      }));
+
+  EXPECT_EQ(true, content::EvalJs(web_contents, R"(
+    window.domAutomationController.send({
+      fullTitle: "test1",
+      duration: 1
+    });
+    window.domAutomationController.send({
+      fullTitle: "test2",
+      duration: 2,
+      failureReason: "failureReason"
+    });
+    window.domAutomationController.send("SUCCESS");
+  )"));
+
+  run_loop.Run();
 }
 
 // Test that code coverage metrics are reported from WebUIMochaBrowserTest

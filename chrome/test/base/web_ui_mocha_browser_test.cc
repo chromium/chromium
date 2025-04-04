@@ -51,8 +51,8 @@ void CanonicalizeTestName(std::string* test_name) {
       '_');
 }
 
-bool WaitForTestToFinish(content::WebContents* web_contents,
-                         bool is_sub_test_result_reporting_enabled) {
+bool ProcessMessagesFromJsTest(content::WebContents* web_contents,
+                               const SubTestReporter* sub_test_reporter) {
   content::DOMMessageQueue message_queue(web_contents);
   std::string message;
   while (message_queue.WaitForMessage(&message)) {
@@ -61,11 +61,8 @@ bool WaitForTestToFinish(content::WebContents* web_contents,
     } else if (message == "\"FAILURE\"") {
       return false;
     }
-    // Android can't use XmlUnitTestResultPrinter, so AddSubTestResult is not
-    // supported.
-#if !BUILDFLAG(IS_ANDROID)
     // Deserialize JSON from JS and record a SubTestResult.
-    if (is_sub_test_result_reporting_enabled) {
+    if (sub_test_reporter) {
       std::optional<base::Value> msg = base::JSONReader::Read(message);
 
       std::string* test_name = msg->GetDict().FindString("fullTitle");
@@ -80,10 +77,9 @@ bool WaitForTestToFinish(content::WebContents* web_contents,
         optional_failure_reason.emplace(*failure_reason);
       }
 
-      base::AddSubTestResult(canonicalized_test_name, *duration,
-                             optional_failure_reason);
+      sub_test_reporter->Report(canonicalized_test_name, *duration,
+                                optional_failure_reason);
     }
-#endif
   }
   NOTREACHED();
 }
@@ -92,7 +88,15 @@ bool WaitForTestToFinish(content::WebContents* web_contents,
 
 WebUIMochaBrowserTest::WebUIMochaBrowserTest()
     : test_loader_host_(chrome::kChromeUIWebUITestHost),
-      test_loader_scheme_(content::kChromeUIScheme) {}
+      test_loader_scheme_(content::kChromeUIScheme),
+// XmlUnitTestResultPrinter is not supported on Android.
+#if BUILDFLAG(IS_ANDROID)
+      sub_test_reporter_(nullptr)
+#else
+      sub_test_reporter_(std::make_unique<SubTestReporter>())
+#endif
+{
+}
 
 WebUIMochaBrowserTest::~WebUIMochaBrowserTest() = default;
 
@@ -219,8 +223,8 @@ testing::AssertionResult WebUIMochaBrowserTest::RunTestOnWebContents(
   }
 
   // Receive messages from JS.
-  bool success = webui::WaitForTestToFinish(
-      web_contents, is_sub_test_result_reporting_enabled_);
+  bool success =
+      webui::ProcessMessagesFromJsTest(web_contents, sub_test_reporter_.get());
 
 #if !BUILDFLAG(IS_ANDROID)
   // Report code coverage metrics.
@@ -252,7 +256,7 @@ void WebUIMochaBrowserTest::RunTestWithoutTestLoader(
 }
 
 void WebUIMochaBrowserTest::DisableSubTestResultReporting() {
-  is_sub_test_result_reporting_enabled_ = false;
+  sub_test_reporter_.reset();
 }
 
 testing::AssertionResult WebUIMochaBrowserTest::SimulateTestLoader(
@@ -286,4 +290,11 @@ void WebUIMochaFocusTest::OnWebContentsAvailable(
   // Focus the web contents before running the test, used for tests running as
   // interactive_ui_tests.
   web_contents->Focus();
+}
+
+void SubTestReporter::Report(
+    std::string_view name,
+    testing::TimeInMillis elapsed_time,
+    std::optional<std::string_view> failure_message) const {
+  base::AddSubTestResult(name, elapsed_time, failure_message);
 }
