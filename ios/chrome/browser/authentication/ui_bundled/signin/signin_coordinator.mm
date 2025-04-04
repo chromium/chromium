@@ -268,7 +268,8 @@ using signin_metrics::PromoAction;
                    completionIdentity:(id<SystemIdentity>)completionIdentity {
   // `identity` is set, if and only if the sign-in is successful.
   DCHECK(
-      ((signinResult == SigninCoordinatorResultSuccess) &&
+      ((signinResult == SigninCoordinatorResultSuccess ||
+        signinResult == SigninCoordinatorProfileSwitch) &&
        completionIdentity) ||
       ((signinResult != SigninCoordinatorResultSuccess) && !completionIdentity))
       << "signinResult: " << signinResult
