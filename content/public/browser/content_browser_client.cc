@@ -1930,6 +1930,7 @@ bool ContentBrowserClient::IsSaveableNavigation(
 
 #if BUILDFLAG(IS_WIN)
 void ContentBrowserClient::OnUiaProviderRequested(bool uia_provider_enabled) {}
+void ContentBrowserClient::OnUiaProviderDisabled() {}
 #endif
 
 bool ContentBrowserClient::AllowNonActivatedCrossOriginPaintHolding() {

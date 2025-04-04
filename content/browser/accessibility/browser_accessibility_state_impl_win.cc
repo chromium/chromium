@@ -17,6 +17,7 @@
 
 #include "base/check_deref.h"
 #include "base/containers/heap_array.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
@@ -33,6 +34,13 @@
 namespace content {
 
 namespace {
+
+// Killswitch to turn off this feature remotely in case it affects ATs in a way
+// we didn't expect. This is temporary.
+// TODO(crbug.com/407891291): Remove this feature flag in Chrome 139.
+BASE_FEATURE(kDisableUiaProviderWhenJawsIsRunning,
+             "DisableUiaProviderWhenJawsIsRunning",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const wchar_t kNarratorRegistryKey[] = L"Software\\Microsoft\\Narrator\\NoRoam";
 const wchar_t kNarratorRunningStateValueName[] = L"RunningState";
@@ -390,6 +398,7 @@ class BrowserAccessibilityStateImplWin : public BrowserAccessibilityStateImpl {
   void RefreshAssistiveTech() override;
   ui::AXPlatform::ProductStrings GetProductStrings() override;
   void OnUiaProviderRequested(bool uia_provider_enabled) override;
+  void OnUiaProviderDisabled() override;
 
  private:
   void OnDiscoveredAssistiveTech(
@@ -429,6 +438,20 @@ void BrowserAccessibilityStateImplWin::RefreshAssistiveTech() {
 void BrowserAccessibilityStateImplWin::OnDiscoveredAssistiveTech(
     const std::vector<AssistiveTechInfo>& at_infos) {
   awaiting_known_assistive_tech_computation_ = false;
+
+  // Older versions of JAWS are known to not work well with text fields when we
+  // expose the native UIA provider. Disable it when we detect a JAWS version
+  // older than 2025.
+  if (base::FeatureList::IsEnabled(kDisableUiaProviderWhenJawsIsRunning) &&
+      ui::AXPlatform::GetInstance().IsUiaProviderEnabled()) {
+    for (const auto& info : at_infos) {
+      if (info.tech == AccessibilityTarget::kJaws && info.version.has_value() &&
+          info.version->IsLowerThan({2025, 0, 0, 0})) {
+        ui::AXPlatform::GetInstance().DisableActiveUiaProvider();
+        break;
+      }
+    }
+  }
 
   // Helper lambda to check for a specific AT.
   auto HasTarget = [&at_infos](AccessibilityTarget target) -> bool {
@@ -563,6 +586,11 @@ void BrowserAccessibilityStateImplWin::OnUiaProviderRequested(
     bool uia_provider_enabled) {
   CHECK_DEREF(CHECK_DEREF(GetContentClient()).browser())
       .OnUiaProviderRequested(uia_provider_enabled);
+}
+
+void BrowserAccessibilityStateImplWin::OnUiaProviderDisabled() {
+  CHECK_DEREF(CHECK_DEREF(GetContentClient()).browser())
+      .OnUiaProviderDisabled();
 }
 
 // static

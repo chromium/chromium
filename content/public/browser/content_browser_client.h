@@ -3206,6 +3206,11 @@ class CONTENT_EXPORT ContentBrowserClient {
   // for a window. `uia_provider_enabled` is true when the request was
   // satisfied, and false when the request was refused.
   virtual void OnUiaProviderRequested(bool uia_provider_enabled);
+
+  // Invoked when the UI Automation Provider for Windows has been disabled due
+  // to a detected assistive technology that may cause issues with the
+  // provider, such as JAWS.
+  virtual void OnUiaProviderDisabled();
 #endif
 
   // Indicates whether this client allows paint holding in cross-origin

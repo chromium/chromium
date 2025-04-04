@@ -8926,6 +8926,31 @@ void ChromeContentBrowserClient::OnUiaProviderRequested(
     }
   }
 }
+
+void ChromeContentBrowserClient::OnUiaProviderDisabled() {
+  // Regardless of whether another request has been handled before, we want to
+  // make this user as part of the "Rejected" group.
+  handled_uia_provider_request_ = true;
+
+  if (features::kUiaProvider.default_state ==
+      base::FEATURE_ENABLED_BY_DEFAULT) {
+    // Do nothing if the feature has launched.
+    // TODO: Remove all code relating to this synthetic field trial.
+    return;
+  }
+
+  // See the comment in `ChromeContentBrowserClient::OnUiaProviderRequested`.
+  if (auto* trial = base::FeatureList::GetFieldTrial(features::kUiaProvider)) {
+    // When the UI Automation Provider is forcibly disabled despite the user
+    // being in the "Enabled" group, we want to ensure that the user is properly
+    // assigned to the "Rejected" group.
+    if (base::StartsWith(trial->GetGroupNameWithoutActivation(), "Enabled")) {
+      ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+          "UiaProviderActiveSynthetic", "Rejected",
+          variations::SyntheticTrialAnnotationMode::kCurrentLog);
+    }
+  }
+}
 #endif  // BUILDFLAG(IS_WIN)
 
 void ChromeContentBrowserClient::SetSamplingProfiler(
