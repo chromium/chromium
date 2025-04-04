@@ -614,6 +614,8 @@ chromium-metrics-reviews@google.com.
   <int value="-1631133219" label="chrome://help-app/"/>
   <int value="-1620492168" label="chrome://local-files-migration/"/>
   <int value="-1618666743" label="chrome://office-fallback/"/>
+  <int value="-1594315149"
+      label="chrome://tab-strip.top-chrome/split-view-new-tab-page/"/>
   <int value="-1591890659" label="chrome://syncfs-internals/"/>
   <int value="-1564946100" label="chrome://tab-strip.top-chrome/"/>
   <int value="-1532727290" label="chrome://whats-new/"/>
