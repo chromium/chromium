@@ -145,8 +145,6 @@ found in the LICENSE file.
     <color name="promo_illustration_bg_color_dark">@color/baseline_neutral_20_alpha_38</color>
 
     <!-- Omnibox bg color -->
-    <color name="omnibox_bg_color_light">@color/baseline_neutral_100_with_surface_tint_light_alpha_8</color>
-    <color name="omnibox_bg_color_dark">@color/baseline_neutral_10_with_surface_tint_dark_alpha_11</color>
     <color name="omnibox_bg_color_incognito" tools:ignore="UnusedResources">@color/black_alpha_38</color>
 
     <!-- Settings -->
