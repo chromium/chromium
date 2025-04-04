@@ -35,6 +35,8 @@ promise_test(async () => {
     'Scrolling should happen after beforematch is fired.');
   assert_true(results.pageYOffsetAfterRaf > 0,
     'The page should be scrolled down to foo.');
+  assert_true(results.beforematchHiddenAttributePresent,
+    'The hidden attribute should be set inside the beforematch event handler.');
 }, 'Verifies that the beforematch event is fired on the matching element of a ScrollToTextFragment navigation.');
 
 promise_test(async () => {

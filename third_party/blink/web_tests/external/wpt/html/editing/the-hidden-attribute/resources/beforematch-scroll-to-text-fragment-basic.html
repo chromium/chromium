@@ -26,8 +26,12 @@
   // This should be true. Foo was searched for, so it should get a
   // beforematch event.
   results.beforematchFiredOnFoo = false;
+  // This should be true. the hidden attribute should not be removed until
+  // after beforematch is fired.
+  results.beforematchHiddenAttributePresent = false;
   foo.addEventListener('beforematch', () => {
     results.beforematchFiredOnFoo = true;
+    results.beforematchHiddenAttributePresent = foo.hasAttribute('hidden');
     // This should be zero. Scrolling should happen after beforematch is
     // fired.
     results.pageYOffsetDuringBeforematch = window.pageYOffset;
