@@ -310,19 +310,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
 
   static bool HasFetchStreamingUploadBody(const ResourceRequest*);
 
-  static std::optional<net::IsolationInfo> GetIsolationInfo(
-      const net::IsolationInfo& factory_isolation_info,
-      bool automatically_assign_isolation_info,
-      const ResourceRequest& request);
-
-  // Computes the CookieSettingOverrides to use for a given `ResourceRequest`.
-  // May also emit to histograms.
-  static net::CookieSettingOverrides CalculateCookieSettingOverrides(
-      net::CookieSettingOverrides factory_overrides,
-      net::CookieSettingOverrides devtools_overrides,
-      const ResourceRequest& request,
-      bool emit_metrics);
-
   // Returns an optional reference to a constant permissions policy that belongs
   // to the request. `this` must outlive the caller of this method.
   base::optional_ref<const network::PermissionsPolicy> GetPermissionsPolicy()
@@ -650,9 +637,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // If no further decoding is needed, `partial_decoder_` is reset, and
   // `partial_decoder_result_` is set unless an error occurred during decoding.
   void CheckPartialDecoderResult(int result);
-
-  // Records metrics about GET requests.
-  void RecordRequestMetrics();
 
   const raw_ptr<net::URLRequestContext> url_request_context_;
 

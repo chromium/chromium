@@ -58,6 +58,7 @@
 #include "services/network/trust_tokens/trust_token_operation_metrics_recorder.h"
 #include "services/network/url_loader.h"
 #include "services/network/url_loader_factory.h"
+#include "services/network/url_loader_util.h"
 #include "url/scheme_host_port.h"
 #include "url/url_util.h"
 
@@ -894,7 +895,7 @@ void CorsURLLoader::StartRequest() {
         context_->cookie_manager()->cookie_settings().GetStorageAccessStatus(
             request_.url, request_.site_for_cookies,
             isolation_info_.top_frame_origin(),
-            network::URLLoader::CalculateCookieSettingOverrides(
+            url_loader_util::CalculateCookieSettingOverrides(
                 factory_cookie_setting_overrides_,
                 devtools_cookie_setting_overrides_, request_,
                 /*emit_metrics=*/false),

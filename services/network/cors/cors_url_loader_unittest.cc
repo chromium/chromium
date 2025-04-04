@@ -34,6 +34,7 @@
 #include "services/network/test/mock_devtools_observer.h"
 #include "services/network/test/test_url_loader_client.h"
 #include "services/network/url_loader.h"
+#include "services/network/url_loader_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/origin.h"
@@ -2441,7 +2442,7 @@ class StorageAccessHeadersCorsURLLoaderTest : public CorsURLLoaderTest {
         .GetStorageAccessStatus(
             request.url, request.site_for_cookies,
             request.trusted_params->isolation_info.top_frame_origin(),
-            URLLoader::CalculateCookieSettingOverrides(
+            url_loader_util::CalculateCookieSettingOverrides(
                 /*factory_overrides=*/net::CookieSettingOverrides(),
                 /*devtools_overrides=*/net::CookieSettingOverrides(), request,
                 /*emit_metrics=*/false),
