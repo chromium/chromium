@@ -21,7 +21,7 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2018"
-  cargo_pkg_version = "1.9.2"
+  cargo_pkg_version = "1.9.3"
   cargo_pkg_authors = "Lokathor <zefria@gmail.com>"
   cargo_pkg_name = "bytemuck_derive"
   cargo_pkg_description = "derive proc-macros for `bytemuck`"

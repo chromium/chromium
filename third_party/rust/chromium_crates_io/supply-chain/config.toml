@@ -71,7 +71,7 @@ criteria = []
 [policy."bytemuck:1.22.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."bytemuck_derive:1.9.2"]
+[policy."bytemuck_derive:1.9.3"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."bytes:1.10.1"]
