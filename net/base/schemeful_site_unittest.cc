@@ -65,6 +65,8 @@ TEST(SchemefulSiteTest, IsSameSiteOpaque) {
 }
 
 TEST(SchemefulSiteTest, IsSameSite) {
+  url::ScopedSchemeRegistryForTests scoped_registry;
+  url::AddStandardScheme("custom", url::SCHEME_WITH_HOST);
   const struct {
     std::string a;
     std::string b;
@@ -81,6 +83,11 @@ TEST(SchemefulSiteTest, IsSameSite) {
 
       // Different file origins
       {"file://foo", "file://bar", false},
+
+      // This custom scheme should fail the IsStandardSchemeWithNetworkHost
+      // check, causing SchemefulSite to compare the full host, despite the fact
+      // that the host will succeed in finding a registerable domain.
+      {"custom://foo.bar.test", "custom://bar.test", false},
 
       // Equal hosts
       {"http://bar.foo.test/", "http://bar.foo.test/", true},
