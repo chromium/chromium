@@ -115,6 +115,13 @@ NSAttributedString* AsAttributedString(NSString* text,
     _multiProfilePasskeyCreationViewControllerDelegate = delegate;
     _navigationItemTitleView = navigationItemTitleView;
 
+    // Use the default world icon as the default favicon.
+    _faviconAttributes = [FaviconAttributes
+        attributesWithImage:
+            [[UIImage imageNamed:@"default_world_favicon"]
+                imageWithTintColor:[UIColor colorNamed:kTextQuaternaryColor]
+                     renderingMode:UIImageRenderingModeAlwaysOriginal]];
+
     // Attempt to fetch the favicon.
     if (favicon) {
       __weak __typeof(self) weakSelf = self;
@@ -214,18 +221,9 @@ NSAttributedString* AsAttributedString(NSString* text,
 - (UIView*)iconView {
   FaviconContainerView* faviconContainerView =
       [[FaviconContainerView alloc] init];
-  FaviconAttributes* defaultWorldIconAttributes = [FaviconAttributes
-      attributesWithImage:
-          [[UIImage imageNamed:@"default_world_favicon"]
-              imageWithTintColor:[UIColor colorNamed:kTextQuaternaryColor]
-                   renderingMode:UIImageRenderingModeAlwaysOriginal]];
-
-  // Use the default world icon as the default favicon.
-  _faviconView = faviconContainerView.faviconView;
-  [_faviconView configureWithAttributes:defaultWorldIconAttributes];
-
   [faviconContainerView setFaviconBackgroundColor:GetBackgroundColor()];
   [faviconContainerView setFaviconBorderColor:[UIColor clearColor]];
+  _faviconView = faviconContainerView.faviconView;
   return faviconContainerView;
 }
 
