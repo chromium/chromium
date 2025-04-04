@@ -16,6 +16,8 @@ _inspector_protocol = "//third_party/inspector_protocol"
 import("$_inspector_protocol/inspector_protocol.gni")
 
 _protocol_generated = [
+  "protocol/browser.cc",
+  "protocol/browser.h",
   "protocol/target.cc",
   "protocol/target.h",
 ]
@@ -26,8 +28,6 @@ if (!is_android || is_desktop_android) {
     "protocol/autofill.h",
     "protocol/extensions.cc",
     "protocol/extensions.h",
-    "protocol/browser.cc",
-    "protocol/browser.h",
     "protocol/cast.cc",
     "protocol/cast.h",
     "protocol/emulation.cc",
@@ -202,6 +202,8 @@ static_library("devtools") {
       "chrome_devtools_session_android.cc",
       "chrome_devtools_session_android.h",
       "devtools_window_android.cc",
+      "protocol/browser_handler_android.cc",
+      "protocol/browser_handler_android.h",
       "protocol/target_handler_android.cc",
       "protocol/target_handler_android.h",
     ]

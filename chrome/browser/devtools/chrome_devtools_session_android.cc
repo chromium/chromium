@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
+#include "chrome/browser/devtools/protocol/browser_handler_android.h"
 #include "chrome/browser/devtools/protocol/target_handler_android.h"
 #include "content/public/browser/devtools_agent_host_client_channel.h"
 
@@ -21,6 +22,12 @@ bool IsDomainAvailableToUntrustedClient() {
 ChromeDevToolsSessionAndroid::ChromeDevToolsSessionAndroid(
     content::DevToolsAgentHostClientChannel* channel)
     : dispatcher_(this), client_channel_(channel) {
+  content::DevToolsAgentHost* agent_host = channel->GetAgentHost();
+  if (IsDomainAvailableToUntrustedClient<BrowserHandlerAndroid>() ||
+      channel->GetClient()->IsTrusted()) {
+    browser_handler_ = std::make_unique<BrowserHandlerAndroid>(
+        &dispatcher_, agent_host->GetId());
+  }
   if (IsDomainAvailableToUntrustedClient<TargetHandlerAndroid>() ||
       channel->GetClient()->IsTrusted()) {
     target_handler_ = std::make_unique<TargetHandlerAndroid>(
