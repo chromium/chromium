@@ -1361,61 +1361,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Net.TrustTokens.RequestHelperFactoryOutcome"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="WebAppSystemAppInternalName" separator=".">
-  <suffix name="Boca" label="Boca"/>
-  <suffix name="Camera" label="Camera"/>
-  <suffix name="ConnectivityDiagnostics" label="Connectivity Diagnostics"/>
-  <suffix name="Crosh" label="Crosh"/>
-  <suffix name="DemoMode" label="DemoMode"/>
-  <suffix name="Diagnostics" label="Diagnostics"/>
-  <suffix name="Eche" label="Eche"/>
-  <suffix name="FaceML" label="Face ML (Deprecated)"/>
-  <suffix name="FirmwareUpdate" label="FirmwareUpdate"/>
-  <suffix name="Graduation" label="Graduation"/>
-  <suffix name="Help" label="Help"/>
-  <suffix name="Mall" label="App Mall"/>
-  <suffix name="Media" label="Media"/>
-  <suffix name="OSFeedback" label="OSFeedback"/>
-  <suffix name="OsFlags" label="OsFlags"/>
-  <suffix name="OSSettings" label="OS Settings"/>
-  <suffix name="Personalization" label="Personalization"/>
-  <suffix name="PrintManagement" label="PrintManagement"/>
-  <suffix name="PrintPreviewCrOS" label="Print Preview CrOS"/>
-  <suffix name="Projector" label="Projector"/>
-  <suffix name="Recorder" label="Recorder"/>
-  <suffix name="Sample" label="Sample"/>
-  <suffix name="Sanitize" label="Sanitize"/>
-  <suffix name="Scanning" label="Scanning"/>
-  <suffix name="ShimlessRMA" label="Shimless RMA"/>
-  <suffix name="ShortcutCustomization" label="ShortcutCustomization"/>
-  <suffix name="Terminal" label="Terminal"/>
-  <suffix name="VcBackground" label="VC Background"/>
-  <affected-histogram name="Webapp.InstallResult.System.Apps"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="WebAppSystemHistogramGroup" separator=".">
-  <suffix base="true" name="Apps" label="Per-Application"/>
-  <suffix base="true" name="Profiles" label="Per-Profile"/>
-  <affected-histogram name="Webapp.InstallResult.System"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="WebAppSystemProfileCategory" separator=".">
-  <suffix name="Ephemeral" label="Guest or incognito"/>
-  <suffix name="Kiosk" label="Kioso app"/>
-  <suffix name="Other" label="Other"/>
-  <suffix name="Primary" label="Regular user"/>
-  <suffix name="SigninOrLockScreen" label="Sign in or lockscreen"/>
-  <affected-histogram name="Webapp.InstallResult.System.Profiles"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="WebappType" separator=".">
-  <suffix name="Default" label="Default-installed app"/>
-  <suffix name="Policy" label="Policy-installed app"/>
-  <suffix name="Sync" label="Sync-installed app"/>
-  <suffix base="true" name="System" label="System-installed app"/>
-  <affected-histogram name="Webapp.InstallResult"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="WebSocketErrorCodesVariants" separator="_">
   <suffix name="Localhost" label=""/>
   <suffix name="NotLocalhost" label=""/>
