@@ -2085,6 +2085,11 @@
       status: "stable",
     },
     {
+      // crbug.com/408309951
+      name: "FindNestedAnnotationFix",
+      status: "stable",
+    },
+    {
       name: "Fledge",
       status: "stable",
       base_feature: "none",
