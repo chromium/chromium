@@ -131,6 +131,10 @@ bool RenderInputRouterSupportBase::IsPointerLocked() {
   NOTREACHED();
 }
 
+void RenderInputRouterSupportBase::StopFlingingOnViz() {
+  RenderWidgetHostViewInput::StopFling();
+}
+
 void RenderInputRouterSupportBase::UpdateFrameSinkIdRegistration() {
   // Let the page-level input event router know about our frame sink ID for
   // surface-based hit testing.

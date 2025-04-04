@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/render_widget_host.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
@@ -78,6 +79,8 @@ class CONTENT_EXPORT OverscrollControllerAndroid
   // ignored until the controller is re-enabled.
   void Enable();
   void Disable();
+
+  bool IsHandlingInputSequence();
 
   // Returns true if |event| is consumed by an overscroll effect, in which
   // case it should cease propagation.

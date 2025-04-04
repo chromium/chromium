@@ -413,6 +413,14 @@ std::optional<bool> InputManager::IsDelegatedInkHovering(
   return support->GetLastActivatedFrameMetadata()
       ->delegated_ink_metadata->is_hovering();
 }
+
+void InputManager::DidOverscroll(const FrameSinkId& frame_sink_id,
+                                 const base::UnguessableToken& grouping_id,
+                                 blink::mojom::DidOverscrollParamsPtr params) {
+  rir_delegate_remote_map_.at(grouping_id)
+      ->StateOnOverscrollTransfer(frame_sink_id, std::move(params));
+}
+
 void InputManager::StateOnTouchTransfer(
     input::mojom::TouchTransferStatePtr state) {
 #if BUILDFLAG(IS_ANDROID)
@@ -470,6 +478,13 @@ void InputManager::ForceEnableZoomStateChanged(
     if (itr != rir_map_.end()) {
       itr->second->SetForceEnableZoom(force_enable_zoom);
     }
+  }
+}
+
+void InputManager::StopFlingingOnViz(const FrameSinkId& frame_sink_id) {
+  auto iter = frame_sink_metadata_map_.find(frame_sink_id);
+  if (iter != frame_sink_metadata_map_.end()) {
+    iter->second.rir_support->StopFlingingOnViz();
   }
 }
 

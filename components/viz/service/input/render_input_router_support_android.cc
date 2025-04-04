@@ -103,12 +103,6 @@ void RenderInputRouterSupportAndroid::ProcessAckedTouchEvent(
   input_helper_->ProcessAckedTouchEvent(touch, ack_result);
 }
 
-void RenderInputRouterSupportAndroid::DidOverscroll(
-    const ui::DidOverscrollParams& params) {
-  // The implementation on Browser side informs SyncCompositor and
-  // OverscrollController, and both of those are unaffected by InputVizard.
-}
-
 FrameSinkId RenderInputRouterSupportAndroid::GetRootFrameSinkId() {
   return delegate()->GetRootCompositorFrameSinkId(GetFrameSinkId());
 }

@@ -2470,6 +2470,17 @@ void RenderWidgetHostImpl::RendererIsResponsive() {
   }
 }
 
+void RenderWidgetHostImpl::DidOverscroll(
+    blink::mojom::DidOverscrollParamsPtr params) {
+  if (view_) {
+    ui::DidOverscrollParams overscroll_params = {
+        params->accumulated_overscroll, params->latest_overscroll_delta,
+        params->current_fling_velocity, params->causal_event_viewport_point,
+        params->overscroll_behavior};
+    view_->DidOverscroll(overscroll_params);
+  }
+}
+
 void RenderWidgetHostImpl::ClearDisplayedGraphics() {
   NotifyNewContentRenderingTimeoutForTesting();
   if (view_) {

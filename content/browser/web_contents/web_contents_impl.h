@@ -1288,6 +1288,9 @@ class CONTENT_EXPORT WebContentsImpl
       std::unique_ptr<blink::WebCoalescedInputEvent> event) override;
   void OnInvalidInputEventSource(
       const viz::FrameSinkId& frame_sink_id) override;
+  void StateOnOverscrollTransfer(
+      const viz::FrameSinkId& frame_sink_id,
+      blink::mojom::DidOverscrollParamsPtr params) override;
 
   // Invoked before a form repost warning is shown.
   void NotifyBeforeFormRepostWarningShow() override;

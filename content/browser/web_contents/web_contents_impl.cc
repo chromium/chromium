@@ -7347,6 +7347,19 @@ void WebContentsImpl::OnInvalidInputEventSource(
   iter->second->OnInvalidInputEventSource();
 }
 
+void WebContentsImpl::StateOnOverscrollTransfer(
+    const viz::FrameSinkId& frame_sink_id,
+    blink::mojom::DidOverscrollParamsPtr params) {
+  auto iter = created_widgets_.find(frame_sink_id);
+  // This adds a safeguard against race condition where a RenderWidgetHostImpl
+  // is being destroyed & removed from |created_widgets_|, but Viz may still
+  // send a mojo call referencing it.
+  if (iter == created_widgets_.end()) {
+    return;
+  }
+  iter->second->DidOverscroll(std::move(params));
+}
+
 void WebContentsImpl::DidNavigateMainFramePreCommit(
     NavigationHandle* navigation_handle,
     bool navigation_is_within_page) {

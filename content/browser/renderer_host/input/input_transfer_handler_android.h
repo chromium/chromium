@@ -37,9 +37,7 @@ class CONTENT_EXPORT InputTransferHandlerAndroid {
   class JniDelegate {
    public:
     virtual ~JniDelegate() = default;
-    // `raw_x` is the point's x coordinate in pixels in coordinate space of the
-    // device display similar to MotionEvent.getRawX.
-    virtual int MaybeTransferInputToViz(int surface_id, float raw_x) = 0;
+    virtual int MaybeTransferInputToViz(int surface_id) = 0;
     virtual int TransferInputToViz(int surface_id) = 0;
   };
 

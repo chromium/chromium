@@ -10,6 +10,7 @@ import android.view.View;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -20,14 +21,19 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.UrlUtils;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.pagecontroller.utils.UiAutomatorUtils;
+import org.chromium.chrome.test.util.browser.TabLoadObserver;
 import org.chromium.content_public.browser.GestureListenerManager;
 import org.chromium.content_public.browser.GestureStateListener;
+import org.chromium.content_public.browser.TransferInputToVizResult;
+import org.chromium.content_public.browser.test.util.WebContentsUtils;
 
 @RunWith(ChromeJUnit4ClassRunner.class)
 @MediumTest
@@ -98,40 +104,45 @@ public class InputOnVizTest {
     }
 
     @Test
-    public void secondScrollIsHandledOnViz() {
-        // Scroll 1 will be handled by the browser. On the browser side it says not to transfer
-        // the sequence when the web contents is at 0 offset, which would be the case when the
-        // page loads and we are scrolling for the first time.
+    public void scrollIsHandledOnViz() {
         UiAutomatorUtils.getInstance().swipeUpVertically(0.3f);
         // Wait for the scroll offset to have changed as a result of scroll.
         CriteriaHelper.pollInstrumentationThread(
                 () -> {
                     Criteria.checkThat(mScrollOffsetY, Matchers.greaterThan(0));
                 });
-        // Wait for scroll end.
-        CriteriaHelper.pollInstrumentationThread(
-                () -> {
-                    Criteria.checkThat(mScrolling, Matchers.equalTo(false));
-                });
-
-        // Scroll 2 should be handled by Viz since the page would be at non-zero offset after
-        // the first scroll.
-        // This is not completely accurate since it's possible a late
-        // running frame updates the scroll offset due to scroll updates from previous scroll.
-        // TODO(crbug.com/393576167): Remove this and just check for offset>0, once the first
-        // scroll goes to Viz as well.
-        int scrollOffsetAfterScroll1 = mScrollOffsetY;
-        UiAutomatorUtils.getInstance().swipeUpVertically(0.3f);
         // We should have received a cancel corresponding to a successful touch transfer.
         CriteriaHelper.pollInstrumentationThread(
                 () -> {
                     Criteria.checkThat(
                             mLastSeenEventAction, Matchers.equalTo(MotionEvent.ACTION_CANCEL));
                 });
-        CriteriaHelper.pollInstrumentationThread(
-                () -> {
-                    Criteria.checkThat(
-                            mScrollOffsetY, Matchers.greaterThan(scrollOffsetAfterScroll1));
-                });
+    }
+
+    @Test
+    public void handlesOverscrollsWithInputVizard() throws Exception {
+        TabLoadObserver observer =
+                new TabLoadObserver(mActivityTestRule.getActivity().getActivityTab());
+        observer.fullyLoadUrl(mLongHtmlTestPage);
+
+        UserActionTester userActionTester = new UserActionTester();
+        HistogramWatcher histograms =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.InputOnViz.Browser.TransferInputToVizResult",
+                                TransferInputToVizResult.SUCCESSFULLY_TRANSFERRED)
+                        .build();
+
+        WebContentsUtils.waitForCopyableViewInWebContents(
+                mActivityTestRule.getActivity().getActivityTab().getWebContents());
+
+        // Scrolling down should trigger refresh effect on the page.
+        UiAutomatorUtils.getInstance().swipeDownVertically(0.6f);
+
+        histograms.assertExpected();
+        // Asserts that the input sequence ended up triggering OverscrollController which
+        // triggered the page to reload.
+        observer.assertLoaded();
+        Assert.assertEquals(1, userActionTester.getActionCount("MobilePullGestureReload"));
     }
 }
