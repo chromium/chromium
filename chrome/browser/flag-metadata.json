@@ -9647,8 +9647,8 @@
     "expiry_milestone": 138
   },
   {
-    "name": "web-serial-api",
-    "owners": ["ovn@google.com", "cros-web-apps-team@google.com"],
+    "name": "web-serial-over-bluetooth",
+    "owners": ["xutan@chromium.org", "ovn@google.com", "cros-web-apps-team@google.com"],
     "expiry_milestone": 146
   },
   {

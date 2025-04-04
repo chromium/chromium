@@ -8237,9 +8237,10 @@ const char kHistoryOptInEntryPointsName[] = "History opt-in entry points";
 const char kHistoryOptInEntryPointsDescription[] =
     "Add some history opt-in entry points.";
 
-const char kWebSerialAPIName[] = "Enable Web Serial API";
-const char kWebSerialAPIDescription[] =
-    "Provides a way for websites to interact with a serial device";
+const char kWebSerialOverBluetoothName[] = "Enable Web Serial over Bluetooth";
+const char kWebSerialOverBluetoothDescription[] =
+    "Provides a way for websites to interact with a serial device over "
+    "Bluetooth";
 
 const char kSupervisedUserForceSigninWithCapabilitiesName[] =
     "Use capabilities for supervised user forced sign-in";

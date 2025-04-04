@@ -11849,9 +11849,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(supervised_user::kSupervisedUserBlockInterstitialV3)},
 
 #if BUILDFLAG(IS_ANDROID)
-    {"web-serial-api", flag_descriptions::kWebSerialAPIName,
-     flag_descriptions::kWebSerialAPIDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(blink::features::kWebSerialAPI)},
+    {"web-serial-over-bluetooth",
+     flag_descriptions::kWebSerialOverBluetoothName,
+     flag_descriptions::kWebSerialOverBluetoothDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(device::features::kBluetoothRfcommAndroid)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \

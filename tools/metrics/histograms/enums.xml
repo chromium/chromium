@@ -11751,6 +11751,7 @@ from previous Chrome versions.
   <int value="-980317085" label="EnablePasswordsAccountStorage:disabled"/>
   <int value="-980260493" label="NTPSnippets:disabled"/>
   <int value="-980260396" label="ShopCardImpressionLimits:disabled"/>
+  <int value="-980202554" label="BluetoothRfcommAndroid:disabled"/>
   <int value="-980054107" label="DestroyProfileOnBrowserClose:enabled"/>
   <int value="-979438173" label="EcheSWAMeasureLatency:disabled"/>
   <int value="-979313250" label="enable-google-branded-context-menu"/>
@@ -12534,6 +12535,7 @@ from previous Chrome versions.
   <int value="-670188266" label="enable-zip-archiver-unpacker"/>
   <int value="-669761849" label="SplitSettings:disabled"/>
   <int value="-669400536" label="FastPairSoftwareScanning:disabled"/>
+  <int value="-669383690" label="BluetoothRfcommAndroid:enabled"/>
   <int value="-668250016" label="HttpsFirstDialogUi:enabled"/>
   <int value="-668114930" label="WindowsFollowCursor:disabled"/>
   <int value="-667952041" label="CCTRealTimeEngagementSignals:enabled"/>

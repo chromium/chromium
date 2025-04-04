@@ -4872,8 +4872,8 @@ extern const char kSupervisedUserLocalWebApprovalsDescription[];
 extern const char kHistoryOptInEntryPointsName[];
 extern const char kHistoryOptInEntryPointsDescription[];
 
-extern const char kWebSerialAPIName[];
-extern const char kWebSerialAPIDescription[];
+extern const char kWebSerialOverBluetoothName[];
+extern const char kWebSerialOverBluetoothDescription[];
 
 extern const char kSupervisedUserForceSigninWithCapabilitiesName[];
 extern const char kSupervisedUserForceSigninWithCapabilitiesDescription[];
