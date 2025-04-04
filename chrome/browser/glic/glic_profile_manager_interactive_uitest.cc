@@ -122,9 +122,11 @@ class GlicProfileManagerUiTest
     return Do([primary_profile, this]() {
       if (ShouldWarmFRE()) {
         if (primary_profile) {
-          glic_test_environment().SetFRECompletion(false);
+          glic_test_environment().SetFRECompletion(
+              prefs::FreStatus::kNotStarted);
         } else {
-          test_env_for_second_profile_->SetFRECompletion(false);
+          test_env_for_second_profile_->SetFRECompletion(
+              prefs::FreStatus::kNotStarted);
         }
         GetService(primary_profile)->TryPreloadFre();
       } else {
@@ -188,7 +190,9 @@ class GlicProfileManagerUiTest
   }
 
   auto SetNeedsFRE() {
-    return Do([this]() { glic_test_environment().SetFRECompletion(false); });
+    return Do([this]() {
+      glic_test_environment().SetFRECompletion(prefs::FreStatus::kNotStarted);
+    });
   }
 
   auto SendMemoryPressureSignal(bool primary_profile) {

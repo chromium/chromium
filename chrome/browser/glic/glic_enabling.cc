@@ -82,6 +82,11 @@ bool GlicEnabling::IsEnabledAndConsentForProfile(Profile* profile) {
   return IsEnabledForProfile(profile) && HasConsentedForProfile(profile);
 }
 
+bool GlicEnabling::DidDismissForProfile(Profile* profile) {
+  return profile->GetPrefs()->GetInteger(glic::prefs::kGlicCompletedFre) ==
+         static_cast<int>(prefs::FreStatus::kIncomplete);
+}
+
 bool GlicEnabling::IsReadyForProfile(Profile* profile) {
   return GetProfileReadyState(profile) == mojom::ProfileReadyState::kReady;
 }

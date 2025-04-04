@@ -7,6 +7,7 @@
 #include "base/test/run_until.h"
 #include "base/time/time.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
+#include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser.h"
@@ -26,7 +27,7 @@ class GlicFreControllerBrowserTest : public glic::test::InteractiveGlicTest {
 
   void SetUpOnMainThread() override {
     glic::test::InteractiveGlicTest::SetUpOnMainThread();
-    glic_test_environment().SetFRECompletion(false);
+    glic_test_environment().SetFRECompletion(prefs::FreStatus::kNotStarted);
   }
 
   GlicFreController* glic_fre_controller() {

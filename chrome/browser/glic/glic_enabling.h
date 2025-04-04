@@ -66,6 +66,10 @@ class GlicEnabling : public signin::IdentityManager::Observer {
   // runtime.
   static bool IsEnabledAndConsentForProfile(Profile* profile);
 
+  // Returns true if the given profile was shown the FRE but did not complete
+  // it. This value can change at runtime.
+  static bool DidDismissForProfile(Profile* profile);
+
   // Whether or not the profile is currently ready for Glic. This means no
   // additional steps must be taken before opening Glic.
   static bool IsReadyForProfile(Profile* profile);
