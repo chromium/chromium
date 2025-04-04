@@ -147,11 +147,13 @@ void InitiatePrecompilation(skgpu::graphite::Context* context) {
 std::unique_ptr<skgpu::graphite::Recorder> MakeGraphiteRecorder(
     skgpu::graphite::Context* context,
     size_t max_resource_cache_bytes,
-    size_t max_image_provider_cache_bytes) {
+    size_t max_image_provider_cache_bytes,
+    std::optional<bool> require_ordered_recordings = {}) {
   skgpu::graphite::RecorderOptions options;
   options.fGpuBudgetInBytes = max_resource_cache_bytes;
   options.fImageProvider =
       sk_make_sp<gpu::GraphiteImageProvider>(max_image_provider_cache_bytes);
+  options.fRequireOrderedRecordings = require_ordered_recordings;
   return context->makeRecorder(options);
 }
 
@@ -673,9 +675,15 @@ bool SharedContextState::InitializeGraphite(
   // compositor which will be the GPU main context without DrDC and the
   // the CompositorGpuThread context with DrDC.
   if (!is_drdc_enabled_ || created_on_compositor_gpu_thread_) {
+    // The Viz recorder is shared across multiple output surfaces, which have
+    // independent event sequences. The Viz content is unlikely to trigger the
+    // scenarios that have improved performance when Recordings are required to
+    // be inserted in order, so this grants the Viz thread more flexibility
+    // without any negative impact. See https://crbug.com/406292843
     viz_compositor_graphite_recorder_ = MakeGraphiteRecorder(
         graphite_context_, context_options.fGpuBudgetInBytes,
-        max_viz_compositor_image_provider_cache_bytes);
+        max_viz_compositor_image_provider_cache_bytes,
+        /*require_ordered_recordings=*/false);
   }
 
   transfer_cache_ = std::make_unique<ServiceTransferCache>(
