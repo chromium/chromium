@@ -607,7 +607,7 @@
 
 
     'optimization_guide_android_arm64_rel': [
-      'minimal_symbols', 'remoteexec', 'release', 'android', 'arm64',
+      'minimal_symbols', 'remoteexec', 'release', 'android', 'arm64', 'android_static_analysis',
     ],
 
     'optimization_guide_cros_rel': [
@@ -704,6 +704,10 @@
 
     'android_low_end': {
       'gn_args': 'is_high_end_android=false',
+    },
+
+    'android_static_analysis': {
+      'gn_args': 'android_static_analysis="on"',
     },
 
     'android_without_codecs': {
