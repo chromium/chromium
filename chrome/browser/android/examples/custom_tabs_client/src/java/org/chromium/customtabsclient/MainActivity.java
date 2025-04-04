@@ -69,8 +69,6 @@ import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.browser.auth.AuthTabColorSchemeParams;
@@ -84,6 +82,8 @@ import androidx.browser.customtabs.EngagementSignalsCallback;
 
 import com.google.android.material.button.MaterialButtonToggleGroup;
 
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.customtabsclient.shared.CustomTabsHelper;
 import org.chromium.customtabsclient.shared.ServiceConnection;
 import org.chromium.customtabsclient.shared.ServiceConnectionCallback;
@@ -94,6 +94,7 @@ import java.util.HashSet;
 import java.util.List;
 
 /** Example client activity for using Chrome Custom Tabs. */
+@NullUnmarked
 public class MainActivity extends AppCompatActivity
         implements OnClickListener, ServiceConnectionCallback {
     private static final String TAG = "CustomTabsClientExample";
@@ -262,7 +263,7 @@ public class MainActivity extends AppCompatActivity
 
     private static class NavigationCallback extends CustomTabsCallback {
         @Override
-        public void onNavigationEvent(int navigationEvent, Bundle extras) {
+        public void onNavigationEvent(int navigationEvent, @Nullable Bundle extras) {
             Log.w(TAG, "onNavigationEvent: Code = " + navigationEvent);
         }
 
@@ -293,7 +294,7 @@ public class MainActivity extends AppCompatActivity
         }
 
         @Override
-        public void extraCallback(@NonNull String callbackName, @Nullable Bundle args) {
+        public void extraCallback(String callbackName, @Nullable Bundle args) {
             if (args == null) return;
 
             // CustomTabsConnection#ON_RESIZED_CALLBACK
@@ -368,7 +369,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         mSharedPref = getPreferences(Context.MODE_PRIVATE);
@@ -504,7 +505,8 @@ public class MainActivity extends AppCompatActivity
                 new ArrayAdapter<>(this, 0, packagesSupportingCustomTabs) {
 
                     @Override
-                    public View getView(int position, View convertView, ViewGroup parent) {
+                    public View getView(
+                            int position, @Nullable View convertView, ViewGroup parent) {
                         View view = convertView;
                         if (view == null) {
                             view =
@@ -573,7 +575,8 @@ public class MainActivity extends AppCompatActivity
         final ArrayAdapter<String> colorAdapter =
                 new ArrayAdapter<String>(this, 0, colorsArr) {
                     @Override
-                    public View getView(int position, View convertView, ViewGroup parent) {
+                    public View getView(
+                            int position, @Nullable View convertView, ViewGroup parent) {
                         View view = convertView;
                         if (view == null) {
                             view =
@@ -771,7 +774,8 @@ public class MainActivity extends AppCompatActivity
         final ArrayAdapter<String> cctAdapter =
                 new ArrayAdapter<String>(this, 0, cctOptions) {
                     @Override
-                    public View getView(int position, View convertView, ViewGroup parent) {
+                    public View getView(
+                            int position, @Nullable View convertView, ViewGroup parent) {
                         View view = convertView;
                         if (view == null) {
                             view =

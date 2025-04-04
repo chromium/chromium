@@ -4,8 +4,10 @@
 
 package org.chromium.customtabsclient;
 
-import androidx.annotation.Nullable;
 import androidx.browser.customtabs.CustomTabsSession;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.lang.ref.WeakReference;
 
@@ -13,8 +15,9 @@ import java.lang.ref.WeakReference;
  * A class that keeps tracks of the current {@link CustomTabsSession} and helps other components of
  * the app to get access to the current session.
  */
+@NullMarked
 public class SessionHelper {
-    private static WeakReference<CustomTabsSession> sCurrentSession;
+    private static @Nullable WeakReference<CustomTabsSession> sCurrentSession;
 
     /**
      * @return The current {@link CustomTabsSession} object.
@@ -27,7 +30,7 @@ public class SessionHelper {
      * Sets the current session to the given one.
      * @param session The current session.
      */
-    public static void setCurrentSession(CustomTabsSession session) {
+    public static void setCurrentSession(@Nullable CustomTabsSession session) {
         sCurrentSession = new WeakReference<CustomTabsSession>(session);
     }
 }
