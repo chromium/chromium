@@ -98,7 +98,7 @@ void Autofill(PasswordManagerClient* client,
     metrics_util::LogFilledPasswordFromAndroidApp(
         PreferredRealmIsFromAndroid(fill_data));
   }
-  driver->SetPasswordFillData(fill_data);
+  driver->PropagateFillDataOnParsingCompletion(fill_data);
 
   // Matches can be empty when there are only WebAuthn credentials available.
   // In that case there will be no actual fill so the client doesn't need

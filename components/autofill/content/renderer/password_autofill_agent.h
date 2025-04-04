@@ -135,7 +135,8 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   mojom::PasswordManagerDriver& GetPasswordManagerDriver();
 
   // mojom::PasswordAutofillAgent:
-  void SetPasswordFillData(const PasswordFormFillData& form_data) override;
+  void ApplyFillDataOnParsingCompletion(
+      const PasswordFormFillData& form_data) override;
   void FillPasswordSuggestion(const std::u16string& username,
                               const std::u16string& password,
                               base::OnceCallback<void(bool)> callback) override;
@@ -534,15 +535,16 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
       AutofillSuggestionTriggerSource suggestion_source);
 
   // This function attempts to fill `username_element` and `password_element`
-  // with values from `fill_data`. The `username_element` and `password_element`
-  // will only have the suggestedValue set. Notifies the browser about
-  // successful filling based on `notify_browser_of_successful_filling`. Returns
-  // true if filling was successful.
-  bool FillUserNameAndPassword(blink::WebInputElement username_element,
-                               blink::WebInputElement password_element,
-                               const PasswordFormFillData& fill_data,
-                               RendererSavePasswordProgressLogger* logger,
-                               bool notify_browser_of_successful_filling);
+  // with values from `fill_data` when the page is loaded. The
+  // `username_element` and `password_element` will only have the suggestedValue
+  // set. Notifies the browser about successful filling based on
+  // `notify_browser_of_successful_filling`. Returns true if filling was
+  // successful.
+  bool FillCredentialsAutomatically(blink::WebInputElement username_element,
+                                    blink::WebInputElement password_element,
+                                    const PasswordFormFillData& fill_data,
+                                    RendererSavePasswordProgressLogger* logger,
+                                    bool notify_browser_of_successful_filling);
 
   // Logs whether a username value that was prefilled by the website was
   // overridden when trying to fill with an existing credential. This logs
@@ -586,10 +588,12 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   void TryFixAutofilledForm(
       std::vector<blink::WebFormControlElement>& control_elements) const;
 
-  // Autofills `field` with `value` and updates `gatekeeper_`,
+  // Fills `field` with `value` and updates `gatekeeper_` after the form is
+  // loaded and parsed, automatically (=without explicit user action).
   // `field_data_manager_`, `autofilled_elements_cache_`. `field` should be
   // non-null.
-  void AutofillField(const std::u16string& value, blink::WebInputElement field);
+  void FillFieldAutomatically(const std::u16string& value,
+                              blink::WebInputElement field);
 
   void SetLastUpdatedFormAndField(const blink::WebFormElement& form,
                                   const blink::WebFormControlElement& input);

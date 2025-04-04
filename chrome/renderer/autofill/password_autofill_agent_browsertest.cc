@@ -411,7 +411,7 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
   // We use that so we don't have to make RenderView::OnFillPasswordForm()
   // protected.
   void SimulateOnFillPasswordForm(const PasswordFormFillData& fill_data) {
-    password_autofill_agent_->SetPasswordFillData(fill_data);
+    password_autofill_agent_->ApplyFillDataOnParsingCompletion(fill_data);
   }
 
   void SendVisiblePasswordForms() {
@@ -4386,20 +4386,20 @@ TEST_F(PasswordAutofillAgentTest, GaiaReauthenticationFormIgnored) {
 TEST_F(PasswordAutofillAgentTest,
        UpdateSuggestionsIfNewerCredentialsAreSupplied) {
   // Supply old fill data
-  password_autofill_agent_->SetPasswordFillData(fill_data_);
+  password_autofill_agent_->ApplyFillDataOnParsingCompletion(fill_data_);
   // The username and password should have been autocompleted.
   CheckTextFieldsSuggestedState(kAliceUsername, true, kAlicePassword, true);
 
   // Change fill data
   fill_data_.preferred_login.password_value = u"a-changed-password";
   // Supply changed fill data
-  password_autofill_agent_->SetPasswordFillData(fill_data_);
+  password_autofill_agent_->ApplyFillDataOnParsingCompletion(fill_data_);
   CheckTextFieldsSuggestedState(kAliceUsername, true, "a-changed-password",
                                 true);
 }
 
 TEST_F(PasswordAutofillAgentTest, SuggestLatestCredentials) {
-  password_autofill_agent_->SetPasswordFillData(fill_data_);
+  password_autofill_agent_->ApplyFillDataOnParsingCompletion(fill_data_);
   ASSERT_TRUE(SimulateElementClick(kPasswordName));
   EXPECT_CALL(fake_driver_, ShowPasswordSuggestions)
       .Times(NumShowSuggestionsCalls());
@@ -4408,7 +4408,7 @@ TEST_F(PasswordAutofillAgentTest, SuggestLatestCredentials) {
   // Change fill data
   fill_data_.preferred_login.username_value = u"a-changed-username";
 
-  password_autofill_agent_->SetPasswordFillData(fill_data_);
+  password_autofill_agent_->ApplyFillDataOnParsingCompletion(fill_data_);
   ASSERT_TRUE(SimulateElementClick(kPasswordName));
   // Empty value because nothing was typed into the field.
   CheckSuggestions(u"", true);
@@ -5194,7 +5194,7 @@ TEST_F(PasswordAutofillAgentTest, NoFillingFallbackForBannedFields) {
       FieldRef(credit_card_full_name_field).GetId(),
       FieldRef(credit_card_number_field).GetId(),
       FieldRef(credit_card_cvc_field).GetId()};
-  password_autofill_agent_->SetPasswordFillData(form_data);
+  password_autofill_agent_->ApplyFillDataOnParsingCompletion(form_data);
 
   // Expect filling suggestion on credential forms.
   EXPECT_TRUE(password_autofill_agent_->ShowSuggestions(
