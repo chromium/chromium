@@ -1410,9 +1410,7 @@ int32_t SharedContextState::GetMaxTextureSize() {
 #endif  // BUILDFLAG(SKIA_USE_DAWN)
 #if BUILDFLAG(SKIA_USE_METAL)
     if (metal_context_provider()) {
-      // This is a development only code path, so just assume 16K since that
-      // should be supported on non-ancient HW and ARM Macs in particular.
-      max_texture_size = 16384;
+      max_texture_size = metal_context_provider()->GetMaxTextureSize();
     }
 #endif  // BUILDFLAG(SKIA_USE_METAL)
   }

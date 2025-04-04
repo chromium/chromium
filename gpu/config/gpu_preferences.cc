@@ -93,6 +93,8 @@ std::string SkiaBackendTypeToString(SkiaBackendType type) {
       return "GraphiteDawnD3D11";
     case SkiaBackendType::kGraphiteDawnD3D12:
       return "GraphiteDawnD3D12";
+    case SkiaBackendType::kGraphiteMetal:
+      return "GraphiteMetal";
   }
   NOTREACHED() << "SkiaBackendType=" << static_cast<int>(type);
 }
