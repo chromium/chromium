@@ -228,12 +228,12 @@ views::ProposedLayout IconLabelBubbleView::CalculateProposedLayout(
   gfx::Size preferred_size = GetSizeForLabelWidth(preferred_label_width);
   if (size_bounds.width().is_bounded() &&
       preferred_size.width() > size_bounds.width()) {
-    if (label()->GetElideBehavior() == gfx::NO_ELIDE) {
-      preferred_size = GetSizeForLabelWidth(0);
-    } else {
-      // If the label supports eliding, whittle away from its fully expanded
-      // size.
-      preferred_size.set_width(size_bounds.width().value());
+    preferred_size = GetSizeForLabelWidth(0);
+    // If the label should be shown, and supports elision, then extend the
+    // width to whatever space is available.
+    if (ShouldShowLabel() && label()->GetElideBehavior() != gfx::NO_ELIDE) {
+      preferred_size.set_width(
+          std::max(preferred_size.width(), size_bounds.width().value()));
     }
   }
   layout.host_size = preferred_size;

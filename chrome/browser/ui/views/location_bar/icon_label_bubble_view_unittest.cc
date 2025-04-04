@@ -23,12 +23,14 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "ui/gfx/text_constants.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/test/ink_drop_host_test_api.h"
 #include "ui/views/animation/test/test_ink_drop.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/flex_layout_types.h"
+#include "ui/views/layout/layout_types.h"
 #include "ui/views/widget/widget_utils.h"
 
 #if defined(USE_AURA)
@@ -73,6 +75,7 @@ class TestIconLabelBubbleView : public IconLabelBubbleView {
   bool IsLabelVisible() const { return label()->GetVisible(); }
   void SetLabelVisible(bool visible) { label()->SetVisible(visible); }
   const gfx::Rect& GetLabelBounds() const { return label()->bounds(); }
+  views::Label* GetLabel() { return label(); }
 
   void HideBubble() {
     views::InkDrop::Get(this)->AnimateToState(views::InkDropState::HIDDEN,
@@ -623,6 +626,43 @@ TEST_F(IconLabelBubbleViewTest, LabelPaintsBackgroundAlways) {
   view()->AnimateIn(IDS_AUTOFILL_CARD_SAVED);
   EXPECT_TRUE(view()->IsLabelVisible());
   EXPECT_EQ(nullptr, view()->GetBackground());
+}
+
+TEST_F(IconLabelBubbleViewTest, CollapsedSizing) {
+  view()->ResetSlideAnimation(true);
+  view()->SizeToPreferredSize();
+  const gfx::Size min_size = view()->GetPreferredSize({0, 0});
+  ASSERT_LT(min_size.width(), view()->width());
+
+  // Set bounds to a size between the current and minimum size.
+  const int width_between = (view()->width() + min_size.width()) / 2;
+
+  // With elision, the preferred size should be the provided bounds.
+  view()->GetLabel()->SetElideBehavior(gfx::ELIDE_TAIL);
+  const views::SizeBounds new_bounds({width_between}, {});
+  EXPECT_EQ(view()->GetPreferredSize(new_bounds),
+            gfx::Size(width_between, min_size.height()));
+
+  // Without elision, the preferred size should be the min size.
+  view()->GetLabel()->SetElideBehavior(gfx::NO_ELIDE);
+  EXPECT_EQ(view()->GetPreferredSize(new_bounds), min_size);
+}
+
+TEST_F(IconLabelBubbleViewTest, MinimumSize) {
+  view()->ResetSlideAnimation(true);
+  view()->SizeToPreferredSize();
+  const gfx::Size min_size = view()->GetPreferredSize({0, 0});
+  ASSERT_LT(min_size.width(), view()->width());
+
+  // Set the bounds to something slightly smaller than the min size.
+  const views::SizeBounds new_bounds({min_size.width() - 2}, {});
+
+  // The min size should remain regardless of elision behavior.
+  view()->GetLabel()->SetElideBehavior(gfx::ELIDE_TAIL);
+  EXPECT_EQ(view()->GetPreferredSize(new_bounds), min_size);
+
+  view()->GetLabel()->SetElideBehavior(gfx::NO_ELIDE);
+  EXPECT_EQ(view()->GetPreferredSize(new_bounds), min_size);
 }
 
 // Tests that the client-provided additional padding for labels is correctly
