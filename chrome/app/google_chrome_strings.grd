@@ -2165,20 +2165,6 @@ Google Chrome is unable to recover your settings.
         </message>
       </if>
 
-      <!-- Strings for full restore notifications -->
-      <if expr="is_chromeos">
-        <if expr="reven">
-          <message name="IDS_RESTORE_NOTIFICATION_DISPLAY_SOURCE" desc="This is the string shown as the display source of the notification for the user to select restore or not on startup.">
-            ChromeOS Flex system
-          </message>
-        </if>
-        <if expr="not reven">
-          <message name="IDS_RESTORE_NOTIFICATION_DISPLAY_SOURCE" desc="This is the string shown as the display source of the notification for the user to select restore or not on startup.">
-            ChromeOS system
-          </message>
-        </if>
-      </if>
-
       <!-- ChromeLabs bubble -->
       <message name="IDS_CHROMELABS_RELAUNCH_FOOTER_MESSAGE" desc="Text that shows in the footer of the Chrome Labs bubble when relaunch is needed for changes to take effect.">
         Your changes will take effect the next time you relaunch Google Chrome.

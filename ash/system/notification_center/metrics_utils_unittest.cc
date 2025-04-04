@@ -468,7 +468,7 @@ TEST_F(MessageCenterMetricsUtilsTest, RecordSystemNotificationAdded) {
   // Create system notifications with a valid catalog name, one for a non-pinned
   // notification and one for a pinned one (e.g. Full Restore and Caps Lock).
   const NotificationCatalogName catalog_name =
-      NotificationCatalogName::kFullRestore;
+      NotificationCatalogName::kNightLight;
   const NotificationCatalogName pinned_catalog_name =
       NotificationCatalogName::kCapsLock;
   auto notification = CreateNotificationWithCatalogName(catalog_name);
@@ -495,7 +495,7 @@ TEST_F(MessageCenterMetricsUtilsTest,
 
   // Create a system notification with a valid catalog name (e.g. Full Restore).
   const NotificationCatalogName catalog_name =
-      NotificationCatalogName::kFullRestore;
+      NotificationCatalogName::kNightLight;
   auto notification = CreateNotificationWithCatalogName(catalog_name);
 
   // Add notification to message center.
@@ -541,7 +541,7 @@ TEST_F(MessageCenterMetricsUtilsTest, RecordPopupUserJourneyTime) {
 
   // Create a non-pinned system notification with a valid catalog name.
   const NotificationCatalogName catalog_name =
-      NotificationCatalogName::kFullRestore;
+      NotificationCatalogName::kNightLight;
   auto notification = CreateNotificationWithCatalogName(catalog_name);
 
   // Add notification to message center. Use the normal duration for adding the

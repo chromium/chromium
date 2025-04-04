@@ -6775,29 +6775,6 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
     <ph name="DOMAIN">$1<ex>example.com</ex></ph> requires you to keep your smart card inserted.
   </message>
 
-  <!-- Strings for full restore notifications -->
-  <message name="IDS_RESTORE_NOTIFICATION_RESTORE_BUTTON" desc="The restore button label of the notification for the user to select restore apps and pages on startup.">
-    Restore
-  </message>
-  <message name="IDS_RESTORE_NOTIFICATION_CANCEL_BUTTON" desc="The cancel button label of the notification for the user to select not restore on startup.">
-    No thanks
-  </message>
-  <message name="IDS_RESTORE_NOTIFICATION_SETTINGS_BUTTON" desc="The settings button label of the notification for the user to set the restore setting.">
-    Settings
-  </message>
-  <message name="IDS_RESTORE_NOTIFICATION_TITLE" desc="This is the title of the notification for the user to select restore or not on startup.">
-    Restore apps?
-  </message>
-  <message name="IDS_RESTORE_CRASH_NOTIFICATION_TITLE" desc="This is the title of the notification for the user to select restore or not on startup after crash.">
-    Your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> restarted unexpectedly
-  </message>
-  <message name="IDS_RESTORE_NOTIFICATION_MESSAGE" desc="This is the text message of the notification for the user to select restore or not on startup if the 'restore_apps' setting is 'Ask every time', and the system is not crashed before reboot.">
-    Continue from where you left off. You can set apps to always restore on startup or turn off restore in Settings.
-  </message>
-  <message name="IDS_RESTORE_CRASH_NOTIFICATION_MESSAGE" desc="This is the text message of the notification for the user to select restore or not on startup after crash.">
-    You can restore your previous apps
-  </message>
-
   <!-- Strings for multi-capture -->
   <message name="IDS_MULTI_CAPTURE_NOTIFICATION_TITLE" desc="This is the title of the notification when an application starts capturing multiple surfaces.">
     <ph name="APP_ORIGIN">$1</ph> is recording your screen

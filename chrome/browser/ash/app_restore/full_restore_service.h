@@ -8,7 +8,6 @@
 #include <memory>
 #include <optional>
 
-#include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/wm/window_restore/informed_restore_contents_data.h"
 #include "base/callback_list.h"
@@ -20,7 +19,6 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/sessions/core/session_types.h"
-#include "ui/message_center/public/cpp/notification_delegate.h"
 
 class Profile;
 
@@ -28,19 +26,11 @@ namespace app_restore {
 class RestoreData;
 }  // namespace app_restore
 
-namespace message_center {
-class Notification;
-}  // namespace message_center
-
 namespace ash::full_restore {
 
 class FullRestoreAppLaunchHandler;
 class FullRestoreDataHandler;
 class NewUserRestorePrefHandler;
-
-extern const char kRestoreForCrashNotificationId[];
-extern const char kRestoreNotificationId[];
-extern const char kSetRestorePrefNotificationId[];
 
 // The restore notification button index.
 enum class RestoreNotificationButtonIndex {
@@ -64,8 +54,6 @@ enum class RestoreAction {
 // The FullRestoreService class calls AppService and Window Management
 // interfaces to restore the app launchings and app windows.
 class FullRestoreService : public KeyedService,
-                           public message_center::NotificationObserver,
-                           public AcceleratorController::Observer,
                            public SessionObserver {
  public:
   // Delegate class that talks to ash shell. Ash shell is not created in
@@ -111,16 +99,6 @@ class FullRestoreService : public KeyedService,
   // Implement the restoration.
   void Restore();
 
-  // message_center::NotificationObserver:
-  void Close(bool by_user) override;
-  void Click(const std::optional<int>& button_index,
-             const std::optional<std::u16string>& reply) override;
-
-  // AcceleratorController::Observer:
-  void OnActionPerformed(AcceleratorAction action) override;
-  void OnAcceleratorControllerWillBeDestroyed(
-      AcceleratorController* controller) override;
-
   // SessionObserver:
   void OnSessionStateChanged(session_manager::SessionState state) override;
 
@@ -153,12 +131,9 @@ class FullRestoreService : public KeyedService,
       InformedRestoreContentsData::DialogType dialog_type);
 
   // Shows the restore notification or the informed restore dialog on startup.
-  void MaybeShowRestoreNotification(
+  void MaybeShowRestoreDialog(
       InformedRestoreContentsData::DialogType dialog_type,
-      bool& show_notification);
-
-  void RecordRestoreAction(const std::string& notification_id,
-                           RestoreAction restore_action);
+      bool& out_show_notification);
 
   // Callback used when the pref |kRestoreAppsAndPagesPrefName| changes.
   void OnPreferenceChanged(const std::string& pref_name);
@@ -210,11 +185,6 @@ class FullRestoreService : public KeyedService,
   // Specifies whether it is the first time to run the full restore feature.
   bool first_run_full_restore_ = false;
 
-  // If the user clicks a notification button, set
-  // |skip_notification_histogram_| as true to skip the notification close
-  // histogram.
-  bool skip_notification_histogram_ = false;
-
   std::unique_ptr<NewUserRestorePrefHandler> new_user_pref_handler_;
 
   // |app_launch_handler_| is responsible for launching apps based on the
@@ -228,8 +198,6 @@ class FullRestoreService : public KeyedService,
   // session.
   std::unique_ptr<InformedRestoreContentsData> contents_data_;
 
-  std::unique_ptr<message_center::Notification> notification_;
-
   std::unique_ptr<Delegate> delegate_;
 
   base::CallbackListSubscription on_app_terminating_subscription_;
@@ -237,10 +205,6 @@ class FullRestoreService : public KeyedService,
   // Browser session restore exit type service lock. This is created when the
   // system is restored from crash to help set the browser saving flag.
   std::unique_ptr<ExitTypeService::CrashedLock> crashed_lock_;
-
-  base::ScopedObservation<AcceleratorController,
-                          AcceleratorController::Observer>
-      accelerator_controller_observer_{this};
 
   base::WeakPtrFactory<FullRestoreService> weak_ptr_factory_{this};
 };

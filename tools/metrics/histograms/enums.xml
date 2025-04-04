@@ -20893,7 +20893,7 @@ Called by update_net_error_codes.py.-->
   <int value="117" label="Network Portal Detector"/>
   <int value="118" label="Crostini Package"/>
   <int value="119" label="Crostini Upgrade Available"/>
-  <int value="120" label="Full Restore"/>
+  <int value="120" label="(deprecated) Full Restore"/>
   <int value="121" label="Adb Sideloading Disallowed"/>
   <int value="122" label="Adb Sideloading Powerwash Planned"/>
   <int value="123" label="Adb Sideloading Powerwash On Reboot"/>
