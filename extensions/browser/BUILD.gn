@@ -590,7 +590,10 @@ source_set("browser_sources") {
   ]
 
   if (is_chromeos) {
-    deps += [ "//chromeos/constants" ]
+    deps += [
+      "//chromeos/constants",
+      "//extensions/browser/api/clipboard:clipboard_types",
+    ]
   }
 
   public_deps = [

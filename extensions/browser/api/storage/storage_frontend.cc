@@ -37,6 +37,7 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/api/storage.h"
 #include "extensions/common/extension_id.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 
 using content::BrowserContext;
 using content::BrowserThread;
