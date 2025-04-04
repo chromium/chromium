@@ -4205,8 +4205,11 @@ base::OnceClosure ChromeContentBrowserClient::SelectClientCertificate(
     // result in always proceeding with no certificate for any request from an
     // extension service worker. That decision would be remembered across the
     // entire profile, potentially locking the user out of the origin.
-    // Allow background requests on desktop android even if there are no
-    // matching certificates.
+    // For now, allow all extension background requests on desktop android to
+    // proceed without a certificate. This is done as a temporary workaround to
+    // enable testing.
+    // TODO(wenz): This should instead proceed with the selected certificate
+    // when there are matching certificates in the OS.
 #if BUILDFLAG(ENABLE_EXTENSIONS) && \
     !(BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_DESKTOP_ANDROID))
     if (matching_certificates.empty() && nonmatching_certificates.empty()) {
