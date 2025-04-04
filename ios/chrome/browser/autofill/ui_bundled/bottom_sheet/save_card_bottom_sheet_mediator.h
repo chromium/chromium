@@ -10,14 +10,10 @@
 #import <memory>
 
 #import "ios/chrome/browser/autofill/model/bottom_sheet/save_card_bottom_sheet_model.h"
-#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/save_card_bottom_sheet_consumer.h"
 
 // This mediator tracks SaveCardBottomSheetModel to update the view. It also
 // receives user actions to be communicated to the model.
 @interface SaveCardBottomSheetMediator : NSObject
-
-// Consumer interface for updating the save card bottomsheet.
-@property(nonatomic, weak) id<SaveCardBottomSheetConsumer> consumer;
 
 // Initialize this mediator with the save card bottomsheet model.
 - (instancetype)initWithUIModel:

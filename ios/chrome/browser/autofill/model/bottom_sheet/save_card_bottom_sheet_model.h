@@ -36,22 +36,6 @@ class SaveCardBottomSheetModel {
   // Calls `AutofillSaveCardDelegate` to handle the dismiss event.
   void OnDismissed();
 
-  // Logo to be displayed above the title in the bottomsheet.
-  inline int logo_icon_id() const { return ui_info_.logo_icon_id; }
-
-  // Accessibility description for the logo.
-  inline const std::u16string& logo_icon_description() const {
-    return ui_info_.logo_icon_description;
-  }
-
-  // Title displayed in the bottomsheet.
-  inline const std::u16string& title() const { return ui_info_.title_text; }
-
-  // Explanatory text displayed below the title in the bottomsheet.
-  inline const std::u16string& subtitle() const {
-    return ui_info_.description_text;
-  }
-
   base::WeakPtr<SaveCardBottomSheetModel> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
