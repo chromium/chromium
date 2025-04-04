@@ -5677,10 +5677,6 @@ const char kMacPWAsNotificationAttributionDescription[] =
     "Route notifications for PWAs on Mac through the app shim, attributing "
     "notifications to the correct apps.";
 
-const char kMacSyscallSandboxName[] = "Mac Syscall Filtering Sandbox";
-const char kMacSyscallSandboxDescription[] =
-    "Controls whether the macOS sandbox filters syscalls.";
-
 const char kRetryGetVideoCaptureDeviceInfosName[] =
     "Retry capture device enumeration on crash";
 const char kRetryGetVideoCaptureDeviceInfosDescription[] =

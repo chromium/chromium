@@ -5493,10 +5493,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_MAC)
-    {"mac-syscall-sandbox", flag_descriptions::kMacSyscallSandboxName,
-     flag_descriptions::kMacSyscallSandboxDescription, kOsMac,
-     FEATURE_VALUE_TYPE(features::kMacSyscallSandbox)},
-
     {"mac-loopback-audio-for-screen-share",
      flag_descriptions::kMacLoopbackAudioForScreenShareName,
      flag_descriptions::kMacLoopbackAudioForScreenShareDescription, kOsMac,

@@ -6063,11 +6063,6 @@
     "expiry_milestone": 145
   },
   {
-    "name": "mac-syscall-sandbox",
-    "owners": [ "rsesek@google.com" ],
-    "expiry_milestone": 88
-  },
-  {
     "name": "mahi",
     "owners": [ "thanhdng@chromium.org", "chrome-knowledge-eng@google.com" ],
     "expiry_milestone": 135

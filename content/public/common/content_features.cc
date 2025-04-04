@@ -1418,10 +1418,6 @@ BASE_FEATURE(kMacImeLiveConversionFix,
              "MacImeLiveConversionFix",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kMacSyscallSandbox,
-             "MacSyscallSandbox",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Changes how Chrome responds to accessibility activation signals on macOS
 // Sonoma, to avoid unnecessary changes to the screen reader state.
 BASE_FEATURE(kSonomaAccessibilityActivationRefinements,
