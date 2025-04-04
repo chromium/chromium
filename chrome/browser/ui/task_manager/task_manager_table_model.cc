@@ -383,8 +383,12 @@ TableSortDescriptor::TableSortDescriptor(int col_id, bool ascending)
 TaskManagerTableModel::TaskManagerTableModel(
     TableViewDelegate* delegate,
     DisplayCategory initial_display_category)
-    : TaskManagerObserver(base::Milliseconds(kRefreshTimeMS),
-                          REFRESH_TYPE_NONE),
+    : TaskManagerObserver(
+          base::Milliseconds(
+              base::FeatureList::IsEnabled(features::kTaskManagerDesktopRefresh)
+                  ? 2000
+                  : kRefreshTimeMS),
+          REFRESH_TYPE_NONE),
       table_view_delegate_(delegate),
       table_model_observer_(nullptr),
       stringifier_(new TaskManagerValuesStringifier),
@@ -917,6 +921,7 @@ void TaskManagerTableModel::OnTaskToBeRemoved(TaskId id) {
 }
 
 void TaskManagerTableModel::OnTasksRefreshed(const TaskIdList& task_ids) {
+  LOG(ERROR) << "kRefreshTimeMS: " << kRefreshTimeMS;
   OnRefresh(task_ids);
 }
 
