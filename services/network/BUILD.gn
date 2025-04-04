@@ -219,6 +219,8 @@ component("network_service") {
     "url_loader_context.h",
     "url_loader_factory.cc",
     "url_loader_factory.h",
+    "url_loader_util.cc",
+    "url_loader_util.h",
     "url_request_context_builder_mojo.cc",
     "url_request_context_builder_mojo.h",
     "url_request_context_owner.cc",
