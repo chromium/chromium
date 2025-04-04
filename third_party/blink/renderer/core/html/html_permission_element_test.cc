@@ -1843,6 +1843,63 @@ TEST_F(HTMLPermissionElementIntersectionTest, ClickingDisablePseudoClass) {
                    ->matches(AtomicString(":invalid-style")));
 }
 
+TEST_F(HTMLPermissionElementIntersectionTest, IntersectionOclluderLogging) {
+  SimRequest main_resource("https://example.test/", "text/html");
+  LoadURL("https://example.test/");
+  main_resource.Complete(R"HTML(
+<div id='parent' style='width: 250px; height: 0px;'>
+  <permission id='camera' type='camera'></permission>
+  <div style='position: fixed; left: 0px; top: 100px; width: 100px; height: 100px;'>
+</div>
+)HTML");
+
+  Compositor().BeginFrame();
+  auto* permission_element = To<HTMLPermissionElement>(
+      GetDocument().QuerySelector(AtomicString("permission")));
+  auto* parent_div =
+      To<HTMLDivElement>(GetDocument().QuerySelector(AtomicString("div")));
+  auto* div =
+      To<HTMLDivElement>(parent_div->QuerySelector(AtomicString("div")));
+  WaitForIntersectionVisibilityChanged(
+      permission_element,
+      HTMLPermissionElement::IntersectionVisibility::kFullyVisible);
+  DeferredChecker checker(permission_element);
+  checker.CheckClickingEnabledAfterDelay(kDefaultTimeout,
+                                         /*expected_enabled*/ true);
+  permission_element->setAttribute(
+      html_names::kStyleAttr,
+      AtomicString("color: red; background-color: purple;"));
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+
+  div->SetInlineStyleProperty(CSSPropertyID::kTop, "0px");
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  WaitForIntersectionVisibilityChanged(
+      permission_element,
+      HTMLPermissionElement::IntersectionVisibility::kOccludedOrDistorted);
+  checker.CheckClickingEnabledAfterDelay(kDefaultTimeout,
+                                         /*expected_enabled*/ false);
+  auto& console_messages =
+      static_cast<frame_test_helpers::TestWebFrameClient*>(MainFrame().Client())
+          ->ConsoleMessages();
+  EXPECT_EQ(console_messages.size(), 5u);
+  EXPECT_EQ(console_messages[0],
+            String::Format("Contrast between color and background color of the "
+                           "permission element 'camera' is too low"));
+  EXPECT_EQ(console_messages[1],
+            String::Format("The permission element 'camera' cannot be "
+                           "activated due to invalid style."));
+  EXPECT_EQ(
+      console_messages[2],
+      String::Format("The permission element 'camera' cannot be activated due "
+                     "to intersection occluded or distorted."));
+  EXPECT_EQ(console_messages[3],
+            String::Format("The permission element is occluded by node %s",
+                           div->ToString().Utf8().c_str()));
+  EXPECT_EQ(console_messages[4],
+            String::Format("The occluder's parent node is %s",
+                           parent_div->ToString().Utf8().c_str()));
+}
+
 #if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
 #define MAYBE_ContainerDivRotates DISABLED_ContainerDivRotates
 #else

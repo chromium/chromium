@@ -123,6 +123,8 @@ class CORE_EXPORT HTMLPermissionElement final
   FRIEND_TEST_ALL_PREFIXES(HTMLPermissionElementIntersectionTest,
                            ContainerDivClipPath);
   FRIEND_TEST_ALL_PREFIXES(HTMLPermissionElementIntersectionTest,
+                           IntersectionOclluderLogging);
+  FRIEND_TEST_ALL_PREFIXES(HTMLPermissionElementIntersectionTest,
                            IntersectionVisibleOverlapsRecentAttachedInterval);
   FRIEND_TEST_ALL_PREFIXES(HTMLPermissionElementFencedFrameTest,
                            NotAllowedInFencedFrame);
@@ -472,6 +474,10 @@ class CORE_EXPORT HTMLPermissionElement final
   // permission requests. Once fallback mode is entered the element does not
   // revert back.
   void EnableFallbackMode();
+
+  // If there's a node covers this element, try to get some useful
+  // information from this node and add to console log.
+  void AddOccluderInfoToConsole();
 
   bool IsClickingDisabledIndefinitely(DisableReason reason) const {
     auto it = clicking_disabled_reasons_.find(reason);

@@ -1171,34 +1171,27 @@ bool HTMLPermissionElement::IsClickingEnabled() {
     return true;
   }
 
-  // Remove expired reasons. If a non-expired reason is found, then clicking is
-  // disabled.
+  // Remove expired reasons. If the remaining map is not empty, clicking is
+  // disabled. Record and log all the remaining reasons in the map in this case.
   base::TimeTicks now = base::TimeTicks::Now();
-  while (!clicking_disabled_reasons_.empty()) {
-    auto it = clicking_disabled_reasons_.begin();
-    if (it->value >= now) {
-      AddConsoleError(String::Format(
-          "The permission element '%s' cannot be activated due to %s.",
-          GetType().Utf8().c_str(),
-          DisableReasonToString(it->key).Utf8().c_str()));
-      if (it->key ==
-              DisableReason::kIntersectionVisibilityOccludedOrDistorted &&
-          occluder_node_id_ != kInvalidDOMNodeId) {
-        if (Node* node = DOMNodeIds::NodeForId(occluder_node_id_)) {
-          AddConsoleError(
-              String::Format("The permission element is occluded by node %s",
-                             node->ToString().Utf8().c_str()));
-        }
-      }
-      base::UmaHistogramEnumeration(
-          "Blink.PermissionElement.UserInteractionDeniedReason",
-          DisableReasonToUserInteractionDeniedReason(it->key));
-      return false;
+  clicking_disabled_reasons_.erase_if(
+      [&now](const auto& it) { return it.value < now; });
+
+  for (const auto& it : clicking_disabled_reasons_) {
+    AddConsoleError(String::Format(
+        "The permission element '%s' cannot be activated due to %s.",
+        GetType().Utf8().c_str(),
+        DisableReasonToString(it.key).Utf8().c_str()));
+    if (it.key == DisableReason::kIntersectionVisibilityOccludedOrDistorted &&
+        occluder_node_id_ != kInvalidDOMNodeId) {
+      AddOccluderInfoToConsole();
     }
-    clicking_disabled_reasons_.erase(it);
+    base::UmaHistogramEnumeration(
+        "Blink.PermissionElement.UserInteractionDeniedReason",
+        DisableReasonToUserInteractionDeniedReason(it.key));
   }
 
-  return true;
+  return clicking_disabled_reasons_.empty();
 }
 
 void HTMLPermissionElement::DisableClickingIndefinitely(DisableReason reason) {
@@ -1691,6 +1684,27 @@ void HTMLPermissionElement::EnableFallbackMode() {
   UserAgentShadowRoot()->RemoveChild(permission_text_span_);
 
   MaybeDispatchValidationChangeEvent();
+}
+
+void HTMLPermissionElement::AddOccluderInfoToConsole() {
+  Node* node = DOMNodeIds::NodeForId(occluder_node_id_);
+  if (!node) {
+    return;
+  }
+  AddConsoleError(
+      String::Format("The permission element is occluded by node %s",
+                     node->ToString().Utf8().c_str()));
+
+  auto* element = DynamicTo<Element>(node);
+  if (element && (element->HasID() || element->HasClass())) {
+    return;
+  }
+  // Printing parent node might give some useful information if there's no id or
+  // class attr.
+  if (Node* parent = node->parentNode()) {
+    AddConsoleError(String::Format("The occluder's parent node is %s",
+                                   parent->ToString().Utf8().c_str()));
+  }
 }
 
 }  // namespace blink
