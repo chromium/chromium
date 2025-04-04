@@ -102,7 +102,6 @@ class TEST_TYPES(object):
 # The perf data will be handled on a separated 'processor' VM.
 # This list will be removed or replace by an opt-out list.
 LIGHTWEIGHT_TESTERS = [
-    'linux-perf',
     'win-10-perf',
     'win-10_laptop_low_end-perf',
     'win-11-perf',
@@ -149,7 +148,6 @@ UPLOAD_SKIA_JSON_BUILDERS = frozenset([
 ])
 
 PUBLIC_PERF_BUILDERS = [
-    'linux-perf',  # ChromiumPerf
     'linux-perf-fyi',  # ChromiumPerfFyi
     'win-10-perf',  # ChromiumPerf
 ]
@@ -814,24 +812,6 @@ BUILDERS = {
             'os': 'Android',
             'device_type': 'wembley_2GB',
             'device_os_flavor': 'google',
-        },
-    },
-    'linux-perf': {
-        'tests': [
-            {
-                'isolate': 'performance_test_suite',
-                'extra_args': [
-                    '--assert-gpu-compositing',
-                ],
-            },
-        ],
-        'platform':
-        'linux',
-        'dimension': {
-            'gpu': '10de:1cb3-440.100',
-            'os': 'Ubuntu-18.04',
-            'pool': 'chrome.tests.perf',
-            'synthetic_product_name': 'PowerEdge R230 (Dell Inc.)'
         },
     },
     'linux-perf-pgo': {

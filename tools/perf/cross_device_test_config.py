@@ -121,46 +121,6 @@ TARGET_DEVICES = {
             'Speedometer3': 8,
         },
     },
-    'linux-perf': {
-        'jetstream2': {
-            'JetStream2': 5,
-        },
-        'jetstream2-minorms': {
-            'JetStream2': 5,
-        },
-        'system_health.common_desktop': {
-            # cputimeToFirstContentfulPaint
-            'browse:social:tumblr_infinite_scroll:2018': 10,
-            'long_running:tools:gmail-background': 10,
-            'browse:media:youtubetv:2019': 10
-        },
-        # set speedometer to 20 shards to help warm up speedometer2
-        # benchmark runs on linux-perf b/325578543
-        'speedometer': {
-            'http://browserbench.org/Speedometer/': 20,
-        },
-        'speedometer2-minorms': {
-            'Speedometer2': 20,
-        },
-        'speedometer2': {
-            'Speedometer2': 20,
-        },
-        'speedometer2-predictable': {
-            'Speedometer2': 20,
-        },
-        'speedometer3': {
-            'Speedometer3': 20,
-        },
-        'speedometer3-minorms': {
-            'Speedometer3': 20,
-        },
-        'speedometer3-predictable': {
-            'Speedometer3': 20,
-        },
-        'speedometer3.crossbench': 20,
-        'speedometer3.1.crossbench': 20,
-        'jetstream2.crossbench': 20,
-    },
     'linux-perf-fyi': {
         'speedometer2': 4,
         'speedometer2-minorms': 4,

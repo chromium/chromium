@@ -777,13 +777,6 @@ _LINUX_PERF_CALIBRATION_BENCHMARK_CONFIGS = PerfSuite([
 
 
 # Linux
-LINUX = PerfPlatform('linux-perf',
-                     'Ubuntu-18.04, 8 core, NVIDIA Quadro P400',
-                     _LINUX_BENCHMARK_CONFIGS_WITH_MINORMS_PREDICTABLE,
-                     22,
-                     'linux',
-                     executables=_LINUX_EXECUTABLE_CONFIGS,
-                     crossbench=_CROSSBENCH_BENCHMARKS_ALL)
 LINUX_PGO = PerfPlatform('linux-perf-pgo',
                          'Ubuntu-18.04, 8 core, NVIDIA Quadro P400',
                          _LINUX_BENCHMARK_CONFIGS,
