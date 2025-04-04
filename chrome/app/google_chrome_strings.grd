@@ -451,7 +451,7 @@ chromium_strings.grd. -->
       </message>
       <if expr="is_macosx">
         <message name="IDS_MACOS_OBSOLETE" desc="A message displayed on an at-launch infobar and About (Help) page warning the user that the OS version they are using will soon be or is already unsupported.">
-          To get future Google Chrome updates, you'll need macOS 11 or later. This computer is using macOS 10.15.
+          To get future Google Chrome updates, you'll need macOS 12 or later. This computer is using macOS 11.
         </message>
       </if>
       <if expr="is_win">
