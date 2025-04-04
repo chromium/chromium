@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/enhanced_calendar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/mini_map_commands.h"
 #import "ios/chrome/browser/shared/public/commands/save_to_photos_commands.h"
 #import "ios/chrome/browser/shared/public/commands/unit_conversion_commands.h"
@@ -132,6 +133,11 @@ class ContextMenuConfigurationProviderTest : public PlatformTest {
     [browser_->GetCommandDispatcher()
         startDispatchingToTarget:mock_activity_service_commands_handler
                      forProtocol:@protocol(ActivityServiceCommands)];
+    mock_enhanced_calendar_handler =
+        OCMStrictProtocolMock(@protocol(EnhancedCalendarCommands));
+    [browser_->GetCommandDispatcher()
+        startDispatchingToTarget:mock_enhanced_calendar_handler
+                     forProtocol:@protocol(EnhancedCalendarCommands)];
   }
 
   void TearDown() final {
@@ -180,6 +186,7 @@ class ContextMenuConfigurationProviderTest : public PlatformTest {
   id mock_save_to_photos_commands_handler;
   id mock_activity_service_commands_handler;
   id mock_application_command_handler;
+  id mock_enhanced_calendar_handler;
 };
 
 // Test that the "Save Image in Google Photos" action is added to the context

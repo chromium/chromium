@@ -43,6 +43,7 @@
 #import "ios/chrome/browser/shared/public/commands/activity_service_share_url_command.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/enhanced_calendar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/mini_map_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reading_list_add_command.h"
@@ -293,7 +294,9 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
             HandlerForProtocol(self.browser->GetCommandDispatcher(),
                                MiniMapCommands),
             HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                               UnitConversionCommands));
+                               UnitConversionCommands),
+            HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                               EnhancedCalendarCommands));
     if (result && result.elements) {
       [menuElements addObjectsFromArray:result.elements];
       menuTitle = result.title;

@@ -46,15 +46,6 @@ ElementsToAddToContextMenu* GetContextMenuElementsToAdd(
     id<UnitConversionCommands> unit_conversion_handler,
     id<EnhancedCalendarCommands> enhanced_calendar_handler);
 
-// TODO(crbug.com/408185339): Remove this function once the provider migration
-// is finished.
-ElementsToAddToContextMenu* GetContextMenuElementsToAdd(
-    web::WebState* web_state,
-    web::ContextMenuParams params,
-    UIViewController* presenting_view_controller,
-    id<MiniMapCommands> mini_map_handler,
-    id<UnitConversionCommands> unit_conversion_handler);
-
 // Returns set of `NSTextCheckingType` representing the intent types that
 // can be handled by the provider, for the given `web_state`.
 NSTextCheckingType GetHandledIntentTypes(web::WebState* web_state);

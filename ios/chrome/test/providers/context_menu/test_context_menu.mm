@@ -16,17 +16,6 @@ ElementsToAddToContextMenu* GetContextMenuElementsToAdd(
   return nil;
 }
 
-// TODO(crbug.com/408185339): Remove this function once the provider migration
-// is finished.
-ElementsToAddToContextMenu* GetContextMenuElementsToAdd(
-    web::WebState* web_state,
-    web::ContextMenuParams params,
-    UIViewController* presenting_view_controller,
-    id<MiniMapCommands> mini_map_handler,
-    id<UnitConversionCommands> unit_conversion_handler) {
-  return nil;
-}
-
 NSTextCheckingType GetHandledIntentTypes(web::WebState* web_state) {
   return 0;
 }
