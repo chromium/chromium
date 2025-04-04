@@ -239,7 +239,7 @@ void SharedStorageDocumentServiceImpl::SharedStorageGet(
   GetSharedStorageRuntimeManager()->NotifySharedStorageAccessed(
       AccessScope::kWindow, AccessMethod::kGet, main_frame_id(),
       SerializeLastCommittedOrigin(),
-      SharedStorageEventParams::CreateForGetOrDelete(base::UTF16ToUTF8(key)));
+      SharedStorageEventParams::CreateForGet(base::UTF16ToUTF8(key)));
 
   auto operation_completed_callback = base::BindOnce(
       [](SharedStorageGetCallback callback, GetResult result) {

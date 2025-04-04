@@ -1056,8 +1056,8 @@ void SharedStorageWorkletHost::SharedStorageGet(
     shared_storage_runtime_manager_->NotifySharedStorageAccessed(
         AccessScope::kSharedStorageWorklet, AccessMethod::kGet,
         document_service_->main_frame_id(), shared_storage_origin_.Serialize(),
-        SharedStorageEventParams::CreateForGetOrDelete(base::UTF16ToUTF8(key),
-                                                       worklet_id_));
+        SharedStorageEventParams::CreateForGet(base::UTF16ToUTF8(key),
+                                               worklet_id_));
   }
 
   auto operation_completed_callback = base::BindOnce(

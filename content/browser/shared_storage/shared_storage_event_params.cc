@@ -307,7 +307,9 @@ SharedStorageEventParams::SharedStorageEventParams(
     std::optional<std::string> key,
     std::optional<std::string> value,
     std::optional<bool> ignore_if_present,
-    std::optional<int> worklet_id)
+    std::optional<int> worklet_id,
+    std::optional<std::string> with_lock,
+    std::optional<int> batch_update_id)
     : script_source_url(std::move(script_source_url)),
       data_origin(std::move(data_origin)),
       operation_name(std::move(operation_name)),
@@ -320,7 +322,9 @@ SharedStorageEventParams::SharedStorageEventParams(
       key(std::move(key)),
       value(std::move(value)),
       ignore_if_present(ignore_if_present),
-      worklet_id(worklet_id) {}
+      worklet_id(worklet_id),
+      with_lock(std::move(with_lock)),
+      batch_update_id(batch_update_id) {}
 
 // static
 SharedStorageEventParams SharedStorageEventParams::CreateForAddModule(
@@ -402,43 +406,64 @@ SharedStorageEventParams SharedStorageEventParams::CreateForSet(
     const std::string& key,
     const std::string& value,
     bool ignore_if_present,
-    std::optional<int> worklet_id) {
+    std::optional<int> worklet_id,
+    std::optional<std::string> with_lock,
+    std::optional<int> batch_update_id) {
   return SharedStorageEventParams::CreateForModifierMethod(
-      key, value, ignore_if_present, worklet_id);
+      key, value, ignore_if_present, worklet_id, std::move(with_lock),
+      batch_update_id);
 }
 
 // static
 SharedStorageEventParams SharedStorageEventParams::CreateForAppend(
     const std::string& key,
     const std::string& value,
-    std::optional<int> worklet_id) {
+    std::optional<int> worklet_id,
+    std::optional<std::string> with_lock,
+    std::optional<int> batch_update_id) {
   return SharedStorageEventParams::CreateForModifierMethod(
       key, value,
-      /*ignore_if_present=*/std::nullopt, worklet_id);
+      /*ignore_if_present=*/std::nullopt, worklet_id, std::move(with_lock),
+      batch_update_id);
 }
 
 // static
-SharedStorageEventParams SharedStorageEventParams::CreateForGetOrDelete(
+SharedStorageEventParams SharedStorageEventParams::CreateForDelete(
     const std::string& key,
-    std::optional<int> worklet_id) {
+    std::optional<int> worklet_id,
+    std::optional<std::string> with_lock,
+    std::optional<int> batch_update_id) {
   return SharedStorageEventParams::CreateForModifierMethod(
       key,
       /*value=*/std::nullopt,
-      /*ignore_if_present=*/std::nullopt, worklet_id);
+      /*ignore_if_present=*/std::nullopt, worklet_id, std::move(with_lock),
+      batch_update_id);
+}
+
+// static
+SharedStorageEventParams SharedStorageEventParams::CreateForClear(
+    std::optional<int> worklet_id,
+    std::optional<std::string> with_lock,
+    std::optional<int> batch_update_id) {
+  return SharedStorageEventParams::CreateForModifierMethod(
+      /*key=*/std::nullopt,
+      /*value=*/std::nullopt,
+      /*ignore_if_present=*/std::nullopt, worklet_id, std::move(with_lock),
+      batch_update_id);
+}
+
+// static
+SharedStorageEventParams SharedStorageEventParams::CreateForGet(
+    const std::string& key,
+    std::optional<int> worklet_id) {
+  return SharedStorageEventParams::CreateForGetterMethod(key, worklet_id);
 }
 
 // static
 SharedStorageEventParams SharedStorageEventParams::CreateWithWorkletId(
     int worklet_id) {
-  return SharedStorageEventParams::CreateForModifierMethod(
-      /*key=*/std::nullopt,
-      /*value=*/std::nullopt,
-      /*ignore_if_present=*/std::nullopt, worklet_id);
-}
-
-// static
-SharedStorageEventParams SharedStorageEventParams::CreateDefault() {
-  return SharedStorageEventParams();
+  return SharedStorageEventParams::CreateForGetterMethod(
+      /*key=*/std::nullopt, worklet_id);
 }
 
 // static
@@ -457,7 +482,9 @@ SharedStorageEventParams SharedStorageEventParams::CreateForWorkletCreation(
       /*saved_query=*/std::nullopt,
       /*key=*/std::nullopt,
       /*value=*/std::nullopt,
-      /*ignore_if_present=*/std::nullopt, worklet_id);
+      /*ignore_if_present=*/std::nullopt, worklet_id,
+      /*with_lock=*/std::nullopt,
+      /*batch_update_id=*/std::nullopt);
 }
 
 // static
@@ -479,7 +506,9 @@ SharedStorageEventParams SharedStorageEventParams::CreateForWorkletOperation(
       std::move(urls_with_metadata), resolve_to_config, std::move(saved_query),
       /*key=*/std::nullopt,
       /*value=*/std::nullopt,
-      /*ignore_if_present=*/std::nullopt, worklet_id);
+      /*ignore_if_present=*/std::nullopt, worklet_id,
+      /*with_lock=*/std::nullopt,
+      /*batch_update_id=*/std::nullopt);
 }
 
 // static
@@ -503,7 +532,9 @@ SharedStorageEventParams::CreateForWorkletOperationForTesting(
       std::move(urls_with_metadata), resolve_to_config, std::move(saved_query),
       /*key=*/std::nullopt,
       /*value=*/std::nullopt,
-      /*ignore_if_present=*/std::nullopt, worklet_id);
+      /*ignore_if_present=*/std::nullopt, worklet_id,
+      /*with_lock=*/std::nullopt,
+      /*batch_update_id=*/std::nullopt);
 }
 
 // static
@@ -511,7 +542,9 @@ SharedStorageEventParams SharedStorageEventParams::CreateForModifierMethod(
     std::optional<std::string> key,
     std::optional<std::string> value,
     std::optional<bool> ignore_if_present,
-    std::optional<int> worklet_id) {
+    std::optional<int> worklet_id,
+    std::optional<std::string> with_lock,
+    std::optional<int> batch_update_id) {
   return SharedStorageEventParams(
       /*script_source_url=*/std::nullopt,
       /*data_origin=*/std::nullopt,
@@ -522,7 +555,27 @@ SharedStorageEventParams SharedStorageEventParams::CreateForModifierMethod(
       /*urls_with_metadata=*/std::nullopt,
       /*resolve_to_config=*/std::nullopt,
       /*saved_query=*/std::nullopt, std::move(key), std::move(value),
-      ignore_if_present, worklet_id);
+      ignore_if_present, worklet_id, std::move(with_lock), batch_update_id);
+}
+
+// static
+SharedStorageEventParams SharedStorageEventParams::CreateForGetterMethod(
+    std::optional<std::string> key,
+    std::optional<int> worklet_id) {
+  return SharedStorageEventParams(
+      /*script_source_url=*/std::nullopt,
+      /*data_origin=*/std::nullopt,
+      /*operation_name=*/std::nullopt,
+      /*keep_alive=*/std::nullopt,
+      /*private_aggregation_config=*/std::nullopt,
+      /*serialized_data*/ std::nullopt,
+      /*urls_with_metadata=*/std::nullopt,
+      /*resolve_to_config=*/std::nullopt,
+      /*saved_query=*/std::nullopt, std::move(key),
+      /*value=*/std::nullopt,
+      /*ignore_if_present=*/std::nullopt, worklet_id,
+      /*with_lock=*/std::nullopt,
+      /*batch_update_id=*/std::nullopt);
 }
 
 // Note that for `serialized_data`, we only match its presence or absence.
@@ -539,7 +592,8 @@ bool operator==(const SharedStorageEventParams& lhs,
          lhs.saved_query == rhs.saved_query && lhs.key == rhs.key &&
          lhs.value == rhs.value &&
          lhs.ignore_if_present == rhs.ignore_if_present &&
-         lhs.worklet_id == rhs.worklet_id;
+         lhs.worklet_id == rhs.worklet_id && lhs.with_lock == rhs.with_lock &&
+         lhs.batch_update_id == rhs.batch_update_id;
 }
 
 std::ostream& operator<<(std::ostream& os,
@@ -563,7 +617,10 @@ std::ostream& operator<<(std::ostream& os,
      << "; Value: " << SerializeOptionalString(params.value)
      << "; Ignore If Present: "
      << SerializeOptionalBool(params.ignore_if_present)
-     << "; Worklet ID: " << SerializeOptionalInt(params.worklet_id) << " }";
+     << "; Worklet ID: " << SerializeOptionalInt(params.worklet_id)
+     << "; With Lock: " << SerializeOptionalString(params.with_lock)
+     << "; Batch Update ID: " << SerializeOptionalInt(params.batch_update_id)
+     << " }";
   return os;
 }
 

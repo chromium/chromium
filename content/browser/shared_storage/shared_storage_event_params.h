@@ -106,17 +106,29 @@ class CONTENT_EXPORT SharedStorageEventParams {
       const std::string& key,
       const std::string& value,
       bool ignore_if_present,
-      std::optional<int> worklet_id = std::nullopt);
+      std::optional<int> worklet_id = std::nullopt,
+      std::optional<std::string> with_lock = std::nullopt,
+      std::optional<int> batch_update_id = std::nullopt);
   static SharedStorageEventParams CreateForAppend(
       const std::string& key,
       const std::string& value,
-      std::optional<int> worklet_id = std::nullopt);
-  static SharedStorageEventParams CreateForGetOrDelete(
+      std::optional<int> worklet_id = std::nullopt,
+      std::optional<std::string> with_lock = std::nullopt,
+      std::optional<int> batch_update_id = std::nullopt);
+  static SharedStorageEventParams CreateForDelete(
+      const std::string& key,
+      std::optional<int> worklet_id = std::nullopt,
+      std::optional<std::string> with_lock = std::nullopt,
+      std::optional<int> batch_update_id = std::nullopt);
+  static SharedStorageEventParams CreateForClear(
+      std::optional<int> worklet_id = std::nullopt,
+      std::optional<std::string> with_lock = std::nullopt,
+      std::optional<int> batch_update_id = std::nullopt);
+
+  static SharedStorageEventParams CreateForGet(
       const std::string& key,
       std::optional<int> worklet_id = std::nullopt);
-
   static SharedStorageEventParams CreateWithWorkletId(int worklet_id);
-  static SharedStorageEventParams CreateDefault();
 
   SharedStorageEventParams(const SharedStorageEventParams&);
   ~SharedStorageEventParams();
@@ -136,6 +148,8 @@ class CONTENT_EXPORT SharedStorageEventParams {
   std::optional<std::string> value;
   std::optional<bool> ignore_if_present;
   std::optional<int> worklet_id;
+  std::optional<std::string> with_lock;
+  std::optional<int> batch_update_id;
 
  private:
   SharedStorageEventParams();
@@ -153,7 +167,9 @@ class CONTENT_EXPORT SharedStorageEventParams {
       std::optional<std::string> key,
       std::optional<std::string> value,
       std::optional<bool> ignore_if_present,
-      std::optional<int> worklet_id);
+      std::optional<int> worklet_id,
+      std::optional<std::string> with_lock,
+      std::optional<int> batch_update_id);
 
   static SharedStorageEventParams CreateForWorkletCreation(
       const GURL& script_source_url,
@@ -186,6 +202,12 @@ class CONTENT_EXPORT SharedStorageEventParams {
       std::optional<std::string> key,
       std::optional<std::string> value,
       std::optional<bool> ignore_if_present,
+      std::optional<int> worklet_id,
+      std::optional<std::string> with_lock,
+      std::optional<int> batch_update_id);
+
+  static SharedStorageEventParams CreateForGetterMethod(
+      std::optional<std::string> key,
       std::optional<int> worklet_id);
 };
 
