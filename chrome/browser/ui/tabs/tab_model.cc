@@ -172,7 +172,9 @@ base::CallbackListSubscription TabModel::RegisterWillDiscardContents(
 }
 
 bool TabModel::IsActivated() const {
-  return GetModelForTabInterface()->GetActiveTab() == this;
+  // TODO(crbug.com/407148703): Remove the `owning_model_` check once clients of
+  // TabInterface::MaybeGetFromContents() have been removed.
+  return owning_model_ && GetModelForTabInterface()->GetActiveTab() == this;
 }
 
 base::CallbackListSubscription TabModel::RegisterDidActivate(
