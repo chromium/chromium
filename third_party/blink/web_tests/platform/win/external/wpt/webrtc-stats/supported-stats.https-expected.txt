@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 22 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 21 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] inbound-rtp's framesRendered
   assert_true: Is framesRendered present expected true got false
 [FAIL] inbound-rtp's fecBytesReceived
@@ -24,8 +24,6 @@ Found 22 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_true: Is packetsReportedAsLostButRecovered present expected true got false
 [PRECONDITION_FAILED] outbound-rtp's rid
   outbound-rtp.rid marked as not testable.
-[FAIL] outbound-rtp's encodingIndex
-  assert_true: Is encodingIndex present expected true got false
 [FAIL] outbound-rtp's packetsSentWithEct1
   assert_true: Is packetsSentWithEct1 present expected true got false
 [FAIL] remote-inbound-rtp's packetsWithBleachedEct1Marking
