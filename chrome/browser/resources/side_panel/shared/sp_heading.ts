@@ -46,8 +46,8 @@ export class SpHeadingElement extends CrLitElement {
   }
 
   compact: boolean = false;
-  backButtonAriaLabel: string;
-  backButtonTitle: string;
+  backButtonAriaLabel: string = '';
+  backButtonTitle: string = '';
   hideBackButton: boolean = false;
   disableBackButton: boolean = false;
 

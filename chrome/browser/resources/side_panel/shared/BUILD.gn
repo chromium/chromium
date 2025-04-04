@@ -11,10 +11,14 @@ build_webui("build") {
   grd_prefix = "side_panel_shared"
   grd_resource_path_prefix = "shared"
 
-  web_component_files = [
+  non_web_component_files = [
+    "sp_empty_state.html.ts",
     "sp_empty_state.ts",
+    "sp_footer.html.ts",
     "sp_footer.ts",
+    "sp_heading.html.ts",
     "sp_heading.ts",
+    "sp_list_item_badge.html.ts",
     "sp_list_item_badge.ts",
   ]
 
@@ -33,7 +37,7 @@ build_webui("build") {
   html_to_wrapper_template = "detect"
 
   ts_composite = true
-  ts_tsconfig_base = "//tools/typescript/tsconfig_base_polymer_legacy.json"
+  ts_tsconfig_base = "//tools/typescript/tsconfig_base_lit_legacy.json"
   ts_deps = [
     "//third_party/lit/v3_0:build_ts",
     "//third_party/polymer/v3_0:library",

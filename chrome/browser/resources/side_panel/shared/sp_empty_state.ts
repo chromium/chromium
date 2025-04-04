@@ -33,10 +33,10 @@ export class SpEmptyStateElement extends CrLitElement {
     };
   }
 
-  body: string;
-  darkImagePath: string;
-  heading: string;
-  imagePath: string;
+  body: string = '';
+  darkImagePath: string = '';
+  heading: string = '';
+  imagePath: string = '';
 }
 
 declare global {
