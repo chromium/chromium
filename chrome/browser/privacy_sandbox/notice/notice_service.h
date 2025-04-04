@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/privacy_sandbox/notice/notice_model.h"
+#include "chrome/browser/privacy_sandbox/notice/notice_service_interface.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_notice.mojom.h"
@@ -24,16 +25,19 @@ namespace privacy_sandbox {
 // 3. Determine which views are required to get them to the latest API version
 // 4. Keeps an internal registry to keep track of when notices were shown,
 // what actions were taken on them and how
-class PrivacySandboxNoticeService : public KeyedService {
+class PrivacySandboxNoticeService
+    : public KeyedService,
+      public PrivacySandboxNoticeServiceInterface {
  public:
   explicit PrivacySandboxNoticeService(Profile* profile);
   ~PrivacySandboxNoticeService() override;
 
+  // NoticeServiceInterface:
   std::vector<notice::mojom::PrivacySandboxNotice> GetRequiredNotices(
-      SurfaceType surface);
+      SurfaceType surface) override;
 
   void EventOccurred(NoticeId notice_id,
-                     notice::mojom::PrivacySandboxNoticeEvent event);
+                     notice::mojom::PrivacySandboxNoticeEvent event) override;
 
   // Service Accessors.
   PrivacySandboxNoticeStorage* GetNoticeStorage();

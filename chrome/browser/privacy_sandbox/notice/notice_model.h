@@ -21,7 +21,7 @@ enum class NoticeType {
 };
 
 // The different surface types a notice can be shown on.
-enum SurfaceType {
+enum class SurfaceType {
   kDesktopNewTab,
   kClankBrApp,      // Clank Browser App.
   kClankCustomTab,  // Clank CCT.

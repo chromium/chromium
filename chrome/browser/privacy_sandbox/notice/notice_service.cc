@@ -116,7 +116,8 @@ void PrivacySandboxNoticeService::EventOccurred(
   auto it = catalog_->GetNoticeMap().find(notice_id);
   CHECK(it != catalog_->GetNoticeMap().end())
       << "EventOccurred on unregistered notice id for noticeId "
-      << notice_id.first << " and surfaceType " << notice_id.second;
+      << notice_id.first << " and surfaceType "
+      << static_cast<int>(notice_id.second);
 
   Notice* notice = it->second.get();
   std::string_view name = notice->GetFeature()->name;
@@ -135,7 +136,8 @@ void PrivacySandboxNoticeService::EventOccurred(
 }
 
 // TODO(crbug.com/392612108): Implement this function.
-std::vector<PrivacySandboxNotice> GetRequiredNotices(SurfaceType surface) {
+std::vector<PrivacySandboxNotice>
+PrivacySandboxNoticeService::GetRequiredNotices(SurfaceType surface) {
   std::vector<PrivacySandboxNotice> required_notices;
   return required_notices;
 }
