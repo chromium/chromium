@@ -96,7 +96,7 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
         observer: 'updateNumFingerprintsDescription_',
       },
 
-      numFingerprintsDescription_: {
+      numFingerprintDescription_: {
         type: String,
       },
 

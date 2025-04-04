@@ -151,6 +151,7 @@ export class SettingsGoogleAssistantSubpageElement extends
 
   private browserProxy_: GoogleAssistantBrowserProxy;
   private dspHotwordState_: DspHotwordState;
+  private hotwordDropdownList_: Array<{name: string, value: number}>;
   private hotwordDspAvailable_: boolean;
   private hotwordEnforced_: boolean;
   private hotwordEnforcedForChild_: boolean;

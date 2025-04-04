@@ -157,13 +157,14 @@ export class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
 
   private browserProxy_: PrivacyHubBrowserProxy;
   private showPrivacyHubLocationControl_: boolean;
-  private locationSublabel_: string;
+  private locationSubLabel_: string;
   private cameraFallbackMechanismEnabled_: boolean;
   private cameraRowSubtext_: string;
   private isCameraListEmpty_: boolean;
   private isMicListEmpty_: boolean;
   private microphoneRowSubtext_: string;
   private microphoneHardwareToggleActive_: boolean;
+  private microphoneToggleTooltipText_: string;
   private shouldDisableMicrophoneToggle_: boolean;
   private cameraSwitchForceDisabled_: boolean;
   private shouldDisableCameraToggle_: boolean;
