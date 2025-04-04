@@ -419,26 +419,13 @@ inline wtf_size_t StringView::Find(CharacterMatchFunctionPtr match_function,
                   : WTF::Find(Span16(), match_function, start);
 }
 
-template <bool isSpecialCharacter(UChar), typename CharacterType>
-inline bool IsAllSpecialCharacters(const CharacterType* characters,
-                                   size_t length) {
-  for (size_t i = 0; i < length; ++i) {
-    if (!isSpecialCharacter(characters[i]))
-      return false;
-  }
-  return true;
-}
-
 template <bool isSpecialCharacter(UChar)>
 inline bool StringView::IsAllSpecialCharacters() const {
-  size_t len = length();
-  if (!len)
+  if (empty()) {
     return true;
-
-  return Is8Bit() ? WTF::IsAllSpecialCharacters<isSpecialCharacter, LChar>(
-                        Characters8(), len)
-                  : WTF::IsAllSpecialCharacters<isSpecialCharacter, UChar>(
-                        Characters16(), len);
+  }
+  return Is8Bit() ? std::ranges::all_of(Span8(), isSpecialCharacter)
+                  : std::ranges::all_of(Span16(), isSpecialCharacter);
 }
 
 WTF_EXPORT std::ostream& operator<<(std::ostream&, const StringView&);
@@ -448,6 +435,5 @@ WTF_EXPORT std::ostream& operator<<(std::ostream&, const StringView&);
 using WTF::StringView;
 using WTF::EqualIgnoringASCIICase;
 using WTF::DeprecatedEqualIgnoringCase;
-using WTF::IsAllSpecialCharacters;
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_VIEW_H_
