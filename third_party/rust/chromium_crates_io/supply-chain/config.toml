@@ -170,7 +170,7 @@ criteria = ["crypto-safe", "safe-to-run"]
 [policy."iana-time-zone-haiku:0.1.2"]
 criteria = []
 
-[policy."iana-time-zone:0.1.62"]
+[policy."iana-time-zone:0.1.63"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."icu_calendar:2.0.0-beta2"]
@@ -485,20 +485,35 @@ criteria = []
 [policy."winapi-util:0.1.9"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."windows-core:0.52.0"]
+[policy."windows-core:0.61.0"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
+
+[policy."windows-implement:0.60.0"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
+
+[policy."windows-interface:0.59.1"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
+
+[policy."windows-link:0.1.1"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
+
+[policy."windows-result:0.3.2"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
+
+[policy."windows-strings:0.4.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."windows-sys:0.52.0"]
 criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."windows-targets:0.52.6"]
-criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
+criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."windows_aarch64_gnullvm:0.52.6"]
 criteria = []
 
 [policy."windows_aarch64_msvc:0.52.6"]
-criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
+criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."windows_i686_gnu:0.52.6"]
 criteria = []
@@ -507,7 +522,7 @@ criteria = []
 criteria = []
 
 [policy."windows_i686_msvc:0.52.6"]
-criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
+criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."windows_x86_64_gnu:0.52.6"]
 criteria = []
@@ -516,7 +531,7 @@ criteria = []
 criteria = []
 
 [policy."windows_x86_64_msvc:0.52.6"]
-criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
+criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."writeable:0.6.1"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]

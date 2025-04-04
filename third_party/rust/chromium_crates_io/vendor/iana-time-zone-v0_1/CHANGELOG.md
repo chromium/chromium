@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.63] - 2025-03-31
+### Changes
+- Bump MSRV (minimum supported rust version) to 1.62 ([#131](https://github.com/strawlab/iana-time-zone/pull/131))
+- Bump `windows-core` to `0.56-0.61` range ([#131](https://github.com/strawlab/iana-time-zone/pull/131), [#133](https://github.com/strawlab/iana-time-zone/pull/133))
+
 ## [0.1.62] - 2025-03-24
 ### Changed
 - Bump MSRV (minimum supported rust version) to 1.61 ([#157](https://github.com/strawlab/iana-time-zone/pull/157))
@@ -282,6 +287,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Implement for Linux, Windows, MacOS
 
+[0.1.63]: https://github.com/strawlab/iana-time-zone/releases/tag/v0.1.63
 [0.1.62]: https://github.com/strawlab/iana-time-zone/releases/tag/v0.1.62
 [0.1.61]: https://github.com/strawlab/iana-time-zone/releases/tag/v0.1.61
 [0.1.60]: https://github.com/strawlab/iana-time-zone/releases/tag/v0.1.60
