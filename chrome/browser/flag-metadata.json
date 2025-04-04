@@ -767,7 +767,7 @@
   },
   {
     "name": "autofill-improved-labels",
-    "owners": [ "brunobraga@chromium.org", "theocristea@google.com" ],
+    "owners": ["brunobraga@chromium.org"],
     "expiry_milestone": 140
   },
   {
@@ -8257,12 +8257,12 @@
   },
   {
     "name": "sensitive-content",
-    "owners": ["theocristea@google.com", "jkeitel@google.com"],
+    "owners": ["jkeitel@google.com"],
     "expiry_milestone": 145
   },
   {
     "name": "sensitive-content-while-switching-tabs",
-    "owners": ["theocristea@google.com", "jkeitel@google.com"],
+    "owners": ["jkeitel@google.com"],
     "expiry_milestone": 145
   },
   {
