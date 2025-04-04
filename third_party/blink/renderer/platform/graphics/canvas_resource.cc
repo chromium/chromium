@@ -403,8 +403,14 @@ scoped_refptr<CanvasResourceSharedImage> CanvasResourceSharedImage::Create(
 
 void CanvasResourceSharedImage::OnReturnedFromCompositor(
     scoped_refptr<CanvasResource>&& resource) {
+  auto downcast_ref = scoped_refptr<CanvasResourceSharedImage>(this);
+  CHECK_EQ(downcast_ref, resource);
+
+  // Reset the compositor ref to ensure that there is still only one outstanding
+  // ref (necessary for the provider to actually recycle the resource).
+  resource.reset();
   if (Provider()) {
-    Provider()->OnResourceReturnedFromCompositor(std::move(resource));
+    Provider()->OnResourceReturnedFromCompositor(std::move(downcast_ref));
   }
 }
 
