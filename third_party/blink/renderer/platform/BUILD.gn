@@ -1469,6 +1469,7 @@ component("platform") {
     "text/capitalize.h",
     "text/character.cc",
     "text/character.h",
+    "text/character_break_iterator.h",
     "text/character_emoji.cc",
     "text/character_property.h",
     "text/character_property_data.h",
