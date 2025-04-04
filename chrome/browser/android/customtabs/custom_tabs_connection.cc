@@ -10,6 +10,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/trace_event/named_trigger.h"
 #include "chrome/browser/android/customtabs/client_data_header_web_contents_observer.h"
 #include "chrome/browser/android/customtabs/detached_resource_request.h"
 #include "chrome/browser/android/customtabs/text_fragment_lookup_state_tracker.h"
@@ -152,6 +153,10 @@ static void JNI_CustomTabsConnection_TextFragmentFindScrollAndHighlight(
   TextFragmentLookupStateTracker::CreateForWebContents(web_contents);
   TextFragmentLookupStateTracker::FromWebContents(web_contents)
       ->FindScrollAndHighlight(text_fragment);
+}
+
+static void JNI_CustomTabsConnection_EmitIntentHandledTrigger(JNIEnv* env) {
+  base::trace_event::EmitNamedTrigger("cct-intent-with-native");
 }
 
 }  // namespace customtabs
