@@ -1875,6 +1875,8 @@ TEST_F(PdfViewWebPluginTest, OnSearchifyStartedAndStoppedAndStarted) {
   run_loop.Run();
 
   plugin_->OnSearchifyStateChange(true);
+
+  pdf_receiver_.FlushForTesting();
 }
 
 TEST_F(PdfViewWebPluginTest, OnSearchifyStartedMoreThanOnce) {
