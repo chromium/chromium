@@ -131,12 +131,6 @@ AX_BASE_EXPORT bool IsAXRandomizedStressTestsEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kIChromeAccessible);
 AX_BASE_EXPORT bool IsIChromeAccessibleEnabled();
 
-// Selectively enable accessibility depending on the
-// UIA APIs that are called. (Note: This will make it possible for
-// non-screenreader services to enable less of the accessibility system)
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kSelectiveUIAEnablement);
-AX_BASE_EXPORT bool IsSelectiveUIAEnablementEnabled();
-
 // Use the browser's UIA provider when requested by
 // an accessibility client.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kUiaProvider);

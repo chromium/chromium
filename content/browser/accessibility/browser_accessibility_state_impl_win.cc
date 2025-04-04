@@ -357,12 +357,6 @@ class WindowsAccessibilityEnabler
       return;
     }
 
-    // UI Automation insulates providers from knowing about the client(s) asking
-    // for information. When IsSelectiveUIAEnablement is Enabled, we turn on
-    // various parts of accessibility depending on what APIs have been called.
-    if (!features::IsSelectiveUIAEnablementEnabled()) {
-      mode = ui::kAXModeComplete;
-    }
     BrowserAccessibilityStateImpl::GetInstance()->AddAccessibilityModeFlags(
         mode);
   }
