@@ -36,6 +36,8 @@ import org.chromium.components.browser_ui.share.ShareHelper;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.collaboration.CollaborationControllerDelegate;
 import org.chromium.components.collaboration.CollaborationService;
+import org.chromium.components.collaboration.CollaborationServiceJoinEntryPoint;
+import org.chromium.components.collaboration.CollaborationServiceShareOrManageEntryPoint;
 import org.chromium.components.collaboration.FlowType;
 import org.chromium.components.collaboration.Outcome;
 import org.chromium.components.collaboration.messaging.MessagingBackendService;
@@ -254,7 +256,8 @@ public class DataSharingTabManager {
         mCurrentDelegate =
                 mCollaborationControllerDelegateFactory.create(
                         FlowType.JOIN, switchToTabSwitcherCallback);
-        mCollaborationService.startJoinFlow(mCurrentDelegate, dataSharingUrl);
+        mCollaborationService.startJoinFlow(
+                mCurrentDelegate, dataSharingUrl, CollaborationServiceJoinEntryPoint.UNKNOWN);
     }
 
     /**
@@ -494,7 +497,10 @@ public class DataSharingTabManager {
      * @param createGroupFinishedCallback Callback when the UI flow is finished with result.
      */
     public void createTabGroupAndShare(
-            Activity activity, Tab tab, Callback<Boolean> createGroupFinishedCallback) {
+            Activity activity,
+            Tab tab,
+            @CollaborationServiceShareOrManageEntryPoint int entryPoint,
+            Callback<Boolean> createGroupFinishedCallback) {
         TabGroupModelFilter filter =
                 mTabModelSelectorSupplier
                         .get()
@@ -507,6 +513,7 @@ public class DataSharingTabManager {
                 activity,
                 /* syncId= */ null,
                 new LocalTabGroupId(tab.getTabGroupId()),
+                entryPoint,
                 createGroupFinishedCallback);
     }
 
@@ -522,6 +529,7 @@ public class DataSharingTabManager {
             Activity activity,
             String syncId,
             LocalTabGroupId localTabGroupId,
+            @CollaborationServiceShareOrManageEntryPoint int entry,
             Callback<Boolean> createGroupFinishedCallback) {
         DataSharingMetrics.recordShareActionFlowState(
                 DataSharingMetrics.ShareActionStateAndroid.SHARE_TRIGGERED);
@@ -534,7 +542,7 @@ public class DataSharingTabManager {
         mCurrentDelegate =
                 mCollaborationControllerDelegateFactory.create(
                         FlowType.SHARE_OR_MANAGE, /* switchToTabSwitcherCallback= */ null);
-        mCollaborationService.startShareOrManageFlow(mCurrentDelegate, existingGroup.syncId);
+        mCollaborationService.startShareOrManageFlow(mCurrentDelegate, existingGroup.syncId, entry);
     }
 
     /**
@@ -849,6 +857,7 @@ public class DataSharingTabManager {
                                 activity,
                                 existingGroup.syncId,
                                 /* localTabGroupId= */ null,
+                                CollaborationServiceShareOrManageEntryPoint.RECENT_ACTIVITY,
                                 /* createGroupFinishedCallback= */ null);
         RecentActivityActionHandler recentActivityActionHandler =
                 new RecentActivityActionHandlerImpl(

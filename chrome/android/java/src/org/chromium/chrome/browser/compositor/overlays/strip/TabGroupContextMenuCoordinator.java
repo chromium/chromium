@@ -47,6 +47,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiUtils;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.collaboration.CollaborationService;
+import org.chromium.components.collaboration.CollaborationServiceShareOrManageEntryPoint;
 import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
@@ -218,13 +219,17 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                         tabGroupModelFilter,
                         dataSharingTabManager,
                         tabId,
-                        tabGroupDisplayName);
+                        tabGroupDisplayName,
+                        CollaborationServiceShareOrManageEntryPoint
+                                .ANDROID_TAB_GROUP_CONTEXT_MENU_SHARE);
                 recordUserAction("ShareGroup");
             } else if (menuId == R.id.manage_sharing) {
                 dataSharingTabManager.createOrManageFlow(
                         activity,
                         /* syncId= */ null,
                         new LocalTabGroupId(tabGroupId),
+                        CollaborationServiceShareOrManageEntryPoint
+                                .ANDROID_TAB_GROUP_CONTEXT_MENU_MANAGE,
                         /* createGroupFinishedCallback= */ null);
                 recordUserAction("ManageSharing");
             } else if (menuId == R.id.recent_activity) {
