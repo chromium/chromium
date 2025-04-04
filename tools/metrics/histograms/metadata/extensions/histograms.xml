@@ -5160,6 +5160,21 @@ This is emitted for two scenarios when a worker may be unregistered:
   <summary>Uninstalls grouped by Extension::HistogramType.</summary>
 </histogram>
 
+<histogram name="Extensions.UploadExtensionToAccount.{Page}" enum="Boolean"
+    expires_after="2026-04-02">
+  <owner>kelvinjiang@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Logged when the user interacts with the dialog which uploads a local
+    extension to their signed in account from the {Page} in chrome://extensions.
+    Logs if the user proceeds with or cancels the extension upload.
+  </summary>
+  <token key="Page">
+    <variant name="DetailsViewPage" summary="details view page"/>
+    <variant name="ItemsListPage" summary="item list page"/>
+  </token>
+</histogram>
+
 <histogram name="Extensions.WAR.XOriginWebAccessible.{ManifestVersion}"
     enum="Boolean" expires_after="2025-08-24">
   <owner>solomonkinard@chromium.org</owner>

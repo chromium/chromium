@@ -1556,11 +1556,11 @@ void DeveloperPrivateUploadExtensionToAccountFunction::OnDialogAccepted() {
   const Extension* extension = *result;
 
   UploadExtensionToAccount(*extension);
-  Respond(NoArguments());
+  Respond(WithArguments(true));
 }
 
 void DeveloperPrivateUploadExtensionToAccountFunction::OnDialogCancelled() {
-  Respond(NoArguments());
+  Respond(WithArguments(false));
 }
 
 }  // namespace api
