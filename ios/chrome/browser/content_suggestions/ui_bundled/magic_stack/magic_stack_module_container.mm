@@ -100,11 +100,12 @@ const CGFloat kSeparatorHeight = 0.5;
                                        forAxis:UILayoutConstraintAxisVertical];
 
     _title = [[UILabel alloc] init];
-    _title.font = [self fontForTitle];
+    _title.font = PreferredFontForTextStyle(UIFontTextStyleFootnote,
+                                            UIFontWeightSemibold);
+    _title.adjustsFontForContentSizeCategory = YES;
     _title.textColor = [UIColor colorNamed:kTextPrimaryColor];
     _title.numberOfLines = 1;
     _title.lineBreakMode = NSLineBreakByTruncatingTail;
-    _title.adjustsFontForContentSizeCategory = YES;
     _title.accessibilityTraits |= UIAccessibilityTraitHeader;
     [_title setContentHuggingPriority:UILayoutPriorityDefaultLow
                               forAxis:UILayoutConstraintAxisHorizontal];
@@ -147,9 +148,10 @@ const CGFloat kSeparatorHeight = 0.5;
 
     _subtitle = [[UILabel alloc] init];
     _subtitle.hidden = YES;
-    _subtitle.font = [[UIFontMetrics defaultMetrics]
-        scaledFontForFont:[MagicStackModuleContainer fontForSubtitle]
-         maximumPointSize:kMaxTextSizeForStyleFootnote];
+    _subtitle.font =
+        PreferredFontForTextStyle(UIFontTextStyleFootnote, UIFontWeightRegular,
+                                  kMaxTextSizeForStyleFootnote);
+    _subtitle.adjustsFontForContentSizeCategory = YES;
     _subtitle.textColor = [UIColor colorNamed:kTextSecondaryColor];
     _subtitle.numberOfLines = 0;
     _subtitle.lineBreakMode = NSLineBreakByWordWrapping;
@@ -203,16 +205,6 @@ const CGFloat kSeparatorHeight = 0.5;
     if (@available(iOS 17, *)) {
       NSArray<UITrait>* traits = TraitCollectionSetForTraits(
           @[ UITraitPreferredContentSizeCategory.class ]);
-      __weak __typeof(self) weakSelf = self;
-      UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
-                                       UITraitCollection* previousCollection) {
-        __strong __typeof(weakSelf) strongSelf = weakSelf;
-        if (!strongSelf) {
-          return;
-        }
-        [weakSelf updateTitleFont];
-      };
-      [self registerForTraitChanges:traits withHandler:handler];
       [self registerForTraitChanges:traits
                          withAction:@selector(updateCardSizing)];
     }
@@ -473,21 +465,6 @@ const CGFloat kSeparatorHeight = 0.5;
   }
 }
 
-// Returns the font for the module title string.
-- (UIFont*)fontForTitle {
-  return CreateDynamicFont(UIFontTextStyleFootnote, UIFontWeightSemibold, self);
-}
-
-// Returns the font for the module subtitle string.
-+ (UIFont*)fontForSubtitle {
-  return CreateDynamicFont(UIFontTextStyleFootnote, UIFontWeightRegular);
-}
-
-// Updates the title font.
-- (void)updateTitleFont {
-  _title.font = [self fontForTitle];
-}
-
 // Updates the bottom content margins if the module contents need it.
 - (void)updateBottomContentMarginsForConfig:(MagicStackModule*)config {
   switch (config.type) {
@@ -529,7 +506,6 @@ const CGFloat kSeparatorHeight = 0.5;
 
   if (previousTraitCollection.preferredContentSizeCategory !=
       self.traitCollection.preferredContentSizeCategory) {
-    _title.font = [self fontForTitle];
     [self updateCardSizing];
   }
 }

@@ -32,7 +32,7 @@ const CGFloat kPriceChipHorizontalSpacing = 4.0;
   self = [super init];
   if (self) {
     _currentPriceFont =
-        CreateDynamicFont(UIFontTextStyleFootnote, UIFontWeightBold);
+        PreferredFontForTextStyle(UIFontTextStyleFootnote, UIFontWeightBold);
     _previousPriceFont =
         [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
   }

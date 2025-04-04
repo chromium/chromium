@@ -204,7 +204,7 @@ const CGFloat kFaviconImageContainerTrailingMargin = -4.62;
   _titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
 
   _titleLabel.font =
-      CreateDynamicFont(UIFontTextStyleFootnote, UIFontWeightSemibold, self);
+      PreferredFontForTextStyle(UIFontTextStyleFootnote, UIFontWeightSemibold);
   _titleLabel.adjustsFontForContentSizeCategory = YES;
   _titleLabel.text = l10n_util::GetNSString(
       IDS_IOS_CONTENT_SUGGESTIONS_PRICE_TRACKING_PROMO_TITLE);

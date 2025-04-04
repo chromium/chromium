@@ -220,7 +220,7 @@ const CGFloat kGradientOverlayBottomAlpha = 0.14;
   _titleLabel.numberOfLines = 1;
   _titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
   _titleLabel.font =
-      CreateDynamicFont(UIFontTextStyleFootnote, UIFontWeightSemibold, self);
+      PreferredFontForTextStyle(UIFontTextStyleFootnote, UIFontWeightSemibold);
   _titleLabel.adjustsFontForContentSizeCategory = YES;
   _titleLabel.text = _item.shopCardData.productTitle;
 }
@@ -238,9 +238,9 @@ const CGFloat kGradientOverlayBottomAlpha = 0.14;
 - (void)populatePriceNotificationChip {
   _priceNotificationsChip = [[PriceNotificationsPriceChipView alloc] init];
   _priceNotificationsChip.previousPriceFont =
-      CreateDynamicFont(UIFontTextStyleFootnote, UIFontWeightMedium);
+      PreferredFontForTextStyle(UIFontTextStyleFootnote, UIFontWeightMedium);
   _priceNotificationsChip.currentPriceFont =
-      CreateDynamicFont(UIFontTextStyleFootnote, UIFontWeightMedium);
+      PreferredFontForTextStyle(UIFontTextStyleFootnote, UIFontWeightMedium);
   _priceNotificationsChip.strikeoutPreviousPrice = YES;
   [_priceNotificationsChip
        setPriceDrop:_item.shopCardData.priceDrop->current_price

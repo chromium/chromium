@@ -142,9 +142,9 @@ bool HasPriceDropOnTab(TabResumptionItem* item) {
     _priceNotificationsChip.translatesAutoresizingMaskIntoConstraints = NO;
     _priceNotificationsChip.isAccessibilityElement = YES;
     _priceNotificationsChip.previousPriceFont =
-        CreateDynamicFont(UIFontTextStyleFootnote, UIFontWeightMedium);
+        PreferredFontForTextStyle(UIFontTextStyleFootnote, UIFontWeightMedium);
     _priceNotificationsChip.currentPriceFont =
-        CreateDynamicFont(UIFontTextStyleFootnote, UIFontWeightMedium);
+        PreferredFontForTextStyle(UIFontTextStyleFootnote, UIFontWeightMedium);
     _priceNotificationsChip.strikeoutPreviousPrice = YES;
     [_priceNotificationsChip
          setPriceDrop:_item.shopCardData.priceDrop->current_price
@@ -392,27 +392,15 @@ bool HasPriceDropOnTab(TabResumptionItem* item) {
                        ? _item.tabTitle
                        : l10n_util::GetNSString(
                              IDS_IOS_TAB_RESUMPTION_TAB_TITLE_PLACEHOLDER);
-  // This is the default "Dynamic type" trait collection.
-  // It is necessary to get the font in this size as it will be scaled later
-  // using UIFontMetrics.
-  UITraitCollection* traitCollection =
-      [UITraitCollection traitCollectionWithPreferredContentSizeCategory:
-                             UIContentSizeCategoryLarge];
-  UIFontDescriptor* descriptor = [UIFontDescriptor
-      preferredFontDescriptorWithTextStyle:UIFontTextStyleFootnote
-             compatibleWithTraitCollection:traitCollection];
-  UIFont* font = [UIFont systemFontOfSize:descriptor.pointSize
-                                   weight:UIFontWeightSemibold];
-
+  UIFont* font =
+      PreferredFontForTextStyle(UIFontTextStyleFootnote, UIFontWeightSemibold);
   NSMutableParagraphStyle* style = [[NSMutableParagraphStyle alloc] init];
   style.lineHeightMultiple = kTitleLineSpacing / font.lineHeight;
   style.lineBreakMode = NSLineBreakByTruncatingTail;
-  UIFontMetrics* footnoteMetrics =
-      [UIFontMetrics metricsForTextStyle:UIFontTextStyleFootnote];
   NSAttributedString* attrString = [[NSAttributedString alloc]
       initWithString:text
           attributes:@{
-            NSFontAttributeName : [footnoteMetrics scaledFontForFont:font],
+            NSFontAttributeName : font,
             NSForegroundColorAttributeName :
                 [UIColor colorNamed:kTextPrimaryColor],
             NSParagraphStyleAttributeName : style
