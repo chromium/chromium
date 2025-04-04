@@ -202,7 +202,7 @@ bool CanvasResourceHost::PrepareTransferableResource(
   // If the context is lost, we don't know if we should be producing GPU or
   // software frames, until we get a new context, since the compositor will
   // be trying to get a new context and may change modes.
-  if (!GetOrCreateCanvasResourceProvider(preferred_2d_raster_mode_)) {
+  if (!GetOrCreateResourceProviderWithCurrentRasterModeHint()) {
     return false;
   }
 
@@ -279,7 +279,7 @@ bool CanvasResourceHost::IsResourceValid() {
     return false;
   }
 
-  return !!GetOrCreateCanvasResourceProvider(preferred_2d_raster_mode_);
+  return !!GetOrCreateResourceProviderWithCurrentRasterModeHint();
 }
 
 }  // namespace blink
