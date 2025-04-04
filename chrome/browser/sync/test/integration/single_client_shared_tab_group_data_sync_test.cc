@@ -359,9 +359,16 @@ IN_PROC_BROWSER_TEST_F(SingleClientSharedTabGroupDataSyncTest,
   }
 }
 
-// Flaky: crbug.com/403333571
+// Flaky on Android: crbug.com/403333571.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_ShouldTransitionSavedToSharedTabGroup \
+  DISABLED_ShouldTransitionSavedToSharedTabGroup
+#else
+#define MAYBE_ShouldTransitionSavedToSharedTabGroup \
+  ShouldTransitionSavedToSharedTabGroup
+#endif
 IN_PROC_BROWSER_TEST_F(SingleClientSharedTabGroupDataSyncTest,
-                       DISABLED_ShouldTransitionSavedToSharedTabGroup) {
+                       MAYBE_ShouldTransitionSavedToSharedTabGroup) {
   const GURL kUrl = embedded_test_server()->GetURL(kDefaultURLPath);
   ASSERT_TRUE(SetupSync());
 
@@ -436,9 +443,16 @@ IN_PROC_BROWSER_TEST_F(SingleClientSharedTabGroupDataSyncTest,
             saved_group_specifics.guid());
 }
 
-// Flaky: crbug.com/403333571
+// Flaky on Android: crbug.com/403333571.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_ShouldTransitionSavedToSharedGroupRemotely \
+  DISABLED_ShouldTransitionSavedToSharedGroupRemotely
+#else
+#define MAYBE_ShouldTransitionSavedToSharedGroupRemotely \
+  ShouldTransitionSavedToSharedGroupRemotely
+#endif
 IN_PROC_BROWSER_TEST_F(SingleClientSharedTabGroupDataSyncTest,
-                       DISABLED_ShouldTransitionSavedToSharedGroupRemotely) {
+                       MAYBE_ShouldTransitionSavedToSharedGroupRemotely) {
   const GURL kUrl = embedded_test_server()->GetURL(kDefaultURLPath);
   const std::string kCollaborationId = "collaboration";
 
