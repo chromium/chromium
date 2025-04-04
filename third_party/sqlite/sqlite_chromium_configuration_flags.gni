@@ -54,9 +54,6 @@ sqlite_chromium_configuration_flags = [
   # Chrome calls sqlite3_reset() correctly to reset prepared statements.
   "SQLITE_OMIT_AUTORESET",
 
-  # Chrome does not use CHECK constraints.
-  "SQLITE_OMIT_CHECK",
-
   # Chromium does not use sqlite3_{get,free}_table().
   # Chrome doesn't use sqlite3_compileoption_{used,get}().
   "SQLITE_OMIT_COMPILEOPTION_DIAGS",

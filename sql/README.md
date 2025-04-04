@@ -470,7 +470,9 @@ to disable SQLite's foreign key support using
 should not be used, for the same reasons as foreign key constraints. The
 equivalent checks should be performed in C++, typically using `DCHECK`.
 
-`CHECK` constraints are disabled using
+After
+[WebSQL](https://www.w3.org/TR/webdatabase/) is removed from Chrome, we plan
+to disable SQLite's CHECK constraint support using
 [SQLITE_OMIT_CHECK](https://sqlite.org/compile.html#omit_check).
 
 #### Triggers {#no-triggers}
