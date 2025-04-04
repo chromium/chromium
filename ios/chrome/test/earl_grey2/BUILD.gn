@@ -202,6 +202,7 @@ chrome_ios_eg2_test("ios_chrome_ui_eg2tests_module") {
     "//ios/chrome/browser/drive_file_picker/test:eg2_tests",
     "//ios/chrome/browser/find_bar/ui_bundled:eg2_tests",
     "//ios/chrome/browser/first_run/ui_bundled:eg2_tests",
+    "//ios/chrome/browser/first_run/ui_bundled/best_features/ui:eg2_tests",
     "//ios/chrome/browser/first_run/ui_bundled/default_browser:eg2_tests",
     "//ios/chrome/browser/first_run/ui_bundled/omnibox_position:eg2_tests",
     "//ios/chrome/browser/fullscreen/ui_bundled:eg2_tests",
