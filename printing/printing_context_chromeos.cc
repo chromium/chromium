@@ -29,6 +29,7 @@
 #include "printing/client_info_helpers.h"
 #include "printing/metafile.h"
 #include "printing/mojom/print.mojom.h"
+#include "printing/page_setup.h"
 #include "printing/print_job_constants.h"
 #include "printing/print_settings.h"
 #include "printing/printing_utils.h"
@@ -47,6 +48,33 @@ const char kDocumentNamePlaceholder[] = "-";
 bool IsUriSecure(std::string_view uri) {
   return base::StartsWith(uri, "ipps:") || base::StartsWith(uri, "https:") ||
          base::StartsWith(uri, "usb:") || base::StartsWith(uri, "ippusb:");
+}
+
+void MarginsMicronsToPWG(const PageMargins& margins_microns,
+                         int* bottom_pwg,
+                         int* left_pwg,
+                         int* right_pwg,
+                         int* top_pwg) {
+  CHECK(bottom_pwg);
+  CHECK(left_pwg);
+  CHECK(right_pwg);
+  CHECK(top_pwg);
+
+  // These values in microns were obtained from media-col and it must possible
+  // to losslessly convert them back to PWG units.
+  int bottom_um = margins_microns.bottom;
+  int left_um = margins_microns.left;
+  int right_um = margins_microns.right;
+  int top_um = margins_microns.top;
+  CHECK_EQ(bottom_um % kMicronsPerPwgUnit, 0);
+  CHECK_EQ(left_um % kMicronsPerPwgUnit, 0);
+  CHECK_EQ(right_um % kMicronsPerPwgUnit, 0);
+  CHECK_EQ(top_um % kMicronsPerPwgUnit, 0);
+
+  *bottom_pwg = bottom_um / kMicronsPerPwgUnit;
+  *left_pwg = left_um / kMicronsPerPwgUnit;
+  *right_pwg = right_um / kMicronsPerPwgUnit;
+  *top_pwg = top_um / kMicronsPerPwgUnit;
 }
 
 // Populates the 'client-info' attribute of the IPP collection `options`. Each
@@ -104,9 +132,10 @@ void EncodeClientInfo(const std::vector<mojom::IppClientInfo>& client_infos,
 void EncodeMediaCol(ipp_t* options,
                     const gfx::Size& size_um,
                     const gfx::Rect& printable_area_um,
-                    bool borderless,
                     const std::string& source,
-                    const std::string& type) {
+                    const PrintSettings& settings) {
+  const std::string& type = settings.media_type();
+
   // The size and printable area in microns were calculated from the size and
   // margins in PWG units, so we can losslessly convert them back. If
   // borderless printing was requested, though, set all margins to zero.
@@ -115,10 +144,16 @@ void EncodeMediaCol(ipp_t* options,
   int width = size_um.width() / kMicronsPerPwgUnit;
   int height = size_um.height() / kMicronsPerPwgUnit;
   int bottom_margin = 0, left_margin = 0, right_margin = 0, top_margin = 0;
-  if (!borderless) {
-    PwgMarginsFromSizeAndPrintableArea(size_um, printable_area_um,
-                                       &bottom_margin, &left_margin,
-                                       &right_margin, &top_margin);
+  if (!settings.borderless()) {
+    if (settings.margin_type() == mojom::MarginType::kCustomMargins) {
+      MarginsMicronsToPWG(settings.requested_custom_margins_in_microns(),
+                          &bottom_margin, &left_margin, &right_margin,
+                          &top_margin);
+    } else if (settings.margin_type() == mojom::MarginType::kDefaultMargins) {
+      PwgMarginsFromSizeAndPrintableArea(size_um, printable_area_um,
+                                         &bottom_margin, &left_margin,
+                                         &right_margin, &top_margin);
+    }
   }
 
   ScopedIppPtr media_col = WrapIpp(ippNew());
@@ -303,8 +338,8 @@ ScopedIppPtr SettingsToIPPOptions(const PrintSettings& settings,
 
   // Construct the IPP media-col attribute specifying media size, margins,
   // source, etc.
-  EncodeMediaCol(options, media_size_microns, printable_area_um,
-                 settings.borderless(), media_source, settings.media_type());
+  EncodeMediaCol(options, media_size_microns, printable_area_um, media_source,
+                 settings);
 
   // Add multivalue enum options.
   for (const auto& it : multival) {

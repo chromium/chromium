@@ -23,8 +23,10 @@
 #include "components/cloud_devices/common/printer_description.h"
 #include "printing/backend/print_backend.h"
 #include "printing/mojom/print.mojom.h"
+#include "printing/page_setup.h"
 #include "printing/print_settings.h"
 #include "printing/printing_features.h"
+#include "printing/units.h"
 #include "third_party/re2/src/re2/re2.h"
 
 namespace extensions {
@@ -301,6 +303,30 @@ std::unique_ptr<printing::PrintSettings> ParsePrintTicket(
           break;
         default:
           NOTREACHED();
+      }
+    }
+
+    // This item is optional - don't fail if it doesn't exist.
+    cloud_devices::printer::MarginsTicketItem margin_ticket;
+    if (!margin_ticket.LoadFrom(description)) {
+      settings->set_margin_type(printing::mojom::MarginType::kDefaultMargins);
+    } else if (margin_ticket.value().left_um < 0 ||
+               margin_ticket.value().right_um < 0 ||
+               margin_ticket.value().top_um < 0 ||
+               margin_ticket.value().bottom_um < 0) {
+      LOG(ERROR) << "Loaded invalid margins from print ticket.";
+      return nullptr;
+    } else {
+      settings->SetCustomMargins(
+          {/*header=*/0, /*footer=*/0, margin_ticket.value().left_um,
+           margin_ticket.value().right_um, margin_ticket.value().top_um,
+           margin_ticket.value().bottom_um});
+      if (margin_ticket.value().left_um == 0 &&
+          margin_ticket.value().right_um == 0 &&
+          margin_ticket.value().top_um == 0 &&
+          margin_ticket.value().bottom_um == 0) {
+        settings->set_margin_type(printing::mojom::MarginType::kNoMargins);
+        settings->set_borderless(true);
       }
     }
   }
