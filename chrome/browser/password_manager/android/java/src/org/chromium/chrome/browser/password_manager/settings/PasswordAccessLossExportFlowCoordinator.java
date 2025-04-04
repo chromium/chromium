@@ -10,6 +10,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.FragmentActivity;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.access_loss.AccessLossWarningMetricsRecorder.PasswordAccessLossWarningExportStep;
 import org.chromium.chrome.browser.access_loss.PasswordAccessLossWarningType;
 import org.chromium.chrome.browser.lifetime.ApplicationLifetime;
@@ -31,6 +32,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
  * PasswordAccessLossImportDialogCoordinator}). This step is executed only if GMS Core is installed
  * and up to date.
  */
+@NullMarked
 public class PasswordAccessLossExportFlowCoordinator
         implements PasswordAccessLossExportDialogCoordinator.Observer {
     private final FragmentActivity mActivity;

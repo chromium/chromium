@@ -8,11 +8,13 @@ import android.content.Context;
 
 import org.chromium.base.Callback;
 import org.chromium.base.IntStringCallback;
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * Interface for retrieving passwords and password exceptions (websites for which Chrome should not
  * save password) from native code.
  */
+@NullMarked
 public interface PasswordManagerHandler {
     /** Called to insert a password entry into the password store. */
     public void insertPasswordEntryForTesting(String origin, String username, String password);

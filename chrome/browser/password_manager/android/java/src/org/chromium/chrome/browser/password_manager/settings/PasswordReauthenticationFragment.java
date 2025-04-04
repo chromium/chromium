@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.password_manager.settings;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.chrome.browser.password_manager.settings.PasswordAccessReauthenticationHelper.SETTINGS_REAUTHENTICATION_HISTOGRAM;
 
 import android.app.Activity;
@@ -16,9 +17,12 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.device_reauth.ReauthResult;
 
 /** Show the lock screen confirmation and lock the screen. */
+@NullMarked
 public class PasswordReauthenticationFragment extends Fragment {
     /**
      * The key for the description argument, which is used to retrieve an explanation of the
@@ -43,9 +47,9 @@ public class PasswordReauthenticationFragment extends Fragment {
     private FragmentManager mFragmentManager;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mFragmentManager = getFragmentManager();
+        mFragmentManager = assertNonNull(getFragmentManager());
         boolean isFirstTime = savedInstanceState == null;
         if (!sPreventLockDevice && isFirstTime) {
             lockDevice();
@@ -62,7 +66,7 @@ public class PasswordReauthenticationFragment extends Fragment {
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == CONFIRM_DEVICE_CREDENTIAL_REQUEST_CODE) {
             if (resultCode == Activity.RESULT_OK) {

@@ -17,23 +17,26 @@ import org.jni_zero.JNINamespace;
 
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.signin.AccountUtils;
 
 import java.util.Optional;
 
 /**
  * Java-counterpart of the native PasswordSettingsUpdaterAndroidDispatcherBridge. It forwards
- * passwords settings updates from native to the downstream implementation. Response callbacks
- * are forwarded by a separate PasswordSettingsUpdaterReceiverBridge.
+ * passwords settings updates from native to the downstream implementation. Response callbacks are
+ * forwarded by a separate PasswordSettingsUpdaterReceiverBridge.
  */
 @JNINamespace("password_manager")
+@NullMarked
 public class PasswordSettingsUpdaterDispatcherBridge {
     private final PasswordSettingsAccessor mSettingsAccessor;
     private final PasswordSettingsUpdaterReceiverBridge mReceiverBridge;
 
     PasswordSettingsUpdaterDispatcherBridge(
             PasswordSettingsUpdaterReceiverBridge settingsUpdaterReceiverBridge,
-            PasswordSettingsAccessor settingsAccessor) {
+            @Nullable PasswordSettingsAccessor settingsAccessor) {
         assertOnBackgroundThread();
         assert settingsUpdaterReceiverBridge != null;
         assert settingsAccessor != null;

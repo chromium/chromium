@@ -12,6 +12,8 @@ import androidx.fragment.app.FragmentManager;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.device_reauth.ReauthResult;
 import org.chromium.chrome.browser.password_manager.R;
 import org.chromium.chrome.browser.password_manager.settings.ReauthenticationManager.ReauthScope;
@@ -24,6 +26,7 @@ import java.lang.annotation.RetentionPolicy;
  * A helper to perform a user's reauthentication for a specific {@link ReauthReason}. Only a single
  * reauthentication can happen at a given time.
  */
+@NullMarked
 public class PasswordAccessReauthenticationHelper {
     public static final String SETTINGS_REAUTHENTICATION_HISTOGRAM =
             "PasswordManager.ReauthToAccessPasswordInSettings";
@@ -49,7 +52,7 @@ public class PasswordAccessReauthenticationHelper {
 
     private final Context mContext;
     private final FragmentManager mFragmentManager;
-    private Callback<Boolean> mCallback;
+    private @Nullable Callback<Boolean> mCallback;
 
     public PasswordAccessReauthenticationHelper(Context context, FragmentManager fragmentManager) {
         mContext = context;
