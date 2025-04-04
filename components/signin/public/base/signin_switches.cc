@@ -145,6 +145,12 @@ bool IsChromeRefreshTokenBindingEnabled(const PrefService* profile_prefs) {
 BASE_FEATURE(kBoundSessionCredentialsKillSwitch,
              "BoundSessionCredentialsKillSwitch",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, Chrome will always use the /IssueToken endpoint to fetch access
+// tokens, no matter if a refresh token is bound or not.
+BASE_FEATURE(kUseIssueTokenToFetchAccessTokens,
+             "UseIssueTokenToFetchAccessTokens",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 BASE_FEATURE(kEnablePreferencesAccountStorage,

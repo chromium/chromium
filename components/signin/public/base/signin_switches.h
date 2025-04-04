@@ -106,6 +106,9 @@ bool IsChromeRefreshTokenBindingEnabled(const PrefService* profile_prefs);
 
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kBoundSessionCredentialsKillSwitch);
+
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kUseIssueTokenToFetchAccessTokens);
 #endif
 
 // Enables a separate account-scoped storage for preferences.
