@@ -748,17 +748,13 @@ scoped_refptr<StaticBitmapImage> DrawingBuffer::TransferToStaticBitmapImage() {
   }
 
   DCHECK(release_callback);
-  DCHECK_EQ(size_.width(), shared_image->size().width());
-  DCHECK_EQ(size_.height(), shared_image->size().height());
 
-  auto format = shared_image->format();
+  const auto format = shared_image->format();
+  const auto size = shared_image->size();
 
-  // TODO(xidachen): Create a small pool of recycled textures from
-  // ImageBitmapRenderingContext's transferFromImageBitmap, and try to use them
-  // in DrawingBuffer.
   return AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
       std::move(shared_image), sync_token,
-      /* shared_image_texture_id = */ 0, size_, format, kPremul_SkAlphaType,
+      /* shared_image_texture_id = */ 0, size, format, kPremul_SkAlphaType,
       gfx::ColorSpace::CreateSRGB(), context_provider_->GetWeakPtr(),
       base::PlatformThread::CurrentRef(),
       ThreadScheduler::Current()->CleanupTaskRunner(),
@@ -1078,9 +1074,8 @@ bool DrawingBuffer::CopyToPlatformInternal(gpu::InterfaceBase* dst_interface,
     return false;
   }
 
-  std::optional<gpu::SyncToken> sync_token =
-      copy_function(src_color_buffer->shared_image, produce_sync_token,
-                    src_alpha_type, src_color_buffer->shared_image->size());
+  std::optional<gpu::SyncToken> sync_token = copy_function(
+      src_color_buffer->shared_image, produce_sync_token, src_alpha_type);
 
   if (need_restore_access) {
     src_color_buffer->BeginAccess(sync_token.value_or(gpu::SyncToken()),
@@ -1103,8 +1098,8 @@ bool DrawingBuffer::CopyToPlatformTexture(gpu::gles2::GLES2Interface* dst_gl,
 
   auto copy_function =
       [&](scoped_refptr<gpu::ClientSharedImage> src_shared_image,
-          const gpu::SyncToken& produce_sync_token, SkAlphaType src_alpha_type,
-          const gfx::Size&) -> std::optional<gpu::SyncToken> {
+          const gpu::SyncToken& produce_sync_token,
+          SkAlphaType src_alpha_type) -> std::optional<gpu::SyncToken> {
     // If origin doesn't match, we need to flip.
     bool do_flip_y = src_shared_image->surface_origin() != dst_origin;
 
@@ -1152,8 +1147,8 @@ bool DrawingBuffer::CopyToPlatformMailbox(
     SourceDrawingBuffer src_buffer) {
   auto copy_function =
       [&](scoped_refptr<gpu::ClientSharedImage> src_shared_image,
-          const gpu::SyncToken& produce_sync_token, SkAlphaType src_alpha_type,
-          const gfx::Size&) -> std::optional<gpu::SyncToken> {
+          const gpu::SyncToken& produce_sync_token,
+          SkAlphaType src_alpha_type) -> std::optional<gpu::SyncToken> {
     std::unique_ptr<gpu::RasterScopedAccess> ri_access =
         src_shared_image->BeginRasterAccess(dst_raster_interface,
                                             produce_sync_token,
@@ -1186,11 +1181,11 @@ bool DrawingBuffer::CopyToVideoFrame(
     return false;
   auto copy_function =
       [&](scoped_refptr<gpu::ClientSharedImage> src_shared_image,
-          const gpu::SyncToken& produce_sync_token, SkAlphaType src_alpha_type,
-          const gfx::Size& src_size) -> std::optional<gpu::SyncToken> {
+          const gpu::SyncToken& produce_sync_token,
+          SkAlphaType src_alpha_type) -> std::optional<gpu::SyncToken> {
     return frame_pool->CopyRGBATextureToVideoFrame(
-        src_size, src_shared_image, produce_sync_token, dst_color_space,
-        std::move(callback));
+        src_shared_image->size(), src_shared_image, produce_sync_token,
+        dst_color_space, std::move(callback));
   };
   return CopyToPlatformInternal(raster_interface, /*dst_is_unpremul_gl=*/false,
                                 src_buffer, copy_function);
