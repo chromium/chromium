@@ -186,19 +186,26 @@ public abstract class TabModelJniBridge implements TabModelInternal {
     protected abstract Tab createNewTabForDevTools(GURL url, boolean newWindow);
 
     /**
-     * Returns whether supplied Tab instance has been grouped together with other Tabs.
+     * Returns whether supplied {@link Tab} instance is in a tab group.
      *
      * <p>This is a legacy static implementation which will be replaced in the future by a
      * non-static implementation once TabModel understands tab groups.
+     *
+     * @deprecated Use non-static version.
      */
     @CalledByNative
     @VisibleForTesting
+    @Deprecated
     static boolean isTabInTabGroupLegacy(@NonNull Tab tab) {
         final TabGroupModelFilter filter = TabModelUtils.getTabGroupModelFilterByTab(tab);
         if (filter == null) return false;
 
         return filter.isTabInTabGroup(tab);
     }
+
+    /** Returns whether supplied {@link Tab} instance is in a tab group. */
+    @CalledByNative
+    public abstract boolean isTabInTabGroup(@NonNull Tab tab);
 
     /**
      * Returns the count of non-custom tabs that have a {@link
