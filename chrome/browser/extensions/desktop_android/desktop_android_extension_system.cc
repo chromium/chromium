@@ -136,6 +136,7 @@ class DesktopAndroidExtensionRegistrarDelegate
   void GrantActivePermissions(const Extension* extension) override {
     PermissionsUpdater(browser_context_).GrantActivePermissions(extension);
   }
+  void UpdateExternalExtensionAlert() override {}
 
  private:
   raw_ptr<content::BrowserContext> browser_context_;  // Not owned.

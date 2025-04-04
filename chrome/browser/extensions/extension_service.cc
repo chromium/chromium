@@ -561,26 +561,6 @@ void ExtensionService::DisableUserExtensionsExcept(
   }
 }
 
-// Extensions that are not locked, components or forced by policy should be
-// locked. Extensions are no longer considered enabled or disabled. Blocklisted
-// extensions are now considered both blocklisted and locked.
-// TODO(crbug.com/408049386): Migrate callers to ExtensionRegistrar.
-void ExtensionService::BlockAllExtensions() {
-  extension_registrar_->BlockAllExtensions();
-}
-
-// All locked extensions should revert to being either enabled or disabled
-// as appropriate.
-// TODO(crbug.com/408049386): Migrate callers to ExtensionRegistrar and use a
-// delegate to access `external_install_manager_` (or inline the call).
-void ExtensionService::UnblockAllExtensions() {
-  extension_registrar_->UnblockAllExtensions();
-
-  // While extensions are blocked, we won't display any external install
-  // warnings. Now that they are unblocked, we should update the error.
-  external_install_manager_->UpdateExternalExtensionAlert();
-}
-
 content::BrowserContext* ExtensionService::GetBrowserContext() const {
   // Implemented in the .cc file to avoid adding a profile.h dependency to
   // extension_service.h.

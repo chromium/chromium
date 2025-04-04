@@ -757,6 +757,8 @@ void ExtensionRegistrar::BlockAllExtensions() {
   }
 }
 
+// All locked extensions should revert to being either enabled or disabled
+// as appropriate.
 void ExtensionRegistrar::UnblockAllExtensions() {
   block_extensions_ = false;
 
@@ -767,6 +769,10 @@ void ExtensionRegistrar::UnblockAllExtensions() {
     registry_->RemoveBlocked(extension->id());
     AddExtension(extension.get());
   }
+
+  // While extensions are blocked, we won't display any external install
+  // warnings. Now that they are unblocked, we should update the error.
+  delegate_->UpdateExternalExtensionAlert();
 }
 
 void ExtensionRegistrar::OnBlocklistStateRemoved(

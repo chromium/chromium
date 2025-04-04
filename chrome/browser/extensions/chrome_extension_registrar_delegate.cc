@@ -14,6 +14,7 @@
 #include "chrome/browser/extensions/extension_assets_manager.h"
 #include "chrome/browser/extensions/extension_disabled_ui.h"
 #include "chrome/browser/extensions/extension_special_storage_policy.h"
+#include "chrome/browser/extensions/external_install_manager.h"
 #include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/browser/extensions/installed_loader.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
@@ -324,6 +325,10 @@ bool ChromeExtensionRegistrarDelegate::CanDisableExtension(
 void ChromeExtensionRegistrarDelegate::GrantActivePermissions(
     const Extension* extension) {
   PermissionsUpdater(profile_).GrantActivePermissions(extension);
+}
+
+void ChromeExtensionRegistrarDelegate::UpdateExternalExtensionAlert() {
+  ExternalInstallManager::Get(profile_)->UpdateExternalExtensionAlert();
 }
 
 void ChromeExtensionRegistrarDelegate::CheckPermissionsIncrease(

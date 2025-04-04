@@ -221,6 +221,7 @@ class StubExtensionRegistrarDelegate : public ExtensionRegistrar::Delegate {
   bool CanEnableExtension(const Extension* extension) override { return true; }
   bool CanDisableExtension(const Extension* extension) override { return true; }
   void GrantActivePermissions(const Extension* extension) override {}
+  void UpdateExternalExtensionAlert() override {}
 };
 
 class MockUpdateService : public UpdateService {

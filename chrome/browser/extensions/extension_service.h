@@ -294,18 +294,6 @@ class ExtensionService : public ExtensionServiceInterface,
   // |was_installed_by_default| flag.
   void DisableUserExtensionsExcept(const std::vector<std::string>& except_ids);
 
-  // Puts all extensions in a blocked state: Unloading every extension, and
-  // preventing them from ever loading until UnblockAllExtensions is called.
-  // This state is stored in preferences, so persists until Chrome restarts.
-  //
-  // Component, external component and allowlisted policy installed extensions
-  // are exempt from being Blocked (see CanBlockExtension in .cc file).
-  void BlockAllExtensions();
-
-  // All blocked extensions are reverted to their previous state, and are
-  // reloaded. Newly added extensions are no longer automatically blocked.
-  void UnblockAllExtensions();
-
   // Informs the service that an extension's files are in place for loading.
   //
   // |extension|                the extension

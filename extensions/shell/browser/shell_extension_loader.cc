@@ -10,6 +10,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/notimplemented.h"
 #include "base/task/sequenced_task_runner.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/extension_file_task_runner.h"
@@ -186,6 +187,10 @@ bool ShellExtensionLoader::CanDisableExtension(const Extension* extension) {
 }
 
 void ShellExtensionLoader::GrantActivePermissions(const Extension* extension) {
+  NOTIMPLEMENTED();
+}
+
+void ShellExtensionLoader::UpdateExternalExtensionAlert() {
   NOTIMPLEMENTED();
 }
 

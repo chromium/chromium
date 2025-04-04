@@ -121,6 +121,9 @@ class ExtensionRegistrar : public KeyedService, public ProcessManagerObserver {
     // Updates the `extension`s granted permissions lists to include all
     // permissions in the `extensions`s manifest.
     virtual void GrantActivePermissions(const Extension* extension) = 0;
+
+    // Checks if there are any new external extensions to notify the user about.
+    virtual void UpdateExternalExtensionAlert() = 0;
   };
 
   explicit ExtensionRegistrar(content::BrowserContext* browser_context);

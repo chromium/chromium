@@ -736,7 +736,7 @@ class ExtensionServiceTest : public ExtensionServiceTestWithInstall {
     EXPECT_FALSE(IsBlocked(extension_id));
 
     // Block the extensions.
-    service()->BlockAllExtensions();
+    registrar()->BlockAllExtensions();
     task_environment()->RunUntilIdle();
 
     if (should_block)
@@ -744,7 +744,7 @@ class ExtensionServiceTest : public ExtensionServiceTestWithInstall {
     else
       ASSERT_FALSE(IsBlocked(extension_id));
 
-    service()->UnblockAllExtensions();
+    registrar()->UnblockAllExtensions();
     task_environment()->RunUntilIdle();
 
     ASSERT_FALSE(IsBlocked(extension_id));
@@ -4066,7 +4066,7 @@ TEST_F(ExtensionServiceTest, BlockAndUnblockBlocklistedExtension) {
   AssertExtensionBlocksAndUnblocks(false, good0);
   AssertExtensionBlocksAndUnblocks(false, good1);
 
-  service()->BlockAllExtensions();
+  registrar()->BlockAllExtensions();
 
   // Remove an extension from the blocklist while the service is blocked.
   test_blocklist.SetBlocklistState(good0, NOT_BLOCKLISTED, true);
@@ -4119,7 +4119,7 @@ TEST_F(ExtensionServiceTest, BlockAndUnblockTheme) {
 TEST_F(ExtensionServiceTest, WillNotLoadExtensionsWhenBlocked) {
   InitializeGoodInstalledExtensionService();
 
-  service()->BlockAllExtensions();
+  registrar()->BlockAllExtensions();
 
   service()->Init();
 
@@ -4132,7 +4132,7 @@ TEST_F(ExtensionServiceTest, WillNotLoadExtensionsWhenBlocked) {
 TEST_F(ExtensionServiceTest, IsEnabledExtensionBlockedAndNotInstalled) {
   InitializeEmptyExtensionService();
 
-  service()->BlockAllExtensions();
+  registrar()->BlockAllExtensions();
 
   registrar()->IsExtensionEnabled(theme_crx);
 }
@@ -7422,7 +7422,7 @@ TEST_F(ExtensionServiceTest, BlockedExternalExtension) {
   external_install_manager()->UpdateExternalExtensionAlert();
   EXPECT_FALSE(HasExternalInstallErrors(profile()));
 
-  service()->BlockAllExtensions();
+  registrar()->BlockAllExtensions();
 
   provider->UpdateOrAddExtension(page_action, "1.0.0.0",
                                  data_dir().AppendASCII("page_action.crx"));
@@ -7430,7 +7430,7 @@ TEST_F(ExtensionServiceTest, BlockedExternalExtension) {
   WaitForInstallationAttemptToComplete(page_action);
   EXPECT_FALSE(HasExternalInstallErrors(profile()));
 
-  service()->UnblockAllExtensions();
+  registrar()->UnblockAllExtensions();
   EXPECT_TRUE(HasExternalInstallErrors(profile()));
 }
 
@@ -8495,7 +8495,7 @@ TEST_F(ExtensionServiceTest, PluginManagerCrash) {
 
   // crbug.com/708230: This will cause OnExtensionUnloaded to be called
   // redundantly for a disabled extension.
-  service()->BlockAllExtensions();
+  registrar()->BlockAllExtensions();
 }
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 
@@ -8517,7 +8517,7 @@ TEST_F(ExtensionServiceTest, BlockDisabledExtensionNotification) {
   registry()->AddObserver(&observer);
 
   // Block the extension
-  service()->BlockAllExtensions();
+  registrar()->BlockAllExtensions();
 
   // Check that we didn't get unloading notification
   EXPECT_EQ(std::string(), observer.last_extension_unloaded);

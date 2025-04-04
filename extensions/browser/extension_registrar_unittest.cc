@@ -99,6 +99,7 @@ class TestExtensionRegistrarDelegate : public ExtensionRegistrar::Delegate {
   MOCK_METHOD1(CanDisableExtension, bool(const Extension* extension));
   MOCK_METHOD1(ShouldBlockExtension, bool(const Extension* extension));
   MOCK_METHOD1(GrantActivePermissions, void(const Extension* extension));
+  MOCK_METHOD0(UpdateExternalExtensionAlert, void());
 };
 
 }  // namespace
