@@ -67,6 +67,7 @@ import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.chrome.browser.toolbar.ToolbarTabController;
+import org.chromium.chrome.browser.toolbar.back_button.BackButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonCoordinator.TransitionType;
@@ -354,7 +355,8 @@ public class ToolbarPhone extends ToolbarLayout
             UserEducationHelper userEducationHelper,
             ObservableSupplier<Tracker> trackerSupplier,
             ToolbarProgressBar progressBar,
-            ReloadButtonCoordinator reloadButtonCoordinator) {
+            ReloadButtonCoordinator reloadButtonCoordinator,
+            BackButtonCoordinator backButtonCoordinator) {
         super.initialize(
                 toolbarDataProvider,
                 tabController,
@@ -366,7 +368,8 @@ public class ToolbarPhone extends ToolbarLayout
                 userEducationHelper,
                 trackerSupplier,
                 progressBar,
-                reloadButtonCoordinator);
+                reloadButtonCoordinator,
+                backButtonCoordinator);
         mUserEducationHelper = userEducationHelper;
         mTrackerSupplier = trackerSupplier;
 

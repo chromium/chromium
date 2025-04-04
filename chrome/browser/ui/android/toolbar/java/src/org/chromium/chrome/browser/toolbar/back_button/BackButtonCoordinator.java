@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.toolbar.back_button;
 
+import android.animation.ObjectAnimator;
 import android.content.res.ColorStateList;
 import android.view.View;
 import android.widget.ImageButton;
@@ -91,6 +92,25 @@ public class BackButtonCoordinator {
      */
     public void setTabSwitcherMode(boolean isTabSwitcherMode) {
         mMediator.setTabSwitcherMode(isTabSwitcherMode);
+    }
+
+    /**
+     * Prepares the view for fade animation and returns an alpha animator.
+     *
+     * @param shouldShow indicated fade in or out animation type
+     * @return {@link ObjectAnimator} that animates view's alpha
+     */
+    public ObjectAnimator getFadeAnimator(boolean shouldShow) {
+        return mMediator.getFadeAnimator(shouldShow);
+    }
+
+    /**
+     * Sets back button visibility.
+     *
+     * @param isVisible indicated whether view should be visible or gone.
+     */
+    public void setVisibility(boolean isVisible) {
+        mMediator.setVisibility(isVisible);
     }
 
     /**

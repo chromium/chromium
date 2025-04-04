@@ -271,4 +271,33 @@ public class BackButtonMediatorTest {
         mMediator.setTabSwitcherMode(false);
         verifyEnabled(mModel);
     }
+
+    @Test
+    public void testHide_shouldHideButton() {
+        mMediator.setVisibility(false);
+        assertFalse(
+                "Button is visible, but should be gone.",
+                mModel.get(BackButtonProperties.IS_VISIBLE));
+    }
+
+    @Test
+    public void testShow_shouldShowButton() {
+        mMediator.setVisibility(true);
+        assertTrue(
+                "Button is gone, but should be visible.",
+                mModel.get(BackButtonProperties.IS_VISIBLE));
+    }
+
+    @Test
+    public void testGetFadeInAnimator_shouldPrepareViewWithAlpha0() {
+        mMediator.getFadeAnimator(true);
+        assertEquals(
+                "View should be transparent", 0f, mModel.get(BackButtonProperties.ALPHA), 0.01f);
+    }
+
+    @Test
+    public void testGetFadeInAnimator_shouldPrepareViewWithAlpha1() {
+        mMediator.getFadeAnimator(false);
+        assertEquals("View should be opaque", 1f, mModel.get(BackButtonProperties.ALPHA), 0.01f);
+    }
 }

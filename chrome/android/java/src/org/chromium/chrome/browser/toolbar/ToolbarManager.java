@@ -1616,7 +1616,8 @@ public class ToolbarManager
                         mTabStripTransitionDelegateSupplier,
                         onLongClickListener,
                         progressBar,
-                        mActivityTabProvider);
+                        mActivityTabProvider,
+                        mBackButtonCoordinator);
 
         mHomepageStateListener =
                 () -> {

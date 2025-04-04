@@ -8,6 +8,7 @@ import android.content.res.ColorStateList;
 
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableFloatPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
@@ -27,6 +28,8 @@ class BackButtonProperties {
             new WritableObjectPropertyKey<>();
     public static final WritableBooleanPropertyKey IS_ENABLED = new WritableBooleanPropertyKey();
     public static final WritableBooleanPropertyKey IS_FOCUSABLE = new WritableBooleanPropertyKey();
+    public static final WritableBooleanPropertyKey IS_VISIBLE = new WritableBooleanPropertyKey();
+    public static final WritableFloatPropertyKey ALPHA = new WritableFloatPropertyKey();
 
     public static PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
@@ -36,6 +39,8 @@ class BackButtonProperties {
                 LONG_CLICK_LISTENER,
                 IS_ENABLED,
                 IS_FOCUSABLE,
+                IS_VISIBLE,
+                ALPHA,
             };
 
     private BackButtonProperties() {}

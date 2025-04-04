@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.toolbar.back_button;
 
+import android.animation.ObjectAnimator;
 import android.content.res.ColorStateList;
 
 import androidx.annotation.DrawableRes;
@@ -20,6 +21,7 @@ import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelAnimatorFactory;
 
 /**
  * A class responsible for mediating external events like theme changes or visibility changes from
@@ -144,6 +146,27 @@ class BackButtonMediator implements ThemeColorProvider.TintObserver {
     public void setTabSwitcherMode(boolean isTabSwitcherMode) {
         mIsTabSwitcherMode = isTabSwitcherMode;
         updateButtonEnabledState();
+    }
+
+    /**
+     * Prepares the view for fade animation and returns an alpha animator.
+     *
+     * @param shouldShow indicated fade in or out animation type
+     * @return {@link ObjectAnimator} that animates view's alpha
+     */
+    public ObjectAnimator getFadeAnimator(boolean shouldShow) {
+        mModel.set(BackButtonProperties.ALPHA, shouldShow ? 0f : 1f);
+        return PropertyModelAnimatorFactory.ofFloat(
+                mModel, BackButtonProperties.ALPHA, shouldShow ? 1f : 0f);
+    }
+
+    /**
+     * Sets back button visibility.
+     *
+     * @param isVisible indicated whether view should be visible or gone.
+     */
+    public void setVisibility(boolean isVisible) {
+        mModel.set(BackButtonProperties.IS_VISIBLE, isVisible);
     }
 
     /**

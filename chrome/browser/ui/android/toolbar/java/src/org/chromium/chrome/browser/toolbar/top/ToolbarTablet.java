@@ -48,6 +48,7 @@ import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.chrome.browser.toolbar.ToolbarTabController;
+import org.chromium.chrome.browser.toolbar.back_button.BackButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.reload_button.ReloadButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbarBlockCaptureReason;
@@ -97,7 +98,6 @@ public class ToolbarTablet extends ToolbarLayout
 
     private boolean mIsInTabSwitcherMode;
     private boolean mToolbarButtonsVisible;
-    private ImageButton[] mToolbarButtons;
     private ImageButton mOptionalButton;
     private boolean mOptionalButtonUsesTint;
 
@@ -106,6 +106,7 @@ public class ToolbarTablet extends ToolbarLayout
     private Boolean mIsIncognitoBranded;
     private LocationBarCoordinator mLocationBar;
     private ReloadButtonCoordinator mReloadButtonCoordinator;
+    private BackButtonCoordinator mBackButtonCoordinator;
 
     private final int mStartPaddingWithButtons;
     private final int mStartPaddingWithoutButtons;
@@ -147,7 +148,6 @@ public class ToolbarTablet extends ToolbarLayout
         // changes.
         mShouldAnimateButtonVisibilityChange = false;
         mToolbarButtonsVisible = true;
-        mToolbarButtons = new ImageButton[] {mBackButton, mForwardButton};
     }
 
     @Override
@@ -185,7 +185,6 @@ public class ToolbarTablet extends ToolbarLayout
                     }
                 });
 
-        mBackButton.setLongClickable(true);
         mBackButton.setOnKeyListener(
                 new KeyboardNavigationListener() {
                     @Override
@@ -559,7 +558,8 @@ public class ToolbarTablet extends ToolbarLayout
             UserEducationHelper userEducationHelper,
             ObservableSupplier<Tracker> trackerSupplier,
             ToolbarProgressBar progressBar,
-            ReloadButtonCoordinator reloadButtonCoordinator) {
+            ReloadButtonCoordinator reloadButtonCoordinator,
+            BackButtonCoordinator backButtonCoordinator) {
         super.initialize(
                 toolbarDataProvider,
                 tabController,
@@ -571,10 +571,12 @@ public class ToolbarTablet extends ToolbarLayout
                 userEducationHelper,
                 trackerSupplier,
                 progressBar,
-                reloadButtonCoordinator);
+                reloadButtonCoordinator,
+                backButtonCoordinator);
         mHistoryDelegate = historyDelegate;
         mOfflineDownloader = offlineDownloader;
         mReloadButtonCoordinator = reloadButtonCoordinator;
+        mBackButtonCoordinator = backButtonCoordinator;
         menuButtonCoordinator.setVisibility(true);
     }
 
@@ -754,10 +756,9 @@ public class ToolbarTablet extends ToolbarLayout
         if (mShouldAnimateButtonVisibilityChange) {
             runToolbarButtonsVisibilityAnimation(visible);
         } else {
-            for (ImageButton button : mToolbarButtons) {
-                button.setVisibility(visible ? View.VISIBLE : View.GONE);
-            }
+            mForwardButton.setVisibility(visible ? View.VISIBLE : View.GONE);
             mReloadButtonCoordinator.setVisibility(visible);
+            mBackButtonCoordinator.setVisibility(visible);
             mLocationBar.setShouldShowButtonsWhenUnfocusedForTablet(visible);
             setStartPaddingBasedOnButtonVisibility(visible);
             setIncognitoIndicatorVisibility();
@@ -801,16 +802,19 @@ public class ToolbarTablet extends ToolbarLayout
     private AnimatorSet buildShowToolbarButtonsAnimation() {
         Collection<Animator> animators = new ArrayList<>();
 
-        // Create animators for all of the toolbar buttons.
-        for (ImageButton button : mToolbarButtons) {
-            animators.add(mLocationBar.createShowButtonAnimatorForTablet(button));
-        }
+        animators.add(mLocationBar.createShowButtonAnimatorForTablet(mForwardButton));
 
         final var reloadButtonAnimator = mReloadButtonCoordinator.getFadeAnimator(true);
         reloadButtonAnimator.setInterpolator(Interpolators.LINEAR_OUT_SLOW_IN_INTERPOLATOR);
         reloadButtonAnimator.setStartDelay(ICON_FADE_IN_ANIMATION_DELAY_MS);
         reloadButtonAnimator.setDuration(ICON_FADE_ANIMATION_DURATION_MS);
         animators.add(reloadButtonAnimator);
+
+        final var backButtonAnimator = mBackButtonCoordinator.getFadeAnimator(true);
+        backButtonAnimator.setInterpolator(Interpolators.LINEAR_OUT_SLOW_IN_INTERPOLATOR);
+        backButtonAnimator.setStartDelay(ICON_FADE_IN_ANIMATION_DELAY_MS);
+        backButtonAnimator.setDuration(ICON_FADE_ANIMATION_DURATION_MS);
+        animators.add(backButtonAnimator);
 
         // Add animators for location bar.
         animators.addAll(
@@ -825,10 +829,9 @@ public class ToolbarTablet extends ToolbarLayout
                     @Override
                     public void onAnimationStart(Animator animation) {
                         keepControlsShownForAnimation();
-                        for (ImageButton button : mToolbarButtons) {
-                            button.setVisibility(View.VISIBLE);
-                        }
+                        mForwardButton.setVisibility(View.VISIBLE);
                         mReloadButtonCoordinator.setVisibility(true);
+                        mBackButtonCoordinator.setVisibility(true);
 
                         // Set the padding at the start of the animation so the toolbar buttons
                         // don't jump when the animation ends.
@@ -849,19 +852,21 @@ public class ToolbarTablet extends ToolbarLayout
     private AnimatorSet buildHideToolbarButtonsAnimation() {
         Collection<Animator> animators = new ArrayList<>();
 
-        // Create animators for all of the toolbar buttons.
-        for (ImageButton button : mToolbarButtons) {
-            ObjectAnimator hideButtonAnimator =
-                    mLocationBar.createHideButtonAnimatorForTablet(button);
-            if (hideButtonAnimator != null) {
-                animators.add(hideButtonAnimator);
-            }
+        ObjectAnimator hideButtonAnimator =
+                mLocationBar.createHideButtonAnimatorForTablet(mForwardButton);
+        if (hideButtonAnimator != null) {
+            animators.add(hideButtonAnimator);
         }
 
         final var reloadButtonAnimator = mReloadButtonCoordinator.getFadeAnimator(false);
         reloadButtonAnimator.setInterpolator(Interpolators.FAST_OUT_LINEAR_IN_INTERPOLATOR);
         reloadButtonAnimator.setDuration(ICON_FADE_ANIMATION_DURATION_MS);
         animators.add(reloadButtonAnimator);
+
+        final var backButtonAnimator = mBackButtonCoordinator.getFadeAnimator(false);
+        backButtonAnimator.setInterpolator(Interpolators.FAST_OUT_LINEAR_IN_INTERPOLATOR);
+        backButtonAnimator.setDuration(ICON_FADE_ANIMATION_DURATION_MS);
+        animators.add(backButtonAnimator);
 
         // Add animators for location bar.
         animators.addAll(
@@ -888,11 +893,9 @@ public class ToolbarTablet extends ToolbarLayout
 
                     @Override
                     public void onEnd(Animator animator) {
-                        for (ImageButton button : mToolbarButtons) {
-                            button.setVisibility(View.GONE);
-                        }
-
+                        mForwardButton.setVisibility(View.GONE);
                         mReloadButtonCoordinator.setVisibility(false);
+                        mBackButtonCoordinator.setVisibility(false);
 
                         // Set the padding at the end of the animation so the toolbar buttons
                         // don't jump when the animation starts.
@@ -910,11 +913,6 @@ public class ToolbarTablet extends ToolbarLayout
         return getResources().getDimensionPixelSize(dimenId);
     }
 
-    @VisibleForTesting
-    ImageButton[] getToolbarButtons() {
-        return mToolbarButtons;
-    }
-
     void enableButtonVisibilityChangeAnimationForTesting() {
         mShouldAnimateButtonVisibilityChange = true;
     }
@@ -926,6 +924,11 @@ public class ToolbarTablet extends ToolbarLayout
     @VisibleForTesting
     void setReloadButtonCoordinator(ReloadButtonCoordinator coordinator) {
         mReloadButtonCoordinator = coordinator;
+    }
+
+    @VisibleForTesting
+    void setBackButtonCoordinator(BackButtonCoordinator coordinator) {
+        mBackButtonCoordinator = coordinator;
     }
 
     public ImageButton getBookmarkButtonForTesting() {
