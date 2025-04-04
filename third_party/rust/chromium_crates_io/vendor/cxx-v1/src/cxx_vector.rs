@@ -74,6 +74,10 @@ where
 
     /// Returns a pinned mutable reference to an element at the given position,
     /// or `None` if out of bounds.
+    ///
+    /// This method cannot be named "get\_mut" due to a conflict with
+    /// `Pin::get_mut`.
+    #[doc(alias = "get_mut")]
     pub fn index_mut(self: Pin<&mut Self>, pos: usize) -> Option<Pin<&mut T>> {
         if pos < self.len() {
             Some(unsafe { self.index_unchecked_mut(pos) })
@@ -111,6 +115,10 @@ where
     /// [std::vector\<T\>::operator\[\]][operator_at].
     ///
     /// [operator_at]: https://en.cppreference.com/w/cpp/container/vector/operator_at
+    ///
+    /// This method cannot be named "get\_unchecked\_mut" due to a conflict with
+    /// `Pin::get_unchecked_mut`.
+    #[doc(alias = "get_unchecked_mut")]
     pub unsafe fn index_unchecked_mut(self: Pin<&mut Self>, pos: usize) -> Pin<&mut T> {
         unsafe {
             let ptr = T::__get_unchecked(self.get_unchecked_mut(), pos);
