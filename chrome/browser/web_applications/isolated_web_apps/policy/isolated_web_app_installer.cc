@@ -103,17 +103,6 @@ std::optional<UpdateManifest::VersionEntry> GetVersionWithOptions(
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-std::string CopyErrorToString(IwaCacheClient::CopyBundleToCacheError error) {
-  switch (error) {
-    case IwaCacheClient::CopyBundleToCacheError::kFailedToCreateDir:
-      return "FailedToCreateDir";
-    case IwaCacheClient::CopyBundleToCacheError::kFailedToCopyFile:
-      return "FailedToCopyFile";
-  }
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 }  // namespace
 
 IwaInstaller::IwaInstallCommandWrapperImpl::IwaInstallCommandWrapperImpl(
@@ -245,8 +234,9 @@ void IwaInstaller::OnBundleCopiedToCache(
     log_->Append(base::Value(u"successfully copied bundle to the cache: " +
                              result->cached_bundle_path.LossyDisplayName()));
   } else {
-    log_->Append(base::Value("failed to copy bundle to cache: " +
-                             CopyErrorToString(result.error())));
+    log_->Append(
+        base::Value("failed to copy bundle to cache: " +
+                    IwaCacheClient::CopyErrorToString(result.error())));
   }
 
   // TODO(crbug.com/388727600): add UMA metrics for failed and successful copy

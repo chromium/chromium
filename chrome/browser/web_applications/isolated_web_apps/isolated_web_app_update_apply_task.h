@@ -12,7 +12,12 @@
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "base/version.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_cache_client.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class ScopedKeepAlive;
 class ScopedProfileKeepAlive;
@@ -36,7 +41,8 @@ class IsolatedWebAppUpdateApplyTask {
       IsolatedWebAppUrlInfo url_info,
       std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
       std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
-      WebAppCommandScheduler& command_scheduler);
+      WebAppCommandScheduler& command_scheduler,
+      Profile* profile);
   ~IsolatedWebAppUpdateApplyTask();
 
   IsolatedWebAppUpdateApplyTask(const IsolatedWebAppUpdateApplyTask&) = delete;
@@ -51,17 +57,38 @@ class IsolatedWebAppUpdateApplyTask {
 
   base::Value AsDebugValue() const;
 
+#if BUILDFLAG(IS_CHROMEOS)
+  static constexpr char kCopyToCacheFailedMessage[] =
+      "Failed to cache the bundle update";
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
  private:
   void OnUpdateApplied(CompletionStatus result);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  void CopyUpdatedBundleToCache(
+      const IsolatedWebAppApplyUpdateCommandSuccess& apply_success_result);
+
+  void OnBundleCopiedToCache(
+      const IsolatedWebAppApplyUpdateCommandSuccess& apply_success_result,
+      base::expected<IwaCacheClient::CopyBundleToCacheSuccess,
+                     IwaCacheClient::CopyBundleToCacheError> result);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   IsolatedWebAppUrlInfo url_info_;
   std::unique_ptr<ScopedKeepAlive> optional_keep_alive_;
   std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive_;
-  base::raw_ref<WebAppCommandScheduler> command_scheduler_;
+  raw_ref<WebAppCommandScheduler> command_scheduler_;
+  raw_ref<Profile> profile_;
 
   base::Value::Dict debug_log_;
   bool has_started_ = false;
   CompletionCallback callback_;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // `cache_client_` is created only when `IsIwaBundleCacheEnabled()` is true.
+  std::unique_ptr<IwaCacheClient> cache_client_;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   base::WeakPtrFactory<IsolatedWebAppUpdateApplyTask> weak_factory_{this};
 };

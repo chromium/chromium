@@ -103,6 +103,32 @@ class UpdateDiscoveryTaskResultWaiter
       observation_{this};
 };
 
+class UpdateApplyTaskResultWaiter
+    : public IsolatedWebAppUpdateManager::Observer {
+  using TaskResultCallback = base::OnceCallback<void(
+      IsolatedWebAppUpdateApplyTask::CompletionStatus status)>;
+
+ public:
+  UpdateApplyTaskResultWaiter(WebAppProvider& provider,
+                              const webapps::AppId expected_app_id,
+                              TaskResultCallback callback);
+  ~UpdateApplyTaskResultWaiter() override;
+
+  // IsolatedWebAppUpdateManager::Observer:
+  void OnUpdateApplyTaskCompleted(
+      const webapps::AppId& app_id,
+      IsolatedWebAppUpdateApplyTask::CompletionStatus status) override;
+
+ private:
+  const webapps::AppId expected_app_id_;
+  TaskResultCallback callback_;
+  const raw_ref<WebAppProvider> provider_;
+
+  base::ScopedObservation<IsolatedWebAppUpdateManager,
+                          IsolatedWebAppUpdateManager::Observer>
+      observation_{this};
+};
+
 std::unique_ptr<net::EmbeddedTestServer> CreateAndStartDevServer(
     base::FilePath::StringViewType chrome_test_data_relative_root);
 

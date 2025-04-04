@@ -30,6 +30,9 @@ class IwaCacheClient {
     kFailedToCopyFile = 1,
   };
 
+  static std::string CopyErrorToString(
+      IwaCacheClient::CopyBundleToCacheError error);
+
   struct CopyBundleToCacheSuccess {
     base::FilePath cached_bundle_path;
   };
@@ -65,9 +68,9 @@ class IwaCacheClient {
           base::expected<CopyBundleToCacheSuccess, CopyBundleToCacheError>)>
           callback);
 
-  // TODO(crbug.com/388729035): handle IWA updates.
   // TODO(crbug.com/388728794, crbug.com/388729037): clear cache for uninstalled
   // IWAs.
+  // TODO(crbug.com/392069400): clean cache for old IWA versions.
 
   void SetCacheDirForTesting(const base::FilePath& cache_dir);
 

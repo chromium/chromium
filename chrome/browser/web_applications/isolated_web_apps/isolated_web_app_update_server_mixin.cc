@@ -54,6 +54,11 @@ IsolatedWebAppUpdateServerMixin::CreateForceInstallPolicyEntry(
       pinned_version, allow_downgrades);
 }
 
+base::Value::Dict IsolatedWebAppUpdateServerMixin::GetUpdateManifest(
+    const web_package::SignedWebBundleId& web_bundle_id) const {
+  return storage_.GetUpdateManifest(web_bundle_id);
+}
+
 void IsolatedWebAppUpdateServerMixin::AddBundle(
     std::unique_ptr<BundledIsolatedWebApp> bundle,
     std::optional<std::vector<UpdateChannel>> update_channels) {
