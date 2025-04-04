@@ -23,31 +23,17 @@ class FakeExternallyManagedAppManager : public ExternallyManagedAppManager {
                OnceInstallCallback callback) override;
   void InstallApps(std::vector<ExternalInstallOptions> install_options_list,
                    const RepeatingInstallCallback& callback) override;
-  void UninstallApps(std::vector<GURL> uninstall_urls,
-                     ExternalInstallSource install_source,
-                     const UninstallCallback& callback) override;
 
   using HandleInstallRequestCallback =
       base::RepeatingCallback<ExternallyManagedAppManager::InstallResult(
           const ExternalInstallOptions&)>;
-
-  using HandleUninstallRequestCallback = base::RepeatingCallback<
-      webapps::UninstallResultCode(const GURL&, ExternalInstallSource)>;
-
   // Set a callback to handle install requests. If set, this callback will be
   // used in place of the real installation process. The callback takes a const
   // ExternalInstallOptions& and should return a webapps::InstallResultCode.
   void SetHandleInstallRequestCallback(HandleInstallRequestCallback callback);
 
-  // Set a callback to handle uninstall requests. If set, this callback will be
-  // used in place of the real uninstallation process. The callback takes a
-  // const ExternalInstallOptions& and should return a bool.
-  void SetHandleUninstallRequestCallback(
-      HandleUninstallRequestCallback callback);
-
  private:
   HandleInstallRequestCallback handle_install_request_callback_;
-  HandleUninstallRequestCallback handle_uninstall_request_callback_;
 };
 
 }  // namespace web_app

@@ -48,33 +48,9 @@ void FakeExternallyManagedAppManager::InstallApps(
   ExternallyManagedAppManager::InstallApps(install_options_list, callback);
 }
 
-void FakeExternallyManagedAppManager::UninstallApps(
-    std::vector<GURL> uninstall_urls,
-    ExternalInstallSource install_source,
-    const UninstallCallback& callback) {
-  if (handle_uninstall_request_callback_) {
-    for (auto& app_url : uninstall_urls) {
-      base::SequencedTaskRunner::GetCurrentDefault()
-          ->PostTaskAndReplyWithResult(
-              FROM_HERE,
-              base::BindOnce(handle_uninstall_request_callback_, app_url,
-                             install_source),
-              base::BindOnce(callback, app_url));
-    }
-    return;
-  }
-  ExternallyManagedAppManager::UninstallApps(uninstall_urls, install_source,
-                                             callback);
-}
-
 void FakeExternallyManagedAppManager::SetHandleInstallRequestCallback(
     HandleInstallRequestCallback callback) {
   handle_install_request_callback_ = std::move(callback);
-}
-
-void FakeExternallyManagedAppManager::SetHandleUninstallRequestCallback(
-    HandleUninstallRequestCallback callback) {
-  handle_uninstall_request_callback_ = std::move(callback);
 }
 
 }  // namespace web_app

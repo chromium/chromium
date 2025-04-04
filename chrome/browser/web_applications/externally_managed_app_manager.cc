@@ -188,24 +188,6 @@ void ExternallyManagedAppManager::InstallApps(
   PostMaybeStartNext();
 }
 
-void ExternallyManagedAppManager::UninstallApps(
-    std::vector<GURL> uninstall_urls,
-    ExternalInstallSource install_source,
-    const UninstallCallback& callback) {
-  for (auto& url : uninstall_urls) {
-    provider_->scheduler().RemoveInstallUrlMaybeUninstall(
-        /*app_id=*/std::nullopt,
-        ConvertExternalInstallSourceToSource(install_source), url,
-        ConvertExternalInstallSourceToUninstallSource(install_source),
-        base::BindOnce(
-            [](const UninstallCallback& callback, const GURL& app_url,
-               webapps::UninstallResultCode code) {
-              callback.Run(app_url, code);
-            },
-            callback, url));
-  }
-}
-
 void ExternallyManagedAppManager::SynchronizeInstalledApps(
     std::vector<ExternalInstallOptions> desired_apps_install_options,
     ExternalInstallSource install_source,
@@ -538,6 +520,24 @@ void ExternallyManagedAppManager::MaybeEnqueueServiceWorkerRegistration(
 
 bool ExternallyManagedAppManager::IsShuttingDown() {
   return is_in_shutdown_ || profile()->ShutdownStarted();
+}
+
+void ExternallyManagedAppManager::UninstallApps(
+    std::vector<GURL> uninstall_urls,
+    ExternalInstallSource install_source,
+    const UninstallCallback& callback) {
+  for (auto& url : uninstall_urls) {
+    provider_->scheduler().RemoveInstallUrlMaybeUninstall(
+        /*app_id=*/std::nullopt,
+        ConvertExternalInstallSourceToSource(install_source), url,
+        ConvertExternalInstallSourceToUninstallSource(install_source),
+        base::BindOnce(
+            [](const UninstallCallback& callback, const GURL& app_url,
+               webapps::UninstallResultCode code) {
+              callback.Run(app_url, code);
+            },
+            callback, url));
+  }
 }
 
 void ExternallyManagedAppManager::SynchronizeInstalledAppsOnLockAcquired(

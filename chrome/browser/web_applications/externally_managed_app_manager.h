@@ -152,15 +152,6 @@ class ExternallyManagedAppManager {
       std::vector<ExternalInstallOptions> install_options_list,
       const RepeatingInstallCallback& callback);
 
-  // Adds a task to the queue of operations for each GURL in
-  // |uninstall_urls|. Runs |callback| with the URL of the corresponding
-  // app in |uninstall_urls| and with a bool indicating whether or not the
-  // uninstall succeeded. Runs |callback| for every completed uninstallation -
-  // whether or not the uninstallation actually succeeded.
-  virtual void UninstallApps(std::vector<GURL> uninstall_urls,
-                             ExternalInstallSource install_source,
-                             const UninstallCallback& callback);
-
   // Installs an app for each ExternalInstallOptions in
   // |desired_apps_install_options| and uninstalls any apps in
   // GetInstalledAppUrls(install_source) that are not in
@@ -228,6 +219,15 @@ class ExternallyManagedAppManager {
     std::map<GURL, InstallResult> install_results;
     std::map<GURL, webapps::UninstallResultCode> uninstall_results;
   };
+
+  // Adds a task to the queue of operations for each GURL in
+  // |uninstall_urls|. Runs |callback| with the URL of the corresponding
+  // app in |uninstall_urls| and with a bool indicating whether or not the
+  // uninstall succeeded. Runs |callback| for every completed uninstallation -
+  // whether or not the uninstallation actually succeeded.
+  void UninstallApps(std::vector<GURL> uninstall_urls,
+                     ExternalInstallSource install_source,
+                     const UninstallCallback& callback);
 
   void SynchronizeInstalledAppsOnLockAcquired(
       std::vector<ExternalInstallOptions> desired_apps_install_options,
