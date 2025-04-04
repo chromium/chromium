@@ -249,8 +249,8 @@
 
 #pragma mark - SigninScreenMediatorDelegate
 
-- (void)mediatorFinishedSignin:(SigninScreenMediator*)mediator {
-  CHECK_EQ(mediator, self.mediator);
+- (void)signinScreenMediatorDidFinishSignin:(SigninScreenMediator*)mediator {
+  CHECK_EQ(mediator, self.mediator, base::NotFatalUntil::M140);
   [self finishPresentingWithSignIn:YES];
 }
 

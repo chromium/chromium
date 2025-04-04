@@ -10,7 +10,7 @@
 @protocol SigninScreenMediatorDelegate <NSObject>
 
 // Let the coordinator know the sing-in ended successfully.
-- (void)mediatorFinishedSignin:(SigninScreenMediator*)mediator;
+- (void)signinScreenMediatorDidFinishSignin:(SigninScreenMediator*)mediator;
 
 @end
 

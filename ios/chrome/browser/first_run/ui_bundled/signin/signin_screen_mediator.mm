@@ -149,6 +149,8 @@ enum class SigninScreenState {
 }
 
 - (void)disconnect {
+  _consumer = nil;
+  _delegate = nil;
   _accountManagerService = nullptr;
   _authenticationService = nullptr;
   _identityManager = nullptr;
@@ -302,7 +304,7 @@ enum class SigninScreenState {
   }
   [self.logger logSigninCompletedWithResult:SigninCoordinatorResultSuccess
                                addedAccount:self.addedAccount];
-  [self.delegate mediatorFinishedSignin:self];
+  [self.delegate signinScreenMediatorDidFinishSignin:self];
 }
 
 - (bool)selectedIdentityIsValid {
