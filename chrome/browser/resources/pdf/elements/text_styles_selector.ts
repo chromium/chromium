@@ -33,7 +33,7 @@ export class TextStylesSelectorElement extends TextStylesSelectorElementBase {
     };
   }
 
-  protected currentStyles_: TextStyles = {
+  protected accessor currentStyles_: TextStyles = {
     [TextStyle.BOLD]: false,
     [TextStyle.ITALIC]: false,
     [TextStyle.UNDERLINE]: false,

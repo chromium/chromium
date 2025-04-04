@@ -53,23 +53,26 @@ export const InkAnnotationTextMixin =
           InkAnnotationTextMixinInterface {
         static get properties() {
           return {
+            colors: {type: Array},
             currentColor: {type: Object},
             currentFont: {type: String},
             currentSize: {type: Number},
+            fonts: {type: Array},
+            sizes: {type: Array},
           };
         }
 
-        currentColor: Color = hexToColor(TEXT_COLORS[0]!.color);
-        currentFont: string = '';
-        currentSize: number = TEXT_SIZES[0]!;
-        colors: ColorOption[] = TEXT_COLORS;
-        fonts: string[] = [
+        accessor currentColor: Color = hexToColor(TEXT_COLORS[0]!.color);
+        accessor currentFont: string = '';
+        accessor currentSize: number = TEXT_SIZES[0]!;
+        accessor colors: ColorOption[] = TEXT_COLORS;
+        accessor fonts: string[] = [
           'Roboto',
           'Serif',
           'Sans',
           'Monospace',
         ];
-        sizes: number[] = TEXT_SIZES;
+        accessor sizes: number[] = TEXT_SIZES;
 
         isSelectedFont(font: string): boolean {
           return font === this.currentFont;

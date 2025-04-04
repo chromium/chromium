@@ -11,6 +11,7 @@ import './viewer_toolbar_dropdown.js';
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
+import type {LoadTimeDataRaw} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {AnnotationTool} from '../annotation_tool.js';
@@ -46,6 +47,8 @@ export class ViewerAnnotationsBarElement extends PolymerElement {
         observer: 'onAnnotationModeChanged_',
       },
 
+      strings: Object,
+
       annotationTool_: Object,
 
       canUndoAnnotation_: {
@@ -60,10 +63,11 @@ export class ViewerAnnotationsBarElement extends PolymerElement {
     };
   }
 
-  annotationMode: boolean;
-  private annotationTool_: AnnotationTool|null;
-  private canUndoAnnotation_: boolean;
-  private canRedoAnnotation_: boolean;
+  declare annotationMode: boolean;
+  declare strings: LoadTimeDataRaw|undefined;
+  declare private annotationTool_: AnnotationTool|null;
+  declare private canUndoAnnotation_: boolean;
+  declare private canRedoAnnotation_: boolean;
   private inkController_: InkController = InkController.getInstance();
   private tracker_: EventTracker = new EventTracker();
 

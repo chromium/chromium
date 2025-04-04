@@ -35,7 +35,7 @@ export class TextAlignmentSelectorElement extends
     };
   }
 
-  protected currentAlignment_: TextAlignment = TextAlignment.LEFT;
+  protected accessor currentAlignment_: TextAlignment = TextAlignment.LEFT;
 
   override focus() {
     const selectedButton = this.shadowRoot.querySelector<HTMLElement>(

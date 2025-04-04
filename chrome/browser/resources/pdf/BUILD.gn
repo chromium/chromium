@@ -189,8 +189,6 @@ build_webui("build") {
   # TypeScript Compiler parameters
   if (enable_ink) {
     ts_tsconfig_base = "tsconfig_base.json"
-  } else {
-    ts_tsconfig_base = "//tools/typescript/tsconfig_base_lit_legacy.json"
   }
   ts_composite = true
   ts_definitions = [

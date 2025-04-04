@@ -65,15 +65,15 @@ export class ViewerPdfSidenavElement extends CrLitElement {
     };
   }
 
-  activePage: number = 0;
-  attachments: Attachment[] = [];
-  bookmarks: Bookmark[] = [];
-  clockwiseRotations: number = 0;
-  docLength: number = 0;
-  pdfCr23Enabled: boolean = false;
-  strings?: {[key: string]: string};
-  private selectedTab_: number = 0;
-  protected tabs_: Tab[] = [];
+  accessor activePage: number = 0;
+  accessor attachments: Attachment[] = [];
+  accessor bookmarks: Bookmark[] = [];
+  accessor clockwiseRotations: number = 0;
+  accessor docLength: number = 0;
+  accessor pdfCr23Enabled: boolean = false;
+  accessor strings: {[key: string]: string}|undefined;
+  private accessor selectedTab_: number = 0;
+  protected accessor tabs_: Tab[] = [];
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
