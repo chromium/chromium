@@ -108,6 +108,7 @@ dependencies = [
  "cxx",
  "cxxbridge-cmd",
  "fend-core",
+ "ff",
  "font-types",
  "hex",
  "icu_capi",
@@ -297,6 +298,15 @@ dependencies = [
 name = "fend-core"
 version = "1.5.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "ff"
+version = "0.13.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "rand_core 0.9.3",
+ "subtle",
+]
 
 [[package]]
 name = "fixed_decimal"
