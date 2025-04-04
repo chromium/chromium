@@ -49,7 +49,7 @@ inline constexpr int kLeftRightPadding = 12;
 // The size of the vertical padding for most elements in the bubble.
 inline constexpr int kVerticalSpacing = 8;
 // Vertical spacing for buttons in multi IDP.
-inline constexpr int kMultiIdpVerticalSpacing = 25;
+inline constexpr int kMultiIdpVerticalSpacing = 4;
 // The height of the progress bar shown when showing "Verifying...".
 inline constexpr int kProgressBarHeight = 2;
 // The size of the space between the right boundary of the WebContents and the
