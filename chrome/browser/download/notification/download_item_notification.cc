@@ -252,6 +252,11 @@ DownloadItemNotification::DownloadItemNotification(
       rich_notification_data,
       base::MakeRefCounted<message_center::ThunkNotificationDelegate>(
           weak_factory_.GetWeakPtr()));
+  if (item_->GetDownloadItem() == nullptr) {
+    // For background fetches, OfflineItem::original_url is its job's
+    // registration origin.
+    notification_->set_origin_url(item_->GetOriginalURL());
+  }
   notification_->set_progress(0);
   notification_->set_fullscreen_visibility(
       message_center::FullscreenVisibility::OVER_USER);
@@ -297,9 +302,12 @@ void DownloadItemNotification::DisablePopup() {
   CloseNotification();
   notification_->set_priority(message_center::LOW_PRIORITY);
   closed_ = false;
-  NotificationDisplayServiceFactory::GetForProfile(profile())->Display(
-      NotificationHandler::Type::TRANSIENT, *notification_,
-      /*metadata=*/nullptr);
+  // If shutting down, the BrowserContext won't be valid.
+  if (profile() && !profile()->ShutdownStarted()) {
+    NotificationDisplayServiceFactory::GetForProfile(profile())->Display(
+        NotificationHandler::Type::TRANSIENT, *notification_,
+        /*metadata=*/nullptr);
+  }
 }
 
 void DownloadItemNotification::Close(bool by_user) {
@@ -484,7 +492,9 @@ void DownloadItemNotification::UpdateNotificationData(bool display,
 
   notification_->set_title(GetTitle());
   notification_->set_message(GetSubStatusString());
-  notification_->set_progress_status(GetStatusString());
+  notification_->set_progress_status((item_->GetDownloadItem() != nullptr)
+                                         ? GetStatusString()
+                                         : std::u16string());
 
   if (item_->IsDangerous()) {
     notification_->set_type(message_center::NOTIFICATION_TYPE_SIMPLE);
@@ -726,6 +736,9 @@ DownloadItemNotification::GetExtraActions() const {
           actions->push_back(DownloadCommands::KEEP);
         }
       }
+    }
+    if (item_->GetDownloadItem() == nullptr) {
+      actions->push_back(DownloadCommands::CANCEL);
     }
     return actions;
   }
