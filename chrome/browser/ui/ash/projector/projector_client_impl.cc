@@ -15,15 +15,16 @@
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ref.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -35,6 +36,7 @@
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/soda/soda_installer.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/web_contents.h"
@@ -50,18 +52,14 @@ namespace {
 
 constexpr char kUSMExperimentRoutingId[] = "screencast_usm_rnnt";
 
-inline const std::string& GetLocale() {
-  return g_browser_process->GetApplicationLocale();
-}
-
-inline const std::string GetLocaleOrLanguageForServerSideRecognition() {
-  const std::string& locale = g_browser_process->GetApplicationLocale();
+inline const std::string GetLocaleOrLanguageForServerSideRecognition(
+    const std::string& application_locale) {
   // Some languages and locales need to be mapped to the default
   // languages/locales provided by the server side speech recognition service.
-  if (locale == "ar") {
+  if (application_locale == "ar") {
     return "ar-x-maghrebi";
   }
-  return locale;
+  return application_locale;
 }
 
 ash::OnDeviceToServerSpeechRecognitionFallbackReason GetFallbackReason(
@@ -103,8 +101,11 @@ ash::OnDeviceToServerSpeechRecognitionFallbackReason GetFallbackReason(
 
 // Using base::Unretained for callback is safe since the ProjectorClientImpl
 // owns `drive_helper_`.
-ProjectorClientImpl::ProjectorClientImpl(ash::ProjectorController* controller)
-    : controller_(controller),
+ProjectorClientImpl::ProjectorClientImpl(
+    ApplicationLocaleStorage* application_locale_storage,
+    ash::ProjectorController* controller)
+    : application_locale_storage_(CHECK_DEREF(application_locale_storage)),
+      controller_(controller),
       drive_helper_(base::BindRepeating(
           &ProjectorClientImpl::MaybeSwitchDriveIntegrationServiceObservation,
           base::Unretained(this))) {
@@ -118,12 +119,10 @@ ProjectorClientImpl::ProjectorClientImpl(ash::ProjectorController* controller)
   if (base::FeatureList::IsEnabled(ash::features::kOnDeviceSpeechRecognition)) {
     soda_installation_controller_ =
         std::make_unique<ProjectorSodaInstallationController>(
-            ash::ProjectorAppClient::Get(), controller_);
+            application_locale_storage, ash::ProjectorAppClient::Get(),
+            controller_);
   }
 }
-
-ProjectorClientImpl::ProjectorClientImpl()
-    : ProjectorClientImpl(ash::ProjectorController::Get()) {}
 
 ProjectorClientImpl::~ProjectorClientImpl() {
   controller_->SetClient(nullptr);
@@ -136,11 +135,13 @@ ProjectorClientImpl::GetSpeechRecognitionAvailability() const {
   ash::SpeechRecognitionAvailability availability;
   availability.use_on_device = true;
   availability.on_device_availability = SpeechRecognitionRecognizerClientImpl::
-      GetOnDeviceSpeechRecognitionAvailability(GetLocale());
+      GetOnDeviceSpeechRecognitionAvailability(
+          application_locale_storage_->Get());
   availability.server_based_availability =
       SpeechRecognitionRecognizerClientImpl::
           GetServerBasedRecognitionAvailability(
-              GetLocaleOrLanguageForServerSideRecognition());
+              GetLocaleOrLanguageForServerSideRecognition(
+                  application_locale_storage_->Get()));
 
   if (ash::features::ShouldForceEnableServerSideSpeechRecognition() ||
       (availability.on_device_availability !=
@@ -158,10 +159,11 @@ void ProjectorClientImpl::StartSpeechRecognition() {
   DCHECK(availability.IsAvailable());
   DCHECK_EQ(speech_recognizer_.get(), nullptr);
   recognizer_status_ = SPEECH_RECOGNIZER_OFF;
+  const std::string& app_locale = application_locale_storage_->Get();
   const std::string locale =
       availability.use_on_device
-          ? GetLocale()
-          : GetLocaleOrLanguageForServerSideRecognition();
+          ? app_locale
+          : GetLocaleOrLanguageForServerSideRecognition(app_locale);
   const std::string experiment_recognizer_routing_key =
       ash::features::IsProjectorUseUSMForS3Enabled() ? kUSMExperimentRoutingId
                                                      : "";

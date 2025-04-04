@@ -20,6 +20,7 @@
 #include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -30,6 +31,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/common/page_type.h"
 #include "content/public/test/browser_test.h"
@@ -349,7 +351,7 @@ class ProjectorNavigationThrottleLocaleTest
 // Verifies that the Projector app can detect locale changes.
 IN_PROC_BROWSER_TEST_P(ProjectorNavigationThrottleLocaleTest,
                        UntrustedNavigationLocaleDetection) {
-  g_browser_process->SetApplicationLocale(locale());
+  g_browser_process->GetFeatures()->application_locale_storage()->Set(locale());
 
   GURL untrusted_url(kChromeUIUntrustedProjectorUrl);
 
