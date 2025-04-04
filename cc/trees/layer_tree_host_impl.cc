@@ -4268,7 +4268,8 @@ LayerTreeHostImpl::CreateRasterBufferProvider() {
   return std::make_unique<OneCopyRasterBufferProvider>(
       GetTaskRunner(), compositor_context_provider, worker_context_provider,
       max_copy_texture_chromium_size, settings_.use_partial_raster,
-      settings_.max_staging_buffer_usage_in_bytes, raster_caps_);
+      settings_.max_staging_buffer_usage_in_bytes, raster_caps_.tile_format,
+      raster_caps_.tile_overlay_candidate);
 }
 
 void LayerTreeHostImpl::SetLayerTreeMutator(

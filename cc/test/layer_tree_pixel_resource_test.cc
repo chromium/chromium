@@ -105,7 +105,8 @@ LayerTreeHostPixelResourceTest::CreateRasterBufferProvider(
       return std::make_unique<OneCopyRasterBufferProvider>(
           task_runner, compositor_context_provider, worker_context_provider,
           max_bytes_per_copy_operation, false,
-          max_staging_buffer_usage_in_bytes, raster_caps);
+          max_staging_buffer_usage_in_bytes, raster_caps.tile_format,
+          raster_caps.tile_overlay_candidate);
   }
 }
 

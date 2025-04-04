@@ -192,7 +192,8 @@ class RasterBufferProviderTest
         raster_buffer_provider_ = std::make_unique<OneCopyRasterBufferProvider>(
             base::SingleThreadTaskRunner::GetCurrentDefault().get(),
             context_provider_.get(), worker_context_provider_.get(),
-            kMaxBytesPerCopyOperation, false, kMaxStagingBuffers, raster_caps);
+            kMaxBytesPerCopyOperation, false, kMaxStagingBuffers,
+            raster_caps.tile_format, raster_caps.tile_overlay_candidate);
         break;
       case RASTER_BUFFER_PROVIDER_TYPE_GPU:
         Create3dResourceProvider();
