@@ -104,47 +104,37 @@ bool Notice::WasFulfilled() {
   return false;
 }
 
-std::optional<bool> Notice::EvaluateNoticeEvent(
-    PrivacySandboxNoticeEvent event) {
-  switch (event) {
-    // Fulfillment : Yes
-    case PrivacySandboxNoticeEvent::kAck:
-    case PrivacySandboxNoticeEvent::kSettings:
-      return true;
-    // Not Fulfillment
-    case PrivacySandboxNoticeEvent::kShown:
-      return std::nullopt;
-    // Unexpected.
-    default:
-      NOTREACHED();
+bool Notice::IsFulfillmentEvent(PrivacySandboxNoticeEvent event) {
+  const std::set<PrivacySandboxNoticeEvent>& enabled_set =
+      EnablementFulfillEvents();
+  const std::set<PrivacySandboxNoticeEvent>& disabled_set =
+      DisablementFulfillEvents();
+  if (enabled_set.find(event) != enabled_set.end()) {
+    return true;
   }
-}
-
-std::optional<bool> Consent::EvaluateNoticeEvent(
-    PrivacySandboxNoticeEvent event) {
-  switch (event) {
-    // Fulfillment : Yes
-    case PrivacySandboxNoticeEvent::kOptIn:
-      return true;
-    // Fulfillment : No
-    case PrivacySandboxNoticeEvent::kOptOut:
-      return false;
-    // Not Fulfillment
-    case PrivacySandboxNoticeEvent::kShown:
-      return std::nullopt;
-    // Unexpected.
-    default:
-      NOTREACHED();
+  if (disabled_set.find(event) != disabled_set.end()) {
+    return true;
   }
+  return false;
 }
 
 void Notice::UpdateTargetApiResults(PrivacySandboxNoticeEvent event) {
-  std::optional<bool> result = EvaluateNoticeEvent(event);
-  if (!result.has_value()) {
+  if (!IsFulfillmentEvent(event)) {
     return;
   }
+  const std::set<PrivacySandboxNoticeEvent>& enabled_set =
+      EnablementFulfillEvents();
+  const std::set<PrivacySandboxNoticeEvent>& disabled_set =
+      DisablementFulfillEvents();
   for (NoticeApi* api : target_apis_) {
-    api->UpdateResult(*result);
+    if (enabled_set.find(event) != enabled_set.end()) {
+      api->UpdateResult(true);
+      continue;
+    }
+    if (disabled_set.find(event) != disabled_set.end()) {
+      api->UpdateResult(false);
+      continue;
+    }
   }
 }
 
@@ -152,11 +142,35 @@ NoticeType Notice::GetNoticeType() {
   return NoticeType::kNotice;
 }
 
+const std::set<PrivacySandboxNoticeEvent>& Notice::EnablementFulfillEvents() {
+  static base::NoDestructor<std::set<PrivacySandboxNoticeEvent>> enabled_set{
+      {PrivacySandboxNoticeEvent::kAck, PrivacySandboxNoticeEvent::kSettings}};
+  return *enabled_set;
+}
+
+const std::set<PrivacySandboxNoticeEvent>& Notice::DisablementFulfillEvents() {
+  static base::NoDestructor<std::set<PrivacySandboxNoticeEvent>> disabled_set{
+      {}};
+  return *disabled_set;
+}
+
 // Consent class definitions.
 Consent::Consent(NoticeId notice_id) : Notice(notice_id) {}
 
 NoticeType Consent::GetNoticeType() {
   return NoticeType::kConsent;
+}
+
+const std::set<PrivacySandboxNoticeEvent>& Consent::EnablementFulfillEvents() {
+  static base::NoDestructor<std::set<PrivacySandboxNoticeEvent>> enabled_set{
+      {PrivacySandboxNoticeEvent::kOptIn}};
+  return *enabled_set;
+}
+
+const std::set<PrivacySandboxNoticeEvent>& Consent::DisablementFulfillEvents() {
+  static base::NoDestructor<std::set<PrivacySandboxNoticeEvent>> disabled_set{
+      {PrivacySandboxNoticeEvent::kOptOut}};
+  return *disabled_set;
 }
 
 // Notice catalog class definitions.
