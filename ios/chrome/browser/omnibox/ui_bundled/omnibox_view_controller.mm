@@ -449,8 +449,15 @@ using base::UserMetricsAction;
   [self.view setThumbnailImage:image];
   // Cancel any pending image removal if a new selection is made.
   self.view.thumbnailButton.selected = NO;
-  self.textField.allowsReturnKeyWithEmptyText = !!image;
   self.textField.placeholder = [self placeholderText];
+  [self updateReturnKeyAvailability];
+}
+
+- (void)updateReturnKeyAvailability {
+  self.textField.allowsReturnKeyWithEmptyText =
+      !!self.view.thumbnailImage ||
+      [self.popupKeyboardDelegate
+          canPerformKeyboardAction:OmniboxKeyboardAction::kReturnKey];
 }
 
 #pragma mark - EditViewAnimatee

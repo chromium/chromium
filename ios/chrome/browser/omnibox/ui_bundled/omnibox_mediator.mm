@@ -216,6 +216,9 @@ using base::UserMetricsAction;
 
 - (void)setPreviewSuggestion:(id<AutocompleteSuggestion>)suggestion
                isFirstUpdate:(BOOL)isFirstUpdate {
+  // Updates the return key availability in case popup highlight changed.
+  [self.consumer updateReturnKeyAvailability];
+
   // On first update, don't set the preview text, as omnibox will automatically
   // receive the suggestion as inline autocomplete through OmniboxViewIOS.
   if (!isFirstUpdate) {
