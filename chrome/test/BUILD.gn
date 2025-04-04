@@ -33,6 +33,7 @@ import("//components/safe_browsing/buildflags.gni")
 import("//components/services/on_device_translation/buildflags/features.gni")
 import("//components/soda/buildflags.gni")
 import("//components/spellcheck/spellcheck_build_features.gni")
+import("//content/browser/devtools/features.gni")
 import("//crypto/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
@@ -6383,6 +6384,18 @@ test("unit_tests") {
     ]
   }
 
+  if (enable_devtools_frontend) {
+    sources += [
+      "../browser/devtools/aida_client_unittest.cc",
+      "../browser/devtools/devtools_file_helper_unittest.cc",
+      "../browser/devtools/devtools_file_system_indexer_unittest.cc",
+      "../browser/devtools/devtools_file_watcher_unittest.cc",
+      "../browser/devtools/devtools_settings_unittest.cc",
+      "../browser/devtools/devtools_ui_bindings_unittest.cc",
+      "../browser/ui/webui/devtools/devtools_ui_data_source_unittest.cc",
+    ]
+  }
+
   # Support v8_unwinder_unittest on Android.
   if (is_android && enable_arm_cfi_table) {
     configs -= [ "//build/config/compiler:default_symbols" ]
@@ -7568,14 +7581,8 @@ test("unit_tests") {
       "../browser/device_notifications/device_system_tray_icon_unittest.h",
       "../browser/device_notifications/device_test_utils.cc",
       "../browser/device_notifications/device_test_utils.h",
-      "../browser/devtools/aida_client_unittest.cc",
       "../browser/devtools/device/android_device_manager_unittest.cc",
-      "../browser/devtools/devtools_file_helper_unittest.cc",
-      "../browser/devtools/devtools_file_system_indexer_unittest.cc",
-      "../browser/devtools/devtools_file_watcher_unittest.cc",
       "../browser/devtools/devtools_select_file_dialog_unittest.cc",
-      "../browser/devtools/devtools_settings_unittest.cc",
-      "../browser/devtools/devtools_ui_bindings_unittest.cc",
       "../browser/devtools/protocol/cast_handler_unittest.cc",
       "../browser/devtools/serialize_host_descriptions_unittest.cc",
       "../browser/diagnostics/diagnostics_controller_unittest.cc",
@@ -7867,7 +7874,6 @@ test("unit_tests") {
       "../browser/ui/webui/cr_components/history_embeddings/history_embeddings_handler_unittest.cc",
       "../browser/ui/webui/cr_components/theme_color_picker/theme_color_picker_handler_unittest.cc",
       "../browser/ui/webui/data_sharing/data_sharing_page_handler_unittest.cc",
-      "../browser/ui/webui/devtools/devtools_ui_data_source_unittest.cc",
       "../browser/ui/webui/discards/graph_dump_impl_unittest.cc",
       "../browser/ui/webui/downloads/downloads_dom_handler_unittest.cc",
       "../browser/ui/webui/downloads/downloads_list_tracker_unittest.cc",
