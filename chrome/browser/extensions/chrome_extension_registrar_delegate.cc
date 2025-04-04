@@ -281,9 +281,6 @@ void ChromeExtensionRegistrarDelegate::LoadExtensionForReload(
 void ChromeExtensionRegistrarDelegate::ShowExtensionDisabledError(
     const Extension* extension,
     bool is_remote_install) {
-  // TODO(crbug.com/399680111): Android will need a different implementation of
-  // this function (e.g. an extension_disabled_ui_android.cc file) as it cannot
-  // use the views implementation of this bubble.
   AddExtensionDisabledError(profile_, extension, is_remote_install);
 }
 
