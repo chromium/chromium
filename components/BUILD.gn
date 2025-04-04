@@ -354,7 +354,7 @@ test("components_unittests") {
     "//components/sync_user_events:unit_tests",
     "//components/system_cpu:unit_tests",
     "//components/system_media_controls:unit_tests",
-    "//components/tab_collections:unit_tests",
+    "//components/tabs:unit_tests",
     "//components/test:run_all_unittests",
     "//components/tpcd/metadata/browser:unit_tests",
     "//components/tpcd/metadata/common:unit_tests",

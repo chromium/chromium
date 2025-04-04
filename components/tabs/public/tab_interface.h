@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_TAB_COLLECTIONS_PUBLIC_TAB_INTERFACE_H_
-#define COMPONENTS_TAB_COLLECTIONS_PUBLIC_TAB_INTERFACE_H_
+#ifndef COMPONENTS_TABS_PUBLIC_TAB_INTERFACE_H_
+#define COMPONENTS_TABS_PUBLIC_TAB_INTERFACE_H_
 
 #include <memory>
 
@@ -12,8 +12,8 @@
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "components/tab_collections/public/supports_handles.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "components/tabs/public/supports_handles.h"
 
 namespace content {
 class WebContents;
@@ -239,4 +239,4 @@ using TabHandle = TabInterface::Handle;
 
 }  // namespace tabs
 
-#endif  // COMPONENTS_TAB_COLLECTIONS_PUBLIC_TAB_INTERFACE_H_
+#endif  // COMPONENTS_TABS_PUBLIC_TAB_INTERFACE_H_

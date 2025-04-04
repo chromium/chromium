@@ -12,7 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "components/tab_collections/public/tab_interface.h"
+#include "components/tabs/public/tab_interface.h"
 #include "ui/views/widget/widget.h"
 
 namespace content {

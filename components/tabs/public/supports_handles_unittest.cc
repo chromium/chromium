@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/tab_collections/public/supports_handles.h"
+#include "components/tabs/public/supports_handles.h"
 
 #include <concepts>
 #include <cstdint>

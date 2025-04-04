@@ -379,7 +379,7 @@ include_rules = [
   "+components/sync_preferences",
   "+components/sync_sessions",
   "+components/sync_user_events",
-  "+components/tab_collections",
+  "+components/tabs",
   "+components/tab_count_metrics",
   "+components/tab_groups",
   "+components/tpcd/enterprise_reporting",

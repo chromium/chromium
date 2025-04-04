@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_TAB_COLLECTIONS_PUBLIC_SUPPORTS_HANDLES_H_
-#define COMPONENTS_TAB_COLLECTIONS_PUBLIC_SUPPORTS_HANDLES_H_
+#ifndef COMPONENTS_TABS_PUBLIC_SUPPORTS_HANDLES_H_
+#define COMPONENTS_TABS_PUBLIC_SUPPORTS_HANDLES_H_
 
 // SupportsHandles is a way to add "handle" support to an object, such as a tab
 // or browser window which:
@@ -40,8 +40,8 @@
 // thread, though their handles and handle values may be copied to and stored on
 // any thread.
 //
-// Handles are backed by a 32-bit signed integer, since (a) there are usually not
-// more than 4 billion of any UI object, and (b) signed integers provide the
+// Handles are backed by a 32-bit signed integer, since (a) there are usually
+// not more than 4 billion of any UI object, and (b) signed integers provide the
 // broadest possible language support.
 //
 // The null value for handles is always zero.
@@ -215,4 +215,4 @@ T* SupportsHandles<T>::Handle::Get() const {
   return internal::HandleHelper<T>::GetInstance().LookupObject(raw_value_);
 }
 
-#endif  // COMPONENTS_TAB_COLLECTIONS_PUBLIC_SUPPORTS_HANDLES_H_
+#endif  // COMPONENTS_TABS_PUBLIC_SUPPORTS_HANDLES_H_

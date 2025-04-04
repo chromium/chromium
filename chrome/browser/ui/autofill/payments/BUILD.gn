@@ -143,7 +143,7 @@ source_set("impl") {
       "//components/prefs",
       "//components/strings:components_strings_grit",
       "//components/sync/service",
-      "//components/tab_collections:public",
+      "//components/tabs:public",
       "//components/user_prefs",
       "//components/webauthn/content/browser",
     ]

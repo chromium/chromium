@@ -20,8 +20,8 @@ source_set("tabs_public") {
     ":split_tabs",
     "//base",
     "//chrome/common:buildflags",
-    "//components/tab_collections:public",
     "//components/tab_groups:tab_groups",
+    "//components/tabs:public",
   ]
   deps = [ "//content/public/browser" ]
 }

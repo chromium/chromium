@@ -1,8 +1,10 @@
-# Tab Collections
+# Tabs
 
 This directory contains the data structures, interfaces, and in-memory storage
-for tab collections. As of March 2025 the desktop tab collection code is being
-migrated to this directory to be shared with other platforms.
+for cross platform tab code. As of March 2025 the desktop tab collection code is
+being migrated to this directory to be shared with other platforms.
+
+## Tab Collections
 
 `TabCollection`s are n-ary tree data structures that host a mix of tabs and other
 tab collections. These collections represent logical groupings of tabs such as

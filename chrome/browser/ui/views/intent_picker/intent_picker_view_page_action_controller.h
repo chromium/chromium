@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_INTENT_PICKER_INTENT_PICKER_VIEW_PAGE_ACTION_CONTROLLER_H_
 
 #include "base/memory/raw_ref.h"
-#include "components/tab_collections/public/tab_interface.h"
+#include "components/tabs/public/tab_interface.h"
 
 namespace ui {
 class ImageModel;
