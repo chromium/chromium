@@ -48,6 +48,7 @@
 #include "content/browser/loader/url_loader_factory_utils.h"
 #include "content/browser/private_aggregation/private_aggregation_manager.h"
 #include "content/browser/renderer_host/page_impl.h"
+#include "content/browser/renderer_host/policy_container_host.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
@@ -744,6 +745,18 @@ scoped_refptr<SiteInstance> AdAuctionServiceImpl::GetFrameSiteInstance() {
 
 network::mojom::ClientSecurityStatePtr
 AdAuctionServiceImpl::GetClientSecurityState() {
+  if (base::FeatureList::IsEnabled(
+          features::kFledgeOnlyUseIpAddressSpaceInClientSecurityState)) {
+    PolicyContainerHost* policies = GetFrame()->policy_container_host();
+    // This matches what GetFrame()->BuildClientSecurityState() does, in the no
+    // PolicyContainer case. According to comments there, PolicyContainerHost
+    // should only be null before commit, which shouldn't be the case when any
+    // of AdAuctionServiceImpl's methods are invoked.
+    network::mojom::IPAddressSpace ip_address_space =
+        policies ? policies->ip_address_space()
+                 : network::mojom::IPAddressSpace::kUnknown;
+    return CreateClientSecurityStateForProtectedAudience(ip_address_space);
+  }
   network::mojom::ClientSecurityStatePtr frame_state =
       GetFrame()->BuildClientSecurityState();
   // Ensure all Local Network Access requests are blocked as this could lead to

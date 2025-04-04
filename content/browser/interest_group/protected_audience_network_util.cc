@@ -16,6 +16,8 @@
 #include "content/browser/renderer_host/navigator_delegate.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/mojom/client_security_state.mojom.h"
+#include "services/network/public/mojom/ip_address_space.mojom.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 
 namespace content {
@@ -70,6 +72,17 @@ void SetUpDevtoolsForRequest(FrameTreeNode* frame_tree_node,
           NetworkServiceDevToolsObserver::MakeSelfOwned(frame_tree_node);
     }
   }
+}
+
+network::mojom::ClientSecurityStatePtr
+CreateClientSecurityStateForProtectedAudience(
+    network::mojom::IPAddressSpace ip_address_space) {
+  auto client_security_state = network::mojom::ClientSecurityState::New();
+  client_security_state->ip_address_space = ip_address_space;
+  client_security_state->is_web_secure_context = true;
+  client_security_state->private_network_request_policy =
+      network::mojom::PrivateNetworkRequestPolicy::kBlock;
+  return client_security_state;
 }
 
 }  // namespace content
