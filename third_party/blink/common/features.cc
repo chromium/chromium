@@ -54,6 +54,10 @@ BASE_FEATURE(kComputePressureRateObfuscationMitigation,
              "ComputePressureRateObfuscationMitigation",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kCrashReportingAPIMoreContextData,
+             "CrashReportingAPIMoreContextData",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kLowerHighResolutionTimerThreshold,
              "LowerHighResolutionTimerThreshold",
              base::FEATURE_DISABLED_BY_DEFAULT);
