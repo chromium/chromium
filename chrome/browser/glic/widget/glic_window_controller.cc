@@ -265,7 +265,7 @@ void GlicWindowController::WebClientInitializeFailed() {
     LOG(ERROR)
         << "Glic web client failed to initialize, it won't work properly.";
     glic_service_->metrics()->set_show_start_time(base::TimeTicks());
-    ShowFinish();
+    GlicLoadedAndAnimationDone();
   }
 }
 
@@ -277,12 +277,12 @@ void GlicWindowController::LoginPageCommitted() {
     // TODO(crbug.com/388328847): Temporarily allow showing the UI when a login
     // page is reached.
     glic_service_->metrics()->set_show_start_time(base::TimeTicks());
-    ShowFinish();
+    GlicLoadedAndAnimationDone();
   }
 }
 
 void GlicWindowController::SetWebClient(GlicWebClientAccess* web_client) {
-  // If state_ == kClosed, then store web_client_ for a future call to Open().
+  // If state_ == kClosed, then store web_client_ for a future call to Show().
   // Once we get crash/error flows, this can theoretically happen with state_ ==
   // kOpen, but those will those need to handled alongside the crash/error
   // flows.
@@ -301,7 +301,7 @@ void GlicWindowController::SetWebClient(GlicWebClientAccess* web_client) {
         // crashes. Determine the correct behavior in this case.
         LOG(ERROR) << "Glic web client disconnected before showing the window.";
         glic_service_->metrics()->set_show_start_time(base::TimeTicks());
-        ShowFinish();
+        GlicLoadedAndAnimationDone();
       }
       break;
     case State::kOpen:
@@ -610,44 +610,18 @@ void GlicWindowController::Show(Browser* browser,
   if (!contents_) {
     CreateContents();
   }
-  glic_service_->GetAuthController().CheckAuthBeforeShow(
-      AuthController::FallbackBehavior::kNone,
-      base::BindOnce(&GlicWindowController::AuthCheckDoneBeforeShow,
-                     GetWeakPtr(), browser ? browser->AsWeakPtr() : nullptr));
-}
 
-void GlicWindowController::AuthCheckDoneBeforeShow(
-    base::WeakPtr<Browser> browser_for_attachment,
-    AuthController::BeforeShowResult result) {
-  // `contents_` can be null if Shutdown() is called.
-  if (!contents_) {
-    return;
-  }
-
-  // Note: we ignore the result of the auth check here. The WebUI can handle
-  // error cases.
   glic_service_->NotifyWindowIntentToShow();
 
-  // Since this method is called asynchronously, check that the profile wasn't
-  // disabled since the request was made.
-  if (!GlicEnabling::IsEnabledForProfile(profile_)) {
-    SetWindowState(State::kClosed);
-    return;
-  }
+  SetupGlicWidget(browser);
 
   glic_window_animator_ = std::make_unique<GlicWindowAnimator>(this);
-  if (browser_for_attachment) {
-    if (AlwaysDetached()) {
-      OpenDetached(browser_for_attachment.get());
-    } else {
-      OpenAttached(*browser_for_attachment.get());
-    }
+  if (browser && !AlwaysDetached()) {
+    StartAttachedAnimation(GetGlicButton(*browser));
   } else {
-    OpenDetached(nullptr);
+    // There is no detached animation so move to waiting for glic.
+    SetWindowState(State::kWaitingForGlicToLoad);
   }
-
-  // Immediately hook up the WebView to the WebContents.
-  GetGlicView()->SetWebContents(contents_->web_contents());
 
   // If the web client is already initialized, wait for it to load in parallel.
   if (web_client_) {
@@ -655,7 +629,7 @@ void GlicWindowController::AuthCheckDoneBeforeShow(
   } else if (login_page_committed_) {
     // This indicates that we've warmed the web client and it has hit a login
     // page. See LoginPageCommitted.
-    ShowFinish();
+    GlicLoadedAndAnimationDone();
   }
 
   NotifyIfPanelStateChanged();
@@ -667,11 +641,51 @@ bool GlicWindowController::AlwaysDetached() {
   return base::FeatureList::IsEnabled(features::kGlicDetached);
 }
 
-gfx::Rect GlicWindowController::GetInitialDetachedBounds(Browser* browser) {
-  if (browser) {
-    return GetInitialDetachedBoundsFromBrowser(browser);
+void GlicWindowController::SetupGlicWidget(Browser* browser) {
+  auto initial_bounds = GetInitialBounds(browser);
+  glic_widget_ = GlicWidget::Create(profile_, initial_bounds,
+                                    /*accelerator_delegate=*/GetWeakPtr(),
+                                    user_resizable_);
+  glic_widget_observation_.Observe(glic_widget_.get());
+  AddAccelerators();
+
+  if (AlwaysDetached()) {
+    // When detached mode is on, there's no need for a holder window so it's
+    // simplified to just setting the z-order.
+    GetGlicWidget()->SetZOrderLevel(ui::ZOrderLevel::kFloatingWindow);
+#if BUILDFLAG(IS_MAC)
+    GetGlicWidget()->SetActivationIndependence(true);
+    GetGlicWidget()->SetVisibleOnAllWorkspaces(true);
+#endif
+  } else if (!browser) {
+    // Detached window when no always detach. Be sure to reparent the widget and
+    // set its state first before showing it.
+    MaybeCreateHolderWindowAndReparent(AttachChangeReason::kInit);
   }
 
+  glic_widget_->Show();
+
+  // This is needed in case of theme difference between OS and chrome.
+  GetGlicWidget()->ThemeChanged();
+
+  if (browser && !AlwaysDetached()) {
+    // Attached window if needed.
+    AttachToBrowser(*browser, AttachChangeReason::kInit);
+  }
+
+  // Immediately hook up the WebView to the WebContents.
+  GetGlicView()->SetWebContents(contents_->web_contents());
+}
+
+gfx::Rect GlicWindowController::GetInitialBounds(Browser* browser) {
+  if (browser && !AlwaysDetached()) {
+    return GetInitialAttachedBounds(*browser);
+  }
+  if (browser) {
+    return GetInitialDetachedBoundsFromBrowser(*browser);
+  }
+
+  // Get the default detached position.
   display::Display display = GetDisplayForOpeningDetached();
   gfx::Size widget_size = GetLastRequestedSizeClamped(display.size().height());
 
@@ -685,34 +699,7 @@ gfx::Rect GlicWindowController::GetInitialDetachedBounds(Browser* browser) {
   return {{initial_x, initial_y}, widget_size};
 }
 
-gfx::Rect GlicWindowController::GetInitialDetachedBoundsFromBrowser(
-    Browser* browser) {
-  gfx::Rect display_bounds = GetDisplayForOpeningDetached().work_area();
-  gfx::Size widget_size = GetLastRequestedSizeClamped(display_bounds.height());
-  gfx::Point origin = display_bounds.top_right();
-
-  // Open detached relative to the browser.
-  gfx::Rect browser_bounds =
-      browser->GetBrowserView().GetWidget()->GetWindowBoundsInScreen();
-  GlicButton* glic_button = GetGlicButton(*browser);
-  CHECK(glic_button);
-  gfx::Rect glic_button_inset_bounds = glic_button->GetBoundsWithInset();
-  // If glic can't fit to the right of the browser,
-  // set the origin so the top right of glic meets the bottom left of the glic
-  // button.
-  if (display_bounds.width() - browser_bounds.right() > widget_size.width()) {
-    origin = glic_button_inset_bounds.bottom_right();
-  } else {
-    origin =
-        gfx::Point(glic_button_inset_bounds.x() - widget_size.width() -
-                       kInitialPositionBuffer,
-                   glic_button_inset_bounds.bottom() + kInitialPositionBuffer);
-  }
-  return {origin, widget_size};
-}
-
-void GlicWindowController::OpenAttached(Browser& browser) {
-  CHECK(!AlwaysDetached());
+gfx::Rect GlicWindowController::GetInitialAttachedBounds(Browser& browser) {
   GlicButton* glic_button = GetGlicButton(browser);
   CHECK(glic_button);
 
@@ -729,56 +716,48 @@ void GlicWindowController::OpenAttached(Browser& browser) {
     glic_window_widget_initial_rect.set_height(
         std::max(glic_window_widget_initial_rect.height(), 1));
   }
+  return glic_window_widget_initial_rect;
+}
 
-  glic_widget_ = CreateGlicWidget(glic_window_widget_initial_rect);
-  glic_widget_observation_.Observe(glic_widget_.get());
-  AddAccelerators();
+gfx::Rect GlicWindowController::GetInitialDetachedBoundsFromBrowser(
+    Browser& browser) {
+  gfx::Rect display_bounds = GetDisplayForOpeningDetached().work_area();
+  gfx::Size widget_size = GetLastRequestedSizeClamped(display_bounds.height());
+  gfx::Point origin = display_bounds.top_right();
 
-  glic_widget_->Show();
-  AttachToBrowser(browser, AttachChangeReason::kInit);
+  // Open detached relative to the browser.
+  gfx::Rect browser_bounds =
+      browser.GetBrowserView().GetWidget()->GetWindowBoundsInScreen();
+  GlicButton* glic_button = GetGlicButton(browser);
+  CHECK(glic_button);
+  gfx::Rect glic_button_inset_bounds = glic_button->GetBoundsWithInset();
+  // If glic can't fit to the right of the browser,
+  // set the origin so the top right of glic meets the bottom left of the glic
+  // button.
+  if (display_bounds.width() - browser_bounds.right() > widget_size.width()) {
+    origin = glic_button_inset_bounds.bottom_right();
+  } else {
+    origin =
+        gfx::Point(glic_button_inset_bounds.x() - widget_size.width() -
+                       kInitialPositionBuffer,
+                   glic_button_inset_bounds.bottom() + kInitialPositionBuffer);
+  }
+  return {origin, widget_size};
+}
+
+void GlicWindowController::StartAttachedAnimation(GlicButton* glic_button) {
+  // Make the web view invisible for now, then fade it in after the open
+  // animation finishes.
+  glic_window_animator_->SetGlicWebViewVisibility(false);
 
   // Set target size for animation and run the open attached animation.
   gfx::Size widget_size =
       GetLastRequestedSizeClamped(glic_widget_->GetDisplay().size().height());
 
-  // Make the web view invisible for now, then fade it in after the open
-  // animation finishes.
-  glic_window_animator_->SetGlicWebViewVisibility(false);
-
   glic_window_animator_->RunOpenAttachedAnimation(
       glic_button, widget_size,
       base::BindOnce(&GlicWindowController::OpenAnimationFinished,
                      GetWeakPtr()));
-}
-
-void GlicWindowController::OpenDetached(Browser* browser) {
-  gfx::Rect initial_bounds = GetInitialDetachedBounds(browser);
-
-  // Make the widget.
-  glic_widget_ = CreateGlicWidget(initial_bounds);
-  glic_widget_observation_.Observe(glic_widget_.get());
-  AddAccelerators();
-
-  // When detached mode is on, there's no need for a holder window so it's
-  // simplified to just setting the z-order.
-  if (AlwaysDetached()) {
-    GetGlicWidget()->SetZOrderLevel(ui::ZOrderLevel::kFloatingWindow);
-#if BUILDFLAG(IS_MAC)
-    GetGlicWidget()->SetActivationIndependence(true);
-    GetGlicWidget()->SetVisibleOnAllWorkspaces(true);
-#endif
-  } else {
-    // Be sure to reparent the widget and set its state first before showing it.
-    MaybeCreateHolderWindowAndReparent(AttachChangeReason::kInit);
-  }
-  GetGlicWidget()->Show();
-
-  // There is no open detached animation so wait for glic to load to continue
-  // opening.
-  SetWindowState(State::kWaitingForGlicToLoad);
-
-  // This is needed in case of theme difference between OS and chrome.
-  GetGlicWidget()->ThemeChanged();
 }
 
 // This happens after the web client is initialized. It signals the web client
@@ -807,7 +786,7 @@ void GlicWindowController::GlicLoaded(mojom::OpenPanelInfoPtr open_info) {
 
   glic_loaded_ = true;
   if (state_ == State::kWaitingForGlicToLoad) {
-    ShowFinish();
+    GlicLoadedAndAnimationDone();
   }
 }
 
@@ -820,12 +799,12 @@ void GlicWindowController::OpenAnimationFinished() {
     glic_window_animator_->FadeInWebView();
 
     if (glic_loaded_) {
-      ShowFinish();
+      GlicLoadedAndAnimationDone();
     }
   }
 }
 
-void GlicWindowController::ShowFinish() {
+void GlicWindowController::GlicLoadedAndAnimationDone() {
   login_page_committed_ = false;
   if (state_ == State::kClosed || state_ == State::kOpen) {
     return;
@@ -1426,7 +1405,7 @@ GlicWindowController::AddWindowActivationChangedCallback(
 void GlicWindowController::Preload() {
   if (!contents_) {
     CreateContents();
-    contents_->web_contents()->Resize(GetInitialDetachedBounds(nullptr));
+    contents_->web_contents()->Resize(GetInitialBounds(nullptr));
   }
 }
 
@@ -1502,13 +1481,6 @@ void GlicWindowController::MaybeAdjustSizeForDisplay(bool animate) {
           base::DoNothing());
     }
   }
-}
-
-std::unique_ptr<GlicWidget> GlicWindowController::CreateGlicWidget(
-    const gfx::Rect& bounds) {
-  return GlicWidget::Create(profile_, bounds,
-                            /*accelerator_delegate=*/GetWeakPtr(),
-                            user_resizable_);
 }
 
 void GlicWindowController::CreateContents() {
