@@ -12,44 +12,32 @@ namespace blink {
 
 class CSSPercentageInterpolationType : public CSSInterpolationType {
  public:
-  CSSPercentageInterpolationType(PropertyHandle property,
-                                 const PropertyRegistration* registration)
-      : CSSInterpolationType(property, registration) {
-    DCHECK(property.IsCSSCustomProperty());
-  }
+  explicit CSSPercentageInterpolationType(
+      PropertyHandle property,
+      const PropertyRegistration* registration = nullptr)
+      : CSSInterpolationType(property, registration) {}
 
-  InterpolationValue MaybeConvertNeutral(const InterpolationValue& underlying,
-                                         ConversionCheckers&) const final;
-  InterpolationValue MaybeConvertValue(const CSSValue&,
-                                       const StyleResolverState*,
-                                       ConversionCheckers&) const final;
+  InterpolationValue MaybeConvertStandardPropertyUnderlyingValue(
+      const ComputedStyle&) const final;
+  void ApplyStandardPropertyValue(const InterpolableValue&,
+                                  const NonInterpolableValue*,
+                                  StyleResolverState&) const final;
 
   const CSSValue* CreateCSSValue(const InterpolableValue&,
                                  const NonInterpolableValue*,
                                  const StyleResolverState&) const final;
 
  private:
-  // These methods only apply to CSSInterpolationTypes used by standard CSS
-  // properties.
-  // CSSPercentageInterpolationType is only accessible via registered custom CSS
-  // properties.
-  InterpolationValue MaybeConvertStandardPropertyUnderlyingValue(
-      const ComputedStyle&) const final {
-    NOTREACHED();
-  }
-  void ApplyStandardPropertyValue(const InterpolableValue&,
-                                  const NonInterpolableValue*,
-                                  StyleResolverState&) const final {
-    NOTREACHED();
-  }
+  InterpolationValue CreatePercentageValue(double percentage) const;
+  InterpolationValue MaybeConvertNeutral(const InterpolationValue& underlying,
+                                         ConversionCheckers&) const final;
   InterpolationValue MaybeConvertInitial(const StyleResolverState&,
-                                         ConversionCheckers&) const final {
-    NOTREACHED();
-  }
+                                         ConversionCheckers&) const final;
   InterpolationValue MaybeConvertInherit(const StyleResolverState&,
-                                         ConversionCheckers&) const final {
-    NOTREACHED();
-  }
+                                         ConversionCheckers&) const final;
+  InterpolationValue MaybeConvertValue(const CSSValue&,
+                                       const StyleResolverState*,
+                                       ConversionCheckers&) const final;
 };
 
 }  // namespace blink

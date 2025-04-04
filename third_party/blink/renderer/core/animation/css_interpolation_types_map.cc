@@ -214,7 +214,6 @@ const InterpolationTypes& CSSInterpolationTypesMap::Get(
       case CSSPropertyID::kStrokeMiterlimit:
       case CSSPropertyID::kStrokeOpacity:
       case CSSPropertyID::kColumnCount:
-      case CSSPropertyID::kTextSizeAdjust:
       case CSSPropertyID::kWidows:
       case CSSPropertyID::kZIndex:
         applicable_types->push_back(
@@ -226,6 +225,10 @@ const InterpolationTypes& CSSInterpolationTypesMap::Get(
       case CSSPropertyID::kCornerBottomRightShape:
         applicable_types->push_back(
             std::make_unique<CSSSuperellipseInterpolationType>(property));
+        break;
+      case CSSPropertyID::kTextSizeAdjust:
+        applicable_types->push_back(
+            std::make_unique<CSSPercentageInterpolationType>(property));
         break;
       case CSSPropertyID::kLineHeight:
       case CSSPropertyID::kTabSize:
