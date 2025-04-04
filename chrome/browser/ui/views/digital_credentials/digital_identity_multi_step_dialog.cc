@@ -43,12 +43,45 @@ ButtonModel CreateButtonModel(const ButtonModel::Params& params) {
 
 }  // anonymous namespace
 
-DigitalIdentityMultiStepDialog::TestApi::TestApi(
-    DigitalIdentityMultiStepDialog* dialog)
-    : dialog_(dialog) {}
-DigitalIdentityMultiStepDialog::TestApi::~TestApi() = default;
+// The wrapped views::BubbleDialogDelegate.
+class DigitalIdentityMultiStepDialogDelegate
+    : public views::BubbleDialogDelegate {
+ public:
+  DigitalIdentityMultiStepDialogDelegate();
+  ~DigitalIdentityMultiStepDialogDelegate() override;
 
-DigitalIdentityMultiStepDialog::Delegate::Delegate()
+  void Update(
+      const std::optional<ui::DialogModel::Button::Params>& accept_button,
+      base::OnceClosure accept_callback,
+      const ui::DialogModel::Button::Params& cancel_button,
+      base::OnceClosure cancel_callback,
+      const std::u16string& dialog_title,
+      const std::u16string& body_text,
+      std::unique_ptr<views::View> custom_body_field);
+
+  views::Widget::ClosedReason get_closed_reason() { return closed_reason_; }
+
+ private:
+  bool OnDialogAccepted();
+  bool OnDialogCanceled();
+  void OnDialogClosed();
+
+  void ResetCallbacks();
+
+  // Owned by the parent view.
+  raw_ptr<views::View> contents_view_;
+
+  base::OnceClosure accept_callback_;
+  base::OnceClosure cancel_callback_;
+
+  views::Widget::ClosedReason closed_reason_ =
+      views::Widget::ClosedReason::kUnspecified;
+
+  base::WeakPtrFactory<DigitalIdentityMultiStepDialogDelegate>
+      weak_ptr_factory_{this};
+};
+
+DigitalIdentityMultiStepDialogDelegate::DigitalIdentityMultiStepDialogDelegate()
     : views::BubbleDialogDelegate(/*anchor_view=*/nullptr,
                                   views::BubbleBorder::Arrow::NONE,
                                   views::BubbleBorder::DIALOG_SHADOW,
@@ -66,9 +99,10 @@ DigitalIdentityMultiStepDialog::Delegate::Delegate()
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 }
 
-DigitalIdentityMultiStepDialog::Delegate::~Delegate() = default;
+DigitalIdentityMultiStepDialogDelegate::
+    ~DigitalIdentityMultiStepDialogDelegate() = default;
 
-void DigitalIdentityMultiStepDialog::Delegate::Update(
+void DigitalIdentityMultiStepDialogDelegate::Update(
     const std::optional<ButtonModel::Params>& accept_button,
     base::OnceClosure accept_callback,
     const ButtonModel::Params& cancel_button,
@@ -80,15 +114,18 @@ void DigitalIdentityMultiStepDialog::Delegate::Update(
   cancel_callback_ = std::move(cancel_callback);
 
   if (accept_button) {
-    SetAcceptCallbackWithClose(base::BindRepeating(&Delegate::OnDialogAccepted,
-                                                   base::Unretained(this)));
+    SetAcceptCallbackWithClose(base::BindRepeating(
+        &DigitalIdentityMultiStepDialogDelegate::OnDialogAccepted,
+        base::Unretained(this)));
   }
 
   SetTitle(dialog_title);
-  SetCancelCallbackWithClose(
-      base::BindRepeating(&Delegate::OnDialogCanceled, base::Unretained(this)));
-  SetCloseCallback(base::BindOnce(&Delegate::OnDialogClosed,
-                                  weak_ptr_factory_.GetWeakPtr()));
+  SetCancelCallbackWithClose(base::BindRepeating(
+      &DigitalIdentityMultiStepDialogDelegate::OnDialogCanceled,
+      base::Unretained(this)));
+  SetCloseCallback(
+      base::BindOnce(&DigitalIdentityMultiStepDialogDelegate::OnDialogClosed,
+                     weak_ptr_factory_.GetWeakPtr()));
 
   int button_mask = static_cast<int>(ui::mojom::DialogButton::kCancel);
   if (accept_button) {
@@ -114,7 +151,7 @@ void DigitalIdentityMultiStepDialog::Delegate::Update(
   }
 }
 
-bool DigitalIdentityMultiStepDialog::Delegate::OnDialogAccepted() {
+bool DigitalIdentityMultiStepDialogDelegate::OnDialogAccepted() {
   closed_reason_ = views::Widget::ClosedReason::kAcceptButtonClicked;
 
   // views::DialogDelegate does not support synchronously destroying
@@ -130,7 +167,7 @@ bool DigitalIdentityMultiStepDialog::Delegate::OnDialogAccepted() {
   return false;
 }
 
-bool DigitalIdentityMultiStepDialog::Delegate::OnDialogCanceled() {
+bool DigitalIdentityMultiStepDialogDelegate::OnDialogCanceled() {
   closed_reason_ = views::Widget::ClosedReason::kCancelButtonClicked;
 
   // views::DialogDelegate does not support synchronously destroying
@@ -146,7 +183,7 @@ bool DigitalIdentityMultiStepDialog::Delegate::OnDialogCanceled() {
   return false;
 }
 
-void DigitalIdentityMultiStepDialog::Delegate::OnDialogClosed() {
+void DigitalIdentityMultiStepDialogDelegate::OnDialogClosed() {
   if (cancel_callback_) {
     // views::DialogDelegate does not support synchronously destroying
     // views::Widget from close callback.
@@ -155,10 +192,25 @@ void DigitalIdentityMultiStepDialog::Delegate::OnDialogClosed() {
   }
 }
 
-void DigitalIdentityMultiStepDialog::Delegate::ResetCallbacks() {
+void DigitalIdentityMultiStepDialogDelegate::ResetCallbacks() {
   SetAcceptCallbackWithClose(base::BindRepeating([]() { return false; }));
   SetCancelCallbackWithClose(base::BindRepeating([]() { return false; }));
   SetCloseCallback(base::OnceClosure());
+}
+
+DigitalIdentityMultiStepDialog::TestApi::TestApi(
+    DigitalIdentityMultiStepDialog* dialog)
+    : dialog_(dialog) {}
+
+DigitalIdentityMultiStepDialog::TestApi::~TestApi() = default;
+
+views::Widget* DigitalIdentityMultiStepDialog::TestApi::GetWidget() {
+  return dialog_->dialog_.get();
+}
+
+views::BubbleDialogDelegate*
+DigitalIdentityMultiStepDialog::TestApi::GetWidgetDelegate() {
+  return dialog_->GetWidgetDelegate();
 }
 
 DigitalIdentityMultiStepDialog::DigitalIdentityMultiStepDialog(
@@ -187,10 +239,11 @@ void DigitalIdentityMultiStepDialog::TryShow(
     return;
   }
 
-  std::unique_ptr<Delegate> new_dialog_delegate;
-  Delegate* delegate = GetWidgetDelegate();
+  std::unique_ptr<DigitalIdentityMultiStepDialogDelegate> new_dialog_delegate;
+  DigitalIdentityMultiStepDialogDelegate* delegate = GetWidgetDelegate();
   if (!delegate) {
-    new_dialog_delegate = std::make_unique<Delegate>();
+    new_dialog_delegate =
+        std::make_unique<DigitalIdentityMultiStepDialogDelegate>();
     delegate = new_dialog_delegate.get();
   }
 
@@ -208,18 +261,18 @@ void DigitalIdentityMultiStepDialog::TryShow(
 }
 
 ui::ColorVariant DigitalIdentityMultiStepDialog::GetBackgroundColor() {
-  DigitalIdentityMultiStepDialog::Delegate* widget_delegate =
-      GetWidgetDelegate();
+  DigitalIdentityMultiStepDialogDelegate* widget_delegate = GetWidgetDelegate();
   if (!widget_delegate) {
     return gfx::kPlaceholderColor;
   }
   return widget_delegate->background_color();
 }
 
-DigitalIdentityMultiStepDialog::Delegate*
+DigitalIdentityMultiStepDialogDelegate*
 DigitalIdentityMultiStepDialog::GetWidgetDelegate() {
   if (!dialog_) {
     return nullptr;
   }
-  return reinterpret_cast<Delegate*>(dialog_->widget_delegate());
+  return static_cast<DigitalIdentityMultiStepDialogDelegate*>(
+      dialog_->widget_delegate());
 }

@@ -265,17 +265,17 @@ class ShelfBackgroundLayerDelegate : public ui::LayerOwner,
 // The contents view of the Shelf. In an active session, this is used to
 // display a semi-opaque background behind the shelf. Outside of an active
 // session, this also contains the login shelf view.
-class ShelfWidget::DelegateView : public views::WidgetDelegate,
-                                  public views::AccessiblePaneView,
-                                  public ShelfBackgroundAnimatorObserver,
-                                  public HotseatTransitionAnimator::Observer {
+class ShelfWidgetDelegateView : public views::WidgetDelegate,
+                                public views::AccessiblePaneView,
+                                public ShelfBackgroundAnimatorObserver,
+                                public HotseatTransitionAnimator::Observer {
  public:
-  DelegateView(ShelfWidget* shelf_widget, Shelf* shelf);
+  ShelfWidgetDelegateView(ShelfWidget* shelf_widget, Shelf* shelf);
 
-  DelegateView(const DelegateView&) = delete;
-  DelegateView& operator=(const DelegateView&) = delete;
+  ShelfWidgetDelegateView(const ShelfWidgetDelegateView&) = delete;
+  ShelfWidgetDelegateView& operator=(const ShelfWidgetDelegateView&) = delete;
 
-  ~DelegateView() override;
+  ~ShelfWidgetDelegateView() override;
 
   void set_focus_cycler(FocusCycler* focus_cycler) {
     focus_cycler_ = focus_cycler;
@@ -362,7 +362,8 @@ class ShelfWidget::DelegateView : public views::WidgetDelegate,
   bool background_is_currently_blurred_ = false;
 };
 
-ShelfWidget::DelegateView::DelegateView(ShelfWidget* shelf_widget, Shelf* shelf)
+ShelfWidgetDelegateView::ShelfWidgetDelegateView(ShelfWidget* shelf_widget,
+                                                 Shelf* shelf)
     : shelf_widget_(shelf_widget),
       opaque_background_(shelf, this),
       animating_background_(ui::LAYER_SOLID_COLOR),
@@ -388,9 +389,9 @@ ShelfWidget::DelegateView::DelegateView(ShelfWidget* shelf_widget, Shelf* shelf)
        kDragHandleCornerRadius, kDragHandleCornerRadius});
 }
 
-ShelfWidget::DelegateView::~DelegateView() = default;
+ShelfWidgetDelegateView::~ShelfWidgetDelegateView() = default;
 
-void ShelfWidget::DelegateView::SetParentLayer(ui::Layer* layer) {
+void ShelfWidgetDelegateView::SetParentLayer(ui::Layer* layer) {
   layer->Add(opaque_background_layer());
   ReorderLayers();
   // Animating background is only shown during hotseat state transitions to
@@ -402,20 +403,20 @@ void ShelfWidget::DelegateView::SetParentLayer(ui::Layer* layer) {
   layer->parent()->StackAtBottom(&animating_background_);
 }
 
-void ShelfWidget::DelegateView::HideOpaqueBackground() {
+void ShelfWidgetDelegateView::HideOpaqueBackground() {
   hide_background_for_transitions_ = true;
   opaque_background_layer()->SetVisible(false);
   drag_handle_->SetVisible(false);
 }
 
-void ShelfWidget::DelegateView::ShowOpaqueBackground() {
+void ShelfWidgetDelegateView::ShowOpaqueBackground() {
   hide_background_for_transitions_ = false;
   UpdateOpaqueBackground();
   UpdateDragHandle();
   UpdateBackgroundBlur();
 }
 
-void ShelfWidget::DelegateView::OnThemeChanged() {
+void ShelfWidgetDelegateView::OnThemeChanged() {
   views::AccessiblePaneView::OnThemeChanged();
   shelf_widget_->background_animator_.PaintBackground(
       shelf_widget_->shelf_layout_manager()->ComputeShelfBackgroundType(),
@@ -426,20 +427,20 @@ void ShelfWidget::DelegateView::OnThemeChanged() {
       GetColorProvider()->GetColor(cros_tokens::kCrosSysOnSurface));
 }
 
-bool ShelfWidget::DelegateView::CanActivate() const {
+bool ShelfWidgetDelegateView::CanActivate() const {
   return false;
 }
 
-void ShelfWidget::DelegateView::ReorderChildLayers(ui::Layer* parent_layer) {
+void ShelfWidgetDelegateView::ReorderChildLayers(ui::Layer* parent_layer) {
   views::View::ReorderChildLayers(parent_layer);
   parent_layer->StackAtBottom(opaque_background_layer());
 }
 
-void ShelfWidget::DelegateView::OnWidgetInitialized() {
+void ShelfWidgetDelegateView::OnWidgetInitialized() {
   UpdateOpaqueBackground();
 }
 
-void ShelfWidget::DelegateView::UpdateBackgroundBlur() {
+void ShelfWidgetDelegateView::UpdateBackgroundBlur() {
   if (hide_background_for_transitions_)
     return;
   // Blur only if the background is visible.
@@ -458,7 +459,7 @@ void ShelfWidget::DelegateView::UpdateBackgroundBlur() {
   background_is_currently_blurred_ = should_blur_background;
 }
 
-void ShelfWidget::DelegateView::UpdateOpaqueBackground() {
+void ShelfWidgetDelegateView::UpdateOpaqueBackground() {
   if (hide_background_for_transitions_)
     return;
   // Shell could be destroying.
@@ -528,7 +529,7 @@ void ShelfWidget::DelegateView::UpdateOpaqueBackground() {
   SchedulePaint();
 }
 
-void ShelfWidget::DelegateView::UpdateDragHandle() {
+void ShelfWidgetDelegateView::UpdateDragHandle() {
   if (!Shell::Get()->IsInTabletMode()) {
     drag_handle_->SetVisible(false);
     return;
@@ -544,7 +545,7 @@ void ShelfWidget::DelegateView::UpdateDragHandle() {
   drag_handle_->SetVisible(true);
 }
 
-void ShelfWidget::DelegateView::OnBoundsChanged(const gfx::Rect& old_bounds) {
+void ShelfWidgetDelegateView::OnBoundsChanged(const gfx::Rect& old_bounds) {
   UpdateOpaqueBackground();
 
   // Layout the animating background layer below the shelf bounds (the layer
@@ -561,7 +562,7 @@ void ShelfWidget::DelegateView::OnBoundsChanged(const gfx::Rect& old_bounds) {
     shelf_widget_->status_area_widget()->UpdateCollapseState();
 }
 
-void ShelfWidget::DelegateView::Layout(PassKey) {
+void ShelfWidgetDelegateView::Layout(PassKey) {
   // Center drag handle within the expected in-app shelf bounds - it's safe to
   // assume bottom shelf, given that the drag handle is only shown within the
   // bottom shelf (either in tablet mode, or on login/lock screen)
@@ -574,12 +575,12 @@ void ShelfWidget::DelegateView::Layout(PassKey) {
   drag_handle_->SetBoundsRect(drag_handle_bounds);
 }
 
-void ShelfWidget::DelegateView::UpdateShelfBackground(SkColor color) {
+void ShelfWidgetDelegateView::UpdateShelfBackground(SkColor color) {
   opaque_background_.SetBackgroundColor(color);
   UpdateOpaqueBackground();
 }
 
-void ShelfWidget::DelegateView::OnHotseatTransitionAnimationWillStart(
+void ShelfWidgetDelegateView::OnHotseatTransitionAnimationWillStart(
     HotseatState from_state,
     HotseatState to_state) {
   ShowAnimatingBackground(true);
@@ -590,7 +591,7 @@ void ShelfWidget::DelegateView::OnHotseatTransitionAnimationWillStart(
     HideOpaqueBackground();
 }
 
-void ShelfWidget::DelegateView::OnHotseatTransitionAnimationEnded(
+void ShelfWidgetDelegateView::OnHotseatTransitionAnimationEnded(
     HotseatState from_state,
     HotseatState to_state) {
   ShowAnimatingBackground(false);
@@ -601,11 +602,11 @@ void ShelfWidget::DelegateView::OnHotseatTransitionAnimationEnded(
     ShowOpaqueBackground();
 }
 
-void ShelfWidget::DelegateView::ShowAnimatingBackground(bool show) {
+void ShelfWidgetDelegateView::ShowAnimatingBackground(bool show) {
   animating_background_.SetVisible(show);
 }
 
-SkColor ShelfWidget::DelegateView::GetShelfBackgroundColor() const {
+SkColor ShelfWidgetDelegateView::GetShelfBackgroundColor() const {
   return opaque_background_.background_color();
 }
 
@@ -654,7 +655,7 @@ ShelfWidget::ShelfWidget(Shelf* shelf)
       shelf_layout_manager_owned_(
           std::make_unique<ShelfLayoutManager>(this, shelf)),
       shelf_layout_manager_(shelf_layout_manager_owned_.get()),
-      delegate_view_(new DelegateView(this, shelf_)),
+      delegate_view_(new ShelfWidgetDelegateView(this, shelf_)),
       scoped_session_observer_(this) {
   DCHECK(shelf_);
 }
