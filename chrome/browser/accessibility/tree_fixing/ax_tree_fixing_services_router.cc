@@ -123,7 +123,7 @@ bool AXTreeFixingServicesRouter::IdentifyMainNode(
   if (!can_make_main_node_identification_requests_) {
     // TODO(401308988): Handle queueing requests, or allow observer to have
     // clearer signal of when to make additional requests; pending UX.
-    // request_queue_.emplace(ax_tree, std::move(callback));
+    // screen_ai_request_queue_.emplace(ax_tree, std::move(callback));
     return false;
   }
 
@@ -135,24 +135,25 @@ void AXTreeFixingServicesRouter::MakeMainNodeRequestToScreenAI(
     const ui::AXTreeUpdate& ax_tree,
     MainNodeIdentificationCallback callback) {
   // Store the callback for later use, and make a request to ScreenAI.
-  pending_callbacks_.emplace_back(next_request_id_, std::move(callback));
-  screen_ai_service_->IdentifyMainNode(ax_tree, next_request_id_);
-  next_request_id_++;
+  pending_screen_ai_callbacks_.emplace_back(next_screen_ai_request_id_,
+                                            std::move(callback));
+  screen_ai_service_->IdentifyMainNode(ax_tree, next_screen_ai_request_id_);
+  next_screen_ai_request_id_++;
 }
 
 void AXTreeFixingServicesRouter::OnMainNodeIdentified(ui::AXTreeID tree_id,
                                                       ui::AXNodeID node_id,
                                                       int request_id) {
-  CHECK(!pending_callbacks_.empty());
+  CHECK(!pending_screen_ai_callbacks_.empty());
 
   // Find the callback associated with the returned request ID, and call it with
   // the identified tree_id and node_id for the upstream client to use. Remove
   // the pending callback since we have fulfilled the contract.
-  for (auto it = pending_callbacks_.begin(); it != pending_callbacks_.end();
-       ++it) {
+  for (auto it = pending_screen_ai_callbacks_.begin();
+       it != pending_screen_ai_callbacks_.end(); ++it) {
     if (it->first == request_id) {
       MainNodeIdentificationCallback callback = std::move(it->second);
-      pending_callbacks_.erase(it);
+      pending_screen_ai_callbacks_.erase(it);
       std::move(callback).Run(tree_id, node_id);
       return;
     }
@@ -165,13 +166,42 @@ void AXTreeFixingServicesRouter::OnServiceStateChanged(bool service_ready) {
 
   // If the service is now ready, process any queued requests.
   if (service_ready) {
-    while (!request_queue_.empty()) {
-      auto& [ax_tree, callback] = request_queue_.front();
+    while (!screen_ai_request_queue_.empty()) {
+      auto& [ax_tree, callback] = screen_ai_request_queue_.front();
       auto ax_tree_copy = std::move(ax_tree);
-      request_queue_.pop();
+      screen_ai_request_queue_.pop();
       MakeMainNodeRequestToScreenAI(ax_tree_copy, std::move(callback));
     }
   }
+}
+
+void AXTreeFixingServicesRouter::RequestScreenshot(
+    const raw_ptr<content::WebContents> web_contents,
+    ScreenshotCallback callback) {
+  // Store the callback for later use, and request a screenshot.
+  pending_screenshot_callbacks_.emplace_back(next_screenshot_request_id_,
+                                             std::move(callback));
+  screenshotter_->RequestScreenshot(web_contents, next_screenshot_request_id_);
+  next_screenshot_request_id_++;
+}
+
+void AXTreeFixingServicesRouter::OnScreenshotCaptured(const SkBitmap& bitmap,
+                                                      int request_id) {
+  CHECK(!pending_screenshot_callbacks_.empty());
+
+  // Find the callback associated with the returned request ID, and call it with
+  // the screenshot for the upstream client to use. Remove the pending callback
+  // since we have fulfilled the contract.
+  for (auto it = pending_screenshot_callbacks_.begin();
+       it != pending_screenshot_callbacks_.end(); ++it) {
+    if (it->first == request_id) {
+      ScreenshotCallback callback = std::move(it->second);
+      pending_screenshot_callbacks_.erase(it);
+      std::move(callback).Run(bitmap);
+      return;
+    }
+  }
+  NOTREACHED();
 }
 
 void AXTreeFixingServicesRouter::ToggleEnabledState() {
