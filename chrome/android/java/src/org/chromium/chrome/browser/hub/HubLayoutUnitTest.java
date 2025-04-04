@@ -50,6 +50,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
@@ -59,6 +61,7 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.LazyOneshotSupplier;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.supplier.SyncOneshotSupplierImpl;
@@ -76,6 +79,7 @@ import org.chromium.chrome.browser.compositor.scene_layer.SolidColorSceneLayer;
 import org.chromium.chrome.browser.compositor.scene_layer.SolidColorSceneLayerJni;
 import org.chromium.chrome.browser.compositor.scene_layer.StaticTabSceneLayer;
 import org.chromium.chrome.browser.compositor.scene_layer.StaticTabSceneLayerJni;
+import org.chromium.chrome.browser.hub.HubLayout.HubLayoutAnimationListenerImpl;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
@@ -144,6 +148,8 @@ public class HubLayoutUnitTest {
     @Mock private DesktopWindowStateManager mDesktopWindowStateManager;
     @Mock private HubContainerView mHubContainerViewMock;
     @Mock private HubContainerView mPaneHostViewMock;
+    @Mock private HubLayoutAnimationRunner mCurrentAnimationRunner;
+    @Captor private ArgumentCaptor<HubLayoutAnimationListener> mAnimationListenerCaptor;
 
     private UserActionTester mActionTester;
 
@@ -692,6 +698,98 @@ public class HubLayoutUnitTest {
         mHubLayout.getFinalRectForNewTabAnimation(
                 mHubContainerViewMock, /* newIsIncognito= */ true, spyRect);
         verify(spyRect, times(2)).offset(anyInt(), anyInt());
+    }
+
+    @Test
+    @SmallTest
+    public void testHubLayoutAnimationListener() {
+        ObservableSupplierImpl<Boolean> isAnimatingSupplier = new ObservableSupplierImpl<>();
+        HubLayoutAnimationListenerImpl listener =
+                new HubLayoutAnimationListenerImpl(isAnimatingSupplier);
+
+        listener.onStart();
+        assertTrue(isAnimatingSupplier.get());
+
+        listener.onEnd(false);
+        assertFalse(isAnimatingSupplier.get());
+    }
+
+    @Test
+    @SmallTest
+    public void testIsAnimatingSupplier_startShowing() {
+        setUpHubLayoutForAnimatingSupplierTests();
+        ObservableSupplier<Boolean> isAnimatingSupplier = mHubLayout.getIsAnimatingSupplier();
+
+        startShowing(LayoutType.BROWSING, true);
+        verify(mCurrentAnimationRunner).addListener(mAnimationListenerCaptor.capture());
+        HubLayoutAnimationListener listener = mAnimationListenerCaptor.getValue();
+
+        listener.onStart();
+        assertTrue(isAnimatingSupplier.get());
+
+        listener.onEnd(false);
+        assertFalse(isAnimatingSupplier.get());
+    }
+
+    @Test
+    @SmallTest
+    public void testIsAnimatingSupplier_startHiding() {
+        setUpHubLayoutForAnimatingSupplierTests();
+        ObservableSupplier<Boolean> isAnimatingSupplier = mHubLayout.getIsAnimatingSupplier();
+
+        startHiding(LayoutType.BROWSING, NEW_TAB_ID);
+        verify(mCurrentAnimationRunner).addListener(mAnimationListenerCaptor.capture());
+        HubLayoutAnimationListener listener = mAnimationListenerCaptor.getValue();
+
+        listener.onStart();
+        assertTrue(isAnimatingSupplier.get());
+
+        listener.onEnd(false);
+        assertFalse(isAnimatingSupplier.get());
+    }
+
+    @Test
+    @SmallTest
+    public void testIsAnimatingSupplier_onTabCreated() {
+        setUpHubLayoutForAnimatingSupplierTests();
+        ObservableSupplier<Boolean> isAnimatingSupplier = mHubLayout.getIsAnimatingSupplier();
+
+        mHubLayout.onTabCreated(FAKE_TIME, NEW_TAB_ID, NEW_TAB_INDEX, TAB_ID, false, false, 0, 0);
+        verify(mCurrentAnimationRunner).addListener(mAnimationListenerCaptor.capture());
+        HubLayoutAnimationListener listener = mAnimationListenerCaptor.getValue();
+
+        listener.onStart();
+        assertTrue(isAnimatingSupplier.get());
+
+        listener.onEnd(false);
+        assertFalse(isAnimatingSupplier.get());
+    }
+
+    private void setUpHubLayoutForAnimatingSupplierTests() {
+        LazyOneshotSupplier<HubManager> hubManagerSupplier =
+                LazyOneshotSupplier.fromValue(mHubManager);
+        LazyOneshotSupplier<ViewGroup> rootViewSupplier =
+                LazyOneshotSupplier.fromValue(mFrameLayout);
+        HubLayoutDependencyHolder dependencyHolder =
+                new HubLayoutDependencyHolder(
+                        hubManagerSupplier, rootViewSupplier, mScrimController, mOnAlphaChange);
+        mHubLayout =
+                new HubLayout(
+                        mActivity,
+                        mUpdateHost,
+                        mRenderHost,
+                        mLayoutStateProvider,
+                        dependencyHolder,
+                        mTabModelSelectorSupplier,
+                        mDesktopWindowStateManager,
+                        ignored -> mCurrentAnimationRunner);
+        mHubLayout.setTabModelSelector(mTabModelSelector);
+        mHubLayout.setTabContentManager(mTabContentManager);
+        mHubLayout.onFinishNativeInitialization();
+
+        assertFalse(mHubLayout.isRunningAnimations());
+        assertFalse(mHubLayout.onUpdateAnimation(FAKE_TIME, false));
+        assertFalse(mHubLayout.forceHideBrowserControlsAndroidView());
     }
 
     private void show(
