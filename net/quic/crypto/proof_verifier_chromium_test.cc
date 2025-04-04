@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "net/quic/crypto/proof_verifier_chromium.h"
 
+#include <algorithm>
 #include <memory>
+#include <ranges>
 #include <string_view>
 #include <utility>
 
@@ -279,7 +276,7 @@ TEST_F(ProofVerifierChromiumTest, FailsIfSignatureFails) {
 
 HashValueVector MakeHashValueVector(uint8_t tag) {
   HashValue hash(HASH_VALUE_SHA256);
-  memset(hash.data(), tag, hash.size());
+  std::ranges::fill(hash, tag);
   HashValueVector hashes;
   hashes.push_back(hash);
   return hashes;

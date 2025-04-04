@@ -47,6 +47,11 @@ HashValue::HashValue(const SHA256HashValue& hash)
   fingerprint.sha256 = hash;
 }
 
+HashValue::HashValue(base::span<const uint8_t> hash)
+    : HashValue(HASH_VALUE_SHA256) {
+  base::span(fingerprint.sha256).copy_from(hash);
+}
+
 bool HashValue::FromString(std::string_view value) {
   if (!value.starts_with(kSha256Slash)) {
     return false;
@@ -55,7 +60,7 @@ bool HashValue::FromString(std::string_view value) {
   std::string_view base64_str = value.substr(kSha256Slash.size());
 
   auto decoded = base::Base64Decode(base64_str);
-  if (!decoded || decoded->size() != size()) {
+  if (!decoded || decoded->size() != span().size()) {
     return false;
   }
   tag_ = HASH_VALUE_SHA256;
@@ -71,23 +76,6 @@ std::string HashValue::ToString() const {
   }
 
   NOTREACHED();
-}
-
-size_t HashValue::size() const {
-  switch (tag_) {
-    case HASH_VALUE_SHA256:
-      return sizeof(fingerprint.sha256);
-  }
-
-  NOTREACHED();
-}
-
-unsigned char* HashValue::data() {
-  return span().data();
-}
-
-const unsigned char* HashValue::data() const {
-  return span().data();
 }
 
 base::span<uint8_t> HashValue::span() {

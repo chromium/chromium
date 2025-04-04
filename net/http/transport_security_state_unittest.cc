@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/http/transport_security_state.h"
 
 #include <stdint.h>
@@ -15,6 +10,7 @@
 #include <array>
 #include <iterator>
 #include <memory>
+#include <ranges>
 #include <string>
 #include <vector>
 
@@ -153,15 +149,14 @@ class TransportSecurityStateTest : public ::testing::Test,
 
   static HashValueVector GetSampleSPKIHashes() {
     HashValueVector spki_hashes;
-    HashValue hash(HASH_VALUE_SHA256);
-    memset(hash.data(), 0, hash.size());
+    HashValue hash({});
     spki_hashes.push_back(hash);
     return spki_hashes;
   }
 
   static HashValue GetSampleSPKIHash(uint8_t value) {
     HashValue hash(HASH_VALUE_SHA256);
-    memset(hash.data(), value, hash.size());
+    std::ranges::fill(hash, value);
     return hash;
   }
 
@@ -618,11 +613,11 @@ TEST_F(TransportSecurityStateTest, NewPinsOverride) {
   const base::Time current_time(base::Time::Now());
   const base::Time expiry = current_time + base::Seconds(1000);
   HashValue hash1(HASH_VALUE_SHA256);
-  memset(hash1.data(), 0x01, hash1.size());
+  std::ranges::fill(hash1, 0x01);
   HashValue hash2(HASH_VALUE_SHA256);
-  memset(hash2.data(), 0x02, hash1.size());
+  std::ranges::fill(hash2, 0x02);
   HashValue hash3(HASH_VALUE_SHA256);
-  memset(hash3.data(), 0x03, hash1.size());
+  std::ranges::fill(hash3, 0x03);
 
   state.AddHPKP("example.com", expiry, true, HashValueVector(1, hash1));
 
@@ -1628,7 +1623,7 @@ TEST_F(TransportSecurityStateTest, UpdateKeyPinsListValidPin) {
   for (size_t i = 0; kBadPath[i]; i++) {
     HashValue hash;
     ASSERT_TRUE(hash.FromString(kBadPath[i]));
-    accepted_hashes.emplace_back(hash.data(), hash.data() + hash.size());
+    accepted_hashes.emplace_back(hash.begin(), hash.end());
   }
   TransportSecurityState::PinSet test_pinset(
       /*name=*/"test",
@@ -1665,7 +1660,7 @@ TEST_F(TransportSecurityStateTest, UpdateKeyPinsListNotValidPin) {
   for (size_t i = 0; kGoodPath[i]; i++) {
     HashValue hash;
     ASSERT_TRUE(hash.FromString(kGoodPath[i]));
-    rejected_hashes.emplace_back(hash.data(), hash.data() + hash.size());
+    rejected_hashes.emplace_back(hash.begin(), hash.end());
   }
   TransportSecurityState::PinSet test_pinset(
       /*name=*/"test",
@@ -1742,7 +1737,7 @@ TEST_F(TransportSecurityStateTest, UpdateKeyPinsIncludeSubdomains) {
   for (size_t i = 0; kBadPath[i]; i++) {
     HashValue hash;
     ASSERT_TRUE(hash.FromString(kBadPath[i]));
-    accepted_hashes.emplace_back(hash.data(), hash.data() + hash.size());
+    accepted_hashes.emplace_back(hash.begin(), hash.end());
   }
   TransportSecurityState::PinSet test_pinset(
       /*name=*/"test",
@@ -1789,7 +1784,7 @@ TEST_F(TransportSecurityStateTest, UpdateKeyPinsIncludeSubdomainsTLD) {
   for (size_t i = 0; kBadPath[i]; i++) {
     HashValue hash;
     ASSERT_TRUE(hash.FromString(kBadPath[i]));
-    accepted_hashes.emplace_back(hash.data(), hash.data() + hash.size());
+    accepted_hashes.emplace_back(hash.begin(), hash.end());
   }
   TransportSecurityState::PinSet test_pinset(
       /*name=*/"test",
@@ -1836,7 +1831,7 @@ TEST_F(TransportSecurityStateTest, UpdateKeyPinsDontIncludeSubdomains) {
   for (size_t i = 0; kBadPath[i]; i++) {
     HashValue hash;
     ASSERT_TRUE(hash.FromString(kBadPath[i]));
-    accepted_hashes.emplace_back(hash.data(), hash.data() + hash.size());
+    accepted_hashes.emplace_back(hash.begin(), hash.end());
   }
   TransportSecurityState::PinSet test_pinset(
       /*name=*/"test",
@@ -1887,7 +1882,7 @@ TEST_F(TransportSecurityStateTest, UpdateKeyPinsListTimestamp) {
   for (size_t i = 0; kBadPath[i]; i++) {
     HashValue hash;
     ASSERT_TRUE(hash.FromString(kBadPath[i]));
-    rejected_hashes.emplace_back(hash.data(), hash.data() + hash.size());
+    rejected_hashes.emplace_back(hash.begin(), hash.end());
   }
   TransportSecurityState::PinSet test_pinset(
       /*name=*/"test",

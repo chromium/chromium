@@ -20,6 +20,7 @@
 
 #include "base/base64.h"
 #include "base/build_time.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
@@ -36,6 +37,7 @@
 #include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "crypto/hash.h"
 #include "crypto/sha2.h"
 #include "net/base/features.h"
 #include "net/base/hash_value.h"
@@ -77,10 +79,8 @@ bool HashesIntersect(const HashValueVector& a, const HashValueVector& b) {
   return false;
 }
 
-bool AddHash(const char* sha256_hash, HashValueVector* out) {
-  HashValue hash(HASH_VALUE_SHA256);
-  memcpy(hash.data(), sha256_hash, hash.size());
-  out->push_back(hash);
+bool AddHash(base::span<const uint8_t> sha256_hash, HashValueVector& out) {
+  out.emplace_back(sha256_hash);
   return true;
 }
 
@@ -681,17 +681,15 @@ bool TransportSecurityState::GetStaticPKPState(std::string_view host,
         for (const auto& hash : pinset->static_spki_hashes()) {
           // If the update is malformed, it's preferable to skip the hash than
           // crash.
-          if (hash.size() == 32) {
-            AddHash(reinterpret_cast<const char*>(hash.data()),
-                    &pkp_result->spki_hashes);
+          if (hash.size() == crypto::hash::kSha256Size) {
+            AddHash(hash, pkp_result->spki_hashes);
           }
         }
         for (const auto& hash : pinset->bad_static_spki_hashes()) {
           // If the update is malformed, it's preferable to skip the hash than
           // crash.
           if (hash.size() == 32) {
-            AddHash(reinterpret_cast<const char*>(hash.data()),
-                    &pkp_result->bad_spki_hashes);
+            AddHash(hash, pkp_result->bad_spki_hashes);
           }
         }
         return true;
@@ -720,14 +718,18 @@ bool TransportSecurityState::GetStaticPKPState(std::string_view host,
     if (pinset->accepted_pins) {
       const char* const* sha256_hash = pinset->accepted_pins;
       while (*sha256_hash) {
-        AddHash(*sha256_hash, &pkp_result->spki_hashes);
+        AddHash(UNSAFE_TODO(base::as_bytes(base::span<const char>(
+                    *sha256_hash, crypto::hash::kSha256Size))),
+                pkp_result->spki_hashes);
         sha256_hash++;
       }
     }
     if (pinset->rejected_pins) {
       const char* const* sha256_hash = pinset->rejected_pins;
       while (*sha256_hash) {
-        AddHash(*sha256_hash, &pkp_result->bad_spki_hashes);
+        AddHash(UNSAFE_TODO(base::as_bytes(base::span<const char>(
+                    *sha256_hash, crypto::hash::kSha256Size))),
+                pkp_result->bad_spki_hashes);
         sha256_hash++;
       }
     }

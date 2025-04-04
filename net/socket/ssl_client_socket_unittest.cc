@@ -15,6 +15,7 @@
 #include <algorithm>
 #include <memory>
 #include <optional>
+#include <ranges>
 #include <string_view>
 #include <tuple>
 #include <utility>
@@ -4389,7 +4390,7 @@ TEST_F(SSLClientSocketTest, ClientCertSignatureAlgorithm) {
 HashValueVector MakeHashValueVector(uint8_t value) {
   HashValueVector out;
   HashValue hash(HASH_VALUE_SHA256);
-  memset(hash.data(), value, hash.size());
+  std::ranges::fill(hash.begin(), hash.end(), value);
   out.push_back(hash);
   return out;
 }
