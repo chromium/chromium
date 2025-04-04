@@ -1438,8 +1438,16 @@ IN_PROC_BROWSER_TEST_F(
               ValueIs(OptionalBool::kFalse));
 }
 
+// TODO(crbug.com/408234441): Re-enable this test
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_TopLevelIsReported_HasSameSiteIframe \
+  DISABLED_TopLevelIsReported_HasSameSiteIframe
+#else
+#define MAYBE_TopLevelIsReported_HasSameSiteIframe \
+  TopLevelIsReported_HasSameSiteIframe
+#endif
 IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
-                       TopLevelIsReported_HasSameSiteIframe) {
+                       MAYBE_TopLevelIsReported_HasSameSiteIframe) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   GURL toplevel_url =
       embedded_test_server()->GetURL("a.test", "/page_with_blank_iframe.html");
