@@ -428,7 +428,8 @@ const base::FeatureParam<NtpSharepointModuleDataType>::Option
         {NtpSharepointModuleDataType::kTrendingInsightsFakeData,
          "fake-trending"},
         {NtpSharepointModuleDataType::kNonInsightsFakeData,
-         "fake-non-insights"}};
+         "fake-non-insights"},
+        {NtpSharepointModuleDataType::kCombinedSuggestions, "combined"}};
 
 const base::FeatureParam<NtpSharepointModuleDataType>
     kNtpSharepointModuleDataParam{&ntp_features::kNtpSharepointModule,
@@ -440,6 +441,18 @@ const base::FeatureParam<int> kNtpMicrosoftFilesModuleMaxFilesParam(
     &ntp_features::kNtpSharepointModule,
     "NtpMicrosoftFilesModuleMaxFilesParam",
     6);
+
+const base::FeatureParam<int>
+    kNtpMicrosoftFilesModuleMaxTrendingFilesForCombinedParam(
+        &ntp_features::kNtpSharepointModule,
+        "NtpMicrosoftFilesModuleMaxTrendingFilesForCombinedParam",
+        2);
+
+const base::FeatureParam<int>
+    kNtpMicrosoftFilesModuleMaxNonInsightsFilesForCombinedParam(
+        &ntp_features::kNtpSharepointModule,
+        "NtpMicrosoftFilesModuleMaxNonInsightsFilesForCombinedParam",
+        4);
 
 base::TimeDelta GetModulesLoadTimeout() {
   std::string param_value = base::GetFieldTrialParamValueByFeature(

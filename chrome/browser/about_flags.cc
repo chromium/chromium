@@ -2182,6 +2182,8 @@ const FeatureEntry::FeatureParam kNtpSharepointModuleTrendingFakeData[] = {
     {"NtpSharepointModuleDataParam", "fake-trending"}};
 const FeatureEntry::FeatureParam kNtpSharepointModuleNonInsightsFakeData[] = {
     {"NtpSharepointModuleDataParam", "fake-non-insights"}};
+const FeatureEntry::FeatureParam kNtpSharepointModuleCombinedSuggestions[] = {
+    {"NtpSharepointModuleDataParam", "combined"}};
 
 const FeatureEntry::FeatureVariation kNtpSharepointModuleVariations[] = {
     {"- Trending", kNtpSharepointModuleTrendingInsights,
@@ -2191,7 +2193,9 @@ const FeatureEntry::FeatureVariation kNtpSharepointModuleVariations[] = {
     {"- Fake Trending Data", kNtpSharepointModuleTrendingFakeData,
      std::size(kNtpSharepointModuleTrendingFakeData), nullptr},
     {"- Fake Recently Used and Shared", kNtpSharepointModuleNonInsightsFakeData,
-     std::size(kNtpSharepointModuleNonInsightsFakeData), nullptr}};
+     std::size(kNtpSharepointModuleNonInsightsFakeData), nullptr},
+    {"- Combined Suggestions", kNtpSharepointModuleCombinedSuggestions,
+     std::size(kNtpSharepointModuleCombinedSuggestions), nullptr}};
 
 const FeatureEntry::FeatureParam kNtpMostRelevantTabResumptionModuleFakeData[] =
     {{ntp_features::kNtpMostRelevantTabResumptionModuleDataParam, "Fake Data"}};
