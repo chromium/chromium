@@ -277,14 +277,15 @@ IN_PROC_BROWSER_TEST_F(
                   WaitForState(kTab2AlertState, IsNotAccessing()));
 }
 
-// TODO(crbug.com/404281597): Re-enable this test.
-#if BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/404281597): Re-enable this test on Linux.
+// TODO(crbug.com/408424752): Re-enable this flakily-failing test on Mac.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 #define MAYBE_MinimizingWindowWithGlicDetachedShouldNotAlertUntilNewBrowserActive \
   DISABLED_MinimizingWindowWithGlicDetachedShouldNotAlertUntilNewBrowserActive
 #else
 #define MAYBE_MinimizingWindowWithGlicDetachedShouldNotAlertUntilNewBrowserActive \
   MinimizingWindowWithGlicDetachedShouldNotAlertUntilNewBrowserActive
-#endif  // BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(
     GlicTabIndicatorHelperUiTest,
     MAYBE_MinimizingWindowWithGlicDetachedShouldNotAlertUntilNewBrowserActive) {
