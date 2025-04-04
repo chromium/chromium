@@ -141,13 +141,11 @@ chromium-metrics-reviews@google.com.
       summary="Recorded for Google servers (https) only when QUIC is used."/>
 </variants>
 
-<variants name="TrustTokenOperationSuccess">
-  <variant name=".Failure"
-      summary="The operation or partial operation failed: for ServerTime,
-               this means that the subsequent Finalize part failed; for
-               TotalTime, it means that the operation failed during Finalize."/>
-  <variant name=".Success"
-      summary="The operation or partial operation succeeded."/>
+<variants name="TrustTokenOperationType">
+  <variant name="Issuance" summary="Trust token issuance"/>
+  <variant name="Redemption" summary="Trust token redemption"/>
+  <variant name="Signing"
+      summary="SRR attachment and outgoing request signing"/>
 </variants>
 
 <variants name="URLLoaderThrottleStages">
@@ -6895,10 +6893,9 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Net.TrustTokens.NetErrorForFetchFailure"
+<histogram
+    name="Net.TrustTokens.NetErrorForFetchFailure.{TrustTokenOperationType}"
     enum="NetErrorCodes" expires_after="2023-06-06">
-<!-- Name completed by histogram_suffixes name="TrustTokenOperationType" -->
-
   <owner>svaldez@chromium.org</owner>
   <owner>timhuber@google.com</owner>
   <owner>yhirano@chromium.org</owner>
@@ -6906,29 +6903,35 @@ chromium-metrics-reviews@google.com.
     The net error for a failed Fetch API call with an associated Trust Tokens
     operation. This was originally added to help debug a surfeit of 'TypeError:
     failed to fetch' observed in live testing, and it is now retained since it's
-    useful for ongoing health monitoring.
+    useful for ongoing health monitoring. {TrustTokenOperationType}
   </summary>
 </histogram>
 
 <histogram
-    name="Net.TrustTokens.NetErrorForTrustTokenOperation{TrustTokenOperationSuccess}"
+    name="Net.TrustTokens.NetErrorForTrustTokenOperation.{OperationResult}.{TrustTokenOperationType}"
     enum="NetErrorCodes" expires_after="2023-06-06">
-<!-- Name completed by histogram_suffixes name="TrustTokenOperationType" -->
-
   <owner>svaldez@chromium.org</owner>
   <owner>timhuber@google.com</owner>
   <summary>
     The //net status codes for resource requests that had started Trust Tokens
     operations. This captures the reasons why requests with Trust Tokens
     operations fail and might help debug a surfeit of &quot;TypeError: failed to
-    fetch&quot; observed in live testing. {TrustTokenOperationSuccess}
+    fetch&quot; observed in live testing. {OperationResult}
+    {TrustTokenOperationType}
   </summary>
+  <token key="OperationResult">
+    <variant name="Failure"
+        summary="The operation or partial operation failed: for ServerTime,
+                 this means that the subsequent Finalize part failed; for
+                 TotalTime, it means that the operation failed during
+                 Finalize."/>
+    <variant name="Success"
+        summary="The operation or partial operation succeeded."/>
+  </token>
 </histogram>
 
-<histogram base="true" name="Net.TrustTokens.OperationOutcome"
+<histogram name="Net.TrustTokens.OperationOutcome.{TrustTokenOperationType}"
     enum="TrustTokenOperationStatus" expires_after="2025-08-31">
-<!-- Name completed by histogram_suffixes name="TrustTokenOperationType" -->
-
   <owner>svaldez@chromium.org</owner>
   <owner>timhuber@google.com</owner>
   <summary>
@@ -6936,6 +6939,7 @@ chromium-metrics-reviews@google.com.
     is recorded everytime a PST operation completed in URLLoader. See
     network::URLLoader::OnDoneBeginningTrustTokenOperation for details. This can
     help debug the use of the API observed in the ecosystem.
+    {TrustTokenOperationType}
   </summary>
 </histogram>
 
@@ -6951,10 +6955,10 @@ chromium-metrics-reviews@google.com.
     4. Total = Begin + Server + Finalize (only recorded for operations that see
     server responses)
 
-    The other variants (see histogram_suffixes_list's TrustTokenOperationType
-    entry): 1. Outcome (Success or Failure) 2. The type of Trust Tokens
-    operation 3. Whether the operation was platform-provided (i.e. executed by a
-    method other than a direct HTTP request to the issuer's server)
+    The other variants (see TrustTokenOperationType variants): 1. Outcome
+    (Success or Failure) 2. The type of Trust Tokens operation 3. Whether the
+    operation was platform-provided (i.e. executed by a method other than a
+    direct HTTP request to the issuer's server)
   </summary>
   <token key="TimeSpan">
     <variant name="Begin"/>
@@ -6986,17 +6990,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Net.TrustTokens.RequestHelperFactoryOutcome"
+<histogram
+    name="Net.TrustTokens.RequestHelperFactoryOutcome.{TrustTokenOperationType}"
     enum="TrustTokenRequestHelperFactoryOutcome" expires_after="2025-09-14">
-<!-- Name completed by histogram_suffixes name="TrustTokenOperationType" -->
-
   <owner>svaldez@chromium.org</owner>
   <owner>timhuber@google.com</owner>
   <summary>
     For resource requests that bear Trust Tokens parameters, the results of
     running TrustTokenRequestHelperFactory to initialize Trust Tokens handling
     logic. This might help debug a surfeit of failed Trust Tokens issuance
-    operations observed in live testing.
+    operations observed in live testing. {TrustTokenOperationType}
   </summary>
 </histogram>
 

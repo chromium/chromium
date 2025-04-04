@@ -1348,19 +1348,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="ThreadPool.UnnecessaryWakeup.Renderer"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="TrustTokenOperationType" separator=".">
-  <suffix name="Issuance" label="Trust token issuance"/>
-  <suffix name="Redemption" label="Trust token redemption"/>
-  <suffix name="Signing" label="SRR attachment and outgoing request signing"/>
-  <affected-histogram name="Net.TrustTokens.NetErrorForFetchFailure"/>
-  <affected-histogram
-      name="Net.TrustTokens.NetErrorForTrustTokenOperation.Failure"/>
-  <affected-histogram
-      name="Net.TrustTokens.NetErrorForTrustTokenOperation.Success"/>
-  <affected-histogram name="Net.TrustTokens.OperationOutcome"/>
-  <affected-histogram name="Net.TrustTokens.RequestHelperFactoryOutcome"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="WebSocketErrorCodesVariants" separator="_">
   <suffix name="Localhost" label=""/>
   <suffix name="NotLocalhost" label=""/>

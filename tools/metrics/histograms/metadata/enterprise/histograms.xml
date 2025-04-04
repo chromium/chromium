@@ -319,7 +319,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram base="true" name="Enterprise.BrowserSigninIOS.SignedOutByPolicy"
+<histogram name="Enterprise.BrowserSigninIOS.SignedOutByPolicy"
     enum="BooleanHit" expires_after="2023-06-30">
   <owner>gujen@google.com</owner>
   <owner>goanuj@google.com</owner>
@@ -333,8 +333,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true"
-    name="Enterprise.BrowserSigninIOS.SignInInterruptedByPolicy"
+<histogram name="Enterprise.BrowserSigninIOS.SignInInterruptedByPolicy"
     enum="BooleanHit" expires_after="2023-06-30">
   <owner>gujen@google.com</owner>
   <owner>goanuj@google.com</owner>
