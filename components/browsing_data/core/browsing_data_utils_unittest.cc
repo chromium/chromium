@@ -170,7 +170,7 @@ TEST_F(BrowsingDataUtilsTest, PasswordsCounterResult) {
   store->ShutdownOnUIThread();
 }
 
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 // Tests the output of the History counter.
 TEST_F(BrowsingDataUtilsTest, HistoryCounterResult) {
   history::HistoryService history_service;
@@ -222,7 +222,7 @@ TEST_F(BrowsingDataUtilsTest, HistoryCounterResult) {
   }
 }
 
-#else  // !BUILDFLAG(IS_ANDROID)
+#else  // !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS))
 
 // Tests the output of the History counter.
 TEST_F(BrowsingDataUtilsTest, Deprecated_HistoryCounterResult) {
@@ -264,6 +264,6 @@ TEST_F(BrowsingDataUtilsTest, Deprecated_HistoryCounterResult) {
   }
 }
 
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 }  // namespace browsing_data
