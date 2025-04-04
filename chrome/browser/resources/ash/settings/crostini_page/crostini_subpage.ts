@@ -189,15 +189,22 @@ export class SettingsCrostiniSubpageElement extends
 
   private browserProxy_: CrostiniBrowserProxy;
   private canDiskResize_: boolean;
+  private disableUpgradeButton_: boolean;
   private diskResizeButtonAriaLabel_: string;
   private diskResizeButtonLabel_: string;
   private diskResizeConfirmationState_: ConfirmationState;
   private diskSizeLabel_: string;
+  private hideCrostiniUninstall_: boolean;
   private installerShowing_: boolean;
+  private readonly isArcAdbSideloadingSupported_: boolean;
   private isAndroidEnabled_: boolean;
   private isDiskUserChosenSize_: boolean;
+  private showArcAdbSideloading_: boolean;
   private showCrostiniContainerUpgrade_: boolean;
+  private readonly showCrostiniExportImport_: boolean;
+  private readonly showCrostiniExtraContainers_: boolean;
   private showCrostiniMicPermissionDialog_: boolean;
+  private readonly showCrostiniPortForwarding_: boolean;
   private showDiskResizeConfirmationDialog_: boolean;
   private showDiskResizeDialog_: boolean;
   private upgraderDialogShowing_: boolean;

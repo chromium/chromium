@@ -65,8 +65,9 @@ export class ParentalControlsSettingsCardElement extends
     Setting.kSetUpParentalControls,
   ]);
 
-  private online_: boolean;
   private browserProxy_: ParentalControlsBrowserProxy;
+  private readonly isChild_: boolean;
+  private online_: boolean;
 
   constructor() {
     super();

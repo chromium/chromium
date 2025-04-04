@@ -97,6 +97,7 @@ export class TimezoneSubpageElement extends TimezoneSubpageElementBase {
 
   private canSetSystemTimezone_: boolean;
   private browserProxy_: DateTimeBrowserProxy;
+  private geolocationWarningText_: string;
   private showEnableSystemGeolocationDialog_: boolean;
   private shouldShowGeolocationWarningText_: boolean;
 

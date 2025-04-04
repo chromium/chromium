@@ -164,6 +164,8 @@ export class SettingsSliderRowElement extends SettingsSliderRowElementBase {
     };
   }
 
+  override ariaDescription: string;
+  override ariaLabel: string;
   ticks: SliderTick[]|number[];
   scale: number;
   min: number;

@@ -115,11 +115,6 @@ export class MainPageContainerElement extends MainPageContainerElementBase {
         value: !!loadTimeData.getString('updateRequiredEolBannerText'),
       },
 
-      currentRoute_: {
-        type: Object,
-        value: null,
-      },
-
       showEolIncentive_: {
         type: Boolean,
         value: false,
