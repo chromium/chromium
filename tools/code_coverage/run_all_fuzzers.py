@@ -112,22 +112,34 @@ class CentipedeRunner(EngineRunner):
 
   def run_full_corpus(self, env: Mapping[str, str], timeout: float,
                       annotation: str, corpus_dir: Optional[str]) -> bool:
-    dir = tempfile.TemporaryDirectory()
+    workdir = tempfile.TemporaryDirectory()
+    tmpdir = tempfile.TemporaryDirectory()
+    this_env = env.copy()
+    this_env['TMPDIR'] = tmpdir.name
     cmd = [
         self.centipede_path, f'-binary={self.fuzz_target_path}',
         '-shmem_size_mb=4096', '-address_space_limit_mb=0', '-rss_limit_mb=0',
         '-symbolizer_path=/dev/null', '-num_runs=0', '-require_pc_table=false',
-        f'-workdir={dir.name}', '-populate_binary_info=false',
-        '-ignore_timeout_reports=true'
+        f'-workdir={workdir.name}', '-populate_binary_info=false',
+        '-batch_triage_suspect_only', '-ignore_timeout_reports=true',
+        '-exit_on_crash=true'
     ]
     if corpus_dir:
       cmd += [f'-corpus_dir={corpus_dir}']
-    return self._run_command(cmd, env, timeout, annotation)
+    return self._run_command(cmd, this_env, timeout, annotation)
 
   def run_testcases(self, env: Mapping[str, str], timeout: float,
                     annotation: str, testcases: Sequence[str]) -> bool:
-    return self._run_command([self.fuzz_target_path] + testcases, env, timeout,
-                             annotation)
+    res = self._run_command([self.fuzz_target_path] + testcases, env, timeout,
+                            annotation)
+    # running Centipede in that particular mode will generate feature files for
+    # each of the testcase. Since we're running in an environment with limited
+    # disk space, we must delete those files after the run.
+    for testcase in testcases:
+      feature_file = f'{testcase}-features'
+      if os.path.exists(feature_file):
+        os.unlink(feature_file)
+    return res
 
 
 @dataclasses.dataclass
