@@ -354,7 +354,7 @@
 
     'codesearch_gen_chrome_android_bot_remoteexec': [
       'codesearch_remoteexec', 'android_without_codecs', 'static',
-      'chrome_branded', 'android_desktop'
+      'chrome_branded', 'android_desktop', 'android_fastbuild'
     ],
 
     'codesearch_gen_chrome_bot_remoteexec': [
@@ -363,7 +363,7 @@
 
     'codesearch_gen_chromium_android_bot_remoteexec': [
       'codesearch_remoteexec', 'android_without_codecs', 'static',
-      'android_desktop'
+      'android_desktop', 'android_fastbuild',
     ],
 
     'codesearch_gen_chromium_bot_remoteexec': [
@@ -377,7 +377,7 @@
     'codesearch_gen_chromium_cronet_bot_remoteexec': [
       # Set is_cronet_build to true in order to build cronet.
       'codesearch_cronet_remoteexec', 'android_without_codecs', 'static', 'is_cronet_build',
-      'cronet_android', 'arm_no_neon',
+      'cronet_android', 'arm_no_neon', 'android_fastbuild'
     ],
 
     'codesearch_gen_chromium_fuchsia_bot_remoteexec': [
