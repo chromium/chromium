@@ -1012,7 +1012,13 @@ bool GPUQueue::CopyFromCanvasSourceImage(
 
     wgpu::Extent3D source_image_copy_size = {copy_size.width, copy_size.height};
 
-    wgpu::CommandEncoder encoder = device_->GetHandle().CreateCommandEncoder();
+    wgpu::CommandEncoderDescriptor command_encoder_desc = {
+        .label = "GPUQueue::CopyFromCanvasSourceImage",
+    };
+
+    wgpu::CommandEncoder encoder =
+        device_->GetHandle().CreateCommandEncoder(&command_encoder_desc);
+
     encoder.CopyBufferToTexture(&dawn_intermediate_buffer,
                                 &dawn_intermediate_texture,
                                 &source_image_copy_size);

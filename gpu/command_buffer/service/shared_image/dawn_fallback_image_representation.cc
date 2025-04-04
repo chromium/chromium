@@ -127,6 +127,7 @@ bool DawnFallbackImageRepresentation::ReadbackFromBacking() {
   internal_usage_desc.useInternalUsages = true;
   wgpu::CommandEncoderDescriptor command_encoder_desc = {
       .nextInChain = &internal_usage_desc,
+      .label = "DawnFallbackImageRepresentation::ReadbackFromBacking",
   };
 
   wgpu::CommandEncoder encoder =
@@ -202,6 +203,7 @@ bool DawnFallbackImageRepresentation::UploadToBacking() {
   internal_usage_desc.useInternalUsages = true;
   wgpu::CommandEncoderDescriptor command_encoder_desc = {
       .nextInChain = &internal_usage_desc,
+      .label = "DawnFallbackImageRepresentation::UploadToBacking",
   };
 
   wgpu::CommandEncoder encoder =
