@@ -10,6 +10,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.Drawable.ConstantState;
 import android.graphics.drawable.LayerDrawable;
+import android.graphics.drawable.StateListDrawable;
 import android.util.SparseArray;
 import android.util.TypedValue;
 
@@ -389,30 +390,42 @@ public class OmniboxResourceProvider {
                 : ContextCompat.getColor(context, R.color.omnibox_suggestion_bg);
     }
 
-    /**
-     * Returns the background hover drawable for suggestions in a "standard" (non-incognito) model
-     * with the given context.
-     */
-    private static Drawable getHoverSuggestionBackgroundDrawable(
+    /** Returns the background hover color for suggestions in a model with the given context. */
+    private static @ColorInt int getHoverSuggestionBackgroundColor(
             Context context, @BrandedColorScheme int colorScheme) {
-        return colorScheme == BrandedColorScheme.INCOGNITO
-                ? new ColorDrawable(context.getColor(R.color.omnibox_suggestion_bg_hover_incognito))
-                : AppCompatResources.getDrawable(
-                        context, R.drawable.omnibox_suggestion_bg_hover_layers);
+
+        if (colorScheme == BrandedColorScheme.INCOGNITO) {
+            return context.getColor(R.color.omnibox_suggestion_bg_hover_incognito);
+        }
+
+        // omnibox_suggestion_bg + 8% colorOnSurface
+        @ColorInt int baseColor = ContextCompat.getColor(context, R.color.omnibox_suggestion_bg);
+        @ColorInt int hoverColor = MaterialColors.getColor(context, R.attr.colorOnSurface, TAG);
+        float fraction =
+                context.getResources()
+                        .getFraction(R.fraction.omnibox_suggestion_bg_hover_overlay_fraction, 1, 1);
+
+        return ColorUtils.overlayColor(baseColor, hoverColor, fraction);
     }
 
     /** Returns a stateful suggestion background with the select default state. */
     public static Drawable getStatefulSuggestionBackground(
             Context context, @ColorInt int defaultColor, @BrandedColorScheme int colorScheme) {
         var background = new ColorDrawable(defaultColor);
-        // Hover, selected, hover and selected are defined in the drawable here.
-        var hover = getHoverSuggestionBackgroundDrawable(context, colorScheme);
+        var hover = new ColorDrawable(getHoverSuggestionBackgroundColor(context, colorScheme));
 
         // Ripple effect to use when the user interacts with the suggestion.
         var ripple =
                 resolveAttributeToDrawable(context, colorScheme, R.attr.selectableItemBackground);
 
-        return new LayerDrawable(new Drawable[] {background, hover, ripple});
+        var statefulBackground = new StateListDrawable();
+        statefulBackground.addState(new int[] {android.R.attr.state_selected}, hover);
+        statefulBackground.addState(new int[] {android.R.attr.state_hovered}, hover);
+        statefulBackground.addState(
+                new int[] {android.R.attr.state_selected, android.R.attr.state_hovered}, hover);
+        statefulBackground.addState(new int[] {}, background);
+
+        return new LayerDrawable(new Drawable[] {statefulBackground, ripple});
     }
 
     /**
