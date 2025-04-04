@@ -612,7 +612,7 @@ class TabMenuModelComparisonTableTest : public TabMenuModelBrowserTest {
     ui_test_utils::NavigateToURLWithDisposition(
         browser, url, WindowOpenDisposition::NEW_BACKGROUND_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-    browser->tab_strip_model()->ToggleSelectionAt(
+    browser->tab_strip_model()->SelectTabAt(
         browser->tab_strip_model()->count() - 1);
   }
 

@@ -265,7 +265,7 @@ void ExistingTabGroupSubMenuModel::ExecuteExistingCommand(size_t target_index) {
   // Ensure that the selected_indices maintain selection in the new window.
   for (int tab_index : selected_indices) {
     if (!found_model->IsTabSelected(tab_index)) {
-      found_model->ToggleSelectionAt(tab_index);
+      found_model->SelectTabAt(tab_index);
     }
   }
 

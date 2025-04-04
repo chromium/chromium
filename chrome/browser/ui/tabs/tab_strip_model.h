@@ -478,9 +478,11 @@ class TabStripModel : public TabGroupController {
   // Extends the selection from the anchor to |index|.
   void ExtendSelectionTo(int index);
 
-  // Returns true if the selection was toggled; this can fail if the tabstrip
-  // is not editable.
-  bool ToggleSelectionAt(int index);
+  // This can fail if the tabstrip is not editable.
+  void SelectTabAt(int index);
+
+  // This can fail if the tabstrip is not editable.
+  void DeselectTabAt(int index);
 
   // Makes sure the tabs from the anchor to |index| are selected. This only
   // adds to the selection.

@@ -1718,9 +1718,10 @@ ExtensionFunction::ResponseAction TabsUpdateFunction::Run() {
       return RespondNow(Error(ExtensionTabUtil::kTabStripNotEditableError));
     }
 
-    bool highlighted = *params->update_properties.highlighted;
-    if (highlighted != tab_strip->IsTabSelected(tab_index)) {
-      tab_strip->ToggleSelectionAt(tab_index);
+    if (*params->update_properties.highlighted) {
+      tab_strip->SelectTabAt(tab_index);
+    } else {
+      tab_strip->DeselectTabAt(tab_index);
     }
   }
 

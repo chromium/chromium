@@ -601,11 +601,9 @@ TEST_F(TabsApiUnitTest, TabsUpdateSavedTabGroupTab) {
   {  // Reset the active states, and then test highlighted for a saved tab.
     GetTabStripModel()->ActivateTabAt(
         GetTabStripModel()->GetIndexOfWebContents(raw_non_updated_contents));
-    if (GetTabStripModel()->IsTabSelected(
-            GetTabStripModel()->GetIndexOfWebContents(raw_contents))) {
-      GetTabStripModel()->ToggleSelectionAt(
-          GetTabStripModel()->GetIndexOfWebContents(raw_contents));
-    }
+    GetTabStripModel()->DeselectTabAt(
+        GetTabStripModel()->GetIndexOfWebContents(raw_contents));
+
     scoped_refptr<const Extension> extension =
         ExtensionBuilder("UpdateTest").Build();
     auto function = base::MakeRefCounted<TabsUpdateFunction>();
@@ -622,11 +620,9 @@ TEST_F(TabsApiUnitTest, TabsUpdateSavedTabGroupTab) {
   {  // Reset the active states, and then test selected state for a saved tab.
     GetTabStripModel()->ActivateTabAt(
         GetTabStripModel()->GetIndexOfWebContents(raw_non_updated_contents));
-    if (GetTabStripModel()->IsTabSelected(
-            GetTabStripModel()->GetIndexOfWebContents(raw_contents))) {
-      GetTabStripModel()->ToggleSelectionAt(
-          GetTabStripModel()->GetIndexOfWebContents(raw_contents));
-    }
+    GetTabStripModel()->DeselectTabAt(
+        GetTabStripModel()->GetIndexOfWebContents(raw_contents));
+
     scoped_refptr<const Extension> extension =
         ExtensionBuilder("UpdateTest").Build();
     auto function = base::MakeRefCounted<TabsUpdateFunction>();

@@ -442,7 +442,6 @@ void TabStripModel::OnChange(const TabStripModelChange& change,
 
 std::unique_ptr<DetachedTabGroup> TabStripModel::DetachTabGroupImpl(
     const tab_groups::TabGroupId& group_id) {
-
   // Prepare for group to be removed.
   const gfx::Range tabs_in_group =
       group_model_->GetTabGroup(group_id)->ListTabs();
@@ -1160,32 +1159,43 @@ void TabStripModel::ExtendSelectionTo(int index) {
                /*triggered_by_other_operation=*/false);
 }
 
-bool TabStripModel::ToggleSelectionAt(int index) {
+void TabStripModel::SelectTabAt(int index) {
   if (!delegate()->IsTabStripEditable()) {
-    return false;
+    return;
   }
+
   CHECK(ContainsIndex(index));
-  const size_t index_size_t = static_cast<size_t>(index);
+
+  const size_t selection_index = static_cast<size_t>(index);
   ui::ListSelectionModel new_model = selection_model();
-  if (selection_model().IsSelected(index_size_t)) {
-    if (selection_model().size() == 1) {
-      // One tab must be selected and this tab is currently selected so we can't
-      // unselect it.
-      return false;
-    }
-    new_model.RemoveIndexFromSelection(index_size_t);
-    new_model.set_anchor(index_size_t);
-    if (!new_model.active().has_value() || new_model.active() == index_size_t) {
-      new_model.set_active(*new_model.selected_indices().begin());
-    }
-  } else {
-    new_model.AddIndexToSelection(index_size_t);
-    new_model.set_anchor(index_size_t);
-    new_model.set_active(index_size_t);
+  new_model.AddIndexToSelection(selection_index);
+  new_model.set_anchor(selection_index);
+  new_model.set_active(selection_index);
+  SetSelection(std::move(new_model), TabStripModelObserver::CHANGE_REASON_NONE,
+               /*triggered_by_other_operation=*/false);
+}
+
+void TabStripModel::DeselectTabAt(int index) {
+  if (!delegate()->IsTabStripEditable()) {
+    return;
+  } else if (selection_model().size() == 1) {
+    // One tab must be selected and this tab is currently selected so we can't
+    // unselect it.
+    return;
+  }
+
+  CHECK(ContainsIndex(index));
+
+  const size_t selection_index = static_cast<size_t>(index);
+  ui::ListSelectionModel new_model = selection_model();
+  new_model.RemoveIndexFromSelection(selection_index);
+  new_model.set_anchor(selection_index);
+  if (!new_model.active().has_value() ||
+      new_model.active() == selection_index) {
+    new_model.set_active(*new_model.selected_indices().begin());
   }
   SetSelection(std::move(new_model), TabStripModelObserver::CHANGE_REASON_NONE,
                /*triggered_by_other_operation=*/false);
-  return true;
 }
 
 void TabStripModel::AddSelectionFromAnchorTo(int index) {
@@ -3166,7 +3176,7 @@ void TabStripModel::AddToNewGroupImpl(
       group_model()->GetTabGroup(new_group)->ListTabs();
   for (auto index = tab_indices.start(); index < tab_indices.end(); ++index) {
     if (active_index() != static_cast<int>(index) && IsTabSelected(index)) {
-      ToggleSelectionAt(index);
+      DeselectTabAt(index);
     }
   }
 }
