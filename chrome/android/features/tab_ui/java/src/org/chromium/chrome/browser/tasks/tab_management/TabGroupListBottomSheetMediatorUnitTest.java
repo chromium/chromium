@@ -35,6 +35,8 @@ import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabList;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator.RowType;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator.TabGroupCreationCallback;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator.TabGroupListBottomSheetCoordinatorDelegate;
@@ -44,6 +46,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Stat
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.data_sharing.DataSharingService;
+import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -63,6 +66,8 @@ public class TabGroupListBottomSheetMediatorUnitTest {
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private TabGroupListBottomSheetCoordinatorDelegate mDelegate;
     @Mock private TabGroupModelFilter mFilter;
+    @Mock private TabModel mTabModel;
+    @Mock private TabList mTabList;
     @Mock private TabGroupCreationCallback mTabGroupCreationCallback;
     @Mock private FaviconResolver mFaviconResolver;
     @Mock private TabGroupSyncService mTabGroupSyncService;
@@ -70,14 +75,20 @@ public class TabGroupListBottomSheetMediatorUnitTest {
     @Mock private CollaborationService mCollaborationService;
     @Mock private Tab mTab1;
     @Mock private Tab mTab2;
+    @Mock private Tab mTab3;
     @Mock private SavedTabGroup mSavedTabGroup1;
     @Mock private SavedTabGroup mSavedTabGroup2;
+    @Mock private SavedTabGroup mSavedTabGroup3;
     @Mock private SavedTabGroupTab mSavedTabGroupTab1;
     @Mock private SavedTabGroupTab mSavedTabGroupTab2;
+    @Mock private SavedTabGroupTab mSavedTabGroupTab3;
     @Captor private ArgumentCaptor<BottomSheetObserver> mBottomSheetObserverCaptor;
 
     private ModelList mModelList;
     private TabGroupListBottomSheetMediator mMediator;
+    private Token mToken1;
+    private Token mToken2;
+    private Token mToken3;
 
     @Before
     public void setUp() {
@@ -94,18 +105,51 @@ public class TabGroupListBottomSheetMediatorUnitTest {
                         mBottomSheetController,
                         mDelegate,
                         /* showNewGroupRow= */ true);
+        when(mTabList.getCount()).thenReturn(3);
+
+        when(mTabList.getTabAt(0)).thenReturn(mTab1);
+        when(mTabList.getTabAt(1)).thenReturn(mTab2);
+        when(mTabList.getTabAt(2)).thenReturn(mTab3);
+
+        when(mTabModel.getComprehensiveModel()).thenReturn(mTabList);
+        when(mFilter.getTabModel()).thenReturn(mTabModel);
+
         when(mTab1.getId()).thenReturn(1);
         when(mTab2.getId()).thenReturn(2);
+        when(mTab3.getId()).thenReturn(3);
+
+        mToken1 = Token.createRandom();
+        mToken2 = Token.createRandom();
+        mToken3 = Token.createRandom();
+
+        when(mTab1.getId()).thenReturn(1);
+        when(mTab2.getId()).thenReturn(2);
+        when(mTab3.getId()).thenReturn(3);
+
+        when(mTab1.getTabGroupId()).thenReturn(mToken1);
+        when(mTab2.getTabGroupId()).thenReturn(mToken2);
+        when(mTab3.getTabGroupId()).thenReturn(mToken3);
+
+        when(mTab1.isClosing()).thenReturn(true);
+        when(mTab2.isClosing()).thenReturn(true);
+        when(mTab3.isClosing()).thenReturn(true);
+
+        mSavedTabGroup1.localId = new LocalTabGroupId(mToken1);
+        mSavedTabGroup2.localId = new LocalTabGroupId(mToken2);
+        mSavedTabGroup3.localId = null;
 
         mSavedTabGroup1.updateTimeMs = 1L;
         mSavedTabGroup2.updateTimeMs = 2L;
+        mSavedTabGroup3.updateTimeMs = 3L;
 
         mSavedTabGroup1.savedTabs = List.of(mSavedTabGroupTab1);
         mSavedTabGroup2.savedTabs = List.of(mSavedTabGroupTab2);
+        mSavedTabGroup3.savedTabs = List.of(mSavedTabGroupTab3);
 
-        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {"1", "2"});
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {"1", "2", "3"});
         when(mTabGroupSyncService.getGroup("1")).thenReturn(mSavedTabGroup1);
         when(mTabGroupSyncService.getGroup("2")).thenReturn(mSavedTabGroup2);
+        when(mTabGroupSyncService.getGroup("3")).thenReturn(mSavedTabGroup3);
     }
 
     @Test
@@ -195,6 +239,31 @@ public class TabGroupListBottomSheetMediatorUnitTest {
         assertEquals(
                 mSavedTabGroup1.updateTimeMs,
                 mModelList.get(2).model.get(TabGroupRowProperties.TIMESTAMP_EVENT).timestampMs);
+    }
+
+    @Test
+    public void testPopulateList_noHiddenGroups() {
+        mSavedTabGroup3.localId = new LocalTabGroupId(mToken3);
+
+        when(mDelegate.requestShowContent()).thenReturn(true);
+        mMediator.requestShowContent(Arrays.asList(mTab1, mTab2));
+
+        // New group row, plus three rows representing existing groups.
+        assertEquals(4, mModelList.size());
+        assertEquals(RowType.NEW_GROUP, mModelList.get(0).type);
+        assertEquals(RowType.EXISTING_GROUP, mModelList.get(1).type);
+        assertEquals(RowType.EXISTING_GROUP, mModelList.get(2).type);
+        assertEquals(RowType.EXISTING_GROUP, mModelList.get(3).type);
+
+        assertEquals(
+                mSavedTabGroup3.updateTimeMs,
+                mModelList.get(1).model.get(TabGroupRowProperties.TIMESTAMP_EVENT).timestampMs);
+        assertEquals(
+                mSavedTabGroup2.updateTimeMs,
+                mModelList.get(2).model.get(TabGroupRowProperties.TIMESTAMP_EVENT).timestampMs);
+        assertEquals(
+                mSavedTabGroup1.updateTimeMs,
+                mModelList.get(3).model.get(TabGroupRowProperties.TIMESTAMP_EVENT).timestampMs);
     }
 
     @Test
