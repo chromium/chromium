@@ -1161,44 +1161,6 @@ Iban FormDataImporter::ExtractIbanFromForm(const FormStructure& form) {
   return candidate_iban;
 }
 
-// TODO(crbug.com/40270301): Move ShouldOfferCreditCardSave to
-// credit_card_save_manger and combine all card and CVC save logic to
-// ProceedWithSavingIfApplicable function.
-bool FormDataImporter::ShouldOfferCreditCardSave(
-    const std::optional<CreditCard>& extracted_credit_card,
-    bool is_credit_card_upstream_enabled) {
-  // If we have an invalid card in the form, a duplicate field type, or we have
-  // entered a virtual card, `extracted_credit_card` is nullptr and thus we do
-  // not want to offer upload save or local card save.
-  if (!extracted_credit_card) {
-    return false;
-  }
-
-  // Check if CVC local or upload save should be offered.
-  if (credit_card_save_manager_->ShouldOfferCvcSave(
-          *extracted_credit_card, credit_card_import_type_,
-          is_credit_card_upstream_enabled)) {
-    return true;
-  }
-
-  // We do not want to offer upload save or local card save for server cards.
-  if (credit_card_import_type_ == CreditCardImportType::kServerCard) {
-    return false;
-  }
-
-  // Credit card upload save is not offered for local cards if upstream is
-  // disabled. Local save is not offered for local cards if the card is already
-  // saved as a local card.
-  if (!is_credit_card_upstream_enabled &&
-      credit_card_import_type_ == CreditCardImportType::kLocalCard) {
-    return false;
-  }
-
-  // We know `extracted_credit_card` is either a new card, or a local
-  // card with upload enabled.
-  return true;
-}
-
 void FormDataImporter::OnAddressDataChanged() {
   multistep_importer_.OnAddressDataChanged(address_data_manager());
 }
