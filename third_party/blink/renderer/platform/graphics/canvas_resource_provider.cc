@@ -811,7 +811,7 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
 
   void OnResourceReturnedFromCompositor(
       scoped_refptr<CanvasResourceSharedImage>&& resource) override {
-    if (resource->IsRecycleable() && resource->HasOneRef()) {
+    if (!resource->IsLost() && resource->HasOneRef()) {
       RecycleResource(std::move(resource));
     }
   }

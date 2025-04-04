@@ -85,14 +85,6 @@ class PLATFORM_EXPORT CanvasResource
 
   bool HasLastUnrefCallback() { return !!last_unref_callback_; }
 
-  // We perform a lazy copy on write if the canvas content needs to be updated
-  // while its current resource is in use. In order to avoid re-allocating
-  // resources, its preferable to reuse a resource if its no longer in use.
-  // This API indicates whether a resource can be recycled.  This method does
-  // not however check whether the resource is still in use (e.g. has
-  // outstanding references).
-  virtual bool IsRecycleable() const = 0;
-
   // Returns true if this instance creates TransferableResources for usage with
   // GPU compositing.
   virtual bool CreatesAcceleratedTransferableResources() const = 0;
@@ -251,7 +243,6 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
       gpu::SharedImageUsageSet shared_image_usage_flags);
   ~CanvasResourceSharedImage() override;
 
-  bool IsRecycleable() const final { return !IsLost(); }
   bool CreatesAcceleratedTransferableResources() const override {
     return !GetClientSharedImage()->is_software();
   }
@@ -383,7 +374,6 @@ class PLATFORM_EXPORT ExternalCanvasResource final : public CanvasResource {
       base::WeakPtr<CanvasResourceProvider>);
 
   ~ExternalCanvasResource() override;
-  bool IsRecycleable() const final { return IsValid(); }
   bool IsValid() const override;
   bool CreatesAcceleratedTransferableResources() const override { return true; }
   void NotifyResourceLost() override { resource_is_lost_ = true; }
@@ -441,7 +431,6 @@ class PLATFORM_EXPORT CanvasResourceSwapChain final : public CanvasResource {
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       base::WeakPtr<CanvasResourceProvider>);
   ~CanvasResourceSwapChain() override;
-  bool IsRecycleable() const final { return IsValid(); }
   bool IsValid() const override;
   bool CreatesAcceleratedTransferableResources() const override { return true; }
   void NotifyResourceLost() override {
