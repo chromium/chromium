@@ -4529,7 +4529,8 @@ StyleRecalcChange Element::RecalcOwnStyle(
     GetDocument().GetStyleEngine().MarkCountersDirty();
   }
 
-  if (new_style && !new_style->ScrollMarkerContainNone()) {
+  if ((!old_style || old_style->ScrollMarkerContainNone()) && new_style &&
+      !new_style->ScrollMarkerContainNone()) {
     GetDocument().AddScrollMarkerGroup(&EnsureScrollMarkerGroupData());
   }
 
@@ -11509,8 +11510,12 @@ ScrollMarkerGroupData& Element::EnsureScrollMarkerGroupData() {
 
 void Element::RemoveScrollMarkerGroupData() {
   if (ElementRareDataVector* data = GetElementRareData()) {
-    GetDocument().RemoveScrollMarkerGroup(data->GetScrollMarkerGroupData());
-    data->RemoveScrollMarkerGroupData();
+    if (ScrollMarkerGroupData* scroll_marker_group_data =
+            data->GetScrollMarkerGroupData()) {
+      scroll_marker_group_data->ClearFocusGroup();
+      GetDocument().RemoveScrollMarkerGroup(scroll_marker_group_data);
+      data->RemoveScrollMarkerGroupData();
+    }
   }
 }
 

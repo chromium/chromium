@@ -9647,6 +9647,9 @@ void Document::UpdateScrollMarkerGroupRelations() {
   if (!needs_scroll_marker_contain_relations_update_) {
     return;
   }
+  if (scroll_marker_group_to_scrollable_areas_.empty()) {
+    return;
+  }
   for (auto& [scroll_marker_group, scrollable_areas] :
        scroll_marker_group_to_scrollable_areas_) {
     for (PaintLayerScrollableArea* scrollable_area : scrollable_areas) {
@@ -9657,7 +9660,7 @@ void Document::UpdateScrollMarkerGroupRelations() {
   }
   scroll_marker_group_to_scrollable_areas_.clear();
   if (document_element_) {
-    ::blink::RecalcScrollMarkerContainRelations(*document_element_, nullptr);
+    RecalcScrollMarkerContainRelations(*document_element_, nullptr);
   }
   needs_scroll_marker_contain_relations_update_ = false;
 }
@@ -9669,6 +9672,7 @@ void Document::UpdateScrollMarkerGroupToScrollableAreasMap() {
   for (auto& [scroll_marker_group, scrollable_areas] :
        scroll_marker_group_to_scrollable_areas_) {
     scroll_marker_group->UpdateScrollableAreaSubscriptions(scrollable_areas);
+    scroll_marker_group->UpdateSelectedScrollMarker();
   }
   needs_scroll_marker_groups_map_update_ = false;
 }
