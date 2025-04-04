@@ -4,6 +4,7 @@
 
 package org.chromium.webapk.shell_apk.h2o;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.webapk.shell_apk.h2o.SplashUtils.createScaledBitmapAndCanvas;
 
 import android.app.Activity;
@@ -22,10 +23,12 @@ import android.widget.ImageView;
 
 import androidx.annotation.RequiresApi;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.webapk.shell_apk.R;
 import org.chromium.webapk.shell_apk.WebApkUtils;
 
 /** Contains splash screen related utility methods that require Android S APIs. */
+@NullMarked
 class SplashUtilsForS {
     private SplashUtilsForS() {}
 
@@ -57,7 +60,7 @@ class SplashUtilsForS {
                             Bitmap bitmap =
                                     screenshotSplashScreenView(
                                             splashView,
-                                            splashView.getIconView(),
+                                            assertNonNull(splashView.getIconView()),
                                             systemBarInsets,
                                             backgroundColor,
                                             SplashContentProvider.MAX_TRANSFER_SIZE_BYTES);

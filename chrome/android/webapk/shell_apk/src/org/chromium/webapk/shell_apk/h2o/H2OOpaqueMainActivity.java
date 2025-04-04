@@ -11,6 +11,9 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.SystemClock;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /**
  * Launches {@link SplashActivity}. SplashActivity does not handle android.intent.action.MAIN
  * because when the root activity is singleTask and the root activity handles
@@ -18,6 +21,7 @@ import android.os.SystemClock;
  * singleTask activity when a user taps the app icon in the app drawer. This bad behavior does not
  * occur if a non-root activity is singleTask.
  */
+@NullMarked
 public class H2OOpaqueMainActivity extends Activity {
     /** Returns whether {@link InitialSplashActivity} is enabled. */
     public static boolean checkComponentEnabled(Context context, boolean isNewStyleWebApk) {
@@ -33,7 +37,7 @@ public class H2OOpaqueMainActivity extends Activity {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         final long launchTimeMs = SystemClock.elapsedRealtime();
         super.onCreate(savedInstanceState);
         Context appContext = getApplicationContext();
