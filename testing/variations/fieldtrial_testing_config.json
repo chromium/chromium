@@ -12786,21 +12786,6 @@
             ]
         }
     ],
-    "IOSTabGroupInGridiPad": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "TabGroupsIPad"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSTabGroupIndicator": [
         {
             "platforms": [
