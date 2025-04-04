@@ -8209,7 +8209,6 @@ crbug.com/332467110 external/wpt/websockets/Create-blocked-port.any.worker.html?
 
 # Branch Gardener 2024-04-02
 crbug.com/332068449 external/wpt/focus/cross-origin-ancestor-activeelement-after-child-lose-focus.sub.html [ Failure Pass ]
-crbug.com/330761492 external/wpt/html/editing/the-hidden-attribute/beforematch-scroll-to-text-fragment.html [ Failure Pass ]
 
 # RubyLineBreakable
 crbug.com/324111880 external/wpt/css/css-ruby/empty-ruby-text-container-float.html [ Failure ]

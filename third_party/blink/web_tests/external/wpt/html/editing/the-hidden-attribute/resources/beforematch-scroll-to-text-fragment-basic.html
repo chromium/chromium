@@ -3,52 +3,57 @@
 
 <!-- This test is navigated to with the fragment #:~:text=foo -->
 
-<body>
-  <div style="height: 4000px;">spacer</div>
-  <script>
-    const results = {};
-    results.beforematchFiredOnFoo = false;
-    results.beforematchFiredOnBar = false;
+<div style="height: 4000px;">spacer</div>
 
-    params = new URLSearchParams(window.location.search);
+<script>
+(async () => {
+  const results = {};
+  const key = (new URLSearchParams(window.location.search)).get('key');
 
-    // This test adds the elements from JS
-    // (unlike beforematch-scroll-to-text-fragment-with-anchor.html,
-    // which uses parser-created elements)
-    const foo = document.createElement('div');
-    foo.textContent = 'foo';
-    foo.hidden = 'until-found';
-    document.body.appendChild(foo);
-    const bar = document.createElement('div');
-    bar.textContent = 'bar';
-    document.body.appendChild(bar);
+  // This test adds the elements from JS
+  // (unlike beforematch-scroll-to-text-fragment-with-anchor.html,
+  // which uses parser-created elements)
+  const foo = document.createElement('div');
+  foo.hidden = 'until-found';
+  foo.textContent = 'foo';
+  document.body.appendChild(foo);
 
-    bar.addEventListener('beforematch', () => {
-      // this handler should never run. If it does,
-      // send back the message immediately to make the test fail.
-      results.beforematchFiredOnBar = true;
-      params = new URLSearchParams(window.location.search);
-      stashResultsThenClose(params.get('key'), results);
-    });
+  let beforematchResolver = null;
+  const beforematchPromise = new Promise(resolve => {
+    beforematchResolver = resolve;
+  });
 
-    foo.addEventListener('beforematch', () => {
-      if (results.beforematchFiredOnBar) {
-        return;
-      }
-      // This should be zero. Scrolling should happen after beforematch is
-      // fired.
-      results.pageYOffsetDuringBeforematch = window.pageYOffset;
-      results.beforematchFiredOnFoo = true;
+  // This should be true. Foo was searched for, so it should get a
+  // beforematch event.
+  results.beforematchFiredOnFoo = false;
+  foo.addEventListener('beforematch', () => {
+    results.beforematchFiredOnFoo = true;
+    // This should be zero. Scrolling should happen after beforematch is
+    // fired.
+    results.pageYOffsetDuringBeforematch = window.pageYOffset;
+    beforematchResolver();
+  });
 
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          // This should be greater than zero. The page should be scrolled down
-          // to foo.
-          results.pageYOffsetAfterRaf = window.pageYOffset;
+  const bar = document.createElement('div');
+  bar.hidden = 'until-found';
+  bar.textContent = 'bar';
+  document.body.appendChild(bar);
+  // This should be false. Bar was not searched for, so it should not get
+  // a beforematch event.
+  results.beforematchFiredOnBar = false;
+  bar.addEventListener('beforematch', () => {
+    // this handler should never run. If it does,
+    // send back the message immediately to make the test fail.
+    results.beforematchFiredOnBar = true;
+    stashResultsThenClose(key, results);
+  });
 
-          stashResultsThenClose(params.get('key'), results);
-        });
-      });
-    });
-  </script>
-</body>
+  await beforematchPromise;
+  await new Promise(requestAnimationFrame);
+  await new Promise(requestAnimationFrame);
+  // This should be greater than zero. The page should be scrolled down
+  // to foo.
+  results.pageYOffsetAfterRaf = window.pageYOffset;
+  stashResultsThenClose(key, results);
+})();
+</script>
