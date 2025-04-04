@@ -318,6 +318,7 @@ export class SettingsCursorAndTouchpadPageElement extends
   private shelfNavigationButtonsImplicitlyEnabled_: boolean;
   private shelfNavigationButtonsPref_:
       chrome.settingsPrivate.PrefObject<boolean>;
+  private showFaceGazeRow_: boolean;
   private showShelfNavigationButtonsSettings_: boolean;
   private readonly isAccessibilityDisableTouchpadEnabled_: boolean;
   private readonly isAccessibilityFaceGazeEnabled_: boolean;

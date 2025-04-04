@@ -163,7 +163,7 @@ export class SettingsMouseKeysSubpageElement extends
         },
       },
 
-      numKeypadPreviewOptions: {
+      numKeypadPreviewOptions_: {
         readOnly: true,
         type: Array,
         value() {
@@ -206,8 +206,12 @@ export class SettingsMouseKeysSubpageElement extends
     Setting.kMouseKeysEnabled,
   ]);
 
+  private readonly mouseKeysDominantHandOptions_:
+      Array<{value: number, name: string}>;
+  private readonly numKeypadPreviewOptions_: KeyboardPreviewOption[];
   private primaryKeyboardRightHandPreviewOptions_: KeyboardPreviewOption[];
   private primaryKeyboardLeftHandPreviewOptions_: KeyboardPreviewOption[];
+  private toggleLabel_: string;
 
   private getToggleLabel_(): string {
     return this.getPref('settings.a11y.mouse_keys.enabled').value ?

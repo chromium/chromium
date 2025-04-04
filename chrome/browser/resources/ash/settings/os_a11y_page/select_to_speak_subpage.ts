@@ -240,6 +240,7 @@ export class SettingsSelectToSpeakSubpageElement extends
   private langBrowserProxy_: LanguagesBrowserProxy;
   private enhancedNetworkVoicesVirtualPref_:
       chrome.settingsPrivate.PrefObject<boolean>;
+  private readonly highlightColorOptions_: DropdownMenuOptionList;
   private isPreviewing_: boolean;
   private languageFilterVirtualPref_: chrome.settingsPrivate.PrefObject<string>;
   private languagesMenuOptions_: DropdownMenuOptionList;

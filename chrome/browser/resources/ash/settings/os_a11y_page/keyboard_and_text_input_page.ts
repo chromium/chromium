@@ -189,6 +189,8 @@ export class SettingsKeyboardAndTextInputPageElement extends
   private isKioskModeActive_: boolean;
   private focusHighlightEnabledPref_:
       chrome.settingsPrivate.PrefObject<boolean>;
+  private focusHighlightEnabledVirtualPref_:
+      chrome.settingsPrivate.PrefObject<boolean>;
   private keyboardAndTextInputBrowserProxy_:
       KeyboardAndTextInputPageBrowserProxy;
   private stickyKeysEnabledVirtualPref_:

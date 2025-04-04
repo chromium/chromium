@@ -221,6 +221,7 @@ export class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
   private app_: App;
   private appNotificationsObserverReceiver_: AppNotificationsObserverReceiver;
   private appsWithNotifications_: AppWithNotifications[];
+  private readonly isAppParentalControlsFeatureAvailable_: boolean;
   private isArcVmManageUsbAvailable_: boolean;
   private isDndEnabled_: boolean;
   private isPinVerified_: boolean;

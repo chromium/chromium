@@ -89,7 +89,7 @@ export class SettingsAudioAndCaptionsPageElement extends
         },
       },
 
-      isAccessibilityFlashNotificationFeatureEnabled: {
+      isAccessibilityFlashNotificationFeatureEnabled_: {
         readOnly: true,
         type: Boolean,
         value() {
@@ -149,7 +149,10 @@ export class SettingsAudioAndCaptionsPageElement extends
   ]);
 
   private audioAndCaptionsBrowserProxy_: AudioAndCaptionsPageBrowserProxy;
+  private readonly isAccessibilityFlashNotificationFeatureEnabled_: boolean;
   private isKioskModeActive_: boolean;
+  private readonly notificationColorOptions_:
+      Array<{value: number, name: string}>;
 
   constructor() {
     super();

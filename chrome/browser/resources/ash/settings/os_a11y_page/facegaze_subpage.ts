@@ -51,6 +51,8 @@ export class SettingsFaceGazeSubpageElement extends
     };
   }
 
+  private toggleLabel_: string;
+
   // DeepLinkingMixin override
   override supportedSettingIds = new Set<Setting>([
     Setting.kFaceGaze,
