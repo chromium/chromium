@@ -3919,6 +3919,11 @@
       name: "ScrollTimelineCurrentTime",
       status: "experimental"
     },
+    {
+      // https://github.com/w3c/csswg-drafts/issues/9367#issuecomment-1854280461
+      name: "ScrollTimelineNamedRangeScroll",
+      status: "test",
+    },
     // Implements documentElement.scrollTop/Left and bodyElement.scrollTop/Left
     // as per the spec, matching other Web engines.
     //

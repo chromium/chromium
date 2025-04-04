@@ -4270,9 +4270,15 @@ CSSValue* ConsumeAnimationDuration(CSSParserTokenStream& stream,
 }
 
 CSSValue* ConsumeTimelineRangeName(CSSParserTokenStream& stream) {
-  return ConsumeIdent<CSSValueID::kContain, CSSValueID::kCover,
-                      CSSValueID::kEntry, CSSValueID::kEntryCrossing,
-                      CSSValueID::kExit, CSSValueID::kExitCrossing>(stream);
+  return RuntimeEnabledFeatures::ScrollTimelineNamedRangeScrollEnabled()
+             ? ConsumeIdent<CSSValueID::kContain, CSSValueID::kCover,
+                            CSSValueID::kEntry, CSSValueID::kEntryCrossing,
+                            CSSValueID::kExit, CSSValueID::kExitCrossing,
+                            CSSValueID::kScroll>(stream)
+             : ConsumeIdent<CSSValueID::kContain, CSSValueID::kCover,
+                            CSSValueID::kEntry, CSSValueID::kEntryCrossing,
+                            CSSValueID::kExit, CSSValueID::kExitCrossing>(
+                   stream);
 }
 
 CSSValue* ConsumeTimelineRangeNameAndPercent(CSSParserTokenStream& stream,

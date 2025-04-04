@@ -145,12 +145,8 @@ ScrollTimeline::TimelineState ScrollTimeline::ComputeTimelineState() const {
 void ScrollTimeline::CalculateOffsets(PaintLayerScrollableArea* scrollable_area,
                                       ScrollOrientation physical_orientation,
                                       TimelineState* state) const {
-  ScrollOffset scroll_dimensions = scrollable_area->MaximumScrollOffset() -
-                                   scrollable_area->MinimumScrollOffset();
-  double end_offset = physical_orientation == kHorizontalScroll
-                          ? scroll_dimensions.x()
-                          : scroll_dimensions.y();
-  state->scroll_offsets = std::make_optional<ScrollOffsets>(0, end_offset);
+  CalculateScrollLimits(scrollable_area, physical_orientation, state);
+  state->scroll_offsets = state->scroll_limits;
 }
 
 Element* ScrollTimeline::source() const {
