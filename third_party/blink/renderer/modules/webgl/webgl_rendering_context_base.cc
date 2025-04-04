@@ -6281,11 +6281,7 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
     // For certain video frame formats (e.g. I420/YUV), if they start on the CPU
     // (e.g. video camera frames): upload them to the GPU, do a GPU decode, and
     // then copy into the target texture.
-    //
-    // TODO(crbug.com/1180879): I420A should be supported, but currently fails
-    // conformance/textures/misc/texture-video-transparent.html.
     if (!media_video_frame->HasSharedImage() &&
-        media::IsOpaque(media_video_frame->format()) &&
         video_renderer->CopyVideoFrameYUVDataToGLTexture(
             raster_context_provider, ContextGL(), media_video_frame,
             params.target, texture->Object(), adjusted_internalformat,
