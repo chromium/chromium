@@ -100,7 +100,8 @@ void IceTransportChannel::Connect(const std::string& name,
                            : cricket::ICEROLE_CONTROLLED);
   delegate_->OnChannelIceCredentials(this, ice_username_fragment_,
                                      ice_password);
-  channel_->SetIceCredentials(ice_username_fragment_, ice_password);
+  channel_->SetIceParameters(cricket::IceParameters(
+      ice_username_fragment_, ice_password, /*ice_renomination=*/false));
   channel_->SignalCandidateGathered.connect(
       this, &IceTransportChannel::OnCandidateGathered);
   channel_->SignalRouteChange.connect(this,
@@ -115,8 +116,9 @@ void IceTransportChannel::Connect(const std::string& name,
 
   // Pass pending ICE credentials and candidates to the channel.
   if (!remote_ice_username_fragment_.empty()) {
-    channel_->SetRemoteIceCredentials(remote_ice_username_fragment_,
-                                      remote_ice_password_);
+    channel_->SetRemoteIceParameters(cricket::IceParameters(
+        remote_ice_username_fragment_, remote_ice_password_,
+        /*ice_renomination=*/false));
   }
 
   while (!pending_candidates_.empty()) {
@@ -152,7 +154,8 @@ void IceTransportChannel::SetRemoteCredentials(const std::string& ufrag,
   remote_ice_password_ = password;
 
   if (channel_) {
-    channel_->SetRemoteIceCredentials(ufrag, password);
+    channel_->SetRemoteIceParameters(
+        cricket::IceParameters(ufrag, password, /*ice_renomination=*/false));
   }
 }
 
@@ -275,7 +278,8 @@ void IceTransportChannel::TryReconnect() {
   std::string ice_password = rtc::CreateRandomString(cricket::ICE_PWD_LENGTH);
   delegate_->OnChannelIceCredentials(this, ice_username_fragment_,
                                      ice_password);
-  channel_->SetIceCredentials(ice_username_fragment_, ice_password);
+  channel_->SetIceParameters(cricket::IceParameters(
+      ice_username_fragment_, ice_password, /*ice_renomination=*/false));
 }
 
 }  // namespace remoting::protocol
