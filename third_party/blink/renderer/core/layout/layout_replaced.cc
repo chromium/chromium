@@ -357,14 +357,15 @@ PhysicalNaturalSizingInfo LayoutReplaced::ComputeNaturalSizingInfo() const {
 }
 
 static std::pair<LayoutUnit, LayoutUnit> SelectionTopAndBottom(
-    const LayoutReplaced& layout_replaced) {
+    const LayoutReplaced& layout_replaced,
+    const LogicalRect& rect) {
   // TODO(layout-dev): This code is buggy if the replaced element is relative
   // positioned.
 
   // The fallback answer when we can't find the containing line box of
   // |layout_replaced|.
-  const std::pair<LayoutUnit, LayoutUnit> fallback(
-      layout_replaced.LogicalTop(), layout_replaced.LogicalBottom());
+  const std::pair<LayoutUnit, LayoutUnit> fallback(rect.BlockStartOffset(),
+                                                   rect.BlockEndOffset());
 
   if (layout_replaced.IsInline() &&
       layout_replaced.IsInLayoutNGInlineFormattingContext()) {
@@ -399,11 +400,13 @@ PositionWithAffinity LayoutReplaced::PositionForPoint(
     const PhysicalOffset& point) const {
   NOT_DESTROYED();
 
-  auto [top, bottom] = SelectionTopAndBottom(*this);
+  auto converter = LocationContainer()->CreateWritingModeConverter();
+  LogicalRect logical_rect =
+      converter.ToLogical(PhysicalRect(PhysicalLocation(), Size()));
+  auto [top, bottom] = SelectionTopAndBottom(*this, logical_rect);
 
   LogicalOffset logical_point =
-      LocationContainer()->CreateWritingModeConverter().ToLogical(
-          point + PhysicalLocation(), {});
+      converter.ToLogical(point + PhysicalLocation(), {});
   LayoutUnit block_direction_position = logical_point.block_offset;
   LayoutUnit line_direction_position = logical_point.inline_offset;
 
@@ -415,7 +418,8 @@ PositionWithAffinity LayoutReplaced::PositionForPoint(
 
   if (GetNode()) {
     const bool is_at_left_side =
-        line_direction_position <= LogicalLeft() + (LogicalWidth() / 2);
+        line_direction_position <=
+        logical_rect.offset.inline_offset + logical_rect.InlineSize() / 2;
     const bool is_at_start = is_at_left_side == IsLtr(ResolvedDirection());
     if (is_at_start)
       return PositionBeforeThis();
