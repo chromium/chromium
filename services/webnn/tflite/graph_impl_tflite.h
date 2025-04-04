@@ -33,7 +33,8 @@ class ContextImplTflite;
 class GraphImplTflite final : public WebNNGraphImpl {
  public:
   static base::expected<std::unique_ptr<GraphImplTflite>, mojom::ErrorPtr>
-  CreateAndBuild(mojom::GraphInfoPtr graph_info,
+  CreateAndBuild(mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
+                 mojom::GraphInfoPtr graph_info,
                  ComputeResourceInfo compute_resource_info,
                  base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
                      constant_operands,
@@ -48,7 +49,8 @@ class GraphImplTflite final : public WebNNGraphImpl {
 
   using NamedBuffers = base::flat_map<std::string, mojo_base::BigBuffer>;
 
-  GraphImplTflite(ComputeResourceInfo compute_resource_info,
+  GraphImplTflite(mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
+                  ComputeResourceInfo compute_resource_info,
                   base::flat_map<std::string, int> input_name_to_index,
                   base::flat_map<std::string, int> output_name_to_index,
                   scoped_refptr<QueueableResourceState<ComputeResources>>

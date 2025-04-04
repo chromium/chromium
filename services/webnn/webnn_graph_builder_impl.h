@@ -98,6 +98,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNGraphBuilderImpl
  private:
   void DidCreateGraph(
       CreateGraphCallback callback,
+      mojo::PendingAssociatedRemote<mojom::WebNNGraph> remote,
       base::expected<std::unique_ptr<WebNNGraphImpl>, mojom::ErrorPtr> result);
 
   void DestroySelf();

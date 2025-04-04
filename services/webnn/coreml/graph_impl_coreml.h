@@ -41,6 +41,7 @@ class ContextImplCoreml;
 class API_AVAILABLE(macos(14.0)) GraphImplCoreml final : public WebNNGraphImpl {
  public:
   static void CreateAndBuild(
+      mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
       ContextImplCoreml* context,
       mojom::GraphInfoPtr graph_info,
       ComputeResourceInfo compute_resource_info,
@@ -90,7 +91,9 @@ class API_AVAILABLE(macos(14.0)) GraphImplCoreml final : public WebNNGraphImpl {
     MLModel* __strong ml_model;
   };
 
-  GraphImplCoreml(ContextImplCoreml* context, std::unique_ptr<Params> params);
+  GraphImplCoreml(mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
+                  ContextImplCoreml* context,
+                  std::unique_ptr<Params> params);
 
   static MLFeatureValue* CreateMultiArrayFeatureValueFromBytes(
       MLMultiArrayConstraint* multi_array_constraint,
@@ -118,6 +121,7 @@ class API_AVAILABLE(macos(14.0)) GraphImplCoreml final : public WebNNGraphImpl {
       NSError* error);
 
   static void DidCreateAndBuild(
+      mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
       base::WeakPtr<WebNNContextImpl> context,
       WebNNContextImpl::CreateGraphImplCallback callback,
       base::expected<std::unique_ptr<Params>, mojom::ErrorPtr> result);
