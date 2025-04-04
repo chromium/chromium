@@ -388,6 +388,40 @@ bool CheckSettingsAndCapabilitiesCompatibility(
                  << "' is not compatible with printer capabilities";
       return false;
     }
+
+    if (settings.margin_type() !=
+        printing::mojom::MarginType::kDefaultMargins) {
+      const auto& requested_margins_um =
+          settings.requested_custom_margins_in_microns();
+      bool result = std::ranges::any_of(
+          capabilities.papers,
+          [requested_margins_um,
+           needs_borderless_variant = settings.borderless()](
+              const printing::PrinterSemanticCapsAndDefaults::Paper& paper) {
+            // Borderless variant doesn't have margins stored separately. Thus,
+            // check if there is a paper with borderless variant.
+            if (needs_borderless_variant) {
+              return paper.has_borderless_variant() &&
+                     requested_margins_um.IsEmpty();
+            }
+            if (!paper.supported_margins_um().has_value()) {
+              return false;
+            }
+            const auto& supported_margins =
+                paper.supported_margins_um().value();
+            return requested_margins_um ==
+                   printing::PageMargins(/*header=*/0, /*footer=*/0,
+                                         supported_margins.left_margin_um,
+                                         supported_margins.right_margin_um,
+                                         supported_margins.top_margin_um,
+                                         supported_margins.bottom_margin_um);
+          });
+      if (!result) {
+        LOG(ERROR) << "Margin values " << requested_margins_um.ToString()
+                   << " are not supported by the printer";
+        return false;
+      }
+    }
   }
 
   const printing::PrintSettings::RequestedMedia& requested_media =

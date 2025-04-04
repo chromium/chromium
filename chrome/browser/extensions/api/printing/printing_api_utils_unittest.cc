@@ -752,4 +752,102 @@ TEST(PrintingApiUtilsTest,
   }
 }
 
+TEST(PrintingApiUtilsTest, CheckSettingsAndCapabilitiesCompatibility_Margins) {
+  std::unique_ptr<printing::PrintSettings> settings = ConstructPrintSettings();
+  printing::PrinterSemanticCapsAndDefaults capabilities =
+      ConstructPrinterCapabilities();
+
+  const printing::PageMargins kMargins = {
+      /*header=*/0,  /*footer=*/0,
+      /*left=*/1500, /*right=*/500,
+      /*top=*/3530,  /*bottom=*/5525};
+  settings->SetCustomMargins(kMargins);
+  settings->set_margin_type(printing::mojom::MarginType::kCustomMargins);
+
+  // There must be no supported margins for the check to pass.
+  for (const auto& paper : capabilities.papers) {
+    ASSERT_FALSE(paper.supported_margins_um().has_value());
+  }
+
+  {
+    // Test with feature disabled - despite margins not being supported and
+    // provided, the check should pass as the feature is disabled.
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(
+        printing::features::kApiPrintingMarginsAndScale);
+    EXPECT_TRUE(
+        CheckSettingsAndCapabilitiesCompatibility(*settings, capabilities));
+  }
+
+  // Re-enable feature for further tests.
+  base::test::ScopedFeatureList feature_list(
+      printing::features::kApiPrintingMarginsAndScale);
+
+  // Add a paper with supported margins.
+  const printing::PaperMargins kSupportedMargins(1500, 500, 3241, 3451);
+  capabilities.papers.emplace_back(
+      /*display_name=*/"", /*vendor_id=*/"",
+      /*size_um=*/gfx::Size(kMediaSizeWidth, kMediaSizeHeight),
+      /*printable_area_um=*/gfx::Rect(kMediaSizeWidth, kMediaSizeHeight),
+      /*max_height_um=*/0, /*has_borderless_variant=*/false,
+      /*supported_margins_um=*/kSupportedMargins);
+
+  // Default margins should be supported.
+  {
+    settings->SetCustomMargins(printing::PageMargins());
+    settings->set_margin_type(printing::mojom::MarginType::kDefaultMargins);
+    EXPECT_TRUE(
+        CheckSettingsAndCapabilitiesCompatibility(*settings, capabilities));
+  }
+
+  // Set supported margins and settings to different values. The check should
+  // fail.
+  {
+    settings->SetCustomMargins(kMargins);
+    settings->set_margin_type(printing::mojom::MarginType::kCustomMargins);
+    EXPECT_FALSE(
+        CheckSettingsAndCapabilitiesCompatibility(*settings, capabilities));
+  }
+
+  // Now, update the settings to have supported margins. The check should pass.
+  {
+    settings->SetCustomMargins(printing::PageMargins(
+        /*header=*/0, /*footer=*/0,
+        /*left=*/kSupportedMargins.left_margin_um,
+        /*right=*/kSupportedMargins.right_margin_um,
+        /*top=*/kSupportedMargins.top_margin_um,
+        /*bottom=*/kSupportedMargins.bottom_margin_um));
+    EXPECT_TRUE(
+        CheckSettingsAndCapabilitiesCompatibility(*settings, capabilities));
+  }
+
+  // Test borderless variant.
+  {
+    settings->SetCustomMargins(printing::PageMargins());
+    settings->set_margin_type(printing::mojom::MarginType::kNoMargins);
+    settings->set_borderless(true);
+    EXPECT_FALSE(
+        CheckSettingsAndCapabilitiesCompatibility(*settings, capabilities));
+    capabilities.papers.emplace_back(
+        printing::PrinterSemanticCapsAndDefaults::Paper(
+            /*display_name=*/"", /*vendor_id=*/"",
+            /*size_um=*/gfx::Size(kMediaSizeWidth, kMediaSizeHeight),
+            /*printable_area_um=*/gfx::Rect(kMediaSizeWidth, kMediaSizeHeight),
+            /*max_height_um=*/0, /*has_borderless_variant=*/true,
+            /*supported_margins_um=*/kSupportedMargins));
+    EXPECT_TRUE(
+        CheckSettingsAndCapabilitiesCompatibility(*settings, capabilities));
+  }
+
+  // Invalid case: try to set borderless in settings, but still provide margin
+  // values. This must be invalid.
+  {
+    settings->set_borderless(true);
+    settings->SetCustomMargins(kMargins);
+    settings->set_margin_type(printing::mojom::MarginType::kCustomMargins);
+    EXPECT_FALSE(
+        CheckSettingsAndCapabilitiesCompatibility(*settings, capabilities));
+  }
+}
+
 }  // namespace extensions
