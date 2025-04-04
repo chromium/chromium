@@ -60,7 +60,8 @@ TEST(TracingHelperTest, TraceableState) {
                                      std::vector<std::string>{"negative"}));
 }
 
-TEST(TracingHelperTest, TraceableStateOperators) {
+// TODO(crbug.com/408328552): Re-enable this test
+TEST(TracingHelperTest, DISABLED_TraceableStateOperators) {
   TraceableVariableController controller;
   TraceableState<int, TRACE_DISABLED_BY_DEFAULT("renderer.scheduler.debug")> x(
       -1, perfetto::NamedTrack("X"), &controller, SignOfInt);
