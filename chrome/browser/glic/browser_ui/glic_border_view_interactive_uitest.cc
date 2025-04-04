@@ -21,6 +21,7 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "gpu/config/gpu_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -66,12 +67,6 @@ class TesterImpl : public GlicBorderView::Tester {
     ramp_down_started_ = true;
     wait_for_ramp_down_started_.Quit();
   }
-  void FocusedTabChanged(const GURL& actual_url) override {
-    actual_url_ = actual_url;
-    if (actual_url_ == expected_url_) {
-      wait_for_focused_tab_changed_.Quit();
-    }
-  }
 
   void WaitForAnimationStart() {
     if (animation_started_) {
@@ -92,14 +87,6 @@ class TesterImpl : public GlicBorderView::Tester {
       return;
     }
     wait_for_ramp_down_started_.Run();
-  }
-
-  void WaitForFocusedTabChange(const GURL& expected_url) {
-    expected_url_ = expected_url;
-    if (expected_url_ == actual_url_) {
-      return;
-    }
-    wait_for_focused_tab_changed_.Run();
   }
 
   // Flush out the ramp down animation.
@@ -128,10 +115,6 @@ class TesterImpl : public GlicBorderView::Tester {
 
   bool ramp_down_started_ = false;
   base::RunLoop wait_for_ramp_down_started_;
-
-  GURL actual_url_;
-  GURL expected_url_;
-  base::RunLoop wait_for_focused_tab_changed_;
 };
 
 class GlicBorderViewUiTest : public test::InteractiveGlicTest {
@@ -176,6 +159,17 @@ class GlicBorderViewUiTest : public test::InteractiveGlicTest {
                               PressButton(kGlicButtonElementId)),
                     CheckControllerHasWidget(true),
                     CheckControllerWidgetMode(GlicWindowMode::kAttached));
+  }
+
+  void AppendTabAndNavigate(Browser* browser, const GURL& url) {
+    auto new_tab_index = browser->tab_strip_model()->active_index() + 1;
+    content::TestNavigationObserver navigation_observer(url);
+    navigation_observer.StartWatchingNewWebContents();
+    chrome::AddTabAt(browser, url, /*index=*/new_tab_index,
+                     /*foreground=*/false);
+    navigation_observer.Wait();
+
+    browser->tab_strip_model()->ActivateTabAt(new_tab_index);
   }
 
   GURL Title1() const { return embedded_test_server()->GetURL("/title1.html"); }
@@ -333,8 +327,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, AnimationStateReset) {
 }
 
 // Ensures that the emphasis animation is restarted when tab focus changes.
-// crbug.com/406843285: Fix and Re-enable.
-IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, DISABLED_FocusedTabChange) {
+IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, FocusedTabChange) {
   auto* border = browser()->window()->AsBrowserView()->glic_border();
   ASSERT_TRUE(border);
   TesterImpl tester(border);
@@ -352,8 +345,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, DISABLED_FocusedTabChange) {
   EXPECT_NEAR(border->emphasis_for_testing(), 1.f, kFloatComparisonTolerance);
 
   // Changing the active tab.
-  chrome::AddTabAt(browser(), (embedded_test_server()->GetURL("/")),
-                   /*index=*/-1, /*foreground=*/true);
+  AppendTabAndNavigate(browser(), Title2());
   ASSERT_EQ(browser()->tab_strip_model()->active_index(), 1);
   tester.WaitForEmphasisRestarted();
 
@@ -395,12 +387,9 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, FocusedTabDestroyed) {
   TesterImpl tester(border);
 
   // Adding a new tab so the focus changes to the new tab.
-  auto title2_url = Title2();
-  chrome::AddTabAt(browser(), title2_url,
-                   /*index=*/-1, /*foreground=*/true);
+  AppendTabAndNavigate(browser(), Title2());
   ASSERT_EQ(2, browser()->tab_strip_model()->count());
   ASSERT_EQ(browser()->tab_strip_model()->active_index(), 1);
-  tester.WaitForFocusedTabChange(title2_url);
 
   StartBorderAnimation();
   tester.WaitForAnimationStart();
@@ -702,8 +691,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, FocusedTabChangeEffectTime) {
   tester.AdvanceTimeAndTickAnimation(base::Seconds(0.123));
 
   // Changing the active tab.
-  chrome::AddTabAt(browser(), Title2(),
-                   /*index=*/-1, /*foreground=*/true);
+  AppendTabAndNavigate(browser(), Title2());
   ASSERT_EQ(browser()->tab_strip_model()->active_index(), 1);
   tester.WaitForEmphasisRestarted();
 
@@ -830,12 +818,9 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewPrefersReducedMotionUiTest,
   TesterImpl tester(border);
 
   // Adding a new tab so the focus changes to the new tab.
-  auto title2_url = Title2();
-  chrome::AddTabAt(browser(), title2_url,
-                   /*index=*/-1, /*foreground=*/true);
+  AppendTabAndNavigate(browser(), Title2());
   ASSERT_EQ(2, browser()->tab_strip_model()->count());
   ASSERT_EQ(browser()->tab_strip_model()->active_index(), 1);
-  tester.WaitForFocusedTabChange(title2_url);
 
   StartBorderAnimation();
   tester.WaitForAnimationStart();
