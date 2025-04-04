@@ -7,9 +7,9 @@
 //
 // TODO(crbug.com/40279749): Avoid code duplication / reuse code.
 
-#include "build/rust/std/alias.h"
+#include "build/rust/allocator/alias.h"
 
-#include "build/rust/std/compiler_specific.h"
+#include "build/rust/allocator/compiler_specific.h"
 
 namespace build_rust_std {
 namespace debug {

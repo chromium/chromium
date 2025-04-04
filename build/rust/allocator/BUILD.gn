@@ -1,0 +1,90 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/buildflag_header.gni")
+import("//build/config/rust.gni")
+import("//build/rust/rust_static_library.gni")
+
+rust_allocator_uses_partition_alloc = false
+if (build_with_chromium) {
+  import("//base/allocator/partition_allocator/partition_alloc.gni")
+  rust_allocator_uses_partition_alloc = use_partition_alloc_as_malloc
+}
+
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+  flags = [
+    "RUST_ALLOCATOR_USES_PARTITION_ALLOC=$rust_allocator_uses_partition_alloc",
+  ]
+  visibility = [ ":*" ]
+}
+
+if (toolchain_has_rust) {
+  # All targets which depend on Rust code but are not linked by rustc must
+  # depend on this. Usually, this dependency will come from the rust_target() GN
+  # template. However, cargo_crate() does *not* include this dependency so any
+  # C++ targets which directly depend on a cargo_crate() must depend on this.
+  rust_static_library("allocator") {
+    sources = [ "lib.rs" ]
+    crate_root = "lib.rs"
+    cxx_bindings = [ "lib.rs" ]
+
+    deps = [
+      ":allocator_impls",
+      ":allocator_shim_definitions",
+    ]
+
+    no_chromium_prelude = true
+    no_allocator_crate = true
+    allow_unsafe = true
+  }
+
+  static_library("allocator_impls") {
+    public_deps = []
+    if (rust_allocator_uses_partition_alloc) {
+      public_deps += [ "//base/allocator/partition_allocator:partition_alloc" ]
+    }
+
+    sources = [
+      "allocator_impls.cc",
+      "allocator_impls.h",
+    ]
+
+    deps = [
+      ":allocator_cpp_shared",
+      ":buildflags",
+
+      # TODO(crbug.com/408221149): remove the C++ -> Rust dependency for the
+      # default allocator.
+      "//build/rust/std",
+    ]
+
+    visibility = [ ":*" ]
+  }
+
+  source_set("allocator_shim_definitions") {
+    sources = [ "allocator_shim_definitions.cc" ]
+
+    deps = [ ":allocator_cpp_shared" ]
+
+    visibility = [ ":*" ]
+  }
+
+  source_set("allocator_cpp_shared") {
+    sources = [
+      # `alias.*`, `compiler_specific.h`, and `immediate_crash.*` have been
+      # copied from `//base`.
+      # TODO(crbug.com/40279749): Avoid duplication / reuse code.
+      "alias.cc",
+      "alias.h",
+      "compiler_specific.h",
+      "immediate_crash.h",
+    ]
+
+    visibility = [
+      ":allocator_impls",
+      ":allocator_shim_definitions",
+    ]
+  }
+}

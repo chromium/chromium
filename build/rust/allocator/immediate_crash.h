@@ -5,8 +5,8 @@
 // This file has been copied from //base/immediate_crash.h.
 // TODO(crbug.com/40279749): Avoid code duplication / reuse code.
 
-#ifndef BUILD_RUST_STD_IMMEDIATE_CRASH_H_
-#define BUILD_RUST_STD_IMMEDIATE_CRASH_H_
+#ifndef BUILD_RUST_ALLOCATOR_IMMEDIATE_CRASH_H_
+#define BUILD_RUST_ALLOCATOR_IMMEDIATE_CRASH_H_
 
 #include "build/build_config.h"
 
@@ -168,4 +168,4 @@
 
 #endif  // defined(__clang__) || defined(COMPILER_GCC)
 
-#endif  // BUILD_RUST_STD_IMMEDIATE_CRASH_H_
+#endif  // BUILD_RUST_ALLOCATOR_IMMEDIATE_CRASH_H_

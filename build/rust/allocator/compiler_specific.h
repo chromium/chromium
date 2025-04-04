@@ -7,8 +7,8 @@
 //
 // TODO(crbug.com/40279749): Avoid code duplication / reuse code.
 
-#ifndef BUILD_RUST_STD_COMPILER_SPECIFIC_H_
-#define BUILD_RUST_STD_COMPILER_SPECIFIC_H_
+#ifndef BUILD_RUST_ALLOCATOR_COMPILER_SPECIFIC_H_
+#define BUILD_RUST_ALLOCATOR_COMPILER_SPECIFIC_H_
 
 #include "build/build_config.h"
 
@@ -35,4 +35,4 @@
 #define NOINLINE
 #endif
 
-#endif  // BUILD_RUST_STD_COMPILER_SPECIFIC_H_
+#endif  // BUILD_RUST_ALLOCATOR_COMPILER_SPECIFIC_H_

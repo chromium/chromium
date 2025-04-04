@@ -8,8 +8,8 @@
 //
 // TODO(crbug.com/40279749): Avoid code duplication / reuse code.
 
-#ifndef BUILD_RUST_STD_ALIAS_H_
-#define BUILD_RUST_STD_ALIAS_H_
+#ifndef BUILD_RUST_ALLOCATOR_ALIAS_H_
+#define BUILD_RUST_ALLOCATOR_ALIAS_H_
 
 #include <stddef.h>
 
@@ -34,4 +34,4 @@ void Alias(const void* var);
   const int line_number = __LINE__; \
   build_rust_std::debug::Alias(&line_number)
 
-#endif  // BUILD_RUST_STD_ALIAS_H_
+#endif  // BUILD_RUST_ALLOCATOR_ALIAS_H_

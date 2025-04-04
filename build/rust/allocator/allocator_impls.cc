@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "build/rust/allocator/allocator_impls.h"
+
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
 #pragma allow_unsafe_libc_calls
@@ -11,9 +13,9 @@
 #include <cstring>
 
 #include "build/build_config.h"
-#include "build/rust/std/alias.h"
-#include "build/rust/std/buildflags.h"
-#include "build/rust/std/immediate_crash.h"
+#include "build/rust/allocator/alias.h"
+#include "build/rust/allocator/buildflags.h"
+#include "build/rust/allocator/immediate_crash.h"
 
 #if BUILDFLAG(RUST_ALLOCATOR_USES_PARTITION_ALLOC)
 #include "partition_alloc/partition_alloc_constants.h"  // nogncheck
@@ -22,6 +24,11 @@
 #include <cstdlib>
 #endif
 
+// NOTE: this documentation is outdated.
+//
+// TODO(crbug.com/408221149): update this documentation, or replace it with docs
+// in the Rust allocator implementation.
+//
 // When linking a final binary, rustc has to pick between either:
 // * The default Rust allocator
 // * Any #[global_allocator] defined in *any rlib in its dependency tree*
@@ -87,19 +94,6 @@
 // enabling it breaks Win32 APIs like CreateProcess:
 // https://issues.chromium.org/u/1/issues/368070343#comment29
 
-extern "C" {
-
-#ifdef COMPONENT_BUILD
-#if BUILDFLAG(IS_WIN)
-#define REMAP_ALLOC_ATTRIBUTES __declspec(dllexport) __attribute__((weak))
-#else
-#define REMAP_ALLOC_ATTRIBUTES \
-  __attribute__((visibility("default"))) __attribute__((weak))
-#endif
-#else
-#define REMAP_ALLOC_ATTRIBUTES __attribute__((weak))
-#endif  // COMPONENT_BUILD
-
 #if !BUILDFLAG(RUST_ALLOCATOR_USES_PARTITION_ALLOC) && BUILDFLAG(IS_WIN) && \
     defined(ADDRESS_SANITIZER)
 #define USE_WIN_ALIGNED_MALLOC 1
@@ -107,17 +101,19 @@ extern "C" {
 #define USE_WIN_ALIGNED_MALLOC 0
 #endif
 
-// This must exist as the stdlib depends on it to prove that we know the
-// alloc shims below are unstable. In the future we may be required to replace
-// them with a #[global_allocator] crate (see file comment above for more).
-//
-// Marked as weak as when Rust drives linking it includes this symbol itself,
-// and we don't want a collision due to C++ being in the same link target, where
-// C++ causes us to explicitly link in the stdlib and this symbol here.
-[[maybe_unused]]
-__attribute__((weak)) unsigned char __rust_no_alloc_shim_is_unstable;
+// The default allocator functions provided by the Rust standard library.
+extern "C" void* __rdl_alloc(size_t size, size_t align);
+extern "C" void __rdl_dealloc(void* p, size_t size, size_t align);
+extern "C" void* __rdl_realloc(void* p,
+                               size_t old_size,
+                               size_t align,
+                               size_t new_size);
 
-REMAP_ALLOC_ATTRIBUTES void* __rust_alloc(size_t size, size_t align) {
+extern "C" void* __rdl_alloc_zeroed(size_t size, size_t align);
+
+namespace rust_allocator_internal {
+
+unsigned char* alloc(size_t size, size_t align) {
 #if BUILDFLAG(RUST_ALLOCATOR_USES_PARTITION_ALLOC)
   // PartitionAlloc will crash if given an alignment larger than this.
   if (align > partition_alloc::internal::kMaxSupportedAlignment) {
@@ -125,19 +121,19 @@ REMAP_ALLOC_ATTRIBUTES void* __rust_alloc(size_t size, size_t align) {
   }
 
   if (align <= alignof(std::max_align_t)) {
-    return allocator_shim::UncheckedAlloc(size);
+    return static_cast<unsigned char*>(allocator_shim::UncheckedAlloc(size));
   } else {
-    return allocator_shim::UncheckedAlignedAlloc(size, align);
+    return static_cast<unsigned char*>(
+        allocator_shim::UncheckedAlignedAlloc(size, align));
   }
 #elif USE_WIN_ALIGNED_MALLOC
-  return _aligned_malloc(size, align);
+  return static_cast<unsigned char*>(_aligned_malloc(size, align));
 #else
-  extern void* __rdl_alloc(size_t size, size_t align);
-  return __rdl_alloc(size, align);
+  return static_cast<unsigned char*>(__rdl_alloc(size, align));
 #endif
 }
 
-REMAP_ALLOC_ATTRIBUTES void __rust_dealloc(void* p, size_t size, size_t align) {
+void dealloc(unsigned char* p, size_t size, size_t align) {
 #if BUILDFLAG(RUST_ALLOCATOR_USES_PARTITION_ALLOC)
   if (align <= alignof(std::max_align_t)) {
     allocator_shim::UncheckedFree(p);
@@ -147,54 +143,44 @@ REMAP_ALLOC_ATTRIBUTES void __rust_dealloc(void* p, size_t size, size_t align) {
 #elif USE_WIN_ALIGNED_MALLOC
   return _aligned_free(p);
 #else
-  extern void __rdl_dealloc(void* p, size_t size, size_t align);
   __rdl_dealloc(p, size, align);
 #endif
 }
 
-REMAP_ALLOC_ATTRIBUTES void* __rust_realloc(void* p,
-                                            size_t old_size,
-                                            size_t align,
-                                            size_t new_size) {
+unsigned char* realloc(unsigned char* p,
+                       size_t old_size,
+                       size_t align,
+                       size_t new_size) {
 #if BUILDFLAG(RUST_ALLOCATOR_USES_PARTITION_ALLOC)
   if (align <= alignof(std::max_align_t)) {
-    return allocator_shim::UncheckedRealloc(p, new_size);
+    return static_cast<unsigned char*>(
+        allocator_shim::UncheckedRealloc(p, new_size));
   } else {
-    return allocator_shim::UncheckedAlignedRealloc(p, new_size, align);
+    return static_cast<unsigned char*>(
+        allocator_shim::UncheckedAlignedRealloc(p, new_size, align));
   }
 #elif USE_WIN_ALIGNED_MALLOC
-  return _aligned_realloc(p, new_size, align);
+  return static_cast<unsigned char*>(_aligned_realloc(p, new_size, align));
 #else
-  extern void* __rdl_realloc(void* p, size_t old_size, size_t align,
-                             size_t new_size);
-  return __rdl_realloc(p, old_size, align, new_size);
+  return static_cast<unsigned char*>(
+      __rdl_realloc(p, old_size, align, new_size));
 #endif
 }
 
-REMAP_ALLOC_ATTRIBUTES void* __rust_alloc_zeroed(size_t size, size_t align) {
+unsigned char* alloc_zeroed(size_t size, size_t align) {
 #if BUILDFLAG(RUST_ALLOCATOR_USES_PARTITION_ALLOC) || USE_WIN_ALIGNED_MALLOC
   // TODO(danakj): When RUST_ALLOCATOR_USES_PARTITION_ALLOC is true, it's
   // possible that a partition_alloc::UncheckedAllocZeroed() call would perform
   // better than partition_alloc::UncheckedAlloc() + memset. But there is no
   // such API today. See b/342251590.
-  void* p = __rust_alloc(size, align);
+  unsigned char* p = alloc(size, align);
   if (p) {
     memset(p, 0, size);
   }
   return p;
 #else
-  extern void* __rdl_alloc_zeroed(size_t size, size_t align);
-  return __rdl_alloc_zeroed(size, align);
+  return static_cast<unsigned char*>(__rdl_alloc_zeroed(size, align));
 #endif
 }
 
-REMAP_ALLOC_ATTRIBUTES void __rust_alloc_error_handler(size_t size,
-                                                       size_t align) {
-  NO_CODE_FOLDING();
-  IMMEDIATE_CRASH();
-}
-
-REMAP_ALLOC_ATTRIBUTES extern const unsigned char
-    __rust_alloc_error_handler_should_panic = 0;
-
-}  // extern "C"
+}  // namespace rust_allocator_internal
