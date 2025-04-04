@@ -2285,6 +2285,7 @@ source_set("blink_platform_unittests_sources") {
     "graphics/parkable_image_segment_reader_test.cc",
     "graphics/parkable_image_test.cc",
     "graphics/raster_dark_mode_filter_impl_test.cc",
+    "graphics/static_bitmap_image_transform_test.cc",
     "graphics/video_frame_image_util_test.cc",
     "graphics/video_frame_sink_bundle_test.cc",
     "graphics/video_frame_submitter_test.cc",
