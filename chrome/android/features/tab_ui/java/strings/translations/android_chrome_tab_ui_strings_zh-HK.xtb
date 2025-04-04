@@ -19,6 +19,7 @@
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> 分鐘前建立}other{<ph name="NUM_MINS_MANY" /> 分鐘前建立}}</translation>
 <translation id="1499635324672558517">要關閉所有無痕式分頁嗎？</translation>
 <translation id="1501480321619201731">刪除群組</translation>
+<translation id="1505526451013346974">加去「<ph name="TITLE_OF_GROUP" />」</translation>
 <translation id="1555130319947370107">藍色</translation>
 <translation id="161042844686301425">青色</translation>
 <translation id="1645759014353344461">已將 <ph name="TABS_COUNT_MANY" /> 個分頁加入群組</translation>
@@ -85,7 +86,6 @@
 <translation id="4076226664360336092">分頁群組清單，目前顯示於整個畫面</translation>
 <translation id="4133493477912226187">似乎有 <ph name="NUMBER_OF_TABS" /> 個相關的分頁。要唔要將佢哋分組？</translation>
 <translation id="4139634748112164403">系統不會在此裝置上關閉這些分頁，但會永久刪除此群組</translation>
-<translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{閂有 <ph name="TABS_COUNT_ONE" /> 個分頁嘅「<ph name="TITLE_OF_GROUP" />」分頁群組，顏色係<ph name="COLOR_NAME" />。}other{閂有 <ph name="TABS_COUNT_MANY" /> 個分頁嘅「<ph name="TITLE_OF_GROUP" />」分頁群組，顏色係<ph name="COLOR_NAME" />。}}</translation>
 <translation id="4159784952369912983">紫色</translation>
 <translation id="427987768447457592">新分頁群組</translation>
 <translation id="4371591986692297148">未啟用</translation>
@@ -119,7 +119,6 @@
 <translation id="5446043142172831860">移除分頁並離開群組</translation>
 <translation id="5490235265819901748">展開咗分頁群組</translation>
 <translation id="5494920125229734069">全部選取</translation>
-<translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{閂有 <ph name="TABS_COUNT_ONE" /> 個分頁嘅分頁群組，顏色係<ph name="COLOR_NAME" />。}other{閂有 <ph name="TABS_COUNT_MANY" /> 個分頁嘅分頁群組，顏色係<ph name="COLOR_NAME" />。}}</translation>
 <translation id="5556417849629758491">商店資料同可用選項喺螢幕最頂嘅附近</translation>
 <translation id="5627941783489838464">沒有分頁更新</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{還原分頁}other{還原分頁}}</translation>
@@ -213,7 +212,7 @@
 <translation id="8820741577754260431">在分頁上查看降價資料</translation>
 <translation id="8887921976452567404">你可以在「最近開啟的分頁」和「分頁群組」部分重新開啟已關閉的分頁和群組。</translation>
 <translation id="8915916167043355778">全部關閉</translation>
-<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{移到新視窗}other{移到其他視窗}}</translation>
+<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{移至新視窗}other{移至其他視窗}}</translation>
 <translation id="9090098097337832354">閂咗關於呢間商店嘅資料</translation>
 <translation id="9114502155681725011">開啟分頁群組「<ph name="TITLE_OF_GROUP" />」的操作選單，顏色為「<ph name="COLOR_NAME" />」。</translation>
 <translation id="9169141410816678175">所有人將立即無法再存取「<ph name="GROUP_NAME" />」分頁群組，此分頁群組亦會從所有裝置刪除</translation>

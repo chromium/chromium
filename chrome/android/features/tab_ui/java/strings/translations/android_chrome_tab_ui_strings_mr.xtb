@@ -86,7 +86,6 @@
 <translation id="4076226664360336092">टॅब गट सूची, पूर्ण उंचीवर उघडली आहे</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> टॅब संबंधित वाटतात. त्यांचा गट बनवायचा का?</translation>
 <translation id="4139634748112164403">या डिव्हाइसवर टॅब उघडे राहती, गट कायमचा हटवला जाईल</translation>
-<translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{<ph name="TITLE_OF_GROUP" /> गट <ph name="TABS_COUNT_ONE" /> टॅब, <ph name="COLOR_NAME" /> रंग वापरून बंद करा.}other{<ph name="TITLE_OF_GROUP" /> गट <ph name="TABS_COUNT_MANY" /> टॅब, <ph name="COLOR_NAME" /> रंग वापरून बंद करा.}}</translation>
 <translation id="4159784952369912983">जांभळा</translation>
 <translation id="427987768447457592">नवीन टॅब गट</translation>
 <translation id="4371591986692297148">इनॅक्टिव्ह आहे</translation>
@@ -120,7 +119,6 @@
 <translation id="5446043142172831860">टॅब काढून टाका आणि गटातून बाहेर पडा</translation>
 <translation id="5490235265819901748">टॅब गटाचा विस्तार केला आहे</translation>
 <translation id="5494920125229734069">सर्व निवडा</translation>
-<translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{टॅब गट <ph name="TABS_COUNT_ONE" /> टॅब, <ph name="COLOR_NAME" /> रंग वापरून बंद करा.}other{टॅब गट <ph name="TABS_COUNT_MANY" /> टॅब, <ph name="COLOR_NAME" /> रंग वापरून बंद करा.}}</translation>
 <translation id="5556417849629758491">स्टोअरची माहिती पहा, पर्याय स्क्रीनच्या सर्वात वर उपलब्ध आहे</translation>
 <translation id="5627941783489838464">टॅब अपडेट नाहीत</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{टॅब रिस्टोअर करा}other{टॅब रिस्टोअर करा}}</translation>

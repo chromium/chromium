@@ -97,6 +97,7 @@
 <translation id="1377508275003315939">പാസ്‌വേഡുകൾ</translation>
 <translation id="1381022135873211423">{count,plural, =1{{count} വിലാസത്തിൽ {position}-ാമത്തേത്}other{{count} വിലാസങ്ങളിൽ {position}-ാമത്തേത്}}</translation>
 <translation id="1383876407941801731">തിരയുക</translation>
+<translation id="1385168997509105202">നിങ്ങൾക്ക് ഉടൻ തന്നെ “<ph name="GROUP_NAME" />" ടാബ് ഗ്രൂപ്പിലേക്കുള്ള ആക്‌സസ് നഷ്‌ടമാകും, Google സേവനങ്ങളിലുടനീളം <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) എന്നയാൾക്ക് ഇനി നിങ്ങളുമായി ഇടപഴകാനാകില്ല.</translation>
 <translation id="138618066238211776"><ph name="USER_NAME" /> ആയി തുടരുക</translation>
 <translation id="138692594145659985">കാർഡ് സംരക്ഷിക്കാനുള്ള ഓപ്ഷനുകൾ</translation>
 <translation id="1396260204083880024"><ph name="USER_NAME" /> എന്നയാളായി സൈൻ ഇൻ ചെയ്‌തു. <ph name="USER_EMAIL" />. അക്കൗണ്ട് മെനു തുറക്കുക.</translation>
@@ -260,6 +261,7 @@
 <translation id="2010008505735295285">റീലോഡ് ചെയ്യുക</translation>
 <translation id="2015722694326466240">പാസ്‍വേഡുകൾ കാണാൻ, ആദ്യം നിങ്ങളുടെ ഉപകരണത്തിൽ പാസ്‌കോഡ് സജ്ജീകരിക്കുക.</translation>
 <translation id="201759455285471444">ടാബ് ഗ്രൂപ്പ് വികസിപ്പിക്കുക.</translation>
+<translation id="202070562065520783">ഇത് എന്നോട് വിശദീകരിക്കുക</translation>
 <translation id="2021670401941426298">ബാധകമെങ്കിൽ, നിങ്ങളുടെ തിരയൽ ചരിത്രം ഇല്ലാതാക്കാനുള്ള തിരയൽ യന്ത്രത്തിന്റെ നിർദ്ദേശങ്ങൾ കാണുക.</translation>
 <translation id="2044394949148788042">ടാബ് ഗ്രിഡ് തുറക്കുക</translation>
 <translation id="20485545164632846">പുതിയ ഇനം</translation>
@@ -512,6 +514,7 @@
 <translation id="3124568093781685165">നിങ്ങളുടെ പാസ്‌വേഡുകൾ നിങ്ങളുടെ കുടുംബവുമായി പങ്കിടൂ</translation>
 <translation id="3130863904455712965">ചരിത്രവും മറ്റും</translation>
 <translation id="313283613037595347">പുതിയ അദൃശ്യ ടാബ് സൃഷ്‌ടിക്കുക.</translation>
+<translation id="3136739222562075778">നിങ്ങളുടെ തുറന്നിരിക്കുന്ന ടാബുകളിലെ ഉൽപ്പന്നങ്ങളുടെ വിലക്കുറവുകൾ ഈ കാർഡ് കാണിക്കുന്നു</translation>
 <translation id="3138611310073113613">തിരഞ്ഞെടുത്തത് ഉപേക്ഷിക്കുക</translation>
 <translation id="3140825265190223781">സംരക്ഷിച്ച പാസ്‌വേഡുകളും പാസ്‌കീകളും</translation>
 <translation id="3143515551205905069">സമന്വയം റദ്ദാക്കുക</translation>
@@ -523,6 +526,7 @@
 <translation id="3167868116600277716">Discover ഫീഡ്</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3174662312949010067">സംരക്ഷിച്ച പാസ്‌വേഡുകൾ നിങ്ങളുടെ മറ്റ് ഉപകരണങ്ങളിലും ഉപയോഗിക്കാനാകും.</translation>
+<translation id="3177338796769255211">ബുക്ക്‌മാർക്കുകളും മറ്റും നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിലും നേടുന്നതിന് സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="3181954750937456830">സുരക്ഷിത ബ്രൗസിംഗ് (അപകടകരമായ സൈറ്റുകളിൽ നിന്ന് നിങ്ങളെയും ഉപകരണത്തെയും പരിരക്ഷിക്കുന്നു)</translation>
 <translation id="3190736958609431397">ട്രാക്ക് ചെയ്യുന്നത് അവസാനിപ്പിക്കുക</translation>
 <translation id="3208260410153224535">നിങ്ങളുടെ സ്ഥാപനം, സൈൻ ഇൻ ചെയ്യൽ ഓഫാക്കി. പുതിയ ബുക്ക്‌മാർക്കുകളും പാസ്‌വേഡുകളും മറ്റും ഈ ഉപകരണത്തിൽ മാത്രമേ സംരക്ഷിക്കൂ.</translation>
@@ -963,7 +967,6 @@
 <translation id="5087098519049306025">നിരക്ക് ട്രാക്ക് ചെയ്യൽ</translation>
 <translation id="5090832849094901128">ഈ പാസ്‌വേഡ് ഇല്ലാതാക്കുന്നത് <ph name="WEBSITE" /> -ലെ നിങ്ങളുടെ അക്കൗണ്ട് ഇല്ലാതാക്കില്ല.</translation>
 <translation id="5118462200606189584">അക്കൗണ്ട് ചേർക്കുക…</translation>
-<translation id="5118713593561876160">താൽപ്പര്യങ്ങൾ</translation>
 <translation id="5118764316110575523">ഓഫാണ്</translation>
 <translation id="5119329531859909472">ഉൽപ്പന്നം ട്രാക്ക് ചെയ്യാൻ, 'ട്രാക്ക് ചെയ്യുക' ടാപ്പ് ചെയ്യുക</translation>
 <translation id="5121618895923301719">നിങ്ങൾ ഇതിനകം ഈ ഉൽപ്പന്നം ട്രാക്ക് ചെയ്യുന്നുണ്ട്. ഈ പേജ് <ph name="BEGIN_LINK" />മൊബൈൽ ബുക്ക്‌മാർക്കുകളിൽ<ph name="END_LINK" /> സംരക്ഷിച്ചിരിക്കുന്നു.</translation>
@@ -988,6 +991,7 @@
 <translation id="5197255632782567636">ഇന്‍റര്‍നെറ്റ്</translation>
 <translation id="5200894869889836319">അനുമതികൾ സജ്ജീകരിക്കാനുള്ള ഓപ്ഷനുകൾ</translation>
 <translation id="5203051773066903947">നൽകുക</translation>
+<translation id="5205750905107419335"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) എന്നയാൾക്ക് ഉടൻ തന്നെ “<ph name="GROUP_NAME" />" ടാബ് ഗ്രൂപ്പിലേക്കുള്ള ആക്‌സസ് നഷ്‌ടമാകും, Google സേവനങ്ങളിലുടനീളം ഇനി നിങ്ങളുമായി ഇടപഴകാനാകില്ല.</translation>
 <translation id="5206453674369664567">സൈൻ ഔട്ട് ചെയ്ത് ഡാറ്റ മായ്ക്കുക</translation>
 <translation id="5210365745912300556">ടാബ് അടയ്ക്കൂക</translation>
 <translation id="5211488077761630279">"<ph name="SITE_NAME" />" എന്നതിനെ നിങ്ങളുടെ <ph name="PERMISSION" /> ഉപയോഗിക്കാൻ അനുവദിക്കണോ?</translation>
@@ -1069,6 +1073,7 @@
 <translation id="5567439033041178034">കൂടുതലറിയുക</translation>
 <translation id="5572648434713976849">വിലാസ ബാറിൽ നിങ്ങൾക്ക്, മെച്ചപ്പെടുത്തിയ നിർദ്ദേശങ്ങൾ ലഭിക്കും</translation>
 <translation id="5576885723883013398">പുതിയ വിൻഡോ</translation>
+<translation id="5578543325423650885"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) എന്നയാൾക്ക് ഉടൻ തന്നെ “<ph name="GROUP_NAME" />" ടാബ് ഗ്രൂപ്പിലേക്കുള്ള ആക്‌സസ് നഷ്‌ടമാകും.</translation>
 <translation id="5578795271662203820">ഈ ചിത്രത്തിനായി <ph name="SEARCH_ENGINE" />-ൽ തിരയുക</translation>
 <translation id="5579012242779565775">'വായിക്കാനുള്ളവയുടെ ലിസ്‌റ്റ്' മറയ്ക്കുക</translation>
 <translation id="5585019845078534178">കാർഡുകൾ</translation>

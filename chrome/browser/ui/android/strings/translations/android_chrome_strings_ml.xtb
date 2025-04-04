@@ -77,6 +77,7 @@
 <translation id="1298077576058087471">60% വരെ ഡാറ്റ ലാഭിക്കൂ, ഇന്നത്തെ വാർത്തകൾ വായിക്കൂ</translation>
 <translation id="1303339473099049190">പാസ്‌വേഡ് കണ്ടെത്താനായില്ല. അക്ഷരത്തെറ്റ് പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - <ph name="DEVICE_NAME" />-ൽ നിന്ന് അയച്ചത്</translation>
+<translation id="1318262688555255786"><ph name="PAGE_TITLE" /> എന്ന വെബ്പേജിലേക്കുള്ള ലിങ്ക് പങ്കിടുക. ഉറവിടം: <ph name="PAGE_URL" /></translation>
 <translation id="1320912611264252795">ബുക്ക്‌മാർക്ക് സംരക്ഷിക്കൽ ഫ്ലോ ഫോൾഡറുകൾ മുഴുവൻ ഉയരത്തിൽ തുറന്നു</translation>
 <translation id="1327257854815634930">നാവിഗേഷൻ ചരിത്രം തുറന്നിരിക്കുന്നു</translation>
 <translation id="1331212799747679585">Chrome അപ്‌ഡേറ്റ് ചെയ്യാനാവില്ല. കൂടുതൽ ഓപ്‌ഷനുകൾ</translation>
@@ -455,6 +456,7 @@
 <translation id="3072980200212375806"><ph name="APP_NAME" />, Chrome-ൽ തുറക്കും. തുടരുന്നതിലൂടെ, നിങ്ങൾ <ph name="BEGIN_LINK1" />Google സേവന നിബന്ധനകളും<ph name="END_LINK1" /> <ph name="BEGIN_LINK2" />Google Chrome, ChromeOS അധിക സേവന നിബന്ധനകളും<ph name="END_LINK2" /> അംഗീകരിക്കുന്നു. <ph name="BEGIN_LINK3" />സ്വകാര്യതാ നയവും<ph name="END_LINK3" /> ബാധകമാണ്.</translation>
 <translation id="3080525922482950719">പിന്നീട് അല്ലെങ്കിൽ ഓഫ്‌ലൈനിൽ വായിക്കുന്നതിന് നിങ്ങൾക്ക് പേജുകൾ സംരക്ഷിക്കാനാകും</translation>
 <translation id="3087734570205094154">താഴെ</translation>
+<translation id="3088687687599869821">പേജ് നാവിഗേഷൻ</translation>
 <translation id="3091010850649238832">ക്ലിപ്പ്ബോർഡിലെ ഉള്ളടക്കങ്ങൾ കാണിക്കുക</translation>
 <translation id="3098745985164956033">മെച്ചപ്പെട്ട വിവരണങ്ങൾ നിങ്ങൾക്ക് നൽകുന്നതിന് ചില ചിത്രങ്ങൾ Google-ന് അയയ്ക്കുന്നു</translation>
 <translation id="3114507951000454849">ഇന്നത്തെ വാർത്തകൾ വായിക്കൂ <ph name="NEWS_ICON" /></translation>
@@ -515,6 +517,7 @@
 <translation id="3435465986463792564">നിരവധി വിൻഡോകളുണ്ടോ? അവ നിങ്ങൾക്ക് ഇവിടെ മാനേജ് ചെയ്യാം</translation>
 <translation id="3435575784518354875">നിങ്ങളുടെ പാസ്‌വേഡുകളിലേക്കുള്ള ആക്‌സസ് നിലനിർത്താൻ, അവ ഇപ്പോൾ എക്‌സ്‌പോർട്ട് ചെയ്യുക, Google Play സേവനങ്ങൾ അപ്‌ഡേറ്റ് ചെയ്യുക, തുടർന്ന് Google Password Manager-ലേക്ക് തിരികെ ഇമ്പോർട്ട് ചെയ്യുക. <ph name="BEGIN_LINK" />പൂർണ്ണമായ നിർദ്ദേശങ്ങൾ കാണുക<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">സുരക്ഷ</translation>
+<translation id="3435914367318771664">പുതിയ ഗ്രൂപ്പിലേക്ക് ടാബ് ചേർക്കുക</translation>
 <translation id="3439276997620616816">നിങ്ങളുടെ സമീപകാല ടാബുകൾ ഇവിടെ കാണാം</translation>
 <translation id="3443221991560634068">നിലവിലെ പേജ് റീലോഡ് ചെയ്യുക</translation>
 <translation id="3444179773590444986">സൈറ്റുകൾക്കുള്ള ഡാർക്ക് തീമുകൾ സംബന്ധിച്ച് ഫീഡ്ബാക്ക് പങ്കിടണോ?</translation>
@@ -612,6 +615,7 @@
 <translation id="3856096718352044181">ഇത് സാധുതയുള്ളൊരു ദാതാവാണെന്ന് പരിശോധിച്ചുറപ്പിക്കുക അല്ലെങ്കിൽ പിന്നീട് വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="3858860766373142691">പേര്</translation>
 <translation id="3863527519275151528">അറിയിപ്പ് പ്രോസസ് ചെയ്യുന്നു</translation>
+<translation id="3866863539038222107">പരിശോധിക്കുക</translation>
 <translation id="3870908470613821006">എല്ലാവർക്കും ഉടൻ തന്നെ “<ph name="GROUP_NAME" />” ടാബ് ഗ്രൂപ്പിലേക്കുള്ള ആക്‌സസ് നഷ്‌ടമാകും, അത് എല്ലാ ഉപകരണങ്ങളിൽ നിന്നും ഇല്ലാതാക്കുകയും ചെയ്യും</translation>
 <translation id="3873174561423636563">തുടരാൻ, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> നിങ്ങളുടെ <ph name="FIELDS_STRING" /> ഈ സൈറ്റുമായി പങ്കിടും. ഈ സൈറ്റിന്റെ <ph name="BEGIN_LINK1" />സേവന നിബന്ധനകൾ<ph name="END_LINK1" /> കാണുക.</translation>
 <translation id="3892148308691398805">ടെക്‌സ്‌റ്റ് പകർത്തുക</translation>
@@ -780,6 +784,7 @@
 <translation id="4684427112815847243">എല്ലാം സമന്വയിപ്പിക്കുക</translation>
 <translation id="4685741273709472646">ഡ്രോപ്പ്ഡൗൺ ലിസ്റ്റിൽ നിന്ന് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="4687718960473379118">സൈറ്റ് നിർദ്ദേശിത പരസ്യം</translation>
+<translation id="468924408576231679"><ph name="PAGE_TITLE" /> എന്ന വെബ്പേജിലേക്കുള്ള ലിങ്ക് പകർത്തുക. ഉറവിടം: <ph name="PAGE_URL" /></translation>
 <translation id="469286762610133730">കൂടുതൽ മെച്ചപ്പെട്ട ഉള്ളടക്കം നേടുക</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 എന്നതും ‌മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> പേയ്‌മെന്റ് രീതികളും}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 എന്നതും ‌മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> പേയ്‌മെന്റ് രീതികളും}}</translation>
 <translation id="4698061626562952596">നിങ്ങളുടെ നിഷ്‌ക്രിയമായ ടാബുകൾ ഇവിടെ അവലോകനം ചെയ്യുക</translation>
@@ -1056,6 +1061,7 @@
 <translation id="5907542076239273525"><ph name="FOLDER_NAME" /> ഫോൾഡറിൽ ബുക്ക്‌മാർക്ക് സംരക്ഷിച്ചു</translation>
 <translation id="5916664084637901428">ഓൺ ചെയ്യുക</translation>
 <translation id="5919204609460789179">സമന്വയിപ്പിക്കാൻ തുടങ്ങുന്നതിന്, <ph name="PRODUCT_NAME" /> അപ്‌ഡേറ്റ് ചെയ്യുക</translation>
+<translation id="5932881020239635062">സീരിയൽ</translation>
 <translation id="5938820472109305350"><ph name="INTEREST" /> ചേർക്കുക</translation>
 <translation id="5942872142862698679">തിരയാൻ Google ഉപയോഗിക്കുന്നു</translation>
 <translation id="5945035219773565305">നിലവിലെ നിർദ്ദേശം: <ph name="RECOMMENDATION" /></translation>
@@ -1121,6 +1127,7 @@
 <translation id="6205314730813004066">പരസ്യവുമായി ബന്ധപ്പെട്ട സ്വകാര്യത</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> അല്ലേ?</translation>
 <translation id="6211386937064921208">ഈ പേജ് പ്രിവ്യു ചെയ്യുന്നു</translation>
+<translation id="6212567362666004597">ഗ്രൂപ്പിലേക്ക് ടാബ് ചേർക്കുക</translation>
 <translation id="6221633008163990886">നിങ്ങളുടെ പാസ്‌വേഡുകൾ എക്‌സ്‌പോർട്ട് ചെയ്യാൻ അൺലോക്ക് ചെയ്യുക</translation>
 <translation id="6225572914528673855">വിലാസ ബാർ</translation>
 <translation id="6232535412751077445">നിങ്ങളുടെ ബ്രൗസിംഗ് ട്രാഫിക്കിൽ ഒരു അഭ്യർത്ഥന ഉൾപ്പെടുത്തുമെന്നാണ് 'ട്രാക്ക് ചെയ്യരുത്' ഫീച്ചർ പ്രവർത്തനക്ഷമമാക്കുക എന്നത് അർത്ഥമാക്കുന്നത്. അതിനെ തുടർന്നുള്ള ഏതൊരു കാര്യവും, ഒരു വെബ്‌സൈറ്റ് അഭ്യർത്ഥനയിന്മേൽ പ്രതികരിക്കുന്നുണ്ടോ എന്നതിനെയും അഭ്യർത്ഥന വ്യാഖ്യാനിക്കുന്നതെങ്ങനെ എന്നതിനെയും ആശ്രയിച്ചിരിക്കും.
@@ -1148,6 +1155,7 @@
 <translation id="6324916366299863871">കുറുക്കുവഴി എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="6324977638108296054">ഹൈലൈറ്റിലേക്കുള്ള ലിങ്ക് സൃഷ്‌ടിക്കാനാകുന്നില്ല</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> വഴി പങ്കിടുക</translation>
+<translation id="6335454563754888572">ഇനിപ്പറയുന്നതിലെ പേജിലേക്ക് പോയിന്റ് ചെയ്യുന്ന URL എഡിറ്റ് ചെയ്യുക: <ph name="PAGE_URL" /></translation>
 <translation id="6337234675334993532">എന്‍ക്രിപ്ഷന്‍</translation>
 <translation id="6340526405444716530">വ്യക്തിപരമാക്കൽ</translation>
 <translation id="6341580099087024258">ഫയലുകൾ എവിടെയാണ് സംരക്ഷിക്കേണ്ടതെന്ന് ചോദിക്കുക</translation>
@@ -1191,6 +1199,7 @@
 <translation id="6486420406192123355">ഈ PDF ഫയൽ, സുരക്ഷിതമല്ലാത്ത കണക്ഷൻ ഉപയോഗിക്കുന്ന സൈറ്റിൽ നിന്നാണ്</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{ഫയൽ ഡൗൺലോഡ് ചെയ്‌തു}other{# ഡൗൺലോഡുകൾ പൂർത്തിയായി}}</translation>
 <translation id="6508722015517270189">Chrome റീസ്‌റ്റാർട്ടുചെയ്യുക</translation>
+<translation id="6513924416597632811">ഇനിപ്പറയുന്നതിനുള്ള തിരയൽ ഫലങ്ങളുടെ പേജിലേക്കുള്ള ലിങ്ക് പകർത്തുക: <ph name="SEARCH_QUERY" />. ഉറവിടം: <ph name="PAGE_URL" /></translation>
 <translation id="6518133107902771759">സ്ഥിരീകരിക്കുക</translation>
 <translation id="6527303717912515753">പങ്കിടുക</translation>
 <translation id="652948702951888897">Chrome ചരിത്രം</translation>
@@ -1602,6 +1611,7 @@
 <translation id="8221401890884589479">ആവശ്യമില്ലാത്ത സൈറ്റുകൾ നിങ്ങൾക്ക് ബ്ലോക്ക് ചെയ്യാം. 30 ദിവസത്തിലധികം പഴക്കമുള്ള സൈറ്റുകൾ ലിസ്റ്റിൽ നിന്ന് Chrome സ്വയമേവ ഇല്ലാതാക്കുന്നു. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="8221985041778490865">ബ്രൗസിംഗ് ഡാറ്റ ഇല്ലാതാക്കുന്നു</translation>
 <translation id="8223642481677794647">ഫീഡ് കാർഡ് മെനു</translation>
+<translation id="82296173028782770">തിരയൽ പദം എഡിറ്റ് ചെയ്യുക: <ph name="SEARCH_QUERY" /></translation>
 <translation id="8236063039629122676">ഇപ്പോൾ, വലത് സ്വൈപ്പ് ചെയ്യുമ്പോൾ, നിങ്ങൾ മുമ്പ് സന്ദർശിച്ച പേജുകൾ കാണുന്നതിനായി നിങ്ങളെ പിന്നിലേക്ക് കൊണ്ടുപോകുകയും ഇടത് സ്വൈപ്പ് ചെയ്യുമ്പോൾ നിങ്ങളെ മുന്നോട്ട് കൊണ്ടുപോകുകയും ചെയ്യുന്നു</translation>
 <translation id="8236097722223016103">ബുക്ക്‌മാർക്കുകളിൽ ചേർക്കുക</translation>
 <translation id="8243077599929149377">നിങ്ങളുടെ ഉപയോക്തൃനാമം ചേർക്കുക</translation>
@@ -1750,6 +1760,7 @@
 <translation id="8890668505403261809">നിങ്ങളുടെ അദൃശ്യ ടാബുകൾ തിരയുക</translation>
 <translation id="8898822736010347272">വെബിലെ പുതിയ ഭീഷണികൾ കണ്ടെത്തി എല്ലാവരെയും പരിരക്ഷിക്കാൻ സഹായിക്കുന്നതിന് നിങ്ങൾ സന്ദർശിക്കുന്ന ചില പേജുകളുടെ URL-കൾ, പരിമിത സിസ്‌റ്റം വിവരങ്ങൾ, ചില പേജുകളുടെ ഉള്ളടക്കം എന്നിവ Google-ലേക്ക് അയയ്ക്കുന്നു.</translation>
 <translation id="8909135823018751308">പങ്കിടുക...</translation>
+<translation id="8918299437379122615">ഇനിപ്പറയുന്നതിനുള്ള തിരയൽ ഫലങ്ങളുടെ പേജിലേക്കുള്ള ലിങ്ക് പങ്കിടുക: <ph name="SEARCH_QUERY" />. ഉറവിടം: <ph name="PAGE_URL" /></translation>
 <translation id="8922289737868596582">ഓഫ്‌ലൈനായി ഉപയോഗിക്കാൻ 'കൂടുതൽ ഓപ്ഷനുകൾ' ബട്ടണിൽ നിന്ന് പേജുകൾ ഡൗൺലോഡ് ചെയ്യുക</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> തയ്യാറാണ്</translation>

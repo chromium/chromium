@@ -1925,6 +1925,7 @@
 <translation id="4282346679996504092">এই প্রোডাক্টের জন্য বিজ্ঞপ্তি বন্ধ করে বুকমার্ক সরানো হয়েছে</translation>
 <translation id="4285498937028063278">আনপিন</translation>
 <translation id="4287495839370498922">Chrome-এ উন্নত বিজ্ঞাপন সংক্রান্ত গোপনীয়তা</translation>
+<translation id="4288101205645068104">গাড়ির নাম মুছে দিন</translation>
 <translation id="4290920330097335010">কখনও অনুমতি দেবেন না</translation>
 <translation id="4296207570293932800">নতুন বিজ্ঞাপন সম্পর্কিত গোপনীয়তা ফিচার এখন উপলভ্য আছে</translation>
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" /> পৃষ্ঠার থাম্বনেল</translation>
@@ -2050,6 +2051,7 @@
 <translation id="4521280267704259211">এনভেলপ মোনার্ক</translation>
 <translation id="4521916730539354575">বাঁদিকের ট্রে</translation>
 <translation id="4522570452068850558">বিবরণগুলি</translation>
+<translation id="4523580145196408446">লিঙ্ক করা হয়েছে</translation>
 <translation id="4523643381056109546">সাইনেজ</translation>
 <translation id="4524138615196389145">এখন থেকে WebAuthn ব্যবহার করে আপনার কার্ড আরও দ্রুত কনফার্ম করুন</translation>
 <translation id="45243788195988825"><ph name="TOPIC" /> বিষয়টি ব্লক করুন</translation>
@@ -3124,6 +3126,7 @@
 <translation id="6405181733356710802"><ph name="APP_NAME" />-এ চালিয়ে যেতে চান?</translation>
 <translation id="6410264514553301377">Enter the expiration date and CVC for <ph name="CREDIT_CARD" /></translation>
 <translation id="6411107829285739505">A4x8</translation>
+<translation id="6412543105195503444">অভিভাবক অনুমতি সম্পর্কিত ডায়ালগ</translation>
 <translation id="6414010576370319452">ত্বক ও নখের যত্ন</translation>
 <translation id="6415778972515849510">আপনার পাসওয়ার্ড পরিবর্তন করে Google অ্যাকাউন্ট সুরক্ষিত রাখতে Chromium সাহায্য করতে পারবে।</translation>
 <translation id="6416877227920300343">EDP</translation>
@@ -4196,6 +4199,7 @@
 <translation id="8280630997017109758">ট্রে ১১</translation>
 <translation id="8281730697546299650">এখন অন্যান্য বিজ্ঞাপন সম্পর্কিত গোপনীয়তা ফিচার উপলভ্য</translation>
 <translation id="8281886186245836920">এড়িয়ে যান</translation>
+<translation id="8282292167096638950">ড্রাইভিং লাইসেন্স মুছে দিন</translation>
 <translation id="8282409409360764263">ইয়ার্ড রক্ষণাবেক্ষণ</translation>
 <translation id="8282947398454257691">আপনার অনন্য ডিভাইস সনাক্তকারীকে জানুন</translation>
 <translation id="8284769179630993263">Chrome সেটিংসে আপনার Safe Browsing ও আরও অনেক কিছু ম্যানেজ করুন</translation>
@@ -4223,6 +4227,7 @@
 <translation id="8321476692217554900">বিজ্ঞপ্তি</translation>
 <translation id="8322402665880479974">বেড ও হেডবোর্ড</translation>
 <translation id="8323505966575306467">আপনার পাসওয়ার্ড আরও সুরক্ষিত করুন</translation>
+<translation id="832547548543012337">পাসপোর্ট মুছে দিন</translation>
 <translation id="832567874344484841">ব্রেকফাস্টের খাবার</translation>
 <translation id="8329068931308448247">এনভেলপ #১৪</translation>
 <translation id="8332188693563227489"><ph name="HOST_NAME" /> এ অ্যাক্সেস অস্বীকার করা হয়েছে</translation>

@@ -351,6 +351,7 @@
 <translation id="2438248248625638801">Felvételcímek létrehozása…</translation>
 <translation id="2446553403094072641">Lebegőpontos pontosság</translation>
 <translation id="2448312741937722512">Típus</translation>
+<translation id="2448857983905133469">Kurzuseszközök</translation>
 <translation id="2468124392950503650">Válassza ki a létrehozáshoz a kívánt utasítást, vagy tekintse meg az <ph name="BEGIN_LINK_PROMPTING_GUIDE" />utasításírási útmutatót<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">A (Google AI által működtetett) Segítség az íráshoz funkció használatával vázlatokat hozhat létre, és finomhangolhatja a meglévő munkákat.</translation>
 <translation id="2475982808118771221">Hiba történt</translation>
@@ -449,6 +450,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Befejező pont</translation>
 <translation id="3060579846059757016">Főbb pontok</translation>
+<translation id="3060798442805232711">A Kurzuseszközök alkalmazás használja a mikrofont</translation>
 <translation id="3061850252076394168">felolvasás engedélyezése</translation>
 <translation id="3066772729299747758">kedden</translation>
 <translation id="3069085583900247081">Sikertelen teszt</translation>
@@ -910,6 +912,7 @@
 <translation id="5170568018924773124">Megjelenítés mappában</translation>
 <translation id="517075088756846356">A frissítési folyamat folytatásához húzza ki, majd csatlakoztassa újra a(z) <ph name="DEVICE_NAME" /> tápkábelét</translation>
 <translation id="5180108905184566358">majomkenyérfák</translation>
+<translation id="5180431943345994173">A tanárod tartalmat távolított el a Kurzuseszközökből</translation>
 <translation id="5180712487038406644">Kifejező</translation>
 <translation id="5190187232518914472">Élje át újra kedvenc emlékeit. Albumok létrehozásához és szerkesztéséhez lépjen a <ph name="LINK_BEGIN" />Google Fotók<ph name="LINK_END" /> alkalmazásba.</translation>
 <translation id="5212593641110061691">„Tabloid” méret</translation>
@@ -1003,6 +1006,7 @@
 <translation id="5628106863521633649">Rendelkezésre álló nyelvek</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">absztrakt</translation>
+<translation id="5655084389678168978">A tanárod új tartalmat adott hozzá a Kurzuseszközökhöz</translation>
 <translation id="5655283760733841251">Billentyűzet fényerejének növelése</translation>
 <translation id="5655296450510165335">Eszközregisztráció</translation>
 <translation id="5655776422854483175">Nincs nyomtatási feladat</translation>
@@ -1529,6 +1533,7 @@ Ha szeretné használni az átiratokat, töltse le az átírási modellt (legfel
 <translation id="7971535376154084247">Általános vezérlők</translation>
 <translation id="7977800524392185497">A(z) <ph name="NETWORK_NAME" />-hálózathoz való csatlakozáshoz nyissa meg a Beállításokat</translation>
 <translation id="7978412674231730200">Privát kulcs</translation>
+<translation id="7979468455552394856">A Kurzuseszközök alkalmazás csatlakozik a tanulókhoz.</translation>
 <translation id="7982789257301363584">Hálózat</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{A(z) „<ph name="APP_NAME_1" />” automatikusan elindult}other{# alkalmazás automatikusan elindult}}</translation>
 <translation id="7994702968232966508">EAP módszer</translation>

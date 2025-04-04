@@ -1252,7 +1252,6 @@
     <ph name="BEGIN_PARAGRAPH2" />你也可以完全關閉 TPM 裝置。系統仍會透過軟體加密功能安全儲存你的資料，但會停用硬體支援憑證等特定安全性功能。<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />只要重新啟動並進入系統 BIOS/UEFI 設定，即可變更 TPM 設定。操作步驟會因裝置型號而有所不同。如需更多資訊，請在重新啟動前使用其他裝置開啟 <ph name="DEVICE_OS" /> 說明文件：g.co/flex/TPMHelp。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1852799913675865625">嘗試讀取檔案時發生錯誤：<ph name="ERROR_TEXT" /></translation>
-<translation id="1854049213067042715">繼續進行還原程序。你可以將應用程式設為一律在啟動時還原，或前往「設定」頁面關閉還原功能。</translation>
 <translation id="1854180393107901205">停止投放</translation>
 <translation id="1856715684130786728">新增位置...</translation>
 <translation id="185766080319917408">啟動鍵位於左 Alt 鍵的左側</translation>
@@ -3590,7 +3589,6 @@
 <translation id="3500417806337761827">掛接檔案共用區時發生錯誤。已掛接過多 SMB 檔案共用區。</translation>
 <translation id="3500764001796099683">啟用隔離網頁應用程式</translation>
 <translation id="350397915809787283">如果沒有帳戶，請選取第一個選項建立帳戶。</translation>
-<translation id="3503995387997205657">你可以還原先前的應用程式</translation>
 <translation id="3505100368357440862">購物建議</translation>
 <translation id="3507132249039706973">已啟用標準防護功能</translation>
 <translation id="3507650052590605702">管理密碼</translation>
@@ -5001,7 +4999,6 @@
 <translation id="4479424953165245642">管理 Kiosk 應用程式</translation>
 <translation id="4479639480957787382">乙太網路</translation>
 <translation id="4479877282574735775">正在設定虛擬機器，這可能需要幾分鐘的時間。</translation>
-<translation id="4481448477173043917">你的 <ph name="DEVICE_TYPE" /> 無預警重新啟動</translation>
 <translation id="4481467543947557978">Service Worker</translation>
 <translation id="4482990632723642375">最近關閉的分頁</translation>
 <translation id="4486333480498805415">定位精確度</translation>
@@ -9107,7 +9104,6 @@
 <translation id="7457027286267861992">磁碟空間不足。請釋出更多磁碟空間，然後再試一次。錯誤代碼：<ph name="ERROR" />。</translation>
 <translation id="7457831169406914076">{COUNT,plural, =1{1 個連結}other{# 個連結}}</translation>
 <translation id="7458168200501453431">系統會使用與 Google 搜尋相同的拼字檢查技術，將你在瀏覽器中輸入的文字傳送給 Google。</translation>
-<translation id="7458715171471938198">要還原應用程式嗎？</translation>
 <translation id="7458933488302148148">檢查已儲存的密碼，強化安全防護來提升網路安全</translation>
 <translation id="7461924472993315131">固定</translation>
 <translation id="746216226901520237">下次手機會為你的 <ph name="DEVICE_TYPE" /> 解鎖。你可以在「設定」中停用 Smart Lock。</translation>

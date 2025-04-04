@@ -112,7 +112,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1306549533752902673">PREPORUČENE APLIKACIJE</translation>
 <translation id="1310396869741602366">Promijeni ton</translation>
 <translation id="1312604459020188865">Jačina signala <ph name="SIGNAL_STRENGTH" /></translation>
-<translation id="1314113845887519729">Odabran je marker za gornji rub, upotrijebite tipke sa strelicama za pomicanje</translation>
+<translation id="1314113845887519729">Odabrana ručica u gornjem rubu; pomicanje pomoću tipki sa strelicom</translation>
 <translation id="1316069254387866896">Uvijek prikaži policu</translation>
 <translation id="132346741904777634">Kamera se uklopila u gornji lijevi ugao. Došlo je do konflikta s površinom sistema.</translation>
 <translation id="132415371743256095">Zatvorite radnu površinu <ph name="DESK_NAME" /> i prozore</translation>
@@ -187,7 +187,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1557622599341396706">Prikaži naziv radne površine</translation>
 <translation id="1569384531973824928">Ovo dozvoljava pristup kameri i mikrofonu za sve aplikacije i web lokacije s odobrenjima za njih. Možda ćete morati osvježiti web stranicu ili ponovo pokrenuti aplikaciju.</translation>
 <translation id="1571697193564730395">Uključi/isključi funkciju Ne ometaj. <ph name="STATE_TEXT" /></translation>
-<translation id="1574691582236909946">Odabran je marker za lijevi rub, upotrijebite tipke sa strelicama za pomicanje</translation>
+<translation id="1574691582236909946">Odabrana ručica na lijevom rubu; pomicanje pomoću tipki sa strelicom</translation>
 <translation id="1576623706766186887">Umanjite kada je povećalo uključeno</translation>
 <translation id="1582946770779745370">Dostupna je kontrolna tabla igre. Bilo kada pritisnite <ph name="LAUNCHER_KEY_NAME" /> + Shift + Escape, a zatim <ph name="LAUNCHER_KEY_NAME" /> + g da otvorite</translation>
 <translation id="1586324912145647027">Idite na 1. radnu površinu od 8</translation>
@@ -222,7 +222,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1696984622403682083">Možete isključiti ovu funkciju bilo kada u Postavkama. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910">Tajmer od <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 adresa: <ph name="ADDRESS" /></translation>
-<translation id="1700782710852683371">Slike tog sadržaja trenutačno se ne mogu izraditi. Pokušajte promijeniti opis. Imajte na umu da ne možete izrađivati slike ljudi, štetan ili eksplicitan sadržaj.</translation>
+<translation id="1700782710852683371">Trenutno nije moguće kreirati slike ovog sadržaja. Preformulišite opis. Imajte na umu da ne možete kreirati slike osoba, štetan ni eksplicitan sadržaj.</translation>
 <translation id="1703117532528082099">Aktivni prozor je priključen na lijevoj strani.</translation>
 <translation id="1708345662127501511">Radna površina: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Postavke mreže</translation>
@@ -611,7 +611,7 @@ U suprotnom će se ugrađena dodirna podloga ponovo omogućiti za <ph name="TIME
 <translation id="304097922505898963">Otvorite aplikaciju Key Shortcuts</translation>
 <translation id="304417730895741346">Zakačene i otvorene aplikacije su na polici. Da zakačite aplikaciju na policu, kliknite na aplikaciju desnim klikom ili dodirnite dodirnu podlogu s dva prsta.</translation>
 <translation id="3045488863354895414">Dobar dan,</translation>
-<translation id="3045670165536837541">Odabran je marker za gornji desni kut, upotrijebite tipke sa strelicama za pomicanje</translation>
+<translation id="3045670165536837541">Odabrana ručica u gornjem desnom uglu; pomicanje pomoću tipki sa strelicom</translation>
 <translation id="3047761520276763270">Pokušajte izgovoriti:</translation>
 <translation id="3053407068093039599">Uključivanje/isključivanje pristupa kameri</translation>
 <translation id="3055162170959710888">Danas je uređaj korišten <ph name="USED_TIME" /></translation>
@@ -1767,7 +1767,7 @@ Nova instalacija</translation>
 <translation id="6696025732084565524">Vašoj odvojivoj tastaturi je potrebno važno ažuriranje</translation>
 <translation id="6697913454192220372">Dodavanje nove radne površine</translation>
 <translation id="6700713906295497288">IME dugme menija</translation>
-<translation id="6704073473590541209">Odabran je marker za desni rub, upotrijebite tipke sa strelicama za pomicanje</translation>
+<translation id="6704073473590541209">Odabrana ručica na desnom rubu; pomicanje pomoću tipki sa strelicom</translation>
 <translation id="6706742084323792866">Kačenje tastature</translation>
 <translation id="6710213216561001401">Nazad</translation>
 <translation id="6723839937902243910">Uključivanje/isključivanje</translation>
@@ -1791,7 +1791,7 @@ Nova instalacija</translation>
 <translation id="6781002679438061620">9. radna površina</translation>
 <translation id="6782182743534150858">13. radna površina</translation>
 <translation id="6782919488259222803">Pretraživanje trenutne stranice</translation>
-<translation id="6783348167101855071">Odabran je marker za donji desni kut, upotrijebite tipke sa strelicama za pomicanje</translation>
+<translation id="6783348167101855071">Odabrana ručica u donjem desnom uglu; pomicanje pomoću tipki sa strelicom</translation>
 <translation id="6786750046913594791">Zatvori folder</translation>
 <translation id="6790428901817661496">Pokreni</translation>
 <translation id="6792262051831399889">Nedostupno</translation>
@@ -1947,7 +1947,7 @@ Nova instalacija</translation>
 <translation id="7371404428569700291">Snimite prozor</translation>
 <translation id="7372069265635026568">Dostupna memorija: <ph name="AVAILABLE_MEMORY" /> od ukupno <ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">Ovo omogućava pristup mikrofonu za sve aplikacije i web lokacije koje imaju odobrenje za njega</translation>
-<translation id="7376933029363911338">Odabran je marker za donji rub, upotrijebite tipke sa strelicama za pomicanje</translation>
+<translation id="7376933029363911338">Odabrana ručica u donjem rubu; pomicanje pomoću tipki sa strelicom</translation>
 <translation id="7377169924702866686">Uključena su velika slova.</translation>
 <translation id="7377481913241237033">Povežite se pomoću koda</translation>
 <translation id="7378203170292176219">Prevucite da odaberete oblast za snimanje</translation>
@@ -2044,7 +2044,7 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="7658239707568436148">Otkaži</translation>
 <translation id="7659861092419699379">Radna površina i prozori su zatvoreni</translation>
 <translation id="7660160718439869192">Uređaj <ph name="NAME" /> će se prikazati na uređajima povezanim s adresom e-pošte <ph name="EMAIL" /></translation>
-<translation id="7661694115779363471">Odabran je marker za donji lijevi kut, upotrijebite tipke sa strelicama za pomicanje</translation>
+<translation id="7661694115779363471">Odabrana ručica u donjem lijevom uglu; pomicanje pomoću tipki sa strelicom</translation>
 <translation id="7662283695561029522">Dodirnite za konfiguriranje</translation>
 <translation id="7670953955701272011">Otvorite ovaj datum u Google Kalendaru</translation>
 <translation id="7671610481353807627">Aplikacije su poredane po boji</translation>
@@ -2213,7 +2213,7 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="8155628902202578800">Otvaranje informativnog dijaloškog okvira za <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Koristite <ph name="LOCALE_NAME" /></translation>
 <translation id="8168435359814927499">Sadržaj</translation>
-<translation id="8172370561760918656">Odabran je marker za gornji lijevi kut, upotrijebite tipke sa strelicama za pomicanje</translation>
+<translation id="8172370561760918656">Odabrana ručica u gornjem lijevom uglu; pomicanje pomoću tipki sa strelicom</translation>
 <translation id="81817143961839203">Umetanje slike nije uspjelo</translation>
 <translation id="8185090165691050712">Uključite/isključite meni da promijenite veličinu zaključanog načina rada</translation>
 <translation id="8192727139462702395">Kada isključite Bluetooth, prekinut će se povezanost uređaja <ph name="DEVICE_TYPE" /> i vanjskih uređaja:</translation>

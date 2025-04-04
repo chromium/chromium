@@ -351,6 +351,7 @@
 <translation id="2438248248625638801">Inatayarisha majina ya rekodi</translation>
 <translation id="2446553403094072641">Usahihi wa mfumo wa uhandisi wa kuonyesha namba</translation>
 <translation id="2448312741937722512">Aina</translation>
+<translation id="2448857983905133469">Zana za Darasani</translation>
 <translation id="2468124392950503650">Chagua kidokezo ili ubuni au uangalie <ph name="BEGIN_LINK_PROMPTING_GUIDE" />mwongozo wa kidokezo<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Tumia kipengele cha Nisaidie kuandika ili utayarishe rasimu au uboreshe kazi iliyopo, kinaendeshwa na Google AI</translation>
 <translation id="2475982808118771221">Hitilafu fulani imetokea</translation>
@@ -449,6 +450,7 @@
 <translation id="3054177598518735801">mA <ph name="CURRENT_VALUE" /></translation>
 <translation id="3056720590588772262">Anwani halisi</translation>
 <translation id="3060579846059757016">Muhtasari</translation>
+<translation id="3060798442805232711">Kipengele cha Zana za Darasani kinatumia maikrofoni yako</translation>
 <translation id="3061850252076394168">washa kipengele cha chagua ili izungumze</translation>
 <translation id="3066772729299747758">Jumanne</translation>
 <translation id="3069085583900247081">Jaribio halijafaulu</translation>
@@ -910,6 +912,7 @@
 <translation id="5170568018924773124">Onyesha katika folda</translation>
 <translation id="517075088756846356">Chomoa kisha uchomeke upya kebo ya umeme ya <ph name="DEVICE_NAME" /> ili uendelee na mchakato wa kusasisha</translation>
 <translation id="5180108905184566358">miti ya mibuyu</translation>
+<translation id="5180431943345994173">Mwalimu wako ameondoa maudhui kwenye kipengele cha Zana za Darasani</translation>
 <translation id="5180712487038406644">Inayojidhihirisha</translation>
 <translation id="5190187232518914472">Jikumbushe matukio uyapendayo. Ili uongeze au ubadilishe albamu, nenda katika<ph name="LINK_BEGIN" />Picha kwenye Google<ph name="LINK_END" />.</translation>
 <translation id="5212593641110061691">Kijigazeti</translation>
@@ -1003,6 +1006,7 @@
 <translation id="5628106863521633649">Lugha zinazopatikana</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">ikisiri</translation>
+<translation id="5655084389678168978">Mwalimu wako ameweka maudhui mapya kwenye kipengele cha Zana za Darasani</translation>
 <translation id="5655283760733841251">Ongeza mwangaza wa kibodi</translation>
 <translation id="5655296450510165335">Uandikishaji wa kifaa</translation>
 <translation id="5655776422854483175">Hakuna kazi za kuchapisha</translation>
@@ -1529,6 +1533,7 @@ Pakua mfumo wa unukuzi (hadi MB 100) ili upate manukuu haya.</translation>
 <translation id="7971535376154084247">Vidhibiti vya jumla</translation>
 <translation id="7977800524392185497">Ili ujiunge kwenye mtandao wa <ph name="NETWORK_NAME" />, nenda kwenye Mipangilio</translation>
 <translation id="7978412674231730200">Ufunguo binafsi</translation>
+<translation id="7979468455552394856">Kipengele cha Zana za Darasani kimeunganishwa kwenye akaunti za wanafunzi</translation>
 <translation id="7982789257301363584">Mtandao</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" ilianzishwa kiotomatiki}other{Programu # zilianzishwa kiotomatiki}}</translation>
 <translation id="7994702968232966508">Mbinu ya EAP</translation>

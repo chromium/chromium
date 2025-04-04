@@ -351,6 +351,7 @@
 <translation id="2438248248625638801">កំពុង​បង្កើត​ចំណងជើង​ខ្លឹមសារថត</translation>
 <translation id="2446553403094072641">ភាពត្រឹមត្រូវនៃ​ពិន្ទុអណ្ដែត</translation>
 <translation id="2448312741937722512">ប្រភេទ</translation>
+<translation id="2448857983905133469">ឧបករណ៍​ថ្នាក់</translation>
 <translation id="2468124392950503650">ជ្រើសរើស​សារតម្រុយ ដើម្បីបង្កើត ឬមើល<ph name="BEGIN_LINK_PROMPTING_GUIDE" />ការណែនាំ​អំពី​សារតម្រុយ<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">ប្រើ "ជួយខ្ញុំក្នុងការសរសេរ" ដើម្បីបង្កើតសេចក្ដីព្រាង ឬកែលម្អស្នាដៃដែលមានស្រាប់ ដែលដំណើរការដោយ Google AI</translation>
 <translation id="2475982808118771221">កំហុសឆ្គងមួយបានកើតឡើង</translation>
@@ -449,6 +450,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">Endpoint</translation>
 <translation id="3060579846059757016">គ្រោង</translation>
+<translation id="3060798442805232711">ឧបករណ៍​ថ្នាក់​កំពុងប្រើ​មីក្រូហ្វូន​របស់អ្នក</translation>
 <translation id="3061850252076394168">បើក​មុខងារជ្រើសរើសដើម្បីអាន</translation>
 <translation id="3066772729299747758">នៅថ្ងៃអង្គារ</translation>
 <translation id="3069085583900247081">ការធ្វើតេស្ត​​មិនបានសម្រេចទេ</translation>
@@ -910,6 +912,7 @@
 <translation id="5170568018924773124">បង្ហាញនៅក្នុងថតឯកសារ</translation>
 <translation id="517075088756846356">ដករួចដោតខ្សែ​ភ្លើង <ph name="DEVICE_NAME" /> វិញ ដើម្បីបន្តដំណើរការដំឡើងកំណែ</translation>
 <translation id="5180108905184566358">ដើម​បេអូបាប</translation>
+<translation id="5180431943345994173">គ្រូ​របស់អ្នក​បានដក​ខ្លឹមសារ​ចេញពី​ឧបករណ៍​ថ្នាក់</translation>
 <translation id="5180712487038406644">បង្ហាញអារម្មណ៍</translation>
 <translation id="5190187232518914472">រំឭកអនុស្សាវរីយ៍​ដែលអ្នក​ចូលចិត្ត។ ដើម្បីបញ្ចូល ឬ​កែអាល់ប៊ុម សូមចូល​ទៅកាន់ <ph name="LINK_BEGIN" />Google រូបថត<ph name="LINK_END" />។</translation>
 <translation id="5212593641110061691">កាសែតខ្នាតតូច</translation>
@@ -1003,6 +1006,7 @@
 <translation id="5628106863521633649">ភាសាដែល​អាចប្រើបាន</translation>
 <translation id="5630438231335788050">បូហូស</translation>
 <translation id="5631759159893697722">ចំណុច​សំខាន់</translation>
+<translation id="5655084389678168978">គ្រូ​របស់អ្នក​បានបញ្ចូល​ខ្លឹមសារថ្មី​នៅក្នុង​ឧបករណ៍​ថ្នាក់</translation>
 <translation id="5655283760733841251">គ្រាប់ចុចព្រួញឡើងលើសម្រាប់បង្កើនពន្លឺក្ដារចុច</translation>
 <translation id="5655296450510165335">ការចុះឈ្មោះឧបករណ៍</translation>
 <translation id="5655776422854483175">គ្មានការងារបោះពុម្ពទេ</translation>
@@ -1529,6 +1533,7 @@
 <translation id="7971535376154084247">ការ​គ្រប់គ្រង​ទូទៅ</translation>
 <translation id="7977800524392185497">ដើម្បីចូលរួមបណ្ដាញ <ph name="NETWORK_NAME" /> សូមចូលទៅកាន់ការកំណត់</translation>
 <translation id="7978412674231730200">សោឯកជន</translation>
+<translation id="7979468455552394856">ឧបករណ៍​ថ្នាក់​ត្រូវបាន​ភ្ជាប់ជាមួយ​សិស្ស</translation>
 <translation id="7982789257301363584">បណ្តាញ</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" ត្រូវបានចាប់ផ្តើមដោយស្វ័យប្រវត្តិ}other{កម្មវិធីចំនួន # ត្រូវបានចាប់ផ្ដើមដោយស្វ័យប្រវត្តិ}}</translation>
 <translation id="7994702968232966508">វិធីសាស្ត្រ EAP</translation>

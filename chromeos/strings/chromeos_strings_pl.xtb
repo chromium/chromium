@@ -350,6 +350,7 @@
 <translation id="2438248248625638801">Tworzę tytuły nagrań</translation>
 <translation id="2446553403094072641">Precyzja obliczeń zmiennoprzecinkowych</translation>
 <translation id="2448312741937722512">Typ</translation>
+<translation id="2448857983905133469">Narzędzia lekcyjne</translation>
 <translation id="2468124392950503650">Wybierz prompt, aby utworzyć obraz, lub zapoznaj się z <ph name="BEGIN_LINK_PROMPTING_GUIDE" />przewodnikiem po promptach<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Użyj funkcji Pomóż mi w pisaniu, aby utworzyć wersję lub dopracować już istniejącą pracę z wykorzystaniem AI od Google</translation>
 <translation id="2475982808118771221">Wystąpił błąd</translation>
@@ -448,6 +449,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Punkt końcowy</translation>
 <translation id="3060579846059757016">Kontury</translation>
+<translation id="3060798442805232711">Narzędzia lekcyjne używają mikrofonu</translation>
 <translation id="3061850252076394168">Włącz funkcję Przeczytaj na głos</translation>
 <translation id="3066772729299747758">we wtorek</translation>
 <translation id="3069085583900247081">Niepowodzenie testu</translation>
@@ -908,6 +910,7 @@
 <translation id="5170568018924773124">Pokaż w folderze</translation>
 <translation id="517075088756846356">Aby kontynuować proces aktualizacji, odłącz i ponownie podłącz kabel zasilający urządzenia <ph name="DEVICE_NAME" /></translation>
 <translation id="5180108905184566358">baobaby</translation>
+<translation id="5180431943345994173">Nauczyciel usunął treści z Narzędzi lekcyjnych</translation>
 <translation id="5180712487038406644">Ekspresyjny</translation>
 <translation id="5190187232518914472">Przeżyj to jeszcze raz. Aby dodawać lub edytować albumy, otwórz <ph name="LINK_BEGIN" />Zdjęcia Google<ph name="LINK_END" />.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
@@ -1001,6 +1004,7 @@
 <translation id="5628106863521633649">Dostępne języki</translation>
 <translation id="5630438231335788050">Bauhausu</translation>
 <translation id="5631759159893697722">streszczenie</translation>
+<translation id="5655084389678168978">Nauczyciel dodał nowe treści do Narzędzi lekcyjnych</translation>
 <translation id="5655283760733841251">Zwiększ jasność klawiatury</translation>
 <translation id="5655296450510165335">Rejestracja urządzeń</translation>
 <translation id="5655776422854483175">Brak zadań drukowania</translation>
@@ -1525,6 +1529,7 @@ Aby korzystać z tej funkcji, pobierz model transkrypcji (do 100 MB).</transla
 <translation id="7971535376154084247">Ustawienia ogólne</translation>
 <translation id="7977800524392185497">Aby połączyć się z siecią <ph name="NETWORK_NAME" />, otwórz Ustawienia</translation>
 <translation id="7978412674231730200">Klucz prywatny</translation>
+<translation id="7979468455552394856">Narzędzia lekcyjne mają połączenie z uczniami</translation>
 <translation id="7982789257301363584">Sieć</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{Aplikacja „<ph name="APP_NAME_1" />” została uruchomiona automatycznie}few{# aplikacje zostały uruchomione automatycznie}many{# aplikacji zostało uruchomionych automatycznie}other{# aplikacji zostało uruchomione automatycznie}}</translation>
 <translation id="7994702968232966508">Metoda EAP</translation>

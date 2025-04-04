@@ -86,7 +86,6 @@
 <translation id="4076226664360336092">รายการกลุ่มแท็บที่เปิดอยู่แบบเต็มความสูง</translation>
 <translation id="4133493477912226187">ดูเหมือนว่ามีแท็บที่เกี่ยวข้อง <ph name="NUMBER_OF_TABS" /> แท็บ ต้องการจัดกลุ่มแท็บไหม</translation>
 <translation id="4139634748112164403">แท็บจะยังคงเปิดอยู่ในอุปกรณ์นี้ แต่ระบบจะลบกลุ่มอย่างถาวร</translation>
-<translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{ปิดกลุ่ม<ph name="TITLE_OF_GROUP" />ที่มี <ph name="TABS_COUNT_ONE" /> แท็บ สี<ph name="COLOR_NAME" />}other{ปิดกลุ่ม<ph name="TITLE_OF_GROUP" />ที่มี <ph name="TABS_COUNT_MANY" /> แท็บ สี<ph name="COLOR_NAME" />}}</translation>
 <translation id="4159784952369912983">ม่วง</translation>
 <translation id="427987768447457592">กลุ่มแท็บใหม่</translation>
 <translation id="4371591986692297148">ไม่ได้ใช้งาน</translation>
@@ -120,7 +119,6 @@
 <translation id="5446043142172831860">นำแท็บออกและออกจากกลุ่ม</translation>
 <translation id="5490235265819901748">ขยายกลุ่มแท็บแล้ว</translation>
 <translation id="5494920125229734069">เลือกทั้งหมด</translation>
-<translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{ปิดกลุ่มแท็บที่มี <ph name="TABS_COUNT_ONE" /> แท็บ สี<ph name="COLOR_NAME" />}other{ปิดกลุ่มแท็บที่มี <ph name="TABS_COUNT_MANY" /> แท็บ สี<ph name="COLOR_NAME" />}}</translation>
 <translation id="5556417849629758491">ดูข้อมูลร้านค้า ตัวเลือกจะอยู่ตรงบริเวณด้านบนของหน้าจอ</translation>
 <translation id="5627941783489838464">ไม่มีการอัปเดตแท็บ</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{กู้คืนแท็บ}other{กู้คืนแท็บ}}</translation>

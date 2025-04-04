@@ -612,6 +612,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="3856096718352044181">유효한 제공업체인지 확인하거나 나중에 다시 시도하세요.</translation>
 <translation id="3858860766373142691">이름</translation>
 <translation id="3863527519275151528">알림 처리 중</translation>
+<translation id="3866863539038222107">검사</translation>
 <translation id="3870908470613821006">모든 사용자가 '<ph name="GROUP_NAME" />' 탭 그룹에 대한 액세스 권한을 즉시 잃게 되며 탭 그룹이 모든 기기에서 삭제됩니다.</translation>
 <translation id="3873174561423636563">계속하려면 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />에서 내 <ph name="FIELDS_STRING" />를 이 사이트와 공유해야 합니다. 사이트의 <ph name="BEGIN_LINK1" />서비스 약관<ph name="END_LINK1" />을 확인하세요.</translation>
 <translation id="3892148308691398805">텍스트 복사</translation>
@@ -1056,6 +1057,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="5907542076239273525"><ph name="FOLDER_NAME" />에 북마크가 저장되었습니다.</translation>
 <translation id="5916664084637901428">사용</translation>
 <translation id="5919204609460789179"><ph name="PRODUCT_NAME" />을(를) 업데이트하여 동기화를 시작합니다.</translation>
+<translation id="5932881020239635062">일련번호</translation>
 <translation id="5938820472109305350"><ph name="INTEREST" /> 추가</translation>
 <translation id="5942872142862698679">검색할 때 Google 사용</translation>
 <translation id="5945035219773565305">현재 추천: <ph name="RECOMMENDATION" /></translation>

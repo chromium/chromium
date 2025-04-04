@@ -112,6 +112,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1306549533752902673">DOPORUČENÉ APLIKACE</translation>
 <translation id="1310396869741602366">Změnit tón</translation>
 <translation id="1312604459020188865">Síla signálu: <ph name="SIGNAL_STRENGTH" /></translation>
+<translation id="1314113845887519729">Je vybrán úchyt horního okraje, můžete ho přesouvat klávesami se šipkami</translation>
 <translation id="1316069254387866896">Vždy zobrazovat poličku</translation>
 <translation id="132346741904777634">Kamera byla připnuta do levého horního rohu. Konflikt s platformou systému.</translation>
 <translation id="132415371743256095">Zavřít plochu <ph name="DESK_NAME" /> a okna</translation>
@@ -186,6 +187,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1557622599341396706">Zobrazit název plochy</translation>
 <translation id="1569384531973824928">Tímto povolíte přístup všem aplikacím a webům, které mají oprávnění používat kameru a mikrofon. Možná budete muset obnovit webovou stránku nebo restartovat aplikaci.</translation>
 <translation id="1571697193564730395">Přepnout možnost Nerušit. <ph name="STATE_TEXT" /></translation>
+<translation id="1574691582236909946">Je vybrán úchyt levého okraje, můžete ho přesouvat klávesami se šipkami</translation>
 <translation id="1576623706766186887">Oddálit, když je zapnutá lupa</translation>
 <translation id="1582946770779745370">Je k dispozici Herní panel. Můžete ho kdykoli otevřít stisknutím kláves <ph name="LAUNCHER_KEY_NAME" /> + Shift + Escape a poté <ph name="LAUNCHER_KEY_NAME" /> + g</translation>
 <translation id="1586324912145647027">Přejděte na plochu 1 až 8</translation>
@@ -609,6 +611,7 @@ Když to neuděláte, vestavěný touchpad se za <ph name="TIMEOUT_SECONDS" /> z
 <translation id="304097922505898963">Otevřít aplikaci Klávesové zkratky</translation>
 <translation id="304417730895741346">Vaše připnuté a otevřené aplikace jsou na poličce. Aplikaci na poličku připnete tak, že na ni klepnete pravým tlačítkem nebo že klepnete dvěma prsty na touchpad.</translation>
 <translation id="3045488863354895414">Dobré odpoledne,</translation>
+<translation id="3045670165536837541">Je vybrán úchyt pravého horního rohu, můžete ho přesouvat klávesami se šipkami</translation>
 <translation id="3047761520276763270">Řekněte:</translation>
 <translation id="3053407068093039599">Zapnout/vypnout přístup k fotoaparátu</translation>
 <translation id="3055162170959710888">Toto zařízení jsi dnes používal(a) <ph name="USED_TIME" /></translation>
@@ -1764,6 +1767,7 @@ Nová instalace</translation>
 <translation id="6696025732084565524">Odpojitelná klávesnice vyžaduje kritickou aktualizaci</translation>
 <translation id="6697913454192220372">Přidat novou plochu</translation>
 <translation id="6700713906295497288">Tlačítko nabídky IME</translation>
+<translation id="6704073473590541209">Je vybrán úchyt pravého okraje, můžete ho přesouvat klávesami se šipkami</translation>
 <translation id="6706742084323792866">Klávesnice pro PIN</translation>
 <translation id="6710213216561001401">Předchozí</translation>
 <translation id="6723839937902243910">Napájení</translation>
@@ -1787,6 +1791,7 @@ Nová instalace</translation>
 <translation id="6781002679438061620">Plocha 9</translation>
 <translation id="6782182743534150858">Plocha 13</translation>
 <translation id="6782919488259222803">Hledat na aktuální stránce</translation>
+<translation id="6783348167101855071">Je vybrán úchyt pravého dolního rohu, můžete ho přesouvat klávesami se šipkami</translation>
 <translation id="6786750046913594791">Zavřít složku</translation>
 <translation id="6790428901817661496">Přehrát</translation>
 <translation id="6792262051831399889">Nedostupné</translation>
@@ -1941,6 +1946,7 @@ Nová instalace</translation>
 <translation id="7371404428569700291">Zaznamenat okno</translation>
 <translation id="7372069265635026568">K dispozici je toto množství paměti: <ph name="AVAILABLE_MEMORY" /> z celkem <ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">Umožňuje přístup k mikrofonu všem aplikacím a webům s oprávněním k mikrofonu</translation>
+<translation id="7376933029363911338">Je vybrán úchyt dolního okraje, můžete ho přesouvat klávesami se šipkami</translation>
 <translation id="7377169924702866686">Caps Lock je zapnutý.</translation>
 <translation id="7377481913241237033">Připojit pomocí kódu</translation>
 <translation id="7378203170292176219">Přetažením vyberte oblast, kterou chcete zaznamenat</translation>
@@ -2037,6 +2043,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="7658239707568436148">Zrušit</translation>
 <translation id="7659861092419699379">Plocha a okna byly zavřeny</translation>
 <translation id="7660160718439869192">Zařízení <ph name="NAME" /> se zobrazí u zařízení propojených s účtem <ph name="EMAIL" /></translation>
+<translation id="7661694115779363471">Je vybrán úchyt levého dolního rohu, můžete ho přesouvat klávesami se šipkami</translation>
 <translation id="7662283695561029522">Klepnutím zahájíte konfiguraci</translation>
 <translation id="7670953955701272011">Otevřít toto datum v Kalendáři Google</translation>
 <translation id="7671610481353807627">Aplikace jsou seřazeny podle barvy</translation>
@@ -2205,6 +2212,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="8155628902202578800">Otevřít dialogové okno s informacemi o účtu <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Používá se <ph name="LOCALE_NAME" /></translation>
 <translation id="8168435359814927499">Obsah</translation>
+<translation id="8172370561760918656">Je vybrán úchyt levého horního rohu, můžete ho přesouvat klávesami se šipkami</translation>
 <translation id="81817143961839203">Vložení obrázku se nezdařilo</translation>
 <translation id="8185090165691050712">Zapnout/vypnout nabídku změny velikosti zamknutého režimu</translation>
 <translation id="8192727139462702395">Když vypnete Bluetooth, od zařízení <ph name="DEVICE_TYPE" /> se odpojí tato externí zařízení:</translation>

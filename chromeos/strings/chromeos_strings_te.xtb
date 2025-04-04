@@ -351,6 +351,7 @@
 <translation id="2438248248625638801">రికార్డింగ్ టైటిల్స్‌ని క్రియేట్ చేస్తోంది</translation>
 <translation id="2446553403094072641">ఫ్లోటింగ్ పాయింట్ ఖచ్చితత్వం</translation>
 <translation id="2448312741937722512">రకం</translation>
+<translation id="2448857983905133469">క్లాస్ టూల్స్</translation>
 <translation id="2468124392950503650"><ph name="BEGIN_LINK_PROMPTING_GUIDE" />ప్రాంప్ట్ గైడ్<ph name="END_LINK_PROMPTING_GUIDE" />‌ను క్రియేట్ చేయడానికి లేదా చూడటానికి ప్రాంప్ట్‌ను ఎంచుకోండి</translation>
 <translation id="2472215337771558851">Googleకు చెందిన AI టెక్నాలజీల ద్వారా అందించబడుతోన్న డ్రాఫ్ట్‌ను క్రియేట్ చేయడానికి లేదా ఇప్పటికే ఉన్న దాన్ని మెరుగుపరచడానికి 'నాకు రాయడానికి సహాయం చేయండి'ని ఉపయోగించండి</translation>
 <translation id="2475982808118771221">ఒక ఎర్రర్ ఏర్పడింది</translation>
@@ -449,6 +450,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">ముగింపుపాయింట్</translation>
 <translation id="3060579846059757016">అవుట్‌లైన్‌లు</translation>
+<translation id="3060798442805232711">క్లాస్ టూల్స్ మీ మైక్రోఫోన్‌ను ఉపయోగిస్తోంది</translation>
 <translation id="3061850252076394168">'వినడానికి-ఎంచుకోండి'ని ఎనేబుల్ చేయండి</translation>
 <translation id="3066772729299747758">మంగళవారం నాడు</translation>
 <translation id="3069085583900247081">పరీక్ష విఫలమైంది</translation>
@@ -910,6 +912,7 @@
 <translation id="5170568018924773124">ఫోల్డర్‌లో చూపించు</translation>
 <translation id="517075088756846356">అప్‌డేట్ ప్రాసెస్‌ను కొనసాగించడానికి, <ph name="DEVICE_NAME" /> పవర్ కేబుల్‌ను అన్‌ప్లగ్ చేసి, మళ్లీ ప్లగ్ చేయండి</translation>
 <translation id="5180108905184566358">బెయొబాబ్ చెట్లు</translation>
+<translation id="5180431943345994173">మీ టీచర్ క్లాస్ టూల్స్‌లోని కంటెంట్‌ను తీసివేశారు</translation>
 <translation id="5180712487038406644">స్పష్టంగా ఉండే రంగు</translation>
 <translation id="5190187232518914472">మీకు ఇష్టమైన మధుర జ్ఞాపకాలను మళ్లీ ఆస్వాదించండి. ఆల్బమ్‌లను జోడించడానికి లేదా ఎడిట్ చేయడానికి, <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />కు వెళ్లండి.</translation>
 <translation id="5212593641110061691">టాబ్లాయిడ్</translation>
@@ -1003,6 +1006,7 @@
 <translation id="5628106863521633649">అందుబాటులో ఉన్న భాషలు</translation>
 <translation id="5630438231335788050">బౌహాస్</translation>
 <translation id="5631759159893697722">సంక్షేపం</translation>
+<translation id="5655084389678168978">మీ టీచర్ క్లాస్ టూల్స్‌లో కొత్త కంటెంట్‌ను జోడించారు</translation>
 <translation id="5655283760733841251">కీబోర్డ్ బ్రైట్‌నెస్‌ను పెంచండి</translation>
 <translation id="5655296450510165335">పరికర ఎన్‌రోల్‌మెంట్</translation>
 <translation id="5655776422854483175">ప్రింట్ టాస్క్‌లు ఏవీ లేవు</translation>
@@ -1529,6 +1533,7 @@
 <translation id="7971535376154084247">సాధారణ కంట్రోల్స్</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> నెట్‌వర్క్‌లో చేరడానికి, సెట్టింగ్‌లకు వెళ్లండి</translation>
 <translation id="7978412674231730200">వ్యక్తిగత కీ</translation>
+<translation id="7979468455552394856">క్లాస్ టూల్స్ విద్యార్థులకు కనెక్ట్ చేయబడ్డాయి</translation>
 <translation id="7982789257301363584">నెట్‌వర్క్</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" ఆటోమేటిక్‌గా ప్రారంభించబడింది}other{# యాప్‌లు ఆటోమేటిక్‌గా ప్రారంభించబడ్డాయి}}</translation>
 <translation id="7994702968232966508">EAP పద్ధతి</translation>

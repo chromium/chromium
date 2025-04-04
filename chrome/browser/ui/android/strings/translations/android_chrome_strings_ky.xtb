@@ -612,6 +612,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="3856096718352044181">Бул жарамдуу кызмат көрсөтүүчү экенин текшерип, кайталап көрүңүз</translation>
 <translation id="3858860766373142691">Аталышы</translation>
 <translation id="3863527519275151528">Билдирме иштетилүүдө</translation>
+<translation id="3866863539038222107">Текшерүү</translation>
 <translation id="3870908470613821006">Бардык колдонуучулар “<ph name="GROUP_NAME" />” өтмөктөр тобуна кирүү мүмкүнчүлүгүнөн дароо ажырап, ал бардык түзмөктөрдөн өчүрүлөт</translation>
 <translation id="3873174561423636563">Улантуу үчүн <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> <ph name="FIELDS_STRING" /> ушул сайт менен бөлүшөт. Бул сайттын <ph name="BEGIN_LINK1" />тейлөө шарттарын<ph name="END_LINK1" /> карап көрүңүз.</translation>
 <translation id="3892148308691398805">Текстти көчүрүү</translation>
@@ -941,6 +942,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="539881862970320163">Татаал сырсөз сунушталды. Баскычтоп жашырылган.</translation>
 <translation id="5409881200985013443"><ph name="CLIENT_NAME" /> түзмөгүнө <ph name="ONE_TIME_CODE" /> тапшырылсынбы?</translation>
 <translation id="5410300144953132176"><ph name="OWNER_FULL_NAME" /> (<ph name="OWNER_EMAIL" />) өтмөктөр тобуна кошулушуңузду каалайт. Шилтемеси бар колдонуучулардын баары бардык өтмөктөрдү түзөтө алат, андыктан этияттык менен кошулуңуз. Мөөнөтү 48 сааттан кийин бүтөт.</translation>
+<translation id="5412388166586147626">ЖИ жардамчысы ачылган жок. Кайра аракет кылыңыз.</translation>
 <translation id="5414836363063783498">Текшерилүүдө…</translation>
 <translation id="5415871492522952905">Таржымал жана өтмөктөр бардык түзмөктөрүңүздө жеткиликтүү болот</translation>
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) дароо "<ph name="GROUP_NAME" />" өтмөктөр тобуна кирүү мүмкүнчүлүгүн жоготот</translation>
@@ -1055,6 +1057,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="5907542076239273525">Кыстарма <ph name="FOLDER_NAME" /> папкасына сакталды</translation>
 <translation id="5916664084637901428">Күйүк</translation>
 <translation id="5919204609460789179">Шайкештирүүнү баштоо үчүн <ph name="PRODUCT_NAME" /> жаңыртыңыз</translation>
+<translation id="5932881020239635062">Сериялык номери</translation>
 <translation id="5938820472109305350"><ph name="INTEREST" /> кошуу</translation>
 <translation id="5942872142862698679">Издөө үчүн Google колдонулууда</translation>
 <translation id="5945035219773565305">Учурдагы сунуш:  <ph name="RECOMMENDATION" /></translation>

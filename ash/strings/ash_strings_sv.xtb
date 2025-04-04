@@ -112,6 +112,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1306549533752902673">REKOMMENDERADE APPAR</translation>
 <translation id="1310396869741602366">Ändra ton</translation>
 <translation id="1312604459020188865">Signalstyrka <ph name="SIGNAL_STRENGTH" /></translation>
+<translation id="1314113845887519729">Du har valt handtaget för överkanten – använd piltangenterna för att flytta det</translation>
 <translation id="1316069254387866896">Visa alltid hyllan</translation>
 <translation id="132346741904777634">Kameran har fästs i det övre vänstra hörnet. Konflikt med systemyta.</translation>
 <translation id="132415371743256095">Stäng <ph name="DESK_NAME" /> och fönster</translation>
@@ -186,6 +187,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1557622599341396706">Visa skrivbordets namn</translation>
 <translation id="1569384531973824928">Detta ger åtkomst för alla appar och webbplatser med kamera- och mikrofonbehörighet. Du kan behöva uppdatera webbsidan eller starta om appen.</translation>
 <translation id="1571697193564730395">Aktivera och inaktivera Stör ej. <ph name="STATE_TEXT" /></translation>
+<translation id="1574691582236909946">Du har valt handtaget för vänster kant – använd piltangenterna för att flytta det</translation>
 <translation id="1576623706766186887">Zooma ut när skärmförstoring är aktiverat</translation>
 <translation id="1582946770779745370">Spelöversikt är tillgänglig. Tryck på <ph name="LAUNCHER_KEY_NAME" /> + Skift + Escape och sedan på <ph name="LAUNCHER_KEY_NAME" /> + g när som helst för att öppna den</translation>
 <translation id="1586324912145647027">Öppna skrivbord 1 till 8</translation>
@@ -609,6 +611,7 @@ Annars aktiveras den inbyggda styrplattan igen om <ph name="TIMEOUT_SECONDS" />.
 <translation id="304097922505898963">Öppna appen Kortkommandon</translation>
 <translation id="304417730895741346">Dina fästa och öppna appar finns på hyllan. Om du vill fästa en app på hyllan kan du högerklicka på appen eller trycka på styrplattan med två fingrar.</translation>
 <translation id="3045488863354895414">Hej!</translation>
+<translation id="3045670165536837541">Du har valt handtaget uppe till höger – använd piltangenterna för att flytta det</translation>
 <translation id="3047761520276763270">Testa att säga detta:</translation>
 <translation id="3053407068093039599">Aktivera/inaktivera kameraåtkomst</translation>
 <translation id="3055162170959710888">Du har använt den här enheten i <ph name="USED_TIME" /> i dag</translation>
@@ -1764,6 +1767,7 @@ Nyligen installerad</translation>
 <translation id="6696025732084565524">Det behövs en viktig uppdatering till ditt frånkopplingsbara tangentbord</translation>
 <translation id="6697913454192220372">Lägg till nytt skrivbord</translation>
 <translation id="6700713906295497288">IME-menyknapp</translation>
+<translation id="6704073473590541209">Du har valt handtaget för höger kant – använd piltangenterna för att flytta det</translation>
 <translation id="6706742084323792866">Fäst tangentbord</translation>
 <translation id="6710213216561001401">Föregående</translation>
 <translation id="6723839937902243910">Batteri</translation>
@@ -1787,6 +1791,7 @@ Nyligen installerad</translation>
 <translation id="6781002679438061620">Skrivbord 9</translation>
 <translation id="6782182743534150858">Skrivbord 13</translation>
 <translation id="6782919488259222803">Sök på den aktuella sidan</translation>
+<translation id="6783348167101855071">Du har valt handtaget nere till höger – använd piltangenterna för att flytta det</translation>
 <translation id="6786750046913594791">Stäng mappen</translation>
 <translation id="6790428901817661496">Spela</translation>
 <translation id="6792262051831399889">Inte tillgängligt</translation>
@@ -1942,6 +1947,7 @@ Nyligen installerad</translation>
 <translation id="7371404428569700291">Spela in fönster</translation>
 <translation id="7372069265635026568"><ph name="AVAILABLE_MEMORY" /> minne av totalt <ph name="TOTAL_MEMORY" /> är tillgängligt</translation>
 <translation id="737315737514430195">Detta tillåter mikrofonåtkomst för alla appar och webbplatser med mikrofonbehörighet</translation>
+<translation id="7376933029363911338">Du har valt handtaget för nederkanten – använd piltangenterna för att flytta det</translation>
 <translation id="7377169924702866686">Caps Lock är på.</translation>
 <translation id="7377481913241237033">Anslut med en kod</translation>
 <translation id="7378203170292176219">Välj ett område att spela in genom att dra</translation>
@@ -2038,6 +2044,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="7659861092419699379">Skrivbordet och dess fönster har stängts</translation>
 <translation id="7660160718439869192"><ph name="NAME" /> visas på enheter som har länkats till <ph name="EMAIL" /></translation>
+<translation id="7661694115779363471">Du har valt handtaget nere till vänster – använd piltangenterna för att flytta det</translation>
 <translation id="7662283695561029522">Tryck om du vill konfigurera</translation>
 <translation id="7670953955701272011">Öppna det här datumet i Google Kalender</translation>
 <translation id="7671610481353807627">Apparna har sorterats efter färg</translation>
@@ -2206,6 +2213,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="8155628902202578800">Öppna informationsdialogrutan för <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Använder <ph name="LOCALE_NAME" /></translation>
 <translation id="8168435359814927499">Innehåll</translation>
+<translation id="8172370561760918656">Du har valt handtaget uppe till vänster – använd piltangenterna för att flytta det</translation>
 <translation id="81817143961839203">Det gick inte att infoga bilden</translation>
 <translation id="8185090165691050712">Aktivera/inaktivera menyn för att ändra storlek på låst läge</translation>
 <translation id="8192727139462702395">När du inaktiverar Bluetooth kopplas dessa externa enheter från din <ph name="DEVICE_TYPE" />:</translation>

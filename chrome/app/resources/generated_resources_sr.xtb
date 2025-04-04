@@ -1250,8 +1250,8 @@
 <translation id="185111092974636561"><ph name="BEGIN_PARAGRAPH1" />Пре него што се региструјете, треба да обришете TPM да би <ph name="DEVICE_OS" /> могао да преузме власништво над уређајем.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Можете и у потпуности да искључите TPM уређај. Ваши подаци ће се и даље безбедно чувати помоћу софтверског шифровања, али одређене безбедносне функције, попут хардверских сертификата, биће онемогућене.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Подешавања TPM-а можете да промените рестартовањем и уносом BIOS/UEFI подешавања. Кораци се разликују у зависности од модела уређаја. Да бисте пронашли више информација, отворите документацију за <ph name="DEVICE_OS" /> на посебном уређају пре рестартовања: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="1851551847729706116"><ph name="TAB_NAME" /> се дели на овој картици</translation>
 <translation id="1852799913675865625">Дошло је до грешке при покушају читања датотеке: <ph name="ERROR_TEXT" />.</translation>
-<translation id="1854049213067042715">Наставите тамо где сте стали. Можете да подесите апликације тако да се увек враћају при покретању или да искључите враћање у Подешавањима.</translation>
 <translation id="1854180393107901205">Заустави пребацивање</translation>
 <translation id="1856715684130786728">Додај локацију...</translation>
 <translation id="185766080319917408">Тастер покретача се налази са леве стране левог тастера Alt</translation>
@@ -1639,6 +1639,7 @@
 <translation id="2121825465123208577">Промени величину</translation>
 <translation id="2123766928840368256">Одаберите другу датотеку</translation>
 <translation id="2124930039827422115">{1,plural, =1{Један корисник је оценио са <ph name="AVERAGE_RATING" />.}one{# корисник је оценио са <ph name="AVERAGE_RATING" />.}few{# корисника су оценила са <ph name="AVERAGE_RATING" />.}other{# корисника је оценило са <ph name="AVERAGE_RATING" />.}}</translation>
+<translation id="2125715366913703594">Истражите додатке</translation>
 <translation id="2126167708562367080">Администратор је онемогућио синхронизацију.</translation>
 <translation id="2127372758936585790">Пуњач мале снаге</translation>
 <translation id="212862741129535676">Проценат заузетости стања фреквенције</translation>
@@ -3591,7 +3592,6 @@
 <translation id="3500417806337761827">Грешка при инсталацији дељене ставке. Превише SMB дељених ставки је већ инсталирано.</translation>
 <translation id="3500764001796099683">Омогући изоловане веб-апликације</translation>
 <translation id="350397915809787283">Ако немате налог, изаберите прву опцију да бисте га отворили.</translation>
-<translation id="3503995387997205657">Можете да вратите претходне апликације</translation>
 <translation id="3505100368357440862">Предлози за куповину</translation>
 <translation id="3507132249039706973">Стандардна заштита је укључена</translation>
 <translation id="3507650052590605702">Управљај лозинком</translation>
@@ -5003,7 +5003,6 @@
 <translation id="4479424953165245642">Управљај киоск апликацијама</translation>
 <translation id="4479639480957787382">Етернет</translation>
 <translation id="4479877282574735775">Виртуелна машина се конфигуруше. То може да потраје пар минута.</translation>
-<translation id="4481448477173043917"><ph name="DEVICE_TYPE" /> се неочекивано рестартовао</translation>
 <translation id="4481467543947557978">сервисер</translation>
 <translation id="4482990632723642375">Недавно затворена картица</translation>
 <translation id="4486333480498805415">Прецизност локације</translation>
@@ -9119,7 +9118,6 @@
 <translation id="7457027286267861992">Нема довољно простора на диску. Ослободите још простора на диску, па пробајте поново. Кôд грешке је <ph name="ERROR" />.</translation>
 <translation id="7457831169406914076">{COUNT,plural, =1{линк}one{# линк}few{# линка}other{# линкова}}</translation>
 <translation id="7458168200501453431">Користи исту проверу правописа као Google претрага. Текст који унесете у прегледач се шаље Google-у.</translation>
-<translation id="7458715171471938198">Желите да вратите апликације?</translation>
 <translation id="7458933488302148148">Проверите сачуване лозинке да бисте ојачали безбедност и били безбеднији онлајн</translation>
 <translation id="7461924472993315131">Закачи</translation>
 <translation id="746216226901520237">Следећи пут ће телефон откључати <ph name="DEVICE_TYPE" />. Можете да искључите Smart Lock у подешавањима.</translation>
@@ -11289,6 +11287,7 @@
 <translation id="8963117664422609631">Идите на подешавања сајта</translation>
 <translation id="8964927371396953727">Потврдите идентитет да бисте користили и чували лозинке на налогу, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8965037249707889821">Унесите стару лозинку</translation>
+<translation id="8967403839792635452">Развијате додатке? Обавештавајте се о <ph name="BEGIN_LINK" />новостима<ph name="END_LINK" /> помоћу документације за програмере додатака за Chrome.</translation>
 <translation id="8967427617812342790">Додај на листу за читање</translation>
 <translation id="8967548289042494261">Уклоните виртуелну машину <ph name="VM_NAME" /></translation>
 <translation id="8968527460726243404">Уписивање слика Chrome ОС система</translation>

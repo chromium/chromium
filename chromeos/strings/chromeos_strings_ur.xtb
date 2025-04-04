@@ -351,6 +351,7 @@
 <translation id="2438248248625638801">ریکارڈنگ کے عنوانات تخلیق کیے جا رہے ہیں</translation>
 <translation id="2446553403094072641">فلوٹنگ پوائنٹ کی درستگی</translation>
 <translation id="2448312741937722512">قسم</translation>
+<translation id="2448857983905133469">کلاس ٹولز</translation>
 <translation id="2468124392950503650">تخلیق کرنے کیلئے پرامپٹ منتخب کریں یا <ph name="BEGIN_LINK_PROMPTING_GUIDE" />پرامپٹ گائیڈ<ph name="END_LINK_PROMPTING_GUIDE" /> دیکھیں</translation>
 <translation id="2472215337771558851">‏اGoogle AI سے تقویت یافتہ کے ساتھ ایک مسودہ تخلیق کرنے یا موجودہ کام کو بہتر بنانے کے لیے لکھنے میں میری مدد کریں کا استعمال کریں</translation>
 <translation id="2475982808118771221">ایک خرابی پیش آگئی</translation>
@@ -449,6 +450,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">اینڈ پوائنٹ</translation>
 <translation id="3060579846059757016">آؤٹ لائنز</translation>
+<translation id="3060798442805232711">کلاس ٹولز آپ کا مائیکروفون استعمال کر رہا ہے</translation>
 <translation id="3061850252076394168">سننے کیلئے منتخب کریں کو فعال کریں</translation>
 <translation id="3066772729299747758">منگل کو</translation>
 <translation id="3069085583900247081">ٹیسٹ ناکام ہو گیا</translation>
@@ -910,6 +912,7 @@
 <translation id="5170568018924773124">فولڈر میں دکھائیں</translation>
 <translation id="517075088756846356">اپ ڈیٹ ہونے کے عمل کو جاری رکھنے کے لیے <ph name="DEVICE_NAME" /> کے پاور کیبل کو ان پلگ کریں پھر اسے دوبارہ پلک ان کریں</translation>
 <translation id="5180108905184566358">بوباب کے درخت</translation>
+<translation id="5180431943345994173">آپ کے استاد نے کلاس ٹولز میں موجود مواد کو ہٹا دیا ہے</translation>
 <translation id="5180712487038406644">ایکسپریسو</translation>
 <translation id="5190187232518914472">‏اپنی پسندیدہ میموریز کو دوبارہ زندہ کریں۔ البمز کو شامل یا ان میں ترمیم کرنے کے لیے، <ph name="LINK_BEGIN" />Google تصاویر<ph name="LINK_END" /> پر جائیں۔</translation>
 <translation id="5212593641110061691">ٹیبلائڈ</translation>
@@ -1003,6 +1006,7 @@
 <translation id="5628106863521633649">دستیاب زبانیں</translation>
 <translation id="5630438231335788050">باہاؤس</translation>
 <translation id="5631759159893697722">تجریدی</translation>
+<translation id="5655084389678168978">آپ کے استاد نے کلاس ٹولز میں نیا مواد شامل کیا ہے</translation>
 <translation id="5655283760733841251">کی بورڈ کی چمک بڑھانے کی کلید</translation>
 <translation id="5655296450510165335">آلہ کا اندراج</translation>
 <translation id="5655776422854483175">کوئی پرنٹ جابز نہیں ہیں</translation>
@@ -1529,6 +1533,7 @@
 <translation id="7971535376154084247">عام کنٹرولز</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> نیٹ ورک میں شامل ہونے کیلئے، ترتیبات پر جائیں</translation>
 <translation id="7978412674231730200">نجی کلید</translation>
+<translation id="7979468455552394856">کلاس ٹولز طلباء سے منسلک ہے</translation>
 <translation id="7982789257301363584">نیٹ ورک</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" خودکار طور پر شروع ہو گئی}other{# ایپس خودکار طور پر شروع ہو گئیں}}</translation>
 <translation id="7994702968232966508">‏EAP طریقہ</translation>

@@ -351,6 +351,7 @@
 <translation id="2438248248625638801">Праве се наслови снимака</translation>
 <translation id="2446553403094072641">Прецизност покретног зареза</translation>
 <translation id="2448312741937722512">Тип</translation>
+<translation id="2448857983905133469">Алатке у разреду</translation>
 <translation id="2468124392950503650">Изаберите упит за прављење или погледајте <ph name="BEGIN_LINK_PROMPTING_GUIDE" />водич за упите<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Користите Помоћ при писању да бисте направили радну верзију или побољшали постојећи рад који омогућава Google вештачка интелигенција</translation>
 <translation id="2475982808118771221">Дошло је до грешке</translation>
@@ -449,6 +450,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Крајња тачка</translation>
 <translation id="3060579846059757016">Оквири</translation>
+<translation id="3060798442805232711">Алатке у разреду користе микрофон</translation>
 <translation id="3061850252076394168">омогућите услугу Изаберите за говор</translation>
 <translation id="3066772729299747758">у уторак</translation>
 <translation id="3069085583900247081">Тест није успео</translation>
@@ -910,6 +912,7 @@
 <translation id="5170568018924773124">Прикажи у директоријуму</translation>
 <translation id="517075088756846356">Искључите и поново прикључите кабл за напајање уређаја <ph name="DEVICE_NAME" /> да бисте наставили процес ажурирања</translation>
 <translation id="5180108905184566358">баобаб дрвеће</translation>
+<translation id="5180431943345994173">Наставник је уклонио садржај у Алаткама у разреду</translation>
 <translation id="5180712487038406644">Изражајно</translation>
 <translation id="5190187232518914472">Поново проживите омиљене успомене. Да бисте додали или изменили албуме, идите у <ph name="LINK_BEGIN" />Google слике<ph name="LINK_END" />.</translation>
 <translation id="5212593641110061691">Таблоид</translation>
@@ -1003,6 +1006,7 @@
 <translation id="5628106863521633649">Доступни језици</translation>
 <translation id="5630438231335788050">баухаус</translation>
 <translation id="5631759159893697722">сажетак</translation>
+<translation id="5655084389678168978">Наставник је додао нови садржај у Алаткама у разреду</translation>
 <translation id="5655283760733841251">Повећајте осветљеност тастатуре</translation>
 <translation id="5655296450510165335">Регистрација уређаја</translation>
 <translation id="5655776422854483175">Нема задатака штампања</translation>
@@ -1529,6 +1533,7 @@
 <translation id="7971535376154084247">Опште контроле</translation>
 <translation id="7977800524392185497">Да бисте се повезали са <ph name="NETWORK_NAME" /> мрежи, идите у Подешавања</translation>
 <translation id="7978412674231730200">Приватни кључ</translation>
+<translation id="7979468455552394856">Алатке у разреду су повезане са ученицима</translation>
 <translation id="7982789257301363584">Мрежа</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{Апликација <ph name="APP_NAME_1" /> је аутоматски покренута}one{# апликација је аутоматски покренута}few{# апликације су аутоматски покренуте}other{# апликација је аутоматски покренуто}}</translation>
 <translation id="7994702968232966508">EAP метод</translation>

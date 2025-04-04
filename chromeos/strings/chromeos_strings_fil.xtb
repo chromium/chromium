@@ -351,6 +351,7 @@
 <translation id="2438248248625638801">Gumagawa ng mga pamagat ng recording</translation>
 <translation id="2446553403094072641">Katumpakan ng floating point</translation>
 <translation id="2448312741937722512">Uri</translation>
+<translation id="2448857983905133469">Tools sa Klase</translation>
 <translation id="2468124392950503650">Pumili ng prompt para gumawa o makita ang<ph name="BEGIN_LINK_PROMPTING_GUIDE" />gabay sa prompt<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Gamitin ang Tulungan akong magsulat para gumawa ng draft o magpino ng dati nang gawa, na pinapagana ng Google AI</translation>
 <translation id="2475982808118771221">May isang naganap na error</translation>
@@ -449,6 +450,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">Endpoint</translation>
 <translation id="3060579846059757016">Mga outline</translation>
+<translation id="3060798442805232711">Ginagamit ng Tools sa Klase ang iyong mikropono</translation>
 <translation id="3061850252076394168">i-enable ang select to speak</translation>
 <translation id="3066772729299747758">sa Martes</translation>
 <translation id="3069085583900247081">Nabigo ang pagsubok</translation>
@@ -910,6 +912,7 @@
 <translation id="5170568018924773124">Ipinakita sa folder</translation>
 <translation id="517075088756846356">Bunutin at isaksak ulit ang power cable ng <ph name="DEVICE_NAME" /> para ituloy ang proseso ng pag-update</translation>
 <translation id="5180108905184566358">mga puno ng baobab</translation>
+<translation id="5180431943345994173">Nag-alis ng content ang iyong guro sa Tools sa Klase</translation>
 <translation id="5180712487038406644">Expressive</translation>
 <translation id="5190187232518914472">Balikan ang iyong mga paboritong alaala. Para magdagdag o mag-edit ng mga album, pumunta sa <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
@@ -1003,6 +1006,7 @@
 <translation id="5628106863521633649">Mga available na wika</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">abstract</translation>
+<translation id="5655084389678168978">Nagdagdag ng bagong content ang iyong guro sa Tools sa Klase</translation>
 <translation id="5655283760733841251">Taasan ang liwanag ng keyboard</translation>
 <translation id="5655296450510165335">Pag-enroll ng device</translation>
 <translation id="5655776422854483175">Walang pag-print</translation>
@@ -1529,6 +1533,7 @@ I-download ang modelo ng transcription (hanggang 100MB) para makuha ang mga tran
 <translation id="7971535376154084247">Mga pangkalahatang kontrol</translation>
 <translation id="7977800524392185497">Para sumali sa isang <ph name="NETWORK_NAME" /> network, pumunta sa Mga Setting</translation>
 <translation id="7978412674231730200">Private na key</translation>
+<translation id="7979468455552394856">Nakakonekta sa mga mag-aaral ang Tools sa Klase</translation>
 <translation id="7982789257301363584">Network</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{Awtomatikong sinimulan ang "<ph name="APP_NAME_1" />"}one{Awtomatikong sinimulan ang # app}other{Awtomatikong sinimulan ang # na app}}</translation>
 <translation id="7994702968232966508">Pamamaraang EAP</translation>

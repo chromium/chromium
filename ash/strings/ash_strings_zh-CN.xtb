@@ -112,6 +112,7 @@
 <translation id="1306549533752902673">推荐的应用</translation>
 <translation id="1310396869741602366">更改语气</translation>
 <translation id="1312604459020188865">信号强度为 <ph name="SIGNAL_STRENGTH" /></translation>
+<translation id="1314113845887519729">已选择顶部边缘手柄，使用箭头键即可移动</translation>
 <translation id="1316069254387866896">一律显示任务栏</translation>
 <translation id="132346741904777634">相机已对准左上角。与系统界面冲突。</translation>
 <translation id="132415371743256095">关闭“<ph name="DESK_NAME" />”和窗口</translation>
@@ -186,6 +187,7 @@
 <translation id="1557622599341396706">显示桌面名称</translation>
 <translation id="1569384531973824928">这将允许所有具有摄像头和麦克风使用权限的应用和网站使用摄像头/麦克风。您可能需要刷新网页或重启应用。</translation>
 <translation id="1571697193564730395">开启/关闭“勿扰”模式。<ph name="STATE_TEXT" /></translation>
+<translation id="1574691582236909946">已选择左边缘手柄，使用箭头键即可移动</translation>
 <translation id="1576623706766186887">开启放大镜时缩小</translation>
 <translation id="1582946770779745370">游戏信息中心可供使用。随时按下<ph name="LAUNCHER_KEY_NAME" /> + Shift + Esc 键，再按<ph name="LAUNCHER_KEY_NAME" /> + g 键即可打开</translation>
 <translation id="1586324912145647027">转至桌面 1 到 8</translation>
@@ -609,6 +611,7 @@
 <translation id="304097922505898963">打开“键盘快捷键”应用</translation>
 <translation id="304417730895741346">您已固定的应用和已打开的应用会显示在任务栏上。若要将某个应用固定到任务栏，请右键点击该应用或用双指点按触控板。</translation>
 <translation id="3045488863354895414">下午好！</translation>
+<translation id="3045670165536837541">已选择右上角手柄，使用箭头键即可移动</translation>
 <translation id="3047761520276763270">试着说：</translation>
 <translation id="3053407068093039599">开启/关闭摄像头使用权限</translation>
 <translation id="3055162170959710888">您今天的设备使用时长：<ph name="USED_TIME" /></translation>
@@ -1762,6 +1765,7 @@
 <translation id="6696025732084565524">您的可拆卸式键盘需要安装一项重要更新</translation>
 <translation id="6697913454192220372">添加新桌面</translation>
 <translation id="6700713906295497288">IME 菜单按钮</translation>
+<translation id="6704073473590541209">已选择右边缘手柄，使用箭头键即可移动</translation>
 <translation id="6706742084323792866">PIN 码键盘</translation>
 <translation id="6710213216561001401">上一项</translation>
 <translation id="6723839937902243910">电源</translation>
@@ -1785,6 +1789,7 @@
 <translation id="6781002679438061620">桌面 9</translation>
 <translation id="6782182743534150858">桌面 13</translation>
 <translation id="6782919488259222803">搜索当前网页</translation>
+<translation id="6783348167101855071">已选择右下角手柄，使用箭头键即可移动</translation>
 <translation id="6786750046913594791">关闭文件夹</translation>
 <translation id="6790428901817661496">播放</translation>
 <translation id="6792262051831399889">不可用</translation>
@@ -1940,6 +1945,7 @@
 <translation id="7371404428569700291">录制窗口</translation>
 <translation id="7372069265635026568">可用内存为 <ph name="AVAILABLE_MEMORY" />，总共 <ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">如果您取消麦克风静音，即意味着允许所有具有麦克风使用权限的应用和网站使用麦克风</translation>
+<translation id="7376933029363911338">已选择底部边缘手柄，使用箭头键即可移动</translation>
 <translation id="7377169924702866686">大写锁定已打开。</translation>
 <translation id="7377481913241237033">利用代码连接</translation>
 <translation id="7378203170292176219">拖动鼠标指针即可选择要录制的区域</translation>
@@ -2036,6 +2042,7 @@
 <translation id="7658239707568436148">取消</translation>
 <translation id="7659861092419699379">已关闭桌面和窗口</translation>
 <translation id="7660160718439869192">您的<ph name="NAME" />将会显示在与 <ph name="EMAIL" /> 关联的设备上</translation>
+<translation id="7661694115779363471">已选择左下角手柄，使用箭头键即可移动</translation>
 <translation id="7662283695561029522">点按即可配置</translation>
 <translation id="7670953955701272011">在 Google 日历中打开此日期</translation>
 <translation id="7671610481353807627">应用已按颜色排序</translation>
@@ -2204,6 +2211,7 @@
 <translation id="8155628902202578800">打开与 <ph name="USER_EMAIL_ADDRESS" /> 对应的信息对话框</translation>
 <translation id="8167567890448493835">目前使用的是“<ph name="LOCALE_NAME" />”</translation>
 <translation id="8168435359814927499">内容</translation>
+<translation id="8172370561760918656">已选择左上角手柄，使用箭头键即可移动</translation>
 <translation id="81817143961839203">插入图片失败</translation>
 <translation id="8185090165691050712">开启/关闭菜单即可调整锁定模式的范围</translation>
 <translation id="8192727139462702395">关闭蓝牙后，以下外部设备将与您的 <ph name="DEVICE_TYPE" /> 断开连接：</translation>

@@ -1261,7 +1261,6 @@
     
 <ph name="BEGIN_PARAGRAPH3" />如要變更 TPM 設定，請重新啟動並進入系統的 BIOS/UEFI 設定。操作步驟根據裝置型號而有所不同。如需更多資料，請在重新啟動前使用其他裝置開啟 <ph name="DEVICE_OS" /> 文件：g.co/flex/TPMHelp。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1852799913675865625">嘗試讀取檔案時發生錯誤：<ph name="ERROR_TEXT" /></translation>
-<translation id="1854049213067042715">繼續進行還原程序。您可在「設定」中將應用程式設定為一律在啟動或關閉時還原。</translation>
 <translation id="1854180393107901205">停止投放</translation>
 <translation id="1856715684130786728">新增位置…</translation>
 <translation id="185766080319917408">啟動器鍵位於左 Alt 鍵的左方</translation>
@@ -3603,7 +3602,6 @@
 <translation id="3500417806337761827">連接共用檔案時發生錯誤。已連接過多 SMB 共用檔案。</translation>
 <translation id="3500764001796099683">啟用隔離的網絡應用程式</translation>
 <translation id="350397915809787283">如果沒有帳戶，請選取第一個選項建立帳戶。</translation>
-<translation id="3503995387997205657">您可還原先前的應用程式</translation>
 <translation id="3505100368357440862">購物建議</translation>
 <translation id="3507132249039706973">已開啟「標準保護功能」</translation>
 <translation id="3507650052590605702">管理密碼</translation>
@@ -4623,7 +4621,7 @@
 <translation id="4203769790323223880">唔批准用攝錄機</translation>
 <translation id="4204415812590935863">目前無法建立主題。</translation>
 <translation id="4205157409548006256">設定 Linux 時發生錯誤。</translation>
-<translation id="4205643719206044108">你造訪的網站和網頁內容會分享給 Google，以提供建議</translation>
+<translation id="4205643719206044108">為提供建議，你瀏覽的網站和頁面內容會與 Google 分享</translation>
 <translation id="4206144641569145248">外星人</translation>
 <translation id="4206323443866416204">意見反映報告</translation>
 <translation id="4206585797409671301">允許咗顯示要求</translation>
@@ -5012,7 +5010,6 @@
 <translation id="4479424953165245642">管理 Kiosk 應用程式</translation>
 <translation id="4479639480957787382">以太網絡</translation>
 <translation id="4479877282574735775">正在設定虛擬機器。這項操作可能需時數分鐘。</translation>
-<translation id="4481448477173043917">您的 <ph name="DEVICE_TYPE" /> 意外重新開機</translation>
 <translation id="4481467543947557978">Service Worker</translation>
 <translation id="4482990632723642375">最近閂咗嘅分頁</translation>
 <translation id="4486333480498805415">定位精確度</translation>
@@ -8762,7 +8759,7 @@
 <translation id="7199452998289813782">暫停投放去 <ph name="DEVICE_NAME" /></translation>
 <translation id="720110658997053098">讓此裝置永久使用 Kiosk 模式</translation>
 <translation id="7201118060536064622">已刪除「<ph name="DELETED_ITEM_NAME" />」</translation>
-<translation id="7201336084980086208">你提交表單時，自動填入功能可詢問是否要儲存資訊，例如駕照或護照的號碼</translation>
+<translation id="7201336084980086208">提交表格時，自動填入功能可能會詢問是否要儲存資料，例如駕駛執照或護照號碼</translation>
 <translation id="7201420661433230412">查看檔案</translation>
 <translation id="7201432510117121839">此裝置不支援投放桌面電腦音訊</translation>
 <translation id="7201535955609308429">正在驗證，請稍候</translation>
@@ -9119,7 +9116,6 @@
 <translation id="7457027286267861992">磁碟空間不足。請騰出磁碟空間，然後再試一次。錯誤代碼：<ph name="ERROR" />。</translation>
 <translation id="7457831169406914076">{COUNT,plural, =1{1 個連結}other{# 個連結}}</translation>
 <translation id="7458168200501453431">系統會使用與「Google 搜尋」相同的的拼字檢查工具。您在瀏覽器輸入的文字將會傳送給 Google。</translation>
-<translation id="7458715171471938198">要還原應用程式嗎？</translation>
 <translation id="7458933488302148148">請檢查已儲存的密碼，提升安全性並保保網上安全</translation>
 <translation id="7461924472993315131">Pin</translation>
 <translation id="746216226901520237">下次您便可使用手機來解鎖 <ph name="DEVICE_TYPE" />。您可在「設定」中停用 Smart Lock。</translation>

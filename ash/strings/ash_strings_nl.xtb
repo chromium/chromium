@@ -112,6 +112,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1306549533752902673">AANBEVOLEN APPS</translation>
 <translation id="1310396869741602366">Toon wijzigen</translation>
 <translation id="1312604459020188865">Signaalsterkte <ph name="SIGNAL_STRENGTH" /></translation>
+<translation id="1314113845887519729">Geselecteerde handgreep aan de bovenkant, gebruik de pijltoetsen om te verplaatsen</translation>
 <translation id="1316069254387866896">Plank altijd bekijken</translation>
 <translation id="132346741904777634">Camera uitgelijnd op de linkerbovenhoek. Conflict met systeemoppervlak.</translation>
 <translation id="132415371743256095"><ph name="DESK_NAME" /> en vensters sluiten</translation>
@@ -186,6 +187,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1557622599341396706">Bureaunaam tonen</translation>
 <translation id="1569384531973824928">Hiermee geef je toegang aan alle apps en websites met camera- en microfoonrechten. Je moet misschien de webpagina vernieuwen of de app opnieuw starten.</translation>
 <translation id="1571697193564730395">Niet storen aan-/uitzetten. <ph name="STATE_TEXT" /></translation>
+<translation id="1574691582236909946">Geselecteerde handgreep aan de linkerkant, gebruik de pijltoetsen om te verplaatsen</translation>
 <translation id="1576623706766186887">Uitzoomen als vergrootglas aanstaat</translation>
 <translation id="1582946770779745370">Game Dashboard is beschikbaar. Druk op <ph name="LAUNCHER_KEY_NAME" /> + Shift + Escape en daarna op <ph name="LAUNCHER_KEY_NAME" /> + g om dit te openen.</translation>
 <translation id="1586324912145647027">Naar bureau 1 tot en met 8 gaan</translation>
@@ -609,6 +611,7 @@ Anders wordt de ingebouwde touchpad over <ph name="TIMEOUT_SECONDS" /> weer aang
 <translation id="304097922505898963">App voor sneltoetsen openen</translation>
 <translation id="304417730895741346">Je vastgezette en geopende apps staan op de plank. Als je een app wilt vastzetten op de plank, klik je met de rechtermuisknop op een app of tik je met 2 vingers op de touchpad.</translation>
 <translation id="3045488863354895414">Goedemiddag,</translation>
+<translation id="3045670165536837541">Geselecteerde handgreep rechtsboven, gebruik de pijltoetsen om te verplaatsen</translation>
 <translation id="3047761520276763270">Zeg eens:</translation>
 <translation id="3053407068093039599">Cameratoegang aan-/uitzetten</translation>
 <translation id="3055162170959710888">Je hebt dit apparaat vandaag <ph name="USED_TIME" /> gebruikt</translation>
@@ -1764,6 +1767,7 @@ Nieuwe installatie</translation>
 <translation id="6696025732084565524">Je afneembare toetsenbord heeft een essentiële update nodig</translation>
 <translation id="6697913454192220372">Nieuw bureau toevoegen</translation>
 <translation id="6700713906295497288">IME-menuknop</translation>
+<translation id="6704073473590541209">Geselecteerde handgreep aan de rechterkant, gebruik de pijltoetsen om te verplaatsen</translation>
 <translation id="6706742084323792866">Toetsenbord vastzetten</translation>
 <translation id="6710213216561001401">Vorige</translation>
 <translation id="6723839937902243910">Voeding</translation>
@@ -1787,6 +1791,7 @@ Nieuwe installatie</translation>
 <translation id="6781002679438061620">Bureau 9</translation>
 <translation id="6782182743534150858">Bureau 13</translation>
 <translation id="6782919488259222803">Zoeken op huidige pagina</translation>
+<translation id="6783348167101855071">Geselecteerde handgreep rechtsonder, gebruik de pijltoetsen om te verplaatsen</translation>
 <translation id="6786750046913594791">Map sluiten</translation>
 <translation id="6790428901817661496">Spelen</translation>
 <translation id="6792262051831399889">Niet beschikbaar</translation>
@@ -1942,6 +1947,7 @@ Nieuwe installatie</translation>
 <translation id="7371404428569700291">Opname van venster maken</translation>
 <translation id="7372069265635026568"><ph name="AVAILABLE_MEMORY" /> geheugen van in totaal <ph name="TOTAL_MEMORY" /> beschikbaar</translation>
 <translation id="737315737514430195">Hierdoor wordt microfoontoegang toegestaan voor alle apps en websites met microfoonrechten</translation>
+<translation id="7376933029363911338">Geselecteerde handgreep aan de onderkant, gebruik de pijltoetsen om te verplaatsen</translation>
 <translation id="7377169924702866686">Caps Lock staat aan.</translation>
 <translation id="7377481913241237033">Koppelen met een code</translation>
 <translation id="7378203170292176219">Sleep om het gedeelte te selecteren dat je wilt opnemen</translation>
@@ -2038,6 +2044,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="7658239707568436148">Annuleren</translation>
 <translation id="7659861092419699379">Bureau en vensters zijn gesloten</translation>
 <translation id="7660160718439869192">Je <ph name="NAME" /> is zichtbaar op apparaten die aan <ph name="EMAIL" /> zijn gekoppeld</translation>
+<translation id="7661694115779363471">Geselecteerde handgreep linksonder, gebruik de pijltoetsen om te verplaatsen</translation>
 <translation id="7662283695561029522">Tik om te configureren</translation>
 <translation id="7670953955701272011">Deze datum openen in Google Agenda</translation>
 <translation id="7671610481353807627">Apps zijn gesorteerd op kleur</translation>
@@ -2206,6 +2213,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8155628902202578800">Dialoogvenster met informatie openen voor <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> in gebruik</translation>
 <translation id="8168435359814927499">Content</translation>
+<translation id="8172370561760918656">Geselecteerde handgreep linksboven, gebruik de pijltoetsen om te verplaatsen</translation>
 <translation id="81817143961839203">Invoegen van afbeelding is mislukt</translation>
 <translation id="8185090165691050712">Menu aan-/uitzetten om het formaat van de vergrendelde modus aan te passen</translation>
 <translation id="8192727139462702395">Als je bluetooth uitzet, wordt de verbinding van deze externe apparaten met je <ph name="DEVICE_TYPE" /> verbroken:</translation>
