@@ -8,8 +8,10 @@
 
 #include "base/i18n/time_formatting.h"
 #include "base/json/values_util.h"
+#include "base/logging.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -34,9 +36,17 @@ ImpressionLimitService::ImpressionLimitService(
     history::HistoryService* history_service)
     : history_service_(history_service), pref_service_(pref_service) {
   DCHECK(history_service_);
-  history_service_observation_.Observe(history_service_.get());
-  for (const auto pref_name : GetAllowListedPrefs()) {
-    RemoveEntriesOlderThan30Days(pref_name);
+  if (base::FeatureList::IsEnabled(commerce::kShopCardImpressionLimits)) {
+    history_service_observation_.Observe(history_service_.get());
+    for (const auto& pref_name : GetAllowListedPrefs()) {
+      RemoveEntriesOlderThan30Days(pref_name);
+    }
+  } else {
+    // ShopCard feature is experimental. Don't keep impression
+    // counts around when flag is turned off.
+    for (const auto& pref_name : GetAllowListedPrefs()) {
+      pref_service_->ClearPref(pref_name);
+    }
   }
 }
 
@@ -52,8 +62,24 @@ void ImpressionLimitService::Shutdown() {
 void ImpressionLimitService::OnHistoryDeletions(
     history::HistoryService* history_service,
     const history::DeletionInfo& deletion_info) {
-  // TODO(crbug.com/407527797) Remove impressions for a URL
-  // when the URL is deleted from history.
+  if (deletion_info.IsAllHistory()) {
+    for (const auto& pref_name : GetAllowListedPrefs()) {
+      pref_service_->ClearPref(pref_name);
+    }
+  } else {
+    std::set<std::string> urls_to_remove;
+    for (const history::URLRow& row : deletion_info.deleted_rows()) {
+      urls_to_remove.insert(GetUrlKey(row.url()).spec());
+    }
+    for (const auto& pref_name : GetAllowListedPrefs()) {
+      base::Value::Dict impressions = pref_service_->GetDict(pref_name).Clone();
+
+      for (const auto& url : urls_to_remove) {
+        impressions.Remove(url);
+      }
+      pref_service_->SetDict(pref_name, std::move(impressions));
+    }
+  }
 }
 
 void ImpressionLimitService::LogImpressionForURL(
