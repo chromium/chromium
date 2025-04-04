@@ -5,6 +5,7 @@
 #include "services/network/url_loader_util.h"
 
 #include "base/containers/enum_set.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "net/base/elements_upload_data_stream.h"
 #include "net/base/upload_bytes_element_reader.h"
@@ -15,14 +16,21 @@
 #include "net/http/http_response_info.h"
 #include "net/url_request/url_request.h"
 #include "services/network/ad_heuristic_cookie_overrides.h"
+#include "services/network/attribution/attribution_request_helper.h"
 #include "services/network/chunked_data_pipe_upload_data_stream.h"
 #include "services/network/data_pipe_element_reader.h"
 #include "services/network/public/cpp/cors/cors.h"
+#include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/cpp/data_element.h"
+#include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/header_util.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/resource_request_body.h"
+#include "services/network/public/cpp/sri_message_signatures.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_request.mojom-shared.h"
+#include "services/network/sec_header_helpers.h"
 
 namespace network::url_loader_util {
 
@@ -67,6 +75,163 @@ const char* GetCertStatePartString(const net::SSLInfo& ssl_info) {
     return "NoCert";
   }
   return ssl_info.is_issued_by_known_root ? "KnownRootCert" : "UnknownRootCert";
+}
+
+// Returns true if the |credentials_mode| of the request allows sending
+// credentials.
+bool ShouldAllowCredentials(mojom::CredentialsMode credentials_mode) {
+  switch (credentials_mode) {
+    case mojom::CredentialsMode::kInclude:
+    // TODO(crbug.com/40619226): Make this work with
+    // CredentialsMode::kSameOrigin.
+    case mojom::CredentialsMode::kSameOrigin:
+      return true;
+
+    case mojom::CredentialsMode::kOmit:
+    case mojom::CredentialsMode::kOmitBug_775438_Workaround:
+      return false;
+  }
+}
+
+// Returns true when the |credentials_mode| of the request allows sending client
+// certificates.
+bool ShouldSendClientCertificates(mojom::CredentialsMode credentials_mode) {
+  switch (credentials_mode) {
+    case mojom::CredentialsMode::kInclude:
+    case mojom::CredentialsMode::kSameOrigin:
+      return true;
+
+    // TODO(crbug.com/40089326): Due to a bug, the default behavior does
+    // not properly correspond to Fetch's "credentials mode", in that client
+    // certificates will be sent if available, or the handshake will be aborted
+    // to allow selecting a client cert.
+    // With the feature kOmitCorsClientCert enabled, the correct
+    // behavior is done; omit all client certs and continue the handshake
+    // without sending one if requested.
+    case mojom::CredentialsMode::kOmit:
+      return !base::FeatureList::IsEnabled(features::kOmitCorsClientCert);
+
+    case mojom::CredentialsMode::kOmitBug_775438_Workaround:
+      return false;
+  }
+}
+
+// Returns whether sending/storing credentials is allowed by COEP and
+// Document-Isolation-Policy.
+// |url| is the latest request URL, either the original URL or
+// `redirect_info.new_url`.
+// When Cross-Origin-Embedder-Policy: credentialless or
+// Document-Isolation-Policy: isolate-and-credentialless are set, do not send
+// or store credentials for no-cors cross-origin request.
+// [spec]:
+// https://fetch.spec.whatwg.org/#cross-origin-embedder-policy-allows-credentials
+bool WebPoliciesAllowCredentials(
+    const GURL& url,
+    const network::mojom::ClientSecurityStatePtr& client_security_state,
+    mojom::RequestMode request_mode,
+    const std::optional<url::Origin>& initiator) {
+  // [spec]: To check if Cross-Origin-Embedder-Policy allows credentials, given
+  //         a request request, run these steps:
+
+  // [spec]  1. If request’s mode is not "no-cors", then return true.
+  switch (request_mode) {
+    case mojom::RequestMode::kCors:
+    case mojom::RequestMode::kCorsWithForcedPreflight:
+    case mojom::RequestMode::kNavigate:
+    case mojom::RequestMode::kSameOrigin:
+      return true;
+
+    case mojom::RequestMode::kNoCors:
+      break;
+  }
+
+  // [spec]: 2. If request’s client is null, then return true.
+  if (!client_security_state) {
+    return true;
+  }
+
+  // [spec]: 3. If request’s client’s policy container’s embedder policy’s value
+  //            is not "credentialless", then return true.
+  // Document-Isolation-Policy: also check that Document-Isolation-Policy allows
+  // credentials.
+  if (client_security_state->cross_origin_embedder_policy.value !=
+          mojom::CrossOriginEmbedderPolicyValue::kCredentialless &&
+      client_security_state->document_isolation_policy.value !=
+          mojom::DocumentIsolationPolicyValue::kIsolateAndCredentialless) {
+    return true;
+  }
+
+  // [spec]: 4. If request’s origin is same origin with request’s current URL’s
+  //            origin and request does not have a redirect-tainted origin, then
+  //            return true.
+  url::Origin request_initiator = initiator.value_or(url::Origin());
+  if (request_initiator.IsSameOriginWith(url)) {
+    return true;
+  }
+
+  // [spec]: 5. Return false.
+  return false;
+}
+
+bool ShouldForceIgnoreSiteForCookies(
+    const ResourceRequest& request,
+    const cors::OriginAccessList& origin_access_list) {
+  // Ignore site for cookies in requests from an initiator covered by the
+  // same-origin-policy exclusions in `origin_access_list_` (typically requests
+  // initiated by Chrome Extensions).
+  if (request.request_initiator.has_value() &&
+      cors::OriginAccessList::AccessState::kAllowed ==
+          origin_access_list.CheckAccessState(request.request_initiator.value(),
+                                              request.url)) {
+    return true;
+  }
+
+  // Convert `site_for_cookies` into an origin (an opaque origin if
+  // `net::SiteForCookies::IsNull()` returns true).
+  //
+  // Note that `site_for_cookies` is a _site_ rather than an _origin_, but for
+  // Chrome Extensions the _site_ and _origin_ of a host are the same extension
+  // id.  Thanks to this, for Chrome Extensions, we can pass a _site_ into
+  // OriginAccessChecks (which normally expect an _origin_).
+  url::Origin site_origin =
+      url::Origin::Create(request.site_for_cookies.RepresentativeUrl());
+
+  // If `site_for_cookies` represents an origin that is granted access to the
+  // initiator and the target by `origin_access_list_` (typically such
+  // `site_for_cookies` represents a Chrome Extension), then we also should
+  // force ignoring of site for cookies if the initiator and the target are
+  // same-site.
+  //
+  // Ideally we would walk up the frame tree and check that each ancestor is
+  // first-party to the main frame (treating the `origin_access_list_`
+  // exceptions as "first-party").  But walking up the tree is not possible in
+  // //services/network and so we make do with just checking the direct
+  // initiator of the request.
+  //
+  // We also check same-siteness between the initiator and the requested URL,
+  // because setting `force_ignore_site_for_cookies` to true causes Strict
+  // cookies to be attached, and having the initiator be same-site to the
+  // request URL is a requirement for Strict cookies (see
+  // net::cookie_util::ComputeSameSiteContext).
+  if (!site_origin.opaque() && request.request_initiator.has_value()) {
+    bool site_can_access_target =
+        cors::OriginAccessList::AccessState::kAllowed ==
+        origin_access_list.CheckAccessState(site_origin, request.url);
+    bool site_can_access_initiator =
+        cors::OriginAccessList::AccessState::kAllowed ==
+        origin_access_list.CheckAccessState(
+            site_origin, request.request_initiator->GetURL());
+    net::SiteForCookies site_of_initiator =
+        net::SiteForCookies::FromOrigin(request.request_initiator.value());
+    bool are_initiator_and_target_same_site =
+        site_of_initiator.IsFirstParty(request.url);
+    if (site_can_access_initiator && site_can_access_target &&
+        are_initiator_and_target_same_site) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 // A subclass of net::UploadBytesElementReader which owns
@@ -358,6 +523,141 @@ void MaybeRecordSharedDictionaryUsedResponseMetrics(
                      response_info.connection_info)),
              ".", GetCertStatePartString(response_info.ssl_info)}),
         response_info.did_use_shared_dictionary);
+  }
+}
+
+void ConfigureUrlRequest(const ResourceRequest& request,
+                         const mojom::URLLoaderFactoryParams& factory_params,
+                         const cors::OriginAccessList& origin_access_list,
+                         net::URLRequest& url_request) {
+  url_request.set_method(request.method);
+  url_request.set_site_for_cookies(request.site_for_cookies);
+  url_request.set_force_ignore_site_for_cookies(
+      ShouldForceIgnoreSiteForCookies(request, origin_access_list));
+  if (!request.navigation_redirect_chain.empty()) {
+    DCHECK_EQ(request.mode, mojom::RequestMode::kNavigate);
+    url_request.SetURLChain(request.navigation_redirect_chain);
+  }
+  url_request.SetReferrer(request.referrer.GetAsReferrer().spec());
+  url_request.set_referrer_policy(request.referrer_policy);
+  url_request.set_upgrade_if_insecure(request.upgrade_if_insecure);
+  url_request.set_ad_tagged(request.is_ad_tagged);
+  url_request.set_client_side_content_decoding_enabled(
+      request.client_side_content_decoding_enabled);
+
+  auto isolation_info = GetIsolationInfo(
+      factory_params.isolation_info,
+      factory_params.automatically_assign_isolation_info, request);
+  if (isolation_info) {
+    url_request.set_isolation_info(std::move(isolation_info).value());
+  }
+
+  // When a service worker forwards a navigation request it uses the
+  // service worker's IsolationInfo.  This causes the cookie code to fail
+  // to send SameSite=Lax cookies for main-frame navigations passed through
+  // a service worker.  To fix this we check to see if the original destination
+  // of the request was a main frame document and then set a flag indicating
+  // SameSite cookies should treat it as a main frame navigation.
+  url_request.set_force_main_frame_for_same_site_cookies(
+      request.mode == mojom::RequestMode::kNavigate &&
+      request.destination == mojom::RequestDestination::kEmpty &&
+      request.original_destination == mojom::RequestDestination::kDocument);
+
+  url_request.SetSecureDnsPolicy(
+      factory_params.disable_secure_dns ||
+              (request.trusted_params &&
+               request.trusted_params->disable_secure_dns)
+          ? net::SecureDnsPolicy::kDisable
+          : net::SecureDnsPolicy::kAllow);
+
+  // |cors_exempt_headers| must be merged here to avoid breaking CORS checks.
+  // They are non-empty when the values are given by the UA code, therefore
+  // they should be ignored by CORS checks.
+  net::HttpRequestHeaders merged_headers = request.headers;
+  merged_headers.MergeFrom(ComputeAttributionReportingHeaders(request));
+  merged_headers.MergeFrom(request.cors_exempt_headers);
+  // This should be ensured by the CorsURLLoaderFactory(), which is called
+  // before URLLoaders are created.
+  DCHECK(AreRequestHeadersSafe(merged_headers));
+  url_request.SetExtraRequestHeaders(std::move(merged_headers));
+
+  url_request.set_accepted_stream_types(request.devtools_accepted_stream_types);
+
+  url_request.set_initiator(request.request_initiator);
+
+  // Note: There are some ordering dependencies here. `SetRequestCredentials`
+  // depends on `SetLoadFlags`; `CalculateStorageAccessStatus` depends on
+  // `cookie_setting_overrides` and `SetRequestCredentials`.
+  // `SetFetchMetadataHeaders` depends on
+  // `url_request.storage_access_status()`.
+  url_request.cookie_setting_overrides() = CalculateCookieSettingOverrides(
+      factory_params.cookie_setting_overrides,
+      factory_params.devtools_cookie_setting_overrides, request,
+      /*emit_metrics=*/true);
+  url_request.SetLoadFlags(request.load_flags);
+  SetRequestCredentials(request.url, factory_params.client_security_state,
+                        request.mode, request.credentials_mode,
+                        request.request_initiator, url_request);
+  if (request.credentials_mode == mojom::CredentialsMode::kInclude) {
+    url_request.set_storage_access_status(
+        url_request.CalculateStorageAccessStatus());
+  }
+
+  SetFetchMetadataHeaders(
+      &url_request, request.mode,
+      request.trusted_params && request.trusted_params->has_user_activation,
+      request.destination, nullptr, factory_params, origin_access_list,
+      request.credentials_mode);
+
+  MaybeSetAcceptSignatureHeader(&url_request, request.expected_public_keys);
+
+  url_request.set_first_party_url_policy(
+      request.update_first_party_url_on_redirect
+          ? net::RedirectInfo::FirstPartyURLPolicy::UPDATE_URL_ON_REDIRECT
+          : net::RedirectInfo::FirstPartyURLPolicy::NEVER_CHANGE_URL);
+
+  url_request.SetPriorityIncremental(request.priority_incremental);
+  if (request.socket_tag != net::SocketTag()) {
+    url_request.set_socket_tag(request.socket_tag);
+  }
+
+  url_request.set_allows_device_bound_sessions(
+      request.allows_device_bound_sessions);
+}
+
+void SetRequestCredentials(
+    const GURL& url,
+    const network::mojom::ClientSecurityStatePtr& client_security_state,
+    mojom::RequestMode request_mode,
+    mojom::CredentialsMode credentials_mode,
+    const std::optional<url::Origin>& initiator,
+    net::URLRequest& url_request) {
+  bool policies_allow_credentials = WebPoliciesAllowCredentials(
+      url, client_security_state, request_mode, initiator);
+
+  bool allow_credentials =
+      ShouldAllowCredentials(credentials_mode) && policies_allow_credentials;
+
+  bool allow_client_certificates =
+      ShouldSendClientCertificates(credentials_mode) &&
+      policies_allow_credentials;
+
+  // The decision not to include credentials is sticky. This is equivalent to
+  // checking the tainted origin flag in the fetch specification.
+  if (!allow_credentials) {
+    url_request.set_allow_credentials(false);
+  }
+  if (!allow_client_certificates) {
+    url_request.set_send_client_certs(false);
+  }
+
+  // Contrary to Firefox or blink's cache, the HTTP cache doesn't distinguish
+  // requests including user's credentials from the anonymous ones yet. See
+  // https://docs.google.com/document/d/1lvbiy4n-GM5I56Ncw304sgvY5Td32R6KHitjRXvkZ6U
+  // As a workaround until a solution is implemented, the cached responses
+  // aren't used for those requests.
+  if (!policies_allow_credentials) {
+    url_request.SetLoadFlags(url_request.load_flags() | net::LOAD_BYPASS_CACHE);
   }
 }
 

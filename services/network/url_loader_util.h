@@ -14,6 +14,8 @@
 #include "base/files/file.h"
 #include "net/base/isolation_info.h"
 #include "net/cookies/cookie_setting_override.h"
+#include "services/network/public/mojom/client_security_state.mojom-forward.h"
+#include "services/network/public/mojom/fetch_api.mojom-forward.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -28,8 +30,13 @@ class URLRequest;
 
 namespace network {
 
+namespace cors {
+class OriginAccessList;
+}  // namespace cors
+
 namespace mojom {
 enum class RequestDestination;
+class URLLoaderFactoryParams;
 }  // namespace mojom
 
 struct ResourceRequest;
@@ -81,6 +88,27 @@ void MaybeRecordSharedDictionaryUsedResponseMetrics(
     network::mojom::RequestDestination destination,
     const net::HttpResponseInfo& response_info,
     bool shared_dictionary_allowed_check_passed);
+
+// Configures the given `url_request` based on the properties specified in
+// `request` and context/factory parameters (`factory_params`,
+// `origin_access_list`).
+void ConfigureUrlRequest(const ResourceRequest& request,
+                         const mojom::URLLoaderFactoryParams& factory_params,
+                         const cors::OriginAccessList& origin_access_list,
+                         net::URLRequest& url_request);
+
+// Sets credential-related flags (`allow_credentials`, `send_client_certs`)
+// on the `url_request` based on the request's properties and security context.
+// Checks both the request's `credentials_mode` and relevant web platform
+// policies (COEP, DIP). May also add the `net::LOAD_BYPASS_CACHE` flag if web
+// policies disallow credentials.
+void SetRequestCredentials(
+    const GURL& url,
+    const network::mojom::ClientSecurityStatePtr& client_security_state,
+    mojom::RequestMode request_mode,
+    mojom::CredentialsMode credentials_mode,
+    const std::optional<url::Origin>& initiator,
+    net::URLRequest& url_request);
 
 }  // namespace url_loader_util
 }  // namespace network

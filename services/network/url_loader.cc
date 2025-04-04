@@ -81,7 +81,6 @@
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_getter.h"
 #include "services/network/ad_heuristic_cookie_overrides.h"
-#include "services/network/attribution/attribution_request_helper.h"
 #include "services/network/orb/orb_impl.h"
 #include "services/network/public/cpp/client_hints.h"
 #include "services/network/public/cpp/constants.h"
@@ -209,45 +208,6 @@ std::vector<mojom::WebClientHintsType> ComputeAcceptCHFrameHints(
   }
 
   return hints;
-}
-
-// Returns true if the |credentials_mode| of the request allows sending
-// credentials.
-bool ShouldAllowCredentials(mojom::CredentialsMode credentials_mode) {
-  switch (credentials_mode) {
-    case mojom::CredentialsMode::kInclude:
-    // TODO(crbug.com/40619226): Make this work with
-    // CredentialsMode::kSameOrigin.
-    case mojom::CredentialsMode::kSameOrigin:
-      return true;
-
-    case mojom::CredentialsMode::kOmit:
-    case mojom::CredentialsMode::kOmitBug_775438_Workaround:
-      return false;
-  }
-}
-
-// Returns true when the |credentials_mode| of the request allows sending client
-// certificates.
-bool ShouldSendClientCertificates(mojom::CredentialsMode credentials_mode) {
-  switch (credentials_mode) {
-    case mojom::CredentialsMode::kInclude:
-    case mojom::CredentialsMode::kSameOrigin:
-      return true;
-
-    // TODO(crbug.com/40089326): Due to a bug, the default behavior does
-    // not properly correspond to Fetch's "credentials mode", in that client
-    // certificates will be sent if available, or the handshake will be aborted
-    // to allow selecting a client cert.
-    // With the feature kOmitCorsClientCert enabled, the correct
-    // behavior is done; omit all client certs and continue the handshake
-    // without sending one if requested.
-    case mojom::CredentialsMode::kOmit:
-      return !base::FeatureList::IsEnabled(features::kOmitCorsClientCert);
-
-    case mojom::CredentialsMode::kOmitBug_775438_Workaround:
-      return false;
-  }
 }
 
 template <typename T>
@@ -576,80 +536,18 @@ URLLoader::URLLoader(
 
   TRACE_EVENT("loading", "URLLoader::URLLoader",
               net::NetLogWithSourceToFlow(url_request_->net_log()));
-
-  // |cors_exempt_headers| must be merged here to avoid breaking CORS checks.
-  // They are non-empty when the values are given by the UA code, therefore
-  // they should be ignored by CORS checks.
-  net::HttpRequestHeaders merged_headers = request.headers;
-  merged_headers.MergeFrom(ComputeAttributionReportingHeaders(request));
-  merged_headers.MergeFrom(request.cors_exempt_headers);
-
-  // This should be ensured by the CorsURLLoaderFactory(), which is called
-  // before URLLoaders are created.
-  DCHECK(AreRequestHeadersSafe(merged_headers));
-
-  // When a service worker forwards a navigation request it uses the
-  // service worker's IsolationInfo.  This causes the cookie code to fail
-  // to send SameSite=Lax cookies for main-frame navigations passed through
-  // a service worker.  To fix this we check to see if the original destination
-  // of the request was a main frame document and then set a flag indicating
-  // SameSite cookies should treat it as a main frame navigation.
-  const bool force_main_frame_for_same_site_cookies =
-      request.mode == mojom::RequestMode::kNavigate &&
-      request.destination == mojom::RequestDestination::kEmpty &&
-      request.original_destination == mojom::RequestDestination::kDocument;
-
-  const net::SecureDnsPolicy secure_dns_policy =
-      factory_params_->disable_secure_dns ||
-              (request.trusted_params &&
-               request.trusted_params->disable_secure_dns)
-          ? net::SecureDnsPolicy::kDisable
-          : net::SecureDnsPolicy::kAllow;
-
-  const net::RedirectInfo::FirstPartyURLPolicy first_party_url_policy =
-      request.update_first_party_url_on_redirect
-          ? net::RedirectInfo::FirstPartyURLPolicy::UPDATE_URL_ON_REDIRECT
-          : net::RedirectInfo::FirstPartyURLPolicy::NEVER_CHANGE_URL;
-
-  if (!request.navigation_redirect_chain.empty()) {
-    DCHECK_EQ(request.mode, mojom::RequestMode::kNavigate);
-  }
-
-  ConfigureRequest(
-      request.url, request.method, request.site_for_cookies,
-      /*force_ignore_site_for_cookies=*/
-      ShouldForceIgnoreSiteForCookies(request),
-      request.navigation_redirect_chain, request.referrer,
-      request.referrer_policy,
-      /*upgrade_if_insecure=*/request.upgrade_if_insecure,
-      /*is_ad_tagged=*/request.is_ad_tagged,
-      request.client_side_content_decoding_enabled,
-      /*isolation_info=*/
-      url_loader_util::GetIsolationInfo(
-          factory_params_->isolation_info,
-          factory_params_->automatically_assign_isolation_info, request),
-      /*force_main_frame_for_same_site_cookies=*/
-      force_main_frame_for_same_site_cookies, secure_dns_policy,
-      std::move(merged_headers), request.devtools_accepted_stream_types,
-      request.request_initiator, first_party_url_policy,
-      /*request_load_flags=*/request.load_flags,
-      /*priority_incremental=*/request.priority_incremental,
-      /*cookie_setting_overrides=*/
-      url_loader_util::CalculateCookieSettingOverrides(
-          factory_params_->cookie_setting_overrides,
-          factory_params_->devtools_cookie_setting_overrides, request,
-          /*emit_metrics=*/true),
-      /*shared_dictionary_getter=*/
-      shared_dictionary_manager
-          ? std::make_optional(
-                shared_dictionary_manager->MaybeCreateSharedDictionaryGetter(
-                    request.load_flags, request_destination_))
-          : std::nullopt,
-      request.socket_tag, request.allows_device_bound_sessions);
-
+  // Set up UserData (pointing to `this`) first.
+  url_request_->SetUserData(kUserDataKey,
+                            std::make_unique<UnownedPointer>(this));
+  // Configure the main request parameters. This must happen after setting
+  // UserData, as `ConfigureUrlRequest` might internally retrieve data (e.g.,
+  // PermissionsPolicy) via the `url_request_`'s UserData pointer.
+  url_loader_util::ConfigureUrlRequest(request, *factory_params_,
+                                       *origin_access_list_, *url_request_);
   if (context.ShouldRequireIsolationInfo()) {
     DCHECK(!url_request_->isolation_info().IsEmpty());
   }
+  SetUpUrlRequestCallbacks(shared_dictionary_manager);
 
   throttling_token_ = network::ScopedThrottlingToken::MaybeCreate(
       url_request_->net_log().source().id, request.throttling_profile_id);
@@ -675,86 +573,8 @@ URLLoader::URLLoader(
   ProcessOutboundTrustTokenInterceptor(request);
 }
 
-void URLLoader::ConfigureRequest(
-    const GURL& url,
-    std::string_view method,
-    const net::SiteForCookies& site_for_cookies,
-    bool force_ignore_site_for_cookies,
-    const std::vector<GURL>& url_chain,
-    const GURL& referrer,
-    net::ReferrerPolicy referrer_policy,
-    bool upgrade_if_insecure,
-    bool is_ad_tagged,
-    bool client_side_content_decoding_enabled,
-    std::optional<net::IsolationInfo> isolation_info,
-    bool force_main_frame_for_same_site_cookies,
-    net::SecureDnsPolicy secure_dns_policy,
-    net::HttpRequestHeaders extra_request_headers,
-    const std::optional<std::vector<net::SourceStreamType>>&
-        accepted_stream_types,
-    const std::optional<url::Origin>& initiator,
-    net::RedirectInfo::FirstPartyURLPolicy first_party_url_policy,
-    int request_load_flags,
-    bool priority_incremental,
-    net::CookieSettingOverrides cookie_setting_overrides,
-    std::optional<net::SharedDictionaryGetter> shared_dictionary_getter,
-    net::SocketTag socket_tag,
-    bool allows_device_bound_sessions) {
-  url_request_->set_method(method);
-  url_request_->set_site_for_cookies(site_for_cookies);
-  url_request_->set_force_ignore_site_for_cookies(
-      force_ignore_site_for_cookies);
-  if (!url_chain.empty()) {
-    url_request_->SetURLChain(url_chain);
-  }
-  url_request_->SetReferrer(referrer.GetAsReferrer().spec());
-  url_request_->set_referrer_policy(referrer_policy);
-  url_request_->set_upgrade_if_insecure(upgrade_if_insecure);
-  url_request_->set_ad_tagged(is_ad_tagged);
-  url_request_->set_client_side_content_decoding_enabled(
-      client_side_content_decoding_enabled);
-
-  if (isolation_info) {
-    url_request_->set_isolation_info(std::move(isolation_info).value());
-  }
-
-  url_request_->set_force_main_frame_for_same_site_cookies(
-      force_main_frame_for_same_site_cookies);
-
-  url_request_->SetSecureDnsPolicy(secure_dns_policy);
-
-  url_request_->SetExtraRequestHeaders(std::move(extra_request_headers));
-
-  url_request_->SetUserData(kUserDataKey,
-                            std::make_unique<UnownedPointer>(this));
-  url_request_->set_accepted_stream_types(accepted_stream_types);
-
-  url_request_->set_initiator(initiator);
-
-  // Note: There are some ordering dependencies here. `SetRequestCredentials`
-  // depends on `SetLoadFlags`; `CalculateStorageAccessStatus` depends on
-  // `cookie_setting_overrides` and `SetRequestCredentials`.
-  // `SetFetchMetadataHeaders` depends on
-  // `url_request_->storage_access_status()`.
-  url_request_->cookie_setting_overrides() = cookie_setting_overrides;
-  url_request_->SetLoadFlags(request_load_flags);
-  SetRequestCredentials(url);
-  if (request_credentials_mode_ == mojom::CredentialsMode::kInclude) {
-    url_request_->set_storage_access_status(
-        url_request_->CalculateStorageAccessStatus());
-  }
-
-  SetFetchMetadataHeaders(url_request_.get(), request_mode_,
-                          has_user_activation_, request_destination_, nullptr,
-                          *factory_params_, *origin_access_list_,
-                          request_credentials_mode_);
-
-  MaybeSetAcceptSignatureHeader(url_request_.get(), expected_public_keys_);
-
-  url_request_->set_first_party_url_policy(first_party_url_policy);
-
-  url_request_->SetPriorityIncremental(priority_incremental);
-
+void URLLoader::SetUpUrlRequestCallbacks(
+    SharedDictionaryManager* shared_dictionary_manager) {
   url_request_->SetRequestHeadersCallback(base::BindRepeating(
       &URLLoader::SetRawRequestHeadersAndNotify, base::Unretained(this)));
   if (shared_dictionary_checker_) {
@@ -770,13 +590,10 @@ void URLLoader::ConfigureRequest(
   url_request_->SetEarlyResponseHeadersCallback(base::BindRepeating(
       &URLLoader::NotifyEarlyResponse, base::Unretained(this)));
 
-  if (shared_dictionary_getter) {
+  if (shared_dictionary_manager) {
     url_request_->SetSharedDictionaryGetter(
-        std::move(shared_dictionary_getter).value());
-  }
-
-  if (socket_tag != net::SocketTag()) {
-    url_request_->set_socket_tag(std::move(socket_tag));
+        shared_dictionary_manager->MaybeCreateSharedDictionaryGetter(
+            url_request_->load_flags(), request_destination_));
   }
 
   // Device bound session access can happen asynchronously as a result
@@ -801,8 +618,6 @@ void URLLoader::ConfigureRequest(
         &mojom::DeviceBoundSessionAccessObserver::OnDeviceBoundSessionAccessed,
         Clone(*device_bound_session_observer_)));
   }
-
-  url_request_->set_allows_device_bound_sessions(allows_device_bound_sessions);
 }
 
 // This class is used to manage the queue of pending file upload operations
@@ -1646,7 +1461,10 @@ void URLLoader::OnReceivedRedirect(net::URLRequest* url_request,
     return;
   }
 
-  SetRequestCredentials(redirect_info.new_url);
+  url_loader_util::SetRequestCredentials(
+      redirect_info.new_url, factory_params_->client_security_state,
+      request_mode_, request_credentials_mode_, url_request_->initiator(),
+      *url_request_);
 
   // Clear the Cookie header to ensure that cookies passed in through the
   // `ResourceRequest` do not persist across redirects.
@@ -3230,80 +3048,6 @@ bool URLLoader::ShouldForceIgnoreSiteForCookies(
     }
   }
 
-  return false;
-}
-
-void URLLoader::SetRequestCredentials(const GURL& url) {
-  bool policies_allow_credentials = WebPoliciesAllowCredentials(url);
-
-  bool allow_credentials = ShouldAllowCredentials(request_credentials_mode_) &&
-                           policies_allow_credentials;
-
-  bool allow_client_certificates =
-      ShouldSendClientCertificates(request_credentials_mode_) &&
-      policies_allow_credentials;
-
-  // The decision not to include credentials is sticky. This is equivalent to
-  // checking the tainted origin flag in the fetch specification.
-  if (!allow_credentials)
-    url_request_->set_allow_credentials(false);
-  if (!allow_client_certificates)
-    url_request_->set_send_client_certs(false);
-
-  // Contrary to Firefox or blink's cache, the HTTP cache doesn't distinguish
-  // requests including user's credentials from the anonymous ones yet. See
-  // https://docs.google.com/document/d/1lvbiy4n-GM5I56Ncw304sgvY5Td32R6KHitjRXvkZ6U
-  // As a workaround until a solution is implemented, the cached responses
-  // aren't used for those requests.
-  if (!policies_allow_credentials) {
-    url_request_->SetLoadFlags(url_request_->load_flags() |
-                               net::LOAD_BYPASS_CACHE);
-  }
-}
-
-// [spec]:
-// https://fetch.spec.whatwg.org/#cross-origin-embedder-policy-allows-credentials
-bool URLLoader::WebPoliciesAllowCredentials(const GURL& url) {
-  // [spec]: To check if Cross-Origin-Embedder-Policy allows credentials, given
-  //         a request request, run these steps:
-
-  // [spec]  1. If request’s mode is not "no-cors", then return true.
-  switch (request_mode_) {
-    case mojom::RequestMode::kCors:
-    case mojom::RequestMode::kCorsWithForcedPreflight:
-    case mojom::RequestMode::kNavigate:
-    case mojom::RequestMode::kSameOrigin:
-      return true;
-
-    case mojom::RequestMode::kNoCors:
-      break;
-  }
-
-  // [spec]: 2. If request’s client is null, then return true.
-  if (!factory_params_->client_security_state)
-    return true;
-
-  // [spec]: 3. If request’s client’s policy container’s embedder policy’s value
-  //            is not "credentialless", then return true.
-  // Document-Isolation-Policy: also check that Document-Isolation-Policy allows
-  // credentials.
-  if (factory_params_->client_security_state->cross_origin_embedder_policy
-              .value !=
-          mojom::CrossOriginEmbedderPolicyValue::kCredentialless &&
-      factory_params_->client_security_state->document_isolation_policy.value !=
-          mojom::DocumentIsolationPolicyValue::kIsolateAndCredentialless) {
-    return true;
-  }
-
-  // [spec]: 4. If request’s origin is same origin with request’s current URL’s
-  //            origin and request does not have a redirect-tainted origin, then
-  //            return true.
-  url::Origin request_initiator =
-      url_request_->initiator().value_or(url::Origin());
-  if (request_initiator.IsSameOriginWith(url))
-    return true;
-
-  // [spec]: 5. Return false.
   return false;
 }
 

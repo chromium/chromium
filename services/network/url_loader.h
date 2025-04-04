@@ -349,32 +349,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
     kMaxValue = kErrorAfterResponseArrival,
   };
 
-  // Configures `url_request_`, including registering callbacks.
-  void ConfigureRequest(
-      const GURL& url,
-      std::string_view method,
-      const net::SiteForCookies& site_for_cookies,
-      bool force_ignore_site_for_cookies,
-      const std::vector<GURL>& url_chain,
-      const GURL& referrer,
-      net::ReferrerPolicy referrer_policy,
-      bool upgrade_if_insecure,
-      bool is_ad_tagged,
-      bool client_side_content_decoding_enabled,
-      std::optional<net::IsolationInfo> isolation_info,
-      bool force_main_frame_for_same_site_cookies,
-      net::SecureDnsPolicy secure_dns_policy,
-      net::HttpRequestHeaders extra_request_headers,
-      const std::optional<std::vector<net::SourceStreamType>>&
-          accepted_stream_types,
-      const std::optional<url::Origin>& initiator,
-      net::RedirectInfo::FirstPartyURLPolicy first_party_url_policy,
-      int request_load_flags,
-      bool priority_incremental,
-      net::CookieSettingOverrides cookie_setting_overrides,
-      std::optional<net::SharedDictionaryGetter> shared_dictionary_getter,
-      net::SocketTag socket_tag,
-      bool allows_device_bound_sessions);
+  // Sets various callbacks on the internal `url_request_`.
+  void SetUpUrlRequestCallbacks(
+      SharedDictionaryManager* shared_dictionary_manager);
 
   void OpenFilesForUpload(const ResourceRequest& request);
   void SetUpUpload(const ResourceRequest& request,
@@ -604,19 +581,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // Builds a response struct based on the data received so far.
   // Never returns nullptr.
   mojom::URLResponseHeadPtr BuildResponseHead() const;
-
-  // Determine given the |url|, whether the |url_request_| should include
-  // credentials and client certificates.
-  void SetRequestCredentials(const GURL& url);
-
-  // Returns whether sending/storing credentials is allowed by COEP and
-  // Document-Isolation-Policy.
-  // |url| is the latest request URL, either the original URL or
-  // `redirect_info.new_url`.
-  // When Cross-Origin-Embedder-Policy: credentialless or
-  // Document-Isolation-Policy: isolate-and-credentialless are set, do not send
-  // or store credentials for no-cors cross-origin request.
-  bool WebPoliciesAllowCredentials(const GURL& url);
 
   // Returns whether TransferSizeUpdated IPC should be sent.
   bool ShouldSendTransferSizeUpdated() const;
