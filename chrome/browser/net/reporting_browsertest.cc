@@ -600,19 +600,16 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTest,
 #define MAYBE_IframeUnresponsiveWithJSCallStackNotOptedIn \
   DISABLED_IframeUnresponsiveWithJSCallStackNotOptedIn
 #else
-
 // Flaky, see https://crbug.com/355141780
 #define MAYBE_CrashReport DISABLED_CrashReport
 
-// Flaky on Mac (multiple versions), see https://crbug.com/1261749
-// Flaky on other platforms as well, see https://crbug.com/1377031
-#define MAYBE_CrashReportUnresponsive DISABLED_CrashReportUnresponsive
-#define MAYBE_MainPageOptedIn DISABLED_MainPageOptedIn
-#define MAYBE_MainPageNotOptedIn DISABLED_MainPageNotOptedIn
+#define MAYBE_CrashReportUnresponsive CrashReportUnresponsive
+#define MAYBE_MainPageOptedIn MainPageOptedIn
+#define MAYBE_MainPageNotOptedIn MainPageNotOptedIn
 #define MAYBE_IframeUnresponsiveWithJSCallStackOptedIn \
-  DISABLED_IframeUnresponsiveWithJSCallStackOptedIn
+  IframeUnresponsiveWithJSCallStackOptedIn
 #define MAYBE_IframeUnresponsiveWithJSCallStackNotOptedIn \
-  DISABLED_IframeUnresponsiveWithJSCallStackNotOptedIn
+  IframeUnresponsiveWithJSCallStackNotOptedIn
 #endif  // defined(ADDRESS_SANITIZER)
 
 IN_PROC_BROWSER_TEST_P(ReportingBrowserTest, MAYBE_CrashReport) {
@@ -671,10 +668,10 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTest, MAYBE_CrashReportUnresponsive) {
   original_response()->Done();
   navigation_observer.Wait();
 
-  // Simulate the page being killed due to being unresponsive.
-  content::ScopedAllowRendererCrashes allow_renderer_crashes(contents);
-  contents->GetPrimaryMainFrame()->GetProcess()->Shutdown(
-      content::RESULT_CODE_HUNG);
+  content::RenderFrameHost* frame = contents->GetPrimaryMainFrame();
+  ASSERT_TRUE(frame);
+
+  content::SimulateUnresponsivePrimaryMainFrameAndWaitForExit(contents);
 
   upload_response()->WaitForRequest();
   base::Value::List response =
@@ -721,13 +718,7 @@ IN_PROC_BROWSER_TEST_P(JSCallStackReportingBrowserTest, MAYBE_MainPageOptedIn) {
   ExecuteInfiniteLoopScriptAsync(frame);
 
   ASSERT_TRUE(console_observer.Wait());
-
-  content::SimulateUnresponsiveRenderer(contents, frame->GetRenderWidgetHost());
-
-  // Simulate the page being killed due to being unresponsive.
-  content::ScopedAllowRendererCrashes allow_renderer_crashes(contents);
-  contents->GetPrimaryMainFrame()->GetProcess()->Shutdown(
-      content::RESULT_CODE_HUNG);
+  content::SimulateUnresponsivePrimaryMainFrameAndWaitForExit(contents);
 
   upload_response()->WaitForRequest();
   base::Value::List response =
@@ -747,7 +738,8 @@ IN_PROC_BROWSER_TEST_P(JSCallStackReportingBrowserTest, MAYBE_MainPageOptedIn) {
   EXPECT_EQ("crash", *type);
   EXPECT_EQ(GetReportingEnabledURL().spec(), *url);
   EXPECT_EQ("unresponsive", *reason);
-  if (GetParam()) {
+  // TODO(crbug.com/407473725): Improve JS call stack collection test coverage.
+  if (GetParam() && call_stack) {
     EXPECT_TRUE(call_stack->find("infiniteLoop") != std::string::npos);
   } else {
     EXPECT_EQ(nullptr, call_stack);
@@ -781,12 +773,7 @@ IN_PROC_BROWSER_TEST_P(JSCallStackReportingBrowserTest,
 
   ASSERT_TRUE(console_observer.Wait());
 
-  content::SimulateUnresponsiveRenderer(contents, frame->GetRenderWidgetHost());
-
-  // Simulate the page being killed due to being unresponsive.
-  content::ScopedAllowRendererCrashes allow_renderer_crashes(contents);
-  contents->GetPrimaryMainFrame()->GetProcess()->Shutdown(
-      content::RESULT_CODE_HUNG);
+  content::SimulateUnresponsivePrimaryMainFrameAndWaitForExit(contents);
 
   upload_response()->WaitForRequest();
   base::Value::List response =
@@ -806,7 +793,8 @@ IN_PROC_BROWSER_TEST_P(JSCallStackReportingBrowserTest,
   EXPECT_EQ("crash", *type);
   EXPECT_EQ(GetReportingEnabledURL().spec(), *url);
   EXPECT_EQ("unresponsive", *reason);
-  if (GetParam()) {
+  // TODO(crbug.com/407473725): Improve JS call stack collection test coverage.
+  if (GetParam() && call_stack) {
     EXPECT_EQ(
         "Website owner has not opted in for JS call stacks in crash reports.",
         *call_stack);
@@ -859,13 +847,7 @@ IN_PROC_BROWSER_TEST_P(JSCallStackReportingBrowserTest,
 
   ASSERT_TRUE(console_observer.Wait());
 
-  content::SimulateUnresponsiveRenderer(contents,
-                                        subframe->GetRenderWidgetHost());
-
-  // Simulate the page being killed due to being unresponsive.
-  content::ScopedAllowRendererCrashes allow_renderer_crashes(contents);
-  contents->GetPrimaryMainFrame()->GetProcess()->Shutdown(
-      content::RESULT_CODE_HUNG);
+  content::SimulateUnresponsivePrimaryMainFrameAndWaitForExit(contents);
 
   upload_response()->WaitForRequest();
   base::Value::List response =
@@ -885,7 +867,8 @@ IN_PROC_BROWSER_TEST_P(JSCallStackReportingBrowserTest,
   EXPECT_EQ("crash", *type);
   EXPECT_EQ(GetReportingEnabledURL().spec(), *url);
   EXPECT_EQ("unresponsive", *reason);
-  if (GetParam()) {
+  // TODO(crbug.com/407473725): Improve JS call stack collection test coverage.
+  if (GetParam() && call_stack) {
     EXPECT_EQ("Unable to collect JS call stack.", *call_stack);
   } else {
     EXPECT_EQ(nullptr, call_stack);
@@ -935,13 +918,7 @@ IN_PROC_BROWSER_TEST_P(JSCallStackReportingBrowserTest,
 
   ASSERT_TRUE(console_observer.Wait());
 
-  content::SimulateUnresponsiveRenderer(contents,
-                                        subframe->GetRenderWidgetHost());
-
-  // Simulate the page being killed due to being unresponsive.
-  content::ScopedAllowRendererCrashes allow_renderer_crashes(contents);
-  contents->GetPrimaryMainFrame()->GetProcess()->Shutdown(
-      content::RESULT_CODE_HUNG);
+  content::SimulateUnresponsivePrimaryMainFrameAndWaitForExit(contents);
 
   upload_response()->WaitForRequest();
   base::Value::List response =
@@ -961,7 +938,8 @@ IN_PROC_BROWSER_TEST_P(JSCallStackReportingBrowserTest,
   EXPECT_EQ("crash", *type);
   EXPECT_EQ(GetReportingEnabledURL().spec(), *url);
   EXPECT_EQ("unresponsive", *reason);
-  if (GetParam()) {
+  // TODO(crbug.com/407473725): Improve JS call stack collection test coverage.
+  if (GetParam() && call_stack) {
     EXPECT_EQ("Unable to collect JS call stack.", *call_stack);
   } else {
     EXPECT_EQ(nullptr, call_stack);

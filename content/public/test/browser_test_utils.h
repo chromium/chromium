@@ -326,6 +326,11 @@ void OverrideLastCommittedOrigin(RenderFrameHost* render_frame_host,
 // Causes the specified web_contents to crash. Blocks until it is crashed.
 void CrashTab(WebContents* web_contents);
 
+// Causes the specified web_contents to crash after hanging. Blocks until it is
+// crashed.
+void SimulateUnresponsivePrimaryMainFrameAndWaitForExit(
+    WebContents* web_contents);
+
 // Sets up a commit interceptor to alter commits for |target_url| to change
 // their commit URL to |new_url| and origin to |new_origin|. This will happen
 // for all commits in |web_contents|.
