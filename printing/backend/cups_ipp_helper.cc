@@ -292,7 +292,15 @@ PaperFromMediaColDatabaseEntry(ipp_t* db_entry) {
 
   return PrinterSemanticCapsAndDefaults::Paper(
       /*display_name=*/"", /*vendor_id=*/"", size_um, printable_area_um,
-      max_height_um);
+      max_height_um, /*has_borderless_variant=*/false
+#if BUILDFLAG(IS_CHROMEOS)
+      ,
+      PaperMargins(size->top_margin * kMicronsPerPwgUnit,
+                   size->right_margin * kMicronsPerPwgUnit,
+                   size->bottom_margin * kMicronsPerPwgUnit,
+                   size->left_margin * kMicronsPerPwgUnit)
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  );
 }
 
 bool PaperIsBorderless(const PrinterSemanticCapsAndDefaults::Paper& paper) {

@@ -40,6 +40,7 @@ constexpr int kCustomMediaSizeMin = 2540;
 constexpr char kMediaSizeVendorId[] = "iso_a4_210x297mm";
 constexpr char kVendorItemId[] = "finishings";
 constexpr char kVendorItemValue[] = "trim";
+const printing::PaperMargins kPaperMargins = {10, 20, 30, 40};
 
 constexpr char kCjt[] = R"(
     {
@@ -259,7 +260,8 @@ ConstructPrinterCapabilitiesWithCustomSize() {
   printing::PrinterSemanticCapsAndDefaults::Paper paper(
       /*display_name=*/"", kMediaSizeVendorId,
       gfx::Size(kMediaSizeWidth, kCustomMediaSizeMin),
-      /*printable_area_um=*/gfx::Rect(), kMediaSizeHeight);
+      /*printable_area_um=*/gfx::Rect(), kMediaSizeHeight,
+      /*has_borderless_variant=*/false, /*supported_margins_um=*/kPaperMargins);
   capabilities.papers.push_back(paper);
 
   return capabilities;

@@ -59,6 +59,24 @@ struct less<::printing::AdvancedCapability> {
 
 namespace mojo {
 
+#if BUILDFLAG(IS_CHROMEOS)
+// static
+bool StructTraits<
+    printing::mojom::PaperMarginsDataView,
+    printing::PaperMargins>::Read(printing::mojom::PaperMarginsDataView data,
+                                  printing::PaperMargins* out) {
+  if (data.top_margin_um() < 0 || data.right_margin_um() < 0 ||
+      data.bottom_margin_um() < 0 || data.left_margin_um() < 0) {
+    return false;
+  }
+  out->top_margin_um = data.top_margin_um();
+  out->right_margin_um = data.right_margin_um();
+  out->bottom_margin_um = data.bottom_margin_um();
+  out->left_margin_um = data.left_margin_um();
+  return true;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 namespace {
 template <class Key>
 class DuplicateChecker {
@@ -154,6 +172,15 @@ bool StructTraits<printing::mojom::PaperDataView,
     base::debug::DumpWithoutCrashing();
     return false;
   }
+#if BUILDFLAG(IS_CHROMEOS)
+  std::optional<printing::PaperMargins> supported_margins_um;
+  if (!data.ReadSupportedMarginsUm(&supported_margins_um)) {
+    base::debug::Alias(&data);
+    base::debug::DumpWithoutCrashing();
+    return false;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   int max_height_um = data.max_height_um();
   bool has_borderless_variant = data.has_borderless_variant();
 
@@ -185,9 +212,15 @@ bool StructTraits<printing::mojom::PaperDataView,
     base::debug::DumpWithoutCrashing();
     return false;
   }
+#if BUILDFLAG(IS_CHROMEOS)
+  *out = printing::PrinterSemanticCapsAndDefaults::Paper(
+      display_name, vendor_id, size_um, printable_area_um, max_height_um,
+      has_borderless_variant, supported_margins_um);
+#else
   *out = printing::PrinterSemanticCapsAndDefaults::Paper(
       display_name, vendor_id, size_um, printable_area_um, max_height_um,
       has_borderless_variant);
+#endif  // BUILDFLAG(IS_CHROMEOS)
   return true;
 }
 
