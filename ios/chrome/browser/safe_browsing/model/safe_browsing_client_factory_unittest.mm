@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/safe_browsing/model/safe_browsing_client_factory.h"
 
+#import "base/test/scoped_feature_list.h"
 #import "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #import "components/enterprise/connectors/core/common.h"
 #import "components/enterprise/connectors/core/connectors_prefs.h"
@@ -46,6 +47,9 @@ TEST_F(SafeBrowsingClientFactoryTest, DifferentClientInstances) {
 // Tests that SafeBrowsingClientFactory returns the enterprise url lookup
 // service when Url filtering is enabled.
 TEST_F(SafeBrowsingClientFactoryTest, GetEnterpriseOrConsumerLookupService) {
+  base::test::ScopedFeatureList feature(
+      kEnterpriseRealtimeUrlFilteringKillSwitch);
+
   SafeBrowsingClient* recording_client =
       SafeBrowsingClientFactory::GetForProfile(profile_.get());
   EXPECT_TRUE(recording_client);
