@@ -1090,6 +1090,32 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form) {
            << base::StrCat({type, " (regex heuristic: ", regex_heuristic_type,
                             ml_heuristic_part, ", server: ",
                             server_type, html_type_description, ")"});
+    if (std::optional<FieldType> autofill_ai_type =
+            field->GetAutofillAiServerTypePredictions()) {
+      buffer << Tr{}
+             << "Autofill AI Type:" << FieldTypeToStringView(*autofill_ai_type);
+    }
+    if (base::optional_ref<const std::u16string> format_string =
+            field->format_string()) {
+      std::string_view source;
+      switch (field->format_string_source()) {
+        case AutofillField::FormatStringSource::kUnset:
+          source = "unset";
+          break;
+        case AutofillField::FormatStringSource::kHeuristics:
+          source = "heuristic";
+          break;
+        case AutofillField::FormatStringSource::kModelResult:
+          source = "model";
+          break;
+        case AutofillField::FormatStringSource::kServer:
+          source = "server";
+          break;
+      }
+      buffer << Tr{} << "Format string:"
+             << base::StrCat({"\"", base::UTF16ToUTF8(*format_string),
+                              "\" from ", source});
+    }
     buffer << Tr{} << "Section:" << field->section();
 
     constexpr size_t kMaxLabelSize = 100;
