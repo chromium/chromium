@@ -2928,6 +2928,7 @@ if (!is_android) {
       "../browser/content_extraction/inner_text_browsertest.cc",
       "../browser/content_index/content_index_browsertest.cc",
       "../browser/content_language/content_language_browsertest.cc",
+      "../browser/contextual_cueing/contextual_cueing_service_browsertest.cc",
       "../browser/contextual_cueing/zero_state_suggestions_page_data_browsertest.cc",
       "../browser/crash_recovery_browsertest.cc",
       "../browser/custom_handlers/protocol_handler_registry_browsertest.cc",
