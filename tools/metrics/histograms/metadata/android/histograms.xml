@@ -5478,6 +5478,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Android.TopToolbar.CaptureBlocked.OptionalButtonAnimationDuration"
+    units="ms" expires_after="2025-10-22">
+  <owner>peilinwang@google.com</owner>
+  <owner>clank-performance-team@google.com</owner>
+  <summary>
+    Records how long the optional button was animating for when it causes a
+    capture to be blocked. Only recorded when the duration is longer than 10s.
+  </summary>
+</histogram>
+
+<histogram name="Android.TopToolbar.CaptureBlocked.StatusIconAnimationDuration"
+    units="ms" expires_after="2025-10-22">
+  <owner>peilinwang@google.com</owner>
+  <owner>clank-performance-team@google.com</owner>
+  <summary>
+    Records how long the status icon was animating for when it causes a capture
+    to be blocked. Only recorded when the duration is longer than 10s.
+  </summary>
+</histogram>
+
 <histogram name="Android.TopToolbar.InMotionStage" enum="ToolbarInMotionStage"
     expires_after="2025-10-22">
   <owner>skym@chromium.org</owner>

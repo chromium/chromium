@@ -304,11 +304,11 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
-  'skia_revision': '943df306bc3a9f8b03093c42aac9092508fa3607',
+  'skia_revision': '6169a5537c1c97d2d9faa39eb19ce01b01a4ce71',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'v8_revision': '22a8f69e932a98834649d50814d0c05d61d01ec4',
+  'v8_revision': 'e698a2cdd47ba72ddc2360c51f511e6a6d366214',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ANGLE
   # and whatever else without interference from each other.
@@ -396,7 +396,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': '746901b981c9c4778547fc014eb347171ebb661c',
+  'devtools_frontend_revision': '4b3837462a8578f948853e86a730b253ec56a264',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
@@ -420,7 +420,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
-  'dawn_revision': '97dbdda1f0951906a12a387a7cf1f5f9520d3268',
+  'dawn_revision': '9635980f2ad6d9500ab2f26e4b7fea2db2898a30',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
@@ -1501,12 +1501,12 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    '6c6f7b6bf45eb0261a161b9cdc1a966a9dcc8e60',
+    '4ba69d176ba14466a18ed3e881815aa1b723b9fa',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
   'src/docs/website': {
-    'url': Var('chromium_git') + '/website.git' + '@' + '7dac4ca7243406e1451049a28fa1b42ce76055e9',
+    'url': Var('chromium_git') + '/website.git' + '@' + 'cac8fbef00b6695ad2f41d65d92ce8af443728be',
   },
 
   'src/ios/third_party/earl_grey2/src': {
@@ -1530,7 +1530,7 @@ deps = {
   },
 
   'src/ios/third_party/material_components_ios/src': {
-      'url': Var('chromium_git') + '/external/github.com/material-components/material-components-ios.git' + '@' + 'be61b671e5c90b8c221aac40550d3d983e9072bf',
+      'url': Var('chromium_git') + '/external/github.com/material-components/material-components-ios.git' + '@' + 'a33768e63142497497c73383accc8d7254aa4dc9',
       'condition': 'checkout_ios',
   },
 
@@ -2909,7 +2909,7 @@ deps = {
     Var('chromium_git') + '/webpagereplay.git' + '@' + Var('webpagereplay_revision'),
 
   'src/third_party/webrtc':
-    Var('webrtc_git') + '/src.git' + '@' + '31fac0dca963cffd89da4ac8b20431854318fe18',
+    Var('webrtc_git') + '/src.git' + '@' + 'bddd95b63fea8f1baa5461ec4dff23ba1ebac7f9',
 
   # Wuffs' canonical repository is at github.com/google/wuffs, but we use
   # Skia's mirror of Wuffs, the same as in upstream Skia's DEPS file.
@@ -3031,7 +3031,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/boca_app/app',
-        'version': 'iWi098-_7aYyaw1Idpnq8Eunw6rRP_u4IgcU2V90dH4C',
+        'version': 'jUi4eMFuQomAleJPLwKVBTZKSCkWW-8f59jdSdw2mCsC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
@@ -4701,7 +4701,7 @@ deps = {
 
   'src/ios_internal':  {
       'url': Var('chrome_git') + '/chrome/ios_internal.git' + '@' +
-        '9451e8b4d70062a3f01c3a18645b5bca7cb856dd',
+        'd8f7cf9e86f0f877dca811c5c1b9f080a5e70c9e',
       'condition': 'checkout_ios and checkout_src_internal',
   },
 

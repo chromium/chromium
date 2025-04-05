@@ -602,7 +602,7 @@ void KeyboardEventManager::DefaultEscapeEventHandler(KeyboardEvent* event) {
     // Make a copy of the list, in case the event handlers change its state.
     auto elements{document.CurrentInterestTargetElements()};
     for (Element* el : elements) {
-      Element::GainOrLoseInterest(el, el->interestTargetElement(),
+      Element::GainOrLoseInterest(el, el->InterestTargetElement(),
                                   /*interest_gained*/ false);
     }
   }

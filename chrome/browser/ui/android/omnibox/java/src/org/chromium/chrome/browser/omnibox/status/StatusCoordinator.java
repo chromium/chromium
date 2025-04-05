@@ -387,6 +387,11 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
         return mStatusView.isStatusIconAnimating();
     }
 
+    /** Returns the start time (ms) of the current or most recent status icon animation. */
+    public long getAnimationStartTimeMs() {
+        return mStatusView.getAnimationStartTimeMs();
+    }
+
     /**
      * Populates an animation that fades =/unfades the entire StatusView container with the given
      * start delay and duration, adding it to the given list of animators.

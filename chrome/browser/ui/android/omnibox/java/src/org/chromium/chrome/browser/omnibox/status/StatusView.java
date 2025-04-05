@@ -30,6 +30,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.widget.TooltipCompat;
 
+import org.chromium.base.TimeUtils;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.components.browser_ui.widget.ChromeTransitionDrawable;
@@ -70,6 +71,7 @@ public class StatusView extends LinearLayout {
     private View mStatusExtraSpace;
 
     private boolean mAnimationsEnabled;
+    private long mAnimationStartTimeMs;
     private boolean mAnimatingStatusIconShow;
     private boolean mAnimatingStatusIconHide;
     private boolean mIsAnimatingStatusIconChange;
@@ -186,6 +188,11 @@ public class StatusView extends LinearLayout {
                         updateTouchDelegate());
     }
 
+    /** Returns the start time (ms) of the current or most recent status icon animation. */
+    public long getAnimationStartTimeMs() {
+        return mAnimationStartTimeMs;
+    }
+
     /**
      * Start animating transition of status icon.
      *
@@ -222,6 +229,7 @@ public class StatusView extends LinearLayout {
         if (!wantIconHidden && (isIconHidden || mAnimatingStatusIconHide)) {
             // Action 1: animate showing, if icon was either hidden or hiding.
             if (mAnimatingStatusIconHide) mIconView.animate().cancel();
+            updateAnimationStartTime();
             mAnimatingStatusIconHide = false;
             mAnimatingStatusIconShow = true;
             keepControlsShownForAnimation();
@@ -245,6 +253,7 @@ public class StatusView extends LinearLayout {
         } else if (wantIconHidden && (!isIconHidden || mAnimatingStatusIconShow)) {
             // Action 2: animate hiding, if icon was either shown or showing.
             if (mAnimatingStatusIconShow) mIconView.animate().cancel();
+            updateAnimationStartTime();
             mAnimatingStatusIconShow = false;
             mAnimatingStatusIconHide = true;
             keepControlsShownForAnimation();
@@ -296,6 +305,7 @@ public class StatusView extends LinearLayout {
                 mIconView.setImageDrawable(newImage);
 
                 if (transitionType == IconTransitionType.CROSSFADE) {
+                    updateAnimationStartTime();
                     mIsAnimatingStatusIconChange = true;
                     long duration = mAnimationsEnabled ? getIconAnimationDuration() : 0;
                     if (duration > 0) {
@@ -306,6 +316,7 @@ public class StatusView extends LinearLayout {
                             .setDuration(duration)
                             .withEndAction(this::resetAnimationStatus);
                 } else {
+                    updateAnimationStartTime();
                     mIsAnimatingStatusIconChange = true;
                     keepControlsShownForAnimation();
                     mIconView
@@ -341,6 +352,12 @@ public class StatusView extends LinearLayout {
             } else {
                 mIconView.setImageDrawable(targetIcon);
             }
+        }
+    }
+
+    private void updateAnimationStartTime() {
+        if (!isStatusIconAnimating()) {
+            mAnimationStartTimeMs = TimeUtils.elapsedRealtimeMillis();
         }
     }
 

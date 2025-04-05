@@ -506,7 +506,7 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
       source_type == kMenuSourceLongTap) {
     for (Node* node = result.InnerNode(); node; node = node->parentNode()) {
       if (HTMLElement* element = DynamicTo<HTMLElement>(node);
-          element && element->interestTargetElement()) {
+          element && element->InterestTargetElement()) {
         data.opened_from_interest_target = true;
         break;
       }
