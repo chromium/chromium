@@ -93,6 +93,7 @@ void DataDeleter::StartDeleting(Profile* profile,
                                 const Extension* extension,
                                 base::OnceClosure done_callback) {
   DCHECK(profile);
+  DCHECK(!profile->IsOffTheRecord());
   DCHECK(extension);
 
   // Storage deletion can take a couple different tasks, depending on the
@@ -141,7 +142,7 @@ void DataDeleter::StartDeleting(Profile* profile,
     profile->AsyncObliterateStoragePartition(
         util::GetPartitionDomainForExtension(extension),
         base::BindOnce(&OnNeedsToGarbageCollectIsolatedStorage,
-                       profile->GetOriginalProfile()->GetWeakPtr()),
+                       profile->GetWeakPtr()),
         subtask_done_callback);
   }
   if (delete_extension_origin) {
