@@ -1646,6 +1646,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2121825465123208577">Преоразмеряване</translation>
 <translation id="2123766928840368256">Избиране на друг файл</translation>
 <translation id="2124930039827422115">{1,plural, =1{Оценка <ph name="AVERAGE_RATING" /> от един потребител.}other{Оценка <ph name="AVERAGE_RATING" /> от # потребители.}}</translation>
+<translation id="2125715366913703594">Разглеждане на разширенията</translation>
 <translation id="2126167708562367080">Синхронизирането е деактивирано от администратора ви.</translation>
 <translation id="2127372758936585790">Зарядно устройство с малка мощност</translation>
 <translation id="212862741129535676">Процент на използване в състояние на активност</translation>
