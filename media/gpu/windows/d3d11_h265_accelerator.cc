@@ -11,6 +11,7 @@
 
 #include <algorithm>
 
+#include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -55,8 +56,11 @@ D3D11H265Picture::~D3D11H265Picture() {
 }
 
 D3D11H265Accelerator::D3D11H265Accelerator(D3D11VideoDecoderClient* client,
-                                           MediaLog* media_log)
-    : media_log_(media_log->Clone()), client_(client) {
+                                           MediaLog* media_log,
+                                           bool use_dxva_device_for_hevc_rext)
+    : media_log_(media_log->Clone()),
+      client_(client),
+      use_dxva_device_for_hevc_rext_(use_dxva_device_for_hevc_rext) {
   DCHECK(client_);
 }
 
@@ -131,200 +135,216 @@ H265DecoderStatus D3D11H265Accelerator::SubmitFrameMetadata(
 }
 
 void D3D11H265Accelerator::FillPicParamsWithConstants(
-    DXVA_PicParams_HEVC_Rext* pic) {
-  // According to DXVA spec section 2.2, this optional 1-bit flag
-  // has no meaning when used for CurrPic so always configure to 0.
-  pic->main.CurrPic.AssociatedFlag = 0;
+    DXVA_PicParams_HEVC_Rext* pic_param) {
+  std::visit(
+      [&](auto& pic) {
+        // According to DXVA spec section 2.2, this optional 1-bit flag
+        // has no meaning when used for CurrPic so always configure to 0.
+        pic.params.CurrPic.AssociatedFlag = 0;
 
-  // num_tile_columns_minus1 and num_tile_rows_minus1 will only
-  // be set if tiles are enabled. Set to 0 by default.
-  pic->main.num_tile_columns_minus1 = 0;
-  pic->main.num_tile_rows_minus1 = 0;
+        // num_tile_columns_minus1 and num_tile_rows_minus1 will only
+        // be set if tiles are enabled. Set to 0 by default.
+        pic.params.num_tile_columns_minus1 = 0;
+        pic.params.num_tile_rows_minus1 = 0;
 
-  // Host decoder may set this to 1 if sps_max_num_reorder_pics is 0,
-  // but there is no requirement that NoPicReorderingFlag must be
-  // derived from it. So we always set it to 0 here.
-  pic->main.NoPicReorderingFlag = 0;
+        // Host decoder may set this to 1 if sps_max_num_reorder_pics is 0,
+        // but there is no requirement that NoPicReorderingFlag must be
+        // derived from it. So we always set it to 0 here.
+        pic.params.NoPicReorderingFlag = 0;
 
-  // Must be set to 0 in absence of indication whether B slices are used
-  // or not, and it does not affect the decoding process.
-  pic->main.NoBiPredFlag = 0;
+        // Must be set to 0 in absence of indication whether B slices are used
+        // or not, and it does not affect the decoding process.
+        pic.params.NoBiPredFlag = 0;
 
-  // Shall be set to 0 and accelerators shall ignore its value.
-  pic->main.ReservedBits1 = 0;
+        // Shall be set to 0 and accelerators shall ignore its value.
+        pic.params.ReservedBits1 = 0;
 
-  // Bit field added to enable DWORD alignment and should be set to 0.
-  pic->main.ReservedBits2 = 0;
+        // Bit field added to enable DWORD alignment and should be set to 0.
+        pic.params.ReservedBits2 = 0;
 
-  // Should always be set to 0.
-  pic->main.ReservedBits3 = 0;
+        // Should always be set to 0.
+        pic.params.ReservedBits3 = 0;
 
-  // Should be set to 0 and ignored by accelerators
-  pic->main.ReservedBits4 = 0;
+        // Should be set to 0 and ignored by accelerators
+        pic.params.ReservedBits4 = 0;
 
-  // Should always be set to 0.
-  pic->main.ReservedBits5 = 0;
+        // Should always be set to 0.
+        pic.params.ReservedBits5 = 0;
 
-  // Should always be set to 0.
-  pic->main.ReservedBits6 = 0;
+        // Should always be set to 0.
+        pic.params.ReservedBits6 = 0;
 
-  // Should always be set to 0.
-  pic->main.ReservedBits7 = 0;
+        // Should always be set to 0.
+        pic.params.ReservedBits7 = 0;
+      },
+      *pic_param);
 }
 
 #define ARG_SEL(_1, _2, NAME, ...) NAME
-#define SPS_TO_PP1(a) (pic_param->main).a = sps->a;
-#define SPS_TO_PPEXT(a) pic_param->a = sps->a;
-#define SPS_TO_PP2(a, b) (pic_param->main).a = sps->b;
+#define SPS_TO_PP1(a) (pic_param.params).a = sps->a;
+#define SPS_TO_PPEXT(a) pic_param.a = sps->a;
+#define SPS_TO_PP2(a, b) (pic_param.params).a = sps->b;
 #define SPS_TO_PP(...) ARG_SEL(__VA_ARGS__, SPS_TO_PP2, SPS_TO_PP1)(__VA_ARGS__)
-void D3D11H265Accelerator::PicParamsFromSPS(DXVA_PicParams_HEVC_Rext* pic_param,
-                                            const H265SPS* sps) {
-  // Refer to formula 7-14 and 7-16 of HEVC spec.
-  int min_cb_log2_size_y = sps->log2_min_luma_coding_block_size_minus3 + 3;
-  (pic_param->main).PicWidthInMinCbsY =
-      sps->pic_width_in_luma_samples >> min_cb_log2_size_y;
-  (pic_param->main).PicHeightInMinCbsY =
-      sps->pic_height_in_luma_samples >> min_cb_log2_size_y;
-  // wFormatAndSequenceInfoFlags from SPS
-  SPS_TO_PP(chroma_format_idc);
-  SPS_TO_PP(separate_colour_plane_flag);
-  SPS_TO_PP(bit_depth_luma_minus8);
-  SPS_TO_PP(bit_depth_chroma_minus8);
-  SPS_TO_PP(log2_max_pic_order_cnt_lsb_minus4);
+void D3D11H265Accelerator::PicParamsFromSPS(
+    DXVA_PicParams_HEVC_Rext* pic_params,
+    const H265SPS* sps) {
+  std::visit(
+      [&](auto& pic_param) {
+        // Refer to formula 7-14 and 7-16 of HEVC spec.
+        int min_cb_log2_size_y =
+            sps->log2_min_luma_coding_block_size_minus3 + 3;
+        (pic_param.params).PicWidthInMinCbsY =
+            sps->pic_width_in_luma_samples >> min_cb_log2_size_y;
+        (pic_param.params).PicHeightInMinCbsY =
+            sps->pic_height_in_luma_samples >> min_cb_log2_size_y;
+        // wFormatAndSequenceInfoFlags from SPS
+        SPS_TO_PP(chroma_format_idc);
+        SPS_TO_PP(separate_colour_plane_flag);
+        SPS_TO_PP(bit_depth_luma_minus8);
+        SPS_TO_PP(bit_depth_chroma_minus8);
+        SPS_TO_PP(log2_max_pic_order_cnt_lsb_minus4);
 
-  if (sps->profile_tier_level.general_profile_idc == 4) {
-    is_rext_ = true;
-  }
-  // HEVC DXVA spec does not clearly state which slot
-  // in sps->sps_max_dec_pic_buffering_minus1 should
-  // be used here. However section A4.1 of HEVC spec
-  // requires the slot of highest tid to be used for
-  // indicating the maximum DPB size if level is not
-  // 8.5.
-  int highest_tid = sps->sps_max_sub_layers_minus1;
-  (pic_param->main).sps_max_dec_pic_buffering_minus1 =
-      sps->sps_max_dec_pic_buffering_minus1[highest_tid];
+        if (sps->profile_tier_level.general_profile_idc == 4) {
+          is_rext_ = true;
+        }
+        // HEVC DXVA spec does not clearly state which slot
+        // in sps->sps_max_dec_pic_buffering_minus1 should
+        // be used here. However section A4.1 of HEVC spec
+        // requires the slot of highest tid to be used for
+        // indicating the maximum DPB size if level is not
+        // 8.5.
+        int highest_tid = sps->sps_max_sub_layers_minus1;
+        (pic_param.params).sps_max_dec_pic_buffering_minus1 =
+            sps->sps_max_dec_pic_buffering_minus1[highest_tid];
 
-  SPS_TO_PP(log2_min_luma_coding_block_size_minus3);
-  SPS_TO_PP(log2_diff_max_min_luma_coding_block_size);
+        SPS_TO_PP(log2_min_luma_coding_block_size_minus3);
+        SPS_TO_PP(log2_diff_max_min_luma_coding_block_size);
 
-  // DXVA spec names them differently with HEVC spec.
-  SPS_TO_PP(log2_min_transform_block_size_minus2,
-            log2_min_luma_transform_block_size_minus2);
-  SPS_TO_PP(log2_diff_max_min_transform_block_size,
-            log2_diff_max_min_luma_transform_block_size);
+        // DXVA spec names them differently with HEVC spec.
+        SPS_TO_PP(log2_min_transform_block_size_minus2,
+                  log2_min_luma_transform_block_size_minus2);
+        SPS_TO_PP(log2_diff_max_min_transform_block_size,
+                  log2_diff_max_min_luma_transform_block_size);
 
-  SPS_TO_PP(max_transform_hierarchy_depth_inter);
-  SPS_TO_PP(max_transform_hierarchy_depth_intra);
-  SPS_TO_PP(num_short_term_ref_pic_sets);
-  SPS_TO_PP(num_long_term_ref_pics_sps);
+        SPS_TO_PP(max_transform_hierarchy_depth_inter);
+        SPS_TO_PP(max_transform_hierarchy_depth_intra);
+        SPS_TO_PP(num_short_term_ref_pic_sets);
+        SPS_TO_PP(num_long_term_ref_pics_sps);
 
-  // dwCodingParamToolFlags extracted from SPS
-  SPS_TO_PP(scaling_list_enabled_flag);
-  SPS_TO_PP(amp_enabled_flag);
-  SPS_TO_PP(sample_adaptive_offset_enabled_flag);
-  SPS_TO_PP(pcm_enabled_flag);
+        // dwCodingParamToolFlags extracted from SPS
+        SPS_TO_PP(scaling_list_enabled_flag);
+        SPS_TO_PP(amp_enabled_flag);
+        SPS_TO_PP(sample_adaptive_offset_enabled_flag);
+        SPS_TO_PP(pcm_enabled_flag);
 
-  if (sps->pcm_enabled_flag) {
-    SPS_TO_PP(pcm_sample_bit_depth_luma_minus1);
-    SPS_TO_PP(pcm_sample_bit_depth_chroma_minus1);
-    SPS_TO_PP(log2_min_pcm_luma_coding_block_size_minus3);
-    SPS_TO_PP(log2_diff_max_min_pcm_luma_coding_block_size);
-    SPS_TO_PP(pcm_loop_filter_disabled_flag);
-  }
-  SPS_TO_PP(long_term_ref_pics_present_flag);
-  SPS_TO_PP(sps_temporal_mvp_enabled_flag);
-  SPS_TO_PP(strong_intra_smoothing_enabled_flag);
+        if (sps->pcm_enabled_flag) {
+          SPS_TO_PP(pcm_sample_bit_depth_luma_minus1);
+          SPS_TO_PP(pcm_sample_bit_depth_chroma_minus1);
+          SPS_TO_PP(log2_min_pcm_luma_coding_block_size_minus3);
+          SPS_TO_PP(log2_diff_max_min_pcm_luma_coding_block_size);
+          SPS_TO_PP(pcm_loop_filter_disabled_flag);
+        }
+        SPS_TO_PP(long_term_ref_pics_present_flag);
+        SPS_TO_PP(sps_temporal_mvp_enabled_flag);
+        SPS_TO_PP(strong_intra_smoothing_enabled_flag);
 
-  if (sps->sps_range_extension_flag) {
-    SPS_TO_PPEXT(transform_skip_rotation_enabled_flag);
-    SPS_TO_PPEXT(transform_skip_context_enabled_flag);
-    SPS_TO_PPEXT(implicit_rdpcm_enabled_flag);
-    SPS_TO_PPEXT(explicit_rdpcm_enabled_flag);
-    SPS_TO_PPEXT(extended_precision_processing_flag);
-    SPS_TO_PPEXT(intra_smoothing_disabled_flag);
-    SPS_TO_PPEXT(high_precision_offsets_enabled_flag);
-    SPS_TO_PPEXT(persistent_rice_adaptation_enabled_flag);
-    SPS_TO_PPEXT(cabac_bypass_alignment_enabled_flag);
-  }
+        if (sps->sps_range_extension_flag) {
+          SPS_TO_PPEXT(transform_skip_rotation_enabled_flag);
+          SPS_TO_PPEXT(transform_skip_context_enabled_flag);
+          SPS_TO_PPEXT(implicit_rdpcm_enabled_flag);
+          SPS_TO_PPEXT(explicit_rdpcm_enabled_flag);
+          SPS_TO_PPEXT(extended_precision_processing_flag);
+          SPS_TO_PPEXT(intra_smoothing_disabled_flag);
+          SPS_TO_PPEXT(high_precision_offsets_enabled_flag);
+          SPS_TO_PPEXT(persistent_rice_adaptation_enabled_flag);
+          SPS_TO_PPEXT(cabac_bypass_alignment_enabled_flag);
+        }
+      },
+      *pic_params);
 }
 #undef SPS_TO_PP
 #undef SPS_TO_PPEXT
 #undef SPS_TO_PP2
 #undef SPS_TO_PP1
 
-#define PPS_TO_PPEXT(a) pic_param->a = pps->a;
-#define PPS_TO_PP1(a) (pic_param->main).a = pps->a;
-#define PPS_TO_PP2(a, b) (pic_param->main).a = pps->b;
+#define PPS_TO_PPEXT(a) pic_param.a = pps->a;
+#define PPS_TO_PP1(a) (pic_param.params).a = pps->a;
+#define PPS_TO_PP2(a, b) (pic_param.params).a = pps->b;
 #define PPS_TO_PP(...) ARG_SEL(__VA_ARGS__, PPS_TO_PP2, PPS_TO_PP1)(__VA_ARGS__)
-void D3D11H265Accelerator::PicParamsFromPPS(DXVA_PicParams_HEVC_Rext* pic_param,
-                                            const H265PPS* pps) {
-  PPS_TO_PP(num_ref_idx_l0_default_active_minus1);
-  PPS_TO_PP(num_ref_idx_l1_default_active_minus1);
-  PPS_TO_PP(init_qp_minus26);
+void D3D11H265Accelerator::PicParamsFromPPS(
+    DXVA_PicParams_HEVC_Rext* pic_params,
+    const H265PPS* pps) {
+  std::visit(
+      [&](auto& pic_param) {
+        PPS_TO_PP(num_ref_idx_l0_default_active_minus1);
+        PPS_TO_PP(num_ref_idx_l1_default_active_minus1);
+        PPS_TO_PP(init_qp_minus26);
 
-  // dwCodingParamToolFlags from PPS
-  PPS_TO_PP(dependent_slice_segments_enabled_flag);
-  PPS_TO_PP(output_flag_present_flag);
-  PPS_TO_PP(num_extra_slice_header_bits);
-  PPS_TO_PP(sign_data_hiding_enabled_flag);
-  PPS_TO_PP(cabac_init_present_flag);
+        // dwCodingParamToolFlags from PPS
+        PPS_TO_PP(dependent_slice_segments_enabled_flag);
+        PPS_TO_PP(output_flag_present_flag);
+        PPS_TO_PP(num_extra_slice_header_bits);
+        PPS_TO_PP(sign_data_hiding_enabled_flag);
+        PPS_TO_PP(cabac_init_present_flag);
 
-  // dwCodingSettingPicturePropertyFlags from PPS
-  PPS_TO_PP(constrained_intra_pred_flag);
-  PPS_TO_PP(transform_skip_enabled_flag);
-  PPS_TO_PP(cu_qp_delta_enabled_flag);
-  PPS_TO_PP(pps_slice_chroma_qp_offsets_present_flag);
-  PPS_TO_PP(weighted_pred_flag);
-  PPS_TO_PP(weighted_bipred_flag);
-  PPS_TO_PP(transquant_bypass_enabled_flag);
-  PPS_TO_PP(tiles_enabled_flag);
-  PPS_TO_PP(entropy_coding_sync_enabled_flag);
-  PPS_TO_PP(uniform_spacing_flag);
-  if (pps->tiles_enabled_flag)
-    PPS_TO_PP(loop_filter_across_tiles_enabled_flag);
-  PPS_TO_PP(pps_loop_filter_across_slices_enabled_flag);
-  PPS_TO_PP(deblocking_filter_override_enabled_flag);
-  PPS_TO_PP(pps_deblocking_filter_disabled_flag);
-  PPS_TO_PP(lists_modification_present_flag);
-  PPS_TO_PP(slice_segment_header_extension_present_flag);
+        // dwCodingSettingPicturePropertyFlags from PPS
+        PPS_TO_PP(constrained_intra_pred_flag);
+        PPS_TO_PP(transform_skip_enabled_flag);
+        PPS_TO_PP(cu_qp_delta_enabled_flag);
+        PPS_TO_PP(pps_slice_chroma_qp_offsets_present_flag);
+        PPS_TO_PP(weighted_pred_flag);
+        PPS_TO_PP(weighted_bipred_flag);
+        PPS_TO_PP(transquant_bypass_enabled_flag);
+        PPS_TO_PP(tiles_enabled_flag);
+        PPS_TO_PP(entropy_coding_sync_enabled_flag);
+        PPS_TO_PP(uniform_spacing_flag);
+        if (pps->tiles_enabled_flag) {
+          PPS_TO_PP(loop_filter_across_tiles_enabled_flag);
+        }
+        PPS_TO_PP(pps_loop_filter_across_slices_enabled_flag);
+        PPS_TO_PP(deblocking_filter_override_enabled_flag);
+        PPS_TO_PP(pps_deblocking_filter_disabled_flag);
+        PPS_TO_PP(lists_modification_present_flag);
+        PPS_TO_PP(slice_segment_header_extension_present_flag);
 
-  PPS_TO_PP(pps_cb_qp_offset);
-  PPS_TO_PP(pps_cr_qp_offset);
-  if (pps->tiles_enabled_flag) {
-    PPS_TO_PP(num_tile_columns_minus1);
-    PPS_TO_PP(num_tile_rows_minus1);
-    if (!pps->uniform_spacing_flag) {
-      for (int i = 0; i <= pps->num_tile_columns_minus1; i++) {
-        PPS_TO_PP(column_width_minus1[i]);
-      }
-      for (int j = 0; j <= pps->num_tile_rows_minus1; j++) {
-        PPS_TO_PP(row_height_minus1[j]);
-      }
-    }
-  }
-  PPS_TO_PP(diff_cu_qp_delta_depth);
-  PPS_TO_PP(pps_beta_offset_div2);
-  PPS_TO_PP(pps_tc_offset_div2);
-  PPS_TO_PP(log2_parallel_merge_level_minus2);
+        PPS_TO_PP(pps_cb_qp_offset);
+        PPS_TO_PP(pps_cr_qp_offset);
+        if (pps->tiles_enabled_flag) {
+          PPS_TO_PP(num_tile_columns_minus1);
+          PPS_TO_PP(num_tile_rows_minus1);
+          if (!pps->uniform_spacing_flag) {
+            for (int i = 0; i <= pps->num_tile_columns_minus1; i++) {
+              PPS_TO_PP(column_width_minus1[i]);
+            }
+            for (int j = 0; j <= pps->num_tile_rows_minus1; j++) {
+              PPS_TO_PP(row_height_minus1[j]);
+            }
+          }
+        }
+        PPS_TO_PP(diff_cu_qp_delta_depth);
+        PPS_TO_PP(pps_beta_offset_div2);
+        PPS_TO_PP(pps_tc_offset_div2);
+        PPS_TO_PP(log2_parallel_merge_level_minus2);
 
-  if (pps->pps_range_extension_flag) {
-    PPS_TO_PPEXT(cross_component_prediction_enabled_flag);
-    PPS_TO_PPEXT(chroma_qp_offset_list_enabled_flag);
-    if (pps->chroma_qp_offset_list_enabled_flag) {
-      PPS_TO_PPEXT(diff_cu_chroma_qp_offset_depth);
-      PPS_TO_PPEXT(chroma_qp_offset_list_len_minus1);
-      for (int i = 0; i <= pps->chroma_qp_offset_list_len_minus1; i++) {
-        PPS_TO_PPEXT(cb_qp_offset_list[i]);
-        PPS_TO_PPEXT(cr_qp_offset_list[i]);
-      }
-    }
-    PPS_TO_PPEXT(log2_sao_offset_scale_luma);
-    PPS_TO_PPEXT(log2_sao_offset_scale_chroma);
-    if (pps->transform_skip_enabled_flag) {
-      PPS_TO_PPEXT(log2_max_transform_skip_block_size_minus2);
-    }
-  }
+        if (pps->pps_range_extension_flag) {
+          PPS_TO_PPEXT(cross_component_prediction_enabled_flag);
+          PPS_TO_PPEXT(chroma_qp_offset_list_enabled_flag);
+          if (pps->chroma_qp_offset_list_enabled_flag) {
+            PPS_TO_PPEXT(diff_cu_chroma_qp_offset_depth);
+            PPS_TO_PPEXT(chroma_qp_offset_list_len_minus1);
+            for (int i = 0; i <= pps->chroma_qp_offset_list_len_minus1; i++) {
+              PPS_TO_PPEXT(cb_qp_offset_list[i]);
+              PPS_TO_PPEXT(cr_qp_offset_list[i]);
+            }
+          }
+          PPS_TO_PPEXT(log2_sao_offset_scale_luma);
+          PPS_TO_PPEXT(log2_sao_offset_scale_chroma);
+          if (pps->transform_skip_enabled_flag) {
+            PPS_TO_PPEXT(log2_max_transform_skip_block_size_minus2);
+          }
+        }
+      },
+      *pic_params);
   return;
 }
 #undef PPS_TO_PPEXT
@@ -334,100 +354,118 @@ void D3D11H265Accelerator::PicParamsFromPPS(DXVA_PicParams_HEVC_Rext* pic_param,
 #undef ARG_SEL
 
 void D3D11H265Accelerator::PicParamsFromSliceHeader(
-    DXVA_PicParams_HEVC_Rext* pic_param,
+    DXVA_PicParams_HEVC_Rext* pic_params,
     const H265SPS* sps,
     const H265SliceHeader* slice_hdr) {
-  // IDR_W_RADL and IDR_N_LP NALUs do not contain st_rps in slice header.
-  // Otherwise if short_term_ref_pic_set_sps_flag is 1, host decoder
-  // shall set ucNumDeltaPocsOfRefRpsIdx to 0.
-  if (slice_hdr->short_term_ref_pic_set_sps_flag) {
-    pic_param->main.ucNumDeltaPocsOfRefRpsIdx = 0;
-    pic_param->main.wNumBitsForShortTermRPSInSlice = 0;
-  } else {
-    pic_param->main.ucNumDeltaPocsOfRefRpsIdx =
-        slice_hdr->st_ref_pic_set.rps_idx_num_delta_pocs;
-    pic_param->main.wNumBitsForShortTermRPSInSlice = slice_hdr->st_rps_bits;
-  }
-  pic_param->main.IrapPicFlag = slice_hdr->irap_pic;
-  auto nal_unit_type = slice_hdr->nal_unit_type;
-  pic_param->main.IdrPicFlag = (nal_unit_type == H265NALU::IDR_W_RADL ||
-                                nal_unit_type == H265NALU::IDR_N_LP);
-  pic_param->main.IntraPicFlag = slice_hdr->irap_pic;
+  std::visit(
+      [&](auto& pic_param) {
+        // IDR_W_RADL and IDR_N_LP NALUs do not contain st_rps in slice header.
+        // Otherwise if short_term_ref_pic_set_sps_flag is 1, host decoder
+        // shall set ucNumDeltaPocsOfRefRpsIdx to 0.
+        if (slice_hdr->short_term_ref_pic_set_sps_flag) {
+          pic_param.params.ucNumDeltaPocsOfRefRpsIdx = 0;
+          pic_param.params.wNumBitsForShortTermRPSInSlice = 0;
+        } else {
+          pic_param.params.ucNumDeltaPocsOfRefRpsIdx =
+              slice_hdr->st_ref_pic_set.rps_idx_num_delta_pocs;
+          pic_param.params.wNumBitsForShortTermRPSInSlice =
+              slice_hdr->st_rps_bits;
+        }
+        pic_param.params.IrapPicFlag = slice_hdr->irap_pic;
+        auto nal_unit_type = slice_hdr->nal_unit_type;
+        pic_param.params.IdrPicFlag = (nal_unit_type == H265NALU::IDR_W_RADL ||
+                                       nal_unit_type == H265NALU::IDR_N_LP);
+        pic_param.params.IntraPicFlag = slice_hdr->irap_pic;
+      },
+      *pic_params);
 }
 
-void D3D11H265Accelerator::PicParamsFromPic(DXVA_PicParams_HEVC_Rext* pic_param,
-                                            D3D11H265Picture* pic) {
-  pic_param->main.CurrPicOrderCntVal = pic->pic_order_cnt_val_;
-  pic_param->main.CurrPic.Index7Bits = pic->picture_index_;
+void D3D11H265Accelerator::PicParamsFromPic(
+    DXVA_PicParams_HEVC_Rext* pic_params,
+    D3D11H265Picture* pic) {
+  std::visit(
+      [&](auto& pic_param) {
+        pic_param.params.CurrPicOrderCntVal = pic->pic_order_cnt_val_;
+        pic_param.params.CurrPic.Index7Bits = pic->picture_index_;
+      },
+      *pic_params);
 }
 
 bool D3D11H265Accelerator::PicParamsFromRefLists(
-    DXVA_PicParams_HEVC_Rext* pic_param,
+    DXVA_PicParams_HEVC_Rext* pic_params,
     const H265Picture::Vector& ref_pic_set_lt_curr,
     const H265Picture::Vector& ref_pic_set_st_curr_after,
     const H265Picture::Vector& ref_pic_set_st_curr_before) {
   constexpr int kDxvaInvalidRefPicIndex = 0xFF;
   constexpr unsigned kStLtRpsSize = 8;
 
-  std::fill_n(pic_param->main.RefPicSetStCurrBefore, kStLtRpsSize,
-              kDxvaInvalidRefPicIndex);
-  std::fill_n(pic_param->main.RefPicSetStCurrAfter, kStLtRpsSize,
-              kDxvaInvalidRefPicIndex);
-  std::fill_n(pic_param->main.RefPicSetLtCurr, kStLtRpsSize,
-              kDxvaInvalidRefPicIndex);
-  std::copy(ref_frame_pocs_, ref_frame_pocs_ + kMaxRefPicListSize - 1,
-            pic_param->main.PicOrderCntValList);
+  bool ref_check_ok = true;
+  std::visit(
+      [&](auto& pic_param) {
+        std::fill_n(pic_param.params.RefPicSetStCurrBefore, kStLtRpsSize,
+                    kDxvaInvalidRefPicIndex);
+        std::fill_n(pic_param.params.RefPicSetStCurrAfter, kStLtRpsSize,
+                    kDxvaInvalidRefPicIndex);
+        std::fill_n(pic_param.params.RefPicSetLtCurr, kStLtRpsSize,
+                    kDxvaInvalidRefPicIndex);
+        std::copy(ref_frame_pocs_, ref_frame_pocs_ + kMaxRefPicListSize - 1,
+                  pic_param.params.PicOrderCntValList);
 
-  size_t idx = 0;
-  for (auto& it : ref_pic_set_st_curr_before) {
-    if (!it)
-      continue;
-    auto poc = it->pic_order_cnt_val_;
-    auto poc_index = poc_index_into_ref_pic_list_[poc];
-    if (poc_index < 0) {
-      DLOG(ERROR) << "Invalid index of POC for RefPicSetStCurrBefore.";
-      return false;
-    }
-    if (idx > kStLtRpsSize - 1) {
-      DLOG(ERROR) << "Invalid RefPicSetStCurrBefore size.";
-      return false;
-    }
-    pic_param->main.RefPicSetStCurrBefore[idx++] = poc_index;
-  }
-  idx = 0;
-  for (auto& it : ref_pic_set_st_curr_after) {
-    if (!it)
-      continue;
-    auto poc = it->pic_order_cnt_val_;
-    auto poc_index = poc_index_into_ref_pic_list_[poc];
-    if (poc_index < 0) {
-      DLOG(ERROR) << "Invalid index of POC for RefPicSetStCurrAfter.";
-      return false;
-    }
-    if (idx > kStLtRpsSize - 1) {
-      DLOG(ERROR) << "Invalid RefPicSetStCurrAfter size.";
-      return false;
-    }
-    pic_param->main.RefPicSetStCurrAfter[idx++] = poc_index;
-  }
-  idx = 0;
-  for (auto& it : ref_pic_set_lt_curr) {
-    if (!it)
-      continue;
-    auto poc = it->pic_order_cnt_val_;
-    auto poc_index = poc_index_into_ref_pic_list_[poc];
-    if (poc_index < 0) {
-      DLOG(ERROR) << "Invalid index of POC for RefPicSetLtCurr.";
-      return false;
-    }
-    if (idx > kStLtRpsSize - 1) {
-      DLOG(ERROR) << "Invalid RefPicSetLtCurr size.";
-      return false;
-    }
-    pic_param->main.RefPicSetLtCurr[idx++] = poc_index;
-  }
+        size_t idx = 0;
+        for (auto& it : ref_pic_set_st_curr_before) {
+          if (!it) {
+            continue;
+          }
+          auto poc = it->pic_order_cnt_val_;
+          auto poc_index = poc_index_into_ref_pic_list_[poc];
+          if (poc_index < 0) {
+            DLOG(ERROR) << "Invalid index of POC for RefPicSetStCurrBefore.";
+            ref_check_ok = false;
+          }
+          if (idx > kStLtRpsSize - 1) {
+            DLOG(ERROR) << "Invalid RefPicSetStCurrBefore size.";
+            ref_check_ok = false;
+          }
+          pic_param.params.RefPicSetStCurrBefore[idx++] = poc_index;
+        }
+        idx = 0;
+        for (auto& it : ref_pic_set_st_curr_after) {
+          if (!it) {
+            continue;
+          }
+          auto poc = it->pic_order_cnt_val_;
+          auto poc_index = poc_index_into_ref_pic_list_[poc];
+          if (poc_index < 0) {
+            DLOG(ERROR) << "Invalid index of POC for RefPicSetStCurrAfter.";
+            ref_check_ok = false;
+          }
+          if (idx > kStLtRpsSize - 1) {
+            DLOG(ERROR) << "Invalid RefPicSetStCurrAfter size.";
+            ref_check_ok = false;
+          }
+          pic_param.params.RefPicSetStCurrAfter[idx++] = poc_index;
+        }
+        idx = 0;
+        for (auto& it : ref_pic_set_lt_curr) {
+          if (!it) {
+            continue;
+          }
+          auto poc = it->pic_order_cnt_val_;
+          auto poc_index = poc_index_into_ref_pic_list_[poc];
+          if (poc_index < 0) {
+            DLOG(ERROR) << "Invalid index of POC for RefPicSetLtCurr.";
+            ref_check_ok = false;
+          }
+          if (idx > kStLtRpsSize - 1) {
+            DLOG(ERROR) << "Invalid RefPicSetLtCurr size.";
+            ref_check_ok = false;
+          }
+          pic_param.params.RefPicSetLtCurr[idx++] = poc_index;
+        }
+      },
+      *pic_params);
 
-  return true;
+  return ref_check_ok;
 }
 
 H265DecoderStatus D3D11H265Accelerator::SubmitSlice(
@@ -445,7 +483,15 @@ H265DecoderStatus D3D11H265Accelerator::SubmitSlice(
     const std::vector<SubsampleEntry>& subsamples) {
   if (!client_->GetWrapper()->HasPendingBuffer(
           D3DVideoDecoderWrapper::BufferType::kPictureParameters)) {
-    DXVA_PicParams_HEVC_Rext pic_param = {};
+    DXVA_PicParams_HEVC_Rext pic_param;
+
+    if (use_dxva_device_for_hevc_rext_) {
+      pic_param.emplace<DXVA_PicParams_HEVC_RangeExt>(
+          DXVA_PicParams_HEVC_RangeExt{});
+    } else {
+      pic_param.emplace<DXVA_PicParams_HEVC_Rext_Intel>(
+          DXVA_PicParams_HEVC_Rext_Intel{});
+    }
 
     D3D11H265Picture* d3d11_pic = pic->AsD3D11H265Picture();
     if (!d3d11_pic) {
@@ -457,8 +503,13 @@ H265DecoderStatus D3D11H265Accelerator::SubmitSlice(
     PicParamsFromPPS(&pic_param, pps);
     PicParamsFromSliceHeader(&pic_param, sps, slice_hdr);
     PicParamsFromPic(&pic_param, d3d11_pic);
-    memcpy(pic_param.main.RefPicList, ref_frame_list_,
-           sizeof pic_param.main.RefPicList);
+
+    std::visit(
+        [&](auto& param) {
+          base::span<DXVA_PicEntry_HEVC>(param.params.RefPicList)
+              .copy_from(base::span<const DXVA_PicEntry_HEVC>(ref_frame_list_));
+        },
+        pic_param);
 
     if (!PicParamsFromRefLists(&pic_param, ref_pic_set_lt_curr,
                                ref_pic_set_st_curr_after,
@@ -466,15 +517,23 @@ H265DecoderStatus D3D11H265Accelerator::SubmitSlice(
       return H265DecoderStatus::kFail;
     }
 
-    pic_param.main.StatusReportFeedbackNumber =
-        current_status_report_feedback_num_++;
+    std::visit(
+        [&](auto& param) {
+          param.params.StatusReportFeedbackNumber =
+              current_status_report_feedback_num_++;
+        },
+        pic_param);
 
-    size_t pic_params_size = is_rext_ ? sizeof(DXVA_PicParams_HEVC_Rext)
-                                      : sizeof(DXVA_PicParams_HEVC);
+    // Determine the size of the selected type.
+    size_t pic_params_size =
+        is_rext_ ? (use_dxva_device_for_hevc_rext_
+                        ? sizeof(DXVA_PicParams_HEVC_RangeExt)
+                        : sizeof(DXVA_PicParams_HEVC_Rext_Intel))
+                 : sizeof(DXVA_PicParams_HEVC);
     auto params_buffer =
         client_->GetWrapper()->GetPictureParametersBuffer(pic_params_size);
     // For 420 content the driver may only allow main part picture parameters.
-    if (is_rext_ && params_buffer.size() < sizeof(DXVA_PicParams_HEVC_Rext)) {
+    if (is_rext_ && params_buffer.size() < pic_params_size) {
       pic_params_size = sizeof(DXVA_PicParams_HEVC);
     }
     if (params_buffer.size() < pic_params_size) {
@@ -483,7 +542,13 @@ H265DecoderStatus D3D11H265Accelerator::SubmitSlice(
       return H265DecoderStatus::kFail;
     }
 
-    memcpy(params_buffer.data(), &pic_param, pic_params_size);
+    std::visit(
+        [&](const auto& param) {
+          base::span<uint8_t>(params_buffer.data(), pic_params_size)
+              .copy_from(base::span<const uint8_t>(
+                  reinterpret_cast<const uint8_t*>(&param), pic_params_size));
+        },
+        pic_param);
 
     if (!params_buffer.Commit()) {
       return H265DecoderStatus::kFail;
