@@ -99,7 +99,6 @@ public class WebViewBrowserActivity extends AppCompatActivity {
     }
 
     @Override
-    @SuppressWarnings("GestureBackNavigation")
     public void onBackPressed() {
         if (mWebView != null && mWebView.canGoBack()) {
             mWebView.goBack();

@@ -74,7 +74,6 @@ public class XrHostActivity extends Activity {
     }
 
     @Override
-    @SuppressWarnings("GestureBackNavigation")
     public void onBackPressed() {
         if (DEBUG_LOGS) Log.i(TAG, "onBackPressed");
         super.onBackPressed();
