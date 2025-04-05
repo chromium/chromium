@@ -10,6 +10,13 @@
 
 namespace remoting {
 
+// The caller who initiated the request.
+enum class ChromeOsEnterpriseRequestOrigin {
+  kUnknown,
+  kEnterpriseAdmin,
+  kClassManagement,
+};
+
 // ChromeOS enterprise specific parameters.
 // These parameters are not exposed through the public Mojom APIs, for security
 // reasons.
@@ -40,6 +47,8 @@ struct ChromeOsEnterpriseParams {
   bool allow_reconnections = false;
   bool allow_file_transfer = false;
   bool connection_dialog_required = false;
+  ChromeOsEnterpriseRequestOrigin request_origin =
+      ChromeOsEnterpriseRequestOrigin::kUnknown;
 
   // Both local and remote machine configuration.
   base::TimeDelta connection_auto_accept_timeout;

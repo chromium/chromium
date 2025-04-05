@@ -304,7 +304,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
-  'skia_revision': '6169a5537c1c97d2d9faa39eb19ce01b01a4ce71',
+  'skia_revision': '8f1638231e342c12c31cc206aee6ec4bc433db0f',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
@@ -396,7 +396,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': 'b3a0ca161c3ba054d40b29547204d48e1262df9f',
+  'devtools_frontend_revision': 'a9fde0441e2a422f7005965b52ed9c8790f260c9',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
@@ -528,7 +528,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling llvm-libc
   # and whatever else without interference from each other.
-  'llvm_libc_revision':    '5c22cb8a881cbfe7c944170e7c9f4bcec36aaa69',
+  'llvm_libc_revision':    'aa5c758d870f1a1f2f0b51c960dc96f73a50eb54',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling llvm-libc
   # and whatever else without interference from each other.
@@ -536,7 +536,7 @@ vars = {
 
   # If you change this, also update the libc++ revision in
   # //buildtools/deps_revisions.gni.
-  'libcxx_revision':       '93ee954f850fd0e2cd39366f04c4752cf8eabf59',
+  'libcxx_revision':       'c66de5889c47f408b81d69659c5f19e87073c35d',
 
   # GN CIPD package version.
   'gn_version': 'git_revision:6e8e0d6d4a151ab2ed9b4a35366e630c55888444',
@@ -1501,7 +1501,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    '9e76f1dbc1fc0f9b91e59409e0ee95719b20ebf5',
+    'b903879c04a82575aef78989dbf625dca276fc2f',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
@@ -2855,7 +2855,7 @@ deps = {
       'dep_type': 'cipd',
   },
 
-  'src/third_party/vulkan-deps': '{chromium_git}/vulkan-deps@1e436104283724a4bf42b49def473d32ec33df82',
+  'src/third_party/vulkan-deps': '{chromium_git}/vulkan-deps@007b93a5bc8b62a325e6605fd3d7eb1612f585b4',
   'src/third_party/glslang/src': '{chromium_git}/external/github.com/KhronosGroup/glslang@4a038eafdf9e9f3e0ac2e200127df969f3a51ddb',
   'src/third_party/spirv-cross/src': '{chromium_git}/external/github.com/KhronosGroup/SPIRV-Cross@b8fcf307f1f347089e3c46eb4451d27f32ebc8d3',
   'src/third_party/spirv-headers/src': '{chromium_git}/external/github.com/KhronosGroup/SPIRV-Headers@8e82b7cfeca98baae9a01a53511483da7194f854',
@@ -2864,7 +2864,7 @@ deps = {
   'src/third_party/vulkan-loader/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Loader@b8eb2b901835497b91db7bd7005f4d6ddba2bf1e',
   'src/third_party/vulkan-tools/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Tools@289efccc7560f2b970e2b4e0f50349da87669311',
   'src/third_party/vulkan-utility-libraries/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Utility-Libraries@01851ecae564f8d3da0123659c26a2f5bbfc0228',
-  'src/third_party/vulkan-validation-layers/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-ValidationLayers@77caa409bdb901611c9713bc59db7e46867943c7',
+  'src/third_party/vulkan-validation-layers/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-ValidationLayers@3886a6bc5a4628c071f6cf09150d52b40868b834',
 
   'src/third_party/vulkan_memory_allocator':
     Var('chromium_git') + '/external/github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git' + '@' + '56300b29fbfcc693ee6609ddad3fdd5b7a449a21',
@@ -4701,7 +4701,7 @@ deps = {
 
   'src/ios_internal':  {
       'url': Var('chrome_git') + '/chrome/ios_internal.git' + '@' +
-        'a4cc1fe198a7d51c4c4355a9829355b6f3f9e48d',
+        'd00bab0f3c478e4bd96ceb6e09f22eaeaa14bd62',
       'condition': 'checkout_ios and checkout_src_internal',
   },
 
