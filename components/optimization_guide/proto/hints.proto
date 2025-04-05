@@ -320,6 +320,8 @@ enum OptimizationType {
   // Provides information about the contextual zero state suggestions for a
   // page.
   GLIC_ZERO_STATE_SUGGESTIONS = 91;
+  // Provides information about whether GLIC may act on a page.
+  GLIC_ACTION_PAGE_BLOCK = 92;
 }
 
 // Presents semantics for how page load URLs should be matched.

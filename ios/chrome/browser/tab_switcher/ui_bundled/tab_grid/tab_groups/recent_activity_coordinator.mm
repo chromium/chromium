@@ -11,8 +11,16 @@
 #import "ios/chrome/browser/share_kit/model/share_kit_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/recent_activity_commands.h"
+#import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
+#import "ios/chrome/browser/shared/public/commands/tab_groups_commands.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/recent_activity_mediator.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/recent_activity_view_controller.h"
+#import "ios/web/public/web_state.h"
+
+@interface RecentActivityCoordinator () <RecentActivityCommands>
+@end
 
 @implementation RecentActivityCoordinator {
   // A mediator of the recent activity.
@@ -42,15 +50,21 @@
 
   ProfileIOS* profile = self.profile;
   _mediator = [[RecentActivityMediator alloc]
-      initWithtabGroup:_tabGroup
-      messagingService:collaboration::messaging::
-                           MessagingBackendServiceFactory::GetForProfile(
-                               profile)
-         faviconLoader:IOSChromeFaviconLoaderFactory::GetForProfile(profile)
-           syncService:tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-                           profile)
-       shareKitService:ShareKitServiceFactory::GetForProfile(profile)];
+            initWithtabGroup:_tabGroup
+            messagingService:collaboration::messaging::
+                                 MessagingBackendServiceFactory::GetForProfile(
+                                     profile)
+               faviconLoader:IOSChromeFaviconLoaderFactory::GetForProfile(
+                                 profile)
+                 syncService:tab_groups::TabGroupSyncServiceFactory::
+                                 GetForProfile(profile)
+             shareKitService:ShareKitServiceFactory::GetForProfile(profile)
+                webStateList:self.browser->GetWebStateList()
+      webStateCreationParams:web::WebState::CreateParams(profile)];
   _mediator.consumer = _viewController;
+  _mediator.recentActivityHandler = self;
+
+  _viewController.mutator = _mediator;
 
   UINavigationController* navigationController = [[UINavigationController alloc]
       initWithRootViewController:_viewController];
@@ -76,6 +90,47 @@
     _viewController = nil;
   }
   [super stop];
+}
+
+#pragma mark - RecentActivityCommands
+
+- (void)dismissViewAndExitTabGrid {
+  id<TabGridCommands> tabGridHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), TabGridCommands);
+  [_viewController.presentingViewController
+      dismissViewControllerAnimated:YES
+                         completion:^{
+                           [tabGridHandler exitTabGrid];
+                         }];
+}
+
+- (void)showManageScreenForGroup:(const TabGroup*)group {
+  if (group != _tabGroup.get()) {
+    DUMP_WILL_BE_NOTREACHED();
+    return;
+  }
+  id<TabGroupsCommands> tabGroupsHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), TabGroupsCommands);
+  base::WeakPtr<const TabGroup> weakGroup = group->GetWeakPtr();
+  [_viewController.presentingViewController
+      dismissViewControllerAnimated:YES
+                         completion:^{
+                           [tabGroupsHandler showManageForGroup:weakGroup];
+                         }];
+}
+
+- (void)showTabGroupEditForGroup:(const TabGroup*)group {
+  if (group != _tabGroup.get()) {
+    DUMP_WILL_BE_NOTREACHED();
+    return;
+  }
+  id<TabGroupsCommands> tabGroupsHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), TabGroupsCommands);
+  [_viewController.presentingViewController
+      dismissViewControllerAnimated:YES
+                         completion:^{
+                           [tabGroupsHandler showTabGroupEditionForGroup:group];
+                         }];
 }
 
 @end

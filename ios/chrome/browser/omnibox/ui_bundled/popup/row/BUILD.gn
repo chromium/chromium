@@ -17,6 +17,7 @@ source_set("row") {
     "//components/omnibox/common",
     "//ios/chrome/app/strings",
     "//ios/chrome/app/theme",
+    "//ios/chrome/browser/omnibox/model:ui_bundled_interface",
     "//ios/chrome/browser/omnibox/public:features",
     "//ios/chrome/browser/omnibox/ui_bundled/popup:popup_accessibility_identifier_constants",
     "//ios/chrome/browser/omnibox/ui_bundled/popup:popup_icon",

@@ -173,7 +173,7 @@ struct NET_EXPORT HttpNetworkSessionParams {
   bool ignore_ip_address_changes = false;
 
   // Whether to use the ALPN information in the DNS HTTPS record.
-  bool use_dns_https_svcb_alpn = false;
+  bool use_dns_https_svcb_alpn = true;
 };
 
 // Structure with pointers to the dependencies of the HttpNetworkSession.

@@ -112,6 +112,7 @@
 <translation id="1306549533752902673">सिफारिस गरिएका एपहरू</translation>
 <translation id="1310396869741602366">टोन बदल्नुहोस्</translation>
 <translation id="1312604459020188865">सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" /></translation>
+<translation id="1314113845887519729">सिरानको किनारामा भएको ह्यान्डल चयन गरिएको छ, सार्न एरो कीहरू प्रयोग गर्नुहोस्</translation>
 <translation id="1316069254387866896">सधैँ सेल्फ देखाउनुहोस्</translation>
 <translation id="132346741904777634">क्यामेरा सिरानको बायाँ कुनामा स्न्याप गरियो। सिस्टमको सतहसँग बाझियो।</translation>
 <translation id="132415371743256095"><ph name="DESK_NAME" /> र विन्डो बन्द गर्नुहोस्</translation>
@@ -186,6 +187,7 @@
 <translation id="1557622599341396706">डेस्कको नाम देखाउनुहोस्</translation>
 <translation id="1569384531973824928">तपाईंले यसो गर्नुभयो भने क्यामेरा तथा माइक्रोफोन प्रयोग गर्ने अनुमति भएका सबै एप तथा वेबसाइटहरूलाई क्यामेरा तथा माइक्रोफोन प्रयोग गर्ने अनुमति दिइन्छ। तपाईंले वेबपेज रिफ्रेस गर्नु पर्ने वा एप रिस्टार्ट गर्नु पर्ने हुन सक्छ।</translation>
 <translation id="1571697193564730395">Do Not Disturb अन वा अफ गर्नुहोस्। <ph name="STATE_TEXT" /></translation>
+<translation id="1574691582236909946">बायाँ किनारामा भएको ह्यान्डल चयन गरिएको छ, सार्न एरो कीहरू प्रयोग गर्नुहोस्</translation>
 <translation id="1576623706766186887">म्याग्निफायर अन भएका बेला जुम आउट गर्नुहोस्</translation>
 <translation id="1582946770779745370">गेम ड्यासबोर्ड उपलब्ध छ। खोल्नका लागि जुनसुकै बेला <ph name="LAUNCHER_KEY_NAME" /> + Shift + Escape थिच्नुहोस्, त्यसपछि <ph name="LAUNCHER_KEY_NAME" /> + g थिच्नुहोस्</translation>
 <translation id="1586324912145647027">डेस्क १ देखि ८ मा जानुहोस्</translation>
@@ -220,6 +222,7 @@
 <translation id="1696984622403682083">तपाईं जुनसुकै बेला सेटिङमा गई यो सुविधा अफ गर्न सक्नुहुन्छ। <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> टाइमर · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 ठेगाना: <ph name="ADDRESS" /></translation>
+<translation id="1700782710852683371">यस बखत तपाईंले वर्णन गरेअनुसारका फोटोहरू बनाउन सकिँदैन। वर्णन परिवर्तन गरी हेर्नुहोस्। तपाईं मान्छे र हानिकारक वा अश्लील सामग्रीका फोटोहरू बनाउन सक्नुहुन्न भन्ने कुरा याद राख्नुहोस्।</translation>
 <translation id="1703117532528082099">सक्रिय विन्डो बायाँतिर डक गरिएको छ।</translation>
 <translation id="1708345662127501511">डेस्क: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">नेटवर्कसम्बन्धी सेटिङहरू</translation>
@@ -608,6 +611,7 @@
 <translation id="304097922505898963">Key Shortcuts एप खोल्नुहोस्</translation>
 <translation id="304417730895741346">तपाईंका पिन गरिएका तथा खुला रहेका एपहरू सेल्फमा देखिन्छन्। सेल्फमा कुनै एप पिन गर्न सो एपमा राइट क्लिक गर्नुहोस् वा दुई वटा औँलाले टचप्याडमा ट्याप गर्नुहोस्।</translation>
 <translation id="3045488863354895414">नमस्ते,</translation>
+<translation id="3045670165536837541">सिरानको दायाँतिर भएको ह्यान्डल चयन गरिएको छ, सार्न एरो कीहरू प्रयोग गर्नुहोस्</translation>
 <translation id="3047761520276763270">यसो भनी हेर्नुहोस्:</translation>
 <translation id="3053407068093039599">क्यामेराको एक्सेस अन/अफ गर्नुहोस्</translation>
 <translation id="3055162170959710888">तपाईंले आज यो डिभाइस <ph name="USED_TIME" /> प्रयोग गर्नुभयो</translation>
@@ -1763,6 +1767,7 @@
 <translation id="6696025732084565524">तपाईंको अलग्याउन मिल्ने किबोर्डलाई महत्त्वपूर्ण अद्यावधिक आवश्यक छ</translation>
 <translation id="6697913454192220372">नयाँ डेस्क हाल्नुहोस्</translation>
 <translation id="6700713906295497288">IME सम्बन्धी मेनुको बटन</translation>
+<translation id="6704073473590541209">दायाँ किनारामा भएको ह्यान्डल चयन गरिएको छ, सार्न एरो कीहरू प्रयोग गर्नुहोस्</translation>
 <translation id="6706742084323792866">किबोर्ड पिन गर्नुहोस्</translation>
 <translation id="6710213216561001401">अघिल्लो</translation>
 <translation id="6723839937902243910">पावर</translation>
@@ -1786,6 +1791,7 @@
 <translation id="6781002679438061620">डेस्क ९</translation>
 <translation id="6782182743534150858">डेस्क १३</translation>
 <translation id="6782919488259222803">हालको पेजमा खोज्नुहोस्</translation>
+<translation id="6783348167101855071">पुछारको दायाँतिर भएको ह्यान्डल चयन गरिएको छ, सार्न एरो कीहरू प्रयोग गर्नुहोस्</translation>
 <translation id="6786750046913594791">फोल्डर बन्द गर्नुहोस्</translation>
 <translation id="6790428901817661496">प्ले गर्नुहोस्</translation>
 <translation id="6792262051831399889">उपलब्ध छैन</translation>
@@ -1941,6 +1947,7 @@
 <translation id="7371404428569700291">विन्डोको भिडियो रेकर्ड गर्नुहोस्</translation>
 <translation id="7372069265635026568">कुल <ph name="TOTAL_MEMORY" /> भण्डारणमध्ये <ph name="AVAILABLE_MEMORY" /> भण्डारण उपलब्ध छ</translation>
 <translation id="737315737514430195">यसले माइक्रोफोन प्रयोग गर्ने अनुमति चाहिने सबै एप तथा वेबसाइटहरूलाई माइक्रोफोन प्रयोग गर्ने अनुमति दिन्छ</translation>
+<translation id="7376933029363911338">पुछारको किनारामा भएको ह्यान्डल चयन गरिएको छ, सार्न एरो कीहरू प्रयोग गर्नुहोस्</translation>
 <translation id="7377169924702866686">क्याप्स लक सक्रिय छ।</translation>
 <translation id="7377481913241237033">कोड प्रयोग गरी कनेक्ट गर्नुहोस्</translation>
 <translation id="7378203170292176219">रेकर्ड गर्ने कुनै क्षेत्र चयन गर्न ड्र्याग गर्नुहोस्</translation>
@@ -2037,6 +2044,7 @@
 <translation id="7658239707568436148">रद्द गर्नुहोस्</translation>
 <translation id="7659861092419699379">डेस्क तथा विन्डोहरू बन्द गरिएका छन्</translation>
 <translation id="7660160718439869192">तपाईंको <ph name="NAME" /> <ph name="EMAIL" /> मा लिंक गरिएका डिभाइसहरूमा देखिने छ</translation>
+<translation id="7661694115779363471">पुछारको बायाँतिर भएको ह्यान्डल चयन गरिएको छ, सार्न एरो कीहरू प्रयोग गर्नुहोस्</translation>
 <translation id="7662283695561029522">कन्फिगर गर्न ट्याप गर्नुहोस्</translation>
 <translation id="7670953955701272011">Google पात्रोमा यो मिति खोल्नुहोस्</translation>
 <translation id="7671610481353807627">एपहरू रङअनुसार क्रमबद्ध गरिन्छन्</translation>
@@ -2205,6 +2213,7 @@
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> को जानकारीको डायलग खोल्नुहोस्</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> प्रयोग गर्दै</translation>
 <translation id="8168435359814927499">सामग्री</translation>
+<translation id="8172370561760918656">सिरानको बायाँतिर भएको ह्यान्डल चयन गरिएको छ, सार्न एरो कीहरू प्रयोग गर्नुहोस्</translation>
 <translation id="81817143961839203">फोटो हाल्न सकिएन</translation>
 <translation id="8185090165691050712">लक मोडको आकार बदल्न मेनु टगल गरी अन/अफ गर्नुहोस्</translation>
 <translation id="8192727139462702395">तपाईंले ब्लुटुथ अफ गर्नुभयो भने तपाईंको <ph name="DEVICE_TYPE" /> बाट यी बाह्य डिभाइसहरू डिस्कनेक्ट हुने छन्:</translation>

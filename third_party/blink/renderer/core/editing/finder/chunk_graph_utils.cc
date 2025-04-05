@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/finder/find_buffer.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 
 namespace blink {
@@ -406,8 +407,10 @@ const CorpusChunk* CorpusChunk::FindNext(const String& level) const {
   }
   wtf_size_t delimiter_index = level.ReverseFind(kLevelDelimiter);
   if (delimiter_index == kNotFound) {
-    // No link for `level`. It means the graph is incorrect.
-    return nullptr;
+    // No link for `level`. We should apply the base level link.
+    return RuntimeEnabledFeatures::FindNestedAnnotationFixEnabled()
+               ? FindNext(String(kBaseLevel))
+               : nullptr;
   }
   return FindNext(level.Substring(0, delimiter_index));
 }

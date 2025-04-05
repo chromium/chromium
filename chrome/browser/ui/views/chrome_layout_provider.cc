@@ -105,8 +105,6 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
       return 4;
     case DISTANCE_CONTENT_LIST_VERTICAL_MULTI:
       return 8;
-    case DISTANCE_CONTROL_LIST_VERTICAL:
-      return 12;
     case DISTANCE_EXTENSIONS_MENU_WIDTH:
       return kMediumDialogWidth;
     case DISTANCE_EXTENSIONS_MENU_BUTTON_ICON_SIZE:
@@ -120,7 +118,7 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
               GetDistanceMetric(DISTANCE_EXTENSIONS_MENU_BUTTON_ICON_SIZE)) /
              2;
     case DISTANCE_EXTENSIONS_MENU_BUTTON_MARGIN:
-      return GetDistanceMetric(DISTANCE_CONTROL_LIST_VERTICAL);
+      return 12;
     case DISTANCE_EXTENSIONS_MENU_LABEL_ICON_SPACING:
       return 4;
     case DISTANCE_RELATED_CONTROL_HORIZONTAL_SMALL:
@@ -141,8 +139,6 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
       return 16;
     case DISTANCE_UNRELATED_CONTROL_VERTICAL_LARGE:
       return 16;
-    case DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE:
-      return 20;
     case DISTANCE_STANDALONE_BUBBLE_PREFERRED_WIDTH:
       return kMediumDialogWidth;
     case DISTANCE_BETWEEN_PRIMARY_AND_SECONDARY_LABELS_HORIZONTAL:

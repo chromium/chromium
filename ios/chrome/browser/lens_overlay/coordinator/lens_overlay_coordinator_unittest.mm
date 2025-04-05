@@ -200,6 +200,8 @@ class LensOverlayCoordinatorTest : public PlatformTest {
  protected:
   web::WebTaskEnvironment task_environment_{
       web::WebTaskEnvironment::IOThreadType::REAL_THREAD};
+  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+      variations::VariationsIdsProvider::Mode::kUseSignedInState};
   base::RunLoop run_loop_;
   FakeSnapshotGeneratorDelegate* delegate_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
@@ -218,8 +220,6 @@ class LensOverlayCoordinatorTest : public PlatformTest {
   id<LoadQueryCommands> load_query_handler_;
   id<LensCommands> lens_commands_handler_;
   id<BrowserCoordinatorCommands> browser_coordinator_commands_handler_;
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
-      variations::VariationsIdsProvider::Mode::kUseSignedInState};
 
   void DeliverMemoryWarningNotification() {
     [[NSNotificationCenter defaultCenter]

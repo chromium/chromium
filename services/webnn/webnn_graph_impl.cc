@@ -83,23 +83,33 @@ WebNNGraphImpl::ComputeResourceInfo::operator=(ComputeResourceInfo&&) = default;
 
 WebNNGraphImpl::ComputeResourceInfo::~ComputeResourceInfo() = default;
 
-WebNNGraphImpl::WebNNGraphImpl(WebNNContextImpl* context,
-                               ComputeResourceInfo compute_resource_info)
+WebNNGraphImpl::WebNNGraphImpl(
+    mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
+    WebNNContextImpl* context,
+    ComputeResourceInfo compute_resource_info)
     : compute_resource_info_(std::move(compute_resource_info)),
-      context_(context) {
+      context_(context),
+      receiver_(this, std::move(receiver)) {
   CHECK(context_);
 #if DCHECK_IS_ON()
   context_->AssertCalledOnValidSequence();
 #endif
+  // Safe to use base::Unretained because `this` owns `receiver_`.
+  receiver_.set_disconnect_handler(base::BindOnce(
+      &WebNNGraphImpl::OnConnectionError, base::Unretained(this)));
 }
 
 WebNNGraphImpl::~WebNNGraphImpl() = default;
+
+void WebNNGraphImpl::OnConnectionError() {
+  context_->DisconnectAndDestroyWebNNGraphImpl(handle());
+}
 
 void WebNNGraphImpl::Dispatch(
     const base::flat_map<std::string, blink::WebNNTensorToken>& named_inputs,
     const base::flat_map<std::string, blink::WebNNTensorToken>& named_outputs) {
   if (!ValidateWebNNTensorsUsage(named_inputs, named_outputs)) {
-    mojo::ReportBadMessage(kBadMessageInvalidTensor);
+    receiver_.ReportBadMessage(kBadMessageInvalidTensor);
     return;
   }
 
@@ -121,7 +131,7 @@ void WebNNGraphImpl::Dispatch(
   if (!ValidateWebNNTensors(
           name_to_input_tensor_map,
           compute_resource_info_.input_names_to_descriptors)) {
-    mojo::ReportBadMessage(kBadMessageInvalidTensor);
+    receiver_.ReportBadMessage(kBadMessageInvalidTensor);
     return;
   }
 
@@ -144,7 +154,7 @@ void WebNNGraphImpl::Dispatch(
   if (!ValidateWebNNTensors(
           name_to_output_tensor_map,
           compute_resource_info_.output_names_to_descriptors)) {
-    mojo::ReportBadMessage(kBadMessageInvalidTensor);
+    receiver_.ReportBadMessage(kBadMessageInvalidTensor);
     return;
   }
 

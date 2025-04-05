@@ -310,8 +310,8 @@ class LineBreakData {
   void FillFromIcu() {
     UErrorCode status = U_ZERO_ERROR;
     const icu::Locale locale("en");
-    icu::BreakIterator* break_iterator =
-        icu::BreakIterator::createLineInstance(locale, status);
+    std::unique_ptr<icu::BreakIterator> break_iterator(
+        icu::BreakIterator::createLineInstance(locale, status));
     CHECK_U_ERROR(status, "createLineInstance");
 
     for (UChar ch = kMinChar; ch <= kMaxChar; ++ch) {

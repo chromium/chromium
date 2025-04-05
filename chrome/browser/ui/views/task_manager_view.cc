@@ -34,6 +34,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/accessibility/platform/ax_platform.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -153,6 +154,13 @@ task_manager::TaskManagerTableModel* TaskManagerView::Show(
   g_task_manager_view->SelectTaskOfActiveTab(browser);
   g_task_manager_view->GetWidget()->Show();
 
+  if (g_task_manager_view->table_config_.layout_refresh &&
+      ui::AXPlatform::GetInstance().IsScreenReaderActive()) {
+    // For a11y: with the refreshed layout, the top-left most item should be
+    // focused by default so screen readers read out the layout ltr (or flipped
+    // for rtl).
+    g_task_manager_view->tabs_->GetSelectedTab()->RequestFocus();
+  }
 #if BUILDFLAG(IS_CHROMEOS)
   aura::Window* window = g_task_manager_view->GetWidget()->GetNativeWindow();
   // An app id for task manager windows, also used to identify the shelf item.

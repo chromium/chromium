@@ -146,7 +146,7 @@ AutofillSaveCardUiInfo AutofillSaveCardUiInfo::CreateForLocalSave(
       break;
     }
     case CardSaveType::kCvcSaveOnly: {
-      save_card_icon_id = IDR_AUTOFILL_CC_GENERIC_PRIMARY;
+      save_card_icon_id = IDR_AUTOFILL_CC_GENERIC_PRIMARY_OLD;
       save_card_prompt_title_id = IDS_AUTOFILL_SAVE_CVC_PROMPT_TITLE_LOCAL;
       description_text = l10n_util::GetStringUTF16(
           IDS_AUTOFILL_SAVE_CVC_PROMPT_EXPLANATION_LOCAL);
@@ -225,7 +225,7 @@ AutofillSaveCardUiInfo AutofillSaveCardUiInfo::CreateForUploadSave(
       break;
     }
     case CardSaveType::kCvcSaveOnly: {
-      save_card_icon_id = IDR_AUTOFILL_CC_GENERIC_PRIMARY;
+      save_card_icon_id = IDR_AUTOFILL_CC_GENERIC_PRIMARY_OLD;
       save_card_prompt_title_id = IDS_AUTOFILL_SAVE_CVC_PROMPT_TITLE_TO_CLOUD;
       description_text = l10n_util::GetStringUTF16(
           IDS_AUTOFILL_SAVE_CVC_PROMPT_EXPLANATION_UPLOAD);

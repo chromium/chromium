@@ -246,6 +246,11 @@ void TestCaptureModeDelegate::SendLensWebRegionSearch(
     ash::OnSearchUrlFetchedCallback search_callback,
     ash::OnTextDetectionComplete text_callback,
     base::OnceCallback<void()> error_callback) {
+  if (force_lens_web_error_) {
+    std::move(error_callback).Run();
+    return;
+  }
+
   std::move(search_callback).Run(GURL("https://lens.google.com/"));
   if (!lens_detected_text_.empty()) {
     std::move(text_callback).Run(lens_detected_text_);

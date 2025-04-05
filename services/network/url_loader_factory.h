@@ -93,6 +93,8 @@ class URLLoaderFactory : public mojom::URLLoaderFactory,
   bool DataUseUpdatesEnabled() override;
   mojom::DeviceBoundSessionAccessObserver* GetDeviceBoundSessionAccessObserver()
       const override;
+  scoped_refptr<RefCountedDeviceBoundSessionAccessObserverRemote>
+  GetDeviceBoundSessionAccessObserverSharedRemote() const override;
 
   // Allows starting a URLLoader with a synchronous URLLoaderClient as an
   // optimization.
@@ -137,7 +139,7 @@ class URLLoaderFactory : public mojom::URLLoaderFactory,
   mojo::Remote<mojom::CookieAccessObserver> cookie_observer_;
   mojo::Remote<mojom::TrustTokenAccessObserver> trust_token_observer_;
   mojo::Remote<mojom::DevToolsObserver> devtools_observer_;
-  mojo::Remote<mojom::DeviceBoundSessionAccessObserver>
+  scoped_refptr<RefCountedDeviceBoundSessionAccessObserverRemote>
       device_bound_session_observer_;
 };
 

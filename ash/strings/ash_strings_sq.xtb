@@ -112,6 +112,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1306549533752902673">APLIKACIONET E REKOMANDUARA</translation>
 <translation id="1310396869741602366">Ndrysho tonin</translation>
 <translation id="1312604459020188865">Fuqia e sinjalit <ph name="SIGNAL_STRENGTH" /></translation>
+<translation id="1314113845887519729">Është zgjedhur doreza e skajit të sipërm; përdor tastet e shigjetave për ta zhvendosur</translation>
 <translation id="1316069254387866896">Shfaq gjithmonë raftin</translation>
 <translation id="132346741904777634">Pamja paraprake e kamerës ka kaluar në këndin e sipërm majtas. Në konflikt me sipërfaqen e sistemit.</translation>
 <translation id="132415371743256095">Mbyll "<ph name="DESK_NAME" />" dhe dritaret</translation>
@@ -186,6 +187,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1557622599341396706">Shfaq emrin e tavolinës së punës</translation>
 <translation id="1569384531973824928">Kjo lejon qasjen për të gjitha aplikacionet dhe uebsajtet që kanë lejen për kamerën dhe mikrofonin. Mund të duhet të rifreskosh faqen e uebit ose të rinisësh aplikacionin.</translation>
 <translation id="1571697193564730395">Aktivizo/çaktivizo modalitetin "Mos shqetëso". <ph name="STATE_TEXT" /></translation>
+<translation id="1574691582236909946">Është zgjedhur doreza e skajit të majtë; përdor tastet e shigjetave për ta zhvendosur</translation>
 <translation id="1576623706766186887">Zvogëlo kur zmadhuesi është aktiv</translation>
 <translation id="1582946770779745370">"Paneli i lojës" është i disponueshëm. Shtyp "<ph name="LAUNCHER_KEY_NAME" />" + Shift + Escape dhe më pas "<ph name="LAUNCHER_KEY_NAME" />" + g në çdo kohë për ta hapur</translation>
 <translation id="1586324912145647027">Shko te tavolina e punës nga 1 deri në 8</translation>
@@ -220,6 +222,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1696984622403682083">Mund ta çaktivizosh këtë veçori në çdo kohë te "Cilësimet". <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910">Kohëmatësi: <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">Adresa IPv6: <ph name="ADDRESS" /></translation>
+<translation id="1700782710852683371">Nuk mund të krijohen imazhe për këtë për momentin. Provo të riformulosh përshkrimin. Ki parasysh se nuk mund të krijosh imazhe të njerëzve, përmbajtje të dëmshme ose të papërshtatshme.</translation>
 <translation id="1703117532528082099">Dritarja aktive u pozicionua në të majtë.</translation>
 <translation id="1708345662127501511">Tavolina e punës: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Cilësimet e rrjetit</translation>
@@ -608,6 +611,7 @@ Në rast të kundërt, blloku i integruar me prekje do të riaktivizohet pas <ph
 <translation id="304097922505898963">Hap aplikacionin "Shkurtoret e tasteve"</translation>
 <translation id="304417730895741346">Aplikacionet e tua të gozhduara dhe të hapura janë te rafti. Për të gozhduar një aplikacion te rafti, kliko me butonin djathtas te një aplikacion ose trokit me dy gishta te blloku me prekje.</translation>
 <translation id="3045488863354895414">Mirëdita,</translation>
+<translation id="3045670165536837541">Është zgjedhur doreza e sipërme djathtas; përdor tastet e shigjetave për ta zhvendosur</translation>
 <translation id="3047761520276763270">Provo të thuash:</translation>
 <translation id="3053407068093039599">Aktivizo/çaktivizo qasjen te kamera</translation>
 <translation id="3055162170959710888">Sot e ke përdorur këtë pajisje për <ph name="USED_TIME" /></translation>
@@ -1763,6 +1767,7 @@ Instalim i ri</translation>
 <translation id="6696025732084565524">Tastiera jote e shkëputshme ka nevojë për një përditësim me rëndësi</translation>
 <translation id="6697913454192220372">Shto një tavolinë të re pune</translation>
 <translation id="6700713906295497288">Butoni i menysë IME</translation>
+<translation id="6704073473590541209">Është zgjedhur doreza e skajit të djathtë; përdor tastet e shigjetave për ta zhvendosur</translation>
 <translation id="6706742084323792866">Gozhdo tastierën</translation>
 <translation id="6710213216561001401">Prapa</translation>
 <translation id="6723839937902243910">Energjia</translation>
@@ -1786,6 +1791,7 @@ Instalim i ri</translation>
 <translation id="6781002679438061620">Tavolina e punës 9</translation>
 <translation id="6782182743534150858">Tavolina e punës 13</translation>
 <translation id="6782919488259222803">Kërko në faqen aktuale</translation>
+<translation id="6783348167101855071">Është zgjedhur doreza e poshtme djathtas; përdor tastet e shigjetave për ta zhvendosur</translation>
 <translation id="6786750046913594791">Mbyll dosjen</translation>
 <translation id="6790428901817661496">Luaj</translation>
 <translation id="6792262051831399889">Nuk ofrohet</translation>
@@ -1941,6 +1947,7 @@ Instalim i ri</translation>
 <translation id="7371404428569700291">Regjistro dritaren</translation>
 <translation id="7372069265635026568">Memoria: <ph name="AVAILABLE_MEMORY" /> në dispozicion nga <ph name="TOTAL_MEMORY" /> në total</translation>
 <translation id="737315737514430195">Kjo lejon qasjen te mikrofoni për të gjitha aplikacionet dhe uebsajtet me lejen e mikrofonit</translation>
+<translation id="7376933029363911338">Është zgjedhur doreza e skajit të poshtëm; përdor tastet e shigjetave për ta zhvendosur</translation>
 <translation id="7377169924702866686">Kyçja e kapitaleve është aktive.</translation>
 <translation id="7377481913241237033">Lidhu me një kod</translation>
 <translation id="7378203170292176219">Zvarrite për të zgjedhur një zonë për të regjistruar</translation>
@@ -2037,6 +2044,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="7658239707568436148">Anulo</translation>
 <translation id="7659861092419699379">Tavolina e punës dhe dritaret janë mbyllur</translation>
 <translation id="7660160718439869192"><ph name="NAME" /> do të shfaqet në pajisjet e lidhura me <ph name="EMAIL" /></translation>
+<translation id="7661694115779363471">Është zgjedhur doreza e poshtme majtas; përdor tastet e shigjetave për ta zhvendosur</translation>
 <translation id="7662283695561029522">Trokit për të konfiguruar</translation>
 <translation id="7670953955701272011">Hape këtë datë në "Kalendarin e Google"</translation>
 <translation id="7671610481353807627">Aplikacionet janë renditur sipas ngjyrës</translation>
@@ -2205,6 +2213,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="8155628902202578800">Hap dialogun e informacioneve për <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Po përdor <ph name="LOCALE_NAME" /></translation>
 <translation id="8168435359814927499">Përmbajtja</translation>
+<translation id="8172370561760918656">Është zgjedhur doreza e sipërme majtas; përdor tastet e shigjetave për ta zhvendosur</translation>
 <translation id="81817143961839203">Futja e imazhit dështoi</translation>
 <translation id="8185090165691050712">Aktivizo/çaktivizo menynë për të ndryshuar përmasat e modalitetit të kyçjes</translation>
 <translation id="8192727139462702395">Kur të çaktivizosh Bluetooth-in, këto pajisje të jashtme do të shkëputen nga <ph name="DEVICE_TYPE" />:</translation>

@@ -192,9 +192,12 @@ export class SettingsDevicePageElement extends SettingsDevicePageElementBase {
   private browserProxy_: DevicePageBrowserProxy;
   private hasMouse_: boolean;
   private hasPointingStick_: boolean;
+  private hasStylus_: boolean;
   private hasTouchpad_: boolean;
   private hasHapticTouchpad_: boolean;
+  private inputMethodDisplayName_: string;
   private isDeviceSettingsSplitEnabled_: boolean;
+  private isExternalStorageEnabled_: boolean;
   private isPeripheralCustomizationEnabled: boolean;
   private pointingStickSettingsObserverReceiver:
       PointingStickSettingsObserverReceiver;

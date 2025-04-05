@@ -1535,17 +1535,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram base="true" name="Power.Mac" units="mW" expires_after="2025-09-14">
-  <owner>olivierli@chromium.org</owner>
-  <owner>markchang@chromium.org</owner>
-  <summary>
-    Instantaneous power consution in milliwatts, for the system as a whole and
-    broken down by component. Only recorded on macOS. Only valid on Intel based
-    systems. NB: The collection method was changed in May 2019, which may look
-    like a regression in timeline view.
-  </summary>
-</histogram>
-
 <histogram name="Power.Mac.ThermalState" enum="MacThermalState"
     expires_after="2023-11-30">
   <owner>lgrey@chromium.org</owner>
@@ -1554,6 +1543,32 @@ chromium-metrics-reviews@google.com.
     Thermal state of the user's machine as reported by macOS's [NSProcessInfo
     thermalState]. Sampled once per minute.
   </summary>
+</histogram>
+
+<histogram name="Power.Mac{PowerConsumptionSources}" units="mW"
+    expires_after="2025-09-14">
+  <owner>olivierli@chromium.org</owner>
+  <owner>markchang@chromium.org</owner>
+  <summary>
+    Instantaneous power consution in milliwatts, for the system as a whole and
+    broken down by component. Only recorded on macOS. Only valid on Intel based
+    systems. NB: The collection method was changed in May 2019, which may look
+    like a regression in timeline view. {PowerConsumptionSources}
+  </summary>
+  <token key="PowerConsumptionSources">
+    <variant name=".CPU" summary="Instantaneous power used by the CPU."/>
+    <variant name=".GPU0"
+        summary="Instantaneous power used by the first dedicated GPU, if any."/>
+    <variant name=".GPU1"
+        summary="Instantaneous power used by the second dedicated GPU, if
+                 any."/>
+    <variant name=".GPUi"
+        summary="Instantaneous power used by the integrated GPU, if any."/>
+    <variant name=".Total"
+        summary="Instantaneous power used by the whole system. May be less
+                 useful than other power metrics because it includes
+                 peripherals like the display backlight."/>
+  </token>
 </histogram>
 
 <histogram name="Power.PC10inS0ixRuntimeResidencyRate" units="%"

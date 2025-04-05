@@ -88,36 +88,30 @@ import java.util.List;
 
         @KeyboardFocusRow int oldKeyboardFocusRow = getKeyboardFocusRow();
         @KeyboardFocusRow int newKeyboardFocusRow = getNewKeyboardFocusRow(oldKeyboardFocusRow);
-        // Inform strip about keyboard focus state. Unlike the other requestFocus methods, this
-        // needs to be called in all scenarios because we need to manually reset keyboard focus on
-        // the virtual views if the strip is being blurred.
-        var stripLayoutHelperManager = mStripLayoutHelperManagerSupplier.get();
-        // TODO(crbug.com/360423850): Implement.
-        if (stripLayoutHelperManager != null) {
-            // stripLayoutHelperManager.requestKeyboardFocusState(
-            //     newKeyboardFocusRow == KeyboardFocusRow.TAB_STRIP);
-        }
-
         switch (newKeyboardFocusRow) {
             case KeyboardFocusRow.NONE -> {
-                // mCompositorViewHolderSupplier.get().setFocusOnFirstContentViewItem();
+                mCompositorViewHolderSupplier.get().setFocusOnFirstContentViewItem();
+            }
+            case KeyboardFocusRow.TAB_STRIP -> {
+                var stripLayoutHelperManager = mStripLayoutHelperManagerSupplier.get();
+                if (stripLayoutHelperManager != null) {
+                    stripLayoutHelperManager.requestKeyboardFocus();
+                }
             }
             case KeyboardFocusRow.TOOLBAR -> {
                 var toolbarManager = mToolbarManagerSupplier.get();
                 if (toolbarManager != null) toolbarManager.requestFocus();
             }
             case KeyboardFocusRow.BOOKMARKS_BAR -> {
-                // var bookmarkBarCoordinator = mBookmarkBarCoordinatorSupplier.get();
-                // if (bookmarkBarCoordinator != null) bookmarkBarCoordinator.requestFocus();
+                var bookmarkBarCoordinator = mBookmarkBarCoordinatorSupplier.get();
+                if (bookmarkBarCoordinator != null) bookmarkBarCoordinator.requestFocus();
             }
-                // case KeyboardFocusRow.TAB_STRIP is already handled above.
         }
     }
 
     private @KeyboardFocusRow int getKeyboardFocusRow() {
         var stripLayoutHelperManager = mStripLayoutHelperManagerSupplier.get();
-        if (stripLayoutHelperManager
-                != null /* && stripLayoutHelperManager.containsKeyboardFocus() */) {
+        if (stripLayoutHelperManager != null && stripLayoutHelperManager.containsKeyboardFocus()) {
             return KeyboardFocusRow.TAB_STRIP;
         }
 
@@ -127,7 +121,7 @@ import java.util.List;
         }
 
         var bookmarkBarCoordinator = mBookmarkBarCoordinatorSupplier.get();
-        if (bookmarkBarCoordinator != null /* && bookmarkBarCoordinator.hasKeyboardFocus() */) {
+        if (bookmarkBarCoordinator != null && bookmarkBarCoordinator.hasKeyboardFocus()) {
             return KeyboardFocusRow.BOOKMARKS_BAR;
         }
 

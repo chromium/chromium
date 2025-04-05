@@ -116,7 +116,8 @@ class GraphBuilderTflite final {
     TensorInfo(int32_t index,
                ::tflite::TensorType data_type,
                base::span<const int32_t> dimensions,
-               std::optional<std::string> name = std::nullopt);
+               std::optional<std::string> name = std::nullopt,
+               bool has_quantize_params = false);
     ~TensorInfo();
 
     // Copyable and movable.
@@ -129,6 +130,7 @@ class GraphBuilderTflite final {
     ::tflite::TensorType data_type;
     std::vector<int32_t> dimensions;
     std::optional<std::string> name;
+    bool has_quantize_params;
   };
 
   // Serialize tensor for input, constant and output operand and return the
@@ -192,8 +194,10 @@ class GraphBuilderTflite final {
 
   // Serializes temporary tensor for casting the data type of input operand or
   // decomposing WebNN operation that isn't supported in TFLite schema.
-  int32_t SerializeTemporaryTensor(base::span<const int32_t> dimensions,
-                                   ::tflite::TensorType tensor_type);
+  int32_t SerializeTemporaryTensor(
+      base::span<const int32_t> dimensions,
+      ::tflite::TensorType tensor_type,
+      QuantizateParametersOffset quantize_params = 0);
 
   uint32_t GetOperatorCodeIndex(::tflite::BuiltinOperator code,
                                 int32_t version = 1);

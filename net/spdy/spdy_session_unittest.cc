@@ -108,12 +108,15 @@ base::TimeTicks InstantaneousReads() {
   return g_time_now;
 }
 
-class MockRequireCTDelegate : public TransportSecurityState::RequireCTDelegate {
+class MockRequireCTDelegate : public RequireCTDelegate {
  public:
-  MOCK_METHOD3(IsCTRequiredForHost,
-               CTRequirementLevel(std::string_view host,
-                                  const X509Certificate* chain,
-                                  const HashValueVector& hashes));
+  MOCK_CONST_METHOD3(IsCTRequiredForHost,
+                     CTRequirementLevel(std::string_view host,
+                                        const X509Certificate* chain,
+                                        const HashValueVector& hashes));
+
+ protected:
+  ~MockRequireCTDelegate() override = default;
 };
 
 // SpdySessionRequest::Delegate implementation that does nothing. The test it's
@@ -6250,8 +6253,7 @@ TEST(CanPoolTest, CanNotPoolWithBadPins) {
 
 TEST(CanPoolTest, CanNotPoolWithBadCTWhenCTRequired) {
   using testing::Return;
-  using CTRequirementLevel =
-      TransportSecurityState::RequireCTDelegate::CTRequirementLevel;
+  using CTRequirementLevel = net::RequireCTDelegate::CTRequirementLevel;
 
   TestSSLConfigService ssl_config_service;
   SSLInfo ssl_info;
@@ -6262,15 +6264,17 @@ TEST(CanPoolTest, CanNotPoolWithBadCTWhenCTRequired) {
   ssl_info.ct_policy_compliance =
       ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS;
 
-  MockRequireCTDelegate require_ct_delegate;
-  EXPECT_CALL(require_ct_delegate, IsCTRequiredForHost("www.example.org", _, _))
+  scoped_refptr<MockRequireCTDelegate> require_ct_delegate =
+      base::MakeRefCounted<MockRequireCTDelegate>();
+  EXPECT_CALL(*require_ct_delegate,
+              IsCTRequiredForHost("www.example.org", _, _))
       .WillRepeatedly(Return(CTRequirementLevel::NOT_REQUIRED));
-  EXPECT_CALL(require_ct_delegate,
+  EXPECT_CALL(*require_ct_delegate,
               IsCTRequiredForHost("mail.example.org", _, _))
       .WillRepeatedly(Return(CTRequirementLevel::REQUIRED));
 
   TransportSecurityState tss;
-  tss.SetRequireCTDelegate(&require_ct_delegate);
+  tss.SetRequireCTDelegate(require_ct_delegate);
 
   EXPECT_FALSE(SpdySession::CanPool(&tss, ssl_info, ssl_config_service,
                                     "www.example.org", "mail.example.org"));
@@ -6278,8 +6282,7 @@ TEST(CanPoolTest, CanNotPoolWithBadCTWhenCTRequired) {
 
 TEST(CanPoolTest, CanPoolWithBadCTWhenCTNotRequired) {
   using testing::Return;
-  using CTRequirementLevel =
-      TransportSecurityState::RequireCTDelegate::CTRequirementLevel;
+  using CTRequirementLevel = net::RequireCTDelegate::CTRequirementLevel;
 
   TestSSLConfigService ssl_config_service;
   SSLInfo ssl_info;
@@ -6290,15 +6293,17 @@ TEST(CanPoolTest, CanPoolWithBadCTWhenCTNotRequired) {
   ssl_info.ct_policy_compliance =
       ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS;
 
-  MockRequireCTDelegate require_ct_delegate;
-  EXPECT_CALL(require_ct_delegate, IsCTRequiredForHost("www.example.org", _, _))
+  scoped_refptr<MockRequireCTDelegate> require_ct_delegate =
+      base::MakeRefCounted<MockRequireCTDelegate>();
+  EXPECT_CALL(*require_ct_delegate,
+              IsCTRequiredForHost("www.example.org", _, _))
       .WillRepeatedly(Return(CTRequirementLevel::NOT_REQUIRED));
-  EXPECT_CALL(require_ct_delegate,
+  EXPECT_CALL(*require_ct_delegate,
               IsCTRequiredForHost("mail.example.org", _, _))
       .WillRepeatedly(Return(CTRequirementLevel::NOT_REQUIRED));
 
   TransportSecurityState tss;
-  tss.SetRequireCTDelegate(&require_ct_delegate);
+  tss.SetRequireCTDelegate(require_ct_delegate);
 
   EXPECT_TRUE(SpdySession::CanPool(&tss, ssl_info, ssl_config_service,
                                    "www.example.org", "mail.example.org"));
@@ -6306,8 +6311,7 @@ TEST(CanPoolTest, CanPoolWithBadCTWhenCTNotRequired) {
 
 TEST(CanPoolTest, CanPoolWithGoodCTWhenCTRequired) {
   using testing::Return;
-  using CTRequirementLevel =
-      TransportSecurityState::RequireCTDelegate::CTRequirementLevel;
+  using CTRequirementLevel = net::RequireCTDelegate::CTRequirementLevel;
 
   TestSSLConfigService ssl_config_service;
   SSLInfo ssl_info;
@@ -6318,15 +6322,17 @@ TEST(CanPoolTest, CanPoolWithGoodCTWhenCTRequired) {
   ssl_info.ct_policy_compliance =
       ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS;
 
-  MockRequireCTDelegate require_ct_delegate;
-  EXPECT_CALL(require_ct_delegate, IsCTRequiredForHost("www.example.org", _, _))
+  scoped_refptr<MockRequireCTDelegate> require_ct_delegate =
+      base::MakeRefCounted<MockRequireCTDelegate>();
+  EXPECT_CALL(*require_ct_delegate,
+              IsCTRequiredForHost("www.example.org", _, _))
       .WillRepeatedly(Return(CTRequirementLevel::NOT_REQUIRED));
-  EXPECT_CALL(require_ct_delegate,
+  EXPECT_CALL(*require_ct_delegate,
               IsCTRequiredForHost("mail.example.org", _, _))
       .WillRepeatedly(Return(CTRequirementLevel::REQUIRED));
 
   TransportSecurityState tss;
-  tss.SetRequireCTDelegate(&require_ct_delegate);
+  tss.SetRequireCTDelegate(require_ct_delegate);
 
   EXPECT_TRUE(SpdySession::CanPool(&tss, ssl_info, ssl_config_service,
                                    "www.example.org", "mail.example.org"));

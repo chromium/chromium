@@ -7,7 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ntp/ui_bundled/feed_management/feed_management_navigation_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_mutator.h"
 
 namespace regional_capabilities {
@@ -39,8 +38,7 @@ class UrlLoadingBrowserAgent;
 
 // Mediator for the NTP Home panel, handling the interactions with the
 // suggestions.
-@interface NewTabPageMediator
-    : NSObject <FeedManagementNavigationDelegate, NewTabPageMutator>
+@interface NewTabPageMediator : NSObject <NewTabPageMutator>
 
 - (instancetype)
      initWithTemplateURLService:(TemplateURLService*)templateURLService
@@ -86,10 +84,6 @@ class UrlLoadingBrowserAgent;
 
 // Restores the current state of the NTP.
 - (void)restoreNTPStateForWebState:(web::WebState*)webState;
-
-// Handles the actions following a tap on the "Learn More" item in the Discover
-// feed menu.
-- (void)handleFeedLearnMoreTapped;
 
 @end
 

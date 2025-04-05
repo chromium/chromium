@@ -40,7 +40,6 @@ build_webui("build") {
     "tools.css",
   ]
 
-  ts_tsconfig_base = "//tools/typescript/tsconfig_base_lit_legacy.json"
   ts_deps = [
     "//third_party/lit/v3_0:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",

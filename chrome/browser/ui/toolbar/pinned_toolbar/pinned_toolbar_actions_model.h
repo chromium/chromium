@@ -37,17 +37,17 @@ class PinnedToolbarActionsModel : public KeyedService {
     // Signals that `id` has been added to the model. This will
     // *only* be called after the model has been initialized. N.B. Direct pref
     // updates which happen to add an action WILL NOT call this method.
-    virtual void OnActionAddedLocally(const actions::ActionId& id) {}
+    virtual void OnActionAddedLocally(actions::ActionId id) {}
 
     // Signals that the given action with `id` has been removed from the
     // model. N.B. Direct pref updates which happen to remove an action WILL NOT
     // call this method.
-    virtual void OnActionRemovedLocally(const actions::ActionId& id) {}
+    virtual void OnActionRemovedLocally(actions::ActionId id) {}
 
     // Signals that the given action with `id` has been moved in the model.
     // N.B. Direct pref updates which happen to move an action WILL NOT call
     // this method.
-    virtual void OnActionMovedLocally(const actions::ActionId& id,
+    virtual void OnActionMovedLocally(actions::ActionId id,
                                       int from_index,
                                       int to_index) {}
 
@@ -70,17 +70,17 @@ class PinnedToolbarActionsModel : public KeyedService {
   bool CanUpdate();
 
   // Returns true if `action_id` is in the toolbar model.
-  bool Contains(const actions::ActionId& action_id) const;
+  bool Contains(actions::ActionId action_id) const;
 
   // Move the pinned action for |action_id| to |target_index|.
-  void MovePinnedAction(const actions::ActionId& action_id, int target_index);
+  void MovePinnedAction(actions::ActionId action_id, int target_index);
 
   // Updates the Action state of `action_id`.
   // 1) Adds `action_id` to the model if `should_pin` is true and the id does
   // not exist in the model.
   // 2) Removes `action_id` from the model if
   // `should_pin` is false and the id exists in the model.
-  virtual void UpdatePinnedState(const actions::ActionId& action_id,
+  virtual void UpdatePinnedState(actions::ActionId action_id,
                                  const bool should_pin);
 
   // Resets the pinned actions to default. NOTE: This also affects the home and
@@ -101,10 +101,10 @@ class PinnedToolbarActionsModel : public KeyedService {
 
  private:
   // Adds the `action_id` to the kPinnedActions pref.
-  void PinAction(const actions::ActionId& action_id);
+  void PinAction(actions::ActionId action_id);
 
   // Removes the `action_id` from the kPinnedActions pref.
-  void UnpinAction(const actions::ActionId& action_id);
+  void UnpinAction(actions::ActionId action_id);
 
   // Called when the kPinnedActions pref is changed. |pinned_action_ids_| is
   // replaced with the entries in the kPinnedActions pref object. Should

@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.chrome.browser.toolbar.ToolbarTabController;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
+import org.chromium.chrome.browser.toolbar.back_button.BackButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.reload_button.ReloadButtonCoordinator;
@@ -99,6 +100,7 @@ public class TopToolbarCoordinator implements Toolbar {
 
     private MenuButtonCoordinator mMenuButtonCoordinator;
     private @Nullable ReloadButtonCoordinator mReloadButtonCoordinator;
+    private @Nullable final BackButtonCoordinator mBackButtonCoordinator;
     private ObservableSupplier<AppMenuButtonHelper> mAppMenuButtonHelperSupplier;
     private ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
 
@@ -191,10 +193,12 @@ public class TopToolbarCoordinator implements Toolbar {
             OneshotSupplier<TabStripTransitionDelegate> tabStripTransitionDelegateSupplier,
             @Nullable OnLongClickListener onLongClickListener,
             ToolbarProgressBar progressBar,
-            ObservableSupplier<Tab> tabSupplier) {
-        mControlContainer = controlContainer;
+            ObservableSupplier<Tab> tabSupplier,
+            @Nullable BackButtonCoordinator backButtonCoordinator) {
         mToolbarLayout = toolbarLayout;
         mMenuButtonCoordinator = browsingModeMenuButtonCoordinator;
+        mControlContainer = controlContainer;
+        mBackButtonCoordinator = backButtonCoordinator;
         mOptionalButtonController =
                 new OptionalBrowsingModeButtonController(
                         buttonDataProviders,
@@ -252,7 +256,8 @@ public class TopToolbarCoordinator implements Toolbar {
                 userEducationHelper,
                 mTrackerSupplier,
                 progressBar,
-                mReloadButtonCoordinator);
+                mReloadButtonCoordinator,
+                mBackButtonCoordinator);
         mToolbarLayout.setThemeColorProvider(normalThemeColorProvider);
         mAppMenuButtonHelperSupplier = appMenuButtonHelperSupplier;
         new OneShotCallback<>(mAppMenuButtonHelperSupplier, this::setAppMenuButtonHelper);

@@ -29,6 +29,8 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/new_tab_page_commands.h"
 #import "ios/public/provider/chrome/browser/signin/choice_api.h"
 
 namespace first_run {
@@ -140,6 +142,11 @@ class FirstRunCoordinatorMetricsHelper final {
                                   first_run::kComplete);
     WriteFirstRunSentinel();
     [self.delegate didFinishFirstRun];
+
+    // Present feed swipe IPH.
+    [HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                        NewTabPageCommands) presentFeedSwipeFirstRunBubble];
+
     return;
   }
   self.childCoordinator = [self createChildCoordinatorWithScreenType:type];

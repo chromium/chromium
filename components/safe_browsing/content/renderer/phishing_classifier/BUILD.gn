@@ -8,8 +8,8 @@ import("//components/safe_browsing/buildflags.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
 
-source_set("phishing_classifier") {
-  if (safe_browsing_mode != 0) {
+if (safe_browsing_mode != 0) {
+  source_set("phishing_classifier") {
     sources = [
       "features.cc",
       "features.h",
@@ -68,65 +68,64 @@ source_set("phishing_classifier") {
       "//v8",
     ]
   }
-}
 
-source_set("unit_tests") {
-  testonly = true
-  sources = [
-    "features_unittest.cc",
-    "murmurhash3_util_unittest.cc",
-    "phishing_term_feature_extractor_unittest.cc",
-    "phishing_url_feature_extractor_unittest.cc",
-    "scorer_unittest.cc",
-  ]
-  deps = [
-    ":phishing_classifier",
-    "//base:base",
-    "//base/test:test_support",
-    "//components/safe_browsing/content/renderer/phishing_classifier:unit_tests_support",
-    "//components/safe_browsing/core/common/fbs:client_model",
-    "//components/safe_browsing/core/common/proto:client_model_proto",
-    "//components/safe_browsing/core/common/proto:csd_proto",
-    "//crypto",
-    "//skia",
-    "//testing/gmock",
-    "//testing/gtest",
-    "//url",
-  ]
-}
-
-source_set("unit_tests_support") {
-  testonly = true
-  sources = [
-    "test_utils.cc",
-    "test_utils.h",
-  ]
-  deps = [
-    ":phishing_classifier",
-    "//testing/gmock",
-  ]
-}
-
-if (use_fuzzing_engine_with_lpm) {
-  fuzzer_test("client_side_phishing_fuzzer") {
-    sources = [ "client_side_phishing_fuzzer.cc" ]
+  source_set("unit_tests") {
+    testonly = true
+    sources = [
+      "features_unittest.cc",
+      "murmurhash3_util_unittest.cc",
+      "phishing_term_feature_extractor_unittest.cc",
+      "phishing_url_feature_extractor_unittest.cc",
+      "scorer_unittest.cc",
+    ]
     deps = [
-      ":client_side_phishing_fuzzer_proto",
       ":phishing_classifier",
       "//base:base",
+      "//base/test:test_support",
+      "//components/safe_browsing/content/renderer/phishing_classifier:unit_tests_support",
       "//components/safe_browsing/core/common/fbs:client_model",
       "//components/safe_browsing/core/common/proto:client_model_proto",
+      "//components/safe_browsing/core/common/proto:csd_proto",
+      "//crypto",
       "//skia",
-      "//third_party/libprotobuf-mutator",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//url",
     ]
-    if (safe_browsing_mode != 0) {
-      deps += [ "//components/safe_browsing/content/browser:client_side_detection_service" ]
-    }
   }
 
-  fuzzable_proto_library("client_side_phishing_fuzzer_proto") {
-    proto_in_dir = "//"
-    sources = [ "client_side_phishing_fuzzer.proto" ]
-    deps = [ "//components/safe_browsing/core/common/proto:client_model_proto" ]
+  source_set("unit_tests_support") {
+    testonly = true
+    sources = [
+      "test_utils.cc",
+      "test_utils.h",
+    ]
+    deps = [
+      ":phishing_classifier",
+      "//testing/gmock",
+    ]
+  }
+
+  if (use_fuzzing_engine_with_lpm) {
+    fuzzer_test("client_side_phishing_fuzzer") {
+      sources = [ "client_side_phishing_fuzzer.cc" ]
+      deps = [
+        ":client_side_phishing_fuzzer_proto",
+        ":phishing_classifier",
+        "//base:base",
+        "//components/safe_browsing/core/common/fbs:client_model",
+        "//components/safe_browsing/core/common/proto:client_model_proto",
+        "//skia",
+        "//third_party/libprotobuf-mutator",
+      ]
+      deps += [ "//components/safe_browsing/content/browser:client_side_detection_service" ]
+    }
+
+    fuzzable_proto_library("client_side_phishing_fuzzer_proto") {
+      proto_in_dir = "//"
+      sources = [ "client_side_phishing_fuzzer.proto" ]
+      deps =
+          [ "//components/safe_browsing/core/common/proto:client_model_proto" ]
+    }
   }
 }

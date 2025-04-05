@@ -302,7 +302,8 @@ class MagicStackRankingModelTest : public PlatformTest {
                      prefService:GetProfile()->GetPrefs()
                  identityManager:identityManager
                          browser:browser_.get()
-        optimizationGuideService:nil];
+        optimizationGuideService:nil
+          impressionLimitService:nil];
     favicon::LargeIconService* large_icon_service =
         IOSChromeLargeIconServiceFactory::GetForProfile(GetProfile());
     LargeIconCache* cache =

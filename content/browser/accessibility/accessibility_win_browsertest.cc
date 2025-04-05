@@ -6138,12 +6138,6 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinUIABrowserTest,
 class AccessibilityWinUIASelectivelyEnabledBrowserTest
     : public AccessibilityWinUIABrowserTest {
  protected:
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kSelectiveUIAEnablement);
-
-    AccessibilityWinUIABrowserTest::SetUp();
-  }
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

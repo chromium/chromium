@@ -17,11 +17,14 @@
               "builder_group": "chromium.android",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_android_config": {
-                "config": "x64_builder_mb"
+                "config": "base_config"
               },
               "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
                 "build_config": "Debug",
-                "config": "x64_builder_mb",
+                "config": "main_builder",
                 "target_arch": "intel",
                 "target_bits": 64,
                 "target_platform": "android"
@@ -45,11 +48,14 @@
               "builder_group": "chromium.android.fyi",
               "execution_mode": "TEST",
               "legacy_android_config": {
-                "config": "x64_builder_mb"
+                "config": "base_config"
               },
               "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
                 "build_config": "Debug",
-                "config": "x64_builder_mb",
+                "config": "main_builder",
                 "target_arch": "intel",
                 "target_bits": 64,
                 "target_platform": "android"
@@ -78,14 +84,15 @@
               "builder_group": "chromium.android",
               "execution_mode": "TEST",
               "legacy_android_config": {
-                "config": "x64_builder_mb"
+                "config": "base_config"
               },
               "legacy_chromium_config": {
                 "apply_configs": [
+                  "mb",
                   "download_xr_test_apks"
                 ],
                 "build_config": "Debug",
-                "config": "x64_builder_mb",
+                "config": "main_builder",
                 "target_arch": "intel",
                 "target_bits": 64,
                 "target_platform": "android"
@@ -114,14 +121,15 @@
               "builder_group": "chromium.android",
               "execution_mode": "TEST",
               "legacy_android_config": {
-                "config": "x64_builder_mb"
+                "config": "base_config"
               },
               "legacy_chromium_config": {
                 "apply_configs": [
+                  "mb",
                   "download_xr_test_apks"
                 ],
                 "build_config": "Debug",
-                "config": "x64_builder_mb",
+                "config": "main_builder",
                 "target_arch": "intel",
                 "target_bits": 64,
                 "target_platform": "android"
@@ -150,11 +158,14 @@
               "builder_group": "chromium.android",
               "execution_mode": "TEST",
               "legacy_android_config": {
-                "config": "x64_builder_mb"
+                "config": "base_config"
               },
               "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
                 "build_config": "Debug",
-                "config": "x64_builder_mb",
+                "config": "main_builder",
                 "target_arch": "intel",
                 "target_bits": 64,
                 "target_platform": "android"
@@ -183,11 +194,14 @@
               "builder_group": "chromium.android",
               "execution_mode": "TEST",
               "legacy_android_config": {
-                "config": "x64_builder_mb"
+                "config": "base_config"
               },
               "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
                 "build_config": "Debug",
-                "config": "x64_builder_mb",
+                "config": "main_builder",
                 "target_arch": "intel",
                 "target_bits": 64,
                 "target_platform": "android"
@@ -216,11 +230,14 @@
               "builder_group": "chromium.android.fyi",
               "execution_mode": "TEST",
               "legacy_android_config": {
-                "config": "x64_builder_mb"
+                "config": "base_config"
               },
               "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
                 "build_config": "Debug",
-                "config": "x64_builder_mb",
+                "config": "main_builder",
                 "target_arch": "intel",
                 "target_bits": 64,
                 "target_platform": "android"
@@ -249,11 +266,14 @@
               "builder_group": "chromium.android.fyi",
               "execution_mode": "TEST",
               "legacy_android_config": {
-                "config": "x64_builder_mb"
+                "config": "base_config"
               },
               "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
                 "build_config": "Debug",
-                "config": "x64_builder_mb",
+                "config": "main_builder",
                 "target_arch": "intel",
                 "target_bits": 64,
                 "target_platform": "android"

@@ -394,6 +394,7 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   void HandleExpandedStateChanged(int32_t root_id);
   void AnnounceLiveRegionText(const std::u16string& text);
   void HandleTextContentChanged(int32_t unique_id);
+  void HandleActiveDescendantChanged(int32_t unique_id);
   void HandleTextSelectionChanged(int32_t unique_id);
   void HandleEditableTextChanged(int32_t unique_id);
   void HandleImageAnnotationChanged(int32_t unique_id);

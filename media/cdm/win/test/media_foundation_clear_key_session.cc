@@ -46,6 +46,9 @@ MF_MEDIAKEY_STATUS ToMFKeyStatus(media::CdmKeyInformation::KeyStatus status) {
       return MF_MEDIAKEY_STATUS_RELEASED;
     case media::CdmKeyInformation::KeyStatus::OUTPUT_RESTRICTED:
       return MF_MEDIAKEY_STATUS_OUTPUT_RESTRICTED;
+    case media::CdmKeyInformation::KeyStatus::USABLE_IN_FUTURE:
+      // Not used by MediaFoundationClearKey, return status expired for now.
+      return MF_MEDIAKEY_STATUS_EXPIRED;
   }
 }
 

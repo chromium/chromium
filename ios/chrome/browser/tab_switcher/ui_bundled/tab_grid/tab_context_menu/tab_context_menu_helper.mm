@@ -337,8 +337,7 @@ using tab_groups::SharingState;
   BOOL isSharedTabGroupSupported =
       shareKitService && shareKitService->IsSupported();
 
-  if (tab_groups::utils::IsTabGroupShared(group, tabGroupSyncService,
-                                          shareKitService)) {
+  if (tab_groups::utils::IsTabGroupShared(group, tabGroupSyncService)) {
     collaboration::CollaborationService* collaborationService =
         collaboration::CollaborationServiceFactory::GetForProfile(_profile);
     data_sharing::MemberRole userRole = tab_groups::utils::GetUserRoleForGroup(

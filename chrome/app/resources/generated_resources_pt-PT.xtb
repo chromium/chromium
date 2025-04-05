@@ -1251,8 +1251,8 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="185111092974636561"><ph name="BEGIN_PARAGRAPH1" />Antes de se inscrever, tem de limpar o TPM para que o <ph name="DEVICE_OS" /> possa assumir a propriedade do dispositivo.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Também pode desativar completamente o dispositivo TPM. Os seus dados vão continuar a ser armazenados em segurança com encriptação de software, mas determinadas funcionalidades de segurança, como certificados suportados por hardware, vão ser desativadas.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Pode alterar as definições do TPM ao reiniciar e introduzir as definições do sistema BIOS/UEFI. Os passos variam consoante o modelo do dispositivo. Para mais informações, abra a documentação do <ph name="DEVICE_OS" /> num dispositivo separado antes de reiniciar: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="1851551847729706116">A partilhar <ph name="TAB_NAME" /> com este separador</translation>
 <translation id="1852799913675865625">Ocorreu um erro ao tentar ler o ficheiro: <ph name="ERROR_TEXT" /></translation>
-<translation id="1854049213067042715">Continue a partir de onde parou. Pode definir as apps para serem sempre restauradas no arranque ou desativar o restauro nas Definições.</translation>
 <translation id="1854180393107901205">Parar de transmitir</translation>
 <translation id="1856715684130786728">Adicionar localização...</translation>
 <translation id="185766080319917408">A tecla do Launcher está localizada à esquerda da tecla Alt do lado esquerdo</translation>
@@ -1641,6 +1641,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2121825465123208577">Redimensionar</translation>
 <translation id="2123766928840368256">Selecionar um ficheiro diferente</translation>
 <translation id="2124930039827422115">{1,plural, =1{Classificação de <ph name="AVERAGE_RATING" /> por um utilizador.}other{Classificação de <ph name="AVERAGE_RATING" /> por # utilizadores.}}</translation>
+<translation id="2125715366913703594">Explorar &amp;extensões</translation>
 <translation id="2126167708562367080">A sincronização foi desativada pelo gestor.</translation>
 <translation id="2127372758936585790">Carregador de baixo consumo</translation>
 <translation id="212862741129535676">Percentagem de ocupação no estado de frequência</translation>
@@ -2628,7 +2629,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2790112944253231361">Alterou este separador</translation>
 <translation id="2790750268015892264">As apps Web isoladas não podem controlar leitores de cartões inteligentes. As apps não vão ter acesso a nenhum cartão inteligente.</translation>
 <translation id="2791529110887957050">Remover Linux</translation>
-<translation id="279182647442890396">Eliminar as informações?</translation>
 <translation id="2791952154587244007">Ocorreu um erro. A aplicação Quiosque não poderá ser iniciada automaticamente neste dispositivo.</translation>
 <translation id="2792465461386711506">Ative a Sincronização do Chrome para ver separadores recentes do Chrome no telemóvel.</translation>
 <translation id="2792697226874849938">Imagem de restrição</translation>
@@ -3595,7 +3595,6 @@ Quer pará-lo?</translation>
 <translation id="3500417806337761827">Ocorreu um erro ao montar a partilha. Já se encontram montadas demasiadas partilhas do SMB.</translation>
 <translation id="3500764001796099683">Ative as apps Web isoladas</translation>
 <translation id="350397915809787283">Se não tiver uma conta, selecione a primeira opção para criar uma.</translation>
-<translation id="3503995387997205657">Pode restaurar as suas apps anteriores</translation>
 <translation id="3505100368357440862">Sugestões de compras</translation>
 <translation id="3507132249039706973">A Proteção padrão está ativada.</translation>
 <translation id="3507650052590605702">Gerir palavra-passe</translation>
@@ -4088,6 +4087,7 @@ Quer pará-lo?</translation>
 <translation id="3820749202859700794">SECG de curva elíptica secp521r1 (também denominada NIST P-521)</translation>
 <translation id="3821074617718452587">Notificações do Phone Hub</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Uma extensão foi aprovada}other{# extensões foram aprovadas}}</translation>
+<translation id="3822426549715448461">DD</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Recomenda-se, pelo menos, <ph name="INSTALL_SIZE" /> de espaço para o Linux.</translation>
 <translation id="3824621460022590830">O token de inscrição de dispositivo é inválido. Contacte o proprietário ou o gestor do dispositivo. Código de erro: <ph name="ERROR_CODE" />.</translation>
@@ -4617,6 +4617,7 @@ Quer pará-lo?</translation>
 <translation id="4203769790323223880">Acesso à câmara não permitido</translation>
 <translation id="4204415812590935863">De momento, não é possível criar um tema.</translation>
 <translation id="4205157409548006256">Ocorreu um erro ao configurar o Linux.</translation>
+<translation id="4205643719206044108">Para oferecer sugestões, os sites que visita e o conteúdo das páginas são partilhados com a Google</translation>
 <translation id="4206144641569145248">Extraterrestre</translation>
 <translation id="4206323443866416204">Relatório de comentários</translation>
 <translation id="4206585797409671301">Com autorização para mostrar pedidos</translation>
@@ -5005,7 +5006,6 @@ Quer pará-lo?</translation>
 <translation id="4479424953165245642">Gerir apps de quiosque</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4479877282574735775">A configurar a máquina virtual… Esta ação pode demorar alguns minutos.</translation>
-<translation id="4481448477173043917">O dispositivo <ph name="DEVICE_TYPE" /> reiniciou inesperadamente</translation>
 <translation id="4481467543947557978">service worker</translation>
 <translation id="4482990632723642375">Separador fechado recentemente</translation>
 <translation id="4486333480498805415">Precisão da localização</translation>
@@ -8761,6 +8761,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7199452998289813782">Pausar transmissão para <ph name="DEVICE_NAME" /></translation>
 <translation id="720110658997053098">Manter este dispositivo permanentemente no modo quiosque</translation>
 <translation id="7201118060536064622">"<ph name="DELETED_ITEM_NAME" />" eliminado</translation>
+<translation id="7201336084980086208">O preenchimento automático pode oferecer a opção de guardar informações quando envia formulários, como o número da carta de condução ou do passaporte</translation>
 <translation id="7201420661433230412">Ver ficheiros</translation>
 <translation id="7201432510117121839">A transmissão do áudio do computador não é suportada neste dispositivo</translation>
 <translation id="7201535955609308429">Aguarde enquanto a validação está em curso</translation>
@@ -9118,7 +9119,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7457027286267861992">Não existe espaço suficiente em disco. Liberte mais algum espaço em disco e tente novamente. O código de erro é <ph name="ERROR" />.</translation>
 <translation id="7457831169406914076">{COUNT,plural, =1{um link}other{# links}}</translation>
 <translation id="7458168200501453431">Utiliza o mesmo corretor ortográfico que é utilizado na Pesquisa Google. O texto que introduzir no navegador é enviado à Google.</translation>
-<translation id="7458715171471938198">Quer restaurar as apps?</translation>
 <translation id="7458933488302148148">Verifique as suas palavras-passe guardadas para reforçar a sua segurança, nomeadamente online</translation>
 <translation id="7461924472993315131">Fixar</translation>
 <translation id="746216226901520237">Da próxima vez, o telemóvel irá desbloquear o <ph name="DEVICE_TYPE" />. Pode desativar o Smart Lock nas Definições.</translation>
@@ -11286,6 +11286,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="8963117664422609631">Aceda às definições do site</translation>
 <translation id="8964927371396953727">Valide a sua identidade para usar e guardar palavras-passe na sua conta, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8965037249707889821">Introduzir palavra-passe antiga</translation>
+<translation id="8967403839792635452">A programar extensões? Mantenha-se a par das <ph name="BEGIN_LINK" />novidades<ph name="END_LINK" /> com a documentação para programadores de extensões do Chrome.</translation>
 <translation id="8967427617812342790">Adicionar à lista de leitura</translation>
 <translation id="8967548289042494261">Remova <ph name="VM_NAME" /></translation>
 <translation id="8968527460726243404">Criador de imagem do sistema do Chrome OS</translation>

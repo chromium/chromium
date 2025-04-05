@@ -184,6 +184,10 @@ class OmniboxClient {
   virtual void OnFocusChanged(OmniboxFocusState state,
                               OmniboxFocusChangeReason reason) {}
 
+  // Called to notify clients when keyword mode is entered or exited.
+  virtual void OnKeywordModeChanged(bool entered,
+                                    const std::u16string& keyword) {}
+
   // Called to show HaTS survey if the proper criteria is met.
   virtual void MaybeShowOnFocusHatsSurvey(AutocompleteProviderClient* client,
                                           std::u16string text) {}

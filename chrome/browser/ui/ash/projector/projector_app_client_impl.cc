@@ -10,10 +10,11 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/webui/annotator/untrusted_annotator_page_handler_impl.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ref.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/ui/ash/projector/projector_soda_installation_controller.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/soda/constants.h"
@@ -30,14 +32,6 @@
 namespace {
 
 constexpr char kUsEnglishLocale[] = "en-US";
-
-inline const std::string& GetLocale() {
-  return g_browser_process->GetApplicationLocale();
-}
-
-inline speech::LanguageCode GetLocaleLanguageCode() {
-  return speech::GetLanguageCode(GetLocale());
-}
 
 }  // namespace
 
@@ -70,8 +64,12 @@ void ProjectorAppClientImpl::RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 }
 
-ProjectorAppClientImpl::ProjectorAppClientImpl()
-    : pending_screencast_manager_(base::BindRepeating(
+ProjectorAppClientImpl::ProjectorAppClientImpl(
+    PrefService* local_state,
+    ApplicationLocaleStorage* application_locale_storage)
+    : local_state_(CHECK_DEREF(local_state)),
+      application_locale_storage_(CHECK_DEREF(application_locale_storage)),
+      pending_screencast_manager_(base::BindRepeating(
           &ProjectorAppClientImpl::NotifyScreencastsPendingStatusChanged,
           base::Unretained(this))) {}
 
@@ -119,11 +117,12 @@ void ProjectorAppClientImpl::NotifyScreencastsPendingStatusChanged(
 
 bool ProjectorAppClientImpl::ShouldDownloadSoda() const {
   return ProjectorSodaInstallationController::ShouldDownloadSoda(
-      GetLocaleLanguageCode());
+      speech::GetLanguageCode(application_locale_storage_->Get()));
 }
 
 void ProjectorAppClientImpl::InstallSoda() {
-  return ProjectorSodaInstallationController::InstallSoda(GetLocale());
+  return ProjectorSodaInstallationController::InstallSoda(
+      *local_state_, application_locale_storage_->Get());
 }
 
 void ProjectorAppClientImpl::OnSodaInstallProgress(int combined_progress) {

@@ -14,7 +14,8 @@ enum TimelineRange {
   "entry",
   "entry-crossing",
   "exit",
-  "exit-crossing" };
+  "exit-crossing",
+  "scroll" };
 
 dictionary TimelineRangeOffset {
     TimelineRange rangeName;

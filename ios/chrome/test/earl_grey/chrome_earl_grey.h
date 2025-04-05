@@ -895,6 +895,9 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Copies `text` into the clipboard from the app's perspective.
 - (void)copyTextToPasteboard:(NSString*)text;
 
+// Copies `link` as NSURL into the clipboard from the app's perspective.
+- (void)copyLinkAsURLToPasteBoard:(NSString*)link;
+
 #pragma mark - Context Menus Utilities (EG2)
 
 // Taps on the Copy Link context menu action and verifies that the `text` has

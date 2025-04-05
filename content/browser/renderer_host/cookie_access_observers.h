@@ -36,9 +36,10 @@ class CONTENT_EXPORT CookieAccessObservers
       mojo::PendingReceiver<network::mojom::CookieAccessObserver> receiver,
       CookieAccessDetails::Source source);
 
-  virtual std::vector<
-      mojo::PendingReceiver<network::mojom::CookieAccessObserver>>
-  TakeReceivers();
+  using PendingObserversWithContext = std::vector<
+      std::pair<mojo::PendingReceiver<network::mojom::CookieAccessObserver>,
+                CookieAccessDetails::Source>>;
+  virtual PendingObserversWithContext TakeReceiversWithContext();
 
   // network::mojom::CookieAccessObserver
   void OnCookiesAccessed(std::vector<network::mojom::CookieAccessDetailsPtr>

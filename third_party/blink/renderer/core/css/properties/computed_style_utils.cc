@@ -2779,14 +2779,14 @@ CSSValue* ComputedStyleUtils::ValueForCornerShape(
   if (superellipse == Superellipse::Scoop()) {
     return CSSIdentifierValue::Create(CSSValueID::kScoop);
   }
-  if (superellipse == Superellipse::Straight()) {
-    return CSSIdentifierValue::Create(CSSValueID::kStraight);
+  if (superellipse == Superellipse::Square()) {
+    return CSSIdentifierValue::Create(CSSValueID::kSquare);
   }
   if (superellipse == Superellipse::Squircle()) {
     return CSSIdentifierValue::Create(CSSValueID::kSquircle);
   }
   return MakeGarbageCollected<cssvalue::CSSSuperellipseValue>(
-      *CSSNumericLiteralValue::Create(superellipse.Exponent(),
+      *CSSNumericLiteralValue::Create(superellipse.Parameter(),
                                       CSSPrimitiveValue::UnitType::kNumber));
 }
 

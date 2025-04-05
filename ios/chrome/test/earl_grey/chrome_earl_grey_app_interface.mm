@@ -1415,6 +1415,10 @@ NSString* SerializedValue(const base::Value* value) {
   [UIPasteboard.generalPasteboard setString:text];
 }
 
++ (void)copyLinkAsURLToPasteBoard:(NSString*)link {
+  [UIPasteboard.generalPasteboard setURL:[NSURL URLWithString:link]];
+}
+
 #pragma mark - Watcher utilities
 
 // Delay between two watch cycles.

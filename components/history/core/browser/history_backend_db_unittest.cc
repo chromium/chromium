@@ -20,6 +20,7 @@
 #include <stdint.h>
 
 #include <cstdint>
+#include <optional>
 #include <string>
 #include <unordered_set>
 
@@ -3203,11 +3204,11 @@ TEST_F(HistoryBackendDBTest,
   const GURL url3("http://www.cat.com");
   const GURL url4("http://www.relevantsite.com");
   const GURL url5("http://www.anotherone.com");
-  const int visit_count1 = 10;
-  const int visit_count2 = 5;
-  const int visit_count3 = 11;
-  const int visit_count4 = 20;
-  const int visit_count5 = 25;
+  const int visit_count1 = 2;
+  const int visit_count2 = 1;
+  const int visit_count3 = 3;
+  const int visit_count4 = 5;
+  const int visit_count5 = 8;
 
   URLID url_id1 = db_->AddURL(URLRow(url1));
   ASSERT_NE(0, url_id1);
@@ -3256,7 +3257,7 @@ TEST_F(HistoryBackendDBTest,
 
   std::vector<std::unique_ptr<PageUsageData>> results = db_->QuerySegmentUsage(
       /*max_result_count=*/5, base::NullCallback(),
-      /*recency_factor_name=*/kMvtScoringParamRecencyFactor_Classic,
+      /*recency_factor_name=*/std::nullopt,
       /*recency_window_days=*/0);
 
   ASSERT_EQ(5u, results.size());

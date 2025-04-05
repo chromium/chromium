@@ -16,7 +16,6 @@
 #include <array>
 #include <cmath>
 #include <memory>
-#include <string_view>
 #include <utility>
 
 #include "base/command_line.h"
@@ -120,7 +119,7 @@ bool InternalIsVLogOn(int vlog_level) {
 }
 
 bool HandleLogMessage(int severity,
-                      std::string_view file,
+                      const char* file,
                       int line,
                       size_t message_start,
                       const std::string& str) {

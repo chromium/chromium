@@ -12,7 +12,10 @@ namespace glic {
 class GlicKeyedService;
 namespace internal {
 class TestCookieSynchronizer;
-}
+}  // namespace internal
+namespace prefs {
+enum class FreStatus;
+}  // namespace prefs
 
 // Overrides some glic functionality to allow tests that depend on glic to run.
 // This should be created on the main thread.
@@ -30,7 +33,7 @@ class GlicTestEnvironment {
   ~GlicTestEnvironment();
 
   // Convenience functions.
-  void SetFRECompletion(bool complete);
+  void SetFRECompletion(prefs::FreStatus fre_status);
   GlicKeyedService* GetService();
 
   // Glic syncs sign-in cookies to the webview before showing the window. By

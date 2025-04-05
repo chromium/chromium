@@ -6,6 +6,7 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {assert} from 'chrome://resources/js/assert.js';
+import type {LoadTimeDataRaw} from 'chrome://resources/js/load_time_data.js';
 import {beforeNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './viewer_pen_options.html.js';
@@ -119,13 +120,13 @@ export class ViewerPenOptionsElement extends PolymerElement {
     };
   }
 
-  selectedSize: number;
-  selectedColor: string;
-  strings: any;
-  private colors_: Color[];
-  private expanded_: boolean;
+  declare selectedSize: number;
+  declare selectedColor: string;
+  declare strings: LoadTimeDataRaw|undefined;
+  declare private colors_: Color[];
+  declare private expanded_: boolean;
   private expandAnimations_: Animation[]|null = null;
-  private sizes_: Size[];
+  declare private sizes_: Size[];
 
   private sizeChanged_(e: Event) {
     this.selectedSize = Number((e.target as HTMLInputElement).value);

@@ -71,6 +71,36 @@ public class FullscreenAlertDialogUnitTest {
     }
 
     @Test
+    public void notPadForInsetsWithBuilder() {
+        launchActivity();
+
+        FrameLayout dialogView = new FrameLayout(mActivity);
+        AlertDialog dialog =
+                new FullscreenAlertDialog.Builder(mActivity, /* shouldPadForContent= */ false)
+                        .setView(dialogView)
+                        .create();
+        dialog.show();
+
+        Assert.assertFalse(
+                "Dialog view should not be wrapped.",
+                dialogView.getParent() instanceof EdgeToEdgeBaseLayout);
+    }
+
+    @Test
+    public void notPadForInsetsWithConstructor() {
+        launchActivity();
+
+        FrameLayout dialogView = new FrameLayout(mActivity);
+        AlertDialog dialog = new FullscreenAlertDialog(mActivity, /* shouldPadForContent= */ false);
+        dialog.setView(dialogView);
+        dialog.show();
+
+        Assert.assertFalse(
+                "Dialog view should not be wrapped.",
+                dialogView.getParent() instanceof EdgeToEdgeBaseLayout);
+    }
+
+    @Test
     public void padForInsetsDisabledOnAutomotive() {
         mAutomotiveRule.setIsAutomotive(true);
         launchActivity();

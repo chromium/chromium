@@ -45,6 +45,9 @@ class SyncService;
 // Disconnects the mediator.
 - (void)disconnect;
 
+// Informs the mediator the authentication flow finished the sign-in.
+- (void)signinDidEndWithResult:(SigninCoordinatorResult)result;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_SIGNIN_ACCOUNT_MENU_ACCOUNT_MENU_MEDIATOR_H_

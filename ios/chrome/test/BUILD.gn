@@ -289,6 +289,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/enterprise/connectors/reporting:unit_tests",
     "//ios/chrome/browser/enterprise/identifiers:unit_tests",
     "//ios/chrome/browser/enterprise/model/idle:unit_tests",
+    "//ios/chrome/browser/external_files/model:unit_tests",
     "//ios/chrome/browser/favicon/model:unit_tests",
     "//ios/chrome/browser/feature_engagement/model:unit_tests",
     "//ios/chrome/browser/find_in_page/model:unit_tests",
@@ -536,6 +537,12 @@ test("ios_chrome_unittests") {
     "//ios/testing:http_server_bundle_data",
     "//ios/testing/earl_grey:unit_tests",
   ]
+
+  if (target_environment != "catalyst") {
+    deps += [
+      "//ios/chrome/browser/default_browser/model/default_status:unit_tests",
+    ]
+  }
 
   if (ios_enable_widget_kit_extension) {
     deps += [ "//ios/chrome/browser/widget_kit/model:unit_tests" ]

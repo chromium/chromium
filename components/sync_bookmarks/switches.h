@@ -15,9 +15,6 @@ BASE_DECLARE_FEATURE(kSyncReuploadBookmarks);
 
 BASE_DECLARE_FEATURE(kSyncMigrateBookmarksWithoutClientTagHash);
 
-// Guards a performance optimization during batch upload.
-BASE_DECLARE_FEATURE(kSyncFastDeletionsDuringBookmarkBatchUpload);
-
 // If enabled, support displaying and uploading individual items (bookmarks or
 // folders) in the Batch Upload UI.
 //

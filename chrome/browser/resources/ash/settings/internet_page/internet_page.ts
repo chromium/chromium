@@ -329,18 +329,6 @@ export class SettingsInternetPageElement extends
         value: '',
       },
 
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kWifiOnOff,
-          Setting.kMobileOnOff,
-          Setting.kCellularAddApn,
-        ]),
-      },
-
       errorToastMessage_: {
         type: String,
         value: '',
@@ -387,6 +375,14 @@ export class SettingsInternetPageElement extends
   deviceStates: Record<string, OncMojo.DeviceStateProperties>|undefined;
   hotspotInfo: HotspotInfo|undefined;
   managedNetworkAvailable: boolean;
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kWifiOnOff,
+    Setting.kMobileOnOff,
+    Setting.kCellularAddApn,
+  ]);
+
   private addConnectionExpanded_: boolean;
   private browserProxy_: InternetPageBrowserProxy;
   private cellularSetupDialogPageName_: CellularSetupPageName|null;
@@ -395,6 +391,7 @@ export class SettingsInternetPageElement extends
   private eSimNetworkState_: NetworkStateProperties;
   private globalPolicy_: GlobalPolicy|undefined;
   private hasActiveCellularNetwork_: boolean;
+  private readonly isApnRevampEnabled_: boolean;
   private isConnectedToNonCellularNetwork_: boolean;
   private isNumCustomApnsLimitReached_: boolean;
   private isInstantHotspotRebrandEnabled_: boolean;

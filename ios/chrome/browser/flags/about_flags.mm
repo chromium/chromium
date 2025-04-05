@@ -2126,9 +2126,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillShowManualFillForVirtualCards)},
-    {"home-customization", flag_descriptions::kHomeCustomizationName,
-     flag_descriptions::kHomeCustomizationDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kHomeCustomization)},
     {"safety-check-notifications",
      flag_descriptions::kSafetyCheckNotificationsName,
      flag_descriptions::kSafetyCheckNotificationsDescription, flags_ui::kOsIos,
@@ -2207,6 +2204,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(commerce::kShopCard,
                                     kShopCardOverrideOptions,
                                     "ShopCard")},
+    {"ios-shop-card-impression-limits",
+     flag_descriptions::kShopCardImpressionLimitsName,
+     flag_descriptions::kShopCardImpressionLimitsDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(commerce::kShopCardImpressionLimits)},
     {"ios-segmentation-ephemeral-card-ranker",
      flag_descriptions::kSegmentationPlatformEphemeralCardRankerName,
      flag_descriptions::kSegmentationPlatformEphemeralCardRankerDescription,
@@ -2610,6 +2611,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSafeBrowsingTrustedURLName,
      flag_descriptions::kSafeBrowsingTrustedURLDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kSafeBrowsingTrustedURL)},
+    {"contained-tab-group", flag_descriptions::kContainedTabGroupName,
+     flag_descriptions::kContainedTabGroupDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kContainedTabGroup)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

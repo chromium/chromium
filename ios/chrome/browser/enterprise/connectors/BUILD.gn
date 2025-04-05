@@ -51,6 +51,7 @@ source_set("util") {
   deps = [
     "//base",
     "//components/enterprise",
+    "//components/enterprise/common/proto:upload_request_response",
     "//components/enterprise/connectors/core",
     "//components/policy/core/common",
     "//components/profile_metrics",

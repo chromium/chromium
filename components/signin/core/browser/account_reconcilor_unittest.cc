@@ -249,7 +249,7 @@ struct Cookie {
 
 // Converts CookieParams to ListedAccounts.
 gaia::ListedAccount ListedAccountFromCookieParams(
-    const signin::CookieParams& params,
+    const gaia::CookieParams& params,
     const CoreAccountId& account_id) {
   gaia::ListedAccount listed_account;
   listed_account.id = account_id;
@@ -638,7 +638,7 @@ class BaseAccountReconcilorTestTable : public AccountReconcilorTest {
   }
 
   void ConfigureCookieManagerService(const std::vector<Cookie>& cookies) {
-    std::vector<signin::CookieParams> cookie_params;
+    std::vector<gaia::CookieParams> cookie_params;
     for (const auto& cookie : cookies) {
       GaiaId gaia_id = cookie.gaia_id;
 
@@ -1881,9 +1881,9 @@ TEST_F(AccountReconcilorMirrorTest, GetAccountsFromCookieFailure) {
 TEST_F(AccountReconcilorMirrorTest, ExtraCookieChangeNotification) {
   AccountInfo account_info = ConnectProfileToAccount(kFakeEmail);
   const CoreAccountId account_id = account_info.account_id;
-  signin::CookieParams cookie_params = {
-      account_info.email, account_info.gaia, false /* valid */,
-      false /* signed_out */, true /* verified */};
+  gaia::CookieParams cookie_params = {account_info.email, account_info.gaia,
+                                      false /* valid */, false /* signed_out */,
+                                      true /* verified */};
 
   signin::SetListAccountsResponseOneAccountWithParams(
       cookie_params, &test_url_loader_factory_);
@@ -3063,7 +3063,7 @@ TEST_F(AccountReconcilorTest, OnAccountsInCookieUpdatedLogoutInProgress) {
   signin::AccountConsistencyMethod account_consistency =
       signin::AccountConsistencyMethod::kDice;
   SetAccountConsistency(account_consistency);
-  signin::CookieParams cookie_params = {
+  gaia::CookieParams cookie_params = {
       kFakeEmail, signin::GetTestGaiaIdForEmail(kFakeEmail), true /* valid */,
       false /* signed_out */, true /* verified */};
 

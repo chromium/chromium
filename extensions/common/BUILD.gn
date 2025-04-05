@@ -72,7 +72,10 @@ source_set("extension_features") {
     "extension_features.cc",
     "extension_features.h",
   ]
-  public_deps = [ "//base" ]
+  public_deps = [
+    "//base",
+    "//build:branding_buildflags",
+  ]
 }
 
 mojom("mojom") {

@@ -29,6 +29,8 @@ class CORE_EXPORT ViewTransitionPseudoElementBase : public PseudoElement {
       const StyleRecalcContext&) override;
   void Trace(Visitor* visitor) const override;
 
+  const Vector<AtomicString>& ViewTransitionClassList() const;
+
   // Returns true if this pseudo element is bound to a transition using
   // `tracker`.
   bool IsBoundTo(const blink::ViewTransitionStyleTracker* tracker) const;

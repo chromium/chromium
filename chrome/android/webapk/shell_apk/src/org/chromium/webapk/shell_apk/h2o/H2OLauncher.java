@@ -13,12 +13,15 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.webapk.lib.common.WebApkConstants;
 import org.chromium.webapk.shell_apk.HostBrowserLauncher;
 import org.chromium.webapk.shell_apk.HostBrowserLauncherParams;
 import org.chromium.webapk.shell_apk.WebApkSharedPreferences;
 
 /** Contains methods for launching host browser where ShellAPK shows the splash screen. */
+@NullMarked
 public class H2OLauncher {
     private static final String TAG = "cr_H2OLauncher";
 
@@ -80,7 +83,7 @@ public class H2OLauncher {
     public static void copyIntentExtrasAndLaunch(
             Context context,
             Intent intentToCopy,
-            String selectedShareTargetActivity,
+            @Nullable String selectedShareTargetActivity,
             long launchTimeMs,
             ComponentName launchComponent) {
         Intent intent = new Intent(Intent.ACTION_VIEW, intentToCopy.getData());

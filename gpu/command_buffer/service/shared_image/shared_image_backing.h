@@ -362,6 +362,12 @@ class GPU_GLES2_EXPORT SharedImageBacking {
     return factory_;
   }
 
+  void AssertLockAcquired() const {
+    if (lock_) {
+      lock_->AssertAcquired();
+    }
+  }
+
   // Helper class used by subclasses to acquire |lock_| if it exists.
   class SCOPED_LOCKABLE GPU_GLES2_EXPORT AutoLock {
     STACK_ALLOCATED();
@@ -450,6 +456,8 @@ class GPU_GLES2_EXPORT ClearTrackingSharedImageBacking
   gfx::Rect ClearedRectInternal() const EXCLUSIVE_LOCKS_REQUIRED(lock_);
   void SetClearedRectInternal(const gfx::Rect& cleared_rect)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  void SetClearedInternal() EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  bool IsClearedInternal() const EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
  private:
   gfx::Rect cleared_rect_ GUARDED_BY(lock_);

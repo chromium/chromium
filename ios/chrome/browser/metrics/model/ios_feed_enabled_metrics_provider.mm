@@ -19,9 +19,7 @@ namespace {
 // Returns whether the Feed can be displayed according for `prefs`.
 bool CanDisplayFeed(PrefService* prefs) {
   BOOL is_feed_enabled_by_user =
-      prefs->GetBoolean(prefs::kArticlesForYouEnabled) &&
-      (IsHomeCustomizationEnabled() ||
-       prefs->GetBoolean(feed::prefs::kArticlesListVisible));
+      prefs->GetBoolean(prefs::kArticlesForYouEnabled);
   return is_feed_enabled_by_user &&
          prefs->GetBoolean(prefs::kNTPContentSuggestionsEnabled) &&
          !IsFeedAblationEnabled();

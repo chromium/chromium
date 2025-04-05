@@ -17,7 +17,7 @@ source_set("signin_history_sync") {
     "//ios/chrome/browser/authentication/ui_bundled/signin:signin_screen_provider",
     "//ios/chrome/browser/authentication/ui_bundled/signin/add_account_signin",
     "//ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin",
-    "//ios/chrome/browser/authentication/ui_bundled/signin/fullscreen_signin",
+    "//ios/chrome/browser/authentication/ui_bundled/signin/fullscreen_signin/coordinator",
     "//ios/chrome/browser/authentication/ui_bundled/signin/instant_signin",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/public/features",

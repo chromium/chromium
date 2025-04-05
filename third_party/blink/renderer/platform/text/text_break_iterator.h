@@ -31,14 +31,13 @@
 #include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/text/character.h"
+#include "third_party/blink/renderer/platform/text/character_break_iterator.h"
 #include "third_party/blink/renderer/platform/text/layout_locale.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 
 namespace blink {
-
-typedef icu::BreakIterator TextBreakIterator;
 
 struct PLATFORM_EXPORT ReturnBreakIteratorToPool {
   void operator()(void* ptr) const;
@@ -78,8 +77,6 @@ PLATFORM_EXPORT TextBreakIterator* SentenceBreakIterator(
 // it may not work as expected.
 // See https://ssl.icu-project.org/trac/ticket/13447 .
 PLATFORM_EXPORT bool IsWordTextBreak(TextBreakIterator*);
-
-const int kTextBreakDone = -1;
 
 // A Unicode Line Break Word Identifier (key "lw".)
 // https://www.unicode.org/reports/tr35/#UnicodeLineBreakWordIdentifier
@@ -311,79 +308,6 @@ inline void LazyLineBreakIterator::SetStrictness(
     InvalidateLocaleWithKeyword();
   }
 }
-
-// Iterates over "extended grapheme clusters", as defined in UAX #29.
-// Note that platform implementations may be less sophisticated - e.g. ICU prior
-// to version 4.0 only supports "legacy grapheme clusters".  Use this for
-// general text processing, e.g. string truncation.
-
-class PLATFORM_EXPORT NonSharedCharacterBreakIterator final {
-  STACK_ALLOCATED();
-
- public:
-  explicit NonSharedCharacterBreakIterator(const StringView&);
-  explicit NonSharedCharacterBreakIterator(base::span<const UChar>);
-  NonSharedCharacterBreakIterator(const NonSharedCharacterBreakIterator&) =
-      delete;
-  NonSharedCharacterBreakIterator& operator=(
-      const NonSharedCharacterBreakIterator&) = delete;
-  ~NonSharedCharacterBreakIterator();
-
-  int Next();
-  int Current();
-
-  bool IsBreak(int offset) const;
-  int Preceding(int offset) const;
-  int Following(int offset) const;
-
-  bool operator!() const { return !is_8bit_ && !iterator_; }
-
- private:
-  void CreateIteratorForBuffer(base::span<const UChar>);
-
-  unsigned ClusterLengthStartingAt(unsigned offset) const {
-    DCHECK(is_8bit_);
-    // The only Latin-1 Extended Grapheme Cluster is CR LF
-    return IsCRBeforeLF(offset) ? 2 : 1;
-  }
-
-  bool IsCRBeforeLF(unsigned offset) const {
-    DCHECK(is_8bit_);
-    // SAFTEY: second indexing is safe because of length check, but
-    // the first is not. Could be made safe by re-ordering.
-    return UNSAFE_TODO(charaters8_[offset]) == '\r' && offset + 1 < length_ &&
-           UNSAFE_BUFFERS(charaters8_[offset + 1]) == '\n';
-  }
-
-  bool IsLFAfterCR(unsigned offset) const {
-    DCHECK(is_8bit_);
-    return UNSAFE_TODO(charaters8_[offset]) == '\n' && offset >= 1 &&
-           UNSAFE_TODO(charaters8_[offset - 1]) == '\r';
-  }
-
-  bool is_8bit_;
-
-  // For 8 bit strings, we implement the iterator ourselves.
-  const LChar* charaters8_;
-  unsigned offset_;
-  unsigned length_;
-
-  // For 16 bit strings, we use a TextBreakIterator.
-  TextBreakIterator* iterator_;
-};
-
-// Counts the number of grapheme clusters. A surrogate pair or a sequence
-// of a non-combining character and following combining characters is
-// counted as 1 grapheme cluster.
-PLATFORM_EXPORT unsigned NumGraphemeClusters(const String&);
-
-// Returns the number of code units that the next grapheme cluster is made of.
-PLATFORM_EXPORT unsigned LengthOfGraphemeCluster(const String&, unsigned = 0);
-
-// Returns a list of graphemes cluster at each character using character break
-// rules.
-PLATFORM_EXPORT void GraphemesClusterList(const StringView& text,
-                                          Vector<unsigned>* graphemes);
 
 }  // namespace blink
 

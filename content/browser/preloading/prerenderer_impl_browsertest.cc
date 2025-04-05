@@ -202,12 +202,28 @@ class PrerendererImplBrowserTestNoPrefetchAhead
 };
 
 class PrerendererImplBrowserTestPrefetchAhead
-    : public PrerendererImplBrowserTestBase {
+    : public PrerendererImplBrowserTestBase,
+      public ::testing::WithParamInterface<
+          features::Prerender2FallbackPrefetchSchedulerPolicy> {
  public:
   PrerendererImplBrowserTestPrefetchAhead() {
+    const char* prefetch_scheduler_policy = [&]() {
+      switch (GetParam()) {
+        case features::Prerender2FallbackPrefetchSchedulerPolicy::kNotUse:
+          return "NotUse";
+        case features::Prerender2FallbackPrefetchSchedulerPolicy::kPrioritize:
+          return "Prioritize";
+        case features::Prerender2FallbackPrefetchSchedulerPolicy::kBurst:
+          return "Burst";
+      }
+    }();
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kPrefetchReusable, {}},
-         {features::kPrerender2FallbackPrefetchSpecRules, {}},
+         {features::kPrerender2FallbackPrefetchSpecRules,
+          {
+              {"kPrerender2FallbackPrefetchSchedulerPolicy",
+               prefetch_scheduler_policy},
+          }},
          {features::kPrefetchUseContentRefactor,
           {
               {"prefetch_timeout_ms", "1500"},
@@ -219,6 +235,14 @@ class PrerendererImplBrowserTestPrefetchAhead
          features::kPrefetchServiceWorker});
   }
 };
+
+INSTANTIATE_TEST_SUITE_P(
+    ParametrizedTests,
+    PrerendererImplBrowserTestPrefetchAhead,
+    testing::Values(
+        features::Prerender2FallbackPrefetchSchedulerPolicy::kNotUse,
+        features::Prerender2FallbackPrefetchSchedulerPolicy::kPrioritize,
+        features::Prerender2FallbackPrefetchSchedulerPolicy::kBurst));
 
 IN_PROC_BROWSER_TEST_F(PrerendererImplBrowserTestNoPrefetchAhead,
                        PrefetchNotTriggeredPrerenderSuccess) {
@@ -294,7 +318,7 @@ IN_PROC_BROWSER_TEST_F(PrerendererImplBrowserTestNoPrefetchAhead,
   ASSERT_EQ(expected, GetObservedRequests());
 }
 
-IN_PROC_BROWSER_TEST_F(PrerendererImplBrowserTestPrefetchAhead,
+IN_PROC_BROWSER_TEST_P(PrerendererImplBrowserTestPrefetchAhead,
                        PrefetchSuccessPrerenderSuccess) {
   ASSERT_TRUE(NavigateToURL(shell(), GetUrl("/empty.html")));
 
@@ -329,7 +353,7 @@ IN_PROC_BROWSER_TEST_F(PrerendererImplBrowserTestPrefetchAhead,
   ASSERT_EQ(expected, GetObservedRequests());
 }
 
-IN_PROC_BROWSER_TEST_F(PrerendererImplBrowserTestPrefetchAhead,
+IN_PROC_BROWSER_TEST_P(PrerendererImplBrowserTestPrefetchAhead,
                        PrefetchSuccessPrerenderNotEligible) {
   ASSERT_TRUE(NavigateToURL(shell(), GetUrl("/empty.html")));
 
@@ -366,7 +390,7 @@ IN_PROC_BROWSER_TEST_F(PrerendererImplBrowserTestPrefetchAhead,
   ASSERT_EQ(expected, GetObservedRequests());
 }
 
-IN_PROC_BROWSER_TEST_F(PrerendererImplBrowserTestPrefetchAhead,
+IN_PROC_BROWSER_TEST_P(PrerendererImplBrowserTestPrefetchAhead,
                        PrefetchSuccessPrerenderFailure) {
   ASSERT_TRUE(NavigateToURL(shell(), GetUrl("/empty.html")));
 
@@ -413,7 +437,7 @@ IN_PROC_BROWSER_TEST_F(PrerendererImplBrowserTestPrefetchAhead,
   ASSERT_EQ(expected, GetObservedRequests());
 }
 
-IN_PROC_BROWSER_TEST_F(PrerendererImplBrowserTestPrefetchAhead,
+IN_PROC_BROWSER_TEST_P(PrerendererImplBrowserTestPrefetchAhead,
                        PrefetchNotEligiblePrerenderFailure) {
   PrefetchService::SetForceIneligibilityForTesting(
       PreloadingEligibility::kHostIsNonUnique);
@@ -456,7 +480,7 @@ IN_PROC_BROWSER_TEST_F(PrerendererImplBrowserTestPrefetchAhead,
   ASSERT_EQ(expected, GetObservedRequests());
 }
 
-IN_PROC_BROWSER_TEST_F(PrerendererImplBrowserTestPrefetchAhead,
+IN_PROC_BROWSER_TEST_P(PrerendererImplBrowserTestPrefetchAhead,
                        PrefetchNotEligibleNonHttpsPrerenderSuccess) {
   ASSERT_TRUE(NavigateToURL(shell(), GetUrlHttp("/empty.html")));
 
@@ -490,7 +514,7 @@ IN_PROC_BROWSER_TEST_F(PrerendererImplBrowserTestPrefetchAhead,
   ASSERT_EQ(expected, GetObservedRequests());
 }
 
-IN_PROC_BROWSER_TEST_F(PrerendererImplBrowserTestPrefetchAhead,
+IN_PROC_BROWSER_TEST_P(PrerendererImplBrowserTestPrefetchAhead,
                        PrefetchNotEligibleNonHttpsPrerenderSuccessWithDelay) {
   ASSERT_TRUE(NavigateToURL(shell(), GetUrlHttp("/empty.html")));
 
@@ -549,7 +573,7 @@ IN_PROC_BROWSER_TEST_F(PrerendererImplBrowserTestPrefetchAhead,
 // - Trigger prerender A' for URL U.
 //   - A' falls back to non-prefetch navigation.
 // - Navigation is started. A' is used.
-IN_PROC_BROWSER_TEST_F(PrerendererImplBrowserTestPrefetchAhead,
+IN_PROC_BROWSER_TEST_P(PrerendererImplBrowserTestPrefetchAhead,
                        PrefetchNotEligibleServiceWorkerPrerenderSuccess) {
   ASSERT_TRUE(NavigateToURL(shell(), GetUrl("/prerender/empty.html")));
 
@@ -605,7 +629,7 @@ IN_PROC_BROWSER_TEST_F(PrerendererImplBrowserTestPrefetchAhead,
 // - A failed in eligibility check due to SW.
 //   - A' falls back to non-prefetch navigation.
 // - Navigation is started. A' is used.
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     PrerendererImplBrowserTestPrefetchAhead,
     PrefetchNotEligibleServiceWorkerPrerenderSuccessWithDelay) {
   ASSERT_TRUE(NavigateToURL(shell(), GetUrl("/prerender/empty.html")));
@@ -675,7 +699,7 @@ IN_PROC_BROWSER_TEST_F(
 // - A failed due to timeout.
 //   - The failure is propagated to A'.
 // - Navigation is started. No preloads are used.
-IN_PROC_BROWSER_TEST_F(PrerendererImplBrowserTestPrefetchAhead,
+IN_PROC_BROWSER_TEST_P(PrerendererImplBrowserTestPrefetchAhead,
                        PrefetchTimeoutPrerenderFailure) {
   // Prefetch will fail as
   // `prefetch_timeout_ms = 1500 < response_delay_ = 1500 + 1000`.
@@ -731,7 +755,7 @@ IN_PROC_BROWSER_TEST_F(PrerendererImplBrowserTestPrefetchAhead,
 // - Trigger prerender B' for URL U.
 //   - A blocks B'.
 // - Navigation is started. B' is used.
-IN_PROC_BROWSER_TEST_F(PrerendererImplBrowserTestPrefetchAhead,
+IN_PROC_BROWSER_TEST_P(PrerendererImplBrowserTestPrefetchAhead,
                        PrefetchMigratedPrefetchSuccessPrerenderSuccess) {
   ASSERT_TRUE(NavigateToURL(shell(), GetUrl("/empty.html")));
 
@@ -777,7 +801,7 @@ IN_PROC_BROWSER_TEST_F(PrerendererImplBrowserTestPrefetchAhead,
 
 // Variant of PrefetchMigratedPrefetchSuccessPrerenderSuccess.
 // The order of migration and prefetch completion is reversed.
-IN_PROC_BROWSER_TEST_F(PrerendererImplBrowserTestPrefetchAhead,
+IN_PROC_BROWSER_TEST_P(PrerendererImplBrowserTestPrefetchAhead,
                        PrefetchSuccessPrefetchMigratedPrerenderSuccess) {
   ASSERT_TRUE(NavigateToURL(shell(), GetUrl("/empty.html")));
 
@@ -840,7 +864,7 @@ IN_PROC_BROWSER_TEST_F(PrerendererImplBrowserTestPrefetchAhead,
 //
 // This shows the necessity of eligibility propagation in
 // `PrefetchContainer::MigrateNewlyAdded()`.
-IN_PROC_BROWSER_TEST_F(PrerendererImplBrowserTestPrefetchAhead,
+IN_PROC_BROWSER_TEST_P(PrerendererImplBrowserTestPrefetchAhead,
                        PrefetchMigratedPrefetchFailurePrerenderFailure) {
   // Prefetch will fail as
   // `prefetch_timeout_ms = 1500 < response_delay_ = 1500 + 1000`.
@@ -907,7 +931,7 @@ IN_PROC_BROWSER_TEST_F(PrerendererImplBrowserTestPrefetchAhead,
 // - A fails in eligibility check.
 //   - B' fails as the ineligibility is not admissible.
 // - Navigation is started. No preloads are used.
-IN_PROC_BROWSER_TEST_F(PrerendererImplBrowserTestPrefetchAhead,
+IN_PROC_BROWSER_TEST_P(PrerendererImplBrowserTestPrefetchAhead,
                        PrefetchMigratedPrefetchNotEligiblePrerenderFailure) {
   PrefetchService::SetForceIneligibilityForTesting(
       PreloadingEligibility::kHostIsNonUnique);
@@ -986,7 +1010,7 @@ IN_PROC_BROWSER_TEST_F(PrerendererImplBrowserTestPrefetchAhead,
 // - A failed due to timeout.
 //   - The failure is propagated to B'.
 // - Navigation is started. No preloads are used.
-IN_PROC_BROWSER_TEST_F(PrerendererImplBrowserTestPrefetchAhead,
+IN_PROC_BROWSER_TEST_P(PrerendererImplBrowserTestPrefetchAhead,
                        PrefetchMigratedPrefetchTimeoutPrerenderFailure) {
   // Prefetch will fail as
   // `prefetch_timeout_ms = 1500 < response_delay_ = 1500 + 1000`.
@@ -1057,7 +1081,7 @@ IN_PROC_BROWSER_TEST_F(PrerendererImplBrowserTestPrefetchAhead,
 // request was avoided due to the HTTP cache, but after that change the overall
 // brokenness of the scenario is revealed. It is likely that the /title1.html
 // response is not making it into the speculation rules prefetch cache.
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     PrerendererImplBrowserTestPrefetchAhead,
     DISABLED_PrefetchSuccessPrefetchMatchResolverTimeoutPrerenderFailure) {
   SetResponseDelay(base::Milliseconds(1000));
@@ -1126,7 +1150,7 @@ IN_PROC_BROWSER_TEST_F(
 // - Trigger prerender B' for URL U.
 //   - B' uses A.
 // - Navigation is started. B' is used.
-IN_PROC_BROWSER_TEST_F(PrerendererImplBrowserTestPrefetchAhead,
+IN_PROC_BROWSER_TEST_P(PrerendererImplBrowserTestPrefetchAhead,
                        PrerenderSuccessCancelledAnotherPrerenderSuccess) {
   ASSERT_TRUE(NavigateToURL(shell(), GetUrl("/empty.html")));
 

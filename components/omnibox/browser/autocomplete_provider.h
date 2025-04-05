@@ -369,7 +369,7 @@ class AutocompleteProvider
       std::pair<AutocompleteInput, const TemplateURL*>;
   static AdjustedInputAndStarterPackKeyword AdjustInputForStarterPackKeyword(
       const AutocompleteInput& input,
-      TemplateURLService* turl_service);
+      const TemplateURLService* turl_service);
 
   // Fixes up user URL input to make it more possible to match against.  Among
   // many other things, this takes care of the following:

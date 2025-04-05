@@ -461,8 +461,10 @@ IN_PROC_BROWSER_TEST_P(ChromeKeepAliveURLBrowserTest,
 
 // Checks that when a fetch keepalive request's redirect is handled in browser
 // the variations header (X-Client-Data) is attached to the requests to Google.
-IN_PROC_BROWSER_TEST_P(ChromeKeepAliveURLBrowserTest,
-                       ReceiveMultipleRedirectsToGoogleAfterPageUnload) {
+// TODO(crbug.com/407998594): Fix test before re-enabling.
+IN_PROC_BROWSER_TEST_P(
+    ChromeKeepAliveURLBrowserTest,
+    DISABLED_ReceiveMultipleRedirectsToGoogleAfterPageUnload) {
   const std::string method = GetParam();
   const std::string target_url = GetUrlWithCategory("test-prefix1");
   const std::string redirect_target1 = "/redirected1";

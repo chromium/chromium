@@ -23,7 +23,7 @@ items:
 - caption: Keep local files in read-only mode
   name: "read_only"
   value: "read_only"
-- caption: Delete existing local files  (supported since version 136)
+- caption: Delete existing local files  (supported since version 137)
   name: "delete"
   value: "delete"
 owners:

@@ -79,6 +79,7 @@ class NET_EXPORT CertVerifier {
     virtual ~Request() = default;
   };
 
+  // LINT.IfChange(CertVerifier.VerifyFlags)
   enum VerifyFlags {
     // If set, actively overrides the current CertVerifier::Config to disable
     // dependent network fetches. This can be used to avoid triggering
@@ -91,8 +92,14 @@ class NET_EXPORT CertVerifier {
     // without accessing the network.
     VERIFY_DISABLE_NETWORK_FETCHES = 1 << 0,
 
-    VERIFY_FLAGS_LAST = VERIFY_DISABLE_NETWORK_FETCHES
+    // If set, Certificate Transparency requirements are evaluated in a
+    // stricter fashion as required by Signed Exchanges. This only has effect
+    // in implementations where CT is handled by chrome.
+    VERIFY_SXG_CT_REQUIREMENTS = 1 << 1,
+
+    VERIFY_FLAGS_LAST = VERIFY_SXG_CT_REQUIREMENTS
   };
+  // LINT.ThenChange(/net/log/net_log_util.cc:CertVerifier.VerifyFlags)
 
   // Parameters to verify |certificate| against the supplied
   // |hostname| as an SSL server.

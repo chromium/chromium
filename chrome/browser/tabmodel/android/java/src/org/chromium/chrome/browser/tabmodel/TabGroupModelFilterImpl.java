@@ -207,11 +207,6 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
     }
 
     @Override
-    public void createSingleTabGroup(int tabId) {
-        createSingleTabGroup(getTabModel().getTabByIdChecked(tabId));
-    }
-
-    @Override
     public void createSingleTabGroup(Tab tab) {
         createSingleTabGroupInternal(tab, Token.createRandom());
     }
@@ -248,11 +243,6 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
     }
 
     @Override
-    public void mergeTabsToGroup(int sourceTabId, int destinationTabId) {
-        mergeTabsToGroup(sourceTabId, destinationTabId, false);
-    }
-
-    @Override
     public void mergeTabsToGroup(
             int sourceTabId, int destinationTabId, boolean skipUpdateTabModel) {
         Tab sourceTab = getTabModel().getTabByIdChecked(sourceTabId);
@@ -279,12 +269,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
             boolean willMergingCreateNewGroup =
                     willMergingCreateNewGroup(List.of(sourceTab, destinationTab));
             int destinationGroupColorId = TabGroupColorUtils.getTabGroupColor(destinationRootId);
-            final boolean destinationGroupTitleCollapsed;
-            if (ChromeFeatureList.sTabStripGroupCollapse.isEnabled()) {
-                destinationGroupTitleCollapsed = getTabGroupCollapsed(destinationRootId);
-            } else {
-                destinationGroupTitleCollapsed = false;
-            }
+            final boolean destinationGroupTitleCollapsed = getTabGroupCollapsed(destinationRootId);
 
             if (!skipUpdateTabModel) {
                 originalIndexes.add(
@@ -412,12 +397,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         String destinationGroupTitle = TabGroupTitleUtils.getTabGroupTitle(destinationRootId);
         int destinationGroupColorId = TabGroupColorUtils.getTabGroupColor(destinationRootId);
 
-        final boolean destinationGroupTitleCollapsed;
-        if (ChromeFeatureList.sTabStripGroupCollapse.isEnabled()) {
-            destinationGroupTitleCollapsed = getTabGroupCollapsed(destinationRootId);
-        } else {
-            destinationGroupTitleCollapsed = false;
-        }
+        final boolean destinationGroupTitleCollapsed = getTabGroupCollapsed(destinationRootId);
 
         // Iterate through all tabs to set the proper new group creation status.
         for (int i = 0; i < tabs.size(); i++) {
@@ -1111,9 +1091,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
                 if (metadata.color != TabGroupColorUtils.INVALID_COLOR_ID) {
                     setTabGroupColor(newRootId, metadata.color);
                 }
-                if (ChromeFeatureList.sTabStripGroupCollapse.isEnabled()) {
-                    if (metadata.isCollapsed) setTabGroupCollapsed(newRootId, true);
-                }
+                if (metadata.isCollapsed) setTabGroupCollapsed(newRootId, true);
             }
 
             resetFilterState();
@@ -1123,9 +1101,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
                 if (!mRootIdToGroupMap.containsKey(oldRootId)) {
                     TabGroupTitleUtils.deleteTabGroupTitle(oldRootId);
                     TabGroupColorUtils.deleteTabGroupColor(oldRootId);
-                    if (ChromeFeatureList.sTabStripGroupCollapse.isEnabled()) {
-                        deleteTabGroupCollapsed(oldRootId);
-                    }
+                    deleteTabGroupCollapsed(oldRootId);
                 }
             }
         }
@@ -1445,11 +1421,6 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
     }
 
     @Override
-    public void setTabGroupCollapsed(int rootId, boolean isCollapsed) {
-        setTabGroupCollapsed(rootId, isCollapsed, /* animate= */ true);
-    }
-
-    @Override
     public void deleteTabGroupCollapsed(int rootId) {
         TabGroupCollapsedUtils.deleteTabGroupCollapsed(rootId);
         for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
@@ -1467,10 +1438,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
     public void deleteTabGroupVisualData(int rootId) {
         deleteTabGroupTitle(rootId);
         deleteTabGroupColor(rootId);
-
-        if (ChromeFeatureList.sTabStripGroupCollapse.isEnabled()) {
-            deleteTabGroupCollapsed(rootId);
-        }
+        deleteTabGroupCollapsed(rootId);
     }
 
     @Override

@@ -80,6 +80,7 @@ PaymentsWindowUserConsentDialogView::PaymentsWindowUserConsentDialogView(
       payments_window_user_consent_dialog_controller_->GetOkButtonLabel());
   SetShowCloseButton(false);
   RegisterWindowWillCloseCallback(
+      RegisterWillCloseCallbackPassKey(),
       base::BindOnce(&PaymentsWindowUserConsentDialogView::OnDialogClosing,
                      weak_ptr_factory_.GetWeakPtr()));
   SetModalType(ui::mojom::ModalType::kChild);

@@ -40,6 +40,7 @@
 #include "cc/trees/transform_node.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
+#include "components/viz/common/quads/compositor_frame.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/events/types/scroll_input_type.h"
 #include "ui/gfx/geometry/point_conversions.h"
@@ -3262,6 +3263,60 @@ class CommitWithoutSynchronizingScrollOffsets : public LayerTreeHostScrollTest {
 };
 
 MULTI_THREAD_TEST_F(CommitWithoutSynchronizingScrollOffsets);
+
+class LayerTreeHostScrollTestScrollFrameIntervalInputs
+    : public LayerTreeHostScrollTest {
+ public:
+  void BeginTest() override { PostSetNeedsCommitToMainThread(); }
+
+  void WillBeginImplFrameOnThread(LayerTreeHostImpl* host_impl,
+                                  const viz::BeginFrameArgs& args,
+                                  bool has_damage) override {
+    frame_time_delta_ = args.frame_time - last_frame_time_;
+    last_frame_time_ = args.frame_time;
+    if (has_activated_ && !has_scrolled_) {
+      // Scroll second frame.
+      ScrollStateData scroll_state_data;
+      scroll_state_data.is_beginning = true;
+      scroll_state_data.delta_y_hint = kScrollDelta;
+      ScrollState scroll_state(scroll_state_data);
+      host_impl->GetInputHandler().ScrollBegin(
+          &scroll_state, ui::ScrollInputType::kAutoscroll);
+      host_impl->GetInputHandler().ScrollUpdate(
+          UpdateState(gfx::Point(), gfx::Vector2d(0, kScrollDelta)));
+      has_scrolled_ = true;
+    }
+  }
+
+  void DidActivateTreeOnThread(LayerTreeHostImpl* host_impl) override {
+    has_activated_ = true;
+  }
+
+  void WillSubmitCompositorFrame(LayerTreeHostImpl* host_impl,
+                                 const viz::CompositorFrame& frame) override {
+    if (!has_scrolled_) {
+      host_impl->SetNeedsRedraw();
+      host_impl->SetFullViewportDamage();
+    } else {
+      int scroll_delta = kScrollDelta;
+      float pixels_per_second = scroll_delta / frame_time_delta_.InSecondsF();
+
+      EXPECT_EQ(pixels_per_second,
+                frame.metadata.frame_interval_inputs
+                    .major_scroll_speed_in_pixels_per_second);
+      EndTest();
+    }
+  }
+
+ private:
+  constexpr static int kScrollDelta = 10;
+  bool has_activated_ = false;
+  bool has_scrolled_ = false;
+  base::TimeTicks last_frame_time_;
+  base::TimeDelta frame_time_delta_;
+};
+
+MULTI_THREAD_TEST_F(LayerTreeHostScrollTestScrollFrameIntervalInputs);
 
 }  // namespace
 }  // namespace cc

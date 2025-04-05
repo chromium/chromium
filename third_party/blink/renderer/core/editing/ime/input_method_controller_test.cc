@@ -219,7 +219,7 @@ TEST_F(InputMethodControllerTest, AddImeTextSpansToExistingText) {
 TEST_F(InputMethodControllerTest, AddGrammarCheckSpans) {
   InsertHTMLElement("<div id='sample' contenteditable>hello world</div>",
                     "sample");
-  Element* div = GetDocument().QuerySelector(AtomicString("div"));
+  Element* div = QuerySelector("div");
   Node* text = div->firstChild();
 
   GetDocument().Markers().AddSpellingMarker(

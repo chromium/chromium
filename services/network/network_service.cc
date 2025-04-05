@@ -380,6 +380,9 @@ NetworkService::NetworkService(
   DCHECK(!g_network_service);
   g_network_service = this;
 
+  ContentDecodingInterceptor::SetIsNetworkServiceRunningInTheCurrentProcess(
+      true, {});
+
   // |registry_| is nullptr when a NetworkService is out-of-process.
   if (registry_) {
     mojo::SetDefaultProcessErrorHandler(base::BindRepeating(&HandleBadMessage));
@@ -506,6 +509,9 @@ void NetworkService::Initialize(mojom::NetworkServiceParamsPtr params,
 
 NetworkService::~NetworkService() {
   DCHECK_EQ(this, g_network_service);
+
+  ContentDecodingInterceptor::SetIsNetworkServiceRunningInTheCurrentProcess(
+      false, {});
 
   doh_probe_activator_.reset();
 

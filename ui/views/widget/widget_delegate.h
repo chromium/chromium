@@ -131,6 +131,15 @@ class VIEWS_EXPORT WidgetDelegate {
     std::u16string title;
   };
 
+  class RegisterWillCloseCallbackPassKey {
+   public:
+    RegisterWillCloseCallbackPassKey() = default;
+  };
+  class RegisterDeleteCallbackPassKey {
+   public:
+    RegisterDeleteCallbackPassKey() = default;
+  };
+
   WidgetDelegate();
   WidgetDelegate(const WidgetDelegate&) = delete;
   WidgetDelegate& operator=(const WidgetDelegate&) = delete;
@@ -405,11 +414,22 @@ class VIEWS_EXPORT WidgetDelegate {
 
   void RegisterWidgetInitializedCallback(base::OnceClosure callback);
   void RegisterWindowClosingCallback(base::OnceClosure callback);
-  void RegisterDeleteDelegateCallback(base::OnceClosure callback);
 
-  // DEPRECATED. Don't use this. See Widget::MakeCloseSynchronous() for
-  // details.
-  void RegisterWindowWillCloseCallback(base::OnceClosure callback);
+  // DEPRECATED: Instead of using this to perform actions just before close, use
+  // the CLIENT_OWNS_WIDGET ownership model for the Widget, then call
+  // `Widget::MakeCloseSynchronous()` with a client callback that will do the
+  // desired "on close" actions and delete the Widget.
+  void RegisterWindowWillCloseCallback(RegisterWillCloseCallbackPassKey,
+                                       base::OnceClosure callback);
+
+  // DEPRECATED: This is unnecessary if the client directly owns the Delegate
+  // (see comments on `SetOwnedByWidget()` above), since then it can do any
+  // necessary cleanup directly before deleting the Delegate. Many callers also
+  // use this for similar purposes to `RegisterWindowWillCloseCallback()`, e.g.
+  // notifying someone of a dialog result; in this sort of case,
+  // `Widget::MakeCloseSynchronous()` is similarly useful.
+  void RegisterDeleteDelegateCallback(RegisterDeleteCallbackPassKey,
+                                      base::OnceClosure callback);
 
   void SetClientViewFactory(ClientViewFactory factory);
   void SetNonClientFrameViewFactory(NonClientFrameViewFactory factory);

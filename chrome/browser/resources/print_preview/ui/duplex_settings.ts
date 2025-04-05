@@ -64,8 +64,8 @@ export class PrintPreviewDuplexSettingsElement extends
     ];
   }
 
-  dark: boolean;
-  disabled: boolean;
+  declare dark: boolean;
+  declare disabled: boolean;
 
   private onDuplexSettingChange_() {
     this.$.duplex.checked = this.getSettingValue('duplex');

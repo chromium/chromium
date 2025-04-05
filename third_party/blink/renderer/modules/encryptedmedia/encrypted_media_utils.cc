@@ -102,6 +102,8 @@ V8MediaKeyStatus EncryptedMediaUtils::ConvertKeyStatusToEnum(
       return V8MediaKeyStatus(V8MediaKeyStatus::Enum::kStatusPending);
     case WebEncryptedMediaKeyInformation::KeyStatus::kInternalError:
       return V8MediaKeyStatus(V8MediaKeyStatus::Enum::kInternalError);
+    case WebEncryptedMediaKeyInformation::KeyStatus::kUsableInFuture:
+      return V8MediaKeyStatus(V8MediaKeyStatus::Enum::kUsableInFuture);
   }
   NOTREACHED();
 }

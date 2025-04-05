@@ -195,4 +195,15 @@
   return credentialIndex != NSNotFound;
 }
 
+#pragma mark - PasskeyRequestDetails (Testing)
+
+- (instancetype)initWithURL:(NSString*)url username:(NSString*)username {
+  self = [super init];
+  if (self) {
+    self.relyingPartyIdentifier = url;
+    self.userName = username;
+  }
+  return self;
+}
+
 @end

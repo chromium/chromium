@@ -6,11 +6,11 @@
  * @fileoverview Navigation listener to report hash change.
  */
 
-import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
 window.addEventListener('hashchange', () => {
   sendWebKitMessage(
       'NavigationEventMessage',
-      {'command': 'hashchange', 'frame_id': gCrWeb.message.getFrameId()});
+      {'command': 'hashchange', 'frame_id': gCrWebLegacy.message.getFrameId()});
 });

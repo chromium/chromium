@@ -15,10 +15,14 @@ import unittest
 
 REPOSITORY_ROOT = os.path.abspath(
     os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+sys.path.insert(0, REPOSITORY_ROOT)
 
-sys.path.append(os.path.join(REPOSITORY_ROOT, 'components'))
-from cronet.tools import api_static_checks  # pylint: disable=wrong-import-position
-from cronet.tools import update_api  # pylint: disable=wrong-import-position
+from build.android.gyp.util import build_utils  # pylint: disable=wrong-import-position
+from components.cronet.tools import api_static_checks  # pylint: disable=wrong-import-position
+from components.cronet.tools import update_api  # pylint: disable=wrong-import-position
+
+JAR_PATH = os.path.join(build_utils.JAVA_HOME, 'bin', 'jar')
+JAVAC_PATH = os.path.join(build_utils.JAVA_HOME, 'bin', 'javac')
 
 # pylint: disable=useless-object-inheritance
 
@@ -89,8 +93,9 @@ class ApiStaticCheckUnitTest(unittest.TestCase):
       java_file.write('public class %s {' % class_name)
       java_file.write(java)
       java_file.write('}')
-    os.system('javac %s' % java_filename)
-    os.system('jar cf %s %s' % (jar_filename, class_filenames))
+    os.system(f'{os.path.abspath(JAVAC_PATH)} {java_filename}')
+    os.system(
+        f'{os.path.abspath(JAR_PATH)} cf {jar_filename} {class_filenames}')
     return jar_filename
 
   def run_check_api_calls(self, api_java, impl_java):
@@ -167,7 +172,7 @@ class ApiStaticCheckUnitTest(unittest.TestCase):
             '}',
         ],
     ]
-    input = """Compiled from Api.java
+    input_str = """Compiled from Api.java
 public class Api {
 public void b();
 public Api();
@@ -181,7 +186,8 @@ public void y();
 public abstract int z();
 }
 """
-    self.assertEqual(update_api._split_by_class(input.splitlines()), expected)
+    self.assertEqual(update_api._split_by_class(input_str.splitlines()),
+                     expected)
 
   def test_update_api_success(self):
     # Test simple new API

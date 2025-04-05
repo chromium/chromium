@@ -47,7 +47,6 @@ source_set("omnibox_util") {
   sources = [
     "omnibox_metrics_helper.h",
     "omnibox_metrics_helper.mm",
-    "omnibox_text_change_delegate.h",
     "omnibox_text_field_delegate.h",
     "omnibox_util.h",
     "omnibox_util.mm",
@@ -113,8 +112,6 @@ source_set("omnibox_internal") {
     "omnibox_mediator.h",
     "omnibox_mediator.mm",
     "omnibox_mutator.h",
-    "omnibox_return_key_forwarding_delegate.h",
-    "omnibox_return_key_forwarding_delegate.mm",
     "omnibox_text_field_ios.mm",
     "omnibox_text_field_paste_delegate.h",
     "omnibox_text_field_paste_delegate.mm",

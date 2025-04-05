@@ -75,12 +75,12 @@ export class FullDataResetElement extends FullDataResetElementBase {
     };
   }
 
-  isSyncingPasswords: boolean;
-  isAccountStoreUser: boolean;
-  private passwordsCount_: string = '';
-  private passkeysCount_: string = '';
-  private passwordsCountDetails_: string = '';
-  private passkeysCountDetails_: string = '';
+  declare isSyncingPasswords: boolean;
+  declare isAccountStoreUser: boolean;
+  declare private passwordsCount_: string;
+  declare private passkeysCount_: string;
+  declare private passwordsCountDetails_: string;
+  declare private passkeysCountDetails_: string;
 
   private async updateCounters_(credentials:
                                     chrome.passwordsPrivate.PasswordUiEntry[]) {

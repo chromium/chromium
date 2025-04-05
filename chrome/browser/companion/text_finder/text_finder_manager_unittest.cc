@@ -69,10 +69,12 @@ TEST_F(TextFinderManagerTest, MultiTextFindersTest) {
                 id_and_text_finder.second->GetTextDirective() == "def");
     if (id_and_text_finder.second->GetTextDirective() == "ab,cd") {
       // Found text
-      id_and_text_finder.second->DidFinishAttachment(rect_1);
+      id_and_text_finder.second->DidFinishAttachment(
+          rect_1, blink::mojom::AttachmentResult::kSuccess);
     } else {
       // Not found.
-      id_and_text_finder.second->DidFinishAttachment(rect_2);
+      id_and_text_finder.second->DidFinishAttachment(
+          rect_2, blink::mojom::AttachmentResult::kSelectorNotMatched);
     }
   }
 }

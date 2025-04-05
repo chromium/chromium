@@ -8,6 +8,7 @@
 #include <tuple>
 
 #include "base/check_op.h"
+#include "base/strings/stringprintf.h"
 
 namespace printing {
 
@@ -63,6 +64,17 @@ void PageMargins::Clear() {
   right = 0;
   top = 0;
   bottom = 0;
+}
+
+std::string PageMargins::ToString() const {
+  return base::StringPrintf(
+      "header=%d, footer=%d, left=%d, right=%d, top=%d, bottom=%d)", header,
+      footer, left, right, top, bottom);
+}
+
+bool PageMargins::IsEmpty() const {
+  return header == 0 && footer == 0 && left == 0 && right == 0 && top == 0 &&
+         bottom == 0;
 }
 
 PageSetup::PageSetup() {

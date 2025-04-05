@@ -21,8 +21,11 @@ public interface HubLayoutController {
      *
      * @param tabId The ID of the tab to select or {@link Tab.INVALID_TAB_ID}.
      */
-    public void selectTabAndHideHubLayout(int tabId);
+    void selectTabAndHideHubLayout(int tabId);
 
     /** Returns a supplier of the {@link LayoutType} shown prior to entering the Hub. */
-    public ObservableSupplier<Integer> getPreviousLayoutTypeSupplier();
+    ObservableSupplier<Integer> getPreviousLayoutTypeSupplier();
+
+    /** Supplies whether an animation for the Hub Layout is running. */
+    ObservableSupplier<Boolean> getIsAnimatingSupplier();
 }

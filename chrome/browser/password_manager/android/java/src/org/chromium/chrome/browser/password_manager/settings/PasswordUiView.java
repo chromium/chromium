@@ -12,12 +12,14 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.base.IntStringCallback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 
 /**
  * Production implementation of PasswordManagerHandler, making calls to native C++ code to retrieve
  * the data.
  */
+@NullMarked
 public final class PasswordUiView implements PasswordManagerHandler {
     @CalledByNative
     private static SavedPasswordEntry createSavedPasswordEntry(

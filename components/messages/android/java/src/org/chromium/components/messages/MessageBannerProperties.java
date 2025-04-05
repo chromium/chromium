@@ -150,6 +150,10 @@ public class MessageBannerProperties {
     static final WritableObjectPropertyKey<Runnable> ON_SECONDARY_BUTTON_CLICK =
             new WritableObjectPropertyKey<>();
 
+    // Supplier of whether the view is under tap protection.
+    static final WritableObjectPropertyKey<Supplier<Boolean>>
+            IS_WITHIN_TAP_PROTECTION_PERIOD_SUPPLIER = new WritableObjectPropertyKey();
+
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 MESSAGE_IDENTIFIER,
@@ -187,6 +191,7 @@ public class MessageBannerProperties {
                 PRIMARY_WIDGET_APPEARANCE,
                 ELEVATION,
                 MARGIN_TOP,
-                VISUAL_HEIGHT
+                VISUAL_HEIGHT,
+                IS_WITHIN_TAP_PROTECTION_PERIOD_SUPPLIER
             };
 }

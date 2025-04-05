@@ -159,7 +159,7 @@ GPUBuffer* GPUBuffer::Create(GPUDevice* device,
     GPU* gpu = device->adapter()->gpu();
     gpu->TrackMappableBuffer(buffer);
     device->TrackMappableBuffer(buffer);
-    buffer->mappable_buffer_handles_ = gpu->mappable_buffer_handles();
+    buffer->mappable_buffer_handles_ = gpu->GetMappableBufferHandles();
   }
 
   return buffer;

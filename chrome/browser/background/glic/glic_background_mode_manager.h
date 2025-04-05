@@ -90,8 +90,6 @@ class GlicBackgroundModeManager
   void UnregisterHotkey();
   void UpdateState();
 
-  void OnProfileAllowedChanged();
-
   bool IsEnabledInAnyLoadedProfile();
 
   // A helper class for observing pref changes.
@@ -124,7 +122,10 @@ class GlicBackgroundModeManager
   ui::Accelerator actual_registered_hotkey_;
 
   // Listens to changes to IsEnabled() for profiles.
-  std::map<Profile*, base::CallbackListSubscription> profile_subscriptions_;
+  std::map<Profile*, base::CallbackListSubscription>
+      profile_enabled_subscriptions_;
+  std::map<Profile*, base::CallbackListSubscription>
+      profile_consent_subscriptions_;
   using ScopedProfileObserver =
       base::ScopedObservation<Profile, ProfileObserver>;
   std::map<Profile*, ScopedProfileObserver> profile_observers_;

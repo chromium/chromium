@@ -1015,6 +1015,7 @@
 <translation id="2742870351467570537">ಆಯ್ಕೆಮಾಡಿದ ಐಟಂಗಳನ್ನು ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="2743512410823092182">ಡಿಜೆ ಸಂಪನ್ಮೂಲಗಳು ಮತ್ತು ಉಪಕರಣ</translation>
 <translation id="2743934314332613923">ಡ್ರೈವಿಂಗ್ ಲೈಸೆನ್ಸ್ ಅಪ್‌ಡೇಟ್‌ ಮಾಡಬೇಕೆ?</translation>
+<translation id="2759299890026163685">ಪುನಃ ಪ್ರಯತ್ನಿಸುವ ಮೊದಲು ನೀವು ಸ್ಥಿರವಾದ ಇಂಟರ್‌ನೆಟ್ ಕನೆಕ್ಷನ್ ಅನ್ನು ಹೊಂದಿದ್ದೀರಿ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ</translation>
 <translation id="2759825833388495838"><ph name="APP_NAME" /> ನಲ್ಲಿ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ನಮೂದಿಸಿ</translation>
 <translation id="2764001903315068341">ಕಾಮಿಕ್ಸ್</translation>
 <translation id="2765217105034171413">ಸಣ್ಣ</translation>
@@ -1277,6 +1278,7 @@
 <translation id="323107829343500871"><ph name="CREDIT_CARD" /> ಗೆ CVC ಅನ್ನು ನಮೂದಿಸಿ</translation>
 <translation id="3234666976984236645">ಈ ಸೈಟ್‌ನಲ್ಲಿ ಯಾವಾಗೂ ಮುಖ್ಯ ವಿಷಯವನ್ನು ಹುಡುಕಿ</translation>
 <translation id="323585066388831737">ತಿಳಿ ಕೆಂಪು</translation>
+<translation id="3235902901585019063"><ph name="DATE_TIME" /> ರಂದು ಸ್ಥಳೀಯ ಫೈಲ್‌ಗಳನ್ನು ಅಳಿಸಲಾಗುತ್ತದೆ. ಯಾವುದೇ ನಿರ್ಣಾಯಕ ವ್ಯಾಪಾರ ಅಥವಾ ವೈಯಕ್ತಿಕ ಡೇಟಾವನ್ನು ಬಾಹ್ಯವಾಗಿ ಸಂಗ್ರಹಿಸಲಾಗಿದೆಯೇ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.</translation>
 <translation id="3236212803136366317">ಕಾರ್ಡ್ ಪ್ರಯೋಜನಗಳು</translation>
 <translation id="3238395604961564389">ಲಿಂಕ್‌ ಅನ್ನು ಅಜ್ಞಾತ ವಿಂಡೋದಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, ನಿಮ್ಮ ಬ್ರೌಸರ್‌ನ ನೋಟವನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಲು Tab ಒತ್ತಿ, ನಂತರ Enter ಒತ್ತಿರಿ</translation>
@@ -1754,6 +1756,7 @@
 <translation id="4031179711345676612">ಮೈಕ್ರೊಫೋನ್ ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="4036753017940930924">ಲಾಟ್‌ಗಳು ಮತ್ತು ಭೂಮಿ</translation>
 <translation id="4039506337798853114">ನಿಮ್ಮ ಕರ್ಸರ್ ಅನ್ನು ತೋರಿಸಲು, |<ph name="ACCELERATOR" />| ಅನ್ನು ಒತ್ತಿರಿ</translation>
+<translation id="4045226534284799755">ಪುನಃ ಪ್ರಯತ್ನಿಸುವ ಮೊದಲು ನಿಮ್ಮ Microsoft ಖಾತೆಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="4045441967987592849">ಪುನಃ ತೆರೆಯಿರಿ</translation>
 <translation id="4047351652147966654">18 x 24 ಇಂಚು</translation>
 <translation id="404831776305217138">"<ph name="EXTENSION_ID" />" ID ಹೊಂದಿರುವ ವಿಸ್ತರಣೆಯ ಅಪ್‌ಡೇಟ್ URL ಅಮಾನ್ಯವಾಗಿದೆ ಅಥವಾ ಬೆಂಬಲವಿಲ್ಲದ ಸ್ಕೀಮ್ ಅನ್ನು ಬಳಸುತ್ತದೆ. ಬೆಂಬಲವಿರುವ ಸ್ಕೀಮ್‌ಗಳು: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> ಹಾಗೂ <ph name="FILE_SCHEME" />.</translation>
@@ -1774,6 +1777,7 @@
 <translation id="4073797364926776829">ಕಾರ್ಡ್ ವೀಕ್ಷಿಸಿ</translation>
 <translation id="4075732493274867456">ಸಾಮಾನ್ಯ SSL ಪ್ರೊಟೋಕಾಲ್ ಆವೃತ್ತಿ ಅಥವಾ ಸೈಫರ್ ಸ್ಯೂಟ್ ಅನ್ನು ಕ್ಲೈಂಟ್ ಮತ್ತು ಸರ್ವರ್ ಬೆಂಬಲಿಸುವುದಿಲ್ಲ.</translation>
 <translation id="4079302484614802869">ಪ್ರಾಕ್ಸಿ ಕಾನ್ಫಿಗರೇಶನ್ ಅನ್ನು .pac ಸ್ಕ್ರಿಪ್ಟ್ URL ಬಳಸುವಂತೆ ಹೊಂದಿಸಲಾಗಿದೆ, ಹೊಂದಿಸಿದ ಪ್ರಾಕ್ಸಿ ಸರ್ವರ್‌ಗಳಲ್ಲ.</translation>
+<translation id="4080855220442581440">ಹಂಚಿಕೊಳ್ಳಲಾದ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಸ್ಕ್ರಾಲ್ ಮತ್ತು ಝೂಮ್‌ ಮಾಡುವುದು</translation>
 <translation id="4082333119419111506">ಕಾಗದ (ಪೂರ್ವಮುದ್ರಿತ)</translation>
 <translation id="4082393374666368382">ಸೆಟ್ಟಿಂಗ್‌ಗಳು - ನಿರ್ವಹಣೆ</translation>
 <translation id="4084219288110917128">ಎನ್ವಲಪ್ C1</translation>
@@ -2042,6 +2046,7 @@
 <translation id="4521280267704259211">ಎನ್ವಲಪ್ ಮೋನಾರ್ಕ್</translation>
 <translation id="4521916730539354575">ಎಡಭಾಗದ ಟ್ರೇ</translation>
 <translation id="4522570452068850558">ವಿವರಗಳು</translation>
+<translation id="4523580145196408446">ಲಿಂಕ್ ಮಾಡಿರುವುದು</translation>
 <translation id="4523643381056109546">ಸೈನೇಜ್</translation>
 <translation id="4524138615196389145">ಇನ್ನು ಮುಂದೆ WebAuthn ಅನ್ನು ಬಳಸುವ ಮೂಲಕ ನಿಮ್ಮ ಕಾರ್ಡ್‌ಗಳನ್ನು ವೇಗವಾಗಿ ದೃಢೀಕರಿಸಿ</translation>
 <translation id="45243788195988825"><ph name="TOPIC" /> ಅನ್ನು ನಿರ್ಬಂಧಿಸಿ</translation>
@@ -2206,6 +2211,7 @@
 <translation id="4834250788637067901">Google Pay ಅನ್ನು ಬಳಸುತ್ತಿರುವ ಪಾವತಿ ವಿಧಾನಗಳು, ಆಫರ್‌ಗಳು ಮತ್ತು ವಿಳಾಸಗಳು</translation>
 <translation id="4840250757394056958">ನಿಮ್ಮ Chrome ಇತಿಹಾಸವನ್ನು ವೀಕ್ಷಿಸಿ</translation>
 <translation id="484462545196658690">ಆಟೋ</translation>
+<translation id="4844937814014739139">ಹಂಚಿಕೊಳ್ಳಲಾದ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಸ್ಕ್ರಾಲ್ ಮತ್ತು ಝೂಮ್‌ ಮಾಡುವುದು</translation>
 <translation id="484671803914931257"><ph name="MERCHANT_NAME" /> ಮತ್ತು ಇತ್ಯಾದಿಗಳ ಮೇಲೆ ರಿಯಾಯಿತಿ ಪಡೆಯಿರಿ</translation>
 <translation id="484988093836683706">ಸಾಧನದ ಅನ್‌ಲಾಕ್ ಬಳಸಿ</translation>
 <translation id="4850886885716139402">ವೀಕ್ಷಣೆ</translation>
@@ -2499,6 +2505,7 @@
 <translation id="5344522958567249764">ಜಾಹೀರಾತು ಗೌಪ್ಯತೆಯನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="5344579389779391559">ಈ ಪುಟವು ನಿಮಗೆ ಶುಲ್ಕ ವಿಧಿಸಲು ಪ್ರಯತ್ನಿಸಬಹುದು</translation>
 <translation id="5345249337934847112">ಕಾಗದ (ಭಾರೀ ತೂಕದ ಲೇಪಿತ)</translation>
+<translation id="5348330584842140856">ಈ ಫೈಲ್ ಅಸ್ತಿತ್ವದಲ್ಲಿಲ್ಲದ ಕಾರಣ ಅದನ್ನು ಸರಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
 <translation id="5349543692327946794">ಲೇಬಲ್‌ಗಳು (ಇಂಕ್‌ಜೆಟ್‌)</translation>
 <translation id="5351548097010183514">ಕಟ್ಟಡ ಸಾಮಗ್ರಿಗಳು ಮತ್ತು ಪೂರೈಕೆಗಳು</translation>
 <translation id="5354143049423063163">ಹೆಡ್ಜ್ ನಿಧಿಗಳು</translation>
@@ -2763,6 +2770,7 @@
 <translation id="5826507051599432481">ಸಾಮಾನ್ಯ ಹೆಸರು (CN)</translation>
 <translation id="5830698870816298009">ಕ್ಯಾಮರಾದ ಬಳಕೆ ಮತ್ತು ಚಲನೆ</translation>
 <translation id="583281660410589416">ಅಪರಿಚಿತ</translation>
+<translation id="5837220895135257862">ಪುನಃ ಪ್ರಯತ್ನಿಸುವ ಮೊದಲು <ph name="CLOUD_PROVIDER" /> ನಲ್ಲಿ ಸ್ಥಳಾವಕಾಶವನ್ನು ಮುಕ್ತಗೊಳಿಸಿ</translation>
 <translation id="5838278095973806738">ಈ ಸೈಟ್‌ನಲ್ಲಿ ನೀವು ಯಾವುದೇ ಸೂಕ್ಷ್ಮ ಮಾಹಿತಿಯನ್ನು (ಉದಾಹರಣೆಗೆ, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಅಥವಾ ಕ್ರೆಡಿಟ್ ಕಾರ್ಡ್‌ಗಳು) ನಮೂದಿಸಬಾರದು, ಏಕೆಂದರೆ ಅದು ದಾಳಿಕೋರರ ಮೂಲಕ ಕಳುವಾಗಬಹುದು.</translation>
 <translation id="5838732667866024867">ದರ ಬದಲಾವಣೆಗಳನ್ನು ಗ್ರಾಫ್‌ನಲ್ಲಿ ಪರಿಶೀಲಿಸಲು ನೀವು ಲೆಫ್ಟ್/ರೈಟ್ ಆ್ಯರೋ ಬಳಸಬಹುದು</translation>
 <translation id="5840318881868981258">ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ, <ph name="ACCOUNT" /></translation>
@@ -3113,6 +3121,7 @@
 <translation id="6405181733356710802"><ph name="APP_NAME" /> ಗೆ ಮುಂದುವರಿಯಲು ಬಯಸುತ್ತೀರಾ?</translation>
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" /> ಗೆ ಮುಕ್ತಾಯ ದಿನಾಂಕ ಮತ್ತು ಸಿವಿಸಿ ಅನ್ನು ನಮೂದಿಸಿ</translation>
 <translation id="6411107829285739505">A4x8</translation>
+<translation id="6412543105195503444">ಪೋಷಕರ ಅನುಮೋದನೆಯ ಡೈಲಾಗ್</translation>
 <translation id="6414010576370319452">ಚರ್ಮ ಮತ್ತು ಉಗುರಿನ ಕಾಳಜಿ</translation>
 <translation id="6415778972515849510">ನಿಮ್ಮ Google ಖಾತೆಯನ್ನು ಸಂರಕ್ಷಿಸಲು ಹಾಗೂ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಬದಲಾಯಿಸಲು, Chromium ನಿಮಗೆ ಸಹಾಯ ಮಾಡಬಲ್ಲದು.</translation>
 <translation id="6416877227920300343">EDP</translation>
@@ -4022,6 +4031,7 @@
 <translation id="799149739215780103">ಬೈಂಡ್ ಮಾಡಿ</translation>
 <translation id="7992044431894087211"><ph name="APPLICATION_TITLE" /> ಜೊತೆ ಸ್ಕ್ರೀನ್‌‌ ಹಂಚಿಕೊಳ್ಳುವುದನ್ನು ಪುನರಾರಂಭಿಸಲಾಗಿದೆ</translation>
 <translation id="7995512525968007366">ನಿರ್ದಿಷ್ಟಪಡಿಸಲಾಗಿಲ್ಲ</translation>
+<translation id="7997855386298213183">ಹಂಚಿಕೊಳ್ಳಲಾಗಿರುವ ಟ್ಯಾಬ್‌ಗಳು</translation>
 <translation id="800218591365569300">ಮೆಮೊರಿ ಮುಕ್ತಗೊಳಿಸಲು ಇತರ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಅಥವಾ ಪ್ರೋಗ್ರಾಂಗಳನ್ನು ಮುಚ್ಚಲು ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="8002230960325005199">ಸಂಬಂಧಿತ ಸೈಟ್‌ಗಳನ್ನು ಹೊಸ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ನೋಡಿ</translation>
 <translation id="8003046808285812021">“<ph name="SEARCH_TERMS" />”</translation>
@@ -4096,6 +4106,7 @@
 <translation id="812020627659652807">ಫೈಲ್‌ಗಳನ್ನು ಈಗಲೇ ಅಳಿಸಿ</translation>
 <translation id="8120720167840853945">ಈ ನೀತಿಯು ಯಾವುದೇ ಇತರ ನೀತಿಗಳ ಡೀಫಾಲ್ಟ್ ನಡವಳಿಕೆಯನ್ನು ನಿಯಂತ್ರಿಸುತ್ತಿಲ್ಲ.</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್ ಅಥವಾ ನೆಟ್‌ವರ್ಕ್ ನಲ್ಲಿ ಸರಿಯಾಗಿ ಇನ್‌ಸ್ಟಾಲ್‌ ಮಾಡಲಾಗಿಲ್ಲ: ಈ ಸಮಸ್ಯೆಯನ್ನು ಪರಿಹರಿಸಲು ನಿಮ್ಮ IT ನಿರ್ವಾಹಕರಿಗೆ ತಿಳಿಸಿ.</translation>
+<translation id="8130113808541743942">ಇದಕ್ಕೆ ವರ್ಗಾಯಿಸಿ...</translation>
 <translation id="8131740175452115882">ದೃಢೀಕರಿಸು</translation>
 <translation id="8133495915926741232">ಆ್ಯಡ್‌ಗಳನ್ನು ವೈಯಕ್ತೀಕರಿಸುವುದಕ್ಕೆ ಸಹಾಯ ಮಾಡಲು ಯಾವ ವಿಶಾಲ ವರ್ಗದ ವಿಷಯವನ್ನು ಬಳಸಬೇಕೆಂದು ಆಯ್ಕೆಮಾಡಿ. ವಿಶಾಲ ವರ್ಗವನ್ನು ಆಫ್ ಮಾಡುವುದರಿಂದ ಅದರ ಸಂಬಂಧಿತ ವಿಷಯಗಳನ್ನು ಸಹ ನಿರ್ಬಂಧಿಸುತ್ತದೆ. <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="8134058435519644366">ನೇಮಕಾತಿ ಮತ್ತು ಸಿಬ್ಬಂದಿ ವ್ಯವಸ್ಥೆ</translation>

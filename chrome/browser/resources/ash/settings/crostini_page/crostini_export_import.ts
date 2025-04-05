@@ -117,21 +117,17 @@ export class SettingsCrostiniExportImportElement extends
         type: String,
         value: DEFAULT_CROSTINI_VM,
       },
-
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kBackupLinuxAppsAndFiles,
-          Setting.kRestoreLinuxAppsAndFiles,
-        ]),
-      },
     };
   }
 
   prefs: PrefsState;
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kBackupLinuxAppsAndFiles,
+    Setting.kRestoreLinuxAppsAndFiles,
+  ]);
+
   private allContainers_: ContainerInfo[];
   private browserProxy_: CrostiniBrowserProxy;
   private defaultVmName_: string;

@@ -213,6 +213,7 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
       const GURL& dest_url,
       blink::mojom::ReferrerPtr dest_referrer,
       blink::mojom::NavigationType navigation_type,
+      base::TimeTicks actual_navigation_start,
       base::TimeTicks navigation_start,
       base::TimeTicks input_start);
   blink::mojom::CommitNavigationParamsPtr ConstructCommitNavigationParams(

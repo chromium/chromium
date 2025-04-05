@@ -14,7 +14,7 @@
 #include "chrome/browser/actor/tools/tool_invocation.h"
 #include "chrome/common/chrome_features.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
-#include "components/tab_collections/public/tab_interface.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "url/origin.h"
 
@@ -29,6 +29,11 @@ ActorCoordinator::ActorCoordinator() = default;
 
 ActorCoordinator::~ActorCoordinator() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+// static
+void ActorCoordinator::RegisterWithProfile(Profile* profile) {
+  InitActionBlocklist(profile);
 }
 
 void ActorCoordinator::Act(TabInterface& tab,

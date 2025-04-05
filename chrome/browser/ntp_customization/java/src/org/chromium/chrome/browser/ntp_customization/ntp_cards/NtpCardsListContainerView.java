@@ -17,6 +17,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import org.chromium.chrome.browser.magic_stack.HomeModulesConfigManager;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetListContainerView;
 import org.chromium.chrome.browser.ntp_customization.ListContainerViewDelegate;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationMetricsUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.R;
 
@@ -80,6 +81,7 @@ public class NtpCardsListContainerView extends BottomSheetListContainerView {
         listItemView.setOnCheckedChangeListener(
                 (button, newValue) -> {
                     homeModulesConfigManager.setPrefModuleTypeEnabled(type, newValue);
+                    NtpCustomizationMetricsUtils.recordModuleToggledInBottomSheet(type, newValue);
                 });
     }
 

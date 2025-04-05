@@ -83,8 +83,9 @@ std::optional<GraphFeatures>* GetGraphFeaturesOverride() {
 }
 
 void OnGraphCreated(const GraphFeatures& graph_features,
-                    GraphCreatedCallback external_graph_created_callback,
-                    GraphImpl* graph) {
+                    GraphCreatedCallback external_graph_created_callback) {
+  GraphImpl* graph = PerformanceManagerImpl::GetGraphImpl();
+
   auto graph_features_override = *GetGraphFeaturesOverride();
   const GraphFeatures& configured_features =
       graph_features_override ? *graph_features_override : graph_features;
@@ -104,13 +105,12 @@ void OnGraphCreated(const GraphFeatures& graph_features,
 
 PerformanceManagerLifetime::PerformanceManagerLifetime(
     const GraphFeatures& graph_features,
-    GraphCreatedCallback graph_created_callback)
-    : performance_manager_(PerformanceManagerImpl::Create(
-          base::BindOnce(&OnGraphCreated,
-                         graph_features,
-                         std::move(graph_created_callback)))),
-      performance_manager_registry_(
-          performance_manager::PerformanceManagerRegistry::Create()) {}
+    GraphCreatedCallback graph_created_callback) {
+  performance_manager_ = PerformanceManagerImpl::Create();
+  OnGraphCreated(graph_features, std::move(graph_created_callback));
+  performance_manager_registry_ =
+      performance_manager::PerformanceManagerRegistry::Create();
+}
 
 PerformanceManagerLifetime::~PerformanceManagerLifetime() {
   // There may still be worker hosts, WebContents and RenderProcessHosts with

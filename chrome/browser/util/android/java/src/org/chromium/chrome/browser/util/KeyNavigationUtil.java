@@ -146,4 +146,28 @@ public class KeyNavigationUtil {
     public static boolean isActionUp(KeyEvent event) {
         return event.getAction() == KeyEvent.ACTION_UP;
     }
+
+    /**
+     * Checks whether the given event is a TAB event.
+     *
+     * @param event Event to be checked.
+     * @return Whether the event is a TAB event.
+     */
+    public static boolean isTab(KeyEvent event) {
+        return isActionDown(event)
+                && event.getKeyCode() == KeyEvent.KEYCODE_TAB
+                && event.hasNoModifiers();
+    }
+
+    /**
+     * Checks whether the given event is a TAB+SHIFT event.
+     *
+     * @param event Event to be checked.
+     * @return Whether the event is a TAB +SHIFT event.
+     */
+    public static boolean isBackwardTab(KeyEvent event) {
+        return isActionDown(event)
+                && event.getKeyCode() == KeyEvent.KEYCODE_TAB
+                && event.isShiftPressed();
+    }
 }

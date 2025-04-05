@@ -17,7 +17,7 @@
               "builder_group": "chromium.android",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_android_config": {
-                "config": "x64_builder"
+                "config": "base_config"
               },
               "legacy_chromium_config": {
                 "apply_configs": [
@@ -25,7 +25,7 @@
                   "mb"
                 ],
                 "build_config": "Debug",
-                "config": "x64_builder",
+                "config": "main_builder",
                 "target_arch": "intel",
                 "target_bits": 64,
                 "target_platform": "android"
@@ -49,7 +49,7 @@
               "builder_group": "chromium.android",
               "execution_mode": "TEST",
               "legacy_android_config": {
-                "config": "x64_builder"
+                "config": "base_config"
               },
               "legacy_chromium_config": {
                 "apply_configs": [
@@ -57,7 +57,7 @@
                   "mb"
                 ],
                 "build_config": "Debug",
-                "config": "x64_builder",
+                "config": "main_builder",
                 "target_arch": "intel",
                 "target_bits": 64,
                 "target_platform": "android"
@@ -86,7 +86,7 @@
               "builder_group": "chromium.android",
               "execution_mode": "TEST",
               "legacy_android_config": {
-                "config": "x64_builder"
+                "config": "base_config"
               },
               "legacy_chromium_config": {
                 "apply_configs": [
@@ -94,7 +94,7 @@
                   "mb"
                 ],
                 "build_config": "Debug",
-                "config": "x64_builder",
+                "config": "main_builder",
                 "target_arch": "intel",
                 "target_bits": 64,
                 "target_platform": "android"
@@ -123,7 +123,7 @@
               "builder_group": "chromium.android",
               "execution_mode": "TEST",
               "legacy_android_config": {
-                "config": "x64_builder"
+                "config": "base_config"
               },
               "legacy_chromium_config": {
                 "apply_configs": [
@@ -131,7 +131,7 @@
                   "mb"
                 ],
                 "build_config": "Debug",
-                "config": "x64_builder",
+                "config": "main_builder",
                 "target_arch": "intel",
                 "target_bits": 64,
                 "target_platform": "android"
@@ -160,7 +160,7 @@
               "builder_group": "chromium.android",
               "execution_mode": "TEST",
               "legacy_android_config": {
-                "config": "x64_builder"
+                "config": "base_config"
               },
               "legacy_chromium_config": {
                 "apply_configs": [
@@ -168,8 +168,44 @@
                   "mb"
                 ],
                 "build_config": "Debug",
-                "config": "x64_builder",
+                "config": "main_builder",
                 "target_arch": "intel",
+                "target_bits": 64,
+                "target_platform": "android"
+              },
+              "legacy_gclient_config": {
+                "apply_configs": [
+                  "android"
+                ],
+                "config": "chromium"
+              },
+              "parent": {
+                "bucket": "ci",
+                "builder": "android-cronet-x64-dbg",
+                "project": "chromium"
+              }
+            }
+          },
+          {
+            "builder_id": {
+              "bucket": "ci",
+              "builder": "android-cronet-x64-dbg-16-tests",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "build_gs_bucket": "chromium-android-archive",
+              "builder_group": "chromium.android",
+              "execution_mode": "TEST",
+              "legacy_android_config": {
+                "config": "base_config"
+              },
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "cronet_builder",
+                  "mb"
+                ],
+                "build_config": "Debug",
+                "config": "main_builder",
                 "target_bits": 64,
                 "target_platform": "android"
               },
@@ -215,6 +251,11 @@
           "bucket": "ci",
           "builder": "android-cronet-x64-dbg-15-tests",
           "project": "chromium"
+        },
+        {
+          "bucket": "ci",
+          "builder": "android-cronet-x64-dbg-16-tests",
+          "project": "chromium"
         }
       ],
       "mirroring_builder_group_and_names": [
@@ -236,6 +277,10 @@
         },
         {
           "builder": "android-cronet-x64-dbg-15-tests",
+          "group": "tryserver.chromium.android"
+        },
+        {
+          "builder": "android-cronet-x64-dbg-16-tests",
           "group": "tryserver.chromium.android"
         }
       ],

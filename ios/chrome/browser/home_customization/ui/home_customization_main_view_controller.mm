@@ -6,7 +6,8 @@
 
 #import <map>
 
-#import "ios/chrome/browser/home_customization/ui/home_customization_background_view_cell.h"
+#import "ios/chrome/browser/home_customization/ui/home_customization_background_cell.h"
+#import "ios/chrome/browser/home_customization/ui/home_customization_background_picker_cell.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_collection_configurator.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_mutator.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_toggle_cell.h"
@@ -33,8 +34,11 @@
   // Registration for the HomeCustomizationToggleCells.
   UICollectionViewCellRegistration* _toggleCellRegistration;
 
-  // Registration for the background customization cell.
-  UICollectionViewCellRegistration* _backgroundCustomizationRegistration;
+  // Registration for the background cell.
+  UICollectionViewCellRegistration* _backgroundCellRegistration;
+
+  // Registration for the background picker cell.
+  UICollectionViewCellRegistration* _backgroundPickerCellRegistration;
 }
 
 // Synthesized from HomeCustomizationViewControllerProtocol.
@@ -72,7 +76,7 @@
       registrationWithCellClass:[HomeCustomizationToggleCell class]
            configurationHandler:^(HomeCustomizationToggleCell* cell,
                                   NSIndexPath* indexPath,
-                                  NSNumber* itemIdentifier) {
+                                  NSString* itemIdentifier) {
              CustomizationToggleType toggleType =
                  (CustomizationToggleType)[itemIdentifier integerValue];
              BOOL enabled = self.toggleMap.at(toggleType);
@@ -81,30 +85,38 @@
            }];
 
   if (IsNTPBackgroundCustomizationEnabled()) {
-    _backgroundCustomizationRegistration = [UICollectionViewCellRegistration
-        registrationWithCellClass:[HomeCustomizationBackgroundViewCell class]
-             configurationHandler:^(HomeCustomizationBackgroundViewCell* cell,
+    _backgroundCellRegistration = [UICollectionViewCellRegistration
+        registrationWithCellClass:[HomeCustomizationBackgroundCell class]
+             configurationHandler:^(HomeCustomizationBackgroundCell* cell,
                                     NSIndexPath* indexPath,
-                                    NSNumber* itemIdentifier) {
+                                    NSString* itemIdentifier) {
+               cell.mutator = weakSelf.mutator;
+             }];
+
+    _backgroundPickerCellRegistration = [UICollectionViewCellRegistration
+        registrationWithCellClass:[HomeCustomizationBackgroundPickerCell class]
+             configurationHandler:^(HomeCustomizationBackgroundPickerCell* cell,
+                                    NSIndexPath* indexPath,
+                                    NSString* itemIdentifier) {
                cell.mutator = weakSelf.mutator;
              }];
   }
 }
 
 // Creates a data snapshot representing the content of the collection view.
-- (NSDiffableDataSourceSnapshot<CustomizationSection*, NSNumber*>*)
+- (NSDiffableDataSourceSnapshot<CustomizationSection*, NSString*>*)
     dataSnapshot {
-  NSDiffableDataSourceSnapshot<CustomizationSection*, NSNumber*>* snapshot =
+  NSDiffableDataSourceSnapshot<CustomizationSection*, NSString*>* snapshot =
       [[NSDiffableDataSourceSnapshot alloc] init];
 
   if (IsNTPBackgroundCustomizationEnabled()) {
     // Create background customization section and add items to it.
     [snapshot
         appendSectionsWithIdentifiers:@[ kCustomizationSectionBackground ]];
-
-    NSInteger smallestExistingIdentifier =
-        static_cast<NSInteger>(self.toggleMap.begin()->first);
-    [snapshot appendItemsWithIdentifiers:@[ @(smallestExistingIdentifier - 1) ]
+    [snapshot appendItemsWithIdentifiers:[self identifiersForBackgroundCells:
+                                                   kNumberOfRecentBackgrounds]
+               intoSectionWithIdentifier:kCustomizationSectionBackground];
+    [snapshot appendItemsWithIdentifiers:@[ kBackgroundPickerCellIdentifier ]
                intoSectionWithIdentifier:kCustomizationSectionBackground];
   }
 
@@ -134,16 +146,19 @@
       [self.diffableDataSource.snapshot
           indexOfSectionIdentifier:kCustomizationSectionBackground];
 
-  if (sectionIndex == mainTogglesIdentifier ||
-      sectionIndex == backgroundCustomizationIdentifier) {
+  if (sectionIndex == mainTogglesIdentifier) {
     return [_collectionConfigurator
         verticalListSectionForLayoutEnvironment:layoutEnvironment];
+  } else if (sectionIndex == backgroundCustomizationIdentifier) {
+    CHECK(IsNTPBackgroundCustomizationEnabled());
+    return [_collectionConfigurator
+        backgroundCellSectionForLayoutEnvironment:layoutEnvironment];
   }
   return nil;
 }
 
 - (UICollectionViewCell*)configuredCellForIndexPath:(NSIndexPath*)indexPath
-                                     itemIdentifier:(NSNumber*)itemIdentifier {
+                                     itemIdentifier:(NSString*)itemIdentifier {
   CustomizationSection* section = [_diffableDataSource.snapshot
       sectionIdentifierForSectionContainingItemIdentifier:itemIdentifier];
 
@@ -153,11 +168,19 @@
                                          forIndexPath:indexPath
                                                  item:itemIdentifier];
   } else if (kCustomizationSectionBackground == section) {
-    return [_collectionView
-        dequeueConfiguredReusableCellWithRegistration:
-            _backgroundCustomizationRegistration
-                                         forIndexPath:indexPath
-                                                 item:itemIdentifier];
+    if ([itemIdentifier isEqual:kBackgroundPickerCellIdentifier]) {
+      return [_collectionView
+          dequeueConfiguredReusableCellWithRegistration:
+              _backgroundPickerCellRegistration
+                                           forIndexPath:indexPath
+                                                   item:itemIdentifier];
+    } else if ([itemIdentifier hasPrefix:kBackgroundCellIdentifier]) {
+      return [_collectionView
+          dequeueConfiguredReusableCellWithRegistration:
+              _backgroundCellRegistration
+                                           forIndexPath:indexPath
+                                                   item:itemIdentifier];
+    }
   }
   return nil;
 }
@@ -169,7 +192,7 @@
 
   // Recreate the snapshot with the new items to take into account all the
   // changes of items presence (add/remove).
-  NSDiffableDataSourceSnapshot<CustomizationSection*, NSNumber*>* snapshot =
+  NSDiffableDataSourceSnapshot<CustomizationSection*, NSString*>* snapshot =
       [self dataSnapshot];
 
   // Reconfigure all present items to ensure that they are updated in case their
@@ -182,14 +205,27 @@
 
 #pragma mark - Helpers
 
+// Returns an array of identifiers for the background options, which can be used
+// by the snapshot.
+- (NSArray*)identifiersForBackgroundCells:(NSInteger)numberOfBackgrounds {
+  NSMutableArray<NSString*>* identifiers = [[NSMutableArray alloc] init];
+  for (int i = 0; i < numberOfBackgrounds; i++) {
+    [identifiers
+        addObject:[NSString
+                      stringWithFormat:@"%@%d", kBackgroundCellIdentifier, i]];
+  }
+
+  return identifiers;
+}
+
 // Returns an array of identifiers for a map of toggle types, which can be
 // used by the snapshot.
-- (NSMutableArray<NSNumber*>*)identifiersForToggleMap:
+- (NSMutableArray<NSString*>*)identifiersForToggleMap:
     (std::map<CustomizationToggleType, BOOL>)types {
-  NSMutableArray<NSNumber*>* toggleDataIdentifiers =
+  NSMutableArray<NSString*>* toggleDataIdentifiers =
       [[NSMutableArray alloc] init];
   for (auto const& [key, value] : types) {
-    [toggleDataIdentifiers addObject:@((int)key)];
+    [toggleDataIdentifiers addObject:[@((int)key) stringValue]];
   }
   return toggleDataIdentifiers;
 }

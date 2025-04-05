@@ -8,7 +8,7 @@ import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import type {StoreObserver} from 'chrome://resources/js/store.js';
 
 import {selectFolder, setSearchTerm} from './actions.js';
-import {BOOKMARKS_BAR_ID} from './constants.js';
+import {ACCOUNT_HEADING_NODE_ID, BOOKMARKS_BAR_ID} from './constants.js';
 import {Store} from './store.js';
 import type {BookmarksPageState} from './types.js';
 
@@ -20,6 +20,7 @@ import type {BookmarksPageState} from './types.js';
 export class BookmarksRouter implements StoreObserver<BookmarksPageState> {
   private searchTerm_: string = '';
   private selectedId_: string = '';
+  private defaultId_: string = '';
   private updateStateTimeout_: number|null = null;
   private tracker_: EventTracker = new EventTracker();
 
@@ -52,7 +53,7 @@ export class BookmarksRouter implements StoreObserver<BookmarksPageState> {
     const searchTerm = newParams.get('q') || '';
     let selectedId = newParams.get('id');
     if (!selectedId && !searchTerm) {
-      selectedId = BOOKMARKS_BAR_ID;
+      selectedId = this.defaultId_;
     }
 
     if (searchTerm !== this.searchTerm_) {
@@ -74,6 +75,9 @@ export class BookmarksRouter implements StoreObserver<BookmarksPageState> {
   onStateChanged(state: BookmarksPageState) {
     this.selectedId_ = state.selectedFolder;
     this.searchTerm_ = state.search.term;
+    this.defaultId_ = state.nodes[ACCOUNT_HEADING_NODE_ID] ?
+        ACCOUNT_HEADING_NODE_ID :
+        BOOKMARKS_BAR_ID;
     if (this.updateStateTimeout_) {
       clearTimeout(this.updateStateTimeout_);
     }
@@ -89,7 +93,7 @@ export class BookmarksRouter implements StoreObserver<BookmarksPageState> {
     const queryParams = new URLSearchParams();
     if (this.searchTerm_) {
       queryParams.set('q', this.searchTerm_);
-    } else if (this.selectedId_ !== BOOKMARKS_BAR_ID) {
+    } else if (this.selectedId_ !== this.defaultId_) {
       queryParams.set('id', this.selectedId_);
     }
     CrRouter.getInstance().setQueryParams(queryParams);

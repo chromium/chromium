@@ -65,6 +65,11 @@ _OVERRIDES = [
     #('androidx_core_core/core-1.9.0-SNAPSHOT.aar',
     # 'https://androidx.dev/snapshots/builds/8545498/artifacts/repository/'
     # 'androidx/core/core/1.8.0-SNAPSHOT/core-1.8.0-20220505.122105-1.aar'),
+    # TODO(crbug.com/408228583): Remove the pin once internal code is updated.
+    ('androidx_compose_material3_material3_android/material3-android-1.4.0-SNAPSHOT.aar',
+     'https://androidx.dev/snapshots/builds/13297744/artifacts/repository/'
+     'androidx/compose/material3/material3-android/1.4.0-SNAPSHOT/'
+     'material3-android-1.4.0-20250401.133516-1.aar'),
 ]
 
 _FILES_TO_COMMIT = [

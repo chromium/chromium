@@ -68,7 +68,7 @@ void OnSodaResponse(const char* serialized_proto,
 void SodaClientImplUnitTest::AddRecognitionResult(std::string result) {
   // The language pack used by the MacOS builder is newer and has punctuation
   // enabled whereas the one used by the Linux builder does not.
-  result.erase(std::remove(result.begin(), result.end(), ','), result.end());
+  std::erase(result, ',');
   recognition_results_.push_back(std::move(result));
 }
 

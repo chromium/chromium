@@ -11,7 +11,7 @@
 #include "base/notreached.h"
 #include "third_party/blink/renderer/core/animation/css/css_animations.h"
 #include "third_party/blink/renderer/core/animation/css_interpolation_environment.h"
-#include "third_party/blink/renderer/core/animation/css_interpolation_types_map.h"
+#include "third_party/blink/renderer/core/animation/interpolation_types_map.h"
 #include "third_party/blink/renderer/core/animation/invalidatable_interpolation.h"
 #include "third_party/blink/renderer/core/animation/property_handle.h"
 #include "third_party/blink/renderer/core/animation/transition_interpolation.h"
@@ -814,8 +814,8 @@ void StyleCascade::ApplyInterpolation(
     CascadeResolver& resolver) {
   DCHECK(!property.IsSurrogate());
 
-  CSSInterpolationTypesMap map(state_.GetDocument().GetPropertyRegistry(),
-                               state_.GetDocument());
+  InterpolationTypesMap map(state_.GetDocument().GetPropertyRegistry(),
+                            state_.GetDocument());
   CSSInterpolationEnvironment environment(map, state_, this, &resolver);
 
   const Interpolation& interpolation = *interpolations.front();

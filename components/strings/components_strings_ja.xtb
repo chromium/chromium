@@ -1015,6 +1015,7 @@
 <translation id="2742870351467570537">選択したアイテムを削除</translation>
 <translation id="2743512410823092182">DJ 用の機材</translation>
 <translation id="2743934314332613923">運転免許証を更新しますか？</translation>
+<translation id="2759299890026163685">インターネット接続が安定していることを確認してからもう一度お試しください</translation>
 <translation id="2759825833388495838"><ph name="APP_NAME" /> でパスワードを入力しようとしています</translation>
 <translation id="2764001903315068341">コミック</translation>
 <translation id="2765217105034171413">小</translation>
@@ -1279,6 +1280,7 @@
 <translation id="323107829343500871"><ph name="CREDIT_CARD" /> の CVC を入力</translation>
 <translation id="3234666976984236645">このサイトの重要なコンテンツを常に検出</translation>
 <translation id="323585066388831737">ライトレッド</translation>
+<translation id="3235902901585019063">ローカル ファイルは <ph name="DATE_TIME" /> に削除されます。ビジネスや個人の重要なデータは外部に保存してください。</translation>
 <translation id="3236212803136366317">カードのメリット</translation>
 <translation id="3238395604961564389">シークレット ウインドウでリンクを開く</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab、Enter キーの順に押すと、ブラウザのデザインをカスタマイズできます</translation>
@@ -1757,6 +1759,7 @@
 <translation id="4031179711345676612">マイクを使用できます</translation>
 <translation id="4036753017940930924">用地、土地</translation>
 <translation id="4039506337798853114">カーソルを表示するには、|<ph name="ACCELERATOR" />| を押します</translation>
+<translation id="4045226534284799755">Microsoft アカウントにログインしてからもう一度お試しください</translation>
 <translation id="4045441967987592849">再度開く</translation>
 <translation id="4047351652147966654">18x24 インチ</translation>
 <translation id="404831776305217138">ID「<ph name="EXTENSION_ID" />」の拡張機能の更新 URL は無効であるか、サポートされていないスキームが使用されています。サポートされているスキームは <ph name="HTTP_SCHEME" />、<ph name="HTTPS_SCHEME" />、<ph name="FILE_SCHEME" /> です。</translation>
@@ -1777,6 +1780,7 @@
 <translation id="4073797364926776829">カードを表示</translation>
 <translation id="4075732493274867456">クライアントとサーバーで、共通の SSL プロトコル バージョンまたは暗号スイートがサポートされていません。</translation>
 <translation id="4079302484614802869">プロキシは固定プロキシ サーバーではなく .pac スクリプト URL を使用するように設定されています。</translation>
+<translation id="4080855220442581440">共有タブのスクロールとズーム</translation>
 <translation id="4082333119419111506">紙（プレプリント）</translation>
 <translation id="4082393374666368382">設定 - 管理</translation>
 <translation id="4084219288110917128">C1 封筒</translation>
@@ -2210,6 +2214,7 @@
 <translation id="4834250788637067901">Google Pay を使用したお支払方法、クーポン、住所</translation>
 <translation id="4840250757394056958">Chrome 履歴を表示</translation>
 <translation id="484462545196658690">自動</translation>
+<translation id="4844937814014739139">共有タブのスクロールとズーム</translation>
 <translation id="484671803914931257"><ph name="MERCHANT_NAME" /> などの割引を取得</translation>
 <translation id="484988093836683706">デバイスのロック解除を使用</translation>
 <translation id="4850886885716139402">表示</translation>
@@ -2503,6 +2508,7 @@
 <translation id="5344522958567249764">広告プライバシーを管理</translation>
 <translation id="5344579389779391559">このページでは課金される恐れがあります</translation>
 <translation id="5345249337934847112">紙（厚手コート）</translation>
+<translation id="5348330584842140856">このファイルは存在しないため移動されませんでした</translation>
 <translation id="5349543692327946794">ラベル（インクジェット）</translation>
 <translation id="5351548097010183514">建築資材、物資</translation>
 <translation id="5354143049423063163">ヘッジファンド</translation>
@@ -2767,6 +2773,7 @@
 <translation id="5826507051599432481">一般名（CN）</translation>
 <translation id="5830698870816298009">カメラの使用と移動</translation>
 <translation id="583281660410589416">不明</translation>
+<translation id="5837220895135257862"><ph name="CLOUD_PROVIDER" /> の空き容量を増やしてからもう一度お試しください</translation>
 <translation id="5838278095973806738">このサイトでは機密情報（パスワード、クレジット カードなど）を入力しないでください。悪意のあるユーザーに情報が盗まれる恐れがあります。</translation>
 <translation id="5838732667866024867">左右の矢印を使って、グラフで価格の変動を確認できます</translation>
 <translation id="5840318881868981258">保存先の Google アカウント: <ph name="ACCOUNT" /></translation>
@@ -4029,6 +4036,7 @@
 <translation id="799149739215780103">製本</translation>
 <translation id="7992044431894087211"><ph name="APPLICATION_TITLE" /> との画面共有が再開されました</translation>
 <translation id="7995512525968007366">指定なし</translation>
+<translation id="7997855386298213183">共有タブ</translation>
 <translation id="800218591365569300">メモリを解放するために、他のタブやプログラムを閉じてみてください。</translation>
 <translation id="8002230960325005199">新しいタブで関連サイトを表示</translation>
 <translation id="8003046808285812021">「<ph name="SEARCH_TERMS" />」</translation>

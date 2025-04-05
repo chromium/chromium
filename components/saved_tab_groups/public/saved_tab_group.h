@@ -75,6 +75,9 @@ class SavedTabGroup {
   const base::Time& last_user_interaction_time() const {
     return last_user_interaction_time_;
   }
+  const std::optional<base::Time>& archival_time() const {
+    return archival_time_;
+  }
   const std::optional<std::string>& creator_cache_guid() const {
     return creator_cache_guid_;
   }
@@ -155,6 +158,7 @@ class SavedTabGroup {
       base::Time update_time_windows_epoch_micros);
   SavedTabGroup& SetLastUserInteractionTime(
       base::Time last_user_interaction_time);
+  SavedTabGroup& SetArchivalTime(std::optional<base::Time> archival_time);
   SavedTabGroup& SetPosition(size_t position);
   SavedTabGroup& SetPinned(bool pinned);
   SavedTabGroup& SetCollaborationId(
@@ -321,6 +325,10 @@ class SavedTabGroup {
   // refers to tab addition, tab removal and tab navigation only. Only for
   // metrics.
   base::Time last_user_interaction_time_;
+
+  // Timestamp of when the tab group was locally archived. Tab groups that are
+  // not archived will not have a value. This field is not synced.
+  std::optional<base::Time> archival_time_;
 
   // The saved guid of the group that this group was created from. Used for
   // both shared and saved tab groups when they are converted from the other

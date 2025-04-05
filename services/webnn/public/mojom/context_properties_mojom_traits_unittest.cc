@@ -19,6 +19,7 @@ TEST(ContextPropertiesMojomTraitsTest, Basic) {
 
   webnn::ContextProperties input(
       webnn::InputOperandLayout::kNchw, webnn::Resample2DAxes::kChannelsFirst,
+      webnn::BatchNormalizationAxis::kChannelsFirst,
       /*tensor_byte_length_limit=*/INT_MAX,
       {/*input=*/webnn::SupportedDataTypes::All(),
        /*constant=*/
@@ -229,6 +230,7 @@ TEST(ContextPropertiesMojomTraitsTest, Basic) {
 
   webnn::ContextProperties output(
       webnn::InputOperandLayout::kNhwc, webnn::Resample2DAxes::kChannelsFirst,
+      webnn::BatchNormalizationAxis::kChannelsFirst,
       /*tensor_byte_length_limit=*/0,
       {{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
        {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},

@@ -6,29 +6,42 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/values.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
+#include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "components/content_settings/core/browser/single_value_wildcard_rule_iterator.h"
 #include "components/content_settings/core/common/content_settings.h"
-#include "components/permissions/android/os_additional_security_permission_util_android.h"
+
+using safe_browsing::AdvancedProtectionStatusManager;
+using safe_browsing::AdvancedProtectionStatusManagerFactory;
 
 JavascriptOptimizerProviderAndroid::JavascriptOptimizerProviderAndroid(
+    Profile* profile,
     bool should_record_metrics)
-    : has_permission_callback_(
-          base::BindRepeating(&permissions::HasJavascriptOptimizerPermission)) {
+    : advanced_protection_manager_(
+          AdvancedProtectionStatusManagerFactory::GetForProfile(profile)),
+      is_under_advanced_protection_(
+          advanced_protection_manager_->IsUnderAdvancedProtection()) {
+  advanced_protection_manager_->AddObserver(this);
   if (should_record_metrics) {
     RecordHistogramMetrics();
   }
 }
 
 JavascriptOptimizerProviderAndroid::JavascriptOptimizerProviderAndroid(
-    CheckPermissionCallback callback,
+    safe_browsing::AdvancedProtectionStatusManager* advanced_protection_manager,
     bool should_record_metrics)
-    : has_permission_callback_(std::move(callback)) {
+    : advanced_protection_manager_(advanced_protection_manager),
+      is_under_advanced_protection_(
+          advanced_protection_manager_->IsUnderAdvancedProtection()) {
+  advanced_protection_manager_->AddObserver(this);
   if (should_record_metrics) {
     RecordHistogramMetrics();
   }
 }
 
-JavascriptOptimizerProviderAndroid::~JavascriptOptimizerProviderAndroid() {}
+JavascriptOptimizerProviderAndroid::~JavascriptOptimizerProviderAndroid() =
+    default;
 
 std::unique_ptr<content_settings::RuleIterator>
 JavascriptOptimizerProviderAndroid::GetRuleIterator(
@@ -38,11 +51,11 @@ JavascriptOptimizerProviderAndroid::GetRuleIterator(
   if (content_type != ContentSettingsType::JAVASCRIPT_OPTIMIZER) {
     return nullptr;
   }
-  return QueryHasPermission()
-             ? nullptr
-             : std::make_unique<
+  return is_under_advanced_protection_
+             ? std::make_unique<
                    content_settings::SingleValueWildcardRuleIterator>(
-                   base::Value(CONTENT_SETTING_BLOCK));
+                   base::Value(CONTENT_SETTING_BLOCK))
+             : nullptr;
 }
 
 std::unique_ptr<content_settings::Rule>
@@ -55,12 +68,13 @@ JavascriptOptimizerProviderAndroid::GetRule(
   if (content_type != ContentSettingsType::JAVASCRIPT_OPTIMIZER) {
     return nullptr;
   }
-  return QueryHasPermission() ? nullptr
-                              : std::make_unique<content_settings::Rule>(
-                                    ContentSettingsPattern::Wildcard(),
-                                    ContentSettingsPattern::Wildcard(),
-                                    base::Value(CONTENT_SETTING_BLOCK),
-                                    content_settings::RuleMetaData{});
+  return is_under_advanced_protection_
+             ? std::make_unique<content_settings::Rule>(
+                   ContentSettingsPattern::Wildcard(),
+                   ContentSettingsPattern::Wildcard(),
+                   base::Value(CONTENT_SETTING_BLOCK),
+                   content_settings::RuleMetaData{})
+             : nullptr;
 }
 
 bool JavascriptOptimizerProviderAndroid::SetWebsiteSetting(
@@ -80,15 +94,23 @@ void JavascriptOptimizerProviderAndroid::ClearAllContentSettingsRules(
 void JavascriptOptimizerProviderAndroid::ShutdownOnUIThread() {
   CHECK(CalledOnValidThread());
   RemoveAllObservers();
-  has_permission_callback_.Reset();
+  if (advanced_protection_manager_) {
+    advanced_protection_manager_->RemoveObserver(this);
+    advanced_protection_manager_ = nullptr;
+  }
 }
 
-bool JavascriptOptimizerProviderAndroid::QueryHasPermission() const {
-  return !has_permission_callback_ || has_permission_callback_.Run();
+void JavascriptOptimizerProviderAndroid::OnAdvancedProtectionStatusChanged(
+    bool enrolled) {
+  is_under_advanced_protection_ = enrolled;
+  NotifyObservers(ContentSettingsPattern::Wildcard(),
+                  ContentSettingsPattern::Wildcard(),
+                  ContentSettingsType::JAVASCRIPT_OPTIMIZER,
+                  /*partition_key=*/nullptr);
 }
 
 void JavascriptOptimizerProviderAndroid::RecordHistogramMetrics() {
   base::UmaHistogramBoolean(
       "ContentSettings.RegularProfile.DefaultJavascriptOptimizationBlockedByOs",
-      !QueryHasPermission());
+      is_under_advanced_protection_);
 }

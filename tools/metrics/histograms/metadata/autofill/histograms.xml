@@ -55,6 +55,12 @@ chromium-metrics-reviews@google.com.
       summary="3DS (Three Domain Secure) authentication only"/>
 </variants>
 
+<variants name="Autofill.BnplIssuer">
+  <variant name="Affirm" summary="Buy-now-pay-later issued by Affirm"/>
+  <variant name="Afterpay" summary="Buy-now-pay-later issued by Afterpay"/>
+  <variant name="Zip" summary="Buy-now-pay-later issued by Zip"/>
+</variants>
+
 <variants name="Autofill.CardMetadataVisible">
   <variant name="ArtImageShown" summary="Only art image was visible"/>
   <variant name="MetadataNotShown" summary="No metadata was visible"/>
@@ -257,6 +263,9 @@ chromium-metrics-reviews@google.com.
 <variants name="Autofill.ProgressDialog.FlowType">
   <variant name="3dsFetchVirtualCard"
       summary="Progress dialog after the VCN 3DS pop-up has closed"/>
+  <variant name="CardInfoRetrievalEnrolledUnmask"
+      summary="Progress dialog for for cards enrolled in CardInfoRetrieval
+               unmask flow"/>
   <variant name="ServerCardUnmask"
       summary="Progress dialog for the credit card risk-based unmask flow"/>
   <variant name="ServerIbanUnmask"
@@ -1599,6 +1608,30 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.Bnpl.PopupWindowResult.{Issuer}"
+    enum="BnplPopupWindowResult" expires_after="2025-07-01">
+  <owner>wilsonlow@google.com</owner>
+  <owner>vinnypersky@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Tracks the result of the BNPL pop-up window for {Issuer}, i.e. Success,
+    Failure, or NotFinished. Logged once when the pop-up window is closed.
+  </summary>
+  <token key="Issuer" variants="Autofill.BnplIssuer"/>
+</histogram>
+
+<histogram name="Autofill.Bnpl.PopupWindowShown.{Issuer}" enum="BooleanShown"
+    expires_after="2025-07-01">
+  <owner>wilsonlow@google.com</owner>
+  <owner>vinnypersky@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    The count for the number of times the BNPL popup window for {Issuer} is
+    shown. Records true every time the popup window is shown.
+  </summary>
+  <token key="Issuer" variants="Autofill.BnplIssuer"/>
+</histogram>
+
 <histogram name="Autofill.Bnpl.SuggestionNotShownReason"
     enum="BnplSuggestionNotShownReason" expires_after="2025-07-01">
   <owner>wilsonlow@google.com</owner>
@@ -1612,19 +1645,26 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
-<histogram name="Autofill.Bnpl.TosDialogShown.{IssuerName}" enum="BooleanShown"
+<histogram name="Autofill.Bnpl.TosDialogResult.{Issuer}"
+    enum="BnplTosDialogResult" expires_after="2025-07-01">
+  <owner>longsheng@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    The result of the BNPL ToS Dialog, broken down by result. Records when an
+    action was taken on the dialog.
+  </summary>
+  <token key="Issuer" variants="Autofill.BnplIssuer"/>
+</histogram>
+
+<histogram name="Autofill.Bnpl.TosDialogShown.{Issuer}" enum="BooleanShown"
     expires_after="2025-07-01">
   <owner>longsheng@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
-    The count for the number of times the BNPL ToS Dialog is shown. Records true
-    every time the dialog is shown.
+    The count for the number of times the BNPL ToS Dialog is shown for {Issuer}.
+    Records true every time the dialog is shown.
   </summary>
-  <token key="IssuerName">
-    <variant name="Affirm"/>
-    <variant name="Afterpay"/>
-    <variant name="Zip"/>
-  </token>
+  <token key="Issuer" variants="Autofill.BnplIssuer"/>
 </histogram>
 
 <histogram name="Autofill.CardholderNameFixFlowPrompt.Events"
@@ -2923,7 +2963,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 
 <histogram name="Autofill.FilledFieldType.Password"
     enum="BooleanFieldClassificationType" expires_after="2025-09-30">
-  <owner>theocristea@google.com</owner>
   <owner>brunobraga@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -3627,7 +3666,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 <histogram
     name="Autofill.KeyMetrics.FillingAcceptance.GroupedByFocusedFieldType"
     enum="FillingAcceptanceByFieldType" expires_after="2025-12-12">
-  <owner>theocristea@google.com</owner>
   <owner>jihadghanna@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -4649,7 +4687,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 <histogram name="Autofill.ProfileDeleted.{DeletionType}"
     enum="BooleanAutofillDeleteAddress" expires_after="2025-08-24">
   <owner>tchudakov@google.com</owner>
-  <owner>theocristea@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     Autofill.ProfileDeleted is emitted in the following scenarios: Settings,
@@ -6164,7 +6201,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 
 <histogram name="Autofill.Suggestions.AcceptedType" enum="SuggestionType"
     expires_after="2025-12-12">
-  <owner>theocristea@google.com</owner>
   <owner>jihadghanna@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>

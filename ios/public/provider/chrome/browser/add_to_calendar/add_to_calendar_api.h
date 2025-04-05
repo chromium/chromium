@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+// TODO(crbug.com/405195613): Cleanup imports when provider migration is
+// complete.
 #import <memory>
 
 #import "base/memory/weak_ptr.h"
@@ -15,6 +17,8 @@
 namespace web {
 class WebState;
 }  // namespace web
+
+@class EnhancedCalendarConfiguration;
 
 namespace ios::provider {
 
@@ -25,8 +29,14 @@ enum class AddToCalendarIntegrationProvider {
 };
 
 // Configures and presents the "add to calendar" view using the
-// `presenting_view_controller`. `enhanced_calendar_response` holds all the
-// calendar event data to be processed and passed to the "add to calendar" UI.
+// `presenting_view_controller`. `config` holds all the calendar event data
+// necessary to create and present the "add to calendar" UI.
+void PresentAddToCalendar(UIViewController* presenting_view_controller,
+                          web::WebState* web_state,
+                          EnhancedCalendarConfiguration* config);
+
+// TODO(crbug.com/405195613): Cleanup function when provider migration is
+// complete.
 void PresentAddToCalendar(
     UIViewController* presenting_view_controller,
     AddToCalendarIntegrationProvider provider,

@@ -792,6 +792,15 @@ void PreinstalledWebAppManager::PostProcessConfigs(
     parsed_configs.options_list.push_back(std::move(options));
   }
 
+  // Allow tests to bypass kDisableDefaultApps with an allow list.
+  if (GetPreinstallUrlAllowListForTesting().has_value()) {
+    std::erase_if(
+        parsed_configs.options_list, [](const ExternalInstallOptions& options) {
+          return !GetPreinstallUrlAllowListForTesting().value().contains(
+              options.install_url);
+        });
+  }
+
   // Set common install options.
   for (ExternalInstallOptions& options : parsed_configs.options_list) {
     DCHECK_EQ(options.install_source, ExternalInstallSource::kExternalDefault);

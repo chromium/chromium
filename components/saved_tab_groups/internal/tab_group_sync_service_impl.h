@@ -176,6 +176,7 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
 
   std::unique_ptr<std::vector<SavedTabGroup>>
   TakeSharedTabGroupsAvailableAtStartupForMessaging() override;
+  void OnLastTabClosed(const SavedTabGroup& saved_tab_group) override;
 
   void AddObserver(TabGroupSyncService::Observer* observer) override;
   void RemoveObserver(TabGroupSyncService::Observer* observer) override;

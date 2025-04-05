@@ -234,7 +234,7 @@ ExtensionsMenuView::CreateExtensionButtonsContainer() {
     header->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     header->SetBorder(views::CreateEmptyBorder(
         gfx::Insets::TLBR(ChromeLayoutProvider::Get()->GetDistanceMetric(
-                              DISTANCE_CONTROL_LIST_VERTICAL),
+                              views::DISTANCE_CONTROL_LIST_VERTICAL),
                           0, 0, 0)));
     container->AddChildView(std::move(header));
 

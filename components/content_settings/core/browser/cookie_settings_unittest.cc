@@ -6,6 +6,7 @@
 
 #include <cstddef>
 #include <memory>
+#include <optional>
 #include <string>
 #include <tuple>
 
@@ -40,6 +41,8 @@
 #include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/site_for_cookies.h"
+#include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -2059,26 +2062,46 @@ TEST_F(CookieSettingsTest, LegacyCookieAccessAllowDomainWildcardPattern) {
 }
 
 TEST_F(CookieSettingsTest, GetStorageAccessStatus) {
+  // TODO(crbug.com/382291442): Remove `scoped_feature_list` once PP launched.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {network::features::kPopulatePermissionsPolicyOnRequest,
+       network::features::kStorageAccessHeadersRespectPermissionsPolicy},
+      /*disabled_features=*/{});
+
   GURL url = kFirstPartySite;
   url::Origin top_frame_origin = url::Origin::Create(kAllowedSite);
   prefs_.SetInteger(prefs::kCookieControlsMode,
                     static_cast<int>(CookieControlsMode::kBlockThirdParty));
 
+  url::Origin origin = url::Origin::Create(url);
+  const std::unique_ptr<network::PermissionsPolicy>
+      allowing_permissions_policy =
+          network::PermissionsPolicy::CreateFromParsedPolicy(
+              {{{network::mojom::PermissionsPolicyFeature::kStorageAccessAPI,
+                 /*allowed_origins=*/
+                 {*network::OriginWithPossibleWildcards::FromOrigin(origin)},
+                 /*self_if_matches=*/std::nullopt,
+                 /*matches_all_origins=*/false,
+                 /*matches_opaque_src=*/false}}},
+              std::nullopt, origin);
+
   EXPECT_EQ(cookie_settings_->GetStorageAccessStatus(
-                url, net::SiteForCookies::FromUrl(url),
-                url::Origin::Create(url), net::CookieSettingOverrides()),
+                url, net::SiteForCookies::FromUrl(url), origin,
+                net::CookieSettingOverrides(), *allowing_permissions_policy),
             std::nullopt);
 
-  EXPECT_EQ(
-      cookie_settings_->GetStorageAccessStatus(
-          url, net::SiteForCookies::FromUrl(url), url::Origin::Create(url),
-          net::CookieSettingOverrides(
-              {net::CookieSettingOverride::kStorageAccessGrantEligible})),
-      std::nullopt);
+  EXPECT_EQ(cookie_settings_->GetStorageAccessStatus(
+                url, net::SiteForCookies::FromUrl(url), origin,
+                net::CookieSettingOverrides(
+                    {net::CookieSettingOverride::kStorageAccessGrantEligible}),
+                *allowing_permissions_policy),
+            std::nullopt);
 
   EXPECT_EQ(cookie_settings_->GetStorageAccessStatus(
                 url, net::SiteForCookies(), top_frame_origin,
-                net::CookieSettingOverrides()),
+                net::CookieSettingOverrides(), *allowing_permissions_policy),
 // We expect kActive when running the following in IOS due to the behavior of
 // `CookieSettings::ShouldBlockThirdPartyCookiesInternal()`.
 #if BUILDFLAG(IS_IOS)
@@ -2091,7 +2114,8 @@ TEST_F(CookieSettingsTest, GetStorageAccessStatus) {
   EXPECT_EQ(cookie_settings_->GetStorageAccessStatus(
                 url, net::SiteForCookies(), top_frame_origin,
                 net::CookieSettingOverrides(
-                    {net::CookieSettingOverride::kStorageAccessGrantEligible})),
+                    {net::CookieSettingOverride::kStorageAccessGrantEligible}),
+                *allowing_permissions_policy),
 #if BUILDFLAG(IS_IOS)
             net::cookie_util::StorageAccessStatus::kActive
 #else
@@ -2105,7 +2129,7 @@ TEST_F(CookieSettingsTest, GetStorageAccessStatus) {
 
   EXPECT_EQ(cookie_settings_->GetStorageAccessStatus(
                 url, net::SiteForCookies(), top_frame_origin,
-                net::CookieSettingOverrides()),
+                net::CookieSettingOverrides(), *allowing_permissions_policy),
 #if BUILDFLAG(IS_IOS)
             net::cookie_util::StorageAccessStatus::kActive
 #else
@@ -2113,18 +2137,78 @@ TEST_F(CookieSettingsTest, GetStorageAccessStatus) {
 #endif
   );
 
+  const std::unique_ptr<network::PermissionsPolicy>
+      blocking_permissions_policy =
+          network::PermissionsPolicy::CreateFromParsedPolicy(
+              {{{network::mojom::PermissionsPolicyFeature::kStorageAccessAPI,
+                 /*allowed_origins=*/{},
+                 /*self_if_matches=*/std::nullopt,
+                 /*matches_all_origins=*/false,
+                 /*matches_opaque_src=*/false}}},
+              std::nullopt, origin);
+  EXPECT_EQ(cookie_settings_->GetStorageAccessStatus(
+                url, net::SiteForCookies(), top_frame_origin,
+                net::CookieSettingOverrides(), *blocking_permissions_policy),
+#if BUILDFLAG(IS_IOS)
+            net::cookie_util::StorageAccessStatus::kActive
+#else
+            net::cookie_util::StorageAccessStatus::kNone
+#endif
+  );
+
   EXPECT_EQ(cookie_settings_->GetStorageAccessStatus(
                 url, net::SiteForCookies(), top_frame_origin,
                 net::CookieSettingOverrides(
-                    {net::CookieSettingOverride::kStorageAccessGrantEligible})),
+                    {net::CookieSettingOverride::kStorageAccessGrantEligible}),
+                *allowing_permissions_policy),
             net::cookie_util::StorageAccessStatus::kActive);
 
   EXPECT_EQ(cookie_settings_->GetStorageAccessStatus(
                 url, net::SiteForCookies(), top_frame_origin,
                 net::CookieSettingOverrides(
                     {net::CookieSettingOverride::
-                         kStorageAccessGrantEligibleViaHeader})),
+                         kStorageAccessGrantEligibleViaHeader}),
+                *allowing_permissions_policy),
             net::cookie_util::StorageAccessStatus::kActive);
+}
+
+// TODO(crbug.com/382291442): Remove test once feature is launched.
+TEST_F(CookieSettingsTest,
+       GetStorageAccessStatus_RespectPermissionsPolicyDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {network::features::kPopulatePermissionsPolicyOnRequest},
+      /*disabled_features=*/{
+          network::features::kStorageAccessHeadersRespectPermissionsPolicy});
+
+  GURL url = kFirstPartySite;
+  url::Origin top_frame_origin = url::Origin::Create(kAllowedSite);
+  prefs_.SetInteger(prefs::kCookieControlsMode,
+                    static_cast<int>(CookieControlsMode::kBlockThirdParty));
+
+  settings_map_->SetContentSettingDefaultScope(
+      url, kAllowedSite, ContentSettingsType::STORAGE_ACCESS,
+      CONTENT_SETTING_ALLOW);
+
+  const std::unique_ptr<network::PermissionsPolicy>
+      blocking_permissions_policy =
+          network::PermissionsPolicy::CreateFromParsedPolicy(
+              {{{network::mojom::PermissionsPolicyFeature::kStorageAccessAPI,
+                 /*allowed_origins=*/{},
+                 /*self_if_matches=*/std::nullopt,
+                 /*matches_all_origins=*/false,
+                 /*matches_opaque_src=*/false}}},
+              std::nullopt, url::Origin::Create(url));
+  EXPECT_EQ(cookie_settings_->GetStorageAccessStatus(
+                url, net::SiteForCookies(), top_frame_origin,
+                net::CookieSettingOverrides(), *blocking_permissions_policy),
+#if BUILDFLAG(IS_IOS)
+            net::cookie_util::StorageAccessStatus::kActive
+#else
+            net::cookie_util::StorageAccessStatus::kInactive
+#endif
+  );
 }
 
 // NOTE: These tests will fail if their FINAL name is of length greater than 256

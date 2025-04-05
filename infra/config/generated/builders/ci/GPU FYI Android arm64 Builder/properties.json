@@ -16,14 +16,15 @@
               "builder_group": "chromium.gpu.fyi",
               "execution_mode": "TEST",
               "legacy_android_config": {
-                "config": "arm64_builder_rel_mb"
+                "config": "base_config"
               },
               "legacy_chromium_config": {
                 "apply_configs": [
+                  "mb",
                   "download_xr_test_apks"
                 ],
                 "build_config": "Release",
-                "config": "arm64_builder_rel_mb",
+                "config": "main_builder",
                 "target_arch": "arm",
                 "target_bits": 64,
                 "target_platform": "android"
@@ -52,14 +53,15 @@
               "builder_group": "chromium.gpu.fyi",
               "execution_mode": "TEST",
               "legacy_android_config": {
-                "config": "arm64_builder_rel_mb"
+                "config": "base_config"
               },
               "legacy_chromium_config": {
                 "apply_configs": [
+                  "mb",
                   "download_xr_test_apks"
                 ],
                 "build_config": "Release",
-                "config": "arm64_builder_rel_mb",
+                "config": "main_builder",
                 "target_arch": "arm",
                 "target_bits": 64,
                 "target_platform": "android"
@@ -87,14 +89,15 @@
               "builder_group": "chromium.gpu.fyi",
               "execution_mode": "TEST",
               "legacy_android_config": {
-                "config": "arm64_builder_rel_mb"
+                "config": "base_config"
               },
               "legacy_chromium_config": {
                 "apply_configs": [
+                  "mb",
                   "download_xr_test_apks"
                 ],
                 "build_config": "Release",
-                "config": "arm64_builder_rel_mb",
+                "config": "main_builder",
                 "target_arch": "arm",
                 "target_bits": 64,
                 "target_platform": "android"
@@ -123,11 +126,14 @@
               "builder_group": "chromium.gpu.fyi",
               "execution_mode": "TEST",
               "legacy_android_config": {
-                "config": "arm64_builder_rel_mb"
+                "config": "base_config"
               },
               "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
                 "build_config": "Release",
-                "config": "arm64_builder_rel_mb",
+                "config": "main_builder",
                 "target_arch": "arm",
                 "target_bits": 64,
                 "target_platform": "android"
@@ -156,14 +162,15 @@
               "builder_group": "chromium.gpu.fyi",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_android_config": {
-                "config": "arm64_builder_rel_mb"
+                "config": "base_config"
               },
               "legacy_chromium_config": {
                 "apply_configs": [
+                  "mb",
                   "download_xr_test_apks"
                 ],
                 "build_config": "Release",
-                "config": "arm64_builder_rel_mb",
+                "config": "main_builder",
                 "target_arch": "arm",
                 "target_bits": 64,
                 "target_platform": "android"

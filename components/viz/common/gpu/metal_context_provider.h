@@ -41,8 +41,10 @@ class VIZ_METAL_CONTEXT_PROVIDER_EXPORT MetalContextProvider {
 
   skgpu::graphite::Context* GetGraphiteContext();
 
+  int32_t GetMaxTextureSize() const;
+
 #if __OBJC__
-  id<MTLDevice> GetMTLDevice();
+  id<MTLDevice> GetMTLDevice() const;
 #endif  // __OBJC__
 
  private:

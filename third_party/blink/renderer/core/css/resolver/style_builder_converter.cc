@@ -1757,7 +1757,7 @@ int StyleBuilderConverter::ConvertBorderWidth(StyleResolverState& state,
 }
 
 Superellipse StyleBuilderConverter::ConvertCornerShape(
-    StyleResolverState& state,
+    const StyleResolverState& state,
     const CSSValue& value) {
   if (const auto* keyword = DynamicTo<CSSIdentifierValue>(value)) {
     switch (keyword->GetValueID()) {
@@ -1771,8 +1771,8 @@ Superellipse StyleBuilderConverter::ConvertCornerShape(
         return Superellipse::Squircle();
       case CSSValueID::kScoop:
         return Superellipse::Scoop();
-      case CSSValueID::kStraight:
-        return Superellipse::Straight();
+      case CSSValueID::kSquare:
+        return Superellipse::Square();
       default:
         NOTREACHED();
     }

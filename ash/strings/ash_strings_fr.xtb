@@ -112,6 +112,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1306549533752902673">APPLICATIONS RECOMMANDÉES</translation>
 <translation id="1310396869741602366">Modifier le ton</translation>
 <translation id="1312604459020188865">Force du signal : <ph name="SIGNAL_STRENGTH" /></translation>
+<translation id="1314113845887519729">Poignée sélectionnée sur le bord supérieur, utiliser les touches fléchées pour la déplacer</translation>
 <translation id="1316069254387866896">Toujours afficher l'étagère</translation>
 <translation id="132346741904777634">Appareil photo aligné sur l'angle supérieur gauche. Conflit avec la surface du système.</translation>
 <translation id="132415371743256095">Fermer le <ph name="DESK_NAME" /> et les fenêtres</translation>
@@ -186,6 +187,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1557622599341396706">Afficher le nom du bureau</translation>
 <translation id="1569384531973824928">L'accès est accordé à l'ensemble des applis et sites Web ayant l'autorisation d'accéder à l'appareil photo et au micro. Vous devrez peut-être actualiser la page Web ou redémarrer l'appli.</translation>
 <translation id="1571697193564730395">Activer/Désactiver Ne pas déranger. <ph name="STATE_TEXT" /></translation>
+<translation id="1574691582236909946">Poignée sélectionnée sur le bord gauche, utiliser les touches fléchées pour la déplacer</translation>
 <translation id="1576623706766186887">Faire un zoom arrière lorsque la loupe est activée</translation>
 <translation id="1582946770779745370">Tableau de bord Jeux disponible. Appuyez sur <ph name="LAUNCHER_KEY_NAME" />+Maj+Échap, puis sur <ph name="LAUNCHER_KEY_NAME" />+g à tout moment pour ouvrir</translation>
 <translation id="1586324912145647027">Accéder aux bureaux 1 à 8</translation>
@@ -220,6 +222,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1696984622403682083">Vous pouvez désactiver cette fonctionnalité à tout moment dans les paramètres. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910">Minuteur de <ph name="TOTAL_TIME" /> – <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">Adresse IPv6 : <ph name="ADDRESS" /></translation>
+<translation id="1700782710852683371">Impossible de créer des images à partir de votre description pour le moment. Essayez de la reformuler. N'oubliez pas que vous ne pouvez pas créer d'images de personnes, ni de contenus nuisibles ou explicites.</translation>
 <translation id="1703117532528082099">Fenêtre active épinglée à gauche.</translation>
 <translation id="1708345662127501511">Bureau : <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Paramètres du réseau</translation>
@@ -608,6 +611,7 @@ Sinon, le pavé tactile intégré sera réactivé dans <ph name="TIMEOUT_SECONDS
 <translation id="304097922505898963">Ouvrir l'appli Raccourcis clavier</translation>
 <translation id="304417730895741346">Vos applis épinglées et ouvertes se trouvent sur l'étagère. Pour épingler une appli à l'étagère, effectuez un clic droit sur l'appli ou appuyez sur le pavé tactile avec deux doigts.</translation>
 <translation id="3045488863354895414">Bonjour,</translation>
+<translation id="3045670165536837541">Poignée sélectionnée en haut à droite, utiliser les touches fléchées pour la déplacer</translation>
 <translation id="3047761520276763270">Essayez de dire :</translation>
 <translation id="3053407068093039599">Activer/Désactiver l'accès à la caméra</translation>
 <translation id="3055162170959710888">Vous avez utilisé l'appareil pendant <ph name="USED_TIME" /> aujourd'hui</translation>
@@ -1763,6 +1767,7 @@ Nouvelle installation</translation>
 <translation id="6696025732084565524">Votre clavier amovible nécessite une mise à jour critique</translation>
 <translation id="6697913454192220372">Ajouter un bureau</translation>
 <translation id="6700713906295497288">Bouton de menu IME</translation>
+<translation id="6704073473590541209">Poignée sélectionnée sur le bord droit, utiliser les touches fléchées pour la déplacer</translation>
 <translation id="6706742084323792866">Épingler le clavier</translation>
 <translation id="6710213216561001401">Précédent</translation>
 <translation id="6723839937902243910">Marche/Arrêt</translation>
@@ -1786,6 +1791,7 @@ Nouvelle installation</translation>
 <translation id="6781002679438061620">Bureau 9</translation>
 <translation id="6782182743534150858">Bureau 13</translation>
 <translation id="6782919488259222803">Rechercher sur la page active</translation>
+<translation id="6783348167101855071">Poignée sélectionnée en bas à droite, utiliser les touches fléchées pour la déplacer</translation>
 <translation id="6786750046913594791">Fermer le dossier</translation>
 <translation id="6790428901817661496">Lire</translation>
 <translation id="6792262051831399889">Indisponible</translation>
@@ -1942,6 +1948,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="7371404428569700291">Enregistrer la fenêtre</translation>
 <translation id="7372069265635026568"><ph name="AVAILABLE_MEMORY" /> de mémoire disponible sur un total de <ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">L'accès au micro est accordé à l'ensemble des sites Web et applis ayant l'autorisation d'y accéder</translation>
+<translation id="7376933029363911338">Poignée sélectionnée sur le bord inférieur, utiliser les touches fléchées pour la déplacer</translation>
 <translation id="7377169924702866686">La touche de verrouillage des majuscules est activée</translation>
 <translation id="7377481913241237033">Connecter un appareil avec un code</translation>
 <translation id="7378203170292176219">Faire glisser pour sélectionner une zone à enregistrer</translation>
@@ -2038,6 +2045,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="7658239707568436148">Annuler</translation>
 <translation id="7659861092419699379">Le bureau et les fenêtres ont été fermés</translation>
 <translation id="7660160718439869192"><ph name="NAME" /> sera visible sur les appareils associés à <ph name="EMAIL" /></translation>
+<translation id="7661694115779363471">Poignée sélectionnée en bas à gauche, utiliser les touches fléchées pour la déplacer</translation>
 <translation id="7662283695561029522">Appuyer pour configurer</translation>
 <translation id="7670953955701272011">Ouvrir cette date dans Google Agenda</translation>
 <translation id="7671610481353807627">Les applis sont triées par couleur</translation>
@@ -2206,6 +2214,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="8155628902202578800">Ouvrir la boîte de dialogue d'informations pour <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> en cours d'utilisation</translation>
 <translation id="8168435359814927499">Contenu</translation>
+<translation id="8172370561760918656">Poignée sélectionnée en haut à gauche, utiliser les touches fléchées pour la déplacer</translation>
 <translation id="81817143961839203">Échec de l'insertion de l'image</translation>
 <translation id="8185090165691050712">Activer/Désactiver le menu pour redimensionner le mode verrouillé</translation>
 <translation id="8192727139462702395">Les appareils externes suivants seront alors déconnectés de votre <ph name="DEVICE_TYPE" /> :</translation>

@@ -16,11 +16,14 @@ enum class InputOperandLayout { kNchw, kNhwc };
 
 enum class Resample2DAxes { kAny, kChannelsFirst, kChannelsLast };
 
+enum class BatchNormalizationAxis { kAny, kChannelsFirst };
+
 struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) ContextProperties {
   explicit ContextProperties(mojo::DefaultConstruct::Tag);
 
   ContextProperties(InputOperandLayout input_operand_layout,
                     Resample2DAxes resample_2d_axes,
+                    BatchNormalizationAxis batch_normalization_axis,
                     uint64_t tensor_byte_length_limit,
                     DataTypeLimits data_type_limits);
 
@@ -33,6 +36,7 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) ContextProperties {
 
   InputOperandLayout input_operand_layout;
   Resample2DAxes resample_2d_axes;
+  BatchNormalizationAxis batch_normalization_axis;
   uint64_t tensor_byte_length_limit;
   DataTypeLimits data_type_limits;
 };

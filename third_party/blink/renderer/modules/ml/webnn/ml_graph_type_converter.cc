@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <array>
+#include <numeric>
 #include <optional>
 
 #include "base/notreached.h"
@@ -540,6 +541,30 @@ std::optional<std::vector<uint32_t>> GetResample2DPermutation(
   return permutation;
 }
 
+constexpr uint32_t kBatchNormalizationChannelFirstAxis = 1u;
+std::optional<std::vector<uint32_t>> GetBatchNormalizationPermutation(
+    const uint32_t from_axis,
+    const uint32_t input_rank,
+    const webnn::ContextProperties& context_properties) {
+  if (context_properties.batch_normalization_axis ==
+      webnn::BatchNormalizationAxis::kAny) {
+    return std::nullopt;
+  }
+
+  const uint32_t to_axis = kBatchNormalizationChannelFirstAxis;
+
+  if (from_axis == to_axis) {
+    return std::nullopt;
+  }
+
+  std::vector<uint32_t> permutation(input_rank);
+  std::iota(permutation.begin(), permutation.end(), 0);
+  CHECK_LT(to_axis, input_rank);
+  std::swap(permutation[to_axis], permutation[from_axis]);
+
+  return permutation;
+}
+
 std::vector<uint32_t> GetInversePermutation(
     base::span<const uint32_t> permutation) {
   std::vector<uint32_t> inverse_perm(permutation.size());
@@ -565,19 +590,13 @@ OperationPtr CreateArgMinMaxOperation(const OperandToIdMap& operand_to_id_map,
   return blink_mojom::Operation::NewArgMinMax(std::move(arg_min_max_mojo));
 }
 
-OperationPtr CreateBatchNormalizationOperation(
+void SerializeBatchNormalizationOperation(
     const OperandToIdMap& operand_to_id_map,
-    const MLOperator* batch_normalization) {
+    const webnn::ContextProperties& context_properties,
+    const MLOperator* batch_normalization,
+    blink_mojom::GraphInfo* graph_info) {
   auto batch_normalization_mojo =
       webnn::mojom::blink::BatchNormalization::New();
-  batch_normalization_mojo->input_operand_id =
-      GetOperatorInputId(batch_normalization, operand_to_id_map, 0);
-  batch_normalization_mojo->mean_operand_id =
-      GetOperatorInputId(batch_normalization, operand_to_id_map, 1);
-  batch_normalization_mojo->variance_operand_id =
-      GetOperatorInputId(batch_normalization, operand_to_id_map, 2);
-  batch_normalization_mojo->output_operand_id =
-      GetOperatorOutputId(batch_normalization, operand_to_id_map);
 
   const auto* options = static_cast<const MLBatchNormalizationOptions*>(
       batch_normalization->Options());
@@ -590,11 +609,65 @@ OperationPtr CreateBatchNormalizationOperation(
     batch_normalization_mojo->bias_operand_id =
         operand_to_id_map.at(options->bias());
   }
-  batch_normalization_mojo->axis = options->axis();
+
+  const MLOperand* input_operand = batch_normalization->Inputs()[0];
+  uint64_t input_operand_id = operand_to_id_map.at(input_operand);
+
+  const MLOperand* output_operand = batch_normalization->Outputs()[0];
+  uint64_t output_operand_id = operand_to_id_map.at(output_operand);
+
+  uint32_t axis = options->axis();
+  const std::optional<std::vector<uint32_t>> input_permutation =
+      GetBatchNormalizationPermutation(axis, input_operand->shape().size(),
+                                       context_properties);
+  if (input_permutation.has_value()) {
+    switch (context_properties.batch_normalization_axis) {
+      case webnn::BatchNormalizationAxis::kChannelsFirst:
+        axis = kBatchNormalizationChannelFirstAxis;
+        break;
+      case webnn::BatchNormalizationAxis::kAny:
+        NOTREACHED();
+    }
+
+    input_operand_id = InsertInputTranspose(
+        context_properties, operand_to_id_map, input_operand,
+        *input_permutation, graph_info, options->label());
+
+    output_operand_id = InsertTemporaryOperand(
+        operand_to_id_map,
+        *webnn::OperandDescriptor::Create(
+            context_properties, output_operand->DataType(),
+            PermuteShape(output_operand->Shape(), *input_permutation),
+            options->label().Utf8()),
+        graph_info);
+  }
+
+  batch_normalization_mojo->axis = axis;
   batch_normalization_mojo->epsilon = options->epsilon();
   batch_normalization_mojo->label = options->label();
-  return webnn::mojom::blink::Operation::NewBatchNormalization(
-      std::move(batch_normalization_mojo));
+  batch_normalization_mojo->input_operand_id = input_operand_id;
+  batch_normalization_mojo->mean_operand_id =
+      GetOperatorInputId(batch_normalization, operand_to_id_map, 1);
+  batch_normalization_mojo->variance_operand_id =
+      GetOperatorInputId(batch_normalization, operand_to_id_map, 2);
+  batch_normalization_mojo->output_operand_id = output_operand_id;
+
+  graph_info->operations.push_back(
+      blink_mojom::Operation::NewBatchNormalization(
+          std::move(batch_normalization_mojo)));
+
+  if (input_permutation.has_value()) {
+    std::vector<uint32_t> output_permutation =
+        GetInversePermutation(*input_permutation);
+    auto output_transpose = blink_mojom::Transpose::New();
+    output_transpose->input_operand_id = output_operand_id;
+    output_transpose->output_operand_id = operand_to_id_map.at(output_operand);
+    output_transpose->permutation = Vector<uint32_t>(output_permutation);
+    output_transpose->label = options->label();
+
+    graph_info->operations.push_back(
+        blink_mojom::Operation::NewTranspose(std::move(output_transpose)));
+  }
 }
 
 OperationPtr CreateConcatOperation(const OperandToIdMap& operand_to_id_map,
@@ -1716,8 +1789,8 @@ std::optional<String> SerializeMojoOperation(
           operand_to_id_map, op, op->SubKind<blink_mojom::ArgMinMax::Kind>()));
       break;
     case blink_mojom::Operation::Tag::kBatchNormalization:
-      graph_info->operations.push_back(
-          CreateBatchNormalizationOperation(operand_to_id_map, op));
+      SerializeBatchNormalizationOperation(operand_to_id_map,
+                                           context_properties, op, graph_info);
       break;
     case blink_mojom::Operation::Tag::kClamp:
       graph_info->operations.push_back(

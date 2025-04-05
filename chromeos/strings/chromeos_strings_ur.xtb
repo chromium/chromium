@@ -351,6 +351,7 @@
 <translation id="2438248248625638801">ریکارڈنگ کے عنوانات تخلیق کیے جا رہے ہیں</translation>
 <translation id="2446553403094072641">فلوٹنگ پوائنٹ کی درستگی</translation>
 <translation id="2448312741937722512">قسم</translation>
+<translation id="2448857983905133469">کلاس ٹولز</translation>
 <translation id="2468124392950503650">تخلیق کرنے کیلئے پرامپٹ منتخب کریں یا <ph name="BEGIN_LINK_PROMPTING_GUIDE" />پرامپٹ گائیڈ<ph name="END_LINK_PROMPTING_GUIDE" /> دیکھیں</translation>
 <translation id="2472215337771558851">‏اGoogle AI سے تقویت یافتہ کے ساتھ ایک مسودہ تخلیق کرنے یا موجودہ کام کو بہتر بنانے کے لیے لکھنے میں میری مدد کریں کا استعمال کریں</translation>
 <translation id="2475982808118771221">ایک خرابی پیش آگئی</translation>
@@ -449,6 +450,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">اینڈ پوائنٹ</translation>
 <translation id="3060579846059757016">آؤٹ لائنز</translation>
+<translation id="3060798442805232711">کلاس ٹولز آپ کا مائیکروفون استعمال کر رہا ہے</translation>
 <translation id="3061850252076394168">سننے کیلئے منتخب کریں کو فعال کریں</translation>
 <translation id="3066772729299747758">منگل کو</translation>
 <translation id="3069085583900247081">ٹیسٹ ناکام ہو گیا</translation>
@@ -458,7 +460,6 @@
 <translation id="3084958266922136097">اسکرین سیور غیر فعال کریں</translation>
 <translation id="3091839911843451378">ناکام ہو گیا - رک گیا</translation>
 <translation id="3102119246920354026">کیش</translation>
-<translation id="3112413615003385433">آپ کے استاد نے اسکول ٹولز میں موجود مواد کو ہٹا دیا ہے</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">پُولز</translation>
 <translation id="3122883569442693641">مزید تفصیلات</translation>
@@ -539,7 +540,6 @@
 <translation id="3488065109653206955">جزوی طور پر فعال کردہ</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_COLOR" /> ٹونز والا ایک <ph name="OFFICE_STYLE" /> آفس</translation>
 <translation id="3493187369049186498">‏ڈیٹا کی پیمائش آپ کی Chromebook کے ذریعے کی جاتی ہے۔ یہ فراہم کنندہ کے ڈیٹا سے مختلف ہو سکتا ہے۔</translation>
-<translation id="349570724365779960">اسکول کے ٹولز طلباء سے منسلک ہیں</translation>
 <translation id="3502426834823382181">سبھی ایپس دیکھیں</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />کارکردگی کا پتا لگانے کا ڈیٹا<ph name="END_LINK1" /> بھیجیں</translation>
 <translation id="3517001332549868749">‏Chrome OS اپ ڈیٹ</translation>
@@ -547,7 +547,6 @@
 <translation id="353214771040290298">ترمیم ہو گئی</translation>
 <translation id="3532980081107202182">تقریباً <ph name="MIN_REMAINING" /> منٹ باقی ہیں</translation>
 <translation id="3533790840489634638">پول</translation>
-<translation id="3535802910192338629">آپ کے استاد نے اسکول ٹولز میں نیا مواد شامل کیا ہے</translation>
 <translation id="3547264467365135390">فارمولہ</translation>
 <translation id="3557205324756024651">مقامی شناخت (اختیاری)</translation>
 <translation id="3565064564551103223">‏اجازت یافتہ IPs</translation>
@@ -913,6 +912,7 @@
 <translation id="5170568018924773124">فولڈر میں دکھائیں</translation>
 <translation id="517075088756846356">اپ ڈیٹ ہونے کے عمل کو جاری رکھنے کے لیے <ph name="DEVICE_NAME" /> کے پاور کیبل کو ان پلگ کریں پھر اسے دوبارہ پلک ان کریں</translation>
 <translation id="5180108905184566358">بوباب کے درخت</translation>
+<translation id="5180431943345994173">آپ کے استاد نے کلاس ٹولز میں موجود مواد کو ہٹا دیا ہے</translation>
 <translation id="5180712487038406644">ایکسپریسو</translation>
 <translation id="5190187232518914472">‏اپنی پسندیدہ میموریز کو دوبارہ زندہ کریں۔ البمز کو شامل یا ان میں ترمیم کرنے کے لیے، <ph name="LINK_BEGIN" />Google تصاویر<ph name="LINK_END" /> پر جائیں۔</translation>
 <translation id="5212593641110061691">ٹیبلائڈ</translation>
@@ -1006,6 +1006,7 @@
 <translation id="5628106863521633649">دستیاب زبانیں</translation>
 <translation id="5630438231335788050">باہاؤس</translation>
 <translation id="5631759159893697722">تجریدی</translation>
+<translation id="5655084389678168978">آپ کے استاد نے کلاس ٹولز میں نیا مواد شامل کیا ہے</translation>
 <translation id="5655283760733841251">کی بورڈ کی چمک بڑھانے کی کلید</translation>
 <translation id="5655296450510165335">آلہ کا اندراج</translation>
 <translation id="5655776422854483175">کوئی پرنٹ جابز نہیں ہیں</translation>
@@ -1235,6 +1236,7 @@
 <translation id="6657240842932274095">سسٹم سروسز کو اپنا مقام استعمال کرنے کی اجازت دیں؟</translation>
 <translation id="6657585470893396449">پاس ورڈ</translation>
 <translation id="66621959568103627">مرجان جیسا گلابی</translation>
+<translation id="6669485505082792176">اس وقت اس کی تصاویر نہیں بنائی جا سکتیں۔ اپنی تفصیل کو دوبارہ بیان کرنے کی کوشش کریں۔ یاد رکھیں کہ آپ لوگوں کی تصاویر، نقصان دہ یا فُحش مواد نہیں بنا سکتے۔ <ph name="BEGIN_LINK_LEARN_MORE" />مزید جانیں<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6673898378497337661">کی بورڈ کی چمک کو بڑھائیں کریں</translation>
 <translation id="6692996468359469499">اپنے انتخاب سے متعلق معلومات حاصل کریں</translation>
 <translation id="6694534975463174713">لاک</translation>
@@ -1440,7 +1442,6 @@
 <translation id="7544853251252956727">شفل کریں</translation>
 <translation id="7550715992156305117">ڈائیگناسٹک روٹینز</translation>
 <translation id="7551123448725492271">آلہ ایک آڈیو آلہ ہے۔</translation>
-<translation id="7553913964854052228">سکول ٹولز آپ کا مائیکروفون استعمال کر رہا ہے۔</translation>
 <translation id="7559239713112547082">اسکرین شاٹ کا پیش منظر دیکھیں</translation>
 <translation id="7561454561030345039">یہ کارروائی آپ کے منتظم کے زیر انتظام ہے</translation>
 <translation id="7561759921596375678">والیوم کو آن کریں</translation>
@@ -1532,6 +1533,7 @@
 <translation id="7971535376154084247">عام کنٹرولز</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> نیٹ ورک میں شامل ہونے کیلئے، ترتیبات پر جائیں</translation>
 <translation id="7978412674231730200">نجی کلید</translation>
+<translation id="7979468455552394856">کلاس ٹولز طلباء سے منسلک ہے</translation>
 <translation id="7982789257301363584">نیٹ ورک</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" خودکار طور پر شروع ہو گئی}other{# ایپس خودکار طور پر شروع ہو گئیں}}</translation>
 <translation id="7994702968232966508">‏EAP طریقہ</translation>
@@ -1663,7 +1665,6 @@
 <translation id="8576249514688522074">شروع نہیں کیا گیا</translation>
 <translation id="8584654835905316966"><ph name="DEVICE_NAME" /> کے لیے ورزن <ph name="VERSION" /> پر فرم ویئر کی انسٹالیشن مکمل کرنے کے لیے ری اسٹارٹ کرنے کی ضرورت ہے۔ آپ کا کمپیوٹر کئی بار ریبوٹ ہوتا ہوا نظر آ سکتا ہے۔ یہ برتاؤ متوقع ہے۔</translation>
 <translation id="8593058461203131755">میڈیا موقوف کریں</translation>
-<translation id="8619169570378509764">اسکول ٹولز</translation>
 <translation id="8620617069779373398">رومنگ کی صورتحال</translation>
 <translation id="8626489604350149811"><ph name="APN_NAME" /> کیلئے مزید کارروائیاں</translation>
 <translation id="86356131183441916">ہلکا جامنی</translation>

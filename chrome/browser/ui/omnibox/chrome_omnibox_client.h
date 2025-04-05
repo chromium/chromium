@@ -74,6 +74,8 @@ class ChromeOmniboxClient final : public OmniboxClient {
   void OnInputStateChanged() override;
   void OnFocusChanged(OmniboxFocusState state,
                       OmniboxFocusChangeReason reason) override;
+  void OnKeywordModeChanged(bool entered,
+                            const std::u16string& keyword) override;
   void MaybeShowOnFocusHatsSurvey(AutocompleteProviderClient* client,
                                   std::u16string text) override;
   void OnResultChanged(const AutocompleteResult& result,

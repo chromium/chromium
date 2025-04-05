@@ -103,6 +103,8 @@ class MessagingBackendServiceImpl : public MessagingBackendService,
                     bool is_selected) override;
   void OnTabSelectionChanged(const tab_groups::LocalTabID& tab_id,
                              bool is_selected) override;
+  void OnTabLastSeenTimeChanged(const base::Uuid& tab_id,
+                                tab_groups::TriggerSource source) override;
   void OnTabGroupOpened(const tab_groups::SavedTabGroup& tab_group) override;
   void OnTabGroupClosed(const tab_groups::SavedTabGroup& tab_group) override;
 

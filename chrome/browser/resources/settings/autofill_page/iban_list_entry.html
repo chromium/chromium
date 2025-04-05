@@ -39,9 +39,9 @@
 <if expr="_google_chrome">
         <picture id="paymentsIcon">
           <source
-              srcset="chrome://theme/IDR_AUTOFILL_GOOGLE_PAY_DARK_SMALL"
+              srcset="[[getScaledSrcSet_('chrome://theme/IDR_AUTOFILL_GOOGLE_PAY_DARK_SMALL')]]"
               media="(prefers-color-scheme: dark)">
-          <img alt="" src="chrome://theme/IDR_AUTOFILL_GOOGLE_PAY_SMALL">
+          <img alt="" srcset="[[getScaledSrcSet_('chrome://theme/IDR_AUTOFILL_GOOGLE_PAY_SMALL')]]">
         </picture>
 </if>
 <if expr="not _google_chrome">

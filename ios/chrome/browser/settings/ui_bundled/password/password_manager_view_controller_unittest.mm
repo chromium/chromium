@@ -497,7 +497,9 @@ TEST_F(PasswordManagerViewControllerTest,
 
 // Tests that the password manager is updated when passwords change while in
 // search mode.
-TEST_F(PasswordManagerViewControllerTest, TestChangePasswordsWhileSearching) {
+// TODO(crbug.com/347688002): The test is flaky on iPad on iOS 17.
+TEST_F(PasswordManagerViewControllerTest,
+       DISABLED_TestChangePasswordsWhileSearching) {
   root_view_controller_ = [[UIViewController alloc] init];
   scoped_window_.Get().rootViewController = root_view_controller_;
 

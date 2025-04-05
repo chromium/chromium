@@ -37,7 +37,7 @@ class GPUCommandEncoder : public DawnObject<wgpu::CommandEncoder> {
   GPUCommandEncoder(const GPUCommandEncoder&) = delete;
   GPUCommandEncoder& operator=(const GPUCommandEncoder&) = delete;
 
-  // gpu_command_encoder.idl
+  // gpu_command_encoder.idl {{{
   GPURenderPassEncoder* beginRenderPass(
       const GPURenderPassDescriptor* descriptor,
       ExceptionState& exception_state);
@@ -134,8 +134,9 @@ class GPUCommandEncoder : public DawnObject<wgpu::CommandEncoder> {
     GetHandle().ClearBuffer(buffer->GetHandle(), offset, size);
   }
   GPUCommandBuffer* finish(const GPUCommandBufferDescriptor* descriptor);
+  // }}} End of WebIDL binding implementation.
 
-  void setLabelImpl(const String& value) override {
+  void SetLabelImpl(const String& value) override {
     std::string utf8_label = value.Utf8();
     GetHandle().SetLabel(utf8_label.c_str());
   }

@@ -10,6 +10,8 @@ import android.content.Context;
 import android.content.res.Resources;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.access_loss.AccessLossWarningMetricsRecorder.PasswordAccessLossWarningExportStep;
 import org.chromium.chrome.browser.access_loss.PasswordAccessLossWarningType;
 import org.chromium.chrome.browser.loading_modal.LoadingModalDialogCoordinator;
@@ -28,6 +30,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * been saved to the file on disk. It is displayed only if the user has up to date GMS Core
  * installed. If user accepts, it redirects the user to Google Password Manager (GMS Core).
  */
+@NullMarked
 public class PasswordAccessLossImportDialogCoordinator {
     private class ModalDialogController implements ModalDialogProperties.Controller {
 
@@ -64,14 +67,14 @@ public class PasswordAccessLossImportDialogCoordinator {
     }
 
     private final Context mContext;
-    private final SyncService mSyncService;
+    private final @Nullable SyncService mSyncService;
     private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
     private final PasswordManagerHelper mPasswordManagerHelper;
     private final Runnable mChromeShutDownRunnable;
 
     public PasswordAccessLossImportDialogCoordinator(
             Context context,
-            SyncService syncService,
+            @Nullable SyncService syncService,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
             PasswordManagerHelper passwordManagerHelper,
             Runnable chromeShutDownRunnable) {

@@ -549,6 +549,8 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
     return property_tree_delegate_.get();
   }
 
+  const cc::PropertyTrees* property_trees() const;
+
   ExternalBeginFrameControllerClientFactory*
   external_begin_frame_controler_client_factory() {
     return external_begin_frame_controler_client_factory_.get();
@@ -738,6 +740,7 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
   bool uses_layer_lists_ = false;
   std::unique_ptr<CompositorPropertyTreeDelegate> property_tree_delegate_;
   std::optional<cc::PropertyTrees> property_trees_;
+  int viewport_clip_id_ = cc::kInvalidPropertyNodeId;
 
   base::WeakPtrFactory<Compositor> context_creation_weak_ptr_factory_{this};
   base::WeakPtrFactory<Compositor> weak_ptr_factory_{this};

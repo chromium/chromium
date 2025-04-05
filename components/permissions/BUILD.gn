@@ -177,8 +177,6 @@ source_set("permissions") {
       "android/bluetooth_scanning_prompt_android.cc",
       "android/bluetooth_scanning_prompt_android.h",
       "android/bluetooth_scanning_prompt_android_delegate.h",
-      "android/os_additional_security_permission_util_android.cc",
-      "android/os_additional_security_permission_util_android.h",
       "android/permission_prompt/embedded_permission_prompt_android.cc",
       "android/permission_prompt/embedded_permission_prompt_android.h",
       "android/permission_prompt/permission_dialog.cc",

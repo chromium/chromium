@@ -82,7 +82,7 @@ void StartKioskSession(KioskAppId app, bool is_auto_launch = false) {
 
   CHECK_DEREF(input_method::InputMethodManager::Get())
       .GetActiveIMEState()
-      ->SetInputMethodLoginDefault();
+      ->SetInputMethodLoginDefault(/*is_in_oobe_context=*/false);
 
   // Manages its own lifetime. See ShutdownDisplayHost().
   auto* display_host = new LoginDisplayHostWebUI();

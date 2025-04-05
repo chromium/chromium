@@ -94,13 +94,8 @@ class CORE_EXPORT FragmentData : public GarbageCollected<FragmentData> {
   //   properties would have a transform node that points to the div's
   //   ancestor transform space.
   PropertyTreeStateOrAlias LocalBorderBoxProperties() const {
-    DCHECK(HasLocalBorderBoxProperties());
-
-    // TODO(chrishtr): this should never happen, but does in practice and
-    // we haven't been able to find all of the cases where it happens yet.
-    // See crbug.com/1137883. Once we find more of them, remove this.
-    if (!HasLocalBorderBoxProperties()) {
-      return PropertyTreeState::Root();
+    if (!HasLocalBorderBoxProperties()) [[unlikely]] {
+      return LocalBorderBoxPropertiesFallback();
     }
     return PropertyTreeStateOrAlias(rare_data_->local_border_box_properties);
   }
@@ -157,6 +152,8 @@ class CORE_EXPORT FragmentData : public GarbageCollected<FragmentData> {
 
  protected:
   friend class FragmentDataTest;
+
+  NOINLINE PropertyTreeStateOrAlias LocalBorderBoxPropertiesFallback() const;
 
 #if DCHECK_IS_ON()
   void AssertIsFirst() const { DCHECK(is_first_); }

@@ -458,7 +458,6 @@
 <translation id="3084958266922136097">စခရင်နားချိန်ပုံ ပိတ်ရန်</translation>
 <translation id="3091839911843451378">မအောင်မြင်ပါ - ရပ်သွားသည်</translation>
 <translation id="3102119246920354026">Cache</translation>
-<translation id="3112413615003385433">‘ကျောင်းဆိုင်ရာတူးလ်များ’ တွင် သင့်ဆရာက အကြောင်းအရာကို ဖယ်ရှားလိုက်သည်</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">ရေအိုင်</translation>
 <translation id="3122883569442693641">နောက်ထပ်အသေးစိတ်</translation>
@@ -539,7 +538,6 @@
 <translation id="3488065109653206955">တစ်စိတ်တစ်ဒေသ ဖွင့်သုံးနေ</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_COLOR" /> အရောင်များဖြင့် <ph name="OFFICE_STYLE" /> ရုံးခန်း</translation>
 <translation id="3493187369049186498">ဒေတာကို သင့် Chromebook ဖြင့် တိုင်းတာသည်။ ၎င်းသည် ဝန်ဆောင်မှုပေးသူ၏ ဒေတာနှင့် ကွဲပြားမှုရှိနိုင်သည်။</translation>
-<translation id="349570724365779960">‘ကျောင်းသုံးတူးလ်များ’ ကို ကျောင်းသားများနှင့် ချိတ်ဆက်ထားသည်</translation>
 <translation id="3502426834823382181">အက်ပ်အားလုံး ကြည့်ရန်</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />စွမ်းဆောင်ရည် မှတ်တမ်းဒေတာ<ph name="END_LINK1" /> ပို့ရန်</translation>
 <translation id="3517001332549868749">ChromeOS အပ်ဒိတ်</translation>
@@ -547,7 +545,6 @@
 <translation id="353214771040290298">တည်းဖြတ်ပြီးပါပြီ</translation>
 <translation id="3532980081107202182"><ph name="MIN_REMAINING" /> မိနစ်ခန့် ကျန်သည်</translation>
 <translation id="3533790840489634638">ရေအိုင်</translation>
-<translation id="3535802910192338629">‘ကျောင်းဆိုင်ရာတူးလ်များ’ တွင် သင့်ဆရာက အကြောင်းအရာအသစ် ထည့်လိုက်သည်</translation>
 <translation id="3547264467365135390">ဖော်မြူလာ</translation>
 <translation id="3557205324756024651">နေရာတွင်း အထောက်အထား (ဆန္ဒရှိလျှင်)</translation>
 <translation id="3565064564551103223">ခွင့်ပြုထားသည့် IP များ</translation>
@@ -1235,6 +1232,7 @@
 <translation id="6657240842932274095">သင့်တည်နေရာသုံးရန် စနစ်ဝန်ဆောင်မှုများကို ခွင့်ပြုမလား။</translation>
 <translation id="6657585470893396449">စကားဝှက်</translation>
 <translation id="66621959568103627">သန္တာပန်းရောင်</translation>
+<translation id="6669485505082792176">ယင်းပုံများကို လောလောဆယ် မပြုလုပ်နိုင်ပါ။ သင့်ဖော်ပြချက်ကို ပြောင်းရေးကြည့်ပါ။ လူပုံ၊ အန္တရာယ်ရှိသော သို့မဟုတ် မဖွယ်မရာအကြောင်းအရာပုံများကို ပြုလုပ်၍မရကြောင်း သတိပြုပါ။ <ph name="BEGIN_LINK_LEARN_MORE" />ပိုမိုလေ့လာရန်<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6673898378497337661">ကီးဘုတ်တောက်ပမှု တိုးရန်</translation>
 <translation id="6692996468359469499">သင့်ရွေးချယ်မှုနှင့် သက်ဆိုင်သည့် အချက်အလက်များ ရယူခြင်း</translation>
 <translation id="6694534975463174713">လော့ခ် သင်္ကေတ</translation>
@@ -1440,7 +1438,6 @@
 <translation id="7544853251252956727">ရောသမမွှေပါ</translation>
 <translation id="7550715992156305117">အမှားရှာဖွေမှု ပုံမှန်အစီအစဉ်များ</translation>
 <translation id="7551123448725492271">ကိရိယာသည် အသံစက်ပစ္စည်းဖြစ်သည်။</translation>
-<translation id="7553913964854052228">‘ကျောင်းသုံးတူးလ်’ သည် သင့်မိုက်ခရိုဖုန်းကို သုံးနေသည်</translation>
 <translation id="7559239713112547082">ဖန်သားပြင်ဓာတ်ပုံ အစမ်းကြည့်ရှုရန်</translation>
 <translation id="7561454561030345039">ဤလုပ်ဆောင်ချက်ကို သင့်ကြီးကြပ်သူက စီမံသည်</translation>
 <translation id="7561759921596375678">အသံဖွင့်ရန်</translation>
@@ -1663,7 +1660,6 @@
 <translation id="8576249514688522074">စတင်မထားပါ</translation>
 <translation id="8584654835905316966"><ph name="DEVICE_NAME" /> အတွက် ဖာမ်းဝဲဗားရှင်း <ph name="VERSION" /> ထည့်သွင်းမှုကို အပြီးသတ်ရန်အတွက် ပြန်စရန်လိုအပ်သည်။ သင့်ကွန်ပျူတာကို အကြိမ်များစွာ ပြန်လည်စတင်နိုင်သည်။ ဤလုပ်ဆောင်ချက်သည် ပုံမှန်ဖြစ်သည်။</translation>
 <translation id="8593058461203131755">မီဒီယာကို ခဏရပ်ရန်</translation>
-<translation id="8619169570378509764">ကျောင်းဆိုင်ရာတူးလ်များ</translation>
 <translation id="8620617069779373398">ကွန်ရက်ပြင်ပဒေတာသုံးခြင်း အခြေအနေ</translation>
 <translation id="8626489604350149811"><ph name="APN_NAME" /> အတွက် နောက်ထပ်လုပ်ဆောင်ချက်များ</translation>
 <translation id="86356131183441916">ခရမ်းနု</translation>

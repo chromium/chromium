@@ -91,9 +91,7 @@ using segmentation_platform::TipIdentifier;
       _profilePrefChangeRegistrar.Init(profilePrefService);
 
       _prefObserverBridge->ObserveChangesForPreference(
-          (IsHomeCustomizationEnabled()
-               ? prefs::kHomeCustomizationMagicStackTipsEnabled
-               : tips_prefs::kTipsInMagicStackDisabledPref),
+          (prefs::kHomeCustomizationMagicStackTipsEnabled),
           &_profilePrefChangeRegistrar);
     }
   }

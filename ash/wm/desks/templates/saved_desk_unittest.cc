@@ -205,16 +205,6 @@ class SavedDeskTest : public OverviewTestBase,
     return desks_bar_view->new_desk_button()->GetEnabled();
   }
 
-  SavedDeskSaveDeskButton* GetSaveDeskAsTemplateButtonForRoot(
-      aura::Window* root_window) {
-    return OverviewGridTestApi(root_window).GetSaveDeskAsTemplateButton();
-  }
-
-  SavedDeskSaveDeskButton* GetSaveDeskForLaterButtonForRoot(
-      aura::Window* root_window) {
-    return OverviewGridTestApi(root_window).GetSaveDeskForLaterButton();
-  }
-
   SavedDeskSaveDeskButtonContainer* GetSaveDeskButtonContainerForRoot(
       aura::Window* root_window) {
     return OverviewGridTestApi(root_window).GetSaveDeskButtonContainer();

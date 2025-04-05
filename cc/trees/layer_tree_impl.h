@@ -793,7 +793,7 @@ class CC_EXPORT LayerTreeImpl {
   // Returns all of the view transition requests stored so far, and empties
   // the internal list.
   std::vector<std::unique_ptr<ViewTransitionRequest>>
-  TakeViewTransitionRequests();
+  TakeViewTransitionRequests(bool should_set_needs_update_draw_properties);
 
   // Returns true if there are pending ViewTransition requests that need a draw.
   bool HasViewTransitionRequests() const;

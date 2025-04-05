@@ -301,8 +301,61 @@ void InputMethodManagerImpl::StateImpl::EnableLoginLayouts(
     }
   }
 
-  manager_->GetMigratedInputMethodIDs(&layouts);
-  enabled_input_method_ids_.swap(layouts);
+  // Empty |initial_layouts| work too.
+  FinalizeInputMethodsEnabling(layouts, initial_layouts);
+}
+
+void InputMethodManagerImpl::StateImpl::EnableOobeInputMethods(
+    const std::string& language_code,
+    const std::vector<std::string>& initial_input_methods) {
+  if (IsShuttingDown()) {
+    return;
+  }
+
+  // First, hardware input methods should be shown.
+  std::vector<std::string> candidates =
+      manager_->util_.GetHardwareInputMethodIds();
+
+  // Second, locale based input method should be shown.
+  // Add input methods associated with the language.
+  std::vector<std::string> input_methods_from_locale;
+  manager_->util_.GetInputMethodIdsFromLanguageCode(
+      language_code, kAllInputMethods, &input_methods_from_locale);
+  candidates.insert(candidates.end(), input_methods_from_locale.begin(),
+                    input_methods_from_locale.end());
+
+  std::vector<std::string> resulting_input_methods;
+  // First, add the initial input method ID, if it's requested, to
+  // resulting_input_methods, so it appears first on the list of enabled input
+  // methods at the input language status menu.
+  for (const auto& initial_input_method : initial_input_methods) {
+    if (manager_->util_.IsValidInputMethodId(initial_input_method) &&
+        manager_->util_.IsOobeAllowlisted(initial_input_method) &&
+        IsInputMethodAllowed(initial_input_method)) {
+      resulting_input_methods.push_back(initial_input_method);
+    }
+  }
+
+  // Add candidates to resulting_input_methods, while skipping duplicates.
+  for (const auto& candidate : candidates) {
+    // Not efficient, but should be fine, as the two vectors are very
+    // short (2-5 items).
+    if (!base::Contains(resulting_input_methods, candidate) &&
+        manager_->util_.IsOobeAllowlisted(candidate) &&
+        IsInputMethodAllowed(candidate)) {
+      resulting_input_methods.push_back(candidate);
+    }
+  }
+
+  // Empty |initial_input_methods| work too.
+  FinalizeInputMethodsEnabling(resulting_input_methods, initial_input_methods);
+}
+
+void InputMethodManagerImpl::StateImpl::FinalizeInputMethodsEnabling(
+    std::vector<std::string>& input_methods_to_enable,
+    const std::vector<std::string>& initial_input_methods) {
+  manager_->GetMigratedInputMethodIDs(&input_methods_to_enable);
+  enabled_input_method_ids_.swap(input_methods_to_enable);
 
   if (IsActive()) {
     // Initialize candidate window controller and widgets such as
@@ -312,11 +365,10 @@ void InputMethodManagerImpl::StateImpl::EnableLoginLayouts(
       manager_->MaybeInitializeCandidateWindowController();
     }
 
-    // you can pass empty |initial_layout|.
-    ChangeInputMethod(initial_layouts.empty()
+    ChangeInputMethod(initial_input_methods.empty()
                           ? std::string()
                           : extension_ime_util::GetInputMethodIDByEngineID(
-                                initial_layouts[0]),
+                                initial_input_methods[0]),
                       false);
   }
 }
@@ -707,34 +759,34 @@ void InputMethodManagerImpl::StateImpl::SetEnabledExtensionImes(
 void InputMethodManagerImpl::StateImpl::SetInputMethodLoginDefaultFromVPD(
     const std::string& locale,
     const std::string& oem_layout) {
-  std::string layout;
+  std::string input_method_id;
   if (!oem_layout.empty()) {
     // If the OEM layout information is provided, use it.
-    layout = oem_layout;
+    input_method_id = oem_layout;
   } else {
     // Otherwise, determine the hardware keyboard from the locale.
     std::vector<std::string> input_method_ids;
     if (manager_->util_.GetInputMethodIdsFromLanguageCode(
-            locale, kKeyboardLayoutsOnly, &input_method_ids)) {
+            locale, kAllInputMethods, &input_method_ids)) {
       // The output list |input_method_ids| is sorted by popularity, hence
       // input_method_ids[0] now contains the most popular keyboard layout
       // for the given locale.
       DCHECK_GE(input_method_ids.size(), 1U);
-      layout = input_method_ids[0];
+      input_method_id = input_method_ids[0];
     }
   }
 
-  if (layout.empty()) {
+  if (input_method_id.empty()) {
     return;
   }
 
-  std::vector<std::string> layouts = base::SplitString(
-      layout, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-  manager_->GetMigratedInputMethodIDs(&layouts);
+  std::vector<std::string> input_method_ids = base::SplitString(
+      input_method_id, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  manager_->GetMigratedInputMethodIDs(&input_method_ids);
 
   PrefService* prefs = g_browser_process->local_state();
   prefs->SetString(prefs::kHardwareKeyboardLayout,
-                   base::JoinString(layouts, ","));
+                   base::JoinString(input_method_ids, ","));
 
   // This asks the file thread to save the prefs (i.e. doesn't block).
   // The latest values of Local State reside in memory so we can safely
@@ -744,11 +796,13 @@ void InputMethodManagerImpl::StateImpl::SetInputMethodLoginDefaultFromVPD(
 
   manager_->util_.UpdateHardwareLayoutCache();
 
-  EnableLoginLayouts(locale, layouts);
+  // This function is called only during system setup in OOBE.
+  EnableOobeInputMethods(locale, input_method_ids);
   LoadNecessaryComponentExtensions();
 }
 
-void InputMethodManagerImpl::StateImpl::SetInputMethodLoginDefault() {
+void InputMethodManagerImpl::StateImpl::SetInputMethodLoginDefault(
+    bool is_in_oobe_context) {
   // Set up keyboards. For example, when |locale| is "en-US", enable US qwerty
   // and US dvorak keyboard layouts.
   if (g_browser_process && g_browser_process->local_state()) {
@@ -771,7 +825,11 @@ void InputMethodManagerImpl::StateImpl::SetInputMethodLoginDefault() {
         input_method_ids_to_be_enabled.push_back(initial_input_method_id);
       }
     }
-    EnableLoginLayouts(locale, input_method_ids_to_be_enabled);
+    if (is_in_oobe_context) {
+      EnableOobeInputMethods(locale, input_method_ids_to_be_enabled);
+    } else {
+      EnableLoginLayouts(locale, input_method_ids_to_be_enabled);
+    }
     LoadNecessaryComponentExtensions();
   }
 }

@@ -56,6 +56,7 @@ class SVGTransformList final
   bool Parse(const UChar*& ptr, const UChar* end);
   bool Parse(const LChar*& ptr, const LChar* end);
 
+  // SVGPropertyBase:
   void Add(const SVGPropertyBase*, const SVGElement*) override;
   void CalculateAnimatedValue(
       const SMILAnimationEffectParameters&,

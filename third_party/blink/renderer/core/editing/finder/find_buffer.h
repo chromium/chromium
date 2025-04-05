@@ -57,7 +57,8 @@ class CORE_EXPORT FindBuffer {
                                          const Node& end_node);
 
   // See |GetVisibleTextNode|.
-  static Node* ForwardVisibleTextNode(Node& start_node);
+  static Node* ForwardVisibleTextNode(Node& start_node,
+                                      Node* past_last_node = nullptr);
   static Node* BackwardVisibleTextNode(Node& start_node);
 
   static bool ShouldIgnoreContents(const Node& node);

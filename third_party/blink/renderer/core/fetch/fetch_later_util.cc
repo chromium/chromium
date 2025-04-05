@@ -129,8 +129,14 @@ uint32_t FetchLaterUtil::GetReservedDeferredFetchQuota(const Frame* frame) {
     return kMaxScheduledDeferredBytes - kQuotaReservedForDeferredFetchMinimal;
   }
 
-  // `frame` is not top-level.
-  CHECK(frame->Owner());
+  // TODO(crbug.com/408106277): Until the spec is fixed, a temporarily 0 quota
+  // is returned for non top-level control frames where they also don't have a
+  // frame owner (iframe).
+  if (!frame->Owner()) {
+    return 0;
+  }
+
+  // `frame` must not be top-level and have a frame owner.
   auto container_policy =
       frame->Owner()->GetFramePolicy().deferred_fetch_policy;
   uint32_t container_reserved_quota =

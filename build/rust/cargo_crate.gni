@@ -259,6 +259,12 @@ template("cargo_crate") {
     # Don't import the `chromium` crate into third-party code.
     no_chromium_prelude = true
 
+    # Don't depend on the chrome-specific #[global_allocator] crate from
+    # third-party code. This avoids some dependency cycle issues. The allocator
+    # crate will still be used if it exists anywhere in the dependency graph for
+    # a given linked artifact.
+    no_allocator_crate = true
+
     rustc_metadata = _rustc_metadata
 
     # TODO(crbug.com/40259764): don't default to true. This requires changes to
@@ -482,6 +488,9 @@ template("cargo_crate") {
 
         # Don't import the `chromium` crate into third-party code.
         no_chromium_prelude = true
+
+        # Build scripts do not need to link to chrome's allocator.
+        no_allocator_crate = true
 
         # The ${_build_script_name}_output target looks for the exe in this
         # location. Due to how the Windows component build works, this has to

@@ -20,3 +20,12 @@ source_set("model") {
     "//ios/web/public",
   ]
 }
+
+source_set("config") {
+  sources = [
+    "enhanced_calendar_configuration.h",
+    "enhanced_calendar_configuration.mm",
+  ]
+
+  deps = [ "//components/optimization_guide/proto:optimization_guide_proto" ]
+}

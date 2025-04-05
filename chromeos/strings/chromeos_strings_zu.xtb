@@ -458,7 +458,6 @@
 <translation id="3084958266922136097">Khubaza isilondolozi sesikrini</translation>
 <translation id="3091839911843451378">Yehlulekile - Imile</translation>
 <translation id="3102119246920354026">Inqolobane</translation>
-<translation id="3112413615003385433">Uthisha ususe okuqukethwe Emathuluzini Esikole</translation>
 <translation id="3122464029669770682">I-CPU</translation>
 <translation id="3122614491980756867">amachibi okubhukuda</translation>
 <translation id="3122883569442693641">Imininingwane eyengeziwe</translation>
@@ -539,7 +538,6 @@
 <translation id="3488065109653206955">Yenziwe yasebenza ngokungaphelele</translation>
 <translation id="3492882532495507361">Ihhovisi le-<ph name="OFFICE_STYLE" /> elinamathoni e-<ph name="OFFICE_COLOR" /></translation>
 <translation id="3493187369049186498">Idatha ilinganiswa nge-Chromebook yakho. Lokhu kungase kuhluke kudatha yomhlinzeki.</translation>
-<translation id="349570724365779960">Amathuluzi Esikole axhunywe kubafundi</translation>
 <translation id="3502426834823382181">Buka wonke ama-app</translation>
 <translation id="3510890413042482857">Thumela <ph name="BEGIN_LINK1" />idatha yokulandelela ukusebenza<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Isibuyekezo se-ChromeOS</translation>
@@ -547,7 +545,6 @@
 <translation id="353214771040290298">Kuqediwe ukuhlela</translation>
 <translation id="3532980081107202182">Kusele cishe amaminithi angu-<ph name="MIN_REMAINING" /></translation>
 <translation id="3533790840489634638">ichibi lokubhukuda</translation>
-<translation id="3535802910192338629">Uthisha wakho ufake okuqukethwe okusha Emathuluzini Esikole</translation>
 <translation id="3547264467365135390">Ifomula</translation>
 <translation id="3557205324756024651">Ubunikazi bendawo (ongakukhetha)</translation>
 <translation id="3565064564551103223">Ama-IP avunyelwe</translation>
@@ -1235,6 +1232,7 @@
 <translation id="6657240842932274095">Vumela amasevisi esistimu ukuthi asebenzise indawo yakho?</translation>
 <translation id="6657585470893396449">Igama lokungena</translation>
 <translation id="66621959568103627">uphinki we-coral</translation>
+<translation id="6669485505082792176">Ayikwazi ukusungula izithombe zalokhu njengamanje. Zama ukuyibeka ngamanye amazwi incazelo yakho. Khumbula ukuthi angeke usungule izithombe zekhontenti yabantu, okulimazayo, noma okubeka obala. <ph name="BEGIN_LINK_LEARN_MORE" />Funda kabanzi<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6673898378497337661">ukukhanya kwekhibhodi kuphezulu</translation>
 <translation id="6692996468359469499">Thola ukwaziswa okuhlobene nokhetho lwakho</translation>
 <translation id="6694534975463174713">khiya</translation>
@@ -1440,7 +1438,6 @@ Dawuniloda imodeli yokubhala (okungafika ku-100MB) ukuze uthole lokhu okubhaliwe
 <translation id="7544853251252956727">Shova</translation>
 <translation id="7550715992156305117">Imijikelezo yokuhlola</translation>
 <translation id="7551123448725492271">Idivayisi iyidivayisi yokulalelwayo.</translation>
-<translation id="7553913964854052228">Amathuluzi Esikole asebenzisa imakrofoni yakho</translation>
 <translation id="7559239713112547082">Buka kuqala Isithombe-skrini</translation>
 <translation id="7561454561030345039">Lesi senzo siphethwe umlawuli wakho</translation>
 <translation id="7561759921596375678">Vula ivolumu</translation>
@@ -1663,7 +1660,6 @@ Dawuniloda imodeli yokubhala (okungafika ku-100MB) ukuze uthole lokhu okubhaliwe
 <translation id="8576249514688522074">Akuqaliswanga</translation>
 <translation id="8584654835905316966">Kudingeka ukuqalisa kabusha ukuze uqedele ukufaka ifirmware ye-<ph name="DEVICE_NAME" /> ibe uhlobo <ph name="VERSION" />. Ikhompyutha yakho ingase ibonakale iqalisa izikhathi ezithize. Lokhu kulindelekile.</translation>
 <translation id="8593058461203131755">misa imidiya</translation>
-<translation id="8619169570378509764">Amathuluzi Esikole</translation>
 <translation id="8620617069779373398">Isimo sokuzulazula</translation>
 <translation id="8626489604350149811">Izenzo ezengeziwe ze-<ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Okunsomi okhanyayo</translation>

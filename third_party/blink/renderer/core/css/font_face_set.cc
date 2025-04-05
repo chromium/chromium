@@ -206,7 +206,7 @@ ScriptPromise<IDLSequence<FontFace>> FontFaceSet::load(
   }
 
   FontFaceCache* font_face_cache = GetFontSelector()->GetFontFaceCache();
-  FontFaceArray* faces = MakeGarbageCollected<FontFaceArray>();
+  FontFaceArray faces = FontFaceArray();
   for (const FontFamily* f = &font->GetFontDescription().Family(); f;
        f = f->Next()) {
     if (f->FamilyIsGeneric()) {
@@ -215,12 +215,12 @@ ScriptPromise<IDLSequence<FontFace>> FontFaceSet::load(
     CSSSegmentedFontFace* segmented_font_face =
         font_face_cache->Get(font->GetFontDescription(), f->FamilyName());
     if (segmented_font_face) {
-      segmented_font_face->Match(text, faces);
+      segmented_font_face->Match(text, &faces);
     }
   }
 
   auto* resolver =
-      MakeGarbageCollected<LoadFontPromiseResolver>(faces, script_state);
+      MakeGarbageCollected<LoadFontPromiseResolver>(&faces, script_state);
   auto promise = resolver->Promise();
   // After this, resolver->promise() may return null.
   resolver->LoadFonts();

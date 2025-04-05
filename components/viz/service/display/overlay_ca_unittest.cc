@@ -136,7 +136,6 @@ TextureDrawQuad* CreateCandidateQuadAt(
                        resource_id, premultiplied_alpha, kUVTopLeft,
                        kUVBottomRight, SkColors::kTransparent, nearest_neighbor,
                        /*secure_output_only=*/false, protected_video_type);
-  overlay_quad->set_resource_size_in_pixels(resource_size_in_pixels);
 
   return overlay_quad;
 }

@@ -1256,14 +1256,17 @@ class MODULES_EXPORT WebGLRenderingContextBase : public ScriptWrappable,
 
     // Returns sub rect of the source based on `unpack_*` params above. This
     // rect is always in top-left coordinate space.
-    gfx::Rect GetSourceRect(gfx::Size source_size);
+    gfx::Rect GetSourceRect(gfx::Size source_size) const;
 
     // Returns GrSurfaceOrigin of the destination texture for this operation.
     // Note, that textures don't have persistent orientation (e.g unlike
     // SharedImages), so this value doesn't affect the data in the texture
     // before the operation, only operation itself. This is helper because
     // everything else operates in terms of GrSurfaceOrigin.
-    GrSurfaceOrigin GetDestinationOrigin();
+    GrSurfaceOrigin GetDestinationOrigin() const;
+
+    // Returns desired alpha type of the uploaded data.
+    SkAlphaType GetDestinationAlphaType() const;
 
     // The source's height for 3D copies. If we are doing a 3D copy, then we
     // interpret the 2D source as 3D by treating it as vertical sequence of

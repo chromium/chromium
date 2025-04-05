@@ -1115,14 +1115,20 @@ public class CustomTabsConnection {
                     bundleToJson(intent.getExtras()));
         }
 
+        if (ChromeBrowserInitializer.getInstance().isFullBrowserInitialized()) {
+            CustomTabsConnectionJni.get().emitIntentHandledTrigger();
+        }
+
         // If we still have pending warmup tasks, don't continue as they would only delay intent
         // processing from now on.
         if (mWarmupTasks != null) mWarmupTasks.cancel();
 
-        maybePreconnectToRedirectEndpoint(session, url, intent);
-        ChromeBrowserInitializer.getInstance()
-                .runNowOrAfterFullBrowserStarted(() -> handleParallelRequest(session, intent));
-        maybePrefetchResources(session, intent);
+        try (TraceEvent event = TraceEvent.scoped("CustomTabsConnection.PreconnectResources")) {
+            maybePreconnectToRedirectEndpoint(session, url, intent);
+            ChromeBrowserInitializer.getInstance()
+                    .runNowOrAfterFullBrowserStarted(() -> handleParallelRequest(session, intent));
+            maybePrefetchResources(session, intent);
+        }
     }
 
     /**
@@ -2322,5 +2328,7 @@ public class CustomTabsConnection {
                 SessionHolder<?> session,
                 WebContents webContents,
                 @JniType("std::string") String textFragment);
+
+        void emitIntentHandledTrigger();
     }
 }

@@ -102,7 +102,7 @@ void BluetoothDeviceCredentialsView::InitControls(
   // to ensure the proper spacing is maintained between items when stacking
   // vertically.
   const int vertical_spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
-                                   DISTANCE_CONTROL_LIST_VERTICAL) /
+                                   views::DISTANCE_CONTROL_LIST_VERTICAL) /
                                2;
   constexpr int horizontal_spacing = 0;
 

@@ -302,7 +302,7 @@ bool ReadBookmarksFromPasteboard(
 
 bool PasteboardContainsBookmarks(NSPasteboard* pb) {
   NSArray* availableTypes = @[
-    ui::kUTTypeWebKitWebURLsWithTitles,
+    ui::kUTTypeWebKitWebUrlsWithTitles,
     kUTTypeChromiumBookmarkDictionaryList,
     NSPasteboardTypeURL,
   ];

@@ -50,7 +50,6 @@ class DiscardsUI : public ui::MojoWebUIController {
       mojo::PendingReceiver<discards::mojom::GraphDump> receiver);
 
  private:
-  std::unique_ptr<discards::mojom::DetailsProvider> ui_handler_;
   std::string profile_id_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();

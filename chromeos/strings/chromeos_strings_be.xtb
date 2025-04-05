@@ -458,7 +458,6 @@
 <translation id="3084958266922136097">Выключыць застаўку</translation>
 <translation id="3091839911843451378">Збой: работа спынена</translation>
 <translation id="3102119246920354026">Кэш</translation>
-<translation id="3112413615003385433">Выкладчык выдаліў змесціва з праграмы "Школьныя інструменты"</translation>
 <translation id="3122464029669770682">Працэсар</translation>
 <translation id="3122614491980756867">вадаёмы</translation>
 <translation id="3122883569442693641">Дадатковая інфармацыя</translation>
@@ -539,7 +538,6 @@
 <translation id="3488065109653206955">Часткова актывавана</translation>
 <translation id="3492882532495507361">Офіс, стыль – <ph name="OFFICE_STYLE" />, тон – <ph name="OFFICE_COLOR" /></translation>
 <translation id="3493187369049186498">Выкарыстанне трафіка вымяраецца Chromebook. Атрыманае значэнне можа адрознівацца ад даных пастаўшчыка інтэрнэт-паслуг.</translation>
-<translation id="349570724365779960">Навучэнцы падключаны да праграмы "Школьныя інструменты"</translation>
 <translation id="3502426834823382181">паглядзець усе праграмы</translation>
 <translation id="3510890413042482857">Адпраўляць <ph name="BEGIN_LINK1" />даныя адсочвання прадукцыйнасці<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Абнаўленне Chrome OS</translation>
@@ -547,7 +545,6 @@
 <translation id="353214771040290298">Гатова</translation>
 <translation id="3532980081107202182">Прыблізны час да завяршэння: <ph name="MIN_REMAINING" /> хв</translation>
 <translation id="3533790840489634638">вадаём</translation>
-<translation id="3535802910192338629">Выкладчык дадаў новае змесціва ў праграму "Школьныя інструменты"</translation>
 <translation id="3547264467365135390">Формула</translation>
 <translation id="3557205324756024651">Лакальнае пасведчанне (неабавязкова)</translation>
 <translation id="3565064564551103223">Дазволеныя IP-адрасы</translation>
@@ -1235,6 +1232,7 @@
 <translation id="6657240842932274095">Дазволіць сістэмным службам выкарыстоўваць даныя пра ваша месцазнаходжанне?</translation>
 <translation id="6657585470893396449">Пароль</translation>
 <translation id="66621959568103627">каралава-ружовы</translation>
+<translation id="6669485505082792176">Не ўдаецца стварыць відарысы па гэтым запыце. Паспрабуйце змяніць апісанне. Не дазваляецца ствараць відарысы асоб, а таксама шкоднае і непрыстойнае змесціва. <ph name="BEGIN_LINK_LEARN_MORE" />Даведацца больш<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6673898378497337661">павялічыць яркасць клавіятуры</translation>
 <translation id="6692996468359469499">Атрыманне інфармацыі, звязанай з вылучаным вамі</translation>
 <translation id="6694534975463174713">блакіроўка</translation>
@@ -1438,7 +1436,6 @@
 <translation id="7544853251252956727">Перамяшаць</translation>
 <translation id="7550715992156305117">Паслядоўнасці дзеянняў для дыягностыкі</translation>
 <translation id="7551123448725492271">Гэта аўдыяпрылада.</translation>
-<translation id="7553913964854052228">Праграма "Школьныя інструменты" выкарыстоўвае ваш мікрафон</translation>
 <translation id="7559239713112547082">Перадпрагляд здымка экрана</translation>
 <translation id="7561454561030345039">Гэтым дзеяннем кіруе адміністратар</translation>
 <translation id="7561759921596375678">Уключыць гук</translation>
@@ -1661,7 +1658,6 @@
 <translation id="8576249514688522074">Неініцыялізаваная</translation>
 <translation id="8584654835905316966">Для завяршэння ўсталявання абнаўлення ўбудаванага праграмнага забеспячэння да версіі <ph name="VERSION" /> трэба перазапусціць прыладу "<ph name="DEVICE_NAME" />". Ваш камп’ютар можа перазагрузіцца некалькі разоў. Гэта стандартны працэс.</translation>
 <translation id="8593058461203131755">прыпыніць медыязмесціва</translation>
-<translation id="8619169570378509764">Школьныя інструменты</translation>
 <translation id="8620617069779373398">Стан роўмінгу</translation>
 <translation id="8626489604350149811">Іншыя дзеянні з прыладай "<ph name="APN_NAME" />"</translation>
 <translation id="86356131183441916">Светла-фіялетавы</translation>

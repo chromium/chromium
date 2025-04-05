@@ -332,6 +332,7 @@ source_set("ksadmin_lib") {
     "//chrome/updater:base_app",
     "//chrome/updater:ks_ticket",
     "//chrome/updater:public_sources",
+    "//chrome/updater:tagging",
     "//chrome/updater:version_header",
   ]
 

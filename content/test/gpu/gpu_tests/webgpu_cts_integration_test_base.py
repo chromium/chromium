@@ -140,7 +140,8 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
 
   @classmethod
   def _SuiteSupportsParallelTests(cls) -> bool:
-    return True
+    # Service worker tests might have cross-page state. Serialize to be safe.
+    return cls._worker_type != WorkerType.SERVICE
 
   @classmethod
   def _GetSlowTests(cls) -> expectations_parser.TestExpectations:

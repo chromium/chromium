@@ -935,6 +935,21 @@ float ShapeResult::ForEachGraphemeClusters(const StringView& text,
   return advance_so_far;
 }
 
+bool ShapeResult::IsCursiveScript(hb_script_t script) {
+  switch (script) {
+    case HB_SCRIPT_ARABIC:
+    case HB_SCRIPT_HANIFI_ROHINGYA:
+    case HB_SCRIPT_MANDAIC:
+    case HB_SCRIPT_MONGOLIAN:
+    case HB_SCRIPT_NKO:
+    case HB_SCRIPT_PHAGS_PA:
+    case HB_SCRIPT_SYRIAC:
+      return true;
+    default:
+      return false;
+  }
+}
+
 // TODO(kojii): VC2015 fails to explicit instantiation of a member function.
 // Typed functions + this private function are to instantiate instances.
 template <typename TextContainerType>
@@ -963,7 +978,8 @@ float ShapeResult::ApplySpacingImpl(
       typename ShapeResultSpacing<TextContainerType>::ComputeSpacingParameters
           parameters{.index = run_start_index + glyph_data.character_index,
                      .original_advance = glyph_data.advance};
-      space = spacing.ComputeSpacing(parameters, offset);
+      space = spacing.ComputeSpacing(parameters, offset,
+                                     IsCursiveScript(run->script_));
       glyph_data.AddAdvance(space);
       total_advance_for_run += glyph_data.advance;
 

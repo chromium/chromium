@@ -211,7 +211,7 @@ void FragmentBuilder::PropagateChildAnchors(const PhysicalFragment& child,
     // Set the child's `anchor-name` before propagating its descendants', so
     // that ancestors have precedence over their descendants.
     LogicalRect logical_rect(child_offset,
-                             child.Size().ConvertToLogical(GetWritingMode()));
+                             ToLogicalSize(child.Size(), GetWritingMode()));
     const WritingModeConverter converter(GetWritingDirection(), Size());
     PhysicalRect rect = converter.ToPhysical(logical_rect);
     options = AnchorQuerySetOptions(

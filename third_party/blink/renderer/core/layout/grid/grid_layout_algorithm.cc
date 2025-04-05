@@ -3935,12 +3935,14 @@ void GridLayoutAlgorithm::BuildGapIntersectionPoints(
         LayoutUnit(col_tracks[col_index] - (col_gutter_size / 2.0f));
 
     columns[col_index - 1][0] = GapIntersection(mid_point, row_tracks[0]);
+    columns[col_index - 1][0].is_at_edge_of_container = true;
     for (wtf_size_t row_index = 1; row_index < row_count - 1; ++row_index) {
       columns[col_index - 1][row_index] =
           GapIntersection(mid_point, LayoutUnit());
     }
     columns[col_index - 1][row_count - 1] =
         GapIntersection(mid_point, row_tracks[row_count - 1]);
+    columns[col_index - 1][row_count - 1].is_at_edge_of_container = true;
   }
 
   // For rows, populate each row gap with intersection points. Since we already
@@ -3954,6 +3956,7 @@ void GridLayoutAlgorithm::BuildGapIntersectionPoints(
         LayoutUnit(row_tracks[row_index] - (row_gutter_size / 2.0f));
 
     rows[row_index - 1][0] = GapIntersection(col_tracks[0], mid_point);
+    rows[row_index - 1][0].is_at_edge_of_container = true;
     for (wtf_size_t col_index = 1; col_index < col_count - 1; ++col_index) {
       rows[row_index - 1][col_index] =
           GapIntersection(columns[col_index - 1][0].inline_offset, mid_point);
@@ -3961,6 +3964,7 @@ void GridLayoutAlgorithm::BuildGapIntersectionPoints(
     }
     rows[row_index - 1][col_count - 1] =
         GapIntersection(col_tracks[col_count - 1], mid_point);
+    rows[row_index - 1][col_count - 1].is_at_edge_of_container = true;
   }
 
   gap_geometry->SetGapIntersections(kForColumns, std::move(columns));

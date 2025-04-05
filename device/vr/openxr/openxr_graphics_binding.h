@@ -43,6 +43,7 @@ class ContextProvider;
 }  // namespace viz
 
 namespace device {
+class OpenXrExtensionEnumeration;
 class OpenXrViewConfiguration;
 
 // TODO(crbug.com/40909689): Refactor this class.
@@ -105,6 +106,9 @@ class OpenXrGraphicsBinding {
   // Gets the set of RequiredExtensions that need to be present on the platform.
   static void GetRequiredExtensions(std::vector<const char*>& extensions);
 
+  // Gets any OptionalExtensions that should be enabled if present.
+  static std::vector<std::string> GetOptionalExtensions();
+
   virtual ~OpenXrGraphicsBinding() = default;
 
   // Ensures that the GraphicsBinding is ready for use.
@@ -127,6 +131,9 @@ class OpenXrGraphicsBinding {
   // TODO(crbug.com/40909689): Make SwapChainInfo internal to the child
   // classes.
   virtual base::span<SwapChainInfo> GetSwapChainImages() = 0;
+
+  // Const getter of the above.
+  virtual base::span<const SwapChainInfo> GetSwapChainImages() const = 0;
 
   // Returns whether or not the platform believes it can support using Shared
   // buffers/images.
@@ -164,7 +171,7 @@ class OpenXrGraphicsBinding {
 
   // Returns whether or not the current Swapchain is actually using SharedImages
   // or not.
-  bool IsUsingSharedImages();
+  bool IsUsingSharedImages() const;
 
   // Returns the previously set swapchain image size, or 0,0 if one is not set.
   gfx::Size GetSwapchainImageSize();
@@ -239,14 +246,21 @@ class OpenXrGraphicsBinding {
   void SetWebGPUSession(bool is_webgpu) { webgpu_session_ = is_webgpu; }
   bool IsWebGPUSession() const { return webgpu_session_; }
 
+  // Append any necessary data to the `layer` object to instruct the runtime to
+  // flip the layer if necessary.
+  void MaybeFlipLayer(XrCompositionLayerProjection& layer) const;
+
  protected:
+  explicit OpenXrGraphicsBinding(
+      const OpenXrExtensionEnumeration* extension_enum);
+
   // Internal helper to clear the list of images allocated during
   // `EnumerateSwapchainImages`, since the child classes own the actual list.
   virtual void ClearSwapchainImages() = 0;
 
   // Indicates whether the graphics binding expects the submitted image to need
   // to be flipped when being submitted to the runtime.
-  virtual bool ShouldFlipSubmittedImage() = 0;
+  virtual bool ShouldFlipSubmittedImage() const = 0;
 
   // Will be called when SetSwapchainImageSize is called, even if a change is
   // not made, to allow child classes/concrete implementations to override any
@@ -278,6 +292,9 @@ class OpenXrGraphicsBinding {
   uint32_t active_swapchain_index_;
   bool has_active_swapchain_image_ = false;
   bool webgpu_session_ = false;
+  bool fb_composition_layer_ext_enabled_ = false;
+  // This will only be valid if `fb_composition_layer_ext_enabled_` is true.
+  XrCompositionLayerImageLayoutFB y_flip_layer_layout_;
 };
 
 }  // namespace device

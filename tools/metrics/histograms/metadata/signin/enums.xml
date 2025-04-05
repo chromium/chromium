@@ -134,6 +134,16 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<!-- LINT.IfChange(AccountExtensionsSignoutChoice) -->
+
+<enum name="AccountExtensionsSignoutChoice">
+  <int value="0" label="Signout Cancelled"/>
+  <int value="1" label="Signout - Account Extensions Kept"/>
+  <int value="2" label="Signout - Account Extensions Uninstalled"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/signin/chrome_signout_confirmation_prompt.h:AccountExtensionsSignoutChoice) -->
+
 <enum name="AccountInPrefState">
   <int value="0" label="Account is fully known"/>
   <int value="1" label="Account is unkown"/>
@@ -680,6 +690,7 @@ chromium-metrics-reviews@google.com.
   <int value="74" label="Glic launch button"/>
   <int value="75" label="History page (Android only)"/>
   <int value="76" label="Join collaboration tab group authentication"/>
+  <int value="77" label="History Sync Opt-in Expanded Pill"/>
 </enum>
 
 <enum name="SigninAccountReconcilorState">
@@ -1009,6 +1020,11 @@ chromium-metrics-reviews@google.com.
   </int>
   <int value="37" label="User disabled allow chrome sign-in toggle">
     User disabled &quot;Allow Chrome sign-in&quot; toggle.
+  </int>
+  <int value="38"
+      label="Signed out before a forced sign-in with a supervised account">
+    A sign-out was triggered to allow a switch to a supervised account that was
+    added to the device. Android only.
   </int>
 </enum>
 

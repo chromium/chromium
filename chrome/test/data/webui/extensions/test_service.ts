@@ -416,6 +416,6 @@ export class TestService extends TestBrowserProxy implements ServiceInterface {
 
   uploadItemToAccount(id: string) {
     this.methodCalled('uploadItemToAccount', id);
-    return Promise.resolve();
+    return Promise.resolve(false);
   }
 }

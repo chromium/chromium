@@ -63,6 +63,7 @@ enum class NtpSharepointModuleDataType {
   kNonInsights,
   kTrendingInsightsFakeData,
   kNonInsightsFakeData,
+  kCombinedSuggestions,
 };
 BASE_DECLARE_FEATURE(kNtpShortcuts);
 BASE_DECLARE_FEATURE(kNtpHandleMostVisitedNavigationExplicitly);
@@ -211,6 +212,16 @@ extern const base::FeatureParam<NtpSharepointModuleDataType>
 // Parameter determining the max number of files to display on the Microsoft
 // files module.
 extern const base::FeatureParam<int> kNtpMicrosoftFilesModuleMaxFilesParam;
+// Parameter determining the max number of trending files to display on the
+// Microsoft files module. Used only for the
+// `NtpSharepointModuleDataType::kCombinedSuggestions` variation.
+extern const base::FeatureParam<int>
+    kNtpMicrosoftFilesModuleMaxTrendingFilesForCombinedParam;
+// Parameter determining the max number of used and shared files to display on
+// the Microsoft files module. Used only for the
+// `NtpSharepointModuleDataType::kCombinedSuggestions` variation.
+extern const base::FeatureParam<int>
+    kNtpMicrosoftFilesModuleMaxNonInsightsFilesForCombinedParam;
 // Parameter determining whether the tab resumption module should filter visits
 // that are associated with local tabs.
 extern const base::FeatureParam<bool>

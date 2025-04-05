@@ -169,15 +169,32 @@ public final class EditUrlSuggestionProcessorUnitTest {
 
     @Test
     public void doesProcessSuggestion_acceptMatchingUrlWhatYouTyped() {
+        // URL_WHAT_YOU_TYPED
         assertTrue(mProcessor.doesProcessSuggestion(mMatch, 0));
+
+        // SEARCH_WHAT_YOU_TYPED
+        var match =
+                new AutocompleteMatchBuilder(OmniboxSuggestionType.SEARCH_WHAT_YOU_TYPED)
+                        .setUrl(SEARCH_URL_1)
+                        .build();
+        assertTrue(mProcessor.doesProcessSuggestion(match, 0));
+
         verifyNoMoreInteractions(mSuggestionHost, mShareDelegate, mClipboardManager);
     }
 
     @Test
-    public void
-            doesProcessSuggestion_acceptMatchingUrlWhatYouTypedWhenRetainOmniboxOnFocusDisabled() {
+    public void doesProcessSuggestion_acceptMatchingWhatYouTypedWhenRetainOmniboxOnFocusDisabled() {
+        // URL_WHAT_YOU_TYPED
         OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(Boolean.FALSE);
         assertTrue(mProcessor.doesProcessSuggestion(mMatch, 0));
+
+        // SEARCH_WHAT_YOU_TYPED
+        var match =
+                new AutocompleteMatchBuilder(OmniboxSuggestionType.SEARCH_WHAT_YOU_TYPED)
+                        .setUrl(SEARCH_URL_1)
+                        .build();
+        assertTrue(mProcessor.doesProcessSuggestion(match, 0));
+
         verifyNoMoreInteractions(mSuggestionHost, mShareDelegate, mClipboardManager);
     }
 
@@ -216,10 +233,10 @@ public final class EditUrlSuggestionProcessorUnitTest {
     }
 
     @Test
-    public void doesProcessSuggestion_rejectSearchWhatYouTyped() {
+    public void doesProcessSuggestion_rejectNonMatchingSearchWhatYouTyped() {
         var match =
                 new AutocompleteMatchBuilder(OmniboxSuggestionType.SEARCH_WHAT_YOU_TYPED)
-                        .setUrl(SEARCH_URL_1)
+                        .setUrl(SEARCH_URL_2)
                         .build();
         // Suggestion should be rejected even though URLs match.
         when(mTab.getUrl()).thenReturn(SEARCH_URL_1);

@@ -455,9 +455,10 @@ chromium-metrics-reviews@google.com.
 
 <enum name="AndroidWebViewSupervisedUserUrlCheckResult">
   <int value="0" label="ALLOWED_SITE_LOADED"/>
-  <int value="1" label="ALLOWED_SITE_DETECTED"/>
+  <int value="1" label="(Obsolete) ALLOWED_SITE_DETECTED. Removed in 2025/02"/>
   <int value="2" label="DISALLOWED_SITE_BLOCKED"/>
-  <int value="3" label="DISALLOWED_SITE_DETECTED"/>
+  <int value="3"
+      label="(Obsolete) DISALLOWED_SITE_DETECTED. Removed in 2025/02"/>
   <int value="4" label="TIMEOUT"/>
   <int value="5" label="UNKNOWN_ERROR"/>
 </enum>

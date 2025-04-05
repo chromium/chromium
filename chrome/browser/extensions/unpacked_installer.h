@@ -65,6 +65,10 @@ class UnpackedInstaller : public base::RefCountedThreadSafe<UnpackedInstaller>,
   UnpackedInstaller(const UnpackedInstaller&) = delete;
   UnpackedInstaller& operator=(const UnpackedInstaller&) = delete;
 
+  static scoped_refptr<UnpackedInstaller> Create(Profile* profile);
+
+  // TODO(crbug.com/398299722): Delete this constructor in favor of the one that
+  // takes a Profile.
   static scoped_refptr<UnpackedInstaller> Create(
       ExtensionService* extension_service);
 

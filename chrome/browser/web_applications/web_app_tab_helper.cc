@@ -27,7 +27,7 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
-#include "components/tab_collections/public/tab_interface.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/webapps/browser/launch_queue/launch_queue.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/navigation_handle.h"

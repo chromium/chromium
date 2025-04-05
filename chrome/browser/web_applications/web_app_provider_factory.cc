@@ -88,8 +88,6 @@ void WebAppProviderFactory::RegisterProfilePrefs(
   WebAppPolicyManager::RegisterProfilePrefs(registry);
   IsolatedWebAppPolicyManager::RegisterProfilePrefs(registry);
 
-  registry->RegisterBooleanPref(prefs::kShouldGarbageCollectStoragePartitions,
-                                false);
   RegisterInstallBounceMetricProfilePrefs(registry);
   RegisterDailyWebAppMetricsProfilePrefs(registry);
   OsIntegrationManager::RegisterProfilePrefs(registry);

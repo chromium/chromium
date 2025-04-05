@@ -1069,6 +1069,7 @@ void Navigator::NavigateFromFrameProxy(
     const std::optional<blink::Impression>& impression,
     blink::mojom::NavigationInitiatorActivationAndAdStatus
         initiator_activation_and_ad_status,
+    base::TimeTicks actual_navigation_start_time,
     base::TimeTicks navigation_start_time,
     bool is_embedder_initiated_fenced_frame_navigation,
     bool is_unfenced_top_navigation,
@@ -1122,10 +1123,11 @@ void Navigator::NavigateFromFrameProxy(
       should_replace_current_entry, download_policy, method, post_body,
       extra_headers, std::move(source_location),
       std::move(blob_url_loader_factory), is_form_submission, impression,
-      initiator_activation_and_ad_status, navigation_start_time,
-      is_embedder_initiated_fenced_frame_navigation, is_unfenced_top_navigation,
-      force_new_browsing_instance, is_container_initiated, has_rel_opener,
-      storage_access_api_status, embedder_shared_storage_context);
+      initiator_activation_and_ad_status, actual_navigation_start_time,
+      navigation_start_time, is_embedder_initiated_fenced_frame_navigation,
+      is_unfenced_top_navigation, force_new_browsing_instance,
+      is_container_initiated, has_rel_opener, storage_access_api_status,
+      embedder_shared_storage_context);
 }
 
 void Navigator::SetWillNavigateFromFrameProxyCallbackForTesting(

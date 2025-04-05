@@ -223,18 +223,15 @@ class AddressComponent {
   // Sets the value corresponding to the storage type of this AddressComponent.
   virtual void SetValue(std::u16string value, VerificationStatus status);
 
-  // Wrapper function around
-  // SetValueForTypeIfPossible(/*invalidate_child_nodes=*/false);
+  // Sets the value for the specified field type.
+  // - If `invalidate_child_nodes` is false (default), checks if the node is
+  //   read-only.
+  // - If `invalidate_child_nodes` is true, ignores read-only status and clears
+  //   child nodes after setting.
   bool SetValueForType(FieldType field_type,
                        const std::u16string& value,
-                       const VerificationStatus& status);
-
-  // Wrapper function around
-  // SetValueForTypeIfPossible(/*invalidate_child_nodes=*/true);
-  // TODO(crbug.com/40266145): Remove and merge with SetValueForType.
-  bool SetValueForTypeAndResetSubstructure(FieldType field_type,
-                                           const std::u16string& value,
-                                           const VerificationStatus& status);
+                       const VerificationStatus& status,
+                       bool invalidate_child_nodes = false);
 
   // Sets the value to an empty string, marks it unassigned and sets the
   // verification status to |kNoStatus|.

@@ -26,7 +26,6 @@
 
 #include "third_party/blink/renderer/core/page/drag_data.h"
 
-#include "third_party/blink/renderer/core/clipboard/clipboard_mime_types.h"
 #include "third_party/blink/renderer/core/clipboard/data_object.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/dom/range.h"
@@ -35,6 +34,7 @@
 #include "third_party/blink/renderer/platform/file_metadata.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "ui/base/clipboard/clipboard_constants.h"
 
 namespace blink {
 
@@ -50,11 +50,11 @@ DragData::DragData(DataObject* data,
       force_default_action_(force_default_action) {}
 
 bool DragData::ContainsHTML() const {
-  return platform_drag_data_->Types().Contains(kMimeTypeTextHTML);
+  return platform_drag_data_->Types().Contains(ui::kMimeTypeHtml);
 }
 
 bool DragData::ContainsURL(FilenameConversionPolicy filename_policy) const {
-  return platform_drag_data_->Types().Contains(kMimeTypeTextURIList) ||
+  return platform_drag_data_->Types().Contains(ui::kMimeTypeUriList) ||
          (filename_policy == kConvertFilenames &&
           platform_drag_data_->ContainsFilenames());
 }
@@ -62,17 +62,18 @@ bool DragData::ContainsURL(FilenameConversionPolicy filename_policy) const {
 String DragData::AsURL(FilenameConversionPolicy filename_policy,
                        String* title) const {
   String url;
-  if (platform_drag_data_->Types().Contains(kMimeTypeTextURIList))
+  if (platform_drag_data_->Types().Contains(ui::kMimeTypeUriList)) {
     platform_drag_data_->UrlAndTitle(url, title);
-  else if (filename_policy == kConvertFilenames && ContainsFiles())
+  } else if (filename_policy == kConvertFilenames && ContainsFiles()) {
     url = FilePathToURL(platform_drag_data_->Filenames()[0]);
+  }
   return url;
 }
 
 Vector<String> DragData::AsURLs(
     FilenameConversionPolicy filename_policy) const {
   Vector<String> result;
-  if (platform_drag_data_->Types().Contains(kMimeTypeTextURIList)) {
+  if (platform_drag_data_->Types().Contains(ui::kMimeTypeUriList)) {
     const auto urls = platform_drag_data_->Urls();
     result.reserve(urls.size());
     for (const String& url : urls) {
@@ -113,11 +114,11 @@ unsigned DragData::NumberOfFiles() const {
 }
 
 bool DragData::ContainsPlainText() const {
-  return platform_drag_data_->Types().Contains(kMimeTypeTextPlain);
+  return platform_drag_data_->Types().Contains(ui::kMimeTypePlainText);
 }
 
 String DragData::AsPlainText() const {
-  return platform_drag_data_->GetData(kMimeTypeTextPlain);
+  return platform_drag_data_->GetData(ui::kMimeTypePlainText);
 }
 
 bool DragData::CanSmartReplace() const {
@@ -125,8 +126,8 @@ bool DragData::CanSmartReplace() const {
   // This is allowed whenever the drag data contains a 'range' (ie.,
   // ClipboardWin::writeRange is called). For example, dragging a link
   // should not result in a space being added.
-  return platform_drag_data_->Types().Contains(kMimeTypeTextPlain) &&
-         !platform_drag_data_->Types().Contains(kMimeTypeTextURIList);
+  return platform_drag_data_->Types().Contains(ui::kMimeTypePlainText) &&
+         !platform_drag_data_->Types().Contains(ui::kMimeTypeUriList);
 }
 
 bool DragData::ContainsCompatibleContent() const {

@@ -27,6 +27,7 @@
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/ai/model_download_progress_observer.mojom.h"
 #include "third_party/blink/public/mojom/on_device_translation/translation_manager.mojom.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace on_device_translation {
 
@@ -295,7 +296,11 @@ void TranslationManagerImpl::TranslationAvailable(
   }
 
   bool mask_readily_result =
-      MaskReadilyResult(accept_languages, source_language, target_language);
+      base::FeatureList::IsEnabled(blink::features::kTranslationAPIV1) &&
+      ((!IsInAcceptLanguage(accept_languages, source_language) &&
+        l10n_util::GetLanguage(source_language) != "en") ||
+       (!IsInAcceptLanguage(accept_languages, target_language) &&
+        l10n_util::GetLanguage(target_language) != "en"));
 
   GetServiceController().CanTranslate(
       std::move(source_language), std::move(target_language),

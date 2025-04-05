@@ -32,7 +32,7 @@ class IndexWriter {
               const std::vector<blink::IndexedDBKey>& keys);
 
   [[nodiscard]] bool VerifyIndexKeys(BackingStore* store,
-                                     BackingStore::Transaction* transaction,
+                                     Transaction::Delegate* transaction,
                                      int64_t database_id,
                                      int64_t object_store_id,
                                      int64_t index_id,
@@ -42,7 +42,7 @@ class IndexWriter {
 
   Status WriteIndexKeys(const BackingStore::RecordIdentifier& record,
                         BackingStore* store,
-                        BackingStore::Transaction* transaction,
+                        Transaction::Delegate* transaction,
                         int64_t database_id,
                         int64_t object_store_id) const;
 
@@ -53,7 +53,7 @@ class IndexWriter {
 
  private:
   [[nodiscard]] bool AddingKeyAllowed(BackingStore* store,
-                                      BackingStore::Transaction* transaction,
+                                      Transaction::Delegate* transaction,
                                       int64_t database_id,
                                       int64_t object_store_id,
                                       int64_t index_id,

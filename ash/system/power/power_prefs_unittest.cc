@@ -694,17 +694,17 @@ TEST_F(PowerPrefsTest, ChargeLimit_EnabledByPrefWhenAdaptiveChargingDisabled) {
   EXPECT_FALSE(power_manager_client()->policy().charge_limit_enabled());
 }
 
-TEST_F(PowerPrefsTest, ChargeLimit_DisabledWhenAdaptiveChargingEnabled) {
+TEST_F(PowerPrefsTest, AdaptiveChargingAndChargeLimit_MutuallyExclusive) {
   // Enable adaptive charging hardware support.
   power_manager::PowerSupplyProperties power_props;
   power_props.set_adaptive_charging_supported(true);
   power_manager_client()->UpdatePowerProperties(power_props);
 
-  // When adaptive charging is enabled, charge limit should be disabled.
-  // This ensures that the two features do not conflict.
+  // When both adaptive charging and charge limit enabled, adaptive charging
+  // should be disabled. This ensures that the two features do not conflict.
   SetAdaptiveChargingPreference(true);
   managed_pref_store_->SetBoolean(prefs::kPowerChargeLimitEnabled, true);
-  EXPECT_TRUE(power_manager_client()->policy().adaptive_charging_enabled());
-  EXPECT_FALSE(power_manager_client()->policy().charge_limit_enabled());
+  EXPECT_FALSE(power_manager_client()->policy().adaptive_charging_enabled());
+  EXPECT_TRUE(power_manager_client()->policy().charge_limit_enabled());
 }
 }  // namespace ash

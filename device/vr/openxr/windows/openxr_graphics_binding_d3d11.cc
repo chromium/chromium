@@ -38,7 +38,8 @@ void OpenXrGraphicsBinding::GetRequiredExtensions(
 
 OpenXrGraphicsBindingD3D11::OpenXrGraphicsBindingD3D11(
     base::WeakPtr<OpenXrPlatformHelperWindows> weak_platform_helper)
-    : texture_helper_(std::make_unique<D3D11TextureHelper>()),
+    : OpenXrGraphicsBinding(weak_platform_helper->GetExtensionEnumeration()),
+      texture_helper_(std::make_unique<D3D11TextureHelper>()),
       weak_platform_helper_(weak_platform_helper) {}
 
 OpenXrGraphicsBindingD3D11::~OpenXrGraphicsBindingD3D11() = default;
@@ -123,6 +124,11 @@ void OpenXrGraphicsBindingD3D11::ClearSwapchainImages() {
 }
 
 base::span<SwapChainInfo> OpenXrGraphicsBindingD3D11::GetSwapChainImages() {
+  return color_swapchain_images_;
+}
+
+base::span<const SwapChainInfo> OpenXrGraphicsBindingD3D11::GetSwapChainImages()
+    const {
   return color_swapchain_images_;
 }
 
@@ -338,7 +344,7 @@ void OpenXrGraphicsBindingD3D11::CleanupWithoutSubmit() {
   texture_helper_->CleanupNoSubmit();
 }
 
-bool OpenXrGraphicsBindingD3D11::ShouldFlipSubmittedImage() {
+bool OpenXrGraphicsBindingD3D11::ShouldFlipSubmittedImage() const {
   return IsUsingSharedImages() && !IsWebGPUSession();
 }
 

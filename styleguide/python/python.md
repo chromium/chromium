@@ -3,10 +3,11 @@
 _For other languages, please see the [Chromium style
 guides](https://chromium.googlesource.com/chromium/src/+/main/styleguide/styleguide.md)._
 
-We currently require Python 3.8 (as in, that's what the bots use, so don't
-assume or require anything older *or* newer), but most newer versions of
-Python3 will work fine for most things. There is an appropriate version
-of Python3 in `$depot_tools/python-bin`, if you don't have one already.
+The minimum supported Python version is 3.9, we recommend using Python 3.11
+(as in, that's what the bots use, so don't assume or require anything older
+*or* newer), but most newer versions of Python3 will work fine for most
+things. There is an appropriate version of Python3 in
+`$depot_tools/python-bin`, if you don't have one already.
 
 We (often) use a tool called [vpython] to manage Python packages; vpython
 is a wrapper around virtualenv. However, it is not safe to use vpython

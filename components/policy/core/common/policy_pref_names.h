@@ -80,7 +80,6 @@ extern const char kPolicyTestPageEnabled[];
 extern const char kHasDismissedPolicyPagePromotionBanner[];
 extern const char kAllowBackForwardCacheForCacheControlNoStorePageEnabled[];
 extern const char kLocalTestPoliciesForNextStartup[];
-extern const char kMutationEventsEnabled[];
 extern const char kCSSCustomStateDeprecatedSyntaxEnabled[];
 extern const char kSelectParserRelaxationEnabled[];
 extern const char kForcePermissionPolicyUnloadDefaultEnabled[];

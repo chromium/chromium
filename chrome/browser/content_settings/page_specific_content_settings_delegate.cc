@@ -44,7 +44,7 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "components/permissions/permission_indicators_tab_data.h"
-#include "components/tab_collections/public/tab_interface.h"
+#include "components/tabs/public/tab_interface.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 using content_settings::PageSpecificContentSettings;

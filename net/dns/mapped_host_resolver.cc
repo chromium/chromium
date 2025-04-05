@@ -8,7 +8,6 @@
 #include <string>
 #include <utility>
 
-#include "base/notimplemented.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "net/base/host_port_pair.h"

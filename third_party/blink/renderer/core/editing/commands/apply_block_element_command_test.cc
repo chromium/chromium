@@ -70,12 +70,10 @@ TEST_F(ApplyBlockElementCommandTest, visibilityChangeDuringCommand) {
   GetDocument().setDesignMode("on");
 
   UpdateAllLifecyclePhasesForTest();
-  Selection().SetSelection(
-      SelectionInDOMTree::Builder()
-          .Collapse(
-              Position(GetDocument().QuerySelector(AtomicString("li")), 0))
-          .Build(),
-      SetSelectionOptions());
+  Selection().SetSelection(SelectionInDOMTree::Builder()
+                               .Collapse(Position(QuerySelector("li"), 0))
+                               .Build(),
+                           SetSelectionOptions());
 
   auto* command = MakeGarbageCollected<IndentOutdentCommand>(
       GetDocument(), IndentOutdentCommand::kIndent);
@@ -94,8 +92,8 @@ TEST_F(ApplyBlockElementCommandTest, IndentHeadingIntoBlockquote) {
       "<h6><button><table></table></button></h6>"
       "<object></object>"
       "</div>");
-  Element* button = GetDocument().QuerySelector(AtomicString("button"));
-  Element* object = GetDocument().QuerySelector(AtomicString("object"));
+  Element* button = QuerySelector("button");
+  Element* object = QuerySelector("object");
   Selection().SetSelection(SelectionInDOMTree::Builder()
                                .Collapse(Position(button, 0))
                                .Extend(Position(object, 0))

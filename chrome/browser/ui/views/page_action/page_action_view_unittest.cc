@@ -343,29 +343,6 @@ TEST_F(PageActionViewTest, OnThemeChangedUpdatesIconImage) {
             view_icon_size());
 }
 
-// Test that UpdateBorder adjusts the insets based on label visibility.
-TEST_F(PageActionViewTest, UpdateBorderAdjustsInsets) {
-  EXPECT_CALL(*model(), GetVisible()).WillRepeatedly(Return(true));
-  EXPECT_CALL(*model(), GetShowSuggestionChip()).WillRepeatedly(Return(true));
-  EXPECT_CALL(*model(), GetText()).WillRepeatedly(ReturnRef(kTestText));
-  page_action_view()->OnPageActionModelChanged(*model());
-  const gfx::Insets initial_insets = page_action_view()->GetInsets();
-
-  page_action_view()->UpdateBorder();
-  const gfx::Insets insets_with_chip = page_action_view()->GetInsets();
-
-  EXPECT_EQ(initial_insets, insets_with_chip);
-
-  EXPECT_CALL(*model(), GetShowSuggestionChip()).WillRepeatedly(Return(false));
-  page_action_view()->OnPageActionModelChanged(*model());
-
-  page_action_view()->UpdateBorder();
-  const gfx::Insets insets_without_chip = page_action_view()->GetInsets();
-
-  EXPECT_NE(initial_insets, insets_without_chip);
-  EXPECT_NE(insets_with_chip, insets_without_chip);
-}
-
 // Test that UpdateIconImage() correctly handles ImageModels created without a
 // vector icon
 TEST_F(PageActionViewTest, UpdateIconImageHandlesDifferentImageTypes) {
@@ -564,31 +541,6 @@ TEST_F(PageActionViewAnimationTest, ChipStateDuringAnimateIn) {
   EXPECT_FALSE(page_action_view()->is_animating_label());
   EXPECT_TRUE(page_action_view()->IsChipVisible());
   EXPECT_NE(page_action_view()->GetBackground(), nullptr);
-}
-
-TEST_F(PageActionViewAnimationTest, BorderInsetsScaleWithAnimationProgress) {
-  gfx::Animation::SetPrefersReducedMotionForTesting(false);
-  ASSERT_FALSE(gfx::Animation::PrefersReducedMotion());
-  EXPECT_CALL(*model(), GetShouldAnimateChip()).WillRepeatedly(Return(true));
-
-  // Record the min and max insets.
-  // The test will compare insets mid-animation to these values.
-  SetInitialChipVisibility(false);
-  const gfx::Insets min_insets = page_action_view()->GetInsets();
-  SetInitialChipVisibility(true);
-  const gfx::Insets max_insets = page_action_view()->GetInsets();
-  ASSERT_LT(min_insets.width(), max_insets.width());
-
-  ExtendAnimations();
-  EXPECT_CALL(*model(), GetShowSuggestionChip()).WillRepeatedly(Return(false));
-  page_action_view()->OnPageActionModelChanged(*model());
-
-  // Fast forward the animation to halfway.
-  // The insets should be somewhere between the min and max insets.
-  FastForwardAnimation(0.5);
-  const gfx::Insets curr_insets = page_action_view()->GetInsets();
-  EXPECT_LT(curr_insets.width(), max_insets.width());
-  EXPECT_GT(curr_insets.width(), min_insets.width());
 }
 
 TEST_F(PageActionViewAnimationTest, AnimationsDisabled) {

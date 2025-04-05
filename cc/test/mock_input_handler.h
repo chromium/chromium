@@ -62,7 +62,7 @@ class MockInputHandler : public InputHandler {
   MOCK_METHOD1(MouseUp,
                InputHandlerPointerResult(const gfx::PointF& mouse_position));
   MOCK_METHOD1(SetIsHandlingTouchSequence, void(bool));
-  void NotifyInputEvent() override {}
+  void NotifyInputEvent(bool is_fling) override {}
 
   std::unique_ptr<LatencyInfoSwapPromiseMonitor>
   CreateLatencyInfoSwapPromiseMonitor(ui::LatencyInfo* latency) override {

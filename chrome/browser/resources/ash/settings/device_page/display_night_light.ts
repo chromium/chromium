@@ -95,17 +95,6 @@ export class SettingsDisplayNightLightElement extends
 
       nightLightScheduleSubLabel_: String,
 
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kNightLight,
-          Setting.kNightLightColorTemperature,
-        ]),
-      },
-
       shouldShowGeolocationWarningText_: {
         type: Boolean,
         computed: 'computeShouldShowGeolocationWarningText_(' +
@@ -165,11 +154,20 @@ export class SettingsDisplayNightLightElement extends
   }
 
   isInternalDisplay: boolean;
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kNightLight,
+    Setting.kNightLightColorTemperature,
+  ]);
+
   private displaySettingsProvider: DisplaySettingsProviderInterface =
       getDisplaySettingsProvider();
+  private geolocationWarningText_: string;
   private nightLightScheduleSubLabel_: string;
   private scheduleTypesList_: ScheduleType[];
   private shouldOpenCustomScheduleCollapse_: boolean;
+  private shouldShowEnableGeolocationDialog_: boolean;
   private shouldShowGeolocationDialog_: boolean;
   private shouldShowGeolocationWarningText_: boolean;
   private currentNightLightStatus: boolean;

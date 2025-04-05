@@ -465,6 +465,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/segmentation_platform:client_util_java",
       "//chrome/browser/segmentation_platform:factory_java",
       "//chrome/browser/selection/android:java",
+      "//chrome/browser/serial/android:java",
       "//chrome/browser/settings:factory_java",
       "//chrome/browser/settings:java",
       "//chrome/browser/share:java",
@@ -1091,6 +1092,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/safety_hub/android:junit",
       "//chrome/browser/search_engines/android:junit",
       "//chrome/browser/search_resumption:junit",
+      "//chrome/browser/serial/android:junit",
       "//chrome/browser/signin/services/android:junit",
       "//chrome/browser/single_tab/android:junit",
       "//chrome/browser/supervised_user:junit",
@@ -1519,24 +1521,25 @@ if (current_toolchain == default_toolchain) {
           "javatests/src/org/chromium/chrome/browser/vr/rules/VrTestRule.java",
         ]
 
-        deps = chrome_test_xr_java_deps + [
-                 ":chrome_test_util_java",
-                 "//base:base_java_test_support_uncommon",
-                 "//chrome/android:chrome_test_xr_java",
-                 "//chrome/browser/profiles/android:java",
-                 "//chrome/browser/settings:java",
-                 "//chrome/browser/tabmodel:java",
-                 "//components/browser_ui/site_settings/android:java",
-                 "//components/content_settings/android:content_settings_enums_java",
-                 "//components/infobars/android:java",
-                 "//components/messages/android:java",
-                 "//components/messages/android/internal:java",
-                 "//components/messages/android/test:test_support_java",
-                 "//components/module_installer/android:module_installer_java",
-                 "//third_party/androidx:androidx_test_core_java",
-                 "//third_party/androidx:androidx_test_core_java",
-                 "//ui/android:ui_java_test_support",
-               ]
+        deps = [
+          ":chrome_test_util_java",
+          "//base:base_java_test_support_uncommon",
+          "//chrome/android:chrome_test_xr_java",
+          "//chrome/browser/profiles/android:java",
+          "//chrome/browser/settings:java",
+          "//chrome/browser/tabmodel:java",
+          "//components/browser_ui/site_settings/android:java",
+          "//components/content_settings/android:content_settings_enums_java",
+          "//components/infobars/android:java",
+          "//components/messages/android:java",
+          "//components/messages/android/internal:java",
+          "//components/messages/android/test:test_support_java",
+          "//components/module_installer/android:module_installer_java",
+          "//third_party/androidx:androidx_test_core_java",
+          "//third_party/androidx:androidx_test_core_java",
+          "//ui/android:ui_java_test_support",
+        ]
+        deps += chrome_test_xr_java_deps
 
         if (enable_cardboard) {
           sources += [
@@ -1578,8 +1581,8 @@ if (current_toolchain == default_toolchain) {
           "javatests/src/org/chromium/chrome/browser/vr/util/ArTestRuleUtils.java",
         ]
 
-        deps = chrome_test_xr_java_deps +
-               [ "//chrome/android:chrome_test_xr_java" ]
+        deps = [ "//chrome/android:chrome_test_xr_java" ]
+        deps += chrome_test_xr_java_deps
 
         data = [
           "//chrome/test/data/xr/ar_playback_datasets/",
@@ -2017,6 +2020,7 @@ if (current_toolchain == default_toolchain) {
       "java/src/org/chromium/chrome/browser/ChromeBackgroundService.java",
       "java/src/org/chromium/chrome/browser/DeferredStartupHandler.java",
       "java/src/org/chromium/chrome/browser/app/bluetooth/BluetoothNotificationService.java",
+      "java/src/org/chromium/chrome/browser/app/serial/SerialNotificationService.java",
       "java/src/org/chromium/chrome/browser/app/usb/UsbNotificationService.java",
       "java/src/org/chromium/chrome/browser/backup/ChromeBackupAgent.java",
       "java/src/org/chromium/chrome/browser/base/ColdStartTracker.java",
@@ -2697,11 +2701,11 @@ if (current_toolchain == default_toolchain) {
   }
 
   if (android_64bit_target_cpu && !defined(android_app_secondary_abi)) {
-    group("monochrome_public_bundle") {
-      deps = [ ":monochrome_64_public_bundle" ]
+    alias_with_wrapper_script("monochrome_public_bundle") {
+      alias_target = ":monochrome_64_public_bundle"
     }
-    group("trichrome_chrome_bundle") {
-      deps = [ ":trichrome_chrome_64_bundle" ]
+    alias_with_wrapper_script("trichrome_chrome_bundle") {
+      alias_target = ":trichrome_chrome_64_bundle"
     }
   } else {
     if (android_64bit_target_cpu) {

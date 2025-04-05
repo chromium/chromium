@@ -2,13 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #ifndef COMPONENTS_GUEST_VIEW_BROWSER_GUEST_VIEW_H_
 #define COMPONENTS_GUEST_VIEW_BROWSER_GUEST_VIEW_H_
+
+#include <string_view>
 
 #include "base/metrics/histogram_functions.h"
 #include "components/guest_view/browser/guest_view_base.h"
@@ -72,9 +69,7 @@ class GuestView : public GuestViewBase {
   GuestView& operator=(const GuestView&) = delete;
 
   // GuestViewBase implementation.
-  const char* GetViewType() const final {
-    return T::Type;
-  }
+  std::string_view GetViewType() const final { return T::Type; }
 
  protected:
   explicit GuestView(content::RenderFrameHost* owner_rfh)
@@ -91,12 +86,13 @@ class GuestView : public GuestViewBase {
   // Downcasts to a *ViewGuest if the GuestViewBase is of the derived view type.
   // Otherwise, returns nullptr.
   static T* AsDerivedGuest(GuestViewBase* guest) {
-    if (!guest)
+    if (!guest) {
       return nullptr;
+    }
 
-    const bool same_type = !strcmp(guest->GetViewType(), T::Type);
-    if (!same_type)
+    if (guest->GetViewType() != T::Type) {
       return nullptr;
+    }
 
     return static_cast<T*>(guest);
   }

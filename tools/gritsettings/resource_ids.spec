@@ -629,7 +629,7 @@
     "includes": [4910],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/side_panel/shared/resources.grd": {
-    "META": {"sizes": {"includes": [15],}},
+    "META": {"sizes": {"includes": [18],}},
     "includes": [4920],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/signin/batch_upload/resources.grd": {

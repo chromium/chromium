@@ -77,6 +77,7 @@
 <translation id="1298077576058087471">Uštedite i do 60% podataka, čitajte današnje vesti</translation>
 <translation id="1303339473099049190">Ne možemo da pronađemo tu lozinku. Proverite kako ste je napisali i probajte ponovo.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> – poslato je sa uređaja <ph name="DEVICE_NAME" /></translation>
+<translation id="1318262688555255786">Delite link do veb-stranice <ph name="PAGE_TITLE" />. Izvor: <ph name="PAGE_URL" /></translation>
 <translation id="1320912611264252795">Folderi toka čuvanja obeleživača su otvoreni do polovine ekrana</translation>
 <translation id="1327257854815634930">Istorija navigacije je otvorena</translation>
 <translation id="1331212799747679585">Chrome ne može da se ažurira. Još opcija</translation>
@@ -455,6 +456,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="3072980200212375806"><ph name="APP_NAME" /> će se otvoriti u Chrome-u. Ako nastavite, prihvatate <ph name="BEGIN_LINK1" />Google uslove korišćenja usluge<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />dodatne uslove korišćenja usluge za Google Chrome i Chrome OS<ph name="END_LINK2" />. Primenjuje se i <ph name="BEGIN_LINK3" />politika privatnosti<ph name="END_LINK3" />.</translation>
 <translation id="3080525922482950719">Možete da sačuvate stranice da biste ih čitali kasnije ili oflajn</translation>
 <translation id="3087734570205094154">Dno</translation>
+<translation id="3088687687599869821">NAVIGACIJA PO STRANICI</translation>
 <translation id="3091010850649238832">Prikaži sadržaj privremene memorije</translation>
 <translation id="3098745985164956033">Neke slike se šalju Google-u radi poboljšanja opisa</translation>
 <translation id="3114507951000454849">Čitajte današnje vesti <ph name="NEWS_ICON" /></translation>
@@ -515,6 +517,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="3435465986463792564">Imate mnogo prozora? Njima možete da upravljate odavde.</translation>
 <translation id="3435575784518354875">Da biste zadržali pristup lozinkama, izvezite ih odmah, ažurirajte Google Play usluge, pa ih ponovo uvezite u Google menadžer lozinki. <ph name="BEGIN_LINK" />Pogledajte kompletna uputstva<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">Bezbednost</translation>
+<translation id="3435914367318771664">Dodaj karticu u novu grupu</translation>
 <translation id="3439276997620616816">Ovde ćete pronaći nedavne kartice</translation>
 <translation id="3443221991560634068">Ponovno učitavanje aktuelne stranice</translation>
 <translation id="3444179773590444986">Želite da delite povratne informacije o tamnoj temi za sajtove?</translation>
@@ -612,6 +615,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="3856096718352044181">Proverite da li je ovo važeći dobavljač usluge ili probajte ponovo kasnije</translation>
 <translation id="3858860766373142691">Naziv</translation>
 <translation id="3863527519275151528">Obaveštenje se obrađuje</translation>
+<translation id="3866863539038222107">Proveri</translation>
 <translation id="3870908470613821006">Svi će odmah izgubiti pristup grupi kartica <ph name="GROUP_NAME" /> i ona će biti izbrisana sa svih uređaja</translation>
 <translation id="3873174561423636563">Da biste nastavili, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> će deliti <ph name="FIELDS_STRING" /> sa ovim sajtom. Pogledajte <ph name="BEGIN_LINK1" />uslove korišćenja usluge<ph name="END_LINK1" /> za ovaj sajt.</translation>
 <translation id="3892148308691398805">Kopiraj tekst</translation>
@@ -735,7 +739,6 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="4460861538906892109">{ITEMS_COUNT,plural, =1{1 obeleživač}one{# obeleživač}few{# obeleživača}other{# obeleživača}}</translation>
 <translation id="4478161224666880173">Možete da koristite <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> nalog na ovom sajtu. Da biste nastavili, prijavite se na <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="4479972344484327217">Instalira se <ph name="MODULE" /> za Chrome…</translation>
-<translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{Obeleživač je sačuvan u folderu <ph name="FOLDER_NAME" />. Čuva se samo na ovom uređaju.}one{Obeleživači su sačuvani u folderu<ph name="FOLDER_NAME" />. Čuvaju se samo na ovom uređaju.}few{Obeleživači su sačuvani u folderu<ph name="FOLDER_NAME" />. Čuvaju se samo na ovom uređaju.}other{Obeleživači su sačuvani u folderu<ph name="FOLDER_NAME" />. Čuvaju se samo na ovom uređaju.}}</translation>
 <translation id="4484496141267039529">Nema internet veze. Probajte ponovo kasnije.</translation>
 <translation id="4487967297491345095">Svi podaci Chrome aplikacija će biti trajno izbrisani. To obuhvata sve datoteke, podešavanja, naloge, baze podataka itd.</translation>
 <translation id="4494806687727322324">Administrator je uključio čuvanje lozinki</translation>
@@ -781,6 +784,7 @@ Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i akti
 <translation id="4684427112815847243">Sinhronizuj sve</translation>
 <translation id="4685741273709472646">Izaberite sa padajuće liste</translation>
 <translation id="4687718960473379118">Oglasi koje predlažu sajtovi</translation>
+<translation id="468924408576231679">Kopirajte link do veb-stranice <ph name="PAGE_TITLE" />. Izvor: <ph name="PAGE_URL" /></translation>
 <translation id="469286762610133730">Dobijajte bolji sadržaj</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}few{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4698061626562952596">Pregledajte neaktivne kartice ovde</translation>
@@ -1057,6 +1061,7 @@ Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i akti
 <translation id="5907542076239273525">Obeleživač je sačuvan u folderu <ph name="FOLDER_NAME" /></translation>
 <translation id="5916664084637901428">Uključeno</translation>
 <translation id="5919204609460789179">Ažurirajte <ph name="PRODUCT_NAME" /> da biste započeli sinhronizaciju</translation>
+<translation id="5932881020239635062">Serijski broj</translation>
 <translation id="5938820472109305350">Dodajte: <ph name="INTEREST" /></translation>
 <translation id="5942872142862698679">Koristite Google za pretragu</translation>
 <translation id="5945035219773565305">Aktuelna preporuka: <ph name="RECOMMENDATION" /></translation>
@@ -1122,6 +1127,7 @@ Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i akti
 <translation id="6205314730813004066">Privatnost sa oglasima</translation>
 <translation id="6210748933810148297">Niste <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Pregled ove stranice</translation>
+<translation id="6212567362666004597">Dodaj karticu u grupu</translation>
 <translation id="6221633008163990886">Otključajte da biste izvezli lozinke</translation>
 <translation id="6225572914528673855">Traka za adresu</translation>
 <translation id="6232535412751077445">Ako omogućite funkciju „Ne prati“, zahtev će biti obuhvaćen saobraćajem pregledanja. Posledica te radnje zavisi od toga da li veb-sajt odgovara na zahtev i kako se zahtev tumači.
@@ -1149,6 +1155,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="6324916366299863871">Izmeni prečicu</translation>
 <translation id="6324977638108296054">Pravljenje linka do istaknutog teksta nije uspelo</translation>
 <translation id="6333140779060797560">Deljenje preko <ph name="APPLICATION" /></translation>
+<translation id="6335454563754888572">Izmenite URL koji vodi do stranice na: <ph name="PAGE_URL" /></translation>
 <translation id="6337234675334993532">Šifrovanje</translation>
 <translation id="6340526405444716530">Personalizacija</translation>
 <translation id="6341580099087024258">Pitaj gde da sačuvaš datoteke</translation>
@@ -1192,6 +1199,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="6486420406192123355">Ovaj PDF fajl je sa sajta koji koristi nebezbednu vezu</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{Fajl je preuzet}one{# preuzimanje je dovršeno}few{# preuzimanja su dovršena}other{# preuzimanja je dovršeno}}</translation>
 <translation id="6508722015517270189">Ponovo pokrenite Chrome</translation>
+<translation id="6513924416597632811">Kopirajte link do stranice rezultata pretrage za: <ph name="SEARCH_QUERY" />. Izvor: <ph name="PAGE_URL" /></translation>
 <translation id="6518133107902771759">Verifikuj</translation>
 <translation id="6527303717912515753">Deli</translation>
 <translation id="652948702951888897">Istorija Chrome-a</translation>
@@ -1337,7 +1345,6 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="7063006564040364415">Nije moguće povezivanje sa serverom za sinhronizaciju.</translation>
 <translation id="7071521146534760487">Upravljajte nalogom</translation>
 <translation id="707155805709242880">Odaberite stavke za sinhronizaciju u nastavku</translation>
-<translation id="707702207692430409">{BOOKMARK_COUNT,plural, =1{Obeleživač je sačuvan u folderu <ph name="FOLDER_NAME" /> na nalogu, <ph name="ACCOUNT_EMAIL" />.}one{Obeleživači su sačuvani u folderu<ph name="FOLDER_NAME" /> na nalogu, <ph name="ACCOUNT_EMAIL" />.}few{Obeleživači su sačuvani u folderu<ph name="FOLDER_NAME" /> na nalogu, <ph name="ACCOUNT_EMAIL" />.}other{Obeleživači su sačuvani u folderu<ph name="FOLDER_NAME" /> na nalogu, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="7077143737582773186">SD kartica</translation>
 <translation id="7078916049958741685">Izbrišite Chrome podatke i sa ovog uređaja</translation>
 <translation id="7085332316435785646">Odaberite da li ćete uvrstiti istoriju Chrome-a radi personalizovanijih doživljaja u Google uslugama</translation>
@@ -1604,6 +1611,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="8221401890884589479">Možete da blokirate sajtove koje ne želite. Chrome takođe automatski sa liste briše sajtove koji su stariji od 30 dana. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="8221985041778490865">Brišu se podaci pregledanja</translation>
 <translation id="8223642481677794647">Meni kartice fida</translation>
+<translation id="82296173028782770">Izmenite upit za pretragu: <ph name="SEARCH_QUERY" /></translation>
 <translation id="8236063039629122676">Sada vas prevlačenje udesno vodi unazad da biste videli prethodne stranice koje ste posetili, a prevlačenje ulevo vas pomera unapred</translation>
 <translation id="8236097722223016103">Dodaj u obeleživače</translation>
 <translation id="8243077599929149377">Dodajte korisničko ime</translation>
@@ -1752,6 +1760,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="8890668505403261809">Pretražite kartice bez arhiviranja</translation>
 <translation id="8898822736010347272">Šalje Google-u URL-ove nekih stranica koje posećujete, ograničene informacije o sistemu i određeni sadržaj stranica da bi se otkrile nove pretnje i zaštitili svi širom veba.</translation>
 <translation id="8909135823018751308">Deli...</translation>
+<translation id="8918299437379122615">Delite link do stranice rezultata pretrage za: <ph name="SEARCH_QUERY" />. Izvor: <ph name="PAGE_URL" /></translation>
 <translation id="8922289737868596582">Preuzmite stranice pomoću dugmeta Još opcija da biste ih koristili oflajn</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="892496902842311796">Jezik <ph name="LANG" /> je spreman</translation>

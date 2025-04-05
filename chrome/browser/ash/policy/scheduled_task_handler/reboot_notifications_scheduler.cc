@@ -174,14 +174,6 @@ void RebootNotificationsScheduler::RegisterProfilePrefs(
   registry->RegisterBooleanPref(ash::prefs::kShowPostRebootNotification, false);
 }
 
-// static
-bool RebootNotificationsScheduler::ShouldShowPostRebootNotification(
-    Profile* profile) {
-  DCHECK(profile);
-  PrefService* prefs = user_prefs::UserPrefs::Get(profile);
-  return IsPostRebootPrefSet(prefs);
-}
-
 void RebootNotificationsScheduler::SchedulePendingRebootNotifications(
     RebootButtonCallback reboot_button_callback,
     const base::Time& reboot_time,

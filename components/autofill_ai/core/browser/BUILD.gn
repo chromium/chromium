@@ -71,6 +71,7 @@ if (is_win || is_mac || is_linux || is_chromeos) {
       "//components/autofill/core/browser:test_support",
       "//components/autofill/core/common",
       "//components/optimization_guide/core:test_support",
+      "//components/optimization_guide/proto:optimization_guide_proto",
       "//components/prefs:test_support",
       "//testing/gmock",
       "//testing/gtest",

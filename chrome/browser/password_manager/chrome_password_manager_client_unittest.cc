@@ -257,7 +257,7 @@ class FakePasswordAutofillAgent
 
  private:
   // autofill::mojom::PasswordAutofillAgent:
-  void SetPasswordFillData(
+  void ApplyFillDataOnParsingCompletion(
       const autofill::PasswordFormFillData& form_data) override {}
 
   void FillPasswordSuggestion(

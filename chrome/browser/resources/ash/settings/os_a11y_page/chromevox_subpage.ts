@@ -362,6 +362,9 @@ export class SettingsChromeVoxSubpageElement extends
   private virtualBrailleDisplayStyleOptions_: DropdownMenuOptionList;
   private chromeVoxBrowserProxy_: ChromeVoxSubpageBrowserProxy;
   private brailleTables_: BrailleTable[];
+  private developerOptionsExpanded_: boolean;
+  private readonly eventStreamFilters_: string[];
+  private readonly mainNodeAnnotationsFeatureEnabled_: boolean;
 
   // Regular expressions that will match against a voice name if it contains a
   // speaker ID in it.

@@ -136,8 +136,8 @@ void Address::SetRawInfoWithVerificationStatus(FieldType type,
     if (!current_value.empty()) {
       AreStringTokenEquivalent(value, Root()->GetValueForType(type))
           ? Root()->SetValueForType(ADDRESS_HOME_STREET_ADDRESS, value, status)
-          : Root()->SetValueForTypeAndResetSubstructure(
-                ADDRESS_HOME_STREET_ADDRESS, value, status);
+          : Root()->SetValueForType(ADDRESS_HOME_STREET_ADDRESS, value, status,
+                                    /*invalidate_child_nodes=*/true);
       return;
     }
   }

@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/row/actions/omnibox_popup_actions_row_content_configuration.h"
 
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_suggestion.h"
+#import "ios/chrome/browser/omnibox/model/autocomplete_suggestion.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/row/actions/omnibox_popup_actions_row_content_view.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/row/actions/omnibox_popup_actions_row_delegate.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/row/actions/suggest_action.h"
@@ -78,6 +78,8 @@
     case kLeftArrow:
     case kRightArrow:
       return YES;
+    case kReturnKey:
+      return [self canPerformReturnKeyAction];
   }
 }
 
@@ -121,18 +123,10 @@
       }
       break;
     }
+    case kReturnKey:
+      [self performReturnKeyAction];
+      break;
   }
-}
-
-#pragma mark - OmniboxReturnDelegate
-
-- (void)omniboxReturnPressed:(id)sender {
-  CHECK(self.highlightedActionIndex != NSNotFound);
-  CHECK(self.highlightedActionIndex < self.actions.count);
-
-  SuggestAction* action = self.actions[self.highlightedActionIndex];
-  [self.delegate omniboxPopupRowActionSelectedWithConfiguration:self
-                                                         action:action];
 }
 
 #pragma mark - UIContentConfiguration
@@ -181,6 +175,23 @@
   }
 
   return configuration;
+}
+
+#pragma mark - Private
+
+/// Whether the Return/Enter action can be performed.
+- (BOOL)canPerformReturnKeyAction {
+  return self.highlightedActionIndex != NSNotFound;
+}
+
+/// Performs Return/Enter action.
+- (void)performReturnKeyAction {
+  CHECK([self canPerformReturnKeyAction]);
+  CHECK(self.highlightedActionIndex < self.actions.count);
+
+  SuggestAction* action = self.actions[self.highlightedActionIndex];
+  [self.delegate omniboxPopupRowActionSelectedWithConfiguration:self
+                                                         action:action];
 }
 
 @end

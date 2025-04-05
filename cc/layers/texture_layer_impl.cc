@@ -149,7 +149,6 @@ void TextureLayerImpl::AppendQuads(const AppendQuadsContext& context,
                resource_id_, premultiplied_alpha_, uv_top_left_,
                uv_bottom_right_, bg_color, nearest_neighbor,
                /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
-  quad->set_resource_size_in_pixels(transferable_resource_.size);
   quad->dynamic_range_limit = GetDynamicRangeLimit();
   ValidateQuadResources(quad);
 }

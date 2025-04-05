@@ -63,14 +63,14 @@ export class ThemesElement extends ThemesElementBase {
     };
   }
 
-  selectedCollection: BackgroundCollection|null = null;
+  accessor selectedCollection: BackgroundCollection|null = null;
 
-  protected header_: string = '';
-  protected imageErrorDetectionEnabled_: boolean =
+  protected accessor header_: string = '';
+  protected accessor imageErrorDetectionEnabled_: boolean =
       loadTimeData.getBoolean('imageErrorDetectionEnabled');
-  protected isRefreshToggleChecked_: boolean = false;
-  private theme_?: Theme;
-  protected themes_: CollectionImage[] = [];
+  protected accessor isRefreshToggleChecked_: boolean = false;
+  private accessor theme_: Theme|undefined;
+  protected accessor themes_: CollectionImage[] = [];
 
   private callbackRouter_: CustomizeChromePageCallbackRouter;
   private pageHandler_: CustomizeChromePageHandlerInterface;

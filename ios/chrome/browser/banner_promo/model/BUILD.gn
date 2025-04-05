@@ -6,12 +6,15 @@ source_set("model") {
   sources = [
     "default_browser_banner_promo_app_agent.h",
     "default_browser_banner_promo_app_agent.mm",
+    "default_browser_banner_promo_scene_observer.h",
+    "default_browser_banner_promo_scene_observer.mm",
   ]
   deps = [
     "//base",
     "//components/feature_engagement/public",
     "//components/feature_engagement/public:feature_constants",
     "//components/google/core/common",
+    "//ios/chrome/app/application_delegate:app_state",
     "//ios/chrome/app/application_delegate:observing_app_state_agent",
     "//ios/chrome/app/profile",
     "//ios/chrome/browser/default_browser/model:utils",

@@ -136,7 +136,7 @@ enum class NotificationCatalogName {
   kNetworkPortalDetector = 117,
   kCrostiniPackage = 118,
   kCrostiniUpgradeAvailable = 119,
-  kFullRestore = 120,
+  // [Deprecated] kFullRestore = 120,
   kAdbSideloadingDisallowed = 121,
   kAdbSideloadingPowerwashPlanned = 122,
   kAdbSideloadingPowerwashOnReboot = 123,

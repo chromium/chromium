@@ -763,17 +763,19 @@ void RecordCookieOrCacheDeletedFromDialogHistogram(
 - (NSString*)browsingHistorySummary:
     (const browsing_data::HistoryCounter::HistoryResult*)result {
   CHECK(result);
-  browsing_data::BrowsingDataCounter::ResultInt historyCount = result->Value();
-  if (historyCount < 1) {
+  browsing_data::BrowsingDataCounter::ResultInt uniqueDomainsCount =
+      result->unique_domains_result();
+  if (uniqueDomainsCount < 1) {
     return @"";
   }
 
   return result->has_synced_visits()
              ? l10n_util::GetPluralNSStringF(
                    IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SITES_SYNCED,
-                   historyCount)
+                   uniqueDomainsCount)
              : l10n_util::GetPluralNSStringF(
-                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SITES, historyCount);
+                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SITES,
+                   uniqueDomainsCount);
 }
 
 // Returns the tabs summary based on `result`. If the count of tabs in

@@ -40,7 +40,6 @@ blink_core_sources_svg = [
   "properties/svg_list_property_tear_off_helper.h",
   "properties/svg_listable_property.h",
   "properties/svg_property.h",
-  "properties/svg_property_helper.h",
   "properties/svg_property_info.h",
   "properties/svg_property_tear_off.cc",
   "properties/svg_property_tear_off.h",

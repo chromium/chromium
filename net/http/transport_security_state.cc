@@ -20,6 +20,7 @@
 
 #include "base/base64.h"
 #include "base/build_time.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
@@ -36,6 +37,7 @@
 #include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "crypto/hash.h"
 #include "crypto/sha2.h"
 #include "net/base/features.h"
 #include "net/base/hash_value.h"
@@ -77,10 +79,8 @@ bool HashesIntersect(const HashValueVector& a, const HashValueVector& b) {
   return false;
 }
 
-bool AddHash(const char* sha256_hash, HashValueVector* out) {
-  HashValue hash(HASH_VALUE_SHA256);
-  memcpy(hash.data(), sha256_hash, hash.size());
-  out->push_back(hash);
+bool AddHash(base::span<const uint8_t> sha256_hash, HashValueVector& out) {
+  out.emplace_back(sha256_hash);
   return true;
 }
 
@@ -343,47 +343,20 @@ bool TransportSecurityState::HasPublicKeyPins(std::string_view host) {
   return GetPKPState(host, &pkp_state) && pkp_state.HasPublicKeyPins();
 }
 
-TransportSecurityState::CTRequirementsStatus
-TransportSecurityState::CheckCTRequirements(
+ct::CTRequirementsStatus TransportSecurityState::CheckCTRequirements(
     std::string_view host,
     bool is_issued_by_known_root,
     const HashValueVector& public_key_hashes,
     const X509Certificate* validated_certificate_chain,
     ct::CTPolicyCompliance policy_compliance) {
-  using CTRequirementLevel = RequireCTDelegate::CTRequirementLevel;
-
   // If CT is emergency disabled, we don't require CT for any host.
   if (ct_emergency_disable_) {
-    return CT_NOT_REQUIRED;
+    return ct::CTRequirementsStatus::CT_NOT_REQUIRED;
   }
 
-  // CT is not required if the certificate does not chain to a publicly
-  // trusted root certificate.
-  if (!is_issued_by_known_root) {
-    return CT_NOT_REQUIRED;
-  }
-
-  // A connection is considered compliant if it has sufficient SCTs or if the
-  // build is outdated. Other statuses are not considered compliant; this
-  // includes COMPLIANCE_DETAILS_NOT_AVAILABLE because compliance must have been
-  // evaluated in order to determine that the connection is compliant.
-  bool complies =
-      (policy_compliance ==
-           ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS ||
-       policy_compliance == ct::CTPolicyCompliance::CT_POLICY_BUILD_NOT_TIMELY);
-
-  CTRequirementLevel ct_required = CTRequirementLevel::NOT_REQUIRED;
-  if (require_ct_delegate_) {
-    // Allow the delegate to override the CT requirement state.
-    ct_required = require_ct_delegate_->IsCTRequiredForHost(
-        host, validated_certificate_chain, public_key_hashes);
-  }
-  switch (ct_required) {
-    case CTRequirementLevel::REQUIRED:
-      return complies ? CT_REQUIREMENTS_MET : CT_REQUIREMENTS_NOT_MET;
-    case CTRequirementLevel::NOT_REQUIRED:
-      return CT_NOT_REQUIRED;
-  }
+  return RequireCTDelegate::CheckCTRequirements(
+      require_ct_delegate_.get(), host, is_issued_by_known_root,
+      public_key_hashes, validated_certificate_chain, policy_compliance);
 }
 
 void TransportSecurityState::SetDelegate(
@@ -392,9 +365,10 @@ void TransportSecurityState::SetDelegate(
   delegate_ = delegate;
 }
 
-void TransportSecurityState::SetRequireCTDelegate(RequireCTDelegate* delegate) {
+void TransportSecurityState::SetRequireCTDelegate(
+    scoped_refptr<RequireCTDelegate> delegate) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  require_ct_delegate_ = delegate;
+  require_ct_delegate_ = std::move(delegate);
 }
 
 void TransportSecurityState::UpdatePinList(
@@ -707,17 +681,15 @@ bool TransportSecurityState::GetStaticPKPState(std::string_view host,
         for (const auto& hash : pinset->static_spki_hashes()) {
           // If the update is malformed, it's preferable to skip the hash than
           // crash.
-          if (hash.size() == 32) {
-            AddHash(reinterpret_cast<const char*>(hash.data()),
-                    &pkp_result->spki_hashes);
+          if (hash.size() == crypto::hash::kSha256Size) {
+            AddHash(hash, pkp_result->spki_hashes);
           }
         }
         for (const auto& hash : pinset->bad_static_spki_hashes()) {
           // If the update is malformed, it's preferable to skip the hash than
           // crash.
           if (hash.size() == 32) {
-            AddHash(reinterpret_cast<const char*>(hash.data()),
-                    &pkp_result->bad_spki_hashes);
+            AddHash(hash, pkp_result->bad_spki_hashes);
           }
         }
         return true;
@@ -746,14 +718,18 @@ bool TransportSecurityState::GetStaticPKPState(std::string_view host,
     if (pinset->accepted_pins) {
       const char* const* sha256_hash = pinset->accepted_pins;
       while (*sha256_hash) {
-        AddHash(*sha256_hash, &pkp_result->spki_hashes);
+        AddHash(UNSAFE_TODO(base::as_bytes(base::span<const char>(
+                    *sha256_hash, crypto::hash::kSha256Size))),
+                pkp_result->spki_hashes);
         sha256_hash++;
       }
     }
     if (pinset->rejected_pins) {
       const char* const* sha256_hash = pinset->rejected_pins;
       while (*sha256_hash) {
-        AddHash(*sha256_hash, &pkp_result->bad_spki_hashes);
+        AddHash(UNSAFE_TODO(base::as_bytes(base::span<const char>(
+                    *sha256_hash, crypto::hash::kSha256Size))),
+                pkp_result->bad_spki_hashes);
         sha256_hash++;
       }
     }

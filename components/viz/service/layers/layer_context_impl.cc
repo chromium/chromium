@@ -208,6 +208,8 @@ base::expected<void, std::string> UpdatePropertyTreeNode(
   }
   node.blend_mode = static_cast<SkBlendMode>(wire.blend_mode);
   node.target_id = wire.target_id;
+  node.view_transition_element_resource_id =
+      wire.view_transition_element_resource_id;
   node.filters = wire.filters;
   node.backdrop_filters = wire.backdrop_filters;
   node.backdrop_filter_bounds = wire.backdrop_filter_bounds;
@@ -571,7 +573,8 @@ DeserializeTileContents(mojom::TileContents& wire) {
 
 base::expected<void, std::string> DeserializeTiling(
     cc::TileDisplayLayerImpl& layer,
-    mojom::Tiling& wire) {
+    mojom::Tiling& wire,
+    bool is_incremental_update) {
   const float scale_key =
       std::max(wire.raster_scale.x(), wire.raster_scale.y());
   auto& tiling = layer.GetOrCreateTilingFromScaleKey(scale_key);
@@ -585,9 +588,39 @@ base::expected<void, std::string> DeserializeTiling(
     tiling.SetTileContents(
         cc::TileIndex{base::saturated_cast<int>(wire_tile->column_index),
                       base::saturated_cast<int>(wire_tile->row_index)},
-        std::move(contents));
+        std::move(contents), is_incremental_update);
   }
   return base::ok();
+}
+
+void DeserializeViewTransitionRequests(
+    cc::LayerTreeImpl& layers,
+    std::vector<mojom::ViewTransitionRequestPtr>& wire_data) {
+  for (auto& wire : wire_data) {
+    std::unique_ptr<cc::ViewTransitionRequest> request;
+    switch (wire->type) {
+      case mojom::CompositorFrameTransitionDirectiveType::kSave:
+        // Callback is not used at all in
+        // ViewTransitionRequest::ConstructDirective, therefore it's not
+        // wired in mojom::ViewTransitionRequest to viz, and here we just use
+        // a placeholder.
+        request = cc::ViewTransitionRequest::CreateCapture(
+            wire->transition_token, wire->maybe_cross_frame_sink,
+            wire->capture_resource_ids,
+            cc::ViewTransitionRequest::ViewTransitionCaptureCallback());
+        break;
+      case mojom::CompositorFrameTransitionDirectiveType::kAnimateRenderer:
+        request = cc::ViewTransitionRequest::CreateAnimateRenderer(
+            wire->transition_token, wire->maybe_cross_frame_sink);
+        break;
+      case mojom::CompositorFrameTransitionDirectiveType::kRelease:
+        request = cc::ViewTransitionRequest::CreateRelease(
+            wire->transition_token, wire->maybe_cross_frame_sink);
+        break;
+    }
+    request->set_sequence_id(wire->sequence_id);
+    layers.AddViewTransitionRequest(std::move(request));
+  }
 }
 
 gfx::StepsTimingFunction::StepPosition DeserializeTimingStepPosition(
@@ -1185,6 +1218,11 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
     layers.SetSurfaceRanges(surface_ranges);
   }
 
+  if (update->view_transition_requests) {
+    DeserializeViewTransitionRequests(layers,
+                                      *(update->view_transition_requests));
+  }
+
   RETURN_IF_ERROR(
       CreateOrUpdateLayers(*this, update->layers, update->layer_order, layers));
 
@@ -1200,8 +1238,9 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
       if (layer->GetLayerType() != cc::mojom::LayerType::kTileDisplay) {
         return base::unexpected("Invalid tile update");
       }
-      RETURN_IF_ERROR(DeserializeTiling(
-          static_cast<cc::TileDisplayLayerImpl&>(*layer), *tiling));
+      RETURN_IF_ERROR(
+          DeserializeTiling(static_cast<cc::TileDisplayLayerImpl&>(*layer),
+                            *tiling, /*is_incremental_update=*/false));
     }
   }
 
@@ -1232,6 +1271,7 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
     return base::unexpected("Invalid painted device scale factor");
   }
   layers.set_painted_device_scale_factor(update->painted_device_scale_factor);
+  layers.SetDisplayColorSpaces(update->display_color_spaces);
   if (update->local_surface_id_from_parent) {
     layers.SetLocalSurfaceIdFromParent(*update->local_surface_id_from_parent);
   }
@@ -1306,8 +1346,9 @@ void LayerContextImpl::UpdateDisplayTiling(mojom::TilingPtr tiling) {
       return;
     }
 
-    auto result = DeserializeTiling(
-        static_cast<cc::TileDisplayLayerImpl&>(*layer), *tiling);
+    auto result =
+        DeserializeTiling(static_cast<cc::TileDisplayLayerImpl&>(*layer),
+                          *tiling, /*is_incremental_update=*/true);
     if (!result.has_value()) {
       receiver_.ReportBadMessage(result.error());
       return;

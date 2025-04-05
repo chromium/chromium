@@ -77,14 +77,8 @@ GraphImpl* PerformanceManagerImpl::GetGraphImpl() {
 }
 
 // static
-std::unique_ptr<PerformanceManagerImpl> PerformanceManagerImpl::Create(
-    GraphImplCallback on_start) {
-  std::unique_ptr<PerformanceManagerImpl> instance =
-      base::WrapUnique(new PerformanceManagerImpl());
-
-  std::move(on_start).Run(&instance->graph_);
-
-  return instance;
+std::unique_ptr<PerformanceManagerImpl> PerformanceManagerImpl::Create() {
+  return base::WrapUnique(new PerformanceManagerImpl());
 }
 
 // static

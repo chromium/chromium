@@ -149,20 +149,6 @@ export class SettingsTtsVoiceSubpageElement extends
         type: Boolean,
         value: false,
       },
-
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kTextToSpeechRate,
-          Setting.kTextToSpeechPitch,
-          Setting.kTextToSpeechVolume,
-          Setting.kTextToSpeechVoice,
-          Setting.kTextToSpeechEngines,
-        ]),
-      },
     };
   }
 
@@ -173,6 +159,16 @@ export class SettingsTtsVoiceSubpageElement extends
   languagesOpened: boolean;
   languagesToVoices: TtsLanguage[];
   prefs: PrefsState;
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kTextToSpeechRate,
+    Setting.kTextToSpeechPitch,
+    Setting.kTextToSpeechVolume,
+    Setting.kTextToSpeechVoice,
+    Setting.kTextToSpeechEngines,
+  ]);
+
   private isPreviewing_: boolean;
   private langBrowserProxy_: LanguagesBrowserProxy;
   private previewText_: string;

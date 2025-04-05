@@ -14,11 +14,18 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/color/color_variant.h"
-#include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/border.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout_view.h"
+
+class DigitalIdentityMultiStepDialogDelegate;
 
 namespace content {
 class WebContents;
+}
+
+namespace views {
+class BubbleDialogDelegate;
 }
 
 // Wraps views::BubbleDialogDelegate where contents can be updated in order to
@@ -71,11 +78,8 @@ class DigitalIdentityMultiStepDialog {
     explicit TestApi(DigitalIdentityMultiStepDialog* dialog);
     ~TestApi();
 
-    views::Widget* get_widget() { return dialog_->dialog_.get(); }
-
-    views::BubbleDialogDelegate* get_widget_delegate() {
-      return dialog_->GetWidgetDelegate();
-    }
+    views::Widget* GetWidget();
+    views::BubbleDialogDelegate* GetWidgetDelegate();
 
    private:
     const raw_ptr<DigitalIdentityMultiStepDialog> dialog_;
@@ -100,43 +104,7 @@ class DigitalIdentityMultiStepDialog {
   ui::ColorVariant GetBackgroundColor();
 
  private:
-  // The wrapped views::BubbleDialogDelegate.
-  class Delegate : public views::BubbleDialogDelegate {
-   public:
-    Delegate();
-    ~Delegate() override;
-
-    void Update(
-        const std::optional<ui::DialogModel::Button::Params>& accept_button,
-        base::OnceClosure accept_callback,
-        const ui::DialogModel::Button::Params& cancel_button,
-        base::OnceClosure cancel_callback,
-        const std::u16string& dialog_title,
-        const std::u16string& body_text,
-        std::unique_ptr<views::View> custom_body_field);
-
-    views::Widget::ClosedReason get_closed_reason() { return closed_reason_; }
-
-   private:
-    bool OnDialogAccepted();
-    bool OnDialogCanceled();
-    void OnDialogClosed();
-
-    void ResetCallbacks();
-
-    // Owned by the parent view.
-    raw_ptr<views::View> contents_view_;
-
-    base::OnceClosure accept_callback_;
-    base::OnceClosure cancel_callback_;
-
-    views::Widget::ClosedReason closed_reason_ =
-        views::Widget::ClosedReason::kUnspecified;
-
-    base::WeakPtrFactory<Delegate> weak_ptr_factory_{this};
-  };
-
-  DigitalIdentityMultiStepDialog::Delegate* GetWidgetDelegate();
+  DigitalIdentityMultiStepDialogDelegate* GetWidgetDelegate();
 
   // The web contents the dialog is modal to.
   base::WeakPtr<content::WebContents> web_contents_;

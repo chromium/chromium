@@ -31,6 +31,16 @@ namespace autofill {
 //   program_logo         The url of the logo icon for the card.
 //   loyalty_card_number  A string representation of the unmasked loyalty card
 //                        number suffix.
+// -----------------------------------------------------------------------------
+// loyalty_card_merchant_domain
+//                      Contains the mapping of merchant domains and card linked
+//                      offers.
+//
+//   loyalty_card_id    Identifies the relevant loyalty card. Matches the
+//                      `loyalty_card_id` in the loyalty_cards table.
+//   merchant_domain    List of full origins for merchant websites on which
+//                      this card would apply.
+// -----------------------------------------------------------------------------
 class ValuablesTable : public WebDatabaseTable {
  public:
   ValuablesTable();
@@ -51,11 +61,10 @@ class ValuablesTable : public WebDatabaseTable {
   // Returns all loyalty cards stored in the database.
   std::vector<LoyaltyCard> GetLoyaltyCards() const;
 
-  // Inserts a new or updates an existing loyalty card into the database using
-  // the loyalty card id as a primary key. Returns `true` if the database
-  // operation succeeded. Returns `false` if the loyalty card's program logo URL
-  // is invalid or the database operation fails.
-  bool AddOrUpdateLoyaltyCard(const LoyaltyCard& loyalty_card) const;
+  // Overwrites the existing set of loyalty cards in the DB with those in
+  // `loyalty_cards`. Returns `true` if the database operation succeeded with no
+  // errors.
+  bool SetLoyaltyCards(const std::vector<LoyaltyCard>& loyalty_cards) const;
 
   // Attempts to retrieve a loyalty card from the database using the
   // `loyalty_card_id` as a unique identifier. Returns `std::nullopt` if there's
@@ -67,12 +76,9 @@ class ValuablesTable : public WebDatabaseTable {
   // unique identifier. Returns `true` if the operation succeeded.
   bool RemoveLoyaltyCard(ValuableId loyalty_card_id);
 
-  // Removes all loyalty cards stored in the database. Returns `true` if the
-  // operation succeeded.
-  bool ClearLoyaltyCards();
-
  private:
   bool InitLoyaltyCardsTable();
+  bool InitLoyaltyCardMerchantDomainTable();
 
   // Renames the database table from `loyalty_card` to `loyalty_cards` and
   // renames the following columns:

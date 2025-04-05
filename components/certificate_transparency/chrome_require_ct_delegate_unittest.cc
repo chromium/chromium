@@ -17,6 +17,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "net/base/hash_value.h"
+#include "net/cert/require_ct_delegate.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
 #include "net/test/cert_test_util.h"
@@ -61,76 +62,77 @@ TEST_F(ChromeRequireCTDelegateTest, RegistersPrefs) {
 }
 
 TEST_F(ChromeRequireCTDelegateTest, DelegateChecksExcludedHosts) {
-  using CTRequirementLevel =
-      net::TransportSecurityState::RequireCTDelegate::CTRequirementLevel;
-  ChromeRequireCTDelegate delegate;
+  using CTRequirementLevel = net::RequireCTDelegate::CTRequirementLevel;
+  scoped_refptr<ChromeRequireCTDelegate> delegate =
+      base::MakeRefCounted<ChromeRequireCTDelegate>();
 
   // No setting should yield the default results.
   EXPECT_EQ(CTRequirementLevel::REQUIRED,
-            delegate.IsCTRequiredForHost("google.com", cert_.get(), hashes_));
+            delegate->IsCTRequiredForHost("google.com", cert_.get(), hashes_));
 
   // Add a excluded host
-  delegate.UpdateCTPolicies({"google.com"}, {});
+  delegate->UpdateCTPolicies({"google.com"}, {});
 
   // The new setting should take effect.
   EXPECT_EQ(CTRequirementLevel::NOT_REQUIRED,
-            delegate.IsCTRequiredForHost("google.com", cert_.get(), hashes_));
+            delegate->IsCTRequiredForHost("google.com", cert_.get(), hashes_));
 }
 
 TEST_F(ChromeRequireCTDelegateTest, DelegateChecksExcludedSPKIs) {
-  using CTRequirementLevel =
-      net::TransportSecurityState::RequireCTDelegate::CTRequirementLevel;
-  ChromeRequireCTDelegate delegate;
+  using CTRequirementLevel = net::RequireCTDelegate::CTRequirementLevel;
+  scoped_refptr<ChromeRequireCTDelegate> delegate =
+      base::MakeRefCounted<ChromeRequireCTDelegate>();
 
   // No setting should yield the default results.
   EXPECT_EQ(CTRequirementLevel::REQUIRED,
-            delegate.IsCTRequiredForHost("google.com", cert_.get(), hashes_));
+            delegate->IsCTRequiredForHost("google.com", cert_.get(), hashes_));
 
   // Add a excluded SPKI
-  delegate.UpdateCTPolicies({}, {hashes_.front().ToString()});
+  delegate->UpdateCTPolicies({}, {hashes_.front().ToString()});
 
   // The new setting should take effect.
   EXPECT_EQ(CTRequirementLevel::NOT_REQUIRED,
-            delegate.IsCTRequiredForHost("google.com", cert_.get(), hashes_));
+            delegate->IsCTRequiredForHost("google.com", cert_.get(), hashes_));
 }
 
 TEST_F(ChromeRequireCTDelegateTest, IgnoresInvalidEntries) {
-  using CTRequirementLevel =
-      net::TransportSecurityState::RequireCTDelegate::CTRequirementLevel;
-  ChromeRequireCTDelegate delegate;
+  using CTRequirementLevel = net::RequireCTDelegate::CTRequirementLevel;
+  scoped_refptr<ChromeRequireCTDelegate> delegate =
+      base::MakeRefCounted<ChromeRequireCTDelegate>();
 
   // No setting should yield the default results.
   EXPECT_EQ(CTRequirementLevel::REQUIRED,
-            delegate.IsCTRequiredForHost("google.com", cert_.get(), hashes_));
+            delegate->IsCTRequiredForHost("google.com", cert_.get(), hashes_));
 
   // Now setup invalid state (that is, that fail to be parsable as
   // URLs).
-  delegate.UpdateCTPolicies(
+  delegate->UpdateCTPolicies(
       {"file:///etc/fstab", "file://withahost/etc/fstab", "file:///c|/Windows",
        "*", "https://*", "example.com", "https://example.test:invalid_port"},
       {});
 
   // Wildcards are ignored (both * and https://*).
   EXPECT_EQ(CTRequirementLevel::REQUIRED,
-            delegate.IsCTRequiredForHost("google.com", cert_.get(), hashes_));
+            delegate->IsCTRequiredForHost("google.com", cert_.get(), hashes_));
   // File URL hosts are ignored.
   // TODO(rsleevi): https://crbug.com/841407 - Ensure that file URLs have their
   // hosts ignored for policy.
   // EXPECT_EQ(CTRequirementLevel::DEFAULT,
-  //          delegate.IsCTRequiredForHost("withahost", cert_.get(), hashes_));
+  //          delegate->IsCTRequiredForHost("withahost", cert_.get(), hashes_));
 
   // While the partially parsed hosts should take effect.
+  EXPECT_EQ(
+      CTRequirementLevel::NOT_REQUIRED,
+      delegate->IsCTRequiredForHost("example.test", cert_.get(), hashes_));
   EXPECT_EQ(CTRequirementLevel::NOT_REQUIRED,
-            delegate.IsCTRequiredForHost("example.test", cert_.get(), hashes_));
-  EXPECT_EQ(CTRequirementLevel::NOT_REQUIRED,
-            delegate.IsCTRequiredForHost("example.com", cert_.get(), hashes_));
+            delegate->IsCTRequiredForHost("example.com", cert_.get(), hashes_));
 }
 
 TEST_F(ChromeRequireCTDelegateTest, SupportsOrgRestrictions) {
-  using CTRequirementLevel =
-      net::TransportSecurityState::RequireCTDelegate::CTRequirementLevel;
+  using CTRequirementLevel = net::RequireCTDelegate::CTRequirementLevel;
 
-  ChromeRequireCTDelegate delegate;
+  scoped_refptr<ChromeRequireCTDelegate> delegate =
+      base::MakeRefCounted<ChromeRequireCTDelegate>();
 
   base::FilePath test_directory = net::GetTestNetDataDirectory().Append(
       FILE_PATH_LITERAL("ov_name_constraints"));
@@ -245,17 +247,17 @@ TEST_F(ChromeRequireCTDelegateTest, SupportsOrgRestrictions) {
       leaf = net::X509Certificate::CreateFromBuffer(
           bssl::UpRef(leaf->cert_buffer()), std::move(intermediates));
     }
-    delegate.UpdateCTPolicies({}, {});
+    delegate->UpdateCTPolicies({}, {});
 
     // The default setting should require CT.
     EXPECT_EQ(CTRequirementLevel::REQUIRED,
-              delegate.IsCTRequiredForHost("google.com", leaf.get(), hashes));
+              delegate->IsCTRequiredForHost("google.com", leaf.get(), hashes));
 
-    delegate.UpdateCTPolicies({}, {test.spki.ToString()});
+    delegate->UpdateCTPolicies({}, {test.spki.ToString()});
 
     // The new setting should take effect.
     EXPECT_EQ(test.expected,
-              delegate.IsCTRequiredForHost("google.com", leaf.get(), hashes));
+              delegate->IsCTRequiredForHost("google.com", leaf.get(), hashes));
   }
 }
 

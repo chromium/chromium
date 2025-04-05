@@ -1,5 +1,6 @@
 caption: Enable adaptive charging model to hold charging process to extend battery
   life
+deprecated: true
 default: true
 default_for_enterprise_users: false
 desc: |-
@@ -26,9 +27,10 @@ items:
     ChromeOS</ex></ph>
   value: false
 owners:
-- thanhdng@chromium.org
+- chromeos-power-team@google.com
+- jingmuli@google.com
 - napper@chromium.org
-- dbasehore@chromium.org
+- thanhdng@chromium.org
 schema:
   type: boolean
 supported_on:

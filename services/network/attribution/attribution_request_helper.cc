@@ -10,18 +10,15 @@
 #include <utility>
 
 #include "base/feature_list.h"
-#include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "net/http/http_request_headers.h"
-#include "net/url_request/redirect_info.h"
 #include "net/url_request/url_request.h"
 #include "services/network/attribution/request_headers_internal.h"
 #include "services/network/public/cpp/attribution_utils.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/resource_request.h"
-#include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace network {
 
@@ -31,38 +28,6 @@ using ::network::mojom::AttributionReportingEligibility;
 
 }  // namespace
 
-std::unique_ptr<AttributionRequestHelper>
-AttributionRequestHelper::CreateIfNeeded(
-    AttributionReportingEligibility eligibility) {
-  return nullptr;
-}
-
-std::unique_ptr<AttributionRequestHelper>
-AttributionRequestHelper::CreateForTesting() {
-  return base::WrapUnique(new AttributionRequestHelper());
-}
-
-AttributionRequestHelper::AttributionRequestHelper() = default;
-
-AttributionRequestHelper::~AttributionRequestHelper() = default;
-
-void AttributionRequestHelper::Begin(net::URLRequest& request,
-                                     base::OnceClosure done) {
-  std::move(done).Run();
-}
-
-void AttributionRequestHelper::OnReceiveRedirect(
-    net::URLRequest& request,
-    mojom::URLResponseHeadPtr response,
-    const net::RedirectInfo& redirect_info,
-    base::OnceCallback<void(mojom::URLResponseHeadPtr response)> done) {
-  std::move(done).Run(std::move(response));
-}
-
-void AttributionRequestHelper::Finalize(mojom::URLResponseHead& response,
-                                        base::OnceClosure done) {
-  std::move(done).Run();
-}
 
 // https://wicg.github.io/attribution-reporting-api/#mark-a-request-for-attribution-reporting-eligibility
 net::HttpRequestHeaders ComputeAttributionReportingHeaders(

@@ -405,11 +405,6 @@ class PLATFORM_EXPORT GraphicsContext {
                 DOMNodeId,
                 const AutoDarkMode& auto_dark_mode);
 
-  void DeprecatedDrawEmphasisMarks(const Font&,
-                                   const TextRun&,
-                                   const AtomicString& mark,
-                                   const gfx::PointF&,
-                                   const AutoDarkMode& auto_dark_mode);
   void DrawEmphasisMarks(const Font&,
                          const TextFragmentPaintInfo&,
                          const AtomicString& mark,

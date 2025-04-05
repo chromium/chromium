@@ -811,7 +811,7 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame() {
   // |pic_parameters.ref_frame_idx| doesn't need to be filled in for intra
   // frames (it can be left zero initialized).
   if (!libgav1::IsIntraFrame(current_frame_header.frame_type)) {
-    for (size_t i = 0; i < kAv1NumRefFrames; ++i) {
+    for (size_t i = 0; i < libgav1::kNumInterReferenceFrameTypes; ++i) {
       const int8_t index = current_frame_header.reference_frame_index[i];
       CHECK_GE(index, 0);
       CHECK_LT(static_cast<size_t>(index), kAv1NumRefFrames);

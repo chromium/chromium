@@ -46,6 +46,10 @@ GetSwitchDependentFeatureOverrides(const base::CommandLine& command_line) {
        std::cref(features::kOriginIsolationHeader),
        base::FeatureList::OVERRIDE_ENABLE_FEATURE},
       {switches::kEnableExperimentalWebPlatformFeatures,
+       std::cref(
+           blink::features::kDocumentPolicyIncludeJSCallStacksInCrashReports),
+       base::FeatureList::OVERRIDE_ENABLE_FEATURE},
+      {switches::kEnableExperimentalWebPlatformFeatures,
        std::cref(features::kEnableCanvas2DLayers),
        base::FeatureList::OVERRIDE_ENABLE_FEATURE},
       {switches::kEnableExperimentalWebPlatformFeatures,

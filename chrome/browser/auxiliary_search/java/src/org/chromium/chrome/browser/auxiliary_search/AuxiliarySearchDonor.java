@@ -271,7 +271,7 @@ public class AuxiliarySearchDonor {
     List<Class<?>> getSupportedDocumentClasses() {
         List<Class<?>> documents = new ArrayList<>();
         documents.add(WebPage.class);
-        if (mSupportMultiDataSource) {
+        if (!AuxiliarySearchUtils.USE_SCHEMA_V1.getValue() && mSupportMultiDataSource) {
             documents.add(CustomTabWebPage.class);
             documents.add(TopSiteWebPage.class);
         }

@@ -23,17 +23,17 @@ namespace {
 // TODO(b/311679168): Move this to share logic with ContentAnalysisDelegate.
 std::string GetMimeType(const ui::ClipboardFormatType& clipboard_format) {
   if (clipboard_format == ui::ClipboardFormatType::PlainTextType()) {
-    return ui::kMimeTypeText;
+    return ui::kMimeTypePlainText;
   } else if (clipboard_format == ui::ClipboardFormatType::HtmlType()) {
-    return ui::kMimeTypeHTML;
+    return ui::kMimeTypeHtml;
   } else if (clipboard_format == ui::ClipboardFormatType::SvgType()) {
     return ui::kMimeTypeSvg;
   } else if (clipboard_format == ui::ClipboardFormatType::RtfType()) {
-    return ui::kMimeTypeRTF;
+    return ui::kMimeTypeRtf;
   } else if (clipboard_format == ui::ClipboardFormatType::PngType()) {
-    return ui::kMimeTypePNG;
+    return ui::kMimeTypePng;
   } else if (clipboard_format == ui::ClipboardFormatType::FilenamesType()) {
-    return ui::kMimeTypeURIList;
+    return ui::kMimeTypeUriList;
   }
   return "";
 }

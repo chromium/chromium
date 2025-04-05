@@ -28,7 +28,7 @@ bool FrameIsValid(const SkBitmap& frame_bitmap) {
 }  // anonymous namespace
 
 ImageExtractor::ImageExtractor(Image* image,
-                               bool premultiply_alpha,
+                               SkAlphaType target_alpha_type,
                                sk_sp<SkColorSpace> target_color_space) {
   if (!image) {
     return;
@@ -80,7 +80,7 @@ ImageExtractor::ImageExtractor(Image* image,
       // bother re-decoding if premultiply alpha was requested, because we will
       // do that lossy conversion later.
       if (skia_image->alphaType() == kPremul_SkAlphaType &&
-          !premultiply_alpha) {
+          target_alpha_type != kPremul_SkAlphaType) {
         needs_redecode = true;
       }
 

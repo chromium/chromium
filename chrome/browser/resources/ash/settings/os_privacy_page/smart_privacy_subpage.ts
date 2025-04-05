@@ -93,19 +93,14 @@ export class SettingsSmartPrivacySubpage extends
           return loadTimeData.getBoolean('isSnoopingProtectionEnabled');
         },
       },
-
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kQuickDim,
-          Setting.kSnoopingProtection,
-        ]),
-      },
     };
   }
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kQuickDim,
+    Setting.kSnoopingProtection,
+  ]);
 
   private isQuickDimEnabled_: boolean;
   private isSnoopingProtectionEnabled_: boolean;

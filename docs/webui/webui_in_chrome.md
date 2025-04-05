@@ -117,7 +117,7 @@ export class HelloWorldAppElement extends CrLitElement {
     };
   }
 
-  protected message_: string = loadTimeData.getString('message');
+  protected accessor message_: string = loadTimeData.getString('message');
 }
 
 declare global {

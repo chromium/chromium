@@ -38,7 +38,7 @@ class GPUQueue : public DawnObject<wgpu::Queue> {
   GPUQueue(const GPUQueue&) = delete;
   GPUQueue& operator=(const GPUQueue&) = delete;
 
-  // gpu_queue.idl
+  // gpu_queue.idl {{{
   void submit(ScriptState* script_state,
               const HeapVector<Member<GPUCommandBuffer>>& buffers);
   ScriptPromise<IDLUndefined> onSubmittedWorkDone(ScriptState* script_state);
@@ -84,6 +84,7 @@ class GPUQueue : public DawnObject<wgpu::Queue> {
                                   GPUImageCopyTextureTagged* destination,
                                   const V8GPUExtent3D* copySize,
                                   ExceptionState& exception_state);
+  // }}} End of WebIDL binding implementation.
 
  private:
   void CopyFromVideoElement(const ExternalTextureSource source,
@@ -116,7 +117,7 @@ class GPUQueue : public DawnObject<wgpu::Queue> {
                         const V8GPUExtent3D* write_size,
                         ExceptionState& exception_state);
 
-  void setLabelImpl(const String& value) override {
+  void SetLabelImpl(const String& value) override {
     std::string utf8_label = value.Utf8();
     GetHandle().SetLabel(utf8_label.c_str());
   }

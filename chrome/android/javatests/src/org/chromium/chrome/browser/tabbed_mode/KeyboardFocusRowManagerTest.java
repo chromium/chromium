@@ -30,7 +30,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
@@ -51,8 +50,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.concurrent.TimeoutException;
 
-/** Tests for {@link TabbedRootUiCoordinator}. */
-@DisabledTest(message = "crbug.com/360423850")
+/** Tests for {@link KeyboardFocusRowManager}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
@@ -80,8 +78,7 @@ public class KeyboardFocusRowManagerTest {
         mTabbedRootUiCoordinator =
                 (TabbedRootUiCoordinator)
                         sActivityTestRule.getActivity().getRootUiCoordinatorForTesting();
-        // mKeyboardFocusRowManager =
-        // mTabbedRootUiCoordinator.getKeyboardFocusRowManagerForTesting();
+        mKeyboardFocusRowManager = mTabbedRootUiCoordinator.getKeyboardFocusRowManagerForTesting();
     }
 
     @Test
@@ -193,8 +190,8 @@ public class KeyboardFocusRowManagerTest {
     @Restriction(DeviceFormFactor.TABLET)
     @EnableFeatures(ChromeFeatureList.ANDROID_BOOKMARK_BAR)
     public void testSwitchKeyboardFocusRow_withBookmarkBarFocus() {
-        // ThreadUtils.runOnUiThreadBlocking(
-        //     mTabbedRootUiCoordinator::initializeBookmarkBarCoordinatorForTesting);
+        ThreadUtils.runOnUiThreadBlocking(
+                mTabbedRootUiCoordinator::initializeBookmarkBarCoordinatorForTesting);
 
         // Put something in the content view so we can focus on it.
         ChromeTabUtils.newTabFromMenu(

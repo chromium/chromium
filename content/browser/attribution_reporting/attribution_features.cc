@@ -4,7 +4,19 @@
 
 #include "content/browser/attribution_reporting/attribution_features.h"
 
+#include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
+#include "base/time/time.h"
+
 namespace content {
-// TODO(crbug.com/384870263): Add feature flag to gate report delivery on
-// navigation.
+
+BASE_FEATURE(kAttributionReportDeliveryOnNewNavigation,
+             "AttributionReportDeliveryOnNewNavigation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<base::TimeDelta>
+    kAttributionReportingNavigationForReportDeliveryWindow{
+        &kAttributionReportDeliveryOnNewNavigation, "navigation_window",
+        base::Minutes(2)};
+
 }  // namespace content

@@ -59,11 +59,13 @@ class ThreadSafeInterfaceEndpointClientProxy : public ThreadSafeProxy {
       base::WeakPtr<InterfaceEndpointClient> endpoint,
       scoped_refptr<ThreadSafeProxy::Target> target,
       const AssociatedGroup& associated_group,
-      scoped_refptr<base::SequencedTaskRunner> task_runner)
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
+      const base::Location& location)
       : endpoint_(std::move(endpoint)),
         target_(std::move(target)),
         associated_group_(associated_group),
-        task_runner_(std::move(task_runner)) {}
+        task_runner_(std::move(task_runner)),
+        location_(location) {}
 
   ThreadSafeInterfaceEndpointClientProxy(
       const ThreadSafeInterfaceEndpointClientProxy&) = delete;
@@ -154,12 +156,14 @@ class ThreadSafeInterfaceEndpointClientProxy : public ThreadSafeProxy {
 
   class ForwardToCallingThread : public MessageReceiver {
    public:
-    explicit ForwardToCallingThread(std::unique_ptr<MessageReceiver> responder)
+    explicit ForwardToCallingThread(std::unique_ptr<MessageReceiver> responder,
+                                    const base::Location& location)
         : responder_(std::move(responder)),
-          caller_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
+          caller_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
+          location_(location) {}
 
     ~ForwardToCallingThread() override {
-      caller_task_runner_->DeleteSoon(FROM_HERE, std::move(responder_));
+      caller_task_runner_->DeleteSoon(location_, std::move(responder_));
     }
 
    private:
@@ -167,7 +171,7 @@ class ThreadSafeInterfaceEndpointClientProxy : public ThreadSafeProxy {
       // `this` will be deleted immediately after this method returns. We must
       // relinquish ownership of `responder_` so it doesn't get deleted.
       caller_task_runner_->PostTask(
-          FROM_HERE,
+          location_,
           base::BindOnce(&ForwardToCallingThread::CallAcceptAndDeleteResponder,
                          std::move(responder_), std::move(*message)));
       return true;
@@ -181,6 +185,7 @@ class ThreadSafeInterfaceEndpointClientProxy : public ThreadSafeProxy {
 
     std::unique_ptr<MessageReceiver> responder_;
     scoped_refptr<base::SequencedTaskRunner> caller_task_runner_;
+    const base::Location location_;
   };
 
   class ForwardSameThreadResponder : public MessageReceiver {
@@ -231,6 +236,7 @@ class ThreadSafeInterfaceEndpointClientProxy : public ThreadSafeProxy {
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
   const scoped_refptr<InProgressSyncCalls> sync_calls_{
       base::MakeRefCounted<InProgressSyncCalls>()};
+  const base::Location location_;
 };
 
 void DetermineIfEndpointIsConnected(
@@ -381,8 +387,8 @@ void ThreadSafeInterfaceEndpointClientProxy::SendMessageWithResponder(
   // Async messages are always posted (even if `task_runner_` runs tasks on
   // this sequence) to guarantee that two async calls can't be reordered.
   if (!message.has_flag(Message::kFlagIsSync)) {
-    auto reply_forwarder =
-        std::make_unique<ForwardToCallingThread>(std::move(responder));
+    auto reply_forwarder = std::make_unique<ForwardToCallingThread>(
+        std::move(responder), location_);
     task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&ThreadSafeInterfaceEndpointClientProxy ::
@@ -510,10 +516,11 @@ AssociatedGroup* InterfaceEndpointClient::associated_group() {
 }
 
 scoped_refptr<ThreadSafeProxy> InterfaceEndpointClient::CreateThreadSafeProxy(
-    scoped_refptr<ThreadSafeProxy::Target> target) {
+    scoped_refptr<ThreadSafeProxy::Target> target,
+    const base::Location& location) {
   return base::MakeRefCounted<ThreadSafeInterfaceEndpointClientProxy>(
       weak_ptr_factory_.GetWeakPtr(), std::move(target), *associated_group_,
-      task_runner_);
+      task_runner_, location);
 }
 
 ScopedInterfaceEndpointHandle InterfaceEndpointClient::PassHandle() {

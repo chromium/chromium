@@ -28,6 +28,8 @@ ZeroStateSuggestionsPageData::ZeroStateSuggestionsPageData(
       optimization_guide_keyed_service_(ogks),
       suggestions_callback_(std::move(suggestions_callback)) {
   CHECK(base::FeatureList::IsEnabled(kGlicZeroStateSuggestions));
+  CHECK(kExtractInnerTextForZeroStateSuggestions.Get() ||
+        kExtractAnnotatedPageContentForZeroStateSuggestions.Get());
 
   suggestions_request_.set_is_fre(is_fre);
   optimization_guide::proto::PageContext* page_context =
@@ -38,25 +40,33 @@ ZeroStateSuggestionsPageData::ZeroStateSuggestionsPageData(
   }
   page_context->set_title(base::UTF16ToUTF8(web_contents->GetTitle()));
 
-  blink::mojom::AIPageContentOptionsPtr ai_page_content_options;
-  ai_page_content_options = optimization_guide::DefaultAIPageContentOptions();
-  ai_page_content_options->include_geometry = false;
-  ai_page_content_options->on_critical_path = true;
-  ai_page_content_options->include_hidden_searchable_content = false;
-  optimization_guide::GetAIPageContent(
-      web_contents, std::move(ai_page_content_options),
-      base::BindOnce(
-          &ZeroStateSuggestionsPageData::OnReceivedAnnotatedPageContent,
-          weak_ptr_factory_.GetWeakPtr()));
+  if (kExtractAnnotatedPageContentForZeroStateSuggestions.Get()) {
+    blink::mojom::AIPageContentOptionsPtr ai_page_content_options;
+    ai_page_content_options = optimization_guide::DefaultAIPageContentOptions();
+    ai_page_content_options->include_geometry = false;
+    ai_page_content_options->on_critical_path = true;
+    ai_page_content_options->include_hidden_searchable_content = false;
+    optimization_guide::GetAIPageContent(
+        web_contents, std::move(ai_page_content_options),
+        base::BindOnce(
+            &ZeroStateSuggestionsPageData::OnReceivedAnnotatedPageContent,
+            weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    OnReceivedAnnotatedPageContent(/*content=*/std::nullopt);
+  }
 
-  // TODO(crbug.com/407121627): remove inner text fetch once server is ready to
-  // take annotated page content.
-  content::RenderFrameHost& frame = page.GetMainDocument();
-  content_extraction::GetInnerText(
-      frame,
-      /*node_id=*/std::nullopt,
-      base::BindOnce(&ZeroStateSuggestionsPageData::OnReceivedInnerText,
-                     weak_ptr_factory_.GetWeakPtr()));
+  if (kExtractInnerTextForZeroStateSuggestions.Get()) {
+    // TODO(crbug.com/407121627): remove inner text fetch once server is ready
+    // to take annotated page content.
+    content::RenderFrameHost& frame = page.GetMainDocument();
+    content_extraction::GetInnerText(
+        frame,
+        /*node_id=*/std::nullopt,
+        base::BindOnce(&ZeroStateSuggestionsPageData::OnReceivedInnerText,
+                       weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    OnReceivedInnerText(/*result=*/nullptr);
+  }
 }
 
 ZeroStateSuggestionsPageData::~ZeroStateSuggestionsPageData() = default;

@@ -244,10 +244,6 @@ void FollowBrowserAgent::OnFollowSuccess(WebPageURLs* web_page_urls,
     pref_service->SetBoolean(prefs::kArticlesForYouEnabled, true);
   }
 
-  if (!pref_service->GetBoolean(feed::prefs::kArticlesListVisible)) {
-    pref_service->SetBoolean(feed::prefs::kArticlesListVisible, true);
-  }
-
   // Display the First Follow modal UI if needed.
   const bool is_overflow_menu_source = source == FollowSource::OverflowMenu;
   if (is_overflow_menu_source && ShouldShowFirstFollowUI(pref_service)) {

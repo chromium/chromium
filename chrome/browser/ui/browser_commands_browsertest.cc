@@ -83,7 +83,7 @@ class BrowserCommandsTest : public InProcessBrowserTest {
     // Add tabs to the selection (the last one created remains selected) and
     // trigger a reload command on all of them.
     for (int i = 0; i < tab_count - 1; ++i) {
-      browser()->tab_strip_model()->ToggleSelectionAt(i + 1);
+      browser()->tab_strip_model()->SelectTabAt(i + 1);
     }
     EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_RELOAD));
     browser()->tab_strip_model()->CloseSelectedTabs();
@@ -155,7 +155,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, ReloadSelectedTabs) {
   // Add two tabs to the selection (the last one created remains selected) and
   // trigger a reload command on all of them.
   for (int i = 0; i < kTabCount - 1; i++) {
-    browser()->tab_strip_model()->ToggleSelectionAt(i + 1);
+    browser()->tab_strip_model()->SelectTabAt(i + 1);
   }
   EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_RELOAD));
 
@@ -379,7 +379,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
   ASSERT_TRUE(AddTabAtIndex(1, url2, ui::PAGE_TRANSITION_LINK));
   ASSERT_TRUE(AddTabAtIndex(2, url3, ui::PAGE_TRANSITION_LINK));
   // Select the first tab.
-  browser()->tab_strip_model()->ToggleSelectionAt(0);
+  browser()->tab_strip_model()->SelectTabAt(0);
   // First and third (since it's active) should be selected
   EXPECT_TRUE(browser()->tab_strip_model()->IsTabSelected(0));
   EXPECT_FALSE(browser()->tab_strip_model()->IsTabSelected(1));
@@ -445,7 +445,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
   Browser* popup_browser = Browser::Create(
       Browser::CreateParams(Browser::TYPE_POPUP, browser()->profile(), true));
   chrome::AddTabAt(popup_browser, GURL(url::kAboutBlankURL), -1, true);
-  popup_browser->tab_strip_model()->ToggleSelectionAt(0);
+  popup_browser->tab_strip_model()->SelectTabAt(0);
   browser()->tab_strip_model()->CloseAllTabs();
   ConvertPopupToTabbedBrowser(popup_browser);
   EXPECT_EQ(false, browser_shutdown::HasShutdownStarted());

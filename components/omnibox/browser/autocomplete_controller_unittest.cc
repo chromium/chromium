@@ -54,6 +54,14 @@ class AutocompleteControllerTest : public testing::Test {
     controller_.internal_result_.AppendMatches(matches);
   }
 
+  void UpdateSearchboxStats() {
+    controller_.UpdateSearchboxStats(&controller_.internal_result_);
+  }
+
+  void UpdateShownInSession() {
+    controller_.UpdateShownInSession(&controller_.internal_result_);
+  }
+
   void MaybeRemoveCompanyEntityImages() {
     controller_.MaybeRemoveCompanyEntityImages(&controller_.internal_result_);
   }
@@ -79,6 +87,178 @@ class AutocompleteControllerTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   FakeAutocompleteController controller_;
 };
+
+TEST_F(AutocompleteControllerTest, UpdateShownInSessionTypedThenZeroPrefix) {
+  std::vector<AutocompleteMatch> matches;
+
+  AutocompleteInput typed_input(u"abc", 3u, metrics::OmniboxEventProto::OTHER,
+                                TestSchemeClassifier());
+  controller_.input_ = typed_input;
+
+  matches.push_back(CreateSearchMatch(u"abc"));
+  SetAutocompleteMatches(matches);
+
+  UpdateSearchboxStats();
+  UpdateShownInSession();
+
+  for (size_t i = 0; i < controller_.internal_result_.size(); i++) {
+    const auto* match = controller_.internal_result_.match_at(i);
+
+    ASSERT_FALSE(match->zero_prefix_suggestions_shown_in_session);
+    ASSERT_FALSE(match->zero_prefix_search_suggestions_shown_in_session);
+    ASSERT_FALSE(match->zero_prefix_url_suggestions_shown_in_session);
+
+    ASSERT_TRUE(match->typed_search_suggestions_shown_in_session);
+    ASSERT_FALSE(match->typed_url_suggestions_shown_in_session);
+  }
+
+  matches.push_back(
+      CreateHistoryURLMatch(/*destination_url=*/"https://www.abc.com/"));
+  SetAutocompleteMatches(matches);
+
+  UpdateSearchboxStats();
+  UpdateShownInSession();
+
+  for (size_t i = 0; i < controller_.internal_result_.size(); i++) {
+    const auto* match = controller_.internal_result_.match_at(i);
+
+    ASSERT_FALSE(match->zero_prefix_suggestions_shown_in_session);
+    ASSERT_FALSE(match->zero_prefix_search_suggestions_shown_in_session);
+    ASSERT_FALSE(match->zero_prefix_url_suggestions_shown_in_session);
+
+    ASSERT_TRUE(match->typed_search_suggestions_shown_in_session);
+    ASSERT_TRUE(match->typed_url_suggestions_shown_in_session);
+  }
+
+  matches.clear();
+
+  AutocompleteInput zero_prefix_input(
+      u"", 0u, metrics::OmniboxEventProto::OTHER, TestSchemeClassifier());
+  zero_prefix_input.set_focus_type(
+      metrics::OmniboxFocusType::INTERACTION_FOCUS);
+  controller_.input_ = zero_prefix_input;
+
+  matches.push_back(CreateZeroPrefixSearchMatch(u"abc"));
+  SetAutocompleteMatches(matches);
+
+  UpdateSearchboxStats();
+  UpdateShownInSession();
+
+  for (size_t i = 0; i < controller_.internal_result_.size(); i++) {
+    const auto* match = controller_.internal_result_.match_at(i);
+
+    ASSERT_TRUE(match->zero_prefix_suggestions_shown_in_session);
+    ASSERT_TRUE(match->zero_prefix_search_suggestions_shown_in_session);
+    ASSERT_FALSE(match->zero_prefix_url_suggestions_shown_in_session);
+
+    ASSERT_TRUE(match->typed_search_suggestions_shown_in_session);
+    ASSERT_TRUE(match->typed_url_suggestions_shown_in_session);
+  }
+
+  matches.push_back(CreateHistoryURLMatch(
+      /*destination_url=*/"https://www.abc.com/", /*is_zero_prefix=*/true));
+  SetAutocompleteMatches(matches);
+
+  UpdateSearchboxStats();
+  UpdateShownInSession();
+
+  for (size_t i = 0; i < controller_.internal_result_.size(); i++) {
+    const auto* match = controller_.internal_result_.match_at(i);
+
+    ASSERT_TRUE(match->zero_prefix_suggestions_shown_in_session);
+    ASSERT_TRUE(match->zero_prefix_search_suggestions_shown_in_session);
+    ASSERT_TRUE(match->zero_prefix_url_suggestions_shown_in_session);
+
+    ASSERT_TRUE(match->typed_search_suggestions_shown_in_session);
+    ASSERT_TRUE(match->typed_url_suggestions_shown_in_session);
+  }
+}
+
+TEST_F(AutocompleteControllerTest, UpdateShownInSessionZeroPrefixThenTyped) {
+  std::vector<AutocompleteMatch> matches;
+
+  AutocompleteInput zero_prefix_input(
+      u"", 0u, metrics::OmniboxEventProto::OTHER, TestSchemeClassifier());
+  zero_prefix_input.set_focus_type(
+      metrics::OmniboxFocusType::INTERACTION_FOCUS);
+  controller_.input_ = zero_prefix_input;
+
+  matches.push_back(CreateZeroPrefixSearchMatch(u"abc"));
+  SetAutocompleteMatches(matches);
+
+  UpdateSearchboxStats();
+  UpdateShownInSession();
+
+  for (size_t i = 0; i < controller_.internal_result_.size(); i++) {
+    const auto* match = controller_.internal_result_.match_at(i);
+
+    ASSERT_TRUE(match->zero_prefix_suggestions_shown_in_session);
+    ASSERT_TRUE(match->zero_prefix_search_suggestions_shown_in_session);
+    ASSERT_FALSE(match->zero_prefix_url_suggestions_shown_in_session);
+
+    ASSERT_FALSE(match->typed_search_suggestions_shown_in_session);
+    ASSERT_FALSE(match->typed_url_suggestions_shown_in_session);
+  }
+
+  matches.push_back(CreateHistoryURLMatch(
+      /*destination_url=*/"https://www.abc.com/", /*is_zero_prefix=*/true));
+  SetAutocompleteMatches(matches);
+
+  UpdateSearchboxStats();
+  UpdateShownInSession();
+
+  for (size_t i = 0; i < controller_.internal_result_.size(); i++) {
+    const auto* match = controller_.internal_result_.match_at(i);
+
+    ASSERT_TRUE(match->zero_prefix_suggestions_shown_in_session);
+    ASSERT_TRUE(match->zero_prefix_search_suggestions_shown_in_session);
+    ASSERT_TRUE(match->zero_prefix_url_suggestions_shown_in_session);
+
+    ASSERT_FALSE(match->typed_search_suggestions_shown_in_session);
+    ASSERT_FALSE(match->typed_url_suggestions_shown_in_session);
+  }
+
+  matches.clear();
+
+  AutocompleteInput typed_input(u"abc", 3u, metrics::OmniboxEventProto::OTHER,
+                                TestSchemeClassifier());
+  controller_.input_ = typed_input;
+
+  matches.push_back(CreateSearchMatch(u"abc"));
+  SetAutocompleteMatches(matches);
+
+  UpdateSearchboxStats();
+  UpdateShownInSession();
+
+  for (size_t i = 0; i < controller_.internal_result_.size(); i++) {
+    const auto* match = controller_.internal_result_.match_at(i);
+
+    ASSERT_TRUE(match->zero_prefix_suggestions_shown_in_session);
+    ASSERT_TRUE(match->zero_prefix_search_suggestions_shown_in_session);
+    ASSERT_TRUE(match->zero_prefix_url_suggestions_shown_in_session);
+
+    ASSERT_TRUE(match->typed_search_suggestions_shown_in_session);
+    ASSERT_FALSE(match->typed_url_suggestions_shown_in_session);
+  }
+
+  matches.push_back(
+      CreateHistoryURLMatch(/*destination_url=*/"https://www.abc.com/"));
+  SetAutocompleteMatches(matches);
+
+  UpdateSearchboxStats();
+  UpdateShownInSession();
+
+  for (size_t i = 0; i < controller_.internal_result_.size(); i++) {
+    const auto* match = controller_.internal_result_.match_at(i);
+
+    ASSERT_TRUE(match->zero_prefix_suggestions_shown_in_session);
+    ASSERT_TRUE(match->zero_prefix_search_suggestions_shown_in_session);
+    ASSERT_TRUE(match->zero_prefix_url_suggestions_shown_in_session);
+
+    ASSERT_TRUE(match->typed_search_suggestions_shown_in_session);
+    ASSERT_TRUE(match->typed_url_suggestions_shown_in_session);
+  }
+}
 
 TEST_F(AutocompleteControllerTest, RemoveCompanyEntityImage) {
   base::HistogramTester histogram_tester;
@@ -2478,8 +2658,13 @@ TEST_F(AutocompleteControllerTest, UpdateAssociatedKeywords) {
 
   auto test = [&](const std::u16string input_text,
                   const std::u16string input_keyword,
-                  std::vector<MatchData> match_datas) {
+                  std::vector<MatchData> match_datas,
+                  bool is_zero_suggest = false) {
     controller_.input_ = FakeAutocompleteController::CreateInput(input_text);
+    if (is_zero_suggest) {
+      controller_.input_.set_focus_type(
+          metrics::OmniboxFocusType::INTERACTION_FOCUS);
+    }
     AutocompleteResult result;
     for (const auto& match_data : match_datas) {
       AutocompleteMatch match;
@@ -2562,4 +2747,11 @@ TEST_F(AutocompleteControllerTest, UpdateAssociatedKeywords) {
       test(u"input", u"",
            {{u"keywo"}, {u"keyword_0_underscore"}, {u"keyword_0 space"}}),
       testing::ElementsAreArray({u"", u"", u"keyword_0"}));
+
+  EXPECT_THAT(test(u"", u"",
+                   {{u"keywo", AutocompleteMatchType::Type::NAVSUGGEST},
+                    {u"keyword_0_underscore"},
+                    {u"keyword_0 space"}},
+                   /*is_zero_suggest=*/true),
+              testing::ElementsAreArray({u"", u"", u""}));
 }

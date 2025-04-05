@@ -24,7 +24,7 @@ dependencies = [
 
 [[package]]
 name = "font-types"
-version = "0.8.3"
+version = "0.8.4"
 dependencies = [
  "bytemuck",
  "serde",

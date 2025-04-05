@@ -16,6 +16,7 @@ build_webui("build") {
     "alert_indicators/tab_audio_muting_rounded.svg",
     "alert_indicators/tab_audio_rounded.svg",
     "alert_indicators/tab_media_recording.svg",
+    "split_new_tab_page.html",
     "tab_search.html",
   ]
 
@@ -47,6 +48,9 @@ build_webui("build") {
     "lazy_list.ts",
     "search.ts",
     "selectable_lazy_list.ts",
+    "split_new_tab_page.ts",
+    "split_view/app.ts",
+    "split_view/app.html.ts",
     "tab_data.ts",
     "tab_group_color_helper.ts",
     "tab_organization_selector.html.ts",
@@ -81,6 +85,7 @@ build_webui("build") {
     "declutter/declutter_page.css",
     "lazy_list.css",
     "selectable_lazy_list.css",
+    "split_view/app.css",
     "tab_group_shared_vars.css",
     "tab_organization_selector.css",
     "tab_organization_selector_button.css",
@@ -102,7 +107,6 @@ build_webui("build") {
 
   html_to_wrapper_template = "detect"
 
-  ts_tsconfig_base = "//tools/typescript/tsconfig_base_lit_389737066.json"
   ts_composite = true
   ts_definitions = [
     "//tools/typescript/definitions/metrics_private.d.ts",
@@ -121,6 +125,9 @@ build_webui("build") {
   optimize = optimize_webui
   if (optimize) {
     optimize_webui_host = "tab-search.top-chrome"
-    optimize_webui_in_files = [ "tab_search.js" ]
+    optimize_webui_in_files = [
+      "split_new_tab_page.js",
+      "tab_search.js",
+    ]
   }
 }

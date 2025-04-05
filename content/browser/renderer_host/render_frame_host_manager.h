@@ -11,7 +11,6 @@
 #include <memory>
 #include <optional>
 #include <set>
-#include <unordered_map>
 #include <unordered_set>
 
 #include "base/containers/unique_ptr_adapters.h"

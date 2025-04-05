@@ -12,7 +12,6 @@ import "third_party/blink/public/mojom/quota/quota_types.mojom";
 struct BucketTableEntry {
     int64 bucket_id;
     string storage_key;
-    blink.mojom.StorageType type;
     string name;
     int64 usage = -1;
     int64 use_count;

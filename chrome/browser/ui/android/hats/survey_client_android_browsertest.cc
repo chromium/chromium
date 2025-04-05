@@ -10,6 +10,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/android/hats/hats_service_android.h"
 #include "chrome/browser/ui/android/hats/test/test_survey_utils_bridge.h"
+#include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/messages/android/message_dispatcher_bridge.h"
@@ -123,7 +124,8 @@ IN_PROC_BROWSER_TEST_F(SurveyClientAndroidBrowserTest, LaunchSurvey) {
         kTestSurveyTrigger, web_contents(), kTestSurveyProductSpecificBitsData,
         kTestSurveyProductSpecificStringData,
         base::BindOnce(&SurveyObserver::Accept, observer.GetWeakPtr()),
-        base::BindOnce(&SurveyObserver::Dismiss, observer.GetWeakPtr()));
+        base::BindOnce(&SurveyObserver::Dismiss, observer.GetWeakPtr()),
+        std::nullopt, HatsService::SurveyOptions());
     EXPECT_TRUE(waiter.Wait());
   }
 

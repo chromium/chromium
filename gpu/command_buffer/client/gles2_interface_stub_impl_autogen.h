@@ -1133,7 +1133,7 @@ void GLES2InterfaceStub::CopySharedImageToTextureINTERNAL(
     GLint /* src_y */,
     GLsizei /* width */,
     GLsizei /* height */,
-    GLboolean /* flip_y */,
+    GLboolean /* is_dst_origin_top_left */,
     const GLbyte* /* src_mailbox */) {}
 GLboolean GLES2InterfaceStub::ReadbackARGBImagePixelsINTERNAL(
     const GLbyte* /* mailbox */,

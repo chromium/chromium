@@ -230,10 +230,11 @@ export class DatabaseTabElement extends DatabaseTabElementBase {
   private requestedOrigins_: {[key: string]: boolean} = {};
   private siteDataProvider_: SiteDataProviderRemote|null = null;
 
+  override sortKey: string = 'origin';
+
   override connectedCallback() {
     super.connectedCallback();
 
-    this.setSortKey('origin');
     this.requestedOrigins_ = {};
     this.siteDataProvider_ = getOrCreateSiteDataProvider();
 

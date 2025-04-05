@@ -94,18 +94,16 @@ export class SettingsCrostiniArcAdbElement extends
         type: Boolean,
         value: false,
       },
-
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([Setting.kCrostiniAdbDebugging]),
-      },
     };
   }
 
   prefs: PrefsState;
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kCrostiniAdbDebugging,
+  ]);
+
   private arcAdbEnabled_: boolean;
   private arcAdbNeedPowerwash_: boolean;
   private browserProxy_: CrostiniBrowserProxy;

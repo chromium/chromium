@@ -204,107 +204,108 @@ class SkiaFontMapper {
 
     // Nothing was found (e.g. an optional Windows font is not installed),
     // then try to map the name to a fallback.
-    auto fallback = GetFallbackFace(subst_face, charset, weight, italic);
+    auto fallback = GetFallbackFace(subst_face, charset, weight, italic, style);
     if (fallback) {
-      typeface = manager_->matchFamilyStyle(fallback->c_str(), style);
-      if (typeface) {
-        return typeface;
-      }
+      return fallback;
     }
 
     // Finally, try some hacks that fix edge cases & mis-spellings.
     return FinalFixups(subst_face, style);
   }
 
-  bool HasFamily(const char* family) {
-    auto style_set = manager_->matchFamily(family);
-    bool has_family = style_set->count() > 0;
-    return has_family;
-  }
-
-  std::optional<std::string> GetShiftJISPreference(const std::string& face,
-                                                   int weight,
-                                                   int pitch_family) {
+  sk_sp<SkTypeface> GetShiftJISPreference(const std::string& face,
+                                          int weight,
+                                          int pitch_family,
+                                          SkFontStyle style) {
     if (base::Contains(face, "Gothic") ||
         base::Contains(face, "\x83\x53\x83\x56\x83\x62\x83\x4e")) {
       if (base::Contains(face, "UI Gothic")) {
-        return "MS UI Gothic";
+        return manager_->matchFamilyStyle("MS UI Gothic", style);
       } else if (base::Contains(face, "PGothic") ||
                  base::Contains(face,
                                 "\x82\x6f\x83\x53\x83\x56\x83\x62\x83\x4e") ||
                  base::Contains(face, "HGSGothicM") ||
                  base::Contains(face, "HGMaruGothicMPRO")) {
-        return "MS PGothic";
+        return manager_->matchFamilyStyle("MS PGothic", style);
       }
-      return "MS Gothic";
+      return manager_->matchFamilyStyle("MS Gothic", style);
     }
     if (base::Contains(face, "Mincho") ||
         base::Contains(face, "\x96\xbe\x92\xa9")) {
       if (base::Contains(face, "PMincho") ||
           base::Contains(face, "\x82\x6f\x96\xbe\x92\xa9")) {
-        return std::string(HasFamily("MS PMincho") ? "MS PMincho"
-                                                   : "MS PGothic");
+        auto typeface = manager_->matchFamilyStyle("MS PMincho", style);
+        if (typeface) {
+          return typeface;
+        }
+        return manager_->matchFamilyStyle("MS PGothic", style);
       }
-      return std::string(HasFamily("MS Mincho") ? "MS Mincho" : "MS Gothic");
+      auto typeface = manager_->matchFamilyStyle("MS Mincho", style);
+      if (typeface) {
+        return typeface;
+      }
+      return manager_->matchFamilyStyle("MS Gothic", style);
     }
     if (!(pitch_family & FXFONT_FF_ROMAN) && weight > 400) {
-      return "MS PGothic";
+      return manager_->matchFamilyStyle("MS PGothic", style);
     }
-    return "MS Gothic";
+    return manager_->matchFamilyStyle("MS Gothic", style);
   }
 
-  std::optional<std::string> GetGBPreference(const std::string& face,
-                                             int weight,
-                                             int pitch_family) {
+  sk_sp<SkTypeface> GetGBPreference(const std::string& face,
+                                    int weight,
+                                    int pitch_family,
+                                    SkFontStyle style) {
     // KaiTi and SimHei are Windows supplemental fonts so assume they were not
     // found by skia.
     if (base::Contains(face, "KaiTi") || base::Contains(face, "\xbf\xac")) {
-      return "SimSun";
+      return manager_->matchFamilyStyle("SimSun", style);
     } else if (base::Contains(face, "FangSong") ||
                base::Contains(face, "\xb7\xc2\xcb\xce")) {
-      return "SimSun";
+      return manager_->matchFamilyStyle("SimSun", style);
     } else if (base::Contains(face, "SimSun") ||
                base::Contains(face, "\xcb\xce")) {
-      return "SimSun";
+      return manager_->matchFamilyStyle("SimSun", style);
     } else if (base::Contains(face, "SimHei") ||
                base::Contains(face, "\xba\xda")) {
-      return "SimHei";
+      return manager_->matchFamilyStyle("SimHei", style);
     } else if (!(pitch_family & FXFONT_FF_ROMAN) && weight > 550) {
-      return "SimHei";
+      return manager_->matchFamilyStyle("SimHei", style);
     }
-    return "SimSun";
+    return manager_->matchFamilyStyle("SimSun", style);
   }
 
-  std::optional<std::string> GetHangeulPreference(const std::string& face,
-                                                  int weight,
-                                                  int pitch_family) {
+  sk_sp<SkTypeface> GetHangeulPreference(const std::string& face,
+                                         SkFontStyle style) {
     // Gulim is a supplemental font.
-    if (HasFamily("Gulim")) {
-      return "Gulim";
+    auto typeface = manager_->matchFamilyStyle("Gulim", style);
+    if (typeface) {
+      return typeface;
     }
-    return "Malgun Gothic";
+    return manager_->matchFamilyStyle("Malgun Gothic", style);
   }
 
-  std::optional<std::string> GetFallbackFace(const std::string& face,
-                                             int charset,
-                                             int weight,
-                                             int pitch_family) {
+  sk_sp<SkTypeface> GetFallbackFace(const std::string& face,
+                                    int charset,
+                                    int weight,
+                                    int pitch_family,
+                                    SkFontStyle style) {
     switch (charset) {
       case FXFONT_SHIFTJIS_CHARSET:
-        return GetShiftJISPreference(face, weight, pitch_family);
+        return GetShiftJISPreference(face, weight, pitch_family, style);
       case FXFONT_GB2312_CHARSET:
-        return GetGBPreference(face, weight, pitch_family);
+        return GetGBPreference(face, weight, pitch_family, style);
       case FXFONT_HANGEUL_CHARSET:
-        return GetHangeulPreference(face, weight, pitch_family);
+        return GetHangeulPreference(face, style);
       case FXFONT_CHINESEBIG5_CHARSET:
         if (base::Contains(face, "MSung")) {
           // Monospace.
-          return "Microsoft YaHei";
+          return manager_->matchFamilyStyle("Microsoft YaHei", style);
         }
         // Proportional.
-        return "Microsoft JHengHei";
+        return manager_->matchFamilyStyle("Microsoft JHengHei", style);
       default:
-        return std::nullopt;
+        return nullptr;
     }
   }
 

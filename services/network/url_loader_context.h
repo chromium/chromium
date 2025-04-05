@@ -6,8 +6,11 @@
 #define SERVICES_NETWORK_URL_LOADER_CONTEXT_H_
 
 #include "base/component_export.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/cpp/orb/orb_api.h"
+#include "services/network/public/mojom/device_bound_sessions.mojom-forward.h"
 
 namespace net {
 class URLRequestContext;
@@ -31,6 +34,9 @@ class TrustTokenAccessObserver;
 class URLLoaderFactoryParams;
 class URLLoaderNetworkServiceObserver;
 }  // namespace mojom
+
+using RefCountedDeviceBoundSessionAccessObserverRemote = base::RefCountedData<
+    mojo::Remote<network::mojom::DeviceBoundSessionAccessObserver>>;
 
 // An interface implemented in production code by network::URLLoaderFactory (or
 // by URLLoaderContextForTests in unit tests).
@@ -57,6 +63,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoaderContext {
   virtual bool DataUseUpdatesEnabled() = 0;
   virtual mojom::DeviceBoundSessionAccessObserver*
   GetDeviceBoundSessionAccessObserver() const = 0;
+  virtual scoped_refptr<RefCountedDeviceBoundSessionAccessObserverRemote>
+  GetDeviceBoundSessionAccessObserverSharedRemote() const = 0;
 
  protected:
   // `protected` destructor = can only destruct via concrete implementations

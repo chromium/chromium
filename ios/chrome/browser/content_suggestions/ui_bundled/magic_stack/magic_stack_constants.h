@@ -22,9 +22,6 @@ extern const CGFloat kMagicStackSpacing;
 extern const CGFloat kMagicStackPeekInset;
 extern const CGFloat kMagicStackPeekInsetLandscape;
 
-// The bottom spacing underneath the Magic Stack.
-extern const float kBottomMagicStackPadding;
-
 // The minimum scroll velocity in order to swipe between modules in the Magic
 // Stack.
 extern const float kMagicStackMinimumPaginationScrollVelocity;

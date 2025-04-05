@@ -14,6 +14,7 @@ import androidx.fragment.app.FragmentActivity;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.access_loss.PasswordAccessLossDialogSettingsCoordinator;
 import org.chromium.chrome.browser.access_loss.PasswordAccessLossPostExportDialogController;
 import org.chromium.chrome.browser.access_loss.PasswordAccessLossWarningType;
@@ -30,6 +31,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
  * Contains all the logic for showing password access loss dialog when trying to access password
  * settings.
  */
+@NullMarked
 public class PasswordAccessLossDialogHelper {
 
     /**

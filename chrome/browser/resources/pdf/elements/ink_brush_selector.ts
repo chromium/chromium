@@ -48,7 +48,7 @@ export class InkBrushSelectorElement extends CrLitElement {
     };
   }
 
-  currentType: AnnotationBrushType = AnnotationBrushType.PEN;
+  accessor currentType: AnnotationBrushType = AnnotationBrushType.PEN;
 
   protected onSelectedChanged_(e: CustomEvent<{value: string}>) {
     const newType = e.detail.value as AnnotationBrushType;

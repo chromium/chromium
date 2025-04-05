@@ -120,7 +120,7 @@ ChromeLabsItemView::ChromeLabsItemView(
       ->SetOrientation(views::LayoutOrientation::kVertical);
   SetBorder(views::CreateEmptyBorder(
       gfx::Insets::VH(ChromeLayoutProvider::Get()->GetDistanceMetric(
-                          DISTANCE_CONTROL_LIST_VERTICAL),
+                          views::DISTANCE_CONTROL_LIST_VERTICAL),
                       0)));
 
   experiment_name_ = AddChildView(

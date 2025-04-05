@@ -1150,9 +1150,6 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
 }
 
 void MaybeEnsureShortcutAppsTreatedAsDiy(WebApp& app) {
-  if (!base::FeatureList::IsEnabled(kMigrateShortcutsToDiy)) {
-    return;
-  }
   bool is_shortcut = app.scope().is_empty() ||
                      (app.latest_install_source().has_value() &&
                       app.latest_install_source() ==

@@ -627,6 +627,29 @@ TEST_P(PDFiumOnDemandSearchifierTest, SelectPageBeforeSearchify) {
   ASSERT_EQ(engine()->GetSelectedText(), kExpectedSelection);
 }
 
+TEST_P(PDFiumOnDemandSearchifierTest, UpdateWithUnloadedPage) {
+  CreateEngine(FILE_PATH_LITERAL("multi_page_no_text.pdf"));
+
+  PDFiumPage& page0 = GetPDFiumPageForTest(*engine(), 0);
+  PDFiumPage& page1 = GetPDFiumPageForTest(*engine(), 1);
+
+  // Load page 0 to schedule it for searchify.
+  EXPECT_TRUE(page0.GetPage());
+
+  page1.Unload();
+
+  StartSearchify(/*empty_results=*/false);
+  PDFiumOnDemandSearchifier* searchifier = engine()->GetSearchifierForTesting();
+
+  // Wait until searchify is finished.
+  base::test::TestFuture<void> future;
+  WaitUntilIdle(searchifier, future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+  EXPECT_EQ(performed_ocrs(), 1);
+
+  EXPECT_EQ(page1.GetImageObjectIndices().size(), 1u);
+}
+
 INSTANTIATE_TEST_SUITE_P(All, PDFiumOnDemandSearchifierTest, testing::Bool());
 
 }  // namespace chrome_pdf

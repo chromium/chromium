@@ -158,26 +158,7 @@ HRESULT CreateLocalServer(GUID clsid,
 }
 
 [[nodiscard]] bool IsServiceGone(const std::wstring& service_name) {
-  ScopedScHandle scm(::OpenSCManager(
-      nullptr, nullptr, SC_MANAGER_CONNECT | SC_MANAGER_CREATE_SERVICE));
-  if (!scm.IsValid()) {
-    return false;
-  }
-
-  ScopedScHandle service(
-      ::OpenService(scm.Get(), service_name.c_str(),
-                    SERVICE_QUERY_CONFIG | SERVICE_CHANGE_CONFIG));
-  bool is_service_gone = !service.IsValid();
-  if (!is_service_gone) {
-    if (!::ChangeServiceConfig(service.Get(), SERVICE_NO_CHANGE,
-                               SERVICE_NO_CHANGE, SERVICE_NO_CHANGE, nullptr,
-                               nullptr, nullptr, nullptr, nullptr, nullptr,
-                               nullptr)) {
-      is_service_gone = ::GetLastError() == ERROR_SERVICE_MARKED_FOR_DELETE;
-    }
-  }
-
-  return is_service_gone &&
+  return !IsServicePresent(service_name) &&
          !base::win::RegKey(HKEY_LOCAL_MACHINE, UPDATER_KEY, Wow6432(KEY_READ))
               .HasValue(service_name.c_str());
 }

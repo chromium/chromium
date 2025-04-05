@@ -17,6 +17,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kGlicTabContextEnabled, false);
   registry->RegisterIntegerPref(
       kGlicCompletedFre, static_cast<int>(prefs::FreStatus::kNotStarted));
+  registry->RegisterTimePref(kGlicWindowLastDismissedTime, base::Time());
 }
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {

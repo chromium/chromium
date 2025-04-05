@@ -87,6 +87,9 @@ class CORE_EXPORT LineBreaker {
     DCHECK(RuntimeEnabledFeatures::CSSLineClampLineBreakingEllipsisEnabled());
     line_clamp_ellipsis_width_ = width;
     UpdateAvailableWidth();
+    if (current_style_ && !auto_wrap_ && !disallow_auto_wrap_) {
+      SetCurrentStyleForce(*current_style_);
+    }
   }
 
   // Computing |LineBreakerMode::kMinContent| with |MaxSizeCache| caches
@@ -210,6 +213,7 @@ class CORE_EXPORT LineBreaker {
 
   void HandleTrailingSpaces(const InlineItem&, LineInfo*);
   void HandleTrailingSpaces(const InlineItem&, const ShapeResult*, LineInfo*);
+  void RemoveLineClampTrailingSpace(LineInfo*);
   void RemoveTrailingCollapsibleSpace(LineInfo*);
   void SplitTrailingBidiPreservedSpace(LineInfo*);
   LayoutUnit TrailingCollapsibleSpaceWidth(LineInfo*);
@@ -265,6 +269,14 @@ class CORE_EXPORT LineBreaker {
   bool MayBeAtomicInline(wtf_size_t offset) const;
   const InlineItem* TryGetAtomicInlineItemAfter(const InlineItem& item) const;
   unsigned IgnorableBidiControlLength(const InlineItem& item) const;
+
+  bool ShouldWrapLine(const ComputedStyle& style) const {
+    return line_clamp_ellipsis_width_ || style.ShouldWrapLine();
+  }
+  bool ShouldBreakOnlyAfterWhiteSpace(const ComputedStyle& style) const {
+    return (style.ShouldPreserveWhiteSpaces() && ShouldWrapLine(style)) ||
+           style.GetLineBreak() == LineBreak::kAfterWhiteSpace;
+  }
 
   bool ShouldPushFloatAfterLine(UnpositionedFloat*, LineInfo*);
   void HandleFloat(const InlineItem&,

@@ -13,8 +13,8 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/tabs/split_tab_id.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
-#include "components/tab_collections/public/tab_interface.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
@@ -100,6 +100,9 @@ class TabModel final : public TabInterface, public TabStripModelObserver {
   // tab hierarchy, maintaining consistent organization.
   void OnReparented(TabCollection* parent, base::PassKey<TabCollection>);
 
+  // Must be called whenever any of this tab's ancestors change.
+  void OnAncestorChanged(base::PassKey<TabCollection>);
+
   // Called by TabStripModel when a tab is going to be backgrounded (any
   // operation that makes the tab no longer visible, including removal from the
   // TabStripModel). Not called if TabStripModel is being destroyed.
@@ -166,6 +169,9 @@ class TabModel final : public TabInterface, public TabStripModelObserver {
   // soon_to_be_owning_model_ is removed. TabInterface logic can only be invoked
   // in contexts where a model exists.
   TabStripModel* GetModelForTabInterface() const;
+
+  // Updates the tab's properties based on all of its ancestor collections.
+  void UpdateProperties();
 
   // Tracks whether a tab-modal UI is showing.
   class ScopedTabModalUIImpl : public ScopedTabModalUI {

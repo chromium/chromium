@@ -40,7 +40,11 @@ inline constexpr std::array kSpanifyManualPathsToIgnore = {
 
     // span_unittests explicitly wants to test compatibility of certain types,
     // rewriting would break that.
-    "base/containers/span_unittest.cc"
+    "base/containers/span_unittest.cc",
+
+    // The comment atop this test suite explains that it "contains intentional
+    // memory errors" to verify Chromium tooling.
+    "base/tools_sanity_unittest.cc",
 
     // Can't depend on //base, pointers/references under this directory can't be
     // rewritten.

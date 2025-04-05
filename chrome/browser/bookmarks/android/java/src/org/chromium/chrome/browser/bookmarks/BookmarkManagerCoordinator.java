@@ -34,7 +34,6 @@ import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.BasicNativePage;
@@ -188,14 +187,6 @@ public class BookmarkManagerCoordinator
 
         mModalDialogManager =
                 new ModalDialogManager(new AppModalPresenter(context), ModalDialogType.APP);
-        BookmarkMoveSnackbarManager moveSnackbarManager =
-                new BookmarkMoveSnackbarManager(
-                        context,
-                        mProfile,
-                        mBookmarkModel,
-                        snackbarManager,
-                        IdentityServicesProvider.get()
-                                .getIdentityManager(profile.getOriginalProfile()));
 
         // Using OneshotSupplier as an alternative to a 2-step initialization process.
         OneshotSupplierImpl<BookmarkDelegate> bookmarkDelegateSupplier =
@@ -215,7 +206,6 @@ public class BookmarkManagerCoordinator
                         mBookmarkUiPrefs,
                         mModalDialogManager,
                         this::onEndSearch,
-                        moveSnackbarManager,
                         () -> IncognitoUtils.isIncognitoModeEnabled(profile),
                         bookmarkManagerOpener);
         mSelectableListLayout.configureWideDisplayStyle();
@@ -257,7 +247,6 @@ public class BookmarkManagerCoordinator
                         mSnackbarManager,
                         this::canShowSigninPromo,
                         onScrollListenerConsumer,
-                        moveSnackbarManager,
                         bookmarkManagerOpener,
                         priceDropNotificationManager);
         mPromoHeaderManager = mMediator.getPromoHeaderManager();

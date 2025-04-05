@@ -104,6 +104,26 @@ struct COMPONENT_EXPORT(PRINT_BACKEND) AdvancedCapability {
 
 using AdvancedCapabilities = std::vector<AdvancedCapability>;
 
+// Describes the margins for a paper size.
+struct COMPONENT_EXPORT(PRINT_BACKEND) PaperMargins {
+  PaperMargins();
+  PaperMargins(int32_t top_margin_um,
+               int32_t right_margin_um,
+               int32_t bottom_margin_um,
+               int32_t left_margin_um);
+  PaperMargins(const PaperMargins& other);
+  PaperMargins& operator=(const PaperMargins& other);
+  ~PaperMargins();
+
+  bool operator==(const PaperMargins& other) const;
+
+  // Defines margins from their edges.
+  int32_t top_margin_um;
+  int32_t right_margin_um;
+  int32_t bottom_margin_um;
+  int32_t left_margin_um;
+};
+
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
@@ -203,7 +223,14 @@ struct COMPONENT_EXPORT(PRINT_BACKEND) PrinterSemanticCapsAndDefaults {
           const gfx::Size& size_um,
           const gfx::Rect& printable_area_um,
           int max_height_um,
-          bool has_borderless_variant);
+          bool has_borderless_variant
+#if BUILDFLAG(IS_CHROMEOS)
+          ,
+          std::optional<PaperMargins> supported_margins_um = std::nullopt
+#endif  // BUILDFLAG(IS_CHROMEOS)
+    );
+
+    ~Paper();
 
     // The compiler has decided that this class is now "complex" and thus
     // requires an explicit, out-of-line copy constructor.
@@ -237,6 +264,12 @@ struct COMPONENT_EXPORT(PRINT_BACKEND) PrinterSemanticCapsAndDefaults {
     // of this object.  Else, return false.
     bool IsSizeWithinBounds(const gfx::Size& other_um) const;
 
+#if BUILDFLAG(IS_CHROMEOS)
+    const std::optional<PaperMargins>& supported_margins_um() const {
+      return supported_margins_um_;
+    }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
    private:
     std::string display_name_;
     std::string vendor_id_;
@@ -257,6 +290,13 @@ struct COMPONENT_EXPORT(PRINT_BACKEND) PrinterSemanticCapsAndDefaults {
     // *only* supports borderless and has no variant with margins, this field
     // will be false and `printable_area_um` will cover the entire page.
     bool has_borderless_variant_ = false;
+
+#if BUILDFLAG(IS_CHROMEOS)
+    // This field represents supported margins by the printer for this paper.
+    // If this field is nullopt, it means that it was not possible to determine
+    // the margins.
+    std::optional<PaperMargins> supported_margins_um_;
+#endif  // BUILDFLAG(IS_CHROMEOS)
   };
   using Papers = std::vector<Paper>;
   Papers papers;

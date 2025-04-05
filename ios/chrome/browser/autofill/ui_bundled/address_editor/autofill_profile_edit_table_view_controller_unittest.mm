@@ -60,7 +60,8 @@ class AutofillProfileEditTableViewControllerTest
         personalDataManager:personal_data_manager_.get()
             autofillProfile:profile_.get()
           isMigrationPrompt:(GetParam().prompt_mode ==
-                             AutofillSaveProfilePromptMode::kMigrateProfile)];
+                             AutofillSaveProfilePromptMode::kMigrateProfile)
+           addManualAddress:NO];
     autofill_profile_edit_table_view_controller_ =
         [[AutofillProfileEditTableViewController alloc]
             initWithDelegate:autofill_profile_edit_mediator_

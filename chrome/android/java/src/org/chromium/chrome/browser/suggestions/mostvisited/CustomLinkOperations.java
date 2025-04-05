@@ -8,7 +8,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.url.GURL;
 
-/** Methods to change and query custom links that exist alongside Most Visited links. */
+/** Methods to access Custom Links, which may exist alongside Most Visited links. */
 @NullMarked
 public interface CustomLinkOperations {
     /**
@@ -42,10 +42,10 @@ public interface CustomLinkOperations {
     boolean deleteCustomLink(GURL keyUrl);
 
     /**
-     * Queries the existence of a custom link identified by {@param keyUrl}.
+     * Tests the existence of a custom link identified by {@param keyUrl}.
      *
-     * @param keyUrl The URL of an existing custom tile to query.
+     * @param keyUrl The URL to search.
      * @return Whether a custom link identified by {@param keyUrl} exists.
      */
-    boolean queryCustomLink(GURL keyUrl);
+    boolean hasCustomLink(GURL keyUrl);
 }

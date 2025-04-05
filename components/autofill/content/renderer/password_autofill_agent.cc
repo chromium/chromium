@@ -792,11 +792,13 @@ bool PasswordAutofillAgent::TextDidChangeInTextField(
 
 // LINT.IfChange
 
-void PasswordAutofillAgent::NotifyPasswordManagerAboutFieldModification(
-    const WebInputElement& element) {
+void PasswordAutofillAgent::NotifyPasswordManagerAboutUserFieldModification(
+    const WebInputElement& element,
+    FieldModificationType modification_type) {
   if (element.FormControlTypeForAutofill() == kInputPassword) {
     auto iter = password_to_username_.find(FieldRef(element));
-    if (iter != password_to_username_.end()) {
+    if ((iter != password_to_username_.end()) &&
+        (modification_type == FieldModificationType::kManualTyping)) {
       // Note that the suggested value of `mutable_element` was reset when its
       // value changed.
       // TODO(crbug.com/41132785): Do this through const WebInputElement.
@@ -839,7 +841,8 @@ void PasswordAutofillAgent::NotifyPasswordManagerAboutFieldModification(
 void PasswordAutofillAgent::UpdatePasswordStateForTextChange(
     const WebInputElement& element,
     const SynchronousFormCache& form_cache) {
-  NotifyPasswordManagerAboutFieldModification(element);
+  NotifyPasswordManagerAboutUserFieldModification(
+      element, FieldModificationType::kManualTyping);
 
   InformBrowserAboutUserInput(element.GetOwningFormForAutofill(), element,
                               form_cache);
@@ -877,7 +880,7 @@ void PasswordAutofillAgent::FillPasswordSuggestion(
   }
   bool success = FillUsernameAndPasswordElements(
       username_element, password_element, username, password,
-      AutofillSuggestionTriggerSource::kUnspecified);
+      AutofillSuggestionTriggerSource::kFormControlElementClicked);
   std::move(callback).Run(success);
 }
 
@@ -1048,6 +1051,28 @@ void PasswordAutofillAgent::DoFillField(WebInputElement input,
   input.SetAutofillValue(WebString::FromUTF16(credential));
   field_data_manager().UpdateFieldDataMap(form_util::GetFieldRendererId(input),
                                           credential, flag);
+
+  switch (flag) {
+    case kAutofilledOnUserTrigger:
+    case kAutofilledPasswordFormFilledViaManualFallback:
+      // Notify password manager when the user is modifying field values by
+      // manually filling the form.
+      NotifyPasswordManagerAboutUserFieldModification(
+          input, FieldModificationType::kFillingOnUserTrigger);
+      break;
+    case kAutofilledOnPageLoad:
+    case kAutofilledChangePasswordFormOnPageLoad:
+      // Autofilling on pageload is not initiated by the user.
+      break;
+    case kNoFlags:
+    case kUserTyped:
+    case kHadFocus:
+    case kErrorOccurred:
+    case kKnownValue:
+    case kAutofilled:
+      NOTREACHED();
+  }
+
   TrackAutofilledElement(input);
 }
 
@@ -1524,7 +1549,7 @@ void PasswordAutofillAgent::ReadyToCommitNavigation(
 }
 
 // mojom::PasswordAutofillAgent:
-void PasswordAutofillAgent::SetPasswordFillData(
+void PasswordAutofillAgent::ApplyFillDataOnParsingCompletion(
     const PasswordFormFillData& form_data) {
   std::unique_ptr<RendererSavePasswordProgressLogger> logger;
   if (logging_state_active_) {
@@ -1569,9 +1594,9 @@ void PasswordAutofillAgent::SetPasswordFillData(
     MaybeTriggerSuggestionsOnFocusedElement(username_element, password_element);
     return;
   }
-  FillUserNameAndPassword(username_element, password_element, form_data,
-                          logger.get(),
-                          form_data.notify_browser_of_successful_filling);
+  FillCredentialsAutomatically(username_element, password_element, form_data,
+                               logger.get(),
+                               form_data.notify_browser_of_successful_filling);
 }
 
 void PasswordAutofillAgent::SetLoggingState(bool active) {
@@ -1900,7 +1925,7 @@ void PasswordAutofillAgent::InformBrowserAboutUserInput(
   }
 }
 
-bool PasswordAutofillAgent::FillUserNameAndPassword(
+bool PasswordAutofillAgent::FillCredentialsAutomatically(
     WebInputElement username_element,
     WebInputElement password_element,
     const PasswordFormFillData& fill_data,
@@ -2009,7 +2034,7 @@ bool PasswordAutofillAgent::FillUserNameAndPassword(
         (username_element.Value().IsEmpty() ||
          username_element.GetAutofillState() != WebAutofillState::kNotFilled ||
          prefilled_placeholder_username)) {
-      AutofillField(username, username_element);
+      FillFieldAutomatically(username, username_element);
       if (prefilled_placeholder_username) {
         LogPrefilledUsernameFillOutcome(
             PrefilledUsernameFillOutcome::
@@ -2021,7 +2046,7 @@ bool PasswordAutofillAgent::FillUserNameAndPassword(
   }
 
   if (!is_single_username_fill) {
-    AutofillField(password, password_element);
+    FillFieldAutomatically(password, password_element);
     if (logger)
       logger->LogElementName(Logger::STRING_PASSWORD_FILLED, password_element);
   }
@@ -2309,8 +2334,8 @@ void PasswordAutofillAgent::TryFixAutofilledForm(
   }
 }
 
-void PasswordAutofillAgent::AutofillField(const std::u16string& value,
-                                          WebInputElement field) {
+void PasswordAutofillAgent::FillFieldAutomatically(const std::u16string& value,
+                                                   WebInputElement field) {
   CHECK(field);
   // Do not autofill on load fields that have any user typed input.
   const FieldRendererId field_id = form_util::GetFieldRendererId(field);

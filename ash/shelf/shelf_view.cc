@@ -45,6 +45,7 @@
 #include "ash/user_education/user_education_class_properties.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/mru_window_tracker.h"
+#include "ash/wm/window_pin_util.h"
 #include "ash/wm/window_util.h"
 #include "base/auto_reset.h"
 #include "base/check_op.h"
@@ -61,6 +62,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/timer/timer.h"
+#include "chromeos/ui/base/window_pin_type.h"
 #include "chromeos/utils/haptics_util.h"
 #include "components/account_id/account_id.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
@@ -2525,6 +2527,16 @@ void ShelfView::OnShelfAlignmentChanged(aura::Window* root_window,
     view_model_->view_at(visible_index)->DeprecatedLayoutImmediately();
 
   AnnounceShelfAlignment();
+}
+
+void ShelfView::OnPinnedStateChanged(aura::Window* pinned_window) {
+  // Close context menus in locked fullscreen mode to prevent users from exiting
+  // this mode.
+  if ((GetWindowPinType(pinned_window) ==
+       chromeos::WindowPinType::kTrustedPinned) &&
+      IsShowingMenu()) {
+    shelf_menu_model_adapter_->Cancel();
+  }
 }
 
 void ShelfView::OnShelfAutoHideBehaviorChanged() {

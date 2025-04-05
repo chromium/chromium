@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
@@ -14,6 +15,10 @@
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
 #include "chrome/updater/updater_scope.h"
+
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+#endif
 
 namespace base {
 class FilePath;
@@ -34,17 +39,20 @@ class UsageStatsProvider {
   // have usage stats enabled. This information is stored in the registry on
   // Windows, and in a crashpad database found in the `ApplicationSupport`
   // directory on MacOS.
-  virtual bool AnyAppEnablesUsageStats(UpdaterScope scope) = 0;
-  static std::unique_ptr<UsageStatsProvider> Create();
+  virtual bool AnyAppEnablesUsageStats() = 0;
+
+  static std::unique_ptr<UsageStatsProvider> Create(UpdaterScope scope);
 
  private:
+  friend class UpdateUsageStatsTaskTest;
+
 #if BUILDFLAG(IS_WIN)
   static std::unique_ptr<UsageStatsProvider> Create(
-      const std::wstring& system_key,
-      const std::wstring& user_key);
+      HKEY hive,
+      std::vector<std::wstring> registry_paths);
 #elif BUILDFLAG(IS_MAC)
   static std::unique_ptr<UsageStatsProvider> Create(
-      const base::FilePath& app_directory);
+      std::vector<base::FilePath> app_directories);
 #endif
 };
 

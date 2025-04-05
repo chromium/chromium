@@ -517,6 +517,9 @@ class CONTENT_EXPORT WebContentsObserver : public base::CheckedObserver {
   // Called when a network request issued by the navigation reads or sets a
   // cookie. If a notification is received after the navigation has committed,
   // it will be attributed to the RenderFrameHost created by the navigation.
+  // This method not only includes accesses from the navigation's
+  // request/response, but also accesses from other requests/responses triggered
+  // by the navigation e.g. early hints requests.
   virtual void OnCookiesAccessed(NavigationHandle* navigation_handle,
                                  const CookieAccessDetails& details) {}
 

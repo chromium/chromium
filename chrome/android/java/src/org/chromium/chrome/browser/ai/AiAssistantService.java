@@ -347,6 +347,20 @@ public class AiAssistantService {
         return Duration.ofDays(durationDays).toMillis();
     }
 
+    private boolean shouldDisableForParentalControl() {
+        return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_PAGE_SUMMARY,
+                "disable_for_parent_control",
+                true);
+    }
+
+    private boolean shouldDisableForEnterprise() {
+        return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_PAGE_SUMMARY,
+                "disable_for_enterprise",
+                true);
+    }
+
     private void saveAvailabilityToPrefs() {
         // Don't cache results if system provider is not available.
         if (!mIsInitialized || !mIsSystemAiProviderAvailable) {
@@ -451,8 +465,17 @@ public class AiAssistantService {
                 .getAccountCapabilities(accountInfo)
                 .then(
                         capabilities -> {
-                            shouldEnable.onResult(
-                                    capabilities.isSubjectToParentalControls() == Tribool.FALSE);
+                            boolean enabled = true;
+                            if (shouldDisableForParentalControl()
+                                    && capabilities.isSubjectToParentalControls()
+                                            != Tribool.FALSE) {
+                                enabled = false;
+                            } else if (shouldDisableForEnterprise()
+                                    && capabilities.isSubjectToEnterprisePolicies()
+                                            != Tribool.FALSE) {
+                                enabled = false;
+                            }
+                            shouldEnable.onResult(enabled);
                         });
     }
 

@@ -319,24 +319,20 @@ void ClickView(const views::View* view) {
   event_generator.ClickLeftButton();
 }
 
+void ClickDeskMenuItem(ash::DeskActionContextMenu::CommandId command_id) {
+  // Get the menu option to save the desk as a template and click it.
+  views::MenuItemView* menu_item =
+      ash::DesksTestApi::OpenDeskContextMenuAndGetMenuItem(
+          ash::Shell::GetPrimaryRootWindow(),
+          ash::DeskBarViewBase::Type::kOverview, /*index=*/0u, command_id);
+  ASSERT_TRUE(menu_item);
+  ClickView(menu_item);
+}
+
 // If `wait_for_ui` is true, wait for the callback from the model to update the
 // UI.
-void ClickSaveDeskAsTemplateButton(bool wait_for_ui) {
-  if (ash::features::IsForestFeatureEnabled()) {
-    // Get the menu option to save the desk as a template and click it.
-    views::MenuItemView* menu_item =
-        ash::DesksTestApi::OpenDeskContextMenuAndGetMenuItem(
-            ash::Shell::GetPrimaryRootWindow(),
-            ash::DeskBarViewBase::Type::kOverview, /*index=*/0u,
-            ash::DeskActionContextMenu::CommandId::kSaveAsTemplate);
-    ASSERT_TRUE(menu_item);
-    ClickView(menu_item);
-  } else {
-    const views::Button* save_desk_as_template_button =
-        ash::GetSaveDeskAsTemplateButton();
-    DCHECK(save_desk_as_template_button);
-    ClickView(save_desk_as_template_button);
-  }
+void ClickSaveDeskAsTemplateMenuItem(bool wait_for_ui = true) {
+  ClickDeskMenuItem(ash::DeskActionContextMenu::CommandId::kSaveAsTemplate);
 
   if (wait_for_ui) {
     ash::WaitForSavedDeskUI();
@@ -347,15 +343,8 @@ void ClickSaveDeskAsTemplateButton(bool wait_for_ui) {
   SendKey(ui::VKEY_RETURN);
 }
 
-void ClickSaveDeskAsTemplateButton() {
-  ClickSaveDeskAsTemplateButton(/*wait_for_ui=*/true);
-}
-
-void ClickSaveDeskForLaterButton() {
-  const views::Button* save_desk_for_later_button =
-      ash::GetSaveDeskForLaterButton();
-  DCHECK(save_desk_for_later_button);
-  ClickView(save_desk_for_later_button);
+void ClickSaveDeskForLaterMenuItem() {
+  ClickDeskMenuItem(ash::DeskActionContextMenu::CommandId::kSaveForLater);
 }
 
 void ClickLibraryButton() {
@@ -644,7 +633,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, CaptureBrowserTabGroupsTest) {
   ash::ToggleOverview();
   ash::WaitForOverviewEnterAnimation();
 
-  ClickSaveDeskAsTemplateButton();
+  ClickSaveDeskAsTemplateMenuItem();
 
   std::vector<raw_ptr<const ash::DeskTemplate, VectorExperimental>> templates =
       GetAllEntries();
@@ -680,7 +669,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, CaptureBrowserWithPinnedTabs) {
   ash::ToggleOverview();
   ash::WaitForOverviewEnterAnimation();
 
-  ClickSaveDeskAsTemplateButton();
+  ClickSaveDeskAsTemplateMenuItem();
 
   std::vector<raw_ptr<const ash::DeskTemplate, VectorExperimental>> templates =
       GetAllEntries();
@@ -1111,7 +1100,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest,
   ash::ToggleOverview();
   ash::WaitForOverviewEnterAnimation();
 
-  ClickSaveDeskAsTemplateButton();
+  ClickSaveDeskAsTemplateMenuItem();
 
   ClickFirstTemplateItem();
 
@@ -1155,7 +1144,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchBrowserWithPinnedTabs) {
   ash::ToggleOverview();
   ash::WaitForOverviewEnterAnimation();
 
-  ClickSaveDeskAsTemplateButton();
+  ClickSaveDeskAsTemplateMenuItem();
 
   ClickFirstTemplateItem();
 
@@ -1483,17 +1472,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUIBasic) {
 
   // Note that this button needs at least one window to show up. Browser tests
   // have an existing browser window, so no new window needs to be created.
-  // TODO(http://b/350771229): Remove `if` when Forest is enabled.
-  if (ash::features::IsForestFeatureEnabled()) {
-    ClickSaveDeskAsTemplateButton();
-  } else {
-    const views::Button* save_desk_as_template_button =
-        ash::GetSaveDeskAsTemplateButton();
-    ASSERT_TRUE(save_desk_as_template_button);
-    ClickView(save_desk_as_template_button);
-
-    ash::WaitForSavedDeskUI();
-  }
+  ClickSaveDeskAsTemplateMenuItem();
 
   EXPECT_EQ(1u, desk_model->GetEntryCount());
 
@@ -1529,7 +1508,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUILaunchBrowser) {
   ash::ToggleOverview();
   ash::WaitForOverviewEnterAnimation();
 
-  ClickSaveDeskAsTemplateButton();
+  ClickSaveDeskAsTemplateMenuItem();
 
   ClickFirstTemplateItem();
 
@@ -1574,7 +1553,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUICaptureBrowserUrlsTest) {
   ash::ToggleOverview();
   ash::WaitForOverviewEnterAnimation();
 
-  ClickSaveDeskAsTemplateButton();
+  ClickSaveDeskAsTemplateMenuItem();
 
   std::vector<raw_ptr<const ash::DeskTemplate, VectorExperimental>> templates =
       GetAllEntries();
@@ -1617,7 +1596,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUILaunchSnappedWindow) {
   auto* split_view_controller =
       ash::SplitViewController::Get(window->GetRootWindow());
   ASSERT_FALSE(split_view_controller->IsWindowInSplitView(window));
-  ClickSaveDeskAsTemplateButton();
+  ClickSaveDeskAsTemplateMenuItem();
 
   // Launch our template and then exit overview.
   ClickFirstTemplateItem();
@@ -1725,7 +1704,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUICaptureIncognitoBrowserTest) {
 
   // Incognito browsers are unsupported so a dialog will popup asking users if
   // they are sure.
-  ClickSaveDeskAsTemplateButton(/*wait_for_ui=*/false);
+  ClickSaveDeskAsTemplateMenuItem(/*wait_for_ui=*/false);
   const views::Button* dialog_accept_button =
       ash::GetSavedDeskDialogAcceptButton();
   ASSERT_TRUE(dialog_accept_button);
@@ -1779,7 +1758,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest,
   ash::ToggleOverview();
   ash::WaitForOverviewEnterAnimation();
 
-  ClickSaveDeskAsTemplateButton();
+  ClickSaveDeskAsTemplateMenuItem();
 
   // Exit overview and close the settings window. We'll need to verify if it
   // reopens later.
@@ -1859,7 +1838,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUILaunchTemplateWithSWAExisting) {
   ash::ToggleOverview();
   ash::WaitForOverviewEnterAnimation();
 
-  ClickSaveDeskAsTemplateButton();
+  ClickSaveDeskAsTemplateMenuItem();
 
   // Exit overview and move the settings window to a new place and stack it on
   // top so that we can later verify that it has been placed.
@@ -1963,7 +1942,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUIBrowserWindowRestorationTest) {
   // Capture the active desk, which contains the three browser windows.
   ash::ToggleOverview();
   ash::WaitForOverviewEnterAnimation();
-  ClickSaveDeskAsTemplateButton();
+  ClickSaveDeskAsTemplateMenuItem();
 
   ClickFirstTemplateItem();
 
@@ -2007,7 +1986,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUILaunchTemplateWithPWA) {
   // Capture the active desk, which contains the PWA.
   ash::ToggleOverview();
   ash::WaitForOverviewEnterAnimation();
-  ClickSaveDeskAsTemplateButton();
+  ClickSaveDeskAsTemplateMenuItem();
 
   std::vector<raw_ptr<const ash::DeskTemplate, VectorExperimental>> templates =
       GetAllEntries();
@@ -2053,7 +2032,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest,
   // Capture the active desk, which contains the PWA.
   ash::ToggleOverview();
   ash::WaitForOverviewEnterAnimation();
-  ClickSaveDeskAsTemplateButton();
+  ClickSaveDeskAsTemplateMenuItem();
 
   std::vector<raw_ptr<const ash::DeskTemplate, VectorExperimental>> templates =
       GetAllEntries();
@@ -2102,7 +2081,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest,
   ash::ToggleOverview();
   ash::WaitForOverviewEnterAnimation();
 
-  ClickSaveDeskAsTemplateButton();
+  ClickSaveDeskAsTemplateMenuItem();
 
   std::vector<raw_ptr<const ash::DeskTemplate, VectorExperimental>> templates =
       GetAllEntries();
@@ -2178,7 +2157,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUILaunchTemplateWithChromeApp) {
   ash::ToggleOverview();
   ash::WaitForOverviewEnterAnimation();
 
-  ClickSaveDeskAsTemplateButton();
+  ClickSaveDeskAsTemplateMenuItem();
 
   // Close the chrome app window. We'll need to verify if it reopens later.
   views::Widget* app_widget =
@@ -2224,7 +2203,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest,
   // Save a template.
   ash::ToggleOverview();
   ash::WaitForOverviewEnterAnimation();
-  ClickSaveDeskAsTemplateButton();
+  ClickSaveDeskAsTemplateMenuItem();
 
   // NOTE: there is an existing browser with 1 tab created by BrowserMain().
   // Window count: 2 files app windows + 2 created browsers + 1 existing browser
@@ -2252,7 +2231,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest,
   // Save 3 templates.
   const int saves = 3;
   for (int i = 0; i < saves; i++) {
-    ClickSaveDeskAsTemplateButton();
+    ClickSaveDeskAsTemplateMenuItem();
 
     // Change desk name to avoid duplication on template name. Having duplicate
     // names invokes a workflow that involves showing and accepting the replace
@@ -2294,7 +2273,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest,
   ash::WaitForOverviewExitAnimation();
   ash::ToggleOverview();
   ash::WaitForOverviewEnterAnimation();
-  ClickSaveDeskAsTemplateButton();
+  ClickSaveDeskAsTemplateMenuItem();
 
   // Verify that all template saves and deletes are captured by the histogram.
   histogram_tester.ExpectBucketCount(ash::kUserTemplateCountHistogramName, 1,
@@ -2334,7 +2313,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest,
   ash::ToggleOverview();
   ash::WaitForOverviewEnterAnimation();
 
-  ClickSaveDeskAsTemplateButton();
+  ClickSaveDeskAsTemplateMenuItem();
 
   // Exit overview, close the browser and verify that all browser windows are
   // closed.
@@ -2373,11 +2352,11 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUILaunchMultipleDeskTemplates) {
   ash::ToggleOverview();
   ash::WaitForOverviewEnterAnimation();
 
-  ClickSaveDeskAsTemplateButton();
+  ClickSaveDeskAsTemplateMenuItem();
 
-  // `ClickSaveDeskAsTemplateButton` will take us to the templates grid. For all
-  // subsuquent runs, we enter the templates grid by click the templates button
-  // on the desks bar.
+  // `ClickSaveDeskAsTemplateMenuItem` will take us to the templates grid. For
+  // all subsuquent runs, we enter the templates grid by click the templates
+  // button on the desks bar.
   bool first_run = true;
   auto check_launch_template_desk_name =
       [kDeskUuid, &first_run](const std::u16string& desk_name) {
@@ -2429,7 +2408,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest,
   // Save a template.
   ash::ToggleOverview();
   ash::WaitForOverviewEnterAnimation();
-  ClickSaveDeskAsTemplateButton();
+  ClickSaveDeskAsTemplateMenuItem();
 
   const int launches = 5;
   for (int i = 0; i < launches; i++) {
@@ -2457,7 +2436,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateRecordsLoadTimeMetric) {
   // Save and launch a template.
   ash::ToggleOverview();
   ash::WaitForOverviewEnterAnimation();
-  ClickSaveDeskAsTemplateButton();
+  ClickSaveDeskAsTemplateMenuItem();
   ClickFirstTemplateItem();
 
   // Verify that the metric was recorded.
@@ -2520,7 +2499,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest,
   ash::ToggleOverview();
   ash::WaitForOverviewEnterAnimation();
 
-  ClickSaveDeskAsTemplateButton();
+  ClickSaveDeskAsTemplateMenuItem();
 
   ash::DesksController* desks_controller = ash::DesksController::Get();
   const auto& desks = desks_controller->desks();
@@ -2537,17 +2516,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest,
   ASSERT_TRUE(desks_controller->active_desk()->ContainsAppWindows());
 
   // Now save the desk. This should close the desk.
-  auto* overview_grid = ash::GetOverviewSession()->GetGridWithRootWindow(
-      ash::Shell::GetPrimaryRootWindow());
-  ASSERT_TRUE(overview_grid);
-  auto* save_desk_button =
-      ash::OverviewGridTestApi(overview_grid).GetSaveDeskForLaterButton();
-  ASSERT_TRUE(save_desk_button);
-
-  // Wait for the bounds to finish animating.
-  ash::ShellTestApi().WaitForWindowFinishAnimating(
-      save_desk_button->GetWidget()->GetNativeWindow());
-  ClickView(save_desk_button);
+  ClickSaveDeskForLaterMenuItem();
   ash::WaitForSavedDeskUI();
 
   // Wait for the browser to close.
@@ -3003,20 +2972,13 @@ using SaveAndRecallBrowserTest = DesksClientTest;
 
 IN_PROC_BROWSER_TEST_F(SaveAndRecallBrowserTest,
                        SystemUIBlockingDialogAccepted) {
-  // TODO(http://b/350771229): This test tests clicking the "Save desk for
-  // later" button that will not be shown if the feature is enabled. This test
-  // will be fixed before the button change is no longer hidden behind the flag.
-  if (ash::features::IsForestFeatureEnabled()) {
-    GTEST_SKIP() << "Skipping test body for saved desk revamp feature.";
-  }
-
   SetupBrowserToConfirmClose(browser());
 
   // We'll now save the desk as Save & Recall. After saving desks, this
   // operation will try to automatically close windows.
   ash::ToggleOverview();
   ash::WaitForOverviewEnterAnimation();
-  ClickSaveDeskForLaterButton();
+  ClickSaveDeskForLaterMenuItem();
   ash::WaitForSavedDeskUI();
 
   ash::SavedDeskPresenterTestApi::WaitForSaveAndRecallBlockingDialog();
@@ -3042,18 +3004,11 @@ IN_PROC_BROWSER_TEST_F(SaveAndRecallBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SaveAndRecallBrowserTest,
                        SystemUIBlockingDialogRejected) {
-  // TODO(http://b/350771229): This test tests clicking the "Save desk for
-  // later" button that will not be shown if the feature is enabled. This test
-  // will be fixed before the button change is no longer hidden behind the flag.
-  if (ash::features::IsForestFeatureEnabled()) {
-    GTEST_SKIP() << "Skipping test body for saved desk revamp feature.";
-  }
-
   SetupBrowserToConfirmClose(browser());
 
   ash::ToggleOverview();
   ash::WaitForOverviewEnterAnimation();
-  ClickSaveDeskForLaterButton();
+  ClickSaveDeskForLaterMenuItem();
   ash::WaitForSavedDeskUI();
 
   ash::SavedDeskPresenterTestApi::WaitForSaveAndRecallBlockingDialog();
@@ -3103,7 +3058,7 @@ IN_PROC_BROWSER_TEST_F(SnapGroupDesksClientTest, DesksTemplates) {
   ash::ToggleOverview();
   ash::WaitForOverviewEnterAnimation();
 
-  ClickSaveDeskAsTemplateButton();
+  ClickSaveDeskAsTemplateMenuItem();
 
   // Launch the template.
   ClickFirstTemplateItem();
@@ -3201,7 +3156,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientArcTest,
   ash::ToggleOverview();
   ash::WaitForOverviewEnterAnimation();
 
-  ClickSaveDeskAsTemplateButton();
+  ClickSaveDeskAsTemplateMenuItem();
   ASSERT_EQ(1u, desk_model->GetEntryCount());
 
   // Exit overview and close the Arc window. We'll need to verify if it

@@ -697,8 +697,13 @@ AttributionManagerImpl::AttributionManagerImpl(
   DCHECK(report_sender_);
   DCHECK(os_level_manager_);
 
-  scheduler_timer_ = std::make_unique<ReportSchedulerTimer>(
-      std::make_unique<ReportScheduler>(weak_factory_.GetWeakPtr()));
+  scheduler_timer_ =
+      base::FeatureList::IsEnabled(kAttributionReportDeliveryOnNewNavigation)
+          ? std::make_unique<ReportSchedulerTimer>(
+                std::make_unique<ReportScheduler>(weak_factory_.GetWeakPtr()),
+                kAttributionReportingNavigationForReportDeliveryWindow.Get())
+          : std::make_unique<ReportSchedulerTimer>(
+                std::make_unique<ReportScheduler>(weak_factory_.GetWeakPtr()));
 }
 
 AttributionManagerImpl::~AttributionManagerImpl() {
@@ -1095,6 +1100,7 @@ void AttributionManagerImpl::RemoveAttributionDataByDataKey(
 void AttributionManagerImpl::UpdateLastNavigationTime(
     base::Time navigation_time) {
   last_navigation_time_ = navigation_time;
+  scheduler_timer_->OnNewNavigation();
 }
 
 void AttributionManagerImpl::GetReportsToSend() {

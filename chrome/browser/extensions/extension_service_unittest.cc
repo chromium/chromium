@@ -736,7 +736,7 @@ class ExtensionServiceTest : public ExtensionServiceTestWithInstall {
     EXPECT_FALSE(IsBlocked(extension_id));
 
     // Block the extensions.
-    service()->BlockAllExtensions();
+    registrar()->BlockAllExtensions();
     task_environment()->RunUntilIdle();
 
     if (should_block)
@@ -744,7 +744,7 @@ class ExtensionServiceTest : public ExtensionServiceTestWithInstall {
     else
       ASSERT_FALSE(IsBlocked(extension_id));
 
-    service()->UnblockAllExtensions();
+    registrar()->UnblockAllExtensions();
     task_environment()->RunUntilIdle();
 
     ASSERT_FALSE(IsBlocked(extension_id));
@@ -4066,7 +4066,7 @@ TEST_F(ExtensionServiceTest, BlockAndUnblockBlocklistedExtension) {
   AssertExtensionBlocksAndUnblocks(false, good0);
   AssertExtensionBlocksAndUnblocks(false, good1);
 
-  service()->BlockAllExtensions();
+  registrar()->BlockAllExtensions();
 
   // Remove an extension from the blocklist while the service is blocked.
   test_blocklist.SetBlocklistState(good0, NOT_BLOCKLISTED, true);
@@ -4119,7 +4119,7 @@ TEST_F(ExtensionServiceTest, BlockAndUnblockTheme) {
 TEST_F(ExtensionServiceTest, WillNotLoadExtensionsWhenBlocked) {
   InitializeGoodInstalledExtensionService();
 
-  service()->BlockAllExtensions();
+  registrar()->BlockAllExtensions();
 
   service()->Init();
 
@@ -4132,7 +4132,7 @@ TEST_F(ExtensionServiceTest, WillNotLoadExtensionsWhenBlocked) {
 TEST_F(ExtensionServiceTest, IsEnabledExtensionBlockedAndNotInstalled) {
   InitializeEmptyExtensionService();
 
-  service()->BlockAllExtensions();
+  registrar()->BlockAllExtensions();
 
   registrar()->IsExtensionEnabled(theme_crx);
 }
@@ -4322,7 +4322,7 @@ TEST_F(ExtensionServiceTest, NonCWSForceInstalledDisabledOnNonDomainJoin) {
   scoped_refptr<const Extension> extension =
       CreateExtension("policy_installed", data_dir().AppendASCII("good.crx"),
                       ManifestLocation::kExternalPolicyDownload);
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension);
 
   {
     ManagementPrefUpdater pref(profile_->GetTestingPrefService());
@@ -4350,7 +4350,7 @@ TEST_F(ExtensionServiceTest, NonCWSForceInstalledEnabledOnDomainJoin) {
   scoped_refptr<const Extension> extension =
       CreateExtension("policy_installed", data_dir().AppendASCII("good.crx"),
                       ManifestLocation::kExternalPolicyDownload);
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension);
 
   {
     ManagementPrefUpdater pref(profile_->GetTestingPrefService());
@@ -5943,6 +5943,7 @@ TEST_F(ExtensionServiceTest, WillNotLoadFromCommandLineForESBUsers) {
 
 // Tests --load-extension works for non-ESB users.
 TEST_F(ExtensionServiceTest, LoadsFromCommandLineForNonESBUsers) {
+  base::HistogramTester histograms;
   InitializeEmptyExtensionServiceWithTestingPrefs();
   // Disable ESB.
   profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, false);
@@ -5957,6 +5958,9 @@ TEST_F(ExtensionServiceTest, LoadsFromCommandLineForNonESBUsers) {
   EXPECT_EQ(0u, GetErrors().size());
   ASSERT_EQ(1u, loaded_extensions().size());
   ValidatePrefKeyCount(1);
+
+  histograms.ExpectUniqueSample("Extensions.LoadingFromCommandLineBlocked",
+                                false, 1);
 }
 
 // Tests that --load-extension is ignored for users with policy
@@ -5994,6 +5998,33 @@ TEST_F(ExtensionServiceTest, LoadsFromCommandLineForUsersWithoutPolicy) {
   EXPECT_EQ(0u, GetErrors().size());
   ASSERT_EQ(1u, loaded_extensions().size());
   ValidatePrefKeyCount(1);
+}
+
+TEST_F(ExtensionServiceTest, DisableLoadExtensionCommandLineSwitch) {
+  base::HistogramTester histograms;
+  base::test::ScopedFeatureList feature_list(
+      /*enable_feature=*/extensions_features::
+          kDisableLoadExtensionCommandLineSwitch);
+  InitializeEmptyExtensionServiceWithTestingPrefs();
+
+  // Try to load an extension from command line.
+  base::FilePath path =
+      base::MakeAbsoluteFilePath(data_dir().AppendASCII("good_unpacked"));
+  base::CommandLine::ForCurrentProcess()->AppendSwitchPath(
+      switches::kLoadExtension, path);
+  service()->Init();
+
+  ExtensionSystem* extension_system = ExtensionSystem::Get(profile());
+  // Wait until the extension system is ready.
+  base::RunLoop run_loop;
+  extension_system->ready().Post(FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+
+  ASSERT_EQ(0u, loaded_extensions().size());
+  ValidatePrefKeyCount(0);
+
+  histograms.ExpectUniqueSample("Extensions.LoadingFromCommandLineBlocked",
+                                true, 1);
 }
 
 // Tests that we generate IDs when they are not specified in the manifest for
@@ -7422,7 +7453,7 @@ TEST_F(ExtensionServiceTest, BlockedExternalExtension) {
   external_install_manager()->UpdateExternalExtensionAlert();
   EXPECT_FALSE(HasExternalInstallErrors(profile()));
 
-  service()->BlockAllExtensions();
+  registrar()->BlockAllExtensions();
 
   provider->UpdateOrAddExtension(page_action, "1.0.0.0",
                                  data_dir().AppendASCII("page_action.crx"));
@@ -7430,7 +7461,7 @@ TEST_F(ExtensionServiceTest, BlockedExternalExtension) {
   WaitForInstallationAttemptToComplete(page_action);
   EXPECT_FALSE(HasExternalInstallErrors(profile()));
 
-  service()->UnblockAllExtensions();
+  registrar()->UnblockAllExtensions();
   EXPECT_TRUE(HasExternalInstallErrors(profile()));
 }
 
@@ -7510,7 +7541,7 @@ TEST_F(ExtensionServiceTest, DisablingComponentExtensions) {
       "external_component_extension",
       base::FilePath(FILE_PATH_LITERAL("//external_component_extension")),
       ManifestLocation::kExternalComponent);
-  service_->AddExtension(external_component_extension.get());
+  registrar()->AddExtension(external_component_extension);
   EXPECT_TRUE(registry()->enabled_extensions().Contains(
       external_component_extension->id()));
   service_->DisableExtension(external_component_extension->id(),
@@ -7522,7 +7553,7 @@ TEST_F(ExtensionServiceTest, DisablingComponentExtensions) {
       "component_extension",
       base::FilePath(FILE_PATH_LITERAL("//component_extension")),
       ManifestLocation::kComponent);
-  service_->AddExtension(component_extension.get());
+  registrar()->AddExtension(component_extension);
   EXPECT_TRUE(
       registry()->enabled_extensions().Contains(component_extension->id()));
   service_->DisableExtension(component_extension->id(),
@@ -8495,7 +8526,7 @@ TEST_F(ExtensionServiceTest, PluginManagerCrash) {
 
   // crbug.com/708230: This will cause OnExtensionUnloaded to be called
   // redundantly for a disabled extension.
-  service()->BlockAllExtensions();
+  registrar()->BlockAllExtensions();
 }
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 
@@ -8517,7 +8548,7 @@ TEST_F(ExtensionServiceTest, BlockDisabledExtensionNotification) {
   registry()->AddObserver(&observer);
 
   // Block the extension
-  service()->BlockAllExtensions();
+  registrar()->BlockAllExtensions();
 
   // Check that we didn't get unloading notification
   EXPECT_EQ(std::string(), observer.last_extension_unloaded);

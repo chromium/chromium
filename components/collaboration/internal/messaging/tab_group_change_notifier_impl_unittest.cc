@@ -114,6 +114,9 @@ class MockTabGroupChangeNotifierObserver
               OnTabSelectionChanged,
               (const tab_groups::LocalTabID&, bool));
   MOCK_METHOD(void,
+              OnTabLastSeenTimeChanged,
+              (const base::Uuid& tab_id, tab_groups::TriggerSource source));
+  MOCK_METHOD(void,
               OnTabGroupOpened,
               (const tab_groups::SavedTabGroup& tab_group));
   MOCK_METHOD(void,

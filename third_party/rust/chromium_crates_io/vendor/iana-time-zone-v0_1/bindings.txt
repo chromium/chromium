@@ -1,16 +1,4 @@
---out src/Windows.rs
+--out src/windows_bindings.rs
 
 --filter
     Windows.Globalization.Calendar
-
-    # Dependencies of the above
-    Windows.Foundation.Collections.IIterable
-    Windows.Foundation.Collections.IIterator
-    Windows.Foundation.Collections.IVectorView
-    Windows.Foundation.DateTime
-    Windows.Foundation.TimeSpan
-    Windows.Globalization.DayOfWeek
-    Windows.Globalization.ICalendar
-    Windows.Globalization.ICalendarFactory
-    Windows.Globalization.ICalendarFactory2
-    Windows.Globalization.ITimeZoneOnCalendar

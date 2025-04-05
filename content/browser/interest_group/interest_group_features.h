@@ -36,6 +36,9 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgeFacilitatedTestingSignalsHeaders);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kFledgeModifyInterestGroupPolicyCheckOnOwner);
 
+CONTENT_EXPORT BASE_DECLARE_FEATURE(
+    kFledgeOnlyUseIpAddressSpaceInClientSecurityState);
+
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgeQueryKAnonymity);
 
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgeSendDebugReportCooldownsToBandA);

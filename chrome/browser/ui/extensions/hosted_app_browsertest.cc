@@ -182,14 +182,6 @@ bool TryToLoadImage(const content::ToRenderFrameHost& adapter,
   return content::EvalJs(adapter, script).ExtractBool();
 }
 
-// On Lacros, due to the wayland async UI flow, when a test switches between
-// multiple active browsers, BrowserList::GetLastActive() may not return
-// the right browser due to the race. See details in b/325634285.
-// However, ui_test_utils::WaitUntilBrowserBecomeActive works reliably by using
-// WidgetActivationWaiter to wait for the browser widget to become active.
-// Therefore, we use different approach to wait and verify the expected browser
-// to become the active or last active browser in test.
-
 // TODO(b/342491793): On Mac, the expected browser window (to be activated) is
 // occasionally deactivated after being activated. So the test will fail
 // (correctly) and become flaky if we use WidgetActivationWaiter to wait for the

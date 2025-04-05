@@ -368,15 +368,6 @@ chromium-metrics-reviews@google.com.
   <summary>Specified DevTools panel was shown.</summary>
 </histogram>
 
-<histogram name="DevTools.PanelShownInLocation"
-    enum="DevToolsPanelWithLocation" expires_after="2025-05-11">
-  <owner>bmeurer@google.com</owner>
-  <owner>ergunsh@google.com</owner>
-  <summary>
-    Specified DevTools panel was shown in the specified location: Main or Drawer
-  </summary>
-</histogram>
-
 <histogram name="DevTools.RecordingAssertion" enum="DevToolsRecordingAssertion"
     expires_after="2026-03-01">
   <owner>alexrudenko@google.com</owner>

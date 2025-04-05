@@ -10,7 +10,6 @@
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/child_process_host.h"
-#include "third_party/blink/public/common/features.h"
 
 namespace content {
 
@@ -56,8 +55,6 @@ void WorkerOrWorkletDevToolsAgentHost::ChildWorkerCreated(
     const GURL& url,
     const std::string& name,
     base::OnceCallback<void(DevToolsAgentHostImpl*)> callback) {
-  DCHECK(base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker));
-
   url_ = url;
   name_ = name;
   destroyed_callback_ = std::move(callback);

@@ -207,6 +207,10 @@ struct GenerateOptions {
   uint32? top_k;
   // Deprecated: use SessionParams.temperature instead.
   float? temperature;
+
+  // A JSON schema defining structured output requirements for the response.
+  // Passed as an opaque JSON blob to llguidance.
+  [MinVersion=1] string? response_json_schema;
 };
 
 // A session for a model that allows adding context and then executing an input

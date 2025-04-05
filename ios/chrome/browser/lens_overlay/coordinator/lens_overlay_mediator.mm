@@ -239,15 +239,15 @@ typedef NS_ENUM(NSUInteger, LensOverlayFilterState) {
       // bottom sheet hidden, as no auto selection happens at this stage.
       [self.lensHandler resetSelectionAreaToInitialPosition:^{
       }];
-      [self.presentationDelegate hideBottomSheet];
+      [self.presentationDelegate
+          showInfoMessage:LensOverlayBottomSheetInfoMessageType::
+                              kImageTranslatedIndication];
     } else if (noSelectionInTranslate) {
       // A missing selection without a switch in modes indicates the user
       // intended to dismiss the current selection.
-      [self.presentationDelegate hideBottomSheet];
-    } else if (switchToSelection || willUseTranslate) {
-      // When transitioning to selection the bottom sheet might be hidden. As
-      // auto selection might be on we need to restore it if hidden.
-      [self.presentationDelegate revealBottomSheetIfHidden];
+      [self.presentationDelegate
+          showInfoMessage:LensOverlayBottomSheetInfoMessageType::
+                              kImageTranslatedIndication];
     }
   }
 
@@ -258,8 +258,22 @@ typedef NS_ENUM(NSUInteger, LensOverlayFilterState) {
 
 // The lens overlay search request produced an error.
 - (void)lensOverlayDidReceiveError:(id<ChromeLensOverlay>)lensOverlay {
-  [self.resultConsumer handleSearchRequestErrored];
+  __weak id<LensOverlayResultConsumer> weakResultConsumer = self.resultConsumer;
+  auto completion = ^{
+    [weakResultConsumer handleSearchRequestErrored];
+  };
   [self.toolbarConsumer setOmniboxEnabled:YES];
+  // Make sure the bottom sheet is dismissed before triggering any alert.
+  if (self.presentationDelegate) {
+    [self.presentationDelegate hideBottomSheetWithCompletion:completion];
+  } else {
+    completion();
+  }
+}
+
+- (void)lensOverlayDidFailDetectingTranslatableText:
+    (id<ChromeLensOverlay>)lensOverlay {
+  [_delegate lensOverlayMediatorDidFailDetectingTranslatableText];
 }
 
 // The lens overlay search request produced a valid result.

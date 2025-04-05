@@ -458,7 +458,6 @@
 <translation id="3084958266922136097">Desactiva l'estalvi de pantalla</translation>
 <translation id="3091839911843451378">Error: s'ha aturat</translation>
 <translation id="3102119246920354026">Memòria cau</translation>
-<translation id="3112413615003385433">El teu professor ha suprimit contingut de School Tools</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">piscines</translation>
 <translation id="3122883569442693641">Més detalls</translation>
@@ -539,7 +538,6 @@
 <translation id="3488065109653206955">Activat parcialment</translation>
 <translation id="3492882532495507361">Oficina <ph name="OFFICE_STYLE" /> amb tons <ph name="OFFICE_COLOR" /></translation>
 <translation id="3493187369049186498">El Chromebook mesura les dades. És possible que no coincideixin amb les dades del proveïdor.</translation>
-<translation id="349570724365779960">School Tools està connectat als alumnes</translation>
 <translation id="3502426834823382181">mostra totes les aplicacions</translation>
 <translation id="3510890413042482857">Envia <ph name="BEGIN_LINK1" />dades de traça del rendiment<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Actualitz. ChromeOS</translation>
@@ -547,7 +545,6 @@
 <translation id="353214771040290298">Edició finalitzada</translation>
 <translation id="3532980081107202182">Queden aproximadament <ph name="MIN_REMAINING" /> minuts</translation>
 <translation id="3533790840489634638">piscina</translation>
-<translation id="3535802910192338629">El teu professor ha afegit contingut nou a School Tools</translation>
 <translation id="3547264467365135390">Fórmula</translation>
 <translation id="3557205324756024651">Identitat local (opcional)</translation>
 <translation id="3565064564551103223">IP permeses</translation>
@@ -1235,6 +1232,7 @@
 <translation id="6657240842932274095">Vols permetre que els serveis del sistema utilitzin la teva ubicació?</translation>
 <translation id="6657585470893396449">Contrasenya</translation>
 <translation id="66621959568103627">rosa coral</translation>
+<translation id="6669485505082792176">Ara mateix no es poden crear imatges d'això. Prova de reformular la descripció. Tingues en compte que no pots crear imatges de persones ni de contingut perjudicial o explícit. <ph name="BEGIN_LINK_LEARN_MORE" />Més informació<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6673898378497337661">augmenta la brillantor del teclat</translation>
 <translation id="6692996468359469499">Obtén informació relacionada amb la teva selecció</translation>
 <translation id="6694534975463174713">cadenat</translation>
@@ -1440,7 +1438,6 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="7544853251252956727">Aleatori</translation>
 <translation id="7550715992156305117">Rutines de diagnòstic</translation>
 <translation id="7551123448725492271">El dispositiu és un dispositiu d'àudio.</translation>
-<translation id="7553913964854052228">School Tools està utilitzant el teu micròfon</translation>
 <translation id="7559239713112547082">Previsualitza la captura de pantalla</translation>
 <translation id="7561454561030345039">El teu administrador gestiona aquesta acció</translation>
 <translation id="7561759921596375678">Activa el volum</translation>
@@ -1663,7 +1660,6 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="8576249514688522074">No s'ha inicialitzat</translation>
 <translation id="8584654835905316966">Cal reiniciar l'ordinador per acabar d'instal·lar el microprogramari per a <ph name="DEVICE_NAME" /> amb la versió <ph name="VERSION" />. És possible que sembli que l'ordinador es reinicia diverses vegades. És el comportament previst.</translation>
 <translation id="8593058461203131755">posa en pausa el contingut multimèdia</translation>
-<translation id="8619169570378509764">School Tools</translation>
 <translation id="8620617069779373398">Estat d'itinerància</translation>
 <translation id="8626489604350149811">Més accions per a <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Porpra clar</translation>

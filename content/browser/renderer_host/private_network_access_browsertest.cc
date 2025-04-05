@@ -40,7 +40,6 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -576,7 +575,6 @@ class PrivateNetworkAccessBrowserTest
   PrivateNetworkAccessBrowserTest()
       : PrivateNetworkAccessBrowserTestBase(
             {
-                blink::features::kPlzDedicatedWorker,
                 features::kBlockInsecurePrivateNetworkRequests,
                 features::kPrivateNetworkAccessSendPreflights,
             },
@@ -601,13 +599,11 @@ class PrivateNetworkAccessSandboxedDataBrowserTest
   PrivateNetworkAccessSandboxedDataBrowserTest()
       : PrivateNetworkAccessBrowserTestBase(
             GetParam() ? FeatureVec({
-                             blink::features::kPlzDedicatedWorker,
                              features::kBlockInsecurePrivateNetworkRequests,
                              features::kPrivateNetworkAccessSendPreflights,
                              features::kOriginKeyedProcessesByDefault,
                          })
                        : FeatureVec({
-                             blink::features::kPlzDedicatedWorker,
                              features::kBlockInsecurePrivateNetworkRequests,
                              features::kPrivateNetworkAccessSendPreflights,
                          }),

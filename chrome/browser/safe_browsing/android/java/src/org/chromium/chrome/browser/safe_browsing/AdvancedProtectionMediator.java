@@ -49,7 +49,9 @@ public class AdvancedProtectionMediator implements OsAdditionalSecurityPermissio
         }
 
         updatePref(provider);
-        enqueueMessage(provider);
+        if (provider.isAdvancedProtectionRequestedByOs()) {
+            enqueueMessage(provider);
+        }
         return true;
     }
 
@@ -59,7 +61,9 @@ public class AdvancedProtectionMediator implements OsAdditionalSecurityPermissio
         if (provider == null) return;
 
         updatePref(provider);
-        enqueueMessage(provider);
+        if (provider.isAdvancedProtectionRequestedByOs()) {
+            enqueueMessage(provider);
+        }
     }
 
     private void enqueueMessage(@NonNull OsAdditionalSecurityPermissionProvider provider) {

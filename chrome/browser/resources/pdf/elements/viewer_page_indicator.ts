@@ -37,8 +37,8 @@ export class ViewerPageIndicatorElement extends CrLitElement {
     };
   }
 
-  index: number = 0;
-  pageLabels: number[]|null = null;
+  accessor index: number = 0;
+  accessor pageLabels: number[]|null = null;
   private timerId_?: number;
   private viewport_: Viewport|null = null;
 

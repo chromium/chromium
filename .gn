@@ -148,7 +148,7 @@ no_check_targets = [
 
 exec_script_allowlist =
     build_dotfile_settings.exec_script_allowlist +
-    angle_dotfile_settings.exec_script_whitelist +
+    angle_dotfile_settings.exec_script_allowlist +
     [
       # Allowlist entries for //build should go into
       # //build/dotfile_settings.gni instead, so that they can be shared

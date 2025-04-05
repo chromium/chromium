@@ -124,22 +124,19 @@ const base::FeatureParam<std::string> kBoardingPassDetectorUrlParam(
 BASE_FEATURE(kBorealis, "Borealis", base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+#if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 BASE_FEATURE(kEnableCertManagementUIV2,
              "EnableCertManagementUIV2",
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableCertManagementUIV2Write,
              "EnableCertManagementUIV2Write",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableCertManagementUIV2EditCerts,
              "EnableCertManagementUIV2EditCerts",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
 // Enable project Crostini, Linux VMs on Chrome OS.
@@ -314,6 +311,12 @@ BASE_FEATURE(kGlicActor, "GlicActor", base::FEATURE_DISABLED_BY_DEFAULT);
 // Controls whether the Glic feature is always detached.
 BASE_FEATURE(kGlicDetached, "GlicDetached", base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Controls whether the Glic feature's z order changes based on the webclient
+// mode.
+BASE_FEATURE(kGlicZOrderChanges,
+             "GlicZOrderChanges",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Whether to sync @google.com account cookies. This is only for development and
 // testing.
 BASE_FEATURE(kGlicDevelopmentSyncGoogleCookies,
@@ -341,9 +344,6 @@ const base::FeatureParam<int> kGlicInitialWidth{&kGlic, "glic-initial-width",
                                                 352};
 const base::FeatureParam<int> kGlicInitialHeight{&kGlic, "glic-initial-height",
                                                  48};
-
-const base::FeatureParam<int> kGlicMaxHeightPercentOfScreen{
-    &kGlic, "glic-max-height-percent-of-screen", 60};
 
 const base::FeatureParam<int> kGlicFreInitialWidth{
     &kGlic, "glic-fre-initial-width", 512};
@@ -1328,7 +1328,7 @@ BASE_FEATURE(kSkyVaultV2, "SkyVaultV2", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the SkyVault V3 changes, which improve the resilience of file uploads
 // and error handling.
-BASE_FEATURE(kSkyVaultV3, "SkyVaultV3", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSkyVaultV3, "SkyVaultV3", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables SmartDim on Chrome OS.
 BASE_FEATURE(kSmartDim, "SmartDim", base::FEATURE_DISABLED_BY_DEFAULT);

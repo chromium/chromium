@@ -52,6 +52,12 @@ URLLoaderContextForTests::GetDeviceBoundSessionAccessObserver() const {
   return nullptr;
 }
 
+scoped_refptr<RefCountedDeviceBoundSessionAccessObserverRemote>
+URLLoaderContextForTests::GetDeviceBoundSessionAccessObserverSharedRemote()
+    const {
+  return nullptr;
+}
+
 mojom::NetworkContextClient* URLLoaderContextForTests::GetNetworkContextClient()
     const {
   return network_context_client_;

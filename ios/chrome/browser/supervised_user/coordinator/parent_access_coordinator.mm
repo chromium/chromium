@@ -157,7 +157,8 @@
 
 #pragma mark - ParentAccessBottomSheetViewControllerPresentationDelegate
 
-- (void)closeButtonTapped:(ParentAccessBottomSheetViewController*)controller {
+- (void)closeBottomSheetRequested:
+    (ParentAccessBottomSheetViewController*)controller {
   [self hideParentAccessBottomSheetWithResult:supervised_user::
                                                   LocalApprovalResult::kCanceled
                                     errorType:std::nullopt];

@@ -81,14 +81,6 @@ bool IsBlockedUrlInterstitialBeingShown(content::WebContents* content) {
 class SupervisedUserPendingStateNavigationTest
     : public MixinBasedInProcessBrowserTest {
  public:
-  SupervisedUserPendingStateNavigationTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {supervised_user::kUncredentialedFilteringFallbackForSupervisedUsers,
-         supervised_user::kForceSupervisedUserReauthenticationForYouTube},
-        /*disabled_features=*/{});
-  }
-
  protected:
   void PreRunTestOnMainThread() override {
     InProcessBrowserTest::PreRunTestOnMainThread();
@@ -246,7 +238,8 @@ class SupervisedUserPendingStateNavigationTest
 
  private:
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      supervised_user::kUncredentialedFilteringFallbackForSupervisedUsers};
 };
 
 // Tests the blocked site main frame re-authentication interstitial.

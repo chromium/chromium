@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <variant>
 
 #include "base/containers/circular_deque.h"
@@ -112,7 +113,7 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   static bool IsGuest(content::FrameTreeNodeId frame_tree_node_id);
 
   // Returns the name of the derived type of this GuestView.
-  virtual const char* GetViewType() const = 0;
+  virtual std::string_view GetViewType() const = 0;
 
   // This method queries whether autosize is supported for this particular view.
   // By default, autosize is not supported. Derived classes can override this

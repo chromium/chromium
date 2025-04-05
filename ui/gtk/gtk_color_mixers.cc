@@ -73,8 +73,7 @@ void AddGtkNativeColorMixer(ui::ColorProvider* provider,
   mixer[ui::kColorPrimaryBackground] = {primary_bg};
   mixer[ui::kColorPrimaryForeground] = {label_fg};
   mixer[ui::kColorSecondaryForeground] = {label_fg_disabled};
-  mixer[ui::kColorTextSelectionBackground] = {
-      GetSelectionBgColor("label selection")};
+  mixer[ui::kColorTextSelectionBackground] = {GetBgColor("label selection")};
   mixer[ui::kColorTextSelectionForeground] = {GetFgColor("label selection")};
 
   // UI element colors
@@ -185,10 +184,15 @@ void AddGtkNativeColorMixer(ui::ColorProvider* provider,
   mixer[ui::kColorTextfieldForegroundDisabled] = {
       GetFgColor("textview.view:disabled text")};
   mixer[ui::kColorTextfieldForegroundPlaceholder] = {GtkCheckVersion(4)};
+  static constexpr char kTextFocused[] =
+      "textview.view:focus:focus-within text:focus:focus-within";
+  static constexpr char kSelectionFocused[] =
+      "textview.view:focus:focus-within text:focus:focus-within "
+      "selection:focus:focus-within";
   mixer[ui::kColorTextfieldSelectionBackground] = {
-      GetSelectionBgColor("textview.view text selection")};
+      GetBgColor(kSelectionFocused)};
   mixer[ui::kColorTextfieldSelectionForeground] = {
-      GetFgColor("textview.view text selection")};
+      GetFgColor(GtkCheckVersion(4) ? kTextFocused : kSelectionFocused)};
   mixer[ui::kColorThrobber] = {GetFgColor("spinner")};
   mixer[ui::kColorThrobberPreconnect] = {GetFgColor("spinner:disabled")};
   mixer[ui::kColorToggleButtonTrackOff] = {

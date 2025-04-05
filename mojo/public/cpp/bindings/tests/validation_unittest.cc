@@ -150,8 +150,7 @@ bool ReadResultFile(const std::string& path, std::string* result) {
     return false;
 
   // Result files are new-line delimited text files. Remove any CRs.
-  result->erase(std::remove(result->begin(), result->end(), '\r'),
-                result->end());
+  std::erase(*result, '\r');
 
   // Remove trailing LFs.
   size_t pos = result->find_last_not_of('\n');

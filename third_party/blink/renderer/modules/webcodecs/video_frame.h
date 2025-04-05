@@ -22,7 +22,6 @@
 #include "third_party/blink/renderer/modules/webcodecs/array_buffer_util.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_handle.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/bindings/v8_external_memory_accounter.h"
 #include "third_party/blink/renderer/platform/graphics/predefined_color_space.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -141,7 +140,6 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
   bool IsOpaque() const override;
   bool IsAccelerated() const override;
 
-  void ResetExternalMemory();
   void ConvertAndCopyToRGB(scoped_refptr<media::VideoFrame> frame,
                            const gfx::Rect& src_rect,
                            const VideoFrameLayout& dest_layout,
@@ -171,7 +169,6 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
   Member<DOMRectReadOnly> visible_rect_;
   Member<VideoColorSpace> color_space_;
   Member<VideoColorSpace> empty_color_space_;
-  V8ExternalMemoryAccounter external_memory_accounter_;
 };
 
 }  // namespace blink

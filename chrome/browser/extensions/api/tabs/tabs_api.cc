@@ -17,6 +17,7 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
@@ -63,6 +64,8 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
+#include "chrome/browser/ui/tabs/split_tab_data.h"
+#include "chrome/browser/ui/tabs/split_tab_id.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -1591,6 +1594,21 @@ ExtensionFunction::ResponseAction TabsHighlightFunction::Run() {
     return RespondNow(Error(kNoHighlightedTabError));
   }
 
+  // Extend selection for any split tabs.
+  base::flat_set<split_tabs::SplitTabId> splits_with_selections;
+  for (const auto& index : selection.selected_indices()) {
+    if (tab_strip_model->IsTabSplit(index)) {
+      splits_with_selections.insert(
+          tab_strip_model->GetTabAtIndex(index)->GetSplit().value());
+    }
+  }
+  for (split_tabs::SplitTabId split_id : splits_with_selections) {
+    for (::tabs::TabInterface* split_tab :
+         tab_strip_model->GetSplitData(split_id)->ListTabs()) {
+      selection.AddIndexToSelection(tab_strip_model->GetIndexOfTab(split_tab));
+    }
+  }
+
   selection.set_active(active_index);
   tab_strip_model->SetSelectionFromModel(std::move(selection));
   return RespondNow(
@@ -1700,9 +1718,10 @@ ExtensionFunction::ResponseAction TabsUpdateFunction::Run() {
       return RespondNow(Error(ExtensionTabUtil::kTabStripNotEditableError));
     }
 
-    bool highlighted = *params->update_properties.highlighted;
-    if (highlighted != tab_strip->IsTabSelected(tab_index)) {
-      tab_strip->ToggleSelectionAt(tab_index);
+    if (*params->update_properties.highlighted) {
+      tab_strip->SelectTabAt(tab_index);
+    } else {
+      tab_strip->DeselectTabAt(tab_index);
     }
   }
 

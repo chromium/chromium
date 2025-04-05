@@ -65,7 +65,6 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChrome;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.HubLayout;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
@@ -281,9 +280,7 @@ public class TabUiTestHelper {
      */
     public static void closeFirstTabGroupInTabSwitcher(Context context) {
         closeFirstTabInTabSwitcher(context);
-        if (ChromeFeatureList.sTabGroupPaneAndroid.isEnabled()) {
-            onView(withText("Close")).perform(click());
-        }
+        onView(withText("Close")).perform(click());
     }
 
     /**

@@ -62,9 +62,7 @@ struct CORE_EXPORT LogicalRect {
   }
   LogicalOffset EndOffset() const { return offset + size; }
 
-  constexpr bool operator==(const LogicalRect& other) const {
-    return other.offset == offset && other.size == size;
-  }
+  constexpr bool operator==(const LogicalRect& other) const = default;
 
   LogicalRect operator+(const LogicalOffset& additional_offset) const {
     return {offset + additional_offset, size};

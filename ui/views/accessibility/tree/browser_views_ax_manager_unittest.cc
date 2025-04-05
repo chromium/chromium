@@ -22,10 +22,12 @@ class BrowserViewsAXManagerTest : public ::testing::Test {
         features::kAccessibilityTreeForViews);
   }
 
-  void TearDown() override {
-    BrowserViewsAXManager::GetInstance()->ShutdownForTesting();
+  void SetUp() override {
+    browser_views_ax_manager_handle_ = views::BrowserViewsAXManager::Create();
   }
 
+  std::unique_ptr<views::BrowserViewsAXManager::LifetimeHandle>
+      browser_views_ax_manager_handle_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -40,12 +42,12 @@ TEST_F(BrowserViewsAXManagerTest, IsEnabledAfterAXModeAdded) {
   EXPECT_TRUE(manager->is_enabled());
 }
 
-// This death test verifies that GetInstance() crashes (via CHECK) when the flag
-// is off.
-TEST_F(BrowserViewsAXManagerTest, GetInstanceCrashesWhenFlagOff) {
+// This death test verifies that Create() crashes (via CHECK) when the flag is
+// off.
+TEST_F(BrowserViewsAXManagerTest, CreateCrashesWhenFlagOff) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(features::kAccessibilityTreeForViews);
-  EXPECT_DEATH(BrowserViewsAXManager::GetInstance(), "");
+  EXPECT_DEATH(views::BrowserViewsAXManager::Create(), "");
 }
 
 TEST_F(BrowserViewsAXManagerTest, GetOrCreateAXNodeUniqueId) {

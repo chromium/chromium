@@ -40,9 +40,9 @@
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/autofill_driver.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
-#include "components/autofill/core/browser/integrators/autofill_ai_delegate.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_delegate.h"
 #include "components/autofill/core/browser/integrators/autofill_compose_delegate.h"
-#include "components/autofill/core/browser/integrators/autofill_plus_address_delegate.h"
+#include "components/autofill/core/browser/integrators/plus_addresses/autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/integrators/valuables/valuable_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_in_devtools_metrics.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
@@ -630,11 +630,13 @@ void AutofillExternalDelegate::DidSelectSuggestion(
       }
       break;
     case SuggestionType::kIdentityCredential:
+      // TODO(crbug.com/380367784): allow previewing more field types.
       manager_->FillOrPreviewField(
           mojom::ActionPersistence::kPreview,
           mojom::FieldActionType::kReplaceAll, query_form_, query_field_,
-          suggestion.main_text.value, SuggestionType::kIdentityCredential,
-          EMAIL_ADDRESS);
+          suggestion.GetPayload<Suggestion::IdentityCredentialPayload>()
+              .fields[HtmlFieldType::kEmail],
+          SuggestionType::kIdentityCredential, EMAIL_ADDRESS);
       break;
     case SuggestionType::kLoyaltyCardEntry:
       // Always shows the masked loyalty card value as the preview of the
@@ -847,11 +849,13 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
         // TODO(crbug.com/380367784): generalize this to allow filling different
         // field types (e.g. passwords) as well as more than one one field
         // at a time (e.g. name and email, rather than email alone)?
+        Suggestion::IdentityCredentialPayload payload =
+            suggestion.GetPayload<Suggestion::IdentityCredentialPayload>();
         manager_->FillOrPreviewField(
             mojom::ActionPersistence::kFill,
             mojom::FieldActionType::kReplaceAll, query_form_, query_field_,
-            suggestion.main_text.value, SuggestionType::kIdentityCredential,
-            EMAIL_ADDRESS);
+            payload.fields[HtmlFieldType::kEmail],
+            SuggestionType::kIdentityCredential, EMAIL_ADDRESS);
       }
       break;
     }

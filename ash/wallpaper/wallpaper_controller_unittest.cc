@@ -1184,8 +1184,6 @@ TEST_P(WallpaperControllerTest, WallpaperMovementDuringUnlock) {
   // that will animate in on top of the old one.
   controller->CreateEmptyWallpaperForTesting();
 
-  const bool forest_enabled = features::IsForestFeatureEnabled();
-
   // In this state we have a wallpaper views stored in
   // LockScreenWallpaperContainer.
   WallpaperWidgetController* widget_controller =
@@ -1195,13 +1193,9 @@ TEST_P(WallpaperControllerTest, WallpaperMovementDuringUnlock) {
   EXPECT_TRUE(widget_controller->IsAnimating());
   EXPECT_EQ(0, ChildCountForContainer(kWallpaperId));
   EXPECT_EQ(1, ChildCountForContainer(kLockScreenWallpaperId));
-  if (forest_enabled) {
-    // There must be four layers: shield, underlay, original and old layers.
-    ASSERT_EQ(4u, wallpaper_view()->layer()->parent()->children().size());
-  } else {
-    // There must be three layers: shield, original and old layers.
-    ASSERT_EQ(3u, wallpaper_view()->layer()->parent()->children().size());
-  }
+
+  // There must be four layers: shield, underlay, original and old layers.
+  ASSERT_EQ(4u, wallpaper_view()->layer()->parent()->children().size());
 
   // Before the wallpaper's animation completes, user unlocks the screen, which
   // moves the wallpaper to the back.
@@ -1209,25 +1203,18 @@ TEST_P(WallpaperControllerTest, WallpaperMovementDuringUnlock) {
 
   // Ensure that widget has moved.
   EXPECT_EQ(1, ChildCountForContainer(kWallpaperId));
+
   // The shield layer is gone during an active session.
-  if (forest_enabled) {
-    ASSERT_EQ(3u, wallpaper_view()->layer()->parent()->children().size());
-  } else {
-    ASSERT_EQ(2u, wallpaper_view()->layer()->parent()->children().size());
-  }
+  ASSERT_EQ(3u, wallpaper_view()->layer()->parent()->children().size());
   EXPECT_EQ(0, ChildCountForContainer(kLockScreenWallpaperId));
 
   // Finish the new wallpaper animation.
   RunDesktopControllerAnimation();
 
   EXPECT_EQ(1, ChildCountForContainer(kWallpaperId));
-  if (forest_enabled) {
-    // Now there is one wallpaper and two layers: underlay and original.
-    ASSERT_EQ(2u, wallpaper_view()->layer()->parent()->children().size());
-  } else {
-    // Now there is one wallpaper and the original layer.
-    ASSERT_EQ(1u, wallpaper_view()->layer()->parent()->children().size());
-  }
+
+  // Now there is one wallpaper and two layers: underlay and original.
+  ASSERT_EQ(2u, wallpaper_view()->layer()->parent()->children().size());
   EXPECT_EQ(0, ChildCountForContainer(kLockScreenWallpaperId));
 }
 
@@ -3500,23 +3487,14 @@ TEST_P(WallpaperControllerTest, WallpaperBlurDuringLockScreenTransition) {
       controller_->GetWallpaperType()));
   ASSERT_FALSE(controller_->IsWallpaperBlurredForLockState());
 
-  const bool forest_enabled = features::IsForestFeatureEnabled();
-  if (forest_enabled) {
-    // There are three layers: underlay, original and old layers.
-    ASSERT_EQ(3u, wallpaper_view()->layer()->parent()->children().size());
-    EXPECT_EQ(ui::LAYER_SOLID_COLOR,
-              wallpaper_view()->layer()->parent()->children()[0]->type());
-    EXPECT_EQ(ui::LAYER_TEXTURED,
-              wallpaper_view()->layer()->parent()->children()[1]->type());
-    EXPECT_EQ(ui::LAYER_TEXTURED,
-              wallpaper_view()->layer()->parent()->children()[2]->type());
-  } else {
-    ASSERT_EQ(2u, wallpaper_view()->layer()->parent()->children().size());
-    EXPECT_EQ(ui::LAYER_TEXTURED,
-              wallpaper_view()->layer()->parent()->children()[0]->type());
-    EXPECT_EQ(ui::LAYER_TEXTURED,
-              wallpaper_view()->layer()->parent()->children()[1]->type());
-  }
+  // There are three layers: underlay, original and old layers.
+  ASSERT_EQ(3u, wallpaper_view()->layer()->parent()->children().size());
+  EXPECT_EQ(ui::LAYER_SOLID_COLOR,
+            wallpaper_view()->layer()->parent()->children()[0]->type());
+  EXPECT_EQ(ui::LAYER_TEXTURED,
+            wallpaper_view()->layer()->parent()->children()[1]->type());
+  EXPECT_EQ(ui::LAYER_TEXTURED,
+            wallpaper_view()->layer()->parent()->children()[2]->type());
 
   // Simulate lock and unlock sequence.
   controller_->UpdateWallpaperBlurForLockState(true);
@@ -3525,48 +3503,32 @@ TEST_P(WallpaperControllerTest, WallpaperBlurDuringLockScreenTransition) {
 
   SetSessionState(SessionState::LOCKED);
   EXPECT_TRUE(controller_->IsWallpaperBlurredForLockState());
-  if (forest_enabled) {
-    // There are four layers: shield, underlay, original and old layers.
-    ASSERT_EQ(4u, wallpaper_view()->layer()->parent()->children().size());
-    EXPECT_EQ(ui::LAYER_SOLID_COLOR,
-              wallpaper_view()->layer()->parent()->children()[0]->type());
-    EXPECT_EQ(ui::LAYER_SOLID_COLOR,
-              wallpaper_view()->layer()->parent()->children()[1]->type());
-    EXPECT_EQ(ui::LAYER_TEXTURED,
-              wallpaper_view()->layer()->parent()->children()[2]->type());
-    EXPECT_EQ(ui::LAYER_TEXTURED,
-              wallpaper_view()->layer()->parent()->children()[3]->type());
-  } else {
-    ASSERT_EQ(3u, wallpaper_view()->layer()->parent()->children().size());
-    EXPECT_EQ(ui::LAYER_SOLID_COLOR,
-              wallpaper_view()->layer()->parent()->children()[0]->type());
-    EXPECT_EQ(ui::LAYER_TEXTURED,
-              wallpaper_view()->layer()->parent()->children()[1]->type());
-    EXPECT_EQ(ui::LAYER_TEXTURED,
-              wallpaper_view()->layer()->parent()->children()[2]->type());
-  }
+
+  // There are four layers: shield, underlay, original and old layers.
+  ASSERT_EQ(4u, wallpaper_view()->layer()->parent()->children().size());
+  EXPECT_EQ(ui::LAYER_SOLID_COLOR,
+            wallpaper_view()->layer()->parent()->children()[0]->type());
+  EXPECT_EQ(ui::LAYER_SOLID_COLOR,
+            wallpaper_view()->layer()->parent()->children()[1]->type());
+  EXPECT_EQ(ui::LAYER_TEXTURED,
+            wallpaper_view()->layer()->parent()->children()[2]->type());
+  EXPECT_EQ(ui::LAYER_TEXTURED,
+            wallpaper_view()->layer()->parent()->children()[3]->type());
 
   // Change of state to ACTIVE triggers post lock animation and
   // UpdateWallpaperBlur(false)
   SetSessionState(SessionState::ACTIVE);
   EXPECT_FALSE(controller_->IsWallpaperBlurredForLockState());
   EXPECT_EQ(2, observer.blur_changed_count());
-  if (forest_enabled) {
-    // There are three layers: underlay, original and old layers.
-    ASSERT_EQ(3u, wallpaper_view()->layer()->parent()->children().size());
-    EXPECT_EQ(ui::LAYER_SOLID_COLOR,
-              wallpaper_view()->layer()->parent()->children()[0]->type());
-    EXPECT_EQ(ui::LAYER_TEXTURED,
-              wallpaper_view()->layer()->parent()->children()[1]->type());
-    EXPECT_EQ(ui::LAYER_TEXTURED,
-              wallpaper_view()->layer()->parent()->children()[2]->type());
-  } else {
-    ASSERT_EQ(2u, wallpaper_view()->layer()->parent()->children().size());
-    EXPECT_EQ(ui::LAYER_TEXTURED,
-              wallpaper_view()->layer()->parent()->children()[0]->type());
-    EXPECT_EQ(ui::LAYER_TEXTURED,
-              wallpaper_view()->layer()->parent()->children()[1]->type());
-  }
+
+  // There are three layers: underlay, original and old layers.
+  ASSERT_EQ(3u, wallpaper_view()->layer()->parent()->children().size());
+  EXPECT_EQ(ui::LAYER_SOLID_COLOR,
+            wallpaper_view()->layer()->parent()->children()[0]->type());
+  EXPECT_EQ(ui::LAYER_TEXTURED,
+            wallpaper_view()->layer()->parent()->children()[1]->type());
+  EXPECT_EQ(ui::LAYER_TEXTURED,
+            wallpaper_view()->layer()->parent()->children()[2]->type());
 }
 
 TEST_P(WallpaperControllerTest, LockDuringOverview) {

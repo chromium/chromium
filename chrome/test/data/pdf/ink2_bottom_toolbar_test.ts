@@ -7,7 +7,7 @@ import type {InkColorSelectorElement, InkSizeSelectorElement, ViewerBottomToolba
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {assertAnnotationBrush, assertSelectedSize, getBrushSelector, getColorButtons, getRequiredElement, getSizeButtons, setGetAnnotationBrushReply, setupMockMetricsPrivate, setupTestMockPluginForInk} from './test_util.js';
+import {assertAnnotationBrush, assertSelectedSize, clickDropdownButton, getBrushSelector, getColorButtons, getRequiredElement, getSizeButtons, setGetAnnotationBrushReply, setupMockMetricsPrivate, setupTestMockPluginForInk} from './test_util.js';
 
 const viewer = document.body.querySelector('pdf-viewer')!;
 const mockPlugin = setupTestMockPluginForInk();
@@ -32,13 +32,6 @@ async function clickColorButton(index: number) {
   await microtasksFinished();
 }
 
-async function clickDropdownButton(
-    dropdown: ViewerBottomToolbarDropdownElement) {
-  const dropdownButton = getRequiredElement(dropdown, 'cr-button');
-  dropdownButton.click();
-  await microtasksFinished();
-}
-
 function assertDropdownSizeIcon(expected: string) {
   const bottomToolbar = getBottomToolbar();
   const actual =
@@ -50,7 +43,7 @@ function assertDropdownSizeIcon(expected: string) {
 function assertDropdownColorFillColor(expected: string) {
   const bottomToolbar = getBottomToolbar();
   const styles =
-      getComputedStyle(getRequiredElement(bottomToolbar, '#color-chip'));
+      getComputedStyle(getRequiredElement(bottomToolbar, '.color-chip'));
   chrome.test.assertEq(expected, styles.getPropertyValue('background-color'));
 }
 
@@ -67,7 +60,7 @@ chrome.test.runTests([
 
     // No toolbars initially.
     const drawToolbarQuery = 'viewer-bottom-toolbar';
-    const textToolbarQuery = `div[toolbar-name="${AnnotationMode.TEXT}"]`;
+    const textToolbarQuery = 'viewer-text-bottom-toolbar';
     chrome.test.assertEq(AnnotationMode.NONE, viewer.$.toolbar.annotationMode);
     chrome.test.assertFalse(
         !!viewer.shadowRoot.querySelector(drawToolbarQuery));

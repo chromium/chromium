@@ -1,7 +1,7 @@
 Name: Annotation
 Short Name: annotation-jvm
-URL: https://developer.android.com/jetpack/androidx/releases/annotation#1.9.1
-Version: 1.9.1
+URL: https://developer.android.com/jetpack/androidx/releases/annotation#1.10.0-SNAPSHOT
+Version: 1.10.0-SNAPSHOT
 License: Apache-2.0
 License File: LICENSE
 CPEPrefix: unknown

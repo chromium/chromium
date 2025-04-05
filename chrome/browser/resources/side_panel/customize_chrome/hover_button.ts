@@ -36,9 +36,9 @@ export class HoverButtonElement extends CrLitElement {
     };
   }
 
-  ariaButtonLabel: string|null = null;
-  label: string = '';
-  labelDescription: string|null = null;
+  accessor ariaButtonLabel: string|null = null;
+  accessor label: string = '';
+  accessor labelDescription: string|null = null;
 
   constructor() {
     super();

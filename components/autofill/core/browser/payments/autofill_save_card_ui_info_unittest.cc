@@ -71,7 +71,7 @@ TEST(AutofillSaveCardUiInfoTestForLocalSave, VerifyCommonAttributes) {
   card.SetNickname(u"My Card");
   auto ui_info =
       AutofillSaveCardUiInfo::CreateForLocalSave(/*options=*/{}, card);
-  EXPECT_EQ(ui_info.issuer_icon_id, IDR_AUTOFILL_METADATA_CC_VISA);
+  EXPECT_EQ(ui_info.issuer_icon_id, IDR_AUTOFILL_METADATA_CC_VISA_OLD);
   EXPECT_THAT(base::UTF16ToUTF8(ui_info.card_label),
               testing::AllOf(testing::HasSubstr("My Card"),
                              testing::HasSubstr("1111")));
@@ -165,7 +165,7 @@ TEST(AutofillSaveCardUiInfoTestForLocalSave,
       /*options=*/{.card_save_type = CardSaveType::kCvcSaveOnly},
       test::GetCreditCard());
 
-  EXPECT_EQ(ui_info.logo_icon_id, IDR_AUTOFILL_CC_GENERIC_PRIMARY);
+  EXPECT_EQ(ui_info.logo_icon_id, IDR_AUTOFILL_CC_GENERIC_PRIMARY_OLD);
   EXPECT_EQ(ui_info.title_text, l10n_util::GetStringUTF16(
                                     IDS_AUTOFILL_SAVE_CVC_PROMPT_TITLE_LOCAL));
   EXPECT_EQ(ui_info.description_text,
@@ -215,7 +215,7 @@ TEST_P(AutofillSaveCardUiInfoTestForUploadSave, VerifyCommonAttributes) {
   auto ui_info = AutofillSaveCardUiInfo::CreateForUploadSave(
       /*options=*/{}, card, legal_message_lines, account_info,
       /*is_google_pay_branding_enabled=*/is_gpay_branded());
-  EXPECT_EQ(ui_info.issuer_icon_id, IDR_AUTOFILL_METADATA_CC_VISA);
+  EXPECT_EQ(ui_info.issuer_icon_id, IDR_AUTOFILL_METADATA_CC_VISA_OLD);
   EXPECT_THAT(base::UTF16ToUTF8(ui_info.card_label),
               testing::AllOf(testing::HasSubstr("My Card"),
                              testing::HasSubstr("1111")));
@@ -333,7 +333,7 @@ TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
       /*options=*/{.card_save_type = CardSaveType::kCvcSaveOnly},
       is_gpay_branded());
 
-  EXPECT_EQ(ui_info.logo_icon_id, IDR_AUTOFILL_CC_GENERIC_PRIMARY);
+  EXPECT_EQ(ui_info.logo_icon_id, IDR_AUTOFILL_CC_GENERIC_PRIMARY_OLD);
   EXPECT_EQ(
       ui_info.title_text,
       l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_CVC_PROMPT_TITLE_TO_CLOUD));

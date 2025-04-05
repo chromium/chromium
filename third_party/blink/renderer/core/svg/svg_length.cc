@@ -100,12 +100,6 @@ SVGLength* SVGLength::Clone() const {
   return MakeGarbageCollected<SVGLength>(*value_, UnitMode());
 }
 
-SVGPropertyBase* SVGLength::CloneForAnimation(const String& value) const {
-  auto* length = MakeGarbageCollected<SVGLength>(UnitMode());
-  length->SetValueAsString(value);
-  return length;
-}
-
 bool SVGLength::operator==(const SVGLength& other) const {
   return unit_mode_ == other.unit_mode_ && value_ == other.value_;
 }

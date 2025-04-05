@@ -159,7 +159,7 @@ void AndroidTabModelURLVisitDataFetcher::FetchURLVisitData(
       // Not applicable to android.
       tab_data.pinned = false;
       tab_data.in_group =
-          tab_data.in_group || TabModelJniBridge::IsTabInTabGroup(tab_android);
+          tab_data.in_group || model->IsTabInTabGroup(tab_android);
     }
   }
 

@@ -20,14 +20,12 @@ namespace on_device_translation {
 const std::vector<std::string_view> GetAcceptLanguages(
     content::BrowserContext* browser_context);
 
+// Determines if a given language is in the Accept languages.
+bool IsInAcceptLanguage(const std::vector<std::string_view>& accept_languages,
+                        const std::string_view lang);
+
 // Determines if the Translator API is enabled.
 bool IsTranslatorAllowed(content::BrowserContext* browser_context);
-
-// Determines whether to mask a "readily" `availability()` result as
-// "downloadable", as a fingerprinting prevention measure.
-bool MaskReadilyResult(const std::vector<std::string_view>& accept_languages,
-                       const std::string& source_language,
-                       const std::string& target_language);
 
 // When the `TranslationAPIAcceptLanguagesCheck` feature is enabled, the
 // Translation API will fail if neither the source nor destination language is

@@ -43,6 +43,7 @@ class TargetHandler : public protocol::Target::Backend {
       std::optional<bool> new_window,
       std::optional<bool> background,
       std::optional<bool> for_tab,
+      std::optional<bool> hidden,
       std::string* out_target_id) override;
 
  private:

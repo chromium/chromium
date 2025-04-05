@@ -370,6 +370,7 @@ enum WebDXFeature {
   kWebAppManifestUpdateToken = 312,
   kReadingFlow = 313,
   kComposedRanges = 314,
+  kCompressionDictionaryTransport = 315
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

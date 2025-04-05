@@ -37,24 +37,9 @@
 
 namespace blink {
 
-bool CanvasRenderingContext::
-    CheckProviderInCanCreateCanvas2dResourceProvider() {
-  return base::FeatureList::IsEnabled(
-      features::kAdjustCanCreateCanvas2dResourceProvider);
-}
-
 // static
 bool CanvasRenderingContext::
     CheckProviderInCanvas2DRenderingContextIsPaintable() {
-  // The change to IsPaintable() is safe only if the below feature is enabled,
-  // as (a) our reasoning about the IsPaintable() change is built on the
-  // behavior enabled by this feature, and (b) if we were to ever disable this
-  // feature but leave the IsPaintable() change in place we would be putting
-  // the codebase in an untested state.
-  if (!CheckProviderInCanCreateCanvas2dResourceProvider()) {
-    return false;
-  }
-
   return base::FeatureList::IsEnabled(
       features::kIsPaintableChecksResourceProviderInsteadOfBridge);
 }

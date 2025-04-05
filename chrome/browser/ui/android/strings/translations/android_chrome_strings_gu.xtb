@@ -289,6 +289,7 @@
 <translation id="2362083820973145409"><ph name="USER_NAME" /> તરીકે સાઇન ઇન થયા. <ph name="USER_EMAIL" />. સેટિંગ ખોલે છે.</translation>
 <translation id="2363734411417672757">વધુ પેજ પહેલેથી લોડ કરવામાં આવ્યા છે. જ્યારે અન્ય સાઇટ કે ઍપ દ્વારા વિનંતી કરવામાં આવે, ત્યારે પેજને Googleના સર્વર મારફતે પહેલેથી લોડ કરી શકાય છે.</translation>
 <translation id="2366554533468315977">આ વિકલ્પ માટે સમગ્ર વેબ પરથી કિંમતનો ઇતિહાસ</translation>
+<translation id="2367818124433749493">ડેવલપરના શૉર્ટકટ</translation>
 <translation id="2385605401818128172">તમે એવી સાઇટ રિવ્યૂ કરી શકો જે ઘણા નોટિફિકેશન મોકલતી હોય અને ભવિષ્યમાં વધુ નોટિફિકેશન મોકલતા તેમને અટકાવી શકો</translation>
 <translation id="2386938421315164605">વિષયોને છુપાવો અને બતાવો</translation>
 <translation id="2390510615457643724">શું તમે <ph name="FILE_NAME" /><ph name="FILE_SIZE" />ને ફરી ડાઉનલોડ કરવા માગો છો?</translation>
@@ -611,6 +612,7 @@
 <translation id="3856096718352044181">કૃપા કરીને ચકાસણી કરો કે આ માન્ય પ્રદાતા છે અથવા પછીથી ફરી પ્રયાસ કરો</translation>
 <translation id="3858860766373142691">નામ</translation>
 <translation id="3863527519275151528">નોટિફિકેશન પર પ્રક્રિયા કરી રહ્યાં છીએ</translation>
+<translation id="3866863539038222107">તપાસો</translation>
 <translation id="3870908470613821006">દરેક જણ તાત્કાલિક “<ph name="GROUP_NAME" />” ટૅબના ગ્રૂપનો ઍક્સેસ ગુમાવશે અને તેને બધા ડિવાઇસમાંથી ડિલીટ કરવામાં આવશે</translation>
 <translation id="3873174561423636563">ચાલુ રાખવા માટે, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> તમારું <ph name="FIELDS_STRING" /> આ સાઇટ સાથે શેર કરશે. આ સાઇટની <ph name="BEGIN_LINK1" />સેવાની શરતો<ph name="END_LINK1" /> જુઓ.</translation>
 <translation id="3892148308691398805">ટેક્સ્ટ કૉપિ કરો</translation>
@@ -734,7 +736,6 @@
 <translation id="4460861538906892109">{ITEMS_COUNT,plural, =1{1 બુકમાર્ક}one{# બુકમાર્ક}other{# બુકમાર્ક}}</translation>
 <translation id="4478161224666880173">તમે આ સાઇટ પર તમારા <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> એકાઉન્ટનો ઉપયોગ કરી શકો છો. ચાલુ રાખવા માટે, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />માં સાઇન ઇન કરો.</translation>
 <translation id="4479972344484327217">Chrome માટે <ph name="MODULE" /> ઇન્સ્ટૉલ કરી રહ્યાં છે…</translation>
-<translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{બુકમાર્ક "<ph name="FOLDER_NAME" />" પર સાચવવામાં આવ્યું છે. તે માત્ર આ ડિવાઇસ પર સાચવવામાં આવે છે.}one{બુકમાર્ક "<ph name="FOLDER_NAME" />" પર સાચવવામાં આવ્યું છે. તે માત્ર આ ડિવાઇસ પર સાચવવામાં આવે છે.}other{બુકમાર્ક "<ph name="FOLDER_NAME" />" પર સાચવવામાં આવ્યા છે. તે માત્ર આ ડિવાઇસ પર સાચવવામાં આવે છે.}}</translation>
 <translation id="4484496141267039529">કોઈ કનેક્શન નથી. થોડા સમય પછી ફરી પ્રયાસ કરો.</translation>
 <translation id="4487967297491345095">Chromeનો તમામ ઍપ ડેટા કાયમ માટે ડિલીટ કરવામાં આવશે. આમાં તમામ ફાઇલો, સેટિંગ, એકાઉન્ટ, ડેટાબેઝ, વગેરેનો સમાવેશ થાય છે.</translation>
 <translation id="4494806687727322324">તમારા ઍડમિનિસ્ટ્રેટર દ્વારા પાસવર્ડ સાચવવાની સુવિધા ચાલુ કરવામાં આવી છે</translation>
@@ -941,6 +942,7 @@
 <translation id="539881862970320163">સશક્ત પાસવર્ડ સૂચવવામાં આવ્યો છે. કીબોર્ડ છુપાવેલું છે.</translation>
 <translation id="5409881200985013443"><ph name="CLIENT_NAME" /> પર <ph name="ONE_TIME_CODE" /> સબમિટ કરીએ?</translation>
 <translation id="5410300144953132176"><ph name="OWNER_FULL_NAME" /> (<ph name="OWNER_EMAIL" />) ઇચ્છે છે કે તમે ટૅબના ગ્રૂપમાં જોડાઓ. લિંક ધરાવતી કોઈપણ વ્યક્તિ બધા ટૅબમાં ફેરફાર કરી શકે છે, તેથી સચેત રહીને જોડાઓ. લિંકની સમયસીમા 48 કલાકમાં સમાપ્ત થાય છે.</translation>
+<translation id="5412388166586147626">AI આસિસ્ટંટ ખોલી શક્યા નથી. ફરી પ્રયાસ કરો.</translation>
 <translation id="5414836363063783498">ચકાસી રહ્યું છે...</translation>
 <translation id="5415871492522952905">તમારી પાસે તમારા બધા ડિવાઇસ પર તમારો ઇતિહાસ અને ટૅબ હશે, જેથી તમે જે કરી રહ્યાં હતા તે આગળ વધારી શકો</translation>
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) તરત જ “<ph name="GROUP_NAME" />” ટૅબના ગ્રૂપનો ઍક્સેસ ગુમાવશે</translation>
@@ -1055,6 +1057,7 @@
 <translation id="5907542076239273525"><ph name="FOLDER_NAME" />માં બુકમાર્ક સાચવવામાં આવ્યું</translation>
 <translation id="5916664084637901428">ચાલુ</translation>
 <translation id="5919204609460789179">સમન્વયન પ્રારંભ કરવા માટે <ph name="PRODUCT_NAME" /> અપડેટ કરો</translation>
+<translation id="5932881020239635062">શ્રૃંખલા</translation>
 <translation id="5938820472109305350"><ph name="INTEREST" /> ઉમેરો</translation>
 <translation id="5942872142862698679">શોધવા માટે Googleનો ઉપયોગ કરી રહ્યાં છે</translation>
 <translation id="5945035219773565305">હાલનો સુઝાવ:  <ph name="RECOMMENDATION" /></translation>
@@ -1138,6 +1141,7 @@
 <translation id="6295158916970320988">બધી સાઇટ</translation>
 <translation id="6296366034485697675">નિકાસ કરો અને ડિલીટ કરો</translation>
 <translation id="629730747756840877">એકાઉન્ટ</translation>
+<translation id="6301526076346731664">ડેવલપર ટૂલ ખોલો</translation>
 <translation id="6303969859164067831">સાઇન આઉટ કરો અને સિંક બંધ કરો</translation>
 <translation id="6307241780749477694">આ ડિવાઇસ પર તમારા બધા પાસવર્ડ મેળવવા માટે ખાતરી કરો કે તે તમે જ છો</translation>
 <translation id="6312687380483398334">વેબ ઍપ (છોડો)</translation>
@@ -1334,7 +1338,6 @@
 <translation id="7063006564040364415">સમન્વયન સર્વર સાથે કનેક્ટ કરી શકાયું નથી</translation>
 <translation id="7071521146534760487">એકાઉન્ટને મેનેજ કરો</translation>
 <translation id="707155805709242880">શું સિંક કરવું તે નીચે પસંદ કરો</translation>
-<translation id="707702207692430409">{BOOKMARK_COUNT,plural, =1{તમારા એકાઉન્ટ, <ph name="ACCOUNT_EMAIL" />માં "<ph name="FOLDER_NAME" />"માં બુકમાર્ક સાચવવામાં આવ્યું.}one{તમારા એકાઉન્ટ, <ph name="ACCOUNT_EMAIL" />માં "<ph name="FOLDER_NAME" />"માં બુકમાર્ક સાચવવામાં આવ્યું.}other{તમારા એકાઉન્ટ, <ph name="ACCOUNT_EMAIL" />માં "<ph name="FOLDER_NAME" />"માં બુકમાર્ક સાચવવામાં આવ્યા.}}</translation>
 <translation id="7077143737582773186">SD કાર્ડ</translation>
 <translation id="7078916049958741685">આ ડિવાઇસમાંનો તમારો Chrome ડેટા પણ ડિલીટ કરો</translation>
 <translation id="7085332316435785646">Googleની સેવાઓમાં વધુ મનગમતા બનાવેલા અનુભવો આપવા માટે, Chrome ઇતિહાસ શામેલ કરવો કે નહીં, તે પસંદ કરો</translation>

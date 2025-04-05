@@ -123,19 +123,19 @@ export class PrintPreviewDestinationSettingsElement extends
     };
   }
 
-  dark: boolean;
-  destination: Destination;
-  destinationState: DestinationState;
-  disabled: boolean;
-  error: Error;
-  firstLoad: boolean;
-  state: State;
-  private destinationStore_: DestinationStore|null;
-  private displayedDestinations_: Destination[];
-  private isDialogOpen_: boolean;
-  private noDestinations_: boolean;
-  private pdfPrinterDisabled_: boolean;
-  private loaded_: boolean;
+  declare dark: boolean;
+  declare destination: Destination;
+  declare destinationState: DestinationState;
+  declare disabled: boolean;
+  declare error: Error;
+  declare firstLoad: boolean;
+  declare state: State;
+  declare private destinationStore_: DestinationStore|null;
+  declare private displayedDestinations_: Destination[];
+  declare private isDialogOpen_: boolean;
+  declare private noDestinations_: boolean;
+  declare private pdfPrinterDisabled_: boolean;
+  declare private loaded_: boolean;
 
   private lastUser_: string = '';
   private tracker_: EventTracker = new EventTracker();

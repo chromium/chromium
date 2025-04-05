@@ -11,19 +11,8 @@
 #include "base/containers/map_util.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
-#include "base/threading/thread_restrictions.h"
-#include "chrome/browser/printing/local_printer_utils_chromeos.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/common/chrome_paths.h"
-#include "chromeos/printing/printer_configuration.h"
-#include "content/public/browser/browser_thread.h"
-#include "extensions/common/constants.h"
-#include "extensions/test/test_extension_dir.h"
-#include "printing/backend/cups_ipp_constants.h"
-#include "printing/backend/print_backend.h"
-
-#if BUILDFLAG(IS_CHROMEOS)
 #include "base/strings/utf_string_conversions.h"
+#include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/printing/cups_print_job_manager.h"
 #include "chrome/browser/ash/printing/cups_print_job_manager_factory.h"
 #include "chrome/browser/ash/printing/cups_printers_manager_factory.h"
@@ -31,12 +20,20 @@
 #include "chrome/browser/ash/printing/fake_cups_printers_manager.h"
 #include "chrome/browser/ash/printing/history/print_job_info.pb.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/printing/local_printer_utils_chromeos.h"
 #include "chrome/browser/printing/print_job.h"
 #include "chrome/browser/printing/print_job_manager.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/common/chrome_paths.h"
+#include "chromeos/printing/printer_configuration.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "content/public/browser/browser_thread.h"
+#include "extensions/common/constants.h"
+#include "extensions/test/test_extension_dir.h"
+#include "printing/backend/cups_ipp_constants.h"
+#include "printing/backend/print_backend.h"
 #include "printing/backend/test_print_backend.h"
 #include "printing/printing_context.h"
-#endif
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
 #include "base/feature_list.h"
@@ -66,6 +63,8 @@ constexpr int kCustomPaperWidth = 200000;
 constexpr int kCustomPaperHeight = 250000;
 constexpr int kCustomPaperMaxHeight = 300000;
 
+const printing::PaperMargins kDefaultPaperMargins = {1003, 3002, 5008, 3050};
+
 // Mapping of the different extension types used in the test to the specific
 // manifest file names to create an extension of that type. The actual location
 // of these files is at //chrome/test/data/extensions/api_test/printing/.
@@ -75,7 +74,6 @@ static constexpr auto kManifestFileNames =
          {ExtensionType::kExtensionMV2, "manifest_extension.json"},
          {ExtensionType::kExtensionMV3, "manifest_v3_extension.json"}});
 
-#if BUILDFLAG(IS_CHROMEOS)
 // This class uses methods from FakeCupsPrintJobManager while connecting it to
 // the rest of the printing pipeline so that it no longer has to be directly
 // invoked by the test code.
@@ -115,7 +113,6 @@ std::unique_ptr<KeyedService> BuildFakeCupsPrintersManager(
     content::BrowserContext* context) {
   return std::make_unique<ash::FakeCupsPrintersManager>();
 }
-#endif
 
 }  // namespace
 
@@ -153,7 +150,6 @@ PrintingBackendInfrastructureHelper::~PrintingBackendInfrastructureHelper() {
 #endif
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
 PrintingTestHelper::PrintingTestHelper() {
   create_services_subscription_ =
       BrowserContextDependencyManager::GetInstance()
@@ -207,7 +203,6 @@ void PrintingTestHelper::SetUpBrowserContextKeyedServices(
   ash::CupsPrintersManagerFactory::GetInstance()->SetTestingFactory(
       context, base::BindRepeating(&BuildFakeCupsPrintersManager));
 }
-#endif
 
 std::unique_ptr<TestExtensionDir> CreatePrintingExtension(ExtensionType type) {
   auto extension_dir = std::make_unique<TestExtensionDir>();
@@ -247,7 +242,9 @@ ConstructPrinterCapabilities() {
       /*display_name=*/"", /*vendor_id=*/"",
       {kCustomPaperWidth, kCustomPaperHeight},
       /*printable_area_um=*/{kCustomPaperWidth, kCustomPaperHeight},
-      /*max_height_um=*/kCustomPaperMaxHeight);
+      /*max_height_um=*/kCustomPaperMaxHeight,
+      /*has_borderless_variant=*/false,
+      /*supported_margins_um=*/kDefaultPaperMargins);
   capabilities->default_paper = iso_a4_paper;
   capabilities->papers = {std::move(iso_a4_paper), std::move(na_letter_paper),
                           std::move(custom_paper)};

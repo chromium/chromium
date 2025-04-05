@@ -17,6 +17,7 @@
 #include "chrome/common/extensions/api/url_handlers/url_handlers_parser.h"
 #include "chrome/common/extensions/sync_helper.h"
 #include "chrome/common/pref_names.h"
+#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/variations/variations_associated_data.h"
 #include "content/public/browser/site_instance.h"
@@ -402,9 +403,15 @@ std::u16string GetFixupExtensionNameForUIDisplay(
       extension_name, extension_name_char_limit, break_type);
   return fixup_extension_name;
 }
+
 std::u16string GetFixupExtensionNameForUIDisplay(
     const std::string& extension_name) {
   return GetFixupExtensionNameForUIDisplay(base::UTF8ToUTF16(extension_name));
+}
+
+void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
+  registry->RegisterBooleanPref(prefs::kShouldGarbageCollectStoragePartitions,
+                                false);
 }
 
 }  // namespace util

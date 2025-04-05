@@ -56,6 +56,8 @@ WebEncryptedMediaKeyInformation::KeyStatus ConvertCdmKeyStatus(
       return WebEncryptedMediaKeyInformation::KeyStatus::kStatusPending;
     case media::CdmKeyInformation::RELEASED:
       return WebEncryptedMediaKeyInformation::KeyStatus::kReleased;
+    case media::CdmKeyInformation::USABLE_IN_FUTURE:
+      return WebEncryptedMediaKeyInformation::KeyStatus::kUsableInFuture;
   }
   NOTREACHED();
 }

@@ -68,13 +68,13 @@ export class PrintPreviewLinkContainerElement extends PolymerElement {
     };
   }
 
-  appKioskMode: boolean;
-  destination: Destination|null;
-  disabled: boolean;
-  private shouldShowSystemDialogLink_: boolean;
-  private systemDialogLinkDisabled_: boolean;
-  private openingSystemDialog_: boolean;
-  private openingInPreview_: boolean;
+  declare appKioskMode: boolean;
+  declare destination: Destination|null;
+  declare disabled: boolean;
+  declare private shouldShowSystemDialogLink_: boolean;
+  declare private systemDialogLinkDisabled_: boolean;
+  declare private openingSystemDialog_: boolean;
+  declare private openingInPreview_: boolean;
 
   /**
    * @return Whether the system dialog link should be visible.

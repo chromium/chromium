@@ -40,9 +40,13 @@ void RemoveDeviceToDestroyAllContexts(ContextImplDml* context) {
 // computing graph message.
 class FakeWebNNGraphImpl final : public WebNNGraphImpl {
  public:
-  FakeWebNNGraphImpl(ContextImplDml* context,
-                     ComputeResourceInfo compute_resource_info)
-      : WebNNGraphImpl(context, std::move(compute_resource_info)),
+  FakeWebNNGraphImpl(
+      mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
+      ContextImplDml* context,
+      ComputeResourceInfo compute_resource_info)
+      : WebNNGraphImpl(std::move(receiver),
+                       context,
+                       std::move(compute_resource_info)),
         context_(context) {}
   ~FakeWebNNGraphImpl() override = default;
 
@@ -86,11 +90,12 @@ class FakeWebNNTensorImpl final : public WebNNTensorImpl {
 // the graph validation steps and computation resources.
 class FakeWebNNBackend final : public ContextImplDml::BackendForTesting {
   void CreateGraphImpl(
+      mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
       ContextImplDml* context,
       WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
       WebNNContextImpl::CreateGraphImplCallback callback) override {
     std::move(callback).Run(std::make_unique<FakeWebNNGraphImpl>(
-        context, std::move(compute_resource_info)));
+        std::move(receiver), context, std::move(compute_resource_info)));
   }
 
   void CreateTensorImpl(

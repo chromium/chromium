@@ -40,6 +40,7 @@ var ENTITY_INSTANCE = {
     typeNameAsString: 'Driver\'s license',
     addEntityTypeString: 'Add driver\'s license',
     editEntityTypeString: 'Edit driver\'s license',
+    deleteEntityTypeString: 'Delete driver\'s license',
   },
   attributeInstances: [
     {
@@ -913,6 +914,7 @@ var availableTests = [
             typeNameAsString: 'Driver\'s license',
             addEntityTypeString: 'Add driver\'s license',
             editEntityTypeString: 'Edit driver\'s license',
+            deleteEntityTypeString: 'Delete driver\'s license',
           },
           attributeInstances: [
             {
@@ -961,6 +963,7 @@ var availableTests = [
             typeNameAsString: 'Passport',
             addEntityTypeString: 'Add passport',
             editEntityTypeString: 'Edit passport',
+            deleteEntityTypeString: 'Delete passport',
           },
           attributeInstances: [
             {
@@ -1000,6 +1003,7 @@ var availableTests = [
             typeNameAsString: 'Passport',
             addEntityTypeString: 'Add passport',
             editEntityTypeString: 'Edit passport',
+            deleteEntityTypeString: 'Delete passport',
           },
           attributeInstances: [
             {
@@ -1039,6 +1043,7 @@ var availableTests = [
             typeNameAsString: 'Passport',
             addEntityTypeString: 'Add passport',
             editEntityTypeString: 'Edit passport',
+            deleteEntityTypeString: 'Delete passport',
           },
           attributeInstances: [
             {
@@ -1088,6 +1093,7 @@ var availableTests = [
             typeNameAsString: 'Vehicle',
             addEntityTypeString: 'Add vehicle',
             editEntityTypeString: 'Edit vehicle',
+            deleteEntityTypeString: 'Delete vehicle',
           },
           attributeInstances: [
             {
@@ -1119,6 +1125,7 @@ var availableTests = [
             typeNameAsString: 'Vehicle',
             addEntityTypeString: 'Add vehicle',
             editEntityTypeString: 'Edit vehicle',
+            deleteEntityTypeString: 'Delete vehicle',
           },
           attributeInstances: [
             {
@@ -1266,19 +1273,22 @@ var availableTests = [
         typeName: 0,
         typeNameAsString: 'Passport',
         addEntityTypeString: 'Add passport',
-        editEntityTypeString: 'Edit passport'
+        editEntityTypeString: 'Edit passport',
+        deleteEntityTypeString: 'Delete passport',
       },
       {
         typeName: 1,
         typeNameAsString: 'Driver\'s license',
         addEntityTypeString: 'Add driver\'s license',
-        editEntityTypeString: 'Edit driver\'s license'
+        editEntityTypeString: 'Edit driver\'s license',
+        deleteEntityTypeString: 'Delete driver\'s license',
       },
       {
         typeName: 2,
         typeNameAsString: 'Vehicle',
         addEntityTypeString: 'Add vehicle',
-        editEntityTypeString: 'Edit vehicle'
+        editEntityTypeString: 'Edit vehicle',
+        deleteEntityTypeString: 'Delete vehicle',
       },
     ];
     for (const index in expectedEntityTypesList) {

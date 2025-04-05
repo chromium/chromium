@@ -394,6 +394,7 @@ class CORE_EXPORT Node : public EventTarget {
   }
   virtual PseudoId GetPseudoId() const { return kPseudoIdNone; }
   virtual PseudoId GetPseudoIdForStyling() const { return kPseudoIdNone; }
+  virtual const AtomicString& GetPseudoArgument() const { return g_null_atom; }
 
   CustomElementState GetCustomElementState() const {
     return static_cast<CustomElementState>(node_flags_ &

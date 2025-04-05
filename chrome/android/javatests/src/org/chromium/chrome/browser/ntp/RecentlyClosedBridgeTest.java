@@ -27,8 +27,8 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -1057,7 +1057,7 @@ public class RecentlyClosedBridgeTest {
     /** Tests opening a specific closed group and that it persists across restarts. */
     @Test
     @LargeTest
-    @DisabledTest(message = "https://crbug.com/407607684")
+    @RequiresRestart
     public void testOpenRecentlyClosedEntry_Group_FromGroupClosure_WithRestart() {
         if (mTabGroupModelFilter == null) return;
 
@@ -1107,7 +1107,7 @@ public class RecentlyClosedBridgeTest {
         // 3. tabB restored in new tab.
         // 4. tabC restored in new tab.
         final List<Tab> tabs = getAllTabs();
-        Assert.assertEquals(4, tabs.size());
+        Assert.assertEquals("Expected 4 tabs. Was " + tabsToString(tabs), 4, tabs.size());
         Assert.assertEquals(titles[2], ChromeTabUtils.getTitleOnUiThread(tabs.get(1)));
         Assert.assertEquals(urls[2], ChromeTabUtils.getUrlOnUiThread(tabs.get(1)).getSpec());
         Assert.assertEquals(titles[1], ChromeTabUtils.getTitleOnUiThread(tabs.get(2)));
@@ -1785,5 +1785,19 @@ public class RecentlyClosedBridgeTest {
 
     private void closeTabs(TabClosureParams params) {
         mTabModel.getTabRemover().closeTabs(params, /* allowDialog= */ false);
+    }
+
+    private String tabsToString(List<Tab> tabs) {
+        StringBuilder builder = new StringBuilder();
+        builder.append("[");
+        for (Tab tab : tabs) {
+            builder.append("Tab id: ");
+            builder.append(tab.getId());
+            builder.append(" url: ");
+            builder.append(tab.getUrl().getSpec());
+            builder.append(", ");
+        }
+        builder.append("]");
+        return builder.toString();
     }
 }

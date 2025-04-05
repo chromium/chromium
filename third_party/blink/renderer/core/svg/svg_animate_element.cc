@@ -244,7 +244,98 @@ SVGPropertyBase* SVGAnimateElement::CreatePropertyForAttributeAnimation(
   // http://www.w3.org/TR/SVG/single-page.html#animate-AnimateTransformElement
   DCHECK_NE(type_, kAnimatedTransformList);
   DCHECK(target_property_);
-  return target_property_->BaseValueBase().CloneForAnimation(value);
+  const SVGPropertyBase& base_value = target_property_->BaseValueBase();
+  switch (base_value.GetType()) {
+    case kAnimatedAngle: {
+      auto* property = MakeGarbageCollected<SVGAngle>();
+      property->SetValueAsString(value);
+      return property;
+    }
+    case kAnimatedBoolean: {
+      auto* property = MakeGarbageCollected<SVGBoolean>();
+      property->SetValueAsString(value);
+      return property;
+    }
+    case kAnimatedEnumeration: {
+      auto* property = To<SVGEnumeration>(base_value).Clone();
+      property->SetValueAsString(value);
+      return property;
+    }
+    case kAnimatedInteger: {
+      auto* property = MakeGarbageCollected<SVGInteger>();
+      property->SetValueAsString(value);
+      return property;
+    }
+    case kAnimatedIntegerOptionalInteger: {
+      auto* property = MakeGarbageCollected<SVGIntegerOptionalInteger>(
+          MakeGarbageCollected<SVGInteger>(0),
+          MakeGarbageCollected<SVGInteger>(0));
+      property->SetValueAsString(value);
+      return property;
+    }
+    case kAnimatedLength: {
+      auto* property =
+          MakeGarbageCollected<SVGLength>(To<SVGLength>(base_value).UnitMode());
+      property->SetValueAsString(value);
+      return property;
+    }
+    case kAnimatedLengthList: {
+      auto* property = MakeGarbageCollected<SVGLengthList>(
+          To<SVGLengthList>(base_value).UnitMode());
+      property->SetValueAsString(value);
+      return property;
+    }
+    case kAnimatedNumber: {
+      auto* property = MakeGarbageCollected<SVGNumber>();
+      property->SetValueAsString(value);
+      return property;
+    }
+    case kAnimatedNumberList: {
+      auto* property = MakeGarbageCollected<SVGNumberList>();
+      property->SetValueAsString(value);
+      return property;
+    }
+    case kAnimatedNumberOptionalNumber: {
+      auto* property = MakeGarbageCollected<SVGNumberOptionalNumber>(
+          MakeGarbageCollected<SVGNumber>(0),
+          MakeGarbageCollected<SVGNumber>(0));
+      property->SetValueAsString(value);
+      return property;
+    }
+    case kAnimatedPath: {
+      auto* property = MakeGarbageCollected<SVGPath>();
+      property->SetValueAsString(value);
+      return property;
+    }
+    case kAnimatedPoints: {
+      auto* property = MakeGarbageCollected<SVGPointList>();
+      property->SetValueAsString(value);
+      return property;
+    }
+    case kAnimatedPreserveAspectRatio: {
+      auto* property = MakeGarbageCollected<SVGPreserveAspectRatio>();
+      property->SetValueAsString(value);
+      return property;
+    }
+    case kAnimatedRect: {
+      auto* property = MakeGarbageCollected<SVGRect>();
+      property->SetValueAsString(value);
+      return property;
+    }
+    case kAnimatedString:
+      return MakeGarbageCollected<SVGString>(value);
+
+    // The following are either not animated or are not animated as
+    // attributeType=XML. <animateTransform> handles the transform-list case.
+    case kAnimatedUnknown:
+    case kAnimatedColor:
+    case kAnimatedPoint:
+    case kAnimatedStringList:
+    case kAnimatedTransform:
+    case kAnimatedTransformList:
+    case kNumberOfAnimatedPropertyTypes:
+      NOTREACHED();
+  }
 }
 
 SVGPropertyBase* SVGAnimateElement::CreateUnderlyingValueForAttributeAnimation()
@@ -293,7 +384,7 @@ SVGPropertyBase* SVGAnimateElement::CreateUnderlyingValueForAttributeAnimation()
     case kAnimatedStringList:
     case kAnimatedTransform:
     case kAnimatedTransformList:
-    default:
+    case kNumberOfAnimatedPropertyTypes:
       NOTREACHED();
   }
 }

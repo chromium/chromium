@@ -60,6 +60,7 @@ import type {PowerBookmarksLabelsElement} from './power_bookmarks_labels.js';
 import {getTemplate} from './power_bookmarks_list.html.js';
 import type {Label} from './power_bookmarks_service.js';
 import {editingDisabledByPolicy, PowerBookmarksService} from './power_bookmarks_service.js';
+import type {PowerBookmarksDelegate} from './power_bookmarks_service.js';
 import {getFolderLabel} from './power_bookmarks_utils.js';
 
 const ADD_FOLDER_ACTION_UMA = 'Bookmarks.FolderAddedFromSidePanel';
@@ -116,7 +117,8 @@ interface SectionVisibility {
   footer?: boolean;
 }
 
-export class PowerBookmarksListElement extends PolymerElement {
+export class PowerBookmarksListElement extends PolymerElement implements
+    PowerBookmarksDelegate {
   static get is() {
     return 'power-bookmarks-list';
   }
@@ -385,20 +387,19 @@ export class PowerBookmarksListElement extends PolymerElement {
     this.hasLoadedData_ = true;
   }
 
-  onBookmarkChanged(id: string, changedInfo: chrome.bookmarks.ChangeInfo) {
+  onBookmarkChanged(id: string) {
     const bookmark = this.bookmarksService_.findBookmarkWithId(id)!;
      this.updatedElementIds_ = [bookmark.id];
     if (this.bookmarkShouldShow_(bookmark) ||
         this.bookmarkIsShowing_(bookmark)) {
       this.updateDisplayLists_();
     }
-    Object.keys(changedInfo).forEach(key => {
-      this.notifyPathIfVisible_(id, key);
-    });
+    this.notifyPathIfVisible_(id, 'title');
+    this.notifyPathIfVisible_(id, 'url');
     this.updateShoppingData_();
   }
 
-  onBookmarkCreated(
+  onBookmarkAdded(
       bookmark: chrome.bookmarks.BookmarkTreeNode,
       parent: chrome.bookmarks.BookmarkTreeNode) {
     if (this.bookmarkShouldShow_(bookmark)) {
@@ -898,11 +899,11 @@ export class PowerBookmarksListElement extends PolymerElement {
     let parentId = event.detail.folderId;
     for (const folder of event.detail.newFolders) {
       chrome.metricsPrivate.recordUserAction(ADD_FOLDER_ACTION_UMA);
-      const newFolder =
+      const result: {newFolderId: string} =
           await this.bookmarksApi_.createFolder(folder.parentId!, folder.title);
-      folder.children!.forEach(child => child.parentId = newFolder.id);
+      folder.children!.forEach(child => child.parentId = result.newFolderId);
       if (folder.id === parentId) {
-        parentId = newFolder.id;
+        parentId = result.newFolderId;
       }
       // Removing folders added in edit menu while editing a bookmark as they
       // are made with TEMP_FOLDER_ID_PREFIX bookmark-id and are again created
@@ -1057,8 +1058,8 @@ export class PowerBookmarksListElement extends PolymerElement {
     chrome.metricsPrivate.recordUserAction(ADD_FOLDER_ACTION_UMA);
     this.bookmarksApi_
         .createFolder(newParent.id, loadTimeData.getString('newFolderTitle'))
-        .then((newFolder) => {
-          this.renamingId_ = newFolder.id;
+        .then((result: {newFolderId: string}) => {
+          this.renamingId_ = result.newFolderId;
         });
   }
 

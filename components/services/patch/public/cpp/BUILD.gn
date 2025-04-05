@@ -9,7 +9,9 @@ source_set("cpp") {
   ]
 
   public_deps = [
+    "//base",
     "//components/services/patch/public/mojom",
+    "//components/zucchini:zucchini_lib",
     "//mojo/public/cpp/bindings",
   ]
 }

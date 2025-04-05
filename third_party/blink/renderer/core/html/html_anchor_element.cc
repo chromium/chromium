@@ -829,6 +829,14 @@ void HTMLAnchorElementBase::Trace(Visitor* visitor) const {
 HTMLAnchorElement::HTMLAnchorElement(Document& document)
     : HTMLAnchorElementBase(html_names::kATag, document) {}
 
+void HTMLAnchorElement::AttachLayoutTree(AttachContext& context) {
+  // It's ok to set the update flag here, since update traversal will only
+  // happen if there are elements with scroll-marker-contain property set, and
+  // if there are some, the update traversal will happen anyway.
+  GetDocument().SetNeedsScrollMarkerGroupRelationsUpdate();
+  HTMLAnchorElementBase::AttachLayoutTree(context);
+}
+
 void HTMLAnchorElement::DetachLayoutTree(bool performing_reattach) {
   if (ScrollMarkerGroupData* data = GetScrollMarkerGroupContainerData()) {
     data->RemoveFromFocusGroup(*this);

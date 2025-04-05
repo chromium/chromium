@@ -20,6 +20,8 @@ source_set("messaging") {
     "message_service_bindings.cc",
     "messaging_delegate.cc",
     "messaging_delegate.h",
+    "native_message_port.cc",
+    "native_message_port.h",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
@@ -49,6 +51,7 @@ source_set("native_messaging") {
   sources = [
     "native_message_host.cc",
     "native_message_host.h",
+    "native_message_port_dispatcher.h",
     "native_messaging_channel.h",
   ]
 

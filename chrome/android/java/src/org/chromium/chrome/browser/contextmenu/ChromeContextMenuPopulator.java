@@ -180,6 +180,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             Action.BACK,
             Action.FORWARD,
             Action.RELOAD,
+            Action.INSPECT_ELEMENT,
         })
         @Retention(RetentionPolicy.SOURCE)
         public @interface Action {
@@ -230,7 +231,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             int BACK = 44;
             int FORWARD = 45;
             int RELOAD = 46;
-            int NUM_ENTRIES = 47;
+            int INSPECT_ELEMENT = 47;
+            int NUM_ENTRIES = 48;
         }
     }
 
@@ -293,6 +295,13 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                 && DeviceInput.supportsAlphabeticKeyboard()
                 && DeviceInput.supportsPrecisionPointer()
                 && ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXT_MENU_EMPTY_SPACE);
+    }
+
+    @VisibleForTesting
+    boolean shouldShowDeveloperMenu() {
+        return DeviceFormFactor.isDesktop()
+                && DeviceInput.supportsAlphabeticKeyboard()
+                && DeviceInput.supportsPrecisionPointer();
     }
 
     @Override
@@ -526,6 +535,11 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             }
         }
 
+        if (shouldShowDeveloperMenu()) {
+            ModelList developerGroup = new ModelList();
+            developerGroup.add(createListItem(Item.INSPECT_ELEMENT));
+            groupedItems.add(new Pair<>(R.string.contextmenu_developer_title, developerGroup));
+        }
         return groupedItems;
     }
 
@@ -778,6 +792,10 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                     mParams.getReferrer(),
                     /* navigateToTab= */ true,
                     /* additionalNavigationParams= */ null);
+        } else if (itemId == R.id.contextmenu_inspect_element) {
+            recordContextMenuSelection(ContextMenuUma.Action.INSPECT_ELEMENT);
+            mNativeDelegate.inspectElement(
+                    mParams.getTriggeringTouchXDp(), mParams.getTriggeringTouchYDp());
         } else {
             assert false;
         }

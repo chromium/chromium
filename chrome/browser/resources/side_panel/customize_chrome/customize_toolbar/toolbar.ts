@@ -51,9 +51,9 @@ export class ToolbarElement extends ToolbarElementBase {
   private handler_: CustomizeToolbarHandlerInterface;
   private listenerIds_: number[] = [];
 
-  protected actions_: Action[] = [];
-  protected categories_: Category[] = [];
-  protected resetToDefaultDisabled_: boolean = true;
+  protected accessor actions_: Action[] = [];
+  protected accessor categories_: Category[] = [];
+  protected accessor resetToDefaultDisabled_: boolean = true;
 
   constructor() {
     super();

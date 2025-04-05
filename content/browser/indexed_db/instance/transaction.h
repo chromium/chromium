@@ -22,18 +22,22 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_id.h"
+#include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
+#include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
+#include "components/services/storage/privileged/mojom/indexed_db_internals_types.mojom-forward.h"
 #include "content/browser/indexed_db/indexed_db_database_error.h"
 #include "content/browser/indexed_db/indexed_db_external_object_storage.h"
-#include "content/browser/indexed_db/instance/backing_store.h"
-#include "content/browser/indexed_db/instance/connection.h"
+#include "content/browser/indexed_db/instance/bucket_context_handle.h"
+#include "content/browser/indexed_db/status.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
-#include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-forward.h"
+#include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 
 namespace content::indexed_db {
 
+class Connection;
 class Cursor;
-class DatabaseCallbacks;
+class Database;
 
 // Corresponds to the IndexedDB API notion of transaction and has a 1:1
 // relationship with IDBTransaction in Blink.
@@ -50,14 +54,35 @@ class CONTENT_EXPORT Transaction : public blink::mojom::IDBTransaction {
     FINISHED,    // Either aborted or committed.
   };
 
+  // This interface wraps state and actions executed on the backing store by the
+  // store-agnostic `Transaction`, and is to be implemented by backends such as
+  // LevelDB or SQLite.
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+
+    // For now, refer to comments in BackingStore::Transaction for
+    // documentation.
+    virtual void Begin(std::vector<PartitionedLock> locks) = 0;
+    virtual Status CommitPhaseOne(BlobWriteCallback callback) = 0;
+    virtual Status CommitPhaseTwo() = 0;
+    virtual void Rollback() = 0;
+
+    // Called after the transaction is aborted or completed.
+    // TODO(crbug.com/40253999): can this be removed in favor of deleting the
+    // object?
+    virtual void Reset() = 0;
+  };
+
   static void DisableInactivityTimeoutForTesting();
 
   Transaction(int64_t id,
               Connection* connection,
               const std::set<int64_t>& object_store_ids,
               blink::mojom::IDBTransactionMode mode,
+              blink::mojom::IDBTransactionDurability durability,
               BucketContextHandle bucket_context,
-              BackingStore::Transaction* backing_store_transaction);
+              std::unique_ptr<Delegate> backing_store_transaction);
   ~Transaction() override;
 
   void BindReceiver(
@@ -135,12 +160,11 @@ class CONTENT_EXPORT Transaction : public blink::mojom::IDBTransaction {
   // `GetIdbInternalsMetadata` is changed in a significant way.
   void NotifyOfIdbInternalsRelevantChange();
 
-  BackingStore::Transaction* BackingStoreTransaction() {
+  Delegate* BackingStoreTransaction() {
     return backing_store_transaction_.get();
   }
   int64_t id() const { return id_; }
 
-  DatabaseCallbacks* callbacks() const { return connection()->callbacks(); }
   Connection* connection() const { return connection_.get(); }
   bool is_commit_pending() const { return is_commit_pending_; }
   int64_t num_errors_sent() const { return num_errors_sent_; }
@@ -229,6 +253,7 @@ class CONTENT_EXPORT Transaction : public blink::mojom::IDBTransaction {
   const int64_t id_;
   const std::set<int64_t> object_store_ids_;
   const blink::mojom::IDBTransactionMode mode_;
+  const blink::mojom::IDBTransactionDurability durability_;
 
   bool used_ = false;
   State state_ = CREATED;
@@ -286,7 +311,7 @@ class CONTENT_EXPORT Transaction : public blink::mojom::IDBTransaction {
   TaskQueue preemptive_task_queue_;
   TaskStack abort_task_stack_;
 
-  std::unique_ptr<BackingStore::Transaction> backing_store_transaction_;
+  std::unique_ptr<Delegate> backing_store_transaction_;
   bool backing_store_transaction_begun_ = false;
 
   int pending_preemptive_events_ = 0;

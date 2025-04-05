@@ -184,14 +184,6 @@ void StringKeyframe::RemoveCustomCSSProperty(const PropertyHandle& property) {
   input_properties_.erase(property);
 }
 
-bool StringKeyframe::HasCssProperty() const {
-  for (const PropertyHandle& property : Properties()) {
-    if (property.IsCSSProperty())
-      return true;
-  }
-  return false;
-}
-
 void StringKeyframe::AddKeyframePropertiesToV8Object(
     V8ObjectBuilder& object_builder,
     Element* element) const {
@@ -315,15 +307,6 @@ void StringKeyframe::CSSPropertySpecificKeyframe::Trace(
   visitor->Trace(tree_scope_);
   visitor->Trace(compositor_keyframe_value_cache_);
   Keyframe::PropertySpecificKeyframe::Trace(visitor);
-}
-
-Keyframe::PropertySpecificKeyframe*
-StringKeyframe::CSSPropertySpecificKeyframe::CloneWithOffset(
-    double offset) const {
-  auto* clone = MakeGarbageCollected<CSSPropertySpecificKeyframe>(
-      offset, easing_, value_.Get(), tree_scope_.Get(), composite_);
-  clone->compositor_keyframe_value_cache_ = compositor_keyframe_value_cache_;
-  return clone;
 }
 
 // ----- Property Resolver -----

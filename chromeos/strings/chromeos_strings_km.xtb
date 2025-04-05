@@ -351,6 +351,7 @@
 <translation id="2438248248625638801">កំពុង​បង្កើត​ចំណងជើង​ខ្លឹមសារថត</translation>
 <translation id="2446553403094072641">ភាពត្រឹមត្រូវនៃ​ពិន្ទុអណ្ដែត</translation>
 <translation id="2448312741937722512">ប្រភេទ</translation>
+<translation id="2448857983905133469">ឧបករណ៍​ថ្នាក់</translation>
 <translation id="2468124392950503650">ជ្រើសរើស​សារតម្រុយ ដើម្បីបង្កើត ឬមើល<ph name="BEGIN_LINK_PROMPTING_GUIDE" />ការណែនាំ​អំពី​សារតម្រុយ<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">ប្រើ "ជួយខ្ញុំក្នុងការសរសេរ" ដើម្បីបង្កើតសេចក្ដីព្រាង ឬកែលម្អស្នាដៃដែលមានស្រាប់ ដែលដំណើរការដោយ Google AI</translation>
 <translation id="2475982808118771221">កំហុសឆ្គងមួយបានកើតឡើង</translation>
@@ -449,6 +450,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">Endpoint</translation>
 <translation id="3060579846059757016">គ្រោង</translation>
+<translation id="3060798442805232711">ឧបករណ៍​ថ្នាក់​កំពុងប្រើ​មីក្រូហ្វូន​របស់អ្នក</translation>
 <translation id="3061850252076394168">បើក​មុខងារជ្រើសរើសដើម្បីអាន</translation>
 <translation id="3066772729299747758">នៅថ្ងៃអង្គារ</translation>
 <translation id="3069085583900247081">ការធ្វើតេស្ត​​មិនបានសម្រេចទេ</translation>
@@ -458,7 +460,6 @@
 <translation id="3084958266922136097">បិទធាតុរក្សាអេក្រង់</translation>
 <translation id="3091839911843451378">មិនបានសម្រេច - ​​​ម៉ាស៊ីន​បោះពុម្ពបានឈប់</translation>
 <translation id="3102119246920354026">ឃ្លាំងបម្រុង</translation>
-<translation id="3112413615003385433">គ្រូ​របស់អ្នក​បានដក​ខ្លឹមសារ​ចេញពី School Tools</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">អាង​ហែលទឹក</translation>
 <translation id="3122883569442693641">ព័ត៌មានលម្អិតបន្ថែម</translation>
@@ -539,7 +540,6 @@
 <translation id="3488065109653206955">បានធ្វើសកម្មភាពតាមផ្នែក</translation>
 <translation id="3492882532495507361">ការិយាល័យ<ph name="OFFICE_STYLE" />ដែល​មានពណ៌<ph name="OFFICE_COLOR" /></translation>
 <translation id="3493187369049186498">ទិន្នន័យត្រូវបានវាស់ដោយ Chromebook របស់អ្នក។ ការវាស់នេះអាចខុសពីទិន្នន័យរបស់ក្រុមហ៊ុនផ្ដល់សេវាកម្ម។</translation>
-<translation id="349570724365779960">School Tools ត្រូវបាន​ភ្ជាប់​ជាមួយ​សិស្ស</translation>
 <translation id="3502426834823382181">មើល​កម្មវិធី​ទាំងអស់</translation>
 <translation id="3510890413042482857">ផ្ញើ<ph name="BEGIN_LINK1" />ទិន្នន័យដានប្រតិបត្តិការ<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">កំណែថ្មី ChromeOS</translation>
@@ -547,7 +547,6 @@
 <translation id="353214771040290298">កែរួចរាល់</translation>
 <translation id="3532980081107202182">នៅសល់ប្រហែល <ph name="MIN_REMAINING" /> នាទីទៀត</translation>
 <translation id="3533790840489634638">អាងហែល​ទឹក</translation>
-<translation id="3535802910192338629">គ្រូ​របស់អ្នក​បានបញ្ចូល​ខ្លឹមសារថ្មី​នៅក្នុង School Tools</translation>
 <translation id="3547264467365135390">រូបមន្ត</translation>
 <translation id="3557205324756024651">អត្តសញ្ញាណ​មូលដ្ឋាន (មិនតម្រូវ)</translation>
 <translation id="3565064564551103223">IP ដែលត្រូវបាន​អនុញ្ញាត</translation>
@@ -913,6 +912,7 @@
 <translation id="5170568018924773124">បង្ហាញនៅក្នុងថតឯកសារ</translation>
 <translation id="517075088756846356">ដករួចដោតខ្សែ​ភ្លើង <ph name="DEVICE_NAME" /> វិញ ដើម្បីបន្តដំណើរការដំឡើងកំណែ</translation>
 <translation id="5180108905184566358">ដើម​បេអូបាប</translation>
+<translation id="5180431943345994173">គ្រូ​របស់អ្នក​បានដក​ខ្លឹមសារ​ចេញពី​ឧបករណ៍​ថ្នាក់</translation>
 <translation id="5180712487038406644">បង្ហាញអារម្មណ៍</translation>
 <translation id="5190187232518914472">រំឭកអនុស្សាវរីយ៍​ដែលអ្នក​ចូលចិត្ត។ ដើម្បីបញ្ចូល ឬ​កែអាល់ប៊ុម សូមចូល​ទៅកាន់ <ph name="LINK_BEGIN" />Google រូបថត<ph name="LINK_END" />។</translation>
 <translation id="5212593641110061691">កាសែតខ្នាតតូច</translation>
@@ -1006,6 +1006,7 @@
 <translation id="5628106863521633649">ភាសាដែល​អាចប្រើបាន</translation>
 <translation id="5630438231335788050">បូហូស</translation>
 <translation id="5631759159893697722">ចំណុច​សំខាន់</translation>
+<translation id="5655084389678168978">គ្រូ​របស់អ្នក​បានបញ្ចូល​ខ្លឹមសារថ្មី​នៅក្នុង​ឧបករណ៍​ថ្នាក់</translation>
 <translation id="5655283760733841251">គ្រាប់ចុចព្រួញឡើងលើសម្រាប់បង្កើនពន្លឺក្ដារចុច</translation>
 <translation id="5655296450510165335">ការចុះឈ្មោះឧបករណ៍</translation>
 <translation id="5655776422854483175">គ្មានការងារបោះពុម្ពទេ</translation>
@@ -1441,7 +1442,6 @@
 <translation id="7544853251252956727">ច្របល់</translation>
 <translation id="7550715992156305117">ការធ្វើតេស្ត​តាមការកំណត់</translation>
 <translation id="7551123448725492271">ឧបករណ៍គឺជាឧបករណ៍សំឡេង។</translation>
-<translation id="7553913964854052228">School Tools កំពុង​ប្រើប្រាស់​មីក្រូហ្វូន​របស់អ្នក</translation>
 <translation id="7559239713112547082">មើលរូបថតអេក្រង់សាកល្បង</translation>
 <translation id="7561454561030345039">សកម្មភាពនេះត្រូវបានគ្រប់គ្រងដោយអ្នកគ្រប់គ្រងរបស់អ្នក</translation>
 <translation id="7561759921596375678">បើក​កម្រិត​សំឡេង</translation>
@@ -1533,6 +1533,7 @@
 <translation id="7971535376154084247">ការ​គ្រប់គ្រង​ទូទៅ</translation>
 <translation id="7977800524392185497">ដើម្បីចូលរួមបណ្ដាញ <ph name="NETWORK_NAME" /> សូមចូលទៅកាន់ការកំណត់</translation>
 <translation id="7978412674231730200">សោឯកជន</translation>
+<translation id="7979468455552394856">ឧបករណ៍​ថ្នាក់​ត្រូវបាន​ភ្ជាប់ជាមួយ​សិស្ស</translation>
 <translation id="7982789257301363584">បណ្តាញ</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" ត្រូវបានចាប់ផ្តើមដោយស្វ័យប្រវត្តិ}other{កម្មវិធីចំនួន # ត្រូវបានចាប់ផ្ដើមដោយស្វ័យប្រវត្តិ}}</translation>
 <translation id="7994702968232966508">វិធីសាស្ត្រ EAP</translation>
@@ -1664,7 +1665,6 @@
 <translation id="8576249514688522074">មិនបាន​ចាប់​ផ្ដើម</translation>
 <translation id="8584654835905316966">តម្រូវឱ្យចាប់ផ្ដើម​ឡើងវិញ ដើម្បីបញ្ចប់ការដំឡើងកម្មវិធី​បង្កប់សម្រាប់ <ph name="DEVICE_NAME" /> ទៅកំណែ <ph name="VERSION" />។ កុំព្យូទ័ររបស់អ្នកប្រហែលជាចាប់​ផ្ដើម​ឡើង​វិញច្រើនដង។ លក្ខណៈដំណើរការនេះត្រូវបានរំពឹងទុក។</translation>
 <translation id="8593058461203131755">ផ្អាក​មេឌៀ</translation>
-<translation id="8619169570378509764">School Tools</translation>
 <translation id="8620617069779373398">ស្ថានភាពរ៉ូមីង</translation>
 <translation id="8626489604350149811">សកម្មភាព​ច្រើន​ទៀត​សម្រាប់ <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">ស្វាយ​ខ្ចី</translation>

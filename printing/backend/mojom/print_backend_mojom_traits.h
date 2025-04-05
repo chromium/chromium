@@ -5,6 +5,7 @@
 #ifndef PRINTING_BACKEND_MOJOM_PRINT_BACKEND_MOJOM_TRAITS_H_
 #define PRINTING_BACKEND_MOJOM_PRINT_BACKEND_MOJOM_TRAITS_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -39,6 +40,28 @@ struct StructTraits<printing::mojom::PrinterBasicInfoDataView,
                    printing::PrinterBasicInfo* out);
 };
 
+#if BUILDFLAG(IS_CHROMEOS)
+template <>
+struct StructTraits<printing::mojom::PaperMarginsDataView,
+                    printing::PaperMargins> {
+  static int32_t top_margin_um(const printing::PaperMargins& m) {
+    return m.top_margin_um;
+  }
+  static int32_t right_margin_um(const printing::PaperMargins& m) {
+    return m.right_margin_um;
+  }
+  static int32_t bottom_margin_um(const printing::PaperMargins& m) {
+    return m.bottom_margin_um;
+  }
+  static int32_t left_margin_um(const printing::PaperMargins& m) {
+    return m.left_margin_um;
+  }
+
+  static bool Read(printing::mojom::PaperMarginsDataView data,
+                   printing::PaperMargins* out);
+};
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 template <>
 struct StructTraits<printing::mojom::PaperDataView,
                     printing::PrinterSemanticCapsAndDefaults::Paper> {
@@ -66,6 +89,12 @@ struct StructTraits<printing::mojom::PaperDataView,
       const printing::PrinterSemanticCapsAndDefaults::Paper& p) {
     return p.has_borderless_variant();
   }
+#if BUILDFLAG(IS_CHROMEOS)
+  static const std::optional<printing::PaperMargins>& supported_margins_um(
+      const printing::PrinterSemanticCapsAndDefaults::Paper& p) {
+    return p.supported_margins_um();
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   static bool Read(printing::mojom::PaperDataView data,
                    printing::PrinterSemanticCapsAndDefaults::Paper* out);

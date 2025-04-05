@@ -994,8 +994,10 @@ void LayerTreeImpl::PushPropertiesTo(LayerTreeImpl* target_tree) {
     target_tree->clear_delegated_ink_metadata();
   }
 
-  for (auto& request : TakeViewTransitionRequests())
+  for (auto& request : TakeViewTransitionRequests(
+           /*should_set_needs_update_draw_properties=*/true)) {
     target_tree->AddViewTransitionRequest(std::move(request));
+  }
 
   // Make sure that property tree based changes are moved to layers
   // and draw properties are invalidated.
@@ -3036,8 +3038,9 @@ void LayerTreeImpl::AddViewTransitionRequest(
 }
 
 std::vector<std::unique_ptr<ViewTransitionRequest>>
-LayerTreeImpl::TakeViewTransitionRequests() {
-  if (HasViewTransitionRequests()) {
+LayerTreeImpl::TakeViewTransitionRequests(
+    bool should_set_needs_update_draw_properties) {
+  if (HasViewTransitionRequests() && should_set_needs_update_draw_properties) {
     set_needs_update_draw_properties();
   }
   return std::move(view_transition_requests_);

@@ -4,6 +4,8 @@
 
 #include "components/printing/common/cloud_print_cdd_conversion.h"
 
+#include <string>
+
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "printing/backend/print_backend.h"
@@ -14,6 +16,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "base/test/scoped_feature_list.h"
+#include "base/test/with_feature_override.h"
 #include "printing/printing_features.h"  // nogncheck
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -295,6 +298,43 @@ constexpr char kExpectedFitToPageSingleValue[] = R"json({
       "type": "AUTO_FIT"
    }
 ]})json";
+
+constexpr char kExpectedMargins[] = R"json({
+  "option": [
+    {
+      "bottom_microns": 200,
+      "left_microns": 200,
+      "right_microns": 100,
+      "top_microns": 100,
+      "is_default": true
+    }, {
+      "bottom_microns": 0,
+      "left_microns": 0,
+      "right_microns": 0,
+      "top_microns": 0
+    }
+]})json";
+
+constexpr char kExpectedMarginsWiderPaper[] = R"json({
+  "option": [
+    {
+      "bottom_microns": 200,
+      "left_microns": 200,
+      "right_microns": 100,
+      "top_microns": 100,
+      "is_default": true
+    }, {
+      "bottom_microns": 0,
+      "left_microns": 0,
+      "right_microns": 0,
+      "top_microns": 0
+    }, {
+      "bottom_microns": 500,
+      "left_microns": 1000,
+      "right_microns": 700,
+      "top_microns": 200
+    }
+]})json";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
@@ -353,12 +393,23 @@ const base::Value::Dict* GetPrinterDict(const base::Value& caps_value) {
 
 }  // namespace
 
-TEST(CloudPrintCddConversionTest, ValidCloudPrintCddConversion) {
 #if BUILDFLAG(IS_CHROMEOS)
-  base::test::ScopedFeatureList feature_list(
-      printing::features::kApiPrintingMarginsAndScale);
-#endif  // BUILDFLAG(IS_CHROMEOS)
+class CloudPrintCddConversionParamTest : public base::test::WithFeatureOverride,
+                                         public testing::Test {
+ public:
+  CloudPrintCddConversionParamTest()
+      : base::test::WithFeatureOverride(
+            printing::features::kApiPrintingMarginsAndScale) {}
 
+  bool UsePrinterMarginsAndScale() const { return IsParamFeatureEnabled(); }
+};
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(CloudPrintCddConversionParamTest);
+
+TEST_P(CloudPrintCddConversionParamTest, ValidCloudPrintCddConversion) {
+#else
+TEST(CloudPrintCddConversionTest, ValidCloudPrintCddConversion) {
+#endif
   const printing::PrinterSemanticCapsAndDefaults input =
       printing::GenerateSamplePrinterSemanticCapsAndDefaults({});
   const base::Value output = PrinterSemanticCapsAndDefaultsToCdd(input);
@@ -366,7 +417,8 @@ TEST(CloudPrintCddConversionTest, ValidCloudPrintCddConversion) {
   ASSERT_TRUE(printer_dict);
   size_t expected_dict_size = 9;
 #if BUILDFLAG(IS_CHROMEOS)
-  ++expected_dict_size;
+  expected_dict_size = UsePrinterMarginsAndScale() ? expected_dict_size + 2
+                                                   : expected_dict_size + 1;
 #endif  // BUILDFLAG(IS_CHROMEOS)
   ASSERT_EQ(expected_dict_size, printer_dict->size());
   EXPECT_THAT(
@@ -390,6 +442,12 @@ TEST(CloudPrintCddConversionTest, ValidCloudPrintCddConversion) {
   EXPECT_THAT(printer_dict->Find("pin"),
               Pointee(base::test::IsJson(kExpectedPinSupportedFalse)));
   ASSERT_FALSE(printer_dict->contains("fit_to_page"));
+  if (UsePrinterMarginsAndScale()) {
+    EXPECT_THAT(printer_dict->Find("margins"),
+                Pointee(base::test::IsJson(kExpectedMargins)));
+  } else {
+    ASSERT_FALSE(printer_dict->contains("margins"));
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
@@ -408,6 +466,7 @@ TEST(CloudPrintCddConversionTest, MissingEntry) {
 #endif  // BUILDFLAG(IS_CHROMEOS)
   ASSERT_EQ(expected_dict_size, printer_dict->size());
   ASSERT_FALSE(printer_dict->contains("collate"));
+  ASSERT_FALSE(printer_dict->contains("margins"));
 }
 
 TEST(CloudPrintCddConversionTest, CollateDefaultIsFalse) {
@@ -429,26 +488,47 @@ TEST(CloudPrintCddConversionTest, CollateDefaultIsFalse) {
 }
 
 TEST(CloudPrintCddConversionTest, WiderPaper) {
+#if BUILDFLAG(IS_CHROMEOS)
+  base::test::ScopedFeatureList feature_list(
+      printing::features::kApiPrintingMarginsAndScale);
+#endif  // BUILDFLAG(IS_CHROMEOS)
   // Test that a Paper that has a larger width swaps its width and height when
   // converting to a CDD.  Additionally, create the printable area such that
   // none of the margins are equal.  Create margins as so:  left: 1000,
   // bottom: 500, right: 700, top: 200.
   printing::PrinterSemanticCapsAndDefaults input =
       printing::GenerateSamplePrinterSemanticCapsAndDefaults({});
-  input.papers.push_back(printing::PrinterSemanticCapsAndDefaults::Paper(
-      "NA_INDEX_3X5", "15", gfx::Size(127000, 76200),
-      gfx::Rect(1000, 500, 125300, 75500)));
+
+  constexpr gfx::Size kPaperSize(127000, 76200);
+  constexpr gfx::Rect kPrintableArea(1000, 500, 125300, 75500);
+  constexpr int kMaxHeight = 0;
+  constexpr bool kHasBorderlessVariant = false;
+  // Use const as constexpr fails on Android-x86 builds.
+  const std::string kVendorId = "15";
+  const std::string kDisplayName = "NA_INDEX_3X5";
+#if BUILDFLAG(IS_CHROMEOS)
+  input.papers.emplace_back(kDisplayName, kVendorId, kPaperSize, kPrintableArea,
+                            kMaxHeight, kHasBorderlessVariant,
+                            printing::PaperMargins(200, 700, 500, 1000));
+#else
+  input.papers.emplace_back(kDisplayName, kVendorId, kPaperSize, kPrintableArea,
+                            kMaxHeight, kHasBorderlessVariant);
+#endif  // BUILDFLAG(IS_CHROMEOS)
   const base::Value output = PrinterSemanticCapsAndDefaultsToCdd(input);
   const base::Value::Dict* printer_dict = GetPrinterDict(output);
 
   ASSERT_TRUE(printer_dict);
   size_t expected_dict_size = 9;
 #if BUILDFLAG(IS_CHROMEOS)
-  ++expected_dict_size;
+  expected_dict_size += 2;
 #endif  // BUILDFLAG(IS_CHROMEOS)
   ASSERT_EQ(expected_dict_size, printer_dict->size());
   EXPECT_THAT(printer_dict->Find("media_size"),
               Pointee(base::test::IsJson(kExpectedMediaSizeWithWiderPaper)));
+#if BUILDFLAG(IS_CHROMEOS)
+  EXPECT_THAT(printer_dict->Find("margins"),
+              Pointee(base::test::IsJson(kExpectedMarginsWiderPaper)));
+#endif
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -465,7 +545,7 @@ TEST(CloudPrintCddConversionTest, MediaTypeOnlyOne) {
   EXPECT_FALSE(printer_dict->contains("media_type"));
 }
 
-TEST(CloudPrintCddConversionTest, FitToPageAndPinAndAdvancedCapabilities) {
+TEST(CloudPrintCddConversionTest, PinAndAdvancedCapabilities) {
   printing::PrinterSemanticCapsAndDefaults input =
       printing::GenerateSamplePrinterSemanticCapsAndDefaults(
           printing::SampleWithScaleAndPinAndAdvancedCapabilities());
@@ -482,7 +562,20 @@ TEST(CloudPrintCddConversionTest, FitToPageAndPinAndAdvancedCapabilities) {
               .Set("pin", base::test::ParseJson(kExpectedPinSupportedTrue))
               .Set("vendor_capability",
                    base::test::ParseJson(kExpectedAdvancedCapabilities))));
+}
+
+TEST(CloudPrintCddConversionTest, MarginsAndFitToPageCapabilities) {
+  printing::PrinterSemanticCapsAndDefaults input =
+      printing::GenerateSamplePrinterSemanticCapsAndDefaults(
+          printing::SampleWithScaleAndPinAndAdvancedCapabilities());
+  base::Value output = PrinterSemanticCapsAndDefaultsToCdd(input);
+  const base::Value::Dict* printer_dict = GetPrinterDict(output);
+
+  ASSERT_TRUE(printer_dict);
+  size_t expected_dict_size = 11;
+  ASSERT_EQ(expected_dict_size, printer_dict->size());
   EXPECT_FALSE(printer_dict->contains("fit_to_page"));
+  EXPECT_FALSE(printer_dict->contains("margins"));
 
   base::test::ScopedFeatureList feature_list(
       printing::features::kApiPrintingMarginsAndScale);
@@ -491,11 +584,15 @@ TEST(CloudPrintCddConversionTest, FitToPageAndPinAndAdvancedCapabilities) {
   printer_dict = GetPrinterDict(output);
 
   ASSERT_TRUE(printer_dict);
-  ASSERT_EQ(++expected_dict_size, printer_dict->size());
+  expected_dict_size += 2;
+  ASSERT_EQ(expected_dict_size, printer_dict->size());
   EXPECT_THAT(
       *printer_dict,
-      base::test::IsSupersetOfValue(base::Value::Dict().Set(
-          "fit_to_page", base::test::ParseJson(kExpectedFitToPageValues))));
+      base::test::IsSupersetOfValue(
+          base::Value::Dict()
+              .Set("fit_to_page",
+                   base::test::ParseJson(kExpectedFitToPageValues))
+              .Set("margins", base::test::ParseJson(kExpectedMargins))));
 }
 
 TEST(CloudPrintCddConversionTest, FitToPageNoCapability) {

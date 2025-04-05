@@ -345,7 +345,9 @@ struct SnapshotInfo {
   snapshotInfo.baseView = [_delegate
       baseViewWithWebStateInfo:[[WebStateSnapshotInfo alloc]
                                    initWithWebState:_webState.get()]];
-  DCHECK(snapshotInfo.baseView);
+  if (!snapshotInfo.baseView) {
+    return std::nullopt;
+  }
 
   UIEdgeInsets baseViewInsets = [_delegate
       snapshotEdgeInsetsWithWebStateInfo:[[WebStateSnapshotInfo alloc]

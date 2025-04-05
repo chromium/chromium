@@ -6,7 +6,7 @@
  * @fileoverview Add functionality related to getting image data.
  */
 
-import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
 /**
@@ -116,4 +116,4 @@ function getImageDataByXMLHttpRequest(
   xhr.send();
 }
 
-gCrWeb.imageFetch = {getImageData};
+gCrWebLegacy.imageFetch = {getImageData};

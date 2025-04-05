@@ -157,8 +157,6 @@ const char kDisableSkiaGraphitePrecompilation[] =
 const char kEnableSkiaGraphitePrecompilation[] =
     "enable-skia-graphite-precompilation";
 
-const char kShaderCachePath[] = "shader-cache-path";
-
 // Try to use a redistributable DirectML.dll. Used for testing WebNN
 // against newer DirectML release before it is integrated into Windows OS.
 // Please see more info about DirectML releases at:

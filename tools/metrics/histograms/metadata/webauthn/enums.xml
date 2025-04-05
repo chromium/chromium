@@ -364,6 +364,8 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Renewal failed"/>
 </enum>
 
+<!-- LINT.IfChange(PinRenewalFailureCauseEnum) -->
+
 <enum name="WebAuthenticationPinRenewalFailureCause">
   <int value="1" label="Renewal failed while downloading XML files"/>
   <int value="2" label="Renewal failed getting access token"/>
@@ -373,7 +375,12 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Renewal failed parsing enclave response (2)"/>
   <int value="7" label="Renewal failed uploading to recovery key store"/>
   <int value="8" label="Renewal failed joining the PIN to the domain"/>
+  <int value="9" label="Tried to renew but the security domain reports no PIN"/>
+  <int value="10"
+      label="Renewal failed because the security domain has been reset"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/webauthn/enclave_manager.h:PinRenewalFailureCause) -->
 
 <enum name="WebAuthenticationRequestMode">
   <int value="0" label="WebAuthn Modal Request"/>

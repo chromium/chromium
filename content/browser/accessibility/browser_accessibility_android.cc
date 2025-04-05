@@ -479,11 +479,9 @@ bool BrowserAccessibilityAndroid::IsInterestingOnAndroid() const {
     return false;
   }
 
-  // Otherwise, the interesting nodes are leaf nodes with non-whitespace text.
-  return IsLeaf() && (!base::ContainsOnlyChars(GetTextContentUTF16(),
-                                               base::kWhitespaceUTF16) ||
-                      !base::ContainsOnlyChars(GetContainerTitle(),
-                                               base::kWhitespaceUTF16));
+  // Otherwise, the interesting nodes are leaf nodes with non-whitespace accessible name.
+  return IsLeaf() && !base::ContainsOnlyChars(GetAccessibleNameUTF16(),
+                                               base::kWhitespaceUTF16);
 }
 
 bool BrowserAccessibilityAndroid::IsHeadingLink() const {
@@ -795,9 +793,11 @@ std::u16string BrowserAccessibilityAndroid::GetSubstringTextContentUTF16(
     return base::UTF8ToUTF16(skia::SkColorToHexString(color));
   }
 
-  // If the aria-label is already mapped to the container title, we should
-  // exclude aria-label from mapping to text.
-  std::u16string text = GetContainerTitle().empty() ? GetNameAsString16() : u"";
+  // In the case of accessible name from kAttribute, the aria-label will be
+  // mapped to one of the container title, content description or supplemental
+  // description, we should exclude aria-label from mapping to text.
+  std::u16string text =
+      IsAccessibleNameFromAttribute() ? u"" : GetNameAsString16();
   if (ui::IsRangeValueSupported(GetRole())) {
     // For controls that support range values such as sliders, when a non-empty
     // name is present (e.g. a label), append this to the value so both the
@@ -864,9 +864,10 @@ std::u16string BrowserAccessibilityAndroid::GetSubstringTextContentUTF16(
   std::vector<std::u16string> inner_text({std::move(text)});
   // This is called from IsLeaf, so don't call PlatformChildCount
   // from within this!
-  // Only if the aria-label is not already mapped to the container title
-  // (in other words, container title is empty), we loop through the children.
-  if (text_length == 0 && GetContainerTitle().empty() &&
+  // Only if the aria-label is not already mapped to the container title /
+  // content description / supplemental description, (in other words, accessible
+  // name is not from kAttribute), we loop through the children.
+  if (text_length == 0 && !IsAccessibleNameFromAttribute() &&
       ((HasOnlyTextChildren() && !HasListMarkerChild()) ||
        (IsFocusable() && HasOnlyTextAndImageChildren()))) {
     for (auto it = InternalChildrenBegin(); it != InternalChildrenEnd(); ++it) {
@@ -935,7 +936,11 @@ std::u16string BrowserAccessibilityAndroid::GetHint() const {
   // If we're returning the value as the main text, the name needs to be
   // part of the hint.
   if (ShouldExposeValueAsName(GetValueForControl())) {
-    std::u16string name = GetNameAsString16();
+    // In the case of accessible name from kAttribute, the name will be
+    // mapped to one of the container title, content description or supplemental
+    // description, we should exclude name from mapping to hint.
+    std::u16string name =
+        IsAccessibleNameFromAttribute() ? u"" : GetNameAsString16();
     if (!name.empty()) {
       strings.push_back(name);
     }
@@ -1022,7 +1027,28 @@ std::u16string BrowserAccessibilityAndroid::GetStateDescription() const {
 }
 
 std::u16string BrowserAccessibilityAndroid::GetContainerTitle() const {
-  if (ui::IsContainerOnAndroid(GetRole()) && IsAccessibleNameFromAttribute()) {
+  // Accessible name from kAttribute, is Android container role.
+  if (IsAccessibleNameFromAttribute() && ui::IsContainerOnAndroid(GetRole())) {
+    return GetNameAsString16();
+  }
+  return u"";
+}
+
+std::u16string BrowserAccessibilityAndroid::GetContentDescription() const {
+  // Accessible name from kAttribute, is not Android container role, supports
+  // naming from child content.
+  if (IsAccessibleNameFromAttribute() && !ui::IsContainerOnAndroid(GetRole()) &&
+      ui::SupportsNamingWithChildContent(GetRole())) {
+    return GetNameAsString16();
+  }
+  return u"";
+}
+
+std::u16string BrowserAccessibilityAndroid::GetSupplementalDescription() const {
+  // Accessible name from kAttribute, is not Android container role, does not
+  // support naming from child content.
+  if (IsAccessibleNameFromAttribute() && !ui::IsContainerOnAndroid(GetRole()) &&
+      !ui::SupportsNamingWithChildContent(GetRole())) {
     return GetNameAsString16();
   }
   return u"";
@@ -1031,6 +1057,20 @@ std::u16string BrowserAccessibilityAndroid::GetContainerTitle() const {
 bool BrowserAccessibilityAndroid::IsAccessibleNameFromAttribute() const {
   return HasIntAttribute(ax::mojom::IntAttribute::kNameFrom) &&
          GetNameFrom() == ax::mojom::NameFrom::kAttribute;
+}
+
+std::u16string BrowserAccessibilityAndroid::GetAccessibleNameUTF16() const {
+  std::u16string name = GetTextContentUTF16();
+  if (name.empty()) {
+    name = GetContainerTitle();
+  }
+  if (name.empty()) {
+    name = GetContentDescription();
+  }
+  if (name.empty()) {
+    name = GetSupplementalDescription();
+  }
+  return name;
 }
 
 std::u16string BrowserAccessibilityAndroid::GetMultiselectableStateDescription()
@@ -1980,10 +2020,10 @@ void BrowserAccessibilityAndroid::GetWordBoundaries(
   for (auto it = InternalChildrenBegin(); it != InternalChildrenEnd(); ++it) {
     BrowserAccessibilityAndroid* child =
         static_cast<BrowserAccessibilityAndroid*>(it.get());
-    concatenated_text += child->GetTextContentUTF16();
+    concatenated_text += child->GetAccessibleNameUTF16();
   }
 
-  std::u16string text = GetTextContentUTF16();
+  std::u16string text = GetAccessibleNameUTF16();
   if (text.empty() || concatenated_text == text) {
     // Great - this node is just the concatenation of its children, so
     // we can get the word boundaries recursively.

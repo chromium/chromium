@@ -133,9 +133,21 @@ DeviceInfo& DeviceInfo::operator=(DeviceInfo&&) = default;
 
 DeviceInfo::~DeviceInfo() = default;
 
+PreinstallUrlAllowList& GetPreinstallUrlAllowListForTesting() {
+  static base::NoDestructor<PreinstallUrlAllowList> preinstall_url_allow_list;
+  return *preinstall_url_allow_list;
+}
+
+ScopedPreinstallUrlAllowList SetPreinstallUrlAllowListForTesting(
+    PreinstallUrlAllowList preinstall_url_allow_list) {
+  return {&GetPreinstallUrlAllowListForTesting(),
+          std::move(preinstall_url_allow_list)};
+}
+
 bool PreinstalledWebAppsDisabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      ::switches::kDisableDefaultApps);
+             ::switches::kDisableDefaultApps) &&
+         !GetPreinstallUrlAllowListForTesting().has_value();
 }
 
 std::vector<ExternalInstallOptions> GetPreinstalledWebApps(

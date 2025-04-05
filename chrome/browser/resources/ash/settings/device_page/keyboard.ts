@@ -117,23 +117,6 @@ export class SettingsKeyboardElement extends SettingsKeyboardElementBase {
       },
 
       /**
-       * Whether the setting for long press diacritics should be shown
-       */
-
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kKeyboardFunctionKeys,
-          Setting.kKeyboardAutoRepeat,
-          Setting.kKeyboardShortcuts,
-          Setting.kShowDiacritic,
-        ]),
-      },
-
-      /**
        * Whether settings should be split per device.
        */
       isDeviceSettingsSplitEnabled_: {
@@ -147,6 +130,17 @@ export class SettingsKeyboardElement extends SettingsKeyboardElementBase {
   }
 
   prefs: PrefsState;
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kKeyboardFunctionKeys,
+    Setting.kKeyboardAutoRepeat,
+    Setting.kKeyboardShortcuts,
+    Setting.kShowDiacritic,
+  ]);
+
+  private readonly autoRepeatDelays_: number[];
+  private readonly autoRepeatIntervals_: number[];
   private browserProxy_: DevicePageBrowserProxy;
   private hasAssistantKey_: boolean;
   private hasLauncherKey_: boolean;

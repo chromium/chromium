@@ -10,11 +10,11 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.DimenRes;
 import androidx.annotation.DrawableRes;
-import androidx.annotation.Px;
 import androidx.core.content.res.ResourcesCompat;
 
 import org.chromium.chrome.browser.ui.theme.ChromeSemanticColorUtils;
 import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.util.ColorUtils;
 
 /**
@@ -23,6 +23,7 @@ import org.chromium.ui.util.ColorUtils;
  */
 public class TabUiThemeUtil {
     private static final float MAX_TAB_STRIP_TAB_WIDTH_DP = 265.f;
+    private static final float DIVIDER_FOLIO_LIGHT_OPACITY = 0.3f;
 
     /**
      * Returns the tab strip background color based on the windowing mode and activity focus state.
@@ -63,30 +64,21 @@ public class TabUiThemeUtil {
             Context context, boolean isIncognito, boolean isActivityFocused) {
         // Default spec for incognito, dark and light themes, used when not in desktop windowing
         // mode or when the activity is focused in desktop windowing mode.
-        @ColorRes int incognitoColor = R.color.default_bg_color_dark_elev_2_baseline;
-        @Px
-        float darkThemeElevation =
-                context.getResources().getDimensionPixelSize(R.dimen.default_elevation_2);
-        @Px
-        float lightThemeElevation =
-                context.getResources().getDimensionPixelSize(R.dimen.default_elevation_3);
+        @ColorRes int incognitoColor = R.color.tab_strip_tablet_bg_incognito;
+        @ColorInt int darkThemeColor = SemanticColorUtils.getColorSurfaceContainer(context);
+        @ColorInt int lightThemeColor = SemanticColorUtils.getColorSurfaceContainerHigh(context);
 
         // Spec for when the activity is in an unfocused desktop window.
         if (!isActivityFocused) {
-            incognitoColor = R.color.default_bg_color_dark_elev_1_baseline;
-            darkThemeElevation =
-                    context.getResources().getDimensionPixelSize(R.dimen.default_elevation_1);
-            lightThemeElevation =
-                    context.getResources().getDimensionPixelSize(R.dimen.default_elevation_2);
+            incognitoColor = R.color.tab_strip_tablet_bg_unfocused_incognito;
+            darkThemeColor = SemanticColorUtils.getColorSurfaceContainerLow(context);
+            lightThemeColor = SemanticColorUtils.getColorSurfaceContainer(context);
         }
 
         if (isIncognito) {
             return context.getColor(incognitoColor);
         }
-
-        return ChromeColors.getSurfaceColor(
-                context,
-                ColorUtils.inNightMode(context) ? darkThemeElevation : lightThemeElevation);
+        return ColorUtils.inNightMode(context) ? darkThemeColor : lightThemeColor;
     }
 
     /**
@@ -181,5 +173,27 @@ public class TabUiThemeUtil {
 
     public static float getMaxTabStripTabWidthDp() {
         return MAX_TAB_STRIP_TAB_WIDTH_DP;
+    }
+
+    /**
+     * @return The tint color resource for the tab divider.
+     */
+    public static @ColorInt int getDividerTint(Context context, boolean isIncognito) {
+        if (isIncognito) {
+            return context.getColor(R.color.tab_strip_tablet_divider_bg_incognito);
+        }
+
+        if (!ColorUtils.inNightMode(context)) {
+            // This color will not be used at full opacity. We can't set this using the alpha
+            // component of the {@code @ColorInt}, since it is ignored when loading resources
+            // with a specified tint in the CC layer (instead retaining the alpha of the original
+            // image). Instead, this is reflected by setting the opacity of the divider itself.
+            // See https://crbug.com/1373634.
+            return ColorUtils.setAlphaComponentWithFloat(
+                    SemanticColorUtils.getDefaultIconColorAccent1(context),
+                    DIVIDER_FOLIO_LIGHT_OPACITY);
+        }
+
+        return SemanticColorUtils.getDividerLineBgColor(context);
     }
 }

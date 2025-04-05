@@ -12,6 +12,7 @@
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "content/public/test/browser_task_environment.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -67,6 +68,10 @@ class ExtensionInstalledWaiterTest : public BrowserWithTestWindowTest {
     return extensions::ExtensionBuilder(name).Build();
   }
 
+  extensions::ExtensionRegistrar* extension_registrar() {
+    return extensions::ExtensionRegistrar::Get(profile());
+  }
+
   extensions::ExtensionService* extension_service() {
     return extension_service_;
   }
@@ -78,7 +83,7 @@ class ExtensionInstalledWaiterTest : public BrowserWithTestWindowTest {
 
 TEST_F(ExtensionInstalledWaiterTest, ExtensionIsAlreadyInstalled) {
   auto extension = MakeExtensionNamed("foo");
-  extension_service()->AddExtension(extension.get());
+  extension_registrar()->AddExtension(extension);
 
   WaitFor(extension);
   EXPECT_EQ(1, done_called_);
@@ -90,7 +95,7 @@ TEST_F(ExtensionInstalledWaiterTest, ExtensionInstall) {
   WaitFor(extension);
   EXPECT_EQ(0, done_called_);
 
-  extension_service()->AddExtension(extension.get());
+  extension_registrar()->AddExtension(extension);
 
   // ExtensionInstalledWaiter must *not* call the done callback on the same
   // runloop cycle as the extension installation, to allow all the other
@@ -109,11 +114,11 @@ TEST_F(ExtensionInstalledWaiterTest, NotTheExtensionYouAreLookingFor) {
   WaitFor(foo);
   EXPECT_EQ(0, done_called_);
 
-  extension_service()->AddExtension(bar.get());
+  extension_registrar()->AddExtension(bar);
   task_environment()->RunUntilIdle();
   EXPECT_EQ(0, done_called_);
 
-  extension_service()->AddExtension(foo.get());
+  extension_registrar()->AddExtension(foo);
   task_environment()->RunUntilIdle();
   EXPECT_EQ(1, done_called_);
 }
@@ -124,7 +129,7 @@ TEST_F(ExtensionInstalledWaiterTest, ExtensionUninstalledWhileWaiting) {
   WaitFor(extension);
   EXPECT_EQ(0, done_called_);
 
-  extension_service()->AddExtension(extension.get());
+  extension_registrar()->AddExtension(extension);
   extension_service()->UnloadExtension(
       extension->id(), extensions::UnloadedExtensionReason::UNINSTALL);
   EXPECT_EQ(1, giving_up_called_);

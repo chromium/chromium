@@ -281,25 +281,6 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
         type: Number,
         value: null,
       },
-
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kDisplaySize,
-          Setting.kDisplayOrientation,
-          Setting.kDisplayArrangement,
-          Setting.kDisplayResolution,
-          Setting.kDisplayRefreshRate,
-          Setting.kDisplayMirroring,
-          Setting.kAllowWindowsToSpanDisplays,
-          Setting.kAmbientColors,
-          Setting.kTouchscreenCalibration,
-          Setting.kDisplayOverscan,
-        ]),
-      },
     };
   }
 
@@ -320,6 +301,22 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
   overscanDisplayId: string;
   primaryDisplayId: string;
   selectedDisplay?: DisplayUnitInfo;
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kDisplaySize,
+    Setting.kDisplayOrientation,
+    Setting.kDisplayArrangement,
+    Setting.kDisplayResolution,
+    Setting.kDisplayRefreshRate,
+    Setting.kDisplayMirroring,
+    Setting.kAllowWindowsToSpanDisplays,
+    Setting.kAmbientColors,
+    Setting.kTouchscreenCalibration,
+    Setting.kDisplayOverscan,
+  ]);
+
+  private readonly ambientColorAvailable_: boolean;
   private browserProxy_: DevicePageBrowserProxy;
   private brightnessSliderMax_: number;
   private brightnessSliderMin_: number;
@@ -331,10 +328,12 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
   private displayModeList_: DropdownMenuOptionList;
   private displaySettingsProvider: DisplaySettingsProviderInterface;
   private displayTabNames_: string[];
+  private readonly excludeDisplayInMirrorModeEnabled_: boolean;
   private hasAmbientLightSensor_: boolean;
   private invalidDisplayId_: string;
   private isAmbientLightSensorEnabled_: boolean;
   private isDisplayPerformanceEnabled_: boolean;
+  private readonly isDisplayPerformanceSupported_: boolean;
   private isTabletMode_: boolean;
   private listAllDisplayModes_: boolean;
   private logicalResolutionText_: string;
@@ -349,6 +348,7 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
   private selectedParentModePref_: chrome.settingsPrivate.PrefObject;
   private selectedTab_: number;
   private selectedZoomPref_: chrome.settingsPrivate.PrefObject;
+  private readonly unifiedDesktopAvailable_: boolean;
   private unifiedDesktopMode_: boolean;
   private zoomValues_: SliderTick[];
 

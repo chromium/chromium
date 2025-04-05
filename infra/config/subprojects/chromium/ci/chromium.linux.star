@@ -540,8 +540,9 @@ ci.thin_tester(
                 # crbug.com/1473501
                 retry_only_failed_tests = True,
             ),
-            "webdriver_wpt_tests": targets.remove(
-                reason = "https://crbug.com/929689, https://crbug.com/936557",
+            "webdriver_wpt_tests": targets.mixin(
+                ci_only = True,
+                experiment_percentage = 100,
             ),
         },
     ),

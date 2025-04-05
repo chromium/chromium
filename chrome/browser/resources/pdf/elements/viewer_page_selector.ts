@@ -43,8 +43,8 @@ export class ViewerPageSelectorElement extends CrLitElement {
     };
   }
 
-  docLength: number = 1;
-  pageNo: number = 1;
+  accessor docLength: number = 1;
+  accessor pageNo: number = 1;
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);

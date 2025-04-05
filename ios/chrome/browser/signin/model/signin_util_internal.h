@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/files/file_path.h"
+#include "base/functional/callback_helpers.h"
 #include "base/time/time.h"
 
 namespace signin {
@@ -38,6 +39,8 @@ base::FilePath PathForSentinel(const base::FilePath::CharType* sentinel_name);
 // Returns whether Chrome has been started after a device restore. This method
 // needs to be called for the first time before IO is disallowed on UI thread.
 // The value is cached. The result is cached for later calls.
-signin::RestoreData LoadDeviceRestoreDataInternal();
+// `completion` is called once all sentinel files are created.
+signin::RestoreData LoadDeviceRestoreDataInternal(
+    base::OnceClosure completion = base::DoNothing());
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_MODEL_SIGNIN_UTIL_INTERNAL_H_

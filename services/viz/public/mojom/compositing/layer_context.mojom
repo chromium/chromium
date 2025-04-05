@@ -10,8 +10,10 @@ import "services/viz/public/mojom/compositing/layer.mojom";
 import "services/viz/public/mojom/compositing/local_surface_id.mojom";
 import "services/viz/public/mojom/compositing/tiling.mojom";
 import "services/viz/public/mojom/compositing/surface_range.mojom";
+import "services/viz/public/mojom/compositing/view_transition_request.mojom";
 import "skia/public/mojom/skcolor4f.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
+import "ui/gfx/mojom/display_color_spaces.mojom";
 
 // Metadata and contents of a service-side display tree to be updated each time
 // the corresponding client layer tree activates.
@@ -51,6 +53,9 @@ struct LayerTreeUpdate {
   gfx.mojom.Rect device_viewport;
   float device_scale_factor;
   float painted_device_scale_factor;
+
+  // Display color spaces that the compositor expects, set by the tree's client.
+  gfx.mojom.DisplayColorSpaces display_color_spaces;
 
   // If a new LocalSurfaceId is assigned by the parent, it's included here.
   LocalSurfaceId? local_surface_id_from_parent;
@@ -104,6 +109,10 @@ struct LayerTreeUpdate {
   // SurfaceRange updates for SurfaceLayers in the tree.
   // If nullopt, there are no added or removed surfaces in this frame.
   array<SurfaceRange>? surface_ranges;
+
+  // Document transition requests to be transferred to Viz.
+  // If nullopt, there are no requests in this frame.
+  array<ViewTransitionRequest>? view_transition_requests;
 
   // New or updated animation timelines.
   array<AnimationTimeline>? animation_timelines;

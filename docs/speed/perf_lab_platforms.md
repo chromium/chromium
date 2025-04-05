@@ -18,10 +18,12 @@
  * [android-pixel6-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel6-perf): Android U.
  * [android-pixel6-perf-pgo](https://ci.chromium.org/p/chrome/builders/ci/android-pixel6-perf-pgo): Android U.
  * [android-pixel6-pro-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel6-pro-perf): Android T.
+ * [android-pixel9-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel9-perf): Android B.
+ * [android-pixel9-pro-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel9-pro-perf): Android B.
+ * [android-pixel9-pro-xl-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel9-pro-xl-perf): Android B.
 
 ### Linux
 
- * [linux-perf](https://ci.chromium.org/p/chrome/builders/ci/linux-perf): Ubuntu-18.04, 8 core, NVIDIA Quadro P400.
  * [linux-perf-calibration](https://ci.chromium.org/p/chrome/builders/ci/linux-perf-calibration): Ubuntu-18.04, 8 core, NVIDIA Quadro P400.
  * [linux-perf-rel](https://ci.chromium.org/p/chrome/builders/ci/linux-perf-rel): Ubuntu-18.04, 8 core, NVIDIA Quadro P400.
  * [linux-r350-perf](https://ci.chromium.org/p/chrome/builders/ci/linux-r350-perf): Ubuntu-22.04, 16 core.

@@ -139,19 +139,23 @@ class DragWindowFromShelfController::WindowsHider
       : dragged_window_(dragged_window) {
     std::vector<raw_ptr<aura::Window, VectorExperimental>> windows =
         Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
+    auto* split_view_controller = SplitViewController::Get(dragged_window);
+
     for (aura::Window* window : windows) {
-      if (window == dragged_window_ || window == other_window) {
+      if (window == dragged_window_ || window == other_window ||
+          window == split_view_controller->primary_window() ||
+          window == split_view_controller->secondary_window()) {
         continue;
       }
-      if (wm::HasTransientAncestor(window, dragged_window_))
-        continue;
-      if (other_window && wm::HasTransientAncestor(window, other_window)) {
+
+      if (::wm::GetTransientParent(window)) {
         continue;
       }
-      if (!window->IsVisible())
+
+      if (!window->IsVisible()) {
         continue;
-      if (SplitViewController::Get(window)->IsWindowInSplitView(window))
-        continue;
+      }
+
       auto* overview_controller = Shell::Get()->overview_controller();
       if (overview_controller->InOverviewSession() &&
           overview_controller->overview_session()->IsWindowInOverview(window)) {

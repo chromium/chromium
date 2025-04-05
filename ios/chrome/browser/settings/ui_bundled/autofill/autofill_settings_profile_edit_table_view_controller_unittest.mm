@@ -50,7 +50,8 @@ class AutofillSettingsProfileEditTableViewControllerTest
            initWithDelegate:nil
         personalDataManager:personal_data_manager_.get()
             autofillProfile:profile_.get()
-          isMigrationPrompt:NO];
+          isMigrationPrompt:NO
+           addManualAddress:NO];
     CreateController();
     CheckController();
 

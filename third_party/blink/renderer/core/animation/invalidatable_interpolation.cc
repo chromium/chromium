@@ -27,7 +27,7 @@ void InvalidatableInterpolation::Interpolate(int, double fraction) {
 
 PairwisePrimitiveInterpolation*
 InvalidatableInterpolation::MaybeConvertPairwise(
-    const InterpolationEnvironment& environment,
+    const CSSInterpolationEnvironment& environment,
     const UnderlyingValueOwner& underlying_value_owner) const {
   for (const auto& interpolation_type : *interpolation_types_) {
     if ((start_keyframe_->IsNeutral() || end_keyframe_->IsNeutral()) &&
@@ -53,7 +53,7 @@ InvalidatableInterpolation::MaybeConvertPairwise(
 
 TypedInterpolationValue* InvalidatableInterpolation::ConvertSingleKeyframe(
     const PropertySpecificKeyframe& keyframe,
-    const InterpolationEnvironment& environment,
+    const CSSInterpolationEnvironment& environment,
     const UnderlyingValueOwner& underlying_value_owner) const {
   if (keyframe.IsNeutral() && !underlying_value_owner) {
     return nullptr;
@@ -89,7 +89,7 @@ void InvalidatableInterpolation::AddConversionCheckers(
 
 TypedInterpolationValue*
 InvalidatableInterpolation::MaybeConvertUnderlyingValue(
-    const InterpolationEnvironment& environment) const {
+    const CSSInterpolationEnvironment& environment) const {
   for (const auto& interpolation_type : *interpolation_types_) {
     InterpolationValue result =
         interpolation_type->MaybeConvertUnderlyingValue(environment);
@@ -112,12 +112,8 @@ bool InvalidatableInterpolation::IsNeutralKeyframeActive() const {
 }
 
 void InvalidatableInterpolation::ClearConversionCache(
-    InterpolationEnvironment& environment) const {
-  if (auto* css_environment =
-          DynamicTo<CSSInterpolationEnvironment>(environment)) {
-    css_environment->GetState().SetAffectsCompositorSnapshots();
-  }
-
+    CSSInterpolationEnvironment& environment) const {
+  environment.GetState().SetAffectsCompositorSnapshots();
   is_conversion_cached_ = false;
   cached_pair_conversion_.Clear();
   conversion_checkers_.clear();
@@ -125,7 +121,7 @@ void InvalidatableInterpolation::ClearConversionCache(
 }
 
 bool InvalidatableInterpolation::IsConversionCacheValid(
-    const InterpolationEnvironment& environment,
+    const CSSInterpolationEnvironment& environment,
     const UnderlyingValueOwner& underlying_value_owner) const {
   if (!is_conversion_cached_) {
     return false;
@@ -151,7 +147,7 @@ bool InvalidatableInterpolation::IsConversionCacheValid(
 
 const TypedInterpolationValue*
 InvalidatableInterpolation::EnsureValidConversion(
-    InterpolationEnvironment& environment,
+    CSSInterpolationEnvironment& environment,
     const UnderlyingValueOwner& underlying_value_owner) const {
   DCHECK(!std::isnan(current_fraction_));
   DCHECK(interpolation_types_ &&
@@ -180,7 +176,7 @@ InvalidatableInterpolation::EnsureValidConversion(
 }
 
 void InvalidatableInterpolation::EnsureValidInterpolationTypes(
-    InterpolationEnvironment& environment) const {
+    CSSInterpolationEnvironment& environment) const {
   const InterpolationTypesMap& map = environment.GetInterpolationTypesMap();
   size_t latest_version = map.Version();
   if (interpolation_types_ && interpolation_types_version_ == latest_version) {
@@ -196,12 +192,11 @@ void InvalidatableInterpolation::EnsureValidInterpolationTypes(
 }
 
 void InvalidatableInterpolation::SetFlagIfInheritUsed(
-    InterpolationEnvironment& environment) const {
+    CSSInterpolationEnvironment& environment) const {
   if (!property_.IsCSSProperty()) {
     return;
   }
-  StyleResolverState& state =
-      To<CSSInterpolationEnvironment>(environment).GetState();
+  StyleResolverState& state = environment.GetState();
   if (!state.ParentStyle()) {
     return;
   }
@@ -229,7 +224,7 @@ double InvalidatableInterpolation::UnderlyingFraction() const {
 
 void InvalidatableInterpolation::ApplyStack(
     const ActiveInterpolations& interpolations,
-    InterpolationEnvironment& environment) {
+    CSSInterpolationEnvironment& environment) {
   DCHECK(!interpolations.empty());
   wtf_size_t starting_index = 0;
 

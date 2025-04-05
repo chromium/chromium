@@ -5141,7 +5141,7 @@ error::Error GLES2DecoderPassthroughImpl::DoCopySharedImageToTextureINTERNAL(
     GLint src_y,
     GLsizei width,
     GLsizei height,
-    GLboolean flip_y,
+    GLboolean is_dst_origin_top_left,
     const volatile GLbyte* src_mailbox) {
   if (!lazy_context_) {
     lazy_context_ = LazySharedContextState::Create(this);
@@ -5173,7 +5173,10 @@ error::Error GLES2DecoderPassthroughImpl::DoCopySharedImageToTextureINTERNAL(
                                lazy_context_->shared_context_state());
   auto result = helper.CopySharedImageToGLTexture(
       gl_texture_service_id, target, internal_format, type, src_x, src_y, width,
-      height, flip_y, src_mailbox);
+      height,
+      is_dst_origin_top_left ? kTopLeft_GrSurfaceOrigin
+                             : kBottomLeft_GrSurfaceOrigin,
+      src_mailbox);
   if (!result.has_value()) {
     InsertError(result.error().gl_error, result.error().msg);
   }

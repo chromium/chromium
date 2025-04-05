@@ -68,17 +68,10 @@ class MockExternalUseClient : public ExternalUseClient {
   MOCK_METHOD1(ReleaseImageContexts,
                gpu::SyncToken(
                    std::vector<std::unique_ptr<ImageContext>> image_contexts));
-  MOCK_METHOD10(
+  MOCK_METHOD3(
       CreateImageContext,
-      std::unique_ptr<ImageContext>(const gpu::Mailbox& mailbox,
-                                    const gpu::SyncToken& sync_token,
-                                    uint32_t texture_target,
-                                    const gfx::Size&,
-                                    SharedImageFormat,
+      std::unique_ptr<ImageContext>(const TransferableResource& resource,
                                     bool,
-                                    const std::optional<gpu::VulkanYCbCrInfo>&,
-                                    sk_sp<SkColorSpace>,
-                                    GrSurfaceOrigin,
                                     bool));
 };
 
@@ -172,22 +165,20 @@ TEST_F(DisplayResourceProviderSkiaTest, LockForExternalUse) {
   auto format = SinglePlaneFormat::kRGBA_8888;
   auto owned_image_context = std::make_unique<ExternalUseClient::ImageContext>(
       mailbox, sync_token1, GL_TEXTURE_2D, size, format,
-      /*ycbcr_info=*/std::nullopt, /*color_space=*/nullptr,
-      kTopLeft_GrSurfaceOrigin);
+      /*color_space=*/nullptr, kTopLeft_GrSurfaceOrigin);
   auto* image_context = owned_image_context.get();
 
-  gpu::Mailbox mailbox_out;
-  gpu::SyncToken sync_token_out;
-  EXPECT_CALL(client_, CreateImageContext(_, _, _, _, _, _, _, _, _, _))
-      .WillOnce(DoAll(SaveArg<0>(&mailbox_out), SaveArg<1>(&sync_token_out),
+  TransferableResource resource_out;
+  EXPECT_CALL(client_, CreateImageContext(_, _, _))
+      .WillOnce(DoAll(SaveArg<0>(&resource_out),
                       Return(ByMove(std::move(owned_image_context)))));
 
   ExternalUseClient::ImageContext* locked_image_context =
       lock_set_->LockResource(parent_id, /*maybe_concurrent_reads=*/true,
                               /*is_video_plane=*/false);
   EXPECT_EQ(image_context, locked_image_context);
-  ASSERT_EQ(mailbox_out, mailbox);
-  ASSERT_TRUE(sync_token_out.HasData());
+  ASSERT_EQ(resource_out.mailbox(), mailbox);
+  ASSERT_TRUE(resource_out.sync_token().HasData());
 
   // Don't release while locked.
   EXPECT_CALL(client_, ReleaseImageContexts(_)).Times(0);
@@ -255,22 +246,20 @@ TEST_F(DisplayResourceProviderSkiaTest, LockForExternalUseWebView) {
   auto format = SinglePlaneFormat::kRGBA_8888;
   auto owned_image_context = std::make_unique<ExternalUseClient::ImageContext>(
       mailbox, sync_token1, GL_TEXTURE_2D, size, format,
-      /*ycbcr_info=*/std::nullopt, /*color_space=*/nullptr,
-      kTopLeft_GrSurfaceOrigin);
+      /*color_space=*/nullptr, kTopLeft_GrSurfaceOrigin);
   auto* image_context = owned_image_context.get();
 
-  gpu::Mailbox mailbox_out;
-  gpu::SyncToken sync_token_out;
-  EXPECT_CALL(client_, CreateImageContext(_, _, _, _, _, _, _, _, _, _))
-      .WillOnce(DoAll(SaveArg<0>(&mailbox_out), SaveArg<1>(&sync_token_out),
+  TransferableResource resource_out;
+  EXPECT_CALL(client_, CreateImageContext(_, _, _))
+      .WillOnce(DoAll(SaveArg<0>(&resource_out),
                       Return(ByMove(std::move(owned_image_context)))));
 
   ExternalUseClient::ImageContext* locked_image_context =
       lock_set_->LockResource(parent_id, /*maybe_concurrent_reads=*/true,
                               /*is_video_plane=*/false);
   EXPECT_EQ(image_context, locked_image_context);
-  ASSERT_EQ(mailbox_out, mailbox);
-  ASSERT_TRUE(sync_token_out.HasData());
+  ASSERT_EQ(resource_out.mailbox(), mailbox);
+  ASSERT_TRUE(resource_out.sync_token().HasData());
 
   // Don't release while locked.
   EXPECT_CALL(client_, ReleaseImageContexts(_)).Times(0);

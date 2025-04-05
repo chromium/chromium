@@ -196,7 +196,6 @@ void InstalledLoaderUnitTest::RunEmitUserHistogramsTest(
   histograms.ExpectTotalCount("Extensions.LoadAllTime2", 1);
   histograms.ExpectTotalCount("Extensions.LoadAll", 1);
   histograms.ExpectTotalCount("Extensions.Disabled", 1);
-  histograms.ExpectTotalCount("Extensions.ManifestVersion", 1);
   histograms.ExpectTotalCount("Extensions.LoadAllTime2.NonUser",
                               nonuser_expected_total_count);
   histograms.ExpectTotalCount("Extensions.LoadAllTime2.User",

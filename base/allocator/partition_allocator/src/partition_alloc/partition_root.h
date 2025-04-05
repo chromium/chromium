@@ -166,6 +166,7 @@ struct PartitionOptions {
   static constexpr auto kEnabled = EnableToggle::kEnabled;
 
   EnableToggle thread_cache = kDisabled;
+  EnableToggle use_cookie_if_supported = kEnabled;
   EnableToggle backup_ref_ptr = kDisabled;
   AllowToggle use_configurable_pool = kDisallowed;
 
@@ -249,7 +250,7 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
     bool with_thread_cache = false;
 
 #if PA_BUILDFLAG(USE_PARTITION_COOKIE)
-    static constexpr bool use_cookie = true;
+    bool use_cookie = true;
 #else
     static constexpr bool use_cookie = false;
 #endif  // PA_BUILDFLAG(USE_PARTITION_COOKIE)
@@ -936,6 +937,8 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   }
 #endif  // PA_CONFIG(ENABLE_SHADOW_METADATA)
 
+  PA_NOINLINE static void CheckMetadataIntegrity(const void* object);
+
  private:
   static inline StraightenLargerSlotSpanFreeListsMode
       straighten_larger_slot_span_free_lists_ =
@@ -1601,13 +1604,15 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeNoHooksImmediate(
   // For more context, see the other "Layout inside the slot" comment inside
   // AllocInternalNoHooks().
 
-  if (Settings::use_cookie) {
+#if PA_BUILDFLAG(USE_PARTITION_COOKIE)
+  if (settings.use_cookie) {
     // Verify the cookie after the allocated region.
     // If this assert fires, you probably corrupted memory.
     const size_t usable_size = GetSlotUsableSize(slot_span);
     internal::PartitionCookieCheckValue(
         static_cast<unsigned char*>(object) + usable_size, usable_size);
   }
+#endif  // PA_BUILDFLAG(USE_PARTITION_COOKIE)
 
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   if (brp_enabled()) [[likely]] {
@@ -2315,10 +2320,12 @@ PA_ALWAYS_INLINE void* PartitionRoot::AllocInternalNoHooks(
   void* object = SlotStartToObject(slot_start);
 
   // Add the cookie after the allocation.
-  if (Settings::use_cookie) {
+#if PA_BUILDFLAG(USE_PARTITION_COOKIE)
+  if (settings.use_cookie) {
     internal::PartitionCookieWriteValue(static_cast<unsigned char*>(object) +
                                         usable_size);
   }
+#endif  // PA_BUILDFLAG(USE_PARTITION_COOKIE)
 
   // Fill the region kUninitializedByte (on debug builds, if not requested to 0)
   // or 0 (if requested and not 0 already).

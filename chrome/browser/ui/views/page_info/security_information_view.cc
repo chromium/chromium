@@ -96,7 +96,7 @@ SecurityInformationView::SecurityInformationView(int side_margin) {
       AddChildView(std::make_unique<views::View>());
 
   const int end_padding =
-      layout_provider->GetDistanceMetric(DISTANCE_CONTROL_LIST_VERTICAL);
+      layout_provider->GetDistanceMetric(views::DISTANCE_CONTROL_LIST_VERTICAL);
   layout->AddPaddingRow(views::TableLayout::kFixedSize, end_padding);
 }
 

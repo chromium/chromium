@@ -101,24 +101,19 @@ export class OsSettingsA11yPageElement extends OsSettingsA11yPageElementBase {
       },
 
       languageHelper: Object,
-
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kA11yQuickSettings,
-          Setting.kGetImageDescriptionsFromGoogle,
-          Setting.kLiveCaption,
-        ]),
-      },
     };
   }
 
   currentRoute: Route;
   languages: LanguagesModel;
   languageHelper: LanguageHelper;
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kA11yQuickSettings,
+    Setting.kGetImageDescriptionsFromGoogle,
+    Setting.kLiveCaption,
+  ]);
 
   private browserProxy_: OsA11yPageBrowserProxy;
   private hasScreenReader_: boolean;

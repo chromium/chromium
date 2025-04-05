@@ -1846,9 +1846,15 @@ TEST_F(ChromeDownloadManagerDelegateTest,
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if !BUILDFLAG(IS_ANDROID)
 #if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(ChromeDownloadManagerDelegateTest, ScheduleCancelForEphemeralWarning) {
+#if BUILDFLAG(IS_ANDROID)
+  // Enable the feature on Android to activate warnings, and thus ephemeral
+  // warning cancellation.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(safe_browsing::kMaliciousApkDownloadCheck);
+#endif
+
   std::unique_ptr<download::MockDownloadItem> download_item =
       CreateActiveDownloadItem(0);
   EXPECT_CALL(*download_item, GetDangerType())
@@ -1865,6 +1871,13 @@ TEST_F(ChromeDownloadManagerDelegateTest, ScheduleCancelForEphemeralWarning) {
 
 TEST_F(ChromeDownloadManagerDelegateTest,
        ScheduleCancelForEphemeralWarning_DownloadKept) {
+#if BUILDFLAG(IS_ANDROID)
+  // Enable the feature on Android to activate warnings, and thus ephemeral
+  // warning cancellation.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(safe_browsing::kMaliciousApkDownloadCheck);
+#endif
+
   std::unique_ptr<download::MockDownloadItem> download_item =
       CreateActiveDownloadItem(0);
   EXPECT_CALL(*download_item, GetDangerType())
@@ -1879,6 +1892,13 @@ TEST_F(ChromeDownloadManagerDelegateTest,
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(ChromeDownloadManagerDelegateTest, CancelAllEphemeralWarnings) {
+#if BUILDFLAG(IS_ANDROID)
+  // Enable the feature on Android to activate warnings, and thus ephemeral
+  // warning cancellation.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(safe_browsing::kMaliciousApkDownloadCheck);
+#endif
+
   std::vector<raw_ptr<download::DownloadItem, VectorExperimental>> items;
   auto safe_item = CreateActiveDownloadItem(0);
   EXPECT_CALL(*safe_item, GetDangerType())
@@ -1910,7 +1930,6 @@ TEST_F(ChromeDownloadManagerDelegateTest, CancelAllEphemeralWarnings) {
 
   delegate()->CancelAllEphemeralWarnings();
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 namespace {
@@ -2324,6 +2343,7 @@ TEST_P(ChromeDownloadManagerDelegateTestWithSafeBrowsing,
 }
 
 // Auto cancel is only available on platforms with download bubble.
+// TODO(crbug.com/397407934): Support auto cancel reports on Android.
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 TEST_F(ChromeDownloadManagerDelegateTestWithSafeBrowsing,
        AutoCanceledReport_Sent) {

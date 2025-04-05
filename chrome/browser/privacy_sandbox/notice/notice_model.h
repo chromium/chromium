@@ -11,9 +11,10 @@
 #include "components/privacy_sandbox/privacy_sandbox_notice.mojom.h"
 #include "components/privacy_sandbox/privacy_sandbox_notice_storage.h"
 
+class PrefService;
+
 namespace privacy_sandbox {
 class NoticeApi;
-
 // Types of notices that can be shown.
 enum class NoticeType {
   kNotice,   // This type of notice requires a user to have acknowledged it.
@@ -21,7 +22,7 @@ enum class NoticeType {
 };
 
 // The different surface types a notice can be shown on.
-enum SurfaceType {
+enum class SurfaceType {
   kDesktopNewTab,
   kClankBrApp,      // Clank Browser App.
   kClankCustomTab,  // Clank CCT.
@@ -38,16 +39,26 @@ using NoticeId = std::pair<notice::mojom::PrivacySandboxNotice, SurfaceType>;
 class Notice {
   // TODO(crbug.com/392612108): Include view group information.
  public:
-  explicit Notice(NoticeId notice_id, const base::Feature*);
-  Notice(const Notice& other);
+  explicit Notice(NoticeId notice_id);
+  // Delete copy constructor and copy assignment operator
+  Notice(const Notice&) = delete;
+  Notice& operator=(const Notice&) = delete;
+
+  // Delete move constructor and move assignment operator
+  Notice(Notice&&) = delete;
+  Notice& operator=(Notice&&) = delete;
+
   virtual ~Notice();
 
   // Sets Apis that need to be eligible or previously fulfilled to see this
   // notice.
   Notice* SetTargetApis(const std::vector<NoticeApi*>& apis);
   Notice* SetPreReqApis(const std::vector<NoticeApi*>& apis);
+  Notice* SetFeature(const base::Feature* feature);
 
-  bool WasFulfilled();
+  // Return true if the notice had a fulfillment action taken on it.
+  bool WasFulfilled(PrivacySandboxNoticeStorage* notice_storage,
+                    PrefService* pref_service);
 
   // Accessors.
   const std::vector<raw_ptr<NoticeApi>>& GetTargetApis();
@@ -86,7 +97,7 @@ class Notice {
 
 class Consent : public Notice {
  public:
-  explicit Consent(NoticeId notice_id, const base::Feature* feature);
+  explicit Consent(NoticeId notice_id);
   NoticeType GetNoticeType() override;
 
  private:
@@ -99,8 +110,15 @@ class Consent : public Notice {
 class NoticeApi {
  public:
   NoticeApi();
-  NoticeApi(const NoticeApi& other) = delete;
-  ~NoticeApi();
+  // Delete copy constructor and copy assignment operator
+  NoticeApi(const NoticeApi&) = delete;
+  NoticeApi& operator=(const NoticeApi&) = delete;
+
+  // Delete move constructor and move assignment operator
+  NoticeApi(NoticeApi&&) = delete;
+  NoticeApi& operator=(NoticeApi&&) = delete;
+
+  virtual ~NoticeApi();
 
   // Accessors.
   const std::vector<Notice*>& GetLinkedNotices();
@@ -114,7 +132,8 @@ class NoticeApi {
   void CanBeFulfilledBy(Notice* notice);
 
   // Returns whether the api was fulfilled.
-  bool IsFulfilled();
+  bool IsFulfilled(PrivacySandboxNoticeStorage* notice_storage,
+                   PrefService* pref_service);
 
   // Callbacks.
   NoticeApi* SetEligibilityCallback(
@@ -140,29 +159,18 @@ class NoticeCatalog {
   // Registers a new notice api.
   NoticeApi* RegisterAndRetrieveNewApi();
 
-  // Template implementation needs to be inline to bypass linkage issues, other
-  // classes need access to the template implementation source.
   // Registers a new notice.
-  template <typename T>
-  Notice* RegisterAndRetrieveNewNotice(NoticeId notice_id,
-                                       const base::Feature* feature) {
-    notices_.emplace(notice_id, std::make_unique<T>(T(notice_id, feature)));
-    return notices_[notice_id].get();
-  }
+  Notice* RegisterAndRetrieveNewNotice(
+      std::unique_ptr<Notice> (*notice_creator)(NoticeId),
+      NoticeId notice_id);
 
   // Registers a group of notices with the same requirements to be shown (for
   // ex. Topics can have TopicsClankBrApp, TopicsDesktop and TopicsClankCCT)
-  template <typename T>
   void RegisterNoticeGroup(
+      std::unique_ptr<Notice> (*notice_creator)(NoticeId),
       std::vector<std::pair<NoticeId, const base::Feature*>>&& notice_ids,
       std::vector<NoticeApi*>&& target_apis,
-      std::vector<NoticeApi*>&& pre_req_apis = {}) {
-    for (auto notice_id : notice_ids) {
-      RegisterAndRetrieveNewNotice<T>(notice_id.first, notice_id.second)
-          ->SetTargetApis(target_apis)
-          ->SetPreReqApis(pre_req_apis);
-    }
-  }
+      std::vector<NoticeApi*>&& pre_req_apis = {});
 
  private:
   std::vector<std::unique_ptr<NoticeApi>> apis_;

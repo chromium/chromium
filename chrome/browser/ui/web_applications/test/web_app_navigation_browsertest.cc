@@ -153,6 +153,7 @@ void WebAppNavigationBrowserTest::ClickLink(
       rel.c_str());
   ASSERT_TRUE(content::ExecJs(web_contents, script));
 
+  content::SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents);
   content::SimulateMouseClick(web_contents, modifiers, button);
 }
 

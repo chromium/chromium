@@ -24,6 +24,7 @@ import org.chromium.base.task.TaskRunner;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.task.SchedulerTestHelpers;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content.app.ContentMain;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.UiThreadSchedulerTestUtils;
@@ -34,6 +35,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Test class for scheduling on the UI Thread. */
 @RunWith(BaseJUnit4ClassRunner.class)
+@NullMarked
 public class UiThreadSchedulerTest {
     @Before
     public void setUp() {

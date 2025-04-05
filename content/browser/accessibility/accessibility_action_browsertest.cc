@@ -1478,8 +1478,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, OpenSelectPopup) {
 IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, FocusPermissionElement) {
   LoadInitialAccessibilityTreeFromHtml(R"HTML(
       <body>
-        <permission type="invalid" aria-label="invalid-pepc">
-        <permission type="camera" aria-label="valid-pepc">
+        <permission type="invalid" aria-label="invalid-pepc"></permission>
+        <permission type="camera" aria-label="valid-pepc"></permission>
       </body>
       )HTML");
 

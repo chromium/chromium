@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 
 /**
  * @fileoverview Contains feature flag state for behavior relating to Autofill
@@ -119,9 +119,9 @@ function isAutofillCorrectUserEditedBitInParsedField(): boolean {
   return autofillCorrectUserEditedBitInParsedField;
 }
 
-// Expose globally via `gCrWeb` instead of `export` to ensure state (feature
+// Expose globally via `gCrWebLegacy` instead of `export` to ensure state (feature
 // on/off) is maintained across imports.
-gCrWeb.autofill_form_features = {
+gCrWebLegacy.autofill_form_features = {
   setAutofillAcrossIframes,
   isAutofillAcrossIframesEnabled,
   setAutofillAcrossIframesThrottling,

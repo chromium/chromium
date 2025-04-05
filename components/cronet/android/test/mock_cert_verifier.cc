@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "net/cert/mock_cert_verifier.h"
+
 #include <string>
 #include <string_view>
 #include <vector>
@@ -9,12 +11,12 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/containers/span.h"
 #include "base/test/test_support_android.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "net/base/net_errors.h"
 #include "net/cert/asn1_util.h"
 #include "net/cert/cert_verifier.h"
-#include "net/cert/mock_cert_verifier.h"
 #include "net/cert/cert_verify_result.h"
 #include "net/cert/x509_util.h"
 #include "net/test/cert_test_util.h"
@@ -42,9 +44,8 @@ static bool CalculatePublicKeySha256(const net::X509Certificate& cert,
     return false;
   }
   // Calculate SHA256 hash of public key bytes.
-  *out_hash_value = net::HashValue(net::HASH_VALUE_SHA256);
-  crypto::SHA256HashString(spki_bytes, out_hash_value->data(),
-                           crypto::kSHA256Length);
+  *out_hash_value =
+      net::HashValue(crypto::hash::Sha256(base::as_byte_span(spki_bytes)));
   return true;
 }
 

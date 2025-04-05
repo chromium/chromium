@@ -6,10 +6,7 @@
 
 #include <utility>
 
-#include "base/functional/callback.h"
-#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
-#include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
@@ -36,7 +33,7 @@ class PerformanceManagerImplTest : public testing::Test {
 
   void SetUp() override {
     EXPECT_FALSE(PerformanceManagerImpl::IsAvailable());
-    performance_manager_ = PerformanceManagerImpl::Create(base::DoNothing());
+    performance_manager_ = PerformanceManagerImpl::Create();
     // Make sure creation registers the created instance.
     EXPECT_TRUE(PerformanceManagerImpl::IsAvailable());
   }

@@ -1091,41 +1091,38 @@ TEST_F(StructTraitsTest, QuadListBasic) {
   const bool secure_output_only = true;
   const gfx::ProtectedVideoType protected_video_type =
       gfx::ProtectedVideoType::kClear;
-  const gfx::Size resource_size_in_pixels5(1234, 5678);
   TextureDrawQuad* texture_draw_quad =
       render_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
-  texture_draw_quad->SetAll(
-      sqs, rect5, rect5, needs_blending, resource_id5, resource_size_in_pixels5,
-      premultiplied_alpha, uv_top_left, uv_bottom_right, background_color,
-      nearest_neighbor, secure_output_only, protected_video_type);
+  texture_draw_quad->SetAll(sqs, rect5, rect5, needs_blending, resource_id5,
+                            premultiplied_alpha, uv_top_left, uv_bottom_right,
+                            background_color, nearest_neighbor,
+                            secure_output_only, protected_video_type);
   // Create a stream video TextureDrawQuad.
   const gfx::Rect rect6(321, 765, 11109, 151413);
   const bool needs_blending6 = false;
   const ResourceId resource_id6(1234);
-  const gfx::Size resource_size_in_pixels6(1234, 5678);
   TextureDrawQuad* stream_video_draw_quad =
       render_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
-  stream_video_draw_quad->SetAll(
-      sqs, rect6, rect6, needs_blending6, resource_id6,
-      resource_size_in_pixels6, false, uv_top_left, uv_bottom_right,
-      SkColors::kTransparent, false, false, protected_video_type);
+  stream_video_draw_quad->SetAll(sqs, rect6, rect6, needs_blending6,
+                                 resource_id6, false, uv_top_left,
+                                 uv_bottom_right, SkColors::kTransparent, false,
+                                 false, protected_video_type);
   stream_video_draw_quad->is_stream_video = true;
 
   // Create a TextureDrawQuad with rounded-display masks.
   const gfx::Rect rect7(421, 865, 11109, 151413);
   const bool needs_blending7 = false;
   const ResourceId resource_id7(4834);
-  const gfx::Size resource_size_in_pixels7(12894, 8878);
   const int origin_rounded_display_mask_radius = 10;
   const int other_rounded_display_mask_radius = 15;
   const bool is_horizontally_positioned = false;
 
   TextureDrawQuad* rounded_display_mask_quad =
       render_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
-  rounded_display_mask_quad->SetAll(
-      sqs, rect7, rect7, needs_blending7, resource_id7,
-      resource_size_in_pixels7, false, uv_top_left, uv_bottom_right,
-      SkColors::kTransparent, false, false, protected_video_type);
+  rounded_display_mask_quad->SetAll(sqs, rect7, rect7, needs_blending7,
+                                    resource_id7, false, uv_top_left,
+                                    uv_bottom_right, SkColors::kTransparent,
+                                    false, false, protected_video_type);
   rounded_display_mask_quad->rounded_display_masks_info =
       TextureDrawQuad::RoundedDisplayMasksInfo::CreateRoundedDisplayMasksInfo(
           origin_rounded_display_mask_radius, other_rounded_display_mask_radius,
@@ -1195,8 +1192,6 @@ TEST_F(StructTraitsTest, QuadListBasic) {
   EXPECT_EQ(rect5, out_texture_draw_quad->visible_rect);
   EXPECT_EQ(needs_blending, out_texture_draw_quad->needs_blending);
   EXPECT_EQ(resource_id5, out_texture_draw_quad->resource_id);
-  EXPECT_EQ(resource_size_in_pixels5,
-            out_texture_draw_quad->resource_size_in_pixels());
   EXPECT_EQ(premultiplied_alpha, out_texture_draw_quad->premultiplied_alpha);
   EXPECT_EQ(uv_top_left, out_texture_draw_quad->uv_top_left);
   EXPECT_EQ(uv_bottom_right, out_texture_draw_quad->uv_bottom_right);
@@ -1211,8 +1206,6 @@ TEST_F(StructTraitsTest, QuadListBasic) {
   EXPECT_EQ(rect6, out_stream_video_draw_quad->visible_rect);
   EXPECT_EQ(needs_blending6, out_stream_video_draw_quad->needs_blending);
   EXPECT_EQ(resource_id6, out_stream_video_draw_quad->resource_id);
-  EXPECT_EQ(resource_size_in_pixels6,
-            out_stream_video_draw_quad->resource_size_in_pixels());
   EXPECT_EQ(uv_top_left, out_stream_video_draw_quad->uv_top_left);
   EXPECT_EQ(uv_bottom_right, out_stream_video_draw_quad->uv_bottom_right);
 
@@ -1223,8 +1216,6 @@ TEST_F(StructTraitsTest, QuadListBasic) {
   EXPECT_EQ(rect7, out_rounded_display_mask_quad->visible_rect);
   EXPECT_EQ(needs_blending7, out_rounded_display_mask_quad->needs_blending);
   EXPECT_EQ(resource_id7, out_rounded_display_mask_quad->resource_id);
-  EXPECT_EQ(resource_size_in_pixels7,
-            out_rounded_display_mask_quad->resource_size_in_pixels());
   EXPECT_EQ(uv_top_left, out_rounded_display_mask_quad->uv_top_left);
   EXPECT_EQ(uv_bottom_right, out_rounded_display_mask_quad->uv_bottom_right);
   EXPECT_EQ(origin_rounded_display_mask_radius,

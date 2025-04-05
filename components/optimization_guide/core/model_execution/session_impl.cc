@@ -176,6 +176,16 @@ void SessionImpl::ExecuteModel(
     const google::protobuf::MessageLite& request_metadata,
     optimization_guide::OptimizationGuideModelExecutionResultStreamingCallback
         callback) {
+  ExecuteModelWithResponseJsonSchema(request_metadata,
+                                     /*response_json_schema=*/std::nullopt,
+                                     std::move(callback));
+}
+
+void SessionImpl::ExecuteModelWithResponseJsonSchema(
+    const google::protobuf::MessageLite& request_metadata,
+    const std::optional<std::string>& response_json_schema,
+    optimization_guide::OptimizationGuideModelExecutionResultStreamingCallback
+        callback) {
   auto logger = std::make_unique<OnDeviceExecution::ResultLogger>(feature_);
 
   // Compute the amount of time context would have for processing assuming
@@ -212,7 +222,8 @@ void SessionImpl::ExecuteModel(
   // Set new pending response.
   on_device_execution_.emplace(
       feature_, on_device_context_->opts(), execute_remote_fn_,
-      std::move(merged_request), std::move(logger), std::move(callback),
+      std::move(merged_request), std::move(response_json_schema),
+      std::move(logger), std::move(callback),
       base::BindOnce(&SessionImpl::OnDeviceExecutionTerminated,
                      weak_ptr_factory_.GetWeakPtr()));
 

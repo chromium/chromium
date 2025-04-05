@@ -35,6 +35,8 @@ template <class Key,
           class KeyTraits = HashTraits<Key>,
           unsigned cache_size = 512>
 class FixedSizeCache {
+  DISALLOW_NEW();
+
   static_assert((cache_size & (cache_size - 1)) == 0,
                 "cache_size should be a power of two");
   static_assert(cache_size >= 2);

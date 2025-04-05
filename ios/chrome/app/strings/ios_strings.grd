@@ -2178,6 +2178,15 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_EDIT_PASSWORD_DESCRIPTION" desc="Message inside confirmation alert when the user is trying to edit password [iOS only]" meaning="Telling user to ensure provided password matches password on the website.">
         Make sure the password you are saving matches your password for <ph name="WEBSITE">$1<ex>twitter.com</ex></ph>
       </message>
+      <message name="IDS_IOS_ENHANCED_CALENDAR_BOTTOM_SHEET_CANCEL_BUTTON" translateable="false" desc="The title for the enhanced calendar page of the AI prototyping menu [Length: unlimited].">
+        Cancel
+      </message>
+      <message name="IDS_IOS_ENHANCED_CALENDAR_BOTTOM_SHEET_SUBTITLE" translateable="false" desc="The subtitle for the Enhanced Calendar bottom sheet.">
+        Hang tight while we use AI to supercharge your calendar event using the web page's context.
+      </message>
+      <message name="IDS_IOS_ENHANCED_CALENDAR_BOTTOM_SHEET_TITLE" translateable="false" desc="The title for the Enhanced Calendar bottom sheet.">
+        Enhanced Calendar
+      </message>
       <message name="IDS_IOS_ENHANCED_SAFE_BROWSING_PROMO_INSTRUCTIONS_STEP2" desc="Step 2 of instructions telling the user how to enable Enhanced Safe Browsing.">
         Tap "Privacy and Security" and then "Safe Browsing"
       </message>
@@ -2323,6 +2332,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_EXPLAIN_GEMINI_EDIT_MENU" desc="Edit Menu button to explain the selected text with Gemini.">
         Explain
       </message>
+      <message name="IDS_IOS_EXPLAIN_GEMINI_PROMPT_PREFIX" desc="This text will be appended before a body of text which Gemini is being asked to explain to the user.">
+          Explain this to me
+      </message>
       <message name="IDS_IOS_EXPORT_PASSWORDS" desc="Button that the user can press to export passwords. [Length: 22em] [iOS only]">
         Export passwords…
       </message>
@@ -2370,12 +2382,6 @@ See your search engine’s instructions for deleting your search history, if app
       </message>
       <message name="IDS_IOS_FEED_MANAGEMENT_HIDDEN_TEXT" desc="The 'Hidden' row title in the feed management UI.">
         Hidden
-      </message>
-      <message name="IDS_IOS_FEED_MANAGEMENT_INTERESTS_TEXT" desc="The 'Interests' row title in the feed management UI.">
-        Interests
-      </message>
-      <message name="IDS_IOS_FEED_MANAGEMENT_TITLE" desc="The title of the feed management UI.">
-        Manage
       </message>
       <message name="IDS_IOS_FEED_SORT_ACCESSIBILITY_LABEL" desc="The accessibility label for the Following feed header's sort button.">
         Sort button for Following feed.
@@ -3198,6 +3204,15 @@ See your search engine’s instructions for deleting your search history, if app
       </message>
       <message name="IDS_IOS_LENS_OVERLAY_TOOLTIP_TEXT" desc="The Lens overlay tooltip displayed text.">
         Search your screen
+      </message>
+      <message name="IDS_IOS_LENS_OVERLAY_TRANSLATE_ERROR_SUBTITLE" desc="The subtitle that appears in the bottom sheet of the Lens Overlay when translate fails.">
+        Make sure the text you're translating is clear and in frame.
+      </message>
+      <message name="IDS_IOS_LENS_OVERLAY_TRANSLATE_ERROR_TITLE" desc="The title of the message that appears in the bottom sheet of the Lens Overlay when translate fails.">
+        No text found
+      </message>
+      <message name="IDS_IOS_LENS_OVERLAY_TRANSLATE_INDICATION_TITLE" desc="The text that appears in the zero state after a translation took place in Lens Overlay.">
+        Translated text
       </message>
       <message name="IDS_IOS_LENS_PRODUCT_NAME" desc="The brand name of Google Lens that will appear in menu titles as a single string.">
         Google Lens

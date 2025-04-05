@@ -48,9 +48,13 @@ mojom::GraphInfoPtr BuildSimpleGraphInfo(
 // computing graph message.
 class FakeWebNNGraphImpl final : public WebNNGraphImpl {
  public:
-  FakeWebNNGraphImpl(WebNNContextImpl* context,
-                     ComputeResourceInfo compute_resource_info)
-      : WebNNGraphImpl(context, std::move(compute_resource_info)) {}
+  FakeWebNNGraphImpl(
+      mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
+      WebNNContextImpl* context,
+      ComputeResourceInfo compute_resource_info)
+      : WebNNGraphImpl(std::move(receiver),
+                       context,
+                       std::move(compute_resource_info)) {}
   ~FakeWebNNGraphImpl() override = default;
 
  private:
@@ -82,6 +86,7 @@ class FakeWebNNContextImpl final : public WebNNContextImpl {
 
  private:
   void CreateGraphImpl(
+      mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
       mojom::GraphInfoPtr graph_info,
       WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
       base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
@@ -93,14 +98,16 @@ class FakeWebNNContextImpl final : public WebNNContextImpl {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(
-            [](base::WeakPtr<WebNNContextImpl> context,
+            [](mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
+               base::WeakPtr<WebNNContextImpl> context,
                WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
                CreateGraphImplCallback callback) {
               CHECK(context);
               std::move(callback).Run(std::make_unique<FakeWebNNGraphImpl>(
-                  context.get(), std::move(compute_resource_info)));
+                  std::move(receiver), context.get(),
+                  std::move(compute_resource_info)));
             },
-            AsWeakPtr(), std::move(compute_resource_info),
+            std::move(receiver), AsWeakPtr(), std::move(compute_resource_info),
             std::move(callback)));
   }
 

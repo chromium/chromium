@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
+#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/bottom_sheet_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -22,9 +23,26 @@
 using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::SettingsDoneButton;
 using chrome_test_util::SettingsMenuBackButton;
+using chrome_test_util::SettingsProfileMatcher;
 using chrome_test_util::SettingsToolbarAddButton;
 
 namespace {
+
+NSString* const kStreetAddressLabel =
+    base::SysUTF8ToNSString(autofill::FieldTypeToDeveloperRepresentationString(
+        autofill::ADDRESS_HOME_STREET_ADDRESS));
+
+NSString* const kCityLabel =
+    base::SysUTF8ToNSString(autofill::FieldTypeToDeveloperRepresentationString(
+        autofill::ADDRESS_HOME_CITY));
+
+NSString* const kStateLabel =
+    base::SysUTF8ToNSString(autofill::FieldTypeToDeveloperRepresentationString(
+        autofill::ADDRESS_HOME_STATE));
+
+NSString* const kZipLabel =
+    base::SysUTF8ToNSString(autofill::FieldTypeToDeveloperRepresentationString(
+        autofill::ADDRESS_HOME_ZIP));
 
 // Matcher for the "Save Address" button.
 id<GREYMatcher> SaveAddressButton() {
@@ -38,6 +56,11 @@ id<GREYMatcher> TextFieldWithLabel(NSString* text_field_label) {
   return grey_allOf(grey_accessibilityID([text_field_label
                         stringByAppendingString:@"_textField"]),
                     grey_kindOfClass([UITextField class]), nil);
+}
+
+// Matcher for the "add address" bottom sheet.
+id<GREYMatcher> EditProfileBottomSheet() {
+  return grey_accessibilityID(kEditProfileBottomSheetViewIdentfier);
 }
 
 // Helper to open the address settings page.
@@ -88,44 +111,44 @@ void OpenAddressSettings() {
 
 // Populates required address fields.
 - (void)fillRequiredFields {
-  NSString* streetAddressLabel = base::SysUTF8ToNSString(
-      autofill::FieldTypeToDeveloperRepresentationString(
-          autofill::ADDRESS_HOME_STREET_ADDRESS));
-
-  [[EarlGrey selectElementWithMatcher:TextFieldWithLabel(streetAddressLabel)]
+  [[EarlGrey selectElementWithMatcher:TextFieldWithLabel(kStreetAddressLabel)]
       performAction:grey_replaceText(@"Rue St Catherine")];
 
-  NSString* cityLabel = base::SysUTF8ToNSString(
-      autofill::FieldTypeToDeveloperRepresentationString(
-          autofill::ADDRESS_HOME_CITY));
-
-  [[EarlGrey selectElementWithMatcher:TextFieldWithLabel(cityLabel)]
+  [[EarlGrey selectElementWithMatcher:TextFieldWithLabel(kCityLabel)]
       performAction:grey_replaceText(@"Montreal")];
 
-  NSString* stateLabel = base::SysUTF8ToNSString(
-      autofill::FieldTypeToDeveloperRepresentationString(
-          autofill::ADDRESS_HOME_STATE));
-
-  [[EarlGrey selectElementWithMatcher:TextFieldWithLabel(stateLabel)]
+  [[EarlGrey selectElementWithMatcher:TextFieldWithLabel(kStateLabel)]
       performAction:grey_replaceText(@"Quebec")];
 
-  NSString* zipLabel = base::SysUTF8ToNSString(
-      autofill::FieldTypeToDeveloperRepresentationString(
-          autofill::ADDRESS_HOME_ZIP));
-
-  [[EarlGrey selectElementWithMatcher:TextFieldWithLabel(zipLabel)]
+  [[EarlGrey selectElementWithMatcher:TextFieldWithLabel(kZipLabel)]
       performAction:grey_replaceText(@"H3H 1H1")];
+}
+
+// Helper to open the "add address" bottom sheet.
+- (void)openAddAddressView:(BOOL)signIn {
+  if (signIn) {
+    [SigninEarlGreyUI
+        signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+    [ChromeEarlGrey
+        waitForSyncTransportStateActiveWithTimeout:base::Seconds(10)];
+  }
+
+  OpenAddressSettings();
+
+  // Tap the "Add" button.
+  [[EarlGrey selectElementWithMatcher:SettingsToolbarAddButton()]
+      performAction:grey_tap()];
+
+  // Verify the "add address" bottom sheet is visible.
+  [[EarlGrey selectElementWithMatcher:EditProfileBottomSheet()]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 #pragma mark - Tests
 
 // Tests adding a local address manually through settings.
 - (void)testAddLocalAddressManually {
-  OpenAddressSettings();
-
-  // Tap the "Add" button.
-  [[EarlGrey selectElementWithMatcher:SettingsToolbarAddButton()]
-      performAction:grey_tap()];
+  [self openAddAddressView:NO];
 
   // Fill the required fields.
   [self fillRequiredFields];
@@ -146,14 +169,7 @@ void OpenAddressSettings() {
 // Tests adding an account address manually through settings.
 - (void)testAddAccountAddressManually {
   // The user needs to be signed in for the address to be saved to the account.
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
-  [ChromeEarlGrey waitForSyncTransportStateActiveWithTimeout:base::Seconds(10)];
-
-  OpenAddressSettings();
-
-  // Tap the "Add" button.
-  [[EarlGrey selectElementWithMatcher:SettingsToolbarAddButton()]
-      performAction:grey_tap()];
+  [self openAddAddressView:YES];
 
   // Fill the required fields.
   [self fillRequiredFields];
@@ -177,11 +193,23 @@ void OpenAddressSettings() {
   [SigninEarlGreyUI signOut];
 }
 
-// Tests that tapping the `Cancel` button triggers the dismissal of the add
-// address bottom sheet.
+// Tests that tapping the `Cancel` button triggers the dismissal of the "add
+// address" bottom sheet.
 - (void)testCancelButton {
-  // TODO(crbug.com/406799169): EGTest for checking if the `Cancel` button works
-  // as expected.
+  [self openAddAddressView:NO];
+
+  // Tap "Cancel".
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityID(
+                                       kEditProfileBottomSheetCancelButton),
+                                   grey_accessibilityTrait(
+                                       UIAccessibilityTraitButton),
+                                   nil)] performAction:grey_tap()];
+
+  // Verify the address settings opened.
+  [[EarlGrey selectElementWithMatcher:SettingsProfileMatcher()]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 // Tests the 'Save' button enabled state when manually adding an address to the
@@ -193,14 +221,7 @@ void OpenAddressSettings() {
   }
 
   // The user needs to be signed in for the address to be saved to the account.
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
-  [ChromeEarlGrey waitForSyncTransportStateActiveWithTimeout:base::Seconds(10)];
-
-  OpenAddressSettings();
-
-  // Tap the "Add" button.
-  [[EarlGrey selectElementWithMatcher:SettingsToolbarAddButton()]
-      performAction:grey_tap()];
+  [self openAddAddressView:YES];
 
   // Ensure the 'Save' button is initially disabled for an account address.
   [[EarlGrey selectElementWithMatcher:SaveAddressButton()]
@@ -217,16 +238,122 @@ void OpenAddressSettings() {
     EARL_GREY_TEST_SKIPPED(@"Test fails on iPad currently.");
   }
 
-  OpenAddressSettings();
-
-  // Tap the "Add" button.
-  [[EarlGrey selectElementWithMatcher:SettingsToolbarAddButton()]
-      performAction:grey_tap()];
+  [self openAddAddressView:NO];
 
   // Ensure the 'Save' button is initially enabled for a local address (user is
   // signed out).
   [[EarlGrey selectElementWithMatcher:SaveAddressButton()]
       assertWithMatcher:grey_enabled()];
+}
+
+// Tests the 'Save' button's enabled state when manually adding an address to
+// the account, validating it against required field population.
+- (void)testButtonEnabledStateForAccountAddress {
+  // TODO(crbug.com/407506623): Fix EGTests on iPad.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Test fails on iPad currently.");
+  }
+
+  // The user needs to be signed in for the address to be saved to the account.
+  [self openAddAddressView:YES];
+
+  // Fill the required fields.
+  [self fillRequiredFields];
+
+  // Ensure the 'Save' button's status changes to enabled.
+  [[EarlGrey selectElementWithMatcher:SaveAddressButton()]
+      assertWithMatcher:grey_enabled()];
+
+  // Remove one of the required fields
+  [[EarlGrey selectElementWithMatcher:TextFieldWithLabel(kStreetAddressLabel)]
+      performAction:grey_replaceText(@"")];
+
+  // Ensure the 'Save' button is disabled.
+  [[EarlGrey selectElementWithMatcher:SaveAddressButton()]
+      assertWithMatcher:grey_not(grey_enabled())];
+
+  // Fill the required field.
+  [[EarlGrey selectElementWithMatcher:TextFieldWithLabel(kStreetAddressLabel)]
+      performAction:grey_replaceText(@"Rue St Catherine")];
+
+  // Ensure the 'Save' button is enabled.
+  [[EarlGrey selectElementWithMatcher:SaveAddressButton()]
+      assertWithMatcher:grey_enabled()];
+
+  // Sign out.
+  [SigninEarlGrey signOut];
+}
+
+// Tests that the correct error message is displayed based on the completeness
+// of required address fields during manual address addition.
+- (void)testErrorMessageForAccountAddress {
+  // TODO(crbug.com/407506623): Fix EGTests on iPad.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Test fails on iPad currently.");
+  }
+
+  // The user needs to be signed in for the address to be saved to the account.
+  [self openAddAddressView:YES];
+
+  // Fill the required fields.
+  [self fillRequiredFields];
+
+  // Assert that no error message is displayed at start.
+  [[EarlGrey
+      selectElementWithMatcher:
+          chrome_test_util::ContainsPartialText(l10n_util::GetPluralNSStringF(
+              IDS_IOS_SETTINGS_EDIT_AUTOFILL_ADDRESS_REQUIREMENT_ERROR, 1))]
+      assertWithMatcher:grey_nil()];
+
+  // Remove one of the required fields.
+  [[EarlGrey selectElementWithMatcher:TextFieldWithLabel(kStreetAddressLabel)]
+      performAction:grey_replaceText(@"")];
+
+  // Assert that an error message is displayed when one required field is
+  // missing.
+  [[EarlGrey
+      selectElementWithMatcher:
+          chrome_test_util::ContainsPartialText(l10n_util::GetPluralNSStringF(
+              IDS_IOS_SETTINGS_EDIT_AUTOFILL_ADDRESS_REQUIREMENT_ERROR, 1))]
+      assertWithMatcher:grey_notNil()];
+
+  // Remove another required field, leaving two required fields empty.
+  [[EarlGrey selectElementWithMatcher:TextFieldWithLabel(kCityLabel)]
+      performAction:grey_replaceText(@"")];
+
+  // Assert that the error message reflects multiple missing required fields.
+  [[EarlGrey
+      selectElementWithMatcher:
+          chrome_test_util::ContainsPartialText(l10n_util::GetPluralNSStringF(
+              IDS_IOS_SETTINGS_EDIT_AUTOFILL_ADDRESS_REQUIREMENT_ERROR, 2))]
+      assertWithMatcher:grey_notNil()];
+
+  // Fill one of the required fields to leave only one field empty.
+  [[EarlGrey selectElementWithMatcher:TextFieldWithLabel(kStreetAddressLabel)]
+      performAction:grey_replaceText(@"Rue St Catherine")];
+
+  // Assert that an error message is displayed when one required field is
+  // missing.
+  [[EarlGrey
+      selectElementWithMatcher:
+          chrome_test_util::ContainsPartialText(l10n_util::GetPluralNSStringF(
+              IDS_IOS_SETTINGS_EDIT_AUTOFILL_ADDRESS_REQUIREMENT_ERROR, 1))]
+      assertWithMatcher:grey_notNil()];
+
+  // Fill the last required field, completing all required fields.
+  [[EarlGrey selectElementWithMatcher:TextFieldWithLabel(kCityLabel)]
+      performAction:grey_replaceText(@"Montreal")];
+
+  // Assert that the error message disappears when all required fields are
+  // filled.
+  [[EarlGrey
+      selectElementWithMatcher:
+          chrome_test_util::ContainsPartialText(l10n_util::GetPluralNSStringF(
+              IDS_IOS_SETTINGS_EDIT_AUTOFILL_ADDRESS_REQUIREMENT_ERROR, 1))]
+      assertWithMatcher:grey_nil()];
+
+  // Sign out.
+  [SigninEarlGrey signOut];
 }
 
 @end

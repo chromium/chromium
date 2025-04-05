@@ -60,6 +60,7 @@ void EchoAILanguageModel::DoMockExecution(
 
 void EchoAILanguageModel::Prompt(
     std::vector<blink::mojom::AILanguageModelPromptPtr> prompts,
+    const std::optional<std::string>& response_json_schema,
     mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
         pending_responder) {
   if (is_destroyed_) {

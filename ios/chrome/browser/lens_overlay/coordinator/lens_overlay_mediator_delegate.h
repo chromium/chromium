@@ -19,6 +19,10 @@ class GURL;
 /// Called when an URL needs to be opened in a new tab.
 - (void)lensOverlayMediatorOpenURLInNewTabRequsted:(GURL)url;
 
+/// Called when a translation failed due to no or unprocessable text in the
+/// given image.
+- (void)lensOverlayMediatorDidFailDetectingTranslatableText;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_LENS_OVERLAY_COORDINATOR_LENS_OVERLAY_MEDIATOR_DELEGATE_H_

@@ -166,6 +166,9 @@ void FencedFrame::Navigate(
 
   // Embedder initiated fenced frame navigation should force a new browsing
   // instance.
+  // Note: `navigation_start_time` already comes from the renderer process in
+  // HTMLFencedFrameElement::FencedFrameDelegate::Navigate, so it is not
+  // necessary to record a different `actual_navigation_start_time`.
   inner_root->navigator().NavigateFromFrameProxy(
       inner_root->current_frame_host(), validated_url,
       /*initiator_frame_token=*/nullptr,
@@ -179,6 +182,7 @@ void FencedFrame::Navigate(
       network::mojom::SourceLocation::New(), /*has_user_gesture=*/false,
       /*is_form_submission=*/false,
       /*impression=*/std::nullopt, initiator_activation_and_ad_status,
+      /*actual_navigation_start_time=*/navigation_start_time,
       navigation_start_time,
       /*is_embedder_initiated_fenced_frame_navigation=*/true,
       /*is_unfenced_top_navigation=*/false,

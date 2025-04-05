@@ -33,30 +33,9 @@ flags.DEFINE_string('results', r'c:\temp\results.json',
                     'Path to write results to.')
 
 
-def wait_for_connectivity(host: str, port: int, timeout: float = 2 * 60):
-  deadline = time.monotonic() + timeout
-  while time.monotonic() < deadline:
-    test_socket = socket.socket()
-    test_socket.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
-    test_socket.settimeout(30)
-    try:
-      test_socket.connect((host, port))
-      return
-    except OSError:
-      traceback.print_exc()
-      time.sleep(10)
-    finally:
-      test_socket.close()
-  # A firewall misconfiguration is likely (either Windows's native firewall
-  # or Google Cloud's).
-  raise TimeoutError(
-      f'{host}:{port} not accepting connections after {timeout:.3f}s')
-
-
 def main(argv):
   host, _, port = FLAGS.addr.rpartition(':')
   port = int(port)
-  wait_for_connectivity(host, port)
 
   options = webdriver.ChromeOptions()
   # Expose Chrome UI elements to `pywinauto`.

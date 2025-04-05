@@ -2825,17 +2825,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Apps.RestoreForCrashNotification" enum="RestoreAction"
-    expires_after="2025-10-15">
-  <owner>dandersson@chromium.org</owner>
-  <owner>fanafan@chromium.org</owner>
-  <owner>chromeos-wm-corexp@google.com</owner>
-  <summary>
-    Records user actions on the full restore for crash notification, when the
-    notification is closed.
-  </summary>
-</histogram>
-
 <histogram name="Apps.RestoreInitSetting" enum="RestoreSetting"
     expires_after="2025-10-15">
   <owner>dandersson@chromium.org</owner>
@@ -2844,16 +2833,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the restore apps and pages preference setting, when a profile is
     loaded.
-  </summary>
-</histogram>
-
-<histogram name="Apps.RestoreNotification" enum="RestoreAction"
-    expires_after="2025-09-14">
-  <owner>nancylingwang@chromium.org</owner>
-  <owner>dandersson@chromium.org</owner>
-  <summary>
-    Records user actions on the full restore notification, when the notification
-    is closed.
   </summary>
 </histogram>
 

@@ -45,11 +45,11 @@ export class SpHeadingElement extends CrLitElement {
     };
   }
 
-  compact: boolean = false;
-  backButtonAriaLabel: string;
-  backButtonTitle: string;
-  hideBackButton: boolean = false;
-  disableBackButton: boolean = false;
+  accessor compact: boolean = false;
+  accessor backButtonAriaLabel: string = '';
+  accessor backButtonTitle: string = '';
+  accessor hideBackButton: boolean = false;
+  accessor disableBackButton: boolean = false;
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);

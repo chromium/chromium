@@ -19,6 +19,7 @@ Kung ide-delete mo ito, mawawalan kaagad ang lahat ng access sa grupo ng tab na 
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Ginawa <ph name="NUM_MINS_ONE" /> minuto ang nakalipas}one{Ginawa <ph name="NUM_MINS_MANY" /> minuto ang nakalipas}other{Ginawa <ph name="NUM_MINS_MANY" /> na minuto ang nakalipas}}</translation>
 <translation id="1499635324672558517">Isara ang lahat ng tab na Incognito?</translation>
 <translation id="1501480321619201731">I-delete ang pangkat</translation>
+<translation id="1505526451013346974">Idagdag sa <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1555130319947370107">Asul</translation>
 <translation id="161042844686301425">Cyan</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> (na) tab ang naigrupo</translation>
@@ -85,7 +86,6 @@ Kung ide-delete mo ito, mawawalan kaagad ang lahat ng access sa grupo ng tab na 
 <translation id="4076226664360336092">Listahan ng grupo ng tab, na binuksan nang buo</translation>
 <translation id="4133493477912226187">Mukhang magkaugnay ang <ph name="NUMBER_OF_TABS" /> (na) tab. Igrupo ang mga ito?</translation>
 <translation id="4139634748112164403">Mananatiling nakabukas ang mga tab sa device na ito pero permanenteng made-delete ang grupo</translation>
-<translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{Isara ang grupong <ph name="TITLE_OF_GROUP" /> na may <ph name="TABS_COUNT_ONE" /> tab, na may kulay na <ph name="COLOR_NAME" />.}one{Isara ang grupong <ph name="TITLE_OF_GROUP" /> na may <ph name="TABS_COUNT_MANY" /> tab, na may kulay na <ph name="COLOR_NAME" />.}other{Isara ang grupong <ph name="TITLE_OF_GROUP" /> na may <ph name="TABS_COUNT_MANY" /> na tab, na may kulay na <ph name="COLOR_NAME" />.}}</translation>
 <translation id="4159784952369912983">Lila</translation>
 <translation id="427987768447457592">Bagong grupo ng tab</translation>
 <translation id="4371591986692297148">Hindi Aktibo</translation>
@@ -119,7 +119,6 @@ Kung ide-delete mo ito, mawawalan kaagad ang lahat ng access sa grupo ng tab na 
 <translation id="5446043142172831860">Alisin ang tab at umalis sa grupo</translation>
 <translation id="5490235265819901748">Na-expand ang grupo ng tab</translation>
 <translation id="5494920125229734069">Piliin ang lahat</translation>
-<translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Isara ang grupo ng tab na may <ph name="TABS_COUNT_ONE" /> tab, na may kulay na <ph name="COLOR_NAME" />.}one{Isara ang grupo ng tab na may <ph name="TABS_COUNT_MANY" /> tab, na may kulay na <ph name="COLOR_NAME" />.}other{Isara ang grupo ng tab na may <ph name="TABS_COUNT_MANY" /> na tab, na may kulay na <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Tingnan ang impormasyon ng store, available ang opsyon malapit sa itaas ng screen</translation>
 <translation id="5627941783489838464">Walang update sa tab</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{I-restore ang tab}one{I-restore ang mga tab}other{I-restore ang mga tab}}</translation>

@@ -2882,9 +2882,12 @@ void LensOverlayController::OnFocusChanged(bool focused) {
     }
     csb_session_end_metrics_.searchbox_focused_ = true;
 
-    // If the searchbox becomes focused, showing intent to issue a new query,
-    // upload the new page content for contextualization.
-    TryUpdatePageContextualization();
+    if (state() == State::kLivePageAndResults) {
+      // If the live page is showing and the searchbox becomes focused, showing
+      // intent to issue a new query, upload the new page content for
+      // contextualization.
+      TryUpdatePageContextualization();
+    }
   }
 }
 
@@ -3394,10 +3397,13 @@ void LensOverlayController::IssueSearchBoxRequest(
   RecordTimeToFirstInteraction(
       lens::LensOverlayFirstInteractionType::kSearchbox);
 
-  // Do not attempt to contextualize if CSB is disabled or if the user is not in
-  // the contextual search flow (aka, issues an image request already).
+  // Do not attempt to contextualize if CSB is disabled, if recontextualization
+  // on each query is disabled, if the live page is not being displayed, or if
+  // the user is not in the contextual search flow (aka, issues an image request
+  // already).
   if (!lens::features::IsLensOverlayContextualSearchboxEnabled() ||
-      !IsContextualSearchbox()) {
+      !lens::features::ShouldLensOverlayRecontextualizeOnQuery() ||
+      state() != State::kLivePageAndResults || !IsContextualSearchbox()) {
     IssueSearchBoxRequestPart2(search_box_text, match_type,
                                is_zero_prefix_suggestion,
                                additional_query_params);

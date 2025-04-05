@@ -98,7 +98,7 @@ class ChildAccountServiceTest : public ::testing::Test {
   PrefService& GetUserPerferences() { return syncable_pref_service_; }
 
   void SetListAccountsResponseAndTriggerCookieJarUpdate(
-      const signin::CookieParams& params) {
+      const gaia::CookieParams& params) {
     signin::SetListAccountsResponseOneAccountWithParams(
         params, GetTestURLLoaderFactory());
     GetAccountsCookieMutator()->TriggerCookieJarUpdate();

@@ -191,6 +191,8 @@ target(link_target_type, "gles2_sources") {
     "graphite_image_provider.h",
     "graphite_precompile.cc",
     "graphite_precompile.h",
+    "graphite_shared_context.cc",
+    "graphite_shared_context.h",
     "graphite_utils.cc",
     "graphite_utils.h",
     "id_manager.cc",

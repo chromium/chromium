@@ -23,6 +23,8 @@ namespace mojom {
 class NetworkService;
 }  // namespace mojom
 
+class NetworkService;
+
 // Intercepts network requests to apply content decoding (e.g., gzip, brotli,
 // zstd) to the response body.
 class COMPONENT_EXPORT(NETWORK_CPP) ContentDecodingInterceptor {
@@ -42,7 +44,6 @@ class COMPONENT_EXPORT(NETWORK_CPP) ContentDecodingInterceptor {
   //
   // IMPORTANT NOTE: This method performs decoding, so it MUST NOT be used in
   // the browser process, other than the network service on Android.
-  // TODO(crbug.com/407477261): Add CHECK() for it.
   static void Intercept(
       const std::vector<net::SourceStreamType>& types,
       network::mojom::URLLoaderClientEndpointsPtr& endpoints,
@@ -66,7 +67,6 @@ class COMPONENT_EXPORT(NETWORK_CPP) ContentDecodingInterceptor {
   //
   // IMPORTANT NOTE: This method performs decoding, so it MUST NOT be used in
   // the browser process, other than the network service on Android.
-  // TODO(crbug.com/407477261): Add CHECK() for it.
   static void Intercept(
       const std::vector<net::SourceStreamType>& types,
       base::OnceCallback<
@@ -81,7 +81,6 @@ class COMPONENT_EXPORT(NETWORK_CPP) ContentDecodingInterceptor {
   //
   // IMPORTANT NOTE: This method performs decoding, so it MUST NOT be used in
   // the browser process, other than the network service on Android.
-  // TODO(crbug.com/407477261): Add CHECK() for it.
   static void Intercept(
       const std::vector<net::SourceStreamType>& types,
       mojo::ScopedDataPipeConsumerHandle source_body,
@@ -118,9 +117,30 @@ class COMPONENT_EXPORT(NETWORK_CPP) ContentDecodingInterceptor {
   // insufficient resources error (`net::ERR_INSUFFICIENT_RESOURCES`).
   static void SetForceMojoCreateDataPipeFailureForTesting(bool value);
 
+  // A capability class used as a key to restrict calls to
+  // SetIsNetworkServiceRunningInTheCurrentProcess.
+  class SetIsNetworkServiceRunningInTheCurrentProcessKey {
+   private:
+    SetIsNetworkServiceRunningInTheCurrentProcessKey() = default;
+    friend class ::network::NetworkService;
+  };
+  // Sets a static flag indicating whether the Network Service is running within
+  // the current process.
+  static void SetIsNetworkServiceRunningInTheCurrentProcess(
+      bool value,
+      SetIsNetworkServiceRunningInTheCurrentProcessKey key);
+
  private:
+  // Returns true if content decoding is permitted in the current process.
+  // Decoding is allowed in non-browser processes. In the browser process,
+  // it's only allowed if the Network Service is also running in-process.
+  static bool IsInContentDecodingAllowedProcess();
+
   // Backing flag for the test utility above. Defined in the .cc file.
   static bool force_mojo_create_data_pipe_failure_for_testing_;
+
+  // Flag indicating if the network service is running in the current process.
+  static bool is_network_serice_runnning_in_the_current_process_;
 };
 
 }  // namespace network

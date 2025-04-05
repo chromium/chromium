@@ -143,9 +143,6 @@ void ManagedProfileRequiredPage::PopulateStringsForSharedHTML(
   load_time_data.Set("managed-profile-required", true);
   load_time_data.Set("overridable", false);
   load_time_data.Set("hide_primary_button", false);
-  load_time_data.Set("show_recurrent_error_paragraph", false);
-
-  load_time_data.Set("recurrentErrorParagraph", "");
   load_time_data.Set("openDetails", "");
   load_time_data.Set("optInLink", "");
   load_time_data.Set("enhancedProtectionMessage", "");

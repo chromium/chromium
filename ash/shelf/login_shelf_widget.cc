@@ -16,12 +16,11 @@
 
 namespace ash {
 
-// LoginShelfWidget::LoginShelfWidgetDelegate ----------------------------------
+// LoginShelfWidgetDelegate ----------------------------------------------------
 // The delegate of the login shelf widget.
 
-class LoginShelfWidget::LoginShelfWidgetDelegate
-    : public views::AccessiblePaneView,
-      public views::WidgetDelegate {
+class LoginShelfWidgetDelegate : public views::AccessiblePaneView,
+                                 public views::WidgetDelegate {
  public:
   explicit LoginShelfWidgetDelegate(Shelf* shelf) : shelf_(shelf) {
     SetOwnedByWidget(true);

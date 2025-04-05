@@ -20,6 +20,7 @@
 #include "net/cert/ct_log_verifier.h"
 #include "net/cert/ct_policy_enforcer.h"
 #include "net/cert/ct_verifier.h"
+#include "net/cert/require_ct_delegate.h"
 #include "net/net_buildflags.h"
 #include "third_party/boringssl/src/pki/parsed_certificate.h"
 
@@ -42,6 +43,7 @@ typedef std::vector<scoped_refptr<X509Certificate>> CertificateList;
 class NET_EXPORT CertVerifyProc
     : public base::RefCountedThreadSafe<CertVerifyProc> {
  public:
+  // LINT.IfChange(CertVerifyProc.VerifyFlags)
   enum VerifyFlags {
     // If set, enables online revocation checking via CRLs and OCSP for the
     // certificate chain.
@@ -66,10 +68,15 @@ class NET_EXPORT CertVerifyProc
     // Theoretically we could still check for cached results.)
     VERIFY_DISABLE_NETWORK_FETCHES = 1 << 3,
 
+    // If set, Certificate Transparency requirements are evaluated in a
+    // stricter fashion as required by Signed Exchanges.
+    VERIFY_SXG_CT_REQUIREMENTS = 1 << 4,
+
     // Also update GetNetConstants() in net/log/net_log_util.cc when updating
     // this enum.
-    VERIFY_FLAGS_LAST = VERIFY_DISABLE_NETWORK_FETCHES
+    VERIFY_FLAGS_LAST = VERIFY_SXG_CT_REQUIREMENTS
   };
+  // LINT.ThenChange(/net/log/net_log_util.cc:CertVerifyProc.VerifyFlags)
 
   // The set factory parameters that are variable over time, but are expected to
   // be consistent between multiple verifiers that are created. For example,
@@ -170,6 +177,10 @@ class NET_EXPORT CertVerifyProc
     // This only has an impact if the Chrome Root Store is being used.
     bool include_system_trust_store = true;
 #endif
+
+    // Delegate that determines whether CT is required for each verification.
+    // May be nullptr if CT is not enabled.
+    scoped_refptr<const RequireCTDelegate> require_ct_delegate;
   };
 
   // These values are persisted to logs. Entries should not be renumbered and

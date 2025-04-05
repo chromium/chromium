@@ -244,9 +244,8 @@ void WelcomeScreen::SetApplicationLocaleAndInputMethod(
       base::BindOnce(&WelcomeScreen::OnLanguageChangedCallback,
                      language_weak_ptr_factory_.GetWeakPtr(),
                      base::Owned(new InputEventsBlocker), input_method));
-  locale_util::SwitchLanguage(locale, true /* enableLocaleKeyboardLayouts */,
-                              true /* login_layouts_only */,
-                              std::move(callback),
+  locale_util::SwitchLanguage(locale, /*enable_locale_keyboard_layouts=*/true,
+                              /*login_layouts_only=*/false, std::move(callback),
                               ProfileManager::GetActiveUserProfile());
 }
 
@@ -272,9 +271,8 @@ void WelcomeScreen::SetApplicationLocale(const std::string& locale,
       base::BindOnce(&WelcomeScreen::OnLanguageChangedCallback,
                      language_weak_ptr_factory_.GetWeakPtr(),
                      base::Owned(new InputEventsBlocker), std::string()));
-  locale_util::SwitchLanguage(locale, true /* enableLocaleKeyboardLayouts */,
-                              true /* login_layouts_only */,
-                              std::move(callback),
+  locale_util::SwitchLanguage(locale, /*enable_locale_keyboard_layouts=*/true,
+                              /*login_layouts_only=*/false, std::move(callback),
                               ProfileManager::GetActiveUserProfile());
   if (is_from_ui) {
     // Write into the local state to save data about locale changes in case of

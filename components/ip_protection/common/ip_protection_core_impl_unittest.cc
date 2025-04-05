@@ -26,6 +26,7 @@
 #include "components/ip_protection/common/ip_protection_proxy_config_manager_impl.h"
 #include "components/ip_protection/common/ip_protection_token_manager.h"
 #include "components/ip_protection/common/masked_domain_list_manager.h"
+#include "components/ip_protection/common/probabilistic_reveal_token_registry.h"
 #include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
 #include "net/base/features.h"
 #include "net/base/network_change_notifier.h"
@@ -34,6 +35,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/proxy_config.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace ip_protection {
 
@@ -47,6 +49,8 @@ constexpr char kEmptyTokenCacheHistogram[] =
     "NetworkService.IpProtection.EmptyTokenCache2";
 constexpr char kMdlMatchesTimeHistogram[] =
     "NetworkService.MaskedDomainList.MatchesTime";
+constexpr char kQuicProxiesFailedHistogram[] =
+    "NetworkService.IpProtection.QuicProxiesFailed";
 
 constexpr char kMountainViewGeoId[] = "US,US-CA,MOUNTAIN VIEW";
 constexpr char kSunnyvaleGeoId[] = "US,US-CA,SUNNYVALE";
@@ -170,6 +174,19 @@ class FakePRTManager : public IpProtectionProbabilisticRevealTokenManager {
   void RequestTokens() override { response_ = mock_response_; }
   std::optional<std::string> response_ = std::nullopt;
   std::optional<std::string> mock_response_ = std::nullopt;
+};
+
+class FakeProbabilisticRevealTokenRegistry
+    : public ProbabilisticRevealTokenRegistry {
+ public:
+  FakeProbabilisticRevealTokenRegistry() = default;
+  ~FakeProbabilisticRevealTokenRegistry() override = default;
+  bool IsRegistered(const GURL& url) override { return registered_url_ == url; }
+  void UpdateRegistry(base::Value::Dict registry) override { NOTREACHED(); }
+  void SetRegisteredUrl(const GURL& url) { registered_url_ = url; }
+
+ private:
+  GURL registered_url_;
 };
 
 class IpProtectionCoreImplTest : public testing::Test {
@@ -528,10 +545,18 @@ TEST_F(IpProtectionCoreImplTest, GetProxyListFromManagerWithQuic) {
               net::ProxyServer::SCHEME_HTTPS, "b-proxy2", std::nullopt),
       })};
   ASSERT_TRUE(ip_protection_core->IsProxyListAvailable());
+
+  // Call GetProxyChainList three times to test counting requests before
+  // failure.
+  EXPECT_EQ(ip_protection_core->GetProxyChainList(),
+            proxy_chain_list_with_quic);
+  EXPECT_EQ(ip_protection_core->GetProxyChainList(),
+            proxy_chain_list_with_quic);
   EXPECT_EQ(ip_protection_core->GetProxyChainList(),
             proxy_chain_list_with_quic);
 
   ip_protection_core->QuicProxiesFailed();
+  histogram_tester_.ExpectBucketCount(kQuicProxiesFailedHistogram, 3, 1);
 
   EXPECT_EQ(ip_protection_core->GetProxyChainList(),
             proxy_chain_list_without_quic);
@@ -832,6 +857,93 @@ TEST_F(IpProtectionCoreImplTest, RegularCoreDoesNotCallPRTRequest) {
       /*is_ip_protection_enabled=*/true, /*ip_protection_incognito=*/false);
   auto maybe_token = core->GetProbabilisticRevealToken("a", "b");
   EXPECT_FALSE(maybe_token.has_value());
+}
+
+TEST_F(IpProtectionCoreImplTest, GetPrtReturnsNulloptWhenNoManager) {
+  auto core = std::make_unique<IpProtectionCoreImpl>(
+      /*masked_domain_list_manager=*/nullptr,
+      /*ip_protection_proxy_config_manager=*/nullptr,
+      std::map<ProxyLayer, std::unique_ptr<IpProtectionTokenManager>>(),
+      /*probabilistic_reveal_token_registry=*/nullptr,
+      /*ipp_prt_manager=*/nullptr,
+      /*is_ip_protection_enabled=*/true, /*ip_protection_incognito=*/true);
+  auto maybe_token = core->GetProbabilisticRevealToken("a", "b");
+  EXPECT_FALSE(maybe_token.has_value());
+}
+
+TEST_F(IpProtectionCoreImplTest,
+       RequestShouldNotIncludePRTWhenFeatureDisabled) {
+  FakeProbabilisticRevealTokenRegistry ipp_prt_registry;
+  GURL example_com = GURL("https://example.com");
+  ipp_prt_registry.SetRegisteredUrl(example_com);
+
+  auto core = std::make_unique<IpProtectionCoreImpl>(
+      /*masked_domain_list_manager=*/nullptr,
+      /*ip_protection_proxy_config_manager=*/nullptr,
+      std::map<ProxyLayer, std::unique_ptr<IpProtectionTokenManager>>(),
+      &ipp_prt_registry, /*ipp_prt_manager=*/nullptr,
+      /*is_ip_protection_enabled=*/true, /*ip_protection_incognito=*/true);
+  EXPECT_FALSE(core->ShouldRequestIncludeProbabilisticRevealToken(example_com));
+}
+
+TEST_F(IpProtectionCoreImplTest,
+       RequestShouldIncludePRTWhenFeatureEnabledAndDomainIsRegistered) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      net::features::kEnableProbabilisticRevealTokens);
+  FakeProbabilisticRevealTokenRegistry ipp_prt_registry;
+  GURL example_com = GURL("https://example.com");
+  ipp_prt_registry.SetRegisteredUrl(example_com);
+
+  auto core = std::make_unique<IpProtectionCoreImpl>(
+      /*masked_domain_list_manager=*/nullptr,
+      /*ip_protection_proxy_config_manager=*/nullptr,
+      std::map<ProxyLayer, std::unique_ptr<IpProtectionTokenManager>>(),
+      &ipp_prt_registry, /*ipp_prt_manager=*/nullptr,
+      /*is_ip_protection_enabled=*/true, /*ip_protection_incognito=*/true);
+  EXPECT_TRUE(core->ShouldRequestIncludeProbabilisticRevealToken(example_com));
+}
+
+TEST_F(IpProtectionCoreImplTest,
+       RequestShouldNotIncludePRTWhenFeatureEnabledAndDomainIsNotRegistered) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      net::features::kEnableProbabilisticRevealTokens);
+  FakeProbabilisticRevealTokenRegistry ipp_prt_registry;
+  GURL example_com = GURL("https://example.com");
+  ipp_prt_registry.SetRegisteredUrl(example_com);
+
+  auto core = std::make_unique<IpProtectionCoreImpl>(
+      /*masked_domain_list_manager=*/nullptr,
+      /*ip_protection_proxy_config_manager=*/nullptr,
+      std::map<ProxyLayer, std::unique_ptr<IpProtectionTokenManager>>(),
+      &ipp_prt_registry, /*ipp_prt_manager=*/nullptr,
+      /*is_ip_protection_enabled=*/true, /*ip_protection_incognito=*/true);
+  GURL other_com = GURL("https://other.com");
+  EXPECT_FALSE(core->ShouldRequestIncludeProbabilisticRevealToken(other_com));
+}
+
+TEST_F(
+    IpProtectionCoreImplTest,
+    RequestShouldIncludePRTWhenFeatureEnabledToAttachPRTsOnAllProxiedRequests) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      net::features::kEnableProbabilisticRevealTokens,
+      {{net::features::kAttachProbabilisticRevealTokensOnAllProxiedRequests
+            .name,
+        base::ToString(true)}});
+  FakeProbabilisticRevealTokenRegistry ipp_prt_registry;
+  GURL example_com = GURL("https://example.com");
+  ipp_prt_registry.SetRegisteredUrl(example_com);
+
+  auto core = std::make_unique<IpProtectionCoreImpl>(
+      /*masked_domain_list_manager=*/nullptr,
+      /*ip_protection_proxy_config_manager=*/nullptr,
+      std::map<ProxyLayer, std::unique_ptr<IpProtectionTokenManager>>(),
+      &ipp_prt_registry, /*ipp_prt_manager=*/nullptr,
+      /*is_ip_protection_enabled=*/true, /*ip_protection_incognito=*/true);
+  GURL other_com = GURL("https://other.com");
+  EXPECT_TRUE(core->ShouldRequestIncludeProbabilisticRevealToken(other_com));
 }
 
 }  // namespace

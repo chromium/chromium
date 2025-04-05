@@ -496,7 +496,7 @@ declare global {
       export function dismissMv2DeprecationNoticeForExtension(
           extensionId: string): Promise<void>;
       export function uploadExtensionToAccount(extensionId: string):
-          Promise<void>;
+          Promise<boolean>;
 
       export const onItemStateChanged: ChromeEvent<(data: EventData) => void>;
       export const onProfileStateChanged:

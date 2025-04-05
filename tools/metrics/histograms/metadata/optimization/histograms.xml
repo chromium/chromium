@@ -291,6 +291,8 @@ chromium-metrics-reviews@google.com.
   <variant name="FormsAnnotations"
       summary="Provides information about whether a URL is eligible for
                generating user annotations derived from forms."/>
+  <variant name="GlicActionPageBlock"
+      summary="Provides information about whether GLIC may act on a page."/>
   <variant name="GlicContextualCueing"
       summary="Provides information about whether a page is eligible to cue
                for GLIC."/>

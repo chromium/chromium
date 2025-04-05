@@ -166,20 +166,6 @@ dependencies = [
 
 [[package]]
 name = "cargo_metadata"
-version = "0.15.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "eee4243f1f26fc7a42710e7439c149e2b10b05472f88090acce52632f231a73a"
-dependencies = [
- "camino",
- "cargo-platform",
- "semver",
- "serde",
- "serde_json",
- "thiserror 1.0.69",
-]
-
-[[package]]
-name = "cargo_metadata"
 version = "0.19.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "dd5eb614ed4c27c5d706420e4320fbe3216ab31fa1c33cd8246ac36dae4479ba"
@@ -532,7 +518,6 @@ version = "0.0.0"
 dependencies = [
  "anyhow",
  "cargo-platform",
- "cargo_metadata 0.15.4",
  "clap",
  "env_logger",
  "flate2",
@@ -558,7 +543,7 @@ source = "git+https://github.com/anforowicz/guppy.git?branch=cargo-set-more-link
 dependencies = [
  "ahash",
  "camino",
- "cargo_metadata 0.19.2",
+ "cargo_metadata",
  "cfg-if",
  "debug-ignore",
  "fixedbitset",

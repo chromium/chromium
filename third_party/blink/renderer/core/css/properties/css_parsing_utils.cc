@@ -3162,9 +3162,10 @@ static CSSValue* ConsumeDeprecatedWebkitCrossFade(
     return nullptr;
   }
 
-  if (percentage->IsNumericLiteralValue()) {
+  if (const auto* percentage_literal =
+          DynamicTo<CSSNumericLiteralValue>(percentage)) {
     percentage = CSSNumericLiteralValue::Create(
-        ClampTo<double>(percentage->GetDoubleValue(), 0, 1),
+        ClampTo<double>(percentage_literal->GetDoubleValue(), 0, 1),
         CSSPrimitiveValue::UnitType::kNumber);
   }
 
@@ -3189,8 +3190,9 @@ static CSSValue* ConsumeCrossFade(CSSParserTokenStream& stream,
       if (percentage) {
         return nullptr;
       }
-      if (percent_value->IsNumericLiteralValue()) {
-        double val = percent_value->GetDoubleValue();
+      if (const auto* literal =
+              DynamicTo<CSSNumericLiteralValue>(percent_value)) {
+        double val = literal->GetDoubleValue();
         if (!(val >= 0.0 &&
               val <= 100.0)) {  // Includes checks for NaN and infinities.
           return nullptr;
@@ -4268,9 +4270,15 @@ CSSValue* ConsumeAnimationDuration(CSSParserTokenStream& stream,
 }
 
 CSSValue* ConsumeTimelineRangeName(CSSParserTokenStream& stream) {
-  return ConsumeIdent<CSSValueID::kContain, CSSValueID::kCover,
-                      CSSValueID::kEntry, CSSValueID::kEntryCrossing,
-                      CSSValueID::kExit, CSSValueID::kExitCrossing>(stream);
+  return RuntimeEnabledFeatures::ScrollTimelineNamedRangeScrollEnabled()
+             ? ConsumeIdent<CSSValueID::kContain, CSSValueID::kCover,
+                            CSSValueID::kEntry, CSSValueID::kEntryCrossing,
+                            CSSValueID::kExit, CSSValueID::kExitCrossing,
+                            CSSValueID::kScroll>(stream)
+             : ConsumeIdent<CSSValueID::kContain, CSSValueID::kCover,
+                            CSSValueID::kEntry, CSSValueID::kEntryCrossing,
+                            CSSValueID::kExit, CSSValueID::kExitCrossing>(
+                   stream);
 }
 
 CSSValue* ConsumeTimelineRangeNameAndPercent(CSSParserTokenStream& stream,
@@ -5178,7 +5186,7 @@ CSSValue* ConsumeCornerShape(CSSParserTokenStream& stream,
   if (auto* ident =
           ConsumeIdent<CSSValueID::kBevel, CSSValueID::kNotch,
                        CSSValueID::kRound, CSSValueID::kScoop,
-                       CSSValueID::kSquircle, CSSValueID::kStraight>(stream)) {
+                       CSSValueID::kSquircle, CSSValueID::kSquare>(stream)) {
     return ident;
   }
 
@@ -5189,14 +5197,18 @@ CSSValue* ConsumeCornerShape(CSSParserTokenStream& stream,
   CSSParserTokenStream::RestoringBlockGuard guard(stream);
   stream.ConsumeWhitespace();
   const CSSPrimitiveValue* param = nullptr;
-  if (stream.Peek().Id() == CSSValueID::kInfinity) {
+  if (stream.Peek().Id() == CSSValueID::kNegativeInfinity) {
+    param =
+        CSSNumericLiteralValue::Create(-std::numeric_limits<double>::infinity(),
+                                       CSSPrimitiveValue::UnitType::kNumber);
+    stream.ConsumeIncludingWhitespace();
+  } else if (stream.Peek().Id() == CSSValueID::kInfinity) {
     param =
         CSSNumericLiteralValue::Create(std::numeric_limits<double>::infinity(),
                                        CSSPrimitiveValue::UnitType::kNumber);
     stream.ConsumeIncludingWhitespace();
   } else {
-    param = ConsumeNumber(stream, context,
-                          CSSPrimitiveValue::ValueRange::kNonNegative);
+    param = ConsumeNumber(stream, context, CSSPrimitiveValue::ValueRange::kAll);
   }
   if (!param) {
     return nullptr;

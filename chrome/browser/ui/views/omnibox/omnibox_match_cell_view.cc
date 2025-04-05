@@ -249,9 +249,6 @@ void OmniboxMatchCellView::OnMatchUpdate(const OmniboxResultView* result_view,
                                          const AutocompleteMatch& match) {
   if (ShouldDisplayImage(match)) {
     // Enterprise search aggregator people suggestions may display an image.
-    CHECK(AutocompleteMatch::IsSearchType(match.type) ||
-          match.provider->type() ==
-              AutocompleteProvider::TYPE_ENTERPRISE_SEARCH_AGGREGATOR);
     layout_style_ = LayoutStyle::SEARCH_SUGGESTION_WITH_IMAGE;
   } else if (AutocompleteMatch::IsSearchType(match.type)) {
     layout_style_ = LayoutStyle::SEARCH_SUGGESTION;

@@ -32,8 +32,8 @@ export class ViewerBottomToolbarDropdownElement extends CrLitElement {
     };
   }
 
-  buttonTitle: string = '';
-  protected showDropdown_: boolean = false;
+  accessor buttonTitle: string = '';
+  protected accessor showDropdown_: boolean = false;
 
   private pluginController_: PluginController = PluginController.getInstance();
   private tracker_: EventTracker = new EventTracker();

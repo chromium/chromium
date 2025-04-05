@@ -11,7 +11,7 @@
 // Requires functions from fill.ts, form.ts, autofill_form_features.ts and
 // child_frame_registration_lib.ts.
 
-import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
 /**
@@ -124,8 +124,8 @@ function formActivity(evt: Event): void {
     lastFocusedElement = document.activeElement;
   }
   if (['change', 'input'].includes(evt.type) &&
-      gCrWeb.form.wasEditedByUser !== null) {
-    gCrWeb.form.wasEditedByUser.set(target, evt.isTrusted);
+      gCrWebLegacy.form.wasEditedByUser !== null) {
+    gCrWebLegacy.form.wasEditedByUser.set(target, evt.isTrusted);
   }
 
   if (evt.target !== lastFocusedElement) {
@@ -135,18 +135,18 @@ function formActivity(evt: Event): void {
       target.tagName === 'FORM' ? target : (target as HTMLFormElement)['form'];
   const field = target.tagName === 'FORM' ? null : target;
 
-  const formRendererID = gCrWeb.fill.getUniqueID(form);
-  const fieldRendererID = gCrWeb.fill.getUniqueID(field);
+  const formRendererID = gCrWebLegacy.fill.getUniqueID(form);
+  const fieldRendererID = gCrWebLegacy.fill.getUniqueID(field);
 
   const fieldType = 'type' in target ? target.type : '';
   const fieldValue = 'value' in target ? target.value : '';
 
   const msg = {
     'command': 'form.activity',
-    'frameID': gCrWeb.message.getFrameId(),
-    'formName': gCrWeb.form.getFormIdentifier(form),
+    'frameID': gCrWebLegacy.message.getFrameId(),
+    'formName': gCrWebLegacy.form.getFormIdentifier(form),
     'formRendererID': formRendererID,
-    'fieldIdentifier': gCrWeb.form.getFieldIdentifier(field),
+    'fieldIdentifier': gCrWebLegacy.form.getFieldIdentifier(field),
     'fieldRendererID': fieldRendererID,
     'fieldType': fieldType,
     'type': evt.type,
@@ -166,7 +166,7 @@ function submitHandler(evt: Event): void {
     return;
   }
 
-  gCrWeb.form.formSubmitted(
+  gCrWebLegacy.form.formSubmitted(
       evt.target as HTMLFormElement,
       /* messageHandler= */ NATIVE_MESSAGE_HANDLER,
       /* programmaticSubmission= */ false);
@@ -221,8 +221,8 @@ function sendFormMutationMessagesAfterDelay(
  * the Child Frame Registration lib.
  */
 function processInboundMessage(event: MessageEvent<any>): void {
-  if (gCrWeb.autofill_form_features.isAutofillAcrossIframesEnabled()) {
-    gCrWeb.remoteFrameRegistration.processChildFrameMessage(event);
+  if (gCrWebLegacy.autofill_form_features.isAutofillAcrossIframesEnabled()) {
+    gCrWebLegacy.remoteFrameRegistration.processChildFrameMessage(event);
   }
 }
 
@@ -257,7 +257,7 @@ function attachListeners(): void {
   if (formSubmitOriginalFunction === null) {
     formSubmitOriginalFunction = HTMLFormElement.prototype.submit;
     HTMLFormElement.prototype.submit = function() {
-      if (!gCrWeb.autofill_form_features
+      if (!gCrWebLegacy.autofill_form_features
                .isAutofillIsolatedContentWorldEnabled()) {
         // If an error happens in formSubmitted, this will cancel the form
         // submission which can lead to usability issue for the user.
@@ -265,7 +265,7 @@ function attachListeners(): void {
         // is always called.
 
         try {
-          gCrWeb.form.formSubmitted(
+          gCrWebLegacy.form.formSubmitted(
               this,
               /* messageHandler= */ NATIVE_MESSAGE_HANDLER,
               /* programmaticSubmission= */ true);
@@ -313,9 +313,9 @@ function findAllFormElementsInNodes(nodeList: NodeList): Element[] {
 function findFormlessFieldsIds(elements: Element[]): string[] {
   return elements
       .filter(
-          e => gCrWeb.fill.isAutofillableElement(e) &&
+          e => gCrWebLegacy.fill.isAutofillableElement(e) &&
               !(e as HTMLInputElement).form)
-      .map(gCrWeb.fill.getUniqueID);
+      .map(gCrWebLegacy.fill.getUniqueID);
 }
 
 /**
@@ -352,7 +352,7 @@ function trackFormMutations(delay: number): void {
       if (!addedFormMessage && formWasAdded) {
         addedFormMessage = {
           'command': 'form.activity',
-          'frameID': gCrWeb.message.getFrameId(),
+          'frameID': gCrWebLegacy.message.getFrameId(),
           'formName': '',
           'formRendererID': '',
           'fieldIdentifier': '',
@@ -391,12 +391,12 @@ function trackFormMutations(delay: number): void {
         } else {
           // Send the removed forms identifiers to the browser.
           const filteredFormIDs =
-              forms.map(form => gCrWeb.fill.getUniqueID(form));
+              forms.map(form => gCrWebLegacy.fill.getUniqueID(form));
           removedFormMessage = {
             'command': 'form.removal',
-            'frameID': gCrWeb.message.getFrameId(),
-            'removedFormIDs': gCrWeb.stringify(filteredFormIDs),
-            'removedFieldIDs': gCrWeb.stringify(removedFormlessFieldsIds),
+            'frameID': gCrWebLegacy.message.getFrameId(),
+            'removedFormIDs': gCrWebLegacy.stringify(filteredFormIDs),
+            'removedFieldIDs': gCrWebLegacy.stringify(removedFormlessFieldsIds),
           };
           continue;
         }
@@ -406,8 +406,8 @@ function trackFormMutations(delay: number): void {
         // Handle the removed formless field case.
         removedFormMessage = {
           'command': 'form.removal',
-          'frameID': gCrWeb.message.getFrameId(),
-          'removedFieldIDs': gCrWeb.stringify(removedFormlessFieldsIds),
+          'frameID': gCrWebLegacy.message.getFrameId(),
+          'removedFieldIDs': gCrWebLegacy.stringify(removedFormlessFieldsIds),
         };
         continue;
       } else if (formlessFieldsWereRemoved) {
@@ -420,7 +420,7 @@ function trackFormMutations(delay: number): void {
         // mutation that is treated the same way as adding a new form.
         addedFormMessage = {
           'command': 'form.activity',
-          'frameID': gCrWeb.message.getFrameId(),
+          'frameID': gCrWebLegacy.message.getFrameId(),
           'formName': '',
           'formRendererID': '',
           'fieldIdentifier': '',
@@ -445,4 +445,4 @@ function trackFormMutations(delay: number): void {
   formMutationObserver.observe(document, {childList: true, subtree: true});
 }
 
-gCrWeb.formHandlers = {trackFormMutations};
+gCrWebLegacy.formHandlers = {trackFormMutations};

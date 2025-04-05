@@ -163,6 +163,7 @@ class CONTENT_EXPORT SharedStorageLockManager
       FrameTreeNodeId main_frame_id,
       std::optional<int> worklet_id,
       SharedStorageUpdateCallback callback,
+      std::optional<std::string> with_lock,
       std::optional<int> legacy_batch_update_id,
       mojo::AssociatedRemote<blink::mojom::LockHandle> lock_handle,
       mojo::Remote<blink::mojom::LockManager> lock_manager);
@@ -191,7 +192,9 @@ class CONTENT_EXPORT SharedStorageLockManager
       const url::Origin& shared_storage_origin,
       AccessScope scope,
       FrameTreeNodeId main_frame_id,
-      std::optional<int> worklet_id);
+      std::optional<int> worklet_id,
+      std::optional<std::string> with_lock,
+      std::optional<int> batch_update_id);
 
   // `storage_partition_` indirectly owns `this`, and thus outlives `this`.
   raw_ref<StoragePartitionImpl> storage_partition_;

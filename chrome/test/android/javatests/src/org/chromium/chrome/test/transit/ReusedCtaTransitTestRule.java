@@ -16,6 +16,7 @@ import org.junit.runners.model.Statement;
 import org.chromium.base.test.transit.BatchedPublicTransitRule;
 import org.chromium.base.test.transit.Station;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 
@@ -28,7 +29,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 public class ReusedCtaTransitTestRule<HostStationT extends Station<? extends ChromeTabbedActivity>>
         extends BaseCtaTransitTestRule implements TestRule {
     @SuppressLint("StaticFieldLeak")
-    private static ChromeTabbedActivity sActivity;
+    private static @Nullable ChromeTabbedActivity sActivity;
 
     private final Function<ChromeTabbedActivityTestRule, HostStationT> mEntryPointFunction;
     private final BatchedPublicTransitRule<HostStationT> mBatchedRule;

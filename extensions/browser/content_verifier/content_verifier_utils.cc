@@ -9,8 +9,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "extensions/common/extension_features.h"
 
-namespace extensions {
-namespace content_verifier_utils {
+namespace extensions::content_verifier_utils {
 
 namespace {
 #if BUILDFLAG(IS_WIN)
@@ -65,5 +64,38 @@ CanonicalRelativePath CanonicalizeRelativePath(
   return CanonicalRelativePath(std::move(canonical_path));
 }
 
-}  // namespace content_verifier_utils
-}  // namespace extensions
+base::FilePath NormalizePathComponents(const base::FilePath& relative_path) {
+  CHECK(!relative_path.IsAbsolute());
+
+  base::FilePath normalized_path;
+  for (const auto& component : relative_path.GetComponents()) {
+    if (component == base::FilePath::kCurrentDirectory) {
+      // Do nothing.
+    } else if (component == base::FilePath::kParentDirectory) {
+      const auto base_name = normalized_path.BaseName();
+      if (base_name.empty() ||
+          base_name.value() == base::FilePath::kCurrentDirectory ||
+          base_name.value() == base::FilePath::kParentDirectory) {
+        normalized_path =
+            normalized_path.Append(base::FilePath::kParentDirectory);
+      } else {
+        normalized_path = normalized_path.DirName();
+      }
+    } else {
+      // This is just a regular component. Append it.
+      normalized_path = normalized_path.Append(component);
+    }
+  }
+
+  if (normalized_path.empty()) {
+    normalized_path = base::FilePath(base::FilePath::kCurrentDirectory);
+  }
+
+  if (relative_path.EndsWithSeparator()) {
+    normalized_path = normalized_path.AsEndingWithSeparator();
+  }
+
+  return normalized_path.NormalizePathSeparators();
+}
+
+}  // namespace extensions::content_verifier_utils

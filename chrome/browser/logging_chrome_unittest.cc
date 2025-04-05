@@ -5,6 +5,7 @@
 #include "chrome/common/logging_chrome.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/command_line.h"
 #include "base/environment.h"
@@ -24,8 +25,7 @@ class ChromeLoggingTest : public testing::Test {
   // variable and sets the variable to new_value.
   void SaveEnvironmentVariable(const std::string& new_value) {
     std::unique_ptr<base::Environment> env(base::Environment::Create());
-    if (!env->GetVar(env_vars::kLogFileName, &environment_filename_))
-      environment_filename_ = "";
+    environment_filename_ = env->GetVar(env_vars::kLogFileName).value_or("");
 
     env->SetVar(env_vars::kLogFileName, new_value);
   }

@@ -434,8 +434,7 @@ const PhysicalBoxFragment& ColumnLayoutAlgorithm::CreateEmptyColumn(
   WritingMode writing_mode = parent_space.GetWritingMode();
   DCHECK(previous_column.IsColumnBox());
   const BlockBreakToken* break_token = previous_column.GetBreakToken();
-  LogicalSize column_size =
-      previous_column.Size().ConvertToLogical(writing_mode);
+  LogicalSize column_size = ToLogicalSize(previous_column.Size(), writing_mode);
   ConstraintSpace child_space = CreateConstraintSpaceForFragmentainer(
       parent_space, kFragmentColumn, column_size,
       /*percentage_resolution_size=*/column_size, /*balance_columns=*/false,
@@ -1660,7 +1659,7 @@ LayoutUnit ColumnLayoutAlgorithm::TotalColumnBlockSize() const {
   for (auto& child : container_builder_.Children()) {
     if (child.fragment->IsFragmentainerBox()) {
       LayoutUnit fragmentainer_block_size =
-          child.fragment->Size().ConvertToLogical(writing_mode).block_size;
+          ToLogicalSize(child.fragment->Size(), writing_mode).block_size;
       total_block_size +=
           ClampedToValidFragmentainerCapacity(fragmentainer_block_size);
     }

@@ -46,17 +46,15 @@ namespace viz {
 // SkiaOutputSurfaceImplOnGpu. {Begin,End}Access is called from the GPU thread.
 class ImageContextImpl final : public ExternalUseClient::ImageContext {
  public:
+  ImageContextImpl(const TransferableResource& resource,
+                   bool maybe_concurrent_reads,
+                   bool raw_draw_if_possible);
+
+  // Used only for creating promise image from RenderPass.
   ImageContextImpl(const gpu::Mailbox& mailbox,
-                   const gpu::SyncToken& sync_token,
-                   uint32_t texture_target,
                    const gfx::Size& size,
                    SharedImageFormat format,
-                   bool maybe_concurrent_reads,
-                   const std::optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
-                   sk_sp<SkColorSpace> color_space,
-                   GrSurfaceOrigin origin,
-                   bool is_for_render_pass,
-                   bool raw_draw_if_possible = false);
+                   sk_sp<SkColorSpace> color_space);
 
   ImageContextImpl(const ImageContextImpl&) = delete;
   ImageContextImpl& operator=(const ImageContextImpl&) = delete;

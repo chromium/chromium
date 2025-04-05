@@ -377,6 +377,9 @@ std::u16string ToggleImageButton::GetToggledTooltipText() const {
 
 void ToggleImageButton::SetToggledTooltipText(const std::u16string& tooltip) {
   if (tooltip == toggled_tooltip_text_) {
+    // This call is needed to ensure that the tooltip text is correctly updated
+    // even if `SetTooltipText` is explicitly called during toggle on state.
+    UpdateTooltipText();
     return;
   }
   toggled_tooltip_text_ = tooltip;

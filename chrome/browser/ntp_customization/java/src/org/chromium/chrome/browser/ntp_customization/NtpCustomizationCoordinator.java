@@ -18,7 +18,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ViewFlipper;
 
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ntp_customization.ntp_cards.NtpCardsCoordinator;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -46,10 +48,21 @@ public class NtpCustomizationCoordinator {
         int MAIN = 0;
         int NTP_CARDS = 1;
         int DISCOVER_FEED = 2;
+        int NUM_ENTRIES = 3;
+    }
+
+    @IntDef({EntryPointType.MAIN_MENU, EntryPointType.TOOL_BAR})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface EntryPointType {
+        int MAIN_MENU = 0;
+        int TOOL_BAR = 1;
+        int NUM_ENTRIES = 2;
     }
 
     public NtpCustomizationCoordinator(
-            Context context, BottomSheetController bottomSheetController) {
+            Context context,
+            BottomSheetController bottomSheetController,
+            Supplier<ProfileProvider> profileSupplier) {
         mContext = context;
         View contentView =
                 LayoutInflater.from(mContext)
@@ -84,7 +97,8 @@ public class NtpCustomizationCoordinator {
                         bottomSheetController,
                         bottomSheetContent,
                         viewFlipperPropertyModel,
-                        containerPropertyModel);
+                        containerPropertyModel,
+                        profileSupplier);
         mMediator.registerBottomSheetLayout(MAIN);
 
         mDelegate = createBottomSheetDelegate();
@@ -112,7 +126,7 @@ public class NtpCustomizationCoordinator {
                     if (mNtpCardsCoordinator == null) {
                         mNtpCardsCoordinator = new NtpCardsCoordinator(mContext, mDelegate);
                     }
-                    mMediator.showBottomSheet(BottomSheetType.NTP_CARDS);
+                    mMediator.showBottomSheet(NTP_CARDS);
                 };
             case DISCOVER_FEED:
                 return null;

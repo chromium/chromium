@@ -1023,6 +1023,36 @@ void MessagingBackendServiceImpl::OnTabSelectionChanged(
                                            tab->saved_group_guid());
 }
 
+void MessagingBackendServiceImpl::OnTabLastSeenTimeChanged(
+    const base::Uuid& tab_id,
+    tab_groups::TriggerSource source) {
+  // Only remote changes need to update the notification states.
+  if (source != tab_groups::TriggerSource::REMOTE) {
+    return;
+  }
+
+  std::optional<tab_groups::SavedTabGroupTab> tab;
+  std::optional<data_sharing::GroupId> collaboration_group_id;
+  for (const auto& group : tab_group_sync_service_->GetAllGroups()) {
+    if (group.is_shared_tab_group() && group.GetTab(tab_id)) {
+      tab = *(group.GetTab(tab_id));
+      collaboration_group_id =
+          data_sharing::GroupId(group.collaboration_id().value().value());
+      break;
+    }
+  }
+
+  if (!tab) {
+    return;
+  }
+
+  store_->ClearDirtyMessageForTab(
+      *collaboration_group_id, tab->saved_tab_guid(), DirtyType::kDotAndChip);
+
+  DisplayOrHideTabGroupDirtyDotForTabGroup(*collaboration_group_id,
+                                           tab->saved_group_guid());
+}
+
 void MessagingBackendServiceImpl::OnTabGroupOpened(
     const tab_groups::SavedTabGroup& tab_group) {
   std::optional<data_sharing::GroupId> collaboration_group_id =

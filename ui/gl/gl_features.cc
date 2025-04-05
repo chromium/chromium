@@ -140,25 +140,6 @@ constexpr base::FeatureParam<base::TimeDelta> kGLCompileShaderDelay = {
     /*default_value=*/base::Microseconds(1300)};
 #endif  // !defined(PASSTHROUGH_COMMAND_DECODER_LAUNCHED)
 
-#if BUILDFLAG(IS_MAC)
-// If true, metal shader programs are written to disk.
-//
-// As the gpu process writes to disk when this is set, you must also disable
-// the sandbox.
-//
-// The path the shaders are written to is controlled via the command line switch
-// --shader-cache-path (default is /tmp/shaders).
-BASE_FEATURE(kWriteMetalShaderCacheToDisk,
-             "WriteMetalShaderCacheToDisk",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// If true, the metal shader cache is read from a file and put into BlobCache
-// during startup.
-BASE_FEATURE(kUseBuiltInMetalShaderCache,
-             "UseBuiltInMetalShaderCache",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 #if BUILDFLAG(IS_WIN)
 // If true, VSyncThreadWin will use the primary monitor's
 // refresh rate as the vsync interval.
@@ -305,17 +286,6 @@ void GetANGLEFeaturesFromCommandLineAndFinch(
     SplitAndAppendANGLEFeatureList(kForcedANGLEDisabledFeaturesFP.Get(),
                                    disabled_angle_features);
   }
-
-#if BUILDFLAG(IS_MAC)
-  if (base::FeatureList::IsEnabled(features::kWriteMetalShaderCacheToDisk)) {
-    disabled_angle_features.push_back("enableParallelMtlLibraryCompilation");
-    enabled_angle_features.push_back("compileMetalShaders");
-    enabled_angle_features.push_back("disableProgramCaching");
-  }
-  if (base::FeatureList::IsEnabled(features::kUseBuiltInMetalShaderCache)) {
-    enabled_angle_features.push_back("loadMetalShadersFromBlobCache");
-  }
-#endif
 }
 
 #if BUILDFLAG(ENABLE_SWIFTSHADER)

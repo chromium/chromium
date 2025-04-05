@@ -44,7 +44,6 @@
 #include "net/cookies/site_for_cookies.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom.h"
@@ -313,23 +312,6 @@ class ServiceWorkerContainerHostTest : public testing::Test {
  private:
 
   url::ScopedSchemeRegistryForTests scoped_registry_;
-};
-
-// Run tests with PlzDedicatedWorker.
-// TODO(crbug.com/40093136): Merge this test fixture into
-// ServiceWorkerContainerHostTest once PlzDedicatedWorker is enabled by default.
-class ServiceWorkerContainerHostTestWithPlzDedicatedWorker
-    : public ServiceWorkerContainerHostTest {
- public:
-  ServiceWorkerContainerHostTestWithPlzDedicatedWorker() {
-    // ServiceWorkerClient for dedicated workers is available only when
-    // PlzDedicatedWorker is enabled.
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kPlzDedicatedWorker);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(ServiceWorkerContainerHostTest, MatchRegistration) {
@@ -1097,20 +1079,13 @@ class ServiceWorkerContainerHostTestByClientType
     : public ServiceWorkerContainerHostTest,
       public testing::WithParamInterface<ClientType> {
  public:
-  ServiceWorkerContainerHostTestByClientType() {
-    // ServiceWorkerClient for dedicated workers is available only when
-    // PlzDedicatedWorker is enabled.
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kPlzDedicatedWorker);
-  }
+  ServiceWorkerContainerHostTestByClientType() = default;
 
   ScopedServiceWorkerClient CreateClient() {
     switch (GetParam()) {
       case ClientType::kWindow:
         return CreateServiceWorkerClient(context_.get());
       case ClientType::kDedicatedWorker:
-        CHECK(
-            base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker));
         return ScopedServiceWorkerClient(
             helper_->context()
                 ->service_worker_client_owner()
@@ -1178,9 +1153,6 @@ class ServiceWorkerContainerHostTestByClientType
         break;
     }
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Test that a "reserved" (i.e., not execution ready) client is not included

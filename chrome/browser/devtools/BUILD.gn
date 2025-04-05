@@ -2,10 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//content/browser/devtools/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//printing/buildflags/buildflags.gni")
-
-enable_devtools_frontend = !is_android || is_desktop_android
 
 if (enable_devtools_frontend) {
   import("//build/config/features.gni")
@@ -13,17 +12,22 @@ if (enable_devtools_frontend) {
   import("//tools/grit/grit_rule.gni")
 }
 
-if (enable_devtools_frontend) {
-  _inspector_protocol = "//third_party/inspector_protocol"
-  import("$_inspector_protocol/inspector_protocol.gni")
+_inspector_protocol = "//third_party/inspector_protocol"
+import("$_inspector_protocol/inspector_protocol.gni")
 
-  _protocol_generated = [
+_protocol_generated = [
+  "protocol/browser.cc",
+  "protocol/browser.h",
+  "protocol/target.cc",
+  "protocol/target.h",
+]
+
+if (!is_android || is_desktop_android) {
+  _protocol_generated += [
     "protocol/autofill.cc",
     "protocol/autofill.h",
     "protocol/extensions.cc",
     "protocol/extensions.h",
-    "protocol/browser.cc",
-    "protocol/browser.h",
     "protocol/cast.cc",
     "protocol/cast.h",
     "protocol/emulation.cc",
@@ -39,8 +43,6 @@ if (enable_devtools_frontend) {
     "protocol/storage.h",
     "protocol/system_info.cc",
     "protocol/system_info.h",
-    "protocol/target.cc",
-    "protocol/target.h",
   ]
 
   if (is_chromeos) {
@@ -49,47 +51,47 @@ if (enable_devtools_frontend) {
       "protocol/window_manager.h",
     ]
   }
+}
 
-  _concatenated_protocol_path =
-      "$root_gen_dir/chrome/browser/devtools/protocol.json"
-  action("concatenate_protocols") {
-    script = _inspector_protocol + "/concatenate_protocols.py"
+_concatenated_protocol_path =
+    "$root_gen_dir/chrome/browser/devtools/protocol.json"
+action("concatenate_protocols") {
+  script = _inspector_protocol + "/concatenate_protocols.py"
 
-    deps = [ "//third_party/blink/public/devtools_protocol:protocol_version" ]
+  deps = [ "//third_party/blink/public/devtools_protocol:protocol_version" ]
 
-    _blink_protocol_path =
-        "$root_gen_dir/third_party/blink/public/devtools_protocol/protocol.json"
-    inputs = [ _blink_protocol_path ]
-    output_file = _concatenated_protocol_path
-    outputs = [ output_file ]
+  _blink_protocol_path =
+      "$root_gen_dir/third_party/blink/public/devtools_protocol/protocol.json"
+  inputs = [ _blink_protocol_path ]
+  output_file = _concatenated_protocol_path
+  outputs = [ output_file ]
 
-    args = [ rebase_path(_blink_protocol_path, root_build_dir) ]
-    if (is_chromeos) {
-      inputs += [ "cros_protocol.pdl" ]
-      args += [ rebase_path("cros_protocol.pdl", root_build_dir) ]
-    }
-
-    args += [ rebase_path(output_file, root_build_dir) ]
+  args = [ rebase_path(_blink_protocol_path, root_build_dir) ]
+  if (is_chromeos) {
+    inputs += [ "cros_protocol.pdl" ]
+    args += [ rebase_path("cros_protocol.pdl", root_build_dir) ]
   }
 
-  inspector_protocol_generate("protocol_generated_sources") {
-    inspector_protocol_dir = _inspector_protocol
-    visibility = [ ":*" ]  # Only targets in this file can depend on this.
-    deps = [ ":concatenate_protocols" ]
-    out_dir = target_gen_dir
-    config_file = "inspector_protocol_config.json"
-    use_embedder_types = true
+  args += [ rebase_path(output_file, root_build_dir) ]
+}
 
-    protocol_path = rebase_path(_concatenated_protocol_path, root_build_dir)
-    config_values = [ "protocol.path=$protocol_path" ]
+inspector_protocol_generate("protocol_generated_sources") {
+  inspector_protocol_dir = _inspector_protocol
+  visibility = [ ":*" ]  # Only targets in this file can depend on this.
+  deps = [ ":concatenate_protocols" ]
+  out_dir = target_gen_dir
+  config_file = "inspector_protocol_config.json"
+  use_embedder_types = true
 
-    inputs = [
-      _concatenated_protocol_path,
-      "inspector_protocol_config.json",
-    ]
+  protocol_path = rebase_path(_concatenated_protocol_path, root_build_dir)
+  config_values = [ "protocol.path=$protocol_path" ]
 
-    outputs = _protocol_generated
-  }
+  inputs = [
+    _concatenated_protocol_path,
+    "inspector_protocol_config.json",
+  ]
+
+  outputs = _protocol_generated
 }
 
 static_library("devtools") {
@@ -124,6 +126,7 @@ static_library("devtools") {
 
     # Similar bandaid as the above. Since we cannot depend on
     # //chrome/browser:browser, we include indirect dependencies here.
+    ":protocol_generated_sources",
     "//chrome/browser/autofill:autofill",
     "//components/autofill/content/browser:browser",
     "//components/autofill/core/browser:browser",
@@ -177,7 +180,6 @@ static_library("devtools") {
       "visual_logging.h",
     ]
     deps += [
-      ":protocol_generated_sources",
       "//chrome/browser:browser_process",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/profiles:profile_util",
@@ -196,7 +198,15 @@ static_library("devtools") {
   }
 
   if (is_android) {
-    sources += [ "devtools_window_android.cc" ]
+    sources += [
+      "chrome_devtools_session_android.cc",
+      "chrome_devtools_session_android.h",
+      "devtools_window_android.cc",
+      "protocol/browser_handler_android.cc",
+      "protocol/browser_handler_android.h",
+      "protocol/target_handler_android.cc",
+      "protocol/target_handler_android.h",
+    ]
   } else {
     public_deps += [
       "//chrome/browser/ui:browser_list",
@@ -367,8 +377,9 @@ static_library("devtools") {
         deps += [ "//chrome/services/printing/public/mojom" ]
       }
     }
-    sources += rebase_path(_protocol_generated, ".", target_gen_dir)
   }
+
+  sources += rebase_path(_protocol_generated, ".", target_gen_dir)
 
   if (enable_extensions) {
     deps += [

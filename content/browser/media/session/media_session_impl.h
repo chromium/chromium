@@ -530,6 +530,10 @@ class MediaSessionImpl : public MediaSession,
 
   void ResetDurationUpdateGuard();
 
+  // Called when any of the normal players auto picture in picture information
+  // changes.
+  void OnAutoPictureInPictureInfoChanged();
+
   CONTENT_EXPORT void SetShouldThrottleDurationUpdateForTest(
       bool should_throttle);
 

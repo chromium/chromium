@@ -8,6 +8,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_features.h"
+#include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/ui/tabs/test/mock_tab_interface.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -29,6 +31,28 @@ class ActorSitePolicyTest : public ChromeRenderViewHostTestHarness {
         kGlicActionAllowlist, CreateFieldTrialParams());
 
     ChromeRenderViewHostTestHarness::SetUp();
+
+    mock_optimization_guide_keyed_service_ =
+        static_cast<MockOptimizationGuideKeyedService*>(
+            OptimizationGuideKeyedServiceFactory::GetInstance()
+                ->SetTestingFactoryAndUse(
+                    profile(),
+                    base::BindOnce(
+                        &ActorSitePolicyTest::CreateOptimizationService)));
+
+    ON_CALL(*mock_optimization_guide_keyed_service_,
+            CanApplyOptimization(
+                testing::_, optimization_guide::proto::GLIC_ACTION_PAGE_BLOCK,
+                testing::An<
+                    optimization_guide::OptimizationGuideDecisionCallback>()))
+        .WillByDefault(base::test::RunOnceCallback<2>(
+            optimization_guide::OptimizationGuideDecision::kTrue,
+            optimization_guide::OptimizationMetadata{}));
+  }
+
+  void TearDown() override {
+    mock_optimization_guide_keyed_service_ = nullptr;
+    ChromeRenderViewHostTestHarness::TearDown();
   }
 
   virtual base::FieldTrialParams CreateFieldTrialParams() {
@@ -39,6 +63,19 @@ class ActorSitePolicyTest : public ChromeRenderViewHostTestHarness {
   }
 
  protected:
+  void SetExpectedOptimizationGuideCall(
+      const GURL& url,
+      optimization_guide::OptimizationGuideDecision result) {
+    EXPECT_CALL(
+        *mock_optimization_guide_keyed_service_,
+        CanApplyOptimization(
+            url, optimization_guide::proto::GLIC_ACTION_PAGE_BLOCK,
+            testing::An<
+                optimization_guide::OptimizationGuideDecisionCallback>()))
+        .WillOnce(base::test::RunOnceCallback<2>(
+            result, optimization_guide::OptimizationMetadata{}));
+  }
+
   void CheckUrl(const GURL& url, bool expected_allowed) {
     content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
                                                                url);
@@ -54,6 +91,14 @@ class ActorSitePolicyTest : public ChromeRenderViewHostTestHarness {
   }
 
  private:
+  static std::unique_ptr<KeyedService> CreateOptimizationService(
+      content::BrowserContext* context) {
+    return std::make_unique<MockOptimizationGuideKeyedService>();
+  }
+
+  raw_ptr<MockOptimizationGuideKeyedService>
+      mock_optimization_guide_keyed_service_;
+
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -101,6 +146,22 @@ TEST_F(ActorSitePolicyTest, AllowSubdomain) {
 
 TEST_F(ActorSitePolicyTest, AllowIfNotBlocked) {
   CheckUrl(GURL("https://c.test/"), true);
+}
+
+TEST_F(ActorSitePolicyTest, BlockIfInBlocklist) {
+  const GURL url("https://c.test/");
+  SetExpectedOptimizationGuideCall(
+      url, optimization_guide::OptimizationGuideDecision::kFalse);
+  CheckUrl(url, false);
+}
+
+TEST_F(ActorSitePolicyTest, BlockIfBlocklistUnavailable) {
+  const GURL url("https://c.test/");
+  // Simulate the blocklist not being loaded. This should cause the URL check to
+  // fail closed.
+  SetExpectedOptimizationGuideCall(
+      url, optimization_guide::OptimizationGuideDecision::kUnknown);
+  CheckUrl(url, false);
 }
 
 TEST_F(ActorSitePolicyAllowlistOnlyTest, BlockIfNotInAllowlist) {

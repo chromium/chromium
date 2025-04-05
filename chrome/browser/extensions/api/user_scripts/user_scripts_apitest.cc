@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/extensions/api/user_scripts/user_scripts_apitest.h"
+
 #include "base/feature_list.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -17,13 +19,8 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/extension_util.h"
-#include "extensions/browser/process_manager.h"
-#include "extensions/browser/renderer_startup_helper.h"
-#include "extensions/browser/script_executor.h"
-#include "extensions/browser/user_script_manager.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/features/feature_developer_mode_only.h"
-#include "extensions/common/mojom/renderer.mojom.h"
 #include "extensions/common/user_scripts_allowed_state.h"
 #include "extensions/common/utils/content_script_utils.h"
 #include "extensions/test/extension_test_message_listener.h"
@@ -34,128 +31,111 @@
 
 namespace extensions {
 
-class UserScriptsAPITest : public ExtensionApiTest,
-                           public testing::WithParamInterface<bool> {
- public:
-  UserScriptsAPITest();
-  UserScriptsAPITest(const UserScriptsAPITest&) = delete;
-  const UserScriptsAPITest& operator=(const UserScriptsAPITest&) = delete;
-  ~UserScriptsAPITest() override = default;
+void UserScriptsAPITest::SetUpOnMainThread() {
+  ExtensionApiTest::SetUpOnMainThread();
 
-  void SetUpOnMainThread() override {
-    ExtensionApiTest::SetUpOnMainThread();
+  host_resolver()->AddRule("*", "127.0.0.1");
+  ASSERT_TRUE(StartEmbeddedTestServer());
+}
 
-    host_resolver()->AddRule("*", "127.0.0.1");
-    ASSERT_TRUE(StartEmbeddedTestServer());
-  }
+void UserScriptsAPITest::OpenInCurrentTab(const GURL& url) {
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
 
-  void OpenInCurrentTab(const GURL& url) {
-    content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
-    ASSERT_TRUE(web_contents);
+  content::TestNavigationObserver nav_observer(web_contents);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  nav_observer.Wait();
 
-    content::TestNavigationObserver nav_observer(web_contents);
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-    nav_observer.Wait();
+  EXPECT_TRUE(nav_observer.last_navigation_succeeded());
+  EXPECT_EQ(url, web_contents->GetLastCommittedURL());
+}
 
-    EXPECT_TRUE(nav_observer.last_navigation_succeeded());
-    EXPECT_EQ(url, web_contents->GetLastCommittedURL());
-  }
+content::RenderFrameHost* UserScriptsAPITest::OpenInNewTab(const GURL& url) {
+  content::TestNavigationObserver nav_observer(url);
+  nav_observer.StartWatchingNewWebContents();
+  content::RenderFrameHost* tab = ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  nav_observer.Wait();
 
-  content::RenderFrameHost* OpenInNewTab(const GURL& url) {
-    content::TestNavigationObserver nav_observer(url);
-    nav_observer.StartWatchingNewWebContents();
-    content::RenderFrameHost* tab = ui_test_utils::NavigateToURLWithDisposition(
-        browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-    nav_observer.Wait();
+  EXPECT_TRUE(nav_observer.last_navigation_succeeded());
+  EXPECT_EQ(url, browser()
+                     ->tab_strip_model()
+                     ->GetActiveWebContents()
+                     ->GetLastCommittedURL());
 
-    EXPECT_TRUE(nav_observer.last_navigation_succeeded());
-    EXPECT_EQ(url, browser()
-                       ->tab_strip_model()
-                       ->GetActiveWebContents()
-                       ->GetLastCommittedURL());
+  return tab;
+}
 
-    return tab;
-  }
-
-  content::EvalJsResult GetInjectedElements(content::RenderFrameHost* host) {
-    static constexpr char kGetInjectedScripts[] =
-        R"(const divs = document.body.getElementsByTagName('div');
+content::EvalJsResult UserScriptsAPITest::GetInjectedElements(
+    content::RenderFrameHost* host) {
+  static constexpr char kGetInjectedScripts[] =
+      R"(const divs = document.body.getElementsByTagName('div');
            JSON.stringify(Array.from(divs).map(div => div.id).sort());)";
-    return content::EvalJs(host, kGetInjectedScripts);
-  }
+  return content::EvalJs(host, kGetInjectedScripts);
+}
 
   // Loads the extension and pauses in-between loading and running the tests to
   // enable the userScripts API.
-  testing::AssertionResult RunUserScriptsExtensionTestImpl(
-      const base::FilePath& extension_path,
-      bool allow_api) {
-    // Load the extension.
-    ExtensionTestMessageListener test_ready_listener(
-        "ready",
-        allow_api ? ReplyBehavior::kWillReply : ReplyBehavior::kWontReply);
-    ResultCatcher catcher;
-    const Extension* extension = LoadExtension(extension_path);
-    if (!extension) {
-      return testing::AssertionFailure() << "Failed to load extension";
+testing::AssertionResult UserScriptsAPITest::RunUserScriptsExtensionTestImpl(
+    const base::FilePath& extension_path,
+    bool allow_api) {
+  // Load the extension.
+  ExtensionTestMessageListener test_ready_listener(
+      "ready",
+      allow_api ? ReplyBehavior::kWillReply : ReplyBehavior::kWontReply);
+  ResultCatcher catcher;
+  const Extension* extension = LoadExtension(extension_path);
+  if (!extension) {
+    return testing::AssertionFailure() << "Failed to load extension";
+  }
+
+  if (allow_api) {
+    // Wait until extension tests are ready to run, then allow the
+    // userScripts API, then continue on with the API testing.
+    bool extension_ready = test_ready_listener.WaitUntilSatisfied();
+    if (!extension_ready) {
+      testing::AssertionFailure()
+          << "extension did not signal that it was ready after loading";
     }
+    user_scripts_test_util::SetUserScriptsAPIAllowed(profile(), extension->id(),
+                                                     /*allowed=*/true);
+    test_ready_listener.Reply("");
+  }
 
-    if (allow_api) {
-      // Wait until extension tests are ready to run, then allow the
-      // userScripts API, then continue on with the API testing.
-      bool extension_ready = test_ready_listener.WaitUntilSatisfied();
-      if (!extension_ready) {
-        testing::AssertionFailure()
-            << "extension did not signal that it was ready after loading";
-      }
-      user_scripts_test_util::SetUserScriptsAPIAllowed(profile(),
-                                                       extension->id(),
-                                                       /*allowed=*/true);
-      test_ready_listener.Reply("");
+  // Observe each test result.
+  {
+    base::test::ScopedRunLoopTimeout timeout(
+        FROM_HERE, std::nullopt,
+        base::BindRepeating(
+            [](const base::FilePath& extension_path) {
+              return "GetNextResult timeout while "
+                     "RunUserScriptsExtensionTest: " +
+                     extension_path.MaybeAsASCII();
+            },
+            extension_path));
+    if (!catcher.GetNextResult()) {
+      return testing::AssertionFailure() << catcher.message();
     }
-
-    // Observe each test result.
-    {
-      base::test::ScopedRunLoopTimeout timeout(
-          FROM_HERE, std::nullopt,
-          base::BindRepeating(
-              [](const base::FilePath& extension_path) {
-                return "GetNextResult timeout while "
-                       "RunUserScriptsExtensionTest: " +
-                       extension_path.MaybeAsASCII();
-              },
-              extension_path));
-      if (!catcher.GetNextResult()) {
-        return testing::AssertionFailure() << catcher.message();
-      }
-    }
-
-    return testing::AssertionSuccess();
-    ;
   }
 
-  testing::AssertionResult RunUserScriptsExtensionTest(
-      const char* extension_name) {
-    const base::FilePath& root_path = test_data_dir_;
-    base::FilePath extension_path = root_path.AppendASCII(extension_name);
-    return RunUserScriptsExtensionTestImpl(extension_path, /*allow_api=*/true);
-  }
+  return testing::AssertionSuccess();
+  ;
+}
 
-  testing::AssertionResult RunUserScriptsExtensionTest(
-      const base::FilePath& extension_path) {
-    return RunUserScriptsExtensionTestImpl(extension_path, /*allow_api=*/true);
-  }
+testing::AssertionResult UserScriptsAPITest::RunUserScriptsExtensionTest(
+    const char* extension_sub_path) {
+  const base::FilePath& root_path = test_data_dir_;
+  base::FilePath extension_path = root_path.AppendASCII(extension_sub_path);
+  return RunUserScriptsExtensionTestImpl(extension_path, /*allow_api=*/true);
+}
 
-  testing::AssertionResult RunUserScriptsExtensionTestNotAllowed(
-      const base::FilePath& extension_path) {
-    return RunUserScriptsExtensionTestImpl(extension_path, /*allow_api=*/false);
-  }
-
- private:
-  // Some userScripts API methods are currently behind a feature restriction.
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+testing::AssertionResult
+UserScriptsAPITest::RunUserScriptsExtensionTestNotAllowed(
+    const base::FilePath& extension_path) {
+  return RunUserScriptsExtensionTestImpl(extension_path, /*allow_api=*/false);
+}
 
 UserScriptsAPITest::UserScriptsAPITest() {
   if (GetParam()) {

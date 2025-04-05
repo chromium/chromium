@@ -62,8 +62,10 @@ TEST(SharedStorageEventParamsTest, NonASCIISerializedData_EscapedByInsertion) {
   blink::CloneableMessage serialized_data_message;
   SetCloneableMessageWithByteArray(serialized_data_message, data);
 
-  auto params = SharedStorageEventParams::CreateForRun(
-      "test-operation", serialized_data_message, /*worklet_id=*/0);
+  auto params = SharedStorageEventParams::CreateForRunForTesting(
+      "test-operation", /*keep_alive=*/false,
+      SharedStorageEventParams::PrivateAggregationConfigWrapper(),
+      serialized_data_message, /*worklet_id=*/0);
 
   EXPECT_FALSE(base::IsStringUTF8(GetSerializedDataDirectFromBytes(params)));
 
@@ -88,8 +90,10 @@ TEST(SharedStorageEventParamsTest, ASCIISerializedData_UnchangedByInsertion) {
   blink::CloneableMessage serialized_data_message;
   SetCloneableMessageWithByteArray(serialized_data_message, data);
 
-  auto params = SharedStorageEventParams::CreateForRun(
-      "test-operation", serialized_data_message, /*worklet_id=*/0);
+  auto params = SharedStorageEventParams::CreateForRunForTesting(
+      "test-operation", /*keep_alive=*/false,
+      SharedStorageEventParams::PrivateAggregationConfigWrapper(),
+      serialized_data_message, /*worklet_id=*/0);
 
   std::string serialized_data_direct_from_bytes =
       GetSerializedDataDirectFromBytes(params);

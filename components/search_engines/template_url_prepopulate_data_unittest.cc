@@ -288,35 +288,6 @@ TEST_F(TemplateURLPrepopulateDataTest,
   }
 }
 
-// Verifies that the the search engines are re-shuffled on Chrome update.
-TEST_F(TemplateURLPrepopulateDataTest,
-       SearchEnginesOrderChangesOnChromeUpdate) {
-  SetupForChoiceScreenDisplay();
-
-  std::vector<std::unique_ptr<TemplateURLData>> t_urls =
-      prepopulate_data_resolver().GetPrepopulatedEngines();
-
-  // Change the saved chrome milestone to something else.
-  pref_service()->SetInteger(
-      prefs::kDefaultSearchProviderChoiceScreenShuffleMilestone, 3);
-
-  std::vector<std::unique_ptr<TemplateURLData>> t_urls_after_update =
-      prepopulate_data_resolver().GetPrepopulatedEngines();
-
-  ASSERT_EQ(t_urls.size(), t_urls_after_update.size());
-  bool is_order_same = true;
-  for (size_t i = 0; i < t_urls.size(); i++) {
-    // Each prepopulated engine has a unique prepopulate_id, so we simply
-    // compare those.
-    is_order_same &=
-        t_urls[i]->prepopulate_id == t_urls_after_update[i]->prepopulate_id;
-    if (!is_order_same) {
-      break;
-    }
-  }
-  ASSERT_FALSE(is_order_same);
-}
-
 // Verifies that default search providers from the preferences file
 // override the built-in ones.
 TEST_F(TemplateURLPrepopulateDataTest, ProvidersFromPrefs) {

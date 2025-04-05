@@ -51,12 +51,12 @@ export class SimpleActionMenuElement extends SimpleActionMenuElementBase {
     };
   }
 
-  currentSelectedIndex: number = 0;
-  menuItems: Array<MenuStateItem<any>> = [];
+  accessor currentSelectedIndex: number = 0;
+  accessor menuItems: Array<MenuStateItem<any>> = [];
 
   // Initializing to random value, but this is set by the parent.
-  eventName: ToolbarEvent = ToolbarEvent.THEME;
-  label: string = '';
+  accessor eventName: ToolbarEvent = ToolbarEvent.THEME;
+  accessor label: string = '';
 
   open(anchor: HTMLElement) {
     openMenu(this.$.lazyMenu.get(), anchor);

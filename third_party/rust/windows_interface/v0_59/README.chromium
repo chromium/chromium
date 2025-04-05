@@ -1,0 +1,10 @@
+Name: windows-interface
+URL: https://crates.io/crates/windows-interface
+Version: 0.59.1
+Revision: 79c2c3917cac805aeb0d000ae9e32e719b514ff4
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/windows-interface-v0_59/license-apache-2.0
+Shipped: yes
+Security Critical: yes
+
+Description: The interface macro for the windows crate

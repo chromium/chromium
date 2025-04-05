@@ -313,7 +313,6 @@ KeepAliveURLLoader::KeepAliveURLLoader(
           GetContentClient()->browser()->MaybeCreateKeepAliveRequestTracker(
               resource_request,
               ukm_source_id,
-              !!attribution_request_helper,
               base::BindRepeating(&KeepAliveURLLoader::IsContextDetached,
                                   // `this` owns `request_tracker_`, so it is
                                   // safe to use.

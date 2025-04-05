@@ -448,6 +448,7 @@ class CONTENT_EXPORT WebContentsImpl
                              size_t max_nodes,
                              base::TimeDelta timeout,
                              AXTreeSnapshotPolicy policy) override;
+  ui::AXTreeUpdate RequestAXTreeSnapshotWithinBrowserProcess() override;
   uint64_t GetUploadSize() override;
   uint64_t GetUploadPosition() override;
   const std::string& GetEncoding() override;
@@ -744,6 +745,9 @@ class CONTENT_EXPORT WebContentsImpl
   std::string DumpAccessibilityTree(
       ui::AXApiType::Type api_type,
       std::vector<ui::AXPropertyFilter> property_filters) override;
+  void ApplyAXTreeFixingResult(ui::AXTreeID tree_id,
+                               ui::AXNodeID node_id,
+                               ax::mojom::Role role) override;
   void RecordAccessibilityEvents(
       bool start_recording,
       std::optional<ui::AXEventCallback> callback) override;
@@ -1284,6 +1288,9 @@ class CONTENT_EXPORT WebContentsImpl
       std::unique_ptr<blink::WebCoalescedInputEvent> event) override;
   void OnInvalidInputEventSource(
       const viz::FrameSinkId& frame_sink_id) override;
+  void StateOnOverscrollTransfer(
+      const viz::FrameSinkId& frame_sink_id,
+      blink::mojom::DidOverscrollParamsPtr params) override;
 
   // Invoked before a form repost warning is shown.
   void NotifyBeforeFormRepostWarningShow() override;
@@ -2198,6 +2205,11 @@ class CONTENT_EXPORT WebContentsImpl
 
   // See GetPartitionedPopinEmbedderOrigin for details.
   GURL GetPartitionedPopinEmbedderOriginImpl() const;
+
+  // Recursively constructs a vector of AXNodeData objects for the children of
+  // the given |node|.
+  void RecursivelyConstructAXTree(ui::AXNode* node,
+                                  std::vector<ui::AXNodeData>& nodes);
 
   // Data for core operation ---------------------------------------------------
 

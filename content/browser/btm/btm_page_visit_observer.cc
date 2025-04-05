@@ -97,12 +97,8 @@ class NavigationState
     // recorded an access type for.
     urls.push_back(navigation_handle.GetURL());
 
-    // TODO - crbug.com/406841434: `CHECK` the result of `filter_.Filter`
-    // instead of dumping.
-    bool were_all_accesses_matched = filter_.Filter(urls, accesses);
-    if (!were_all_accesses_matched) {
-      base::debug::DumpWithoutCrashing();
-    }
+    // TODO - crbug.com/406841434: `CHECK` the result of `filter_.Filter`.
+    filter_.Filter(urls, accesses);
 
     int i = 0;
     for (const size_t redirect_chain_index : server_redirect_chain_indices_) {
@@ -201,7 +197,7 @@ void BtmPageVisitObserver::DidFinishNavigation(
   current_page_ = BtmPageVisitInfo{
       .url = navigation_handle->GetURL(),
       .source_id = navigation_handle->GetNextPageUkmSourceId(),
-      .had_qualifying_storage_access = IsWrite(final_url_cookie_access)};
+      .had_active_storage_access = IsWrite(final_url_cookie_access)};
   last_page_change_time_ = now;
 }
 
@@ -219,7 +215,7 @@ void BtmPageVisitObserver::NotifyStorageAccessed(
   if (!render_frame_host->GetPage().IsPrimary() || blocked) {
     return;
   }
-  current_page_.had_qualifying_storage_access = true;
+  current_page_.had_active_storage_access = true;
 }
 
 void BtmPageVisitObserver::OnCookiesAccessed(
@@ -261,7 +257,7 @@ void BtmPageVisitObserver::OnCookiesAccessed(
 
   if (render_frame_host->GetMainFrame()->IsInPrimaryMainFrame()) {
     // Cookie access within the current page.
-    current_page_.had_qualifying_storage_access = true;
+    current_page_.had_active_storage_access = true;
     return;
   }
 
@@ -269,7 +265,7 @@ void BtmPageVisitObserver::OnCookiesAccessed(
   // page, try to find that page's visit.
   for (VisitTuple& visit : pending_visits_) {
     if (first_party_url == visit.prev_page.url) {
-      visit.prev_page.had_qualifying_storage_access = true;
+      visit.prev_page.had_active_storage_access = true;
       return;
     }
   }
@@ -278,7 +274,8 @@ void BtmPageVisitObserver::OnCookiesAccessed(
 void BtmPageVisitObserver::OnCookiesAccessed(
     NavigationHandle* navigation_handle,
     const CookieAccessDetails& details) {
-  // Ignore irrelevant cookie accesses.
+  // Ignore irrelevant cookie accesses. Included in this group are navigational
+  // cookie reads, as they're passive storage accesses.
   if (details.blocked_by_policy ||
       details.type != CookieAccessDetails::Type::kChange ||
       !IsInPrimaryPage(*navigation_handle)) {
@@ -296,7 +293,7 @@ void BtmPageVisitObserver::OnCookiesAccessed(
     }
 
     // Attribute subframe storage accesses to the top-level page.
-    current_page_.had_qualifying_storage_access = true;
+    current_page_.had_active_storage_access = true;
     return;
   }
 

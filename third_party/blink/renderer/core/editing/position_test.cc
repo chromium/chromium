@@ -82,7 +82,7 @@ TEST_F(PositionTest, editingPositionOfWithEditingIgnoresContent) {
 TEST_F(PositionTest, LastPositionInOrAfterNodeNotInFlatTree) {
   SetBodyContent("<option><select>A</select></option>");
   const Element& document_element = *GetDocument().documentElement();
-  const Element& select = *GetDocument().QuerySelector(AtomicString("select"));
+  const Element& select = *QuerySelector("select");
 
   EXPECT_EQ(Position::LastPositionInNode(document_element),
             Position::LastPositionInOrAfterNode(document_element));

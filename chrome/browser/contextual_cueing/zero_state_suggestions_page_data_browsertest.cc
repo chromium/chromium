@@ -21,32 +21,72 @@ namespace contextual_cueing {
 using ::testing::_;
 using ::testing::WithArgs;
 
-class ZeroStateSuggestionsPageDataBrowserTest : public InProcessBrowserTest {
+enum class ContentExtraction {
+  kFetchInnerTextOnly,
+  kFetchAnnotatedPageContentOnly,
+  kFetchInnerTextAndAnnotatedPageContent,
+};
+
+class ZeroStateSuggestionsPageDataBrowserTest
+    : public InProcessBrowserTest,
+      public ::testing::WithParamInterface<ContentExtraction> {
  public:
   ZeroStateSuggestionsPageDataBrowserTest() {
+    base::FieldTrialParams zss_params;
+    switch (GetParam()) {
+      case ContentExtraction::kFetchInnerTextOnly:
+        zss_params = {{"ZSSExtractInnerText", "true"},
+                      {"ZSSExtractAnnotatedPageContent", "false"}};
+        break;
+      case ContentExtraction::kFetchAnnotatedPageContentOnly:
+        zss_params = {{"ZSSExtractInnerText", "false"},
+                      {"ZSSExtractAnnotatedPageContent", "true"}};
+        break;
+      case ContentExtraction::kFetchInnerTextAndAnnotatedPageContent:
+        zss_params = {{"ZSSExtractInnerText", "true"},
+                      {"ZSSExtractAnnotatedPageContent", "true"}};
+        break;
+    }
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{contextual_cueing::kContextualCueing, {}},
-         {contextual_cueing::kGlicZeroStateSuggestions, {}}},
+         {contextual_cueing::kGlicZeroStateSuggestions, zss_params}},
         /*disabled_features=*/{});
   }
+
+  ContentExtraction GetContentExtraction() const { return GetParam(); }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(ZeroStateSuggestionsPageDataBrowserTest, BasicFlow) {
+INSTANTIATE_TEST_SUITE_P(
+    WithContentExtraction,
+    ZeroStateSuggestionsPageDataBrowserTest,
+    ::testing::Values(
+        ContentExtraction::kFetchInnerTextOnly,
+        ContentExtraction::kFetchAnnotatedPageContentOnly,
+        ContentExtraction::kFetchInnerTextAndAnnotatedPageContent));
+
+IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest, BasicFlow) {
   auto fake_optimization_guide_keyed_service =
       testing::NiceMock<MockOptimizationGuideKeyedService>();
   ON_CALL(fake_optimization_guide_keyed_service, ExecuteModel(_, _, _, _))
       .WillByDefault(WithArgs<1, 3>(
-          [](const google::protobuf::MessageLite& request_metadata,
-             optimization_guide::OptimizationGuideModelExecutionResultCallback
-                 callback) {
+          [&](const google::protobuf::MessageLite& request_metadata,
+              optimization_guide::OptimizationGuideModelExecutionResultCallback
+                  callback) {
             const auto* request = reinterpret_cast<
                 const optimization_guide::proto::ZeroStateSuggestionsRequest*>(
                 &request_metadata);
-            EXPECT_EQ("AB\n\np-tag\n\nCD",
-                      request->page_context().inner_text());
+            EXPECT_EQ(request->page_context().inner_text().empty(),
+                      GetContentExtraction() ==
+                          ContentExtraction::kFetchAnnotatedPageContentOnly);
+            EXPECT_EQ(
+                request->page_context().annotated_page_content().version() ==
+                    optimization_guide::proto::
+                        ANNOTATED_PAGE_CONTENT_VERSION_UNKNOWN,
+                GetContentExtraction() ==
+                    ContentExtraction::kFetchInnerTextOnly);
             EXPECT_EQ("title", request->page_context().title());
             EXPECT_NE(std::string::npos,
                       request->page_context().url().find(

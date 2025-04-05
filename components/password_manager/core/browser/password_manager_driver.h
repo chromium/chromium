@@ -45,8 +45,9 @@ class PasswordManagerDriver {
   // Returns driver id which is unique in the current tab.
   virtual int GetId() const = 0;
 
-  // Fills forms matching `form_data`.
-  virtual void SetPasswordFillData(
+  // Propagates `form_data` to the renderer, in order to store values for
+  // filling on account select, or fill on pageload if appliccable.
+  virtual void PropagateFillDataOnParsingCompletion(
       const autofill::PasswordFormFillData& form_data) = 0;
 
   // Informs the driver that there are no saved credentials in the password

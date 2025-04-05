@@ -45,6 +45,7 @@ static_library("common") {
     ":content_settings_types",
     ":features",
     "//base",
+    "//services/network/public/cpp:web_platform",
   ]
 
   deps = [

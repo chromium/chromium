@@ -894,6 +894,21 @@ void CrashTab(WebContents* web_contents) {
   EXPECT_TRUE(web_contents->IsCrashed());
 }
 
+void SimulateUnresponsivePrimaryMainFrameAndWaitForExit(
+    WebContents* web_contents) {
+  RenderProcessHost* rph = web_contents->GetPrimaryMainFrame()->GetProcess();
+  RenderProcessHostWatcher watcher(
+      rph, RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+
+  SimulateUnresponsiveRenderer(
+      web_contents, web_contents->GetPrimaryMainFrame()->GetRenderWidgetHost());
+
+  EXPECT_TRUE(rph->Shutdown(RESULT_CODE_HUNG));
+  watcher.Wait();
+  EXPECT_FALSE(watcher.did_exit_normally());
+  EXPECT_TRUE(web_contents->IsCrashed());
+}
+
 void PwnCommitIPC(WebContents* web_contents,
                   const GURL& target_url,
                   const GURL& new_url,
@@ -1006,6 +1021,14 @@ void NotifyCopyableViewInFrame(RenderFrameHost* render_frame_host,
       rwhi->GetWeakPtr(), std::move(done_callback));
 
   rwhi->InsertVisualStateCallback(std::move(first_frame_done));
+}
+
+void SimulateEndOfPaintHoldingOnPrimaryMainFrame(WebContents* web_contents) {
+  WebContentsImpl* web_contents_impl =
+      static_cast<WebContentsImpl*>(web_contents);
+  RenderWidgetHostImpl* main_frame_rwh =
+      web_contents_impl->GetPrimaryMainFrame()->GetRenderWidgetHost();
+  main_frame_rwh->ForceFirstFrameAfterNavigationTimeout();
 }
 
 void SimulateMouseClick(WebContents* web_contents,
@@ -2676,7 +2699,6 @@ DOMMessageQueue::~DOMMessageQueue() = default;
 
 void DOMMessageQueue::PrimaryMainFrameRenderProcessGone(
     base::TerminationStatus status) {
-  VLOG(0) << "DOMMessageQueue::RenderProcessGone " << status;
   switch (status) {
     case base::TERMINATION_STATUS_NORMAL_TERMINATION:
     case base::TERMINATION_STATUS_STILL_RUNNING:

@@ -2,11 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
+#include <algorithm>
 #include <optional>
 
 #include "base/base64.h"
@@ -429,10 +425,6 @@ IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperTest, HttpsPage) {
       security_state::SECURE, false, false, false,
       false /* expect cert status error */);
 }
-
-// TODO(crbug.com/40928765): Add an end-to-end test for
-// security_state::SECURE_WITH_POLICY_INSTALLED_CERT (currently that depends on
-// a cros-specific policy/service).
 
 IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperTest, DevToolsPage) {
   GURL devtools_url("devtools://devtools/bundled/");
@@ -1074,7 +1066,7 @@ IN_PROC_BROWSER_TEST_F(PKPModelClientTest, PKPBypass) {
   verify_result.verified_cert = cert;
   // Public key hash which does not match the value in the static pin.
   net::HashValue hash(net::HASH_VALUE_SHA256);
-  memset(hash.data(), 1, hash.size());
+  std::fill(hash.begin(), hash.end(), 1);
   verify_result.public_key_hashes.push_back(hash);
 
   mock_cert_verifier()->AddResultForCert(cert, verify_result, net::OK);
@@ -1099,7 +1091,7 @@ IN_PROC_BROWSER_TEST_F(PKPModelClientTest, PKPEnforced) {
   verify_result.verified_cert = cert;
   // Public key hash which does not match the value in the static pin.
   net::HashValue hash(net::HASH_VALUE_SHA256);
-  memset(hash.data(), 1, hash.size());
+  std::fill(hash.begin(), hash.end(), 1);
   verify_result.public_key_hashes.push_back(hash);
 
   mock_cert_verifier()->AddResultForCert(cert, verify_result, net::OK);

@@ -21,7 +21,6 @@ import androidx.appcompat.widget.DialogTitle;
 import org.chromium.base.Token;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
@@ -239,7 +238,6 @@ public class TabGroupVisualDataDialogManager {
             // TabGroupPane flags are enabled.
             if (!tabModel.isIncognitoBranded()
                     && TabGroupSyncFeatures.isTabGroupSyncEnabled(profile)
-                    && ChromeFeatureList.sTabGroupPaneAndroid.isEnabled()
                     && tracker.shouldTriggerHelpUi(
                             FeatureConstants.TAB_GROUP_CREATION_DIALOG_SYNC_TEXT_FEATURE)) {
                 mTracker = tracker;

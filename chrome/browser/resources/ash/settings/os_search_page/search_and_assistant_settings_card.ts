@@ -127,29 +127,32 @@ export class SearchAndAssistantSettingsCardElement extends
           return isAssistantAllowed();
         },
       },
-
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kPreferredSearchEngine,
-          Setting.kMagicBoostOnOff,
-          Setting.kMahiOnOff,
-          Setting.kShowOrca,
-          Setting.kLobsterOnOff,
-          Setting.kSunfishOnOff,
-          Setting.kScannerOnOff,
-        ]),
-      },
     };
   }
 
   prefs: PrefsState;
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kPreferredSearchEngine,
+    Setting.kMagicBoostOnOff,
+    Setting.kMahiOnOff,
+    Setting.kShowOrca,
+    Setting.kLobsterOnOff,
+    Setting.kSunfishOnOff,
+    Setting.kScannerOnOff,
+  ]);
+
+  private readonly enterprisePolicyToggleUncheckedValues_: number[];
   private isAssistantAllowed_: boolean;
-  private isQuickAnswersSupported_: boolean;
+  private isHmrAllowedByEnterprisePolicy_: boolean;
+  private isHmwAllowedByEnterprisePolicy_: boolean;
+  private isLobsterAllowedByEnterprisePolicy_: boolean;
+  private readonly isLobsterSettingsToggleVisible_: boolean;
+  private readonly isMagicBoostNoticeBannerVisible_: boolean;
   private isMagicBoostFeatureEnabled_: boolean;
+  private isQuickAnswersSupported_: boolean;
+  private isScannerAllowedByEnterprisePolicy_: boolean;
   private readonly isScannerSettingsToggleVisible_: boolean;
 
   constructor() {

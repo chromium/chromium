@@ -18,6 +18,7 @@ import {getInstance as getAnnouncerInstance} from 'chrome://resources/ash/common
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import type {Network} from 'chrome://resources/ash/common/traffic_counters/traffic_counters_adapter.js';
 import {TrafficCountersAdapter} from 'chrome://resources/ash/common/traffic_counters/traffic_counters_adapter.js';
+import type {ManagedProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './settings_traffic_counters.html.js';
@@ -120,6 +121,7 @@ export class SettingsTrafficCountersElement extends
     };
   }
 
+  managedProperties: ManagedProperties|undefined;
   guid: string;
   private date_: string;
   private resetDay_: number;

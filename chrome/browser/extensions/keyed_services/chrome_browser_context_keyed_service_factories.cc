@@ -6,6 +6,7 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/extensions/blocklist_factory.h"
+#include "chrome/browser/extensions/component_loader_factory.h"
 #include "chrome/browser/extensions/delayed_install_manager_factory.h"
 #include "chrome/browser/extensions/error_console/error_console_factory.h"
 #include "chrome/browser/extensions/extension_allowlist_factory.h"
@@ -15,6 +16,7 @@
 #include "chrome/browser/extensions/install_tracker_factory.h"
 #include "chrome/browser/extensions/pending_extension_manager_factory.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
+#include "chrome/browser/extensions/updater/extension_updater_factory.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/account_extension_tracker.h"
@@ -37,7 +39,6 @@
 #include "chrome/browser/extensions/menu_manager_factory.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/extensions/plugin_manager.h"
-#include "chrome/browser/extensions/updater/extension_updater_factory.h"
 #include "chrome/browser/extensions/warning_badge_service_factory.h"
 #include "ppapi/buildflags/buildflags.h"
 #endif
@@ -50,9 +51,11 @@ namespace chrome_extensions {
 
 void EnsureChromeBrowserContextKeyedServiceFactoriesBuilt() {
   extensions::BlocklistFactory::GetInstance();
+  extensions::ComponentLoaderFactory::GetInstance();
   extensions::DelayedInstallManagerFactory::GetInstance();
   extensions::ErrorConsoleFactory::GetInstance();
   extensions::ExtensionAllowlistFactory::GetInstance();
+  extensions::ExtensionUpdaterFactory::GetInstance();
   extensions::ExtensionWebUIOverrideRegistrar::GetFactoryInstance();
   extensions::ExternalInstallManagerFactory::GetInstance();
   extensions::InstallStageTrackerFactory::GetInstance();
@@ -73,7 +76,6 @@ void EnsureChromeBrowserContextKeyedServiceFactoriesBuilt() {
   extensions::ExtensionGarbageCollectorFactory::GetInstance();
   extensions::ExtensionGCMAppHandler::GetFactoryInstance();
   extensions::ExtensionManagementFactory::GetInstance();
-  extensions::ExtensionUpdaterFactory::GetInstance();
   extensions::ExternalProviderManagerFactory::GetInstance();
   extensions::ChromeExtensionSystemFactory::GetInstance();
   extensions::InstallVerifierFactory::GetInstance();

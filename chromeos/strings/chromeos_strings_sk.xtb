@@ -458,7 +458,6 @@
 <translation id="3084958266922136097">Deaktivovať šetrič obrazovky</translation>
 <translation id="3091839911843451378">Nepodarilo sa – zastavené</translation>
 <translation id="3102119246920354026">Vyrovnávacia pamäť</translation>
-<translation id="3112413615003385433">Učiteľ odstránil obsah zo Školských nástrojov</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">bazény</translation>
 <translation id="3122883569442693641">Ďalšie podrobnosti</translation>
@@ -539,7 +538,6 @@
 <translation id="3488065109653206955">Čiastočne aktivované</translation>
 <translation id="3492882532495507361">Kancelária v štýle <ph name="OFFICE_STYLE" /> v odtieňoch <ph name="OFFICE_COLOR" /></translation>
 <translation id="3493187369049186498">Dáta meria Chromebook. Namerané dáta sa môžu líšiť od dát poskytovateľa.</translation>
-<translation id="349570724365779960">Školské nástroje sú pripojené k študentom</translation>
 <translation id="3502426834823382181">zobrazenie všetkých aplikácií</translation>
 <translation id="3510890413042482857">Odosielať <ph name="BEGIN_LINK1" />údaje o sledovaní výkonnosti<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Aktualiz. ChromeOS</translation>
@@ -547,7 +545,6 @@
 <translation id="353214771040290298">Dokončiť úpravy</translation>
 <translation id="3532980081107202182">Zostávajúci čas je približne <ph name="MIN_REMAINING" /> min.</translation>
 <translation id="3533790840489634638">bazén</translation>
-<translation id="3535802910192338629">Učiteľ pridal nový obsah do Školských nástrojov</translation>
 <translation id="3547264467365135390">Vzorec</translation>
 <translation id="3557205324756024651">Miestna identita (nepovinné)</translation>
 <translation id="3565064564551103223">Povolené adresy IP</translation>
@@ -1235,6 +1232,7 @@
 <translation id="6657240842932274095">Chcete povoliť systémovým službám používať vašu polohu?</translation>
 <translation id="6657585470893396449">Heslo</translation>
 <translation id="66621959568103627">koralovo ružovom</translation>
+<translation id="6669485505082792176">Tieto obrázky sa momentálne nedajú vytvoriť. Skúste opis preformulovať. Upozorňujeme, že nemôžete vytvárať obrázky ľudí ani škodlivý alebo explicitný obsah. <ph name="BEGIN_LINK_LEARN_MORE" />Ďalšie informácie<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6673898378497337661">zvýšenie jasu klávesnice</translation>
 <translation id="6692996468359469499">Získajte informácie súvisiace s vaším výberom</translation>
 <translation id="6694534975463174713">uzamknúť</translation>
@@ -1440,7 +1438,6 @@ Ak chcete mať tieto prepisy k dispozícii, stiahnite si model prepisov (až 10
 <translation id="7544853251252956727">Náhodne prehrávať</translation>
 <translation id="7550715992156305117">Diagnostické postupy</translation>
 <translation id="7551123448725492271">Zariadenie je audio zariadenie.</translation>
-<translation id="7553913964854052228">School Tools používa váš mikrofón</translation>
 <translation id="7559239713112547082">Zobraziť ukážku snímky obrazovky</translation>
 <translation id="7561454561030345039">Túto akciu ovláda váš správca</translation>
 <translation id="7561759921596375678">Zapnutie zvuku</translation>
@@ -1663,7 +1660,6 @@ Ak chcete mať tieto prepisy k dispozícii, stiahnite si model prepisov (až 10
 <translation id="8576249514688522074">Nespustené</translation>
 <translation id="8584654835905316966">Dokončenie inštalácie firmvéru zariadenia <ph name="DEVICE_NAME" /> na verziu <ph name="VERSION" /> vyžaduje reštart. Váš počítač sa môže niekoľkokrát reštartovať. Toto správanie je očakávané.</translation>
 <translation id="8593058461203131755">pozastavenie médií</translation>
-<translation id="8619169570378509764">Školské nástroje</translation>
 <translation id="8620617069779373398">Stav roamingu</translation>
 <translation id="8626489604350149811">Ďalšie akcie pre aplikáciu <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Svetlopurpurová</translation>

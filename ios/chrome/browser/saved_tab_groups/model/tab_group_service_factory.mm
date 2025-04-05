@@ -7,7 +7,6 @@
 #import "ios/chrome/browser/collaboration/model/features.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_service.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
-#import "ios/chrome/browser/share_kit/model/share_kit_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 // static
@@ -27,7 +26,6 @@ TabGroupServiceFactory::TabGroupServiceFactory()
                                     ServiceCreation::kCreateLazily,
                                     TestingCreation::kNoServiceForTests) {
   DependsOn(tab_groups::TabGroupSyncServiceFactory::GetInstance());
-  DependsOn(ShareKitServiceFactory::GetInstance());
 }
 
 TabGroupServiceFactory::~TabGroupServiceFactory() = default;
@@ -43,8 +41,5 @@ std::unique_ptr<KeyedService> TabGroupServiceFactory::BuildServiceInstanceFor(
 
   tab_groups::TabGroupSyncService* tab_group_sync_service =
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile);
-  ShareKitService* share_kit_service =
-      ShareKitServiceFactory::GetForProfile(profile);
-  return std::make_unique<TabGroupService>(profile, tab_group_sync_service,
-                                           share_kit_service);
+  return std::make_unique<TabGroupService>(profile, tab_group_sync_service);
 }

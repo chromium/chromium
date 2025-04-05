@@ -13,6 +13,7 @@
 #include "chrome/common/extensions/api/omnibox.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "content/public/test/browser_task_environment.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/manifest_constants.h"
@@ -69,7 +70,7 @@ TEST_F(ExtensionInstalledBubbleModelTest, SyntheticPageActionExtension) {
   // An extension with no action info in the manifest at all gets a synthesized
   // page action.
   auto extension = extensions::ExtensionBuilder("Foo").Build();
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension);
 
   ExtensionInstalledBubbleModel model(profile(), extension.get(), SkBitmap());
 
@@ -90,7 +91,7 @@ TEST_F(ExtensionInstalledBubbleModelTest, OmniboxExtension) {
   AddOmniboxKeyword(&builder, "fookey");
   builder.AddFlags(extensions::Extension::WAS_INSTALLED_BY_DEFAULT);
   auto extension = builder.Build();
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension);
 
   ExtensionInstalledBubbleModel model(profile(), extension.get(), SkBitmap());
 
@@ -111,7 +112,7 @@ TEST_F(ExtensionInstalledBubbleModelTest, PageActionExtension) {
                        .SetManifestVersion(2)
                        .SetAction(extensions::ActionInfo::Type::kPage)
                        .Build();
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension);
 
   ExtensionInstalledBubbleModel model(profile(), extension.get(), SkBitmap());
 
@@ -134,7 +135,7 @@ TEST_F(ExtensionInstalledBubbleModelTest, MV3ActionExtension) {
                        .SetManifestVersion(3)
                        .SetAction(extensions::ActionInfo::Type::kAction)
                        .Build();
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension);
 
   ExtensionInstalledBubbleModel model(profile(), extension.get(), SkBitmap());
 
@@ -181,7 +182,7 @@ TEST_F(ExtensionInstalledBubbleModelTest, OmniboxKeywordAndSyntheticAction) {
   AddOmniboxKeyword(&builder, "fookey");
   auto extension = builder.Build();
 
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension);
 
   ExtensionInstalledBubbleModel model(profile(), extension.get(), SkBitmap());
 

@@ -525,7 +525,9 @@ TEST_F(BluetoothUtilsTest, TestTimeIntervalBetweenConnectionsMetric) {
       kTimeIntervalBetweenConnectionsHistogramName, base::Minutes(1), 1);
 }
 
-TEST_F(BluetoothUtilsTest, TestConnectionToastShownCount24HoursMetric) {
+// TODO(crbug.com/407890254): Fix and re-enable
+TEST_F(BluetoothUtilsTest,
+       DISABLED_TestConnectionToastShownCount24HoursMetric) {
   // Verify no initial histogram entries.
   histogram_tester.ExpectTotalCount(
       kConnectionToastShownLast24HoursCountHistogramName, 0);

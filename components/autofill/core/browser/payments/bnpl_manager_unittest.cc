@@ -13,7 +13,7 @@
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager_test_api.h"
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
-#include "components/autofill/core/browser/integrators/mock_autofill_optimization_guide.h"
+#include "components/autofill/core/browser/integrators/optimization_guide/mock_autofill_optimization_guide.h"
 #include "components/autofill/core/browser/metrics/payments/bnpl_metrics.h"
 #include "components/autofill/core/browser/payments/bnpl_manager_test_api.h"
 #include "components/autofill/core/browser/payments/constants.h"
@@ -534,7 +534,8 @@ TEST_F(BnplManagerTest, OnIssuerSelected_OnRedirectUrlFetched) {
   EXPECT_CALL(*static_cast<MockPaymentsWindowManager*>(
                   autofill_client_->GetPaymentsAutofillClient()
                       ->GetPaymentsWindowManager()),
-              InitBnplFlow(FieldsAre(kRedirectUrl, response.success_url_prefix,
+              InitBnplFlow(FieldsAre(linked_issuer.issuer_id(), kRedirectUrl,
+                                     response.success_url_prefix,
                                      response.failure_url_prefix,
                                      /*completion_callback=*/_)))
       .Times(1);

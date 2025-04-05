@@ -409,12 +409,6 @@ struct StructTraits<viz::mojom::TextureQuadStateDataView, viz::DrawQuad> {
     return quad->resource_id;
   }
 
-  static const gfx::Size& resource_size_in_pixels(const viz::DrawQuad& input) {
-    const viz::TextureDrawQuad* quad =
-        viz::TextureDrawQuad::MaterialCast(&input);
-    return quad->resource_size_in_pixels();
-  }
-
   static viz::TextureDrawQuad::RoundedDisplayMasksInfo
   rounded_display_masks_info(const viz::DrawQuad& input) {
     const viz::TextureDrawQuad* quad =

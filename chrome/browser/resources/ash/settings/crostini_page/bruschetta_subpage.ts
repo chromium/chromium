@@ -43,16 +43,6 @@ export class BruschettaSubpageElement extends BruschettaSubpageElementBase {
         type: Boolean,
         value: false,
       },
-
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kBruschettaMicAccess,
-        ]),
-      },
     };
   }
 
@@ -61,6 +51,11 @@ export class BruschettaSubpageElement extends BruschettaSubpageElementBase {
       'onInstalledChanged_(prefs.bruschetta.installed.value)',
     ];
   }
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kBruschettaMicAccess,
+  ]);
 
   private browserProxy_: CrostiniBrowserProxy;
   private showBruschettaMicPermissionDialog_: boolean;

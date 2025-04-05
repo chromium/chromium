@@ -31,7 +31,9 @@
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
+#include "google_apis/gaia/gaia_auth_test_util.h"
 #include "google_apis/gaia/gaia_constants.h"
+#include "google_apis/gaia/gaia_features.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/base/url_util.h"
@@ -74,10 +76,6 @@ const base::FilePath::CharType kEmbeddedSetupChromeos[] =
 // OAuth2 Authentication header value prefix.
 const char kAuthHeaderBearer[] = "Bearer ";
 const char kAuthHeaderOAuth[] = "OAuth ";
-
-const char kIndividualListedAccountResponseFormat[] =
-    "[\"gaia.l.a\",1,\"\",\"%s\",\"\",1,1,0,0,1,\"%s\",11,12,13,%d]";
-const char kListAccountsResponseFormat[] = "[\"gaia.l.a.r\",[%s]]";
 
 const char kFakeRemoveLocalAccountPath[] = "FakeRemoveLocalAccount";
 const char kFakeSAMLContinuePath[] = "FakeSAMLContinue";
@@ -775,26 +773,34 @@ void FakeGaia::HandleIssueToken(const HttpRequest& request,
 
 void FakeGaia::HandleListAccounts(const HttpRequest& request,
                                   BasicHttpResponse* http_response) {
-  const int kAccountIsSignedIn = 0;
-  const int kAccountIsSignedOut = 1;
+  // Add the primary signed in account.
+  std::vector<gaia::CookieParams> params{{.email = configuration_.email,
+                                          .gaia_id = GetDefaultGaiaId(),
+                                          .valid = true,
+                                          .signed_out = false,
+                                          .verified = true}};
 
-  std::vector<std::string> listed_accounts;
-  listed_accounts.push_back(base::StringPrintf(
-      kIndividualListedAccountResponseFormat, configuration_.email.c_str(),
-      GetDefaultGaiaId().ToString(), kAccountIsSignedIn));
-
+  // Add the other signed out accounts.
   for (const GaiaId& gaia_id : configuration_.signed_out_gaia_ids) {
     DCHECK_NE(GetDefaultGaiaId(), gaia_id);
 
-    const std::string email = GetEmailOfGaiaId(gaia_id);
-    listed_accounts.push_back(base::StringPrintf(
-        kIndividualListedAccountResponseFormat, email.c_str(),
-        gaia_id.ToString().c_str(), kAccountIsSignedOut));
+    params.push_back({.email = GetEmailOfGaiaId(gaia_id),
+                      .gaia_id = gaia_id,
+                      .valid = true,
+                      .signed_out = true,
+                      .verified = true});
   }
 
-  http_response->set_content(
-      base::StringPrintf(kListAccountsResponseFormat,
-                         base::JoinString(listed_accounts, ",").c_str()));
+  std::string value;
+  bool uses_binary_format =
+      net::GetValueForKeyInQuery(request.GetURL(), "laf", &value) &&
+      value == "b64bin";
+  std::string content =
+      uses_binary_format
+          ? gaia::CreateListAccountsResponseInBinaryFormat(params)
+          : gaia::CreateListAccountsResponseInLegacyFormat(params);
+
+  http_response->set_content(content);
   http_response->set_code(net::HTTP_OK);
 }
 

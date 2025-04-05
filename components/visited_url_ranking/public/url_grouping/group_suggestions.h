@@ -25,6 +25,10 @@ struct GroupSuggestion {
   GroupSuggestion(GroupSuggestion&&);
   GroupSuggestion& operator=(GroupSuggestion&&);
 
+  GroupSuggestion DeepCopy() const;
+
+  // LINT.IfChange
+
   // The list of tabs / URLs to suggest, in order of relevance. For the initial
   // prototype, the current tab is always the first entry in the list. This need
   // not be the tab order in the group, if the group is created.
@@ -39,7 +43,7 @@ struct GroupSuggestion {
   };
 
   // The contents of the promo to be shown.
-  SuggestionReason suggestion_reason;
+  SuggestionReason suggestion_reason = SuggestionReason::kUnknown;
   std::u16string suggested_name;
   std::string promo_header;
   std::string promo_contents;
@@ -47,6 +51,8 @@ struct GroupSuggestion {
   // The ID of the suggestion used to record the user action, or cancel ongoing
   // requests.
   UrlGroupingSuggestionId suggestion_id;
+
+  // LINT.ThenChange(components/visited_url_ranking/public/url_grouping/group_suggestions.cc)
 };
 
 struct GroupSuggestions {

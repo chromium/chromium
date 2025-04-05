@@ -888,6 +888,98 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                 /* expectShowIdp= */ true);
     }
 
+    @Test
+    public void testSingleIdentifierAccounts() {
+        mMediator.showAccounts(
+                mTestEtldPlusOne,
+                Arrays.asList(mSingleIdentifierAccount, mSingleIdentifierAccountFilteredOut),
+                Arrays.asList(mIdpData),
+                /* isAutoReauthn= */ false,
+                /* newAccounts= */ Collections.EMPTY_LIST);
+
+        // Account chooser is shown.
+        assertEquals(HeaderType.SIGN_IN, mModel.get(ItemProperties.HEADER).get(TYPE));
+
+        assertEquals(2, mSheetAccountItems.size());
+        // First account has a click listener.
+        assertNotNull(mSheetAccountItems.get(0).model.get(AccountProperties.ON_CLICK_LISTENER));
+        // Second account is filtered out, so does not.
+        assertNull(mSheetAccountItems.get(1).model.get(AccountProperties.ON_CLICK_LISTENER));
+
+        View sheetContainer = mContentView.findViewById(R.id.sheet_item_list_container);
+        RecyclerView sheetItemListView = sheetContainer.findViewById(R.id.sheet_item_list);
+        assertEquals(2, sheetItemListView.getAdapter().getItemCount());
+
+        assertEquals(
+                AccountSelectionProperties.ITEM_TYPE_ACCOUNT,
+                sheetItemListView.getAdapter().getItemViewType(0));
+        View row = sheetItemListView.getChildAt(0);
+        assertEquals(row.getAlpha(), 1.f, ALPHA_COMPARISON_DELTA);
+        TextView textView = row.findViewById(R.id.title);
+        assertEquals("username", textView.getText());
+        textView = row.findViewById(R.id.description);
+        assertEquals("", textView.getText());
+        assertFalse(textView.isShown());
+
+        assertEquals(
+                AccountSelectionProperties.ITEM_TYPE_ACCOUNT,
+                sheetItemListView.getAdapter().getItemViewType(1));
+        row = sheetItemListView.getChildAt(1);
+        assertEquals(
+                row.getAlpha(),
+                AccountSelectionViewBinder.DISABLED_OPACITY,
+                ALPHA_COMPARISON_DELTA);
+        textView = row.findViewById(R.id.title);
+        assertEquals("username2", textView.getText());
+        textView = row.findViewById(R.id.description);
+        assertEquals("You can’t sign in using this account", textView.getText());
+    }
+
+    @Test
+    public void testSingleAccountWithSingleIdentifier() {
+        mMediator.showAccounts(
+                mTestEtldPlusOne,
+                Arrays.asList(mSingleIdentifierAccount),
+                Arrays.asList(mIdpData),
+                /* isAutoReauthn= */ false,
+                /* newAccounts= */ Arrays.asList(mSingleIdentifierAccount));
+
+        if (mRpMode == RpMode.PASSIVE) {
+            // Account chooser is shown.
+            assertEquals(HeaderType.SIGN_IN, mModel.get(ItemProperties.HEADER).get(TYPE));
+
+            assertEquals(1, mSheetAccountItems.size());
+
+            View sheetContainer = mContentView.findViewById(R.id.sheet_item_list_container);
+            assertTrue(sheetContainer.isShown());
+            RecyclerView sheetItemListView = sheetContainer.findViewById(R.id.sheet_item_list);
+            assertEquals(1, sheetItemListView.getAdapter().getItemCount());
+
+            assertEquals(
+                    AccountSelectionProperties.ITEM_TYPE_ACCOUNT,
+                    sheetItemListView.getAdapter().getItemViewType(0));
+            View row = sheetItemListView.getChildAt(0);
+            assertEquals(row.getAlpha(), 1.f, ALPHA_COMPARISON_DELTA);
+            TextView textView = row.findViewById(R.id.title);
+            assertEquals("username", textView.getText());
+            textView = row.findViewById(R.id.description);
+            assertEquals("", textView.getText());
+            assertFalse(textView.isShown());
+        } else {
+            // Request permission is shown.
+            assertEquals(
+                    HeaderType.REQUEST_PERMISSION_MODAL,
+                    mModel.get(ItemProperties.HEADER).get(TYPE));
+
+            View accountChip = mContentView.findViewById(R.id.account_chip);
+            assertNotNull(accountChip);
+            assertTrue(accountChip.isShown());
+
+            TextView textView = accountChip.findViewById(R.id.description);
+            assertEquals("username", textView.getText());
+        }
+    }
+
     private void pressBack() {
         if (mBottomSheetContent.handleBackPress()) return;
 

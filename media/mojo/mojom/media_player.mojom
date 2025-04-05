@@ -63,6 +63,11 @@ interface MediaPlayer {
   // If this method is called multiple times in a row, the newest callback
   // always takes precedence. Previous ones are immediately run with `false`.
   RequestVisibility() => (bool has_sufficiently_visible_video);
+
+  // Request the media player to record auto picture in picture related
+  // information. This information helps identify why a request to enter
+  // picture in picture automatically is denied/accepted.
+  RecordAutoPictureInPictureInfo (string auto_picture_in_picture_info);
 };
 
 // Implemented by the MediaWebContentsObserver. The remote lives in the renderer

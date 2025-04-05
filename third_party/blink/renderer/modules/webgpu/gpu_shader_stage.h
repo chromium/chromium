@@ -14,11 +14,6 @@ class GPUShaderStage : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  // gpu_shader_stage.idl
-  static constexpr uint32_t kVertex = V8GPUShaderStage::Constant::kVertex;
-  static constexpr uint32_t kFragment = V8GPUShaderStage::Constant::kFragment;
-  static constexpr uint32_t kCompute = V8GPUShaderStage::Constant::kCompute;
-
   GPUShaderStage(const GPUShaderStage&) = delete;
   GPUShaderStage& operator=(const GPUShaderStage&) = delete;
 };

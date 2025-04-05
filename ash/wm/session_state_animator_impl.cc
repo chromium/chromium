@@ -359,9 +359,7 @@ void SessionStateAnimatorImpl::GetContainers(
     GetContainersInRootWindow(container_mask, root_window, containers);
 
   // Some of containers may be null in some tests.
-  containers->erase(
-      std::remove(containers->begin(), containers->end(), nullptr),
-      containers->end());
+  std::erase(*containers, nullptr);
 }
 
 void SessionStateAnimatorImpl::StartAnimation(int container_mask,

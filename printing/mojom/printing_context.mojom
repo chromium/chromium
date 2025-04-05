@@ -65,7 +65,7 @@ struct PrintSettings {
   PrinterLanguageType printer_language_type;
 
   bool is_modifiable;
-  PageMargins requested_custom_margins_in_points;
+  PageMargins requested_custom_margins_in_microns;
   int32 pages_per_sheet;
 
   [EnableIf=is_chromeos|is_linux]

@@ -317,11 +317,6 @@ void LayerTreeHostImpl::DidUpdateScrollAnimationCurve() {
   events_metrics_manager_.SaveActiveEventMetrics();
 }
 
-void LayerTreeHostImpl::AccumulateScrollDeltaForTracing(
-    const gfx::Vector2dF& delta) {
-  scroll_accumulated_this_frame_ += delta;
-}
-
 void LayerTreeHostImpl::DidStartPinchZoom() {
   client_->RenewTreePriority();
   frame_trackers_.StartSequence(FrameSequenceTrackerType::kPinchZoom);
@@ -1188,8 +1183,9 @@ LayerTreeHostImpl::GetScopedEventMetricsMonitor(
   return events_metrics_manager_.GetScopedMonitor(std::move(done_callback));
 }
 
-void LayerTreeHostImpl::NotifyInputEvent() {
+void LayerTreeHostImpl::NotifyInputEvent(bool is_fling) {
   frame_rate_estimator_.NotifyInputEvent();
+  has_non_fling_input_since_last_frame_ |= (!is_fling);
 }
 
 void LayerTreeHostImpl::QueueSwapPromiseForMainThreadScrollUpdate(
@@ -3070,39 +3066,56 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
 
   viz::CompositorFrameMetadata metadata = MakeCompositorFrameMetadata();
 
-  ViewTransitionRequest::ViewTransitionElementMap view_transition_element_map;
-  const auto& capture_view_transition_tokens =
-      active_tree_->GetCaptureViewTransitionTokens();
-  for (RenderSurfaceImpl* render_surface : *frame->render_surface_list) {
-    const auto& view_transition_element_resource_id =
-        render_surface->OwningEffectNode()->view_transition_element_resource_id;
-    if (!view_transition_element_resource_id.IsValid()) {
-      continue;
+  // Don't compute transition directives in TreesInViz mode because
+  // the requests will be sent over to viz to compute them.
+  // If we call TakeViewTransitionRequests() here, it will clear the requests
+  // and send none to viz.
+  if (!use_layer_context_for_display_) {
+    ViewTransitionRequest::ViewTransitionElementMap view_transition_element_map;
+    const auto& capture_view_transition_tokens =
+        active_tree_->GetCaptureViewTransitionTokens();
+    for (RenderSurfaceImpl* render_surface : *frame->render_surface_list) {
+      const auto& view_transition_element_resource_id =
+          render_surface->OwningEffectNode()
+              ->view_transition_element_resource_id;
+      if (!view_transition_element_resource_id.IsValid()) {
+        continue;
+      }
+
+      DCHECK(!base::Contains(view_transition_element_map,
+                             view_transition_element_resource_id))
+          << "Cannot map " << view_transition_element_resource_id.ToString()
+          << " to render pass "
+          << render_surface->render_pass_id().GetUnsafeValue()
+          << "; It already maps to render pass "
+          << view_transition_element_map[view_transition_element_resource_id]
+                 .GetUnsafeValue();
+
+      if (view_transition_element_resource_id.MatchesToken(
+              capture_view_transition_tokens)) {
+        view_transition_element_map[view_transition_element_resource_id] =
+            render_surface->view_transition_capture_render_pass_id();
+      } else {
+        view_transition_element_map[view_transition_element_resource_id] =
+            render_surface->render_pass_id();
+      }
     }
 
-    DCHECK(!base::Contains(view_transition_element_map,
-                           view_transition_element_resource_id))
-        << "Cannot map " << view_transition_element_resource_id.ToString()
-        << " to render pass "
-        << render_surface->render_pass_id().GetUnsafeValue()
-        << "; It already maps to render pass "
-        << view_transition_element_map[view_transition_element_resource_id]
-               .GetUnsafeValue();
-
-    if (view_transition_element_resource_id.MatchesToken(
-            capture_view_transition_tokens)) {
-      view_transition_element_map[view_transition_element_resource_id] =
-          render_surface->view_transition_capture_render_pass_id();
-    } else {
-      view_transition_element_map[view_transition_element_resource_id] =
-          render_surface->render_pass_id();
+    auto display_color_spaces = GetDisplayColorSpaces();
+    for (auto& request : active_tree_->TakeViewTransitionRequests(
+             /*should_set_needs_update_draw_properties=*/true)) {
+      metadata.transition_directives.push_back(request->ConstructDirective(
+          view_transition_element_map, display_color_spaces));
     }
-  }
-
-  auto display_color_spaces = GetDisplayColorSpaces();
-  for (auto& request : active_tree_->TakeViewTransitionRequests()) {
-    metadata.transition_directives.push_back(request->ConstructDirective(
-        view_transition_element_map, display_color_spaces));
+  } else {
+    // In TreesInViz mode, we call TakeViewTransitionRequest() later in
+    // VizLayerContext::UpdateDisplayTreeFrom(), but we still want to set
+    // the flag here to avoid changing the flow of computing. Also, we will
+    // skip setting the flag when TakeViewTransitionRequest() is called later
+    // to avoid triggering a DCHECK.
+    if (active_tree_->HasViewTransitionRequests()) {
+      active_tree_->set_needs_update_draw_properties();
+    }
   }
 
   PopulateMetadataContentColorUsage(frame, &metadata);
@@ -3116,6 +3129,19 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
       CurrentBeginFrameArgs().frame_time;
   metadata.frame_interval_inputs.has_input =
       frame_rate_estimator_.input_priority_mode();
+  has_non_fling_input_since_last_frame_ = false;
+
+  if (frame->damage_reasons.Has(DamageReason::kCompositorScroll)) {
+    // Sanity check frame time delta.
+    if (begin_frame_time_delta_.InMicroseconds() < 100 ||
+        begin_frame_time_delta_.InMicroseconds() > 1000000) {
+      metadata.frame_interval_inputs.major_scroll_speed_in_pixels_per_second =
+          0.f;
+    } else {
+      metadata.frame_interval_inputs.major_scroll_speed_in_pixels_per_second =
+          frame_max_scroll_delta_ / begin_frame_time_delta_.InSecondsF();
+    }
+  }
 
   if (!frame->video_layer_preferred_intervals.empty() &&
       frame->damage_reasons.Has(DamageReason::kVideoLayer)) {
@@ -3428,6 +3454,15 @@ bool LayerTreeHostImpl::WillBeginImplFrame(const viz::BeginFrameArgs& args) {
                                       input_delegate_->IsCurrentlyScrolling() &&
                                       !input_delegate_->HasQueuedInput());
   }
+
+  frame_max_scroll_delta_ = 0.f;
+  if (current_begin_frame_tracker_.HasLast()) {
+    begin_frame_time_delta_ =
+        args.frame_time - current_begin_frame_tracker_.Last().frame_time;
+  } else {
+    begin_frame_time_delta_ = base::TimeDelta();
+  }
+
   impl_thread_phase_ = ImplThreadPhase::INSIDE_IMPL_FRAME;
   current_begin_frame_tracker_.Start(args);
   frame_trackers_.NotifyBeginImplFrame(args);
@@ -4192,7 +4227,9 @@ LayerTreeHostImpl::CreateRasterBufferProvider() {
 
   if (!compositor_context_provider) {
     return std::make_unique<ZeroCopyRasterBufferProvider>(
-        layer_tree_frame_sink_->shared_image_interface(), raster_caps_);
+        layer_tree_frame_sink_->shared_image_interface(),
+        raster_caps_.tile_format,
+        /*is_software=*/true);
   }
 
   const gpu::Capabilities& caps =
@@ -4221,7 +4258,9 @@ LayerTreeHostImpl::CreateRasterBufferProvider() {
 
   if (use_zero_copy) {
     return std::make_unique<ZeroCopyRasterBufferProvider>(
-        compositor_context_provider, raster_caps_);
+        compositor_context_provider->SharedImageInterface(),
+        raster_caps_.tile_format,
+        /*is_software=*/false);
   }
 
   const int max_copy_texture_chromium_size =
@@ -4229,7 +4268,8 @@ LayerTreeHostImpl::CreateRasterBufferProvider() {
   return std::make_unique<OneCopyRasterBufferProvider>(
       GetTaskRunner(), compositor_context_provider, worker_context_provider,
       max_copy_texture_chromium_size, settings_.use_partial_raster,
-      settings_.max_staging_buffer_usage_in_bytes, raster_caps_);
+      settings_.max_staging_buffer_usage_in_bytes, raster_caps_.tile_format,
+      raster_caps_.tile_overlay_candidate);
 }
 
 void LayerTreeHostImpl::SetLayerTreeMutator(
@@ -4646,7 +4686,12 @@ void LayerTreeHostImpl::WillScrollContent(ElementId element_id) {
   }
 }
 
-void LayerTreeHostImpl::DidScrollContent(ElementId element_id, bool animated) {
+void LayerTreeHostImpl::DidScrollContent(ElementId element_id,
+                                         bool animated,
+                                         const gfx::Vector2dF& scroll_delta) {
+  scroll_accumulated_this_frame_ += scroll_delta;
+  frame_max_scroll_delta_ =
+      std::max(std::abs(scroll_delta.x()), std::abs(scroll_delta.y()));
   if (settings().scrollbar_flash_after_any_scroll_update) {
     FlashAllScrollbars(true);
   } else {

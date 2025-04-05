@@ -106,7 +106,7 @@ PasswordAddUsernameView::PasswordAddUsernameView(
       .SetDefault(
           views::kMarginsKey,
           gfx::Insets::VH(ChromeLayoutProvider::Get()->GetDistanceMetric(
-                              DISTANCE_CONTROL_LIST_VERTICAL),
+                              views::DISTANCE_CONTROL_LIST_VERTICAL),
                           0));
 
   std::unique_ptr<views::Label> body_text = CreateBodyText(margins().width());

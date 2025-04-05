@@ -12,6 +12,8 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/device_signals/core/common/common_types.h"
+#include "components/enterprise/connectors/core/common.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "components/device_signals/core/common/win/win_types.h"
@@ -231,6 +233,28 @@ struct OsSignalsResponse : BaseSignalResponse {
   std::optional<std::string> windows_user_domain = std::nullopt;
 };
 
+struct ProfileSignalsResponse : BaseSignalResponse {
+  ProfileSignalsResponse();
+
+  ProfileSignalsResponse(const ProfileSignalsResponse&);
+  ProfileSignalsResponse& operator=(const ProfileSignalsResponse&);
+
+  bool operator==(const ProfileSignalsResponse&) const;
+
+  ~ProfileSignalsResponse() override;
+
+  bool built_in_dns_client_enabled;
+  bool chrome_remote_desktop_app_blocked;
+  std::optional<safe_browsing::PasswordProtectionTrigger>
+      password_protection_warning_trigger = std::nullopt;
+  std::optional<std::string> profile_enrollment_domain = std::nullopt;
+  safe_browsing::SafeBrowsingState safe_browsing_protection_level;
+  bool site_isolation_enabled;
+
+  // Enterprise cloud content analysis exclusive
+  enterprise_connectors::EnterpriseRealTimeUrlCheckMode realtime_url_check_mode;
+};
+
 struct FileSystemInfoResponse : BaseSignalResponse {
   FileSystemInfoResponse();
 
@@ -308,6 +332,7 @@ struct SignalsAggregationResponse {
 #endif  // BUILDFLAG(IS_WIN)
   std::optional<SettingsResponse> settings_response = std::nullopt;
   std::optional<OsSignalsResponse> os_signals_response = std::nullopt;
+  std::optional<ProfileSignalsResponse> profile_signals_response = std::nullopt;
 
   std::optional<FileSystemInfoResponse> file_system_info_response =
       std::nullopt;

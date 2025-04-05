@@ -56,10 +56,10 @@ export class ViewerThumbnailBarElement extends CrLitElement {
     };
   }
 
-  activePage: number = 0;
-  clockwiseRotations: number = 0;
-  docLength: number = 0;
-  protected isPluginActive_: boolean = false;
+  accessor activePage: number = 0;
+  accessor clockwiseRotations: number = 0;
+  accessor docLength: number = 0;
+  protected accessor isPluginActive_: boolean = false;
   private intersectionObserver_: IntersectionObserver|null = null;
   private pluginController_: PluginController = PluginController.getInstance();
   private tracker_: EventTracker = new EventTracker();

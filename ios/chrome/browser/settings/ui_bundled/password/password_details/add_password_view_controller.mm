@@ -9,6 +9,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/password_manager/core/browser/generation/password_generator.h"
 #import "components/password_manager/core/browser/password_manager_metrics_util.h"
 #import "components/password_manager/core/browser/password_requirements_service.h"
 #import "components/password_manager/core/common/password_manager_constants.h"
@@ -227,6 +228,10 @@ const int kMinNoteCharAmountForWarning = 901;
 
 - (BOOL)showCancelDuringEditing {
   return YES;
+}
+
+- (void)updatePasswordTextFieldValue:(NSString*)textFieldValue {
+  [_passwordTextItem updateTextFieldValue:textFieldValue];
 }
 
 #pragma mark - Items
@@ -690,9 +695,14 @@ const int kMinNoteCharAmountForWarning = 901;
                                   password:_passwordTextItem.textFieldValue
                                       note:_noteTextItem.text];
 }
+
+// Called when the user taps the Suggest Strong Password button.
 - (void)didTapSuggestStrongPassword:(UIButton*)sender {
   _passwordTextItem.textFieldSecureTextEntry = NO;
-  [_passwordTextItem updateTextFieldValue:[self.delegate generatePassword]];
+  __weak __typeof(self) weakSelf = self;
+  [self.delegate requestGeneratedPasswordWithCompletion:^(NSString* password) {
+    [weakSelf updatePasswordTextFieldValue:password];
+  }];
 }
 
 #pragma mark - SettingsRootTableViewController

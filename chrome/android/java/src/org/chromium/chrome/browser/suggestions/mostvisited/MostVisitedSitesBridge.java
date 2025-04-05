@@ -66,10 +66,9 @@ public class MostVisitedSitesBridge implements MostVisitedSites {
     }
 
     @Override
-    public boolean queryCustomLink(GURL keyUrl) {
+    public boolean hasCustomLink(GURL keyUrl) {
         if (mNativeMostVisitedSitesBridge == 0) return false;
-        return MostVisitedSitesBridgeJni.get()
-                .queryCustomLink(mNativeMostVisitedSitesBridge, keyUrl);
+        return MostVisitedSitesBridgeJni.get().hasCustomLink(mNativeMostVisitedSitesBridge, keyUrl);
     }
 
     // MostVisitedSites implementation.
@@ -204,7 +203,7 @@ public class MostVisitedSitesBridge implements MostVisitedSites {
 
         boolean deleteCustomLink(long nativeMostVisitedSitesBridge, @JniType("GURL") GURL keyUrl);
 
-        boolean queryCustomLink(long nativeMostVisitedSitesBridge, @JniType("GURL") GURL keyUrl);
+        boolean hasCustomLink(long nativeMostVisitedSitesBridge, @JniType("GURL") GURL keyUrl);
 
         void destroy(long nativeMostVisitedSitesBridge, MostVisitedSitesBridge caller);
 

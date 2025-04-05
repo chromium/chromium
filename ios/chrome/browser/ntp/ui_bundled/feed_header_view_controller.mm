@@ -8,7 +8,6 @@
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_recorder.h"
 #import "ios/chrome/browser/ntp/ui_bundled/discover_feed_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/feed_control_delegate.h"
-#import "ios/chrome/browser/ntp/ui_bundled/feed_menu_commands.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
@@ -51,10 +50,6 @@ const CGFloat kTopVerticalPadding = 15;
 // The size of feed symbol images.
 NSInteger kFeedSymbolPointSize = 17;
 
-// The distance between the custom search engine label and the management
-// button, if both are present.
-const CGFloat kCustomSearchEngineLabelTrailingMargin = 9;
-
 }  // namespace
 
 @interface FeedHeaderViewController ()
@@ -64,10 +59,6 @@ const CGFloat kCustomSearchEngineLabelTrailingMargin = 9;
 
 // Title label element for the feed.
 @property(nonatomic, strong) UILabel* titleLabel;
-
-// Button for opening top-level feed management menu.
-// Redefined to not be readonly.
-@property(nonatomic, strong) UIButton* managementButton;
 
 // Button for sorting feed content. Only used for Following feed.
 @property(nonatomic, strong) UIButton* sortButton;
@@ -91,13 +82,7 @@ const CGFloat kCustomSearchEngineLabelTrailingMargin = 9;
 @implementation FeedHeaderViewController
 
 - (instancetype)init {
-  self = [super initWithNibName:nil bundle:nil];
-  if (self) {
-    // The menu button is created early so that it can be assigned a tap action
-    // before the view loads.
-    _managementButton = [[UIButton alloc] init];
-  }
-  return self;
+  return [super initWithNibName:nil bundle:nil];
 }
 
 - (void)viewDidLoad {
@@ -115,9 +100,6 @@ const CGFloat kCustomSearchEngineLabelTrailingMargin = 9;
   self.view.translatesAutoresizingMaskIntoConstraints = NO;
   self.container.translatesAutoresizingMaskIntoConstraints = NO;
 
-  if (!IsHomeCustomizationEnabled()) {
-    [self configureManagementButton:self.managementButton];
-  }
   [self configureHeaderViews];
 
   [self.view addSubview:self.container];
@@ -193,9 +175,6 @@ const CGFloat kCustomSearchEngineLabelTrailingMargin = 9;
 }
 
 - (void)updateForFeedVisibilityChanged {
-  // When feed visibility changes, the menu content is recreated.
-  [self.feedMenuHandler configureManagementMenu:self.managementButton];
-
   if (![self.feedControlDelegate isFollowingFeedAvailable]) {
     [self.titleLabel setText:[self feedHeaderTitleText]];
     [self.titleLabel setNeedsDisplay];
@@ -216,18 +195,6 @@ const CGFloat kCustomSearchEngineLabelTrailingMargin = 9;
 - (void)updateForFollowingFeedVisibilityChanged {
   [self resetView];
   [self.titleLabel removeFromSuperview];
-
-  // The management button is different for the Following feed header, so it's
-  // recreated.
-  if (self.managementButton) {
-    [self.managementButton removeFromSuperview];
-    self.managementButton = nil;
-  }
-  if (!IsHomeCustomizationEnabled()) {
-    self.managementButton = [[UIButton alloc] init];
-    [self configureManagementButton:self.managementButton];
-    [self.feedMenuHandler configureManagementMenu:self.managementButton];
-  }
 
   [self configureHeaderViews];
   [self applyHeaderConstraints];
@@ -267,9 +234,6 @@ const CGFloat kCustomSearchEngineLabelTrailingMargin = 9;
                  [self.NTPDelegate isGoogleDefaultSearchEngine])) {
     self.titleLabel = [self createTitleLabel];
     [self.container addSubview:self.titleLabel];
-  }
-  if (!IsHomeCustomizationEnabled()) {
-    [self.feedMenuHandler configureManagementMenu:self.managementButton];
   }
   if (![self.NTPDelegate isGoogleDefaultSearchEngine]) {
     [self addCustomSearchEngineView];
@@ -311,33 +275,6 @@ const CGFloat kCustomSearchEngineLabelTrailingMargin = 9;
   }
 
   return [UIMenu menuWithTitle:@"" children:sortActions];
-}
-
-// Configures the feed header's menu button.
-- (void)configureManagementButton:(UIButton*)managementButton {
-  UIButtonConfiguration* buttonConfiguration =
-      [UIButtonConfiguration plainButtonConfiguration];
-  buttonConfiguration.image =
-      DefaultSymbolTemplateWithPointSize(kMenuSymbol, kFeedSymbolPointSize);
-  if (![self.feedControlDelegate isFollowingFeedAvailable]) {
-    buttonConfiguration.baseForegroundColor =
-        [UIColor colorNamed:kGrey600Color];
-  }
-
-  managementButton.translatesAutoresizingMaskIntoConstraints = NO;
-  managementButton.showsMenuAsPrimaryAction = YES;
-  [managementButton addTarget:self.feedMenuHandler
-                       action:@selector(configureManagementMenu:)
-             forControlEvents:UIControlEventTouchDown];
-
-  managementButton.accessibilityIdentifier =
-      kNTPFeedHeaderManagementButtonIdentifier;
-  managementButton.accessibilityLabel =
-      l10n_util::GetNSString(IDS_IOS_DISCOVER_FEED_MENU_ACCESSIBILITY_LABEL);
-  managementButton.clipsToBounds = YES;
-
-  [self.container addSubview:managementButton];
-  managementButton.configuration = buttonConfiguration;
 }
 
 // Configures and returns the feed header's sorting button.
@@ -481,9 +418,6 @@ const CGFloat kCustomSearchEngineLabelTrailingMargin = 9;
   self.feedHeaderConstraints = [[NSMutableArray alloc] init];
 
   [self anchorContainer];
-  if (!IsHomeCustomizationEnabled()) {
-    [self anchorManagementButton];
-  }
   if ([self.feedControlDelegate isFollowingFeedAvailable]) {
     [self anchorSegmentedControlAndSortButton];
   } else {
@@ -518,28 +452,6 @@ const CGFloat kCustomSearchEngineLabelTrailingMargin = 9;
   ]];
 }
 
-// Anchor management button.
-- (void)anchorManagementButton {
-  CHECK(!IsHomeCustomizationEnabled());
-  NSLayoutConstraint* verticalConstraint;
-  if ([self.feedControlDelegate isFollowingFeedAvailable]) {
-    verticalConstraint = [self.managementButton.centerYAnchor
-        constraintEqualToAnchor:self.container.centerYAnchor];
-  } else {
-    verticalConstraint = [self.managementButton.bottomAnchor
-        constraintEqualToAnchor:self.container.bottomAnchor];
-  }
-  [self.feedHeaderConstraints addObjectsFromArray:@[
-    verticalConstraint,
-    [self.managementButton.trailingAnchor
-        constraintEqualToAnchor:self.container.trailingAnchor
-                       constant:-kButtonHorizontalMargin],
-    // Set menu button size.
-    [self.managementButton.heightAnchor constraintEqualToConstant:kButtonSize],
-    [self.managementButton.widthAnchor constraintEqualToConstant:kButtonSize],
-  ]];
-}
-
 // Anchors the segmented control.
 - (void)anchorSegmentedControl {
   // Anchor segmented control.
@@ -552,14 +464,6 @@ const CGFloat kCustomSearchEngineLabelTrailingMargin = 9;
         constraintEqualToAnchor:self.sortButton.trailingAnchor
                        constant:kButtonHorizontalMargin],
   ]];
-
-  if (!IsHomeCustomizationEnabled()) {
-    [self.feedHeaderConstraints addObjectsFromArray:@[
-      [self.segmentedControl.trailingAnchor
-          constraintLessThanOrEqualToAnchor:self.managementButton.leadingAnchor
-                                   constant:-kButtonHorizontalMargin],
-    ]];
-  }
 }
 
 // Anchors feed header elements that should be shown when following feed is
@@ -600,15 +504,12 @@ const CGFloat kCustomSearchEngineLabelTrailingMargin = 9;
           [self.NTPDelegate isGoogleDefaultSearchEngine])) {
     return;
   }
-  NSLayoutAnchor* trailingAnchor = IsHomeCustomizationEnabled()
-                                       ? self.container.trailingAnchor
-                                       : self.managementButton.leadingAnchor;
   [self.feedHeaderConstraints addObjectsFromArray:@[
     [self.titleLabel.leadingAnchor
         constraintEqualToAnchor:self.container.leadingAnchor
                        constant:kTitleHorizontalMargin],
     [self.titleLabel.trailingAnchor
-        constraintLessThanOrEqualToAnchor:trailingAnchor],
+        constraintLessThanOrEqualToAnchor:self.container.trailingAnchor],
     [self.titleLabel.bottomAnchor
         constraintEqualToAnchor:self.container.bottomAnchor]
   ]];
@@ -632,18 +533,12 @@ const CGFloat kCustomSearchEngineLabelTrailingMargin = 9;
           constraintEqualToAnchor:self.container.topAnchor],
     ]];
   } else {
-    NSLayoutAnchor* trailingAnchor = IsHomeCustomizationEnabled()
-                                         ? self.container.trailingAnchor
-                                         : self.managementButton.leadingAnchor;
-    CGFloat trailingConstant = IsHomeCustomizationEnabled()
-                                   ? kButtonHorizontalMargin
-                                   : kCustomSearchEngineLabelTrailingMargin;
     [self.feedHeaderConstraints addObjectsFromArray:@[
       [self.customSearchEngineView.heightAnchor
           constraintEqualToConstant:kCustomSearchEngineLabelHeight],
       [self.customSearchEngineView.trailingAnchor
-          constraintEqualToAnchor:trailingAnchor
-                         constant:-trailingConstant],
+          constraintEqualToAnchor:self.container.trailingAnchor
+                         constant:-kButtonHorizontalMargin],
       [self.customSearchEngineView.bottomAnchor
           constraintEqualToAnchor:self.container.bottomAnchor]
     ]];

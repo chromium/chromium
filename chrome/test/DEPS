@@ -9,6 +9,7 @@ include_rules = [
   "+chromeos",
   "+components/account_id",
   "+components/account_manager_core",
+  "+components/application_locale_storage",
   "+components/autofill/content",
   "+components/autofill/core",
   "+components/bookmarks/browser",

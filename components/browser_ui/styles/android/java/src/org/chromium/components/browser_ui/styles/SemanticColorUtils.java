@@ -32,6 +32,8 @@ public class SemanticColorUtils {
         return ChromeColors.getSurfaceColor(context, elevationDimen);
     }
 
+    // LINT.IfChange(SemanticColorUtils)
+
     /** Returns the semantic color value that corresponds to default_bg_color. */
     public static @ColorInt int getDefaultBgColor(Context context) {
         return resolve(R.attr.colorSurface, context);
@@ -175,6 +177,13 @@ public class SemanticColorUtils {
         return ContextCompat.getColor(context, R.color.menu_bg_color);
     }
 
+    /** Returns the background color for a CardView matching default_card_bg_color */
+    public static @ColorInt int getCardBackgroundColor(Context context) {
+        return getColorSurfaceContainer(context);
+    }
+
+    // LINT.ThenChange(//components/browser_ui/styles/android/java/res/values/semantic_colors_dynamic.xml)
+
     /** Returns the semantic color values that corresponds to colorPrimaryContainer. */
     public static @ColorInt int getColorPrimaryContainer(Context context) {
         return resolve(R.attr.colorPrimaryContainer, context);
@@ -207,6 +216,11 @@ public class SemanticColorUtils {
     /** Returns the semantic color values that correspond to colorSurfaceContainer. */
     public static @ColorInt int getColorSurfaceContainer(Context context) {
         return resolve(R.attr.colorSurfaceContainer, context);
+    }
+
+    /** Returns the semantic color values that correspond to colorSurfaceContainerHigh. */
+    public static @ColorInt int getColorSurfaceContainerHigh(Context context) {
+        return resolve(R.attr.colorSurfaceContainerHigh, context);
     }
 
     /** Returns the semantic color values that correspond to colorSurfaceContainerHighest. */

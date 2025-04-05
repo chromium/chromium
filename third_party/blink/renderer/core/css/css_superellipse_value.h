@@ -18,6 +18,7 @@ class CSSSuperellipseValue : public CSSValue {
  public:
   explicit CSSSuperellipseValue(const CSSPrimitiveValue& param)
       : CSSValue(kSuperellipseClass), param_(param) {}
+
   String CustomCSSText() const;
 
   bool Equals(const CSSSuperellipseValue& other) const {

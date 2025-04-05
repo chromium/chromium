@@ -103,6 +103,11 @@ class MediaSessionPlayerObserver {
 
   virtual media::MediaContentType GetMediaContentType() const = 0;
 
+  // Called when the auto picture in picture information has changed.
+  virtual void OnAutoPictureInPictureInfoChanged(
+      int player_id,
+      std::string_view auto_picture_in_picture_info) = 0;
+
   // Returns the RenderFrameHost this player observer belongs to. Returns
   // nullptr if unavailable.
   virtual RenderFrameHost* render_frame_host() const = 0;

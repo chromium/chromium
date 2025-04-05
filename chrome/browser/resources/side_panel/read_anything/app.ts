@@ -221,11 +221,11 @@ export class AppElement extends AppElementBase {
 
   private allowAutoScroll_ = true;
   private scrollingOnSelection_ = false;
-  protected hasContent_ = false;
-  protected emptyStateImagePath_?: string;
-  protected emptyStateDarkImagePath_?: string;
-  protected emptyStateHeading_?: string;
-  protected emptyStateSubheading_ = '';
+  protected accessor hasContent_ = false;
+  protected accessor emptyStateImagePath_: string|undefined;
+  protected accessor emptyStateDarkImagePath_: string|undefined;
+  protected accessor emptyStateHeading_: string|undefined;
+  protected accessor emptyStateSubheading_ = '';
 
   private previousHighlights_: HTMLElement[] = [];
   private previousRootId_?: number;
@@ -237,7 +237,7 @@ export class AppElement extends AppElementBase {
   // the play / pause buttons normally. Otherwise, we should disable the
   // Read Aloud controls until the engine has loaded in order to provide
   // visual feedback that a voice is about to be spoken.
-  private speechEngineLoaded_: boolean = true;
+  private accessor speechEngineLoaded_: boolean = true;
 
   // The extension is responsible for installing the Natural voices. We need to
   // keep track of whether the extension is being responsive. If not, the
@@ -250,7 +250,7 @@ export class AppElement extends AppElementBase {
   // when the current distillation finishes, we re-distill immediately. In that
   // case we shouldn't allow playing speech until the next distillation to avoid
   // resetting speech right after starting it.
-  private willDrawAgainSoon_: boolean = false;
+  private accessor willDrawAgainSoon_: boolean = false;
 
   // After the first utterance has been spoken, we should assume that the
   // speech engine has loaded, and we shouldn't adjust the play / pause
@@ -263,11 +263,11 @@ export class AppElement extends AppElementBase {
   // request the install.
   private waitingForNewEngine_ = false;
 
-  protected selectedVoice_: SpeechSynthesisVoice|undefined;
+  protected accessor selectedVoice_: SpeechSynthesisVoice|undefined;
   // The set of languages currently enabled for use by Read Aloud. This
   // includes user-enabled languages and auto-downloaded languages. The former
   // are stored in preferences. The latter are not.
-  enabledLangs: string[] = [];
+  accessor enabledLangs: string[] = [];
 
   // These are languages that don't exist when restoreEnabledLanguagesFromPref()
   // is first called when the engine is getting set up. We need to disable
@@ -280,18 +280,18 @@ export class AppElement extends AppElementBase {
   possiblyDisabledLangs: string[] = [];
 
   // All possible available voices for the current speech engine.
-  protected availableVoices_: SpeechSynthesisVoice[] = [];
+  protected accessor availableVoices_: SpeechSynthesisVoice[] = [];
   // The set of languages found in availableVoices.
   private availableLangs_: string[] = [];
   // If a preview is playing, this is set to the voice the preview is playing.
   // Otherwise, this is undefined.
-  protected previewVoicePlaying_?: SpeechSynthesisVoice;
+  protected accessor previewVoicePlaying_: SpeechSynthesisVoice|undefined;
 
-  protected localeToDisplayName_: {[locale: string]: string} = {};
+  protected accessor localeToDisplayName_: {[locale: string]: string} = {};
 
   // Our local representation of the status of voice pack downloads and
   // availability
-  private voiceStatusLocalState_:
+  private accessor voiceStatusLocalState_:
       {[language: string]: VoiceClientSideStatusCode} = {};
 
   // Cache of responses from LanguagePackManager
@@ -309,7 +309,7 @@ export class AppElement extends AppElementBase {
   private logger_: ReadAnythingLogger = ReadAnythingLogger.getInstance();
   private styleUpdater_: AppStyleUpdater;
   private speech_: SpeechBrowserProxy;
-  protected settingsPrefs_: SettingsPrefs = {
+  protected accessor settingsPrefs_: SettingsPrefs = {
     letterSpacing: 0,
     lineSpacing: 0,
     theme: 0,
@@ -321,7 +321,7 @@ export class AppElement extends AppElementBase {
   // State for speech synthesis paused/play state needs to be tracked explicitly
   // because there are bugs with window.speechSynthesis.paused and
   // window.speechSynthesis.speaking on some platforms.
-  speechPlayingState: SpeechPlayingState = {
+  accessor speechPlayingState: SpeechPlayingState = {
     isSpeechTreeInitialized: false,
     isSpeechActive: false,
     pauseSource: PauseActionSource.DEFAULT,
@@ -330,7 +330,7 @@ export class AppElement extends AppElementBase {
     isSpeechBeingRepositioned: false,
   };
 
-  private imagesEnabled: boolean = false;
+  private accessor imagesEnabled: boolean = false;
 
   wordBoundaryState: WordBoundaryState = {
     mode: WordBoundaryMode.BOUNDARIES_NOT_SUPPORTED,
@@ -344,6 +344,12 @@ export class AppElement extends AppElementBase {
   firstTextNodeSetForReadAloud: number|null = null;
 
   speechSynthesisLanguage: string;
+
+  // With minor page changes, we redistill or redraw sometimes and end up losing
+  // our reading position if read aloud has started. This keeps track of the
+  // last position so we can check if it's still in the new page.
+  private lastReadingId_: number|null = null;
+  private lastReadingOffset_: number|null = null;
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
@@ -724,6 +730,12 @@ export class AppElement extends AppElementBase {
       this.logger_.logSpeechStopSource(
           chrome.readingMode.unexpectedUpdateContentStopSource);
     }
+    const hadSpeechBeenTriggered =
+        this.speechPlayingState.hasSpeechBeenTriggered;
+    const hadWordBoundaries =
+        this.wordBoundaryState.mode === WordBoundaryMode.BOUNDARY_DETECTED;
+    const previousWordBoundaryState = {...this.wordBoundaryState};
+
     this.speech_.cancel();
     this.clearReadAloudState();
     const container = this.$.container;
@@ -769,6 +781,42 @@ export class AppElement extends AppElementBase {
     this.hasContent_ = true;
     container.appendChild(node);
     this.updateImages_();
+
+    // If the previous reading position still exists and we haven't reached the
+    // end of speech, keep that spot.
+    if (hadSpeechBeenTriggered) {
+      this.setPreviousReadingPositionIfExists_(
+          hadWordBoundaries, previousWordBoundaryState);
+    }
+  }
+
+  private setPreviousReadingPositionIfExists_(
+      hadWordBoundaries: boolean,
+      previousWordBoundaryState: WordBoundaryState) {
+    if (this.lastReadingId_ === null || this.lastReadingOffset_ === null) {
+      return;
+    }
+
+    if (this.domNodeToAxNodeIdMap_.keyFrom(this.lastReadingId_)) {
+      this.speechPlayingState = {
+        ...this.speechPlayingState,
+        hasSpeechBeenTriggered: true,
+      };
+      this.movePlaybackToNode_(this.lastReadingId_, this.lastReadingOffset_);
+      // If there were word boundaries before the content was updated and we can
+      // restore the reading position, restore the word boundary state so that
+      // we can restore the specific word we stopped on.
+      if (hadWordBoundaries) {
+        this.wordBoundaryState = {...previousWordBoundaryState};
+      }
+      // Since we're setting the reading position after a content update when
+      // we're paused, redraw the highlight after moving the traversal state to
+      // the right spot above.
+      this.highlightCurrentGranularity(chrome.readingMode.getCurrentText());
+    } else {
+      this.lastReadingId_ = null;
+      this.lastReadingOffset_ = null;
+    }
   }
 
   async onImageDownloaded(nodeId: number) {
@@ -1698,7 +1746,9 @@ export class AppElement extends AppElementBase {
         chrome.readingMode.getCurrentTextEndIndex(nodeId) > offset;
     while (hasCurrentText && !startOfSelectionIsInCurrentText) {
       this.highlightCurrentGranularity(
-          currentTextIds, /*scrollIntoView=*/ false);
+          currentTextIds, /*scrollIntoView=*/ false,
+          /*shouldUpdateSentenceHighlight=*/ true,
+          /*shouldSetLastReadingPos=*/ false);
       chrome.readingMode.movePositionToNextGranularity();
       currentTextIds = chrome.readingMode.getCurrentText();
       hasCurrentText = currentTextIds.length > 0;
@@ -1761,11 +1811,14 @@ export class AppElement extends AppElementBase {
       this.wordBoundaryState.speechUtteranceStartIndex = substringIndex;
       const utteranceTextForWordBoundary =
           utteranceText.substring(substringIndex);
-      // Don't use the word boundary if it's going to cause a TTS engine issue.
-      if (utteranceTextForWordBoundary.trim().length === 0) {
-        this.playText(utteranceText);
+      // If we paused right at the end of the sentence, no need to speak the
+      // ending punctuation.
+      if (isInvalidHighlightForWordHighlighting(
+              utteranceTextForWordBoundary.trim())) {
+        chrome.readingMode.movePositionToNextGranularity();
+        return this.highlightAndPlayMessage(isInterrupted);
       } else {
-        this.playText(utteranceText.substring(substringIndex));
+        this.playText(utteranceTextForWordBoundary);
       }
     } else {
       this.playText(utteranceText);
@@ -1778,7 +1831,13 @@ export class AppElement extends AppElementBase {
   // Highlights or rehighlights the current granularity, sentence or word.
   highlightCurrentGranularity(
       axNodeIds: number[], scrollIntoView: boolean = true,
-      shouldUpdateSentenceHighlight: boolean = true) {
+      shouldUpdateSentenceHighlight: boolean = true,
+      shouldSetLastReadingPos: boolean = true) {
+    if (shouldSetLastReadingPos && axNodeIds.length && axNodeIds[0]) {
+      this.lastReadingId_ = axNodeIds[0];
+      this.lastReadingOffset_ =
+          chrome.readingMode.getCurrentTextStartIndex(this.lastReadingId_);
+    }
     const highlightGranularity = this.getEffectiveHighlightingGranularity_();
     switch (highlightGranularity) {
       case chrome.readingMode.noHighlighting:

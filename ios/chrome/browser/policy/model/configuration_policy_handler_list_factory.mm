@@ -164,6 +164,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { policy::key::kProfileSeparationDataMigrationSettings,
     prefs::kProfileSeparationDataMigrationSettings,
     base::Value::Type::INTEGER },
+  { policy::key::kProvisionalNotificationsAllowed,
+    prefs::kProvisionalNotificationsAllowedByPolicy,
+    base::Value::Type::BOOLEAN },
 };
 // clang-format on
 

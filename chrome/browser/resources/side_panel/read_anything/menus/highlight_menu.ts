@@ -37,7 +37,7 @@ export class HighlightMenuElement extends HighlightMenuElementBase {
     return {settingsPrefs: {type: Object}};
   }
 
-  settingsPrefs: SettingsPrefs = {
+  accessor settingsPrefs: SettingsPrefs = {
     letterSpacing: 0,
     lineSpacing: 0,
     theme: 0,

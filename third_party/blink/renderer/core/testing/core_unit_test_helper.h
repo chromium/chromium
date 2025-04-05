@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_CORE_UNIT_TEST_HELPER_H_
 
 #include <gtest/gtest.h>
+
 #include <memory>
 
 #include "cc/layers/layer.h"
@@ -22,6 +23,7 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/platform/testing/geometry_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/layer_tree_host_embedder.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -196,11 +198,6 @@ constexpr LogicalRect::LogicalRect(int inline_offset,
                                    int inline_size,
                                    int block_size)
     : offset(inline_offset, block_offset), size(inline_size, block_size) {}
-template <typename ValueType>
-constexpr PhysicalFixedOffset<ValueType>::PhysicalFixedOffset(int left, int top)
-    : left(left), top(top) {}
-constexpr PhysicalSize::PhysicalSize(int width, int height)
-    : width(width), height(height) {}
 constexpr PhysicalRect::PhysicalRect(int left, int top, int width, int height)
     : offset(left, top), size(width, height) {}
 
