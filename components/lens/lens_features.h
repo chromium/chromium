@@ -73,6 +73,10 @@ BASE_DECLARE_FEATURE(kLensOverlayUploadChunking);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensSearchSidePanelNewFeedback);
 
+// Enables recontextualizing on each query for the Lens overlay.
+COMPONENT_EXPORT(LENS_FEATURES)
+BASE_DECLARE_FEATURE(kLensOverlayRecontextualizeOnQuery);
+
 // The base URL for Lens.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern const base::FeatureParam<std::string> kHomepageURLForLens;
@@ -784,6 +788,10 @@ extern int GetLensOverlayUploadChunkRequestTimeoutMs();
 // Whether to the new feedback entry point in the side panel.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsLensSearchSidePanelNewFeedbackEnabled();
+
+// Whether to recontextualize on each query.
+COMPONENT_EXPORT(LENS_FEATURES)
+bool ShouldLensOverlayRecontextualizeOnQuery();
 
 }  // namespace lens::features
 #endif  // COMPONENTS_LENS_LENS_FEATURES_H_

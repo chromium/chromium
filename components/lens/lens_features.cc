@@ -87,6 +87,10 @@ BASE_FEATURE(kLensOverlayUploadChunking,
              "LensOverlayUploadChunking",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kLensOverlayRecontextualizeOnQuery,
+             "LensOverlayRecontextualizeOnQuery",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<int> kLensOverlayMinRamMb{&kLensOverlay, "min_ram_mb",
                                                    /*default=value=*/-1};
 const base::FeatureParam<std::string> kActivityUrl{
@@ -1005,6 +1009,10 @@ int GetLensOverlayUploadChunkRequestTimeoutMs() {
 
 bool IsLensSearchSidePanelNewFeedbackEnabled() {
   return base::FeatureList::IsEnabled(kLensSearchSidePanelNewFeedback);
+}
+
+bool ShouldLensOverlayRecontextualizeOnQuery() {
+  return base::FeatureList::IsEnabled(kLensOverlayRecontextualizeOnQuery);
 }
 
 }  // namespace lens::features
