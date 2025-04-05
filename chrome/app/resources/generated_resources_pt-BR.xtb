@@ -3958,7 +3958,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3748424433435232460">Uma senha para essa conta já está salva no dispositivo</translation>
 <translation id="3748706263662799310">Informar um bug</translation>
 <translation id="3749724428455457489">Saiba mais sobre anúncios sugeridos por sites</translation>
-<translation id="3752115502500640407">Compartilhe uma cópia da sua senha de <ph name="WEBSITE" /></translation>
+<translation id="3752115502500640407">Compartilhe uma cópia da sua senha para <ph name="WEBSITE" /></translation>
 <translation id="3752253558646317685">Peça para a criança levantar o dedo algumas vezes para salvar a impressão digital</translation>
 <translation id="3753033997400164841">Salve uma vez. Use em qualquer lugar</translation>
 <translation id="3753142252662437130">Filtros de cor</translation>
@@ -4684,7 +4684,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="4252828488489674554">Clique com o botão direito do mouse no nome do grupo de guias para editá-lo ou clique para fechar</translation>
 <translation id="4252899949534773101">Bluetooth desativado</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - Conteúdo da guia compartilhado</translation>
-<translation id="4253168017788158739">Nota</translation>
+<translation id="4253168017788158739">Observação</translation>
 <translation id="4253183225471855471">Nenhuma rede encontrada. Insira o chip e reinicie o dispositivo antes de tentar novamente.</translation>
 <translation id="425411422794688815">Algo deu errado. Confira se o smartphone está por perto, desbloqueado e com o Bluetooth e o Wi-Fi ativados.</translation>
 <translation id="4254414375763576535">Ponteiro grande</translation>
@@ -5104,7 +5104,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="4554591392113183336">A extensão externa está na mesma versão ou em uma versão anterior à existente.</translation>
 <translation id="4555769855065597957">Shadow</translation>
 <translation id="4555863373929230635">Para salvar senhas na Conta do Google, faça login e ative a sincronização.</translation>
-<translation id="4556072422434361369"><ph name="SENDER_NAME" /> compartilhou uma senha para <ph name="WEBSITE_NAME" /> com você. Você pode usá-la no formulário de login.</translation>
+<translation id="4556072422434361369"><ph name="SENDER_NAME" /> compartilhou uma senha para <ph name="WEBSITE_NAME" /> com você. Ela pode ser usada no formulário de login.</translation>
 <translation id="4558426062282641716">Permissão de inicialização automática solicitada</translation>
 <translation id="4558542033859106586">Abrindo no app <ph name="TARGET_APP" />…</translation>
 <translation id="4558946868955275132">Apenas apps que têm suporte à seleção de idioma são mostrados aqui</translation>

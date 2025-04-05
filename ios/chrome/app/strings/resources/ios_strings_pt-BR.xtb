@@ -760,7 +760,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="4250432749243022864">{count,plural, =0{Abrir {count} guia}=1{Abrir {count} guia}one{Abrir {count} guia}other{Abrir {count} guias}}</translation>
 <translation id="4250680216510889253">Não</translation>
 <translation id="4251531167342733205">Aproveite ao máximo o navegador que você adora.</translation>
-<translation id="4253168017788158739">Nota</translation>
+<translation id="4253168017788158739">Observação</translation>
 <translation id="4256782883801055595">Licenças de código aberto</translation>
 <translation id="4263576668337963058">Mostrar ações de página disponíveis</translation>
 <translation id="4267586310863245665">{COUNT,plural, =1{Você dispensou {COUNT} aviso}one{Você dispensou {COUNT} aviso}other{Você dispensou {COUNT} avisos}}</translation>

@@ -519,7 +519,7 @@
 
 無効にしない場合は <ph name="TIMEOUT_SECONDS" /> 秒後に内蔵タッチパッドが再度有効になります。</translation>
 <translation id="2782591952652094792">キャプチャ モードを終了</translation>
-<translation id="2785499565474703580">1 台のデバイスが接続されています</translation>
+<translation id="2785499565474703580">1 台のデバイスが接続中</translation>
 <translation id="2791421900609674576">前回中断したところから再開できるように、おすすめが表示されます。おすすめは長押しで削除できます。</translation>
 <translation id="2792498699870441125">Alt+ 検索</translation>
 <translation id="2798702144670138229">タブレット モードがオンになっています。ゲーム ダッシュボードは使用できません。</translation>
@@ -2099,7 +2099,7 @@
 <translation id="7902625623987030061">指紋認証センサーをタッチ</translation>
 <translation id="7904094684485781019">このアカウントの管理者がマルチログインを許可していません。</translation>
 <translation id="7911118814695487383">Linux</translation>
-<translation id="7917760201509801422"><ph name="DEVICECOUNT" /> 台のデバイスが接続されています</translation>
+<translation id="7917760201509801422"><ph name="DEVICECOUNT" /> 台のデバイスが接続中</translation>
 <translation id="7921565901396407357">PIN を確認できませんでした。もう一度お試しください。</translation>
 <translation id="7923534281713082605">天気情報</translation>
 <translation id="7926080067315048321">ウェブの Google ToDo リストの全タスクを表示</translation>
