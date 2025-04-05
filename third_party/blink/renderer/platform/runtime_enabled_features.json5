@@ -4240,7 +4240,7 @@
     },
     {
       name: "SpeculationRulesTag",
-      status: "experimental",
+      status: "stable",
     },
     {
       // Enables to run prerendering for new tabs (e.g., target="_blank").
