@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -38,6 +39,11 @@ public class SuggestionEventObserver {
             new TabModelObserver() {
                 @Override
                 public void didSelectTab(Tab tab, int type, int lastId) {
+                    if (type == TabSelectionType.FROM_CLOSE
+                            || type == TabSelectionType.FROM_EXIT
+                            || type == TabSelectionType.FROM_UNDO) {
+                        return;
+                    }
                     mGroupSuggestionsService.didSelectTab(tab.getId(), type, lastId);
                 }
 

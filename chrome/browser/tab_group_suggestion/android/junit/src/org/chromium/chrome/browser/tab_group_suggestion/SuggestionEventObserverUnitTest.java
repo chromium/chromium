@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -87,9 +88,19 @@ public class SuggestionEventObserverUnitTest {
 
     @Test
     public void testDidSelectTab() {
-        mTabModelObserverCaptor.getValue().didSelectTab(mTab, 0, 0);
+        mTabModelObserverCaptor.getValue().didSelectTab(mTab, TabSelectionType.FROM_USER, 0);
 
-        verify(mGroupSuggestionsService).didSelectTab(eq(TAB_ID), eq(0), eq(0));
+        verify(mGroupSuggestionsService)
+                .didSelectTab(eq(TAB_ID), eq(TabSelectionType.FROM_USER), eq(0));
+    }
+
+    @Test
+    public void testDidSelectTab_IgnoreTypes() {
+        mTabModelObserverCaptor.getValue().didSelectTab(mTab, TabSelectionType.FROM_CLOSE, 0);
+        mTabModelObserverCaptor.getValue().didSelectTab(mTab, TabSelectionType.FROM_EXIT, 0);
+        mTabModelObserverCaptor.getValue().didSelectTab(mTab, TabSelectionType.FROM_UNDO, 0);
+
+        verify(mGroupSuggestionsService, never()).didSelectTab(anyInt(), anyInt(), anyInt());
     }
 
     @Test
