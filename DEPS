@@ -396,7 +396,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': '4b3837462a8578f948853e86a730b253ec56a264',
+  'devtools_frontend_revision': 'b3a0ca161c3ba054d40b29547204d48e1262df9f',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
@@ -420,7 +420,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
-  'dawn_revision': '9635980f2ad6d9500ab2f26e4b7fea2db2898a30',
+  'dawn_revision': '6e1cf2fdd6821466767ac7702ad1c926364da494',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
@@ -1501,7 +1501,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    '4ba69d176ba14466a18ed3e881815aa1b723b9fa',
+    '9e76f1dbc1fc0f9b91e59409e0ee95719b20ebf5',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
@@ -1660,7 +1660,7 @@ deps = {
     'packages': [
       {
           'package': 'chromium/third_party/androidx',
-          'version': 'brlEP-hD-L2HXCYuK64xAWpsFLigTrCr63IEUJFguisC',
+          'version': '0JMvR6y69sxoozYf2KYxRocmA_cdAm8ncbJmReEWO7MC',
       },
     ],
     'condition': 'checkout_android and non_git_source',
@@ -2541,7 +2541,7 @@ deps = {
     Var('pdfium_git') + '/pdfium.git' + '@' +  Var('pdfium_revision'),
 
   'src/third_party/perfetto':
-    Var('chromium_git') + '/external/github.com/google/perfetto.git' + '@' + '256692b4376d5454088d417f51a0b97b1b4d9065',
+    Var('chromium_git') + '/external/github.com/google/perfetto.git' + '@' + '4df384ab8fd5cb376e392f6e245593f9ea221f2f',
 
   'src/base/tracing/test/data': {
     'bucket': 'perfetto',
@@ -2909,7 +2909,7 @@ deps = {
     Var('chromium_git') + '/webpagereplay.git' + '@' + Var('webpagereplay_revision'),
 
   'src/third_party/webrtc':
-    Var('webrtc_git') + '/src.git' + '@' + 'bddd95b63fea8f1baa5461ec4dff23ba1ebac7f9',
+    Var('webrtc_git') + '/src.git' + '@' + '6b4c78d4781c904a2e3fc88a98ef8548c553ba03',
 
   # Wuffs' canonical repository is at github.com/google/wuffs, but we use
   # Skia's mirror of Wuffs, the same as in upstream Skia's DEPS file.
@@ -3042,7 +3042,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/help_app/app',
-        'version': '4eaiwqncpeRxKCHtV1CFaSR5CTFvo9uJWjTSXM2dsUkC',
+        'version': 'XP259BBAiQ4xvBDu4Vn9kY57VtNjFrtPjNGha99HtBMC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
@@ -3053,7 +3053,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/media_app/app',
-        'version': 'xrI54Nb6AILqiwdbcVexWkmiEcURwGoevY7_OSABFE0C',
+        'version': 'tYUDS08XNqGPs10VSaG4S0oyekAPAp2gUhOH6IQRRbUC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
@@ -4701,7 +4701,7 @@ deps = {
 
   'src/ios_internal':  {
       'url': Var('chrome_git') + '/chrome/ios_internal.git' + '@' +
-        'd8f7cf9e86f0f877dca811c5c1b9f080a5e70c9e',
+        'a4cc1fe198a7d51c4c4355a9829355b6f3f9e48d',
       'condition': 'checkout_ios and checkout_src_internal',
   },
 

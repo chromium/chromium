@@ -746,7 +746,7 @@ BASE_FEATURE(kAutofillInferLabelFromDefaultSelectText,
 COMPONENT_EXPORT(AUTOFILL)
 BASE_FEATURE(kAutofillVoteWhenInactive,
              "AutofillVoteWhenInactive",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, a HaTS survey is shown after the successful first time creation
 // flow.

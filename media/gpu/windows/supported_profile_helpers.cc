@@ -171,37 +171,66 @@ SupportedResolutionRange GetResolutionsForGUID(
 }  // namespace
 
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-GUID GetHEVCRangeExtensionPrivateGUID(uint8_t bitdepth,
-                                      VideoChromaSampling chroma_sampling) {
-  if (bitdepth == 8) {
-    if (chroma_sampling == VideoChromaSampling::k420) {
-      return DXVA_ModeHEVC_VLD_Main_Intel;
-    } else if (chroma_sampling == VideoChromaSampling::k422) {
-      // For D3D11/D3D12, 8b/10b-422 HEVC will share 10b-422 GUID no matter
-      // it is defined by Intel or DXVA spec(as part of Windows SDK).
-      return DXVA_ModeHEVC_VLD_Main422_10_Intel;
-    } else if (chroma_sampling == VideoChromaSampling::k444) {
-      return DXVA_ModeHEVC_VLD_Main444_Intel;
-    }
+const struct HEVCProfileGUID {
+  uint8_t bitdepth;
+  VideoChromaSampling chroma_sampling;
+  GUID private_guid;
+  GUID public_guid;
+} kHEVCProfileGUIDs[] = {
+    // Use main profile GUID for 8b-420 range extension. Ideally we should use
+    // DXVA_ModeHEVC_VLD_Main10_Ext, but not all devices support it.
+    {8, VideoChromaSampling::k420, DXVA_ModeHEVC_VLD_Main_Intel,
+     DXVA_ModeHEVC_VLD_Main},
+    // 8b-422 uses same device GUID as 10b-422.
+    {8, VideoChromaSampling::k422, DXVA_ModeHEVC_VLD_Main422_10_Intel,
+     DXVA_ModeHEVC_VLD_Main10_422},
+    {8, VideoChromaSampling::k444, DXVA_ModeHEVC_VLD_Main444_Intel,
+     DXVA_ModeHEVC_VLD_Main_444},
+    // Use main10 profile GUID for 10b-420 range extension. Ideally we should
+    // use DXVA_ModeHEVC_VLD_Main10_Ext, but not all devices support it.
+    {10, VideoChromaSampling::k420, DXVA_ModeHEVC_VLD_Main10_Intel,
+     DXVA_ModeHEVC_VLD_Main10},
+    {10, VideoChromaSampling::k422, DXVA_ModeHEVC_VLD_Main422_10_Intel,
+     DXVA_ModeHEVC_VLD_Main10_422},
+    {10, VideoChromaSampling::k444, DXVA_ModeHEVC_VLD_Main444_10_Intel,
+     DXVA_ModeHEVC_VLD_Main10_444},
+    {12, VideoChromaSampling::k420, DXVA_ModeHEVC_VLD_Main12_Intel,
+     DXVA_ModeHEVC_VLD_Main12},
+    {12, VideoChromaSampling::k422, DXVA_ModeHEVC_VLD_Main422_12_Intel,
+     DXVA_ModeHEVC_VLD_Main12_422},
+    {12, VideoChromaSampling::k444, DXVA_ModeHEVC_VLD_Main444_12_Intel,
+     DXVA_ModeHEVC_VLD_Main12_444},
+};
 
-  } else if (bitdepth == 10) {
-    if (chroma_sampling == VideoChromaSampling::k420) {
-      return DXVA_ModeHEVC_VLD_Main10_Intel;
-    } else if (chroma_sampling == VideoChromaSampling::k422) {
-      return DXVA_ModeHEVC_VLD_Main422_10_Intel;
-    } else if (chroma_sampling == VideoChromaSampling::k444) {
-      return DXVA_ModeHEVC_VLD_Main444_10_Intel;
-    }
-  } else if (bitdepth == 12) {
-    if (chroma_sampling == VideoChromaSampling::k420) {
-      return DXVA_ModeHEVC_VLD_Main12_Intel;
-    } else if (chroma_sampling == VideoChromaSampling::k422) {
-      return DXVA_ModeHEVC_VLD_Main422_12_Intel;
-    } else if (chroma_sampling == VideoChromaSampling::k444) {
-      return DXVA_ModeHEVC_VLD_Main444_12_Intel;
+GUID GetHEVCRangeExtensionGUID(uint8_t bitdepth,
+                               VideoChromaSampling chroma_sampling,
+                               bool use_dxva_device_for_hevc_rext) {
+  for (const auto& entry : kHEVCProfileGUIDs) {
+    if (entry.bitdepth == bitdepth &&
+        entry.chroma_sampling == chroma_sampling) {
+      return use_dxva_device_for_hevc_rext ? entry.public_guid
+                                           : entry.private_guid;
     }
   }
   return {};
+}
+
+bool SupportsHEVCRangeExtensionDXVAProfile(ComD3D11Device device) {
+  ComD3D11VideoDevice video_device;
+  if (device && SUCCEEDED(device.As(&video_device))) {
+    for (UINT i = video_device->GetVideoDecoderProfileCount(); i--;) {
+      GUID profile = {};
+      if (SUCCEEDED(video_device->GetVideoDecoderProfile(i, &profile))) {
+        if (profile == DXVA_ModeHEVC_VLD_Main10_422 ||
+            profile == DXVA_ModeHEVC_VLD_Main10_444 ||
+            profile == DXVA_ModeHEVC_VLD_Main12_422 ||
+            profile == DXVA_ModeHEVC_VLD_Main12_444) {
+          return true;
+        }
+      }
+    }
+  }
+  return false;
 }
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 
@@ -352,14 +381,21 @@ SupportedResolutionRangeMap GetSupportedD3DVideoDecoderResolutions(
             supported_resolution;
         continue;
       }
-      // For range extensions only test main10_422 with P010, and apply
-      // the same resolution range to main420 & main10_YUV420. Ideally we
-      // should be also testing against NV12 & Y210 for YUV422, and Y410 for
-      // YUV444 8/10/12 bit.
-      if (profile_id == DXVA_ModeHEVC_VLD_Main422_10_Intel) {
+      // For range extensions only test main10_444 with Y410, and apply
+      // the same resolution range to other formats to reduce profile
+      // enumeration time for decoders. The selection of main10 444 is due to
+      // the fact that IHV drivers' support on this is more common than other
+      // range extension formats.
+      // Ideally we should be also testing P016 for 12-bit 4:2:0, for example,
+      // to get the precise resolution range of 12-bit 4:2:0. Same for other
+      // range extension formats.
+      if (profile_id == DXVA_ModeHEVC_VLD_Main10_444 ||
+          profile_id == DXVA_ModeHEVC_VLD_Main444_10_Intel) {
+        // Intel private GUID reports the same capability as DXVA GUID, so
+        // it is fine to override supported resolutions here.
         supported_resolutions[HEVCPROFILE_REXT] =
             GetResolutionsForGUID(video_device_wrapper, profile_id,
-                                  kModernResolutions, DXGI_FORMAT_P010);
+                                  kModernResolutions, DXGI_FORMAT_Y410);
         continue;
       }
       if (profile_id == D3D11_DECODER_PROFILE_HEVC_VLD_MAIN10) {
@@ -401,6 +437,23 @@ SupportedResolutionRangeMap GetSupportedD3D12VideoDecoderResolutions(
   }
   return GetSupportedD3DVideoDecoderResolutions(video_device_wrapper.get(),
                                                 workarounds);
+}
+
+UINT GetGPUVendorID(ComDXGIDevice dxgi_device) {
+  if (!dxgi_device) {
+    return 0;
+  }
+  ComDXGIAdapter dxgi_adapter;
+  HRESULT hr = dxgi_device->GetAdapter(&dxgi_adapter);
+  if (FAILED(hr)) {
+    return 0;
+  }
+  DXGI_ADAPTER_DESC desc{};
+  hr = dxgi_adapter->GetDesc(&desc);
+  if (FAILED(hr)) {
+    return 0;
+  }
+  return desc.VendorId;
 }
 
 }  // namespace media

@@ -19,8 +19,6 @@ import android.provider.MediaStore;
 import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.OptIn;
-import androidx.browser.auth.ExperimentalAuthTab;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.TrustedWebUtils;
 import androidx.core.os.BuildCompat;
@@ -264,7 +262,6 @@ public class LaunchIntentDispatcher {
     /**
      * @return Whether the intent is for launching a Custom Tab.
      */
-    @OptIn(markerClass = ExperimentalAuthTab.class)
     public static boolean isCustomTabIntent(Intent intent) {
         if (intent == null) return false;
         Log.w(

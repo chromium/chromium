@@ -14,11 +14,9 @@ import android.os.Build;
 import android.os.SystemClock;
 import android.text.TextUtils;
 
-import androidx.annotation.OptIn;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 import androidx.browser.auth.AuthTabIntent;
-import androidx.browser.auth.ExperimentalAuthTab;
 import androidx.browser.customtabs.CustomTabsService;
 
 import org.chromium.base.CallbackController;
@@ -48,7 +46,6 @@ import java.util.Map;
  * Runs Digital Asset Link verification for AuthTab, returns as Activity result for the matching
  * redirect URL when navigated to it.
  */
-@OptIn(markerClass = ExperimentalAuthTab.class)
 public class AuthTabVerifier implements NativeInitObserver, DestroyObserver {
     private static boolean sDelayVerificationForTesting;
 

@@ -147,7 +147,8 @@ GUID GetD3D12VideoDecodeGUID(VideoCodecProfile profile,
     case HEVCPROFILE_MAIN10:
       return D3D12_VIDEO_DECODE_PROFILE_HEVC_MAIN10;
     case HEVCPROFILE_REXT:
-      return GetHEVCRangeExtensionPrivateGUID(bitdepth, chroma_sampling);
+      return GetHEVCRangeExtensionGUID(bitdepth, chroma_sampling,
+                                       /*use_dxva_device_for_hevc_rext=*/true);
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
     case AV1PROFILE_PROFILE_MAIN:
       return D3D12_VIDEO_DECODE_PROFILE_AV1_PROFILE0;
