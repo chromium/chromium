@@ -109,7 +109,7 @@ class CORE_EXPORT HTMLAnchorElementBase : public HTMLElement,
 
   void SendPings(const KURL& destination_url) const;
 
-  Element* interestTargetElement() override;
+  Element* InterestTargetElement() const override;
 
   void Trace(Visitor*) const override;
 

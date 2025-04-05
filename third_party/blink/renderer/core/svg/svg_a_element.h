@@ -38,7 +38,7 @@ class CORE_EXPORT SVGAElement final : public SVGGraphicsElement,
 
   explicit SVGAElement(Document&);
 
-  Element* interestTargetElement() override;
+  Element* InterestTargetElement() const override;
 
   void Trace(Visitor*) const override;
 

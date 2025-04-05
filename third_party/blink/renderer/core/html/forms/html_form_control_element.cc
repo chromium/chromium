@@ -390,7 +390,7 @@ HTMLFormControlElement::popoverTargetElement() {
   return PopoverTargetElement{.popover = target_popover, .action = action};
 }
 
-Element* HTMLFormControlElement::interestTargetElement() {
+Element* HTMLFormControlElement::InterestTargetElement() const {
   if (!RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
           GetDocument().GetExecutionContext())) {
     return nullptr;

@@ -101,14 +101,15 @@
 #include "third_party/blink/renderer/core/dom/first_letter_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
-#include "third_party/blink/renderer/core/dom/interest_invoker_data.h"
 #include "third_party/blink/renderer/core/dom/interest_invoker_target_data.h"
+#include "third_party/blink/renderer/core/dom/invoker_data.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder.h"
 #include "third_party/blink/renderer/core/dom/mutation_observer_interest_group.h"
 #include "third_party/blink/renderer/core/dom/mutation_record.h"
 #include "third_party/blink/renderer/core/dom/named_node_map.h"
 #include "third_party/blink/renderer/core/dom/node_cloning_data.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
+#include "third_party/blink/renderer/core/dom/popover_data.h"
 #include "third_party/blink/renderer/core/dom/presentation_attribute_style.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/scriptable_document_parser.h"
@@ -1489,17 +1490,12 @@ PopoverData* Element::GetPopoverData() const {
   return nullptr;
 }
 
-void Element::RemoveInterestInvokerData() {
-  if (ElementRareDataVector* data = GetElementRareData()) {
-    data->RemoveInterestInvokerData();
-  }
+InvokerData& Element::EnsureInvokerData() {
+  return EnsureElementRareData().EnsureInvokerData();
 }
-InterestInvokerData& Element::EnsureInterestInvokerData() {
-  return EnsureElementRareData().EnsureInterestInvokerData();
-}
-InterestInvokerData* Element::GetInterestInvokerData() const {
+InvokerData* Element::GetInvokerData() const {
   if (const ElementRareDataVector* data = GetElementRareData()) {
-    return data->GetInterestInvokerData();
+    return data->GetInvokerData();
   }
   return nullptr;
 }
@@ -1516,6 +1512,34 @@ InterestInvokerTargetData* Element::GetInterestInvokerTargetData() const {
     return data->GetInterestInvokerTargetData();
   }
   return nullptr;
+}
+
+// If this element is a triggering element for an *open* popover, in one of
+// several ways, this returns the target popover. These forms of triggering
+// are supported:
+//   <button command=*-popover commandfor=foo>
+//   <button popovertarget=foo>
+//   <button interesttarget=foo>
+//   (JS) popover.showPopover({source: invoker});
+// Note that only one of these mechanisms can be active at a time, and only
+// an active invoker relationship will cause this function to return a popover.
+// E.g. if there is `<button popovertarget=foo>` pointing to popover foo, but
+// foo was opened with `foo.showPopover()` (no invoker specified), then this
+// function will return nullptr.
+HTMLElement* Element::GetOpenPopoverTarget() const {
+  if (!IsFocusable() || !IsInTreeScope()) {
+    return nullptr;
+  }
+  InvokerData* data = GetInvokerData();
+  if (!data) {
+    return nullptr;
+  }
+  HTMLElement* popover = data->GetInvokedPopover();
+  if (!popover || !popover->popoverOpen()) {
+    return nullptr;
+  }
+  CHECK_EQ(popover->GetPopoverData()->invoker(), this);
+  return popover;
 }
 
 bool Element::InterestGained(Element& interest_target) {
@@ -6476,13 +6500,15 @@ void Element::ParseAttribute(const AttributeModificationParams& params) {
         // We are changing the value of the `interesttarget` attribute, which
         // might "point" it at a different target element. So clear the
         // InterestInvokerTargetData from the old target.
-        if (Element* old_target = interestTargetElement()) {
+        if (Element* old_target = InterestTargetElement()) {
           old_target->RemoveInterestInvokerTargetData();
         }
       }
       if (params.new_value.IsNull()) {
         // We are removing the attribute, so remove interest invoker data.
-        RemoveInterestInvokerData();
+        if (auto* invoker_data = GetInvokerData()) {
+          invoker_data->CancelInterestLostTask();
+        }
       }
       // Changing the `interesttarget` attribute could change the state of the
       // `:has-interest` pseudo class, e.g. by pointing to a different target.
@@ -6916,7 +6942,7 @@ void Element::SetFocused(bool now_focused, mojom::blink::FocusType focus_type) {
   // Handle interest invokers for focus gained or lost.
   if (RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
           GetDocument().GetExecutionContext())) {
-    if (interestTargetElement()) {
+    if (InterestTargetElement()) {
       if (now_focused) {
         ScheduleInterestGainedTask();
       } else {
@@ -10572,7 +10598,7 @@ bool Element::GainOrLoseInterest(Element* invoker,
   // may have changed since invoker and target were passed.
   if (!invoker || !target || !invoker->IsInTreeScope() ||
       !invoker->GetDocument().IsActive() ||
-      invoker->interestTargetElement() != target ||
+      invoker->InterestTargetElement() != target ||
       (!interest_gained && target->GetInterestInvoker() != invoker)) {
     return false;
   }
@@ -10593,9 +10619,9 @@ bool Element::GainOrLoseInterest(Element* invoker,
       //     from the old invoker before gaining it via the new one.
       if (existing_invoker == invoker) {
         // Case 1.
-        auto* invoker_data = invoker->GetInterestInvokerData();
-        CHECK(!invoker_data->hasInterestGainedTask());
-        invoker_data->cancelInterestLostTask();
+        auto* invoker_data = invoker->GetInvokerData();
+        CHECK(!invoker_data->HasInterestGainedTask());
+        invoker_data->CancelInterestLostTask();
         return false;
       } else {
         // Case 2.
@@ -10606,7 +10632,7 @@ bool Element::GainOrLoseInterest(Element* invoker,
         // Event handlers might have changed things around, so re-check.
         if (!invoker || !target || !invoker->IsInTreeScope() ||
             !invoker->GetDocument().IsActive() ||
-            invoker->interestTargetElement() != target) {
+            invoker->InterestTargetElement() != target) {
           return false;
         }
       }
@@ -10642,7 +10668,7 @@ bool Element::GainOrLoseInterest(Element* invoker,
 
 void Element::ScheduleInterestGainedTask() {
   // This should be called on an interest invoker only.
-  auto* target = interestTargetElement();
+  auto* target = InterestTargetElement();
   CHECK(target);
   const ComputedStyle* style =
       ComputedStyle::NullifyEnsured(GetComputedStyle());
@@ -10655,11 +10681,11 @@ void Element::ScheduleInterestGainedTask() {
     return;
   }
   CHECK_GE(show_delay_seconds, 0);
-  auto& interest_invoker_data = EnsureInterestInvokerData();
-  interest_invoker_data.cancelInterestGainedTask();
+  auto& invoker_data = EnsureInvokerData();
+  invoker_data.CancelInterestGainedTask();
   // TODO(https://crbug.com/326681249): Perhaps there should be a task runner
   // specific to these events, rather than kMiscPlatformAPI?
-  interest_invoker_data.setInterestGainedTask(PostDelayedCancellableTask(
+  invoker_data.SetInterestGainedTask(PostDelayedCancellableTask(
       *GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI),
       FROM_HERE,
       WTF::BindOnce(
@@ -10672,7 +10698,7 @@ void Element::ScheduleInterestGainedTask() {
 
 void Element::ScheduleInterestLostTask() {
   // This should be called on an interest invoker only.
-  auto* target = interestTargetElement();
+  auto* target = InterestTargetElement();
   CHECK(target);
   const ComputedStyle* style =
       ComputedStyle::NullifyEnsured(GetComputedStyle());
@@ -10685,11 +10711,11 @@ void Element::ScheduleInterestLostTask() {
     return;
   }
   CHECK_GE(hide_delay_seconds, 0);
-  auto& interest_invoker_data = EnsureInterestInvokerData();
-  interest_invoker_data.cancelInterestLostTask();
+  auto& invoker_data = EnsureInvokerData();
+  invoker_data.CancelInterestLostTask();
   // TODO(https://crbug.com/326681249): Perhaps there should be a task runner
   // specific to these events, rather than kMiscPlatformAPI?
-  interest_invoker_data.setInterestLostTask(PostDelayedCancellableTask(
+  invoker_data.SetInterestLostTask(PostDelayedCancellableTask(
       *GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI),
       FROM_HERE,
       WTF::BindOnce(
@@ -10709,7 +10735,7 @@ Element* Element::GetInterestInvoker() const {
   if (!invoker) {
     return nullptr;
   }
-  if (!invoker->interestTargetElement()) {
+  if (!invoker->InterestTargetElement()) {
     // Don't return it if it doesn't still have the `interesttarget` attribute.
     return nullptr;
   }
@@ -10719,7 +10745,7 @@ Element* Element::GetInterestInvoker() const {
 bool Element::HasInterest() {
   CHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
       GetDocument().GetExecutionContext()));
-  auto* target = interestTargetElement();
+  auto* target = InterestTargetElement();
   if (!target) {
     return false;
   }
@@ -10763,22 +10789,22 @@ void Element::SetHovered(bool hovered) {
     //    element chain "losing" hover, up to the common ancestor of the element
     //    chain "gaining" hover. Then SetHovered(true) is called on the element
     //    chain "gaining" hover.
-    InterestInvokerData* invoker_data = GetInterestInvokerData();
-    Element* target = interestTargetElement();
+    InvokerData* invoker_data = GetInvokerData();
+    Element* target = InterestTargetElement();
     Element* upstream_invoker = GetInterestInvoker();
     if (hovered) {
       if (invoker_data) [[unlikely]] {
         // Cancel (unconditionally) any InterestLost tasks on this element (as
         // an interest invoker), even if the interesttarget attribute
         // has been removed.
-        invoker_data->cancelInterestLostTask();
+        invoker_data->CancelInterestLostTask();
       }
       if (upstream_invoker) [[unlikely]] {
         // Cancel (unconditionally) any InterestLost tasks on the interest
         // invoker for this element.
-        if (InterestInvokerData* upstream_invoker_data =
-                upstream_invoker->GetInterestInvokerData()) {
-          upstream_invoker_data->cancelInterestLostTask();
+        if (InvokerData* upstream_invoker_data =
+                upstream_invoker->GetInvokerData()) {
+          upstream_invoker_data->CancelInterestLostTask();
         }
       }
       if (target) [[unlikely]] {
@@ -10793,7 +10819,7 @@ void Element::SetHovered(bool hovered) {
         // needed. (We need to check that invoker_data is non-nullptr because
         // the `invoketarget` attribute might have been added while this element
         // was already hovered.)
-        invoker_data->cancelInterestGainedTask();
+        invoker_data->CancelInterestGainedTask();
         if (target->GetInterestInvoker() == this) {
           ScheduleInterestLostTask();
         }
@@ -10809,9 +10835,8 @@ void Element::SetHovered(bool hovered) {
         //    schedule an InterestLost task. Any existing InterestLost tasks
         //    would have been cancelled (above) when this element was hovered.
         // Note that an element can be both an interest invoker and a target.
-        CHECK(!upstream_invoker->GetInterestInvokerData() ||
-              !upstream_invoker->GetInterestInvokerData()
-                   ->hasInterestGainedTask());
+        CHECK(!upstream_invoker->GetInvokerData() ||
+              !upstream_invoker->GetInvokerData()->HasInterestGainedTask());
         if (!upstream_invoker->IsHovered()) {
           upstream_invoker->ScheduleInterestLostTask();
         }
