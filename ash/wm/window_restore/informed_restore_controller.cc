@@ -433,6 +433,7 @@ void InformedRestoreController::OnOnboardingAcceptPressed(bool restore_on) {
   // Only do this if we have contents data.
   if (contents_data_) {
     onboarding_widget_->widget_delegate()->RegisterDeleteDelegateCallback(
+        views::WidgetDelegate::RegisterDeleteCallbackPassKey(),
         base::BindOnce(
             [](const base::WeakPtr<InformedRestoreController>& weak_this) {
               if (weak_this) {

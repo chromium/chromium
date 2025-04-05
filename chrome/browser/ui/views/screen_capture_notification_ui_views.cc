@@ -183,6 +183,7 @@ ScreenCaptureNotificationUIViews::ScreenCaptureNotificationUIViews(
 
   SetOwnedByWidget(false);
   RegisterDeleteDelegateCallback(
+      RegisterDeleteCallbackPassKey(),
       base::BindOnce(&ScreenCaptureNotificationUIViews::NotifyStopped,
                      base::Unretained(this)));
 

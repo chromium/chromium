@@ -130,13 +130,15 @@ PresentationReceiverWindowView::PresentationReceiverWindowView(
   // through WidgetDelegate::DeleteDelegate(). This requires confirming that
   // delegate_->WindowClosed() is safe to call before this deletes.
   SetOwnedByWidget(false);
-  RegisterDeleteDelegateCallback(base::BindOnce(
-      [](PresentationReceiverWindowView* dialog) {
-        auto* const delegate = dialog->delegate_.get();
-        delete dialog;
-        delegate->WindowClosed();
-      },
-      this));
+  RegisterDeleteDelegateCallback(
+      RegisterDeleteCallbackPassKey(),
+      base::BindOnce(
+          [](PresentationReceiverWindowView* dialog) {
+            auto* const delegate = dialog->delegate_.get();
+            delete dialog;
+            delegate->WindowClosed();
+          },
+          this));
 
   DCHECK(frame);
   DCHECK(delegate);
