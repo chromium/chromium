@@ -166,10 +166,6 @@ SkColor GetBgColor(const std::string& css_selector);
 // returns the average color.
 SkColor GetBorderColor(const std::string& css_selector);
 
-// On Gtk3.20 or later, behaves like GetBgColor.  Otherwise, returns
-// the background-color property.
-SkColor GetSelectionBgColor(const std::string& css_selector);
-
 // Get the color of the GtkSeparator specified by |css_selector|.
 SkColor GetSeparatorColor(const std::string& css_selector);
 
