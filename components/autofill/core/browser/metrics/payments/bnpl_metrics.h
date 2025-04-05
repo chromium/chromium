@@ -26,6 +26,19 @@ enum class BnplSuggestionNotShownReason {
   kMaxValue = kCheckoutAmountNotSupported,
 };
 
+// Enum to track the result of a corresponding BnplTosDialog that was shown.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(BnplTosDialogResult)
+enum class BnplTosDialogResult {
+  kCancelButtonClicked = 0,
+  kAcceptButtonClicked = 1,
+  kMaxValue = kAcceptButtonClicked,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:BnplTosDialogResult)
+
 // Returns the histogram suffix corresponding to the given issuer_id.
 std::string GetHistogramSuffixFromIssuerId(std::string_view issuer_id);
 
@@ -40,6 +53,10 @@ void LogBnplIssuersSyncedCountAtStartup(int count);
 
 // Logs that the BNPL ToS dialog was shown.
 void LogBnplTosDialogShown(std::string_view issuer_id);
+
+// Logs that the BNPL ToS dialog closed reason.
+void LogBnplTosDialogResult(BnplTosDialogResult result,
+                            std::string_view issuer_id);
 
 // Logs that the BNPL suggestion was not shown and the reason why.
 void LogBnplSuggestionNotShownReason(BnplSuggestionNotShownReason reason);

@@ -38,6 +38,14 @@ void LogBnplTosDialogShown(std::string_view issuer_id) {
   base::UmaHistogramBoolean(histogram_name, /*sample=*/true);
 }
 
+void LogBnplTosDialogResult(BnplTosDialogResult result,
+                            std::string_view issuer_id) {
+  std::string histogram_name =
+      base::StrCat({"Autofill.Bnpl.TosDialogResult.",
+                    GetHistogramSuffixFromIssuerId(issuer_id)});
+  base::UmaHistogramEnumeration(histogram_name, result);
+}
+
 void LogBnplSuggestionNotShownReason(BnplSuggestionNotShownReason reason) {
   base::UmaHistogramEnumeration("Autofill.Bnpl.SuggestionNotShownReason",
                                 reason);

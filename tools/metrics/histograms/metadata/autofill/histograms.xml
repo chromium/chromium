@@ -1645,6 +1645,17 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.Bnpl.TosDialogResult.{Issuer}"
+    enum="BnplTosDialogResult" expires_after="2025-07-01">
+  <owner>longsheng@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    The result of the BNPL ToS Dialog, broken down by result. Records when an
+    action was taken on the dialog.
+  </summary>
+  <token key="Issuer" variants="Autofill.BnplIssuer"/>
+</histogram>
+
 <histogram name="Autofill.Bnpl.TosDialogShown.{Issuer}" enum="BooleanShown"
     expires_after="2025-07-01">
   <owner>longsheng@google.com</owner>

@@ -2998,6 +2998,15 @@ Called by update_autofill_enums.py.-->
   <int value="1" label="Checkout amount not supported"/>
 </enum>
 
+<!-- LINT.IfChange(BnplTosDialogResult) -->
+
+<enum name="BnplTosDialogResult">
+  <int value="0" label="The cancel button was pressed"/>
+  <int value="1" label="The accept button was pressed"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/autofill/core/browser/metrics/payments/bnpl_metrics.h:BnplTosDialogResult) -->
+
 <enum name="BooleanAutofillAddressSuggestionOnTypingAcceptance">
   <int value="0" label="Not accepted"/>
   <int value="1" label="Accepted"/>

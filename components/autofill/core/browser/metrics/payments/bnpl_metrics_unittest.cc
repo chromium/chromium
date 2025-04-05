@@ -156,6 +156,30 @@ TEST_P(BnplMetricsTest, LogBnplPopupWindowResult_UserClosed) {
       BnplFlowResult::kUserClosed, 1);
 }
 
+TEST_P(BnplMetricsTest, LogBnplTosDialogResult_AcceptButtonClicked) {
+  base::HistogramTester histogram_tester;
+  std::string_view issuer_id = GetBnplIssuerId();
+
+  LogBnplTosDialogResult(BnplTosDialogResult::kAcceptButtonClicked, issuer_id);
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({"Autofill.Bnpl.TosDialogResult.",
+                    GetHistogramSuffixFromIssuerId(issuer_id)}),
+      BnplTosDialogResult::kAcceptButtonClicked,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_P(BnplMetricsTest, LogBnplTosDialogResult_CancelButtonClicked) {
+  base::HistogramTester histogram_tester;
+  std::string_view issuer_id = GetBnplIssuerId();
+
+  LogBnplTosDialogResult(BnplTosDialogResult::kCancelButtonClicked, issuer_id);
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({"Autofill.Bnpl.TosDialogResult.",
+                    GetHistogramSuffixFromIssuerId(issuer_id)}),
+      BnplTosDialogResult::kCancelButtonClicked,
+      /*expected_bucket_count=*/1);
+}
+
 INSTANTIATE_TEST_SUITE_P(,
                          BnplMetricsTest,
                          testing::Values(kBnplAffirmIssuerId,
