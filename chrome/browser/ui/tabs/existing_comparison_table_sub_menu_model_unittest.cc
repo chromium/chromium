@@ -94,7 +94,7 @@ TEST_F(ExistingComparisonTableSubMenuModelTest,
 
 TEST_F(ExistingComparisonTableSubMenuModelTest, BuildMenuItems_MultipleSets) {
   AddTab(browser(), GURL(kTestUrl3));
-  tab_strip()->ToggleSelectionAt(0);
+  tab_strip()->SelectTabAt(0);
 
   ExistingComparisonTableSubMenuModel sub_menu_model(
       nullptr, nullptr, tab_strip(), 0, product_specs_service.get());
@@ -107,7 +107,7 @@ TEST_F(ExistingComparisonTableSubMenuModelTest, BuildMenuItems_MultipleSets) {
 TEST_F(ExistingComparisonTableSubMenuModelTest,
        BuildMenuItems_SomeSetsContainUrl) {
   AddTab(browser(), GURL(kTestUrl2));
-  tab_strip()->ToggleSelectionAt(0);
+  tab_strip()->SelectTabAt(0);
 
   ExistingComparisonTableSubMenuModel sub_menu_model(
       nullptr, nullptr, tab_strip(), 0, product_specs_service.get());
@@ -119,7 +119,7 @@ TEST_F(ExistingComparisonTableSubMenuModelTest,
 
 TEST_F(ExistingComparisonTableSubMenuModelTest, UrlAddedToExistingSet) {
   AddTab(browser(), GURL(kTestUrl3));
-  tab_strip()->ToggleSelectionAt(0);
+  tab_strip()->SelectTabAt(0);
 
   const auto& title = tab_strip()->GetWebContentsAt(0)->GetTitle();
 

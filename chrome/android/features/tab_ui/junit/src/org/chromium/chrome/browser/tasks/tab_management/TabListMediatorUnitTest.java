@@ -3787,129 +3787,6 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.TAB_GROUP_PANE_ANDROID})
-    public void testCloseButtonDescriptionStringSetup_TabSwitcher() {
-        setUpCloseButtonDescriptionString(false);
-        String targetString = "Close Tab1 tab";
-
-        List<Tab> tabs = new ArrayList<>();
-        for (int i = 0; i < mTabModel.getCount(); i++) {
-            tabs.add(mTabModel.getTabAt(i));
-        }
-
-        mMediator.resetWithListOfTabs(tabs, false);
-        assertThat(
-                mModelList
-                        .get(POSITION1)
-                        .model
-                        .get(TabProperties.ACTION_BUTTON_DESCRIPTION_TEXT_RESOLVER)
-                        .resolve(mContext),
-                equalTo(targetString));
-
-        // Create tab group.
-        Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
-        List<Tab> group1 = new ArrayList<>(Arrays.asList(mTab1, tab3));
-        createTabGroup(group1, TAB1_ID, TAB_GROUP_ID);
-        setUpCloseButtonDescriptionString(true);
-        targetString = "Close tab group with 2 tabs, color Grey.";
-
-        mMediator.resetWithListOfTabs(tabs, false);
-        assertThat(
-                mModelList
-                        .get(POSITION1)
-                        .model
-                        .get(TabProperties.ACTION_BUTTON_DESCRIPTION_TEXT_RESOLVER)
-                        .resolve(mContext),
-                equalTo(targetString));
-
-        // Set group name.
-        targetString =
-                String.format("Close %s group with 2 tabs, color Grey.", CUSTOMIZED_DIALOG_TITLE1);
-        mTabGroupModelFilter.setTabGroupTitle(TAB1_ID, CUSTOMIZED_DIALOG_TITLE1);
-        mTabGroupModelFilterObserverCaptor
-                .getValue()
-                .didChangeTabGroupTitle(TAB1_ID, CUSTOMIZED_DIALOG_TITLE1);
-        assertThat(
-                mModelList
-                        .get(POSITION1)
-                        .model
-                        .get(TabProperties.ACTION_BUTTON_DESCRIPTION_TEXT_RESOLVER)
-                        .resolve(mContext),
-                equalTo(targetString));
-    }
-
-    @Test
-    @DisableFeatures({ChromeFeatureList.TAB_GROUP_PANE_ANDROID})
-    public void testCloseButtonDescriptionStringSetup_SingleTabGroup_TabSwitcher() {
-        // Create tab group.
-        List<Tab> tabs = Arrays.asList(mTab1);
-        createTabGroup(tabs, TAB1_ID, TAB_GROUP_ID);
-        setUpCloseButtonDescriptionString(true);
-        String targetString = "Close tab group with 1 tab, color Grey.";
-
-        mMediator.resetWithListOfTabs(tabs, false);
-        assertThat(
-                mModelList
-                        .get(POSITION1)
-                        .model
-                        .get(TabProperties.ACTION_BUTTON_DESCRIPTION_TEXT_RESOLVER)
-                        .resolve(mContext),
-                equalTo(targetString));
-
-        // Set group name.
-        targetString =
-                String.format("Close %s group with 1 tab, color Grey.", CUSTOMIZED_DIALOG_TITLE1);
-        mTabGroupModelFilter.setTabGroupTitle(TAB1_ID, CUSTOMIZED_DIALOG_TITLE1);
-        mTabGroupModelFilterObserverCaptor
-                .getValue()
-                .didChangeTabGroupTitle(TAB1_ID, CUSTOMIZED_DIALOG_TITLE1);
-        assertThat(
-                mModelList
-                        .get(POSITION1)
-                        .model
-                        .get(TabProperties.ACTION_BUTTON_DESCRIPTION_TEXT_RESOLVER)
-                        .resolve(mContext),
-                equalTo(targetString));
-    }
-
-    @Test
-    @DisableFeatures({ChromeFeatureList.TAB_GROUP_PANE_ANDROID})
-    public void testCloseButtonDescriptionStringWithColorSetup_TabSwitcher() {
-        // Create tab group.
-        Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
-        List<Tab> group1 = new ArrayList<>(Arrays.asList(mTab1, tab3));
-        createTabGroup(group1, TAB1_ID, TAB_GROUP_ID);
-        String targetString = "Close tab group with 2 tabs, color Grey.";
-
-        mMediator.resetWithListOfTabs(group1, false);
-        assertThat(
-                mModelList
-                        .get(POSITION1)
-                        .model
-                        .get(TabProperties.ACTION_BUTTON_DESCRIPTION_TEXT_RESOLVER)
-                        .resolve(mContext),
-                equalTo(targetString));
-
-        // Set group name.
-        targetString =
-                String.format("Close %s group with 2 tabs, color Grey.", CUSTOMIZED_DIALOG_TITLE1);
-        mTabGroupModelFilter.setTabGroupTitle(TAB1_ID, CUSTOMIZED_DIALOG_TITLE1);
-        mTabGroupModelFilterObserverCaptor
-                .getValue()
-                .didChangeTabGroupTitle(TAB1_ID, CUSTOMIZED_DIALOG_TITLE1);
-        assertThat(
-                mModelList
-                        .get(POSITION1)
-                        .model
-                        .get(TabProperties.ACTION_BUTTON_DESCRIPTION_TEXT_RESOLVER)
-                        .resolve(mContext),
-                equalTo(targetString));
-    }
-
-    @Test
-    @EnableFeatures({
-        ChromeFeatureList.TAB_GROUP_PANE_ANDROID,
-    })
     public void testActionButtonDescriptionStringGroupOverflowMenu_TabSwitcher() {
         // Create tab group.
         Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
@@ -3951,7 +3828,7 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.TAB_GROUP_PANE_ANDROID, ChromeFeatureList.DATA_SHARING})
+    @EnableFeatures({ChromeFeatureList.DATA_SHARING})
     public void testActionButtonDescriptionStringGroupOverflowMenu_TabSwitcherSharedGroup() {
         when(mProfile.isOffTheRecord()).thenReturn(false);
         when(mTabGroupSyncFeaturesJniMock.isTabGroupSyncEnabled(mProfile)).thenReturn(true);
@@ -4303,7 +4180,7 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.TAB_GROUP_PANE_ANDROID, ChromeFeatureList.DATA_SHARING})
+    @EnableFeatures({ChromeFeatureList.DATA_SHARING})
     public void testIsTabGroup_TabSwitcher() {
         mMediator.setComponentNameForTesting(TabSwitcherPaneCoordinator.COMPONENT_NAME);
 
@@ -4702,6 +4579,65 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.DATA_SHARING)
+    public void testShareUpdateTabCardLabelsContentDescription() {
+        when(mProfile.isOffTheRecord()).thenReturn(false);
+        when(mTabGroupSyncFeaturesJniMock.isTabGroupSyncEnabled(mProfile)).thenReturn(true);
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
+
+        // Setup a tab group with {tab2, tab3}.
+        Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        List<Tab> group1 = new ArrayList<>(Arrays.asList(mTab2, tab3));
+        createTabGroup(group1, TAB2_ID, TAB_GROUP_ID);
+        setupSyncedGroup(/* isShared= */ true);
+
+        TabCardLabelData tabCardLabelData =
+                new TabCardLabelData(
+                        TabCardLabelType.ACTIVITY_UPDATE,
+                        (context) -> "Test label",
+                        /* asyncImageFactory= */ null,
+                        (context) -> "Alice changed");
+
+        Map<Integer, TabCardLabelData> dataMap = new HashMap<>();
+        dataMap.put(TAB2_ID, tabCardLabelData);
+
+        mMediator.updateTabCardLabels(dataMap);
+
+        String targetString1 =
+                "Expand shared tab group with 2 tabs, color Grey, with label Alice changed.";
+        assertEquals(
+                targetString1,
+                mModelList
+                        .get(POSITION2)
+                        .model
+                        .get(TabProperties.CONTENT_DESCRIPTION_TEXT_RESOLVER)
+                        .resolve(mContext));
+
+        mTabGroupModelFilter.setTabGroupTitle(TAB2_ID, CUSTOMIZED_DIALOG_TITLE1);
+        String targetString2 =
+                "Expand shared Cool Tabs tab group with 2 tabs, color Grey, with label Alice"
+                        + " changed.";
+        assertEquals(
+                targetString2,
+                mModelList
+                        .get(POSITION2)
+                        .model
+                        .get(TabProperties.CONTENT_DESCRIPTION_TEXT_RESOLVER)
+                        .resolve(mContext));
+
+        dataMap.replace(TAB2_ID, null);
+        mMediator.updateTabCardLabels(dataMap);
+        String targetString3 = "Expand shared Cool Tabs tab group with 2 tabs, color Grey.";
+        assertEquals(
+                targetString3,
+                mModelList
+                        .get(POSITION2)
+                        .model
+                        .get(TabProperties.CONTENT_DESCRIPTION_TEXT_RESOLVER)
+                        .resolve(mContext));
+    }
+
+    @Test
     public void testObserversRemovedAfterHiding() {
         setUpTabListMediator(TabListMediatorType.TAB_SWITCHER, TabListMode.GRID);
 
@@ -4764,35 +4700,6 @@ public class TabListMediatorUnitTest {
                 TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_MEDIUM,
                 mMediator.getSpanCount(TabListCoordinator.MAX_SCREEN_WIDTH_MEDIUM_DP + 1));
         XrUtils.resetXrDeviceForTesting();
-    }
-
-    private void setUpCloseButtonDescriptionString(boolean isGroup) {
-        if (isGroup) {
-            doAnswer(
-                            invocation -> {
-                                String title = invocation.getArgument(1);
-                                String num = invocation.getArgument(2);
-                                return String.format("Close %s group with %s tabs", title, num);
-                            })
-                    .when(mActivity)
-                    .getString(anyInt(), anyString(), anyString());
-
-            doAnswer(
-                            invocation -> {
-                                String num = invocation.getArgument(1);
-                                return String.format("Close tab group with %s tabs", num);
-                            })
-                    .when(mActivity)
-                    .getString(anyInt(), anyString());
-        } else {
-            doAnswer(
-                            invocation -> {
-                                String title = invocation.getArgument(1);
-                                return String.format("Close %s tab", title);
-                            })
-                    .when(mActivity)
-                    .getString(anyInt(), anyString());
-        }
     }
 
     private void setUpTabGroupCardDescriptionString() {

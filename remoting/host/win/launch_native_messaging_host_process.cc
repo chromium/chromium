@@ -31,15 +31,16 @@ const int kTimeOutMilliseconds = 2000;
 const char kChromePipeNamePrefix[] = "\\\\.\\pipe\\chrome_remote_desktop.";
 
 uint32_t CreateNamedPipe(const std::string& pipe_name,
-                         const remoting::ScopedSd& security_descriptor,
+                         remoting::ScopedSd& security_descriptor,
                          uint32_t open_mode,
                          base::win::ScopedHandle* file_handle) {
   DCHECK(file_handle);
 
-  SECURITY_ATTRIBUTES security_attributes = {0};
-  security_attributes.nLength = sizeof(security_attributes);
-  security_attributes.lpSecurityDescriptor = security_descriptor.get();
-  security_attributes.bInheritHandle = FALSE;
+  SECURITY_ATTRIBUTES security_attributes = {
+      .nLength = sizeof(security_attributes),
+      .lpSecurityDescriptor = security_descriptor.get(),
+      .bInheritHandle = FALSE,
+  };
 
   base::win::ScopedHandle temp_handle(::CreateNamedPipe(
       base::ASCIIToWide(pipe_name).c_str(), open_mode,

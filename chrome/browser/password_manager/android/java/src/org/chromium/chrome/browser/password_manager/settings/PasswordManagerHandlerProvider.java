@@ -4,9 +4,13 @@
 
 package org.chromium.chrome.browser.password_manager.settings;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.lifetime.Destroyable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
 
@@ -18,8 +22,9 @@ import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
  * one instance of Chrome's passwords settings opened at a time (although more clients of
  * PasswordManagerHandler can live as nested settings pages).
  */
+@NullMarked
 public class PasswordManagerHandlerProvider implements PasswordListObserver, Destroyable {
-    private static ProfileKeyedMap<PasswordManagerHandlerProvider> sProfileMap;
+    private static @Nullable ProfileKeyedMap<PasswordManagerHandlerProvider> sProfileMap;
 
     /** Return the {@link PasswordManagerHandlerProvider} for the given {@link Profile}. */
     public static PasswordManagerHandlerProvider getForProfile(Profile profile) {
@@ -36,8 +41,8 @@ public class PasswordManagerHandlerProvider implements PasswordListObserver, Des
     // The production implementation of PasswordManagerHandler is |sPasswordUiView|, instantiated on
     // demand. Tests might want to override that by providing a fake implementation through
     // setPasswordManagerHandlerForTest, which is then kept in |mTestPasswordManagerHandler|.
-    private PasswordUiView mPasswordUiView;
-    private PasswordManagerHandler mTestPasswordManagerHandler;
+    private @Nullable PasswordUiView mPasswordUiView;
+    private @Nullable PasswordManagerHandler mTestPasswordManagerHandler;
 
     // This class is itself a PasswordListObserver, listening directly to a PasswordManagerHandler
     // implementation. But it also keeps a list of other observers, to which it forwards the events.
@@ -87,7 +92,7 @@ public class PasswordManagerHandlerProvider implements PasswordListObserver, Des
      * A convenience function to choose between the production and test PasswordManagerHandler
      * implementation.
      */
-    public PasswordManagerHandler getPasswordManagerHandler() {
+    public @Nullable PasswordManagerHandler getPasswordManagerHandler() {
         ThreadUtils.assertOnUiThread();
         if (mTestPasswordManagerHandler != null) return mTestPasswordManagerHandler;
         return mPasswordUiView;
@@ -116,6 +121,7 @@ public class PasswordManagerHandlerProvider implements PasswordListObserver, Des
         // If this was the last observer of the production implementation of PasswordManagerHandler,
         // call destroy on it to close the connection to the native C++ code.
         if (mObservers.isEmpty() && mTestPasswordManagerHandler == null) {
+            assumeNonNull(mPasswordUiView);
             mPasswordUiView.destroy();
             mPasswordUiView = null;
         }

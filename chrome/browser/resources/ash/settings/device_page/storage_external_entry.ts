@@ -58,6 +58,7 @@ class StorageExternalEntryElement extends StorageExternalEntryElementBase {
     ];
   }
 
+  label: string;
   uuid: string;
   private visiblePref_: chrome.settingsPrivate.PrefObject<boolean>;
 

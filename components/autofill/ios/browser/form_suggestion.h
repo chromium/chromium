@@ -36,6 +36,16 @@ enum class SuggestionFeatureForIPH {
   kPlusAddressCreation = 2
 };
 
+// Enum class used to determine the icon for the suggestion.
+enum class SuggestionIconType {
+  // Default value.
+  kNone = 0,
+  // Home address profile icon.
+  kAccountHome = 1,
+  // Work address profile icon.
+  kAccountWork = 2
+};
+
 // Represents a user-selectable suggestion for a single field within a form
 // on a web page.
 @interface FormSuggestion : NSObject
@@ -49,7 +59,7 @@ enum class SuggestionFeatureForIPH {
 // An optional user-visible description for this suggestion.
 @property(copy, readonly, nonatomic) NSString* displayDescription;
 
-// The credit card icon; either a custom icon if available, or the network icon
+// The suggestion icon; either a custom icon if available, or the network icon
 // otherwise.
 @property(copy, readonly, nonatomic) UIImage* icon;
 
@@ -69,6 +79,9 @@ enum class SuggestionFeatureForIPH {
 
 // If specified, shows in-product help for the suggestion.
 @property(assign, nonatomic) SuggestionFeatureForIPH featureForIPH;
+
+// If specified, describes the icon type for the suggestion.
+@property(assign, nonatomic) SuggestionIconType suggestionIconType;
 
 // The payload associated with this suggestion.
 @property(assign, readonly, nonatomic) autofill::Suggestion::Payload payload;

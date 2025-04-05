@@ -454,9 +454,13 @@ bool VotesUploader::UploadPasswordVote(
   // re-uses credentials, a vote about the saved form is sent. If the user saves
   // credentials, the observed and pending forms are the same.
   FormStructure form_structure(form_to_upload.form_data);
-  form_structure.set_submission_event(submitted_form.submission_event);
 
-  FieldTypeSet available_field_types;
+  autofill::EncodeUploadRequestOptions options;
+  options.encoder = RandomizedEncoder::Create(client_->GetPrefs());
+  options.submission_event = submitted_form.submission_event;
+  options.login_form_signature = login_form_signature;
+  options.observed_submission = true;
+
   // A map from field names to field types.
   FieldTypeMap field_types;
   // Used to detect whether the vote is corrupted because of duplicate field
@@ -531,7 +535,7 @@ bool VotesUploader::UploadPasswordVote(
   LabelFields(
       field_types, field_name_collision,
       {{form_to_upload.username_element_renderer_id, username_vote_type}},
-      &form_structure, &available_field_types);
+      &form_structure, &options.available_field_types);
 
   if (password_manager_util::IsLoggingActive(client_)) {
     BrowserSavePasswordProgressLogger logger(client_->GetCurrentLogManager());
@@ -539,8 +543,7 @@ bool VotesUploader::UploadPasswordVote(
                             password_attributes);
   }
 
-  return SendUploadRequest(form_structure, available_field_types,
-                           login_form_signature, password_attributes,
+  return SendUploadRequest(form_structure, options, password_attributes,
                            should_set_passwords_were_revealed);
 }
 
@@ -561,7 +564,11 @@ void VotesUploader::UploadFirstLoginVotes(
   }
 
   FormStructure form_structure(form_to_upload.form_data);
-  form_structure.set_submission_event(form_to_upload.submission_event);
+
+  autofill::EncodeUploadRequestOptions options;
+  options.encoder = RandomizedEncoder::Create(client_->GetPrefs());
+  options.submission_event = form_to_upload.submission_event;
+  options.observed_submission = true;
 
   FieldTypeMap field_types;
   bool field_name_collision = false;
@@ -576,9 +583,8 @@ void VotesUploader::UploadFirstLoginVotes(
         AutofillUploadContents::Field::FIRST_USE;
   }
 
-  FieldTypeSet available_field_types;
   LabelFields(field_types, field_name_collision, vote_types, &form_structure,
-              &available_field_types);
+              &options.available_field_types);
   SetKnownValueFlag(pending_credentials, best_matches, &form_structure);
 
   // Annotate the form with the source language of the page.
@@ -593,8 +599,7 @@ void VotesUploader::UploadFirstLoginVotes(
                             std::nullopt);
   }
 
-  SendUploadRequest(form_structure, available_field_types,
-                    /*login_form_signature=*/std::nullopt,
+  SendUploadRequest(form_structure, options,
                     /*password_attributes=*/std::nullopt,
                     /*should_set_passwords_were_revealed=*/false);
 }
@@ -889,18 +894,14 @@ void VotesUploader::StoreInitialFieldValues(
 std::vector<autofill::AutofillUploadContents>
 VotesUploader::EncodeUploadRequest(
     autofill::FormStructure& form,
-    const autofill::FieldTypeSet& available_field_types,
-    std::optional<FormSignature> login_form_signature,
+    const autofill::EncodeUploadRequestOptions& options,
     std::optional<PasswordAttributesMetadata> password_attributes,
     bool should_set_passwords_were_revealed) {
   // Annotate the form with the source language of the page.
   form.set_current_page_language(client_->GetPageLanguage());
 
   std::vector<AutofillUploadContents> upload_contents =
-      autofill::EncodeUploadRequest(
-          form, RandomizedEncoder::Create(client_->GetPrefs()).get(),
-          /*format_strings=*/{}, available_field_types, login_form_signature,
-          /*observed_submission=*/true);
+      autofill::EncodeUploadRequest(form, options);
   CHECK(!upload_contents.empty());
 
   upload_contents[0].set_passwords_revealed(
@@ -915,8 +916,7 @@ VotesUploader::EncodeUploadRequest(
 
 bool VotesUploader::SendUploadRequest(
     autofill::FormStructure& form_to_upload,
-    const FieldTypeSet& available_field_types,
-    std::optional<FormSignature> login_form_signature,
+    const autofill::EncodeUploadRequestOptions& options,
     std::optional<PasswordAttributesMetadata> password_attributes,
     bool should_set_passwords_were_revealed) {
   AutofillCrowdsourcingManager* crowdsourcing_manager =
@@ -926,8 +926,7 @@ bool VotesUploader::SendUploadRequest(
   }
 
   return crowdsourcing_manager->StartUploadRequest(
-      EncodeUploadRequest(form_to_upload, available_field_types,
-                          login_form_signature, password_attributes,
+      EncodeUploadRequest(form_to_upload, options, password_attributes,
                           should_set_passwords_were_revealed),
       form_to_upload.submission_source(),
       /*is_password_manager_upload=*/true);
@@ -936,7 +935,7 @@ bool VotesUploader::SendUploadRequest(
 bool VotesUploader::SetSingleUsernameVoteOnUsernameForm(
     AutofillField* field,
     const SingleUsernameVoteData& single_username,
-    FieldTypeSet* available_field_types,
+    autofill::EncodeUploadRequestOptions& options,
     FormSignature form_signature,
     IsMostRecentSingleUsernameCandidate
         is_most_recent_single_username_candidate,
@@ -981,11 +980,13 @@ bool VotesUploader::SetSingleUsernameVoteOnUsernameForm(
 
   CHECK_NE(field_type, autofill::UNKNOWN_TYPE);
   CHECK_NE(vote_type, AutofillUploadContents::Field::DEFAULT);
-  available_field_types->insert(field_type);
+  options.available_field_types.insert(field_type);
+  autofill::EncodeUploadRequestOptions::Field& field_options =
+      options.fields[field->global_id()];
   field->set_possible_types({field_type});
-  field->set_single_username_vote_type(vote_type);
-  field->set_is_most_recent_single_username_candidate(
-      is_most_recent_single_username_candidate);
+  field_options.single_username_vote_type = vote_type;
+  field_options.is_most_recent_single_username_candidate =
+      is_most_recent_single_username_candidate;
   return true;
 }
 
@@ -1069,8 +1070,11 @@ bool VotesUploader::MaybeSendSingleUsernameVote(
       FormStructure::CreateForPasswordManagerUpload(predictions.form_signature,
                                                     field_signatures);
 
+  autofill::EncodeUploadRequestOptions options;
+  options.encoder = RandomizedEncoder::Create(client_->GetPrefs());
+  options.observed_submission = true;
+
   // Label the username field with a SINGLE_USERNAME or NOT_USERNAME vote.
-  FieldTypeSet available_field_types;
   for (size_t i = 0; i < form_to_upload->field_count(); ++i) {
     AutofillField* field = form_to_upload->field(i);
     FieldRendererId field_renderer_id = predictions.fields[i].renderer_id;
@@ -1080,8 +1084,7 @@ bool VotesUploader::MaybeSendSingleUsernameVote(
       continue;
     }
     if (!SetSingleUsernameVoteOnUsernameForm(
-            field, single_username, &available_field_types,
-            predictions.form_signature,
+            field, single_username, options, predictions.form_signature,
             is_most_recent_single_username_candidate,
             is_forgot_password_vote)) {
       // The single username field has no field type. Don't send vote.
@@ -1090,15 +1093,14 @@ bool VotesUploader::MaybeSendSingleUsernameVote(
   }
 
   // Upload a vote on the username form if available.
-  if (!available_field_types.empty()) {
+  if (!options.available_field_types.empty()) {
     if (password_manager_util::IsLoggingActive(client_)) {
       BrowserSavePasswordProgressLogger logger(client_->GetCurrentLogManager());
       logger.LogFormStructure(Logger::STRING_USERNAME_FIRST_FLOW_VOTE,
                               *form_to_upload, std::nullopt);
     }
 
-    if (SendUploadRequest(*form_to_upload, available_field_types,
-                          /*login_form_signature=*/std::nullopt,
+    if (SendUploadRequest(*form_to_upload, options,
                           /*password_attributes=*/std::nullopt,
                           /*should_set_passwords_were_revealed=*/false)) {
       return true;

@@ -304,6 +304,10 @@ TEST_F(CookieSettingsBaseTest, IsValidLegacyAccessSetting) {
       CONTENT_SETTING_SESSION_ONLY));
 }
 
+// `GetStorageAccessStatus` is tested in
+// components/content_settings/core/browser/cookie_settings_unittest.cc and
+// services/network/cookie_settings_unittest.cc
+
 class CookieSettingsBaseStorageAccessAPITest
     : public testing::TestWithParam<std::tuple<bool, bool>> {
  public:

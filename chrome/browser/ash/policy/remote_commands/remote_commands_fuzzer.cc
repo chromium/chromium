@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <fuzzer/FuzzedDataProvider.h>
 #include <stddef.h>
 #include <stdint.h>
 
 #include <initializer_list>
 #include <memory>
 #include <string>
-#include <string_view>
+
+#include <fuzzer/FuzzedDataProvider.h>
 
 #include "base/at_exit.h"
 #include "base/check.h"
@@ -40,7 +40,7 @@ constexpr logging::LogSeverity kLogSeverity = logging::LOGGING_FATAL;
 // threshold. It's needed in order to suppress unneeded syslog logging (which by
 // default is exempt from the level set by `logging::SetMinLogLevel()`).
 bool VoidifyingLogHandler(int severity,
-                          std::string_view /*file*/,
+                          const char* /*file*/,
                           int /*line*/,
                           size_t /*message_start*/,
                           const std::string& /*str*/) {

@@ -181,7 +181,7 @@ AutocompleteProvider::AsOmniboxEventProviderType() const {
     case TYPE_MOST_VISITED_SITES:
       return metrics::OmniboxEventProto::MOST_VISITED_SITES;
     case TYPE_VERBATIM_MATCH:
-      return metrics::OmniboxEventProto::ZERO_SUGGEST;
+      return metrics::OmniboxEventProto::VERBATIM_MATCH;
     case TYPE_VOICE_SUGGEST:
       return metrics::OmniboxEventProto::SEARCH;
     case TYPE_HISTORY_FUZZY:
@@ -242,7 +242,7 @@ AutocompleteProvider::~AutocompleteProvider() {
 AutocompleteProvider::AdjustedInputAndStarterPackKeyword
 AutocompleteProvider::AdjustInputForStarterPackKeyword(
     const AutocompleteInput& input,
-    TemplateURLService* turl_service) {
+    const TemplateURLService* turl_service) {
   if (input.prefer_keyword()) {
     AutocompleteInput keyword_input = input;
     const TemplateURL* template_url =

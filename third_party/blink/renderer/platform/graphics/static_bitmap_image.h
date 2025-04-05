@@ -66,7 +66,7 @@ class PLATFORM_EXPORT StaticBitmapImage : public Image {
                              GLenum dest_target,
                              GLuint dest_texture_id,
                              GLint dest_level,
-                             bool unpack_premultiply_alpha,
+                             SkAlphaType dest_alpha_type,
                              GrSurfaceOrigin destination_origin,
                              const gfx::Point& dest_point,
                              const gfx::Rect& src_rect) {

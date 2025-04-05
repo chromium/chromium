@@ -26,9 +26,8 @@ source_set("lib") {
 
 source_set("in_process") {
   # NOTE: In-process unzipping is unsafe! Unfortunately on iOS we have no other
-  # choice. On all other platforms, this target is restricted to tests.
-  testonly = !is_ios
-
+  # choice, and some single-process embedders need access to an in-process
+  # unzipper.
   sources = [
     "in_process_unzipper.cc",
     "in_process_unzipper.h",

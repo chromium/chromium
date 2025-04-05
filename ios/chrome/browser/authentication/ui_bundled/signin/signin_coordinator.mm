@@ -12,7 +12,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/add_account_signin/add_account_signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin/consistency_promo_signin_coordinator.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/fullscreen_signin/fullscreen_signin_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/fullscreen_signin/coordinator/fullscreen_signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/history_sync/history_sync_signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/instant_signin/instant_signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/logging/first_run_signin_logger.h"
@@ -268,7 +268,8 @@ using signin_metrics::PromoAction;
                    completionIdentity:(id<SystemIdentity>)completionIdentity {
   // `identity` is set, if and only if the sign-in is successful.
   DCHECK(
-      ((signinResult == SigninCoordinatorResultSuccess) &&
+      ((signinResult == SigninCoordinatorResultSuccess ||
+        signinResult == SigninCoordinatorProfileSwitch) &&
        completionIdentity) ||
       ((signinResult != SigninCoordinatorResultSuccess) && !completionIdentity))
       << "signinResult: " << signinResult

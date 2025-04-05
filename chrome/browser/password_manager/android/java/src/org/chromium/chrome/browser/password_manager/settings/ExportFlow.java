@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.password_manager.settings;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.access_loss.AccessLossWarningMetricsRecorder.logExportFlowLastStepMetric;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PWD_MIGRATION_WARNING;
@@ -16,7 +17,6 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
 
@@ -26,6 +26,9 @@ import org.chromium.base.FileProviderUtils;
 import org.chromium.base.FileUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.access_loss.AccessLossWarningMetricsRecorder.PasswordAccessLossWarningExportStep;
 import org.chromium.chrome.browser.access_loss.PasswordAccessLossWarningType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -45,6 +48,7 @@ import java.lang.annotation.RetentionPolicy;
  * This class allows to trigger and complete the UX flow for exporting passwords. A {@link Fragment}
  * can use it to display the flow UI over the fragment.
  *
+ * <pre>
  * Internally, the flow is represented by the following calls:
  * (1)  {@link #startExporting}, which triggers both preparing of stored passwords in the background
  *      and reauthentication of the user.
@@ -57,7 +61,9 @@ import java.lang.annotation.RetentionPolicy;
  *      case when (2b) finishes before (2a), it also displays a progress bar.
  * (4)  {@link #sendExportIntent} creates an intent chooser for sharing the exported passwords with
  *      an app of user's choice.
+ * </pre>
  */
+@NullMarked
 public class ExportFlow implements ExportFlowInterface {
     @IntDef({ExportState.INACTIVE, ExportState.REQUESTED, ExportState.CONFIRMED})
     @Retention(RetentionPolicy.SOURCE)
@@ -124,14 +130,14 @@ public class ExportFlow implements ExportFlowInterface {
      * other times, this variable is null. In particular, after the export is requested, the
      * variable being null means that the passwords have not arrived from the native code yet.
      */
-    @Nullable private Uri mExportFileUri;
+    private @Nullable Uri mExportFileUri;
 
     /**
      * The number of password entries contained in the most recent serialized data for password
      * export. The null value indicates that serialization has not completed since the last request
      * (or there was no request at all).
      */
-    @Nullable private Integer mEntriesCount;
+    private @Nullable Integer mEntriesCount;
 
     // Histogram values for "PasswordManager.Android.ExportPasswordsProgressBarUsage". Never remove
     // or reuse them, only add new ones if needed to keep past and future UMA reports compatible.
@@ -147,7 +153,7 @@ public class ExportFlow implements ExportFlowInterface {
      * If an error dialog should be shown, this contains the arguments for it, such as the error
      * message. If no error dialog should be shown, this is null.
      */
-    @Nullable private ExportErrorDialogFragment.ErrorDialogParams mErrorDialogParams;
+    private ExportErrorDialogFragment.@Nullable ErrorDialogParams mErrorDialogParams;
 
     /**
      * Contains the reference to the export warning dialog when it is displayed, so that the dialog
@@ -155,7 +161,7 @@ public class ExportFlow implements ExportFlowInterface {
      * for the reauthentication time window to still allow exporting. It is null during all other
      * times.
      */
-    @Nullable private ExportWarningDialogFragment mExportWarningDialogFragment;
+    private @Nullable ExportWarningDialogFragment mExportWarningDialogFragment;
 
     public DialogManager getDialogManagerForTesting() {
         return mProgressBarManager;
@@ -183,6 +189,7 @@ public class ExportFlow implements ExportFlowInterface {
         return mCallerMetricsId + PasswordMetricsUtil.EXPORT_RESULT_HISTOGRAM_SUFFIX;
     }
 
+    @Initializer
     @Override
     public void onCreate(Bundle savedInstanceState, Delegate delegate, String callerMetricsId) {
         mDelegate = delegate;
@@ -199,6 +206,7 @@ public class ExportFlow implements ExportFlowInterface {
         }
         if (savedInstanceState.containsKey(SAVED_STATE_EXPORT_FILE_URI)) {
             String uriString = savedInstanceState.getString(SAVED_STATE_EXPORT_FILE_URI);
+            assumeNonNull(uriString);
             if (uriString.isEmpty()) {
                 mExportFileUri = Uri.EMPTY;
             } else {
@@ -271,9 +279,11 @@ public class ExportFlow implements ExportFlowInterface {
         // fails the reauthentication, the serialized passwords will simply get ignored when
         // they arrive.
         mEntriesCount = null;
-        if (!PasswordManagerHandlerProvider.getForProfile(mDelegate.getProfile())
-                .getPasswordManagerHandler()
-                .isWaitingForPasswordStore()) {
+        PasswordManagerHandler handler =
+                PasswordManagerHandlerProvider.getForProfile(mDelegate.getProfile())
+                        .getPasswordManagerHandler();
+        assumeNonNull(handler);
+        if (!handler.isWaitingForPasswordStore()) {
             serializePasswords();
         }
         if (!ReauthenticationManager.isScreenLockSetUp(
@@ -306,22 +316,24 @@ public class ExportFlow implements ExportFlowInterface {
     void serializePasswords() {
         if (mPasswordSerializationStarted) return;
         mPasswordSerializationStarted = true;
-        PasswordManagerHandlerProvider.getForProfile(mDelegate.getProfile())
-                .getPasswordManagerHandler()
-                .serializePasswords(
-                        getTargetDirectory(),
-                        (int entriesCount, String pathToPasswordsFile) -> {
-                            mEntriesCount = entriesCount;
-                            shareSerializedPasswords(pathToPasswordsFile);
-                        },
-                        (String errorMessage) -> {
-                            showExportErrorAndAbort(
-                                    R.string.password_settings_export_tips,
-                                    errorMessage,
-                                    getPositiveButtonLabelId(),
-                                    HistogramExportResult.WRITE_FAILED,
-                                    PasswordAccessLossWarningExportStep.PWD_SERIALIZATION_FAILED);
-                        });
+        PasswordManagerHandler handler =
+                PasswordManagerHandlerProvider.getForProfile(mDelegate.getProfile())
+                        .getPasswordManagerHandler();
+        assumeNonNull(handler);
+        handler.serializePasswords(
+                getTargetDirectory(),
+                (int entriesCount, String pathToPasswordsFile) -> {
+                    mEntriesCount = entriesCount;
+                    shareSerializedPasswords(pathToPasswordsFile);
+                },
+                (String errorMessage) -> {
+                    showExportErrorAndAbort(
+                            R.string.password_settings_export_tips,
+                            errorMessage,
+                            getPositiveButtonLabelId(),
+                            HistogramExportResult.WRITE_FAILED,
+                            PasswordAccessLossWarningExportStep.PWD_SERIALIZATION_FAILED);
+                });
     }
 
     @Override
@@ -629,9 +641,10 @@ public class ExportFlow implements ExportFlowInterface {
                     PasswordAccessLossWarningExportStep.SAVE_PWD_FILE_FAILED);
             return;
         }
-        new AsyncTask<String>() {
+        new AsyncTask<@Nullable String>() {
             @Override
-            protected String doInBackground() {
+            protected @Nullable String doInBackground() {
+                assumeNonNull(mExportFileUri);
                 try {
                     writeToInternalStorage(mExportFileUri, passwordsFile);
                 } catch (IOException e) {
@@ -648,7 +661,7 @@ public class ExportFlow implements ExportFlowInterface {
             }
 
             @Override
-            protected void onPostExecute(String exceptionMessage) {
+            protected void onPostExecute(@Nullable String exceptionMessage) {
                 mProgressBarManager.hide(
                         () -> {
                             if (exceptionMessage != null) {
@@ -683,6 +696,8 @@ public class ExportFlow implements ExportFlowInterface {
                     ContextUtils.getApplicationContext()
                             .getContentResolver()
                             .openOutputStream(savedPasswordsFileUri)) {
+                assumeNonNull(fileInputStream);
+                assumeNonNull(fileOutputStream);
                 FileUtils.copyStream(fileInputStream, fileOutputStream);
             }
         }

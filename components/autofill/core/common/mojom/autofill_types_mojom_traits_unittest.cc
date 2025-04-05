@@ -49,6 +49,8 @@ void CreateTestFieldDataPredictions(const std::string& signature,
   field_predict->server_type = "TestServerType";
   field_predict->html_type = "TestHtmlType";
   field_predict->overall_type = "TestOverallType";
+  field_predict->autofill_ai_type = "TestAutofillAiType";
+  field_predict->format_string = "TestFormatString";
   field_predict->parseable_name = "TestParseableName";
   field_predict->section = "TestSection";
   field_predict->rank = 0;

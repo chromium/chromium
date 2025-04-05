@@ -12,7 +12,7 @@
 #include "base/functional/callback.h"
 #include "chrome/browser/tab_contents/web_contents_collection.h"
 #include "components/printing/common/print.mojom.h"
-#include "components/tab_collections/public/tab_interface.h"
+#include "components/tabs/public/tab_interface.h"
 
 class GURL;
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 
 // Add type extensions needed for other scripts defining the fill namespace.
 declare global {
@@ -22,16 +22,16 @@ declare global {
   }
 }
 
-if (!gCrWeb.fill) {
+if (!gCrWebLegacy.fill) {
   /**
-   * Namespace for this file. It depends on |gCrWeb| having already been
-   * injected. String 'fill' is used in |gCrWeb['fill']| as it needs to be
+   * Namespace for this file. It depends on |gCrWebLegacy| having already been
+   * injected. String 'fill' is used in |gCrWebLegacy['fill']| as it needs to be
    * accessed in Objective-C code.
    */
-  gCrWeb.fill = {};
+  gCrWebLegacy.fill = {};
 
   // Store fill namespace object in a global __gCrWeb object referenced by a
   // string, so it does not get renamed by closure compiler during the
   // minification.
-  gCrWeb['fill'] = gCrWeb.fill;
+  gCrWebLegacy['fill'] = gCrWebLegacy.fill;
 }

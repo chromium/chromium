@@ -4,6 +4,7 @@
 
 import("//chromecast/chromecast.gni")
 import("//chromecast/starboard/starboard.gni")
+import("//testing/test.gni")
 
 config("public_config") {
   include_dirs =
@@ -22,7 +23,10 @@ source_set("starboard_adapter_public") {
 
 source_set("starboard_adapter_static") {
   sources = []
-  public_deps = [ ":starboard_adapter_public" ]
+  public_deps = [
+    ":starboard_adapter_public",
+    "//base",
+  ]
 
   if (remove_starboard_headers) {
     sources += [ "src/cast_starboard_api_adapter_dummy.cc" ]
@@ -31,10 +35,7 @@ source_set("starboard_adapter_static") {
       "src/cast_starboard_api_adapter_impl.cc",
       "src/cast_starboard_api_adapter_impl.h",
     ]
-    public_deps += [
-      "//chromecast/starboard/chromecast/starboard_cast_api",
-      "//chromecast/starboard/chromecast/starboard_cast_dummy:cast_starboard_api",
-    ]
+    public_deps += [ "//chromecast/starboard/chromecast/starboard_cast_api" ]
   }
 
   # TODO(riazantsevv@): To implement this in a better way.
@@ -44,9 +45,29 @@ source_set("starboard_adapter_static") {
 if (starboard_graphics_is_shared) {
   shared_library("starboard_adapter") {
     public_deps = [ ":starboard_adapter_static" ]
+    if (!remove_starboard_headers) {
+      public_deps += [ "//chromecast/starboard/chromecast/starboard_cast_dummy:cast_starboard_api" ]
+    }
   }
 } else {
   source_set("starboard_adapter") {
     public_deps = [ ":starboard_adapter_static" ]
+    if (!remove_starboard_headers) {
+      public_deps += [ "//chromecast/starboard/chromecast/starboard_cast_dummy:cast_starboard_api" ]
+    }
+  }
+}
+
+if (!remove_starboard_headers) {
+  test("cast_starboard_api_adapter_test") {
+    sources = [ "src/cast_starboard_api_adapter_test.cc" ]
+    deps = [
+      ":starboard_adapter_static",
+      "//base/test:run_all_unittests",
+      "//base/test:test_support",
+      "//chromecast/starboard/chromecast/starboard_cast_api",
+      "//testing/gmock",
+      "//testing/gtest",
+    ]
   }
 }

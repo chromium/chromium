@@ -265,6 +265,38 @@ void TabGroupSyncServiceImpl::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
+void TabGroupSyncServiceImpl::OnLastTabClosed(
+    const SavedTabGroup& saved_tab_group) {
+  if (!saved_tab_group.is_shared_tab_group()) {
+    return;
+  }
+
+  const std::vector<SavedTabGroupTab>& tabs = saved_tab_group.saved_tabs();
+  if (tabs.size() != 1) {
+    return;
+  }
+
+  // Create a new empty tab and remove the old tab.
+  const SavedTabGroupTab& tab = tabs[0];
+  std::pair<GURL, std::u16string> url_and_title = GetDefaultUrlAndTitle();
+  SavedTabGroupTab new_tab(url_and_title.first, url_and_title.second,
+                           saved_tab_group.saved_guid(), 0);
+  new_tab.SetCreatorCacheGuid(
+      sync_bridge_mediator_->GetLocalCacheGuidForSavedBridge());
+  std::optional<GaiaId> account_id =
+      sync_bridge_mediator_->GetTrackingAccountIdForSharedBridge();
+  if (account_id.has_value()) {
+    new_tab.SetUpdatedByAttribution(std::move(account_id.value()));
+  }
+  model_->AddTabToGroupLocally(saved_tab_group.saved_guid(),
+                               std::move(new_tab));
+  RemoveTab(saved_tab_group.local_group_id().value(),
+            tab.local_tab_id().value());
+
+  // Inform UI about the tab group change.
+  NotifyTabGroupUpdated(saved_tab_group.saved_guid(), TriggerSource::REMOTE);
+}
+
 void TabGroupSyncServiceImpl::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event_details) {
   for (signin::ConsentLevel consent_level :
@@ -1306,7 +1338,6 @@ void TabGroupSyncServiceImpl::HandleTabGroupRemoved(
   // account_id has already been cleared here, which is fragile. Ideally,
   // HandleTabGroupRemoved() would receive a "reason" param, where one of the
   // possible values would be "signout".
-
   RemoveLocallyClosedGroupIdFromPref(removed_group.saved_guid());
 
   // Clean up from the list of shared groups waiting for people group, if

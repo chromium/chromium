@@ -282,7 +282,9 @@ ExternalSource GetExternalSourceFromExternalImage(
     // generate
     //   required results.
     ImageExtractor image_extractor(image_for_canvas.get(),
-                                   external_image_dst_info.premultiplied_alpha,
+                                   external_image_dst_info.premultiplied_alpha
+                                       ? kPremul_SkAlphaType
+                                       : kUnpremul_SkAlphaType,
                                    PredefinedColorSpaceToSkColorSpace(
                                        external_image_dst_info.color_space));
     sk_image = image_extractor.GetSkImage();
@@ -1010,7 +1012,13 @@ bool GPUQueue::CopyFromCanvasSourceImage(
 
     wgpu::Extent3D source_image_copy_size = {copy_size.width, copy_size.height};
 
-    wgpu::CommandEncoder encoder = device_->GetHandle().CreateCommandEncoder();
+    wgpu::CommandEncoderDescriptor command_encoder_desc = {
+        .label = "GPUQueue::CopyFromCanvasSourceImage",
+    };
+
+    wgpu::CommandEncoder encoder =
+        device_->GetHandle().CreateCommandEncoder(&command_encoder_desc);
+
     encoder.CopyBufferToTexture(&dawn_intermediate_buffer,
                                 &dawn_intermediate_texture,
                                 &source_image_copy_size);

@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/process/current_process.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/types/pass_key.h"
@@ -234,6 +235,10 @@ class Interceptor : public network::mojom::URLLoaderClient,
 bool ContentDecodingInterceptor::
     force_mojo_create_data_pipe_failure_for_testing_ = false;
 
+// static
+bool ContentDecodingInterceptor::
+    is_network_serice_runnning_in_the_current_process_ = false;
+
 void ContentDecodingInterceptor::Intercept(
     const std::vector<net::SourceStreamType>& types,
     network::mojom::URLLoaderClientEndpointsPtr& endpoints,
@@ -311,6 +316,7 @@ void ContentDecodingInterceptor::Intercept(
     mojo::PendingReceiver<network::mojom::URLLoader> dest_url_loader,
     mojo::PendingRemote<network::mojom::URLLoaderClient> dest_url_loader_client,
     scoped_refptr<base::SequencedTaskRunner> worker_task_runner) {
+  CHECK(IsInContentDecodingAllowedProcess());
   // Post a task to create and start the `Interceptor` on the worker thread.
   worker_task_runner->PostTask(
       FROM_HERE,
@@ -366,9 +372,31 @@ void ContentDecodingInterceptor::InterceptOnNetworkService(
 }
 
 // static
+void ContentDecodingInterceptor::SetIsNetworkServiceRunningInTheCurrentProcess(
+    bool value,
+    SetIsNetworkServiceRunningInTheCurrentProcessKey) {
+  is_network_serice_runnning_in_the_current_process_ = value;
+}
+
+// static
 void ContentDecodingInterceptor::SetForceMojoCreateDataPipeFailureForTesting(
     bool value) {
   force_mojo_create_data_pipe_failure_for_testing_ = value;
+}
+
+// static
+bool ContentDecodingInterceptor::IsInContentDecodingAllowedProcess() {
+  // Allow if NetworkService runs in the current process.
+  if (is_network_serice_runnning_in_the_current_process_) {
+    return true;
+  }
+  // Otherwise, disallow only if this is the browser process.
+  if (base::CurrentProcess::GetInstance().GetType({}) ==
+      base::CurrentProcessType::PROCESS_BROWSER) {
+    return false;
+  }
+  // Allow in other process types (renderer, utility, etc.).
+  return true;
 }
 
 }  // namespace network

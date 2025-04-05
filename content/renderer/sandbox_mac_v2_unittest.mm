@@ -40,8 +40,7 @@ namespace {
 
 void SetParametersForTest(SandboxSerializer* serializer,
                           const base::FilePath& logging_path,
-                          const base::FilePath& executable_path,
-                          bool use_syscall_filter) {
+                          const base::FilePath& executable_path) {
   bool enable_logging = true;
   CHECK(serializer->SetBooleanParameter(sandbox::policy::kParamEnableLogging,
                                         enable_logging));
@@ -75,9 +74,6 @@ void SetParametersForTest(SandboxSerializer* serializer,
 
   CHECK(serializer->SetParameter(sandbox::policy::kParamExecutablePath,
                                  executable_path.value()));
-
-  CHECK(serializer->SetBooleanParameter(sandbox::policy::kParamFilterSyscalls,
-                                        use_syscall_filter));
 }
 
 }  // namespace
@@ -107,11 +103,7 @@ MULTIPROCESS_TEST_MAIN(SandboxProfileProcess) {
   const base::FilePath log_file = temp_path.Append("log-file");
   const base::FilePath exec_file("/bin/ls");
 
-  // TODO(crbug.com/40273168): re-enable syscall filter for this test.
-  // SandboxV2Test.SandboxProfileTest uses system() which uses a denied syscall,
-  // which should cause the test to fail.
-  SetParametersForTest(&serializer, log_file, exec_file,
-                       /*use_syscall_filter=*/false);
+  SetParametersForTest(&serializer, log_file, exec_file);
 
   std::string error, serialized;
   CHECK(serializer.SerializePolicy(serialized, error)) << error;

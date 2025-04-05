@@ -143,32 +143,28 @@ export class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
         computed: 'computeMicrophoneToggleTooltipText_(isMicListEmpty_, ' +
             'microphoneHardwareToggleActive_)',
       },
-
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kCameraOnOff,
-          Setting.kMicrophoneOnOff,
-          Setting.kSpeakOnMuteDetectionOnOff,
-          Setting.kGeolocationOnOff,
-          Setting.kUsageStatsAndCrashReports,
-        ]),
-      },
     };
   }
 
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kCameraOnOff,
+    Setting.kMicrophoneOnOff,
+    Setting.kSpeakOnMuteDetectionOnOff,
+    Setting.kGeolocationOnOff,
+    Setting.kUsageStatsAndCrashReports,
+  ]);
+
   private browserProxy_: PrivacyHubBrowserProxy;
   private showPrivacyHubLocationControl_: boolean;
-  private locationSublabel_: string;
+  private locationSubLabel_: string;
   private cameraFallbackMechanismEnabled_: boolean;
   private cameraRowSubtext_: string;
   private isCameraListEmpty_: boolean;
   private isMicListEmpty_: boolean;
   private microphoneRowSubtext_: string;
   private microphoneHardwareToggleActive_: boolean;
+  private microphoneToggleTooltipText_: string;
   private shouldDisableMicrophoneToggle_: boolean;
   private cameraSwitchForceDisabled_: boolean;
   private shouldDisableCameraToggle_: boolean;

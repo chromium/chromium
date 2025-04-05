@@ -152,21 +152,9 @@ DisplayResourceProviderSkia::LockSetForExternalUse::LockResource(
     resources_.emplace_back(id, &resource);
 
     if (!resource.image_context) {
-      // SkColorSpace covers only RGB portion of the gfx::ColorSpace, YUV
-      // portion is handled via SkYuvColorSpace at places where we create YUV
-      // images.
-      sk_sp<SkColorSpace> image_color_space =
-          resource.transferable.color_space.GetAsFullRangeRGB()
-              .ToSkColorSpace();
-
       resource.image_context =
           resource_provider_->external_use_client_->CreateImageContext(
-              resource.transferable.mailbox(),
-              resource.transferable.sync_token(),
-              resource.transferable.texture_target(),
-              resource.transferable.size, resource.transferable.format,
-              maybe_concurrent_reads, resource.transferable.ycbcr_info,
-              std::move(image_color_space), resource.transferable.origin,
+              resource.transferable, maybe_concurrent_reads,
               raw_draw_is_possible);
     }
     resource.locked_for_external_use = true;

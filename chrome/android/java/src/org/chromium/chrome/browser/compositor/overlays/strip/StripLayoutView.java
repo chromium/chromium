@@ -82,6 +82,7 @@ public abstract class StripLayoutView implements VirtualView {
     private boolean mIsIncognito;
     private boolean mIsForegrounded;
     private boolean mIsDraggedOffStrip;
+    private boolean mWillClose;
 
     // A11y variables.
     private String mAccessibilityDescription = "";
@@ -288,9 +289,19 @@ public abstract class StripLayoutView implements VirtualView {
         mIsDraggedOffStrip = isDraggedOffStrip;
     }
 
-    /** Returns whether or not the tab is dragged off the strip and should be hidden. */
+    /** Returns whether or not the view is dragged off the strip and should be hidden. */
     public boolean isDraggedOffStrip() {
         return mIsDraggedOffStrip;
+    }
+
+    /** Marks that the view will be closed due to an incoming TabModel update. */
+    public void setWillClose() {
+        mWillClose = true;
+    }
+
+    /** Returns whether or not the view will be closed due to an incoming TabModel update. */
+    public boolean willClose() {
+        return mWillClose;
     }
 
     /**

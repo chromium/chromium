@@ -12,6 +12,7 @@
 #include <memory>
 
 #include "base/apple/scoped_mach_port.h"
+#include "base/ios/device_util.h"
 #include "base/logging.h"
 #include "base/process/process_handle.h"
 #include "base/process/process_metrics.h"
@@ -48,16 +49,12 @@ uint64_t GetFreePhysicalBytes() {
 }
 
 uint64_t GetRealMemoryUsedInBytes() {
-  task_vm_info task_info_data;
-  mach_msg_type_number_t count = sizeof(task_vm_info) / sizeof(natural_t);
-  kern_return_t kr =
-      task_info(mach_task_self(), TASK_VM_INFO,
-                reinterpret_cast<task_info_t>(&task_info_data), &count);
-  if (kr != KERN_SUCCESS) {
-    return 0;
+  auto result = ios::device_util::GetTaskVMInfo();
+  if (result.has_value()) {
+    task_vm_info task_vm_info_data = result.value();
+    return task_vm_info_data.resident_size - task_vm_info_data.reusable;
   }
-
-  return task_info_data.resident_size - task_info_data.reusable;
+  return 0;
 }
 
 uint64_t GetDirtyVMBytes() {
@@ -86,17 +83,12 @@ uint64_t GetDirtyVMBytes() {
 }
 
 uint64_t GetInternalVMBytes() {
-  task_vm_info_data_t task_vm_info;
-  mach_msg_type_number_t count = TASK_VM_INFO_COUNT;
-  kern_return_t result =
-      task_info(mach_task_self(), TASK_VM_INFO,
-                reinterpret_cast<task_info_t>(&task_vm_info), &count);
-  if (result != KERN_SUCCESS) {
-    LOG(ERROR) << "Calling task_info failed.";
-    return 0;
+  auto result = ios::device_util::GetTaskVMInfo();
+  if (result.has_value()) {
+    task_vm_info task_vm_info_data = result.value();
+    return static_cast<uint64_t>(task_vm_info_data.internal);
   }
-
-  return static_cast<uint64_t>(task_vm_info.internal);
+  LOG(ERROR) << "Calling task_info failed.";
+  return 0;
 }
-
 }  // namespace memory_util

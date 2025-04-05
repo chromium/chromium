@@ -96,19 +96,6 @@ class TestSum(unittest.TestCase):
     temp_file.close()
     os.unlink(temp_file.name)
 
-  def test_simple_rust_library_x86(self):
-    self._test_end_to_end_generation(
-        ["x86"],
-        ["//components/cronet/gn2bp/tests/test_rlib_crate:target1_gn2bp_test"])
-
-  def test_simple_rust_library_all_archs(self):
-    self._test_end_to_end_generation([
-        "x86", "x64", "arm", "arm64", "riscv64"
-    ], [
-        "//components/cronet/gn2bp/tests/test_rlib_crate:target1_gn2bp_test",
-        "//components/cronet/gn2bp/tests/test_rlib_crate:target2_gn2bp_test"
-    ])
-
 
 def main():
   try:

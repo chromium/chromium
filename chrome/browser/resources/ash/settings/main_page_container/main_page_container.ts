@@ -73,7 +73,7 @@ export class MainPageContainerElement extends MainPageContainerElementBase {
       },
 
       /** Mirror Section enum to be used in Polymer data bindings. */
-      Section: {
+      SectionEnum_: {
         type: Object,
         value: Section,
       },
@@ -113,11 +113,6 @@ export class MainPageContainerElement extends MainPageContainerElementBase {
       showUpdateRequiredEolBanner_: {
         type: Boolean,
         value: !!loadTimeData.getString('updateRequiredEolBannerText'),
-      },
-
-      currentRoute_: {
-        type: Object,
-        value: null,
       },
 
       showEolIncentive_: {

@@ -87,12 +87,12 @@ git-derive[EXE] stash push:
   -h, --help               Print help
 
 git-derive[EXE] stash pop:
-  -h, --help   Print help
-  [STASH]  
+  -h, --help  Print help
+  [STASH]     
 
 git-derive[EXE] stash apply:
-  -h, --help   Print help
-  [STASH]  
+  -h, --help  Print help
+  [STASH]     
 
 git-derive[EXE] stash help:
 Print this message or the help of the given subcommand(s)

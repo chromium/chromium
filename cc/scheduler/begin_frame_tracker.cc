@@ -74,6 +74,12 @@ const viz::BeginFrameArgs& BeginFrameTracker::Last() const {
   return current_args_;
 }
 
+bool BeginFrameTracker::HasLast() const {
+  DCHECK(HasFinished())
+      << "Tried to use last viz::BeginFrameArgs before the frame is finished.";
+  return current_args_.IsValid();
+}
+
 base::TimeDelta BeginFrameTracker::Interval() const {
   base::TimeDelta interval = current_args_.interval;
   // Normal interval will be ~16ms, 200Hz (5ms) screens are the fastest

@@ -85,12 +85,12 @@ git[EXE] stash push:
   -h, --help               Print help
 
 git[EXE] stash pop:
-  -h, --help   Print help
-  [STASH]  
+  -h, --help  Print help
+  [STASH]     
 
 git[EXE] stash apply:
-  -h, --help   Print help
-  [STASH]  
+  -h, --help  Print help
+  [STASH]     
 
 git[EXE] stash help:
 Print this message or the help of the given subcommand(s)

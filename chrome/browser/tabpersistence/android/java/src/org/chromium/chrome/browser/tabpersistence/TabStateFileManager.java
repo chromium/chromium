@@ -20,6 +20,8 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.version_info.VersionInfo;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
@@ -53,6 +55,7 @@ import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
 
 /** Saves and restores {@link TabState} to and from files. */
+@NullMarked
 public class TabStateFileManager {
     // Different variants will be experimented with and each variant will have
     // a different prefix.
@@ -78,7 +81,7 @@ public class TabStateFileManager {
     protected static final long KEY_CHECKER = 0;
 
     /** Overrides the Chrome channel/package name to test a variant channel-specific behaviour. */
-    private static String sChannelNameOverrideForTest;
+    private static @Nullable String sChannelNameOverrideForTest;
 
     private static final long NO_TAB_GROUP_ID = 0L;
 
@@ -145,7 +148,8 @@ public class TabStateFileManager {
      * @param cipherFactory The {@link CipherFactory} used for encrypting and decrypting files.
      * @return {@link TabState} corresponding to Tab with id
      */
-    public static TabState restoreTabState(File stateFolder, int id, CipherFactory cipherFactory) {
+    public static @Nullable TabState restoreTabState(
+            File stateFolder, int id, CipherFactory cipherFactory) {
         recordTabStateMigrationStatus(stateFolder, id);
         // If the FlatBuffer schema is enabled, try to restore using that. There are no guarantees,
         // however - for example if the flag was just turned on there won't have been the
@@ -222,7 +226,7 @@ public class TabStateFileManager {
      * @return TabState that has been restored, or null if it failed.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public static TabState restoreTabState(
+    public static @Nullable TabState restoreTabState(
             File stateFolder, int id, CipherFactory cipherFactory, boolean useFlatBuffer) {
         // First try finding an unencrypted file.
         boolean encrypted = false;
@@ -262,7 +266,7 @@ public class TabStateFileManager {
      * @return TabState that has been restored, or null if it failed.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public static TabState restoreTabStateInternal(
+    public static @Nullable TabState restoreTabStateInternal(
             File tabFile, boolean isEncrypted, CipherFactory cipherFactory) {
         TabState tabState = null;
         try {
@@ -316,7 +320,8 @@ public class TabStateFileManager {
      * @param cipherFactory The {@link CipherFactory} used for encrypting and decrypting files.
      * @return TabState that has been restored, or null if it failed.
      */
-    private static TabState readState(File file, boolean encrypted, CipherFactory cipherFactory)
+    private static @Nullable TabState readState(
+            File file, boolean encrypted, CipherFactory cipherFactory)
             throws IOException, FileNotFoundException {
         if (file.getName().startsWith(FLATBUFFER_PREFIX)) {
             return readStateFlatBuffer(file, encrypted, cipherFactory);
@@ -482,7 +487,7 @@ public class TabStateFileManager {
         }
     }
 
-    private static TabState readStateFlatBuffer(
+    private static @Nullable TabState readStateFlatBuffer(
             File file, boolean encrypted, CipherFactory cipherFactory) throws IOException {
         FileInputStream fileInputStream = null;
         CipherInputStream cipherInputStream = null;
@@ -736,6 +741,7 @@ public class TabStateFileManager {
             // the app and simply log what went wrong.
             Log.e(TAG, "Exception writing " + file.getName(), e);
         } finally {
+            assert fileOutputStream != null;
             StreamUtil.closeQuietly(dataOutputStream);
             StreamUtil.closeQuietly(cipherOutputStream);
             StreamUtil.closeQuietly(fileOutputStream);
@@ -888,10 +894,11 @@ public class TabStateFileManager {
 
     /**
      * Parse the tab id and whether the tab is incognito from the tab state filename.
+     *
      * @param name The given filename for the tab state file.
      * @return A {@link Pair} with tab id and incognito state read from the filename.
      */
-    public static Pair<Integer, Boolean> parseInfoFromFilename(String name) {
+    public static @Nullable Pair<Integer, Boolean> parseInfoFromFilename(String name) {
         try {
             if (name.startsWith(SAVED_TAB_STATE_FILE_PREFIX_INCOGNITO)) {
                 int id =

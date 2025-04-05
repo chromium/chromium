@@ -1012,6 +1012,15 @@ void Element::SetBooleanAttribute(const QualifiedName& name, bool value) {
   }
 }
 
+bool Element::HasAnyExplicitlySetAttrAssociatedElements() const {
+  if (ElementRareDataVector* data = GetElementRareData()) {
+    const ExplicitlySetAttrElementsMap* element_attribute_map =
+        data->GetExplicitlySetElementsForAttr();
+    return element_attribute_map && !element_attribute_map->map.empty();
+  }
+  return false;
+}
+
 bool Element::HasExplicitlySetAttrAssociatedElements(
     const QualifiedName& name) const {
   return GetExplicitlySetElementsForAttr(name);
@@ -1019,21 +1028,31 @@ bool Element::HasExplicitlySetAttrAssociatedElements(
 
 GCedHeapLinkedHashSet<WeakMember<Element>>*
 Element::GetExplicitlySetElementsForAttr(const QualifiedName& name) const {
-  ExplicitlySetAttrElementsMap* element_attribute_map =
-      GetDocument().GetExplicitlySetAttrElementsMap(this);
-  auto it = element_attribute_map->find(name);
-  if (it == element_attribute_map->end()) {
-    return nullptr;
+  if (ElementRareDataVector* data = GetElementRareData()) {
+    const ExplicitlySetAttrElementsMap* element_attribute_map =
+        data->GetExplicitlySetElementsForAttr();
+    if (!element_attribute_map) {
+      return nullptr;
+    }
+    auto it = element_attribute_map->map.find(name);
+    if (it == element_attribute_map->map.end()) {
+      return nullptr;
+    }
+    const auto& elements = it->value;
+    return elements->size() ? elements : nullptr;
   }
-  const auto& elements = it->value;
-  return elements->size() ? elements : nullptr;
+  return nullptr;
 }
 
 void Element::SynchronizeContentAttributeAndElementReference(
     const QualifiedName& name) {
-  ExplicitlySetAttrElementsMap* element_attribute_map =
-      GetDocument().GetExplicitlySetAttrElementsMap(this);
-  element_attribute_map->erase(name);
+  if (ElementRareDataVector* data = GetElementRareData()) {
+    ExplicitlySetAttrElementsMap* element_attribute_map =
+        data->GetExplicitlySetElementsForAttr();
+    if (element_attribute_map) {
+      element_attribute_map->map.erase(name);
+    }
+  }
 }
 
 void Element::SetElementAttribute(const QualifiedName& name, Element* element) {
@@ -1041,20 +1060,28 @@ void Element::SetElementAttribute(const QualifiedName& name, Element* element) {
       << " Element attributes must be added to IsElementReflectionAttribute. "
          "name: "
       << name;
-  ExplicitlySetAttrElementsMap* explicitly_set_attr_elements_map =
-      GetDocument().GetExplicitlySetAttrElementsMap(this);
+  if (!element && (!GetElementRareData() ||
+                   !GetElementRareData()->GetExplicitlySetElementsForAttr())) {
+    // Nothing to do for explicitly set attributes below,
+    // so don't ensure the map; just remove the attribute.
+    removeAttribute(name);
+    return;
+  }
+
+  ExplicitlySetAttrElementsMap& explicitly_set_attr_elements_map =
+      EnsureElementRareData().EnsureExplicitlySetElementsForAttr();
 
   // If the reflected element is explicitly null then we remove the content
   // attribute and the explicitly set attr-element.
   if (!element) {
-    explicitly_set_attr_elements_map->erase(name);
+    explicitly_set_attr_elements_map.map.erase(name);
     removeAttribute(name);
     return;
   }
 
   setAttribute(name, g_empty_atom);
 
-  auto result = explicitly_set_attr_elements_map->insert(name, nullptr);
+  auto result = explicitly_set_attr_elements_map.map.insert(name, nullptr);
   if (result.is_new_entry) {
     result.stored_value->value =
         MakeGarbageCollected<GCedHeapLinkedHashSet<WeakMember<Element>>>();
@@ -1298,13 +1325,13 @@ void Element::SetElementArrayAttribute(
     const GCedHeapVector<Member<Element>>* given_elements) {
   // https://html.spec.whatwg.org/multipage/common-dom-interfaces.html#reflecting-content-attributes-in-idl-attributes:element-3
 
-  ExplicitlySetAttrElementsMap* element_attribute_map =
-      GetDocument().GetExplicitlySetAttrElementsMap(this);
+  ExplicitlySetAttrElementsMap& element_attribute_map =
+      EnsureElementRareData().EnsureExplicitlySetElementsForAttr();
 
   if (!given_elements) {
     // 1. If the given value is null:
     //   1. Set this's explicitly set attr-elements to null.
-    element_attribute_map->erase(name);
+    element_attribute_map.map.erase(name);
     //   2. Run this's delete the content attribute.
     removeAttribute(name);
     return;
@@ -1321,13 +1348,13 @@ void Element::SetElementArrayAttribute(
   // In practice, we're fetching elements from element_attribute_map, clearing
   // the previous value if necessary to get an empty list, and then populating
   // the list.
-  auto it = element_attribute_map->find(name);
+  auto it = element_attribute_map.map.find(name);
   GCedHeapLinkedHashSet<WeakMember<Element>>* stored_elements =
-      it != element_attribute_map->end() ? it->value : nullptr;
+      it != element_attribute_map.map.end() ? it->value : nullptr;
   if (!stored_elements) {
     stored_elements =
         MakeGarbageCollected<GCedHeapLinkedHashSet<WeakMember<Element>>>();
-    element_attribute_map->Set(name, stored_elements);
+    element_attribute_map.map.Set(name, stored_elements);
   } else {
     stored_elements->clear();
   }
@@ -1341,7 +1368,7 @@ void Element::SetElementArrayAttribute(
   // |setAttribute| will call through to |AttributeChanged| which calls
   // |SynchronizeContentAttributeAndElementReference| erasing the entry for
   // |name| from the map.
-  element_attribute_map->Set(name, stored_elements);
+  element_attribute_map.map.Set(name, stored_elements);
 
   // |HandleAttributeChanged| must be called after updating the attribute map.
   if (isConnected()) {
@@ -1541,50 +1568,6 @@ bool Element::InterestLost(Element& interest_target) {
 }
 
 void Element::DefaultEventHandler(Event& event) {
-  if (Element* target = interestTargetElement()) {
-    CHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
-        GetDocument().GetExecutionContext()));
-    if (auto* keyboard_event = DynamicTo<KeyboardEvent>(event);
-        keyboard_event && event.type() == event_type_names::kKeydown) {
-      const int modifiers =
-          keyboard_event->GetModifiers() & blink::WebInputEvent::kKeyModifiers;
-      if (keyboard_event->key() == keywords::kArrowUp &&
-          modifiers == WebInputEvent::kAltKey && !HasInterest()) {
-        bool should_trigger_interest = true;
-        if (Element* current_interest_element =
-                GetDocument().KeyboardInterestTargetElement();
-            current_interest_element && current_interest_element != this &&
-            current_interest_element->HasInterest()) {
-          // We are gaining interest in a different element, but we haven't lost
-          // interest in the old element yet. Do that now.
-          if (!GainOrLoseInterest(
-                  current_interest_element,
-                  current_interest_element->interestTargetElement(),
-                  /*interest_gained*/ false)) {
-            // The `loseinterest` event to the old target was cancelled.
-            should_trigger_interest = false;
-          } else if (target != interestTargetElement()) {
-            // The event handler above changed the target
-            should_trigger_interest = false;
-          }
-        }
-        if (should_trigger_interest) {
-          if (GainOrLoseInterest(this, target, /*interest_gained*/ true)) {
-            event.SetDefaultHandled();
-            GetDocument().SetKeyboardInterestTargetElement(this);
-            return;
-          }
-        }
-      } else if (keyboard_event->key() == keywords::kEscape && !modifiers &&
-                 HasInterest()) {
-        if (GainOrLoseInterest(this, target, /*interest_gained*/ false)) {
-          event.SetDefaultHandled();
-          GetDocument().SetKeyboardInterestTargetElement(nullptr);
-          return;
-        }
-      }
-    }
-  }
   ContainerNode::DefaultEventHandler(event);
 }
 
@@ -4573,7 +4556,8 @@ StyleRecalcChange Element::RecalcOwnStyle(
     GetDocument().GetStyleEngine().MarkCountersDirty();
   }
 
-  if (new_style && !new_style->ScrollMarkerContainNone()) {
+  if ((!old_style || old_style->ScrollMarkerContainNone()) && new_style &&
+      !new_style->ScrollMarkerContainNone()) {
     GetDocument().AddScrollMarkerGroup(&EnsureScrollMarkerGroupData());
   }
 
@@ -6904,31 +6888,47 @@ void Element::Focus(const FocusParams& params) {
   }
 }
 
-void Element::SetFocused(bool received, mojom::blink::FocusType focus_type) {
+void Element::SetFocused(bool now_focused, mojom::blink::FocusType focus_type) {
   // Recurse up author shadow trees to mark shadow hosts if it matches :focus.
   // TODO(kochi): Handle UA shadows which marks multiple nodes as focused such
   // as <input type="date"> the same way as author shadow.
   if (ShadowRoot* root = ContainingShadowRoot()) {
     if (!root->IsUserAgent()) {
-      OwnerShadowHost()->SetFocused(received, focus_type);
+      OwnerShadowHost()->SetFocused(now_focused, focus_type);
     }
   }
 
   // We'd like to invalidate :focus style for kPage even if element's focus
   // state has not been changed, because the element might have been focused
   // while the page was inactive.
-  if (IsFocused() == received && focus_type != mojom::blink::FocusType::kPage) {
+  if (IsFocused() == now_focused &&
+      focus_type != mojom::blink::FocusType::kPage) {
     return;
   }
 
   if (focus_type == mojom::blink::FocusType::kMouse) {
     GetDocument().SetHadKeyboardEvent(false);
   }
-  GetDocument().UserActionElements().SetFocused(this, received);
+  GetDocument().UserActionElements().SetFocused(this, now_focused);
 
   FocusStateChanged();
 
-  if (GetLayoutObject() || received) {
+  // Handle interest invokers for focus gained or lost.
+  if (RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
+          GetDocument().GetExecutionContext())) {
+    if (interestTargetElement()) {
+      if (now_focused) {
+        ScheduleInterestGainedTask();
+      } else {
+        ScheduleInterestLostTask();
+      }
+    } else if (auto* invoker = GetInterestInvoker();
+               invoker && invoker->HasInterest() && !now_focused) {
+      invoker->ScheduleInterestLostTask();
+    }
+  }
+
+  if (GetLayoutObject() || now_focused) {
     return;
   }
 
@@ -7096,6 +7096,10 @@ bool Element::SupportsSpatialNavigationFocus() const {
     return false;
   }
 
+  return HasSpatialNavigationFocusHeuristics();
+}
+
+bool Element::HasSpatialNavigationFocusHeuristics() const {
   if (!GetLayoutObject()) {
     return false;
   }
@@ -7235,26 +7239,12 @@ bool Element::IsMaybeClickable() {
   if (IsClickableControl(this)) {
     return true;
   }
+
   if (HasActivationBehavior()) {
     return true;
   }
-  if (HasJSBasedEventListeners(event_type_names::kClick) ||
-      HasJSBasedEventListeners(event_type_names::kKeydown) ||
-      HasJSBasedEventListeners(event_type_names::kKeypress) ||
-      HasJSBasedEventListeners(event_type_names::kKeyup) ||
-      HasJSBasedEventListeners(event_type_names::kMouseover) ||
-      HasJSBasedEventListeners(event_type_names::kMouseenter)) {
-    return true;
-  }
-  if (HasEventListeners(event_type_names::kClick) ||
-      HasEventListeners(event_type_names::kKeydown) ||
-      HasEventListeners(event_type_names::kKeypress) ||
-      HasEventListeners(event_type_names::kKeyup) ||
-      HasEventListeners(event_type_names::kMouseover) ||
-      HasEventListeners(event_type_names::kMouseenter)) {
-    return true;
-  }
-  return false;
+
+  return HasSpatialNavigationFocusHeuristics();
 }
 
 bool Element::IsFocusable(UpdateBehavior update_behavior) const {
@@ -9180,12 +9170,6 @@ const ComputedStyle* Element::StyleForPseudoElement(
     return result;
   }
 
-  // We use the originating DOM element when resolving style for ::transition*
-  // pseudo elements instead of the element's direct ancestor (which could
-  // itself be a pseudo element).
-  DCHECK(!IsTransitionPseudoElement(GetPseudoId()) ||
-         (GetDocument().documentElement() == this));
-
   StyleRequest style_request = request;
   if (PseudoElement::IsLayoutSiblingOfOriginatingElement(pseudo_id)) {
     CHECK(request.parent_override);
@@ -10588,7 +10572,8 @@ bool Element::GainOrLoseInterest(Element* invoker,
   // may have changed since invoker and target were passed.
   if (!invoker || !target || !invoker->IsInTreeScope() ||
       !invoker->GetDocument().IsActive() ||
-      invoker->interestTargetElement() != target) {
+      invoker->interestTargetElement() != target ||
+      (!interest_gained && target->GetInterestInvoker() != invoker)) {
     return false;
   }
 
@@ -10635,8 +10620,10 @@ bool Element::GainOrLoseInterest(Element* invoker,
         .EnsureInterestInvokerTargetData()
         .setInterestInvoker(invoker);
     invoker->PseudoStateChanged(CSSSelector::kPseudoHasInterest);
+    DCHECK(!invoker->GetDocument().CurrentInterestTargetElements().Contains(
+        invoker));
+    invoker->GetDocument().CurrentInterestTargetElements().insert(invoker);
   } else {
-    CHECK_EQ(target->GetInterestInvoker(), invoker);
     if (!invoker->InterestLost(*target)) {
       return false;  // event was cancelled.
     }
@@ -10645,6 +10632,9 @@ bool Element::GainOrLoseInterest(Element* invoker,
         targets_invoker && targets_invoker == invoker) {
       target->EnsureElementRareData().RemoveInterestInvokerTargetData();
       invoker->PseudoStateChanged(CSSSelector::kPseudoHasInterest);
+      DCHECK(invoker->GetDocument().CurrentInterestTargetElements().Contains(
+          invoker));
+      invoker->GetDocument().CurrentInterestTargetElements().erase(invoker);
     }
   }
   return true;
@@ -10674,9 +10664,7 @@ void Element::ScheduleInterestGainedTask() {
       FROM_HERE,
       WTF::BindOnce(
           [](Element* invoker, Element* target) {
-            if (GainOrLoseInterest(invoker, target, /*interest_gained*/ true)) {
-              invoker->GetDocument().SetKeyboardInterestTargetElement(nullptr);
-            }
+            GainOrLoseInterest(invoker, target, /*interest_gained*/ true);
           },
           WrapWeakPersistent(this), WrapWeakPersistent(target)),
       base::Seconds(show_delay_seconds)));
@@ -11543,8 +11531,12 @@ ScrollMarkerGroupData& Element::EnsureScrollMarkerGroupData() {
 
 void Element::RemoveScrollMarkerGroupData() {
   if (ElementRareDataVector* data = GetElementRareData()) {
-    GetDocument().RemoveScrollMarkerGroup(data->GetScrollMarkerGroupData());
-    data->RemoveScrollMarkerGroupData();
+    if (ScrollMarkerGroupData* scroll_marker_group_data =
+            data->GetScrollMarkerGroupData()) {
+      scroll_marker_group_data->ClearFocusGroup();
+      GetDocument().RemoveScrollMarkerGroup(scroll_marker_group_data);
+      data->RemoveScrollMarkerGroupData();
+    }
   }
 }
 

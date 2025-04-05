@@ -20,12 +20,15 @@
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/regional_capabilities/regional_capabilities_switches.h"
 #include "components/search_engines/search_engines_switches.h"
+#include "components/user_education/test/test_product_messaging_controller.h"
 #include "components/variations/service/variations_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
+
+DEFINE_LOCAL_REQUIRED_NOTICE_IDENTIFIER(kNoticeId);
 
 // This file is meant to test the general code path that causes notices to show.
 // Specifically triggering of the notice queue.
@@ -36,11 +39,9 @@ class PrivacySandboxQueueTestNotice : public InProcessBrowserTest {
         {privacy_sandbox::kPrivacySandboxNoticeQueue}, {});
   }
 
-  void SetUpPrivacySandboxService() {
-    auto* privacy_sandbox_service =
-        PrivacySandboxServiceFactory::GetForProfile(browser()->profile());
-    privacy_sandbox_service->SetPromptDisabledForTests(false);
-    privacy_sandbox_service->ForceChromeBuildForTests(true);
+  void SetUpOnMainThread() override {
+    privacy_sandbox_service()->SetPromptDisabledForTests(false);
+    privacy_sandbox_service()->ForceChromeBuildForTests(true);
     g_browser_process->variations_service()->OverrideStoredPermanentCountry(
         "be");
     base::CommandLine::ForCurrentProcess()->RemoveSwitch(switches::kNoFirstRun);
@@ -48,6 +49,14 @@ class PrivacySandboxQueueTestNotice : public InProcessBrowserTest {
 
   content::WebContents* web_contents(PrivacySandboxDialogView* dialog_widget) {
     return dialog_widget->GetWebContentsForTesting();
+  }
+
+  privacy_sandbox::PrivacySandboxQueueManager& queue_manager() {
+    return privacy_sandbox_service()->GetPrivacySandboxNoticeQueueManager();
+  }
+
+  PrivacySandboxService* privacy_sandbox_service() {
+    return PrivacySandboxServiceFactory::GetForProfile(browser()->profile());
   }
 
   std::string element_path_ =
@@ -66,13 +75,6 @@ class PrivacySandboxQueueTestNotice : public InProcessBrowserTest {
 
 // Navigate to a invalid then valid webpage. Ensure handle is held throughout.
 IN_PROC_BROWSER_TEST_F(PrivacySandboxQueueTestNotice, NoPrompt) {
-  // Set flags correctly
-  SetUpPrivacySandboxService();
-  auto* privacy_sandbox_service =
-      PrivacySandboxServiceFactory::GetForProfile(browser()->profile());
-  privacy_sandbox::PrivacySandboxQueueManager& queue_manager =
-      privacy_sandbox_service->GetPrivacySandboxNoticeQueueManager();
-
   // Navigate to invalid page.
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(chrome::kChromeUINewTabPageURL),
@@ -81,7 +83,7 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxQueueTestNotice, NoPrompt) {
 
   // When we navigate to a page that doesn't require a prompt, we should still
   // hog handle.
-  ASSERT_TRUE(queue_manager.IsHoldingHandle());
+  ASSERT_TRUE(queue_manager().IsHoldingHandle());
 
   // Navigate to valid page.
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
@@ -89,18 +91,11 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxQueueTestNotice, NoPrompt) {
       WindowOpenDisposition::NEW_WINDOW,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
-  ASSERT_TRUE(queue_manager.IsHoldingHandle());
+  ASSERT_TRUE(queue_manager().IsHoldingHandle());
 }
 
 // Navigate to a valid webpage (settings page) and click a notice. One window.
 IN_PROC_BROWSER_TEST_F(PrivacySandboxQueueTestNotice, PromptShows) {
-  // Set flags correctly.
-  SetUpPrivacySandboxService();
-  auto* privacy_sandbox_service =
-      PrivacySandboxServiceFactory::GetForProfile(browser()->profile());
-  privacy_sandbox::PrivacySandboxQueueManager& queue_manager =
-      privacy_sandbox_service->GetPrivacySandboxNoticeQueueManager();
-
   // Navigate.
   views::NamedWidgetShownWaiter waiter(
       views::test::AnyWidgetTestPasskey{},
@@ -115,7 +110,7 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxQueueTestNotice, PromptShows) {
       waiter.WaitIfNeededAndGet()->widget_delegate()->GetContentsView());
 
   // Before we click, should still be holding handle.
-  ASSERT_TRUE(queue_manager.IsHoldingHandle());
+  ASSERT_TRUE(queue_manager().IsHoldingHandle());
 
   // Click ack button.
   const std::string& code = element_path_ + ".click();";
@@ -124,19 +119,12 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxQueueTestNotice, PromptShows) {
                               1 /* world_id */));
 
   // After click, should release handle.
-  ASSERT_FALSE(queue_manager.IsHoldingHandle());
+  ASSERT_FALSE(queue_manager().IsHoldingHandle());
 }
 
 // Navigate to a valid webpage (settings page) and click a notice. Two windows.
 IN_PROC_BROWSER_TEST_F(PrivacySandboxQueueTestNotice,
                        PromptShowsMultipleWindows) {
-  // Set flags correctly.
-  SetUpPrivacySandboxService();
-  auto* privacy_sandbox_service =
-      PrivacySandboxServiceFactory::GetForProfile(browser()->profile());
-  privacy_sandbox::PrivacySandboxQueueManager& queue_manager =
-      privacy_sandbox_service->GetPrivacySandboxNoticeQueueManager();
-
   // Navigate.
   views::NamedWidgetShownWaiter waiter(
       views::test::AnyWidgetTestPasskey{},
@@ -151,7 +139,7 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxQueueTestNotice,
       waiter.WaitIfNeededAndGet()->widget_delegate()->GetContentsView());
 
   // After first nav, we should be holding handle.
-  ASSERT_TRUE(queue_manager.IsHoldingHandle());
+  ASSERT_TRUE(queue_manager().IsHoldingHandle());
 
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(chrome::kChromeUISettingsURL),
@@ -159,7 +147,7 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxQueueTestNotice,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   // After second nav, should still be holding handle.
-  ASSERT_TRUE(queue_manager.IsHoldingHandle());
+  ASSERT_TRUE(queue_manager().IsHoldingHandle());
 
   // Click ack button on one window.
   const std::string& code = element_path_ + ".click();";
@@ -168,19 +156,14 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxQueueTestNotice,
                               1 /* world_id */));
 
   // After click, should release handle.
-  ASSERT_FALSE(queue_manager.IsHoldingHandle());
+  ASSERT_FALSE(queue_manager().IsHoldingHandle());
 }
 
 // Browser startup assumes we don't need a notice. Then we need a notice.
 IN_PROC_BROWSER_TEST_F(PrivacySandboxQueueTestNotice,
                        PromptNeededAtStartupThenNotAtNavigation) {
   // Set flags incorrectly so we don't need a prompt.
-  SetUpPrivacySandboxService();
-  auto* privacy_sandbox_service =
-      PrivacySandboxServiceFactory::GetForProfile(browser()->profile());
-  privacy_sandbox_service->SetPromptDisabledForTests(true);
-  privacy_sandbox::PrivacySandboxQueueManager& queue_manager =
-      privacy_sandbox_service->GetPrivacySandboxNoticeQueueManager();
+  privacy_sandbox_service()->SetPromptDisabledForTests(true);
 
   // Navigate.
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
@@ -189,11 +172,11 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxQueueTestNotice,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   // After first nav, we should not be holding handle.
-  ASSERT_FALSE(queue_manager.IsHoldingHandle());
-  ASSERT_FALSE(queue_manager.IsNoticeQueued());
+  ASSERT_FALSE(queue_manager().IsHoldingHandle());
+  ASSERT_FALSE(queue_manager().IsNoticeQueued());
 
   // Set the correct flag.
-  privacy_sandbox_service->SetPromptDisabledForTests(false);
+  privacy_sandbox_service()->SetPromptDisabledForTests(false);
 
   // Navigate again and now we want to queue and hold the handle.
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
@@ -202,19 +185,12 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxQueueTestNotice,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   // After second nav, should have been queued and holding handle.
-  ASSERT_TRUE(queue_manager.IsHoldingHandle());
+  ASSERT_TRUE(queue_manager().IsHoldingHandle());
 }
 
 // Browser startup assumes we need a notice. Then we realize we don't need it.
 IN_PROC_BROWSER_TEST_F(PrivacySandboxQueueTestNotice,
                        PromptNotNeededAtStartupThenNeededAtNavigation) {
-  // Set flags correctly.
-  SetUpPrivacySandboxService();
-  auto* privacy_sandbox_service =
-      PrivacySandboxServiceFactory::GetForProfile(browser()->profile());
-  privacy_sandbox::PrivacySandboxQueueManager& queue_manager =
-      privacy_sandbox_service->GetPrivacySandboxNoticeQueueManager();
-
   // Navigate.
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(chrome::kChromeUISettingsURL),
@@ -222,10 +198,10 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxQueueTestNotice,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   // After first trigger, should have been queued and holding handle.
-  ASSERT_TRUE(queue_manager.IsHoldingHandle());
+  ASSERT_TRUE(queue_manager().IsHoldingHandle());
 
   // Change our mind about wanting a prompt.
-  privacy_sandbox_service->SetPromptDisabledForTests(true);
+  privacy_sandbox_service()->SetPromptDisabledForTests(true);
 
   // Navigate.
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
@@ -234,8 +210,47 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxQueueTestNotice,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   // After second nav do not hold handle.
-  ASSERT_FALSE(queue_manager.IsNoticeQueued());
-  ASSERT_FALSE(queue_manager.IsHoldingHandle());
+  ASSERT_FALSE(queue_manager().IsNoticeQueued());
+  ASSERT_FALSE(queue_manager().IsHoldingHandle());
+}
+
+// Don't allow the notice to be queued, such that the handle check fails, and we
+// can log a QueueState.
+IN_PROC_BROWSER_TEST_F(PrivacySandboxQueueTestNotice,
+                       TestNoticeQueueStateNotInQueue) {
+  base::HistogramTester histogram_tester;
+  // Suppress attempts to queue.
+  queue_manager().SetSuppressQueue(true);
+
+  // Navigate to valid page, failing the holdingHandle check.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(chrome::kChromeUISettingsURL),
+      WindowOpenDisposition::NEW_WINDOW, ui_test_utils::BROWSER_TEST_NO_WAIT);
+  base::RunLoop().RunUntilIdle();
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.Notice.NotHoldingHandle.NotInQueue",
+      /*sample=*/1, /*expected_count=*/1);
+}
+
+// Allow the notice to be queued, but add a blocking notice that doesn't allow
+// our spot in the queue to trigger. The handle check repeatedly fails, and we
+// are still in the queue.
+IN_PROC_BROWSER_TEST_F(PrivacySandboxQueueTestNotice,
+                       TestNoticeQueueStateStuckInQueue) {
+  base::HistogramTester histogram_tester;
+
+  // Add a test notice before our notice that hogs the handle.
+  user_education::test::TestNotice notice(
+      *queue_manager().GetProductMessagingController(), kNoticeId);
+
+  // Navigate to valid page, failing the holdingHandle check.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(chrome::kChromeUISettingsURL),
+      WindowOpenDisposition::NEW_WINDOW, ui_test_utils::BROWSER_TEST_NO_WAIT);
+  base::RunLoop().RunUntilIdle();
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.Notice.NotHoldingHandle.InQueue",
+      /*sample=*/1, /*expected_count=*/1);
 }
 
 class PrivacySandboxQueueTestNoticeWithSearchEngine
@@ -248,16 +263,10 @@ class PrivacySandboxQueueTestNoticeWithSearchEngine
         switches::kIgnoreNoFirstRunForSearchEngineChoiceScreen);
   }
 
-  void SetUpPrivacySandboxServiceAndDMA() {
-    auto* privacy_sandbox_service =
-        PrivacySandboxServiceFactory::GetForProfile(browser()->profile());
+  void SetUpOnMainThread() override {
+    PrivacySandboxQueueTestNotice::SetUpOnMainThread();
     SearchEngineChoiceDialogService::SetDialogDisabledForTests(
         /*dialog_disabled=*/false);
-    privacy_sandbox_service->SetPromptDisabledForTests(false);
-    privacy_sandbox_service->ForceChromeBuildForTests(true);
-    g_browser_process->variations_service()->OverrideStoredPermanentCountry(
-        "be");
-    base::CommandLine::ForCurrentProcess()->RemoveSwitch(switches::kNoFirstRun);
   }
 
  private:
@@ -270,20 +279,13 @@ class PrivacySandboxQueueTestNoticeWithSearchEngine
 // Navigate to a page where the DMA notice should show and ensure suppression.
 IN_PROC_BROWSER_TEST_F(PrivacySandboxQueueTestNoticeWithSearchEngine,
                        PromptSuppressed) {
-  // Set flags correctly.
-  SetUpPrivacySandboxServiceAndDMA();
-  auto* privacy_sandbox_service =
-      PrivacySandboxServiceFactory::GetForProfile(browser()->profile());
-  privacy_sandbox::PrivacySandboxQueueManager& queue_manager =
-      privacy_sandbox_service->GetPrivacySandboxNoticeQueueManager();
-
   // When we navigate to valid page for SE dialog, we should unqueue and set the
   // suppress flag.
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::NEW_WINDOW,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
-  ASSERT_FALSE(queue_manager.IsHoldingHandle());
+  ASSERT_FALSE(queue_manager().IsHoldingHandle());
 
   // Navigate again to a valid notice page.
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
@@ -292,8 +294,8 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxQueueTestNoticeWithSearchEngine,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   // After second nav do not queue or hold the handle. Suppress should be true.
-  ASSERT_FALSE(queue_manager.IsNoticeQueued());
-  ASSERT_FALSE(queue_manager.IsHoldingHandle());
+  ASSERT_FALSE(queue_manager().IsNoticeQueued());
+  ASSERT_FALSE(queue_manager().IsHoldingHandle());
 }
 
 class PrivacySandboxQueueTestNoticeFeatureDisabled
@@ -311,16 +313,9 @@ class PrivacySandboxQueueTestNoticeFeatureDisabled
 // Navigate to a page and click a button.
 IN_PROC_BROWSER_TEST_F(PrivacySandboxQueueTestNoticeFeatureDisabled,
                        ShowAndClickPrompt) {
-  // Set flags correctly.
-  SetUpPrivacySandboxService();
-  auto* privacy_sandbox_service =
-      PrivacySandboxServiceFactory::GetForProfile(browser()->profile());
-  privacy_sandbox::PrivacySandboxQueueManager& queue_manager =
-      privacy_sandbox_service->GetPrivacySandboxNoticeQueueManager();
-
   // Should not be queued after browser startup
-  ASSERT_FALSE(queue_manager.IsNoticeQueued());
-  ASSERT_FALSE(queue_manager.IsHoldingHandle());
+  ASSERT_FALSE(queue_manager().IsNoticeQueued());
+  ASSERT_FALSE(queue_manager().IsHoldingHandle());
 
   // Navigate
   views::NamedWidgetShownWaiter waiter(
@@ -336,8 +331,8 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxQueueTestNoticeFeatureDisabled,
       waiter.WaitIfNeededAndGet()->widget_delegate()->GetContentsView());
 
   // Before we click, should still be holding handle.
-  ASSERT_FALSE(queue_manager.IsNoticeQueued());
-  ASSERT_FALSE(queue_manager.IsHoldingHandle());
+  ASSERT_FALSE(queue_manager().IsNoticeQueued());
+  ASSERT_FALSE(queue_manager().IsHoldingHandle());
 
   // Click ack button.
   const std::string& code = element_path_ + ".click();";
@@ -346,6 +341,6 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxQueueTestNoticeFeatureDisabled,
                               1 /* world_id */));
 
   // After click, should release handle.
-  ASSERT_FALSE(queue_manager.IsNoticeQueued());
-  ASSERT_FALSE(queue_manager.IsHoldingHandle());
+  ASSERT_FALSE(queue_manager().IsNoticeQueued());
+  ASSERT_FALSE(queue_manager().IsHoldingHandle());
 }

@@ -105,6 +105,7 @@ export class AppSetupPinKeyboardElement extends AppSetupPinKeyboardElementBase {
     };
   }
 
+  override ariaLabel: string;
   enableSubmit: boolean;
   isConfirmStep: boolean;
 

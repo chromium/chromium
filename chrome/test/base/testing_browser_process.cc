@@ -32,6 +32,7 @@
 #include "chrome/browser/status_icons/status_tray.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_browser_process_platform_part.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/embedder_support/origin_trials/origin_trials_settings_storage.h"
 #include "components/metrics/metrics_service.h"
 #include "components/network_time/network_time_tracker.h"
@@ -151,10 +152,8 @@ void TestingBrowserProcess::TearDownAndDeleteInstance() {
 }
 
 TestingBrowserProcess::TestingBrowserProcess()
-    : app_locale_("en"),
-      platform_part_(std::make_unique<TestingBrowserProcessPlatformPart>()),
-      os_crypt_async_(os_crypt_async::GetTestOSCryptAsyncForTesting()) {
-}
+    : platform_part_(std::make_unique<TestingBrowserProcessPlatformPart>()),
+      os_crypt_async_(os_crypt_async::GetTestOSCryptAsyncForTesting()) {}
 
 TestingBrowserProcess::~TestingBrowserProcess() {
   EXPECT_FALSE(local_state_);
@@ -172,6 +171,12 @@ TestingBrowserProcess::~TestingBrowserProcess() {
 }
 
 void TestingBrowserProcess::Init() {
+  features_ = GlobalFeatures::CreateGlobalFeatures();
+  features_->Init();
+
+  // Assume locale is initialized to "en" during initialization.
+  features_->application_locale_storage()->Set("en");
+
   // See comment in constructor.
   if (!network::TestNetworkConnectionTracker::HasInstance()) {
     test_network_connection_tracker_ =
@@ -458,12 +463,16 @@ TestingBrowserProcess::background_printing_manager() {
 }
 
 const std::string& TestingBrowserProcess::GetApplicationLocale() {
-  return app_locale_;
+  CHECK(features_);
+  CHECK(features_->application_locale_storage());
+  return features_->application_locale_storage()->Get();
 }
 
 void TestingBrowserProcess::SetApplicationLocale(
     const std::string& actual_locale) {
-  app_locale_ = actual_locale;
+  CHECK(features_);
+  CHECK(features_->application_locale_storage());
+  return features_->application_locale_storage()->Set(actual_locale);
 }
 
 DownloadStatusUpdater* TestingBrowserProcess::download_status_updater() {
@@ -567,8 +576,16 @@ GlobalFeatures* TestingBrowserProcess::GetFeatures() {
 }
 
 void TestingBrowserProcess::CreateGlobalFeaturesForTesting() {
+  // To replace the GlobalFeatures, shutdown the default instance first.
+  CHECK(features_);
+  features_->Shutdown();
+  features_.reset();
+
   features_ = GlobalFeatures::CreateGlobalFeatures();
   features_->Init();
+
+  // Assume locale is initialized to "en" during initialization.
+  features_->application_locale_storage()->Set("en");
 }
 
 resource_coordinator::TabManager* TestingBrowserProcess::GetTabManager() {

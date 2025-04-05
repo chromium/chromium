@@ -7,6 +7,7 @@
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/auth_controller.h"
 #include "chrome/browser/glic/host/glic_cookie_synchronizer.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
@@ -88,8 +89,8 @@ void GlicTestEnvironment::SetResultForFutureCookieSyncInFre(bool result) {
   fre_cookie_synchronizer_->set_copy_cookies_result(result);
 }
 
-void GlicTestEnvironment::SetFRECompletion(bool complete) {
-  ::glic::SetFRECompletion(profile_, complete);
+void GlicTestEnvironment::SetFRECompletion(prefs::FreStatus fre_status) {
+  ::glic::SetFRECompletion(profile_, fre_status);
 }
 
 }  // namespace glic

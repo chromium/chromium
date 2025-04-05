@@ -15,6 +15,7 @@ import './elements/viewer_password_dialog.js';
 // <if expr="enable_pdf_ink2">
 import './elements/viewer_bottom_toolbar.js';
 import './elements/viewer_side_panel.js';
+import './elements/viewer_text_bottom_toolbar.js';
 import './elements/viewer_text_side_panel.js';
 // </if>
 import './elements/viewer_pdf_sidenav.js';
@@ -192,6 +193,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
 
       documentMetadata_: {type: Object},
 
+      embedded_: {type: Boolean},
       fileName_: {type: String},
       hadPassword_: {type: Boolean},
       hasEdits_: {type: Boolean},
@@ -230,14 +232,14 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   }
 
   beepCount: number = 0;
-  protected annotationMode_: AnnotationMode = AnnotationMode.NONE;
-  protected attachments_: Attachment[] = [];
-  protected bookmarks_: Bookmark[] = [];
-  private canSerializeDocument_: boolean = false;
-  protected clockwiseRotations_: number = 0;
-  protected docLength_: number = 0;
-  protected documentHasFocus_: boolean = false;
-  protected documentMetadata_: DocumentMetadata = {
+  protected accessor annotationMode_: AnnotationMode = AnnotationMode.NONE;
+  protected accessor attachments_: Attachment[] = [];
+  protected accessor bookmarks_: Bookmark[] = [];
+  private accessor canSerializeDocument_: boolean = false;
+  protected accessor clockwiseRotations_: number = 0;
+  protected accessor docLength_: number = 0;
+  protected accessor documentHasFocus_: boolean = false;
+  protected accessor documentMetadata_: DocumentMetadata = {
     author: '',
     canSerializeDocument: false,
     creationDate: '',
@@ -252,23 +254,24 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     title: '',
     version: '',
   };
-  protected embedded_: boolean = false;
-  protected fileName_: string = '';
-  private hadPassword_: boolean = false;
-  protected hasEdits_: boolean = false;
-  protected hasEnteredAnnotationMode_: boolean = false;
+  protected accessor embedded_: boolean = false;
+  protected accessor fileName_: string = '';
+  private accessor hadPassword_: boolean = false;
+  protected accessor hasEdits_: boolean = false;
+  protected accessor hasEnteredAnnotationMode_: boolean = false;
   // <if expr="enable_pdf_ink2">
-  protected hasInk2Edits_: boolean = false;
+  protected accessor hasInk2Edits_: boolean = false;
   private hasSavedEdits_: boolean = false;
   // </if>
-  protected formFieldFocus_: FormFieldFocusType = FormFieldFocusType.NONE;
-  protected loadProgress_: number = 0;
+  protected accessor formFieldFocus_: FormFieldFocusType =
+      FormFieldFocusType.NONE;
+  protected accessor loadProgress_: number = 0;
   private navigator_: PdfNavigator|null = null;
-  protected pageNo_: number = 0;
+  protected accessor pageNo_: number = 0;
   // <if expr="enable_pdf_ink2">
-  protected pdfInk2Enabled_: boolean = false;
+  protected accessor pdfInk2Enabled_: boolean = false;
   // </if>
-  private pdfUseShowSaveFilePicker_: boolean = false;
+  private accessor pdfUseShowSaveFilePicker_: boolean = false;
   private pluginController_: PluginController = PluginController.getInstance();
   // <if expr="enable_pdf_ink2">
   private restoreAnnotationMode_: AnnotationMode = AnnotationMode.NONE;
@@ -276,9 +279,9 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   // <if expr="enable_ink or enable_pdf_ink2">
   private showBeforeUnloadDialog_: boolean = false;
   // </if>
-  protected showPasswordDialog_: boolean = false;
-  protected showPropertiesDialog_: boolean = false;
-  protected sidenavCollapsed_: boolean;
+  protected accessor showPasswordDialog_: boolean = false;
+  protected accessor showPropertiesDialog_: boolean = false;
+  protected accessor sidenavCollapsed_: boolean;
 
   // <if expr="enable_ink">
   /**
@@ -288,14 +291,14 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   private sidenavRestoreState_: boolean = false;
   // </if>
 
-  protected title_: string = '';
+  protected accessor title_: string = '';
   protected toolbarEnabled_: boolean = false;
-  protected twoUpViewEnabled_: boolean = false;
+  protected accessor twoUpViewEnabled_: boolean = false;
   // <if expr="enable_pdf_ink2">
-  private useSidePanelForInk_: boolean = false;
+  private accessor useSidePanelForInk_: boolean = false;
   // </if>
-  protected viewportZoom_: number = 1;
-  protected zoomBounds_: ZoomBounds = {min: 0, max: 0};
+  protected accessor viewportZoom_: number = 1;
+  protected accessor zoomBounds_: ZoomBounds = {min: 0, max: 0};
   private hasSearchifyText_: boolean = false;
 
   // <if expr="enable_ink">

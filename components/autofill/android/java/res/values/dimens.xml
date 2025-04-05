@@ -6,7 +6,6 @@ found in the LICENSE file.
 -->
 <resources>
     <dimen name="autofill_dropdown_item_height">50dp</dimen>
-    <dimen name="autofill_dropdown_item_tag_height">16dp</dimen>
     <dimen name="autofill_dropdown_item_divider_height">1dp</dimen>
     <dimen name="autofill_dropdown_item_label_margin">10dp</dimen>
     <dimen name="autofill_dropdown_icon_margin">8dp</dimen>

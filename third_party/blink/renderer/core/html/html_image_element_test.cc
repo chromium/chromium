@@ -240,30 +240,7 @@ TEST_F(HTMLImageElementSimTest,
       << ConsoleMessages().front();
 }
 
-class TransparentPlaceholderImageSimTest
-    : public SimTest,
-      public ::testing::WithParamInterface<bool> {
- protected:
-  void SetUp() override {
-    SimTest::SetUp();
-    if (GetParam()) {
-      feature_list_.InitAndEnableFeature(
-          features::kSimplifyLoadingTransparentPlaceholderImage);
-    } else {
-      feature_list_.InitAndDisableFeature(
-          features::kSimplifyLoadingTransparentPlaceholderImage);
-    }
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(TransparentPlaceholderImageSimTest,
-                         TransparentPlaceholderImageSimTest,
-                         testing::Bool());
-
-TEST_P(TransparentPlaceholderImageSimTest, OnloadTransparentPlaceholderImage) {
+TEST_F(HTMLImageElementSimTest, OnloadTransparentPlaceholderImage) {
   SimRequest main_resource("http://example.com/index.html", "text/html");
   LoadURL("http://example.com/index.html");
   main_resource.Complete(R"(
@@ -280,8 +257,7 @@ TEST_P(TransparentPlaceholderImageSimTest, OnloadTransparentPlaceholderImage) {
   EXPECT_TRUE(ConsoleMessages().Contains("image element onload"));
 }
 
-TEST_P(TransparentPlaceholderImageSimTest,
-       CurrentSrcForTransparentPlaceholderImage) {
+TEST_F(HTMLImageElementSimTest, CurrentSrcForTransparentPlaceholderImage) {
   const String image_source =
       "data:image/gif;base64,R0lGODlhAQABAIAAAP///////"
       "yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==";

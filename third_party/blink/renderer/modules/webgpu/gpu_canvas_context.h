@@ -98,13 +98,13 @@ class GPUCanvasContext : public ScriptWrappable,
     return false;
   }
 
-  // gpu_presentation_context.idl
+  // gpu_canvas_context.idl {{{
   V8UnionHTMLCanvasElementOrOffscreenCanvas* getHTMLOrOffscreenCanvas() const;
-
   void configure(const GPUCanvasConfiguration* descriptor, ExceptionState&);
   void unconfigure();
   GPUCanvasConfiguration* getConfiguration();
   GPUTexture* getCurrentTexture(ScriptState*, ExceptionState&);
+  // }}} End of WebIDL binding implementation.
 
   // WebGPUSwapBufferProvider::Client implementation
   void OnTextureTransferred() override;

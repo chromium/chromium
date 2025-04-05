@@ -265,14 +265,17 @@ void PKIMetadataComponentInstallerService::UpdateNetworkServiceCTListOnUI(
       content::GetNetworkService();
 
   if (proto->disable_ct_enforcement()) {
-    // TODO(crbug.com/41392053): when CT enforcement is moved to the cert
-    // verifier service, the killswitch also needs to be moved to the cert
-    // verifier service.
-    network_service->SetCtEnforcementEnabled(
-        false,
+    // TODO(crbug.com/41392053): The disable_ct_enforcement kill switch is
+    // used in both the network service and cert verifier service. Finish
+    // refactoring so that it is only sent to cert verifier service.
+    base::RepeatingClosure done_callback = BarrierClosure(
+        /*num_closures=*/2,
         base::BindOnce(
             &PKIMetadataComponentInstallerService::NotifyCTLogListConfigured,
             weak_factory_.GetWeakPtr()));
+    content::GetCertVerifierServiceFactory()->DisableCtEnforcement(
+        done_callback);
+    network_service->SetCtEnforcementEnabled(false, done_callback);
     return;
   }
 

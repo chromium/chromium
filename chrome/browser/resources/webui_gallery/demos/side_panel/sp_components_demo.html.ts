@@ -7,6 +7,7 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {SpComponentsDemoElement} from './sp_components_demo.js';
 
 export function getHtml(this: SpComponentsDemoElement) {
+  // clang-format off
   return html`
 <h1>Side panel shared components</h1>
 <div class="demos">
@@ -95,7 +96,7 @@ export function getHtml(this: SpComponentsDemoElement) {
     <span>3 Notes</span>
   </sp-list-item-badge>
 
-  <sp-list-item-badge updated>
+  <sp-list-item-badge was-updated>
     <cr-icon icon="cr:info-outline"></cr-icon>
     <span>$100</span>
     <span slot="previous-badge">$200</span>
@@ -115,4 +116,5 @@ export function getHtml(this: SpComponentsDemoElement) {
 <div class="demos">
   <hr class="sp-hr">
 </div>`;
+  // clang-format on
 }

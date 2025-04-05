@@ -80,7 +80,6 @@ found in the LICENSE file.
     <!-- The offset is required for the background drawable used by the
          location bar on tablets. -->
     <dimen name="modern_toolbar_background_vertical_offset">4dp</dimen>
-    <dimen name="toolbar_text_box_elevation">@dimen/default_elevation_2</dimen>
     <dimen name="search_box_icon_background_width">40dp</dimen>
     <dimen name="search_box_icon_background_height">32dp</dimen>
     <dimen name="search_box_nav_button_background_inset">12dp</dimen>

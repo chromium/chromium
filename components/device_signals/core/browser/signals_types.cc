@@ -111,6 +111,18 @@ bool OsSignalsResponse::operator==(const OsSignalsResponse&) const = default;
 
 OsSignalsResponse::~OsSignalsResponse() = default;
 
+ProfileSignalsResponse::ProfileSignalsResponse() = default;
+ProfileSignalsResponse::ProfileSignalsResponse(const ProfileSignalsResponse&) =
+    default;
+
+ProfileSignalsResponse& ProfileSignalsResponse::operator=(
+    const ProfileSignalsResponse&) = default;
+
+bool ProfileSignalsResponse::operator==(const ProfileSignalsResponse&) const =
+    default;
+
+ProfileSignalsResponse::~ProfileSignalsResponse() = default;
+
 FileSystemInfoResponse::FileSystemInfoResponse() = default;
 FileSystemInfoResponse::FileSystemInfoResponse(const FileSystemInfoResponse&) =
     default;

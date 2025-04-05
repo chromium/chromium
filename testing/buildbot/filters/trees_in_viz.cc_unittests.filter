@@ -65,10 +65,6 @@
 # TODO(crbug.com/404940699) Fix missing frame submit to Viz after commit request
 -LayerTreeHostTestBeginFrameAcks.RunMultiThread_DelegatingRenderer
 
-# TODO(crbug.com/404941217) Fix submitted frame.metadata.transition_directives
--LayerTreeHostTestViewTransitionsPropagatedToMetadata.RunMultiThread_DelegatingRenderer
--LayerTreeHostTestViewTransitionsPropagatedToMetadata.RunSingleThread_DelegatingRenderer
-
 # TODO (crbug.com/404940328) Fix LayerTreeHostTestInvisibleLayersSkipRenderPass
 -LayerTreeHostTestInvisibleLayersSkipRenderPass.RunSingleThread_DelegatingRenderer
 -LayerTreeHostTestInvisibleLayersSkipRenderPass.RunMultiThread_DelegatingRenderer
@@ -153,10 +149,11 @@
 -LayerTreeHostTestCompositeImmediatelyStateTransitions.RunSingleThread_DelegatingRenderer
 -LayerTreeHostTestSynchronousCompositeSwapPromise.RunSingleThread_DelegatingRenderer
 
-# TODO(crbug.com/406273351) Update tests to use DisplayReceivedCompositorFrameOnThread for introspection
--LayerTreeHostTestContinuousDrawWhenCreatingVisibleTiles.RunMultiThread_DelegatingRenderer
--LayerTreeHostTestCrispUpAfterPinchEnds.RunMultiThread_DelegatingRenderer
+# TODO(crbug.com/406010462) View transition requests are lost between cc and viz
 -LayerTreeHostTestDamagePropagatesFromViewTransitionSurface.RunMultiThread_DelegatingRenderer
+
+# TODO(crbug.com/408053792) Implement Tiling removal in TileDisplayLayerImpl
+-LayerTreeHostTestCrispUpAfterPinchEnds.RunMultiThread_DelegatingRenderer
 
 # TODO(crbug.com/404813701) Triage cc_unittests failures using non layer list mode
 -All/LayerTreeHostCopyRequestTestDeleteSharedImage.Test/SkiaGL_MultiThreaded
@@ -173,12 +170,6 @@
 -All/LayerTreeHostCopyRequestTestMultipleDrawsHiddenCopyRequest.Test/SkiaVulkan_SingleThreaded
 
 # TODO(crbug.com/383016428) Readback of layers outside of the viewport stopped
-# working for Readback since crrev.com/c/6383158.
--All/LayerTreeHostReadbackPixelTest.ReadbackNonRootLayerOutsideViewport/SkiaGL_Bitmap
--All/LayerTreeHostReadbackPixelTest.ReadbackNonRootLayerOutsideViewport/SkiaGL_Texture
--All/LayerTreeHostReadbackPixelTest.ReadbackNonRootLayerOutsideViewport/SkiaGraphiteDawn_Bitmap
--All/LayerTreeHostReadbackPixelTest.ReadbackNonRootLayerOutsideViewport/Software_Bitmap
--All/LayerTreeHostReadbackPixelTest.ReadbackOutsideViewportWhenNoDamage/SkiaGL_Bitmap
--All/LayerTreeHostReadbackPixelTest.ReadbackOutsideViewportWhenNoDamage/SkiaGL_Texture
--All/LayerTreeHostReadbackPixelTest.ReadbackOutsideViewportWhenNoDamage/SkiaGraphiteDawn_Bitmap
--All/LayerTreeHostReadbackPixelTest.ReadbackOutsideViewportWhenNoDamage/Software_Bitmap
+# working since crrev.com/c/6383158.
+-All/LayerTreeHostReadbackPixelTest.ReadbackNonRootLayerOutsideViewport/*
+-All/LayerTreeHostReadbackPixelTest.ReadbackOutsideViewportWhenNoDamage/*

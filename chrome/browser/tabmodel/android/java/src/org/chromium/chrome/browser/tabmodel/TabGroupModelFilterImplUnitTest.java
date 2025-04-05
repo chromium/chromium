@@ -88,7 +88,6 @@ import java.util.Set;
 @SuppressWarnings("ResultOfMethodCallIgnored")
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@EnableFeatures({ChromeFeatureList.TAB_STRIP_GROUP_COLLAPSE})
 @DisableFeatures({ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR})
 public class TabGroupModelFilterImplUnitTest {
     private static final int TAB1_ID = 11;
@@ -1359,14 +1358,6 @@ public class TabGroupModelFilterImplUnitTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_COLLAPSE)
-    public void mergeTabsToGroup_CollapsedWithoutFeature() {
-        mTabGroupModelFilter.mergeTabsToGroup(mTab5.getId(), mTab2.getId());
-        verify(mTabGroupModelFilterObserver)
-                .didCreateGroup(any(), any(), any(), any(), any(), anyInt(), eq(false));
-    }
-
-    @Test
     public void mergeListOfTabsToGroup_AllBackward() {
         List<Tab> expectedTabModel =
                 new ArrayList<>(Arrays.asList(mTab2, mTab3, mTab5, mTab6, mTab1, mTab4));
@@ -1566,15 +1557,6 @@ public class TabGroupModelFilterImplUnitTest {
         mTabGroupModelFilter.mergeListOfTabsToGroup(tabsToMerge, mTab4, true);
         verify(mTabGroupModelFilterObserver)
                 .didCreateGroup(any(), any(), any(), any(), any(), anyInt(), eq(true));
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_COLLAPSE)
-    public void mergeListOfTabsToGroup_CollapsedWithoutFeature() {
-        List<Tab> tabsToMerge = new ArrayList<>(Arrays.asList(mTab5, mTab6));
-        mTabGroupModelFilter.mergeListOfTabsToGroup(tabsToMerge, mTab4, true);
-        verify(mTabGroupModelFilterObserver)
-                .didCreateGroup(any(), any(), any(), any(), any(), anyInt(), eq(false));
     }
 
     @Test
@@ -2433,7 +2415,7 @@ public class TabGroupModelFilterImplUnitTest {
         mTabGroupModelFilter.setTabGroupCollapsed(TAB2_ROOT_ID, /* isCollapsed= */ true);
         verify(mTabGroupModelFilterObserver)
                 .didChangeTabGroupCollapsed(
-                        TAB2_ROOT_ID, /* isCollapsed= */ true, /* animate= */ true);
+                        TAB2_ROOT_ID, /* isCollapsed= */ true, /* animate= */ false);
     }
 
     @Test

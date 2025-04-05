@@ -28,7 +28,7 @@ GPUExternalTexture* ExternalTextureCache::Import(
     ExceptionState& exception_state) {
   // Ensure the GPUExternalTexture created from a destroyed GPUDevice will be
   // expired immediately.
-  if (device()->destroyed()) {
+  if (device()->IsDestroyed()) {
     return GPUExternalTexture::CreateExpired(this, descriptor, exception_state);
   }
 
@@ -347,7 +347,7 @@ GPUExternalTexture::GPUExternalTexture(
 void GPUExternalTexture::Refresh() {
   CHECK(status_ != Status::Destroyed);
 
-  if (active()) {
+  if (IsActive()) {
     return;
   }
 
@@ -356,7 +356,7 @@ void GPUExternalTexture::Refresh() {
 }
 
 void GPUExternalTexture::Expire() {
-  if (expired() || destroyed()) {
+  if (IsExpired() || IsDestroyed()) {
     return;
   }
 
@@ -365,13 +365,13 @@ void GPUExternalTexture::Expire() {
 }
 
 void GPUExternalTexture::Destroy() {
-  DCHECK(!destroyed());
+  DCHECK(!IsDestroyed());
   DCHECK(mailbox_texture_);
 
   // One copy path finished video frame access after GPUExternalTexture
   // construction. Zero copy path needs to ensure all gpu commands
   // execution finished before destroy.
-  if (isZeroCopy() && isReadLockFenceEnabled()) {
+  if (isZeroCopy() && IsReadLockFenceEnabled()) {
     cache_->ReferenceUntilGPUIsFinished(std::move(mailbox_texture_));
   }
 
@@ -398,7 +398,7 @@ bool GPUExternalTexture::NeedsToUpdate() {
 
   // If GPUExternalTexture is used in current task scope, don't do
   // reimport until current task scope finished.
-  if (active()) {
+  if (IsActive()) {
     return false;
   }
 
@@ -480,8 +480,9 @@ bool GPUExternalTexture::ListenToVideoFrame(VideoFrame* frame) {
 void GPUExternalTexture::OnVideoFrameClosed() {
   CHECK(task_runner_);
 
-  if (destroyed())
+  if (IsDestroyed()) {
     return;
+  }
 
   // Expire the GPUExternalTexture here in the main thread to prevent it from
   // being used again (because WebGPU runs on the main thread). Expiring the
@@ -502,11 +503,11 @@ void GPUExternalTexture::OnVideoFrameClosed() {
                              WrapCrossThreadWeakPersistent(this))));
 }
 
-bool GPUExternalTexture::active() const {
+bool GPUExternalTexture::IsActive() const {
   return status_ == Status::Active;
 }
 
-bool GPUExternalTexture::expired() const {
+bool GPUExternalTexture::IsExpired() const {
   return status_ == Status::Expired;
 }
 
@@ -514,11 +515,11 @@ bool GPUExternalTexture::isZeroCopy() const {
   return is_zero_copy_;
 }
 
-bool GPUExternalTexture::isReadLockFenceEnabled() const {
+bool GPUExternalTexture::IsReadLockFenceEnabled() const {
   return read_lock_fences_enabled_;
 }
 
-bool GPUExternalTexture::destroyed() const {
+bool GPUExternalTexture::IsDestroyed() const {
   return status_ == Status::Destroyed;
 }
 

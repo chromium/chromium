@@ -542,6 +542,14 @@ BASE_FEATURE(kMemoryPressureBasedSourceBufferGC,
              "MemoryPressureBasedSourceBufferGC",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Forces SuggestProviderState() to only suggest deferring when range requests
+// aren't supported. Will cause us to buffer up to preload then release the
+// loader -- creating a new one to refill beyond the preload amount. Increases
+// the number of network connections used during loading, but may prevent hangs.
+BASE_FEATURE(kMultiBufferNeverDefer,
+             "MultiBufferNeverDefer",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether the Mirroring Service will fetch, analyze, and store
 // information on the quality of the session using RTCP logs.
 BASE_FEATURE(kEnableRtcpReporting,

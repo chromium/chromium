@@ -11,6 +11,7 @@ class BrowserPolicyConnectorIOS;
 class ProfilePolicyConnector;
 
 namespace policy {
+class CloudPolicyStore;
 class SchemaRegistry;
 class UserCloudPolicyManager;
 }  // namespace policy
@@ -18,6 +19,7 @@ class UserCloudPolicyManager;
 std::unique_ptr<ProfilePolicyConnector> BuildProfilePolicyConnector(
     policy::SchemaRegistry* schema_registry,
     BrowserPolicyConnectorIOS* browser_policy_connector,
-    policy::UserCloudPolicyManager* user_policy_manager);
+    policy::UserCloudPolicyManager* user_policy_manager,
+    policy::CloudPolicyStore* policy_store);
 
 #endif  // IOS_CHROME_BROWSER_POLICY_MODEL_PROFILE_POLICY_CONNECTOR_FACTORY_H_

@@ -182,6 +182,7 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
       const std::string& prerender_headers_str,
       PreloadingTriggerType trigger_type,
       const std::string& histogram_suffix,
+      bool allow_x_header_mismatch,
       PrerenderCancellationReason& reason);
 
   // Sets a callback to be called on PrerenderHost creation.
@@ -455,12 +456,12 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
   AreBeginNavigationParamsCompatibleWithNavigation(
       const GURL& potential_activation_url,
       const blink::mojom::BeginNavigationParams& potential_activation,
-      bool allow_initiator_and_transition_mismatch,
+      bool allow_partial_mismatch,
       PrerenderCancellationReason& reason);
   ActivationNavigationParamsMatch
   AreCommonNavigationParamsCompatibleWithNavigation(
       const blink::mojom::CommonNavigationParams& potential_activation,
-      bool allow_initiator_and_transition_mismatch);
+      bool allow_partial_mismatch);
 
   void MaybeSetNoVarySearch(network::mojom::NoVarySearchWithParseError&
                                 no_vary_search_with_parse_error);

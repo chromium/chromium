@@ -856,6 +856,45 @@ public class AwPrerenderTest extends AwParameterizedTest {
         }
     }
 
+    // Tests X-* headers are ignored on header match during activation.
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
+    @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
+    public void testIgnoreXHeadersOnHeaderMatch() throws Throwable {
+        loadInitialPage();
+
+        var histogramWatcher = createFinalStatusHistogramWatcher(/*kActivated*/ 0);
+
+        // Prerender with an "X-Hello" additional header.
+        HashMap<String, String> additionalHeadersForPrerender = new HashMap<>();
+        additionalHeadersForPrerender.put("X-Hello", "1");
+
+        AwPrefetchParameters prefetchParameters =
+                new AwPrefetchParameters(
+                        additionalHeadersForPrerender,
+                        /* expectedNoVarySearch= */ null,
+                        /* isJavascriptEnabled= */ true);
+
+        startPrerenderingAndWait(
+                mPrerenderingUrl,
+                prefetchParameters,
+                /* cancellationSignal= */ null,
+                mActivationCallbackHelper.getCallback(),
+                mPrerenderErrorCallbackHelper.getCallback());
+
+        // Activate with an "x-world" additional header.
+        HashMap<String, String> additionalHeadersForActivation = new HashMap<>();
+        additionalHeadersForActivation.put("x-world", "1");
+        activatePage(
+                mPrerenderingUrl,
+                mPrerenderingUrl,
+                ActivationBy.LOAD_URL,
+                additionalHeadersForActivation);
+        histogramWatcher.pollInstrumentationThreadUntilSatisfied();
+    }
+
     // Tests speculation rules prerendering with No-Vary-Search header.
     @Test
     @LargeTest

@@ -42,13 +42,10 @@ class SupervisedUserServiceBrowserTest
     return supervision_mixin_.api_mock_setup_mixin().api_mock();
   }
 
-  SupervisionMixin supervision_mixin_{
-      mixin_host_,
-      this,
-      embedded_test_server(),
-      {.sign_in_mode = GetSignInMode(),
-       .embedded_test_server_options = {.resolver_rules_map_host_list =
-                                            "google1.com"}}};
+  SupervisionMixin supervision_mixin_{mixin_host_,
+                                      this,
+                                      embedded_test_server(),
+                                      {.sign_in_mode = GetSignInMode()}};
 
  private:
   base::test::ScopedFeatureList scoped_feature_list;
@@ -80,16 +77,48 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserServiceBrowserTest, LocalPolicies) {
   }
 }
 
-IN_PROC_BROWSER_TEST_P(SupervisedUserServiceBrowserTest,
+IN_PROC_BROWSER_TEST_P(SupervisedUserServiceBrowserTest, ProfileName) {
+  Profile* profile = browser()->profile();
+  PrefService* prefs = profile->GetPrefs();
+  EXPECT_TRUE(prefs->IsUserModifiablePreference(prefs::kProfileName));
+
+  std::string original_name = prefs->GetString(prefs::kProfileName);
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile->GetPath());
+  ASSERT_NE(entry, nullptr);
+  EXPECT_EQ(original_name, base::UTF16ToUTF8(entry->GetName()));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SupervisedUserServiceBrowserTest,
+    testing::Values(
+#if !BUILDFLAG(IS_CHROMEOS)
+        // Only for platforms that support signed-out browser.
+        SupervisionMixin::SignInMode::kSignedOut,
+#endif
+        SupervisionMixin::SignInMode::kRegular,
+        SupervisionMixin::SignInMode::kSupervised),
+    ::testing::PrintToStringParamName());
+
+// Suite for supervised user features activated for regular users.
+class SupervisedUserServiceForRegularUsersBrowserTest
+    : public MixinBasedInProcessBrowserTest,
+      public ::testing::WithParamInterface<SupervisionMixin::SignInMode> {
+ protected:
+  static SupervisionMixin::SignInMode GetSignInMode() { return GetParam(); }
+  SupervisionMixin supervision_mixin_{mixin_host_,
+                                      this,
+                                      embedded_test_server(),
+                                      {.sign_in_mode = GetSignInMode()}};
+};
+
+IN_PROC_BROWSER_TEST_P(SupervisedUserServiceForRegularUsersBrowserTest,
                        ForceGoogleSafeSearchCanBeOverriden) {
   Profile* profile = browser()->profile();
   PrefService* prefs = profile->GetPrefs();
-
-  if (GetSignInMode() == SupervisionMixin::SignInMode::kSupervised) {
-    // Required for supervised users, who have all navigations, including Google
-    // search, classified.
-    kids_management_api_mock().AllowSubsequentClassifyUrl();
-  }
 
   content::TestNavigationObserver observer(
       browser()->tab_strip_model()->GetActiveWebContents());
@@ -128,30 +157,15 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserServiceBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_P(SupervisedUserServiceBrowserTest, ProfileName) {
-  Profile* profile = browser()->profile();
-  PrefService* prefs = profile->GetPrefs();
-  EXPECT_TRUE(prefs->IsUserModifiablePreference(prefs::kProfileName));
-
-  std::string original_name = prefs->GetString(prefs::kProfileName);
-  ProfileAttributesEntry* entry =
-      g_browser_process->profile_manager()
-          ->GetProfileAttributesStorage()
-          .GetProfileAttributesWithPath(profile->GetPath());
-  ASSERT_NE(entry, nullptr);
-  EXPECT_EQ(original_name, base::UTF16ToUTF8(entry->GetName()));
-}
-
 INSTANTIATE_TEST_SUITE_P(
     All,
-    SupervisedUserServiceBrowserTest,
+    SupervisedUserServiceForRegularUsersBrowserTest,
     testing::Values(
 #if !BUILDFLAG(IS_CHROMEOS)
         // Only for platforms that support signed-out browser.
         SupervisionMixin::SignInMode::kSignedOut,
 #endif
-        SupervisionMixin::SignInMode::kRegular,
-        SupervisionMixin::SignInMode::kSupervised),
+        SupervisionMixin::SignInMode::kRegular),
     ::testing::PrintToStringParamName());
 
 }  // namespace

@@ -227,7 +227,6 @@ source_set("policy_specific_browser_tests") {
     "test/force_permission_policy_unload_default_enabled_policy_browsertest.cc",
     "test/hsts_policy_browsertest.cc",
     "test/keyboard_focusable_scollers_policy_browsertest.cc",
-    "test/mutation_events_policy_browsertest.cc",
     "test/network_prediction_policy_browsertest.cc",
     "test/policy_statistics_collector_browsertest.cc",
     "test/proxy_policies_browsertest.cc",

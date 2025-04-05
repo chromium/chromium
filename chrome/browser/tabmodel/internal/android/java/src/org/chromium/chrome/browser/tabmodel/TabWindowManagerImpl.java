@@ -14,8 +14,6 @@ import android.util.Pair;
 import android.util.SparseArray;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
@@ -27,6 +25,8 @@ import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.BuildConfig;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.WindowId;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
@@ -48,6 +48,7 @@ import java.util.Map;
  *
  * <p>Also manages tabs being reparented in AsyncTabParamsManager.
  */
+@NullMarked
 public class TabWindowManagerImpl implements TabWindowManager {
 
     public static final String TAG_MULTI_INSTANCE = "MultiInstance";
@@ -115,13 +116,13 @@ public class TabWindowManagerImpl implements TabWindowManager {
     }
 
     @Override
-    public Pair<@WindowId Integer, TabModelSelector> requestSelector(
+    public @Nullable Pair<@WindowId Integer, TabModelSelector> requestSelector(
             Activity activity,
             ModalDialogManager modalDialogManager,
             OneshotSupplier<ProfileProvider> profileProviderSupplier,
             TabCreatorManager tabCreatorManager,
             NextTabPolicySupplier nextTabPolicySupplier,
-            @NonNull MismatchedIndicesHandler mismatchedIndicesHandler,
+            MismatchedIndicesHandler mismatchedIndicesHandler,
             @WindowId int windowId) {
         if (windowId < 0 || windowId >= mMaxSelectors) return null;
 
@@ -263,6 +264,10 @@ public class TabWindowManagerImpl implements TabWindowManager {
             boolean isInAppTask = false;
             for (AppTask task : activityManager.getAppTasks()) {
                 ActivityManager.RecentTaskInfo info = AndroidTaskUtils.getTaskInfoFromTask(task);
+                if (info == null) {
+                    message += "null info;";
+                    continue;
+                }
                 message += info + ";\n";
                 if (info.taskId == activityAtRequestedWindowIdTaskId) {
                     isInAppTask = true;
@@ -391,11 +396,8 @@ public class TabWindowManagerImpl implements TabWindowManager {
 
     @Override
     public int getIdForWindow(Activity activity) {
-        if (activity == null) return TabWindowManager.INVALID_WINDOW_ID;
         TabModelSelector selector = mAssignments.get(activity);
-        if (selector == null) return TabWindowManager.INVALID_WINDOW_ID;
-        @WindowId int windowId = mSelectorsToWindowId.get(selector);
-        return windowId == -1 ? TabWindowManager.INVALID_WINDOW_ID : windowId;
+        return getWindowIdForSelectorChecked(selector);
     }
 
     @Override
@@ -423,9 +425,7 @@ public class TabWindowManagerImpl implements TabWindowManager {
     }
 
     @Override
-    public TabModel getTabModelForTab(Tab tab) {
-        if (tab == null) return null;
-
+    public @Nullable TabModel getTabModelForTab(Tab tab) {
         for (TabModelSelector selector : getAllTabModelSelectors()) {
             if (selector != null) {
                 TabModel tabModel = selector.getModelForTabId(tab.getId());
@@ -437,7 +437,7 @@ public class TabWindowManagerImpl implements TabWindowManager {
     }
 
     @Override
-    public Tab getTabById(@TabId int tabId) {
+    public @Nullable Tab getTabById(@TabId int tabId) {
         for (TabModelSelector selector : getAllTabModelSelectors()) {
             @Nullable final Tab tab = getTabFromTabModelSelector(selector, tabId);
             if (tab != null) return tab;
@@ -447,7 +447,7 @@ public class TabWindowManagerImpl implements TabWindowManager {
     }
 
     @Override
-    public Tab getTabById(@TabId int tabId, @WindowId int windowId) {
+    public @Nullable Tab getTabById(@TabId int tabId, @WindowId int windowId) {
         @Nullable TabModelSelector selector = getTabModelSelectorById(windowId);
         @Nullable final Tab tab = getTabFromTabModelSelector(selector, tabId);
         if (tab != null) return tab;
@@ -456,7 +456,7 @@ public class TabWindowManagerImpl implements TabWindowManager {
     }
 
     @Override
-    public List<Tab> getGroupedTabsByWindow(
+    public @Nullable List<Tab> getGroupedTabsByWindow(
             @WindowId int windowId, Token tabGroupId, boolean isIncognito) {
         @Nullable TabModelSelector tabModelSelector = getTabModelSelectorById(windowId);
         if (tabModelSelector == null) return null;
@@ -512,7 +512,7 @@ public class TabWindowManagerImpl implements TabWindowManager {
     private @WindowId int clearSelectorAndWindowIdAssignments(Activity activity) {
         if (!mAssignments.containsKey(activity)) return INVALID_WINDOW_ID;
         TabModelSelector selector = mAssignments.remove(activity);
-        @WindowId int windowId = mSelectorsToWindowId.get(selector);
+        @WindowId int windowId = getWindowIdForSelectorChecked(selector);
         if (windowId >= 0) {
             mWindowIdToSelectors.remove(windowId);
             mSelectorsToWindowId.remove(selector);
@@ -526,14 +526,16 @@ public class TabWindowManagerImpl implements TabWindowManager {
                         || !mArchivedTabModelSelector.isTabStateInitialized());
     }
 
-    private Tab getTabFromTabModelSelector(@Nullable TabModelSelector selector, @TabId int tabId) {
+    private @Nullable Tab getTabFromTabModelSelector(
+            @Nullable TabModelSelector selector, @TabId int tabId) {
         if (selector == null) return null;
         return selector.getTabById(tabId);
     }
 
-    private Tab getTabFromOtherSource(@TabId int tabId) {
-        if (mAsyncTabParamsManager.hasParamsForTabId(tabId)) {
-            return mAsyncTabParamsManager.getAsyncTabParams().get(tabId).getTabToReparent();
+    private @Nullable Tab getTabFromOtherSource(@TabId int tabId) {
+        AsyncTabParams asyncTabParams = mAsyncTabParamsManager.getAsyncTabParams().get(tabId);
+        if (asyncTabParams != null) {
+            return asyncTabParams.getTabToReparent();
         }
 
         if (mArchivedTabModelSelector != null) {
@@ -541,5 +543,11 @@ public class TabWindowManagerImpl implements TabWindowManager {
         }
 
         return null;
+    }
+
+    private @WindowId int getWindowIdForSelectorChecked(@Nullable TabModelSelector selector) {
+        if (selector == null) return TabWindowManager.INVALID_WINDOW_ID;
+        @WindowId Integer windowId = mSelectorsToWindowId.get(selector);
+        return windowId == null || windowId == -1 ? TabWindowManager.INVALID_WINDOW_ID : windowId;
     }
 }

@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# TODO:(crbug.com/406830591): Split build rule for save card bottomsheet classes.
-
 group("unit_tests") {
   testonly = true
   deps = [
@@ -40,10 +38,6 @@ source_set("bottom_sheet") {
     "payments_suggestion_bottom_sheet_exit_reason.h",
     "payments_suggestion_bottom_sheet_mediator.h",
     "payments_suggestion_bottom_sheet_mediator.mm",
-    "save_card_bottom_sheet_coordinator.h",
-    "save_card_bottom_sheet_coordinator.mm",
-    "save_card_bottom_sheet_mediator.h",
-    "save_card_bottom_sheet_mediator.mm",
     "settings_autofill_edit_profile_bottom_sheet_handler.h",
     "settings_autofill_edit_profile_bottom_sheet_handler.mm",
   ]
@@ -62,7 +56,6 @@ source_set("bottom_sheet") {
     "//ios/chrome/browser/autofill/model:features",
     "//ios/chrome/browser/autofill/model:model_internal",
     "//ios/chrome/browser/autofill/model/bottom_sheet",
-    "//ios/chrome/browser/autofill/model/bottom_sheet:save_card_bottom_sheet_model",
     "//ios/chrome/browser/autofill/model/credit_card",
     "//ios/chrome/browser/autofill/ui_bundled/address_editor:autofill_shared_ui",
     "//ios/chrome/browser/autofill/ui_bundled/address_editor:constants",
@@ -91,8 +84,6 @@ source_set("bottom_sheet_ui") {
     "payments_suggestion_bottom_sheet_handler.h",
     "payments_suggestion_bottom_sheet_view_controller.h",
     "payments_suggestion_bottom_sheet_view_controller.mm",
-    "save_card_bottom_sheet_view_controller.h",
-    "save_card_bottom_sheet_view_controller.mm",
   ]
   deps = [
     ":constants",
@@ -179,6 +170,51 @@ source_set("bottom_sheet_egtest") {
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//net:test_support",
     "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+# Save Card Bottom Sheet related classes are below:
+
+source_set("save_card_bottom_sheet_coordinator") {
+  sources = [
+    "save_card_bottom_sheet_coordinator.h",
+    "save_card_bottom_sheet_coordinator.mm",
+  ]
+  deps = [
+    ":save_card_bottom_sheet_mediator",
+    ":save_card_bottom_sheet_view_controller",
+    "//base",
+    "//ios/chrome/browser/autofill/model/bottom_sheet",
+    "//ios/chrome/browser/autofill/model/bottom_sheet:save_card_bottom_sheet_model",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/web_state_list",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("save_card_bottom_sheet_view_controller") {
+  sources = [
+    "save_card_bottom_sheet_view_controller.h",
+    "save_card_bottom_sheet_view_controller.mm",
+  ]
+  deps = [
+    "//build:branding_buildflags",
+    "//ios/chrome/browser/shared/ui/bottom_sheet:table_view_bottom_sheet_view_controller",
+    "//ios/chrome/browser/shared/ui/symbols",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("save_card_bottom_sheet_mediator") {
+  sources = [
+    "save_card_bottom_sheet_mediator.h",
+    "save_card_bottom_sheet_mediator.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/autofill/model/bottom_sheet:save_card_bottom_sheet_model",
   ]
   frameworks = [ "UIKit.framework" ]
 }

@@ -396,16 +396,15 @@ network::mojom::NetworkServiceParamsPtr CreateNetworkServiceParams() {
   // in another process.
   if (IsOutOfProcessNetworkService()) {
     std::unique_ptr<base::Environment> env(base::Environment::Create());
-    std::string value;
-    if (env->HasVar(kKrb5CCEnvName)) {
-      env->GetVar(kKrb5CCEnvName, &value);
+    std::optional<std::string> value = env->GetVar(kKrb5CCEnvName);
+    if (value.has_value()) {
       network_service_params->environment.push_back(
-          network::mojom::EnvironmentVariable::New(kKrb5CCEnvName, value));
+          network::mojom::EnvironmentVariable::New(kKrb5CCEnvName, *value));
     }
-    if (env->HasVar(kKrb5ConfEnvName)) {
-      env->GetVar(kKrb5ConfEnvName, &value);
+    value = env->GetVar(kKrb5ConfEnvName);
+    if (value.has_value()) {
       network_service_params->environment.push_back(
-          network::mojom::EnvironmentVariable::New(kKrb5ConfEnvName, value));
+          network::mojom::EnvironmentVariable::New(kKrb5ConfEnvName, *value));
     }
   }
 #endif  // BUILDFLAG(IS_POSIX)
@@ -655,16 +654,16 @@ network::mojom::NetworkService* GetNetworkService() {
             << "ssl-key-log-file argument missing";
       } else {
         std::unique_ptr<base::Environment> env(base::Environment::Create());
-        std::string env_str;
-        if (env->GetVar("SSLKEYLOGFILE", &env_str)) {
+        std::optional<std::string> env_str = env->GetVar("SSLKEYLOGFILE");
+        if (env_str.has_value()) {
           UMA_HISTOGRAM_ENUMERATION(kSSLKeyLogFileHistogram,
                                     SSLKeyLogFileAction::kEnvVarFound);
 #if BUILDFLAG(IS_WIN)
           // base::Environment returns environment variables in UTF-8 on
           // Windows.
-          ssl_key_log_path = base::FilePath(base::UTF8ToWide(env_str));
+          ssl_key_log_path = base::FilePath(base::UTF8ToWide(*env_str));
 #else
-          ssl_key_log_path = base::FilePath(env_str);
+          ssl_key_log_path = base::FilePath(*env_str);
 #endif
         }
       }

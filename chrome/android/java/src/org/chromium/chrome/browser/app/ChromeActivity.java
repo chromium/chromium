@@ -809,10 +809,6 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         // outside the UI thread. This call should fully initialize the CompositorView if it hasn't
         // been yet.
         mCompositorViewHolderSupplier.get().setRootView(rootView);
-        mCompositorViewHolderSupplier
-                .get()
-                .getCompositorView()
-                .setActivityTabProvider(getActivityTabProvider());
 
         super.onInitialLayoutInflationComplete();
     }

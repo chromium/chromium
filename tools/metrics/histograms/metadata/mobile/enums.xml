@@ -602,6 +602,7 @@ chromium-metrics-reviews@google.com.
   <int value="39" label="Data Sharing"/>
   <int value="40" label="Unified password manager access loss warning"/>
   <int value="41" label="Tracing"/>
+  <int value="42" label="Serial"/>
 </enum>
 
 </enums>

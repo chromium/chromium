@@ -64,7 +64,7 @@ TEST_F(GetBnplPaymentInstrumentForFetchingVcnRequestTest, GetRequestUrlPath) {
 TEST_F(GetBnplPaymentInstrumentForFetchingVcnRequestTest,
        GetRequestContentType) {
   EXPECT_EQ(request_->GetRequestContentType(),
-            "application/json/x-www-form-urlencoded");
+            "application/x-www-form-urlencoded");
 }
 
 TEST_F(GetBnplPaymentInstrumentForFetchingVcnRequestTest, GetRequestContent) {

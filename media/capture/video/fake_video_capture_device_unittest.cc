@@ -35,7 +35,6 @@
 #include "media/capture/video/video_capture_device.h"
 #include "media/capture/video/video_capture_gpu_channel_host.h"
 #include "media/capture/video_capture_types.h"
-#include "media/video/fake_gpu_memory_buffer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -171,8 +170,7 @@ TEST_P(FakeVideoCaptureDeviceTest, CaptureUsing) {
 
   std::unique_ptr<VideoCaptureDevice> device =
       FakeVideoCaptureDeviceFactory::CreateDeviceWithDefaultResolutions(
-          pixel_format, delivery_mode, frame_rate,
-          std::make_unique<FakeGpuMemoryBufferSupport>());
+          pixel_format, delivery_mode, frame_rate);
   ASSERT_TRUE(device);
 
   // First: Requested, Second: Expected

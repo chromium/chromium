@@ -132,19 +132,6 @@
     (extension-class "com.apple.app-sandbox.read")
     (subpath "/")))
 
-(if (param-true? filter-syscalls-debug)
-  (when (defined? 'syscall-unix)
-    (deny syscall-unix (with send-signal SIGSYS))
-    (allow syscall-unix
-      (syscall-number SYS_csrctl)
-      (syscall-number SYS_getentropy)
-      (syscall-number SYS_getxattr)
-      (syscall-number SYS_kdebug_typefilter)
-      (syscall-number SYS_sigaltstack)
-      (syscall-number SYS_write)
-      (syscall-number SYS_write_nocancel)
-)))
-
 (if (not (maybe-disable-metal-shader-cache))
   (maybe-allow-metal-shader-cache-access))
 

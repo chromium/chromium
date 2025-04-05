@@ -90,21 +90,17 @@ export class SettingsPerDeviceKeyboardElement extends
         value: [2000, 1000, 500, 300, 200, 100, 50, 30, 20],
         readOnly: true,
       },
-
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kKeyboardAutoRepeat,
-          Setting.kKeyboardShortcuts,
-        ]),
-      },
     };
   }
 
   prefs: PrefsState;
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kKeyboardAutoRepeat,
+    Setting.kKeyboardShortcuts,
+  ]);
+
   protected keyboards: Keyboard[];
   protected keyboardPolicies: KeyboardPolicies;
   private autoRepeatDelays: number[];

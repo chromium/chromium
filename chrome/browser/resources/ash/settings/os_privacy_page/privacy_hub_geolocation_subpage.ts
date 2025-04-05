@@ -199,6 +199,10 @@ export class SettingsPrivacyHubGeolocationSubpage extends
   private currentSunRiseTime_: string;
   private currentSunSetTime_: string;
   private shouldShowManageGeolocationDialog_: boolean;
+  private automaticTimeZoneText_: string;
+  private darkThemeText_: string;
+  private localWeatherText_: string;
+  private nightLightText_: string;
 
   constructor() {
     super();

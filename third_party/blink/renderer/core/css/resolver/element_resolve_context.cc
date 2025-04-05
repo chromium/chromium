@@ -50,6 +50,14 @@ ElementResolveContext::BuildPseudoElementAncestors(Element* element) {
   if (!element->IsPseudoElement()) {
     return pseudo_element_ancestors;
   }
+  // View transition pseudo elements can have multiple pseudo element ancestors,
+  // but the spec says we should only check against the element itself.
+  // E.g. the tree can be root -> ::A -> ::B -> ::C, and we should match rule
+  // ::B for element being B, or rule ::C for element C.
+  if (element->IsViewTransitionPseudoElement()) {
+    pseudo_element_ancestors[--pseudo_element_ancestors_size_] = element;
+    return pseudo_element_ancestors;
+  }
   while (element->IsPseudoElement()) {
     CHECK_GE(pseudo_element_ancestors_size_, 0u);
     pseudo_element_ancestors[--pseudo_element_ancestors_size_] = element;

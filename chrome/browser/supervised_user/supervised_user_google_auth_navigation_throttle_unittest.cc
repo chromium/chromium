@@ -4,7 +4,6 @@
 
 #include "chrome/browser/supervised_user/supervised_user_google_auth_navigation_throttle.h"
 
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/child_accounts/child_account_service_factory.h"
@@ -17,7 +16,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/supervised_user/core/browser/child_account_service.h"
-#include "components/supervised_user/core/common/features.h"
 #include "components/sync/test/mock_sync_service.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/test/mock_navigation_handle.h"
@@ -174,11 +172,6 @@ TEST_F(SupervisedUserGoogleAuthNavigationThrottleTest,
 
 TEST_F(SupervisedUserGoogleAuthNavigationThrottleTest,
        NavigationForPendingSignedInSupervisedUsers) {
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      supervised_user::kForceSupervisedUserReauthenticationForYouTube);
-#endif
   SetUserAsSupervised();
 #if !BUILDFLAG(IS_ANDROID)
   SetInvalidRefreshTokenForPrimaryAccount(
@@ -258,10 +251,6 @@ TEST_F(SupervisedUserGoogleAuthNavigationThrottleTest,
 TEST_F(
     SupervisedUserGoogleAuthNavigationThrottleTest,
     NavigationForPendingSignedInSupervisedUsersAllowsYouTubeInfrastructureInSubframes) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      supervised_user::kForceSupervisedUserReauthenticationForYouTube);
-
   SetUserAsSupervised();
   SetInvalidRefreshTokenForPrimaryAccount(
       identity_manager(),

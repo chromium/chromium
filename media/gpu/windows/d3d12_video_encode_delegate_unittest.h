@@ -5,6 +5,7 @@
 #ifndef MEDIA_GPU_WINDOWS_D3D12_VIDEO_ENCODE_DELEGATE_UNITTEST_H_
 #define MEDIA_GPU_WINDOWS_D3D12_VIDEO_ENCODE_DELEGATE_UNITTEST_H_
 
+#include "media/gpu/windows/d3d12_video_encode_delegate.h"
 #include "media/gpu/windows/d3d12_video_encoder_wrapper.h"
 #include "media/gpu/windows/d3d12_video_processor_wrapper.h"
 #include "testing/gmock/include/gmock/gmock.h"

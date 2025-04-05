@@ -425,13 +425,8 @@ void InputRouterImpl::OnSetCompositorAllowedTouchAction(
 void InputRouterImpl::DidOverscroll(
     blink::mojom::DidOverscrollParamsPtr params) {
   // Touchpad and Touchscreen flings are handled on the browser side.
-  ui::DidOverscrollParams fling_updated_params = {
-      params->accumulated_overscroll, params->latest_overscroll_delta,
-      params->current_fling_velocity, params->causal_event_viewport_point,
-      params->overscroll_behavior};
-  fling_updated_params.current_fling_velocity =
-      gesture_event_queue_.CurrentFlingVelocity();
-  client_->DidOverscroll(fling_updated_params);
+  params->current_fling_velocity = gesture_event_queue_.CurrentFlingVelocity();
+  client_->DidOverscroll(std::move(params));
 }
 
 void InputRouterImpl::DidStartScrollingViewport() {

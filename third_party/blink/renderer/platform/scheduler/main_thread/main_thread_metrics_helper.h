@@ -27,7 +27,8 @@ class MainThreadSchedulerImpl;
 class PLATFORM_EXPORT MainThreadMetricsHelper {
  public:
   MainThreadMetricsHelper(MainThreadSchedulerImpl* main_thread_scheduler,
-                          base::TimeTicks now);
+                          base::TimeTicks now,
+                          bool in_background);
   MainThreadMetricsHelper(const MainThreadMetricsHelper&) = delete;
   MainThreadMetricsHelper& operator=(const MainThreadMetricsHelper&) = delete;
   ~MainThreadMetricsHelper();
@@ -39,6 +40,7 @@ class PLATFORM_EXPORT MainThreadMetricsHelper {
 
   void OnRendererShutdown(base::TimeTicks now);
 
+  void SetRendererBackgrounded(bool backgrounded, base::TimeTicks now);
   void RecordMainThreadTaskLoad(base::TimeTicks time, double load);
 
   void ResetForTest(base::TimeTicks now);
@@ -69,6 +71,7 @@ class PLATFORM_EXPORT MainThreadMetricsHelper {
   MainThreadTaskLoadState main_thread_task_load_state_;
   float sampling_ratio_ = .01;
   base::MetricsSubSampler metrics_subsampler_;
+  base::TimeTicks last_foregrounded_time_;
 };
 
 }  // namespace scheduler

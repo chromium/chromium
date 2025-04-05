@@ -43,14 +43,6 @@ export class ParentalControlsSettingsCardElement extends
 
   static get properties() {
     return {
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([Setting.kSetUpParentalControls]),
-      },
-
       isChild_: {
         type: Boolean,
         value() {
@@ -68,8 +60,14 @@ export class ParentalControlsSettingsCardElement extends
     };
   }
 
-  private online_: boolean;
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kSetUpParentalControls,
+  ]);
+
   private browserProxy_: ParentalControlsBrowserProxy;
+  private readonly isChild_: boolean;
+  private online_: boolean;
 
   constructor() {
     super();

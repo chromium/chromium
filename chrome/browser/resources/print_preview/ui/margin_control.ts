@@ -107,18 +107,18 @@ export class PrintPreviewMarginControlElement extends
     };
   }
 
-  disabled: boolean;
-  side: CustomMarginsOrientation;
-  invalid: boolean;
-  invisible: boolean;
-  measurementSystem: MeasurementSystem|null;
-  scaleTransform: number;
-  translateTransform: Coordinate2d;
-  pageSize: Size;
-  clipSize: Size|null;
+  declare disabled: boolean;
+  declare side: CustomMarginsOrientation;
+  declare invalid: boolean;
+  declare invisible: boolean;
+  declare measurementSystem: MeasurementSystem|null;
+  declare scaleTransform: number;
+  declare translateTransform: Coordinate2d;
+  declare pageSize: Size;
+  declare clipSize: Size|null;
 
-  private focused_: boolean;
-  private positionInPts_: number;
+  declare private focused_: boolean;
+  declare private positionInPts_: number;
 
   static get observers() {
     return [

@@ -51,6 +51,8 @@ struct PLATFORM_EXPORT PhysicalFixedOffset {
     top = std::max(top, ValueType());
   }
 
+  constexpr bool operator==(const PhysicalFixedOffset& other) const = default;
+
   PhysicalFixedOffset operator+(const PhysicalFixedOffset& other) const {
     return PhysicalFixedOffset{this->left + other.left, this->top + other.top};
   }
@@ -68,14 +70,6 @@ struct PLATFORM_EXPORT PhysicalFixedOffset {
   PhysicalFixedOffset& operator-=(const PhysicalFixedOffset& other) {
     *this = *this - other;
     return *this;
-  }
-
-  constexpr bool operator==(const PhysicalFixedOffset& other) const {
-    return other.left == left && other.top == top;
-  }
-
-  constexpr bool operator!=(const PhysicalFixedOffset& other) const {
-    return !(*this == other);
   }
 
   // Conversions from/to existing code. New code prefers type safety for

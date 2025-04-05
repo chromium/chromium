@@ -80,14 +80,6 @@ class AIManager : public base::SupportsUserData::Data,
   // Return the max temperature for the LanguageModel API.
   float GetLanguageModelMaxTemperature();
 
- private:
-  FRIEND_TEST_ALL_PREFIXES(AIManagerTest, CanCreate);
-  FRIEND_TEST_ALL_PREFIXES(AIManagerTest, NoUAFWithInvalidOnDeviceModelPath);
-  FRIEND_TEST_ALL_PREFIXES(AISummarizerTest, CreateSummarizerWithoutService);
-  FRIEND_TEST_ALL_PREFIXES(AIManagerIsLanguagesSupportedTest, OneVector);
-  FRIEND_TEST_ALL_PREFIXES(AIManagerIsLanguagesSupportedTest,
-                           TwoVectorsAndOneCode);
-
   // Returns if all of the language codes in `languages` are supported.
   static bool IsLanguagesSupported(
       const std::vector<AILanguageCodePtr>& languages);
@@ -130,11 +122,15 @@ class AIManager : public base::SupportsUserData::Data,
       mojo::PendingRemote<blink::mojom::ModelDownloadProgressObserver>
           observer_remote) override;
 
+  // Check whether optimization guide supports the feature matching `capability`
+  // and modalities specified by `capabilities`; yields a result to `callback`.
+  void CanCreateSession(optimization_guide::ModelBasedCapabilityKey capability,
+                        on_device_model::Capabilities capabilities,
+                        CanCreateLanguageModelCallback callback);
+
+ private:
   void OnModelPathValidationComplete(const std::string& model_path,
                                      bool is_valid_path);
-
-  void CanCreateSession(optimization_guide::ModelBasedCapabilityKey capability,
-                        CanCreateLanguageModelCallback callback);
 
   // Creates an `AILanguageModel`, either as a new session, or as a clone of
   // an existing session with its context copied. When this method is called

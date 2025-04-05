@@ -184,9 +184,8 @@ public class StatusBarColorController
         mIncognitoActiveOmniboxColor = context.getColor(R.color.omnibox_dropdown_bg_incognito);
         // TODO(b/41494931): Share code with ToolbarPhone#getToolbarDefaultColor().
         mStandardScrolledOmniboxColor =
-                ChromeColors.getSurfaceColor(context, R.dimen.toolbar_text_box_elevation);
-        mIncognitoScrolledOmniboxColor =
-                context.getColor(R.color.default_bg_color_dark_elev_2_baseline);
+                ContextCompat.getColor(context, R.color.toolbar_text_box_bg_color);
+        mIncognitoScrolledOmniboxColor = context.getColor(R.color.omnibox_scrolled_bg_incognito);
 
         mStatusBarColorTabObserver =
                 new ActivityTabProvider.ActivityTabTabObserver(tabProvider) {

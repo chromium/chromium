@@ -172,6 +172,13 @@ void SkyVaultMigrationRetryHistogram(int count) {
       1, kMaxRetryCount, kMaxRetryCount);
 }
 
+void SkyVaultDeletionRetryHistogram(int count) {
+  base::UmaHistogramCustomCounts(
+      GetHistogramName(kMigrationRetrySuffix, UploadTrigger::kMigration,
+                       MigrationDestination::kDelete),
+      count, 1, kMaxRetryCount, kMaxRetryCount);
+}
+
 void SkyVaultMigrationStoppedHistogram(MigrationDestination destination,
                                        bool value) {
   base::UmaHistogramBoolean(
@@ -191,6 +198,13 @@ void SkyVaultMigrationWrongStateHistogram(MigrationDestination destination,
       GetHistogramName(kMigrationWrongStateSuffix, UploadTrigger::kMigration,
                        destination),
       state);
+}
+
+void SkyVaultDeletionDoneHistogram(bool success) {
+  base::UmaHistogramBoolean(
+      GetHistogramName(kMigrationFailedSuffix, UploadTrigger::kMigration,
+                       MigrationDestination::kDelete),
+      !success);
 }
 
 void SkyVaultMigrationDoneHistograms(MigrationDestination destination,

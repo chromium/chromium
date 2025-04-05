@@ -270,11 +270,15 @@ bool DataTypeController::ShouldRunInTransportOnlyMode() const {
 
 void DataTypeController::HasUnsyncedData(
     base::OnceCallback<void(bool)> callback) {
-  if (!delegate_) {
+  auto it = delegate_map_.find(SyncMode::kTransportOnly);
+  if (it == delegate_map_.end()) {
     std::move(callback).Run(false);
     return;
   }
-  delegate_->HasUnsyncedData(std::move(callback));
+  CHECK(it->second);
+  // This should only be triggered for transport-only mode.
+  CHECK(!delegate_ || delegate_ == it->second.get());
+  it->second->HasUnsyncedData(std::move(callback));
 }
 
 void DataTypeController::GetAllNodesForDebugging(AllNodesCallback callback) {

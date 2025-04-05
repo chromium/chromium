@@ -242,13 +242,6 @@ struct PLATFORM_EXPORT ShapeResultBloberizer::FillGlyphs
                       unsigned from,
                       unsigned to);
 };
-struct PLATFORM_EXPORT ShapeResultBloberizer::FillTextEmphasisGlyphs
-    : public ShapeResultBloberizer {
-  FillTextEmphasisGlyphs(const FontDescription&,
-                         const TextRunPaintInfo&,
-                         const ShapeResultBuffer&,
-                         const GlyphData& emphasis_data);
-};
 
 void DrawTextBlobs(const ShapeResultBloberizer::BlobBuffer& blobs,
                    cc::PaintCanvas& canvas,

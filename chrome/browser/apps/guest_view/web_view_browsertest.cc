@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -863,8 +859,8 @@ class WebViewTestBase : public extensions::PlatformAppBrowserTest {
         testing::UnitTest::GetInstance()->current_test_info();
 
     // SpeechRecognition test specific SetUp.
-    const char* name = "SpeechRecognitionAPI_HasPermissionAllow";
-    return !strncmp(test_info->name(), name, strlen(name));
+    constexpr std::string_view name = "SpeechRecognitionAPI_HasPermissionAllow";
+    return std::string_view(test_info->name()).starts_with(name);
   }
 
   std::unique_ptr<device::ScopedGeolocationOverrider> geolocation_overrider_;

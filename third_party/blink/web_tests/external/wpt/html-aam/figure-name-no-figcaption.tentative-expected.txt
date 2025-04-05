@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] img without alt within a figure with figcaption
+  assert_equals: <img src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" data-testname="img without alt within a figure with figcaption" data-expectedlabel="figcaption" class="ex"> expected "figcaption" but got ""
+Harness: the test ran to completion.
+

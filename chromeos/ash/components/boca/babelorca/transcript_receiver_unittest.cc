@@ -347,7 +347,7 @@ TEST_F(TranscriptReceiverTest, NewRequestResetsTranscriptBuilder) {
   EXPECT_TRUE(result_future.IsEmpty());
 }
 
-TEST_F(TranscriptReceiverTest, RequestHasTachyonToken) {
+TEST_F(TranscriptReceiverTest, RequestFieldsSet) {
   ReceiveMessagesRequest request;
 
   receiver_->StartReceiving(base::DoNothing(), base::DoNothing());
@@ -355,6 +355,9 @@ TEST_F(TranscriptReceiverTest, RequestHasTachyonToken) {
   ASSERT_TRUE(request.ParseFromString(authed_client_ptr_->GetRequestString()));
   EXPECT_EQ(request.header().auth_token_payload(),
             data_provider_.tachyon_token().value());
+  ASSERT_EQ(request.initial_pull_options().message_types().size(), 1);
+  EXPECT_EQ(request.initial_pull_options().message_types()[0],
+            InboxMessage::GROUP);
 }
 
 struct TranscriptReceiverMissingDataTestCase {

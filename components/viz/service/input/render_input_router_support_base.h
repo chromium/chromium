@@ -67,6 +67,8 @@ class VIZ_SERVICE_EXPORT RenderInputRouterSupportBase
   float GetDeviceScaleFactor() const final;
   bool IsPointerLocked() override;
 
+  void StopFlingingOnViz();
+
   Delegate* delegate() { return delegate_; }
 
  protected:

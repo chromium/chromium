@@ -164,20 +164,6 @@ export class SettingsMultidevicePageElement extends
       },
 
       /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kSetUpMultiDevice,
-          Setting.kVerifyMultiDeviceSetup,
-          Setting.kMultiDeviceOnOff,
-          Setting.kNearbyShareDeviceVisibility,
-          Setting.kNearbyShareOnOff,
-        ]),
-      },
-
-      /**
        * Reflects the password sub-dialog property.
        */
       isPasswordDialogShowing_: {
@@ -239,11 +225,22 @@ export class SettingsMultidevicePageElement extends
   }
 
   isSettingsRetreived: boolean;
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kSetUpMultiDevice,
+    Setting.kVerifyMultiDeviceSetup,
+    Setting.kMultiDeviceOnOff,
+    Setting.kNearbyShareDeviceVisibility,
+    Setting.kNearbyShareOnOff,
+  ]);
+
   private authToken_: TokenInfo|undefined;
   private authTokenReply_: RequestTokenReply|undefined|null;
   private browserProxy_: MultiDeviceBrowserProxy;
   private featureToBeEnabledOnceAuthenticated_: MultiDeviceFeature|null;
   private isChromeosScreenLockEnabled_: boolean;
+  private readonly isNameEnabled_: boolean;
   private isNearbyShareSupported_: boolean;
   private isPasswordDialogShowing_: boolean;
   private isPhoneScreenLockEnabled_: boolean;

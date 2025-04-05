@@ -30,6 +30,11 @@ constexpr base::FeatureParam<std::string> kVisitedURLRankingResultTypesParam{
     /*name=*/"visited_url_ranking_url_types",
     /*default_value=*/""};
 
+constexpr base::FeatureParam<bool> kVisitedURLRankingRecordActions{
+    &kVisitedURLRankingService,
+    /*name=*/"visited_url_ranking_record_actions",
+    /*default_value=*/false};
+
 const char kVisitedURLRankingFetchDurationInHoursParam[] =
     "VisitedURLRankingFetchDurationInHoursParam";
 

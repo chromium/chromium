@@ -161,6 +161,15 @@ public class MenuButtonCoordinator {
     }
 
     /**
+     * Highlights a menu item the next time the menu is opened.
+     *
+     * @param menuItemId The ID of the menu item to be highlighted.
+     */
+    public void highlightMenuItemOnShow(@IdRes int menuItemId) {
+        mAppMenuButtonHelper.highlightMenuItemOnShow(menuItemId);
+    }
+
+    /**
      * @return Whether the menu button is present and visible.
      */
     public boolean isVisible() {

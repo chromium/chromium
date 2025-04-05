@@ -640,8 +640,7 @@ PositionWithAffinity InlineCursor::PositionForPointInInlineFormattingContext(
       // Hitting on line bottom doesn't count, to match legacy behavior.
       const LayoutUnit child_block_end_offset =
           child_block_offset +
-          child_item->Size()
-              .ConvertToLogical(writing_direction.GetWritingMode())
+          ToLogicalSize(child_item->Size(), writing_direction.GetWritingMode())
               .block_size;
       if (point_block_offset >= child_block_end_offset) {
         if (child_block_end_offset > closest_line_after_block_offset) {
@@ -765,8 +764,7 @@ PositionWithAffinity InlineCursor::PositionForPointInInlineBox(
     }
     const LayoutUnit child_inline_end_offset =
         child_inline_offset +
-        child_item->Size()
-            .ConvertToLogical(writing_direction.GetWritingMode())
+        ToLogicalSize(child_item->Size(), writing_direction.GetWritingMode())
             .inline_size;
     if (point_inline_offset >= child_inline_end_offset) {
       if (child_item->IsFloating())
@@ -1220,7 +1218,7 @@ void InlineCursor::MoveToNextInlineLeafOnLine() {
   MoveTo(cursor);
   DCHECK(!cursor.Current() || cursor.Current().IsInlineLeaf())
       << "Must return an empty or inline leaf position, returned: "
-      << cursor.CurrentMutableLayoutObject();
+      << cursor.Current().GetLayoutObject();
 }
 
 void InlineCursor::MoveToNextLine() {

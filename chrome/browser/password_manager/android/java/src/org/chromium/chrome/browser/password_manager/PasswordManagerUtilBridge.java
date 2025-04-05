@@ -11,11 +11,14 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.PackageUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.access_loss.PasswordAccessLossWarningType;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.sync.SyncService;
 
 /** Wrapper for utilities in password_manager_util. */
+@NullMarked
 public class PasswordManagerUtilBridge {
 
     /**
@@ -63,7 +66,7 @@ public class PasswordManagerUtilBridge {
      *     functionality.
      */
     public static boolean isGmsCoreUpdateRequired(
-            PrefService prefService, SyncService syncService) {
+            PrefService prefService, @Nullable SyncService syncService) {
         return PasswordManagerUtilBridgeJni.get().isGmsCoreUpdateRequired(prefService, syncService);
     }
 
@@ -119,7 +122,7 @@ public class PasswordManagerUtilBridge {
 
         boolean isGmsCoreUpdateRequired(
                 @JniType("PrefService*") PrefService prefService,
-                @JniType("syncer::SyncService*") SyncService syncService);
+                @JniType("syncer::SyncService*") @Nullable SyncService syncService);
 
         boolean areMinUpmRequirementsMet();
 

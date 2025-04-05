@@ -569,8 +569,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PrintPreview.FetchCapabilitiesTime" units="ms"
-    expires_after="2025-09-28">
+<histogram name="PrintPreview.FetchCapabilitiesTime2" units="ms"
+    expires_after="2025-07-27">
   <owner>awscreen@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>

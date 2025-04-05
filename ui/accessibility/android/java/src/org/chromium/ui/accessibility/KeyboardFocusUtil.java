@@ -28,7 +28,7 @@ public class KeyboardFocusUtil {
             }
             if (setFocus(childView)) return true;
         }
-        return false;
+        return setFocus(viewGroup);
     }
 
     /**

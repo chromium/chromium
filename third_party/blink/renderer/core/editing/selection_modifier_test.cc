@@ -429,8 +429,8 @@ TEST_F(SelectionModifierTest, OptgroupAndTable) {
       "<optgroup></optgroup><table><tbody><tr><td></td></tr></tbody></table>",
       GetSelectionTextFromBody(selection));
 
-  HTMLOptGroupElement* optgroup = To<HTMLOptGroupElement>(
-      GetDocument().QuerySelector(AtomicString("optgroup")));
+  HTMLOptGroupElement* optgroup =
+      To<HTMLOptGroupElement>(QuerySelector("optgroup"));
   ShadowRoot* shadow_root = optgroup->GetShadowRoot();
   HTMLDivElement* label = &optgroup->OptGroupLabelElement();
   EXPECT_EQ(Position(label, 0), selection.Anchor());

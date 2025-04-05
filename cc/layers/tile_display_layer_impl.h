@@ -115,7 +115,9 @@ class CC_EXPORT TileDisplayLayerImpl : public LayerImpl {
     void SetRasterTransform(const gfx::AxisTransform2d& transform);
     void SetTileSize(const gfx::Size& size);
     void SetTilingRect(const gfx::Rect& rect);
-    void SetTileContents(const TileIndex& key, const TileContents& contents);
+    void SetTileContents(const TileIndex& key,
+                         const TileContents& contents,
+                         bool is_incremental_update);
 
     CoverageIterator Cover(const gfx::Rect& coverage_rect,
                            float coverage_scale) const;
@@ -155,6 +157,10 @@ class CC_EXPORT TileDisplayLayerImpl : public LayerImpl {
   void GetContentsResourceId(viz::ResourceId* resource_id,
                              gfx::Size* resource_size,
                              gfx::SizeF* resource_uv_size) const override;
+  gfx::Rect GetDamageRect() const override;
+  void ResetChangeTracking() override;
+
+  void RecordDamage(const gfx::Rect& damage_rect);
 
  private:
   raw_ref<Client> client_;
@@ -162,6 +168,10 @@ class CC_EXPORT TileDisplayLayerImpl : public LayerImpl {
   std::vector<viz::TransferableResource> discarded_resources_;
   std::optional<SkColor4f> solid_color_;
   bool is_backdrop_filter_mask_ = false;
+
+  // Denotes an area that is damaged and needs redraw. This is in the layer's
+  // space.
+  gfx::Rect damage_rect_;
 };
 
 }  // namespace cc

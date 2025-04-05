@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
 // Mark: Private properties
@@ -128,7 +128,7 @@ function detectLanguage(): void {
     'hasNoTranslate': false,
     'htmlLang': document.documentElement.lang,
     'httpContentLanguage': httpContentLanguage,
-    'frameId': gCrWeb.message.getFrameId(),
+    'frameId': gCrWebLegacy.message.getFrameId(),
   };
 
   if (hasNoTranslate()) {
@@ -153,7 +153,7 @@ function retrieveBufferedTextContent(): string|null {
 
 // Mark: Public API
 
-gCrWeb.languageDetection = {
+gCrWebLegacy.languageDetection = {
   detectLanguage,
   retrieveBufferedTextContent,
 };

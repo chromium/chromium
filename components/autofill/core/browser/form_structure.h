@@ -269,14 +269,6 @@ class FormStructure {
   // Returns whether the form comes from an HTML form with a <form> tag.
   bool is_form_element() const;
 
-  void set_submission_event(mojom::SubmissionIndicatorEvent submission_event) {
-    submission_event_ = submission_event;
-  }
-
-  mojom::SubmissionIndicatorEvent submission_event() const {
-    return submission_event_;
-  }
-
   base::TimeTicks form_parsed_timestamp() const {
     return form_parsed_timestamp_;
   }
@@ -346,14 +338,6 @@ class FormStructure {
     std::optional<FormSignature> second_last_address_form_submitted;
     std::optional<FormSignature> last_credit_card_form_submitted;
   };
-
-  void set_form_associations(FormAssociations associations) {
-    form_associations_ = associations;
-  }
-
-  const FormAssociations& form_associations() const {
-    return form_associations_;
-  }
 
   base::flat_map<FieldGlobalId, AutofillType::ServerPrediction>
   GetServerPredictions(const std::vector<FieldGlobalId>& field_ids) const;
@@ -428,11 +412,6 @@ class FormStructure {
   // The titles of form's buttons.
   ButtonTitleList button_titles_;
 
-  // The type of the event that was taken as an indication that the form has
-  // been successfully submitted.
-  mojom::SubmissionIndicatorEvent submission_event_ =
-      mojom::SubmissionIndicatorEvent::NONE;
-
   // The source URL (excluding the query parameters and fragment identifiers).
   GURL source_url_;
 
@@ -499,11 +478,6 @@ class FormStructure {
 
   // A vector of all iframes in the form.
   std::vector<FrameTokenWithPredecessor> child_frames_;
-
-  // The signatures of forms recently submitted on the same origin within a
-  // small period of time.
-  // Only used for voting-purposes.
-  FormAssociations form_associations_;
 };
 
 LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form);

@@ -46,6 +46,7 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/path_win.h"
 #include "ui/views/corewm/tooltip_aura.h"
+#include "ui/views/views_features.h"
 #include "ui/views/views_switches.h"
 #include "ui/views/widget/desktop_aura/desktop_drag_drop_client_win.h"
 #include "ui/views/widget/desktop_aura/desktop_native_cursor_manager.h"
@@ -77,7 +78,9 @@ namespace {
 const int kMouseCaptureRegionBorder = 5;
 
 gfx::Size GetExpandedWindowSize(bool is_translucent, gfx::Size size) {
-  if (!is_translucent) {
+  if (!base::FeatureList::IsEnabled(
+          features::kEnableTransparentHwndEnlargement) ||
+      !is_translucent) {
     return size;
   }
 

@@ -8,6 +8,7 @@ source_set("signin") {
     "signin_screen_coordinator.mm",
     "signin_screen_mediator.h",
     "signin_screen_mediator.mm",
+    "signin_screen_mediator_delegate.h",
   ]
   deps = [
     ":signin_ui",

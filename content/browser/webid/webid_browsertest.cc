@@ -1904,35 +1904,6 @@ class WebIdModeBrowserTest : public WebIdBrowserTest {
   }
 };
 
-// Verify that using mode: button in the API call logs to console.
-IN_PROC_BROWSER_TEST_F(WebIdModeBrowserTest, UseModeButtonInsteadOfActive) {
-  idp_server()->SetConfigResponseDetails(BuildValidConfigDetails());
-
-  std::string script = R"(
-        (async () => {
-          var x = (await navigator.credentials.get({
-            identity: {
-              providers: [{
-                configURL: ')" +
-                       BaseIdpUrl() + R"(',
-                clientId: 'client_id_1',
-                nonce: '12345',
-              }],
-              mode: 'button'
-            },
-          }));
-          return x.token;
-        }) ()
-    )";
-
-  WebContentsConsoleObserver console_observer(shell()->web_contents());
-  console_observer.SetPattern(
-      "The mode button/widget are renamed to active/passive respectively and "
-      "will be deprecated soon.");
-  EXPECT_EQ(std::string(kToken), EvalJs(shell(), script));
-  ASSERT_TRUE(console_observer.Wait());
-}
-
 std::vector<uint8_t> TestSha256(std::string_view data) {
   std::string str = crypto::SHA256HashString(data);
   std::vector<uint8_t> result(str.begin(), str.end());
@@ -2059,7 +2030,7 @@ IN_PROC_BROWSER_TEST_F(WebIdDelegationBrowserTest, IssueVCs) {
                 clientId: 'client_id_1',
                 nonce: '12345',
               }],
-              mode: 'button'
+              mode: 'active'
             },
           }));
           return x.token;

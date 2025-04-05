@@ -19,5 +19,12 @@ bundle_data_xcassets("resources") {
     "Assets.xcassets/lens_overlay_onboarding_illustration.imageset/Contents.json",
     "Assets.xcassets/lens_overlay_onboarding_illustration.imageset/lens_overlay_onboarding_illustration@2x.png",
     "Assets.xcassets/lens_overlay_onboarding_illustration.imageset/lens_overlay_onboarding_illustration@3x.png",
+    "Assets.xcassets/lens_translate_error.imageset/Contents.json",
+    "Assets.xcassets/lens_translate_error.imageset/lens_translate_error@1x.png",
+    "Assets.xcassets/lens_translate_error.imageset/lens_translate_error@2x.png",
+    "Assets.xcassets/lens_translate_error.imageset/lens_translate_error@3x.png",
+    "Assets.xcassets/lens_translate_error.imageset/lens_translate_error_dark@1x.png",
+    "Assets.xcassets/lens_translate_error.imageset/lens_translate_error_dark@2x.png",
+    "Assets.xcassets/lens_translate_error.imageset/lens_translate_error_dark@3x.png",
   ]
 }

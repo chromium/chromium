@@ -15,7 +15,6 @@
 #include "base/test/bind.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
 #include "third_party/blink/public/mojom/worker/dedicated_worker_host.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -313,14 +312,13 @@ class DedicatedWorkerMessagingProxyForTest
             WorkerBackingThreadStartupData::AtomicsWaitMode::kAllow),
         WorkerObjectProxy().token());
 
-    if (base::FeatureList::IsEnabled(features::kPlzDedicatedWorker)) {
-      PostCrossThreadTask(
-          *GetDedicatedWorkerThread()->GetTaskRunner(TaskType::kInternalTest),
-          FROM_HERE,
-          CrossThreadBindOnce(
-              &DedicatedWorkerThreadForTest::InitializeGlobalScope,
-              CrossThreadUnretained(GetDedicatedWorkerThread()), script_url_));
-    }
+    PostCrossThreadTask(
+        *GetDedicatedWorkerThread()->GetTaskRunner(TaskType::kInternalTest),
+        FROM_HERE,
+        CrossThreadBindOnce(
+            &DedicatedWorkerThreadForTest::InitializeGlobalScope,
+            CrossThreadUnretained(GetDedicatedWorkerThread()), script_url_));
+
   }
 
   void EvaluateClassicScript(const String& source) {

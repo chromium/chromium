@@ -12,8 +12,9 @@ namespace blink {
 
 class CSSTimeInterpolationType : public CSSInterpolationType {
  public:
-  CSSTimeInterpolationType(PropertyHandle property,
-                           const PropertyRegistration* registration = nullptr)
+  explicit CSSTimeInterpolationType(
+      PropertyHandle property,
+      const PropertyRegistration* registration = nullptr)
       : CSSInterpolationType(property, registration) {}
 
   InterpolationValue MaybeConvertNeutral(const InterpolationValue& underlying,

@@ -595,8 +595,11 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, RunOperation_Success) {
                                    "/shared_storage/simple_module.js"),
             /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
-        SharedStorageEventParams::CreateForRun(
-            "test-operation", blink::CloneableMessage(), /*worklet_id=*/0)}});
+        SharedStorageEventParams::CreateForRunForTesting(
+            "test-operation",
+            /*keep_alive=*/false,
+            SharedStorageEventParams::PrivateAggregationConfigWrapper(),
+            blink::CloneableMessage(), /*worklet_id=*/0)}});
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
@@ -882,8 +885,10 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
                 "a.test", "/shared_storage/erroneous_function_module.js"),
             /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
-        SharedStorageEventParams::CreateForRun(
-            "test-operation", blink::CloneableMessage(), /*worklet_id=*/0)}});
+        SharedStorageEventParams::CreateForRunForTesting(
+            "test-operation", /*keep_alive=*/false,
+            SharedStorageEventParams::PrivateAggregationConfigWrapper(),
+            blink::CloneableMessage(), /*worklet_id=*/0)}});
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -966,11 +971,15 @@ IN_PROC_BROWSER_TEST_P(
                                    "/shared_storage/simple_module.js"),
             /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
-        SharedStorageEventParams::CreateForRun(
-            "test-operation", blink::CloneableMessage(), /*worklet_id=*/0)},
+        SharedStorageEventParams::CreateForRunForTesting(
+            "test-operation", /*keep_alive=*/true,
+            SharedStorageEventParams::PrivateAggregationConfigWrapper(),
+            blink::CloneableMessage(), /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
-        SharedStorageEventParams::CreateForRun(
-            "test-operation", blink::CloneableMessage(), /*worklet_id=*/0)}});
+        SharedStorageEventParams::CreateForRunForTesting(
+            "test-operation", /*keep_alive=*/false,
+            SharedStorageEventParams::PrivateAggregationConfigWrapper(),
+            blink::CloneableMessage(), /*worklet_id=*/0)}});
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -1040,8 +1049,10 @@ IN_PROC_BROWSER_TEST_P(
                                    "/shared_storage/simple_module.js"),
             /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
-        SharedStorageEventParams::CreateForRun(
-            "test-operation", blink::CloneableMessage(), /*worklet_id=*/0)}});
+        SharedStorageEventParams::CreateForRunForTesting(
+            "test-operation", /*keep_alive=*/false,
+            SharedStorageEventParams::PrivateAggregationConfigWrapper(),
+            blink::CloneableMessage(), /*worklet_id=*/0)}});
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -1110,8 +1121,10 @@ IN_PROC_BROWSER_TEST_P(
                                    "/shared_storage/simple_module.js"),
             /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
-        SharedStorageEventParams::CreateForRun(
-            "test-operation", blink::CloneableMessage(), /*worklet_id=*/0)}});
+        SharedStorageEventParams::CreateForRunForTesting(
+            "test-operation", /*keep_alive=*/false,
+            SharedStorageEventParams::PrivateAggregationConfigWrapper(),
+            blink::CloneableMessage(), /*worklet_id=*/0)}});
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, WorkletDestroyed) {
@@ -1430,8 +1443,10 @@ IN_PROC_BROWSER_TEST_P(
                                    "/shared_storage/simple_module.js"),
             /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
-        SharedStorageEventParams::CreateForRun(
-            "test-operation", blink::CloneableMessage(), /*worklet_id=*/0)}});
+        SharedStorageEventParams::CreateForRunForTesting(
+            "test-operation", /*keep_alive=*/false,
+            SharedStorageEventParams::PrivateAggregationConfigWrapper(),
+            blink::CloneableMessage(), /*worklet_id=*/0)}});
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -1552,8 +1567,10 @@ IN_PROC_BROWSER_TEST_P(
             /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kSelectURL, MainFrameId(),
         origin_str,
-        SharedStorageEventParams::CreateForSelectURL(
-            "test-url-selection-operation", blink::CloneableMessage(),
+        SharedStorageEventParams::CreateForSelectURLForTesting(
+            "test-url-selection-operation", /*keep_alive=*/false,
+            SharedStorageEventParams::PrivateAggregationConfigWrapper(),
+            blink::CloneableMessage(),
             std::vector<SharedStorageUrlSpecWithMetadata>(
                 {{https_server()->GetURL("a.test",
                                          "/fenced_frames/title0.html"),
@@ -1561,6 +1578,8 @@ IN_PROC_BROWSER_TEST_P(
                  {https_server()->GetURL("a.test",
                                          "/fenced_frames/title1.html"),
                   {}}}),
+            ResolveSelectURLToConfig(),
+            /*saved_query=*/std::string(),
             /*worklet_id=*/0)}});
 }
 
@@ -1840,8 +1859,10 @@ IN_PROC_BROWSER_TEST_P(
             /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kSelectURL, MainFrameId(),
         origin_str,
-        SharedStorageEventParams::CreateForSelectURL(
-            "test-url-selection-operation", blink::CloneableMessage(),
+        SharedStorageEventParams::CreateForSelectURLForTesting(
+            "test-url-selection-operation", /*keep_alive=*/false,
+            SharedStorageEventParams::PrivateAggregationConfigWrapper(),
+            blink::CloneableMessage(),
             std::vector<SharedStorageUrlSpecWithMetadata>(
                 {{https_server()->GetURL("a.test",
                                          "/fenced_frames/title0.html"),
@@ -1853,6 +1874,8 @@ IN_PROC_BROWSER_TEST_P(
                     https_server()
                         ->GetURL("a.test", "/fenced_frames/report2.html")
                         .spec()}}}}),
+            ResolveSelectURLToConfig(),
+            /*saved_query=*/std::string(),
             /*worklet_id=*/0)}});
 }
 
@@ -1951,8 +1974,10 @@ IN_PROC_BROWSER_TEST_P(
             /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kSelectURL, MainFrameId(),
         origin_str,
-        SharedStorageEventParams::CreateForSelectURL(
-            "test-url-selection-operation", blink::CloneableMessage(),
+        SharedStorageEventParams::CreateForSelectURLForTesting(
+            "test-url-selection-operation", /*keep_alive=*/false,
+            SharedStorageEventParams::PrivateAggregationConfigWrapper(),
+            blink::CloneableMessage(),
             std::vector<SharedStorageUrlSpecWithMetadata>(
                 {{https_server()->GetURL("a.test",
                                          "/fenced_frames/title0.html"),
@@ -1960,6 +1985,8 @@ IN_PROC_BROWSER_TEST_P(
                     https_server()
                         ->GetURL("a.test", "/fenced_frames/report1.html")
                         .spec()}}}}),
+            ResolveSelectURLToConfig(),
+            /*saved_query=*/std::string(),
             /*worklet_id=*/0)}});
 }
 
@@ -2067,8 +2094,10 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
             /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kSelectURL, MainFrameId(),
         origin_str,
-        SharedStorageEventParams::CreateForSelectURL(
-            "test-url-selection-operation", blink::CloneableMessage(),
+        SharedStorageEventParams::CreateForSelectURLForTesting(
+            "test-url-selection-operation", /*keep_alive=*/false,
+            SharedStorageEventParams::PrivateAggregationConfigWrapper(),
+            blink::CloneableMessage(),
             std::vector<SharedStorageUrlSpecWithMetadata>(
                 {{https_server()->GetURL("b.test",
                                          "/fenced_frames/title0.html"),
@@ -2082,6 +2111,8 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
                  {https_server()->GetURL("b.test",
                                          "/fenced_frames/title2.html"),
                   {}}}),
+            ResolveSelectURLToConfig(),
+            /*saved_query=*/std::string(),
             /*worklet_id=*/0)}});
 }
 
@@ -2214,21 +2245,29 @@ IN_PROC_BROWSER_TEST_P(
             /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kSelectURL, MainFrameId(),
         origin_str,
-        SharedStorageEventParams::CreateForSelectURL(
-            "test-url-selection-operation", blink::CloneableMessage(),
+        SharedStorageEventParams::CreateForSelectURLForTesting(
+            "test-url-selection-operation", /*keep_alive=*/true,
+            SharedStorageEventParams::PrivateAggregationConfigWrapper(),
+            blink::CloneableMessage(),
             std::vector<SharedStorageUrlSpecWithMetadata>(
                 {{https_server()->GetURL("a.test",
                                          "/fenced_frames/title0.html"),
                   {}}}),
+            ResolveSelectURLToConfig(),
+            /*saved_query=*/std::string(),
             /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kSelectURL, MainFrameId(),
         origin_str,
-        SharedStorageEventParams::CreateForSelectURL(
-            "test-url-selection-operation", blink::CloneableMessage(),
+        SharedStorageEventParams::CreateForSelectURLForTesting(
+            "test-url-selection-operation", /*keep_alive=*/false,
+            SharedStorageEventParams::PrivateAggregationConfigWrapper(),
+            blink::CloneableMessage(),
             std::vector<SharedStorageUrlSpecWithMetadata>(
                 {{https_server()->GetURL("a.test",
                                          "/fenced_frames/title0.html"),
                   {}}}),
+            ResolveSelectURLToConfig(),
+            /*saved_query=*/std::string(),
             /*worklet_id=*/0)}});
 }
 
@@ -2342,12 +2381,16 @@ IN_PROC_BROWSER_TEST_P(
             /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kSelectURL, MainFrameId(),
         origin_str,
-        SharedStorageEventParams::CreateForSelectURL(
-            "test-url-selection-operation", blink::CloneableMessage(),
+        SharedStorageEventParams::CreateForSelectURLForTesting(
+            "test-url-selection-operation", /*keep_alive=*/false,
+            SharedStorageEventParams::PrivateAggregationConfigWrapper(),
+            blink::CloneableMessage(),
             std::vector<SharedStorageUrlSpecWithMetadata>(
                 {{https_server()->GetURL("a.test",
                                          "/fenced_frames/title0.html"),
                   {}}}),
+            ResolveSelectURLToConfig(),
+            /*saved_query=*/std::string(),
             /*worklet_id=*/0)}});
 }
 
@@ -2442,12 +2485,16 @@ IN_PROC_BROWSER_TEST_P(
             /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kSelectURL, MainFrameId(),
         origin_str,
-        SharedStorageEventParams::CreateForSelectURL(
-            "test-url-selection-operation", blink::CloneableMessage(),
+        SharedStorageEventParams::CreateForSelectURLForTesting(
+            "test-url-selection-operation", /*keep_alive=*/false,
+            SharedStorageEventParams::PrivateAggregationConfigWrapper(),
+            blink::CloneableMessage(),
             std::vector<SharedStorageUrlSpecWithMetadata>(
                 {{https_server()->GetURL("a.test",
                                          "/fenced_frames/title0.html"),
                   {}}}),
+            ResolveSelectURLToConfig(),
+            /*saved_query=*/std::string(),
             /*worklet_id=*/0)}});
 }
 
@@ -2533,8 +2580,10 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
                                    "/shared_storage/simple_module.js"),
             /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
-        SharedStorageEventParams::CreateForRun(
-            "test-operation", blink::CloneableMessage(), /*worklet_id=*/0)}});
+        SharedStorageEventParams::CreateForRunForTesting(
+            "test-operation", /*keep_alive=*/false,
+            SharedStorageEventParams::PrivateAggregationConfigWrapper(),
+            blink::CloneableMessage(), /*worklet_id=*/0)}});
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
@@ -2646,16 +2695,22 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
                                    "/shared_storage/simple_module.js"),
             /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
-        SharedStorageEventParams::CreateForRun(
-            "test-operation", blink::CloneableMessage(), /*worklet_id=*/0)},
+        SharedStorageEventParams::CreateForRunForTesting(
+            "test-operation", /*keep_alive=*/true,
+            SharedStorageEventParams::PrivateAggregationConfigWrapper(),
+            blink::CloneableMessage(), /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kSelectURL, MainFrameId(),
         origin_str,
-        SharedStorageEventParams::CreateForSelectURL(
-            "test-url-selection-operation", blink::CloneableMessage(),
+        SharedStorageEventParams::CreateForSelectURLForTesting(
+            "test-url-selection-operation", /*keep_alive=*/false,
+            SharedStorageEventParams::PrivateAggregationConfigWrapper(),
+            blink::CloneableMessage(),
             std::vector<SharedStorageUrlSpecWithMetadata>(
                 {{https_server()->GetURL("a.test",
                                          "/fenced_frames/title0.html"),
                   {}}}),
+            ResolveSelectURLToConfig(),
+            /*saved_query=*/std::string(),
             /*worklet_id=*/0)}});
 }
 
@@ -2740,8 +2795,10 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
                                    "/shared_storage/simple_module.js"),
             /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
-        SharedStorageEventParams::CreateForRun(
-            "test-operation", blink::CloneableMessage(), /*worklet_id=*/0)}});
+        SharedStorageEventParams::CreateForRunForTesting(
+            "test-operation", /*keep_alive=*/false,
+            SharedStorageEventParams::PrivateAggregationConfigWrapper(),
+            blink::CloneableMessage(), /*worklet_id=*/0)}});
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
@@ -2854,16 +2911,22 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
             /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kSelectURL, MainFrameId(),
         origin_str,
-        SharedStorageEventParams::CreateForSelectURL(
-            "test-url-selection-operation", blink::CloneableMessage(),
+        SharedStorageEventParams::CreateForSelectURLForTesting(
+            "test-url-selection-operation", /*keep_alive=*/true,
+            SharedStorageEventParams::PrivateAggregationConfigWrapper(),
+            blink::CloneableMessage(),
             std::vector<SharedStorageUrlSpecWithMetadata>(
                 {{https_server()->GetURL("a.test",
                                          "/fenced_frames/title0.html"),
                   {}}}),
+            ResolveSelectURLToConfig(),
+            /*saved_query=*/std::string(),
             /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
-        SharedStorageEventParams::CreateForRun(
-            "test-operation", blink::CloneableMessage(), /*worklet_id=*/0)}});
+        SharedStorageEventParams::CreateForRunForTesting(
+            "test-operation", /*keep_alive=*/false,
+            SharedStorageEventParams::PrivateAggregationConfigWrapper(),
+            blink::CloneableMessage(), /*worklet_id=*/0)}});
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
@@ -2966,12 +3029,16 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
             /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kSelectURL, MainFrameId(),
         origin_str,
-        SharedStorageEventParams::CreateForSelectURL(
-            "test-url-selection-operation", blink::CloneableMessage(),
+        SharedStorageEventParams::CreateForSelectURLForTesting(
+            "test-url-selection-operation", /*keep_alive=*/false,
+            SharedStorageEventParams::PrivateAggregationConfigWrapper(),
+            blink::CloneableMessage(),
             std::vector<SharedStorageUrlSpecWithMetadata>(
                 {{https_server()->GetURL("a.test",
                                          "/fenced_frames/title0.html"),
                   {}}}),
+            ResolveSelectURLToConfig(),
+            /*saved_query=*/std::string(),
             /*worklet_id=*/0)}});
 }
 
@@ -3074,12 +3141,16 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
             /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kSelectURL, MainFrameId(),
         origin_str,
-        SharedStorageEventParams::CreateForSelectURL(
-            "test-url-selection-operation", blink::CloneableMessage(),
+        SharedStorageEventParams::CreateForSelectURLForTesting(
+            "test-url-selection-operation", /*keep_alive=*/false,
+            SharedStorageEventParams::PrivateAggregationConfigWrapper(),
+            blink::CloneableMessage(),
             std::vector<SharedStorageUrlSpecWithMetadata>(
                 {{https_server()->GetURL("a.test",
                                          "/fenced_frames/title0.html"),
                   {}}}),
+            ResolveSelectURLToConfig(),
+            /*saved_query=*/std::string(),
             /*worklet_id=*/0)}});
 }
 
@@ -3174,14 +3245,18 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
             /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kSelectURL, MainFrameId(),
         origin_str,
-        SharedStorageEventParams::CreateForSelectURL(
-            "test-url-selection-operation", blink::CloneableMessage(),
+        SharedStorageEventParams::CreateForSelectURLForTesting(
+            "test-url-selection-operation", /*keep_alive=*/false,
+            SharedStorageEventParams::PrivateAggregationConfigWrapper(),
+            blink::CloneableMessage(),
             std::vector<SharedStorageUrlSpecWithMetadata>(
                 {{https_server()->GetURL("a.test",
                                          "/fenced_frames/title0.html"),
                   {{"", https_server()
                             ->GetURL("a.test", "/fenced_frames/report1.html")
                             .spec()}}}}),
+            ResolveSelectURLToConfig(),
+            /*saved_query=*/std::string(),
             /*worklet_id=*/0)}});
 }
 
@@ -3249,24 +3324,26 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, SetAppendOperationInDocument) {
         SharedStorageEventParams::CreateForAddModule(out_script_url,
                                                      /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
-        SharedStorageEventParams::CreateForRun(
-            "test-operation", blink::CloneableMessage(), /*worklet_id=*/0)},
+        SharedStorageEventParams::CreateForRunForTesting(
+            "test-operation", /*keep_alive=*/true,
+            SharedStorageEventParams::PrivateAggregationConfigWrapper(),
+            blink::CloneableMessage(), /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kGet, MainFrameId(),
         origin_str,
-        SharedStorageEventParams::CreateForGetOrDelete("key0",
-                                                       /*worklet_id=*/0)},
+        SharedStorageEventParams::CreateForGet("key0",
+                                               /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kGet, MainFrameId(),
         origin_str,
-        SharedStorageEventParams::CreateForGetOrDelete("key1",
-                                                       /*worklet_id=*/0)},
+        SharedStorageEventParams::CreateForGet("key1",
+                                               /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kGet, MainFrameId(),
         origin_str,
-        SharedStorageEventParams::CreateForGetOrDelete("key2",
-                                                       /*worklet_id=*/0)},
+        SharedStorageEventParams::CreateForGet("key2",
+                                               /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kGet, MainFrameId(),
         origin_str,
-        SharedStorageEventParams::CreateForGetOrDelete("key3",
-                                                       /*worklet_id=*/0)},
+        SharedStorageEventParams::CreateForGet("key3",
+                                               /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kLength,
         MainFrameId(), origin_str,
         SharedStorageEventParams::CreateWithWorkletId(/*worklet_id=*/0)}});
@@ -3307,21 +3384,23 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, DeleteOperationInDocument) {
       {{AccessScope::kWindow, AccessMethod::kSet, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForSet("key0", "value0", false)},
        {AccessScope::kWindow, AccessMethod::kDelete, MainFrameId(), origin_str,
-        SharedStorageEventParams::CreateForGetOrDelete("key0")},
+        SharedStorageEventParams::CreateForDelete("key0")},
        {AccessScope::kWindow, AccessMethod::kAddModule, MainFrameId(),
         origin_str,
         SharedStorageEventParams::CreateForAddModule(out_script_url,
                                                      /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
-        SharedStorageEventParams::CreateForRun(
-            "test-operation", blink::CloneableMessage(), /*worklet_id=*/0)},
+        SharedStorageEventParams::CreateForRunForTesting(
+            "test-operation", /*keep_alive=*/true,
+            SharedStorageEventParams::PrivateAggregationConfigWrapper(),
+            blink::CloneableMessage(), /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kLength,
         MainFrameId(), origin_str,
         SharedStorageEventParams::CreateWithWorkletId(/*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kGet, MainFrameId(),
         origin_str,
-        SharedStorageEventParams::CreateForGetOrDelete("key0",
-                                                       /*worklet_id=*/0)}});
+        SharedStorageEventParams::CreateForGet("key0",
+                                               /*worklet_id=*/0)}});
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, ClearOperationInDocument) {
@@ -3352,14 +3431,16 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, ClearOperationInDocument) {
       {{AccessScope::kWindow, AccessMethod::kSet, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForSet("key0", "value0", false)},
        {AccessScope::kWindow, AccessMethod::kClear, MainFrameId(), origin_str,
-        SharedStorageEventParams::CreateDefault()},
+        SharedStorageEventParams::CreateForClear()},
        {AccessScope::kWindow, AccessMethod::kAddModule, MainFrameId(),
         origin_str,
         SharedStorageEventParams::CreateForAddModule(out_script_url,
                                                      /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
-        SharedStorageEventParams::CreateForRun(
-            "test-operation", blink::CloneableMessage(), /*worklet_id=*/0)},
+        SharedStorageEventParams::CreateForRunForTesting(
+            "test-operation", /*keep_alive=*/true,
+            SharedStorageEventParams::PrivateAggregationConfigWrapper(),
+            blink::CloneableMessage(), /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kLength,
         MainFrameId(), origin_str,
         SharedStorageEventParams::CreateWithWorkletId(/*worklet_id=*/0)}});
@@ -3413,8 +3494,10 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, SetAppendOperationInWorklet) {
         SharedStorageEventParams::CreateForAddModule(out_script_url,
                                                      /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
-        SharedStorageEventParams::CreateForRun(
-            "test-operation", blink::CloneableMessage(), /*worklet_id=*/0)},
+        SharedStorageEventParams::CreateForRunForTesting(
+            "test-operation", /*keep_alive=*/true,
+            SharedStorageEventParams::PrivateAggregationConfigWrapper(),
+            blink::CloneableMessage(), /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kSet, MainFrameId(),
         origin_str,
         SharedStorageEventParams::CreateForSet("key0", "value0", false,
@@ -3445,20 +3528,20 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, SetAppendOperationInWorklet) {
                                                   /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kGet, MainFrameId(),
         origin_str,
-        SharedStorageEventParams::CreateForGetOrDelete("key0",
-                                                       /*worklet_id=*/0)},
+        SharedStorageEventParams::CreateForGet("key0",
+                                               /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kGet, MainFrameId(),
         origin_str,
-        SharedStorageEventParams::CreateForGetOrDelete("key1",
-                                                       /*worklet_id=*/0)},
+        SharedStorageEventParams::CreateForGet("key1",
+                                               /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kGet, MainFrameId(),
         origin_str,
-        SharedStorageEventParams::CreateForGetOrDelete("key2",
-                                                       /*worklet_id=*/0)},
+        SharedStorageEventParams::CreateForGet("key2",
+                                               /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kGet, MainFrameId(),
         origin_str,
-        SharedStorageEventParams::CreateForGetOrDelete("key3",
-                                                       /*worklet_id=*/0)},
+        SharedStorageEventParams::CreateForGet("key3",
+                                               /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kLength,
         MainFrameId(), origin_str,
         SharedStorageEventParams::CreateWithWorkletId(/*worklet_id=*/0)}});
@@ -3496,8 +3579,10 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
         SharedStorageEventParams::CreateForAddModule(out_script_url,
                                                      /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
-        SharedStorageEventParams::CreateForRun(
-            "test-operation", blink::CloneableMessage(), /*worklet_id=*/0)},
+        SharedStorageEventParams::CreateForRunForTesting(
+            "test-operation", /*keep_alive=*/true,
+            SharedStorageEventParams::PrivateAggregationConfigWrapper(),
+            blink::CloneableMessage(), /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kSet, MainFrameId(),
         origin_str,
         SharedStorageEventParams::CreateForSet("k", std::string(2621439, 'a'),
@@ -3553,8 +3638,10 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, DeleteOperationInWorklet) {
         SharedStorageEventParams::CreateForAddModule(out_script_url,
                                                      /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
-        SharedStorageEventParams::CreateForRun(
-            "test-operation", blink::CloneableMessage(), /*worklet_id=*/0)},
+        SharedStorageEventParams::CreateForRunForTesting(
+            "test-operation", /*keep_alive=*/true,
+            SharedStorageEventParams::PrivateAggregationConfigWrapper(),
+            blink::CloneableMessage(), /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kSet, MainFrameId(),
         origin_str,
         SharedStorageEventParams::CreateForSet("key0", "value0", false,
@@ -3564,19 +3651,19 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, DeleteOperationInWorklet) {
         SharedStorageEventParams::CreateWithWorkletId(/*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kGet, MainFrameId(),
         origin_str,
-        SharedStorageEventParams::CreateForGetOrDelete("key0",
-                                                       /*worklet_id=*/0)},
+        SharedStorageEventParams::CreateForGet("key0",
+                                               /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kDelete,
         MainFrameId(), origin_str,
-        SharedStorageEventParams::CreateForGetOrDelete("key0",
-                                                       /*worklet_id=*/0)},
+        SharedStorageEventParams::CreateForDelete("key0",
+                                                  /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kLength,
         MainFrameId(), origin_str,
         SharedStorageEventParams::CreateWithWorkletId(/*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kGet, MainFrameId(),
         origin_str,
-        SharedStorageEventParams::CreateForGetOrDelete("key0",
-                                                       /*worklet_id=*/0)}});
+        SharedStorageEventParams::CreateForGet("key0",
+                                               /*worklet_id=*/0)}});
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, ClearOperationInWorklet) {
@@ -3613,8 +3700,10 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, ClearOperationInWorklet) {
         SharedStorageEventParams::CreateForAddModule(out_script_url,
                                                      /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
-        SharedStorageEventParams::CreateForRun(
-            "test-operation", blink::CloneableMessage(), /*worklet_id=*/0)},
+        SharedStorageEventParams::CreateForRunForTesting(
+            "test-operation", /*keep_alive=*/true,
+            SharedStorageEventParams::PrivateAggregationConfigWrapper(),
+            blink::CloneableMessage(), /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kSet, MainFrameId(),
         origin_str,
         SharedStorageEventParams::CreateForSet("key0", "value0", false,
@@ -3624,8 +3713,8 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, ClearOperationInWorklet) {
         SharedStorageEventParams::CreateWithWorkletId(/*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kGet, MainFrameId(),
         origin_str,
-        SharedStorageEventParams::CreateForGetOrDelete("key0",
-                                                       /*worklet_id=*/0)},
+        SharedStorageEventParams::CreateForGet("key0",
+                                               /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kClear, MainFrameId(),
         origin_str,
         SharedStorageEventParams::CreateWithWorkletId(/*worklet_id=*/0)},
@@ -3732,25 +3821,29 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, GetOperationInWorklet) {
         SharedStorageEventParams::CreateForAddModule(script_url,
                                                      /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
-        SharedStorageEventParams::CreateForRun(
-            "get-operation", blink::CloneableMessage(), /*worklet_id=*/0)},
+        SharedStorageEventParams::CreateForRunForTesting(
+            "get-operation", /*keep_alive=*/true,
+            SharedStorageEventParams::PrivateAggregationConfigWrapper(),
+            blink::CloneableMessage(), /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kLength,
         MainFrameId(), origin_str,
         SharedStorageEventParams::CreateWithWorkletId(/*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kGet, MainFrameId(),
         origin_str,
-        SharedStorageEventParams::CreateForGetOrDelete("key0",
-                                                       /*worklet_id=*/0)},
+        SharedStorageEventParams::CreateForGet("key0",
+                                               /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
-        SharedStorageEventParams::CreateForRun(
-            "get-operation", blink::CloneableMessage(), /*worklet_id=*/0)},
+        SharedStorageEventParams::CreateForRunForTesting(
+            "get-operation", /*keep_alive=*/false,
+            SharedStorageEventParams::PrivateAggregationConfigWrapper(),
+            blink::CloneableMessage(), /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kLength,
         MainFrameId(), origin_str,
         SharedStorageEventParams::CreateWithWorkletId(/*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kGet, MainFrameId(),
         origin_str,
-        SharedStorageEventParams::CreateForGetOrDelete("key0",
-                                                       /*worklet_id=*/0)}});
+        SharedStorageEventParams::CreateForGet("key0",
+                                               /*worklet_id=*/0)}});
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
@@ -3788,8 +3881,10 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
         SharedStorageEventParams::CreateForAddModule(out_script_url,
                                                      /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
-        SharedStorageEventParams::CreateForRun(
-            "test-operation", blink::CloneableMessage(), /*worklet_id=*/0)},
+        SharedStorageEventParams::CreateForRunForTesting(
+            "test-operation", /*keep_alive=*/true,
+            SharedStorageEventParams::PrivateAggregationConfigWrapper(),
+            blink::CloneableMessage(), /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kLength,
         MainFrameId(), origin_str,
         SharedStorageEventParams::CreateWithWorkletId(/*worklet_id=*/0)}});
@@ -3831,8 +3926,10 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
         SharedStorageEventParams::CreateForAddModule(out_script_url,
                                                      /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin2_str,
-        SharedStorageEventParams::CreateForRun(
-            "test-operation", blink::CloneableMessage(), /*worklet_id=*/0)},
+        SharedStorageEventParams::CreateForRunForTesting(
+            "test-operation", /*keep_alive=*/true,
+            SharedStorageEventParams::PrivateAggregationConfigWrapper(),
+            blink::CloneableMessage(), /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kLength,
         MainFrameId(), origin2_str,
         SharedStorageEventParams::CreateWithWorkletId(/*worklet_id=*/0)}});
@@ -3888,8 +3985,10 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, KeysAndEntriesOperation) {
         SharedStorageEventParams::CreateForAddModule(out_script_url,
                                                      /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
-        SharedStorageEventParams::CreateForRun(
-            "test-operation", blink::CloneableMessage(), /*worklet_id=*/0)},
+        SharedStorageEventParams::CreateForRunForTesting(
+            "test-operation", /*keep_alive=*/true,
+            SharedStorageEventParams::PrivateAggregationConfigWrapper(),
+            blink::CloneableMessage(), /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kKeys, MainFrameId(),
         origin_str,
         SharedStorageEventParams::CreateWithWorkletId(/*worklet_id=*/0)},
@@ -3942,8 +4041,10 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, ValuesOperation) {
         SharedStorageEventParams::CreateForAddModule(out_script_url,
                                                      /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
-        SharedStorageEventParams::CreateForRun(
-            "test-operation", blink::CloneableMessage(), /*worklet_id=*/0)},
+        SharedStorageEventParams::CreateForRunForTesting(
+            "test-operation", /*keep_alive=*/true,
+            SharedStorageEventParams::PrivateAggregationConfigWrapper(),
+            blink::CloneableMessage(), /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kValues,
         MainFrameId(), origin_str,
         SharedStorageEventParams::CreateWithWorkletId(/*worklet_id=*/0)}});
@@ -4003,8 +4104,10 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
                                      out_script_url, /*worklet_id=*/0));
   expected_accesses.emplace_back(
       AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
-      SharedStorageEventParams::CreateForRun(
-          "test-operation", blink::CloneableMessage(), /*worklet_id=*/0));
+      SharedStorageEventParams::CreateForRunForTesting(
+          "test-operation", /*keep_alive=*/true,
+          SharedStorageEventParams::PrivateAggregationConfigWrapper(),
+          blink::CloneableMessage(), /*worklet_id=*/0));
   expected_accesses.emplace_back(
       AccessScope::kSharedStorageWorklet, AccessMethod::kKeys, MainFrameId(),
       origin_str,
@@ -4055,6 +4158,46 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, WebLocksUsageHistograms) {
       "Storage.SharedStorage.BatchUpdateMethod.HasLockOption", true, 1);
   histogram_tester_.ExpectUniqueSample(
       "Storage.SharedStorage.Worklet.NavigatorLocksInvoked", true, 1);
+
+  std::string origin_str = url::Origin::Create(url).Serialize();
+  ExpectAccessObserved(
+      {{AccessScope::kWindow, AccessMethod::kAddModule, MainFrameId(),
+        origin_str,
+        SharedStorageEventParams::CreateForAddModule(out_script_url,
+                                                     /*worklet_id=*/0)},
+       {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
+        SharedStorageEventParams::CreateForRunForTesting(
+            "test-operation", /*keep_alive=*/true,
+            SharedStorageEventParams::PrivateAggregationConfigWrapper(),
+            blink::CloneableMessage(), /*worklet_id=*/0)},
+       {AccessScope::kSharedStorageWorklet, AccessMethod::kSet, MainFrameId(),
+        origin_str,
+        SharedStorageEventParams::CreateForSet("key0", "value0", false,
+                                               /*worklet_id=*/0)},
+       {AccessScope::kSharedStorageWorklet, AccessMethod::kSet, MainFrameId(),
+        origin_str,
+        SharedStorageEventParams::CreateForSet("key0", "value0", false,
+                                               /*worklet_id=*/0)},
+       {AccessScope::kSharedStorageWorklet, AccessMethod::kSet, MainFrameId(),
+        origin_str,
+        SharedStorageEventParams::CreateForSet(
+            "key0", "value0", false,
+            /*worklet_id=*/0,
+            /*with_lock=*/"lock2",
+            /*batch_update_id=*/std::nullopt)},
+       // TODO(crbug.com/401011862): Observe batchUpdate access here.
+       {AccessScope::kSharedStorageWorklet, AccessMethod::kSet, MainFrameId(),
+        origin_str,
+        SharedStorageEventParams::CreateForSet("key0", "value0", false,
+                                               /*worklet_id=*/0,
+                                               /*with_lock=*/std::nullopt,
+                                               /*batch_update_id=*/0)},
+       {AccessScope::kSharedStorageWorklet, AccessMethod::kAppend,
+        MainFrameId(), origin_str,
+        SharedStorageEventParams::CreateForAppend("key1", "value1",
+                                                  /*worklet_id=*/0,
+                                                  /*with_lock=*/std::nullopt,
+                                                  /*batch_update_id=*/0)}});
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
@@ -9112,8 +9255,10 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
                                                          "context-origin",
                                                          /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
-        SharedStorageEventParams::CreateForRun(
-            "test-operation", blink::CloneableMessage(), /*worklet_id=*/0)},
+        SharedStorageEventParams::CreateForRunForTesting(
+            "test-operation", /*keep_alive=*/true,
+            SharedStorageEventParams::PrivateAggregationConfigWrapper(),
+            blink::CloneableMessage(), /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kSet, MainFrameId(),
         origin_str,
         SharedStorageEventParams::CreateForSet("key0", "value0", false,
@@ -9124,8 +9269,8 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
                                                   /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kGet, MainFrameId(),
         origin_str,
-        SharedStorageEventParams::CreateForGetOrDelete("key0",
-                                                       /*worklet_id=*/0)},
+        SharedStorageEventParams::CreateForGet("key0",
+                                               /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kLength,
         MainFrameId(), origin_str,
         SharedStorageEventParams::CreateWithWorkletId(/*worklet_id=*/0)},
@@ -9135,8 +9280,10 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
                                                          "context-origin",
                                                          /*worklet_id=*/1)},
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
-        SharedStorageEventParams::CreateForRun(
-            "test-operation", blink::CloneableMessage(), /*worklet_id=*/1)},
+        SharedStorageEventParams::CreateForRunForTesting(
+            "test-operation", /*keep_alive=*/true,
+            SharedStorageEventParams::PrivateAggregationConfigWrapper(),
+            blink::CloneableMessage(), /*worklet_id=*/1)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kSet, MainFrameId(),
         origin_str,
         SharedStorageEventParams::CreateForSet("key1", "value2", false,
@@ -9147,8 +9294,8 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
                                                   /*worklet_id=*/1)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kGet, MainFrameId(),
         origin_str,
-        SharedStorageEventParams::CreateForGetOrDelete("key1",
-                                                       /*worklet_id=*/1)},
+        SharedStorageEventParams::CreateForGet("key1",
+                                               /*worklet_id=*/1)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kLength,
         MainFrameId(), origin_str,
         SharedStorageEventParams::CreateWithWorkletId(/*worklet_id=*/1)}});

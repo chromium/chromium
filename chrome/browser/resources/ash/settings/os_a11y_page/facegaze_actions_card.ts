@@ -44,18 +44,6 @@ export interface FaceGazeActionsCardElement {
 
 export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
   static readonly FACEGAZE_COMMAND_PAIRS_PROPERTY_NAME = 'commandPairs_';
-  disabled: boolean;
-
-  private showAddActionDialog_: boolean;
-  private leftClickGestures_: FacialGesture[] = [];
-  private dialogPageToShow_: AddDialogPage;
-  private rowIdToUpdate_: number;
-  private commandPairToConfigure_: FaceGazeCommandPair|null = null;
-  private actionsSpokenFeedbackAlert_ = '';
-
-  // This field stores the current state of gestures assigned to macros and
-  // custom key combinations.
-  private commandPairs_: FaceGazeCommandPair[] = [];
 
   static get is() {
     return 'facegaze-actions-card' as const;
@@ -114,6 +102,17 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
   static get observers() {
     return [`initFromPrefs_(prefs.settings.a11y.face_gaze.enabled.value)`];
   }
+
+  disabled: boolean;
+  private actionsSpokenFeedbackAlert_ = '';
+  private commandPairs_: FaceGazeCommandPair[] = [];
+  private commandPairToConfigure_: FaceGazeCommandPair|null = null;
+  private dialogPageToShow_: AddDialogPage;
+  private disableConfigureControls_: boolean;
+  private leftClickGestures_: FacialGesture[] = [];
+  private rowIdToUpdate_: number;
+  private shouldAnnounceA11yActionFeedback_: boolean;
+  private showAddActionDialog_: boolean;
 
   private shouldAnnounceAlert_(): boolean {
     return this.actionsSpokenFeedbackAlert_ !== '';

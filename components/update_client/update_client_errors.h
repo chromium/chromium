@@ -87,6 +87,10 @@ enum class UnpackerError {
   kCrxCacheNotProvided = 21,
   kCrxCacheMetadataCorrupted = 22,
   kCrxCacheFileNotCached = 23,
+  kPatchInvalidOldFile = 24,
+  kPatchInvalidPatchFile = 25,
+  kPatchInvalidNewFile = 26,
+  kXzFailed = 27,
 };
 
 // These errors are returned with the |kInstall| error category and

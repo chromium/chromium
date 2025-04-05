@@ -112,6 +112,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1306549533752902673">SOVELLUSSUOSITUKSET</translation>
 <translation id="1310396869741602366">Vaihda sävyä</translation>
 <translation id="1312604459020188865">Signaalin vahvuus <ph name="SIGNAL_STRENGTH" /></translation>
+<translation id="1314113845887519729">Valittu yläreunan kahva, siirry nuolinäppäimillä</translation>
 <translation id="1316069254387866896">Näytä hylly aina</translation>
 <translation id="132346741904777634">Kamera kohdistettu vasempaan yläkulmaan. Ristiriita järjestelmän alustan kanssa.</translation>
 <translation id="132415371743256095">Sulje <ph name="DESK_NAME" /> ja ikkunat</translation>
@@ -186,6 +187,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1557622599341396706">Näytä työpöydän nimi</translation>
 <translation id="1569384531973824928">Sallii pääsyn kaikille sovelluksille ja verkkosivustoille, joilla on kamera- ja mikrofonilupa. Sinun on ehkä päivitettävä verkkosivu tai käynnistettävä sovellus uudelleen.</translation>
 <translation id="1571697193564730395">Älä häiritse ‑tila päälle tai pois. <ph name="STATE_TEXT" /></translation>
+<translation id="1574691582236909946">Valittu vasemman reunan kahva, siirry nuolinäppäimillä</translation>
 <translation id="1576623706766186887">Loitonna, kun suurennus on päällä</translation>
 <translation id="1582946770779745370">Pelipaneeli saatavilla. Avaa se milloin tahansa painamalla <ph name="LAUNCHER_KEY_NAME" /> + vaihto + Esc ja sitten <ph name="LAUNCHER_KEY_NAME" /> + g</translation>
 <translation id="1586324912145647027">Avaa jokin työpöydistä 1–8</translation>
@@ -220,6 +222,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1696984622403682083">Voit laittaa ominaisuuden pois päältä milloin tahansa asetuksista. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> ajastin · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6-osoite: <ph name="ADDRESS" /></translation>
+<translation id="1700782710852683371">Kuvien luominen tästä aiheesta ei juuri nyt onnistu. Kokeile muotoilla kuvaus uudelleen. Muista, että et voi luoda kuvia ihmisistä tai haitallisesta tai vain aikuisille tarkoitetusta sisällöstä.</translation>
 <translation id="1703117532528082099">Aktiivinen ikkuna kiinnitetty vasemmalle</translation>
 <translation id="1708345662127501511">Työpöytä: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Verkkoasetukset</translation>
@@ -608,6 +611,7 @@ Muussa tapauksessa sisäänrakennettu kosketuslevy otetaan käyttöön, kun <ph 
 <translation id="304097922505898963">Avaa Key Shortcuts ‑sovellus</translation>
 <translation id="304417730895741346">Kiinnitetyt ja avoimet sovellukset näkyvät hyllyssä. Voit kiinnittää sovelluksen hyllyyn klikkaamalla sovellusta kakkospainikkeella tai napauttamalla sitä kosketuslevyllä kahdella sormella.</translation>
 <translation id="3045488863354895414">Hyvää päivää</translation>
+<translation id="3045670165536837541">Valittu oikean yläreunan kahva, siirry nuolinäppäimillä</translation>
 <translation id="3047761520276763270">Kokeile sanoa:</translation>
 <translation id="3053407068093039599">Laita kameran pääsyoikeus päälle tai pois päältä</translation>
 <translation id="3055162170959710888">Olet käyttänyt tätä laitetta tänään <ph name="USED_TIME" /></translation>
@@ -1763,6 +1767,7 @@ Uusi asennus</translation>
 <translation id="6696025732084565524">Irrotettavaan näppäimistöösi täytyy asentaa kriittinen päivitys</translation>
 <translation id="6697913454192220372">Lisää uusi työpöytä</translation>
 <translation id="6700713906295497288">IME-valikkopainike</translation>
+<translation id="6704073473590541209">Valittu oikean reunan kahva, siirry nuolinäppäimillä</translation>
 <translation id="6706742084323792866">Kiinnitä näppäimistö</translation>
 <translation id="6710213216561001401">Edellinen</translation>
 <translation id="6723839937902243910">Virta</translation>
@@ -1786,6 +1791,7 @@ Uusi asennus</translation>
 <translation id="6781002679438061620">Työpöytä 9</translation>
 <translation id="6782182743534150858">Työpöytä 13</translation>
 <translation id="6782919488259222803">Hae nykyiseltä sivulta</translation>
+<translation id="6783348167101855071">Valittu alaoikea kahva, siirry nuolinäppäimillä</translation>
 <translation id="6786750046913594791">Sulje kansio</translation>
 <translation id="6790428901817661496">Toista</translation>
 <translation id="6792262051831399889">Ei käytettävissä</translation>
@@ -1941,6 +1947,7 @@ Uusi asennus</translation>
 <translation id="7371404428569700291">Tallenna ikkuna</translation>
 <translation id="7372069265635026568">Muistia käytettävissä <ph name="AVAILABLE_MEMORY" />/<ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">Sallii mikrofonin käytön kaikille sovelluksille ja verkkosivustoille, joilla on mikrofonilupa</translation>
+<translation id="7376933029363911338">Valittu alareunan kahva, siirry nuolinäppäimillä</translation>
 <translation id="7377169924702866686">Caps Lock on päällä.</translation>
 <translation id="7377481913241237033">Muodosta yhteys koodilla</translation>
 <translation id="7378203170292176219">Valitse tallennettava alue vetämällä</translation>
@@ -2037,6 +2044,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="7658239707568436148">Peru</translation>
 <translation id="7659861092419699379">Työpöytä ja ikkunat on suljettu</translation>
 <translation id="7660160718439869192"><ph name="NAME" /> näkyy laitteilla, joihin <ph name="EMAIL" /> on linkitetty</translation>
+<translation id="7661694115779363471">Valittu vasen alareunan kahva, siirry nuolinäppäimillä</translation>
 <translation id="7662283695561029522">Määritä napauttamalla.</translation>
 <translation id="7670953955701272011">Avaa tämä päivämäärä Google Kalenterissa</translation>
 <translation id="7671610481353807627">Sovellukset on lajiteltu värin perusteella</translation>
@@ -2205,6 +2213,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="8155628902202578800">Avaa tietoikkuna: <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> käytössä</translation>
 <translation id="8168435359814927499">Sisältö</translation>
+<translation id="8172370561760918656">Valittu ylävasen kahva, siirry nuolinäppäimillä</translation>
 <translation id="81817143961839203">Kuvan lisääminen epäonnistui</translation>
 <translation id="8185090165691050712">Muuta lukitustilan kokoa laittamalla valikko päälle tai pois päältä</translation>
 <translation id="8192727139462702395">Kun laitat Bluetoothin pois päältä, nämä ulkoiset laitteet katkaisevat yhteyden (<ph name="DEVICE_TYPE" />):</translation>

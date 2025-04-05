@@ -11,7 +11,7 @@ namespace blink {
 
 class CSSBorderImageLengthBoxInterpolationType : public CSSInterpolationType {
  public:
-  CSSBorderImageLengthBoxInterpolationType(PropertyHandle property)
+  explicit CSSBorderImageLengthBoxInterpolationType(PropertyHandle property)
       : CSSInterpolationType(property) {}
 
   InterpolationValue MaybeConvertStandardPropertyUnderlyingValue(

@@ -32,7 +32,7 @@ PageInfoAdPersonalizationContentView::PageInfoAdPersonalizationContentView(
   const auto button_insets =
       layout_provider->GetInsetsMetric(INSETS_PAGE_INFO_HOVER_BUTTON);
   const int vertical_distance =
-      layout_provider->GetDistanceMetric(DISTANCE_CONTROL_LIST_VERTICAL);
+      layout_provider->GetDistanceMetric(views::DISTANCE_CONTROL_LIST_VERTICAL);
   const int bottom_margin =
       layout_provider->GetDistanceMetric(DISTANCE_CONTENT_LIST_VERTICAL_MULTI);
   // The last view is a RichHoverButton, which overrides the bottom
@@ -91,6 +91,8 @@ void PageInfoAdPersonalizationContentView::SetAdPersonalizationInfo(
   description_label->SetMultiLine(true);
   description_label->SetEnabledColor(kColorPageInfoForeground);
   description_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  description_label->SetID(
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_AD_PERSONALIZATION_LABEL);
   // TODO(crbug.com/40244046): Figure out why without additional horizontal
   // margin the size is being calculated incorrectly and the topics labels are
   // being cut off.

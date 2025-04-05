@@ -1511,7 +1511,7 @@ class Auditor:
 
     all_annotations = []
     num_workers = 5
-
+    chunksize = len(files) // num_workers if len(files) > num_workers else 1
     with concurrent.futures.ProcessPoolExecutor(
         max_workers=num_workers) as executor:
       process_files_with_args = partial(self.process_file,
@@ -1520,7 +1520,7 @@ class Auditor:
 
       for annotations in executor.map(process_files_with_args,
                                       files,
-                                      chunksize=len(files) // num_workers):
+                                      chunksize=chunksize):
         if annotations:
           all_annotations.extend(annotations)
 

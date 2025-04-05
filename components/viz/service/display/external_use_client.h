@@ -13,6 +13,7 @@
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
 #include "components/viz/common/resources/shared_image_format.h"
+#include "components/viz/common/resources/transferable_resource.h"
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/sync_token.h"
@@ -45,9 +46,10 @@ class VIZ_SERVICE_EXPORT ExternalUseClient {
                  uint32_t texture_target,
                  const gfx::Size& size,
                  SharedImageFormat format,
-                 const std::optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
                  sk_sp<SkColorSpace> color_space,
                  GrSurfaceOrigin origin);
+
+    explicit ImageContext(const TransferableResource& resource);
 
     ImageContext(const ImageContext&) = delete;
     ImageContext& operator=(const ImageContext&) = delete;
@@ -76,6 +78,9 @@ class VIZ_SERVICE_EXPORT ExternalUseClient {
     }
 
     GrSurfaceOrigin origin() const { return origin_; }
+    TransferableResource::ResourceSource resource_source() const {
+      return resource_source_;
+    }
 
     std::optional<gpu::VulkanYCbCrInfo> ycbcr_info() { return ycbcr_info_; }
 
@@ -113,6 +118,8 @@ class VIZ_SERVICE_EXPORT ExternalUseClient {
     const SharedImageFormat format_;
     const sk_sp<SkColorSpace> color_space_;
     const GrSurfaceOrigin origin_;
+    const TransferableResource::ResourceSource resource_source_ =
+        TransferableResource::ResourceSource::kUnknown;
 
     SkAlphaType alpha_type_ = kPremul_SkAlphaType;
 
@@ -131,15 +138,8 @@ class VIZ_SERVICE_EXPORT ExternalUseClient {
   // If |maybe_concurrent_reads| is true then there can be concurrent reads to
   // the texture that modify GL texture parameters.
   virtual std::unique_ptr<ImageContext> CreateImageContext(
-      const gpu::Mailbox& mailbox,
-      const gpu::SyncToken& sync_token,
-      uint32_t texture_target,
-      const gfx::Size& size,
-      SharedImageFormat format,
+      const TransferableResource& resource,
       bool maybe_concurrent_reads,
-      const std::optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
-      sk_sp<SkColorSpace> color_space,
-      GrSurfaceOrigin origin,
       bool raw_draw_if_possible) = 0;
 
   virtual gpu::SyncToken ReleaseImageContexts(

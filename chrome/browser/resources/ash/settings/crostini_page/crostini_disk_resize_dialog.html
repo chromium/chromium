@@ -35,7 +35,7 @@
   -->
   <div slot="title">$i18n{crostiniDiskResizeTitle}</div>
   <div slot="body">
-    <template is="dom-if" if="[[eq_(displayState_, DisplayState.RESIZE)]]">
+    <template is="dom-if" if="[[eq_(displayState_, DisplayStateEnum_.RESIZE)]]">
       <div>
         <div hidden="[[isLowSpaceAvailable_]]" id="recommended-size">
           $i18n{crostiniDiskResizeRecommended}
@@ -58,17 +58,17 @@
       </div>
     </template>
     <template is="dom-if"
-        if="[[eq_(displayState_, DisplayState.UNSUPPORTED)]]">
+        if="[[eq_(displayState_, DisplayStateEnum_.UNSUPPORTED)]]">
       <div id="unsupported">
         $i18n{crostiniDiskResizeUnsupported}
       </div>
     </template>
-    <template is="dom-if" if="[[eq_(displayState_, DisplayState.LOADING)]]">
+    <template is="dom-if" if="[[eq_(displayState_, DisplayStateEnum_.LOADING)]]">
       <div id="loading">
         $i18n{crostiniDiskResizeLoading}
       </div>
     </template>
-    <template is="dom-if" if="[[eq_(displayState_, DisplayState.ERROR)]]">
+    <template is="dom-if" if="[[eq_(displayState_, DisplayStateEnum_.ERROR)]]">
       <span id="error" aria-hidden="true">
         $i18n{crostiniDiskResizeError}
       </span>
@@ -81,21 +81,21 @@
   <div slot="button-container">
     <div id="message" aria-live="assertive">
       <span id="resizing"
-          hidden="[[!eq_(resizeState_, ResizeState.RESIZING)]]">
+          hidden="[[!eq_(resizeState_, ResizeStateEnum_.RESIZING)]]">
         $i18n{crostiniDiskResizeInProgress}
       </span>
-      <template is="dom-if" if="[[eq_(resizeState_, ResizeState.ERROR)]]">
+      <template is="dom-if" if="[[eq_(resizeState_, ResizeStateEnum_.ERROR)]]">
         <span id="resize-error" class="error">
           <iron-icon id="errorIcon" icon="cr:error-outline"></iron-icon>
           $i18n{crostiniDiskResizeResizingError}
         </span>
       </template>
-      <span id="done" hidden="[[!eq_(resizeState_, ResizeState.DONE)]]">
+      <span id="done" hidden="[[!eq_(resizeState_, ResizeStateEnum_.DONE)]]">
         $i18n{crostiniDiskResizeDone}
       </span>
     </div>
     <cr-button id="cancel" class="cancel-button"
-        disabled="[[eq_(resizeState_, ResizeState.RESIZING)]]"
+        disabled="[[eq_(resizeState_, ResizeStateEnum_.RESIZING)]]"
         on-click="onCancelClick_">
       $i18n{crostiniDiskResizeCancel}
     </cr-button>

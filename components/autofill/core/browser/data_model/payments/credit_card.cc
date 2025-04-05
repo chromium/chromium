@@ -63,6 +63,15 @@ constexpr auto k16DigitNumberSegmentations = std::to_array({4, 4, 4, 4});
 // masked server card.
 constexpr char kVirtualCardIdentifierSuffix[] = "_vcn";
 
+bool ShouldUseNewFopDisplay() {
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
+  return false;
+#else
+  return base::FeatureList::IsEnabled(
+      features::kAutofillEnableNewFopDisplayDesktop);
+#endif
+}
+
 std::u16string NetworkForFill(const std::string& network) {
   if (network == kAmericanExpressCard) {
     return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_AMEX);
@@ -272,29 +281,41 @@ std::u16string CreditCard::NetworkForDisplay(const std::string& network) {
 int CreditCard::IconResourceId(Suggestion::Icon icon) {
   switch (icon) {
     case Suggestion::Icon::kCardAmericanExpress:
-      return IDR_AUTOFILL_METADATA_CC_AMEX;
+      return ShouldUseNewFopDisplay() ? IDR_AUTOFILL_METADATA_CC_AMEX
+                                      : IDR_AUTOFILL_METADATA_CC_AMEX_OLD;
     case Suggestion::Icon::kCardDiners:
-      return IDR_AUTOFILL_METADATA_CC_DINERS;
+      return ShouldUseNewFopDisplay() ? IDR_AUTOFILL_METADATA_CC_DINERS
+                                      : IDR_AUTOFILL_METADATA_CC_DINERS_OLD;
     case Suggestion::Icon::kCardDiscover:
-      return IDR_AUTOFILL_METADATA_CC_DISCOVER;
+      return ShouldUseNewFopDisplay() ? IDR_AUTOFILL_METADATA_CC_DISCOVER
+                                      : IDR_AUTOFILL_METADATA_CC_DISCOVER_OLD;
     case Suggestion::Icon::kCardElo:
-      return IDR_AUTOFILL_METADATA_CC_ELO;
+      return ShouldUseNewFopDisplay() ? IDR_AUTOFILL_METADATA_CC_ELO
+                                      : IDR_AUTOFILL_METADATA_CC_ELO_OLD;
     case Suggestion::Icon::kCardJCB:
-      return IDR_AUTOFILL_METADATA_CC_JCB;
+      return ShouldUseNewFopDisplay() ? IDR_AUTOFILL_METADATA_CC_JCB
+                                      : IDR_AUTOFILL_METADATA_CC_JCB_OLD;
     case Suggestion::Icon::kCardMasterCard:
-      return IDR_AUTOFILL_METADATA_CC_MASTERCARD;
+      return ShouldUseNewFopDisplay() ? IDR_AUTOFILL_METADATA_CC_MASTERCARD
+                                      : IDR_AUTOFILL_METADATA_CC_MASTERCARD_OLD;
     case Suggestion::Icon::kCardMir:
-      return IDR_AUTOFILL_METADATA_CC_MIR;
+      return ShouldUseNewFopDisplay() ? IDR_AUTOFILL_METADATA_CC_MIR
+                                      : IDR_AUTOFILL_METADATA_CC_MIR_OLD;
     case Suggestion::Icon::kCardTroy:
-      return IDR_AUTOFILL_METADATA_CC_TROY;
+      return ShouldUseNewFopDisplay() ? IDR_AUTOFILL_METADATA_CC_TROY
+                                      : IDR_AUTOFILL_METADATA_CC_TROY_OLD;
     case Suggestion::Icon::kCardUnionPay:
-      return IDR_AUTOFILL_METADATA_CC_UNIONPAY;
+      return ShouldUseNewFopDisplay() ? IDR_AUTOFILL_METADATA_CC_UNIONPAY
+                                      : IDR_AUTOFILL_METADATA_CC_UNIONPAY_OLD;
     case Suggestion::Icon::kCardVerve:
-      return IDR_AUTOFILL_METADATA_CC_VERVE;
+      return ShouldUseNewFopDisplay() ? IDR_AUTOFILL_METADATA_CC_VERVE
+                                      : IDR_AUTOFILL_METADATA_CC_VERVE_OLD;
     case Suggestion::Icon::kCardVisa:
-      return IDR_AUTOFILL_METADATA_CC_VISA;
+      return ShouldUseNewFopDisplay() ? IDR_AUTOFILL_METADATA_CC_VISA
+                                      : IDR_AUTOFILL_METADATA_CC_VISA_OLD;
     case Suggestion::Icon::kCardGeneric:
-      return IDR_AUTOFILL_METADATA_CC_GENERIC;
+      return ShouldUseNewFopDisplay() ? IDR_AUTOFILL_METADATA_CC_GENERIC
+                                      : IDR_AUTOFILL_METADATA_CC_GENERIC_OLD;
     case Suggestion::Icon::kAccount:
     case Suggestion::Icon::kClear:
     case Suggestion::Icon::kCode:

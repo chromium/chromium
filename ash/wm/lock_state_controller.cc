@@ -17,7 +17,6 @@
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/cancel_mode.h"
 #include "ash/capture_mode/capture_mode_controller.h"
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/saved_desk_delegate.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -465,11 +464,7 @@ void LockStateController::RequestShutdown(ShutdownReason reason) {
   }
 
   HideAndMaybeLockCursor(/*lock=*/true);
-  if (features::IsForestFeatureEnabled()) {
-    SessionStateChangeWithInformedRestore(RequestedSessionState::kShutdown);
-  } else {
-    StartSessionStateChange(RequestedSessionState::kShutdown);
-  }
+  SessionStateChangeWithInformedRestore(RequestedSessionState::kShutdown);
 }
 
 void LockStateController::RequestCancelableShutdown(ShutdownReason reason) {
@@ -477,12 +472,8 @@ void LockStateController::RequestCancelableShutdown(ShutdownReason reason) {
   shutdown_canceled_ = false;
 
   HideAndMaybeLockCursor(/*lock=*/false);
-  if (features::IsForestFeatureEnabled()) {
-    SessionStateChangeWithInformedRestore(
-        RequestedSessionState::kCancelableShutdown);
-  } else {
-    StartSessionStateChange(RequestedSessionState::kCancelableShutdown);
-  }
+  SessionStateChangeWithInformedRestore(
+      RequestedSessionState::kCancelableShutdown);
 }
 
 bool LockStateController::ShutdownRequested() const {
@@ -499,12 +490,10 @@ bool LockStateController::MaybeCancelShutdownAnimation() {
       SessionStateAnimator::ANIMATION_UNDO_GRAYSCALE_BRIGHTNESS,
       SessionStateAnimator::ANIMATION_SPEED_REVERT_SHUTDOWN);
   shutdown_canceled_ = true;
-  if (features::IsForestFeatureEnabled()) {
-    // Shutdown maybe canceled before or after image saved. So we need to delete
-    // both here and `OnImageSaved`.
-    DeleteInformedRestoreImage(informed_restore_image_callback_for_test_,
-                               GetInformedRestoreImagePath());
-  }
+  // Shutdown maybe canceled before or after image saved. So we need to delete
+  // both here and `OnImageSaved`.
+  DeleteInformedRestoreImage(informed_restore_image_callback_for_test_,
+                             GetInformedRestoreImagePath());
   cancelable_shutdown_timer_.Stop();
   return true;
 }
@@ -512,23 +501,15 @@ bool LockStateController::MaybeCancelShutdownAnimation() {
 void LockStateController::RequestRestart(
     power_manager::RequestRestartReason reason,
     const std::string& description) {
-  if (features::IsForestFeatureEnabled()) {
-    HideAndMaybeLockCursor(/*lock=*/false);
-    restart_callback_ =
-        base::BindOnce(&LockStateController::DoRestart, base::Unretained(this),
-                       reason, description);
-    SessionStateChangeWithInformedRestore(RequestedSessionState::kRestart);
-  } else {
-    chromeos::PowerManagerClient::Get()->RequestRestart(reason, description);
-  }
+  HideAndMaybeLockCursor(/*lock=*/false);
+  restart_callback_ =
+      base::BindOnce(&LockStateController::DoRestart, base::Unretained(this),
+                     reason, description);
+  SessionStateChangeWithInformedRestore(RequestedSessionState::kRestart);
 }
 
 void LockStateController::RequestSignOut() {
-  if (features::IsForestFeatureEnabled()) {
-    SessionStateChangeWithInformedRestore(RequestedSessionState::kSignOut);
-  } else {
-    Shell::Get()->session_controller()->RequestSignOut();
-  }
+  SessionStateChangeWithInformedRestore(RequestedSessionState::kSignOut);
 }
 
 void LockStateController::OnHostCloseRequested(aura::WindowTreeHost* host) {

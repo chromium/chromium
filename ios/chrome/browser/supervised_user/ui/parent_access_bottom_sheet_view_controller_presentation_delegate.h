@@ -10,8 +10,10 @@
 // Delegate for presentation events related to the Parent Access bottom sheet.
 @protocol ParentAccessBottomSheetViewControllerPresentationDelegate <NSObject>
 
-// Called when the user taps on the Close (X) button.
-- (void)closeButtonTapped:(ParentAccessBottomSheetViewController*)controller;
+// Called when the bottom sheet receives a dismiss signal (e.g., (x) button,
+// accessibility gesture, or escape key)
+- (void)closeBottomSheetRequested:
+    (ParentAccessBottomSheetViewController*)controller;
 
 @end
 

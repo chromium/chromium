@@ -128,6 +128,9 @@ class VIZ_SERVICE_EXPORT InputManager
       const base::UnguessableToken& grouping_id) override;
   std::optional<bool> IsDelegatedInkHovering(
       const FrameSinkId& frame_sink_id) override;
+  void DidOverscroll(const FrameSinkId& frame_sink_id,
+                     const base::UnguessableToken& grouping_id,
+                     blink::mojom::DidOverscrollParamsPtr params) override;
   GpuServiceImpl* GetGpuService() override;
 
   // input::mojom::RenderInputRouterDelegate implementation.
@@ -137,6 +140,7 @@ class VIZ_SERVICE_EXPORT InputManager
   void ForceEnableZoomStateChanged(
       bool force_enable_zoom,
       const std::vector<FrameSinkId>& frame_sink_ids) override;
+  void StopFlingingOnViz(const FrameSinkId& frame_sink_id) override;
 
   void SetupRenderInputRouterDelegateConnection(
       const base::UnguessableToken& grouping_id,

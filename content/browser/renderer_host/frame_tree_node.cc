@@ -7,7 +7,6 @@
 #include <math.h>
 
 #include <queue>
-#include <unordered_map>
 #include <utility>
 
 #include "base/debug/crash_logging.h"
@@ -37,6 +36,7 @@
 #include "content/public/common/content_features.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/frame/fenced_frame_sandbox_flags.h"
 #include "third_party/blink/public/common/loader/loader_constants.h"
@@ -49,7 +49,7 @@ namespace {
 
 // This is a global map between frame_tree_node_ids and pointers to
 // FrameTreeNodes.
-using FrameTreeNodeIdMap = std::unordered_map<FrameTreeNodeId, FrameTreeNode*>;
+using FrameTreeNodeIdMap = absl::flat_hash_map<FrameTreeNodeId, FrameTreeNode*>;
 
 base::LazyInstance<FrameTreeNodeIdMap>::DestructorAtExit
     g_frame_tree_node_id_map = LAZY_INSTANCE_INITIALIZER;
@@ -1248,14 +1248,15 @@ FrameTreeNode::CreateNavigationRequestForSynchronousRendererCommit(
     const GURL& original_url,
     std::unique_ptr<CrossOriginEmbedderPolicyReporter> coep_reporter,
     std::unique_ptr<DocumentIsolationPolicyReporter> dip_reporter,
-    int http_response_code) {
+    int http_response_code,
+    base::TimeTicks actual_navigation_start) {
   return NavigationRequest::CreateForSynchronousRendererCommit(
       this, render_frame_host, is_same_document, url, origin,
       initiator_base_url, isolation_info_for_subresources, std::move(referrer),
       transition, should_replace_current_entry, method,
       has_transient_activation, is_overriding_user_agent, redirects,
       original_url, std::move(coep_reporter), std::move(dip_reporter),
-      http_response_code);
+      http_response_code, actual_navigation_start);
 }
 
 void FrameTreeNode::CancelNavigation(NavigationDiscardReason reason) {

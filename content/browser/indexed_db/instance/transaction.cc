@@ -20,6 +20,7 @@
 #include "content/browser/indexed_db/instance/bucket_context.h"
 #include "content/browser/indexed_db/instance/bucket_context_handle.h"
 #include "content/browser/indexed_db/instance/callback_helpers.h"
+#include "content/browser/indexed_db/instance/connection.h"
 #include "content/browser/indexed_db/instance/cursor.h"
 #include "content/browser/indexed_db/instance/database.h"
 #include "content/browser/indexed_db/instance/database_callbacks.h"
@@ -126,14 +127,16 @@ Transaction::Transaction(int64_t id,
                          Connection* connection,
                          const std::set<int64_t>& object_store_ids,
                          blink::mojom::IDBTransactionMode mode,
+                         blink::mojom::IDBTransactionDurability durability,
                          BucketContextHandle bucket_context,
-                         BackingStore::Transaction* backing_store_transaction)
+                         std::unique_ptr<Delegate> backing_store_transaction)
     : id_(id),
       object_store_ids_(object_store_ids),
       mode_(mode),
+      durability_(durability),
       connection_(connection->GetWeakPtr()),
       bucket_context_(std::move(bucket_context)),
-      backing_store_transaction_(backing_store_transaction),
+      backing_store_transaction_(std::move(backing_store_transaction)),
       receiver_(this) {
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("IndexedDB", "Transaction::lifetime", this);
 
@@ -256,7 +259,7 @@ Status Transaction::Abort(const DatabaseError& error) {
   locks_receiver_.locks.clear();
   locks_receiver_.CancelLockRequest();
 
-  callbacks()->OnAbort(*this, error);
+  connection()->callbacks()->OnAbort(*this, error);
 
   bucket_context_->QueueRunTasks();
   bucket_context_.Release();
@@ -735,14 +738,13 @@ Status Transaction::CommitPhaseTwo() {
       TRACE_EVENT1("IndexedDB",
                    "Transaction::CommitPhaseTwo.TransactionCompleteCallbacks",
                    "txn.id", id());
-      callbacks()->OnComplete(*this);
+      connection()->callbacks()->OnComplete(*this);
     }
 
     if (mode() != blink::mojom::IDBTransactionMode::ReadOnly) {
       const bool did_sync =
           mode() == blink::mojom::IDBTransactionMode::VersionChange ||
-          backing_store_transaction_->durability() ==
-              blink::mojom::IDBTransactionDurability::Strict;
+          durability_ == blink::mojom::IDBTransactionDurability::Strict;
       bucket_context_->delegate().on_files_written.Run(did_sync);
     }
     return s;
@@ -761,7 +763,7 @@ Status Transaction::CommitPhaseTwo() {
     error = DatabaseError(blink::mojom::IDBException::kUnknownError,
                           "Internal error committing transaction.");
   }
-  callbacks()->OnAbort(*this, error);
+  connection()->callbacks()->OnAbort(*this, error);
   return s;
 }
 

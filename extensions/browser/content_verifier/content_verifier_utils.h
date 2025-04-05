@@ -40,6 +40,20 @@ bool IsDotSpaceFilenameSuffixIgnored();
 CanonicalRelativePath CanonicalizeRelativePath(
     const base::FilePath& relative_path);
 
+// Normalize a relative pathname by collapsing redundant separators and up-level
+// references, and normalizing separators so that "A//B", "A/./B", "A/foo/../B"
+// and "A\\B" all become "A/B". The trailing separator is preserved. This string
+// manipulation may change the meaning of a path that contains symbolic links.
+//
+// This function performs purely string operations without accessing the
+// filesystem or considering the current directory. The path doesn't need to
+// exist. Use base::NormalizeFilePath() to expand symbolic links and junctions
+// and get an absolute normalized file path.
+//
+// The function CHECKs that the path is not absolute.
+[[nodiscard]] base::FilePath NormalizePathComponents(
+    const base::FilePath& relative_path);
+
 }  // namespace extensions::content_verifier_utils
 
 #endif  // EXTENSIONS_BROWSER_CONTENT_VERIFIER_CONTENT_VERIFIER_UTILS_H_

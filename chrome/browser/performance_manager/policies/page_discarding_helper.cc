@@ -163,92 +163,92 @@ std::optional<base::TimeTicks> PageDiscardingHelper::DiscardMultiplePages(
                             page_node->GetTimeSinceLastVisibilityChange());
   }
 
-  // Sorts with descending importance.
-  std::sort(candidates.rbegin(), candidates.rend());
+  // Sorts with ascending importance.
+  std::sort(candidates.begin(), candidates.end());
 
   UMA_HISTOGRAM_COUNTS_100("Discarding.DiscardCandidatesCount",
                            candidates.size());
 
-  NodeFootprintMap page_node_footprint_kb;
-  if (reclaim_target) {
-    // Only compute the estimated memory footprint if needed.
-    page_node_footprint_kb = GetPageNodeFootprintEstimateKb(candidates);
+  // Returns early when candidate is empty to avoid infinite loop in
+  // DiscardMultiplePages.
+  if (candidates.empty()) {
+    return std::nullopt;
   }
+  std::vector<const PageNode*> discard_attempts;
 
-  while (!candidates.empty()) {
-    std::vector<const PageNode*> discard_attempts;
+  if (!reclaim_target) {
+    const PageNode* oldest = candidates[0].page_node();
+    discard_attempts.emplace_back(oldest);
 
-    if (!reclaim_target) {
-      const auto candidate = candidates.back();
-      candidates.pop_back();
+    // Record metrics about the tab that is about to be discarded.
+    RecordDiscardedTabMetrics(candidates[0]);
+  } else {
+    const uint64_t reclaim_target_kb_value = reclaim_target->target_kb;
+    uint64_t total_reclaim_kb = 0;
+    auto page_node_footprint_kb = GetPageNodeFootprintEstimateKb(candidates);
+    for (auto& candidate : candidates) {
+      if (total_reclaim_kb >= reclaim_target_kb_value) {
+        break;
+      }
+      const PageNode* node = candidate.page_node();
+      discard_attempts.emplace_back(node);
 
       // Record metrics about the tab that is about to be discarded.
       RecordDiscardedTabMetrics(candidate);
 
-      discard_attempts.emplace_back(candidate.page_node());
-    } else {
-      const uint64_t reclaim_target_kb_value = reclaim_target->target_kb;
-      uint64_t total_reclaim_kb = 0;
-      while (total_reclaim_kb < reclaim_target_kb_value &&
-             !candidates.empty()) {
-        const auto candidate = candidates.back();
-        candidates.pop_back();
+      // The node footprint value is updated by ProcessMetricsDecorator
+      // periodically. The footprint value is 0 for nodes that have never been
+      // updated, estimate the RSS value to 80 MiB for these nodes. 80 MiB is
+      // the average Memory.Renderer.PrivateMemoryFootprint histogram value on
+      // Windows in August 2021.
+      uint64_t node_reclaim_kb = (page_node_footprint_kb[node])
+                                     ? page_node_footprint_kb[node]
+                                     : 80 * 1024;
+      total_reclaim_kb += node_reclaim_kb;
 
-        // Record metrics about the tab that is about to be discarded.
-        RecordDiscardedTabMetrics(candidate);
-
-        const PageNode* node = candidate.page_node();
-        discard_attempts.emplace_back(node);
-
-        // The node footprint value is updated by ProcessMetricsDecorator
-        // periodically. The footprint value is 0 for nodes that have never been
-        // updated, estimate the RSS value to 80 MiB for these nodes. 80 MiB is
-        // the average Memory.Renderer.PrivateMemoryFootprint histogram value on
-        // Windows in August 2021.
-        uint64_t node_reclaim_kb = (page_node_footprint_kb[node])
-                                       ? page_node_footprint_kb[node]
-                                       : 80 * 1024;
-        total_reclaim_kb += node_reclaim_kb;
-
-        LOG(WARNING) << "Queueing discard attempt, type="
-                     << performance_manager::PageNode::ToString(node->GetType())
-                     << ", flags=["
-                     << (candidate.is_focused() ? " focused" : "")
-                     << (candidate.is_protected() ? " protected" : "")
-                     << (candidate.is_visible() ? " visible" : "")
-                     << " ] to save " << node_reclaim_kb << " KiB";
-      }
+      LOG(WARNING) << "Queueing discard attempt, type="
+                   << performance_manager::PageNode::ToString(node->GetType())
+                   << ", flags=[" << (candidate.is_focused() ? " focused" : "")
+                   << (candidate.is_protected() ? " protected" : "")
+                   << (candidate.is_visible() ? " visible" : "")
+                   << " ] to save " << node_reclaim_kb << " KiB";
     }
-
-    // Adorns the PageNodes with a discard attempt marker to make sure that we
-    // don't try to discard it multiple times if it fails to be discarded. In
-    // practice this should only happen to prerenderers.
-    for (auto* attempt : discard_attempts) {
-      DiscardEligibilityPolicy::AddDiscardAttemptMarker(
-          PageNodeImpl::FromNode(attempt));
-    }
-
-    // Do the discard.
-    std::vector<PageDiscarder::DiscardEvent> discard_events =
-        page_discarder_->DiscardPageNodes(discard_attempts, discard_reason);
-
-    if (!discard_events.empty()) {
-      for (const auto& discard_event : discard_events) {
-        unnecessary_discard_monitor_.OnDiscard(
-            discard_event.estimated_memory_freed_kb,
-            discard_event.discard_time);
-      }
-
-      unnecessary_discard_monitor_.OnReclaimTargetEnd();
-
-      return discard_events[0].discard_time;
-    }
-
-    // Nothing was actually discarded, keep looping to try with more candidates.
   }
 
-  // Ran out of candidates.
-  return std::nullopt;
+  // Clear the candidates vector to avoid holding on to pointers of the pages
+  // that are about to be discarded.
+  candidates.clear();
+
+  if (discard_attempts.empty()) {
+    // No pages left that are available for discarding.
+    return std::nullopt;
+  }
+
+  // Adorns the PageNodes with a discard attempt marker to make sure that we
+  // don't try to discard it multiple times if it fails to be discarded. In
+  // practice this should only happen to prerenderers.
+  for (auto* attempt : discard_attempts) {
+    DiscardEligibilityPolicy::AddDiscardAttemptMarker(
+        PageNodeImpl::FromNode(attempt));
+  }
+
+  std::vector<PageDiscarder::DiscardEvent> discard_events =
+      page_discarder_->DiscardPageNodes(discard_attempts, discard_reason);
+
+  if (discard_events.empty()) {
+    // DiscardAttemptMarker will force the retry to choose different pages.
+    return DiscardMultiplePages(reclaim_target, discard_protected_tabs,
+                                discard_reason, minimum_time_in_background);
+  }
+
+  for (const auto& discard_event : discard_events) {
+    unnecessary_discard_monitor_.OnDiscard(
+        discard_event.estimated_memory_freed_kb, discard_event.discard_time);
+  }
+
+  unnecessary_discard_monitor_.OnReclaimTargetEnd();
+
+  return discard_events[0].discard_time;
 }
 
 std::optional<base::TimeTicks>

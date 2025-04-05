@@ -458,7 +458,6 @@
 <translation id="3084958266922136097">停用屏保功能</translation>
 <translation id="3091839911843451378">失败 - 已停止</translation>
 <translation id="3102119246920354026">缓存</translation>
-<translation id="3112413615003385433">老师从 School Tools 中移除了内容</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">水池</translation>
 <translation id="3122883569442693641">更多详情</translation>
@@ -539,7 +538,6 @@
 <translation id="3488065109653206955">部分激活</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_COLOR" />色调的<ph name="OFFICE_STYLE" />办公室</translation>
 <translation id="3493187369049186498">流量消耗是由 Chromebook 测得的，可能与提供商的数据不同。</translation>
-<translation id="349570724365779960">School Tools 已连接到学生的设备</translation>
 <translation id="3502426834823382181">查看所有应用</translation>
 <translation id="3510890413042482857">发送<ph name="BEGIN_LINK1" />性能跟踪数据<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Chrome 操作系统更新</translation>
@@ -547,7 +545,6 @@
 <translation id="353214771040290298">完成修改</translation>
 <translation id="3532980081107202182">还剩大约 <ph name="MIN_REMAINING" /> 分钟</translation>
 <translation id="3533790840489634638">水池</translation>
-<translation id="3535802910192338629">老师在 School Tools 中添加了新内容</translation>
 <translation id="3547264467365135390">公式</translation>
 <translation id="3557205324756024651">本地身份（可选）</translation>
 <translation id="3565064564551103223">允许使用的 IP</translation>
@@ -1235,6 +1232,7 @@
 <translation id="6657240842932274095">允许系统服务使用您的位置信息？</translation>
 <translation id="6657585470893396449">密码</translation>
 <translation id="66621959568103627">珊瑚粉</translation>
+<translation id="6669485505082792176">目前无法创建这样的图片。请尝试重新表述您的说明。请注意，您无法生成包含人物、有害或露骨内容的图片。<ph name="BEGIN_LINK_LEARN_MORE" />了解详情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6673898378497337661">调高键盘亮度</translation>
 <translation id="6692996468359469499">获取与您的所选项相关的信息</translation>
 <translation id="6694534975463174713">锁定</translation>
@@ -1440,7 +1438,6 @@
 <translation id="7544853251252956727">随机播放</translation>
 <translation id="7550715992156305117">诊断例程</translation>
 <translation id="7551123448725492271">设备类型是音频设备。</translation>
-<translation id="7553913964854052228">School Tools 正在使用您的麦克风</translation>
 <translation id="7559239713112547082">预览屏幕截图</translation>
 <translation id="7561454561030345039">此操作由您的管理员管理</translation>
 <translation id="7561759921596375678">开启声音</translation>
@@ -1663,7 +1660,6 @@
 <translation id="8576249514688522074">未初始化</translation>
 <translation id="8584654835905316966">必须重启，才能完成<ph name="DEVICE_NAME" />固件安装操作，并更新至版本 <ph name="VERSION" />。电脑可能会重启几次。这是正常现象。</translation>
 <translation id="8593058461203131755">暂停媒体内容</translation>
-<translation id="8619169570378509764">School Tools</translation>
 <translation id="8620617069779373398">漫游状态</translation>
 <translation id="8626489604350149811">可对“<ph name="APN_NAME" />”执行的更多操作</translation>
 <translation id="86356131183441916">浅紫色</translation>

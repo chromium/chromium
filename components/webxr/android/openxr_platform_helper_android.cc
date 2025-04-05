@@ -27,7 +27,8 @@ OpenXrPlatformHelperAndroid::~OpenXrPlatformHelperAndroid() = default;
 
 std::unique_ptr<device::OpenXrGraphicsBinding>
 OpenXrPlatformHelperAndroid::GetGraphicsBinding() {
-  return std::make_unique<device::OpenXrGraphicsBindingOpenGLES>();
+  return std::make_unique<device::OpenXrGraphicsBindingOpenGLES>(
+      GetExtensionEnumeration());
 }
 
 void OpenXrPlatformHelperAndroid::GetPlatformCreateInfo(

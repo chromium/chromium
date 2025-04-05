@@ -21,6 +21,10 @@ extern const char kTabResumptionDisabledPref[];
 // Pref name that stores the last opened tab URL.
 extern const char kTabResumptionLastOpenedTabURLPref[];
 
+// Stores impressions for which Tab Resumption card with price drop
+// has been rendered on a per URL basis.
+extern const char kTabResumptionWithPriceDropUrlImpressions[];
+
 // Registers the local state prefs associated with the tab resumption tile.
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 

@@ -5,6 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_AX_RELATION_CACHE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_AX_RELATION_CACHE_H_
 
+#include <stdint.h>
+
+#include <utility>
+
 #include "third_party/blink/renderer/core/html/forms/html_label_element.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
@@ -279,8 +283,10 @@ class AXRelationCache {
   // aria-describedby or aria-labeledby, update the text for the related object.
   void UpdateRelatedText(Node*);
 
-  static base::span<QualifiedName> GetTextRelationAttributes();
-  static base::span<QualifiedName> GetOtherRelationAttributes();
+  static base::span<std::pair<QualifiedName, uint32_t>>
+  GetTextRelationAttributes();
+  static base::span<std::pair<QualifiedName, uint32_t>>
+  GetOtherRelationAttributes();
 
   bool IsValidOwnsRelation(AXObject* owner, Node& child_node) const;
   void UnmapOwnedChildrenWithCleanLayout(const AXObject* owner,

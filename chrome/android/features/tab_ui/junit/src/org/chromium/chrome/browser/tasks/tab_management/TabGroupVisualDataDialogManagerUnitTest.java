@@ -99,10 +99,7 @@ public class TabGroupVisualDataDialogManagerUnitTest {
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.TAB_GROUP_PANE_ANDROID,
-        ChromeFeatureList.TAB_GROUP_SYNC_ANDROID
-    })
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_SYNC_ANDROID})
     public void testVisualDataDialogDelegate_showDialog() {
         mTabGroupVisualDataDialogManager.showDialog(
                 TAB_GROUP_ID, mTabGroupModelFilter, mDialogController);
@@ -124,10 +121,7 @@ public class TabGroupVisualDataDialogManagerUnitTest {
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.TAB_GROUP_PANE_ANDROID,
-        ChromeFeatureList.TAB_GROUP_SYNC_ANDROID
-    })
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_SYNC_ANDROID})
     public void testVisualDataDialogDelegate_doubleShowDismissed() {
         // Mock a double trigger for the creation dialog observer method for the same group action,
         // but show dialog is only called once.
@@ -140,10 +134,7 @@ public class TabGroupVisualDataDialogManagerUnitTest {
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.TAB_GROUP_PANE_ANDROID,
-        ChromeFeatureList.TAB_GROUP_SYNC_ANDROID
-    })
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_SYNC_ANDROID})
     public void testVisualDataDialog_descriptionTextNotSet() {
         // Set the opposite values for the conditional statement to be true.
         doReturn(true).when(mTabModel).isIncognitoBranded();
@@ -167,10 +158,7 @@ public class TabGroupVisualDataDialogManagerUnitTest {
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.TAB_GROUP_PANE_ANDROID,
-        ChromeFeatureList.TAB_GROUP_SYNC_ANDROID
-    })
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_SYNC_ANDROID})
     public void testVisualDataDialog_descriptionTextSetButNotSyncing() {
         doReturn(false).when(mTabModel).isIncognitoBranded();
         doReturn(true)
@@ -199,10 +187,7 @@ public class TabGroupVisualDataDialogManagerUnitTest {
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.TAB_GROUP_PANE_ANDROID,
-        ChromeFeatureList.TAB_GROUP_SYNC_ANDROID
-    })
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_SYNC_ANDROID})
     public void testVisualDataDialog_descriptionTextSetAndSyncing() {
         doReturn(false).when(mTabModel).isIncognitoBranded();
         doReturn(true)

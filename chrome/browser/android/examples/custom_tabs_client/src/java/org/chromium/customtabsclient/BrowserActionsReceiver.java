@@ -9,10 +9,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.widget.Toast;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * A {@link BroadcastReceiver} that handles the callback if default menu items are chosen from
  * Browser Actions.
  */
+@NullMarked
 public class BrowserActionsReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {

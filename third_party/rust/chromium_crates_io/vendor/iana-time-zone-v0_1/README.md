@@ -27,10 +27,10 @@ cargo run --example get_timezone
 
 ## Minimum supported rust version policy
 
-This crate has a minimum supported rust version (MSRV) of 1.61.0 for [Tier 1]
+This crate has a minimum supported rust version (MSRV) of 1.62.0 for [Tier 1]
 platforms.
 
-[tier 1]: https://doc.rust-lang.org/1.61.0/rustc/platform-support.html
+[tier 1]: https://doc.rust-lang.org/1.62.0/rustc/platform-support.html
 
 Updates to the MSRV are sometimes necessary due to the MSRV of dependencies.
 MSRV updates will not be indicated as a breaking change to the semver version.

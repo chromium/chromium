@@ -1,0 +1,21 @@
+diff --git a/src/google/protobuf/compiler/java/context.h b/src/google/protobuf/compiler/java/context.h
+index 993301bbd796b..8117ce67821bd 100644
+--- a//src/google/protobuf/compiler/java/context.h
++++ b//src/google/protobuf/compiler/java/context.h
+@@ -12,1 +12,1 @@
+ #include <vector>
+
+ #include "absl/container/flat_hash_map.h"
++#include "google/protobuf/compiler/java/field_common.h"
+ #include "google/protobuf/compiler/java/helpers.h"
+ #include "google/protobuf/compiler/java/options.h"
+ #include "google/protobuf/port.h"
+@@ -36,2 +37,2 @@ namespace protobuf {
+ namespace compiler {
+ namespace java {
+
+-struct FieldGeneratorInfo;
+-struct OneofGeneratorInfo;
+ // A context object holds the information that is shared among all code
+ // generators.
+ class Context {

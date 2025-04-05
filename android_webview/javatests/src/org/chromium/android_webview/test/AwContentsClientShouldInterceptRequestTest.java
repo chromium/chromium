@@ -1997,7 +1997,6 @@ public class AwContentsClientShouldInterceptRequestTest extends AwParameterizedT
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add({"enable-features=PlzDedicatedWorker"})
     public void testDedicatedWorkerSubresourceIntercepted() throws Throwable {
         final String importScriptJs = addJavaScriptToTestServer(mWebServer, "/test-worker.js", "");
         final String workerJs =

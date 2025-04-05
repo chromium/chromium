@@ -46,6 +46,12 @@ class ContextMenuNativeDelegateImpl {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jobject>& jrender_frame_host);
+  void InspectElement(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj,
+      const base::android::JavaParamRef<jobject>& jrender_frame_host,
+      jint x,
+      jint y);
 
  protected:
   using ImageRetrieveCallback = base::OnceCallback<void(

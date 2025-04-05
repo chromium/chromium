@@ -109,7 +109,6 @@ class CORE_EXPORT CanvasRenderingContext
 
   // TODO(crbug.com/40280152): Remove these methods once killswitch-guarded
   // behavior has shipped.
-  static bool CheckProviderInCanCreateCanvas2dResourceProvider();
   static bool CheckProviderInCanvas2DRenderingContextIsPaintable();
 
   // Correspond to CanvasRenderingAPI defined in

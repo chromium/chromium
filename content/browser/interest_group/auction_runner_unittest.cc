@@ -101,6 +101,7 @@
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/features_generated.h"
@@ -1786,6 +1787,22 @@ class EventReportingAttestationBrowserClient : public TestContentBrowserClient {
   }
 };
 
+class MockDwaAuctionMetrics : public DwaAuctionMetrics {
+ public:
+  MOCK_METHOD(void,
+              SetSellerInfo,
+              (const url::Origin& seller_origin),
+              (override));
+  MOCK_METHOD(void, OnAuctionEnd, (AuctionResult auction_result), (override));
+  ~MockDwaAuctionMetrics() override = default;
+};
+
+class MockDwaAuctionMetricsManager : public DwaAuctionMetricsManager {
+ public:
+  MOCK_METHOD(DwaAuctionMetrics*, CreateDwaAuctionMetrics, (), (override));
+  ~MockDwaAuctionMetricsManager() override = default;
+};
+
 // TrustedSignalsCacheImpl implementation that allows setting request
 // expectations and mocking out results, without having to deal with encryption
 // or request formatting. Note that consumers must specify compression group and
@@ -2154,6 +2171,8 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
     auction_nonce_manager_ = std::make_unique<AuctionNonceManager>(GetFrame());
     ad_auction_page_data_ = PageUserData<AdAuctionPageData>::GetOrCreateForPage(
         web_contents()->GetPrimaryPage());
+    dwa_auction_metrics_manager_ =
+        std::make_unique<MockDwaAuctionMetricsManager>();
   }
 
   void TearDown() override {
@@ -2537,8 +2556,9 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
             base::Unretained(browser_context()));
 
     auction_runner_ = AuctionRunner::CreateAndStart(
-        auction_metrics_recorder_.get(), auction_worklet_manager_.get(),
-        auction_nonce_manager_.get(), interest_group_manager_.get(),
+        auction_metrics_recorder_.get(), dwa_auction_metrics_manager_.get(),
+        auction_worklet_manager_.get(), auction_nonce_manager_.get(),
+        interest_group_manager_.get(),
         /*browser_context=*/browser_context(), &private_aggregation_manager_,
         base::BindRepeating(&AuctionRunnerTest::GetAdAuctionPageData,
                             base::Unretained(this)),
@@ -3981,6 +4001,8 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
   // Can be used to interrupt currently running auction.
   mojo::Remote<blink::mojom::AbortableAdAuction> abortable_ad_auction_;
 
+  std::unique_ptr<MockDwaAuctionMetricsManager> dwa_auction_metrics_manager_;
+
   // Which worklet to pause, if any.
   GURL pause_worklet_url_;
 };
@@ -4176,6 +4198,12 @@ INSTANTIATE_TEST_SUITE_P(All, AuctionRunnerTrustedSignalsTest, testing::Bool());
 // Runs an auction with an empty buyers field.
 TEST_F(AuctionRunnerTest, NullBuyers) {
   interest_group_buyers_->clear();
+  auto dwa_metrics = std::make_unique<MockDwaAuctionMetrics>();
+  EXPECT_CALL(*dwa_metrics, SetSellerInfo(kSeller)).Times(1);
+  EXPECT_CALL(*dwa_metrics, OnAuctionEnd(AuctionResult::kNoInterestGroups))
+      .Times(1);
+  EXPECT_CALL(*dwa_auction_metrics_manager_, CreateDwaAuctionMetrics())
+      .WillOnce(testing::Return(dwa_metrics.get()));
   RunAuctionAndWait(kSellerUrl, std::vector<StorageInterestGroup>());
 
   EXPECT_THAT(result_.errors, testing::ElementsAre());
@@ -4191,8 +4219,25 @@ TEST_F(AuctionRunnerTest, NullBuyers) {
 // Runs a component auction with all buyers fields null.
 TEST_F(AuctionRunnerTest, ComponentAuctionNullBuyers) {
   interest_group_buyers_.reset();
+
+  auto dwa_metrics = std::make_unique<MockDwaAuctionMetrics>();
+  EXPECT_CALL(*dwa_metrics, SetSellerInfo(kSeller)).Times(1);
+  EXPECT_CALL(*dwa_metrics, OnAuctionEnd(AuctionResult::kNoInterestGroups))
+      .Times(1);
+
   component_auctions_.emplace_back(
       CreateAuctionConfig(kComponentSeller1Url, /*buyers=*/std::nullopt));
+
+  auto component_dwa_metrics = std::make_unique<MockDwaAuctionMetrics>();
+  EXPECT_CALL(*component_dwa_metrics, SetSellerInfo(kComponentSeller1))
+      .Times(1);
+  EXPECT_CALL(*component_dwa_metrics,
+              OnAuctionEnd(AuctionResult::kNoInterestGroups))
+      .Times(1);
+  EXPECT_CALL(*dwa_auction_metrics_manager_, CreateDwaAuctionMetrics())
+      .WillOnce(testing::Return(dwa_metrics.get()))
+      .WillOnce(testing::Return(component_dwa_metrics.get()));
+
   RunAuctionAndWait(kSellerUrl, std::vector<StorageInterestGroup>());
 
   EXPECT_THAT(result_.errors, testing::ElementsAre());
@@ -4203,6 +4248,30 @@ TEST_F(AuctionRunnerTest, ComponentAuctionNullBuyers) {
   EXPECT_THAT(result_.interest_groups_that_bid,
               testing::UnorderedElementsAre());
   CheckMetrics(MetricsExpectations(AuctionResult::kNoInterestGroups));
+}
+
+TEST_F(AuctionRunnerTest, SingleSellerServerAuctionNoDWALogging) {
+  server_response_request_id_ = base::Uuid();
+  EXPECT_CALL(*dwa_auction_metrics_manager_, CreateDwaAuctionMetrics())
+      .Times(0);
+  StartAuction(kSellerUrl, std::vector<StorageInterestGroup>());
+
+  // Resolve auction's server response promise.
+  const char kResponse[] = {0x02, 0x00, 0x00, 0x00, 0x02, '{', '}'};
+
+  quiche::ObliviousHttpRequest::Context client_context =
+      CreateBiddingAndAuctionEncryptionContext();
+  std::string encrypted_response =
+      quiche::ObliviousHttpResponse::CreateServerObliviousResponse(
+          std::string(kResponse, sizeof(kResponse)), client_context,
+          kBiddingAndAuctionEncryptionResponseMediaType)
+          ->EncapsulateAndSerialize();
+
+  abortable_ad_auction_->ResolvedAuctionAdResponsePromise(
+      blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
+      mojo_base::BigBuffer(base::as_byte_span(encrypted_response)));
+
+  auction_run_loop_->Run();
 }
 
 // Runs an auction with an empty buyers field.

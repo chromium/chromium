@@ -7,22 +7,13 @@
 #include <string>
 #include <vector>
 
-#include "google_apis/gaia/gaia_id.h"
+#include "google_apis/gaia/gaia_auth_test_util.h"
 
 namespace network {
 class TestURLLoaderFactory;
 }  // namespace network
 
 namespace signin {
-
-// Parameters for the fake ListAccounts response.
-struct CookieParams {
-  std::string email;
-  GaiaId gaia_id;
-  bool valid;
-  bool signed_out;
-  bool verified;
-};
 
 // Make ListAccounts call return NotFound.
 void SetListAccountsResponseHttpNotFound(
@@ -35,7 +26,7 @@ void SetListAccountsResponseWithUnexpectedServiceResponse(
 
 // Make ListAccounts return a list of accounts based on the provided |params|.
 void SetListAccountsResponseWithParams(
-    const std::vector<CookieParams>& params,
+    const std::vector<gaia::CookieParams>& params,
     network::TestURLLoaderFactory* test_url_loader_factory);
 
 // Helper methods, equivalent to calling
@@ -54,7 +45,7 @@ void SetListAccountsResponseOneAccount(
 
 // Make ListAccounts return one account based on the provided |params|.
 void SetListAccountsResponseOneAccountWithParams(
-    const CookieParams& params,
+    const gaia::CookieParams& params,
     network::TestURLLoaderFactory* test_url_loader_factory);
 
 // Make ListAccounts return two accounts with the provided emails and gaia_ids.

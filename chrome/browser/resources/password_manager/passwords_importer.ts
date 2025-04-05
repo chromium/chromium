@@ -79,7 +79,22 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
 
   static get properties() {
     return {
-      dialogState_: Number,
+      isUserSyncingPasswords: {
+        type: Boolean,
+        value: false,
+      },
+
+      isAccountStoreUser: {
+        type: Boolean,
+        value: false,
+      },
+
+      accountEmail: String,
+
+      dialogState_: {
+        type: Number,
+        value: DialogState.NO_DIALOG,
+      },
 
       dialogStateEnum_: {
         type: Object,
@@ -95,7 +110,11 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
 
       selectedStoreOption_: String,
 
-      results_: Object,
+      results_: {
+        type: Object,
+        value: null,
+      },
+
       successDescription_: String,
       failedImportsSummary_: String,
       rowsWithUnknownErrorsSummary_: String,
@@ -132,24 +151,24 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
     ];
   }
 
-  isUserSyncingPasswords: boolean;
-  isAccountStoreUser: boolean;
-  accountEmail: string;
+  declare isUserSyncingPasswords: boolean;
+  declare isAccountStoreUser: boolean;
+  declare accountEmail: string;
 
-  private dialogState_: DialogState = DialogState.NO_DIALOG;
+  declare private dialogState_: DialogState;
   // Refers both to syncing users with sync enabled for passwords and account
   // store users who choose to import passwords to their account.
   private passwordsSavedToAccount_: boolean;
-  private selectedStoreOption_: string;
-  private bannerDescription_: string;
-  private results_: chrome.passwordsPrivate.ImportResults|null = null;
-  private conflicts_: chrome.passwordsPrivate.ImportEntry[];
-  private conflictsSelectedForReplace_: number[];
-  private successDescription_: string;
-  private conflictsDialogTitle_: string;
-  private failedImportsSummary_: string;
-  private rowsWithUnknownErrorsSummary_: string;
-  private showRowsWithUnknownErrorsSummary_: boolean;
+  declare private selectedStoreOption_: string;
+  declare private bannerDescription_: string;
+  declare private results_: chrome.passwordsPrivate.ImportResults|null;
+  declare private conflicts_: chrome.passwordsPrivate.ImportEntry[];
+  declare private conflictsSelectedForReplace_: number[];
+  declare private successDescription_: string;
+  declare private conflictsDialogTitle_: string;
+  declare private failedImportsSummary_: string;
+  declare private rowsWithUnknownErrorsSummary_: string;
+  declare private showRowsWithUnknownErrorsSummary_: boolean;
   private passwordManager_: PasswordManagerProxy =
       PasswordManagerImpl.getInstance();
 
@@ -176,11 +195,7 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
   }
 
   private updatePasswordsSavedToAccount_() {
-    if (this.isUserSyncingPasswords) {
-      this.passwordsSavedToAccount_ = true;
-    } else {
-      this.passwordsSavedToAccount_ = false;
-    }
+    this.passwordsSavedToAccount_ = this.isUserSyncingPasswords;
   }
 
   private isState_(state: DialogState): boolean {

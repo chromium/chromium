@@ -298,6 +298,9 @@ BASE_DECLARE_FEATURE_PARAM(int, kInterestGroupStorageMaxOpsBeforeMaintenance);
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 BASE_DECLARE_FEATURE(kGetCookiesOnSet);
 
+COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
+BASE_DECLARE_FEATURE(kIncreaseCookieAccessCacheSize);
+
 // If enabled, permissions policies relevant to a request are populated on
 // `network:ResourceRequest`.
 //
@@ -310,6 +313,18 @@ BASE_DECLARE_FEATURE(kPopulatePermissionsPolicyOnRequest);
 // Content-Type.
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 BASE_DECLARE_FEATURE(kProtectedAudienceCorsSafelistKVv2Signals);
+
+// If enabled and `kPopulatePermissionsPolicyOnRequest` is also enabled, storage
+// access headers will respect the "storage-access" permissions policy when
+// calculating storage access status.
+COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
+BASE_DECLARE_FEATURE(kStorageAccessHeadersRespectPermissionsPolicy);
+
+// When enabled, a shared remote Mojo interface of
+// DeviceBoundSessionAccessObserver is used to reduce Clone() IPC.
+// See https://crbug.com/407680127 for more details.
+COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
+BASE_DECLARE_FEATURE(kDeviceBoundSessionAccessObserverSharedRemote);
 
 }  // namespace network::features
 

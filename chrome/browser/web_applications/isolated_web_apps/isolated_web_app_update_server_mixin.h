@@ -42,6 +42,11 @@ class IsolatedWebAppUpdateServerMixin : public InProcessBrowserTestMixin {
       const std::optional<base::Version>& pinned_version = std::nullopt,
       const bool allow_downgrades = false) const;
 
+  // Returns the update manifest for `web_bundle_id`. Will CHECK if there are no
+  // bundles served for this `web_bundle_id`.
+  base::Value::Dict GetUpdateManifest(
+      const web_package::SignedWebBundleId& web_bundle_id) const;
+
   // Adds a bundle to the update server and starts tracking it in the
   // corresponding update manifest.
   void AddBundle(

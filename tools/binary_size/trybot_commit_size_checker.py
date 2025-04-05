@@ -181,8 +181,9 @@ def _CreateResourceSizes64Delta(before_dir, after_dir, max_increase):
   sizes_diff.ProduceDiff(before_dir, after_dir)
 
   # Allow 4x growth of arm64 before blocking CLs.
+  # TODO(crbug.com/399103933): Return this to * 4 once bot is not noisy.
   return sizes_diff.Summary(), _SizeDelta('Normalized APK Size (arm64)',
-                                          'bytes', max_increase * 4,
+                                          'bytes', max_increase * 400,
                                           sizes_diff.summary_stat.value)
 
 

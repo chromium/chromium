@@ -5,6 +5,8 @@
 #ifndef EXTENSIONS_BROWSER_API_EXTENSIONS_API_CLIENT_H_
 #define EXTENSIONS_BROWSER_API_EXTENSIONS_API_CLIENT_H_
 
+#include <stdint.h>
+
 #include <map>
 #include <memory>
 #include <string>
@@ -15,15 +17,22 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/guest_view/buildflags/buildflags.h"
-#include "extensions/browser/api/clipboard/clipboard_api.h"
-#include "extensions/browser/api/declarative_content/content_rules_registry.h"
 #include "extensions/browser/api/storage/settings_namespace.h"
 #include "extensions/browser/api/storage/settings_observer.h"
-#include "extensions/common/api/clipboard.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "extensions/browser/api/clipboard/clipboard_api_types.h"
+#include "extensions/common/api/clipboard.h"
+#endif
+
 class GURL;
+class KeyedServiceBaseFactory;
+
+namespace base {
+class SingleThreadTaskRunner;
+}
 
 namespace content {
 class BrowserContext;
@@ -55,6 +64,9 @@ class MessagingDelegate;
 class MetricsPrivateDelegate;
 class MimeHandlerViewGuest;
 class MimeHandlerViewGuestDelegate;
+class NativeMessageHost;
+class NativeMessagePort;
+class NativeMessagePortDispatcher;
 class NonNativeFileSystemDelegate;
 class RulesCacheDelegate;
 class SupervisedUserExtensionsDelegate;
@@ -238,6 +250,12 @@ class ExtensionsAPIClient {
   // Gets keyed service factories that are used in the other methods on this
   // class.
   virtual std::vector<KeyedServiceBaseFactory*> GetFactoryDependencies();
+
+  virtual std::unique_ptr<NativeMessagePortDispatcher>
+  CreateNativeMessagePortDispatcher(
+      std::unique_ptr<NativeMessageHost> host,
+      base::WeakPtr<NativeMessagePort> port,
+      scoped_refptr<base::SingleThreadTaskRunner> message_service_task_runner);
 
   // NOTE: If this interface gains too many methods (perhaps more than 20) it
   // should be split into one interface per API.

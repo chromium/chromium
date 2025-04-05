@@ -1248,6 +1248,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kPrimaryMouseButtonSwitch,
     ash::prefs::kPrimaryMouseButtonRight,
     base::Value::Type::BOOLEAN },
+  { key::kFaceGazeEnabled,
+    ash::prefs::kAccessibilityFaceGazeEnabled,
+    base::Value::Type::BOOLEAN },
   { key::kKeyboardFocusHighlightEnabled,
     ash::prefs::kAccessibilityFocusHighlightEnabled,
     base::Value::Type::BOOLEAN },
@@ -2271,9 +2274,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kAllowBackForwardCacheForCacheControlNoStorePageEnabled,
     policy_prefs::kAllowBackForwardCacheForCacheControlNoStorePageEnabled,
     base::Value::Type::BOOLEAN},
-  { key::kMutationEventsEnabled,
-    policy_prefs::kMutationEventsEnabled,
-    base::Value::Type::BOOLEAN},
   { key::kSelectParserRelaxationEnabled,
     policy_prefs::kSelectParserRelaxationEnabled,
     base::Value::Type::BOOLEAN},
@@ -2510,6 +2510,8 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
           key::kOnSecurityEventEnterpriseConnector,
           enterprise_connectors::kOnSecurityEventPref,
           enterprise_connectors::kOnSecurityEventScopePref, chrome_schema));
+
+  handlers->AddHandler(std::make_unique<DeveloperToolsPolicyHandler>());
   // Policies for all platforms - End
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
@@ -2581,7 +2583,6 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
                                             base::Value::Type::BOOLEAN)));
 
   handlers->AddHandler(std::make_unique<headless::HeadlessModePolicyHandler>());
-  handlers->AddHandler(std::make_unique<DeveloperToolsPolicyHandler>());
   handlers->AddHandler(
       std::make_unique<DownloadAutoOpenPolicyHandler>(chrome_schema));
 

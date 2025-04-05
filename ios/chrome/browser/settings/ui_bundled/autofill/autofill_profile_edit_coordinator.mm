@@ -84,7 +84,8 @@
          initWithDelegate:self
       personalDataManager:personalDataManager
           autofillProfile:_autofillProfile.get()
-        isMigrationPrompt:NO];
+        isMigrationPrompt:NO
+         addManualAddress:NO];
 
   _viewController = [[AutofillSettingsProfileEditTableViewController alloc]
                       initWithDelegate:_mediator

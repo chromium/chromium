@@ -80,6 +80,11 @@ struct CONTENT_EXPORT GlobalRenderFrameHostId {
   constexpr friend bool operator==(const GlobalRenderFrameHostId&,
                                    const GlobalRenderFrameHostId&) = default;
 
+  template <typename H>
+  friend H AbslHashValue(H h, const GlobalRenderFrameHostId& id) {
+    return H::combine(std::move(h), id.child_id, id.frame_routing_id);
+  }
+
   explicit operator bool() const {
     return frame_routing_id != MSG_ROUTING_NONE;
   }

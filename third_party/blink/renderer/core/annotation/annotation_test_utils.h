@@ -31,7 +31,7 @@ class MockAnnotationSelector : public AnnotationSelector {
 
   String Serialize() const override { return ""; }
 
-  void FindRange(Document& document,
+  void FindRange(Range& search_range,
                  SearchType type,
                  FinishedCallback finished_cb) override {
     RangeInFlatTree* range;
@@ -41,12 +41,16 @@ class MockAnnotationSelector : public AnnotationSelector {
         range = nullptr;
       } else {
         range = mock_result_;
-        DCHECK_EQ(mock_result_->StartPosition().GetDocument(), &document);
+
+        DCHECK_EQ(mock_result_->StartPosition().GetDocument(),
+                  &search_range.OwnerDocument());
       }
     } else {
       // Just select the whole document.
-      auto range_start = PositionInFlatTree::FirstPositionInNode(document);
-      auto range_end = PositionInFlatTree::LastPositionInNode(document);
+      auto range_start =
+          PositionInFlatTree::FirstPositionInNode(search_range.OwnerDocument());
+      auto range_end =
+          PositionInFlatTree::LastPositionInNode(search_range.OwnerDocument());
       range = MakeGarbageCollected<RangeInFlatTree>(range_start, range_end);
     }
 
@@ -83,7 +87,8 @@ class MockAnnotationAgentHost : public mojom::blink::AnnotationAgentHost {
  public:
   MockAnnotationAgentHost() : receiver_(this) {}
   ~MockAnnotationAgentHost() override = default;
-  void DidFinishAttachment(const gfx::Rect& rect) override {
+  void DidFinishAttachment(const gfx::Rect& rect,
+                           mojom::blink::AttachmentResult result) override {
     did_finish_attachment_rect_ = rect;
   }
 

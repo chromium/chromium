@@ -19,6 +19,10 @@ namespace download {
 class DownloadItem;
 }
 
+namespace network {
+struct ResourceRequest;
+}
+
 namespace safe_browsing {
 
 class ClientDownloadRequest;
@@ -35,6 +39,8 @@ class DownloadProtectionDelegateAndroid : public DownloadProtectionDelegate {
                            const base::FilePath& target_path) const override;
   void PreSerializeRequest(const download::DownloadItem* item,
                            ClientDownloadRequest& request_proto) override;
+  void FinalizeResourceRequest(
+      network::ResourceRequest& resource_request) override;
   const GURL& GetDownloadRequestUrl() const override;
   net::NetworkTrafficAnnotationTag
   CompleteClientDownloadRequestTrafficAnnotation(

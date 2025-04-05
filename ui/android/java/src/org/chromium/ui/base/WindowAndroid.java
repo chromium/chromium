@@ -52,6 +52,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.RequiresNonNull;
@@ -292,19 +293,8 @@ public class WindowAndroid
             mOverlayTransformApiHelper = OverlayTransformApiHelper.create(this);
         }
 
-        // Disable occlusion for now, see crbug.com/399724403 for details.
-        mTrackOcclusion = false;
-        if (mTrackOcclusion) {
-            var decorView = getDecorView();
-            assert decorView != null;
-
-            // If the decor view is already attached to the window the listener won't be called.
-            // In this case, the window token exists so we can register the occlusion observer.
-            if (decorView.isAttachedToWindow()) {
-                maybeRegisterOcclusionObserver(getWindowToken());
-            }
-            decorView.addOnAttachStateChangeListener(this);
-        }
+        mTrackOcclusion = trackOcclusion;
+        maybeTrackOcclusion();
 
         mActivityTopResumedSupported = activityTopResumedSupported;
     }
@@ -319,10 +309,35 @@ public class WindowAndroid
         maybeUnregisterOcclusionObserver();
     }
 
-    private void maybeRegisterOcclusionObserver(@Nullable IBinder windowToken) {
-        if (!mTrackOcclusion || Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+    private boolean shouldTrackOcclusion() {
+        // Enable occlusion only for desktop Android. For non-desktop Android, occlusion signals
+        // from Android should be the same as the Activity lifecycle signals that already control
+        // web contents occlusion. Also, on rotate Android seems to send a spurious occlusion
+        // signal. See crbug.com/380209799 for details.
+        return mTrackOcclusion
+                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM
+                && BuildConfig.IS_DESKTOP_ANDROID
+                && UiAndroidFeatureList.sAndroidWindowOcclusion.isEnabled();
+    }
+
+    private void maybeTrackOcclusion() {
+        if (!shouldTrackOcclusion()) {
             return;
         }
+
+        var decorView = getDecorView();
+        assert decorView != null;
+
+        // If the decor view is already attached to the window the listener won't be called.
+        // In this case, the window token exists so we can register the occlusion observer.
+        if (decorView.isAttachedToWindow()) {
+            maybeRegisterOcclusionObserver(getWindowToken());
+        }
+        decorView.addOnAttachStateChangeListener(this);
+    }
+
+    @SuppressWarnings("NewApi")
+    private void maybeRegisterOcclusionObserver(@Nullable IBinder windowToken) {
         assert mOcclusionObserver == null;
 
         Context context = assumeNonNull(getContext().get());
@@ -347,10 +362,8 @@ public class WindowAndroid
                 mOcclusionObserver);
     }
 
+    @SuppressWarnings("NewApi")
     private void maybeUnregisterOcclusionObserver() {
-        if (!mTrackOcclusion || Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-            return;
-        }
         assert mOcclusionObserver != null;
 
         Context context = assumeNonNull(getContext().get());

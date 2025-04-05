@@ -9,10 +9,10 @@
 
 #include "components/input/web_input_event_builders_ios.h"
 
-#import <BrowserEngineKit/BrowserEngineKit.h>
 #import <UIKit/UIKit.h>
 
 #include "base/apple/foundation_util.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "third_party/blink/public/common/input/web_pointer_event.h"
 #include "third_party/blink/public/common/input/web_touch_point.h"
@@ -21,6 +21,10 @@
 #include "ui/events/event_utils.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
 #include "ui/events/keycodes/keyboard_code_conversion_ios.h"
+
+#if !BUILDFLAG(IS_IOS_TVOS)
+#import <BrowserEngineKit/BrowserEngineKit.h>
+#endif
 
 namespace input {
 
@@ -184,6 +188,8 @@ blink::WebTouchPoint CreateWebTouchPoint(
   return touch;
 }
 
+#if !BUILDFLAG(IS_IOS_TVOS)
+
 NSString* FilterSpecialCharacter(NSString* str) {
   if ([str length] != 1) {
     return str;
@@ -225,9 +231,12 @@ bool IsSystemKeyEvent(const blink::WebKeyboardEvent& event) {
   return event.GetModifiers() & blink::WebInputEvent::kMetaKey;
 }
 
+#endif  // !BUILDFLAG(IS_IOS_TVOS)
+
 }  // namespace
 
 blink::WebKeyboardEvent WebKeyboardEventBuilder::Build(gfx::NativeEvent event) {
+#if !BUILDFLAG(IS_IOS_TVOS)
   BEKeyEntry* entry = std::get<base::apple::OwnedBEKeyEntry>(event).Get();
   CHECK(entry);
 
@@ -279,6 +288,10 @@ blink::WebKeyboardEvent WebKeyboardEventBuilder::Build(gfx::NativeEvent event) {
   result.is_system_key = IsSystemKeyEvent(result);
 
   return result;
+#else
+  TVOS_NOT_YET_IMPLEMENTED();
+  return blink::WebKeyboardEvent();
+#endif  // !BUILDFLAG(IS_IOS_TVOS)
 }
 
 blink::WebGestureEvent WebGestureEventBuilder::Build(UIEvent*, UIView*) {

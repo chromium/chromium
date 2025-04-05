@@ -48,18 +48,23 @@ namespace {
 // computing graph message.
 class FakeWebNNGraphImpl final : public WebNNGraphImpl {
  public:
-  FakeWebNNGraphImpl(WebNNContextImpl* context,
-                     ComputeResourceInfo compute_resource_info)
-      : WebNNGraphImpl(context, std::move(compute_resource_info)) {}
+  FakeWebNNGraphImpl(
+      mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
+      WebNNContextImpl* context,
+      ComputeResourceInfo compute_resource_info)
+      : WebNNGraphImpl(std::move(receiver),
+                       context,
+                       std::move(compute_resource_info)) {}
   ~FakeWebNNGraphImpl() override = default;
 
   static void CreateAndBuild(
+      mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
       WebNNContextImpl* context,
       const mojom::GraphInfo& graph_info,
       ComputeResourceInfo compute_resource_info,
       WebNNContextImpl::CreateGraphImplCallback callback) {
     std::move(callback).Run(std::make_unique<FakeWebNNGraphImpl>(
-        context, std::move(compute_resource_info)));
+        std::move(receiver), context, std::move(compute_resource_info)));
   }
 
  private:
@@ -109,13 +114,14 @@ class FakeWebNNContextImpl final : public WebNNContextImpl {
 
  private:
   void CreateGraphImpl(
+      mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
       mojom::GraphInfoPtr graph_info,
       WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
       base::flat_map<
           uint64_t,
           std::unique_ptr<WebNNConstantOperand>> /*constant_operands*/,
       CreateGraphImplCallback callback) override {
-    FakeWebNNGraphImpl::CreateAndBuild(this, *graph_info,
+    FakeWebNNGraphImpl::CreateAndBuild(std::move(receiver), this, *graph_info,
                                        std::move(compute_resource_info),
                                        std::move(callback));
   }

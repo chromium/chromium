@@ -487,10 +487,10 @@ void PowerPrefs::UpdatePowerPolicyFromPrefs() {
         charge_limit_enabled.value_or(false)) {
       LOG(WARNING) << "Pref set to enable both Adaptive Charging and Charge "
                    << "Limit, which are mutually exclusive features. "
-                   << "Disabling charge limit.";
+                   << "Adaptive charging will be disabled.";
 
       // Update the local optional variable to maintain consistency
-      charge_limit_enabled = false;
+      adaptive_charging_enabled = false;
     }
 
     values.adaptive_charging_enabled = adaptive_charging_enabled;

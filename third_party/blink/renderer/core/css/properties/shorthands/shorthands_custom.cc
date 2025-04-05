@@ -1335,7 +1335,7 @@ bool Flex::ParseShorthand(bool important,
           flex_shrink = num;
           savepoint.Release();
         } else if (!flex_basis && num->IsNumericLiteralValue() &&
-                   num->GetDoubleValue() == 0) {
+                   To<CSSNumericLiteralValue>(num)->GetDoubleValue() == 0) {
           // Unitless zero is a valid <'flex-basis'>. All other <length>s
           // must have some unit, and are handled by the other branch.
           flex_basis = CSSNumericLiteralValue::Create(

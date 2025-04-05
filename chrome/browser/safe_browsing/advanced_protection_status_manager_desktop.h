@@ -7,7 +7,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -70,9 +69,7 @@ class AdvancedProtectionStatusManagerDesktop
   ~AdvancedProtectionStatusManagerDesktop() override;
 
   // AdvancedProtectionManager:
-  bool IsUnderAdvancedProtection() const override;
-  void AddObserver(StatusChangedObserver* observer) override;
-  void RemoveObserver(StatusChangedObserver* observer) override;
+  Type GetAdvancedProtectionType() const override;
   void SetAdvancedProtectionStatusForTesting(bool enrolled) override;
 
   // KeyedService:
@@ -165,8 +162,6 @@ class AdvancedProtectionStatusManagerDesktop
   // Returns an empty string if user is not signed in.
   CoreAccountId GetUnconsentedPrimaryAccountId() const;
 
-  void NotifyStatusChanged();
-
   // Only called in tests to set a customized minimum delay.
   AdvancedProtectionStatusManagerDesktop(
       PrefService* pref_service,
@@ -186,7 +181,6 @@ class AdvancedProtectionStatusManagerDesktop
   base::OneShotTimer timer_;
   base::Time last_refreshed_;
   base::TimeDelta minimum_delay_;
-  base::ObserverList<StatusChangedObserver> observers_;
 };
 
 }  // namespace safe_browsing

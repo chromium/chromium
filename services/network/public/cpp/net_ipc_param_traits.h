@@ -228,9 +228,15 @@ struct COMPONENT_EXPORT(NETWORK_CPP_NETWORK_PARAM)
 
 #endif  // INTERNAL_SERVICES_NETWORK_PUBLIC_CPP_NET_IPC_PARAM_TRAITS_H_
 
+// TODO(crbug.com/408018829): convert these to normal mojom EnumTraits
+// LINT.IfChange(CTPolicyCompliance)
 IPC_ENUM_TRAITS_MAX_VALUE(
     net::ct::CTPolicyCompliance,
     net::ct::CTPolicyCompliance::CT_POLICY_COMPLIANCE_DETAILS_NOT_AVAILABLE)
+// LINT.ThenChange(/net/cert/ct_policy_status.h:CTPolicyCompliance)
+
+IPC_ENUM_TRAITS_MAX_VALUE(net::ct::CTRequirementsStatus,
+                          net::ct::CTRequirementsStatus::kMaxValue)
 
 IPC_ENUM_TRAITS(net::ProxyServer::Scheme)  // BitMask.
 

@@ -407,7 +407,6 @@ void LevelDBScope::AddCommitPoint() {
 leveldb::Status LevelDBScope::WriteBufferBatch(bool sync) {
   leveldb::WriteOptions write_options;
   write_options.sync = sync;
-  approximate_bytes_written_ += buffer_batch_.ApproximateSize();
   leveldb::Status s = level_db_->db()->Write(write_options, &buffer_batch_);
   // We intentionally clear the write batch, even if the write fails, as this
   // class is expected to be treated as invalid after a failure and shouldn't be

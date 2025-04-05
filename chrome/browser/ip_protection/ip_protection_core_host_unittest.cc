@@ -1052,9 +1052,8 @@ TEST_F(IpProtectionCoreHostTest, TryGetProbabilisticRevealTokensSuccess) {
     response_str = response_proto.SerializeAsString();
   }
 
-  const GURL issuer_server_url = GURL(
-      "https://prod.probabilisticrevealtoken.goog/v1/ipblinding/"
-      "getProbabilisticRevealToken");
+  const GURL issuer_server_url =
+      GURL("https://aaftokenissuer.pa.googleapis.com/v1/issueprts");
   test_url_loader_factory_.SetInterceptor(
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
         auto head = network::mojom::URLResponseHead::New();
@@ -1119,9 +1118,8 @@ TEST_F(IpProtectionCoreHostTest,
     response_str = response_proto.SerializeAsString();
   }
 
-  const GURL issuer_server_url = GURL(
-      "https://prod.probabilisticrevealtoken.goog/v1/ipblinding/"
-      "getProbabilisticRevealToken");
+  const GURL issuer_server_url =
+      GURL("https://aaftokenissuer.pa.googleapis.com/v1/issueprts");
   test_url_loader_factory_.SetInterceptor(
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
         auto head = network::mojom::URLResponseHead::New();

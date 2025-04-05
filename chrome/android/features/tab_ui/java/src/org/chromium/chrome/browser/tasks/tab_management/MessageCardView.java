@@ -16,7 +16,7 @@ import android.widget.LinearLayout;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.tab_ui.R;
-import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.ChromeImageView;
 import org.chromium.ui.widget.TextViewWithLeading;
@@ -171,8 +171,7 @@ class MessageCardView extends LinearLayout {
         }
         // Set dynamic color.
         GradientDrawable gradientDrawable = (GradientDrawable) getBackground();
-        gradientDrawable.setColor(
-                ChromeColors.getSurfaceColor(getContext(), R.dimen.default_elevation_2));
+        gradientDrawable.setColor(SemanticColorUtils.getCardBackgroundColor(getContext()));
     }
 
     /**

@@ -1,0 +1,57 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Configuration for an Android-14 Automotive (U, API 34) AVD on google_apis on x86_64
+
+emulator_package {
+  package_name: "chromium/third_party/android_sdk/public/emulator"
+  version: "abxH5kvB9WO4Xg_EHEiIjAl1rqmM2hQRhU5e4_9AFboC"  # 35.3.11 (Stable)
+}
+
+system_image_package {
+  package_name: "chromium/third_party/android_sdk/public/system-images/android-34/android-automotive/x86_64"
+  version: "yu3GTxX-EiMAdks2nEQxDflUnmmPrO7e_z753zemG9sC"  # r4 (UAA1.250210.001)
+}
+system_image_name: "system-images;android-34-ext9;android-automotive;x86_64"
+
+avd_package {
+  package_name: "chromium/third_party/android_sdk/public/avds/android-34/android-automotive/x86_64"
+}
+avd_name: "android_34_automotive_x64"
+
+avd_settings {
+  screen {
+    density: 160
+    height: 792
+    width: 1408
+  }
+  advanced_features {
+    key: "GLESDynamicVersion"
+    value: "on"
+  }
+  avd_properties {
+    key: "hw.initialOrientation"
+    value: "landscape"
+  }
+  # (crbug.com/330259653):Increase RAM size to 6GB for Auto AVD
+  ram_size: 6144
+}
+avd_variants {
+  key: "swarming"
+  value {
+    avd_properties {
+      key: "disk.dataPartition.size"
+      value: "4G"
+    }
+  }
+}
+avd_variants {
+  key: "local"
+  value {
+    avd_properties {
+      key: "disk.dataPartition.size"
+      value: "12G"
+    }
+  }
+}

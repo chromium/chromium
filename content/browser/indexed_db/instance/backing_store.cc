@@ -1803,13 +1803,14 @@ Status BackingStore::DeleteDatabase(const std::u16string& name,
 }
 
 Status BackingStore::SetDatabaseVersion(
-    Transaction* transaction,
+    Transaction::Delegate* delegate,
     int64_t row_id,
     int64_t version,
     blink::IndexedDBDatabaseMetadata* metadata) {
   if (version == IndexedDBDatabaseMetadata::NO_VERSION) {
     version = IndexedDBDatabaseMetadata::DEFAULT_VERSION;
   }
+  Transaction* transaction = reinterpret_cast<Transaction*>(delegate);
   DCHECK_GE(version, 0) << "version was " << version;
   metadata->version = version;
   return PutVarInt(
@@ -1819,13 +1820,14 @@ Status BackingStore::SetDatabaseVersion(
 }
 
 Status BackingStore::CreateObjectStore(
-    Transaction* transaction,
+    Transaction::Delegate* delegate,
     int64_t database_id,
     int64_t object_store_id,
     std::u16string name,
     blink::IndexedDBKeyPath key_path,
     bool auto_increment,
     blink::IndexedDBObjectStoreMetadata* metadata) {
+  Transaction* transaction = reinterpret_cast<Transaction*>(delegate);
   TransactionalLevelDBTransaction* leveldb_transaction =
       transaction->transaction();
   if (!KeyPrefix::ValidIds(database_id, object_store_id)) {
@@ -1906,7 +1908,7 @@ Status BackingStore::CreateObjectStore(
 }
 
 Status BackingStore::DeleteObjectStore(
-    Transaction* transaction,
+    Transaction::Delegate* delegate,
     int64_t database_id,
     const blink::IndexedDBObjectStoreMetadata& object_store) {
   if (!KeyPrefix::ValidIds(database_id, object_store.id)) {
@@ -1915,6 +1917,7 @@ Status BackingStore::DeleteObjectStore(
 
   std::u16string object_store_name;
   bool found = false;
+  Transaction* transaction = reinterpret_cast<Transaction*>(delegate);
   TransactionalLevelDBTransaction* leveldb_transaction =
       transaction->transaction();
   Status s =
@@ -1964,7 +1967,7 @@ Status BackingStore::DeleteObjectStore(
 }
 
 Status BackingStore::RenameObjectStore(
-    Transaction* transaction,
+    Transaction::Delegate* delegate,
     int64_t database_id,
     std::u16string new_name,
     std::u16string* old_name,
@@ -1980,6 +1983,7 @@ Status BackingStore::RenameObjectStore(
 
   std::u16string old_name_check;
   bool found = false;
+  Transaction* transaction = reinterpret_cast<Transaction*>(delegate);
   Status s =
       GetString(transaction->transaction(), name_key, &old_name_check, &found);
   // TODO(dmurph): Change DELETE_OBJECT_STORE to RENAME_OBJECT_STORE & fix UMA.
@@ -2014,7 +2018,7 @@ Status BackingStore::RenameObjectStore(
   return s;
 }
 
-Status BackingStore::CreateIndex(Transaction* transaction,
+Status BackingStore::CreateIndex(Transaction::Delegate* delegate,
                                  int64_t database_id,
                                  int64_t object_store_id,
                                  int64_t index_id,
@@ -2026,6 +2030,7 @@ Status BackingStore::CreateIndex(Transaction* transaction,
   if (!KeyPrefix::ValidIds(database_id, object_store_id, index_id)) {
     return InvalidDBKeyStatus();
   }
+  Transaction* transaction = reinterpret_cast<Transaction*>(delegate);
   TransactionalLevelDBTransaction* leveldb_transaction =
       transaction->transaction();
   Status s = SetMaxIndexId(leveldb_transaction, database_id, object_store_id,
@@ -2071,7 +2076,7 @@ Status BackingStore::CreateIndex(Transaction* transaction,
 }
 
 Status BackingStore::DeleteIndex(
-    Transaction* transaction,
+    Transaction::Delegate* delegate,
     int64_t database_id,
     int64_t object_store_id,
     const blink::IndexedDBIndexMetadata& metadata) {
@@ -2083,12 +2088,13 @@ Status BackingStore::DeleteIndex(
       IndexMetaDataKey::Encode(database_id, object_store_id, metadata.id, 0);
   const std::string index_meta_data_end =
       IndexMetaDataKey::EncodeMaxKey(database_id, object_store_id, metadata.id);
+  Transaction* transaction = reinterpret_cast<Transaction*>(delegate);
   return Status(transaction->transaction()->RemoveRange(
       index_meta_data_start, index_meta_data_end,
       LevelDBScopeDeletionMode::kImmediateWithRangeEndExclusive));
 }
 
-Status BackingStore::RenameIndex(Transaction* transaction,
+Status BackingStore::RenameIndex(Transaction::Delegate* delegate,
                                  int64_t database_id,
                                  int64_t object_store_id,
                                  std::u16string new_name,
@@ -2101,6 +2107,7 @@ Status BackingStore::RenameIndex(Transaction* transaction,
   const std::string name_key = IndexMetaDataKey::Encode(
       database_id, object_store_id, metadata->id, IndexMetaDataKey::NAME);
 
+  Transaction* transaction = reinterpret_cast<Transaction*>(delegate);
   // TODO(dmurph): Add consistency checks & umas for old name.
   Status s = PutString(transaction->transaction(), name_key, new_name);
   if (!s.ok()) {
@@ -2118,7 +2125,7 @@ void BackingStore::Compact() {
   db_->CompactAll();
 }
 
-Status BackingStore::GetRecord(Transaction* transaction,
+Status BackingStore::GetRecord(Transaction::Delegate* delegate,
                                int64_t database_id,
                                int64_t object_store_id,
                                const IndexedDBKey& key,
@@ -2131,6 +2138,7 @@ Status BackingStore::GetRecord(Transaction* transaction,
   if (!KeyPrefix::ValidIds(database_id, object_store_id)) {
     return InvalidDBKeyStatus();
   }
+  Transaction* transaction = reinterpret_cast<Transaction*>(delegate);
   TransactionalLevelDBTransaction* leveldb_transaction =
       transaction->transaction();
 
@@ -2188,7 +2196,7 @@ int64_t BackingStore::GetInMemorySize() const {
   return blob_size + level_db_size;
 }
 
-Status BackingStore::PutRecord(BackingStore::Transaction* transaction,
+Status BackingStore::PutRecord(Transaction::Delegate* delegate,
                                int64_t database_id,
                                int64_t object_store_id,
                                const IndexedDBKey& key,
@@ -2204,6 +2212,7 @@ Status BackingStore::PutRecord(BackingStore::Transaction* transaction,
   }
   DCHECK(key.IsValid());
 
+  Transaction* transaction = reinterpret_cast<Transaction*>(delegate);
   TransactionalLevelDBTransaction* leveldb_transaction =
       transaction->transaction();
   int64_t version = -1;
@@ -2245,7 +2254,7 @@ Status BackingStore::PutRecord(BackingStore::Transaction* transaction,
   return s;
 }
 
-Status BackingStore::ClearObjectStore(BackingStore::Transaction* transaction,
+Status BackingStore::ClearObjectStore(Transaction::Delegate* delegate,
                                       int64_t database_id,
                                       int64_t object_store_id) {
 #if DCHECK_IS_ON()
@@ -2257,6 +2266,7 @@ Status BackingStore::ClearObjectStore(BackingStore::Transaction* transaction,
     return InvalidDBKeyStatus();
   }
 
+  Transaction* transaction = reinterpret_cast<Transaction*>(delegate);
   Status s =
       DeleteBlobsInObjectStore(transaction, database_id, object_store_id);
   if (!s.ok()) {
@@ -2287,7 +2297,7 @@ Status BackingStore::ClearObjectStore(BackingStore::Transaction* transaction,
       LevelDBScopeDeletionMode::kImmediateWithRangeEndExclusive));
 }
 
-Status BackingStore::DeleteRecord(BackingStore::Transaction* transaction,
+Status BackingStore::DeleteRecord(Transaction::Delegate* delegate,
                                   int64_t database_id,
                                   int64_t object_store_id,
                                   const RecordIdentifier& record_identifier) {
@@ -2295,6 +2305,7 @@ Status BackingStore::DeleteRecord(BackingStore::Transaction* transaction,
   if (!KeyPrefix::ValidIds(database_id, object_store_id)) {
     return InvalidDBKeyStatus();
   }
+  Transaction* transaction = reinterpret_cast<Transaction*>(delegate);
   TransactionalLevelDBTransaction* leveldb_transaction =
       transaction->transaction();
 
@@ -2315,7 +2326,7 @@ Status BackingStore::DeleteRecord(BackingStore::Transaction* transaction,
   return Status(leveldb_transaction->Remove(exists_entry_key));
 }
 
-Status BackingStore::DeleteRange(BackingStore::Transaction* transaction,
+Status BackingStore::DeleteRange(Transaction::Delegate* delegate,
                                  int64_t database_id,
                                  int64_t object_store_id,
                                  const IndexedDBKeyRange& key_range) {
@@ -2323,6 +2334,7 @@ Status BackingStore::DeleteRange(BackingStore::Transaction* transaction,
   DCHECK(initialized_);
 #endif
 
+  Transaction* transaction = reinterpret_cast<Transaction*>(delegate);
   // TODO(dmurph): Remove the need to create these cursors.
   // https://crbug.com/980678
   Status s;
@@ -2383,7 +2395,7 @@ Status BackingStore::DeleteRange(BackingStore::Transaction* transaction,
 }
 
 Status BackingStore::GetKeyGeneratorCurrentNumber(
-    BackingStore::Transaction* transaction,
+    Transaction::Delegate* delegate,
     int64_t database_id,
     int64_t object_store_id,
     int64_t* key_generator_current_number) {
@@ -2393,6 +2405,7 @@ Status BackingStore::GetKeyGeneratorCurrentNumber(
   if (!KeyPrefix::ValidIds(database_id, object_store_id)) {
     return InvalidDBKeyStatus();
   }
+  Transaction* transaction = reinterpret_cast<Transaction*>(delegate);
   TransactionalLevelDBTransaction* leveldb_transaction =
       transaction->transaction();
 
@@ -2466,7 +2479,7 @@ Status BackingStore::GetKeyGeneratorCurrentNumber(
 }
 
 Status BackingStore::MaybeUpdateKeyGeneratorCurrentNumber(
-    BackingStore::Transaction* transaction,
+    Transaction::Delegate* delegate,
     int64_t database_id,
     int64_t object_store_id,
     int64_t new_number,
@@ -2478,6 +2491,7 @@ Status BackingStore::MaybeUpdateKeyGeneratorCurrentNumber(
     return InvalidDBKeyStatus();
   }
 
+  Transaction* transaction = reinterpret_cast<Transaction*>(delegate);
   if (check_current) {
     int64_t current_number;
     Status s = GetKeyGeneratorCurrentNumber(transaction, database_id,
@@ -2499,7 +2513,7 @@ Status BackingStore::MaybeUpdateKeyGeneratorCurrentNumber(
 }
 
 Status BackingStore::KeyExistsInObjectStore(
-    BackingStore::Transaction* transaction,
+    Transaction::Delegate* delegate,
     int64_t database_id,
     int64_t object_store_id,
     const IndexedDBKey& key,
@@ -2517,6 +2531,7 @@ Status BackingStore::KeyExistsInObjectStore(
       ObjectStoreDataKey::Encode(database_id, object_store_id, key);
   std::string data;
 
+  Transaction* transaction = reinterpret_cast<Transaction*>(delegate);
   Status s(transaction->transaction()->Get(leveldb_key, &data, found));
   if (!s.ok()) {
     INTERNAL_READ_ERROR(KEY_EXISTS_IN_OBJECT_STORE);
@@ -2856,7 +2871,7 @@ bool BackingStore::UpdateEarliestCompactionTime() {
          txn->Commit().ok();
 }
 
-Status BackingStore::ClearIndex(BackingStore::Transaction* transaction,
+Status BackingStore::ClearIndex(Transaction::Delegate* delegate,
                                 int64_t database_id,
                                 int64_t object_store_id,
                                 int64_t index_id) {
@@ -2868,6 +2883,7 @@ Status BackingStore::ClearIndex(BackingStore::Transaction* transaction,
   if (!KeyPrefix::ValidIds(database_id, object_store_id, index_id)) {
     return InvalidDBKeyStatus();
   }
+  Transaction* transaction = reinterpret_cast<Transaction*>(delegate);
   TransactionalLevelDBTransaction* leveldb_transaction =
       transaction->transaction();
 
@@ -2887,7 +2903,7 @@ Status BackingStore::ClearIndex(BackingStore::Transaction* transaction,
 }
 
 Status BackingStore::PutIndexDataForRecord(
-    BackingStore::Transaction* transaction,
+    Transaction::Delegate* delegate,
     int64_t database_id,
     int64_t object_store_id,
     int64_t index_id,
@@ -2914,6 +2930,7 @@ Status BackingStore::PutIndexDataForRecord(
   EncodeVarInt(record_identifier.version(), &data);
   data.append(record_identifier.primary_key());
 
+  Transaction* transaction = reinterpret_cast<Transaction*>(delegate);
   return Status(transaction->transaction()->Put(index_data_key, &data));
 }
 
@@ -2989,7 +3006,7 @@ Status BackingStore::FindKeyInIndex(BackingStore::Transaction* transaction,
 }
 
 Status BackingStore::GetPrimaryKeyViaIndex(
-    BackingStore::Transaction* transaction,
+    Transaction::Delegate* delegate,
     int64_t database_id,
     int64_t object_store_id,
     int64_t index_id,
@@ -3004,6 +3021,7 @@ Status BackingStore::GetPrimaryKeyViaIndex(
     return InvalidDBKeyStatus();
   }
 
+  Transaction* transaction = reinterpret_cast<Transaction*>(delegate);
   bool found = false;
   std::string found_encoded_primary_key;
   Status s = FindKeyInIndex(transaction, database_id, object_store_id, index_id,
@@ -3029,7 +3047,7 @@ Status BackingStore::GetPrimaryKeyViaIndex(
 }
 
 Status BackingStore::KeyExistsInIndex(
-    BackingStore::Transaction* transaction,
+    Transaction::Delegate* delegate,
     int64_t database_id,
     int64_t object_store_id,
     int64_t index_id,
@@ -3045,6 +3063,7 @@ Status BackingStore::KeyExistsInIndex(
     return InvalidDBKeyStatus();
   }
 
+  Transaction* transaction = reinterpret_cast<Transaction*>(delegate);
   *exists = false;
   std::string found_encoded_primary_key;
   Status s = FindKeyInIndex(transaction, database_id, object_store_id, index_id,
@@ -3951,7 +3970,7 @@ bool IndexCursorImpl::LoadCurrentRow(Status* s) {
 }
 
 std::unique_ptr<BackingStore::Cursor> BackingStore::OpenObjectStoreCursor(
-    BackingStore::Transaction* transaction,
+    Transaction::Delegate* delegate,
     int64_t database_id,
     int64_t object_store_id,
     const IndexedDBKeyRange& range,
@@ -3959,6 +3978,7 @@ std::unique_ptr<BackingStore::Cursor> BackingStore::OpenObjectStoreCursor(
     Status* s) {
   TRACE_EVENT0("IndexedDB", "BackingStore::OpenObjectStoreCursor");
 
+  Transaction* transaction = reinterpret_cast<Transaction*>(delegate);
   TransactionalLevelDBTransaction* leveldb_transaction =
       transaction->transaction();
   BackingStore::Cursor::CursorOptions cursor_options;
@@ -3980,7 +4000,7 @@ std::unique_ptr<BackingStore::Cursor> BackingStore::OpenObjectStoreCursor(
 }
 
 std::unique_ptr<BackingStore::Cursor> BackingStore::OpenObjectStoreKeyCursor(
-    BackingStore::Transaction* transaction,
+    Transaction::Delegate* delegate,
     int64_t database_id,
     int64_t object_store_id,
     const IndexedDBKeyRange& range,
@@ -3988,6 +4008,7 @@ std::unique_ptr<BackingStore::Cursor> BackingStore::OpenObjectStoreKeyCursor(
     Status* s) {
   TRACE_EVENT0("IndexedDB", "BackingStore::OpenObjectStoreKeyCursor");
 
+  Transaction* transaction = reinterpret_cast<Transaction*>(delegate);
   TransactionalLevelDBTransaction* leveldb_transaction =
       transaction->transaction();
   BackingStore::Cursor::CursorOptions cursor_options;
@@ -4009,7 +4030,7 @@ std::unique_ptr<BackingStore::Cursor> BackingStore::OpenObjectStoreKeyCursor(
 }
 
 std::unique_ptr<BackingStore::Cursor> BackingStore::OpenIndexKeyCursor(
-    BackingStore::Transaction* transaction,
+    Transaction::Delegate* delegate,
     int64_t database_id,
     int64_t object_store_id,
     int64_t index_id,
@@ -4018,6 +4039,7 @@ std::unique_ptr<BackingStore::Cursor> BackingStore::OpenIndexKeyCursor(
     Status* s) {
   TRACE_EVENT0("IndexedDB", "BackingStore::OpenIndexKeyCursor");
   *s = Status::OK();
+  Transaction* transaction = reinterpret_cast<Transaction*>(delegate);
   TransactionalLevelDBTransaction* leveldb_transaction =
       transaction->transaction();
   BackingStore::Cursor::CursorOptions cursor_options;
@@ -4037,7 +4059,7 @@ std::unique_ptr<BackingStore::Cursor> BackingStore::OpenIndexKeyCursor(
 }
 
 std::unique_ptr<BackingStore::Cursor> BackingStore::OpenIndexCursor(
-    BackingStore::Transaction* transaction,
+    Transaction::Delegate* delegate,
     int64_t database_id,
     int64_t object_store_id,
     int64_t index_id,
@@ -4045,6 +4067,8 @@ std::unique_ptr<BackingStore::Cursor> BackingStore::OpenIndexCursor(
     blink::mojom::IDBCursorDirection direction,
     Status* s) {
   TRACE_EVENT0("IndexedDB", "BackingStore::OpenIndexCursor");
+
+  Transaction* transaction = reinterpret_cast<Transaction*>(delegate);
   TransactionalLevelDBTransaction* leveldb_transaction =
       transaction->transaction();
   BackingStore::Cursor::CursorOptions cursor_options;
@@ -4648,11 +4672,6 @@ void BackingStore::Transaction::Rollback() {
         std::move(transaction_);
     transaction->Rollback();
   }
-}
-
-uint64_t BackingStore::Transaction::GetTransactionSize() {
-  DCHECK(transaction_);
-  return transaction_->GetTransactionSize();
 }
 
 Status BackingStore::Transaction::PutExternalObjectsIfNeeded(

@@ -11,9 +11,9 @@
 
 [package]
 edition = "2018"
-rust-version = "1.84"
+rust-version = "1.61"
 name = "bytemuck_derive"
-version = "1.9.2"
+version = "1.9.3"
 authors = ["Lokathor <zefria@gmail.com>"]
 build = false
 autolib = false

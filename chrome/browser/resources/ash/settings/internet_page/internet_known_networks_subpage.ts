@@ -127,21 +127,17 @@ export class SettingsInternetKnownNetworksPageElement extends
         type: Number,
         value: null,
       },
-
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kPreferWifiNetwork,
-          Setting.kForgetWifiNetwork,
-        ]),
-      },
     };
   }
 
   networkType: NetworkType|undefined;
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kPreferWifiNetwork,
+    Setting.kForgetWifiNetwork,
+  ]);
+
   private enableForget_: boolean;
   private networkConfig_: CrosNetworkConfigInterface;
   private networkStateList_: OncMojo.NetworkStateProperties[];

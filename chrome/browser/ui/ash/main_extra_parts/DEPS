@@ -38,6 +38,7 @@ include_rules = [
   "+chrome/browser/chromeos/tablet_mode",
   "+chrome/browser/enterprise/connectors/device_trust/attestation/ash",
   "+chrome/browser/exo_parts.h",
+  "+chrome/browser/global_features.h",
   "+chrome/browser/profiles/profile.h",
   "+chrome/browser/profiles/profile_manager.h",
   "+chrome/browser/ui/ash/accessibility",

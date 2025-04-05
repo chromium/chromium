@@ -13,6 +13,8 @@ import android.view.View.AccessibilityDelegate;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 
+import androidx.annotation.IdRes;
+
 import org.chromium.base.metrics.RecordUserAction;
 
 /**
@@ -50,6 +52,11 @@ class AppMenuButtonHelperImpl extends AccessibilityDelegate implements AppMenuBu
     @Override
     public boolean onEnterKeyPress(View view) {
         return showAppMenu(view, false);
+    }
+
+    @Override
+    public void highlightMenuItemOnShow(@IdRes int menuItemId) {
+        mMenuHandler.setMenuHighlight(menuItemId);
     }
 
     @Override

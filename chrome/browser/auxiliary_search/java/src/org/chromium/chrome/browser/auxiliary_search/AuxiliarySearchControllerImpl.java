@@ -210,10 +210,13 @@ public class AuxiliarySearchControllerImpl
         int[] counts = new int[AuxiliarySearchEntryType.MAX_VALUE + 1];
         Callback<Boolean> onDonationCompleteCallback =
                 (success) -> {
+                    // Only records total donate counts when all data's meta data are donated.
                     AuxiliarySearchMetrics.recordDonationCount(counts);
-                    AuxiliarySearchMetrics.recordDonateTime(TimeUtils.uptimeMillis() - startTimeMs);
-                    AuxiliarySearchMetrics.recordDonationRequestStatus(
-                            success ? RequestStatus.SUCCESSFUL : RequestStatus.UNSUCCESSFUL);
+                    recordDonationTimeAndResults(startTimeMs, success);
+                };
+        Callback<Boolean> onFaviconDonationCompleteCallback =
+                (success) -> {
+                    recordDonationTimeAndResults(startTimeMs, success);
                 };
 
         // Donates the list of entries without favicons.
@@ -260,7 +263,8 @@ public class AuxiliarySearchControllerImpl
                                     TimeUtils.uptimeMillis() - faviconStartTimeMs);
 
                             if (!entryToFaviconMap.isEmpty()) {
-                                mDonor.donateEntries(entryToFaviconMap, onDonationCompleteCallback);
+                                mDonor.donateEntries(
+                                        entryToFaviconMap, onFaviconDonationCompleteCallback);
                             }
                         }
                     });
@@ -282,6 +286,12 @@ public class AuxiliarySearchControllerImpl
                     sAndroidAppIntegrationWithFaviconScheduleDelayTimeMs.getValue(),
                     TimeUtils.uptimeMillis());
         }
+    }
+
+    private void recordDonationTimeAndResults(long startTimeMs, boolean success) {
+        AuxiliarySearchMetrics.recordDonateTime(TimeUtils.uptimeMillis() - startTimeMs);
+        AuxiliarySearchMetrics.recordDonationRequestStatus(
+                success ? RequestStatus.SUCCESSFUL : RequestStatus.UNSUCCESSFUL);
     }
 
     /**

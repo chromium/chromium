@@ -938,7 +938,7 @@ TEST_P(CookieSettingsTestP, GetCookieSettingSAAResourceWildcards) {
 // grant exists.
 TEST_P(CookieSettingsTestP, GetCookieSettingSAATopLevelWildcards) {
   GURL top_level_url = GURL(kDomainURL);
-  GURL url = GURL(kURL);
+  GURL url(kURL);
 
   CookieSettings settings;
   settings.set_content_settings(
@@ -2387,55 +2387,126 @@ TEST_F(CookieSettingsTest,
 }
 
 TEST_F(CookieSettingsTest, GetStorageAccessStatus) {
+  // TODO(crbug.com/382291442): Remove `scoped_feature_list` once PP launched.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {network::features::kPopulatePermissionsPolicyOnRequest,
+       network::features::kStorageAccessHeadersRespectPermissionsPolicy},
+      /*disabled_features=*/{});
+
   CookieSettings settings;
-  GURL url = GURL(kURL);
+  GURL url(kURL);
   url::Origin top_frame_origin = url::Origin::Create(GURL(kOtherURL));
   settings.set_block_third_party_cookies(true);
 
+  url::Origin origin = url::Origin::Create(url);
+  const std::unique_ptr<network::PermissionsPolicy>
+      allowing_permissions_policy =
+          network::PermissionsPolicy::CreateFromParsedPolicy(
+              {{{network::mojom::PermissionsPolicyFeature::kStorageAccessAPI,
+                 /*allowed_origins=*/
+                 {*network::OriginWithPossibleWildcards::FromOrigin(origin)},
+                 /*self_if_matches=*/std::nullopt,
+                 /*matches_all_origins=*/false,
+                 /*matches_opaque_src=*/false}}},
+              std::nullopt, origin);
+
   EXPECT_EQ(settings.GetStorageAccessStatus(
-                url, net::SiteForCookies::FromUrl(url),
-                url::Origin::Create(url), net::CookieSettingOverrides()),
+                url, net::SiteForCookies::FromUrl(url), origin,
+                net::CookieSettingOverrides(), *allowing_permissions_policy),
             std::nullopt);
 
-  EXPECT_EQ(
-      settings.GetStorageAccessStatus(
-          url, net::SiteForCookies::FromUrl(url), url::Origin::Create(url),
-          net::CookieSettingOverrides(
-              {net::CookieSettingOverride::kStorageAccessGrantEligible})),
-      std::nullopt);
+  EXPECT_EQ(settings.GetStorageAccessStatus(
+                url, net::SiteForCookies::FromUrl(url), origin,
+                net::CookieSettingOverrides(
+                    {net::CookieSettingOverride::kStorageAccessGrantEligible}),
+                *allowing_permissions_policy),
+            std::nullopt);
 
-  EXPECT_EQ(settings.GetStorageAccessStatus(url, net::SiteForCookies(),
-                                            top_frame_origin,
-                                            net::CookieSettingOverrides()),
+  EXPECT_EQ(settings.GetStorageAccessStatus(
+                url, net::SiteForCookies(), top_frame_origin,
+                net::CookieSettingOverrides(), *allowing_permissions_policy),
             net::cookie_util::StorageAccessStatus::kNone);
 
   EXPECT_EQ(settings.GetStorageAccessStatus(
                 url, net::SiteForCookies(), top_frame_origin,
                 net::CookieSettingOverrides(
-                    {net::CookieSettingOverride::kStorageAccessGrantEligible})),
+                    {net::CookieSettingOverride::kStorageAccessGrantEligible}),
+                *allowing_permissions_policy),
             net::cookie_util::StorageAccessStatus::kNone);
 
   settings.set_content_settings(
       ContentSettingsType::STORAGE_ACCESS,
       {CreateSetting(kURL, kOtherURL, CONTENT_SETTING_ALLOW)});
 
-  EXPECT_EQ(settings.GetStorageAccessStatus(url, net::SiteForCookies(),
-                                            top_frame_origin,
-                                            net::CookieSettingOverrides()),
+  EXPECT_EQ(settings.GetStorageAccessStatus(
+                url, net::SiteForCookies(), top_frame_origin,
+                net::CookieSettingOverrides(), *allowing_permissions_policy),
             net::cookie_util::StorageAccessStatus::kInactive);
+
+  const std::unique_ptr<network::PermissionsPolicy>
+      blocking_permissions_policy =
+          network::PermissionsPolicy::CreateFromParsedPolicy(
+              {{{network::mojom::PermissionsPolicyFeature::kStorageAccessAPI,
+                 /*allowed_origins=*/{},
+                 /*self_if_matches=*/std::nullopt,
+                 /*matches_all_origins=*/false,
+                 /*matches_opaque_src=*/false}}},
+              std::nullopt, origin);
+  EXPECT_EQ(settings.GetStorageAccessStatus(
+                url, net::SiteForCookies(), top_frame_origin,
+                net::CookieSettingOverrides(), *blocking_permissions_policy),
+            net::cookie_util::StorageAccessStatus::kNone);
 
   EXPECT_EQ(settings.GetStorageAccessStatus(
                 url, net::SiteForCookies(), top_frame_origin,
                 net::CookieSettingOverrides(
-                    {net::CookieSettingOverride::kStorageAccessGrantEligible})),
+                    {net::CookieSettingOverride::kStorageAccessGrantEligible}),
+                *allowing_permissions_policy),
             net::cookie_util::StorageAccessStatus::kActive);
 
   EXPECT_EQ(settings.GetStorageAccessStatus(
                 url, net::SiteForCookies(), top_frame_origin,
                 net::CookieSettingOverrides(
                     {net::CookieSettingOverride::
-                         kStorageAccessGrantEligibleViaHeader})),
+                         kStorageAccessGrantEligibleViaHeader}),
+                *allowing_permissions_policy),
             net::cookie_util::StorageAccessStatus::kActive);
+}
+
+// TODO(crbug.com/382291442): Remove test once feature is launched.
+TEST_F(CookieSettingsTest,
+       GetStorageAccessStatus_RespectPermissionsPolicyDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {network::features::kPopulatePermissionsPolicyOnRequest},
+      /*disabled_features=*/{
+          network::features::kStorageAccessHeadersRespectPermissionsPolicy});
+
+  CookieSettings settings;
+  GURL url(kURL);
+  url::Origin top_frame_origin = url::Origin::Create(GURL(kOtherURL));
+  settings.set_block_third_party_cookies(true);
+
+  settings.set_content_settings(
+      ContentSettingsType::STORAGE_ACCESS,
+      {CreateSetting(kURL, kOtherURL, CONTENT_SETTING_ALLOW)});
+
+  const std::unique_ptr<network::PermissionsPolicy>
+      blocking_permissions_policy =
+          network::PermissionsPolicy::CreateFromParsedPolicy(
+              {{{network::mojom::PermissionsPolicyFeature::kStorageAccessAPI,
+                 /*allowed_origins=*/{},
+                 /*self_if_matches=*/std::nullopt,
+                 /*matches_all_origins=*/false,
+                 /*matches_opaque_src=*/false}}},
+              std::nullopt, url::Origin::Create(url));
+  EXPECT_EQ(settings.GetStorageAccessStatus(
+                url, net::SiteForCookies(), top_frame_origin,
+                net::CookieSettingOverrides(), *blocking_permissions_policy),
+            net::cookie_util::StorageAccessStatus::kInactive);
 }
 
 TEST_F(CookieSettingsTest,

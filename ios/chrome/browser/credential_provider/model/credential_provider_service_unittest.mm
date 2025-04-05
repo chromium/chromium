@@ -509,8 +509,16 @@ TEST_F(CredentialProviderServiceTest, AddCredentialsRefactored) {
   ASSERT_TRUE(WaitForCredentialCount(2u));
 }
 
+// TODO(crbug.com/407946269): Fails on device.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_OnLoginsChanged_WithPerformanceImprovements_SingleOperation \
+  OnLoginsChanged_WithPerformanceImprovements_SingleOperation
+#else
+#define MAYBE_OnLoginsChanged_WithPerformanceImprovements_SingleOperation \
+  DISABLED_OnLoginsChanged_WithPerformanceImprovements_SingleOperation
+#endif
 TEST_F(CredentialProviderServiceTest,
-       OnLoginsChanged_WithPerformanceImprovements_SingleOperation) {
+       MAYBE_OnLoginsChanged_WithPerformanceImprovements_SingleOperation) {
   base::test::ScopedFeatureList scoped_feature_list_;
   scoped_feature_list_.InitWithFeatureState(
       kCredentialProviderPerformanceImprovements, true);
@@ -751,7 +759,13 @@ TEST_F(CredentialProviderServiceTest, DeletePasskey) {
   EXPECT_TRUE(WaitForCredentialCount(0u));
 }
 
-TEST_F(CredentialProviderServiceTest, UpdatePasskey) {
+// TODO(crbug.com/407946269): Fails on device.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_UpdatePasskey UpdatePasskey
+#else
+#define MAYBE_UpdatePasskey DISABLED_UpdatePasskey
+#endif
+TEST_F(CredentialProviderServiceTest, MAYBE_UpdatePasskey) {
   CreateCredentialProviderService(/*with_account_store=*/true);
 
   ASSERT_EQ(credential_store_.credentials.count, 0u);

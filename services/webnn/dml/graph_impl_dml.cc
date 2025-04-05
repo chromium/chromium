@@ -5967,6 +5967,7 @@ GraphImplDml::AllocateGraphResources(Adapter* adapter,
 }
 
 GraphImplDml::GraphImplDml(
+    mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
     scoped_refptr<Adapter> adapter,
     ContextImplDml* context,
     std::unique_ptr<CommandRecorder> command_recorder,
@@ -5975,7 +5976,9 @@ GraphImplDml::GraphImplDml(
     ComputeResourceInfo compute_resource_info,
     GraphBufferBindingInfo graph_buffer_binding_info,
     std::unique_ptr<GraphResources> graph_resources)
-    : WebNNGraphImpl(context, std::move(compute_resource_info)),
+    : WebNNGraphImpl(std::move(receiver),
+                     context,
+                     std::move(compute_resource_info)),
       persistent_resource_(std::move(persistent_resource)),
       adapter_(std::move(adapter)),
       context_(context),
@@ -6007,6 +6010,7 @@ HRESULT GraphImplDml::ExecuteAndWaitSyncOnBackgroundThread(
 
 // static
 void GraphImplDml::OnCompilationComplete(
+    mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
     scoped_refptr<Adapter> adapter,
     base::WeakPtr<ContextImplDml> context,
     WebNNContextImpl::CreateGraphImplCallback callback,
@@ -6215,9 +6219,10 @@ void GraphImplDml::OnCompilationComplete(
         base::BindOnce(&GraphImplDml::ExecuteAndWaitSyncOnBackgroundThread,
                        std::move(initialization_command_recorder)),
         base::BindOnce(
-            &GraphImplDml::OnInitializationComplete, std::move(adapter),
-            std::move(context), std::move(persistent_resource),
-            std::move(compiled_operator), std::move(compute_resource_info),
+            &GraphImplDml::OnInitializationComplete, std::move(receiver),
+            std::move(adapter), std::move(context),
+            std::move(persistent_resource), std::move(compiled_operator),
+            std::move(compute_resource_info),
             std::move(graph_buffer_binding_info), std::move(callback)));
     return;
   }
@@ -6234,14 +6239,15 @@ void GraphImplDml::OnCompilationComplete(
   // they're no longer needed, it won't need to be passed to
   // `OnInitializationComplete()`.
   initialization_command_recorder->command_queue()->WaitAsync(base::BindOnce(
-      &GraphImplDml::OnInitializationComplete, std::move(adapter),
-      std::move(context), std::move(persistent_resource),
+      &GraphImplDml::OnInitializationComplete, std::move(receiver),
+      std::move(adapter), std::move(context), std::move(persistent_resource),
       std::move(compiled_operator), std::move(compute_resource_info),
       std::move(graph_buffer_binding_info), std::move(callback)));
 }
 
 // static
 void GraphImplDml::CreateWebNNGraphImpl(
+    mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
     scoped_refptr<Adapter> adapter,
     base::WeakPtr<ContextImplDml> context,
     scoped_refptr<PersistentResource> persistent_resource,
@@ -6307,7 +6313,7 @@ void GraphImplDml::CreateWebNNGraphImpl(
 
   // The receiver bound to GraphImplDml.
   std::move(callback).Run(base::WrapUnique(new GraphImplDml(
-      std::move(adapter), context.get(),
+      std::move(receiver), std::move(adapter), context.get(),
       std::move(command_recorder_for_dispatch), std::move(persistent_resource),
       std::move(compiled_operator), std::move(compute_resource_info),
       std::move(graph_buffer_binding_info), std::move(graph_resources))));
@@ -6315,6 +6321,7 @@ void GraphImplDml::CreateWebNNGraphImpl(
 
 // static
 void GraphImplDml::OnInitializationComplete(
+    mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
     scoped_refptr<Adapter> adapter,
     base::WeakPtr<ContextImplDml> context,
     scoped_refptr<PersistentResource> persistent_resource,
@@ -6340,9 +6347,10 @@ void GraphImplDml::OnInitializationComplete(
   }
 
   CreateWebNNGraphImpl(
-      std::move(adapter), std::move(context), std::move(persistent_resource),
-      std::move(compiled_operator), std::move(compute_resource_info),
-      std::move(graph_buffer_binding_info), std::move(callback));
+      std::move(receiver), std::move(adapter), std::move(context),
+      std::move(persistent_resource), std::move(compiled_operator),
+      std::move(compute_resource_info), std::move(graph_buffer_binding_info),
+      std::move(callback));
 }
 
 // static
@@ -6835,6 +6843,7 @@ base::expected<void, mojom::ErrorPtr> GraphImplDml::CreateAndBuildInternal(
 
 // static
 void GraphImplDml::CreateAndBuild(
+    mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
     scoped_refptr<Adapter> adapter,
     base::WeakPtr<ContextImplDml> context,
     mojom::GraphInfoPtr graph_info,
@@ -6878,12 +6887,12 @@ void GraphImplDml::CreateAndBuild(
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&GraphImplDml::CompileOnBackgroundThread,
                      std::move(graph_builder), flags),
-      base::BindOnce(&GraphImplDml::OnCompilationComplete, std::move(adapter),
-                     std::move(context), std::move(callback),
-                     std::move(constant_id_to_input_index_map),
-                     std::move(graph_buffer_binding_info),
-                     std::move(compute_resource_info),
-                     std::move(constant_operands)));
+      base::BindOnce(
+          &GraphImplDml::OnCompilationComplete, std::move(receiver),
+          std::move(adapter), std::move(context), std::move(callback),
+          std::move(constant_id_to_input_index_map),
+          std::move(graph_buffer_binding_info),
+          std::move(compute_resource_info), std::move(constant_operands)));
 }
 
 void GraphImplDml::HandleDispatchFailure(std::string_view error_message,

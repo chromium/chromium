@@ -11,7 +11,7 @@ namespace blink {
 
 class CSSRayInterpolationType : public CSSInterpolationType {
  public:
-  CSSRayInterpolationType(PropertyHandle property)
+  explicit CSSRayInterpolationType(PropertyHandle property)
       : CSSInterpolationType(property) {
     DCHECK(CssProperty().PropertyID() == CSSPropertyID::kOffsetPath);
   }

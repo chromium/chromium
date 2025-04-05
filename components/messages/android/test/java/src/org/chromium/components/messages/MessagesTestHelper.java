@@ -150,6 +150,14 @@ public class MessagesTestHelper {
         return ((SingleActionMessage) messageStateHandler).getModelForTesting();
     }
 
+    /**
+     * Enable tap protection duration in Test environment, which is disabled by default in Test
+     * environment.
+     */
+    public static void enableTapProtectionDuration(long duration) {
+        MessageBannerMediator.setTapProtectionDurationMsForTesting(duration);
+    }
+
     @NativeMethods
     interface Natives {
         void onMessageEnqueued(long nativeMessagesTestHelper);

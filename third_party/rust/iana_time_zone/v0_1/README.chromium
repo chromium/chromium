@@ -1,7 +1,7 @@
 Name: iana-time-zone
 URL: https://crates.io/crates/iana-time-zone
-Version: 0.1.62
-Revision: 18469d8cc61d2d5fa0597a8dbec2d6e761cc89a0
+Version: 0.1.63
+Revision: 6adcd016a82fc11e6ee6c1a7f8086d2330ea747a
 License: Apache-2.0
 License File: //third_party/rust/chromium_crates_io/vendor/iana-time-zone-v0_1/LICENSE-APACHE
 Shipped: yes

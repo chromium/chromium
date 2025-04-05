@@ -8,6 +8,7 @@ import("//build/config/locales.gni")
 import("//chrome/browser/buildflags.gni")
 import("//chrome/common/features.gni")
 import("//components/compose/features.gni")
+import("//content/browser/devtools/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//pdf/features.gni")
 import("//ui/base/ui_features.gni")
@@ -244,7 +245,7 @@ template("chrome_extra_paks") {
         deps += [ "//chrome/browser/resources/settings_shared:resources" ]
       }
     }
-    if (!is_android || is_desktop_android) {
+    if (enable_devtools_frontend) {
       sources +=
           [ "$root_gen_dir/content/browser/devtools/devtools_resources.pak" ]
       deps += [ "//content/browser/devtools:devtools_resources" ]

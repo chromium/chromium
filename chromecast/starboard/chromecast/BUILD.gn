@@ -9,6 +9,7 @@ if (!remove_starboard_headers) {
   cast_test_group("starboard_adapter_tests") {
     tests = [
       "//chromecast/starboard/chromecast/events:starboard_event_source_test",
+      "//chromecast/starboard/chromecast/starboard_adapter:cast_starboard_api_adapter_test",
     ]
   }
 }

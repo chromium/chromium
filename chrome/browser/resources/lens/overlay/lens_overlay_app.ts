@@ -75,17 +75,28 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
 
   static get properties() {
     return {
+      autocompleteRequestStarted: {
+        type: Boolean,
+        value: false,
+      },
+      forceHideSearchBox: {
+        type: Boolean,
+        value: false,
+      },
       isImageRendered: {
         type: Boolean,
         reflectToAttribute: true,
+        value: false,
       },
       initialFlashAnimationHasEnded: {
         type: Boolean,
         reflectToAttribute: true,
+        value: false,
       },
       sidePanelOpened: {
         type: Boolean,
         reflectToAttribute: true,
+        value: false,
       },
       searchBoxHidden: {
         type: Boolean,
@@ -96,16 +107,26 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
       isClosing: {
         type: Boolean,
         reflectToAttribute: true,
+        value: false,
       },
       moreOptionsMenuVisible: {
         type: Boolean,
         reflectToAttribute: true,
+        value: false,
+      },
+      isPointerDown: {
+        type: Boolean,
+        value: false,
       },
       isTranslateButtonEnabled: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('enableOverlayTranslateButton'),
         readOnly: true,
         reflectToAttribute: true,
+      },
+      isTranslateModeActive: {
+        type: Boolean,
+        value: false,
       },
       shouldFadeOutButtons: {
         type: Boolean,
@@ -123,6 +144,7 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
       isLensOverlayContextualSearchboxVisible: {
         type: Boolean,
         reflectToAttribute: true,
+        value: false,
       },
       theme: {
         type: Object,
@@ -136,6 +158,7 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
       isSearchboxFocused: {
         type: Boolean,
         reflectToAttribute: true,
+        value: false,
       },
       suppressGhostLoader: {
         type: Boolean,
@@ -155,6 +178,10 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
                 suppressGhostLoader)`,
         reflectToAttribute: true,
       },
+      pageContentType: {
+        type: Number,
+        value: PageContentType.kUnknown,
+      },
       placeholderText: {
         type: String,
         computed: `computePlaceholderText(pageContentType)`,
@@ -164,68 +191,74 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
         value: false,
         notify: true,
       },
-      areLanguagePickersOpen: Boolean,
-      toastMessage: String,
+      areLanguagePickersOpen: {
+        type: Boolean,
+        value: false,
+      },
+      toastMessage: {
+        type: String,
+        value: '',
+      },
     };
   }
 
   // Whether the user is currently focused into the searchbox.
-  isSearchboxFocused: boolean = false;
+  declare isSearchboxFocused: boolean;
   // Whether to purposely suppress the ghost loader. Done when escaping from
   // the searchbox when there's text (this doesn't create a zero suggset
   // request).
-  suppressGhostLoader: boolean;
+  declare suppressGhostLoader: boolean;
   // Whether the ghost loader should show its error state.
-  showErrorState: boolean;
+  declare showErrorState: boolean;
   // Whether this is an in flight request to autocomplete.
-  private autocompleteRequestStarted: boolean = false;
+  declare private autocompleteRequestStarted: boolean;
   // Whether the translate button is enabled.
-  private isTranslateButtonEnabled: boolean;
+  declare private isTranslateButtonEnabled: boolean;
   // Whether the image has finished rendering.
-  private isImageRendered: boolean = false;
+  declare private isImageRendered: boolean;
   // Whether the initial flash animation has ended on the selection overlay.
-  private initialFlashAnimationHasEnded: boolean = false;
+  declare private initialFlashAnimationHasEnded: boolean;
   // Whether the side panel has been opened.
-  private sidePanelOpened: boolean = false;
+  declare private sidePanelOpened: boolean;
   // Whether the search box should be hidden.
-  private searchBoxHidden: boolean = false;
+  declare private searchBoxHidden: boolean;
   // Whether the search box should be forced to hide. Used to prevent the search
   // box from showing when we know the side panel will be opened.
-  private forceHideSearchBox: boolean = false;
+  declare private forceHideSearchBox: boolean;
   // Whether the overlay is being shut down.
-  private isClosing: boolean = false;
+  declare private isClosing: boolean;
   // Whether more options menu should be shown.
-  private moreOptionsMenuVisible: boolean = false;
+  declare private moreOptionsMenuVisible: boolean;
   // Whether the translate mode on the lens overlay has been activated. Updated
   // in response to events dispatched from the translate button.
-  private isTranslateModeActive: boolean = false;
+  declare private isTranslateModeActive: boolean;
   // Whether the user is pressing down on the selection overlay. Updated in
   // response to events dispatched from the selection overlay.
-  private isPointerDown: boolean = false;
+  declare private isPointerDown: boolean;
   // Whether the button containers should be faded out.
-  private shouldFadeOutButtons: boolean = false;
-  private darkMode: boolean;
+  declare private shouldFadeOutButtons: boolean;
+  declare private darkMode: boolean;
   // The overlay theme.
-  private theme: OverlayTheme;
+  declare private theme: OverlayTheme;
   // Whether the contextual searchbox feature is enabled.
-  private isLensOverlayContextualSearchboxEnabled: boolean;
+  declare private isLensOverlayContextualSearchboxEnabled: boolean;
   // Whether the contextual searchbox is visible to the user.
-  private isLensOverlayContextualSearchboxVisible: boolean = false;
+  declare private isLensOverlayContextualSearchboxVisible: boolean;
   // Whether the contextual searchbox should be auto-focused when the overlay is
   // first opened.
   private autoFocusSearchbox: boolean =
       loadTimeData.getValue('autoFocusSearchbox');
-  private toastMessage: string = '';
+  declare private toastMessage: string;
   // What the current page content type is.
-  private pageContentType: PageContentType = PageContentType.kUnknown;
+  declare private pageContentType: PageContentType;
   // Whether the ghost loader is enabled via feature flag.
-  private enableGhostLoader: boolean;
+  declare private enableGhostLoader: boolean;
   // Whether to show the ghost loader.
-  private showGhostLoader: boolean;
+  declare private showGhostLoader: boolean;
   // What the placeholder text should be.
-  private placeholderText: string;
+  declare private placeholderText: string;
   // Whether the translate language pickers are open.
-  private areLanguagePickersOpen: boolean = false;
+  declare private areLanguagePickersOpen: boolean;
 
   // The performance tracker used to log performance metrics for the overlay.
   private performanceTracker: PerformanceTracker = new PerformanceTracker();

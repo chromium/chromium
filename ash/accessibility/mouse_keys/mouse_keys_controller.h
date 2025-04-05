@@ -5,6 +5,7 @@
 #ifndef ASH_ACCESSIBILITY_MOUSE_KEYS_MOUSE_KEYS_CONTROLLER_H_
 #define ASH_ACCESSIBILITY_MOUSE_KEYS_MOUSE_KEYS_CONTROLLER_H_
 
+#include <array>
 #include <memory>
 
 #include "ash/ash_export.h"
@@ -144,7 +145,7 @@ class ASH_EXPORT MouseKeysController : public ui::EventHandler {
   double speed_ = 0;
   MouseButton current_mouse_button_ = kLeft;
 
-  bool pressed_keys_[kKeyCount];
+  std::array<bool, kKeyCount> pressed_keys_;
   bool dragging_ = false;
   gfx::Point last_mouse_position_dips_ = gfx::Point(-1, -1);
   int event_flags_ = 0;

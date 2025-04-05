@@ -23,7 +23,8 @@
                          params:
                              (std::optional<autofill::FormActivityParams>)params
                        provider:(id<FormSuggestionProvider>)provider
-                  featureForIPH:(SuggestionFeatureForIPH)featureForIPH {
+                  featureForIPH:(SuggestionFeatureForIPH)featureForIPH
+             suggestionIconType:(SuggestionIconType)suggestionIconType {
   self = [super init];
   if (self) {
     _value = [value copy];
@@ -39,6 +40,7 @@
     _params = params;
     _provider = provider;
     _featureForIPH = featureForIPH;
+    _suggestionIconType = suggestionIconType;
   }
   return self;
 }
@@ -64,7 +66,8 @@
                                    metadata:metadata
                                      params:std::nullopt
                                    provider:nil
-                              featureForIPH:SuggestionFeatureForIPH::kUnknown];
+                              featureForIPH:SuggestionFeatureForIPH::kUnknown
+                         suggestionIconType:SuggestionIconType::kNone];
 }
 
 + (FormSuggestion*)suggestionWithValue:(NSString*)value
@@ -90,7 +93,8 @@
                                    metadata:FormSuggestionMetadata()
                                      params:std::nullopt
                                    provider:nil
-                              featureForIPH:SuggestionFeatureForIPH::kUnknown];
+                              featureForIPH:SuggestionFeatureForIPH::kUnknown
+                         suggestionIconType:SuggestionIconType::kNone];
 }
 
 + (FormSuggestion*)suggestionWithValue:(NSString*)value
@@ -112,7 +116,8 @@
                                    metadata:FormSuggestionMetadata()
                                      params:std::nullopt
                                    provider:nil
-                              featureForIPH:SuggestionFeatureForIPH::kUnknown];
+                              featureForIPH:SuggestionFeatureForIPH::kUnknown
+                         suggestionIconType:SuggestionIconType::kNone];
 }
 
 + (FormSuggestion*)copy:(FormSuggestion*)formSuggestionToCopy
@@ -133,7 +138,8 @@
                          metadata:formSuggestionToCopy.metadata
                            params:params
                          provider:provider
-                    featureForIPH:formSuggestionToCopy.featureForIPH];
+                    featureForIPH:formSuggestionToCopy.featureForIPH
+               suggestionIconType:formSuggestionToCopy.suggestionIconType];
 }
 
 @end

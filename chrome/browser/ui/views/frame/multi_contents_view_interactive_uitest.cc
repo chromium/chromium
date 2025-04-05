@@ -53,7 +53,7 @@ class MultiContentsViewUiTest : public InteractiveBrowserTest {
         Do([&]() {
           content::WebContents* inactive_contents =
               tab_strip_model()->GetWebContentsAt(1);
-          multi_contents_view()->SetWebContents(inactive_contents, false);
+          multi_contents_view()->SetWebContentsAtIndex(inactive_contents, 1);
         }),
         PollView(kResizeLoadObserver,
                  MultiContentsResizeArea::kMultiContentsResizeAreaElementId,

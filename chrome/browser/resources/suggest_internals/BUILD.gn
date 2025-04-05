@@ -7,8 +7,10 @@ import("//ui/webui/resources/tools/build_webui.gni")
 build_webui("build") {
   grd_prefix = "suggest_internals"
   static_files = [ "suggest_internals.html" ]
-  web_component_files = [
+  non_web_component_files = [
+    "app.html.ts",
     "app.ts",
+    "request.html.ts",
     "request.ts",
   ]
   css_files = [
@@ -26,7 +28,6 @@ build_webui("build") {
     "//components/omnibox/browser:mojo_bindings_ts__generator",
   ]
 
-  ts_tsconfig_base = "//tools/typescript/tsconfig_base_lit_389737066.json"
   ts_deps = [
     "//third_party/lit/v3_0:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",

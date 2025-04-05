@@ -6,6 +6,7 @@
 #define EXTENSIONS_BROWSER_EXTENSION_REGISTRAR_H_
 
 #include <memory>
+#include <set>
 
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
@@ -14,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/sync/model/string_ordinal.h"
 #include "extensions/browser/blocklist_state.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
@@ -66,6 +68,9 @@ class ExtensionRegistrar : public KeyedService, public ProcessManagerObserver {
     virtual void PreAddExtension(const Extension* extension,
                                  const Extension* old_extension) = 0;
 
+    // Handles extension install tasks before AddExtension.
+    virtual void OnAddNewOrUpdatedExtension(const Extension* extension) = 0;
+
     // Handles updating the browser context when an extension is activated
     // (becomes enabled).
     virtual void PostActivateExtension(
@@ -108,20 +113,17 @@ class ExtensionRegistrar : public KeyedService, public ProcessManagerObserver {
     // extensions ready to be installed.
     virtual void FinishDelayedInstallationsIfAny() = 0;
 
-    // Returns true if |extension| can be added.
-    virtual bool CanAddExtension(const Extension* extension) = 0;
-
     // Returns true if the extension is allowed to be enabled or disabled,
     // respectively.
     virtual bool CanEnableExtension(const Extension* extension) = 0;
     virtual bool CanDisableExtension(const Extension* extension) = 0;
 
-    // Returns true if the extension should be blocked.
-    virtual bool ShouldBlockExtension(const Extension* extension) = 0;
-
     // Updates the `extension`s granted permissions lists to include all
     // permissions in the `extensions`s manifest.
     virtual void GrantActivePermissions(const Extension* extension) = 0;
+
+    // Checks if there are any new external extensions to notify the user about.
+    virtual void UpdateExternalExtensionAlert() = 0;
   };
 
   explicit ExtensionRegistrar(content::BrowserContext* browser_context);
@@ -152,6 +154,18 @@ class ExtensionRegistrar : public KeyedService, public ProcessManagerObserver {
   // the enabled, disabled, blocklisted or blocked set. If the extension is
   // added as enabled, it will be activated.
   void AddExtension(scoped_refptr<const Extension> extension);
+
+  // Updates preferences for a new or updated extension; notifies observers that
+  // the extension is installed, e.g., to update event handlers on background
+  // pages; and performs other extension install tasks before calling
+  // AddExtension.
+  // |install_flags| is a bitmask of InstallFlags.
+  void AddNewOrUpdatedExtension(const Extension* extension,
+                                const base::flat_set<int>& disable_reasons,
+                                int install_flags,
+                                const syncer::StringOrdinal& page_ordinal,
+                                const std::string& install_parameter,
+                                base::Value::Dict ruleset_install_prefs);
 
   // Removes |extension| from the extension system by deactivating it if it is
   // enabled and removing references to it from the ExtensionRegistry's
@@ -201,6 +215,11 @@ class ExtensionRegistrar : public KeyedService, public ProcessManagerObserver {
   // Attempts to enable all disabled extensions which the only disabled reason
   // is reloading.
   void EnabledReloadableExtensions();
+
+  // Check if we have preferences for the component extension and, if not or if
+  // the stored version differs, install the extension (without requirements
+  // checking) before calling AddExtension.
+  void AddComponentExtension(const Extension* extension);
 
   // Removes the specified component extension.
   void RemoveComponentExtension(const std::string& extension_id);
@@ -312,11 +331,19 @@ class ExtensionRegistrar : public KeyedService, public ProcessManagerObserver {
   // extension.
   void GrantPermissionsAndEnableExtension(const Extension& extension);
 
+  // Adds to the set of allowlisted enabled extensions loaded from the
+  // --disable-extensions-except command line flag.
+  void AddDisableFlagExemptedExtension(const ExtensionId& extension_id);
+
   // Simple accessors.
   bool extensions_enabled() const { return extensions_enabled_; }
   const base::FilePath& install_directory() const { return install_directory_; }
   const base::FilePath& unpacked_install_directory() const {
     return unpacked_install_directory_;
+  }
+
+  void set_extensions_enabled_for_test(bool value) {
+    extensions_enabled_ = value;
   }
 
  private:
@@ -351,6 +378,12 @@ class ExtensionRegistrar : public KeyedService, public ProcessManagerObserver {
   // ProcessManagerObserver overrides
   void OnStartedTrackingServiceWorkerInstance(
       const WorkerId& worker_id) override;
+
+  // Returns true if `extension` can be added.
+  bool CanAddExtension(const Extension* extension) const;
+
+  // Returns true if `extension` should be blocked.
+  bool ShouldBlockExtension(const Extension* extension) const;
 
   const raw_ptr<content::BrowserContext> browser_context_;
 
@@ -395,6 +428,13 @@ class ExtensionRegistrar : public KeyedService, public ProcessManagerObserver {
   // Store the paths of extensions that failed to reload. We use this to retry
   // reload.
   std::set<base::FilePath> failed_to_reload_unpacked_extensions_;
+
+  // Set of allowlisted enabled extensions loaded from the
+  // --disable-extensions-except command line flag.
+  std::set<ExtensionId> disable_flag_exempted_extensions_;
+
+  // Set to true if extensions are all to be blocked.
+  bool block_extensions_ = false;
 
   base::ScopedObservation<ProcessManager, ProcessManagerObserver>
       process_manager_observation_{this};

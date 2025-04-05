@@ -67,22 +67,4 @@ void StartupHelper::HandleUnsavedLocalTabGroups() {
   }
 }
 
-void StartupHelper::MapTabIdsForGroup(const LocalTabGroupID& local_tab_group_id,
-                                      const SavedTabGroup& saved_tab_group) {
-  std::vector<LocalTabID> local_tab_ids =
-      platform_delegate_->GetLocalTabIdsForTabGroup(local_tab_group_id);
-  // Since we haven't run UpdateTabGroup yet, the number of tabs might be
-  // different between local and sync versions of the tab group.
-  // Regardless, update the in-memory tab ID mappings left to right.
-  // The mismatch in number of tabs will be handled in the subsequent call to
-  // UpdateLocalTabGroup.
-  for (size_t i = 0;
-       i < saved_tab_group.saved_tabs().size() && i < local_tab_ids.size();
-       ++i) {
-    const auto& saved_tab = saved_tab_group.saved_tabs()[i];
-    service_->UpdateLocalTabId(local_tab_group_id, saved_tab.saved_tab_guid(),
-                               local_tab_ids[i]);
-  }
-}
-
 }  // namespace tab_groups

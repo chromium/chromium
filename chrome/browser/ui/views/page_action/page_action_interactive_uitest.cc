@@ -39,11 +39,71 @@ bool IsAtMinimumSize(PageActionView* page_action) {
   return page_action->size() == page_action->GetMinimumSize();
 }
 
+bool IsIconCentered(PageActionView* page_action) {
+  const auto* const image_container = page_action->GetImageContainerView();
+  return image_container->x() ==
+         page_action->width() - image_container->bounds().right();
+}
+
 void EnsurePageActionEnabled(actions::ActionId action_id) {
   auto* action = actions::ActionManager::Get().FindAction(action_id);
   CHECK(action);
   action->SetEnabled(true);
   action->SetVisible(true);
+}
+
+MATCHER(IsChipExpanded, "Check if the chip is expanded") {
+  if (arg == nullptr) {
+    *result_listener << "Page action is null";
+    return false;
+  }
+  if (!IsLabelVisible(arg)) {
+    *result_listener << "Label is not visible";
+    return false;
+  }
+  if (IsAtMinimumSize(arg)) {
+    *result_listener << "Chip is at minimum size, Size: "
+                     << arg->size().ToString();
+    return false;
+  }
+  if (arg->is_animating_label()) {
+    *result_listener << "Page action is animating";
+    return false;
+  }
+  if (IsIconCentered(arg)) {
+    *result_listener << "Chip is centered, Insets: "
+                     << arg->GetInsets().ToString();
+    return false;
+  }
+
+  return true;
+}
+
+MATCHER(IsChipCollapsed, "Check if the chip is collapsed") {
+  if (arg == nullptr) {
+    *result_listener << "Page action is null";
+    return false;
+  }
+  if (IsLabelVisible(arg)) {
+    *result_listener << "Label is visible";
+    return false;
+  }
+  if (!IsAtMinimumSize(arg)) {
+    *result_listener << "Chip is not at minimum size, Size: "
+                     << arg->size().ToString();
+    return false;
+  }
+  if (arg->is_animating_label()) {
+    *result_listener << "Page action is animating";
+    return false;
+  }
+  if (!IsIconCentered(arg)) {
+    *result_listener << "Chip is not centered, Insets: "
+                     << arg->GetInsets().ToString();
+    return false;
+  }
+
+  return true;
 }
 
 class PageActionUiTestBase {
@@ -189,16 +249,14 @@ IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
   ShowTestSuggestionChip();
   FastForwardAnimation(view);
 
-  EXPECT_TRUE(IsLabelVisible(view));
-  EXPECT_FALSE(IsAtMinimumSize(view));
+  EXPECT_THAT(view, IsChipExpanded());
 
   AdjustAvailableSpace(kReducedSpaceTextLength);
 
   ShowTestSuggestionChip();
   FastForwardAnimation(view);
 
-  EXPECT_FALSE(IsLabelVisible(view));
-  EXPECT_TRUE(IsAtMinimumSize(view));
+  EXPECT_THAT(view, IsChipCollapsed());
 }
 
 // Tests that increasing available space from reduced to full restores the
@@ -212,15 +270,14 @@ IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
   ShowTestSuggestionChip();
   FastForwardAnimation(view);
 
-  EXPECT_FALSE(IsLabelVisible(view));
+  EXPECT_THAT(view, IsChipCollapsed());
 
   AdjustAvailableSpace(kFullSpaceTextLength);
 
   ShowTestSuggestionChip();
   FastForwardAnimation(view);
 
-  EXPECT_TRUE(IsLabelVisible(view));
-  EXPECT_FALSE(IsAtMinimumSize(view));
+  EXPECT_THAT(view, IsChipExpanded());
 }
 
 // Tests that transitioning from full available space to reduced and then back
@@ -234,24 +291,21 @@ IN_PROC_BROWSER_TEST_F(
   ShowTestSuggestionChip();
   FastForwardAnimation(view);
 
-  EXPECT_TRUE(IsLabelVisible(view));
-  EXPECT_FALSE(IsAtMinimumSize(view));
+  EXPECT_THAT(view, IsChipExpanded());
 
   AdjustAvailableSpace(kReducedSpaceTextLength);
 
   ShowTestSuggestionChip();
   FastForwardAnimation(view);
 
-  EXPECT_FALSE(IsLabelVisible(view));
-  EXPECT_TRUE(IsAtMinimumSize(view));
+  EXPECT_THAT(view, IsChipCollapsed());
 
   AdjustAvailableSpace(kFullSpaceTextLength);
 
   ShowTestSuggestionChip();
   FastForwardAnimation(view);
 
-  EXPECT_TRUE(IsLabelVisible(view));
-  EXPECT_FALSE(IsAtMinimumSize(view));
+  EXPECT_THAT(view, IsChipExpanded());
 }
 
 // Tests that starting with reduced space, moving to full space, and then
@@ -273,16 +327,14 @@ IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
   ShowTestSuggestionChip();
   FastForwardAnimation(view);
 
-  EXPECT_TRUE(IsLabelVisible(view));
-  EXPECT_FALSE(IsAtMinimumSize(view));
+  EXPECT_THAT(view, IsChipExpanded());
 
   AdjustAvailableSpace(kReducedSpaceTextLength);
 
   ShowTestSuggestionChip();
   FastForwardAnimation(view);
 
-  EXPECT_FALSE(IsLabelVisible(view));
-  EXPECT_TRUE(IsAtMinimumSize(view));
+  EXPECT_THAT(view, IsChipCollapsed());
 }
 
 // Tests that calling ShowPageAction on a page action results in an icon-only
@@ -294,8 +346,7 @@ IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
 
   PageActionView* view = GetTestPageActionView();
 
-  EXPECT_FALSE(IsLabelVisible(view));
-  EXPECT_TRUE(IsAtMinimumSize(view));
+  EXPECT_THAT(view, IsChipCollapsed());
 }
 
 // Tests that once a page action is shown as an icon-only view, it remains
@@ -307,13 +358,11 @@ IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
 
   PageActionView* view = GetTestPageActionView();
 
-  EXPECT_FALSE(IsLabelVisible(view));
-  EXPECT_TRUE(IsAtMinimumSize(view));
+  EXPECT_THAT(view, IsChipCollapsed());
 
   AdjustAvailableSpace(kReducedSpaceTextLength);
 
-  EXPECT_FALSE(IsLabelVisible(view));
-  EXPECT_TRUE(IsAtMinimumSize(view));
+  EXPECT_THAT(view, IsChipCollapsed());
 
   AdjustAvailableSpace(kFullSpaceTextLength);
 

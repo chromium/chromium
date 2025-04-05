@@ -73,6 +73,9 @@ interface RenderInputRouterDelegate {
   ForceEnableZoomStateChanged(
     bool force_enable_zoom,
     array<viz.mojom.FrameSinkId> frame_sink_ids);
+
+  // Stops any ongoing flings for |frame_sink_id| on VizCompositorThread.
+  StopFlingingOnViz(viz.mojom.FrameSinkId frame_sink_id);
 };
 
 // Implemented by the browser, this interface defines methods that will be
@@ -94,4 +97,10 @@ interface RenderInputRouterDelegateClient {
   // Notifies the browser of an invalid input event source being seen on
   // the VizCompositor thread when handling input.
   OnInvalidInputEventSource(viz.mojom.FrameSinkId id);
+
+  // Sends |DidOverscrollParams| to the browser to allow overscroll effect to
+  // request input back if it ends up consuming the input sequence.
+  StateOnOverscrollTransfer(
+    viz.mojom.FrameSinkId frame_sink_id,
+    blink.mojom.DidOverscrollParams? overscroll);
 };

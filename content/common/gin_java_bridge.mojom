@@ -25,7 +25,7 @@ enum GinJavaBridgeError {
 interface GinJavaBridge {
   // Sent from browser to renderer to add a Java object with the given name.
   // Object IDs are generated on the browser side.
-  AddNamedObject(string name, int32 object_id);
+  AddNamedObject(string name, int32 object_id, string matcher);
 
   // Sent from browser to renderer to remove a Java object with the given name.
   RemoveNamedObject(string name);

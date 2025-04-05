@@ -64,6 +64,7 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder",
+            "android_with_static_analysis",
             "release_try_builder",
             "remoteexec",
             "strip_debug_info",

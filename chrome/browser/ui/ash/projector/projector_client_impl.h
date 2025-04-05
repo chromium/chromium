@@ -6,11 +6,13 @@
 #define CHROME_BROWSER_UI_ASH_PROJECTOR_PROJECTOR_CLIENT_IMPL_H_
 
 #include <memory>
+#include <string>
 
 #include "ash/public/cpp/projector/projector_client.h"
 #include "ash/public/cpp/projector/projector_controller.h"
 #include "ash/public/cpp/projector/speech_recognition_availability.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
@@ -21,6 +23,7 @@
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
 
+class ApplicationLocaleStorage;
 class SpeechRecognitionRecognizerClientImpl;
 
 // The client implementation for the ProjectorController in ash/. This client is
@@ -30,9 +33,9 @@ class ProjectorClientImpl : public ash::ProjectorClient,
                             drive::DriveIntegrationService::Observer,
                             session_manager::SessionManagerObserver {
  public:
-  explicit ProjectorClientImpl(ash::ProjectorController* controller);
-
-  ProjectorClientImpl();
+  // `application_locale_storage` must not be null, and must outlive `this`.
+  ProjectorClientImpl(ApplicationLocaleStorage* application_locale_storage,
+                      ash::ProjectorController* controller);
   ProjectorClientImpl(const ProjectorClientImpl&) = delete;
   ProjectorClientImpl& operator=(const ProjectorClientImpl&) = delete;
   ~ProjectorClientImpl() override;
@@ -89,6 +92,8 @@ class ProjectorClientImpl : public ash::ProjectorClient,
 
   // Called when app registry becomes ready.
   void SetAppIsDisabled(bool disabled);
+
+  raw_ref<ApplicationLocaleStorage> application_locale_storage_;
 
   const raw_ptr<ash::ProjectorController> controller_;
   SpeechRecognizerStatus recognizer_status_ =

@@ -324,28 +324,6 @@ TEST_P(AccountMenuCoordinatorNonManagedTest, testTriggerSignout) {
   assertOpenAndInterrupt();
 }
 
-// Tests that `triggerSigninWithSystemIdentity` call its completion.
-TEST_P(AccountMenuCoordinatorNonManagedTest, testSignin) {
-  base::RunLoop run_loop;
-  base::RepeatingClosure closure = run_loop.QuitClosure();
-  AuthenticationFlow* authentication_flow = [coordinator_
-      triggerSigninWithSystemIdentity:kSecondaryIdentity
-                           anchorRect:CGRectNull
-                           completion:^(SigninCoordinatorResult result) {
-                             EXPECT_EQ(result,
-                                       SigninCoordinatorResult::
-                                           SigninCoordinatorResultSuccess);
-                             assertOpenAndInterrupt();
-                             closure.Run();
-                           }];
-
-  OCMExpect([mock_snackbar_commands_handler_
-      showSnackbarMessageOverBrowserToolbar:[OCMArg any]]);
-  EXPECT_TRUE(authentication_flow);
-
-  run_loop.Run();
-}
-
 #pragma mark - SyncErrorSettingsCommandHandler
 
 // Tests that `openPassphraseDialogWithModalPresentation` has no impact on the

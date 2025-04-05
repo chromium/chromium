@@ -117,6 +117,8 @@ void DumpWithoutCrashingOnError(wgpu::ErrorType error_type,
   }
 }
 
+// NOTE: Update the toggles in GpuInfoCollector whenever a toggle is disabled
+// here.
 std::vector<const char*> GetDisabledToggles(
     const GpuPreferences& gpu_preferences) {
   std::vector<const char*> disabled_toggles;
@@ -126,6 +128,8 @@ std::vector<const char*> GetDisabledToggles(
   return disabled_toggles;
 }
 
+// NOTE: Update the toggles in GpuInfoCollector whenever a toggle is enabled
+// here.
 std::vector<const char*> GetEnabledToggles(
     wgpu::BackendType backend_type,
     bool force_fallback_adapter,
@@ -164,6 +168,7 @@ std::vector<const char*> GetEnabledToggles(
     // Samsung devices are failing validation checks that texture allocation
     // size is bigger than AHB size when they should. See
     // https://crbug.com/377935752 for details.
+    // TODO(crbug.com/407497928): Enable this toggle over GpuInfoCollector.
     if (std::string_view(build_info->brand()) == "samsung") {
       enabled_toggles.push_back(
           "ignore_imported_ahardwarebuffer_vulkan_image_size");
@@ -177,6 +182,7 @@ std::vector<const char*> GetEnabledToggles(
   // Skip expensive swiftshader vkCmdDraw* for tests.
   // TODO(penghuang): rename kDisableGLDrawingForTests to
   // kDisableGpuDrawingForTests
+  // TODO(crbug.com/407497928): Enable this toggle over GpuInfoCollector.
   auto* command_line = base::CommandLine::ForCurrentProcess();
   if (backend_type == wgpu::BackendType::Vulkan && force_fallback_adapter &&
       command_line->HasSwitch(switches::kDisableGLDrawingForTests)) {

@@ -216,6 +216,17 @@
   }
 }
 
+- (void)instantSigninMediatorWillSwitchProfile:
+    (InstantSigninMediator*)mediator {
+  CHECK_EQ(mediator, _mediator);
+  [_mediator disconnect];
+  _mediator.delegate = nil;
+  _mediator = nil;
+  [self removeActivityOverlay];
+  [self runCompletionWithSigninResult:SigninCoordinatorProfileSwitch
+                   completionIdentity:_identity];
+}
+
 #pragma mark - Private
 
 // Starts the sign-in flow.

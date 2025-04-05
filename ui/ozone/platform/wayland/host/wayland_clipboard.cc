@@ -147,18 +147,20 @@ class ClipboardImpl final : public Clipboard, public DataSource::Delegate {
     std::vector<std::string> mime_types;
     for (const auto& data : offered_data_) {
       mime_types.push_back(data.first);
-      if (data.first == ui::kMimeTypeText)
-        mime_types.push_back(ui::kMimeTypeTextUtf8);
+      if (data.first == ui::kMimeTypePlainText) {
+        mime_types.push_back(ui::kMimeTypeUtf8PlainText);
+      }
     }
     return mime_types;
   }
 
   std::string GetMimeTypeForRequest(const std::string& mime_type) {
-    if (mime_type != ui::kMimeTypeText)
+    if (mime_type != ui::kMimeTypePlainText) {
       return mime_type;
+    }
     // Prioritize unicode for text data.
     for (const auto& t : GetDevice()->GetAvailableMimeTypes()) {
-      if (t == ui::kMimeTypeTextUtf8 || t == ui::kMimeTypeLinuxString ||
+      if (t == ui::kMimeTypeUtf8PlainText || t == ui::kMimeTypeLinuxString ||
           t == ui::kMimeTypeLinuxUtf8String || t == ui::kMimeTypeLinuxText) {
         return t;
       }
@@ -187,8 +189,9 @@ class ClipboardImpl final : public Clipboard, public DataSource::Delegate {
                         std::string* contents) override {
     DCHECK(contents);
     auto it = offered_data_.find(mime_type);
-    if (it == offered_data_.end() && mime_type == ui::kMimeTypeTextUtf8)
-      it = offered_data_.find(ui::kMimeTypeText);
+    if (it == offered_data_.end() && mime_type == ui::kMimeTypeUtf8PlainText) {
+      it = offered_data_.find(ui::kMimeTypePlainText);
+    }
     if (it != offered_data_.end()) {
       *contents = base::as_string_view(*it->second);
     }

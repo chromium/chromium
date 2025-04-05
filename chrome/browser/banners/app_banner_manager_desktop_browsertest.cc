@@ -315,17 +315,25 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest,
   options.user_display_mode = web_app::mojom::UserDisplayMode::kBrowser;
   web_app::ExternallyManagedAppManagerInstall(profile, options);
 
-  // Uninstall web app by policy.
+  // Uninstall web app by policy by synchronizing with an empty
+  // `ExternalInstallOptions` vector.
   {
     base::RunLoop run_loop;
     web_app::WebAppProvider::GetForTest(profile)
         ->externally_managed_app_manager()
-        .UninstallApps(
-            {GetBannerURL()}, web_app::ExternalInstallSource::kExternalPolicy,
+        .SynchronizeInstalledApps(
+            {}, web_app::ExternalInstallSource::kExternalPolicy,
             base::BindLambdaForTesting(
-                [&run_loop](const GURL& app_url,
-                            webapps::UninstallResultCode code) {
-                  EXPECT_EQ(code, webapps::UninstallResultCode::kAppRemoved);
+                [&](std::map<GURL /*install_url*/,
+                             web_app::ExternallyManagedAppManagerInstallResult>
+                        install_results,
+                    std::map<GURL /*install_url*/, webapps::UninstallResultCode>
+                        uninstall_results) {
+                  EXPECT_TRUE(install_results.empty());
+                  ASSERT_TRUE(
+                      base::Contains(uninstall_results, GetBannerURL()));
+                  EXPECT_EQ(webapps::UninstallResultCode::kAppRemoved,
+                            uninstall_results[GetBannerURL()]);
                   run_loop.Quit();
                 }));
     run_loop.Run();

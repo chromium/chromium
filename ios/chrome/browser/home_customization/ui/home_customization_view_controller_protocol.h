@@ -17,7 +17,7 @@
 
 // The diffable data source for the collection view.
 @property(nonatomic, strong)
-    UICollectionViewDiffableDataSource<CustomizationSection*, NSNumber*>*
+    UICollectionViewDiffableDataSource<CustomizationSection*, NSString*>*
         diffableDataSource;
 
 @property(nonatomic, assign) CustomizationMenuPage page;

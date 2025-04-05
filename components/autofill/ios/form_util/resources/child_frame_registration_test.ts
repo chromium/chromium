@@ -7,7 +7,7 @@
  * Requires functions in child_frame_registration_lib.ts.
  */
 
-import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 
 /**
  * Calls registerChildFrame on each frame in the document. This is a convenience
@@ -17,13 +17,13 @@ import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 function registerAllChildFrames(): string[] {
   const ids: string[] = [];
   for (const frame of document.getElementsByTagName('iframe')) {
-    ids.push(gCrWeb.remoteFrameRegistration.registerChildFrame(
+    ids.push(gCrWebLegacy.remoteFrameRegistration.registerChildFrame(
         (frame as HTMLIFrameElement)));
   }
   return ids;
 }
 
 window.addEventListener(
-    'message', gCrWeb.remoteFrameRegistration.processChildFrameMessage);
+    'message', gCrWebLegacy.remoteFrameRegistration.processChildFrameMessage);
 
-gCrWeb.remoteFrameRegistration.registerAllChildFrames = registerAllChildFrames;
+gCrWebLegacy.remoteFrameRegistration.registerAllChildFrames = registerAllChildFrames;

@@ -3976,4 +3976,8 @@ void CaptureModeSession::ClearPseudoFocus() {
   focus_cycler_->ClearFocus();
 }
 
+void CaptureModeSession::SetA11yOverrideWindowToSearchResultsPanel() {
+  focus_cycler_->SetA11yOverrideWindowToSearchResultsPanel();
+}
+
 }  // namespace ash

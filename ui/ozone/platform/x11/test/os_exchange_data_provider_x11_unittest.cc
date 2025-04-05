@@ -34,7 +34,7 @@ class OSExchangeDataProviderX11Test : public testing::Test {
     scoped_refptr<base::RefCountedMemory> mem(
         base::MakeRefCounted<base::RefCountedString>(list_contents));
 
-    provider.format_map_.Insert(x11::GetAtom(kMimeTypeURIList), mem);
+    provider.format_map_.Insert(x11::GetAtom(kMimeTypeUriList), mem);
   }
 
  protected:

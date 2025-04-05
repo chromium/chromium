@@ -48,6 +48,7 @@ mojom("mojom") {
     "compositing/vertical_scroll_direction.mojom",
     "compositing/video_detector_observer.mojom",
     "compositing/view_transition_element_resource_id.mojom",
+    "compositing/view_transition_request.mojom",
     "gpu.mojom",
     "hit_test/aggregated_hit_test_region.mojom",
     "hit_test/hit_test_region_list.mojom",

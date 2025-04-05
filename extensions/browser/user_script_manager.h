@@ -62,13 +62,14 @@ class UserScriptManager : public ExtensionRegistryObserver {
 
   // Returns whether the extension has permission to run user scripts or can
   // request permission to do so.
-  static bool CanExtensionUseUserScriptsAPI(const Extension& extension);
+  static bool IsUserScriptsAPIPermissionAvailable(const Extension& extension);
 
-  // Get and set extension preference for userScripts API being allowed. Note:
-  // use AreUserScriptsAllowed() (or GetCurrentUserScriptAllowedState() if this
-  // class can't be accessed) to check if the extension is actually allowed
-  // to use the API.
-  bool IsUserScriptPrefEnabled(const ExtensionId& extension_id) const;
+  bool IsUserScriptPrefEnabledForTesting(
+      const ExtensionId& extension_id) const {
+    return IsUserScriptPrefEnabled(extension_id);
+  }
+
+  // Set extension preference for userScripts API being allowed.
   void SetUserScriptPrefEnabled(const ExtensionId& extension_id, bool enabled);
 
  private:
@@ -99,6 +100,9 @@ class UserScriptManager : public ExtensionRegistryObserver {
   // Creates a EmbedderUserScriptLoader object.
   EmbedderUserScriptLoader* CreateEmbedderUserScriptLoader(
       const mojom::HostID& host_id);
+
+  // Get extension preference for userScripts API being allowed.
+  bool IsUserScriptPrefEnabled(const ExtensionId& extension_id) const;
 
   // A map of ExtensionUserScriptLoader for each extension host, with one loader
   // per extension. Currently, each loader is lazily initialized and contains

@@ -112,6 +112,7 @@
 <translation id="1306549533752902673">सुझाए गए ऐप्लिकेशन</translation>
 <translation id="1310396869741602366">टोन बदलें</translation>
 <translation id="1312604459020188865">सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" /></translation>
+<translation id="1314113845887519729">हैंडल, चुने गए हिस्से के सबसे ऊपरी कोने में मौजूद है. हैंडल को मूव करने के लिए, ऐरो बटन इस्तेमाल करें</translation>
 <translation id="1316069254387866896">शेल्फ़ हमेशा दिखाएं</translation>
 <translation id="132346741904777634">कैमरा इनपुट की झलक, अब ऊपर बाएं कोने में दिखेगी. ऐसा, सिस्टम पर दूसरे ऐप्लिकेशन के साथ ओवरलैप होने की वजह से किया गया है.</translation>
 <translation id="132415371743256095"><ph name="DESK_NAME" /> और विंडो बंद करें</translation>
@@ -186,6 +187,7 @@
 <translation id="1557622599341396706">डेस्क का नाम दिखाएं</translation>
 <translation id="1569384531973824928">ऐसे सभी ऐप्लिकेशन और वेबसाइटों को ऐक्सेस मिलेगा जिनके पास कैमरा और माइक्रोफ़ोन इस्तेमाल करने की अनुमति है. आपको वेब पेज को रीफ़्रेश या ऐप्लिकेशन को रीस्टार्ट करना पड़ सकता है.</translation>
 <translation id="1571697193564730395">'परेशान न करें' सुविधा को टॉगल करें. <ph name="STATE_TEXT" /></translation>
+<translation id="1574691582236909946">हैंडल, चुने गए हिस्से के बाएं कोने में मौजूद है. हैंडल को मूव करने के लिए, ऐरो बटन इस्तेमाल करें</translation>
 <translation id="1576623706766186887">ज़ूम करने की सुविधा चालू होने पर ज़ूम आउट करने के लिए</translation>
 <translation id="1582946770779745370">गेम डैशबोर्ड उपलब्ध है. इसे किसी भी समय खोलने के लिए, <ph name="LAUNCHER_KEY_NAME" /> + Shift + Escape दबाएं, फिर <ph name="LAUNCHER_KEY_NAME" /> + G दबाएं</translation>
 <translation id="1586324912145647027">पहली डेस्क से आठवीं डेस्क पर जाएं</translation>
@@ -220,6 +222,7 @@
 <translation id="1696984622403682083">सेटिंग में जाकर, इसे किसी भी समय बंद किया जा सकता है. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> टाइमर · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 पता: <ph name="ADDRESS" /></translation>
+<translation id="1700782710852683371">फ़िलहाल, दिए गए ब्यौरे के हिसाब से इमेज नहीं बनाई जा सकतीं. इसलिए, ब्यौरे में बदलाव करें. ध्यान रखें कि लोगों की इमेज और नुकसान पहुंचाने वाला या अश्लील कॉन्टेंट नहीं बनाया जा सकता.</translation>
 <translation id="1703117532528082099">चालू विंडो को बाईं तरफ़ डॉक किया गया है.</translation>
 <translation id="1708345662127501511">डेस्क: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">नेटवर्क सेटिंग</translation>
@@ -608,6 +611,7 @@
 <translation id="304097922505898963">Keyboard Shortcuts ऐप्लिकेशन खोलें</translation>
 <translation id="304417730895741346">शेल्फ़ में, आपके पिन किए गए और खुले हुए ऐप्लिकेशन मौजूद हैं. किसी ऐप्लिकेशन को शेल्फ़ में पिन करने के लिए, ऐप्लिकेशन पर राइट क्लिक करें या अपने टचपैड पर दो उंगलियों से टैप करें.</translation>
 <translation id="3045488863354895414">गुड आफ़्टरनून,</translation>
+<translation id="3045670165536837541">हैंडल, चुने गए हिस्से के सबसे ऊपर दाईं ओर मौजूद है. हैंडल को मूव करने के लिए, ऐरो बटन इस्तेमाल करें</translation>
 <translation id="3047761520276763270">यह बोलकर देखें:</translation>
 <translation id="3053407068093039599">कैमरा इस्तेमाल करने की सुविधा चालू/बंद करें</translation>
 <translation id="3055162170959710888">आपने आज इस डिवाइस का <ph name="USED_TIME" /> तक इस्तेमाल कर लिया है</translation>
@@ -1764,6 +1768,7 @@
 <translation id="6696025732084565524">आपके अलग किए जाने लायक कीबोर्ड में एक महत्वपूर्ण अपडेट ज़रूरी है</translation>
 <translation id="6697913454192220372">नया डेस्क जोड़ें</translation>
 <translation id="6700713906295497288">IME मेन्यू बटन</translation>
+<translation id="6704073473590541209">हैंडल, चुने गए हिस्से के दाएं कोने में मौजूद है. हैंडल को मूव करने के लिए, ऐरो बटन इस्तेमाल करें</translation>
 <translation id="6706742084323792866">कीबोर्ड पिन करें</translation>
 <translation id="6710213216561001401">पिछला</translation>
 <translation id="6723839937902243910">पावर</translation>
@@ -1787,6 +1792,7 @@
 <translation id="6781002679438061620">डेस्क 9</translation>
 <translation id="6782182743534150858">डेस्क 13</translation>
 <translation id="6782919488259222803">मौजूदा पेज में खोजें</translation>
+<translation id="6783348167101855071">हैंडल, चुने गए हिस्से के सबसे नीचे दाईं ओर मौजूद है. हैंडल को मूव करने के लिए, ऐरो बटन इस्तेमाल करें</translation>
 <translation id="6786750046913594791">फ़ोल्डर बंद करें</translation>
 <translation id="6790428901817661496">चलाएं</translation>
 <translation id="6792262051831399889">उपलब्ध नहीं है</translation>
@@ -1942,6 +1948,7 @@
 <translation id="7371404428569700291">चुनी गई विंडो के लिए वीडियो रिकॉर्ड करें</translation>
 <translation id="7372069265635026568"><ph name="TOTAL_MEMORY" /> में से <ph name="AVAILABLE_MEMORY" /> मेमोरी उपलब्ध है</translation>
 <translation id="737315737514430195">इससे ऐसे सभी ऐप्लिकेशन और वेबसाइटों को माइक्रोफ़ोन का ऐक्सेस मिलेगा जिनके पास माइक्रोफ़ोन इस्तेमाल करने की अनुमति है</translation>
+<translation id="7376933029363911338">हैंडल, चुने गए हिस्से के सबसे निचले कोने में मौजूद है. हैंडल को मूव करने के लिए, ऐरो बटन इस्तेमाल करें</translation>
 <translation id="7377169924702866686">Caps Lock चालू है.</translation>
 <translation id="7377481913241237033">कोड का इस्तेमाल करके कनेक्ट करें</translation>
 <translation id="7378203170292176219">रिकॉर्ड की जाने वाली जगह चुनने के लिए खींचें</translation>
@@ -2038,6 +2045,7 @@
 <translation id="7658239707568436148">अभी नहीं</translation>
 <translation id="7659861092419699379">डेस्क और विंडो बंद कर दी गई हैं</translation>
 <translation id="7660160718439869192">आपका <ph name="NAME" />, <ph name="EMAIL" /> से लिंक किए गए डिवाइसों पर दिखेगा</translation>
+<translation id="7661694115779363471">हैंडल, चुने गए हिस्से के सबसे नीचे बाईं ओर मौजूद है. हैंडल को मूव करने के लिए, ऐरो बटन इस्तेमाल करें</translation>
 <translation id="7662283695561029522">कॉन्फ़िगर करने के लिए टैप करें</translation>
 <translation id="7670953955701272011">Google Calendar में यह तारीख खोलें</translation>
 <translation id="7671610481353807627">ऐप्लिकेशन को रंग के हिसाब से क्रम में लगाया गया है</translation>
@@ -2206,6 +2214,7 @@
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> के लिए, जानकारी वाला डायलॉग खोलें.</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> का इस्तेमाल किया जा रहा है</translation>
 <translation id="8168435359814927499">कॉन्टेंट</translation>
+<translation id="8172370561760918656">हैंडल, चुने गए हिस्से के सबसे ऊपर बाईं ओर मौजूद है. हैंडल को मूव करने के लिए, ऐरो बटन इस्तेमाल करें</translation>
 <translation id="81817143961839203">इमेज नहीं जोड़ी जा सकी</translation>
 <translation id="8185090165691050712">मेन्यू को चालू या बंद करने के लिए, ताकि लॉक मोड का साइज़ बदला जा सके</translation>
 <translation id="8192727139462702395">ब्लूटूथ बंद करने पर, ये बाहरी डिवाइस आपके <ph name="DEVICE_TYPE" /> से डिसकनेक्ट हो जाएंगे:</translation>

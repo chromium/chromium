@@ -378,7 +378,9 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
             WebDXFeature::kLaunchHandler},
            {WebFeature::kCSSFunctions, WebDXFeature::kDRAFT_CssFunction},
            {WebFeature::kSelectionGetComposedRanges,
-            WebDXFeature::kComposedRanges}}};
+            WebDXFeature::kComposedRanges},
+           {WebFeature::kSharedDictionaryUsed,
+            WebDXFeature::kCompressionDictionaryTransport}}};
 
   return *kMap;
 }

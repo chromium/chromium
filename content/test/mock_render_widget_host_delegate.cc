@@ -105,6 +105,14 @@ MockRenderWidgetHostDelegate::GetDelegatedInkRenderer(
 void MockRenderWidgetHostDelegate::OnInputIgnored(
     const blink::WebInputEvent& event) {}
 
+input::mojom::RenderInputRouterDelegate*
+MockRenderWidgetHostDelegate::GetRenderInputRouterDelegateRemote() {
+  if (!rir_delegate_remote_.is_bound()) {
+    return nullptr;
+  }
+  return rir_delegate_remote_.get();
+}
+
 input::TouchEmulator* MockRenderWidgetHostDelegate::GetTouchEmulator(
     bool create_if_necessary) {
   NOTIMPLEMENTED();

@@ -78,14 +78,6 @@ BASE_DECLARE_FEATURE(kForceSafeSearchForUnauthenticatedSupervisedUsers);
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 // Uses supervised user strings on the signout dialog.
 BASE_DECLARE_FEATURE(kEnableSupervisedUserVersionSignOutDialog);
-
-// Force re-authentication when an unauthenticated supervised user tries to
-// access YouTube, so that content restrictions can be applied.
-BASE_DECLARE_FEATURE(kForceSupervisedUserReauthenticationForYouTube);
-
-// Specifies if infrastructure-related YouTube endpoints should be still
-// reachable even if parental controls related restrict YouTube access.
-BASE_DECLARE_FEATURE(kExemptYouTubeInfrastructureFromBlocking);
 #endif
 
 // Fallback to sending un-credentialed filtering requests for supervised users

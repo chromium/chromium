@@ -94,6 +94,7 @@ public class HomeModulesUtils {
             @ModuleType int moduleType, @NonNull Resources resources) {
         switch (moduleType) {
             case SINGLE_TAB:
+                return resources.getQuantityString(R.plurals.home_modules_tab_resumption_title, 1);
             case PRICE_CHANGE:
                 return resources.getString(R.string.price_change_module_name);
             case SAFETY_HUB:

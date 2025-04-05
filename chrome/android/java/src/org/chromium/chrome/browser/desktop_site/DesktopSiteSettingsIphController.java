@@ -245,7 +245,7 @@ public class DesktopSiteSettingsIphController {
         mActivityTabTabObserver =
                 new ActivityTabTabObserver(mActivityTabProvider) {
                     @Override
-                    protected void onObservingDifferentTab(Tab tab, boolean hint) {
+                    protected void onObservingDifferentTab(Tab tab) {
                         if (tab == null) return;
                         showGenericIph(tab, profile);
                     }

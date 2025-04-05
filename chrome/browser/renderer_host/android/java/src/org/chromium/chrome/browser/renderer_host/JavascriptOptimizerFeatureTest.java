@@ -9,7 +9,6 @@ import static org.junit.Assert.assertTrue;
 
 import androidx.test.filters.MediumTest;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -17,13 +16,9 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
-import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
-import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -32,15 +27,12 @@ import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.permissions.OsAdditionalSecurityPermissionProvider;
-import org.chromium.components.permissions.OsAdditionalSecurityPermissionUtil;
 import org.chromium.components.permissions.PermissionsAndroidFeatureList;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.url.GURL;
-
-import java.util.concurrent.TimeoutException;
 
 /** Integration test for Android OS disabling Javascript Optimizers. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -49,25 +41,24 @@ import java.util.concurrent.TimeoutException;
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     ContentSwitches.SITE_PER_PROCESS
 })
-@DoNotBatch(reason = "TODO(crbug.com/401528684) Determine why batching is needed.")
+@DoNotBatch(reason = "Tests manipulate global profile state")
 public class JavascriptOptimizerFeatureTest {
     private static final String TEST_PAGE = "/chrome/test/data/android/test.html";
 
     private static class TestPermissionProvider extends OsAdditionalSecurityPermissionProvider {
-        private boolean mIsJavascriptOptimizerPermissionGranted;
+        private boolean mIsAdvancedProtectionRequestedByOs;
 
-        public TestPermissionProvider(boolean isJavascriptOptimizerPermissionGranted) {
-            mIsJavascriptOptimizerPermissionGranted = isJavascriptOptimizerPermissionGranted;
+        public TestPermissionProvider(boolean isAdvancedProtectionRequestedByOs) {
+            mIsAdvancedProtectionRequestedByOs = isAdvancedProtectionRequestedByOs;
         }
 
         @Override
-        public boolean hasJavascriptOptimizerPermission() {
-            return mIsJavascriptOptimizerPermissionGranted;
+        public boolean isAdvancedProtectionRequestedByOs() {
+            return mIsAdvancedProtectionRequestedByOs;
         }
     }
 
     private EmbeddedTestServer mTestServer;
-    private Profile mProfile;
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -77,24 +68,6 @@ public class JavascriptOptimizerFeatureTest {
         EmbeddedTestServerRule embeddedTestServerRule =
                 mActivityTestRule.getEmbeddedTestServerRule();
         mTestServer = embeddedTestServerRule.getServer();
-        mActivityTestRule.startMainActivityOnBlankPage();
-        mProfile = mActivityTestRule.getProfile(/* incognito= */ false);
-    }
-
-    @After
-    public void tearDown() throws TimeoutException {
-        OsAdditionalSecurityPermissionUtil.resetForTesting();
-
-        CallbackHelper clearBrowsingCallbackHelper = new CallbackHelper();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    BrowsingDataBridge.getForProfile(mProfile)
-                            .clearBrowsingData(
-                                    clearBrowsingCallbackHelper::notifyCalled,
-                                    new int[] {BrowsingDataType.SITE_SETTINGS},
-                                    TimePeriod.ALL_TIME);
-                });
-        clearBrowsingCallbackHelper.waitForCallback(0);
     }
 
     private boolean queryJavascriptOptimizersEnabledForActiveWebContents() {
@@ -116,8 +89,11 @@ public class JavascriptOptimizerFeatureTest {
                     ServiceLoaderUtil.setInstanceForTesting(
                             OsAdditionalSecurityPermissionProvider.class,
                             new TestPermissionProvider(
-                                    /* isJavascriptOptimizerPermissionGranted= */ false));
+                                    /* isAdvancedProtectionRequestedByOs= */ true));
                 });
+
+        mActivityTestRule.startMainActivityOnBlankPage();
+
         mActivityTestRule.loadUrl(mTestServer.getURL(TEST_PAGE));
         assertTrue(queryJavascriptOptimizersEnabledForActiveWebContents());
     }
@@ -129,45 +105,51 @@ public class JavascriptOptimizerFeatureTest {
     @Test
     @MediumTest
     public void testNoServiceProvider() {
-        OsAdditionalSecurityPermissionUtil.resetForTesting();
+        mActivityTestRule.startMainActivityOnBlankPage();
+
         mActivityTestRule.loadUrl(mTestServer.getURL(TEST_PAGE));
         assertTrue(queryJavascriptOptimizersEnabledForActiveWebContents());
     }
 
     /**
      * Test that Javascript optimizers are enabled by default if a {@link
-     * OsAdditionalSecurityPermissionProvider} is provided and the OS has granted permission to use
-     * Javascript Optimizers.
+     * OsAdditionalSecurityPermissionProvider} is provided and the OS does not request advanced
+     * protection.
      */
     @Test
     @MediumTest
-    public void testServiceProviderEnablesJavascriptOptimizers() {
+    public void testServiceProviderDoesNotRequestAdvancedProtection() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ServiceLoaderUtil.setInstanceForTesting(
                             OsAdditionalSecurityPermissionProvider.class,
                             new TestPermissionProvider(
-                                    /* isJavascriptOptimizerPermissionGranted= */ true));
+                                    /* isAdvancedProtectionRequestedByOs= */ false));
                 });
+
+        mActivityTestRule.startMainActivityOnBlankPage();
+
         mActivityTestRule.loadUrl(mTestServer.getURL(TEST_PAGE));
         assertTrue(queryJavascriptOptimizersEnabledForActiveWebContents());
     }
 
     /**
      * Test that Javascript optimizers are disabled by default if a {@link
-     * OsAdditionalSecurityPermissionProvider} is provided and the OS has denied permission to use
-     * Javascript Optimizers.
+     * OsAdditionalSecurityPermissionProvider} is provided and the OS requests advanced protection.
      */
     @Test
     @MediumTest
-    public void testServiceProviderDisablesJavascriptOptimizers() {
+    public void testServiceProviderRequestsAdvancedProtection() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ServiceLoaderUtil.setInstanceForTesting(
                             OsAdditionalSecurityPermissionProvider.class,
                             new TestPermissionProvider(
-                                    /* isJavascriptOptimizerPermissionGranted= */ false));
+                                    /* isAdvancedProtectionRequestedByOs= */ true));
                 });
+
+        mActivityTestRule.startMainActivityOnBlankPage();
+
         mActivityTestRule.loadUrl(mTestServer.getURL(TEST_PAGE));
         assertFalse(queryJavascriptOptimizersEnabledForActiveWebContents());
     }
@@ -185,11 +167,17 @@ public class JavascriptOptimizerFeatureTest {
                     ServiceLoaderUtil.setInstanceForTesting(
                             OsAdditionalSecurityPermissionProvider.class,
                             new TestPermissionProvider(
-                                    /* isJavascriptOptimizerPermissionGranted= */ false));
+                                    /* isAdvancedProtectionRequestedByOs= */ true));
+                });
 
+        mActivityTestRule.startMainActivityOnBlankPage();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
                     GURL pageOrigin = new GURL(pageUrl.getScheme() + "://" + pageUrl.getHost());
+                    Profile profile = mActivityTestRule.getProfile(/* incognito= */ false);
                     WebsitePreferenceBridge.setContentSettingDefaultScope(
-                            mProfile,
+                            profile,
                             ContentSettingsType.JAVASCRIPT_OPTIMIZER,
                             pageOrigin,
                             pageOrigin,

@@ -18,6 +18,8 @@ BASE_DECLARE_FEATURE_PARAM(std::string, kAllowlist);
 BASE_DECLARE_FEATURE_PARAM(std::string, kAllowlistExact);
 BASE_DECLARE_FEATURE_PARAM(bool, kAllowlistOnly);
 
+BASE_DECLARE_FEATURE(kGlicActionUseOptimizationGuide);
+
 }  // namespace actor
 
 #endif  // CHROME_BROWSER_ACTOR_ACTOR_FEATURES_H_

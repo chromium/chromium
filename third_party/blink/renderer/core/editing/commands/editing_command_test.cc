@@ -93,7 +93,7 @@ TEST_F(EditingCommandTest, EnabledVisibleSelection) {
   Selection().SetSelection(
       SetSelectionTextToBody("<div contenteditable>a|b<div>"),
       SetSelectionOptions());
-  Element* div = GetDocument().QuerySelector(AtomicString("div"));
+  Element* div = QuerySelector("div");
   GetDocument().SetFocusedElement(
       div, FocusParams(SelectionBehaviorOnFocus::kNone,
                        mojom::blink::FocusType::kNone, nullptr));
@@ -110,7 +110,7 @@ TEST_F(EditingCommandTest, EnabledVisibleSelectionAndMark) {
   Selection().SetSelection(
       SetSelectionTextToBody("<div contenteditable>a|b<div>"),
       SetSelectionOptions());
-  Element* div = GetDocument().QuerySelector(AtomicString("div"));
+  Element* div = QuerySelector("div");
   GetDocument().SetFocusedElement(
       div, FocusParams(SelectionBehaviorOnFocus::kNone,
                        mojom::blink::FocusType::kNone, nullptr));
@@ -137,7 +137,7 @@ TEST_F(EditingCommandTest, EnabledInEditableTextOrCaretBrowsing) {
   Selection().SetSelection(
       SetSelectionTextToBody("<div contenteditable>a|b<div>"),
       SetSelectionOptions());
-  Element* div = GetDocument().QuerySelector(AtomicString("div"));
+  Element* div = QuerySelector("div");
   GetDocument().SetFocusedElement(
       div, FocusParams(SelectionBehaviorOnFocus::kNone,
                        mojom::blink::FocusType::kNone, nullptr));
@@ -153,7 +153,7 @@ TEST_F(EditingCommandTest, DeleteSoftLineBackwardTargetRanges) {
   Selection().SetSelection(
       SetSelectionTextToBody("<div contenteditable>abcdef<br>123|<div>"),
       SetSelectionOptions());
-  Element* div = GetDocument().QuerySelector(AtomicString("div"));
+  Element* div = QuerySelector("div");
   GetDocument().SetFocusedElement(
       div, FocusParams(SelectionBehaviorOnFocus::kNone,
                        mojom::blink::FocusType::kNone, nullptr));

@@ -58,9 +58,12 @@ enum DistanceMetric {
   // two types have not been interchanged.
   VIEWS_DISTANCE_START = VIEWS_INSETS_MAX,
 
+  // Width and height of a vector icon in a bubble's header (i.e. the one
+  // returned from GetWindowIcon).
+  DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE = VIEWS_DISTANCE_START,
   // Width of a bubble unless the content is too wide to make that
   // feasible.
-  DISTANCE_BUBBLE_PREFERRED_WIDTH = VIEWS_DISTANCE_START,
+  DISTANCE_BUBBLE_PREFERRED_WIDTH,
   // The default padding to add on each side of a button's label.
   DISTANCE_BUTTON_HORIZONTAL_PADDING,
   // The maximum width a button can have and still influence the sizes of
@@ -70,6 +73,8 @@ enum DistanceMetric {
   // The distance between a dialog's edge and the close button in the upper
   // trailing corner.
   DISTANCE_CLOSE_BUTTON_MARGIN,
+  // Vertical spacing between a list of multiple controls in one column.
+  DISTANCE_CONTROL_LIST_VERTICAL,
   // The vertical padding applied to text in a control.
   DISTANCE_CONTROL_VERTICAL_TEXT_PADDING,
   // The vertical padding applied to text in a table.

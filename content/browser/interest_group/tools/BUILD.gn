@@ -12,6 +12,7 @@ executable("adjustable_auction") {
     "//content/test:content_browsertests",
     "//content/test:content_test_mojo_bindings",
     "//content/test:test_support",
+    "//third_party/metrics_proto"
   ]
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]

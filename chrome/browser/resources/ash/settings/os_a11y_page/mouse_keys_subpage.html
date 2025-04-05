@@ -108,7 +108,7 @@
   </settings-card>
   <settings-card>
     <div id="primaryKeysPreview"
-      class="keyboard-preview" 
+      class="keyboard-preview"
       hidden$="[[!prefs.settings.a11y.mouse_keys.use_primary_keys.value]]">
       <h2>$i18n{primaryKeyTitle}</h2>
         <div class="grid-container">
@@ -129,7 +129,7 @@
       <h2>$i18n{numKeypadTitle}</h2>
       <div class="grid-container">
         <template is="dom-repeat"
-          items="[[numKeypadPreviewOptions]]" as="option">
+          items="[[numKeypadPreviewOptions_]]" as="option">
             <div class="grid-item">
               <iron-icon icon="[[option.icon]]"
                 class="illustration">

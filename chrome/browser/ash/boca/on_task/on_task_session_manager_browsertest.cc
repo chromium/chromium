@@ -21,6 +21,8 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/ash/components/boca/on_task/notification_constants.h"
+#include "chromeos/ash/components/boca/on_task/on_task_notifications_manager.h"
 #include "chromeos/ash/components/boca/on_task/util/mock_clock.h"
 #include "chromeos/ui/wm/window_util.h"
 #include "components/sessions/core/session_id.h"
@@ -45,6 +47,31 @@ constexpr char kSessionId2[] = "test_session_id_2";
 constexpr char kTestUrl1[] = "https://test1.com";
 constexpr char kTestUrl2[] = "https://test2.com";
 
+// Fake delegate implementation for the `OnTaskNotificationsManager` to minimize
+// dependency on Ash UI.
+class FakeOnTaskNotificationsManagerDelegate
+    : public boca::OnTaskNotificationsManager::Delegate {
+ public:
+  FakeOnTaskNotificationsManagerDelegate() = default;
+  ~FakeOnTaskNotificationsManagerDelegate() override = default;
+
+  // OnTaskNotificationsManager::Delegate:
+  void ShowNotification(
+      std::unique_ptr<message_center::Notification> notification) override {
+    notifications_shown_.insert(notification->id());
+  }
+  void ClearNotification(const std::string& notification_id) override {
+    notifications_shown_.erase(notification_id);
+  }
+
+  bool WasNotificationShown(const std::string& id) {
+    return notifications_shown_.contains(id);
+  }
+
+ private:
+  std::set<std::string> notifications_shown_;
+};
+
 class OnTaskSessionManagerBrowserTest : public InProcessBrowserTest {
  protected:
   OnTaskSessionManagerBrowserTest() {
@@ -65,7 +92,22 @@ class OnTaskSessionManagerBrowserTest : public InProcessBrowserTest {
     mock_cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
     https_server()->AddDefaultHandlers(
         InProcessBrowserTest::GetChromeTestDataDir());
+
+    // Override notification manager implementation to minimize dependency on
+    // Ash UI.
+    auto fake_notifications_delegate =
+        std::make_unique<FakeOnTaskNotificationsManagerDelegate>();
+    fake_notifications_delegate_ptr_ = fake_notifications_delegate.get();
+    GetOnTaskSessionManager()->SetNotificationManagerForTesting(
+        boca::OnTaskNotificationsManager::CreateForTest(
+            std::move(fake_notifications_delegate)));
+
     InProcessBrowserTest::SetUpOnMainThread();
+  }
+
+  void TearDownOnMainThread() override {
+    fake_notifications_delegate_ptr_ = nullptr;
+    InProcessBrowserTest::TearDownOnMainThread();
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -91,6 +133,15 @@ class OnTaskSessionManagerBrowserTest : public InProcessBrowserTest {
     return ash::FindSystemWebAppBrowser(profile(), ash::SystemWebAppType::BOCA);
   }
 
+  void VerifyNotificationShown(std::string notification_id,
+                               bool notification_shown) {
+    boca::MockClock::Get().Advance(boca::kOnTaskNotificationCountdownInterval);
+    content::RunAllTasksUntilIdle();
+    EXPECT_EQ(
+        fake_notifications_delegate_ptr_->WasNotificationShown(notification_id),
+        notification_shown);
+  }
+
   void WaitForLockedModeCountdown() {
     // Simulate the full countdown duration to ensure generating the
     // notification.
@@ -112,6 +163,8 @@ class OnTaskSessionManagerBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
   content::ContentMockCertVerifier mock_cert_verifier_;
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
+  raw_ptr<FakeOnTaskNotificationsManagerDelegate>
+      fake_notifications_delegate_ptr_;
 };
 
 IN_PROC_BROWSER_TEST_F(OnTaskSessionManagerBrowserTest,
@@ -494,6 +547,9 @@ IN_PROC_BROWSER_TEST_F(OnTaskSessionManagerBrowserTest,
   GetOnTaskSessionManager()->OnSessionEnded(kSessionId);
   // Wait until the browser actually gets closed.
   ui_test_utils::WaitForBrowserToClose();
+  VerifyNotificationShown(kOnTaskSessionEndNotificationId, true);
+  VerifyNotificationShown(kOnTaskBundleContentAddedNotificationId, false);
+  VerifyNotificationShown(kOnTaskBundleContentRemovedNotificationId, false);
   ASSERT_THAT(FindBocaSystemWebAppBrowser(), IsNull());
 }
 

@@ -91,6 +91,7 @@ class GraphImplDml final : public WebNNGraphImpl {
   // GraphImplDml instance will only be created and bound to the mojom receiver
   // in GraphImplDml::OnInitializationComplete method.
   static void CreateAndBuild(
+      mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
       scoped_refptr<Adapter> adapter,
       base::WeakPtr<ContextImplDml> context,
       mojom::GraphInfoPtr graph_info,
@@ -175,6 +176,7 @@ class GraphImplDml final : public WebNNGraphImpl {
       std::unique_ptr<CommandRecorder> init_command_recorder_for_npu);
 
   static void CreateWebNNGraphImpl(
+      mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
       scoped_refptr<Adapter> adapter,
       base::WeakPtr<ContextImplDml> context,
       scoped_refptr<PersistentResource> persistent_resource,
@@ -183,7 +185,8 @@ class GraphImplDml final : public WebNNGraphImpl {
       GraphBufferBindingInfo graph_buffer_binding_info,
       WebNNContextImpl::CreateGraphImplCallback callback);
 
-  GraphImplDml(scoped_refptr<Adapter> adapter,
+  GraphImplDml(mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
+               scoped_refptr<Adapter> adapter,
                ContextImplDml* context,
                std::unique_ptr<CommandRecorder> command_recorder,
                scoped_refptr<PersistentResource> persistent_resource,
@@ -216,6 +219,7 @@ class GraphImplDml final : public WebNNGraphImpl {
   // initialization, while the data of the input tensor is uploaded for every
   // graph execution.
   static void OnCompilationComplete(
+      mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
       scoped_refptr<Adapter> adapter,
       base::WeakPtr<ContextImplDml> context,
       WebNNContextImpl::CreateGraphImplCallback callback,
@@ -232,6 +236,7 @@ class GraphImplDml final : public WebNNGraphImpl {
   // to the renderer process. Notice that the `persistent_resource` could be
   // nullptr which means it isn't required by the graph.
   static void OnInitializationComplete(
+      mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
       scoped_refptr<Adapter> adapter,
       base::WeakPtr<ContextImplDml> context,
       scoped_refptr<PersistentResource> persistent_resource,

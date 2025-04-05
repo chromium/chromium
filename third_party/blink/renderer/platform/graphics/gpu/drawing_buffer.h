@@ -273,8 +273,8 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
                              GLenum dst_target,
                              GLuint dst_texture,
                              GLint dst_level,
-                             bool premultiply_alpha,
-                             GrSurfaceOrigin destination_origin,
+                             SkAlphaType dst_alpha_type,
+                             GrSurfaceOrigin dst_origin,
                              const gfx::Point& dst_texture_offset,
                              const gfx::Rect& src_rect,
                              SourceDrawingBuffer);
@@ -414,9 +414,6 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
 
   struct ColorBuffer : public ThreadSafeRefCounted<ColorBuffer> {
     ColorBuffer(base::WeakPtr<DrawingBuffer> drawing_buffer,
-                const gfx::Size&,
-                viz::SharedImageFormat,
-                SkAlphaType alpha_type,
                 scoped_refptr<gpu::ClientSharedImage> shared_image,
                 std::unique_ptr<gpu::SharedImageTexture> shared_image_texture);
     ColorBuffer(const ColorBuffer&) = delete;
@@ -435,9 +432,6 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
     // by the beginDestruction method, which will eventually drain all of its
     // ColorBuffers.
     base::WeakPtr<DrawingBuffer> drawing_buffer;
-    const gfx::Size size;
-    const viz::SharedImageFormat format;
-    const SkAlphaType alpha_type;
 
     // The shared image used to send this buffer to the compositor.
     scoped_refptr<gpu::ClientSharedImage> shared_image;
@@ -461,8 +455,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   using CopyFunctionRef = base::FunctionRef<std::optional<gpu::SyncToken>(
       scoped_refptr<gpu::ClientSharedImage>,
       const gpu::SyncToken&,
-      SkAlphaType alpha_type,
-      const gfx::Size&)>;
+      SkAlphaType alpha_type)>;
   bool CopyToPlatformInternal(gpu::InterfaceBase* dst_interface,
                               bool dst_is_unpremul_gl,
                               SourceDrawingBuffer src_buffer,

@@ -34,7 +34,9 @@ class ValueStoreFactory;
 
 namespace extensions {
 class AppSorting;
+class ChromeExtensionRegistrarDelegate;
 class ExtensionSystemProvider;
+class ManagementPolicy;
 
 ////////////////////////////////////////////////////////////////////////////////
 // S  T  O  P
@@ -128,10 +130,11 @@ class DesktopAndroidExtensionSystem : public ExtensionSystem {
   std::unique_ptr<QuotaService> quota_service_;
   std::unique_ptr<UserScriptManager> user_script_manager_;
   std::unique_ptr<AppSorting> app_sorting_;
+  std::unique_ptr<ManagementPolicy> management_policy_;
 
   scoped_refptr<value_store::ValueStoreFactory> store_factory_;
 
-  std::unique_ptr<ExtensionRegistrar::Delegate> registrar_delegate_;
+  std::unique_ptr<ChromeExtensionRegistrarDelegate> registrar_delegate_;
   raw_ptr<ExtensionRegistrar> registrar_;  // Not owned
 
   // Signaled when the extension system has completed its startup tasks.

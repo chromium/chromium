@@ -369,7 +369,6 @@ StaticBitmapImageTransform::ConvertToColorSpace(
   options.source_rect = gfx::Rect(GetSourceSize(source, options));
   options.dest_size = GetSourceSize(source, options);
   options.premultiply_alpha = source->GetAlphaType() != kUnpremul_SkAlphaType;
-  options.force_copy = true;
   options.dest_color_space = color_space;
   return Apply(flush_reason, source, options);
 }

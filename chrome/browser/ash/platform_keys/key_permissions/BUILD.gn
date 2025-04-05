@@ -102,7 +102,6 @@ source_set("unit_tests") {
 
   sources = [
     "arc_key_permissions_manager_delegate_unittest.cc",
-    "key_permissions_manager_unittest.cc",
     "key_permissions_service_impl_unittest.cc",
   ]
 
@@ -115,7 +114,6 @@ source_set("unit_tests") {
     "//chrome/browser/ash/platform_keys:test_support",
     "//chrome/browser/chromeos/platform_keys",
     "//chrome/test:test_support",
-    "//chromeos/ash/components/kcer:chaps_proto",
     "//chromeos/ash/experiences/arc",
     "//chromeos/ash/experiences/arc:arc_test_support",
     "//components/policy/core/common",

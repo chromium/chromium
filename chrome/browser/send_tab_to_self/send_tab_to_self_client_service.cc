@@ -19,15 +19,13 @@ namespace send_tab_to_self {
 SendTabToSelfClientService::SendTabToSelfClientService(
     std::unique_ptr<ReceivingUiHandler> receiving_ui_handler,
     SendTabToSelfModel* model)
-    : model_(model), receiving_ui_handler_(std::move(receiving_ui_handler)) {
-  model_->AddObserver(this);
+    : receiving_ui_handler_(std::move(receiving_ui_handler)) {
+  model_observation_.Observe(model);
 }
 
 SendTabToSelfClientService::~SendTabToSelfClientService() = default;
 
 void SendTabToSelfClientService::Shutdown() {
-  model_->RemoveObserver(this);
-  model_ = nullptr;
   receiving_ui_handler_.reset();
 }
 

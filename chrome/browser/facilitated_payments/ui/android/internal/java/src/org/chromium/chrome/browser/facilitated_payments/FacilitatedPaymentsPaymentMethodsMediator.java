@@ -335,7 +335,7 @@ class FacilitatedPaymentsPaymentMethodsMediator {
                 .with(
                         BANK_ACCOUNT_PAYMENT_RAIL,
                         context.getString(R.string.settings_manage_other_financial_accounts_pix)
-                                + "  •")
+                                + "  •  ")
                 .with(
                         BANK_ACCOUNT_TYPE,
                         getBankAccountTypeString(context, bankAccount.getAccountType()))

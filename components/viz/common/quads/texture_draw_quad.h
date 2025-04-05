@@ -48,7 +48,6 @@ class VIZ_COMMON_EXPORT TextureDrawQuad : public DrawQuad {
               const gfx::Rect& visible_rect,
               bool needs_blending,
               ResourceId resource_id,
-              gfx::Size resource_size_in_pixels,
               bool premultiplied,
               const gfx::PointF& top_left,
               const gfx::PointF& bottom_right,
@@ -129,21 +128,6 @@ class VIZ_COMMON_EXPORT TextureDrawQuad : public DrawQuad {
   // otherwise the masks are drawn at bounds (10, 10, 15, 15) and (10, 45, 15,
   // 15).
   RoundedDisplayMasksInfo rounded_display_masks_info;
-
-  struct OverlayResources {
-    OverlayResources();
-
-    gfx::Size size_in_pixels;
-  };
-  OverlayResources overlay_resources;
-
-  // TODO(crbug.com/40279814): Remove this resource size.
-  const gfx::Size& resource_size_in_pixels() const {
-    return overlay_resources.size_in_pixels;
-  }
-  void set_resource_size_in_pixels(const gfx::Size& size_in_pixels) {
-    overlay_resources.size_in_pixels = size_in_pixels;
-  }
 
   void set_force_rgbx(bool force_rgbx_value = true) {
     force_rgbx = force_rgbx_value;

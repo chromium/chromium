@@ -42,8 +42,6 @@ enum ChromeDistanceMetric {
   // Same as |DISTANCE_CONTENT_LIST_VERTICAL_SINGLE|, but used at the beginning
   // and end of a multi-item content list.
   DISTANCE_CONTENT_LIST_VERTICAL_MULTI,
-  // Vertical spacing between a list of multiple controls in one column.
-  DISTANCE_CONTROL_LIST_VERTICAL,
   // Width of the extensions menu.
   DISTANCE_EXTENSIONS_MENU_WIDTH,
   // Width and height of a button's icon in the extensions menu.
@@ -81,9 +79,6 @@ enum ChromeDistanceMetric {
   DISTANCE_UNRELATED_CONTROL_HORIZONTAL_LARGE,
   // Larger vertical spacing between unrelated controls.
   DISTANCE_UNRELATED_CONTROL_VERTICAL_LARGE,
-  // Width and height of a vector icon in a bubble's header (i.e. the one
-  // returned from GetWindowIcon).
-  DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE,
   // Width of a bubble that appears mid-screen (like a standalone dialog)
   // instead of being anchored.
   DISTANCE_STANDALONE_BUBBLE_PREFERRED_WIDTH,

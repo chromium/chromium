@@ -317,9 +317,6 @@ class CORE_EXPORT InlineCursor {
 
   // |Current*| functions return an object for the current position.
   const FragmentItem* CurrentItem() const { return Current().Item(); }
-  LayoutObject* CurrentMutableLayoutObject() const {
-    return Current().GetMutableLayoutObject();
-  }
 
   // Returns text of the current position. It is error to call other than
   // text.

@@ -559,6 +559,20 @@ void ExpectKSAdminFetchTag(UpdaterScope scope,
   ExpectKSAdminResult(scope, elevate, switches, std::move(want_tag), want_exit);
 }
 
+void ExpectKSAdminXattrBrand(UpdaterScope scope,
+                             bool elevate,
+                             const base::FilePath& path,
+                             std::optional<std::string> want_brand) {
+  int want_exit = EXIT_FAILURE;
+  if (want_brand) {
+    *want_brand = base::StrCat({*want_brand, "\n"});
+    want_exit = EXIT_SUCCESS;
+  }
+  ExpectKSAdminResult(scope, elevate,
+                      {{"--print-xattr-tag-brand", path.value()}},
+                      std::move(want_brand), want_exit);
+}
+
 void ExpectCRURegistrationCannotFindKSAdmin() {
   @autoreleasepool {
     CRURegistration* registration = [[CRURegistration alloc]

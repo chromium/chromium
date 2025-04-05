@@ -1780,9 +1780,7 @@ void FlexLayoutAlgorithm::PopulateGapIntersectionsForFirstLine(
   // associated with two potential cross axis gap intersections:
   // 1. The cross axis offset of the line.
   item_cross_intersection.block_offset = flex_line.cross_axis_offset;
-  // Since it is the first line, the cross axis intersection is "blocked" by the
-  // content edge before the line.
-  item_cross_intersection.is_blocked_before = true;
+  item_cross_intersection.is_at_edge_of_container = true;
   item_cross_intersections_list.push_back(item_cross_intersection);
 
   // 2. The main and cross intersections of the cross gap with the main
@@ -1793,7 +1791,7 @@ void FlexLayoutAlgorithm::PopulateGapIntersectionsForFirstLine(
   item_cross_intersection.block_offset =
       num_lines > 1 ? (next_main_axis_gap_start + next_main_axis_gap_end) / 2
                     : flex_line.LineCrossEnd();
-  item_cross_intersection.is_blocked_before = false;
+  item_cross_intersection.is_at_edge_of_container = false;
   item_cross_intersections_list.push_back(item_cross_intersection);
 
   if (num_lines > 1) {
@@ -1828,7 +1826,7 @@ void FlexLayoutAlgorithm::PopulateMainAxisGapIntersectionsForFirstItem(
 
   GapIntersection main_gap_intersection(main_gap_intersection_inline_offset,
                                         main_gap_intersection_block_offset);
-  main_gap_intersection.is_blocked_before = true;
+  main_gap_intersection.is_at_edge_of_container = true;
   main_intersections_after_current_line.push_back(main_gap_intersection);
 }
 
@@ -1846,9 +1844,7 @@ void FlexLayoutAlgorithm::PopulateMainAxisGapIntersectionsForLastItem(
   GapIntersection main_gap_intersection(edge_inline_offset,
                                         cross_axis_block_offset);
 
-  // The last intersection of a main gap will be "blocked" by the content edge
-  // at the end of the line.
-  main_gap_intersection.is_blocked_after = true;
+  main_gap_intersection.is_at_edge_of_container = true;
   main_intersections_after_current_line.push_back(main_gap_intersection);
 }
 
@@ -1912,7 +1908,7 @@ void FlexLayoutAlgorithm::PopulateGapIntersectionsForLastLine(
   item_cross_intersection.block_offset = flex_line.LineCrossEnd();
   // Since it is the last line, the cross axis intersection is "blocked" by
   // the content edge after the line.
-  item_cross_intersection.is_blocked_after = true;
+  item_cross_intersection.is_at_edge_of_container = true;
   item_cross_intersections_list.push_back(item_cross_intersection);
 }
 

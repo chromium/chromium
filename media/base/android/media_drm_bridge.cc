@@ -142,23 +142,21 @@ CdmKeyInformation::KeyStatus ConvertKeyStatus(KeyStatus key_status,
       return CdmKeyInformation::OUTPUT_RESTRICTED;
     case KeyStatus::KEY_STATUS_PENDING:
       // On pre-Q versions of Android, 'status-pending' really means "usable in
-      // the future". Translate this to 'expired' as that's the only status that
-      // makes sense in this case. Starting with Android Q, 'status-pending'
-      // means what you expect. See crbug.com/889272 for explanation.
+      // the future". Starting with Android Q, 'status-pending' means what you
+      // expect. See crbug.com/889272 for explanation.
       // TODO(jrummell): "KEY_STATUS_PENDING" should probably be renamed to
       // "STATUS_PENDING".
       return (base::android::BuildInfo::GetInstance()->sdk_int() <=
               base::android::SDK_VERSION_P)
-                 ? CdmKeyInformation::EXPIRED
+                 ? CdmKeyInformation::USABLE_IN_FUTURE
                  : CdmKeyInformation::KEY_STATUS_PENDING;
     case KeyStatus::KEY_STATUS_INTERNAL_ERROR:
       return CdmKeyInformation::INTERNAL_ERROR;
     case KeyStatus::KEY_STATUS_USABLE_IN_FUTURE:
       // This was added in Android Q.
       // https://developer.android.com/reference/android/media/MediaDrm.KeyStatus.html#STATUS_USABLE_IN_FUTURE
-      // notes this happens "because the start time is in the future." There is
-      // no matching EME status, so returning EXPIRED as the closest match.
-      return CdmKeyInformation::EXPIRED;
+      // notes this happens "because the start time is in the future."
+      return CdmKeyInformation::USABLE_IN_FUTURE;
   }
 
   NOTREACHED();

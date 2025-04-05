@@ -44,6 +44,7 @@
 #include "components/privacy_sandbox/privacy_sandbox_attestations/scoped_privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/webapps/common/web_app_id.h"
+#include "content/public/browser/cookie_access_details.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
@@ -175,12 +176,18 @@ class PageSpecificSiteDataDialogInteractiveUiTest
       CookieChangeObserver* cookie_observer = nullptr) {
     const GURL third_party_cookie_page_url =
         https_server()->GetURL("a.test", GetTestPageRelativeURL());
+    auto navigate_and_maybe_wait_cookies_accessed =
+        cookie_observer
+            ? Steps(InParallel(
+                  RunSubsequence(WaitForEvent(kBrowserViewElementId,
+                                              kCookieAccessedEvent)),
+                  RunSubsequence(NavigateWebContents(
+                      kWebContentsElementId, third_party_cookie_page_url))))
+            : NavigateWebContents(kWebContentsElementId,
+                                  third_party_cookie_page_url);
     return Steps(
         InstrumentTab(kWebContentsElementId),
-        NavigateWebContents(kWebContentsElementId, third_party_cookie_page_url),
-        cookie_observer
-            ? Steps(WaitForEvent(kBrowserViewElementId, kCookieAccessedEvent))
-            : MultiStep(),
+        std::move(navigate_and_maybe_wait_cookies_accessed),
         PressButton(kLocationIconElementId),
         PressButton(PageInfoMainView::kCookieButtonElementId),
         PressButton(PageInfoCookiesContentView::kCookieDialogButton),
@@ -449,8 +456,10 @@ class PageSpecificSiteDataDialogWithRelatedWebAppsInteractiveUiTest
       ui::ElementIdentifier section_id) {
     return Steps(
         InstrumentTab(section_id),
-        LaunchBrowserForWebAppInTab(app_id, section_id),
-        WaitForEvent(kBrowserViewElementId, kCookieAccessedEvent),
+        InParallel(
+            RunSubsequence(
+                WaitForEvent(kBrowserViewElementId, kCookieAccessedEvent)),
+            RunSubsequence(LaunchBrowserForWebAppInTab(app_id, section_id))),
         PressButton(kLocationIconElementId),
         PressButton(PageInfoMainView::kCookieButtonElementId),
         PressButton(PageInfoCookiesContentView::kCookieDialogButton),

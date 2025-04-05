@@ -9,7 +9,7 @@
 #import "components/omnibox/browser/autocomplete_match_type.h"
 #import "components/omnibox/browser/autocomplete_provider.h"
 #import "components/variations/variations_switches.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_match_formatter.h"
+#import "ios/chrome/browser/omnibox/model/autocomplete_match_formatter.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/debugger/omnibox_autocomplete_event.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/debugger/omnibox_autocomplete_event_view_controller.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/debugger/omnibox_event.h"

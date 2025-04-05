@@ -35,8 +35,8 @@ export class ViewerAnnotationsModeDialogElement extends PolymerElement {
     };
   }
 
-  rotated: boolean;
-  twoUpViewEnabled: boolean;
+  declare rotated: boolean;
+  declare twoUpViewEnabled: boolean;
 
   /** @return Whether the dialog is open. */
   isOpen(): boolean {

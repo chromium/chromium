@@ -140,6 +140,29 @@ void UpdateDiscoveryTaskResultWaiter::OnUpdateDiscoveryTaskCompleted(
   observation_.Reset();
 }
 
+UpdateApplyTaskResultWaiter::UpdateApplyTaskResultWaiter(
+    WebAppProvider& provider,
+    const webapps::AppId expected_app_id,
+    TaskResultCallback callback)
+    : expected_app_id_(expected_app_id),
+      callback_(std::move(callback)),
+      provider_(provider) {
+  observation_.Observe(&provider.iwa_update_manager());
+}
+
+UpdateApplyTaskResultWaiter::~UpdateApplyTaskResultWaiter() = default;
+
+// IsolatedWebAppUpdateManager::Observer:
+void UpdateApplyTaskResultWaiter::OnUpdateApplyTaskCompleted(
+    const webapps::AppId& app_id,
+    IsolatedWebAppUpdateApplyTask::CompletionStatus status) {
+  if (app_id != expected_app_id_) {
+    return;
+  }
+  std::move(callback_).Run(status);
+  observation_.Reset();
+}
+
 std::unique_ptr<net::EmbeddedTestServer> CreateAndStartDevServer(
     base::FilePath::StringViewType chrome_test_data_relative_root) {
   base::FilePath server_root =

@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/dom/attr.h"
 #include "third_party/blink/renderer/core/dom/dataset_dom_string_map.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
+#include "third_party/blink/renderer/core/dom/explicitly_set_attr_elements_map.h"
 #include "third_party/blink/renderer/core/dom/has_invalidation_flags.h"
 #include "third_party/blink/renderer/core/dom/interest_invoker_data.h"
 #include "third_party/blink/renderer/core/dom/interest_invoker_target_data.h"
@@ -483,6 +484,18 @@ AnchorPositionScrollData& ElementRareDataVector::EnsureAnchorPositionScrollData(
          GetAnchorPositionScrollData()->AnchoredElement() == anchored_element);
   return EnsureField<AnchorPositionScrollData>(
       FieldId::kAnchorPositionScrollData, anchored_element);
+}
+
+ExplicitlySetAttrElementsMap*
+ElementRareDataVector::GetExplicitlySetElementsForAttr() const {
+  return static_cast<ExplicitlySetAttrElementsMap*>(
+      GetField(FieldId::kExplicitlySetElementsForAttr));
+}
+
+ExplicitlySetAttrElementsMap&
+ElementRareDataVector::EnsureExplicitlySetElementsForAttr() {
+  return EnsureField<ExplicitlySetAttrElementsMap>(
+      FieldId::kExplicitlySetElementsForAttr);
 }
 
 AnchorElementObserver& ElementRareDataVector::EnsureAnchorElementObserver(

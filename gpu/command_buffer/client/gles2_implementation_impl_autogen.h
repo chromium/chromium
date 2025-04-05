@@ -3595,7 +3595,7 @@ void GLES2Implementation::CopySharedImageToTextureINTERNAL(
     GLint src_y,
     GLsizei width,
     GLsizei height,
-    GLboolean flip_y,
+    GLboolean is_dst_origin_top_left,
     const GLbyte* src_mailbox) {
   GPU_CLIENT_SINGLE_THREAD_CHECK();
   GPU_CLIENT_LOG(
@@ -3603,7 +3603,7 @@ void GLES2Implementation::CopySharedImageToTextureINTERNAL(
           << texture << ", " << GLES2Util::GetStringEnum(target) << ", "
           << internal_format << ", " << GLES2Util::GetStringEnum(type) << ", "
           << src_x << ", " << src_y << ", " << width << ", " << height << ", "
-          << GLES2Util::GetStringBool(flip_y) << ", "
+          << GLES2Util::GetStringBool(is_dst_origin_top_left) << ", "
           << static_cast<const void*>(src_mailbox) << ")");
   uint32_t count = 16;
   for (uint32_t ii = 0; ii < count; ++ii) {
@@ -3621,7 +3621,7 @@ void GLES2Implementation::CopySharedImageToTextureINTERNAL(
   }
   helper_->CopySharedImageToTextureINTERNALImmediate(
       texture, target, internal_format, type, src_x, src_y, width, height,
-      flip_y, src_mailbox);
+      is_dst_origin_top_left, src_mailbox);
   CheckGLError();
 }
 

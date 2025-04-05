@@ -19,6 +19,7 @@ Jos poistat sen, kaikki menettävät heti pääsyn välilehtiryhmään "<ph name
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Luotu <ph name="NUM_MINS_ONE" /> minuutti sitten}other{Luotu <ph name="NUM_MINS_MANY" /> minuuttia sitten}}</translation>
 <translation id="1499635324672558517">Suljetaanko kaikki incognito-välilehdet?</translation>
 <translation id="1501480321619201731">Poista ryhmä</translation>
+<translation id="1505526451013346974">Lisää tänne: <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1555130319947370107">Sininen</translation>
 <translation id="161042844686301425">Turkoosi</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> välilehteä lisätty ryhmään</translation>
@@ -85,7 +86,6 @@ Jos poistat sen, kaikki menettävät heti pääsyn välilehtiryhmään "<ph name
 <translation id="4076226664360336092">Välilehtiryhmälista avattu kokonaan</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> välilehteä vaikuttaa liittyvän toisiinsa. Lisätäänkö ne ryhmäksi?</translation>
 <translation id="4139634748112164403">Välilehdet pysyvät auki tällä laitteella, mutta ryhmä poistetaan pysyvästi</translation>
-<translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{Sulje ryhmä (<ph name="TITLE_OF_GROUP" />), jossa on <ph name="TABS_COUNT_ONE" /> välilehti, väri <ph name="COLOR_NAME" />.}other{Sulje ryhmä (<ph name="TITLE_OF_GROUP" />), jossa on <ph name="TABS_COUNT_MANY" /> välilehteä, väri <ph name="COLOR_NAME" />.}}</translation>
 <translation id="4159784952369912983">Violetti</translation>
 <translation id="427987768447457592">Uusi välilehtiryhmä</translation>
 <translation id="4371591986692297148">Ei aktiivinen</translation>
@@ -119,7 +119,6 @@ Jos poistat sen, kaikki menettävät heti pääsyn välilehtiryhmään "<ph name
 <translation id="5446043142172831860">Poista välilehti ja poistu ryhmästä</translation>
 <translation id="5490235265819901748">Välilehtiryhmä laajennettu</translation>
 <translation id="5494920125229734069">Valitse kaikki</translation>
-<translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Sulje välilehtiryhmä, jossa on <ph name="TABS_COUNT_ONE" /> välilehti, väri <ph name="COLOR_NAME" />.}other{Sulje välilehtiryhmä, jossa on <ph name="TABS_COUNT_MANY" /> välilehteä, väri <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Näytä kaupan tiedot, vaihtoehto lähellä näytön yläreunaa</translation>
 <translation id="5627941783489838464">Ei välilehtipäivityksiä</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Palauta välilehti}other{Palauta välilehdet}}</translation>
@@ -213,6 +212,7 @@ Jos poistat sen, kaikki menettävät heti pääsyn välilehtiryhmään "<ph name
 <translation id="8820741577754260431">Katso hinnanalennukset välilehdiltä</translation>
 <translation id="8887921976452567404">Suljetut välilehdet ja ryhmät voi avata uudelleen Viimeaikaiset välilehdet‑ ja Välilehtiryhmät-osioista.</translation>
 <translation id="8915916167043355778">Sulje kaikki</translation>
+<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Siirrä uuteen ikkunaan}other{Siirrä toiseen ikkunaan}}</translation>
 <translation id="9090098097337832354">"Tietoja tästä kaupasta" suljettu</translation>
 <translation id="9114502155681725011">Avaa välilehtiryhmän toimintovalikko välilehtiryhmälle <ph name="TITLE_OF_GROUP" />, värinä <ph name="COLOR_NAME" />.</translation>
 <translation id="9169141410816678175">Kaikki menettävät heti pääsyn välilehtiryhmään "<ph name="GROUP_NAME" />", ja se poistetaan kaikilta laitteilta</translation>

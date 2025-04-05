@@ -413,8 +413,7 @@ bool SecurityOrigin::CanDisplay(const KURL& url) const {
     return true;
 
   // Data URLs can always be displayed.
-  if (base::FeatureList::IsEnabled(features::kOptimizeLoadingDataUrls) &&
-      url.ProtocolIsData()) {
+  if (url.ProtocolIsData()) {
     return true;
   }
 

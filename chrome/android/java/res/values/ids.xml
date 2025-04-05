@@ -54,6 +54,7 @@ found in the LICENSE file.
     <item type="id" name="contextmenu_back" />
     <item type="id" name="contextmenu_forward" />
     <item type="id" name="contextmenu_reload" />
+    <item type="id" name="contextmenu_inspect_element" />
 
     <!-- Custom Tab Group -->
     <item type="id" name="contextmenu_open_in_new_chrome_tab" />

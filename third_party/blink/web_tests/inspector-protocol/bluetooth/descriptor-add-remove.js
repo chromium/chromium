@@ -20,7 +20,6 @@
       });
   const {result: {characteristicId: measurementIntervalCharacteristicId}} =
       await bp.BluetoothEmulation.addCharacteristic({
-        address: helper.peripheralAddress(),
         serviceId: heartRateServiceId,
         characteristicUuid:
             BluetoothHelper.MEASUREMENT_INTERVAL_CHARACTERISTIC_UUID,
@@ -46,8 +45,6 @@
   // Start the test.
   const {result: {descriptorId: userDescriptionDescriptorId}} =
       await bp.BluetoothEmulation.addDescriptor({
-        address: helper.peripheralAddress(),
-        serviceId: heartRateServiceId,
         characteristicId: measurementIntervalCharacteristicId,
         descriptorUuid:
             BluetoothHelper.CHARACTERISTIC_USER_DESCRIPTION_DESCRIPTOR_UUID
@@ -59,8 +56,6 @@
 
   const {result: {descriptorId: clientConfigurationDescriptorId}} =
       await bp.BluetoothEmulation.addDescriptor({
-        address: helper.peripheralAddress(),
-        serviceId: heartRateServiceId,
         characteristicId: measurementIntervalCharacteristicId,
         descriptorUuid:
             BluetoothHelper.CLIENT_CHARACTERISTIC_CONFIGURATION_DESCRIPTOR_UUID
@@ -72,9 +67,6 @@
               BluetoothHelper.MEASUREMENT_INTERVAL_CHARACTERISTIC_UUID)}`);
 
   await bp.BluetoothEmulation.removeDescriptor({
-    address: helper.peripheralAddress(),
-    serviceId: heartRateServiceId,
-    characteristicId: measurementIntervalCharacteristicId,
     descriptorId: clientConfigurationDescriptorId
   });
   testRunner.log(
@@ -84,9 +76,6 @@
               BluetoothHelper.MEASUREMENT_INTERVAL_CHARACTERISTIC_UUID)}`);
 
   await bp.BluetoothEmulation.removeDescriptor({
-    address: helper.peripheralAddress(),
-    serviceId: heartRateServiceId,
-    characteristicId: measurementIntervalCharacteristicId,
     descriptorId: userDescriptionDescriptorId
   });
   testRunner.log(`After removing characteristic user description descriptor: ${

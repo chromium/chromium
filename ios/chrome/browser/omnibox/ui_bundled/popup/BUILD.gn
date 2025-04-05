@@ -14,6 +14,7 @@ swift_source_set("popup_swift") {
     "//ios/chrome/app/strings",
     "//ios/chrome/app/theme",
     "//ios/chrome/browser/net/model:crurl",
+    "//ios/chrome/browser/omnibox/model:ui_bundled_interface",
     "//ios/chrome/common/ui/colors:swift",
     "//ui/base",
   ]
@@ -26,8 +27,6 @@ swift_source_set("popup_swift") {
 
 source_set("popup") {
   sources = [
-    "omnibox_pedal_annotator.h",
-    "omnibox_pedal_annotator.mm",
     "omnibox_popup_coordinator.h",
     "omnibox_popup_coordinator.mm",
     "omnibox_popup_mediator+Testing.h",
@@ -38,8 +37,6 @@ source_set("popup") {
     "omnibox_popup_provider.h",
     "omnibox_popup_view_ios.h",
     "omnibox_popup_view_ios.mm",
-    "pedal_section_extractor.h",
-    "pedal_section_extractor.mm",
     "pedal_suggestion_wrapper.h",
     "pedal_suggestion_wrapper.mm",
   ]
@@ -140,6 +137,7 @@ source_set("popup_ui") {
     "//ios/chrome/browser/download/model",
     "//ios/chrome/browser/favicon/ui_bundled",
     "//ios/chrome/browser/net/model:crurl",
+    "//ios/chrome/browser/omnibox/model:ui_bundled_interface",
     "//ios/chrome/browser/omnibox/public:features",
     "//ios/chrome/browser/omnibox/ui_bundled:omnibox_popup_shared",
     "//ios/chrome/browser/omnibox/ui_bundled:omnibox_util",
@@ -185,10 +183,6 @@ source_set("popup_icon") {
 
 source_set("popup_internal") {
   sources = [
-    "autocomplete_match_formatter.h",
-    "autocomplete_match_formatter.mm",
-    "autocomplete_suggestion_group_impl.h",
-    "autocomplete_suggestion_group_impl.mm",
     "omnibox_icon_formatter.h",
     "omnibox_icon_formatter.mm",
   ]
@@ -213,10 +207,8 @@ source_set("popup_internal") {
 source_set("popup_ui_protocols") {
   sources = [
     "autocomplete_result_consumer.h",
-    "autocomplete_suggestion.h",
     "content_providing.h",
     "omnibox_icon.h",
-    "omnibox_pedal.h",
     "popup_match_preview_delegate.h",
   ]
 }
@@ -224,10 +216,8 @@ source_set("popup_ui_protocols") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "omnibox_pedal_annotator_unittest.mm",
     "omnibox_popup_mediator_unittest.mm",
     "omnibox_popup_view_controller_unittest.mm",
-    "pedal_section_extractor_unittest.mm",
   ]
   deps = [
     ":popup",

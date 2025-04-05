@@ -35,7 +35,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
 #include "ui/wm/core/window_util.h"
@@ -75,8 +74,7 @@ OverviewEnterExitType MaybeOverrideEnterExitType(
     return original_type;
   }
 
-  if (features::IsForestFeatureEnabled() &&
-      !!Shell::Get()->informed_restore_controller()->contents_data()) {
+  if (!!Shell::Get()->informed_restore_controller()->contents_data()) {
     return OverviewEnterExitType::kInformedRestore;
   }
 

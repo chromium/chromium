@@ -50,14 +50,14 @@ export class LanguageToastElement extends LanguageToastElementBase implements
 
   protected notifications_: Map<string, NotificationType> = new Map();
   protected toastDuration_: number = toastDurationMs;
-  protected toastTitle_: string = '';
-  protected toastMessage_: string = '';
+  protected accessor toastTitle_: string = '';
+  protected accessor toastMessage_: string = '';
 
   // Some parent components don't want certain error notifications shown (e.g.
   // the language menu), so we let the parent control whether errors are shown
   // via data binding.
-  showErrors: boolean = false;
-  numAvailableVoices: number = 0;
+  accessor showErrors: boolean = false;
+  accessor numAvailableVoices: number = 0;
 
   notify(type: NotificationType, language?: string) {
     // <if expr="chromeos_ash">

@@ -23,15 +23,14 @@ namespace updater {
 
 class UsageStatsProviderImpl : public UsageStatsProvider {
  public:
-  UsageStatsProviderImpl(const std::wstring& system_key,
-                         const std::wstring& user_key)
-      : system_key_(system_key), user_key_(user_key) {}
+  UsageStatsProviderImpl(HKEY hive, std::vector<std::wstring> key_paths)
+      : hive_(hive), key_paths_(std::move(key_paths)) {}
 
-  bool AnyAppEnablesUsageStats(UpdaterScope scope) override {
+  bool AnyAppEnablesUsageStats() override {
     bool allowed = std::ranges::any_of(
-        GetAppIdsForScope(scope), [this, &scope](const std::string& app_id) {
-          if (!IsUpdaterOrCompanionApp(app_id) &&
-              AppAllowsUsageStats(scope, app_id)) {
+        GetInstalledAppIds(), [this](const std::wstring& app_id) {
+          if (!IsUpdaterOrCompanionApp(base::WideToUTF8(app_id)) &&
+              AppAllowsUsageStats(app_id)) {
             VLOG(2) << "usage stats enabled by app " << app_id;
             return true;
           }
@@ -45,65 +44,52 @@ class UsageStatsProviderImpl : public UsageStatsProvider {
   }
 
  private:
-  std::vector<std::string> GetAppIdsForScope(UpdaterScope scope) {
-    const HKEY root = UpdaterScopeToHKeyRoot(scope);
-    std::vector<std::wstring> subkeys({user_key_});
-    if (IsSystemInstall(scope)) {
-      subkeys.push_back(system_key_);
-    }
-
-    std::vector<std::string> app_ids;
-    for (const auto& subkey : subkeys) {
-      for (base::win::RegistryKeyIterator it(root, subkey.c_str(),
+  std::vector<std::wstring> GetInstalledAppIds() {
+    std::vector<std::wstring> app_ids;
+    for (const std::wstring& path : key_paths_) {
+      for (base::win::RegistryKeyIterator it(hive_, path.c_str(),
                                              KEY_WOW64_32KEY);
            it.Valid(); ++it) {
-        app_ids.push_back(base::WideToUTF8(it.Name()));
+        app_ids.push_back(it.Name());
       }
     }
-
     return app_ids;
   }
 
-  bool AppAllowsUsageStats(UpdaterScope scope, const std::string& id) {
-    const std::wstring& app_id = base::UTF8ToWide(id);
-    DWORD usagestats = 0;
-    if (IsSystemInstall(scope) &&
-        base::win::RegKey(UpdaterScopeToHKeyRoot(scope),
-                          base::StrCat({system_key_, app_id}).c_str(),
-                          Wow6432(KEY_READ))
-                .ReadValueDW(L"usagestats", &usagestats) == ERROR_SUCCESS) {
-      return usagestats == 1;
-    }
-
-    if (base::win::RegKey(UpdaterScopeToHKeyRoot(scope),
-                          base::StrCat({user_key_, app_id}).c_str(),
-                          Wow6432(KEY_READ))
-            .ReadValueDW(L"usagestats", &usagestats) == ERROR_SUCCESS) {
-      return usagestats == 1;
-    }
-
-    return false;
+  bool AppAllowsUsageStats(const std::wstring& app_id) {
+    return std::ranges::any_of(
+        key_paths_, [this, app_id](std::wstring key_path) {
+          DWORD usagestats = 0;
+          base::win::RegKey key;
+          return key.Open(hive_, base::StrCat({key_path, app_id}).c_str(),
+                          Wow6432(KEY_READ)) == ERROR_SUCCESS &&
+                 key.ReadValueDW(L"usagestats", &usagestats) == ERROR_SUCCESS &&
+                 usagestats == 1;
+        });
   }
 
-  std::wstring system_key_;
-  std::wstring user_key_;
+  HKEY hive_;
+  std::vector<std::wstring> key_paths_;
 };
 
 // Returns a usage stats provider that checks for apps under the
 // CLIENT_STATE_MEDIUM_KEY and CLIENT_STATE_KEY registry keys. The updater
 // stores installation and usage stat information in these keys.
-std::unique_ptr<UsageStatsProvider> UsageStatsProvider::Create() {
+std::unique_ptr<UsageStatsProvider> UsageStatsProvider::Create(
+    UpdaterScope scope) {
   return UsageStatsProvider::Create(
-      /*system_key=*/CLIENT_STATE_MEDIUM_KEY, /*user_key=*/CLIENT_STATE_KEY);
+      UpdaterScopeToHKeyRoot(scope),
+      IsSystemInstall(scope) ? std::vector<std::wstring>(
+                                   {CLIENT_STATE_KEY, CLIENT_STATE_MEDIUM_KEY})
+                             : std::vector<std::wstring>({CLIENT_STATE_KEY}));
 }
 
-// Returns a usage stats provider that checks apps installed under the
-// `system_key` and `user_key` in the registry. The updater
-// stores installation and usage stat information in these keys.
+// Returns a usage stats provider that checks for installed app data under the
+// given registry keys.
 std::unique_ptr<UsageStatsProvider> UsageStatsProvider::Create(
-    const std::wstring& system_key,
-    const std::wstring& user_key) {
-  return std::make_unique<UsageStatsProviderImpl>(system_key, user_key);
+    HKEY hive,
+    std::vector<std::wstring> key_paths) {
+  return std::make_unique<UsageStatsProviderImpl>(hive, std::move(key_paths));
 }
 
 }  // namespace updater

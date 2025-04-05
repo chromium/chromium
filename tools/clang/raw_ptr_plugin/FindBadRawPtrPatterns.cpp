@@ -365,11 +365,7 @@ void FindBadRawPtrPatterns(const Options& options,
                            clang::ASTContext& ast_context,
                            clang::CompilerInstance& compiler) {
   llvm::StringMap<llvm::TimeRecord> Records;
-#if defined(LLVM_FORCE_HEAD_REVISION)
   MatchFinder::MatchFinderOptions FinderOptions;
-#else  // TODO(crbug.com/403519834): Remove in next clang roll.
-  MatchFinderOptions FinderOptions;
-#endif
   if (options.enable_match_profiling) {
     FinderOptions.CheckProfiling.emplace(Records);
   }

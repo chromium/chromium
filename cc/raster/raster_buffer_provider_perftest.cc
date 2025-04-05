@@ -375,7 +375,8 @@ class RasterBufferProviderPerfTest
         raster_caps.use_gpu_rasterization = false;
         raster_buffer_provider_ =
             std::make_unique<ZeroCopyRasterBufferProvider>(
-                compositor_context_provider_.get(), raster_caps);
+                compositor_context_provider_.get()->SharedImageInterface(),
+                raster_caps.tile_format, /*is_software=*/false);
         break;
       case RASTER_BUFFER_PROVIDER_TYPE_ONE_COPY:
         Create3dResourceProvider();
@@ -383,7 +384,8 @@ class RasterBufferProviderPerfTest
         raster_buffer_provider_ = std::make_unique<OneCopyRasterBufferProvider>(
             task_runner_.get(), compositor_context_provider_.get(),
             worker_context_provider_.get(), std::numeric_limits<int>::max(),
-            false, std::numeric_limits<int>::max(), raster_caps);
+            false, std::numeric_limits<int>::max(), raster_caps.tile_format,
+            raster_caps.tile_overlay_candidate);
         break;
       case RASTER_BUFFER_PROVIDER_TYPE_GPU:
         Create3dResourceProvider();
@@ -397,7 +399,7 @@ class RasterBufferProviderPerfTest
         raster_buffer_provider_ =
             std::make_unique<ZeroCopyRasterBufferProvider>(
                 layer_tree_frame_sink_.get()->shared_image_interface(),
-                raster_caps);
+                raster_caps.tile_format, /*is_software=*/true);
         break;
     }
     DCHECK(raster_buffer_provider_);

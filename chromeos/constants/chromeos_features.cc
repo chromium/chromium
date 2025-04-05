@@ -540,7 +540,8 @@ bool IsRoundedWindowsEnabled() {
 }
 
 bool IsSystemBlurEnabled() {
-  return !base::FeatureList::IsEnabled(kDisableSystemBlur);
+  static bool disable_blur = base::FeatureList::IsEnabled(kDisableSystemBlur);
+  return !disable_blur;
 }
 
 bool IsPkcs12ToChapsDualWriteEnabled() {

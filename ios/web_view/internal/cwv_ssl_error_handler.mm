@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "base/memory/weak_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/session/session_certificate_policy_cache.h"
@@ -10,7 +11,7 @@
 #import "ios/web_view/internal/cwv_ssl_util.h"
 
 @implementation CWVSSLErrorHandler {
-  web::WebState* _webState;
+  base::WeakPtr<web::WebState> _webState;
   net::SSLInfo _SSLInfo;
   void (^_errorPageHTMLCallback)(NSString*);
   BOOL _overridden;
@@ -23,7 +24,7 @@
            errorPageHTMLCallback:(void (^)(NSString*))errorPageHTMLCallback {
   self = [super init];
   if (self) {
-    _webState = webState;
+    _webState = webState->GetWeakPtr();
     _URL = URL;
     _error = error;
     _SSLInfo = SSLInfo;
@@ -55,7 +56,7 @@
 }
 
 - (void)overrideErrorAndReloadPage {
-  if (!self.overridable) {
+  if (!self.overridable || !_webState) {
     return;
   }
 

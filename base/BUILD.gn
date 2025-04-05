@@ -394,6 +394,7 @@ component("base") {
     "memory/ref_counted_memory.h",
     "memory/safe_ref.h",
     "memory/safe_ref_traits.h",
+    "memory/safety_checks.cc",
     "memory/safety_checks.h",
     "memory/scoped_policy.h",
     "memory/scoped_refptr.h",
@@ -1518,8 +1519,6 @@ component("base") {
   # TODO(crbug.com/40511454) Use only boringssl when NaCl is removed.
   sources += [
     "hash/md5.h",
-    "hash/md5_constexpr.h",
-    "hash/md5_constexpr_internal.h",
     "hash/sha1.h",
   ]
   if (is_nacl) {
@@ -2071,6 +2070,8 @@ component("base") {
     sources += [
       "apple/mach_port_rendezvous.cc",
       "apple/mach_port_rendezvous.h",
+      "apple/mach_port_rendezvous_mac.cc",
+      "apple/mach_port_rendezvous_mac.h",
       "enterprise_util.cc",
       "enterprise_util.h",
       "enterprise_util_mac.mm",
@@ -2212,7 +2213,11 @@ component("base") {
         # the bare minimum and does not use Mach ports.
         sources += [ "process/process_tvos.cc" ]
       } else {
-        sources += [ "process/process_mac.cc" ]
+        sources += [
+          "apple/mach_port_rendezvous_ios.cc",
+          "apple/mach_port_rendezvous_ios.h",
+          "process/process_mac.cc",
+        ]
       }
 
       # We include launch_mac on simulator builds so unittests can fork. But,
@@ -3171,7 +3176,7 @@ generated_file("generate_file_for_test") {
 if (is_ios) {
   bundle_data("base_test_proto_bundle_data") {
     testonly = true
-    public_deps = [ "//base/test:test_proto_descriptor" ]
+    public_deps = [ "//base/test:test_proto_descriptor_gen" ]
     sources = [ "$root_gen_dir/base/test/test_proto.descriptor" ]
     outputs = [ "{{bundle_resources_dir}}/gen/base/test/{{source_file_part}}" ]
   }
@@ -3380,7 +3385,6 @@ test("base_unittests") {
     "gmock_unittest.cc",
     "hash/hash_unittest.cc",
     "hash/legacy_hash_unittest.cc",
-    "hash/md5_constexpr_unittest.cc",
     "hash/md5_unittest.cc",
     "hash/sha1_unittest.cc",
     "i18n/break_iterator_unittest.cc",

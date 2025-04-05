@@ -38,6 +38,7 @@
             initWithDetails:(PasskeyRequestDetails*)passkeyRequestDetails
                        gaia:(NSString*)gaia
                   userEmail:(NSString*)userEmail
+                    favicon:(NSString*)favicon
     navigationItemTitleView:(UIView*)navigationItemTitleView
                    delegate:
                        (id<MultiProfilePasskeyCreationViewControllerDelegate>)

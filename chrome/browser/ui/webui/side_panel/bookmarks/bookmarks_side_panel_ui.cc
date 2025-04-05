@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/bookmarks/bookmark_merged_surface_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #include "chrome/browser/browser_features.h"
@@ -309,9 +310,12 @@ BookmarksSidePanelUI::GetShoppingListContextMenuController() {
 }
 
 void BookmarksSidePanelUI::CreateBookmarksPageHandler(
+    mojo::PendingRemote<side_panel::mojom::BookmarksPage> page,
     mojo::PendingReceiver<side_panel::mojom::BookmarksPageHandler> receiver) {
-  bookmarks_page_handler_ =
-      std::make_unique<BookmarksPageHandler>(std::move(receiver), this);
+  bookmarks_page_handler_ = std::make_unique<BookmarksPageHandler>(
+      std::move(receiver), std::move(page), this,
+      BookmarkMergedSurfaceServiceFactory::GetForProfile(
+          Profile::FromWebUI(web_ui())));
 }
 
 void BookmarksSidePanelUI::CreateShoppingServiceHandler(

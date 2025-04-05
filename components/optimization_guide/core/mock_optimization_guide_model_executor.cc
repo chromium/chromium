@@ -61,6 +61,12 @@ void MockSession::Delegate(OptimizationGuideModelExecutor::Session* impl) {
       .WillByDefault([impl](const auto& input, auto callback) {
         impl->ExecuteModel(input, std::move(callback));
       });
+  ON_CALL(*this, ExecuteModelWithResponseJsonSchema)
+      .WillByDefault([impl](const auto& input, const auto& response_json_schema,
+                            auto callback) {
+        impl->ExecuteModelWithResponseJsonSchema(input, response_json_schema,
+                                                 std::move(callback));
+      });
   ON_CALL(*this, GetSizeInTokens)
       .WillByDefault([impl](const auto& input, auto callback) {
         impl->GetSizeInTokens(input, std::move(callback));

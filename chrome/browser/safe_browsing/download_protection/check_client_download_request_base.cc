@@ -464,6 +464,8 @@ void CheckClientDownloadRequestBase::SendRequest() {
       net::SiteForCookies::FromUrl(resource_request->url);
 
 #if !BUILDFLAG(IS_ANDROID)
+  // TODO(chlily): Factor this out into
+  // DownloadProtectionDelegate::FinalizeResourceRequest.
   if (!access_token_.empty()) {
     LogAuthenticatedCookieResets(
         *resource_request,
@@ -479,6 +481,8 @@ void CheckClientDownloadRequestBase::SendRequest() {
     FinishRequest(DownloadCheckResult::UNKNOWN, REASON_SERVER_PING_FAILED);
     return;
   }
+
+  service_->delegate()->FinalizeResourceRequest(*resource_request);
 
   loader_ = network::SimpleURLLoader::Create(
       std::move(resource_request),

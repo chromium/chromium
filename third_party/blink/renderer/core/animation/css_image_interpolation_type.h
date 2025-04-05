@@ -13,8 +13,9 @@ class StyleImage;
 
 class CSSImageInterpolationType : public CSSInterpolationType {
  public:
-  CSSImageInterpolationType(PropertyHandle property,
-                            const PropertyRegistration* registration = nullptr)
+  explicit CSSImageInterpolationType(
+      PropertyHandle property,
+      const PropertyRegistration* registration = nullptr)
       : CSSInterpolationType(property, registration) {}
 
   InterpolationValue MaybeConvertStandardPropertyUnderlyingValue(

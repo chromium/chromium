@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/paint/fragment_data.h"
+
+#include "base/debug/dump_without_crashing.h"
 #include "third_party/blink/renderer/core/page/scrolling/sticky_position_scrolling_constraints.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
@@ -130,6 +132,25 @@ const EffectPaintPropertyNodeOrAlias& FragmentData::ContentsEffect() const {
       return *properties->EffectIsolationNode();
   }
   return LocalBorderBoxProperties().Effect();
+}
+
+PropertyTreeStateOrAlias FragmentData::LocalBorderBoxPropertiesFallback()
+    const {
+  // TODO(crbug.com/40218657): This should never be reached, but does in
+  // practice and we haven't been able to find all of the cases where it
+  // happens yet. crbug.com/40152845 is an example case. crbug.com/396612314
+  // is an example of fixed cases.
+#if DCHECK_IS_ON()
+  // Crash on DCHECK build.
+  NOTREACHED();
+#else
+  // Otherwise, dump stack without crashing, and fallback to root. This may
+  // cause unexpected situation in later stages, which are probably also worked
+  // around. We can remove this function and all later workarounds if this no
+  // longer happens.
+  base::debug::DumpWithoutCrashing();
+  return PropertyTreeStateOrAlias::Root();
+#endif
 }
 
 FragmentData& FragmentDataList::AppendNewFragment() {

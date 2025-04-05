@@ -1549,8 +1549,8 @@ LogicalSize BlockNode::GetReplacedAspectRatio() const {
     const PhysicalNaturalSizingInfo legacy_sizing_info =
         To<LayoutReplaced>(*box_).ComputeNaturalSizingInfo();
     if (!legacy_sizing_info.aspect_ratio.IsEmpty()) {
-      return legacy_sizing_info.aspect_ratio.ConvertToLogical(
-          Style().GetWritingMode());
+      return ToLogicalSize(legacy_sizing_info.aspect_ratio,
+                           Style().GetWritingMode());
     }
   }
 
@@ -1794,7 +1794,7 @@ void BlockNode::UpdateShapeOutsideInfoIfNeeded(
   BoxStrut margins = ComputePhysicalMargins(constraint_space, Style())
                          .ConvertToLogical({writing_mode, TextDirection::kLtr});
   shape_outside->SetReferenceBoxLogicalSize(
-      box_size.ConvertToLogical(writing_mode),
+      ToLogicalSize(box_size, writing_mode),
       LogicalSize(margins.InlineSum(), margins.BlockSum()));
   shape_outside->SetPercentageResolutionInlineSize(
       constraint_space.PercentageResolutionInlineSize());

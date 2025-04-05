@@ -482,12 +482,6 @@ void TapMagicStackEditButton() {
 // Set Up List, returns to the Magic Stack and ensures Set Up List is not in the
 // Magic Stack anymore.
 - (void)testMagicStackEditButton {
-  // Enable customization.
-  AppLaunchConfiguration config = [self appConfigurationForTestCase];
-  config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  config.features_enabled.push_back(kHomeCustomization);
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
-
   [self prepareToTestSetUpListInMagicStack];
   TapMagicStackEditButton();
 

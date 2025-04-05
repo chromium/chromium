@@ -67,6 +67,7 @@ class SettingsSetupPinDialogElement extends SettingsSetupPinDialogElementBase {
     };
   }
 
+  authToken: string;
   private enableSubmit_: boolean;
   private isConfirmStep_: boolean;
   private quickUnlockPrivate: Object;

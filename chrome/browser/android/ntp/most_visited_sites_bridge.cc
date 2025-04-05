@@ -230,8 +230,8 @@ jboolean MostVisitedSitesBridge::DeleteCustomLink(JNIEnv* env,
   return false;
 }
 
-jboolean MostVisitedSitesBridge::QueryCustomLink(JNIEnv* env,
-                                                 const GURL& key_url) {
+jboolean MostVisitedSitesBridge::HasCustomLink(JNIEnv* env,
+                                               const GURL& key_url) {
   // TODO(crbug.com/397421743): Implement.
   return false;
 }

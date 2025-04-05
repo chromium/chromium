@@ -73,10 +73,10 @@ interface KeySystemSupportObserver {
 // Browser process singleton that a renderer process can use to subscribe to
 // key system updates.
 interface KeySystemSupport {
-  // Adds an observer to observe key system support updates. KeySystemSupport
+  // Sets an observer to observe key system support updates. KeySystemSupport
   // implementation is in the browser process, as it maintains the list of
   // registered CDMs, and hardware secure support check also needs to run in the
   // browser process because the render process is sandboxed. KeySystemSupport
   // clients run in the renderer process.
-  AddObserver(pending_remote<KeySystemSupportObserver> observer);
+  SetObserver(pending_remote<KeySystemSupportObserver> observer);
 };

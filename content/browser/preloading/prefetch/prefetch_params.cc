@@ -271,4 +271,10 @@ size_t GetPrefetchDataPipeTeeBodySizeLimit() {
       features::kPrerender2FallbackBodySizeLimit.Get());
 }
 
+bool UsePrefetchScheduler() {
+  return base::FeatureList::IsEnabled(features::kPrefetchScheduler) ||
+         features::kPrerender2FallbackPrefetchSchedulerPolicy.Get() !=
+             features::Prerender2FallbackPrefetchSchedulerPolicy::kNotUse;
+}
+
 }  // namespace content

@@ -11,7 +11,7 @@ namespace blink {
 
 class CSSPathInterpolationType : public CSSInterpolationType {
  public:
-  CSSPathInterpolationType(PropertyHandle property)
+  explicit CSSPathInterpolationType(PropertyHandle property)
       : CSSInterpolationType(property) {}
 
   void ApplyStandardPropertyValue(const InterpolableValue&,

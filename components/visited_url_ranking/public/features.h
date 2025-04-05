@@ -21,6 +21,10 @@ BASE_DECLARE_FEATURE(kVisitedURLRankingService);
 extern const base::FeatureParam<bool>
     kVisitedURLRankingHistoryFetcherDiscardZeroDurationVisits;
 
+// Parameter determining if the actions used to train the model should
+// continue to be sent to the segmentation service.
+extern const base::FeatureParam<bool> kVisitedURLRankingRecordActions;
+
 // Parameter determining the fetch option's default query duration in hours.
 extern const char kVisitedURLRankingFetchDurationInHoursParam[];
 

@@ -53,6 +53,7 @@
 #include "ash/wm/screen_pinning_controller.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/split_view_controller.h"
+#include "ash/wm/window_pin_util.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/work_area_insets.h"
@@ -69,6 +70,7 @@
 #include "chromeos/ash/components/growth/campaigns_constants.h"
 #include "chromeos/ash/components/growth/campaigns_manager.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "chromeos/ui/base/window_pin_type.h"
 #include "components/prefs/pref_service.h"
 #include "ui/aura/client/drag_drop_client.h"
 #include "ui/aura/client/screen_position_client.h"
@@ -1704,6 +1706,16 @@ void ShelfLayoutManager::SetState(ShelfVisibilityState visibility_state,
 HotseatState ShelfLayoutManager::CalculateHotseatState(
     ShelfVisibilityState visibility_state,
     ShelfAutoHideState auto_hide_state) const {
+  // Hide hotseat when in locked fullscreen mode to prevent users from exiting
+  // this mode.
+  auto* const screen_pinning_controller =
+      Shell::Get()->screen_pinning_controller();
+  if (screen_pinning_controller && screen_pinning_controller->IsPinned() &&
+      (GetWindowPinType(screen_pinning_controller->pinned_window()) ==
+       chromeos::WindowPinType::kTrustedPinned)) {
+    return HotseatState::kHidden;
+  }
+
   if (!Shell::Get()->IsInTabletMode() || !shelf_->IsHorizontalAlignment()) {
     return HotseatState::kShownClamshell;
   }

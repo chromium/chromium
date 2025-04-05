@@ -323,8 +323,6 @@ class WebAppSyncBridge : public syncer::DataTypeSyncBridge {
   base::WeakPtrFactory<WebAppSyncBridge> weak_ptr_factory_{this};
 };
 
-BASE_DECLARE_FEATURE(kMigrateShortcutsToDiy);
-
 std::unique_ptr<syncer::EntityData> CreateSyncEntityData(const WebApp& app);
 
 void ApplySyncDataToApp(const sync_pb::WebAppSpecifics& sync_data, WebApp* app);

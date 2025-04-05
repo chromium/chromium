@@ -136,15 +136,15 @@ export class PrintPreviewPagesSettingsElement extends
     ];
   }
 
-  disabled: boolean;
-  pageCount: number;
-  private controlsDisabled_: boolean;
-  private errorState_: PagesInputErrorState;
-  private hasError_: boolean;
-  private inputString_: string;
-  private pagesToPrint_: number[];
-  private rangesToPrint_: Range[];
-  private selection_: PagesValue;
+  declare disabled: boolean;
+  declare pageCount: number;
+  declare private controlsDisabled_: boolean;
+  declare private errorState_: PagesInputErrorState;
+  declare private hasError_: boolean;
+  declare private inputString_: string;
+  declare private pagesToPrint_: number[];
+  declare private rangesToPrint_: Range[];
+  declare private selection_: PagesValue;
 
   /**
    * True if the user's last valid input should be restored to the custom

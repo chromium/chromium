@@ -43,7 +43,6 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
-#import "ios/chrome/browser/signin/model/chrome_account_manager_service_observer_bridge.h"
 #import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
@@ -56,21 +55,6 @@
 #import "ios/web/public/web_state.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
-
-namespace {
-// URL for 'Manage Activity' item in the Discover feed menu.
-const char kFeedManageActivityURL[] =
-    "https://myactivity.google.com/myactivity?product=50";
-// URL for 'Manage Interests' item in the Discover feed menu.
-const char kFeedManageInterestsURL[] =
-    "https://google.com/preferences/interests/yourinterests";
-// URL for 'Manage Hidden' item in the Discover feed menu.
-const char kFeedManageHiddenURL[] =
-    "https://google.com/preferences/interests/hidden";
-// URL for 'Learn More' item in the Discover feed menu;
-const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
-                                 "?p=new_tab&co=GENIE.Platform%3DiOS&oco=1";
-}  // namespace
 
 @interface NewTabPageMediator () <IdentityManagerObserverBridgeDelegate,
                                   PrefObserverDelegate,
@@ -195,11 +179,6 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
   self.feedControlDelegate = nil;
 }
 
-- (void)handleFeedLearnMoreTapped {
-  [self.feedMetricsRecorder recordHeaderMenuLearnMoreTapped];
-  [self openMenuItemWebPage:GURL(kFeedLearnMoreURL)];
-}
-
 - (void)saveNTPStateForWebState:(web::WebState*)webState {
   NewTabPageState* NTPState = [[NewTabPageState alloc]
       initWithScrollPosition:self.scrollPositionToSave
@@ -225,28 +204,6 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
   } else {
     [self.consumer restoreScrollPosition:NTPState.scrollPosition];
   }
-}
-
-#pragma mark - FeedManagementNavigationDelegate
-
-- (void)handleNavigateToActivity {
-  [self.feedMetricsRecorder recordHeaderMenuManageActivityTapped];
-  [self openMenuItemWebPage:GURL(kFeedManageActivityURL)];
-}
-
-- (void)handleNavigateToFollowing {
-  [self.feedMetricsRecorder recordHeaderMenuManageFollowingTapped];
-  [self openMenuItemWebPage:GURL(kFeedManageInterestsURL)];
-}
-
-- (void)handleNavigateToHidden {
-  [self.feedMetricsRecorder recordHeaderMenuManageHiddenTapped];
-  [self openMenuItemWebPage:GURL(kFeedManageHiddenURL)];
-}
-
-- (void)handleNavigateToFollowedURL:(const GURL&)url {
-  // TODO(crbug.com/40227407): Add metrics.
-  [self openMenuItemWebPage:url];
 }
 
 #pragma mark - SearchEngineObserving

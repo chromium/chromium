@@ -19,7 +19,8 @@ class LoyaltyCard final {
               std::string merchant_name,
               std::string program_name,
               GURL program_logo,
-              std::string loyalty_card_number);
+              std::string loyalty_card_number,
+              std::vector<GURL> merchant_domains);
 
   LoyaltyCard(const LoyaltyCard&);
   LoyaltyCard(LoyaltyCard&&);
@@ -53,6 +54,13 @@ class LoyaltyCard final {
     loyalty_card_number_ = loyalty_card_number;
   }
 
+  const std::vector<GURL>& merchant_domains() const {
+    return merchant_domains_;
+  }
+  void set_merchant_domains(std::vector<GURL> merchant_domains) {
+    merchant_domains_ = std::move(merchant_domains);
+  }
+
   // Checks if this loyalty card is valid. A valid loyalty card contains a
   // non-empty loyalty card id and a logo URL which should be either empty or
   // valid.
@@ -76,6 +84,9 @@ class LoyaltyCard final {
 
   // The loyalty card text code.
   std::string loyalty_card_number_;
+
+  // The list of merchant domains associated to this card.
+  std::vector<GURL> merchant_domains_;
 };
 
 }  // namespace autofill

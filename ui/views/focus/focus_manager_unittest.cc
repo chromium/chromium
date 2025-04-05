@@ -939,6 +939,7 @@ TEST_F(FocusManagerTest, AdvanceFocusStaysInWidget) {
       std::make_unique<AdvanceFocusWidgetDelegate>(child_widget.get());
   params.delegate = delegate_owned.get();
   params.delegate->RegisterDeleteDelegateCallback(
+      WidgetDelegate::RegisterDeleteCallbackPassKey(),
       base::DoNothingWithBoundArgs(std::move(delegate_owned)));
   child_widget->Init(std::move(params));
 

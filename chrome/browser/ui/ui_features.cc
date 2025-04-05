@@ -44,12 +44,18 @@ BASE_FEATURE(kFewerUpdateConfirmations,
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+
 // Controls whether we use a different UX for simple extensions overriding
 // settings.
 BASE_FEATURE(kLightweightExtensionOverrideConfirmations,
              "LightweightExtensionOverrideConfirmations",
              base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
+
+BASE_FEATURE(kExtensionsCollapseMainMenu,
+             "ExtensionsCollapseMainMenu",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(IS_WIN)
 BASE_FEATURE(kOfferPinToTaskbarWhenSettingToDefault,
@@ -60,7 +66,7 @@ BASE_FEATURE(kOfferPinToTaskbarWhenSettingToDefault,
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 // Shows an infobar on PDFs offering to become the default PDF viewer if Chrome
 // isn't the default already.
-BASE_FEATURE(kPdfInfoBar, "kPdfInfoBar", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPdfInfoBar, "PdfInfoBar", base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // Preloads a WebContents with a Top Chrome WebUI on BrowserView initialization,

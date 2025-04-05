@@ -15,6 +15,7 @@
 
 #include "base/containers/contains.h"
 #include "base/location.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -70,7 +71,10 @@ ResourceMultiBufferDataProvider::ResourceMultiBufferDataProvider(
   DCHECK_GE(pos, 0);
 }
 
-ResourceMultiBufferDataProvider::~ResourceMultiBufferDataProvider() = default;
+ResourceMultiBufferDataProvider::~ResourceMultiBufferDataProvider() {
+  base::UmaHistogramCustomCounts("Media.Network.TotalBytesReceived.SRC",
+                                 total_bytes_received_, 1024, 1073741824, 100);
+}
 
 void ResourceMultiBufferDataProvider::Start() {
   DVLOG(1) << __func__ << " @ " << byte_pos();
@@ -299,7 +303,6 @@ void ResourceMultiBufferDataProvider::DidReceiveResponse(
       do_fail = true;
     }
   } else {
-    destination_url_data->set_range_supported();
     if (content_length != kPositionNotSpecified) {
       destination_url_data->set_length(content_length + byte_pos());
     }
@@ -387,6 +390,8 @@ void ResourceMultiBufferDataProvider::DidReceiveData(
   DCHECK(!Available());
   DCHECK(active_loader_);
   DCHECK_GT(data.size(), 0u);
+
+  total_bytes_received_ += data.size();
 
   auto bytes_data = base::as_bytes(data);
   if (bytes_to_discard_) {

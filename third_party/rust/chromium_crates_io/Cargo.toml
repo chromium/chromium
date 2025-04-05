@@ -45,10 +45,37 @@ temporal_capi = "0.0.6"
 version = "1.4.2"
 features = ["nightly"]  # For optimized aarch64 implementation.
 
+# Include temporarily here as a direct dependency during the import process
+# for authenticated-pseudonyms.
+# TODO(crbug.com/404604413): Stop exposing this here when it becomes a
+# transitive dependency.
+[dependencies.ff]
+version = "0.13"
+default-features = false
+
 [dependencies.icu_capi]
 version = "2.0.0-beta2"
 default-features = false
 features = ["calendar", "compiled_data", "experimental", "casemap"]
+
+[dependencies.icu_casemap]
+version = "2.0.0-beta2"
+default-features = false
+[dependencies.icu_experimental]
+version = "0.3.0-beta2"
+default-features = false
+[dependencies.icu_locale_core]
+version = "2.0.0-beta2"
+default-features = false
+[dependencies.icu_normalizer]
+version = "2.0.0-beta2"
+default-features = false
+[dependencies.icu_properties]
+version = "2.0.0-beta2"
+default-features = false
+[dependencies.icu_provider]
+version = "2.0.0-beta2"
+default-features = false
 
 [dependencies.tinyvec]
 version = "1.6.0"

@@ -98,3 +98,7 @@ int TestTabModel::GetTabCountNavigatedInTimeWindow(
 
 void TestTabModel::CloseTabsNavigatedInTimeWindow(const base::Time& begin_time,
                                                   const base::Time& end_time) {}
+
+bool TestTabModel::IsTabInTabGroup(TabAndroid* tab) {
+  return false;
+}

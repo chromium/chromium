@@ -5,6 +5,7 @@
 #ifndef ASH_ACCESSIBILITY_ACCESSIBILITY_CONTROLLER_H_
 #define ASH_ACCESSIBILITY_ACCESSIBILITY_CONTROLLER_H_
 
+#include <array>
 #include <memory>
 #include <optional>
 #include <string>
@@ -855,7 +856,7 @@ class ASH_EXPORT AccessibilityController
   raw_ptr<AccessibilityControllerClient> client_ = nullptr;
 
   // Features are indexed by A11yFeatureType cast to int.
-  std::unique_ptr<Feature> features_[kA11yFeatureTypeCount];
+  std::array<std::unique_ptr<Feature>, kA11yFeatureTypeCount> features_;
 
   base::TimeDelta autoclick_delay_;
   int large_cursor_size_in_dip_ = kDefaultLargeCursorSize;

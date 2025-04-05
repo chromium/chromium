@@ -275,6 +275,13 @@ class OptimizationGuideModelExecutor {
         const google::protobuf::MessageLite& request_metadata,
         OptimizationGuideModelExecutionResultStreamingCallback callback) = 0;
 
+    // A JSON schema is provided to define structured output requirements for
+    // the response.
+    virtual void ExecuteModelWithResponseJsonSchema(
+        const google::protobuf::MessageLite& request_metadata,
+        const std::optional<std::string>& response_json_schema,
+        OptimizationGuideModelExecutionResultStreamingCallback callback) = 0;
+
     // Call `GetSizeInTokens()` from the model to get the size of the given text
     // in tokens. The result will be passed back through the callback.
     virtual void GetSizeInTokens(

@@ -585,8 +585,7 @@ class ComputedStyle final : public ComputedStyleBase {
 
   // column-rule-width
   GapDataList<int> ColumnRuleWidth() const {
-    if (ColumnRuleStyle().GetLegacyValue() == EBorderStyle::kNone ||
-        ColumnRuleStyle().GetLegacyValue() == EBorderStyle::kHidden) {
+    if (!BorderStyleIsVisible(ColumnRuleStyle())) {
       return GapDataList<int>(0);
     }
     return ColumnRuleWidthInternal();
@@ -1000,8 +999,8 @@ class ComputedStyle final : public ComputedStyleBase {
                                 Display() != EDisplay::kFlex)) [[likely]] {
       return false;
     }
-    return ColumnRuleWidth().GetLegacyValue() && !ColumnRuleIsTransparent() &&
-           BorderStyleIsVisible(ColumnRuleStyle().GetLegacyValue());
+    return HasRuleWidth(ColumnRuleWidth()) && !ColumnRuleIsTransparent() &&
+           BorderStyleIsVisible(ColumnRuleStyle());
   }
 
   bool RowRuleIsTransparent() const {
@@ -1011,8 +1010,8 @@ class ComputedStyle final : public ComputedStyleBase {
         .IsFullyTransparent();
   }
   bool HasRowRule() const {
-    return RowRuleWidth().GetLegacyValue() && !RowRuleIsTransparent() &&
-           BorderStyleIsVisible(RowRuleStyle().GetLegacyValue());
+    return HasRuleWidth(RowRuleWidth()) && !RowRuleIsTransparent() &&
+           BorderStyleIsVisible(RowRuleStyle());
   }
 
   bool HasGapRule() const { return HasColumnRule() || HasRowRule(); }
@@ -2248,6 +2247,49 @@ class ComputedStyle final : public ComputedStyleBase {
   static bool BorderStyleIsVisible(EBorderStyle style) {
     return style != EBorderStyle::kNone && style != EBorderStyle::kHidden;
   }
+
+  static bool BorderStyleIsVisible(GapDataList<EBorderStyle> styles) {
+    for (const auto& style : styles.GetGapDataList()) {
+      if (!style.IsRepeaterData()) {
+        // Simple single value, check directly.
+        if (BorderStyleIsVisible(style.GetValue())) {
+          return true;
+        }
+      } else {
+        // Repeater value, check each repeated value.
+        for (const auto& repeated_style :
+             style.GetValueRepeater()->RepeatedValues()) {
+          if (BorderStyleIsVisible(repeated_style)) {
+            return true;
+          }
+        }
+      }
+    }
+
+    return false;
+  }
+
+  static bool HasRuleWidth(GapDataList<int> widths) {
+    for (const auto& width : widths.GetGapDataList()) {
+      if (!width.IsRepeaterData()) {
+        // Simple single value, check directly.
+        if (width.GetValue() != 0) {
+          return true;
+        }
+      } else {
+        // Repeater value, check each repeated value.
+        for (const auto& repeated_width :
+             width.GetValueRepeater()->RepeatedValues()) {
+          if (repeated_width != 0) {
+            return true;
+          }
+        }
+      }
+    }
+
+    return false;
+  }
+
   bool BorderObscuresBackground() const;
   void GetBorderEdgeInfo(
       BorderEdgeArray& edges,
@@ -2423,7 +2465,7 @@ class ComputedStyle final : public ComputedStyleBase {
 
   LogicalSize LogicalAspectRatio() const {
     DCHECK_NE(AspectRatio().GetType(), EAspectRatioType::kAuto);
-    return AspectRatio().GetLayoutRatio().ConvertToLogical(GetWritingMode());
+    return ToLogicalSize(AspectRatio().GetLayoutRatio(), GetWritingMode());
   }
 
   EBoxSizing BoxSizingForAspectRatio() const {

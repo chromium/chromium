@@ -55,6 +55,8 @@ class MockMigrationNotificationManager : public MigrationNotificationManager {
               ShowConfigurationErrorNotification,
               (MigrationDestination),
               (override));
+
+  MOCK_METHOD(void, ShowDeletionCompletedNotification, (), (override));
 };
 
 // Mock implementation of MigrationCoordinator, with the default behavior to
@@ -90,6 +92,27 @@ class MockMigrationCoordinator : public MigrationCoordinator {
   base::RepeatingClosure run_cb_;
 
   base::WeakPtrFactory<MockMigrationCoordinator> weak_ptr_factory_{this};
+};
+
+// Mock implementation of FilesCleanupHandler. By default, cleanup succeeds
+// immediately.
+class MockCleanupHandler : public chromeos::FilesCleanupHandler {
+ public:
+  MockCleanupHandler();
+
+  MockCleanupHandler(const MockCleanupHandler&) = delete;
+  MockCleanupHandler& operator=(const MockCleanupHandler&) = delete;
+
+  ~MockCleanupHandler() override;
+
+  base::WeakPtr<MockCleanupHandler> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+  MOCK_METHOD(void, Cleanup, (CleanupHandlerCallback callback), (override));
+
+ private:
+  base::WeakPtrFactory<MockCleanupHandler> weak_ptr_factory_{this};
 };
 
 }  // namespace policy::local_user_files

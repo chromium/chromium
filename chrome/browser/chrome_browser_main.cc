@@ -874,13 +874,10 @@ int ChromeBrowserMainParts::OnLocalStateLoaded(
   }
 #endif
 
-  std::string locale =
-      startup_data_->chrome_feature_list_creator()->actual_locale();
-  if (locale.empty()) {
+  if (startup_data_->chrome_feature_list_creator()->actual_locale().empty()) {
     *failed_to_load_resource_bundle = true;
     return CHROME_RESULT_CODE_MISSING_DATA;
   }
-  browser_process_->SetApplicationLocale(locale);
 
   const int apply_first_run_result = ApplyFirstRunPrefs();
   if (apply_first_run_result != content::RESULT_CODE_NORMAL_EXIT)
@@ -945,7 +942,7 @@ int ChromeBrowserMainParts::ApplyFirstRunPrefs() {
 int ChromeBrowserMainParts::PreCreateThreadsImpl() {
   TRACE_EVENT0("startup", "ChromeBrowserMainParts::PreCreateThreadsImpl");
 
-  if (browser_process_->GetApplicationLocale().empty()) {
+  if (startup_data_->chrome_feature_list_creator()->actual_locale().empty()) {
     ShowMissingLocaleMessageBox();
     return CHROME_RESULT_CODE_MISSING_DATA;
   }

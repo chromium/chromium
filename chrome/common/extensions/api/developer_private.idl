@@ -603,6 +603,7 @@ namespace developerPrivate {
   callback UserAndExtensionSitesByEtldCallback = void (SiteGroup[] siteGroups);
   callback GetMatchingExtensionsForSiteCallback =
       void (MatchingExtensionInfo[] matchingExtensions);
+  callback BoolCallback = void(boolean result);
 
   interface Functions {
     // Runs auto update for extensions and apps immediately.
@@ -812,10 +813,11 @@ namespace developerPrivate {
     // Triggers the dismissal of the mv2 deprecation notice for `extensionId`.
     static void dismissMv2DeprecationNoticeForExtension(DOMString extensionId);
 
-    // Uploads an extension to the signed in user's account. If the extension is
-    // not eligible for upload or if there is no signed in user, returns an
-    // error.
-    static void uploadExtensionToAccount(DOMString extensionId);
+    // Uploads an extension to the signed in user's account and returns whether
+    // the extension is actually uploaded in `callback`. If the extension is not
+    // eligible for upload or if there is no signed in user, returns an error.
+    static void uploadExtensionToAccount(DOMString extensionId,
+                                         BoolCallback callback);
 
     [nocompile, deprecated="Use openDevTools"]
         static void inspect(InspectOptions options,

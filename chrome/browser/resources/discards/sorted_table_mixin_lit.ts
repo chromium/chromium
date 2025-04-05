@@ -28,11 +28,6 @@ export const SortedTableMixinLit = <T extends Constructor<CrLitElement>>(
     accessor sortKey: string;
     accessor sortReverse: boolean;
 
-    /** Sets a new sort key for this item. */
-    setSortKey(sortKey: string) {
-      this.sortKey = sortKey;
-    }
-
     /**
      * Invoked when a header is clicked, sets a new sort key and updates
      * element styles to present the new sort key.
@@ -51,7 +46,7 @@ export const SortedTableMixinLit = <T extends Constructor<CrLitElement>>(
       if (newSortKey === this.sortKey) {
         this.sortReverse = !this.sortReverse;
       } else {
-        this.setSortKey(newSortKey);
+        this.sortKey = newSortKey;
       }
 
       // Update the sort key and the styles on the new sort header.
@@ -64,7 +59,6 @@ export const SortedTableMixinLit = <T extends Constructor<CrLitElement>>(
 };
 
 export interface SortedTableMixinLitInterface {
-  setSortKey(sortKey: string): void;
   onSortClick(e: Event): void;
   sortKey: string;
   sortReverse: boolean;

@@ -25,6 +25,7 @@ class EchoAILanguageModel : public blink::mojom::AILanguageModel {
 
   // `blink::mojom::AILanguageModel` implementation.
   void Prompt(std::vector<blink::mojom::AILanguageModelPromptPtr> prompts,
+              const std::optional<std::string>& response_json_schema,
               mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
                   pending_responder) override;
   void Fork(

@@ -216,6 +216,9 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
   void RegisterFrameSinkHierarchy() override;
   void UnregisterFrameSinkHierarchy() override;
 
+  void RecordAutoPictureInPictureInfo(
+      const WebString& auto_picture_in_picture_info) override {}
+
  private:
   friend class WebMediaPlayerMSTest;
 

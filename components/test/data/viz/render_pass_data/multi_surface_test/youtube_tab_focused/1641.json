@@ -1874,10 +1874,6 @@
                   "x": 0,
                   "y": 15
                },
-               "resource_size_in_pixels": {
-                  "height": 0,
-                  "width": 0
-               },
                "resources": [ 26 ],
                "secure_output_only": false,
                "shared_quad_state_index": 0,
@@ -1913,10 +1909,6 @@
                   "width": 15,
                   "x": 0,
                   "y": 0
-               },
-               "resource_size_in_pixels": {
-                  "height": 0,
-                  "width": 0
                },
                "resources": [ 25 ],
                "secure_output_only": false,
@@ -2408,10 +2400,6 @@
                   "x": 0,
                   "y": 15
                },
-               "resource_size_in_pixels": {
-                  "height": 0,
-                  "width": 0
-               },
                "resources": [ 35 ],
                "secure_output_only": false,
                "shared_quad_state_index": 1,
@@ -2447,10 +2435,6 @@
                   "width": 15,
                   "x": 0,
                   "y": 0
-               },
-               "resource_size_in_pixels": {
-                  "height": 0,
-                  "width": 0
                },
                "resources": [ 34 ],
                "secure_output_only": false,
@@ -2488,10 +2472,6 @@
                   "x": 15,
                   "y": 0
                },
-               "resource_size_in_pixels": {
-                  "height": 0,
-                  "width": 0
-               },
                "resources": [ 33 ],
                "secure_output_only": false,
                "shared_quad_state_index": 2,
@@ -2527,10 +2507,6 @@
                   "width": 1125,
                   "x": 0,
                   "y": 0
-               },
-               "resource_size_in_pixels": {
-                  "height": 0,
-                  "width": 0
                },
                "resources": [ 32 ],
                "secure_output_only": false,
@@ -4602,10 +4578,6 @@
                   "width": 300,
                   "x": 0,
                   "y": 0
-               },
-               "resource_size_in_pixels": {
-                  "height": 600,
-                  "width": 300
                },
                "resources": [ 54 ],
                "secure_output_only": false,

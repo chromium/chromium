@@ -6,6 +6,8 @@
 
 #include <dlfcn.h>
 #include <unistd.h>
+
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -62,11 +64,12 @@ void AllowAccessToEnvSpecifiedPath(
     bool recursive_only) {
   std::unique_ptr<base::Environment> env(base::Environment::Create());
 
-  std::string path_value;
-  if (!env->GetVar(variable_name, &path_value))
+  std::optional<std::string> path_value = env->GetVar(variable_name);
+  if (!path_value.has_value()) {
     return;
+  }
 
-  const base::FilePath pa_config_path(path_value);
+  const base::FilePath pa_config_path(*path_value);
   if (pa_config_path.empty())
     return;
 

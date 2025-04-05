@@ -1,8 +1,7 @@
-#[path = "Windows.rs"]
+#[path = "windows_bindings.rs"]
 #[allow(missing_debug_implementations, clippy::undocumented_unsafe_blocks)]
-mod windows;
-
-use windows::Globalization::Calendar;
+mod windows_bindings;
+use windows_bindings::Windows::Globalization::Calendar;
 
 impl From<windows_core::Error> for crate::GetTimezoneError {
     fn from(orig: windows_core::Error) -> Self {

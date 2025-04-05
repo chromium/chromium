@@ -19,7 +19,6 @@ include_rules = [
   "+chrome/browser/ash/login/users",
   "+chrome/browser/ash/profiles",
   "+chrome/browser/ash/system_web_apps",
-  "+chrome/browser/browser_process.h",
   "+chrome/browser/download",
   "+chrome/browser/feedback",
   "+chrome/browser/notifications",
@@ -44,3 +43,10 @@ include_rules = [
   "+chrome/services/media_gallery_util/public/mojom",
   "+chrome/test"
 ]
+
+specific_include_rules = {
+  ".*(browser|unit)test\.cc": [
+    "+chrome/browser/browser_process.h",
+    "+chrome/browser/global_features.h",
+  ],
+}

@@ -833,7 +833,6 @@ void ClientSideDetectionService::ResetOnDeviceSession() {
 }
 
 void ClientSideDetectionService::InquireOnDeviceModel(
-    ClientPhishingRequest* verdict,
     std::string rendered_texts,
     base::OnceCallback<
         void(std::optional<optimization_guide::proto::ScamDetectionResponse>)>
@@ -879,11 +878,10 @@ void ClientSideDetectionService::InquireOnDeviceModel(
   session_->ExecuteModel(
       *std::make_unique<ScamDetectionRequest>(request),
       base::BindRepeating(&ClientSideDetectionService::ModelExecutionCallback,
-                          weak_factory_.GetWeakPtr(), verdict));
+                          weak_factory_.GetWeakPtr()));
 }
 
 void ClientSideDetectionService::ModelExecutionCallback(
-    ClientPhishingRequest* verdict,
     optimization_guide::OptimizationGuideModelStreamingExecutionResult result) {
   if (!result.response.has_value()) {
     LogOnDeviceModelExecutionSuccessAndTime(/*success=*/false,

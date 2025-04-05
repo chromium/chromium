@@ -3369,10 +3369,7 @@ TEST_F(RTCVideoEncoderEncodeTest, AV1TemporalLayerGenericFrameInfo) {
   for (auto& profile : supported_profiles_) {
     if (profile.profile == media::AV1PROFILE_PROFILE_MAIN) {
       auto& scalability_modes = profile.scalability_modes;
-      scalability_modes.erase(
-          std::remove(scalability_modes.begin(), scalability_modes.end(),
-                      media::SVCScalabilityMode::kL1T2),
-          scalability_modes.end());
+      std::erase(scalability_modes, media::SVCScalabilityMode::kL1T2);
     }
   }
 

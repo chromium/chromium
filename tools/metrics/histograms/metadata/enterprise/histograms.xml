@@ -319,7 +319,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram base="true" name="Enterprise.BrowserSigninIOS.SignedOutByPolicy"
+<histogram name="Enterprise.BrowserSigninIOS.SignedOutByPolicy"
     enum="BooleanHit" expires_after="2023-06-30">
   <owner>gujen@google.com</owner>
   <owner>goanuj@google.com</owner>
@@ -333,8 +333,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true"
-    name="Enterprise.BrowserSigninIOS.SignInInterruptedByPolicy"
+<histogram name="Enterprise.BrowserSigninIOS.SignInInterruptedByPolicy"
     enum="BooleanHit" expires_after="2023-06-30">
   <owner>gujen@google.com</owner>
   <owner>goanuj@google.com</owner>
@@ -3051,6 +3050,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.SkyVault.Migration.Delete.Retry" units="count"
+    expires_after="2025-10-01">
+  <owner>aidazolic@google.com</owner>
+  <owner>src/chrome/browser/ash/policy/skyvault/OWNERS</owner>
+  <summary>Recorded when SkyVault deletion of local files is retried.</summary>
+</histogram>
+
 <histogram name="Enterprise.SkyVault.Migration.Reset" enum="Boolean"
     expires_after="2025-10-01">
   <owner>aidazolic@google.com</owner>
@@ -3079,18 +3085,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Recorded when an error occurs while setting the local storage write access.
   </summary>
-</histogram>
-
-<histogram name="Enterprise.SkyVault.Migration.{CloudProvider}.Failed"
-    enum="Boolean" expires_after="2025-10-01">
-  <owner>aidazolic@google.com</owner>
-  <owner>src/chrome/browser/ash/policy/skyvault/OWNERS</owner>
-  <summary>
-    Recorded when SkyVault migration of local files to {CloudProvider} fails,
-    i.e. when at least one file couldn't be uploaded to the cloud due to a non
-    retryable error.
-  </summary>
-  <token key="CloudProvider" variants="Enterprise_SkyVaultCloudProvider"/>
 </histogram>
 
 <histogram name="Enterprise.SkyVault.Migration.{CloudProvider}.FailureDuration"
@@ -3219,6 +3213,20 @@ chromium-metrics-reviews@google.com.
     enabled and that all policies are configured properly, i.e. local storage is
     blocked, migration destination is set to {MigrationDestination} and, in case
     of a cloud destination, the required cloud storage is enabled.
+  </summary>
+  <token key="MigrationDestination"
+      variants="Enterprise_SkyVaultMigrationDestination"/>
+</histogram>
+
+<histogram name="Enterprise.SkyVault.Migration.{MigrationDestination}.Failed"
+    enum="Boolean" expires_after="2025-10-01">
+  <owner>aidazolic@google.com</owner>
+  <owner>src/chrome/browser/ash/policy/skyvault/OWNERS</owner>
+  <summary>
+    Recorded when SkyVault migration to {MigrationDestination} or deletion of
+    local files fails. This means that at least one file couldn't be uploaded to
+    the cloud due to a non retryable error, in case of a cloud destination, or
+    deleted e.g. due to file permissions or other errors.
   </summary>
   <token key="MigrationDestination"
       variants="Enterprise_SkyVaultMigrationDestination"/>

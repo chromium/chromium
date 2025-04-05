@@ -143,6 +143,20 @@ def distro_codename():
                                   "--short"]).decode().strip()
 
 
+@functools.lru_cache(maxsize=1)
+def requires_pinned_linux_libc():
+  # See: https://crbug.com/403291652 and b/408002335
+  name = subprocess.check_output(["uname", "-r"]).decode().strip()
+  return name == '6.12.12-1rodete2-amd64'
+
+
+def add_version_workaround(packages):
+  if 'linux-libc-dev:i386' in packages:
+    idx = packages.index('linux-libc-dev:i386')
+    packages[idx] += '=5.8.14-1'
+    packages += ['linux-libc-dev=5.8.14-1']
+
+
 def check_distro(options):
   if options.unsupported or options.quick_check:
     return
@@ -772,6 +786,9 @@ def package_list(options):
               backwards_compatible_list(options))
   packages = [maybe_append_t64(package) for package in set(packages)]
 
+  if requires_pinned_linux_libc():
+    add_version_workaround(packages)
+
   # Sort all the :i386 packages to the front, to avoid confusing dpkg-query
   # (https://crbug.com/446172).
   return sorted(packages, key=lambda x: (not x.endswith(":i386"), x))
@@ -850,6 +867,10 @@ def find_missing_packages(options):
         if not line.startswith("  "):
           break
         install += line.strip().split(" ")
+
+  if requires_pinned_linux_libc():
+    add_version_workaround(install)
+
   return install
 
 
@@ -867,8 +888,9 @@ def install_packages(options):
   except subprocess.CalledProcessError as e:
     # An apt-get exit status of 100 indicates that a real error has occurred.
     print("`apt-get --just-print install ...` failed", file=sys.stderr)
-    print("It produced the following output:", file=sys.stderr)
-    print(file=sys.stderr)
+    if e.stdout is not None:
+      print("It produced the following output:", file=sys.stderr)
+      print(e.stdout, file=sys.stderr)
     print("You will have to install the above packages yourself.",
           file=sys.stderr)
     print(file=sys.stderr)

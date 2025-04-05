@@ -23,9 +23,8 @@ LayoutUnit BoxInlineSize(const LayoutBox& box) {
 
   // TODO(almaher): We can't assume all fragments will have the same inline
   // size.
-  return box.GetPhysicalFragment(0u)
-      ->Size()
-      .ConvertToLogical(box.StyleRef().GetWritingMode())
+  return ToLogicalSize(box.GetPhysicalFragment(0u)->Size(),
+                       box.StyleRef().GetWritingMode())
       .inline_size;
 }
 
@@ -38,9 +37,8 @@ LayoutUnit BoxTotalBlockSize(const LayoutBox& box) {
   LayoutUnit total_block_size;
   while (num_fragments > 0) {
     LayoutUnit block_size =
-        box.GetPhysicalFragment(num_fragments - 1)
-            ->Size()
-            .ConvertToLogical(box.StyleRef().GetWritingMode())
+        ToLogicalSize(box.GetPhysicalFragment(num_fragments - 1)->Size(),
+                      box.StyleRef().GetWritingMode())
             .block_size;
     if (block_size > LayoutUnit()) {
       total_block_size += block_size;

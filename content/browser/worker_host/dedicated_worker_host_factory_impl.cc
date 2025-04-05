@@ -80,10 +80,6 @@ void DedicatedWorkerHostFactoryImpl::CreateWorkerHostAndStartScriptLoad(
       "DedicatedWorkerHostFactoryImpl::CreateWorkerHostAndStartScriptLoad",
       "script_url", script_url);
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker)) {
-    mojo::ReportBadMessage("DWH_BROWSER_SCRIPT_FETCH_DISABLED");
-    return;
-  }
   base::TimeTicks start_time = base::TimeTicks::Now();
 
   // Get the dedicated worker service.

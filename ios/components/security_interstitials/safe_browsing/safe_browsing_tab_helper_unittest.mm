@@ -213,6 +213,47 @@ TEST_P(SafeBrowsingTabHelperTest, SingleUnsafeRequestAndResponse) {
   web::WebStatePolicyDecider::PolicyDecision response_decision =
       ShouldAllowResponseUrl(url);
   EXPECT_TRUE(response_decision.ShouldCancelNavigation());
+
+  NSError* decision_error = response_decision.GetDisplayError();
+  EXPECT_NSEQ(decision_error.domain, kSafeBrowsingErrorDomain);
+  EXPECT_EQ(static_cast<SafeBrowsingErrorCode>(decision_error.code),
+            SafeBrowsingErrorCode::kUnsafeResource);
+}
+
+// Tests the case of a single navigation request and response, for a URL that is
+// blocked by an Enterprise organization.
+TEST_P(SafeBrowsingTabHelperTest, SingleEnterpriseBlockRequestAndResponse) {
+  GURL url("http://" + FakeSafeBrowsingService::kEnterpriseBlockHost);
+  EXPECT_TRUE(ShouldAllowRequestUrl(url).ShouldAllowNavigation());
+  RunSyncCallbacksThenAsyncCallbacks();
+
+  web::WebStatePolicyDecider::PolicyDecision response_decision =
+      ShouldAllowResponseUrl(url);
+
+  EXPECT_TRUE(response_decision.ShouldCancelNavigation());
+
+  NSError* decision_error = response_decision.GetDisplayError();
+  EXPECT_NSEQ(decision_error.domain, kSafeBrowsingErrorDomain);
+  EXPECT_EQ(static_cast<SafeBrowsingErrorCode>(decision_error.code),
+            SafeBrowsingErrorCode::kEnterpriseBlock);
+}
+
+// Tests the case of a single navigation request and response, for a URL that
+// requires displaying a warning from an Enterprise organization.
+TEST_P(SafeBrowsingTabHelperTest, SingleEnterpriseWarnRequestAndResponse) {
+  GURL url("http://" + FakeSafeBrowsingService::kEnterpriseWarnHost);
+  EXPECT_TRUE(ShouldAllowRequestUrl(url).ShouldAllowNavigation());
+  RunSyncCallbacksThenAsyncCallbacks();
+
+  web::WebStatePolicyDecider::PolicyDecision response_decision =
+      ShouldAllowResponseUrl(url);
+
+  EXPECT_TRUE(response_decision.ShouldCancelNavigation());
+
+  NSError* decision_error = response_decision.GetDisplayError();
+  EXPECT_NSEQ(decision_error.domain, kSafeBrowsingErrorDomain);
+  EXPECT_EQ(static_cast<SafeBrowsingErrorCode>(decision_error.code),
+            SafeBrowsingErrorCode::kEnterpriseWarn);
 }
 
 // Tests the case of a single navigation request and response, for a URL that is

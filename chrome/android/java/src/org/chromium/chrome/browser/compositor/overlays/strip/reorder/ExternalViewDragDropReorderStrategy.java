@@ -79,7 +79,7 @@ public class ExternalViewDragDropReorderStrategy extends ReorderStrategyBase {
         setTrailingMarginForTab(
                 (StripLayoutTab) interactingView,
                 stripGroupTitles,
-                /* shouldHaveTrailingMargin= */ true,
+                TabDragSource.canMergeIntoGroupOnDrop(),
                 animationList);
 
         // 3. Kick-off animations and request an update.
@@ -121,8 +121,6 @@ public class ExternalViewDragDropReorderStrategy extends ReorderStrategyBase {
             return;
         }
         // 3. Otherwise, update drop indicator if necessary.
-        // TODO(crbug.com/384978938): Hide drop indicator if merging into the target group isn't
-        //  allowed (e.g. merging a shared group into a non-shared group).
         StripLayoutTab hoveredTab =
                 (StripLayoutTab)
                         StripLayoutUtils.findViewAtPositionX(
@@ -143,7 +141,10 @@ public class ExternalViewDragDropReorderStrategy extends ReorderStrategyBase {
 
             // 3.b. Set state for the new "interacting" tab.
             setTrailingMarginForTab(
-                    hoveredTab, groupTitles, /* shouldHaveTrailingMargin= */ true, animationList);
+                    hoveredTab,
+                    groupTitles,
+                    TabDragSource.canMergeIntoGroupOnDrop(),
+                    animationList);
             mInteractingView = hoveredTab;
 
             // 3.c. Animate.

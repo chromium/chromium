@@ -159,12 +159,8 @@ EncoderStatus D3D12VideoEncodeDelegate::Initialize(
   }
   processed_input_frame_.Reset();
 
-  auto rate_control =
+  rate_control_ =
       D3D12VideoEncoderRateControl::Create(config.bitrate, config.framerate);
-  if (!rate_control.has_value()) {
-    return EncoderStatus::Codes::kEncoderUnsupportedConfig;
-  }
-  rate_control_ = rate_control.value();
 
   static constexpr uint32_t kDefaultGOPLength = 3000;
   config.gop_length = config.gop_length.value_or(kDefaultGOPLength);
@@ -176,19 +172,20 @@ EncoderStatus D3D12VideoEncodeDelegate::Initialize(
   return InitializeVideoEncoder(config);
 }
 
+bool D3D12VideoEncodeDelegate::ReportsAverageQp() const {
+  return false;
+}
+
 bool D3D12VideoEncodeDelegate::UpdateRateControl(const Bitrate& bitrate,
                                                  uint32_t framerate) {
   auto rate_control = D3D12VideoEncoderRateControl::Create(bitrate, framerate);
-  if (!rate_control.has_value()) {
-    return false;
-  }
 
-  if (rate_control->GetMode() != rate_control_.GetMode() &&
+  if (rate_control.GetMode() != rate_control_.GetMode() &&
       !SupportsRateControlReconfiguration()) {
     return false;
   }
 
-  rate_control_ = rate_control.value();
+  rate_control_ = rate_control;
   return true;
 }
 
@@ -198,7 +195,7 @@ D3D12VideoEncodeDelegate::Encode(
     UINT input_frame_subresource,
     const gfx::ColorSpace& input_frame_color_space,
     const BitstreamBuffer& bitstream_buffer,
-    bool force_keyframe) {
+    const VideoEncoder::EncodeOptions& options) {
   if (D3D12_RESOURCE_DESC input_frame_desc = input_frame->GetDesc();
       input_frame_desc.Width != input_size_.Width ||
       input_frame_desc.Height != input_size_.Height ||
@@ -230,7 +227,7 @@ D3D12VideoEncodeDelegate::Encode(
   }
 
   auto impl_result =
-      EncodeImpl(input_frame.Get(), input_frame_subresource, force_keyframe);
+      EncodeImpl(input_frame.Get(), input_frame_subresource, options);
   if (!impl_result.has_value()) {
     return std::move(impl_result).error();
   }
@@ -295,7 +292,28 @@ D3D12VideoEncodeDelegate::D3D12VideoEncoderRateControl::operator=(
   return *this;
 }
 
-std::optional<D3D12VideoEncodeDelegate::D3D12VideoEncoderRateControl>
+// static
+D3D12VideoEncodeDelegate::D3D12VideoEncoderRateControl
+D3D12VideoEncodeDelegate::D3D12VideoEncoderRateControl::CreateCqp(
+    uint32_t i_frame_qp,
+    uint32_t p_frame_qp,
+    uint32_t b_frame_qp) {
+  D3D12VideoEncoderRateControl rate_control;
+  rate_control.params_.cqp = {
+      .ConstantQP_FullIntracodedFrame = i_frame_qp,
+      .ConstantQP_InterPredictedFrame_PrevRefOnly = p_frame_qp,
+      .ConstantQP_InterPredictedFrame_BiDirectionalRef = b_frame_qp};
+  rate_control.rate_control_ = {
+      .Mode = D3D12_VIDEO_ENCODER_RATE_CONTROL_MODE_CQP,
+      .ConfigParams = {.DataSize = sizeof(rate_control.params_.cqp),
+                       .pConfiguration_CQP = &rate_control.params_.cqp},
+      .TargetFrameRate = {30, 1},
+  };
+  return rate_control;
+}
+
+// static
+D3D12VideoEncodeDelegate::D3D12VideoEncoderRateControl
 D3D12VideoEncodeDelegate::D3D12VideoEncoderRateControl::Create(
     Bitrate bitrate,
     uint32_t framerate) {
@@ -325,10 +343,22 @@ D3D12VideoEncodeDelegate::D3D12VideoEncoderRateControl::Create(
       };
       break;
     case Bitrate::Mode::kExternal:
-      // TODO(crbug.com/40275246): wire to CQP
-      LOG(ERROR)
-          << "D3D12VideoEncoder does not support Bitrate::Mode::kExternal";
-      return std::nullopt;
+      // The effective QP value will be set before each frame. Filling a
+      // commonly used default value that would be most likely supported by the
+      // hardware.
+      constexpr uint32_t kDefaultQp = 26;
+      rate_control.params_.cqp = {
+          .ConstantQP_FullIntracodedFrame = kDefaultQp,
+          .ConstantQP_InterPredictedFrame_PrevRefOnly = kDefaultQp,
+          .ConstantQP_InterPredictedFrame_BiDirectionalRef = kDefaultQp,
+      };
+      rate_control.rate_control_ = {
+          .Mode = D3D12_VIDEO_ENCODER_RATE_CONTROL_MODE_CQP,
+          .ConfigParams = {.DataSize = sizeof(rate_control.params_.cqp),
+                           .pConfiguration_CQP = &rate_control.params_.cqp},
+          .TargetFrameRate = {framerate, 1},
+      };
+      break;
   }
   return rate_control;
 }
@@ -336,6 +366,23 @@ D3D12VideoEncodeDelegate::D3D12VideoEncoderRateControl::Create(
 D3D12_VIDEO_ENCODER_RATE_CONTROL_MODE
 D3D12VideoEncodeDelegate::D3D12VideoEncoderRateControl::GetMode() const {
   return rate_control_.Mode;
+}
+
+void D3D12VideoEncodeDelegate::D3D12VideoEncoderRateControl::SetCQP(
+    FrameType frame_type,
+    uint32_t qp) {
+  CHECK_EQ(rate_control_.Mode, D3D12_VIDEO_ENCODER_RATE_CONTROL_MODE_CQP);
+  switch (frame_type) {
+    case FrameType::kIntra:
+      params_.cqp.ConstantQP_FullIntracodedFrame = qp;
+      break;
+    case FrameType::kInterPrev:
+      params_.cqp.ConstantQP_InterPredictedFrame_PrevRefOnly = qp;
+      break;
+    case FrameType::kInterBiDirectional:
+      params_.cqp.ConstantQP_InterPredictedFrame_BiDirectionalRef = qp;
+      break;
+  }
 }
 
 bool D3D12VideoEncodeDelegate::D3D12VideoEncoderRateControl::operator==(

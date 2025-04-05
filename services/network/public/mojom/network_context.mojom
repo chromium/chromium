@@ -454,8 +454,8 @@ struct NetworkContextParams {
 
   // Points to the user-data directory of the active profile, where
   // Probabilistic Reveal Tokens will be stored if the
-  // `IpPrivacyStoreProbabilisticRevealTokens` feature is enabled. This path
-  // will be populated when IP Protection and the PRT storage feature are
+  // `StoreProbabilisticRevealTokens` switch is enabled. This path will be
+  // populated when the IP Protection feature and the PRT storage switch are
   // enabled, even for incognito contexts when `file_paths` is empty.
   mojo_base.mojom.FilePath? ip_protection_data_directory;
 

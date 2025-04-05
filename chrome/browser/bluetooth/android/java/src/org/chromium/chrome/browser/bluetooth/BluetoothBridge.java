@@ -6,9 +6,11 @@ package org.chromium.chrome.browser.bluetooth;
 
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.WebContents;
 
 /** Java access point for BluetoothBridge, allowing for querying Bluetooth state. */
+@NullMarked
 public class BluetoothBridge {
     public static boolean isWebContentsConnectedToBluetoothDevice(WebContents webContents) {
         if (webContents == null) return false;

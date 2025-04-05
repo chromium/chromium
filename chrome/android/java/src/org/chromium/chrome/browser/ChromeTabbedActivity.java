@@ -168,6 +168,7 @@ import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.ntp.NewTabPageUma;
 import org.chromium.chrome.browser.ntp.NewTabPageUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationMetricsUtils;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.paint_preview.StartupPaintPreviewHelper;
@@ -721,6 +722,12 @@ public class ChromeTabbedActivity extends ChromeActivity {
                         @Override
                         public void onFinishingTabClosure(Tab tab) {
                             closeIfNoTabsAndHomepageEnabled(false);
+
+                            // On XR Devices when the last tab is closed then the Chrome instance is
+                            // also closed.
+                            if (XrUtils.isXrDevice()) {
+                                mMultiInstanceManager.closeChromeWindowIfEmpty(mWindowId);
+                            }
                         }
 
                         @Override
@@ -938,10 +945,8 @@ public class ChromeTabbedActivity extends ChromeActivity {
         builder.registerPane(
                 PaneId.INCOGNITO_TAB_SWITCHER,
                 LazyOneshotSupplier.fromSupplier(() -> createTabSwitcherPane(true)));
-        if (TabUiFeatureUtilities.isTabGroupPaneEnabled()) {
-            builder.registerPane(
-                    PaneId.TAB_GROUPS, LazyOneshotSupplier.fromSupplier(this::createTabGroupsPane));
-        }
+        builder.registerPane(
+                PaneId.TAB_GROUPS, LazyOneshotSupplier.fromSupplier(this::createTabGroupsPane));
         if (ChromeFeatureList.sCrossDeviceTabPaneAndroid.isEnabled()) {
             builder.registerPane(
                     PaneId.CROSS_DEVICE,
@@ -1611,11 +1616,27 @@ public class ChromeTabbedActivity extends ChromeActivity {
                             intent);
             tabs.add(tab);
         }
+
+        // Dragging a collapsed tab group to a new window can result in a window with a single
+        // collapsed group and no tab in foreground. To prevent this, we skip applying the
+        // collapsed state and select the first tab in the dropped group instead.
+        TabModel tabModel = getCurrentTabModel();
+        Tab selectedTab = TabModelUtils.getCurrentTab(tabModel);
+        if (selectedTab == null) {
+            TabModelUtils.setIndex(tabModel, /* index= */ 0);
+        }
+
+        // 4. Regroup tabs and restore the original group properties(e.g. color, title, collapsed
+        // state).
         TabGroupModelFilter tabGroupModelFilter =
                 mTabModelSelector
                         .getTabGroupModelFilterProvider()
                         .getTabGroupModelFilter(tabGroupMetadata.isIncognito);
-        TabGroupUtils.regroupTabs(tabGroupModelFilter, tabs, tabGroupMetadata);
+        TabGroupUtils.regroupTabs(
+                tabGroupModelFilter,
+                tabs,
+                tabGroupMetadata,
+                /* shouldApplyCollapse= */ selectedTab != null);
         return true;
     }
 
@@ -3129,13 +3150,22 @@ public class ChromeTabbedActivity extends ChromeActivity {
                 Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
                 tracker.notifyEvent(EventConstants.APP_MENU_NEW_INCOGNITO_TAB_CLICKED);
             }
-        } else if (id == R.id.add_to_group_menu_id) {
+        } else if (id == R.id.add_to_group_menu_id
+                || id == R.id.add_tab_to_group_menu_id
+                || id == R.id.add_tab_to_new_group_menu_id) {
             if (!mTabModelSelector.isTabStateInitialized()) return false;
 
             TabGroupModelFilter filter =
                     mTabModelSelector
                             .getTabGroupModelFilterProvider()
                             .getCurrentTabGroupModelFilter();
+            if (id == R.id.add_to_group_menu_id) {
+                if (filter.getTabGroupCount() == 0) {
+                    RecordUserAction.record("MobileMenuAddToNewGroup");
+                } else {
+                    RecordUserAction.record("MobileMenuAddToGroup");
+                }
+            }
 
             new TabGroupMenuActionHandler(
                             this,
@@ -3283,8 +3313,14 @@ public class ChromeTabbedActivity extends ChromeActivity {
             mTabModelSelector.selectModel(false);
             RecordUserAction.record("MobileMenuSwitchOutOfIncognito");
         } else if (id == R.id.ntp_customization_id) {
-            new NtpCustomizationCoordinator(this, mRootUiCoordinator.getBottomSheetController())
+            new NtpCustomizationCoordinator(
+                            this,
+                            mRootUiCoordinator.getBottomSheetController(),
+                            getProfileProviderSupplier())
                     .showBottomSheet();
+            NtpCustomizationMetricsUtils.recordOpenBottomSheetEntry(
+                    NtpCustomizationCoordinator.EntryPointType.MAIN_MENU);
+            RecordUserAction.record("MobileMenuNtpCustomization");
         } else if (id == R.id.toggle_bookmark_bar) {
             BookmarkBarUtils.toggleSettingEnabled(this, getProfileProviderSupplier());
         } else {

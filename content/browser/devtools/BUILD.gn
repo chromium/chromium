@@ -5,13 +5,13 @@
 import("//build/config/compiler/pgo/pgo.gni")
 import("//build/config/devtools.gni")
 import("//components/viz/common/debugger/viz_debugger.gni")
+import("//content/browser/devtools/features.gni")
 import("//device/bluetooth/emulation/buildflags.gni")
 import("//third_party/inspector_protocol/inspector_protocol.gni")
 import("//third_party/protobuf/proto_library.gni")
 import("//tools/grit/grit_rule.gni")
 
-# Android and iOS don't support DevTools front-end.
-if ((!is_android || is_desktop_android) && !is_ios && !is_fuchsia) {
+if (enable_devtools_frontend) {
   source_set("devtools_resources_extern") {
     sources = [ "devtools_resources.cc" ]
 

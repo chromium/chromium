@@ -6,8 +6,6 @@
 #define COMPONENTS_PAYMENTS_CORE_FEATURES_H_
 
 #include "base/feature_list.h"
-#include "base/metrics/field_trial_params.h"
-#include "build/blink_buildflags.h"
 
 namespace payments {
 namespace features {
@@ -44,29 +42,6 @@ BASE_DECLARE_FEATURE(kGPayAppDynamicUpdate);
 // Used to control whether SecurePaymentConfirmation is able to rely on OS-level
 // credential store APIs, or if it can only rely on the user-profile database.
 BASE_DECLARE_FEATURE(kSecurePaymentConfirmationUseCredentialStoreAPIs);
-
-#if BUILDFLAG(USE_BLINK)
-// Controls how network and issuer icons (when enabled) are presented in SPC UX.
-extern const base::FeatureParam<std::string>
-    kSecurePaymentConfirmationNetworkAndIssuerIconsOptions;
-
-// Defines the supported UX treatments for displaying the network and issuer
-// icons in SPC UX.
-enum class SecurePaymentConfirmationNetworkAndIssuerIconsTreatment {
-  // Issuer and network icons should not be shown.
-  kNone,
-  // Issuer and network icons should be shown inline with the dialog title text.
-  kInline,
-  // Issuer and network icons should be shown as rows in the SPC transaction
-  // data 'table'.
-  kRows
-};
-
-// Retrieve the current UX treatment for network and issuer icons for SPC, based
-// on the feature flags set.
-SecurePaymentConfirmationNetworkAndIssuerIconsTreatment
-GetNetworkAndIssuerIconsTreatment();
-#endif
 
 }  // namespace features
 }  // namespace payments

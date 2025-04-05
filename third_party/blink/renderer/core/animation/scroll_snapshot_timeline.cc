@@ -36,6 +36,11 @@ ScrollSnapshotTimeline::GetResolvedViewOffsets() const {
   return timeline_state_snapshotted_.view_offsets;
 }
 
+std::optional<ScrollOffsets> ScrollSnapshotTimeline::GetResolvedScrollLimits()
+    const {
+  return timeline_state_snapshotted_.scroll_limits;
+}
+
 // TODO(crbug.com/1336260): Since phase can only be kActive or kInactive and
 // currentTime  can only be null if phase is inactive or before the first
 // snapshot we can probably drop phase.
@@ -116,16 +121,17 @@ AnimationTimeDelta ScrollSnapshotTimeline::CalculateIntrinsicIterationDuration(
 
 TimelineRange ScrollSnapshotTimeline::GetTimelineRange() const {
   std::optional<ScrollOffsets> scroll_offsets = GetResolvedScrollOffsets();
+  std::optional<ScrollOffsets> scroll_limits = GetResolvedScrollLimits();
 
-  if (!scroll_offsets.has_value()) {
+  if (!scroll_offsets.has_value() || !scroll_limits.has_value()) {
     return TimelineRange();
   }
 
   std::optional<ViewOffsets> view_offsets = GetResolvedViewOffsets();
 
-  return TimelineRange(scroll_offsets.value(), view_offsets.has_value()
-                                                   ? view_offsets.value()
-                                                   : ViewOffsets());
+  return TimelineRange(
+      scroll_limits.value(), scroll_offsets.value(),
+      view_offsets.has_value() ? view_offsets.value() : ViewOffsets());
 }
 
 void ScrollSnapshotTimeline::ServiceAnimations(TimingUpdateReason reason) {
@@ -232,6 +238,18 @@ void ScrollSnapshotTimeline::UpdateCompositorTimeline() {
       ->UpdateScrollerIdAndScrollOffsets(
           scroll_timeline_util::GetCompositorScrollElementId(ResolvedSource()),
           GetResolvedScrollOffsets());
+}
+
+void ScrollSnapshotTimeline::CalculateScrollLimits(
+    PaintLayerScrollableArea* scrollable_area,
+    ScrollOrientation physical_orientation,
+    TimelineState* state) const {
+  ScrollOffset scroll_dimensions = scrollable_area->MaximumScrollOffset() -
+                                   scrollable_area->MinimumScrollOffset();
+  double end_offset = physical_orientation == kHorizontalScroll
+                          ? scroll_dimensions.x()
+                          : scroll_dimensions.y();
+  state->scroll_limits = std::make_optional<ScrollOffsets>(0, end_offset);
 }
 
 }  // namespace blink

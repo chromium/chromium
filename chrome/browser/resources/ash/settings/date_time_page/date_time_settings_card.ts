@@ -49,17 +49,6 @@ export class DateTimeSettingsCardElement extends
       },
 
       /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.k24HourClock,
-          Setting.kChangeTimeZone,
-        ]),
-      },
-
-      /**
        * Whether date and time are settable. Normally the date and time are
        * forced by network time, so default to false to initially hide the
        * button.
@@ -91,6 +80,13 @@ export class DateTimeSettingsCardElement extends
   }
 
   activeTimeZoneDisplayName: string;
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.k24HourClock,
+    Setting.kChangeTimeZone,
+  ]);
+
   private canSetDateTime_: boolean;
   private shouldShowManagedByParentIcon_: boolean;
   private timeZoneSettingSublabel_: string;

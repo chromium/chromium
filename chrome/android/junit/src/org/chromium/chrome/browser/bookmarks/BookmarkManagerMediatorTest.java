@@ -188,7 +188,6 @@ public class BookmarkManagerMediatorTest {
     @Mock private PriceTrackingUtils.Natives mPriceTrackingUtilsJniMock;
     @Mock private ListObservable.ListObserver<Void> mListObserver;
     @Mock private Consumer<OnScrollListener> mOnScrollListenerConsumer;
-    @Mock private BookmarkMoveSnackbarManager mBookmarkMoveSnackbarManager;
     @Mock private BasicNativePage mNativePage;
     @Mock private ReauthenticatorBridge mReauthenticatorMock;
     @Mock private BookmarkManagerOpener mBookmarkManagerOpener;
@@ -535,7 +534,6 @@ public class BookmarkManagerMediatorTest {
                         mSnackbarManager,
                         mCanShowPromo,
                         mOnScrollListenerConsumer,
-                        mBookmarkMoveSnackbarManager,
                         mBookmarkManagerOpener,
                         mPriceDropNotificationManager);
         mMediator.addUiObserver(mBookmarkUiObserver);
@@ -684,7 +682,6 @@ public class BookmarkManagerMediatorTest {
         verify(mBookmarkUiObserver).onDestroy();
         verify(mBookmarkUndoController).destroy();
         verify(mBookmarkImageFetcher).destroy();
-        verify(mBookmarkMoveSnackbarManager).destroy();
     }
 
     @Test

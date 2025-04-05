@@ -46,8 +46,8 @@ export class PasswordManagerToolbarElement extends
     };
   }
 
-  narrow: boolean;
-  pageName: string;
+  declare narrow: boolean;
+  declare pageName: string;
 
   override currentRouteChanged(newRoute: Route, _oldRoute: Route): void {
     this.updateSearchTerm(newRoute.queryParameters);

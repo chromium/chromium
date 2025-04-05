@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/modules/webaudio/audio_buffer.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/bindings/to_blink_string.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -476,6 +477,19 @@ ScriptPromise<IDLString> LanguageModel::prompt(
     return promise;
   }
 
+  String stringified_schema;
+  if (RuntimeEnabledFeatures::AIPromptAPIStructuredOutputEnabled()) {
+    if (options->hasResponseJSONSchema()) {
+      stringified_schema = ValidateAndStringifyObject(
+          options->responseJSONSchema(), script_state, exception_state);
+      if (!stringified_schema) {
+        // ValidateAndStringifyObject throws an exception, which automatically
+        // rejects the promise, when it returns a null string.
+        return promise;
+      }
+    }
+  }
+
   auto pending_remote = CreateModelExecutionResponder(
       script_state, signal, resolver, task_runner_,
       AIMetrics::AISessionType::kLanguageModel,
@@ -484,6 +498,7 @@ ScriptPromise<IDLString> LanguageModel::prompt(
       WTF::BindRepeating(&LanguageModel::OnQuotaOverflow,
                          WrapWeakPersistent(this)));
   language_model_remote_->Prompt(std::move(prompts).value(),
+                                 std::move(stringified_schema),
                                  std::move(pending_remote));
   return promise;
 }
@@ -537,6 +552,19 @@ ReadableStream* LanguageModel::promptStreaming(
     return nullptr;
   }
 
+  String stringified_schema;
+  if (RuntimeEnabledFeatures::AIPromptAPIStructuredOutputEnabled()) {
+    if (options->hasResponseJSONSchema()) {
+      stringified_schema = ValidateAndStringifyObject(
+          options->responseJSONSchema(), script_state, exception_state);
+      if (!stringified_schema) {
+        // ValidateAndStringifyObject throws an exception when it returns
+        // nullopt.
+        return nullptr;
+      }
+    }
+  }
+
   auto [readable_stream, pending_remote] =
       CreateModelExecutionStreamingResponder(
           script_state, signal, task_runner_,
@@ -547,6 +575,7 @@ ReadableStream* LanguageModel::promptStreaming(
                              WrapWeakPersistent(this)));
 
   language_model_remote_->Prompt(std::move(prompts).value(),
+                                 std::move(stringified_schema),
                                  std::move(pending_remote));
   return readable_stream;
 }

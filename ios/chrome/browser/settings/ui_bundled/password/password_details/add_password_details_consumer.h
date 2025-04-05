@@ -19,7 +19,7 @@
 // completed.
 - (void)onDuplicateCheckCompletion:(BOOL)duplicateFound;
 
-// Called when the user presses on tap suggest strong password.
+// Called when the user taps the Suggest Strong Password button.
 - (void)didTapSuggestStrongPassword:(UIButton*)sender;
 
 @end

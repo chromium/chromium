@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/base_grid_coordinator+subclassing.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/incognito/incognito_grid_mediator_delegate.h"
 
+@protocol ApplicationCommands;
 class Browser;
 @protocol GridCommands;
 @protocol GridCoordinatorAudience;

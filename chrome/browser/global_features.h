@@ -27,6 +27,8 @@ class GlicSyntheticTrialManager;
 }  // namespace glic
 #endif
 
+class ApplicationLocaleStorage;
+
 // This class owns the core controllers for features that are globally
 // scoped on desktop. It can be subclassed by tests to perform
 // dependency injection.
@@ -76,6 +78,10 @@ class GlobalFeatures {
   }
 #endif
 
+  ApplicationLocaleStorage* application_locale_storage() {
+    return application_locale_storage_.get();
+  }
+
  protected:
   GlobalFeatures();
 
@@ -105,6 +111,8 @@ class GlobalFeatures {
       glic_background_mode_manager_;
   std::unique_ptr<glic::GlicSyntheticTrialManager> synthetic_trial_manager_;
 #endif
+
+  std::unique_ptr<ApplicationLocaleStorage> application_locale_storage_;
 };
 
 #endif  // CHROME_BROWSER_GLOBAL_FEATURES_H_

@@ -64,7 +64,6 @@ void TextureDrawQuad::SetAll(const SharedQuadState* shared_quad_state,
                              const gfx::Rect& visible_rect,
                              bool needs_blending,
                              ResourceId resource,
-                             gfx::Size resource_size_in_pixels,
                              bool premultiplied,
                              const gfx::PointF& top_left,
                              const gfx::PointF& bottom_right,
@@ -76,7 +75,6 @@ void TextureDrawQuad::SetAll(const SharedQuadState* shared_quad_state,
   DrawQuad::SetAll(shared_quad_state, DrawQuad::Material::kTextureContent, rect,
                    visible_rect, needs_blending);
   resource_id = resource;
-  overlay_resources.size_in_pixels = resource_size_in_pixels;
   premultiplied_alpha = premultiplied;
   uv_top_left = top_left;
   uv_bottom_right = bottom_right;
@@ -118,8 +116,6 @@ void TextureDrawQuad::ExtendValue(base::trace_event::TracedValue* value) const {
   value->SetInteger("protected_video_type",
                     static_cast<int>(protected_video_type));
 }
-
-TextureDrawQuad::OverlayResources::OverlayResources() = default;
 
 TextureDrawQuad::RoundedDisplayMasksInfo::RoundedDisplayMasksInfo() = default;
 

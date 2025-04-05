@@ -20,9 +20,9 @@ void CookieAccessObservers::Add(
   cookie_observer_set_.Add(this, std::move(receiver), source);
 }
 
-std::vector<mojo::PendingReceiver<network::mojom::CookieAccessObserver>>
-CookieAccessObservers::TakeReceivers() {
-  return cookie_observer_set_.TakeReceivers();
+CookieAccessObservers::PendingObserversWithContext
+CookieAccessObservers::TakeReceiversWithContext() {
+  return cookie_observer_set_.TakeReceiversWithContext();
 }
 
 void CookieAccessObservers::OnCookiesAccessed(

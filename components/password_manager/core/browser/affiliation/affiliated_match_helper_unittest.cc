@@ -43,8 +43,6 @@ using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::IsEmpty;
 using ::testing::UnorderedElementsAre;
-using StrategyOnCacheMiss =
-    ::affiliations::AffiliationService::StrategyOnCacheMiss;
 
 const char kTestWebFacetURIAlpha1[] = "https://one.alpha.example.com";
 const char kTestWebFacetURIAlpha2[] = "https://two.alpha.example.com";

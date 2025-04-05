@@ -40,7 +40,8 @@ class OfflineItemModel : public DownloadUIModel,
   OfflineItemModel(OfflineItemModelManager* manager,
                    const OfflineItem& offline_item,
                    std::unique_ptr<DownloadUIModel::StatusTextBuilderBase>
-                       status_text_builder);
+                       status_text_builder,
+                   bool user_canceled = false);
 
   OfflineItemModel(const OfflineItemModel&) = delete;
   OfflineItemModel& operator=(const OfflineItemModel&) = delete;
@@ -104,6 +105,8 @@ class OfflineItemModel : public DownloadUIModel,
 
   std::unique_ptr<FilteredOfflineItemObserver> offline_item_observer_;
   std::unique_ptr<OfflineItem> offline_item_;
+  // Whether the user canceled the download.
+  bool user_canceled_ = false;
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_OFFLINE_ITEM_MODEL_H_

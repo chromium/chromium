@@ -53,13 +53,17 @@ std::string GetApplicationOctetStreamName(const std::string& mime_type) {
 // Converts mime type string to OSExchangeData::Format, if supported, otherwise
 // 0 is returned.
 int MimeTypeToFormat(const std::string& mime_type) {
-  if (mime_type == ui::kMimeTypeText || mime_type == ui::kMimeTypeTextUtf8)
+  if (mime_type == ui::kMimeTypePlainText ||
+      mime_type == ui::kMimeTypeUtf8PlainText) {
     return OSExchangeData::STRING;
-  if (mime_type == ui::kMimeTypeURIList)
+  }
+  if (mime_type == ui::kMimeTypeUriList) {
     return OSExchangeData::FILE_NAME;
-  if (mime_type == ui::kMimeTypeMozillaURL)
+  }
+  if (mime_type == ui::kMimeTypeMozillaUrl) {
     return OSExchangeData::URL;
-  if (mime_type == ui::kMimeTypeHTML || mime_type == ui::kMimeTypeHTMLUtf8) {
+  }
+  if (mime_type == ui::kMimeTypeHtml || mime_type == ui::kMimeTypeUtf8Html) {
     return OSExchangeData::HTML;
   }
   if (!GetApplicationOctetStreamName(mime_type).empty()) {
@@ -211,18 +215,18 @@ std::vector<std::string> WaylandExchangeDataProvider::BuildMimeTypesList()
   // practice: begin with URIs and end with plain text.  Just in case.
   std::vector<std::string> mime_types;
   if (HasFile())
-    mime_types.push_back(ui::kMimeTypeURIList);
+    mime_types.push_back(ui::kMimeTypeUriList);
 
   if (HasURL(kFilenameToURLPolicy))
-    mime_types.push_back(ui::kMimeTypeMozillaURL);
+    mime_types.push_back(ui::kMimeTypeMozillaUrl);
 
   if (HasHtml()) {
-    mime_types.push_back(ui::kMimeTypeHTML);
+    mime_types.push_back(ui::kMimeTypeHtml);
   }
 
   if (HasString()) {
-    mime_types.push_back(ui::kMimeTypeTextUtf8);
-    mime_types.push_back(ui::kMimeTypeText);
+    mime_types.push_back(ui::kMimeTypeUtf8PlainText);
+    mime_types.push_back(ui::kMimeTypePlainText);
   }
 
   if (HasFileContents()) {
@@ -273,12 +277,12 @@ bool WaylandExchangeDataProvider::ExtractData(const std::string& mime_type,
   DCHECK(out_content);
   DCHECK(IsMimeTypeSupported(mime_type));
   if (std::optional<ui::OSExchangeData::UrlInfo> url_info;
-      mime_type == ui::kMimeTypeMozillaURL &&
+      mime_type == ui::kMimeTypeMozillaUrl &&
       (url_info = GetURLAndTitle(kFilenameToURLPolicy)).has_value()) {
     out_content->append(url_info->url.spec());
     return true;
   }
-  if ((mime_type == ui::kMimeTypeHTML || mime_type == ui::kMimeTypeHTMLUtf8) &&
+  if ((mime_type == ui::kMimeTypeHtml || mime_type == ui::kMimeTypeUtf8Html) &&
       HasHtml()) {
     const std::optional<ui::OSExchangeData::HtmlInfo>& html_content = GetHtml();
     out_content->append(base::UTF16ToUTF8(html_content->html));

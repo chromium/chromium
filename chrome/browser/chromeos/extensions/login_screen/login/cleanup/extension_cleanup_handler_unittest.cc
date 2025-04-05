@@ -28,6 +28,7 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/pref_names.h"
@@ -155,15 +156,12 @@ scoped_refptr<const Extension> MakeExtensionNamed(const std::string& name,
 }
 
 TEST_F(ExtensionCleanupHandlerUnittest, Cleanup) {
-  extensions::ExtensionSystem::Get(mock_profile_)
-      ->extension_service()
-      ->AddExtension(MakeExtensionNamed("foo", kExemptExtensionId).get());
-  extensions::ExtensionSystem::Get(mock_profile_)
-      ->extension_service()
-      ->AddExtension(MakeExtensionNamed("bar", kExtensionId1).get());
-  extensions::ExtensionSystem::Get(mock_profile_)
-      ->extension_service()
-      ->AddExtension(MakeExtensionNamed("baz", kExtensionId2).get());
+  extensions::ExtensionRegistrar::Get(mock_profile_)
+      ->AddExtension(MakeExtensionNamed("foo", kExemptExtensionId));
+  extensions::ExtensionRegistrar::Get(mock_profile_)
+      ->AddExtension(MakeExtensionNamed("bar", kExtensionId1));
+  extensions::ExtensionRegistrar::Get(mock_profile_)
+      ->AddExtension(MakeExtensionNamed("baz", kExtensionId2));
 
   SetupExemptList();
   extensions::ExtensionSet all_installed_extensions =

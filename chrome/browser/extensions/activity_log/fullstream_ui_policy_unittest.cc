@@ -26,13 +26,13 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/activity_log/activity_log.h"
 #include "chrome/browser/extensions/activity_log/activity_log_task_runner.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/common/extension_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -56,10 +56,9 @@ class FullStreamUIPolicyTest : public testing::Test {
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
     command_line->AppendSwitch(switches::kEnableExtensionActivityLogging);
     command_line->AppendSwitch(switches::kEnableExtensionActivityLogTesting);
-    extension_service_ =
-        static_cast<TestExtensionSystem*>(ExtensionSystem::Get(profile_.get()))
-            ->CreateExtensionService(&no_program_command_line, base::FilePath(),
-                                     false);
+    static_cast<TestExtensionSystem*>(ExtensionSystem::Get(profile_.get()))
+        ->CreateExtensionService(&no_program_command_line, base::FilePath(),
+                                 false);
 
     // Run pending async tasks resulting from profile construction to ensure
     // these are complete before the test begins.
@@ -71,7 +70,6 @@ class FullStreamUIPolicyTest : public testing::Test {
     user_manager_.Reset();
 #endif
     base::RunLoop().RunUntilIdle();
-    extension_service_ = nullptr;
     profile_.reset();
     base::RunLoop().RunUntilIdle();
   }
@@ -330,7 +328,6 @@ class FullStreamUIPolicyTest : public testing::Test {
   }
 
  protected:
-  raw_ptr<ExtensionService> extension_service_ = nullptr;
   std::unique_ptr<TestingProfile> profile_;
   content::BrowserTaskEnvironment task_environment_;
 
@@ -354,7 +351,7 @@ TEST_F(FullStreamUIPolicyTest, Construct) {
                            .Set("version", "1.0.0")
                            .Set("manifest_version", 2))
           .Build();
-  extension_service_->AddExtension(extension.get());
+  ExtensionRegistrar::Get(profile_.get())->AddExtension(extension);
   scoped_refptr<Action> action =
       new Action(extension->id(), base::Time::Now(), Action::ACTION_API_CALL,
                  "tabs.testMethod");
@@ -373,7 +370,7 @@ TEST_F(FullStreamUIPolicyTest, LogAndFetchActions) {
                            .Set("version", "1.0.0")
                            .Set("manifest_version", 2))
           .Build();
-  extension_service_->AddExtension(extension.get());
+  ExtensionRegistrar::Get(profile_.get())->AddExtension(extension);
   GURL gurl("http://www.google.com");
 
   // Write some API calls
@@ -408,7 +405,7 @@ TEST_F(FullStreamUIPolicyTest, LogAndFetchFilteredActions) {
                            .Set("version", "1.0.0")
                            .Set("manifest_version", 2))
           .Build();
-  extension_service_->AddExtension(extension.get());
+  ExtensionRegistrar::Get(profile_.get())->AddExtension(extension);
   GURL gurl("http://www.google.com");
 
   // Write some API calls
@@ -485,7 +482,7 @@ TEST_F(FullStreamUIPolicyTest, LogWithArguments) {
                            .Set("version", "1.0.0")
                            .Set("manifest_version", 2))
           .Build();
-  extension_service_->AddExtension(extension.get());
+  ExtensionRegistrar::Get(profile_.get())->AddExtension(extension);
 
   auto args = base::Value::List().Append("hello");
   args.Append("world");
@@ -773,7 +770,7 @@ TEST_F(FullStreamUIPolicyTest, DeleteDatabase) {
                            .Set("version", "1.0.0")
                            .Set("manifest_version", 2))
           .Build();
-  extension_service_->AddExtension(extension.get());
+  ExtensionRegistrar::Get(profile_.get())->AddExtension(extension);
   GURL gurl("http://www.google.com");
 
   // Write some API calls.

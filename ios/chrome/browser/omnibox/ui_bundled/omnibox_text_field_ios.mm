@@ -793,6 +793,13 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
     case kRightArrow:
       return ([self isPreEditing] || [self hasAutocompleteText] ||
               [self hasAdditionalText]);
+    case kReturnKey: {
+      NSString* trimmedText =
+          [self.text stringByTrimmingCharactersInSet:
+                         [NSCharacterSet whitespaceAndNewlineCharacterSet]];
+      // Don't allow return when the text is empty. (crbug.com/400861280)
+      return self.allowsReturnKeyWithEmptyText || trimmedText.length;
+    }
   }
 }
 
@@ -809,6 +816,9 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
       break;
     case kRightArrow:
       [self keyCommandRight];
+      break;
+    case kReturnKey:
+      [self.delegate textFieldDidAcceptInput:self];
       break;
   }
 }

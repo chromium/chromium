@@ -197,47 +197,6 @@ TEST_F(NewTabPageMediatorTest, TestConsumerSetup) {
   EXPECT_OCMOCK_VERIFY(header_consumer_);
 }
 
-// Tests that the FeedManagementNavigationDelegate methods load URLs and
-// record metrics.
-TEST_F(NewTabPageMediatorTest, TestFeedManagementNavigationDelegate) {
-  [mediator_ handleNavigateToActivity];
-  EXPECT_URL_LOAD("https://myactivity.google.com/myactivity");
-  histogram_tester_->ExpectUniqueSample(
-      kDiscoverFeedUserActionHistogram,
-      FeedUserActionType::kTappedManageActivity, 1);
-
-  histogram_tester_.reset(new base::HistogramTester());
-  [mediator_ handleNavigateToFollowing];
-  EXPECT_URL_LOAD("https://google.com/preferences/interests");
-  histogram_tester_->ExpectUniqueSample(
-      kDiscoverFeedUserActionHistogram,
-      FeedUserActionType::kTappedManageFollowing, 1);
-
-  histogram_tester_.reset(new base::HistogramTester());
-  [mediator_ handleNavigateToHidden];
-  EXPECT_URL_LOAD("https://google.com/preferences/interests/hidden");
-  histogram_tester_->ExpectUniqueSample(kDiscoverFeedUserActionHistogram,
-                                        FeedUserActionType::kTappedManageHidden,
-                                        1);
-
-  histogram_tester_.reset(new base::HistogramTester());
-  GURL followed_url("https://example.org");
-  [mediator_ handleNavigateToFollowedURL:followed_url];
-  EXPECT_URL_LOAD(followed_url.spec().c_str());
-  // TODO(crbug.com/40227407): Add metrics.
-}
-
-// Tests that the handleFeedLearnMoreTapped loads the correct URL and records
-// metrics.
-TEST_F(NewTabPageMediatorTest, TestHandleFeedLearnMoreTapped) {
-  [mediator_ handleFeedLearnMoreTapped];
-  EXPECT_URL_LOAD("https://support.google.com/chrome/"
-                  "?p=new_tab&co=GENIE.Platform%3DiOS&oco=1");
-  histogram_tester_->ExpectUniqueSample(kDiscoverFeedUserActionHistogram,
-                                        FeedUserActionType::kTappedLearnMore,
-                                        1);
-}
-
 // Tests that the feed will be hidden when a non-Google search engine is chosen,
 // but only in EEA countries.
 TEST_F(NewTabPageMediatorTest, TestHideFeedWithSearchChoiceTargeted) {

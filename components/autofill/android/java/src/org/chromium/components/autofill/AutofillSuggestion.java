@@ -4,8 +4,6 @@
 
 package org.chromium.components.autofill;
 
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 
 import androidx.annotation.VisibleForTesting;
@@ -25,9 +23,7 @@ public class AutofillSuggestion extends DropdownItemBase {
     private final String mSublabel;
     private final @Nullable String mSecondarySublabel;
     private final @Nullable String mLabelContentDescription;
-    private final @Nullable String mItemTag;
     private final int mIconId;
-    private final boolean mIsIconAtStart;
     private final int mSuggestionType;
     private final boolean mIsDeletable;
     private final boolean mApplyDeactivatedStyle;
@@ -35,7 +31,6 @@ public class AutofillSuggestion extends DropdownItemBase {
     private final @Nullable String mFeatureForIph;
     private final @Nullable String mIphDescriptionText;
     private final @Nullable GURL mCustomIconUrl;
-    private final @Nullable Drawable mIconDrawable;
 
     /**
      * Constructs a Autofill suggestion container. Use the {@link AutofillSuggestion.Builder}
@@ -43,13 +38,8 @@ public class AutofillSuggestion extends DropdownItemBase {
      *
      * @param label The main label of the Autofill suggestion.
      * @param sublabel The describing sublabel of the Autofill suggestion.
-     * @param itemTag The tag for the autofill suggestion. For keyboard accessory, this would be
-     *     displayed as an IPH bubble. For the dropdown, this is shown below the secondary text.For
-     *     example: For credit cards with offers, the item tag is set to indicate that the card has
-     *     some cashback offer associated with it.
      * @param iconId The resource ID for the icon associated with the suggestion, or {@code
      *     DropdownItem.NO_ICON} for no icon.
-     * @param isIconAtStart {@code true} if {@code iconId} is displayed before {@code label}.
      * @param popupItemId The type of suggestion.
      * @param isDeletable Whether the item can be deleted by the user.
      * @param applyDeactivatedStyle Whether to apply deactivated style to the suggestion.
@@ -57,7 +47,6 @@ public class AutofillSuggestion extends DropdownItemBase {
      * @param featureForIph The IPH feature for the autofill suggestion. If present, it'll be
      *     attempted to be shown in the keyboard accessory.
      * @param customIconUrl The {@link GURL} for the custom icon, if any.
-     * @param iconDrawable The {@link Drawable} for an icon, if any.
      */
     @VisibleForTesting
     public AutofillSuggestion(
@@ -66,25 +55,20 @@ public class AutofillSuggestion extends DropdownItemBase {
             String sublabel,
             @Nullable String secondarySublabel,
             @Nullable String labelContentDescription,
-            @Nullable String itemTag,
             int iconId,
-            boolean isIconAtStart,
             @SuggestionType int popupItemId,
             boolean isDeletable,
             boolean applyDeactivatedStyle,
             boolean shouldDisplayTermsAvailable,
             @Nullable String featureForIph,
             @Nullable String iphDescriptionText,
-            @Nullable GURL customIconUrl,
-            @Nullable Drawable iconDrawable) {
+            @Nullable GURL customIconUrl) {
         mLabel = label;
         mSecondaryLabel = secondaryLabel;
         mSublabel = sublabel;
         mSecondarySublabel = secondarySublabel;
         mLabelContentDescription = labelContentDescription;
-        mItemTag = itemTag;
         mIconId = iconId;
-        mIsIconAtStart = isIconAtStart;
         mSuggestionType = popupItemId;
         mIsDeletable = isDeletable;
         mApplyDeactivatedStyle = applyDeactivatedStyle;
@@ -92,7 +76,6 @@ public class AutofillSuggestion extends DropdownItemBase {
         mFeatureForIph = featureForIph;
         mIphDescriptionText = iphDescriptionText;
         mCustomIconUrl = customIconUrl;
-        mIconDrawable = iconDrawable;
     }
 
     @Override
@@ -116,11 +99,6 @@ public class AutofillSuggestion extends DropdownItemBase {
     }
 
     @Override
-    public @Nullable String getItemTag() {
-        return mItemTag;
-    }
-
-    @Override
     public int getIconId() {
         return mIconId;
     }
@@ -134,21 +112,8 @@ public class AutofillSuggestion extends DropdownItemBase {
     }
 
     @Override
-    public boolean isIconAtStart() {
-        if (mIsIconAtStart) {
-            return true;
-        }
-        return super.isIconAtStart();
-    }
-
-    @Override
     public @Nullable GURL getCustomIconUrl() {
         return mCustomIconUrl;
-    }
-
-    @Override
-    public @Nullable Drawable getIconDrawable() {
-        return mIconDrawable;
     }
 
     public @Nullable String getLabelContentDescription() {
@@ -198,31 +163,25 @@ public class AutofillSuggestion extends DropdownItemBase {
                 && this.mSublabel.equals(other.mSublabel)
                 && Objects.equals(this.mSecondarySublabel, other.mSecondarySublabel)
                 && Objects.equals(this.mLabelContentDescription, other.mLabelContentDescription)
-                && Objects.equals(this.mItemTag, other.mItemTag)
                 && this.mIconId == other.mIconId
-                && this.mIsIconAtStart == other.mIsIconAtStart
                 && this.mSuggestionType == other.mSuggestionType
                 && this.mIsDeletable == other.mIsDeletable
                 && this.mApplyDeactivatedStyle == other.mApplyDeactivatedStyle
                 && this.mShouldDisplayTermsAvailable == other.mShouldDisplayTermsAvailable
                 && Objects.equals(this.mFeatureForIph, other.mFeatureForIph)
                 && Objects.equals(this.mIphDescriptionText, other.mIphDescriptionText)
-                && Objects.equals(this.mCustomIconUrl, other.mCustomIconUrl)
-                && areIconsEqual(this.mIconDrawable, other.mIconDrawable);
+                && Objects.equals(this.mCustomIconUrl, other.mCustomIconUrl);
     }
 
     /** Builder for the {@link AutofillSuggestion}. */
     public static final class Builder {
         private int mIconId;
         private @Nullable GURL mCustomIconUrl;
-        private @Nullable Drawable mIconDrawable;
-        private boolean mIsIconAtStart;
         private boolean mIsDeletable;
         private boolean mApplyDeactivatedStyle;
         private boolean mShouldDisplayTermsAvailable;
         private @Nullable String mFeatureForIph;
         private @Nullable String mIphDescriptionText;
-        private @Nullable String mItemTag;
         private @Nullable String mLabel;
         private @Nullable String mSecondaryLabel;
         private @Nullable String mSubLabel;
@@ -237,16 +196,6 @@ public class AutofillSuggestion extends DropdownItemBase {
 
         public Builder setCustomIconUrl(GURL customIconUrl) {
             this.mCustomIconUrl = customIconUrl;
-            return this;
-        }
-
-        public Builder setIconDrawable(Drawable iconDrawable) {
-            this.mIconDrawable = iconDrawable;
-            return this;
-        }
-
-        public Builder setIsIconAtStart(boolean isIconAtStart) {
-            this.mIsIconAtStart = isIconAtStart;
             return this;
         }
 
@@ -272,11 +221,6 @@ public class AutofillSuggestion extends DropdownItemBase {
 
         public Builder setIphDescriptionText(String iphDescriptionText) {
             this.mIphDescriptionText = iphDescriptionText;
-            return this;
-        }
-
-        public Builder setItemTag(String itemTag) {
-            this.mItemTag = itemTag;
             return this;
         }
 
@@ -321,36 +265,14 @@ public class AutofillSuggestion extends DropdownItemBase {
                     mSubLabel,
                     mSecondarySubLabel,
                     mLabelContentDescription,
-                    mItemTag,
                     mIconId,
-                    mIsIconAtStart,
                     mSuggestionType,
                     mIsDeletable,
                     mApplyDeactivatedStyle,
                     mShouldDisplayTermsAvailable,
                     mFeatureForIph,
                     mIphDescriptionText,
-                    mCustomIconUrl,
-                    mIconDrawable);
+                    mCustomIconUrl);
         }
-    }
-
-    public static boolean areIconsEqual(
-            @Nullable Drawable iconDrawable1, @Nullable Drawable iconDrawable2) {
-        if (iconDrawable1 == null) {
-            return iconDrawable2 == null;
-        }
-        // If the icons are custom Bitmap images.
-        if (iconDrawable1 instanceof BitmapDrawable) {
-            if (iconDrawable2 instanceof BitmapDrawable) {
-                return ((BitmapDrawable) iconDrawable1)
-                        .getBitmap()
-                        .sameAs(((BitmapDrawable) iconDrawable2).getBitmap());
-            }
-            return false;
-        }
-        // Icons with {@code iconId} which are fetched from resources are already checked for
-        // equality.
-        return true;
     }
 }

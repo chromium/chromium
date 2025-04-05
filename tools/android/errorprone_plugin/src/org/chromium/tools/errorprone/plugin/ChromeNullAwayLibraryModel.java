@@ -69,6 +69,8 @@ public class ChromeNullAwayLibraryModel implements LibraryModels {
     @Override
     public ImmutableSet<MethodRef> nonNullReturns() {
         return ImmutableSet.of(
+                // Null only during onCreate().
+                methodRef("android.content.ContentProvider", "getContext()"),
                 // While findViewById() can return null, call sites are generally pretty confident
                 // that they don't since we use generated constants that map to XML layouts.
                 methodRef("androidx.appcompat.app.AppCompatDelegate", "findViewById(int)"),

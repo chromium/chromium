@@ -150,9 +150,9 @@ class OnTaskSessionManagerTest : public ::testing::Test {
     auto fake_notifications_delegate =
         std::make_unique<FakeOnTaskNotificationsManagerDelegate>();
     fake_notifications_delegate_ptr_ = fake_notifications_delegate.get();
-    session_manager_->notifications_manager_ =
+    session_manager_->SetNotificationManagerForTesting(
         OnTaskNotificationsManager::CreateForTest(
-            std::move(fake_notifications_delegate));
+            std::move(fake_notifications_delegate)));
   }
 
   base::flat_map<GURL, std::set<SessionID>>* provider_url_tab_ids_map() {

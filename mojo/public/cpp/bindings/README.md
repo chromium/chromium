@@ -1480,12 +1480,13 @@ namespace mojo {
 bool StructTraits<gfx::mojom::RectDataView, gfx::Rect>::Read(
     gfx::mojom::RectDataView data,
   gfx::Rect* out_rect) {
-  if (data.width() < 0 || data.height() < 0)
+  if (data.width() < 0 || data.height() < 0) {
     return false;
+  }
 
   out_rect->SetRect(data.x(), data.y(), data.width(), data.height());
   return true;
-};
+}
 
 }  // namespace mojo
 ```
@@ -1520,9 +1521,10 @@ struct StructTraits<url::mojom::UrlDataView, GURL> {
         !r.is_valid()) {
       return std::string_view();
     }
-    return std::string_view(r.possibly_invalid_spec().c_str(),
-                             r.possibly_invalid_spec().length());
+    return r.possibly_invalid_spec();
   }
+};
+
 }  // namespace mojo
 ```
 

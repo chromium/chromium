@@ -76,6 +76,7 @@
   },
   "optimization_guide-android-arm64": {
     "gn_args": {
+      "android_static_analysis": "on",
       "dcheck_always_on": false,
       "debuggable_apks": false,
       "ffmpeg_branding": "Chrome",

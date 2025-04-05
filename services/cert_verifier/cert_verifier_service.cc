@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/message.h"
@@ -18,6 +19,11 @@
 #include "services/cert_verifier/cert_net_url_loader/cert_net_fetcher_url_loader.h"
 #include "services/cert_verifier/cert_verifier_service_factory.h"
 #include "services/network/public/mojom/cert_verifier_service.mojom.h"
+
+#if BUILDFLAG(IS_CT_SUPPORTED)
+#include "components/certificate_transparency/chrome_require_ct_delegate.h"
+#include "services/network/public/mojom/network_context.mojom.h"
+#endif  // BUILDFLAG(IS_CT_SUPPORTED)
 
 namespace cert_verifier {
 namespace internal {
@@ -173,6 +179,19 @@ void CertVerifierServiceImpl::WaitUntilNextUpdateForTesting(
     WaitUntilNextUpdateForTestingCallback callback) {
   update_complete_callback_ = std::move(callback);
 }
+
+#if BUILDFLAG(IS_CT_SUPPORTED)
+void CertVerifierServiceImpl::SetCTPolicy(
+    network::mojom::CTPolicyPtr ct_policy) {
+  scoped_refptr<certificate_transparency::ChromeRequireCTDelegate>
+      require_ct_delegate = base::MakeRefCounted<
+          certificate_transparency::ChromeRequireCTDelegate>();
+  require_ct_delegate->UpdateCTPolicies(ct_policy->excluded_hosts,
+                                        ct_policy->excluded_spkis);
+  instance_params_.require_ct_delegate = std::move(require_ct_delegate);
+  UpdateVerifierData(service_factory_impl_->get_impl_params());
+}
+#endif
 
 void CertVerifierServiceImpl::SetCertVerifierServiceFactory(
     base::WeakPtr<cert_verifier::CertVerifierServiceFactoryImpl>

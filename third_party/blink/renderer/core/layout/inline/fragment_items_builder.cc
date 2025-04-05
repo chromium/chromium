@@ -315,7 +315,7 @@ FragmentItemsBuilder::AddPreviousItems(const PhysicalBoxFragment& container,
 
     last_break_token = break_token;
     container_builder->AddChild(*line_fragment, item_offset);
-    used_block_size += item.Size().ConvertToLogical(writing_mode).block_size;
+    used_block_size += ToLogicalSize(item.Size(), writing_mode).block_size;
 
     items_.emplace_back(item_offset, item);
     const PhysicalRect line_box_bounds = item.RectInContainerFragment();

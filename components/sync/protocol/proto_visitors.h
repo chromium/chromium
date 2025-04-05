@@ -2014,10 +2014,16 @@ VISIT_PROTO_FIELDS(const sync_pb::SharedTabDetails& proto) {
   VISIT(last_seen_timestamp_windows_epoch);
 }
 
+VISIT_PROTO_FIELDS(const sync_pb::SharedTabGroupDetails& proto) {
+  VISIT(pinned_position);
+}
+
 VISIT_PROTO_FIELDS(const sync_pb::SharedTabGroupAccountDataSpecifics& proto) {
   VISIT(guid);
   VISIT(collaboration_id);
   VISIT(shared_tab_details);
+  VISIT(shared_tab_group_details);
+  VISIT(update_time_windows_epoch_micros);
 }
 
 }  // namespace syncer

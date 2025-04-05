@@ -84,6 +84,9 @@ class InputMethodManagerImpl : public InputMethodManager,
     void EnableLoginLayouts(
         const std::string& language_code,
         const std::vector<std::string>& initial_layouts) override;
+    void EnableOobeInputMethods(
+        const std::string& language_code,
+        const std::vector<std::string>& initial_input_methods) override;
     void DisableNonLockScreenLayouts() override;
     void GetInputMethodExtensions(InputMethodDescriptors* result) override;
     InputMethodDescriptors GetEnabledInputMethodsSortedByLocalizedDisplayNames()
@@ -94,7 +97,7 @@ class InputMethodManagerImpl : public InputMethodManager,
         const std::string& input_method_id) const override;
     size_t GetNumEnabledInputMethods() const override;
     void SetEnabledExtensionImes(base::span<const std::string> ids) override;
-    void SetInputMethodLoginDefault() override;
+    void SetInputMethodLoginDefault(bool is_in_oobe_context) override;
     void SetInputMethodLoginDefaultFromVPD(const std::string& locale,
                                            const std::string& layout) override;
     void SwitchToNextInputMethod() override;
@@ -134,6 +137,14 @@ class InputMethodManagerImpl : public InputMethodManager,
     // Returns Input Method that best matches given id.
     const InputMethodDescriptor* LookupInputMethod(
         const std::string& input_method_id);
+
+    // Replaces currently enabled input methnods ids list with the
+    // |input_methods_to_enable|. Initializes candidate window controller and
+    // activates first entry of |initial_input_methods| if caller's state is in
+    // the active state and |initial_input_methods| is not empty.
+    void FinalizeInputMethodsEnabling(
+        std::vector<std::string>& input_methods_to_enable,
+        const std::vector<std::string>& initial_input_methods);
 
     const raw_ptr<Profile, DanglingUntriaged> profile_;
 

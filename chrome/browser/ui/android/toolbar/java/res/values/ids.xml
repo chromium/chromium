@@ -39,4 +39,6 @@ found in the LICENSE file.
     <item type="id" name="close_all_incognito_tabs_menu_id" />
     <item type="id" name="switch_to_incognito_menu_id" />
     <item type="id" name="switch_out_of_incognito_menu_id" />
+    <item type="id" name="add_tab_to_group_menu_id" />
+    <item type="id" name="add_tab_to_new_group_menu_id" />
 </resources>

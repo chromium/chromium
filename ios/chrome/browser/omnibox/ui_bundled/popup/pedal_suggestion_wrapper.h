@@ -7,8 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_suggestion.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_pedal.h"
+#import "ios/chrome/browser/omnibox/model/autocomplete_suggestion.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_pedal.h"
 
 /// A wrapper for an OmniboxPedal that exposes AutocompleteSuggestion-compatible
 /// API. Used to display pedals as suggestions in the popup.

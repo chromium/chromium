@@ -7,29 +7,40 @@
 # TODO(crbug.com/394567614): Remove this target once model files have been moved.
 source_set("ui_bundled_interface") {
   sources = [
+    "autocomplete_match_formatter.h",
     "autocomplete_result_wrapper.h",
     "autocomplete_result_wrapper_delegate.h",
+    "autocomplete_suggestion.h",
+    "autocomplete_suggestion_group_impl.h",
     "omnibox_autocomplete_controller.h",
     "omnibox_autocomplete_controller_debugger_delegate.h",
     "omnibox_autocomplete_controller_delegate.h",
     "omnibox_controller.h",
     "omnibox_image_fetcher.h",
+    "omnibox_pedal.h",
+    "omnibox_pedal_annotator.h",
     "omnibox_text_controller.h",
     "omnibox_text_controller_delegate.h",
+    "pedal_section_extractor.h",
   ]
   deps = [
     "//ios/chrome/browser/favicon/model",
+    "//ios/chrome/browser/omnibox/ui_bundled/popup:popup_ui_protocols",
     "//ui/base:types",
   ]
 }
 
 source_set("model") {
   sources = [
+    "autocomplete_match_formatter.mm",
     "autocomplete_result_wrapper.mm",
+    "autocomplete_suggestion_group_impl.mm",
     "omnibox_autocomplete_controller.mm",
     "omnibox_controller.mm",
     "omnibox_image_fetcher.mm",
+    "omnibox_pedal_annotator.mm",
     "omnibox_text_controller.mm",
+    "pedal_section_extractor.mm",
   ]
   deps = [
     "//base",
@@ -37,18 +48,34 @@ source_set("model") {
     "//components/image_fetcher/core",
     "//components/omnibox/browser",
     "//components/open_from_clipboard",
+    "//components/password_manager/core/browser/ui",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/default_browser/model",
     "//ios/chrome/browser/favicon/model",
+    "//ios/chrome/browser/net/model:crurl",
+    "//ios/chrome/browser/omnibox/public:features",
     "//ios/chrome/browser/omnibox/ui_bundled:model_interface",
+    "//ios/chrome/browser/omnibox/ui_bundled:omnibox_util",
     "//ios/chrome/browser/omnibox/ui_bundled/popup",
     "//ios/chrome/browser/omnibox/ui_bundled/popup:popup_internal",
+    "//ios/chrome/browser/omnibox/ui_bundled/popup:popup_swift",
     "//ios/chrome/browser/omnibox/ui_bundled/popup:popup_ui_protocols",
     "//ios/chrome/browser/omnibox/ui_bundled/popup/row/actions",
     "//ios/chrome/browser/search_engines/model",
+    "//ios/chrome/browser/settings/ui_bundled/clear_browsing_data:features",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/prefs",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/symbols:symbols_views",
     "//ios/chrome/common:string_conversions",
+    "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/favicon",
+    "//ios/chrome/common/ui/util:image_util",
+    "//ui/base",
     "//ui/base:types",
   ]
 
@@ -60,6 +87,8 @@ source_set("unit_tests") {
   sources = [
     "autocomplete_result_wrapper_unittest.mm",
     "omnibox_autocomplete_controller_unittest.mm",
+    "omnibox_pedal_annotator_unittest.mm",
+    "pedal_section_extractor_unittest.mm",
   ]
   deps = [
     ":model",
@@ -73,6 +102,8 @@ source_set("unit_tests") {
     "//components/search_engines:test_support",
     "//ios/chrome/browser/omnibox/ui_bundled/popup",
     "//ios/chrome/browser/omnibox/ui_bundled/popup:popup_internal",
+    "//ios/chrome/browser/omnibox/ui_bundled/popup:popup_swift",
+    "//ios/chrome/browser/omnibox/ui_bundled/popup:popup_ui_protocols",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/shared/model/prefs:browser_prefs",
     "//ios/chrome/browser/shared/model/prefs:pref_names",

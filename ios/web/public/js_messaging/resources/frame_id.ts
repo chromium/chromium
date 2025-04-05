@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {generateRandomId, sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
 /**
@@ -12,10 +12,10 @@ import {generateRandomId, sendWebKitMessage} from '//ios/web/public/js_messaging
  * when navigating 'back' to this frame.
  */
 export function getFrameId(): string {
-  if (!gCrWeb.hasOwnProperty('frameId')) {
-    gCrWeb.frameId = generateRandomId();
+  if (!gCrWebLegacy.hasOwnProperty('frameId')) {
+    gCrWebLegacy.frameId = generateRandomId();
   }
-  return gCrWeb.frameId;
+  return gCrWebLegacy.frameId;
 }
 
 /**

@@ -20,8 +20,7 @@ class MockAffiliationFetcherFactory : public AffiliationFetcherFactory {
   MOCK_METHOD(
       std::unique_ptr<AffiliationFetcherInterface>,
       CreateInstance,
-      (scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-       AffiliationFetcherDelegate* delegate),
+      (scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory),
       (override));
 };
 

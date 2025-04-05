@@ -35,43 +35,27 @@ PATTERN_DEPENDENCY_DIVIDER = re.compile(r"^-{20} DEPENDENCY DIVIDER -{20}$")
 VALUE_DELIMITER = ","
 
 
-def get_license_type(license: str) -> LicenseType:
+def get_license_type(license_name: str) -> LicenseType:
     """Return the equivalent license type for the provided string license."""
-    if license in constants.RAW_LICENSE_TO_FORMATTED_DETAILS:
-        return constants.RAW_LICENSE_TO_FORMATTED_DETAILS[license][1]
-    raise None
+    return constants.RAW_LICENSE_TO_FORMATTED_DETAILS[license_name][1]
 
 
-def get_license_bp_name(license: str) -> str:
-    return constants.RAW_LICENSE_TO_FORMATTED_DETAILS[license][2]
+def get_license_bp_name(license_name: str) -> str:
+    return constants.RAW_LICENSE_TO_FORMATTED_DETAILS[license_name][2]
 
 
 def is_ignored_readme_chromium(path: str) -> bool:
     return path in constants.IGNORED_README
 
 
-def get_most_restrictive_type(licenses: List[str]) -> LicenseType:
-    """Returns the most restrictive license according to the values of LicenseType."""
-    most_restrictive = LicenseType.UNKNOWN
-    for license in licenses:
-        if constants.RAW_LICENSE_TO_FORMATTED_DETAILS[license][
-                1].value > most_restrictive.value:
-            most_restrictive = constants.RAW_LICENSE_TO_FORMATTED_DETAILS[
-                license][1]
-    return most_restrictive
-
-
-def get_license_file_format(license: str):
+def get_license_file_format(license_name: str):
     """Return a different representation of the license that is better suited
   for file names."""
-    if license in constants.RAW_LICENSE_TO_FORMATTED_DETAILS:
-        return constants.RAW_LICENSE_TO_FORMATTED_DETAILS[license][0]
-    raise None
+    return constants.RAW_LICENSE_TO_FORMATTED_DETAILS[license_name][0]
 
 
 class InvalidMetadata(Exception):
     """This exception is raised when metadata is invalid."""
-    pass
 
 
 def parse_chromium_readme_file(readme_path: str,
@@ -140,13 +124,13 @@ def parse_chromium_readme_file(readme_path: str,
             post_process_operation = constants.POST_PROCESS_OPERATION.get(
                 readme_path, lambda _metadata: _metadata)
         metadata = Metadata(post_process_operation(dependencies[0]))
-    except MapperException:
-        raise Exception(f"Failed to post-process {readme_path}")
+    except MapperException as e:
+        raise Exception(f"Failed to post-process {readme_path}") from e
 
-    for license in metadata.get_licenses():
-        if not license in constants.RAW_LICENSE_TO_FORMATTED_DETAILS:
+    for license_name in metadata.get_licenses():
+        if not license_name in constants.RAW_LICENSE_TO_FORMATTED_DETAILS:
             raise InvalidMetadata(
-                f"\"{readme_path}\" contains unidentified license \"{license}\""
+                f"\"{readme_path}\" contains unidentified license \"{license_name}\""
             )
     return metadata
 

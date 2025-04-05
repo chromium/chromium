@@ -7,6 +7,8 @@ package org.chromium.content.browser.scheduler;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
@@ -27,6 +29,8 @@ import org.chromium.base.test.task.ThreadPoolTestHelpers;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.RequiresRestart;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content.app.ContentMain;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 
@@ -44,12 +48,13 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
+@NullMarked
 public class NativePostTaskTest {
     private static class BlockedTask extends BackgroundOnlyAsyncTask<Integer> {
         private final Object mStartLock = new Object();
         private final AtomicInteger mValue = new AtomicInteger(0);
         private final AtomicBoolean mStarted = new AtomicBoolean(false);
-        private Thread mBackgroundThread;
+        private @Nullable Thread mBackgroundThread;
 
         @Override
         protected Integer doInBackground() {
@@ -78,7 +83,7 @@ public class NativePostTaskTest {
         }
 
         public Thread getBackgroundThread() {
-            return mBackgroundThread;
+            return assertNonNull(mBackgroundThread);
         }
     }
 

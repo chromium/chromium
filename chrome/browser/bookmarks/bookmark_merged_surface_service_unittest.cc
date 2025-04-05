@@ -16,9 +16,9 @@
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service_observer.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/bookmarks/bookmark_parent_folder_children.h"
+#include "chrome/browser/bookmarks/bookmark_test_utils.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
-#include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/bookmarks/managed/managed_bookmark_service.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
@@ -73,48 +73,6 @@ MATCHER_P(HasParent, parent, "") {
   return BookmarkParentFolder::FromFolderNode(node->parent()) == parent;
 }
 
-base::Value::List ConstructManagedBookmarks(size_t managed_bookmarks_size) {
-  const GURL url("http://google.com/");
-  base::Value::List bookmarks_list;
-  for (size_t i = 0; i < managed_bookmarks_size; ++i) {
-    base::Value::List folder_items;
-    folder_items.Append(
-        base::Value::Dict().Set("name", "Google").Set("url", url.spec()));
-    bookmarks_list.Append(
-        base::Value::Dict()
-            .Set("name", "Bookmark folder " + base::NumberToString(i))
-            .Set("children", std::move(folder_items)));
-  }
-  return bookmarks_list;
-}
-
-class TestBookmarkClientWithManagedService
-    : public bookmarks::TestBookmarkClient {
- public:
-  explicit TestBookmarkClientWithManagedService(
-      bookmarks::ManagedBookmarkService* managed_bookmark_service)
-      : managed_bookmark_service_(managed_bookmark_service) {
-    CHECK(managed_bookmark_service);
-  }
-
-  // BookmarkClient:
-  void Init(bookmarks::BookmarkModel* model) override {
-    managed_bookmark_service_->BookmarkModelCreated(model);
-  }
-  bookmarks::LoadManagedNodeCallback GetLoadManagedNodeCallback() override {
-    return managed_bookmark_service_->GetLoadManagedNodeCallback();
-  }
-  bool CanSetPermanentNodeTitle(const BookmarkNode* permanent_node) override {
-    return managed_bookmark_service_->CanSetPermanentNodeTitle(permanent_node);
-  }
-  bool IsNodeManaged(const BookmarkNode* node) override {
-    return managed_bookmark_service_->IsNodeManaged(node);
-  }
-
- private:
-  const raw_ptr<bookmarks::ManagedBookmarkService> managed_bookmark_service_;
-};
-
 class MockBookmarkMergedSurfaceServiceObserver
     : public BookmarkMergedSurfaceServiceObserver {
  public:
@@ -164,7 +122,7 @@ class BookmarkMergedSurfaceServiceTest : public testing::Test {
     if (with_managed_node) {
       CHECK(managed_bookmarks_size);
       managed_bookmark_service_ =
-          CreateManagedBookmarkService(managed_bookmarks_size);
+          CreateManagedBookmarkService(&prefs_, managed_bookmarks_size);
       bookmark_client = std::make_unique<TestBookmarkClientWithManagedService>(
           managed_bookmark_service_.get());
     } else {
@@ -201,21 +159,6 @@ class BookmarkMergedSurfaceServiceTest : public testing::Test {
   }
 
  private:
-  std::unique_ptr<bookmarks::ManagedBookmarkService>
-  CreateManagedBookmarkService(size_t managed_bookmarks_size) {
-    prefs_.registry()->RegisterListPref(bookmarks::prefs::kManagedBookmarks);
-    prefs_.registry()->RegisterStringPref(
-        bookmarks::prefs::kManagedBookmarksFolderName, std::string());
-
-    prefs_.SetString(bookmarks::prefs::kManagedBookmarksFolderName, "Managed");
-    prefs_.SetManagedPref(bookmarks::prefs::kManagedBookmarks,
-                          ConstructManagedBookmarks(managed_bookmarks_size));
-
-    return std::make_unique<bookmarks::ManagedBookmarkService>(
-        &prefs_, base::BindRepeating(
-                     []() -> std::string { return "managedDomain.com"; }));
-  }
-
   base::test::ScopedFeatureList features_{
       switches::kSyncEnableBookmarksInTransportMode};
   sync_preferences::TestingPrefServiceSyncable prefs_;

@@ -38,7 +38,7 @@ class GPUAdapterInfo : public ScriptWrappable {
 
   void AppendMemoryHeapInfo(GPUMemoryHeapInfo*);
 
-  // gpu_adapter_info.idl
+  // gpu_adapter_info.idl {{{
   const String& vendor() const;
   const String& architecture() const;
   const String& device() const;
@@ -52,6 +52,7 @@ class GPUAdapterInfo : public ScriptWrappable {
   const HeapVector<Member<GPUMemoryHeapInfo>>& memoryHeaps() const;
   const std::optional<uint32_t>& d3dShaderModel() const;
   const std::optional<uint32_t>& vkDriverVersion() const;
+  // }}} End of WebIDL binding implementation.
 
   void Trace(Visitor*) const override;
 

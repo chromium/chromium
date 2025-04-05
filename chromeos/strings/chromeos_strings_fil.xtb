@@ -351,6 +351,7 @@
 <translation id="2438248248625638801">Gumagawa ng mga pamagat ng recording</translation>
 <translation id="2446553403094072641">Katumpakan ng floating point</translation>
 <translation id="2448312741937722512">Uri</translation>
+<translation id="2448857983905133469">Tools sa Klase</translation>
 <translation id="2468124392950503650">Pumili ng prompt para gumawa o makita ang<ph name="BEGIN_LINK_PROMPTING_GUIDE" />gabay sa prompt<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Gamitin ang Tulungan akong magsulat para gumawa ng draft o magpino ng dati nang gawa, na pinapagana ng Google AI</translation>
 <translation id="2475982808118771221">May isang naganap na error</translation>
@@ -449,6 +450,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">Endpoint</translation>
 <translation id="3060579846059757016">Mga outline</translation>
+<translation id="3060798442805232711">Ginagamit ng Tools sa Klase ang iyong mikropono</translation>
 <translation id="3061850252076394168">i-enable ang select to speak</translation>
 <translation id="3066772729299747758">sa Martes</translation>
 <translation id="3069085583900247081">Nabigo ang pagsubok</translation>
@@ -458,7 +460,6 @@
 <translation id="3084958266922136097">I-disable ang screen saver</translation>
 <translation id="3091839911843451378">Hindi na-print - Huminto</translation>
 <translation id="3102119246920354026">Cache</translation>
-<translation id="3112413615003385433">Nag-alis ng content ang iyong guro sa Mga Tool sa Paaralan</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">mga pool</translation>
 <translation id="3122883569442693641">Higit pang detalye</translation>
@@ -539,7 +540,6 @@
 <translation id="3488065109653206955">Bahagyang na-activate</translation>
 <translation id="3492882532495507361">Isang <ph name="OFFICE_STYLE" /> na opisina na may mga <ph name="OFFICE_COLOR" /> na tone</translation>
 <translation id="3493187369049186498">Sinusukat ng iyong Chromebook ang data. Posibleng naiiba ito sa data ng provider.</translation>
-<translation id="349570724365779960">Nakakonekta sa mga mag-aaral ang Mga Tool sa Paaralan</translation>
 <translation id="3502426834823382181">tingnan ang lahat ng app</translation>
 <translation id="3510890413042482857">Ipadala ang <ph name="BEGIN_LINK1" />data ng pagte-trace sa performance<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Update sa Chrome OS</translation>
@@ -547,7 +547,6 @@
 <translation id="353214771040290298">Tapos nang mag-edit</translation>
 <translation id="3532980081107202182">Humigit-kumulang <ph name="MIN_REMAINING" /> (na) minuto ang natitira</translation>
 <translation id="3533790840489634638">pool</translation>
-<translation id="3535802910192338629">Nagdagdag ng bagong content ang iyong guro sa Mga Tool sa Paaralan</translation>
 <translation id="3547264467365135390">Formula</translation>
 <translation id="3557205324756024651">Lokal na pagkakakilanlan (opsyonal)</translation>
 <translation id="3565064564551103223">Mga pinapayagang IP</translation>
@@ -913,6 +912,7 @@
 <translation id="5170568018924773124">Ipinakita sa folder</translation>
 <translation id="517075088756846356">Bunutin at isaksak ulit ang power cable ng <ph name="DEVICE_NAME" /> para ituloy ang proseso ng pag-update</translation>
 <translation id="5180108905184566358">mga puno ng baobab</translation>
+<translation id="5180431943345994173">Nag-alis ng content ang iyong guro sa Tools sa Klase</translation>
 <translation id="5180712487038406644">Expressive</translation>
 <translation id="5190187232518914472">Balikan ang iyong mga paboritong alaala. Para magdagdag o mag-edit ng mga album, pumunta sa <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
@@ -1006,6 +1006,7 @@
 <translation id="5628106863521633649">Mga available na wika</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">abstract</translation>
+<translation id="5655084389678168978">Nagdagdag ng bagong content ang iyong guro sa Tools sa Klase</translation>
 <translation id="5655283760733841251">Taasan ang liwanag ng keyboard</translation>
 <translation id="5655296450510165335">Pag-enroll ng device</translation>
 <translation id="5655776422854483175">Walang pag-print</translation>
@@ -1441,7 +1442,6 @@ I-download ang modelo ng transcription (hanggang 100MB) para makuha ang mga tran
 <translation id="7544853251252956727">I-shuffle</translation>
 <translation id="7550715992156305117">Mga Diagnostic na Routine</translation>
 <translation id="7551123448725492271">Audio device ang device.</translation>
-<translation id="7553913964854052228">Ginagamit ng Mga Tool sa Paaralan ang iyong mikropono</translation>
 <translation id="7559239713112547082">I-preview ang Screenshot</translation>
 <translation id="7561454561030345039">Pinapamahalaan ng iyong administrator ang pagkilos na ito.</translation>
 <translation id="7561759921596375678">I-on ang volume</translation>
@@ -1533,6 +1533,7 @@ I-download ang modelo ng transcription (hanggang 100MB) para makuha ang mga tran
 <translation id="7971535376154084247">Mga pangkalahatang kontrol</translation>
 <translation id="7977800524392185497">Para sumali sa isang <ph name="NETWORK_NAME" /> network, pumunta sa Mga Setting</translation>
 <translation id="7978412674231730200">Private na key</translation>
+<translation id="7979468455552394856">Nakakonekta sa mga mag-aaral ang Tools sa Klase</translation>
 <translation id="7982789257301363584">Network</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{Awtomatikong sinimulan ang "<ph name="APP_NAME_1" />"}one{Awtomatikong sinimulan ang # app}other{Awtomatikong sinimulan ang # na app}}</translation>
 <translation id="7994702968232966508">Pamamaraang EAP</translation>
@@ -1664,7 +1665,6 @@ I-download ang modelo ng transcription (hanggang 100MB) para makuha ang mga tran
 <translation id="8576249514688522074">Hindi Nasimulan</translation>
 <translation id="8584654835905316966">Nire-require na mag-restart para makumpleto ang pag-install ng firmware para sa <ph name="DEVICE_NAME" /> sa bersyon <ph name="VERSION" />. Posibleng magmukhang nagre-reboot nang ilang beses ang iyong computer. Inaasahan ang gawing ito.</translation>
 <translation id="8593058461203131755">mag-pause ng media</translation>
-<translation id="8619169570378509764">Mga Tool sa Paaralan</translation>
 <translation id="8620617069779373398">Status ng roaming</translation>
 <translation id="8626489604350149811">Higit pang pagkilos para sa <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Light purple</translation>

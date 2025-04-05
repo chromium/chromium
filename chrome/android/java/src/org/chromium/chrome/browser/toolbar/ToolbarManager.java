@@ -35,6 +35,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.JavaExceptionReporter;
+import org.chromium.base.TimeUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.ValueChangedCallback;
 import org.chromium.base.metrics.RecordUserAction;
@@ -1060,6 +1061,7 @@ public class ToolbarManager
                     private NavigationHandle mLastNavigation;
                     private String mLastUrl;
                     private String mCurrentUrl;
+                    private long mLastNavigationTimestamp;
 
                     @Override
                     public void onObservingDifferentTab(Tab tab, boolean hint) {
@@ -1227,12 +1229,19 @@ public class ToolbarManager
                                 } else if (mLastNavigation.isForward() && navigation.isBack()) {
                                     direction = NavigationDirection.BACKWARD;
                                 }
+                                if (TimeUtils.elapsedRealtimeMillis() - mLastNavigationTimestamp
+                                        <= 3 * 1000) {
+                                    // Only record if two consecutive navigations happen with 3
+                                    // seconds.
+                                    BackPressMetrics.recordStrictBackFalsing(direction);
+                                }
                                 BackPressMetrics.recordBackFalsing(direction);
                             }
                             // Update the URLs and index.
                             mLastUrl = mCurrentUrl;
                             mCurrentUrl = newUrl;
                             mLastNavigation = navigation;
+                            mLastNavigationTimestamp = TimeUtils.elapsedRealtimeMillis();
 
                             mToolbar.onNavigatedToDifferentPage();
                             maybeTriggerCacheRefreshForZeroSuggest(navigation.getUrl());
@@ -1607,7 +1616,8 @@ public class ToolbarManager
                         mTabStripTransitionDelegateSupplier,
                         onLongClickListener,
                         progressBar,
-                        mActivityTabProvider);
+                        mActivityTabProvider,
+                        mBackButtonCoordinator);
 
         mHomepageStateListener =
                 () -> {

@@ -6,6 +6,8 @@ package org.chromium.webapk.shell_apk;
 
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -24,6 +26,8 @@ import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.webapk.lib.common.WebApkMetaDataKeys;
 import org.chromium.webapk.lib.common.WebApkConstants;
 
@@ -34,6 +38,7 @@ import java.util.List;
  * Handles site settings shortcuts for WebApks. The shortcut opens the web browser's site settings
  * for the start url associated with the WebApk.
  */
+@NullMarked
 public class ManageDataLauncherActivity extends Activity {
     public static final String ACTION_SITE_SETTINGS =
             "android.support.customtabs.action.ACTION_MANAGE_TRUSTED_WEB_ACTIVITY_DATA";
@@ -59,9 +64,9 @@ public class ManageDataLauncherActivity extends Activity {
     private Uri mUrl;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mProviderPackage = getIntent().getStringExtra(EXTRA_PROVIDER_PACKAGE);
+        mProviderPackage = assertNonNull(getIntent().getStringExtra(EXTRA_PROVIDER_PACKAGE));
         mUrl = Uri.parse(getIntent().getStringExtra(EXTRA_SITE_SETTINGS_URL));
 
         if (!siteSettingsShortcutEnabled(this, mProviderPackage)) {

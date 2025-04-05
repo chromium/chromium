@@ -8,11 +8,16 @@
 #import <Foundation/Foundation.h>
 
 #import "base/memory/weak_ptr.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/recent_activity_mutator.h"
+#import "ios/web/public/web_state.h"
 
 class FaviconLoader;
+@protocol RecentActivityCommands;
 @protocol RecentActivityConsumer;
 class ShareKitService;
 class TabGroup;
+class WebStateList;
+
 namespace collaboration::messaging {
 class MessagingBackendService;
 }  // namespace collaboration::messaging
@@ -21,10 +26,13 @@ class TabGroupSyncService;
 }  // namespace tab_groups
 
 // A mediator to control the recent activity logs in a shared tab group.
-@interface RecentActivityMediator : NSObject
+@interface RecentActivityMediator : NSObject <RecentActivityMutator>
 
 // Consumer of the recent activity.
 @property(nonatomic, weak) id<RecentActivityConsumer> consumer;
+
+// Handler for the recent activity commands.
+@property(nonatomic, weak) id<RecentActivityCommands> recentActivityHandler;
 
 // Designated initializer.
 - (instancetype)initWithtabGroup:(base::WeakPtr<const TabGroup>)tabGroup
@@ -34,6 +42,9 @@ class TabGroupSyncService;
                    faviconLoader:(FaviconLoader*)faviconLoader
                      syncService:(tab_groups::TabGroupSyncService*)syncService
                  shareKitService:(ShareKitService*)shareKitService
+                    webStateList:(WebStateList*)webStateList
+          webStateCreationParams:
+              (const web::WebState::CreateParams&)webStateCreationParams
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

@@ -110,7 +110,7 @@ net::HashValue ComputeCacheKey(
   std::string encoded_sct;
   net::ct::EncodeSignedCertificateTimestamp(sct_list.at(0).sct, &encoded_sct);
   SHA256_Update(&ctx, encoded_sct.data(), encoded_sct.size());
-  SHA256_Final(reinterpret_cast<uint8_t*>(cache_key.data()), &ctx);
+  SHA256_Final(cache_key.span().data(), &ctx);
   return cache_key;
 }
 

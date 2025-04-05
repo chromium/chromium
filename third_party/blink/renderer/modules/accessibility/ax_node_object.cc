@@ -515,7 +515,7 @@ const LayoutObject* GetListMarker(const LayoutObject& layout_object,
 }
 
 bool ElementHasAnyAriaRelation(Element& element) {
-  return element.GetDocument().HasExplicitlySetAttrElements(&element) ||
+  return element.HasAnyExplicitlySetAttrAssociatedElements() ||
          AXObject::HasAriaAttribute(element, html_names::kAriaActionsAttr) ||
          AXObject::HasAriaAttribute(element,
                                     html_names::kAriaActivedescendantAttr) ||
@@ -3146,12 +3146,13 @@ AccessibilityExpanded AXNodeObject::IsExpanded() const {
 
   // For button elements that act as commandFor triggers, aria-expanded may be
   // set depending on the command type. This results in the same mapping as
-  // popovertarget, but takes precedence in the case of conflicting markup as the
-  // HTML spec invokers commandfor functionality first, and only popovertarget
-  // after, if commandfor was not executed.
+  // popovertarget, but takes precedence in the case of conflicting markup as
+  // the HTML spec invokers commandfor functionality first, and only
+  // popovertarget after, if commandfor was not executed.
   if (RuntimeEnabledFeatures::HTMLCommandAttributesEnabled()) {
     if (auto* button = DynamicTo<HTMLButtonElement>(element)) {
-      const AtomicString& action = button->FastGetAttribute(html_names::kCommandAttr);
+      const AtomicString& action =
+          button->FastGetAttribute(html_names::kCommandAttr);
       CommandEventType type = button->GetCommandEventType(action);
       if (HTMLElement* command_for =
               DynamicTo<HTMLElement>(button->commandForElement())) {
@@ -6108,7 +6109,6 @@ void AXNodeObject::CheckValidChild(AXObject* child) {
       << "\nChild: " << child << "\nParent: " << child->ParentObject();
 }
 #endif
-
 
 void AXNodeObject::AddChild(AXObject* child, bool is_from_aria_owns) {
   if (!child)

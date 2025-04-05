@@ -111,7 +111,7 @@ inline PhysicalOffset WritingModeConverter::ToPhysical(
 
 inline LogicalSize WritingModeConverter::ToLogical(
     const PhysicalSize& size) const {
-  return size.ConvertToLogical(GetWritingMode());
+  return ToLogicalSize(size, GetWritingMode());
 }
 
 inline PhysicalSize WritingModeConverter::ToPhysical(

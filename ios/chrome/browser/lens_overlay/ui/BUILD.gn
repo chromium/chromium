@@ -69,6 +69,10 @@ source_set("container_presenter") {
 
 source_set("view_controller") {
   sources = [
+    "info_message/lens_translate_error_view_controller.h",
+    "info_message/lens_translate_error_view_controller.mm",
+    "info_message/lens_translate_indication_view_controller.h",
+    "info_message/lens_translate_indication_view_controller.mm",
     "lens_overlay_consent_view_controller.h",
     "lens_overlay_consent_view_controller.mm",
     "lens_overlay_container_view_controller.h",
@@ -156,6 +160,7 @@ source_set("network_issue_alert_presenter") {
     ":protocols",
     "//base",
     "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/lens_overlay/model",
     "//ui/base",
     "//url",
   ]

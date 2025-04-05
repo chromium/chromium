@@ -54,21 +54,14 @@ class PerformanceManagerImpl : public PerformanceManager {
   // Same as GetGraph(), but returns a GraphImpl*.
   static GraphImpl* GetGraphImpl();
 
-  // Creates, initializes and registers an instance. Invokes |on_start|
-  // immediately after creation.
-  // TODO(https://crbug.com/405158066): Get rid of `on_start`. Now that the PM
-  // lives on the main thread, any callers can simply do any initialization
-  // right after calling PerformanceManagerImpl::Create().
-  using GraphImplCallback = base::OnceCallback<void(GraphImpl*)>;
-  static std::unique_ptr<PerformanceManagerImpl> Create(
-      GraphImplCallback on_start);
+  // Creates, initializes and registers an instance. Valid to call from the main
+  // thread only.
+  static std::unique_ptr<PerformanceManagerImpl> Create();
 
   // Unregisters |instance| and arranges for its deletion.
   static void Destroy(std::unique_ptr<PerformanceManager> instance);
 
-  // Creates a new node of the requested type and adds it to the graph. If a
-  // |creation_callback| is provided, it will be run immediately after adding
-  // the node to the graph.
+  // Creates a new node of the requested type and adds it to the graph.
   static std::unique_ptr<FrameNodeImpl> CreateFrameNode(
       ProcessNodeImpl* process_node,
       PageNodeImpl* page_node,

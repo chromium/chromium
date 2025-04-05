@@ -116,17 +116,6 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
         value: false,
       },
 
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kChargingSounds,
-          Setting.kLowBatterySound,
-        ]),
-      },
-
       showAllowAGC: {
         type: Boolean,
         value: loadTimeData.getBoolean('enableForceRespectUiGainsToggle'),
@@ -152,6 +141,12 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
       },
     };
   }
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kChargingSounds,
+    Setting.kLowBatterySound,
+  ]);
 
   protected isAllowAGCEnabled: boolean;
   protected showAllowAGC: boolean;

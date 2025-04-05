@@ -128,12 +128,6 @@ const char kMaxUntiledLayerWidth[] = "max-untiled-layer-width";
 // Sets the min tile height for GPU raster.
 const char kMinHeightForGpuRasterTile[] = "min-height-for-gpu-raster-tile";
 
-// Used to communicate managed policy for MutationEvents feature. This feature
-// is typically controlled by a RuntimeEnabledFeature, but requires an
-// enterprise policy override.
-extern const char kMutationEventsEnabled[] =
-    "deprecated-mutation-events-enabled";
-
 // Used to communicate managed policy for CSSCustomStateDeprecatedSyntax. This
 // feature is typically controlled by a RuntimeEnabledFeature, but requires an
 // enterprise policy override.

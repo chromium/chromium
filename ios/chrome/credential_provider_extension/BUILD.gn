@@ -168,6 +168,18 @@ source_set("metrics_util") {
   frameworks = [ "Foundation.framework" ]
 }
 
+source_set("favicon_util") {
+  sources = [
+    "favicon_util.h",
+    "favicon_util.mm",
+  ]
+  deps = [
+    "//ios/chrome/common/app_group",
+    "//ios/chrome/common/ui/favicon",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}
+
 source_set("passkey_request_details") {
   sources = [
     "passkey_request_details.h",

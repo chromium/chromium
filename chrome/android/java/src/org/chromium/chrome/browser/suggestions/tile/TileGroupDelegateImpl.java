@@ -83,9 +83,9 @@ public class TileGroupDelegateImpl implements TileGroup.Delegate {
     }
 
     @Override
-    public boolean queryCustomLink(GURL keyUrl) {
+    public boolean hasCustomLink(GURL keyUrl) {
         assert !mIsDestroyed;
-        return mMostVisitedSites.queryCustomLink(keyUrl);
+        return mMostVisitedSites.hasCustomLink(keyUrl);
     }
 
     // TileGroup.Delegate implementation.

@@ -13,8 +13,7 @@ namespace content {
 std::ostream& operator<<(std::ostream& out, const BtmPageVisitInfo& page) {
   return out << "BtmPageVisitInfo{url=" << page.url
              << ", source_id=" << page.source_id
-             << ", had_qualifying_storage_access="
-             << page.had_qualifying_storage_access
+             << ", had_active_storage_access=" << page.had_active_storage_access
              << ", received_user_activation=" << page.received_user_activation
              << ", had_successful_webauthn_assertion="
              << page.had_successful_web_authn_assertion

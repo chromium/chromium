@@ -962,7 +962,7 @@ class _VersionCodeGroupedTest(unittest.TestCase):
     self.assertEqual(build, 5750)
     self.assertEqual(patch, 112)
     self.assertEqual(package, 'CHROME_MODERN')
-    self.assertEqual(abi, 'arm_64')
+    self.assertEqual(abi, 'arm_64_high')
     self.assertEqual(is_next_build, False)
 
   def testArm_32_64Translate(self):

@@ -35,6 +35,9 @@
 /// thumbnail.
 - (void)setThumbnailImage:(UIImage*)image;
 
+/// Updates the return key availability.
+- (void)updateReturnKeyAvailability;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_OMNIBOX_CONSUMER_H_

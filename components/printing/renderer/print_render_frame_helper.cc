@@ -825,6 +825,8 @@ class PrepareFrameAndViewForPrint : public blink::WebViewClient,
   void EnterPrintModeInternal(const mojom::PrintParams& params,
                               bool ignore_css_margins);
 
+  void LeavePrintModeInternal();
+
   // blink::WebViewClient:
   void DidStopLoading() override;
 
@@ -888,6 +890,15 @@ void PrepareFrameAndViewForPrint::EnterPrintModeInternal(
   is_printing_started_ = true;
 }
 
+void PrepareFrameAndViewForPrint::LeavePrintModeInternal() {
+  blink::WebLocalFrame* frame = frame_.GetFrame();
+  if (!frame || !is_printing_started_) {
+    return;
+  }
+  frame->PrintEnd();
+  is_printing_started_ = false;
+}
+
 void PrepareFrameAndViewForPrint::BeginPrinting(
     const WebPreferences& preferences,
     const mojom::PrintParams& params,
@@ -897,10 +908,6 @@ void PrepareFrameAndViewForPrint::BeginPrinting(
   if (params.selection_only) {
     // Printing selection not an option for PDF.
     DCHECK(!IsPrintingPdfFrame(frame(), node_to_print_));
-
-    // Save the parameters. Will be used when the document has loaded the copied
-    // selection.
-    selection_only_print_params_ = params.Clone();
 
     CopySelection(params, preferences);
   } else {
@@ -923,7 +930,15 @@ void PrepareFrameAndViewForPrint::EnterPrintMode(
 void PrepareFrameAndViewForPrint::CopySelection(
     const mojom::PrintParams& params,
     const WebPreferences& preferences) {
+  // Save the parameters. Will be used when the document has loaded the copied
+  // selection.
+  selection_only_print_params_ = params.Clone();
+
+  // Temporarily enter print mode so that the right print media styles are
+  // applied for the selection.
+  EnterPrintModeInternal(params, /*ignore_css_margins=*/false);
   std::string html = frame()->SelectionAsMarkup().Utf8();
+  LeavePrintModeInternal();
 
   // Save the base URL before `frame_` gets reset below.
   GURL original_base_url = frame()->GetDocument().BaseURL();
@@ -1059,7 +1074,6 @@ void PrepareFrameAndViewForPrint::FinishPrinting() {
   if (frame) {
     blink::WebView* web_view = frame->View();
     if (is_printing_started_) {
-      is_printing_started_ = false;
       if (!owns_web_view_) {
         web_view->GetSettings()->SetShouldPrintBackgrounds(false);
       }
@@ -1088,7 +1102,7 @@ void PrepareFrameAndViewForPrint::FinishPrinting() {
       base::debug::Alias(&debug_event_alias9);
       base::debug::Alias(&debug_event_index);
 
-      frame->PrintEnd();
+      LeavePrintModeInternal();
     }
     if (owns_web_view_) {
       DCHECK(!frame->IsLoading());

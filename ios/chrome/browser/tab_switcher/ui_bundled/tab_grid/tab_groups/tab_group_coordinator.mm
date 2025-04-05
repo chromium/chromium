@@ -503,11 +503,8 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
 - (void)startUserEducationIfNeeded {
   tab_groups::TabGroupSyncService* syncService =
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(self.profile);
-  ShareKitService* shareKitService =
-      ShareKitServiceFactory::GetForProfile(self.profile);
 
-  if (!tab_groups::utils::IsTabGroupShared(_tabGroup, syncService,
-                                           shareKitService)) {
+  if (!tab_groups::utils::IsTabGroupShared(_tabGroup, syncService)) {
     return;
   }
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];

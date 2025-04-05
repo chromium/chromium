@@ -96,14 +96,17 @@ void ValidationMessageClientImpl::ShowValidationMessage(
   overlay_ =
       MakeGarbageCollected<FrameOverlay>(target_frame, std::move(delegate));
   overlay_delegate_->CreatePage(*overlay_);
-  bool success = target_frame->View()->UpdateAllLifecyclePhasesExceptPaint(
-      DocumentUpdateReason::kOverlay);
-  ValidationMessageVisibilityChanged(anchor);
-
-  // The lifecycle update should always succeed, because this is not inside
-  // of a throttling scope.
-  DCHECK(success);
-  LayoutOverlay();
+  if (RuntimeEnabledFeatures::ValidationBubbleNoForcedLayoutEnabled()) {
+    ValidationMessageVisibilityChanged(anchor);
+  } else {
+    bool success = target_frame->View()->UpdateAllLifecyclePhasesExceptPaint(
+        DocumentUpdateReason::kOverlay);
+    ValidationMessageVisibilityChanged(anchor);
+    // The lifecycle update should always succeed, because this is not inside
+    // of a throttling scope.
+    DCHECK(success);
+    LayoutOverlay();
+  }
 }
 
 void ValidationMessageClientImpl::HideValidationMessage(const Element& anchor) {

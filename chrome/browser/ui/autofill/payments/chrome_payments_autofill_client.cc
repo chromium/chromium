@@ -103,7 +103,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 // TODO(crbug.com/407105162): Remove nogncheck when crbug.com/40147906 is fixed.
-#include "components/tab_collections/public/tab_interface.h"  // nogncheck
+#include "components/tabs/public/tab_interface.h"  // nogncheck
 #include "components/webauthn/content/browser/internal_authenticator_impl.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -984,7 +984,7 @@ void ChromePaymentsAutofillClient::DismissSelectBnplIssuerDialog() {
 bool ChromePaymentsAutofillClient::IsTabModalPopup() const {
 #if !BUILDFLAG(IS_ANDROID)
   tabs::TabInterface* const tab_interface =
-      tabs::TabInterface::GetFromContents(web_contents());
+      tabs::TabInterface::MaybeGetFromContents(web_contents());
   return tab_interface &&
          tab_interface->GetBrowserWindowInterface()->IsTabModalPopup();
 #else

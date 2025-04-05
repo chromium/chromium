@@ -196,7 +196,8 @@ enum class KeyStatusMixForUma {
   kEmpty = 7,
   kMixedWithUsable = 8,
   kMixedWithoutUsable = 9,
-  kMaxValue = kMixedWithoutUsable
+  kAllUsableInFuture = 10,
+  kMaxValue = kAllUsableInFuture
 };
 
 KeyStatusMixForUma GetKeyStatusMixForUma(const media::CdmKeysInfo& keys_info) {
@@ -233,6 +234,8 @@ KeyStatusMixForUma GetKeyStatusMixForUma(const media::CdmKeysInfo& keys_info) {
         return KeyStatusMixForUma::kAllKeyStatusPending;
       case media::CdmKeyInformation::KeyStatus::RELEASED:
         return KeyStatusMixForUma::kAllReleased;
+      case media::CdmKeyInformation::KeyStatus::USABLE_IN_FUTURE:
+        return KeyStatusMixForUma::kAllUsableInFuture;
     }
   } else {
     return has_usable ? KeyStatusMixForUma::kMixedWithUsable

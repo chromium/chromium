@@ -50,7 +50,6 @@ include_rules = [
   "+ios/chrome/browser/regional_capabilities/model/regional_capabilities_service_factory.h",
   "+ios/chrome/browser/signin/model/chrome_account_manager_service.h",
   "+ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h",
-  "+ios/chrome/browser/signin/model/chrome_account_manager_service_observer_bridge.h",
   "+ios/chrome/browser/signin/model/identity_manager_factory.h",
   "+ios/chrome/browser/signin/model/system_identity_manager.h",
   "+ios/chrome/browser/supervised_user/model/family_link_user_capabilities_observer_bridge.h",

@@ -1197,12 +1197,6 @@ BASE_FEATURE(kUnrestrictedSharedArrayBuffer,
              "UnrestrictedSharedArrayBuffer",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable using browser-calculated origins on navigations, instead of
-// renderer-calculated ones.
-BASE_FEATURE(kUseBrowserCalculatedOrigin,
-             "UseBrowserCalculatedOrigin",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_ANDROID) && BUILDFLAG(INCLUDE_BOTH_V8_SNAPSHOTS)
 // If enabled, blink's context snapshot is used rather than the v8 snapshot.
 BASE_FEATURE(kUseContextSnapshot,
@@ -1378,6 +1372,11 @@ BASE_FEATURE(kAndroidOpenPdfInline,
              "AndroidOpenPdfInline",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// A feature to enable launch handler and file handler api for Chrome on Android
+BASE_FEATURE(kAndroidWebAppLaunchHandler,
+             "AndroidWebAppLaunchHandler",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Allows the use of "Smart Zoom", an alternative form of page zoom, and
 // enables the associated UI.
 BASE_FEATURE(kSmartZoom, "SmartZoom", base::FEATURE_DISABLED_BY_DEFAULT);
@@ -1418,10 +1417,6 @@ BASE_FEATURE(kMacAllowBackgroundingRenderProcesses,
 BASE_FEATURE(kMacImeLiveConversionFix,
              "MacImeLiveConversionFix",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kMacSyscallSandbox,
-             "MacSyscallSandbox",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Changes how Chrome responds to accessibility activation signals on macOS
 // Sonoma, to avoid unnecessary changes to the screen reader state.

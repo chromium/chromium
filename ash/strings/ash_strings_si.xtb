@@ -112,6 +112,7 @@
 <translation id="1306549533752902673">නිර්දේශිත යෙදුම්</translation>
 <translation id="1310396869741602366">ස්වභාවය වෙනස් කරන්න</translation>
 <translation id="1312604459020188865">සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" /></translation>
+<translation id="1314113845887519729">ඉහළ දාර හසුරුව තෝරා ඇත, ගෙන යාමට ඊතල යතුරු භාවිතා කරන්න</translation>
 <translation id="1316069254387866896">සැමවිටම රාක්කය පෙන්වන්න</translation>
 <translation id="132346741904777634">කැමරාව ඉහළ වම් කෙළවරට සවි කර ඇත. පද්ධති මතුපිට සමග ගැටුම.</translation>
 <translation id="132415371743256095"><ph name="DESK_NAME" /> සහ කවුළු වසන්න</translation>
@@ -186,6 +187,7 @@
 <translation id="1557622599341396706">මේසයේ නම පෙන්වන්න</translation>
 <translation id="1569384531973824928">මෙය කැමරා සහ මයික්‍රොෆෝන අවසර සහිත සියලු යෙදුම් සහ වෙබ් අඩවි සඳහා ප්‍රවේශයට ඉඩ දෙයි. ඔබට වෙබ් පිටුව නැවුම් කිරීමට හෝ යෙදුම නැවත ආරම්භ කිරීමට අවශ්‍ය වේවි.</translation>
 <translation id="1571697193564730395">බාධා නොකරන්න ටොගල් කරන්න. <ph name="STATE_TEXT" /></translation>
+<translation id="1574691582236909946">වම් කෙළවරේ හසුරුව තෝරා ඇත, ගෙන යාමට ඊතල යතුරු භාවිතා කරන්න</translation>
 <translation id="1576623706766186887">විශාලකය සක්‍රීයව ඇති විට විශාලනය අඩු කරන්න</translation>
 <translation id="1582946770779745370">ක්‍රීඩා උපකරණ පුවරුව තිබේ. විවෘත කිරීම සඳහා ඕනෑම වේලාවක <ph name="LAUNCHER_KEY_NAME" /> + Shift + Escape, ඉන්පසු <ph name="LAUNCHER_KEY_NAME" /> + g ඔබන්න</translation>
 <translation id="1586324912145647027">1 සිට 8 දක්වා මේස වෙත යන්න</translation>
@@ -220,6 +222,7 @@
 <translation id="1696984622403682083">ඔබට සැකසීම් තුළ ඕනෑම වේලාවක මෙම විශේෂාංගය ක්‍රියා විරහිත කළ හැක. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> කාල ගණකය · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 ලිපිනය: <ph name="ADDRESS" /></translation>
+<translation id="1700782710852683371">දැන් මෙහි රූප නිර්මාණය කළ නොහැක. ඔබේ විස්තරය නැවත කීමට උත්සාහ කරන්න. ඔබට පුද්ගලයන්ගේ රූප, හානිකර, හෝ අසභ්‍ය අන්තර්ගතයන් නිර්මාණය කළ නොහැකි බව මතක තබා ගන්න.</translation>
 <translation id="1703117532528082099">සක්‍රිය කවුළුව වමේ ඈඳා ඇත.</translation>
 <translation id="1708345662127501511">මේසය: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">ජාල සැකසීම්</translation>
@@ -608,6 +611,7 @@
 <translation id="304097922505898963">යතුරු කෙටි මං යෙදුම් විවෘත කරන්න</translation>
 <translation id="304417730895741346">ඔබේ අමුණන ලද සහ විවෘත යෙදුම් රාක්කයේ ඇත. යෙදුමක් රාක්කයට ඇමිණීමට, යෙදුමක් දකුණු-ක්ලික් කරන්න හෝ ඇඟිලි දෙකකින් ඔබේ ස්පර්ශ පුවරුව තට්ටු කරන්න.</translation>
 <translation id="3045488863354895414">සුබ අපරභාගයක්,</translation>
+<translation id="3045670165536837541">ඉහළ දකුණු හසුරුව තෝරා ඇත, ගෙන යාමට ඊතල යතුරු භාවිතා කරන්න</translation>
 <translation id="3047761520276763270">පැවසීමට උත්සාහ කරන්න:</translation>
 <translation id="3053407068093039599">කැමරා ප්‍රවේශය ක්‍රියාත්මක/ක්‍රියාවිරහිත කරන්න</translation>
 <translation id="3055162170959710888">ඔබ මෙම උපාංගය අද <ph name="USED_TIME" />කට භාවිත කළා</translation>
@@ -1763,6 +1767,7 @@
 <translation id="6696025732084565524">ඔබේ ගැලවීමට හැකි යතුරු පුවරුවට අවදානම් යාවත්කාලීනයක් අවශ්‍යයි</translation>
 <translation id="6697913454192220372">නව මේසයක් එක් කරන්න</translation>
 <translation id="6700713906295497288">IME මෙනු බොත්තම</translation>
+<translation id="6704073473590541209">දකුණු දාර හසුරුව තෝරා ඇත, ගෙන යාමට ඊතල යතුරු භාවිතා කරන්න</translation>
 <translation id="6706742084323792866">යතුරු පුවරුව අමුණන්න</translation>
 <translation id="6710213216561001401">පෙර</translation>
 <translation id="6723839937902243910">බලය</translation>
@@ -1786,6 +1791,7 @@
 <translation id="6781002679438061620">9 වෙනි මේසය</translation>
 <translation id="6782182743534150858">13 වෙනි මේසය</translation>
 <translation id="6782919488259222803">වත්මන් පිටුව සොයන්න</translation>
+<translation id="6783348167101855071">පහළ දකුණු හසුරුව තෝරා ඇත, ගෙන යාමට ඊතල යතුරු භාවිතා කරන්න</translation>
 <translation id="6786750046913594791">ෆෝල්ඩරය වසන්න</translation>
 <translation id="6790428901817661496">වාදනය කරන්න</translation>
 <translation id="6792262051831399889">නොමැත</translation>
@@ -1941,6 +1947,7 @@
 <translation id="7371404428569700291">පටිගත කිරීමේ කවුළුව</translation>
 <translation id="7372069265635026568"><ph name="TOTAL_MEMORY" />ක එකතුවෙන් <ph name="AVAILABLE_MEMORY" />ක මතකය ලැබේ</translation>
 <translation id="737315737514430195">මෙය මයික්‍රෆෝන අවසරය ඇතිව සියලු යෙදුම් සහ වෙබ් අඩවි සඳහා මයික්‍රෆෝන ප්‍රවේශයට ඉඩ දෙයි</translation>
+<translation id="7376933029363911338">පහළ දාර හසුරුව තෝරා ඇත, ගෙන යාමට ඊතල යතුරු භාවිතා කරන්න</translation>
 <translation id="7377169924702866686">කැප්ස් ලොක් සක්‍රීයයි.</translation>
 <translation id="7377481913241237033">කේතයක් සමගින් සම්බන්ධ වන්න</translation>
 <translation id="7378203170292176219">පටිගත කිරීමට ප්‍රදේශයක් තේරීමට අදින්න</translation>
@@ -2037,6 +2044,7 @@
 <translation id="7658239707568436148">අවලංගු කරන්න</translation>
 <translation id="7659861092419699379">ඩෙස්ක් සහ කවුළු වසා ඇත</translation>
 <translation id="7660160718439869192"><ph name="EMAIL" /> සමග සබැඳි කර ඇති උපාංගවල ඔබගේ <ph name="NAME" /> දිස් වනු ඇත</translation>
+<translation id="7661694115779363471">පහළ වම් හසුරුව තෝරා ඇත, ගෙන යාමට ඊතල යතුරු භාවිතා කරන්න</translation>
 <translation id="7662283695561029522">වින්‍යාස කිරීමට තට්ටු කරන්න</translation>
 <translation id="7670953955701272011">Google දින දර්ශනය තුළ මෙම දිනය විවෘත කරන්න</translation>
 <translation id="7671610481353807627">වර්ණය අනුව යෙදුම් අනුපිළිවෙළට සකසා ඇත</translation>
@@ -2205,6 +2213,7 @@
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> සඳහා තතු සංවාදය විවෘත කරන්න</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> භාවිත කිරීම</translation>
 <translation id="8168435359814927499">අන්තර්ගතය</translation>
+<translation id="8172370561760918656">ඉහළ වම් හසුරුව තෝරා ඇත, ගෙන යාමට ඊතල යතුරු භාවිතා කරන්න</translation>
 <translation id="81817143961839203">රූපය ඇතුළු කිරීම අසාර්ථක විය</translation>
 <translation id="8185090165691050712">අගුලු ප්‍රකාරය ප්‍රතිප්‍රමාණ කිරීමට මෙනුව සක්‍රීය/අක්‍රිය කරන්න</translation>
 <translation id="8192727139462702395">ඔබ බ්ලූටූත් ක්‍රියාවිරහිත කළ විට, මෙම බාහිර උපාංග ඔබේ <ph name="DEVICE_TYPE" /> වෙතින් විසන්ධි වනු ඇත:</translation>

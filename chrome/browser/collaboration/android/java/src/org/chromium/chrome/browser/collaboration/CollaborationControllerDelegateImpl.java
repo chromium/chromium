@@ -224,7 +224,7 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
             // Need to redirect to verify account activity.
             Callback<Boolean> successCallback =
                     (success) -> {
-                        @Outcome int outcome = success ? Outcome.SUCCESS : Outcome.FAILURE;
+                        @Outcome int outcome = success ? Outcome.SUCCESS : Outcome.CANCEL;
 
                         CollaborationControllerDelegateImplJni.get()
                                 .runResultCallback(outcome, resultCallback);

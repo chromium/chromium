@@ -112,6 +112,7 @@
 <translation id="1306549533752902673">おすすめのアプリ</translation>
 <translation id="1310396869741602366">トーンを変更</translation>
 <translation id="1312604459020188865">信号強度 <ph name="SIGNAL_STRENGTH" /></translation>
+<translation id="1314113845887519729">選択した上端のハンドル、矢印キーを使用して移動します</translation>
 <translation id="1316069254387866896">シェルフを常に表示</translation>
 <translation id="132346741904777634">カメラは左上にスナップされています。システムのサーフェスと競合しています。</translation>
 <translation id="132415371743256095"><ph name="DESK_NAME" /> とウィンドウを閉じる</translation>
@@ -186,6 +187,7 @@
 <translation id="1557622599341396706">デスク名を表示</translation>
 <translation id="1569384531973824928">カメラとマイクへのアクセス権を持つすべてのアプリとウェブサイトに対して、アクセスを許可します。ウェブページの更新またはアプリの再起動が必要となる場合があります。</translation>
 <translation id="1571697193564730395">サイレント モードを切り替えます。<ph name="STATE_TEXT" /></translation>
+<translation id="1574691582236909946">選択した左端のハンドル、矢印キーを使用して移動します</translation>
 <translation id="1576623706766186887">拡大鏡がオンのときにズームアウトします</translation>
 <translation id="1582946770779745370">ゲーム ダッシュボードを使用できます。<ph name="LAUNCHER_KEY_NAME" />+Shift+Esc キー、<ph name="LAUNCHER_KEY_NAME" />+G キーの順に押すと、いつでも開くことができます</translation>
 <translation id="1586324912145647027">デスク 1～8 に移動する</translation>
@@ -220,6 +222,7 @@
 <translation id="1696984622403682083">この機能は [設定] でいつでもオフにできます。<ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> タイマー · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 アドレス: <ph name="ADDRESS" /></translation>
+<translation id="1700782710852683371">現在、この画像を作成できません。説明の表現を変えてみてください。なお、人物、有害な内容、露骨な表現を含む画像は作成できません。</translation>
 <translation id="1703117532528082099">アクティブなウィンドウを左側に固定しました。</translation>
 <translation id="1708345662127501511">デスク: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">ネットワーク設定</translation>
@@ -525,7 +528,7 @@
 
 無効にしない場合は <ph name="TIMEOUT_SECONDS" /> 秒後に内蔵タッチパッドが再度有効になります。</translation>
 <translation id="2782591952652094792">キャプチャ モードを終了</translation>
-<translation id="2785499565474703580">1 台のデバイスが接続されています</translation>
+<translation id="2785499565474703580">1 台のデバイスが接続中</translation>
 <translation id="2791421900609674576">前回中断したところから再開できるように、おすすめが表示されます。おすすめは長押しで削除できます。</translation>
 <translation id="2792498699870441125">Alt+ 検索</translation>
 <translation id="2798702144670138229">タブレット モードがオンになっています。ゲーム ダッシュボードは使用できません。</translation>
@@ -608,6 +611,7 @@
 <translation id="304097922505898963">キー ショートカット アプリを開く</translation>
 <translation id="304417730895741346">シェルフには、固定したアプリまたは開いているアプリが表示されます。アプリをシェルフに固定するには、アプリを右クリックするか、2 本の指でタッチパッドをタップします。</translation>
 <translation id="3045488863354895414">こんにちは</translation>
+<translation id="3045670165536837541">選択した右上のハンドル、矢印キーを使用して移動します</translation>
 <translation id="3047761520276763270">次のように言ってみてください。</translation>
 <translation id="3053407068093039599">カメラへのアクセスをオンまたはオフにする</translation>
 <translation id="3055162170959710888">あなたは今日、このデバイスを <ph name="USED_TIME" />使用しました</translation>
@@ -1763,6 +1767,7 @@
 <translation id="6696025732084565524">お使いのキーボード（取り外し可能）に重要なアップデートを適用する必要があります</translation>
 <translation id="6697913454192220372">新しいデスクを追加</translation>
 <translation id="6700713906295497288">IME メニューボタン</translation>
+<translation id="6704073473590541209">選択した右端のハンドル、矢印キーを使用して移動します</translation>
 <translation id="6706742084323792866">キーボードを固定</translation>
 <translation id="6710213216561001401">前へ</translation>
 <translation id="6723839937902243910">電源</translation>
@@ -1786,6 +1791,7 @@
 <translation id="6781002679438061620">デスク 9</translation>
 <translation id="6782182743534150858">デスク 13</translation>
 <translation id="6782919488259222803">現在のページを検索する</translation>
+<translation id="6783348167101855071">選択した右下のハンドル、矢印キーを使用して移動します</translation>
 <translation id="6786750046913594791">フォルダを閉じる</translation>
 <translation id="6790428901817661496">再生</translation>
 <translation id="6792262051831399889">使用不可</translation>
@@ -1941,6 +1947,7 @@
 <translation id="7371404428569700291">ウィンドウを録画</translation>
 <translation id="7372069265635026568">合計メモリ <ph name="TOTAL_MEMORY" /> 中 <ph name="AVAILABLE_MEMORY" /> を使用できます</translation>
 <translation id="737315737514430195">マイクへのアクセス権を持つすべてのアプリとウェブサイトに対して、マイクへのアクセスを許可します</translation>
+<translation id="7376933029363911338">選択した下端のハンドル、矢印キーを使用して移動します</translation>
 <translation id="7377169924702866686">CapsLock 
 がオンになっています。</translation>
 <translation id="7377481913241237033">コードを使用して接続</translation>
@@ -2038,6 +2045,7 @@
 <translation id="7658239707568436148">キャンセル</translation>
 <translation id="7659861092419699379">デスクとウィンドウを閉じました</translation>
 <translation id="7660160718439869192"><ph name="NAME" /> は、<ph name="EMAIL" /> と関連付けられているデバイスに表示されます</translation>
+<translation id="7661694115779363471">選択した左下のハンドル、矢印キーを使用して移動します</translation>
 <translation id="7662283695561029522">設定するにはタップします</translation>
 <translation id="7670953955701272011">この日を Google カレンダーで開きます</translation>
 <translation id="7671610481353807627">アプリは色で並べ替えられています</translation>
@@ -2119,7 +2127,7 @@
 <translation id="7902625623987030061">指紋認証センサーをタッチ</translation>
 <translation id="7904094684485781019">このアカウントの管理者がマルチログインを許可していません。</translation>
 <translation id="7911118814695487383">Linux</translation>
-<translation id="7917760201509801422"><ph name="DEVICECOUNT" /> 台のデバイスが接続されています</translation>
+<translation id="7917760201509801422"><ph name="DEVICECOUNT" /> 台のデバイスが接続中</translation>
 <translation id="7921565901396407357">PIN を確認できませんでした。もう一度お試しください。</translation>
 <translation id="7923534281713082605">天気情報</translation>
 <translation id="7926080067315048321">ウェブの Google ToDo リストの全タスクを表示</translation>
@@ -2206,6 +2214,7 @@
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> の情報ダイアログを開きます</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> を使用しています</translation>
 <translation id="8168435359814927499">コンテンツ</translation>
+<translation id="8172370561760918656">選択した左上のハンドル、矢印キーを使用して移動します</translation>
 <translation id="81817143961839203">画像を挿入できませんでした</translation>
 <translation id="8185090165691050712">ロックモードのサイズ変更メニューのオンとオフを切り替えます</translation>
 <translation id="8192727139462702395">Bluetooth をオフにすると、次の外部デバイスが <ph name="DEVICE_TYPE" /> と接続解除されます。</translation>

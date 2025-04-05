@@ -1,0 +1,49 @@
+Test creating hidden target
+Create hidden target
+Attached to the hidden target
+Filtered targets via hidden target's session: [
+    [0] : {
+        targetId : <string 0>
+        url : about:blank?HIDDEN=TARGET
+    }
+]
+Filtered targets via browser session: [
+    [0] : {
+        targetId : <string 0>
+        url : about:blank?HIDDEN=TARGET
+    }
+]
+Disconnect the parent session
+DetachedFromTarget{
+    method : Target.detachedFromTarget
+    params : {
+        sessionId : <string 1>
+        targetId : <string 2>
+    }
+}
+DetachedFromTarget{
+    method : Target.detachedFromTarget
+    params : {
+        sessionId : <string 3>
+        targetId : <string 0>
+    }
+}
+DetachedFromTarget{
+    method : Target.detachedFromTarget
+    params : {
+        sessionId : <string 4>
+        targetId : <string 0>
+    }
+}
+TargetDestroyed{
+    method : Target.targetDestroyed
+    params : {
+        targetId : <string 0>
+    }
+}
+Expected error response: {
+    code : -32001
+    message : Session with given id not found.
+}
+Filtered targets via browser session: [
+]

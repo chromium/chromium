@@ -41,7 +41,7 @@ action("device_policy_remover_generate") {
   ]
 
   public_deps = [
-    "//components/policy/proto",
+    "//components/policy/proto:proto_internal_gen",
     "//third_party/protobuf:py_proto",
   ]
 }

@@ -6,12 +6,15 @@
 #include <string>
 
 #include "base/feature_list.h"
+#include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/extensions/unpacked_installer.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -37,6 +40,7 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/interaction/tracked_element_webcontents.h"
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
+#include "components/crx_file/id_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/performance_manager/public/features.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -47,7 +51,11 @@
 #include "components/webapps/browser/banners/web_app_banner_data.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_system.h"
+#include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/common/extension_urls.h"
+#include "extensions/test/test_extension_dir.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/accelerators/menu_label_accelerator_util.h"
@@ -158,27 +166,6 @@ IN_PROC_BROWSER_TEST_F(AppMenuModelInteractiveTest, IncognitoAccelerator) {
       CheckIncognitoWindowOpened(browser()));
 }
 
-// Test to confirm that the manage extensions menu item navigates when selected
-// and emite histograms that it did so.
-IN_PROC_BROWSER_TEST_F(AppMenuModelInteractiveTest, ManageExtensions) {
-  base::HistogramTester histograms;
-
-  RunTestSequence(
-      InstrumentTab(kPrimaryTabPageElementId),
-      PressButton(kToolbarAppMenuButtonElementId),
-      SelectMenuItem(AppMenuModel::kExtensionsMenuItem),
-      SelectMenuItem(ExtensionsMenuModel::kManageExtensionsMenuItem),
-      WaitForWebContentsNavigation(kPrimaryTabPageElementId,
-                                   GURL(chrome::kChromeUIExtensionsURL)));
-
-  histograms.ExpectTotalCount("WrenchMenu.TimeToAction.ManageExtensions", 1);
-  histograms.ExpectTotalCount("WrenchMenu.TimeToAction.VisitChromeWebStore", 0);
-  histograms.ExpectBucketCount("WrenchMenu.MenuAction",
-                               MENU_ACTION_MANAGE_EXTENSIONS, 1);
-  histograms.ExpectBucketCount("WrenchMenu.MenuAction",
-                               MENU_ACTION_VISIT_CHROME_WEB_STORE, 0);
-}
-
 IN_PROC_BROWSER_TEST_F(AppMenuModelInteractiveTest,
                        CastSaveShareSubMenuItemText) {
   if (!media_router::MediaRouterEnabled(browser()->profile())) {
@@ -196,43 +183,149 @@ IN_PROC_BROWSER_TEST_F(AppMenuModelInteractiveTest,
       EnsurePresent(AppMenuModel::kCastTitleItem));
 }
 
-// TODO(crbug.com/40073814): Remove this test in favor of a unit test
-// extension_urls::GetWebstoreLaunchURL().
-class ExtensionsMenuVisitChromeWebstoreModelInteractiveTest
-    : public AppMenuModelInteractiveTest {
+namespace {
+
+enum ExtensionsTestMode {
+  kDoNotCollapse,
+  kCollapseNoExtensions,
+  kCollapseWithExtensions
+};
+
+}  // namespace
+
+class AppMenuModelExtensionsInteractiveTest
+    : public AppMenuModelInteractiveTest,
+      public testing::WithParamInterface<ExtensionsTestMode> {
  public:
+  AppMenuModelExtensionsInteractiveTest() = default;
+  ~AppMenuModelExtensionsInteractiveTest() override = default;
+
+  bool MenuShouldCollapse() const {
+    return GetParam() == ExtensionsTestMode::kCollapseNoExtensions;
+  }
+
   void SetUp() override {
+    scoped_feature_list_.InitWithFeatureState(
+        features::kExtensionsCollapseMainMenu,
+        GetParam() != ExtensionsTestMode::kDoNotCollapse);
     set_open_about_blank_on_browser_launch(true);
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
     InteractiveBrowserTest::SetUp();
   }
 
+  void SetUpOnMainThread() override {
+    if (GetParam() == ExtensionsTestMode::kCollapseWithExtensions) {
+      // Create and load a dummy extension.
+      constexpr char kExtensionManifest[] = R"(
+        {
+          "name": "an extension",
+          "version": "1.0",
+          "manifest_version": 2,
+          "browser_action": {}
+        }
+      )";
+      extensions::TestExtensionDir dir;
+      dir.WriteManifest(kExtensionManifest);
+      const auto id = crx_file::id_util::GenerateIdForPath(
+          base::MakeAbsoluteFilePath(dir.UnpackedPath()));
+      auto* const service =
+          extensions::ExtensionSystem::Get(browser()->profile())
+              ->extension_service();
+      CHECK(service);
+      auto* const registry =
+          extensions::ExtensionRegistry::Get(browser()->profile());
+      CHECK(registry);
+      extensions::TestExtensionRegistryObserver observer(registry, id);
+      extensions::UnpackedInstaller::Create(service)->Load(dir.UnpackedPath());
+      observer.WaitForExtensionLoaded();
+    }
+    AppMenuModelInteractiveTest::SetUpOnMainThread();
+  }
+
  protected:
-  base::HistogramTester histograms;
+  base::HistogramTester histograms_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Test to confirm that the visit Chrome Web Store menu item navigates to the
-// correct chrome webstore URL when selected and emits histograms that it did
-// so.
-IN_PROC_BROWSER_TEST_F(ExtensionsMenuVisitChromeWebstoreModelInteractiveTest,
-                       VisitChromeWebStore) {
-  GURL expected_webstore_launch_url = extension_urls::GetNewWebstoreLaunchURL();
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    AppMenuModelExtensionsInteractiveTest,
+    testing::Values(ExtensionsTestMode::kDoNotCollapse,
+                    ExtensionsTestMode::kCollapseNoExtensions,
+                    ExtensionsTestMode::kCollapseWithExtensions),
+    [](const testing::TestParamInfo<ExtensionsTestMode>& param) {
+      switch (param.param) {
+        case ExtensionsTestMode::kDoNotCollapse:
+          return "DoNotCollapse";
+        case ExtensionsTestMode::kCollapseNoExtensions:
+          return "CollapseNoExtensions";
+        case ExtensionsTestMode::kCollapseWithExtensions:
+          return "CollapseWithExtensions";
+      }
+    });
+
+// Test to confirm that the manage extensions menu item navigates when selected
+// and emit histograms that it did so.
+IN_PROC_BROWSER_TEST_P(AppMenuModelExtensionsInteractiveTest,
+                       ManageExtensions) {
+  if (MenuShouldCollapse()) {
+    GTEST_SKIP()
+        << "Manage extensions cannot be accessed through collapsed menu.";
+  }
+
   RunTestSequence(
       InstrumentTab(kPrimaryTabPageElementId),
       PressButton(kToolbarAppMenuButtonElementId),
       SelectMenuItem(AppMenuModel::kExtensionsMenuItem),
+      SelectMenuItem(ExtensionsMenuModel::kManageExtensionsMenuItem),
+      WaitForWebContentsNavigation(kPrimaryTabPageElementId,
+                                   GURL(chrome::kChromeUIExtensionsURL)));
+
+  histograms_.ExpectTotalCount("WrenchMenu.TimeToAction.ManageExtensions", 1);
+  histograms_.ExpectTotalCount("WrenchMenu.TimeToAction.VisitChromeWebStore",
+                               0);
+  histograms_.ExpectTotalCount("WrenchMenu.TimeToAction.ExploreExtensions", 0);
+  histograms_.ExpectBucketCount("WrenchMenu.MenuAction",
+                                MENU_ACTION_MANAGE_EXTENSIONS, 1);
+  histograms_.ExpectBucketCount("WrenchMenu.MenuAction",
+                                MENU_ACTION_VISIT_CHROME_WEB_STORE, 0);
+  histograms_.ExpectBucketCount("WrenchMenu.MenuAction",
+                                MENU_ACTION_EXPLORE_EXTENSIONS, 0);
+}
+
+// Test to confirm that the visit Chrome Web Store menu item navigates to the
+// correct chrome webstore URL when selected and emits histograms that it did
+// so.
+IN_PROC_BROWSER_TEST_P(AppMenuModelExtensionsInteractiveTest,
+                       VisitChromeWebStore) {
+  const bool collapse = MenuShouldCollapse();
+  const GURL expected_webstore_launch_url =
+      extension_urls::GetNewWebstoreLaunchURL();
+  RunTestSequence(
+      InstrumentTab(kPrimaryTabPageElementId),
+      PressButton(kToolbarAppMenuButtonElementId),
+      // If not collapsed, then the web store item is in the extensions submenu.
+      If([collapse]() { return !collapse; },
+         Then(SelectMenuItem(AppMenuModel::kExtensionsMenuItem))),
       SelectMenuItem(ExtensionsMenuModel::kVisitChromeWebStoreMenuItem),
       WaitForWebContentsNavigation(
           kPrimaryTabPageElementId,
           extension_urls::AppendUtmSource(expected_webstore_launch_url,
                                           extension_urls::kAppMenuUtmSource)));
 
-  histograms.ExpectTotalCount("WrenchMenu.TimeToAction.VisitChromeWebStore", 1);
-  histograms.ExpectTotalCount("WrenchMenu.TimeToAction.ManageExtensions", 0);
-  histograms.ExpectBucketCount("WrenchMenu.MenuAction",
-                               MENU_ACTION_VISIT_CHROME_WEB_STORE, 1);
-  histograms.ExpectBucketCount("WrenchMenu.MenuAction",
-                               MENU_ACTION_MANAGE_EXTENSIONS, 0);
+  histograms_.ExpectTotalCount("WrenchMenu.TimeToAction.VisitChromeWebStore",
+                               collapse ? 0 : 1);
+  histograms_.ExpectTotalCount("WrenchMenu.TimeToAction.ExploreExtensions",
+                               collapse ? 1 : 0);
+  histograms_.ExpectTotalCount("WrenchMenu.TimeToAction.ManageExtensions", 0);
+  histograms_.ExpectBucketCount("WrenchMenu.MenuAction",
+                                MENU_ACTION_VISIT_CHROME_WEB_STORE,
+                                collapse ? 0 : 1);
+  histograms_.ExpectBucketCount("WrenchMenu.MenuAction",
+                                MENU_ACTION_EXPLORE_EXTENSIONS,
+                                collapse ? 1 : 0);
+  histograms_.ExpectBucketCount("WrenchMenu.MenuAction",
+                                MENU_ACTION_MANAGE_EXTENSIONS, 0);
 }
 
 class PasswordManagerMenuItemInteractiveTest

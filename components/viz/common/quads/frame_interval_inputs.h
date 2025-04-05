@@ -61,6 +61,10 @@ struct VIZ_COMMON_EXPORT FrameIntervalInputs {
   // as touch scrolling, in the future.
   bool has_input = false;
 
+  // The maximum of x or y scroll speed.
+  // TODO(crbug.com/402442892): Serialize and use this.
+  float major_scroll_speed_in_pixels_per_second = 0.f;
+
   // Any content that has a fixed or specified content frame interval can be
   // added to `content_interval_info`. If `content_interval_info` contains
   // information on _all_ updating content in this client , then client can

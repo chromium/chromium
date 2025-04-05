@@ -85,7 +85,7 @@ class WrappedGraphiteTextureBacking::SkiaGraphiteImageRepresentationImpl
           color_space().ToSkColorSpace(), &surface_props, release_proc,
           release_context, WrappedTextureDebugLabel(plane));
       if (!surface) {
-        LOG(ERROR) << "MakeGraphiteFromBackendTexture() failed.";
+        LOG(ERROR) << "BeginWriteAccess() failed.";
         write_surfaces_.clear();
         return {};
       }
@@ -221,6 +221,12 @@ bool WrappedGraphiteTextureBacking::InitializeWithData(
     return false;
   }
 
+  // Create `texture_holder_` so that on backing construction failure, the
+  // texture will be deleted as well.
+  texture_holders_ = std::vector<scoped_refptr<GraphiteTextureHolder>>{
+      base::MakeRefCounted<WrappedGraphiteTextureHolder>(
+          texture, context_state_, created_task_runner_)};
+
   if (format().IsCompressed()) {
     if (!recorder()->updateCompressedBackendTexture(texture, pixels.data(),
                                                     pixels.size())) {
@@ -246,9 +252,6 @@ bool WrappedGraphiteTextureBacking::InitializeWithData(
     return false;
   }
 
-  texture_holders_ = std::vector<scoped_refptr<GraphiteTextureHolder>>{
-      base::MakeRefCounted<WrappedGraphiteTextureHolder>(
-          std::move(texture), context_state_, created_task_runner_)};
   SetCleared();
   return true;
 }

@@ -292,9 +292,6 @@ bool CanvasResourceDispatcher::PrepareFrame(
 
   resources_.insert(resource_id, std::move(frame_resource));
 
-  // TODO(crbug.com/869913): add unit testing for this.
-  const gfx::Size canvas_resource_size = canvas_resource->Size();
-
   PostImageToPlaceholderIfNotBlocked(std::move(canvas_resource), resource_id);
 
   frame->resource_list.push_back(std::move(resource));
@@ -309,8 +306,8 @@ bool CanvasResourceDispatcher::PrepareFrame(
   constexpr gfx::PointF uv_top_left(0.f, 0.f);
   constexpr gfx::PointF uv_bottom_right(1.f, 1.f);
   quad->SetAll(sqs, bounds, bounds, needs_blending, resource_id,
-               canvas_resource_size, kPremultipliedAlpha, uv_top_left,
-               uv_bottom_right, SkColors::kTransparent, nearest_neighbor,
+               kPremultipliedAlpha, uv_top_left, uv_bottom_right,
+               SkColors::kTransparent, nearest_neighbor,
                /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
   frame->render_pass_list.push_back(std::move(pass));
 

@@ -89,20 +89,20 @@ std::vector<std::u16string> ClipboardIOS::GetStandardFormats(
   std::vector<std::u16string> types;
   if (IsFormatAvailable(ClipboardFormatType::PlainTextType(), buffer,
                         data_dst)) {
-    types.push_back(base::UTF8ToUTF16(kMimeTypeText));
+    types.push_back(kMimeTypePlainText16);
   }
   if (IsFormatAvailable(ClipboardFormatType::HtmlType(), buffer, data_dst)) {
-    types.push_back(base::UTF8ToUTF16(kMimeTypeHTML));
+    types.push_back(kMimeTypeHtml16);
   }
   if (IsFormatAvailable(ClipboardFormatType::SvgType(), buffer, data_dst)) {
-    types.push_back(base::UTF8ToUTF16(kMimeTypeSvg));
+    types.push_back(kMimeTypeSvg16);
   }
   if (IsFormatAvailable(ClipboardFormatType::RtfType(), buffer, data_dst)) {
-    types.push_back(base::UTF8ToUTF16(kMimeTypeRTF));
+    types.push_back(kMimeTypeRtf16);
   }
   if (IsFormatAvailable(ClipboardFormatType::FilenamesType(), buffer,
                         data_dst)) {
-    types.push_back(base::UTF8ToUTF16(kMimeTypeURIList));
+    types.push_back(kMimeTypeUriList16);
   }
   return types;
 }
@@ -331,7 +331,7 @@ void ClipboardIOS::ReadBookmark(const DataTransferEndpoint* data_dst,
   }
 
   NSData* title_data =
-      GetDataWithTypeFromPasteboard(GetPasteboard(), kUTTypeURLName);
+      GetDataWithTypeFromPasteboard(GetPasteboard(), kUTTypeUrlName);
   if (title_data) {
     NSString* contents = [[NSString alloc] initWithData:title_data
                                                encoding:NSUTF8StringEncoding];
@@ -429,7 +429,7 @@ void ClipboardIOS::WriteFilenames(std::vector<ui::FileInfo> filenames) {
 void ClipboardIOS::WriteBookmark(std::string_view title, std::string_view url) {
   NSDictionary<NSString*, id>* bookmarkItem = @{
     ClipboardFormatType::UrlType().ToNSString() : base::SysUTF8ToNSString(url),
-    kUTTypeURLName : base::SysUTF8ToNSString(title),
+    kUTTypeUrlName : base::SysUTF8ToNSString(title),
   };
 
   [GetPasteboard() addItems:@[ bookmarkItem ]];

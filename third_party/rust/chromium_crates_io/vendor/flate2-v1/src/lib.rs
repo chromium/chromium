@@ -17,20 +17,18 @@
 //! backends, controlled through this crate's features:
 //!
 //! * `default`, or `rust_backend` - this implementation uses the `miniz_oxide`
-//!   crate which is a port of `miniz.c` (below) to Rust. This feature does not
-//!   require a C compiler and only requires Rust code.
+//!   crate which is a port of `miniz.c` to Rust. This feature does not
+//!   require a C compiler, and only uses safe Rust code.
 //!
-//! * `zlib` - this feature will enable linking against the `libz` library, typically found on most
-//!   Linux systems by default. If the library isn't found to already be on the system it will be
-//!   compiled from source (this is a C library).
+//! * `zlib-rs` - this implementation utilizes the `zlib-rs` crate, a Rust rewrite of zlib.
+//!   This backend is the fastest, at the cost of some `unsafe` Rust code.
 //!
-//! There's various tradeoffs associated with each implementation, but in general you probably
-//! won't have to tweak the defaults. The default choice is selected to avoid the need for a C
-//! compiler at build time. `zlib-ng-compat` is useful if you're using zlib for compatibility but
-//! want performance via zlib-ng's zlib-compat mode. `zlib` is useful if something else in your
-//! dependencies links the original zlib so you cannot use zlib-ng-compat. The compression ratios
-//! and performance of each of these feature should be roughly comparable, but you'll likely want
-//! to run your own tests if you're curious about the performance.
+//! Several backends implemented in C are also available.
+//! These are useful in case you are already using a specific C implementation
+//! and need the result of compression to be bit-identical.
+//! See the crate's README for details on the available C backends.
+//!
+//! The `zlib-rs` backend typically outperforms all the C implementations.
 //!
 //! # Organization
 //!

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.password_manager.settings;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID;
 
 import android.content.Context;
@@ -14,6 +15,8 @@ import android.widget.TextView;
 import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.access_loss.PasswordAccessLossWarningType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.LoginDbDeprecationUtilBridge;
@@ -33,9 +36,10 @@ import org.chromium.components.user_prefs.UserPrefs;
  * is used so that the password manager entry point displays custom strings when saving passwords is
  * enabled/disabled by policy.
  */
+@NullMarked
 public class PasswordsPreference extends ChromeBasePreference implements ProfileDependentSetting {
-    private static PrefService sPrefServiceForTesting;
-    private Profile mProfile;
+    private static @Nullable PrefService sPrefServiceForTesting;
+    private @Nullable Profile mProfile;
 
     /** Constructor for inflating from XML. */
     public PasswordsPreference(Context context, AttributeSet attrs) {
@@ -58,6 +62,7 @@ public class PasswordsPreference extends ChromeBasePreference implements Profile
         super.onBindViewHolder(holder);
         // This preference is the only one of its type in the preferences group so it will not
         // be recycled.
+        assumeNonNull(mProfile);
         PrefService prefService =
                 sPrefServiceForTesting != null ? sPrefServiceForTesting : UserPrefs.get(mProfile);
 

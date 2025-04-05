@@ -8,7 +8,7 @@ import * as fillConstants from '//components/autofill/ios/form_util/resources/fi
 import {inferLabelFromNext} from '//components/autofill/ios/form_util/resources/fill_element_inference.js';
 import * as inferenceUtil from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
 import type * as fillUtil from '//components/autofill/ios/form_util/resources/fill_util.js';
-import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {isTextField, removeQueryAndReferenceFromURL} from '//ios/web/public/js_messaging/resources/utils.js';
 
 // This file provides methods used to fill forms in JavaScript.
@@ -64,14 +64,14 @@ function extractFieldsFromControlElements(
     elementArray[i] = null;
 
     const controlElement = controlElements[i];
-    if (!gCrWeb.fill.isAutofillableElement(controlElement)) {
+    if (!gCrWebLegacy.fill.isAutofillableElement(controlElement)) {
       continue;
     }
 
     // Create a new AutofillFormFieldData, fill it out and map it to the
     // field's name.
-    const formField = new gCrWeb['common'].JSONSafeObject();
-    gCrWeb.fill.webFormControlElementToFormField(controlElement, formField);
+    const formField = new gCrWebLegacy['common'].JSONSafeObject();
+    gCrWebLegacy.fill.webFormControlElementToFormField(controlElement, formField);
     formFields.push(formField);
     elementArray[i] = formField;
     fieldsExtracted[i] = true;
@@ -98,7 +98,7 @@ function extractFieldsFromControlElements(
  * @param node The node to be processed.
  * @return Whether the node is visible or not.
  */
-gCrWeb.fill.isVisibleNode = function(node: Node): boolean {
+gCrWebLegacy.fill.isVisibleNode = function(node: Node): boolean {
   if (!node) {
     return false;
   }
@@ -111,7 +111,7 @@ gCrWeb.fill.isVisibleNode = function(node: Node): boolean {
   }
 
   // Verify all ancestors are focusable.
-  return !node.parentNode || gCrWeb.fill.isVisibleNode(node.parentNode);
+  return !node.parentNode || gCrWebLegacy.fill.isVisibleNode(node.parentNode);
 };
 
 /**
@@ -321,7 +321,7 @@ function formOrFieldsetsToFormData(
     const currentField = formFields[fieldIdx]!;
     if (!currentField.label) {
       currentField.label =
-          gCrWeb.fill.inferLabelForElement(controlElement)?.label || '';
+      gCrWebLegacy.fill.inferLabelForElement(controlElement)?.label || '';
     }
     if (currentField.label!.length > fillConstants.MAX_DATA_LENGTH) {
       currentField.label =
@@ -353,7 +353,7 @@ function formOrFieldsetsToFormData(
   // Protect against custom implementation of Array.toJSON in host pages.
   (form.fields as any).toJSON = null;
 
-  form.host_frame = gCrWeb.message.getFrameId();
+  form.host_frame = gCrWebLegacy.message.getFrameId();
 
   if (childFrames.length > 0) {
     form.child_frames = childFrames;
@@ -374,7 +374,7 @@ function getChildFrameRemoteToken(frame: HTMLIFrameElement|null): string|null {
   }
   // Either register a new token when in the isolated world or read the last
   // registered token from the page content world.
-  return gCrWeb.remoteFrameRegistration?.registerChildFrame(frame) ??
+  return gCrWebLegacy.remoteFrameRegistration?.registerChildFrame(frame) ??
       frame.getAttribute(fillConstants.CHILD_FRAME_REMOTE_TOKEN_ATTRIBUTE);
 }
 
@@ -408,7 +408,7 @@ function getChildFrameRemoteToken(frame: HTMLIFrameElement|null): string|null {
  * @return Whether there are fields and not too many fields in the
  *     form.
  */
-gCrWeb.fill.webFormElementToFormData = function(
+gCrWebLegacy.fill.webFormElementToFormData = function(
     frame: Window, formElement: HTMLFormElement,
     formControlElement: fillConstants.FormControlElement,
     form: fillUtil.AutofillFormData, field?: fillUtil.AutofillFormFieldData,
@@ -417,15 +417,15 @@ gCrWeb.fill.webFormElementToFormData = function(
     return false;
   }
 
-  form.name = gCrWeb.form.getFormIdentifier(formElement);
+  form.name = gCrWebLegacy.form.getFormIdentifier(formElement);
   form.origin = removeQueryAndReferenceFromURL(frame.origin);
-  form.action = gCrWeb.fill.getCanonicalActionForForm(formElement);
+  form.action = gCrWebLegacy.fill.getCanonicalActionForForm(formElement);
 
   // The raw name and id attributes, which may be empty.
   form.name_attribute = formElement.getAttribute('name') || '';
   form.id_attribute = formElement.getAttribute('id') || '';
 
-  form.renderer_id = gCrWeb.fill.getUniqueID(formElement);
+  form.renderer_id = gCrWebLegacy.fill.getUniqueID(formElement);
 
   form.host_frame = frame.__gCrWeb.message.getFrameId();
 
@@ -436,17 +436,17 @@ gCrWeb.fill.webFormElementToFormData = function(
   // computed by creating a <a> element, and we don't check if the action is
   // valid.
 
-  const controlElements = gCrWeb.form.getFormControlElements(formElement);
+  const controlElements = gCrWebLegacy.form.getFormControlElements(formElement);
 
   let iframeElements = extractChildFrames &&
-          gCrWeb.autofill_form_features.isAutofillAcrossIframesEnabled() ?
-      gCrWeb.form.getIframeElements(formElement) :
+      gCrWebLegacy.autofill_form_features.isAutofillAcrossIframesEnabled() ?
+      gCrWebLegacy.form.getIframeElements(formElement) :
       [];
 
   // To avoid performance bottlenecks, do not keep child frames if their
   // quantity exceeds the allowed threshold.
   if (iframeElements.length > fillConstants.MAX_EXTRACTABLE_FRAMES &&
-      gCrWeb.autofill_form_features
+      gCrWebLegacy.autofill_form_features
           .isAutofillAcrossIframesThrottlingEnabled()) {
     iframeElements = [];
   }
@@ -469,7 +469,7 @@ gCrWeb.fill.webFormElementToFormData = function(
  * @param element The element to be processed.
  * @param field Field to fill in the element information.
  */
-gCrWeb.fill.webFormControlElementToFormField = function(
+gCrWebLegacy.fill.webFormControlElementToFormField = function(
     element: fillConstants.FormControlElement,
     field: fillUtil.AutofillFormFieldData) {
   if (!field || !element) {
@@ -478,14 +478,14 @@ gCrWeb.fill.webFormControlElementToFormField = function(
   // The label is not officially part of a form control element; however, the
   // labels for all form control elements are scraped from the DOM and set in
   // form data.
-  field.identifier = gCrWeb.form.getFieldIdentifier(element);
-  field.name = gCrWeb.form.getFieldName(element);
+  field.identifier = gCrWebLegacy.form.getFieldIdentifier(element);
+  field.name = gCrWebLegacy.form.getFieldName(element);
 
   // The raw name and id attributes, which may be empty.
   field.name_attribute = element.getAttribute('name') || '';
   field.id_attribute = element.getAttribute('id') || '';
 
-  field.renderer_id = gCrWeb.fill.getUniqueID(element);
+  field.renderer_id = gCrWebLegacy.fill.getUniqueID(element);
 
   field.form_control_type = element.type;
   const autocompleteAttribute = element.getAttribute('autocomplete');
@@ -516,24 +516,24 @@ gCrWeb.fill.webFormControlElementToFormField = function(
     field.placeholder_attribute = 'x-max-data-length-exceeded';
   }
 
-  field.aria_label = gCrWeb.fill.getAriaLabel(element);
-  field.aria_description = gCrWeb.fill.getAriaDescription(element);
+  field.aria_label = gCrWebLegacy.fill.getAriaLabel(element);
+  field.aria_description = gCrWebLegacy.fill.getAriaDescription(element);
 
-  if (!gCrWeb.fill.isAutofillableElement(element)) {
+  if (!gCrWebLegacy.fill.isAutofillableElement(element)) {
     return;
   }
 
-  if (gCrWeb.fill.isAutofillableInputElement(element) ||
+  if (gCrWebLegacy.fill.isAutofillableInputElement(element) ||
       inferenceUtil.isTextAreaElement(element) ||
-      gCrWeb.fill.isSelectElement(element)) {
+      gCrWebLegacy.fill.isSelectElement(element)) {
     field.is_autofilled = (element as any).isAutofilled;
-    field.is_user_edited = gCrWeb.form.fieldWasEditedByUser(element);
-    field.should_autocomplete = gCrWeb.fill.shouldAutocomplete(element);
+    field.is_user_edited = gCrWebLegacy.form.fieldWasEditedByUser(element);
+    field.should_autocomplete = gCrWebLegacy.fill.shouldAutocomplete(element);
     field.is_focusable = !element.disabled && !(element as any).readOnly &&
-        element.tabIndex >= 0 && gCrWeb.fill.isVisibleNode(element);
+        element.tabIndex >= 0 && gCrWebLegacy.fill.isVisibleNode(element);
   }
 
-  if (gCrWeb.fill.isAutofillableInputElement(element)) {
+  if (gCrWebLegacy.fill.isAutofillableInputElement(element)) {
     if (isTextField(element)) {
       field.max_length = (element as HTMLInputElement).maxLength;
       if (field.max_length === -1) {
@@ -541,14 +541,14 @@ gCrWeb.fill.webFormControlElementToFormField = function(
         field.max_length = 524288;
       }
     }
-    field.is_checkable = gCrWeb.fill.isCheckableElement(element);
+    field.is_checkable = gCrWebLegacy.fill.isCheckableElement(element);
   } else if (inferenceUtil.isTextAreaElement(element)) {
     // Nothing more to do in this case.
   } else {
-    gCrWeb.fill.getOptionStringsFromElement(element, field);
+    gCrWebLegacy.fill.getOptionStringsFromElement(element, field);
   }
 
-  let value = gCrWeb.fill.value(element);
+  let value = gCrWebLegacy.fill.value(element);
 
   // There is a constraint on the maximum data length in method
   // WebFormControlElementToFormField() in form_autofill_util.h in order to
@@ -569,10 +569,10 @@ gCrWeb.fill.webFormControlElementToFormField = function(
  * @param form The form to serialize.
  * @return a JSON encoded version of |form|
  */
-gCrWeb.fill.autofillSubmissionData =
+gCrWebLegacy.fill.autofillSubmissionData =
     function(form: HTMLFormElement): fillUtil.AutofillFormData {
-  const formData = new gCrWeb['common'].JSONSafeObject();
-  gCrWeb['fill'].webFormElementToFormData(window, form, null, formData, null);
+  const formData = new gCrWebLegacy['common'].JSONSafeObject();
+      gCrWebLegacy['fill'].webFormElementToFormData(window, form, null, formData, null);
   return formData;
 };
 
@@ -595,19 +595,19 @@ gCrWeb.fill.autofillSubmissionData =
  * @param fieldsets out param for unowned fieldsets.
  * @return The elements that are not part of a form.
  */
-gCrWeb.fill.getUnownedAutofillableFormFieldElements = function(
+gCrWebLegacy.fill.getUnownedAutofillableFormFieldElements = function(
     elements: fillConstants.FormControlElement[],
     fieldsets: Element[]): fillConstants.FormControlElement[] {
   const unownedFieldsetChildren: fillConstants.FormControlElement[] = [];
   for (const element of elements) {
-    if (gCrWeb.form.isFormControlElement(element)) {
+    if (gCrWebLegacy.form.isFormControlElement(element)) {
       if (!element.form) {
         unownedFieldsetChildren.push(element);
       }
     }
 
-    if (gCrWeb.fill.hasTagName(element, 'fieldset') &&
-        !gCrWeb.fill.isElementInsideFormOrFieldSet(element)) {
+    if (gCrWebLegacy.fill.hasTagName(element, 'fieldset') &&
+        !gCrWebLegacy.fill.isElementInsideFormOrFieldSet(element)) {
       fieldsets.push(element);
     }
   }
@@ -653,7 +653,7 @@ gCrWeb.fill.getUnownedAutofillableFormFieldElements = function(
  * @return Whether there are fields and not too many fields in the
  *     form.
  */
-gCrWeb.fill.unownedFormElementsAndFieldSetsToFormData = function(
+gCrWebLegacy.fill.unownedFormElementsAndFieldSetsToFormData = function(
     frame: Window, fieldsets: Element[],
     controlElements: fillConstants.FormControlElement[],
     iframeElements: HTMLIFrameElement[],
@@ -669,7 +669,7 @@ gCrWeb.fill.unownedFormElementsAndFieldSetsToFormData = function(
   // To avoid performance bottlenecks, do not keep child frames if their
   // quantity exceeds the allowed threshold.
   if (iframeElements.length > fillConstants.MAX_EXTRACTABLE_FRAMES &&
-      gCrWeb.autofill_form_features
+      gCrWebLegacy.autofill_form_features
           .isAutofillAcrossIframesThrottlingEnabled()) {
     iframeElements = [];
   }
@@ -738,7 +738,7 @@ function extractAutofillableElementsFromSet(
   const autofillableElements
       : fillConstants.FormControlElement[] = [];
   for (const element of controlElements) {
-    if (!gCrWeb.fill.isAutofillableElement(element)) {
+    if (!gCrWebLegacy.fill.isAutofillableElement(element)) {
       continue;
     }
     autofillableElements.push(element);

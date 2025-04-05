@@ -11,6 +11,7 @@
 
 #include <cstddef>
 #include <optional>
+#include <ranges>
 #include <string_view>
 #include <utility>
 
@@ -1005,7 +1006,7 @@ quiche::HttpHeaderBlock SpdyTestUtil::ConstructHeaderBlock(
 namespace test {
 HashValue GetTestHashValue(uint8_t label) {
   HashValue hash_value(HASH_VALUE_SHA256);
-  memset(hash_value.data(), label, hash_value.size());
+  std::ranges::fill(hash_value, label);
   return hash_value;
 }
 

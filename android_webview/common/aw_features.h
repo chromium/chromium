@@ -32,7 +32,6 @@ BASE_DECLARE_FEATURE(kWebViewMixedContentAutoupgrades);
 BASE_DECLARE_FEATURE(kWebViewMuteAudio);
 BASE_DECLARE_FEATURE(kWebViewRecordAppDataDirectorySize);
 BASE_DECLARE_FEATURE(kWebViewRenderDocument);
-BASE_DECLARE_FEATURE(kWebViewSupervisedUserSiteBlock);
 BASE_DECLARE_FEATURE(kWebViewTestFeature);
 BASE_DECLARE_FEATURE(kWebViewUseMetricsUploadService);
 BASE_DECLARE_FEATURE(kWebViewUseMetricsUploadServiceOnlySdkRuntime);

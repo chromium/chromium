@@ -175,6 +175,8 @@ cdm::KeyStatus ToCdmKeyStatus(CdmKeyInformation::KeyStatus status) {
     case CdmKeyInformation::KeyStatus::USABLE:
       return cdm::kUsable;
     case CdmKeyInformation::KeyStatus::INTERNAL_ERROR:
+    // Not compatible with cdm::KeyStatus.
+    case CdmKeyInformation::KeyStatus::USABLE_IN_FUTURE:
       return cdm::kInternalError;
     case CdmKeyInformation::KeyStatus::EXPIRED:
       return cdm::kExpired;

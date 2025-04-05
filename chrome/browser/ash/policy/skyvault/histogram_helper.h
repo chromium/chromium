@@ -27,11 +27,13 @@ void SkyVaultMigrationMisconfiguredHistogram(MigrationDestination destination,
                                              bool value);
 void SkyVaultMigrationResetHistogram(bool value);
 void SkyVaultMigrationRetryHistogram(int count);
+void SkyVaultDeletionRetryHistogram(int count);
 void SkyVaultMigrationStoppedHistogram(MigrationDestination destination,
                                        bool value);
 void SkyVaultMigrationWrongStateHistogram(MigrationDestination destination,
                                           StateErrorContext context,
                                           State state);
+void SkyVaultDeletionDoneHistogram(bool success);
 void SkyVaultMigrationDoneHistograms(MigrationDestination destination,
                                      bool success,
                                      base::TimeDelta duration);

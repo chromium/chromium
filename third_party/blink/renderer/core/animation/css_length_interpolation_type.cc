@@ -116,7 +116,7 @@ InterpolationValue CSSLengthInterpolationType::MaybeConvertValue(
 }
 
 InterpolationValue CSSLengthInterpolationType::MaybeConvertUnderlyingValue(
-    const InterpolationEnvironment& environment) const {
+    const CSSInterpolationEnvironment& environment) const {
   InterpolationValue result =
       CSSInterpolationType::MaybeConvertUnderlyingValue(environment);
 
@@ -125,9 +125,8 @@ InterpolationValue CSSLengthInterpolationType::MaybeConvertUnderlyingValue(
   // the style from the base style, but we want the style from the animation
   // controls style.
   if (auto* length = To<InterpolableLength>(result.interpolable_value.Get())) {
-    const auto& css_environment = To<CSSInterpolationEnvironment>(environment);
     length->SetInterpolateSize(
-        css_environment.AnimationControlsStyle().InterpolateSize());
+        environment.AnimationControlsStyle().InterpolateSize());
   }
 
   return result;

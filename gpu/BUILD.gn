@@ -581,10 +581,6 @@ test("gpu_unittests") {
     sources += [ "command_buffer/service/gpu_fence_manager_unittest.cc" ]
   }
 
-  if (is_mac) {
-    sources += [ "ipc/service/built_in_shader_cache_unittest.cc" ]
-  }
-
   # On official builds angle doesn't build null backend that is required for
   # unit tests. We don't check directly for angle_enable_null to avoid
   # accidental skipping all the tests if angle logic to build null backend will

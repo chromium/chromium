@@ -185,6 +185,19 @@ std::string GetEditEntityTypeStringForI18n(EntityType entity_type) {
   NOTREACHED();
 }
 
+std::string GetDeleteEntityTypeStringForI18n(EntityType entity_type) {
+  switch (entity_type.name()) {
+    case EntityTypeName::kPassport:
+      return l10n_util::GetStringUTF8(IDS_AUTOFILL_AI_DELETE_PASSPORT_ENTITY);
+    case EntityTypeName::kVehicle:
+      return l10n_util::GetStringUTF8(IDS_AUTOFILL_AI_DELETE_VEHICLE_ENTITY);
+    case EntityTypeName::kDriversLicense:
+      return l10n_util::GetStringUTF8(
+          IDS_AUTOFILL_AI_DELETE_DRIVERS_LICENSE_ENTITY);
+  }
+  NOTREACHED();
+}
+
 api::autofill_private::AttributeTypeDataType
 AttributeTypeDataTypeToPrivateApiAttributeTypeDataType(
     AttributeType::DataType data_type) {
@@ -320,6 +333,8 @@ autofill_private::EntityInstance EntityInstanceToPrivateApiEntityInstance(
       GetAddEntityTypeStringForI18n(entity_instance.type());
   private_api_entity_instance.type.edit_entity_type_string =
       GetEditEntityTypeStringForI18n(entity_instance.type());
+  private_api_entity_instance.type.delete_entity_type_string =
+      GetDeleteEntityTypeStringForI18n(entity_instance.type());
   private_api_entity_instance.attribute_instances =
       std::move(private_api_attribute_instances);
   private_api_entity_instance.guid = entity_instance.guid().AsLowercaseString();

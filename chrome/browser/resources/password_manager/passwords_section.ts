@@ -140,22 +140,22 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
     ];
   }
 
-  focusConfig: FocusConfig;
+  declare focusConfig: FocusConfig;
 
-  private groups_: chrome.passwordsPrivate.CredentialGroup[] = [];
-  private searchTerm_: string;
-  private shownGroupsCount_: number;
-  private showAddPasswordDialog_: boolean;
-  private showAuthTimedOutDialog_: boolean;
-  private showMovePasswordsDialog_: boolean;
-  private importPasswordsText_: string;
-  private passwordsOnDevice_: chrome.passwordsPrivate.PasswordUiEntry[];
-  private showPasswordsDescription_: boolean;
-  private movePasswordsText_: string;
-  private promoCard_: PromoCard|null;
-  private passwordManagerDisabled_: boolean;
-  private shouldShowPromoCard_: boolean;
-  private activeListItem_: HTMLElement|null;
+  declare private groups_: chrome.passwordsPrivate.CredentialGroup[];
+  declare private searchTerm_: string;
+  declare private shownGroupsCount_: number;
+  declare private showAddPasswordDialog_: boolean;
+  declare private showAuthTimedOutDialog_: boolean;
+  declare private showMovePasswordsDialog_: boolean;
+  declare private importPasswordsText_: string;
+  declare private passwordsOnDevice_: chrome.passwordsPrivate.PasswordUiEntry[];
+  declare private showPasswordsDescription_: boolean;
+  declare private movePasswordsText_: string;
+  declare private promoCard_: PromoCard|null;
+  declare private passwordManagerDisabled_: boolean;
+  declare private shouldShowPromoCard_: boolean;
+  declare private activeListItem_: HTMLElement|null;
 
   private setSavedPasswordsListener_: (
       (entries: chrome.passwordsPrivate.PasswordUiEntry[]) => void)|null = null;

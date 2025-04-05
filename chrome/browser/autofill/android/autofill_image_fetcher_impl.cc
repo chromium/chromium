@@ -22,8 +22,7 @@ AutofillImageFetcherImpl::~AutofillImageFetcherImpl() = default;
 void AutofillImageFetcherImpl::FetchImagesForURLs(
     base::span<const GURL> image_urls,
     base::span<const AutofillImageFetcherBase::ImageSize> image_sizes,
-    base::OnceCallback<
-        void(const std::vector<std::unique_ptr<CreditCardArtImage>>&)>
+    base::OnceCallback<void(const std::vector<std::unique_ptr<AutofillImage>>&)>
         callback_unused) {
   if (image_urls.empty()) {
     return;

@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.GradientDrawable;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -241,12 +240,13 @@ public class TabGroupColorViewProvider implements Destroyable {
                 new FrameLayout.LayoutParams(
                         FrameLayout.LayoutParams.WRAP_CONTENT,
                         FrameLayout.LayoutParams.WRAP_CONTENT);
-        params.gravity = Gravity.CENTER;
+        // Margin is required to properly center the view. Using gravity results in inconsistent
+        // behaviors between devices.
         @Px
-        int marginStart =
-                mContext.getResources().getDimensionPixelSize(R.dimen.tab_group_color_icon_stroke)
-                        / 2;
-        params.setMarginStart(marginStart);
+        int margin =
+                mContext.getResources().getDimensionPixelSize(R.dimen.tab_group_color_icon_stroke);
+        params.setMarginStart(margin);
+        params.topMargin = margin;
         mFrameLayout.addView(view, params);
         updateColorAndSize();
     }

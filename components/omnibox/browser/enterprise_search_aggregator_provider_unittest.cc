@@ -490,46 +490,48 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, CreateMatch) {
       std::vector<ACMatchClassification>{{0, ACMatchClassification::DIM}};
 
   auto query_match = provider_->CreateMatch(
-      AutocompleteMatch::EnterpriseSearchAggregatorType::QUERY, true, {1000},
+      AutocompleteMatch::EnterpriseSearchAggregatorType::QUERY, false, {1000},
       "https://url.com/", "https://example.com/image.png",
-      "https://example.com/icon.png", u"input title", u"additional text",
-      u"keyword additional text");
+      "https://example.com/icon.png", u"additional text", u"input title",
+      u"keyword input title");
   EXPECT_EQ(query_match.relevance, 1000);
   EXPECT_EQ(query_match.destination_url.spec(), "https://url.com/");
-  EXPECT_EQ(query_match.fill_into_edit, u"keyword additional text");
+  EXPECT_EQ(query_match.fill_into_edit, u"keyword input title");
   EXPECT_EQ(query_match.enterprise_search_aggregator_type,
             AutocompleteMatch::EnterpriseSearchAggregatorType::QUERY);
-  EXPECT_EQ(query_match.description, u"input title");
-  EXPECT_EQ(query_match.description_class, primary_text_class);
-  EXPECT_EQ(query_match.contents, u"additional text");
-  EXPECT_EQ(query_match.contents_class, secondary_text_class);
+  EXPECT_EQ(query_match.description, u"additional text");
+  EXPECT_EQ(query_match.description_class, secondary_text_class);
+  EXPECT_EQ(query_match.contents, u"input title");
+  EXPECT_EQ(query_match.contents_class, primary_text_class);
   EXPECT_EQ(query_match.image_url.spec(), "https://example.com/image.png");
   EXPECT_EQ(query_match.icon_url.spec(), "https://example.com/icon.png");
   EXPECT_EQ(query_match.keyword, u"keyword");
   EXPECT_TRUE(PageTransitionCoreTypeIs(query_match.transition,
                                        ui::PAGE_TRANSITION_KEYWORD));
   EXPECT_EQ(query_match.from_keyword, true);
+  EXPECT_EQ(query_match.search_terms_args->search_terms, u"input title");
 
   auto people_match = provider_->CreateMatch(
-      AutocompleteMatch::EnterpriseSearchAggregatorType::PEOPLE, false, {1000},
+      AutocompleteMatch::EnterpriseSearchAggregatorType::PEOPLE, true, {1000},
       "https://url.com/", "https://example.com/image.png",
-      "https://example.com/icon.png", u"additional text", u"input name",
+      "https://example.com/icon.png", u"input name", u"additional text",
       u"keyword https://url.com/");
   EXPECT_EQ(people_match.relevance, 1000);
   EXPECT_EQ(people_match.destination_url.spec(), "https://url.com/");
   EXPECT_EQ(people_match.fill_into_edit, u"keyword https://url.com/");
   EXPECT_EQ(people_match.enterprise_search_aggregator_type,
             AutocompleteMatch::EnterpriseSearchAggregatorType::PEOPLE);
-  EXPECT_EQ(people_match.description, u"additional text");
-  EXPECT_EQ(people_match.description_class, secondary_text_class);
-  EXPECT_EQ(people_match.contents, u"input name");
-  EXPECT_EQ(people_match.contents_class, primary_text_class);
+  EXPECT_EQ(people_match.description, u"input name");
+  EXPECT_EQ(people_match.description_class, primary_text_class);
+  EXPECT_EQ(people_match.contents, u"additional text");
+  EXPECT_EQ(people_match.contents_class, secondary_text_class);
   EXPECT_EQ(people_match.image_url.spec(), "https://example.com/image.png");
   EXPECT_EQ(people_match.icon_url.spec(), "https://example.com/icon.png");
   EXPECT_EQ(people_match.keyword, u"keyword");
   EXPECT_TRUE(PageTransitionCoreTypeIs(people_match.transition,
                                        ui::PAGE_TRANSITION_KEYWORD));
   EXPECT_EQ(people_match.from_keyword, true);
+  EXPECT_EQ(people_match.search_terms_args, nullptr);
 }
 
 // Test that the provider runs only when allowed.

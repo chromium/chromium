@@ -234,6 +234,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/content_suggestions/ui_bundled/cells",
     "//ios/chrome/browser/content_suggestions/ui_bundled/cells:most_visited_tiles",
     "//ios/chrome/browser/content_suggestions/ui_bundled/cells:shortcuts",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/impression_limits:unit_tests",
     "//ios/chrome/browser/content_suggestions/ui_bundled/price_tracking_promo",
     "//ios/chrome/browser/content_suggestions/ui_bundled/price_tracking_promo:unit_tests",
     "//ios/chrome/browser/content_suggestions/ui_bundled/safety_check",

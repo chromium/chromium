@@ -351,10 +351,9 @@ class ConnectionCoordinator::OpenRequest
     Transaction* transaction = connection_->CreateVersionChangeTransaction(
         pending_->transaction_id,
         std::set<int64_t>(object_store_ids.begin(), object_store_ids.end()),
-        db_->backing_store()
-            ->CreateTransaction(blink::mojom::IDBTransactionDurability::Strict,
-                                blink::mojom::IDBTransactionMode::ReadWrite)
-            .release());
+        db_->backing_store()->CreateTransaction(
+            blink::mojom::IDBTransactionDurability::Strict,
+            blink::mojom::IDBTransactionMode::ReadWrite));
 
     // Save a WeakPtr<Transaction> for the BindTransactionReceiver
     // function to use later.

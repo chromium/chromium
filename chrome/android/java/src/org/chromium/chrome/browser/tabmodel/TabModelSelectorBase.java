@@ -223,6 +223,11 @@ public abstract class TabModelSelectorBase
         return mTabModelInternals.get(index);
     }
 
+    @Override
+    public TabGroupModelFilter getFilter(boolean incognito) {
+        return mTabGroupModelFilterProvider.getTabGroupModelFilter(incognito);
+    }
+
     private int getModelIndex(boolean incognito) {
         for (int i = 0; i < mTabModelInternals.size(); i++) {
             if (incognito == mTabModelInternals.get(i).isIncognito()) return i;

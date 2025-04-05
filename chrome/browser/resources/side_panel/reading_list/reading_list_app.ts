@@ -78,21 +78,22 @@ export class ReadingListAppElement extends ReadingListAppElementBase {
     };
   }
 
-  protected unreadItems_: ReadLaterEntry[] = [];
-  protected readItems_: ReadLaterEntry[] = [];
-  protected focusedIndex_: number = -1;
-  protected focusedItem_: HTMLElement|null = null;
-  private currentPageActionButtonState_: CurrentPageActionButtonState =
+  protected accessor unreadItems_: ReadLaterEntry[] = [];
+  protected accessor readItems_: ReadLaterEntry[] = [];
+  protected accessor focusedIndex_: number = -1;
+  protected accessor focusedItem_: HTMLElement|null = null;
+  private accessor currentPageActionButtonState_: CurrentPageActionButtonState =
       CurrentPageActionButtonState.kDisabled;
-  buttonRipples: boolean = loadTimeData.getBoolean('useRipples');
-  protected loadingContent_: boolean = true;
-  protected itemSize_: number = 48;
-  protected minViewportHeight_: number = 0;
-  protected scrollTarget_: HTMLElement|null = null;
-  private unreadHeader_: string = loadTimeData.getString('unreadHeader');
-  private readHeader_: string = loadTimeData.getString('readHeader');
-  private unreadExpanded_: boolean = true;
-  private readExpanded_: boolean = false;
+  accessor buttonRipples: boolean = loadTimeData.getBoolean('useRipples');
+  protected accessor loadingContent_: boolean = true;
+  protected accessor itemSize_: number = 48;
+  protected accessor minViewportHeight_: number = 0;
+  protected accessor scrollTarget_: HTMLElement|null = null;
+  private accessor unreadHeader_: string =
+      loadTimeData.getString('unreadHeader');
+  private accessor readHeader_: string = loadTimeData.getString('readHeader');
+  private accessor unreadExpanded_: boolean = true;
+  private accessor readExpanded_: boolean = false;
   private apiProxy_: ReadingListApiProxy =
       ReadingListApiProxyImpl.getInstance();
   private listenerIds_: number[] = [];

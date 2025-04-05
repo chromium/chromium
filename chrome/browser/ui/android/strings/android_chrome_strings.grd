@@ -278,6 +278,9 @@ CHAR_LIMIT guidelines:
       <message name="IDS_NOTIFICATION_CATEGORY_USB" desc="Label for USB-related notifications, within a list of notification categories. [CHAR_LIMIT=32]">
         USB
       </message>
+      <message name="IDS_NOTIFICATION_CATEGORY_SERIAL" desc="Label for serial-port-related notifications, within a list of notification categories. [CHAR_LIMIT=32]">
+        Serial
+      </message>
       <message name="IDS_NOTIFICATION_CATEGORY_COLLABORATION" desc="Label for collaboration-related notifications, within a list of notification categories. [CHAR_LIMIT=32]">
         Collaboration
       </message>
@@ -3215,6 +3218,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_CONTEXTMENU_UNPIN" desc="This string is shown in the context menu to remove an existing Custom Tile.">
         Unpin
       </message>
+      <message name="IDS_CONTEXTMENU_INSPECT_ELEMENT" desc="This string is shown in the context menu to inspect an element in a web page using the developer tools. [CHAR_LIMIT=30]">
+        Inspect
+      </message>
 
       <!-- Swipe refresh -->
       <message name="IDS_ACCESSIBILITY_SWIPE_REFRESH" desc="Content description for the swipe refresh action.">
@@ -4432,6 +4438,12 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_MENU_SWITCH_OUT_OF_INCOGNITO" desc="Menu item for switching out of incognito.">
         Switch out of Incognito
       </message>
+      <message name="IDS_MENU_ADD_TAB_TO_GROUP" desc="Menu item for adding a tab to a tab group.">
+        Add tab to group
+      </message>
+      <message name="IDS_MENU_ADD_TAB_TO_NEW_GROUP" desc="Menu item for adding a tab to a new tab group.">
+        Add tab to new group
+      </message>
       <message name="IDS_MENU_OPEN_WITH" desc="Menu item to open the content with another app.">
         Open with…
       </message>
@@ -4733,16 +4745,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_ACCOUNT_BOOKMARKS_SECTION_HEADER" desc="The section header of account top-level bookmark folders.">
         In your Google Account
       </message>
-      <message name="IDS_LOCAL_BOOKMARK_MOVE_SNACKBAR_MESSAGE" desc="The snackbar message shown when a bookmark is moved to a local folder.">
-        {BOOKMARK_COUNT, plural,
-          =1 {Bookmark saved to "<ph name="FOLDER_NAME">%1$s<ex>Mobile bookmarks</ex></ph>". It is only saved to this device.}
-          other {Bookmarks saved to "<ph name="FOLDER_NAME">%1$s<ex>Mobile bookmarks</ex></ph>". It is only saved to this device.}}
-      </message>
-      <message name="IDS_ACCOUNT_BOOKMARK_MOVE_SNACKBAR_MESSAGE" desc="The snackbar message shown when a bookmark is moved to an account folder.">
-        {BOOKMARK_COUNT, plural,
-          =1 {Bookmark saved to "<ph name="FOLDER_NAME">%1$s<ex>Mobile bookmarks</ex></ph>" in your account, <ph name="ACCOUNT_EMAIL">%2$s<ex>example@gmail.com</ex></ph>.}
-          other {Bookmarks saved to "<ph name="FOLDER_NAME">%1$s<ex>Mobile bookmarks</ex></ph>" in your account, <ph name="ACCOUNT_EMAIL">%2$s<ex>example@gmail.com</ex></ph>.}}
-      </message>
 
 
       <!-- Power bookmarks strings-->
@@ -5023,6 +5025,24 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <!-- Accessibility strings for omnibox -->
       <message name="IDS_ACCESSIBILITY_OMNIBOX_BTN_REFINE" desc="Content description for the omnibox refine button followed with the text or URL that will be shown in the Omnibox if the user clicks the refine button, eg. User input 'The' may offer a suggestion 'The meaning of life' or 'thewirecutter.com'.">
         Refine: <ph name="REFINE_TEXT">%1$s<ex>The meaning of life</ex></ph>
+      </message>
+      <message name="IDS_ACCESSIBILITY_OMNIBOX_BTN_SHARE_URL" desc="Content description for the omnibox Share button. When focused, announces action (share), followed by the website domain name.">
+        Share link to webpage <ph name="PAGE_TITLE">%1$s<ex>"BBC Home - Breaking News</ex></ph>. Source: <ph name="PAGE_URL">%2$s<ex>www.bbc.com</ex></ph>
+      </message>
+      <message name="IDS_ACCESSIBILITY_OMNIBOX_BTN_SHARE_SRP" desc="Content description for the omnibox Share button. When focused, announces action (share), followed by the Search query that opened the search results page.">
+        Share link to search results page for: <ph name="SEARCH_QUERY">%1$s<ex>The meaning of life</ex></ph>. Source: <ph name="PAGE_URL">%2$s<ex>www.google.com</ex></ph>
+      </message>
+      <message name="IDS_ACCESSIBILITY_OMNIBOX_BTN_COPY_URL" desc="Content description for the omnibox Copy button. When focused, announces action (copy), followed by the website domain name.">
+        Copy link to webpage <ph name="PAGE_TITLE">%1$s<ex>"BBC Home - Breaking News</ex></ph>. Source: <ph name="PAGE_URL">%2$s<ex>www.bbc.com</ex></ph>
+      </message>
+      <message name="IDS_ACCESSIBILITY_OMNIBOX_BTN_COPY_SRP" desc="Content description for the omnibox Copy button. When focused, announces action (copy), followed by the Search query that opened the search results page.">
+        Copy link to search results page for: <ph name="SEARCH_QUERY">%1$s<ex>The meaning of life</ex></ph>. Source: <ph name="PAGE_URL">%2$s<ex>www.google.com</ex></ph>
+      </message>
+      <message name="IDS_ACCESSIBILITY_OMNIBOX_BTN_EDIT_URL" desc="Content description for the omnibox Edit button followed with the domain name of the current page. This is used only when the user is visiting a website, e.g. www.bbc.com, and not used for Search Results page.">
+        Edit URL pointing to page on: <ph name="PAGE_URL">%1$s<ex>www.bbc.com</ex></ph>
+      </message>
+      <message name="IDS_ACCESSIBILITY_OMNIBOX_BTN_EDIT_QUERY" desc="Content description for the omnibox Edit button followed with the current Search query. This is used only when the user is on the Search Results page for a specific query, and not used for broader web.">
+        Edit search query: <ph name="SEARCH_QUERY">%1$s<ex>The meaning of life</ex></ph>
       </message>
       <message name="IDS_ACCESSIBILITY_OMNIBOX_CONCEAL_CLIPBOARD_CONTENTS" desc="Content description for the omnibox clipboard conceal button.">
         Hide clipboard contents
@@ -5607,6 +5627,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       </message>
       <message name="IDS_CONTEXTMENU_VIDEO_TITLE" desc="The title of a context menu tab when the item pressed contains more than one type. This indicates that all the actions are related to a video.">
         VIDEO
+      </message>
+      <message name="IDS_CONTEXTMENU_DEVELOPER_TITLE" desc="The title of a context menu tab when the item pressed contains more than one type. This indicates that all the actions are related to tools for developers.">
+        DEVELOPER
       </message>
 
       <!-- Multi-instance Switcher Dialog strings -->

@@ -33,13 +33,7 @@ bool TryFiltersImpl(MessageFilterRouter::MessageFilters& filters,
 
 bool RemoveFilterImpl(MessageFilterRouter::MessageFilters& filters,
                       MessageFilter* filter) {
-  MessageFilterRouter::MessageFilters::iterator it =
-      std::remove(filters.begin(), filters.end(), filter);
-  if (it == filters.end())
-    return false;
-
-  filters.erase(it, filters.end());
-  return true;
+  return std::erase(filters, filter) > 0;
 }
 
 bool ValidMessageClass(int message_class) {

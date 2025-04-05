@@ -330,8 +330,6 @@ scoped_refptr<InputContext> AsInputContextInternal(
         break;
       case kTabParentId:
         if (tab_data) {
-          // TODO(crbug.com/397221723): Add a field for tab ID to trace tab
-          // relationship beyond parent.
           value = ProcessedValue::FromFloat(
               tab_data->last_active_tab.tab_metadata.parent_tab_id == -1
                   ? tab_data->last_active_tab.id
@@ -353,6 +351,11 @@ scoped_refptr<InputContext> AsInputContextInternal(
             tab_data->last_active_tab.tab_metadata.local_tab_group_id) {
           value = ProcessedValue(tab_data->last_active_tab.tab_metadata
                                      .local_tab_group_id->ToString());
+        }
+        break;
+      case kTabId:
+        if (tab_data) {
+          value = ProcessedValue::FromFloat(tab_data->last_active_tab.id);
         }
         break;
     }

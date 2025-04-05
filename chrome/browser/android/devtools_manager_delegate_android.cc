@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/devtools/chrome_devtools_session_android.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
@@ -205,16 +206,6 @@ scoped_refptr<DevToolsAgentHost> DevToolsAgentHostForTab(TabAndroid* tab,
 
 static const void* const kCreatedByDevTools = &kCreatedByDevTools;
 
-bool IsCreatedByDevTools(const WebContents& web_contents) {
-  return !!web_contents.GetUserData(kCreatedByDevTools);
-}
-
-void MarkCreatedByDevTools(WebContents& web_contents) {
-  DCHECK(!IsCreatedByDevTools(web_contents));
-  web_contents.SetUserData(kCreatedByDevTools,
-                           std::make_unique<base::SupportsUserData::Data>());
-}
-
 } //  namespace
 
 DevToolsManagerDelegateAndroid::DevToolsManagerDelegateAndroid() = default;
@@ -224,6 +215,18 @@ DevToolsManagerDelegateAndroid::~DevToolsManagerDelegateAndroid() = default;
 content::BrowserContext*
 DevToolsManagerDelegateAndroid::GetDefaultBrowserContext() {
   return ProfileManager::GetActiveUserProfile()->GetOriginalProfile();
+}
+
+bool DevToolsManagerDelegateAndroid::IsCreatedByDevTools(
+    const WebContents& web_contents) {
+  return !!web_contents.GetUserData(kCreatedByDevTools);
+}
+
+void DevToolsManagerDelegateAndroid::MarkCreatedByDevTools(
+    WebContents& web_contents) {
+  DCHECK(!IsCreatedByDevTools(web_contents));
+  web_contents.SetUserData(kCreatedByDevTools,
+                           std::make_unique<base::SupportsUserData::Data>());
 }
 
 std::string DevToolsManagerDelegateAndroid::GetTargetType(
@@ -273,30 +276,31 @@ DevToolsAgentHost::List DevToolsManagerDelegateAndroid::RemoteDebuggingTargets(
   return result;
 }
 
-scoped_refptr<DevToolsAgentHost>
-DevToolsManagerDelegateAndroid::CreateNewTarget(
-    const GURL& url,
-    DevToolsManagerDelegate::TargetType target_type,
-    bool new_window) {
-  if (TabModelList::models().empty())
-    return nullptr;
-
-  TabModel* tab_model = TabModelList::models()[0];
-  if (!tab_model)
-    return nullptr;
-
-  WebContents* web_contents =
-      tab_model->CreateNewTabForDevTools(url, new_window);
-  if (!web_contents) {
-    return nullptr;
-  }
-
-  MarkCreatedByDevTools(*web_contents);
-  return target_type == DevToolsManagerDelegate::kTab
-             ? DevToolsAgentHost::GetOrCreateForTab(web_contents)
-             : DevToolsAgentHost::GetOrCreateFor(web_contents);
-}
-
 bool DevToolsManagerDelegateAndroid::IsBrowserTargetDiscoverable() {
   return true;
+}
+
+void DevToolsManagerDelegateAndroid::HandleCommand(
+    content::DevToolsAgentHostClientChannel* channel,
+    base::span<const uint8_t> message,
+    NotHandledCallback callback) {
+  auto it = sessions_.find(channel);
+  if (it == sessions_.end()) {
+    // This should not happen, but happens. NOTREACHED tries to get
+    // a repro in some test.
+    NOTREACHED();
+  }
+  it->second->HandleCommand(message, std::move(callback));
+}
+
+void DevToolsManagerDelegateAndroid::ClientAttached(
+    content::DevToolsAgentHostClientChannel* channel) {
+  DCHECK(sessions_.find(channel) == sessions_.end());
+  sessions_.emplace(channel,
+                    std::make_unique<ChromeDevToolsSessionAndroid>(channel));
+}
+
+void DevToolsManagerDelegateAndroid::ClientDetached(
+    content::DevToolsAgentHostClientChannel* channel) {
+  sessions_.erase(channel);
 }

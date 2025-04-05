@@ -37,6 +37,9 @@
 // Current sheet dimension.
 @property(nonatomic, readonly) SheetDimensionState sheetDimension;
 
+// The height of the info message in points.
+@property(nonatomic, assign) CGFloat infoMessageHeight;
+
 // The strategy to use when presenting.
 //
 // Changing the presentation strategy adjusts the detents for unrestricted

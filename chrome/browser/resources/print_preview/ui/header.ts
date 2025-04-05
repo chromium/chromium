@@ -53,12 +53,12 @@ export class PrintPreviewHeaderElement extends PrintPreviewHeaderElementBase {
     ];
   }
 
-  destination: Destination;
-  error: Error;
-  state: State;
-  managed: boolean;
-  sheetCount: number;
-  private summary_: string|null;
+  declare destination: Destination;
+  declare error: Error;
+  declare state: State;
+  declare managed: boolean;
+  declare sheetCount: number;
+  declare private summary_: string|null;
 
   private isPdf_(): boolean {
     return this.destination &&

@@ -7,6 +7,10 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
+#include <string>
+
+#include "base/apple/foundation_util.h"
+#include "base/auto_reset.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ui/accessibility/ax_common.h"
@@ -16,6 +20,7 @@
 #import "ui/accessibility/platform/ax_platform_node_ios.h"
 #import "ui/accessibility/platform/ax_platform_tree_manager_delegate.h"
 #import "ui/accessibility/platform/child_iterator_base.h"
+#include "ui/gfx/native_widget_types.h"
 
 @implementation AXPlatformNodeUIKitElement {
   // The AXPlatformNode corresponding to this wrapper instance.
@@ -28,15 +33,20 @@
   BOOL _gettingChildren;
 }
 
++ (AXPlatformNodeUIKitElement*)elementFromNativeViewAccessible:
+    (gfx::NativeViewAccessible)nativeViewAccessible {
+  return base::apple::ObjCCast<AXPlatformNodeUIKitElement>(
+      nativeViewAccessible.Get());
+}
+
 - (instancetype)initWithPlatformNode:(ui::AXPlatformNodeIOS*)platformNode {
-  id container = platformNode->GetParent();
+  id container = platformNode->GetParent().Get();
   // TODO(crbug.com/336611337): Sometimes container is null for new subframes.
   // We need a way to retry after the AXTreeManager is connected to its parent.
   if (!container) {
     return nil;
   }
-  if ((self =
-           [super initWithAccessibilityContainer:platformNode->GetParent()])) {
+  if ((self = [super initWithAccessibilityContainer:container])) {
     _node = platformNode;
     _needsToUpdateChildren = YES;
     _gettingChildren = NO;
@@ -53,7 +63,9 @@
     ui::AXPlatformNode* parentNode =
         ui::AXPlatformNode::FromNativeViewAccessible(_node->GetParent());
     if (parentNode) {
-      [parentNode->GetNativeViewAccessible() childrenChanged];
+      [[AXPlatformNodeUIKitElement
+          elementFromNativeViewAccessible:parentNode->GetNativeViewAccessible()]
+          childrenChanged];
     }
   }
 }
@@ -75,28 +87,29 @@
     return nil;
   }
   if (_needsToUpdateChildren) {
-    base::AutoReset<BOOL> set_getting_children(&_gettingChildren, YES);
+    base::AutoReset<BOOL> setGettingChildren(&_gettingChildren, YES);
     uint32_t childCount = _node->GetChildCount();
     _children = [[NSMutableArray alloc] initWithCapacity:childCount];
     for (auto it = _node->GetDelegate()->ChildrenBegin();
          *it != *_node->GetDelegate()->ChildrenEnd(); ++(*it)) {
-      AXPlatformNodeUIKitElement* child = it->GetNativeViewAccessible();
+      AXPlatformNodeUIKitElement* child = [AXPlatformNodeUIKitElement
+          elementFromNativeViewAccessible:it->GetNativeViewAccessible()];
       if ([child isIncludedInPlatformTree]) {
         [_children addObject:child];
       } else {
-        [_children addObjectsFromArray:[child accessibilityElements]];
+        [_children addObjectsFromArray:child.accessibilityElements];
       }
     }
 
     // Also, add indirect children (if any).
     const std::vector<int32_t>& indirectChildIds = _node->GetIntListAttribute(
         ax::mojom::IntListAttribute::kIndirectChildIds);
-    for (uint32_t i = 0; i < indirectChildIds.size(); ++i) {
-      int32_t child_id = indirectChildIds[i];
-      ui::AXPlatformNode* child = _node->GetDelegate()->GetFromNodeID(child_id);
+    for (int32_t childId : indirectChildIds) {
+      ui::AXPlatformNode* childNode =
+          _node->GetDelegate()->GetFromNodeID(childId);
 
-      if (child) {
-        [_children addObject:child->GetNativeViewAccessible()];
+      if (childNode) {
+        [_children addObject:childNode->GetNativeViewAccessible().Get()];
       }
     }
     _needsToUpdateChildren = NO;
@@ -129,7 +142,7 @@
     return nil;
   }
 
-  return _node->GetFocus();
+  return _node->GetFocus().Get();
 }
 
 - (BOOL)isAccessibilityElement {
@@ -147,7 +160,7 @@
   // If we ever need both a node and its descendants to be interactable using
   // VoiceOver, we will need to restructure the UIAccessibility tree by
   // inserting an additional node to act as a container.
-  if ([self accessibilityElements].count) {
+  if (self.accessibilityElements.count) {
     return NO;
   }
 

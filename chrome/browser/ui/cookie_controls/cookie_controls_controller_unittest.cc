@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -1860,6 +1861,15 @@ TEST_F(CookieControlsUserBypassIncognitoTest, SubresourceProxied) {
   incognito_cookie_controls()->Update(web_contents());
 }
 
+const char kUMAFppActiveDisableProtections[] =
+    "TrackingProtections.Bubble.FppActive.DisableProtections";
+const char kUMAFppActiveEnableProtections[] =
+    "TrackingProtections.Bubble.FppActive.EnableProtections";
+const char kUMAIppActiveDisableProtections[] =
+    "TrackingProtections.Bubble.IppActive.DisableProtections";
+const char kUMAIppActiveEnableProtections[] =
+    "TrackingProtections.Bubble.IppActive.EnableProtections";
+
 class CookieControlsUserBypassTrackingProtectionUiTest
     : public CookieControlsUserBypassTest,
       public testing::WithParamInterface<testing::tuple<bool, bool, bool>> {
@@ -1883,11 +1893,14 @@ class CookieControlsUserBypassTrackingProtectionUiTest
     if (std::get<1>(GetParam())) {
       enabled_features.push_back(privacy_sandbox::kActUserBypassUx);
       enabled_features.push_back(privacy_sandbox::kIpProtectionUx);
+      enabled_features.push_back(net::features::kEnableIpProtectionProxy);
       profile()->GetPrefs()->SetBoolean(prefs::kIpProtectionEnabled, true);
     }
     if (std::get<2>(GetParam())) {
       enabled_features.push_back(privacy_sandbox::kActUserBypassUx);
       enabled_features.push_back(privacy_sandbox::kFingerprintingProtectionUx);
+      enabled_features.push_back(fingerprinting_protection_filter::features::
+                                     kEnableFingerprintingProtectionFilter);
       profile()->GetPrefs()->SetBoolean(prefs::kFingerprintingProtectionEnabled,
                                         true);
     }
@@ -1939,6 +1952,37 @@ class CookieControlsUserBypassTrackingProtectionUiTest
     return features_list;
   }
 
+  void ProxyIpSubresource() {
+    if (!std::get<1>(GetParam())) {
+      return;
+    }
+    ip_protection::IpProtectionStatus::FromWebContents(web_contents())
+        ->ResourceLoadComplete(ChromeRenderViewHostTestHarness::main_rfh(),
+                               content::GlobalRequestID(),
+                               *CreateResourceLoadInfoWithIpProtectionChain());
+  }
+
+  void BlockFingerprintingSubresource() {
+    if (!std::get<2>(GetParam())) {
+      return;
+    }
+    fingerprinting_protection_filter::
+        FingerprintingProtectionWebContentsHelper::FromWebContents(
+            web_contents())
+            ->NotifyOnBlockedSubresource(
+                subresource_filter::mojom::ActivationLevel::kEnabled);
+  }
+
+  void AddSiteException() {
+    scoped_refptr<content_settings::CookieSettings> cookie_settings =
+        CookieSettingsFactory::GetForProfile(incognito_profile());
+    cookie_settings->SetThirdPartyCookieSetting(
+        GURL(kUrl), ContentSetting::CONTENT_SETTING_ALLOW);
+    privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings =
+        TrackingProtectionSettingsFactory::GetForProfile(incognito_profile());
+    tracking_protection_settings->AddTrackingProtectionException(GURL(kUrl));
+  }
+
   content::WebContents* incognito_web_contents() {
     return incognito_web_contents_.get();
   }
@@ -1950,6 +1994,9 @@ class CookieControlsUserBypassTrackingProtectionUiTest
   content_settings::CookieControlsController* incognito_cookie_controls() {
     return incognito_cookie_controls_.get();
   }
+
+ protected:
+  base::UserActionTester user_actions_;
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -2034,9 +2081,82 @@ TEST_P(CookieControlsUserBypassTrackingProtectionUiTest,
   testing::Mock::VerifyAndClearExpectations(incognito_mock());
 }
 
+TEST_P(CookieControlsUserBypassTrackingProtectionUiTest,
+       RecordUmaToggleMetricWhenActFeaturesAreActive) {
+  bool protections_on = std::get<0>(GetParam());
+  bool ipp_enabled = std::get<1>(GetParam());
+  bool fpp_enabled = std::get<2>(GetParam());
+  incognito_cookie_controls()->Update(web_contents());
+
+  // Add site exception when protections are on so toggling UB initiates the
+  // observer calls correctly.
+  if (protections_on) {
+    AddSiteException();
+  }
+
+  // Set up IPP and FPP for blocking / proxying.
+  if (ipp_enabled) {
+    ip_protection::IpProtectionStatus::CreateForWebContents(web_contents());
+  }
+  if (fpp_enabled) {
+    CreateFingerprintingProtectionWebContentsHelper(
+        web_contents(), /*pref_service=*/nullptr, /*content_settings=*/nullptr,
+        /*tracking_protection_settings=*/nullptr, /*is_incognito=*/false);
+  }
+
+  NavigateAndCommit(GURL(kUrl));
+
+  ProxyIpSubresource();
+  BlockFingerprintingSubresource();
+
+  EXPECT_CALL(*incognito_mock(),
+              OnStatusChanged(
+                  /*controls_visible=*/true, protections_on,
+                  CookieControlsEnforcement::kNoEnforcement,
+                  CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration(),
+                  GetFeatureVector(CookieControlsEnforcement::kNoEnforcement)));
+
+  EXPECT_CALL(*incognito_mock(), OnCookieControlsIconStatusChanged(
+                                     /*icon_visible=*/ipp_enabled ||
+                                         fpp_enabled || !protections_on,
+                                     /*protections_on=*/protections_on,
+                                     CookieBlocking3pcdStatus::kNotIn3pcd,
+                                     /*should_highlight=*/false));
+
+  incognito_cookie_controls()->OnCookieBlockingEnabledForSite(protections_on);
+
+  EXPECT_EQ(user_actions_.GetActionCount(kUMAIppActiveEnableProtections),
+            ipp_enabled && protections_on ? 1 : 0);
+  EXPECT_EQ(user_actions_.GetActionCount(kUMAIppActiveDisableProtections),
+            ipp_enabled && !protections_on ? 1 : 0);
+  EXPECT_EQ(user_actions_.GetActionCount(kUMAFppActiveEnableProtections),
+            fpp_enabled && protections_on ? 1 : 0);
+  EXPECT_EQ(user_actions_.GetActionCount(kUMAFppActiveDisableProtections),
+            fpp_enabled && !protections_on ? 1 : 0);
+}
+
+std::string ParamToTestSuffixTrackingProtection(
+    const testing::TestParamInfo<
+        CookieControlsUserBypassTrackingProtectionUiTest::ParamType>& info) {
+  std::stringstream name;
+  if (std::get<0>(info.param)) {
+    name << "ProtectionsOn";
+  } else {
+    name << "ProtectionsOff";
+  }
+  if (std::get<1>(info.param)) {
+    name << "_IppActive";
+  }
+  if (std::get<2>(info.param)) {
+    name << "_FppActive";
+  }
+  return name.str();
+}
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     CookieControlsUserBypassTrackingProtectionUiTest,
     testing::Combine(/*protections_on*/ testing::Bool(),
                      /*kIpProtectionUx*/ testing::Bool(),
-                     /*kFingerprintingProtectionUx*/ testing::Bool()));
+                     /*kFingerprintingProtectionUx*/ testing::Bool()),
+    &ParamToTestSuffixTrackingProtection);

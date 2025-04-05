@@ -137,6 +137,11 @@ if (crashpad_is_apple) {
         "--arch",
         "arm64",
       ]
+    } else if (current_cpu == "arm64e") {
+      args += [
+        "--arch",
+        "arm64e",
+      ]
     } else if (crashpad_is_mac && current_cpu == "mac_universal") {
       args += [
         "--arch",

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.pwm_disabled;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 
 import org.chromium.base.Callback;
@@ -22,7 +24,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 @NullMarked
 public class PasswordManagerUnavailableDialogCoordinator {
     private Context mContext;
-    private Callback<Context> mLaunchGmsUpdateCallback;
+    private @Nullable Callback<Context> mLaunchGmsUpdateCallback;
     private ModalDialogManager mModalDialogManager;
     private PasswordManagerUnavailableDialogMediator mMediator;
 
@@ -30,7 +32,7 @@ public class PasswordManagerUnavailableDialogCoordinator {
     public void showDialog(
             Context context,
             ModalDialogManager modalDialogManager,
-            Callback<Context> launchGmsUpdate) {
+            @Nullable Callback<Context> launchGmsUpdate) {
         mContext = context;
         mLaunchGmsUpdateCallback = launchGmsUpdate;
         mModalDialogManager = modalDialogManager;
@@ -44,6 +46,7 @@ public class PasswordManagerUnavailableDialogCoordinator {
     }
 
     private void launchGmsUpdateFlow() {
+        assumeNonNull(mLaunchGmsUpdateCallback);
         mLaunchGmsUpdateCallback.onResult(mContext);
     }
 

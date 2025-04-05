@@ -26,18 +26,8 @@ class GPU_GLES2_EXPORT PassthroughProgramCache : public ProgramCache {
   using Key = std::vector<uint8_t>;
   using Value = std::vector<uint8_t>;
 
-  // Notified everytime an entry is added to the cache.
-  class GPU_GLES2_EXPORT ValueAddedHook {
-   public:
-    virtual void OnValueAddedToCache(const Key& key, const Value& value) = 0;
-
-   protected:
-    virtual ~ValueAddedHook() = default;
-  };
-
   PassthroughProgramCache(size_t max_cache_size_bytes,
-                          bool disable_gpu_shader_disk_cache,
-                          ValueAddedHook* value_added_hook = nullptr);
+                          bool disable_gpu_shader_disk_cache);
 
   PassthroughProgramCache(const PassthroughProgramCache&) = delete;
   PassthroughProgramCache& operator=(const PassthroughProgramCache&) = delete;
@@ -121,7 +111,6 @@ class GPU_GLES2_EXPORT PassthroughProgramCache : public ProgramCache {
   const bool disable_gpu_shader_disk_cache_;
   size_t curr_size_bytes_;
   ProgramLRUCache store_ GUARDED_BY(lock_);
-  raw_ptr<ValueAddedHook> value_added_hook_;
 
   // TODO(syoussefi): take compression from memory_program_cache, see
   // compress_program_binaries_

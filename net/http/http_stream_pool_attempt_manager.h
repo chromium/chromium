@@ -174,10 +174,6 @@ class HttpStreamPool::AttemptManager
   // still ongoing.
   bool IsSvcbOptional();
 
-  // Called when the server required HTTP/1.1. Clears the current SPDY session
-  // if exists. Subsequent jobs will fail while `this` is alive.
-  void OnRequiredHttp11();
-
   // Called when the QuicTask owned by `this` is completed.
   void OnQuicTaskComplete(int rv, NetErrorDetails details);
 
@@ -513,6 +509,8 @@ class HttpStreamPool::AttemptManager
 
   const NetLogWithSource net_log_;
 
+  const base::TimeTicks created_time_;
+
   // Keeps the initial attempt state. Set when `this` starts a job or
   // preconnect.
   std::optional<InitialAttemptState> initial_attempt_state_;
@@ -552,6 +550,11 @@ class HttpStreamPool::AttemptManager
   NetErrorDetails net_error_details_;
   ResolveErrorInfo resolve_error_info_;
   ConnectionAttempts connection_attempts_;
+
+  // TODO(crbug.com/403373872): Remove below fields once we identify the cause
+  // of the bug.
+  std::vector<ServiceEndpoint> unusable_endpoints_for_tcp_based_attempt_;
+  std::vector<IPEndPoint> aborted_endpoints_for_tcp_based_attempt_;
 
   // An error code to notify jobs when `this` cannot make any further progress.
   // Set to an error from service endpoint resolution failure, the last stream

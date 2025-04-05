@@ -24,7 +24,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
-#include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "media/audio/fake_audio_input_stream.h"
 #include "media/base/video_frame.h"
 #include "media/capture/mojom/image_capture_types.h"
@@ -286,26 +285,17 @@ class JpegEncodingFrameDeliverer : public FrameDeliverer {
 class GpuMemoryBufferFrameDeliverer : public FrameDeliverer {
  public:
   GpuMemoryBufferFrameDeliverer(
-      std::unique_ptr<PacmanFramePainter> frame_painter,
-      gpu::GpuMemoryBufferSupport* gmb_support);
+      std::unique_ptr<PacmanFramePainter> frame_painter);
   ~GpuMemoryBufferFrameDeliverer() override;
 
   // Implementation of FrameDeliveryStrategy
   void PaintAndDeliverNextFrame(base::TimeDelta timestamp_to_paint) override;
-
- private:
-  raw_ptr<gpu::GpuMemoryBufferSupport> gmb_support_;
 };
 
 FrameDelivererFactory::FrameDelivererFactory(
     FakeVideoCaptureDevice::DeliveryMode delivery_mode,
-    const FakeDeviceState* device_state,
-    std::unique_ptr<gpu::GpuMemoryBufferSupport> gmb_support)
-    : delivery_mode_(delivery_mode),
-      device_state_(device_state),
-      gmb_support_(gmb_support
-                       ? std::move(gmb_support)
-                       : std::make_unique<gpu::GpuMemoryBufferSupport>()) {}
+    const FakeDeviceState* device_state)
+    : delivery_mode_(delivery_mode), device_state_(device_state) {}
 
 FrameDelivererFactory::~FrameDelivererFactory() = default;
 
@@ -362,7 +352,7 @@ std::unique_ptr<FrameDeliverer> FrameDelivererFactory::CreateFrameDeliverer(
           std::move(frame_painter));
     case FakeVideoCaptureDevice::DeliveryMode::USE_GPU_MEMORY_BUFFERS:
       return std::make_unique<GpuMemoryBufferFrameDeliverer>(
-          std::move(frame_painter), gmb_support_.get());
+          std::move(frame_painter));
   }
   NOTREACHED();
 }
@@ -935,9 +925,8 @@ void JpegEncodingFrameDeliverer::PaintAndDeliverNextFrame(
 }
 
 GpuMemoryBufferFrameDeliverer::GpuMemoryBufferFrameDeliverer(
-    std::unique_ptr<PacmanFramePainter> frame_painter,
-    gpu::GpuMemoryBufferSupport* gmb_support)
-    : FrameDeliverer(std::move(frame_painter)), gmb_support_(gmb_support) {}
+    std::unique_ptr<PacmanFramePainter> frame_painter)
+    : FrameDeliverer(std::move(frame_painter)) {}
 
 GpuMemoryBufferFrameDeliverer::~GpuMemoryBufferFrameDeliverer() = default;
 

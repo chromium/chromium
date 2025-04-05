@@ -19,7 +19,8 @@ template <typename T>
 concept IsSupportedTokenType = IsAnyOf<T,
                                        blink::WebNNPendingConstantToken,
                                        blink::WebNNContextToken,
-                                       blink::WebNNTensorToken>;
+                                       blink::WebNNTensorToken,
+                                       blink::WebNNGraphToken>;
 }  // namespace internal
 
 template <typename WebNNTokenType>

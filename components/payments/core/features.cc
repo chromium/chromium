@@ -6,10 +6,6 @@
 
 #include "build/build_config.h"
 
-#if BUILDFLAG(USE_BLINK)
-#include "third_party/blink/public/common/features_generated.h"
-#endif
-
 namespace payments {
 namespace features {
 
@@ -60,32 +56,6 @@ BASE_FEATURE(kSecurePaymentConfirmationUseCredentialStoreAPIs,
              base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 );
-
-#if BUILDFLAG(USE_BLINK)
-const base::FeatureParam<std::string>
-    kSecurePaymentConfirmationNetworkAndIssuerIconsOptions(
-        &blink::features::kSecurePaymentConfirmationNetworkAndIssuerIcons,
-        /*name=*/"spc_network_and_issuer_icons_option",
-        /*default_value=*/"rows");
-
-SecurePaymentConfirmationNetworkAndIssuerIconsTreatment
-GetNetworkAndIssuerIconsTreatment() {
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kSecurePaymentConfirmationNetworkAndIssuerIcons)) {
-    return SecurePaymentConfirmationNetworkAndIssuerIconsTreatment::kNone;
-  }
-
-  std::string option =
-      kSecurePaymentConfirmationNetworkAndIssuerIconsOptions.Get();
-  if (option == "inline") {
-    return SecurePaymentConfirmationNetworkAndIssuerIconsTreatment::kInline;
-  } else if (option == "rows") {
-    return SecurePaymentConfirmationNetworkAndIssuerIconsTreatment::kRows;
-  }
-
-  NOTREACHED();
-}
-#endif
 
 }  // namespace features
 }  // namespace payments

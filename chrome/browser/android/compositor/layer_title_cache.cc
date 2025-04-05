@@ -8,6 +8,7 @@
 
 #include <memory>
 
+#include "base/android/token_android.h"
 #include "cc/layers/layer.h"
 #include "cc/layers/ui_resource_layer.h"
 #include "chrome/browser/android/compositor/decoration_icon_title.h"
@@ -96,28 +97,33 @@ void LayerTitleCache::UpdateLayer(JNIEnv* env,
   }
 }
 
-void LayerTitleCache::UpdateGroupLayer(JNIEnv* env,
-                                       const JavaParamRef<jobject>& obj,
-                                       jint group_root_id,
-                                       jint title_resource_id,
-                                       jint avatar_resource_id,
-                                       jint avatar_padding,
-                                       bool is_incognito,
-                                       bool is_rtl) {
-  DecorationIconTitle* title_layer = group_layer_cache_.Lookup(group_root_id);
-  if (title_layer) {
+void LayerTitleCache::UpdateGroupLayer(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj,
+    const base::android::JavaParamRef<jobject>& jgroup_token,
+    jint title_resource_id,
+    jint avatar_resource_id,
+    jint avatar_padding,
+    bool is_incognito,
+    bool is_rtl) {
+  const tab_groups::TabGroupId& group_token =
+      tab_groups::TabGroupId::FromRawToken(
+          base::android::TokenAndroid::FromJavaToken(env, jgroup_token));
+  auto it = group_layer_cache_.find(group_token);
+  if (it != group_layer_cache_.end()) {
+    DecorationIconTitle* title_layer = it->second.get();
     if (title_resource_id != ui::Resource::kInvalidResourceId) {
       title_layer->Update(title_resource_id, avatar_resource_id, fade_width_,
                           kEmptyWidth, avatar_padding, is_incognito, is_rtl);
     } else {
-      group_layer_cache_.Remove(group_root_id);
+      group_layer_cache_.erase(it);
     }
   } else {
-    group_layer_cache_.AddWithID(
+    group_layer_cache_.emplace(
+        group_token,
         std::make_unique<DecorationIconTitle>(
             resource_manager_, title_resource_id, avatar_resource_id,
-            fade_width_, kEmptyWidth, avatar_padding, is_incognito, is_rtl),
-        group_root_id);
+            fade_width_, kEmptyWidth, avatar_padding, is_incognito, is_rtl));
   }
 }
 
@@ -152,15 +158,22 @@ DecorationTabTitle* LayerTitleCache::GetTitleLayer(int tab_id) {
   return layer_cache_.Lookup(tab_id);
 }
 
-DecorationIconTitle* LayerTitleCache::GetGroupTitleLayer(int group_root_id,
-                                                         bool incognito) {
-  if (!group_layer_cache_.Lookup(group_root_id)) {
-    JNIEnv* env = base::android::AttachCurrentThread();
-    Java_LayerTitleCache_buildUpdatedGroupTitle(
-        env, weak_java_title_cache_.get(env), group_root_id, incognito);
+DecorationIconTitle* LayerTitleCache::GetGroupTitleLayer(
+    const tab_groups::TabGroupId& group_token,
+    bool incognito) {
+  auto it = group_layer_cache_.find(group_token);
+  if (it != group_layer_cache_.end()) {
+    return it->second.get();
   }
 
-  return group_layer_cache_.Lookup(group_root_id);
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_LayerTitleCache_buildUpdatedGroupTitle(
+      env, weak_java_title_cache_.get(env),
+      base::android::TokenAndroid::Create(env, group_token.token()), incognito);
+
+  // Retry the find.
+  it = group_layer_cache_.find(group_token);
+  return it == group_layer_cache_.end() ? nullptr : it->second.get();
 }
 
 LayerTitleCache::~LayerTitleCache() = default;

@@ -10,19 +10,21 @@ import android.os.Bundle;
 import android.view.View;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * This collection of static methods provides reauthentication primitives for passwords
- * settings UI.
+ * This collection of static methods provides reauthentication primitives for passwords settings UI.
  */
+@NullMarked
 public final class ReauthenticationManager {
     // Used for various ways to override checks provided by this class.
     @IntDef({OverrideState.NOT_OVERRIDDEN, OverrideState.AVAILABLE, OverrideState.UNAVAILABLE})
@@ -51,7 +53,7 @@ public final class ReauthenticationManager {
 
     // Used for verifying if the last successful reauthentication is still valid. The null value
     // means there was no successful reauthentication yet.
-    @Nullable private static Long sLastReauthTimeMillis;
+    private static @Nullable Long sLastReauthTimeMillis;
 
     // Stores the reauth scope used when |sLastReauthTimeMillis| was reset last time.
     private static @ReauthScope int sLastReauthScope = ReauthScope.ONE_AT_A_TIME;

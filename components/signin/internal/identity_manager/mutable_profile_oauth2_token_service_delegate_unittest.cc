@@ -1953,6 +1953,38 @@ TEST_P(MutableProfileOAuth2TokenServiceDelegateWithChallengeParamTest,
   EXPECT_EQ(0, access_token_failure_count_);
 }
 
+TEST_P(MutableProfileOAuth2TokenServiceDelegateWithChallengeParamTest,
+       UseIssueTokenToFetchAccessTokensFeature) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      switches::kUseIssueTokenToFetchAccessTokens};
+
+  ProfileOAuth2TokenService::RegisterProfilePrefs(pref_service_.registry());
+  // Initialize the delegate without the token binding support.
+  InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDice);
+
+  const CoreAccountId account_id = account_tracker_service_.SeedAccountInfo(
+      GaiaId("account_id"), "test@google.com");
+
+  oauth2_service_delegate_->UpdateCredentials(
+      account_id, "refresh_token",
+      signin_metrics::SourceForRefreshTokenOperation::kUnknown);
+
+  // Even though the token is not bound, the delegate will use the same fetcher
+  // because `kUseIssueTokenToFetchAccessTokens` is enabled.
+  AddSuccessfulBoundTokenResponse();
+
+  EXPECT_EQ(0, access_token_success_count_);
+  EXPECT_EQ(0, access_token_failure_count_);
+  std::unique_ptr<OAuth2AccessTokenFetcher> fetcher =
+      oauth2_service_delegate_->CreateAccessTokenFetcher(
+          account_id, oauth2_service_delegate_->GetURLLoaderFactory(), this,
+          GetParam());
+  fetcher->Start("foo", "bar", {"scope"});
+  WaitForGetTokenCompleted();
+  EXPECT_EQ(1, access_token_success_count_);
+  EXPECT_EQ(0, access_token_failure_count_);
+}
+
 INSTANTIATE_TEST_SUITE_P(
     ,
     MutableProfileOAuth2TokenServiceDelegateWithChallengeParamTest,

@@ -31,4 +31,8 @@ BASE_FEATURE_PARAM(bool,
                    "allowlist_only",
                    true);
 
+BASE_FEATURE(kGlicActionUseOptimizationGuide,
+             "GlicActionUseOptimizationGuide",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace actor

@@ -80,7 +80,9 @@ IpProtectionCoreImplMojo::IpProtectionCoreImplMojo(
               : std::map<ProxyLayer,
                          std::unique_ptr<IpProtectionTokenManager>>(),
           probabilistic_reveal_token_registry,
-          core_host_remote
+          (core_host_remote &&
+           base::FeatureList::IsEnabled(
+               net::features::kEnableProbabilisticRevealTokens))
               ? std::make_unique<IpProtectionProbabilisticRevealTokenManager>(
                     std::make_unique<
                         IpProtectionProbabilisticRevealTokenMojoFetcher>(

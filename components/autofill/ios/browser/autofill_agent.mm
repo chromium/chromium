@@ -661,6 +661,16 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
              ? *popup_suggestion.field_by_field_filling_type_used
              : autofill::FieldType::EMPTY_TYPE);
 
+    SuggestionIconType suggestionIconType = SuggestionIconType::kNone;
+    if (base::FeatureList::IsEnabled(
+            autofill::features::kAutofillEnableSupportForHomeAndWork)) {
+      suggestionIconType =
+          (popup_suggestion.icon == autofill::Suggestion::Icon::kHome)
+              ? SuggestionIconType::kAccountHome
+          : (popup_suggestion.icon == autofill::Suggestion::Icon::kWork)
+              ? SuggestionIconType::kAccountWork
+              : SuggestionIconType::kNone;
+    }
     FormSuggestion* suggestion =
         [FormSuggestion suggestionWithValue:value
                                  minorValue:minorValue
@@ -673,6 +683,7 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
                  acceptanceA11yAnnouncement:acceptanceA11yAnnouncement];
 
     suggestion.featureForIPH = SuggestionFeatureForIPH::kUnknown;
+    suggestion.suggestionIconType = suggestionIconType;
     if (popup_suggestion.iph_metadata.feature ==
         &feature_engagement::
             kIPHAutofillExternalAccountProfileSuggestionFeature) {

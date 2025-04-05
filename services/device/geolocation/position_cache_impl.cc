@@ -136,7 +136,7 @@ void PositionCacheImpl::OnNetworkChanged(
 }
 
 void PositionCacheImpl::EvictEntry(const Hash& hash) {
-  data_.erase(std::remove(data_.begin(), data_.end(), hash), data_.end());
+  std::erase(data_, hash);
 }
 
 }  // namespace device

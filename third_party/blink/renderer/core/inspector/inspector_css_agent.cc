@@ -3970,10 +3970,6 @@ InspectorCSSAgent::BuildArrayForCSSAnimationStyleList(Element* element) {
       name = css_animation->animationName();
     }
 
-    auto property_pass_filter = [](const PropertyHandle& property) {
-      return property.IsCSSProperty();
-    };
-
     EffectStack& effect_stack = element_animations->GetEffectStack();
     HashSet<PropertyHandle> affected_properties =
         effect_stack.AffectedProperties(
@@ -3983,8 +3979,7 @@ InspectorCSSAgent::BuildArrayForCSSAnimationStyleList(Element* element) {
             &effect_stack,
             /*new_animations=*/nullptr,
             /*suppressed_animations=*/nullptr,
-            KeyframeEffect::Priority::kDefaultPriority, property_pass_filter,
-            effect);
+            KeyframeEffect::Priority::kDefaultPriority, effect);
 
     PropertyHandleSet animation_properties =
         effect->Model()->Properties().UniqueProperties();
@@ -4019,10 +4014,6 @@ InspectorCSSAgent::BuildArrayForCSSAnimationStyleList(Element* element) {
 
 std::unique_ptr<protocol::CSS::CSSStyle>
 InspectorCSSAgent::BuildObjectForTransitionsStyle(Element* element) {
-  auto property_pass_filter = [](const PropertyHandle& property) {
-    return property.IsCSSProperty();
-  };
-
   ElementAnimations* element_animations =
       element->GetAnimationTarget()->GetElementAnimations();
   if (!element_animations || element_animations->IsEmpty()) {
@@ -4037,8 +4028,7 @@ InspectorCSSAgent::BuildObjectForTransitionsStyle(Element* element) {
           &effect_stack,
           /*new_animations=*/nullptr,
           /*suppressed_animations=*/nullptr,
-          KeyframeEffect::Priority::kTransitionPriority, property_pass_filter,
-          nullptr);
+          KeyframeEffect::Priority::kTransitionPriority, nullptr);
 
   MutableCSSPropertyValueSet* property_values =
       MakeGarbageCollected<MutableCSSPropertyValueSet>(

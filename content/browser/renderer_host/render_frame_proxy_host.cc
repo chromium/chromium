@@ -6,7 +6,6 @@
 
 #include <memory>
 #include <tuple>
-#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -46,6 +45,7 @@
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom.h"
@@ -62,16 +62,13 @@ RenderFrameProxyHost::TestObserver* g_observer_for_testing = nullptr;
 
 // The (process id, routing id) pair that identifies one RenderFrameProxy.
 typedef std::pair<int32_t, int32_t> RenderFrameProxyHostID;
-typedef std::unordered_map<RenderFrameProxyHostID,
-                           RenderFrameProxyHost*,
-                           base::IntPairHash<RenderFrameProxyHostID>>
-    RoutingIDFrameProxyMap;
+using RoutingIDFrameProxyMap =
+    absl::flat_hash_map<RenderFrameProxyHostID, RenderFrameProxyHost*>;
 base::LazyInstance<RoutingIDFrameProxyMap>::DestructorAtExit
     g_routing_id_frame_proxy_map = LAZY_INSTANCE_INITIALIZER;
 
-using TokenFrameMap = std::unordered_map<blink::RemoteFrameToken,
-                                         RenderFrameProxyHost*,
-                                         blink::RemoteFrameToken::Hasher>;
+using TokenFrameMap =
+    absl::flat_hash_map<blink::RemoteFrameToken, RenderFrameProxyHost*>;
 base::LazyInstance<TokenFrameMap>::Leaky g_token_frame_proxy_map =
     LAZY_INSTANCE_INITIALIZER;
 
@@ -932,7 +929,8 @@ void RenderFrameProxyHost::OpenURL(blink::mojom::OpenURLParamsPtr params) {
       params->extra_headers, std::move(blob_url_loader_factory),
       std::move(params->source_location), params->user_gesture,
       params->is_form_submission, params->impression,
-      params->initiator_activation_and_ad_status, navigation_start_time,
+      params->initiator_activation_and_ad_status,
+      params->actual_navigation_start, navigation_start_time,
       /*is_embedder_initiated_fenced_frame_navigation=*/false,
       /*is_unfenced_top_navigation=*/false,
       /*force_new_browsing_instance=*/false, params->is_container_initiated,

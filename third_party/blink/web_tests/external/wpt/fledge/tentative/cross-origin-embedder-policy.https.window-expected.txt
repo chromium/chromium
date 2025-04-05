@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] COEP does not block seller scripts.
+  assert_true: Auction unexpectedly had no winner expected true got false
+Harness: the test ran to completion.
+

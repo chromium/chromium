@@ -139,13 +139,6 @@ void SetupCommonSandboxParameters(
       sandbox::policy::GetCanonicalPath(base::GetHomeDir()).value();
   CHECK(serializer->SetParameter(sandbox::policy::kParamHomedirAsLiteral,
                                  homedir));
-
-  CHECK(serializer->SetBooleanParameter(
-      sandbox::policy::kParamFilterSyscalls,
-      base::FeatureList::IsEnabled(features::kMacSyscallSandbox)));
-
-  CHECK(serializer->SetBooleanParameter(
-      sandbox::policy::kParamFilterSyscallsDebug, false));
 }
 
 void SetupNetworkSandboxParameters(sandbox::SandboxSerializer* serializer,

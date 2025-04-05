@@ -34,6 +34,7 @@
 #include "services/network/test/mock_devtools_observer.h"
 #include "services/network/test/test_url_loader_client.h"
 #include "services/network/url_loader.h"
+#include "services/network/url_loader_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/origin.h"
@@ -2421,8 +2422,12 @@ TEST_F(CorsURLLoaderTest, PrivateNetworkAccessTargetAddressSpaceCheck) {
 class StorageAccessHeadersCorsURLLoaderTest : public CorsURLLoaderTest {
  public:
   StorageAccessHeadersCorsURLLoaderTest() : CorsURLLoaderTest() {
-    feature_list_.InitAndEnableFeature(
-        network::features::kStorageAccessHeaders);
+    feature_list_.InitWithFeatures(
+        {network::features::kStorageAccessHeaders,
+         // TODO(crbug.com/382291442): Remove features when launched.
+         network::features::kPopulatePermissionsPolicyOnRequest,
+         network::features::kStorageAccessHeadersRespectPermissionsPolicy},
+        {});
 
     ResetFactoryParams factory_params;
     factory_params.is_trusted = true;
@@ -2437,10 +2442,11 @@ class StorageAccessHeadersCorsURLLoaderTest : public CorsURLLoaderTest {
         .GetStorageAccessStatus(
             request.url, request.site_for_cookies,
             request.trusted_params->isolation_info.top_frame_origin(),
-            URLLoader::CalculateCookieSettingOverrides(
+            url_loader_util::CalculateCookieSettingOverrides(
                 /*factory_overrides=*/net::CookieSettingOverrides(),
                 /*devtools_overrides=*/net::CookieSettingOverrides(), request,
-                /*emit_metrics=*/false));
+                /*emit_metrics=*/false),
+            request.permissions_policy);
   }
 
   ResourceRequest CreateNoCorsResourceRequest(
@@ -2459,6 +2465,15 @@ class StorageAccessHeadersCorsURLLoaderTest : public CorsURLLoaderTest {
     request.method = "GET";
     request.site_for_cookies = site_for_cookies;
     request.url = url;
+    request.permissions_policy = *PermissionsPolicy::CreateFromParentPolicy(
+        /*parent_policy=*/nullptr,
+        /*header_policy=*/
+        {{{mojom::PermissionsPolicyFeature::kStorageAccessAPI,
+           /*allowed_origins=*/{},
+           /*self_if_matches=*/std::nullopt,
+           /*matches_all_origins=*/true,
+           /*matches_opaque_src=*/false}}},
+        /*container_policy=*/{}, url::Origin::Create(url));
     request.request_initiator =
         initiator.has_value() ? initiator.value() : kInitiator;
     request.trusted_params = ResourceRequest::TrustedParams();

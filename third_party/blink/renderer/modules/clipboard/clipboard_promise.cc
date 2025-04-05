@@ -20,7 +20,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_clipboard_unsanitized_formats.h"
-#include "third_party/blink/renderer/core/clipboard/clipboard_mime_types.h"
 #include "third_party/blink/renderer/core/clipboard/system_clipboard.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/editing/commands/clipboard_commands.h"
@@ -249,7 +248,7 @@ void ClipboardPromise::HandleRead(ClipboardUnsanitizedFormats* formats) {
           "Reading multiple unsanitized formats is not supported.");
       return;
     }
-    if (unsanitized_formats[0] != kMimeTypeTextHTML) {
+    if (unsanitized_formats[0] != ui::kMimeTypeHtml) {
       script_promise_resolver_->RejectWithDOMException(
           DOMExceptionCode::kNotAllowedError, "The unsanitized type " +
                                                   unsanitized_formats[0] +

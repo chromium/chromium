@@ -289,7 +289,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                                     regularBrowser:(Browser*)regularBrowser
                                    inactiveBrowser:(Browser*)inactiveBrowser
                                   incognitoBrowser:(Browser*)incognitoBrowser {
-  if ((self = [super initWithBaseViewController:nil browser:nullptr])) {
+  if ((self = [super init])) {
     CHECK(inactiveBrowser->IsInactive());
     CHECK(!regularBrowser->IsInactive());
     _dispatcher = [[CommandDispatcher alloc] init];

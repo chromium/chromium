@@ -31,7 +31,7 @@ export class PrintPreviewLayoutSettingsElement extends
     };
   }
 
-  disabled: boolean;
+  declare disabled: boolean;
 
   static get observers() {
     return ['onLayoutSettingChange_(settings.layout.value)'];

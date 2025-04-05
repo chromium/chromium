@@ -150,7 +150,7 @@ void GroupSuggestionsManager::ShowSuggestion(
     return;
   }
   std::erase_if(suggestions->suggestions, [&](const auto& suggestion) {
-    return suggestion_results_.contains(SuggestedTabs(suggestion.tab_ids));
+    return !suggestion_tracker_.ShouldShowSuggestion(suggestion);
   });
   if (suggestions->suggestions.empty()) {
     if (!suggestion_computed_callback_.is_null()) {
@@ -168,10 +168,10 @@ void GroupSuggestionsManager::ShowSuggestion(
   if (delegate) {
     VLOG(1) << "Showing suggestion to group tabs "
             << suggestions->suggestions.size();
-    std::vector<int> tab_ids = suggestions->suggestions[0].tab_ids;
     auto result_callback =
         base::BindOnce(&GroupSuggestionsManager::OnSuggestionResult,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(tab_ids));
+                       weak_ptr_factory_.GetWeakPtr(),
+                       suggestions->suggestions.front().DeepCopy());
 
     base::SequencedTaskRunner::GetCurrentDefault()->PostTaskAndReply(
         FROM_HERE,
@@ -190,9 +190,11 @@ void GroupSuggestionsManager::ShowSuggestion(
 }
 
 void GroupSuggestionsManager::OnSuggestionResult(
-    const std::vector<int>& tab_ids,
+    GroupSuggestion shown_suggestion,
     GroupSuggestionsDelegate::UserResponseMetadata user_response) {
-  suggestion_results_[SuggestedTabs(tab_ids)] = std::move(user_response);
+  // TODO(ssid): Track all suggestions instead of assuming UI shows the first.
+  suggestion_tracker_.AddSuggestion(shown_suggestion,
+                                    user_response.user_response);
 }
 
 }  // namespace visited_url_ranking

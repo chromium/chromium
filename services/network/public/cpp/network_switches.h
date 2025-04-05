@@ -42,6 +42,8 @@ COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 extern const char kDisableSharedDictionaryStorageCleanupForTesting[];
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 extern const char kIgnoreBadMessageForTesting[];
+COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
+extern const char kStoreProbabilisticRevealTokens[];
 
 }  // namespace switches
 

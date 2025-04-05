@@ -213,7 +213,7 @@ files. You can follow the steps below for easier review.
   about WPT coverage for Chrome.
 * [ASANExpectations](../../third_party/blink/web_tests/ASANExpectations):
   Tests that fail under ASAN.
-* [CfTTestExpecations](../../third_party/blink/web_tests/CfTTestExpecations):
+* [CfTTestExpectations](../../third_party/blink/web_tests/CfTTestExpectations):
   Tests that fail under Chrome for Testing
 * [LeakExpectations](../../third_party/blink/web_tests/LeakExpectations):
   Tests that have memory leaks under the leak checker.

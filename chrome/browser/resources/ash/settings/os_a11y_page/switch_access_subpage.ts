@@ -152,18 +152,6 @@ export class SettingsSwitchAccessSubpageElement extends
         value: 1,
       },
 
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kSwitchActionAssignment,
-          Setting.kSwitchActionAutoScan,
-          Setting.kSwitchActionAutoScanKeyboard,
-        ]),
-      },
-
       showSwitchAccessActionAssignmentDialog_: {
         type: Boolean,
         value: false,
@@ -186,6 +174,13 @@ export class SettingsSwitchAccessSubpageElement extends
       },
     };
   }
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kSwitchActionAssignment,
+    Setting.kSwitchActionAutoScan,
+    Setting.kSwitchActionAutoScanKeyboard,
+  ]);
 
   private action_: SwitchAccessCommand|null;
   private autoScanSpeedRangeMs_: number[];

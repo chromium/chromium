@@ -185,13 +185,6 @@ class CORE_EXPORT Keyframe : public GarbageCollected<Keyframe> {
   // subclass-specific data.
   virtual Keyframe* Clone() const = 0;
 
-  // Helper function to create a clone of this keyframe with a specific offset.
-  Keyframe* CloneWithOffset(double offset) const {
-    Keyframe* the_clone = Clone();
-    the_clone->SetOffset(offset);
-    return the_clone;
-  }
-
   // Comparator for stable sorting keyframes by offset. In the event of a tie
   // we sort by original index of the keyframe if specified.
   static bool LessThan(const Member<Keyframe>& a, const Member<Keyframe>& b);
@@ -235,7 +228,6 @@ class CORE_EXPORT Keyframe : public GarbageCollected<Keyframe> {
     virtual bool IsNeutral() const = 0;
     virtual bool IsRevert() const = 0;
     virtual bool IsRevertLayer() const = 0;
-    virtual PropertySpecificKeyframe* CloneWithOffset(double offset) const = 0;
 
     // FIXME: Remove this once CompositorAnimations no longer depends on
     // CompositorKeyframeValues

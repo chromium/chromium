@@ -22,11 +22,8 @@ PageloadForegroundDurationTabHelper::PageloadForegroundDurationTabHelper(
   }
 }
 
-PageloadForegroundDurationTabHelper::~PageloadForegroundDurationTabHelper() {
-  NSNotificationCenter* default_center = [NSNotificationCenter defaultCenter];
-  [default_center removeObserver:foreground_notification_observer_];
-  [default_center removeObserver:background_notification_observer_];
-}
+PageloadForegroundDurationTabHelper::~PageloadForegroundDurationTabHelper() =
+    default;
 
 void PageloadForegroundDurationTabHelper::UpdateForAppWillForeground() {
   // Return early if not currently active WebState.
@@ -107,8 +104,13 @@ void PageloadForegroundDurationTabHelper::RenderProcessGone(
 void PageloadForegroundDurationTabHelper::WebStateDestroyed(
     web::WebState* web_state) {
   DCHECK_EQ(web_state_, web_state);
-  RecordUkmIfInForeground();
   DCHECK(scoped_observation_.IsObservingSource(web_state));
+  RecordUkmIfInForeground();
+  if (web_state_->IsRealized()) {
+    NSNotificationCenter* default_center = [NSNotificationCenter defaultCenter];
+    [default_center removeObserver:foreground_notification_observer_];
+    [default_center removeObserver:background_notification_observer_];
+  }
   scoped_observation_.Reset();
   web_state_ = nullptr;
 }

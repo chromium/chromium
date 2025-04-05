@@ -59,7 +59,12 @@ URLLoaderFactory::URLLoaderFactory(
       trust_token_observer_(std::move(params_->trust_token_observer)),
       devtools_observer_(std::move(params_->devtools_observer)),
       device_bound_session_observer_(
-          std::move(params_->device_bound_session_observer)) {
+          params_->device_bound_session_observer
+              ? base::MakeRefCounted<
+                    RefCountedDeviceBoundSessionAccessObserverRemote>(
+                    mojo::Remote<mojom::DeviceBoundSessionAccessObserver>(
+                        std::move(params_->device_bound_session_observer)))
+              : nullptr) {
   DCHECK(context);
   DCHECK_NE(mojom::kInvalidProcessId, params_->process_id);
   DCHECK(!params_->factory_override);
@@ -346,10 +351,6 @@ void URLLoaderFactory::CreateLoaderAndStartWithSyncClient(
             resource_request.trusted_params->accept_ch_frame_observer));
   }
 
-  std::unique_ptr<AttributionRequestHelper> attribution_request_helper =
-      AttributionRequestHelper::CreateIfNeeded(
-          resource_request.attribution_reporting_eligibility);
-
   auto loader = std::make_unique<URLLoader>(
       *this,
       base::BindOnce(&cors::CorsURLLoaderFactory::DestroyURLLoader,
@@ -364,7 +365,6 @@ void URLLoaderFactory::CreateLoaderAndStartWithSyncClient(
       std::move(trust_token_observer), std::move(url_loader_network_observer),
       std::move(devtools_observer), std::move(device_bound_session_observer),
       std::move(accept_ch_frame_observer),
-      std::move(attribution_request_helper),
       resource_request.shared_storage_writable_eligible);
 
   cors_url_loader_factory_->OnURLLoaderCreated(std::move(loader));
@@ -385,9 +385,14 @@ mojom::DevToolsObserver* URLLoaderFactory::GetDevToolsObserver() const {
 mojom::DeviceBoundSessionAccessObserver*
 URLLoaderFactory::GetDeviceBoundSessionAccessObserver() const {
   if (device_bound_session_observer_) {
-    return device_bound_session_observer_.get();
+    return device_bound_session_observer_->data.get();
   }
   return nullptr;
+}
+
+scoped_refptr<RefCountedDeviceBoundSessionAccessObserverRemote>
+URLLoaderFactory::GetDeviceBoundSessionAccessObserverSharedRemote() const {
+  return device_bound_session_observer_;
 }
 
 mojom::CookieAccessObserver* URLLoaderFactory::GetCookieAccessObserver() const {

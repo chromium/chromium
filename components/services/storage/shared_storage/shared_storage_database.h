@@ -10,6 +10,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -21,6 +22,7 @@
 #include "base/thread_annotations.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/clock.h"
+#include "base/types/optional_ref.h"
 #include "components/services/storage/public/mojom/storage_usage_info.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "sql/database.h"
@@ -280,7 +282,8 @@ class SharedStorageDatabase {
   // Note that `key` is assumed to be of length at most
   // `max_string_length_`, with the burden on the caller to handle errors for
   // strings that exceed this length.
-  [[nodiscard]] GetResult Get(url::Origin context_origin, std::u16string key);
+  [[nodiscard]] GetResult Get(const url::Origin& context_origin,
+                              std::u16string_view key);
 
   // Sets an entry for `context_origin` and `key` to have `value`.
   // If `behavior` is `kIgnoreIfPresent` and an unexpired entry already exists
@@ -296,9 +299,9 @@ class SharedStorageDatabase {
   // `max_bytes_per_origin_`, `Set()` will return a value of
   // `OperationResult::kNoCapacity` and the table will not be modified.
   [[nodiscard]] OperationResult Set(
-      url::Origin context_origin,
-      std::u16string key,
-      std::u16string value,
+      const url::Origin& context_origin,
+      std::u16string_view key,
+      std::u16string_view value,
       SetBehavior behavior = SetBehavior::kDefault);
 
   // Appends `tail_value` to the end of the current `value`
@@ -318,9 +321,9 @@ class SharedStorageDatabase {
   // stored by this call would exceed `max_bytes_per_origin_`, `Append()` will
   // return a value of `OperationResult::kNoCapacity` and the table will not be
   // modified.
-  [[nodiscard]] OperationResult Append(url::Origin context_origin,
-                                       std::u16string key,
-                                       std::u16string tail_value);
+  [[nodiscard]] OperationResult Append(const url::Origin& context_origin,
+                                       std::u16string_view key,
+                                       std::u16string_view tail_value);
 
   // Deletes the entry for `context_origin` and `key`. Returns whether the
   // deletion is successful.
@@ -328,13 +331,13 @@ class SharedStorageDatabase {
   // Note that `key` is assumed to be of length at most `max_string_length_`,
   // with the burden on the caller to handle errors for strings that exceed this
   // length.
-  [[nodiscard]] OperationResult Delete(url::Origin context_origin,
-                                       std::u16string key);
+  [[nodiscard]] OperationResult Delete(const url::Origin& context_origin,
+                                       std::u16string_view key);
 
   // Clears all entries for `context_origin`. Returns whether the operation is
   // successful.
   [[nodiscard]] OperationResult Clear(
-      url::Origin context_origin,
+      const url::Origin& context_origin,
       DataClearSource source = DataClearSource::kSite);
 
   // Executes `methods_with_options` as a transaction. If any method fails, the
@@ -348,7 +351,7 @@ class SharedStorageDatabase {
   // Returns the number of unexpired entries for `context_origin` in the
   // database, or -1 on error.
   // TODO(crbug.com/40207867): Consider renaming to something more descriptive.
-  [[nodiscard]] int64_t Length(url::Origin context_origin);
+  [[nodiscard]] int64_t Length(const url::Origin& context_origin);
 
   // From a list of all the unexpired keys for `context_origin` taken in
   // lexicographic order, send batches of keys to the Shared Storage worklet's
@@ -370,7 +373,7 @@ class SharedStorageDatabase {
 
   // Returns the number of bytes used by unexpired entries for `context_origin`
   // in the database, or -1 on error.
-  [[nodiscard]] int64_t BytesUsed(url::Origin context_origin);
+  [[nodiscard]] int64_t BytesUsed(const url::Origin& context_origin);
 
   // Clears all origins that match `storage_key_matcher` run on the owning
   // StoragePartition's `SpecialStoragePolicy` and have any key with a
@@ -398,7 +401,7 @@ class SharedStorageDatabase {
   // Makes a withdrawal of `bits_debit` stamped with the current time from the
   // privacy budget of `context_site`.
   [[nodiscard]] OperationResult MakeBudgetWithdrawal(
-      net::SchemefulSite context_site,
+      const net::SchemefulSite& context_site,
       double bits_debit);
 
   // Determines the number of bits remaining in the privacy budget of
@@ -407,10 +410,10 @@ class SharedStorageDatabase {
   // bundled with an `OperationResult` value to indicate whether the database
   // retrieval was successful.
   [[nodiscard]] BudgetResult GetRemainingBudget(
-      net::SchemefulSite context_site);
+      const net::SchemefulSite& context_site);
 
   // Retrieves the most recent `creation_time` for `context_origin`.
-  [[nodiscard]] TimeResult GetCreationTime(url::Origin context_origin);
+  [[nodiscard]] TimeResult GetCreationTime(const url::Origin& context_origin);
 
   // Calls `Length()`, `GetRemainingBudget()`, and `GetCreationTime()`, then
   // bundles this info along with the accompanying `OperationResult`s into a
@@ -418,18 +421,19 @@ class SharedStorageDatabase {
   // shared storage data by origin, we continue to pass a `url::Origin` in as
   // parameter `context_origin` and compute the site on the fly to use as
   // parameter for `GetRemainingBudget()`.
-  [[nodiscard]] MetadataResult GetMetadata(url::Origin context_origin);
+  [[nodiscard]] MetadataResult GetMetadata(const url::Origin& context_origin);
 
   // Returns an origin's entries in a vector bundled with an `OperationResult`.
   // To only be used by DevTools.
-  [[nodiscard]] EntriesResult GetEntriesForDevTools(url::Origin context_origin);
+  [[nodiscard]] EntriesResult GetEntriesForDevTools(
+      const url::Origin& context_origin);
 
   // Removes all budget withdrawals for `context_origin`'s site. Intended as a
   // convenience for the DevTools UX. Because DevTools displays shared storage
   // data by origin, we continue to pass a `url::Origin` in as parameter
   // `context_origin` and compute the site on the fly.
   [[nodiscard]] OperationResult ResetBudgetForDevTools(
-      url::Origin context_origin);
+      const url::Origin& context_origin);
 
   // Returns whether the SQLite database is open.
   [[nodiscard]] bool IsOpenForTesting() const;
@@ -439,14 +443,14 @@ class SharedStorageDatabase {
 
   // Changes `creation_time` to `new_creation_time` for `context_origin`.
   [[nodiscard]] bool OverrideCreationTimeForTesting(
-      url::Origin context_origin,
+      const url::Origin& context_origin,
       base::Time new_creation_time);
 
   // Changes `last_used_time` to `new_last_used_time` for `context_origin` and
   // `key`.
   [[nodiscard]] bool OverrideLastUsedTimeForTesting(
-      url::Origin context_origin,
-      std::u16string key,
+      const url::Origin& context_origin,
+      std::u16string_view key,
       base::Time new_last_used_time);
 
   // Overrides the clock used to check the time.
@@ -460,7 +464,7 @@ class SharedStorageDatabase {
   // `budget_mapping` for `context_site`. Returns -1 in case of database
   // initialization failure or SQL error.
   [[nodiscard]] int64_t GetNumBudgetEntriesForTesting(
-      net::SchemefulSite context_site);
+      const net::SchemefulSite& context_site);
 
   // Returns the total number of entries in the table for all origins, or -1 in
   // case of database initialization failure or SQL error.
@@ -518,31 +522,31 @@ class SharedStorageDatabase {
   // successful. Not named `Clear()` to distinguish it from the public method
   // called via `SequenceBound::AsyncCall()`. We remove `context_origin` from
   // `per_origin_mapping` if the origin becomes empty.
-  [[nodiscard]] bool Purge(const std::string& context_origin,
+  [[nodiscard]] bool Purge(std::string_view context_origin,
                            DataClearSource source)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Performs the common last steps for calls to `Set()` or `Append()`.
   [[nodiscard]] OperationResult InternalSetOrAppend(
-      const std::string& context_origin,
-      const std::u16string& key,
-      const std::u16string& value,
+      std::string_view context_origin,
+      std::u16string_view key,
+      std::u16string_view value,
       OperationResult result_for_get,
-      std::optional<std::u16string> previous_value)
+      base::optional_ref<const std::u16string> previous_value)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Returns the number of entries for `context_origin`, not including any
   // expired entries, as determined by a manual "COUNT(*)" query. Returns -1 if
   // there is a database error.
   [[nodiscard]] int64_t NumEntriesManualCountExcludeExpired(
-      const std::string& context_origin)
+      std::string_view context_origin)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Returns the total number of bytes used by `context_origin`, including for
   // any expired entries that have not yet been purged. Returns -1 if there is a
   // database error.
   [[nodiscard]] int64_t NumBytesUsedIncludeExpired(
-      const std::string& context_origin)
+      std::string_view context_origin)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Returns the number of bytes used by `context_origin`, not including for any
@@ -550,28 +554,28 @@ class SharedStorageDatabase {
   // LENGTH(value))" query, rather than by relying on the `num_bytes` recorded
   // in `per_origin_mapping`. Returns -1 if there is a database error.
   [[nodiscard]] int64_t NumBytesUsedManualCountExcludeExpired(
-      const std::string& context_origin)
+      std::string_view context_origin)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Returns the corresponding `value` if an entry exists for `context_origin`
   // and `key`, otherwise `std::nullopt`. This method does not check whether an
   // existing entry is expired.
   [[nodiscard]] std::optional<std::u16string> MaybeGetValueFor(
-      const std::string& context_origin,
-      const std::u16string& key) VALID_CONTEXT_REQUIRED(sequence_checker_);
+      std::string_view context_origin,
+      std::u16string_view key) VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Retrieves the `num_bytes` in `out_num_bytes` and `creation_time` in
   // `out_creation_time`, of `context_origin`. Leaves the `out_*` parameters
   // unchanged if `context_origin` is not found in the database. Returns an
   // `OperationResult` indicating success, error, or that the origin was not
   // found.
-  [[nodiscard]] OperationResult GetOriginInfo(const std::string& context_origin,
+  [[nodiscard]] OperationResult GetOriginInfo(std::string_view context_origin,
                                               int64_t* out_num_bytes,
                                               base::Time* out_creation_time)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Updates `num_bytes` by `delta_bytes` for `context_origin`.
-  [[nodiscard]] bool UpdateBytes(const std::string& context_origin,
+  [[nodiscard]] bool UpdateBytes(std::string_view context_origin,
                                  int64_t delta_bytes)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
@@ -584,11 +588,11 @@ class SharedStorageDatabase {
   // Precondition: Must have called `Get()` synchronously beforehand to check
   // whether row already exists and populated the `previous_value` if it does.
   [[nodiscard]] bool UpdateValuesMappingWithTime(
-      const std::string& context_origin,
-      const std::u16string& key,
-      const std::u16string& value,
+      std::string_view context_origin,
+      std::u16string_view key,
+      std::u16string_view value,
       base::Time last_used_time,
-      std::optional<std::u16string> previous_value)
+      base::optional_ref<const std::u16string> previous_value)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // If `previous_value` is non-null, this means the key already exists; this
@@ -601,23 +605,23 @@ class SharedStorageDatabase {
   // Precondition: Must have called `Get()` synchronously beforehand to check
   // whether row already exists.
   [[nodiscard]] bool UpdateValuesMapping(
-      const std::string& context_origin,
-      const std::u16string& key,
-      const std::u16string& value,
-      std::optional<std::u16string> previous_value)
+      std::string_view context_origin,
+      std::u16string_view key,
+      std::u16string_view value,
+      base::optional_ref<const std::u16string> previous_value)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Deletes the row for `context_origin` from `per_origin_mapping`.
-  [[nodiscard]] bool DeleteFromPerOriginMapping(
-      const std::string& context_origin,
-      DataClearSource source) VALID_CONTEXT_REQUIRED(sequence_checker_);
+  [[nodiscard]] bool DeleteFromPerOriginMapping(std::string_view context_origin,
+                                                DataClearSource source)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Inserts the tuple for `(context_origin, creation_time, num_bytes)`
   // into `per_origin_mapping`.
-  [[nodiscard]] bool InsertIntoPerOriginMapping(
-      const std::string& context_origin,
-      base::Time creation_time,
-      uint64_t num_bytes) VALID_CONTEXT_REQUIRED(sequence_checker_);
+  [[nodiscard]] bool InsertIntoPerOriginMapping(std::string_view context_origin,
+                                                base::Time creation_time,
+                                                uint64_t num_bytes)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Updates the row for `context_origin` from `per_origin_mapping` with the
   // tuple `(context_origin, creation_time, num_bytes)`, unless `num_bytes` is 0
@@ -629,7 +633,7 @@ class SharedStorageDatabase {
   //
   // Precondition: Must have called `GetOriginInfo()` synchronously beforehand
   // to determine whether origin already exists.
-  [[nodiscard]] bool UpdatePerOriginMapping(const std::string& context_origin,
+  [[nodiscard]] bool UpdatePerOriginMapping(std::string_view context_origin,
                                             base::Time creation_time,
                                             uint64_t num_bytes,
                                             bool origin_exists)
@@ -640,13 +644,13 @@ class SharedStorageDatabase {
   // delta_bytes`. This byte count includes the bytes for any expired but
   // unpurged entries for `context_origin`.
   [[nodiscard]] bool HasCapacityIncludingExpired(
-      const std::string& context_origin,
+      std::string_view context_origin,
       int64_t delta_bytes) VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Purges expired rows from `values_mapping` for `context_origin`, then
   // updates `context_origin`'s row in `per_origin_mapping`. Returns true on
   // success, false on database error.
-  [[nodiscard]] bool ManualPurgeExpiredValues(const std::string& context_origin)
+  [[nodiscard]] bool ManualPurgeExpiredValues(std::string_view context_origin)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Logs following initialization various histograms, including e.g. the number

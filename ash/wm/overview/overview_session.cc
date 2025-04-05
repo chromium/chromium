@@ -212,22 +212,20 @@ void OverviewSession::Init(
   }
 
   // Create this before the birch bar widget.
-  if (features::IsForestFeatureEnabled()) {
-    birch_bar_controller_ = std::make_unique<BirchBarController>(
-        /*is_informed_restore=*/enter_exit_overview_type_ ==
-        OverviewEnterExitType::kInformedRestore);
-    if (enter_exit_overview_type_ == OverviewEnterExitType::kInformedRestore) {
-      PostLoginMetricsRecorder* post_login_metrics_recorder =
-          Shell::Get()
-              ->login_unlock_throughput_recorder()
-              ->post_login_metrics_recorder();
-      if (birch_bar_controller_->GetShowBirchSuggestions()) {
-        post_login_metrics_recorder->set_post_login_ui_status(
-            PostLoginMetricsRecorder::PostLoginUIStatus::kShownWithBirchBar);
-      } else {
-        post_login_metrics_recorder->set_post_login_ui_status(
-            PostLoginMetricsRecorder::PostLoginUIStatus::kShownWithoutBirchBar);
-      }
+  birch_bar_controller_ = std::make_unique<BirchBarController>(
+      /*is_informed_restore=*/enter_exit_overview_type_ ==
+      OverviewEnterExitType::kInformedRestore);
+  if (enter_exit_overview_type_ == OverviewEnterExitType::kInformedRestore) {
+    PostLoginMetricsRecorder* post_login_metrics_recorder =
+        Shell::Get()
+            ->login_unlock_throughput_recorder()
+            ->post_login_metrics_recorder();
+    if (birch_bar_controller_->GetShowBirchSuggestions()) {
+      post_login_metrics_recorder->set_post_login_ui_status(
+          PostLoginMetricsRecorder::PostLoginUIStatus::kShownWithBirchBar);
+    } else {
+      post_login_metrics_recorder->set_post_login_ui_status(
+          PostLoginMetricsRecorder::PostLoginUIStatus::kShownWithoutBirchBar);
     }
   }
 
@@ -1582,9 +1580,7 @@ void OverviewSession::OnSplitViewStateChanged(
 
   // Entering or exiting splitview is unexpected behavior in an informed restore
   // overview session.
-  if (features::IsForestFeatureEnabled()) {
-    CHECK(!Shell::Get()->informed_restore_controller()->contents_data());
-  }
+  CHECK(!Shell::Get()->informed_restore_controller()->contents_data());
 
   UpdateNoWindowsWidgetOnEachGrid(/*animate=*/false,
                                   /*is_continuous_enter=*/false);

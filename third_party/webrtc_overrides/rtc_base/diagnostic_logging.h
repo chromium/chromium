@@ -67,10 +67,10 @@ class RTC_EXPORT DiagnosticLogMessage {
  public:
   template <typename T>
   ABSL_ATTRIBUTE_NOINLINE DiagnosticLogMessage& operator<<(const T& v) {
-    if constexpr (absl::HasOstreamOperator<T>::value) {
-      print_stream_ << v;
-    } else if constexpr (absl::HasAbslStringify<T>::value) {
+    if constexpr (absl::HasAbslStringify<T>::value) {
       print_stream_ << absl::StrCat(v);
+    } else if constexpr (absl::HasOstreamOperator<T>::value) {
+      print_stream_ << v;
     } else {
       static_assert(false, "Unsupported type to log");
     }

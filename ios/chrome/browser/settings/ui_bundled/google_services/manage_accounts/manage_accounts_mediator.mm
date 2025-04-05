@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts/identity_view_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts/manage_accounts_consumer.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts/manage_accounts_table_view_controller_constants.h"
+#import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -26,7 +27,6 @@
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
-#import "ios/chrome/browser/signin/model/chrome_account_manager_service_observer_bridge.h"
 #import "ios/chrome/browser/signin/model/constants.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -34,16 +34,12 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
-@interface ManageAccountsMediator () <ChromeAccountManagerServiceObserver,
-                                      IdentityManagerObserverBridgeDelegate>
+@interface ManageAccountsMediator () <IdentityManagerObserverBridgeDelegate>
 @end
 
 @implementation ManageAccountsMediator {
   // Account manager service to retrieve Chrome identities.
   raw_ptr<ChromeAccountManagerService> _accountManagerService;
-  // Chrome account manager service observer bridge.
-  std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
-      _accountManagerServiceObserver;
   raw_ptr<AuthenticationService> _authService;
   raw_ptr<signin::IdentityManager> _identityManager;
   std::unique_ptr<signin::IdentityManagerObserverBridge>
@@ -58,9 +54,6 @@
   self = [super init];
   if (self) {
     _accountManagerService = accountManagerService;
-    _accountManagerServiceObserver =
-        std::make_unique<ChromeAccountManagerServiceObserverBridge>(
-            self, _accountManagerService);
     _authService = authService;
     _identityManager = identityManager;
     _identityManagerObserver =
@@ -72,7 +65,6 @@
 
 - (void)disconnect {
   _accountManagerService = nullptr;
-  _accountManagerServiceObserver.reset();
   _authService = nullptr;
   _identityManager = nullptr;
   _identityManagerObserver.reset();
@@ -124,22 +116,12 @@
   [self.delegate signOutWithItemView:itemView];
 }
 
-#pragma mark - ChromeAccountManagerServiceObserver
-
-- (void)onChromeAccountManagerServiceShutdown:
-    (ChromeAccountManagerService*)accountManagerService {
-  // TODO(crbug.com/40067367): This method can be removed once
-  // crbug.com/40067367 is fixed.
-  [self disconnect];
-}
-
 #pragma mark - IdentityManagerObserverBridgeDelegate
 
 - (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
   id<SystemIdentity> identity =
       _accountManagerService->GetIdentityOnDeviceWithGaiaID(info.gaia);
-  [self.consumer
-      updateIdentityViewItem:[self identityViewItemForIdentity:identity]];
+  [self handleIdentityUpdated:identity];
 }
 
 - (void)onAccountsOnDeviceChanged {
@@ -157,6 +139,11 @@
 }
 
 #pragma mark - Private
+
+- (void)handleIdentityUpdated:(id<SystemIdentity>)identity {
+  [self.consumer
+      updateIdentityViewItem:[self identityViewItemForIdentity:identity]];
+}
 
 - (IdentityViewItem*)identityViewItemForIdentity:(id<SystemIdentity>)identity {
   IdentityViewItem* identityViewItem = [[IdentityViewItem alloc] init];
@@ -176,9 +163,9 @@
 // Returns true if `identity` is known to be managed.
 // Returns false if the identity is known not to be managed or if the management
 // status is unknown. If the management status is unknown, it is fetched by
-// calling `FetchManagedStatusForIdentity`. `identityUpdated` will be called
-// asynchronously when the management status if retrieved and the identity is
-// managed.
+// calling `FetchManagedStatusForIdentity`. `handleIdentityUpdated` will be
+// called asynchronously when the management status if retrieved and the
+// identity is managed.
 - (BOOL)isIdentityKnownToBeManaged:(id<SystemIdentity>)identity {
   if (std::optional<BOOL> managed = IsIdentityManaged(identity);
       managed.has_value()) {
@@ -188,7 +175,7 @@
   __weak __typeof(self) weakSelf = self;
   FetchManagedStatusForIdentity(identity, base::BindOnce(^(bool managed) {
                                   if (managed) {
-                                    [weakSelf identityUpdated:identity];
+                                    [weakSelf handleIdentityUpdated:identity];
                                   }
                                 }));
   return NO;

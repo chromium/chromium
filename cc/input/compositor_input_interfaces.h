@@ -154,7 +154,7 @@ class CompositorDelegateForInput {
   virtual double PredictViewportBoundsDelta(
       double current_bounds_delta,
       gfx::Vector2dF scroll_distance) const = 0;
-  virtual void NotifyInputEvent() = 0;
+  virtual void NotifyInputEvent(bool is_fling) = 0;
   virtual bool ElementHasImplOnlyScrollAnimation(
       ElementId element_id) const = 0;
   virtual std::optional<gfx::PointF> UpdateImplAnimationScrollTargetWithDelta(
@@ -167,7 +167,6 @@ class CompositorDelegateForInput {
   virtual void SetNeedsFullViewportRedraw() = 0;
   virtual void SetDeferBeginMainFrame(bool defer_begin_main_frame) const = 0;
   virtual void DidUpdateScrollAnimationCurve() = 0;
-  virtual void AccumulateScrollDeltaForTracing(const gfx::Vector2dF& delta) = 0;
   virtual void DidStartPinchZoom() = 0;
   virtual void DidUpdatePinchZoom() = 0;
   virtual void DidEndPinchZoom() = 0;
@@ -176,7 +175,9 @@ class CompositorDelegateForInput {
   virtual void DidMouseLeave() = 0;
   virtual bool IsInHighLatencyMode() const = 0;
   virtual void WillScrollContent(ElementId element_id) = 0;
-  virtual void DidScrollContent(ElementId element_id, bool animated) = 0;
+  virtual void DidScrollContent(ElementId element_id,
+                                bool animated,
+                                const gfx::Vector2dF& scroll_delta) = 0;
   virtual float DeviceScaleFactor() const = 0;
   virtual float PageScaleFactor() const = 0;
   virtual gfx::Size VisualDeviceViewportSize() const = 0;

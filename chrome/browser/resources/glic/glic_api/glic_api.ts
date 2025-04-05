@@ -59,9 +59,6 @@ export declare interface GlicWebClient {
   initialize(glicBrowserHost: GlicBrowserHost): Promise<void>;
 
   /**
-   * @todo Remove void promise value once the web client returns OpenPanelInfo.
-   *       https://crbug.com/391946150
-   *
    * @todo The browser is currently storing the previous panel size, but the web
    *       client should be updated to set the panel size when handling this
    *       call. https://crbug.com/392141194
@@ -81,8 +78,8 @@ export declare interface GlicWebClient {
    * Important: The panel is only made user-visible once the returned promise is
    * resolved or failed (failures are ignored and the panel is still shown).
    */
-  notifyPanelWillOpen?(panelOpeningData: PanelOpeningData&
-                       PanelState): Promise<void|OpenPanelInfo>;
+  notifyPanelWillOpen?
+      (panelOpeningData: PanelOpeningData&PanelState): Promise<OpenPanelInfo>;
 
   /**
    * Called right after the panel was hidden away and is not visible to
@@ -95,29 +92,6 @@ export declare interface GlicWebClient {
    * do so at any time.
    */
   notifyPanelWasClosed?(): Promise<void>;
-
-  /**
-   * The user has requested activation of the web client.
-   * The attachedToWindowId identifies the browser window to which the
-   * panel is attached to. It is undefined if it is detached.
-   *
-   * Note: The returned promise is currently not used in the browser.
-   *
-   * @deprecated: Not supported anymore and will eventually be removed.
-   */
-  notifyPanelOpened?(attachedToWindowId: string|undefined): Promise<void>;
-
-  /**
-   * The user has closed the web client window. The window may be activated
-   * again later.
-   *
-   * The promise being resolved indicates the web client has stored any needed
-   * information and stopped accepting the user's input.
-   *
-   * @deprecated: Not supported anymore and will eventually be removed.
-   */
-  notifyPanelClosed?(): Promise<void>;
-
 
   /**
    * The web client should resolve the promise after verifying the app is
@@ -957,19 +931,41 @@ export declare interface ScrollToSelector {
 }
 
 /**
- * scrollTo() selector to select exact text in HTML and PDF documents.
+ * scrollTo() selector to select exact text in HTML and PDF documents within
+ * a given search range starting from the start node (specified with
+ * searchRangeStartNodeId) to the end of the document. If not specified, the
+ * search range will be the entire document.
+ * The documentId in ScrollToParams must be specified if a
+ * searchRangeStartNodeId is specified.
  */
 export declare interface ScrollToTextSelector {
   text: string;
+
+  /**
+   * See common_ancestor_dom_node_id in proto ContentAttributes
+   * in components/optimization_guide/proto/features/common_quality_data.proto.
+   */
+  searchRangeStartNodeId?: number;
 }
 
 /**
- * scrollTo() selector to select a range of text in HTML and PDF documents.
+ * scrollTo() selector to select a range of text in HTML and PDF documents
+ * within a given search range starting from the start node (specified with
+ * searchRangeStartNodeId) to the end of the document. If not specified, the
+ * search range will be the entire document.
+ * The documentId in ScrollToParams must be specified if a
+ * searchRangeStartNodeId is specified.
  * Text selected will match textStart <anything in the middle> textEnd.
  */
 export declare interface ScrollToTextFragmentSelector {
   textStart: string;
   textEnd: string;
+
+  /**
+   * See common_ancestor_dom_node_id in proto ContentAttributes
+   * in components/optimization_guide/proto/features/common_quality_data.proto.
+   */
+  searchRangeStartNodeId?: number;
 }
 
 /** Error type used for scrollTo(). */
@@ -1000,6 +996,11 @@ export enum ScrollToErrorReason {
    * iframes).
    */
   NO_MATCHING_DOCUMENT = 5,
+
+  /**
+   *  The search range starting from DOMNodeId did not result in a valid range.
+   */
+  SEARCH_RANGE_INVALID = 6,
 }
 
 /**

@@ -67,6 +67,11 @@ using GdkToplevel = struct _GdkToplevel;
 constexpr GdkMemoryFormat GDK_MEMORY_B8G8R8A8 = static_cast<GdkMemoryFormat>(3);
 
 constexpr GdkModifierType GDK_ALT_MASK = GDK_MOD1_MASK;
+
+// This is a macro instead of a constexpr variable to workaround an
+// enum-constexpr-conversion error caused by creating a GtkStateFlags outside
+// the range of values defined by in the enum.
+#define GTK_STATE_FLAG_FOCUS_WITHIN static_cast<GtkStateFlags>(1 << 14)
 #elif GTK_MAJOR_VERSION == 4
 enum GtkWidgetHelpType : int;
 enum GtkWindowType : int;

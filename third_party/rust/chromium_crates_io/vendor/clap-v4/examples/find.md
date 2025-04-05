@@ -11,9 +11,9 @@ Options:
   -V, --version  Print version
 
 TESTS:
-      --empty        File is empty and is either a regular file or a directory
-      --name <name>  Base of file name (the path with the leading directories removed) matches shell
-                     pattern pattern
+  --empty        File is empty and is either a regular file or a directory
+  --name <name>  Base of file name (the path with the leading directories removed) matches shell
+                 pattern pattern
 
 OPERATORS:
   -o, --or   expr2 is not evaluate if exp1 is true

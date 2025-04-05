@@ -267,7 +267,7 @@ public class TabModelImpl extends TabModelJniBridge {
 
     @Override
     public @NonNull TabCreator getTabCreator() {
-        return isIncognitoBranded() ? mIncognitoTabCreator : mRegularTabCreator;
+        return getTabCreator(isIncognitoBranded());
     }
 
     /**
@@ -912,11 +912,6 @@ public class TabModelImpl extends TabModelJniBridge {
         return true;
     }
 
-    @Override
-    protected TabCreator getTabCreator(boolean incognito) {
-        return incognito ? mIncognitoTabCreator : mRegularTabCreator;
-    }
-
     /** Used to restore tabs from native. */
     @Override
     protected boolean createTabWithWebContents(
@@ -1038,6 +1033,12 @@ public class TabModelImpl extends TabModelJniBridge {
     }
 
     @Override
+    public boolean isTabInTabGroup(@NonNull Tab tab) {
+        TabGroupModelFilter filter = mModelDelegate.getFilter(isIncognito());
+        return filter == null ? false : filter.isTabInTabGroup(tab);
+    }
+
+    @Override
     public int getTabCountNavigatedInTimeWindow(long beginTimeMs, long endTimeMs) {
         return getTabsNavigatedInTimeWindow(beginTimeMs, endTimeMs).size();
     }
@@ -1084,5 +1085,19 @@ public class TabModelImpl extends TabModelJniBridge {
         for (TabModelObserver obs : mObservers) {
             obs.onFinishingMultipleTabClosure(tabs, saveToTabRestoreService);
         }
+    }
+
+    /**
+     * Returns the {@link TabCreator} for the given {@link Profile}.
+     *
+     * <p>Please note that, the {@link TabCreator} and {@TabModelImpl} are separate instances for
+     * {@link ChromeTabbedActivity} and {@link CustomTabActivity} across both regular and Incognito
+     * modes which allows us to pass the boolean directly.
+     *
+     * @param incognito A boolean to indicate whether to return IncognitoTabCreator or
+     *     RegularTabCreator.
+     */
+    private TabCreator getTabCreator(boolean incognito) {
+        return incognito ? mIncognitoTabCreator : mRegularTabCreator;
     }
 }

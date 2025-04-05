@@ -621,6 +621,8 @@ class CORE_EXPORT HTMLMediaElement
   void RequestMediaRemoting() override {}
   void RequestVisibility(
       RequestVisibilityCallback request_visibility_cb) override {}
+  void RecordAutoPictureInPictureInfo(
+      const String& auto_picture_in_picture_info) override;
 
   void LoadTimerFired(TimerBase*);
   void ProgressEventTimerFired();

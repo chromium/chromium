@@ -131,7 +131,9 @@ enum FirstRunStage {
   kSearchEngineChoiceScreenCompletionWithSelection = 22,
   // The Search Engine Choice screen is closed without a Search Engine Choice
   // selected.
-  kSearchEngineChoiceScreenCompletionWithoutSelection = 23,
+  // DEPRECATED: It is not possible to complete the search engine choice screen
+  // without a selection.
+  // kSearchEngineChoiceScreenCompletionWithoutSelection = 23,
   // The FRE is interrupted due to a Chrome shutdown.
   kFirstRunInterrupted = 24,
   // The Best Features screens are shown.
