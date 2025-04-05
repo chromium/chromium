@@ -547,4 +547,14 @@ TEST_F(ExtensionRegistrarTest, AddDisableFlagExemptedExtension) {
   ExpectInSet(ExtensionRegistry::ENABLED);
 }
 
+TEST_F(ExtensionRegistrarTest, AddAndRemoveComponentExtension) {
+  EXPECT_CALL(*delegate(), PostActivateExtension(extension()));
+  registrar()->AddComponentExtension(extension().get());
+  ExpectInSet(ExtensionRegistry::ENABLED);
+
+  EXPECT_CALL(*delegate(), PostDeactivateExtension(extension()));
+  registrar()->RemoveComponentExtension(extension()->id());
+  ExpectInSet(ExtensionRegistry::NONE);
+}
+
 }  // namespace extensions

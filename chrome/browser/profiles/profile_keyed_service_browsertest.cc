@@ -595,6 +595,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
     "ChildAccountService",
     "ChromeSigninClient",
     "CommandService",
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+    "ComponentLoader",
+#endif
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
     "ConnectorsService",
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)

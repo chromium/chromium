@@ -208,14 +208,14 @@ ExtensionService::ExtensionService(
       external_provider_manager_(ExternalProviderManager::Get(profile)),
       ready_(ready),
       updater_(ExtensionUpdater::Get(profile)),
-      component_loader_(std::make_unique<ComponentLoader>(system_, profile_)),
+      component_loader_(ComponentLoader::Get(profile_)),
       error_controller_(error_controller),
       external_install_manager_(ExternalInstallManager::Get(profile)),
       shared_module_service_(new SharedModuleService(profile_)),
       extension_registrar_delegate_(
           std::make_unique<ChromeExtensionRegistrarDelegate>(
               profile_,
-              component_loader_.get())),
+              component_loader_)),
       extension_registrar_(ExtensionRegistrar::Get(profile)),
       omaha_attributes_handler_(extension_prefs,
                                 ExtensionRegistry::Get(profile),
@@ -317,6 +317,7 @@ void ExtensionService::Shutdown() {
   allowlist_ = nullptr;
   external_install_manager_ = nullptr;
   updater_ = nullptr;
+  component_loader_ = nullptr;
 }
 
 void ExtensionService::Init() {
@@ -789,28 +790,7 @@ void ExtensionService::AddExtension(const Extension* extension) {
 }
 
 void ExtensionService::AddComponentExtension(const Extension* extension) {
-  extension_prefs_->ClearInapplicableDisableReasonsForComponentExtension(
-      extension->id());
-  const std::string old_version_string(
-      extension_prefs_->GetVersionString(extension->id()));
-  const base::Version old_version(old_version_string);
-
-  VLOG(1) << "AddComponentExtension " << extension->name();
-  if (!old_version.IsValid() || old_version != extension->version()) {
-    VLOG(1) << "Component extension " << extension->name() << " ("
-            << extension->id() << ") installing/upgrading from '"
-            << old_version_string << "' to "
-            << extension->version().GetString();
-
-    // TODO(crbug.com/40508457): If needed, add support for Declarative Net
-    // Request to component extensions and pass the ruleset install prefs here.
-    extension_registrar_->AddNewOrUpdatedExtension(
-        extension, {}, kInstallFlagNone, syncer::StringOrdinal(), std::string(),
-        /*ruleset_install_prefs=*/{});
-    return;
-  }
-
-  extension_registrar_->AddExtension(extension);
+  extension_registrar_->AddComponentExtension(extension);
 }
 
 void ExtensionService::OnExtensionInstalled(

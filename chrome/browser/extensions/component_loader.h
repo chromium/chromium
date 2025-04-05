@@ -23,7 +23,11 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/buildflags.h"
+#include "components/keyed_service/core/keyed_service.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class Profile;
 
@@ -33,14 +37,17 @@ class Extension;
 class ExtensionSystem;
 
 // For registering, loading, and unloading component extensions.
-class ComponentLoader {
+class ComponentLoader : public KeyedService {
  public:
-  ComponentLoader(ExtensionSystem* extension_system, Profile* browser_context);
+  static ComponentLoader* Get(Profile* profile);
 
   ComponentLoader(const ComponentLoader&) = delete;
   ComponentLoader& operator=(const ComponentLoader&) = delete;
 
-  virtual ~ComponentLoader();
+  ~ComponentLoader() override;
+
+  // KeyedService:
+  void Shutdown() override;
 
   size_t registered_extensions_count() const {
     return component_extensions_.size();
@@ -148,6 +155,7 @@ class ComponentLoader {
   void set_profile_for_testing(Profile* profile) { profile_ = profile; }
 
  private:
+  friend class ComponentLoaderFactory;
   FRIEND_TEST_ALL_PREFIXES(ComponentLoaderTest, ParseManifest);
 
   // Information about a registered component extension.
@@ -172,6 +180,8 @@ class ComponentLoader {
     // The component extension's ID.
     ExtensionId extension_id;
   };
+
+  explicit ComponentLoader(Profile* profile);
 
   // Parses the given JSON manifest. Returns `std::nullopt` if it cannot be
   // parsed or if the result is not a base::Value::Dict.

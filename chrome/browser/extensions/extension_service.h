@@ -118,6 +118,8 @@ class ExtensionServiceInterface {
   // Check if we have preferences for the component extension and, if not or if
   // the stored version differs, install the extension (without requirements
   // checking) before calling AddExtension.
+  // TODO(crbug.com/408454704): Delete this method. Callers should use
+  // ExtensionRegistrar directly.
   virtual void AddComponentExtension(const Extension* extension) = 0;
 
   // Unload the specified extension.
@@ -125,6 +127,8 @@ class ExtensionServiceInterface {
                                UnloadedExtensionReason reason) = 0;
 
   // Remove the specified component extension.
+  // TODO(crbug.com/408454704): Delete this method. Callers should use
+  // ExtensionRegistrar directly.
   virtual void RemoveComponentExtension(const std::string& extension_id) = 0;
 
   // Whether a user is able to disable a given extension.
@@ -343,7 +347,9 @@ class ExtensionService : public ExtensionServiceInterface,
 
   Profile* profile() { return profile_; }
 
-  ComponentLoader* component_loader() { return component_loader_.get(); }
+  // TODO(crbug.com/408495366): Delete this method. Use ComponentLoader::Get()
+  // instead.
+  ComponentLoader* component_loader() { return component_loader_; }
 
   SharedModuleService* shared_module_service() {
     return shared_module_service_.get();
@@ -487,7 +493,7 @@ class ExtensionService : public ExtensionServiceInterface,
       host_observation_{this};
 
   // Keeps track of loading and unloading component extensions.
-  std::unique_ptr<ComponentLoader> component_loader_;
+  raw_ptr<ComponentLoader> component_loader_ = nullptr;
 
   // Set to true if this is the first time this ExtensionService has run.
   // Used for specially handling external extensions that are installed the

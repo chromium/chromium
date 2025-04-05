@@ -470,6 +470,31 @@ base::flat_set<int> ExtensionRegistrar::GetDisableReasonsOnInstalled(
   return {};
 }
 
+void ExtensionRegistrar::AddComponentExtension(const Extension* extension) {
+  extension_prefs_->ClearInapplicableDisableReasonsForComponentExtension(
+      extension->id());
+  const std::string old_version_string(
+      extension_prefs_->GetVersionString(extension->id()));
+  const base::Version old_version(old_version_string);
+
+  VLOG(1) << "AddComponentExtension " << extension->name();
+  if (!old_version.IsValid() || old_version != extension->version()) {
+    VLOG(1) << "Component extension " << extension->name() << " ("
+            << extension->id() << ") installing/upgrading from '"
+            << old_version_string << "' to "
+            << extension->version().GetString();
+
+    // TODO(crbug.com/40508457): If needed, add support for Declarative Net
+    // Request to component extensions and pass the ruleset install prefs here.
+    AddNewOrUpdatedExtension(extension, {}, kInstallFlagNone,
+                             syncer::StringOrdinal(), std::string(),
+                             /*ruleset_install_prefs=*/{});
+    return;
+  }
+
+  AddExtension(extension);
+}
+
 void ExtensionRegistrar::RemoveComponentExtension(
     const std::string& extension_id) {
   scoped_refptr<const Extension> extension(

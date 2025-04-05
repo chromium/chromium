@@ -216,6 +216,11 @@ class ExtensionRegistrar : public KeyedService, public ProcessManagerObserver {
   // is reloading.
   void EnabledReloadableExtensions();
 
+  // Check if we have preferences for the component extension and, if not or if
+  // the stored version differs, install the extension (without requirements
+  // checking) before calling AddExtension.
+  void AddComponentExtension(const Extension* extension);
+
   // Removes the specified component extension.
   void RemoveComponentExtension(const std::string& extension_id);
 

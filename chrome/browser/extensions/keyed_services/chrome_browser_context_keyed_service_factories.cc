@@ -6,6 +6,7 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/extensions/blocklist_factory.h"
+#include "chrome/browser/extensions/component_loader_factory.h"
 #include "chrome/browser/extensions/delayed_install_manager_factory.h"
 #include "chrome/browser/extensions/error_console/error_console_factory.h"
 #include "chrome/browser/extensions/extension_allowlist_factory.h"
@@ -50,6 +51,7 @@ namespace chrome_extensions {
 
 void EnsureChromeBrowserContextKeyedServiceFactoriesBuilt() {
   extensions::BlocklistFactory::GetInstance();
+  extensions::ComponentLoaderFactory::GetInstance();
   extensions::DelayedInstallManagerFactory::GetInstance();
   extensions::ErrorConsoleFactory::GetInstance();
   extensions::ExtensionAllowlistFactory::GetInstance();
