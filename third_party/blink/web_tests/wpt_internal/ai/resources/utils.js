@@ -181,3 +181,33 @@ const ensureLanguageModel = async () => {
   // not ready.
   assert_not_equals(availability, 'unavailable');
 };
+
+async function testMonitor(createFunc, options = {}) {
+  let created = false;
+  const progressEvents = [];
+  function monitor(m) {
+    m.addEventListener('downloadprogress', e => {
+      // No progress events should be fired after `createFunc` resolves.
+      assert_false(created);
+
+      progressEvents.push(e);
+    });
+  }
+
+  await createFunc({...options, monitor});
+  created = true;
+
+  assert_greater_than_equal(progressEvents.length, 2);
+  assert_equals(progressEvents.at(0).loaded, 0);
+  assert_equals(progressEvents.at(-1).loaded, 1);
+
+  let lastProgressEventLoaded = -1;
+  for (const progressEvent of progressEvents) {
+    assert_equals(progressEvent.total, 1);
+    assert_less_than_equal(progressEvent.loaded, progressEvent.total);
+
+    // Progress events should have monotonically increasing `loaded` values.
+    assert_greater_than(progressEvent.loaded, lastProgressEventLoaded);
+    lastProgressEventLoaded = progressEvent.loaded;
+  }
+}

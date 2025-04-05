@@ -209,7 +209,7 @@ class WebClient implements GlicWebClient {
   }
 
   async notifyPanelWillOpen(panelOpeningData: PanelOpeningData&PanelState):
-      Promise<void|OpenPanelInfo> {
+      Promise<OpenPanelInfo> {
     // Deleting backwards-compatible members coming from PanelState.
     delete (panelOpeningData as Partial<PanelState>).kind;
     delete (panelOpeningData as Partial<PanelState>).windowId;

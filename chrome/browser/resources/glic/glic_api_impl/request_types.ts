@@ -191,13 +191,6 @@ export declare interface WebClientRequestTypes {
   };
   glicWebClientNotifyPanelWasClosed: {
   };
-  glicWebClientNotifyPanelOpened: {
-    request: {
-      attachedToWindowId: string|undefined,
-    },
-  };
-  glicWebClientNotifyPanelClosed: {
-  };
   glicWebClientPanelStateChanged: {
     request: {
       panelState: PanelState,

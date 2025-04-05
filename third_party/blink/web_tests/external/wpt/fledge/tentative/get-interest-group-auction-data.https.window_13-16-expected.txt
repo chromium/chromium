@@ -1,6 +1,7 @@
 This is a testharness.js-based test.
-Harness Error. harness_status.status = 1 , harness_status.message = Unhandled rejection: assert_not_own_property: unexpected property "error" is found on object
 [FAIL] getInterestGroupAdAuctionData() with multiple buyers
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'getInterestGroupAdAuctionData' on 'Navigator': Invalid Coordinator"
+[FAIL] getInterestGroupAdAuctionData() InCooldownOrLockout in each IG
   promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'getInterestGroupAdAuctionData' on 'Navigator': Invalid Coordinator"
 [FAIL] getInterestGroupAdAuctionData() uses perBuyerConfig to select buyers
   promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'getInterestGroupAdAuctionData' on 'Navigator': Invalid Coordinator"

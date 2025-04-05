@@ -49,6 +49,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/content_suggestions/ui_bundled/cells",
     "//ios/chrome/browser/content_suggestions/ui_bundled/cells:most_visited_tiles",
     "//ios/chrome/browser/content_suggestions/ui_bundled/cells:shortcuts",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/impression_limits:impression_limits",
     "//ios/chrome/browser/content_suggestions/ui_bundled/magic_stack",
     "//ios/chrome/browser/content_suggestions/ui_bundled/magic_stack:cells",
     "//ios/chrome/browser/content_suggestions/ui_bundled/magic_stack:public",
@@ -159,6 +160,7 @@ source_set("metrics") {
     "//ios/chrome/browser/content_suggestions/ui_bundled/cells",
     "//ios/chrome/browser/content_suggestions/ui_bundled/cells:constants",
     "//ios/chrome/browser/content_suggestions/ui_bundled/set_up_list:utils",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/shop_card:shop_card_data",
     "//ios/chrome/browser/favicon/ui_bundled",
     "//ios/chrome/browser/metrics/model:metrics_internal",
     "//ios/chrome/browser/ntp/model:set_up_list_item_type",
@@ -199,12 +201,6 @@ source_set("ui") {
   sources = [
     "content_suggestions_view_controller.h",
     "content_suggestions_view_controller.mm",
-    "magic_stack_half_sheet_consumer.h",
-    "magic_stack_half_sheet_mediator.h",
-    "magic_stack_half_sheet_mediator.mm",
-    "magic_stack_half_sheet_model_delegate.h",
-    "magic_stack_half_sheet_table_view_controller.h",
-    "magic_stack_half_sheet_table_view_controller.mm",
     "user_account_image_update_delegate.h",
   ]
   deps = [
@@ -337,8 +333,6 @@ source_set("unit_tests") {
     "content_suggestions_collection_utils_unittest.mm",
     "content_suggestions_coordinator_unittest.mm",
     "content_suggestions_mediator_unittest.mm",
-    "magic_stack_half_sheet_mediator_unittest.mm",
-    "magic_stack_half_sheet_table_view_controller_unittest.mm",
   ]
   deps = [
     ":constants",

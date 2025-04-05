@@ -28,6 +28,7 @@ import androidx.core.widget.ImageViewCompat;
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 
 import org.chromium.base.SysUtils;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -67,6 +68,7 @@ public class MessageBannerView extends BoundedLinearLayout {
     private @Nullable PopupMenuShownListener mPopupMenuShownListener;
     private @Nullable Drawable mDescriptionDrawable;
     private boolean mOverrideSecondaryIconContentDescription = true;
+    private @Nullable Supplier<Boolean> mIsWithinTapProtectionPeriodSupplier;
 
     public MessageBannerView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -274,6 +276,10 @@ public class MessageBannerView extends BoundedLinearLayout {
         mOnTitleChanged = runnable;
     }
 
+    void setTapProtectionSupplier(Supplier<Boolean> supplier) {
+        mIsWithinTapProtectionPeriodSupplier = supplier;
+    }
+
     void dismissSecondaryMenuIfShown() {
         mSecondaryButton.dismiss();
     }
@@ -424,13 +430,24 @@ public class MessageBannerView extends BoundedLinearLayout {
         };
     }
 
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+        return isWithinTapProtectionPeriod() || super.onInterceptTouchEvent(ev);
+    }
+
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        if (isWithinTapProtectionPeriod()) return true;
         if (mSwipeGestureDetector != null) {
             return mSwipeGestureDetector.onTouchEvent(event) || super.onTouchEvent(event);
         }
         return super.onTouchEvent(event);
+    }
+
+    private boolean isWithinTapProtectionPeriod() {
+        return mIsWithinTapProtectionPeriodSupplier != null
+                && Boolean.TRUE.equals(mIsWithinTapProtectionPeriodSupplier.get());
     }
 
     private static class MessageSwipeGestureListener extends SwipeGestureListener {

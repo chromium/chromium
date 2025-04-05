@@ -52,7 +52,7 @@
   margin-inline-start: -2px;
 }
 
-#discover-more-text {
+.cr-secondary-text {
   line-height: 19px;
   margin-inline-end: 10px;
 }

@@ -37,8 +37,7 @@
 
 - (void)removeItemWithID:(web::WebStateID)removedItemID
           selectedItemID:(web::WebStateID)selectedItemID {
-  auto it = std::remove(_items.begin(), _items.end(), removedItemID);
-  _items.erase(it, _items.end());
+  std::erase(_items, removedItemID);
   _selectedItemID = selectedItemID;
 }
 
@@ -52,8 +51,7 @@
 }
 
 - (void)moveItemWithID:(web::WebStateID)itemID toIndex:(NSUInteger)toIndex {
-  auto it = std::remove(_items.begin(), _items.end(), itemID);
-  _items.erase(it, _items.end());
+  std::erase(_items, itemID);
   _items.insert(_items.begin() + toIndex, itemID);
 }
 

@@ -57,7 +57,7 @@ class FakeCompositorDelegateForInput : public CompositorDelegateForInput {
   std::unique_ptr<EventsMetricsManager::ScopedMonitor>
   GetScopedEventMetricsMonitor(
       EventsMetricsManager::ScopedMonitor::DoneCallback done_callback) override;
-  void NotifyInputEvent() override {}
+  void NotifyInputEvent(bool is_fling) override {}
   std::unique_ptr<LatencyInfoSwapPromiseMonitor>
   CreateLatencyInfoSwapPromiseMonitor(ui::LatencyInfo* latency) override;
   void SetNeedsAnimateInput() override {}
@@ -69,7 +69,6 @@ class FakeCompositorDelegateForInput : public CompositorDelegateForInput {
   void SetNeedsFullViewportRedraw() override {}
   void SetDeferBeginMainFrame(bool defer_begin_main_frame) const override {}
   void DidUpdateScrollAnimationCurve() override {}
-  void AccumulateScrollDeltaForTracing(const gfx::Vector2dF& delta) override {}
   void DidStartPinchZoom() override {}
   void DidUpdatePinchZoom() override {}
   void DidEndPinchZoom() override {}
@@ -78,7 +77,9 @@ class FakeCompositorDelegateForInput : public CompositorDelegateForInput {
   void DidMouseLeave() override {}
   bool IsInHighLatencyMode() const override;
   void WillScrollContent(ElementId element_id) override {}
-  void DidScrollContent(ElementId element_id, bool animated) override {}
+  void DidScrollContent(ElementId element_id,
+                        bool animated,
+                        const gfx::Vector2dF& scroll_delta) override {}
   float DeviceScaleFactor() const override;
   float PageScaleFactor() const override;
   gfx::Size VisualDeviceViewportSize() const override;

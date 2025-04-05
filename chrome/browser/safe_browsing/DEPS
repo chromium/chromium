@@ -5,3 +5,9 @@ include_rules = [
   "+mojo",
   "+services/network/test",
 ]
+
+specific_include_rules = {
+  "advanced_protection_status_manager_unittest.cc": [
+    "+components/signin/public/identity_manager",
+  ]
+}

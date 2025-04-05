@@ -55,16 +55,9 @@ enum class AttachChangeReason;
 // This class owns and manages the glic window. This class has the same lifetime
 // as the GlicKeyedService, so it exists if and only if the profile exists.
 //
-// There are 4 states for the glic window:
-//   * Closed (aka hidden, invisible)
-//   * OpenAnimation (showing an animation built into chrome, independent of the
-//     content of the glic window)
-//   * Waiting (the open animation has finished, but glic window contents is
-//     not yet ready)
-//   * Open (aka showing, visible)
-// When the glic window is open there is an additional piece of state. The glic
-// window is either attached to a Browser* or standalone.
-//
+// See the |State| enum below for the lifecycle of the window. When the glic
+// window is open |attached_browser_| indicates if the window is attached or
+// standalone. See |IsAttached|
 class GlicWindowController : public views::WidgetObserver,
                              public ui::AcceleratorTarget {
  public:
@@ -246,7 +239,16 @@ class GlicWindowController : public views::WidgetObserver,
   // Return the Browser to which the panel is attached, or null if detached.
   Browser* attached_browser() { return attached_browser_; }
 
-  // See class comment for details. Public for testing.
+  // Possible states for the glic window. Public for testing.
+  //   * Closed (aka hidden, invisible)
+  //   * OpenAnimation (showing an animation built into chrome, independent of
+  //     the content of the glic window)
+  //   * Waiting for glic to load (the open animation has finished, but the
+  //     glic window contents is not yet ready)
+  //   * Open (aka showing, visible)
+  //   * CloseAnimation
+  //   * Detaching
+  //   * ClosingToReopenDetached
   enum class State {
     kClosed,
     kOpenAnimation,
@@ -271,6 +273,8 @@ class GlicWindowController : public views::WidgetObserver,
   // Helper function to get the always detached flag.
   static bool AlwaysDetached();
 
+  bool IsDragging() { return in_move_loop_; }
+
  private:
   // ui::AcceleratorTarget
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
@@ -278,20 +282,13 @@ class GlicWindowController : public views::WidgetObserver,
 
   void AddAccelerators();
 
-  gfx::Rect GetInitialDetachedBounds(Browser* browser);
+  gfx::Rect GetInitialBounds(Browser* browser);
 
   // Get the default detached bounds relative to browser.
-  gfx::Rect GetInitialDetachedBoundsFromBrowser(Browser* browser);
+  gfx::Rect GetInitialDetachedBoundsFromBrowser(Browser& browser);
 
-  // Performs initialization for the attached/detached opening flows. Important
-  // difference: currently attached has an animation, so we immediately show the
-  // widget. Detached does not have an animation, and we wait until glic is
-  // ready to show anything.
-  void OpenAttached(Browser& browser);
-
-  // Open detached relative to the browser or in the default detached position
-  // if browser is a nullptr.
-  void OpenDetached(Browser* browser);
+  // Get the default bounds when attached to the browser.
+  gfx::Rect GetInitialAttachedBounds(Browser& browser);
 
   // Creates the glic view, waits for the web client to initialize, and then
   // shows the glic window. If `browser` is non-nullptr then glic will be
@@ -301,8 +298,9 @@ class GlicWindowController : public views::WidgetObserver,
   // Close the widget and reopen in detached mode.
   void CloseAndReopenDetached(mojom::InvocationSource source);
 
-  void AuthCheckDoneBeforeShow(base::WeakPtr<Browser> browser_for_attachment,
-                               AuthController::BeforeShowResult result);
+  void SetupGlicWidget(Browser* browser);
+  void StartAttachedAnimation(GlicButton* glic_button);
+
   // This sends a message to glic to get ready to show. This will eventually
   // result in the callback GlicLoaded().
   void WaitForGlicToLoad();
@@ -311,10 +309,9 @@ class GlicWindowController : public views::WidgetObserver,
   // Called when the open animation is finished.
   void OpenAnimationFinished();
 
-  // TODO(crbug.com/391402352): This method is misnamed. It's used to send
-  // coordinate showing the window when glic and this class are both ready.
-  // However this class already shows the window via animation.
-  void ShowFinish();
+  // Called once glic is completely loaded and any animations have finished.
+  // This is the end of the opening process and |state_| will be set to kOpen.
+  void GlicLoadedAndAnimationDone();
 
   // Internal closing implementation. reopen_detached_source must be set
   // if and only if the internal state is kClosingToReopenDetached.
@@ -390,9 +387,6 @@ class GlicWindowController : public views::WidgetObserver,
   // Possibly adjusts the size of the window appropriate for the current
   // display workspace, but only if it's different than the current target size.
   void MaybeAdjustSizeForDisplay(bool animate);
-
-  // Create a GlicWidget.
-  std::unique_ptr<GlicWidget> CreateGlicWidget(const gfx::Rect& bounds);
 
   // Warms the web client and sets `contents_`.
   void CreateContents();

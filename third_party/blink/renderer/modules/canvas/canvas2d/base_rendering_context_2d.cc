@@ -1465,7 +1465,7 @@ V8GPUTextureFormat BaseRenderingContext2D::getTextureFormat() const {
 
   // If that did not work (e.g., the canvas host does not yet exist), we can
   // return the preferred canvas format.
-  return FromDawnEnum(GPU::preferred_canvas_format());
+  return FromDawnEnum(GPU::GetPreferredCanvasFormat());
 }
 
 GPUTexture* BaseRenderingContext2D::transferToGPUTexture(
@@ -1651,7 +1651,7 @@ void BaseRenderingContext2D::transferBackFromGPUTexture(
 
   // If the caller explicitly destroyed the WebGPU access texture, there is
   // nothing to transfer.
-  if (webgpu_access_texture_->Destroyed()) {
+  if (webgpu_access_texture_->IsDestroyed()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "The texture has been destroyed.");
     webgpu_access_texture_ = nullptr;

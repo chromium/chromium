@@ -9,9 +9,6 @@
 #include <iosfwd>
 #include <iterator>
 #include <new>
-#if __cplusplus >= 202002L
-#include <ranges>
-#endif
 #include <stdexcept>
 #include <string>
 #include <type_traits>
@@ -21,6 +18,14 @@
 #include <basetsd.h>
 #else
 #include <sys/types.h>
+#endif
+
+#if __cplusplus >= 201703L
+#include <string_view>
+#endif
+
+#if __cplusplus >= 202002L
+#include <ranges>
 #endif
 
 namespace rust {
@@ -123,6 +128,9 @@ public:
   Str &operator=(const Str &) & noexcept = default;
 
   explicit operator std::string() const;
+#if __cplusplus >= 201703L
+  explicit operator std::string_view() const;
+#endif
 
   // Note: no null terminator.
   const char *data() const noexcept;

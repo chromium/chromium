@@ -27,4 +27,17 @@ const char* CTPolicyComplianceToString(CTPolicyCompliance status) {
   NOTREACHED();
 }
 
+const char* CTRequirementStatusToString(CTRequirementsStatus status) {
+  switch (status) {
+    case CTRequirementsStatus::CT_NOT_REQUIRED:
+      return "CT_NOT_REQUIRED";
+    case CTRequirementsStatus::CT_REQUIREMENTS_MET:
+      return "CT_REQUIREMENTS_MET";
+    case CTRequirementsStatus::CT_REQUIREMENTS_NOT_MET:
+      return "CT_REQUIREMENTS_NOT_MET";
+  }
+
+  NOTREACHED();
+}
+
 }  // namespace net::ct

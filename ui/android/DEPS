@@ -9,6 +9,7 @@ include_rules = [
   "+cc/resources",
   "+cc/test/stub_layer_tree_host_client.h",
   "+cc/test/test_task_graph_runner.h",
+  "+components/cached_flags",
   "+components/url_formatter",
   "+components/viz/client",
   "+components/viz/common",

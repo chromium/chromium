@@ -547,8 +547,8 @@ IN_PROC_BROWSER_TEST_F(BtmNavigationFlowDetectorTest,
   ASSERT_EQ(referrer_entries.size(), 1u);
   auto referrer_entry = referrer_entries.at(0);
   ukm_recorder().ExpectEntrySourceHasUrl(referrer_entry, referrer_url);
-  const int64_t* flow_id =
-      ukm_recorder().GetEntryMetric(referrer_entry, "FlowId");
+  const int64_t flow_id =
+      *ukm_recorder().GetEntryMetric(referrer_entry, "FlowId");
   // Expect entrypoint event to be accurate.
   auto entrypoint_entries = ukm_recorder().GetEntriesByName(
       kSuspectedTrackerFlowEntrypointUkmEventName);
@@ -558,7 +558,67 @@ IN_PROC_BROWSER_TEST_F(BtmNavigationFlowDetectorTest,
   ukm_recorder().ExpectEntryMetric(
       entrypoint_entry, "ExitRedirectType",
       static_cast<int64_t>(BtmRedirectType::kServer));
-  ukm_recorder().ExpectEntryMetric(entrypoint_entry, "FlowId", *flow_id);
+  ukm_recorder().ExpectEntryMetric(entrypoint_entry, "FlowId", flow_id);
+  ukm_recorder().ExpectEntryMetric(entrypoint_entry, "HadActiveStorageAccess",
+                                   true);
+  // It's not possible to interact with a page that server-redirected.
+  ExpectNoUkmEventsOfType(kInFlowInteractionUkmEventName);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    BtmNavigationFlowDetectorTest,
+    SuspectedTrackerFlowDoesNotReportCookieReadsInNavigationsAsStorageAccess) {
+  // Pre-write a cookie on B so that it gets sent later.
+  WebContents* web_contents = GetActiveWebContents();
+  GURL cookie_write_url =
+      embedded_https_test_server_.GetURL(kSiteB, "/title1.html");
+  ASSERT_TRUE(NavigateToURL(web_contents, cookie_write_url));
+  FrameCookieAccessObserver cookie_write_observer(
+      web_contents, web_contents->GetPrimaryMainFrame(),
+      CookieOperation::kChange);
+  ASSERT_TRUE(ExecJs(web_contents->GetPrimaryMainFrame(),
+                     "document.cookie = 'name=value;';"));
+  cookie_write_observer.Wait();
+  // Visit A.
+  GURL referrer_url =
+      embedded_https_test_server_.GetURL(kSiteA, "/title1.html");
+  ASSERT_TRUE(NavigateToURL(web_contents, referrer_url));
+  // Visit B, which is sent the prewritten cookie in the request, and have B
+  // server redirect to C. Wait for cookie access to register and for UKM to
+  // emit.
+  GURL entrypoint_url = embedded_https_test_server_.GetURL(
+      kSiteB, "/cross-site/c.test/title1.html");
+  GURL final_url = embedded_https_test_server_.GetURL(kSiteC, "/title1.html");
+  URLCookieAccessObserver cookie_read_observer(web_contents, entrypoint_url,
+                                               CookieOperation::kRead);
+  base::RunLoop ukm_loop;
+  ukm_recorder().SetOnAddEntryCallback(
+      kSuspectedTrackerFlowEntrypointUkmEventName, ukm_loop.QuitClosure());
+  ASSERT_TRUE(NavigateToURLFromRendererWithoutUserGesture(
+      web_contents, entrypoint_url, final_url));
+  cookie_read_observer.Wait();
+  ukm_loop.Run();
+
+  // Expect referrer event to be accurate.
+  auto referrer_entries = ukm_recorder().GetEntriesByName(
+      kSuspectedTrackerFlowReferrerUkmEventName);
+  ASSERT_EQ(referrer_entries.size(), 1u);
+  auto referrer_entry = referrer_entries.at(0);
+  ukm_recorder().ExpectEntrySourceHasUrl(referrer_entry, referrer_url);
+  const int64_t flow_id =
+      *ukm_recorder().GetEntryMetric(referrer_entry, "FlowId");
+  // Expect entrypoint event to be accurate.
+  auto entrypoint_entries = ukm_recorder().GetEntriesByName(
+      kSuspectedTrackerFlowEntrypointUkmEventName);
+  ASSERT_EQ(entrypoint_entries.size(), 1u);
+  auto entrypoint_entry = entrypoint_entries.at(0);
+  ukm_recorder().ExpectEntrySourceHasUrl(entrypoint_entry, entrypoint_url);
+  ukm_recorder().ExpectEntryMetric(
+      entrypoint_entry, "ExitRedirectType",
+      static_cast<int64_t>(BtmRedirectType::kServer));
+  ukm_recorder().ExpectEntryMetric(entrypoint_entry, "FlowId", flow_id);
+  ukm_recorder().ExpectEntryMetric(entrypoint_entry, "HadActiveStorageAccess",
+                                   false);
   // It's not possible to interact with a page that server-redirected.
   ExpectNoUkmEventsOfType(kInFlowInteractionUkmEventName);
 }
@@ -624,6 +684,8 @@ IN_PROC_BROWSER_TEST_F(
       static_cast<int64_t>(BtmRedirectType::kServer));
   ukm_recorder().ExpectEntryMetric(first_entrypoint_entry, "FlowId",
                                    *first_flow_id);
+  ukm_recorder().ExpectEntryMetric(first_entrypoint_entry,
+                                   "HadActiveStorageAccess", true);
   auto second_entrypoint_entry = entrypoint_entries.at(1);
   ukm_recorder().ExpectEntrySourceHasUrl(second_entrypoint_entry,
                                          second_entrypoint_url);
@@ -632,6 +694,8 @@ IN_PROC_BROWSER_TEST_F(
       static_cast<int64_t>(BtmRedirectType::kServer));
   ukm_recorder().ExpectEntryMetric(second_entrypoint_entry, "FlowId",
                                    *second_flow_id);
+  ukm_recorder().ExpectEntryMetric(second_entrypoint_entry,
+                                   "HadActiveStorageAccess", true);
   // It's not possible to interact with a page that server-redirected.
   ExpectNoUkmEventsOfType(kInFlowInteractionUkmEventName);
 }
@@ -651,17 +715,17 @@ IN_PROC_BROWSER_TEST_P(
   GURL referrer_url =
       embedded_https_test_server_.GetURL(kSiteA, "/title1.html");
   ASSERT_TRUE(NavigateToURL(web_contents, referrer_url));
-  // Make A client-redirect to B, where B commits and writes cookies with JS.
+  // Make A client-redirect to B, where B commits, then writes and reads cookies
+  // with JS.
   GURL entrypoint_url =
       embedded_https_test_server_.GetURL(kSiteB, "/title1.html");
   ASSERT_TRUE(NavigateToURLFromRendererWithoutUserGesture(web_contents,
                                                           entrypoint_url));
   RenderFrameHost* frame = web_contents->GetPrimaryMainFrame();
-  FrameCookieAccessObserver observer(web_contents, frame,
-                                     CookieOperation::kChange);
-  EvalJsResult result = EvalJs(frame, "document.cookie = 'name=value;';",
-                               EXECUTE_SCRIPT_NO_USER_GESTURE);
-  observer.Wait();
+  ASSERT_TRUE(ExecJs(frame, "document.cookie = 'name=value;';",
+                     EXECUTE_SCRIPT_NO_USER_GESTURE));
+  ASSERT_TRUE(
+      ExecJs(frame, "document.cookie;", EXECUTE_SCRIPT_NO_USER_GESTURE));
   // Interact with B.
   SimulateUserActivation(web_contents);
   // TODO - crbug.com/389048223: Speed up this step
@@ -682,8 +746,8 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_EQ(referrer_entries.size(), 1u);
   auto referrer_entry = referrer_entries.at(0);
   ukm_recorder().ExpectEntrySourceHasUrl(referrer_entry, referrer_url);
-  const int64_t* flow_id =
-      ukm_recorder().GetEntryMetric(referrer_entry, "FlowId");
+  const int64_t flow_id =
+      *ukm_recorder().GetEntryMetric(referrer_entry, "FlowId");
   // Expect entrypoint event to be accurate.
   auto entrypoint_entries = ukm_recorder().GetEntriesByName(
       kSuspectedTrackerFlowEntrypointUkmEventName);
@@ -693,7 +757,9 @@ IN_PROC_BROWSER_TEST_P(
   ukm_recorder().ExpectEntryMetric(
       entrypoint_entry, "ExitRedirectType",
       static_cast<int64_t>(BtmRedirectType::kClient));
-  ukm_recorder().ExpectEntryMetric(entrypoint_entry, "FlowId", *flow_id);
+  ukm_recorder().ExpectEntryMetric(entrypoint_entry, "FlowId", flow_id);
+  ukm_recorder().ExpectEntryMetric(entrypoint_entry, "HadActiveStorageAccess",
+                                   true);
   // Expect InFlowInteraction to have been emitted appropriately.
   auto in_flow_interaction_entries =
       ukm_recorder().GetEntriesByName(kInFlowInteractionUkmEventName);
@@ -702,7 +768,7 @@ IN_PROC_BROWSER_TEST_P(
   ukm_recorder().ExpectEntrySourceHasUrl(in_flow_interaction_entry,
                                          entrypoint_url);
   ukm_recorder().ExpectEntryMetric(in_flow_interaction_entry, "FlowId",
-                                   *flow_id);
+                                   flow_id);
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -722,8 +788,8 @@ IN_PROC_BROWSER_TEST_P(
   RenderFrameHost* frame = web_contents->GetPrimaryMainFrame();
   FrameCookieAccessObserver observer(web_contents, frame,
                                      CookieOperation::kChange);
-  EvalJsResult result = EvalJs(frame, "document.cookie = 'name=value;';",
-                               EXECUTE_SCRIPT_NO_USER_GESTURE);
+  ASSERT_TRUE(ExecJs(frame, "document.cookie = 'name=value;';",
+                     EXECUTE_SCRIPT_NO_USER_GESTURE));
   observer.Wait();
   // Make B client-redirect to C, and wait for UKM to be recorded.
   base::RunLoop ukm_loop;
@@ -741,8 +807,8 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_EQ(referrer_entries.size(), 1u);
   auto referrer_entry = referrer_entries.at(0);
   ukm_recorder().ExpectEntrySourceHasUrl(referrer_entry, referrer_url);
-  const int64_t* flow_id =
-      ukm_recorder().GetEntryMetric(referrer_entry, "FlowId");
+  const int64_t flow_id =
+      *ukm_recorder().GetEntryMetric(referrer_entry, "FlowId");
   // Expect entrypoint event to be accurate.
   auto entrypoint_entries = ukm_recorder().GetEntriesByName(
       kSuspectedTrackerFlowEntrypointUkmEventName);
@@ -752,7 +818,9 @@ IN_PROC_BROWSER_TEST_P(
   ukm_recorder().ExpectEntryMetric(
       entrypoint_entry, "ExitRedirectType",
       static_cast<int64_t>(BtmRedirectType::kClient));
-  ukm_recorder().ExpectEntryMetric(entrypoint_entry, "FlowId", *flow_id);
+  ukm_recorder().ExpectEntryMetric(entrypoint_entry, "FlowId", flow_id);
+  ukm_recorder().ExpectEntryMetric(entrypoint_entry, "HadActiveStorageAccess",
+                                   true);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -783,23 +851,45 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     BtmNavigationFlowDetectorTest,
-    SuspectedTrackerFlowNotEmittedWhenRedirectDoesNotWriteCookies) {
+    SuspectedTrackerFlowEmittedWhenRedirectDoesNotAccessCookies) {
   // Visit A.
   WebContents* web_contents = GetActiveWebContents();
   GURL referrer_url =
       embedded_https_test_server_.GetURL(kSiteA, "/title1.html");
   ASSERT_TRUE(NavigateToURL(web_contents, referrer_url));
   // Visit B, which does not write a cookie in the server response, and also
-  // server redirects to C. Wait for cookie access to register.
+  // server redirects to C.
   GURL entrypoint_url = embedded_https_test_server_.GetURL(
       kSiteB, "/cross-site/c.test/title1.html");
   GURL final_url = embedded_https_test_server_.GetURL(kSiteC, "/title1.html");
+  base::RunLoop ukm_loop;
+  ukm_recorder().SetOnAddEntryCallback(
+      kSuspectedTrackerFlowEntrypointUkmEventName, ukm_loop.QuitClosure());
   ASSERT_TRUE(NavigateToURLFromRendererWithoutUserGesture(
       web_contents, entrypoint_url, final_url));
+  ukm_loop.Run();
 
-  ExpectNoUkmEventsOfType(kSuspectedTrackerFlowReferrerUkmEventName);
-  ExpectNoUkmEventsOfType(kSuspectedTrackerFlowEntrypointUkmEventName);
   ExpectNoUkmEventsOfType(kInFlowInteractionUkmEventName);
+  // Expect referrer event to be accurate.
+  auto referrer_entries = ukm_recorder().GetEntriesByName(
+      kSuspectedTrackerFlowReferrerUkmEventName);
+  ASSERT_EQ(referrer_entries.size(), 1u);
+  auto referrer_entry = referrer_entries.at(0);
+  ukm_recorder().ExpectEntrySourceHasUrl(referrer_entry, referrer_url);
+  const int64_t flow_id =
+      *ukm_recorder().GetEntryMetric(referrer_entry, "FlowId");
+  // Expect entrypoint event to be accurate.
+  auto entrypoint_entries = ukm_recorder().GetEntriesByName(
+      kSuspectedTrackerFlowEntrypointUkmEventName);
+  ASSERT_EQ(entrypoint_entries.size(), 1u);
+  auto entrypoint_entry = entrypoint_entries.at(0);
+  ukm_recorder().ExpectEntrySourceHasUrl(entrypoint_entry, entrypoint_url);
+  ukm_recorder().ExpectEntryMetric(
+      entrypoint_entry, "ExitRedirectType",
+      static_cast<int64_t>(BtmRedirectType::kServer));
+  ukm_recorder().ExpectEntryMetric(entrypoint_entry, "FlowId", flow_id);
+  ukm_recorder().ExpectEntryMetric(entrypoint_entry, "HadActiveStorageAccess",
+                                   false);
 }
 
 IN_PROC_BROWSER_TEST_F(BtmNavigationFlowDetectorTest,
@@ -827,7 +917,7 @@ IN_PROC_BROWSER_TEST_F(BtmNavigationFlowDetectorTest,
 }
 
 IN_PROC_BROWSER_TEST_F(BtmNavigationFlowDetectorTest,
-                       SuspectedTrackerFlowNotEmittedForSameSiteExit) {
+                       SuspectedTrackerFlowNotEmittedForSameSiteServerExit) {
   // Visit A.
   WebContents* web_contents = GetActiveWebContents();
   GURL referrer_url =
@@ -901,29 +991,6 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     BtmNavigationFlowDetectorTest,
-    SuspectedTrackerFlowNotEmittedWhenEntrypointDidNotAccessStorage) {
-  // Visit A.
-  WebContents* web_contents = GetActiveWebContents();
-  GURL referrer_url =
-      embedded_https_test_server_.GetURL(kSiteA, "/title1.html");
-  ASSERT_TRUE(NavigateToURL(web_contents, referrer_url));
-  // Make A client-redirect to B, where B commits but does not access cookies.
-  GURL entrypoint_url =
-      embedded_https_test_server_.GetURL(kSiteB, "/title1.html");
-  ASSERT_TRUE(NavigateToURLFromRendererWithoutUserGesture(web_contents,
-                                                          entrypoint_url));
-  // Make B client-redirect to C.
-  GURL final_url = embedded_https_test_server_.GetURL(kSiteC, "/title1.html");
-  ASSERT_TRUE(
-      NavigateToURLFromRendererWithoutUserGesture(web_contents, final_url));
-
-  ExpectNoUkmEventsOfType(kSuspectedTrackerFlowReferrerUkmEventName);
-  ExpectNoUkmEventsOfType(kSuspectedTrackerFlowEntrypointUkmEventName);
-  ExpectNoUkmEventsOfType(kInFlowInteractionUkmEventName);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    BtmNavigationFlowDetectorTest,
     SuspectedTrackerFlowNotEmittedForSameSiteClientSideExit) {
   // Visit A.
   WebContents* web_contents = GetActiveWebContents();
@@ -938,68 +1005,11 @@ IN_PROC_BROWSER_TEST_F(
   RenderFrameHost* frame = web_contents->GetPrimaryMainFrame();
   FrameCookieAccessObserver observer(web_contents, frame,
                                      CookieOperation::kChange);
-  EvalJsResult result = EvalJs(frame, "document.cookie = 'name=value;';",
-                               EXECUTE_SCRIPT_NO_USER_GESTURE);
+  ASSERT_TRUE(ExecJs(frame, "document.cookie = 'name=value;';",
+                     EXECUTE_SCRIPT_NO_USER_GESTURE));
   observer.Wait();
   // Make B client-redirect to another page on B.
   GURL final_url = embedded_https_test_server_.GetURL(kSiteB, "/title2.html");
-  ASSERT_TRUE(
-      NavigateToURLFromRendererWithoutUserGesture(web_contents, final_url));
-
-  ExpectNoUkmEventsOfType(kSuspectedTrackerFlowReferrerUkmEventName);
-  ExpectNoUkmEventsOfType(kSuspectedTrackerFlowEntrypointUkmEventName);
-  ExpectNoUkmEventsOfType(kInFlowInteractionUkmEventName);
-}
-
-IN_PROC_BROWSER_TEST_F(BtmNavigationFlowDetectorTest,
-                       SuspectedTrackerFlowNotEmittedForUserInitiatedReferral) {
-  // Visit A.
-  WebContents* web_contents = GetActiveWebContents();
-  GURL referrer_url =
-      embedded_https_test_server_.GetURL(kSiteA, "/title1.html");
-  ASSERT_TRUE(NavigateToURL(web_contents, referrer_url));
-  // Simulate a user-initiated navigation from A to B, where B commits and reads
-  // cookies with JS.
-  GURL entrypoint_url =
-      embedded_https_test_server_.GetURL(kSiteB, "/title1.html");
-  ASSERT_TRUE(NavigateToURLFromRenderer(web_contents, entrypoint_url));
-  RenderFrameHost* frame = web_contents->GetPrimaryMainFrame();
-  FrameCookieAccessObserver observer(web_contents, frame,
-                                     CookieOperation::kChange);
-  EvalJsResult result = EvalJs(frame, "document.cookie = 'name=value;';",
-                               EXECUTE_SCRIPT_NO_USER_GESTURE);
-  observer.Wait();
-  // Make B client-redirect to C.
-  GURL final_url = embedded_https_test_server_.GetURL(kSiteC, "/title1.html");
-  ASSERT_TRUE(
-      NavigateToURLFromRendererWithoutUserGesture(web_contents, final_url));
-
-  ExpectNoUkmEventsOfType(kSuspectedTrackerFlowReferrerUkmEventName);
-  ExpectNoUkmEventsOfType(kSuspectedTrackerFlowEntrypointUkmEventName);
-  ExpectNoUkmEventsOfType(kInFlowInteractionUkmEventName);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    BtmNavigationFlowDetectorTest,
-    SuspectedTrackerFlowNotEmittedForBrowserInitiatedReferral) {
-  // Visit A.
-  WebContents* web_contents = GetActiveWebContents();
-  GURL referrer_url =
-      embedded_https_test_server_.GetURL(kSiteA, "/title1.html");
-  ASSERT_TRUE(NavigateToURL(web_contents, referrer_url));
-  // Simulate a user-initiated navigation from A to B, where B commits and reads
-  // cookies with JS.
-  GURL entrypoint_url =
-      embedded_https_test_server_.GetURL(kSiteB, "/title1.html");
-  ASSERT_TRUE(NavigateToURL(web_contents, entrypoint_url));
-  RenderFrameHost* frame = web_contents->GetPrimaryMainFrame();
-  FrameCookieAccessObserver observer(web_contents, frame,
-                                     CookieOperation::kChange);
-  EvalJsResult result = EvalJs(frame, "document.cookie = 'name=value;';",
-                               EXECUTE_SCRIPT_NO_USER_GESTURE);
-  observer.Wait();
-  // Make B client-redirect to C.
-  GURL final_url = embedded_https_test_server_.GetURL(kSiteC, "/title1.html");
   ASSERT_TRUE(
       NavigateToURLFromRendererWithoutUserGesture(web_contents, final_url));
 
@@ -1657,7 +1667,7 @@ IN_PROC_BROWSER_TEST_F(BtmNavigationFlowDetectorTest,
   RenderFrameHost* frame = web_contents->GetPrimaryMainFrame();
   FrameCookieAccessObserver observer(web_contents, frame,
                                      CookieOperation::kChange);
-  EvalJsResult result = EvalJs(frame, "document.cookie = 'name=value;';");
+  ASSERT_TRUE(ExecJs(frame, "document.cookie = 'name=value;';"));
   observer.Wait();
   base::TimeDelta visit_duration = base::Seconds(1);
   test_clock_.Advance(visit_duration);
@@ -1791,7 +1801,7 @@ IN_PROC_BROWSER_TEST_F(
   GURL second_page_url =
       embedded_https_test_server_.GetURL(kSiteB, "/title1.html");
   ASSERT_TRUE(NavigateToURL(web_contents, second_page_url));
-  EvalJsResult result = EvalJs(web_contents, "const cookie = document.cookie;");
+  ASSERT_TRUE(ExecJs(web_contents, "const cookie = document.cookie;"));
   // Visit C.
   GURL third_page_url =
       embedded_https_test_server_.GetURL(kSiteC, "/title1.html");
@@ -1818,7 +1828,7 @@ IN_PROC_BROWSER_TEST_F(
   RenderFrameHost* frame = web_contents->GetPrimaryMainFrame();
   FrameCookieAccessObserver cookie_read_observer(web_contents, frame,
                                                  CookieOperation::kRead);
-  EvalJsResult result = EvalJs(frame, "const cookie = document.cookie;");
+  ASSERT_TRUE(ExecJs(frame, "const cookie = document.cookie;"));
   cookie_read_observer.Wait();
   // Visit C, and wait for UKM to be recorded.
   base::RunLoop ukm_loop;
@@ -1861,7 +1871,7 @@ IN_PROC_BROWSER_TEST_F(
   RenderFrameHost* frame = web_contents->GetPrimaryMainFrame();
   FrameCookieAccessObserver observer(web_contents, frame,
                                      CookieOperation::kChange);
-  EvalJsResult result = EvalJs(frame, "document.cookie = 'name=value;';");
+  ASSERT_TRUE(ExecJs(frame, "document.cookie = 'name=value;';"));
   observer.Wait();
   base::TimeDelta visit_duration = base::Hours(1);
   test_clock_.Advance(visit_duration);
@@ -1953,7 +1963,7 @@ IN_PROC_BROWSER_TEST_F(
   RenderFrameHost* frame = web_contents->GetPrimaryMainFrame();
   FrameCookieAccessObserver observer(web_contents, frame,
                                      CookieOperation::kChange);
-  EvalJsResult result = EvalJs(frame, "document.cookie = 'name=value;';");
+  ASSERT_TRUE(ExecJs(frame, "document.cookie = 'name=value;';"));
   observer.Wait();
   // Visit C with a renderer-initiated navigation, and wait for UKM to be
   // recorded.
@@ -1998,7 +2008,7 @@ IN_PROC_BROWSER_TEST_F(
   RenderFrameHost* frame = web_contents->GetPrimaryMainFrame();
   FrameCookieAccessObserver observer(web_contents, frame,
                                      CookieOperation::kChange);
-  EvalJsResult result = EvalJs(frame, "document.cookie = 'name=value;';");
+  ASSERT_TRUE(ExecJs(frame, "document.cookie = 'name=value;';"));
   observer.Wait();
   // Visit C with a browser-initiated navigation, and wait for UKM to be
   // recorded.
@@ -2042,7 +2052,7 @@ IN_PROC_BROWSER_TEST_F(BtmNavigationFlowDetectorTest,
   RenderFrameHost* frame = web_contents->GetPrimaryMainFrame();
   FrameCookieAccessObserver observer(web_contents, frame,
                                      CookieOperation::kChange);
-  EvalJsResult result = EvalJs(frame, "document.cookie = 'name=value;';");
+  ASSERT_TRUE(ExecJs(frame, "document.cookie = 'name=value;';"));
   observer.Wait();
   // Visit C with a renderer-initiated navigation, and wait for UKM to be
   // recorded.

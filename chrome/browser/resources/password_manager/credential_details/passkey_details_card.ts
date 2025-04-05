@@ -64,10 +64,10 @@ export class PasskeyDetailsCardElement extends PasskeyDetailsCardElementBase {
     ];
   }
 
-  passkey: chrome.passwordsPrivate.PasswordUiEntry;
-  private showEditPasskeyDialog_: boolean;
-  private showDeletePasskeyDialog_: boolean;
-  private infoLabelText_: string;
+  declare passkey: chrome.passwordsPrivate.PasswordUiEntry;
+  declare private showEditPasskeyDialog_: boolean;
+  declare private showDeletePasskeyDialog_: boolean;
+  declare private infoLabelText_: string;
 
   private getUsernameValue_(): string {
     return !this.passkey.username || this.passkey.username === '' ?

@@ -120,20 +120,9 @@ class GlicBorderView::BorderViewUpdater {
 
     auto* current_focus = glic_focused_contents_in_current_window_.get();
     bool focus_changed = previous_focus != current_focus;
-    if (border_view_->tester_ && focus_changed) [[unlikely]] {
-      auto current_focus_url = current_focus ? current_focus->GetURL() : GURL();
-      border_view_->tester_->FocusedTabChanged(current_focus_url);
-    }
 
     bool tab_switch = previous_focus &&
                       glic_focused_contents_in_current_window_ && focus_changed;
-    // OnFocusedTabChanged is dispatched after the previous focused WebContents
-    // is destroyed, making it no different than the focus changing to a
-    // different browser window. `border_view_->compositor_` helps
-    // differentiating between the two states.
-    bool focused_tab_destroyed = !previous_focus &&
-                                 glic_focused_contents_in_current_window_ &&
-                                 border_view_->compositor_;
     bool window_gained_focus =
         !previous_focus && glic_focused_contents_in_current_window_;
     bool window_lost_focus =
@@ -141,8 +130,6 @@ class GlicBorderView::BorderViewUpdater {
 
     if (tab_switch) {
       UpdateBorderView(UpdateBorderReason::kFocusedTabChanged_NoFocusChange);
-    } else if (focused_tab_destroyed) {
-      UpdateBorderView(UpdateBorderReason::kFocusedTabDestroyed_NoFocusChange);
     } else if (window_gained_focus) {
       UpdateBorderView(UpdateBorderReason::kFocusedTabChanged_GainFocus);
     } else if (window_lost_focus) {
@@ -171,9 +158,6 @@ class GlicBorderView::BorderViewUpdater {
     // Tab focus changes in the same window.
     kFocusedTabChanged_NoFocusChange,
 
-    // The focused tab is destroyed so the focus changes to a different tab.
-    kFocusedTabDestroyed_NoFocusChange,
-
     // Focus changes across different application windows.
     kFocusedTabChanged_GainFocus,
     kFocusedTabChanged_LostFocus,
@@ -199,8 +183,7 @@ class GlicBorderView::BorderViewUpdater {
         }
         break;
       }
-      case UpdateBorderReason::kFocusedTabChanged_NoFocusChange:
-      case UpdateBorderReason::kFocusedTabDestroyed_NoFocusChange: {
+      case UpdateBorderReason::kFocusedTabChanged_NoFocusChange: {
         if (ShouldShowBorderAnimation()) {
           border_view_->ResetEmphasisAndReplay();
         }
@@ -254,8 +237,6 @@ class GlicBorderView::BorderViewUpdater {
         return "IndicatorOff";
       case UpdateBorderReason::kFocusedTabChanged_NoFocusChange:
         return "TabFocusChange";
-      case UpdateBorderReason::kFocusedTabDestroyed_NoFocusChange:
-        return "TabDestroyed";
       case UpdateBorderReason::kFocusedTabChanged_GainFocus:
         return "WindowGainFocus";
       case UpdateBorderReason::kFocusedTabChanged_LostFocus:
@@ -624,7 +605,7 @@ void GlicBorderView::ResetEmphasisAndReplay() {
   }
 }
 
-float GlicBorderView::GetOpacity(base::TimeTicks timestamp) const {
+float GlicBorderView::GetOpacity(base::TimeTicks timestamp) {
   auto ramp_up_duration = skip_emphasis_animation_ ? kFastOpacityRampUpDuration
                                                    : kOpacityRampUpDuration;
   if (!first_ramp_down_frame_.is_null()) {
@@ -642,13 +623,15 @@ float GlicBorderView::GetOpacity(base::TimeTicks timestamp) const {
     float ramp_down_opacity =
         static_cast<float>(time_since_first_ramp_down_frame.InMillisecondsF() /
                            kOpacityRampDownDuration.InMillisecondsF());
-
-    return std::clamp(ramp_up_opacity - ramp_down_opacity, 0.0f, 1.0f);
+    ramp_down_opacity_ =
+        std::clamp(ramp_up_opacity - ramp_down_opacity, 0.0f, 1.0f);
+    return ramp_down_opacity_;
   } else {
     base::TimeDelta time_since_first_frame = timestamp - first_frame_time_;
     return std::clamp(
-        static_cast<float>(time_since_first_frame.InMillisecondsF() /
-                           ramp_up_duration.InMillisecondsF()),
+        static_cast<float>(ramp_down_opacity_ +
+                           (time_since_first_frame.InMillisecondsF() /
+                            ramp_up_duration.InMillisecondsF())),
         0.0f, 1.0f);
   }
 }

@@ -386,7 +386,6 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kServiceWorkerStaticRouter_AddRoutes,
           WebFeature::kServiceWorkerStaticRouter_Evaluate,
           WebFeature::kNavigatorCookieEnabledThirdParty,
-          WebFeature::kSimplifyLoadingTransparentPlaceholderImage,
           WebFeature::kFedCmContinueOnResponse,
           WebFeature::kSchedulingIsInputPending,
           WebFeature::kV8DocumentPictureInPicture_RequestWindow_Method,

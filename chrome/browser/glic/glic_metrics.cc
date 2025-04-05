@@ -26,7 +26,9 @@ namespace glic {
 namespace {
 
 constexpr char kHistogramGlicPanelPresentationTime[] =
-    "Glic.PanelPresentationTime";
+    "Glic.PanelPresentationTime2";
+
+constexpr static base::TimeDelta kLogSizeMetricsDelay = base::Minutes(3);
 
 enum class ModeOffset : int {
   kTextAttached = 1,
@@ -203,6 +205,23 @@ void GlicMetrics::OnGlicWindowOpen(bool attached,
       .SetAttached(attached)
       .SetInvocationSource(static_cast<int64_t>(source))
       .Record(ukm::UkmRecorder::Get());
+
+  const base::Time last_dismissed_time =
+      profile_->GetPrefs()->GetTime(prefs::kGlicWindowLastDismissedTime);
+  if (!last_dismissed_time.is_null()) {
+    base::TimeDelta elapsed_time_from_last_session =
+        base::Time::Now() - last_dismissed_time;
+    base::UmaHistogramCounts10M(
+        "Glic.PanelWebUi.ElapsedTimeBetweenSessions",
+        base::saturated_cast<int>(elapsed_time_from_last_session.InSeconds()));
+  }
+
+  // Update the last dismissed timestamp. The pref might not get updated on
+  // ungraceful shutdowns. As such, by updating the pref on opening the Glic
+  // window, the dismissal timestamp will get approximated by the opening
+  // timestamp, instead of the previously dismissal timestamp.
+  profile_->GetPrefs()->SetTime(prefs::kGlicWindowLastDismissedTime,
+                                base::Time::Now());
 }
 
 void GlicMetrics::OnGlicWindowOpenAndReady() {
@@ -228,6 +247,18 @@ void GlicMetrics::OnGlicWindowOpenAndReady() {
   }
 
   ResetGlicWindowPresentationTimingState();
+}
+
+void GlicMetrics::OnGlicWindowShown() {
+  GlicMetrics::OnGlicWindowSizeTimerFired();
+  glic_window_size_timer_.Start(
+      FROM_HERE, kLogSizeMetricsDelay,
+      base::BindRepeating(&GlicMetrics::OnGlicWindowSizeTimerFired,
+                          base::Unretained(this)));
+}
+
+void GlicMetrics::OnGlicWindowResize() {
+  base::RecordAction(base::UserMetricsAction("GlicPanelResized"));
 }
 
 void GlicMetrics::OnGlicWindowClose() {
@@ -262,6 +293,10 @@ void GlicMetrics::OnGlicWindowClose() {
   base::UmaHistogramCounts100("Glic.Session.AttachStateChanges",
                               attach_change_count_);
   attach_change_count_ = 0;
+
+  glic_window_size_timer_.Stop();
+  profile_->GetPrefs()->SetTime(prefs::kGlicWindowLastDismissedTime,
+                                base::Time::Now());
 }
 
 void GlicMetrics::SetControllers(GlicWindowController* window_controller,
@@ -319,6 +354,19 @@ void GlicMetrics::OnImpressionTimerFired() {
       glic::GlicLauncherConfiguration::GetGlobalHotkey();
   base::UmaHistogramBoolean("Glic.OsEntrypoint.Settings.ShortcutStatus",
                             saved_hotkey != ui::Accelerator());
+}
+
+void GlicMetrics::OnGlicWindowSizeTimerFired() {
+  // A 4K screen is 3840 or 4096 pixels wide and 2160 tall. Doubling this and
+  // rounding up to 10000 should give a reasonable upper bound on DIPs for
+  // both directions.
+  gfx::Size currentSize = window_controller_->GetSize();
+  base::UmaHistogramCounts10000("Glic.PanelWebUi.Size.Width",
+                                currentSize.width());
+  base::UmaHistogramCounts10000("Glic.PanelWebUi.Size.Height",
+                                currentSize.height());
+  base::UmaHistogramCounts10M("Glic.PanelWebUi.Size.Area",
+                              currentSize.GetArea());
 }
 
 void GlicMetrics::OnMaybeEnabledAndConsentForProfileChanged() {

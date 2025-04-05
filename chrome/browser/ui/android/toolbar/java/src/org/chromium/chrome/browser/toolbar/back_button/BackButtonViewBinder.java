@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.toolbar.back_button;
 
+import android.view.View;
 import android.widget.ImageButton;
 
 import androidx.core.widget.ImageViewCompat;
@@ -53,10 +54,18 @@ class BackButtonViewBinder {
                         listener.run();
                         return true;
                     });
+        } else if (key == BackButtonProperties.KEY_LISTENER) {
+            final var listener = model.get(BackButtonProperties.KEY_LISTENER);
+            button.setOnKeyListener(listener);
         } else if (key == BackButtonProperties.IS_ENABLED) {
             button.setEnabled(model.get(BackButtonProperties.IS_ENABLED));
         } else if (key == BackButtonProperties.IS_FOCUSABLE) {
             button.setFocusable(model.get(BackButtonProperties.IS_FOCUSABLE));
+        } else if (key == BackButtonProperties.IS_VISIBLE) {
+            button.setVisibility(
+                    model.get(BackButtonProperties.IS_VISIBLE) ? View.VISIBLE : View.GONE);
+        } else if (key == BackButtonProperties.ALPHA) {
+            button.setAlpha(model.get(BackButtonProperties.ALPHA));
         } else {
             assert false : String.format("Unsupported property key %s", key.toString());
         }

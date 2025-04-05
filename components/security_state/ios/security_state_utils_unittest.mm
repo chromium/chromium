@@ -46,7 +46,11 @@ TEST_F(SecurityStateUtilsTest, GetMaliciousContentStatus) {
            {SB_THREAT_TYPE_SAVED_PASSWORD_REUSE,
             SB_THREAT_TYPE_SIGNED_IN_SYNC_PASSWORD_REUSE,
             SB_THREAT_TYPE_SIGNED_IN_NON_SYNC_PASSWORD_REUSE,
-            SB_THREAT_TYPE_ENTERPRISE_PASSWORD_REUSE, SB_THREAT_TYPE_BILLING}}};
+            SB_THREAT_TYPE_ENTERPRISE_PASSWORD_REUSE, SB_THREAT_TYPE_BILLING}},
+          {security_state::MALICIOUS_CONTENT_STATUS_MANAGED_POLICY_BLOCK,
+           {SB_THREAT_TYPE_MANAGED_POLICY_BLOCK}},
+          {security_state::MALICIOUS_CONTENT_STATUS_MANAGED_POLICY_WARN,
+           {SB_THREAT_TYPE_MANAGED_POLICY_WARN}}};
 
   for (auto& pair : threats_types_for_content_statuses) {
     security_state::MaliciousContentStatus status = pair.first;

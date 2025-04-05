@@ -137,11 +137,9 @@ int ImpressionsCount(const base::Value::List& impressions,
           safety_check_prefs::kSafetyCheckInMagicStackDisabledPref,
           &_userPrefChangeRegistrar);
 
-      if (IsHomeCustomizationEnabled()) {
-        _prefObserverBridge->ObserveChangesForPreference(
-            prefs::kHomeCustomizationMagicStackSafetyCheckEnabled,
-            &_userPrefChangeRegistrar);
-      }
+      _prefObserverBridge->ObserveChangesForPreference(
+          prefs::kHomeCustomizationMagicStackSafetyCheckEnabled,
+          &_userPrefChangeRegistrar);
 
       _safetyCheckState = [self initialSafetyCheckState];
 
@@ -369,7 +367,6 @@ int ImpressionsCount(const base::Value::List& impressions,
                  prefs::kHomeCustomizationMagicStackSafetyCheckEnabled &&
              !_userState->GetBoolean(
                  prefs::kHomeCustomizationMagicStackSafetyCheckEnabled)) {
-    CHECK(IsHomeCustomizationEnabled());
     [self.delegate removeSafetyCheckModule];
   }
 }

@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_table_view_controller.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #import "components/autofill/core/browser/field_types.h"
@@ -503,6 +505,12 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 
 - (void)didTapButton {
   CHECK(!_settingsView);
+  if (_addManualAddress) {
+    base::RecordAction(
+        base::UserMetricsAction("AddAddressManually_AddressSaved"));
+  } else if (_hasSaveButton) {
+    base::RecordAction(base::UserMetricsAction("AddressInfobar_AddressSaved"));
+  }
   [_delegate didSaveProfileFromModal];
 }
 

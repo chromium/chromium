@@ -276,7 +276,7 @@ ManagePasswordsView::CreateMovePasswordFooterView() {
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
           vector_icons::kSaveCloudIcon, ui::kColorIcon,
           layout_provider->GetDistanceMetric(
-              DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE))));
+              views::DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE))));
   icon_view->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
   icon_view->SetProperty(
       views::kMarginsKey,

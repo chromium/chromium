@@ -131,6 +131,7 @@ void TaskManagerSearchBarView::OnInputChanged() {
 void TaskManagerSearchBarView::OnClearPressed() {
   input_->SetText(u"");
   clear_->SetVisible(false);
+  input_->RequestFocus();
 }
 
 bool TaskManagerSearchBarView::GetClearButtonVisibleStatusForTesting() const {

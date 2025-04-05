@@ -481,6 +481,12 @@ TEST_F(VisitedURLRankingServiceImplTest, RecordAction) {
   base::HistogramTester histogram_tester;
   InitService(/*data_fetchers=*/{}, /*transformers=*/{});
 
+  base::FieldTrialParams params = {
+      {features::kVisitedURLRankingRecordActions.name, "true"}};
+  base::test::ScopedFeatureList features;
+  features.InitWithFeaturesAndParameters(
+      {{features::kVisitedURLRankingService, params}}, {});
+
   std::vector<
       std::pair<segmentation_platform::UkmEventHash,
                 std::map<segmentation_platform::UkmMetricHash, int64_t>>>
@@ -528,6 +534,12 @@ TEST_F(VisitedURLRankingServiceImplTest, RecordAction) {
 TEST_F(VisitedURLRankingServiceImplTest, RecordActionTimeout) {
   base::HistogramTester histogram_tester;
   InitService(/*data_fetchers=*/{}, /*transformers=*/{});
+
+  base::FieldTrialParams params = {
+      {features::kVisitedURLRankingRecordActions.name, "true"}};
+  base::test::ScopedFeatureList features;
+  features.InitWithFeaturesAndParameters(
+      {{features::kVisitedURLRankingService, params}}, {});
 
   std::vector<
       std::pair<segmentation_platform::UkmEventHash,

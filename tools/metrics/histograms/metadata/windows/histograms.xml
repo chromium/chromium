@@ -225,6 +225,16 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Windows.OpenWithLauncherResult" enum="OpenWithLauncherResult"
+    expires_after="2026-03-28">
+  <owner>jessemckenna@google.com</owner>
+  <owner>davidbienvenu@chromium.org</owner>
+  <summary>
+    Records the result of opening the Settings app via the IOpenWithLauncher COM
+    interface.
+  </summary>
+</histogram>
+
 <histogram name="Windows.ParallelDllLoadingEnabled" enum="BooleanEnabled"
     expires_after="never">
 <!-- expires-never: Needed to measure third party incompatibilities on Windows which could happen at any time. -->

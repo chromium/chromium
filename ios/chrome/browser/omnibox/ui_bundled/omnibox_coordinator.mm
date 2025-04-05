@@ -22,22 +22,20 @@
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_constants.h"
 #import "ios/chrome/browser/omnibox/model/autocomplete_result_wrapper.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_pedal_annotator.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_text_controller.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/keyboard_assist/omnibox_assistive_keyboard_delegate.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/keyboard_assist/omnibox_assistive_keyboard_mediator.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/keyboard_assist/omnibox_assistive_keyboard_views.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/keyboard_assist/omnibox_keyboard_accessory_view.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_mediator.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/omnibox_return_key_forwarding_delegate.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_text_field_ios.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_text_field_paste_delegate.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_util.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_view_controller.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_view_ios.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_pedal_annotator.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_popup_coordinator.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_popup_view_ios.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/pedal_section_extractor.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/text_field_view_containing.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/zero_suggest_prefetch_helper.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
@@ -72,9 +70,6 @@
 
 // The paste delegate for the omnibox that prevents multipasting.
 @property(nonatomic, strong) OmniboxTextFieldPasteDelegate* pasteDelegate;
-
-// The return delegate.
-@property(nonatomic, strong) ForwardingReturnDelegate* returnDelegate;
 
 // Helper that starts ZPS prefetch when the user opens a NTP.
 @property(nonatomic, strong)
@@ -255,7 +250,6 @@
   [self.popupCoordinator stop];
   self.popupCoordinator = nil;
 
-  self.returnDelegate.acceptDelegate = nil;
   _editView.reset();
   self.viewController = nil;
   self.mediator.templateURLService = nullptr;  // Unregister the observer.
@@ -267,7 +261,6 @@
   _keyboardMediator = nil;
   self.keyboardAccessoryView = nil;
   self.mediator = nil;
-  self.returnDelegate = nil;
   [self.zeroSuggestPrefetchHelper disconnect];
   self.zeroSuggestPrefetchHelper = nil;
 
@@ -352,12 +345,7 @@
       omniboxAutocompleteController:_omniboxAutocompleteController];
   coordinator.presenterDelegate = presenterDelegate;
 
-  self.returnDelegate = [[ForwardingReturnDelegate alloc] init];
-  self.returnDelegate.acceptDelegate = _editView.get();
-
   coordinator.popupMatchPreviewDelegate = self.mediator;
-  coordinator.acceptReturnDelegate = self.returnDelegate;
-  self.viewController.returnKeyDelegate = coordinator.popupReturnDelegate;
   self.viewController.popupKeyboardDelegate = coordinator.KeyboardDelegate;
 
   _popupCoordinator = coordinator;

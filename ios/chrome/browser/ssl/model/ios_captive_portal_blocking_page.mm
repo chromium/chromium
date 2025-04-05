@@ -77,10 +77,8 @@ void IOSCaptivePortalBlockingPage::PopulateInterstitialStrings(
   load_time_data.Set("closeDetails", "");
   load_time_data.Set("explanationParagraph", "");
   load_time_data.Set("finalParagraph", "");
-  load_time_data.Set("recurrentErrorParagraph", "");
   load_time_data.Set("optInLink", "");
   load_time_data.Set("enhancedProtectionMessage", "");
-  load_time_data.Set("show_recurrent_error_paragraph", false);
 }
 
 void IOSCaptivePortalBlockingPage::HandleCommand(

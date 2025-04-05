@@ -30,7 +30,7 @@ export class SidePanelGhostLoaderElement extends PolymerElement {
   }
 
   // Whether the loading results should render in dark mode.
-  private darkMode: boolean;
+  declare private darkMode: boolean;
 }
 
 declare global {

@@ -154,7 +154,8 @@ TEST_F(D3D12VideoEncodeAV1DelegateTest, EncodeFrame) {
 
     auto result = encoder_delegate_->Encode(
         input_frame.Get(), 0 /*input_frame_subresource*/,
-        gfx::ColorSpace::CreateSRGB(), bitstream_buffer, false);
+        gfx::ColorSpace::CreateSRGB(), bitstream_buffer,
+        VideoEncoder::EncodeOptions());
     EXPECT_EQ(result.has_value(), true);
     auto [bitstream_buffer_id, metadata] = std::move(result).value();
     EXPECT_EQ(bitstream_buffer_id, bitstream_buffer.id());

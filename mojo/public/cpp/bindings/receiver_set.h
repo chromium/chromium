@@ -340,6 +340,24 @@ class ReceiverSetBase {
     return pending_receivers;
   }
 
+  // Similar to the method above, but it also includes the receiver's context.
+  std::vector<std::pair<PendingType, Context>> TakeReceiversWithContext() {
+    static_assert(ContextTraits::SupportsContext(),
+                  "TakeReceiversWithContext() requires non-void context type.");
+
+    ReceiverSetState::EntryMap entries;
+    std::swap(state_.entries(), entries);
+    std::vector<std::pair<PendingType, Context>> pending_receivers;
+    for (auto& entry : entries) {
+      ReceiverEntry& receiver =
+          static_cast<ReceiverEntry&>(entry.second->receiver());
+      pending_receivers.emplace_back(
+          receiver.Unbind(),
+          std::move(*static_cast<Context*>(receiver.GetContext())));
+    }
+    return pending_receivers;
+  }
+
   // Removes all receivers from the set, effectively closing all of them. This
   // ReceiverSet will not schedule or execute any further method invocations or
   // disconnection notifications until a new receiver is added to the set.

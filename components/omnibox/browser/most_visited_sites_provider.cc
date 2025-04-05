@@ -459,6 +459,14 @@ void MostVisitedSitesProvider::DeleteMatch(const AutocompleteMatch& match) {
     DCHECK(history_service);
     DCHECK(match.destination_url.is_valid());
     history_service->DeleteURLs({match.destination_url});
+
+    // Delete site from cache if prefetching is enabled.
+    cached_sites_.erase(
+        std::remove_if(cached_sites_.begin(), cached_sites_.end(),
+                       [&match](const history::MostVisitedURL& site) {
+                         return site.url == match.destination_url;
+                       }),
+        cached_sites_.end());
   } else {
     BlockURL(match.destination_url);
   }
@@ -509,6 +517,11 @@ void MostVisitedSitesProvider::DeleteMatchElement(
   if (tiles_to_update.empty()) {
     matches_.clear();
   }
+}
+
+history::MostVisitedURLList MostVisitedSitesProvider::GetCachedSitesForTesting()
+    const {
+  return cached_sites_;
 }
 
 void MostVisitedSitesProvider::RequestSitesFromHistoryService(

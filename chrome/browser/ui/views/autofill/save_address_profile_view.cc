@@ -184,7 +184,7 @@ SaveAddressProfileView::SaveAddressProfileView(
           .SetOrientation(views::BoxLayout::Orientation::kVertical)
           .SetBetweenChildSpacing(
               ChromeLayoutProvider::Get()->GetDistanceMetric(
-                  DISTANCE_CONTROL_LIST_VERTICAL))
+                  views::DISTANCE_CONTROL_LIST_VERTICAL))
           .Build());
 
   edit_button_ = details_section->AddChildView(CreateEditButton(

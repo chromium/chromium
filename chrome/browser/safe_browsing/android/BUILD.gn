@@ -7,7 +7,10 @@ import("//components/safe_browsing/buildflags.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 
 generate_jni("jni_headers") {
-  sources = [ "java/src/org/chromium/chrome/browser/safe_browsing/SafeBrowsingBridge.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/safe_browsing/AdvancedProtectionStatusManagerAndroidBridge.java",
+    "java/src/org/chromium/chrome/browser/safe_browsing/SafeBrowsingBridge.java",
+  ]
 }
 
 source_set("android") {
@@ -42,10 +45,40 @@ source_set("android") {
   }
 }
 
+generate_jni("test_support_jni") {
+  testonly = true
+  sources = [ "java/src/org/chromium/chrome/browser/safe_browsing/AdvancedProtectionStatusManagerTestUtil.java" ]
+}
+
+android_library("test_support_java") {
+  srcjar_deps = [ ":test_support_jni" ]
+  testonly = true
+  sources = [ "java/src/org/chromium/chrome/browser/safe_browsing/AdvancedProtectionStatusManagerTestUtil.java" ]
+  deps = [
+    "//base:base_java",
+    "//base:service_loader_java",
+    "//components/permissions/android:java",
+    "//third_party/jni_zero:jni_zero_java",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "advanced_protection_status_manager_test_util.cc",
+    "advanced_protection_status_manager_test_util.h",
+  ]
+  deps = [
+    ":test_support_jni",
+    "//base",
+  ]
+}
+
 android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/safe_browsing/AdvancedProtectionCoordinator.java",
     "java/src/org/chromium/chrome/browser/safe_browsing/AdvancedProtectionMediator.java",
+    "java/src/org/chromium/chrome/browser/safe_browsing/AdvancedProtectionStatusManagerAndroidBridge.java",
     "java/src/org/chromium/chrome/browser/safe_browsing/SafeBrowsingBridge.java",
     "java/src/org/chromium/chrome/browser/safe_browsing/settings/EnhancedProtectionSettingsFragment.java",
     "java/src/org/chromium/chrome/browser/safe_browsing/settings/NoProtectionConfirmationDialog.java",

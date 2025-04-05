@@ -9,17 +9,18 @@ use crate::inherit::{
     find_inherited_privilege_group, find_inherited_security_critical_flag,
     find_inherited_shipped_flag,
 };
-use crate::metadata_util::{metadata_nodes, metadata_packages};
 use crate::paths::{self, get_vendor_dir_for_package};
 use crate::readme;
 use crate::util::{
     create_dirs_if_needed, get_guppy_package_graph, init_handlebars, remove_checksums_from_lock,
-    run_cargo_metadata, run_command, without_cargo_config_toml,
+    run_command, without_cargo_config_toml,
 };
 use crate::vet::create_vet_config;
 use crate::VendorCommandArgs;
 
 use anyhow::{format_err, Context, Result};
+use guppy::graph::PackageMetadata;
+use itertools::Itertools;
 
 use std::collections::{HashMap, HashSet};
 use std::path::{Path, PathBuf};
@@ -27,37 +28,33 @@ use std::path::{Path, PathBuf};
 pub fn vendor(args: VendorCommandArgs, paths: &paths::ChromiumPaths) -> Result<()> {
     // Vendoring needs to work with real crates.io, not with our locally vendored
     // crates.
-    without_cargo_config_toml(paths, || vendor_impl(args, paths))?;
+    without_cargo_config_toml(paths, || download_crates(&args, paths))?;
+
+    // Updating metadata should be performed on the locally vendored crates
+    update_vendored_metadata(&args, paths)?;
+
     println!("Vendor successful: run gnrt gen to generate GN rules.");
     Ok(())
 }
 
-fn vendor_impl(args: VendorCommandArgs, paths: &paths::ChromiumPaths) -> Result<()> {
+fn download_crates(args: &VendorCommandArgs, paths: &paths::ChromiumPaths) -> Result<()> {
     let config_file_path = paths.third_party_config_file;
     let config = config::BuildConfig::from_path(config_file_path)?;
 
-    // `unwrap` ok, because `BuildConfig::from_path` would have failed if there is
-    // no parent.
-    let third_party_dir = paths.third_party_config_file.parent().unwrap();
-    let readme_template_path = third_party_dir.join(&config.gn_config.readme_file_template);
-    let readme_handlebars = init_handlebars(&readme_template_path).context("init_handlebars")?;
-    let vet_template_path = third_party_dir.join(&config.vet_config.config_template);
-    let vet_handlebars = init_handlebars(&vet_template_path).context("init_handlebars")?;
-
     println!("Vendoring crates from {}", paths.third_party_cargo_root.display());
 
-    let metadata =
-        run_cargo_metadata(paths.third_party_cargo_root.into(), Vec::new(), HashMap::new())
-            .context("run_cargo_metadata")?;
-    let packages: HashMap<_, _> = metadata_packages(&metadata)?;
-    let nodes: HashMap<_, _> = metadata_nodes(&metadata);
-    let root = metadata.resolve.as_ref().unwrap().root.as_ref().unwrap();
+    let graph =
+        get_guppy_package_graph(paths.third_party_cargo_root.into(), vec![], HashMap::new())?;
 
-    let guppy_resolved_package_ids = get_guppy_resolved_package_ids(&config, paths)?;
-    let is_removed = |cargo_package_id: &cargo_metadata::PackageId| -> bool {
-        let p = packages[cargo_package_id];
-        config.resolve.remove_crates.contains(&p.name)
-            || !guppy_resolved_package_ids.contains(&p.into())
+    let guppy_resolved_package_ids: HashSet<deps::PackageId> =
+        deps::collect_dependencies(&graph, &config.resolve.root, &config)?
+            .iter()
+            .map(|p| p.into())
+            .collect();
+    let is_removed = |guppy_package_id: &guppy::PackageId| -> bool {
+        let p = graph.metadata(&guppy_package_id).unwrap();
+        config.resolve.remove_crates.contains(p.name())
+            || !guppy_resolved_package_ids.contains(&(&p).into())
     };
 
     // Running cargo commands against actual crates.io will put checksum into
@@ -68,7 +65,7 @@ fn vendor_impl(args: VendorCommandArgs, paths: &paths::ChromiumPaths) -> Result<
     remove_checksums_from_lock(paths.third_party_cargo_root)?;
 
     {
-        let package_names = packages.values().map(|p| &p.name).collect::<HashSet<_>>();
+        let package_names = graph.packages().map(|p| p.name().to_string()).collect::<HashSet<_>>();
         for name in config.per_crate_config.keys() {
             if !package_names.contains(name) {
                 return Err(format_err!(
@@ -94,33 +91,39 @@ fn vendor_impl(args: VendorCommandArgs, paths: &paths::ChromiumPaths) -> Result<
             None
         })
         .collect();
-    for p in packages.values() {
-        let crate_dir = get_vendor_dir_for_package(&p.name, &p.version);
+    for p in graph.packages() {
+        // Skip if it's the workspace package, since this only exists to have a
+        // cargo context.
+        if p.in_workspace() {
+            continue;
+        }
+
+        let crate_dir = get_vendor_dir_for_package(p.name(), p.version());
 
         // Keep directories corresponding to packages from the dependency tree.
         dirs_to_remove.remove(&crate_dir);
 
         let is_already_vendored = get_package_id_from_vendored_dir(&vendor_dir.join(&crate_dir))
-            .filter(|vendored| vendored.name() == p.name && *vendored.version() == p.version)
+            .filter(|vendored| vendored.name() == p.name() && vendored.version() == p.version())
             .is_some();
         if is_already_vendored {
             continue;
         }
 
-        if is_removed(&p.id) {
+        if is_removed(p.id()) {
             println!("Generating placeholder for removed crate {}", &crate_dir);
-            generate_placeholder_crate(p, &packages, &nodes, paths, &config)?;
+            generate_placeholder_crate(p, paths, &config)?;
         } else {
             println!("Downloading {}", &crate_dir);
-            download_crate(&p.name, &p.version, paths)?;
+            download_crate(p.name(), p.version(), paths)?;
             let skip_patches = match &args.no_patches {
-                Some(v) => v.is_empty() || v.contains(&p.name),
+                Some(v) => v.is_empty() || v.iter().find(|x| *x == p.name()).is_some(),
                 None => false,
             };
             if skip_patches {
                 log::warn!("Skipped applying patches for {}", &crate_dir);
             } else {
-                apply_patches(&p.name, &p.version, paths)?
+                apply_patches(p.name(), p.version(), paths)?
             }
         }
     }
@@ -129,19 +132,60 @@ fn vendor_impl(args: VendorCommandArgs, paths: &paths::ChromiumPaths) -> Result<
         std::fs::remove_dir_all(paths.third_party_cargo_root.join("vendor").join(d))
             .with_context(|| format!("removing {}", d))?
     }
+    Ok(())
+}
 
-    let find_group = |id| find_inherited_privilege_group(id, root, &packages, &nodes, &config);
+fn update_vendored_metadata(args: &VendorCommandArgs, paths: &paths::ChromiumPaths) -> Result<()> {
+    let config_file_path = paths.third_party_config_file;
+    let config = config::BuildConfig::from_path(config_file_path)?;
+
+    // `unwrap` ok, because `BuildConfig::from_path` would have failed if there is
+    // no parent.
+    let third_party_dir = paths.third_party_config_file.parent().unwrap();
+    let readme_template_path = third_party_dir.join(&config.gn_config.readme_file_template);
+    let readme_handlebars = init_handlebars(&readme_template_path).context("init_handlebars")?;
+    let vet_template_path = third_party_dir.join(&config.vet_config.config_template);
+    let vet_handlebars = init_handlebars(&vet_template_path).context("init_handlebars")?;
+
+    // Fetch the package graph again based on the locally vendored crates, to ensure
+    // that locally applied patches which impact the package graph are considered.
+    // Although --offline is passed, this function also expects to be executed
+    // with a cargo config.toml that uses the locally vendored crates.
+    let graph = get_guppy_package_graph(
+        paths.third_party_cargo_root.into(),
+        vec!["--offline".to_string()],
+        HashMap::new(),
+    )?;
+    let root = match graph.query_workspace().initials().exactly_one() {
+        Ok(root) => root,
+        Err(_) => anyhow::bail!("cargo workspace must contain exactly one package"),
+    }
+    .id();
+
+    let find_group = |id| find_inherited_privilege_group(id, root, &graph, &config);
     let find_security_critical =
-        |id| find_inherited_security_critical_flag(id, root, &packages, &nodes, &config);
-    let find_shipped = |id| find_inherited_shipped_flag(id, root, &packages, &nodes, &config);
+        |id| find_inherited_security_critical_flag(id, root, &graph, &config);
+    let find_shipped = |id| find_inherited_shipped_flag(id, root, &graph, &config);
+
+    let guppy_resolved_package_ids: HashSet<deps::PackageId> =
+        deps::collect_dependencies(&graph, &config.resolve.root, &config)?
+            .iter()
+            .map(|p| p.into())
+            .collect();
+    let is_removed = |guppy_package_id: &guppy::PackageId| -> bool {
+        let p = graph.metadata(&guppy_package_id).unwrap();
+        config.resolve.remove_crates.contains(p.name())
+            || !guppy_resolved_package_ids.contains(&(&p).into())
+    };
+
+    let filter_removed = |meta: &PackageMetadata| {
+        !config.resolve.remove_crates.contains(meta.name())
+            && guppy_resolved_package_ids.contains(&meta.into())
+    };
 
     let all_readme_files: HashMap<PathBuf, readme::ReadmeFile> =
         readme::readme_files_from_packages(
-            packages
-                .values()
-                // Don't generate README files for removed packages.
-                .filter(|p| !is_removed(&p.id))
-                .copied(),
+            graph.packages().filter(filter_removed),
             paths,
             &config,
             find_group,
@@ -178,7 +222,7 @@ fn vendor_impl(args: VendorCommandArgs, paths: &paths::ChromiumPaths) -> Result<
     }
 
     let vet_config_toml =
-        create_vet_config(packages.values().copied(), is_removed, find_group, find_shipped)?;
+        create_vet_config(graph.packages(), is_removed, find_group, find_shipped)?;
 
     for dir in all_readme_files.keys() {
         create_dirs_if_needed(dir).context(format!("dir: {}", dir.display()))?;
@@ -228,25 +272,6 @@ fn vendor_impl(args: VendorCommandArgs, paths: &paths::ChromiumPaths) -> Result<
             .with_context(|| format!("{}", file_path.to_string_lossy()))?;
     }
     Ok(())
-}
-
-fn get_guppy_resolved_package_ids(
-    config: &config::BuildConfig,
-    paths: &paths::ChromiumPaths,
-) -> Result<HashSet<deps::PackageId>> {
-    // `gnrt vendor` (unlike `gnrt gen`) doesn't need to pass `--offline` nor
-    // `--locked` to `cargo`.
-    let cargo_extra_options = vec![];
-    let dependencies = deps::collect_dependencies(
-        &get_guppy_package_graph(
-            paths.third_party_cargo_root.into(),
-            cargo_extra_options,
-            HashMap::new(),
-        )?,
-        &config.resolve.root,
-        config,
-    )?;
-    Ok(dependencies.iter().map(|p| p.into()).collect())
 }
 
 fn download_crate(
@@ -383,13 +408,8 @@ struct PlaceholderDependency<'a> {
 }
 
 fn get_placeholder_crate_metadata<'a>(
-    package_id: &'a cargo_metadata::PackageId,
-    packages: &'a HashMap<&cargo_metadata::PackageId, &cargo_metadata::Package>,
-    nodes: &HashMap<&'a cargo_metadata::PackageId, &'a cargo_metadata::Node>,
+    package: guppy::graph::PackageMetadata<'a>,
 ) -> PlaceholderCrate<'a> {
-    let node = nodes[package_id];
-    let package = packages[package_id];
-
     // We need to collect all dependencies of the crate so they can be
     // reproduced in the placeholder Cargo.toml file. Otherwise the
     // Cargo.lock may be considered out of date and cargo will try
@@ -408,44 +428,33 @@ fn get_placeholder_crate_metadata<'a>(
     // information about dependencies. We grab that verbatim from the
     // Cargo.toml through the [`cargo_metadata::Dependency`] type which
     // we call `feature_dep_info`.
-    let dependencies = node
-        .deps
-        .iter()
-        .filter(|d| {
-            d.dep_kinds.iter().any(|k| {
-                k.kind == cargo_metadata::DependencyKind::Build
-                    || k.kind == cargo_metadata::DependencyKind::Normal
-            })
-        })
-        .map(|d| {
-            // Translate `proc_macro2` (dependency name) into `proc-macro2` (package name).
-            let dep_name = &packages[&d.pkg].name;
-            let feature_dep_info =
-                package.dependencies.iter().find(|f| f.name == *dep_name).unwrap_or_else(|| {
-                    panic!(
-                        "`{}` (`{}`) is not listed as a dependency of `{}-{}`",
-                        dep_name, d.pkg, package.name, package.version,
-                    )
-                });
+    let mut dependencies: Vec<_> = package
+        .direct_links()
+        .filter(|link| !link.dev_only())
+        .map(|link| {
+            let feature_dep_info = [link.normal(), link.build()]
+                .into_iter()
+                .filter(|req| req.is_present())
+                .next()
+                .unwrap();
             PlaceholderDependency {
-                name: dep_name,
-                version: feature_dep_info.req.to_string(),
-                default_features: feature_dep_info.uses_default_features,
-                features: feature_dep_info.features.iter().map(String::as_str).collect(),
+                name: link.to().name(),
+                version: link.version_req().to_string(),
+                default_features: !feature_dep_info.default_features().is_never(),
+                features: feature_dep_info.features().collect(),
             }
         })
         .collect();
+    dependencies.sort_unstable_by(|left, right| left.name.cmp(right.name));
 
-    let mut features = package.features.keys().cloned().collect::<Vec<String>>();
+    let mut features: Vec<_> = package.named_features().map(str::to_string).collect();
     features.sort_unstable();
 
-    PlaceholderCrate { name: &package.name, version: &package.version, dependencies, features }
+    PlaceholderCrate { name: package.name(), version: package.version(), dependencies, features }
 }
 
 fn generate_placeholder_crate(
-    package: &cargo_metadata::Package,
-    packages: &HashMap<&cargo_metadata::PackageId, &cargo_metadata::Package>,
-    nodes: &HashMap<&cargo_metadata::PackageId, &cargo_metadata::Node>,
+    package: guppy::graph::PackageMetadata<'_>,
     paths: &paths::ChromiumPaths,
     config: &config::BuildConfig,
 ) -> Result<()> {
@@ -465,7 +474,7 @@ fn generate_placeholder_crate(
         init_handlebars(&removed_librs_template_path).context("loading removed_librs_template")?;
 
     let vendor_dir = paths.third_party_cargo_root.join("vendor");
-    let crate_dir = vendor_dir.join(get_vendor_dir_for_package(&package.name, &package.version));
+    let crate_dir = vendor_dir.join(get_vendor_dir_for_package(package.name(), package.version()));
     create_dirs_if_needed(&crate_dir).context("creating crate dir")?;
     for x in std::fs::read_dir(&crate_dir)? {
         let entry = x?;
@@ -478,7 +487,7 @@ fn generate_placeholder_crate(
         }
     }
 
-    let placeholder_crate = get_placeholder_crate_metadata(&package.id, packages, nodes);
+    let placeholder_crate = get_placeholder_crate_metadata(package);
 
     {
         let rendered = removed_cargo_template.render("template", &placeholder_crate)?;
@@ -504,7 +513,7 @@ fn generate_placeholder_crate(
     }
 
     std::fs::write(crate_dir.join(".cargo-checksum.json"), "{\"files\":{}}\n")
-        .with_context(|| format!("writing .cargo-checksum.json for crate {}", package.name))?;
+        .with_context(|| format!("writing .cargo-checksum.json for crate {}", package.name()))?;
 
     Ok(())
 }
@@ -563,12 +572,13 @@ mod test {
 
     #[test]
     fn test_get_placeholder_crate_metadata_with_proc_macro2_dependency() {
-        let metadata: cargo_metadata::Metadata =
-            serde_json::from_str(SAMPLE_CARGO_METADATA2).unwrap();
-        let packages: HashMap<_, _> = metadata_packages(&metadata).unwrap();
-        let nodes: HashMap<_, _> = metadata_nodes(&metadata);
-        let zerocopy_derive = packages.values().find(|p| p.name == "yoke-derive").unwrap();
-        let placeholder = get_placeholder_crate_metadata(&zerocopy_derive.id, &packages, &nodes);
+        let graph: guppy::graph::PackageGraph =
+            guppy::CargoMetadata::parse_json(SAMPLE_CARGO_METADATA2)
+                .unwrap()
+                .build_graph()
+                .unwrap();
+        let yoke_derive = graph.packages().find(|p| p.name() == "yoke-derive").unwrap();
+        let placeholder = get_placeholder_crate_metadata(yoke_derive);
         assert_eq!(placeholder.name, "yoke-derive");
         assert_eq!(placeholder.version.to_string(), "0.8.0");
         assert!(placeholder.features.is_empty());
@@ -576,25 +586,21 @@ mod test {
         let mut i = 0;
         assert_eq!(placeholder.dependencies[i].name, "proc-macro2");
         assert_eq!(placeholder.dependencies[i].version, "^1.0.61");
-        assert!(placeholder.dependencies[i].default_features);
         assert!(placeholder.dependencies[i].features.is_empty());
 
         i += 1;
         assert_eq!(placeholder.dependencies[i].name, "quote");
         assert_eq!(placeholder.dependencies[i].version, "^1.0.28");
-        assert!(placeholder.dependencies[i].default_features);
         assert!(placeholder.dependencies[i].features.is_empty());
 
         i += 1;
         assert_eq!(placeholder.dependencies[i].name, "syn");
         assert_eq!(placeholder.dependencies[i].version, "^2.0.21");
-        assert!(placeholder.dependencies[i].default_features);
         assert_eq!(placeholder.dependencies[i].features, &["fold"]);
 
         i += 1;
         assert_eq!(placeholder.dependencies[i].name, "synstructure");
         assert_eq!(placeholder.dependencies[i].version, "^0.13.0");
-        assert!(placeholder.dependencies[i].default_features);
         assert!(placeholder.dependencies[i].features.is_empty());
 
         i += 1;

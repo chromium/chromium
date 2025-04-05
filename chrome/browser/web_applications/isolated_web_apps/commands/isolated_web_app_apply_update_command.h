@@ -59,9 +59,11 @@ class IsolatedWebAppApplyUpdateCommandSuccess {
 
   bool operator==(const IsolatedWebAppApplyUpdateCommandSuccess& other) const;
 
-  base::Version updated_version() { return updated_version_; }
+  base::Version updated_version() const { return updated_version_; }
 
-  IsolatedWebAppStorageLocation updated_location() { return updated_location_; }
+  IsolatedWebAppStorageLocation updated_location() const {
+    return updated_location_;
+  }
 
  private:
   base::Version updated_version_;

@@ -86,20 +86,6 @@ class ExternallyManagedAppManagerTest : public WebAppTest {
               return ExternallyManagedAppManager::InstallResult(
                   webapps::InstallResultCode::kSuccessNewInstall);
             }));
-    externally_managed_app_manager().SetHandleUninstallRequestCallback(
-        base::BindLambdaForTesting(
-            [this](const GURL& app_url, ExternalInstallSource install_source)
-                -> webapps::UninstallResultCode {
-              std::optional<webapps::AppId> app_id =
-                  app_registrar().LookupExternalAppId(app_url);
-              if (app_id.has_value()) {
-                ScopedRegistryUpdate update =
-                    provider().sync_bridge_unsafe().BeginUpdate();
-                update->DeleteApp(app_id.value());
-                deduped_uninstall_count_++;
-              }
-              return webapps::UninstallResultCode::kAppRemoved;
-            }));
   }
 
   void ForceSystemShutdown() { provider_->Shutdown(); }
@@ -120,11 +106,13 @@ class ExternallyManagedAppManagerTest : public WebAppTest {
         std::move(install_options_list),
         ExternalInstallSource::kInternalDefault,
         base::BindLambdaForTesting(
-            [&run_loop, urls](
-                std::map<GURL, ExternallyManagedAppManager::InstallResult>
+            [&](std::map<GURL, ExternallyManagedAppManager::InstallResult>
                     install_results,
                 std::map<GURL, webapps::UninstallResultCode>
-                    uninstall_results) { run_loop.Quit(); }));
+                    uninstall_results) {
+              deduped_uninstall_count_ = uninstall_results.size();
+              run_loop.Quit();
+            }));
     // Wait for SynchronizeInstalledApps to finish.
     run_loop.Run();
   }

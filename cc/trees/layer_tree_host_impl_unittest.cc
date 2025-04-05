@@ -12084,7 +12084,7 @@ TEST_F(CommitToPendingTreeLayerTreeHostImplTest,
 
   auto* fake_layer_tree_frame_sink =
       static_cast<FakeLayerTreeFrameSink*>(host_impl_->layer_tree_frame_sink());
-  host_impl_->NotifyInputEvent();
+  host_impl_->NotifyInputEvent(/*is_fling=*/false);
   host_impl_->SetFullViewportDamage();
   host_impl_->SetNeedsRedraw();
   auto args = viz::CreateBeginFrameArgsForTesting(
@@ -18493,7 +18493,7 @@ TEST_P(LayerTreeHostImplTest, NonCompositedScrollUsesRaster) {
 
   // Draw the next frame of the scroll.
   {
-    host_impl_->NotifyInputEvent();
+    host_impl_->NotifyInputEvent(/*is_fling=*/false);
     host_impl_->SetFullViewportDamage();
     host_impl_->SetNeedsRedraw();
     TestFrameData frame;

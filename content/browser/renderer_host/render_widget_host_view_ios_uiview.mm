@@ -930,7 +930,8 @@ static void* kObservingContext = &kObservingContext;
   ui::BrowserAccessibilityManager* manager =
       _view->host()->GetRootBrowserAccessibilityManager();
   if (manager) {
-    id root = manager->GetBrowserAccessibilityRoot()->GetNativeViewAccessible();
+    id root =
+        manager->GetBrowserAccessibilityRoot()->GetNativeViewAccessible().Get();
     if (root) {
       return @[ root ];
     }

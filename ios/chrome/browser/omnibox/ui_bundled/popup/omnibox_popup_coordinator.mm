@@ -30,12 +30,10 @@
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/content_providing.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/debugger/omnibox_debugger_mediator.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/debugger/omnibox_debugger_view_controller.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_pedal_annotator.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_popup_mediator.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_popup_presenter.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_popup_view_controller.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_popup_view_ios.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/pedal_section_extractor.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
@@ -95,7 +93,6 @@
     _autocompleteController = autocompleteController;
     _popupView = std::move(popupView);
     _popupViewController = [[OmniboxPopupViewController alloc] init];
-    _popupReturnDelegate = _popupViewController;
     _KeyboardDelegate = _popupViewController;
     _omniboxAutocompleteController = omniboxAutocompleteController;
   }
@@ -150,7 +147,6 @@
   self.mediator.consumer = self.popupViewController;
   self.popupViewController.matchPreviewDelegate =
       self.popupMatchPreviewDelegate;
-  self.popupViewController.acceptReturnDelegate = self.acceptReturnDelegate;
   self.mediator.carouselItemConsumer = self.popupViewController;
   self.mediator.allowIncognitoActions =
       !IsIncognitoModeDisabled(self.profile->GetPrefs());

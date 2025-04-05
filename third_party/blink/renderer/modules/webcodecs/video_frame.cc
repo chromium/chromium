@@ -626,10 +626,6 @@ VideoFrame::VideoFrame(scoped_refptr<media::VideoFrame> frame,
   handle_ = base::MakeRefCounted<VideoFrameHandle>(
       frame, std::move(sk_image), context, std::move(monitoring_source_id),
       use_capture_timestamp);
-  size_t external_allocated_memory =
-      media::VideoFrame::AllocationSize(frame->format(), frame->coded_size());
-  external_memory_accounter_.Increase(context->GetIsolate(),
-                                      external_allocated_memory);
 }
 
 VideoFrame::VideoFrame(scoped_refptr<VideoFrameHandle> handle)
@@ -641,16 +637,9 @@ VideoFrame::VideoFrame(scoped_refptr<VideoFrameHandle> handle)
   auto local_frame = handle_->frame();
   if (!local_frame)
     return;
-
-  size_t external_allocated_memory = media::VideoFrame::AllocationSize(
-      local_frame->format(), local_frame->coded_size());
-  external_memory_accounter_.Increase(v8::Isolate::GetCurrent(),
-                                      external_allocated_memory);
 }
 
-VideoFrame::~VideoFrame() {
-  ResetExternalMemory();
-}
+VideoFrame::~VideoFrame() = default;
 
 // static
 VideoFrame* VideoFrame::Create(ScriptState* script_state,
@@ -1427,7 +1416,6 @@ ScriptPromise<IDLSequence<PlaneLayout>> VideoFrame::copyTo(
 
 void VideoFrame::close() {
   handle_->Invalidate();
-  ResetExternalMemory();
 }
 
 VideoFrame* VideoFrame::clone(ExceptionState& exception_state) {
@@ -1526,10 +1514,6 @@ bool VideoFrame::IsAccelerated() const {
                                      local_handle->frame().get());
   }
   return false;
-}
-
-void VideoFrame::ResetExternalMemory() {
-  external_memory_accounter_.Clear(v8::Isolate::GetCurrent());
 }
 
 ImageBitmapSourceStatus VideoFrame::CheckUsability() const {

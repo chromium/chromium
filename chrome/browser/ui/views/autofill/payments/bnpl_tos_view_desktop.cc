@@ -9,7 +9,7 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/autofill/payments/bnpl_tos_dialog.h"
 #include "components/autofill/core/browser/ui/payments/bnpl_tos_controller.h"
-#include "components/tab_collections/public/tab_interface.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 
 using tabs::TabInterface;

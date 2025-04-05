@@ -12,9 +12,9 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.text.TextUtils;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.Contract;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.webapk.lib.common.WebApkMetaDataKeys;
 
 import java.util.Arrays;
@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /** Contains methods for getting information about host browser. */
+@NullMarked
 public class HostBrowserUtils {
     public static String ARC_INTENT_HELPER_BROWSER = "org.chromium.arc.intent_helper";
 
@@ -50,7 +51,9 @@ public class HostBrowserUtils {
     /**
      * Returns whether the passed-in browser package name supports WebAPK notification delegation.
      */
-    public static boolean doesBrowserSupportNotificationDelegation(String browserPackageName) {
+    @Contract("null -> false")
+    public static boolean doesBrowserSupportNotificationDelegation(
+            @Nullable String browserPackageName) {
         return sBrowsersSupportingNotificationDelegation.contains(browserPackageName);
     }
 
@@ -70,21 +73,21 @@ public class HostBrowserUtils {
      * unbound or effectively unbound.
      */
     public static class PackageNameAndComponentName {
-        @NonNull private String mPackageName;
-        @Nullable private ComponentName mComponentName;
+        private String mPackageName;
+        private @Nullable ComponentName mComponentName;
 
-        public PackageNameAndComponentName(@NonNull String packageName) {
+        public PackageNameAndComponentName(String packageName) {
             mPackageName = packageName;
             mComponentName = null;
         }
 
-        public PackageNameAndComponentName(@NonNull ComponentName componentName) {
+        public PackageNameAndComponentName(ComponentName componentName) {
             mPackageName = componentName.getPackageName();
             mComponentName = componentName;
         }
 
         /** Returns the package name of the host browser. */
-        public @NonNull String getPackageName() {
+        public String getPackageName() {
             return mPackageName;
         }
 
@@ -122,7 +125,7 @@ public class HostBrowserUtils {
         return null;
     }
 
-    private static String getHostBrowserFromManifest(Context context) {
+    private static @Nullable String getHostBrowserFromManifest(Context context) {
         String hostBrowserFromManifest =
                 WebApkUtils.readMetaDataFromManifest(context, WebApkMetaDataKeys.RUNTIME_HOST);
         if (!TextUtils.isEmpty(hostBrowserFromManifest)
@@ -148,11 +151,11 @@ public class HostBrowserUtils {
         return WebApkUtils.getComponentNameFromResolveInfo(resolveInfo);
     }
 
-    static @NonNull Intent getBrowserLaunchIntentWithoutFlagsAndExtras(
+    static Intent getBrowserLaunchIntentWithoutFlagsAndExtras(
             boolean hostBrowserIsFromManifest,
-            @NonNull String hostBrowserPackageName,
+            String hostBrowserPackageName,
             @Nullable ComponentName hostBrowserComponentName,
-            @NonNull Uri startUrl) {
+            Uri startUrl) {
         Intent intent;
         if (hostBrowserIsFromManifest) {
             intent = new Intent();

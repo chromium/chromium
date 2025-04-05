@@ -360,6 +360,39 @@ TEST_F(PrintBackendCupsIppHelperTest, CopiesCapable) {
   EXPECT_EQ(2, caps.copies_max);
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+TEST_F(PrintBackendCupsIppHelperTest, PaperMargins) {
+  // There is one borderless variant of the paper. Thus, the total margins
+  // stored will be papers.size() - 1 as borderless margins are not stored
+  // as a separate entry.
+  static const std::array<PaperMargins, 3> kExpectedMarginsUm = {
+      PaperMargins{2960, 3150, 2960, 3150},
+      PaperMargins{3900, 100, 6350, 200},
+      PaperMargins{1000, 1000, 1000, 1000},
+  };
+
+  printer_->SetMediaColDatabase(
+      MakeMediaColDatabase(ipp_, {
+                                     {21000, 29700, 0, 0, 0, 0, {}},
+                                     {21000, 29700, 296, 315, 315, 296, {}},
+                                     {21590, 35560, 635, 20, 10, 390, {}},
+                                     {18200, 25700, 100, 100, 100, 100, {}},
+                                 }));
+
+  PrinterSemanticCapsAndDefaults caps;
+  CapsAndDefaultsFromPrinter(*printer_, &caps);
+  EXPECT_EQ(kExpectedMarginsUm.size(), caps.papers.size());
+
+  std::vector<PaperMargins> supported_margins_um;
+  for (const auto& paper : caps.papers) {
+    ASSERT_TRUE(paper.supported_margins_um().has_value());
+    supported_margins_um.emplace_back(paper.supported_margins_um().value());
+  }
+  EXPECT_THAT(supported_margins_um,
+              UnorderedElementsAreArray(kExpectedMarginsUm));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 TEST_F(PrintBackendCupsIppHelperTest, CopiesNotCapable) {
   // copies missing, no setup
   PrinterSemanticCapsAndDefaults caps;

@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.base.Callback;
+import org.chromium.base.Log;
 import org.chromium.components.payments.AndroidIntentLauncher;
 import org.chromium.components.payments.BrowserPaymentRequest;
 import org.chromium.components.payments.DialogController;
@@ -41,6 +42,7 @@ import java.util.List;
  */
 /*package*/ class AwPaymentRequestService
         implements BrowserPaymentRequest, PaymentResponseHelperInterface, AndroidIntentLauncher {
+    private static final String TAG = "AwPaymentRequest";
     // The following error strings are only used in WebView:
     private static final String RETRY_DISABLED = "PaymentResponse.retry() is disabled in WebView.";
     private static final String MORE_THAN_ONE_APP =
@@ -175,11 +177,13 @@ import java.util.List;
         if (mApps.size() > 1) {
             // WebView does not have UI for the user to choose one of their multiple payment apps
             // that match merchant's PaymentRequest parameters. In this case, abort payment.
+            Log.e(TAG, MORE_THAN_ONE_APP);
             return MORE_THAN_ONE_APP;
         }
 
         PaymentApp selectedPaymentApp = getSelectedPaymentApp();
         if (selectedPaymentApp == null) {
+            Log.e(TAG, "No matching payment apps found.");
             return ErrorStrings.PAYMENT_APP_LAUNCH_FAIL;
         }
 
@@ -271,14 +275,22 @@ import java.util.List;
         boolean isExactlyOneApp = mApps.size() == 1;
 
         if (mSenderOfCanMakePaymentResponseToRenderer != null) {
-            mSenderOfCanMakePaymentResponseToRenderer.onResult(
-                    mPaymentRequestCanMakePaymentResponse && isExactlyOneApp);
+            boolean result = mPaymentRequestCanMakePaymentResponse && isExactlyOneApp;
+            if (!result) {
+                Log.e(TAG, "Cannot make payments. Have %d apps.", mApps.size());
+            }
+
+            mSenderOfCanMakePaymentResponseToRenderer.onResult(result);
             mSenderOfCanMakePaymentResponseToRenderer = null;
         }
 
         if (mSenderOfHasEnrolledInstrumentResponseToRenderer != null) {
-            mSenderOfHasEnrolledInstrumentResponseToRenderer.onResult(
-                    mPaymentRequestHasEnrolledInstrumentResponse && isExactlyOneApp);
+            boolean result = mPaymentRequestHasEnrolledInstrumentResponse && isExactlyOneApp;
+            if (!result) {
+                Log.e(TAG, "No enrolled instrument. Have %d apps.", mApps.size());
+            }
+
+            mSenderOfHasEnrolledInstrumentResponseToRenderer.onResult(result);
             mSenderOfHasEnrolledInstrumentResponseToRenderer = null;
         }
     }

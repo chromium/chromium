@@ -17,8 +17,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/extension_service.h"
-#include "extensions/browser/extension_system.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #endif
@@ -154,24 +153,23 @@ IN_PROC_BROWSER_TEST_F(ChromeSigninClientBrowserTest,
   // Setting the ManifestLocation to kInternal means that the extension is user
   // installed. kComponent is an internal Chrome Exntension used for features,
   // kExternalPolicy means that the extension was installed through a policy.
-  extensions::ExtensionService* extension_service =
-      extensions::ExtensionSystem::Get(browser()->profile())
-          ->extension_service();
+  extensions::ExtensionRegistrar* extension_registrar =
+      extensions::ExtensionRegistrar::Get(browser()->profile());
   auto extension1 =
       extensions::ExtensionBuilder("Extension1")
           .SetLocation(extensions::mojom::ManifestLocation::kInternal)
           .Build();
-  extension_service->AddExtension(extension1.get());
+  extension_registrar->AddExtension(extension1);
   auto extension2 =
       extensions::ExtensionBuilder("Extension2")
           .SetLocation(extensions::mojom::ManifestLocation::kComponent)
           .Build();
-  extension_service->AddExtension(extension2.get());
+  extension_registrar->AddExtension(extension2);
   auto extension3 =
       extensions::ExtensionBuilder("Extension3")
           .SetLocation(extensions::mojom::ManifestLocation::kExternalPolicy)
           .Build();
-  extension_service->AddExtension(extension3.get());
+  extension_registrar->AddExtension(extension3);
 
   // Only one of the 3 extensions is considered user_installed.
   size_t expected_extensions_count = 1;
@@ -197,7 +195,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSigninClientBrowserTest,
       extensions::ExtensionBuilder("Extension4")
           .SetLocation(extensions::mojom::ManifestLocation::kInternal)
           .Build();
-  extension_service->AddExtension(extension4.get());
+  extension_registrar->AddExtension(extension4);
   size_t sync_expected_extensions_count = expected_extensions_count + 1;
 
   // New histogram tester for easier new values check.

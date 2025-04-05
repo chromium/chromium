@@ -57,7 +57,7 @@ class DawnObjectBase {
   const String& label() const { return label_; }
   void setLabel(const String& value);
 
-  virtual void setLabelImpl(const String& value) = 0;
+  virtual void SetLabelImpl(const String& value) = 0;
 
  private:
   scoped_refptr<DawnControlClientHolder> dawn_control_client_;

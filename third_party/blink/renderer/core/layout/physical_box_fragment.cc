@@ -669,7 +669,7 @@ PhysicalRect PhysicalBoxFragment::OverflowClipRect(
     stitched_offset.block_offset = incoming_break_token->ConsumedBlockSize();
   LogicalRect logical_fragment_rect(
       stitched_offset,
-      Size().ConvertToLogical(writing_direction.GetWritingMode()));
+      ToLogicalSize(Size(), writing_direction.GetWritingMode()));
   PhysicalRect physical_fragment_rect =
       converter.ToPhysical(logical_fragment_rect);
 
@@ -1509,9 +1509,8 @@ void PhysicalBoxFragment::CheckSameForSimplifiedLayout(
     bool check_no_fragmentation) const {
   DCHECK_EQ(layout_object_, other.layout_object_);
 
-  LogicalSize size = size_.ConvertToLogical(Style().GetWritingMode());
-  LogicalSize other_size =
-      other.size_.ConvertToLogical(Style().GetWritingMode());
+  LogicalSize size = ToLogicalSize(size_, Style().GetWritingMode());
+  LogicalSize other_size = ToLogicalSize(other.size_, Style().GetWritingMode());
   DCHECK_EQ(size.inline_size, other_size.inline_size);
   if (check_same_block_size)
     DCHECK_EQ(size.block_size, other_size.block_size);

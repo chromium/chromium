@@ -16,7 +16,7 @@ class GURL;
 
 namespace autofill {
 
-struct CreditCardArtImage;
+struct AutofillImage;
 
 // Abstract class that enables pre-fetching of images from server on browser
 // start-up used by various Autofill features.
@@ -52,15 +52,14 @@ class AutofillImageFetcherBase {
   // on the urls. `image_urls` is a span of urls that needs to be downloaded.
   // `image_sizes` is the different sizes in which each image_url should be
   // downloaded. `callback` will be invoked when all the requests have been
-  // completed. The callback will receive a vector of CreditCardArtImage, for
-  // (only) those cards for which the AutofillImageFetcher could successfully
-  // fetch the image.
+  // completed. The callback will receive a vector of AutofillImage, for (only)
+  // those cards for which the AutofillImageFetcher could successfully fetch the
+  // image.
   virtual void FetchImagesForURLs(
       base::span<const GURL> image_urls,
       base::span<const ImageSize> image_sizes,
-      base::OnceCallback<
-          void(const std::vector<std::unique_ptr<CreditCardArtImage>>&)>
-          callback) = 0;
+      base::OnceCallback<void(
+          const std::vector<std::unique_ptr<AutofillImage>>&)> callback) = 0;
 
   // Fetches images for the `image_urls`, treats them according to Pix image
   // specifications, and caches them in memory.

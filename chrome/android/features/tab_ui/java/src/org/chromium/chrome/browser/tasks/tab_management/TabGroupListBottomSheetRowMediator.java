@@ -89,17 +89,26 @@ class TabGroupListBottomSheetRowMediator {
     private void addToGroup(List<Tab> tabs) {
         RecordUserAction.record("TabGroupParity.BottomSheetRowSelection.ExistingGroup");
         String syncId = mSavedTabGroup.syncId;
-        if (syncId == null || mTabGroupSyncService == null) return;
+        if (syncId == null || mTabGroupSyncService == null) {
+            return;
+        }
 
         // Ensure that the group still exists.
         @Nullable SavedTabGroup group = mTabGroupSyncService.getGroup(syncId);
-        if (group == null || group.savedTabs.isEmpty()) return;
+        if (group == null || group.savedTabs.isEmpty()) {
+            return;
+        }
 
         SavedTabGroupTab savedTabGroupTab = group.savedTabs.get(0);
-        Integer localId = savedTabGroupTab.localId;
-        if (localId == null) return;
+        @Nullable Integer localId = savedTabGroupTab.localId;
+        if (localId == null) {
+            return;
+        }
+
         Tab tab = mTabGroupModelFilter.getTabModel().getTabById(localId);
-        if (tab == null) return;
+        if (tab == null) {
+            return;
+        }
 
         mTabGroupModelFilter.mergeListOfTabsToGroup(tabs, tab, true);
     }

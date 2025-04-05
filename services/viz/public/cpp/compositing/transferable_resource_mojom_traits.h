@@ -30,6 +30,16 @@ struct EnumTraits<viz::mojom::SynchronizationType,
 };
 
 template <>
+struct EnumTraits<viz::mojom::ResourceSource,
+                  viz::TransferableResource::ResourceSource> {
+  static viz::mojom::ResourceSource ToMojom(
+      viz::TransferableResource::ResourceSource source);
+
+  static bool FromMojom(viz::mojom::ResourceSource input,
+                        viz::TransferableResource::ResourceSource* out);
+};
+
+template <>
 struct StructTraits<viz::mojom::TransferableResourceDataView,
                     viz::TransferableResource> {
   static const viz::ResourceId& id(const viz::TransferableResource& resource) {
@@ -119,6 +129,11 @@ struct StructTraits<viz::mojom::TransferableResourceDataView,
 
   static GrSurfaceOrigin origin(const viz::TransferableResource& resource) {
     return resource.origin;
+  }
+
+  static viz::TransferableResource::ResourceSource resource_source(
+      const viz::TransferableResource& resource) {
+    return resource.resource_source;
   }
 
   static bool Read(viz::mojom::TransferableResourceDataView data,

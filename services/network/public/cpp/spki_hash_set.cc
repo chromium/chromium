@@ -2,14 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "services/network/public/cpp/spki_hash_set.h"
 
-#include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "net/base/hash_value.h"
 
@@ -25,8 +20,7 @@ SPKIHashSet CreateSPKIHashSet(const std::vector<std::string>& fingerprints) {
       continue;
     }
     net::SHA256HashValue sha256;
-    DCHECK_EQ(hash.size(), sizeof(sha256));
-    memcpy(&sha256, hash.data(), sizeof(sha256));
+    base::span(sha256).copy_from(hash.span());
     spki_hash_list.insert(sha256);
   }
   return spki_hash_list;

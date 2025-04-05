@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.android.httpclient;
 
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
@@ -15,6 +14,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
 import org.chromium.net.NetworkTrafficAnnotationTag;
@@ -34,6 +34,7 @@ import java.util.function.Consumer;
  * network stack from native within your own native code instead.
  */
 @JNINamespace("httpclient")
+@NullMarked
 public class SimpleHttpClient implements Destroyable {
     private static final ProfileKeyedMap<SimpleHttpClient> sClients =
             ProfileKeyedMap.createMapOfDestroyables();

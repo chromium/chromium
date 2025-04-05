@@ -562,7 +562,7 @@ void SetCookieAccounts(
     network::TestURLLoaderFactory* test_url_loader_factory,
     const std::vector<CookieParamsForTest>& cookie_accounts) {
   // Convert |cookie_accounts| to the format list_accounts_test_utils wants.
-  std::vector<CookieParams> gaia_cookie_accounts;
+  std::vector<gaia::CookieParams> gaia_cookie_accounts;
   for (const CookieParamsForTest& params : cookie_accounts) {
     gaia_cookie_accounts.push_back({params.email, params.gaia_id,
                                     /*valid=*/true, params.signed_out,

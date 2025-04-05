@@ -73,24 +73,20 @@ export class SettingsManageUsersSubpageElement extends
           return isChild();
         },
       },
-
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kGuestBrowsingV2,
-          Setting.kShowUsernamesAndPhotosAtSignInV2,
-          Setting.kRestrictSignInV2,
-          Setting.kAddToUserAllowlistV2,
-          Setting.kRemoveFromUserAllowlistV2,
-        ]),
-      },
     };
   }
 
   prefs: PrefsState;
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kGuestBrowsingV2,
+    Setting.kShowUsernamesAndPhotosAtSignInV2,
+    Setting.kRestrictSignInV2,
+    Setting.kAddToUserAllowlistV2,
+    Setting.kRemoveFromUserAllowlistV2,
+  ]);
+
   private isOwner_: boolean;
   private isUserListManaged_: boolean;
   private isChild_: boolean;

@@ -114,12 +114,6 @@ class PLATFORM_EXPORT Font : public GarbageCollected<Font> {
                               CustomFontNotReadyAction,
                               const cc::PaintFlags&,
                               DrawType = DrawType::kGlyphsOnly) const;
-  // Deprecated: Use a TextFragmentPaintInfo variant.
-  void DeprecatedDrawEmphasisMarks(cc::PaintCanvas*,
-                                   const TextRun&,
-                                   const AtomicString& mark,
-                                   const gfx::PointF&,
-                                   const cc::PaintFlags&) const;
   void DrawEmphasisMarks(cc::PaintCanvas*,
                          const TextFragmentPaintInfo&,
                          const AtomicString& mark,

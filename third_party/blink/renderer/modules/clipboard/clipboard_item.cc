@@ -8,7 +8,6 @@
 #include "third_party/blink/public/mojom/clipboard/clipboard.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/core/clipboard/clipboard_mime_types.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/clipboard/clipboard.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -128,8 +127,8 @@ bool ClipboardItem::supports(const String& type) {
   }
 
   // TODO(https://crbug.com/1029857): Add support for other types.
-  return type == kMimeTypeImagePng || type == kMimeTypeTextPlain ||
-         type == kMimeTypeTextHTML || type == kMimeTypeImageSvg;
+  return type == ui::kMimeTypePng || type == ui::kMimeTypePlainText ||
+         type == ui::kMimeTypeHtml || type == ui::kMimeTypeSvg;
 }
 
 void ClipboardItem::Trace(Visitor* visitor) const {

@@ -34,7 +34,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/base/big_buffer.h"
-#include "net/base/schemeful_site.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/scheduler/web_scoped_virtual_time_pauser.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
@@ -452,11 +451,6 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
     return CalculateOverheadSize();
   }
 
-  // Appends the top-frame site derived from |origin| to
-  // |existing_top_frame_sites_in_cache_| and returns true if the same site
-  // already exists.
-  bool AppendTopFrameSiteForMetrics(const SecurityOrigin& origin);
-
   // Sets the ResourceRequest to be tagged as an ad.
   void SetIsAdResource();
 
@@ -624,14 +618,6 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   scoped_refptr<SharedBuffer> data_;
 
   WebScopedVirtualTimePauser virtual_time_pauser_;
-
-  // To compute metrics for measuring the efficacy of the
-  // memory cache if it was partitioned by top-frame site (in addition to the
-  // current origin which it is already partitioned by).
-  // TODO(crbug.com/1127971): Remove this once the decision is made to partition
-  // the cache using either Network Isolation Key or scoped to per-document.
-  std::set<net::SchemefulSite> existing_top_frame_sites_in_cache_
-      ALLOW_DISCOURAGED_TYPE("TODO(crbug.com/1404327)");
 };
 
 class ResourceFactory {

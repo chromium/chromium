@@ -242,6 +242,7 @@ source_set("tflite_public_headers") {
     "src/tensorflow/lite/core/subgraph.h",
     "src/tensorflow/lite/error_reporter.h",
     "src/tensorflow/lite/graph_info.h",
+    "src/tensorflow/lite/logger.h",
     "src/tensorflow/lite/minimal_logging.h",
     "src/tensorflow/lite/model.h",
     "src/tensorflow/lite/mutable_op_resolver.h",
@@ -292,59 +293,14 @@ config("tflite_litert_config") {
   }
 }
 
-source_set("tflite_litert_c_headers") {
-  public = [
-    "src/tensorflow/lite/experimental/litert/c/litert_common.h",
-    "src/tensorflow/lite/experimental/litert/c/litert_logging.h",
-    "src/tensorflow/lite/experimental/litert/c/litert_tensor_buffer.h",
-    "src/tensorflow/lite/experimental/litert/c/litert_tensor_buffer_types.h",
-  ]
-
-  configs += [
-    ":tflite_config",
-    ":tflite_flags",
-    ":tflite_litert_config",
-  ]
-
-  visibility = [ ":*" ]
-}
-
 tflite_litert_sources = [
   "src/tensorflow/lite/experimental/genai/external_kvcache.cc",
   "src/tensorflow/lite/experimental/genai/genai_ops.cc",
   "src/tensorflow/lite/experimental/genai/genai_ops.h",
   "src/tensorflow/lite/experimental/genai/kvcache.cc",
   "src/tensorflow/lite/experimental/genai/sdpa.cc",
-  "src/tensorflow/lite/experimental/litert/c/litert_common.cc",
-  "src/tensorflow/lite/experimental/litert/c/litert_logging.cc",
-  "src/tensorflow/lite/experimental/litert/c/litert_tensor_buffer.cc",
-  "src/tensorflow/lite/experimental/litert/cc/litert_expected.h",
-  "src/tensorflow/lite/experimental/litert/cc/litert_macros.h",
-  "src/tensorflow/lite/experimental/litert/cc/litert_tensor_buffer.h",
-  "src/tensorflow/lite/experimental/litert/cc/litert_tensor_buffer_utils.cc",
-  "src/tensorflow/lite/experimental/litert/cc/litert_tensor_buffer_utils.h",
-  "src/tensorflow/lite/experimental/litert/core/util/tensor_type_util.cc",
-  "src/tensorflow/lite/experimental/litert/core/util/tensor_type_util.h",
-  "src/tensorflow/lite/experimental/litert/runtime/ahwb_buffer.cc",
-  "src/tensorflow/lite/experimental/litert/runtime/ahwb_buffer.h",
-  "src/tensorflow/lite/experimental/litert/runtime/dmabuf_buffer.cc",
-  "src/tensorflow/lite/experimental/litert/runtime/dmabuf_buffer.h",
-  "src/tensorflow/lite/experimental/litert/runtime/event.cc",
-  "src/tensorflow/lite/experimental/litert/runtime/event.h",
-  "src/tensorflow/lite/experimental/litert/runtime/fastrpc_buffer.cc",
-  "src/tensorflow/lite/experimental/litert/runtime/fastrpc_buffer.h",
-  "src/tensorflow/lite/experimental/litert/runtime/gl_buffer.cc",
-  "src/tensorflow/lite/experimental/litert/runtime/gl_buffer.h",
-  "src/tensorflow/lite/experimental/litert/runtime/gl_texture.cc",
-  "src/tensorflow/lite/experimental/litert/runtime/gl_texture.h",
-  "src/tensorflow/lite/experimental/litert/runtime/ion_buffer.cc",
-  "src/tensorflow/lite/experimental/litert/runtime/ion_buffer.h",
-  "src/tensorflow/lite/experimental/litert/runtime/tensor_buffer.cc",
-  "src/tensorflow/lite/experimental/litert/runtime/tensor_buffer.h",
   "src/tensorflow/lite/experimental/resource/cache_buffer.cc",
   "src/tensorflow/lite/experimental/resource/cache_buffer.h",
-  "src/tensorflow/lite/logger.cc",
-  "src/tensorflow/lite/logger.h",
 ]
 
 tflite_litert_deps = [
@@ -362,7 +318,6 @@ tflite_litert_deps = [
 source_set("tflite_litert") {
   sources = tflite_litert_sources
 
-  public_deps = [ ":tflite_litert_c_headers" ]
   deps = tflite_litert_deps
   deps += [ ":tflite_logging" ]
 
@@ -376,7 +331,6 @@ source_set("tflite_litert") {
 source_set("tflite_litert_standalone") {
   sources = tflite_litert_sources
 
-  public_deps = [ ":tflite_litert_c_headers" ]
   deps = tflite_litert_deps
   deps += [ ":tflite_logging_standalone" ]
 
@@ -820,6 +774,7 @@ tflite_static_library("tflite") {
     "src/tensorflow/lite/external_cpu_backend_context.cc",
     "src/tensorflow/lite/graph_info.cc",
     "src/tensorflow/lite/kernels/internal/portable_tensor_utils.cc",
+    "src/tensorflow/lite/logger.cc",
     "src/tensorflow/lite/memory_planner.h",
     "src/tensorflow/lite/minimal_logging.cc",
     "src/tensorflow/lite/mutable_op_resolver.cc",

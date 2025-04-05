@@ -51,12 +51,13 @@ void NativeAppWindowViews::Init(
   // ends up destructed, but the below preserves a previous DialogDelegate
   // override that did not end with a direct `delete this;`.
   SetOwnedByWidget(false);
-  RegisterDeleteDelegateCallback(base::BindOnce(
-      [](NativeAppWindowViews* dialog) {
-        dialog->widget_->RemoveObserver(dialog);
-        dialog->app_window_->OnNativeClose();
-      },
-      this));
+  RegisterDeleteDelegateCallback(RegisterDeleteCallbackPassKey(),
+                                 base::BindOnce(
+                                     [](NativeAppWindowViews* dialog) {
+                                       dialog->widget_->RemoveObserver(dialog);
+                                       dialog->app_window_->OnNativeClose();
+                                     },
+                                     this));
   web_view_ = AddChildView(std::make_unique<views::WebView>(nullptr));
   web_view_->SetWebContents(app_window_->web_contents());
 

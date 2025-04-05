@@ -353,9 +353,6 @@ InputHandlerScrollResult InputHandler::ScrollUpdate(
         ui::ScrollGranularity::kScrollByPixel;
   }
 
-  compositor_delegate_->AccumulateScrollDeltaForTracing(
-      gfx::Vector2dF(scroll_state.delta_x(), scroll_state.delta_y()));
-
   compositor_delegate_->WillScrollContent(scroll_node.element_id);
 
   float initial_top_controls_offset =
@@ -371,8 +368,8 @@ InputHandlerScrollResult InputHandler::ScrollUpdate(
   bool did_scroll_content = did_scroll_x || did_scroll_y;
   if (did_scroll_content) {
     bool is_animated_scroll = ShouldAnimateScroll(scroll_state);
-    compositor_delegate_->DidScrollContent(scroll_node.element_id,
-                                           is_animated_scroll);
+    compositor_delegate_->DidScrollContent(
+        scroll_node.element_id, is_animated_scroll, resolvedScrollDelta);
   }
 
   SetNeedsCommit();
@@ -685,18 +682,21 @@ void InputHandler::SetSynchronousInputHandlerRootScrollOffset(
       root_content_offset - GetViewport().TotalScrollOffset();
   physical_delta.Scale(ActiveTree().page_scale_factor_for_scroll());
 
-  bool changed = !GetViewport()
-                      .ScrollBy(physical_delta,
-                                /*viewport_point=*/gfx::Point(),
-                                /*is_direct_manipulation=*/false,
-                                /*affect_browser_controls=*/false,
-                                /*scroll_outer_viewport=*/true)
-                      .consumed_delta.IsZero();
-  if (!changed)
+  gfx::Vector2dF consumed_delta =
+      GetViewport()
+          .ScrollBy(physical_delta,
+                    /*viewport_point=*/gfx::Point(),
+                    /*is_direct_manipulation=*/false,
+                    /*affect_browser_controls=*/false,
+                    /*scroll_outer_viewport=*/true)
+          .consumed_delta;
+  if (consumed_delta.IsZero()) {
     return;
+  }
 
   compositor_delegate_->DidScrollContent(OuterViewportScrollNode()->element_id,
-                                         /*is_animated_scroll=*/false);
+                                         /*is_animated_scroll=*/false,
+                                         consumed_delta);
   SetNeedsCommit();
 
   // After applying the synchronous input handler's scroll offset, tell it what
@@ -1058,8 +1058,8 @@ void InputHandler::ScrollEndForSnapFling(bool did_finish) {
   ScrollEnd(true /* should_snap */);
 }
 
-void InputHandler::NotifyInputEvent() {
-  compositor_delegate_->NotifyInputEvent();
+void InputHandler::NotifyInputEvent(bool is_fling) {
+  compositor_delegate_->NotifyInputEvent(is_fling);
 }
 
 //

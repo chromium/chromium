@@ -282,9 +282,7 @@ class ObservableInternals
       DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
       DCHECK(observer);
       DCHECK(base::Contains(observers_, observer));
-      observers_.erase(
-          std::remove(observers_.begin(), observers_.end(), observer),
-          observers_.end());
+      std::erase(observers_, observer);
     }
 
     bool Empty() const {

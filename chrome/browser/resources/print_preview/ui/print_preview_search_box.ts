@@ -54,8 +54,8 @@ export class PrintPreviewSearchBoxElement extends
     };
   }
 
-  override autofocus: boolean;
-  searchQuery: RegExp|null;
+  declare autofocus: boolean;
+  declare searchQuery: RegExp|null;
   private lastQuery_: string = '';
 
   override ready() {

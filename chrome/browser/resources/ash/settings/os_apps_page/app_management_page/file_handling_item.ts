@@ -34,17 +34,11 @@ export class AppManagementFileHandlingItemElement extends
     return {
       app: Object,
 
-      /**
-       * @type {boolean}
-       */
       showOverflowDialog: {
         type: Boolean,
         value: false,
       },
 
-      /**
-       * @type {boolean}
-       */
       hidden: {
         type: Boolean,
         computed: 'isHidden_(app)',
@@ -54,6 +48,7 @@ export class AppManagementFileHandlingItemElement extends
   }
 
   app: App;
+  override hidden: boolean;
   showOverflowDialog: boolean;
 
   override ready(): void {

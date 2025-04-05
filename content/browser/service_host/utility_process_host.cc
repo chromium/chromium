@@ -329,6 +329,7 @@ bool UtilityProcessHost::StartProcess() {
         network::switches::kIgnoreCertificateErrorsSPKIList,
         network::switches::kTestThirdPartyCookiePhaseout,
         network::switches::kDisableSharedDictionaryStorageCleanupForTesting,
+        network::switches::kStoreProbabilisticRevealTokens,
         sandbox::policy::switches::kNoSandbox,
 #if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
         switches::kDisableDevShmUsage,

@@ -329,6 +329,9 @@ void DeleteAutofillPopupProxy() {
 // but small enough to prevent wasting memory and cpu if abused.
 const int kMaxCharacterBoundingBoxLen = 1024;
 
+// This is the value of View.NO_ID, used to mark a View that has no ID.
+const int kViewNoId = -1;
+
 std::optional<int> MaybeFindRowColumn(ui::BrowserAccessibility* start_node,
                                       std::u16string element_type,
                                       jboolean forwards) {
@@ -881,6 +884,31 @@ void WebContentsAccessibilityAndroid::HandleEditableTextChanged(
                                                               unique_id);
 }
 
+void WebContentsAccessibilityAndroid::HandleActiveDescendantChanged(
+    int32_t unique_id) {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
+  if (obj.is_null()) {
+    return;
+  }
+
+  BrowserAccessibilityAndroid* node = GetAXFromUniqueID(unique_id);
+  int active_descendant_id_attribute =
+      node->GetIntAttribute(ax::mojom::IntAttribute::kActivedescendantId);
+  ui::BrowserAccessibility* active_descendant_element =
+      node->manager()->GetFromID(active_descendant_id_attribute);
+
+  int active_descendant_id = kViewNoId;
+  if (active_descendant_element) {
+    active_descendant_id =
+        static_cast<BrowserAccessibilityAndroid*>(active_descendant_element)
+            ->GetUniqueId();
+  }
+
+  Java_WebContentsAccessibilityImpl_handleActiveDescendantChanged(
+      env, obj, unique_id, active_descendant_id);
+}
+
 void WebContentsAccessibilityAndroid::SignalEndOfTestForTesting(JNIEnv* env) {
   ui::BrowserAccessibilityManager* manager =
       web_contents_->GetRootBrowserAccessibilityManager();
@@ -1231,8 +1259,7 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
       node->CanScrollLeft(), node->CanScrollRight(), node->IsClickable(),
       node->IsTextField(), node->IsEnabled(), node->IsFocusable(),
       node->IsFocused(), node->IsCollapsed(), node->IsExpanded(),
-      node->HasNonEmptyValue(),
-      !!node->GetTextContentLengthUTF16() || !node->GetContainerTitle().empty(),
+      node->HasNonEmptyValue(), !node->GetAccessibleNameUTF16().empty(),
       node->IsSeekControl(), node->IsFormDescendant());
 
   Java_AccessibilityNodeInfoBuilder_setAccessibilityNodeInfoBaseAttributes(
@@ -1284,6 +1311,10 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
         base::android::ConvertUTF16ToJavaString(env,
                                                 node->GetStateDescription()),
         base::android::ConvertUTF16ToJavaString(env, node->GetContainerTitle()),
+        base::android::ConvertUTF16ToJavaString(env,
+                                                node->GetContentDescription()),
+        base::android::ConvertUTF16ToJavaString(
+            env, node->GetSupplementalDescription()),
         node->GetTextSize(), node->GetTextStyle(), node->GetTextColor(),
         node->GetTextBackgroundColor(),
         GetCanonicalJNIString(env, node->GetFontFamily()), node->IsSubscript(),
@@ -1302,8 +1333,11 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
         suggestion_starts_java, suggestion_ends_java, suggestion_text_java,
         base::android::ConvertUTF16ToJavaString(env,
                                                 node->GetStateDescription()),
+        base::android::ConvertUTF16ToJavaString(env, node->GetContainerTitle()),
         base::android::ConvertUTF16ToJavaString(env,
-                                                node->GetContainerTitle()));
+                                                node->GetContentDescription()),
+        base::android::ConvertUTF16ToJavaString(
+            env, node->GetSupplementalDescription()));
   }
 
   std::u16string element_id;

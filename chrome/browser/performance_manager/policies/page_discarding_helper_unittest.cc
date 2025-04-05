@@ -285,17 +285,12 @@ TEST_F(PageDiscardingHelperTest, DiscardAPageSingleCandidateFails) {
       PageDiscardingHelper::GetFromGraph(graph())->DiscardAPage(
           DiscardReason::URGENT);
   EXPECT_FALSE(first_discarded_at.has_value());
-  // On the first discard attempt, an attempt will be made to discard
-  // `page_node()`, which will render it uneligible for the next discard
-  // attempt.
+  // There should be 2 discard attempts, during the first one an attempt will be
+  // made to discard |page_node()|, on the second attempt no discard candidate
+  // should be found.
   histogram_tester()->ExpectBucketCount("Discarding.DiscardCandidatesCount", 1,
                                         1);
 
-  first_discarded_at =
-      PageDiscardingHelper::GetFromGraph(graph())->DiscardAPage(
-          DiscardReason::URGENT);
-  EXPECT_FALSE(first_discarded_at.has_value());
-  // No eligible candidate found.
   histogram_tester()->ExpectBucketCount("Discarding.DiscardCandidatesCount", 0,
                                         1);
 }

@@ -30,6 +30,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/browser/uninstall_reason.h"
@@ -328,7 +329,7 @@ TEST_F(ActivityLogTest, LogPrerender) {
                            .Set("version", "1.0.0")
                            .Set("manifest_version", 2))
           .Build();
-  extension_service_->AddExtension(extension.get());
+  ExtensionRegistrar::Get(profile())->AddExtension(extension);
   ActivityLog* activity_log = ActivityLog::GetInstance(profile());
   EXPECT_TRUE(activity_log->ShouldLog(extension->id()));
   ASSERT_TRUE(GetDatabaseEnabled());
@@ -503,14 +504,14 @@ TEST_F(ActivityLogTestWithoutSwitch, TestShouldLog) {
   ActivityLog* activity_log = ActivityLog::GetInstance(profile());
   scoped_refptr<const Extension> empty_extension =
       ExtensionBuilder("Test").Build();
-  extension_service_->AddExtension(empty_extension.get());
+  ExtensionRegistrar::Get(profile())->AddExtension(empty_extension);
   // Since the command line switch for logging isn't enabled and there's no
   // watchdog app active, the activity log shouldn't log anything.
   EXPECT_FALSE(activity_log->ShouldLog(empty_extension->id()));
   const char kAllowlistedExtensionId[] = "eplckmlabaanikjjcgnigddmagoglhmp";
   scoped_refptr<const Extension> activity_log_extension =
       ExtensionBuilder("Test").SetID(kAllowlistedExtensionId).Build();
-  extension_service_->AddExtension(activity_log_extension.get());
+  ExtensionRegistrar::Get(profile())->AddExtension(activity_log_extension);
   // Loading a watchdog app means the activity log should log other extension
   // activities...
   EXPECT_TRUE(activity_log->ShouldLog(empty_extension->id()));

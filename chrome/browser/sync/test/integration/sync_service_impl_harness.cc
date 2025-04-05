@@ -120,6 +120,21 @@ class SyncSetupChecker : public SingleClientStatusChangeChecker {
   const State wait_for_state_;
 };
 
+class SyncTransportStateChecker : public SingleClientStatusChangeChecker {
+ public:
+  SyncTransportStateChecker(SyncServiceImpl* service,
+                            syncer::SyncService::TransportState state)
+      : SingleClientStatusChangeChecker(service), state_(state) {}
+
+  bool IsExitConditionSatisfied(std::ostream* os) override {
+    *os << "Waiting for sync transport state to change";
+    return service()->GetTransportState() == state_;
+  }
+
+ private:
+  const syncer::SyncService::TransportState state_;
+};
+
 // Same as reset on chrome.google.com/sync.
 // This function will wait until the reset is done. If error occurs,
 // it will log error messages.
@@ -296,6 +311,24 @@ bool SyncServiceImplHarness::ExitSyncPausedStateForPrimaryAccount() {
   // The engine was off in the sync-paused state, so wait for it to start.
   return AwaitSyncSetupCompletion();
 }
+
+bool SyncServiceImplHarness::EnterSignInPendingStateForPrimaryAccount() {
+  CHECK_EQ(service_->GetTransportState(),
+           syncer::SyncServiceImpl::TransportState::ACTIVE);
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile_);
+  CHECK(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  signin::SetInvalidRefreshTokenForPrimaryAccount(identity_manager);
+  return AwaitSyncTransportPaused();
+}
+
+bool SyncServiceImplHarness::ExitSignInPendingStateForPrimaryAccount() {
+  CHECK_EQ(service_->GetTransportState(),
+           syncer::SyncService::TransportState::PAUSED);
+  signin::SetRefreshTokenForPrimaryAccount(
+      IdentityManagerFactory::GetForProfile(profile_));
+  return AwaitSyncTransportActive();
+}
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 bool SyncServiceImplHarness::SetupSync(
@@ -433,6 +466,16 @@ bool SyncServiceImplHarness::AwaitSyncTransportActive() {
     return false;
   }
 
+  return true;
+}
+
+bool SyncServiceImplHarness::AwaitSyncTransportPaused() {
+  if (!SyncTransportStateChecker(service(),
+                                 syncer::SyncService::TransportState::PAUSED)
+           .Wait()) {
+    LOG(ERROR) << "SyncTransportStateChecker timed out.";
+    return false;
+  }
   return true;
 }
 

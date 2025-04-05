@@ -272,6 +272,9 @@ class BrowserProcessImpl : public BrowserProcess,
 
   void ApplyDefaultBrowserPolicy();
 
+  // ApplicationLocaleStorage callback
+  void OnLocaleChanged(const std::string& new_locale);
+
   // Methods called to control our lifetime. The browser process can be "pinned"
   // to make sure it keeps running.
   void Pin();
@@ -393,7 +396,7 @@ class BrowserProcessImpl : public BrowserProcess,
   std::unique_ptr<printing::PrintJobManager> print_job_manager_;
 #endif
 
-  std::string locale_;
+  base::CallbackListSubscription on_locale_changed_callback_subscription_;
 
   // Download status updates (like a changing application icon on dock/taskbar)
   // are global per-application. DownloadStatusUpdater does no work in the ctor

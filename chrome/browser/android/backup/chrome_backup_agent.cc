@@ -17,7 +17,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/ChromeBackupAgentImpl_jni.h"
 
-static_assert(14 == static_cast<int>(syncer::UserSelectableType::kLastType),
+static_assert(13 == static_cast<int>(syncer::UserSelectableType::kLastType),
               "When adding a new selectable type, add its pref to"
               "BoolPrefBackupSerializer if the type exists on Android");
 

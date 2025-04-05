@@ -102,9 +102,20 @@ void TileDisplayLayerImpl::Tiling::SetTilingRect(const gfx::Rect& rect) {
   tiles_.clear();
 }
 
-void TileDisplayLayerImpl::Tiling::SetTileContents(
-    const TileIndex& key,
-    const TileContents& contents) {
+void TileDisplayLayerImpl::Tiling::SetTileContents(const TileIndex& key,
+                                                   const TileContents& contents,
+                                                   bool is_incremental_update) {
+  if (is_incremental_update) {
+    // Full tree updates receive damage as part of the LayerImpl::update_rect.
+    // For incremental tile updates on an Active tree, we need to record the
+    // damage caused by each tile change.
+    gfx::Rect tile_rect = tiling_data_.TileBoundsWithBorder(key.i, key.j);
+    tile_rect.set_size(tiling_data_.max_texture_size());
+    gfx::Rect enclosing_layer_rect = ToEnclosingRect(
+        raster_transform_.InverseMapRect(gfx::RectF(tile_rect)));
+    layer_->RecordDamage(enclosing_layer_rect);
+  }
+
   std::unique_ptr<Tile> old_tile;
   if (std::holds_alternative<NoContents>(contents)) {
     auto it = tiles_.find(key);
@@ -320,6 +331,19 @@ void TileDisplayLayerImpl::GetContentsResourceId(
   std::vector<viz::TransferableResource> used_resources;
   used_resources.push_back(iter->resource()->resource);
   client_->DidAppendQuadsWithResources(used_resources);
+}
+
+gfx::Rect TileDisplayLayerImpl::GetDamageRect() const {
+  return damage_rect_;
+}
+
+void TileDisplayLayerImpl::ResetChangeTracking() {
+  LayerImpl::ResetChangeTracking();
+  damage_rect_.SetRect(0, 0, 0, 0);
+}
+
+void TileDisplayLayerImpl::RecordDamage(const gfx::Rect& damage_rect) {
+  damage_rect_.Union(damage_rect);
 }
 
 }  // namespace cc

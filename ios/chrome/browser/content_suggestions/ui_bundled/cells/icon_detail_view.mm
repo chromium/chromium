@@ -713,15 +713,12 @@ UIView* BadgeIconInContainer(UIImageView* icon,
   label.numberOfLines = 0;
   label.lineBreakMode = NSLineBreakByWordWrapping;
   if (_layoutType == IconDetailViewLayoutType::kHero) {
-    label.font = [[UIFontMetrics defaultMetrics]
-        scaledFontForFont:CreateDynamicFont(UIFontTextStyleFootnote,
-                                            UIFontWeightSemibold)
-         maximumPointSize:kMaxTextSizeForStyleFootnote];
+    label.font =
+        PreferredFontForTextStyle(UIFontTextStyleFootnote, UIFontWeightSemibold,
+                                  kMaxTextSizeForStyleFootnote);
   } else {
-    label.font = [[UIFontMetrics defaultMetrics]
-        scaledFontForFont:[UIFont
-                              preferredFontForTextStyle:UIFontTextStyleFootnote]
-         maximumPointSize:kMaxTextSizeForStyleFootnote];
+    label.font = PreferredFontForTextStyle(
+        UIFontTextStyleFootnote, std::nullopt, kMaxTextSizeForStyleFootnote);
   }
 
   label.adjustsFontForContentSizeCategory = YES;
@@ -738,10 +735,8 @@ UIView* BadgeIconInContainer(UIImageView* icon,
   label.text = _description;
   label.numberOfLines = 2;
   label.lineBreakMode = NSLineBreakByTruncatingTail;
-  label.font = [[UIFontMetrics defaultMetrics]
-      scaledFontForFont:[UIFont
-                            preferredFontForTextStyle:UIFontTextStyleFootnote]
-       maximumPointSize:kMaxTextSizeForStyleFootnote];
+  label.font = PreferredFontForTextStyle(UIFontTextStyleFootnote, std::nullopt,
+                                         kMaxTextSizeForStyleFootnote);
   label.adjustsFontForContentSizeCategory = YES;
   label.textColor = [UIColor colorNamed:kTextSecondaryColor];
 

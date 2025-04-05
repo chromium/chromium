@@ -169,17 +169,6 @@ struct ViewConfig {
       stringWithFormat:@"%@, %@", [self titleText], [self descriptionText]];
 }
 
-#pragma mark - UITraitEnvironment
-
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-}
-#endif
-
 #pragma mark - Public methods
 
 - (void)markCompleteWithCompletion:(ProceduralBlock)completion {
@@ -318,10 +307,10 @@ struct ViewConfig {
   label.translatesAutoresizingMaskIntoConstraints = NO;
   label.numberOfLines = 0;
   label.lineBreakMode = NSLineBreakByWordWrapping;
-  label.font =
-      _config.hero_layout
-          ? CreateDynamicFont(UIFontTextStyleFootnote, UIFontWeightSemibold)
-          : [UIFont preferredFontForTextStyle:_config.title_font];
+  label.font = _config.hero_layout
+                   ? PreferredFontForTextStyle(UIFontTextStyleFootnote,
+                                               UIFontWeightSemibold)
+                   : PreferredFontForTextStyle(_config.title_font);
   label.adjustsFontForContentSizeCategory = YES;
   if (_complete) {
     label.textColor = [UIColor colorNamed:kTextSecondaryColor];

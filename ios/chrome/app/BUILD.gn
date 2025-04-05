@@ -71,7 +71,7 @@ source_set("app") {
 }
 
 source_set("app_trampoline") {
-  sources = [ "chrome_exe_trampoline.mm" ]
+  sources = [ "chrome_exe_main.mm" ]
 }
 
 source_set("unit_tests") {
@@ -493,6 +493,7 @@ source_set("app_internal") {
     "//ios/chrome/browser/shared/model/paths",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:features",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
@@ -537,6 +538,10 @@ source_set("app_internal") {
     "//ui/resources",
     "//ui/strings:ui_strings",
   ]
+
+  if (target_environment != "catalyst") {
+    deps += [ "//ios/chrome/browser/default_browser/model/default_status" ]
+  }
 
   if (ios_enable_credential_provider_extension) {
     deps += [ ":credential_provider_migrator_app_agent" ]
@@ -611,7 +616,7 @@ source_set("mode") {
 }
 
 source_set("main") {
-  sources = [ "chrome_exe_main.mm" ]
+  sources = [ "chrome_main.mm" ]
 
   deps = [
     ":app_internal",

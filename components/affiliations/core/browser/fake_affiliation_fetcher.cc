@@ -3,16 +3,16 @@
 // found in the LICENSE file.
 
 #include "components/affiliations/core/browser/fake_affiliation_fetcher.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 #include <utility>
+
+#include "net/http/http_status_code.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace affiliations {
 
 FakeAffiliationFetcher::FakeAffiliationFetcher(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    AffiliationFetcherDelegate* delegate)
-    : delegate_(delegate) {}
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {}
 
 FakeAffiliationFetcher::~FakeAffiliationFetcher() = default;
 
@@ -20,16 +20,14 @@ void FakeAffiliationFetcher::SimulateSuccess(
     const ParsedFetchResponse& fake_result_data) {
   FetchResult result;
   result.data = fake_result_data;
-  // TODO(crbug.com/371938601): clean up delegate.
-  delegate_->OnFetchSucceeded(
-      this, std::make_unique<ParsedFetchResponse>(fake_result_data));
+  result.http_status_code = net::HTTP_OK;
   std::move(result_callback_).Run(std::move(result));
 }
 
 void FakeAffiliationFetcher::SimulateFailure() {
-  // TODO(crbug.com/371938601): clean up delegate.
-  delegate_->OnFetchFailed(this);
-  std::move(result_callback_).Run(FetchResult());
+  FetchResult result;
+  result.http_status_code = net::HTTP_INTERNAL_SERVER_ERROR;
+  std::move(result_callback_).Run(result);
 }
 
 void FakeAffiliationFetcher::StartRequest(
@@ -66,10 +64,9 @@ FakeAffiliationFetcher* FakeAffiliationFetcherFactory::PeekNextFetcher() {
 
 std::unique_ptr<AffiliationFetcherInterface>
 FakeAffiliationFetcherFactory::CreateInstance(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    AffiliationFetcherDelegate* delegate) {
-  auto fetcher = std::make_unique<FakeAffiliationFetcher>(
-      std::move(url_loader_factory), delegate);
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+  auto fetcher =
+      std::make_unique<FakeAffiliationFetcher>(std::move(url_loader_factory));
   pending_fetchers_.push(fetcher.get());
   return fetcher;
 }

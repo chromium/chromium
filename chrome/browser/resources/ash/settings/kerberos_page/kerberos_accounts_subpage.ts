@@ -89,20 +89,15 @@ export class SettingsKerberosAccountsSubpageElement extends
         type: String,
         value: '',
       },
-
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kAddKerberosTicketV2,
-          Setting.kRemoveKerberosTicketV2,
-          Setting.kSetActiveKerberosTicketV2,
-        ]),
-      },
     };
   }
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kAddKerberosTicketV2,
+    Setting.kRemoveKerberosTicketV2,
+    Setting.kSetActiveKerberosTicketV2,
+  ]);
 
   private accountToastText_: string;
   private accounts_: KerberosAccount[];

@@ -12,7 +12,6 @@
 #include <optional>
 #include <string_view>
 #include <tuple>
-#include <unordered_map>
 #include <utility>
 #include <variant>
 #include <vector>
@@ -252,6 +251,8 @@
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "storage/browser/blob/blob_url_store_impl.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
@@ -441,24 +442,20 @@ bool g_allow_injecting_javascript = false;
 
 const char kDotGoogleDotCom[] = ".google.com";
 
-typedef std::unordered_map<GlobalRenderFrameHostId,
-                           RenderFrameHostImpl*,
-                           GlobalRenderFrameHostIdHasher>
-    RoutingIDFrameMap;
+using RoutingIDFrameMap =
+    absl::flat_hash_map<GlobalRenderFrameHostId, RenderFrameHostImpl*>;
 base::LazyInstance<RoutingIDFrameMap>::DestructorAtExit g_routing_id_frame_map =
     LAZY_INSTANCE_INITIALIZER;
 
 // A global set of all sandboxed RenderFrameHosts that could be isolated from
 // the rest of their SiteInstance.
-typedef std::unordered_set<GlobalRenderFrameHostId,
-                           GlobalRenderFrameHostIdHasher>
-    RoutingIDIsolatableSandboxedIframesSet;
+using RoutingIDIsolatableSandboxedIframesSet =
+    absl::flat_hash_set<GlobalRenderFrameHostId>;
 base::LazyInstance<RoutingIDIsolatableSandboxedIframesSet>::DestructorAtExit
     g_routing_id_isolatable_sandboxed_iframes_set = LAZY_INSTANCE_INITIALIZER;
 
-using TokenFrameMap = std::unordered_map<blink::LocalFrameToken,
-                                         RenderFrameHostImpl*,
-                                         blink::LocalFrameToken::Hasher>;
+using TokenFrameMap =
+    absl::flat_hash_map<blink::LocalFrameToken, RenderFrameHostImpl*>;
 base::LazyInstance<TokenFrameMap>::Leaky g_token_frame_map =
     LAZY_INSTANCE_INITIALIZER;
 
@@ -1599,22 +1596,22 @@ class DiscardedRFHProcessHelper : public base::SupportsUserData::Data,
 void RecordNavigationTraceEventsAndMetrics(
     const NavigationRequest::Timeline& timeline,
     const GURL& url) {
+  DCHECK(!timeline.start.is_null());
+
   // Record these trace events in a global "Navigations" track, so that it can
   // be found under "Global Track Events". Since this contains events from
   // both the browser and renderer processes, this is preferable to nesting
   // the track under a particular process.
   constexpr uint64_t kGlobalInstantTrackId = 0;
-  static perfetto::NamedTrack track(
-      "Navigations", base::trace_event::GetNextGlobalTraceId(),
+  static const perfetto::NamedTrack track1(
+      "Navigation: Timelines", base::trace_event::GetNextGlobalTraceId(),
       perfetto::Track::Global(kGlobalInstantTrackId));
-
-  DCHECK(!timeline.start.is_null());
 
   // Define a helper to log both a trace event slice and a corresponding metric
   // for one stage of a navigation.
   auto log_trace_event_and_uma =
-      [&](const std::string& name, const base::TimeTicks& begin_time,
-          const base::TimeTicks& end_time,
+      [&](const std::string& name, const perfetto::NamedTrack track,
+          const base::TimeTicks& begin_time, const base::TimeTicks& end_time,
           const std::string& histogram_name = std::string()) {
         if (begin_time.is_null() || end_time.is_null()) {
           return;
@@ -1627,6 +1624,14 @@ void RecordNavigationTraceEventsAndMetrics(
         // validate (and possibly adjust) the renderer-provided timestamps and
         // then convert this to a CHECK.
         if (begin_time < timeline.start || end_time > timeline.finish) {
+          return;
+        }
+
+        // Note that some cases in practice (e.g., prefetch, headless virtual
+        // time) may cause end_time to be before begin_time. This can happen in
+        // unit tests or due to compromised renderers as well. Skip trace events
+        // and metrics in these ill-defined cases.
+        if (end_time < begin_time) {
           return;
         }
 
@@ -1653,8 +1658,10 @@ void RecordNavigationTraceEventsAndMetrics(
   // show up under it. Do not include `url` in the histogram name. Note that
   // `url` is the committing URL, which might differ from the starting URL, e.g.
   // due to redirects.
+  // TODO(crbug.com/405437928): Overlapping navigations may incorrectly appear
+  // to be nested, using the wrong end times.
   std::string top_level_trace_event_name = "Navigation: " + url.spec();
-  log_trace_event_and_uma(top_level_trace_event_name, timeline.start,
+  log_trace_event_and_uma(top_level_trace_event_name, track1, timeline.start,
                           timeline.finish, /*histogram_name=*/"Total");
 
   // It's possible that there was no CommitNavigation IPC sent. This can happen
@@ -1673,18 +1680,35 @@ void RecordNavigationTraceEventsAndMetrics(
     return;
   }
 
-  log_trace_event_and_uma("StartToNavigationRequestCreation", timeline.start,
-                          timeline.navigation_request_creation);
+  // Record Start -> {BeforeUnloadPhase1} -> NavigationRequest.
+  if (!timeline.beforeunload_phase1_start.is_null()) {
+    log_trace_event_and_uma("StartToBeforeUnloadPhase1", track1, timeline.start,
+                            timeline.beforeunload_phase1_start);
+    log_trace_event_and_uma("BeforeUnloadPhase1", track1,
+                            timeline.beforeunload_phase1_start,
+                            timeline.beforeunload_phase1_end);
+    log_trace_event_and_uma("BeforeUnloadPhase1ToNavigationRequestCreation",
+                            track1, timeline.beforeunload_phase1_end,
+                            timeline.navigation_request_creation);
+  } else {
+    log_trace_event_and_uma("StartToNavigationRequestCreation", track1,
+                            timeline.start,
+                            timeline.navigation_request_creation);
+  }
 
-  if (!timeline.beforeunload_start.is_null()) {
-    log_trace_event_and_uma("NavigationRequestToBeforeUnload",
+  // Record NavigationRequest -> {BeforeUnloadPhase2} -> BeginNavigation.
+  if (!timeline.beforeunload_phase2_start.is_null()) {
+    log_trace_event_and_uma("NavigationRequestToBeforeUnloadPhase2", track1,
                             timeline.navigation_request_creation,
-                            timeline.beforeunload_start);
-    log_trace_event_and_uma("BeforeUnloadToBeginNavigation",
-                            timeline.beforeunload_start,
+                            timeline.beforeunload_phase2_start);
+    log_trace_event_and_uma("BeforeUnloadPhase2", track1,
+                            timeline.beforeunload_phase2_start,
+                            timeline.beforeunload_phase2_end);
+    log_trace_event_and_uma("BeforeUnloadPhase2ToBeginNavigation", track1,
+                            timeline.beforeunload_phase2_end,
                             timeline.begin_navigation);
   } else {
-    log_trace_event_and_uma("NavigationRequestToBeginNavigation",
+    log_trace_event_and_uma("NavigationRequestToBeginNavigation", track1,
                             timeline.navigation_request_creation,
                             timeline.begin_navigation);
   }
@@ -1697,13 +1721,13 @@ void RecordNavigationTraceEventsAndMetrics(
   // loader. Otherwise, break down the URL loading into several finer-grained
   // intervals.
   if (timeline.loader_start.is_null() || timeline.receive_response.is_null()) {
-    log_trace_event_and_uma("BeginNavigationToCommit",
+    log_trace_event_and_uma("BeginNavigationToCommit", track1,
                             timeline.begin_navigation,
                             timeline.commit_ipc_sent);
   } else {
-    log_trace_event_and_uma("BeginNavigationToLoaderStart",
+    log_trace_event_and_uma("BeginNavigationToLoaderStart", track1,
                             timeline.begin_navigation, timeline.loader_start);
-    log_trace_event_and_uma("LoaderStartToReceiveResponse",
+    log_trace_event_and_uma("LoaderStartToReceiveResponse", track1,
                             timeline.loader_start, timeline.receive_response);
 
     // Generate the nested loader events contained within
@@ -1711,44 +1735,93 @@ void RecordNavigationTraceEventsAndMetrics(
     // `loader_start` when Prefetch or Prerendering is enabled. Don't record
     // metrics or traces in such cases to avoid skewing the data.
     if (timeline.loader_start <= timeline.loader_fetch_start) {
-      log_trace_event_and_uma("LoaderStartToFetchStart", timeline.loader_start,
+      log_trace_event_and_uma("LoaderStartToFetchStart", track1,
+                              timeline.loader_start,
                               timeline.loader_fetch_start);
-      log_trace_event_and_uma("FetchStartToReceiveHeaders",
+      log_trace_event_and_uma("FetchStartToReceiveHeaders", track1,
                               timeline.loader_fetch_start,
                               timeline.loader_receive_headers);
       // TODO(alexmos): add events for redirects when they are present.
-      log_trace_event_and_uma("ReceiveHeadersToReceiveResponse",
+      log_trace_event_and_uma("ReceiveHeadersToReceiveResponse", track1,
                               timeline.loader_receive_headers,
                               timeline.receive_response);
     }
 
-    log_trace_event_and_uma("ReceiveResponseToCommit",
+    log_trace_event_and_uma("ReceiveResponseToCommit", track1,
                             timeline.receive_response,
                             timeline.commit_ipc_sent);
   }
 
-  log_trace_event_and_uma("CommitToDidCommit", timeline.commit_ipc_sent,
+  log_trace_event_and_uma("CommitToDidCommit", track1, timeline.commit_ipc_sent,
                           timeline.did_commit_ipc_received);
   // Generate a nested slice for the renderer side of the navigation commit,
   // contained within CommitToDidCommit.
-  log_trace_event_and_uma("RendererCommitToDidCommit",
+  log_trace_event_and_uma("RendererCommitToDidCommit", track1,
                           timeline.renderer_commit_ipc_received,
                           timeline.renderer_did_commit_ipc_sent);
-  log_trace_event_and_uma("DidCommitToFinish", timeline.did_commit_ipc_received,
-                          timeline.finish);
+  log_trace_event_and_uma("DidCommitToFinish", track1,
+                          timeline.did_commit_ipc_received, timeline.finish);
 
-  // Also record total time that excludes the time to process beforeunload
-  // handlers, as this time is not under the browser's control. Note that
-  // this can't have a meaningful trace event due to the adjustment.
-  base::TimeDelta total_excluding_beforeunload =
-      timeline.finish - timeline.start;
-  if (!timeline.beforeunload_start.is_null()) {
-    total_excluding_beforeunload -=
-        timeline.begin_navigation - timeline.beforeunload_start;
+  // Create a second track (with the same name but a different ID) for showing
+  // non-nested events about the duration of the navigation, with beforeunload
+  // time removed. Note that the track names are not visible in the Perfetto UI.
+  static const perfetto::NamedTrack track2(
+      "Navigation: Durations", base::trace_event::GetNextGlobalTraceId(),
+      perfetto::Track::Global(kGlobalInstantTrackId));
+
+  // Excluding beforeunload time from the total navigation duration is useful
+  // because it is not under the browser's control, and may include long periods
+  // of waiting for the user to interact with a dialog.
+  base::TimeDelta beforeunload_total_duration;
+  if (!timeline.beforeunload_phase1_start.is_null()) {
+    beforeunload_total_duration +=
+        timeline.beforeunload_phase1_end - timeline.beforeunload_phase1_start;
   }
-  base::UmaHistogramTimes(
-      "Navigation.Timeline.TotalExcludingBeforeUnload.Duration",
-      total_excluding_beforeunload);
+  if (!timeline.beforeunload_phase2_start.is_null()) {
+    beforeunload_total_duration +=
+        timeline.beforeunload_phase2_end - timeline.beforeunload_phase2_start;
+  }
+
+  // Record how much time was correctly ignored by current navigation metrics,
+  // by moving it to the start of the duration.
+  base::TimeTicks duration_start = timeline.start + beforeunload_total_duration;
+  log_trace_event_and_uma("CorrectlyIgnored", track2, timeline.start,
+                          duration_start,
+                          /*histogram_name=*/"IgnoredCorrectly");
+  // Record the remaining duration of the navigation, moving the start time
+  // forward by the amount that was ignored.
+  log_trace_event_and_uma("TotalExcludingBeforeUnload", track2, duration_start,
+                          timeline.finish,
+                          /*histogram_name=*/"TotalExcludingBeforeUnload");
+
+  // Most navigation metrics currently ignore everything before the adjusted
+  // common_params start time, which is after any beforeunload handling (either
+  // phase 1 or phase 2). This is incorrect, because it excludes a significant
+  // amount of work done before and between the two beforeunload phases. Record
+  // how much of this time was ignored incorrectly to determine the impact of
+  // changing the metrics. In the trace viewer, this time is shown nested within
+  // (and at the start of) `TotalExcludingBeforeUnload`, to visually see how
+  // much of the navigation duration such metrics are ignoring.
+  // TODO(crbug.com/385170155): Move to a more accurate navigation start so that
+  // we don't incorrectly ignore anything, and remove the metrics below.
+  if (duration_start < timeline.common_params_start) {
+    log_trace_event_and_uma("IncorrectlyIgnored", track2, duration_start,
+                            timeline.common_params_start,
+                            /*histogram_name=*/"IgnoredIncorrectly");
+    // Also record what percentage was incorrectly ignored.
+    base::TimeDelta ignored_incorrectly =
+        timeline.common_params_start - duration_start;
+    base::TimeDelta total_excluding_beforeunload =
+        timeline.finish - duration_start;
+    if (!ignored_incorrectly.is_negative() &&
+        total_excluding_beforeunload.is_positive()) {
+      size_t ignored_percentage =
+          100 * ignored_incorrectly / total_excluding_beforeunload;
+      base::UmaHistogramPercentage(
+          "Navigation.Timeline.IgnoredIncorrectly.Percentage",
+          ignored_percentage);
+    }
+  }
 }
 }  // namespace
 
@@ -9394,7 +9467,9 @@ void RenderFrameHostImpl::OpenURL(blink::mojom::OpenURLParamsPtr params) {
         /*blob_url_loader_factory=*/nullptr,
         network::mojom::SourceLocation::New(), /*has_user_gesture=*/false,
         params->is_form_submission, params->impression,
-        params->initiator_activation_and_ad_status, base::TimeTicks::Now(),
+        params->initiator_activation_and_ad_status,
+        params->actual_navigation_start,
+        /*navigation_start_time=*/base::TimeTicks::Now(),
         /*is_embedder_initiated_fenced_frame_navigation=*/false,
         /*is_unfenced_top_navigation=*/true,
         /*force_new_browsing_instance=*/true, /*is_container_initiated=*/false,
@@ -9425,6 +9500,8 @@ void RenderFrameHostImpl::OpenURL(blink::mojom::OpenURLParamsPtr params) {
   if (!owner) {
     return;
   }
+  // TODO(crbug.com/385170155): Consider whether to pass actual_navigation_start
+  // through this path as well, which may involve a lot of plumbing.
   owner->GetCurrentNavigator().RequestOpenURL(
       this, validated_url, base::OptionalToPtr(params->initiator_frame_token),
       GetProcess()->GetDeprecatedID(), params->initiator_origin,
@@ -12673,10 +12750,8 @@ void RenderFrameHostImpl::ReportBlockingCrossPartitionBlobURL(
       std::move(details)));
 }
 
-void RenderFrameHostImpl::DoesDocumentHaveStorageAccess(
-    base::OnceCallback<void(bool)> callback) {
-  std::move(callback).Run(
-      StorageAccessHandle::DoesDocumentHaveStorageAccess(this));
+bool RenderFrameHostImpl::DoesDocumentHaveStorageAccess() {
+  return StorageAccessHandle::DoesDocumentHaveStorageAccess(this);
 }
 
 void RenderFrameHostImpl::BindBlobUrlStoreAssociatedReceiver(
@@ -12690,8 +12765,14 @@ void RenderFrameHostImpl::BindBlobUrlStoreAssociatedReceiver(
       base::BindRepeating(
           &RenderFrameHostImpl::ReportBlockingCrossPartitionBlobURL,
           weak_ptr_factory_.GetWeakPtr()),
-      base::BindRepeating(&RenderFrameHostImpl::DoesDocumentHaveStorageAccess,
-                          weak_ptr_factory_.GetWeakPtr()),
+      base::BindRepeating(
+          [](base::WeakPtr<RenderFrameHostImpl> frame) -> bool {
+            if (!frame) {
+              return false;
+            }
+            return frame->DoesDocumentHaveStorageAccess();
+          },
+          weak_ptr_factory_.GetWeakPtr()),
       !(GetContentClient()->browser()->IsBlobUrlPartitioningEnabled(
           GetBrowserContext())));
 }
@@ -14267,7 +14348,8 @@ RenderFrameHostImpl::CreateNavigationRequestForSynchronousRendererCommit(
     const std::vector<GURL>& redirects,
     const GURL& original_request_url,
     bool is_same_document,
-    bool is_same_document_history_api_navigation) {
+    bool is_same_document_history_api_navigation,
+    base::TimeTicks actual_navigation_start) {
   // This function must only be called when there are no NavigationRequests for
   // a navigation can be found at DidCommit time, which can only happen in two
   // cases:
@@ -14335,7 +14417,7 @@ RenderFrameHostImpl::CreateNavigationRequestForSynchronousRendererCommit(
       std::move(referrer), transition, should_replace_current_entry, method,
       has_user_gesture, is_overriding_user_agent, redirects,
       original_request_url, std::move(coep_reporter), std::move(dip_reporter),
-      http_status_code);
+      http_status_code, actual_navigation_start);
 }
 
 void RenderFrameHostImpl::BeforeUnloadTimeout() {
@@ -15181,7 +15263,8 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
         redirects, params->url, is_same_document_navigation,
         same_document_params &&
             same_document_params->same_document_navigation_type ==
-                blink::mojom::SameDocumentNavigationType::kHistoryApi);
+                blink::mojom::SameDocumentNavigationType::kHistoryApi,
+        /*actual_navigation_start=*/params->commit_navigation_start);
 
     // Add the origin from this navigation to the list of committed origins. In
     // the common case, this is done in UpdatePermissionsForNavigation() at
@@ -15315,9 +15398,8 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     // still has a valid receiver, `this` will receive delayed IPC calls from
     // the network service. When the remote interface in the network service is
     // destructed, `mojo::ReceiverSet` automatically removes the receiver.
-    for (auto& receiver : navigation_request->TakeCookieObservers()) {
-      cookie_observers_.Add(std::move(receiver),
-                            CookieAccessDetails::Source::kNavigation);
+    for (auto& [receiver, source] : navigation_request->TakeCookieObservers()) {
+      cookie_observers_.Add(std::move(receiver), source);
     }
     for (auto& receiver : navigation_request->TakeTrustTokenObservers()) {
       trust_token_observers_.Add(this, std::move(receiver));
@@ -15789,25 +15871,29 @@ void RenderFrameHostImpl::MaybeGenerateCrashReport(
 
   // Construct the crash report.
   base::Value::Dict body;
+  if (base::FeatureList::IsEnabled(
+          blink::features::kCrashReportingAPIMoreContextData)) {
+    body.Set("is_top_level", IsOutermostMainFrame() ? "true" : "false");
+  }
   if (!reason.empty()) {
     body.Set("reason", reason);
-    if (reason == "unresponsive" &&
-        base::FeatureList::IsEnabled(
-            blink::features::
-                kDocumentPolicyIncludeJSCallStacksInCrashReports)) {
-      RenderProcessHostImpl* rph =
-          static_cast<RenderProcessHostImpl*>(GetProcess());
-      const std::string& unresponsive_document_javascript_call_stack =
-          rph->GetUnresponsiveDocumentJavascriptCallStack();
-      const blink::LocalFrameToken& unresponsive_document_token =
-          rph->GetUnresponsiveDocumentToken();
+  }
 
-      if (!unresponsive_document_javascript_call_stack.empty()) {
-        if (unresponsive_document_token == GetFrameToken()) {
-          body.Set("stack", unresponsive_document_javascript_call_stack);
-        } else {
-          body.Set("stack", "Unable to collect JS call stack.");
-        }
+  if (reason == "unresponsive" &&
+      base::FeatureList::IsEnabled(
+          blink::features::kDocumentPolicyIncludeJSCallStacksInCrashReports)) {
+    RenderProcessHostImpl* rph =
+        static_cast<RenderProcessHostImpl*>(GetProcess());
+    const std::string& unresponsive_document_javascript_call_stack =
+        rph->GetUnresponsiveDocumentJavascriptCallStack();
+    const blink::LocalFrameToken& unresponsive_document_token =
+        rph->GetUnresponsiveDocumentToken();
+
+    if (!unresponsive_document_javascript_call_stack.empty()) {
+      if (unresponsive_document_token == GetFrameToken()) {
+        body.Set("stack", unresponsive_document_javascript_call_stack);
+      } else {
+        body.Set("stack", "Unable to collect JS call stack.");
       }
     }
   }
@@ -15866,14 +15952,9 @@ void RenderFrameHostImpl::SendCommitNavigation(
 
   base::ElapsedTimer timer;
   DCHECK_EQ(net::OK, navigation_request->GetNetErrorCode());
-  if (commit_params->origin_to_commit) {
-    DCHECK(
-        base::FeatureList::IsEnabled(features::kUseBrowserCalculatedOrigin) ||
-        common_params->url.SchemeIs(url::kDataScheme));
-    CHECK_EQ(commit_params->origin_to_commit.value(),
-             navigation_request->browser_side_origin_to_commit_with_debug_info()
-                 .first.value());
-  }
+  CHECK_EQ(commit_params->origin_to_commit,
+           navigation_request->browser_side_origin_to_commit_with_debug_info()
+               .first.value());
   IncreaseCommitNavigationCounter();
   mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host;
   mojo::PendingRemote<blink::mojom::CodeCacheHost>
@@ -16050,9 +16131,7 @@ void RenderFrameHostImpl::SendCommitFailedNavigation(
         subresource_loader_factories,
     const blink::DocumentToken& document_token,
     blink::mojom::PolicyContainerPtr policy_container) {
-  // `origin_to_commit` must be set on failed navigations.
-  DCHECK(commit_params->origin_to_commit);
-  CHECK_EQ(commit_params->origin_to_commit.value(),
+  CHECK_EQ(commit_params->origin_to_commit,
            navigation_request->browser_side_origin_to_commit_with_debug_info()
                .first.value());
   DCHECK(navigation_client && navigation_request);

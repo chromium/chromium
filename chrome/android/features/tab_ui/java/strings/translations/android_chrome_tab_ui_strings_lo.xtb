@@ -19,6 +19,7 @@
 <translation id="149054111719651807">{NUM_MINS,plural, =1{ສ້າງເມື່ອ <ph name="NUM_MINS_ONE" /> ນາທີກ່ອນ}other{ສ້າງເມື່ອ <ph name="NUM_MINS_MANY" /> ນາທີກ່ອນ}}</translation>
 <translation id="1499635324672558517">ປິດແຖບ​ບໍ່ເປີດເຜີຍຕົວຕົນທັງໝົດບໍ?</translation>
 <translation id="1501480321619201731">ລຶບກຸ່ມ</translation>
+<translation id="1505526451013346974">ເພີ່ມໃສ່ <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1555130319947370107">ສີ​ຟ້າ</translation>
 <translation id="161042844686301425">ສີຟ້າຂຽວ</translation>
 <translation id="1645759014353344461">ຈັດກຸ່ມ <ph name="TABS_COUNT_MANY" /> ແຖບແລ້ວ</translation>
@@ -85,7 +86,6 @@
 <translation id="4076226664360336092">ລາຍຊື່ກຸ່ມແຖບທີ່ເປີດຢູ່ລະດັບຄວາມສູງເຕັມໜ້າຈໍ</translation>
 <translation id="4133493477912226187">ເບິ່ງຄືວ່າມີ <ph name="NUMBER_OF_TABS" /> ແຖບກ່ຽວຂ້ອງກັນ. ຈັດກຸ່ມພວກມັນບໍ?</translation>
 <translation id="4139634748112164403">ແຖບຈະຍັງເປີດຢູ່ໃນອຸປະກອນນີ້ ແຕ່ລະບົບຈະລຶບກຸ່ມອອກຢ່າງຖາວອນ</translation>
-<translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{ປິດກຸ່ມ <ph name="TITLE_OF_GROUP" /> ດ້ວຍ <ph name="TABS_COUNT_ONE" /> ແຖບ, ສີ <ph name="COLOR_NAME" />.}other{ປິດກຸ່ມ <ph name="TITLE_OF_GROUP" /> ດ້ວຍ <ph name="TABS_COUNT_MANY" /> ແຖບ, ສີ <ph name="COLOR_NAME" />.}}</translation>
 <translation id="4159784952369912983">ສີມ່ວງ</translation>
 <translation id="427987768447457592">ກຸ່ມແຖບໃໝ່</translation>
 <translation id="4371591986692297148">ບໍ່ໄດ້ນຳໃຊ້</translation>
@@ -119,7 +119,6 @@
 <translation id="5446043142172831860">ລຶບແຖບອອກ ແລະ ອອກຈາກກຸ່ມ</translation>
 <translation id="5490235265819901748">ຂະຫຍາຍກຸ່ມແຖບແລ້ວ</translation>
 <translation id="5494920125229734069">ເລືອກ​ທັງ​ຫມົດ</translation>
-<translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{ປິດກຸ່ມແຖບດ້ວຍ <ph name="TABS_COUNT_ONE" /> ແຖບ, ສີ <ph name="COLOR_NAME" />.}other{ປິດກຸ່ມແຖບດ້ວຍ <ph name="TABS_COUNT_MANY" /> ແຖບ, ສີ <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">ເບິ່ງຂໍ້ມູນຮ້ານຄ້າ, ມີຕົວເລືອກຢູ່ເທິງສຸດຂອງໜ້າຈໍ</translation>
 <translation id="5627941783489838464">ບໍ່ມີການອັບເດດແຖບ</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{ກູ້ຄືນແຖບ}other{ກູ້ຄືນແຖບ}}</translation>

@@ -57,9 +57,9 @@ export class ViewerThumbnailElement extends CrLitElement {
     };
   }
 
-  clockwiseRotations: number = 0;
-  isActive: boolean = true;
-  pageNumber: number = 0;
+  accessor clockwiseRotations: number = 0;
+  accessor isActive: boolean = true;
+  accessor pageNumber: number = 0;
 
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);

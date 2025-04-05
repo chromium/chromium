@@ -60,7 +60,7 @@ constexpr char kTextAreaUrl[] = R"(
 constexpr char kPumpkinTestFilePath[] =
     "resources/chromeos/accessibility/accessibility_common/third_party/pumpkin";
 constexpr char kTestSupportPath[] =
-    "chrome/browser/resources/chromeos/accessibility/accessibility_common/"
+    "chrome/browser/resources/chromeos/accessibility/accessibility_common/mv2/"
     "dictation/dictation_test_support.js";
 
 // Listens for changes to the clipboard. This class only allows `Wait()` to be

@@ -12,6 +12,7 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
+#include "components/autofill/core/browser/metrics/payments/bnpl_metrics.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/ui/payments/bnpl_tos_controller_impl.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -21,6 +22,7 @@
 #include "ui/views/window/dialog_client_view.h"
 
 namespace autofill {
+using autofill_metrics::BnplTosDialogResult;
 
 namespace {
 constexpr char kSuppressedScreenshotError[] =
@@ -169,6 +171,35 @@ IN_PROC_BROWSER_TEST_F(BnplTosViewDesktopInteractiveUiTest, EscKeyPress) {
           SendAccelerator(views::DialogClientView::kTopViewId,
                           ui::Accelerator(ui::VKEY_ESCAPE, ui::MODIFIER_NONE)),
           WaitForHide(views::DialogClientView::kTopViewId)));
+}
+
+IN_PROC_BROWSER_TEST_F(BnplTosViewDesktopInteractiveUiTest,
+                       DialogLoggedWithAcceptButtonClicked) {
+  base::HistogramTester histogram_tester;
+  RunTestSequence(
+      InvokeUiAndWaitForShow(),
+      InSameContext(Steps(
+          PressButton(views::DialogClientView::kOkButtonElementId),
+          WaitForShow(BnplTosDialog::kThrobberId), Check([&histogram_tester]() {
+            return histogram_tester.GetBucketCount(
+                       "Autofill.Bnpl.TosDialogResult.Affirm",
+                       BnplTosDialogResult::kAcceptButtonClicked) == 1;
+          }))));
+}
+
+IN_PROC_BROWSER_TEST_F(BnplTosViewDesktopInteractiveUiTest,
+                       DialogLoggedWithCancelButtonClicked) {
+  base::HistogramTester histogram_tester;
+  RunTestSequence(
+      InvokeUiAndWaitForShow(),
+      InSameContext(
+          Steps(PressButton(views::DialogClientView::kCancelButtonElementId),
+                WaitForHide(views::DialogClientView::kTopViewId),
+                Check([&histogram_tester]() {
+                  return histogram_tester.GetBucketCount(
+                             "Autofill.Bnpl.TosDialogResult.Affirm",
+                             BnplTosDialogResult::kCancelButtonClicked) == 1;
+                }))));
 }
 
 }  // namespace autofill

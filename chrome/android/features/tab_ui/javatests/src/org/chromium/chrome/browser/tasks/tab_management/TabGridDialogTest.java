@@ -45,7 +45,6 @@ import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.DATA_SHARING;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.NAV_BAR_COLOR_MATCHES_TAB_BACKGROUND;
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.TAB_GROUP_PANE_ANDROID;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.TAB_GROUP_SYNC_ANDROID;
 import static org.chromium.chrome.browser.ntp.HomeSurfaceTestUtils.createTabStatesAndMetadataFile;
 import static org.chromium.chrome.browser.ntp.HomeSurfaceTestUtils.createThumbnailBitmapAndWriteToFile;
@@ -1109,7 +1108,6 @@ public class TabGridDialogTest {
     @Test
     @MediumTest
     @RequiresRestart("crbug.com/344674734")
-    @EnableFeatures({TAB_GROUP_SYNC_ANDROID, TAB_GROUP_PANE_ANDROID})
     public void testDialogSelectionEditor_UngroupAll() {
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         createTabs(cta, false, 4);
@@ -1143,7 +1141,7 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({TAB_GROUP_SYNC_ANDROID, TAB_GROUP_PANE_ANDROID})
+    @EnableFeatures({TAB_GROUP_SYNC_ANDROID})
     @DisableIf.Build(
             sdk_is_less_than = Build.VERSION_CODES.TIRAMISU,
             supported_abis_includes = "x86_64",
@@ -1746,7 +1744,7 @@ public class TabGridDialogTest {
     @Test
     @MediumTest
     @DisableIf.Device(DeviceFormFactor.TABLET)
-    @EnableFeatures({TAB_GROUP_SYNC_ANDROID, TAB_GROUP_PANE_ANDROID})
+    @EnableFeatures({TAB_GROUP_SYNC_ANDROID})
     public void testStripDialog_TabListEditorCloseAll_NoCustomHomepage() {
         ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         // Create a tab group with 2 tabs.
@@ -1794,7 +1792,7 @@ public class TabGridDialogTest {
     @Test
     @MediumTest
     @DisableIf.Device(DeviceFormFactor.TABLET)
-    @EnableFeatures({TAB_GROUP_SYNC_ANDROID, TAB_GROUP_PANE_ANDROID})
+    @EnableFeatures({TAB_GROUP_SYNC_ANDROID})
     public void testStripDialog_TabListEditorCloseAll_CustomHomepage() {
         GURL url =
                 new GURL(
@@ -1945,7 +1943,7 @@ public class TabGridDialogTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @EnableFeatures({TAB_GROUP_SYNC_ANDROID, TAB_GROUP_PANE_ANDROID})
+    @EnableFeatures({TAB_GROUP_SYNC_ANDROID})
     @RequiresRestart("Group creation modal dialog is sometimes persistent when dismissing")
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     @DisabledTest(message = "crbug.com/362762206, see also crbug.com/360072870")

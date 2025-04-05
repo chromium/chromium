@@ -841,7 +841,9 @@ void RelaunchApp() {
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(grey_ancestor(grey_accessibilityID(
                                               @"AlertAccessibilityIdentifier")),
-                                          grey_text(stringURL), nil)]
+                                          chrome_test_util::ContainsPartialText(
+                                              stringURL),
+                                          nil)]
       assertWithMatcher:grey_notNil()];
 }
 

@@ -11,6 +11,8 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.webapk.shell_apk.HostBrowserUtils.PackageNameAndComponentName;
 
 import java.lang.reflect.Constructor;
@@ -19,6 +21,7 @@ import java.lang.reflect.Constructor;
  * Shell class for services provided by WebAPK to Chrome. Extracts code with implementation of
  * services from .dex file in Chrome APK.
  */
+@NullMarked
 public class WebApkServiceFactory extends Service {
     /** Key for passing uid of only application allowed to call the service's methods. */
     public static final String KEY_HOST_BROWSER_UID = "host_browser_uid";
@@ -33,7 +36,7 @@ public class WebApkServiceFactory extends Service {
     private static final String KEY_SMALL_ICON_ID = "small_icon_id";
 
     @Override
-    public IBinder onBind(Intent intent) {
+    public @Nullable IBinder onBind(Intent intent) {
         final PackageNameAndComponentName hostBrowserPackageAndComponent =
                 HostBrowserUtils.computeHostBrowserPackageNameAndComponentName(this);
         final String hostBrowserPackage =

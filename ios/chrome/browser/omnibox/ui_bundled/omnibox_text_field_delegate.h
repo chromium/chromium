@@ -11,7 +11,6 @@
 
 @protocol OmniboxTextFieldDelegate <UITextFieldDelegate>
 
-@optional
 // Called when the OmniboxTextFieldIOS performs a copy operation.
 - (void)onCopy;
 
@@ -34,6 +33,9 @@
 /// Called when the additional text has been removed due to a user action in
 /// `textField`.
 - (void)textFieldDidRemoveAdditionalText:(OmniboxTextFieldIOS*)textField;
+
+/// Called when the textfield accepts the current input.
+- (void)textFieldDidAcceptInput:(OmniboxTextFieldIOS*)textField;
 
 @end
 

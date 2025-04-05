@@ -250,6 +250,21 @@ CookieControlsController::Status CookieControlsController::GetStatus(
           features};
 }
 
+void CookieControlsController::RecordActMetrics(bool protections_on) {
+  if (GetIsSubresourceBlocked()) {
+    base::RecordAction(UserMetricsAction(
+        protections_on
+            ? "TrackingProtections.Bubble.FppActive.EnableProtections"
+            : "TrackingProtections.Bubble.FppActive.DisableProtections"));
+  }
+  if (GetIsSubresourceProxied()) {
+    base::RecordAction(UserMetricsAction(
+        protections_on
+            ? "TrackingProtections.Bubble.IppActive.EnableProtections"
+            : "TrackingProtections.Bubble.IppActive.DisableProtections"));
+  }
+}
+
 bool CookieControlsController::ShowActFeatures() {
   return base::FeatureList::IsEnabled(privacy_sandbox::kActUserBypassUx) &&
          ShouldUpdateTpContentSetting() &&
@@ -367,6 +382,7 @@ void CookieControlsController::OnCookieBlockingEnabledForSite(
     // content setting observer updates the UI for both settings.
     if (ShouldUpdateTpContentSetting()) {
       tracking_protection_settings_->RemoveTrackingProtectionException(url);
+      RecordActMetrics(block_third_party_cookies);
     }
     cookie_settings_->ResetThirdPartyCookieSetting(url);
 
@@ -377,6 +393,7 @@ void CookieControlsController::OnCookieBlockingEnabledForSite(
   base::RecordAction(UserMetricsAction("CookieControls.Bubble.TurnOff"));
   if (ShouldUpdateTpContentSetting()) {
     tracking_protection_settings_->AddTrackingProtectionException(url);
+    RecordActMetrics(block_third_party_cookies);
   }
   cookie_settings_->SetCookieSettingForUserBypass(url);
   // Record expiration metadata for the newly created exception, and increased

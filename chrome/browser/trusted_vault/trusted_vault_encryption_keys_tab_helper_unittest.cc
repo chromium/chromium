@@ -11,7 +11,6 @@
 #include "chrome/browser/trusted_vault/trusted_vault_service_factory.h"
 #include "chrome/common/trusted_vault_encryption_keys_extension.mojom.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "components/safe_browsing/core/common/features.h"
 #include "components/site_isolation/features.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/site_isolation_policy.h"
@@ -37,9 +36,6 @@ class TrustedVaultEncryptionKeysTabHelperTest
     // on Android so that ApplyGlobalIsolatedOrigins() takes effect regardless
     // of available memory when running the test (otherwise low-memory bots may
     // run into test failures).
-    // TODO(crbug.com/362466866): Instead of disabling the
-    // `kSafetyHubAbusiveNotificationRevocation` feature, find a stable
-    // fix such that the tests still pass when the feature is enabled.
     feature_list_.InitWithFeaturesAndParameters(
         {{site_isolation::features::kSiteIsolationMemoryThresholds,
           {{site_isolation::features::
@@ -48,7 +44,7 @@ class TrustedVaultEncryptionKeysTabHelperTest
            {site_isolation::features::
                 kPartialSiteIsolationMemoryThresholdParamName,
             "0"}}}},
-        {safe_browsing::kSafetyHubAbusiveNotificationRevocation});
+        {});
   }
 
   ~TrustedVaultEncryptionKeysTabHelperTest() override = default;

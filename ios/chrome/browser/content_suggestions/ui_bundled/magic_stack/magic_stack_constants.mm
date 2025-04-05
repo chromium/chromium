@@ -16,8 +16,6 @@ const CGFloat kMagicStackSpacing = 12.0f;
 const CGFloat kMagicStackPeekInset = kMagicStackSpacing + 10;
 const CGFloat kMagicStackPeekInsetLandscape = kMagicStackSpacing * 2 + 28;
 
-const float kBottomMagicStackPadding = 14.0f;
-
 const float kMagicStackMinimumPaginationScrollVelocity = 0.2f;
 
 const float kMagicStackEditButtonWidth = 61;

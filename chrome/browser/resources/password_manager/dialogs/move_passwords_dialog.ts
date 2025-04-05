@@ -81,9 +81,9 @@ export class MovePasswordsDialogElement extends MovePasswordsDialogElementBase {
     };
   }
 
-  passwords: chrome.passwordsPrivate.PasswordUiEntry[];
-  private selectedPasswordIds_: number[];
-  private trigger: MoveToAccountStoreTrigger;
+  declare passwords: chrome.passwordsPrivate.PasswordUiEntry[];
+  declare private selectedPasswordIds_: number[];
+  declare private trigger: MoveToAccountStoreTrigger;
 
   override connectedCallback() {
     super.connectedCallback();

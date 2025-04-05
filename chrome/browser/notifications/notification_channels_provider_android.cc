@@ -219,6 +219,15 @@ void NotificationChannelsProviderAndroid::MigrateToChannelsIfNecessary(
     return;
   }
 
+  // If there are no existing rules, no need to migrate.
+  std::unique_ptr<content_settings::RuleIterator> it(
+      pref_provider->GetRuleIterator(
+          ContentSettingsType::NOTIFICATIONS, false /* off_the_record */,
+          content_settings::PartitionKey::WipGetDefault()));
+  if (!it || !it->HasNext()) {
+    return;
+  }
+
   InitCachedChannels(base::BindOnce(
       &NotificationChannelsProviderAndroid::MigrateToChannelsIfNecessaryImpl,
       weak_factory_.GetWeakPtr(), base::Unretained(pref_provider)));

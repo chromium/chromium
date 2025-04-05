@@ -123,8 +123,11 @@ enum class ProfileSignout {
   kUserClickedSignoutInAccountMenu = 36,
   // User disabled allow chrome sign-in from google settings page.
   kUserDisabledAllowChromeSignIn = 37,
+  // User was forced signed out as there was a supervised user added to the
+  // device.
+  kSignoutBeforeSupervisedSignin = 38,
   // Keep this as the last enum.
-  kMaxValue = kUserDisabledAllowChromeSignIn
+  kMaxValue = kSignoutBeforeSupervisedSignin
 };
 
 // Enum values which enumerates all access points where sign in could be
@@ -258,10 +261,13 @@ enum class AccessPoint : int {
   // Access point triggered when a user attempts to join a tab group without
   // being signed in or synced.
   kCollaborationJoinTabGroup = 76,
+  // Access point triggered when a user attempts to opt-in to history sync from
+  // the history sync opt-in expanded pill.
+  kHistorySyncOptinExpansionPill = 77,
   // Add values above this line with a corresponding label to the
   // "SigninAccessPoint" enum in
   // tools/metrics/histograms/metadata/signin/enums.xml.
-  kMaxValue = kCollaborationJoinTabGroup,  // This must be last.
+  kMaxValue = kHistorySyncOptinExpansionPill,  // This must be last.
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/signin/enums.xml)
 

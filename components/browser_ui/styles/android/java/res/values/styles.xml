@@ -228,17 +228,6 @@ found in the LICENSE file.
         <item name="android:textColor">@color/chip_text_color_secondary_list</item>
     </style>
 
-    <!-- Floating action button styles -->
-    <style name="TextAppearance.FloatingActionButton" parent="TextAppearance.TextAccentMediumThick">
-        <item name="android:textColor">@macro/default_text_color_on_accent2_container</item>
-    </style>
-    <style name="TextAppearance.FloatingActionButton.Incognito" parent="TextAppearance.TextAccentMediumThick">
-        <item name="android:textColor">@color/baseline_secondary_90</item>
-    </style>
-    <style name="TextAppearance.FloatingActionButton.OnPrimaryContainer" parent="TextAppearance.TextAccentMediumThick">
-        <item name="android:textColor">@macro/default_text_color_on_accent1_container</item>
-    </style>
-
     <!-- Other text styles -->
     <style name="TextAppearance.BlackLink" tools:ignore="UnusedResources">
         <item name="android:textColor">@color/default_text_color_secondary_list</item>

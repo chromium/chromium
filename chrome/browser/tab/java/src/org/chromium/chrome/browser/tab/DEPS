@@ -17,6 +17,7 @@ include_rules = [
   "+chrome/browser/preferences/android/java",
   "+chrome/browser/profiles/android/java",
   "+chrome/browser/ui/android/native_page",
+  "+chrome/browser/util/android/java",
   "+chrome/browser/flags/android/java",
   "+components/browser_ui/util/android/java",
   "+components/embedder_support/android/java",

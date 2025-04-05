@@ -20,6 +20,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/android_input_receiver_compat.h"
+#include "base/debug/dump_without_crashing.h"
 #include "components/input/android/android_input_callback.h"
 #include "components/input/android/input_token_forwarder.h"
 #include "components/input/android/scoped_input_receiver.h"
@@ -412,6 +413,14 @@ std::optional<bool> InputManager::IsDelegatedInkHovering(
   return support->GetLastActivatedFrameMetadata()
       ->delegated_ink_metadata->is_hovering();
 }
+
+void InputManager::DidOverscroll(const FrameSinkId& frame_sink_id,
+                                 const base::UnguessableToken& grouping_id,
+                                 blink::mojom::DidOverscrollParamsPtr params) {
+  rir_delegate_remote_map_.at(grouping_id)
+      ->StateOnOverscrollTransfer(frame_sink_id, std::move(params));
+}
+
 void InputManager::StateOnTouchTransfer(
     input::mojom::TouchTransferStatePtr state) {
 #if BUILDFLAG(IS_ANDROID)
@@ -420,14 +429,22 @@ void InputManager::StateOnTouchTransfer(
       support_android_interface = nullptr;
   if (iter != frame_sink_metadata_map_.end()) {
     RenderInputRouterSupportBase* support_base = iter->second.rir_support.get();
-    CHECK(support_base &&
-          !support_base->IsRenderInputRouterSupportChildFrame());
-    auto* support_android = static_cast<RenderInputRouterSupportAndroid*>(
-        iter->second.rir_support.get());
-    support_android_interface = support_android->GetWeakPtr();
-    UMA_HISTOGRAM_ENUMERATION(
-        kStateProcessingResultHistogram,
-        InputOnVizStateProcessingResult::kProcessedSuccessfully);
+    CHECK(support_base);
+    // TODO(crbug.com/404741207): Convert this to CHECK once the underlying
+    // reason for crash is fixed.
+    if (!support_base->IsRenderInputRouterSupportChildFrame()) {
+      auto* support_android = static_cast<RenderInputRouterSupportAndroid*>(
+          iter->second.rir_support.get());
+      support_android_interface = support_android->GetWeakPtr();
+      UMA_HISTOGRAM_ENUMERATION(
+          kStateProcessingResultHistogram,
+          InputOnVizStateProcessingResult::kProcessedSuccessfully);
+    } else {
+      UMA_HISTOGRAM_ENUMERATION(
+          kStateProcessingResultHistogram,
+          InputOnVizStateProcessingResult::kFrameSinkIdCorrespondsToChildView);
+      base::debug::DumpWithoutCrashing();
+    }
   } else {
     UMA_HISTOGRAM_ENUMERATION(
         kStateProcessingResultHistogram,
@@ -461,6 +478,13 @@ void InputManager::ForceEnableZoomStateChanged(
     if (itr != rir_map_.end()) {
       itr->second->SetForceEnableZoom(force_enable_zoom);
     }
+  }
+}
+
+void InputManager::StopFlingingOnViz(const FrameSinkId& frame_sink_id) {
+  auto iter = frame_sink_metadata_map_.find(frame_sink_id);
+  if (iter != frame_sink_metadata_map_.end()) {
+    iter->second.rir_support->StopFlingingOnViz();
   }
 }
 

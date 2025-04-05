@@ -77,10 +77,10 @@ export class PrintPreviewDestinationDialogElement extends
     };
   }
 
-  destinationStore: DestinationStore;
-  private destinations_: Destination[];
-  private loadingDestinations_: boolean;
-  private searchQuery_: RegExp|null;
+  declare destinationStore: DestinationStore;
+  declare private destinations_: Destination[];
+  declare private loadingDestinations_: boolean;
+  declare private searchQuery_: RegExp|null;
 
   private tracker_: EventTracker = new EventTracker();
   private initialized_: boolean = false;

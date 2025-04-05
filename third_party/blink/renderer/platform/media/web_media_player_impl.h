@@ -339,6 +339,9 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
 
   void RecordVideoOcclusionState(std::string_view occlusion_state) override;
 
+  void RecordAutoPictureInPictureInfo(
+      const WebString& auto_picture_in_picture_info) override;
+
   bool IsBackgroundMediaSuspendEnabled() const {
     return is_background_suspend_enabled_;
   }

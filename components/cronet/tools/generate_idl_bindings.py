@@ -19,7 +19,7 @@ def run(command, extra_options=''):
     raise OSError(ret)
 
 
-def GenerateIdlBindings(output_path, input_files):
+def GenerateIdlBindings(_, __):
   bytecode_path = tempfile.mkdtemp('idl_bytecode')
   generator = 'components/cronet/tools/generators/cronet_bindings_generator.py'
   input_file = 'components/cronet/native/cronet.idl'

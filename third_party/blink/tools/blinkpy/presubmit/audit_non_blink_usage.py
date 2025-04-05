@@ -832,6 +832,9 @@ _CONFIG = [
             'ui::DomKey',
             'ui::KeycodeConverter',
 
+            # UI MIME types
+            'ui::kMimeType.+',
+
             # Accessibility base types and the non-Blink enums they
             # depend on.
             'ax::mojom::BoolAttribute',

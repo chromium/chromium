@@ -185,7 +185,7 @@ class Speedometer31(_Speedometer3):
 @benchmark.Info(emails=['cbruni@chromium.org', 'vahl@chromium.org'],
                 component='Blink>JavaScript',
                 documentation_url='https://github.com/WebKit/Speedometer')
-class Speedometer3(Speedometer30):
+class Speedometer3(Speedometer31):
   """The latest version of the Speedometer3 benchmark."""
   @classmethod
   def GetStoryClass(cls):

@@ -110,7 +110,7 @@ found in the LICENSE file.
 
     <declare-styleable name="MaterialCardViewNoShadow">
         <attr name="cornerRadius" format="dimension"/>
-        <attr name="cardElevation" format="reference|dimension"/>
+        <attr name="cardBackgroundColor" format="color"/>
     </declare-styleable>
 
     <declare-styleable name="FadingEdgeScrollView">

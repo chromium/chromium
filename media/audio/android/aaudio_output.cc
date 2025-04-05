@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/numerics/checked_math.h"
 #include "base/task/sequenced_task_runner.h"
 #include "media/audio/android/audio_manager_android.h"
 #include "media/audio/audio_manager.h"
@@ -115,6 +116,18 @@ bool AAudioOutputStream::OnAudioDataRequested(void* audio_data,
   if (!callback_) {
     // Stop() might have already been called, but there can still be pending
     // data callbacks in flight.
+
+    size_t total_size;
+    auto total_frames = base::CheckMul(num_frames, audio_bus_->channels());
+    if (base::CheckMul(total_frames, sizeof(float))
+            .AssignIfValid(&total_size)) {
+      // SAFETY: Unfortunately, `audio_data` comes from the OS, and we must use
+      // some unsafe buffers. This should be safe because we set the format
+      // as AAUDIO_FORMAT_PCM_FLOAT in AAudioStreamWrapper (and CHECK that it is
+      // set), so we know this void* is pointing towards floats. We also control
+      // the channel count, and the OS gives us `num_frames`.
+      UNSAFE_BUFFERS(memset(audio_data, 0, total_size));
+    }
     return false;
   }
 

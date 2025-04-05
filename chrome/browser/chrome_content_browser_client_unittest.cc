@@ -1694,6 +1694,75 @@ TEST_F(ChromeContentBrowserClientFieldTrialTest,
   ASSERT_FALSE(variations::IsInSyntheticTrialGroup("UiaProviderActiveSynthetic",
                                                    "Enabled"));
 }
+
+TEST_F(ChromeContentBrowserClientFieldTrialTest,
+       OnUiaProviderDisabledFromEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  // Start with the browser launching in the Enabled group.
+  scoped_feature_list.InitFromCommandLine(
+      "UiaProvider<UiaProviderWin.Enabled_12345:k/v", {});
+  client().OnUiaProviderRequested(true);
+  ASSERT_FALSE(variations::IsInSyntheticTrialGroup("UiaProviderActiveSynthetic",
+                                                   "Control"));
+  ASSERT_TRUE(variations::IsInSyntheticTrialGroup("UiaProviderActiveSynthetic",
+                                                  "Enabled"));
+  ASSERT_FALSE(variations::IsInSyntheticTrialGroup("UiaProviderActiveSynthetic",
+                                                   "Rejected"));
+  // Now simulate disabling the UIA Provider.
+  client().OnUiaProviderDisabled();
+
+  // The synthetic trial should now be re-registered as "Rejected".
+  ASSERT_FALSE(variations::IsInSyntheticTrialGroup("UiaProviderActiveSynthetic",
+                                                   "Control"));
+  ASSERT_FALSE(variations::IsInSyntheticTrialGroup("UiaProviderActiveSynthetic",
+                                                   "Enabled"));
+  ASSERT_TRUE(variations::IsInSyntheticTrialGroup("UiaProviderActiveSynthetic",
+                                                  "Rejected"));
+}
+
+TEST_F(ChromeContentBrowserClientFieldTrialTest,
+       OnUiaProviderDisabledFromControl) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  // Start with the browser launching in the Enabled group.
+  scoped_feature_list.InitFromCommandLine(
+      "UiaProvider<UiaProviderWin.Control_12345:k/v", {});
+  client().OnUiaProviderRequested(true);
+  ASSERT_TRUE(variations::IsInSyntheticTrialGroup("UiaProviderActiveSynthetic",
+                                                  "Control"));
+  ASSERT_FALSE(variations::IsInSyntheticTrialGroup("UiaProviderActiveSynthetic",
+                                                   "Enabled"));
+  ASSERT_FALSE(variations::IsInSyntheticTrialGroup("UiaProviderActiveSynthetic",
+                                                   "Rejected"));
+
+  // Now simulate disabling the UIA Provider.
+  client().OnUiaProviderDisabled();
+
+  // Nothing should change, as the user was part of the control group without
+  // the UIA Provider anyway.
+  ASSERT_TRUE(variations::IsInSyntheticTrialGroup("UiaProviderActiveSynthetic",
+                                                  "Control"));
+  ASSERT_FALSE(variations::IsInSyntheticTrialGroup("UiaProviderActiveSynthetic",
+                                                   "Enabled"));
+  ASSERT_FALSE(variations::IsInSyntheticTrialGroup("UiaProviderActiveSynthetic",
+                                                   "Rejected"));
+}
+
+TEST_F(ChromeContentBrowserClientFieldTrialTest, OnUiaProviderDisabledNoStudy) {
+  client().OnUiaProviderRequested(false);
+  ASSERT_FALSE(variations::IsInSyntheticTrialGroup("UiaProviderActiveSynthetic",
+                                                   "Control"));
+  ASSERT_FALSE(variations::IsInSyntheticTrialGroup("UiaProviderActiveSynthetic",
+                                                   "Enabled"));
+  ASSERT_FALSE(variations::IsInSyntheticTrialGroup("UiaProviderActiveSynthetic",
+                                                   "Rejected"));
+  client().OnUiaProviderDisabled();
+  ASSERT_FALSE(variations::IsInSyntheticTrialGroup("UiaProviderActiveSynthetic",
+                                                   "Control"));
+  ASSERT_FALSE(variations::IsInSyntheticTrialGroup("UiaProviderActiveSynthetic",
+                                                   "Enabled"));
+  ASSERT_FALSE(variations::IsInSyntheticTrialGroup("UiaProviderActiveSynthetic",
+                                                   "Rejected"));
+}
 #endif  // BUILDFLAG(IS_WIN)
 
 class GrantCookieAccessDueToHeuristicTest

@@ -263,19 +263,23 @@ public class WebContentsAccessibilityEventsTest {
     @Test
     @SmallTest
     public void test_ariaComboboxCollapse() {
-        performTest("aria-combo-box-collapse.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("aria-combo-box-collapse.html", "aria-combo-box-collapse-expected-android.txt");
     }
 
     @Test
     @SmallTest
     public void test_ariaComboboxDelayAddList() {
-        performTest("aria-combo-box-delay-add-list.html", EMPTY_EXPECTATIONS_FILE);
+        performTest(
+                "aria-combo-box-delay-add-list.html",
+                "aria-combo-box-delay-add-list-expected-android.txt");
     }
 
     @Test
     @SmallTest
     public void test_ariaComboboxDelayShowList() {
-        performTest("aria-combo-box-delay-show-list.html", EMPTY_EXPECTATIONS_FILE);
+        performTest(
+                "aria-combo-box-delay-show-list.html",
+                "aria-combo-box-delay-show-list-expected-android.txt");
     }
 
     @Test
@@ -294,7 +298,7 @@ public class WebContentsAccessibilityEventsTest {
     @Test
     @SmallTest
     public void test_ariaComboboxNext() {
-        performTest("aria-combo-box-next.html", EMPTY_EXPECTATIONS_FILE);
+        performTest("aria-combo-box-next.html", "aria-combo-box-next-expected-android.txt");
     }
 
     @Test
@@ -1044,7 +1048,9 @@ public class WebContentsAccessibilityEventsTest {
     @Test
     @SmallTest
     public void test_reparentElementWithActiveDescendant() {
-        performTest("reparent-element-with-active-descendant.html", EMPTY_EXPECTATIONS_FILE);
+        performTest(
+                "reparent-element-with-active-descendant.html",
+                "reparent-element-with-active-descendant-expected-android.txt");
     }
 
     @Test

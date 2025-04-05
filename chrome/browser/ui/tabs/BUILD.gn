@@ -20,8 +20,8 @@ source_set("tabs_public") {
     ":split_tabs",
     "//base",
     "//chrome/common:buildflags",
-    "//components/tab_collections:public",
     "//components/tab_groups:tab_groups",
+    "//components/tabs:public",
   ]
   deps = [ "//content/public/browser" ]
 }
@@ -267,7 +267,6 @@ if (!is_android) {
       "pinned_tab_service_factory.h",
       "split_tab_collection.h",
       "split_tab_data.h",
-      "tab_collection.cc",
       "tab_collection.h",
       "tab_collection_storage.h",
       "tab_renderer_data.h",
@@ -316,6 +315,7 @@ if (!is_android) {
       "recent_tabs_sub_menu_model.cc",
       "split_tab_collection.cc",
       "split_tab_data.cc",
+      "tab_collection.cc",
       "tab_collection_storage.cc",
       "tab_dialog_manager.cc",
       "tab_features.cc",
@@ -454,6 +454,7 @@ if (!is_android) {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
     sources = [
+      "existing_window_sub_menu_model_browsertest.cc",
       "pinned_tab_codec_browsertest.cc",
       "pinned_tab_service_browsertest.cc",
       "recent_tabs_builder_test_helper.cc",
@@ -513,7 +514,6 @@ if (!is_android) {
       "existing_base_sub_menu_model_unittest.cc",
       "existing_comparison_table_sub_menu_model_unittest.cc",
       "existing_tab_group_sub_menu_model_unittest.cc",
-      "existing_window_sub_menu_model_unittest.cc",
       "tab_collection_storage_unittest.cc",
       "tab_collection_unittest.cc",
       "tab_group_deletion_dialog_controller_unittest.cc",

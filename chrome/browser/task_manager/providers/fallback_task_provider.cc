@@ -140,10 +140,8 @@ void FallbackTaskProvider::ShowTask(Task* task) {
 }
 
 void FallbackTaskProvider::HideTask(Task* task) {
-  auto it = std::remove(shown_tasks_.begin(), shown_tasks_.end(), task);
   pending_shown_tasks_.erase(task);
-  if (it != shown_tasks_.end()) {
-    shown_tasks_.erase(it, shown_tasks_.end());
+  if (std::erase(shown_tasks_, task) > 0) {
     NotifyObserverTaskRemoved(task);
   }
 }

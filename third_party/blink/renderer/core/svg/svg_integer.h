@@ -31,13 +31,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_INTEGER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_INTEGER_H_
 
-#include "third_party/blink/renderer/core/svg/properties/svg_property_helper.h"
+#include "third_party/blink/renderer/core/svg/properties/svg_property.h"
 #include "third_party/blink/renderer/core/svg/svg_parsing_error.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
-class SVGInteger final : public SVGPropertyHelper<SVGInteger> {
+class SVGInteger final : public SVGPropertyBase {
  public:
   typedef void TearOffType;
   typedef int PrimitiveType;
@@ -65,6 +65,7 @@ class SVGInteger final : public SVGPropertyHelper<SVGInteger> {
                           const SVGElement* context_element) const override;
 
   static AnimatedPropertyType ClassType() { return kAnimatedInteger; }
+  AnimatedPropertyType GetType() const override { return ClassType(); }
 
   void SetInitial(unsigned value) { SetValue(static_cast<int>(value)); }
   static constexpr int kInitialValueBits = 2;

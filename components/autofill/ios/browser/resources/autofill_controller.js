@@ -5,7 +5,7 @@
 import * as fill_constants from '//components/autofill/ios/form_util/resources/fill_constants.js';
 import {isTextAreaElement} from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
 import {getFrameId} from '//ios/web/public/js_messaging/resources/frame_id.js';
-import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {isTextField, sendWebKitMessage, trim} from '//ios/web/public/js_messaging/resources/utils.js';
 
 
@@ -132,7 +132,7 @@ function countEditableElements_(elements) {
  *     empty if no match.
  */
 function getUnownedIframes() {
-  return Array.from(gCrWeb.form.getIframeElements(document))
+  return Array.from(gCrWebLegacy.form.getIframeElements(document))
       .filter(e => !e.closest('form'));
 }
 
@@ -152,7 +152,7 @@ function extractUnownedFields(restrictUnownedFieldsToFormlessCheckout) {
   const numEditableUnownedElements =
       countEditableElements_(unownedControlElements);
   const iframeElements =
-      gCrWeb.autofill_form_features.isAutofillAcrossIframesEnabled() ?
+      gCrWebLegacy.autofill_form_features.isAutofillAcrossIframesEnabled() ?
       getUnownedIframes() :
       [];
   if (numEditableUnownedElements > 0 || iframeElements.length > 0) {
@@ -467,7 +467,7 @@ __gCrWeb.autofill.extractNewForms = function(
   // Returns true if the child frames can be extracted.
   const canExtractChildFrames = () =>
       numFramesSeen <= fill_constants.MAX_EXTRACTABLE_FRAMES ||
-      !gCrWeb.autofill_form_features.isAutofillAcrossIframesThrottlingEnabled();
+      !gCrWebLegacy.autofill_form_features.isAutofillAcrossIframesThrottlingEnabled();
 
   for (let formIndex = 0; formIndex < webForms.length; ++formIndex) {
     /** @type {HTMLFormElement} */
@@ -476,7 +476,7 @@ __gCrWeb.autofill.extractNewForms = function(
         __gCrWeb.autofill.extractAutofillableElementsInForm(formElement);
     const numEditableElements = countEditableElements_(controlElements);
     const hasChildFrames =
-        gCrWeb.autofill_form_features.isAutofillAcrossIframesEnabled() ?
+        gCrWebLegacy.autofill_form_features.isAutofillAcrossIframesEnabled() ?
         formElement.getElementsByTagName('iframe').length > 0 :
         false;
 

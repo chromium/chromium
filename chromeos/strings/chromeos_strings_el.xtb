@@ -458,7 +458,6 @@
 <translation id="3084958266922136097">Απενεργοποίηση προφύλαξης οθόνης</translation>
 <translation id="3091839911843451378">Σφάλμα - Σταμάτησε</translation>
 <translation id="3102119246920354026">Κρυφή μνήμη</translation>
-<translation id="3112413615003385433">Ο καθηγητής σας έχει καταργήσει περιεχόμενο στο School Tools</translation>
 <translation id="3122464029669770682">Κεντρική μονάδα επεξεργασίας</translation>
 <translation id="3122614491980756867">πισίνες</translation>
 <translation id="3122883569442693641">Περισσότερες λεπτομέρειες</translation>
@@ -539,7 +538,6 @@
 <translation id="3488065109653206955">Μερικώς ενεργοποιημένο</translation>
 <translation id="3492882532495507361">Ένα <ph name="OFFICE_STYLE" /> γραφείο σε <ph name="OFFICE_COLOR" /> τόνους</translation>
 <translation id="3493187369049186498">Τα δεδομένα μετρώνται από το Chromebook. Αυτά τα δεδομένα ενδέχεται να διαφέρουν από τα δεδομένα παρόχου.</translation>
-<translation id="349570724365779960">Το School Tools είναι συνδεδεμένο με τους μαθητές</translation>
 <translation id="3502426834823382181">προβολή όλων των εφαρμογών</translation>
 <translation id="3510890413042482857">Αποστολή <ph name="BEGIN_LINK1" />δεδομένων εντοπισμού απόδοσης<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Ενημέρωση ChromeOS</translation>
@@ -547,7 +545,6 @@
 <translation id="353214771040290298">Ολοκλήρωση επεξεργασίας</translation>
 <translation id="3532980081107202182">Απομένουν περίπου <ph name="MIN_REMAINING" /> λεπτά</translation>
 <translation id="3533790840489634638">πισίνα</translation>
-<translation id="3535802910192338629">Ο καθηγητής σας πρόσθεσε νέο περιεχόμενο στο School Tools</translation>
 <translation id="3547264467365135390">Τύπος</translation>
 <translation id="3557205324756024651">Τοπική ταυτότητα (προαιρετικό)</translation>
 <translation id="3565064564551103223">IP που επιτρέπονται</translation>
@@ -1235,6 +1232,7 @@
 <translation id="6657240842932274095">Να επιτρέπεται στις υπηρεσίες συστήματος να χρησιμοποιούν την τοποθεσία σας;</translation>
 <translation id="6657585470893396449">Κωδικός πρόσβασης</translation>
 <translation id="66621959568103627">ροζ κοραλί</translation>
+<translation id="6669485505082792176">Δεν είναι δυνατή η δημιουργία εικόνων αυτού του στοιχείου αυτή τη στιγμή. Δοκιμάστε να αναδιατυπώσετε την περιγραφή σας. Λάβετε υπόψη ότι δεν μπορείτε να δημιουργήσετε εικόνες ατόμων, επιβλαβούς ή άσεμνου περιεχομένου. <ph name="BEGIN_LINK_LEARN_MORE" />Μάθετε περισσότερα<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6673898378497337661">αύξηση φωτεινότητας πληκτρολογίου</translation>
 <translation id="6692996468359469499">Λάβετε πληροφορίες σχετικά με την επιλογή σας.</translation>
 <translation id="6694534975463174713">κλειδαριά</translation>
@@ -1440,7 +1438,6 @@
 <translation id="7544853251252956727">Τυχαία αναπαραγωγή</translation>
 <translation id="7550715992156305117">Ρουτίνες διαγνωστικών στοιχείων</translation>
 <translation id="7551123448725492271">Η συσκευή είναι συσκευή ήχου.</translation>
-<translation id="7553913964854052228">Το School Tools χρησιμοποιεί το μικρόφωνό σας</translation>
 <translation id="7559239713112547082">Προεπισκόπηση στιγμιότυπου οθόνης</translation>
 <translation id="7561454561030345039">Η διαχείριση αυτής της ενέργειας γίνεται από τον διαχειριστή σας.</translation>
 <translation id="7561759921596375678">Ενεργοποίηση έντασης ήχου</translation>
@@ -1663,7 +1660,6 @@
 <translation id="8576249514688522074">Μη προετοιμασμένο</translation>
 <translation id="8584654835905316966">Απαιτείται επανεκκίνηση, για να ολοκληρωθεί η εγκατάσταση του υλικολογισμικού <ph name="VERSION" /> στη συσκευή <ph name="DEVICE_NAME" />. Ο υπολογιστής σας μπορεί να δείχνει ότι κάνει πολλές επανεκκινήσεις. Αυτή η συμπεριφορά είναι αναμενόμενη.</translation>
 <translation id="8593058461203131755">παύση μέσων</translation>
-<translation id="8619169570378509764">School Tools</translation>
 <translation id="8620617069779373398">Κατάσταση περιαγωγής</translation>
 <translation id="8626489604350149811">Περισσότερες ενέργειες για <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Ανοιχτό μοβ</translation>

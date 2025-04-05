@@ -261,7 +261,7 @@ void GetCertChainInfo(CFArrayRef cert_chain, CertVerifyResult* verify_result) {
     }
 
     HashValue sha256(HASH_VALUE_SHA256);
-    CC_SHA256(spki_bytes.data(), spki_bytes.size(), sha256.data());
+    CC_SHA256(spki_bytes.data(), spki_bytes.size(), sha256.span().data());
     verify_result->public_key_hashes.push_back(sha256);
   }
   if (!verified_cert.get()) {

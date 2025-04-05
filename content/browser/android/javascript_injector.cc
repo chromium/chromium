@@ -4,6 +4,8 @@
 
 #include "content/browser/android/javascript_injector.h"
 
+#include <vector>
+
 #include "base/android/jni_string.h"
 #include "base/memory/ptr_util.h"
 #include "content/browser/android/java/gin_java_bridge_dispatcher_host.h"
@@ -48,13 +50,31 @@ void JavascriptInjector::SetAllowInspection(JNIEnv* env,
   java_bridge_dispatcher_host_->SetAllowObjectContentsInspection(allow);
 }
 
-void JavascriptInjector::AddInterface(
+std::vector<std::string> JavascriptInjector::AddInterface(
     JNIEnv* env,
     const JavaParamRef<jobject>& /* obj */,
     const JavaParamRef<jobject>& object,
     const JavaParamRef<jstring>& name,
-    const JavaParamRef<jclass>& safe_annotation_clazz) {
+    const JavaParamRef<jclass>& safe_annotation_clazz,
+    std::vector<std::string> origin_allow_list_rules) {
   DCHECK(java_bridge_dispatcher_host_);
+
+  std::vector<std::string> bad_origins;
+  net::SchemeHostPortMatcher matcher;
+
+  for (const std::string& string_rule : origin_allow_list_rules) {
+    auto rule =
+        net::SchemeHostPortMatcherRule::FromUntrimmedRawString(string_rule);
+    if (rule) {
+      matcher.AddAsLastRule(std::move(rule));
+    } else {
+      bad_origins.emplace_back(string_rule);
+    }
+  }
+
+  if (!bad_origins.empty()) {
+    return bad_origins;
+  }
 
   // If a new js object is added or removed when a page is in BFCache or
   // prerendered, the change won't apply after activating the page. To avoid
@@ -69,7 +89,10 @@ void JavascriptInjector::AddInterface(
       PrerenderFinalStatus::kJavaScriptInterfaceAdded);
 
   java_bridge_dispatcher_host_->AddNamedObject(
-      ConvertJavaStringToUTF8(env, name), object, safe_annotation_clazz);
+      ConvertJavaStringToUTF8(env, name), object, safe_annotation_clazz,
+      std::move(matcher));
+
+  return {};
 }
 
 void JavascriptInjector::RemoveInterface(JNIEnv* env,

@@ -11,7 +11,6 @@ import org.chromium.base.Token;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupColorUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
@@ -68,9 +67,7 @@ public class TabGroupVisualDataManager {
                                     () -> {
                                         filter.deleteTabGroupTitle(rootId);
                                         filter.deleteTabGroupColor(rootId);
-                                        if (ChromeFeatureList.sTabStripGroupCollapse.isEnabled()) {
-                                            filter.deleteTabGroupCollapsed(rootId);
-                                        }
+                                        filter.deleteTabGroupCollapsed(rootId);
                                     };
                             if (filter.isTabGroupHiding(tabGroupId)) {
                                 // Post this work because if the closure is non-undoable, but the
@@ -130,9 +127,7 @@ public class TabGroupVisualDataManager {
                             }
 
                             filter.deleteTabGroupColor(rootId);
-                            if (ChromeFeatureList.sTabStripGroupCollapse.isEnabled()) {
-                                filter.deleteTabGroupCollapsed(rootId);
-                            }
+                            filter.deleteTabGroupCollapsed(rootId);
                         }
                     }
 
@@ -174,11 +169,9 @@ public class TabGroupVisualDataManager {
             filter.setTabGroupColor(newRootId, colorId);
             filter.deleteTabGroupColor(oldRootId);
         }
-        if (ChromeFeatureList.sTabStripGroupCollapse.isEnabled()) {
-            if (filter.getTabGroupCollapsed(oldRootId)) {
-                filter.setTabGroupCollapsed(newRootId, true);
-                filter.deleteTabGroupCollapsed(oldRootId);
-            }
+        if (filter.getTabGroupCollapsed(oldRootId)) {
+            filter.setTabGroupCollapsed(newRootId, true);
+            filter.deleteTabGroupCollapsed(oldRootId);
         }
     }
 

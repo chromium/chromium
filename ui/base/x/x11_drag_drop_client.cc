@@ -493,7 +493,8 @@ void XDragDropClient::InitDrag(int allowed_operations,
   if (!source_provider_->file_contents_name().empty()) {
     actions.push_back(x11::GetAtom(kXdndActionDirectSave));
     x11::Connection::Get()->SetStringProperty(
-        xwindow_, x11::GetAtom(kXdndDirectSave0), x11::GetAtom(kMimeTypeText),
+        xwindow_, x11::GetAtom(kXdndDirectSave0),
+        x11::GetAtom(kMimeTypePlainText),
         source_provider_->file_contents_name().AsUTF8Unsafe());
   }
   x11::Connection::Get()->SetArrayProperty(

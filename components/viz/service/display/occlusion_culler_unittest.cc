@@ -102,7 +102,6 @@ class OcclusionCullerTest : public testing::Test {
         premultiplied_alpha, /*top_left=*/gfx::PointF(),
         /*bottom_right=*/gfx::PointF(), SkColors::kBlack, nearest_neighbor,
         /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
-    overlay_quad->set_resource_size_in_pixels(resource_size_in_pixels);
 
     return overlay_quad;
   }

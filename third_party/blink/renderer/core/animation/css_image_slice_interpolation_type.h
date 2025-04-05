@@ -11,7 +11,7 @@ namespace blink {
 
 class CSSImageSliceInterpolationType : public CSSInterpolationType {
  public:
-  CSSImageSliceInterpolationType(PropertyHandle property)
+  explicit CSSImageSliceInterpolationType(PropertyHandle property)
       : CSSInterpolationType(property) {}
 
   InterpolationValue MaybeConvertStandardPropertyUnderlyingValue(

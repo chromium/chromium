@@ -1225,8 +1225,9 @@ IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
   EXPECT_EQ(entries[0].metrics["UrlIndex"], 1);
 }
 
-#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/408234441): Re-enable this test
 // Very flaky on macOS 11 Tests: https://crbug.com/1486448
+#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_MAC)
 #define MAYBE_PopupInteraction_IsFollowedByPostPopupCookieAccess \
   DISABLED_PopupInteraction_IsFollowedByPostPopupCookieAccess
 #else
@@ -1398,8 +1399,17 @@ IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
                              /*exclusion=*/{"ExcludeThirdPartyPhaseout"});
 }
 
-IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
-                       TopLevelIsReported_PastInteraction_NoSameSiteIframe) {
+// TODO(crbug.com/408234441): Re-enable this test
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_TopLevelIsReported_PastInteraction_NoSameSiteIframe \
+  DISABLED_TopLevelIsReported_PastInteraction_NoSameSiteIframe
+#else
+#define MAYBE_TopLevelIsReported_PastInteraction_NoSameSiteIframe \
+  TopLevelIsReported_PastInteraction_NoSameSiteIframe
+#endif
+IN_PROC_BROWSER_TEST_F(
+    OpenerHeuristicBrowserTest,
+    MAYBE_TopLevelIsReported_PastInteraction_NoSameSiteIframe) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   GURL toplevel_url = embedded_test_server()->GetURL("a.test", "/title1.html");
   GURL popup_url = embedded_test_server()->GetURL("b.test", "/title1.html");
@@ -1428,8 +1438,16 @@ IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
               ValueIs(OptionalBool::kFalse));
 }
 
+// TODO(crbug.com/408234441): Re-enable this test
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_TopLevelIsReported_HasSameSiteIframe \
+  DISABLED_TopLevelIsReported_HasSameSiteIframe
+#else
+#define MAYBE_TopLevelIsReported_HasSameSiteIframe \
+  TopLevelIsReported_HasSameSiteIframe
+#endif
 IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
-                       TopLevelIsReported_HasSameSiteIframe) {
+                       MAYBE_TopLevelIsReported_HasSameSiteIframe) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   GURL toplevel_url =
       embedded_test_server()->GetURL("a.test", "/page_with_blank_iframe.html");
@@ -1463,7 +1481,14 @@ IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
               ValueIs(OptionalBool::kTrue));
 }
 
-IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest, TopLevel_PopupProvider) {
+// TODO(crbug.com/408234441): Re-enable this test
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_TopLevel_PopupProvider DISABLED_TopLevel_PopupProvider
+#else
+#define MAYBE_TopLevel_PopupProvider TopLevel_PopupProvider
+#endif
+IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
+                       MAYBE_TopLevel_PopupProvider) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   GURL toplevel_url = embedded_test_server()->GetURL("a.test", "/title1.html");
   GURL popup_url = embedded_test_server()->GetURL("google.com", "/title1.html");
@@ -1484,7 +1509,13 @@ IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest, TopLevel_PopupProvider) {
             static_cast<int64_t>(PopupProvider::kGoogle));
 }
 
-IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest, TopLevel_PopupId) {
+// TODO(crbug.com/408234441): Re-enable this test
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_TopLevel_PopupId DISABLED_TopLevel_PopupId
+#else
+#define MAYBE_TopLevel_PopupId TopLevel_PopupId
+#endif
+IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest, MAYBE_TopLevel_PopupId) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   GURL toplevel_url = embedded_test_server()->GetURL("a.test", "/title1.html");
   GURL popup_url = embedded_test_server()->GetURL("google.com", "/title1.html");
@@ -1678,8 +1709,17 @@ class OpenerHeuristicBackfillGrantBrowserTest
 
 // Test the backfill grants created by OpenerHeuristicService when tracking
 // protection is onboarded.
-IN_PROC_BROWSER_TEST_P(OpenerHeuristicBackfillGrantBrowserTest,
-                       TrackingProtectionOnboardingCreatesBackfillGrants) {
+// TODO(crbug.com/408234441): Re-enable this test
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_TrackingProtectionOnboardingCreatesBackfillGrants \
+  DISABLED_TrackingProtectionOnboardingCreatesBackfillGrants
+#else
+#define MAYBE_TrackingProtectionOnboardingCreatesBackfillGrants \
+  TrackingProtectionOnboardingCreatesBackfillGrants
+#endif
+IN_PROC_BROWSER_TEST_P(
+    OpenerHeuristicBackfillGrantBrowserTest,
+    MAYBE_TrackingProtectionOnboardingCreatesBackfillGrants) {
   GURL opener_url = embedded_test_server()->GetURL("a.test", "/title1.html");
   GURL popup_url_1 = embedded_test_server()->GetURL("b.test", "/title1.html");
   GURL popup_url_2 = embedded_test_server()->GetURL("c.test", "/title1.html");

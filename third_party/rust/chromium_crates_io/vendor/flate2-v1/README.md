@@ -67,8 +67,20 @@ fn main() {
 
 ## Backends
 
-The default `miniz_oxide` backend has the advantage of being pure Rust. If you
-want maximum performance, you can use the zlib-ng C library:
+The default `miniz_oxide` backend has the advantage of only using safe Rust.
+
+If you want maximum performance while still benefiting from a Rust
+implementation at the cost of some `unsafe`, you can use `zlib-rs`:
+
+```toml
+[dependencies]
+flate2 = { version = "1.0.17", features = ["zlib-rs"], default-features = false }
+```
+
+### C backends
+
+While zlib-rs is [the fastest overall](https://trifectatech.org/blog/zlib-rs-is-faster-than-c/),
+the zlib-ng C library can be slightly faster in certain cases:
 
 ```toml
 [dependencies]

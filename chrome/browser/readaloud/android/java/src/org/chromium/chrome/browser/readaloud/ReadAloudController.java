@@ -14,16 +14,14 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.LruCache;
 import android.view.WindowManager;
+
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import com.google.common.hash.Hashing;
+
 import com.google.common.collect.ImmutableMap;
-import java.time.Duration;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import com.google.common.hash.Hashing;
+
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
@@ -84,6 +82,12 @@ import org.chromium.ui.InsetObserver;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
+
+import java.time.Duration;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 /**
  * The main entrypoint component for Read Aloud feature. It's responsible for checking its
@@ -338,6 +342,10 @@ public class ReadAloudController
 
         /** Apply the saved playback state. */
         void restore() {
+            restore(/* restorePlaybackPosition = */ true);
+        }
+
+        void restore(boolean restorePlaybackPosition) {
             if (GURL.isEmptyOrInvalid(mTab.getUrl())) {
                 ReadAloudMetrics.recordEmptyURLPlayback(
                         Entrypoint.RESTORED_PLAYBACK, Entrypoint.NUM_ENTRIES);
@@ -355,7 +363,7 @@ public class ReadAloudController
                                     mPlayerCoordinator.playbackReady(playback, PAUSED);
                                 }
 
-                                if (mParagraphIndex != 0 || mOffsetNanos != 0) {
+                                if (restorePlaybackPosition && (mParagraphIndex != 0 || mOffsetNanos != 0)) {
                                     playback.seekToParagraph(
                                             mParagraphIndex, /* offsetNanos= */ mOffsetNanos);
                                 }
@@ -1064,10 +1072,12 @@ public class ReadAloudController
         PlaybackArgs args =
                 new PlaybackArgs(
                         sanitizedUrl,
+                        /* isUrl= */ true,
                         isTranslated ? playbackLanguage : null,
                         mPlaybackHooks.getPlaybackVoiceList(
                                 ReadAloudPrefs.getVoices(getPrefService())),
-                        /* dateModifiedMsSinceEpoch= */ dateModified);
+                        /* dateModifiedMsSinceEpoch= */ dateModified,
+                        /* playbackMode= */ getPlaybackModeForNewPlayback());
         Log.d(TAG, "Creating playback with args: %s", args);
 
         Promise<Playback> promise = createPlayback(args);
@@ -1284,6 +1294,12 @@ public class ReadAloudController
                 /* clearPassword= */ true);
     }
 
+    private PlaybackMode getPlaybackModeForNewPlayback() {
+        // TODO(crbug.com/401256755): Implement with actual logic.
+        // Rely on user preference, readability, and page language.
+        return PlaybackMode.UNSPECIFIED;
+    }
+
     private String getLanguageForNewPlayback(Tab tab) {
         WebContents webContents = tab.getWebContents();
         String language =
@@ -1397,7 +1413,16 @@ public class ReadAloudController
 
     @Override
     public void setPlaybackModeAndApplyToPlayback(PlaybackMode mode) {
-        // TODO(crbug.com/401256755): Implement.
+        ReadAloudPrefs.setPlaybackMode(getPrefService(), mode);
+
+        if (mActivePlaybackTabSupplier.get() != null && mPlayback != null) {
+            assert !GURL.isEmptyOrInvalid(mActivePlaybackTabSupplier.get().getUrl());
+            RestoreState state =
+                    new RestoreState(
+                            mActivePlaybackTabSupplier.get(), mCurrentPlaybackData, mDateModified);
+            resetCurrentPlayback(ReasonForStoppingPlayback.PLAYBACK_MODE_CHANGE);
+            state.restore(/* restorePlaybackPosition = */ false);
+        }
     }
 
     @Override

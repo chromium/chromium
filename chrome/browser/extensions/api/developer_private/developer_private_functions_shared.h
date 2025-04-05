@@ -383,6 +383,18 @@ class DeveloperPrivateDismissSafetyHubExtensionsMenuNotificationFunction
       override;
 };
 
+class DeveloperPrivateOpenDevToolsFunction
+    : public DeveloperPrivateAPIFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("developerPrivate.openDevTools",
+                             DEVELOPERPRIVATE_OPENDEVTOOLS)
+  DeveloperPrivateOpenDevToolsFunction();
+
+ protected:
+  ~DeveloperPrivateOpenDevToolsFunction() override;
+  ResponseAction Run() override;
+};
+
 }  // namespace extensions::api
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_DEVELOPER_PRIVATE_DEVELOPER_PRIVATE_FUNCTIONS_SHARED_H_

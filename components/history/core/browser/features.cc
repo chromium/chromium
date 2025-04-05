@@ -4,9 +4,6 @@
 
 #include "components/history/core/browser/features.h"
 
-#include <limits.h>
-
-#include "build/build_config.h"
 #include "components/history/core/browser/top_sites_impl.h"
 #include "components/sync/base/features.h"
 
@@ -14,8 +11,7 @@ namespace history {
 namespace {
 constexpr auto is_android = !!BUILDFLAG(IS_ANDROID);
 constexpr auto kOrganicRepeatableQueriesDefaultValue =
-    is_android ? base::FEATURE_ENABLED_BY_DEFAULT
-               : base::FEATURE_DISABLED_BY_DEFAULT;
+    base::FEATURE_DISABLED_BY_DEFAULT;
 
 // Specifies the scaling behavior, i.e. whether the relevance scales of the
 // top sites and repeatable queries should be first aligned.
@@ -85,6 +81,7 @@ BASE_FEATURE(kPopulateVisitedLinkDatabase,
 // If enabled, uses new scoring function for Most Visited Tiles computation.
 BASE_FEATURE(kMostVisitedTilesNewScoring,
              "MostVisitedTilesNewScoring",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             is_android ? base::FEATURE_ENABLED_BY_DEFAULT
+                        : base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace history

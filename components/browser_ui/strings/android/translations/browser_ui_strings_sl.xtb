@@ -440,7 +440,7 @@
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Zaščitena vsebina</translation>
 <translation id="662080504995468778">Ostani</translation>
-<translation id="6653342741369270081">Pritisnite gumb za nazaj, če želite zapreti celozaslonski način.</translation>
+<translation id="6635327442719709864">Če je ta možnost vklopljena, spletna mesta lahko zahtevajo uporabo serijskih vrat. Če je ta možnost izklopljena, spletna mesta ne smejo uporabljati serijskih vrat.</translation>
 <translation id="6683865262523156564">To spletno mesto je v skupini, ki si lahko ogleda vašo dejavnost. To skupino je definiralo spletno mesto <ph name="RWS_OWNER" /></translation>
 <translation id="6689172468748959065">Profilne fotografije</translation>
 <translation id="6697925417670533197">Aktivni prenosi</translation>

@@ -20,7 +20,10 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.StrictMode;
+import android.text.Spanned;
 import android.text.TextUtils;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.View.MeasureSpec;
@@ -33,11 +36,13 @@ import android.view.inputmethod.InputMethodManager;
 import android.view.inputmethod.InputMethodSubtype;
 import android.widget.AbsListView;
 import android.widget.ListAdapter;
+import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.DimenRes;
 import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
 import androidx.annotation.StyleableRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.Insets;
@@ -505,5 +510,24 @@ public class UiUtils {
         canvas.drawCircle(badgeCenterX, badgeCenterY, badgeRadius, badge);
 
         return new BitmapDrawable(context.getResources(), bitmap);
+    }
+
+    /**
+     * Set a link movement method if the {@code textView} text contains at least one {@link
+     * ClickableSpan}.
+     *
+     * @param textView The TextView which might set a link movement method.
+     */
+    public static void maybeSetLinkMovementMethod(@NonNull TextView textView) {
+        CharSequence text = textView.getText();
+        if (TextUtils.isEmpty(text)) return;
+        if (text instanceof Spanned spanned) {
+            for (Object o : spanned.getSpans(0, text.length(), Object.class)) {
+                if (o instanceof ClickableSpan) {
+                    textView.setMovementMethod(LinkMovementMethod.getInstance());
+                    return;
+                }
+            }
+        }
     }
 }

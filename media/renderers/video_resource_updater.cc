@@ -157,18 +157,6 @@ VideoFrameResourceType ExternalResourceTypeForHardware(const VideoFrame& frame,
   return VideoFrameResourceType::NONE;
 }
 
-// For frames that we receive in software format, determine the dimensions of
-// first plane in the frame.
-gfx::Size SoftwareFirstPlaneDimension(VideoFrame* input_frame,
-                                      bool software_compositor) {
-  if (software_compositor)
-    return input_frame->coded_size();
-
-  int plane_width = input_frame->columns(/*plane=*/0);
-  int plane_height = input_frame->rows(/*plane=*/0);
-  return gfx::Size(plane_width, plane_height);
-}
-
 viz::SharedImageFormat GetRGBSharedImageFormat(VideoPixelFormat format) {
 #if BUILDFLAG(IS_MAC)
   // macOS IOSurfaces are always BGRA_8888.
@@ -486,16 +474,15 @@ class VideoResourceUpdater::HardwareFrameResource
                         viz::SharedImageFormat format,
                         const gfx::ColorSpace& color_space,
                         bool use_gpu_memory_buffer_resources,
-                        viz::RasterContextProvider* context_provider)
-      : FrameResource(frame_resource_id, size, format, /*is_software=*/false),
-        context_provider_(context_provider) {
-    DCHECK(context_provider_);
-    auto* sii = SharedImageInterface();
+                        gpu::SharedImageInterface* shared_image_interface)
+      : FrameResource(frame_resource_id, size, format, /*is_software=*/false) {
+    DCHECK(shared_image_interface);
     // TODO(crbug.com/40239769): Set `overlay_candidate` for multiplanar
     // formats.
     const bool overlay_candidate =
         format.is_single_plane() && use_gpu_memory_buffer_resources &&
-        sii->GetCapabilities().supports_scanout_shared_images &&
+        shared_image_interface->GetCapabilities()
+            .supports_scanout_shared_images &&
         CanCreateGpuMemoryBufferForSinglePlaneSharedImageFormat(format);
 
     // These SharedImages will be sent over to the display compositor as
@@ -507,43 +494,32 @@ class VideoResourceUpdater::HardwareFrameResource
     if (overlay_candidate) {
       shared_image_usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
     }
-    shared_image_ = sii->CreateSharedImage(
+    shared_image_ = shared_image_interface->CreateSharedImage(
         {format, size, color_space, shared_image_usage, "VideoResourceUpdater"},
         gpu::kNullSurfaceHandle);
     CHECK(shared_image_);
-    RasterInterface()->WaitSyncTokenCHROMIUM(
-        sii->GenUnverifiedSyncToken().GetConstData());
+    sync_token_ = shared_image_->creation_sync_token();
   }
 
   HardwareFrameResource(const HardwareFrameResource&) = delete;
   HardwareFrameResource& operator=(const HardwareFrameResource&) = delete;
 
   ~HardwareFrameResource() override {
-    gpu::SyncToken sync_token;
-    RasterInterface()->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
-    SharedImageInterface()->DestroySharedImage(sync_token,
-                                               std::move(shared_image_));
+    shared_image_->UpdateDestructionSyncToken(sync_token_);
+  }
+
+  void UpdateSyncToken(const gpu::SyncToken& sync_token) {
+    sync_token_ = sync_token;
   }
 
   const scoped_refptr<gpu::ClientSharedImage>& shared_image() const {
     return shared_image_;
   }
+  const gpu::SyncToken& sync_token() const { return sync_token_; }
 
  private:
-  gpu::SharedImageInterface* SharedImageInterface() {
-    auto* sii = context_provider_->SharedImageInterface();
-    DCHECK(sii);
-    return sii;
-  }
-
-  gpu::raster::RasterInterface* RasterInterface() {
-    auto* ri = context_provider_->RasterInterface();
-    CHECK(ri);
-    return ri;
-  }
-
-  const raw_ptr<viz::RasterContextProvider> context_provider_;
   scoped_refptr<gpu::ClientSharedImage> shared_image_;
+  gpu::SyncToken sync_token_;
 };
 
 VideoResourceUpdater::SoftwareFrameResource*
@@ -674,7 +650,6 @@ void VideoResourceUpdater::AppendQuad(
                            premultiplied_alpha, uv_top_left, uv_bottom_right,
                            SkColors::kTransparent, nearest_neighbor, false,
                            protected_video_type);
-      texture_quad->set_resource_size_in_pixels(coded_size);
       // Set the is_stream_video flag for STREAM_TEXTURE. Is used downstream
       // (e.g. *_layer_overlay.cc).
       texture_quad->is_stream_video =
@@ -792,7 +767,8 @@ VideoResourceUpdater::FrameResource* VideoResourceUpdater::AllocateResource(
   } else {
     all_resources_.push_back(std::make_unique<HardwareFrameResource>(
         resource_id, size, format, color_space,
-        use_gpu_memory_buffer_resources_, context_provider_));
+        use_gpu_memory_buffer_resources_,
+        context_provider_->SharedImageInterface()));
   }
   return all_resources_.back().get();
 }
@@ -817,7 +793,10 @@ void VideoResourceUpdater::CopyHardwareResource(
   hardware_resource->add_ref();
 
   auto* ri = RasterInterface();
+  // Wait on sync tokens for both source (video frame) and destination (shared
+  // image).
   ri->WaitSyncTokenCHROMIUM(video_frame->acquire_sync_token().GetConstData());
+  ri->WaitSyncTokenCHROMIUM(hardware_resource->sync_token().GetConstData());
 
   ri->CopySharedImage(
       shared_image->mailbox(), hardware_resource->shared_image()->mailbox(),
@@ -825,12 +804,13 @@ void VideoResourceUpdater::CopyHardwareResource(
       output_resource_size.width(), output_resource_size.height());
 
   // Wait (if the existing token isn't null) and replace it with a new one.
-  WaitAndReplaceSyncTokenClient client(RasterInterface());
+  WaitAndReplaceSyncTokenClient client(ri);
   gpu::SyncToken sync_token = video_frame->UpdateReleaseSyncToken(&client);
+  hardware_resource->UpdateSyncToken(sync_token);
 
   auto transferable_resource = viz::TransferableResource::MakeGpu(
-      hardware_resource->shared_image(), GL_TEXTURE_2D, sync_token,
-      output_resource_size, copy_si_format,
+      hardware_resource->shared_image(), GL_TEXTURE_2D,
+      hardware_resource->sync_token(), output_resource_size, copy_si_format,
       /*is_overlay_candidate=*/false,
       viz::TransferableResource::ResourceSource::kVideo);
 
@@ -880,13 +860,10 @@ VideoFrameExternalResource VideoResourceUpdater::CreateForHardwareFrame(
     return external_resource;
   }
 
-  const size_t width = video_frame->columns(/*plane=*/0);
-  const size_t height = video_frame->rows(/*plane=*/0);
-  const gfx::Size size(width, height);
   auto transfer_resource = viz::TransferableResource::MakeGpu(
       shared_image->mailbox(), shared_image->GetTextureTarget(),
-      video_frame->acquire_sync_token(), size, shared_image->format(),
-      video_frame->metadata().allow_overlay,
+      video_frame->acquire_sync_token(), video_frame->coded_size(),
+      shared_image->format(), video_frame->metadata().allow_overlay,
       viz::TransferableResource::ResourceSource::kVideo);
   transfer_resource.origin = shared_image->surface_origin();
   transfer_resource.color_space = video_frame->ColorSpace();
@@ -1089,6 +1066,8 @@ bool VideoResourceUpdater::WriteRGBPixelsToTexture(
 
   // Copy pixels into texture.
   auto* ri = RasterInterface();
+  ri->WaitSyncTokenCHROMIUM(hardware_resource->sync_token().GetConstData());
+
   auto color_type =
       viz::ToClosestSkColorType(output_si_format, /*plane_index=*/0);
   SkImageInfo info =
@@ -1099,6 +1078,10 @@ bool VideoResourceUpdater::WriteRGBPixelsToTexture(
       hardware_resource->shared_image()->mailbox(), /*dst_x_offset=*/0,
       /*dst_y_offset=*/0, hardware_resource->shared_image()->GetTextureTarget(),
       pixmap);
+
+  gpu::SyncToken ri_sync_token;
+  ri->GenUnverifiedSyncTokenCHROMIUM(ri_sync_token.GetData());
+  hardware_resource->UpdateSyncToken(ri_sync_token);
 
   return true;
 }
@@ -1248,8 +1231,15 @@ bool VideoResourceUpdater::WriteYUVPixelsForAllPlanesToTexture(
   SkYUVAInfo info =
       SkYUVAInfo(video_size, plane_config, subsampling, color_space);
   SkYUVAPixmaps yuv_pixmap = SkYUVAPixmaps::FromExternalPixmaps(info, pixmaps);
-  RasterInterface()->WritePixelsYUV(resource->shared_image()->mailbox(),
-                                    yuv_pixmap);
+
+  auto* ri = RasterInterface();
+  ri->WaitSyncTokenCHROMIUM(resource->sync_token().GetConstData());
+
+  ri->WritePixelsYUV(resource->shared_image()->mailbox(), yuv_pixmap);
+
+  gpu::SyncToken ri_sync_token;
+  ri->GenUnverifiedSyncTokenCHROMIUM(ri_sync_token.GetData());
+  resource->UpdateSyncToken(ri_sync_token);
 
   return true;
 }
@@ -1285,8 +1275,7 @@ VideoFrameExternalResource VideoResourceUpdater::CreateForSoftwareFrame(
   // For multiplanar shared images, we only need to store size for first plane
   // (subplane sizes are handled automatically within shared images) and
   // create a single multiplanar resource.
-  gfx::Size output_resource_size =
-      SoftwareFirstPlaneDimension(video_frame.get(), software_compositor());
+  gfx::Size output_resource_size = video_frame->coded_size();
   if (output_resource_size.IsEmpty() ||
       output_resource_size.width() > max_resource_size_ ||
       output_resource_size.height() > max_resource_size_) {
@@ -1351,12 +1340,11 @@ VideoFrameExternalResource VideoResourceUpdater::CreateForSoftwareFrame(
     } else {
       HardwareFrameResource* hardware_resource = frame_resource->AsHardware();
       external_resource.type = VideoFrameResourceType::RGB;
-      gpu::SyncToken sync_token;
-      RasterInterface()->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
       transferable_resource = viz::TransferableResource::MakeGpu(
           hardware_resource->shared_image(),
-          hardware_resource->shared_image()->GetTextureTarget(), sync_token,
-          hardware_resource->resource_size(), output_si_format,
+          hardware_resource->shared_image()->GetTextureTarget(),
+          hardware_resource->sync_token(), hardware_resource->resource_size(),
+          output_si_format,
           hardware_resource->shared_image()->usage().Has(
               gpu::SHARED_IMAGE_USAGE_SCANOUT),
           viz::TransferableResource::ResourceSource::kVideo);
@@ -1385,13 +1373,9 @@ VideoFrameExternalResource VideoResourceUpdater::CreateForSoftwareFrame(
     return VideoFrameExternalResource();
   }
 
-  // Set the sync token otherwise resource is assumed to be synchronized.
-  gpu::SyncToken sync_token;
-  RasterInterface()->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
-
   auto transferable_resource = viz::TransferableResource::MakeGpu(
       resource->shared_image(), resource->shared_image()->GetTextureTarget(),
-      sync_token, resource->resource_size(), output_si_format,
+      resource->sync_token(), resource->resource_size(), output_si_format,
       resource->shared_image()->usage().Has(gpu::SHARED_IMAGE_USAGE_SCANOUT),
       viz::TransferableResource::ResourceSource::kVideo);
   transferable_resource.origin = kTopLeft_GrSurfaceOrigin;
@@ -1445,7 +1429,7 @@ void VideoResourceUpdater::RecycleResource(uint32_t resource_id,
     return;
 
   if (context_provider_ && sync_token.HasData()) {
-    RasterInterface()->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
+    (*resource_it)->AsHardware()->UpdateSyncToken(sync_token);
   }
 
   if (lost_resource) {

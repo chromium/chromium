@@ -40,8 +40,8 @@ export class CheckMarkWrapperElement extends CrLitElement {
     };
   }
 
-  checked: boolean = false;
-  checkmarkBorderHidden: boolean = false;
+  accessor checked: boolean = false;
+  accessor checkmarkBorderHidden: boolean = false;
 }
 
 declare global {

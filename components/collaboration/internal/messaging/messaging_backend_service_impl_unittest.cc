@@ -47,6 +47,7 @@ using testing::Truly;
 namespace collaboration::messaging {
 
 namespace {
+
 bool PersistentMessagesHaveSameTypeAndEvent(const PersistentMessage& a,
                                             const PersistentMessage& b) {
   return a.collaboration_event == b.collaboration_event && a.type == b.type;
@@ -2372,6 +2373,74 @@ TEST_F(MessagingBackendServiceImplTest,
 
   tg_notifier_observer_->OnTabGroupOpened(tab_group);
   task_environment_.FastForwardBy(base::Seconds(10));
+}
+
+TEST_F(MessagingBackendServiceImplTest, OnTabLastSeenTimeChanged_Remote) {
+  CreateAndInitializeService();
+
+  // Create a group in the service with a local tab.
+  data_sharing::GroupId test_group("test_collab");
+  tab_groups::SavedTabGroup test_group_obj = CreateSharedTabGroup(test_group);
+  auto expected_tab_guid = test_group_obj.saved_tabs().front().saved_tab_guid();
+  auto expected_group_guid = test_group_obj.saved_guid();
+  std::vector<tab_groups::SavedTabGroup> all_groups = {test_group_obj};
+  EXPECT_CALL(*mock_tab_group_sync_service_, GetAllGroups())
+      .WillRepeatedly(Return(all_groups));
+
+  // Create a message in the messaging backend.
+  collaboration_pb::Message message =
+      CreateStoredMessage(test_group, collaboration_pb::TAB_UPDATED,
+                          DirtyType::kDotAndChip, base::Time::Now());
+  message.mutable_tab_data()->set_sync_tab_id(
+      expected_tab_guid.AsLowercaseString());
+  message.mutable_tab_data()->set_sync_tab_group_id(
+      expected_group_guid.AsLowercaseString());
+  AddMessage(message);
+
+  ASSERT_TRUE(HasDirtyMessages());
+
+  // Perform a change notification
+  service_->OnTabLastSeenTimeChanged(expected_tab_guid,
+                                     tab_groups::TriggerSource::REMOTE);
+
+  // Expect that the dirty message was cleared.
+  auto dirty_message = GetDirtyMessageForTab(test_group, expected_tab_guid,
+                                             DirtyType::kDotAndChip);
+  EXPECT_FALSE(dirty_message.has_value());
+}
+
+TEST_F(MessagingBackendServiceImplTest, OnTabLastSeenTimeChanged_NonRemote) {
+  CreateAndInitializeService();
+
+  // Create a group in the service with a local tab.
+  data_sharing::GroupId test_group("test_collab");
+  tab_groups::SavedTabGroup test_group_obj = CreateSharedTabGroup(test_group);
+  auto expected_tab_guid = test_group_obj.saved_tabs().front().saved_tab_guid();
+  auto expected_group_guid = test_group_obj.saved_guid();
+  std::vector<tab_groups::SavedTabGroup> all_groups = {test_group_obj};
+  EXPECT_CALL(*mock_tab_group_sync_service_, GetAllGroups())
+      .WillRepeatedly(Return(all_groups));
+
+  // Create a message in the messaging backend.
+  collaboration_pb::Message message =
+      CreateStoredMessage(test_group, collaboration_pb::TAB_UPDATED,
+                          DirtyType::kDotAndChip, base::Time::Now());
+  message.mutable_tab_data()->set_sync_tab_id(
+      expected_tab_guid.AsLowercaseString());
+  message.mutable_tab_data()->set_sync_tab_group_id(
+      expected_group_guid.AsLowercaseString());
+  AddMessage(message);
+
+  ASSERT_TRUE(HasDirtyMessages());
+
+  // Perform a change notification
+  service_->OnTabLastSeenTimeChanged(expected_tab_guid,
+                                     tab_groups::TriggerSource::LOCAL);
+
+  // Expect that the dirty message was not cleared.
+  auto dirty_message = GetDirtyMessageForTab(test_group, expected_tab_guid,
+                                             DirtyType::kDotAndChip);
+  EXPECT_TRUE(dirty_message.has_value());
 }
 
 }  // namespace collaboration::messaging

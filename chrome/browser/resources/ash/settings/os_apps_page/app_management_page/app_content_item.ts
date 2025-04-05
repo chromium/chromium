@@ -41,6 +41,7 @@ export class AppManagementAppContentItemElement extends
   app: App;
   appContentLabel: string;
   appContentSublabel: string;
+  override hidden: boolean;
   showAppContentDialog: boolean;
 
   override ready(): void {

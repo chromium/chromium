@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "cc/layers/deadline_policy.h"
 #include "cc/slim/layer.h"
+#include "components/input/render_input_router.mojom.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "content/browser/renderer_host/frame_tree.h"
@@ -98,6 +99,31 @@ class MockInputTransferHandler : public InputTransferHandlerAndroid {
               OnTouchEvent,
               (const ui::MotionEventAndroid& event),
               (override));
+};
+
+class MockMojoRenderInputRouterDelegate
+    : public input::mojom::RenderInputRouterDelegate {
+ public:
+  MockMojoRenderInputRouterDelegate() = default;
+  ~MockMojoRenderInputRouterDelegate() override = default;
+
+  mojo::PendingRemote<input::mojom::RenderInputRouterDelegate>
+  GetPendingRemote() {
+    return receiver_.BindNewPipeAndPassRemote();
+  }
+
+  MOCK_METHOD1(StateOnTouchTransfer,
+               void(input::mojom::TouchTransferStatePtr state));
+  MOCK_METHOD2(NotifySiteIsMobileOptimized,
+               void(bool is_mobile_optimized,
+                    const viz::FrameSinkId& frame_sink_id));
+  MOCK_METHOD2(ForceEnableZoomStateChanged,
+               void(bool force_enable_zoom,
+                    const std::vector<viz::FrameSinkId>& frame_sink_ids));
+  MOCK_METHOD1(StopFlingingOnViz, void(const viz::FrameSinkId& frame_sink_id));
+
+ private:
+  mojo::Receiver<input::mojom::RenderInputRouterDelegate> receiver_{this};
 };
 
 class RenderWidgetHostViewAndroidTest : public RenderViewHostImplTestHarness {
@@ -446,6 +472,45 @@ TEST_F(RenderWidgetHostViewAndroidTest,
   EXPECT_CALL(*handler, OnTouchEvent(_)).WillOnce(Return(false));
   rwhva->OnTouchEvent(touch_down);
   EXPECT_NE(gesture_provider.GetCurrentDownEvent(), nullptr);
+}
+
+// Tests that when an input sequence is handled on browser with InputVizard,
+// browser sends a StopFlingingOnViz mojo call to VizCompositorThread.
+TEST_F(RenderWidgetHostViewAndroidTest, StopFlingingOnViz) {
+  RenderWidgetHostViewAndroid* rwhva = render_widget_host_view_android();
+
+  MockInputTransferHandler* handler = new MockInputTransferHandler();
+  rwhva->SetInputTransferHandlerForTesting(handler);
+
+  MockMojoRenderInputRouterDelegate rir_delegate;
+  delegate()->set_render_input_router_delegate_remote(
+      rir_delegate.GetPendingRemote());
+
+  gfx::Point point(/*x=*/100, /*y=*/100);
+  ui::MotionEventAndroid::Pointer p(0, point.x(), point.y(), 10, 0, 0, 0, 0);
+  JNIEnv* env = base::android::AttachCurrentThread();
+  auto time_ns = (ui::EventTimeForNow() - base::TimeTicks()).InNanoseconds();
+  auto action = ui::MotionEvent::Action::DOWN;
+  ui::MotionEventAndroidJava touch_down1(
+      env, nullptr, 1.f, 0, 0, 0, base::TimeTicks::FromJavaNanoTime(time_ns),
+      ui::MotionEventAndroid::GetAndroidAction(action), 1, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, false, &p, nullptr);
+
+  EXPECT_CALL(*handler, OnTouchEvent(_)).WillOnce(Return(true));
+  rwhva->OnTouchEvent(touch_down1);
+
+  time_ns = (ui::EventTimeForNow() - base::TimeTicks()).InNanoseconds();
+  ui::MotionEventAndroidJava touch_down2(
+      env, nullptr, 1.f, 0, 0, 0, base::TimeTicks::FromJavaNanoTime(time_ns),
+      ui::MotionEventAndroid::GetAndroidAction(action), 1, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, false, &p, nullptr);
+
+  EXPECT_CALL(*handler, OnTouchEvent(_)).WillOnce(Return(false));
+  rwhva->OnTouchEvent(touch_down2);
+  // Expect a call to StopFlingingOnViz mojo method if the input sequence hasn't
+  // been transferred to VizCompositorThread for handling.
+  EXPECT_CALL(rir_delegate, StopFlingingOnViz).Times(1);
+  base::RunLoop().RunUntilIdle();
 }
 
 // Tests rotation and fullscreen cases that are supported by visual properties

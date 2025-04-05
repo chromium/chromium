@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_metrics_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_metrics_recorder.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/utils.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_data.h"
 #import "ios/chrome/browser/favicon/ui_bundled/favicon_attributes_with_payload.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_item_type.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_metrics.h"
@@ -143,8 +144,38 @@ const float kMaxModuleEngagementIndex = 50;
   }
 }
 
-- (void)recordTabResumptionTabOpened {
+- (void)recordTabResumptionTabOpened:(ShopCardData*)shopCardData {
   base::RecordAction(base::UserMetricsAction(kOpenMostRecentTabAction));
+  if (shopCardData) {
+    if (shopCardData.shopCardItemType == ShopCardItemType::kPriceDropOnTab) {
+      base::RecordAction(
+          base::UserMetricsAction(kTabResumptionWithPriceDropOpenTab));
+    } else if (shopCardData.shopCardItemType ==
+               ShopCardItemType::kPriceTrackableProductOnTab) {
+      base::RecordAction(
+          base::UserMetricsAction(kTabResumptionWithPriceTrackingOpenTab));
+    }
+  } else {
+    base::RecordAction(base::UserMetricsAction(kTabResumptionOpenTab));
+  }
+}
+
+- (void)recordTabResumptionImpressionWithCustomization:
+            (ShopCardData*)shopCardData
+                                               atIndex:(int)index {
+  if (shopCardData) {
+    if (shopCardData.shopCardItemType == ShopCardItemType::kPriceDropOnTab) {
+      UMA_HISTOGRAM_EXACT_LINEAR(kTabResumptionWithPriceDropImpression, index,
+                                 kMaxModuleEngagementIndex);
+    } else if (shopCardData.shopCardItemType ==
+               ShopCardItemType::kPriceTrackableProductOnTab) {
+      UMA_HISTOGRAM_EXACT_LINEAR(kTabResumptionWithPriceTrackingImpression,
+                                 index, kMaxModuleEngagementIndex);
+    }
+  } else {
+    UMA_HISTOGRAM_EXACT_LINEAR(kTabResumptionImpression, index,
+                               kMaxModuleEngagementIndex);
+  }
 }
 
 - (void)recordMostVisitedTilesShown {

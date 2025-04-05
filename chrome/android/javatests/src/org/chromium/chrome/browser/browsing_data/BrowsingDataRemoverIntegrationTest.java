@@ -19,11 +19,11 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.browserservices.verification.ChromeVerificationResultStore;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge.OnClearBrowsingDataListener;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.password_manager.PasswordManagerTestHelper;
 import org.chromium.chrome.browser.webapps.TestFetchStorageCallback;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.util.browser.webapps.WebappTestHelper;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -49,19 +49,12 @@ public class BrowsingDataRemoverIntegrationTest {
     private static final String TEST_PATH = "/chrome/test/data/android/about.html";
 
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
-
-    public BrowsingDataRemoverIntegrationTest() {
-        // This test suite relies on the real password store. However, that can only store
-        // passwords if the device it runs on has the required min GMS Core version.
-        // To ensure the tests don't depend on the device configuration, set up a fake GMS
-        // Core version instead.
-        PasswordManagerTestHelper.setUpPwmRequiredMinGmsVersion();
-    }
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Before
     public void setUp() throws InterruptedException {
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mActivityTestRule.startOnBlankPage();
     }
 
     private void registerWebapp(final String webappId, final String webappUrl) throws Exception {

@@ -141,7 +141,7 @@ void XOSExchangeDataProvider::SetString(std::u16string_view text_data) {
       base::MakeRefCounted<base::RefCountedString>(
           base::UTF16ToUTF8(text_data)));
 
-  format_map_.Insert(x11::GetAtom(kMimeTypeText), mem);
+  format_map_.Insert(x11::GetAtom(kMimeTypePlainText), mem);
   format_map_.Insert(x11::GetAtom(kMimeTypeLinuxText), mem);
   format_map_.Insert(x11::GetAtom(kMimeTypeLinuxString), mem);
   format_map_.Insert(x11::GetAtom(kMimeTypeLinuxUtf8String), mem);
@@ -161,7 +161,7 @@ void XOSExchangeDataProvider::SetURL(const GURL& url,
     ui::AddString16ToVector(title, &data);
     auto mem = base::MakeRefCounted<base::RefCountedBytes>(std::move(data));
 
-    format_map_.Insert(x11::GetAtom(kMimeTypeMozillaURL), mem);
+    format_map_.Insert(x11::GetAtom(kMimeTypeMozillaUrl), mem);
 
     // Set a string fallback as well.
     SetString(spec);
@@ -208,7 +208,7 @@ void XOSExchangeDataProvider::SetFilenames(
   scoped_refptr<base::RefCountedMemory> mem(
       base::MakeRefCounted<base::RefCountedString>(
           base::JoinString(paths, "\n")));
-  format_map_.Insert(x11::GetAtom(kMimeTypeURIList), mem);
+  format_map_.Insert(x11::GetAtom(kMimeTypeUriList), mem);
 }
 
 void XOSExchangeDataProvider::SetPickledData(const ClipboardFormatType& format,
@@ -250,7 +250,7 @@ XOSExchangeDataProvider::GetURLAndTitle(FilenameToURLPolicy policy) const {
     // but that doesn't match the assumptions of the rest of the system which
     // expect single types.
 
-    if (data.GetType() == x11::GetAtom(kMimeTypeMozillaURL)) {
+    if (data.GetType() == x11::GetAtom(kMimeTypeMozillaUrl)) {
       // Mozilla URLs are (UTF16: URL, newline, title).
       std::u16string unparsed;
       data.AssignTo(&unparsed);
@@ -265,7 +265,7 @@ XOSExchangeDataProvider::GetURLAndTitle(FilenameToURLPolicy policy) const {
         return UrlInfo{std::move(url), tokens.size() > 1 ? std::move(tokens[1])
                                                          : std::u16string()};
       }
-    } else if (data.GetType() == x11::GetAtom(kMimeTypeURIList)) {
+    } else if (data.GetType() == x11::GetAtom(kMimeTypeUriList)) {
       std::vector<std::string> tokens = ui::ParseURIList(data);
       for (const std::string& token : tokens) {
         GURL test_url(token);
@@ -287,7 +287,7 @@ std::optional<std::vector<GURL>> XOSExchangeDataProvider::GetURLs(
     FilenameToURLPolicy policy) const {
   std::vector<GURL> local_urls;
 
-  ui::SelectionData data = format_map_.Get(x11::GetAtom(kMimeTypeURIList));
+  ui::SelectionData data = format_map_.Get(x11::GetAtom(kMimeTypeUriList));
   if (data.IsValid()) {
     std::vector<std::string> tokens = ui::ParseURIList(data);
     for (const std::string& token : tokens) {
@@ -299,7 +299,7 @@ std::optional<std::vector<GURL>> XOSExchangeDataProvider::GetURLs(
     }
   }
 
-  data = format_map_.Get(x11::GetAtom(kMimeTypeMozillaURL));
+  data = format_map_.Get(x11::GetAtom(kMimeTypeMozillaUrl));
   if (data.IsValid()) {
     std::u16string unparsed;
     data.AssignTo(&unparsed);
@@ -376,10 +376,10 @@ bool XOSExchangeDataProvider::HasURL(FilenameToURLPolicy policy) const {
   // Windows does and stuffs all the data into one mime type.
   ui::SelectionData data = format_map_.GetFirstOf(requested_types);
   if (data.IsValid()) {
-    if (data.GetType() == x11::GetAtom(kMimeTypeMozillaURL)) {
+    if (data.GetType() == x11::GetAtom(kMimeTypeMozillaUrl)) {
       // File managers shouldn't be using this type, so this is a URL.
       return true;
-    } else if (data.GetType() == x11::GetAtom(ui::kMimeTypeURIList)) {
+    } else if (data.GetType() == x11::GetAtom(ui::kMimeTypeUriList)) {
       std::vector<std::string> tokens = ui::ParseURIList(data);
       for (const std::string& token : tokens) {
         if (!GURL(token).SchemeIsFile() ||
@@ -405,7 +405,7 @@ bool XOSExchangeDataProvider::HasFile() const {
   }
 
   // To actually answer whether we have a file, we need to look through the
-  // contents of the kMimeTypeURIList type, and see if any of them are file://
+  // contents of the kMimeTypeUriList type, and see if any of them are file://
   // URIs.
   ui::SelectionData data = format_map_.GetFirstOf(requested_types);
   if (data.IsValid()) {
@@ -436,7 +436,7 @@ void XOSExchangeDataProvider::SetFileContents(
     const base::FilePath& filename,
     const std::string& file_contents) {
   DCHECK(!filename.empty());
-  DCHECK(!base::Contains(format_map(), x11::GetAtom(kMimeTypeMozillaURL)));
+  DCHECK(!base::Contains(format_map(), x11::GetAtom(kMimeTypeMozillaUrl)));
   set_file_contents_name(filename);
   // Direct save handling is a complicated juggling affair between this class,
   // SelectionFormat, and XDragDropClient. The general idea behind
@@ -506,13 +506,13 @@ void XOSExchangeDataProvider::SetHtml(const std::u16string& html,
   ui::AddString16ToVector(html, &bytes);
   auto mem = base::MakeRefCounted<base::RefCountedBytes>(std::move(bytes));
 
-  format_map_.Insert(x11::GetAtom(kMimeTypeHTML), mem);
+  format_map_.Insert(x11::GetAtom(kMimeTypeHtml), mem);
 }
 
 std::optional<OSExchangeDataProvider::HtmlInfo>
 XOSExchangeDataProvider::GetHtml() const {
   std::vector<x11::Atom> url_atoms;
-  url_atoms.push_back(x11::GetAtom(kMimeTypeHTML));
+  url_atoms.push_back(x11::GetAtom(kMimeTypeHtml));
   std::vector<x11::Atom> requested_types;
   GetAtomIntersection(url_atoms, GetTargets(), &requested_types);
 
@@ -529,7 +529,7 @@ XOSExchangeDataProvider::GetHtml() const {
 
 bool XOSExchangeDataProvider::HasHtml() const {
   std::vector<x11::Atom> url_atoms;
-  url_atoms.push_back(x11::GetAtom(kMimeTypeHTML));
+  url_atoms.push_back(x11::GetAtom(kMimeTypeHtml));
   std::vector<x11::Atom> requested_types;
   GetAtomIntersection(url_atoms, GetTargets(), &requested_types);
 

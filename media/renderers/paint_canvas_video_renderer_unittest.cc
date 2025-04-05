@@ -1043,7 +1043,8 @@ TEST_F(PaintCanvasVideoRendererTest, TexImage2D_Y16_RGBA32F) {
       });
   PaintCanvasVideoRenderer::TexImage2D(
       GL_TEXTURE_2D, 0, &gles2, gpu::Capabilities(), video_frame.get(), 0,
-      GL_RGBA, GL_RGBA, GL_FLOAT, true /*flip_y*/, true);
+      GL_RGBA, GL_RGBA, GL_FLOAT, kBottomLeft_GrSurfaceOrigin,
+      kPremul_SkAlphaType);
 }
 
 TEST_F(PaintCanvasVideoRendererTest, TexSubImage2D_Y16_R32F) {
@@ -1091,7 +1092,8 @@ TEST_F(PaintCanvasVideoRendererTest, TexSubImage2D_Y16_R32F) {
       });
   PaintCanvasVideoRenderer::TexSubImage2D(
       GL_TEXTURE_2D, &gles2, video_frame.get(), 0, GL_RED, GL_FLOAT,
-      2 /*xoffset*/, 1 /*yoffset*/, false /*flip_y*/, true);
+      2 /*xoffset*/, 1 /*yoffset*/, kTopLeft_GrSurfaceOrigin,
+      kPremul_SkAlphaType);
 }
 
 // Fixture for tests that require a GL context as destination.
@@ -1144,8 +1146,8 @@ class PaintCanvasVideoRendererWithGLTest : public testing::Test {
 
     renderer_.CopyVideoFrameTexturesToGLTexture(
         media_context_.get(), destination_gl, frame, target, texture, GL_RGBA,
-        GL_RGBA, GL_UNSIGNED_BYTE, 0, false /* premultiply_alpha */,
-        false /* flip_y */);
+        GL_RGBA, GL_UNSIGNED_BYTE, 0, kUnpremul_SkAlphaType,
+        kTopLeft_GrSurfaceOrigin);
 
     gfx::Size expected_size = frame->visible_rect().size();
 
@@ -1303,8 +1305,8 @@ TEST_F(PaintCanvasVideoRendererWithGLTest, CopyVideoFrameYUVDataToGLTexture) {
 
   renderer_.CopyVideoFrameYUVDataToGLTexture(
       media_context_.get(), destination_gl, cropped_frame(), target, texture,
-      GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, 0, false /* premultiply_alpha */,
-      false /* flip_y */);
+      GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, 0, kUnpremul_SkAlphaType,
+      kTopLeft_GrSurfaceOrigin);
 
   gfx::Size expected_size = cropped_frame()->visible_rect().size();
 
@@ -1335,8 +1337,8 @@ TEST_F(PaintCanvasVideoRendererWithGLTest,
 
   renderer_.CopyVideoFrameYUVDataToGLTexture(
       media_context_.get(), destination_gl, cropped_frame(), target, texture,
-      GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, 0, false /* premultiply_alpha */,
-      true /* flip_y */);
+      GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, 0, kUnpremul_SkAlphaType,
+      kBottomLeft_GrSurfaceOrigin);
 
   gfx::Size expected_size = cropped_frame()->visible_rect().size();
 

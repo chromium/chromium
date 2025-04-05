@@ -4,6 +4,8 @@
 
 package org.chromium.webapk.shell_apk.h2o;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Controls when to launch the WebAPK for {@link SplashActivity}.
  *
@@ -11,6 +13,7 @@ package org.chromium.webapk.shell_apk.h2o;
  * and {@link #onHostBrowserSelected} have been called. The provided Runnable is only called once,
  * but this can be reset by calling {@link #reset}.
  */
+@NullMarked
 public class LaunchTrigger {
     private final Runnable mCallback;
 

@@ -123,7 +123,7 @@ SCTAuditingCache::MaybeGenerateReportEntry(
     return std::nullopt;
 
   net::HashValue cache_key(net::HASH_VALUE_SHA256);
-  SHA256_Final(reinterpret_cast<uint8_t*>(cache_key.data()), &ctx);
+  SHA256_Final(cache_key.span().data(), &ctx);
 
   // Check if the SCTs are already in the cache. This will update the last seen
   // time if they are present in the cache.

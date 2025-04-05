@@ -585,6 +585,23 @@ void QuicSessionPool::QuicCryptoClientConfigOwner::OnMemoryPressure(
   }
 }
 
+bool QuicSessionPool::QuicCryptoClientConfigKey::operator==(
+    const QuicSessionPool::QuicCryptoClientConfigKey& other) const {
+  return Tie() == other.Tie();
+}
+
+bool QuicSessionPool::QuicCryptoClientConfigKey::operator<(
+    const QuicSessionPool::QuicCryptoClientConfigKey& other) const {
+  return Tie() < other.Tie();
+}
+
+std::tuple<const NetworkAnonymizationKey&,
+           const ProxyChain&,
+           const SessionUsage&>
+QuicSessionPool::QuicCryptoClientConfigKey::Tie() const {
+  return std::tie(network_anonymization_key, proxy_chain, session_usage);
+}
+
 QuicSessionPool::CryptoClientConfigHandle::CryptoClientConfigHandle(
     const QuicCryptoClientConfigMap::iterator& map_iterator)
     : map_iterator_(map_iterator) {
@@ -821,7 +838,7 @@ int QuicSessionPool::RequestSession(
     }
     job = std::make_unique<DirectJob>(
         this, quic_version, host_resolver_, std::move(key),
-        CreateCryptoConfigHandle(session_key.network_anonymization_key()),
+        CreateCryptoConfigHandle(QuicCryptoClientConfigKey(session_key)),
         params_.retry_on_alternate_network_before_handshake, priority,
         use_dns_aliases, session_key.require_dns_https_alpn(),
         cert_verify_flags, session_creation_initiator, net_log);
@@ -829,7 +846,7 @@ int QuicSessionPool::RequestSession(
     job = std::make_unique<ProxyJob>(
         this, quic_version, std::move(key), *proxy_annotation_tag,
         session_creation_initiator, http_user_agent_settings,
-        CreateCryptoConfigHandle(session_key.network_anonymization_key()),
+        CreateCryptoConfigHandle(QuicCryptoClientConfigKey(session_key)),
         priority, cert_verify_flags, net_log);
   }
   job->AssociateWithNetLogSource(net_log);
@@ -872,7 +889,7 @@ std::unique_ptr<QuicSessionAttempt> QuicSessionPool::CreateSessionAttempt(
       dns_resolution_end_time,
       params_.retry_on_alternate_network_before_handshake, use_dns_aliases,
       std::move(dns_aliases),
-      CreateCryptoConfigHandle(session_key.network_anonymization_key()),
+      CreateCryptoConfigHandle(QuicCryptoClientConfigKey(session_key)),
       session_creation_initiator);
 }
 
@@ -1854,7 +1871,7 @@ QuicSessionPool::CreateSessionHelper(
         key.session_key().network_anonymization_key(), http_server_properties_);
   }
   std::unique_ptr<CryptoClientConfigHandle> crypto_config_handle =
-      CreateCryptoConfigHandle(key.session_key().network_anonymization_key());
+      CreateCryptoConfigHandle(QuicCryptoClientConfigKey(key.session_key()));
   InitializeCachedStateInCryptoConfig(*crypto_config_handle, server_id,
                                       server_info);
 
@@ -2222,23 +2239,20 @@ void QuicSessionPool::UnmapSessionFromSessionAliases(
 }
 
 std::unique_ptr<QuicSessionPool::CryptoClientConfigHandle>
-QuicSessionPool::CreateCryptoConfigHandle(
-    const NetworkAnonymizationKey& network_anonymization_key) {
-  NetworkAnonymizationKey actual_network_anonymization_key =
-      use_network_anonymization_key_for_crypto_configs_
-          ? network_anonymization_key
-          : NetworkAnonymizationKey();
+QuicSessionPool::CreateCryptoConfigHandle(QuicCryptoClientConfigKey key) {
+  if (!use_network_anonymization_key_for_crypto_configs_) {
+    key.network_anonymization_key = NetworkAnonymizationKey();
+  }
 
   // If there's a matching entry in |active_crypto_config_map_|, create a
   // CryptoClientConfigHandle for it.
-  auto map_iterator =
-      active_crypto_config_map_.find(actual_network_anonymization_key);
+  auto map_iterator = active_crypto_config_map_.find(key);
   if (map_iterator != active_crypto_config_map_.end()) {
     DCHECK_GT(map_iterator->second->num_refs(), 0);
 
     // If there's an active matching crypto config, there shouldn't also be an
     // inactive matching crypto config.
-    DCHECK(recent_crypto_config_map_.Peek(actual_network_anonymization_key) ==
+    DCHECK(recent_crypto_config_map_.Peek(key) ==
            recent_crypto_config_map_.end());
 
     return std::make_unique<CryptoClientConfigHandle>(map_iterator);
@@ -2246,15 +2260,13 @@ QuicSessionPool::CreateCryptoConfigHandle(
 
   // If there's a matching entry in |recent_crypto_config_map_|, move it to
   // |active_crypto_config_map_| and create a CryptoClientConfigHandle for it.
-  auto mru_iterator =
-      recent_crypto_config_map_.Peek(actual_network_anonymization_key);
+  auto mru_iterator = recent_crypto_config_map_.Peek(key);
   if (mru_iterator != recent_crypto_config_map_.end()) {
     DCHECK_EQ(mru_iterator->second->num_refs(), 0);
 
-    map_iterator = active_crypto_config_map_
-                       .emplace(actual_network_anonymization_key,
-                                std::move(mru_iterator->second))
-                       .first;
+    map_iterator =
+        active_crypto_config_map_.emplace(key, std::move(mru_iterator->second))
+            .first;
     recent_crypto_config_map_.Erase(mru_iterator);
     return std::make_unique<CryptoClientConfigHandle>(map_iterator);
   }
@@ -2266,7 +2278,7 @@ QuicSessionPool::CreateCryptoConfigHandle(
           std::make_unique<ProofVerifierChromium>(
               cert_verifier_, transport_security_state_, sct_auditing_delegate_,
               HostsFromOrigins(params_.origins_to_force_quic_on),
-              actual_network_anonymization_key),
+              key.network_anonymization_key),
           std::make_unique<quic::QuicClientSessionCache>(), this);
 
   quic::QuicCryptoClientConfig* crypto_config = crypto_config_owner->config();
@@ -2286,10 +2298,9 @@ QuicSessionPool::CreateCryptoConfigHandle(
     prefer_aes_gcm_recorded_ = true;
   }
 
-  map_iterator = active_crypto_config_map_
-                     .emplace(actual_network_anonymization_key,
-                              std::move(crypto_config_owner))
-                     .first;
+  map_iterator =
+      active_crypto_config_map_.emplace(key, std::move(crypto_config_owner))
+          .first;
   return std::make_unique<CryptoClientConfigHandle>(map_iterator);
 }
 
@@ -2337,26 +2348,22 @@ void QuicSessionPool::CheckQuicSessionKeyMismatch(
 }
 
 std::unique_ptr<QuicCryptoClientConfigHandle>
-QuicSessionPool::GetCryptoConfigForTesting(
-    const NetworkAnonymizationKey& network_anonymization_key) {
-  return CreateCryptoConfigHandle(network_anonymization_key);
+QuicSessionPool::GetCryptoConfigForTesting(QuicCryptoClientConfigKey key) {
+  return CreateCryptoConfigHandle(std::move(key));
 }
 
 bool QuicSessionPool::CryptoConfigCacheIsEmptyForTesting(
     const quic::QuicServerId& server_id,
-    const NetworkAnonymizationKey& network_anonymization_key) {
+    QuicCryptoClientConfigKey key) {
   quic::QuicCryptoClientConfig::CachedState* cached = nullptr;
-  NetworkAnonymizationKey actual_network_anonymization_key =
-      use_network_anonymization_key_for_crypto_configs_
-          ? network_anonymization_key
-          : NetworkAnonymizationKey();
-  auto map_iterator =
-      active_crypto_config_map_.find(actual_network_anonymization_key);
+  if (!use_network_anonymization_key_for_crypto_configs_) {
+    key.network_anonymization_key = NetworkAnonymizationKey();
+  }
+  auto map_iterator = active_crypto_config_map_.find(key);
   if (map_iterator != active_crypto_config_map_.end()) {
     cached = map_iterator->second->config()->LookupOrCreate(server_id);
   } else {
-    auto mru_iterator =
-        recent_crypto_config_map_.Peek(actual_network_anonymization_key);
+    auto mru_iterator = recent_crypto_config_map_.Peek(key);
     if (mru_iterator != recent_crypto_config_map_.end()) {
       cached = mru_iterator->second->config()->LookupOrCreate(server_id);
     }

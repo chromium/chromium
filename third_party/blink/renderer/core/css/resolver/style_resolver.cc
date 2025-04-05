@@ -2775,8 +2775,10 @@ const CSSValue* StyleResolver::ComputeValue(
     Element* element,
     const CSSPropertyName& property_name,
     const CSSValue& value) {
+  Document& document = element->GetDocument();
+  document.GetStyleEngine().UpdateViewportSize();
   const ComputedStyle* base_style = element->GetComputedStyle();
-  StyleResolverState state(element->GetDocument(), *element);
+  StyleResolverState state(document, *element);
   state.EnsureParentStyle();
   STACK_UNINITIALIZED StyleCascade cascade(state);
   state.SetStyle(*base_style);
@@ -2798,7 +2800,7 @@ const CSSValue* StyleResolver::ComputeValue(
   if (state.HasUnsupportedGuaranteedInvalid()) {
     return nullptr;
   }
-  CSSPropertyRef property_ref(property_name, element->GetDocument());
+  CSSPropertyRef property_ref(property_name, document);
   const ComputedStyle* style = state.TakeStyle();
   return ComputedStyleUtils::ComputedPropertyValue(property_ref.GetProperty(),
                                                    *style);
@@ -2809,10 +2811,12 @@ const CSSValue* StyleResolver::ResolveValue(
     const ComputedStyle& style,
     const CSSPropertyName& property_name,
     const CSSValue& value) {
-  StyleResolverState state(element.GetDocument(), element);
+  Document& document = element.GetDocument();
+  document.GetStyleEngine().UpdateViewportSize();
+  StyleResolverState state(document, element);
   state.SetStyle(style);
   return StyleCascade::Resolve(state, property_name, value,
-                               /*tree_scope=*/&element.GetDocument());
+                               /*tree_scope=*/&document);
 }
 
 FilterOperations StyleResolver::ComputeFilterOperations(

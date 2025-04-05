@@ -12,6 +12,7 @@
 #include "components/prefs/pref_service.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/ui_util.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/image_util.h"
@@ -63,6 +64,31 @@ std::u16string GetEnabledExtensionNameForUrl(const GURL& url,
   return extension ? base::CollapseWhitespace(
                          base::UTF8ToUTF16(extension->name()), false)
                    : std::u16string();
+}
+
+bool HasManageableExtensions(content::BrowserContext* browser_context) {
+  auto* const registry = extensions::ExtensionRegistry::Get(browser_context);
+  if (!registry) {
+    return false;
+  }
+
+  // This logic mirrors the logic used to determine which extensions are
+  // displayed on the "manage extensions" page (chrome://extensions) - see
+  // `DeveloperPrivateGetExtensionsInfoFunction`.
+  const auto has_manageable_extension =
+      [](const extensions::ExtensionSet& extensions) {
+        for (const auto& extension : extensions) {
+          if (ShouldDisplayInExtensionSettings(*extension)) {
+            return true;
+          }
+        }
+        return false;
+      };
+
+  return has_manageable_extension(registry->enabled_extensions()) ||
+         has_manageable_extension(registry->disabled_extensions()) ||
+         has_manageable_extension(registry->terminated_extensions()) ||
+         has_manageable_extension(registry->blocklisted_extensions());
 }
 
 }  // namespace ui_util

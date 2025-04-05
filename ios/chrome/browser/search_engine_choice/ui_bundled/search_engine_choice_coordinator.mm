@@ -206,9 +206,6 @@
 - (void)dismissChoiceScreen {
   if (_firstRun) {
     [_firstRunDelegate screenWillFinishPresenting];
-    base::UmaHistogramEnumeration(
-        first_run::kFirstRunStageHistogram,
-        first_run::kSearchEngineChoiceScreenCompletionWithoutSelection);
   } else {
     [self.delegate choiceScreenWillBeDismissed:self];
   }

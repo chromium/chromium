@@ -6,37 +6,212 @@
 
 #include <memory>
 
+#include "base/functional/bind.h"
+#include "base/run_loop.h"
+#include "base/strings/to_string.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/test/mock_callback.h"
+#include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
+#include "chrome/browser/bookmarks/bookmark_test_utils.h"
 #include "chrome/browser/ui/webui/bookmarks/bookmark_prefs.h"
+#include "chrome/browser/ui/webui/side_panel/bookmarks/bookmarks.mojom.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
-#include "components/bookmarks/common/bookmark_pref_names.h"
+#include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/browser/bookmark_node.h"
+#include "components/bookmarks/managed/managed_bookmark_service.h"
+#include "components/bookmarks/test/bookmark_test_helpers.h"
+#include "components/bookmarks/test/test_bookmark_client.h"
+#include "components/signin/public/base/signin_switches.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 
-class TestBookmarksPageHandler : public BookmarksPageHandler {
+using bookmarks::test::AddNodesFromModelString;
+using ::testing::Contains;
+using ::testing::ElementsAre;
+using ::testing::SizeIs;
+using ::testing::UnorderedElementsAre;
+
+// Compares a `side_panel::mojom::BookmarksTreeNodePtr` (arg) with a
+// `bookmarks::BookmarkNode` (node) by comparing their `id` and the ids of their
+// children recursively.
+// Note: the matching node `arg` may contain more children than the expected
+// `node` since it could be the representation of a merged node. Therefore we
+// only make sure that `node`'s children are a subset of `arg`'s children if
+// `arg` actually contains any children.
+MATCHER_P2(MatchesNode, node, service, "") {
+  const std::string expected_id =
+      node->is_folder()
+          ? GetFolderSidePanelIDForTesting(
+                *service, BookmarkParentFolder::FromFolderNode(node))
+          : base::ToString(node->id());
+
+  if (arg->id != expected_id) {
+    return false;
+  }
+
+  // If the matching node has no children, then expected node shouldn't as well.
+  if (!arg->children.has_value() || arg->children->empty()) {
+    return node->children().empty();
+  }
+
+  // The expected node should have its children contained in the matching node
+  // with the same id.
+  for (const auto& child : node->children()) {
+    EXPECT_THAT(arg->children.value(),
+                Contains(MatchesNode(child.get(), service)))
+        << "Some child nodes of '" << node->GetTitle()
+        << "' are not contained in the matching node with the same id.";
+  }
+
+  return true;
+}
+
+class MockBookmarksPage : public side_panel::mojom::BookmarksPage {
  public:
-  TestBookmarksPageHandler()
-      : BookmarksPageHandler(
-            mojo::PendingReceiver<side_panel::mojom::BookmarksPageHandler>(),
-            static_cast<BookmarksSidePanelUI*>(nullptr)) {}
+  MockBookmarksPage() = default;
+  ~MockBookmarksPage() override = default;
+
+  mojo::PendingRemote<side_panel::mojom::BookmarksPage> BindAndGetRemote() {
+    DCHECK(!receiver_.is_bound());
+    return receiver_.BindNewPipeAndPassRemote();
+  }
+
+  void FlushForTesting() { receiver_.FlushForTesting(); }
+
+  void Reset() { receiver_.reset(); }
+
+  MOCK_METHOD(void,
+              OnBookmarkNodeAdded,
+              (side_panel::mojom::BookmarksTreeNodePtr));
+  MOCK_METHOD(void, OnBookmarkNodesRemoved, (const std::vector<std::string>&));
+  MOCK_METHOD(void,
+              OnBookmarkParentFolderChildrenReordered,
+              (const std::string&, const std::vector<std::string>&));
+  MOCK_METHOD(void,
+              OnBookmarkNodeMoved,
+              (const std::string&, uint32_t, const std::string&, uint32_t));
+  MOCK_METHOD(void,
+              OnBookmarkNodeChanged,
+              (const std::string&, const std::string&, const std::string&));
+
+ private:
+  mojo::Receiver<side_panel::mojom::BookmarksPage> receiver_{this};
+};
+
+// Helper class to handle the return value of
+// `BookmarksPageHandler::CreateFolder()` through a callback. It resets
+// internally after retrieving the results so that it can be used multiple times
+// within the same instance.
+class CreateFolderFunctionHelper {
+ public:
+  std::string GetResultWhenReady() {
+    if (!result_) {
+      run_loop_.Run();
+    }
+
+    return ClearAndReturnResult();
+  }
+
+  void OnCreateFolderResult(const std::string& result) {
+    result_ = result;
+
+    if (run_loop_.running()) {
+      run_loop_.Quit();
+    }
+  }
+
+ private:
+  std::string ClearAndReturnResult() {
+    CHECK(result_.has_value());
+    std::string ret_value = result_.value();
+    result_.reset();
+    return ret_value;
+  }
+
+  std::optional<std::string> result_;
+  base::RunLoop run_loop_;
 };
 
 class BookmarksPageHandlerTest : public BrowserWithTestWindowTest {
  public:
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
-    handler_ = std::make_unique<TestBookmarksPageHandler>();
+    CreateHandler();
+    LoadBookmarkModel();
   }
 
   void TearDown() override {
-    handler_.reset();
+    ClearHandler();
     BrowserWithTestWindowTest::TearDown();
   }
 
-  TestBookmarksPageHandler* handler() { return handler_.get(); }
+  BookmarksPageHandler* handler() { return handler_.get(); }
+  bookmarks::BookmarkModel* model() { return bookmark_model_.get(); }
+  bookmarks::ManagedBookmarkService* managed_bookmark_service() {
+    return managed_bookmark_service_.get();
+  }
+  BookmarkMergedSurfaceService* service() {
+    return bookmark_merged_service_.get();
+  }
+  testing::NiceMock<MockBookmarksPage>& mock_bookmarks_page() {
+    return mock_bookmarks_page_;
+  }
+
+  void CreateHandler(int managed_bookmarks_count = 0) {
+    CHECK(!handler_);
+
+    prefs_ = std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
+
+    managed_bookmark_service_ =
+        CreateManagedBookmarkService(prefs_.get(), managed_bookmarks_count);
+    bookmark_model_ = std::make_unique<bookmarks::BookmarkModel>(
+        std::make_unique<TestBookmarkClientWithManagedService>(
+            managed_bookmark_service_.get()));
+
+    bookmark_merged_service_ = std::make_unique<BookmarkMergedSurfaceService>(
+        bookmark_model_.get(), managed_bookmark_service_.get());
+
+    handler_ = std::make_unique<BookmarksPageHandler>(
+        mojo::PendingReceiver<side_panel::mojom::BookmarksPageHandler>(),
+        mock_bookmarks_page_.BindAndGetRemote(),
+        /*bookmarks_ui=*/nullptr, bookmark_merged_service_.get());
+  }
+
+  void LoadBookmarkModel() {
+    bookmark_model_->LoadEmptyForTest();
+    bookmark_merged_service_->LoadForTesting({});
+  }
+
+  void ClearHandler() {
+    handler_.reset();
+    mock_bookmarks_page_.Reset();
+    bookmark_merged_service_.reset();
+    bookmark_model_.reset();
+    managed_bookmark_service_.reset();
+    prefs_.reset();
+  }
+
+  int64_t GetBookmarkIdFromString(const std::string& string_id) {
+    int64_t bookmark_id;
+    CHECK(base::StringToInt64(string_id, &bookmark_id));
+    return bookmark_id;
+  }
 
  private:
-  std::unique_ptr<TestBookmarksPageHandler> handler_;
+  std::unique_ptr<sync_preferences::TestingPrefServiceSyncable> prefs_;
+
+  std::unique_ptr<bookmarks::ManagedBookmarkService> managed_bookmark_service_;
+  std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
+  std::unique_ptr<BookmarkMergedSurfaceService> bookmark_merged_service_;
+
+  testing::NiceMock<MockBookmarksPage> mock_bookmarks_page_;
+
+  std::unique_ptr<BookmarksPageHandler> handler_;
+
+  base::test::ScopedFeatureList scoped_feature_list_{
+      switches::kSyncEnableBookmarksInTransportMode};
 };
 
 TEST_F(BookmarksPageHandlerTest, SetSortOrder) {
@@ -55,6 +230,428 @@ TEST_F(BookmarksPageHandlerTest, SetViewType) {
   ASSERT_EQ(
       pref_service->GetInteger(bookmarks_webui::prefs::kBookmarksViewType),
       static_cast<int>(view_type));
+}
+
+TEST_F(BookmarksPageHandlerTest, GetAllBookmarksOnBookmarkModelLoaded) {
+  // Reset the handler so that the model is not already loaded. Load it
+  // explicitly late.
+  ClearHandler();
+  CreateHandler();
+
+  base::MockCallback<BookmarksPageHandler::GetAllBookmarksCallback>
+      mock_callback;
+
+  EXPECT_CALL(mock_callback, Run(testing::_)).Times(0);
+  handler()->GetAllBookmarks(mock_callback.Get());
+
+  testing::Mock::VerifyAndClearExpectations(&mock_callback);
+
+  EXPECT_CALL(mock_callback, Run(testing::_)).Times(1);
+  LoadBookmarkModel();
+}
+
+TEST_F(BookmarksPageHandlerTest,
+       GetAllBookmarksContentWithEmptyPermanentNodes) {
+  const bookmarks::BookmarkNode* bookmark_bar = model()->bookmark_bar_node();
+  const bookmarks::BookmarkNode* other_node = model()->other_node();
+
+  base::MockCallback<BookmarksPageHandler::GetAllBookmarksCallback>
+      mock_callback;
+  EXPECT_CALL(mock_callback, Run(testing::_))
+      .WillOnce([&](const std::vector<side_panel::mojom::BookmarksTreeNodePtr>&
+                        nodes) {
+        // Total count: 2 - BookmarkBar + Other node (even if empty).
+        EXPECT_THAT(nodes, SizeIs(2));
+        // Bookmark is empty but still pushed.
+        ASSERT_TRUE(bookmark_bar->children().empty());
+        EXPECT_THAT(nodes, Contains(MatchesNode(bookmark_bar, service())));
+        // Other node is empty but still pushed.
+        ASSERT_TRUE(other_node->children().empty());
+        EXPECT_THAT(nodes, Contains(MatchesNode(other_node, service())));
+      });
+  handler()->GetAllBookmarks(mock_callback.Get());
+}
+
+TEST_F(BookmarksPageHandlerTest, GetAllBookmarksContentWithAllNodes) {
+  // Clears the handler to recreate it with the managed bookmarks.
+  ClearHandler();
+  CreateHandler(/*managed_bookmarks_count=*/10);
+  LoadBookmarkModel();
+
+  const bookmarks::BookmarkNode* bookmark_bar = model()->bookmark_bar_node();
+  AddNodesFromModelString(model(), bookmark_bar, "1 2 ");
+  const bookmarks::BookmarkNode* other_node = model()->other_node();
+  AddNodesFromModelString(model(), other_node, "3 f1:[ 4 5 ]");
+
+  const bookmarks::BookmarkNode* mobile_node = model()->mobile_node();
+  AddNodesFromModelString(model(), mobile_node, "6 f2:[ 7 8 ]");
+
+  const bookmarks::BookmarkNode* managed_node =
+      managed_bookmark_service()->managed_node();
+
+  base::MockCallback<BookmarksPageHandler::GetAllBookmarksCallback>
+      mock_callback;
+  EXPECT_CALL(mock_callback, Run(testing::_))
+      .WillOnce([&](const std::vector<side_panel::mojom::BookmarksTreeNodePtr>&
+                        nodes) {
+        // Total count: 4 - BookmarkBar + Other node + Mobile node + Managed.
+        EXPECT_THAT(nodes, SizeIs(4));
+        EXPECT_THAT(nodes, Contains(MatchesNode(bookmark_bar, service())));
+        EXPECT_THAT(nodes, Contains(MatchesNode(other_node, service())));
+        EXPECT_THAT(nodes, Contains(MatchesNode(mobile_node, service())));
+        EXPECT_THAT(nodes, Contains(MatchesNode(managed_node, service())));
+      });
+  handler()->GetAllBookmarks(mock_callback.Get());
+}
+
+TEST_F(BookmarksPageHandlerTest, GetAllBookmarksContentWithAccountNodes) {
+  model()->CreateAccountPermanentFolders();
+
+  const bookmarks::BookmarkNode* bookmark_bar = model()->bookmark_bar_node();
+  AddNodesFromModelString(model(), bookmark_bar, "1 2 ");
+
+  const bookmarks::BookmarkNode* account_bookmark_bar =
+      model()->account_bookmark_bar_node();
+  AddNodesFromModelString(model(), account_bookmark_bar, "a1 a2 ");
+
+  const bookmarks::BookmarkNode* other_node = model()->other_node();
+  AddNodesFromModelString(model(), other_node, "3 4 ");
+
+  const bookmarks::BookmarkNode* account_other_node =
+      model()->account_other_node();
+  AddNodesFromModelString(model(), account_other_node, "a3 a4 ");
+
+  const bookmarks::BookmarkNode* account_mobile_node =
+      model()->account_mobile_node();
+  AddNodesFromModelString(model(), account_mobile_node, "a5 ");
+  const bookmarks::BookmarkNode* mobile_node = model()->mobile_node();
+
+  base::MockCallback<BookmarksPageHandler::GetAllBookmarksCallback>
+      mock_callback;
+  EXPECT_CALL(mock_callback, Run(testing::_))
+      .WillOnce([&](const std::vector<side_panel::mojom::BookmarksTreeNodePtr>&
+                        nodes) {
+        // Total count: 3 - BookmarkBar (Merged) + Other node (Merged) + Mobile.
+        EXPECT_THAT(nodes, SizeIs(3));
+        // Both `bookmark_bar` and `account_bookmark_bar` are merged into one.
+        EXPECT_THAT(nodes, Contains(MatchesNode(bookmark_bar, service())));
+        EXPECT_THAT(nodes,
+                    Contains(MatchesNode(account_bookmark_bar, service())));
+        // Both `other_node` and `account_other_node` are merged into one.
+        EXPECT_THAT(nodes, Contains(MatchesNode(other_node, service())));
+        EXPECT_THAT(nodes,
+                    Contains(MatchesNode(account_other_node, service())));
+        // Both `mobile_node` and `account_mobile_node` are merged into one.
+        // Even if `mobile_node` is empty, it is still represented since there
+        // are at least one total mobile node.
+        EXPECT_THAT(nodes,
+                    Contains(MatchesNode(account_mobile_node, service())));
+        ASSERT_TRUE(mobile_node->children().empty());
+        EXPECT_THAT(nodes, Contains(MatchesNode(mobile_node, service())));
+      });
+  handler()->GetAllBookmarks(mock_callback.Get());
+}
+
+TEST_F(BookmarksPageHandlerTest, OnBookmarkNodeAdded) {
+  const std::string expected_bookmark_side_panel_id =
+      GetFolderSidePanelIDForTesting(*service(),
+                                     BookmarkParentFolder::BookmarkBarFolder());
+
+  // Make sure that nodes added directly to the bookmark_bar folder have the
+  // correct parent id computed for the side panel.
+  EXPECT_CALL(mock_bookmarks_page(), OnBookmarkNodeAdded(testing::_))
+      .Times(3)
+      .WillRepeatedly([&](side_panel::mojom::BookmarksTreeNodePtr mojo_node) {
+        EXPECT_EQ(expected_bookmark_side_panel_id, mojo_node->parent_id);
+      });
+  AddNodesFromModelString(model(), model()->bookmark_bar_node(), "1 2 3 ");
+  mock_bookmarks_page().FlushForTesting();
+  testing::Mock::VerifyAndClearExpectations(&mock_bookmarks_page());
+
+  // When adding a folder, only the folder should have this side panel id as the
+  // parent id, sub elements should just have the new folder as parent id.
+  EXPECT_CALL(mock_bookmarks_page(), OnBookmarkNodeAdded(testing::_))
+      .Times(3)
+      .WillRepeatedly([&](side_panel::mojom::BookmarksTreeNodePtr mojo_node) {
+        if (mojo_node->url.has_value()) {
+          EXPECT_NE(expected_bookmark_side_panel_id, mojo_node->parent_id);
+        } else {
+          // Folder but should not have children as it will be sent with
+          // separate notification.
+          EXPECT_FALSE(mojo_node->children.has_value());
+          EXPECT_EQ(expected_bookmark_side_panel_id, mojo_node->parent_id);
+        }
+      });
+  AddNodesFromModelString(model(), model()->bookmark_bar_node(), "f1:[ 4 5 ]");
+  mock_bookmarks_page().FlushForTesting();
+  testing::Mock::VerifyAndClearExpectations(&mock_bookmarks_page());
+
+  model()->CreateAccountPermanentFolders();
+  // Permanent nodes do not trigger a notification.
+  EXPECT_CALL(mock_bookmarks_page(), OnBookmarkNodeAdded(testing::_)).Times(0);
+  mock_bookmarks_page().FlushForTesting();
+  testing::Mock::VerifyAndClearExpectations(&mock_bookmarks_page());
+
+  // Adding direct children to the account node should also have the side panel
+  // bookmark bar id as their parent id.
+  EXPECT_CALL(mock_bookmarks_page(), OnBookmarkNodeAdded(testing::_))
+      .Times(2)
+      .WillRepeatedly([&](side_panel::mojom::BookmarksTreeNodePtr mojo_node) {
+        EXPECT_EQ(expected_bookmark_side_panel_id, mojo_node->parent_id);
+      });
+  AddNodesFromModelString(model(), model()->account_bookmark_bar_node(),
+                          "a1 a2 ");
+  mock_bookmarks_page().FlushForTesting();
+}
+
+TEST_F(BookmarksPageHandlerTest, OnBookmarkNodesRemoved) {
+  model()->CreateAccountPermanentFolders();
+
+  const bookmarks::BookmarkNode* other_node = model()->other_node();
+  const bookmarks::BookmarkNode* account_other_node =
+      model()->account_other_node();
+
+  AddNodesFromModelString(model(), other_node, "1 2:[ 3 ]");
+  AddNodesFromModelString(model(), account_other_node, "4 5 6 ");
+
+  const bookmarks::BookmarkNode* folder_in_other =
+      other_node->children()[1].get();
+  ASSERT_TRUE(folder_in_other->is_folder());
+
+  // Only folder id expected; without its children ids.
+  EXPECT_CALL(mock_bookmarks_page(),
+              OnBookmarkNodesRemoved(
+                  UnorderedElementsAre(base::ToString(folder_in_other->id()))));
+  model()->Remove(folder_in_other,
+                  bookmarks::metrics::BookmarkEditSource::kOther, FROM_HERE);
+  mock_bookmarks_page().FlushForTesting();
+  testing::Mock::VerifyAndClearExpectations(&mock_bookmarks_page());
+
+  const bookmarks::BookmarkNode* first_account_node =
+      account_other_node->children()[1].get();
+  ASSERT_TRUE(first_account_node->is_url());
+
+  EXPECT_CALL(mock_bookmarks_page(),
+              OnBookmarkNodesRemoved(UnorderedElementsAre(
+                  base::ToString(first_account_node->id()))));
+  model()->Remove(first_account_node,
+                  bookmarks::metrics::BookmarkEditSource::kOther, FROM_HERE);
+  mock_bookmarks_page().FlushForTesting();
+  testing::Mock::VerifyAndClearExpectations(&mock_bookmarks_page());
+
+  // 2 remaining nodes in `account_other_node`.
+  EXPECT_CALL(
+      mock_bookmarks_page(),
+      OnBookmarkNodesRemoved(UnorderedElementsAre(
+          base::ToString(account_other_node->children()[0].get()->id()),
+          base::ToString(account_other_node->children()[1].get()->id()))));
+  model()->RemoveAccountPermanentFolders();
+  mock_bookmarks_page().FlushForTesting();
+}
+
+TEST_F(BookmarksPageHandlerTest,
+       OnBookmarkParentFolderChildrenReorderedFromLocalNode) {
+  model()->CreateAccountPermanentFolders();
+
+  const bookmarks::BookmarkNode* other_node = model()->other_node();
+  const bookmarks::BookmarkNode* account_other_node =
+      model()->account_other_node();
+
+  AddNodesFromModelString(model(), other_node, "2 1:[ 3 ]");
+  std::string first_other_node_id =
+      base::ToString(other_node->children()[0].get()->id());
+  std::string second_other_node_id =
+      base::ToString(other_node->children()[1].get()->id());
+  AddNodesFromModelString(model(), account_other_node, "5 4 ");
+  std::string first_account_other_node_id =
+      base::ToString(account_other_node->children()[0].get()->id());
+  std::string second_account_other_node_id =
+      base::ToString(account_other_node->children()[1].get()->id());
+
+  // All merged nodes are part of the notification, but only local nodes are
+  // reorderd.
+  EXPECT_CALL(
+      mock_bookmarks_page(),
+      OnBookmarkParentFolderChildrenReordered(
+          base::ToString(other_node->id()),
+          ElementsAre(first_account_other_node_id, second_account_other_node_id,
+                      second_other_node_id, first_other_node_id)));
+  // Sort local nodes.
+  model()->SortChildren(other_node);
+  mock_bookmarks_page().FlushForTesting();
+}
+
+TEST_F(BookmarksPageHandlerTest,
+       OnBookmarkParentFolderChildrenReorderedFromAccountNode) {
+  model()->CreateAccountPermanentFolders();
+
+  const bookmarks::BookmarkNode* other_node = model()->other_node();
+  const bookmarks::BookmarkNode* account_other_node =
+      model()->account_other_node();
+
+  AddNodesFromModelString(model(), other_node, "2 1:[ 3 ]");
+  std::string first_other_node_id =
+      base::ToString(other_node->children()[0].get()->id());
+  std::string second_other_node_id =
+      base::ToString(other_node->children()[1].get()->id());
+  AddNodesFromModelString(model(), account_other_node, "5 4 ");
+  std::string first_account_other_node_id =
+      base::ToString(account_other_node->children()[0].get()->id());
+  std::string second_account_other_node_id =
+      base::ToString(account_other_node->children()[1].get()->id());
+
+  // All merged nodes are part of the notification, but only account nodes are
+  // reorderd.
+  EXPECT_CALL(
+      mock_bookmarks_page(),
+      OnBookmarkParentFolderChildrenReordered(
+          base::ToString(other_node->id()),
+          ElementsAre(second_account_other_node_id, first_account_other_node_id,
+                      first_other_node_id, second_other_node_id)));
+  // Sort account nodes.
+  model()->SortChildren(account_other_node);
+  mock_bookmarks_page().FlushForTesting();
+}
+
+TEST_F(BookmarksPageHandlerTest, OnBookmarkNodeMoved) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      switches::kSyncEnableBookmarksInTransportMode};
+
+  model()->CreateAccountPermanentFolders();
+
+  const bookmarks::BookmarkNode* other_node = model()->other_node();
+  const bookmarks::BookmarkNode* account_bookmark_bar_node =
+      model()->account_bookmark_bar_node();
+
+  AddNodesFromModelString(model(), other_node, "2 1:[ 3 ]");
+  const bookmarks::BookmarkNode* node_to_move = other_node->children()[0].get();
+  AddNodesFromModelString(model(), account_bookmark_bar_node, "5 4 ");
+
+  EXPECT_CALL(mock_bookmarks_page(),
+              OnBookmarkNodeMoved(
+                  GetFolderSidePanelIDForTesting(
+                      *service(), BookmarkParentFolder::OtherFolder()),
+                  testing::_,
+                  GetFolderSidePanelIDForTesting(
+                      *service(), BookmarkParentFolder::BookmarkBarFolder()),
+                  testing::_));
+
+  model()->Move(node_to_move, account_bookmark_bar_node, 0);
+  mock_bookmarks_page().FlushForTesting();
+}
+
+TEST_F(BookmarksPageHandlerTest, BookmarkCurrentTabInFolder) {
+  // Adds tab content that will be used to be bookmarked.
+  AddTab(browser(), GURL("http://www.google.com/"));
+
+  const bookmarks::BookmarkNode* other_node = model()->other_node();
+  ASSERT_TRUE(other_node->children().empty());
+
+  // Using side panel id, merged node between local and account nodes.
+  std::string other_side_panel_id = GetFolderSidePanelIDForTesting(
+      *service(), BookmarkParentFolder::OtherFolder());
+  handler()->BookmarkCurrentTabInFolder(other_side_panel_id);
+  // Without account nodes, the local node is the default one for merged nodes.
+  EXPECT_EQ(1u, other_node->children().size());
+
+  // Initiates the account nodes.
+  model()->CreateAccountPermanentFolders();
+  const bookmarks::BookmarkNode* account_other_node =
+      model()->account_other_node();
+  ASSERT_TRUE(account_other_node->children().empty());
+
+  // Account node is now the default one.
+  handler()->BookmarkCurrentTabInFolder(other_side_panel_id);
+  EXPECT_EQ(1u, account_other_node->children().size());
+  EXPECT_EQ(1u, other_node->children().size());
+
+  // Creating a non merged folder.
+  const bookmarks::BookmarkNode* new_folder =
+      model()->AddFolder(other_node, 0, u"New Local Folder");
+  ASSERT_TRUE(new_folder->children().empty());
+  ASSERT_EQ(2u, other_node->children().size());
+  // A non meregd folder is directly given as input and impacted.
+  handler()->BookmarkCurrentTabInFolder(base::ToString(new_folder->id()));
+  EXPECT_EQ(1u, new_folder->children().size());
+  EXPECT_EQ(1u, account_other_node->children().size());
+  EXPECT_EQ(2u, other_node->children().size());
+}
+
+TEST_F(BookmarksPageHandlerTest, CreateFolder) {
+  CreateFolderFunctionHelper helper;
+  const std::string folder_title = "new_folder_title";
+
+  const bookmarks::BookmarkNode* other_node = model()->other_node();
+  ASSERT_TRUE(other_node->children().empty());
+
+  // Using side panel id, merged node between local and account nodes.
+  std::string other_side_panel_id = GetFolderSidePanelIDForTesting(
+      *service(), BookmarkParentFolder::OtherFolder());
+  handler()->CreateFolder(
+      other_side_panel_id, folder_title,
+      base::BindOnce(&CreateFolderFunctionHelper::OnCreateFolderResult,
+                     base::Unretained(&helper)));
+  std::string added_local_folder_id = helper.GetResultWhenReady();
+  // Without account nodes, the local node is the default one for merged nodes.
+  ASSERT_EQ(1u, other_node->children().size());
+  EXPECT_EQ(GetBookmarkIdFromString(added_local_folder_id),
+            other_node->children()[0].get()->id());
+
+  // Initiates the account nodes.
+  model()->CreateAccountPermanentFolders();
+  const bookmarks::BookmarkNode* account_other_node =
+      model()->account_other_node();
+  ASSERT_TRUE(account_other_node->children().empty());
+  // Account node is now the default one.
+  handler()->CreateFolder(
+      other_side_panel_id, folder_title,
+      base::BindOnce(&CreateFolderFunctionHelper::OnCreateFolderResult,
+                     base::Unretained(&helper)));
+  std::string added_account_folder_id = helper.GetResultWhenReady();
+  ASSERT_EQ(1u, account_other_node->children().size());
+  EXPECT_EQ(GetBookmarkIdFromString(added_account_folder_id),
+            account_other_node->children()[0].get()->id());
+  EXPECT_EQ(1u, other_node->children().size());
+
+  // Creating a non merged folder.
+  const bookmarks::BookmarkNode* new_folder =
+      model()->AddFolder(other_node, 0, u"New Local Folder");
+  ASSERT_TRUE(new_folder->children().empty());
+  ASSERT_EQ(2u, other_node->children().size());
+  // A non meregd folder is directly given as input and impacted.
+  handler()->CreateFolder(
+      base::ToString(new_folder->id()), folder_title,
+      base::BindOnce(&CreateFolderFunctionHelper::OnCreateFolderResult,
+                     base::Unretained(&helper)));
+  std::string added_regular_folder_id = helper.GetResultWhenReady();
+  ASSERT_EQ(1u, new_folder->children().size());
+  EXPECT_EQ(GetBookmarkIdFromString(added_regular_folder_id),
+            new_folder->children()[0].get()->id());
+  EXPECT_EQ(1u, account_other_node->children().size());
+  EXPECT_EQ(2u, other_node->children().size());
+}
+
+// Should test any handler function that accepts a string as node ID.
+// Making sure that the test does not crash and has no effect.
+TEST_F(BookmarksPageHandlerTest, HandlerWithInvalidInputs) {
+  const std::string invalid_id_string = "random_invalid_id";
+  model()->CreateAccountPermanentFolders();
+
+  ASSERT_FALSE(model()->HasBookmarks());
+
+  handler()->BookmarkCurrentTabInFolder(invalid_id_string);
+
+  EXPECT_FALSE(model()->HasBookmarks());
+
+  CreateFolderFunctionHelper helper;
+  handler()->CreateFolder(
+      invalid_id_string, "folder_title",
+      base::BindOnce(&CreateFolderFunctionHelper::OnCreateFolderResult,
+                     base::Unretained(&helper)));
+  std::string result = helper.GetResultWhenReady();
+  EXPECT_TRUE(result.empty());
+
+  EXPECT_FALSE(model()->HasBookmarks());
 }
 
 }  // namespace

@@ -67,13 +67,24 @@ constexpr char kTestAppID[] = "{D07D2B56-F583-4631-9E8E-9942F63765BE}";
 
 }  // namespace
 
-TEST(WinUtil, GetServiceName) {
+class WinUtilServiceNameTest : public ::testing::TestWithParam<std::string> {
+ protected:
+  base::Version version() const { return base::Version(GetParam()); }
+};
+
+INSTANTIATE_TEST_SUITE_P(WinUtilServiceNameTestCases,
+                         WinUtilServiceNameTest,
+                         ::testing::Values(kUpdaterVersion,
+                                           "1.2.3.4",
+                                           "199.28537.11717"));
+
+TEST_P(WinUtilServiceNameTest, GetServiceName) {
   for (const bool is_internal_service : {true, false}) {
     EXPECT_EQ(base::StrCat({base::UTF8ToWide(PRODUCT_FULLNAME_STRING),
                             is_internal_service ? kWindowsInternalServiceName
                                                 : kWindowsServiceName,
-                            kUpdaterVersionUtf16}),
-              GetServiceName(is_internal_service));
+                            base::UTF8ToWide(version().GetString())}),
+              GetServiceName(is_internal_service, version()));
   }
 }
 
@@ -624,6 +635,32 @@ TEST(WinUtil, SetEulaAccepted) {
       SetEulaAccepted(GetUpdaterScopeForTesting(), /*eula_accepted=*/true));
   EXPECT_FALSE(base::win::RegKey(root, UPDATER_KEY, Wow6432(KEY_READ))
                    .HasValue(L"eulaaccepted"));
+}
+
+TEST(WinUtil, IsServicePresent_IsServiceEnabled) {
+  if (!::IsUserAnAdmin()) {
+    GTEST_SKIP();
+  }
+
+  GUID random_guid = {0};
+  EXPECT_HRESULT_SUCCEEDED(::CoCreateGuid(&random_guid));
+  const std::wstring service_name = base::StrCat(
+      {base::UTF8ToWide(test::GetTestName()), StringFromGuid(random_guid)});
+
+  EXPECT_FALSE(IsServicePresent(service_name));
+  EXPECT_FALSE(IsServiceEnabled(service_name));
+
+  ASSERT_TRUE(CreateService(service_name, service_name, L"C:\\temp\\temp.exe"));
+  EXPECT_TRUE(IsServicePresent(service_name));
+  EXPECT_TRUE(IsServiceEnabled(service_name));
+
+  EXPECT_TRUE(DisableService(service_name));
+  EXPECT_TRUE(IsServicePresent(service_name));
+  EXPECT_FALSE(IsServiceEnabled(service_name));
+
+  EXPECT_TRUE(DeleteService(service_name));
+  EXPECT_FALSE(IsServicePresent(service_name));
+  EXPECT_FALSE(IsServiceEnabled(service_name));
 }
 
 }  // namespace updater::test

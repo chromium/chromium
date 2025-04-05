@@ -17,6 +17,77 @@
 
 namespace autofill {
 
+// Specifies if the Username First Flow vote has intermediate values.
+enum class IsMostRecentSingleUsernameCandidate {
+  // Field is not part of Username First Flow.
+  kNotPartOfUsernameFirstFlow = 0,
+  // Field is candidate for username in Username First Flow and has no
+  // intermediate fields
+  kMostRecentCandidate = 1,
+  // Field is candidate for username in Username First Flow and has intermediate
+  // fields between candidate and password form.
+  kHasIntermediateValuesInBetween = 2,
+};
+
+struct EncodeUploadRequestOptions {
+  struct Field {
+    Field();
+    Field(const Field&&) = delete;
+    Field(Field&&);
+    Field& operator=(const Field&&) = delete;
+    Field& operator=(Field&&);
+    ~Field();
+
+    // All date format strings that match the field value.
+    base::flat_set<std::u16string> format_strings;
+
+    // Strength of the single username vote signal, if applicable.
+    std::optional<AutofillUploadContents::Field::SingleUsernameVoteType>
+        single_username_vote_type;
+
+    // If set to `kMostRecentCandidate`, the field is candidate for username
+    // in Username First Flow and the field has no intermediate
+    // fields (like OTP/Captcha) between the candidate and the password form.
+    // If set to `kHasIntermediateValuesInBetween`, the field is candidate for
+    // username in Username First Flow, but has intermediate fields between the
+    // candidate and the password form.
+    // If set to `kNotPartOfUsernameFirstFlow`, the field is not part of
+    // Username First Flow.
+    IsMostRecentSingleUsernameCandidate
+        is_most_recent_single_username_candidate =
+            IsMostRecentSingleUsernameCandidate::kNotPartOfUsernameFirstFlow;
+  };
+
+  EncodeUploadRequestOptions();
+  EncodeUploadRequestOptions(const EncodeUploadRequestOptions&) = delete;
+  EncodeUploadRequestOptions(EncodeUploadRequestOptions&&);
+  EncodeUploadRequestOptions& operator=(const EncodeUploadRequestOptions&) =
+      delete;
+  EncodeUploadRequestOptions& operator=(EncodeUploadRequestOptions&&);
+  ~EncodeUploadRequestOptions();
+
+  // The randomized encoder to use to encode form metadata during upload.
+  // If this is nullptr, no randomized metadata is sent.
+  std::optional<RandomizedEncoder> encoder;
+
+  // The type of the event that was taken as an indication that the form has
+  // been successfully submitted.
+  mojom::SubmissionIndicatorEvent submission_event =
+      mojom::SubmissionIndicatorEvent::NONE;
+
+  // The signatures of forms recently submitted on the same origin within a
+  // small period of time.
+  FormStructure::FormAssociations form_associations;
+
+  FieldTypeSet available_field_types;
+
+  std::optional<FormSignature> login_form_signature;
+
+  bool observed_submission = false;
+
+  std::map<FieldGlobalId, Field> fields;
+};
+
 // Encodes the given FormStructure as a vector of protobufs.
 //
 // On success, the returned vector is non-empty. The first element encodes the
@@ -50,12 +121,7 @@ namespace autofill {
 // form signatures of forms 1 and 2.
 std::vector<AutofillUploadContents> EncodeUploadRequest(
     const FormStructure& form,
-    base::optional_ref<RandomizedEncoder> encoder,
-    const std::map<FieldGlobalId, base::flat_set<std::u16string>>&
-        format_strings,
-    const FieldTypeSet& available_field_types,
-    std::optional<FormSignature> login_form_signature,
-    bool observed_submission);
+    const EncodeUploadRequestOptions& options);
 
 // Encodes the list of `forms` and their fields that are valid into an
 // `AutofillPageQueryRequest` proto. The queried FormSignatures and

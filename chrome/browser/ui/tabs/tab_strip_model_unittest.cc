@@ -8,7 +8,7 @@
 #include "chrome/browser/ui/tabs/tab_group_tab_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "components/commerce/core/commerce_utils.h"
-#include "components/tab_collections/public/tab_interface.h"
+#include "components/tabs/public/tab_interface.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -1792,7 +1792,7 @@ TEST_F(TabStripModelTest, CommandAddToSplit) {
   TabStripModel tabstrip(&delegate, profile());
   EXPECT_TRUE(tabstrip.empty());
 
-  // Create five tabs with two pinned, select the last.
+  // Create five tabs with two pinned.
   ASSERT_NO_FATAL_FAILURE(
       PrepareTabstripForSelectionTest(&tabstrip, 5, 2, "2"));
   // Add tab at index 4 to a group.
@@ -1856,7 +1856,7 @@ TEST_F(TabStripModelTest, AddToSplitInGroup) {
   TabStripModel tabstrip(&delegate, profile());
   EXPECT_TRUE(tabstrip.empty());
 
-  // Create five tabs with two pinned, select the last.
+  // Create five tabs with two pinned.
   ASSERT_NO_FATAL_FAILURE(
       PrepareTabstripForSelectionTest(&tabstrip, 5, 2, "2"));
 
@@ -1882,7 +1882,7 @@ TEST_F(TabStripModelTest, AddToSplitInPinned) {
   TabStripModel tabstrip(&delegate, profile());
   EXPECT_TRUE(tabstrip.empty());
 
-  // Create five tabs with two pinned, select the last.
+  // Create five tabs with two pinned.
   ASSERT_NO_FATAL_FAILURE(
       PrepareTabstripForSelectionTest(&tabstrip, 5, 2, "2"));
 
@@ -1906,7 +1906,7 @@ TEST_F(TabStripModelTest, UnsplitOperation) {
   TabStripModel tabstrip(&delegate, profile());
   EXPECT_TRUE(tabstrip.empty());
 
-  // Create five tabs with two pinned, select the last.
+  // Create five tabs with two pinned.
   ASSERT_NO_FATAL_FAILURE(
       PrepareTabstripForSelectionTest(&tabstrip, 5, 2, "2"));
 
@@ -1923,6 +1923,30 @@ TEST_F(TabStripModelTest, UnsplitOperation) {
 
   tabstrip.RemoveSplit(split_tab_id);
   EXPECT_EQ("0p 3p 1p 2 4", GetTabStripStateString(tabstrip));
+
+  tabstrip.CloseAllTabs();
+  EXPECT_TRUE(tabstrip.empty());
+}
+
+TEST_F(TabStripModelTest, MoveInsideSplitRemovesSplit) {
+  scoped_feature_list()->InitAndEnableFeature(features::kSideBySide);
+  TestTabStripModelDelegate delegate;
+  TabStripModel tabstrip(&delegate, profile());
+  EXPECT_TRUE(tabstrip.empty());
+
+  ASSERT_NO_FATAL_FAILURE(
+      PrepareTabstripForSelectionTest(&tabstrip, 5, 0, "2"));
+
+  tabstrip.ActivateTabAt(0,
+                         TabStripUserGestureDetails(
+                             TabStripUserGestureDetails::GestureType::kOther));
+
+  split_tabs::SplitTabId split_tab_id =
+      tabstrip.AddToNewSplit({3}, tabs::SplitTabLayout::kHorizontal);
+
+  EXPECT_EQ(tabstrip.GetSplitData(split_tab_id)->ListTabs().size(), 2u);
+  tabstrip.MoveWebContentsAt(3, 1, false);
+  EXPECT_FALSE(tabstrip.GetSplitData(split_tab_id));
 
   tabstrip.CloseAllTabs();
   EXPECT_TRUE(tabstrip.empty());
@@ -2019,7 +2043,7 @@ TEST_F(TabStripModelTest, CommandToggleGrouped) {
   // Only the active tab will remain selected when adding multiple tabs to a
   // group; all selected tabs continue to be selected when removing multiple
   // tabs from a group.
-  tabstrip.ToggleSelectionAt(1);
+  tabstrip.SelectTabAt(1);
 
   // Execute CommandToggleGrouped again. Expect both tabs to be ungrouped, since
   // they were in the same group.
@@ -3435,7 +3459,7 @@ TEST_F(TabStripModelTest, CloseSelectedTabs) {
   for (int i = 0; i < 3; ++i) {
     strip.AppendWebContents(CreateWebContents(), true);
   }
-  strip.ToggleSelectionAt(1);
+  strip.SelectTabAt(1);
   strip.CloseSelectedTabs();
   EXPECT_EQ(1, strip.count());
   EXPECT_EQ(0, strip.active_index());
@@ -3493,7 +3517,7 @@ TEST_F(TabStripModelTest, MultipleSelection) {
   observer.ClearStates();
 
   // Toggle the active tab, should make the next index active.
-  strip.ToggleSelectionAt(0);
+  strip.DeselectTabAt(0);
   EXPECT_EQ(1, strip.active_index());
   EXPECT_EQ(3U, strip.selection_model().size());
   EXPECT_EQ(4, strip.count());
@@ -3505,7 +3529,7 @@ TEST_F(TabStripModelTest, MultipleSelection) {
   observer.ClearStates();
 
   // Toggle the first tab back to selected and active.
-  strip.ToggleSelectionAt(0);
+  strip.SelectTabAt(0);
   EXPECT_EQ(0, strip.active_index());
   EXPECT_EQ(4U, strip.selection_model().size());
   EXPECT_EQ(4, strip.count());
@@ -3538,7 +3562,7 @@ TEST_F(TabStripModelTest, MultipleSelection) {
   observer.ClearStates();
 
   // Active tab is at 0, deselecting all but the active tab.
-  strip.ToggleSelectionAt(1);
+  strip.DeselectTabAt(1);
   ASSERT_EQ(1, observer.GetStateCount());
   ASSERT_EQ(observer.GetStateAt(0).action, MockTabStripModelObserver::SELECT);
   observer.ClearStates();
@@ -3546,7 +3570,7 @@ TEST_F(TabStripModelTest, MultipleSelection) {
   // Attempting to deselect the only selected and therefore active tab,
   // it is ignored (no notifications being sent) and tab at 0 remains selected
   // and active.
-  strip.ToggleSelectionAt(0);
+  strip.DeselectTabAt(0);
   ASSERT_EQ(0, observer.GetStateCount());
 
   strip.RemoveObserver(&observer);
@@ -3566,8 +3590,8 @@ TEST_F(TabStripModelTest, MultipleToSingle) {
   WebContents* raw_contents2 = contents2.get();
   strip.AppendWebContents(CreateWebContents(), false);
   strip.AppendWebContents(std::move(contents2), false);
-  strip.ToggleSelectionAt(0);
-  strip.ToggleSelectionAt(1);
+  strip.SelectTabAt(0);
+  strip.SelectTabAt(1);
 
   MockTabStripModelObserver observer;
   strip.AddObserver(&observer);
@@ -5100,7 +5124,7 @@ TEST_F(TabStripModelTest, ToggleMuteUnmuteMultipleSites) {
                           ui::PAGE_TRANSITION_TYPED, AddTabTypes::ADD_ACTIVE);
   EXPECT_FALSE(IsSiteMuted(tabstrip, 1));
 
-  EXPECT_TRUE(tabstrip.ToggleSelectionAt(0));
+  tabstrip.SelectTabAt(0);
   EXPECT_TRUE(tabstrip.selection_model().IsSelected(1));
 
   tabstrip.ExecuteContextMenuCommand(0, TabStripModel::CommandToggleSiteMuted);
@@ -5255,7 +5279,7 @@ TEST_F(TabStripModelTest, SelectionChangedForMoveGroupWithSelectedTab) {
   tab_groups::TabGroupId group = tabstrip->AddToNewGroup({1, 2, 3});
   ASSERT_EQ(group, tabstrip->GetTabAtIndex(1)->GetGroup().value());
 
-  tabstrip->ToggleSelectionAt(0);
+  tabstrip->SelectTabAt(0);
 
   // Verify the selection model before moving the group.
   EXPECT_TRUE(tabstrip->selection_model().IsSelected(2));
@@ -5293,8 +5317,8 @@ TEST_F(TabStripModelTest, SelectionChangedForMoveSelectedTabsTo) {
   tabstrip->ActivateTabAt(2);
 
   tabstrip->ActivateTabAt(0);
-  tabstrip->ToggleSelectionAt(2);
-  tabstrip->ToggleSelectionAt(4);
+  tabstrip->SelectTabAt(2);
+  tabstrip->SelectTabAt(4);
 
   // Verify the selection model before moving the tabs.
   EXPECT_TRUE(tabstrip->selection_model().IsSelected(0));

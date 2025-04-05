@@ -77,13 +77,23 @@ class CC_EXPORT ViewTransitionRequest {
 
   // Returns the sequence id for this request.
   uint32_t sequence_id() const { return sequence_id_; }
+  // This is only called on the viz side where the request is constructed from
+  // mojo wire and the sequence id is originally created on the renderer side.
+  void set_sequence_id(uint32_t id) { sequence_id_ = id; }
 
   Type type() const { return type_; }
 
   // Testing / debugging functionality.
   std::string ToString() const;
 
-  const blink::ViewTransitionToken& token() { return transition_token_; }
+  const blink::ViewTransitionToken& token() const { return transition_token_; }
+
+  bool maybe_cross_frame_sink() const { return maybe_cross_frame_sink_; }
+
+  const std::vector<viz::ViewTransitionElementResourceId>&
+  capture_resource_ids() const {
+    return capture_resource_ids_;
+  }
 
  private:
   ViewTransitionRequest(
@@ -97,7 +107,7 @@ class CC_EXPORT ViewTransitionRequest {
   const blink::ViewTransitionToken transition_token_;
   const bool maybe_cross_frame_sink_;
   ViewTransitionCaptureCallback commit_callback_;
-  const uint32_t sequence_id_;
+  uint32_t sequence_id_;
   const std::vector<viz::ViewTransitionElementResourceId> capture_resource_ids_;
 
   static uint32_t s_next_sequence_id_;

@@ -288,6 +288,10 @@ class ASH_EXPORT CaptureModeSessionFocusCycler : public views::WidgetObserver {
   // the search results panel web contents has been reached.
   void AdvanceFocusAfterSearchResultsPanel(bool reverse);
 
+  // Uses the `scoped_a11y_overrider_` to set the A11y override window to the
+  // search results panel's native window.
+  void SetA11yOverrideWindowToSearchResultsPanel();
+
   // views::WidgetObserver:
   void OnWidgetClosing(views::Widget* widget) override;
   void OnWidgetDestroying(views::Widget* widget) override;

@@ -367,6 +367,7 @@ class GraphImplCoreml::ComputeResources
 
 // static
 void GraphImplCoreml::CreateAndBuild(
+    mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
     ContextImplCoreml* context,
     mojom::GraphInfoPtr graph_info,
     ComputeResourceInfo compute_resource_info,
@@ -376,8 +377,8 @@ void GraphImplCoreml::CreateAndBuild(
     ContextProperties context_properties,
     WebNNContextImpl::CreateGraphImplCallback callback) {
   auto wrapped_callback = base::BindPostTaskToCurrentDefault(
-      base::BindOnce(&GraphImplCoreml::DidCreateAndBuild, context->AsWeakPtr(),
-                     std::move(callback)));
+      base::BindOnce(&GraphImplCoreml::DidCreateAndBuild, std::move(receiver),
+                     context->AsWeakPtr(), std::move(callback)));
 
   base::ThreadPool::PostTask(
       FROM_HERE,
@@ -518,6 +519,7 @@ void GraphImplCoreml::LoadCompiledModelOnBackgroundThread(
 
 // static
 void GraphImplCoreml::DidCreateAndBuild(
+    mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
     base::WeakPtr<WebNNContextImpl> context,
     WebNNContextImpl::CreateGraphImplCallback callback,
     base::expected<std::unique_ptr<Params>, mojom::ErrorPtr> result) {
@@ -538,7 +540,8 @@ void GraphImplCoreml::DidCreateAndBuild(
 #endif
 
   std::move(callback).Run(base::WrapUnique(new GraphImplCoreml(
-      static_cast<ContextImplCoreml*>(context.get()), *std::move(result))));
+      std::move(receiver), static_cast<ContextImplCoreml*>(context.get()),
+      *std::move(result))));
 }
 
 // static
@@ -561,9 +564,13 @@ MLFeatureValue* GraphImplCoreml::CreateMultiArrayFeatureValueFromBytes(
   return [MLFeatureValue featureValueWithMultiArray:multi_array];
 }
 
-GraphImplCoreml::GraphImplCoreml(ContextImplCoreml* context,
-                                 std::unique_ptr<Params> params)
-    : WebNNGraphImpl(context, std::move(params->compute_resource_info)),
+GraphImplCoreml::GraphImplCoreml(
+    mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
+    ContextImplCoreml* context,
+    std::unique_ptr<Params> params)
+    : WebNNGraphImpl(std::move(receiver),
+                     context,
+                     std::move(params->compute_resource_info)),
       compute_resources_(base::MakeRefCounted<ComputeResources>(
           std::move(params->coreml_name_to_operand_name),
           params->ml_model)) {}

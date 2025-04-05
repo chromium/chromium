@@ -6,10 +6,14 @@ package org.chromium.chrome.modules.readaloud;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Represents a single audio playback session. */
+@NullMarked
 public interface Playback {
     /** Metadata describing the content of the playback */
     interface Metadata {
@@ -79,9 +83,10 @@ public interface Playback {
 
     /**
      * Returns the metadata represented by this playback.
+     *
      * @return Metadata with language, title, publisher, full text, etc.
      */
-    default Metadata getMetadata() {
+    default @Nullable Metadata getMetadata() {
         return null;
     }
 

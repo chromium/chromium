@@ -1105,5 +1105,17 @@
     <message translateable="false" name="IDS_HISTORY_SYNC_OPT_IN_DESCRIPTION" desc="">
       You can stop syncing anytime in settings. Google may personalize Search and other services based on your history.
     </message>
+
+    <!-- History Sync Opt-in Expansion Pill Desktop -->
+    <!-- TODO(crbug.com/407708165): Finalize the strings and make them translateable. -->
+    <message translateable="false" name="IDS_AVATAR_BUTTON_BROWSE_ACROSS_DEVICES" desc="">
+      Browse across devices?
+    </message>
+    <message translateable="false" name="IDS_AVATAR_BUTTON_SYNC_TABS_AND_HISTORY" desc="">
+      Sync tabs and history?
+    </message>
+    <message translateable="false" name="IDS_AVATAR_BUTTON_SEE_TABS_FROM_OTHER_DEVICES" desc="">
+      See tabs from other devices?
+    </message>
   </if>
 </grit-part>

@@ -64,6 +64,9 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
   void OnRequestVisibility(
       int player_id,
       RequestVisibilityCallback request_visibility_callback) override {}
+  void OnAutoPictureInPictureInfoChanged(
+      int player_id,
+      std::string_view auto_picture_in_picture_info) override {}
 
   std::optional<media_session::MediaPosition> GetPosition(
       int player_id) const override {

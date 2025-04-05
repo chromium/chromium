@@ -794,20 +794,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
 
   void OnVerifyCertComplete(uint64_t cert_verify_id, int result);
 
-#if BUILDFLAG(IS_CT_SUPPORTED)
-  // Checks the Certificate Transparency policy compliance for a given
-  // certificate and SCTs in `cert_verify_result`, and updates
-  // `cert_verify_result.cert_status` and
-  // `cert_verify_result.policy_compliance`. Returns net::OK or
-  // net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED.
-  // TODO(crbug.com/41380502): This code is more-or-less duplicated in
-  // SSLClientSocket and QUIC. Fold this into some CertVerifier-shaped class
-  // in //net.
-  int CheckCTRequirements(net::CertVerifyResult& cert_verify_result,
-                          const net::HostPortPair& host_port_pair,
-                          CTVerificationMode ct_verification_mode);
-#endif  // BUILDFLAG(IS_CT_SUPPORTED)
-
 #if BUILDFLAG(IS_DIRECTORY_TRANSFER_REQUIRED)
   void EnsureMounted(network::TransferableDirectory* directory);
 #endif  // BUILDFLAG(IS_DIRECTORY_TRANSFER_REQUIRED)
@@ -950,7 +936,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   raw_ptr<net::StaticHttpUserAgentSettings> user_agent_settings_ = nullptr;
 
 #if BUILDFLAG(IS_CT_SUPPORTED)
-  std::unique_ptr<certificate_transparency::ChromeRequireCTDelegate>
+  scoped_refptr<certificate_transparency::ChromeRequireCTDelegate>
       require_ct_delegate_;
 
   std::unique_ptr<SCTAuditingHandler> sct_auditing_handler_;
@@ -981,9 +967,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
     VerifyCertCallback callback;
     scoped_refptr<net::X509Certificate> certificate;
     net::HostPortPair host_port;
-    std::string ocsp_result;
-    std::string sct_list;
-    CTVerificationMode ct_verification_mode;
   };
   std::map<uint64_t, std::unique_ptr<PendingCertVerify>>
       cert_verifier_requests_;

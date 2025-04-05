@@ -71,7 +71,7 @@ class SettingsMultideviceTetherItemElement extends
       /**
        * Alias for allowing Polymer bindings to routes.
        */
-      routes: {
+      routesEnum_: {
         type: Object,
         value: routes,
         readonly: true,

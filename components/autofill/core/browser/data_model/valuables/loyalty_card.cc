@@ -14,12 +14,14 @@ LoyaltyCard::LoyaltyCard(ValuableId id,
                          std::string merchant_name,
                          std::string program_name,
                          GURL program_logo,
-                         std::string loyalty_card_number)
+                         std::string loyalty_card_number,
+                         std::vector<GURL> merchant_domains)
     : id_(std::move(id)),
       merchant_name_(std::move(merchant_name)),
       program_name_(std::move(program_name)),
       program_logo_(std::move(program_logo)),
-      loyalty_card_number_(std::move(loyalty_card_number)) {}
+      loyalty_card_number_(std::move(loyalty_card_number)),
+      merchant_domains_(std::move(merchant_domains)) {}
 
 LoyaltyCard::LoyaltyCard(const LoyaltyCard&) = default;
 LoyaltyCard::LoyaltyCard(LoyaltyCard&&) = default;

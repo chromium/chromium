@@ -1646,6 +1646,9 @@ NavigationSimulatorImpl::BuildDidCommitProvisionalLoadParams(
   params->has_potentially_trustworthy_unique_origin =
       has_potentially_trustworthy_unique_origin_;
 
+  params->commit_navigation_start = base::TimeTicks::Now();
+  params->commit_navigation_end = base::TimeTicks::Now();
+
   return params;
 }
 

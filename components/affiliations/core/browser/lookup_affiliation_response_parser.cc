@@ -123,7 +123,7 @@ bool ParseResponse(const std::vector<FacetURI>& requested_facet_uris,
 bool ParseLookupAffiliationResponse(
     const std::vector<FacetURI>& requested_facet_uris,
     const affiliation_pb::LookupAffiliationByHashPrefixResponse& response,
-    AffiliationFetcherDelegate::Result* result) {
+    AffiliationFetcherInterface::ParsedFetchResponse* result) {
   for (const auto& domain : response.psl_extensions()) {
     result->psl_extensions.push_back(domain);
   }

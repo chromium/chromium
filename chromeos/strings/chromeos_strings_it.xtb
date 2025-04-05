@@ -458,7 +458,6 @@
 <translation id="3084958266922136097">Disabilita salvaschermo</translation>
 <translation id="3091839911843451378">Operazione non riuscita - Interruzione</translation>
 <translation id="3102119246920354026">Cache</translation>
-<translation id="3112413615003385433">Il tuo insegnante ha rimosso alcuni contenuti dagli Strumenti scolastici</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">piscine</translation>
 <translation id="3122883569442693641">Altri dettagli</translation>
@@ -539,7 +538,6 @@
 <translation id="3488065109653206955">Attivato parzialmente</translation>
 <translation id="3492882532495507361">Un ufficio <ph name="OFFICE_STYLE" /> con toni <ph name="OFFICE_COLOR" /></translation>
 <translation id="3493187369049186498">I dati vengono misurati dal tuo Chromebook e potrebbero essere diversi dai dati del fornitore.</translation>
-<translation id="349570724365779960">Strumenti scolastici è collegato agli studenti</translation>
 <translation id="3502426834823382181">Visualizza tutte le app</translation>
 <translation id="3510890413042482857">Invia <ph name="BEGIN_LINK1" />dati di rilevamento del rendimento<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Aggiornamento ChromeOS</translation>
@@ -547,7 +545,6 @@
 <translation id="353214771040290298">Modifica completata</translation>
 <translation id="3532980081107202182">Mancano circa <ph name="MIN_REMAINING" /> minuti</translation>
 <translation id="3533790840489634638">piscina</translation>
-<translation id="3535802910192338629">Il tuo insegnante ha aggiunto nuovi contenuti negli Strumenti scolastici</translation>
 <translation id="3547264467365135390">Formula</translation>
 <translation id="3557205324756024651">Identità locale (facoltativa)</translation>
 <translation id="3565064564551103223">IP consentiti</translation>
@@ -1235,6 +1232,7 @@
 <translation id="6657240842932274095">Consentire ai servizi di sistema di utilizzare la tua posizione?</translation>
 <translation id="6657585470893396449">Password</translation>
 <translation id="66621959568103627">rosa corallo</translation>
+<translation id="6669485505082792176">Impossibile creare immagini di questo tipo al momento. Prova a riformulare la descrizione. Tieni presente che non puoi creare immagini di persone, contenuti dannosi o espliciti. <ph name="BEGIN_LINK_LEARN_MORE" />Scopri di più<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6673898378497337661">aumenta la luminosità della tastiera</translation>
 <translation id="6692996468359469499">Ricevi informazioni correlate alla tua selezione</translation>
 <translation id="6694534975463174713">serratura</translation>
@@ -1440,7 +1438,6 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="7544853251252956727">Riproduzione casuale</translation>
 <translation id="7550715992156305117">Routine diagnostiche</translation>
 <translation id="7551123448725492271">Il dispositivo è un dispositivo audio.</translation>
-<translation id="7553913964854052228">Strumenti scolastici sta usando il microfono</translation>
 <translation id="7559239713112547082">Screenshot di anteprima</translation>
 <translation id="7561454561030345039">Questa azione è gestita dall'amministratore</translation>
 <translation id="7561759921596375678">Attiva il volume</translation>
@@ -1663,7 +1660,6 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="8576249514688522074">Non inizializzato</translation>
 <translation id="8584654835905316966">Per completare l'installazione del firmware per <ph name="DEVICE_NAME" /> alla versione <ph name="VERSION" /> è necessario eseguire il riavvio. Potrebbe sembrare che il computer si riavvii più volte. Si tratta di un comportamento normale.</translation>
 <translation id="8593058461203131755">metti in pausa i contenuti multimediali</translation>
-<translation id="8619169570378509764">Strumenti scolastici</translation>
 <translation id="8620617069779373398">Stato roaming</translation>
 <translation id="8626489604350149811">Altre azioni per <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Viola chiaro</translation>

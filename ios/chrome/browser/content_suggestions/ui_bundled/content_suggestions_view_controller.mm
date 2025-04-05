@@ -78,10 +78,7 @@
                        constant:content_suggestions::HeaderBottomPadding(
                                     self.traitCollection)],
     [self.verticalStackView.bottomAnchor
-        constraintEqualToAnchor:self.view.bottomAnchor
-                       constant:(IsHomeCustomizationEnabled()
-                                     ? 0
-                                     : -kBottomMagicStackPadding)]
+        constraintEqualToAnchor:self.view.bottomAnchor]
   ]];
 
   if (_mostVisitedTileConfig.mostVisitedItems.count > 0) {
@@ -155,10 +152,6 @@
 - (void)createAndInsertMostVisitedModule {
   [self.verticalStackView insertArrangedSubview:self.mostVisitedModuleContainer
                                         atIndex:0];
-  [self.verticalStackView
-      setCustomSpacing:(IsHomeCustomizationEnabled() ? 0
-                                                     : kMostVisitedBottomMargin)
-             afterView:self.mostVisitedModuleContainer];
   [NSLayoutConstraint activateConstraints:@[
     [self.mostVisitedModuleContainer.widthAnchor
         constraintEqualToAnchor:self.view.widthAnchor],

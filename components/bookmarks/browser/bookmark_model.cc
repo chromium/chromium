@@ -19,7 +19,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/string_compare.h"
 #include "base/memory/raw_ptr.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/strings/string_util.h"
@@ -1344,10 +1343,6 @@ void BookmarkModel::RemoveAccountPermanentFoldersImpl(bool notify_observers) {
     CHECK(!account_mobile_node_);
     return;
   }
-
-  base::ScopedUmaHistogramTimer scoped_timer(
-      "Bookmarks.RemoveAccountPermanentFoldersDuration",
-      base::ScopedUmaHistogramTimer::ScopedHistogramTiming::kMediumTimes);
 
   CHECK(account_other_node_);
   CHECK(account_mobile_node_);

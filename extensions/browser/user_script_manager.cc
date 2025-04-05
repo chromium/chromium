@@ -106,7 +106,7 @@ void UserScriptManager::SetUserScriptSourceEnabledForExtensions(
 bool UserScriptManager::AreUserScriptsAllowed(
     const Extension& extension,
     content::BrowserContext* browser_context) const {
-  return CanExtensionUseUserScriptsAPI(extension) &&
+  return IsUserScriptsAPIPermissionAvailable(extension) &&
          // We check the pref directly (instead of
          // GetCurrentUserScriptAllowedState() because this method can be called
          // before the allowed state is set.
@@ -114,7 +114,7 @@ bool UserScriptManager::AreUserScriptsAllowed(
 }
 
 // static
-bool UserScriptManager::CanExtensionUseUserScriptsAPI(
+bool UserScriptManager::IsUserScriptsAPIPermissionAvailable(
     const Extension& extension) {
   // TODO(crbug.com/390138269): Once finch flag is default, remove the
   // feature restriction.
@@ -127,16 +127,6 @@ bool UserScriptManager::CanExtensionUseUserScriptsAPI(
              mojom::APIPermissionID::kUserScripts) ||
          PermissionsParser::GetOptionalPermissions(&extension)
              .HasAPIPermission(mojom::APIPermissionID::kUserScripts);
-}
-
-bool UserScriptManager::IsUserScriptPrefEnabled(
-    const ExtensionId& extension_id) const {
-  bool user_scripts_allowed = false;
-  ExtensionPrefs::Get(browser_context_)
-      ->ReadPrefAsBoolean(extension_id, kUserScriptsAllowedPref,
-                          &user_scripts_allowed);
-
-  return user_scripts_allowed;
 }
 
 void UserScriptManager::SetUserScriptPrefEnabled(
@@ -156,7 +146,7 @@ void UserScriptManager::SetUserScriptPrefEnabled(
   SetCurrentUserScriptAllowedState(util::GetBrowserContextId(browser_context_),
                                    extension_id, enabled);
 
-  // If the extension is not loaded, its dynamic user script source will be
+  // If the extension is not enabled, its dynamic user script source will be
   // enabled in OnExtensionLoaded().
   if (!ExtensionRegistry::Get(browser_context_)
            ->enabled_extensions()
@@ -190,7 +180,7 @@ void UserScriptManager::OnExtensionLoaded(
   CHECK(extension);
   // Seed the browser's user script allowed state in case this is the first time
   // we are creating the loader.
-  if (CanExtensionUseUserScriptsAPI(*extension)) {
+  if (IsUserScriptsAPIPermissionAvailable(*extension)) {
     SetCurrentUserScriptAllowedState(
         util::GetBrowserContextId(browser_context_), extension->id(),
         IsUserScriptPrefEnabled(extension->id()));
@@ -275,6 +265,16 @@ EmbedderUserScriptLoader* UserScriptManager::CreateEmbedderUserScriptLoader(
           .first->second.get();
 
   return loader;
+}
+
+bool UserScriptManager::IsUserScriptPrefEnabled(
+    const ExtensionId& extension_id) const {
+  bool user_scripts_pref_allowed = false;
+  ExtensionPrefs::Get(browser_context_)
+      ->ReadPrefAsBoolean(extension_id, kUserScriptsAllowedPref,
+                          &user_scripts_pref_allowed);
+
+  return user_scripts_pref_allowed;
 }
 
 }  // namespace extensions

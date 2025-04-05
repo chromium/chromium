@@ -1,7 +1,26 @@
-collinbaker@chromium.org
-dcheng@chromium.org
-djmitche@chromium.org
-liza@chromium.org
-lukasza@chromium.org
-palmer@chromium.org
-phao@chromium.org
+# How to assign reviews
+# =====================
+#
+# Consider assigning reviews to chrome-third-party-rust-reviews@google.com,
+# rather than to a specific reviewer. This helps distribute review load and
+# knowledge more evenly amongst the team. Automation will select a random
+# reviewer and reassign the review within ~5 minutes. Googlers can read more
+# about this at go/gwsq-gerrit.
+chrome-third-party-rust-reviews@google.com
+
+# Actual list of reviewers
+# ========================
+#
+# The find-owners plugin does not support groups, so the actual `unsafe` Rust
+# reviewers are listed below but tagged with {LAST_RESORT_SUGGESTION} so that
+# Gerrit will preferentially suggest the gwsq review alias above.
+#
+# Please keep this list alphabetized and in sync with the gwsq config (see
+# `chromium_gwsq/third-party-rust/config.gwsq`).
+collinbaker@chromium.org     #{LAST_RESORT_SUGGESTION}
+dcheng@chromium.org          #{LAST_RESORT_SUGGESTION}
+djmitche@chromium.org        #{LAST_RESORT_SUGGESTION}
+liza@chromium.org            #{LAST_RESORT_SUGGESTION}
+lukasza@chromium.org         #{LAST_RESORT_SUGGESTION}
+palmer@chromium.org          #{LAST_RESORT_SUGGESTION}
+phao@chromium.org            #{LAST_RESORT_SUGGESTION}

@@ -68,7 +68,10 @@ class ContextualSearchProvider : public BaseSearchProvider {
   // Adds a default match for verbatim input, or keyword instructions if there
   // is no input yet. This is the match that holds the omnibox in keyword mode
   // when no other matches are available yet.
-  void AddDefaultMatch(std::u16string_view input_text);
+  void AddDefaultVerbatimMatch(const AutocompleteInput& input);
+
+  // Gets the '@page' starter pack engine using `input_keyword_`.
+  const TemplateURL* GetKeywordTemplateURL() const;
 
   // Keyword taken from most recently started autocomplete input.
   std::u16string input_keyword_;

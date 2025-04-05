@@ -7,8 +7,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "components/autofill/core/browser/integrators/fast_checkout_client.h"
-#include "components/autofill/core/browser/integrators/fast_checkout_delegate.h"
+#include "components/autofill/core/browser/integrators/fast_checkout/fast_checkout_client.h"
+#include "components/autofill/core/browser/integrators/fast_checkout/fast_checkout_delegate.h"
 #include "content/public/browser/web_contents.h"
 
 namespace autofill {

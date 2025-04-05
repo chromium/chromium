@@ -3454,6 +3454,16 @@ even if they fit the naming pattern. -->
   <token key="status" variants="TerminationStatus"/>
 </histogram>
 
+<histogram name="Accessibility.ScreenAI.Service.NotReponsive.IsOCR"
+    enum="BooleanYesNo" expires_after="2026-03-21">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records when ScreenAI service does not get a reply from the library in one
+    minute after a request. Records if the request was for OCR or not.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.ScreenAI.{feature}.InitializationLatency"
     units="ms" expires_after="2025-09-07">
   <owner>rhalavati@chromium.org</owner>
@@ -3597,6 +3607,34 @@ even if they fit the naming pattern. -->
     Tracks which Windows high contrast theme is set in system settings (logged
     once after startup). AccessibilityHighContrastColorScheme::None indicates
     that high contrast mode is not enabled.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.WinJAWSVersion" enum="JAWSMajorVersion"
+    expires_after="never">
+<!-- expires-never: usage drives a11y prioritization in browser and content. -->
+
+  <owner>aleventhal@chromium.org</owner>
+  <owner>benjamin.beaudry@microsoft.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks the major version of JAWS detected. Recorded when the AXMode in the
+    browser process changes, usually when an AT connects or at launch when an AT
+    is already connected.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.WinNVDAVersion" enum="NVDAMajorVersion"
+    expires_after="never">
+<!-- expires-never: usage drives a11y prioritization in browser and content. -->
+
+  <owner>aleventhal@chromium.org</owner>
+  <owner>benjamin.beaudry@microsoft.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks the major version of NVDA detected. Recorded when the AXMode in the
+    browser process changes, usually when an AT connects or at launch when an AT
+    is already connected.
   </summary>
 </histogram>
 
@@ -3786,6 +3824,17 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="DomDistiller.Time.RunDistillationJavaScript" units="ms"
+    expires_after="2025-08-24">
+  <owner>wylieb@google.com</owner>
+  <owner>chrome-reader-mode-team@google.com</owner>
+  <summary>
+    The amount of time the distiller script spent running on the page. This is
+    includes loading the script onto the web page. Recorded after the user has
+    chosen to view a simplified version of the current page.
+  </summary>
+</histogram>
+
 <histogram name="DomDistiller.Time.TimeToProvideResultToAccumulator" units="ms"
     expires_after="2025-08-24">
   <owner>wylieb@google.com</owner>
@@ -3805,6 +3854,17 @@ even if they fit the naming pattern. -->
   <summary>
     Records the amount of time a user spent on a Reader Mode Page. Recorded when
     the user exits reader mode. Only recorded on Android.
+  </summary>
+</histogram>
+
+<histogram name="DomDistiller.WordCount" units="count"
+    expires_after="2025-08-24">
+  <owner>wylieb@google.com</owner>
+  <owner>chrome-reader-mode-team@google.com</owner>
+  <summary>
+    Records the word count for the distilled page. Recorded when the page
+    distillation result is received. Recorded per-page even if the article has
+    multiple pages (e.g. a continue reading button).
   </summary>
 </histogram>
 

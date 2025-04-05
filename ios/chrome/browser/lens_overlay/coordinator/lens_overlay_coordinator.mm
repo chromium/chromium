@@ -416,13 +416,13 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
     [_selectionViewController start];
 
     if (self.isResultsBottomSheetCreated) {
-      // Only show the bottom sheet when in selection. For translate, build the
-      // necessary infrastructure but don't show it, effectively starting it
-      // hidden.
       [self buildResultsBottomSheetPresentation];
-      if (!_selectionViewController.translateFilterActive) {
-        [self showResultsBottomSheet];
-      }
+      [self showResultsBottomSheet];
+    } else if (_selectionViewController.translateFilterActive) {
+      [self startResultPage];
+      [_resultsPagePresenter
+          showInfoMessage:LensOverlayBottomSheetInfoMessageType::
+                              kImageTranslatedIndication];
     } else {
       [self scheduleTooltipHintDisplayIfNecessary];
     }
@@ -676,7 +676,7 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
                               kBottomSheetDismissed];
       break;
     case SheetDimensionState::kLarge:
-      [self disableSelectionInteraction:YES];
+      [self disableSelectionInteraction:NO];
       break;
     case SheetDimensionState::kConsent:
       break;
@@ -736,6 +736,12 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
   }
 }
 
+- (void)lensOverlayMediatorDidFailDetectingTranslatableText {
+  [self startResultPage];
+  [_resultsPagePresenter showInfoMessage:LensOverlayBottomSheetInfoMessageType::
+                                             kNoTranslatableTextWarning];
+}
+
 - (void)prepareLensUIForBackgroundTabChange {
   if (!_associatedTabHelper || !self.isUICreated) {
     return;
@@ -761,11 +767,7 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
   [_metricsRecorder
       recordResultLoadedWithTextSelection:_mediator.currentLensResult
                                               .isTextSelection];
-
-  if (!_resultMediator) {
-    [self startResultPage];
-  }
-
+  [self startResultPage];
   [_resultMediator loadResultsURL:url];
 }
 
@@ -782,9 +784,7 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
 }
 
 - (void)handleSlowRequestHasStarted {
-  if (!_resultMediator) {
-    [self startResultPage];
-  }
+  [self startResultPage];
   [_resultMediator handleSlowRequestHasStarted];
 }
 
@@ -971,6 +971,11 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
   id<PageSideSwipeCommands> pageSideSwipeHandler =
       HandlerForProtocol(dispatcher, PageSideSwipeCommands);
 
+  /// Record a snapshot of the current viewport before navigating to the URL.
+  if (_associatedTabHelper) {
+    _associatedTabHelper->RecordViewportSnaphot();
+  }
+
   UIImage* viewportSnapshot =
       _associatedTabHelper ? _associatedTabHelper->GetViewportSnapshot() : nil;
 
@@ -1029,6 +1034,10 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
 
 // Creates and displays the results bottom sheet.
 - (void)startResultPage {
+  if (_resultMediator) {
+    return;
+  }
+
   Browser* browser = self.browser;
   ProfileIOS* profile = browser->GetProfile();
 

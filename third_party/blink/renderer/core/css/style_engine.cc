@@ -95,7 +95,6 @@
 #include "third_party/blink/renderer/core/inspector/invalidation_set_to_selector_map.h"
 #include "third_party/blink/renderer/core/layout/adjust_for_absolute_zoom.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
-#include "third_party/blink/renderer/core/layout/geometry/physical_size.h"
 #include "third_party/blink/renderer/core/layout/layout_counter.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
@@ -116,6 +115,7 @@
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_selector.h"
+#include "third_party/blink/renderer/platform/geometry/physical_size.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
@@ -3263,6 +3263,9 @@ void StyleEngine::NodeWillBeRemoved(Node& node) {
         if (StyleContainmentScopeTree* tree = GetStyleContainmentScopeTree()) {
           tree->RemoveScopeForElement(*element);
         }
+      }
+      if (!style->ScrollMarkerContainNone()) {
+        GetDocument().SetNeedsScrollMarkerGroupRelationsUpdate();
       }
     }
     pending_invalidations_.RescheduleSiblingInvalidationsAsDescendants(

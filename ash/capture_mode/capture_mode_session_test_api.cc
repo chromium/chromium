@@ -115,7 +115,15 @@ CaptureModeSessionTestApi::GetCurrentFocusedView() {
   return items[GetCurrentFocusIndex()];
 }
 
-bool CaptureModeSessionTestApi::HasFocus() {
+bool CaptureModeSessionTestApi::HasAxVirtualWidget() const {
+  return !!session_->focus_cycler_->ax_widget_;
+}
+
+size_t CaptureModeSessionTestApi::GetAxVirtualViewsCount() const {
+  return session_->focus_cycler_->ax_virtual_views_.size();
+}
+
+bool CaptureModeSessionTestApi::HasFocus() const {
   return session_->focus_cycler_->HasFocus();
 }
 

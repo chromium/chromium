@@ -642,6 +642,12 @@ V8AudioContextState BaseAudioContext::state() const {
 
 void BaseAudioContext::SetContextState(V8AudioContextState::Enum new_state) {
   DCHECK(IsMainThread());
+
+  // The closed AudioContext does not accept any state change.
+  if (control_thread_state_ == V8AudioContextState::Enum::kClosed) {
+    return;
+  }
+
   if (!RuntimeEnabledFeatures::AudioContextInterruptedStateEnabled() &&
       new_state == V8AudioContextState::Enum::kInterrupted) {
     return;

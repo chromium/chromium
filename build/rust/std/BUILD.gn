@@ -15,51 +15,12 @@
 # allocator functions to PartitionAlloc when `use_partition_alloc_as_malloc` is
 # true, so that Rust and C++ use the same allocator backend.
 
-import("//build/buildflag_header.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/coverage/coverage.gni")
 import("//build/config/rust.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 
-rust_allocator_uses_partition_alloc = false
-if (build_with_chromium) {
-  import("//base/allocator/partition_allocator/partition_alloc.gni")
-  rust_allocator_uses_partition_alloc = use_partition_alloc_as_malloc
-}
-
-buildflag_header("buildflags") {
-  header = "buildflags.h"
-  flags = [
-    "RUST_ALLOCATOR_USES_PARTITION_ALLOC=$rust_allocator_uses_partition_alloc",
-  ]
-  visibility = [ ":*" ]
-}
-
 if (toolchain_has_rust) {
-  # If clang performs the link step, we need to provide the allocator symbols
-  # that are normally injected by rustc during linking.
-  #
-  # We also "happen to" use this to redirect allocations to PartitionAlloc,
-  # though that would be better done through a #[global_allocator] crate (see
-  # above).
-  source_set("remap_alloc") {
-    public_deps = []
-    if (rust_allocator_uses_partition_alloc) {
-      public_deps += [ "//base/allocator/partition_allocator:partition_alloc" ]
-    }
-    deps = [ ":buildflags" ]
-    sources = [
-      # `alias.*`, `compiler_specific.h`, and `immediate_crash.*` have been
-      # copied from `//base`.
-      # TODO(crbug.com/40279749): Avoid duplication / reuse code.
-      "alias.cc",
-      "alias.h",
-      "compiler_specific.h",
-      "immediate_crash.h",
-      "remap_alloc.cc",
-    ]
-  }
-
   # List of Rust stdlib rlibs which are present in the official Rust toolchain
   # we are using from the Android team. This is usually a version or two behind
   # nightly. Generally this matches the toolchain we build ourselves, but if
@@ -269,8 +230,6 @@ if (toolchain_has_rust) {
       foreach(libname, stdlib_files + skip_stdlib_files) {
         deps += [ "rules:$libname" ]
       }
-
-      public_deps = [ ":remap_alloc" ]
     }
   } else {
     action("find_stdlib") {

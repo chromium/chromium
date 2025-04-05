@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {isTextField} from '//ios/web/public/js_messaging/resources/utils.js';
 
 /**
@@ -15,7 +15,7 @@ import {isTextField} from '//ios/web/public/js_messaging/resources/utils.js';
  * @param tag Tag name.
  * @return Whether the tag of node is tag.
  */
-gCrWeb.fill.hasTagName = function(node: Element, tag: string): boolean {
+gCrWebLegacy.fill.hasTagName = function(node: Element, tag: string): boolean {
   return node.nodeType === Node.ELEMENT_NODE &&
       (node).tagName === tag.toUpperCase();
 };
@@ -30,9 +30,9 @@ gCrWeb.fill.hasTagName = function(node: Element, tag: string): boolean {
  * @return Whether element is one of the element types that can be
  *     autofilled.
  */
-gCrWeb.fill.isAutofillableElement = function(element: Element): boolean {
-  return gCrWeb.fill.isAutofillableInputElement(element) ||
-      gCrWeb.fill.isSelectElement(element) || isTextAreaElement(element);
+gCrWebLegacy.fill.isAutofillableElement = function(element: Element): boolean {
+  return gCrWebLegacy.fill.isAutofillableInputElement(element) ||
+      gCrWebLegacy.fill.isSelectElement(element) || isTextAreaElement(element);
 };
 
 /**
@@ -81,7 +81,7 @@ function trimWhitespaceTrailing(input: string): string {
  *     be added as separator in the combination.
  * @return The combined string.
  */
-gCrWeb.fill.combineAndCollapseWhitespace = function(
+gCrWebLegacy.fill.combineAndCollapseWhitespace = function(
     prefix: string, suffix: string, forceWhitespace: boolean): string {
   const prefixTrimmed = trimWhitespaceTrailing(prefix);
   const prefixTrailingWhitespace = prefixTrimmed !== prefix;
@@ -127,9 +127,9 @@ function findChildTextInner(
     if (node.tagName === 'OPTION') {
       return '';
     }
-    if (gCrWeb.form.isFormControlElement(/** @type {Element} */ (node))) {
+    if (gCrWebLegacy.form.isFormControlElement(/** @type {Element} */ (node))) {
       const input = /** @type {FormControlElement} */ (node);
-      if (gCrWeb.fill.isAutofillableElement(input)) {
+      if (gCrWebLegacy.fill.isAutofillableElement(input)) {
         return '';
       }
     }
@@ -163,7 +163,7 @@ function findChildTextInner(
     // Emulate apparently incorrect Chromium behavior tracked in
     // https://crbug.com/239819.
     addSpace = false;
-    nodeText = gCrWeb.fill.combineAndCollapseWhitespace(
+    nodeText = gCrWebLegacy.fill.combineAndCollapseWhitespace(
         nodeText, childText, addSpace);
   }
 
@@ -175,7 +175,7 @@ function findChildTextInner(
   // Emulate apparently incorrect Chromium behavior tracked in
   // https://crbug.com/239819.
   addSpace = false;
-  nodeText = gCrWeb.fill.combineAndCollapseWhitespace(
+  nodeText = gCrWebLegacy.fill.combineAndCollapseWhitespace(
       nodeText, siblingText, addSpace);
 
   return nodeText;
@@ -271,7 +271,7 @@ function ancestorTagNames(element: any): string[] {
  * @return Whether element is a 'select' element.
  */
 // TODO(crbug.com/40285548): Replace all `any` types with a specific type.
-gCrWeb.fill.isSelectElement = function(element: any): boolean {
+gCrWebLegacy.fill.isSelectElement = function(element: any): boolean {
   if (!element) {
     return false;
   }
@@ -305,7 +305,7 @@ function isTextAreaElement(element: any): boolean {
  * @return Whether element is a checkbox or a radio button.
  */
 // TODO(crbug.com/40285548): Replace all `any` types with a specific type.
-gCrWeb.fill.isCheckableElement = function(element: any): boolean {
+gCrWebLegacy.fill.isCheckableElement = function(element: any): boolean {
   if (!element) {
     return false;
   }
@@ -323,8 +323,8 @@ gCrWeb.fill.isCheckableElement = function(element: any): boolean {
  * @return Whether element is one of the input element types that
  *     can be autofilled.
  */
-gCrWeb.fill.isAutofillableInputElement = function(element: Element): boolean {
-  return isTextField(element) || gCrWeb.fill.isCheckableElement(element);
+gCrWebLegacy.fill.isAutofillableInputElement = function(element: Element): boolean {
+  return isTextField(element) || gCrWebLegacy.fill.isCheckableElement(element);
 };
 
 /**

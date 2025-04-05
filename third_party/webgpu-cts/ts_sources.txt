@@ -21,6 +21,7 @@ src/common/util/timeout.ts
 src/common/util/util.ts
 src/common/framework/data_cache.ts
 src/common/framework/metadata.ts
+src/common/framework/on_shutdown.ts
 src/common/framework/params_builder.ts
 src/common/framework/resources.ts
 src/common/util/collect_garbage.ts

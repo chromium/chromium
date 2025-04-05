@@ -451,7 +451,7 @@ chromium_strings.grd. -->
       </message>
       <if expr="is_macosx">
         <message name="IDS_MACOS_OBSOLETE" desc="A message displayed on an at-launch infobar and About (Help) page warning the user that the OS version they are using will soon be or is already unsupported.">
-          To get future Google Chrome updates, you'll need macOS 11 or later. This computer is using macOS 10.15.
+          To get future Google Chrome updates, you'll need macOS 12 or later. This computer is using macOS 11.
         </message>
       </if>
       <if expr="is_win">
@@ -2163,20 +2163,6 @@ Google Chrome is unable to recover your settings.
         <message name="IDS_SIGNOUT_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNOUT_IPH_TEXT_SCREENREADER" desc="Text announced by screenreaders related to the confirmation message is intended to help users to understand that signing out of a Google service (like Gmail) will not sign them out of Chrome. It appears in a blue in-product help bubble, which points to the Chrome Profile Menu; it appears after the user signs out of a Google service (like Gmail). The user can open the Profile Menu and sign out of Chrome, if they wish to do so.">
           To remove your Google Account from Chrome, sign out of Chrome in the Settings page
         </message>
-      </if>
-
-      <!-- Strings for full restore notifications -->
-      <if expr="is_chromeos">
-        <if expr="reven">
-          <message name="IDS_RESTORE_NOTIFICATION_DISPLAY_SOURCE" desc="This is the string shown as the display source of the notification for the user to select restore or not on startup.">
-            ChromeOS Flex system
-          </message>
-        </if>
-        <if expr="not reven">
-          <message name="IDS_RESTORE_NOTIFICATION_DISPLAY_SOURCE" desc="This is the string shown as the display source of the notification for the user to select restore or not on startup.">
-            ChromeOS system
-          </message>
-        </if>
       </if>
 
       <!-- ChromeLabs bubble -->

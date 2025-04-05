@@ -177,7 +177,7 @@ def convert_skylab(skylab: dict[str, typing.Any]) -> Value:
 
   for key, value in skylab.items():
     match key:
-      case 'cros_cbx' | 'shards' | 'timeout_sec':
+      case 'shards' | 'timeout_sec':
         value_builder[key] = convert_direct(value)
 
       case _:

@@ -139,7 +139,7 @@ struct AffiliationServiceImpl::FetchInfo {
   }
 
   ChangePasswordUrlMatch GetChangePasswordURL(
-      const AffiliationFetcherDelegate::Result& result) const {
+      const AffiliationFetcherInterface::ParsedFetchResponse& result) const {
     std::map<FacetURI, AffiliationServiceImpl::ChangePasswordUrlMatch>
         uri_to_url = CreateFacetUriToChangePasswordUrlMap(result.groupings);
 
@@ -187,7 +187,7 @@ void AffiliationServiceImpl::Init(
     const base::FilePath& db_path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   fetcher_manager_ =
-      std::make_unique<AffiliationFetcherManager>(url_loader_factory_, this);
+      std::make_unique<AffiliationFetcherManager>(url_loader_factory_);
   backend_ = std::make_unique<AffiliationBackend>(
       backend_task_runner_, base::DefaultClock::GetInstance(),
       base::DefaultTickClock::GetInstance());
@@ -238,22 +238,12 @@ GURL AffiliationServiceImpl::GetChangePasswordURL(const GURL& url) const {
   return GURL();
 }
 
-void AffiliationServiceImpl::OnFetchSucceeded(
-    AffiliationFetcherInterface* fetcher,
-    std::unique_ptr<AffiliationFetcherDelegate::Result> result) {}
-
-void AffiliationServiceImpl::OnFetchFailed(
-    AffiliationFetcherInterface* fetcher) {}
-
-void AffiliationServiceImpl::OnMalformedResponse(
-    AffiliationFetcherInterface* fetcher) {}
-
 void AffiliationServiceImpl::OnFetchFinished(
     const FetchInfo& fetch_info,
     AffiliationFetcherInterface::FetchResult fetch_result) {
   // Handle the successful case only. On failure the fetch will be discarded
   // without retries.
-  if (net::HTTP_OK == fetch_result.http_status_code && fetch_result.data) {
+  if (fetch_result.IsSuccessful()) {
     change_password_urls_[fetch_info.requested_facet] =
         fetch_info.GetChangePasswordURL(fetch_result.data.value());
   }
@@ -263,7 +253,7 @@ void AffiliationServiceImpl::GetAffiliationsAndBranding(
     const FacetURI& facet_uri,
     ResultCallback result_callback) {
   PostToBackend(&AffiliationBackend::GetAffiliationsAndBranding, facet_uri,
-                StrategyOnCacheMiss::FAIL, std::move(result_callback),
+                std::move(result_callback),
                 base::SequencedTaskRunner::GetCurrentDefault());
 }
 

@@ -82,6 +82,10 @@ class MockOptimizationGuideKeyedService : public OptimizationGuideKeyedService {
               (optimization_guide::ModelBasedCapabilityKey feature,
                optimization_guide::OnDeviceModelAvailabilityObserver* observer),
               (override));
+  MOCK_METHOD(on_device_model::Capabilities,
+              GetOnDeviceCapabilities,
+              (),
+              (override));
   MOCK_METHOD(bool,
               ShouldFeatureBeCurrentlyEnabledForUser,
               (optimization_guide::UserVisibleFeatureKey),

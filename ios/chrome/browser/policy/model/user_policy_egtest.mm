@@ -286,7 +286,7 @@ id<GREYMatcher> DeclineManagementButtonMatcher() {
   // Sign in with managed account to fetch user policies.
   FakeSystemIdentity* fakeManagedIdentity = [FakeSystemIdentity
       identityWithEmail:base::SysUTF8ToNSString(GetTestEmail())];
-  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+  if ([SigninEarlGrey areSeparateProfilesForManagedAccountsEnabled]) {
     [SigninEarlGrey
         signinWithFakeManagedIdentityInPersonalProfile:fakeManagedIdentity];
   } else {
@@ -301,7 +301,7 @@ id<GREYMatcher> DeclineManagementButtonMatcher() {
   // Sign in with managed account to fetch user policies.
   FakeSystemIdentity* fakeManagedIdentity = [FakeSystemIdentity
       identityWithEmail:base::SysUTF8ToNSString(GetTestEmail())];
-  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+  if ([SigninEarlGrey areSeparateProfilesForManagedAccountsEnabled]) {
     [SigninEarlGrey
         signinWithFakeManagedIdentityInPersonalProfile:fakeManagedIdentity];
   } else {
@@ -320,7 +320,7 @@ id<GREYMatcher> DeclineManagementButtonMatcher() {
   // Sign in with managed account to fetch user policies.
   FakeSystemIdentity* fakeManagedIdentity = [FakeSystemIdentity
       identityWithEmail:base::SysUTF8ToNSString(GetTestEmail())];
-  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+  if ([SigninEarlGrey areSeparateProfilesForManagedAccountsEnabled]) {
     [SigninEarlGrey
         signinWithFakeManagedIdentityInPersonalProfile:fakeManagedIdentity];
   } else {
@@ -415,7 +415,7 @@ id<GREYMatcher> DeclineManagementButtonMatcher() {
   // Sign in with the managed account. This won't trigger the user policy fetch.
   FakeSystemIdentity* fakeManagedIdentity = [FakeSystemIdentity
       identityWithEmail:base::SysUTF8ToNSString(GetTestEmail())];
-  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+  if ([SigninEarlGrey areSeparateProfilesForManagedAccountsEnabled]) {
     [SigninEarlGrey
         signinWithFakeManagedIdentityInPersonalProfile:fakeManagedIdentity];
   } else {

@@ -7,7 +7,6 @@
 #import "base/check.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
-#import "ios/chrome/browser/share_kit/model/share_kit_service.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
@@ -16,14 +15,10 @@
 
 TabGroupService::TabGroupService(
     ProfileIOS* profile,
-    tab_groups::TabGroupSyncService* tab_group_sync_service,
-    ShareKitService* share_kit_service)
-    : profile_(profile),
-      tab_group_sync_service_(tab_group_sync_service),
-      share_kit_service_(share_kit_service) {
+    tab_groups::TabGroupSyncService* tab_group_sync_service)
+    : profile_(profile), tab_group_sync_service_(tab_group_sync_service) {
   DCHECK(profile_);
   DCHECK(tab_group_sync_service_);
-  DCHECK(share_kit_service_);
 }
 
 TabGroupService::~TabGroupService() {}
@@ -57,6 +52,5 @@ std::unique_ptr<web::WebState> TabGroupService::WebStateToAddToEmptyGroup() {
 
 bool TabGroupService::IsSharedGroup(const TabGroup* group) {
   CHECK(group);
-  return tab_groups::utils::IsTabGroupShared(group, tab_group_sync_service_,
-                                             share_kit_service_);
+  return tab_groups::utils::IsTabGroupShared(group, tab_group_sync_service_);
 }

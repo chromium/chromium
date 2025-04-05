@@ -39,6 +39,10 @@ enum PermissionName {
   FULLSCREEN,
   WEB_APP_INSTALLATION,
   LOCAL_NETWORK_ACCESS,
+  VR,
+  AR,
+  HAND_TRACKING,
+  WEB_PRINTING
 };
 
 struct MidiPermissionDescriptor {

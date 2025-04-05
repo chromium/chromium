@@ -66,14 +66,6 @@ export class CrostiniSettingsCardElement extends
         },
       },
 
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([Setting.kSetUpCrostini]),
-      },
-
       showBruschetta_: {
         type: Boolean,
         value() {
@@ -82,6 +74,11 @@ export class CrostiniSettingsCardElement extends
       },
     };
   }
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kSetUpCrostini,
+  ]);
 
   private browserProxy_: CrostiniBrowserProxy;
   private disableCrostiniInstall_: boolean;

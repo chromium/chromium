@@ -31,19 +31,19 @@ class CSSVarCycleInterpolationType : public InterpolationType {
 
  private:
   InterpolationValue MaybeConvertSingle(const PropertySpecificKeyframe&,
-                                        const InterpolationEnvironment&,
+                                        const CSSInterpolationEnvironment&,
                                         const InterpolationValue& underlying,
                                         ConversionCheckers&) const final;
 
   PairwiseInterpolationValue MaybeConvertPairwise(
       const PropertySpecificKeyframe& start_keyframe,
       const PropertySpecificKeyframe& end_keyframe,
-      const InterpolationEnvironment&,
+      const CSSInterpolationEnvironment&,
       const InterpolationValue& underlying,
       ConversionCheckers&) const final;
 
   InterpolationValue MaybeConvertUnderlyingValue(
-      const InterpolationEnvironment&) const final;
+      const CSSInterpolationEnvironment&) const final;
 
   void Composite(UnderlyingValueOwner& underlying_value_owner,
                  double underlying_fraction,
@@ -54,7 +54,7 @@ class CSSVarCycleInterpolationType : public InterpolationType {
 
   void Apply(const InterpolableValue&,
              const NonInterpolableValue*,
-             InterpolationEnvironment&) const final;
+             CSSInterpolationEnvironment&) const final;
 
   WeakPersistent<const PropertyRegistration> registration_;
 };

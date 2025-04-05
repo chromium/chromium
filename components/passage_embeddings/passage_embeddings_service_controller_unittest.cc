@@ -110,17 +110,12 @@ class FakePassageEmbeddingsServiceController
   std::unique_ptr<FakePassageEmbeddingsService> service_;
 };
 
-class FakeEmbedder : public TestEmbedder, public EmbedderMetadataObserver {
+class FakeEmbedder : public Embedder {
  public:
   explicit FakeEmbedder(
-      EmbedderMetadataProvider* embedder_metadata_provider,
       FakePassageEmbeddingsServiceController::GetEmbeddingsCallback
-          get_embeddings_callback,
-      base::test::TestFuture<EmbedderMetadata>* embedder_metadata_future)
-      : get_embeddings_callback_(get_embeddings_callback),
-        embedder_metadata_future_(embedder_metadata_future) {
-    embedder_metadata_observation_.Observe(embedder_metadata_provider);
-  }
+          get_embeddings_callback)
+      : get_embeddings_callback_(get_embeddings_callback) {}
 
   // Embedder:
   Embedder::TaskId ComputePassagesEmbeddings(
@@ -145,16 +140,30 @@ class FakeEmbedder : public TestEmbedder, public EmbedderMetadataObserver {
     return kInvalidTaskId;
   }
 
- protected:
+  bool TryCancel(TaskId task_id) override { return false; }
+
+ private:
+  FakePassageEmbeddingsServiceController::GetEmbeddingsCallback
+      get_embeddings_callback_;
+};
+
+class MetadataObserver : public EmbedderMetadataObserver {
+ public:
+  explicit MetadataObserver(
+      EmbedderMetadataProvider* embedder_metadata_provider,
+      base::test::TestFuture<EmbedderMetadata>* embedder_metadata_future)
+      : embedder_metadata_future_(embedder_metadata_future) {
+    embedder_metadata_observation_.Observe(embedder_metadata_provider);
+  }
+
   // EmbedderMetadataObserver:
   void EmbedderMetadataUpdated(EmbedderMetadata metadata) override {
     embedder_metadata_future_->SetValue(metadata);
   }
 
+ private:
   base::ScopedObservation<EmbedderMetadataProvider, EmbedderMetadataObserver>
       embedder_metadata_observation_{this};
-  FakePassageEmbeddingsServiceController::GetEmbeddingsCallback
-      get_embeddings_callback_;
   raw_ptr<base::test::TestFuture<EmbedderMetadata>> embedder_metadata_future_;
 };
 
@@ -165,15 +174,20 @@ class PassageEmbeddingsServiceControllerTest : public testing::Test {
   void SetUp() override {
     service_controller_ =
         std::make_unique<FakePassageEmbeddingsServiceController>();
+    metadata_observer_.emplace(service_controller_.get(),
+                               &embedder_metadata_future_);
     service_controller_->SetEmbedderForTesting(std::make_unique<FakeEmbedder>(
-        /*embedder_metadata_provider=*/service_controller_.get(),
         /*get_embeddings_callback=*/
         base::BindRepeating(
             &FakePassageEmbeddingsServiceController::GetEmbeddings,
-            base::Unretained(service_controller_.get())),
-        /*embedder_metadata_future=*/embedder_metadata_future()));
+            base::Unretained(service_controller_.get()))));
 
     EXPECT_FALSE(embedder_metadata_future()->IsReady());
+  }
+
+  void TearDown() override {
+    metadata_observer_.reset();
+    service_controller_.reset();
   }
 
  protected:
@@ -185,8 +199,9 @@ class PassageEmbeddingsServiceControllerTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   base::HistogramTester histogram_tester_;
-  base::test::TestFuture<EmbedderMetadata> embedder_metadata_future_;
   std::unique_ptr<FakePassageEmbeddingsServiceController> service_controller_;
+  base::test::TestFuture<EmbedderMetadata> embedder_metadata_future_;
+  std::optional<MetadataObserver> metadata_observer_;
 };
 
 TEST_F(PassageEmbeddingsServiceControllerTest, ReceivesValidModelInfo) {

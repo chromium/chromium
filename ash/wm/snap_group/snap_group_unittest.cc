@@ -1675,7 +1675,6 @@ TEST_F(FasterSplitScreenTest, AccessibilityFocusAnnotator) {
   ASSERT_TRUE(focus_widget);
   OverviewGrid* grid = GetOverviewSession()->grid_list()[0].get();
   ASSERT_FALSE(grid->desks_widget());
-  ASSERT_FALSE(OverviewGridTestApi(grid).GetSaveDeskForLaterButton());
   auto* split_view_setup_widget = grid->split_view_setup_widget();
   ASSERT_TRUE(split_view_setup_widget);
 
@@ -5926,20 +5925,18 @@ TEST_F(SnapGroupOverviewTest, OverviewItemFillMode) {
   }
 }
 
-// Verifies bubble transient windows hide in Overview, reappear on Overview
-// exit, while other transient windows (unless `kHideInOverviewKey` is set to
-// true) remain visible.
-TEST_F(SnapGroupOverviewTest, HideBubbleTransientInOverview) {
+// Verifies bubble transient windows are kept visible in Overview.
+TEST_F(SnapGroupOverviewTest, BubbleTransientIsVisibleInOverview) {
   std::unique_ptr<aura::Window> w0(CreateAppWindow(gfx::Rect(0, 0, 300, 300)));
   std::unique_ptr<aura::Window> w1(
       CreateAppWindow(gfx::Rect(500, 20, 200, 200)));
   SnapTwoTestWindows(w0.get(), w1.get(), /*horizontal=*/true,
                      GetEventGenerator());
 
-  // Create a bubble widget that's anchored to `w0`.
+  // Create a bubble widget that's anchored to `w0` without anchor.
   auto bubble_delegate0 = std::make_unique<views::BubbleDialogDelegateView>(
-      views::BubbleDialogDelegateView::CreatePassKey(),
-      NonClientFrameViewAsh::Get(w0.get()), views::BubbleBorder::TOP_RIGHT);
+      views::BubbleDialogDelegateView::CreatePassKey(), nullptr,
+      views::BubbleBorder::NONE);
 
   // The line below is essential to make sure that the bubble doesn't get closed
   // when entering overview.
@@ -5962,13 +5959,14 @@ TEST_F(SnapGroupOverviewTest, HideBubbleTransientInOverview) {
       CreateTransientChildWindow(w1.get(), gfx::Rect(510, 30, 50, 30)));
   wm::AddTransientChild(w1.get(), w1_transient.get());
 
-  // Verify that bubble transient windows are hidden on entering Overview mode.
+  // Verify that bubble transient windows are visible on entering Overview mode.
   ToggleOverview();
   ASSERT_TRUE(IsInOverviewSession());
-  EXPECT_FALSE(bubble_window0->IsVisible());
+  EXPECT_TRUE(bubble_window0->IsVisible());
   EXPECT_TRUE(w1_transient->IsVisible());
 
-  // Verify that bubble transient windows reappear on exiting Overview mode.
+  // Verify that bubble transient windows are still visible on exiting Overview
+  // mode.
   ToggleOverview();
   ASSERT_FALSE(IsInOverviewSession());
 
@@ -6084,14 +6082,12 @@ TEST_F(SnapGroupDesksTest,
 
   // Create a dummy view for the bubble, adding it to the `w0`.
   views::Widget* w0_widget = views::Widget::GetWidgetForNativeWindow(w0.get());
-  auto* child_view =
-      w0_widget->GetRootView()->AddChildView(std::make_unique<views::View>());
-  child_view->SetBounds(100, 10, 20, 20);
 
-  // Create a bubble widget that's anchored to `w0`.
+  // Create a bubble widget that's anchored to `w0` without anchor.
   auto bubble_delegate = std::make_unique<views::BubbleDialogDelegateView>(
-      views::BubbleDialogDelegateView::CreatePassKey(), child_view,
-      views::BubbleBorder::TOP_RIGHT);
+      views::BubbleDialogDelegateView::CreatePassKey(), nullptr,
+      views::BubbleBorder::NONE);
+  bubble_delegate->set_parent_window(w0_widget->GetNativeWindow());
 
   // The line below is essential to make sure that the bubble doesn't get closed
   // when entering overview.

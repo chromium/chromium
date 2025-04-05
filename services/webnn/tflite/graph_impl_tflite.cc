@@ -283,6 +283,7 @@ class GraphImplTflite::ComputeResources {
 // static
 base::expected<std::unique_ptr<GraphImplTflite>, mojom::ErrorPtr>
 GraphImplTflite::CreateAndBuild(
+    mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
     mojom::GraphInfoPtr graph_info,
     ComputeResourceInfo compute_resource_info,
     base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
@@ -307,22 +308,26 @@ GraphImplTflite::CreateAndBuild(
   auto compute_resources_state =
       base::MakeRefCounted<QueueableResourceState<ComputeResources>>(
           std::move(compute_resources));
-  return base::WrapUnique(new GraphImplTflite(
-      std::move(compute_resource_info), std::move(result.input_name_to_index),
-      std::move(result.output_name_to_index),
-      std::move(compute_resources_state), context));
+  return base::WrapUnique(
+      new GraphImplTflite(std::move(receiver), std::move(compute_resource_info),
+                          std::move(result.input_name_to_index),
+                          std::move(result.output_name_to_index),
+                          std::move(compute_resources_state), context));
 }
 
 GraphImplTflite::~GraphImplTflite() = default;
 
 GraphImplTflite::GraphImplTflite(
+    mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
     ComputeResourceInfo compute_resource_info,
     base::flat_map<std::string, int> input_name_to_index,
     base::flat_map<std::string, int> output_name_to_index,
     scoped_refptr<QueueableResourceState<ComputeResources>>
         compute_resources_state,
     ContextImplTflite* context)
-    : WebNNGraphImpl(context, std::move(compute_resource_info)),
+    : WebNNGraphImpl(std::move(receiver),
+                     context,
+                     std::move(compute_resource_info)),
       compute_resources_state_(std::move(compute_resources_state)),
       input_name_to_index_(std::move(input_name_to_index)),
       output_name_to_index_(std::move(output_name_to_index)) {}

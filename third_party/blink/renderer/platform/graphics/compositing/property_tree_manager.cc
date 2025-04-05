@@ -1364,16 +1364,18 @@ void PropertyTreeManager::UpdateConditionalRenderSurfaceReasons(
           cc::RenderSurfaceReason::k2DScaleTransformWithCompositedDescendants;
     }
 
+    // The conditional render surface can be omitted because it controls less
+    // than two layers or render surfaces.
     if (effect_layer_counts[id] < 2 &&
-        IsConditionalRenderSurfaceReason(effect->render_surface_reason) &&
-        // kBlendModeDstIn should create a render surface if the mask itself
-        // has any child render surface.
-        !(effect->render_surface_reason ==
-              cc::RenderSurfaceReason::kBlendModeDstIn &&
-          has_child_surface[id])) {
-      // The conditional render surface can be omitted because it controls less
-      // than two layers or render surfaces.
-      effect->render_surface_reason = cc::RenderSurfaceReason::kNone;
+        IsConditionalRenderSurfaceReason(effect->render_surface_reason)) {
+      // However, kBlendModeDstIn should create a render surface if the mask
+      // itself has any child render surface or we have fast rounded corner and
+      // a mask on the same effect node.
+      if (effect->render_surface_reason !=
+              cc::RenderSurfaceReason::kBlendModeDstIn ||
+          !(has_child_surface[id] || effect->is_fast_rounded_corner)) {
+        effect->render_surface_reason = cc::RenderSurfaceReason::kNone;
+      }
     }
 
     // We should not have visited the parent.

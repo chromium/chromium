@@ -159,6 +159,7 @@ TEST_F(ImageButtonFactoryWidgetTest, ToggleImageButtonTooltiptext) {
   const std::u16string untoggled_text(u"untoggled_text");
   const std::u16string toggled_tooltip_text(u"toggled_tooltip_text");
   const std::u16string toggled_tooltip_empty_text(u"");
+  const std::u16string toggled_new_tooltip_text(u"New Tooltip Text");
 
   std::unique_ptr<ToggleImageButton> toggle_image_button =
       CreateVectorToggleImageButton(Button::PressedCallback());
@@ -184,9 +185,14 @@ TEST_F(ImageButtonFactoryWidgetTest, ToggleImageButtonTooltiptext) {
   EXPECT_EQ(toggle_image_button->GetRenderedTooltipText(gfx::Point()),
             untoggled_text);
 
-  toggle_image_button->SetToggledTooltipText(u"New Tooltip Text");
+  toggle_image_button->SetToggledTooltipText(toggled_new_tooltip_text);
   EXPECT_EQ(toggle_image_button->GetRenderedTooltipText(gfx::Point()),
-            u"New Tooltip Text");
+            toggled_new_tooltip_text);
+
+  toggle_image_button->SetTooltipText(untoggled_text);
+  toggle_image_button->SetToggledTooltipText(toggled_new_tooltip_text);
+  EXPECT_EQ(toggle_image_button->GetRenderedTooltipText(gfx::Point()),
+            toggled_new_tooltip_text);
 }
 
 TEST_F(ImageButtonFactoryWidgetTest,

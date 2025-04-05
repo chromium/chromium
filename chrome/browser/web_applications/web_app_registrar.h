@@ -325,6 +325,7 @@ class WebAppRegistrar {
   base::Time GetAppLastBadgingTime(const webapps::AppId& app_id) const;
   base::Time GetAppLastLaunchTime(const webapps::AppId& app_id) const;
   base::Time GetAppFirstInstallTime(const webapps::AppId& app_id) const;
+  base::Time GetAppLatestInstallTime(const webapps::AppId& app_id) const;
 
   std::optional<webapps::WebappInstallSource> GetLatestAppInstallSource(
       const webapps::AppId& app_id) const;

@@ -9,6 +9,8 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -19,6 +21,7 @@ import java.util.Set;
  * calls are delegated to the native C++ class.
  */
 @JNINamespace("segmentation_platform")
+@NullMarked
 public class SegmentationPlatformServiceImpl implements SegmentationPlatformService {
     private long mNativePtr;
 
@@ -42,7 +45,7 @@ public class SegmentationPlatformServiceImpl implements SegmentationPlatformServ
     public void getClassificationResult(
             String segmentationKey,
             PredictionOptions predictionOptions,
-            InputContext inputContext,
+            @Nullable InputContext inputContext,
             Callback<ClassificationResult> callback) {
         SegmentationPlatformServiceImplJni.get()
                 .getClassificationResult(
@@ -101,7 +104,7 @@ public class SegmentationPlatformServiceImpl implements SegmentationPlatformServ
                 SegmentationPlatformServiceImpl caller,
                 String segmentationKey,
                 PredictionOptions predictionOptions,
-                InputContext inputContext,
+                @Nullable InputContext inputContext,
                 Callback<ClassificationResult> callback);
 
         SegmentSelectionResult getCachedSegmentResult(

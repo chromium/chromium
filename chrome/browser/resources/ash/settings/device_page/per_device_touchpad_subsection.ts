@@ -127,7 +127,7 @@ export class SettingsPerDeviceTouchpadSubsectionElement extends
         },
       },
 
-      simulateRightClickOptions: {
+      simulateRightClickOptions_: {
         readOnly: true,
         type: Array,
         value() {
@@ -191,24 +191,6 @@ export class SettingsPerDeviceTouchpadSubsectionElement extends
 
       touchpad: {type: Object},
 
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kTouchpadTapToClick,
-          Setting.kTouchpadTapDragging,
-          Setting.kTouchpadReverseScrolling,
-          Setting.kTouchpadAcceleration,
-          Setting.kTouchpadScrollAcceleration,
-          Setting.kTouchpadSpeed,
-          Setting.kTouchpadHapticFeedback,
-          Setting.kTouchpadHapticClickSensitivity,
-          Setting.kTouchpadSimulateRightClick,
-        ]),
-      },
-
       touchpadIndex: {
         type: Number,
       },
@@ -259,6 +241,19 @@ export class SettingsPerDeviceTouchpadSubsectionElement extends
     }
   }
 
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kTouchpadTapToClick,
+    Setting.kTouchpadTapDragging,
+    Setting.kTouchpadReverseScrolling,
+    Setting.kTouchpadAcceleration,
+    Setting.kTouchpadScrollAcceleration,
+    Setting.kTouchpadSpeed,
+    Setting.kTouchpadHapticFeedback,
+    Setting.kTouchpadHapticClickSensitivity,
+    Setting.kTouchpadSimulateRightClick,
+  ]);
+
   private touchpad: Touchpad;
   private enableTapToClickPref: chrome.settingsPrivate.PrefObject;
   private enableTapDraggingPref: chrome.settingsPrivate.PrefObject;
@@ -276,6 +271,11 @@ export class SettingsPerDeviceTouchpadSubsectionElement extends
   isAltClickAndSixPackCustomizationEnabled: boolean;
   protected mice: Mouse[];
   private mouseSettingsObserverReceiver: MouseSettingsObserverReceiver;
+  private readonly hapticClickSensitivityValues_:
+      Array<{value: number, ariaValue: number}>;
+  private readonly sensitivityValues_: number[];
+  private readonly simulateRightClickOptions_:
+      Array<{value: number, name: string}>;
 
   constructor() {
     super();

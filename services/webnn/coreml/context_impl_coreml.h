@@ -41,6 +41,7 @@ class API_AVAILABLE(macos(14.0)) ContextImplCoreml final
 
  private:
   void CreateGraphImpl(
+      mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
       mojom::GraphInfoPtr graph_info,
       WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
       base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>

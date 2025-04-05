@@ -55,6 +55,27 @@ impl From<Uint24> for usize {
     }
 }
 
+/// Indicates an error converting an integer value into a Uint24 due to overflow.
+#[derive(Debug)]
+pub struct TryFromUint24Error;
+
+impl std::fmt::Display for TryFromUint24Error {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "failed to convert usize value into Uint24.")
+    }
+}
+
+impl std::error::Error for TryFromUint24Error {}
+
+impl TryFrom<usize> for Uint24 {
+    type Error = TryFromUint24Error;
+
+    fn try_from(value: usize) -> Result<Self, Self::Error> {
+        let u32_value = u32::try_from(value).map_err(|_| TryFromUint24Error)?;
+        Uint24::checked_new(u32_value).ok_or(TryFromUint24Error)
+    }
+}
+
 impl std::fmt::Display for Uint24 {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         self.0.fmt(f)

@@ -14,6 +14,8 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.Px;
+
 import org.chromium.build.annotations.NullMarked;
 
 /** View logic for SharedImageTiles component. */
@@ -42,31 +44,26 @@ public class SharedImageTilesView extends LinearLayout {
     }
 
     void applyConfig(SharedImageTilesConfig config) {
-        int iconTotalSizePx =
-                mContext.getResources().getDimensionPixelSize(config.iconSizeDp)
-                        + 2 * mContext.getResources().getDimensionPixelSize(config.borderSizeDp);
-        int textPaddingPx = mContext.getResources().getDimensionPixelSize(config.textPaddingDp);
+        Resources res = mContext.getResources();
+        @Px int borderSize = res.getDimensionPixelSize(config.borderSizeDp);
+        @Px int iconTotalSize = res.getDimensionPixelSize(config.iconSizeDp) + 2 * borderSize;
+        @Px int textPadding = res.getDimensionPixelSize(config.textPaddingDp);
 
         // Style the icon tiles.
         for (int i = 0; i < getChildCount(); i++) {
             ViewGroup viewGroup = (ViewGroup) getChildAt(i);
-            viewGroup.getLayoutParams().height = iconTotalSizePx;
-            viewGroup.setMinimumWidth(iconTotalSizePx);
+            viewGroup.getLayoutParams().height = iconTotalSize;
+            viewGroup.setMinimumWidth(iconTotalSize);
             GradientDrawable drawable = (GradientDrawable) viewGroup.getBackground();
             drawable.setColor(config.backgroundColor);
-            drawable.setStroke(
-                    mContext.getResources().getDimensionPixelSize(config.borderSizeDp),
-                    config.borderColor);
+            drawable.setStroke(borderSize, config.borderColor);
         }
 
         // Style the number tile.
         mCountTileView.setTextColor(config.textColor);
         mCountTileView.setTextAppearance(config.textStyle);
         mCountTileView.setPadding(
-                /* left= */ textPaddingPx,
-                /* top= */ 0,
-                /* right= */ textPaddingPx,
-                /* bottom= */ 0);
+                /* left= */ textPadding, /* top= */ 0, /* right= */ textPadding, /* bottom= */ 0);
     }
 
     void resetIconTiles(int count) {

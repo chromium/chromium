@@ -122,8 +122,11 @@ interface AILanguageModelMeasureInputUsageClient {
 // A session for prompting a model with inputs to obtain streaming responses.
 interface AILanguageModel {
   // Prompts the model with arbitrary content provided via the JavaScript API.
+  // A JSON schema can be provided to define structured output requirements
+  // for the response. The schema is optional, and is expected to be valid JSON.
   Prompt(
     array<AILanguageModelPrompt> prompts,
+    string? response_json_schema,
     pending_remote<ModelStreamingResponder> pending_responder
   );
   // Creates a new session with the same configuration and existing context

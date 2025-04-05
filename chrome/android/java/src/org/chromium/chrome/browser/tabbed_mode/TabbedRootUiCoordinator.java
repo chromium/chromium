@@ -114,6 +114,7 @@ import org.chromium.chrome.browser.ntp.NewTabPageUtils;
 import org.chromium.chrome.browser.offlinepages.indicator.OfflineIndicatorControllerV2;
 import org.chromium.chrome.browser.offlinepages.indicator.OfflineIndicatorInProductHelpController;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
+import org.chromium.chrome.browser.pdf.PdfPageIphController;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.privacy_sandbox.ActivityTypeMapper;
@@ -224,6 +225,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private ReadAloudIphController mReadAloudIphController;
     private ReadLaterIphController mReadLaterIphController;
     private DesktopSiteSettingsIphController mDesktopSiteSettingsIphController;
+    private PdfPageIphController mPdfPageIphController;
     private RtlGestureNavIphController mRtlGestureNavIphController;
     private WebFeedFollowIntroController mWebFeedFollowIntroController;
     private UrlFocusChangeListener mUrlFocusChangeListener;
@@ -607,6 +609,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         if (mDesktopSiteSettingsIphController != null) {
             mDesktopSiteSettingsIphController.destroy();
             mDesktopSiteSettingsIphController = null;
+        }
+
+        if (mPdfPageIphController != null) {
+            mPdfPageIphController.destroy();
+            mPdfPageIphController = null;
         }
 
         if (mRtlGestureNavIphController != null) {
@@ -1096,13 +1103,23 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         mAppMenuCoordinator.getAppMenuHandler(),
                         R.id.manage_all_windows_menu_id);
             }
-            DesktopSiteSettingsIphController.create(
-                    mActivity,
-                    mWindowAndroid,
-                    mActivityTabProvider,
-                    profile,
-                    getToolbarManager().getMenuButtonView(),
-                    mAppMenuCoordinator.getAppMenuHandler());
+            mDesktopSiteSettingsIphController =
+                    DesktopSiteSettingsIphController.create(
+                            mActivity,
+                            mWindowAndroid,
+                            mActivityTabProvider,
+                            profile,
+                            getToolbarManager().getMenuButtonView(),
+                            mAppMenuCoordinator.getAppMenuHandler());
+            mPdfPageIphController =
+                    PdfPageIphController.create(
+                            mActivity,
+                            mWindowAndroid,
+                            mActivityTabProvider,
+                            profile,
+                            getToolbarManager().getMenuButtonView(),
+                            mAppMenuCoordinator.getAppMenuHandler(),
+                            /* isBrowserApp= */ true);
         }
         mPromoShownOneshotSupplier.set(didTriggerPromo);
 

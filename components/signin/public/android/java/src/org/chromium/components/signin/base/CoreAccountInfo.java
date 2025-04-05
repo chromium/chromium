@@ -8,6 +8,7 @@ import android.accounts.Account;
 
 import org.jni_zero.CalledByNative;
 
+import org.chromium.build.annotations.Contract;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.signin.AccountUtils;
@@ -86,6 +87,7 @@ public class CoreAccountInfo {
      *
      * @return {@link Account} for the argument if it is not null, null otherwise.
      */
+    @Contract("!null -> !null")
     public static @Nullable Account getAndroidAccountFrom(@Nullable CoreAccountInfo accountInfo) {
         return accountInfo == null
                 ? null
@@ -97,6 +99,7 @@ public class CoreAccountInfo {
      *
      * @return {@link #getId()} for the argument if it is not null, null otherwise.
      */
+    @Contract("!null -> !null")
     public static @Nullable CoreAccountId getIdFrom(@Nullable CoreAccountInfo accountInfo) {
         return accountInfo == null ? null : accountInfo.getId();
     }
@@ -106,6 +109,7 @@ public class CoreAccountInfo {
      *
      * @return {@link #getEmail()} for the argument if it is not null, null otherwise.
      */
+    @Contract("!null -> !null")
     public static @Nullable String getEmailFrom(@Nullable CoreAccountInfo accountInfo) {
         return accountInfo == null ? null : accountInfo.getEmail();
     }
@@ -115,6 +119,7 @@ public class CoreAccountInfo {
      *
      * @return {@link #getGaiaId()} ()} for the argument if it is not null, null otherwise.
      */
+    @Contract("!null -> !null")
     public static @Nullable GaiaId getGaiaIdFrom(@Nullable CoreAccountInfo accountInfo) {
         return accountInfo == null ? null : accountInfo.getGaiaId();
     }

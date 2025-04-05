@@ -120,10 +120,6 @@ void SafeBrowsingLoudErrorUI::PopulateStringsForHtml(
       break;
   }
 
-  // Not used by this interstitial.
-  load_time_data.Set("recurrentErrorParagraph", "");
-  load_time_data.Set("show_recurrent_error_paragraph", false);
-
   PopulateExtendedReportingOption(load_time_data);
   PopulateEnhancedProtectionMessage(load_time_data);
 }

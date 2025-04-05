@@ -19,10 +19,6 @@
 #include "services/network/public/cpp/network_connection_tracker.h"
 #include "services/network/public/mojom/network_change_manager.mojom.h"
 
-namespace base {
-class Time;
-}  // namespace base
-
 namespace content {
 
 // This class consolidates logic regarding when to schedule the browser to send
@@ -63,6 +59,11 @@ class CONTENT_EXPORT ReportSchedulerTimer
 
   explicit ReportSchedulerTimer(std::unique_ptr<Delegate> delegate);
 
+  // Initiates the timer with navigation properties, firing report sends only
+  // if there's a recent enough navigation to support the send.
+  ReportSchedulerTimer(std::unique_ptr<Delegate> delegate,
+                       base::TimeDelta navigation_window);
+
   ReportSchedulerTimer(const ReportSchedulerTimer&) = delete;
   ReportSchedulerTimer& operator=(const ReportSchedulerTimer&) = delete;
   ReportSchedulerTimer(ReportSchedulerTimer&&) = delete;
@@ -75,6 +76,10 @@ class CONTENT_EXPORT ReportSchedulerTimer
   // Schedules `reporting_time_reached_timer_` to fire at that time, unless the
   // timer is already set to fire earlier.
   void MaybeSet(std::optional<base::Time> reporting_time);
+
+  // Updates `last_navigation_time_` and notifies delegate if any report was
+  // pending.
+  void OnNewNavigation();
 
  private:
   void OnTimerFired();
@@ -89,6 +94,10 @@ class CONTENT_EXPORT ReportSchedulerTimer
   void OnConnectionChanged(network::mojom::ConnectionType) final;
 
   bool IsOffline() const VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  bool IsNavigationFeatureEnabled() const {
+    return navigation_window_.has_value();
+  }
 
   // Fires whenever a reporting time is reached for a report. Must be updated
   // whenever the next report time changes.
@@ -105,6 +114,12 @@ class CONTENT_EXPORT ReportSchedulerTimer
       network::NetworkConnectionTracker,
       network::NetworkConnectionTracker::NetworkConnectionObserver>
       obs_ GUARDED_BY_CONTEXT(sequence_checker_){this};
+
+  std::optional<base::Time> last_navigation_time_;
+
+  std::optional<base::TimeDelta> navigation_window_;
+
+  bool standby_mode_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

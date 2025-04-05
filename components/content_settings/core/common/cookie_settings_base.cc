@@ -33,6 +33,8 @@
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/cookies/static_cookie_policy.h"
+#include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -127,6 +129,30 @@ bool IsEligibleForStorageAccess(net::CookieSettingOverrides overrides) {
              net::CookieSettingOverride::kStorageAccessGrantEligible) ||
          overrides.Has(
              net::CookieSettingOverride::kStorageAccessGrantEligibleViaHeader);
+}
+
+// Returns true if the `permissions_policy` allows the "storage-access" feature
+// for the `url`.
+bool IsStorageAccessAllowedByPermissionsPolicy(
+    const url::Origin& origin,
+    base::optional_ref<const network::PermissionsPolicy> permissions_policy) {
+  // TODO(crbug.com/382291442): Remove feature guarding once launched.
+  // If these features are not enabled, return true to maintain the existing
+  // behavior.
+  if (!base::FeatureList::IsEnabled(
+          network::features::kPopulatePermissionsPolicyOnRequest) ||
+      !base::FeatureList::IsEnabled(
+          network::features::kStorageAccessHeadersRespectPermissionsPolicy)) {
+    return true;
+  }
+
+  // TODO(crbug.com/382291442): Once the feature guarding is removed, change the
+  // function argument to a required `network::PermissionsPolicy` and move the
+  // `CHECK` to the caller.
+  CHECK(permissions_policy.has_value());
+
+  return permissions_policy->IsFeatureEnabledForOrigin(
+      network::mojom::PermissionsPolicyFeature::kStorageAccessAPI, origin);
 }
 
 }  // namespace
@@ -804,7 +830,9 @@ CookieSettingsBase::GetStorageAccessStatus(
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
     base::optional_ref<const url::Origin> top_frame_origin,
-    net::CookieSettingOverrides overrides) const {
+    net::CookieSettingOverrides overrides,
+    base::optional_ref<const network::PermissionsPolicy> permissions_policy)
+    const {
   if (!IsThirdPartyRequest(url, site_for_cookies)) {
     return std::nullopt;
   }
@@ -813,6 +841,10 @@ CookieSettingsBase::GetStorageAccessStatus(
     return net::cookie_util::StorageAccessStatus::kActive;
   }
   if (IsEligibleForStorageAccess(overrides)) {
+    return net::cookie_util::StorageAccessStatus::kNone;
+  }
+  if (!IsStorageAccessAllowedByPermissionsPolicy(url::Origin::Create(url),
+                                                 permissions_policy)) {
     return net::cookie_util::StorageAccessStatus::kNone;
   }
   if (IsFullCookieAccessAllowed(

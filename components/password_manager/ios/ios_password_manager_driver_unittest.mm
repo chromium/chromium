@@ -116,8 +116,8 @@ TEST_F(IOSPasswordManagerDriverTest, IsInPrimaryMainFrame) {
   ASSERT_FALSE(driver2_->IsInPrimaryMainFrame());
 }
 
-// Tests the SetPasswordFillData method.
-TEST_F(IOSPasswordManagerDriverTest, SetPasswordFillData) {
+// Tests the PropagateFillDataOnParsingCompletion method.
+TEST_F(IOSPasswordManagerDriverTest, PropagateFillDataOnParsingCompletion) {
   autofill::PasswordFormFillData form_data;
 
   OCMExpect([[password_controller_ ignoringNonObjectArgs]
@@ -126,7 +126,7 @@ TEST_F(IOSPasswordManagerDriverTest, SetPasswordFillData) {
                                 isMainFrame:driver_->IsInPrimaryMainFrame()
                           forSecurityOrigin:driver_->security_origin()])
       .andCompareStringAtIndex(driver_->web_frame_id(), 1);
-  driver_->SetPasswordFillData(form_data);
+  driver_->PropagateFillDataOnParsingCompletion(form_data);
 
   EXPECT_OCMOCK_VERIFY(password_controller_);
 }

@@ -11,9 +11,12 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.webapk.lib.common.WebApkConstants;
 
 /** Contains methods for launching host browser. */
+@NullMarked
 public class HostBrowserLauncher {
     private static final String TAG = "cr_HostBrowserLauncher";
 
@@ -34,7 +37,7 @@ public class HostBrowserLauncher {
     public static void launchBrowserInWebApkModeIfSupported(
             Activity activity,
             HostBrowserLauncherParams params,
-            Bundle extraExtras,
+            @Nullable Bundle extraExtras,
             int flags,
             boolean expectResult) {
         ManageDataLauncherActivity.updateSiteSettingsShortcut(

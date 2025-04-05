@@ -8,7 +8,6 @@
 #import <Foundation/Foundation.h>
 
 class Browser;
-@protocol DiscoverFeedManageDelegate;
 @protocol DiscoverFeedPreviewDelegate;
 @protocol FeedSignInPromoDelegate;
 @protocol UIScrollViewDelegate;
@@ -25,9 +24,6 @@ class Browser;
 
 // DiscoverFeedPreviewDelegate used by Discover Feed ViewController.
 @property(nonatomic, weak) id<DiscoverFeedPreviewDelegate> previewDelegate;
-
-// DiscoverFeedManageDelegate used by Discover Feed ViewController.
-@property(nonatomic, weak) id<DiscoverFeedManageDelegate> manageDelegate;
 
 // FeedSignInPromoDelegate used by Discover Feed ViewController.
 @property(nonatomic, weak) id<FeedSignInPromoDelegate> signInPromoDelegate;

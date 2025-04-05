@@ -110,6 +110,7 @@ include_rules = [
     "+ui/accessibility/ax_event.h",
     "+ui/accessibility/ax_event_intent.h",
     "+ui/accessibility/ax_mode.h",
+    "+ui/base/clipboard/clipboard_constants.h",
     "+ui/base/cursor/cursor.h",
     "+ui/base/ime/ime_text_span.h",
     "+ui/base/ime/mojom/ime_types.mojom-blink-forward.h",

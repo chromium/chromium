@@ -29,45 +29,10 @@ namespace autofill {
 
 namespace {
 
-constexpr auto kEncodingInfo = std::to_array<RandomizedEncoder::EncodingInfo>(
-    {// One bit per byte. These all require 8 bytes to encode and have 8-bit
-     // strides, starting from a different initial bit offset.
-     {AutofillRandomizedValue_EncodingType_BIT_0, 8, 0, 8},
-     {AutofillRandomizedValue_EncodingType_BIT_1, 8, 1, 8},
-     {AutofillRandomizedValue_EncodingType_BIT_2, 8, 2, 8},
-     {AutofillRandomizedValue_EncodingType_BIT_3, 8, 3, 8},
-     {AutofillRandomizedValue_EncodingType_BIT_4, 8, 4, 8},
-     {AutofillRandomizedValue_EncodingType_BIT_5, 8, 5, 8},
-     {AutofillRandomizedValue_EncodingType_BIT_6, 8, 6, 8},
-     {AutofillRandomizedValue_EncodingType_BIT_7, 8, 7, 8},
-     // Four bits per byte. These require 32 bytes to encode and have 2-bit
-     // strides/
-     {AutofillRandomizedValue_EncodingType_EVEN_BITS, 32, 0, 2},
-     {AutofillRandomizedValue_EncodingType_ODD_BITS, 32, 1, 2},
-     // All bits per byte. This require 64 bytes to encode and has a 1-bit
-     // stride.
-     {AutofillRandomizedValue_EncodingType_ALL_BITS, 64, 0, 1}});
-
 // Size related constants.
 constexpr size_t kBitsPerByte = 8;
 constexpr size_t kEncodedChunkLengthInBytes = 64;
 constexpr size_t kMaxChunks = 8;
-
-// Find the EncodingInfo struct for |encoding_type|, else return nullptr.
-constexpr const RandomizedEncoder::EncodingInfo* GetEncodingInfo(
-    AutofillRandomizedValue_EncodingType encoding_type) {
-  static_assert(
-      std::ranges::is_sorted(kEncodingInfo, std::less<>{},
-                             &RandomizedEncoder::EncodingInfo::encoding_type));
-
-  const auto encode_info =
-      std::ranges::lower_bound(kEncodingInfo, encoding_type, std::less<>{},
-                               &RandomizedEncoder::EncodingInfo::encoding_type);
-  return (encode_info != kEncodingInfo.end() &&
-          encode_info->encoding_type == encoding_type)
-             ? &*encode_info
-             : nullptr;
-}
 
 // Get the |i|-th bit of |s| where |i| counts up from the 0-bit of the first
 // character in |s|. It is expected that the caller guarantees that |i| is a
@@ -149,21 +114,21 @@ std::string GetEncodingSeed(PrefService* pref_service) {
 }  // namespace
 
 // static
-std::unique_ptr<RandomizedEncoder> RandomizedEncoder::Create(
+std::optional<RandomizedEncoder> RandomizedEncoder::Create(
     PrefService* pref_service) {
   // Early abort if metadata uploads are not enabled.
   if (!pref_service) {
-    return nullptr;
+    return std::nullopt;
   }
 
-  // Return the randomized encoder. Note that for a given client, the seed and
-  // encoding type are constant via prefs/config.
-  const auto seed = GetEncodingSeed(pref_service);
-  const auto encoding_type = GetEncodingType(seed);
+  // For a given `pref_service`, the seed and encoding type are constant.
+  std::string seed = GetEncodingSeed(pref_service);
+  const AutofillRandomizedValue_EncodingType encoding_type =
+      GetEncodingType(seed);
   bool anonymous_url_collection_is_enabled = pref_service->GetBoolean(
       RandomizedEncoder::kUrlKeyedAnonymizedDataCollectionEnabled);
-  return std::make_unique<RandomizedEncoder>(
-      std::move(seed), encoding_type, anonymous_url_collection_is_enabled);
+  return RandomizedEncoder(std::move(seed), encoding_type,
+                           anonymous_url_collection_is_enabled);
 }
 
 RandomizedEncoder::RandomizedEncoder(
@@ -171,20 +136,64 @@ RandomizedEncoder::RandomizedEncoder(
     AutofillRandomizedValue_EncodingType encoding_type,
     bool anonymous_url_collection_is_enabled)
     : seed_(std::move(seed)),
-      encoding_info_(GetEncodingInfo(encoding_type)),
+      encoding_type_(encoding_type),
       anonymous_url_collection_is_enabled_(
           anonymous_url_collection_is_enabled) {
-  DCHECK(encoding_info_ != nullptr);
+  DCHECK(AutofillRandomizedValue_EncodingType_IsValid(encoding_type_));
+  DCHECK_NE(encoding_type_,
+            AutofillRandomizedValue_EncodingType_UNSPECIFIED_ENCODING_TYPE);
+}
+
+RandomizedEncoder::RandomizedEncoder(RandomizedEncoder&&) = default;
+RandomizedEncoder& RandomizedEncoder::operator=(RandomizedEncoder&&) = default;
+RandomizedEncoder::~RandomizedEncoder() = default;
+
+const RandomizedEncoder::EncodingInfo& RandomizedEncoder::encoding_info()
+    const {
+  // Lookup table AutofillRandomizedValue_EncodingType --> EncodingInfo.
+  static constexpr auto kEncodingInfo =
+      std::to_array<RandomizedEncoder::EncodingInfo>(
+          {// One bit per byte. These all require 8 bytes to encode and have
+           // 8-bit strides, starting from a different initial bit offset.
+           {8, 0, 8},
+           {8, 1, 8},
+           {8, 2, 8},
+           {8, 3, 8},
+           {8, 4, 8},
+           {8, 5, 8},
+           {8, 6, 8},
+           {8, 7, 8},
+           // Four bits per byte. These require 32 bytes to encode and have
+           // 2-bit strides.
+           {32, 0, 2},
+           {32, 1, 2},
+           // All bits per byte. This require 64 bytes to encode and has a 1-bit
+           // stride.
+           {64, 0, 1}});
+
+  // Assert that our array represents all enum constants except for
+  // AutofillRandomizedValue_EncodingType_UNSPECIFIED_ENCODING_TYPE.
+  static_assert([]() {
+    constexpr int kMin = AutofillRandomizedValue_EncodingType_EncodingType_MIN;
+    constexpr int kMax = AutofillRandomizedValue_EncodingType_EncodingType_MAX;
+    constexpr int kUnspecified =
+        AutofillRandomizedValue_EncodingType_UNSPECIFIED_ENCODING_TYPE;
+    for (int i = kMin; i <= kMax; ++i) {
+      if (i != kUnspecified &&
+          (i < 0 || i >= static_cast<int>(kEncodingInfo.size()))) {
+        return false;
+      }
+    }
+    return true;
+  }());
+
+  return kEncodingInfo[encoding_type_];
 }
 
 std::string RandomizedEncoder::Encode(FormSignature form_signature,
                                       FieldSignature field_signature,
                                       std::string_view data_type,
                                       std::string_view data_value) const {
-  if (!encoding_info_) {
-    NOTREACHED();
-  }
-
   size_t chunk_count = GetChunkCount(data_value, data_type);
   size_t padded_input_length_in_bytes =
       chunk_count * kEncodedChunkLengthInBytes;
@@ -206,8 +215,7 @@ std::string RandomizedEncoder::Encode(FormSignature form_signature,
   // For each bit, the encoded value is the true value if the coin-toss is TRUE
   // or the noise value if the coin-toss is FALSE. All the bits in a given byte
   // can be computed in parallel. The trailing bytes are all noise.
-  if (encoding_info_->encoding_type ==
-      AutofillRandomizedValue_EncodingType_ALL_BITS) {
+  if (encoding_type_ == AutofillRandomizedValue_EncodingType_ALL_BITS) {
     std::string all_bits = std::move(noise);
     const size_t value_length =
         std::min(data_value.length(), padded_input_length_in_bytes);
@@ -221,18 +229,18 @@ std::string RandomizedEncoder::Encode(FormSignature form_signature,
   }
 
   // Otherwise, pack the select the subset of bits into an output buffer.
-  // This encodes every |encoding_info_->bit_stride| bit starting from
-  // |encoding_info_->bit_offset|.
+  // This encodes every |encoding_info().bit_stride| bit starting from
+  // |encoding_info().bit_offset|.
   //
   // For each bit, the encoded value is the true value if the coin-toss is TRUE
   // or the noise value if the coin-toss is FALSE. All the bits in a given byte
   // can be computed in parallel. The trailing bytes are all noise.
   const size_t output_length_in_bytes =
-      encoding_info_->chunk_length_in_bytes * chunk_count;
+      encoding_info().chunk_length_in_bytes * chunk_count;
   std::string output(output_length_in_bytes, 0);
   const size_t value_length_in_bits = data_value.length() * kBitsPerByte;
   size_t dst_offset = 0;
-  size_t src_offset = encoding_info_->bit_offset;
+  size_t src_offset = encoding_info().bit_offset;
   while (src_offset < padded_input_length_in_bits) {
     uint8_t output_bit = GetBit(noise, src_offset);
     if (src_offset < value_length_in_bits) {
@@ -241,12 +249,12 @@ std::string RandomizedEncoder::Encode(FormSignature form_signature,
       output_bit = ((coin_bit & data_bit) | (~coin_bit & output_bit));
     }
     SetBit(dst_offset, output_bit, &output);
-    src_offset += encoding_info_->bit_stride;
+    src_offset += encoding_info().bit_stride;
     dst_offset += 1;
   }
 
   DCHECK_EQ(dst_offset,
-            encoding_info_->chunk_length_in_bytes * chunk_count * kBitsPerByte);
+            encoding_info().chunk_length_in_bytes * chunk_count * kBitsPerByte);
   return output;
 }
 

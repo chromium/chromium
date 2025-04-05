@@ -170,7 +170,7 @@ bool AcceleratedStaticBitmapImage::CopyToTexture(
     GLenum dest_target,
     GLuint dest_texture_id,
     GLint dest_level,
-    bool unpack_premultiply_alpha,
+    SkAlphaType dest_alpha_type,
     GrSurfaceOrigin destination_origin,
     const gfx::Point& dest_point,
     const gfx::Rect& src_rect) {
@@ -188,9 +188,9 @@ bool AcceleratedStaticBitmapImage::CopyToTexture(
   auto source_scoped_si_access = source_si_texture->BeginAccess(
       mailbox_ref_->sync_token(), /*readonly=*/true);
   const bool do_alpha_multiply = GetAlphaType() == kUnpremul_SkAlphaType &&
-                                 unpack_premultiply_alpha == true;
+                                 dest_alpha_type == kPremul_SkAlphaType;
   const bool do_alpha_unmultiply = GetAlphaType() == kPremul_SkAlphaType &&
-                                   unpack_premultiply_alpha == false;
+                                   dest_alpha_type == kUnpremul_SkAlphaType;
 
   // `src_rect` here is always in top-left coordinate space, but
   // CopySubTextureCHROMIUM source rect is in texture coordinate space, so we

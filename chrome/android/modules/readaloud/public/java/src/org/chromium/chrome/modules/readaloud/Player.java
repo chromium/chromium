@@ -6,11 +6,11 @@ package org.chromium.chrome.modules.readaloud;
 
 import android.app.Activity;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Promise;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -25,6 +25,7 @@ import org.chromium.components.prefs.PrefService;
 import java.util.List;
 
 /** This interface represents Read Aloud player UI. */
+@NullMarked
 public interface Player {
     /** Embedders of the Read Aloud player must provide a Delegate implementation. */
     interface Delegate {
@@ -98,8 +99,7 @@ public interface Player {
         ActivityLifecycleDispatcher getActivityLifecycleDispatcher();
 
         /** Return the current {@link Profile}. */
-        @Nullable
-        Profile getProfile();
+        @Nullable Profile getProfile();
 
         /** Return {@link UserEducationHelper} for requesting in-product-help. */
         UserEducationHelper getUserEducationHelper();

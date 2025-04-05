@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notimplemented.h"
 #include "base/trace_event/trace_event.h"
 #include "base/version.h"
 #include "build/build_config.h"
@@ -357,8 +358,7 @@ bool ExternalProviderManager::OnExternalExtensionUpdateUrlFound(
     // priority than |info.download_location|, and we aren't doing a
     // reinstall of a corrupt policy force-installed extension.
     ManifestLocation current = extension->location();
-    if (!CorruptedExtensionReinstaller::Get(context_)
-             ->IsReinstallForCorruptionExpected(info.extension_id) &&
+    if (!IsReinstallForCorruptionExpected(info.extension_id) &&
         current == Manifest::GetHigherPriorityLocation(
                        current, info.download_location)) {
       install_stage_tracker->ReportFailure(
@@ -415,8 +415,7 @@ bool ExternalProviderManager::OnExternalExtensionUpdateUrlFound(
       // set of extensions. If the extension is corrupted, it should be
       // reinstalled, thus it should be added to the pending extensions for
       // installation.
-      if (!CorruptedExtensionReinstaller::Get(context_)
-               ->IsReinstallForCorruptionExpected(info.extension_id)) {
+      if (!IsReinstallForCorruptionExpected(info.extension_id)) {
         return false;
       }
     }
@@ -512,4 +511,11 @@ void ExternalProviderManager::InstallationFromExternalFileFinished(
     pending_extension_manager_->Remove(extension_id);
   }
 }
+
+bool ExternalProviderManager::IsReinstallForCorruptionExpected(
+    const ExtensionId& id) const {
+  auto* reinstaller = CorruptedExtensionReinstaller::Get(context_);
+  return reinstaller->IsReinstallForCorruptionExpected(id);
+}
+
 }  // namespace extensions

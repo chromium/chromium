@@ -147,8 +147,14 @@ class MemorySaverDiscardPolicyInteractiveTest
 };
 
 // Check that a tab playing a video in the background won't be discarded
+// TODO(crbug.com/408399396): Re-enable flaky test on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_TabWithVideoNotDiscarded DISABLED_TabWithVideoNotDiscarded
+#else
+#define MAYBE_TabWithVideoNotDiscarded TabWithVideoNotDiscarded
+#endif
 IN_PROC_BROWSER_TEST_P(MemorySaverDiscardPolicyInteractiveTest,
-                       TabWithVideoNotDiscarded) {
+                       MAYBE_TabWithVideoNotDiscarded) {
   DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kVideoIsPlaying);
   const char kPlayVideo[] = "(el) => { el.play(); }";
   const DeepQuery video = {"#video"};
@@ -533,8 +539,9 @@ IN_PROC_BROWSER_TEST_P(MemorySaverChipInteractiveTest, CloseBubbleOnTabSwitch) {
       WaitForHide(MemorySaverBubbleView::kMemorySaverDialogBodyElementId));
 }
 
+// TODO(crbug.com/407785192): Fix and re-enable
 IN_PROC_BROWSER_TEST_P(MemorySaverChipInteractiveTest,
-                       BubbleCorrectlyReportingMemorySaved) {
+                       DISABLED_BubbleCorrectlyReportingMemorySaved) {
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
       NavigateWebContents(kFirstTabContents, GetURL()),

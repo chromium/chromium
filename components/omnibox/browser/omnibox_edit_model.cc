@@ -879,6 +879,12 @@ void OmniboxEditModel::EnterKeywordMode(
   DCHECK(template_url);
   controller_->StopAutocomplete(/*clear_result=*/false);
 
+  if (keyword_ != template_url->keyword()) {
+    // Note, this is not the only place that keyword mode can be entered, but
+    // it would be better to make it so than to add extra notification calls
+    // elsewhere. At present, the method is only meaningfully used for exit.
+    controller_->client()->OnKeywordModeChanged(true, template_url->keyword());
+  }
   SetKeyword(template_url->keyword());
   SetKeywordPlaceholder(placeholder_text);
   is_keyword_hint_ = false;
@@ -1054,6 +1060,7 @@ void OmniboxEditModel::ClearKeyword() {
   bool entry_by_tab = keyword_mode_entry_method_ == OmniboxEventProto::TAB;
 
   controller_->ClearPopupKeywordMode();
+  controller_->client()->OnKeywordModeChanged(false, keyword_);
 
   // There are several possible states we could have been in before the user hit
   // backspace or shift-tab to enter this function:
@@ -2705,7 +2712,11 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
       dropdown_ignored ? fake_single_entry_result
                        : autocomplete_controller()->result(),
       destination_url, is_incognito,
-      match.zero_prefix_suggestions_shown_in_session);
+      match.zero_prefix_suggestions_shown_in_session,
+      match.zero_prefix_search_suggestions_shown_in_session,
+      match.zero_prefix_url_suggestions_shown_in_session,
+      match.typed_search_suggestions_shown_in_session,
+      match.typed_url_suggestions_shown_in_session);
 // Check disabled on iOS as the platform shows a default suggestion on focus
 // (crbug.com/40061502).
 #if !BUILDFLAG(IS_IOS)

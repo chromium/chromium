@@ -46,6 +46,19 @@ const base::FeatureParam<bool>
         &kPrerender2FallbackPrefetchSpecRules,
         "kPrerender2FallbackPrefetchUseBlockUntilHeadTimetout", true};
 
+constexpr base::FeatureParam<Prerender2FallbackPrefetchSchedulerPolicy>::Option
+    kPrerender2FallbackPrefetchSchedulerPolicyOptios[] = {
+        {Prerender2FallbackPrefetchSchedulerPolicy::kNotUse, "NotUse"},
+        {Prerender2FallbackPrefetchSchedulerPolicy::kPrioritize, "Prioritize"},
+        {Prerender2FallbackPrefetchSchedulerPolicy::kBurst, "Burst"},
+};
+const base::FeatureParam<Prerender2FallbackPrefetchSchedulerPolicy>
+    kPrerender2FallbackPrefetchSchedulerPolicy{
+        &kPrerender2FallbackPrefetchSpecRules,
+        "kPrerender2FallbackPrefetchSchedulerPolicy",
+        Prerender2FallbackPrefetchSchedulerPolicy::kNotUse,
+        &kPrerender2FallbackPrefetchSchedulerPolicyOptios};
+
 BASE_FEATURE(kPrerender2NoVarySearch,
              "Prerender2NoVarySearch",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -80,5 +93,11 @@ const base::FeatureParam<base::TimeDelta>
     kSuppressesPrerenderingOnSlowNetworkThreshold{
         &kSuppressesPrerenderingOnSlowNetwork,
         "slow_network_threshold_for_prerendering", base::Milliseconds(208)};
+
+// If enabled, disallows non-trustworthy plaintext HTTP prerendering.
+// See https://crbug.com/340895233 for more details.
+BASE_FEATURE(kPrerender2DisallowNonTrustworthyHttp,
+             "Prerender2DisallowNonTrustworthyHttp",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features

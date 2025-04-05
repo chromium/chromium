@@ -391,6 +391,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   bool IsRendererProcessBlocked() override;
   void OnInputEventAckTimeout() override;
   void RendererIsResponsive() override;
+  void DidOverscroll(blink::mojom::DidOverscrollParamsPtr params) override;
 
   // Update the stored set of visual properties for the renderer. If 'propagate'
   // is true, the new properties will be sent to the renderer process.

@@ -11,6 +11,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/types/optional_ref.h"
 #include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "components/domain_reliability/monitor.h"
@@ -38,6 +39,16 @@
 #endif
 
 namespace network {
+
+namespace {
+// Returns the permissions policy saved for the request in the loader. The
+// loader should outlive the caller of this method.
+base::optional_ref<const network::PermissionsPolicy> GetPermissionsPolicy(
+    const net::URLRequest& request) {
+  const auto* const loader = URLLoader::ForRequest(request);
+  return loader ? loader->GetPermissionsPolicy() : std::nullopt;
+}
+}  // namespace
 
 NetworkServiceNetworkDelegate::NetworkServiceNetworkDelegate(
     bool enable_referrers,
@@ -196,16 +207,17 @@ NetworkServiceNetworkDelegate::OnGetStorageAccessStatus(
   if (redirect_info) {
     return network_context_->cookie_manager()
         ->cookie_settings()
-        .GetStorageAccessStatus(redirect_info->new_url,
-                                redirect_info->new_site_for_cookies,
-                                request.isolation_info().top_frame_origin(),
-                                request.cookie_setting_overrides());
+        .GetStorageAccessStatus(
+            redirect_info->new_url, redirect_info->new_site_for_cookies,
+            request.isolation_info().top_frame_origin(),
+            request.cookie_setting_overrides(), GetPermissionsPolicy(request));
   }
   return network_context_->cookie_manager()
       ->cookie_settings()
       .GetStorageAccessStatus(request.url(), request.site_for_cookies(),
                               request.isolation_info().top_frame_origin(),
-                              request.cookie_setting_overrides());
+                              request.cookie_setting_overrides(),
+                              GetPermissionsPolicy(request));
 }
 
 bool NetworkServiceNetworkDelegate::OnIsStorageAccessHeaderEnabled(

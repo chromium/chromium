@@ -297,6 +297,13 @@ bool OverscrollControllerAndroid::ShouldHandleInputEvents() {
   return true;
 }
 
+bool OverscrollControllerAndroid::IsHandlingInputSequence() {
+  if (!refresh_effect_) {
+    return false;
+  }
+  return refresh_effect_->IsActive();
+}
+
 bool OverscrollControllerAndroid::OnTouchEvent(
     const ui::MotionEventAndroid& event) {
   if (!ShouldHandleInputEvents()) {

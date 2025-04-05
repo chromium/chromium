@@ -9,6 +9,8 @@
 #import "base/task/sequenced_task_runner.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_detents_manager.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_pan_tracker.h"
+#import "ios/chrome/browser/lens_overlay/ui/info_message/lens_translate_error_view_controller.h"
+#import "ios/chrome/browser/lens_overlay/ui/info_message/lens_translate_indication_view_controller.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_results_page_presenter_delegate.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_result_page_view_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -29,11 +31,24 @@ const CGFloat kThresholdHeightForClosingSheet = 200.0f;
 // by the bottom sheet presentation.
 const CGFloat kVisibleAreaMediumDetentThreshold = 100.0f;
 
+// The duration of the opacity transition in the results page.
+const CGFloat kOpacityAnimationDuration = 0.4;
+
 }  // namespace
+
+// Animator responsible for handling the hiding and showing fading transition of
+// the informational message views.
+@interface InfoMessageAnimator
+    : NSObject <UIViewControllerAnimatedTransitioning>
+
+- (instancetype)initWithOperation:(UINavigationControllerOperation)operation;
+
+@end
 
 @interface LensOverlayResultsPagePresenter () <
     LensOverlayPanTrackerDelegate,
-    LensOverlayDetentsManagerDelegate>
+    LensOverlayDetentsManagerDelegate,
+    UINavigationControllerDelegate>
 @end
 
 @implementation LensOverlayResultsPagePresenter {
@@ -41,7 +56,7 @@ const CGFloat kVisibleAreaMediumDetentThreshold = 100.0f;
   __weak UIViewController* _baseViewController;
 
   /// The results view controller to present.
-  __weak UIViewController* _resultViewController;
+  __weak LensResultPageViewController* _resultViewController;
 
   /// Orchestrates the change in detents of the associated bottom sheet.
   LensOverlayDetentsManager* _detentsManager;
@@ -63,6 +78,13 @@ const CGFloat kVisibleAreaMediumDetentThreshold = 100.0f;
 
   // The layout guide that defines the unobstructed area by the presentation.
   UILayoutGuide* _visibleAreaLayoutGuide;
+
+  // TODO(crbug.com/405199044): Consider using a custom container for the UI
+  // orchestration.
+  //
+  // The navigation controller orchestrating the change between the results page
+  // and the informational messages.
+  UINavigationController* _presentationNavigationController;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
@@ -72,6 +94,12 @@ const CGFloat kVisibleAreaMediumDetentThreshold = 100.0f;
   if (self) {
     _baseViewController = baseViewController;
     _resultViewController = resultViewController;
+    _presentationNavigationController = [[UINavigationController alloc]
+        initWithRootViewController:resultViewController];
+    _presentationNavigationController.toolbarHidden = YES;
+    _presentationNavigationController.navigationBarHidden = YES;
+    _presentationNavigationController.delegate = self;
+
     _visibleAreaLayoutGuide = [[UILayoutGuide alloc] init];
   }
 
@@ -80,7 +108,8 @@ const CGFloat kVisibleAreaMediumDetentThreshold = 100.0f;
 
 - (BOOL)isResultPageVisible {
   return _baseViewController.presentedViewController != nil &&
-         _baseViewController.presentedViewController == _resultViewController;
+         _baseViewController.presentedViewController ==
+             _presentationNavigationController;
 }
 
 - (SheetDimensionState)sheetDimension {
@@ -140,7 +169,7 @@ const CGFloat kVisibleAreaMediumDetentThreshold = 100.0f;
   }
 
   UISheetPresentationController* sheet =
-      _resultViewController.sheetPresentationController;
+      _presentationNavigationController.sheetPresentationController;
   sheet.prefersEdgeAttachedInCompactHeight = YES;
   sheet.prefersGrabberVisible = YES;
   sheet.preferredCornerRadius = kPreferredCornerRadius;
@@ -191,7 +220,7 @@ const CGFloat kVisibleAreaMediumDetentThreshold = 100.0f;
 
   __weak __typeof(self) weakSelf = self;
   [_baseViewController
-      presentViewController:_resultViewController
+      presentViewController:_presentationNavigationController
                    animated:animated
                  completion:^{
                    [weakSelf didFinishPresentingResultsPage];
@@ -222,7 +251,29 @@ const CGFloat kVisibleAreaMediumDetentThreshold = 100.0f;
   }
 }
 
-- (void)hideBottomSheet {
+- (void)showInfoMessage:(LensOverlayBottomSheetInfoMessageType)infoMessageType {
+  UIViewController* infoMessageViewController;
+  switch (infoMessageType) {
+    case LensOverlayBottomSheetInfoMessageType::kImageTranslatedIndication:
+      infoMessageViewController =
+          [[LensTranslateIndicationViewController alloc] init];
+      break;
+    case LensOverlayBottomSheetInfoMessageType::kNoTranslatableTextWarning:
+      infoMessageViewController =
+          [[LensTranslateErrorViewController alloc] init];
+      break;
+  }
+
+  _detentsManager.infoMessageHeight =
+      infoMessageViewController.preferredContentSize.height;
+
+  [_detentsManager adjustDetentsForState:SheetDetentStateInfoMessage];
+  [_presentationNavigationController
+      pushViewController:infoMessageViewController
+                animated:YES];
+}
+
+- (void)hideBottomSheetWithCompletion:(void (^)(void))completion {
   [_displayLink invalidate];
   [self sheetPresentationHeightChanged:0];
   [_windowPanTracker stopTracking];
@@ -230,7 +281,7 @@ const CGFloat kVisibleAreaMediumDetentThreshold = 100.0f;
   _detentsManager = nil;
 
   UIViewController* presentedVC = _baseViewController.presentedViewController;
-  [presentedVC dismissViewControllerAnimated:YES completion:nil];
+  [presentedVC dismissViewControllerAnimated:YES completion:completion];
 }
 
 - (void)dismissResultsPageAnimated:(BOOL)animated
@@ -273,17 +324,17 @@ const CGFloat kVisibleAreaMediumDetentThreshold = 100.0f;
     return;
   }
 
+  UIView* presentedView = _baseViewController.presentedViewController.view;
+
   // Early return if the bottom sheet is not displayed yet.
-  CALayer* presentationLayer =
-      _resultViewController.view.layer.presentationLayer;
+  CALayer* presentationLayer = presentedView.layer.presentationLayer;
   if (!presentationLayer) {
     return;
   }
 
-  CGRect presentedFrame = _resultViewController.view.frame;
-  CGRect newFrame =
-      [_resultViewController.view convertRect:presentedFrame
-                                       toView:_baseViewController.view];
+  CGRect presentedFrame = presentedView.frame;
+  CGRect newFrame = [presentedView convertRect:presentedFrame
+                                        toView:_baseViewController.view];
   CGFloat containerHeight = _baseViewController.view.frame.size.height;
   CGFloat currentSheetHeight = containerHeight - newFrame.origin.y;
 
@@ -306,9 +357,11 @@ const CGFloat kVisibleAreaMediumDetentThreshold = 100.0f;
       currentSheetHeight <= kThresholdHeightForClosingSheet;
   BOOL userTouchesTheScreen = _windowPanTracker.isPanning;
 
-  BOOL shouldDestroyLensUI = sheetClosedThresholdReached &&
-                             !userTouchesTheScreen &&
-                             !_presentingAnimationInProgress;
+  BOOL infoMessageShown =
+      _detentsManager.sheetDimension == SheetDimensionState::kInfoMessage;
+  BOOL shouldDestroyLensUI =
+      sheetClosedThresholdReached && !userTouchesTheScreen &&
+      !_presentingAnimationInProgress && !infoMessageShown;
   if (shouldDestroyLensUI) {
     [_displayLink invalidate];
     [self sheetPresentationHeightChanged:0];
@@ -408,6 +461,7 @@ const CGFloat kVisibleAreaMediumDetentThreshold = 100.0f;
     case SheetDimensionState::kHidden:
       return YES;
     case SheetDimensionState::kPeaking:
+    case SheetDimensionState::kInfoMessage:
     case SheetDimensionState::kLarge:
       return NO;
     case SheetDimensionState::kMedium:
@@ -439,13 +493,86 @@ const CGFloat kVisibleAreaMediumDetentThreshold = 100.0f;
 - (void)didLoadSelectionResult {
   _detentsManager.presentationStrategy =
       SheetDetentPresentationStategySelection;
+  [_presentationNavigationController popToRootViewControllerAnimated:YES];
   [self adjustSelectionOcclusionInsets];
 }
 
 - (void)didLoadTranslateResult {
   _detentsManager.presentationStrategy =
       SheetDetentPresentationStategyTranslate;
+  [_presentationNavigationController popToRootViewControllerAnimated:YES];
   [self adjustSelectionOcclusionInsets];
+}
+
+#pragma mark - UINavigationControllerDelegate
+
+- (id<UIViewControllerAnimatedTransitioning>)
+               navigationController:
+                   (UINavigationController*)navigationController
+    animationControllerForOperation:(UINavigationControllerOperation)operation
+                 fromViewController:(UIViewController*)fromVC
+                   toViewController:(UIViewController*)toVC {
+  return [[InfoMessageAnimator alloc] initWithOperation:operation];
+}
+
+@end
+
+@implementation InfoMessageAnimator {
+  // The navigation operation for the animator.
+  UINavigationControllerOperation _operation;
+}
+
+- (instancetype)initWithOperation:(UINavigationControllerOperation)operation {
+  self = [super init];
+  if (self) {
+    _operation = operation;
+  }
+
+  return self;
+}
+
+- (NSTimeInterval)transitionDuration:
+    (id<UIViewControllerContextTransitioning>)transitionContext {
+  return kOpacityAnimationDuration;
+}
+
+- (void)animateTransition:
+    (id<UIViewControllerContextTransitioning>)transitionContext {
+  UIViewController* toViewController = [transitionContext
+      viewControllerForKey:UITransitionContextToViewControllerKey];
+  UIViewController* fromViewController = [transitionContext
+      viewControllerForKey:UITransitionContextFromViewControllerKey];
+  NSTimeInterval duration = [self transitionDuration:transitionContext];
+  auto animationFinished = ^(BOOL finished) {
+    [transitionContext
+        completeTransition:![transitionContext transitionWasCancelled]];
+  };
+
+  if (_operation == UINavigationControllerOperationPush) {
+    [[transitionContext containerView] addSubview:toViewController.view];
+    toViewController.view.alpha = 0.0;
+    [UIView animateWithDuration:duration
+                     animations:^{
+                       toViewController.view.alpha = 1.0;
+                     }
+                     completion:animationFinished];
+
+    return;
+  }
+
+  if (_operation == UINavigationControllerOperationPop) {
+    [[transitionContext containerView] insertSubview:toViewController.view
+                                        belowSubview:fromViewController.view];
+
+    [UIView animateWithDuration:duration
+                     animations:^{
+                       fromViewController.view.alpha = 0.0;
+                     }
+                     completion:animationFinished];
+    return;
+  }
+
+  animationFinished(YES);
 }
 
 @end

@@ -20,6 +20,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/types/optional_ref.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -37,7 +38,6 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/url_request.h"
 #include "services/network/ad_auction/event_record_request_helper.h"
-#include "services/network/attribution/attribution_request_helper.h"
 #include "services/network/keepalive_statistics_recorder.h"
 #include "services/network/network_service.h"
 #include "services/network/partial_decoder.h"
@@ -45,6 +45,7 @@
 #include "services/network/public/cpp/cors/cors_error_status.h"
 #include "services/network/public/cpp/initiator_lock_compatibility.h"
 #include "services/network/public/cpp/orb/orb_api.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "services/network/public/cpp/private_network_access_check_result.h"
 #include "services/network/public/mojom/accept_ch_frame_observer.mojom.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
@@ -179,7 +180,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
           device_bound_session_access_observer,
       mojo::PendingRemote<mojom::AcceptCHFrameObserver>
           accept_ch_frame_observer,
-      std::unique_ptr<AttributionRequestHelper> attribution_request_helper,
       bool shared_storage_writable_eligible);
 
   URLLoader(const URLLoader&) = delete;
@@ -310,18 +310,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
 
   static bool HasFetchStreamingUploadBody(const ResourceRequest*);
 
-  static std::optional<net::IsolationInfo> GetIsolationInfo(
-      const net::IsolationInfo& factory_isolation_info,
-      bool automatically_assign_isolation_info,
-      const ResourceRequest& request);
-
-  // Computes the CookieSettingOverrides to use for a given `ResourceRequest`.
-  // May also emit to histograms.
-  static net::CookieSettingOverrides CalculateCookieSettingOverrides(
-      net::CookieSettingOverrides factory_overrides,
-      net::CookieSettingOverrides devtools_overrides,
-      const ResourceRequest& request,
-      bool emit_metrics);
+  // Returns an optional reference to a constant permissions policy that belongs
+  // to the request. `this` must outlive the caller of this method.
+  base::optional_ref<const network::PermissionsPolicy> GetPermissionsPolicy()
+      const {
+    return permissions_policy_;
+  }
 
  private:
   // This class is used to set the URLLoader as user data on a URLRequest. This
@@ -355,32 +349,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
     kMaxValue = kErrorAfterResponseArrival,
   };
 
-  // Configures `url_request_`, including registering callbacks.
-  void ConfigureRequest(
-      const GURL& url,
-      std::string_view method,
-      const net::SiteForCookies& site_for_cookies,
-      bool force_ignore_site_for_cookies,
-      const std::vector<GURL>& url_chain,
-      const GURL& referrer,
-      net::ReferrerPolicy referrer_policy,
-      bool upgrade_if_insecure,
-      bool is_ad_tagged,
-      bool client_side_content_decoding_enabled,
-      std::optional<net::IsolationInfo> isolation_info,
-      bool force_main_frame_for_same_site_cookies,
-      net::SecureDnsPolicy secure_dns_policy,
-      net::HttpRequestHeaders extra_request_headers,
-      const std::optional<std::vector<net::SourceStreamType>>&
-          accepted_stream_types,
-      const std::optional<url::Origin>& initiator,
-      net::RedirectInfo::FirstPartyURLPolicy first_party_url_policy,
-      int request_load_flags,
-      bool priority_incremental,
-      net::CookieSettingOverrides cookie_setting_overrides,
-      std::optional<net::SharedDictionaryGetter> shared_dictionary_getter,
-      net::SocketTag socket_tag,
-      bool allows_device_bound_sessions);
+  // Sets various callbacks on the internal `url_request_`.
+  void SetUpUrlRequestCallbacks(
+      SharedDictionaryManager* shared_dictionary_manager);
 
   void OpenFilesForUpload(const ResourceRequest& request);
   void SetUpUpload(const ResourceRequest& request,
@@ -458,72 +429,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
       const ::net::RedirectInfo& redirect_info,
       mojom::URLResponseHeadPtr response);
   void ProcessInboundSharedStorageInterceptorOnResponseStarted();
-
-  // A request where `attribution_request_helper_` is defined will (assuming
-  // preconditions pass and operations are successful) have one
-  // `AttributionRequestHelper::Begin` executed against the request, one
-  // `AttributionRequestHelper::OnReceiveRedirect` per redirection received and
-  // one `AttributionRequestHelper::Finalize` executed against its response.
-  //
-  // Outbound control flow:
-  //
-  // Start in `ProcessOutboundAttributionInterceptor`
-  // - If `attribution_request_helper_` is not defined, immediately
-  //   calls `ScheduleStart`.
-  // - Otherwise:
-  //   - Execute `AttributionRequestHelper::Begin`
-  //   - On Begin's callback, calls `ScheduleStart`
-  //
-  // Redirection control flow:
-  //
-  // Start in `ProcessInboundAttributionInterceptorOnReceivedRedirect`
-  //  - If `attribution_request_helper_` is not defined, immediately
-  //    calls`ProcessInboundAttributionInterceptorOnReceivedRedirect`.
-  // - Otherwise:
-  //   - Execute `AttributionRequestHelper::OnReceiveRedirect`
-  //   - On OnReceiveRedirect's callback, calls
-  //   `ProcessInboundAttributionInterceptorOnReceivedRedirect`
-  //
-  // Inbound control flow:
-  //
-  // Start in `ProcessInboundAttributionInterceptorOnResponseStarted`
-  //  - If `attribution_request_helper_` is not defined,
-  //    immediately calls
-  //    `ProcessInboundAdAuctionEventRecordInterceptorOnResponseStarted`.
-  // - Otherwise:
-  //   - Execute `AttributionRequestHelper::Finalize`
-  //   - On Finalize's callback, calls
-  //    `ProcessInboundAdAuctionEventRecordInterceptorOnResponseStarted`.
-  void ProcessOutboundAttributionInterceptor();
-  void ProcessInboundAttributionInterceptorOnReceivedRedirect(
-      const ::net::RedirectInfo& redirect_info,
-      mojom::URLResponseHeadPtr response);
-  void ProcessInboundAttributionInterceptorOnResponseStarted();
-
-  // All inbound responses will invoke
-  // `ad_auction_event_record_request_helper_.HandleResponse()`, which
-  // always returns immediately without blocking, and also exits early for
-  // ineligible responses.
-  //
-  // Outbound control flow:
-  //
-  // There are no outbound flow methods as the request headers are set by
-  // ComputeAttributionReportingHeaders() in the URLLoader() constructor.
-  //
-  // Redirection control flow:
-  //
-  // Redirection isn't handled yet. TODO(crbug.com/394108643): Support
-  // capturing headers on redirection responses.
-  //
-  // Inbound control flow:
-  //
-  // Start in
-  // `ProcessInboundAdAuctionEventRecordInterceptorOnResponseStarted()`
-  //  - Execute
-  //   `ad_auction_event_record_request_helper_::HandleResponse()`.
-  //  - Afterwards, execute
-  //   `ProcessInboundSharedStorageInterceptorOnResponseStarted()`.
-  void ProcessInboundAdAuctionEventRecordInterceptorOnResponseStarted();
 
   // Continuation of `OnReceivedRedirect` after possibly asynchronously
   // concluding the request's Attribution and/or Shared Storage operations.
@@ -677,19 +582,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // Never returns nullptr.
   mojom::URLResponseHeadPtr BuildResponseHead() const;
 
-  // Determine given the |url|, whether the |url_request_| should include
-  // credentials and client certificates.
-  void SetRequestCredentials(const GURL& url);
-
-  // Returns whether sending/storing credentials is allowed by COEP and
-  // Document-Isolation-Policy.
-  // |url| is the latest request URL, either the original URL or
-  // `redirect_info.new_url`.
-  // When Cross-Origin-Embedder-Policy: credentialless or
-  // Document-Isolation-Policy: isolate-and-credentialless are set, do not send
-  // or store credentials for no-cors cross-origin request.
-  bool WebPoliciesAllowCredentials(const GURL& url);
-
   // Returns whether TransferSizeUpdated IPC should be sent.
   bool ShouldSendTransferSizeUpdated() const;
 
@@ -709,9 +601,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // If no further decoding is needed, `partial_decoder_` is reset, and
   // `partial_decoder_result_` is set unless an error occurred during decoding.
   void CheckPartialDecoderResult(int result);
-
-  // Records metrics about GET requests.
-  void RecordRequestMetrics();
 
   const raw_ptr<net::URLRequestContext> url_request_context_;
 
@@ -861,11 +750,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // there is a matching shared dictionary for the request.
   std::unique_ptr<SharedDictionaryAccessChecker> shared_dictionary_checker_;
 
-  // Request helper responsible for orchestrating Attribution operations
-  // (https://github.com/WICG/attribution-reporting-api). Only set if the
-  // request is related to attribution.
-  std::unique_ptr<AttributionRequestHelper> attribution_request_helper_;
-
   // The `SharedStorageRequestHelper` takes a callback to trigger
   // `ContinueOnReceiveRedirect()`. To prevent re-entrancy, however, this
   // callback is conditionally run only if the helper successfully parses
@@ -898,10 +782,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
       url_loader_network_observer_ = nullptr;
   const mojo::Remote<mojom::DevToolsObserver> devtools_observer_remote_;
   const raw_ptr<mojom::DevToolsObserver> devtools_observer_ = nullptr;
-  const mojo::Remote<mojom::DeviceBoundSessionAccessObserver>
+  mojo::Remote<mojom::DeviceBoundSessionAccessObserver>
       device_bound_session_observer_remote_;
-  const raw_ptr<mojom::DeviceBoundSessionAccessObserver>
+  raw_ptr<mojom::DeviceBoundSessionAccessObserver>
       device_bound_session_observer_ = nullptr;
+  const scoped_refptr<RefCountedDeviceBoundSessionAccessObserverRemote>
+      device_bound_session_observer_shared_remote_;
 
   // Request helper responsible for processing Shared Storage headers
   // (https://github.com/WICG/shared-storage#from-response-headers).
@@ -972,6 +858,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   std::optional<std::pair<mojo::ScopedDataPipeProducerHandle,
                           mojo::ScopedDataPipeConsumerHandle>>
       pending_pipe_handles_;
+
+  // Permissions policy of the request.
+  const std::optional<network::PermissionsPolicy> permissions_policy_;
 
   base::WeakPtrFactory<URLLoader> weak_ptr_factory_{this};
 };

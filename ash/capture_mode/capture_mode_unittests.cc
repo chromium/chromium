@@ -8,6 +8,7 @@
 #include <tuple>
 #include <vector>
 
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
 #include "ash/accessibility/magnifier/magnifier_glass.h"
 #include "ash/annotator/annotation_tray.h"
@@ -4063,6 +4064,59 @@ TEST_P(CaptureModeTest, KeyboardNavigationTabThroughWindowsOnMultipleDisplays) {
   // be ended after capturing the selected window.
   SendKey(ui::VKEY_RETURN, event_generator);
   EXPECT_FALSE(controller->IsActive());
+}
+
+// Tests tabbing through partial capture affordance circles, which are drawn
+// directly on a layer and therefore have a custom implementation using
+// `views::AxVirtualView`.
+TEST_P(CaptureModeTest, KeyboardNavigationAffordanceCircles) {
+  // We need two displays to test display removal.
+  UpdateDisplay("800x700,801+0-800x700");
+
+  // The `views::AxVirtualView`'s are not created unless they are needed
+  // (ChromeVox is enabled).
+  Shell::Get()->accessibility_controller()->spoken_feedback().SetEnabled(true);
+
+  auto* controller =
+      StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+  CaptureModeSessionTestApi test_api(controller->capture_mode_session());
+
+  // Select a region and ensure it is on the secondary display, we will test
+  // removing the display while focused on an affordance circle on the secondary
+  // display later.
+  const gfx::Rect target_region(gfx::Rect(850, 50, 200, 200));
+  SelectRegion(target_region);
+  ASSERT_EQ(Shell::GetAllRootWindows().size(), 2u);
+  ASSERT_EQ(test_api.GetCaptureModeBarView()
+                ->GetWidget()
+                ->GetNativeWindow()
+                ->GetRootWindow(),
+            Shell::GetAllRootWindows()[1]);
+
+  // Both the `views::AxVirtualView`s and their widget are created lazily; they
+  // won't be created until tabbed into.
+  EXPECT_FALSE(test_api.HasAxVirtualWidget());
+  EXPECT_EQ(test_api.GetAxVirtualViewsCount(), 0u);
+
+  // Tab through the bar until we reach the first element that needs a
+  // `views::AxVirtualView`.
+  while (test_api.GetCurrentFocusGroup() !=
+         CaptureModeSessionFocusCycler::FocusGroup::kSelection) {
+    SendKey(ui::VKEY_TAB, GetEventGenerator());
+  }
+  EXPECT_TRUE(test_api.HasAxVirtualWidget());
+  EXPECT_EQ(test_api.GetAxVirtualViewsCount(), 1u);
+
+  // Tab through several circles and test that more `views::AxVirtualView`s have
+  // been lazily created.
+  SendKey(ui::VKEY_TAB, GetEventGenerator(), ui::EF_NONE, /*count=*/2);
+  EXPECT_EQ(test_api.GetAxVirtualViewsCount(), 3u);
+
+  // Test that when we remove the secondary display, the `views::AxVirtualView`s
+  // and their widget are destroyed.
+  RemoveSecondaryDisplay();
+  EXPECT_FALSE(test_api.HasAxVirtualWidget());
+  EXPECT_EQ(test_api.GetAxVirtualViewsCount(), 0u);
 }
 
 // Tests that a click will remove focus.

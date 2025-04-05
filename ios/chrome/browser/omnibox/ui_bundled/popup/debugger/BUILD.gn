@@ -45,6 +45,7 @@ source_set("ui") {
     "//base",
     "//components/omnibox/browser",
     "//components/variations",
+    "//ios/chrome/browser/omnibox/model:ui_bundled_interface",
     "//ios/chrome/browser/omnibox/ui_bundled/popup:popup_internal",
     "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/symbols",

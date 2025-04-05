@@ -104,12 +104,6 @@ class CORE_EXPORT TransitionKeyframe : public Keyframe {
     void Trace(Visitor*) const override;
 
    private:
-    Keyframe::PropertySpecificKeyframe* CloneWithOffset(
-        double offset) const final {
-      return MakeGarbageCollected<PropertySpecificKeyframe>(
-          offset, easing_, composite_, value_->Clone(), compositor_value_);
-    }
-
     Member<TypedInterpolationValue> value_;
     Member<CompositorKeyframeValue> compositor_value_;
   };

@@ -351,6 +351,7 @@
 <translation id="2438248248625638801">Prave se naslovi snimaka</translation>
 <translation id="2446553403094072641">Preciznost pokretnog zareza</translation>
 <translation id="2448312741937722512">Tip</translation>
+<translation id="2448857983905133469">Alatke u razredu</translation>
 <translation id="2468124392950503650">Izaberite upit za pravljenje ili pogledajte <ph name="BEGIN_LINK_PROMPTING_GUIDE" />vodič za upite<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Koristite Pomoć pri pisanju da biste napravili radnu verziju ili poboljšali postojeći rad koji omogućava Google veštačka inteligencija</translation>
 <translation id="2475982808118771221">Došlo je do greške</translation>
@@ -449,6 +450,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Krajnja tačka</translation>
 <translation id="3060579846059757016">Okviri</translation>
+<translation id="3060798442805232711">Alatke u razredu koriste mikrofon</translation>
 <translation id="3061850252076394168">omogućite uslugu Izaberite za govor</translation>
 <translation id="3066772729299747758">u utorak</translation>
 <translation id="3069085583900247081">Test nije uspeo</translation>
@@ -458,7 +460,6 @@
 <translation id="3084958266922136097">Onemogućite čuvar ekrana</translation>
 <translation id="3091839911843451378">Nije uspelo – zaustavljeno je</translation>
 <translation id="3102119246920354026">Keš</translation>
-<translation id="3112413615003385433">Nastavnik je uklonio sadržaj u Školskim alatkama</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">bazenima</translation>
 <translation id="3122883569442693641">Još detalja</translation>
@@ -539,7 +540,6 @@
 <translation id="3488065109653206955">Delimično aktivirano</translation>
 <translation id="3492882532495507361">Kancelarija <ph name="OFFICE_STYLE" /> sa <ph name="OFFICE_COLOR" /> nijansama</translation>
 <translation id="3493187369049186498">Podatke meri Chromebook. To može da se razlikuje od podataka dobavljača.</translation>
-<translation id="349570724365779960">Školske alatke su povezane sa učenicima</translation>
 <translation id="3502426834823382181">prikaži sve aplikacije</translation>
 <translation id="3510890413042482857">Šalji <ph name="BEGIN_LINK1" />podatke o praćenju učinka<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Ažuriranje Chrome OS-a</translation>
@@ -547,7 +547,6 @@
 <translation id="353214771040290298">Izmene su gotove</translation>
 <translation id="3532980081107202182">Preostalo je još oko <ph name="MIN_REMAINING" /> minuta</translation>
 <translation id="3533790840489634638">bazenom</translation>
-<translation id="3535802910192338629">Nastavnik je dodao novi sadržaj u Školskim alatkama</translation>
 <translation id="3547264467365135390">Formula</translation>
 <translation id="3557205324756024651">Lokalni identitet (opcionalno)</translation>
 <translation id="3565064564551103223">Dozvoljene IPa adrese</translation>
@@ -913,6 +912,7 @@
 <translation id="5170568018924773124">Prikaži u direktorijumu</translation>
 <translation id="517075088756846356">Isključite i ponovo priključite kabl za napajanje uređaja <ph name="DEVICE_NAME" /> da biste nastavili proces ažuriranja</translation>
 <translation id="5180108905184566358">baobab drveće</translation>
+<translation id="5180431943345994173">Nastavnik je uklonio sadržaj u Alatkama u razredu</translation>
 <translation id="5180712487038406644">Izražajno</translation>
 <translation id="5190187232518914472">Ponovo proživite omiljene uspomene. Da biste dodali ili izmenili albume, idite u <ph name="LINK_BEGIN" />Google slike<ph name="LINK_END" />.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
@@ -1006,6 +1006,7 @@
 <translation id="5628106863521633649">Dostupni jezici</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">sažetak</translation>
+<translation id="5655084389678168978">Nastavnik je dodao novi sadržaj u Alatkama u razredu</translation>
 <translation id="5655283760733841251">Povećajte osvetljenost tastature</translation>
 <translation id="5655296450510165335">Registracija uređaja</translation>
 <translation id="5655776422854483175">Nema zadataka štampanja</translation>
@@ -1441,7 +1442,6 @@ Preuzmite model transkripcije (do 100 MB) da biste preuzeli te transkripcije.</t
 <translation id="7544853251252956727">Pusti nasumično</translation>
 <translation id="7550715992156305117">Dijagnostičke rutine</translation>
 <translation id="7551123448725492271">Uređaj je audio uređaj.</translation>
-<translation id="7553913964854052228">Školske alatke koriste mikrofon</translation>
 <translation id="7559239713112547082">Pregled snimka ekrana</translation>
 <translation id="7561454561030345039">Ovim podešavanjem upravlja administrator</translation>
 <translation id="7561759921596375678">Uključite zvuk</translation>
@@ -1533,6 +1533,7 @@ Preuzmite model transkripcije (do 100 MB) da biste preuzeli te transkripcije.</t
 <translation id="7971535376154084247">Opšte kontrole</translation>
 <translation id="7977800524392185497">Da biste se povezali sa <ph name="NETWORK_NAME" /> mreži, idite u Podešavanja</translation>
 <translation id="7978412674231730200">Privatni ključ</translation>
+<translation id="7979468455552394856">Alatke u razredu su povezane sa učenicima</translation>
 <translation id="7982789257301363584">Mreža</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{Aplikacija <ph name="APP_NAME_1" /> je automatski pokrenuta}one{# aplikacija je automatski pokrenuta}few{# aplikacije su automatski pokrenute}other{# aplikacija je automatski pokrenuto}}</translation>
 <translation id="7994702968232966508">EAP metod</translation>
@@ -1664,7 +1665,6 @@ Preuzmite model transkripcije (do 100 MB) da biste preuzeli te transkripcije.</t
 <translation id="8576249514688522074">Nije pokrenuto</translation>
 <translation id="8584654835905316966">Restartovanje je obavezno da bi se dovršila instalacija firmvera za <ph name="DEVICE_NAME" /> na verziju <ph name="VERSION" />. Može da izgleda kao da se računar restartuje nekoliko puta. Ovo je očekivano ponašanje.</translation>
 <translation id="8593058461203131755">pauzirajte medije</translation>
-<translation id="8619169570378509764">Školske alatke</translation>
 <translation id="8620617069779373398">Status rominga</translation>
 <translation id="8626489604350149811">Još radnji za <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Svetloljubičasto</translation>

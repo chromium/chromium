@@ -85,7 +85,7 @@ export class OnDeviceInternalsEventLogElement extends CrLitElement {
     };
   }
 
-  protected eventLogMessages_: EventLogMessage[] = [];
+  protected accessor eventLogMessages_: EventLogMessage[] = [];
 
   override connectedCallback() {
     super.connectedCallback();

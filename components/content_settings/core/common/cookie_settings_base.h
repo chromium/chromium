@@ -16,6 +16,7 @@
 #include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/site_for_cookies.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 
 namespace net {
 class SiteForCookies;
@@ -392,7 +393,9 @@ class CookieSettingsBase {
       const GURL& url,
       const net::SiteForCookies& site_for_cookies,
       base::optional_ref<const url::Origin> top_frame_origin,
-      net::CookieSettingOverrides overrides) const;
+      net::CookieSettingOverrides overrides,
+      base::optional_ref<const network::PermissionsPolicy> permissions_policy)
+      const;
 
  protected:
   // Returns the URL to be considered "first-party" for the given request. If

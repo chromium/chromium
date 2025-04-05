@@ -304,6 +304,78 @@ TEST_P(LayerTreeHostFiltersPixelTest, BackdropFilterBlurOutsets) {
       base::FilePath(FILE_PATH_LITERAL("backdrop_filter_blur_outsets.png")));
 }
 
+TEST_P(LayerTreeHostFiltersPixelTest, BackdropFilterQuality_0_33) {
+#if defined(MEMORY_SANITIZER)
+  if (renderer_type() == viz::RendererType::kSkiaVk) {
+    GTEST_SKIP() << "TODO(crbug.com/40839215): Uninitialized data error";
+  }
+#endif
+  scoped_refptr<SolidColorLayer> background =
+      CreateSolidColorLayer(gfx::Rect(200, 200), SK_ColorWHITE);
+
+  scoped_refptr<SolidColorLayer> green =
+      CreateSolidColorLayer(gfx::Rect(50, 50, 100, 100), kCSSGreen);
+  scoped_refptr<SolidColorLayer> blur =
+      CreateSolidColorLayer(gfx::Rect(200, 200), SK_ColorTRANSPARENT);
+  background->AddChild(green);
+  background->AddChild(blur);
+
+  FilterOperations filters;
+  filters.Append(FilterOperation::CreateBlurFilter(30.0f, SkTileMode::kClamp));
+  blur->SetBackdropFilters(filters);
+  blur->SetBackdropFilterQuality(0.33);
+
+#if BUILDFLAG(IS_WIN) || defined(ARCH_CPU_ARM64)
+  // Windows and ARM64 have 436 pixels off by 1: crbug.com/259915
+  pixel_comparator_ = std::make_unique<FuzzyPixelComparator>(
+      FuzzyPixelComparator()
+          .DiscardAlpha()
+          .SetErrorPixelsPercentageLimit(1.09f)  // 436px / (200*200)
+          .SetAbsErrorLimit(1));
+#endif
+
+  RunPixelTest(
+      background,
+      base::FilePath(FILE_PATH_LITERAL("backdrop_filter_quality_0_33.png"))
+          .InsertBeforeExtensionASCII(GetRendererSuffix()));
+}
+
+TEST_P(LayerTreeHostFiltersPixelTest, BackdropFilterQuality_1_0) {
+#if defined(MEMORY_SANITIZER)
+  if (renderer_type() == viz::RendererType::kSkiaVk) {
+    GTEST_SKIP() << "TODO(crbug.com/40839215): Uninitialized data error";
+  }
+#endif
+  scoped_refptr<SolidColorLayer> background =
+      CreateSolidColorLayer(gfx::Rect(200, 200), SK_ColorWHITE);
+
+  scoped_refptr<SolidColorLayer> green =
+      CreateSolidColorLayer(gfx::Rect(50, 50, 100, 100), kCSSGreen);
+  scoped_refptr<SolidColorLayer> blur =
+      CreateSolidColorLayer(gfx::Rect(200, 200), SK_ColorTRANSPARENT);
+  background->AddChild(green);
+  background->AddChild(blur);
+
+  FilterOperations filters;
+  filters.Append(FilterOperation::CreateBlurFilter(30.0f, SkTileMode::kClamp));
+  blur->SetBackdropFilters(filters);
+  blur->SetBackdropFilterQuality(1.0);
+
+#if BUILDFLAG(IS_WIN) || defined(ARCH_CPU_ARM64)
+  // Windows and ARM64 have 436 pixels off by 1: crbug.com/259915
+  pixel_comparator_ = std::make_unique<FuzzyPixelComparator>(
+      FuzzyPixelComparator()
+          .DiscardAlpha()
+          .SetErrorPixelsPercentageLimit(1.09f)  // 436px / (200*200)
+          .SetAbsErrorLimit(1));
+#endif
+
+  RunPixelTest(
+      background,
+      base::FilePath(FILE_PATH_LITERAL("backdrop_filter_quality_1_0.png"))
+          .InsertBeforeExtensionASCII(GetRendererSuffix()));
+}
+
 class LayerTreeHostBlurFiltersPixelTestGPULayerList
     : public LayerTreeHostFiltersPixelTest {
  public:

@@ -253,7 +253,7 @@ public class StatusBarColorControllerTest {
 
         statusBarColorController.onSuggestionDropdownScroll();
         final @ColorInt int scrolledColor =
-                ChromeColors.getSurfaceColor(activity, R.dimen.toolbar_text_box_elevation);
+                ContextCompat.getColor(activity, R.color.toolbar_text_box_bg_color);
         waitForStatusBarColor(activity, scrolledColor);
 
         statusBarColorController.onSuggestionDropdownOverscrolledToTop();
@@ -270,7 +270,7 @@ public class StatusBarColorControllerTest {
 
         statusBarColorController.onSuggestionDropdownScroll();
         final @ColorInt int scrolledIncognitoColor =
-                ContextCompat.getColor(activity, R.color.default_bg_color_dark_elev_2_baseline);
+                ContextCompat.getColor(activity, R.color.omnibox_scrolled_bg_incognito);
         waitForStatusBarColor(activity, scrolledIncognitoColor);
 
         statusBarColorController.onSuggestionDropdownOverscrolledToTop();

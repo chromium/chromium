@@ -7,6 +7,8 @@ package org.chromium.webapk.shell_apk.h2o;
 import android.content.ComponentName;
 import android.content.Context;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.webapk.shell_apk.HostBrowserLauncher;
 import org.chromium.webapk.shell_apk.HostBrowserLauncherParams;
 import org.chromium.webapk.shell_apk.HostBrowserUtils;
@@ -17,9 +19,10 @@ import org.chromium.webapk.shell_apk.WebApkUtils;
  * UI-less activity which launches host browser. Relaunches itself if the android.intent.action.MAIN
  * intent handler needs to be switched.
  */
+@NullMarked
 public class H2OTransparentLauncherActivity extends TransparentLauncherActivity {
     @Override
-    protected void onHostBrowserSelected(HostBrowserLauncherParams params) {
+    protected void onHostBrowserSelected(@Nullable HostBrowserLauncherParams params) {
         if (params == null) {
             return;
         }

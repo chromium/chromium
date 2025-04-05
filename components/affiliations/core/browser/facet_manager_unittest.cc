@@ -31,7 +31,6 @@ namespace affiliations {
 
 namespace {
 
-using StrategyOnCacheMiss = FacetManager::StrategyOnCacheMiss;
 enum class NotificationAccuracy { PERFECT, TOO_LATE, TOO_EARLY, NEVER_CALLED };
 
 // Helper class to post callbacks to FacetManager::NotifyAtRequestedTime(),
@@ -266,10 +265,9 @@ class FacetManagerTest : public testing::Test {
   // Returns the elapsed time since CreateFacetManager() was last called.
   base::TimeDelta DeltaNow() { return Now() - facet_manager_creation_; }
 
-  void GetAffiliationsAndBranding(StrategyOnCacheMiss cache_miss_strategy) {
+  void GetAffiliationsAndBranding() {
     facet_manager()->GetAffiliationsAndBranding(
-        cache_miss_strategy, mock_consumer()->GetResultCallback(),
-        consumer_task_runner());
+        mock_consumer()->GetResultCallback(), consumer_task_runner());
   }
 
   void Prefetch(base::Time until) { facet_manager()->Prefetch(until); }
@@ -355,7 +353,7 @@ class FacetManagerTest : public testing::Test {
         GetTestEquivalenceClassWithUpdateTime(Now()));
     fake_facet_manager_host()->set_fake_database_content(fetch_result);
     fake_facet_manager_host()->reset_need_network_request();
-    facet_manager()->OnFetchSucceeded(fetch_result);
+    facet_manager()->UpdateLastFetchTime(fetch_result.last_update_time);
 
     main_task_runner_->RunUntilIdle();
     ASSERT_NO_FATAL_FAILURE(ExpectNoFetchNeeded());
@@ -382,7 +380,7 @@ class FacetManagerTest : public testing::Test {
 
   void ExpectRequestsServedFromCache() {
     EXPECT_TRUE(facet_manager()->IsCachedDataFresh());
-    GetAffiliationsAndBranding(StrategyOnCacheMiss::FAIL);
+    GetAffiliationsAndBranding();
     ExpectConsumerSuccessCallback();
   }
 
@@ -447,12 +445,12 @@ TEST_F(FacetManagerTest, GetAffiliationsAndBrandingServedFromCache) {
   CreateFacetManager();
   EXPECT_TRUE(facet_manager()->IsCachedDataFresh());
 
-  GetAffiliationsAndBranding(StrategyOnCacheMiss::FAIL);
+  GetAffiliationsAndBranding();
   ExpectConsumerSuccessCallback();
   EXPECT_TRUE(facet_manager()->CanBeDiscarded());
   ASSERT_NO_FATAL_FAILURE(ExpectNoFetchNeeded());
 
-  GetAffiliationsAndBranding(StrategyOnCacheMiss::FETCH_OVER_NETWORK);
+  GetAffiliationsAndBranding();
   ExpectConsumerSuccessCallback();
   EXPECT_TRUE(facet_manager()->CanBeDiscarded());
   ASSERT_NO_FATAL_FAILURE(ExpectNoFetchNeeded());
@@ -465,80 +463,16 @@ TEST_F(FacetManagerTest, GetAffiliationsAndBrandingServedFromCache) {
   EXPECT_FALSE(main_task_runner()->HasPendingTask());
 }
 
-// On-demand GetAffiliationsAndBranding() requests should trigger a fetch if the
-// cache has already stale data, or no corresponding data whatsoever. Nothing
-// should happen once the newly fetched data expires.
-TEST_F(FacetManagerTest,
-       OnDemandGetAffiliationsAndBrandingRequestTriggersFetch) {
-  for (const bool cache_initially_has_stale_data : kFalseTrue) {
-    SCOPED_TRACE(cache_initially_has_stale_data);
-
-    if (cache_initially_has_stale_data) {
-      fake_facet_manager_host()->set_fake_database_content(
-          GetTestEquivalenceClassWithUpdateTime(Now()));
-      AdvanceTime(GetCacheHardExpiryPeriod());
-    } else {
-      fake_facet_manager_host()->clear_fake_database_content();
-    }
-
-    CreateFacetManager();
-    EXPECT_FALSE(facet_manager()->IsCachedDataFresh());
-
-    GetAffiliationsAndBranding(StrategyOnCacheMiss::FETCH_OVER_NETWORK);
-    ASSERT_NO_FATAL_FAILURE(ExpectFetchNeeded());
-    EXPECT_FALSE(facet_manager()->CanBeDiscarded());
-    ASSERT_NO_FATAL_FAILURE(CompleteFetch());
-    ExpectConsumerSuccessCallback();
-
-    AdvanceTime(GetCacheHardExpiryPeriod() - Epsilon());
-    EXPECT_TRUE(facet_manager()->IsCachedDataFresh());
-
-    GetAffiliationsAndBranding(StrategyOnCacheMiss::FAIL);
-    ExpectConsumerSuccessCallback();
-    EXPECT_TRUE(facet_manager()->CanBeDiscarded());
-    ASSERT_NO_FATAL_FAILURE(ExpectNoFetchNeeded());
-
-    GetAffiliationsAndBranding(StrategyOnCacheMiss::FETCH_OVER_NETWORK);
-    ExpectConsumerSuccessCallback();
-    EXPECT_TRUE(facet_manager()->CanBeDiscarded());
-    ASSERT_NO_FATAL_FAILURE(ExpectNoFetchNeeded());
-
-    AdvanceTime(Epsilon());
-
-    ASSERT_NO_FATAL_FAILURE(ExpectNoFetchNeeded());
-    EXPECT_FALSE(facet_manager()->IsCachedDataFresh());
-    EXPECT_TRUE(facet_manager()->CanBeDiscarded());
-    EXPECT_FALSE(main_task_runner()->HasPendingTask());
-    DestroyFacetManager();
-  }
-}
-
 TEST_F(FacetManagerTest,
        CachedOnlyGetAffiliationsAndBrandingFailsDueToStaleCache) {
   CreateFacetManager();
   EXPECT_FALSE(facet_manager()->IsCachedDataFresh());
 
-  GetAffiliationsAndBranding(StrategyOnCacheMiss::FAIL);
+  GetAffiliationsAndBranding();
   ExpectConsumerFailureCallback();
   ASSERT_NO_FATAL_FAILURE(ExpectNoFetchNeeded());
   EXPECT_TRUE(facet_manager()->CanBeDiscarded());
   EXPECT_FALSE(main_task_runner()->HasPendingTask());
-}
-
-TEST_F(FacetManagerTest,
-       GetAffiliationsAndBrandingFailureCallbackInvokedOnDestruction) {
-  CreateFacetManager();
-  EXPECT_FALSE(facet_manager()->IsCachedDataFresh());
-
-  GetAffiliationsAndBranding(StrategyOnCacheMiss::FETCH_OVER_NETWORK);
-  ASSERT_NO_FATAL_FAILURE(ExpectFetchNeeded());
-  EXPECT_FALSE(facet_manager()->CanBeDiscarded());
-
-  // Leave the fetch hanging and destroy the facet manager.
-  DestroyFacetManager();
-
-  ExpectConsumerFailureCallback();
-  fake_facet_manager_host()->reset_need_network_request();
 }
 
 // The following tests verify both typical and edge case behavior of Prefetch()
@@ -1431,32 +1365,6 @@ TEST_F(FacetManagerTest, RequestedNotificationsNeverCome) {
   DestroyFacetManager();
 }
 
-TEST_F(FacetManagerTest, StaleCachedDataBeCanDiscardedWhilePendingFetch) {
-  CreateFacetManager();
-  ASSERT_FALSE(facet_manager()->IsCachedDataFresh());
-
-  GetAffiliationsAndBranding(StrategyOnCacheMiss::FETCH_OVER_NETWORK);
-  ASSERT_NO_FATAL_FAILURE(ExpectFetchNeeded());
-  EXPECT_FALSE(facet_manager()->CanBeDiscarded());
-  EXPECT_TRUE(facet_manager()->CanCachedDataBeDiscarded());
-
-  fake_facet_manager_host()->reset_need_network_request();
-}
-
-TEST_F(FacetManagerTest, CachedDataBeCanDiscardedAfterOnDemandGetAffiliatons) {
-  CreateFacetManager();
-  ASSERT_FALSE(facet_manager()->IsCachedDataFresh());
-
-  GetAffiliationsAndBranding(StrategyOnCacheMiss::FETCH_OVER_NETWORK);
-  ASSERT_NO_FATAL_FAILURE(ExpectFetchNeeded());
-  ASSERT_NO_FATAL_FAILURE(CompleteFetch());
-  ExpectConsumerSuccessCallback();
-
-  EXPECT_TRUE(facet_manager()->IsCachedDataFresh());
-  EXPECT_TRUE(facet_manager()->CanBeDiscarded());
-  EXPECT_TRUE(facet_manager()->CanCachedDataBeDiscarded());
-}
-
 // The cached data can be discarded (indicated by 'd') if and only if it is no
 // longer needed to be kept fresh, or if it already stale.
 //
@@ -1512,34 +1420,6 @@ TEST_F(FacetManagerTest, CachedDataBeCanDiscardedAfterCancelledPrefetch) {
 
   EXPECT_TRUE(facet_manager()->CanBeDiscarded());
   EXPECT_TRUE(facet_manager()->CanCachedDataBeDiscarded());
-}
-
-TEST_F(FacetManagerTest, GetAffiliationsAndBrandingOnceOverNetworkSuccess) {
-  CreateFacetManager();
-  EXPECT_FALSE(facet_manager()->IsCachedDataFresh());
-
-  GetAffiliationsAndBranding(StrategyOnCacheMiss::TRY_ONCE_OVER_NETWORK);
-  ASSERT_NO_FATAL_FAILURE(ExpectFetchNeeded());
-  EXPECT_FALSE(facet_manager()->CanBeDiscarded());
-  ASSERT_NO_FATAL_FAILURE(CompleteFetch());
-  ExpectConsumerSuccessCallback();
-}
-
-TEST_F(FacetManagerTest, GetAffiliationsAndBrandingOnceOverNetworkFailure) {
-  CreateFacetManager();
-  EXPECT_FALSE(facet_manager()->IsCachedDataFresh());
-
-  GetAffiliationsAndBranding(StrategyOnCacheMiss::TRY_ONCE_OVER_NETWORK);
-  ASSERT_NO_FATAL_FAILURE(ExpectFetchNeeded());
-  EXPECT_FALSE(facet_manager()->CanBeDiscarded());
-
-  // Simulate failure.
-  fake_facet_manager_host()->reset_need_network_request();
-  facet_manager()->OnFetchFailed();
-  main_task_runner()->RunUntilIdle();
-  ASSERT_NO_FATAL_FAILURE(ExpectNoFetchNeeded());
-
-  ExpectConsumerFailureCallback();
 }
 
 }  // namespace affiliations

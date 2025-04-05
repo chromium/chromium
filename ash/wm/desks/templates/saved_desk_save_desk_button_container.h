@@ -29,20 +29,6 @@ class ASH_EXPORT SavedDeskSaveDeskButtonContainer
 
   ~SavedDeskSaveDeskButtonContainer() override;
 
-  SavedDeskSaveDeskButton* save_desk_as_template_button() {
-    return save_desk_as_template_button_;
-  }
-  const SavedDeskSaveDeskButton* save_desk_as_template_button() const {
-    return save_desk_as_template_button_;
-  }
-
-  SavedDeskSaveDeskButton* save_desk_for_later_button() {
-    return save_desk_for_later_button_;
-  }
-  const SavedDeskSaveDeskButton* save_desk_for_later_button() const {
-    return save_desk_for_later_button_;
-  }
-
   void UpdateButtonEnableStateAndTooltip(DeskTemplateType type,
                                          SaveDeskOptionStatus status);
 

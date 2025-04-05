@@ -626,11 +626,7 @@ int CanvasRenderingContext2D::Height() const {
 }
 
 bool CanvasRenderingContext2D::CanCreateCanvas2dResourceProvider() const {
-  if (CheckProviderInCanCreateCanvas2dResourceProvider()) {
-    return canvas()->GetOrCreateResourceProviderWithCurrentRasterModeHint();
-  } else {
-    return canvas()->GetOrCreateCanvas2DLayerBridge();
-  }
+  return canvas()->GetOrCreateResourceProviderWithCurrentRasterModeHint();
 }
 
 scoped_refptr<StaticBitmapImage> blink::CanvasRenderingContext2D::GetImage(

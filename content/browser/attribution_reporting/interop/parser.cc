@@ -173,6 +173,8 @@ class AttributionInteropParser {
       bool required) && {
     interop_config.needs_cross_app_web =
         ParseBool(dict, "needs_cross_app_web").value_or(false);
+    interop_config.needs_delivery_after_new_navigation =
+        ParseBool(dict, "needs_delivery_after_new_navigation").value_or(false);
 
     AttributionConfig& config = interop_config.attribution_config;
 
@@ -379,6 +381,10 @@ class AttributionInteropParser {
                   /*previous_time=*/events.empty() ? base::Time::Min()
                                                    : events.back().time,
                   /*strictly_greater=*/true);
+    if (dict.FindBool("navigation").value_or(false)) {
+      events.emplace_back(time, AttributionSimulationEvent::Navigation());
+      return;
+    }
 
     std::optional<SuitableOrigin> context_origin;
     AttributionReportingEligibility eligibility;

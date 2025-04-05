@@ -42,6 +42,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_sync_settings_consumer.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/sync_error_settings_command_handler.h"
+#import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -54,7 +55,6 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
-#import "ios/chrome/browser/signin/model/chrome_account_manager_service_observer_bridge.h"
 #import "ios/chrome/browser/signin/model/constants.h"
 #import "ios/chrome/browser/sync/model/enterprise_utils.h"
 #import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
@@ -85,8 +85,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
 
 }  // namespace
 
-@interface ManageSyncSettingsMediator () <IdentityManagerObserverBridgeDelegate,
-                                          ChromeAccountManagerServiceObserver>
+@interface ManageSyncSettingsMediator () <IdentityManagerObserverBridgeDelegate>
 
 // Model item for each data types.
 @property(nonatomic, strong) NSArray<TableViewItem*>* syncSwitchItems;
@@ -121,9 +120,6 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   raw_ptr<AuthenticationService> _authenticationService;
   // Account manager service to retrieve Chrome identities.
   raw_ptr<ChromeAccountManagerService> _chromeAccountManagerService;
-  // Chrome account manager service observer bridge.
-  std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
-      _accountManagerServiceObserver;
   // The pref service.
   raw_ptr<PrefService> _prefService;
   // Signed-in identity. Note: may be nil while signing out.
@@ -148,9 +144,6 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
                                                                 self);
     _authenticationService = authenticationService;
     _chromeAccountManagerService = accountManagerService;
-    _accountManagerServiceObserver =
-        std::make_unique<ChromeAccountManagerServiceObserverBridge>(
-            self, _chromeAccountManagerService);
     _signedInIdentity = _authenticationService->GetPrimaryIdentity(
         signin::ConsentLevel::kSignin);
     _prefService = prefService;
@@ -171,7 +164,6 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   _identityManagerObserver.reset();
   _authenticationService = nullptr;
   _chromeAccountManagerService = nullptr;
-  _accountManagerServiceObserver.reset();
   _prefService = nullptr;
   _signedInIdentity = nil;
   [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -826,7 +818,6 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
     case syncer::UserSelectableType::kExtensions:
     case syncer::UserSelectableType::kApps:
     case syncer::UserSelectableType::kSavedTabGroups:
-    case syncer::UserSelectableType::kSharedTabGroupData:
     case syncer::UserSelectableType::kProductComparison:
     case syncer::UserSelectableType::kCookies:
       NOTREACHED();
@@ -968,14 +959,6 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
     case signin::PrimaryAccountChangeEvent::Type::kNone:
       break;
   }
-}
-
-#pragma mark - ChromeAccountManagerServiceObserver
-
-- (void)onChromeAccountManagerServiceShutdown:
-    (ChromeAccountManagerService*)accountManagerService {
-  // TODO(crbug.com/40284086): Remove `[self disconnect]`.
-  [self disconnect];
 }
 
 #pragma mark - ManageSyncSettingsServiceDelegate

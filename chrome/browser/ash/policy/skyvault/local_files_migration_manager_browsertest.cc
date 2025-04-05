@@ -99,33 +99,6 @@ MigrationDestination GetCloudProvider(const std::string& destination) {
   }
   return MigrationDestination::kNotSpecified;
 }
-
-class MockCleanupHandler : public chromeos::FilesCleanupHandler {
- public:
-  MockCleanupHandler() {
-    ON_CALL(*this, Cleanup)
-        .WillByDefault(
-            [](base::OnceCallback<void(
-                   const std::optional<std::string>& error_message)> callback) {
-              std::move(callback).Run(std::nullopt);
-            });
-  }
-
-  MockCleanupHandler(const MockCleanupHandler&) = delete;
-  MockCleanupHandler& operator=(const MockCleanupHandler&) = delete;
-
-  ~MockCleanupHandler() override = default;
-
-  base::WeakPtr<MockCleanupHandler> GetWeakPtr() {
-    return weak_ptr_factory_.GetWeakPtr();
-  }
-
-  MOCK_METHOD(void, Cleanup, (CleanupHandlerCallback callback), (override));
-
- private:
-  base::WeakPtrFactory<MockCleanupHandler> weak_ptr_factory_{this};
-};
-
 }  // namespace
 
 class LocalFilesMigrationManagerTest : public policy::PolicyTest {
@@ -694,6 +667,57 @@ IN_PROC_BROWSER_TEST_F(LocalFilesMigrationManagerTest, DeleteLocalFiles) {
   task_runner->FastForwardBy(
       base::TimeDelta(kTotalMigrationTimeout - kFinalMigrationTimeout));
   task_runner->FastForwardBy(base::TimeDelta(kTotalMigrationTimeout));
+}
+
+// Tests that when LocalFilesMigrationDestination policy is set to "delete", a
+// failed deletion is retried.
+IN_PROC_BROWSER_TEST_F(LocalFilesMigrationManagerTest,
+                       DeleteLocalFilesRetriesOnFailure) {
+  EXPECT_CALL(observer_, OnMigrationSucceeded).Times(1);
+  SetUpMyFiles();
+  base::FilePath source_file_path = CreateTestFile(kTestFile, my_files_dir_);
+
+  base::ScopedMockTimeMessageLoopTaskRunner task_runner;
+
+  SetMockCleanupHandler();
+
+  base::test::TestFuture<void> cleanup_called_again;
+  EXPECT_CALL(*cleanup_handler_, Cleanup)
+      .WillOnce(
+          [](base::OnceCallback<void(
+                 const std::optional<std::string>& error_message)> callback) {
+            std::move(callback).Run("Something failed");
+          })
+      .WillOnce(
+          [&cleanup_called_again](
+              base::OnceCallback<void(
+                  const std::optional<std::string>& error_message)> callback) {
+            std::move(callback).Run(std::nullopt);
+            cleanup_called_again.SetValue();
+          });
+
+  // Write access will be disallowed.
+  EXPECT_CALL(userdataauth_, SetUserDataStorageWriteEnabled)
+      .WillOnce(
+          ReplyWith(::user_data_auth::SetUserDataStorageWriteEnabledReply()));
+
+  SetMigrationPolicies(/*local_user_files_allowed=*/false,
+                       /*destination=*/"delete");
+  task_runner->FastForwardBy(
+      base::TimeDelta(kTotalMigrationTimeout - kFinalMigrationTimeout));
+  task_runner->FastForwardBy(base::TimeDelta(kTotalMigrationTimeout));
+
+  ASSERT_TRUE(cleanup_called_again.Wait())
+      << "Cleanup wasn't called the second time";
+
+  histogram_tester_.ExpectBucketCount(
+      "Enterprise.SkyVault.Migration.Delete.CleanupError", true, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.SkyVault.Migration.Delete.Retry",
+      /*sample=*/1.0,
+      /*expected_bucket_count=*/1);
+  histogram_tester_.ExpectBucketCount(
+      "Enterprise.SkyVault.Migration.Delete.Failed", false, 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(

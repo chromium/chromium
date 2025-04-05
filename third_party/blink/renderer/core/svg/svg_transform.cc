@@ -45,11 +45,6 @@ SVGTransform* SVGTransform::Clone() const {
                                             matrix_);
 }
 
-SVGPropertyBase* SVGTransform::CloneForAnimation(const String&) const {
-  // SVGTransform is never animated.
-  NOTREACHED();
-}
-
 void SVGTransform::SetMatrix(const AffineTransform& matrix) {
   OnMatrixChange();
   matrix_ = matrix;

@@ -55,6 +55,7 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/rand_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
@@ -116,9 +117,14 @@ class RegistryLookupCache {
         }
       }
     }
-    UMA_HISTOGRAM_BOOLEAN(
-        "Net.RegistryControlledDomains.GetDomainAndRegistry.CacheHit",
-        result.has_value());
+
+    // This method is called frequently, so we only record a small fraction of
+    // the results to avoid excessive overhead.
+    if (base::ShouldRecordSubsampledMetric(0.00001)) {
+      UMA_HISTOGRAM_BOOLEAN(
+          "Net.RegistryControlledDomains.GetDomainAndRegistry.CacheHit.Sampled",
+          result.has_value());
+    }
     return result;
   }
 

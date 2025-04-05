@@ -123,6 +123,15 @@ class ContextMenuNativeDelegateImpl implements ContextMenuNativeDelegate {
     }
 
     @Override
+    public void inspectElement(int x, int y) {
+        if (mNativePtr == 0) return;
+
+        ContextMenuNativeDelegateImplJni.get()
+                .inspectElement(
+                        mNativePtr, ContextMenuNativeDelegateImpl.this, mRenderFrameHost, x, y);
+    }
+
+    @Override
     public RenderFrameHost getRenderFrameHost() {
         return mRenderFrameHost;
     }
@@ -183,5 +192,12 @@ class ContextMenuNativeDelegateImpl implements ContextMenuNativeDelegate {
                 long nativeContextMenuNativeDelegateImpl,
                 ContextMenuNativeDelegateImpl caller,
                 RenderFrameHost renderFrameHost);
+
+        void inspectElement(
+                long nativeContextMenuNativeDelegateImpl,
+                ContextMenuNativeDelegateImpl caller,
+                RenderFrameHost renderFrameHost,
+                int x,
+                int y);
     }
 }

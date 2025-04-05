@@ -55,12 +55,12 @@ NSDictionary* NSDictionaryFromDictValue(const base::Value::Dict& value) {
 
 - (void)addUserScript:(nonnull CWVUserScript*)userScript {
   [_userScripts addObject:userScript];
-  [self updateEarlyPageScript];
+  [self updatePageScripts];
 }
 
 - (void)removeAllUserScripts {
   [_userScripts removeAllObjects];
-  [self updateEarlyPageScript];
+  [self updatePageScripts];
 }
 
 - (nonnull NSArray<CWVUserScript*>*)userScripts {
@@ -69,13 +69,23 @@ NSDictionary* NSDictionaryFromDictValue(const base::Value::Dict& value) {
 
 // Updates the early page script associated with the BrowserState with the
 // content of _userScripts.
-- (void)updateEarlyPageScript {
+- (void)updatePageScripts {
   NSMutableString* joinedAllFramesScript = [[NSMutableString alloc] init];
   NSMutableString* joinedMainFrameScript = [[NSMutableString alloc] init];
+  NSMutableString* joinedAllFramesDocEndScript = [[NSMutableString alloc] init];
+  NSMutableString* joinedMainFrameDocEndScript = [[NSMutableString alloc] init];
   for (CWVUserScript* script in _userScripts) {
     // Inserts "\n" between scripts to make it safer to join multiple scripts,
     // in case the first script doesn't end with ";" or "\n".
-    if (script.isForMainFrameOnly) {
+    if (script.injectionTime == CWVUserScriptInjectionTimeAtDocumentEnd) {
+      if (script.isForMainFrameOnly) {
+        [joinedMainFrameDocEndScript appendString:script.source];
+        [joinedMainFrameDocEndScript appendString:@"\n"];
+      } else {
+        [joinedAllFramesDocEndScript appendString:script.source];
+        [joinedAllFramesDocEndScript appendString:@"\n"];
+      }
+    } else if (script.isForMainFrameOnly) {
       [joinedMainFrameScript appendString:script.source];
       [joinedMainFrameScript appendString:@"\n"];
     } else {
@@ -85,7 +95,9 @@ NSDictionary* NSDictionaryFromDictValue(const base::Value::Dict& value) {
   }
   WebViewScriptsJavaScriptFeature::FromBrowserState(_configuration.browserState)
       ->SetScripts(base::SysNSStringToUTF8(joinedAllFramesScript),
-                   base::SysNSStringToUTF8(joinedMainFrameScript));
+                   base::SysNSStringToUTF8(joinedMainFrameScript),
+                   base::SysNSStringToUTF8(joinedAllFramesDocEndScript),
+                   base::SysNSStringToUTF8(joinedMainFrameDocEndScript));
 }
 
 - (void)addMessageHandler:(void (^)(NSDictionary* payload))handler

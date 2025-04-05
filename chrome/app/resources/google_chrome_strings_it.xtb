@@ -57,6 +57,7 @@
 <translation id="1786044937610313874">Le scorciatoie si aprono in Chrome</translation>
 <translation id="178701303897325119">Questa estensione non è più supportata. Chrome consiglia di rimuoverla.</translation>
 <translation id="1812689907177901597">Se disattivi questa funzione, puoi accedere ai siti Google quali Gmail senza accedere a Chrome</translation>
+<translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome consiglia di mettere in pausa la scheda che rallenta il browser}other{Chrome consiglia di mettere in pausa le schede che rallentano il browser}}</translation>
 <translation id="1838374766361614909">Cancella ricerca</translation>
 <translation id="1860536484129686729">Per questo sito Chrome ha bisogno dell'autorizzazione ad accedere alla fotocamera</translation>
 <translation id="1873233029667955273">Google Chrome non è il browser predefinito</translation>
@@ -102,7 +103,6 @@
 <translation id="234869673307233423">Chrome non può controllare le tue password. Riprova più tardi.</translation>
 <translation id="235650106824528204">Tutti i dati di Chrome generati durante l'utilizzo di questo profilo (come i preferiti, la cronologia, le password e altre impostazioni) possono essere rimossi dall'amministratore del profilo di lavoro. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Continua</translation>
-<translation id="2401189691232800402">Sistema ChromeOS</translation>
 <translation id="2403703063067034158">Errore di avvio: è in esecuzione un'altra istanza di configurazione. Riprova più tardi.</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{Una o più estensioni di Chrome stavano accedendo a 1 dispositivo HID}=1{Una o più estensioni di Chrome stanno accedendo a 1 dispositivo HID}other{Una o più estensioni di Chrome stanno accedendo a # dispositivi HID}}</translation>
 <translation id="2424440923901031101">Questa estensione viola le norme del Chrome Web Store e potrebbe non essere sicura. Rimuovila da Chrome in modo che non possa più vedere e modificare i tuoi dati sui siti che visiti, incluse le tue informazioni personali.</translation>
@@ -156,6 +156,7 @@
 <translation id="2945997411976714835">Errore di installazione: impossibile avviare il processo di installazione.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - Accesso rete - Chrome</translation>
 <translation id="2970681950995291301">Per rimuovere il tuo Account Google da Chrome, esci da Chrome nella pagina Impostazioni</translation>
+<translation id="2991167882679440829">Le password e altri dati di Chrome salvati nel tuo Account Google verranno rimossi da questo dispositivo. Per usarli di nuovo in Chrome, accedi nuovamente.</translation>
 <translation id="2994465299455873643">Fornisce servizi di crittografia e un modo sicuro per recuperare <ph name="BROWSER_NAME" /> in caso diventasse obsoleto. Se questo servizio viene disattivato, <ph name="BROWSER_NAME" /> potrebbe perdere l'accesso ai dati criptati e <ph name="BROWSER_NAME" /> potrebbe non essere in grado di ripristinarsi.</translation>
 <translation id="3003694935412297923">Tutte le attività</translation>
 <translation id="3018957014024118866">Elimina i dati anche da Chrome (<ph name="URL" />)</translation>
@@ -184,6 +185,7 @@
 <translation id="3282568296779691940">Accedi a Chrome</translation>
 <translation id="3286538390144397061">Riavvia adesso</translation>
 <translation id="3292333338048274092">Dovrai quindi riavviare Chrome.</translation>
+<translation id="3327226547491422998">In un secondo momento, Chrome può chiederti se vuoi usare le informazioni salvate per compilare automaticamente i moduli per te</translation>
 <translation id="3360895254066713204">Supporto Chrome</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome verrà riavviato ora}=1{Chrome verrà riavviato tra 1 secondo}other{Chrome verrà riavviato tra # secondi}}</translation>
 <translation id="3396977131400919238">Durante l'installazione si è verificato un errore del sistema operativo. Scarica nuovamente Google Chrome.</translation>
@@ -254,6 +256,7 @@
 <translation id="4281844954008187215">Termini di servizio</translation>
 <translation id="4293420128516039005">Accedi per sincronizzare e personalizzare Chrome sui tuoi dispositivi</translation>
 <translation id="430327780270213103">Consenti all'estensione di mostrare le richieste di accesso nella barra degli strumenti di Chrome</translation>
+<translation id="4326552909330437744">{NUM_TABS,plural, =1{Chrome consiglia di mettere in pausa la scheda che rallenta il browser}other{Chrome consiglia di mettere in pausa le schede che rallentano il browser}}</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">Per accedere alla personalizzazione e ad altre funzionalità, includi Chrome in Attività web e app e nei servizi Google collegati</translation>
 <translation id="4334294535648607276">Download completato.</translation>
@@ -397,6 +400,7 @@
 <translation id="6251759518630934363">Ricevi un avviso in caso di siti pericolosi, inclusi quelli di cui Google non era a conoscenza, in base all'analisi di più dati provenienti dai siti rispetto al livello Protezione standard. Puoi scegliere di ignorare gli avvisi di Chrome.</translation>
 <translation id="6277547788421725101">Uno dei tuoi genitori ha disattivato l'impostazione "Autorizzazioni per siti, app ed estensioni" per Chrome</translation>
 <translation id="627882678981830918">Personalizza e controlla Chrome. Imposta Chrome come browser predefinito.</translation>
+<translation id="6288580400488258237">Imposta Google Chrome come browser predefinito e aggancialelo alla barra delle applicazioni</translation>
 <translation id="6291089322031436445">App di Chrome Dev</translation>
 <translation id="6291549208091401781">Google Chrome è già installato per tutti gli utenti sul computer.</translation>
 <translation id="6319856120645568262">Chrome deve avere l'autorizzazione per mappare l'ambiente circostante e monitorare le tue mani</translation>
@@ -609,7 +613,6 @@
 <translation id="8999208279178790196">{0,plural, =0{È disponibile un aggiornamento di Chrome}=1{È disponibile un aggiornamento di Chrome}other{È disponibile un aggiornamento di Chrome da # giorni}}</translation>
 <translation id="9014771989710951291">Più organizzazioni gestiscono Chrome</translation>
 <translation id="9024318700713112071">Imposta Chrome come browser predefinito</translation>
-<translation id="9053892488859122171">Sistema ChromeOS Flex</translation>
 <translation id="9090566250983691233">Scopri perché Chrome blocca alcuni file</translation>
 <translation id="9106236359747881194">Seleziona il testo da cercare</translation>
 <translation id="911206726377975832">Eliminare anche i tuoi dati di navigazione?</translation>

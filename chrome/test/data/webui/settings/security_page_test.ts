@@ -90,8 +90,8 @@ suite('Main', function() {
     // Chrome Root Store Help link should not be present since
     // kEnableCertManagementUIV2 feature flag is enabled by
     // SettingsSecurityPageTest constructor.
-    // TODO(crbug.com/40928765): remove this comment once the feature flag is
-    // set to default enabled.
+    // TODO(crbug.com/390333881): remove this test case once the feature flag
+    // and old implementation are removed.
     const row =
         page.shadowRoot!.querySelector<HTMLElement>('#chromeCertificates');
     assertFalse(!!row, 'Chrome Root Store Help Center link unexpectedly found');

@@ -118,7 +118,7 @@ namespace {
 // TODO(crbug.com/347909405): Remove this
 BASE_FEATURE(kDumpWithoutCrashingOnMissingRenderPassBacking,
              "DumpWithoutCrashingOnMissingRenderPassBacking",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_WIN)
 // Use BufferQueue for the primary plane instead of a DXGI swap chain or DComp
@@ -1456,8 +1456,8 @@ gfx::ColorSpace SkiaRenderer::CurrentDrawLayerColorSpace() const {
     return it->second.color_space;
   }
 
-  // If there is no render pass backing, we must be drawing the root pass.
-  CHECK(!output_surface_->capabilities().renderer_allocates_images);
+  // If there is no render pass backing, we must be drawing the root pass or
+  // drawing a render pass overlay backing.
   return RenderPassColorSpace(current_frame()->root_render_pass);
 }
 
@@ -2733,12 +2733,7 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
   params->vis_tex_coords = cc::MathUtil::ScaleRectProportional(
       uv_rect, gfx::RectF(quad->rect), params->visible_rect);
 
-  // Use provided resource size if not empty, otherwise use the full image size
-  // as the content area
-  gfx::RectF valid_texel_bounds =
-      quad->resource_size_in_pixels().IsEmpty()
-          ? gfx::RectF(image->width(), image->height())
-          : gfx::RectF(gfx::SizeF(quad->resource_size_in_pixels()));
+  gfx::RectF valid_texel_bounds = gfx::RectF(image->width(), image->height());
   // For video frames, `valid_texel_bounds` is VideoFrame::visible_rect which is
   // passed here via `uv_rect`.
   if (quad->is_video_frame) {

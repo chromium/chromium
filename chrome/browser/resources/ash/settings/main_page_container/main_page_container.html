@@ -149,48 +149,48 @@
   </div>
 
   <template is="dom-if"
-      if="[[shouldStampPage_(pageAvailability, Section.kNetwork)]]"
+      if="[[shouldStampPage_(pageAvailability, SectionEnum_.kNetwork)]]"
       restamp>
-    <page-displayer section="[[Section.kNetwork]]">
+    <page-displayer section="[[SectionEnum_.kNetwork]]">
       <settings-internet-page prefs="{{prefs}}">
       </settings-internet-page>
     </page-displayer>
   </template>
   <template is="dom-if"
-      if="[[shouldStampPage_(pageAvailability, Section.kBluetooth)]]"
+      if="[[shouldStampPage_(pageAvailability, SectionEnum_.kBluetooth)]]"
       restamp>
-    <page-displayer section="[[Section.kBluetooth]]">
+    <page-displayer section="[[SectionEnum_.kBluetooth]]">
       <os-settings-bluetooth-page prefs="{{prefs}}">
       </os-settings-bluetooth-page>
     </page-displayer>
   </template>
   <template is="dom-if"
-      if="[[shouldStampPage_(pageAvailability, Section.kMultiDevice)]]"
+      if="[[shouldStampPage_(pageAvailability, SectionEnum_.kMultiDevice)]]"
       restamp>
-    <page-displayer section="[[Section.kMultiDevice]]">
+    <page-displayer section="[[SectionEnum_.kMultiDevice]]">
       <settings-multidevice-page prefs="{{prefs}}">
       </settings-multidevice-page>
     </page-displayer>
   </template>
   <template is="dom-if"
-      if="[[shouldStampPage_(pageAvailability, Section.kPeople)]]"
+      if="[[shouldStampPage_(pageAvailability, SectionEnum_.kPeople)]]"
       restamp>
-    <page-displayer section="[[Section.kPeople]]">
+    <page-displayer section="[[SectionEnum_.kPeople]]">
       <os-settings-people-page prefs="{{prefs}}">
       </os-settings-people-page>
     </page-displayer>
   </template>
   <template is="dom-if"
-      if="[[shouldStampPage_(pageAvailability, Section.kKerberos)]]"
+      if="[[shouldStampPage_(pageAvailability, SectionEnum_.kKerberos)]]"
       restamp>
-    <page-displayer section="[[Section.kKerberos]]">
+    <page-displayer section="[[SectionEnum_.kKerberos]]">
       <settings-kerberos-page></settings-kerberos-page>
     </page-displayer>
   </template>
   <template is="dom-if"
-      if="[[shouldStampPage_(pageAvailability, Section.kDevice)]]"
+      if="[[shouldStampPage_(pageAvailability, SectionEnum_.kDevice)]]"
       restamp>
-    <page-displayer section="[[Section.kDevice]]">
+    <page-displayer section="[[SectionEnum_.kDevice]]">
       <settings-device-page prefs="{{prefs}}"
           languages="[[languages_]]"
           language-helper="[[languageHelper_]]">
@@ -198,25 +198,25 @@
     </page-displayer>
   </template>
   <template is="dom-if"
-      if="[[shouldStampPage_(pageAvailability, Section.kPersonalization)]]"
+      if="[[shouldStampPage_(pageAvailability, SectionEnum_.kPersonalization)]]"
       restamp>
-    <page-displayer section="[[Section.kPersonalization]]">
+    <page-displayer section="[[SectionEnum_.kPersonalization]]">
       <settings-personalization-page prefs="{{prefs}}">
       </settings-personalization-page>
     </page-displayer>
   </template>
   <template is="dom-if"
-      if="[[shouldStampPage_(pageAvailability, Section.kPrivacyAndSecurity)]]"
+      if="[[shouldStampPage_(pageAvailability, SectionEnum_.kPrivacyAndSecurity)]]"
       restamp>
-    <page-displayer section="[[Section.kPrivacyAndSecurity]]">
+    <page-displayer section="[[SectionEnum_.kPrivacyAndSecurity]]">
       <os-settings-privacy-page prefs="{{prefs}}">
       </os-settings-privacy-page>
     </page-displayer>
   </template>
   <template is="dom-if"
-      if="[[shouldStampPage_(pageAvailability, Section.kApps)]]"
+      if="[[shouldStampPage_(pageAvailability, SectionEnum_.kApps)]]"
       restamp>
-    <page-displayer section="[[Section.kApps]]">
+    <page-displayer section="[[SectionEnum_.kApps]]">
       <os-settings-apps-page
           prefs="{{prefs}}"
           android-apps-info="[[androidAppsInfo]]">
@@ -224,9 +224,9 @@
     </page-displayer>
   </template>
   <template is="dom-if"
-      if="[[shouldStampPage_(pageAvailability, Section.kAccessibility)]]"
+      if="[[shouldStampPage_(pageAvailability, SectionEnum_.kAccessibility)]]"
       restamp>
-    <page-displayer section="[[Section.kAccessibility]]">
+    <page-displayer section="[[SectionEnum_.kAccessibility]]">
       <os-settings-a11y-page prefs="{{prefs}}"
           languages="[[languages_]]"
           language-helper="[[languageHelper_]]">
@@ -234,9 +234,9 @@
     </page-displayer>
   </template>
   <template is="dom-if"
-      if="[[shouldStampPage_(pageAvailability, Section.kSystemPreferences)]]"
+      if="[[shouldStampPage_(pageAvailability, SectionEnum_.kSystemPreferences)]]"
       restamp>
-    <page-displayer section="[[Section.kSystemPreferences]]">
+    <page-displayer section="[[SectionEnum_.kSystemPreferences]]">
       <settings-system-preferences-page prefs="{{prefs}}"
           languages="[[languages_]]"
           language-helper="[[languageHelper_]]">
@@ -244,9 +244,9 @@
     </page-displayer>
   </template>
   <template is="dom-if"
-      if="[[shouldStampPage_(pageAvailability, Section.kAboutChromeOs)]]"
+      if="[[shouldStampPage_(pageAvailability, SectionEnum_.kAboutChromeOs)]]"
       restamp>
-    <page-displayer section="[[Section.kAboutChromeOs]]">
+    <page-displayer section="[[SectionEnum_.kAboutChromeOs]]">
       <os-about-page prefs="{{prefs}}"></os-about-page>
     </page-displayer>
   </template>

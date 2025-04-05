@@ -3,15 +3,15 @@
 // found in the LICENSE file.
 
 import {catchAndReportErrors} from '//ios/web/public/js_messaging/resources/error_reporting.js';
-import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 
-for (const namespace in gCrWeb) {
-  const namespaceObject = gCrWeb[namespace];
+for (const namespace in gCrWebLegacy) {
+  const namespaceObject = gCrWebLegacy[namespace];
   for (const itemName in namespaceObject) {
     const exposedItem = namespaceObject[itemName];
     if (typeof exposedItem === 'function') {
       const funcName = '__gCrWeb.' + namespace + '.' + itemName;
-      gCrWeb[namespace][itemName] = function(...args: unknown[]) {
+      gCrWebLegacy[namespace][itemName] = function(...args: unknown[]) {
         return catchAndReportErrors.apply(null, [funcName, exposedItem, args]);
       };
     }

@@ -2070,21 +2070,7 @@ bool ShellUtil::MakeChromeDefault(int shell_change,
 
 // static
 bool ShellUtil::LaunchUninstallAppsSettings() {
-  static constexpr wchar_t kControlPanelAppModelId[] =
-      L"windows.immersivecontrolpanel_cw5n1h2txyewy"
-      L"!microsoft.windows.immersivecontrolpanel";
-
-  Microsoft::WRL::ComPtr<IApplicationActivationManager> activator;
-  HRESULT hr = ::CoCreateInstance(CLSID_ApplicationActivationManager, nullptr,
-                                  CLSCTX_ALL, IID_PPV_ARGS(&activator));
-  if (FAILED(hr))
-    return false;
-
-  DWORD pid = 0;
-  CoAllowSetForegroundWindow(activator.Get(), nullptr);
-  hr = activator->ActivateApplication(
-      kControlPanelAppModelId, L"page=SettingsPageAppsSizes", AO_NONE, &pid);
-  return SUCCEEDED(hr);
+  return base::win::LaunchSettingsUri(L"page=SettingsPageAppsSizes");
 }
 
 bool ShellUtil::ShowMakeChromeDefaultSystemUI(
@@ -2105,15 +2091,8 @@ bool ShellUtil::ShowMakeChromeDefaultSystemUI(
     if (is_win11_or_greater) {
       // Launch the Windows Apps Settings dialog and navigate to the settings
       // page for Chrome.
-      bool is_per_user_install = InstallUtil::IsPerUserInstall();
-      std::wstring settings_url =
-          base::StrCat({L"ms-settings:defaultapps?",
-                        is_per_user_install ? L"registeredAppUser="
-                                            : L"registeredAppMachine=",
-                        GetApplicationName(chrome_exe)});
-      succeeded = reinterpret_cast<intptr_t>(
-                      ShellExecute(nullptr, L"open", settings_url.c_str(),
-                                   nullptr, nullptr, SW_SHOWNORMAL)) > 32;
+      succeeded = base::win::LaunchSettingsDefaultApps(
+          GetApplicationName(chrome_exe), InstallUtil::IsPerUserInstall());
     }
     if (!is_win11_or_greater || !succeeded) {
       // Launch the Windows Apps Settings dialog.
@@ -2123,6 +2102,43 @@ bool ShellUtil::ShowMakeChromeDefaultSystemUI(
   if (succeeded && is_default)
     RegisterChromeAsDefaultXPStyle(CURRENT_USER, chrome_exe);
   return succeeded;
+}
+
+bool ShellUtil::ShowSetDefaultForFileExtensionSystemUI(
+    const base::FilePath& chrome_exe,
+    base::wcstring_view file_extension,
+    HWND parent_hwnd) {
+  // Ensure `file_extension` is correctly formatted and is one of the extensions
+  // Chrome handles.
+  DCHECK(file_extension.starts_with(base::FilePath::kExtensionSeparator));
+  DCHECK(std::ranges::any_of(base::span(ShellUtil::kPotentialFileAssociations),
+                             [&file_extension](const wchar_t* candidate) {
+                               return base::FilePath::CompareEqualIgnoreCase(
+                                   file_extension, candidate);
+                             }));
+  // If Chrome is not eligible to become the default handler, do nothing.
+  if (!install_static::SupportsSetAsDefaultBrowser() ||
+      !RegisterChromeBrowser(chrome_exe, std::wstring(), true)) {
+    return false;
+  }
+  // If Chrome is already the default handler, do nothing.
+  if (GetChromeDefaultFileHandlerState(file_extension) == IS_DEFAULT) {
+    return true;
+  }
+  // Open the "Select a default app for `file_extension` files" dialog.
+  if (base::win::LaunchDefaultAppForFileExtensionSettings(file_extension,
+                                                          parent_hwnd)) {
+    return true;
+  }
+  // On Windows 11, fall back to the "Default apps" settings page for Chrome.
+  if (base::win::GetVersion() >= base::win::Version::WIN11) {
+    return base::win::LaunchSettingsDefaultApps(
+        GetApplicationName(chrome_exe), InstallUtil::IsPerUserInstall());
+  }
+  // On Windows 10, fall back to the "Choose default apps by file type" page.
+  return base::win::LaunchSettingsUri(
+      L"page=SettingsPageAppsDefaults"
+      L"&target=SettingsPageAppsDefaultsFileExtensionView");
 }
 
 bool ShellUtil::MakeChromeDefaultProtocolClient(

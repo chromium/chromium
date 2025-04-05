@@ -1340,8 +1340,6 @@ TEST_F(DragWindowFromShelfControllerTest,
 
   ui::ScopedAnimationDurationScaleMode animation_scale(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-  UpdateDisplay("1366x768");
-
   auto window = CreateTestWindow();
   auto window_transient = CreateTransientModalChildWindow(
       window.get(), gfx::Rect(0, 20, 1366, 728));
@@ -1453,7 +1451,6 @@ TEST_F(DragWindowFromShelfControllerTest, DestroyTransientWhileAnimating) {
 // Tests that destroying a dragged window in split view will not cause crash.
 TEST_F(DragWindowFromShelfControllerTest,
        DestroyWindowDuringDraggingInSplitView) {
-  UpdateDisplay("500x400");
   const gfx::Rect shelf_bounds = GetShelfBounds();
 
   // Create a window and snapped to the left in split screen.
@@ -1473,7 +1470,6 @@ TEST_F(DragWindowFromShelfControllerTest,
 // Tests that there should be no crash if we exit overview by switching desks
 // during window dragging. See details in http://b/326074747.
 TEST_F(DragWindowFromShelfControllerTest, NoCrashDuringDraggingIfExitOverview) {
-  UpdateDisplay("500x400");
   ui::ScopedAnimationDurationScaleMode animation_scale(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
@@ -1501,6 +1497,29 @@ TEST_F(DragWindowFromShelfControllerTest, NoCrashDuringDraggingIfExitOverview) {
   Drag(gfx::Point(200, 100), 0.f, 1.f);
 
   EndDrag(GetShelfBounds().CenterPoint(), /*velocity_y=*/std::nullopt);
+}
+
+// Tests that the transient child of a window in split view remains visible.
+TEST_F(DragWindowFromShelfControllerTest, DragInSplitViewWithTransientChild) {
+  const gfx::Rect shelf_bounds = GetShelfBounds();
+
+  // Create a window and snapped to the left in split screen.
+  auto window1 = CreateTestWindow();
+  split_view_controller()->SnapWindow(window1.get(), SnapPosition::kPrimary);
+  // Create another window with a transient child and snapped to the right
+  auto window2 = CreateTestWindow();
+  split_view_controller()->SnapWindow(window2.get(), SnapPosition::kSecondary);
+  auto transient_child_window = CreateTransientModalChildWindow(
+      window2.get(), gfx::Rect(300, 20, 150, 200));
+
+  // Try to drag the left window from shelf.
+  StartDrag(window1.get(), shelf_bounds.left_center());
+  Drag(gfx::Point(0, 200), 1.f, 1.f);
+  DragWindowFromShelfControllerTestApi().WaitUntilOverviewIsShown(
+      window_drag_controller());
+  EndDrag(gfx::Point(0, 200), /*velocity_y=*/std::nullopt);
+
+  EXPECT_TRUE(transient_child_window->IsVisible());
 }
 
 class FloatDragWindowFromShelfControllerTest
@@ -1614,8 +1633,6 @@ TEST_F(FloatDragWindowFromShelfControllerTest, WindowStatePreserved) {
 // Tests that the correct window (if any) gets chosen by the shelf layout
 // manager when there is a floated window.
 TEST_F(FloatDragWindowFromShelfControllerTest, DraggingFloatedWindow) {
-  UpdateDisplay("800x600");
-
   auto floated_window = CreateFloatedWindow();
 
   // Start dragging on the shelf, but not under the floated window. Verify that
@@ -1667,8 +1684,6 @@ TEST_F(FloatDragWindowFromShelfControllerTest, DraggingFloatedWindow) {
 // there is a floated and maximized window.
 TEST_F(FloatDragWindowFromShelfControllerTest,
        DraggingFloatedAndMaximizedWindow) {
-  UpdateDisplay("800x600");
-
   // Create one maximized and one floated window.
   auto maximized_window = CreateTestWindow();
   auto floated_window = CreateFloatedWindow();
@@ -1707,8 +1722,6 @@ TEST_F(FloatDragWindowFromShelfControllerTest,
 // there are floated and snapped windows.
 TEST_F(FloatDragWindowFromShelfControllerTest,
        DraggingFloatedAndSnappedWindow) {
-  UpdateDisplay("800x600");
-
   // Create two snapped and one floated window.
   auto left_window = CreateTestWindow();
   auto right_window = CreateTestWindow();

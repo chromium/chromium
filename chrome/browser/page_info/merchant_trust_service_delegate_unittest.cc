@@ -43,7 +43,7 @@ TEST_F(MerchantTrustServiceDelegateTest, ControlSurvey) {
   EXPECT_CALL(
       *mock_hats_service(),
       LaunchSurvey(kHatsSurveyTriggerMerchantTrustEvaluationControlSurvey, _, _,
-                   _, _));
+                   _, _, _, _));
 
   feature_list.InitWithFeaturesAndParameters(
       {{page_info::kMerchantTrustEvaluationControlSurvey, {}}},
@@ -57,7 +57,7 @@ TEST_F(MerchantTrustServiceDelegateTest, ExperimentSurvey) {
   EXPECT_CALL(
       *mock_hats_service(),
       LaunchSurvey(kHatsSurveyTriggerMerchantTrustEvaluationExperimentSurvey, _,
-                   _, _, _));
+                   _, _, _, _, _));
 
   std::vector<base::test::FeatureRefAndParams> enabled_features = {
       {page_info::kMerchantTrust,

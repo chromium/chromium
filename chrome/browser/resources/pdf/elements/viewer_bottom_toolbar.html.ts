@@ -31,7 +31,7 @@ export function getHtml(this: ViewerBottomToolbarElement) {
       </viewer-bottom-toolbar-dropdown>
       <viewer-bottom-toolbar-dropdown id="color"
           .buttonTitle="${this.getColorTitle_()}">
-        <div slot="icon" id="color-chip"></div>
+        <div slot="icon" class="color-chip"></div>
         <ink-color-selector slot="menu" .colors="${this.availableBrushColors()}"
             .currentColor="${this.currentColor}"
             @current-color-changed="${this.onCurrentColorChanged}">

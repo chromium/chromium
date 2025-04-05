@@ -40,6 +40,8 @@ const GURL* g_item_snippet_url_for_test_ = nullptr;
 
 const char kChromeWebstoreBaseURL[] = "https://chrome.google.com/webstore";
 const char kNewChromeWebstoreBaseURL[] = "https://chromewebstore.google.com/";
+const char kExtensionsDocsWhatsNewURL[] =
+    "https://developer.chrome.com/docs/extensions/whats-new";
 const char kChromeWebstoreUpdateURL[] =
     "https://clients2.google.com/service/update2/crx";
 const char kChromeWebstoreApiURL[] = "https://chromewebstore.googleapis.com/";
@@ -53,6 +55,10 @@ GURL GetWebstoreLaunchURL() {
   if (client)
     return client->GetWebstoreBaseURL();
   return GURL(kChromeWebstoreBaseURL);
+}
+
+GURL GetDocsWhatsNewURL() {
+  return GURL(kExtensionsDocsWhatsNewURL);
 }
 
 GURL GetNewWebstoreLaunchURL() {

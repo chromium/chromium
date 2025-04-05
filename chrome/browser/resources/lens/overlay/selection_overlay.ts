@@ -126,18 +126,22 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
       isScreenshotRendered: {
         type: Boolean,
         reflectToAttribute: true,
+        value: false,
       },
       isResized: {
         type: Boolean,
         reflectToAttribute: true,
+        value: false,
       },
       isInitialSize: {
         type: Boolean,
         reflectToAttribute: true,
+        value: true,
       },
       showTranslateContextMenuItem: {
         type: Boolean,
         reflectToAttribute: true,
+        value: true,
       },
       showSelectedTextContextMenu: {
         type: Boolean,
@@ -159,8 +163,14 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
       selectedRegionContextMenuY: Number,
       canvasHeight: Number,
       canvasWidth: Number,
-      isPointerInside: Boolean,
-      currentGesture: emptyGestureEvent(),
+      isPointerInside: {
+        type: Boolean,
+        value: false,
+      },
+      currentGesture: {
+        type: Object,
+        value: () => emptyGestureEvent(),
+      },
       disableShimmer: {
         type: Boolean,
         readOnly: true,
@@ -169,26 +179,35 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
       enableCopyAsImage: {
         type: Boolean,
         reflectToAttribute: true,
+        value: () => loadTimeData.getBoolean('enableCopyAsImage'),
       },
       enableSaveAsImage: {
         type: Boolean,
         reflectToAttribute: true,
+        value: () => loadTimeData.getBoolean('enableSaveAsImage'),
       },
       isClosing: {
         type: Boolean,
         reflectToAttribute: true,
+        value: false,
       },
       suppressCopyAndSaveAsImage: {
         type: Boolean,
         reflectToAttribute: true,
+        value: () => {
+          return loadTimeData.getString('invocationSource') ===
+              'ContentAreaContextMenuImage';
+        },
       },
       shimmerOnSegmentation: {
         type: Boolean,
         reflectToAttribute: true,
+        value: false,
       },
       shimmerFadeOutComplete: {
         type: Boolean,
         reflectToAttribute: true,
+        value: true,
       },
       simplifiedSelectionEnabled: {
         type: Boolean,
@@ -198,6 +217,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
       darkenExtraScrim: {
         type: Boolean,
         reflectToAttribute: true,
+        value: false,
       },
       theme: {
         type: Object,
@@ -206,6 +226,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
       translateModeEnabled: {
         type: Boolean,
         reflectToAttribute: true,
+        value: false,
       },
       selectionOverlayRect: Object,
       isSearchboxFocused: Boolean,
@@ -214,33 +235,33 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   }
 
   // Whether the screenshot has finished loading in.
-  private isScreenshotRendered: boolean = false;
+  declare private isScreenshotRendered: boolean;
   // Whether the selection overlay is its initial size, or has changed size.
-  private isResized: boolean = false;
-  private isInitialSize: boolean = true;
-  private showTranslateContextMenuItem: boolean = true;
-  private showSelectedTextContextMenu: boolean;
-  private showSelectedRegionContextMenu: boolean;
-  private showDetectedTextContextMenuOptions: boolean;
+  declare private isResized: boolean;
+  declare private isInitialSize: boolean;
+  declare private showTranslateContextMenuItem: boolean;
+  declare private showSelectedTextContextMenu: boolean;
+  declare private showSelectedRegionContextMenu: boolean;
+  declare private showDetectedTextContextMenuOptions: boolean;
   // Location at which to show the context menus.
-  private selectedTextContextMenuX: number;
-  private selectedTextContextMenuY: number;
-  private selectedRegionContextMenuX: number;
-  private selectedRegionContextMenuY: number;
+  declare private selectedTextContextMenuX: number;
+  declare private selectedTextContextMenuY: number;
+  declare private selectedRegionContextMenuX: number;
+  declare private selectedRegionContextMenuY: number;
   // Width and height values for rendering the background image canvas as the
   // proper dimensions.
-  private canvasHeight: number;
-  private canvasWidth: number;
+  declare private canvasHeight: number;
+  declare private canvasWidth: number;
   // The current content rectangle of the selection elements DIV. This is the
   // bounds of the screenshot and the part the user interacts with. This should
   // be used instead of call getBoundingClientRect().
-  private selectionOverlayRect: DOMRect;
+  declare private selectionOverlayRect: DOMRect;
   // Whether the users focus is currently in the overlay searchbox. Passed in
   // from parent.
-  private isSearchboxFocused: boolean;
+  declare private isSearchboxFocused: boolean;
   // Whether any of the language pickers are currently open. Passed in from
   // parent.
-  private areLanguagePickersOpen: boolean;
+  declare private areLanguagePickersOpen: boolean;
 
   // The selected region on which the context menu is being displayed. Used as
   // argument for copy and save as image calls.
@@ -251,27 +272,23 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   private textSelectionEndIndex: number = -1;
   private detectedTextStartIndex: number = -1;
   private detectedTextEndIndex: number = -1;
-  private isPointerInside = false;
+  declare private isPointerInside;
   private isPointerInsideContextMenu = false;
   // The current gesture event. The coordinate values are only accurate if a
   // gesture has started.
-  private currentGesture: GestureEvent = emptyGestureEvent();
-  private disableShimmer: boolean;
-  private enableCopyAsImage: boolean =
-      loadTimeData.getBoolean('enableCopyAsImage');
-  private enableSaveAsImage: boolean =
-      loadTimeData.getBoolean('enableSaveAsImage');
-  private suppressCopyAndSaveAsImage: boolean =
-      loadTimeData.getString('invocationSource') ===
-      'ContentAreaContextMenuImage';
+  declare private currentGesture: GestureEvent;
+  declare private disableShimmer: boolean;
+  declare private enableCopyAsImage: boolean;
+  declare private enableSaveAsImage: boolean;
+  declare private suppressCopyAndSaveAsImage: boolean;
   // Whether the overlay is being shut down.
-  private isClosing: boolean = false;
+  declare private isClosing: boolean;
   // Whether the default background scrim is currently being darkened.
-  private darkenExtraScrim: boolean = false;
+  declare private darkenExtraScrim: boolean;
   // Whether the shimmer is currently focused on a segmentation mask.
-  private shimmerOnSegmentation: boolean = false;
-  private shimmerFadeOutComplete: boolean = true;
-  private simplifiedSelectionEnabled: boolean;
+  declare private shimmerOnSegmentation: boolean;
+  declare private shimmerFadeOutComplete: boolean;
+  declare private simplifiedSelectionEnabled: boolean;
   // The text selection layer rendered on the selection overlay if it exists.
   private textSelectionLayer: TextLayerBase;
 
@@ -297,12 +314,12 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   private onPointerMoveRequestId?: number;
   private handleResizeRequestId?: number;
 
-  private theme: OverlayTheme;
+  declare private theme: OverlayTheme;
 
   // Whether or not translate mode is enabled. If true, only text should
   // be selectable, and it should be selectable from any point in the
   // overlay.
-  private translateModeEnabled: boolean = false;
+  declare private translateModeEnabled: boolean;
 
   override connectedCallback() {
     super.connectedCallback();

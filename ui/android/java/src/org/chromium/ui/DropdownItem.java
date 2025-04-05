@@ -4,8 +4,6 @@
 
 package org.chromium.ui;
 
-import android.graphics.drawable.Drawable;
-
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.url.GURL;
@@ -25,16 +23,10 @@ public interface DropdownItem {
     String getSecondaryLabel();
 
     /** Returns the first part of the second line that should be shown in the dropdown. */
-    @Nullable
-    String getSublabel();
+    @Nullable String getSublabel();
 
     /** Returns the second part of the second line that should be shown in the dropdown. */
-    @Nullable
-    String getSecondarySublabel();
-
-    /** Returns the item tag that should be shown in the dropdown. */
-    @Nullable
-    String getItemTag();
+    @Nullable String getSecondarySublabel();
 
     /**
      * Returns the drawable id of the icon that should be shown in the dropdown, or NO_ICON. Note:
@@ -47,15 +39,7 @@ public interface DropdownItem {
      * Returns the url for the icon to be downloaded. If present, the downloaded icon should be
      * preferred over the resource id returned by getIconId().
      */
-    @Nullable
-    GURL getCustomIconUrl();
-
-    /**
-     * Returns the drawable for the icon. It is either the custom card art if available, or the
-     * drawable of the id returned by getIconId().
-     */
-    @Nullable
-    Drawable getIconDrawable();
+    @Nullable GURL getCustomIconUrl();
 
     /** Returns true if the item should be enabled in the dropdown. */
     boolean isEnabled();
@@ -74,12 +58,6 @@ public interface DropdownItem {
 
     /** Returns resource ID of sublabel's font size. */
     int getSublabelFontSizeResId();
-
-    /**
-     * Returns whether the icon should be displayed at the start, before label
-     * and sublabel.
-     */
-    boolean isIconAtStart();
 
     /** Returns the resource ID of the icon's size, or 0 to use WRAP_CONTENT. */
     int getIconSizeResId();

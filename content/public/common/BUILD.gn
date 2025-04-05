@@ -5,6 +5,7 @@
 import("//build/buildflag_header.gni")
 import("//build/config/features.gni")
 import("//build/config/ui.gni")
+import("//content/browser/devtools/features.gni")
 import("//content/public/common/features.gni")
 import("//content/public/common/zygote/features.gni")
 import("//media/media_options.gni")
@@ -21,6 +22,7 @@ if (is_android) {
 buildflag_header("buildflags") {
   header = "buildflags.h"
   flags = [
+    "ENABLE_DEVTOOLS_FRONTEND=$enable_devtools_frontend",
     "ENABLE_SCREEN_CAPTURE=$enable_screen_capture",
     "LOAD_WEBUI_FROM_DISK=$load_webui_from_disk",
   ]

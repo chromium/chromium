@@ -86,12 +86,30 @@ export class PostSelectionRendererElement extends PolymerElement {
 
   static get properties() {
     return {
-      top: Number,
-      left: Number,
-      height: Number,
-      width: Number,
-      currentDragTarget: Number,
-      cornerIds: Array,
+      top: {
+        type: Number,
+        value: 0,
+      },
+      left: {
+        type: Number,
+        value: 0,
+      },
+      height: {
+        type: Number,
+        value: 0,
+      },
+      width: {
+        type: Number,
+        value: 0,
+      },
+      currentDragTarget: {
+        type: Number,
+        value: DragTarget.NONE,
+      },
+      cornerIds: {
+        type: Array,
+        value: () => ['topLeft', 'topRight', 'bottomRight', 'bottomLeft'],
+      },
       canvasHeight: Number,
       canvasWidth: Number,
       canvasPhysicalHeight: Number,
@@ -100,28 +118,28 @@ export class PostSelectionRendererElement extends PolymerElement {
       shouldDarkenScrim: {
         type: Boolean,
         reflectToAttribute: true,
+        value: false,
       },
     };
   }
 
   private eventTracker_: EventTracker = new EventTracker();
   // The bounds of the current selection
-  private top: number = 0;
-  private left: number = 0;
-  private height: number = 0;
-  private width: number = 0;
+  declare private top: number;
+  declare private left: number;
+  declare private height: number;
+  declare private width: number;
   // What is currently being dragged by the user.
-  private currentDragTarget: DragTarget = DragTarget.NONE;
+  declare private currentDragTarget: DragTarget;
   // IDs used to generate the corner hitbox divs.
-  private cornerIds: string[] =
-      ['topLeft', 'topRight', 'bottomRight', 'bottomLeft'];
-  private canvasHeight: number;
-  private canvasWidth: number;
-  private canvasPhysicalHeight: number;
-  private canvasPhysicalWidth: number;
+  declare private cornerIds: string[];
+  declare private canvasHeight: number;
+  declare private canvasWidth: number;
+  declare private canvasPhysicalHeight: number;
+  declare private canvasPhysicalWidth: number;
   // The bounds of the parent element. This is updated by the parent to avoid
   // this class needing to call getBoundingClientRect().
-  private selectionOverlayRect: DOMRect;
+  declare private selectionOverlayRect: DOMRect;
 
   private context: CanvasRenderingContext2D;
   // Listener IDs for events tracked from the browser.
@@ -136,7 +154,7 @@ export class PostSelectionRendererElement extends PolymerElement {
   private newBoxAnimation: Animation|null = null;
   private animateOnResize = false;
   // Whether to darken the post selection scrim.
-  private shouldDarkenScrim = false;
+  declare private shouldDarkenScrim;
 
   override connectedCallback() {
     super.connectedCallback();

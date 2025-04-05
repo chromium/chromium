@@ -135,6 +135,14 @@ String PermissionNameToString(PermissionName name) {
       return "web-app-installation";
     case PermissionName::LOCAL_NETWORK_ACCESS:
       return "local-network-access";
+    case PermissionName::VR:
+      return "vr";
+    case PermissionName::AR:
+      return "ar";
+    case PermissionName::HAND_TRACKING:
+      return "hand-tracking";
+    case PermissionName::WEB_PRINTING:
+      return "web-printing";
   }
 }
 

@@ -8,7 +8,6 @@
 #include "components/google/core/common/google_util.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "content/public/browser/navigation_handle_timing.h"
-#include "net/http/http_response_headers.h"
 
 namespace internal {
 // Exposed for tests.
@@ -141,9 +140,6 @@ class GWSPageLoadMetricsObserver
   virtual bool IsBrowserStartupComplete() = 0;
   virtual bool IsIncognitoProfile() const = 0;
   std::string AddHistogramSuffix(const std::string& histogram_name);
-
-  void MaybeRecordUnexpectedHeaders(
-      const net::HttpResponseHeaders* response_headers);
 
   content::NavigationHandleTiming navigation_handle_timing_;
 

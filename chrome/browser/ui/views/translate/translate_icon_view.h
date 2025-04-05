@@ -8,7 +8,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
-#include "components/tab_collections/public/tab_interface.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/translate/content/browser/content_translate_driver.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 

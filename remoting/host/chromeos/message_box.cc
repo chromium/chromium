@@ -106,13 +106,15 @@ MessageBoxCore::MessageBoxCore(const std::u16string& title_label,
       base::BindOnce(run_callback, base::Unretained(this), MessageBox::CANCEL));
   SetCloseCallback(
       base::BindOnce(run_callback, base::Unretained(this), MessageBox::CANCEL));
-  RegisterDeleteDelegateCallback(base::BindOnce(
-      [](MessageBoxCore* dialog) {
-        if (dialog->message_box_) {
-          dialog->message_box_->OnMessageBoxCoreDestroying();
-        }
-      },
-      this));
+  RegisterDeleteDelegateCallback(
+      RegisterDeleteCallbackPassKey(),
+      base::BindOnce(
+          [](MessageBoxCore* dialog) {
+            if (dialog->message_box_) {
+              dialog->message_box_->OnMessageBoxCoreDestroying();
+            }
+          },
+          this));
 
   // This should be set as the `message_box_view_` is assumed to be owned by the
   // widget created.

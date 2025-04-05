@@ -571,8 +571,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest,
   EXPECT_TRUE(on_task_pod_controller()->CanToggleTabStripVisibility());
 }
 
-IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest,
-                       DisablePinTabStripFunctionalityWhenPaused) {
+IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest, HidePodWhenPaused) {
   // Launch OnTask SWA.
   base::test::TestFuture<bool> launch_future;
   system_web_app_manager()->LaunchSystemWebAppAsync(
@@ -588,16 +587,18 @@ IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest,
   ASSERT_TRUE(window_id.is_valid());
   system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
       window_id, /*observers=*/{});
+
+  // Pause the app and verify the pod widget also gets hidden.
   system_web_app_manager()->SetPinStateForSystemWebAppWindow(/*pinned=*/true,
                                                              window_id);
   system_web_app_manager()->SetPauseStateForSystemWebAppWindow(/*paused=*/true,
                                                                window_id);
   ASSERT_THAT(on_task_pod_controller(), NotNull());
-  EXPECT_FALSE(on_task_pod_controller()->CanToggleTabStripVisibility());
+  EXPECT_FALSE(on_task_pod_controller()->GetPodWidgetForTesting()->IsVisible());
 }
 
 IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest,
-                       EnablePinTabStripFunctionalityWhenUnpaused) {
+                       ShowPodWhenUnpaused) {
   // Launch OnTask SWA.
   base::test::TestFuture<bool> launch_future;
   system_web_app_manager()->LaunchSystemWebAppAsync(
@@ -613,17 +614,20 @@ IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest,
   ASSERT_TRUE(window_id.is_valid());
   system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
       window_id, /*observers=*/{});
+
+  // Pause the app and verify the pod widget also gets hidden.
   system_web_app_manager()->SetPinStateForSystemWebAppWindow(/*pinned=*/true,
                                                              window_id);
   system_web_app_manager()->SetPauseStateForSystemWebAppWindow(/*paused=*/true,
                                                                window_id);
   ASSERT_THAT(on_task_pod_controller(), NotNull());
-  EXPECT_FALSE(on_task_pod_controller()->CanToggleTabStripVisibility());
+  EXPECT_FALSE(on_task_pod_controller()->GetPodWidgetForTesting()->IsVisible());
 
+  // Unpause the app and verify the pod widget also gets shown.
   system_web_app_manager()->SetPauseStateForSystemWebAppWindow(/*paused=*/false,
                                                                window_id);
   ASSERT_THAT(on_task_pod_controller(), NotNull());
-  EXPECT_TRUE(on_task_pod_controller()->CanToggleTabStripVisibility());
+  EXPECT_TRUE(on_task_pod_controller()->GetPodWidgetForTesting()->IsVisible());
 }
 
 IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest,

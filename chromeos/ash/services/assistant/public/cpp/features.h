@@ -23,13 +23,6 @@ BASE_DECLARE_FEATURE(kAssistantAppSupport);
 COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
 BASE_DECLARE_FEATURE(kAssistantRoutines);
 
-// Enables server-driven wait scheduling. This allows the server to inject
-// pauses into the interaction response to give the user time to digest one leg
-// of a routine before proceeding to the next, for example, or to provide
-// comedic timing for jokes.
-COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
-BASE_DECLARE_FEATURE(kAssistantWaitScheduling);
-
 // Enables DSP for hotword detection.
 COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
 BASE_DECLARE_FEATURE(kEnableDspHotword);
@@ -72,8 +65,6 @@ bool IsLibAssistantBetaBackendEnabled();
 COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) bool IsStereoAudioInputEnabled();
 
 COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) bool IsVoiceMatchDisabled();
-
-COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) bool IsWaitSchedulingEnabled();
 
 COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
 bool IsLibAssistantSandboxEnabled();

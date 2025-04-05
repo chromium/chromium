@@ -112,6 +112,7 @@
 <translation id="1306549533752902673">САНАЛ БОЛГОСОН АПП</translation>
 <translation id="1310396869741602366">Өнгө аясыг өөрчлөх</translation>
 <translation id="1312604459020188865">Дохионы хүч <ph name="SIGNAL_STRENGTH" /></translation>
+<translation id="1314113845887519729">Дээд талын ирмэгийн бариулыг сонгосон, зөөхөд суман товчнуудыг ашиглана уу</translation>
 <translation id="1316069254387866896">Тавиурыг байнга харуулах</translation>
 <translation id="132346741904777634">Камерыг зүүн дээд булан руу зэрэгцүүлсэн. Системийн гадаргуутай зөрчилдсөн.</translation>
 <translation id="132415371743256095"><ph name="DESK_NAME" /> болон цонхнуудыг хаана уу</translation>
@@ -186,6 +187,7 @@
 <translation id="1557622599341396706">Дэлгэцийн нэрийг харуулах</translation>
 <translation id="1569384531973824928">Энэ нь камер, микрофоны зөвшөөрөлтэй бүх апп болон вебсайтын хандалтыг зөвшөөрнө. Та веб хуудсыг сэргээх эсвэл аппыг дахин эхлүүлэх шаардлагатай байж магадгүй.</translation>
 <translation id="1571697193564730395">Бүү саад бол онцлогийг асаана уу/унтраана уу. <ph name="STATE_TEXT" /></translation>
+<translation id="1574691582236909946">Зүүн талын ирмэгийн бариулыг сонгосон, зөөхөд суман товчнуудыг ашиглана уу</translation>
 <translation id="1576623706766186887">Томруулагч асаалттай үед жижгэрүүлэх</translation>
 <translation id="1582946770779745370">Тоглоомын хяналтын самбар боломжтой. Нээх бол хүссэн үедээ <ph name="LAUNCHER_KEY_NAME" /> + Shift + Escape, дараа нь <ph name="LAUNCHER_KEY_NAME" /> + g дээр дарна уу</translation>
 <translation id="1586324912145647027">1-ээс 8 дахь дэлгэц рүү очно уу</translation>
@@ -220,6 +222,7 @@
 <translation id="1696984622403682083">Та хүссэн үедээ энэ онцлогийг Тохиргооноос унтраах боломжтой. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> цаг хэмжигч · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 хаяг: <ph name="ADDRESS" /></translation>
+<translation id="1700782710852683371">Яг одоо үүний зургийг үүсгэх боломжгүй байна. Тайлбараа дахин бичиж үзнэ үү. Та хүний зураг, хор хөнөөлтэй, насанд хүрэгчдийн контент үүсгэх боломжгүй болохыг анхаарна уу.</translation>
 <translation id="1703117532528082099">Идэвхтэй цонхыг зүүн талд суурилуулсан.</translation>
 <translation id="1708345662127501511">Дэлгэц: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Сүлжээний тохиргоо</translation>
@@ -608,6 +611,7 @@
 <translation id="304097922505898963">Key Shortcuts аппыг нээх</translation>
 <translation id="304417730895741346">Таны бэхэлсэн болон нээсэн аппууд тавиурт байна. Тавиурт апп бэхлэхийн тулд апп дээр хулганын баруун талыг товших эсвэл хоёр хуруугаараа мэдрэгч самбарыг товшино уу.</translation>
 <translation id="3045488863354895414">Өдрийн мэнд,</translation>
+<translation id="3045670165536837541">Баруун дээд талын бариулыг сонгосон, зөөхөд суман товчнуудыг ашиглана уу</translation>
 <translation id="3047761520276763270">Дараахыг хэлж үзнэ үү:</translation>
 <translation id="3053407068093039599">Камерын хандалтыг асаах/унтраах</translation>
 <translation id="3055162170959710888">Та энэ төхөөрөмжийг өнөөдөр <ph name="USED_TIME" /> ашигласан</translation>
@@ -1764,6 +1768,7 @@
 <translation id="6696025732084565524">Та салгах боломжтой гараа зайлшгүй шинэчлэх шаардлагатай байна</translation>
 <translation id="6697913454192220372">Шинэ дэлгэц нэмэх</translation>
 <translation id="6700713906295497288">IME цэсийн товчлуур</translation>
+<translation id="6704073473590541209">Баруун талын ирмэгийн бариулыг сонгосон, зөөхөд суман товчнуудыг ашиглана уу</translation>
 <translation id="6706742084323792866">ПИН оруулах гар</translation>
 <translation id="6710213216561001401">Өмнөх</translation>
 <translation id="6723839937902243910">Эрчим хүч</translation>
@@ -1787,6 +1792,7 @@
 <translation id="6781002679438061620">9-р дэлгэц</translation>
 <translation id="6782182743534150858">13-р дэлгэц</translation>
 <translation id="6782919488259222803">Одоогийн хуудаснаас хайх</translation>
+<translation id="6783348167101855071">Баруун доод талын бариулыг сонгосон, зөөхөд суман товчнуудыг ашиглана уу</translation>
 <translation id="6786750046913594791">Хавтасыг хаах</translation>
 <translation id="6790428901817661496">Тоглуулах</translation>
 <translation id="6792262051831399889">Боломжгүй</translation>
@@ -1942,6 +1948,7 @@
 <translation id="7371404428569700291">Цонхыг бичих</translation>
 <translation id="7372069265635026568">Нийт <ph name="TOTAL_MEMORY" />-н санах ойгоос <ph name="AVAILABLE_MEMORY" /> боломжтой байна</translation>
 <translation id="737315737514430195">Энэ нь микрофоны зөвшөөрөлтэй бүх апп болон вебсайтад микрофоны хандалтыг зөвшөөрнө</translation>
+<translation id="7376933029363911338">Доод талын ирмэгийн бариулыг сонгосон, зөөхөд суман товчнуудыг ашиглана уу</translation>
 <translation id="7377169924702866686">Caps Lock идэвхжсэн байна.</translation>
 <translation id="7377481913241237033">Кодоор холбогдох</translation>
 <translation id="7378203170292176219">Бичих хэсгийг сонгохын тулд чирнэ үү</translation>
@@ -2038,6 +2045,7 @@
 <translation id="7658239707568436148">Болих</translation>
 <translation id="7659861092419699379">Дэлгэц болон цонхнуудыг хаасан байна</translation>
 <translation id="7660160718439869192">Таны <ph name="NAME" /> <ph name="EMAIL" />-тай холбосон төхөөрөмжүүд дээр харагдана</translation>
+<translation id="7661694115779363471">Зүүн доод талын бариулыг сонгосон, зөөхөд суман товчнуудыг ашиглана уу</translation>
 <translation id="7662283695561029522">Тохируулахын тулд товших</translation>
 <translation id="7670953955701272011">Энэ огноог Google Календарьт нээнэ үү</translation>
 <translation id="7671610481353807627">Аппуудыг өнгөөр эрэмбэлсэн</translation>
@@ -2206,6 +2214,7 @@
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" />-н мэдээллийн харилцах цонхыг нээх</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" />-г ашиглаж байна</translation>
 <translation id="8168435359814927499">Агуулга</translation>
+<translation id="8172370561760918656">Зүүн дээд талын бариулыг сонгосон, зөөхөд суман товчнуудыг ашиглана уу</translation>
 <translation id="81817143961839203">Зураг оруулж чадсангүй</translation>
 <translation id="8185090165691050712">Түгжсэн горимын хэмжээг өөрчлөх цэсийг асаах/унтраах</translation>
 <translation id="8192727139462702395">Таныг Bluetooth-г унтраах үед эдгээр гадны төхөөрөмж таны <ph name="DEVICE_TYPE" />-с сална:</translation>

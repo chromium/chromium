@@ -54,9 +54,9 @@ export class ViewerAttachmentElement extends CrLitElement {
     };
   }
 
-  attachment: Attachment = {name: '', size: 0, readable: false};
-  index: number = -1;
-  protected saveAllowed_: boolean = false;
+  accessor attachment: Attachment = {name: '', size: 0, readable: false};
+  accessor index: number = -1;
+  protected accessor saveAllowed_: boolean = false;
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);

@@ -63,7 +63,8 @@ class MigrationNotificationManager : public KeyedService {
       const base::FilePath& destination_path);
 
   // Shows a notification that the user's files were successfully removed.
-  void ShowDeletionCompletedNotification();
+  // Virtual to override in tests.
+  virtual void ShowDeletionCompletedNotification();
 
   // Shows a notification that migration completed with errors.
   void ShowMigrationErrorNotification(MigrationDestination destination,

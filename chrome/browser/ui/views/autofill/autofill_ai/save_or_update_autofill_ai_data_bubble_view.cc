@@ -46,7 +46,7 @@ constexpr int kNewOrUpdatedAttributeDotTopSpacing = 8;
 
 int GetVerticaSpaceBetweenDialogSections() {
   return ChromeLayoutProvider::Get()->GetDistanceMetric(
-             DISTANCE_CONTROL_LIST_VERTICAL) *
+             views::DISTANCE_CONTROL_LIST_VERTICAL) *
          2;
 }
 
@@ -146,7 +146,7 @@ SaveOrUpdateAutofillAiDataBubbleView::SaveOrUpdateAutofillAiDataBubbleView(
           .SetOrientation(views::BoxLayout::Orientation::kVertical)
           .SetBetweenChildSpacing(
               ChromeLayoutProvider::Get()->GetDistanceMetric(
-                  DISTANCE_CONTROL_LIST_VERTICAL))
+                  views::DISTANCE_CONTROL_LIST_VERTICAL))
           .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
           .SetAccessibleRole(ax::mojom::Role::kDescriptionList)
           .Build());
@@ -314,7 +314,7 @@ void SaveOrUpdateAutofillAiDataBubbleView::AddedToWidget() {
               kHeaderPadding, kHeaderPadding,
               std::min(0, kHeaderPadding -
                               ChromeLayoutProvider::Get()->GetDistanceMetric(
-                                  DISTANCE_CONTROL_LIST_VERTICAL)),
+                                  views::DISTANCE_CONTROL_LIST_VERTICAL)),
               kHeaderPadding))
           .Build();
   if (controller_->IsSavePrompt()) {

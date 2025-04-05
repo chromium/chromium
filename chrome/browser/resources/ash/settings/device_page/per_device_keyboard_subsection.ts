@@ -130,17 +130,6 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
         value: '',
       },
 
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kKeyboardFunctionKeys,
-          Setting.kKeyboardRemapKeys,
-        ]),
-      },
-
       keyboardIndex: {
         type: Number,
       },
@@ -200,6 +189,12 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
       this.attemptDeepLink();
     }
   }
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kKeyboardFunctionKeys,
+    Setting.kKeyboardRemapKeys,
+  ]);
 
   protected keyboard: Keyboard;
   protected keyboardPolicies: KeyboardPolicies;

@@ -1081,7 +1081,7 @@ error::Error DoCopySharedImageToTextureINTERNAL(
     GLint src_y,
     GLsizei width,
     GLsizei height,
-    GLboolean flip_y,
+    GLboolean is_dst_origin_top_left,
     const volatile GLbyte* src_mailbox);
 error::Error DoEnableiOES(GLenum target, GLuint index);
 error::Error DoDisableiOES(GLenum target, GLuint index);

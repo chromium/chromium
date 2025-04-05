@@ -13,6 +13,11 @@
 
 namespace web_app {
 
+FakeWebAppDatabaseFactory*
+AbstractWebAppDatabaseFactory::AsFakeWebAppDatabaseFactory() {
+  return nullptr;
+}
+
 WebAppDatabaseFactory::WebAppDatabaseFactory(Profile* profile)
     : profile_(profile) {}
 

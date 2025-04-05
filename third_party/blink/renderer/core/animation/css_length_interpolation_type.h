@@ -15,8 +15,8 @@ class ComputedStyle;
 
 class CORE_EXPORT CSSLengthInterpolationType : public CSSInterpolationType {
  public:
-  CSSLengthInterpolationType(PropertyHandle,
-                             const PropertyRegistration* = nullptr);
+  explicit CSSLengthInterpolationType(PropertyHandle,
+                                      const PropertyRegistration* = nullptr);
 
   InterpolationValue MaybeConvertStandardPropertyUnderlyingValue(
       const ComputedStyle&) const final;
@@ -50,7 +50,7 @@ class CORE_EXPORT CSSLengthInterpolationType : public CSSInterpolationType {
       ConversionCheckers&) const override;
 
   InterpolationValue MaybeConvertUnderlyingValue(
-      const InterpolationEnvironment&) const final;
+      const CSSInterpolationEnvironment&) const final;
 
   PairwiseInterpolationValue MaybeMergeSingles(
       InterpolationValue&& start,

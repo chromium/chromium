@@ -112,6 +112,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1306549533752902673">PRIPOROČENE APLIKACIJE</translation>
 <translation id="1310396869741602366">Sprememba tona</translation>
 <translation id="1312604459020188865">Moč signala je <ph name="SIGNAL_STRENGTH" /></translation>
+<translation id="1314113845887519729">Izbrana ročica zgornjega roba, uporabite puščične tipke za premikanje</translation>
 <translation id="1316069254387866896">Vedno pokaži polico</translation>
 <translation id="132346741904777634">Fotoaparat je pripet v zgornji levi kot. To je v navzkrižju s sistemskim okoljem.</translation>
 <translation id="132415371743256095">Zapri namizje »<ph name="DESK_NAME" />« in okna</translation>
@@ -186,6 +187,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1557622599341396706">Pokaži ime namizja</translation>
 <translation id="1569384531973824928">To omogoča dostop za vse aplikacije in spletna mesta, ki imajo dovoljenje za kamero in mikrofon. Morda boste morali osvežiti spletno stran ali znova zagnati aplikacijo.</translation>
 <translation id="1571697193564730395">Preklop načina »Ne moti«. <ph name="STATE_TEXT" /></translation>
+<translation id="1574691582236909946">Izbrana ročica levega roba, uporabite puščične tipke za premikanje</translation>
 <translation id="1576623706766186887">Pomanjšava, ko je lupa vklopljena</translation>
 <translation id="1582946770779745370">Na voljo je nadzorna plošča igre. Kadar koli pritisnite <ph name="LAUNCHER_KEY_NAME" /> + Shift + Escape, nato pa <ph name="LAUNCHER_KEY_NAME" /> + g, če jo želite odpreti.</translation>
 <translation id="1586324912145647027">Odpiranje namizja od 1 do 8</translation>
@@ -220,6 +222,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1696984622403682083">To funkcijo lahko kadar koli izklopite v nastavitvah. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910">Časovnik (<ph name="TOTAL_TIME" />) · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">Naslov IPv6: <ph name="ADDRESS" /></translation>
+<translation id="1700782710852683371">Slik tega trenutno ni mogoče ustvariti. Poskusite preoblikovati opis. Upoštevajte, da ne morete ustvariti slik ljudi, škodljive ali eksplicitne vsebine.</translation>
 <translation id="1703117532528082099">Aktivno okno je zasidrano na levi.</translation>
 <translation id="1708345662127501511">Namizje: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Omrežne nastavitve</translation>
@@ -608,6 +611,7 @@ V nasprotnem primeru bo vgrajena sledilna ploščica znova omogočena čez <ph n
 <translation id="304097922505898963">Odpiranje aplikacije za bližnjične tipke</translation>
 <translation id="304417730895741346">Pripete in odprte aplikacije so na polici. Če želite aplikacijo pripeti na polico, z desnim gumbom kliknite aplikacijo ali se dotaknite sledilne ploščice z dvema prstoma.</translation>
 <translation id="3045488863354895414">Dober dan,</translation>
+<translation id="3045670165536837541">Izbrana zgornja desna ročica, uporabite puščične tipke za premikanje</translation>
 <translation id="3047761520276763270">Recite:</translation>
 <translation id="3053407068093039599">Vklop/izklop dostopa do kamere</translation>
 <translation id="3055162170959710888">To napravo si danes uporabljal <ph name="USED_TIME" /></translation>
@@ -1763,6 +1767,7 @@ Nova namestitev</translation>
 <translation id="6696025732084565524">Snemljiva tipkovnica potrebuje nujno posodobitev</translation>
 <translation id="6697913454192220372">Dodajanje novega namizja</translation>
 <translation id="6700713906295497288">Menijski gumb UNV-ja</translation>
+<translation id="6704073473590541209">Izbrana ročica desnega roba, uporabite puščične tipke za premikanje</translation>
 <translation id="6706742084323792866">Pripenjanje tipkovnice</translation>
 <translation id="6710213216561001401">Prejšnji</translation>
 <translation id="6723839937902243910">Napajanje</translation>
@@ -1786,6 +1791,7 @@ Nova namestitev</translation>
 <translation id="6781002679438061620">Namizje 9</translation>
 <translation id="6782182743534150858">Namizje 13</translation>
 <translation id="6782919488259222803">Iskanje po trenutni strani</translation>
+<translation id="6783348167101855071">Izbrana spodnja desna ročica, uporabite puščične tipke za premikanje</translation>
 <translation id="6786750046913594791">Zapri mapo</translation>
 <translation id="6790428901817661496">Predvajanje</translation>
 <translation id="6792262051831399889">Ni na voljo</translation>
@@ -1941,6 +1947,7 @@ Nova namestitev</translation>
 <translation id="7371404428569700291">Okno za snemanje</translation>
 <translation id="7372069265635026568">Pomnilnik: <ph name="AVAILABLE_MEMORY" /> je na voljo od skupno <ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">To omogoča dostop do mikrofona za vse aplikacije in spletna mesta z dovoljenjem za mikrofon.</translation>
+<translation id="7376933029363911338">Izbrana ročica spodnjega roba, uporabite puščične tipke za premikanje</translation>
 <translation id="7377169924702866686">Tipka Caps Lock je vklopljena.</translation>
 <translation id="7377481913241237033">Povezava s kodo</translation>
 <translation id="7378203170292176219">Povlecite, če želite izbrati območje za posnetek</translation>
@@ -2037,6 +2044,7 @@ Nova namestitev</translation>
 <translation id="7658239707568436148">Prekliči</translation>
 <translation id="7659861092419699379">Namizje in okna so zaprta.</translation>
 <translation id="7660160718439869192">Naprava <ph name="NAME" /> bo prikazana pri napravah, povezanih z naslovom <ph name="EMAIL" />.</translation>
+<translation id="7661694115779363471">Izbrana spodnja leva ročica, uporabite puščične tipke za premikanje</translation>
 <translation id="7662283695561029522">Dotaknite se, če želite konfigurirati</translation>
 <translation id="7670953955701272011">Odpiranje tega datuma v Google Koledarju</translation>
 <translation id="7671610481353807627">Aplikacije so razvrščene po barvi</translation>
@@ -2205,6 +2213,7 @@ Nova namestitev</translation>
 <translation id="8155628902202578800">Odpri pogovorno okno z informacijami o uporabniku <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Uporaba jezika <ph name="LOCALE_NAME" /></translation>
 <translation id="8168435359814927499">Vsebina</translation>
+<translation id="8172370561760918656">Izbrana zgornja leva ročica, uporabite puščične tipke za premikanje</translation>
 <translation id="81817143961839203">Vstavljanje slike ni uspelo</translation>
 <translation id="8185090165691050712">Vklop/izklop menija za spreminjanje velikosti zaklenjenega načina</translation>
 <translation id="8192727139462702395">Ko izklopite Bluetooth, bo povezava teh zunanjih naprav z napravo <ph name="DEVICE_TYPE" /> prekinjena:</translation>

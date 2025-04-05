@@ -96,9 +96,12 @@ export class TranslateButtonElement extends PolymerElement {
 
   static get properties() {
     return {
+      clientSourceLanguageList: {type: Array},
+      clientTargetLanguageList: {type: Array},
       contentLanguage: {
         type: String,
         reflectToAttribute: true,
+        value: '',
       },
       isLensOverlayContextualSearchboxEnabled: {
         type: Boolean,
@@ -107,14 +110,17 @@ export class TranslateButtonElement extends PolymerElement {
       isSourceLanguageSearchboxOpen: {
         type: Boolean,
         reflectToAttribute: true,
+        value: false,
       },
       isTargetLanguageSearchboxOpen: {
         type: Boolean,
         reflectToAttribute: true,
+        value: false,
       },
       isTranslateModeEnabled: {
         type: Boolean,
         reflectToAttribute: true,
+        value: false,
       },
       languagePickerButtonsVisible: {
         type: Boolean,
@@ -122,8 +128,14 @@ export class TranslateButtonElement extends PolymerElement {
               isTranslateModeEnabled, sourceLanguageMenuVisible,
               targetLanguageMenuVisible)`,
       },
-      recentSourceLanguages: Array,
-      recentTargetLanguages: Array,
+      recentSourceLanguages: {
+        type: Array,
+        value: () => [],
+      },
+      recentTargetLanguages: {
+        type: Array,
+        value: () => [],
+      },
       shouldFetchSupportedLanguages: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('shouldFetchSupportedLanguages'),
@@ -143,14 +155,29 @@ export class TranslateButtonElement extends PolymerElement {
       searchboxHasText: {
         type: Boolean,
         reflectToAttribute: true,
+        value: false,
       },
-      searchedLanguageList: Array,
+      searchedLanguageList: {
+        type: Array,
+        value: () => [],
+      },
+      serverSourceLanguageList: {
+        type: Array,
+        value: () => [],
+      },
+      serverTargetLanguageList: {
+        type: Array,
+        value: () => [],
+      },
       shouldShowStarsIcon: {
         type: Boolean,
         computed: 'computeShouldShowStarsIcon(sourceLanguage)',
         reflectToAttribute: true,
       },
-      sourceLanguage: Object,
+      sourceLanguage: {
+        type: Object,
+        value: null,
+      },
       sourceLanguageList: {
         type: Array,
         computed: `getSourceLanguageList(clientSourceLanguageList,
@@ -159,8 +186,12 @@ export class TranslateButtonElement extends PolymerElement {
       sourceLanguageMenuVisible: {
         type: Boolean,
         reflectToAttribute: true,
+        value: false,
       },
-      targetLanguage: Object,
+      targetLanguage: {
+        type: Object,
+        value: null,
+      },
       targetLanguageList: {
         type: Array,
         computed: `getTargetLanguageList(clientTargetLanguageList,
@@ -169,6 +200,7 @@ export class TranslateButtonElement extends PolymerElement {
       targetLanguageMenuVisible: {
         type: Boolean,
         reflectToAttribute: true,
+        value: false,
       },
     };
   }
@@ -176,35 +208,35 @@ export class TranslateButtonElement extends PolymerElement {
   private eventTracker: EventTracker = new EventTracker();
   // Whether the lens overlay contextual searchbox is enabled. Passed in from
   // parent.
-  private isLensOverlayContextualSearchboxEnabled: boolean;
+  declare private isLensOverlayContextualSearchboxEnabled: boolean;
   // Whether the source language searchbox is currently open.
-  private isSourceLanguageSearchboxOpen: boolean = false;
+  declare private isSourceLanguageSearchboxOpen: boolean;
   // Whether the target language searchbox is currently open.
-  private isTargetLanguageSearchboxOpen: boolean = false;
+  declare private isTargetLanguageSearchboxOpen: boolean;
   // Whether the translate mode on the lens overlay has been enabled.
-  private isTranslateModeEnabled: boolean = false;
+  declare private isTranslateModeEnabled: boolean;
   // Whether the language picker buttons are currently visible.
-  private languagePickerButtonsVisible: boolean;
+  declare private languagePickerButtonsVisible: boolean;
   // Whether the feature flag to enable fetching supported languages is enabled.
-  private shouldFetchSupportedLanguages: boolean;
+  declare private shouldFetchSupportedLanguages: boolean;
   // Whether either of the language picker searchboxes has text.
-  private searchboxHasText: boolean = false;
+  declare private searchboxHasText: boolean;
   // The list of languages filtered by a search highlight. Uses a
   // `SearchedLanguage` so we can bold the search highlight.
-  private searchedLanguageList: SearchedLanguage[] = [];
+  declare private searchedLanguageList: SearchedLanguage[];
   // Whether the stars icon is visible on the source language button.
-  private shouldShowStarsIcon: boolean;
-  private sourceLanguageList: Language[];
+  declare private shouldShowStarsIcon: boolean;
+  declare private sourceLanguageList: Language[];
   // The currently selected source language to translate to. If null, we should
   // auto detect the language.
-  private sourceLanguage: Language|null = null;
-  private targetLanguageList: Language[];
+  declare private sourceLanguage: Language|null;
+  declare private targetLanguageList: Language[];
   // The currently selected target language to translate to.
-  private targetLanguage: Language|null = null;
+  declare private targetLanguage: Language|null;
   // Whether the source language menu picker is visible.
-  private sourceLanguageMenuVisible: boolean = false;
+  declare private sourceLanguageMenuVisible: boolean;
   // Whether the target language menu picker is visible.
-  private targetLanguageMenuVisible: boolean = false;
+  declare private targetLanguageMenuVisible: boolean;
   // The list of source translate language codes supported by Lens. This differs
   // from the server source translate list because it is a list of language
   // codes that can currently be reliably sent to Lens for translation.
@@ -217,23 +249,23 @@ export class TranslateButtonElement extends PolymerElement {
   private supportedTargetLanguages: Set<string> =
       new Set(loadTimeData.getString('translateTargetLanguages').split(','));
   // The list of source translate languages provided by the chrome API.
-  private clientSourceLanguageList: Language[];
+  declare private clientSourceLanguageList: Language[];
   // The list of source translate languages provided by the chrome API.
-  private clientTargetLanguageList: Language[];
+  declare private clientTargetLanguageList: Language[];
   // The list of source translate languages provided by the server.
-  private serverSourceLanguageList: Language[] = [];
+  declare private serverSourceLanguageList: Language[];
   // The list of target translate languages provided by the server.
-  private serverTargetLanguageList: Language[] = [];
+  declare private serverTargetLanguageList: Language[];
   // The recent languages that the user has selected as source language.
-  private recentSourceLanguages: Language[] = [];
+  declare private recentSourceLanguages: Language[];
   // The recent languages that the user has selected as target language.
-  private recentTargetLanguages: Language[] = [];
+  declare private recentTargetLanguages: Language[];
   // Whether we should show the recent source languages in the picker.
-  private shouldShowRecentSourceLanguages: boolean = false;
+  declare private shouldShowRecentSourceLanguages: boolean;
   // Whether we should show the recent target languages in the picker.
-  private shouldShowRecentTargetLanguages: boolean = false;
+  declare private shouldShowRecentTargetLanguages: boolean;
   // The content language code received from the text layer.
-  private contentLanguage: string = '';
+  declare private contentLanguage: string;
   // A browser proxy for communicating with the C++ Lens overlay controller.
   private browserProxy: BrowserProxy = BrowserProxyImpl.getInstance();
   // A browser proxy for fetching the language settings from the Chrome API.

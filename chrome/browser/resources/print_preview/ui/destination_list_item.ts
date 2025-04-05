@@ -43,10 +43,10 @@ export class PrintPreviewDestinationListItemElement extends PolymerElement {
     ];
   }
 
-  destination: Destination;
-  searchQuery: RegExp|null;
+  declare destination: Destination;
+  declare searchQuery: RegExp|null;
   private destinationIcon_: string;
-  private searchHint_: string;
+  declare private searchHint_: string;
 
   private highlights_: HTMLElement[] = [];
 

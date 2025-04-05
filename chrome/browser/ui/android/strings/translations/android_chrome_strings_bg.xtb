@@ -17,6 +17,7 @@
 <translation id="1052842760770519282">Някои от паролите ви не са достъпни</translation>
 <translation id="1058669287135776095">Офлайн сте. Проверете връзката си с интернет и опитайте отново.</translation>
 <translation id="10614374240317010">Незапазвани никога</translation>
+<translation id="1070689840697074178">Можете да изтегляте PDF файловете тук</translation>
 <translation id="107147699690128016">Ако промените файловото разширение, файлът може да се отвори в друго приложение и потенциално да навреди на устройството ви.</translation>
 <translation id="1080365971383768617">Паролите са достъпни на всичките ви устройства</translation>
 <translation id="1087176310396019910">Възможен спам</translation>
@@ -517,11 +518,13 @@
 <translation id="3439276997620616816">Тук ще се показват скорошните ви раздели</translation>
 <translation id="3443221991560634068">Презареждане на текущата страница</translation>
 <translation id="3444179773590444986">Искате ли да споделите отзиви за тъмната тема за сайтовете?</translation>
+<translation id="3448874648066942074">Обобщаване на страницата с AI</translation>
 <translation id="3452832259067974318">За да защити поверителността ви, Chrome няма да попълни автоматично паролата ви в това поле.</translation>
 <translation id="3467081767799433066">При измерване на рекламите между сайтовете се споделят ограничени типове данни, за да се измери ефективността на показваните от тях реклами – например дали сте направили покупка, след като сте посетили даден сайт.</translation>
 <translation id="3474624961160222204">Продължаване като <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Можете да изберете търсещата си машина</translation>
 <translation id="3479552764303398839">Не сега</translation>
+<translation id="3482805106082349287">Търсене чрез клавиатурата, с глас, чрез камерата или в режим „инкогнито“</translation>
 <translation id="3487903178221457900">Експортираният файл може да бъде достъпен за други лица, включително приложения. След експортиране паролите ви се изтриват от Chrome.</translation>
 <translation id="3488199663160411179">име</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /> за предложеното съдържание</translation>
@@ -609,6 +612,7 @@
 <translation id="3856096718352044181">Моля, проверете дали този доставчик е валиден или опитайте отново по-късно</translation>
 <translation id="3858860766373142691">Име</translation>
 <translation id="3863527519275151528">Известието се обработва</translation>
+<translation id="3866863539038222107">Инспектиране</translation>
 <translation id="3870908470613821006">Всички хора незабавно ще загубят достъп до групата раздели „<ph name="GROUP_NAME" />“ и тя ще бъде изтрита от всички устройства</translation>
 <translation id="3873174561423636563">За да продължите, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ще сподели с този сайт вашите <ph name="FIELDS_STRING" />. Вижте <ph name="BEGIN_LINK1" />общите условия<ph name="END_LINK1" /> на сайта.</translation>
 <translation id="3892148308691398805">Копиране на текста</translation>
@@ -732,7 +736,6 @@
 <translation id="4460861538906892109">{ITEMS_COUNT,plural, =1{1 отметка}other{# отметки}}</translation>
 <translation id="4478161224666880173">Можете да използвате профила си в(ъв) <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> на този сайт. За да продължите, влезте в(ъв) <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="4479972344484327217">Модулът „<ph name="MODULE" />“ за Chrome се инсталира…</translation>
-<translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{Отметката е запазена в папката „<ph name="FOLDER_NAME" />“ само на това устройство.}other{Отметките са запазени в папката „<ph name="FOLDER_NAME" />“ само на това устройство.}}</translation>
 <translation id="4484496141267039529">Няма връзка. Опитайте отново по-късно.</translation>
 <translation id="4487967297491345095">Всички данни на приложението Chrome ще се изтрият за постоянно. Това включва всички файлове, настройки, профили, бази от данни и др.</translation>
 <translation id="4494806687727322324">Запазването на паролите е включено от администратора ви</translation>
@@ -783,6 +786,7 @@
 <translation id="4698061626562952596">Преглеждайте неактивните си раздели оттук</translation>
 <translation id="4699172675775169585">Кеширани изображения и файлове</translation>
 <translation id="4710167854527459075">Сортиране по най-нови</translation>
+<translation id="4718044610319080485">Извиква асистента с AI</translation>
 <translation id="4719927025381752090">Предложения за превод</translation>
 <translation id="4720556299488643018">Отписване</translation>
 <translation id="4732120983431207637">Stack Unwinder</translation>
@@ -898,6 +902,7 @@
 <translation id="5174700554036517242">Разделът е върнат към първоначалната височина</translation>
 <translation id="5180063720319462041">Страницата е преведена на <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="5191251636205085390">Научете повече за новите технологии, които имат за цел да заменят „бисквитките“ на трети страни, и как да ги контролирате</translation>
+<translation id="5197649123261764478">Лесен достъп до отметките ви</translation>
 <translation id="5204967432542742771">Въведете парола</translation>
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{Изтегля се файл…}other{Изтеглят се # файла…}}</translation>
 <translation id="5210286577605176222">Преминаване към предишния раздел</translation>
@@ -927,6 +932,7 @@
 <translation id="5328542107300944283">Използване чрез <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="5342314432463739672">Искания за разрешение</translation>
 <translation id="534580735623577507">Няма сайтове от <ph name="TIME_PERIOD" /></translation>
+<translation id="5354716139000094027">Обобщаване с AI</translation>
 <translation id="5355191726083956201">Режимът за подобрена защита е включен</translation>
 <translation id="5375374982898812658">Незабавно ще загубите достъп до групата раздели „<ph name="GROUP_NAME" />“ и тя ще бъде изтрита от всичките ви устройства</translation>
 <translation id="5375577065097716013">Търсене на изобр. с Обектив <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
@@ -936,6 +942,7 @@
 <translation id="539881862970320163">Предложена бе надеждна парола. Клавиатурата е скрита.</translation>
 <translation id="5409881200985013443">Да се изпрати ли еднократният код <ph name="ONE_TIME_CODE" /> до <ph name="CLIENT_NAME" />?</translation>
 <translation id="5410300144953132176"><ph name="OWNER_FULL_NAME" /> (<ph name="OWNER_EMAIL" />) иска да се присъедините към група раздели. Всеки, който разполага с връзката, може да редактира всички раздели, затова се присъединявайте внимателно. Връзката изтича след 48 ч.</translation>
+<translation id="5412388166586147626">Асистентът с AI не бе отворен. Опитайте отново.</translation>
 <translation id="5414836363063783498">Потвърждава се…</translation>
 <translation id="5415871492522952905">Ще имате достъп до историята и разделите си на всичките си устройства, за да можете да продължавате заниманията си на всяко от тях</translation>
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) незабавно ще загуби достъп до групата раздели „<ph name="GROUP_NAME" />“</translation>
@@ -955,6 +962,7 @@
 <translation id="5456381639095306749">Изтегляне на страницата</translation>
 <translation id="5458366071038729214">Тук ще виждате сайтовете, които следите</translation>
 <translation id="5468068603361015296">Искате ли да изтеглите <ph name="FILE_NAME" /> въпреки това?</translation>
+<translation id="5471273988133666918">Разделът „<ph name="TAB_TITLE" />“ не може да бъде преместен</translation>
 <translation id="548278423535722844">Отваряне в приложение за карти</translation>
 <translation id="5492637351392383067">Шифроване на устройството</translation>
 <translation id="549660026907543296">Присъединяване като <ph name="MEMBER_FULL_NAME" /></translation>
@@ -969,6 +977,7 @@
 <translation id="5556459405103347317">Повторно зареждане</translation>
 <translation id="555671485580955310">Синхронизиране на историята и разделите</translation>
 <translation id="555816257274242153">Проследяването на цената бе прекратено</translation>
+<translation id="5561445479436807659">Впуснете се в забавна игра с динозавър</translation>
 <translation id="5561549206367097665">Изчаква се връзка с мрежата…</translation>
 <translation id="5568069709869097550">Не може да се влезе</translation>
 <translation id="557018954714092179">Създаване на нова папка</translation>
@@ -1048,6 +1057,7 @@
 <translation id="5907542076239273525">Отметката е запазена в папката „<ph name="FOLDER_NAME" />“</translation>
 <translation id="5916664084637901428">Включено</translation>
 <translation id="5919204609460789179">Актуализирайте <ph name="PRODUCT_NAME" />, за да стартира синхронизирането</translation>
+<translation id="5932881020239635062">Сериен №</translation>
 <translation id="5938820472109305350">Добавяне на <ph name="INTEREST" /></translation>
 <translation id="5942872142862698679">За търсене ще се използва Google</translation>
 <translation id="5945035219773565305">Текуща препоръка: <ph name="RECOMMENDATION" /></translation>
@@ -1328,7 +1338,6 @@
 <translation id="7063006564040364415">Не можа да се установи връзка със синхронизиращия сървър.</translation>
 <translation id="7071521146534760487">Управление на профила</translation>
 <translation id="707155805709242880">Изберете какво да синхронизирате по-долу</translation>
-<translation id="707702207692430409">{BOOKMARK_COUNT,plural, =1{Отметката е запазена в папката „<ph name="FOLDER_NAME" />“ в профила ви <ph name="ACCOUNT_EMAIL" />.}other{Отметките са запазени в папката „<ph name="FOLDER_NAME" />“ в профила ви <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="7077143737582773186">SD карта</translation>
 <translation id="7078916049958741685">Изтриване на данните ви в Chrome и от това устройство</translation>
 <translation id="7085332316435785646">Изберете дали да включите историята в Chrome за по-персонализирана практическа работа с услугите на Google</translation>
@@ -1516,6 +1525,7 @@
 <translation id="7913993612870913335">{FILE_COUNT,plural, =1{1 бе блокирано от организацията ви}other{# бяха блокирани от организацията ви}}</translation>
 <translation id="7914399737746719723">Приложението бе инсталирано</translation>
 <translation id="7919123827536834358">Автоматично превеждане от следните езици</translation>
+<translation id="7921782882718083488">Обобщаване на тази страница</translation>
 <translation id="7926975587469166629">Псевдоним на картата</translation>
 <translation id="7929962904089429003">Отваряне на менюто</translation>
 <translation id="7934668619883965330">Файлът не може да се изтегли. Файловият формат не се поддържа.</translation>
@@ -1672,6 +1682,7 @@
 <translation id="8540136935098276800">Въведете правилно форматиран URL адрес</translation>
 <translation id="854522910157234410">Отваряне на тази страница</translation>
 <translation id="8547025137714087639">{ARCHIVED_TAB_COUNT,plural, =1{Неактивен раздел (1)}other{Неактивни раздели (#)}}</translation>
+<translation id="8547466829003330976">Преглед на PDF файла с AI</translation>
 <translation id="8551513938758868521">Заключване на разделите в режим „инкогнито“ при излизане от Chrome</translation>
 <translation id="8559961053328923750">Chrome ограничава общото количество данни, които сайтовете могат да споделят чрез браузъра с цел измерване на ефективността на рекламите.</translation>
 <translation id="8559990750235505898">Извеждане на предложения за превод на страниците, написани на други езици</translation>
@@ -1769,6 +1780,7 @@
 <translation id="9022871169049522985">Сайтовете и рекламодателите могат да измерват ефективността на рекламите си</translation>
 <translation id="9035378196785279980">Преместване във\u2026</translation>
 <translation id="9042893549633094279">Поверителност и сигурност</translation>
+<translation id="9047347135558855162">Бързо стартиране на търсене в Chrome</translation>
 <translation id="9050666287014529139">Парола</translation>
 <translation id="9055497320631373736">Сайтът отново бе добавен към потенциалните сайтове</translation>
 <translation id="9057030985451135243">Научете за споделените групи раздели</translation>

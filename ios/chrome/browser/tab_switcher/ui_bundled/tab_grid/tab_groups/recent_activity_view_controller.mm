@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/recent_activity_log_cell.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/recent_activity_log_item.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/recent_activity_mutator.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -70,7 +71,6 @@ NSString* const kRecentActivitySectionIdentifier =
   UITableView* tableView = self.tableView;
   tableView.tableHeaderView =
       [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, CGFLOAT_MIN)];
-  tableView.allowsSelection = NO;
   tableView.scrollEnabled = YES;
 
   RegisterTableViewCell<RecentActivityLogCell>(tableView);
@@ -85,13 +85,40 @@ NSString* const kRecentActivitySectionIdentifier =
       appendSectionsWithIdentifiers:@[ kRecentActivitySectionIdentifier ]];
   if (items.count == 0) {
     RecentActivityLogItem* emptyItem = [[RecentActivityLogItem alloc] init];
-    emptyItem.type = ActivityLogType::kEmptyActivity;
+    emptyItem.emptyItem = YES;
     [snapshot appendItemsWithIdentifiers:@[ emptyItem ]];
   } else {
     [snapshot appendItemsWithIdentifiers:items];
   }
 
   [self.dataSource applySnapshot:snapshot animatingDifferences:NO];
+}
+
+#pragma mark - UITableViewDelegate
+
+- (BOOL)tableView:(UITableView*)tableView
+    shouldHighlightRowAtIndexPath:(NSIndexPath*)indexPath {
+  RecentActivityLogItem* item =
+      [_dataSource itemIdentifierForIndexPath:indexPath];
+  return !item.emptyItem;
+}
+
+- (BOOL)tableView:(UITableView*)tableView
+    canPerformPrimaryActionForRowAtIndexPath:(NSIndexPath*)indexPath {
+  RecentActivityLogItem* item =
+      [_dataSource itemIdentifierForIndexPath:indexPath];
+  return !item.emptyItem;
+}
+
+- (void)tableView:(UITableView*)tableView
+    performPrimaryActionForRowAtIndexPath:(NSIndexPath*)indexPath {
+  [self.mutator
+      performActionForItem:[_dataSource itemIdentifierForIndexPath:indexPath]];
+}
+
+- (void)tableView:(UITableView*)tableView
+    didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
+  [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 #pragma mark - Private
@@ -124,7 +151,7 @@ NSString* const kRecentActivitySectionIdentifier =
 - (UITableViewCell*)cellForTableView:(UITableView*)tableView
                            indexPath:(NSIndexPath*)indexPath
                       itemIdentifier:(RecentActivityLogItem*)itemIdentifier {
-  if (itemIdentifier.type == ActivityLogType::kEmptyActivity) {
+  if (itemIdentifier.emptyItem) {
     TableViewTextCell* cell =
         DequeueTableViewCell<TableViewTextCell>(tableView);
 

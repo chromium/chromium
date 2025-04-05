@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/first_run/ui_bundled/best_features/ui/best_features_cell.h"
 
+#import "ios/chrome/browser/first_run/ui_bundled/best_features/ui/best_features_constants.h"
 #import "ios/chrome/browser/first_run/ui_bundled/best_features/ui/best_features_item.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -132,6 +133,8 @@ const CGFloat kContentViewTrailingMargin = 13.0;
 
 - (void)setBestFeaturesItem:(BestFeaturesItem*)item {
   _textLabel.text = item.title;
+  _textLabel.accessibilityIdentifier =
+      [kBestFeaturesCellAccessibilityPrefix stringByAppendingString:item.title];
   _detailTextLabel.text = item.caption;
   _iconImageView.image = item.iconImage;
   _iconBackgroundView.backgroundColor = item.iconBackgroundColor;

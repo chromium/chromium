@@ -117,10 +117,8 @@ bool IsSyncDataEqualIfApplied(const WebApp& expected_app,
 
   // The `is_diy_app` and `was_shortcut_app` fields are not updated by the sync
   // system, so ensure both of them are in the same state.
-  if (base::FeatureList::IsEnabled(kMigrateShortcutsToDiy)) {
-    test::MaybeEnsureShortcutAppsTreatedAsDiy(expected_app_copy);
-    test::MaybeEnsureShortcutAppsTreatedAsDiy(app_applied_sync_data_copy);
-  }
+  test::MaybeEnsureShortcutAppsTreatedAsDiy(expected_app_copy);
+  test::MaybeEnsureShortcutAppsTreatedAsDiy(app_applied_sync_data_copy);
 
   return expected_app_copy == app_applied_sync_data_copy;
 }
@@ -155,9 +153,6 @@ bool RegistryContainsSyncDataBatchChanges(
 }
 
 void RunMigrationsOnTestRegistry(Registry& registry) {
-  if (!base::FeatureList::IsEnabled(kMigrateShortcutsToDiy)) {
-    return;
-  }
   for (auto& entry : registry) {
     test::MaybeEnsureShortcutAppsTreatedAsDiy(*entry.second.get());
   }

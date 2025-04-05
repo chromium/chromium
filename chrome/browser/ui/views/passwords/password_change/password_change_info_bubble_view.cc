@@ -51,7 +51,7 @@ PasswordChangeInfoBubbleView::PasswordChangeInfoBubbleView(
       .SetDefault(
           views::kMarginsKey,
           gfx::Insets::VH(ChromeLayoutProvider::Get()->GetDistanceMetric(
-                              DISTANCE_CONTROL_LIST_VERTICAL),
+                              views::DISTANCE_CONTROL_LIST_VERTICAL),
                           0));
 
   AddChildView(CreateLabel(controller_.GetDisplayOrigin()));

@@ -4,6 +4,8 @@
 
 package org.chromium.customtabsclient;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -15,9 +17,13 @@ import android.widget.Toast;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsSession;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 import java.lang.ref.WeakReference;
 
 /** A {@link BroadcastReceiver} that manages the interaction with the active Custom Tab. */
+@NullMarked
 public class BottomBarManager extends BroadcastReceiver {
     /**
      * A {@link BroadcastReceiver} that receives the swipe-up gesture on the Custom Tab bottom bar.
@@ -30,7 +36,7 @@ public class BottomBarManager extends BroadcastReceiver {
         }
     }
 
-    private static WeakReference<MediaPlayer> sMediaPlayerWeakRef;
+    private static @Nullable WeakReference<MediaPlayer> sMediaPlayerWeakRef;
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -45,6 +51,7 @@ public class BottomBarManager extends BroadcastReceiver {
         if (session == null) return;
 
         if (clickedId == R.id.play_pause) {
+            assumeNonNull(sMediaPlayerWeakRef);
             MediaPlayer player = sMediaPlayerWeakRef.get();
             if (player != null) {
                 boolean isPlaying = player.isPlaying();

@@ -28,6 +28,7 @@ class HomeButton;
 enum class HotseatState;
 class NavigationButtonAnimationMetricsReporter;
 class Shelf;
+class ShelfNavigationWidgetDelegate;
 class ShelfView;
 
 // The shelf navigation widget holds the home button and (when in tablet mode)
@@ -103,8 +104,6 @@ class ASH_EXPORT ShelfNavigationWidget : public ShelfComponent,
   }
 
  private:
-  class Delegate;
-
   void UpdateButtonVisibility(
       views::View* button,
       bool visible,
@@ -124,7 +123,7 @@ class ASH_EXPORT ShelfNavigationWidget : public ShelfComponent,
   int CalculateButtonCount() const;
 
   raw_ptr<Shelf> shelf_ = nullptr;
-  raw_ptr<Delegate> delegate_ = nullptr;
+  raw_ptr<ShelfNavigationWidgetDelegate> delegate_ = nullptr;
 
   // In tablet mode with hotseat enabled, `clip_rect_after_rtl_` is used to hide
   // the invisible widget part. We try best to avoid changing the widget's

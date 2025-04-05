@@ -343,8 +343,10 @@ if (use_system_harfbuzz) {
       "HAVE_ICU",
       "HAVE_ICU_BUILTIN",
       "HB_NO_MMAP",
-      "HB_NO_PAINT",
       "HB_NO_RESOURCE_FORK",
+
+      # Use assignment to empty value to work around a build failure.
+      "HB_NO_PAINT=",
 
       # Size reductions by disabling parts that we do not currently require:
 

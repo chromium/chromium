@@ -26,10 +26,34 @@ class VIEWS_EXPORT BrowserViewsAXManager
       public ui::AXPlatformTreeManagerDelegate,
       public ui::AXModeObserver {
  public:
+  // Manages the lifetime of the BrowserViewsAXManager singleton.
+  // Ensures the instance is created only once and properly cleaned up when no
+  // longer needed.
+  class VIEWS_EXPORT LifetimeHandle {
+   public:
+    using BrowserViewsAXManagerPassKey = base::PassKey<BrowserViewsAXManager>;
+    LifetimeHandle(const LifetimeHandle&) = delete;
+    LifetimeHandle& operator=(const LifetimeHandle&) = delete;
+
+    explicit LifetimeHandle(BrowserViewsAXManagerPassKey);
+    ~LifetimeHandle();
+
+   private:
+    std::unique_ptr<BrowserViewsAXManager> instance_;
+  };
+
+  using LifetimeHandlePassKey = base::PassKey<LifetimeHandle>;
+
+  explicit BrowserViewsAXManager(LifetimeHandlePassKey);
+  ~BrowserViewsAXManager() override;
   BrowserViewsAXManager(const BrowserViewsAXManager&) = delete;
   BrowserViewsAXManager& operator=(const BrowserViewsAXManager&) = delete;
 
+  // Returns the single process-wide instance.
   static BrowserViewsAXManager* GetInstance();
+
+  // Returns a new instance. Only one instance can be created.
+  static std::unique_ptr<LifetimeHandle> Create();
 
   // ui::AXNodeIdDelegate:
   ui::AXPlatformNodeId GetOrCreateAXNodeUniqueId(
@@ -65,13 +89,7 @@ class VIEWS_EXPORT BrowserViewsAXManager
   // ui::AXModeObserver:
   void OnAXModeAdded(ui::AXMode mode) override;
 
-  void ShutdownForTesting();
-
  private:
-  friend class base::NoDestructor<BrowserViewsAXManager>;
-  BrowserViewsAXManager();
-  ~BrowserViewsAXManager() override;
-
   void Reset(bool reset_serializer) override;
 
   // Holds the generated AXTree of AXNodes for the views-based tree.

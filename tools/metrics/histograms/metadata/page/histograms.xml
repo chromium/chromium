@@ -1526,36 +1526,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PageLoad.Clients.GoogleSearch.SyntheticResponse.AllHeadersExpected"
-    enum="Boolean" expires_after="2025-08-10">
-  <owner>sisidovski@chromium.org</owner>
-  <owner>chrome-loading@google.com</owner>
-  <summary>
-    Records whether the response headers from SERP are consistent with the ones
-    that the browser internally expects in `GWSPageLoadMetricsObserver`. If
-    either of them is mismatched from the expected one, or the expected header
-    does not actually exist, or there is an unexpected header in the actual SERP
-    header list, this is reported with `false`. This indicates the potential hit
-    rate of synthetic response for SERP.
-
-    This is recorded at the timing of navigation commit.
-  </summary>
-</histogram>
-
-<histogram
-    name="PageLoad.Clients.GoogleSearch.SyntheticResponse.HeaderMismatchType"
-    enum="HeaderMismatchType" expires_after="2025-08-01">
-  <owner>sisidovski@chromium.org</owner>
-  <owner>chrome-loading@google.com</owner>
-  <summary>
-    When the response headers from SERP are mismatched from the expected ones,
-    reports the bitmask of mismatched type.
-
-    This is recorded at the timing of navigation commit.
-  </summary>
-</histogram>
-
-<histogram
     name="PageLoad.Clients.GoogleSearch{Granularity}.PaintTiming.NavigationToLargestContentfulPaint"
     units="ms" expires_after="2025-08-17">
   <owner>spelchat@chromium.org</owner>
@@ -2111,7 +2081,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.PerformanceManager.LCPToLoadedIdle{LoadedIdleVisibility}"
-    units="ms" expires_after="2025-08-24">
+    units="ms" expires_after="2025-09-28">
   <owner>joenotcharles@google.com</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -2153,6 +2123,39 @@ chromium-metrics-reviews@google.com.
     LargestContentfulPaint (LCP) being available. The value is the time from
     navigation start to quiescence. If the navigation gets an LCP before
     reaching quiescense, PageLoad.Clients.PerformanceManager.LCPToLoadedIdle is
+    recorded instead. This version of the metric is recorded for navigations in
+    {LoadedIdleVisibility}.
+  </summary>
+  <token key="LoadedIdleVisibility" variants="LoadedIdleVisibility"/>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.PerformanceManager.NavigationToLoadedIdle{LoadedIdleVisibility}"
+    units="ms" expires_after="2025-09-28">
+  <owner>joenotcharles@google.com</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Recorded for each navigation when its PerformanceManager loading state
+    reaches PageNode::LoadingState::kLoadedIdle, with the time since navigation
+    start. If a navigation is abandoned without ever reaching kLoadedIdle,
+    PageLoad.Clients.PerformanceManager.NavigationWithoutLoadedIdle is recorded
+    instead. This version of the metric is recorded for navigations in
+    {LoadedIdleVisibility}.
+  </summary>
+  <token key="LoadedIdleVisibility" variants="LoadedIdleVisibility"/>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.PerformanceManager.NavigationWithoutLoadedIdle{LoadedIdleVisibility}"
+    units="ms" expires_after="2025-09-28">
+  <owner>joenotcharles@google.com</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Recorded for each navigation that's abandoned without its PerformanceManager
+    loading state reaching PageNode::LoadingState::kLoadedIdle, such as by the
+    page closing or a new navigation starting. The value is the time from
+    navigation start to the time it's abandoned. If the navigation reaches
+    kLoadedIdle, PageLoad.Clients.PerformanceManager.NavigateToLoadedIdle is
     recorded instead. This version of the metric is recorded for navigations in
     {LoadedIdleVisibility}.
   </summary>

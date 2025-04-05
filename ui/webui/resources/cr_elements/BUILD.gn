@@ -234,7 +234,9 @@ build_webui("build") {
 
   html_to_wrapper_template = "detect"
 
-  ts_tsconfig_base = "//tools/typescript/tsconfig_base_lit_389737066.json"
+  # Manually setting to Lit instead of "mixed" config, even though this folder
+  # has a Polymer dependency for mixins.
+  ts_tsconfig_base = "//tools/typescript/tsconfig_base_lit.json"
   ts_out_dir = "$root_gen_dir/ui/webui/resources/tsc/cr_elements"
   ts_composite = true
   ts_deps = [

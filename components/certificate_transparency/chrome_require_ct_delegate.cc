@@ -174,11 +174,11 @@ ChromeRequireCTDelegate::ChromeRequireCTDelegate()
 
 ChromeRequireCTDelegate::~ChromeRequireCTDelegate() = default;
 
-net::TransportSecurityState::RequireCTDelegate::CTRequirementLevel
+net::RequireCTDelegate::CTRequirementLevel
 ChromeRequireCTDelegate::IsCTRequiredForHost(
     std::string_view hostname,
     const net::X509Certificate* chain,
-    const net::HashValueVector& spki_hashes) {
+    const net::HashValueVector& spki_hashes) const {
   if (MatchHostname(hostname) || MatchSPKI(chain, spki_hashes)) {
     return CTRequirementLevel::NOT_REQUIRED;
   }

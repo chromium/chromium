@@ -114,12 +114,13 @@ int GetDeduplicationProviderPreferenceScore(
 
   constexpr auto kProviderPrefMap =
       base::MakeFixedFlatMap<AutocompleteProvider::Type, int>({
-          // Prefer live document suggestions. We check provider type instead
+          // Prefer live remote suggestions. We check provider type instead
           // of match type in order to distinguish live suggestions from the
-          // document provider from stale suggestions from the shortcuts
-          // providers, because the latter omits changing metadata such as last
-          // access date.
+          // from their stale counterparts from the shortcut, history, and
+          // bookmark providers. The latter often have stale metadata such as
+          // last access date.
           {AutocompleteProvider::TYPE_DOCUMENT, 2},
+          {AutocompleteProvider::TYPE_ENTERPRISE_SEARCH_AGGREGATOR, 2},
           // Prefer bookmark suggestions, as:
           // 1) Their titles may be explicitly set.
           // 2) They may display enhanced information such as the bookmark
@@ -145,7 +146,8 @@ template <typename... Args>
 size_t ACMatchKeyHash<Args...>::operator()(
     const ACMatchKey<Args...>& key) const {
   size_t seed = 0;
-  // Compute a hash by applying `HashCombine` to each element of the "key" tuple.
+  // Compute a hash by applying `HashCombine` to each element of the "key"
+  // tuple.
   std::apply(
       [&seed](auto&&... args) { ((base::HashCombine(seed, args)), ...); }, key);
   return seed;
@@ -274,6 +276,14 @@ AutocompleteMatch::AutocompleteMatch(const AutocompleteMatch& match)
       from_previous(match.from_previous),
       zero_prefix_suggestions_shown_in_session(
           match.zero_prefix_suggestions_shown_in_session),
+      zero_prefix_search_suggestions_shown_in_session(
+          match.zero_prefix_search_suggestions_shown_in_session),
+      zero_prefix_url_suggestions_shown_in_session(
+          match.zero_prefix_url_suggestions_shown_in_session),
+      typed_search_suggestions_shown_in_session(
+          match.typed_search_suggestions_shown_in_session),
+      typed_url_suggestions_shown_in_session(
+          match.typed_url_suggestions_shown_in_session),
       search_terms_args(
           match.search_terms_args
               ? new TemplateURLRef::SearchTermsArgs(*match.search_terms_args)
@@ -347,8 +357,19 @@ AutocompleteMatch& AutocompleteMatch::operator=(
   actions = std::move(match.actions);
   takeover_action = std::move(match.takeover_action);
   from_previous = std::move(match.from_previous);
+  // TODO(crbug.com/402519775): Roll all of the individual "shown in session"
+  // members into a single `SessionData` struct (similar to that defined in
+  // `AutocompleteResult`).
   zero_prefix_suggestions_shown_in_session =
       std::move(match.zero_prefix_suggestions_shown_in_session);
+  zero_prefix_search_suggestions_shown_in_session =
+      std::move(match.zero_prefix_search_suggestions_shown_in_session);
+  zero_prefix_url_suggestions_shown_in_session =
+      std::move(match.zero_prefix_url_suggestions_shown_in_session);
+  typed_search_suggestions_shown_in_session =
+      std::move(match.typed_search_suggestions_shown_in_session);
+  typed_url_suggestions_shown_in_session =
+      std::move(match.typed_url_suggestions_shown_in_session);
   search_terms_args = std::move(match.search_terms_args);
   post_content = std::move(match.post_content);
   additional_info = std::move(match.additional_info);
@@ -431,6 +452,14 @@ AutocompleteMatch& AutocompleteMatch::operator=(
   from_previous = match.from_previous;
   zero_prefix_suggestions_shown_in_session =
       match.zero_prefix_suggestions_shown_in_session;
+  zero_prefix_search_suggestions_shown_in_session =
+      match.zero_prefix_search_suggestions_shown_in_session;
+  zero_prefix_url_suggestions_shown_in_session =
+      match.zero_prefix_url_suggestions_shown_in_session;
+  typed_search_suggestions_shown_in_session =
+      match.typed_search_suggestions_shown_in_session;
+  typed_url_suggestions_shown_in_session =
+      match.typed_url_suggestions_shown_in_session;
   search_terms_args.reset(
       match.search_terms_args
           ? new TemplateURLRef::SearchTermsArgs(*match.search_terms_args)
@@ -1848,6 +1877,11 @@ void AutocompleteMatch::UpgradeMatchWithPropertiesFrom(
         duplicate_match.description_class_for_shortcuts;
     swap_contents_and_description =
         duplicate_match.swap_contents_and_description;
+
+    // Image data should stay in sync with the suggestion text.
+    image_dominant_color = duplicate_match.image_dominant_color;
+    image_url = duplicate_match.image_url;
+    icon_url = duplicate_match.icon_url;
   }
 
   // Copy `rich_autocompletion_triggered` for counterfactual logging.

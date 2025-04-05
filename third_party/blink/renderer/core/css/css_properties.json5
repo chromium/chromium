@@ -157,7 +157,7 @@
     // - interpolable
     // The interpolable flag indicates whether a property can be animated
     // smoothly. If this flag is set, the property should also be added to the
-    // switch statements in CSSPropertyEquality and CSSInterpolationTypesMap.
+    // switch statements in CSSPropertyEquality and InterpolationTypesMap.
     interpolable: {
       default: false,
       valid_type: "bool",
@@ -2954,6 +2954,7 @@
       field_template: "external",
       default_value: "Superellipse::Round()",
       include_paths: ["third_party/blink/renderer/core/style/superellipse.h"],
+      keywords: ["notch", "scoop", "bevel", "round", "squircle", "square"],
       type_name: "Superellipse",
       converter: "ConvertCornerShape",
       valid_for_first_letter: true,
@@ -2974,6 +2975,7 @@
       field_template: "external",
       default_value: "Superellipse::Round()",
       include_paths: ["third_party/blink/renderer/core/style/superellipse.h"],
+      keywords: ["notch", "scoop", "bevel", "round", "squircle", "square"],
       type_name: "Superellipse",
       converter: "ConvertCornerShape",
       valid_for_first_letter: true,
@@ -2994,6 +2996,7 @@
       field_template: "external",
       default_value: "Superellipse::Round()",
       include_paths: ["third_party/blink/renderer/core/style/superellipse.h"],
+      keywords: ["notch", "scoop", "bevel", "round", "squircle", "square"],
       type_name: "Superellipse",
       converter: "ConvertCornerShape",
       valid_for_first_letter: true,
@@ -3014,6 +3017,7 @@
       field_template: "external",
       default_value: "Superellipse::Round()",
       include_paths: ["third_party/blink/renderer/core/style/superellipse.h"],
+      keywords: ["notch", "scoop", "bevel", "round", "squircle", "square"],
       type_name: "Superellipse",
       converter: "ConvertCornerShape",
       valid_for_first_letter: true,
@@ -3644,6 +3648,7 @@
       typedom_types: ["Keyword"],
       default_value: "auto",
       invalidate: [],
+      affected_by_all: false,
       runtime_flag: "CSSInert",
     },
     {

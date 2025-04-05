@@ -16,7 +16,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/foundations/autofill_driver.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
-#include "components/autofill/core/browser/integrators/autofill_optimization_guide.h"
+#include "components/autofill/core/browser/integrators/optimization_guide/autofill_optimization_guide.h"
 #include "components/autofill/core/browser/metrics/payments/amount_extraction_metrics.h"
 #include "components/autofill/core/browser/payments/amount_extraction_heuristic_regexes.h"
 #include "components/autofill/core/browser/payments/bnpl_manager.h"
@@ -46,7 +46,7 @@ AmountExtractionManager::MaybeParseAmountToMonetaryMicroUnits(
   if (!RE2::FullMatch(amount, re, &dollar, nullptr, nullptr, &cent)) {
     return std::nullopt;
   }
-  dollar.erase(std::remove(dollar.begin(), dollar.end(), ','), dollar.end());
+  std::erase(dollar, ',');
 
   uint64_t dollar_value = 0;
   uint64_t cent_value = 0;

@@ -46,7 +46,7 @@ std::unique_ptr<views::Border> CreateBorderWithVerticalSpacing(
 
 int GetVerticalSpacing() {
   return ChromeLayoutProvider::Get()->GetDistanceMetric(
-             DISTANCE_CONTROL_LIST_VERTICAL) /
+             views::DISTANCE_CONTROL_LIST_VERTICAL) /
          2;
 }
 

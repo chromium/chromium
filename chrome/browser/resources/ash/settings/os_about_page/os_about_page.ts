@@ -224,22 +224,6 @@ export class OsAboutPageElement extends OsAboutPageBase {
       },
 
       /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kCheckForOsUpdate,
-          Setting.kSeeWhatsNew,
-          Setting.kGetHelpWithChromeOs,
-          Setting.kReportAnIssue,
-          Setting.kTermsOfService,
-          Setting.kDiagnostics,
-          Setting.kFirmwareUpdates,
-        ]),
-      },
-
-      /**
        * Controls whether the extended updates opt-in option is shown.
        */
       showExtendedUpdatesOption_: {
@@ -291,6 +275,17 @@ export class OsAboutPageElement extends OsAboutPageBase {
           'isExtendedUpdatesOptInRequired_)',
     ];
   }
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kCheckForOsUpdate,
+    Setting.kSeeWhatsNew,
+    Setting.kGetHelpWithChromeOs,
+    Setting.kReportAnIssue,
+    Setting.kTermsOfService,
+    Setting.kDiagnostics,
+    Setting.kFirmwareUpdates,
+  ]);
 
   private isDarkModeActive_: boolean;
   private currentUpdateStatusEvent_: UpdateStatusChangedEvent;

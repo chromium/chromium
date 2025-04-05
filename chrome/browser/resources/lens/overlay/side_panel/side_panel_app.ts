@@ -60,6 +60,10 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
 
   static get properties() {
     return {
+      autocompleteRequestStarted: {
+        type: Boolean,
+        value: false,
+      },
       isBackArrowVisible: {
         type: Boolean,
         value: false,
@@ -124,6 +128,10 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
         value: false,
         notify: true,
       },
+      pageContentType: {
+        type: Number,
+        value: PageContentType.kUnknown,
+      },
       /* TODO(385183449): Once WebUI preloading is implemented in the
        * side panel, update the loadTimeData for searchBoxHint in the side
        * panel WebUI constructor insteading of passing it to the searchbox. */
@@ -141,40 +149,43 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
         computed: `computeShowUploadProgress(uploadProgressPercentage)`,
         reflectToAttribute: true,
       },
-      toastMessage: String,
+      toastMessage: {
+        type: String,
+        value: '',
+      },
     };
   }
 
   // Public for use in browser tests.
-  isBackArrowVisible: boolean;
+  declare isBackArrowVisible: boolean;
   // Whether the user is currently focused into the searchbox.
-  isSearchboxFocused: boolean;
-  private showGhostLoader: boolean;
+  declare isSearchboxFocused: boolean;
+  declare private showGhostLoader: boolean;
   // Whether to purposely suppress the ghost loader. Done when escaping from
   // the searchbox when there's text or when page bytes aren't successfully
   // uploaded.
-  suppressGhostLoader: boolean;
-  placeholderText: string;
+  declare suppressGhostLoader: boolean;
+  declare placeholderText: string;
   // Whether the ghost loader should show its error state.
-  showErrorState: boolean;
-  private showUploadProgress: boolean;
+  declare showErrorState: boolean;
+  declare private showUploadProgress: boolean;
   // The current progress of the page content upload.
-  uploadProgressPercentage: number;
+  declare uploadProgressPercentage: number;
   // Whether the ghost loader is enabled via feature flag.
-  private enableGhostLoader: boolean;
+  declare private enableGhostLoader: boolean;
   // The placeholder text to show in the searchbox.
-  private pageContentType: PageContentType = PageContentType.kUnknown;
+  declare private pageContentType: PageContentType;
   // Whether this is an in flight request to autocomplete.
-  private autocompleteRequestStarted: boolean = false;
-  private isErrorPageVisible: boolean;
+  declare private autocompleteRequestStarted: boolean;
+  declare private isErrorPageVisible: boolean;
   // Whether the results iframe is currently loading. This needs to be done via
   // browser because the iframe is cross-origin. Default true since the side
   // panel can open before a navigation has started.
-  private isLoadingResults: boolean;
-  private isContextualSearchbox: boolean;
+  declare private isLoadingResults: boolean;
+  declare private isContextualSearchbox: boolean;
   // The URL for the loading image shown when results frame is loading a new
   // page.
-  private readonly loadingImageUrl: string;
+  declare private readonly loadingImageUrl: string;
   // The animations for the progress bar. One for the progress bar width
   // increase, and one for the progress bar height decrease on results load.
   private progressBarAnimation: Animation|null = null;
@@ -182,11 +193,11 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
 
   private browserProxy: SidePanelBrowserProxy =
       SidePanelBrowserProxyImpl.getInstance();
-  private darkMode: boolean;
+  declare private darkMode: boolean;
   private listenerIds: number[];
   private pageHandler: LensSidePanelPageHandlerInterface;
-  private wasBackArrowAvailable: boolean;
-  private toastMessage: string = '';
+  declare private wasBackArrowAvailable: boolean;
+  declare private toastMessage: string;
   private eventTracker_: EventTracker = new EventTracker();
 
   constructor() {

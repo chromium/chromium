@@ -185,6 +185,10 @@ class TestBubbleDialogDelegateView : public views::BubbleDialogDelegateView {
  public:
   explicit TestBubbleDialogDelegateView(views::View* anchor_view)
       : BubbleDialogDelegateView(anchor_view, views::BubbleBorder::NONE) {}
+  explicit TestBubbleDialogDelegateView(aura::Window* parent)
+      : BubbleDialogDelegateView(nullptr, views::BubbleBorder::NONE) {
+    set_parent_window(parent);
+  }
 
   TestBubbleDialogDelegateView(const TestBubbleDialogDelegateView&) = delete;
   TestBubbleDialogDelegateView& operator=(const TestBubbleDialogDelegateView&) =
@@ -2768,9 +2772,10 @@ TEST_F(SplitViewControllerTest, AdjustTransientChildBounds) {
   split_view_controller()->SnapWindow(window, SnapPosition::kPrimary);
   const gfx::Rect window_bounds = window->GetBoundsInScreen();
 
-  // Create a bubble widget that's anchored to |widget|.
+  // Create a bubble widget without anchor. (anchored bubble's bounds won't be
+  // adjusted)
   views::Widget* bubble_widget = views::BubbleDialogDelegateView::CreateBubble(
-      new TestBubbleDialogDelegateView(widget->GetContentsView()));
+      new TestBubbleDialogDelegateView(widget->GetNativeWindow()));
   aura::Window* bubble_window = bubble_widget->GetNativeWindow();
   EXPECT_TRUE(::wm::HasTransientAncestor(bubble_window, window));
   // Test that the bubble is created inside its anchor widget.
@@ -3246,8 +3251,10 @@ TEST_F(SplitViewControllerTest, DoNotObserveTransientIfNotInSplitview) {
   parent->SetProperty(aura::client::kResizeBehaviorKey,
                       aura::client::kResizeBehaviorCanResize |
                           aura::client::kResizeBehaviorCanMaximize);
+  // Create a bubble without anchor so that it is observed by split view
+  // divider.
   views::Widget* bubble_widget = views::BubbleDialogDelegateView::CreateBubble(
-      new TestBubbleDialogDelegateView(widget->GetContentsView()));
+      new TestBubbleDialogDelegateView(widget->GetNativeWindow()));
   aura::Window* bubble_transient = bubble_widget->GetNativeWindow();
   EXPECT_TRUE(::wm::HasTransientAncestor(bubble_transient, parent));
 

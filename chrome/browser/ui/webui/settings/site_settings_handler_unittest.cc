@@ -293,9 +293,7 @@ void RemoveModelEntries(
     const std::vector<browsing_data_model_test_util::BrowsingDataEntry>&
         entries_to_remove) {
   for (const auto& entry : entries_to_remove) {
-    model_entries.erase(
-        std::remove(model_entries.begin(), model_entries.end(), entry),
-        model_entries.end());
+    std::erase(model_entries, entry);
   }
 }
 

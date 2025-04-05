@@ -109,6 +109,7 @@ template("chrome_ios_eg2_test_app_host") {
 
     deps = [
       ":$_deps_group_name",
+      "//ios/chrome/app:app_trampoline",
       "//ios/chrome/app:main",
       "//ios/chrome/test/earl_grey:eg_app_support+eg2",
       "//ios/chrome/test/earl_grey:hooks",

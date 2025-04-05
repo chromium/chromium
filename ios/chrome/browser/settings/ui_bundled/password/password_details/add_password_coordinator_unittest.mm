@@ -12,10 +12,12 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
+#import "components/password_manager/core/browser/password_requirements_service.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "components/password_manager/core/browser/ui/password_check_referrer.h"
 #import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
+#import "ios/chrome/browser/passwords/model/ios_password_requirements_service_factory.h"
 #import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_metrics.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_details/add_password_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings/scoped_password_settings_reauth_module_override.h"
@@ -56,6 +58,14 @@ class AddPasswordCoordinatorTest : public PlatformTest {
 
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateMockSyncService));
+
+    builder.AddTestingFactory(
+        IOSPasswordRequirementsServiceFactory::GetInstance(),
+        base::BindRepeating(
+            [](web::BrowserState* /*unused*/) -> std::unique_ptr<KeyedService> {
+              return std::make_unique<
+                  password_manager::PasswordRequirementsService>(nil);
+            }));
 
     // Create scene state for reauthentication coordinator.
     scene_state_ = [[SceneState alloc] initWithAppState:nil];

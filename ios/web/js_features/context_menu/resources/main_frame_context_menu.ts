@@ -6,7 +6,7 @@
  * @fileoverview APIs used by CRWContextMenuController.
  */
 
-import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 
 /**
  * Finds the url of the image or link under the selected point. Sends the
@@ -22,8 +22,8 @@ import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
  *                 coordinates.
  */
 function findElementAtPoint(requestId: string, x: number, y: number) {
-  gCrWeb.contextMenuAllFrames.findElementAtPointInPageCoordinates(
+  gCrWebLegacy.contextMenuAllFrames.findElementAtPointInPageCoordinates(
       requestId, x, y);
 }
 
-gCrWeb.contextMenu = {findElementAtPoint};
+gCrWebLegacy.contextMenu = {findElementAtPoint};

@@ -16,6 +16,8 @@ import android.os.Parcel;
 import android.os.RemoteException;
 import android.util.Log;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.webapk.lib.runtime_library.IWebApkApi;
 
 import java.lang.reflect.Field;
@@ -25,6 +27,7 @@ import java.lang.reflect.Method;
  * A wrapper class of {@link org.chromium.webapk.lib.runtime_library.WebApkServiceImpl} that
  * provides additional functionality when the runtime library hasn't been updated.
  */
+@NullMarked
 public class WebApkServiceImplWrapper extends IWebApkApi.Stub {
     private static final String TAG = "cr_WebApkServiceImplWrapper";
 
@@ -136,7 +139,8 @@ public class WebApkServiceImplWrapper extends IWebApkApi.Stub {
     }
 
     @Override
-    public PendingIntent requestNotificationPermission(String channelName, String channelId) {
+    public @Nullable PendingIntent requestNotificationPermission(
+            String channelName, String channelId) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
             Log.w(TAG, "Cannot request notification permission before Android T.");
             return null;

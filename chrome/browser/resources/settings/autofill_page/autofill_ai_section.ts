@@ -146,9 +146,6 @@ export class SettingsAutofillAiSectionElement extends
   private showRemoveEntityInstanceDialog_: boolean;
   private entityInstances_: EntityInstanceWithLabels[];
 
-  // The correspondent `EntityInstanceWithLabels` model for any entity instance
-  // related action menus or dialogs.
-  private activeEntityInstanceWithLabels_: EntityInstanceWithLabels|null;
   private entityInstancesChangedListener_: EntityInstancesChangedListener|null =
       null;
   private entityDataManager_: EntityDataManagerProxy =
@@ -161,18 +158,20 @@ export class SettingsAutofillAiSectionElement extends
         optedIn => this.set('optedIn_.value', !this.ineligibleUser && optedIn));
 
     this.entityInstancesChangedListener_ =
-        (entityInstances => this.entityInstances_ = entityInstances);
+        (entityInstances => this.entityInstances_ =
+             entityInstances.sort(this.entityInstancesWithLabelsComparator_));
     this.entityDataManager_.addEntityInstancesChangedListener(
         this.entityInstancesChangedListener_);
 
     this.entityDataManager_.getAllEntityTypes().then(
         (entityTypes: EntityType[]) => {
-          this.completeEntityTypesList_ = entityTypes;
+          this.completeEntityTypesList_ =
+              entityTypes.sort(this.entityTypesComparator_);
         });
 
     this.entityDataManager_.loadEntityInstances().then(
         (entityInstances: EntityInstanceWithLabels[]) => this.entityInstances_ =
-            entityInstances);
+            entityInstances.sort(this.entityInstancesWithLabelsComparator_));
   }
 
   override disconnectedCallback() {
@@ -184,26 +183,31 @@ export class SettingsAutofillAiSectionElement extends
     this.entityInstancesChangedListener_ = null;
   }
 
+  /*
+   * This comparator purposefully uses sensitivity 'base', not to differentiate
+   * between different capitalization or diacritics.
+   */
+  private entityTypesComparator_(a: EntityType, b: EntityType) {
+    return a.typeNameAsString.localeCompare(
+        b.typeNameAsString, undefined, {sensitivity: 'base'});
+  }
+
+  /**
+   * This comparator compares the labels alphabetically, and, in case of
+   * equality, the sublabels.
+   * This comparator purposefully uses sensitivity 'base', not to differentiate
+   * between different capitalization or diacritics.
+   */
+  private entityInstancesWithLabelsComparator_(
+      a: EntityInstanceWithLabels, b: EntityInstanceWithLabels) {
+    return (a.entityInstanceLabel + a.entityInstanceSubLabel)
+        .localeCompare(
+            b.entityInstanceLabel + b.entityInstanceSubLabel, undefined,
+            {sensitivity: 'base'});
+  }
+
   private onOptInToggleChange_() {
     this.entityDataManager_.setOptInStatus(this.$.prefToggle.checked);
-  }
-
-  /**
-   * @returns the accessibility title for the "More Actions button"
-   *     corresponding to the entity instance which is described by `label` and
-   *     `sublabel`.
-   */
-  private getMoreButtonTitle_(label: string, subLabel: string) {
-    return this.i18n('autofillAiMoreActionsForEntityInstance', label, subLabel);
-  }
-
-  /**
-   * Open the action menu.
-   */
-  private onMoreButtonClick_(e: DomRepeatEvent<EntityInstanceWithLabels>) {
-    this.activeEntityInstanceWithLabels_ = e.model.item;
-    const moreButton = e.target as HTMLElement;
-    this.$.actionMenu.get().showAt(moreButton);
   }
 
   /**
@@ -235,13 +239,23 @@ export class SettingsAutofillAiSectionElement extends
   }
 
   /**
-   * Handles tapping on the "Edit" entity instance button in the action menu.
+   * Open the action menu.
    */
-  private async onMenuEditEntityInstanceClick_(e: Event) {
-    e.preventDefault();
+  private async onMoreButtonClick_(
+      e: DomRepeatEvent<EntityInstanceWithLabels>) {
+    const moreButton = e.target as HTMLElement;
     this.activeEntityInstance_ =
         await this.entityDataManager_.getEntityInstanceByGuid(
-            this.activeEntityInstanceWithLabels_!.guid);
+            e.model.item.guid);
+    this.$.actionMenu.get().showAt(moreButton);
+  }
+
+  /**
+   * Handles tapping on the "Edit" entity instance button in the action menu.
+   */
+  private onMenuEditEntityInstanceClick_(e: Event) {
+    e.preventDefault();
+    assert(this.activeEntityInstance_);
     this.addOrEditEntityInstanceDialogTitle_ =
         this.activeEntityInstance_.type.editEntityTypeString;
     this.showAddOrEditEntityInstanceDialog_ = true;
@@ -265,6 +279,7 @@ export class SettingsAutofillAiSectionElement extends
   private onAddOrEditEntityInstanceDialogClose_(e: Event) {
     e.stopPropagation();
     this.showAddOrEditEntityInstanceDialog_ = false;
+    this.activeEntityInstance_ = null;
   }
 
   private onRemoveEntityInstanceDialogClose_() {
@@ -273,11 +288,12 @@ export class SettingsAutofillAiSectionElement extends
             .querySelector<SettingsSimpleConfirmationDialogElement>(
                 '#removeEntityInstanceDialog')!.wasConfirmed();
     if (wasDeletionConfirmed) {
+      assert(this.activeEntityInstance_);
       this.entityDataManager_.removeEntityInstance(
-          this.activeEntityInstanceWithLabels_!.guid);
+          this.activeEntityInstance_.guid);
     }
-
     this.showRemoveEntityInstanceDialog_ = false;
+    this.activeEntityInstance_ = null;
   }
 }
 

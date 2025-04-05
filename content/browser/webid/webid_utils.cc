@@ -171,7 +171,10 @@ std::string GetConsoleErrorMessageFromResult(
       return "The IdP is not potentially trustworthy (are you using HTTP?)";
     }
     case FederatedAuthRequestResult::kDisabledInSettings: {
-      return "FedCM was disabled in browser Site Settings.";
+      return "FedCM was disabled either temporarily based on previous user "
+             "action or permanently via site settings. Try manage third-party "
+             "sign-in via the icon to the left of the URL bar or via site "
+             "settings.";
     }
     case FederatedAuthRequestResult::kDisabledInFlags: {
       return "FedCM was disabled in flags.";

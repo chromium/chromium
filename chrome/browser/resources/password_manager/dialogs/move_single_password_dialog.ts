@@ -54,7 +54,7 @@ export class MoveSinglePasswordDialogElement extends
     };
   }
 
-  password: chrome.passwordsPrivate.PasswordUiEntry;
+  declare password: chrome.passwordsPrivate.PasswordUiEntry;
 
   override connectedCallback() {
     super.connectedCallback();

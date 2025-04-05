@@ -6,8 +6,10 @@ import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 
 import type {BrowserProxyImpl} from './browser_proxy.js';
+import {GlicApiHost, WebClientState} from './glic_api_impl/glic_api_host.js';
 import type {ApiHostEmbedder} from './glic_api_impl/glic_api_host.js';
-import {GlicApiHost} from './glic_api_impl/glic_api_host.js';
+import {ObservableValue} from './observable.js';
+import type {ObservableValueReadOnly} from './observable.js';
 
 export type PageType =
     // A login page.
@@ -38,6 +40,8 @@ export class WebviewController {
   private host?: GlicApiHost;
   private onDestroy: Array<() => void> = [];
   private eventTracker = new EventTracker();
+  private webClientState =
+      ObservableValue.withValue(WebClientState.UNINITIALIZED);
 
   constructor(
       private readonly container: HTMLElement,
@@ -81,15 +85,31 @@ export class WebviewController {
     this.webview.src = loadTimeData.getString('glicGuestURL');
   }
 
+  getWebClientState(): ObservableValueReadOnly<WebClientState> {
+    return this.webClientState;
+  }
+
   destroy() {
-    if (this.host) {
-      this.host.destroy();
-      this.host = undefined;
-    }
+    this.destroyHost(
+        this.webClientState.getCurrentValue() === WebClientState.ERROR ?
+            WebClientState.ERROR :
+            WebClientState.UNINITIALIZED);
     this.eventTracker.removeAll();
     this.onDestroy.forEach(f => f());
     this.onDestroy = [];
     this.webview.remove();
+  }
+
+  private destroyHost(webClientState: WebClientState) {
+    if (this.host) {
+      this.host.destroy();
+      this.host = undefined;
+    }
+    this.webClientState.assignAndSignal(webClientState);
+  }
+
+  waitingOnPanelWillOpen(): boolean {
+    return this.host?.waitingOnPanelWillOpen() ?? false;
   }
 
   private onLoadCommit(e: any): void {
@@ -141,7 +161,8 @@ export class WebviewController {
 
   private onExit(e: any): void {
     if (e.reason !== 'normal') {
-      this.delegate.webviewError(e.reason);
+      this.destroyHost(WebClientState.ERROR);
+      console.warn(`webview exit. reason: ${e.reason}`);
     }
   }
 
@@ -149,21 +170,22 @@ export class WebviewController {
     if (!isTopLevel) {
       return;
     }
-    if (this.host) {
-      this.host.destroy();
-      this.host = undefined;
-    }
+    this.destroyHost(WebClientState.UNINITIALIZED);
 
     if (this.webview.contentWindow) {
       this.host = new GlicApiHost(
           this.browserProxy, this.webview.contentWindow, new URL(url).origin,
           this.hostEmbedder);
+      this.host.getWebClientState().subscribe(state => {
+        this.webClientState.assignAndSignal(state);
+      });
     }
     this.browserProxy.handler.webviewCommitted({url});
 
     // TODO(https://crbug.com/388328847): Remove when login issues are resolved.
     if (url.startsWith('https://login.corp.google.com/') ||
-        url.startsWith('https://accounts.google.com/')) {
+        url.startsWith('https://accounts.google.com/') ||
+        url.startsWith('https://gaiastaging.corp.google.com/')) {
       this.delegate.webviewPageCommit('login');
     } else {
       this.delegate.webviewPageCommit('regular');

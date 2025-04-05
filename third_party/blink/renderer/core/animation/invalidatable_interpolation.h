@@ -48,7 +48,7 @@ class CORE_EXPORT InvalidatableInterpolation : public Interpolation {
   void Interpolate(int iteration, double fraction) override;
   bool DependsOnUnderlyingValue() const final;
   static void ApplyStack(const ActiveInterpolations&,
-                         InterpolationEnvironment&);
+                         CSSInterpolationEnvironment&);
 
   bool IsInvalidatableInterpolation() const override { return true; }
 
@@ -69,25 +69,25 @@ class CORE_EXPORT InvalidatableInterpolation : public Interpolation {
   using ConversionCheckers = InterpolationType::ConversionCheckers;
 
   TypedInterpolationValue* MaybeConvertUnderlyingValue(
-      const InterpolationEnvironment&) const;
+      const CSSInterpolationEnvironment&) const;
   const TypedInterpolationValue* EnsureValidConversion(
-      InterpolationEnvironment&,
+      CSSInterpolationEnvironment&,
       const UnderlyingValueOwner&) const;
-  void EnsureValidInterpolationTypes(InterpolationEnvironment&) const;
-  void ClearConversionCache(InterpolationEnvironment& environment) const;
-  bool IsConversionCacheValid(const InterpolationEnvironment&,
+  void EnsureValidInterpolationTypes(CSSInterpolationEnvironment&) const;
+  void ClearConversionCache(CSSInterpolationEnvironment& environment) const;
+  bool IsConversionCacheValid(const CSSInterpolationEnvironment&,
                               const UnderlyingValueOwner&) const;
   bool IsNeutralKeyframeActive() const;
   PairwisePrimitiveInterpolation* MaybeConvertPairwise(
-      const InterpolationEnvironment&,
+      const CSSInterpolationEnvironment&,
       const UnderlyingValueOwner&) const;
   TypedInterpolationValue* ConvertSingleKeyframe(
       const PropertySpecificKeyframe&,
-      const InterpolationEnvironment&,
+      const CSSInterpolationEnvironment&,
       const UnderlyingValueOwner&) const;
   void AddConversionCheckers(const InterpolationType&,
                              ConversionCheckers&) const;
-  void SetFlagIfInheritUsed(InterpolationEnvironment&) const;
+  void SetFlagIfInheritUsed(CSSInterpolationEnvironment&) const;
   double UnderlyingFraction() const;
 
   const PropertyHandle property_;

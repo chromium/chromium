@@ -45,15 +45,13 @@ export class SettingsBluetoothTrueWirelessImagesElement extends
        * A BatteryType is passed between html and JS for
        * certain UI elements to determine their state.
        */
-      BatteryType: {
+      BatteryTypeEnum_: {
         type: Object,
         value: BatteryType,
       },
     };
   }
 
-  /* eslint-disable-next-line @typescript-eslint/naming-convention */
-  BatteryType: BatteryType;
   device: BluetoothDeviceProperties;
 
   /**

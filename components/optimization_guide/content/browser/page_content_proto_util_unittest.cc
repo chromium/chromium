@@ -844,5 +844,25 @@ TEST(PageContentProtoUtilTest, ConvertFormControlData) {
   EXPECT_TRUE(form_control_data_proto.select_options(0).is_selected());
 }
 
+TEST(PageContentProtoUtilTest, ConvertLabel) {
+  auto root_content = CreatePageContent();
+  auto anchor_node =
+      CreateContentNode(blink::mojom::AIPageContentAttributeType::kAnchor);
+  anchor_node->content_attributes->label = "aria label";
+  root_content->root_node->children_nodes.emplace_back(std::move(anchor_node));
+
+  AIPageContentResult page_content;
+  EXPECT_TRUE(ConvertAIPageContentToProto(root_content, page_content));
+
+  EXPECT_EQ(page_content.proto.version(),
+            optimization_guide::proto::ANNOTATED_PAGE_CONTENT_VERSION_1_0);
+  ASSERT_EQ(page_content.proto.root_node().children_nodes_size(), 1);
+  const auto& anchor_attributes =
+      page_content.proto.root_node().children_nodes(0).content_attributes();
+  EXPECT_EQ(anchor_attributes.attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_ANCHOR);
+  EXPECT_EQ(anchor_attributes.label(), "aria label");
+}
+
 }  // namespace
 }  // namespace optimization_guide

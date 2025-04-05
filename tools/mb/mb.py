@@ -128,13 +128,13 @@ class MetaBuildWrapper:
         self.DumpInputFiles()
       return ret
     except KeyboardInterrupt:
-      self.Print('interrupted, exiting')
+      self.Print('interrupted, exiting', file=sys.stderr)
       return 130
     except Exception as e:
       self.DumpInputFiles()
       s = traceback.format_exc()
       for l in s.splitlines():
-        self.Print(l)
+        self.Print(l, file=sys.stderr)
       return getattr(e, 'retcode', _DEFAULT_ERROR_RETCODE)
 
   def ParseArgs(self, argv):
@@ -457,11 +457,12 @@ class MetaBuildWrapper:
 
     def DumpContentsOfFilePassedTo(arg_name, path):
       if path and self.Exists(path):
-        self.Print("\n# To recreate the file passed to %s:" % arg_name)
-        self.Print("%% cat > %s <<EOF" % path)
+        self.Print("\n# To recreate the file passed to %s:" % arg_name,
+                   file=sys.stderr)
+        self.Print("%% cat > %s <<EOF" % path, file=sys.stderr)
         contents = self.ReadFile(path)
-        self.Print(contents)
-        self.Print("EOF\n%\n")
+        self.Print(contents, file=sys.stderr)
+        self.Print("EOF\n%\n", file=sys.stderr)
 
     if getattr(self.args, 'input_path', None):
       DumpContentsOfFilePassedTo(
@@ -483,7 +484,8 @@ class MetaBuildWrapper:
   def CmdTrain(self):
     expectations_dir = self.args.expectations_dir
     if not self.Exists(expectations_dir):
-      self.Print('Expectations dir (%s) does not exist.' % expectations_dir)
+      self.Print('Expectations dir (%s) does not exist.' % expectations_dir,
+                 file=sys.stderr)
       return 1
     # Removing every expectation file then immediately re-generating them will
     # clear out deleted groups.
@@ -564,10 +566,12 @@ class MetaBuildWrapper:
     # notice has been live for a few months.
     if not self.args.force:
       self.Print(
-          '`mb run` is deprecated in favor of the UTR. For more info, see '
-          'https://chromium.googlesource.com/chromium/src/+/main/tools/utr/README.md. '
-          'To skip this warning, re-run with "--force". Note that `mb run` '
-          'will be deleted sometime in 2025.')
+          ('`mb run` is deprecated in favor of the UTR. For more info, see '
+           'https://chromium.googlesource.com/chromium/src/+/main/tools/utr/README.md. '
+           'To skip this warning, re-run with "--force". Note that `mb run` '
+           'will be deleted sometime in 2025.'),
+          file=sys.stderr,
+      )
       return 1
     vals = self.GetConfig()
     if not vals:
@@ -864,7 +868,8 @@ class MetaBuildWrapper:
       raise MBErr('mb config file not sorted:\n' + '\n'.join(errs))
 
     if print_ok:
-      self.Print('mb config file %s looks ok.' % self.args.config_file)
+      self.Print('mb config file %s looks ok.' % self.args.config_file,
+                 file=sys.stderr)
     return 0
 
   def _ValidateEach(self, errs, validate):
@@ -918,9 +923,10 @@ class MetaBuildWrapper:
     toolchain_path = self.PathJoin(self.ToAbsPath(build_dir),
                                    'toolchain.ninja')
     if not self.Exists(toolchain_path):
-      self.Print('Must either specify a path to an existing GN build dir '
-                 'or pass in a -m/-b pair or a -c flag to specify the '
-                 'configuration')
+      self.Print(('Must either specify a path to an existing GN build dir '
+                  'or pass in a -m/-b pair or a -c flag to specify the '
+                  'configuration'),
+                 file=sys.stderr)
       return {}
 
     vals['gn_args'] = self.GNArgsFromDir(build_dir)
@@ -1169,7 +1175,7 @@ class MetaBuildWrapper:
         self.WriteJSON({'output': output}, self.args.json_output)
       # If `gn gen` failed, we should exit early rather than trying to
       # generate isolates. Run() will have already logged any error output.
-      self.Print('GN gen failed: %d' % ret)
+      self.Print('GN gen failed: %d' % ret, file=sys.stderr)
       return ret
 
     if isolate_targets is not None:
@@ -1192,7 +1198,7 @@ class MetaBuildWrapper:
     if ret != 0:
       # If `gn ls` failed, we should exit early rather than trying to
       # generate isolates.
-      self.Print('GN ls failed: %d' % ret)
+      self.Print('GN ls failed: %d' % ret, file=sys.stderr)
       return ret
 
     # Create a reverse map from isolate label to isolate dict.
@@ -1372,7 +1378,8 @@ class MetaBuildWrapper:
       filtered_command.append('--test-launcher-filter-file=%s' %
                               filter_file_path)
       self.Print('added test selection filter file to command: %s' %
-                 filter_file_path)
+                 filter_file_path,
+                 file=sys.stderr)
       return filtered_command
     return None
 
@@ -1462,7 +1469,7 @@ class MetaBuildWrapper:
     ret, out, _ = self.Call(cmd)
     if ret != 0:
       if out:
-        self.Print(out)
+        self.Print(out, file=sys.stderr)
       return ret
 
     runtime_deps = self._DedupDependencies(out.splitlines())
@@ -1580,8 +1587,9 @@ class MetaBuildWrapper:
         err += '\n' + build_dir + '/' +  f
 
     if err:
-      self.Print('error: gn `data` items may not list generated directories; '
-                 'list files in directory instead for:' + err)
+      self.Print(('error: gn `data` items may not list generated directories; '
+                  'list files in directory instead for:' + err),
+                 file=sys.stderr)
       return 1
 
     isolate = {
@@ -1598,7 +1606,7 @@ class MetaBuildWrapper:
       if target not in self.rts_banned_suites:
         rts_command = self.AddFilterFileArg(target, command)
         if rts_command:
-          self.Print('Adding RTS filter file to command.')
+          self.Print('Adding RTS filter file to command.', file=sys.stderr)
           isolate['variables']['rts_command'] = rts_command
 
     self.WriteFile(isolate_path, json.dumps(isolate, sort_keys=True) + '\n')
@@ -1913,17 +1921,18 @@ class MetaBuildWrapper:
     inp = self.ReadInputJSON(['files', 'test_targets',
                               'additional_compile_targets'])
     if self.args.verbose:
-      self.Print()
-      self.Print('analyze input:')
-      self.PrintJSON(inp)
-      self.Print()
+      self.Print(file=sys.stderr)
+      self.Print('analyze input:', file=sys.stderr)
+      self.PrintJSON(inp, file=sys.stderr)
+      self.Print(file=sys.stderr)
 
 
     # This shouldn't normally happen, but could due to unusual race conditions,
     # like a try job that gets scheduled before a patch lands but runs after
     # the patch has landed.
     if not inp['files']:
-      self.Print('Warning: No files modified in patch, bailing out early.')
+      self.Print('Warning: No files modified in patch, bailing out early.',
+                 file=sys.stderr)
       self.WriteJSON({
             'status': 'No dependency',
             'compile_targets': [],
@@ -1962,8 +1971,9 @@ class MetaBuildWrapper:
       try:
         gn_outp = json.loads(gn_outp_str)
       except Exception as e:
-        self.Print("Failed to parse the JSON string GN returned: %s\n%s"
-                   % (repr(gn_outp_str), str(e)))
+        self.Print(("Failed to parse the JSON string GN returned: %s\n%s" %
+                    (repr(gn_outp_str), str(e))),
+                   file=sys.stderr)
         raise
 
       outp = {}
@@ -1994,8 +2004,9 @@ class MetaBuildWrapper:
         # and build everything. Probably the right thing to do here is
         # to have GN return the compile targets directly.
         if any("(" in target for target in outp['compile_targets']):
-          self.Print('WARNING: targets with non-default toolchains were '
-                     'found, building everything instead.')
+          self.Print(('WARNING: targets with non-default toolchains were '
+                      'found, building everything instead.'),
+                     file=sys.stderr)
           outp['compile_targets'] = all_input_compile_targets
         else:
           outp['compile_targets'] = [
@@ -2012,9 +2023,11 @@ class MetaBuildWrapper:
         max_cmd_length_kb = 64 if platform.system() == 'Linux' else 7
 
         if len(' '.join(outp['compile_targets'])) > max_cmd_length_kb * 1024:
-          self.Print('WARNING: Too many compile targets were affected.')
-          self.Print('WARNING: Building everything instead to avoid '
-                     'command-line length issues.')
+          self.Print('WARNING: Too many compile targets were affected.',
+                     file=sys.stderr)
+          self.Print(('WARNING: Building everything instead to avoid '
+                      'command-line length issues.'),
+                     file=sys.stderr)
           outp['compile_targets'] = all_input_compile_targets
 
 
@@ -2023,10 +2036,10 @@ class MetaBuildWrapper:
           labels_to_targets[label] for label in gn_outp['test_targets']]
 
       if self.args.verbose:
-        self.Print()
-        self.Print('analyze output:')
-        self.PrintJSON(outp)
-        self.Print()
+        self.Print(file=sys.stderr)
+        self.Print('analyze output:', file=sys.stderr)
+        self.PrintJSON(outp, file=sys.stderr)
+        self.Print(file=sys.stderr)
 
       self.WriteJSON(outp, output_path)
 
@@ -2070,7 +2083,7 @@ class MetaBuildWrapper:
     except Exception as e:
       raise MBErr('Error %s writing to the output path "%s"' % (e, path)) from e
 
-  def PrintCmd(self, cmd):
+  def PrintCmd(self, cmd, **kwargs):
     if self.platform == 'win32':
       shell_quoter = QuoteForCmd
     else:
@@ -2078,10 +2091,10 @@ class MetaBuildWrapper:
 
     if cmd[0] == self.executable:
       cmd = ['python'] + cmd[1:]
-    self.Print(*[shell_quoter(arg) for arg in cmd])
+    self.Print(*[shell_quoter(arg) for arg in cmd], **kwargs)
 
-  def PrintJSON(self, obj):
-    self.Print(json.dumps(obj, indent=2, sort_keys=True))
+  def PrintJSON(self, obj, **kwargs):
+    self.Print(json.dumps(obj, indent=2, sort_keys=True), **kwargs)
 
   def Build(self, target):
     build_dir = self.ToSrcRelPath(self.args.path)
@@ -2099,14 +2112,14 @@ class MetaBuildWrapper:
   def Run(self, cmd, env=None, force_verbose=True, capture_output=True):
     # This function largely exists so it can be overridden for testing.
     if self.args.dryrun or self.args.verbose or force_verbose:
-      self.PrintCmd(cmd)
+      self.PrintCmd(cmd, file=sys.stderr)
     if self.args.dryrun:
       return 0, '', ''
 
     ret, out, err = self.Call(cmd, env=env, capture_output=capture_output)
     if self.args.verbose or force_verbose:
       if ret != 0:
-        self.Print('  -> returned %d' % ret)
+        self.Print('  -> returned %d' % ret, file=sys.stderr)
       if out:
         # This is the error seen on the logs
         self.Print(out, end='')
@@ -2201,7 +2214,8 @@ class MetaBuildWrapper:
   def WriteFile(self, path, contents, force_verbose=False):
     # This function largely exists so it can be overriden for testing.
     if self.args.dryrun or self.args.verbose or force_verbose:
-      self.Print('\nWriting """\\\n%s""" to %s.\n' % (contents, path))
+      self.Print('\nWriting """\\\n%s""" to %s.\n' % (contents, path),
+                 file=sys.stderr)
     with open(path, 'w', encoding='utf-8', newline='') as fp:
       return fp.write(contents)
 

@@ -29,15 +29,8 @@ namespace {
 policy::DeveloperToolsPolicyHandler::Availability GetDevToolsAvailability(
     Profile* profile) {
   using Availability = policy::DeveloperToolsPolicyHandler::Availability;
-
-#if BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/406406417): Enable the policy checker code.
-  NOTIMPLEMENTED();
-  Availability availability = Availability::kAllowed;
-#else
   Availability availability =
       policy::DeveloperToolsPolicyHandler::GetEffectiveAvailability(profile);
-#endif
 #if BUILDFLAG(IS_CHROMEOS)
   // On ChromeOS disable dev tools for captive portal signin windows to prevent
   // them from being used for general navigation.

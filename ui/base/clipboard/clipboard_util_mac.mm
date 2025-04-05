@@ -51,7 +51,7 @@ namespace {
 // and returns the URLs/titles found within.
 NSArray<URLAndTitle*>* ReadWebURLsWithTitlesPboardType(NSPasteboard* pboard) {
   NSArray* bookmark_pairs = base::apple::ObjCCast<NSArray>(
-      [pboard propertyListForType:kUTTypeWebKitWebURLsWithTitles]);
+      [pboard propertyListForType:kUTTypeWebKitWebUrlsWithTitles]);
   if (!bookmark_pairs) {
     return [NSArray array];
   }
@@ -141,7 +141,7 @@ URLAndTitle* ExtractStandardURLAndTitle(NSPasteboardItem* item) {
     return nil;
   }
 
-  NSString* title = [item stringForType:kUTTypeURLName];
+  NSString* title = [item stringForType:kUTTypeUrlName];
 
   if (!title) {
     // If there is no title on the drag, check to see if it's a URL drag
@@ -343,14 +343,14 @@ NSArray<NSPasteboardItem*>* PasteboardItemsFromUrls(
     [item setString:url_string forType:NSPasteboardTypeString];
     [item setString:url_string forType:NSPasteboardTypeURL];
     if (title.length) {
-      [item setString:title forType:kUTTypeURLName];
+      [item setString:title forType:kUTTypeUrlName];
     }
 
     // Safari puts the "Web URLs and Titles" pasteboard type onto the first
     // pasteboard item.
     if (i == 0) {
       [item setPropertyList:@[ urls, titles ]
-                    forType:kUTTypeWebKitWebURLsWithTitles];
+                    forType:kUTTypeWebKitWebUrlsWithTitles];
     }
 
     [items addObject:item];

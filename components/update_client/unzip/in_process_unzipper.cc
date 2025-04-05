@@ -7,6 +7,8 @@
 #include <utility>
 
 #include "base/files/file_path.h"
+#include "components/services/unzip/in_process_unzipper.h"
+#include "components/services/unzip/public/cpp/unzip.h"
 #include "third_party/zlib/google/zip.h"
 
 namespace update_client {
@@ -21,6 +23,13 @@ class InProcessUnzipper : public Unzipper {
              const base::FilePath& output_path,
              UnzipCompleteCallback callback) override {
     std::move(callback).Run(zip::Unzip(zip_path, output_path));
+  }
+
+  base::OnceClosure DecodeXz(const base::FilePath& xz_file,
+                             const base::FilePath& destination,
+                             UnzipCompleteCallback callback) override {
+    return unzip::DecodeXz(unzip::LaunchInProcessUnzipper(), xz_file,
+                           destination, std::move(callback));
   }
 };
 

@@ -33,9 +33,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupColorUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
@@ -54,7 +51,6 @@ import java.util.Set;
 /** Tests for {@link TabGroupVisualDataManager}. */
 @SuppressWarnings({"ArraysAsListWithZeroOrOneArgument", "ResultOfMethodCallIgnored"})
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures({ChromeFeatureList.TAB_STRIP_GROUP_COLLAPSE})
 public class TabGroupVisualDataManagerUnitTest {
     private static final String TAB1_TITLE = "Tab1";
     private static final String TAB2_TITLE = "Tab2";
@@ -294,19 +290,6 @@ public class TabGroupVisualDataManagerUnitTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_COLLAPSE)
-    public void tabMergeIntoGroup_CollapsedWithoutFeature() {
-        List<Tab> group1 = new ArrayList<>(Arrays.asList(mTab1, mTab2));
-        createTabGroup(group1, TAB1_ID, GROUP_1_ID);
-        List<Tab> group2 = new ArrayList<>(Arrays.asList(mTab3, mTab4));
-        createTabGroup(group2, TAB3_ID, GROUP_2_ID);
-        mTabGroupModelFilterObserverCaptor
-                .getValue()
-                .willMergeTabToGroup(mTab1, TAB3_ID, GROUP_2_ID);
-        verify(mTabGroupModelFilter, never()).deleteTabGroupCollapsed(TAB3_ID);
-    }
-
-    @Test
     public void tabMoveOutOfGroup_DeleteStoredTitle_GroupSize1Supported() {
         when(mTabGroupModelFilter.getTabGroupTitle(TAB1_ID)).thenReturn(CUSTOMIZED_TITLE1);
         when(mTabGroupModelFilter.getTabGroupColor(TAB1_ID)).thenReturn(COLOR1_ID);
@@ -373,7 +356,6 @@ public class TabGroupVisualDataManagerUnitTest {
     }
 
     private void createTabGroup(List<Tab> tabs, int rootId, Token groupId) {
-        Tab lastTab = tabs.isEmpty() ? null : tabs.get(0);
         when(mTabGroupModelFilter.getTabCountForGroup(groupId)).thenReturn(tabs.size());
         for (Tab tab : tabs) {
             when(mTabGroupModelFilter.isTabInTabGroup(tab)).thenReturn(true);

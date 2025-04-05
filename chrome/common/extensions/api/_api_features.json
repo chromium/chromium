@@ -63,7 +63,7 @@
   "experimentalAiData": {
     "contexts": ["privileged_extension"],
     "dependencies": ["permission:experimentalAiData"],
-    "channel": "dev"
+    "channel": "beta"
   },
   "app": {
     "blocklist": [

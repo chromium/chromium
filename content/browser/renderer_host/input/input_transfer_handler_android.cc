@@ -28,9 +28,9 @@ class JniDelegateImpl : public InputTransferHandlerAndroid::JniDelegate {
  public:
   ~JniDelegateImpl() override = default;
 
-  int MaybeTransferInputToViz(int surface_id, float raw_x) override {
+  int MaybeTransferInputToViz(int surface_id) override {
     return Java_InputTransferHandler_maybeTransferInputToViz(
-        base::android::AttachCurrentThread(), surface_id, raw_x);
+        base::android::AttachCurrentThread(), surface_id);
   }
 
   int TransferInputToViz(int surface_id) override {
@@ -111,11 +111,8 @@ bool InputTransferHandlerAndroid::OnTouchEvent(
     return false;
   }
 
-  // Use "RawX" to account for multi-window cases
   auto transfer_result = static_cast<TransferInputToVizResult>(
-      jni_delegate_->MaybeTransferInputToViz(
-          client_->GetRootSurfaceHandle(),
-          event.GetRawXPix(/*pointer_index=*/0)));
+      jni_delegate_->MaybeTransferInputToViz(client_->GetRootSurfaceHandle()));
 
   base::UmaHistogramEnumeration(kTransferInputToVizResultHistogram,
                                 transfer_result);

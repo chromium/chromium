@@ -111,7 +111,7 @@ static override get properties() {
  };
 }
 
-protected foo_: boolean = true;
+protected accessor foo_: boolean = true;
 
 onFooChanged_(e: CustomEvent<{value: boolean}>) {
   // Updates the parent's property that is bound to the child.
@@ -164,7 +164,7 @@ static get properties() {
   };
 }
 
-mySelectValue: MyEnum = MyEnum.SECOND;
+accessor mySelectValue: MyEnum = MyEnum.SECOND;
 
 onSelectChange_(e: Event) {
   this.mySelectValue = (e.target as HTMLSelectElement).value;
@@ -196,7 +196,7 @@ static get properties() {
   };
 }
 
-mySelectValue: MyEnum = MyEnum.SECOND;
+accessor mySelectValue: MyEnum = MyEnum.SECOND;
 
 onSelectChange_(e: Event) {
   this.mySelectValue = (e.target as HTMLSelectElement).value;
@@ -352,8 +352,8 @@ export class MyExampleElement extends CrLitElement {
     };
   }
 
-  disabled: boolean = false;
-  myValue: string = 'hello world';
+  accessor disabled: boolean = false;
+  accessor myValue: string = 'hello world';
 
   // Referenced from the template, so must be protected (not private).
   protected onInputValueChanged_(e: CustomEvent<string>) {
@@ -926,6 +926,53 @@ override updated(changedProperties: PropertyValues<this>) {
 ```
 
 ## Additional Lit and Polymer differences
+### Use of the accessor keyword
+As can be observed in the examples in this file, Lit properties should be
+declared as class members using the `accessor` keyword rather than using the
+`declare` keyword that is used when declaring Polymer properties. Polymer
+properties use the `declare` keyword because they do not need to initialize the
+property in the constructor, since Polymer provides the `value` field that can
+be used to initialize such properties instead. For Lit properties to use
+`declare`, they would need to also explicitly initialize all reactive
+properties in the constructor, creating a large amount of boilerplate code
+(listing each reactive property in the `properties()` getter, declaring it as a
+class member, and then initializing its value in the `constructor()`).
+
+As a result, for Lit the `accessor` keyword is preferred. Because `accessor` is
+not natively supported by Chromium yet, the TS compiler polyfills it when
+`target: 'ES2024'` is set by generating a getter, setter, and JS private
+property for every reactive property. `target: 'ES2024'` is set for all WebUIs
+using `build_webui()` that depend on Lit by default.
+
+Without either keyword, TS compiler defines instance properties for each
+reactive property. This breaks Lit's reactive properties by shadowing the
+getters and setters defined by Lit on the class prototype at runtime,
+preventing Lit from detecting any changes to the reactive properties. This
+happens because of JavaScript's [public class fields feature](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/Public_class_fields). The `useDefineForClassFields: false` flag can be used to
+prevent this TS compiler behavior, but it is deprecated and will be removed in
+a future version of TS compiler. As a result it should not be used for
+compiling any new Lit or Polymer targets.
+
+### i18n replacements in checked-in .html.ts files
+As mentioned in a preceding section, unlike for Polymer, the preferred approach
+for Lit templates is to check in the `.html.ts` file directly, instead of
+autogenerating it using `html_to_wrapper()`. This means that for C++ side
+`i18n{}` replacements to work in the HTML template, markers for the start and
+end of the template must be added at the start and end of the HTML template
+string in the `.html.ts` file. e.g.:
+
+```ts
+export function getHtml(this: MyExampleElement) {
+ return html`<!--_html_template_start_-->
+   <div>$i18n{inputLabel}</div>
+   <cr-input id="input" .value="${this.myValue}"
+       ?disabled="${this.disabled}"
+       @value-changed="${this.onInputValueChanged_}">
+   </cr-input>
+<!--_html_template_end_-->`;
+}
+```
+
 ### Testing
 
 A large number of unit tests do something like the following:
@@ -964,7 +1011,7 @@ test helpers like `microtasksFinished()` or the Polymer
 anything specific has happened.
 ***
 
-### Use of the `hidden` attribute
+### Use of the hidden attribute
 As documented in the [styleguide](https://chromium.googlesource.com/chromium/src/+/HEAD/styleguide/web/web.md#Polymer),
 in Polymer the `hidden` attribute was recommended over `<template is="dom-if">`
 for cases of showing and hiding small amounts of HTML or a single element. In

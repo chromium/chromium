@@ -185,6 +185,7 @@ class ExtensionPlatformBrowserTest::TestTabModel : public TabModel {
   }
   void CloseTabsNavigatedInTimeWindow(const base::Time& begin_time,
                                       const base::Time& end_time) override {}
+  bool IsTabInTabGroup(TabAndroid* tab) override { return false; }
 
  private:
   // The WebContents associated with this tab's profile.

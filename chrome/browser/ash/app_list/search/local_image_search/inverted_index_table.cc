@@ -15,8 +15,7 @@
 namespace app_list {
 
 namespace {
-// When extra indexing source is added, also update the `CHECK` within the
-// `source` of InvertedIndex table.
+// Only uses this function to convert source into the right value.
 int ConvertIndexingSourceToInt(IndexingSource indexing_source) {
   switch (indexing_source) {
     case IndexingSource::kOcr:
@@ -34,7 +33,7 @@ bool InvertedIndexTable::Create(SqlDatabase* db) {
       "CREATE TABLE inverted_index("
           "term_id INTEGER NOT NULL,"
           "document_id INTEGER NOT NULL,"
-          "source INTEGER NOT NULL CHECK (source IN (0, 1)),"
+          "source INTEGER NOT NULL,"
           "score REAL,"
           "x REAL,"
           "y REAL,"

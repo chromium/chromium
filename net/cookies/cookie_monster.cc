@@ -1490,7 +1490,7 @@ void CookieMonster::MaybeDeleteEquivalentCookieAndUpdateStatus(
 
   // Check every cookie matching this domain key for equivalence.
   CookieMapItPair range_its = cookie_map->equal_range(key);
-  const auto cookie_being_set_key = cookie_being_set.UniqueKey();
+  const auto cookie_being_set_key = cookie_being_set.RefUniqueKey();
   const auto cookie_being_set_scope_semantics =
       GetScopeSemanticsForCookieDomain(cookie_being_set.Domain());
   for (auto cur_it = range_its.first; cur_it != range_its.second; ++cur_it) {

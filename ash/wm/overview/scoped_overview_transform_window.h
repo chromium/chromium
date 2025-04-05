@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/aura/client/transient_window_client_observer.h"
+#include "ui/aura/scoped_window_event_targeting_blocker.h"
 #include "ui/aura/window_observer.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -23,7 +24,6 @@
 #include "ui/gfx/geometry/transform.h"
 
 namespace aura {
-class ScopedWindowEventTargetingBlocker;
 class Window;
 }  // namespace aura
 
@@ -196,11 +196,22 @@ class ASH_EXPORT ScopedOverviewTransformWindow
       cached_and_filtered_layer_observers_;
 
   // For the duration of this object |window_| and its transient childrens'
-  // event targeting policy will be sent to NONE. Store the originals so we can
-  // change it back when destroying |this|.
-  base::flat_map<aura::Window*,
-                 std::unique_ptr<aura::ScopedWindowEventTargetingBlocker>>
-      event_targeting_blocker_map_;
+  // event targeting policy will be sent to NONE. In addition, bubble should not
+  // adjust their bounds using the display info as it should stay as is.  Store
+  // the original states so we can change them back when destroying |this|.
+  class TransientInfo {
+   public:
+    explicit TransientInfo(aura::Window* transient);
+    TransientInfo(const TransientInfo&) = delete;
+    TransientInfo& operator=(aura::Window* transient) = delete;
+    ~TransientInfo();
+
+   private:
+    bool adjust_if_offscreen = true;
+    aura::ScopedWindowEventTargetingBlocker event_targeting_blocker;
+  };
+  base::flat_map<aura::Window*, std::unique_ptr<TransientInfo>>
+      transient_windows_info_map_;
 
   // The original clipping on the layer of the window before entering overview
   // mode.

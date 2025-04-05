@@ -303,6 +303,17 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
     return alive;
   }
 
+  // Assertion to allocation which ought to be alive.
+  PA_ALWAYS_INLINE void EnsureAlive(
+      uintptr_t slot_start,
+      SlotSpanMetadata<MetadataKind::kReadOnly>* slot_span) {
+    CountType count = count_.load(std::memory_order_relaxed);
+    if (!(count & kMemoryHeldByAllocatorBit)) {
+      DoubleFreeOrCorruptionDetected(count, slot_start, slot_span);
+    }
+    CheckCookieIfSupported();
+  }
+
   // Called when a raw_ptr is not banning dangling ptrs, but the user still
   // wants to ensure the pointer is not currently dangling. This is currently
   // used in UnretainedWrapper to make sure callbacks are not invoked with

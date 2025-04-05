@@ -12,6 +12,9 @@ namespace media {
 
 // ScreenCaptureKit uses the default sample rate of 48kHz.
 static constexpr uint32_t kLoopbackSampleRate = 48000;
+// ScreenCaptureKit produces frames that are 20 ms. By setting frames per
+// buffer to 10 ms, each captured frame will be processed in two batches.
+static constexpr int kLoopbackFramesPerBuffer = kLoopbackSampleRate / 100;
 
 // Documentation for the AudioInputStream implementation in
 // audio_loopback_input_mac.h.

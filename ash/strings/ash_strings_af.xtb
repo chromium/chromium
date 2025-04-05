@@ -112,6 +112,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1306549533752902673">AANBEVEELDE PROGRAMME</translation>
 <translation id="1310396869741602366">Verander toon</translation>
 <translation id="1312604459020188865">Seinsterkte <ph name="SIGNAL_STRENGTH" /></translation>
+<translation id="1314113845887519729">Gekose borandhandvatsel, gebruik pylsleutels om te beweeg</translation>
 <translation id="1316069254387866896">Wys altyd rak</translation>
 <translation id="132346741904777634">Kamera is geglip na hoek bo links. Konflik met stelseloppervlak.</translation>
 <translation id="132415371743256095">Maak <ph name="DESK_NAME" /> en vensters toe</translation>
@@ -186,6 +187,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1557622599341396706">Wys lessenaarnaam</translation>
 <translation id="1569384531973824928">Dit gee toegang vir alle apps en webwerwe met die kamera- en mikrofoontoestemming. Jy sal die webblasy moet herlaai of die app moet herbegin.</translation>
 <translation id="1571697193564730395">Wissel Moenie Steur Nie. <ph name="STATE_TEXT" /></translation>
+<translation id="1574691582236909946">Gekose linkerrandhandvatsel, gebruik pylsleutels om te beweeg</translation>
 <translation id="1576623706766186887">Zoem uit wanneer vergrootglas aan is</translation>
 <translation id="1582946770779745370">Spelkontroleskerm beskikbaar. Druk <ph name="LAUNCHER_KEY_NAME" /> + Shift + Escape, dan <ph name="LAUNCHER_KEY_NAME" /> + g enige tyd om oop te maak</translation>
 <translation id="1586324912145647027">Gaan na lessenaar 1 tot 8</translation>
@@ -220,6 +222,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1696984622403682083">Jy kan hierdie kenmerk enige tyd in Instellings afskakel. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" />-afteller · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6-adres: <ph name="ADDRESS" /></translation>
+<translation id="1700782710852683371">Kan nie op die oomblik prente hiervan skep nie. Probeer om jou beskrywing anders te stel. Hou in gedagte dat jy nie prente van mense of skadelike of eksplisiete inhoud kan skep nie.</translation>
 <translation id="1703117532528082099">Aktiewe venster is aan die linkerkant gedok.</translation>
 <translation id="1708345662127501511">Lessenaar: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Netwerkinstellings</translation>
@@ -608,6 +611,7 @@ Anders sal die ingeboude raakpaneel binne <ph name="TIMEOUT_SECONDS" /> geherakt
 <translation id="304097922505898963">Maak Kortpadsleutels-app oop</translation>
 <translation id="304417730895741346">Jou vasgespelde en geopende apps is op die rak. Regsklik ’n app of tik met twee vingers op jou raakpaneel om ’n app op die rak vas te speld.</translation>
 <translation id="3045488863354895414">Goeiemiddag</translation>
+<translation id="3045670165536837541">Gekose boregterhandvatsel, gebruik pylsleutels om te beweeg</translation>
 <translation id="3047761520276763270">Probeer die volgende sê:</translation>
 <translation id="3053407068093039599">Skakel kameratoegang aan/af</translation>
 <translation id="3055162170959710888">Jy het hierdie toestel vandag <ph name="USED_TIME" /> lank gebruik</translation>
@@ -1764,6 +1768,7 @@ Nuwe installasie</translation>
 <translation id="6696025732084565524">Jou ontkoppelbare sleutelbord moet dringend opgedateer word</translation>
 <translation id="6697913454192220372">Voeg nuwe lessenaar by</translation>
 <translation id="6700713906295497288">IME-kieslysknoppie</translation>
+<translation id="6704073473590541209">Gekose regterrandhandvatsel, gebruik pylsleutels om te beweeg</translation>
 <translation id="6706742084323792866">Speld sleutelbord vas</translation>
 <translation id="6710213216561001401">Vorige</translation>
 <translation id="6723839937902243910">Intensiteit</translation>
@@ -1787,6 +1792,7 @@ Nuwe installasie</translation>
 <translation id="6781002679438061620">Lessenaar 9</translation>
 <translation id="6782182743534150858">Lessenaar 13</translation>
 <translation id="6782919488259222803">Deursoek huidige bladsy</translation>
+<translation id="6783348167101855071">Gekose onderregterhandvatsel, gebruik pylsleutels om te beweeg</translation>
 <translation id="6786750046913594791">Maak vouer toe</translation>
 <translation id="6790428901817661496">Speel</translation>
 <translation id="6792262051831399889">Onbeskikbaar</translation>
@@ -1942,6 +1948,7 @@ Nuwe installasie</translation>
 <translation id="7371404428569700291">Neem venster op</translation>
 <translation id="7372069265635026568"><ph name="AVAILABLE_MEMORY" /> geheue beskikbaar uit totale <ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">Dit gee mikrofoontoegang vir alle apps en webwerwe met die mikrofoontoestemming</translation>
+<translation id="7376933029363911338">Gekose onderrandhandvatsel, gebruik pylsleutels om te beweeg</translation>
 <translation id="7377169924702866686">Hoofletterslot is aan.</translation>
 <translation id="7377481913241237033">Koppel met 'n kode</translation>
 <translation id="7378203170292176219">Sleep om 'n area te kies om op te neem</translation>
@@ -2038,6 +2045,7 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="7658239707568436148">Kanselleer</translation>
 <translation id="7659861092419699379">Lessenaar en vensters is toegemaak</translation>
 <translation id="7660160718439869192">Jou <ph name="NAME" /> sal verskyn op toestelle wat met <ph name="EMAIL" /> gekoppel is</translation>
+<translation id="7661694115779363471">Gekose onderlinkerhandvatsel, gebruik pylsleutels om te beweeg</translation>
 <translation id="7662283695561029522">Tik om op te stel</translation>
 <translation id="7670953955701272011">Maak hierdie datum in Google Kalender oop.</translation>
 <translation id="7671610481353807627">Programme word volgens kleur gerangskik</translation>
@@ -2206,6 +2214,7 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="8155628902202578800">Maak inligtingdialoog oop vir <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Gebruik tans <ph name="LOCALE_NAME" /></translation>
 <translation id="8168435359814927499">Inhoud</translation>
+<translation id="8172370561760918656">Gekose bolinkerhandvatsel, gebruik pylsleutels om te beweeg</translation>
 <translation id="81817143961839203">Invoeging van prent het misluk</translation>
 <translation id="8185090165691050712">Skakel kieslys aan/af om die grootte van die sluitmodus te verander</translation>
 <translation id="8192727139462702395">Wanneer jy Bluetooth afskakel, sal hierdie eksterne toestelle van jou <ph name="DEVICE_TYPE" /> ontkoppel:</translation>

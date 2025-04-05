@@ -141,7 +141,8 @@ void WebViewWebClient::PrepareErrorPage(
   if ([final_underlying_error.domain isEqual:kSafeBrowsingErrorDomain] &&
       [navigation_delegate
           respondsToSelector:@selector(webView:handleUnsafeURLWithHandler:)]) {
-    DCHECK_EQ(kUnsafeResourceErrorCode, final_underlying_error.code);
+    DCHECK_EQ(SafeBrowsingErrorCode::kUnsafeResource,
+              static_cast<SafeBrowsingErrorCode>(final_underlying_error.code));
     SafeBrowsingUnsafeResourceContainer* container =
         SafeBrowsingUnsafeResourceContainer::FromWebState(web_state);
     const security_interstitials::UnsafeResource* resource =

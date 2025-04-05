@@ -5,6 +5,8 @@
 #include "extensions/common/extension_features.h"
 
 #include "base/feature_list.h"
+#include "build/branding_buildflags.h"
+#include "build/build_config.h"
 
 namespace extensions_features {
 
@@ -196,6 +198,17 @@ BASE_FEATURE(kSilentDebuggerExtensionAPI,
 BASE_FEATURE(kRemoveCoreSiteInstance,
              "RemoveCoreSiteInstance",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kDisableLoadExtensionCommandLineSwitch,
+             "DisableLoadExtensionCommandLineSwitch",
+// TODO(crbug.com/401529219): Enable feature for Google Chrome Branding only
+// once ready.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+);
 
 BASE_FEATURE(kUserScriptUserExtensionToggle,
              "UserScriptUserExtensionToggle",

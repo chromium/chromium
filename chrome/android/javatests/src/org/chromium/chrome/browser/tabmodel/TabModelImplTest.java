@@ -162,18 +162,18 @@ public class TabModelImplTest {
                     final Tab tab2 = tabModel.getTabAt(1);
                     final Tab tab3 = tabModel.getTabAt(2);
 
-                    assertFalse(TabModelImpl.isTabInTabGroup(tab1));
-                    assertFalse(TabModelImpl.isTabInTabGroup(tab2));
-                    assertFalse(TabModelImpl.isTabInTabGroup(tab3));
+                    assertFalse(TabModelImpl.isTabInTabGroupLegacy(tab1));
+                    assertFalse(TabModelImpl.isTabInTabGroupLegacy(tab2));
+                    assertFalse(TabModelImpl.isTabInTabGroupLegacy(tab3));
 
                     ChromeTabUtils.mergeTabsToGroup(tab2, tab3);
 
-                    assertFalse(TabModelImpl.isTabInTabGroup(tab1));
-                    assertTrue(TabModelImpl.isTabInTabGroup(tab2));
-                    assertTrue(TabModelImpl.isTabInTabGroup(tab3));
+                    assertFalse(TabModelImpl.isTabInTabGroupLegacy(tab1));
+                    assertTrue(TabModelImpl.isTabInTabGroupLegacy(tab2));
+                    assertTrue(TabModelImpl.isTabInTabGroupLegacy(tab3));
 
                     tab1.setTabGroupId(new Token(1L, 2L));
-                    assertTrue(TabModelImpl.isTabInTabGroup(tab1));
+                    assertTrue(TabModelImpl.isTabInTabGroupLegacy(tab1));
 
                     tab1.setTabGroupId(null);
                 });

@@ -6,10 +6,13 @@ package org.chromium.chrome.modules.readaloud;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Interface for receiving updates on playback state during playback. */
+@NullMarked
 public interface PlaybackListener {
     /** Playback state. */
     @IntDef({

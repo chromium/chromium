@@ -19,7 +19,7 @@ String TextAnnotationSelector::Serialize() const {
   return params_.ToString();
 }
 
-void TextAnnotationSelector::FindRange(Document& document,
+void TextAnnotationSelector::FindRange(Range& search_range,
                                        SearchType type,
                                        FinishedCallback finished_cb) {
   TextFragmentFinder::FindBufferRunnerType find_buffer_type;
@@ -34,8 +34,8 @@ void TextAnnotationSelector::FindRange(Document& document,
 
   was_unique_.reset();
 
-  finder_ = MakeGarbageCollected<TextFragmentFinder>(*this, params_, &document,
-                                                     find_buffer_type);
+  finder_ = MakeGarbageCollected<TextFragmentFinder>(
+      *this, params_, &search_range, find_buffer_type);
   finished_callback_ = std::move(finished_cb);
   finder_->FindMatch();
 }

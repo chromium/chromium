@@ -107,12 +107,7 @@ bool IsSetUpListDisabled(PrefService* prefs) {
 }
 
 void DisableSetUpList(PrefService* prefs) {
-  if (IsHomeCustomizationEnabled()) {
-    prefs->SetBoolean(prefs::kHomeCustomizationMagicStackSetUpListEnabled,
-                      false);
-  } else {
-    prefs->SetBoolean(kDisabled, true);
-  }
+  prefs->SetBoolean(prefs::kHomeCustomizationMagicStackSetUpListEnabled, false);
 }
 
 void RecordInteraction(PrefService* prefs) {

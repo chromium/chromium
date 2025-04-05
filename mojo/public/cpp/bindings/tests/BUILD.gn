@@ -49,6 +49,7 @@ source_set("tests") {
     "report_bad_message_unittest.cc",
     "request_response_unittest.cc",
     "result_response_unittest.cc",
+    "result_response_unittest_mojom_traits.h",
     "router_test_util.cc",
     "router_test_util.h",
     "sample_service_unittest.cc",
@@ -212,6 +213,19 @@ mojom("test_mojom") {
         },
       ]
       traits_headers = [ "default_construct_unittest_mojom_traits.h" ]
+    },
+    {
+      types = [
+        {
+          mojom = "mojo.test.mojom.ResultValue"
+          cpp = "::mojo::test::MappedResultValue"
+        },
+        {
+          mojom = "mojo.test.mojom.ResultError"
+          cpp = "::mojo::test::MappedResultError"
+        },
+      ]
+      traits_headers = [ "result_response_unittest_mojom_traits.h" ]
     },
   ]
 }

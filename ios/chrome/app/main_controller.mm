@@ -111,6 +111,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -158,6 +159,10 @@
 #import "components/rlz/rlz_tracker.h"                        // nogncheck
 #import "ios/chrome/browser/rlz/rlz_tracker_delegate_impl.h"  // nogncheck
 #endif
+
+#if !BUILDFLAG(IS_IOS_MACCATALYST)
+#import "ios/chrome/browser/default_browser/model/default_status/default_status_helper.h"
+#endif  // !BUILDFLAG(IS_IOS_MACCATALYST)
 
 @interface MainController (ForUnloadProfileMarkedForDeletion)
 
@@ -217,6 +222,9 @@ NSString* const kMemoryExperimentation = @"BeginMemoryExperimentation";
 
 // Constant for deferred automatic download deletion.
 NSString* const kAutoDeletionFileRemoval = @"AutoDeletionFileRemoval";
+
+// Constant for deferred default browser status API check.
+NSString* const kDefaultBrowserStatusCheck = @"DefaultBrowserStatusCheck";
 
 // Adapted from chrome/browser/ui/browser_init.cc.
 void RegisterComponentsForUpdate() {
@@ -1429,6 +1437,7 @@ void DeleteProfileContinuation(base::OnceClosure done_closure,
   [self scheduleEnterpriseManagedDeviceCheck];
   [self scheduleMemoryExperimentation];
   [self scheduleAutoDeletionFileRemoval];
+  [self scheduleDefaultBrowserStatusCheck];
 #if BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)
   [self scheduleDumpDocumentsStatistics];
 #endif  // BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)
@@ -1479,6 +1488,16 @@ void DeleteProfileContinuation(base::OnceClosure done_closure,
                   block:^{
                     [startupTasks removeFilesScheduledForAutoDeletion];
                   }];
+}
+
+- (void)scheduleDefaultBrowserStatusCheck {
+#if !BUILDFLAG(IS_IOS_MACCATALYST)
+  [_appState.deferredRunner
+      enqueueBlockNamed:kDefaultBrowserStatusCheck
+                  block:^{
+                    default_status::TriggerDefaultStatusCheck();
+                  }];
+#endif  // !BUILDFLAG(IS_IOS_MACCATALYST)
 }
 
 #if BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)

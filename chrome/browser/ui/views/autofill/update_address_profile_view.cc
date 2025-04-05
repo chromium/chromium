@@ -67,7 +67,7 @@ std::unique_ptr<views::View> CreateValuesView(
       .SetDefault(
           views::kMarginsKey,
           gfx::Insets::VH(ChromeLayoutProvider::Get()->GetDistanceMetric(
-                              DISTANCE_CONTROL_LIST_VERTICAL),
+                              views::DISTANCE_CONTROL_LIST_VERTICAL),
                           0));
 
   for (const ProfileValueDifference& diff_entry : diff) {
@@ -197,7 +197,7 @@ UpdateAddressProfileView::UpdateAddressProfileView(
       .SetCollapseMargins(true)
       .SetDefault(views::kMarginsKey,
                   gfx::Insets::VH(layout_provider->GetDistanceMetric(
-                                      DISTANCE_CONTROL_LIST_VERTICAL),
+                                      views::DISTANCE_CONTROL_LIST_VERTICAL),
                                   0));
 
   std::vector<ProfileValueDifference> profile_diff = GetProfileDifferenceForUi(

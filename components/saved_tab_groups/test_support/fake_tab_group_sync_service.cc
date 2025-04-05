@@ -438,6 +438,9 @@ FakeTabGroupSyncService::TakeSharedTabGroupsAvailableAtStartupForMessaging() {
   return std::make_unique<std::vector<SavedTabGroup>>();
 }
 
+void FakeTabGroupSyncService::OnLastTabClosed(
+    const SavedTabGroup& saved_tab_group) {}
+
 void FakeTabGroupSyncService::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 

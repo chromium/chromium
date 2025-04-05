@@ -17,6 +17,7 @@
 <translation id="1052842760770519282">Ձեր որոշ գաղտնաբառեր անհասանելի են</translation>
 <translation id="1058669287135776095">Դուք անցանց ռեժիմում եք։ Ստուգեք կապը և նորից փորձեք։</translation>
 <translation id="10614374240317010">Կայքեր, որոնց համար գաղտնաբառերը երբեք չեն պահվում</translation>
+<translation id="1070689840697074178">Կարող եք ներբեռնել PDF ֆայլերն այստեղ</translation>
 <translation id="107147699690128016">Եթե փոխեք ընդլայնումը, ֆայլը կարող է բացվել այլ հավելվածով և վնասել ձեր սարքը:</translation>
 <translation id="1080365971383768617">Գաղտնաբառերը ձեր բոլոր սարքերում</translation>
 <translation id="1087176310396019910">Հնարավոր սպամ</translation>
@@ -288,6 +289,7 @@
 <translation id="2362083820973145409">Դուք մուտք եք գործել որպես <ph name="USER_NAME" />։ <ph name="USER_EMAIL" />։ Բացել կարգավորումները:</translation>
 <translation id="2363734411417672757">Ավելի շատ էջեր են նախաբեռնվում։ Նախաբեռնումը կարող է կատարվել Google-ի սերվերների կողմից այլ կայքերի կամ հավելվածների հարցումով։</translation>
 <translation id="2366554533468315977">Վեբ ռեսուրսներում այս ապրանքի գնի փոփոխման պատմությունը</translation>
+<translation id="2367818124433749493">Ծրագրավորողի դյուրանցումներ</translation>
 <translation id="2385605401818128172">Դուք կարող եք դիտել այն կայքերը, որոնք չափազանց շատ ծանուցումներ են ուղարկում, և կանգնեցնել դրանց ուղարկումը</translation>
 <translation id="2386938421315164605">Թաքցրեք և ցուցադրեք թեմաները</translation>
 <translation id="2390510615457643724">Նորից ներբեռնե՞լ <ph name="FILE_NAME" /> ֆայլը (<ph name="FILE_SIZE" />)։</translation>
@@ -516,11 +518,13 @@
 <translation id="3439276997620616816">Այստեղ կցուցադրվեն ձեր վերջին ներդիրները</translation>
 <translation id="3443221991560634068">Վերաբեռնել ընթացիկ էջը</translation>
 <translation id="3444179773590444986">Կարծիք հայտնե՞լ կայքերի մուգ թեմայի մասին</translation>
+<translation id="3448874648066942074">Ամփոփել էջը ԱԲ-ի միջոցով</translation>
 <translation id="3452832259067974318">Ձեր գաղտնիությունը պաշտպանելու նպատակով Chrome-ն այս դաշտում չի ինքնալրացնի ձեր գաղտնաբառը։</translation>
 <translation id="3467081767799433066">Գովազդի արդյունավետությունը գնահատելու համար կայքերը փոխանակում են որոշակի տվյալներ, օրինակ՝ արդյոք դուք գնում եք կատարել կայք այցելելուց հետո։</translation>
 <translation id="3474624961160222204">Շարունակել <ph name="NAME" /> հաշվով</translation>
 <translation id="3478363558367712427">Ընտրեք այլ որոնման համակարգ</translation>
 <translation id="3479552764303398839">Հիմա չէ</translation>
+<translation id="3482805106082349287">Որոնում հիմնաբառերով, ձայնով, ինկոգնիտո ռեժիմում կամ տեսախցիկով</translation>
 <translation id="3487903178221457900">Արտահանված ֆայլը կարող է հասանելի լինել երրոդ կողմերի՝ ներառյալ այլ հավելվածների։ Արտահանելուց հետո ձեր գաղտնաբառերը կջնջվեն Chrome-ից։</translation>
 <translation id="3488199663160411179">անուն</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Իմացեք ավելին<ph name="END_LINK" /> առաջարկվող բովանդակության վերաբերյալ</translation>
@@ -608,6 +612,7 @@
 <translation id="3856096718352044181">Հաստատեք, որ սա վավեր մատակարար է կամ նորից փորձեք</translation>
 <translation id="3858860766373142691">Անուն</translation>
 <translation id="3863527519275151528">Ծանուցման մշակում</translation>
+<translation id="3866863539038222107">Հետազոտել</translation>
 <translation id="3870908470613821006">Բոլորին անմիջապես անհասանելի կդառնա ներդիրների «<ph name="GROUP_NAME" />» խումբը, և այն կջնջվի բոլոր սարքերից</translation>
 <translation id="3873174561423636563">Շարունակելու համար <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ընկերությունն այս կայքին կփոխանցի հետևյալ տվյալները՝ <ph name="FIELDS_STRING" />։ Ծանոթացեք այս կայքի <ph name="BEGIN_LINK1" />օգտագործման պայմաններին<ph name="END_LINK1" />։</translation>
 <translation id="3892148308691398805">Պատճենել տեքստը</translation>
@@ -731,7 +736,6 @@
 <translation id="4460861538906892109">{ITEMS_COUNT,plural, =1{1 էջանիշ}one{# էջանիշ}other{# էջանիշ}}</translation>
 <translation id="4478161224666880173">Այս կայքում կարող եք օգտագործել ձեր <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> հաշիվը։ Շարունակելու համար մուտք գործեք <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />։</translation>
 <translation id="4479972344484327217">«<ph name="MODULE" />» բաղադրիչը տեղադրվում է Chrome-ի համար…</translation>
-<translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{Էջանիշը պահվեց «<ph name="FOLDER_NAME" />» պանակում՝ միայն այս սարքում։}one{Էջանիշը պահվեց «<ph name="FOLDER_NAME" />» պանակում՝ միայն այս սարքում։}other{Էջանիշները պահվեցին «<ph name="FOLDER_NAME" />» պանակում՝ միայն այս սարքում։}}</translation>
 <translation id="4484496141267039529">Կապ չկա։ Փորձեք ավելի ուշ։</translation>
 <translation id="4487967297491345095">Chrome հավելվածի բոլոր տվյալներն ընդմիշտ կջնջվեն, ներառյալ` բոլոր ֆայլերը, կարգավորումները, հաշիվները, տվյալների շտեմարանները և այլն:</translation>
 <translation id="4494806687727322324">Ձեր ադմինիստրատորը միացրել է գաղտնաբառերի պահումը</translation>
@@ -782,6 +786,7 @@
 <translation id="4698061626562952596">Դիտեք ձեր անգործուն ներդիրներն այստեղ</translation>
 <translation id="4699172675775169585">Քեշավորված պատկերներ և ֆայլեր</translation>
 <translation id="4710167854527459075">Սկզբում նորերը</translation>
+<translation id="4718044610319080485">Կանչում է ԱԲ օգնականը</translation>
 <translation id="4719927025381752090">Առաջարկել թարգմանել</translation>
 <translation id="4720556299488643018">Չեղարկել բաժանորդագրությունը</translation>
 <translation id="4732120983431207637">Stack Unwinder</translation>
@@ -897,6 +902,7 @@
 <translation id="5174700554036517242">Ներդիրը ծալվեց հետ իր սկզբնական բարձրությանը</translation>
 <translation id="5180063720319462041">Էջը թարգմանվել է <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="5191251636205085390">Իմացեք ավելին նոր տեխնոլոգիաների մասին, որոնք փոխարինելու են երրորդ կողմի քուքիներին։</translation>
+<translation id="5197649123261764478">Հեշտությամբ բացեք ձեր էջանիշները</translation>
 <translation id="5204967432542742771">Մուտքագրեք գաղտնաբառը</translation>
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{Ֆայլը ներբեռնվում է…}one{Ներբեռնվում է # ֆայլ…}other{Ներբեռնվում է # ֆայլ…}}</translation>
 <translation id="5210286577605176222">Անցնել նախորդ ներդիր</translation>
@@ -926,6 +932,7 @@
 <translation id="5328542107300944283">Օգտագործեք <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> հաշիվը</translation>
 <translation id="5342314432463739672">Թույլտվությունների հարցումներ</translation>
 <translation id="534580735623577507">Կայքեր չկան նշված ժամանակահատվածից (<ph name="TIME_PERIOD" />)</translation>
+<translation id="5354716139000094027">Ամփոփել ԱԲ-ի միջոցով</translation>
 <translation id="5355191726083956201">Բարելավված պաշտպանությունը միացված է</translation>
 <translation id="5375374982898812658">Ձեզ անմիջապես անհասանելի կդառնա ներդիրների «<ph name="GROUP_NAME" />» խումբը, և այն կջնջվի ձեր բոլոր սարքերից</translation>
 <translation id="5375577065097716013">Որոնել Google Տեսապակու միջոցով <ph name="BEGIN_NEW" />Նոր<ph name="END_NEW" /></translation>
@@ -935,6 +942,7 @@
 <translation id="539881862970320163">Հուսալի գաղտնաբառ է առաջարկվում։ Ստեղնաշարը թաքցված է։</translation>
 <translation id="5409881200985013443">Ուղարկե՞լ <ph name="ONE_TIME_CODE" /> կոդը <ph name="CLIENT_NAME" />-ին</translation>
 <translation id="5410300144953132176"><ph name="OWNER_FULL_NAME" /> (<ph name="OWNER_EMAIL" />) օգտատերն ուզում է ներդիրների խմբի միանալ։ Ցանկացած մեկը, ով ունի այս հղումը, կարող է փոփոխել բոլոր ներդիրները, այնպես որ ուշադիր եղեք։ Հղումը կգործի 48 ժամ։</translation>
+<translation id="5412388166586147626">Չհաջողվեց բացել ԱԲ օգնականը։ Նորից փորձեք։</translation>
 <translation id="5414836363063783498">Ստուգում…</translation>
 <translation id="5415871492522952905">Պատմությունը և ներդիրները հասանելի կլինեն ձեր բոլոր սարքերում, այնպես որ դուք կկարողանաք սկսել օգտվել դիտարկիչից մեկ սարքում և շարունակել մյուսում</translation>
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" />-ին (<ph name="EMAIL" />) անմիջապես անհասանելի կդառնա ներդիրների «<ph name="GROUP_NAME" />» խումբը</translation>
@@ -954,6 +962,7 @@
 <translation id="5456381639095306749">Ներբեռնել էջը</translation>
 <translation id="5458366071038729214">Կայքերը, որոնց հետևում եք, կցուցադրվեն այստեղ</translation>
 <translation id="5468068603361015296">Միևնույն է ներբեռնե՞լ <ph name="FILE_NAME" /> ֆայլը։</translation>
+<translation id="5471273988133666918">Ներդիր <ph name="TAB_TITLE" />-ը հնարավոր չէ շարժել</translation>
 <translation id="548278423535722844">Բացեք Քարտեզներ հավելվածում</translation>
 <translation id="5492637351392383067">Գաղտնագրում սարքում</translation>
 <translation id="549660026907543296">Միանալ որպես <ph name="MEMBER_FULL_NAME" /></translation>
@@ -968,6 +977,7 @@
 <translation id="5556459405103347317">Վերաբեռնել</translation>
 <translation id="555671485580955310">Համաժամացնել պատմությունը և ներդիրները</translation>
 <translation id="555816257274242153">Գների հետագծումը դադարեցված է</translation>
+<translation id="5561445479436807659">Զվարճալի Dino խաղ</translation>
 <translation id="5561549206367097665">Ցանցի որոնում…</translation>
 <translation id="5568069709869097550">Չհաջողվեց մուտք գործել</translation>
 <translation id="557018954714092179">Ստեղծել նոր պանակ</translation>
@@ -1047,6 +1057,7 @@
 <translation id="5907542076239273525">Էջանիշը պահվեց «<ph name="FOLDER_NAME" />» պանակում</translation>
 <translation id="5916664084637901428">Միացնել</translation>
 <translation id="5919204609460789179">Թարմացրեք <ph name="PRODUCT_NAME" />-ը՝ համաժամացումը սկսելու համար</translation>
+<translation id="5932881020239635062">Սերիական համարը</translation>
 <translation id="5938820472109305350">Ավելացնել «<ph name="INTEREST" />» հետաքրքրությունը</translation>
 <translation id="5942872142862698679">Օգտագործվում է Google որոնման համակարգը</translation>
 <translation id="5945035219773565305">Ընթացիկ առաջարկը՝ <ph name="RECOMMENDATION" /></translation>
@@ -1130,6 +1141,7 @@
 <translation id="6295158916970320988">Բոլոր կայքերը</translation>
 <translation id="6296366034485697675">Արտահանել և ջնջել</translation>
 <translation id="629730747756840877">Հաշիվ</translation>
+<translation id="6301526076346731664">Բացել ծրագրավորողի գործիքները</translation>
 <translation id="6303969859164067831">Դուրս գրվել հաշվից և անջատել համաժամացումը</translation>
 <translation id="6307241780749477694">Հաստատեք ձեր ինքնությունը, որպեսզի ձեզ հասանելի լինեն ձեր բոլոր գաղտնաբառերն այս սարքում</translation>
 <translation id="6312687380483398334">Վեբ հավելվածներ (լուռ)</translation>
@@ -1326,7 +1338,6 @@
 <translation id="7063006564040364415">Չհաջողվեց կապակցվել համաժամացման սերվերին:</translation>
 <translation id="7071521146534760487">Կառավարել հաշիվը</translation>
 <translation id="707155805709242880">Ստորև ընտրեք, թե ինչ տվյալներ համաժամացնել</translation>
-<translation id="707702207692430409">{BOOKMARK_COUNT,plural, =1{Էջանիշը պահվեց <ph name="ACCOUNT_EMAIL" /> հաշվի «<ph name="FOLDER_NAME" />» պանակում։}one{Էջանիշը պահվեց <ph name="ACCOUNT_EMAIL" /> հաշվի «<ph name="FOLDER_NAME" />» պանակում։}other{Էջանիշները պահվեցին <ph name="ACCOUNT_EMAIL" /> հաշվի «<ph name="FOLDER_NAME" />» պանակում։}}</translation>
 <translation id="7077143737582773186">SD քարտ</translation>
 <translation id="7078916049958741685">Նաև ջնջել Chrome-ի ձեր տվյալներն այս սարքից</translation>
 <translation id="7085332316435785646">Ընտրեք, թե արդյոք ներառել Chromе-ի պատմությունը՝ Google-ի ծառայությունների ավելի անհատականացված օգտագործման համար։</translation>
@@ -1514,6 +1525,7 @@
 <translation id="7913993612870913335">{FILE_COUNT,plural, =1{1 ներբեռնում արգելափակվել է ձեր կազմակերպության կողմից}one{# ներբեռնում արգելափակվել է ձեր կազմակերպության կողմից}other{# ներբեռնում արգելափակվել է ձեր կազմակերպության կողմից}}</translation>
 <translation id="7914399737746719723">Հավելվածը տեղադրվեց</translation>
 <translation id="7919123827536834358">Ավտոմատ թարգմանել այս լեզուներով էջերը</translation>
+<translation id="7921782882718083488">Ամփոփել այս էջը</translation>
 <translation id="7926975587469166629">Քարտի այլանունը</translation>
 <translation id="7929962904089429003">Բացել ընտրացանկը</translation>
 <translation id="7934668619883965330">Չհաջողվեց ներբեռնել ֆայլը։ Ֆայլի ձևաչափը չի աջակցվում։</translation>
@@ -1670,6 +1682,7 @@
 <translation id="8540136935098276800">Մուտքագրեք ճիշտ ձևաչափի URL</translation>
 <translation id="854522910157234410">Բացել այս էջը</translation>
 <translation id="8547025137714087639">{ARCHIVED_TAB_COUNT,plural, =1{Անգործուն ներդիր (1)}one{Անգործուն ներդիր (#)}other{Անգործուն ներդիրներ (#)}}</translation>
+<translation id="8547466829003330976">Ստուգեք PDF ֆայլը ԱԲ-ի միջոցով</translation>
 <translation id="8551513938758868521">Կողպել ինկոգնիտո ներդիրները Chrome-ը փակելուց հետո</translation>
 <translation id="8559961053328923750">Գովազդի արդյունավետությունը գնահատելու համար Chrome-ը սահմանափակում է այն տվյալների ընդհանուր ծավալը, որոնք կայքերն ուղարկում են դիտարկիչի միջոցով</translation>
 <translation id="8559990750235505898">Առաջարկել թարգմանել էջերը այլ լեզուներով</translation>
@@ -1767,6 +1780,7 @@
 <translation id="9022871169049522985">Կայքերն ու գովազդատուները կարող են գնահատել իրենց գովազդի արդյունավետությունը</translation>
 <translation id="9035378196785279980">Տեղափոխել\u2026</translation>
 <translation id="9042893549633094279">Գաղտնիություն և անվտանգություն</translation>
+<translation id="9047347135558855162">Արագ որոնում Chrome-ում</translation>
 <translation id="9050666287014529139">Անցաբառ</translation>
 <translation id="9055497320631373736">Կայքը նորից ավելացվեց հավանական կայքերի ցանկում</translation>
 <translation id="9057030985451135243">Իմանալ ավելին ներդիրների ընդհանուր խմբերի մասին</translation>

@@ -29,7 +29,8 @@ namespace device {
 class DEVICE_VR_EXPORT OpenXrGraphicsBindingOpenGLES
     : public OpenXrGraphicsBinding {
  public:
-  OpenXrGraphicsBindingOpenGLES();
+  explicit OpenXrGraphicsBindingOpenGLES(
+      const OpenXrExtensionEnumeration* extension_enum);
   ~OpenXrGraphicsBindingOpenGLES() override;
 
   // OpenXrGraphicsBinding
@@ -40,6 +41,7 @@ class DEVICE_VR_EXPORT OpenXrGraphicsBindingOpenGLES
       const XrSwapchain& color_swapchain) override;
   void ClearSwapchainImages() override;
   base::span<SwapChainInfo> GetSwapChainImages() override;
+  base::span<const SwapChainInfo> GetSwapChainImages() const override;
   bool CanUseSharedImages() const override;
   void CreateSharedImages(gpu::SharedImageInterface* sii) override;
   const SwapChainInfo& GetActiveSwapchainImage() override;
@@ -47,7 +49,7 @@ class DEVICE_VR_EXPORT OpenXrGraphicsBindingOpenGLES
       const scoped_refptr<viz::ContextProvider>& context_provider) override;
   void CleanupWithoutSubmit() override;
   bool WaitOnFence(gfx::GpuFence& gpu_fence) override;
-  bool ShouldFlipSubmittedImage() override;
+  bool ShouldFlipSubmittedImage() const override;
   void SetOverlayAndWebXrVisibility(bool overlay_visible,
                                     bool webxr_visible) override;
   bool SetOverlayTexture(gfx::GpuMemoryBufferHandle texture,

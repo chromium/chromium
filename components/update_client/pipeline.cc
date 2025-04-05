@@ -29,6 +29,8 @@
 #include "components/update_client/op_download.h"
 #include "components/update_client/op_install.h"
 #include "components/update_client/op_puffin.h"
+#include "components/update_client/op_xz.h"
+#include "components/update_client/op_zucchini.h"
 #include "components/update_client/protocol_parser.h"
 #include "components/update_client/unzipper.h"
 #include "components/update_client/update_client_errors.h"
@@ -253,6 +255,16 @@ std::queue<Operation> MakeOperations(
     } else if (operation.type == "puff") {
       ops.push(SkipIfCached(
           cache_check, base::BindOnce(&PuffOperation, crx_cache,
+                                      config->GetPatcherFactory()->Create(),
+                                      event_adder, id, operation.sha256_from)));
+    } else if (operation.type == "xz") {
+      ops.push(SkipIfCached(
+          cache_check,
+          base::BindOnce(&XzOperation, config->GetUnzipperFactory()->Create(),
+                         event_adder)));
+    } else if (operation.type == "zucchini") {
+      ops.push(SkipIfCached(
+          cache_check, base::BindOnce(&ZucchiniOperation, crx_cache,
                                       config->GetPatcherFactory()->Create(),
                                       event_adder, id, operation.sha256_from)));
     } else if (operation.type == "crx3") {

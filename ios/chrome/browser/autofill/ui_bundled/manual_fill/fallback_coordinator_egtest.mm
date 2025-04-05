@@ -165,11 +165,17 @@ void OpenAddressManualFillView() {
   [ChromeEarlGrey waitForNotSufficientlyVisibleElementWithMatcher:
                       manual_fill::ProfilesTableViewMatcher()];
 
-  // Verify icons are not present now that the selected field is a picker.
-  [[EarlGrey selectElementWithMatcher:manual_fill::ProfilesIconMatcher()]
-      assertWithMatcher:grey_notVisible()];
-  [[EarlGrey selectElementWithMatcher:manual_fill::KeyboardIconMatcher()]
-      assertWithMatcher:grey_not(grey_sufficientlyVisible())];
+  if ([AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
+    // Verify icon is not present now that the selected field is a picker.
+    [[EarlGrey selectElementWithMatcher:KeyboardAccessoryExpandButton()]
+        assertWithMatcher:grey_notVisible()];
+  } else {
+    // Verify icons are not present now that the selected field is a picker.
+    [[EarlGrey selectElementWithMatcher:manual_fill::ProfilesIconMatcher()]
+        assertWithMatcher:grey_notVisible()];
+    [[EarlGrey selectElementWithMatcher:manual_fill::KeyboardIconMatcher()]
+        assertWithMatcher:grey_not(grey_sufficientlyVisible())];
+  }
 }
 
 // Tests that the input accessory view continues working after a picker is
@@ -225,18 +231,30 @@ void OpenAddressManualFillView() {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kFormElementCity)];
 
-  // Verify the profiles icon is visible, and therefore also the input accessory
-  // bar.
-  [[EarlGrey selectElementWithMatcher:manual_fill::FormSuggestionViewMatcher()]
-      performAction:grey_scrollToContentEdge(kGREYContentEdgeRight)];
-  // Verify the status of the icons.
-  [[EarlGrey selectElementWithMatcher:manual_fill::ProfilesIconMatcher()]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  if ([AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
+    // Verify the manual fill icon is visible, and therefore also the input
+    // accessory bar.
+    [[EarlGrey selectElementWithMatcher:KeyboardAccessoryExpandButton()]
+        assertWithMatcher:grey_sufficientlyVisible()];
 
-  [[EarlGrey selectElementWithMatcher:manual_fill::ProfilesIconMatcher()]
-      assertWithMatcher:grey_userInteractionEnabled()];
-  [[EarlGrey selectElementWithMatcher:manual_fill::KeyboardIconMatcher()]
-      assertWithMatcher:grey_not(grey_sufficientlyVisible())];
+    // Verify the status of the icon.
+    [[EarlGrey selectElementWithMatcher:KeyboardAccessoryExpandButton()]
+        assertWithMatcher:grey_userInteractionEnabled()];
+  } else {
+    // Verify the profiles icon is visible, and therefore also the input
+    // accessory bar.
+    [[EarlGrey
+        selectElementWithMatcher:manual_fill::FormSuggestionViewMatcher()]
+        performAction:grey_scrollToContentEdge(kGREYContentEdgeRight)];
+    // Verify the status of the icons.
+    [[EarlGrey selectElementWithMatcher:manual_fill::ProfilesIconMatcher()]
+        assertWithMatcher:grey_sufficientlyVisible()];
+
+    [[EarlGrey selectElementWithMatcher:manual_fill::ProfilesIconMatcher()]
+        assertWithMatcher:grey_userInteractionEnabled()];
+    [[EarlGrey selectElementWithMatcher:manual_fill::KeyboardIconMatcher()]
+        assertWithMatcher:grey_not(grey_sufficientlyVisible())];
+  }
 }
 
 // Tests that the manual fallback view is present in incognito.
@@ -284,8 +302,13 @@ void OpenAddressManualFillView() {
   // Verify the profiles icon is visible.
   [[EarlGrey selectElementWithMatcher:manual_fill::FormSuggestionViewMatcher()]
       performAction:grey_scrollToContentEdge(kGREYContentEdgeRight)];
-  [[EarlGrey selectElementWithMatcher:manual_fill::ProfilesIconMatcher()]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  if ([AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
+    [[EarlGrey selectElementWithMatcher:KeyboardAccessoryExpandButton()]
+        assertWithMatcher:grey_sufficientlyVisible()];
+  } else {
+    [[EarlGrey selectElementWithMatcher:manual_fill::ProfilesIconMatcher()]
+        assertWithMatcher:grey_sufficientlyVisible()];
+  }
 
   // Open a tab in incognito.
   [ChromeEarlGrey openNewIncognitoTab];
@@ -298,8 +321,13 @@ void OpenAddressManualFillView() {
   // Verify the profiles icon is visible.
   [[EarlGrey selectElementWithMatcher:manual_fill::FormSuggestionViewMatcher()]
       performAction:grey_scrollToContentEdge(kGREYContentEdgeRight)];
-  [[EarlGrey selectElementWithMatcher:manual_fill::ProfilesIconMatcher()]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  if ([AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
+    [[EarlGrey selectElementWithMatcher:KeyboardAccessoryExpandButton()]
+        assertWithMatcher:grey_sufficientlyVisible()];
+  } else {
+    [[EarlGrey selectElementWithMatcher:manual_fill::ProfilesIconMatcher()]
+        assertWithMatcher:grey_sufficientlyVisible()];
+  }
 
   [ChromeEarlGrey closeCurrentTab];
   [ChromeEarlGrey openNewTab];
@@ -314,8 +342,13 @@ void OpenAddressManualFillView() {
   // Verify the profiles icon is visible.
   [[EarlGrey selectElementWithMatcher:manual_fill::FormSuggestionViewMatcher()]
       performAction:grey_scrollToContentEdge(kGREYContentEdgeRight)];
-  [[EarlGrey selectElementWithMatcher:manual_fill::ProfilesIconMatcher()]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  if ([AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
+    [[EarlGrey selectElementWithMatcher:KeyboardAccessoryExpandButton()]
+        assertWithMatcher:grey_sufficientlyVisible()];
+  } else {
+    [[EarlGrey selectElementWithMatcher:manual_fill::ProfilesIconMatcher()]
+        assertWithMatcher:grey_sufficientlyVisible()];
+  }
 
   // Open a tab in incognito.
   [ChromeEarlGrey openNewIncognitoTab];
@@ -340,8 +373,13 @@ void OpenAddressManualFillView() {
   // This will fail if there is more than one profiles icon in the hierarchy.
   [[EarlGrey selectElementWithMatcher:manual_fill::FormSuggestionViewMatcher()]
       performAction:grey_scrollToContentEdge(kGREYContentEdgeRight)];
-  [[EarlGrey selectElementWithMatcher:manual_fill::ProfilesIconMatcher()]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  if ([AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
+    [[EarlGrey selectElementWithMatcher:KeyboardAccessoryExpandButton()]
+        assertWithMatcher:grey_sufficientlyVisible()];
+  } else {
+    [[EarlGrey selectElementWithMatcher:manual_fill::ProfilesIconMatcher()]
+        assertWithMatcher:grey_sufficientlyVisible()];
+  }
 }
 
 // Tests that the manual fallback view is not duplicated after incognito.
@@ -358,8 +396,13 @@ void OpenAddressManualFillView() {
   // Verify the profiles icon is visible.
   [[EarlGrey selectElementWithMatcher:manual_fill::FormSuggestionViewMatcher()]
       performAction:grey_scrollToContentEdge(kGREYContentEdgeRight)];
-  [[EarlGrey selectElementWithMatcher:manual_fill::ProfilesIconMatcher()]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  if ([AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
+    [[EarlGrey selectElementWithMatcher:KeyboardAccessoryExpandButton()]
+        assertWithMatcher:grey_sufficientlyVisible()];
+  } else {
+    [[EarlGrey selectElementWithMatcher:manual_fill::ProfilesIconMatcher()]
+        assertWithMatcher:grey_sufficientlyVisible()];
+  }
 
   // Open a tab in incognito.
   [ChromeEarlGrey openNewIncognitoTab];
@@ -385,8 +428,13 @@ void OpenAddressManualFillView() {
   // This will fail if there is more than one profiles icon in the hierarchy.
   [[EarlGrey selectElementWithMatcher:manual_fill::FormSuggestionViewMatcher()]
       performAction:grey_scrollToContentEdge(kGREYContentEdgeRight)];
-  [[EarlGrey selectElementWithMatcher:manual_fill::ProfilesIconMatcher()]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  if ([AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
+    [[EarlGrey selectElementWithMatcher:KeyboardAccessoryExpandButton()]
+        assertWithMatcher:grey_sufficientlyVisible()];
+  } else {
+    [[EarlGrey selectElementWithMatcher:manual_fill::ProfilesIconMatcher()]
+        assertWithMatcher:grey_sufficientlyVisible()];
+  }
 }
 
 @end

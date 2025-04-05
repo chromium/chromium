@@ -157,6 +157,8 @@ struct CORE_EXPORT FrameLoadRequest {
 
   base::TimeTicks GetInputStartTime() const { return input_start_time_; }
 
+  base::TimeTicks GetCreationTime() const { return creation_time_; }
+
   const WebWindowFeatures& GetWindowFeatures() const {
     return window_features_;
   }
@@ -232,6 +234,7 @@ struct CORE_EXPORT FrameLoadRequest {
   scoped_refptr<base::RefCountedData<mojo::Remote<mojom::blink::BlobURLToken>>>
       blob_url_token_;
   base::TimeTicks input_start_time_;
+  base::TimeTicks creation_time_;
   mojom::RequestContextFrameType frame_type_ =
       mojom::RequestContextFrameType::kNone;
   WebWindowFeatures window_features_;

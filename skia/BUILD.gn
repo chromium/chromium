@@ -781,6 +781,8 @@ skia_source_set("skia_opts") {
     }
   } else if (current_cpu == "arm64") {
     # Conditional and empty body needed to avoid assert() below.
+  } else if (current_cpu == "arm64e") {
+    # Conditional and empty body needed to avoid assert() below.
   } else if (current_cpu == "mipsel") {
     cflags += [ "-fomit-frame-pointer" ]
   } else if (current_cpu == "mips64el") {

@@ -7,12 +7,15 @@
 
 #import <CryptoTokenKit/CryptoTokenKit.h>
 #import <Foundation/Foundation.h>
-#import <LocalAuthentication/LocalAuthentication.h>
 #import <Security/Security.h>
 
 #include "crypto/crypto_export.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/no_destructor.h"
+
+#if !BUILDFLAG(IS_IOS_TVOS)
+#import <LocalAuthentication/LocalAuthentication.h>
+#endif
 
 namespace crypto {
 

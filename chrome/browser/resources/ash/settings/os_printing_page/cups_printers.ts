@@ -203,18 +203,6 @@ export class SettingsCupsPrintersElement extends
       },
 
       /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kAddPrinter,
-          Setting.kSavedPrinters,
-          Setting.kPrintJobs,
-        ]),
-      },
-
-      /**
        * Indicates whether the nearby printers section is expanded.
        * @private {boolean}
        */
@@ -239,6 +227,13 @@ export class SettingsCupsPrintersElement extends
   prefs: Object;
   printers: CupsPrinterInfo[];
   searchTerm: string;
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kAddPrinter,
+    Setting.kSavedPrinters,
+    Setting.kPrintJobs,
+  ]);
 
   private addPrintServerResultText_: string;
   private addPrinterResultText_: string;

@@ -7,12 +7,14 @@ package org.chromium.chrome.browser.facilitated_payments;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
  * An interface that allows different facilitated payment views to be shown in the same bottom
  * sheet.
  */
+@NullMarked
 interface FacilitatedPaymentsSequenceView {
     /**
      * Inflates the view to be shown, and binds it to a model. Does not attach the view to the

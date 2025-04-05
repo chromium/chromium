@@ -19,9 +19,6 @@ extern NSString* const kNTPIncognitoViewIdentifier;
 // Represents the feed header container.
 extern NSString* const kNTPFeedHeaderIdentifier;
 
-// Represents the management button of the feed header.
-extern NSString* const kNTPFeedHeaderManagementButtonIdentifier;
-
 // Represents the sort button of the feed header.
 extern NSString* const kNTPFeedHeaderSortButtonIdentifier;
 
@@ -47,5 +44,8 @@ extern const CGFloat kHomeModuleMinimumPadding;
 // The maximum number of times to show the new badge on the Customization menu
 // entrypoint.
 extern const NSInteger kCustomizationNewBadgeMaxImpressionCount;
+
+// The bottom spacing underneath the Magic Stack.
+extern const float kBottomMagicStackPadding;
 
 #endif  // IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_CONSTANTS_H_

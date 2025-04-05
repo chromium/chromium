@@ -1306,7 +1306,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   // selected.
   ASSERT_TRUE(PressInputAtCenter(tab_strip->tab_at(0)));
   ASSERT_TRUE(ReleaseInput());
-  browser()->tab_strip_model()->ToggleSelectionAt(2);
+  browser()->tab_strip_model()->SelectTabAt(2);
 
   // Drag the first tab from its left edge toward the right. This should make
   // the two selected tabs join the start of Tab Group 2 (which previously held
@@ -1357,7 +1357,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   // are selected.
   ASSERT_TRUE(PressInputAtCenter(tab_strip->tab_at(1)));
   ASSERT_TRUE(ReleaseInput());
-  browser()->tab_strip_model()->ToggleSelectionAt(3);
+  browser()->tab_strip_model()->SelectTabAt(3);
 
   // Dragging the fourth tab slightly to the left will result in the two
   // selected tabs joining the end of Tab Group 3.
@@ -1394,7 +1394,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   // are selected.
   ASSERT_TRUE(PressInputAtCenter(tab_strip->tab_at(1)));
   ASSERT_TRUE(ReleaseInput());
-  browser()->tab_strip_model()->ToggleSelectionAt(2);
+  browser()->tab_strip_model()->SelectTabAt(2);
 
   // Dragging the third tab slightly to the left will result in the two
   // selected tabs leaving the group.
@@ -2723,7 +2723,7 @@ void DragAllStep2(DetachToBrowserTabDragControllerTest* test) {
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest, MAYBE_DragAll) {
   AddTabsAndResetBrowser(browser(), 1);
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
-  browser()->tab_strip_model()->ToggleSelectionAt(0);
+  browser()->tab_strip_model()->SelectTabAt(0);
   const gfx::Rect initial_bounds = browser()->window()->GetBounds();
 
   // Move to the first tab and drag it enough so that it would normally
@@ -2796,7 +2796,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   Browser* browser2 = CreateAnotherBrowserAndResize();
   TabStrip* tab_strip2 = GetTabStripForBrowser(browser2);
 
-  browser()->tab_strip_model()->ToggleSelectionAt(0);
+  browser()->tab_strip_model()->SelectTabAt(0);
 
   // Move to the first tab and drag it enough so that it detaches, but not
   // enough that it attaches to browser2.
@@ -2845,7 +2845,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   Browser* browser2 = CreateAnotherBrowserAndResize();
   TabStrip* tab_strip2 = GetTabStripForBrowser(browser2);
 
-  browser()->tab_strip_model()->ToggleSelectionAt(0);
+  browser()->tab_strip_model()->SelectTabAt(0);
 
   DragTabAndNotify(tab_strip, base::BindOnce(&DragAllToSeparateWindowStep2,
                                              this, tab_strip, tab_strip2));
@@ -2934,7 +2934,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   Browser* browser2 = CreateAnotherBrowserAndResize();
   TabStrip* tab_strip2 = GetTabStripForBrowser(browser2);
 
-  browser()->tab_strip_model()->ToggleSelectionAt(0);
+  browser()->tab_strip_model()->SelectTabAt(0);
 
   // Move to the first tab and drag it enough so that it detaches, but not
   // enough that it attaches to browser2.
@@ -2982,7 +2982,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   // selected.
   ASSERT_TRUE(PressInputAtCenter(tab_strip->tab_at(0)));
   ASSERT_TRUE(ReleaseInput());
-  browser()->tab_strip_model()->ToggleSelectionAt(1);
+  browser()->tab_strip_model()->SelectTabAt(1);
 
   // Move to the first tab and drag it enough so that it detaches, but not
   // enough that it attaches to browser2.
@@ -3699,7 +3699,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   Browser* browser2 = CreateAnotherBrowserAndResize();
   TabStrip* tab_strip2 = GetTabStripForBrowser(browser2);
 
-  browser()->tab_strip_model()->ToggleSelectionAt(0);
+  browser()->tab_strip_model()->SelectTabAt(0);
 
   // Move to the first tab and drag it enough so that it detaches, but not
   // enough that it attaches to browser2.
@@ -3750,7 +3750,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   // Open a second tab.
   AddTabsAndResetBrowser(browser(), 1);
   // Re-select the first one.
-  browser()->tab_strip_model()->ToggleSelectionAt(0);
+  browser()->tab_strip_model()->SelectTabAt(0);
 
   // Create another browser.
   Browser* target_browser = CreateAnotherBrowserAndResize();
@@ -5357,7 +5357,7 @@ class SelectTabDuringDragObserver : public TabStripModelObserver {
     }
     const TabStripModelChange::Move* move = change.GetMove();
     int index_to_select = move->to_index == 0 ? 1 : 0;
-    tab_strip_model->ToggleSelectionAt(index_to_select);
+    tab_strip_model->SelectTabAt(index_to_select);
   }
 };
 

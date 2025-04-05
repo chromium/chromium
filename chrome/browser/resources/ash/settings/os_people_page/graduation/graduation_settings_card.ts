@@ -36,19 +36,10 @@ export class GraduationSettingsCardElement extends
     return getTemplate();
   }
 
-  static get properties() {
-    return {
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kGraduation,
-        ]),
-      },
-    };
-  }
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kGraduation,
+  ]);
 
   override currentRouteChanged(newRoute: Route): void {
     if (newRoute !== routes.OS_PEOPLE) {

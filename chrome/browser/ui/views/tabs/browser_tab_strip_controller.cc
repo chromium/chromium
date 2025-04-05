@@ -387,7 +387,11 @@ void BrowserTabStripController::ExtendSelectionTo(int model_index) {
 }
 
 void BrowserTabStripController::ToggleSelected(int model_index) {
-  model_->ToggleSelectionAt(model_index);
+  if (model_->IsTabSelected(model_index)) {
+    model_->DeselectTabAt(model_index);
+  } else {
+    model_->SelectTabAt(model_index);
+  }
 }
 
 void BrowserTabStripController::AddSelectionFromAnchorTo(int model_index) {

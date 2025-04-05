@@ -9,12 +9,16 @@
 #include <algorithm>
 
 #include "base/compiler_specific.h"
+#include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
+#include "base/time/time.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -624,6 +628,21 @@ void CachedStorageArea::MaybeApplyNonLocalMutationForKey(
   key_queue_iter->value.front()->old_value = new_value;
 }
 
+// Controls whether we apply an artificial delay to priming the DOMStorage data.
+// There are 2 parameters that influence how long the delay is, `factor` and
+// `offset`. If the actual time taken is `time_to_prime` then the delay will be
+// `time_to_prime * factor + offset`.
+BASE_FEATURE(kDomStorageAblation,
+             "DomStorageAblation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(double,
+                   kDomStorageAblationDelayFactor,
+                   &kDomStorageAblation,
+                   "factor",
+                   0);
+const base::FeatureParam<base::TimeDelta> kDomStorageAblationDelayOffset{
+    &kDomStorageAblation, "offset", base::Milliseconds(0)};
+
 void CachedStorageArea::EnsureLoaded() {
   if (map_)
     return;
@@ -657,6 +676,17 @@ void CachedStorageArea::EnsureLoaded() {
 
   base::TimeDelta time_to_prime = base::TimeTicks::Now() - before;
   UMA_HISTOGRAM_TIMES("LocalStorage.MojoTimeToPrime", time_to_prime);
+
+  if (base::FeatureList::IsEnabled(kDomStorageAblation)) {
+    base::TimeDelta delay =
+        time_to_prime * kDomStorageAblationDelayFactor.Get() +
+        kDomStorageAblationDelayOffset.Get();
+    base::UmaHistogramMediumTimes("LocalStorage.MojoTimeToPrimeAblationDelay",
+                                  delay);
+    if (delay.is_positive()) {
+      base::PlatformThread::Sleep(delay);
+    }
+  }
 
   size_t local_storage_size_kb = map_->quota_used() / 1024;
   // Track localStorage size, from 0-6MB. Note that the maximum size should be

@@ -20,9 +20,14 @@
 #include "net/log/net_log_with_source.h"
 #include "services/cert_verifier/cert_net_url_loader/cert_net_fetcher_url_loader.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
+#include "services/network/public/cpp/network_service_buildflags.h"
 #include "services/network/public/mojom/cert_verifier_service.mojom.h"
 #include "services/network/public/mojom/cert_verifier_service_updater.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+
+#if BUILDFLAG(IS_CT_SUPPORTED)
+#include "services/network/public/mojom/network_context.mojom-forward.h"
+#endif
 
 namespace net {
 class ChromeRootStoreData;
@@ -66,6 +71,9 @@ class CertVerifierServiceImpl : public mojom::CertVerifierService,
       mojom::AdditionalCertificatesPtr additional_certificates) override;
   void WaitUntilNextUpdateForTesting(
       WaitUntilNextUpdateForTestingCallback callback) override;
+#if BUILDFLAG(IS_CT_SUPPORTED)
+  void SetCTPolicy(network::mojom::CTPolicyPtr ct_policy) override;
+#endif
 
   // Set a pointer to the CertVerifierServiceFactory so that it may be notified
   // when we are deleted.

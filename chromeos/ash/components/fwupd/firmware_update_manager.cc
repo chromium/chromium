@@ -298,7 +298,8 @@ firmware_update::mojom::DeviceRequestPtr GetDeviceRequest(
       static_cast<firmware_update::mojom::DeviceRequestKind>(request.kind));
 }
 
-bool GetMetadataFileInfo(base::FilePath filepath, base::File::Info* info) {
+bool GetMetadataFileInfo(const base::FilePath& filepath,
+                         base::File::Info* info) {
   if (!base::PathExists(filepath)) {
     FIRMWARE_LOG(DEBUG) << "Local firmware file not found at: " << filepath;
     return false;
@@ -315,7 +316,7 @@ bool GetMetadataFileInfo(base::FilePath filepath, base::File::Info* info) {
   return true;
 }
 
-std::string GetFirmwareFileNameFromJsonString(std::string json_content) {
+std::string GetFirmwareFileNameFromJsonString(const std::string& json_content) {
   if (json_content == "") {
     FIRMWARE_LOG(ERROR) << "Failed to deserialize json for empty string";
     return "";
@@ -346,7 +347,7 @@ std::string GetFirmwareFileNameFromJsonString(std::string json_content) {
   return *filename;
 }
 
-bool CreateAndClearFile(base::FilePath filepath) {
+bool CreateAndClearFile(const base::FilePath& filepath) {
   // TODO(michaelcheco): Verify that creating the empty file is
   // necessary.
   return base::WriteFile(filepath, /*data=*/"");
@@ -360,9 +361,9 @@ device_event_log::LogLevel LogLevelForFileErrors() {
              : device_event_log::LOG_LEVEL_DEBUG;
 }
 
-void CleanUpTempFiles(base::FilePath checksum_filepath,
+void CleanUpTempFiles(const base::FilePath& checksum_filepath,
                       base::File checksum_file,
-                      base::FilePath firmware_filepath,
+                      const base::FilePath& firmware_filepath,
                       base::File firmware_file) {
   if (!checksum_filepath.empty()) {
     base::DeleteFile(checksum_filepath);
@@ -385,7 +386,7 @@ std::string ReadFileToString(const base::FilePath& filename) {
   return file_contents;
 }
 
-std::string UncompressFileAndGetFilename(std::string file_contents) {
+std::string UncompressFileAndGetFilename(const std::string& file_contents) {
   // Log an EVENT here in case b/339310876 comes up again.
   FIRMWARE_LOG(EVENT) << "GzipUncompress: " << file_contents.size();
   std::string content;
@@ -1177,7 +1178,8 @@ void FirmwareUpdateManager::GetFirmwareFilename(
   FIRMWARE_LOG(DEBUG) << "GetFirmwareFilename: " << checksum_filepath_
                       << ", Uncompressing and parsing checksum file.";
   task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(&UncompressFileAndGetFilename, file_contents),
+      FROM_HERE,
+      base::BindOnce(&UncompressFileAndGetFilename, std::move(file_contents)),
       base::BindOnce(&FirmwareUpdateManager::TriggerDownloadOfFirmwareFile,
                      weak_ptr_factory_.GetWeakPtr()));
 }

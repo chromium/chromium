@@ -1928,6 +1928,10 @@ inline CSSIdentifierValue::CSSIdentifierValue(
     case TimelineOffset::NamedRange::kExitCrossing:
       value_id_ = CSSValueID::kExitCrossing;
       break;
+    case TimelineOffset::NamedRange::kScroll:
+      CHECK(RuntimeEnabledFeatures::ScrollTimelineNamedRangeScrollEnabled());
+      value_id_ = CSSValueID::kScroll;
+      break;
     default:
       NOTREACHED();
   }
@@ -1948,6 +1952,9 @@ inline TimelineOffset::NamedRange CSSIdentifierValue::ConvertTo() const {
       return TimelineOffset::NamedRange::kExit;
     case CSSValueID::kExitCrossing:
       return TimelineOffset::NamedRange::kExitCrossing;
+    case CSSValueID::kScroll:
+      CHECK(RuntimeEnabledFeatures::ScrollTimelineNamedRangeScrollEnabled());
+      return TimelineOffset::NamedRange::kScroll;
     default:
       break;
   }

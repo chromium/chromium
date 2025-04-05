@@ -20,14 +20,15 @@
 #include "content/public/browser/document_service.h"
 #include "content/public/browser/document_service_internal.h"
 #include "content/public/browser/render_frame_host.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace content {
 
 namespace {
 auto& GetDocumentTokenMap() {
-  static base::NoDestructor<std::unordered_map<
-      blink::DocumentToken, RenderFrameHostImpl*, blink::DocumentToken::Hasher>>
+  static base::NoDestructor<
+      absl::flat_hash_map<blink::DocumentToken, RenderFrameHostImpl*>>
       map;
   return *map;
 }

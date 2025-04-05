@@ -278,6 +278,16 @@ const CSSValue* CoerceStyleValuesOrStrings(
     if (css_value->IsCSSWideKeyword() || css_value->IsUnparsedDeclaration()) {
       return style_values.size() == 1U ? css_value : nullptr;
     }
+
+    // Flatten lists of values into the result list.
+    if (css_value->IsValueList()) {
+      const auto* value_list = DynamicTo<CSSValueList>(css_value);
+      for (const auto& value : *value_list) {
+        result->Append(*value);
+      }
+      continue;
+    }
+
     result->Append(*css_value);
   }
 

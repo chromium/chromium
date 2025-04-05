@@ -44,6 +44,9 @@ sync_pb::SharedTabGroupAccountDataSpecifics TrimSpecifics(
       ->clear_shared_tab_group_guid();
   trimmed_account_specifics.mutable_shared_tab_details()
       ->clear_last_seen_timestamp_windows_epoch();
+  trimmed_account_specifics.mutable_shared_tab_group_details()
+      ->clear_pinned_position();
+  trimmed_account_specifics.clear_update_time_windows_epoch_micros();
   return trimmed_account_specifics;
 }
 

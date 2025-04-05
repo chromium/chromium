@@ -92,7 +92,8 @@
         </div>
       </div>
       <cr-icon-button id="moreButton" class="icon-more-vert"
-          on-click="onMoreButtonClick_" title="[[getMoreButtonTitle_(
+          on-click="onMoreButtonClick_"
+          title="[[i18n('autofillAiMoreActionsForEntityInstance',
               item.entityInstanceLabel, item.entityInstanceSubLabel)]]">
       </cr-icon-button>
     </li>
@@ -136,7 +137,7 @@
 </template>
 <template is="dom-if" if="[[showRemoveEntityInstanceDialog_]]" restamp>
   <settings-simple-confirmation-dialog id="removeEntityInstanceDialog"
-      title-text="$i18n{autofillAiDeleteEntityInstanceDialogTitle}"
+      title-text="[[activeEntityInstance_.type.deleteEntityTypeString]]"
       body-text="$i18n{autofillAiDeleteEntityInstanceDialogText}"
       confirm-text="$i18n{delete}"
       on-close="onRemoveEntityInstanceDialogClose_">

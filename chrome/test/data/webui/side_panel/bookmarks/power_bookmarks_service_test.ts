@@ -5,6 +5,7 @@
 import 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_list.js';
 
 import type {BookmarkProductInfo} from '//resources/cr_components/commerce/shared.mojom-webui.js';
+import type {BookmarksTreeNode} from 'chrome://bookmarks-side-panel.top-chrome/bookmarks.mojom-webui.js';
 import {BookmarksApiProxyImpl} from 'chrome://bookmarks-side-panel.top-chrome/bookmarks_api_proxy.js';
 import {PowerBookmarksService} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_service.js';
 import {ShoppingServiceBrowserProxyImpl} from 'chrome://resources/cr_components/commerce/shopping_service_browser_proxy.js';
@@ -12,7 +13,7 @@ import {PageImageServiceBrowserProxy} from 'chrome://resources/cr_components/pag
 import {PageImageServiceHandlerRemote} from 'chrome://resources/cr_components/page_image_service/page_image_service.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
@@ -58,40 +59,54 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
   let imageServiceHandler: TestMock<PageImageServiceHandlerRemote>&
       PageImageServiceHandlerRemote;
 
-  const folders: chrome.bookmarks.BookmarkTreeNode[] = [
+  const folders: BookmarksTreeNode[] = [
     {
       id: '2',
       parentId: '0',
+      index: 0,
       title: 'Other Bookmarks',
+      url: null,
+      dateAdded: null,
+      dateLastUsed: null,
       children: [
         {
           id: '3',
           parentId: '2',
+          index: 0,
           title: 'First child bookmark',
           url: 'http://child/bookmark/1/',
           dateAdded: 1,
           dateLastUsed: 4,
+          children: null,
         },
         {
           id: '4',
           parentId: '2',
+          index: 1,
           title: 'Second child bookmark',
           url: 'http://child/bookmark/2/',
           dateAdded: 3,
           dateLastUsed: 3,
+          children: null,
         },
         {
           id: '5',
           parentId: '2',
+          index: 2,
           title: 'Child folder',
+          url: null,
           dateAdded: 2,
+          dateLastUsed: null,
           children: [
             {
               id: '6',
               parentId: '5',
+              index: 0,
               title: 'Nested bookmark',
               url: 'http://nested/bookmark/',
               dateAdded: 4,
+              dateLastUsed: null,
+              children: null,
             },
           ],
         },
@@ -101,61 +116,84 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
 
   // More complex folder structure, including a more extensive hierarchy and
   // inverted dateAdded between parents/children. Not used by default in tests.
-  const complexFolders: chrome.bookmarks.BookmarkTreeNode[] = [
+  const complexAllBookmarks: BookmarksTreeNode[] = [
     {
       id: '2',
       parentId: '0',
+      index: 0,
       title: 'Other Bookmarks',
+      url: null,
+      dateAdded: null,
+      dateLastUsed: null,
       children: [
         {
           id: '3',
           parentId: '2',
+          index: 0,
           title: 'Child folder',
+          url: null,
           dateAdded: 4,
+          dateLastUsed: null,
           children: [
             {
               id: '7',
               parentId: '3',
+              index: 0,
               title: 'Nested bookmark',
               url: 'http://nested/bookmark/',
               dateAdded: 1,
               dateLastUsed: 10,
+              children: null,
             },
           ],
         },
         {
           id: '4',
           parentId: '2',
+          index: 1,
           title: 'Child folder',
+          url: null,
           dateAdded: 2,
+          dateLastUsed: null,
           children: [
             {
               id: '8',
               parentId: '4',
+              index: 0,
               title: 'Nested bookmark',
               url: 'http://nested/bookmark/',
               dateAdded: 5,
               dateLastUsed: 6,
+              children: null,
             },
           ],
         },
         {
           id: '5',
           parentId: '2',
+          index: 2,
           title: 'Child folder',
+          url: null,
           dateAdded: 6,
+          dateLastUsed: null,
           children: [
             {
               id: '10',
               parentId: '5',
+              index: 0,
               title: 'Child folder',
+              url: null,
               dateAdded: 8,
+              dateLastUsed: null,
               children: [
                 {
                   id: '13',
                   parentId: '10',
+                  index: 0,
                   title: 'Nested folder',
+                  url: null,
                   dateAdded: 0,
+                  dateLastUsed: null,
                   children: [],
                 },
               ],
@@ -165,22 +203,30 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
         {
           id: '6',
           parentId: '2',
+          index: 3,
           title: 'Child folder',
+          url: null,
           dateAdded: 3,
+          dateLastUsed: null,
           children: [
             {
               id: '12',
               parentId: '6',
+              index: 0,
               title: 'Child folder',
+              url: null,
               dateAdded: 3,
+              dateLastUsed: null,
               children: [
                 {
                   id: '14',
                   parentId: '12',
+                  index: 0,
                   title: 'Nested bookmark',
                   url: 'http://nested/bookmark/',
                   dateAdded: 9,
                   dateLastUsed: 1,
+                  children: null,
                 },
               ],
             },
@@ -194,7 +240,7 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     bookmarksApi = new TestBookmarksApiProxy();
-    bookmarksApi.setFolders(structuredClone(folders));
+    bookmarksApi.setAllBookmarks(folders);
     BookmarksApiProxyImpl.setInstance(bookmarksApi);
 
     shoppingServiceApi = new TestShoppingServiceApiProxy();
@@ -265,7 +311,7 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
   });
 
   test('SortsByNewestWithComplexDescendants', async () => {
-    bookmarksApi.setFolders(structuredClone(complexFolders));
+    bookmarksApi.setAllBookmarks(complexAllBookmarks);
     service.startListening();
 
     await delegate.whenCalled('onBookmarksLoaded');
@@ -287,7 +333,7 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
   });
 
   test('SortsByOldestWithComplexDescendants', async () => {
-    bookmarksApi.setFolders(structuredClone(complexFolders));
+    bookmarksApi.setAllBookmarks(complexAllBookmarks);
     service.startListening();
 
     await delegate.whenCalled('onBookmarksLoaded');
@@ -309,7 +355,7 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
   });
 
   test('SortsByLastOpenedWithComplexDescendants', async () => {
-    bookmarksApi.setFolders(structuredClone(complexFolders));
+    bookmarksApi.setAllBookmarks(complexAllBookmarks);
     service.startListening();
 
     await delegate.whenCalled('onBookmarksLoaded');
@@ -338,44 +384,51 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
     assertEquals(sortedBookmarks[2]!.id, '3');
   });
 
-  test('CallsOnBookmarkChanged', () => {
+  test('CallsOnBookmarkChanged', async () => {
     const changedBookmark = folders[0]!.children![0]!;
-    bookmarksApi.callbackRouter.onChanged.callListeners(changedBookmark.id, {
-      title: 'New title',
-      url: 'http://new/url',
-    });
+    bookmarksApi.callbackRouterRemote.onBookmarkNodeChanged(
+        changedBookmark.id, 'New title', 'http://new/url');
+    await flushTasks();
 
     assertEquals(delegate.getCallCount('onBookmarkChanged'), 1);
   });
 
-  test('CallsOnBookmarkCreated', () => {
-    bookmarksApi.callbackRouter.onCreated.callListeners('999', {
+  test('CallsOnBookmarkAdded', async () => {
+    bookmarksApi.callbackRouterRemote.onBookmarkNodeAdded({
       id: '999',
       title: 'New bookmark',
       index: 0,
       parentId: folders[0]!.id,
       url: 'http://new/bookmark',
+      children: null,
+      dateAdded: null,
+      dateLastUsed: null,
     });
+    await flushTasks();
 
-    assertEquals(delegate.getCallCount('onBookmarkCreated'), 1);
+    assertEquals(delegate.getCallCount('onBookmarkAdded'), 1);
   });
 
-  test('CallsOnBookmarkMoved', () => {
+  test('CallsOnBookmarkMoved', async () => {
     const movedBookmark = folders[0]!.children![2]!.children![0]!;
-    bookmarksApi.callbackRouter.onMoved.callListeners(movedBookmark.id, {
-      index: 0,
-      parentId: folders[0]!.id,                   // Moving to other bookmarks.
-      oldParentId: folders[0]!.children![2]!.id,  // Moving from child folder.
-      oldIndex: 0,
-    });
+    assertTrue(!!movedBookmark);
+    bookmarksApi.callbackRouterRemote.onBookmarkNodeMoved(
+        /*oldParentId=*/ folders[0]!.children![2]!
+            .id,  // Moving from child folder.
+        /*oldIndex=*/ 0,
+        /*parentId=*/ folders[0]!.id,  // Moving to other bookmarks.
+        /*index=*/ 0,
+    );
+    await flushTasks();
 
     assertEquals(delegate.getCallCount('onBookmarkMoved'), 1);
   });
 
-  test('CallsOnBookmarkRemoved', () => {
-    bookmarksApi.callbackRouter.onRemoved.callListeners('4');
+  test('CallsOnBookmarkNodesRemoved', async () => {
+    bookmarksApi.callbackRouterRemote.onBookmarkNodesRemoved(['3', '4']);
+    await flushTasks();
 
-    assertEquals(delegate.getCallCount('onBookmarkRemoved'), 1);
+    assertEquals(delegate.getCallCount('onBookmarkRemoved'), 2);
   });
 
   test('FindsBookmarkWithId', () => {
@@ -406,5 +459,20 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
     assertEquals(imageServiceHandler.getCallCount('getPageImageUrl'), 2);
     await flushTasks();
     assertEquals(imageServiceHandler.getCallCount('getPageImageUrl'), 3);
+  });
+
+  test('OnBookmarkParentFolderChildrenReordered', async () => {
+    const folder = service.findBookmarkWithId('2')!;
+    const b3 = service.findBookmarkWithId('3')!;
+    const b4 = service.findBookmarkWithId('4')!;
+    const b5 = service.findBookmarkWithId('5')!;
+
+    assertDeepEquals(folder.children!, [b3, b4, b5]);
+
+    bookmarksApi.callbackRouterRemote.onBookmarkParentFolderChildrenReordered(
+        '2', ['4', '5', '3']);
+    await flushTasks();
+
+    assertDeepEquals(folder.children!, [b4, b5, b3]);
   });
 });

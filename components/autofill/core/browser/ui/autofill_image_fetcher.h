@@ -43,8 +43,8 @@ class AutofillImageFetcher : public AutofillImageFetcherBase {
   void FetchImagesForURLs(
       base::span<const GURL> image_urls,
       base::span<const AutofillImageFetcherBase::ImageSize> image_sizes_unused,
-      base::OnceCallback<void(
-          const std::vector<std::unique_ptr<CreditCardArtImage>>&)> callback)
+      base::OnceCallback<
+          void(const std::vector<std::unique_ptr<AutofillImage>>&)> callback)
       override;
   void FetchPixAccountImages(base::span<const GURL> image_urls) override;
 
@@ -77,8 +77,7 @@ class AutofillImageFetcher : public AutofillImageFetcherBase {
   // `card_art_image` will be an empty gfx::Image(). If the original URL was
   // invalid, `fetch_image_request_timestamp` will also be null.
   void OnCardArtImageFetched(
-      base::OnceCallback<void(std::unique_ptr<CreditCardArtImage>)>
-          barrier_callback,
+      base::OnceCallback<void(std::unique_ptr<AutofillImage>)> barrier_callback,
       const GURL& card_art_url,
       const std::optional<base::TimeTicks>& fetch_image_request_timestamp,
       const gfx::Image& card_art_image,
@@ -86,8 +85,7 @@ class AutofillImageFetcher : public AutofillImageFetcherBase {
 
  private:
   void FetchImageForURL(
-      base::OnceCallback<void(std::unique_ptr<CreditCardArtImage>)>
-          barrier_callback,
+      base::OnceCallback<void(std::unique_ptr<AutofillImage>)> barrier_callback,
       const GURL& card_art_url);
 
   // Stores the result of fetching images for card art URLs. It's used to

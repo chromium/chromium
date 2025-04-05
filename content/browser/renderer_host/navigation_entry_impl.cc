@@ -880,6 +880,7 @@ NavigationEntryImpl::ConstructCommonNavigationParams(
     const GURL& dest_url,
     blink::mojom::ReferrerPtr dest_referrer,
     blink::mojom::NavigationType navigation_type,
+    base::TimeTicks actual_navigation_start,
     base::TimeTicks navigation_start,
     base::TimeTicks input_start) {
   // `base_url_for_data_url` is saved in NavigationEntry but should only be used
@@ -905,10 +906,11 @@ NavigationEntryImpl::ConstructCommonNavigationParams(
       // navigation that may use replacement create their CommonNavigationParams
       // via NavigationRequest, for example, instead of via NavigationEntry.
       false /* should_replace_entry */,
-      is_for_main_frame ? GetBaseURLForDataURL() : GURL(), navigation_start,
-      frame_entry.method(), post_body ? post_body : post_data_,
-      network::mojom::SourceLocation::New(), has_started_from_context_menu(),
-      has_user_gesture(), false /* has_text_fragment_token */,
+      is_for_main_frame ? GetBaseURLForDataURL() : GURL(),
+      actual_navigation_start, navigation_start, frame_entry.method(),
+      post_body ? post_body : post_data_, network::mojom::SourceLocation::New(),
+      has_started_from_context_menu(), has_user_gesture(),
+      false /* has_text_fragment_token */,
       network::mojom::CSPDisposition::CHECK, std::vector<int>(), std::string(),
       false /* is_history_navigation_in_new_child_frame */, input_start,
       network::mojom::RequestDestination::kEmpty);
@@ -955,7 +957,7 @@ NavigationEntryImpl::ConstructCommitNavigationParams(
 
   blink::mojom::CommitNavigationParamsPtr commit_params =
       blink::mojom::CommitNavigationParams::New(
-          std::nullopt,
+          url::Origin(),
           // The correct storage key will be computed before committing the
           // navigation.
           blink::StorageKey(), GetIsOverridingUserAgent(), redirects,

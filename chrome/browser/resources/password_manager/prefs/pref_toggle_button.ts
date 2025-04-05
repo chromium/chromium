@@ -78,13 +78,13 @@ export class PrefToggleButtonElement extends PolymerElement {
     ];
   }
 
-  label: string;
-  subLabel: string;
-  checked: boolean;
-  disabled: boolean;
-  changeRequiresValidation: boolean;
-  noExtensionIndicator: boolean;
-  pref: chrome.settingsPrivate.PrefObject;
+  declare label: string;
+  declare subLabel: string;
+  declare checked: boolean;
+  declare disabled: boolean;
+  declare changeRequiresValidation: boolean;
+  declare noExtensionIndicator: boolean;
+  declare pref: chrome.settingsPrivate.PrefObject;
 
   override ready() {
     super.ready();

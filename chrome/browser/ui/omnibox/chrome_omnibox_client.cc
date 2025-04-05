@@ -44,6 +44,7 @@
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service_factory.h"
 #include "chrome/browser/preloading/prerender/prerender_manager.h"
 #include "chrome/browser/preloading/prerender/prerender_utils.h"
+#include "chrome/browser/preloading/search_preload/search_preload_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ssl/typed_navigation_upgrade_throttle.h"
@@ -80,6 +81,7 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/search_engines/template_url_starter_pack_data.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/devtools_agent_host.h"
@@ -344,6 +346,30 @@ void ChromeOmniboxClient::OnFocusChanged(OmniboxFocusState state,
   }
 }
 
+void ChromeOmniboxClient::OnKeywordModeChanged(bool entered,
+                                               const std::u16string& keyword) {
+  if (entered) {
+    // Note, entry into keyword mode is not sufficient signal to start lens and
+    // that is handled by separate explicit actions; but whenever the '@page'
+    // keyword mode is exited, lens should be closed.
+    return;
+  }
+  if (content::WebContents* web_contents = location_bar_->GetWebContents()) {
+    if (LensOverlayController* lens_controller =
+            LensOverlayController::GetController(web_contents)) {
+      if (TemplateURL* template_url =
+              GetTemplateURLService()->GetTemplateURLForKeyword(keyword)) {
+        if (template_url->starter_pack_id() ==
+            TemplateURLStarterPackData::kPage) {
+          // TODO(crbug.com/408073216): Create and use new dismissal source.
+          lens_controller->CloseUIAsync(
+              lens::LensOverlayDismissalSource::kEscapeKeyPress);
+        }
+      }
+    }
+  }
+}
+
 void ChromeOmniboxClient::MaybeShowOnFocusHatsSurvey(
     AutocompleteProviderClient* client,
     std::u16string text) {
@@ -427,6 +453,11 @@ void ChromeOmniboxClient::OnResultChanged(
             SearchPrefetchServiceFactory::GetForProfile(profile_)) {
       search_prefetch_service->OnResultChanged(location_bar_->GetWebContents(),
                                                result);
+    }
+    if (auto* search_preload_service =
+            SearchPreloadService::GetForProfile(profile_)) {
+      search_preload_service->OnAutocompleteResultChanged(
+          location_bar_->GetWebContents(), result);
     }
   }
 
@@ -598,6 +629,11 @@ void ChromeOmniboxClient::OnNavigationLikely(
   if (SearchPrefetchService* search_prefetch_service =
           SearchPrefetchServiceFactory::GetForProfile(profile_)) {
     search_prefetch_service->OnNavigationLikely(
+        index, match, navigation_predictor, location_bar_->GetWebContents());
+  }
+  if (auto* search_preload_service =
+          SearchPreloadService::GetForProfile(profile_)) {
+    search_preload_service->OnNavigationLikely(
         index, match, navigation_predictor, location_bar_->GetWebContents());
   }
 }

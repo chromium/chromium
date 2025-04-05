@@ -375,6 +375,7 @@ void ViewTimeline::CalculateOffsets(PaintLayerScrollableArea* scrollable_area,
 
   state->scroll_offsets = scroll_offsets;
   state->view_offsets = view_offsets;
+  CalculateScrollLimits(scrollable_area, physical_orientation, state);
 }
 
 void ViewTimeline::ApplyStickyAdjustments(ScrollOffsets& scroll_offsets,
@@ -578,6 +579,8 @@ CSSNumericValue* ViewTimeline::getCurrentTime(const String& rangeName) {
     range_start.name = TimelineOffset::NamedRange::kExit;
   } else if (rangeName == "exit-crossing") {
     range_start.name = TimelineOffset::NamedRange::kExitCrossing;
+  } else if (rangeName == "scroll") {
+    range_start.name = TimelineOffset::NamedRange::kScroll;
   } else {
     return nullptr;
   }

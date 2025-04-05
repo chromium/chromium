@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.readaloud.player;
 
 import android.widget.SeekBar;
 
+import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackMode;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackVoice;
 
 /** Callbacks for player buttons and seek bar. */
@@ -27,12 +28,17 @@ public interface InteractionHandler {
 
     /**
      * Called when a playback voice is chosen.
+     *
      * @param voice Selected voice.
      */
     void onVoiceSelected(PlaybackVoice voice);
 
+    /** Called when a playback mode changes. */
+    void onPlaybackModeChanged(PlaybackMode playbackMode);
+
     /**
      * Called when a voice's "preview voice" button is clicked.
+     *
      * @param voice Voice to preview.
      */
     void onPreviewVoiceClick(PlaybackVoice voice);

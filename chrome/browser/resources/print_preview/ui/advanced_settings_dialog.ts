@@ -60,9 +60,9 @@ export class PrintPreviewAdvancedSettingsDialogElement extends
     };
   }
 
-  destination: Destination;
-  private searchQuery_: RegExp|null;
-  private hasMatching_: boolean;
+  declare destination: Destination;
+  declare private searchQuery_: RegExp|null;
+  declare private hasMatching_: boolean;
   private highlights_: HTMLElement[] = [];
   private bubbles_: Map<HTMLElement, number> = new Map();
   private metrics_: MetricsContext = MetricsContext.printSettingsUi();

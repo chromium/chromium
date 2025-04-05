@@ -50,9 +50,9 @@ export class ViewerZoomToolbarElement extends CrLitElement {
     };
   }
 
-  protected keyboardNavigationActive_: boolean = false;
-  protected pdfCr23Enabled: boolean = false;
-  private visible_: boolean = false;
+  protected accessor keyboardNavigationActive_: boolean = false;
+  protected accessor pdfCr23Enabled: boolean = false;
+  private accessor visible_: boolean = false;
 
   override firstUpdated() {
     this.addEventListener('focus', this.onFocus_);

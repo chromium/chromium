@@ -39,16 +39,16 @@ MultiContentsView::MultiContentsView(
     WebContentsPressedCallback inactive_view_pressed_callback)
     : browser_view_(browser_view),
       inactive_view_pressed_callback_(inactive_view_pressed_callback) {
-  start_contents_view_ = AddChildView(
-      std::make_unique<ContentsWebView>(browser_view_->GetProfile()));
-  start_contents_view_->set_is_primary_web_contents_for_window(true);
+  contents_views_.push_back(AddChildView(
+      std::make_unique<ContentsWebView>(browser_view_->GetProfile())));
+  contents_views_[0]->set_is_primary_web_contents_for_window(true);
 
   resize_area_ = AddChildView(std::make_unique<MultiContentsResizeArea>(this));
   resize_area_->SetVisible(false);
 
-  end_contents_view_ = AddChildView(
-      std::make_unique<ContentsWebView>(browser_view_->GetProfile()));
-  end_contents_view_->SetVisible(false);
+  contents_views_.push_back(AddChildView(
+      std::make_unique<ContentsWebView>(browser_view_->GetProfile())));
+  contents_views_[1]->SetVisible(false);
 
   SetProperty(views::kElementIdentifierKey, kMultiContentsViewElementId);
   SetLayoutManager(std::make_unique<views::FlexLayout>())
@@ -58,36 +58,54 @@ MultiContentsView::MultiContentsView(
 MultiContentsView::~MultiContentsView() = default;
 
 ContentsWebView* MultiContentsView::GetActiveContentsView() {
-  return active_position_ == 0 ? start_contents_view_ : end_contents_view_;
+  return contents_views_[active_index_];
 }
 
 ContentsWebView* MultiContentsView::GetInactiveContentsView() {
-  return active_position_ == 0 ? end_contents_view_ : start_contents_view_;
+  int inactive_index = active_index_ == 0 ? 1 : 0;
+  return contents_views_[inactive_index];
 }
 
 bool MultiContentsView::IsInSplitView() {
   return resize_area_->GetVisible();
 }
 
-void MultiContentsView::SetWebContents(content::WebContents* web_contents,
-                                       bool active) {
-  ContentsWebView* contents_view =
-      active ? GetActiveContentsView() : GetInactiveContentsView();
-  contents_view->SetWebContents(web_contents);
-  contents_view->SetVisible(web_contents != nullptr);
+void MultiContentsView::SetWebContentsAtIndex(
+    content::WebContents* web_contents,
+    int index) {
+  CHECK(web_contents);
+  CHECK(index >= 0 && index < 2);
+  contents_views_[index]->SetWebContents(web_contents);
 
-  if (start_contents_view_->GetVisible() && end_contents_view_->GetVisible()) {
+  if (index == 1 && !contents_views_[1]->GetVisible()) {
+    contents_views_[1]->SetVisible(true);
     resize_area_->SetVisible(true);
-  } else {
-    resize_area_->SetVisible(false);
   }
 }
 
-void MultiContentsView::SetActivePosition(int position) {
-  // Position should never be less than 0 or equal to or greater than the total
+void MultiContentsView::CloseSplitView() {
+  if (!IsInSplitView()) {
+    return;
+  }
+  if (active_index_ == 1) {
+    // Move the active WebContents so that the first ContentsWebView in
+    // contents_views_ can always be visible.
+    std::iter_swap(contents_views_.begin(),
+                   contents_views_.begin() + active_index_);
+    active_index_ = 0;
+  }
+  contents_views_[1]->SetWebContents(nullptr);
+  contents_views_[1]->SetVisible(false);
+  resize_area_->SetVisible(false);
+}
+
+void MultiContentsView::SetActiveIndex(int index) {
+  // Index should never be less than 0 or equal to or greater than the total
   // number of contents views.
-  CHECK(position >= 0 && position < 2);
-  active_position_ = position;
+  CHECK(index >= 0 && index < 2);
+  // We will only activate a visible contents view.
+  CHECK(contents_views_[index]->GetVisible());
+  active_index_ = index;
   GetActiveContentsView()->set_is_primary_web_contents_for_window(true);
   GetInactiveContentsView()->set_is_primary_web_contents_for_window(false);
   // Schedule paint to be sure that the active/inactive outline is correctly
@@ -115,22 +133,20 @@ bool MultiContentsView::PreHandleMouseEvent(const blink::WebMouseEvent& event) {
 
 void MultiContentsView::ExecuteOnEachVisibleContentsView(
     base::RepeatingCallback<void(ContentsWebView*)> callback) {
-  ContentsWebView* active_contents_view = GetActiveContentsView();
-  ContentsWebView* inactive_contents_view = GetInactiveContentsView();
-  CHECK(active_contents_view->GetVisible());
-  callback.Run(active_contents_view);
-  if (inactive_contents_view->GetVisible()) {
-    callback.Run(inactive_contents_view);
+  for (auto* contents_view : contents_views_) {
+    if (contents_view->GetVisible()) {
+      callback.Run(contents_view);
+    }
   }
 }
 
 void MultiContentsView::OnResize(int resize_amount, bool done_resizing) {
   if (!initial_start_width_on_resize_.has_value()) {
     initial_start_width_on_resize_ =
-        std::make_optional(start_contents_view_->size().width());
+        std::make_optional(contents_views_[0]->size().width());
   }
   double total_width =
-      start_contents_view_->size().width() + end_contents_view_->size().width();
+      contents_views_[0]->size().width() + contents_views_[1]->size().width();
   start_ratio_ =
       (initial_start_width_on_resize_.value() + resize_amount) / total_width;
   if (done_resizing) {
@@ -151,17 +167,19 @@ void MultiContentsView::Layout(PassKey) {
       gfx::Size(widths.resize_width, available_space.height()));
   gfx::Rect end_rect(resize_rect.top_right(),
                      gfx::Size(widths.end_width, available_space.height()));
+  float corner_radius = 0;
   if (IsInSplitView()) {
     start_rect.Inset(gfx::Insets(kSplitViewContentInset).set_right(0));
     end_rect.Inset(gfx::Insets(kSplitViewContentInset).set_left(0));
-    start_contents_view_->layer()->SetRoundedCornerRadius(
-        gfx::RoundedCornersF{kContentCornerRadius});
-    end_contents_view_->layer()->SetRoundedCornerRadius(
-        gfx::RoundedCornersF{kContentCornerRadius});
+    corner_radius = kContentCornerRadius;
   }
-  start_contents_view_->SetBoundsRect(start_rect);
+  for (auto* contents_view : contents_views_) {
+    contents_view->layer()->SetRoundedCornerRadius(
+        gfx::RoundedCornersF{corner_radius});
+  }
+  contents_views_[0]->SetBoundsRect(start_rect);
   resize_area_->SetBoundsRect(resize_rect);
-  end_contents_view_->SetBoundsRect(end_rect);
+  contents_views_[1]->SetBoundsRect(end_rect);
 }
 
 void MultiContentsView::OnPaint(gfx::Canvas* canvas) {
@@ -192,27 +210,24 @@ void MultiContentsView::OnPaint(gfx::Canvas* canvas) {
     canvas->DrawRoundRect(main_content_border_rect, kContentOutlineCornerRadius,
                           flags);
   };
-  draw_contents_outline(start_contents_view_);
-  draw_contents_outline(end_contents_view_);
+  for (auto* contents_view : contents_views_) {
+    draw_contents_outline(contents_view);
+  }
 }
 
 MultiContentsView::ViewWidths MultiContentsView::GetViewWidths(
     gfx::Rect available_space) {
   ViewWidths widths;
   if (IsInSplitView()) {
-    CHECK(start_contents_view_->GetVisible() &&
-          end_contents_view_->GetVisible());
+    CHECK(contents_views_[0]->GetVisible() && contents_views_[1]->GetVisible());
     widths.resize_width = resize_area_->GetPreferredSize().width();
     widths.start_width =
         start_ratio_ * (available_space.width() - widths.resize_width);
     widths.end_width =
         available_space.width() - widths.start_width - widths.resize_width;
-  } else if (start_contents_view_->GetVisible()) {
-    CHECK(!end_contents_view_->GetVisible());
-    widths.start_width = available_space.width();
   } else {
-    CHECK(end_contents_view_->GetVisible());
-    widths.end_width = available_space.width();
+    CHECK(!contents_views_[1]->GetVisible());
+    widths.start_width = available_space.width();
   }
   return ClampToMinWidth(widths);
 }

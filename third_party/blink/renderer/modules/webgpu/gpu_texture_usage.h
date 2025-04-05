@@ -15,16 +15,6 @@ class GPUTextureUsage : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  // gpu_texture_usage.idl
-  static constexpr uint32_t kCopySrc = V8GPUTextureUsage::Constant::kCopySrc;
-  static constexpr uint32_t kCopyDst = V8GPUTextureUsage::Constant::kCopyDst;
-  static constexpr uint32_t kTextureBinding =
-      V8GPUTextureUsage::Constant::kTextureBinding;
-  static constexpr uint32_t kStorageBinding =
-      V8GPUTextureUsage::Constant::kStorageBinding;
-  static constexpr uint32_t kRenderAttachment =
-      V8GPUTextureUsage::Constant::kRenderAttachment;
-
   GPUTextureUsage(const GPUTextureUsage&) = delete;
   GPUTextureUsage& operator=(const GPUTextureUsage&) = delete;
 };

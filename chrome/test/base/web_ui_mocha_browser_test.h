@@ -6,6 +6,7 @@
 #define CHROME_TEST_BASE_WEB_UI_MOCHA_BROWSER_TEST_H_
 
 #include <string>
+#include <tuple>
 
 #include "build/build_config.h"
 #include "chrome/test/base/platform_browser_test.h"
@@ -23,6 +24,37 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+// The result of a single JS test.
+struct SubTestResult {
+  SubTestResult();
+  SubTestResult(const SubTestResult& other);
+  SubTestResult(SubTestResult&& other);
+  SubTestResult& operator=(SubTestResult&& other);
+
+  ~SubTestResult();
+
+  std::string name;
+  testing::TimeInMillis duration;
+  std::optional<std::string> failure_reason;
+};
+
+// Interface for reporting SubTestResults. Can be mocked.
+class SubTestReporter {
+ public:
+  virtual ~SubTestReporter() = default;
+  virtual void Report(std::string_view name,
+                      testing::TimeInMillis elapsed_time,
+                      std::optional<std::string_view> failure_message) const;
+};
+
+// Production implementation of SubTestReporter interface.
+class SubTestReporterImpl : public SubTestReporter {
+ public:
+  void Report(std::string_view name,
+              testing::TimeInMillis elapsed_time,
+              std::optional<std::string_view> failure_message) const override;
+};
+
 namespace webui {
 
 // Convert all non-alphanumeric characters to underscore in-place. Assumes
@@ -30,8 +62,8 @@ namespace webui {
 void CanonicalizeTestName(std::string* test_name);
 
 // Receive messages from JS.
-bool WaitForTestToFinish(content::WebContents* web_contents,
-                         bool is_sub_test_result_reporting_enabled);
+std::tuple<bool, std::vector<SubTestResult>> ProcessMessagesFromJsTest(
+    content::WebContents* web_contents);
 
 }  // namespace webui
 
@@ -118,8 +150,8 @@ class WebUIMochaBrowserTest : public PlatformBrowserTest {
   // Note: It is also used by RunTest even when |skip_test_loader| is true.
   std::string test_loader_scheme_;
 
-  // Determines if SubTestResults should be reported for individual JS tests.
-  bool is_sub_test_result_reporting_enabled_ = true;
+  // Interface for reporting SubTestResults.
+  std::unique_ptr<SubTestReporter> sub_test_reporter_;
 
 #if BUILDFLAG(IS_ANDROID)
   // On Android, JavaScript console messages are only added to test logs if

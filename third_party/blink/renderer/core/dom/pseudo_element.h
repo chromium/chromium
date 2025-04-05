@@ -71,6 +71,9 @@ class CORE_EXPORT PseudoElement : public Element {
   // unresolved = alias, kPseudoScrollMarkerGroup is resolved.
   // For styling and selector matching, return resolved version.
   PseudoId GetPseudoIdForStyling() const override;
+  const AtomicString& GetPseudoArgument() const override {
+    return view_transition_name_;
+  }
 
   // Return the adjusted style needed by layout. In some cases computed style
   // cannot be used as-is by layout. display:contents needs to be adjusted to

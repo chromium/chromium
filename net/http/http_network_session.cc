@@ -100,8 +100,6 @@ HttpNetworkSessionParams::HttpNetworkSessionParams()
       time_func(&base::TimeTicks::Now) {
   enable_early_data =
       base::FeatureList::IsEnabled(features::kEnableTLS13EarlyData);
-  use_dns_https_svcb_alpn =
-      base::FeatureList::IsEnabled(features::kUseDnsHttpsSvcbAlpn);
 }
 
 HttpNetworkSessionParams::HttpNetworkSessionParams(

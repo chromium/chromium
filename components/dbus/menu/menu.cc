@@ -118,6 +118,9 @@ DbusMenu::ScopedMethodResponse::ScopedMethodResponse(
       reader_(method_call_) {}
 
 DbusMenu::ScopedMethodResponse::~ScopedMethodResponse() {
+  // Reset method_call_, it may no longer be valid after Run().
+  method_call_ = nullptr;
+
   std::move(response_sender_).Run(std::move(response_));
 }
 

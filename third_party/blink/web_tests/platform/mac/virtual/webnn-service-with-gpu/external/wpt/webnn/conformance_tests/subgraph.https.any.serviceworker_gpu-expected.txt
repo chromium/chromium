@@ -12,7 +12,7 @@ This is a testharness.js-based test.
 [FAIL] batchNormalization default + elu
   promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'batchNormalization' on 'MLGraphBuilder': Unsupported rank 2 for argument input (must be at least 3)."
 [FAIL] batchNormalization options.axis=0 + gelu
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported axis for batchNormalization. It must be the channel dimension."
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': batchNormalization argument mean must be constant."
 [FAIL] batchNormalization default + hardSigmoid
   promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'batchNormalization' on 'MLGraphBuilder': Unsupported rank 2 for argument input (must be at least 3)."
 [FAIL] batchNormalization default + hardSwish
@@ -20,10 +20,10 @@ This is a testharness.js-based test.
 [FAIL] batchNormalization default + linear
   promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'batchNormalization' on 'MLGraphBuilder': Unsupported rank 2 for argument input (must be at least 3)."
 [FAIL] batchNormalization options.axis=0 + softplus
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported axis for batchNormalization. It must be the channel dimension."
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': batchNormalization argument mean must be constant."
 [FAIL] batchNormalization default + softsign
   promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'batchNormalization' on 'MLGraphBuilder': Unsupported rank 2 for argument input (must be at least 3)."
 [FAIL] batchNormalization options.axis=0  + softmax
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported axis for batchNormalization. It must be the channel dimension."
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': batchNormalization argument mean must be constant."
 Harness: the test ran to completion.
 

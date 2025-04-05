@@ -111,7 +111,7 @@ export class MockItemDelegate extends ClickMock implements ItemDelegate {
   inspectItemView(_id: string, _view: chrome.developerPrivate.ExtensionView) {}
   openUrl(_url: string) {}
   uploadItemToAccount(_id: string) {
-    return Promise.resolve();
+    return Promise.resolve(false);
   }
 
 

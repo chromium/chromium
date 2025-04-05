@@ -104,6 +104,13 @@ BASE_FEATURE(kFledgeModifyInterestGroupPolicyCheckOnOwner,
              "FledgeModifyInterestGroupPolicyCheckOnOwner",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, Protected Audience fetches (scripts, signals, and updates) use
+// ClientSecurityStates that only contain the IPAddressSpace of the frame
+// running the auction, to prevent leaks.
+BASE_FEATURE(kFledgeOnlyUseIpAddressSpaceInClientSecurityState,
+             "FledgeOnlyUseIpAddressSpaceInClientSecurityState",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Turning on kFledgeQueryKAnonymity loads k-anonymity status at interest group
 // join and update time. kFledgeQueryKAnonymity is enabled by default. It may
 // be reasonable to disable kFledgeQueryKAnonymity on clients on which

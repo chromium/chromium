@@ -50,6 +50,25 @@ void TestVotesUploader::UploadVote(
     }
   }
 
+  last_uploaded_form_associations_ = {};
+  for (const AutofillUploadContents& upload : upload_contents) {
+    if (!last_uploaded_form_associations_.last_address_form_submitted &&
+        upload.has_last_address_form_submitted()) {
+      last_uploaded_form_associations_.last_address_form_submitted =
+          FormSignature(upload.last_address_form_submitted());
+    }
+    if (!last_uploaded_form_associations_.second_last_address_form_submitted &&
+        upload.has_second_last_address_form_submitted()) {
+      last_uploaded_form_associations_.second_last_address_form_submitted =
+          FormSignature(upload.second_last_address_form_submitted());
+    }
+    if (!last_uploaded_form_associations_.last_credit_card_form_submitted &&
+        upload.last_credit_card_form_submitted()) {
+      last_uploaded_form_associations_.last_credit_card_form_submitted =
+          FormSignature(upload.last_credit_card_form_submitted());
+    }
+  }
+
   VotesUploader::UploadVote(
       std::move(submitted_form), std::move(upload_contents),
       initial_interaction_timestamp, submission_timestamp, observed_submission,
@@ -63,12 +82,10 @@ bool TestVotesUploader::MaybeStartVoteUploadProcess(
     base::TimeTicks initial_interaction_timestamp,
     const std::u16string& last_unlocked_credit_card_cvc,
     ukm::SourceId ukm_source_id) {
-  FormStructure* form_ptr = form.get();
   if (VotesUploader::MaybeStartVoteUploadProcess(
           std::move(form), observed_submission, current_page_language,
           initial_interaction_timestamp, last_unlocked_credit_card_cvc,
           ukm_source_id)) {
-    last_uploaded_form_associations_ = form_ptr->form_associations();
     // The purpose of this runloop is to ensure that the field type
     // determination finishes.
     base::RunLoop run_loop;

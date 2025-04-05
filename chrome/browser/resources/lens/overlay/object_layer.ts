@@ -195,19 +195,19 @@ export class ObjectLayerElement extends PolymerElement {
   }
 
   private eventTracker_: EventTracker = new EventTracker();
-  private canvasHeight: number;
-  private canvasWidth: number;
-  private canvasPhysicalHeight: number;
-  private canvasPhysicalWidth: number;
+  declare private canvasHeight: number;
+  declare private canvasWidth: number;
+  declare private canvasPhysicalHeight: number;
+  declare private canvasPhysicalWidth: number;
   private context: CanvasRenderingContext2D;
   // The objects rendered in this layer.
-  private renderedObjects: OverlayObject[];
+  declare private renderedObjects: OverlayObject[];
   // The last post selection made. Updated by events from the post selection
   // layer.
   private lastPostSelection: PostSelectionBoundingBox|null = null;
-  private debugMode: boolean;
+  declare private debugMode: boolean;
   // The overlay theme.
-  private theme: OverlayTheme;
+  declare private theme: OverlayTheme;
   private fadeOutAnimations: Animation[] = [];
   private fadeOutTimeoutIds: number[] = [];
   private postSelectionComparisonThreshold: number =

@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_match_formatter.h"
+#import "ios/chrome/browser/omnibox/model/autocomplete_match_formatter.h"
 
 /// A class that store a list of autocomplete matches with a title.
 @interface AutocompleteMatchGroup : NSObject

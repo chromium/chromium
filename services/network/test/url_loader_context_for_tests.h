@@ -54,6 +54,8 @@ class URLLoaderContextForTests : public URLLoaderContext {
   mojom::DevToolsObserver* GetDevToolsObserver() const override;
   mojom::DeviceBoundSessionAccessObserver* GetDeviceBoundSessionAccessObserver()
       const override;
+  scoped_refptr<RefCountedDeviceBoundSessionAccessObserverRemote>
+  GetDeviceBoundSessionAccessObserverSharedRemote() const override;
   mojom::NetworkContextClient* GetNetworkContextClient() const override;
   mojom::TrustedURLLoaderHeaderClient* GetUrlLoaderHeaderClient()
       const override;

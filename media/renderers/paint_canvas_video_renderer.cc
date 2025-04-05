@@ -165,16 +165,16 @@ gpu::SyncToken CopySharedImageToTexture(
     unsigned int format,
     unsigned int type,
     int level,
-    bool premultiply_alpha,
-    bool flip_y) {
+    SkAlphaType dst_alpha_type,
+    GrSurfaceOrigin dst_origin) {
   auto si_texture = source_shared_image->CreateGLTexture(gl);
   auto scoped_si_access =
       si_texture->BeginAccess(source_sync_token, /*readonly=*/true);
-  // The video is stored in a unmultiplied format, so premultiply if
-  // necessary. Application itself needs to take care of setting the right
-  // |flip_y| value down to get the expected result. "flip_y == true" means to
-  // reverse the video orientation while "flip_y == false" means to keep the
-  // intrinsic orientation.
+
+  // TODO(crbug.com/378688985): This assumes Video is always unpremultiplied,
+  // which might be incorrect if VideoFrame originates from WebGL canvas.
+  const bool do_premultiply_alpha = dst_alpha_type == kPremul_SkAlphaType;
+  const bool do_flip_y = source_shared_image->surface_origin() != dst_origin;
   if (visible_rect != gfx::Rect(coded_size)) {
     // Must reallocate the destination texture and copy only a sub-portion.
 
@@ -185,15 +185,19 @@ gpu::SyncToken CopySharedImageToTexture(
 
     BindAndTexImage2D(gl, target, texture, internal_format, format, type, level,
                       visible_rect.size());
+    // TODO(crbug.com/378688985): `visible_rect` is always in top-left
+    // coordinate space, but CopySubTextureCHROMIUM requires it to be in texture
+    // space, so this is incorrect if `source_shared_image` origin is bottom
+    // left.
     gl->CopySubTextureCHROMIUM(
         scoped_si_access->texture_id(), 0, target, texture, level, 0, 0,
         visible_rect.x(), visible_rect.y(), visible_rect.width(),
-        visible_rect.height(), flip_y, premultiply_alpha, false);
+        visible_rect.height(), do_flip_y, do_premultiply_alpha, false);
 
   } else {
     gl->CopyTextureCHROMIUM(scoped_si_access->texture_id(), 0, target, texture,
-                            level, internal_format, type, flip_y,
-                            premultiply_alpha, false);
+                            level, internal_format, type, do_flip_y,
+                            do_premultiply_alpha, false);
   }
   return gpu::SharedImageTexture::ScopedAccess::EndAccess(
       std::move(scoped_si_access));
@@ -657,7 +661,7 @@ bool SupportsOneCopyUploadToGLTexture(VideoPixelFormat video_frame_format,
                                       unsigned int dst_internal_format,
                                       unsigned int dst_type,
                                       int dst_level,
-                                      bool premultiply_alpha) {
+                                      SkAlphaType dst_alpha_type) {
   // NOTE: The direct upload path is not supported on Android (see comment on
   // CopyVideoFrameTexturesToGLTexture()).
   // TODO(crbug.com/40075313): Enable on Android.
@@ -670,7 +674,8 @@ bool SupportsOneCopyUploadToGLTexture(VideoPixelFormat video_frame_format,
   // alpha been requested.
   // TODO(crbug.com/40159723): Figure out whether premultiply options here are
   // accurate.
-  bool is_premul = media::IsOpaque(video_frame_format) || premultiply_alpha;
+  bool is_premul = media::IsOpaque(video_frame_format) ||
+                   dst_alpha_type == kPremul_SkAlphaType;
   bool use_one_copy_upload =
       base::FeatureList::IsEnabled(kOneCopyUploadOfVideoFrameToGLTexture);
   bool supports_one_copy_format = ValidFormatForDirectUploading(
@@ -1229,7 +1234,7 @@ void FlipAndConvertY16(const VideoFrame* video_frame,
 bool TexImageHelper(VideoFrame* frame,
                     unsigned format,
                     unsigned type,
-                    bool flip_y,
+                    GrSurfaceOrigin dst_origin,
                     scoped_refptr<DataBuffer>* temp_buffer) {
   unsigned output_bytes_per_pixel = 0;
   switch (frame->format()) {
@@ -1256,6 +1261,10 @@ bool TexImageHelper(VideoFrame* frame,
       return false;
   }
 
+  // VideoFrame that isn't backed by shared image always top-left, so if
+  // destination is bottom-left we need to flip.
+  const bool flip_y = dst_origin != kTopLeft_GrSurfaceOrigin;
+
   size_t output_row_bytes =
       frame->visible_rect().width() * output_bytes_per_pixel;
   *temp_buffer = base::MakeRefCounted<DataBuffer>(
@@ -1279,8 +1288,8 @@ void TextureSubImageUsingIntermediate(unsigned target,
                                       int level,
                                       int xoffset,
                                       int yoffset,
-                                      bool flip_y,
-                                      bool premultiply_alpha) {
+                                      GrSurfaceOrigin dst_origin,
+                                      SkAlphaType dst_alpha_type) {
   unsigned temp_texture = 0;
   gl->GenTextures(1, &temp_texture);
   gl->BindTexture(target, temp_texture);
@@ -1290,10 +1299,20 @@ void TextureSubImageUsingIntermediate(unsigned target,
                  frame->visible_rect().height(), 0, temp_format, temp_type,
                  frame->visible_data(0));
   gl->BindTexture(target, texture);
+
+  // VideoFrame that is not backed by shared image has always top-left origin.
+  // We uploaded data to `temp_texture` as is, so need to flip when copy to
+  // destination if it's bottom left.
+  const bool do_flip_y = dst_origin != kTopLeft_GrSurfaceOrigin;
+
+  // VideoFrame data is not premultiplied, so we need to premultiply if
+  // requested.
+  const bool do_premultiply_alpha = dst_alpha_type == kPremul_SkAlphaType;
+
   gl->CopySubTextureCHROMIUM(temp_texture, 0, target, texture, level, 0, 0,
                              xoffset, yoffset, frame->visible_rect().width(),
-                             frame->visible_rect().height(), flip_y,
-                             premultiply_alpha, false);
+                             frame->visible_rect().height(), do_flip_y,
+                             do_premultiply_alpha, false);
   gl->DeleteTextures(1, &temp_texture);
 }
 
@@ -1383,8 +1402,8 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
     unsigned int format,
     unsigned int type,
     int level,
-    bool premultiply_alpha,
-    bool flip_y) {
+    SkAlphaType dst_alpha_type,
+    GrSurfaceOrigin dst_origin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(video_frame);
   CHECK(video_frame->HasSharedImage());
@@ -1400,17 +1419,10 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
   // Copying shared image using GL directly require shared image to be either
   // single plane or external sampler, and should be usable by GL.
   if (si_format_has_single_texture && si_usable_by_gles2_interface) {
-    // Correct Y-flip. flip_y should take precedent when
-    // texture_origin_is_top_left is true, and invert the setting when
-    // texture_origin_is_top_left is false.
-    if (shared_image->surface_origin() != kTopLeft_GrSurfaceOrigin) {
-      flip_y = !flip_y;
-    }
-
     CopySharedImageToTexture(
         destination_gl, video_frame->coded_size(), video_frame->visible_rect(),
         shared_image.get(), video_frame->acquire_sync_token(), target, texture,
-        internal_format, format, type, level, premultiply_alpha, flip_y);
+        internal_format, format, type, level, dst_alpha_type, dst_origin);
     destination_gl->ShallowFlushCHROMIUM();
 
     SynchronizeVideoFrameRead(std::move(video_frame), destination_gl,
@@ -1431,7 +1443,7 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
   // VideoFrame's data needs to be uploaded from the CPU to the GPU.
   if (SupportsOneCopyUploadToGLTexture(
           video_frame->format(), shared_image->GetTextureTarget(), target,
-          internal_format, type, level, premultiply_alpha)) {
+          internal_format, type, level, dst_alpha_type)) {
     // Trigger resource allocation for dst texture to back SkSurface.
     // Dst texture size should equal to video frame visible rect.
     BindAndTexImage2D(destination_gl, target, texture, internal_format, format,
@@ -1442,10 +1454,11 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
 
     // Copy shared image to gl texture for hardware video decode with
     // multiplanar shared image formats.
+    const bool is_dst_origin_top_left = dst_origin == kTopLeft_GrSurfaceOrigin;
     destination_gl->CopySharedImageToTextureINTERNAL(
         texture, target, internal_format, type, video_frame->visible_rect().x(),
         video_frame->visible_rect().y(), video_frame->visible_rect().width(),
-        video_frame->visible_rect().height(), flip_y,
+        video_frame->visible_rect().height(), is_dst_origin_top_left,
         shared_image->mailbox().name);
 
     SynchronizeVideoFrameRead(std::move(video_frame), destination_gl,
@@ -1519,7 +1532,7 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
   gpu::SyncToken dest_sync_token = CopySharedImageToTexture(
       destination_gl, video_frame->coded_size(), video_frame->visible_rect(),
       rgb_shared_image.get(), sync_token, target, texture, internal_format,
-      format, type, level, premultiply_alpha, flip_y);
+      format, type, level, dst_alpha_type, dst_origin);
 
   // Update the `rgb_sync_token` to be waited upon based on gles tasks performed
   // earlier.
@@ -1542,8 +1555,8 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
     unsigned int format,
     unsigned int type,
     int level,
-    bool premultiply_alpha,
-    bool flip_y) {
+    SkAlphaType dst_alpha_type,
+    GrSurfaceOrigin dst_origin) {
   if (!raster_context_provider) {
     return false;
   }
@@ -1613,7 +1626,7 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
   rgb_sync_token = CopySharedImageToTexture(
       destination_gl, video_frame->coded_size(), video_frame->visible_rect(),
       rgb_shared_image.get(), post_conversion_sync_token, target, texture,
-      internal_format, format, type, level, premultiply_alpha, flip_y);
+      internal_format, format, type, level, dst_alpha_type, dst_origin);
 
   // Update the rgb sync token to be waited upon based on gles tasks performed
   // earlier.
@@ -1638,8 +1651,8 @@ bool PaintCanvasVideoRenderer::TexImage2D(
     int internalformat,
     unsigned format,
     unsigned type,
-    bool flip_y,
-    bool premultiply_alpha) {
+    GrSurfaceOrigin dst_origin,
+    SkAlphaType dst_alpha_type) {
   DCHECK(frame);
   DCHECK(!frame->HasSharedImage());
 
@@ -1668,12 +1681,13 @@ bool PaintCanvasVideoRenderer::TexImage2D(
     // See angleproject:1952
     TextureSubImageUsingIntermediate(target, texture, gl, frame, GL_R16_EXT,
                                      GL_RED, GL_UNSIGNED_SHORT, level, 0, 0,
-                                     flip_y, premultiply_alpha);
+                                     dst_origin, dst_alpha_type);
     return true;
   }
   scoped_refptr<DataBuffer> temp_buffer;
-  if (!TexImageHelper(frame, format, type, flip_y, &temp_buffer))
+  if (!TexImageHelper(frame, format, type, dst_origin, &temp_buffer)) {
     return false;
+  }
 
   gl->TexImage2D(target, level, internalformat, frame->visible_rect().width(),
                  frame->visible_rect().height(), 0, format, type,
@@ -1689,14 +1703,15 @@ bool PaintCanvasVideoRenderer::TexSubImage2D(unsigned target,
                                              unsigned type,
                                              int xoffset,
                                              int yoffset,
-                                             bool flip_y,
-                                             bool premultiply_alpha) {
+                                             GrSurfaceOrigin dst_origin,
+                                             SkAlphaType dst_alpha_type) {
   DCHECK(frame);
   DCHECK(!frame->HasSharedImage());
 
   scoped_refptr<DataBuffer> temp_buffer;
-  if (!TexImageHelper(frame, format, type, flip_y, &temp_buffer))
+  if (!TexImageHelper(frame, format, type, dst_origin, &temp_buffer)) {
     return false;
+  }
 
   gl->TexSubImage2D(
       target, level, xoffset, yoffset, frame->visible_rect().width(),

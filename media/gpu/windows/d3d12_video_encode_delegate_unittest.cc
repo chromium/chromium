@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/gpu/windows/d3d12_video_encode_delegate.h"
+#include "media/gpu/windows/d3d12_video_encode_delegate_unittest.h"
 
 #include "base/rand_util.h"
 #include "media/base/win/d3d12_mocks.h"
 #include "media/base/win/d3d12_video_mocks.h"
 #include "media/gpu/h264_dpb.h"
-#include "media/gpu/windows/d3d12_video_encode_delegate_unittest.h"
 #include "media/gpu/windows/format_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -30,9 +29,10 @@ class MockD3D12VideoEncodeDelegate : public D3D12VideoEncodeDelegate {
 
   size_t GetMaxNumOfRefFrames() const override { return 8; }
   bool SupportsRateControlReconfiguration() const override { return false; }
-  EncoderStatus::Or<BitstreamBufferMetadata> EncodeImpl(ID3D12Resource*,
-                                                        UINT,
-                                                        bool) override {
+  EncoderStatus::Or<BitstreamBufferMetadata> EncodeImpl(
+      ID3D12Resource*,
+      UINT,
+      const VideoEncoder::EncodeOptions&) override {
     return BitstreamBufferMetadata();
   }
 
@@ -162,11 +162,11 @@ TEST_F(D3D12VideoEncodeDelegateTest, P010InputFormatFor10BitProfile) {
   EXPECT_EQ(encoder_delegate_->GetFormatForTesting(), DXGI_FORMAT_P010);
 }
 
-TEST_F(D3D12VideoEncodeDelegateTest, UnsupportedRateControl) {
+TEST_F(D3D12VideoEncodeDelegateTest, ExternalRateControl) {
   VideoEncodeAccelerator::Config config = GetDefaultH264Config();
   config.bitrate = Bitrate::ExternalRateControl();
   EXPECT_EQ(encoder_delegate_->Initialize(config).code(),
-            EncoderStatus::Codes::kEncoderUnsupportedConfig);
+            EncoderStatus::Codes::kOk);
 }
 
 class D3D12VideoEncodeDelegateTestWithProcessFrame
@@ -207,8 +207,9 @@ TEST_P(D3D12VideoEncodeDelegateTestWithProcessFrame, EncodeFrame) {
   }
   EXPECT_CALL(*GetVideoEncoderWrapper(), GetEncodedBitstreamWrittenBytesCount)
       .WillOnce(Return(kPayloadSize));
-  auto result_or_error = encoder_delegate_->Encode(input_frame, 0, color_space,
-                                                   bitstream_buffer, false);
+  auto result_or_error =
+      encoder_delegate_->Encode(input_frame, 0, color_space, bitstream_buffer,
+                                VideoEncoder::EncodeOptions());
   Mock::VerifyAndClearExpectations(GetVideoProcessorWrapper());
   ASSERT_TRUE(result_or_error.has_value());
 

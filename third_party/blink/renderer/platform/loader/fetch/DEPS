@@ -3,7 +3,6 @@ include_rules = [
   "+base/containers/flat_set.h",
   "+net/base/auth.h",
   "+net/base/ip_endpoint.h",
-  "+net/base/schemeful_site.h",
   "+net/dns/public",
   "+net/filter/source_stream_type.h",
   "+net/http/alternate_protocol_usage.h",

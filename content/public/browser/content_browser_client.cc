@@ -1930,6 +1930,7 @@ bool ContentBrowserClient::IsSaveableNavigation(
 
 #if BUILDFLAG(IS_WIN)
 void ContentBrowserClient::OnUiaProviderRequested(bool uia_provider_enabled) {}
+void ContentBrowserClient::OnUiaProviderDisabled() {}
 #endif
 
 bool ContentBrowserClient::AllowNonActivatedCrossOriginPaintHolding() {
@@ -1968,7 +1969,6 @@ std::unique_ptr<KeepAliveRequestTracker>
 ContentBrowserClient::MaybeCreateKeepAliveRequestTracker(
     const network::ResourceRequest& request,
     std::optional<ukm::SourceId> ukm_source_id,
-    bool is_attribution_request,
     KeepAliveRequestTracker::IsContextDetachedCallback
         is_context_detached_callback) {
   return nullptr;

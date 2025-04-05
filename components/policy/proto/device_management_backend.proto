@@ -910,15 +910,14 @@ message PolicyData {
   // http://google3/ccc/hosted/devices/services/chromeos/common.proto;rcl=436571779;l=549
   optional string license_sku = 38;
 
-  // The K12 user age classification segments for metrics logging. If any values
-  // are added to this enum, the corresponding enum in
-  // `K12AgeClassificationMetricsProvider::AgeClassificationSegment`
-  // (http://shortn/_POBIUl3EIK) should be updated.
+  // The K12 user age classification segments for metrics logging.
+  // LINT.IfChange(K12AgeClassificationSegment)
   enum K12AgeClassificationMetricsLogSegment {
     AGE_UNSPECIFIED = 0;
     AGE_UNDER18 = 1;
     AGE_EQUAL_OR_OVER18 = 2;
   }
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/chromeos/enums.xml:K12AgeClassificationSegment,//chrome/browser/metrics/k12_age_classification_metrics_provider.h:K12AgeClassificationSegment)
 
   // Indicates the segment the user's age classification metrics should be
   // logged under, `AGE_UNSPECIFIED` if not relevant. This field should only be

@@ -560,6 +560,10 @@ void InsertListCommand::ToggleSelectedListItem(
     return;
 
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
+  if (RuntimeEnabledFeatures::PlaceholderVisibilityEnabled() &&
+      EnsureNodeVisibility(placeholder)) {
+    GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
+  }
 
   VisiblePosition insertion_point = VisiblePosition::BeforeNode(*placeholder);
   VisiblePosition visible_start = CreateVisiblePosition(start);

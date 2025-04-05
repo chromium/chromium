@@ -20,7 +20,7 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
-#include "components/tab_collections/public/tab_interface.h"
+#include "components/tabs/public/tab_interface.h"
 #include "ui/views/view_class_properties.h"
 
 namespace tab_groups {

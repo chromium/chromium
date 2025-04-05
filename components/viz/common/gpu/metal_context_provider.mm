@@ -72,7 +72,22 @@ skgpu::graphite::Context* MetalContextProvider::GetGraphiteContext() {
   return objc_storage_->graphite_context.get();
 }
 
-id<MTLDevice> MetalContextProvider::GetMTLDevice() {
+int32_t MetalContextProvider::GetMaxTextureSize() const {
+#if BUILDFLAG(IS_IOS)
+  if (id<MTLDevice> device = GetMTLDevice()) {
+    if ([device supportsFamily:MTLGPUFamilyApple3]) {
+      return 16384;
+    }
+  }
+  return 8192;
+#elif BUILDFLAG(IS_MAC)
+  return 16384;
+#else
+  NOTREACHED();
+#endif
+}
+
+id<MTLDevice> MetalContextProvider::GetMTLDevice() const {
   return objc_storage_->device;
 }
 

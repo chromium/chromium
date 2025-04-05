@@ -26,7 +26,7 @@ GetNativeWindowHandlerCallbackValue() {
 // exposed platform accessibility API, even though actual focus remains in
 // underlying content.
 gfx::NativeViewAccessible& GetPopupFocusOverrideValue() {
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   static base::NoDestructor<gfx::NativeViewAccessible> popup_focus_override;
   return *popup_focus_override;
 #else

@@ -22,7 +22,7 @@ class PLATFORM_EXPORT ImageExtractor final {
   // nullptr. Otherwise, `target_color_space` should be set to the color space
   // that the image will ultimately be converted to.
   ImageExtractor(Image*,
-                 bool premultiply_alpha,
+                 SkAlphaType target_alpha_type,
                  sk_sp<SkColorSpace> target_color_space);
   ImageExtractor(const ImageExtractor&) = delete;
   ImageExtractor& operator=(const ImageExtractor&) = delete;

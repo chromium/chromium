@@ -303,6 +303,70 @@ printer::FitToPageCapability GetFitToPageCapabilities(
 
   return fit_to_page;
 }
+
+// Helper that verifies if the margins are unique and stores them to the
+// supplied vector.
+void StoreMarginsUnique(const printing::PaperMargins& margins_um,
+                        std::vector<printer::Margins>& margins_storage) {
+  printer::Margins printer_margins(
+      margins_um.top_margin_um, margins_um.right_margin_um,
+      margins_um.bottom_margin_um, margins_um.left_margin_um);
+  if (!base::Contains(margins_storage, printer_margins)) {
+    margins_storage.emplace_back(std::move(printer_margins));
+  }
+}
+
+printer::MarginsCapability GetMarginsCapabilities(
+    const printing::PrinterSemanticCapsAndDefaults& semantic_info) {
+  std::optional<printer::Margins> default_margins = std::nullopt;
+  if (semantic_info.default_paper.supported_margins_um().has_value()) {
+    const auto& margins =
+        semantic_info.default_paper.supported_margins_um().value();
+    default_margins =
+        printer::Margins(margins.top_margin_um, margins.right_margin_um,
+                         margins.bottom_margin_um, margins.left_margin_um);
+  }
+
+  // Populate the `all_papers` with all the available papers.
+  printing::PrinterSemanticCapsAndDefaults::Papers all_papers;
+  all_papers.reserve(semantic_info.papers.size() +
+                     semantic_info.user_defined_papers.size());
+  all_papers.insert(all_papers.end(), semantic_info.papers.begin(),
+                    semantic_info.papers.end());
+  all_papers.insert(all_papers.end(), semantic_info.user_defined_papers.begin(),
+                    semantic_info.user_defined_papers.end());
+
+  // Stores all the available sets of margins from papers. This temporary
+  // container is used to avoid duplicates, which is then populated to the
+  // `margins_capabilites`.
+  std::vector<printer::Margins> available_margins_um;
+  for (const auto& paper : all_papers) {
+    if (!paper.supported_margins_um().has_value()) {
+      continue;
+    }
+    StoreMarginsUnique(paper.supported_margins_um().value(),
+                       available_margins_um);
+    if (paper.has_borderless_variant()) {
+      StoreMarginsUnique(printing::PaperMargins(), available_margins_um);
+    }
+  }
+
+  // Populate the `margins_capabilities` with the unique margins.
+  printer::MarginsCapability margins_capabilities;
+  bool default_margins_set = false;
+  for (const auto& margins : available_margins_um) {
+    if (!default_margins.has_value()) {
+      default_margins = margins;
+    }
+    margins_capabilities.AddDefaultOption(margins, default_margins == margins);
+    default_margins_set = default_margins_set || (default_margins == margins);
+  }
+  if (!default_margins_set && default_margins.has_value()) {
+    margins_capabilities.AddDefaultOption(default_margins.value(), true);
+  }
+  return margins_capabilities;
+}
+
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
@@ -412,6 +476,14 @@ base::Value PrinterSemanticCapsAndDefaultsToCdd(
           GetFitToPageCapabilities(semantic_info);
       if (fit_to_page.IsValid()) {
         fit_to_page.SaveTo(&description);
+      }
+    }
+
+    if (!semantic_info.papers.empty()) {
+      printer::MarginsCapability margins =
+          GetMarginsCapabilities(semantic_info);
+      if (margins.IsValid()) {
+        margins.SaveTo(&description);
       }
     }
   }

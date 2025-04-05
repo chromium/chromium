@@ -225,8 +225,7 @@ BaseFetchContext::CanRequestInternal(
       return ResourceRequestBlockedReason::kOther;
     }
 
-    if (!(base::FeatureList::IsEnabled(features::kOptimizeLoadingDataUrls) &&
-          url.ProtocolIsData())) {
+    if (!url.ProtocolIsData()) {
       // CORS is defined only for HTTP(S) requests. See
       // https://fetch.spec.whatwg.org/#http-extensions.
       if (request_mode == network::mojom::RequestMode::kSameOrigin &&
@@ -294,8 +293,7 @@ BaseFetchContext::CanRequestInternal(
   }
 
   // Nothing below this point applies to data: URL images.
-  if (base::FeatureList::IsEnabled(features::kOptimizeLoadingDataUrls) &&
-      type == ResourceType::kImage && url.ProtocolIsData()) {
+  if (type == ResourceType::kImage && url.ProtocolIsData()) {
     return std::nullopt;
   }
 

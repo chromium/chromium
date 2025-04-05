@@ -1049,14 +1049,19 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
         return true;
     }
 
+    private boolean isCurrentSite(WebsiteEntry entry) {
+        assumeNonNull(mSite);
+        return mSite.getDomainAndRegistry().equals(entry.getDomainAndRegistry());
+    }
+
     private void setUpRelatedSitesPreferences() {
-        PreferenceCategory relatedSitesHeader = findPreference(PREF_RELATED_SITES_HEADER);
+        PreferenceCategory relatedSitesSection = findPreference(PREF_RELATED_SITES_HEADER);
         TextMessagePreference relatedSitesText = new TextMessagePreference(getContext(), null);
         var rwsInfo = assumeNonNull(mSite).getRwsCookieInfo();
         boolean shouldRelatedSitesPrefBeVisible =
                 getSiteSettingsDelegate().isRelatedWebsiteSetsDataAccessEnabled()
                         && rwsInfo != null;
-        relatedSitesHeader.setVisible(shouldRelatedSitesPrefBeVisible);
+        relatedSitesSection.setVisible(shouldRelatedSitesPrefBeVisible);
         relatedSitesText.setVisible(shouldRelatedSitesPrefBeVisible);
         ButtonPreference relatedSitesClearDataButton =
                 findPreference(PREF_RELATED_SITES_CLEAR_DATA);
@@ -1095,26 +1100,24 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                                                                     WebsiteSettingsConstants
                                                                             .RWS_LEARN_MORE_URL);
                                                 }))));
-                relatedSitesHeader.addPreference(relatedSitesText);
+                relatedSitesSection.addPreference(relatedSitesText);
                 for (WebsiteEntry entry : rwsInfo.getMembersGroupedByDomain()) {
                     WebsiteRowPreference preference =
                             new WebsiteRowPreference(
-                                    relatedSitesHeader.getContext(),
+                                    relatedSitesSection.getContext(),
                                     getSiteSettingsDelegate(),
                                     entry,
                                     getActivity().getLayoutInflater(),
-                                    /* showRwsMembershipLabels= */ false);
+                                    /* showRwsMembershipLabels= */ false,
+                                    /* isClickable= */ false);
                     preference.setOnDeleteCallback(
-                            () -> {
-                                relatedSitesHeader.removePreference(preference);
-                                // Remove RWS section if only remaining preference is the
-                                // description
-                                if (relatedSitesHeader.getPreferenceCount() == 1) {
-                                    removePreferenceSafely(PREF_RELATED_SITES_HEADER);
-                                    removePreferenceSafely(PREF_RELATED_SITES_CLEAR_DATA);
-                                }
-                            });
-                    relatedSitesHeader.addPreference(preference);
+                            isCurrentSite(entry)
+                                    // If deleting data for the current site, pop back to refresh
+                                    ? mRwsDataClearedCallback
+                                    : () -> {
+                                        relatedSitesSection.removePreference(preference);
+                                    });
+                    relatedSitesSection.addPreference(preference);
                 }
                 relatedSitesClearDataButton.setOnPreferenceClickListener(
                         new Preference.OnPreferenceClickListener() {
@@ -1132,7 +1135,7 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                                         rwsInfo.getMembersCount(),
                                         Integer.toString(rwsInfo.getMembersCount()),
                                         rwsInfo.getOwner()));
-                relatedSitesHeader.addPreference(relatedSitesText);
+                relatedSitesSection.addPreference(relatedSitesText);
             }
         }
     }

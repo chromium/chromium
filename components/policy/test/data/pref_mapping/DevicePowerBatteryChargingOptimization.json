@@ -44,7 +44,7 @@
         }
       },
       {
-        "note":"Check when DevicePowerBatteryChargingOptimization is unset, DevicePowerAdaptiveChargingEnabled can still set adaptive charging",
+        "note":"Check that DevicePowerBatteryChargingOptimization sets the preference correctly (Standard).",
         "policies": {
           "DevicePowerBatteryChargingOptimization": 1
         },

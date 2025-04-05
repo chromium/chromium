@@ -113,7 +113,7 @@ public class AutofillImageFetcher {
      */
     Optional<Bitmap> getImageIfAvailable(GURL url, CardIconSpecs cardIconSpecs) {
         GURL urlToCache =
-                AutofillUiUtils.getCreditCardIconUrlWithParams(
+                AutofillUiUtils.getFifeIconUrlWithParams(
                         url, cardIconSpecs.getWidth(), cardIconSpecs.getHeight());
         // If the card art image exists in the cache, return it.
         if (mImagesCache.containsKey(urlToCache.getSpec())) {
@@ -134,7 +134,7 @@ public class AutofillImageFetcher {
         }
 
         GURL urlToFetch =
-                AutofillUiUtils.getCreditCardIconUrlWithParams(
+                AutofillUiUtils.getFifeIconUrlWithParams(
                         url, cardIconSpecs.getWidth(), cardIconSpecs.getHeight());
         if (mImagesCache.containsKey(urlToFetch.getSpec())) {
             return;
@@ -226,7 +226,7 @@ public class AutofillImageFetcher {
      */
     public void addImageToCacheForTesting(GURL url, Bitmap bitmap, CardIconSpecs cardIconSpecs) {
         GURL urlToCache =
-                AutofillUiUtils.getCreditCardIconUrlWithParams(
+                AutofillUiUtils.getFifeIconUrlWithParams(
                         url, cardIconSpecs.getWidth(), cardIconSpecs.getHeight());
         mImagesCache.put(urlToCache.getSpec(), bitmap);
     }

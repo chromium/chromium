@@ -232,10 +232,9 @@ def ParseGTestOutput(output, symbolizer, device_abi):
         duration = None  # Don't know.  Not using 0 as this is unknown vs 0.
 
     if not launcher_main_start_match:
+      log.append(l)
       if not matcher and _STACK_LINE_RE.match(l):
         stack.append(l)
-      else:
-        log.append(l)
 
     if _RE_ANY_TESTS_FAILED.match(l):
       break

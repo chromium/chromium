@@ -108,6 +108,8 @@ export class AddPrinterManufacturerModelDialogElement extends PolymerElement {
   private errorText_: string;
   private eulaUrl_: string;
   private invalidPPD_: boolean;
+  private isManufacturerInvalid_: boolean;
+  private isModelInvalid_: boolean;
   private newUserPPD_: string;
 
   constructor() {

@@ -244,8 +244,9 @@ bool MayContainsSelectedPlaylist(
                         &FocusModeSoundsController::Playlist::playlist_id);
 }
 
-bool HasAudioFocus(const base::UnguessableToken& focus_mode_request_id,
-                   const base::UnguessableToken& session_request_id) {
+bool MatchesFocusModeRequestId(
+    const base::UnguessableToken& focus_mode_request_id,
+    const base::UnguessableToken& session_request_id) {
   return !focus_mode_request_id.is_empty() &&
          focus_mode_request_id == session_request_id;
 }
@@ -389,19 +390,23 @@ void FocusModeSoundsController::OnFocusGained(
   CHECK(session->request_id.has_value());
   const auto& request_id =
       FocusModeController::Get()->GetMediaSessionRequestId();
-  has_audio_focus_ = HasAudioFocus(request_id, session->request_id.value());
-
-  // If it's not our focus mode media gained the focus, or if the request id
-  // isn't changed, we will do nothing.
-  if (!has_audio_focus_ || media_session_request_id_ == request_id) {
+  has_audio_focus_ =
+      MatchesFocusModeRequestId(request_id, session->request_id.value());
+  // If it's not the Focus Mode media session gaining focus, do nothing.
+  if (!has_audio_focus_) {
     return;
   }
 
-  RecordPlaylistPlayedLatency(selected_playlist_.type, sounds_started_time_);
-  RecordPlaylistChosenHistogram(selected_playlist_);
+  // If it is a new `request_id`, that means a new playlist is starting, so we
+  // should record the metrics. This is checked because switching tracks in a
+  // playlist also trigger the focus to be lost and gained.
+  if (media_session_request_id_ != request_id) {
+    RecordPlaylistPlayedLatency(selected_playlist_.type, sounds_started_time_);
+    RecordPlaylistChosenHistogram(selected_playlist_);
+  }
 
-  // Otherwise, we will bind the media controller observer with the specific
-  // request id to observe our media state.
+  // We will bind the media controller observer with the specific request id to
+  // observe our media state.
   media_session_request_id_ = request_id;
 
   // `media_controller_manager_remote_` is null in test.
@@ -426,9 +431,12 @@ void FocusModeSoundsController::OnFocusLost(
   }
 
   CHECK(session->request_id.has_value());
-  has_audio_focus_ =
-      HasAudioFocus(FocusModeController::Get()->GetMediaSessionRequestId(),
-                    session->request_id.value());
+  // If the request id matches the focus mode request id, it means the Focus
+  // Mode media session is losing focus, so we need to mark it as such. This
+  // happens when we are switching tracks or starting/stopping playlists.
+  has_audio_focus_ = !MatchesFocusModeRequestId(
+      FocusModeController::Get()->GetMediaSessionRequestId(),
+      session->request_id.value());
 }
 
 void FocusModeSoundsController::OnRequestIdReleased(

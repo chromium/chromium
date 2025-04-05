@@ -401,58 +401,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionsLoadMultipleTest, Test) {
   TestInjection(true, true);
 }
 
-// TODO(catmullings): Remove test in future chrome release, perhaps M59.
-class DeprecatedLoadComponentExtensionSwitchBrowserTest
-    : public extensions::ExtensionBrowserTest {
- public:
-  DeprecatedLoadComponentExtensionSwitchBrowserTest() = default;
-
-  void SetUpCommandLine(base::CommandLine* command_line) override;
-
-  ExtensionRegistry* GetExtensionRegistry() {
-    return ExtensionRegistry::Get(browser()->profile());
-  }
-
-  ExtensionRegistrar* GetExtensionRegistrar() {
-    return ExtensionRegistrar::Get(browser()->profile());
-  }
-};
-
-void DeprecatedLoadComponentExtensionSwitchBrowserTest::SetUpCommandLine(
-    base::CommandLine* command_line) {
-  extensions::ExtensionBrowserTest::SetUpCommandLine(command_line);
-  base::FilePath fp1(test_data_dir_.AppendASCII("app_dot_com_app/"));
-  base::FilePath fp2(test_data_dir_.AppendASCII("app/"));
-
-  command_line->AppendSwitchASCII(
-      "load-component-extension",
-      fp1.AsUTF8Unsafe() + "," + fp2.AsUTF8Unsafe());
-}
-
-// Tests that the --load-component-extension flag is not supported.
-IN_PROC_BROWSER_TEST_F(DeprecatedLoadComponentExtensionSwitchBrowserTest,
-                       DefunctLoadComponentExtensionFlag) {
-  EXPECT_TRUE(GetExtensionRegistrar()->extensions_enabled());
-
-  // Checks that the extensions loaded with the --load-component-extension flag
-  // are not installed.
-  bool is_app_dot_com_extension_installed = false;
-  bool is_app_test_extension_installed = false;
-  for (const scoped_refptr<const extensions::Extension>& extension :
-       GetExtensionRegistry()->enabled_extensions()) {
-    if (extension->name() == "App Dot Com: The App") {
-      is_app_dot_com_extension_installed = true;
-    } else if (extension->name() == "App Test") {
-      is_app_test_extension_installed = true;
-    } else {
-      EXPECT_TRUE(
-          extensions::Manifest::IsComponentLocation(extension->location()));
-    }
-  }
-  EXPECT_FALSE(is_app_dot_com_extension_installed);
-  EXPECT_FALSE(is_app_test_extension_installed);
-}
-
 class DisableExtensionsExceptBrowserTest
     : public extensions::ExtensionBrowserTest {
  public:

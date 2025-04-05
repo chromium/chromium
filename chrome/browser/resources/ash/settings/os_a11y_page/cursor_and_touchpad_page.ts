@@ -267,23 +267,6 @@ export class SettingsCursorAndTouchpadPageElement extends
       },
 
       /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kAutoClickWhenCursorStops,
-          Setting.kDisableTouchpad,
-          Setting.kEnableCursorColor,
-          Setting.kHighlightCursorWhileMoving,
-          Setting.kLargeCursor,
-          Setting.kMouseKeysEnabled,
-          Setting.kOverscrollEnabled,
-          Setting.kTabletNavigationButtons,
-        ]),
-      },
-
-      /**
        * Check if at least one mouse is connected.
        */
       hasMouse_: {
@@ -313,6 +296,18 @@ export class SettingsCursorAndTouchpadPageElement extends
     ];
   }
 
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kAutoClickWhenCursorStops,
+    Setting.kDisableTouchpad,
+    Setting.kEnableCursorColor,
+    Setting.kHighlightCursorWhileMoving,
+    Setting.kLargeCursor,
+    Setting.kMouseKeysEnabled,
+    Setting.kOverscrollEnabled,
+    Setting.kTabletNavigationButtons,
+  ]);
+
   private autoClickDelayOptions_: Option[];
   private autoClickMovementThresholdOptions_: Option[];
   private cursorAndTouchpadBrowserProxy_: CursorAndTouchpadPageBrowserProxy;
@@ -323,6 +318,7 @@ export class SettingsCursorAndTouchpadPageElement extends
   private shelfNavigationButtonsImplicitlyEnabled_: boolean;
   private shelfNavigationButtonsPref_:
       chrome.settingsPrivate.PrefObject<boolean>;
+  private showFaceGazeRow_: boolean;
   private showShelfNavigationButtonsSettings_: boolean;
   private readonly isAccessibilityDisableTouchpadEnabled_: boolean;
   private readonly isAccessibilityFaceGazeEnabled_: boolean;

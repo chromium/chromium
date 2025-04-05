@@ -9,9 +9,9 @@
 
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {BackgroundBridge} from '../../../chromevox/common/background_bridge.js';
-import {EarconDescription} from '../../../chromevox/common/earcon_id.js';
-import {QueueMode} from '../../../chromevox/common/tts_types.js';
+import {BackgroundBridge} from '../../../chromevox/mv2/common/background_bridge.js';
+import {EarconDescription} from '../../../chromevox/mv2/common/earcon_id.js';
+import {QueueMode} from '../../../chromevox/mv2/common/tts_types.js';
 
 import {Curriculum, InteractionMedium, LessonData, MainMenuButtonData, Screen} from './constants.js';
 import {LessonContainer} from './lesson_container.js';

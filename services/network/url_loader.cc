@@ -43,7 +43,6 @@
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "net/base/completion_once_callback.h"
-#include "net/base/elements_upload_data_stream.h"
 #include "net/base/features.h"
 #include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
@@ -54,8 +53,7 @@
 #include "net/base/proxy_chain.h"
 #include "net/base/schemeful_site.h"
 #include "net/base/transport_info.h"
-#include "net/base/upload_bytes_element_reader.h"
-#include "net/base/upload_file_element_reader.h"
+#include "net/base/upload_data_stream.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/cookie_setting_override.h"
@@ -83,9 +81,6 @@
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_getter.h"
 #include "services/network/ad_heuristic_cookie_overrides.h"
-#include "services/network/attribution/attribution_request_helper.h"
-#include "services/network/chunked_data_pipe_upload_data_stream.h"
-#include "services/network/data_pipe_element_reader.h"
 #include "services/network/orb/orb_impl.h"
 #include "services/network/public/cpp/client_hints.h"
 #include "services/network/public/cpp/constants.h"
@@ -121,9 +116,11 @@
 #include "services/network/shared_dictionary/shared_dictionary_storage.h"
 #include "services/network/shared_storage/shared_storage_request_helper.h"
 #include "services/network/slop_bucket.h"
+#include "services/network/ssl_private_key_proxy.h"
 #include "services/network/throttling/scoped_throttling_token.h"
 #include "services/network/trust_tokens/trust_token_request_helper.h"
 #include "services/network/url_loader_factory.h"
+#include "services/network/url_loader_util.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 #include "url/origin.h"
 
@@ -137,17 +134,6 @@ constexpr size_t kBlockedBodyAllocationSize = 1;
 
 // Size to allocate for `discard_buffer_`.
 constexpr size_t kDiscardBufferSize = 128 * 1024;
-
-// TODO(https://crbug.com/375352611): add the check for enabling third-party
-// cookies.
-constexpr uint64_t kAllowedDevToolsCookieSettingOverrides =
-    1u << static_cast<int>(
-        net::CookieSettingOverride::kForceDisableThirdPartyCookies) |
-    1u << static_cast<int>(
-        net::CookieSettingOverride::kForceEnableThirdPartyCookieMitigations) |
-    1u << static_cast<int>(net::CookieSettingOverride::kSkipTPCDMetadataGrant) |
-    1u << static_cast<int>(
-        net::CookieSettingOverride::kSkipTPCDHeuristicsGrant);
 
 constexpr char kActivateStorageAccessHeader[] = "activate-storage-access";
 
@@ -171,165 +157,6 @@ enum class StorageAccessRedirectKind {
 void RecordStorageAccessRedirectMetric(StorageAccessRedirectKind kind) {
   base::UmaHistogramEnumeration("Net.HttpJob.StorageAccessRedirect", kind);
 }
-
-// A subclass of net::UploadBytesElementReader which owns
-// ResourceRequestBody.
-class BytesElementReader : public net::UploadBytesElementReader {
- public:
-  BytesElementReader(ResourceRequestBody* resource_request_body,
-                     const DataElementBytes& element)
-      : net::UploadBytesElementReader(element.bytes()),
-        resource_request_body_(resource_request_body) {}
-
-  BytesElementReader(const BytesElementReader&) = delete;
-  BytesElementReader& operator=(const BytesElementReader&) = delete;
-
-  ~BytesElementReader() override {}
-
- private:
-  scoped_refptr<ResourceRequestBody> resource_request_body_;
-};
-
-// A subclass of net::UploadFileElementReader which owns
-// ResourceRequestBody.
-// This class is necessary to ensure the BlobData and any attached shareable
-// files survive until upload completion.
-class FileElementReader : public net::UploadFileElementReader {
- public:
-  FileElementReader(ResourceRequestBody* resource_request_body,
-                    base::TaskRunner* task_runner,
-                    const DataElementFile& element,
-                    base::File&& file)
-      : net::UploadFileElementReader(task_runner,
-                                     std::move(file),
-                                     element.path(),
-                                     element.offset(),
-                                     element.length(),
-                                     element.expected_modification_time()),
-        resource_request_body_(resource_request_body) {}
-
-  FileElementReader(const FileElementReader&) = delete;
-  FileElementReader& operator=(const FileElementReader&) = delete;
-
-  ~FileElementReader() override {}
-
- private:
-  scoped_refptr<ResourceRequestBody> resource_request_body_;
-};
-
-std::unique_ptr<net::UploadDataStream> CreateUploadDataStream(
-    ResourceRequestBody* body,
-    std::vector<base::File>& opened_files,
-    base::SequencedTaskRunner* file_task_runner) {
-  // In the case of a chunked upload, there will just be one element.
-  if (body->elements()->size() == 1) {
-    if (body->elements()->begin()->type() ==
-        network::mojom::DataElementDataView::Tag::kChunkedDataPipe) {
-      auto& element =
-          body->elements_mutable()->at(0).As<DataElementChunkedDataPipe>();
-      const bool has_null_source = element.read_only_once().value();
-      auto upload_data_stream =
-          std::make_unique<ChunkedDataPipeUploadDataStream>(
-              body, element.ReleaseChunkedDataPipeGetter(), has_null_source);
-      if (element.read_only_once()) {
-        upload_data_stream->EnableCache();
-      }
-      return upload_data_stream;
-    }
-  }
-
-  auto opened_file = opened_files.begin();
-  std::vector<std::unique_ptr<net::UploadElementReader>> element_readers;
-  for (const auto& element : *body->elements()) {
-    switch (element.type()) {
-      case network::mojom::DataElementDataView::Tag::kBytes:
-        element_readers.push_back(std::make_unique<BytesElementReader>(
-            body, element.As<DataElementBytes>()));
-        break;
-      case network::mojom::DataElementDataView::Tag::kFile:
-        CHECK(opened_file != opened_files.end(), base::NotFatalUntil::M130);
-        element_readers.push_back(std::make_unique<FileElementReader>(
-            body, file_task_runner, element.As<network::DataElementFile>(),
-            std::move(*opened_file++)));
-        break;
-      case network::mojom::DataElementDataView::Tag::kDataPipe: {
-        element_readers.push_back(std::make_unique<DataPipeElementReader>(
-            body,
-            element.As<network::DataElementDataPipe>().CloneDataPipeGetter()));
-        break;
-      }
-      case network::mojom::DataElementDataView::Tag::kChunkedDataPipe: {
-        // This shouldn't happen, as the traits logic should ensure that if
-        // there's a chunked pipe, there's one and only one element.
-        NOTREACHED();
-      }
-    }
-  }
-  DCHECK(opened_file == opened_files.end());
-
-  return std::make_unique<net::ElementsUploadDataStream>(
-      std::move(element_readers), body->identifier());
-}
-
-class SSLPrivateKeyInternal : public net::SSLPrivateKey {
- public:
-  SSLPrivateKeyInternal(
-      const std::string& provider_name,
-      const std::vector<uint16_t>& algorithm_preferences,
-      mojo::PendingRemote<mojom::SSLPrivateKey> ssl_private_key)
-      : provider_name_(provider_name),
-        algorithm_preferences_(algorithm_preferences),
-        ssl_private_key_(std::move(ssl_private_key)) {
-    ssl_private_key_.set_disconnect_handler(
-        base::BindOnce(&SSLPrivateKeyInternal::HandleSSLPrivateKeyError,
-                       base::Unretained(this)));
-  }
-
-  SSLPrivateKeyInternal(const SSLPrivateKeyInternal&) = delete;
-  SSLPrivateKeyInternal& operator=(const SSLPrivateKeyInternal&) = delete;
-
-  // net::SSLPrivateKey:
-  std::string GetProviderName() override { return provider_name_; }
-
-  std::vector<uint16_t> GetAlgorithmPreferences() override {
-    return algorithm_preferences_;
-  }
-
-  void Sign(uint16_t algorithm,
-            base::span<const uint8_t> input,
-            net::SSLPrivateKey::SignCallback callback) override {
-    std::vector<uint8_t> input_vector(input.begin(), input.end());
-    if (!ssl_private_key_ || !ssl_private_key_.is_connected()) {
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE,
-          base::BindOnce(std::move(callback),
-                         net::ERR_SSL_CLIENT_AUTH_CERT_NO_PRIVATE_KEY,
-                         input_vector));
-      return;
-    }
-
-    ssl_private_key_->Sign(algorithm, input_vector,
-                           base::BindOnce(&SSLPrivateKeyInternal::Callback,
-                                          this, std::move(callback)));
-  }
-
- private:
-  ~SSLPrivateKeyInternal() override = default;
-
-  void HandleSSLPrivateKeyError() { ssl_private_key_.reset(); }
-
-  void Callback(net::SSLPrivateKey::SignCallback callback,
-                int32_t net_error,
-                const std::vector<uint8_t>& input) {
-    DCHECK_LE(net_error, 0);
-    DCHECK_NE(net_error, net::ERR_IO_PENDING);
-    std::move(callback).Run(static_cast<net::Error>(net_error), input);
-  }
-
-  std::string provider_name_;
-  std::vector<uint16_t> algorithm_preferences_;
-  mojo::Remote<mojom::SSLPrivateKey> ssl_private_key_;
-};
 
 bool ShouldNotifyAboutCookie(net::CookieInclusionStatus status) {
   // Notify about cookies actually used, and those blocked by preferences ---
@@ -383,60 +210,24 @@ std::vector<mojom::WebClientHintsType> ComputeAcceptCHFrameHints(
   return hints;
 }
 
-// Returns true if the |credentials_mode| of the request allows sending
-// credentials.
-bool ShouldAllowCredentials(mojom::CredentialsMode credentials_mode) {
-  switch (credentials_mode) {
-    case mojom::CredentialsMode::kInclude:
-    // TODO(crbug.com/40619226): Make this work with
-    // CredentialsMode::kSameOrigin.
-    case mojom::CredentialsMode::kSameOrigin:
-      return true;
-
-    case mojom::CredentialsMode::kOmit:
-    case mojom::CredentialsMode::kOmitBug_775438_Workaround:
-      return false;
-  }
-}
-
-// Returns true when the |credentials_mode| of the request allows sending client
-// certificates.
-bool ShouldSendClientCertificates(mojom::CredentialsMode credentials_mode) {
-  switch (credentials_mode) {
-    case mojom::CredentialsMode::kInclude:
-    case mojom::CredentialsMode::kSameOrigin:
-      return true;
-
-    // TODO(crbug.com/40089326): Due to a bug, the default behavior does
-    // not properly correspond to Fetch's "credentials mode", in that client
-    // certificates will be sent if available, or the handshake will be aborted
-    // to allow selecting a client cert.
-    // With the feature kOmitCorsClientCert enabled, the correct
-    // behavior is done; omit all client certs and continue the handshake
-    // without sending one if requested.
-    case mojom::CredentialsMode::kOmit:
-      return !base::FeatureList::IsEnabled(features::kOmitCorsClientCert);
-
-    case mojom::CredentialsMode::kOmitBug_775438_Workaround:
-      return false;
-  }
-}
-
 template <typename T>
 T* PtrOrFallback(const mojo::Remote<T>& remote, T* fallback) {
   return remote.is_bound() ? remote.get() : fallback;
 }
 
-// Retrieves the Cookie header from either `cors_exempt_headers` or `headers`.
-std::string GetCookiesFromHeaders(
-    const net::HttpRequestHeaders& headers,
-    const net::HttpRequestHeaders& cors_exempt_headers) {
-  std::optional<std::string> cookies =
-      cors_exempt_headers.GetHeader(net::HttpRequestHeaders::kCookie);
-  if (!cookies) {
-    cookies = headers.GetHeader(net::HttpRequestHeaders::kCookie);
+scoped_refptr<RefCountedDeviceBoundSessionAccessObserverRemote>
+MaybeInitializeDeviceBoundSessionAccessObserverSharedRemote(
+    mojo::Remote<mojom::DeviceBoundSessionAccessObserver>& remote,
+    URLLoaderContext& context) {
+  if (!base::FeatureList::IsEnabled(
+          features::kDeviceBoundSessionAccessObserverSharedRemote)) {
+    return nullptr;
   }
-  return std::move(cookies).value_or(std::string());
+  if (remote) {
+    return base::MakeRefCounted<
+        RefCountedDeviceBoundSessionAccessObserverRemote>(std::move(remote));
+  }
+  return context.GetDeviceBoundSessionAccessObserverSharedRemote();
 }
 
 net::HttpRequestHeaders AttachCookies(const net::HttpRequestHeaders& headers,
@@ -477,53 +268,6 @@ net::HttpRequestHeaders AttachCookies(const net::HttpRequestHeaders& headers,
   return updated_headers;
 }
 
-const char* GetDestinationTypePartString(
-    network::mojom::RequestDestination destination) {
-  if (destination == network::mojom::RequestDestination::kDocument) {
-    return "MainFrame";
-  } else if (destination == network::mojom::RequestDestination::kFrame ||
-             destination == network::mojom::RequestDestination::kIframe) {
-    return "SubFrame";
-  }
-  return "Subresource";
-}
-
-const char* GetCertStatePartString(const net::SSLInfo& ssl_info) {
-  if (!ssl_info.cert.get()) {
-    return "NoCert";
-  }
-  return ssl_info.is_issued_by_known_root ? "KnownRootCert" : "UnknownRootCert";
-}
-
-void MaybeRecordSharedDictionaryUsedResponseMetrics(
-    int error_code,
-    network::mojom::RequestDestination destination,
-    const net::HttpResponseInfo& response_info,
-    bool shared_dictionary_allowed_check_passed) {
-  if (response_info.was_cached) {
-    return;
-  }
-  if (response_info.did_use_shared_dictionary) {
-    base::UmaHistogramSparse(
-        base::StrCat({"Net.SharedDictionaryUsedResponseErrorCodes2.",
-                      GetDestinationTypePartString(destination), ".",
-                      GetCertStatePartString(response_info.ssl_info)}),
-        -error_code);
-  }
-
-  if (shared_dictionary_allowed_check_passed &&
-      destination == network::mojom::RequestDestination::kDocument) {
-    base::UmaHistogramBoolean(
-        base::StrCat(
-            {"Net.SharedDictionaryUsedByResponseWhenAvailable2.MainFrame.",
-             net::HttpConnectionInfoCoarseToString(
-                 net::HttpConnectionInfoToCoarse(
-                     response_info.connection_info)),
-             ".", GetCertStatePartString(response_info.ssl_info)}),
-        response_info.did_use_shared_dictionary);
-  }
-}
-
 std::vector<network::mojom::HttpRawHeaderPairPtr>
 ResponseHeaderToRawHeaderPairs(
     const net::HttpResponseHeaders& response_headers) {
@@ -534,18 +278,6 @@ ResponseHeaderToRawHeaderPairs(
     header_array.emplace_back(std::in_place, std::move(name), std::move(value));
   }
   return header_array;
-}
-
-bool IsMultiplexedConnection(const net::HttpResponseInfo& response_info) {
-  switch (net::HttpConnectionInfoToCoarse(response_info.connection_info)) {
-    case net::HttpConnectionInfoCoarse::kHTTP1:
-      return false;
-    case net::HttpConnectionInfoCoarse::kHTTP2:
-    case net::HttpConnectionInfoCoarse::kQUIC:
-      return true;
-    case net::HttpConnectionInfoCoarse::kOTHER:
-      return false;
-  }
 }
 
 bool IncludesValidLoadField(const net::HttpResponseHeaders* headers) {
@@ -568,6 +300,10 @@ bool IncludesValidLoadField(const net::HttpResponseHeaders* headers) {
 
 mojo::SharedRemote<mojom::DeviceBoundSessionAccessObserver> Clone(
     mojom::DeviceBoundSessionAccessObserver& observer) {
+  TRACE_EVENT("loading", "CloneDeviceBoundSessionAccessObserver");
+  base::ScopedUmaHistogramTimer timer(
+      "NetworkService.URLLoader.CloneDeviceBoundSessionAccessObserver",
+      base::ScopedUmaHistogramTimer::ScopedHistogramTiming::kMicrosecondTimes);
   mojo::SharedRemote<mojom::DeviceBoundSessionAccessObserver> new_observer;
   observer.Clone(new_observer.BindNewPipeAndPassReceiver());
   return new_observer;
@@ -649,7 +385,6 @@ URLLoader::URLLoader(
     mojo::PendingRemote<mojom::DeviceBoundSessionAccessObserver>
         device_bound_session_observer,
     mojo::PendingRemote<mojom::AcceptCHFrameObserver> accept_ch_frame_observer,
-    std::unique_ptr<AttributionRequestHelper> attribution_request_helper,
     bool shared_storage_writable_eligible)
     : url_request_context_(context.GetUrlRequestContext()),
       network_context_client_(context.GetNetworkContextClient()),
@@ -696,7 +431,6 @@ URLLoader::URLLoader(
       trust_token_helper_factory_(std::move(trust_token_helper_factory)),
       storage_access_api_status_(request.storage_access_api_status),
       shared_dictionary_checker_(std::move(shared_dictionary_checker)),
-      attribution_request_helper_(std::move(attribution_request_helper)),
       origin_access_list_(context.GetOriginAccessList()),
       cookie_observer_remote_(std::move(cookie_observer)),
       cookie_observer_(PtrOrFallback(cookie_observer_remote_,
@@ -718,6 +452,10 @@ URLLoader::URLLoader(
       device_bound_session_observer_(
           PtrOrFallback(device_bound_session_observer_remote_,
                         context.GetDeviceBoundSessionAccessObserver())),
+      device_bound_session_observer_shared_remote_(
+          MaybeInitializeDeviceBoundSessionAccessObserverSharedRemote(
+              device_bound_session_observer_remote_,
+              context)),
       shared_storage_request_helper_(
           std::make_unique<SharedStorageRequestHelper>(
               shared_storage_writable_eligible,
@@ -730,18 +468,19 @@ URLLoader::URLLoader(
       allow_cookies_from_browser_(
           request.trusted_params &&
           request.trusted_params->allow_cookies_from_browser),
-      cookies_from_browser_(
-          allow_cookies_from_browser_
-              ? GetCookiesFromHeaders(request.headers,
+      cookies_from_browser_(allow_cookies_from_browser_
+                                ? url_loader_util::GetCookiesFromHeaders(
+                                      request.headers,
                                       request.cors_exempt_headers)
-              : std::string()),
+                                : std::string()),
       include_request_cookies_with_response_(
           request.trusted_params &&
           request.trusted_params->include_request_cookies_with_response),
       include_load_timing_internal_info_with_response_(
           request.trusted_params.has_value()),
       provide_data_use_updates_(context.DataUseUpdatesEnabled()),
-      partial_decoder_decoding_buffer_size_(net::kMaxBytesToSniff) {
+      partial_decoder_decoding_buffer_size_(net::kMaxBytesToSniff),
+      permissions_policy_(request.permissions_policy) {
   DCHECK(delete_callback_);
 
   // crbug.com/387537990: Experiment with creating the mojo data pipe
@@ -797,80 +536,18 @@ URLLoader::URLLoader(
 
   TRACE_EVENT("loading", "URLLoader::URLLoader",
               net::NetLogWithSourceToFlow(url_request_->net_log()));
-
-  // |cors_exempt_headers| must be merged here to avoid breaking CORS checks.
-  // They are non-empty when the values are given by the UA code, therefore
-  // they should be ignored by CORS checks.
-  net::HttpRequestHeaders merged_headers = request.headers;
-  merged_headers.MergeFrom(ComputeAttributionReportingHeaders(request));
-  merged_headers.MergeFrom(request.cors_exempt_headers);
-
-  // This should be ensured by the CorsURLLoaderFactory(), which is called
-  // before URLLoaders are created.
-  DCHECK(AreRequestHeadersSafe(merged_headers));
-
-  // When a service worker forwards a navigation request it uses the
-  // service worker's IsolationInfo.  This causes the cookie code to fail
-  // to send SameSite=Lax cookies for main-frame navigations passed through
-  // a service worker.  To fix this we check to see if the original destination
-  // of the request was a main frame document and then set a flag indicating
-  // SameSite cookies should treat it as a main frame navigation.
-  const bool force_main_frame_for_same_site_cookies =
-      request.mode == mojom::RequestMode::kNavigate &&
-      request.destination == mojom::RequestDestination::kEmpty &&
-      request.original_destination == mojom::RequestDestination::kDocument;
-
-  const net::SecureDnsPolicy secure_dns_policy =
-      factory_params_->disable_secure_dns ||
-              (request.trusted_params &&
-               request.trusted_params->disable_secure_dns)
-          ? net::SecureDnsPolicy::kDisable
-          : net::SecureDnsPolicy::kAllow;
-
-  const net::RedirectInfo::FirstPartyURLPolicy first_party_url_policy =
-      request.update_first_party_url_on_redirect
-          ? net::RedirectInfo::FirstPartyURLPolicy::UPDATE_URL_ON_REDIRECT
-          : net::RedirectInfo::FirstPartyURLPolicy::NEVER_CHANGE_URL;
-
-  if (!request.navigation_redirect_chain.empty()) {
-    DCHECK_EQ(request.mode, mojom::RequestMode::kNavigate);
-  }
-
-  ConfigureRequest(
-      request.url, request.method, request.site_for_cookies,
-      /*force_ignore_site_for_cookies=*/
-      ShouldForceIgnoreSiteForCookies(request),
-      request.navigation_redirect_chain, request.referrer,
-      request.referrer_policy,
-      /*upgrade_if_insecure=*/request.upgrade_if_insecure,
-      /*is_ad_tagged=*/request.is_ad_tagged,
-      request.client_side_content_decoding_enabled,
-      /*isolation_info=*/
-      GetIsolationInfo(factory_params_->isolation_info,
-                       factory_params_->automatically_assign_isolation_info,
-                       request),
-      /*force_main_frame_for_same_site_cookies=*/
-      force_main_frame_for_same_site_cookies, secure_dns_policy,
-      std::move(merged_headers), request.devtools_accepted_stream_types,
-      request.request_initiator, first_party_url_policy,
-      /*request_load_flags=*/request.load_flags,
-      /*priority_incremental=*/request.priority_incremental,
-      /*cookie_setting_overrides=*/
-      CalculateCookieSettingOverrides(
-          factory_params_->cookie_setting_overrides,
-          factory_params_->devtools_cookie_setting_overrides, request,
-          /*emit_metrics=*/true),
-      /*shared_dictionary_getter=*/
-      shared_dictionary_manager
-          ? std::make_optional(
-                shared_dictionary_manager->MaybeCreateSharedDictionaryGetter(
-                    request.load_flags, request_destination_))
-          : std::nullopt,
-      request.socket_tag, request.allows_device_bound_sessions);
-
+  // Set up UserData (pointing to `this`) first.
+  url_request_->SetUserData(kUserDataKey,
+                            std::make_unique<UnownedPointer>(this));
+  // Configure the main request parameters. This must happen after setting
+  // UserData, as `ConfigureUrlRequest` might internally retrieve data (e.g.,
+  // PermissionsPolicy) via the `url_request_`'s UserData pointer.
+  url_loader_util::ConfigureUrlRequest(request, *factory_params_,
+                                       *origin_access_list_, *url_request_);
   if (context.ShouldRequireIsolationInfo()) {
     DCHECK(!url_request_->isolation_info().IsEmpty());
   }
+  SetUpUrlRequestCallbacks(shared_dictionary_manager);
 
   throttling_token_ = network::ScopedThrottlingToken::MaybeCreate(
       url_request_->net_log().source().id, request.throttling_profile_id);
@@ -896,86 +573,8 @@ URLLoader::URLLoader(
   ProcessOutboundTrustTokenInterceptor(request);
 }
 
-void URLLoader::ConfigureRequest(
-    const GURL& url,
-    std::string_view method,
-    const net::SiteForCookies& site_for_cookies,
-    bool force_ignore_site_for_cookies,
-    const std::vector<GURL>& url_chain,
-    const GURL& referrer,
-    net::ReferrerPolicy referrer_policy,
-    bool upgrade_if_insecure,
-    bool is_ad_tagged,
-    bool client_side_content_decoding_enabled,
-    std::optional<net::IsolationInfo> isolation_info,
-    bool force_main_frame_for_same_site_cookies,
-    net::SecureDnsPolicy secure_dns_policy,
-    net::HttpRequestHeaders extra_request_headers,
-    const std::optional<std::vector<net::SourceStreamType>>&
-        accepted_stream_types,
-    const std::optional<url::Origin>& initiator,
-    net::RedirectInfo::FirstPartyURLPolicy first_party_url_policy,
-    int request_load_flags,
-    bool priority_incremental,
-    net::CookieSettingOverrides cookie_setting_overrides,
-    std::optional<net::SharedDictionaryGetter> shared_dictionary_getter,
-    net::SocketTag socket_tag,
-    bool allows_device_bound_sessions) {
-  url_request_->set_method(method);
-  url_request_->set_site_for_cookies(site_for_cookies);
-  url_request_->set_force_ignore_site_for_cookies(
-      force_ignore_site_for_cookies);
-  if (!url_chain.empty()) {
-    url_request_->SetURLChain(url_chain);
-  }
-  url_request_->SetReferrer(referrer.GetAsReferrer().spec());
-  url_request_->set_referrer_policy(referrer_policy);
-  url_request_->set_upgrade_if_insecure(upgrade_if_insecure);
-  url_request_->set_ad_tagged(is_ad_tagged);
-  url_request_->set_client_side_content_decoding_enabled(
-      client_side_content_decoding_enabled);
-
-  if (isolation_info) {
-    url_request_->set_isolation_info(std::move(isolation_info).value());
-  }
-
-  url_request_->set_force_main_frame_for_same_site_cookies(
-      force_main_frame_for_same_site_cookies);
-
-  url_request_->SetSecureDnsPolicy(secure_dns_policy);
-
-  url_request_->SetExtraRequestHeaders(std::move(extra_request_headers));
-
-  url_request_->SetUserData(kUserDataKey,
-                            std::make_unique<UnownedPointer>(this));
-  url_request_->set_accepted_stream_types(accepted_stream_types);
-
-  url_request_->set_initiator(initiator);
-
-  // Note: There are some ordering dependencies here. `SetRequestCredentials`
-  // depends on `SetLoadFlags`; `CalculateStorageAccessStatus` depends on
-  // `cookie_setting_overrides` and `SetRequestCredentials`.
-  // `SetFetchMetadataHeaders` depends on
-  // `url_request_->storage_access_status()`.
-  url_request_->cookie_setting_overrides() = cookie_setting_overrides;
-  url_request_->SetLoadFlags(request_load_flags);
-  SetRequestCredentials(url);
-  if (request_credentials_mode_ == mojom::CredentialsMode::kInclude) {
-    url_request_->set_storage_access_status(
-        url_request_->CalculateStorageAccessStatus());
-  }
-
-  SetFetchMetadataHeaders(url_request_.get(), request_mode_,
-                          has_user_activation_, request_destination_, nullptr,
-                          *factory_params_, *origin_access_list_,
-                          request_credentials_mode_);
-
-  MaybeSetAcceptSignatureHeader(url_request_.get(), expected_public_keys_);
-
-  url_request_->set_first_party_url_policy(first_party_url_policy);
-
-  url_request_->SetPriorityIncremental(priority_incremental);
-
+void URLLoader::SetUpUrlRequestCallbacks(
+    SharedDictionaryManager* shared_dictionary_manager) {
   url_request_->SetRequestHeadersCallback(base::BindRepeating(
       &URLLoader::SetRawRequestHeadersAndNotify, base::Unretained(this)));
   if (shared_dictionary_checker_) {
@@ -991,25 +590,34 @@ void URLLoader::ConfigureRequest(
   url_request_->SetEarlyResponseHeadersCallback(base::BindRepeating(
       &URLLoader::NotifyEarlyResponse, base::Unretained(this)));
 
-  if (shared_dictionary_getter) {
+  if (shared_dictionary_manager) {
     url_request_->SetSharedDictionaryGetter(
-        std::move(shared_dictionary_getter).value());
-  }
-
-  if (socket_tag != net::SocketTag()) {
-    url_request_->set_socket_tag(std::move(socket_tag));
+        shared_dictionary_manager->MaybeCreateSharedDictionaryGetter(
+            url_request_->load_flags(), request_destination_));
   }
 
   // Device bound session access can happen asynchronously as a result
-  // of this URLRequest. So create a separate Remote that will outlive
-  // this.
-  if (device_bound_session_observer_) {
+  // of this URLRequest. So pass a refcounted shared Remote that will outlive
+  // `this`.
+  if (device_bound_session_observer_shared_remote_) {
+    // Clear `device_bound_session_observer_` to avoid dangling ptr.
+    device_bound_session_observer_ = nullptr;
+    url_request_->SetDeviceBoundSessionAccessCallback(base::BindRepeating(
+        [](scoped_refptr<RefCountedDeviceBoundSessionAccessObserverRemote>
+               shared_remote,
+           const net::device_bound_sessions::SessionAccess& access) {
+          shared_remote.get()->data->OnDeviceBoundSessionAccessed(access);
+        },
+        device_bound_session_observer_shared_remote_));
+  } else if (device_bound_session_observer_) {
+    // This is just for the experiment to measure the impact on the
+    // DeviceBoundSessionAccessObserverSharedRemote feature.
+    // TODO(crbug.com/407680127): Remove this and when the feature is enabled
+    // and the feature flag is removed.
     url_request_->SetDeviceBoundSessionAccessCallback(base::BindRepeating(
         &mojom::DeviceBoundSessionAccessObserver::OnDeviceBoundSessionAccessed,
         Clone(*device_bound_session_observer_)));
   }
-
-  url_request_->set_allows_device_bound_sessions(allows_device_bound_sessions);
 }
 
 // This class is used to manage the queue of pending file upload operations
@@ -1159,7 +767,7 @@ void URLLoader::SetUpUpload(const ResourceRequest& request,
   scoped_refptr<base::SequencedTaskRunner> task_runner =
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
-  url_request_->set_upload(CreateUploadDataStream(
+  url_request_->set_upload(url_loader_util::CreateUploadDataStream(
       request.request_body.get(), opened_files, task_runner.get()));
 
   if (request.enable_upload_progress) {
@@ -1178,24 +786,10 @@ void URLLoader::ProcessOutboundSharedStorageInterceptor() {
   ScheduleStart();
 }
 
-// TODO(crbug.com/40254265): Parallelize Private State Tokens and
-// Attribution operations.
-void URLLoader::ProcessOutboundAttributionInterceptor() {
-  if (!attribution_request_helper_) {
-    ProcessOutboundSharedStorageInterceptor();
-    return;
-  }
-
-  attribution_request_helper_->Begin(
-      *url_request_,
-      base::BindOnce(&URLLoader::ProcessOutboundSharedStorageInterceptor,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
 void URLLoader::ProcessOutboundTrustTokenInterceptor(
     const ResourceRequest& request) {
   if (!request.trust_token_params) {
-    ProcessOutboundAttributionInterceptor();
+    ProcessOutboundSharedStorageInterceptor();
     return;
   }
 
@@ -1319,7 +913,7 @@ void URLLoader::OnDoneBeginningTrustTokenOperation(
           header_pair.key, header_pair.value, /*overwrite=*/true);
     }
 
-    ProcessOutboundAttributionInterceptor();
+    ProcessOutboundSharedStorageInterceptor();
   } else if (status == mojom::TrustTokenOperationStatus::kAlreadyExists ||
              status == mojom::TrustTokenOperationStatus::
                            kOperationSuccessfullyFulfilledLocally) {
@@ -1498,8 +1092,8 @@ void URLLoader::FollowRedirect(
   // Store any cookies passed from the browser process to later attach them to
   // the request.
   if (allow_cookies_from_browser_) {
-    cookies_from_browser_ =
-        GetCookiesFromHeaders(modified_headers, modified_cors_exempt_headers);
+    cookies_from_browser_ = url_loader_util::GetCookiesFromHeaders(
+        modified_headers, modified_cors_exempt_headers);
   }
 
   // Reset the state of the PNA checker - redirects should be treated like new
@@ -1681,6 +1275,9 @@ int URLLoader::ProcessAcceptCHFrameOnConnected(
     const net::TransportInfo& info,
     net::URLRequest* url_request,
     net::CompletionOnceCallback callback) {
+  TRACE_EVENT("loading", "URLLoader::ProcessAcceptCHFrameOnConnected",
+              net::NetLogWithSourceToFlow(url_request->net_log()), "url",
+              url_request->url());
   if (!accept_ch_frame_observer_ || info.accept_ch_frame.empty() ||
       !base::FeatureList::IsEnabled(features::kAcceptCHFrame)) {
     return net::OK;
@@ -1700,15 +1297,22 @@ int URLLoader::ProcessAcceptCHFrameOnConnected(
     // `accept_ch_frame_observer_` is owned by `this`, so passing in
     // `callback` is safe.
     auto record = [](net::CompletionOnceCallback callback,
-                     base::TimeTicks call_time, int status) {
+                     base::TimeTicks call_time, uint64_t trace_id, int status) {
       base::UmaHistogramMicrosecondsTimes(
           "Net.URLLoader.AcceptCH.RoundTripTime",
           base::TimeTicks::Now() - call_time);
+      TRACE_EVENT_NESTABLE_ASYNC_END1(
+          "loading", "AcceptCHObserver::OnAcceptCHFrameReceived call",
+          TRACE_ID_LOCAL(trace_id), "status", status);
       std::move(callback).Run(status);
     };
+    TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
+        "loading", "AcceptCHObserver::OnAcceptCHFrameReceived call",
+        TRACE_ID_LOCAL(this), "url", url_request->url());
     accept_ch_frame_observer_->OnAcceptCHFrameReceived(
         url::Origin::Create(url_request->url()), hints,
-        base::BindOnce(record, std::move(callback), base::TimeTicks::Now()));
+        base::BindOnce(record, std::move(callback), base::TimeTicks::Now(),
+                       TRACE_ID_LOCAL(this).raw_id()));
     return net::ERR_IO_PENDING;
   }
   return net::OK;
@@ -1857,7 +1461,10 @@ void URLLoader::OnReceivedRedirect(net::URLRequest* url_request,
     return;
   }
 
-  SetRequestCredentials(redirect_info.new_url);
+  url_loader_util::SetRequestCredentials(
+      redirect_info.new_url, factory_params_->client_security_state,
+      request_mode_, request_credentials_mode_, url_request_->initiator(),
+      *url_request_);
 
   // Clear the Cookie header to ensure that cookies passed in through the
   // `ResourceRequest` do not persist across redirects.
@@ -1902,8 +1509,8 @@ void URLLoader::OnReceivedRedirect(net::URLRequest* url_request,
 
   ad_auction_event_record_request_helper_.HandleResponse(*url_request_);
 
-  ProcessInboundAttributionInterceptorOnReceivedRedirect(redirect_info,
-                                                         std::move(response));
+  ProcessInboundSharedStorageInterceptorOnReceivedRedirect(redirect_info,
+                                                           std::move(response));
 }
 
 void URLLoader::ProcessInboundSharedStorageInterceptorOnReceivedRedirect(
@@ -1918,22 +1525,6 @@ void URLLoader::ProcessInboundSharedStorageInterceptorOnReceivedRedirect(
                                         redirect_info, response_index))) {
     ContinueOnReceiveRedirect(redirect_info, response_index);
   }
-}
-
-void URLLoader::ProcessInboundAttributionInterceptorOnReceivedRedirect(
-    const net::RedirectInfo& redirect_info,
-    mojom::URLResponseHeadPtr response) {
-  if (!attribution_request_helper_) {
-    ProcessInboundSharedStorageInterceptorOnReceivedRedirect(
-        redirect_info, std::move(response));
-    return;
-  }
-
-  attribution_request_helper_->OnReceiveRedirect(
-      *url_request_, std::move(response), redirect_info,
-      base::BindOnce(
-          &URLLoader::ProcessInboundSharedStorageInterceptorOnReceivedRedirect,
-          weak_ptr_factory_.GetWeakPtr(), redirect_info));
 }
 
 void URLLoader::ContinueOnReceiveRedirect(
@@ -1960,79 +1551,6 @@ bool URLLoader::HasFetchStreamingUploadBody(const ResourceRequest* request) {
   const auto& element = elements->front();
   return element.type() == mojom::DataElementDataView::Tag::kChunkedDataPipe &&
          element.As<network::DataElementChunkedDataPipe>().read_only_once();
-}
-
-// static
-std::optional<net::IsolationInfo> URLLoader::GetIsolationInfo(
-    const net::IsolationInfo& factory_isolation_info,
-    bool automatically_assign_isolation_info,
-    const ResourceRequest& request) {
-  if (!factory_isolation_info.IsEmpty())
-    return factory_isolation_info;
-
-  if (request.trusted_params &&
-      !request.trusted_params->isolation_info.IsEmpty()) {
-    if (request.credentials_mode != network::mojom::CredentialsMode::kOmit) {
-      DCHECK(request.trusted_params->isolation_info.site_for_cookies()
-                 .IsEquivalent(request.site_for_cookies));
-    }
-    return request.trusted_params->isolation_info;
-  }
-
-  if (automatically_assign_isolation_info) {
-    url::Origin origin = url::Origin::Create(request.url);
-    return net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
-                                      origin, origin, net::SiteForCookies());
-  }
-
-  return std::nullopt;
-}
-
-// static
-net::CookieSettingOverrides URLLoader::CalculateCookieSettingOverrides(
-    net::CookieSettingOverrides factory_overrides,
-    net::CookieSettingOverrides devtools_overrides,
-    const ResourceRequest& request,
-    bool emit_metrics) {
-  net::CookieSettingOverrides overrides(factory_overrides);
-  if (request.is_outermost_main_frame &&
-      network::cors::IsCorsEnabledRequestMode(request.mode)) {
-    overrides.Put(
-        net::CookieSettingOverride::kTopLevelStorageAccessGrantEligible);
-  }
-
-  AddAdsHeuristicCookieSettingOverrides(request.is_ad_tagged, overrides,
-                                        emit_metrics);
-  // Only apply the DevTools overrides if the request is from devtools enabled
-  // context.
-  if (request.devtools_request_id.has_value()) {
-    CHECK_EQ(devtools_overrides.ToEnumBitmask() &
-                 ~kAllowedDevToolsCookieSettingOverrides,
-             0u);
-    overrides = base::Union(overrides, devtools_overrides);
-  }
-
-  // The `kStorageAccessGrantEligible` override should not be present in
-  // factory_overrides.
-  CHECK(
-      !overrides.Has(net::CookieSettingOverride::kStorageAccessGrantEligible));
-  // Add the Storage Access override enum based on whether the request's url and
-  // initiator are same-site, to prevent cross-site sibling iframes benefit from
-  // each other's storage access API grants. This must be updated on redirects.
-  if (net::cookie_util::ShouldAddInitialStorageAccessApiOverride(
-          request.url, request.storage_access_api_status,
-          request.request_initiator, emit_metrics,
-          request.credentials_mode == mojom::CredentialsMode::kInclude)) {
-    overrides.Put(net::CookieSettingOverride::kStorageAccessGrantEligible);
-  }
-
-  // The `kStorageAccessGrantEligibleViaHeader` override will be applied
-  // (in-place) by individual request jobs as appropriate, but should not be
-  // present initially.
-  CHECK(!overrides.Has(
-      net::CookieSettingOverride::kStorageAccessGrantEligibleViaHeader));
-
-  return overrides;
 }
 
 void URLLoader::OnAuthRequired(net::URLRequest* url_request,
@@ -2107,26 +1625,6 @@ void URLLoader::ProcessInboundSharedStorageInterceptorOnResponseStarted() {
   }
 }
 
-void URLLoader::ProcessInboundAttributionInterceptorOnResponseStarted() {
-  if (!attribution_request_helper_) {
-    ProcessInboundAdAuctionEventRecordInterceptorOnResponseStarted();
-    return;
-  }
-
-  attribution_request_helper_->Finalize(
-      *response_,
-      base::BindOnce(
-          &URLLoader::
-              ProcessInboundAdAuctionEventRecordInterceptorOnResponseStarted,
-          weak_ptr_factory_.GetWeakPtr()));
-}
-
-void URLLoader::
-    ProcessInboundAdAuctionEventRecordInterceptorOnResponseStarted() {
-  ad_auction_event_record_request_helper_.HandleResponse(*url_request_);
-  ProcessInboundSharedStorageInterceptorOnResponseStarted();
-}
-
 void URLLoader::OnResponseStarted(net::URLRequest* url_request, int net_error) {
   DCHECK(url_request == url_request_.get());
   has_received_response_ = true;
@@ -2151,6 +1649,8 @@ void URLLoader::OnResponseStarted(net::URLRequest* url_request, int net_error) {
   response_ = BuildResponseHead();
   DispatchOnRawResponse();
 
+  ad_auction_event_record_request_helper_.HandleResponse(*url_request_);
+
   // Parse and remove the Trust Tokens response headers, if any are expected,
   // potentially failing the request if an error occurs.
   if (response_ && response_->headers && trust_token_helper_) {
@@ -2163,7 +1663,7 @@ void URLLoader::OnResponseStarted(net::URLRequest* url_request, int net_error) {
     return;
   }
 
-  ProcessInboundAttributionInterceptorOnResponseStarted();
+  ProcessInboundSharedStorageInterceptorOnResponseStarted();
 }
 
 void URLLoader::OnDoneFinalizingTrustTokenOperation(
@@ -2178,7 +1678,7 @@ void URLLoader::OnDoneFinalizingTrustTokenOperation(
     return;
   }
 
-  ProcessInboundAttributionInterceptorOnResponseStarted();
+  ProcessInboundSharedStorageInterceptorOnResponseStarted();
 }
 
 void URLLoader::MaybeSendTrustTokenOperationResultToDevTools() {
@@ -2897,7 +2397,7 @@ void URLLoader::ContinueWithCertificate(
     const std::vector<uint16_t>& algorithm_preferences,
     mojo::PendingRemote<mojom::SSLPrivateKey> ssl_private_key) {
   client_cert_responder_receiver_.reset();
-  auto key = base::MakeRefCounted<SSLPrivateKeyInternal>(
+  auto key = base::MakeRefCounted<SSLPrivateKeyProxy>(
       provider_name, algorithm_preferences, std::move(ssl_private_key));
   url_request_->ContinueWithCertificate(std::move(x509_certificate),
                                         std::move(key));
@@ -2944,7 +2444,7 @@ void URLLoader::NotifyCompleted(int error_code) {
     UMA_HISTOGRAM_COUNTS_1M("DataUse.BytesSent3.Delegate", total_sent);
   }
 
-  MaybeRecordSharedDictionaryUsedResponseMetrics(
+  url_loader_util::MaybeRecordSharedDictionaryUsedResponseMetrics(
       error_code, request_destination_, url_request_->response_info(),
       shared_dictionary_allowed_check_passed_);
 
@@ -3190,7 +2690,8 @@ bool URLLoader::DispatchOnRawResponse() {
   if (url_request_->response_headers() && !seen_raw_request_headers_) {
     // Record request metrics here instead of in NotifyCompleted to account for
     // redirects.
-    RecordRequestMetrics();
+    url_loader_util::RecordURLLoaderRequestMetrics(
+        *url_request_, raw_request_line_size_, raw_request_headers_size_);
   }
 
   if (!devtools_observer_ || !devtools_request_id() ||
@@ -3550,80 +3051,6 @@ bool URLLoader::ShouldForceIgnoreSiteForCookies(
   return false;
 }
 
-void URLLoader::SetRequestCredentials(const GURL& url) {
-  bool policies_allow_credentials = WebPoliciesAllowCredentials(url);
-
-  bool allow_credentials = ShouldAllowCredentials(request_credentials_mode_) &&
-                           policies_allow_credentials;
-
-  bool allow_client_certificates =
-      ShouldSendClientCertificates(request_credentials_mode_) &&
-      policies_allow_credentials;
-
-  // The decision not to include credentials is sticky. This is equivalent to
-  // checking the tainted origin flag in the fetch specification.
-  if (!allow_credentials)
-    url_request_->set_allow_credentials(false);
-  if (!allow_client_certificates)
-    url_request_->set_send_client_certs(false);
-
-  // Contrary to Firefox or blink's cache, the HTTP cache doesn't distinguish
-  // requests including user's credentials from the anonymous ones yet. See
-  // https://docs.google.com/document/d/1lvbiy4n-GM5I56Ncw304sgvY5Td32R6KHitjRXvkZ6U
-  // As a workaround until a solution is implemented, the cached responses
-  // aren't used for those requests.
-  if (!policies_allow_credentials) {
-    url_request_->SetLoadFlags(url_request_->load_flags() |
-                               net::LOAD_BYPASS_CACHE);
-  }
-}
-
-// [spec]:
-// https://fetch.spec.whatwg.org/#cross-origin-embedder-policy-allows-credentials
-bool URLLoader::WebPoliciesAllowCredentials(const GURL& url) {
-  // [spec]: To check if Cross-Origin-Embedder-Policy allows credentials, given
-  //         a request request, run these steps:
-
-  // [spec]  1. If request’s mode is not "no-cors", then return true.
-  switch (request_mode_) {
-    case mojom::RequestMode::kCors:
-    case mojom::RequestMode::kCorsWithForcedPreflight:
-    case mojom::RequestMode::kNavigate:
-    case mojom::RequestMode::kSameOrigin:
-      return true;
-
-    case mojom::RequestMode::kNoCors:
-      break;
-  }
-
-  // [spec]: 2. If request’s client is null, then return true.
-  if (!factory_params_->client_security_state)
-    return true;
-
-  // [spec]: 3. If request’s client’s policy container’s embedder policy’s value
-  //            is not "credentialless", then return true.
-  // Document-Isolation-Policy: also check that Document-Isolation-Policy allows
-  // credentials.
-  if (factory_params_->client_security_state->cross_origin_embedder_policy
-              .value !=
-          mojom::CrossOriginEmbedderPolicyValue::kCredentialless &&
-      factory_params_->client_security_state->document_isolation_policy.value !=
-          mojom::DocumentIsolationPolicyValue::kIsolateAndCredentialless) {
-    return true;
-  }
-
-  // [spec]: 4. If request’s origin is same origin with request’s current URL’s
-  //            origin and request does not have a redirect-tainted origin, then
-  //            return true.
-  url::Origin request_initiator =
-      url_request_->initiator().value_or(url::Origin());
-  if (request_initiator.IsSameOriginWith(url))
-    return true;
-
-  // [spec]: 5. Return false.
-  return false;
-}
-
 bool URLLoader::ShouldSendTransferSizeUpdated() const {
   return devtools_request_id() || url_request_->ad_tagged() ||
          !base::FeatureList::IsEnabled(features::kReduceTransferSizeUpdatedIPC);
@@ -3671,83 +3098,6 @@ bool URLLoader::ShouldSetLoadWithStorageAccess() const {
       "API.StorageAccessHeader.ActivateStorageAccessLoadOutcome", outcome);
   return outcome ==
          net::cookie_util::ActivateStorageAccessLoadOutcome::kSuccess;
-}
-
-void URLLoader::RecordRequestMetrics() {
-  // All histograms recorded here are of the form:
-  // "NetworkService.Requests.{Multiplexed}.{RequestType}.{Method}.{Result}.{Metric}".
-  // For example:
-  // "NetworkService.Requests.Simple.MainFrame.Get.Success.TotalRequestSize".
-  absl::InlinedVector<std::string_view, 10> histogram_prefix_pieces = {
-      "NetworkService", "Requests"};
-
-  const net::HttpResponseInfo& response_info = url_request_->response_info();
-  if (IsMultiplexedConnection(response_info)) {
-    histogram_prefix_pieces.push_back("Multiplexed");
-  } else {
-    histogram_prefix_pieces.push_back("Simple");
-  }
-
-  switch (url_request_->isolation_info().request_type()) {
-    case net::IsolationInfo::RequestType::kMainFrame:
-      histogram_prefix_pieces.push_back("MainFrame");
-      break;
-    case net::IsolationInfo::RequestType::kSubFrame:
-    case net::IsolationInfo::RequestType::kOther:
-      // TODO(crbug.com/362787712): Add metrics for other types of requests.
-      return;
-  }
-
-  if (url_request_->method() == "GET") {
-    histogram_prefix_pieces.push_back("Get");
-  } else {
-    // Other types of requests need to be handled differently e.g. the total
-    // request size of a POST request needs to include the body.
-    // TODO(crbug.com/362787712): Add metrics for other types of requests.
-    return;
-  }
-
-  const int response_code = response_info.headers->response_code();
-  if (response_code < 199) {
-    // Ignore information responses because they are not complete requests.
-    return;
-  } else if (response_code < 299 || response_code < 399) {
-    // We consider redirects a success.
-    histogram_prefix_pieces.push_back("Success");
-  } else if (response_code < 499) {
-    histogram_prefix_pieces.push_back("ClientError");
-  } else if (response_code < 599) {
-    histogram_prefix_pieces.push_back("ServerError");
-  } else {
-    // Ignore unexpected server response codes.
-    return;
-  }
-
-  auto make_histogram_name =
-      [&histogram_prefix_pieces](std::string_view metric) {
-        histogram_prefix_pieces.push_back(metric);
-        std::string name = base::JoinString(histogram_prefix_pieces, ".");
-        histogram_prefix_pieces.pop_back();
-        return name;
-      };
-
-  base::UmaHistogramCounts100000(make_histogram_name("TotalUrlSize"),
-                                 url_request_->url().spec().size());
-
-  // HTTP/2 and HTTP/3 requests don't separate request line from headers so no
-  // need to record header metrics separately.
-  if (!IsMultiplexedConnection(response_info)) {
-    base::UmaHistogramCounts100000(make_histogram_name("TotalHeadersSize"),
-                                   raw_request_headers_size_);
-  }
-
-  // For HTTP/2 and HTTP/3 the request line is included in the headers, but
-  // `raw_request_line_size_` is 0 for these requests, so we can add it
-  // unconditionally for all requests.
-  size_t total_request_size =
-      raw_request_headers_size_ + raw_request_line_size_;
-  base::UmaHistogramCounts100000(make_histogram_name("TotalRequestSize"),
-                                 total_request_size);
 }
 
 }  // namespace network

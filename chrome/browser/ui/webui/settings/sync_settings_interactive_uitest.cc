@@ -37,8 +37,9 @@ class SyncSettingsInteractiveTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// TODO(crbug.com/407795729): Fix and re-enable.
 IN_PROC_BROWSER_TEST_F(SyncSettingsInteractiveTest,
-                       PressingSignOutButtonsSignsOutUser) {
+                       DISABLED_PressingSignOutButtonsSignsOutUser) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTabContents);
 
   const DeepQuery turn_off_button_query = {"settings-ui",

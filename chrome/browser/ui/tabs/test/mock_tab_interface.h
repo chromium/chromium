@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_TABS_TEST_MOCK_TAB_INTERFACE_H_
 
 #include "chrome/browser/ui/tabs/split_tab_id.h"
-#include "components/tab_collections/public/tab_interface.h"
+#include "components/tabs/public/tab_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"

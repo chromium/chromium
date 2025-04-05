@@ -136,25 +136,45 @@ public abstract class EventFilter {
     }
 
     /**
+     * @see android.view.View#onGenericMotionEvent(android.view.MotionEvent)
+     * @param event The {@link MotionEvent} being processed.
+     * @return Whether the filter handled the event indicating it should not be dispatched further.
+     */
+    public final boolean onGenericMotionEvent(MotionEvent event) {
+        if (mAutoOffset) event.offsetLocation(mCurrentMotionOffsetX, mCurrentMotionOffsetY);
+        return onGenericMotionEventInternal(event);
+    }
+
+    /**
      * @see android.view.ViewGroup#onTouchEvent(android.view.MotionEvent)
      * @param event The {@link MotionEvent} that started the gesture to be evaluated.
-     * @return      Whether the filter handled the event.
+     * @return Whether the filter handled the event.
      */
     protected abstract boolean onTouchEventInternal(MotionEvent event);
 
     /**
      * @see android.view.ViewGroup#onHoverEvent(android.view.MotionEvent)
      * @param event The {@link MotionEvent} that started the hover action.
-     * @return      Whether the filter handled the event.
+     * @return Whether the filter handled the event.
      */
     protected abstract boolean onHoverEventInternal(MotionEvent event);
 
     /**
-     * Simulates an event for testing purpose. This will call onInterceptTouchEvent and
-     * onTouchEvent appropriately.
-     * @param event             The {@link MotionEvent} that started the hover action.
+     * @see android.view.View#onGenericMotionEvent(android.view.MotionEvent)
+     * @param event The {@link MotionEvent} being processed.
+     * @return Whether the filter handled the event indicating it should not be dispatched further.
+     */
+    protected boolean onGenericMotionEventInternal(MotionEvent event) {
+        return false;
+    }
+
+    /**
+     * Simulates an event for testing purpose. This will call onInterceptTouchEvent and onTouchEvent
+     * appropriately.
+     *
+     * @param event The {@link MotionEvent} that started the hover action.
      * @param isKeyboardShowing Whether the keyboard is currently showing.
-     * @return                  Whether the filter handled the event.
+     * @return Whether the filter handled the event.
      */
     @VisibleForTesting
     public boolean simulateTouchEvent(MotionEvent event, boolean isKeyboardShowing) {

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
 #include "chrome/browser/glic/fre/glic_fre_dialog_view.h"
+#include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/predictors/loading_predictor_config.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -76,7 +77,7 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kGlicFreHostElementId);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kGlicFreContentsElementId);
 
 IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTest, PreconnectOnButtonHover) {
-  SetFRECompletion(browser()->profile(), false);
+  SetFRECompletion(browser()->profile(), prefs::FreStatus::kNotStarted);
   EXPECT_TRUE(window_controller().fre_controller()->ShouldShowFreDialog());
   EXPECT_TRUE(predictors::IsPreconnectAllowed(browser()->profile()));
 

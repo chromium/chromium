@@ -84,8 +84,8 @@ public class TabLoadObserver extends EmptyTabObserver {
 
     /** Asserts the page has loaded. */
     public void assertLoaded() throws Exception {
-        mTabLoadStartedCallback.waitForCallback(0, 1);
-        mTabLoadFinishedCallback.waitForCallback(0, 1);
+        mTabLoadStartedCallback.waitForCallback(mTabLoadStartedCallback.getCallCount(), 1);
+        mTabLoadFinishedCallback.waitForCallback(mTabLoadFinishedCallback.getCallCount(), 1);
         final Coordinates coord = Coordinates.createFor(mTab.getWebContents());
 
         CriteriaHelper.pollUiThread(

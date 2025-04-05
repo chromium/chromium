@@ -222,13 +222,7 @@ std::vector<SetUpListItemType> GetSetUpListItemTypeOrder(
                    syncService:(syncer::SyncService*)syncService
          authenticationService:(AuthenticationService*)authService
     contentNotificationEnabled:(BOOL)isContentNotificationEnabled {
-  if (IsHomeCustomizationEnabled() &&
-      !prefs->GetBoolean(prefs::kHomeCustomizationMagicStackSetUpListEnabled)) {
-    return nil;
-  }
-
-  if (!IsHomeCustomizationEnabled() &&
-      set_up_list_prefs::IsSetUpListDisabled(localState)) {
+  if (!prefs->GetBoolean(prefs::kHomeCustomizationMagicStackSetUpListEnabled)) {
     return nil;
   }
 

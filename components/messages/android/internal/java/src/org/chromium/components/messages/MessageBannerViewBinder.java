@@ -13,6 +13,7 @@ import static org.chromium.components.messages.MessageBannerProperties.ICON;
 import static org.chromium.components.messages.MessageBannerProperties.ICON_RESOURCE_ID;
 import static org.chromium.components.messages.MessageBannerProperties.ICON_ROUNDED_CORNER_RADIUS_PX;
 import static org.chromium.components.messages.MessageBannerProperties.ICON_TINT_COLOR;
+import static org.chromium.components.messages.MessageBannerProperties.IS_WITHIN_TAP_PROTECTION_PERIOD_SUPPLIER;
 import static org.chromium.components.messages.MessageBannerProperties.LARGE_ICON;
 import static org.chromium.components.messages.MessageBannerProperties.MARGIN_TOP;
 import static org.chromium.components.messages.MessageBannerProperties.ON_SECONDARY_BUTTON_CLICK;
@@ -148,6 +149,8 @@ public class MessageBannerViewBinder {
             view.setElevation(model.get(ELEVATION));
         } else if (propertyKey == MARGIN_TOP) {
             view.setMarginTop(model.get(MARGIN_TOP));
+        } else if (propertyKey == IS_WITHIN_TAP_PROTECTION_PERIOD_SUPPLIER) {
+            view.setTapProtectionSupplier(model.get(IS_WITHIN_TAP_PROTECTION_PERIOD_SUPPLIER));
         }
     }
 }

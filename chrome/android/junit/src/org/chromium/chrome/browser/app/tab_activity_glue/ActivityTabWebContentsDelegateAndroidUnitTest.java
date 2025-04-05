@@ -13,7 +13,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
-import android.graphics.Rect;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -41,6 +40,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.util.WindowFeatures;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.mojom.WindowOpenDisposition;
@@ -220,7 +220,7 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
                 mWebContents,
                 newWebContents,
                 WindowOpenDisposition.NEW_FOREGROUND_TAB,
-                new Rect(),
+                new WindowFeatures(),
                 false);
         verify(mTabGroupModelFilter, never()).mergeListOfTabsToGroup(any(), any(), anyBoolean());
     }
@@ -244,7 +244,7 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
                 mWebContents,
                 newWebContents,
                 WindowOpenDisposition.NEW_FOREGROUND_TAB,
-                new Rect(),
+                new WindowFeatures(),
                 false);
         verify(mTabGroupModelFilter)
                 .mergeListOfTabsToGroup(Arrays.asList(newTab), parentTab, false);

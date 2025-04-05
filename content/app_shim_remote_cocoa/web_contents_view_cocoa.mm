@@ -203,7 +203,7 @@ STATIC_ASSERT_ENUM(NSDragOperationMove, ui::DragDropTypes::DRAG_MOVE);
     NSPasteboardTypeFileURL, NSPasteboardTypeHTML, NSPasteboardTypeRTF,
     NSPasteboardTypeString, NSPasteboardTypeURL,
     ui::kUTTypeChromiumInitiatedDrag, ui::kUTTypeChromiumDataTransferCustomData,
-    ui::kUTTypeWebKitWebURLsWithTitles
+    ui::kUTTypeWebKitWebUrlsWithTitles
   ]];
 }
 

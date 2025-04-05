@@ -9,8 +9,8 @@
 // Obj-C and have no C++ in them.
 
 #import "ios/chrome/browser/net/model/crurl.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_pedal.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_icon.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_pedal.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/grit/ios_theme_resources.h"
 

@@ -301,21 +301,6 @@ enum class DocumentClass {
 using DocumentClassFlags = base::
     EnumSet<DocumentClass, DocumentClass::kMinValue, DocumentClass::kMaxValue>;
 
-// A map of IDL attribute name to Element list value, for one particular
-// element. For example,
-//   el1.ariaActiveDescendant = el2
-// would add the following pair to the ExplicitlySetAttrElementMap for el1:
-//   ("ariaActiveDescendant", el2)
-// This represents 'explicitly set attr-element' in the HTML specification.
-// https://whatpr.org/html/3917/common-dom-interfaces.html#reflecting-content-attributes-in-idl-attributes:element-2
-// Note that in the interest of simplicitly, attributes that reflect a single
-// element reference are implemented using the same ExplicitlySetAttrElementsMap
-// storage, but only store a single element vector which is DCHECKED at the
-// calling site.
-using ExplicitlySetAttrElementsMap =
-    GCedHeapHashMap<QualifiedName,
-                    Member<GCedHeapLinkedHashSet<WeakMember<Element>>>>;
-
 // A map of IDL attribute name to Element FrozenArray value, for one particular
 // element.
 // This represents 'cached attr-associated elements' in the HTML specification.
@@ -1082,15 +1067,6 @@ class CORE_EXPORT Document : public ContainerNode,
     return user_action_elements_;
   }
 
-  ExplicitlySetAttrElementsMap* GetExplicitlySetAttrElementsMap(const Element*);
-  void MoveElementExplicitlySetAttrElementsMapToNewDocument(
-      const Element*,
-      Document& new_document);
-  inline bool HasExplicitlySetAttrElements() const {
-    return !element_explicitly_set_attr_elements_map_.empty();
-  }
-  bool HasExplicitlySetAttrElements(const Element* element) const;
-
   CachedAttrAssociatedElementsMap* GetCachedAttrAssociatedElementsMap(Element*);
   void MoveElementCachedAttrAssociatedElementsMapToNewDocument(
       Element*,
@@ -1694,10 +1670,7 @@ class CORE_EXPORT Document : public ContainerNode,
     return all_open_dialogs_;
   }
 
-  void SetKeyboardInterestTargetElement(Element*);
-  Member<Element> KeyboardInterestTargetElement() const {
-    return keyboard_interest_target_element_;
-  }
+  HeapLinkedHashSet<Member<Element>>& CurrentInterestTargetElements();
 
   // https://crbug.com/1453291
   // The DOM Parts API:
@@ -2817,10 +2790,12 @@ class CORE_EXPORT Document : public ContainerNode,
   // The ordered list of currently-open dialogs, in order they were opened.
   HeapLinkedHashSet<Member<HTMLDialogElement>> all_open_dialogs_;
 
-  // If there was a keyboard-activated element with the `interesttarget`
-  // attribute, it will be stored here, so that when other elements are shown
-  // interest, this element can first "lose interest".
-  Member<Element> keyboard_interest_target_element_;
+  // The current list of elements in the document that have interest (in the
+  // `interesttarget` sense). This is used to "lose" interest if the keyboard
+  // activation key (ESC) or other actions should cause a loss of interest.
+  // This collection holds the *invokers* (the elements with `interesttarget`)
+  // and not the *targets* of those invokers.
+  HeapLinkedHashSet<Member<Element>> current_interest_target_elements_;
 
   Member<DocumentPartRoot> document_part_root_;
 
@@ -2955,8 +2930,6 @@ class CORE_EXPORT Document : public ContainerNode,
 
   Member<FragmentDirective> fragment_directive_;
 
-  HeapHashMap<WeakMember<const Element>, Member<ExplicitlySetAttrElementsMap>>
-      element_explicitly_set_attr_elements_map_;
   HeapHashMap<WeakMember<Element>, Member<CachedAttrAssociatedElementsMap>>
       element_cached_attr_associated_elements_map_;
 

@@ -39,12 +39,15 @@ class TargetHandler : public DomainHandler, public Target::Backend {
                         std::optional<bool> new_window,
                         std::optional<bool> background,
                         std::optional<bool> for_tab,
+                        std::optional<bool> hidden,
                         std::string* out_target_id) override;
   Response CloseTarget(const std::string& target_id,
                        bool* out_success) override;
 
  private:
   raw_ptr<HeadlessBrowserImpl> browser_;
+  // Keeps hidden targets' ids to close them when the session is closed.
+  std::unordered_set<std::string> hidden_web_contents_;
 };
 
 }  // namespace protocol

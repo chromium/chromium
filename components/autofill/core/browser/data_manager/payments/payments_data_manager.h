@@ -52,7 +52,7 @@ namespace autofill {
 class AutofillOptimizationGuide;
 class BankAccount;
 class BnplIssuer;
-struct CreditCardArtImage;
+struct AutofillImage;
 class Ewallet;
 class PaymentsDatabaseHelper;
 
@@ -637,7 +637,7 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Triggered when all the card art image fetches have been completed,
   // regardless of whether all of them succeeded.
   void OnCardArtImagesFetched(
-      const std::vector<std::unique_ptr<CreditCardArtImage>>& art_images);
+      const std::vector<std::unique_ptr<AutofillImage>>& art_images);
 
   // Checks whether any new card art url is synced. If so, attempt to fetch the
   // image based on the url.

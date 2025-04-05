@@ -59,7 +59,6 @@ class GLShareGroup;
 
 namespace gpu {
 
-class BuiltInShaderCacheWriter;
 class DawnContextProvider;
 class ImageDecodeAcceleratorWorker;
 struct GpuPreferences;
@@ -342,11 +341,6 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelManager
   raw_ptr<GpuWatchdogThread> watchdog_;
 
   scoped_refptr<gl::GLShareGroup> share_group_;
-
-#if BUILDFLAG(IS_MAC)
-  std::unique_ptr<BuiltInShaderCacheWriter> shader_cache_writer_;
-#endif
-
   std::unique_ptr<gles2::Outputter> outputter_;
   raw_ptr<Scheduler> scheduler_;
   // SyncPointManager guaranteed to outlive running MessageLoop.

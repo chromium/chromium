@@ -12,6 +12,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/permissions/system/platform_handle.h"
 #include "chrome/common/chrome_features.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 
 #if BUILDFLAG(ENABLE_GLIC)
 // This causes a gn error on Android builds, because gn does not understand
@@ -76,6 +77,8 @@ void GlobalFeatures::Init() {
             g_browser_process->GetMetricsServicesManager());
   }
 #endif
+
+  application_locale_storage_ = std::make_unique<ApplicationLocaleStorage>();
 }
 
 void GlobalFeatures::Shutdown() {

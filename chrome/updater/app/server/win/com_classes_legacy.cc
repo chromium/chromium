@@ -1286,7 +1286,7 @@ void LegacyAppCommandWebImpl::SendPing(UpdaterScope scope,
         scoped_refptr<PersistedData> persisted_data =
             config->GetUpdaterPersistedData();
         if (!persisted_data->GetUsageStatsEnabled() &&
-            !UsageStatsProvider::Create()->AnyAppEnablesUsageStats(scope)) {
+            !UsageStatsProvider::Create(scope)->AnyAppEnablesUsageStats()) {
           return;
         }
 

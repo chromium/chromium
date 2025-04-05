@@ -798,10 +798,22 @@ static const char* kInterstitialDetails = "Details";
       waitForUIElementToDisappearWithMatcher:
           grey_accessibilityID(kParentAccessViewAccessibilityIdentifier)];
 
+  // Reopen the local web approval bottom sheet.
+  [ChromeEarlGrey tapWebStateElementWithID:@"local-approvals-button"];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(kParentAccessViewAccessibilityIdentifier)];
+
+  // Close the bottom sheet by keyboard.
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"escape" flags:0];
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:
+          grey_accessibilityID(kParentAccessViewAccessibilityIdentifier)];
+
   // Verify that metrics are recorded on bottom sheet dismissal.
   GREYAssertNil(
       [MetricsAppInterface
-          expectUniqueSampleWithCount:1
+          expectUniqueSampleWithCount:2
                             forBucket:static_cast<int>(
                                           supervised_user::LocalApprovalResult::
                                               kCanceled)
@@ -809,7 +821,7 @@ static const char* kInterstitialDetails = "Details";
       @"Unexpected value for local web approval result histogram.");
   GREYAssertNil(
       [MetricsAppInterface
-          expectTotalCount:1
+          expectTotalCount:2
               forHistogram:@"FamilyLinkUser.LocalWebApprovalResult"],
       @"Unexpected total count for local web approval result histogram.");
   GREYAssertNil(

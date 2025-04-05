@@ -20,7 +20,7 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/language_detection/core/constants.h"
 #include "components/prefs/pref_value_map.h"
-#include "components/tab_collections/public/tab_interface.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "content/public/browser/tts_controller.h"
 #include "content/public/test/test_web_ui.h"

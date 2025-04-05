@@ -70,6 +70,7 @@ class ChromeContextMenuItem {
         Item.BACK,
         Item.FORWARD,
         Item.RELOAD,
+        Item.INSPECT_ELEMENT,
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface Item {
@@ -124,8 +125,10 @@ class ChromeContextMenuItem {
         int BACK = 38;
         int FORWARD = 39;
         int RELOAD = 40;
+        // Developer Group
+        int INSPECT_ELEMENT = 41;
         // ALWAYS UPDATE!
-        int NUM_ENTRIES = 41;
+        int NUM_ENTRIES = 42;
     }
 
     /** Mapping from {@link Item} to the ID found in the ids.xml. */
@@ -171,6 +174,7 @@ class ChromeContextMenuItem {
         R.id.contextmenu_back, // Item.BACK
         R.id.contextmenu_forward, // Item.FORWARD
         R.id.contextmenu_reload, // Item.RELOAD
+        R.id.contextmenu_inspect_element, // Item.INSPECT_ELEMENT
     };
 
     /** Mapping from {@link Item} to the ID of the string that describes the action of the item. */
@@ -216,6 +220,7 @@ class ChromeContextMenuItem {
         R.string.contextmenu_back, // Item.BACK
         R.string.contextmenu_forward, // Item.FORWARD
         R.string.contextmenu_reload, // Item.RELOAD
+        R.string.contextmenu_inspect_element, // Item.INSPECT_ELEMENT
     };
 
     /**

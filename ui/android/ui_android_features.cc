@@ -56,4 +56,9 @@ BASE_FEATURE(kUsingCorrectWorkArea,
 BASE_FEATURE(kUseNewEtc1Encoder,
              "UseNewEtc1Encoder",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAndroidWindowOcclusion,
+             "AndroidWindowOcclusion",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace ui

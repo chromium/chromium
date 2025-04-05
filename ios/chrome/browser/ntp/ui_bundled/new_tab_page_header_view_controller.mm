@@ -29,6 +29,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_view.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_view_controller_delegate.h"
+#import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
@@ -321,9 +322,7 @@ const CGFloat kMarginMultiplier = 2;
     // needs to respond to user taps first.
     [self addIdentityDisc];
 
-    if (IsHomeCustomizationEnabled()) {
-      [self addCustomizationMenu];
-    }
+    [self addCustomizationMenu];
 
     UIEdgeInsets safeAreaInsets = self.baseViewController.view.safeAreaInsets;
     width = std::max<CGFloat>(
@@ -366,7 +365,6 @@ const CGFloat kMarginMultiplier = 2;
 }
 
 - (void)hideBadgeOnCustomizationMenu {
-  CHECK(IsHomeCustomizationEnabled());
   [self.headerView hideBadgeOnCustomizationMenu];
 }
 

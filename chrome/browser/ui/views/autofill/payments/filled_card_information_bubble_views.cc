@@ -222,16 +222,21 @@ void FilledCardInformationBubbleViews::AddCardDescriptionView(
       card_text_view->AddChildView(std::make_unique<views::BoxLayoutView>());
   first_line->SetBetweenChildSpacing(layout_provider->GetDistanceMetric(
       DISTANCE_RELATED_LABEL_HORIZONTAL_LIST));
+  // `kEnd` aligns the child views to the end edge of the parent view so that
+  // `card_last_four_view` is positioned first at the end and is never pushed
+  // out.
+  first_line->SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kEnd);
   auto* card_name_view =
       first_line->AddChildView(std::make_unique<views::Label>(
           controller_->GetMaskedCardNameForDescriptionView(),
           views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_PRIMARY));
   card_name_view->SetID(kCardName);
-  card_name_view->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  first_line->SetFlexForView(card_name_view, /*flex=*/1);
-  first_line->AddChildView(std::make_unique<views::Label>(
-      options.masked_card_number_last_four,
-      views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_PRIMARY));
+  auto* card_last_four_view =
+      first_line->AddChildView(std::make_unique<views::Label>(
+          options.masked_card_number_last_four,
+          views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_PRIMARY));
+  // Keep card_last_four_view at its natural size.
+  first_line->SetFlexForView(card_last_four_view, /*flex=*/0);
 
   // Second line of the text content, the "Card" indicator label.
   card_text_view->AddChildView(std::make_unique<views::Label>(

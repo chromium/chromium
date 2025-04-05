@@ -216,15 +216,27 @@ class AccountSelectionViewBinder {
             // shown in the Continue button instead.
             if (title != null) {
                 title.setText(
-                        account.isFilteredOut()
+                        account.isFilteredOut() && !account.getDisplayIdentifier().isEmpty()
                                 ? account.getDisplayIdentifier()
                                 : account.getDisplayName());
             }
             TextView description = view.findViewById(R.id.description);
-            description.setText(
+            String descriptionText =
                     account.isFilteredOut()
                             ? view.getContext().getString(R.string.filtered_account_message)
-                            : account.getDisplayIdentifier());
+                            : account.getDisplayIdentifier();
+            if (descriptionText.isEmpty() && title == null) {
+                // It is possible that the display identifier is empty.
+                // If we have no title, show the display name in the description.
+                descriptionText = account.getDisplayName();
+            }
+            if (descriptionText.isEmpty()) {
+                // Hide the view so that we center the remaining view(s).
+                description.setVisibility(View.GONE);
+            } else {
+                description.setText(descriptionText);
+                description.setVisibility(View.VISIBLE);
+            }
             TextView secondaryDescription = view.findViewById(R.id.secondary_description);
             // The secondary description is not shown in the account chip of active mode's
             // request permission dialog. In this case, the view is not present.

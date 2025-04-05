@@ -19,6 +19,26 @@
 
 namespace {
 
+using safe_browsing::SBThreatType;
+
+// Helper for mapping test urls to safe browsing threat types.
+SBThreatType GetThreatTypeForUrl(const GURL& url) {
+  if (url.host() == FakeSafeBrowsingService::kUnsafeHost ||
+      url.host() == FakeSafeBrowsingService::kAsyncUnsafeHost) {
+    return SBThreatType::SB_THREAT_TYPE_URL_PHISHING;
+  }
+
+  if (url.host() == FakeSafeBrowsingService::kEnterpriseBlockHost) {
+    return SBThreatType::SB_THREAT_TYPE_MANAGED_POLICY_BLOCK;
+  }
+
+  if (url.host() == FakeSafeBrowsingService::kEnterpriseWarnHost) {
+    return SBThreatType::SB_THREAT_TYPE_MANAGED_POLICY_WARN;
+  }
+
+  return SBThreatType::SB_THREAT_TYPE_SAFE;
+}
+
 // This is used to vend a RepeatingCallback which runs the
 // NativeCheckUrlCallback on only the first run.
 class CheckUrlCallbackRunner {
@@ -54,8 +74,7 @@ void RunCheckUrlCallback(
   if (is_url_unsafe) {
     security_interstitials::UnsafeResource resource;
     resource.url = url;
-    resource.threat_type =
-        safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING;
+    resource.threat_type = GetThreatTypeForUrl(url);
     resource.threat_source = safe_browsing::ThreatSource::LOCAL_PVER4;
     resource.callback = base::BindRepeating(
         &CheckUrlCallbackRunner::MaybeRunCallback,
@@ -155,7 +174,9 @@ class FakeSafeBrowsingUrlCheckerImpl
  protected:
   // Returns true if the given `url` should be deemed unsafe.
   virtual bool IsUrlUnsafe(const GURL& url) {
-    return url.host() == FakeSafeBrowsingService::kUnsafeHost;
+    return url.host() == FakeSafeBrowsingService::kUnsafeHost ||
+           url.host() == FakeSafeBrowsingService::kEnterpriseBlockHost ||
+           url.host() == FakeSafeBrowsingService::kEnterpriseWarnHost;
   }
 
   raw_ptr<FakeSafeBrowsingClient> client_ = nullptr;
@@ -194,6 +215,12 @@ const std::string FakeSafeBrowsingService::kUnsafeHost =
     "safe.browsing.unsafe.chromium.test";
 const std::string FakeSafeBrowsingService::kAsyncUnsafeHost =
     "safe.browsing.async.unsafe.chromium.test";
+
+const std::string FakeSafeBrowsingService::kEnterpriseBlockHost =
+    "enterprise.block.chromium.test";
+
+const std::string FakeSafeBrowsingService::kEnterpriseWarnHost =
+    "enterprise.warn.chromium.test";
 
 FakeSafeBrowsingService::FakeSafeBrowsingService() = default;
 

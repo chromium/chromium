@@ -165,7 +165,7 @@ TEST_F(HatsHandlerTest,
   // correctly.
   EXPECT_CALL(*mock_hats_service_,
               LaunchSurvey(kHatsSurveyTriggerSettingsSecurity, _, _, _,
-                           expected_product_specific_data))
+                           expected_product_specific_data, _, _))
       .Times(1);
 
   base::Value::List args;
@@ -204,8 +204,9 @@ TEST_F(
 
   // Verify that if there are no interactions on the security page but user
   // interactions are required through finch, the survey will not be shown.
-  EXPECT_CALL(*mock_hats_service_,
-              LaunchSurvey(kHatsSurveyTriggerSettingsSecurity, _, _, _, _))
+  EXPECT_CALL(
+      *mock_hats_service_,
+      LaunchSurvey(kHatsSurveyTriggerSettingsSecurity, _, _, _, _, _, _))
       .Times(0);
 
   base::Value::List args;

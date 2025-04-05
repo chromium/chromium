@@ -458,7 +458,6 @@
 <translation id="3084958266922136097">停用螢幕保護程式</translation>
 <translation id="3091839911843451378">失敗 - 已停止</translation>
 <translation id="3102119246920354026">快取</translation>
-<translation id="3112413615003385433">老師已移除 School Tools 中的內容</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">水池</translation>
 <translation id="3122883569442693641">詳細資料</translation>
@@ -539,7 +538,6 @@
 <translation id="3488065109653206955">部分已啟用</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_COLOR" />色調的<ph name="OFFICE_STYLE" />辦公室</translation>
 <translation id="3493187369049186498">這裡的數據用量是由 Chromebook 估算，計算結果可能與供應商的資料不同。</translation>
-<translation id="349570724365779960">School Tools 已連上學生的裝置</translation>
 <translation id="3502426834823382181">查看所有應用程式</translation>
 <translation id="3510890413042482857">傳送<ph name="BEGIN_LINK1" />效能追蹤資料<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Chrome OS 更新</translation>
@@ -547,7 +545,6 @@
 <translation id="353214771040290298">編輯完畢</translation>
 <translation id="3532980081107202182">大約還剩 <ph name="MIN_REMAINING" /> 分鐘</translation>
 <translation id="3533790840489634638">水池</translation>
-<translation id="3535802910192338629">老師已在 School Tools 中新增內容</translation>
 <translation id="3547264467365135390">公式</translation>
 <translation id="3557205324756024651">本機識別 (選用)</translation>
 <translation id="3565064564551103223">已允許的 IP</translation>
@@ -1235,6 +1232,7 @@
 <translation id="6657240842932274095">要允許系統服務使用你的位置資訊嗎？</translation>
 <translation id="6657585470893396449">密碼</translation>
 <translation id="66621959568103627">珊瑚粉</translation>
+<translation id="6669485505082792176">目前無法生成這類圖片，請嘗試修改描述。請注意，你無法建立含有人物、有害或情色露骨內容的圖像。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6673898378497337661">調高鍵盤亮度</translation>
 <translation id="6692996468359469499">取得選取項目的相關資訊</translation>
 <translation id="6694534975463174713">鎖定</translation>
@@ -1440,7 +1438,6 @@
 <translation id="7544853251252956727">隨機播放</translation>
 <translation id="7550715992156305117">診斷日常安排</translation>
 <translation id="7551123448725492271">裝置類型為音訊裝置。</translation>
-<translation id="7553913964854052228">School Tools 正在使用麥克風</translation>
 <translation id="7559239713112547082">預覽螢幕截圖</translation>
 <translation id="7561454561030345039">這個動作是由系統管理員管理</translation>
 <translation id="7561759921596375678">開啟音量。</translation>
@@ -1663,7 +1660,6 @@
 <translation id="8576249514688522074">未初始化</translation>
 <translation id="8584654835905316966">必須重新啟動系統，才能完成 <ph name="DEVICE_NAME" /> 韌體安裝作業，並更新至版本 <ph name="VERSION" />。電腦可能會多次重新啟動，這是正常現象。</translation>
 <translation id="8593058461203131755">暫停播放媒體</translation>
-<translation id="8619169570378509764">School Tools</translation>
 <translation id="8620617069779373398">漫遊狀態</translation>
 <translation id="8626489604350149811">可對 <ph name="APN_NAME" /> 執行的其他動作</translation>
 <translation id="86356131183441916">淺紫色</translation>

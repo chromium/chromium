@@ -203,6 +203,7 @@ public class CustomTabToolbarUnitTest {
                 mUserEducationHelper,
                 trackerSupplier,
                 mToolbarProgressBar,
+                null,
                 null);
 
         if (ChromeFeatureList.sCctToolbarRefactor.isEnabled()) {

@@ -19,9 +19,11 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.EnsuresNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.webapk.lib.common.WebApkMetaDataKeys;
 import org.chromium.webapk.lib.common.WebApkMetaDataUtils;
 import org.chromium.webapk.shell_apk.HostBrowserLauncher;
@@ -37,11 +39,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Displays splash screen. */
+@NullMarked
 public class SplashActivity extends Activity {
     /** Task to screenshot and encode splash. */
     @SuppressWarnings("NoAndroidAsyncTaskCheck")
-    @Nullable
-    private android.os.AsyncTask mScreenshotSplashTask;
+    private android.os.@Nullable AsyncTask mScreenshotSplashTask;
 
     @IntDef({ActivityResult.NONE, ActivityResult.CANCELED, ActivityResult.IGNORE})
     @Retention(RetentionPolicy.SOURCE)
@@ -52,32 +54,30 @@ public class SplashActivity extends Activity {
     }
 
     private View mSplashView;
-    private Bitmap mBitmap;
-    private HostBrowserLauncherParams mParams;
+    private @Nullable Bitmap mBitmap;
+    private @Nullable HostBrowserLauncherParams mParams;
     private @ActivityResult int mResult;
 
     private final LaunchTrigger mLaunchTrigger = new LaunchTrigger(this::encodeSplashInBackground);
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        boolean androidSSplashSuccess = false;
         if (androidSSplashScreenEnabled() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             // When launched with a data Intent, the splash screen is created, but
             // SplashScreen.OnExitAnimationListener#onSplashScreenExit is not called.
             // Fall back to manually creating our own splash screen in that case.
-            androidSSplashSuccess =
-                    SplashUtilsForS.listenForSplashScreen(
-                            this,
-                            getWindow(),
-                            (view, bitmap) -> {
-                                mSplashView = view;
-                                mBitmap = bitmap;
-                                mLaunchTrigger.onSplashScreenReady();
-                            });
+            SplashUtilsForS.listenForSplashScreen(
+                    this,
+                    getWindow(),
+                    (view, bitmap) -> {
+                        mSplashView = view;
+                        mBitmap = bitmap;
+                        mLaunchTrigger.onSplashScreenReady();
+                    });
         }
-        if (!androidSSplashSuccess) {
+        if (mSplashView == null) {
             // Fall back to the old behaviour if our reflection based method to launch the Android S
             // splash screen fails.
             showPreSSplashScreen();
@@ -152,9 +152,8 @@ public class SplashActivity extends Activity {
                         new LaunchHostBrowserSelector.Callback() {
                             @Override
                             public void onBrowserSelected(
-                                    @Nullable
-                                            PackageNameAndComponentName
-                                                    hostBrowserPackageNameAndComponentName,
+                                    @Nullable PackageNameAndComponentName
+                                            hostBrowserPackageNameAndComponentName,
                                     boolean dialogShown) {
                                 if (hostBrowserPackageNameAndComponentName == null) {
                                     finish();
@@ -173,8 +172,10 @@ public class SplashActivity extends Activity {
                         });
     }
 
+    @EnsuresNonNull("mSplashView")
     private void showPreSSplashScreen() {
         Bundle metadata = WebApkUtils.readMetaData(this);
+        assert metadata != null;
         updateStatusBar(metadata);
 
         int orientation =
@@ -238,7 +239,7 @@ public class SplashActivity extends Activity {
     }
 
     /** Called once the host browser has been selected. */
-    private void onHostBrowserSelected(HostBrowserLauncherParams params) {
+    private void onHostBrowserSelected(@Nullable HostBrowserLauncherParams params) {
         if (params == null) {
             finish();
             return;
@@ -266,13 +267,14 @@ public class SplashActivity extends Activity {
      * @param splashEncoded Encoded screenshot of {@link mSplashView}.
      * @param encodingFormat The screenshot's encoding format.
      */
-    private void launch(byte[] splashEncoded, Bitmap.CompressFormat encodingFormat) {
+    private void launch(byte @Nullable [] splashEncoded, Bitmap.CompressFormat encodingFormat) {
         SplashContentProvider.cache(
                 this,
                 splashEncoded,
                 encodingFormat,
                 mSplashView.getWidth(),
                 mSplashView.getHeight());
+        assert mParams != null;
         H2OLauncher.launch(this, mParams);
         mParams = null;
     }
@@ -280,20 +282,23 @@ public class SplashActivity extends Activity {
     /** Screenshots and encodes {@link mSplashView} on a background thread. */
     @SuppressWarnings("NoAndroidAsyncTaskCheck")
     private void encodeSplashInBackground() {
-        if (mBitmap == null) {
+        Bitmap bitmap = mBitmap;
+        if (bitmap == null) {
             launch(null, Bitmap.CompressFormat.PNG);
             return;
         }
 
         mScreenshotSplashTask =
-                new android.os.AsyncTask<Void, Void, Pair<byte[], Bitmap.CompressFormat>>() {
+                new android.os.AsyncTask<
+                        Void, Void, @Nullable Pair<byte[], Bitmap.CompressFormat>>() {
                     @Override
-                    protected Pair<byte[], Bitmap.CompressFormat> doInBackground(Void... args) {
+                    protected @Nullable Pair<byte[], Bitmap.CompressFormat> doInBackground(
+                            Void... args) {
                         try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
                             Bitmap.CompressFormat encodingFormat =
                                     SplashUtils.selectBitmapEncoding(
-                                            mBitmap.getWidth(), mBitmap.getHeight());
-                            mBitmap.compress(encodingFormat, 100, out);
+                                            bitmap.getWidth(), bitmap.getHeight());
+                            bitmap.compress(encodingFormat, 100, out);
                             return Pair.create(out.toByteArray(), encodingFormat);
                         } catch (IOException e) {
                         }
@@ -302,7 +307,7 @@ public class SplashActivity extends Activity {
 
                     @Override
                     protected void onPostExecute(
-                            Pair<byte[], Bitmap.CompressFormat> splashEncoded) {
+                            @Nullable Pair<byte[], Bitmap.CompressFormat> splashEncoded) {
                         mScreenshotSplashTask = null;
                         launch(
                                 (splashEncoded == null) ? null : splashEncoded.first,

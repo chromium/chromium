@@ -39,7 +39,7 @@ export function createFolder(
         id: id,
         children: children,
         title: '',
-        syncing: true,
+        syncing: config?.syncing ?? true,
       },
       config || {});
 
@@ -76,7 +76,7 @@ export function createItem(
         id: id,
         title: '',
         url: 'http://www.google.com/',
-        syncing: true,
+        syncing: config?.syncing ?? true,
       },
       config || {});
 }

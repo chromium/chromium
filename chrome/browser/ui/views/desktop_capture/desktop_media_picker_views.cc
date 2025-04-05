@@ -383,14 +383,16 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
   SetButtonLabel(ui::mojom::DialogButton::kOk,
                  l10n_util::GetStringUTF16(message_id));
   SetButtonStyle(ui::mojom::DialogButton::kCancel, ui::ButtonStyle::kTonal);
-  RegisterDeleteDelegateCallback(base::BindOnce(
-      [](DesktopMediaPickerDialogView* dialog) {
-        // If the dialog is being closed then notify the parent about it.
-        if (dialog->parent_) {
-          dialog->parent_->NotifyDialogResult(DesktopMediaID());
-        }
-      },
-      this));
+  RegisterDeleteDelegateCallback(
+      RegisterDeleteCallbackPassKey(),
+      base::BindOnce(
+          [](DesktopMediaPickerDialogView* dialog) {
+            // If the dialog is being closed then notify the parent about it.
+            if (dialog->parent_) {
+              dialog->parent_->NotifyDialogResult(DesktopMediaID());
+            }
+          },
+          this));
 
   const ChromeLayoutProvider* const provider = ChromeLayoutProvider::Get();
   SetLayoutManager(std::make_unique<views::BoxLayout>(
