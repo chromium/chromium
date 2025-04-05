@@ -213,9 +213,7 @@ ExtensionService::ExtensionService(
       external_install_manager_(ExternalInstallManager::Get(profile)),
       shared_module_service_(new SharedModuleService(profile_)),
       extension_registrar_delegate_(
-          std::make_unique<ChromeExtensionRegistrarDelegate>(
-              profile_,
-              component_loader_)),
+          std::make_unique<ChromeExtensionRegistrarDelegate>(profile_)),
       extension_registrar_(ExtensionRegistrar::Get(profile)),
       omaha_attributes_handler_(extension_prefs,
                                 ExtensionRegistry::Get(profile),

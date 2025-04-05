@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/barrier_closure.h"
+#include "base/notimplemented.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/data_deleter.h"
 #include "chrome/browser/extensions/delayed_install_manager.h"
@@ -18,10 +19,8 @@
 #include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/browser/extensions/installed_loader.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
-#include "chrome/browser/extensions/unpacked_installer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
-#include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/favicon_base/favicon_url_parser.h"
 #include "extensions/browser/disable_reason.h"
@@ -39,6 +38,11 @@
 #include "extensions/common/permissions/permission_message_provider.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/permissions_data.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/unpacked_installer.h"
+#include "chrome/browser/ui/webui/theme_source.h"
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/fileapi/file_system_backend.h"
@@ -73,14 +77,13 @@ bool SkipDeleteExtensionDir(const Extension& extension,
 }  // namespace
 
 ChromeExtensionRegistrarDelegate::ChromeExtensionRegistrarDelegate(
-    Profile* profile,
-    ComponentLoader* component_loader)
+    Profile* profile)
     : profile_(profile),
       system_(ExtensionSystem::Get(profile_)),
       extension_prefs_(ExtensionPrefs::Get(profile_)),
       registry_(ExtensionRegistry::Get(profile_)),
       delayed_install_manager_(DelayedInstallManager::Get(profile_)),
-      component_loader_(component_loader) {}
+      component_loader_(ComponentLoader::Get(profile_)) {}
 
 ChromeExtensionRegistrarDelegate::~ChromeExtensionRegistrarDelegate() = default;
 
@@ -131,8 +134,9 @@ void ChromeExtensionRegistrarDelegate::PostActivateExtension(
 
   // TODO(kalman): Convert ExtensionSpecialStoragePolicy to a
   // BrowserContextKeyedService and use ExtensionRegistryObserver.
-  profile_->GetExtensionSpecialStoragePolicy()->GrantRightsForExtension(
-      extension.get(), profile_);
+  auto* special_storage_policy = profile_->GetExtensionSpecialStoragePolicy();
+  CHECK(special_storage_policy);
+  special_storage_policy->GrantRightsForExtension(extension.get(), profile_);
 
   // TODO(kalman): This is broken. The crash reporter is process-wide so doesn't
   // work properly multi-profile. Besides which, it should be using
@@ -152,8 +156,14 @@ void ChromeExtensionRegistrarDelegate::PostActivateExtension(
 
   // Same for chrome://theme/ resources.
   if (permissions_data->HasHostPermission(GURL(chrome::kChromeUIThemeURL))) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
     content::URLDataSource::Add(profile_,
                                 std::make_unique<ThemeSource>(profile_));
+#else
+    // TODO(crbug.com/408507365): Figure out the theme story on desktop Android
+    // and port ThemeSource if necessary.
+    NOTIMPLEMENTED() << "Themes not yet supported on desktop Android.";
+#endif
   }
 }
 
@@ -161,8 +171,9 @@ void ChromeExtensionRegistrarDelegate::PostDeactivateExtension(
     scoped_refptr<const Extension> extension) {
   // TODO(kalman): Convert ExtensionSpecialStoragePolicy to a
   // BrowserContextKeyedService and use ExtensionRegistryObserver.
-  profile_->GetExtensionSpecialStoragePolicy()->RevokeRightsForExtension(
-      extension.get(), profile_);
+  auto* special_storage_policy = profile_->GetExtensionSpecialStoragePolicy();
+  CHECK(special_storage_policy);
+  special_storage_policy->RevokeRightsForExtension(extension.get(), profile_);
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Revoke external file access for the extension from its file system context.
@@ -263,6 +274,7 @@ void ChromeExtensionRegistrarDelegate::LoadExtensionForReload(
   if (installed_extension && installed_extension->extension_manifest.get()) {
     InstalledLoader(profile_).Load(*installed_extension, false);
   } else {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
     // Otherwise, the extension is unpacked (location LOAD). We must load it
     // from the path.
     CHECK(!path.empty()) << "ExtensionRegistrar should never ask to load an "
@@ -275,6 +287,10 @@ void ChromeExtensionRegistrarDelegate::LoadExtensionForReload(
         &ChromeExtensionRegistrarDelegate::OnUnpackedReloadFailure,
         weak_factory_.GetWeakPtr()));
     unpacked_installer->Load(path);
+#else
+    // TODO(crbug.com/398299722): Port UnpackedInstaller to desktop Android.
+    NOTIMPLEMENTED() << "UnpackedInstaller not yet supported on Android";
+#endif
   }
 }
 
@@ -290,6 +306,7 @@ void ChromeExtensionRegistrarDelegate::FinishDelayedInstallationsIfAny() {
 
 bool ChromeExtensionRegistrarDelegate::CanEnableExtension(
     const Extension* extension) {
+  CHECK(system_->management_policy());
   return !system_->management_policy()->MustRemainDisabled(extension, nullptr);
 }
 
@@ -315,6 +332,7 @@ bool ChromeExtensionRegistrarDelegate::CanDisableExtension(
     return true;
   }
 
+  CHECK(system_->management_policy());
   return system_->management_policy()->UserMayModifySettings(extension,
                                                              nullptr);
 }

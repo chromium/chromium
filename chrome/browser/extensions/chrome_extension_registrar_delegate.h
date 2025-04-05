@@ -25,8 +25,7 @@ class ExtensionSystem;
 // The ExtensionRegistrar::Delegate for the //chrome/browser layer.
 class ChromeExtensionRegistrarDelegate : public ExtensionRegistrar::Delegate {
  public:
-  ChromeExtensionRegistrarDelegate(Profile* profile,
-                                   ComponentLoader* component_loader);
+  explicit ChromeExtensionRegistrarDelegate(Profile* profile);
   ChromeExtensionRegistrarDelegate(const ChromeExtensionRegistrarDelegate&) =
       delete;
   ChromeExtensionRegistrarDelegate& operator=(
@@ -63,6 +62,8 @@ class ChromeExtensionRegistrarDelegate : public ExtensionRegistrar::Delegate {
   bool CanDisableExtension(const Extension* extension) override;
   void GrantActivePermissions(const Extension* extension) override;
   void UpdateExternalExtensionAlert() override;
+
+  Profile* profile() { return profile_; }
 
  private:
   // Disables the extension if the privilege level has increased

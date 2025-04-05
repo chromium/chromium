@@ -13,6 +13,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/threading/thread_restrictions.h"
+#include "chrome/browser/extensions/chrome_extension_registrar_delegate.h"
 #include "chrome/browser/extensions/load_error_reporter.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/profiles/profile.h"
@@ -30,6 +31,7 @@
 #include "extensions/browser/extension_registry_factory.h"
 #include "extensions/browser/extension_system_provider.h"
 #include "extensions/browser/install_flag.h"
+#include "extensions/browser/management_policy.h"
 #include "extensions/browser/null_app_sorting.h"
 #include "extensions/browser/quota_service.h"
 #include "extensions/browser/service_worker_manager.h"
@@ -88,34 +90,22 @@ class DesktopAndroidExtensionSystemFactory : public ExtensionSystemProvider {
   bool ServiceIsCreatedWithBrowserContext() const override { return true; }
 };
 
-// A minimal stub implementation of the ExtensionRegistrar::Delegate.
+// A version of ChromeExtensionRegistrarDelegate that works around the current
+// lack of support for UnpackedInstaller on Android.
+//
+// TODO(crbug.com/398299722): Delete this class when UnpackedInstaller is ported
+// to Android, because then unpacked extensions will be supported by
+// ChromeExtensionRegistrarDelegate::LoadExtensionForReload().
 class DesktopAndroidExtensionRegistrarDelegate
-    : public ExtensionRegistrar::Delegate {
+    : public ChromeExtensionRegistrarDelegate {
  public:
   explicit DesktopAndroidExtensionRegistrarDelegate(
       content::BrowserContext* browser_context)
-      : browser_context_(browser_context) {
-    DCHECK(browser_context_);
-  }
+      : ChromeExtensionRegistrarDelegate(
+            Profile::FromBrowserContext(browser_context)) {}
   ~DesktopAndroidExtensionRegistrarDelegate() override = default;
 
   // ExtensionRegistrar::Delegate:
-  void PreAddExtension(const Extension* extension,
-                       const Extension* old_extension) override {}
-  void OnAddNewOrUpdatedExtension(const Extension* extension) override {}
-  void PostActivateExtension(
-      scoped_refptr<const Extension> extension) override {}
-  void PostDeactivateExtension(
-      scoped_refptr<const Extension> extension) override {}
-  void PreUninstallExtension(
-      scoped_refptr<const Extension> extension) override {}
-  void PostUninstallExtension(scoped_refptr<const Extension> extension,
-                              base::OnceClosure done_callback) override {}
-  void PostNotifyUninstallExtension(
-      scoped_refptr<const Extension> extension) override {}
-  void ShowExtensionDisabledError(const Extension* extension,
-                                  bool is_remote_install) override {}
-  void FinishDelayedInstallationsIfAny() override {}
   void LoadExtensionForReload(
       const ExtensionId& extension_id,
       const base::FilePath& path,
@@ -123,23 +113,13 @@ class DesktopAndroidExtensionRegistrarDelegate
     CHECK(!path.empty()) << "ExtensionRegistrar should never ask to load an "
                             "unknown extension with no path";
     auto* android_system = static_cast<DesktopAndroidExtensionSystem*>(
-        ExtensionSystem::Get(browser_context_));
+        ExtensionSystem::Get(profile()));
     DCHECK(android_system);
     scoped_refptr<const Extension> extension =
         android_system->LoadExtensionFromDirectory(path);
     DCHECK(extension);
     DCHECK_EQ(extension->id(), extension_id);
   }
-
-  bool CanEnableExtension(const Extension* extension) override { return true; }
-  bool CanDisableExtension(const Extension* extension) override { return true; }
-  void GrantActivePermissions(const Extension* extension) override {
-    PermissionsUpdater(browser_context_).GrantActivePermissions(extension);
-  }
-  void UpdateExternalExtensionAlert() override {}
-
- private:
-  raw_ptr<content::BrowserContext> browser_context_;  // Not owned.
 };
 
 }  // namespace
@@ -150,6 +130,9 @@ DesktopAndroidExtensionSystem::DesktopAndroidExtensionSystem(
       // TODO(crbug.com/356905053): Provide real sorting once the web app story
       // on Android is finalized.
       app_sorting_(std::make_unique<NullAppSorting>()),
+      // TODO(crbug.com/408523607): Populate ManagementPolicy with actual
+      // policies.
+      management_policy_(std::make_unique<ManagementPolicy>()),
       store_factory_(base::MakeRefCounted<value_store::ValueStoreFactoryImpl>(
           browser_context->GetPath())) {}
 
@@ -237,6 +220,7 @@ void DesktopAndroidExtensionSystem::InitForRegularProfile(
       registrar_delegate_.get(), extensions_enabled,
       browser_context_->GetPath().AppendASCII(kInstallDirectoryName),
       browser_context_->GetPath().AppendASCII(kUnpackedInstallDirectoryName));
+  registrar_delegate_->Init(registrar_.get());
 
   service_worker_manager_ =
       std::make_unique<ServiceWorkerManager>(browser_context_);
@@ -251,7 +235,7 @@ ExtensionService* DesktopAndroidExtensionSystem::extension_service() {
 }
 
 ManagementPolicy* DesktopAndroidExtensionSystem::management_policy() {
-  return nullptr;
+  return management_policy_.get();
 }
 
 ServiceWorkerManager* DesktopAndroidExtensionSystem::service_worker_manager() {
