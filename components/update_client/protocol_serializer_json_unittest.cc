@@ -62,7 +62,7 @@ TEST(SerializeRequestJSON, Serialize) {
                             std::move(apps)));
     constexpr char regex[] =
         R"({"request":{"@os":"\w+","@updater":"prod_id",)"
-        R"("acceptformat":"crx3,download,puff,run,zucchini",)"
+        R"("acceptformat":"crx3,download,puff,run,xz,zucchini",)"
         R"("apps":\[{"ap":"ap1","appid":"id1","attr1":"1","attr2":"2",)"
         R"("brand":"BRND","cohort":"c1","cohorthint":"ch1","cohortname":"cn1",)"
         R"("data":\[{"index":"foobar_install_data_index","name":"install"}],)"
@@ -147,7 +147,7 @@ TEST(SerializeRequestJSON, UpdaterStateAttributes) {
       {}));
   constexpr char regex[] =
       R"({"request":{"@os":"\w+","@updater":"prod_id",)"
-      R"("acceptformat":"crx3,download,puff,run,zucchini",)"
+      R"("acceptformat":"crx3,download,puff,run,xz,zucchini",)"
       R"("arch":"\w+","dedup":"cr",)"
       R"("dlpref":"cacheable","domainjoined":true,"extra":"params",)"
       R"("hw":{"avx":(true|false),)"

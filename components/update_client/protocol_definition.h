@@ -32,6 +32,7 @@ inline constexpr int kEventInstall = 2;
 inline constexpr int kEventUpdate = 3;
 inline constexpr int kEventUninstall = 4;
 inline constexpr int kEventDownload = 14;
+inline constexpr int kEventXz = 60;
 inline constexpr int kEventZucchini = 61;
 inline constexpr int kEventPuff = 62;
 inline constexpr int kEventCrx3 = 63;

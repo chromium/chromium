@@ -90,6 +90,7 @@ enum class UnpackerError {
   kPatchInvalidOldFile = 24,
   kPatchInvalidPatchFile = 25,
   kPatchInvalidNewFile = 26,
+  kXzFailed = 27,
 };
 
 // These errors are returned with the |kInstall| error category and

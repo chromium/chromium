@@ -24,7 +24,7 @@ std::string ProtocolSerializerJSON::Serialize(
   request_node.Set("protocol", request.protocol_version);
   request_node.Set("ismachine", request.is_machine);
   request_node.Set("dedup", "cr");
-  request_node.Set("acceptformat", "crx3,download,puff,run,zucchini");
+  request_node.Set("acceptformat", "crx3,download,puff,run,xz,zucchini");
   if (!request.additional_attributes.empty()) {
     for (const auto& [name, value] : request.additional_attributes) {
       request_node.Set(name, value);
