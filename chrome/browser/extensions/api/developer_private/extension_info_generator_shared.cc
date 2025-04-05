@@ -19,6 +19,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/extensions/api/developer_private/developer_private_api.h"
+#include "chrome/browser/extensions/api/developer_private/inspectable_views_finder.h"
 #include "chrome/browser/extensions/error_console/error_console.h"
 #include "chrome/browser/extensions/extension_allowlist.h"
 #include "chrome/browser/extensions/extension_util.h"
@@ -507,6 +508,8 @@ void ExtensionInfoGeneratorShared::FillExtensionInfo(
 
   Profile* profile = Profile::FromBrowserContext(browser_context_);
 
+  bool is_enabled = state == developer::ExtensionState::kEnabled;
+
   info.description = extension.description();
 
   // Disable reasons.
@@ -689,6 +692,11 @@ void ExtensionInfoGeneratorShared::FillExtensionInfo(
   info.type = GetExtensionType(extension.manifest()->type());
 
   info.version = extension.GetVersionForDisplay();
+
+  if (state != developer::ExtensionState::kTerminated) {
+    info.views = InspectableViewsFinder(profile).GetViewsForExtension(
+        extension, is_enabled);
+  }
 
   // The icon.
   ExtensionResource icon = IconsInfo::GetIconResource(

@@ -29,10 +29,8 @@
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"
 #include "base/uuid.h"
-#include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/extensions/chrome_zipfile_installer.h"
 #include "chrome/browser/extensions/crx_installer.h"
-#include "chrome/browser/extensions/devtools_util.h"
 #include "chrome/browser/extensions/extension_commands_global_registry.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -59,7 +57,6 @@
 #include "chrome/browser/ui/extensions/application_launch.h"
 #include "chrome/browser/ui/extensions/extensions_dialogs.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/extension_status_utils.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "chrome/common/pref_names.h"
@@ -95,7 +92,6 @@
 #include "extensions/common/install_warning.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
-#include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/manifest_handlers/options_page_info.h"
 #include "extensions/common/manifest_url_handlers.h"
 #include "extensions/common/mojom/context_type.mojom.h"
@@ -999,111 +995,6 @@ void DeveloperPrivateRequestFileSourceFunction::Finish(
   response.after_highlight = highlighter->GetAfterFeature();
 
   Respond(WithArguments(response.ToValue()));
-}
-
-DeveloperPrivateOpenDevToolsFunction::DeveloperPrivateOpenDevToolsFunction() =
-    default;
-DeveloperPrivateOpenDevToolsFunction::~DeveloperPrivateOpenDevToolsFunction() =
-    default;
-
-ExtensionFunction::ResponseAction DeveloperPrivateOpenDevToolsFunction::Run() {
-  std::optional<developer::OpenDevTools::Params> params =
-      developer::OpenDevTools::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-  const developer::OpenDevToolsProperties& properties = params->properties;
-
-  Profile* profile = Profile::FromBrowserContext(browser_context());
-  if (properties.incognito && *properties.incognito) {
-    profile = profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
-  }
-
-  const Extension* extension =
-      properties.extension_id
-          ? GetEnabledExtensionById(*properties.extension_id)
-          : nullptr;
-
-  const bool is_service_worker =
-      properties.is_service_worker && *properties.is_service_worker;
-  if (is_service_worker) {
-    if (!extension) {
-      return RespondNow(Error(kNoSuchExtensionError));
-    }
-    if (!BackgroundInfo::IsServiceWorkerBased(extension)) {
-      return RespondNow(Error(kInvalidLazyBackgroundPageParameter));
-    }
-    if (properties.render_process_id == -1) {
-      // Start the service worker and open the inspect window.
-      devtools_util::InspectInactiveServiceWorkerBackground(
-          extension, profile, DevToolsOpenedByAction::kInspectLink);
-      return RespondNow(NoArguments());
-    }
-    devtools_util::InspectServiceWorkerBackground(
-        extension, profile, DevToolsOpenedByAction::kInspectLink);
-    return RespondNow(NoArguments());
-  }
-
-  if (properties.render_process_id == -1) {
-    // This is for a lazy background page.
-    if (!extension) {
-      return RespondNow(Error(kNoSuchExtensionError));
-    }
-    if (!BackgroundInfo::HasLazyBackgroundPage(extension)) {
-      return RespondNow(Error(kInvalidRenderProcessId));
-    }
-    // Wakes up the background page and opens the inspect window.
-    devtools_util::InspectBackgroundPage(extension, profile,
-                                         DevToolsOpenedByAction::kInspectLink);
-    return RespondNow(NoArguments());
-  }
-
-  // NOTE(devlin): Even though the properties use "render_view_id", this
-  // actually refers to a render frame.
-  content::RenderFrameHost* render_frame_host =
-      content::RenderFrameHost::FromID(properties.render_process_id,
-                                       properties.render_view_id);
-
-  content::WebContents* web_contents =
-      render_frame_host
-          ? content::WebContents::FromRenderFrameHost(render_frame_host)
-          : nullptr;
-  // It's possible that the render frame was closed since we last updated the
-  // links. Handle this gracefully.
-  if (!web_contents) {
-    return RespondNow(Error(kNoSuchRendererError));
-  }
-
-  // If we include a url, we should inspect it specifically (and not just the
-  // render frame).
-  if (properties.url) {
-    // Line/column numbers are reported in display-friendly 1-based numbers,
-    // but are inspected in zero-based numbers.
-    // Default to the first line/column.
-    DevToolsWindow::OpenDevToolsWindow(
-        web_contents,
-        DevToolsToggleAction::Reveal(
-            base::UTF8ToUTF16(*properties.url),
-            properties.line_number ? *properties.line_number - 1 : 0,
-            properties.column_number ? *properties.column_number - 1 : 0),
-        DevToolsOpenedByAction::kInspectLink);
-  } else {
-    DevToolsWindow::OpenDevToolsWindow(web_contents,
-                                       DevToolsOpenedByAction::kInspectLink);
-  }
-
-  // Once we open the inspector, we focus on the appropriate tab...
-  Browser* browser = chrome::FindBrowserWithTab(web_contents);
-
-  // ... but some pages (popups and apps) don't have tabs, and some (background
-  // pages) don't have an associated browser. For these, the inspector opens in
-  // a new window, and our work is done.
-  if (!browser || !browser->is_type_normal()) {
-    return RespondNow(NoArguments());
-  }
-
-  TabStripModel* tab_strip = browser->tab_strip_model();
-  tab_strip->ActivateTabAt(tab_strip->GetIndexOfWebContents(
-      web_contents));  // Not through direct user gesture.
-  return RespondNow(NoArguments());
 }
 
 DeveloperPrivateRepairExtensionFunction::

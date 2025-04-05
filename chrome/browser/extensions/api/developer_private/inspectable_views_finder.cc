@@ -12,8 +12,6 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
-#include "extensions/browser/app_window/app_window.h"
-#include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/process_manager.h"
@@ -24,6 +22,11 @@
 #include "extensions/common/manifest_handlers/incognito_info.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "extensions/browser/app_window/app_window.h"
+#include "extensions/browser/app_window/app_window_registry.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 namespace extensions {
 
@@ -210,6 +213,7 @@ void InspectableViewsFinder::GetViewsForExtensionProcess(
 void InspectableViewsFinder::GetAppWindowViewsForExtension(
     const Extension& extension,
     ViewList* result) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   AppWindowRegistry* registry = AppWindowRegistry::Get(profile_);
   if (!registry)
     return;
@@ -232,6 +236,7 @@ void InspectableViewsFinder::GetAppWindowViewsForExtension(
                       main_frame->GetRoutingID(), false, false,
                       ConvertViewType(GetViewType(web_contents))));
   }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
 }  // namespace extensions
