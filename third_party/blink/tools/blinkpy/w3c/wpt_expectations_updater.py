@@ -306,16 +306,11 @@ class WPTExpectationsUpdater:
     def filter_results_for_update(
         self,
         test_results: WebTestResults,
-        min_attempts_for_update: int = 3,
     ) -> Tuple[Set[str], WebTestResults]:
         """Filters for failing test results that need TestExpectations.
 
         Arguments:
-            min_attempts_for_update: Threshold for the number of attempts at
-                which a test's expectations are updated. This prevents excessive
-                expectation creation due to infrastructure issues or flakiness.
-                Note that this threshold is necessary for updating without
-                `--include-unexpected-pass`, but sufficient otherwise.
+            test_results: All web test results on a given build step.
 
         Returns:
             * A set of tests that should be handled by rebaselining, which
@@ -328,14 +323,11 @@ class WPTExpectationsUpdater:
         if not self.options.include_unexpected_pass:
             # TODO(crbug.com/1149035): Consider suppressing flaky passes.
             for result in test_results.didnt_run_as_expected_results():
-                if (result.attempts >= min_attempts_for_update
-                        and not result.did_pass()):
+                if not result.did_pass():
                     failing_results.append(result)
         else:
             for result in test_results.didnt_run_as_expected_results():
-                if (result.attempts >= min_attempts_for_update
-                        or result.did_pass()):
-                    failing_results.append(result)
+                failing_results.append(result)
 
         failing_results = [
             result for result in failing_results
@@ -701,23 +693,21 @@ class WPTExpectationsUpdater:
 
     def can_rebaseline(self, result: WebTestResult) -> bool:
         """Checks if a test can be rebaselined."""
-        if self.is_reference_test(result.test_name()):
+        if not self.port.get_wpt_type(
+                result.test_name()) in {'testharness', 'wdspec'}:
             return False
         statuses = set(result.actual_results())
         if {ResultType.Pass, ResultType.Failure} <= statuses:
             return False  # Has nondeterministic output; cannot be rebaselined.
-        return not (statuses & {ResultType.Crash, ResultType.Timeout})
+        return ResultType.Failure in statuses
 
     def is_reference_test(self, test_name: str) -> bool:
         """Checks whether a given test is a reference test."""
         return bool(self.port.reference_files(test_name))
 
     @memoized
-    def _get_try_bots(self, flag_specific: Optional[str] = None):
-        builders = self.host.builders.filter_builders(
-            is_try=True,
-            exclude_specifiers={'android'},
-            flag_specific=flag_specific)
+    def _get_try_bots(self):
+        builders = self.host.builders.filter_builders(is_try=True)
         # Exclude CQ builders like `win-rel`.
         return sorted(
             set(builders) & self.host.builders.builders_for_rebaselining())

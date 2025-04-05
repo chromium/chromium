@@ -201,22 +201,12 @@ void PrivacySandboxPromptHelper::DidFinishNavigation(
 
   // If a Privacy Sandbox prompt already exists for this browser, do not attempt
   // to open another one.
-  // Or if the handle is not being held, do not attempt to show the prompt.
   if (auto* privacy_sandbox_service =
           PrivacySandboxServiceFactory::GetForProfile(profile())) {
-    privacy_sandbox::PrivacySandboxQueueManager& queue_manager =
-        privacy_sandbox_service->GetPrivacySandboxNoticeQueueManager();
-
     if (privacy_sandbox_service->IsPromptOpenForBrowser(browser)) {
       base::UmaHistogramEnumeration(kPrivacySandboxPromptHelperEventHistogram,
                                     SettingsPrivacySandboxPromptHelperEvent::
                                         kPromptAlreadyExistsForBrowser);
-      return;
-    }
-
-    if (base::FeatureList::IsEnabled(
-            privacy_sandbox::kPrivacySandboxNoticeQueue) &&
-        !queue_manager.IsHoldingHandle()) {
       return;
     }
   }
@@ -243,6 +233,21 @@ void PrivacySandboxPromptHelper::DidFinishNavigation(
         kPrivacySandboxPromptHelperEventHistogram,
         SettingsPrivacySandboxPromptHelperEvent::kNonNormalBrowser);
     return;
+  }
+
+  // If the handle is not being held, do not attempt to show the prompt.
+  // We want to check this constraint at the very end for histogram emitting
+  // reasons.
+  if (auto* privacy_sandbox_service =
+          PrivacySandboxServiceFactory::GetForProfile(profile())) {
+    privacy_sandbox::PrivacySandboxQueueManager& queue_manager =
+        privacy_sandbox_service->GetPrivacySandboxNoticeQueueManager();
+    if (base::FeatureList::IsEnabled(
+            privacy_sandbox::kPrivacySandboxNoticeQueue) &&
+        !queue_manager.IsHoldingHandle()) {
+      queue_manager.MaybeEmitQueueStateMetrics();
+      return;
+    }
   }
 
   // Record the URL that the prompt was displayed over.

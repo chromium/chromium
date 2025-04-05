@@ -167,12 +167,12 @@ scoped_refptr<StaticBitmapImage> GPUCanvasContext::GetImage(FlushReason) {
     return nullptr;
   }
 
-  if (device_->destroyed()) {
+  if (device_->IsDestroyed()) {
     return MakeFallbackStaticBitmapImage(alpha_mode_);
   }
 
   // If there is a current texture, create a snapshot from it.
-  if (texture_ && !texture_->Destroyed()) {
+  if (texture_ && !texture_->IsDestroyed()) {
     return SnapshotInternal(texture_->GetHandle(), swap_buffers_->Size());
   } else if (swap_texture_) {
     return SnapshotInternal(swap_texture_->GetHandle(), swap_buffers_->Size());
@@ -208,7 +208,7 @@ bool GPUCanvasContext::PaintRenderingResultsToCanvas(
     return false;
   }
 
-  if (device_->destroyed()) {
+  if (device_->IsDestroyed()) {
     SkColor4f color = alpha_mode_ == V8GPUCanvasAlphaMode::Enum::kOpaque
                           ? SkColors::kBlack
                           : SkColors::kTransparent;
@@ -336,7 +336,6 @@ ImageBitmap* GPUCanvasContext::TransferToImageBitmap(
           std::move(release_callback)));
 }
 
-// gpu_presentation_context.idl
 V8UnionHTMLCanvasElementOrOffscreenCanvas*
 GPUCanvasContext::getHTMLOrOffscreenCanvas() const {
   if (Host()->IsOffscreenCanvas()) {
@@ -442,9 +441,9 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
   // about not using the preferred format.
   suppress_preferred_format_warning_ = false;
   if (copy_to_swap_texture_required_ &&
-      GPU::preferred_canvas_format() == wgpu::TextureFormat::BGRA8Unorm &&
+      GPU::GetPreferredCanvasFormat() == wgpu::TextureFormat::BGRA8Unorm &&
       texture_descriptor_.usage & wgpu::TextureUsage::StorageBinding &&
-      !device_->adapter()->features()->has(
+      !device_->adapter()->features()->Has(
           V8GPUFeatureName::Enum::kBgra8UnormStorage)) {
     suppress_preferred_format_warning_ = true;
   }
@@ -508,7 +507,7 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
 
     // In cases where a copy is necessary the swap buffers will always use the
     // preferred canvas format.
-    swap_texture_descriptor_.format = GPU::preferred_canvas_format();
+    swap_texture_descriptor_.format = GPU::GetPreferredCanvasFormat();
 
     // The swap buffer texture doesn't need any view formats.
     swap_texture_descriptor_.viewFormats = nullptr;
@@ -758,7 +757,7 @@ void GPUCanvasContext::OnTextureTransferred() {
   DCHECK(texture_);
   DCHECK(swap_texture_);
 
-  if (copy_to_swap_texture_required_ && texture_ && !texture_->Destroyed()) {
+  if (copy_to_swap_texture_required_ && texture_ && !texture_->IsDestroyed()) {
     CopyToSwapTexture();
     texture_->ClearBeforeDestroyCallback();
     texture_->destroy();
@@ -780,7 +779,7 @@ void GPUCanvasContext::SetNeedsCompositingUpdate() {
 }
 
 bool GPUCanvasContext::IsGPUDeviceDestroyed() {
-  return device_->destroyed();
+  return device_->IsDestroyed();
 }
 
 void GPUCanvasContext::CopyToSwapTexture() {

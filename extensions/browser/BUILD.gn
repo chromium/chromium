@@ -554,6 +554,7 @@ source_set("browser_sources") {
     "//content/public/browser:browser",
     "//content/public/common",
     "//extensions:extensions_browser_resources",
+    "//extensions/browser/api/messaging:native_messaging",
     "//extensions/browser/api/storage:settings_namespace",
     "//extensions/browser/api/storage:settings_observer",
     "//extensions/browser/api/system_display:display_info_provider",
@@ -589,7 +590,10 @@ source_set("browser_sources") {
   ]
 
   if (is_chromeos) {
-    deps += [ "//chromeos/constants" ]
+    deps += [
+      "//chromeos/constants",
+      "//extensions/browser/api/clipboard:clipboard_types",
+    ]
   }
 
   public_deps = [
@@ -858,6 +862,7 @@ source_set("unit_tests") {
     "content_hash_tree_unittest.cc",
     "content_verifier/content_hash_unittest.cc",
     "content_verifier/content_verifier_unittest.cc",
+    "content_verifier/content_verifier_utils_unittest.cc",
     "content_verifier/content_verify_job_unittest.cc",
     "error_map_unittest.cc",
     "event_listener_map_unittest.cc",

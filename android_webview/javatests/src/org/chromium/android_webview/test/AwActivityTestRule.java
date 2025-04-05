@@ -645,6 +645,24 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
      * @param objectToInject the JavaScript interface to inject.
      * @param javascriptIdentifier the name with which to refer to {@code objectToInject} from
      *     JavaScript code.
+     * @param allowlist the list of origins this JS interface should be visible to.
+     */
+    public static List<String> addJavascriptInterfaceOnUiThread(
+            final AwContents awContents,
+            final Object objectToInject,
+            final String javascriptIdentifier,
+            final List<String> allowlist)
+            throws Exception {
+        checkJavaScriptEnabled(awContents);
+        return ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        awContents.addJavascriptInterface(
+                                objectToInject, javascriptIdentifier, allowlist));
+    }
+
+    /**
+     * This implementation of addJavascriptInterfaceOnUiThread injects the javascript interface into
+     * all origins.
      */
     public static void addJavascriptInterfaceOnUiThread(
             final AwContents awContents,

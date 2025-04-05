@@ -7,13 +7,13 @@
  * will be executed once for a given `window` JS object.
  */
 
-import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
 const errorReceivedCount: number = 0;
 
 function getErrorCount() {
-  return gCrWeb.javaScriptFeatureTest.errorReceivedCount;
+  return gCrWebLegacy.javaScriptFeatureTest.errorReceivedCount;
 }
 
 function replaceDivContents() {
@@ -32,7 +32,7 @@ if (body) {
   body.appendChild(document.createTextNode('injected_script_loaded'));
 }
 
-gCrWeb.javaScriptFeatureTest = {
+gCrWebLegacy.javaScriptFeatureTest = {
   errorReceivedCount,
   getErrorCount,
   replaceDivContents,

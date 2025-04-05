@@ -30,7 +30,7 @@ class BloomFilter {
   // type) and using |num_hash_functions| per entry.
   BloomFilter(uint32_t num_hash_functions,
               uint32_t num_bits,
-              std::string filter_data);
+              const std::string& filter_data);
 
   BloomFilter(const BloomFilter&) = delete;
   BloomFilter& operator=(const BloomFilter&) = delete;

@@ -124,6 +124,7 @@ void EmptyLocalFrameClient::BeginNavigation(
     network::mojom::CSPDisposition,
     mojo::PendingRemote<mojom::blink::BlobURLToken>,
     base::TimeTicks,
+    base::TimeTicks,
     const String&,
     const std::optional<Impression>&,
     const LocalFrameToken* initiator_frame_token,

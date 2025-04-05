@@ -125,19 +125,19 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
     };
   }
 
-  password: chrome.passwordsPrivate.PasswordUiEntry;
-  groupName: string;
-  iconUrl: string;
-  isUsingAccountStore: boolean;
+  declare password: chrome.passwordsPrivate.PasswordUiEntry;
+  declare groupName: string;
+  declare iconUrl: string;
+  declare isUsingAccountStore: boolean;
   /* This is set by the parent element, to only show help buble on the first
    * card on the page. */
-  shouldRegisterSharingPromo = false;
-  private showEditPasswordDialog_: boolean;
-  private passwordSharingDisabled_: boolean;
-  private showDeletePasswordDialog_: boolean;
-  private showShareFlow_: boolean;
-  private showShareButton_: boolean;
-  private showMovePasswordDialog_: boolean;
+  declare shouldRegisterSharingPromo: boolean;
+  declare private showEditPasswordDialog_: boolean;
+  declare private passwordSharingDisabled_: boolean;
+  declare private showDeletePasswordDialog_: boolean;
+  declare private showShareFlow_: boolean;
+  declare private showShareButton_: boolean;
+  declare private showMovePasswordDialog_: boolean;
 
   override connectedCallback() {
     super.connectedCallback();

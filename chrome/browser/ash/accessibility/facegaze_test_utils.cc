@@ -37,7 +37,7 @@ constexpr char kMediapipeTestFilePath[] =
     "mediapipe_task_vision";
 const int kMouseDeviceId = 1;
 constexpr char kTestSupportPath[] =
-    "chrome/browser/resources/chromeos/accessibility/accessibility_common/"
+    "chrome/browser/resources/chromeos/accessibility/accessibility_common/mv2/"
     "facegaze/facegaze_test_support.js";
 
 PrefService* GetPrefs() {

@@ -2254,34 +2254,22 @@ TEST_P(DeferUnusedPreloadWithExcludedResourceTypeResourceFetcherTest,
 
 class TransparentPlaceholderResourceFetcherTest
     : public ResourceFetcherTestBase,
-      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   TransparentPlaceholderResourceFetcherTest()
       : scoped_skip_callbacks_when_devtools_not_open_(
             IsSkipCallbacksWhenDevToolsNotOpenEnabled()),
         scoped_preload_link_rel_data_urls_(IsPreloadLinkRelDataUrlsEnabled()) {
-    if (IsSimplifyLoadingTransparentPlaceholderImageEnabled()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          features::kSimplifyLoadingTransparentPlaceholderImage);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          features::kSimplifyLoadingTransparentPlaceholderImage);
-    }
   }
 
  protected:
-  bool IsSimplifyLoadingTransparentPlaceholderImageEnabled() {
+  bool IsSkipCallbacksWhenDevToolsNotOpenEnabled() {
     return std::get<0>(GetParam());
   }
 
-  bool IsSkipCallbacksWhenDevToolsNotOpenEnabled() {
-    return std::get<1>(GetParam());
-  }
-
-  bool IsPreloadLinkRelDataUrlsEnabled() { return std::get<2>(GetParam()); }
+  bool IsPreloadLinkRelDataUrlsEnabled() { return std::get<1>(GetParam()); }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   ScopedSkipCallbacksWhenDevToolsNotOpenForTest
       scoped_skip_callbacks_when_devtools_not_open_;
   ScopedPreloadLinkRelDataUrlsForTest scoped_preload_link_rel_data_urls_;
@@ -2290,7 +2278,6 @@ class TransparentPlaceholderResourceFetcherTest
 INSTANTIATE_TEST_SUITE_P(TransparentPlaceholderResourceFetcherTest,
                          TransparentPlaceholderResourceFetcherTest,
                          testing::Combine(testing::Bool(),
-                                          testing::Bool(),
                                           testing::Bool()));
 
 TEST_P(TransparentPlaceholderResourceFetcherTest, InspectorAttached) {
@@ -2346,9 +2333,7 @@ TEST_P(TransparentPlaceholderResourceFetcherTest, InspectorNotAttached) {
   // is open.
   std::optional<PartialResourceRequest> last_request =
       observer->GetLastRequest();
-  EXPECT_EQ(last_request.has_value(),
-            (!IsSimplifyLoadingTransparentPlaceholderImageEnabled() &&
-             !IsSkipCallbacksWhenDevToolsNotOpenEnabled()));
+  EXPECT_FALSE(last_request.has_value());
 }
 
 }  // namespace blink

@@ -114,6 +114,15 @@ Sachez que, sur <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> et <ph name
 <translation id="1065175969514496951">Cette règle permet d'autoriser l'accès aux URL listées lors de l'authentification (par exemple, sur les écrans de connexion et de verrouillage) comme exceptions à <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />. Lisez sa description pour connaître le format des entrées listées. Par exemple, définir <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" /> sur <ph name="WILDCARD_VALUE" /> bloque toutes les requêtes, et vous pouvez appliquer cette règle pour autoriser l'accès à une liste limitée d'URL. Utilisez-la pour définir des exceptions à certains schémas, ports, chemins d'accès spécifiques ou sous-domaines d'autres domaines à l'aide du format spécifié sur https://support.google.com/chrome/a?p=url_blocklist_filter_format. Le filtre le plus spécifique détermine si une URL est bloquée ou autorisée. La règle <ph name="DEVICE_AUTHENTICATION_URL_ALLOWLIST_POLICY_NAME" /> prévaut sur <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />. Cette règle est limitée à 1 000 entrées.
 
 Si cette règle n'est pas configurée, aucune exception à <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" /> n'est autorisée.</translation>
+<translation id="1065501094422559251">Cette règle contrôle les paramètres de code dynamique pour <ph name="PRODUCT_NAME" />.
+
+La désactivation du code dynamique améliore la sécurité de <ph name="PRODUCT_NAME" /> en empêchant le code dynamique et le code tiers potentiellement hostiles de modifier le comportement de <ph name="PRODUCT_NAME" />. Toutefois, cela peut entraîner des problèmes de compatibilité avec les logiciels tiers (par exemple, certains pilotes d'imprimante) devant s'exécuter dans le processus du navigateur.
+
+Si cette règle est définie sur 0 - Default ou si elle n'est pas configurée, <ph name="PRODUCT_NAME" /> utilisera les paramètres par défaut.
+
+Si cette règle est définie sur 1 - DisabledForBrowser, le processus de navigateur de <ph name="PRODUCT_NAME" /> ne peut pas créer de code dynamique.
+
+Remarque : pour en savoir plus sur les règles d'atténuation des risques liés aux processus, consultez https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies.</translation>
 <translation id="1068801725746725727">Activer la réception d'enquêtes sur la navigation sécurisée</translation>
 <translation id="107045325503547419">Dépendre du processus de lancement de la fonctionnalité.</translation>
 <translation id="1073983258515362346">Transmettre les informations concernant le rétroéclairage d'un appareil.
@@ -1187,9 +1196,6 @@ La disponibilité des extensions est toujours contrôlée par d'autres règles.<
 <translation id="1858775210076906272">Configuration Kerberos préremplie</translation>
 <translation id="1861206724856734193">Définit la liste des règles de prévention des fuites de données.</translation>
 <translation id="1862267110714201519">Désactiver la fonctionnalité Fenêtre fantôme.</translation>
-<translation id="1865129144973895592">Cette règle permet de réactiver temporairement un ensemble d'événements de plate-forme obsolète et supprimé appelé "Événements de mutation".
-Si cette règle est activée, les événements de mutation continuent de se déclencher, même s'ils ont été désactivés par défaut pour les utilisateurs Web standards. Si elle est désactivée ou n'est pas configurée, il est possible que ces événements ne soient pas déclenchés.
-Cette règle est une solution temporaire et sera supprimée dans M135.</translation>
 <translation id="1865417998205858223">Autorisations de clés</translation>
 <translation id="1865867000796030567">Si cette règle est activée, la valeur de la clé du fichier manifeste <ph name="REQUIRED_PLATFORM_VERSION" /> de l'application kiosque lancée automatiquement sans délai est utilisée comme préfixe de la version cible pour la mise à jour automatique.
 
@@ -4317,6 +4323,9 @@ Remarque : Bloquer des URL internes chrome://* et chrome-untrusted://* peut ent
       Dans les sessions Kiosque, il n'y a pas de délai de grâce ni de notification concernant le redémarrage.
 </translation>
 <translation id="4187576366596772431">Bloquer l'API WebHID sur ces sites</translation>
+<translation id="4188427466177877986">Si cette règle est activée ou n'est pas configurée, les utilisateurs peuvent suivre leurs colis dans <ph name="PRODUCT_NAME" /> via la page "Nouvel onglet".
+Si cette règle est désactivée, les utilisateurs ne peuvent pas suivre leurs colis dans <ph name="PRODUCT_NAME" /> via la page "Nouvel onglet".
+Obsolète : la fonctionnalité de suivi des colis étant désactivée depuis M132, cette règle n'a plus aucun effet.</translation>
 <translation id="4189100643304138928">Liste des paramètres des services des connecteurs Chrome Enterprise à appliquer au connecteur Enterprise <ph name="ON_FILE_ATTACHED_ENTERPRISE_CONNECTOR" />, qui se déclenche lorsqu'un fichier est joint à Chrome.
 
       Les champs "<ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />", "<ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />", "<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />" et "<ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" />" permettent de déterminer si le connecteur doit envoyer un fichier en vue d'une analyse lorsqu'il est joint à une page spécifique, ainsi que les tags à inclure dans la demande d'analyse de ce fichier. Un tag correspondant à un format "enable" sera inclus dans la demande d'analyse si l'URL de la page suit un format associé à ce tag, à condition qu'aucun format "disable" associé à ce même tag ne corresponde à l'URL de la page. L'analyse a lieu si au moins un tag doit être inclus dans la demande.
@@ -5996,7 +6005,6 @@ Si cette règle n'est pas configurée, aucune exception à <ph name="URL_BLOCKLI
 <translation id="5373552304217872025">Si cette règle est définie sur "true" ou si elle n'est pas configurée, <ph name="PRODUCT_NAME" /> et <ph name="LACROS_NAME" /> autorisent l'ajout d'une personne depuis le gestionnaire d'utilisateurs.
 
       Si elle est définie sur "false", <ph name="PRODUCT_NAME" /> et <ph name="LACROS_NAME" /> n'autorisent pas l'ajout d'une personne depuis le gestionnaire d'utilisateurs.</translation>
-<translation id="5376378981585287162">Supprimer les fichiers locaux existants (pris en charge depuis la version 136)</translation>
 <translation id="5377606826822211923">Contrôler l'accès par l'utilisateur aux applications Android provenant de sources non approuvées</translation>
 <translation id="5377826248281933035">Cette règle liste des sites sur lesquels les utilisateurs peuvent effectuer des recherches rapides à l'aide de raccourcis dans la barre d'adresse. Les utilisateurs peuvent lancer une recherche en saisissant dans la barre d'adresse le raccourci ou raccourci précédé du caractère @ (par exemple, @travail), puis en appuyant sur la barre d'espace ou la touche de tabulation.
 
@@ -7678,6 +7686,15 @@ REMARQUE : Le comportement par défaut des appareils grand public et profession
       2) La langue du système
       3) La langue de remplacement (en-US).</translation>
 <translation id="6493089139124468815">Autoriser les sites à demander aux utilisateurs l'accès au presse-papiers</translation>
+<translation id="6493557163786346587">Permet de dresser la liste des formats d'URL pour lesquels les sites ne sont pas autorisés à demander aux utilisateurs à accéder à un port série.
+
+Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> s'applique pour tous les sites, à condition qu'elle soit définie. Si ce n'est pas le cas, le paramètre défini par l'utilisateur s'applique.
+
+Si le format d'URL ne correspond pas à celui défini dans cette règle, les règles suivantes s'appliquent, selon l'ordre de priorité suivant : <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" /> (si une correspondance existe), <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> (si elle est définie) ou les paramètres personnels de l'utilisateur.
+
+Si les formats d'URL entrent en conflit avec <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />, cette règle prévaut.
+
+Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez consulter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. La valeur <ph name="WILDCARD_VALUE" /> n'est pas acceptée pour cette règle.</translation>
 <translation id="6493918190032622602">Version minimale autorisée de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="6495337487202227251">Cette règle étant obsolète, elle sera supprimée dans la version 85 de <ph name="PRODUCT_OS_NAME" />. (Veuillez utiliser la règle <ph name="SCREEN_LOCK_DELAYS_POLICY_NAME" />.)
 
@@ -8112,6 +8129,11 @@ Le navigateur supprimera automatiquement les données des types sélectionnés q
 La suppression des données expirées se fera 15 secondes après le démarrage du navigateur, puis toutes les 30 minutes lorsque le navigateur sera en cours d'exécution.
 
 Jusqu'à Chrome 114, cette règle exigeait que la règle <ph name="SYNC_DISABLED_POLICY_NAME" /> soit définie sur "true". À partir de Chrome 115, si vous configurez cette règle, la synchronisation sera désactivée pour les types de données respectifs si <ph name="CHROME_SYNC_NAME" /> n'est pas désactivé en définissant la règle <ph name="SYNC_DISABLED_POLICY_NAME" /> et que <ph name="BROWSER_SIGNIN_POLICY_NAME" /> n'est pas désactivé.</translation>
+<translation id="6762635531429930846">Précise l'ancienneté minimale de la version au-delà de laquelle les notifications de relance deviennent plus fréquentes. L'ancienneté est calculée à partir de la date de dernière diffusion aux clients de la version en cours.
+
+Si une nouvelle version est en attente, qu'un redémarrage du navigateur ou de l'appareil est nécessaire et que la version actuelle a été remplacée depuis plus de jours que le nombre indiqué par ce paramètre, la règle <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> est remplacée par deux heures. Si la règle <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" /> est définie sur 1 ("Obligatoire"), les utilisateurs seront obligés de relancer ou de redémarrer à la fin de la période.
+
+Si elle n'est pas définie ou que l'ancienneté de la version ne peut pas être déterminée, la règle <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> sera utilisée pour toutes les mises à jour.</translation>
 <translation id="6763023079133439068">Autoriser les certificats sans extension subjectAlternativeName lorsqu'ils sont émis par des ancres de confiance locales</translation>
 <translation id="6766216162565713893">Autoriser les sites à demander à l'utilisateur d'accorder l'accès à un appareil Bluetooth à proximité</translation>
 <translation id="6770454900105963262">Envoyer des rapports sur les sessions Kiosque actives</translation>
@@ -8705,17 +8727,6 @@ Remarque : Si vous utilisez cette règle pour résoudre automatiquement le fuse
 
       Si cette règle est définie sur "False", les utilisateurs, les applications et les extensions ne peuvent pas utiliser ce mode.</translation>
 <translation id="718126088895133062">Cette règle définit l'ID utilisateur attribuant des licences <ph name="PLUGIN_VM_NAME" /> pour cet appareil.</translation>
-<translation id="7184152751828902217">L'état de la batterie peut être affecté par des facteurs comme les recharges complètes fréquentes et les recharges prolongées. Cette règle propose trois options pour optimiser la recharge, atténuer ces facteurs et prolonger ainsi la durée de vie de la batterie.
-
-Si vous définissez cette règle sur "1 - Standard" ou que vous ne la configurez pas, la batterie se recharge normalement à 100 %. Cela désactive les recharges adaptative et limitée.
-
-Si vous définissez cette règle sur "2 - Adaptative", l'appareil apprend vos habitudes de recharge et retarde la recharge à 100 % jusqu'à ce que cela soit nécessaire. Cela contribue à prolonger la durée de vie de la batterie.
-
-Si vous définissez cette règle sur "3 - Limitée", la batterie ne se recharge qu'à environ 80 % pour maximiser sa durée de vie.
-
-Cette règle remplace <ph name="DEVICE_POWER_ADAPTIVE_CHARGING_ENABLED_POLICY_NAME" />.
-
-Les règles <ph name="DEVICE_POWER_BATTERY_CHARGING_OPTIMIZATION_POLICY_NAME" /> et <ph name="DEVICE_POWER_ADAPTIVE_CHARGING_ENABLED_POLICY_NAME" /> prévalent toujours sur les paramètres utilisateur.</translation>
 <translation id="7185078796915954712">TLS 1.3</translation>
 <translation id="7185630966939835143">Utiliser un service Web Google pour corriger les fautes d'orthographe</translation>
 <translation id="7187248416163189586">Désactiver les rapports sur le rétroéclairage de l'appareil</translation>
@@ -10205,6 +10216,15 @@ Remarque : Cette règle est une solution temporaire pour faciliter la transitio
 <translation id="8371178326720637170">Autorise les extensions gérées à utiliser l'API Enterprise Hardware Platform</translation>
 <translation id="8373176843640227330">Désactiver les rapports Bluetooth de l'appareil</translation>
 <translation id="8375817202037102567">Bloquer l'accès en écriture aux fichiers et répertoires pour ces sites</translation>
+<translation id="837805585374308454">Permet de dresser la liste des formats d'URL pour lesquels les sites sont autorisés à demander aux utilisateurs à accéder à un port série.
+
+Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> s'applique pour tous les sites, à condition qu'elle soit définie. Si ce n'est pas le cas, les paramètres spécifiés par les utilisateurs s'appliquent.
+
+Si le format d'URL ne correspond pas à celui défini dans cette règle, les règles suivantes s'appliquent, selon l'ordre de priorité suivant : <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" /> (si une correspondance existe), <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> (si elle est définie) ou les paramètres personnels de l'utilisateur.
+
+Si les formats d'URL entrent en conflit avec <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" />, ils sont ignorés.
+
+Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez consulter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. La valeur <ph name="WILDCARD_VALUE" /> n'est pas acceptée pour cette règle.</translation>
 <translation id="8378266419596669629">Bloquer l'autorisation des polices locales pour ces sites</translation>
 <translation id="8379281645427937253">Liste des certificats TLS qui devraient être approuvés par <ph name="PRODUCT_NAME" /> pour l'authentification du serveur.
 Les certificats doivent être encodés en base64.</translation>

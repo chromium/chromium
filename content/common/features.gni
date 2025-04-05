@@ -19,7 +19,6 @@ declare_args() {
   # depending on the build argument.
   mbi_mode = is_linux || is_chromeos || is_mac || is_win || is_android
 
-  # We allow legacy IPC to be enabled for Android (GIN Java bridge), and
-  # Pepper usage.
-  content_enable_legacy_ipc = is_android || enable_ppapi
+  # We allow legacy IPC to be enabled for Pepper usage.
+  content_enable_legacy_ipc = enable_ppapi
 }

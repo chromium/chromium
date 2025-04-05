@@ -13,86 +13,10 @@
 namespace tabs {
 
 PinnedTabCollection::PinnedTabCollection()
-    : TabCollection(TabCollection::Type::PINNED),
-      impl_(std::make_unique<TabCollectionStorage>(*this)) {}
+    : TabCollection(TabCollection::Type::PINNED,
+                    {TabCollection::Type::SPLIT},
+                    /*supports_tabs=*/true) {}
 
 PinnedTabCollection::~PinnedTabCollection() = default;
-
-void PinnedTabCollection::AddTab(std::unique_ptr<TabModel> tab_model,
-                                 size_t index) {
-  CHECK(index <= ChildCount() && index >= 0);
-  CHECK(tab_model);
-
-  TabModel* inserted_tab_model = impl_->AddTab(std::move(tab_model), index);
-  inserted_tab_model->SetPinned(/*pinned=*/true);
-  inserted_tab_model->OnReparented(this, GetPassKey());
-}
-
-void PinnedTabCollection::AppendTab(std::unique_ptr<TabModel> tab_model) {
-  CHECK(tab_model);
-  AddTab(std::move(tab_model), ChildCount());
-}
-
-void PinnedTabCollection::MoveTab(TabModel* tab_model, size_t dst_index) {
-  CHECK(dst_index < ChildCount() && dst_index >= 0);
-  impl_->MoveTab(tab_model, dst_index);
-}
-
-void PinnedTabCollection::CloseTab(TabModel* tab_model) {
-  CHECK(tab_model);
-  impl_->CloseTab(tab_model);
-}
-
-tabs::TabModel* PinnedTabCollection::GetTabAtIndex(size_t index) const {
-  CHECK(index < ChildCount() && index >= 0);
-  return impl_->GetTabAtIndex(index);
-}
-
-bool PinnedTabCollection::ContainsTab(const TabInterface* tab) const {
-  CHECK(tab);
-  return impl_->ContainsTab(tab);
-}
-
-bool PinnedTabCollection::ContainsTabRecursive(const TabInterface* tab) const {
-  CHECK(tab);
-  return impl_->ContainsTab(tab);
-}
-
-bool PinnedTabCollection::ContainsCollection(TabCollection* collection) const {
-  CHECK(collection);
-  return false;
-}
-
-std::optional<size_t> PinnedTabCollection::GetIndexOfTabRecursive(
-    const TabInterface* tab) const {
-  CHECK(tab);
-  return impl_->GetIndexOfTab(tab);
-}
-
-std::optional<size_t> PinnedTabCollection::GetIndexOfCollection(
-    TabCollection* collection) const {
-  CHECK(collection);
-  return std::nullopt;
-}
-
-std::unique_ptr<TabModel> PinnedTabCollection::MaybeRemoveTab(
-    TabModel* tab_model) {
-  CHECK(tab_model);
-
-  std::unique_ptr<TabModel> removed_tab_model = impl_->RemoveTab(tab_model);
-  removed_tab_model->SetPinned(/*pinned=*/false);
-  removed_tab_model->OnReparented(nullptr, GetPassKey());
-  return removed_tab_model;
-}
-
-size_t PinnedTabCollection::ChildCount() const {
-  return impl_->GetChildrenCount();
-}
-
-std::unique_ptr<TabCollection> PinnedTabCollection::MaybeRemoveCollection(
-    TabCollection* collection) {
-  CHECK(collection);
-  return nullptr;
-}
 
 }  // namespace tabs

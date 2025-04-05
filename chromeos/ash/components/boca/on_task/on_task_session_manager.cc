@@ -107,6 +107,12 @@ void OnTaskSessionManager::OnSessionEnded(const std::string& session_id) {
   notifications_manager_->ClearNotification(
       kOnTaskEnterLockedModeNotificationId);
 
+  // Clear content added and removed notification if the session ends.
+  notifications_manager_->ClearNotification(
+      kOnTaskBundleContentAddedNotificationId);
+  notifications_manager_->ClearNotification(
+      kOnTaskBundleContentRemovedNotificationId);
+
   // Surface notification to notify user about session end.
   OnTaskNotificationsManager::NotificationCreateParams
       notification_create_params(
@@ -344,6 +350,12 @@ void OnTaskSessionManager::EnterLockedMode() {
       /*pinned=*/true,
       base::BindRepeating(&OnTaskSessionManager::OnSetPinStateOnBocaSWAWindow,
                           weak_ptr_factory_.GetWeakPtr()));
+}
+
+void OnTaskSessionManager::SetNotificationManagerForTesting(
+    std::unique_ptr<ash::boca::OnTaskNotificationsManager>
+        notifications_manager) {
+  notifications_manager_ = std::move(notifications_manager);
 }
 
 void OnTaskSessionManager::PauseOrUnpauseApp(bool pause_app) {

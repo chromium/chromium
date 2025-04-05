@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.password_manager.settings;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.access_loss.AccessLossWarningMetricsRecorder.logExportFlowLastStepMetric;
 
 import android.app.Activity;
@@ -14,6 +15,8 @@ import android.os.Bundle;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.access_loss.AccessLossWarningMetricsRecorder.PasswordAccessLossWarningExportStep;
 import org.chromium.chrome.browser.access_loss.PasswordAccessLossWarningType;
 import org.chromium.chrome.browser.password_manager.PasswordAccessLossDialogHelper;
@@ -30,6 +33,7 @@ import org.chromium.components.user_prefs.UserPrefs;
  * The mediator for the password access loss warning export flow. It implements the {@link
  * ExportFlowInterface.Delegate} and contains the dialog buttons callbacks.
  */
+@NullMarked
 class PasswordAccessLossExportDialogMediator
         implements ExportFlowInterface.Delegate,
                 PasswordAccessLossExportDialogFragment.Delegate,
@@ -42,9 +46,9 @@ class PasswordAccessLossExportDialogMediator
     private final Profile mProfile;
     private final int mDialogViewId;
     private final PasswordAccessLossExportDialogFragment mExportDialogFragment;
-    private ExportFlow mExportFlow;
+    private @Nullable ExportFlow mExportFlow;
     private PasswordStoreBridge mPasswordStoreBridge;
-    private DialogManager mProgressBarManager;
+    private @Nullable DialogManager mProgressBarManager;
     private final PasswordAccessLossExportDialogCoordinator.Observer mExportDialogObserver;
 
     public PasswordAccessLossExportDialogMediator(
@@ -197,6 +201,7 @@ class PasswordAccessLossExportDialogMediator
     }
 
     private void onPasswordDeletionCompleted() {
+        assumeNonNull(mProgressBarManager);
         mProgressBarManager.hide(
                 () -> {
                     destroy();

@@ -139,6 +139,8 @@ def fill_proto_with_bogus(unique_id: str, proto: Message,
 
     if field.type == FieldDescriptor.TYPE_STRING and not repeated:
       setattr(proto, field.name, "[Archived]")
+    elif field.type == FieldDescriptor.TYPE_STRING and repeated:
+      getattr(proto, field.name).append("[Archived]")
     elif field.type == FieldDescriptor.TYPE_ENUM and not repeated:
       # Assume the 2nd value in the enum is reasonable, since the 1st is
       # UNSPECIFIED.

@@ -39,6 +39,14 @@ enum class PolicyCheckResult {
   kValid
 };
 
+#if BUILDFLAG(IS_ANDROID)
+// key::kDeveloperToolsDisabled has been deprecated and has never been supported
+// on Android.
+std::optional<Availability> GetValueFromDeveloperToolsDisabledPolicy(
+    const PolicyMap& policies) {
+  return std::nullopt;
+}
+#else
 // Checks the value of the DeveloperToolsDisabled policy. |errors| may be
 // nullptr.
 PolicyCheckResult CheckDeveloperToolsDisabled(
@@ -75,6 +83,7 @@ std::optional<Availability> GetValueFromDeveloperToolsDisabledPolicy(
   return developer_tools_disabled->GetBool() ? Availability::kDisallowed
                                              : Availability::kAllowed;
 }
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Returns true if |value| is within the valid range of the
 // DeveloperToolsAvailability enum policy.
@@ -199,24 +208,31 @@ bool DeveloperToolsPolicyHandler::CheckPolicySettings(
     policy::PolicyErrorMap* errors) {
   // It is safe to use `GetValueUnsafe()` because type checking is performed
   // before the value is used.
-  // Deprecated boolean policy DeveloperToolsDisabled.
-  const base::Value* developer_tools_disabled =
-      policies.GetValueUnsafe(key::kDeveloperToolsDisabled);
-  PolicyCheckResult developer_tools_disabled_result =
-      CheckDeveloperToolsDisabled(developer_tools_disabled, errors);
-
-  // It is safe to use `GetValueUnsafe()` because type checking is performed
-  // before the value is used.
   // Enumerated policy DeveloperToolsAvailability.
   const base::Value* developer_tools_availability =
       policies.GetValueUnsafe(key::kDeveloperToolsAvailability);
   PolicyCheckResult developer_tools_availability_result =
       CheckDeveloperToolsAvailability(developer_tools_availability, errors);
+  PolicyCheckResult developer_tools_disabled_result =
+      PolicyCheckResult::kNotSet;
+#if !BUILDFLAG(IS_ANDROID)
+  // It is safe to use `GetValueUnsafe()` because type checking is performed
+  // before the value is used.
+  // Deprecated boolean policy DeveloperToolsDisabled.
+  const base::Value* developer_tools_disabled =
+      policies.GetValueUnsafe(key::kDeveloperToolsDisabled);
+  developer_tools_disabled_result =
+      CheckDeveloperToolsDisabled(developer_tools_disabled, errors);
 
   if (developer_tools_disabled_result == PolicyCheckResult::kValid &&
       developer_tools_availability_result == PolicyCheckResult::kValid) {
     errors->AddError(key::kDeveloperToolsDisabled, IDS_POLICY_OVERRIDDEN,
                      key::kDeveloperToolsAvailability);
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+  if (developer_tools_disabled_result != PolicyCheckResult::kValid &&
+      developer_tools_availability_result != PolicyCheckResult::kValid) {
+    return false;
   }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)

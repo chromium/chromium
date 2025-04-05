@@ -395,6 +395,98 @@ const struct InputMethodNameMap {
     {"__MSG_TRANSLITERATION_UR__", IDS_IME_NAME_TRANSLITERATION_UR},
 };
 
+// List of input methods that should be enabled in OOBE.
+// The only fuzzy IMs included in this list are those that have required data
+// pre-bundled in the system's image. Entries in the list should be updated
+// if pre-bundled data for any fuzzy IM is removed from the image.
+const char* const kOobeAllowlistedExtensionLocalIds[] = {
+    // Keyboard layout IMs.
+    "xkb:us::eng",              // English (US)
+    "xkb:us:altgr-intl:eng",    // English (US) with Extended keyboard
+    "xkb:us:colemak:eng",       // English (US) with Colemak keyboard
+    "xkb:us:dvorak:eng",        // English (US) with Dvorak keyboard
+    "xkb:us:dvp:eng",           // English (US) with Programmer Dvorak keyboard
+    "xkb:us:intl_pc:eng",       // English (US) with International PC keyboard
+    "xkb:us:intl:eng",          // English (US) with International keyboard
+    "xkb:us:workman-intl:eng",  // English (US) with Workman International
+                                // keyboard
+    "xkb:us:workman:eng",       // English (US) with Workman keyboard
+    "xkb:dk::dan",              // Danish
+    "xkb:be::nld",              // Dutch (Belgium)
+    "xkb:us:intl_pc:nld",       // Dutch (Netherlands) with US International PC
+                                // keyboard
+    "xkb:us:intl:nld",          // Dutch (Netherlands)
+    "xkb:ca:eng:eng",           // English (Canada)
+    "xkb:gb:dvorak:eng",        // English (UK) with Dvorak keyboard
+    "xkb:gb:extd:eng",          // English (UK)
+    "xkb:fi::fin",              // Finnish
+    "xkb:be::fra",              // French (Belgium)
+    "xkb:ca::fra",              // French (Canada)
+    "xkb:ca:multix:fra",        // French (Canada) with Multilingual keyboard
+    "xkb:fr::fra",              // French (France)
+    "xkb:fr:bepo:fra",          // French (France) with Bépo keyboard
+    "xkb:ch:fr:fra",            // French (Switzerland)
+    "xkb:be::ger",              // German (Belgium)
+    "xkb:de::ger",              // German (Germany)
+    "xkb:de:neo:ger",           // German (Germany) with Neo 2 keyboard
+    "xkb:ch::ger",              // German (Switzerland)
+    "xkb:it::ita",              // Italian
+    "xkb:no::nob",              // Norwegian
+    "xkb:pl::pol",              // Polish
+    "xkb:br::por",              // Portuguese (Brazil)
+    "xkb:pt::por",              // Portuguese (Portugal)
+    "xkb:us:intl_pc:por",       // Portuguese with US International PC keyboard
+    "xkb:us:intl:por",          // Portuguese with US International keyboard
+    "xkb:latam::spa",           // Spanish (Latin America)
+    "xkb:es::spa",              // Spanish (Spain)
+    "xkb:se::swe",              // Swedish
+    "xkb:tr::tur",              // Turkish
+    "xkb:tr:f:tur",             // Turkish with F-keyboard
+    "xkb:am:phonetic:arm",      // Armenian
+    "xkb:bg::bul",              // Bulgarian
+    "xkb:bg:phonetic:bul",      // Bulgarian with Phonetic keyboard
+    "xkb:by::bel",              // Belarusian
+    "xkb:es:cat:cat",           // Catalan
+    "xkb:cz:qwerty:cze",        // Czech with QWERTY keyboard
+    "xkb:cz::cze",              // Czech
+    "xkb:in::eng",              // English (India)
+    "xkb:pk::eng",              // English (Pakistan)
+    "xkb:za:gb:eng",            // English (South Africa)
+    "xkb:ee::est",              // Estonian
+    "xkb:us::fil",              // Filipino
+    "xkb:fo::fao",              // Faroese
+    "xkb:ge::geo",              // Georgian
+    "xkb:gr::gre",              // Greek
+    "xkb:hr::scr",              // Croatian
+    "xkb:hu::hun",              // Hungarian
+    "xkb:hu:qwerty:hun",        // Hungarian with QWERTY keyboard
+    "xkb:us::ind",              // Indonesian
+    "xkb:ie::ga",               // Irish
+    "xkb:il::heb",              // Hebrew
+    "xkb:is::ice",              // Icelandic
+    "xkb:jp::jpn",              // Alphanumeric with Japanese keyboard
+    "xkb:kz::kaz",              // Kazakh
+    "xkb:lt::lit",              // Lithuanian
+    "xkb:lv:apostrophe:lav",    // Latvian
+    "xkb:mk::mkd",              // Macedonian
+    "xkb:mn::mon",              // Mongolian
+    "xkb:us::msa",              // Malay
+    "xkb:mt::mlt",              // Maltese
+    "xkb:ro::rum",              // Romanian
+    "xkb:ro:std:rum",           // Romanian with Standard keyboard
+    "xkb:ru::rus",              // Russian
+    "xkb:ru:phonetic:rus",      // Russian with Phonetic keyboard
+    "xkb:rs::srp",              // Serbian
+    "xkb:si::slv",              // Slovenian
+    "xkb:sk::slo",              // Slovak
+    "xkb:ua::ukr",              // Ukrainian
+    // Deterministic IMEs.
+    "vkd_ar",  // Arabic
+    // Fuzzy IMs.
+    "nacl_mozc_us",  // Japanese
+    "nacl_mozc_jp",  // Japanese with US keyboard
+};
+
 // Inserts {key, value} into the multimap if it does not exist.
 void MultimapDeduplicatedInsert(LanguageCodeToIdsMap& multimap,
                                 const std::string& key,
@@ -434,6 +526,13 @@ InputMethodUtil::InputMethodUtil(InputMethodDelegate* delegate)
   english_to_resource_id_ = EnglishToIDMap(std::move(map_storage));
   DCHECK(english_to_resource_id_.size() == kEnglishToResourceIdArraySize)
       << "Duplicate string is found";
+
+  for (const char* extension_local_id : kOobeAllowlistedExtensionLocalIds) {
+    std::string fully_qualified_id =
+        extension_ime_util::GetInputMethodIDByEngineID(
+            std::string(extension_local_id));
+    oobe_allowlisted_ids_.insert(fully_qualified_id);
+  }
 }
 
 InputMethodUtil::~InputMethodUtil() = default;
@@ -779,6 +878,12 @@ bool InputMethodUtil::IsLoginKeyboard(
   const InputMethodDescriptor* ime =
       GetInputMethodDescriptorFromId(input_method_id);
   return ime ? ime->is_login_keyboard() : false;
+}
+
+bool InputMethodUtil::IsOobeAllowlisted(
+    const std::string& input_method_id) const {
+  return oobe_allowlisted_ids_.find(input_method_id) !=
+         oobe_allowlisted_ids_.cend();
 }
 
 void InputMethodUtil::AppendInputMethods(const InputMethodDescriptors& imes) {

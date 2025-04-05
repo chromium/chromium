@@ -10,14 +10,10 @@
 #import "ios/chrome/browser/discover_feed/model/feed_constants.h"
 
 @protocol FeedControlDelegate;
-@protocol FeedMenuCommands;
 @class FeedMetricsRecorder;
 @protocol NewTabPageDelegate;
 
 @interface FeedHeaderViewController : UIViewController
-
-// Button for opening top-level feed management menu.
-@property(nonatomic, readonly, strong) UIButton* managementButton;
 
 // Delegate for controlling the presented feed.
 @property(nonatomic, weak) id<FeedControlDelegate> feedControlDelegate;
@@ -30,9 +26,6 @@
 
 // Feed metrics recorder.
 @property(nonatomic, weak) FeedMetricsRecorder* feedMetricsRecorder;
-
-// Object that can open the feed menu.
-@property(nonatomic, weak) id<FeedMenuCommands> feedMenuHandler;
 
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithNibName:(NSString*)nibNameOrNil

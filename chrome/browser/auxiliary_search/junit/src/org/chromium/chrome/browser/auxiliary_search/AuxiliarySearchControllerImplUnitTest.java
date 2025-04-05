@@ -83,6 +83,7 @@ public class AuxiliarySearchControllerImplUnitTest {
     @Captor private ArgumentCaptor<Callback<Boolean>> mDeleteCallbackCaptor;
     @Captor private ArgumentCaptor<Callback<Boolean>> mBackgroundTaskCompleteCallbackCaptor;
     @Captor private ArgumentCaptor<Callback<Boolean>> mDonationCompleteCallbackCaptor;
+    @Captor private ArgumentCaptor<Callback<Boolean>> mFaviconDonationCompleteCallbackCaptor;
     @Captor private ArgumentCaptor<FaviconHelper.FaviconImageCallback> mFaviconImageCallbackCaptor1;
     @Captor private ArgumentCaptor<FaviconHelper.FaviconImageCallback> mFaviconImageCallbackCaptor2;
 
@@ -366,35 +367,47 @@ public class AuxiliarySearchControllerImplUnitTest {
                         anyInt(),
                         mFaviconImageCallbackCaptor2.capture());
 
-        Bitmap bitmap = Bitmap.createBitmap(20, 20, Config.RGB_565);
         mFakeTime.advanceMillis(timeDelta);
-        var histogramWatcher =
+        HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
-                        .expectIntRecord(
-                                AuxiliarySearchMetrics.HISTOGRAM_FAVICON_FIRST_DONATE_COUNT, 1)
-                        .expectIntRecord(
-                                AuxiliarySearchMetrics.HISTOGRAM_QUERYTIME_FAVICONS, timeDelta)
-                        .build();
-
-        mFaviconImageCallbackCaptor1.getValue().onFaviconAvailable(bitmap, null);
-        verify(mAuxiliarySearchDonor, never())
-                .donateEntries(any(Map.class), mDonationCompleteCallbackCaptor.capture());
-        mFaviconImageCallbackCaptor2.getValue().onFaviconAvailable(null, null);
-        verify(mAuxiliarySearchDonor)
-                .donateEntries(any(Map.class), mDonationCompleteCallbackCaptor.capture());
-        histogramWatcher.assertExpected();
-
-        // Verifies the callback is called when the donation completes successfully.
-        mFakeTime.advanceMillis(timeDelta);
-        histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord("Search.AuxiliarySearch.DonateTime", timeDelta * 2)
+                        .expectIntRecord("Search.AuxiliarySearch.DonateTime", timeDelta)
                         .expectIntRecords(
                                 "Search.AuxiliarySearch.DonationRequestStatus",
                                 RequestStatus.SUCCESSFUL)
                         .build();
 
         mDonationCompleteCallbackCaptor.getValue().onResult(true);
+        histogramWatcher.assertExpected();
+
+        Bitmap bitmap = Bitmap.createBitmap(20, 20, Config.RGB_565);
+        mFakeTime.advanceMillis(timeDelta);
+        histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                AuxiliarySearchMetrics.HISTOGRAM_FAVICON_FIRST_DONATE_COUNT, 1)
+                        .expectIntRecord(
+                                AuxiliarySearchMetrics.HISTOGRAM_QUERYTIME_FAVICONS, timeDelta * 2)
+                        .build();
+
+        mFaviconImageCallbackCaptor1.getValue().onFaviconAvailable(bitmap, null);
+        verify(mAuxiliarySearchDonor, never())
+                .donateEntries(any(Map.class), mFaviconDonationCompleteCallbackCaptor.capture());
+        mFaviconImageCallbackCaptor2.getValue().onFaviconAvailable(null, null);
+        verify(mAuxiliarySearchDonor)
+                .donateEntries(any(Map.class), mFaviconDonationCompleteCallbackCaptor.capture());
+        histogramWatcher.assertExpected();
+
+        // Verifies the callback is called when the donation completes successfully.
+        mFakeTime.advanceMillis(timeDelta);
+        histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("Search.AuxiliarySearch.DonateTime", timeDelta * 3)
+                        .expectIntRecords(
+                                "Search.AuxiliarySearch.DonationRequestStatus",
+                                RequestStatus.SUCCESSFUL)
+                        .build();
+
+        mFaviconDonationCompleteCallbackCaptor.getValue().onResult(true);
         histogramWatcher.assertExpected();
     }
 

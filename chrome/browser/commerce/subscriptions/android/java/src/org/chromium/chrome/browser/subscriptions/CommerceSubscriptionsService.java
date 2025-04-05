@@ -4,10 +4,14 @@
 
 package org.chromium.chrome.browser.subscriptions;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -26,6 +30,7 @@ import java.util.concurrent.TimeUnit;
  * subscriptions and notifications. Some logic here like observing Android activity lifecycle can be
  * moved to ShoppingServiceFactory.
  */
+@NullMarked
 public class CommerceSubscriptionsService implements Destroyable {
     @VisibleForTesting
     public static final String CHROME_MANAGED_SUBSCRIPTIONS_TIMESTAMP =
@@ -33,8 +38,8 @@ public class CommerceSubscriptionsService implements Destroyable {
 
     private final SharedPreferencesManager mSharedPreferencesManager;
     private final PriceDropNotificationManager mPriceDropNotificationManager;
-    private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
-    private PauseResumeWithNativeObserver mPauseResumeWithNativeObserver;
+    private @Nullable ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
+    private @Nullable PauseResumeWithNativeObserver mPauseResumeWithNativeObserver;
     private ShoppingService mShoppingService;
 
     /** Creates a new instance. */
@@ -70,6 +75,7 @@ public class CommerceSubscriptionsService implements Destroyable {
     @Override
     public void destroy() {
         if (mActivityLifecycleDispatcher != null) {
+            assumeNonNull(mPauseResumeWithNativeObserver);
             mActivityLifecycleDispatcher.unregister(mPauseResumeWithNativeObserver);
         }
     }

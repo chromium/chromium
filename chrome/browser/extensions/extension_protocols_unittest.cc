@@ -52,7 +52,6 @@
 #include "services/network/test/test_url_loader_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/referrer_utils.h"
 
 using extensions::ExtensionRegistry;
@@ -767,9 +766,6 @@ TEST_P(ExtensionProtocolsTest, InvalidBackgroundScriptRequest) {
       network::mojom::RequestDestination::kStyle,
       network::mojom::RequestDestination::kVideo,
   };
-  if (!base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker)) {
-    destinations.push_back(network::mojom::RequestDestination::kWorker);
-  }
   for (network::mojom::RequestDestination destination : destinations) {
     auto get_result =
         RequestOrLoad(extension->GetResourceURL("background.js"), destination);

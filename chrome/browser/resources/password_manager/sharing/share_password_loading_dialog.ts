@@ -24,7 +24,7 @@ export class SharePasswordLoadingDialogElement extends PolymerElement {
     return {dialogTitle: {type: String}};
   }
 
-  dialogTitle: string;
+  declare dialogTitle: string;
 }
 
 declare global {

@@ -78,6 +78,7 @@
 <translation id="2049376729098081731">Chromium の履歴を含めて、Google サービスのパーソナライズに使用するかどうかを選択してください</translation>
 <translation id="2086476982681781442">このダウンロードは Chromium でブロックされました。ファイルが虚偽のもので、デバイスに予期しない変更を加える可能性があります</translation>
 <translation id="2088953378266246249">Chromium でのルート証明書の管理方法に関する情報</translation>
+<translation id="2099452623287920103">Google アカウントに保存したパスワードなどの Chromium データは、このデバイスから削除されます。Chromium でこれらのデータを再度使用するには、もう一度ログインしてください。</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{1 分間使用しなかった場合、組織は Chromium の閲覧データを自動的に削除します。これには、履歴、自動入力、ダウンロードが含まれます。タブは開いたままになります。}other{# 分間使用しなかった場合、組織は Chromium の閲覧データを自動的に削除します。これには、履歴、自動入力、ダウンロードが含まれます。タブは開いたままになります。}}</translation>
 <translation id="2126108037660393668">ダウンロードしたファイルの検証で不合格でした。</translation>
 <translation id="2137162749895930932">翻訳画面を閉じる</translation>
@@ -93,6 +94,7 @@
 <translation id="2238130810669087193">すべてのデバイスでアドレスやその他の設定を使用するには、Chromium にログインしてください。このアドレスは、ログイン後に Google アカウントに保存されます。</translation>
 <translation id="2240214816234246077">最近アクセスしていないため、Chromium で <ph name="PERMISSION_1" /> と<ph name="PERMISSION_2" /> の権限を削除しました</translation>
 <translation id="2241627712206172106">パソコンを共有している場合、友だちや家族はそれぞれ Chromium を自分専用のブラウザとして自分用の設定をして使うことができます。</translation>
+<translation id="2287771843518581140">{NUM_TABS,plural, =1{ブラウザの動作を遅くしているタブを一時停止することをおすすめします}other{ブラウザの動作を遅くしているタブを一時停止することをおすすめします}}</translation>
 <translation id="2313870531055795960">Chromium に保存されている安全でないサイトのリストと URL を照合します。サイトがパスワードを不正に取得しようとしている場合や、ユーザーが安全でないファイルをダウンロードしようとした場合は、URL とページ コンテンツの一部をセーフ ブラウジングに送信することがあります。</translation>
 <translation id="2343156876103232566">Android スマートフォンに番号を送信するには、両方のデバイスで Chromium にログインしてください。</translation>
 <translation id="2359808026110333948">続行</translation>
@@ -148,6 +150,7 @@
 <translation id="2977470724722393594">Chromium は最新版です</translation>
 <translation id="2977506796191543575">サイトがパスワードを不正に取得しようとしている場合や、ユーザーが安全でないファイルをダウンロードしようとした場合は、URL とページ コンテンツの一部をセーフ ブラウジングに送信することがあります</translation>
 <translation id="2981563588585023386">保護者の方が指定した設定でインターネットをより安全に利用するには、Chromium にログインしてください</translation>
+<translation id="3003694935412297923">すべてのタスク</translation>
 <translation id="3013473503895162900">Chromium の新しいタブで <ph name="URL" /> を開きます。</translation>
 <translation id="3032706164202344641">Chromium でパスワードを確認できません。しばらくしてからもう一度お試しください。</translation>
 <translation id="3032787606318309379">Chromium に追加...</translation>
@@ -202,7 +205,6 @@
 <translation id="3790262771324122253">Chromium で一部のダウンロードがブロックされる理由</translation>
 <translation id="379589255253486813">確認の必要な項目がありましたらお知らせします</translation>
 <translation id="3802055581630249637">アクセスする可能性の高いページがプリロードされ、該当のページにアクセスしたときにページの読み込み速度が向上します。</translation>
-<translation id="3830894615770080216">Chromium OS システム</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
 <translation id="3885770153807205175">言語選択ツール</translation>
 <translation id="388648406173476553">Chromium をカスタマイズ、制御します。確認の必要な項目があります。クリックして詳細をご覧ください。</translation>
@@ -264,6 +266,7 @@
 <translation id="4570813286784708942">このダウンロードは Chromium でブロックされました。セーフ ブラウジングがオフになっており、ファイルを確認できません</translation>
 <translation id="4594305310729380060">このデバイスのパスワード マネージャーに保存</translation>
 <translation id="459535195905078186">Chromium アプリ</translation>
+<translation id="4598116752460667024">リストからプロセスを検索します。</translation>
 <translation id="4613863813562375431">Chromium OS のバージョン</translation>
 <translation id="4621240073146040695">Chromium を再起動して更新を完了してください。</translation>
 <translation id="4665829708273112819">警告: 拡張機能による閲覧履歴の記録を Chromium で停止することはできません。シークレット モードでこの拡張機能を無効にするには、このオプションの選択を解除してください。</translation>
@@ -310,6 +313,7 @@
 <translation id="5405650547142096840">Chromium から削除</translation>
 <translation id="5427571867875391349">Chromium をデフォルト ブラウザに設定する</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium Beta</translation>
+<translation id="5460618461609401056">{NUM_TABS,plural, =1{ブラウザの動作を遅くしているタブを一時停止することをおすすめします}other{ブラウザの動作を遅くしているタブを一時停止することをおすすめします}}</translation>
 <translation id="5473971139929175403">この Linux ディストリビューションはサポートされなくなったため、Chromium は正常に機能しない可能性があります</translation>
 <translation id="5475924890392386523">このダウンロードは Chromium でブロックされました。ファイルが個人アカウントやソーシャル ネットワークのアカウントに危害を及ぼす可能性があります</translation>
 <translation id="5480860683791598150">このサイトで現在地を共有するには、Chromium で位置情報の使用を許可する必要があります</translation>
@@ -455,6 +459,7 @@
 <translation id="7223968959479464213">タスク マネージャ - Chromium</translation>
 <translation id="7246575524853130370">Chromium が推定したお客様の興味 / 関心</translation>
 <translation id="7274695763216404502">固定しました。ツールバーから画像検索を使用できます</translation>
+<translation id="7288567540154601580">タブと拡張機能</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{削除することをおすすめします}other{削除することをおすすめします}}</translation>
 <translation id="7309928523159922338">広告の測定により、アクセスしたサイトは、サイトが広告のパフォーマンスを測定する際に役立つ Chromium の情報をリクエストできます。広告の測定は、サイト間で転送する情報をできるだけ少なくすることで、クロスサイト トラッキングを制限します。</translation>
 <translation id="731795002583552498">Chromium を更新しています</translation>

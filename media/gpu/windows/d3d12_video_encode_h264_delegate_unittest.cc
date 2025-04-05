@@ -7,6 +7,7 @@
 #include "media/base/win/d3d12_mocks.h"
 #include "media/base/win/d3d12_video_mocks.h"
 #include "media/gpu/windows/d3d12_video_encode_delegate_unittest.h"
+#include "media/gpu/windows/mf_video_encoder_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -202,13 +203,19 @@ TEST_F(D3D12VideoEncodeH264DelegateTest, EncodeFrame) {
         return EncoderStatus::Codes::kOk;
       });
   auto result_or_error = encoder_delegate_->Encode(
-      input_frame, 0, gfx::ColorSpace::CreateSRGB(), bitstream_buffer, false);
+      input_frame, 0, gfx::ColorSpace::CreateSRGB(), bitstream_buffer,
+      VideoEncoder::EncodeOptions());
   ASSERT_TRUE(result_or_error.has_value());
 
   BitstreamBufferMetadata metadata =
       std::move(result_or_error).value().metadata_;
   EXPECT_EQ(metadata.key_frame, is_key_frame);
-  EXPECT_EQ(metadata.qp, -1);
+  if (encoder_delegate_->ReportsAverageQp()) {
+    EXPECT_GE(metadata.qp, 0);
+    EXPECT_LE(metadata.qp, kH26xMaxQp);
+  } else {
+    EXPECT_EQ(metadata.qp, -1);
+  }
 
   // Make sure we have written h264 SPS/PPS headers.
   ASSERT_GT(metadata.payload_size_bytes, kStreamSize);
@@ -256,7 +263,8 @@ TEST_F(D3D12VideoEncodeH264DelegateTest, EncodeFramesAndVerifyKeyFrameFlag) {
           return EncoderStatus::Codes::kOk;
         });
     auto result_or_error = encoder_delegate_->Encode(
-        input_frame, 0, gfx::ColorSpace::CreateSRGB(), bitstream_buffer, false);
+        input_frame, 0, gfx::ColorSpace::CreateSRGB(), bitstream_buffer,
+        VideoEncoder::EncodeOptions());
     ASSERT_TRUE(result_or_error.has_value());
     Mock::VerifyAndClearExpectations(GetVideoEncoderWrapper());
   }

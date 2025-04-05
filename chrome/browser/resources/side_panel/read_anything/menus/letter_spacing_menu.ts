@@ -39,7 +39,7 @@ export class LetterSpacingMenuElement extends LetterSpacingMenuElementBase {
     return {settingsPrefs: {type: Object}};
   }
 
-  settingsPrefs: SettingsPrefs = {
+  accessor settingsPrefs: SettingsPrefs = {
     letterSpacing: 0,
     lineSpacing: 0,
     theme: 0,

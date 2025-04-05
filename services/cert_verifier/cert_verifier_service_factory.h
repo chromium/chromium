@@ -68,6 +68,7 @@ class CertVerifierServiceFactoryImpl
   void UpdateCtLogList(std::vector<network::mojom::CTLogInfoPtr> log_list,
                        base::Time update_time,
                        UpdateCtLogListCallback callback) override;
+  void DisableCtEnforcement(DisableCtEnforcementCallback callback) override;
 #endif
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
   void UpdateChromeRootStore(mojo_base::ProtoWrapper new_root_store,

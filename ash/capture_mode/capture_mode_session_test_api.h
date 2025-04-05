@@ -73,9 +73,12 @@ class CaptureModeSessionTestApi {
 
   CaptureModeSessionFocusCycler::HighlightableView* GetCurrentFocusedView();
 
+  bool HasAxVirtualWidget() const;
+  size_t GetAxVirtualViewsCount() const;
+
   // Returns false if `current_focus_group_` equals to `kNone` which means
   // there's no focus on any focus group for now. Otherwise, returns true;
-  bool HasFocus();
+  bool HasFocus() const;
 
   bool IsFolderSelectionDialogShown();
 

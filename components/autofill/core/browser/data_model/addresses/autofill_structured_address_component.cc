@@ -339,7 +339,8 @@ std::vector<FieldType> AddressComponent::GetSubcomponentTypes() const {
 bool AddressComponent::SetValueForType(
     FieldType field_type,
     const std::u16string& value,
-    const VerificationStatus& verification_status) {
+    const VerificationStatus& verification_status,
+    bool invalidate_child_nodes) {
   AddressComponent* node_for_type = GetNodeForType(field_type);
   if (!node_for_type || node_for_type->IsValueReadOnly()) {
     return false;
@@ -348,22 +349,9 @@ bool AddressComponent::SetValueForType(
       ? node_for_type->SetValue(value, verification_status)
       : node_for_type->SetValueForOtherSupportedType(field_type, value,
                                                      verification_status);
-  return true;
-}
-
-bool AddressComponent::SetValueForTypeAndResetSubstructure(
-    FieldType field_type,
-    const std::u16string& value,
-    const VerificationStatus& verification_status) {
-  AddressComponent* node_for_type = GetNodeForType(field_type);
-  if (!node_for_type) {
-    return false;
+  if (invalidate_child_nodes) {
+    node_for_type->UnsetSubcomponents();
   }
-  node_for_type->GetStorageType() == field_type
-      ? node_for_type->SetValue(value, verification_status)
-      : node_for_type->SetValueForOtherSupportedType(field_type, value,
-                                                     verification_status);
-  node_for_type->UnsetSubcomponents();
   return true;
 }
 

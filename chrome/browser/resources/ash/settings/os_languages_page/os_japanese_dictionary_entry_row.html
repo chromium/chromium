@@ -18,14 +18,14 @@
   }
 
   .category-label {
-    /* TODO(b/340393256): Use a var(..) from cros */
-    font-size: 11px;
-    line-height: 16px;
+    font: var(--cros-annotation-2-font);
+    /* To match cr-input */
+    font-weight: 500;
   }
 
   .delete-icon {
-    /* TODO(b/340393256): Make this a calculated value */ 
-    margin-top: 26px;
+    --cr-icon-button-size: 20px;
+    align-self: center;
   }
 </style>
 
@@ -57,7 +57,7 @@
      label="$i18n{japaneseDictionaryComment}"
      type="text"
      on-change="saveComment_"></cr-input>
-  <cr-icon-button class="delete-icon"
+  <cr-icon-button class="delete-icon no-overlap"
      iron-icon="cr:close"
      on-click="deleteEntry_"
      title="DeleteEntry"></cr-icon-button>

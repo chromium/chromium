@@ -320,6 +320,7 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
                 mPackageManagerDelegate.getActivitiesThatCanRespondToIntentWithMetaData(
                         new Intent(WebPaymentIntentHelper.ACTION_PAY));
         if (allInstalledPaymentApps.isEmpty()) {
+            Log.e(TAG, "No apps with \"%s\" intent filter.", WebPaymentIntentHelper.ACTION_PAY);
             onAllAppsFoundAndValidated();
             return;
         }
@@ -399,7 +400,15 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
 
                 if (UrlUtil.isURLValid(defaultUrlMethod)) {
                     defaultMethod = urlToStringWithoutTrailingSlash(defaultUrlMethod);
+                } else {
+                    Log.e(
+                            TAG,
+                            "Activity \"%s\" meta-data \"%s\" has invalid URL \"%s\".",
+                            app.activityInfo.name,
+                            META_DATA_NAME_OF_DEFAULT_PAYMENT_METHOD_NAME,
+                            defaultMethod);
                 }
+
                 if (!methodToAppsMapping.containsKey(defaultMethod)) {
                     methodToAppsMapping.put(defaultMethod, new HashSet<ResolveInfo>());
                 }
@@ -420,6 +429,12 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
                     }
                     mOriginToUrlDefaultMethodsMapping.get(appOrigin).add(defaultUrlMethod);
                 }
+            } else {
+                Log.e(
+                        TAG,
+                        "Activity \"%s\" lacks \"%s\" meta-data",
+                        app.activityInfo.name,
+                        META_DATA_NAME_OF_DEFAULT_PAYMENT_METHOD_NAME);
             }
 
             // Note that a payment app with non-URL default payment method (e.g., "basic-card")
@@ -507,6 +522,7 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
         }
 
         if (manifestVerifiers.isEmpty()) {
+            Log.e(TAG, "No manifests to verify.");
             onAllAppsFoundAndValidated();
             return;
         }
@@ -593,6 +609,7 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
 
     @Override
     public void onVerificationError(String errorMessage) {
+        Log.e(TAG, errorMessage);
         mFactoryDelegate.onPaymentAppCreationError(errorMessage, AppCreationFailureReason.UNKNOWN);
     }
 
@@ -641,8 +658,14 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
     private void onAllAppsFoundAndValidated() {
         assert mPendingVerifiersCount == 0;
 
-        mFactoryDelegate.onCanMakePaymentCalculated(mValidApps.size() > 0);
-        if (mValidApps.isEmpty() || mFactoryDelegate.getParams().hasClosed()) {
+        boolean hasValidApps = mValidApps.size() > 0;
+        mFactoryDelegate.onCanMakePaymentCalculated(hasValidApps);
+
+        if (!hasValidApps) {
+            Log.e(TAG, "No valid apps found.");
+        }
+
+        if (!hasValidApps || mFactoryDelegate.getParams().hasClosed()) {
             mFactoryDelegate.onDoneCreatingPaymentApps(mFactory);
             return;
         }
@@ -688,6 +711,11 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
     }
 
     private void onIsReadyToPayResponse(AndroidPaymentApp app, boolean isReadyToPay) {
+        Log.e(
+                TAG,
+                "Android app id \"%s\" ready to pay: \"%b\".",
+                app.getIdentifier(),
+                isReadyToPay);
         if (isReadyToPay) mFactoryDelegate.onPaymentAppCreated(app);
         if (--mPendingIsReadyToPayQueries == 0) {
             mFactoryDelegate.onDoneCreatingPaymentApps(mFactory);

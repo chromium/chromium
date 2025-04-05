@@ -1668,6 +1668,10 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   [ChromeEarlGreyAppInterface copyTextToPasteboard:text];
 }
 
+- (void)copyLinkAsURLToPasteBoard:(NSString*)link {
+  [ChromeEarlGreyAppInterface copyLinkAsURLToPasteBoard:link];
+}
+
 #pragma mark - Context Menus Utilities (EG2)
 
 - (void)verifyCopyLinkActionWithText:(NSString*)text {

@@ -36,6 +36,7 @@ pub(crate) struct Includes<'a> {
     pub ranges: bool,
     pub stdexcept: bool,
     pub string: bool,
+    pub string_view: bool,
     pub type_traits: bool,
     pub utility: bool,
     pub vector: bool,
@@ -98,6 +99,7 @@ pub(super) fn write(out: &mut OutFile) {
         ranges,
         stdexcept,
         string,
+        string_view,
         type_traits,
         utility,
         vector,
@@ -157,11 +159,6 @@ pub(super) fn write(out: &mut OutFile) {
     if vector && !cxx_header {
         writeln!(out, "#include <vector>");
     }
-    if ranges && !cxx_header {
-        writeln!(out, "#if __cplusplus >= 202002L");
-        writeln!(out, "#include <ranges>");
-        writeln!(out, "#endif");
-    }
     if basetsd && !cxx_header {
         writeln!(out, "#if defined(_WIN32)");
         writeln!(out, "#include <basetsd.h>");
@@ -177,6 +174,16 @@ pub(super) fn write(out: &mut OutFile) {
         writeln!(out, "#include <sys/types.h>");
     }
     if (basetsd || sys_types) && !cxx_header {
+        writeln!(out, "#endif");
+    }
+    if string_view && !cxx_header {
+        writeln!(out, "#if __cplusplus >= 201703L");
+        writeln!(out, "#include <string_view>");
+        writeln!(out, "#endif");
+    }
+    if ranges && !cxx_header {
+        writeln!(out, "#if __cplusplus >= 202002L");
+        writeln!(out, "#include <ranges>");
         writeln!(out, "#endif");
     }
 }

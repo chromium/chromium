@@ -16,16 +16,22 @@ package sync_pb;
 
 // Account-local metadata for shared tab groups.
 message SharedTabGroupAccountDataSpecifics {
-  // The guid of this entity. As there is only 1 entity right now, this
-  // is the SharedTab guid (see SharedTabGroupDataSpecifics).
+  // The guid of this entity.
+  // This could be the SharedTab guid (see SharedTabGroupDataSpecifics)
+  // or the SharedTabGroup guid.
   optional string guid = 1;
 
   // The collaboration group.
   optional string collaboration_id = 2;
 
-  // This may change to a oneof in the future to accommodate metadata
-  // about shared groups or other entities.
-  optional SharedTabDetails shared_tab_details = 3;
+  // Entities that contains information for a tab or a tab group.
+  oneof entity {
+    SharedTabDetails shared_tab_details = 3;
+    SharedTabGroupDetails shared_tab_group_details = 4;
+  }
+
+  // Timestamp when the message is updated.
+  optional int64 update_time_windows_epoch_micros = 5;
 }
 
 // Stores account-specific metadata about a shared tab.
@@ -36,4 +42,11 @@ message SharedTabDetails {
 
   // Last time this tab was focused.
   optional int64 last_seen_timestamp_windows_epoch = 2;
+}
+
+message SharedTabGroupDetails {
+  // Position of the pinned tab group in bookmark bar on Desktop.
+  // This is equivalent to and compared against the pinned_position
+  // of message SavedTabGroup in saved_tab_group_specifics.proto.
+  optional int64 pinned_position = 1;
 }

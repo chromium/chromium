@@ -505,9 +505,7 @@ BASE_FEATURE(kFullscreenImprovement,
              "FullscreenImprovement",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kTabGroupsIPad,
-             "TabGroupsIPad",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTabGroupsIPad, "TabGroupsIPad", base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsTabGroupInGridEnabled() {
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
@@ -974,17 +972,8 @@ bool IsSaveToPhotosAccountPickerImprovementEnabled() {
              kSaveToPhotosAccountDefaultChoiceImprovementParam, true);
 }
 
-BASE_FEATURE(kHomeCustomization,
-             "HomeCustomization",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsHomeCustomizationEnabled() {
-  return base::FeatureList::IsEnabled(kHomeCustomization);
-}
-
 bool ShouldDeprecateFeedHeader() {
-  return IsHomeCustomizationEnabled() &&
-         base::FeatureList::IsEnabled(kDeprecateFeedHeader);
+  return base::FeatureList::IsEnabled(kDeprecateFeedHeader);
 }
 
 BASE_FEATURE(kEnableAppBackgroundRefresh,
@@ -1046,14 +1035,9 @@ BASE_FEATURE(kSeparateProfilesForManagedAccounts,
              "SeparateProfilesForManagedAccounts",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-bool AreSeparateProfilesForManagedAccountsEnabled() {
-  // The APIs to support multiple profiles are only available in iOS 17+, so
-  // consider this feature as disabled in earlier versions.
-  if (!@available(iOS 17, *)) {
-    return false;
-  }
-  return base::FeatureList::IsEnabled(kSeparateProfilesForManagedAccounts);
-}
+BASE_FEATURE(kSeparateProfilesForManagedAccountsKillSwitch,
+             "SeparateProfilesForManagedAccountsKillSwitch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kOmahaResyncTimerOnForeground,
              "OmahaResyncTimerOnForeground",
@@ -1344,4 +1328,20 @@ BASE_FEATURE(kNTPBackgroundCustomization,
 
 bool IsNTPBackgroundCustomizationEnabled() {
   return base::FeatureList::IsEnabled(kNTPBackgroundCustomization);
+}
+
+BASE_FEATURE(kRunDefaultStatusCheck,
+             "RunDefaultStatusCheck",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsRunDefaultStatusCheckEnabled() {
+  return base::FeatureList::IsEnabled(kRunDefaultStatusCheck);
+}
+
+BASE_FEATURE(kContainedTabGroup,
+             "ContainedTabGroup",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsContainedTabGroupEnabled() {
+  return base::FeatureList::IsEnabled(kContainedTabGroup);
 }

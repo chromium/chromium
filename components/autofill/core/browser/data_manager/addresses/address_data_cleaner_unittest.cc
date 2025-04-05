@@ -328,32 +328,5 @@ TEST_F(AddressDataCleanerTest, CalculateMinimalIncompatibleTypeSets) {
               &other_profile3, {PHONE_HOME_WHOLE_NUMBER}}));
 }
 
-TEST_F(AddressDataCleanerTest, IsTokenLowQualityForDeduplicationPurposes) {
-  using ObservationType = ProfileTokenQuality::ObservationType;
-
-  AutofillProfile profile = test::GetFullProfile();
-  test_api(profile.token_quality())
-      .AddObservation(NAME_FULL, ObservationType::kEditedFallback);
-  // Not enough observation.
-  EXPECT_FALSE(AddressDataCleaner::IsTokenLowQualityForDeduplicationPurposes(
-      profile, NAME_FULL));
-
-  test_api(profile.token_quality())
-      .AddObservation(NAME_FULL, ObservationType::kAccepted);
-  test_api(profile.token_quality())
-      .AddObservation(NAME_FULL, ObservationType::kEditedFallback);
-  test_api(profile.token_quality())
-      .AddObservation(NAME_FULL, ObservationType::kEditedFallback);
-  // Enough observations, and enough of them are "bad".
-  EXPECT_TRUE(AddressDataCleaner::IsTokenLowQualityForDeduplicationPurposes(
-      profile, NAME_FULL));
-
-  test_api(profile.token_quality())
-      .AddObservation(NAME_FULL, ObservationType::kAccepted);
-  // Too many "good" observations for the token to be considered low quality.
-  EXPECT_FALSE(AddressDataCleaner::IsTokenLowQualityForDeduplicationPurposes(
-      profile, NAME_FULL));
-}
-
 }  // namespace
 }  // namespace autofill

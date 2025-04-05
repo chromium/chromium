@@ -217,7 +217,12 @@ class BrowserProcess {
   //
   // Setting the locale updates a few core places where this information is
   // stored, but does not reload any resources or refresh any UI.
+
+  // DEPRECATED: Please use GetFeatures()->application_locale_storage()->Get().
+  // TODO(crbug.com/407832571): Replace existing usages and remove this.
   virtual const std::string& GetApplicationLocale() = 0;
+  // DEPRECATED: Please use GetFeatures()->application_locale_storage()->Set().
+  // TODO(crbug.com/407832571): Replace existing usages and remove this.
   virtual void SetApplicationLocale(const std::string& actual_locale) = 0;
 
   virtual DownloadStatusUpdater* download_status_updater() = 0;

@@ -65,6 +65,11 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatform {
     // object for a window. `uia_provider_enabled` is true when the request was
     // satisfied, and false when the request was refused.
     virtual void OnUiaProviderRequested(bool uia_provider_enabled) {}
+
+    // Invoked when the UI Automation Provider for Windows has been disabled due
+    // to a detected assistive technology that may cause issues with the
+    // provider, such as JAWS.
+    virtual void OnUiaProviderDisabled() {}
 #endif
 
    protected:
@@ -136,6 +141,10 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatform {
   // enable or disable use of the provider, respectively. This function may only
   // be called during browser process startup before any UI is presented.
   void SetUiaProviderEnabled(bool is_enabled);
+
+  // Disables the UI Automation Provider on Windows, and signals to UIA that the
+  // previous providers that might have been returned are no longer valid.
+  void DisableActiveUiaProvider();
 
   // Returns true if the UI Automation Provider for Windows is enabled.
   bool IsUiaProviderEnabled() const;

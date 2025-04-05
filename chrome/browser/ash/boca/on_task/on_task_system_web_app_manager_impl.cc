@@ -217,7 +217,7 @@ void OnTaskSystemWebAppManagerImpl::SetPauseStateForSystemWebAppWindow(
   }
   auto* const pod_controller = window_tracker->on_task_pod_controller();
   if (pod_controller) {
-    pod_controller->OnPauseModeChanged();
+    pod_controller->OnPauseModeChanged(paused);
   }
 }
 

@@ -40,8 +40,11 @@ void MockInputRouterClient::DecrementInFlightEventCount(
 }
 
 void MockInputRouterClient::DidOverscroll(
-    const ui::DidOverscrollParams& params) {
-  overscroll_ = params;
+    blink::mojom::DidOverscrollParamsPtr params) {
+  overscroll_ = ui::DidOverscrollParams(
+      params->accumulated_overscroll, params->latest_overscroll_delta,
+      params->current_fling_velocity, params->causal_event_viewport_point,
+      params->overscroll_behavior);
 }
 
 void MockInputRouterClient::OnSetCompositorAllowedTouchAction(

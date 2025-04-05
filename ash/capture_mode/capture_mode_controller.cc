@@ -2222,8 +2222,7 @@ void CaptureModeController::OnLensWebError(
   }
 
   CHECK(IsActive());
-  capture_mode_session_->ShowActionContainerError(
-      l10n_util::GetStringUTF16(IDS_ASH_SCANNER_ERROR_GENERIC));
+  Stop();
 }
 
 void CaptureModeController::OnSearchResultClicked() {

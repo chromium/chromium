@@ -38,18 +38,11 @@ export class PrintingSettingsCardElement extends
     return getTemplate();
   }
 
-  static get properties() {
-    return {
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () =>
-            new Set<Setting>([Setting.kPrintJobs, Setting.kScanningApp]),
-      },
-    };
-  }
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kPrintJobs,
+    Setting.kScanningApp,
+  ]);
 
   private browserProxy_: CupsPrintersBrowserProxy;
 

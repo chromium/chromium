@@ -7,19 +7,12 @@
 
 #import <UIKit/UIKit.h>
 
-@protocol ShareKitAvatarPrimitive;
+namespace collaboration::messaging {
+struct MessageAttribution;
+enum class RecentActivityAction;
+}  // namespace collaboration::messaging
 
-// Different type used for RecentActivityLogItem.
-enum class ActivityLogType : NSUInteger {
-  kTabAdded,
-  kTabRemoved,
-  kTabUpdated,
-  kMemberRemoved,
-  kGroupColorChanged,
-  kGroupNameChanged,
-  kEmptyActivity,  // Used when there are no activity to display
-  kUndefined,
-};
+@protocol ShareKitAvatarPrimitive;
 
 // Represents a log item in a diffable data source. It contains the data of
 // ActivityLogItem obtained from MessagingBackendService.
@@ -27,8 +20,9 @@ enum class ActivityLogType : NSUInteger {
 
 // TODO(crbug.com/370897655): Store an ID of the ActivityLogItem struct.
 
-// The type of the activity log.
-@property(nonatomic, assign) ActivityLogType type;
+// When true, all other values should be ignored. This represents an absence of
+// item.
+@property(nonatomic, assign) BOOL emptyItem;
 
 // The image of a favicon of a page.
 @property(nonatomic, strong) UIImage* favicon;
@@ -44,6 +38,17 @@ enum class ActivityLogType : NSUInteger {
 
 // The string of the timestamp when an action is taken.
 @property(nonatomic, strong) NSString* timestamp;
+
+// The type of action to be taken when this activity row is clicked.
+// Not to be used by the UI.
+@property(nonatomic, assign)
+    collaboration::messaging::RecentActivityAction action;
+
+// Implicit metadata that will be used to invoke the delegate when the
+// activity row is clicked.
+// Not to be used by the UI.
+@property(nonatomic, assign)
+    collaboration::messaging::MessageAttribution activityMetadata;
 
 @end
 

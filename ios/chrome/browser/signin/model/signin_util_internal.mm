@@ -8,10 +8,13 @@
 
 #import "base/files/file.h"
 #import "base/files/file_util.h"
+#import "base/functional/callback_helpers.h"
 #import "base/logging.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/path_service.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/task/task_traits.h"
+#import "base/task/thread_pool.h"
 #import "base/threading/scoped_blocking_call.h"
 #import "base/time/time.h"
 #import "components/signin/public/identity_manager/tribool.h"
@@ -30,6 +33,12 @@ enum class SigninIOSDeviceRestoreSentinelError : int {
   // Failed to set ExcludeFromBackupFlag to sentinel file.
   kExcludedFromBackupFlagFailed = 2,
   kMaxValue = kExcludedFromBackupFlagFailed,
+};
+
+// Represents information about a sentinel file.
+struct SentinelFileInfo {
+  base::FilePath path;
+  bool exclude_from_backup;
 };
 
 // Records Signin.IOSDeviceRestoreSentinelError histogram.
@@ -76,6 +85,19 @@ bool CreateSentinelFile(const base::FilePath sentinel_path,
   return false;
 }
 
+// Creates the sentinel files for LoadDeviceRestoreDataInternal(...).
+void CreateSentinelFiles(std::array<SentinelFileInfo, 2> infos) {
+  for (const SentinelFileInfo& info : infos) {
+    if (!base::PathExists(info.path) &&
+        !CreateSentinelFile(info.path, info.exclude_from_backup)) {
+      // If creating any of the sentinel files fail, stop and
+      // do not try to create the other ones. This avoid returning
+      // false positives.
+      return;
+    }
+  }
+}
+
 }  // namespace
 
 // File name for sentinel to backup in iOS backup device.
@@ -95,7 +117,8 @@ base::FilePath PathForSentinel(const base::FilePath::CharType* sentinel_name) {
   return user_data_path.Append(sentinel_name);
 }
 
-signin::RestoreData LoadDeviceRestoreDataInternal() {
+signin::RestoreData LoadDeviceRestoreDataInternal(
+    base::OnceClosure completion) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
   const base::FilePath backed_up_sentinel_path =
@@ -125,21 +148,20 @@ signin::RestoreData LoadDeviceRestoreDataInternal() {
   // fails, the resulting state can be detected and, upon next invocation
   // (which in practice means upon next browser startup), it resumes normally
   // and meanwhile Tribool::kUnknown is returned.
-  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
-    if (does_not_backed_up_sentinel_file_exist ||
-        CreateSentinelFile(not_backed_up_sentinel_path,
-                           /* exclude_from_backup */ true)) {
-      // The not-backed-up file is known to exist, so it is safe to create the
-      // backed-up file. Doing so conditionally avoids returning false positives
-      // in IsFirstSessionAfterDeviceRestoreInternal(), which otherwise could
-      // return true if the first file's creation (the not-backed-up one's)
-      // failed.
-      if (!does_backed_up_sentinel_file_exist) {
-        CreateSentinelFile(backed_up_sentinel_path,
-                           /* exclude_from_backup */ false);
-      }
-    }
-  });
+  base::ThreadPool::PostTaskAndReply(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::LOWEST},
+      base::BindOnce(&CreateSentinelFiles,
+                     std::array<SentinelFileInfo, 2>{
+                         SentinelFileInfo{
+                             .path = not_backed_up_sentinel_path,
+                             .exclude_from_backup = true,
+                         },
+                         SentinelFileInfo{
+                             .path = backed_up_sentinel_path,
+                             .exclude_from_backup = false,
+                         },
+                     }),
+      std::move(completion));
 
   signin::RestoreData restore_data;
   if (!does_backed_up_sentinel_file_exist) {

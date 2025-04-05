@@ -216,11 +216,25 @@ void OnSessionClosed(SbDrmSystem drm_system,
 }  // namespace
 
 StarboardApiWrapperBase::StarboardApiWrapperBase() = default;
-StarboardApiWrapperBase::~StarboardApiWrapperBase() = default;
+
+StarboardApiWrapperBase::~StarboardApiWrapperBase() {
+  if (initialized_) {
+    initialized_ = false;
+    chromecast::CastStarboardApiAdapter::GetInstance()->Unsubscribe(this);
+  }
+}
 
 bool StarboardApiWrapperBase::EnsureInitialized() {
-  return chromecast::CastStarboardApiAdapter::GetInstance()
-      ->EnsureInitialized();
+  // TODO: crbug.com/357265940 - The Starboard API is only explicitly subscriber
+  // in one thread. Currently, CastMediaStarboard will use the Starboard API to
+  // check MIME type compatibility in another process.
+  if (!initialized_) {
+    initialized_ = true;
+    chromecast::CastStarboardApiAdapter::GetInstance()->Subscribe(this,
+                                                                  nullptr);
+  }
+
+  return initialized_;
 }
 
 void* StarboardApiWrapperBase::CreatePlayer(

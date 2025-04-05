@@ -133,6 +133,16 @@ const char kInfobarEnhancedSafeBrowsingModalEventHistogram[] =
 const char kInfobarEnhancedSafeBrowsingBadgeTappedHistogram[] =
     "Mobile.Messages.Badge.Tapped.InfobarTypeEnhancedSafeBrowsing";
 
+// Histogram names for the non modal sign-in promo banner.
+const char kInfobarTypeSigninBannerEventHistogram[] =
+    "Mobile.Messages.Banner.Event.InfobarTypeSignin";
+const char kInfobarTypeSigninBannerDismissTypeHistogram[] =
+    "Mobile.Messages.Banner.Dismiss.InfobarTypeSignin";
+const char kInfobarTypeSigninModalEventHistogram[] =
+    "Mobile.Messages.Modal.Event.InfobarTypeSignin";
+const char kInfobarTypeSigninBadgeTappedHistogram[] =
+    "Mobile.Messages.Badge.Tapped.InfobarTypeSignin";
+
 }  // namespace
 
 @interface InfobarMetricsRecorder ()
@@ -190,6 +200,9 @@ const char kInfobarEnhancedSafeBrowsingBadgeTappedHistogram[] =
       UMA_HISTOGRAM_ENUMERATION(
           kInfobarEnhancedSafeBrowsingBannerEventHistogram, event);
       break;
+    case InfobarType::kInfobarTypeSignin:
+      UMA_HISTOGRAM_ENUMERATION(kInfobarTypeSigninBannerEventHistogram, event);
+      break;
   }
 }
 
@@ -236,6 +249,10 @@ const char kInfobarEnhancedSafeBrowsingBadgeTappedHistogram[] =
       UMA_HISTOGRAM_ENUMERATION(
           kInfobarEnhancedSafeBrowsingBannerDismissTypeHistgram, dismissType);
       break;
+    case InfobarType::kInfobarTypeSignin:
+      UMA_HISTOGRAM_ENUMERATION(kInfobarTypeSigninBannerDismissTypeHistogram,
+                                dismissType);
+      break;
   }
 }
 
@@ -281,6 +298,9 @@ const char kInfobarEnhancedSafeBrowsingBadgeTappedHistogram[] =
       UMA_HISTOGRAM_ENUMERATION(kInfobarEnhancedSafeBrowsingModalEventHistogram,
                                 event);
       break;
+    case InfobarType::kInfobarTypeSignin:
+      UMA_HISTOGRAM_ENUMERATION(kInfobarTypeSigninModalEventHistogram, event);
+      break;
   }
 }
 
@@ -320,6 +340,9 @@ const char kInfobarEnhancedSafeBrowsingBadgeTappedHistogram[] =
     case InfobarType::kInfobarTypeEnhancedSafeBrowsing:
       UMA_HISTOGRAM_ENUMERATION(
           kInfobarEnhancedSafeBrowsingBadgeTappedHistogram, state);
+      break;
+    case InfobarType::kInfobarTypeSignin:
+      UMA_HISTOGRAM_ENUMERATION(kInfobarTypeSigninBadgeTappedHistogram, state);
       break;
   }
 }

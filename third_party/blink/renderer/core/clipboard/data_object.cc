@@ -38,7 +38,6 @@
 #include "third_party/blink/public/platform/file_path_conversion.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_drag_data.h"
-#include "third_party/blink/renderer/core/clipboard/clipboard_mime_types.h"
 #include "third_party/blink/renderer/core/clipboard/clipboard_utilities.h"
 #include "third_party/blink/renderer/core/clipboard/dragged_isolated_file_system.h"
 #include "third_party/blink/renderer/core/clipboard/paste_mode.h"
@@ -47,6 +46,7 @@
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/file_metadata.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
+#include "ui/base/clipboard/clipboard_constants.h"
 
 namespace blink {
 
@@ -61,10 +61,12 @@ DataObject* DataObject::CreateFromClipboard(ExecutionContext* context,
   ClipboardSequenceNumberToken sequence_number =
       system_clipboard->SequenceNumber();
   for (const String& type : system_clipboard->ReadAvailableTypes()) {
-    if (paste_mode == PasteMode::kPlainTextOnly && type != kMimeTypeTextPlain)
+    if (paste_mode == PasteMode::kPlainTextOnly &&
+        type != ui::kMimeTypePlainText) {
       continue;
+    }
     mojom::blink::ClipboardFilesPtr files;
-    if (type == kMimeTypeTextURIList) {
+    if (type == ui::kMimeTypeUriList) {
       files = system_clipboard->ReadFiles();
       if (files) {
         // Ignore ReadFiles() result if clipboard sequence number has changed.
@@ -102,7 +104,7 @@ DataObject* DataObject::CreateFromClipboard(SystemClipboard* system_clipboard,
 // static
 DataObject* DataObject::CreateFromString(const String& data) {
   DataObject* data_object = Create();
-  data_object->Add(data, kMimeTypeTextPlain);
+  data_object->Add(data, ui::kMimeTypePlainText);
   return data_object;
 }
 
@@ -213,9 +215,13 @@ Vector<String> DataObject::Types() const {
     }
   }
   if (contains_files) {
-    results.push_back(kMimeTypeFiles);
+    // The "Files" value that isn't a MIME type but that is inserted into the
+    // types array when files are present in the store item list. See
+    // https://html.spec.whatwg.org/multipage/dnd.html#concept-datatransfer-types.
+    constexpr char kPseudoMimeTypeFiles[] = "Files";
+    results.push_back(kPseudoMimeTypeFiles);
 #if DCHECK_IS_ON()
-    DCHECK(types_seen.insert(kMimeTypeFiles).is_new_entry);
+    DCHECK(types_seen.insert(kPseudoMimeTypeFiles).is_new_entry);
 #endif
   }
   return results;
@@ -237,7 +243,7 @@ void DataObject::SetData(const String& type, const String& data) {
 }
 
 void DataObject::UrlAndTitle(String& url, String* title) const {
-  DataObjectItem* item = FindStringItem(kMimeTypeTextURIList);
+  DataObjectItem* item = FindStringItem(ui::kMimeTypeUriList);
   if (!item)
     return;
   url = ConvertURIListToURL(item->GetAsString());
@@ -246,12 +252,12 @@ void DataObject::UrlAndTitle(String& url, String* title) const {
 }
 
 void DataObject::SetURLAndTitle(const String& url, const String& title) {
-  ClearData(kMimeTypeTextURIList);
+  ClearData(ui::kMimeTypeUriList);
   InternalAddStringItem(DataObjectItem::CreateFromURL(url, title));
 }
 
 void DataObject::HtmlAndBaseURL(String& html, KURL& base_url) const {
-  DataObjectItem* item = FindStringItem(kMimeTypeTextHTML);
+  DataObjectItem* item = FindStringItem(ui::kMimeTypeHtml);
   if (!item)
     return;
   html = item->GetAsString();
@@ -259,7 +265,7 @@ void DataObject::HtmlAndBaseURL(String& html, KURL& base_url) const {
 }
 
 void DataObject::SetHTMLAndBaseURL(const String& html, const KURL& base_url) {
-  ClearData(kMimeTypeTextHTML);
+  ClearData(ui::kMimeTypeHtml);
   InternalAddStringItem(DataObjectItem::CreateFromHTML(html, base_url));
 }
 
@@ -267,7 +273,7 @@ Vector<String> DataObject::Urls() const {
   Vector<String> results;
   for (const auto& item : item_list_) {
     if (item->Kind() == DataObjectItem::kStringKind &&
-        item->GetType() == kMimeTypeTextURIList) {
+        item->GetType() == ui::kMimeTypeUriList) {
       results.push_back(ConvertURIListToURL(item->GetAsString()));
     }
   }
@@ -367,9 +373,9 @@ DataObject* DataObject::Create(ExecutionContext* context,
     std::visit(
         base::Overloaded{
             [&](const WebDragData::StringItem& item) {
-              if (String(item.type) == kMimeTypeTextURIList) {
+              if (String(item.type) == ui::kMimeTypeUriList) {
                 data_object->SetURLAndTitle(item.data, item.title);
-              } else if (String(item.type) == kMimeTypeTextHTML) {
+              } else if (String(item.type) == ui::kMimeTypeHtml) {
                 data_object->SetHTMLAndBaseURL(item.data, item.base_url);
               } else {
                 data_object->SetData(item.type, item.data);

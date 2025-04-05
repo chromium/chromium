@@ -2537,6 +2537,37 @@ TEST_F(SunfishTest, PressingSearchButtonShowsErrorIfOffline) {
   EXPECT_TRUE(error_view->GetVisible());
 }
 
+// Tests that if there is a lens web error when pressing the search button, we
+// exit capture mode.
+TEST_F(SunfishTest, PressingSearchButtonExitsIfLensError) {
+  // Start default capture mode.
+  CaptureModeController* controller =
+      StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+
+  // Simulate a lens web error when pressing the search button.
+  auto* test_delegate =
+      static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
+  test_delegate->set_force_lens_web_error(true);
+
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  WaitForCaptureModeWidgetsVisible();
+
+  // Press the search button.
+  auto* session =
+      static_cast<CaptureModeSession*>(controller->capture_mode_session());
+  CaptureModeSessionTestApi session_test_api(session);
+  ActionButtonView* search_button = session_test_api.GetActionButtonByViewId(
+      ActionButtonViewID::kSearchButton);
+  LeftClickOn(search_button);
+
+  // The session should no longer be active.
+  base::RunLoop run_loop;
+  test_delegate->set_on_session_state_changed_callback(run_loop.QuitClosure());
+  run_loop.Run();
+  ASSERT_FALSE(controller->IsActive());
+}
+
 TEST_F(SunfishTest, PinnedWindowExitSession) {
   auto* controller = CaptureModeController::Get();
 

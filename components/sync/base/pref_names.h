@@ -81,7 +81,6 @@ inline constexpr char kSyncPreferences[] = "sync.preferences";
 inline constexpr char kSyncProductComparison[] = "sync.product_comparison";
 inline constexpr char kSyncReadingList[] = "sync.reading_list";
 inline constexpr char kSyncSavedTabGroups[] = "sync.saved_tab_groups";
-inline constexpr char kSyncSharedTabGroupData[] = "sync.shared_tab_group_data";
 inline constexpr char kSyncTabs[] = "sync.tabs";
 inline constexpr char kSyncThemes[] = "sync.themes";
 

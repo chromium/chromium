@@ -58,6 +58,8 @@ EnumTraits<gpu::mojom::SkiaBackendType, gpu::SkiaBackendType>::ToMojom(
       return gpu::mojom::SkiaBackendType::kGraphiteDawnD3D11;
     case gpu::SkiaBackendType::kGraphiteDawnD3D12:
       return gpu::mojom::SkiaBackendType::kGraphiteDawnD3D12;
+    case gpu::SkiaBackendType::kGraphiteMetal:
+      return gpu::mojom::SkiaBackendType::kGraphiteMetal;
   }
   NOTREACHED() << "Invalid SkiaBackendType:" << static_cast<int>(type);
 }
@@ -90,6 +92,9 @@ bool EnumTraits<gpu::mojom::SkiaBackendType, gpu::SkiaBackendType>::FromMojom(
       return true;
     case gpu::mojom::SkiaBackendType::kGraphiteDawnD3D12:
       *out = gpu::SkiaBackendType::kGraphiteDawnD3D12;
+      return true;
+    case gpu::mojom::SkiaBackendType::kGraphiteMetal:
+      *out = gpu::SkiaBackendType::kGraphiteMetal;
       return true;
   }
   NOTREACHED() << "Invalid SkiaBackendType: " << input;

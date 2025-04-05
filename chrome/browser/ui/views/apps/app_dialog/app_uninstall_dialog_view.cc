@@ -413,7 +413,7 @@ void AppUninstallDialogView::InitializeSubAppList(
   auto sub_apps_container = std::make_unique<views::BoxLayoutView>();
   sub_apps_container->SetOrientation(views::BoxLayout::Orientation::kVertical);
   sub_apps_container->SetBetweenChildSpacing(
-      provider->GetDistanceMetric(DISTANCE_CONTROL_LIST_VERTICAL));
+      provider->GetDistanceMetric(views::DISTANCE_CONTROL_LIST_VERTICAL));
   sub_apps_container->SetInsideBorderInsets(gfx::Insets::TLBR(
       0,
       provider->GetDistanceMetric(views::DISTANCE_UNRELATED_CONTROL_HORIZONTAL),

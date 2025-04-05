@@ -33,7 +33,7 @@ void BrowserAccessibilityIOS::OnDataChanged() {
     // TODO(crbug.com/336611337): Investigate why this needs to be called
     // unconditionally rather than just for children changes.
     [base::apple::ObjCCastStrict<AXPlatformNodeUIKitElement>(
-        platform_node_->GetNativeViewAccessible()) childrenChanged];
+        platform_node_->GetNativeViewAccessible().Get()) childrenChanged];
     return;
   }
 
@@ -129,7 +129,8 @@ BrowserAccessibility* BrowserAccessibilityIOS::PlatformGetPreviousSibling()
 }
 
 gfx::NativeViewAccessible BrowserAccessibilityIOS::GetNativeViewAccessible() {
-  return platform_node_ ? platform_node_->GetNativeViewAccessible() : nullptr;
+  return platform_node_ ? platform_node_->GetNativeViewAccessible()
+                        : gfx::NativeViewAccessible();
 }
 
 AXPlatformNode* BrowserAccessibilityIOS::GetAXPlatformNode() const {

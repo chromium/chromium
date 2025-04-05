@@ -64,8 +64,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobUrlRegistry {
           void(const GURL&,
                std::optional<blink::mojom::PartitioningBlobURLInfo>)>
           partitioning_blob_url_closure,
-      base::RepeatingCallback<void(base::OnceCallback<void(bool)>)>
-          storage_access_check_callback,
+      base::RepeatingCallback<bool()> storage_access_check_callback,
       bool partitioning_disabled_by_policy = false);
 
   // Binds receivers corresponding to connections from renderer worker

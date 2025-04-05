@@ -44,7 +44,7 @@ PopupSearchBarView::PopupSearchBarView(const std::u16string& placeholder,
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
           vector_icons::kSearchChromeRefreshIcon, ui::kColorIcon,
           layout_provider->GetDistanceMetric(
-              DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE))));
+              views::DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE))));
 
   input_ = AddChildView(
       views::Builder<views::Textfield>()

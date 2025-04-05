@@ -29,7 +29,7 @@ export class SelectableIconButtonElement extends
     };
   }
 
-  icon: string = '';
+  accessor icon: string = '';
   override noRipple: boolean = true;
 
   static override get styles() {

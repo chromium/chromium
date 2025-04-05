@@ -53,14 +53,9 @@ public interface BookmarkManagerOpener {
      * @param context A context to start the manager with, if null then the application context will
      *     be used instead.
      * @param profile The profile associated with the bookmarks.
-     * @param activityFinishedCallback A callback when the folder picker activity is finished.
      * @param bookmarkIds The bookmarks that are being moved via the picker.
      */
-    void startFolderPickerActivity(
-            Context context,
-            Profile profile,
-            Runnable activityFinishedCallback,
-            BookmarkId... bookmarkIds);
+    void startFolderPickerActivity(Context context, Profile profile, BookmarkId... bookmarkIds);
 
     /** Closes the {@link BookmarkActivity} on Phone. Does nothing on tablet. */
     // TODO(crbug.com/400793505): Remove this function.

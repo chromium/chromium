@@ -51,7 +51,7 @@ int IOSPasswordManagerDriver::GetId() const {
   return id_;
 }
 
-void IOSPasswordManagerDriver::SetPasswordFillData(
+void IOSPasswordManagerDriver::PropagateFillDataOnParsingCompletion(
     const autofill::PasswordFormFillData& form_data) {
   // Disable proactive generation and clear the pending forms if it is known
   // that there are passwords available for the site. This signal won't work for

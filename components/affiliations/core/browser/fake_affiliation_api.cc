@@ -41,7 +41,7 @@ void FakeAffiliationAPI::ServeNextRequest() {
     return;
 
   FakeAffiliationFetcher* fetcher = fake_fetcher_factory_->PopNextFetcher();
-  AffiliationFetcherDelegate::Result fake_response;
+  AffiliationFetcherInterface::ParsedFetchResponse fake_response;
   for (const auto& facets : preset_equivalence_relation_) {
     bool had_intersection_with_request = std::ranges::any_of(
         fetcher->GetRequestedFacetURIs(), [&facets](const auto& uri) {

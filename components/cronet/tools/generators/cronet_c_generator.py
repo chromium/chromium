@@ -50,7 +50,6 @@ class _NameFormatter(object):
 
   def Format(self,
              separator,
-             prefixed=False,
              internal=False,
              include_variant=False,
              omit_namespace_for_module=None,
@@ -83,7 +82,6 @@ class _NameFormatter(object):
                    internal=False,
                    flatten_nested_kind=False):
     return self.Format("_",
-                       prefixed=True,
                        omit_namespace_for_module=omit_namespace_for_module,
                        internal=internal,
                        include_variant=True,
@@ -123,7 +121,7 @@ class _NameFormatter(object):
     name_parts.append(self._MapKindName(self._token, internal))
     return name_parts
 
-  def _ShouldIncludeNamespace(self, omit_namespace_for_module):
+  def _ShouldIncludeNamespace(self, _):
     return self._token.module
 
   # pylint: disable=inconsistent-return-statements
@@ -424,7 +422,7 @@ class Generator(generator.Generator):
   def _GenerateModuleSharedSource(self):
     return self._GetJinjaExports()
 
-  def GenerateFiles(self, args):
+  def GenerateFiles(self, _):
     self.module.Stylize(generator.Stylizer())
     # TODO(mef): Remove this when generated files are not checked in.
     path, module = os.path.split(self.module.path)

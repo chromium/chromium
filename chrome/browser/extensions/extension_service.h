@@ -118,6 +118,8 @@ class ExtensionServiceInterface {
   // Check if we have preferences for the component extension and, if not or if
   // the stored version differs, install the extension (without requirements
   // checking) before calling AddExtension.
+  // TODO(crbug.com/408454704): Delete this method. Callers should use
+  // ExtensionRegistrar directly.
   virtual void AddComponentExtension(const Extension* extension) = 0;
 
   // Unload the specified extension.
@@ -125,6 +127,8 @@ class ExtensionServiceInterface {
                                UnloadedExtensionReason reason) = 0;
 
   // Remove the specified component extension.
+  // TODO(crbug.com/408454704): Delete this method. Callers should use
+  // ExtensionRegistrar directly.
   virtual void RemoveComponentExtension(const std::string& extension_id) = 0;
 
   // Whether a user is able to disable a given extension.
@@ -294,18 +298,6 @@ class ExtensionService : public ExtensionServiceInterface,
   // |was_installed_by_default| flag.
   void DisableUserExtensionsExcept(const std::vector<std::string>& except_ids);
 
-  // Puts all extensions in a blocked state: Unloading every extension, and
-  // preventing them from ever loading until UnblockAllExtensions is called.
-  // This state is stored in preferences, so persists until Chrome restarts.
-  //
-  // Component, external component and allowlisted policy installed extensions
-  // are exempt from being Blocked (see CanBlockExtension in .cc file).
-  void BlockAllExtensions();
-
-  // All blocked extensions are reverted to their previous state, and are
-  // reloaded. Newly added extensions are no longer automatically blocked.
-  void UnblockAllExtensions();
-
   // Informs the service that an extension's files are in place for loading.
   //
   // |extension|                the extension
@@ -353,11 +345,11 @@ class ExtensionService : public ExtensionServiceInterface,
   // Returns profile_ as a BrowserContext.
   content::BrowserContext* GetBrowserContext() const;
 
-  bool block_extensions() const { return block_extensions_; }
-
   Profile* profile() { return profile_; }
 
-  ComponentLoader* component_loader() { return component_loader_.get(); }
+  // TODO(crbug.com/408495366): Delete this method. Use ComponentLoader::Get()
+  // instead.
+  ComponentLoader* component_loader() { return component_loader_; }
 
   SharedModuleService* shared_module_service() {
     return shared_module_service_.get();
@@ -370,10 +362,6 @@ class ExtensionService : public ExtensionServiceInterface,
   // TODO(crbug.com/404941806): Delete this method and use the KeyedService
   // directly.
   ExtensionAllowlist* allowlist() { return allowlist_; }
-
-  const std::set<std::string>& disable_flag_exempted_extensions() const {
-    return disable_flag_exempted_extensions_;
-  }
 
   //////////////////////////////////////////////////////////////////////////////
   // For Testing
@@ -440,18 +428,6 @@ class ExtensionService : public ExtensionServiceInterface,
   // Signals *ready_ and sends a notification to the listeners.
   void SetReadyAndNotifyListeners();
 
-  // Update preferences for a new or updated extension; notify observers that
-  // the extension is installed, e.g., to update event handlers on background
-  // pages; and perform other extension install tasks before calling
-  // AddExtension.
-  // |install_flags| is a bitmask of InstallFlags.
-  void AddNewOrUpdatedExtension(const Extension* extension,
-                                const base::flat_set<int>& disable_reasons,
-                                int install_flags,
-                                const syncer::StringOrdinal& page_ordinal,
-                                const std::string& install_parameter,
-                                base::Value::Dict ruleset_install_prefs);
-
   // Manages the blocklisted extensions, intended as callback from
   // Blocklist::GetBlocklistedIDs.
   void ManageBlocklist(const Blocklist::BlocklistStateMap& blocklisted_ids);
@@ -500,10 +476,6 @@ class ExtensionService : public ExtensionServiceInterface,
   // Sets of enabled/disabled/terminated/blocklisted extensions. Not owned.
   raw_ptr<ExtensionRegistry> registry_ = nullptr;
 
-  // Set of allowlisted enabled extensions loaded from the
-  // --disable-extensions-except command line flag.
-  std::set<std::string> disable_flag_exempted_extensions_;
-
   // Hold the set of pending extensions. Not owned.
   raw_ptr<PendingExtensionManager> pending_extension_manager_ = nullptr;
 
@@ -521,15 +493,12 @@ class ExtensionService : public ExtensionServiceInterface,
       host_observation_{this};
 
   // Keeps track of loading and unloading component extensions.
-  std::unique_ptr<ComponentLoader> component_loader_;
+  raw_ptr<ComponentLoader> component_loader_ = nullptr;
 
   // Set to true if this is the first time this ExtensionService has run.
   // Used for specially handling external extensions that are installed the
   // first time.
   bool is_first_run_ = false;
-
-  // Set to true if extensions are all to be blocked.
-  bool block_extensions_ = false;
 
   // The controller for the UI that alerts the user about any blocklisted
   // extensions. Not owned.

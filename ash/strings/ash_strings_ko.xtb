@@ -112,6 +112,7 @@
 <translation id="1306549533752902673">추천 앱</translation>
 <translation id="1310396869741602366">어조 변경</translation>
 <translation id="1312604459020188865">신호 강도 <ph name="SIGNAL_STRENGTH" /></translation>
+<translation id="1314113845887519729">선택된 상단 가장자리 핸들, 화살표 키를 사용하여 이동</translation>
 <translation id="1316069254387866896">앱 표시줄 항상 표시</translation>
 <translation id="132346741904777634">카메라 미리보기가 왼쪽 상단으로 맞춰졌습니다. 시스템 표시 경로와 충돌합니다.</translation>
 <translation id="132415371743256095"><ph name="DESK_NAME" /> 및 창 닫기</translation>
@@ -186,6 +187,7 @@
 <translation id="1557622599341396706">데스크 이름 표시</translation>
 <translation id="1569384531973824928">카메라 및 마이크 액세스 권한이 있는 모든 앱과 웹사이트에서 액세스할 수 있게 됩니다. 웹페이지를 새로고침하거나 앱을 다시 시작해야 할 수도 있습니다.</translation>
 <translation id="1571697193564730395">방해 금지 모드를 전환합니다. <ph name="STATE_TEXT" /></translation>
+<translation id="1574691582236909946">선택된 왼쪽 가장자리 핸들, 화살표 키를 사용하여 이동</translation>
 <translation id="1576623706766186887">돋보기 사용 설정 시 축소</translation>
 <translation id="1582946770779745370">게임 대시보드를 사용할 수 있습니다. 언제든지 <ph name="LAUNCHER_KEY_NAME" /> + Shift + Esc를 누른 후 <ph name="LAUNCHER_KEY_NAME" /> + g를 눌러 열 수 있습니다.</translation>
 <translation id="1586324912145647027">데스크 1에서 8로 이동</translation>
@@ -220,6 +222,7 @@
 <translation id="1696984622403682083">언제든지 설정에서 이 기능을 사용 중지할 수 있습니다. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> 타이머 · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 주소: <ph name="ADDRESS" /></translation>
+<translation id="1700782710852683371">지금은 이 이미지를 만들 수 없습니다. 설명을 수정해 보세요. 사람, 유해한 콘텐츠, 선정적인 콘텐츠의 이미지는 만들 수 없습니다.</translation>
 <translation id="1703117532528082099">활성 창이 왼쪽에 고정되었습니다.</translation>
 <translation id="1708345662127501511">데스크: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">네트워크 설정</translation>
@@ -608,6 +611,7 @@
 <translation id="304097922505898963">단축키 앱 열기</translation>
 <translation id="304417730895741346">앱 표시줄에서 고정된 앱과 열려 있는 앱을 확인할 수 있습니다. 앱 표시줄에 앱을 고정하려면 앱을 마우스 오른쪽 버튼으로 클릭하거나 두 손가락으로 터치패드를 탭합니다.</translation>
 <translation id="3045488863354895414">즐거운 오후 보내세요</translation>
+<translation id="3045670165536837541">선택된 오른쪽 상단 핸들, 화살표 키를 사용하여 이동</translation>
 <translation id="3047761520276763270">다음과 같이 말해 보세요.</translation>
 <translation id="3053407068093039599">카메라 액세스 사용 설정/중지</translation>
 <translation id="3055162170959710888">오늘 이 기기를 <ph name="USED_TIME" /> 동안 사용했습니다.</translation>
@@ -1763,6 +1767,7 @@
 <translation id="6696025732084565524">분리식 키보드에 중요 업데이트 필요</translation>
 <translation id="6697913454192220372">새 데스크 추가</translation>
 <translation id="6700713906295497288">IME 메뉴 버튼</translation>
+<translation id="6704073473590541209">선택된 오른쪽 가장자리 핸들, 화살표 키를 사용하여 이동</translation>
 <translation id="6706742084323792866">키보드 고정</translation>
 <translation id="6710213216561001401">이전</translation>
 <translation id="6723839937902243910">전원</translation>
@@ -1786,6 +1791,7 @@
 <translation id="6781002679438061620">데스크 9</translation>
 <translation id="6782182743534150858">데스크 13</translation>
 <translation id="6782919488259222803">현재 페이지 검색</translation>
+<translation id="6783348167101855071">선택된 오른쪽 하단 핸들, 화살표 키를 사용하여 이동</translation>
 <translation id="6786750046913594791">폴더 닫기</translation>
 <translation id="6790428901817661496">재생</translation>
 <translation id="6792262051831399889">사용 불가</translation>
@@ -1941,6 +1947,7 @@
 <translation id="7371404428569700291">창 녹화</translation>
 <translation id="7372069265635026568">총 <ph name="TOTAL_MEMORY" /> 중 <ph name="AVAILABLE_MEMORY" />의 메모리 사용 가능</translation>
 <translation id="737315737514430195">마이크 권한이 있는 모든 앱 및 웹사이트의 마이크 액세스를 허용합니다.</translation>
+<translation id="7376933029363911338">선택된 하단 가장자리 핸들, 화살표 키를 사용하여 이동</translation>
 <translation id="7377169924702866686">Caps Lock이 켜져 있습니다.</translation>
 <translation id="7377481913241237033">코드를 사용한 연결</translation>
 <translation id="7378203170292176219">드래그하여 녹화할 영역을 선택하세요.</translation>
@@ -2037,6 +2044,7 @@
 <translation id="7658239707568436148">취소</translation>
 <translation id="7659861092419699379">데스크와 창을 닫았습니다.</translation>
 <translation id="7660160718439869192"><ph name="EMAIL" />에 연결된 기기에 <ph name="NAME" /> 기기가 표시됩니다.</translation>
+<translation id="7661694115779363471">선택된 왼쪽 하단 핸들, 화살표 키를 사용하여 이동</translation>
 <translation id="7662283695561029522">설정하려면 탭하세요.</translation>
 <translation id="7670953955701272011">Google Calendar에서 이 날짜를 엽니다.</translation>
 <translation id="7671610481353807627">앱이 색상별로 정렬됩니다.</translation>
@@ -2205,6 +2213,7 @@
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> 정보 대화상자 열기</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> 사용 중</translation>
 <translation id="8168435359814927499">콘텐츠</translation>
+<translation id="8172370561760918656">선택된 왼쪽 상단 핸들, 화살표 키를 사용하여 이동</translation>
 <translation id="81817143961839203">이미지를 삽입할 수 없음</translation>
 <translation id="8185090165691050712">잠금 모드의 크기를 조절할 수 있는 메뉴 사용 설정/사용 중지</translation>
 <translation id="8192727139462702395">블루투스를 사용 중지하면 다음의 외부 기기와 <ph name="DEVICE_TYPE" />의 연결이 해제됩니다.</translation>

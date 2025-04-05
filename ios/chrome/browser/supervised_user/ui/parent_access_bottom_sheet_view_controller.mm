@@ -6,6 +6,7 @@
 
 #import "base/functional/callback.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/supervised_user/ui/constants.h"
@@ -114,6 +115,30 @@ UIImage* CloseButtonImage(BOOL highlighted) {
   }
 }
 
+#pragma mark - UIAccessibilityAction
+
+// Dismiss the bottom sheet via the escape accessibility gesture.
+- (BOOL)accessibilityPerformEscape {
+  [self closeBottomSheetRequested];
+  return YES;
+}
+
+#pragma mark - UIResponder
+
+// To always be able to register key commands via -keyCommands, the VC must be
+// able to become first responder.
+- (BOOL)canBecomeFirstResponder {
+  return YES;
+}
+
+- (NSArray<UIKeyCommand*>*)keyCommands {
+  return @[ UIKeyCommand.cr_close ];
+}
+
+- (void)keyCommand_close {
+  [self closeBottomSheetRequested];
+}
+
 #pragma mark - Private
 
 // Returns a custom detent between the medium and large detents.
@@ -145,10 +170,10 @@ UIImage* CloseButtonImage(BOOL highlighted) {
       kCustomBottomSheetDetentIdentifier;
 }
 
-- (void)closeButtonTapped {
+- (void)closeBottomSheetRequested {
   // Hide the WebView to prevent a white flash in dark mode.
   [self setWebViewHidden:YES];
-  [self.presentationDelegate closeButtonTapped:self];
+  [self.presentationDelegate closeBottomSheetRequested:self];
 }
 
 // Creates, initializes, and adds `_closeButton` to the bottom sheet.
@@ -164,7 +189,7 @@ UIImage* CloseButtonImage(BOOL highlighted) {
   _closeButton = [UIButton
       buttonWithConfiguration:closeButtonConfiguration
                 primaryAction:[UIAction actionWithHandler:^(UIAction* action) {
-                  [weakSelf closeButtonTapped];
+                  [weakSelf closeBottomSheetRequested];
                 }]];
 
   _closeButton.translatesAutoresizingMaskIntoConstraints = NO;

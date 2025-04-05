@@ -366,6 +366,9 @@ TabGroupSyncServiceProxy::TakeSharedTabGroupsAvailableAtStartupForMessaging() {
   NOTREACHED();
 }
 
+void TabGroupSyncServiceProxy::OnLastTabClosed(
+    const SavedTabGroup& saved_tab_group) {}
+
 void TabGroupSyncServiceProxy::AddObserver(Observer* observer) {
   if (observers_.empty()) {
     service_->model()->AddObserver(this);

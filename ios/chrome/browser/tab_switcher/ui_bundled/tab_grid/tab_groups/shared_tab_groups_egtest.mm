@@ -61,6 +61,8 @@ using chrome_test_util::TabGroupCreationView;
 using chrome_test_util::TabGroupOverflowMenuButton;
 using chrome_test_util::TabGroupViewTitle;
 using chrome_test_util::WindowWithNumber;
+using data_sharing::features::kDataSharingFeature;
+using data_sharing::features::kDataSharingJoinOnly;
 
 namespace {
 
@@ -125,12 +127,17 @@ void AddSharedGroup(BOOL owner) {
 // the underlying feature dependencies), with the Shared Tab Groups flavor as a
 // parameter.
 AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
-    const base::Feature& shared_tab_group_flavor) {
+    bool join_only = false) {
   AppLaunchConfiguration config;
   config.features_enabled.push_back(kTabGroupsIPad);
   config.features_enabled.push_back(kTabGroupSync);
   config.features_enabled.push_back(kTabGroupIndicator);
-  config.features_enabled.push_back(shared_tab_group_flavor);
+  if (join_only) {
+    config.features_enabled.push_back(kDataSharingJoinOnly);
+    config.features_disabled.push_back(kDataSharingFeature);
+  } else {
+    config.features_enabled.push_back(kDataSharingFeature);
+  }
 
   // Add the flag to use FakeTabGroupSyncService.
   config.additional_args.push_back(
@@ -148,8 +155,7 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
 @implementation SharedTabGroupsTestCase
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
-  return SharedTabGroupAppLaunchConfiguration(
-      data_sharing::features::kDataSharingFeature);
+  return SharedTabGroupAppLaunchConfiguration();
 }
 
 - (void)setUp {
@@ -861,8 +867,7 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
 @implementation SharedTabGroupsJoinOnlyTestCase
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
-  return SharedTabGroupAppLaunchConfiguration(
-      data_sharing::features::kDataSharingJoinOnly);
+  return SharedTabGroupAppLaunchConfiguration(/*join_only=*/true);
 }
 
 - (void)setUp {

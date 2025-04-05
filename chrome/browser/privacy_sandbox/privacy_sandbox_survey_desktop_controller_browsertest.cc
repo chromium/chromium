@@ -84,7 +84,7 @@ class PrivacySandboxSurveyDesktopControllerLaunchSurveyTest
 IN_PROC_BROWSER_TEST_F(PrivacySandboxSurveyDesktopControllerLaunchSurveyTest,
                        SurveyNotLaunchedOnFirstNtp) {
   EXPECT_CALL(*mock_hats_service_,
-              LaunchSurvey(GetSentimentSurveyTriggerId(), _, _, _, _))
+              LaunchSurvey(GetSentimentSurveyTriggerId(), _, _, _, _, _, _))
       .Times(0);
 
   // Navigation to the first NTP should not trigger the sentiment survey.
@@ -98,7 +98,7 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxSurveyDesktopControllerLaunchSurveyTest,
                        SurveyLaunchedOnSecondNtp) {
   EXPECT_CALL(*mock_hats_service_,
               LaunchSurvey(GetSentimentSurveyTriggerId(), _, _,
-                           survey_service()->GetSentimentSurveyPsb(), _));
+                           survey_service()->GetSentimentSurveyPsb(), _, _, _));
 
   browser()->window()->Activate();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),

@@ -388,7 +388,7 @@ void ExtensionServiceTestWithInstall::TerminateExtension(
 }
 
 void ExtensionServiceTestWithInstall::BlockAllExtensions() {
-  service()->BlockAllExtensions();
+  registrar()->BlockAllExtensions();
 }
 
 void ExtensionServiceTestWithInstall::ClearLoadedExtensions() {

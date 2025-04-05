@@ -7,7 +7,7 @@ buildconfig = "//build/config/BUILDCONFIG.gn"
 # for python3.exe and python3.bat.
 script_executable = "python3"
 
-exec_script_whitelist = build_dotfile_settings.exec_script_whitelist
+exec_script_allowlist = build_dotfile_settings.exec_script_allowlist
 
 default_args = {
   clang_use_chrome_plugins = false

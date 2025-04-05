@@ -18,7 +18,6 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
@@ -57,23 +56,15 @@ using set_up_list_prefs::SetUpListItemState;
 }
 
 + (void)disableSetUpList {
-  PrefService* prefService =
-      IsHomeCustomizationEnabled()
-          ? chrome_test_util::GetOriginalProfile()->GetPrefs()
-          : GetApplicationContext()->GetLocalState();
-  set_up_list_prefs::DisableSetUpList(prefService);
+  set_up_list_prefs::DisableSetUpList(
+      chrome_test_util::GetOriginalProfile()->GetPrefs());
 }
 
 + (void)resetSetUpListPrefs {
   PrefService* localState = GetApplicationContext()->GetLocalState();
-  if (IsHomeCustomizationEnabled()) {
-    PrefService* prefService =
-        chrome_test_util::GetOriginalProfile()->GetPrefs();
-    prefService->SetBoolean(prefs::kHomeCustomizationMagicStackSetUpListEnabled,
-                            true);
-  } else {
-    localState->ClearPref(set_up_list_prefs::kDisabled);
-  }
+  PrefService* prefService = chrome_test_util::GetOriginalProfile()->GetPrefs();
+  prefService->SetBoolean(prefs::kHomeCustomizationMagicStackSetUpListEnabled,
+                          true);
   SetUpListItemState unknown = SetUpListItemState::kUnknown;
   set_up_list_prefs::SetItemState(localState, SetUpListItemType::kSignInSync,
                                   unknown);

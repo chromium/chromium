@@ -109,32 +109,4 @@ TEST_F(StartupHelperTest, CloseUnsavedLocalGroupsOnStartup) {
   EXPECT_TRUE(pref_service_.GetBoolean(prefs::kDidSyncTabGroupsInLastSession));
 }
 
-TEST_F(StartupHelperTest, UpdateTabIdMappings) {
-  group_1_ = test::CreateTestSavedTabGroupWithNoTabs();
-  group_1_.SetLocalGroupId(local_group_id_1_);
-
-  SavedTabGroupTab tab1 =
-      test::CreateSavedTabGroupTab("A_Link", u"Tab1", group_1_.saved_guid());
-  SavedTabGroupTab tab2 =
-      test::CreateSavedTabGroupTab("B_Link", u"Tab2", group_1_.saved_guid());
-  group_1_.AddTabLocally(tab1);
-  group_1_.AddTabLocally(tab2);
-
-  std::vector<SavedTabGroup> groups = {group_1_};
-  EXPECT_CALL(*service_, GetAllGroups()).WillRepeatedly(Return(groups));
-
-  EXPECT_CALL(*delegate_, GetLocalTabGroupIds())
-      .WillRepeatedly(Return(std::vector<LocalTabGroupID>{local_group_id_1_}));
-
-  const LocalTabID kTab1LocalId = test::GenerateRandomTabID();
-  const LocalTabID kTab2LocalId = test::GenerateRandomTabID();
-  EXPECT_CALL(*delegate_, GetLocalTabIdsForTabGroup(local_group_id_1_))
-      .WillOnce(Return(std::vector<LocalTabID>{kTab1LocalId, kTab2LocalId}));
-
-  // Expect calls to map local tab ID for each tab.
-  EXPECT_CALL(*service_, UpdateLocalTabId(_, _, _)).Times(2);
-
-  startup_helper_->MapTabIdsForGroup(local_group_id_1_, group_1_);
-}
-
 }  // namespace tab_groups

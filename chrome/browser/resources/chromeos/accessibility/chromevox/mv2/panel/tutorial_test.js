@@ -205,9 +205,8 @@ AX_TEST_F(
 // The first three nudges should read the current item with full context.
 // Afterward, general hints will be given about using ChromeVox. Lastly,
 // we will give a hint for exiting the tutorial.
-// TODO(crbug.com/407459387): Fix and re-enable this test.
 AX_TEST_F(
-    'ChromeVoxTutorialTest', 'DISABLED_GeneralNudgesTest', async function() {
+    'ChromeVoxTutorialTest', 'GeneralNudgesTest', async function() {
       const mockFeedback = this.createMockFeedback();
       const root = await this.runWithLoadedTree(this.simpleDoc);
       await this.launchAndWaitForTutorial();
@@ -399,8 +398,7 @@ AX_TEST_F(
     });
 
 // Tests that the title of an interactive lesson is read when shown.
-// TODO(crbug.com/407459387): Fix and re-enable this test.
-AX_TEST_F('ChromeVoxTutorialTest', 'DISABLED_AutoReadTitle', async function() {
+AX_TEST_F('ChromeVoxTutorialTest', 'AutoReadTitle', async function() {
   const mockFeedback = this.createMockFeedback();
   const root = await this.runWithLoadedTree(this.simpleDoc);
   await this.launchAndWaitForTutorial();
@@ -449,8 +447,7 @@ AX_TEST_F('ChromeVoxTutorialTest', 'DISABLED_LessonHint', async function() {
 });
 
 // Tests for correct speech and earcons on the earcons lesson.
-// TODO(crbug.com/407459387): Fix and re-enable this test.
-AX_TEST_F('ChromeVoxTutorialTest', 'DISABLED_EarconLesson', async function() {
+AX_TEST_F('ChromeVoxTutorialTest', 'EarconLesson', async function() {
   const mockFeedback = this.createMockFeedback();
   const root = await this.runWithLoadedTree(this.simpleDoc);
   await this.launchAndWaitForTutorial();
@@ -550,8 +547,7 @@ AX_TEST_F(
     });
 
 // Tests that tutorial nudges are restarted whenever the current range changes.
-// TODO(crbug.com/407459387): Fix and re-enable this test.
-AX_TEST_F('ChromeVoxTutorialTest', 'DISABLED_RestartNudges', async function() {
+AX_TEST_F('ChromeVoxTutorialTest', 'RestartNudges', async function() {
   const root = await this.runWithLoadedTree(this.simpleDoc);
   await this.launchAndWaitForTutorial();
   const tutorial = this.getTutorial();
@@ -575,8 +571,7 @@ AX_TEST_F('ChromeVoxTutorialTest', 'DISABLED_RestartNudges', async function() {
 });
 
 // Tests that the tutorial closes and ChromeVox navigates to a resource link.
-// TODO(crbug.com/407459387): Fix and re-enable this test.
-AX_TEST_F('ChromeVoxTutorialTest', 'DISABLED_ResourcesTest', async function() {
+AX_TEST_F('ChromeVoxTutorialTest', 'ResourcesTest', async function() {
   const mockFeedback = this.createMockFeedback();
   const root = await this.runWithLoadedTree(this.simpleDoc);
   await this.launchAndWaitForTutorial();
@@ -600,8 +595,7 @@ AX_TEST_F('ChromeVoxTutorialTest', 'DISABLED_ResourcesTest', async function() {
 
 // Tests that choosing a curriculum with only 1 lesson automatically opens the
 // lesson.
-// TODO(crbug.com/407459387): Fix and re-enable this test.
-AX_TEST_F('ChromeVoxTutorialTest', 'DISABLED_OnlyLessonTest', async function() {
+AX_TEST_F('ChromeVoxTutorialTest', 'OnlyLessonTest', async function() {
   const mockFeedback = this.createMockFeedback();
   const root = await this.runWithLoadedTree(this.simpleDoc);
   await this.launchAndWaitForTutorial();
@@ -635,10 +629,8 @@ AX_TEST_F('ChromeVoxTutorialTest', 'DISABLED_OnlyLessonTest', async function() {
 
 // Tests that interactive mode and ForcedActionPath are properly set when
 // showing different screens in the tutorial.
-// TODO(crbug.com/407459387): Fix and re-enable this test.
 AX_TEST_F(
-    'ChromeVoxTutorialTest', 'DISABLED_StartStopInteractiveMode',
-    async function() {
+    'ChromeVoxTutorialTest', 'StartStopInteractiveMode', async function() {
       const root = await this.runWithLoadedTree(this.simpleDoc);
       await this.launchAndWaitForTutorial();
       const tutorial = this.getTutorial();
@@ -749,9 +741,8 @@ AX_TEST_F(
       await mockFeedback.replay();
     });
 
-// TODO(crbug.com/407459387): Fix and re-enable this test.
 AX_TEST_F(
-    'ChromeVoxTutorialTest', 'DISABLED_GeneralTouchNudges', async function() {
+    'ChromeVoxTutorialTest', 'GeneralTouchNudges', async function() {
       const mockFeedback = this.createMockFeedback();
       const root = await this.runWithLoadedTree(this.simpleDoc);
       await this.launchAndWaitForTutorial();

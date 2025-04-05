@@ -127,6 +127,8 @@ class MODULES_EXPORT AudioContext final
   void RequestMediaRemoting() override {}
   void RequestVisibility(
       RequestVisibilityCallback request_visibility_cb) override {}
+  void RecordAutoPictureInPictureInfo(
+      const String& auto_picture_in_picture_info) override {}
 
   // https://webaudio.github.io/web-audio-api/#AudioContext
   double baseLatency() const;

@@ -15,7 +15,6 @@ component("clipboard_types") {
   output_name = "ui_base_clipboard_types"
   sources = [
     "clipboard_buffer.h",
-    "clipboard_constants.cc",
     "clipboard_constants.h",
   ]
 

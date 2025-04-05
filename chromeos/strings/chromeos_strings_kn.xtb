@@ -458,7 +458,6 @@
 <translation id="3084958266922136097">ಸ್ಕ್ರೀನ್ ಸೇವರ್ ಅನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="3091839911843451378">ವಿಫಲವಾಗಿದೆ - ನಿಲ್ಲಿಸಲಾಗಿದೆ</translation>
 <translation id="3102119246920354026">ಸಂಗ್ರಹ</translation>
-<translation id="3112413615003385433">ನಿಮ್ಮ ಶಿಕ್ಷಕರು ಶಾಲಾ ಟೂಲ್‌ಗಳಲ್ಲಿನ ಕಂಟೆಂಟ್‌ ಅನ್ನು ತೆಗೆದುಹಾಕಿದ್ದಾರೆ</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">ಪೂಲ್‌ಗಳು</translation>
 <translation id="3122883569442693641">ಇನ್ನಷ್ಟು ವಿವರಗಳು</translation>
@@ -539,7 +538,6 @@
 <translation id="3488065109653206955">ಭಾಗಶಃ ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_COLOR" /> ಟೋನ್ ಹೊಂದಿರುವ <ph name="OFFICE_STYLE" /> ಆಫೀಸ್</translation>
 <translation id="3493187369049186498">ಡೇಟಾವನ್ನು ನಿಮ್ಮ Chromebook ಮೂಲಕ ಅಳೆಯಲಾಗುತ್ತದೆ. ಇದು ಪೂರೈಕೆದಾರರ ಡೇಟಾದಿಂದ ಭಿನ್ನವಾಗಿರಬಹುದು.</translation>
-<translation id="349570724365779960">ಶಾಲಾ ಟೂಲ್‌ಗಳು ವಿದ್ಯಾರ್ಥಿಗಳಿಗೆ ಸಂಬಂಧಪಟ್ಟಿವೆ</translation>
 <translation id="3502426834823382181">ಎಲ್ಲಾ ಆ್ಯಪ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಿ</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />ಕಾರ್ಯಕ್ಷಮತೆ ಟ್ರೇಸ್ ಡೇಟಾ<ph name="END_LINK1" /> ಕಳುಹಿಸಿ</translation>
 <translation id="3517001332549868749">ChromeOS ಅಪ್‌ಡೇಟ್</translation>
@@ -547,7 +545,6 @@
 <translation id="353214771040290298">ಎಡಿಟ್ ಮಾಡುವುದು ಮುಗಿದಿದೆ</translation>
 <translation id="3532980081107202182">ಸುಮಾರು <ph name="MIN_REMAINING" /> ಬಾಕಿ ಉಳಿದಿದೆ</translation>
 <translation id="3533790840489634638">ಈಜುಕೊಳ</translation>
-<translation id="3535802910192338629">ನಿಮ್ಮ ಶಿಕ್ಷಕರು ಶಾಲಾ ಟೂಲ್‌ಗಳಲ್ಲಿ ಹೊಸ ಕಂಟೆಂಟ್‌ ಅನ್ನು ಸೇರಿಸಿದ್ದಾರೆ</translation>
 <translation id="3547264467365135390">ಫಾರ್ಮುಲಾ</translation>
 <translation id="3557205324756024651">ಸ್ಥಳೀಯ ಗುರುತು (ಐಚ್ಛಿಕ)</translation>
 <translation id="3565064564551103223">ಅನುಮತಿಸಲಾದ IP ಗಳು</translation>
@@ -1235,6 +1232,7 @@
 <translation id="6657240842932274095">ನಿಮ್ಮ ಸ್ಥಳದ ಮಾಹಿತಿಯನ್ನು ಬಳಸಲು ಸಿಸ್ಟಂ ಸೇವೆಗಳನ್ನು ಅನುಮತಿಸಬೇಕೆ?</translation>
 <translation id="6657585470893396449">ಪಾಸ್‌ವರ್ಡ್</translation>
 <translation id="66621959568103627">ಕೋರಲ್ ಗುಲಾಬಿ</translation>
+<translation id="6669485505082792176">ಸದ್ಯಕ್ಕೆ ಇದರ ಚಿತ್ರಗಳನ್ನು ರಚಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ. ನಿಮ್ಮ ವಿವರಣೆಯನ್ನು ಪುನಃ ಬರೆಯಲು ಪ್ರಯತ್ನಿಸಿ. ನೀವು ಜನರ ಚಿತ್ರಗಳನ್ನು, ಹಾನಿಕಾರಕ ಅಥವಾ ಅಶ್ಲೀಲ ಕಂಟೆಂಟ್ ಅನ್ನು ರಚಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ ಎಂಬುದನ್ನು ನೆನಪಿನಲ್ಲಿಡಿ. <ph name="BEGIN_LINK_LEARN_MORE" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6673898378497337661">ಕೀ ಬೋರ್ಡ್ ಪ್ರಖರತೆ ಹೆಚ್ಚಿಸಿ</translation>
 <translation id="6692996468359469499">ನಿಮ್ಮ ಆಯ್ಕೆಗೆ ಸಂಬಂಧಿಸಿದ ಮಾಹಿತಿ ಪಡೆಯಿರಿ</translation>
 <translation id="6694534975463174713">ಲಾಕ್</translation>
@@ -1440,7 +1438,6 @@
 <translation id="7544853251252956727">ಶಫಲ್ ಮಾಡಿ</translation>
 <translation id="7550715992156305117">ಡಯಾಗ್ನಾಸ್ಟಿಕ್ ದಿನಚರಿಗಳು</translation>
 <translation id="7551123448725492271">ಸಾಧನವು ಆಡಿಯೋ ಸಾಧನವಾಗಿದೆ.</translation>
-<translation id="7553913964854052228">ಶಾಲಾ ಟೂಲ್‌ಗಳು ನಿಮ್ಮ ಮೈಕ್ರೊಫೋನ್ ಅನ್ನು ಬಳಸುತ್ತಿದೆ</translation>
 <translation id="7559239713112547082">ಸ್ಕ್ರೀನ್‌ಶಾಟ್ ಪೂರ್ವವೀಕ್ಷಣೆ</translation>
 <translation id="7561454561030345039">ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ವಹಿಸುತ್ತಾರೆ</translation>
 <translation id="7561759921596375678">ವಾಲ್ಯೂಮ್ ಆನ್ ಮಾಡಿ</translation>
@@ -1663,7 +1660,6 @@
 <translation id="8576249514688522074">ಪ್ರಾರಂಭಿಸಲಾಗಿಲ್ಲ</translation>
 <translation id="8584654835905316966"><ph name="DEVICE_NAME" /> ಫರ್ಮ್‌ವೇರ್‌ ಅನ್ನು <ph name="VERSION" /> ಗೆ ಅಪ್‌ಗ್ರೇಡ್‌ ಮಾಡಲು ರೀಬೂಟ್‌ ಮಾಡುವ ಅಗತ್ಯವಿದೆ. ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್‌ ಹಲವಾರು ಬಾರಿ ರೀಬೂಟ್‌ ಆಗುವಂತೆ ಕಾಣಿಸಬಹುದು. ಈ ನಡವಳಿಕೆಯನ್ನು ನಿರೀಕ್ಷಿಸಲಾಗಿದೆ.</translation>
 <translation id="8593058461203131755">ಮಾಧ್ಯಮವನ್ನು ವಿರಾಮಗೊಳಿಸಿ</translation>
-<translation id="8619169570378509764">ಶಾಲಾ ಟೂಲ್‌ಗಳು</translation>
 <translation id="8620617069779373398">ರೋಮಿಂಗ್ ಸ್ಥಿತಿ</translation>
 <translation id="8626489604350149811"><ph name="APN_NAME" /> ಗಾಗಿ ಇನ್ನಷ್ಟು ಕ್ರಿಯೆಗಳು</translation>
 <translation id="86356131183441916">ತಿಳಿ ನೇರಳೆ</translation>

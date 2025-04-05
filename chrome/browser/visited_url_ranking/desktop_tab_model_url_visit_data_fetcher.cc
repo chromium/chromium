@@ -12,7 +12,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/sessions/content/session_tab_helper.h"
-#include "components/tab_collections/public/tab_interface.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/url_deduplication/url_deduplication_helper.h"
 #include "components/visited_url_ranking/public/fetch_options.h"
 #include "components/visited_url_ranking/public/fetch_result.h"

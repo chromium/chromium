@@ -419,7 +419,6 @@ crbug.com/1290953 [ android android-pixel-4 android-webview-instrumentation ] Pi
 crbug.com/40241616 [ android android-sm-a137f ] Pixel_CanvasLowLatencyWebGLAlphaFalse [ Failure ]
 crbug.com/1372141 [ android android-sm-a236b ] Pixel_CanvasLowLatencyWebGLAlphaFalse [ Failure ]
 
-crbug.com/1376927 [ win10 target-cpu-32 nvidia-0x2184 ] Pixel_MediaFoundationClearDirectComposition [ Failure ]
 
 crbug.com/1474611 [ mac nvidia angle-opengl graphite-disabled ] Pixel_WebGLGreenTriangle_NonChromiumImage_NoAA_NoAlpha [ Failure ]
 crbug.com/1477318 [ mac ] Pixel_WebGLPreservedAfterTabSwitch [ RetryOnFailure ]
@@ -477,9 +476,11 @@ crbug.com/402429382 [ win11 amd-0x7480 ] Pixel_ReflectedDiv [ Failure ]
 crbug.com/404887521 [ android android-chromium android-nexus-5x ] Pixel_OffscreenCanvasAccelerated2D [ Failure ]
 crbug.com/404887521 [ android android-chromium android-nexus-5x ] Pixel_OffscreenCanvasAccelerated2DWorker [ RetryOnFailure ]
 
-# Failures on Mac Intel and win10 Nvidia
-crbug.com/370694819 [ mac intel ] Pixel_WebGPUDestroyed_TransferToOffscreenCanvas* [ Failure ]
-crbug.com/370694819 [ win10 nvidia ] Pixel_WebGPUDestroyed_TransferToOffscreenCanvas* [ Failure ]
+# Failures on all Mac and Windows bots running these tests
+crbug.com/370694819 [ mac ] Pixel_WebGPUDestroyed_TransferToOffscreenCanvas* [ Failure ]
+crbug.com/370694819 [ win ] Pixel_WebGPUDestroyed_TransferToOffscreenCanvas* [ Failure ]
+crbug.com/370694819 [ mac asan ] Pixel_WebGPUDestroyed_OffscreenCanvas* [ Failure ]
+crbug.com/370694819 [ mac asan ] Pixel_WebGPUDestroyed_OnscreenCanvas* [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #

@@ -111,11 +111,8 @@ public class ContentViewRenderView extends FrameLayout {
                                                 holder.getSurface(),
                                                 browserInputToken);
                         if (surfaceId != null && browserInputToken != null) {
-                            InputTransferHandler.Delegate delegate =
-                                    new InputTransferHandler.Delegate() {};
                             InputTransferHandler handler =
-                                    new InputTransferHandler(
-                                            browserInputToken, delegate, mWindowAndroid);
+                                    new InputTransferHandler(browserInputToken, mWindowAndroid);
                             assert mSurfaceId == null;
                             mSurfaceId = surfaceId;
                             SurfaceInputTransferHandlerMap.getMap().put(mSurfaceId, handler);

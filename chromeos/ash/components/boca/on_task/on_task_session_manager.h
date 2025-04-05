@@ -64,6 +64,10 @@ class OnTaskSessionManager : public boca::BocaSessionManager::Observer,
     return notifications_manager_.get();
   }
 
+  void SetNotificationManagerForTesting(
+      std::unique_ptr<ash::boca::OnTaskNotificationsManager>
+          notification_manager);
+
  private:
   friend class OnTaskSessionManagerTest;
 

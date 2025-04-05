@@ -9,7 +9,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/views/page_action/page_action_observer.h"
-#include "components/tab_collections/public/tab_interface.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/translate/content/browser/content_translate_driver.h"
 #include "content/public/browser/web_contents.h"
 

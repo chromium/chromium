@@ -126,6 +126,10 @@
 #import "ios/web/common/features.h"
 #import "ui/base/l10n/l10n_util.h"
 
+#if !BUILDFLAG(IS_IOS_MACCATALYST)
+#import "ios/chrome/browser/default_browser/model/default_status/default_status_helper_prefs.h"
+#endif  // !BUILDFLAG(IS_IOS_MACCATALYST)
+
 namespace {
 
 // Deprecated 05/2024.
@@ -185,36 +189,9 @@ inline constexpr char kIosParcelTrackingOptInPromptSwipedDown[] =
 inline constexpr char kIosParcelTrackingPolicyEnabled[] =
     "ios.parcel_tracking.policy_enabled";
 
-// Helper function migrating the preference `pref_name` of type "int" from
-// `defaults` to `pref_service`.
-void MigrateIntegerPreferenceFromUserDefaults(std::string_view pref_name,
-                                              PrefService* pref_service,
-                                              NSUserDefaults* defaults) {
-  NSString* key = @(pref_name.data());
-  NSNumber* value =
-      base::apple::ObjCCast<NSNumber>([defaults objectForKey:key]);
-  if (!value) {
-    return;
-  }
-
-  pref_service->SetInteger(pref_name.data(), [value intValue]);
-  [defaults removeObjectForKey:key];
-}
-
-// Helper function migrating the preference `pref_name` of type "NSDate" from
-// `defaults` to `pref_service`.
-void MigrateNSDatePreferenceFromUserDefaults(std::string_view pref_name,
-                                             PrefService* pref_service,
-                                             NSUserDefaults* defaults) {
-  NSString* key = @(pref_name.data());
-  NSDate* value = base::apple::ObjCCast<NSDate>([defaults objectForKey:key]);
-  if (!value) {
-    return;
-  }
-
-  pref_service->SetTime(pref_name.data(), base::Time::FromNSDate(value));
-  [defaults removeObjectForKey:key];
-}
+// Deprecated 04/2025.
+inline constexpr char kMixedContentAutoupgradeEnabled[] =
+    "ios.mixed_content_autoupgrade_enabled";
 
 // Migrates a boolean pref from source to target PrefService.
 void MigrateBooleanPref(std::string_view pref_name,
@@ -430,6 +407,10 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   TipsNotificationClient::RegisterLocalStatePrefs(registry);
   auto_deletion::AutoDeletionService::RegisterLocalStatePrefs(registry);
   push_notification_prefs::RegisterLocalStatePrefs(registry);
+
+#if !BUILDFLAG(IS_IOS_MACCATALYST)
+  default_status::RegisterDefaultStatusPrefs(registry);
+#endif  // !BUILDFLAG(IS_IOS_MACCATALYST)
 
   // Preferences related to the profile manager.
   registry->RegisterStringPref(prefs::kLastUsedProfile, std::string());
@@ -771,7 +752,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   // Register HTTPS related settings.
   registry->RegisterBooleanPref(prefs::kHttpsOnlyModeEnabled, false);
-  registry->RegisterBooleanPref(prefs::kMixedContentAutoupgradeEnabled, true);
+  registry->RegisterBooleanPref(kMixedContentAutoupgradeEnabled, false);
 
   // Register pref used to determine whether the User Policy notification was
   // already shown.
@@ -998,6 +979,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   registry->RegisterIntegerPref(prefs::kChromeDataRegionSetting, 0);
 
+  registry->RegisterBooleanPref(prefs::kProvisionalNotificationsAllowedByPolicy,
+                                true);
+
   // Deprecated 05/2024.
   registry->RegisterBooleanPref(kAutologinEnabled, true);
   registry->RegisterListPref(kReverseAutologinRejectedEmailList);
@@ -1080,6 +1064,9 @@ void MigrateObsoleteLocalStatePrefs(PrefService* prefs) {
 
   // Added 03/2025.
   prefs->ClearPref(kIosParcelTrackingPolicyEnabled);
+
+  // Added 04/2025.
+  prefs->ClearPref("set_up_list.disabled");
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -1089,17 +1076,6 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
 
   // Check MigrateDeprecatedAutofillPrefs() to see if this is safe to remove.
   autofill::prefs::MigrateDeprecatedAutofillPrefs(prefs);
-
-  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-
-  // Added 04/2024.
-  prefs->ClearPref(prefs::kMixedContentAutoupgradeEnabled);
-
-  // Added 04/2024.
-  MigrateIntegerPreferenceFromUserDefaults(
-      spotlight::kSpotlightLastIndexingVersionKey, prefs, defaults);
-  MigrateNSDatePreferenceFromUserDefaults(
-      spotlight::kSpotlightLastIndexingDateKey, prefs, defaults);
 
   // Added 05/2024.
   prefs->ClearPref(kSyncCachedTrustedVaultAutoUpgradeDebugInfo);
@@ -1244,6 +1220,9 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
   prefs->ClearPref(kIosParcelTrackingOptInPromptDisplayLimitMet);
   prefs->ClearPref(kIosParcelTrackingOptInStatus);
   prefs->ClearPref(kIosParcelTrackingOptInPromptSwipedDown);
+
+  // Added 04/2025.
+  prefs->ClearPref(kMixedContentAutoupgradeEnabled);
 }
 
 void MigrateObsoleteUserDefault() {

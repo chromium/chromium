@@ -70,4 +70,15 @@ void MockMigrationCoordinator::SetRunCallback(base::RepeatingClosure run_cb) {
   run_cb_ = std::move(run_cb);
 }
 
+MockCleanupHandler::MockCleanupHandler() {
+  ON_CALL(*this, Cleanup)
+      .WillByDefault(
+          [](base::OnceCallback<void(
+                 const std::optional<std::string>& error_message)> callback) {
+            std::move(callback).Run(std::nullopt);
+          });
+}
+
+MockCleanupHandler::~MockCleanupHandler() = default;
+
 }  // namespace policy::local_user_files

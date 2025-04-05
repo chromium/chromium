@@ -11,11 +11,14 @@ import android.os.Bundle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.password_manager.R;
 
 /**
  * Shows the dialog that gives the user some tips for how to treat the exported passwords securely.
  */
+@NullMarked
 public class ExportWarningDialogFragment extends DialogFragment {
     /**
      * This interface combines handling the clicks on the buttons and the general dismissal of the
@@ -27,7 +30,7 @@ public class ExportWarningDialogFragment extends DialogFragment {
     }
 
     // This handler is used to answer the user actions on the dialog.
-    private Handler mHandler;
+    private @Nullable Handler mHandler;
 
     public void setExportWarningHandler(Handler handler) {
         mHandler = handler;
@@ -38,9 +41,9 @@ public class ExportWarningDialogFragment extends DialogFragment {
      * passed in arguments.
      */
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-        return new AlertDialog
-                .Builder(getActivity(), R.style.ThemeOverlay_BrowserUI_AlertDialog_NoActionBar)
+    public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
+        return new AlertDialog.Builder(
+                        getActivity(), R.style.ThemeOverlay_BrowserUI_AlertDialog_NoActionBar)
                 .setPositiveButton(R.string.password_settings_export_action_title, mHandler)
                 .setNegativeButton(R.string.cancel, mHandler)
                 .setMessage(
@@ -51,7 +54,7 @@ public class ExportWarningDialogFragment extends DialogFragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // If there is savedInstanceState, then the dialog is being recreated by Android and will
         // lack the necessary callbacks. Dismiss immediately as the settings page will need to be

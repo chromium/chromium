@@ -5166,7 +5166,7 @@ TEST_F(GLES2FormatTest, CopySharedImageToTextureINTERNALImmediate) {
   EXPECT_EQ(static_cast<GLint>(16), cmd.src_y);
   EXPECT_EQ(static_cast<GLsizei>(17), cmd.width);
   EXPECT_EQ(static_cast<GLsizei>(18), cmd.height);
-  EXPECT_EQ(static_cast<GLboolean>(19), cmd.flip_y);
+  EXPECT_EQ(static_cast<GLboolean>(19), cmd.is_dst_origin_top_left);
   CheckBytesWrittenMatchesExpectedSize(
       next_cmd, sizeof(cmd) + RoundSizeToMultipleOfEntries(sizeof(data)));
 }

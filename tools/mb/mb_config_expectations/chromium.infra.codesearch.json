@@ -1,6 +1,7 @@
 {
   "codesearch-gen-chromium-android": {
     "gn_args": {
+      "android_static_analysis": "off",
       "blink_enable_generated_code_formatting": true,
       "clang_use_chrome_plugins": false,
       "debuggable_apks": false,
@@ -32,6 +33,7 @@
   },
   "codesearch-gen-chromium-cronet": {
     "gn_args": {
+      "android_static_analysis": "off",
       "arm_use_neon": false,
       "clang_use_chrome_plugins": false,
       "clang_use_default_sample_profile": false,
@@ -114,6 +116,7 @@
   },
   "codesearch-gen-chromium-webview": {
     "gn_args": {
+      "android_static_analysis": "off",
       "blink_enable_generated_code_formatting": true,
       "clang_use_chrome_plugins": false,
       "debuggable_apks": false,

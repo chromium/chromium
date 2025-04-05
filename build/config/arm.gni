@@ -118,7 +118,8 @@ if (current_cpu == "arm" || v8_current_cpu == "arm") {
       }
     }
   }
-} else if (current_cpu == "arm64" || v8_current_cpu == "arm64") {
+} else if (current_cpu == "arm64" || v8_current_cpu == "arm64" ||
+           current_cpu == "arm64e" || v8_current_cpu == "arm64e") {
   # arm64 supports only "hard".
   arm_float_abi = "hard"
   arm_use_neon = true

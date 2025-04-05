@@ -145,16 +145,6 @@ BASE_FEATURE(kForceSafeSearchForUnauthenticatedSupervisedUsers,
 BASE_FEATURE(kEnableSupervisedUserVersionSignOutDialog,
              "EnableSupervisedUserVersionSignOutDialog",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kForceSupervisedUserReauthenticationForYouTube,
-             "ForceSupervisedUserReauthenticationForYouTube",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// TODO(crbug.com/378636321): Clean-up this flag once
-// `ForceSupervisedUserReauthenticationForYouTube` is enabled.
-BASE_FEATURE(kExemptYouTubeInfrastructureFromBlocking,
-             "ExemptYouTubeInfrastructureFromBlocking",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 // TODO: crbug.com/378636321 - Clean up the

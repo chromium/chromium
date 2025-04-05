@@ -1634,11 +1634,9 @@ void Shell::Init(
   // used in its constructor.
   app_list_controller_ = std::make_unique<AppListControllerImpl>();
 
-  if (features::IsForestFeatureEnabled()) {
-    birch_model_ = std::make_unique<BirchModel>();
-    birch_privacy_nudge_controller_ =
-        std::make_unique<BirchPrivacyNudgeController>();
-  }
+  birch_model_ = std::make_unique<BirchModel>();
+  birch_privacy_nudge_controller_ =
+      std::make_unique<BirchPrivacyNudgeController>();
 
   autoclick_controller_ = std::make_unique<AutoclickController>();
 
@@ -1816,10 +1814,7 @@ void Shell::Init(
   annotator_controller_ = std::make_unique<AnnotatorController>();
 
   float_controller_ = std::make_unique<FloatController>();
-  if (features::IsForestFeatureEnabled()) {
-    informed_restore_controller_ =
-        std::make_unique<InformedRestoreController>();
-  }
+  informed_restore_controller_ = std::make_unique<InformedRestoreController>();
   pip_controller_ = std::make_unique<PipController>();
 
   multitask_menu_nudge_delegate_ =

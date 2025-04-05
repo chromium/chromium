@@ -17,6 +17,11 @@ public interface WebsiteEntry extends Serializable {
     /** @return the title to display in a {@link WebsiteRowPreference}. */
     String getTitleForPreferenceRow();
 
+    /**
+     * @return the domain and registry associated with the entry.
+     */
+    String getDomainAndRegistry();
+
     /** @return the URL for fetching a favicon. */
     GURL getFaviconUrl();
 

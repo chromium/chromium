@@ -5,7 +5,7 @@
 #include "chrome/browser/actor/tools/tool_invocation.h"
 
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
-#include "components/tab_collections/public/tab_interface.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 

@@ -17,9 +17,12 @@
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/ui/views/overlay/back_to_tab_button.h"
 #include "chrome/browser/ui/views/overlay/close_image_button.h"
+#include "chrome/browser/ui/views/overlay/hang_up_button.h"
 #include "chrome/browser/ui/views/overlay/minimize_button.h"
 #include "chrome/browser/ui/views/overlay/playback_image_button.h"
 #include "chrome/browser/ui/views/overlay/simple_overlay_window_image_button.h"
+#include "chrome/browser/ui/views/overlay/toggle_camera_button.h"
+#include "chrome/browser/ui/views/overlay/toggle_microphone_button.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/global_media_controls/public/views/media_progress_view.h"
@@ -1181,4 +1184,55 @@ TEST_F(VideoOverlayWindowViewsWith2024UITest,
   overlay_window().SetMediaPosition(live_media_position);
   EXPECT_FALSE(replay_10_seconds_button->GetVisible());
   EXPECT_FALSE(forward_10_seconds_button->GetVisible());
+}
+
+TEST_F(VideoOverlayWindowViewsWith2024UITest, VideoConferencingUI) {
+  overlay_window().ForceControlsVisibleForTesting(true);
+  ToggleCameraButton* toggle_camera_button =
+      overlay_window().toggle_camera_button_for_testing();
+  ToggleMicrophoneButton* toggle_microphone_button =
+      overlay_window().toggle_microphone_button_for_testing();
+  HangUpButton* hang_up_button = overlay_window().hang_up_button_for_testing();
+  global_media_controls::MediaProgressView* progress_view =
+      overlay_window().progress_view_for_testing();
+
+  ASSERT_NE(nullptr, toggle_camera_button);
+  ASSERT_NE(nullptr, toggle_microphone_button);
+  ASSERT_NE(nullptr, hang_up_button);
+  ASSERT_NE(nullptr, progress_view);
+
+  // The VC controls should start hidden, and other controls should be shown.
+  WaitForLayout();
+  EXPECT_FALSE(toggle_camera_button->IsDrawn());
+  EXPECT_FALSE(toggle_microphone_button->IsDrawn());
+  EXPECT_FALSE(hang_up_button->IsDrawn());
+  EXPECT_TRUE(progress_view->IsDrawn());
+
+  // If at least one VC control is available, it should be shown and the non-VC
+  // controls should be hidden.
+  overlay_window().SetHangUpButtonVisibility(true);
+  WaitForLayout();
+  EXPECT_FALSE(toggle_camera_button->IsDrawn());
+  EXPECT_FALSE(toggle_microphone_button->IsDrawn());
+  EXPECT_TRUE(hang_up_button->IsDrawn());
+  EXPECT_FALSE(progress_view->IsDrawn());
+
+  // Enabling other VC controls should show those.
+  overlay_window().SetToggleCameraButtonVisibility(true);
+  overlay_window().SetToggleMicrophoneButtonVisibility(true);
+  WaitForLayout();
+  EXPECT_TRUE(toggle_camera_button->IsDrawn());
+  EXPECT_TRUE(toggle_microphone_button->IsDrawn());
+  EXPECT_TRUE(hang_up_button->IsDrawn());
+  EXPECT_FALSE(progress_view->IsDrawn());
+
+  // Disabling all VC controls should show the non-VC controls again.
+  overlay_window().SetHangUpButtonVisibility(false);
+  overlay_window().SetToggleCameraButtonVisibility(false);
+  overlay_window().SetToggleMicrophoneButtonVisibility(false);
+  WaitForLayout();
+  EXPECT_FALSE(toggle_camera_button->IsDrawn());
+  EXPECT_FALSE(toggle_microphone_button->IsDrawn());
+  EXPECT_FALSE(hang_up_button->IsDrawn());
+  EXPECT_TRUE(progress_view->IsDrawn());
 }

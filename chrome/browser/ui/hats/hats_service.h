@@ -86,28 +86,39 @@ class HatsService : public KeyedService {
   // contain key-value pairs where the keys match the field names set for the
   // survey in survey_config.cc, and the values are those which will be
   // associated with the survey response.
+  // |supplied_trigger_id| allows the caller to specify a trigger id. If set,
+  // overrides the survey's trigger_id defined in
+  // `SurveyConfig::GetAllSurveyConfigs`
+  // |survey_options| can be used to.
+  // customize survey invitations on Android. This is an experimental feature
+  // and may be removed in the future. For a NOP, use the default constructor of
+  // SurveyOptions.
   virtual void LaunchSurvey(
       const std::string& trigger,
       base::OnceClosure success_callback,
       base::OnceClosure failure_callback,
       const SurveyBitsData& product_specific_bits_data,
-      const SurveyStringData& product_specific_string_data) = 0;
+      const SurveyStringData& product_specific_string_data,
+      const std::optional<std::string>& supplied_trigger_id,
+      const SurveyOptions& survey_options) = 0;
+
   void LaunchSurvey(const std::string& trigger,
                     base::OnceClosure success_callback = base::DoNothing(),
                     base::OnceClosure failure_callback = base::DoNothing(),
-                    const SurveyBitsData& product_specific_bits_data = {}) {
+                    const SurveyBitsData& product_specific_bits_data = {},
+                    const SurveyStringData& product_specific_string_data = {}) {
     LaunchSurvey(trigger, std::move(success_callback),
-                 std::move(failure_callback), product_specific_bits_data, {});
+                 std::move(failure_callback), product_specific_bits_data,
+                 product_specific_string_data, std::nullopt, SurveyOptions());
   }
 
-  // Launches survey (with id |trigger|) with a timeout |timeout_ms| if
-  // appropriate.
+  // Launches survey with id |trigger|.
   // |product_specific_bits_data| and |product_specific_string_data| must
   // contain key-value pairs where the keys match the field names set for the
   // survey in survey_config.cc, and the values are those which will be
   // associated with the survey response.
   // |web_contents| specifies the `WebContents` where the survey should be
-  // displayed. Returns false if the underlying task posting fails.
+  // displayed.
   virtual void LaunchSurveyForWebContents(
       const std::string& trigger,
       content::WebContents* web_contents,
@@ -131,12 +142,13 @@ class HatsService : public KeyedService {
         std::move(failure_callback), supplied_trigger_id, SurveyOptions());
   }
 
-  // Launches survey (with id |trigger|) with a timeout |timeout_ms| if
+  // Launches survey with id |trigger| with a timeout |timeout_ms| if
   // appropriate.
   // |product_specific_bits_data| and |product_specific_string_data| must
   // contain key-value pairs where the keys match the field names set for the
   // survey in survey_config.cc, and the values are those which will be
   // associated with the survey response.
+  // Returns true if the survey was successfully scheduled.
   virtual bool LaunchDelayedSurvey(
       const std::string& trigger,
       int timeout_ms,
@@ -150,7 +162,7 @@ class HatsService : public KeyedService {
                                {});
   }
 
-  // Launches survey (with id |trigger|) with a timeout |timeout_ms| for tab
+  // Launches survey with id |trigger| with a timeout |timeout_ms| for tab
   // |web_contents| if appropriate. |web_contents| required to be non-nullptr.
   // Launch is cancelled if |web_contents| killed before end of timeout.
   // Rejects (and returns false) if there is already an identical delayed-task
@@ -160,6 +172,7 @@ class HatsService : public KeyedService {
   // navigations should abort the survey.
   // |success_callback| is called when the survey is shown to the user.
   // |failure_callback| is called if the survey does not launch for any reason.
+  // Returns true if the survey was successfully scheduled.
   virtual bool LaunchDelayedSurveyForWebContents(
       const std::string& trigger,
       content::WebContents* web_contents,

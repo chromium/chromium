@@ -28,7 +28,8 @@ perfetto::StaticString SignOfInt(int value) {
 
 // TODO(kraynov): TraceableCounter tests.
 
-TEST(TracingHelperTest, TraceableState) {
+// TODO(crbug.com/408328552): Re-enable this test
+TEST(TracingHelperTest, DISABLED_TraceableState) {
   TraceableVariableController controller;
   TraceableState<int, "renderer.scheduler"> state(
       0, perfetto::NamedTrack("State"), &controller, SignOfInt);

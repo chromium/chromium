@@ -34,4 +34,9 @@ message LocalTabGroupData {
   // For example, the originating saved tab groups will be hidden after
   // transitioning to shared groups.
   optional bool is_group_hidden = 7;
+
+  // Timestamp of when the tab group was locally archived. This field is only
+  // set if the tab group is currently archived. Restoring the group from
+  // archive will reset this field.
+  optional int64 archival_time_windows_epoch_micros = 8;
 }

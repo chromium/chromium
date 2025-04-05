@@ -110,6 +110,9 @@ SearchAggregatorProvider::SearchAggregatorProvider() {
   disable_drive = base::FeatureParam<bool>(&kSearchAggregatorProvider,
                                            "disable_drive", true)
                       .Get();
+  multiple_requests = base::FeatureParam<bool>(&kSearchAggregatorProvider,
+                                               "multiple_requests", false)
+                          .Get();
 
   scoring_max_matches_created_per_type =
       base::FeatureParam<size_t>(&kSearchAggregatorProvider,

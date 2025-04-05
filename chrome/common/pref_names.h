@@ -3540,7 +3540,9 @@ inline constexpr char kCreatePasskeysInICloudKeychain[] =
 inline constexpr char kCWSInfoTimestamp[] = "extensions.cws_info_timestamp";
 inline constexpr char kCWSInfoFetchErrorTimestamp[] =
     "extensions.cws_info_fetch_error_timestamp";
+#endif
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 // A bool value for running GarbageCollectStoragePartitionCommand.
 inline constexpr char kShouldGarbageCollectStoragePartitions[] =
     "storage_partitions.should_garbage_collect";

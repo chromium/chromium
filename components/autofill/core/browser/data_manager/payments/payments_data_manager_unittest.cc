@@ -34,7 +34,6 @@
 #include "components/autofill/core/browser/data_manager/personal_data_manager_test_utils.h"
 #include "components/autofill/core/browser/data_model/payments/bank_account.h"
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
-#include "components/autofill/core/browser/data_model/payments/credit_card_art_image.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card_benefit_test_api.h"
 #include "components/autofill/core/browser/data_model/payments/ewallet.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -46,6 +45,7 @@
 #include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/browser/ui/autofill_image.h"
 #include "components/autofill/core/browser/ui/autofill_image_fetcher_base.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
@@ -266,8 +266,8 @@ class MockAutofillImageFetcher : public AutofillImageFetcherBase {
       FetchImagesForURLs,
       (base::span<const GURL> card_art_urls,
        base::span<const AutofillImageFetcherBase::ImageSize> image_sizes,
-       base::OnceCallback<void(
-           const std::vector<std::unique_ptr<CreditCardArtImage>>&)> callback),
+       base::OnceCallback<
+           void(const std::vector<std::unique_ptr<AutofillImage>>&)> callback),
       (override));
   MOCK_METHOD(void,
               FetchPixAccountImages,
@@ -2657,10 +2657,10 @@ TEST_F(PaymentsDataManagerTest,
 #if !BUILDFLAG(IS_IOS)
 TEST_F(PaymentsDataManagerTest, AddAndGetCreditCardArtImage) {
   gfx::Image expected_image = gfx::test::CreateImage(40, 24);
-  std::unique_ptr<CreditCardArtImage> credit_card_art_image =
-      std::make_unique<CreditCardArtImage>(GURL("https://www.example.com"),
-                                           expected_image);
-  std::vector<std::unique_ptr<CreditCardArtImage>> images;
+  std::unique_ptr<AutofillImage> credit_card_art_image =
+      std::make_unique<AutofillImage>(GURL("https://www.example.com"),
+                                      expected_image);
+  std::vector<std::unique_ptr<AutofillImage>> images;
   images.push_back(std::move(credit_card_art_image));
   test_api(payments_data_manager()).OnCardArtImagesFetched(std::move(images));
 

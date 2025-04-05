@@ -79,7 +79,7 @@ std::unique_ptr<views::Label> GetLabelView(
     views::MessageBoxView::MessageLabels& message_labels) {
   return views::Builder<views::Label>()
       .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
-      .SetText(std::move(text.data()))
+      .SetText(std::u16string(text))
       // Avoid empty multi-line labels, which have a height of 0.
       .SetMultiLine(!text.empty())
       .SetAllowCharacterBreak(true)

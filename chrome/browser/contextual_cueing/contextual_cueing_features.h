@@ -46,6 +46,14 @@ extern const base::FeatureParam<base::TimeDelta> kPdfPageCountCaptureDelay;
 // count of words client signal.
 extern const base::FeatureParam<bool> kEnablePageContentExtraction;
 
+// Whether to enable extraction of inner text for zero state suggestions.
+extern const base::FeatureParam<bool> kExtractInnerTextForZeroStateSuggestions;
+
+// Whether to enable extraction of annotated page content for zero state
+// suggestions.
+extern const base::FeatureParam<bool>
+    kExtractAnnotatedPageContentForZeroStateSuggestions;
+
 }  // namespace contextual_cueing
 
 #endif  // CHROME_BROWSER_CONTEXTUAL_CUEING_CONTEXTUAL_CUEING_FEATURES_H_

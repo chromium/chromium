@@ -51,7 +51,6 @@ class SVGLengthList final
   SVGParsingError SetValueAsString(const String&);
 
   // SVGPropertyBase:
-  SVGPropertyBase* CloneForAnimation(const String&) const override;
   SVGLengthList* Clone() const override;
   SVGLengthMode UnitMode() const { return mode_; }
 

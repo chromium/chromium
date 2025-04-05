@@ -89,8 +89,10 @@ WebDialogView::WebDialogView(content::BrowserContext* context,
     for (const auto& accelerator : delegate_->GetAccelerators()) {
       AddAccelerator(accelerator);
     }
-    RegisterWindowWillCloseCallback(base::BindOnce(
-        &WebDialogView::NotifyDialogWillClose, base::Unretained(this)));
+    RegisterWindowWillCloseCallback(
+        RegisterWillCloseCallbackPassKey(),
+        base::BindOnce(&WebDialogView::NotifyDialogWillClose,
+                       base::Unretained(this)));
   }
 
   if (web_contents) {

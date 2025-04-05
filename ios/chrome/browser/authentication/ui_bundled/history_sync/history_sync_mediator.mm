@@ -18,21 +18,17 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
-#import "ios/chrome/browser/signin/model/chrome_account_manager_service_observer_bridge.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
 // Mediator that handles the sync operations.
-@interface HistorySyncMediator () <ChromeAccountManagerServiceObserver,
-                                   IdentityManagerObserverBridgeDelegate>
+@interface HistorySyncMediator () <IdentityManagerObserverBridgeDelegate>
 @end
 
 @implementation HistorySyncMediator {
   raw_ptr<AuthenticationService> _authenticationService;
-  // Account manager service with observer.
+  // Account manager service.
   raw_ptr<ChromeAccountManagerService> _accountManagerService;
-  std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
-      _accountManagerServiceObserver;
   raw_ptr<signin::IdentityManager> _identityManager;
   // Observer for `IdentityManager`.
   std::unique_ptr<signin::IdentityManagerObserverBridge>
@@ -59,9 +55,6 @@
   if (self) {
     _authenticationService = authenticationService;
     _accountManagerService = chromeAccountManagerService;
-    _accountManagerServiceObserver =
-        std::make_unique<ChromeAccountManagerServiceObserverBridge>(
-            self, _accountManagerService);
     _identityManager = identityManager;
     _identityManagerObserver =
         std::make_unique<signin::IdentityManagerObserverBridge>(identityManager,
@@ -76,7 +69,6 @@
 }
 
 - (void)disconnect {
-  _accountManagerServiceObserver.reset();
   _identityManagerObserver.reset();
   [_capabilitiesFetcher shutdown];
   _capabilitiesFetcher = nil;
@@ -137,14 +129,6 @@
   [self.consumer
       displayButtonsWithRestrictionCapability:
           [_capabilitiesFetcher canShowUnrestrictedOptInsCapability]];
-}
-
-#pragma mark - ChromeAccountManagerServiceObserver
-
-- (void)onChromeAccountManagerServiceShutdown:
-    (ChromeAccountManagerService*)accountManagerService {
-  // TODO(crbug.com/40284086): Remove `[self disconnect]`.
-  [self disconnect];
 }
 
 #pragma mark - IdentityManagerObserverBridgeDelegate

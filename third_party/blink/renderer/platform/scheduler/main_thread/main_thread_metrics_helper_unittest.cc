@@ -11,6 +11,7 @@
 #include "base/task/sequence_manager/test/sequence_manager_for_test.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/scheduler/common/task_priority.h"
@@ -102,6 +103,44 @@ TEST_F(MainThreadMetricsHelperTest, TaskQueueingDelay) {
   histogram_tester_->ExpectUniqueSample(
       "RendererScheduler.QueueingDuration.NormalPriority",
       queue_duration.InMicroseconds(), 1);
+}
+
+TEST_F(MainThreadMetricsHelperTest, MainThreadLoad) {
+  base::TimeTicks now = Now();
+  base::TimeTicks queue_time = now;
+  base::TimeDelta queue_duration = base::Milliseconds(11);
+  metrics_helper_->SetRendererBackgrounded(true, now);
+  RunTask(MainThreadTaskQueue::QueueType::kDefault, queue_time, queue_duration,
+          base::Milliseconds(1500));
+  histogram_tester_->ExpectTotalCount(
+      "RendererScheduler.RendererMainThreadLoad6", 1);
+  // Not foreground.
+  histogram_tester_->ExpectTotalCount(
+      "RendererScheduler.RendererMainThreadLoad6.Foreground", 0);
+
+  histogram_tester_ = std::make_unique<base::HistogramTester>();
+  now = Now();
+  queue_time = now;
+  metrics_helper_->SetRendererBackgrounded(false, now);
+  task_environment_.AdvanceClock(base::Milliseconds(10));
+  RunTask(MainThreadTaskQueue::QueueType::kDefault, queue_time, queue_duration,
+          base::Milliseconds(1500));
+  histogram_tester_->ExpectTotalCount(
+      "RendererScheduler.RendererMainThreadLoad6", 2);
+  histogram_tester_->ExpectTotalCount(
+      "RendererScheduler.RendererMainThreadLoad6.Foreground", 1);
+
+  histogram_tester_ = std::make_unique<base::HistogramTester>();
+  now = Now();
+  queue_time = now;
+  metrics_helper_->SetRendererBackgrounded(true, now);
+  task_environment_.AdvanceClock(base::Milliseconds(10));
+  RunTask(MainThreadTaskQueue::QueueType::kDefault, queue_time, queue_duration,
+          base::Milliseconds(1500));
+  histogram_tester_->ExpectTotalCount(
+      "RendererScheduler.RendererMainThreadLoad6", 1);
+  histogram_tester_->ExpectTotalCount(
+      "RendererScheduler.RendererMainThreadLoad6.Foreground", 0);
 }
 
 }  // namespace scheduler

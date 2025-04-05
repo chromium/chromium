@@ -489,8 +489,8 @@ IN_PROC_BROWSER_TEST_F(TabScrubberTest, MoveHighlighted) {
 
   SendScrubEvent(browser(), 0);
   EXPECT_TRUE(TabScrubber::GetInstance()->IsActivationPending());
-  browser()->tab_strip_model()->ToggleSelectionAt(0);
-  browser()->tab_strip_model()->ToggleSelectionAt(1);
+  browser()->tab_strip_model()->SelectTabAt(0);
+  browser()->tab_strip_model()->DeselectTabAt(1);
   browser()->tab_strip_model()->MoveSelectedTabsTo(1, std::nullopt);
   EXPECT_EQ(1, TabScrubber::GetInstance()->highlighted_tab());
 }
@@ -502,8 +502,8 @@ IN_PROC_BROWSER_TEST_F(TabScrubberTest, MoveBefore) {
 
   SendScrubEvent(browser(), 1);
   EXPECT_TRUE(TabScrubber::GetInstance()->IsActivationPending());
-  browser()->tab_strip_model()->ToggleSelectionAt(0);
-  browser()->tab_strip_model()->ToggleSelectionAt(2);
+  browser()->tab_strip_model()->SelectTabAt(0);
+  browser()->tab_strip_model()->SelectTabAt(2);
   browser()->tab_strip_model()->MoveSelectedTabsTo(2, std::nullopt);
   EXPECT_EQ(0, TabScrubber::GetInstance()->highlighted_tab());
 }
@@ -574,8 +574,8 @@ IN_PROC_BROWSER_TEST_F(TabScrubberTest, RTLMoveBefore) {
 
   SendScrubEvent(browser(), 1);
   EXPECT_TRUE(TabScrubber::GetInstance()->IsActivationPending());
-  browser()->tab_strip_model()->ToggleSelectionAt(0);
-  browser()->tab_strip_model()->ToggleSelectionAt(2);
+  browser()->tab_strip_model()->SelectTabAt(0);
+  browser()->tab_strip_model()->SelectTabAt(2);
   browser()->tab_strip_model()->MoveSelectedTabsTo(2, std::nullopt);
   EXPECT_EQ(0, TabScrubber::GetInstance()->highlighted_tab());
 }

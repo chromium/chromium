@@ -65,6 +65,8 @@ class SavedTabGroupConversionTest : public testing::Test {
                   .last_user_interaction_time_windows_epoch_micros(),
               sp2.local_tab_group_data()
                   .last_user_interaction_time_windows_epoch_micros());
+    EXPECT_EQ(sp1.local_tab_group_data().archival_time_windows_epoch_micros(),
+              sp2.local_tab_group_data().archival_time_windows_epoch_micros());
   }
 
   // Compare SavedTabGroups
@@ -84,6 +86,7 @@ class SavedTabGroupConversionTest : public testing::Test {
               group2.last_updater_cache_guid());
     EXPECT_EQ(group1.created_before_syncing_tab_groups(),
               group2.created_before_syncing_tab_groups());
+    EXPECT_EQ(group1.archival_time(), group2.archival_time());
   }
 
   void CompareTabs(const SavedTabGroupTab& tab1, const SavedTabGroupTab& tab2) {
@@ -120,6 +123,7 @@ TEST_F(SavedTabGroupConversionTest, GroupToDataRetainsData) {
   group.SetOriginatingTabGroupGuid(kOriginatingSavedTabGroupGuid,
                                    /*use_originating_tab_group_guid=*/true);
   group.SetIsHidden(true);
+  group.SetArchivalTime(time_);
 
   proto::SavedTabGroupData proto =
       SavedTabGroupSyncBridge::SavedTabGroupToDataForTest(group);
@@ -206,6 +210,7 @@ TEST_F(SavedTabGroupConversionTest, VerifyLocalFieldsOnProtoToGroupConversion) {
   pb_local_group_data->set_last_user_interaction_time_windows_epoch_micros(
       time_in_micros);
   pb_local_group_data->set_is_group_hidden(true);
+  pb_local_group_data->set_archival_time_windows_epoch_micros(time_in_micros);
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   std::string serialized_local_id = base::Token::CreateRandom().ToString();

@@ -1620,9 +1620,6 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kDataUrlInSvgUseEnabled, false);
   registry->RegisterBooleanPref(prefs::kPartitionedBlobUrlUsage, true);
 
-  registry->RegisterBooleanPref(policy::policy_prefs::kMutationEventsEnabled,
-                                false);
-
   registry->RegisterBooleanPref(
       policy::policy_prefs::kCSSCustomStateDeprecatedSyntaxEnabled,
       /*default_value=*/false);
@@ -2807,10 +2804,6 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
       if (!prefs->GetBoolean(prefs::kPartitionedBlobUrlUsage)) {
         command_line->AppendSwitch(
             blink::switches::kDisableBlobUrlPartitioning);
-      }
-
-      if (prefs->GetBoolean(policy::policy_prefs::kMutationEventsEnabled)) {
-        command_line->AppendSwitch(blink::switches::kMutationEventsEnabled);
       }
 
       if (!prefs->GetBoolean(
@@ -4212,8 +4205,11 @@ base::OnceClosure ChromeContentBrowserClient::SelectClientCertificate(
     // result in always proceeding with no certificate for any request from an
     // extension service worker. That decision would be remembered across the
     // entire profile, potentially locking the user out of the origin.
-    // Allow background requests on desktop android even if there are no
-    // matching certificates.
+    // For now, allow all extension background requests on desktop android to
+    // proceed without a certificate. This is done as a temporary workaround to
+    // enable testing.
+    // TODO(wenz): This should instead proceed with the selected certificate
+    // when there are matching certificates in the OS.
 #if BUILDFLAG(ENABLE_EXTENSIONS) && \
     !(BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_DESKTOP_ANDROID))
     if (matching_certificates.empty() && nonmatching_certificates.empty()) {
@@ -8930,6 +8926,31 @@ void ChromeContentBrowserClient::OnUiaProviderRequested(
     }
   }
 }
+
+void ChromeContentBrowserClient::OnUiaProviderDisabled() {
+  // Regardless of whether another request has been handled before, we want to
+  // make this user as part of the "Rejected" group.
+  handled_uia_provider_request_ = true;
+
+  if (features::kUiaProvider.default_state ==
+      base::FEATURE_ENABLED_BY_DEFAULT) {
+    // Do nothing if the feature has launched.
+    // TODO: Remove all code relating to this synthetic field trial.
+    return;
+  }
+
+  // See the comment in `ChromeContentBrowserClient::OnUiaProviderRequested`.
+  if (auto* trial = base::FeatureList::GetFieldTrial(features::kUiaProvider)) {
+    // When the UI Automation Provider is forcibly disabled despite the user
+    // being in the "Enabled" group, we want to ensure that the user is properly
+    // assigned to the "Rejected" group.
+    if (base::StartsWith(trial->GetGroupNameWithoutActivation(), "Enabled")) {
+      ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+          "UiaProviderActiveSynthetic", "Rejected",
+          variations::SyntheticTrialAnnotationMode::kCurrentLog);
+    }
+  }
+}
 #endif  // BUILDFLAG(IS_WIN)
 
 void ChromeContentBrowserClient::SetSamplingProfiler(
@@ -9043,10 +9064,8 @@ std::unique_ptr<content::KeepAliveRequestTracker>
 ChromeContentBrowserClient::MaybeCreateKeepAliveRequestTracker(
     const network::ResourceRequest& request,
     std::optional<ukm::SourceId> ukm_source_id,
-    bool is_attribution_reporting_eligible_request,
     content::KeepAliveRequestTracker::IsContextDetachedCallback
         is_context_detached_callback) {
   return ChromeKeepAliveRequestTracker::MaybeCreateKeepAliveRequestTracker(
-      request, ukm_source_id, is_attribution_reporting_eligible_request,
-      std::move(is_context_detached_callback));
+      request, ukm_source_id, std::move(is_context_detached_callback));
 }

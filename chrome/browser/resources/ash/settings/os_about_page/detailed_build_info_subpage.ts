@@ -84,18 +84,6 @@ export class SettingsDetailedBuildInfoSubpageElement extends
         value: '',
       },
 
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kChangeChromeChannel,
-          Setting.kChangeDeviceName,
-          Setting.kCopyDetailedBuildInfo,
-        ]),
-      },
-
       shouldHideEolInfo_: {
         type: Boolean,
         computed: 'computeShouldHideEolInfo_(eolMessageWithMonthAndYear)',
@@ -157,6 +145,13 @@ export class SettingsDetailedBuildInfoSubpageElement extends
       },
     };
   }
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kChangeChromeChannel,
+    Setting.kChangeDeviceName,
+    Setting.kCopyDetailedBuildInfo,
+  ]);
 
   private versionInfo_: VersionInfo;
   private channelInfo_: ChannelInfo;

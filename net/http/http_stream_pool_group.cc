@@ -346,16 +346,6 @@ void HttpStreamPool::Group::CancelJobs(int error) {
   }
 }
 
-void HttpStreamPool::Group::OnRequiredHttp11() {
-  // This method is called from the upper layer to fall back HTTP/1.1 for
-  // on-going jobs/preconnects (not for paused ones). No need to handle
-  // paused jobs/preconnects.
-  // TODO(crbug.com/381742472): Confirm the above is correct.
-  if (attempt_manager_) {
-    attempt_manager_->OnRequiredHttp11();
-  }
-}
-
 void HttpStreamPool::Group::OnAttemptManagerComplete() {
   CHECK(attempt_manager_);
 

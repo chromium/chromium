@@ -505,8 +505,8 @@ PageContainerLayoutAlgorithm::EdgeMarginNodePreferredSize(
     // Need to lay out for block-sizes.
     main_axis_is_auto = child.Style().LogicalHeight().IsAuto();
     const LayoutResult* result = child.Layout(child_space);
-    LogicalSize size = result->GetPhysicalFragment().Size().ConvertToLogical(
-        child_space.GetWritingMode());
+    LogicalSize size = ToLogicalSize(result->GetPhysicalFragment().Size(),
+                                     child_space.GetWritingMode());
     minmax.min_size = size.block_size;
     minmax.max_size = size.block_size;
     margin_sum = margins.BlockSum();
@@ -528,7 +528,7 @@ void PageContainerLayoutAlgorithm::CalculateEdgeMarginBoxSizes(
   }
 
   LogicalSize available_logical_size =
-      available_physical_size.ConvertToLogical(Style().GetWritingMode());
+      ToLogicalSize(available_physical_size, Style().GetWritingMode());
   std::array<PreferredSizeInfo, 3> preferred_main_axis_sizes;
   LayoutUnit total_max_size_for_auto;
   bool has_auto_sized_box = false;
@@ -724,7 +724,7 @@ void PageContainerLayoutAlgorithm::LayoutEdgeMarginNode(
                                        child.Style().GetWritingDirection(),
                                        /*is_new_fc=*/true);
   LogicalSize available_size =
-      edge_rect.size.ConvertToLogical(Style().GetWritingMode());
+      ToLogicalSize(edge_rect.size, Style().GetWritingMode());
   bool main_axis_is_inline =
       IsHorizontal(dir) == Style().IsHorizontalWritingMode();
   if (main_axis_is_inline) {

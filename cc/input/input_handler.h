@@ -441,7 +441,7 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
 
   // Notifies when any input event is received, irrespective of whether it is
   // being handled by the InputHandler or not.
-  virtual void NotifyInputEvent();
+  virtual void NotifyInputEvent(bool is_fling);
 
   // Returns true if ScrollbarController is in the middle of a scroll operation.
   virtual bool ScrollbarScrollIsActive();

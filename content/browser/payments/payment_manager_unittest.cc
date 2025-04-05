@@ -139,7 +139,6 @@ TEST_F(PaymentManagerTest, DeletePaymentInstrument) {
   PaymentInstrumentPtr write_details = PaymentInstrument::New();
   write_details->name = "Visa ending ****4756";
   write_details->method = "visa";
-  write_details->stringified_capabilities = "{}";
   SetPaymentInstrument("test_key", std::move(write_details), &write_status);
   // Write the first instrument of a web payment app will return
   // FETCH_PAYMENT_APP_INFO_FAILED since the web app's manifest is not
@@ -166,7 +165,6 @@ TEST_F(PaymentManagerTest, HasPaymentInstrument) {
   PaymentInstrumentPtr write_details = PaymentInstrument::New();
   write_details->name = "Visa ending ****4756";
   write_details->method = "visa";
-  write_details->stringified_capabilities = "{}";
   SetPaymentInstrument("test_key", std::move(write_details), &write_status);
   // Write the first instrument of a web payment app will return
   // FETCH_PAYMENT_APP_INFO_FAILED since the web app's manifest is not
@@ -267,7 +265,6 @@ TEST_F(PaymentManagerTest, SetAndGetPaymentInstrument) {
   PaymentInstrumentPtr write_details = PaymentInstrument::New();
   write_details->name = "ChromePay: chrome@chromepay.test";
   write_details->method = "https://www.chromium.org";
-  write_details->stringified_capabilities = "{}";
   SetPaymentInstrument("test_key", std::move(write_details), &write_status);
   // Write the first instrument of a web payment app will return
   // FETCH_PAYMENT_APP_INFO_FAILED since the web app's manifest is not
@@ -281,7 +278,6 @@ TEST_F(PaymentManagerTest, SetAndGetPaymentInstrument) {
   ASSERT_EQ(PaymentHandlerStatus::SUCCESS, read_status);
   EXPECT_EQ("ChromePay: chrome@chromepay.test", read_details->name);
   EXPECT_EQ("https://www.chromium.org", read_details->method);
-  EXPECT_EQ("", read_details->stringified_capabilities);
 }
 
 TEST_F(PaymentManagerTest, UninitializedPaymentManager) {

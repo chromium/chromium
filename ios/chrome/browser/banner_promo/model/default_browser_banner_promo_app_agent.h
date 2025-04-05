@@ -44,6 +44,12 @@
 // Alerts the app agent that the promo's close button was tapped.
 - (void)promoCloseButtonTapped;
 
+// Updates the promo state based on the current active URLs.
+- (void)updatePromoState;
+
+// Alerts the app agent that the given scene was disconnected.
+- (void)onSceneDisconnected:(SceneState*)sceneState;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_BANNER_PROMO_MODEL_DEFAULT_BROWSER_BANNER_PROMO_APP_AGENT_H_

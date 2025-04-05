@@ -45,6 +45,11 @@ class GURL;
 // The lens overlay has deferred a gesture.
 - (void)lensOverlayDidDeferGesture:(id<ChromeLensOverlay>)lensOverlay;
 
+@optional
+// The lens overlay failed to detect translatable text.
+- (void)lensOverlayDidFailDetectingTranslatableText:
+    (id<ChromeLensOverlay>)lensOverlay;
+
 @end
 
 // Defines the interface for interacting with a Chrome Lens Overlay.

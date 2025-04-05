@@ -205,26 +205,23 @@ export class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
         type: Boolean,
         value: false,
       },
-
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kManageAndroidPreferences,
-          Setting.kTurnOnPlayStore,
-          Setting.kAppParentalControls,
-        ]),
-      },
     };
   }
 
   androidAppsInfo: AndroidAppsInfo;
   searchTerm: string;
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kManageAndroidPreferences,
+    Setting.kTurnOnPlayStore,
+    Setting.kAppParentalControls,
+  ]);
+
   private app_: App;
   private appNotificationsObserverReceiver_: AppNotificationsObserverReceiver;
   private appsWithNotifications_: AppWithNotifications[];
+  private readonly isAppParentalControlsFeatureAvailable_: boolean;
   private isArcVmManageUsbAvailable_: boolean;
   private isDndEnabled_: boolean;
   private isPinVerified_: boolean;

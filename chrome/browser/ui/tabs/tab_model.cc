@@ -15,7 +15,11 @@
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/tabs/split_tab_collection.h"
+#include "chrome/browser/ui/tabs/split_tab_id.h"
+#include "chrome/browser/ui/tabs/tab_collection.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
+#include "chrome/browser/ui/tabs/tab_group_tab_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -124,8 +128,13 @@ TabCollection* TabModel::GetParentCollection(
 }
 
 void TabModel::OnReparented(TabCollection* parent,
-                            base::PassKey<TabCollection>) {
+                            base::PassKey<TabCollection> passkey) {
   parent_collection_ = parent;
+  OnAncestorChanged(passkey);
+}
+
+void TabModel::OnAncestorChanged(base::PassKey<TabCollection> passkey) {
+  UpdateProperties();
 }
 
 void TabModel::SetPinned(bool pinned) {
@@ -300,6 +309,37 @@ void TabModel::OnTabStripModelChanged(
 TabStripModel* TabModel::GetModelForTabInterface() const {
   CHECK(soon_to_be_owning_model_ || owning_model_);
   return soon_to_be_owning_model_ ? soon_to_be_owning_model_ : owning_model_;
+}
+
+// TODO(crbug.com/392950857): Consider making collections responsible for
+// updating the properties of their children. TabModel::OnAddedToModel could be
+// called from here instead of manually doing it in TabStripModel.
+void TabModel::UpdateProperties() {
+  bool pinned = false;
+  std::optional<tab_groups::TabGroupId> group = std::nullopt;
+  std::optional<split_tabs::SplitTabId> split = std::nullopt;
+
+  TabCollection* ancestor = parent_collection_;
+  while (ancestor) {
+    switch (ancestor->type()) {
+      case TabCollection::Type::PINNED:
+        pinned = true;
+        break;
+      case TabCollection::Type::GROUP:
+        group = static_cast<TabGroupTabCollection*>(ancestor)->GetTabGroupId();
+        break;
+      case TabCollection::Type::SPLIT:
+        split = static_cast<SplitTabCollection*>(ancestor)->GetSplitTabId();
+        break;
+      case TabCollection::Type::TABSTRIP:
+      case TabCollection::Type::UNPINNED:
+        break;
+    }
+    ancestor = ancestor->GetParentCollection();
+  }
+  SetPinned(pinned);
+  SetGroup(group);
+  set_split(split);
 }
 
 TabModel::ScopedTabModalUIImpl::ScopedTabModalUIImpl(TabModel* tab)

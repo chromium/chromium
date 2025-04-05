@@ -458,7 +458,6 @@ Generatieve AI is experimenteel, in vroege ontwikkeling en op dit moment beperkt
 <translation id="3084958266922136097">Screensaver uitzetten</translation>
 <translation id="3091839911843451378">Mislukt - Gestopt</translation>
 <translation id="3102119246920354026">Cachegeheugen</translation>
-<translation id="3112413615003385433">Je docent heeft content in School Tools verwijderd</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">zwembaden</translation>
 <translation id="3122883569442693641">Meer informatie</translation>
@@ -539,7 +538,6 @@ Generatieve AI is experimenteel, in vroege ontwikkeling en op dit moment beperkt
 <translation id="3488065109653206955">Gedeeltelijk geactiveerd</translation>
 <translation id="3492882532495507361">Een <ph name="OFFICE_STYLE" /> kantoor met <ph name="OFFICE_COLOR" /> tinten</translation>
 <translation id="3493187369049186498">Het datagebruik wordt gemeten door je Chromebook. Dit kan afwijken van de gegevens van je provider.</translation>
-<translation id="349570724365779960">School Tools is verbonden met leerlingen</translation>
 <translation id="3502426834823382181">alle apps bekijken</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />Gegevens over prestatietracering<ph name="END_LINK1" /> sturen</translation>
 <translation id="3517001332549868749">Chrome OS-update</translation>
@@ -547,7 +545,6 @@ Generatieve AI is experimenteel, in vroege ontwikkeling en op dit moment beperkt
 <translation id="353214771040290298">Klaar met bewerken</translation>
 <translation id="3532980081107202182">Nog ongeveer <ph name="MIN_REMAINING" /> minuten</translation>
 <translation id="3533790840489634638">zwembad</translation>
-<translation id="3535802910192338629">Je docent heeft nieuwe content in School Tools toegevoegd</translation>
 <translation id="3547264467365135390">Formule</translation>
 <translation id="3557205324756024651">Lokale identiteit (optioneel)</translation>
 <translation id="3565064564551103223">Toegestane IP's</translation>
@@ -1235,6 +1232,7 @@ Generatieve AI kan fouten maken, ook in informatie over mensen, dus dubbelcheck 
 <translation id="6657240842932274095">Systeemservices toestaan je locatie te gebruiken?</translation>
 <translation id="6657585470893396449">Wachtwoord</translation>
 <translation id="66621959568103627">koraalroze</translation>
+<translation id="6669485505082792176">Kan nu geen afbeeldingen hiervan maken. Probeer je beschrijving anders te formuleren. Je kunt geen afbeeldingen maken van mensen of schadelijke of expliciete content. <ph name="BEGIN_LINK_LEARN_MORE" />Meer informatie<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6673898378497337661">helderheid van toetsenbord verhogen</translation>
 <translation id="6692996468359469499">Informatie over je selectie bekijken</translation>
 <translation id="6694534975463174713">slot</translation>
@@ -1440,7 +1438,6 @@ Download het transcriptiemodel (maximaal 100 MB) om deze transcripties te krijg
 <translation id="7544853251252956727">Shuffle</translation>
 <translation id="7550715992156305117">Diagnostische routines</translation>
 <translation id="7551123448725492271">Apparaat is een audioapparaat.</translation>
-<translation id="7553913964854052228">School Tools gebruikt je microfoon</translation>
 <translation id="7559239713112547082">Voorbeeld van screenshot bekijken</translation>
 <translation id="7561454561030345039">Deze actie wordt beheerd door je beheerder</translation>
 <translation id="7561759921596375678">Volume aanzetten</translation>
@@ -1663,7 +1660,6 @@ Download het transcriptiemodel (maximaal 100 MB) om deze transcripties te krijg
 <translation id="8576249514688522074">Niet geïnitialiseerd</translation>
 <translation id="8584654835905316966">Start je computer opnieuw op om de installatie van firmware voor <ph name="DEVICE_NAME" /> naar versie <ph name="VERSION" /> af te ronden. Je computer lijkt misschien een paar keer opnieuw op te starten. Dit is normaal.</translation>
 <translation id="8593058461203131755">media pauzeren</translation>
-<translation id="8619169570378509764">School Tools</translation>
 <translation id="8620617069779373398">Roamingstatus</translation>
 <translation id="8626489604350149811">Meer acties voor <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Lichtpaars</translation>

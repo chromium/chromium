@@ -43,7 +43,7 @@ class GPUTexture : public DawnObject<wgpu::Texture> {
   GPUTexture(const GPUTexture&) = delete;
   GPUTexture& operator=(const GPUTexture&) = delete;
 
-  // gpu_texture.idl
+  // gpu_texture.idl {{{
   GPUTextureView* createView(const GPUTextureViewDescriptor* webgpu_desc,
                              ExceptionState& exception_state);
   void destroy();
@@ -55,11 +55,12 @@ class GPUTexture : public DawnObject<wgpu::Texture> {
   V8GPUTextureDimension dimension() const;
   V8GPUTextureFormat format() const;
   uint32_t usage() const;
+  // }}} End of WebIDL binding implementation.
 
   wgpu::TextureDimension Dimension() { return dimension_; }
   wgpu::TextureFormat Format() { return format_; }
   wgpu::TextureUsage Usage() { return usage_; }
-  bool Destroyed() { return destroyed_; }
+  bool IsDestroyed() { return destroyed_; }
 
   void DissociateMailbox();
 
@@ -73,7 +74,7 @@ class GPUTexture : public DawnObject<wgpu::Texture> {
   void ClearBeforeDestroyCallback();
 
  private:
-  void setLabelImpl(const String& value) override {
+  void SetLabelImpl(const String& value) override {
     std::string utf8_label = value.Utf8();
     GetHandle().SetLabel(utf8_label.c_str());
   }

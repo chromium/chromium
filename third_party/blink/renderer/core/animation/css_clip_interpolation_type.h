@@ -12,7 +12,7 @@ namespace blink {
 
 class CSSClipInterpolationType : public CSSInterpolationType {
  public:
-  CSSClipInterpolationType(PropertyHandle property)
+  explicit CSSClipInterpolationType(PropertyHandle property)
       : CSSInterpolationType(property) {
     DCHECK_EQ(CssProperty().PropertyID(), CSSPropertyID::kClip);
   }

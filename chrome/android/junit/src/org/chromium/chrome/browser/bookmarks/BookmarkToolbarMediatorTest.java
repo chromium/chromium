@@ -89,7 +89,6 @@ public class BookmarkToolbarMediatorTest {
     @Mock private BookmarkAddNewFolderCoordinator mBookmarkAddNewFolderCoordinator;
     @Mock private PropertyObserver<PropertyKey> mPropertyObserver;
     @Mock private Runnable mEndSearchRunnable;
-    @Mock private BookmarkMoveSnackbarManager mBookmarkMoveSnackbarManager;
     @Mock private Profile mProfile;
     @Mock private ProfileResolver.Natives mProfileResolverNatives;
 
@@ -148,7 +147,6 @@ public class BookmarkToolbarMediatorTest {
                         mBookmarkUiPrefs,
                         mBookmarkAddNewFolderCoordinator,
                         mEndSearchRunnable,
-                        mBookmarkMoveSnackbarManager,
                         mIncognitoEnabledSupplier,
                         mBookmarkManagerOpener);
         mBookmarkDelegateSupplier.set(mBookmarkDelegate);
@@ -184,7 +182,6 @@ public class BookmarkToolbarMediatorTest {
                         mBookmarkUiPrefs,
                         mBookmarkAddNewFolderCoordinator,
                         mEndSearchRunnable,
-                        mBookmarkMoveSnackbarManager,
                         mIncognitoEnabledSupplier,
                         mBookmarkManagerOpener);
     }
@@ -318,8 +315,6 @@ public class BookmarkToolbarMediatorTest {
         assertTrue(
                 mModel.get(BookmarkToolbarProperties.MENU_ID_CLICKED_FUNCTION)
                         .apply(R.id.selection_mode_move_menu_id));
-        verify(mBookmarkMoveSnackbarManager)
-                .startFolderPickerAndObserveResult(mBookmarkManagerOpener, bookmarkId);
     }
 
     @Test

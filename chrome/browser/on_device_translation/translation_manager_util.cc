@@ -20,15 +20,6 @@ namespace on_device_translation {
 
 namespace {
 
-bool IsInAcceptLanguage(const std::vector<std::string_view>& accept_languages,
-                        const std::string_view lang) {
-  const std::string normalized_lang = l10n_util::GetLanguage(lang);
-  return std::find_if(accept_languages.begin(), accept_languages.end(),
-                      [&](const std::string_view lang) {
-                        return l10n_util::GetLanguage(lang) == normalized_lang;
-                      }) != accept_languages.end();
-}
-
 bool IsSupportedPopularLanguage(const std::string& lang) {
   const std::optional<SupportedLanguage> supported_lang =
       ToSupportedLanguage(lang);
@@ -53,25 +44,21 @@ const std::vector<std::string_view> GetAcceptLanguages(
   return accept_languages;
 }
 
+bool IsInAcceptLanguage(const std::vector<std::string_view>& accept_languages,
+                        const std::string_view lang) {
+  const std::string normalized_lang = l10n_util::GetLanguage(lang);
+
+  return std::find_if(accept_languages.begin(), accept_languages.end(),
+                      [&](const std::string_view lang) {
+                        return l10n_util::GetLanguage(lang) == normalized_lang;
+                      }) != accept_languages.end();
+}
+
 bool IsTranslatorAllowed(content::BrowserContext* browser_context) {
   CHECK(browser_context);
   return Profile::FromBrowserContext(browser_context)
       ->GetPrefs()
       ->GetBoolean(prefs::kTranslatorAPIAllowed);
-}
-
-bool MaskReadilyResult(const std::vector<std::string_view>& accept_languages,
-                       const std::string& source_language,
-                       const std::string& target_language) {
-  bool mask_readily_result =
-      (source_language != "en" &&
-       !IsInAcceptLanguage(accept_languages, source_language)) ||
-      (target_language != "en" &&
-       !IsInAcceptLanguage(accept_languages, target_language));
-
-  // TODO(crbug.com/385173766): Remove once V1 is launched.
-  return base::FeatureList::IsEnabled(blink::features::kTranslationAPIV1) &&
-         mask_readily_result;
 }
 
 bool PassAcceptLanguagesCheck(

@@ -66,6 +66,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) ContextImplDml final
   class BackendForTesting {
    public:
     virtual void CreateGraphImpl(
+        mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
         ContextImplDml* context_impl,
         WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
         CreateGraphImplCallback callback) = 0;
@@ -81,6 +82,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) ContextImplDml final
 
  private:
   void CreateGraphImpl(
+      mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
       mojom::GraphInfoPtr graph_info,
       WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
       base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>

@@ -9,7 +9,6 @@
 #include "third_party/blink/public/mojom/clipboard/clipboard.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_supported_type.h"
-#include "third_party/blink/renderer/core/clipboard/clipboard_mime_types.h"
 #include "third_party/blink/renderer/core/clipboard/system_clipboard.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
@@ -273,20 +272,20 @@ ClipboardWriter* ClipboardWriter::Create(SystemClipboard* system_clipboard,
         system_clipboard, promise, web_custom_format);
   }
 
-  if (mime_type == kMimeTypeImagePng) {
+  if (mime_type == ui::kMimeTypePng) {
     return MakeGarbageCollected<ClipboardImageWriter>(system_clipboard,
                                                       promise);
   }
 
-  if (mime_type == kMimeTypeTextPlain) {
+  if (mime_type == ui::kMimeTypePlainText) {
     return MakeGarbageCollected<ClipboardTextWriter>(system_clipboard, promise);
   }
 
-  if (mime_type == kMimeTypeTextHTML) {
+  if (mime_type == ui::kMimeTypeHtml) {
     return MakeGarbageCollected<ClipboardHtmlWriter>(system_clipboard, promise);
   }
 
-  if (mime_type == kMimeTypeImageSvg) {
+  if (mime_type == ui::kMimeTypeSvg) {
     return MakeGarbageCollected<ClipboardSvgWriter>(system_clipboard, promise);
   }
 

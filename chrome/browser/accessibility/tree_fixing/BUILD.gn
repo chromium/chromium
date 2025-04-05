@@ -51,8 +51,12 @@ source_set("internal") {
   visibility = [ ":service" ]
 
   sources = [
+    "internal/ax_tree_fixing_optimization_guide_service.cc",
+    "internal/ax_tree_fixing_optimization_guide_service.h",
     "internal/ax_tree_fixing_screen_ai_service.cc",
     "internal/ax_tree_fixing_screen_ai_service.h",
+    "internal/ax_tree_fixing_screenshotter.cc",
+    "internal/ax_tree_fixing_screenshotter.h",
   ]
 
   public_deps = [ "//ui/accessibility:ax_base" ]
@@ -61,6 +65,9 @@ source_set("internal") {
     "//base",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/screen_ai:screen_ai_service_router_factory",
+    "//components/paint_preview/browser",
+    "//components/paint_preview/common",
+    "//components/paint_preview/public",
     "//content/public/browser:browser",
     "//services/screen_ai/public/mojom:mojom",
   ]

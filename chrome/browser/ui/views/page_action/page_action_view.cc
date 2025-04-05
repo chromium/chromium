@@ -17,6 +17,7 @@
 #include "ui/color/color_id.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/font_list.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/view_class_properties.h"
@@ -47,6 +48,7 @@ PageActionView::PageActionView(actions::ActionItem* action_item,
   SetUseTonalColorsWhenExpanded(true);
   SetBackgroundVisibility(BackgroundVisibility::kWithLabel);
   UpdateBorder();
+  SetExpandedLabelAdditionalInsets(views::Inset1D(4, 8));
 
   label_visibility_changed_subscription_ =
       label()->AddVisibleChangedCallback(base::BindRepeating(
@@ -124,26 +126,11 @@ void PageActionView::ViewHierarchyChanged(
   View::ViewHierarchyChanged(details);
   if (details.is_add && details.child == this) {
     UpdateIconImage();
-    UpdateBorder();
   }
 }
 
 void PageActionView::UpdateBorder() {
-  gfx::Insets insets = icon_insets_;
-  if (IsChipVisible()) {
-    constexpr int kInsetsLeftPaddingMax = 4;
-    constexpr int kInsetsRightPaddingMax = 8;
-
-    // Set the padding according to the progress of the expand/collapse
-    // animation.
-    const int left_padding = GetWidthBetween(0, kInsetsLeftPaddingMax);
-    const int right_padding = GetWidthBetween(0, kInsetsRightPaddingMax);
-    insets += gfx::Insets().set_left_right(left_padding, right_padding);
-  }
-
-  if (GetInsets() != insets) {
-    SetBorder(views::CreateEmptyBorder(insets));
-  }
+  SetBorder(views::CreateEmptyBorder(icon_insets_));
 }
 
 bool PageActionView::ShouldShowSeparator() const {
@@ -217,7 +204,6 @@ bool PageActionView::IsBubbleShowing() const {
 
 void PageActionView::OnLabelVisibilityChanged() {
   UpdateBackground();
-  UpdateBorder();
   UpdateLabelColors();
   UpdateIconImage();
   chip_visibility_changed_callbacks_.Notify(this);

@@ -10,6 +10,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/notimplemented.h"
 #include "base/task/sequenced_task_runner.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/extension_file_task_runner.h"
@@ -126,10 +127,6 @@ void ShellExtensionLoader::FinishExtensionReload(
   keep_alive_requester_.StopTrackingReload(old_extension_id);
 }
 
-bool ShellExtensionLoader::CanAddExtension(const Extension* extension) {
-  return true;
-}
-
 void ShellExtensionLoader::PreAddExtension(const Extension* extension,
                                            const Extension* old_extension) {
   if (old_extension)
@@ -141,6 +138,9 @@ void ShellExtensionLoader::PreAddExtension(const Extension* extension,
   extension_prefs->RemoveDisableReason(extension->id(),
                                        disable_reason::DISABLE_RELOAD);
 }
+
+void ShellExtensionLoader::OnAddNewOrUpdatedExtension(
+    const Extension* extension) {}
 
 void ShellExtensionLoader::PostActivateExtension(
     scoped_refptr<const Extension> extension) {}
@@ -186,11 +186,11 @@ bool ShellExtensionLoader::CanDisableExtension(const Extension* extension) {
   return false;
 }
 
-bool ShellExtensionLoader::ShouldBlockExtension(const Extension* extension) {
-  return false;
+void ShellExtensionLoader::GrantActivePermissions(const Extension* extension) {
+  NOTIMPLEMENTED();
 }
 
-void ShellExtensionLoader::GrantActivePermissions(const Extension* extension) {
+void ShellExtensionLoader::UpdateExternalExtensionAlert() {
   NOTIMPLEMENTED();
 }
 

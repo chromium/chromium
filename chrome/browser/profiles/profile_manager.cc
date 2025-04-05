@@ -116,8 +116,8 @@
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/extension_service.h"
 #include "extensions/browser/api/management/management_api.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/manifest.h"
@@ -1461,15 +1461,13 @@ void ProfileManager::DoFinalInitForServices(Profile* profile,
       extensions_enabled);
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  // Set the block extensions bit on the ExtensionService. There likely are no
+  // Set the block extensions bit on the ExtensionRegistrar. There likely are no
   // blockable extensions to block.
   ProfileAttributesEntry* entry =
       GetProfileAttributesStorage().GetProfileAttributesWithPath(
           profile->GetPath());
   if (entry && entry->IsSigninRequired()) {
-    extensions::ExtensionSystem::Get(profile)
-        ->extension_service()
-        ->BlockAllExtensions();
+    extensions::ExtensionRegistrar::Get(profile)->BlockAllExtensions();
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 

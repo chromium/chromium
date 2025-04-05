@@ -11,12 +11,19 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
+#include "ui/base/test/ui_controls.h"
 #include "ui/views/interaction/polling_view_observer.h"
 #include "url/gurl.h"
 
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTabContents);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTabContents);
+
+#if !BUILDFLAG(IS_MAC)
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kThirdTabContents);
+DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
+                                    kTabSelectedState);
+#endif
 
 constexpr char kDocumentWithTitle[] = "/title3.html";
 
@@ -75,3 +82,28 @@ IN_PROC_BROWSER_TEST_F(TabStripInteractiveUiTest, HoverEffectShowsOnMouseOver) {
                }),
       WaitForState(kTabStripHoverState, true));
 }
+
+// TODO(agale): Fix mouse events on Mac.
+#if !BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(TabStripInteractiveUiTest, SelectionAndDeselection) {
+  const GURL test_url = embedded_test_server()->GetURL(kDocumentWithTitle);
+  RunTestSequence(
+      InstrumentTab(kFirstTabContents, 0),
+      NavigateWebContents(kFirstTabContents, test_url),
+      AddInstrumentedTab(kSecondTabContents, test_url),
+      AddInstrumentedTab(kThirdTabContents, test_url),
+      SelectTab(kTabStripElementId, 0), HoverTabAt(1), Do([]() {
+        ui_controls::SendMouseEvents(ui_controls::LEFT,
+                                     ui_controls::MouseButtonState::DOWN,
+                                     ui_controls::AcceleratorState::kControl);
+        ui_controls::SendMouseEvents(ui_controls::LEFT,
+                                     ui_controls::MouseButtonState::UP,
+                                     ui_controls::AcceleratorState::kControl);
+      }),
+      HoverTabAt(2),
+      PollState(
+          kTabSelectedState,
+          [this]() { return browser()->tab_strip_model()->IsTabSelected(1); }),
+      WaitForState(kTabSelectedState, true));
+}
+#endif

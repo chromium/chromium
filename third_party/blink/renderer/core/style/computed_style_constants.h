@@ -112,6 +112,7 @@ enum PseudoId : uint8_t {
   kPseudoIdInvalid,
   kFirstPublicPseudoId = kPseudoIdFirstLine,
   kLastTrackedPublicPseudoId = kPseudoIdGrammarError,
+  kLastPublicPseudoId = kPseudoIdViewTransitionNew,
   kFirstInternalPseudoId = kPseudoIdFirstLineInherited,
 };
 

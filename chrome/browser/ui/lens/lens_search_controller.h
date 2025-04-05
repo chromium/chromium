@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_LENS_LENS_SEARCH_CONTROLLER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "components/tab_collections/public/tab_interface.h"
+#include "components/tabs/public/tab_interface.h"
 
 class LensOverlayController;
 

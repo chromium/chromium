@@ -387,6 +387,9 @@ class CONTENT_EXPORT PrefetchContainer {
       std::unique_ptr<ProxyLookupClientImpl> proxy_lookup_client);
   std::unique_ptr<ProxyLookupClientImpl> ReleaseProxyLookupClient();
 
+  // Called when it is added to `PrefetchService::owned_prefetches_`.
+  void OnAddedToPrefetchService();
+
   // Whether or not the prefetch was determined to be eligibile.
   void OnEligibilityCheckComplete(PreloadingEligibility eligibility);
   bool IsInitialPrefetchEligible() const;
@@ -866,6 +869,12 @@ class CONTENT_EXPORT PrefetchContainer {
   // be updated to the latest value when this method is called.
   void MaybeRecordPrefetchStatusToUMA(PrefetchStatus prefetch_status);
 
+  // Returns a suffix for UMAs.
+  const char* GetMetricsSuffixTriggerTypeAndEagerness();
+
+  // Records `Prefetch.PrefetchContainer.DurationAdded*` UMAs.
+  void RecordDurationFromAdded();
+
   // The ID of the RenderFrameHost/Document that triggered the prefetch.
   // This will be empty when browser-initiated prefetch.
   const GlobalRenderFrameHostId referring_render_frame_host_id_;
@@ -1079,6 +1088,16 @@ class CONTENT_EXPORT PrefetchContainer {
   // configured for browser-initiated prefetch that doesn't depend on web
   // content.
   const bool should_append_variations_header_ = true;
+
+  // Timing information for metrics
+  //
+  // Constraint: That earlier one is null implies that later one is null.
+  // E.g. `time_load_start_` is null implies `time_header_complete_` is null.
+  std::optional<base::TimeTicks> time_added_to_prefetch_service_;
+  std::optional<base::TimeTicks> time_initial_eligibility_got_;
+  std::optional<base::TimeTicks> time_prefetch_started_;
+  std::optional<base::TimeTicks> time_header_determined_successfully_;
+  std::optional<base::TimeTicks> time_prefetch_completed_successfully_;
 
   base::WeakPtrFactory<PrefetchContainer> weak_method_factory_{this};
 };

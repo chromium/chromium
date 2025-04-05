@@ -37,7 +37,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kWebViewXRequestedWithHeaderControl,
     &metrics::kAndroidMetricsAsyncMetricLogging,
     &safe_browsing::kHashPrefixRealTimeLookups,
-    &features::kWebViewSupervisedUserSiteBlock,
     &base::features::kCollectAndroidFrameTimelineMetrics,
     &features::kWebViewMediaIntegrityApiBlinkExtension,
     &features::kWebViewSeparateResourceContext,

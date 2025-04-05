@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "extensions/browser/api/guest_view/web_view/web_view_internal_api.h"
 
 #include <memory>
@@ -59,15 +54,15 @@ namespace web_view_internal = extensions::api::web_view_internal;
 
 namespace {
 
-const char kCacheKey[] = "cache";
-const char kCookiesKey[] = "cookies";
-const char kSessionCookiesKey[] = "sessionCookies";
-const char kPersistentCookiesKey[] = "persistentCookies";
-const char kFileSystemsKey[] = "fileSystems";
-const char kIndexedDBKey[] = "indexedDB";
-const char kLocalStorageKey[] = "localStorage";
-const char kWebSQLKey[] = "webSQL";
-const char kSinceKey[] = "since";
+constexpr std::string_view kCacheKey = "cache";
+constexpr std::string_view kCookiesKey = "cookies";
+constexpr std::string_view kSessionCookiesKey = "sessionCookies";
+constexpr std::string_view kPersistentCookiesKey = "persistentCookies";
+constexpr std::string_view kFileSystemsKey = "fileSystems";
+constexpr std::string_view kIndexedDBKey = "indexedDB";
+constexpr std::string_view kLocalStorageKey = "localStorage";
+constexpr std::string_view kWebSQLKey = "webSQL";
+constexpr std::string_view kSinceKey = "since";
 const char kLoadFileError[] = "Failed to load file: \"*\". ";
 const char kHostIDError[] = "Failed to generate HostID.";
 const char kViewInstanceIdError[] = "view_instance_id is missing.";
@@ -76,23 +71,31 @@ const char kDuplicatedContentScriptNamesError[] =
 
 const char kGeneratedScriptFilePrefix[] = "generated_script_file:";
 
-uint32_t MaskForKey(const char* key) {
-  if (strcmp(key, kCacheKey) == 0)
+uint32_t MaskForKey(std::string_view key) {
+  if (key == kCacheKey) {
     return webview::WEB_VIEW_REMOVE_DATA_MASK_CACHE;
-  if (strcmp(key, kSessionCookiesKey) == 0)
+  }
+  if (key == kSessionCookiesKey) {
     return webview::WEB_VIEW_REMOVE_DATA_MASK_SESSION_COOKIES;
-  if (strcmp(key, kPersistentCookiesKey) == 0)
+  }
+  if (key == kPersistentCookiesKey) {
     return webview::WEB_VIEW_REMOVE_DATA_MASK_PERSISTENT_COOKIES;
-  if (strcmp(key, kCookiesKey) == 0)
+  }
+  if (key == kCookiesKey) {
     return webview::WEB_VIEW_REMOVE_DATA_MASK_COOKIES;
-  if (strcmp(key, kFileSystemsKey) == 0)
+  }
+  if (key == kFileSystemsKey) {
     return webview::WEB_VIEW_REMOVE_DATA_MASK_FILE_SYSTEMS;
-  if (strcmp(key, kIndexedDBKey) == 0)
+  }
+  if (key == kIndexedDBKey) {
     return webview::WEB_VIEW_REMOVE_DATA_MASK_INDEXEDDB;
-  if (strcmp(key, kLocalStorageKey) == 0)
+  }
+  if (key == kLocalStorageKey) {
     return webview::WEB_VIEW_REMOVE_DATA_MASK_LOCAL_STORAGE;
-  if (strcmp(key, kWebSQLKey) == 0)
+  }
+  if (key == kWebSQLKey) {
     return webview::WEB_VIEW_REMOVE_DATA_MASK_WEBSQL;
+  }
   return 0;
 }
 
@@ -1151,8 +1154,9 @@ uint32_t WebViewInternalClearDataFunction::GetRemovalMask() {
       bad_message_ = true;
       return 0;
     }
-    if (kv.second.GetBool())
-      remove_mask |= MaskForKey(kv.first.c_str());
+    if (kv.second.GetBool()) {
+      remove_mask |= MaskForKey(kv.first);
+    }
   }
 
   return remove_mask;

@@ -11,7 +11,8 @@
 std::unique_ptr<ProfilePolicyConnector> BuildProfilePolicyConnector(
     policy::SchemaRegistry* schema_registry,
     BrowserPolicyConnectorIOS* browser_policy_connector,
-    policy::UserCloudPolicyManager* user_policy_manager) {
+    policy::UserCloudPolicyManager* user_policy_manager,
+    policy::CloudPolicyStore* policy_store) {
   auto connector = std::make_unique<ProfilePolicyConnector>();
 
   // Since extensions are not supported on iOS, the `schema_registry` here has
@@ -20,6 +21,6 @@ std::unique_ptr<ProfilePolicyConnector> BuildProfilePolicyConnector(
   // levels of registry (owned by ApplicationContext vs owned by BrowserState)
   // are maintained to keep a parallel structure with Desktop.
   connector->Init(schema_registry, browser_policy_connector,
-                  user_policy_manager);
+                  user_policy_manager, policy_store);
   return connector;
 }

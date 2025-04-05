@@ -54,17 +54,18 @@ export class PasswordListItemElement extends PasswordListItemElementBase {
        */
       numberOfAccounts_: String,
 
+      tooltipText_: String,
       deviceOnlyCredentialsAccessibilityLabelText_: String,
     };
   }
 
-  item: chrome.passwordsPrivate.CredentialGroup;
-  isAccountStoreUser: boolean;
-  first: boolean;
-  searchTerm: string;
-  private numberOfAccounts_: string;
-  private tooltipText_: string;
-  private deviceOnlyCredentialsAccessibilityLabelText_: string;
+  declare item: chrome.passwordsPrivate.CredentialGroup;
+  declare isAccountStoreUser: boolean;
+  declare first: boolean;
+  declare searchTerm: string;
+  declare private numberOfAccounts_: string;
+  declare private tooltipText_: string;
+  declare private deviceOnlyCredentialsAccessibilityLabelText_: string;
 
   private getElementClass_(): string {
     return this.first ? 'flex-centered' : 'flex-centered hr';

@@ -41,6 +41,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_ash_web_view_factory.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
+#include "ash/wm/window_pin_util.h"
 #include "base/command_line.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -51,6 +52,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/proxy_config/pref_proxy_config_tracker_impl.h"
 #include "components/session_manager/session_manager_types.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
@@ -58,6 +60,7 @@
 #include "ui/gfx/image/image.h"
 
 using session_manager::SessionState;
+using testing::NotNull;
 
 namespace ash {
 
@@ -228,6 +231,35 @@ TEST_F(StatusAreaWidgetTest, DateTrayRoundedCornerBehavior) {
   EXPECT_EQ(GetTrayCornerBehavior(status_area->date_tray()),
             TrayBackgroundView::RoundedCornerBehavior::kStartRounded);
 }
+
+class LockedFullscreenStatusAreaWidgetTest
+    : public AshTestBase,
+      public testing::WithParamInterface<bool> {
+ protected:
+  bool IsLocked() const { return GetParam(); }
+};
+
+TEST_P(LockedFullscreenStatusAreaWidgetTest,
+       TrayBubbleVisibilityWithPinnedWindow) {
+  // Create a window for testing purposes.
+  const std::unique_ptr<aura::Window> window = CreateTestWindow();
+
+  // Show the unified system tray bubble before pinning the window.
+  auto* const status_area_widget = GetPrimaryShelf()->GetStatusAreaWidget();
+  ASSERT_THAT(status_area_widget, NotNull());
+  auto* const unified_system_tray = status_area_widget->unified_system_tray();
+  ASSERT_THAT(unified_system_tray, NotNull());
+  unified_system_tray->ShowBubble();
+  ASSERT_TRUE(unified_system_tray->IsBubbleShown());
+
+  // Pin the window and verify tray bubble visibility.
+  PinWindow(window.get(), IsLocked());
+  EXPECT_EQ(unified_system_tray->IsBubbleShown(), !IsLocked());
+}
+
+INSTANTIATE_TEST_SUITE_P(LockedFullscreenStatusAreaWidgetTests,
+                         LockedFullscreenStatusAreaWidgetTest,
+                         testing::Bool());
 
 class SystemTrayFocusTestObserver : public SystemTrayObserver {
  public:

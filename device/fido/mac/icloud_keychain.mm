@@ -248,6 +248,12 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
                     -> bool { return allow_list_cred.id == cred_id; })) {
           continue;
         }
+        std::optional<std::string> provider_name;
+        if (@available(macOS 14.0, *)) {
+          // `providerName` is documented available in 13.3+, but appears broken
+          // in 13.* (see https://crbug.com/407900955)
+          provider_name = cred.providerName.UTF8String;
+        }
         ret.emplace_back(AuthenticatorType::kICloudKeychain, rp_id,
                          std::move(cred_id),
                          PublicKeyCredentialUserEntity(
@@ -255,7 +261,7 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
                              /* iCloud Keychain does not store
                                 a displayName for passkeys */
                              std::nullopt),
-                         cred.providerName.UTF8String);
+                         std::move(provider_name));
       }
       const auto has_credentials =
           ret.empty() ? FidoRequestHandlerBase::RecognizedCredential::

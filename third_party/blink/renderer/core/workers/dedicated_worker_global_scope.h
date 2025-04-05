@@ -229,6 +229,8 @@ class CORE_EXPORT DedicatedWorkerGlobalScope final : public WorkerGlobalScope {
   bool cross_origin_isolated_capability_;
   bool is_isolated_context_;
   Member<WorkerAnimationFrameProvider> animation_frame_provider_;
+  // TODO(crbug.com/40093136): Remove this now that PlzDedicatedWorker has
+  // launched.
   RejectCoepUnsafeNone reject_coep_unsafe_none_ = RejectCoepUnsafeNone(false);
 
   HeapMojoRemote<mojom::blink::DedicatedWorkerHost> dedicated_worker_host_{

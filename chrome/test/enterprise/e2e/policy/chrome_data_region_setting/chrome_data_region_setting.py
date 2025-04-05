@@ -81,7 +81,7 @@ class ChromeDataRegionSettingTest(ChromeEnterpriseTestCase):
     self.assertIn('scope=Machine', output)
     self.assertIn('status=OK', output)
 
-  # TODO(crbug.com/403340476): Reenable with `@test` once fixed.
+  @test
   def test_cloudUser_ChromeDataRegionSettingNoPreference(self):
     # Domain: chromepizzatest.com / OrgUnit: CBCM-DRZ > No Preference
     # User belongs to an OU with ChromeDataRegionSetting set to No Preference (0)
@@ -103,7 +103,7 @@ class ChromeDataRegionSettingTest(ChromeEnterpriseTestCase):
     self.assertIn("scope=Current user", output)
     self.assertIn("status=OK", output)
 
-  # TODO(crbug.com/403340476): Reenable with `@test` once fixed.
+  @test
   def test_cloudUser_ChromeDataRegionSettingEurope(self):
     # Domain: chromepizzatest.com / OrgUnit: CBCM-DRZ > Europe
     # User belongs to an OU with ChromeDataRegionSetting set to Europe (2)

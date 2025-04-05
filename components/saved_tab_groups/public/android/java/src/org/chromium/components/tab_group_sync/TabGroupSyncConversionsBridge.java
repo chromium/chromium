@@ -51,7 +51,8 @@ public class TabGroupSyncConversionsBridge {
             long updateTimeMs,
             String creatorCacheGuid,
             String lastUpdaterCacheGuid,
-            String collaborationId) {
+            String collaborationId,
+            long archivalTimeMs) {
         SavedTabGroup group = new SavedTabGroup();
         group.syncId = syncId;
         group.localId = localId;
@@ -63,6 +64,7 @@ public class TabGroupSyncConversionsBridge {
         group.creatorCacheGuid = creatorCacheGuid;
         group.lastUpdaterCacheGuid = lastUpdaterCacheGuid;
         group.collaborationId = collaborationId;
+        group.archivalTimeMs = archivalTimeMs == -1 ? null : Long.valueOf(archivalTimeMs);
         return group;
     }
 

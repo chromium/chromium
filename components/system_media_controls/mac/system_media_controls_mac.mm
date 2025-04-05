@@ -77,6 +77,7 @@ SystemMediaControlsMac::SystemMediaControlsMac(
 SystemMediaControlsMac::~SystemMediaControlsMac() {
   if (application_host_) {
     application_host_->RemoveObserver(this);
+    application_host_ = nullptr;
   }
 }
 
@@ -229,8 +230,9 @@ void SystemMediaControlsMac::OnMetadataClearedForTesting() {
 
 void SystemMediaControlsMac::OnApplicationHostDestroying(
     remote_cocoa::ApplicationHost* host) {
-  // If we get here, the user has Cmd+Q quit the app.
-  is_app_shim_closing_ = true;
+  // If we get here, the user has likely Cmd+Q quit the app.
+  application_host_->RemoveObserver(this);
+  application_host_ = nullptr;
 }
 
 void SystemMediaControlsMac::MaybeRebindToBridge() {
@@ -240,7 +242,7 @@ void SystemMediaControlsMac::MaybeRebindToBridge() {
 
   // Don't try to rebind if we've received OnApplicationHostDestroying, as
   // ApplicationBridge will have gone away.
-  if (!is_app_shim_closing_) {
+  if (application_host_) {
     // Before we reset our connections, clear the existing metadata to ensure
     // we don't mix data between the mojo connections.
     bridge_remote_->ClearMetadata();

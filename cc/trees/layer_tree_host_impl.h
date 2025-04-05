@@ -324,14 +324,13 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   std::unique_ptr<EventsMetricsManager::ScopedMonitor>
   GetScopedEventMetricsMonitor(
       EventsMetricsManager::ScopedMonitor::DoneCallback done_callback) override;
-  void NotifyInputEvent() override;
+  void NotifyInputEvent(bool is_fling) override;
   bool HasAnimatedScrollbars() const override;
   // Already overridden for BrowserControlsOffsetManagerClient which declares a
   // method of the same name.
   // void SetNeedsCommit();
   void SetNeedsFullViewportRedraw() override;
   void DidUpdateScrollAnimationCurve() override;
-  void AccumulateScrollDeltaForTracing(const gfx::Vector2dF& delta) override;
   void DidStartPinchZoom() override;
   void DidUpdatePinchZoom() override;
   void DidEndPinchZoom() override;
@@ -340,7 +339,9 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   void DidMouseLeave() override;
   bool IsInHighLatencyMode() const override;
   void WillScrollContent(ElementId element_id) override;
-  void DidScrollContent(ElementId element_id, bool animated) override;
+  void DidScrollContent(ElementId element_id,
+                        bool animated,
+                        const gfx::Vector2dF& scroll_delta) override;
   float DeviceScaleFactor() const override;
   float PageScaleFactor() const override;
   gfx::Size VisualDeviceViewportSize() const override;
@@ -1288,6 +1289,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   std::unique_ptr<LCDTextMetricsReporter> lcd_text_metrics_reporter_;
 
   FrameRateEstimator frame_rate_estimator_;
+  bool has_non_fling_input_since_last_frame_ = false;
   bool has_observed_first_scroll_delay_ = false;
 
   // True if we are measuring smoothness in TotalFrameCounter and
@@ -1311,6 +1313,13 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   base::UnguessableToken screenshot_destination_;
 
   float top_controls_visible_height_ = 0.f;
+
+  // Maximum scroll delta update in x or y direction since last begin impl
+  // frame.
+  float frame_max_scroll_delta_ = 0.f;
+
+  // Time delta between last and current begin impl frame.
+  base::TimeDelta begin_frame_time_delta_;
 
   base::flat_set<ElementId> pending_invalidation_raster_inducing_scrolls_;
 

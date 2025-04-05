@@ -281,14 +281,25 @@ void GetDawnTogglesForWebGPU(
 #if BUILDFLAG(SKIA_USE_DAWN)
 void GetDawnTogglesForSkiaGraphite(
     std::vector<const char*>* force_enabled_toggles,
-    std::vector<const char*>* force_disabled_toggles) {
+    std::vector<const char*>* force_disabled_toggles,
+    wgpu::BackendType backend_type) {
 #if DCHECK_IS_ON()
   force_enabled_toggles->push_back("use_user_defined_labels_in_backend");
 #else
   force_enabled_toggles->push_back("disable_robustness");
   force_enabled_toggles->push_back("skip_validation");
-  force_disabled_toggles->push_back("lazy_clear_resource_on_first_use");
-#endif
+  force_enabled_toggles->push_back(
+      "disable_lazy_clear_for_mapped_at_creation_buffer");
+#if BUILDFLAG(IS_WIN)
+  if (backend_type == wgpu::BackendType::D3D11) {
+    force_enabled_toggles->push_back(
+        "use_packed_depth24_unorm_stencil8_format");
+  }
+#endif  // BUILDFLAG(IS_WIN)
+  if (backend_type == wgpu::BackendType::Vulkan) {
+    force_enabled_toggles->push_back("vulkan_monolithic_pipeline_cache");
+  }
+#endif  // DCHECK_IS_ON()
 }
 #endif  // BUILDFLAG(SKIA_USE_DAWN)
 
@@ -997,13 +1008,14 @@ void CollectDawnInfo(const gpu::GpuPreferences& gpu_preferences,
 #if BUILDFLAG(SKIA_USE_DAWN)
         if (gpu_preferences.gr_context_type == GrContextType::kGraphiteDawn) {
           // Get the list of required toggles for Skia.
-          // TODO(sunnyps): Ideally these should come from a single source of
-          // truth e.g. from DawnContextProvider or a common helper, instead of
-          // just assuming some values here.
+          // TODO(crbug.com/407497928): Ideally these should come from a single
+          // source of truth e.g. from DawnContextProvider or a common helper,
+          // instead of just assuming some values here.
           std::vector<const char*> force_enabled_toggles_skia;
           std::vector<const char*> force_disabled_toggles_skia;
           GetDawnTogglesForSkiaGraphite(&force_enabled_toggles_skia,
-                                        &force_disabled_toggles_skia);
+                                        &force_disabled_toggles_skia,
+                                        info.backendType);
 
           if (!force_enabled_toggles_skia.empty()) {
             dawn_info_list->push_back("[Skia Required Toggles - enabled]");

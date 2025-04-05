@@ -1,0 +1,27 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("search_preload") {
+  public = [
+    "search_preload_features.h",
+    "search_preload_service.h",
+    "search_preload_service_factory.h",
+  ]
+
+  sources = [
+    "search_preload_features.cc",
+    "search_preload_service.cc",
+    "search_preload_service_factory.cc",
+  ]
+
+  public_deps = [ "//content/public/browser" ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/search_engines:search_engines",
+    "//components/omnibox/browser:mojo_bindings",
+    "//components/search_engines",
+  ]
+}

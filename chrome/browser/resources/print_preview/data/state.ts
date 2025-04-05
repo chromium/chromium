@@ -54,8 +54,8 @@ export class PrintPreviewStateElement extends PolymerElement {
     };
   }
 
-  state: State;
-  error: Error;
+  declare state: State;
+  declare error: Error;
 
   transitTo(newState: State) {
     switch (newState) {

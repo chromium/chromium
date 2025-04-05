@@ -81,7 +81,7 @@ PasswordSaveUpdateView::PasswordSaveUpdateView(
         .SetDefault(
             views::kMarginsKey,
             gfx::Insets::VH(ChromeLayoutProvider::Get()->GetDistanceMetric(
-                                DISTANCE_CONTROL_LIST_VERTICAL),
+                                views::DISTANCE_CONTROL_LIST_VERTICAL),
                             0));
 
     const auto titles = GetCredentialLabelsForAccountChooser(password_form);
@@ -122,7 +122,7 @@ PasswordSaveUpdateView::PasswordSaveUpdateView(
         .SetDefault(
             views::kMarginsKey,
             gfx::Insets::VH(ChromeLayoutProvider::Get()->GetDistanceMetric(
-                                DISTANCE_CONTROL_LIST_VERTICAL),
+                                views::DISTANCE_CONTROL_LIST_VERTICAL),
                             0));
 
     username_dropdown_ = username_dropdown.get();

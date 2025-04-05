@@ -2,6 +2,7 @@
   "phases": {
     "ninja": {
       "gn_args": {
+        "android_static_analysis": "off",
         "is_component_build": true,
         "is_debug": true,
         "symbol_level": 2,
@@ -13,6 +14,7 @@
     },
     "siso_native": {
       "gn_args": {
+        "android_static_analysis": "off",
         "is_component_build": true,
         "is_debug": true,
         "symbol_level": 2,
@@ -25,6 +27,7 @@
     },
     "siso_reproxy": {
       "gn_args": {
+        "android_static_analysis": "off",
         "is_component_build": true,
         "is_debug": true,
         "symbol_level": 2,

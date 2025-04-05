@@ -75,6 +75,11 @@ class ValuableSyncBridge : public base::SupportsUserData::Data,
   // the processor.
   void LoadMetadata();
 
+  // Sets the Wallet data from `entity_data` to this client and records metrics
+  // about added/deleted data. Returns a ModelError if any errors occured.
+  std::optional<syncer::ModelError> SetSyncData(
+      const syncer::EntityChangeList& entity_data);
+
   bool SyncMetadataCacheContainsSupportedFields(
       const syncer::EntityMetadataMap& metadata_map) const;
 

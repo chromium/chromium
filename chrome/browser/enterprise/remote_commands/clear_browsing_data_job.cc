@@ -12,6 +12,9 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "components/policy/core/common/policy_logger.h"
+#include "content/public/browser/browsing_data_remover.h"
 
 namespace enterprise_commands {
 
@@ -71,6 +74,8 @@ enterprise_management::RemoteCommand_Type ClearBrowsingDataJob::GetType()
 
 bool ClearBrowsingDataJob::ParseCommandPayload(
     const std::string& command_payload) {
+  VLOG_POLICY(2, REMOTE_COMMANDS)
+      << "ClearBrowsingDataJob::ParseCommandPayload " << command_payload;
   std::optional<base::Value::Dict> root =
       base::JSONReader::ReadDict(command_payload);
   if (!root)
@@ -88,6 +93,8 @@ bool ClearBrowsingDataJob::ParseCommandPayload(
 }
 
 void ClearBrowsingDataJob::RunImpl(CallbackWithResult result_callback) {
+  VLOG_POLICY(2, REMOTE_COMMANDS)
+      << "ClearBrowsingDataJob::Run " << clear_cache_ << " " << clear_cookies_;
   uint64_t types = 0;
   if (clear_cache_)
     types |= content::BrowsingDataRemover::DATA_TYPE_CACHE;

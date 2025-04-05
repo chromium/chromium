@@ -6274,26 +6274,23 @@ class ChromeDriverAndroidTest(ChromeDriverBaseTest):
       self._driver = self.CreateDriver()
       size = self._driver.GetWindowRect()
 
-      old_window_handle = self._driver.GetCurrentWindowHandle()
-      # window1 = self._driver.SendCommandAndGetResult(
-      #     'Browser.getWindowForTarget', {'targetId': old_window_handle})
+      old_target_id = self._driver.GetCurrentWindowHandle()
+      window1 = self._driver.SendCommandAndGetResult(
+          'Browser.getWindowForTarget', {'targetId': old_target_id})
       new_window = self._driver.NewWindow(window_type='window')
       self._driver.SwitchToWindow(new_window['handle'])
       self.assertTrue(
           self.WaitForCondition(
               lambda: self._driver.GetCurrentWindowHandle() !=
-                old_window_handle))
-      new_window_handle = self._driver.GetCurrentWindowHandle()
-      self.assertNotEqual(None, new_window_handle)
-      self.assertNotEqual(old_window_handle, new_window_handle)
+                old_target_id))
+      new_target_id = self._driver.GetCurrentWindowHandle()
+      self.assertNotEqual(None, new_target_id)
+      self.assertNotEqual(old_target_id, new_target_id)
+      window2 = self._driver.SendCommandAndGetResult(
+          'Browser.getWindowForTarget', {'targetId': new_target_id})
 
-      # TODO(crbug.com/6236167): Until Browser.getWindowForTarget is supported
-      # on Android, it's not possible to assert window IDs of two tabs are
-      # different.
-      # window2 = self._driver.SendCommandAndGetResult(
-      #     'Browser.getWindowForTarget', {'targetId': new_window_handle})
-      # Verify that the second tab target is indeed a different window.
-      # self.assertNotEqual(window1['windowId'], window2['windowId'])
+      # Verify that the second tab target is indeed in a different window.
+      self.assertNotEqual(window1['windowId'], window2['windowId'])
 
 class ChromeDownloadDirTest(ChromeDriverBaseTest):
 

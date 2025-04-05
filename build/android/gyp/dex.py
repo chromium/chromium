@@ -32,6 +32,8 @@ DEFAULT_IGNORE_WARNINGS = (
     r'Running R8 version main',
     # https://issuetracker.google.com/327611582
     r'The companion object Companion could not be found',
+    # https://crbug.com/408280256
+    r'MethodHandle.invoke',
 )
 
 _MERGE_SERVICE_ENTRIES = (

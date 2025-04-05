@@ -13,7 +13,6 @@ found in the LICENSE file.
     android:layout_height="wrap_content"
     android:layout_width="match_parent"
     android:minHeight="@dimen/recent_tabs_foreign_session_group_item_height"
-    android:background="?attr/selectableItemBackground"
     android:paddingStart="@dimen/recent_tabs_list_item_side_padding"
     android:paddingEnd="@dimen/recent_tabs_list_item_side_padding">
 

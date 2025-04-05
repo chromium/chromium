@@ -9,10 +9,11 @@ import android.content.Intent;
 import android.util.SparseIntArray;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
@@ -40,6 +41,7 @@ import java.util.Set;
  * Creates and destroys the Web Bluetooth notification when a website is either connected
  * to a Bluetooth device or scanning for nearby Bluetooth devices.
  */
+@NullMarked
 public class BluetoothNotificationManager {
     private static final String NOTIFICATION_NAMESPACE = "BluetoothNotificationManager";
 
@@ -131,7 +133,7 @@ public class BluetoothNotificationManager {
     private void updateNotification(
             int notificationId,
             @BluetoothType int bluetoothType,
-            String url,
+            @Nullable String url,
             boolean isIncognito,
             int startId) {
         if (doesNotificationExist(notificationId)
@@ -166,7 +168,10 @@ public class BluetoothNotificationManager {
      * @param isIncognito Whether the notification comes from incognito mode.
      */
     private void createNotification(
-            int notificationId, @BluetoothType int bluetoothType, String url, boolean isIncognito) {
+            int notificationId,
+            @BluetoothType int bluetoothType,
+            @Nullable String url,
+            boolean isIncognito) {
         Context appContext = ContextUtils.getApplicationContext();
         NotificationWrapperBuilder builder =
                 NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(

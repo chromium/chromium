@@ -8,6 +8,7 @@
 #include <cstddef>
 #include <map>
 #include <memory>
+#include <set>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -132,6 +133,9 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodUtil {
   // Returns true if given input method can be used to input login data.
   bool IsLoginKeyboard(const std::string& input_method_id) const;
 
+  // Returns true if given input method is allowlisted for OOBE.
+  bool IsOobeAllowlisted(const std::string& input_method_id) const;
+
   // Returns true if the given input method id is supported.
   bool IsValidInputMethodId(const std::string& input_method_id) const;
 
@@ -185,6 +189,8 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodUtil {
   std::vector<std::string> hardware_layouts_;
   std::vector<std::string> hardware_login_layouts_;
   std::vector<std::string> cached_hardware_layouts_;
+
+  std::set<std::string> oobe_allowlisted_ids_;
 };
 
 }  // namespace input_method

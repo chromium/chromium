@@ -17,12 +17,13 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
-using ::autofill::autofill_metrics::LogBnplTosDialogShown;
 using l10n_util::GetStringFUTF16;
 using l10n_util::GetStringUTF16;
 using std::u16string;
 
 namespace autofill {
+using autofill_metrics::BnplTosDialogResult;
+using autofill_metrics::LogBnplTosDialogShown;
 
 namespace {
 constexpr std::string_view kWalletLinkText = "wallet.google.com";
@@ -48,11 +49,15 @@ BnplTosControllerImpl::~BnplTosControllerImpl() = default;
 
 void BnplTosControllerImpl::OnUserAccepted() {
   std::move(accept_callback_).Run();
+  LogBnplTosDialogResult(BnplTosDialogResult::kAcceptButtonClicked,
+                         GetIssuerId());
 }
 
 void BnplTosControllerImpl::OnUserCancelled() {
   Dismiss();
   std::move(cancel_callback_).Run();
+  LogBnplTosDialogResult(BnplTosDialogResult::kCancelButtonClicked,
+                         GetIssuerId());
 }
 
 u16string BnplTosControllerImpl::GetOkButtonLabel() const {

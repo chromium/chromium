@@ -96,7 +96,7 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
         observer: 'updateNumFingerprintsDescription_',
       },
 
-      numFingerprintsDescription_: {
+      numFingerprintDescription_: {
         type: String,
       },
 
@@ -156,19 +156,6 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
       showDisableRecoveryDialog_: Boolean,
 
       /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kLockScreenV2,
-          Setting.kChangeAuthPinV2,
-          Setting.kLockScreenNotification,
-          Setting.kDataRecovery,
-        ]),
-      },
-
-      /**
        * Whether the device account is managed.
        */
       deviceAccountManaged_: {
@@ -183,6 +170,15 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
 
   prefs: PrefsState;
   authToken: string|undefined;
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kLockScreenV2,
+    Setting.kChangeAuthPinV2,
+    Setting.kLockScreenNotification,
+    Setting.kDataRecovery,
+  ]);
+
   private fingerprintUnlockEnabled_: boolean;
   private numFingerprints_: number;
   private numFingerprintDescription_: string;

@@ -85,6 +85,18 @@ struct ExternallyManagedAppManagerInstallResult {
 // re-initiated, and if successful, the placeholder app is removed.
 class ExternallyManagedAppManager {
  public:
+  // Test class to drop requests instead of enqueueing them for installation.
+  // TODO(crbug.com/408163317): Do not use, this is an implementation detail and
+  // will be removed later.
+  class ScopedDropRequestsForTesting {
+   public:
+    ScopedDropRequestsForTesting();
+    ScopedDropRequestsForTesting(const ScopedDropRequestsForTesting&) = delete;
+    ScopedDropRequestsForTesting& operator=(
+        const ScopedDropRequestsForTesting&) = delete;
+    ~ScopedDropRequestsForTesting();
+  };
+
   using InstallResult = ExternallyManagedAppManagerInstallResult;
 
   using OnceInstallCallback =
@@ -139,15 +151,6 @@ class ExternallyManagedAppManager {
   virtual void InstallApps(
       std::vector<ExternalInstallOptions> install_options_list,
       const RepeatingInstallCallback& callback);
-
-  // Adds a task to the queue of operations for each GURL in
-  // |uninstall_urls|. Runs |callback| with the URL of the corresponding
-  // app in |uninstall_urls| and with a bool indicating whether or not the
-  // uninstall succeeded. Runs |callback| for every completed uninstallation -
-  // whether or not the uninstallation actually succeeded.
-  virtual void UninstallApps(std::vector<GURL> uninstall_urls,
-                             ExternalInstallSource install_source,
-                             const UninstallCallback& callback);
 
   // Installs an app for each ExternalInstallOptions in
   // |desired_apps_install_options| and uninstalls any apps in
@@ -216,6 +219,15 @@ class ExternallyManagedAppManager {
     std::map<GURL, InstallResult> install_results;
     std::map<GURL, webapps::UninstallResultCode> uninstall_results;
   };
+
+  // Adds a task to the queue of operations for each GURL in
+  // |uninstall_urls|. Runs |callback| with the URL of the corresponding
+  // app in |uninstall_urls| and with a bool indicating whether or not the
+  // uninstall succeeded. Runs |callback| for every completed uninstallation -
+  // whether or not the uninstallation actually succeeded.
+  void UninstallApps(std::vector<GURL> uninstall_urls,
+                     ExternalInstallSource install_source,
+                     const UninstallCallback& callback);
 
   void SynchronizeInstalledAppsOnLockAcquired(
       std::vector<ExternalInstallOptions> desired_apps_install_options,

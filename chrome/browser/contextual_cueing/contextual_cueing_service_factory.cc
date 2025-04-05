@@ -44,7 +44,9 @@ ContextualCueingServiceFactory::~ContextualCueingServiceFactory() = default;
 std::unique_ptr<KeyedService>
 ContextualCueingServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  if (!base::FeatureList::IsEnabled(contextual_cueing::kContextualCueing)) {
+  if (!base::FeatureList::IsEnabled(contextual_cueing::kContextualCueing) &&
+      !base::FeatureList::IsEnabled(
+          contextual_cueing::kGlicZeroStateSuggestions)) {
     return nullptr;
   }
   return std::make_unique<ContextualCueingService>(

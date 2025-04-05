@@ -55,6 +55,8 @@ constexpr char kPassword[] = "test";
 
 @property(nonatomic, strong) NSString* suggestedPassword;
 
+@property(nonatomic, strong) TableViewTextEditItem* passwordCell;
+
 @end
 
 @implementation FakeAddPasswordDelegate
@@ -90,12 +92,12 @@ constexpr char kPassword[] = "test";
   return YES;
 }
 
-- (NSString*)generatePassword {
-  // The default spec is used to avoiding complicating the user flow.
+- (void)requestGeneratedPasswordWithCompletion:
+    (void (^)(NSString* password))completion {
   autofill::PasswordRequirementsSpec defaultSpec;
-  self.suggestedPassword =
+  _suggestedPassword =
       base::SysUTF16ToNSString(autofill::GeneratePassword(defaultSpec));
-  return self.suggestedPassword;
+  [_passwordCell setTextFieldValue:_suggestedPassword];
 }
 
 @end
@@ -275,6 +277,7 @@ TEST_F(AddPasswordViewControllerTest, TestSuggestStrongPassword) {
       GetTableViewItem(password_index_path.section, password_index_path.row));
   EXPECT_TRUE(password_cell);
 
+  delegate_.passwordCell = password_cell;
   password_cell.textFieldValue = @"";
   // Verify it's secure text entry initially.
   EXPECT_TRUE(password_cell.textFieldSecureTextEntry);

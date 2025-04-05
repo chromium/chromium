@@ -149,4 +149,15 @@ bool RenderInputRouterDelegateImpl::IsRendererProcessBlocked() {
   return is_blocked_;
 }
 
+void RenderInputRouterDelegateImpl::DidOverscroll(
+    blink::mojom::DidOverscrollParamsPtr params) {
+  // |InputRouterImpl::GestureEventHandled| triggers both
+  // |RenderInputRouterDelegateImpl::DidOverscroll| (which sends overscroll
+  // information to the browser process) and
+  // |RenderInputRouterSupportAndroid::GestureEventAck| which calls in
+  // StopFlingingIfNecessary, so the decision to stop any fling due to
+  // overscroll is handled within the Viz process.
+  delegate_->DidOverscroll(frame_sink_id_, grouping_id_, std::move(params));
+}
+
 }  // namespace viz

@@ -61,10 +61,6 @@ namespace {
 static constexpr int kHoursInOneWeek = 24 * 7;
 static constexpr int kHoursInOneYear = 24 * 365;
 
-BASE_FEATURE(kIncreaseCoookieAccesCacheSize,
-             "IncreaseCoookieAccesCacheSize",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // How often to call CookieObserveer.OnCookiesAccessed. This value was picked
 // because it reduces calls by up to 90% on slow Android devices while not
 // adding a user-perceptible delay.
@@ -418,7 +414,7 @@ RestrictedCookieManager::RestrictedCookieManager(
       receiver_(this),
       metrics_updater_(metrics_updater),
       max_cookie_cache_count_(
-          base::FeatureList::IsEnabled(kIncreaseCoookieAccesCacheSize)
+          base::FeatureList::IsEnabled(features::kIncreaseCookieAccessCacheSize)
               ? kIncreasedMaxCookieCacheCount
               : kMaxCookieCacheCount),
       cookies_access_timer_(

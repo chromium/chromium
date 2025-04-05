@@ -7,7 +7,6 @@
 #include <optional>
 #include <string_view>
 
-#include "base/hash/md5_constexpr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 
@@ -59,14 +58,11 @@ TEST_F(BackgroundTracingHelperTest, GetIdSuffixPos) {
 TEST_F(BackgroundTracingHelperTest, MD5Hash32) {
   static constexpr char kFoo[] = "foo";
   static constexpr uint32_t kFooHash = 0xacbd18db;
-  static_assert(kFooHash == base::MD5Hash32Constexpr(kFoo), "unexpected hash");
   EXPECT_EQ(kFooHash, MD5Hash32(kFoo));
 
   static constexpr char kQuickFox[] =
       "the quick fox jumps over the lazy brown dog";
   static constexpr uint32_t kQuickFoxHash = 0x01275c33;
-  static_assert(kQuickFoxHash == base::MD5Hash32Constexpr(kQuickFox),
-                "unexpected hash");
   EXPECT_EQ(kQuickFoxHash, MD5Hash32(kQuickFox));
 }
 

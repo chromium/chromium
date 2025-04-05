@@ -81,7 +81,8 @@ DialogDelegate::Params::~Params() = default;
 // DialogDelegate:
 
 DialogDelegate::DialogDelegate() {
-  WidgetDelegate::RegisterWindowWillCloseCallback(
+  RegisterWindowWillCloseCallback(
+      RegisterWillCloseCallbackPassKey(),
       base::BindOnce(&DialogDelegate::WindowWillClose, base::Unretained(this)));
 }
 

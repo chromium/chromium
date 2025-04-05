@@ -68,6 +68,7 @@ class ASH_EXPORT NullCaptureModeSession : public BaseCaptureModeSession {
   void OnSearchResultsPanelCreated(views::Widget* panel_widget) override;
   bool TakeFocusForSearchResultsPanel(bool reverse) override;
   void ClearPseudoFocus() override;
+  void SetA11yOverrideWindowToSearchResultsPanel() override;
 
  private:
   // CaptureModeSession:

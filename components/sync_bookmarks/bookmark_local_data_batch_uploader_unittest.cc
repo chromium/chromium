@@ -8,7 +8,6 @@
 #include <utility>
 #include <variant>
 
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -367,8 +366,6 @@ TEST_F(BookmarkLocalDataBatchUploaderTest,
 // LocalBookmarkModelMerger, this test only checks the communication between the
 // 2 layers.
 TEST_F(BookmarkLocalDataBatchUploaderTest, FullMigrationUploadsLocalBookmarks) {
-  base::HistogramTester histogram_tester;
-
   bookmark_model()->LoadEmptyForTest();
   bookmark_model()->CreateAccountPermanentFolders();
   bookmark_model()->AddURL(bookmark_model()->bookmark_bar_node(),
@@ -388,15 +385,6 @@ TEST_F(BookmarkLocalDataBatchUploaderTest, FullMigrationUploadsLocalBookmarks) {
                           MatchesTitleAndUrl(u"Local", "http://local.com/")));
   EXPECT_THAT(bookmark_model()->account_mobile_node()->children(), IsEmpty());
   EXPECT_THAT(bookmark_model()->account_other_node()->children(), IsEmpty());
-
-  histogram_tester.ExpectTotalCount(kBatchUploadDurationHistogramName, 1);
-  histogram_tester.ExpectUniqueSample(
-      "Bookmarks.BatchUploadOutcomeAccountNodes",
-      /*sample=*/2,
-      /*expected_bucket_count=*/1);
-  histogram_tester.ExpectUniqueSample("Bookmarks.BatchUploadOutcomeRatio",
-                                      /*sample=*/100,
-                                      /*expected_bucket_count=*/1);
 }
 
 // Note: Most of the merging logic is verified in the unit tests for
@@ -404,8 +392,6 @@ TEST_F(BookmarkLocalDataBatchUploaderTest, FullMigrationUploadsLocalBookmarks) {
 // 2 layers.
 TEST_F(BookmarkLocalDataBatchUploaderTest,
        PartialMigrationUploadsSelectedLocalBookmarks) {
-  base::HistogramTester histogram_tester;
-
   bookmark_model()->LoadEmptyForTest();
   bookmark_model()->CreateAccountPermanentFolders();
   const bookmarks::BookmarkNode* local_node1 = bookmark_model()->AddURL(
@@ -430,8 +416,6 @@ TEST_F(BookmarkLocalDataBatchUploaderTest,
                           MatchesTitleAndUrl(u"Local", "http://local1.com/")));
   EXPECT_THAT(bookmark_model()->account_mobile_node()->children(), IsEmpty());
   EXPECT_THAT(bookmark_model()->account_other_node()->children(), IsEmpty());
-
-  histogram_tester.ExpectTotalCount(kBatchUploadDurationHistogramName, 1);
 }
 
 }  // namespace

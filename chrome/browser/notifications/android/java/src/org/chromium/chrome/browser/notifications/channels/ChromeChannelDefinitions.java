@@ -97,7 +97,8 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
         ChannelId.PRICE_DROP_DEFAULT,
         ChannelId.SECURITY_KEY,
         ChannelId.BLUETOOTH,
-        ChannelId.USB
+        ChannelId.USB,
+        ChannelId.SERIAL
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface ChannelId {
@@ -131,6 +132,7 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
         String SECURITY_KEY = "security_key";
         String BLUETOOTH = "bluetooth";
         String USB = "usb";
+        String SERIAL = "serial";
     }
 
     @StringDef({ChannelGroupId.GENERAL, ChannelGroupId.SITES})
@@ -375,6 +377,16 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
                     PredefinedChannel.create(
                             ChannelId.USB,
                             R.string.notification_category_usb,
+                            NotificationManager.IMPORTANCE_LOW,
+                            ChannelGroupId.GENERAL));
+
+            // The serial notification channel will only appear for users
+            // who are targeted for this feature.
+            map.put(
+                    ChannelId.SERIAL,
+                    PredefinedChannel.create(
+                            ChannelId.SERIAL,
+                            R.string.notification_category_serial,
                             NotificationManager.IMPORTANCE_LOW,
                             ChannelGroupId.GENERAL));
 

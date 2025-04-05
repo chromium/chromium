@@ -18,16 +18,16 @@ namespace ip_protection {
 class ProbabilisticRevealTokenRegistry {
  public:
   ProbabilisticRevealTokenRegistry();
-  ~ProbabilisticRevealTokenRegistry();
+  virtual ~ProbabilisticRevealTokenRegistry();
   ProbabilisticRevealTokenRegistry(const ProbabilisticRevealTokenRegistry&);
   ProbabilisticRevealTokenRegistry& operator=(
       const ProbabilisticRevealTokenRegistry&);
 
   // Determines if the request is eligible to receive a token header.
-  bool IsRegistered(const GURL& request_url);
+  virtual bool IsRegistered(const GURL& request_url);
 
   // Clears the existing registry and replaces it with the new content.
-  void UpdateRegistry(base::Value::Dict registry);
+  virtual void UpdateRegistry(base::Value::Dict registry);
 
  private:
   base::flat_set<std::string> domains_;

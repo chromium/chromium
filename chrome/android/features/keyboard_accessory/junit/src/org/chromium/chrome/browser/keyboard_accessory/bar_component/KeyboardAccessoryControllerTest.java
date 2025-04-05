@@ -213,7 +213,6 @@ public class KeyboardAccessoryControllerTest {
                 new AutofillSuggestion.Builder()
                         .setLabel("FirstSuggestion")
                         .setSubLabel("")
-                        .setItemTag("")
                         .setSuggestionType(SuggestionType.AUTOCOMPLETE_ENTRY)
                         .setFeatureForIph("")
                         .build();
@@ -221,7 +220,6 @@ public class KeyboardAccessoryControllerTest {
                 new AutofillSuggestion.Builder()
                         .setLabel("SecondSuggestion")
                         .setSubLabel("")
-                        .setItemTag("")
                         .setSuggestionType(SuggestionType.AUTOCOMPLETE_ENTRY)
                         .setFeatureForIph("")
                         .build();
@@ -319,7 +317,6 @@ public class KeyboardAccessoryControllerTest {
                 new AutofillSuggestion.Builder()
                         .setLabel("Suggestion")
                         .setSubLabel("")
-                        .setItemTag("")
                         .setSuggestionType(SuggestionType.AUTOCOMPLETE_ENTRY)
                         .setFeatureForIph("")
                         .build();
@@ -369,7 +366,6 @@ public class KeyboardAccessoryControllerTest {
                 new AutofillSuggestion.Builder()
                         .setLabel("John")
                         .setSubLabel("Main Str")
-                        .setItemTag("")
                         .setSuggestionType(SuggestionType.ADDRESS_ENTRY)
                         .setFeatureForIph("")
                         .build();
@@ -394,7 +390,6 @@ public class KeyboardAccessoryControllerTest {
                 new AutofillSuggestion.Builder()
                         .setLabel("John")
                         .setSubLabel("4828 ****")
-                        .setItemTag("")
                         .setSuggestionType(SuggestionType.CREDIT_CARD_ENTRY)
                         .setFeatureForIph("")
                         .build();
@@ -419,7 +414,6 @@ public class KeyboardAccessoryControllerTest {
                 new AutofillSuggestion.Builder()
                         .setLabel("John")
                         .setSubLabel("4828 ****")
-                        .setItemTag("")
                         .setSuggestionType(SuggestionType.CREDIT_CARD_ENTRY)
                         .setFeatureForIph(
                                 FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_VIRTUAL_CARD_FEATURE)
@@ -447,7 +441,6 @@ public class KeyboardAccessoryControllerTest {
                 new AutofillSuggestion.Builder()
                         .setLabel("John")
                         .setSubLabel("****")
-                        .setItemTag("")
                         .setSuggestionType(SuggestionType.PASSWORD_ENTRY)
                         .setFeatureForIph("")
                         .build();
@@ -455,7 +448,6 @@ public class KeyboardAccessoryControllerTest {
                 new AutofillSuggestion.Builder()
                         .setLabel("Eva")
                         .setSubLabel("*******")
-                        .setItemTag("")
                         .setSuggestionType(SuggestionType.PASSWORD_ENTRY)
                         .setFeatureForIph("")
                         .build();
@@ -480,7 +472,6 @@ public class KeyboardAccessoryControllerTest {
                 new AutofillSuggestion.Builder()
                         .setLabel("John")
                         .setSubLabel("Man Str")
-                        .setItemTag("")
                         .setSuggestionType(SuggestionType.ADDRESS_ENTRY)
                         .setFeatureForIph(
                                 FeatureConstants

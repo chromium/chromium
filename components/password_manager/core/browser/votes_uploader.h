@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_encoding.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
@@ -307,8 +308,7 @@ class VotesUploader {
   // information that needs to be sent to the Autofill server.
   std::vector<autofill::AutofillUploadContents> EncodeUploadRequest(
       autofill::FormStructure& form,
-      const autofill::FieldTypeSet& available_field_types,
-      std::optional<autofill::FormSignature> login_form_signature,
+      const autofill::EncodeUploadRequestOptions& options,
       std::optional<PasswordAttributesMetadata> password_attributes,
       bool should_set_passwords_were_revealed);
 
@@ -316,8 +316,7 @@ class VotesUploader {
   // `true` if the vote is sent, `false` otherwise.
   bool SendUploadRequest(
       autofill::FormStructure& form_to_upload,
-      const autofill::FieldTypeSet& available_field_types,
-      std::optional<autofill::FormSignature> login_form_signature,
+      const autofill::EncodeUploadRequestOptions& options,
       std::optional<PasswordAttributesMetadata> password_attributes,
       bool should_set_passwords_were_revealed);
 
@@ -329,7 +328,7 @@ class VotesUploader {
   bool SetSingleUsernameVoteOnUsernameForm(
       autofill::AutofillField* field,
       const SingleUsernameVoteData& single_username,
-      autofill::FieldTypeSet* available_field_types,
+      autofill::EncodeUploadRequestOptions& options,
       autofill::FormSignature form_signature,
       autofill::IsMostRecentSingleUsernameCandidate
           is_most_recent_single_username_candidate,

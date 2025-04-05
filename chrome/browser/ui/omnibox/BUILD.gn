@@ -79,6 +79,7 @@ source_set("impl") {
       "//chrome/browser/extensions/api/omnibox",
       "//chrome/browser/favicon",
       "//chrome/browser/omnibox",
+      "//chrome/browser/preloading/search_preload",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/search_engines",
       "//chrome/browser/ui:browser_list",

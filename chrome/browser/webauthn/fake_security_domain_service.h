@@ -54,9 +54,15 @@ class FakeSecurityDomainService {
   // epoch, as if MagicArch had just completed.
   virtual void pretend_there_are_members() = 0;
 
+  // Simulates the user resetting the security domain.
+  virtual void ResetSecurityDomain() = 0;
+
   // Changes the GPM PIN recovery member to not be usable, i.e.
   // usable_for_recovery is set to false and no metadata is returned.
   virtual void MakePinMemberUnusable() = 0;
+
+  // Removes the GPM PIN recovery member.
+  virtual void RemovePinMember() = 0;
 
   // Updates the public key of the PIN member.
   virtual void SetPinMemberPublicKey(std::string public_key) = 0;

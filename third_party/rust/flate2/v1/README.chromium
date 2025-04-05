@@ -1,7 +1,7 @@
 Name: flate2
 URL: https://crates.io/crates/flate2
-Version: 1.1.0
-Revision: 70de9df4f09f9505624a02e7440656293fc2de2c
+Version: 1.1.1
+Revision: 98c98c8a57586b37e6f93e94d993e4f038fd8d32
 License: Apache-2.0
 License File: //third_party/rust/chromium_crates_io/vendor/flate2-v1/LICENSE-APACHE
 Shipped: yes

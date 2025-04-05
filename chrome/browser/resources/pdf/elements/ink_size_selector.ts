@@ -69,8 +69,8 @@ export class InkSizeSelectorElement extends InkSizeSelectorElementBase {
     selectedButton.focus();
   }
 
-  currentSize: number = 0;
-  currentType: AnnotationBrushType = AnnotationBrushType.PEN;
+  accessor currentSize: number = 0;
+  accessor currentType: AnnotationBrushType = AnnotationBrushType.PEN;
 
   protected currentSizeString_(): string {
     return this.currentSize.toString();

@@ -21,7 +21,7 @@ String ServiceWorkerRouterInfo::GetRouterSourceTypeString(
     case network::mojom::ServiceWorkerRouterSourceType::kNetwork:
       return "network";
     case network::mojom::ServiceWorkerRouterSourceType::kRace:
-      return "race-network-and-fetch";
+      return "race-network-and-fetch-handler";
     case network::mojom::ServiceWorkerRouterSourceType::kCache:
       return "cache";
     case network::mojom::ServiceWorkerRouterSourceType::kFetchEvent:

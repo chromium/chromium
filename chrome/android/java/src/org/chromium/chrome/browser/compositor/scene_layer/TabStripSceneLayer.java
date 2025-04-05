@@ -9,6 +9,7 @@ import androidx.annotation.ColorInt;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.Token;
 import org.chromium.cc.input.OffsetTag;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton;
@@ -297,7 +298,7 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                             gt.isForegrounded(),
                             gt.shouldShowReorderBackground(),
                             gt.getNotificationBubbleShown(),
-                            gt.getRootId(),
+                            gt.getTabGroupId(),
                             gt.getTint(),
                             gt.getReorderBackgroundTint(),
                             gt.getBubbleTint(),
@@ -445,7 +446,7 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                 boolean foreground,
                 boolean showReorderBackground,
                 boolean showBubble,
-                int id,
+                Token groupToken,
                 int tint,
                 int reorderBackgroundTint,
                 int bubbleTint,

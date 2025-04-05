@@ -5,7 +5,7 @@
 #include "chrome/browser/actor/tools/navigate_tool.h"
 
 #include "chrome/browser/actor/tools/tool_callbacks.h"
-#include "components/tab_collections/public/tab_interface.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"

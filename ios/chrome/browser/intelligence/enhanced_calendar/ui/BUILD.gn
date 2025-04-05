@@ -1,0 +1,20 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui") {
+  sources = [
+    "enhanced_calendar_mutator.h",
+    "enhanced_calendar_view_controller.h",
+    "enhanced_calendar_view_controller.mm",
+  ]
+
+  deps = [
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/shared/ui/bottom_sheet:bottom_sheet_view_controller",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/common/ui/confirmation_alert",
+    "//ios/public/provider/chrome/browser/add_to_calendar:add_to_calendar_api",
+    "//ui/base",
+  ]
+}

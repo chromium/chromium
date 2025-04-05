@@ -112,6 +112,7 @@
 <translation id="1306549533752902673">প্রস্তাবিত অ্যাপ</translation>
 <translation id="1310396869741602366">টোন পরিবর্তন করুন</translation>
 <translation id="1312604459020188865">সিগন্যাল: <ph name="SIGNAL_STRENGTH" /></translation>
+<translation id="1314113845887519729">উপরে প্রান্তের হ্যান্ডেল বেছে নেওয়া হয়েছে, সরাতে তীরচিহ্ন 'কী' ব্যবহার করুন</translation>
 <translation id="1316069254387866896">সবসময় শেল্ফ দেখান</translation>
 <translation id="132346741904777634">ক্যামেরাটি উপরে বাঁদিকের কোণে স্ন্যাপ করা হয়েছে। সিস্টেমের সারফেসে ছবির কিছুটা ঢাকা পড়ছে।</translation>
 <translation id="132415371743256095">উইন্ডো ও <ph name="DESK_NAME" /> বন্ধ করুন</translation>
@@ -186,6 +187,7 @@
 <translation id="1557622599341396706">ডেস্কের নাম দেখুন</translation>
 <translation id="1569384531973824928">এর ফলে ক্যামেরা ও মাইক্রোফোন ব্যবহার করার অনুমতি আছে এমন সমস্ত অ্যাপ ও ওয়েবসাইট অ্যাক্সেস করা যায়। আপনাকে ওয়েব পেজ রিফ্রেশ করতে বা অ্যাপটি রিস্টার্ট করতে হতে পারে।</translation>
 <translation id="1571697193564730395">'বিরক্ত করবে না' টগল করুন। <ph name="STATE_TEXT" /></translation>
+<translation id="1574691582236909946">বাম প্রান্তের হ্যান্ডেল বেছে নেওয়া হয়েছে, সরাতে তীরচিহ্ন 'কী' ব্যবহার করুন</translation>
 <translation id="1576623706766186887">ম্যাগনিফায়ার চালু থাকাকালীন ছোট করুন</translation>
 <translation id="1582946770779745370">গেম ড্যাশবোর্ড উপলভ্য। যেকোনও সময়ে খুলতে <ph name="LAUNCHER_KEY_NAME" /> + Shift + Escape, তারপর <ph name="LAUNCHER_KEY_NAME" /> + g প্রেস করুন</translation>
 <translation id="1586324912145647027">১ থেকে ৮ নম্বর ডেস্কে যান</translation>
@@ -220,6 +222,7 @@
 <translation id="1696984622403682083">আপনি সেটিংস থেকে যেকোনও সময় এই ফিচার বন্ধ করে দিতে পারবেন। <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" />-এর টাইমার · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 ঠিকানা: <ph name="ADDRESS" /></translation>
+<translation id="1700782710852683371">এই মুহূর্তে এর ছবি তৈরি করা যাচ্ছে না। অন্যভাবে বিবরণ লিখে আবার চেষ্টা করুন। মনে রাখবেন, আপনি কোনও ব্যক্তি, ক্ষতিকর বা অনুপযুক্ত কন্টেন্টের ছবি তৈরি করতে পারবেন না।</translation>
 <translation id="1703117532528082099">অ্যাক্টিভ উইন্ডোটি বাঁদিকে ডক করা আছে।</translation>
 <translation id="1708345662127501511">ডেস্ক: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">নেটওয়ার্ক সেটিংস</translation>
@@ -608,6 +611,7 @@
 <translation id="304097922505898963">Key Shortcuts অ্যাপ খুলুন</translation>
 <translation id="304417730895741346">আপনার পিন করা ও খোলা অ্যাপ শেল্ফে আছে। শেল্ফে কোনও অ্যাপে পিন করতে, অ্যাপে ডানদিকের বোতামে ক্লিক বা দুটি আঙুলের মাধ্যমে আপনার টাচপ্যাডে ট্যাপ করুন।</translation>
 <translation id="3045488863354895414">শুভ অপরাহ্ন,</translation>
+<translation id="3045670165536837541">উপরে ডানদিকের হ্যান্ডেল বেছে নেওয়া হয়েছে, সরাতে তীরচিহ্ন 'কী' ব্যবহার করুন</translation>
 <translation id="3047761520276763270">এটি বলে দেখুন:</translation>
 <translation id="3053407068093039599">ক্যামেরা অ্যাক্সেস চালু/বন্ধ করুন</translation>
 <translation id="3055162170959710888">এই ডিভাইসটি আজ আপনি <ph name="USED_TIME" /> ব্যবহার করেছেন</translation>
@@ -1763,6 +1767,7 @@
 <translation id="6696025732084565524">আলাদা করা যায় এমন কীবোর্ডের একটি জরুরি আপডেট প্রয়োজন</translation>
 <translation id="6697913454192220372">নতুন ডেস্ক যোগ করুন</translation>
 <translation id="6700713906295497288">IME মেনু বোতাম</translation>
+<translation id="6704073473590541209">ডান প্রান্তের হ্যান্ডেল বেছে নেওয়া হয়েছে, সরাতে তীরচিহ্ন 'কী' ব্যবহার করুন</translation>
 <translation id="6706742084323792866">কীবোর্ড পিন করুন</translation>
 <translation id="6710213216561001401">আগের</translation>
 <translation id="6723839937902243910">পাওয়ার</translation>
@@ -1786,6 +1791,7 @@
 <translation id="6781002679438061620">ডেস্ক ৯</translation>
 <translation id="6782182743534150858">ডেস্ক ১৩</translation>
 <translation id="6782919488259222803">বর্তমান পৃষ্ঠা সার্চ করুন</translation>
+<translation id="6783348167101855071">নিচে ডানদিকের হ্যান্ডেল বেছে নেওয়া হয়েছে, সরাতে তীরচিহ্ন 'কী' ব্যবহার করুন</translation>
 <translation id="6786750046913594791">ফোল্ডার বন্ধ করুন</translation>
 <translation id="6790428901817661496">চালু করুন</translation>
 <translation id="6792262051831399889">উপলভ্য নেই</translation>
@@ -1942,6 +1948,7 @@
 <translation id="7371404428569700291">উইন্ডো রেকর্ড করুন</translation>
 <translation id="7372069265635026568">মোট <ph name="TOTAL_MEMORY" /> মেমরির মধ্যে <ph name="AVAILABLE_MEMORY" /> উপলভ্য</translation>
 <translation id="737315737514430195">এটি মাইক্রোফোন অনুমতি সহ সমস্ত অ্যাপ এবং ওয়েবসাইটগুলির জন্য মাইক্রোফোন অ্যাক্সেসের অনুমতি দেয়</translation>
+<translation id="7376933029363911338">নিচে প্রান্তের হ্যান্ডেল বেছে নেওয়া হয়েছে, সরাতে তীরচিহ্ন 'কী' ব্যবহার করুন</translation>
 <translation id="7377169924702866686">Caps Lock চালু আছে৷</translation>
 <translation id="7377481913241237033">কোড ব্যবহার করে কানেক্ট করুন</translation>
 <translation id="7378203170292176219">রেকর্ড করতে ড্র্যাগ করে কিছুটা জায়গা বেছে নিন</translation>
@@ -2038,6 +2045,7 @@
 <translation id="7658239707568436148">বাতিল</translation>
 <translation id="7659861092419699379">ডেস্ক ও উইন্ডো বন্ধ করে দেওয়া হয়েছে</translation>
 <translation id="7660160718439869192"><ph name="EMAIL" />-এর সাথে লিঙ্ক করা ডিভাইসে আপনার <ph name="NAME" /> দেখা যাবে</translation>
+<translation id="7661694115779363471">নিচে বাঁদিকের হ্যান্ডেল বেছে নেওয়া হয়েছে, সরাতে তীরচিহ্ন 'কী' ব্যবহার করুন</translation>
 <translation id="7662283695561029522">কনফিগার করতে ট্যাপ করুন</translation>
 <translation id="7670953955701272011">Google Calendar-এ এই তারিখটি খুলুন</translation>
 <translation id="7671610481353807627">আইকনের রঙ অনুযায়ী অ্যাপ সাজানো হয়েছে</translation>
@@ -2206,6 +2214,7 @@
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" />-এর জন্য তথ্য সংক্রান্ত ডায়ালগ খুলুন</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> ব্যবহার করা হচ্ছে</translation>
 <translation id="8168435359814927499">কন্টেন্ট</translation>
+<translation id="8172370561760918656">উপরে বাঁদিকের হ্যান্ডেল বেছে নেওয়া হয়েছে, সরাতে তীরচিহ্ন 'কী' ব্যবহার করুন</translation>
 <translation id="81817143961839203">ছবি ইনসার্ট করা যায়নি</translation>
 <translation id="8185090165691050712">লক মোড ছোট বড় করতে মেনু চালু/বন্ধ করুন</translation>
 <translation id="8192727139462702395">আপনি ব্লুটুথ বন্ধ করলে, আপনার <ph name="DEVICE_TYPE" /> থেকে এইসব এক্সটার্নাল ডিভাইস ডিসকানেক্ট হয়ে যাবে:</translation>

@@ -528,7 +528,7 @@ class UnitTest(unittest.TestCase):
     # Make sure we log both what is written to args.gn and the command line.
     self.assertIn('Writing """', mbw.out)
     self.assertIn('/fake_src/buildtools/linux64/gn gen //out/Default --check',
-                  mbw.out)
+                  mbw.err)
 
     mbw = self.fake_mbw(win32=True)
     self.check(['gen', '-c', 'debug_remoteexec', '//out/Debug'], mbw=mbw, ret=0)
@@ -537,7 +537,7 @@ class UnitTest(unittest.TestCase):
                                'use_remoteexec = true\n'))
     self.assertIn(
         'c:\\fake_src\\buildtools\\win\\gn.exe gen //out/Debug '
-        '--check', mbw.out)
+        '--check', mbw.err)
 
     mbw = self.fake_mbw()
     self.check(['gen', '-m', 'fake_builder_group', '-b', 'fake_args_bot',
@@ -813,7 +813,7 @@ class UnitTest(unittest.TestCase):
     expected_err = ('error: gn `data` items may not list generated directories;'
                     ' list files in directory instead for:\n'
                     '//out/Default/test_data/\n')
-    self.assertIn(expected_err, mbw.out)
+    self.assertIn(expected_err, mbw.err)
 
   def test_isolate_dir(self):
     files = {
@@ -835,8 +835,7 @@ class UnitTest(unittest.TestCase):
         'isolate', '-c', 'debug_remoteexec', '//out/Default', 'base_unittests'
     ],
                mbw=mbw,
-               ret=0,
-               err='')
+               ret=0)
 
   def test_isolate_generated_dir(self):
     files = {
@@ -862,7 +861,7 @@ class UnitTest(unittest.TestCase):
     ],
                mbw=mbw,
                ret=1)
-    self.assertEqual(mbw.out[-len(expected_err):], expected_err)
+    self.assertEqual(mbw.err[-len(expected_err):], expected_err)
 
   def test_run(self):
     files = {
@@ -896,7 +895,7 @@ class UnitTest(unittest.TestCase):
     # command line in the call to `isolate`.
     self.assertIn(
         'relative-cwd out/Default -- vpython3 '
-        '../../testing/test_env.py', mbw.out)
+        '../../testing/test_env.py', mbw.err)
 
   def test_run_swarmed(self):
     files = {
@@ -1102,7 +1101,7 @@ class UnitTest(unittest.TestCase):
                ret=1)
     self.assertIn(
         'MBErr: Must not specify a build --phase '
-        'for linux-official on chromium', mbw.out)
+        'for linux-official on chromium', mbw.err)
 
   def test_lookup_starlark_phased_gn_args(self):
     mbw = self.gen_starlark_gn_args_mbw(TEST_PHASED_GN_ARGS_JSON)
@@ -1129,7 +1128,7 @@ class UnitTest(unittest.TestCase):
                ret=1)
     self.assertIn(
         'MBErr: Must specify a build --phase for linux-official on chromium',
-        mbw.out)
+        mbw.err)
 
   def test_lookup_starlark_phased_gn_args_wrong_phase(self):
     mbw = self.gen_starlark_gn_args_mbw(TEST_PHASED_GN_ARGS_JSON)
@@ -1140,7 +1139,7 @@ class UnitTest(unittest.TestCase):
                ret=1)
     self.assertIn(
         'MBErr: Phase phase_3 doesn\'t exist for linux-official on chromium',
-        mbw.out)
+        mbw.err)
 
   def test_lookup_gn_args_with_non_existent_gn_args_location_file(self):
     files = {
@@ -1187,17 +1186,17 @@ class UnitTest(unittest.TestCase):
     # Check that not passing a --phase to a multi-phase builder fails.
     mbw = self.check(['lookup', '-m', 'fake_builder_group', '-b',
                       'fake_multi_phase'], ret=1)
-    self.assertIn('Must specify a build --phase', mbw.out)
+    self.assertIn('Must specify a build --phase', mbw.err)
 
     # Check that passing a --phase to a single-phase builder fails.
     mbw = self.check(['lookup', '-m', 'fake_builder_group', '-b',
                       'fake_builder', '--phase', 'phase_1'], ret=1)
-    self.assertIn('Must not specify a build --phase', mbw.out)
+    self.assertIn('Must not specify a build --phase', mbw.err)
 
     # Check that passing a wrong phase key to a multi-phase builder fails.
     mbw = self.check(['lookup', '-m', 'fake_builder_group', '-b',
                       'fake_multi_phase', '--phase', 'wrong_phase'], ret=1)
-    self.assertIn('Phase wrong_phase doesn\'t exist', mbw.out)
+    self.assertIn('Phase wrong_phase doesn\'t exist', mbw.err)
 
     # Check that passing a correct phase key to a multi-phase builder passes.
     mbw = self.check(['lookup', '-m', 'fake_builder_group', '-b',
@@ -1247,7 +1246,7 @@ class UnitTest(unittest.TestCase):
     self.assertIn(
         'Duplicate configs detected. When evaluated fully, the '
         'following configs are all equivalent: \'some_config\', '
-        '\'some_other_config\'.', mbw.out)
+        '\'some_other_config\'.', mbw.err)
 
   def test_good_expectations_validate(self):
     mbw = self.fake_mbw()
@@ -1266,7 +1265,7 @@ class UnitTest(unittest.TestCase):
     mbw.files.pop(os.path.join(temp_dir, 'fake_builder_group.json'))
     # Now validating should fail.
     self.check(['validate', '--expectations-dir', temp_dir], mbw=mbw, ret=1)
-    self.assertIn('Expectations out of date', mbw.out)
+    self.assertIn('Expectations out of date', mbw.err)
 
   def test_build_command_unix(self):
     files = {
@@ -1323,7 +1322,7 @@ class UnitTest(unittest.TestCase):
     )
     self.assertIn(
         'MBErr: Builder group name "non-existent-builder-group" not found',
-        mbw.out)
+        mbw.err)
 
   def test_lookup_non_existent_builder(self):
     """Ensure correct behavior when non-existent builder is specified.
@@ -1338,7 +1337,7 @@ class UnitTest(unittest.TestCase):
         ret=2)
     self.assertIn(
         'MBErr: Builder name "non-existent-builder" not found under groups',
-        mbw.out)
+        mbw.err)
 
 
 if __name__ == '__main__':

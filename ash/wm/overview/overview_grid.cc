@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/metrics/histogram_macros.h"
 #include "ash/public/cpp/desk_template.h"
@@ -511,20 +510,17 @@ bool ShouldAnimateWallpaper(OverviewGrid* grid) {
 
 // Returns true if the birch bar should be shown in current state.
 bool ShouldShowBirchBar(aura::Window* root_window) {
-  // The birch bar should not be shown in tablet mode, partial split view,
-  // the forest feature is disabled, non-primary users, or the birch bars are
-  // disabled by users. We don't need to worry about showing/hiding the bar
-  // dynamically on primary/secondary user switch because we exit overview when
-  // we switch users.
-  return features::IsForestFeatureEnabled() &&
-         Shell::Get()->session_controller()->IsUserPrimary() &&
+  // The birch bar should not be shown in tablet mode, partial split view, for
+  // non-primary users, or the birch bars are disabled by users. We don't need
+  // to worry about showing/hiding the bar dynamically on primary/secondary user
+  // switch because we exit overview when we switch users.
+  return Shell::Get()->session_controller()->IsUserPrimary() &&
          BirchBarController::Get()->GetShowBirchSuggestions() &&
          !SplitViewController::Get(root_window)->InSplitViewMode();
 }
 
 bool ShouldShowInformedRestoreDialog(aura::Window* root_window) {
   return root_window == Shell::GetPrimaryRootWindow() &&
-         features::IsForestFeatureEnabled() &&
          !!Shell::Get()->informed_restore_controller()->contents_data();
 }
 
@@ -749,18 +745,17 @@ void OverviewGrid::PrepareForOverview() {
   OverviewEnterExitType enter_exit_type =
       overview_session_->enter_exit_overview_type();
 
-  if (features::IsForestFeatureEnabled()) {
-    auto animation_type =
-        ScopedOverviewWallpaperClipper::AnimationType::kEnterOverview;
-    if (!should_animate_wallpaper) {
-      animation_type = ScopedOverviewWallpaperClipper::AnimationType::kNone;
-    } else if (enter_exit_type == OverviewEnterExitType::kInformedRestore) {
-      animation_type =
-          ScopedOverviewWallpaperClipper::AnimationType::kEnterInformedRestore;
-    }
-    scoped_overview_wallpaper_clipper_ =
-        std::make_unique<ScopedOverviewWallpaperClipper>(this, animation_type);
+  // Perform clipping on the wallpaper.
+  auto animation_type =
+      ScopedOverviewWallpaperClipper::AnimationType::kEnterOverview;
+  if (!should_animate_wallpaper) {
+    animation_type = ScopedOverviewWallpaperClipper::AnimationType::kNone;
+  } else if (enter_exit_type == OverviewEnterExitType::kInformedRestore) {
+    animation_type =
+        ScopedOverviewWallpaperClipper::AnimationType::kEnterInformedRestore;
   }
+  scoped_overview_wallpaper_clipper_ =
+      std::make_unique<ScopedOverviewWallpaperClipper>(this, animation_type);
 
   // TODO(b/326434696): Currently this will return false if there is no restore
   // data in the pine contents data. Show the zero-state dialog.
@@ -1763,10 +1758,6 @@ gfx::Rect OverviewGrid::GetGridEffectiveBounds() const {
 }
 
 gfx::Insets OverviewGrid::GetGridHorizontalPaddings() const {
-  if (!features::IsForestFeatureEnabled()) {
-    return gfx::Insets();
-  }
-
   // Use compact paddings for partial overview.
   if (SplitViewController::Get(root_window_)->InSplitViewMode()) {
     return gfx::Insets::VH(0, kCompactPaddingForEffectiveBounds);
@@ -1794,11 +1785,8 @@ gfx::Insets OverviewGrid::GetGridHorizontalPaddings() const {
 }
 
 gfx::Insets OverviewGrid::GetGridVerticalPaddings() const {
-  const bool forest_enabled = features::IsForestFeatureEnabled();
-
   // Use compact paddings for partial overview.
-  if (forest_enabled &&
-      SplitViewController::Get(root_window_)->InSplitViewMode()) {
+  if (SplitViewController::Get(root_window_)->InSplitViewMode()) {
     return gfx::Insets::VH(kCompactPaddingForEffectiveBounds, 0);
   }
 
@@ -1813,14 +1801,8 @@ gfx::Insets OverviewGrid::GetGridVerticalPaddings() const {
   const bool has_desk_bar =
       desks_bar_view_ || desks_util::ShouldDesksBarBeCreated();
 
-  const int no_desk_bar_padding =
-      forest_enabled ? kSpaciousPaddingForEffectiveBounds : 0;
   vertical_paddings.set_top(has_desk_bar ? GetDesksBarHeight()
-                                         : no_desk_bar_padding);
-
-  if (!forest_enabled) {
-    return vertical_paddings;
-  }
+                                         : kSpaciousPaddingForEffectiveBounds);
 
   // Calculate the bottom padding according to the existence of birch bar,
   // shelf, and home launcher.
@@ -3170,10 +3152,6 @@ bool OverviewGrid::FitWindowRectsInBounds(
 void OverviewGrid::MaybeCenterOverviewItems(
     const base::flat_set<OverviewItemBase*>& ignored_items,
     std::vector<gfx::RectF>& out_window_rects) {
-  if (!features::IsForestFeatureEnabled()) {
-    return;
-  }
-
   if (out_window_rects.empty()) {
     return;
   }

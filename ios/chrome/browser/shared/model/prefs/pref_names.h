@@ -612,10 +612,6 @@ inline constexpr char kNewTabPageLocationOverride[] =
 // A boolean specifying whether HTTPS-Only Mode is enabled.
 inline constexpr char kHttpsOnlyModeEnabled[] = "ios.https_only_mode_enabled";
 
-// A boolean specifying whether Mixed Content Autoupgrading is enabled.
-inline constexpr char kMixedContentAutoupgradeEnabled[] =
-    "ios.mixed_content_autoupgrade_enabled";
-
 // An int counting the remaining number of times the autofill branding icon
 // should show inside form input accessories.
 inline constexpr char kAutofillBrandingIconAnimationRemainingCount[] =
@@ -739,6 +735,10 @@ inline constexpr char kReminderNotifications[] = "ios.notifications.reminders";
 // set.
 inline constexpr char kMigrateWidgetsPrefs[] =
     "ios.widgets.update_to_support_mim";
+
+// A boolean specifying whether provisional notifications are allowed by policy.
+inline constexpr char kProvisionalNotificationsAllowedByPolicy[] =
+    "ios.notifications.provisional.allowed_by_policy";
 
 }  // namespace prefs
 

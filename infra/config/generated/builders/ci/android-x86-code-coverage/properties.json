@@ -17,11 +17,14 @@
               "builder_group": "chromium.coverage",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_android_config": {
-                "config": "x86_builder_mb"
+                "config": "base_config"
               },
               "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
                 "build_config": "Release",
-                "config": "x86_builder_mb",
+                "config": "main_builder",
                 "target_arch": "intel",
                 "target_bits": 32,
                 "target_platform": "android"

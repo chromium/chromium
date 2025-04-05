@@ -11,17 +11,25 @@
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/background/startup_launch_manager.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/glic/fre/glic_fre_controller.h"
+#include "chrome/browser/glic/glic_keyed_service.h"
+#include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
+#include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/global_features.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/status_icons/status_tray.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_base.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -39,23 +47,14 @@ class TestStartupLaunchManager : public StartupLaunchManager {
 
 namespace glic {
 
-class GlicBackgroundModeManagerUiTest : public InteractiveBrowserTest {
+class GlicBackgroundModeManagerUiTest : public test::InteractiveGlicTest {
  public:
-  void SetUp() override {
-    feature_list_.InitWithFeatures(
-        {features::kGlic, features::kTabstripComboButton}, {});
-    InteractiveBrowserTest::SetUp();
-  }
-  void SetUpOnMainThread() override {
-    InteractiveBrowserTest::SetUpOnMainThread();
-    ForceSigninAndModelExecutionCapability(browser()->profile());
-  }
-
   void TearDownOnMainThread() override {
     // Disable glic so that the glic_background_mode_manager won't prevent the
     // browser process from closing which causes the test to hang.
     g_browser_process->local_state()->SetBoolean(prefs::kGlicLauncherEnabled,
                                                  false);
+    test::InteractiveGlicTest::TearDownOnMainThread();
   }
 
   bool IsHotkeySupported() {
@@ -236,5 +235,42 @@ IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerUiTest, HotkeyPressed) {
                                      1);
   histogram_tester.ExpectBucketCount("Glic.Usage.Hotkey", HotkeyUsage::kCustom,
                                      1);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerUiTest, DeleteEligibleProfile) {
+  GlicBackgroundModeManager* const background_mode_manager =
+      g_browser_process->GetFeatures()->glic_background_mode_manager();
+  g_browser_process->local_state()->SetBoolean(prefs::kGlicLauncherEnabled,
+                                               true);
+  EXPECT_TRUE(background_mode_manager->IsInBackgroundModeForTesting());
+
+  // Create a second browser with a different profile that didn't complete Glic
+  // fre yet.
+  ProfileManager* const profile_manager = g_browser_process->profile_manager();
+  Profile& second_profile = profiles::testing::CreateProfileSync(
+      profile_manager, profile_manager->GenerateNextProfileDirectoryPath());
+  Browser* const second_browser = CreateBrowser(&second_profile);
+  SigninWithPrimaryAccount(&second_profile);
+  SetModelExecutionCapability(&second_profile, true);
+
+  // Delete the first profile and the glic launcher should not be in the
+  // background since there are no profiles that are eligible to use glic.
+  profile_manager->GetDeleteProfileHelper().MaybeScheduleProfileForDeletion(
+      browser()->profile()->GetPath(), base::DoNothing(),
+      ProfileMetrics::DELETE_PROFILE_USER_MANAGER);
+  ui_test_utils::WaitForBrowserToClose(browser());
+  EXPECT_FALSE(background_mode_manager->IsInBackgroundModeForTesting());
+  EXPECT_TRUE(g_browser_process->local_state()->GetBoolean(
+      prefs::kGlicLauncherEnabled));
+
+  // The GlicBackgroundModeManager should go into background mode after
+  // completing the fre in the second profile since the glic launcher local pref
+  // has already been set to enabled.
+  GlicKeyedService* const second_keyed_service =
+      GlicKeyedServiceFactory::GetGlicKeyedService(second_browser->profile());
+  EXPECT_FALSE(second_keyed_service->enabling().HasConsented());
+  second_keyed_service->window_controller().fre_controller()->AcceptFre();
+  EXPECT_TRUE(second_keyed_service->enabling().HasConsented());
+  EXPECT_TRUE(background_mode_manager->IsInBackgroundModeForTesting());
 }
 }  // namespace glic

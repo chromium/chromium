@@ -21,6 +21,8 @@ import android.app.Activity;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -31,7 +33,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
-import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
@@ -50,6 +51,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabLi
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -60,6 +62,10 @@ public class ArchivedTabsMessageServiceUnitTest {
     private static final int TIME_DELTA_DAYS = 10;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
+
+    @Rule
+    public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
+            new ActivityScenarioRule<>(TestActivity.class);
 
     @Mock private ArchivedTabModelOrchestrator mArchivedTabModelOrchestrator;
     @Mock private TabArchiveSettings mTabArchiveSettings;
@@ -90,7 +96,7 @@ public class ArchivedTabsMessageServiceUnitTest {
 
     @Before
     public void setUp() throws Exception {
-        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
+        mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
         mRootView = new FrameLayout(mActivity);
 
         doReturn(TIME_DELTA_DAYS).when(mTabArchiveSettings).getArchiveTimeDeltaDays();

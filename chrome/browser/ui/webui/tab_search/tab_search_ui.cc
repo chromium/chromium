@@ -207,6 +207,8 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
       features::IsTabstripDeclutterEnabled() && !profile->IsIncognitoProfile());
   source->AddBoolean("dedupeEnabled", features::IsTabstripDedupeEnabled() &&
                                           !profile->IsIncognitoProfile());
+  source->AddBoolean("splitViewEnabled",
+                     base::FeatureList::IsEnabled(features::kSideBySide));
 
 #if BUILDFLAG(ENABLE_GLIC)
   source->AddResourcePath("alert_indicators/tab_media_glic_active.svg",

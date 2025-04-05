@@ -458,7 +458,6 @@
 <translation id="3084958266922136097">Deaktiveer sluimerskerm</translation>
 <translation id="3091839911843451378">Misluk – Gestop</translation>
 <translation id="3102119246920354026">Kas</translation>
-<translation id="3112413615003385433">Jou onderwyser het inhoud uit skoolnutsgoed verwyder</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">poele</translation>
 <translation id="3122883569442693641">Meer besonderhede</translation>
@@ -539,7 +538,6 @@
 <translation id="3488065109653206955">Deels geaktiveer</translation>
 <translation id="3492882532495507361">’n <ph name="OFFICE_STYLE" /> kantoor met <ph name="OFFICE_COLOR" /> skakerings</translation>
 <translation id="3493187369049186498">Data word deur jou Chromebook gemeet. Dit kan van verskafferdata verskil.</translation>
-<translation id="349570724365779960">School Tools is aan studente gekoppel</translation>
 <translation id="3502426834823382181">bekyk alle apps</translation>
 <translation id="3510890413042482857">Stuur <ph name="BEGIN_LINK1" />werkverrigtingnasporingdata<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Chrome OS-opdatering</translation>
@@ -547,7 +545,6 @@
 <translation id="353214771040290298">Klaar gewysig</translation>
 <translation id="3532980081107202182">Ongeveer <ph name="MIN_REMAINING" /> minute oor</translation>
 <translation id="3533790840489634638">swembad</translation>
-<translation id="3535802910192338629">Jou onderwyser het nuwe inhoud by skoolnutsgoed gevoeg</translation>
 <translation id="3547264467365135390">Formule</translation>
 <translation id="3557205324756024651">Plaaslike identiteit (opsioneel)</translation>
 <translation id="3565064564551103223">Toegelate IP's</translation>
@@ -1235,6 +1232,7 @@
 <translation id="6657240842932274095">Wil jy stelseldienste toelaat om jou ligging te gebruik?</translation>
 <translation id="6657585470893396449">Wagwoord</translation>
 <translation id="66621959568103627">koraalpienk</translation>
+<translation id="6669485505082792176">Kan nie op die oomblik prente hiervan skep nie. Probeer jou beskrywing op 'n ander manier stel. Hou in gedagte dat jy nie prente van mense of skadelike of eksplisiete inhoud kan skep nie. <ph name="BEGIN_LINK_LEARN_MORE" />Meer inligting<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6673898378497337661">verhoog sleutelbordhelderheid</translation>
 <translation id="6692996468359469499">Kry inligting wat met jou keuse verband hou</translation>
 <translation id="6694534975463174713">sluit</translation>
@@ -1440,7 +1438,6 @@ Laai die transkripsiemodel (tot 100 MB) af om hierdie transkripsies te kry.</tr
 <translation id="7544853251252956727">Skommel</translation>
 <translation id="7550715992156305117">Diagnostiese roetines</translation>
 <translation id="7551123448725492271">Toestel is 'n oudiotoestel.</translation>
-<translation id="7553913964854052228">School Tools gebruik jou mikrofoon</translation>
 <translation id="7559239713112547082">Voorbeskou skermkiekie</translation>
 <translation id="7561454561030345039">Jou administrateur bestuur hierdie handeling</translation>
 <translation id="7561759921596375678">Skakel volume aan</translation>
@@ -1663,7 +1660,6 @@ Laai die transkripsiemodel (tot 100 MB) af om hierdie transkripsies te kry.</tr
 <translation id="8576249514688522074">Ongeïnisieer</translation>
 <translation id="8584654835905316966">’n Herbegin is nodig om die installering van fermware vir <ph name="DEVICE_NAME" /> na weergawe <ph name="VERSION" /> te voltooi. Dit kan voorkom asof jou rekenaar baie keer herselflaai. Hierdie optrede word verwag.</translation>
 <translation id="8593058461203131755">onderbreek media</translation>
-<translation id="8619169570378509764">Skoolnutsgoed</translation>
 <translation id="8620617069779373398">Swerfstatus</translation>
 <translation id="8626489604350149811">Meer handelinge vir <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Ligpers</translation>

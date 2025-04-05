@@ -6,19 +6,13 @@
  * #type=style-lit
  * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
  * #import=./pdf_shared.css.js
- * #include=pdf-shared
+ * #import=./bottom_toolbar_shared.css.js
+ * #include=pdf-shared bottom-toolbar-shared
  * #css_wrapper_metadata_end */
 
 :host {
   --cr-icon-button-margin-end: 0;
   --cr-icon-button-margin-start: 0;
-  align-items: center;
-  background-color: var(--viewer-side-background-color);
-  bottom: 0;
-  border-radius: 28px 28px 0 0;
-  display: flex;
-  padding: 8px;
-  position: absolute;
 }
 
 #vertical-separator {
@@ -36,16 +30,4 @@ ink-brush-selector {
   --ink-brush-button-gap: 4px;
   --ink-brush-button-size: 40px;
   padding: 4px;
-}
-
-ink-color-selector {
-  padding: 20px;
-}
-
-#color-chip {
-  background: var(--ink-brush-color, magenta);
-  border: 1px solid var(--viewer-icon-ink-background-color);
-  border-radius: 50%;
-  height: 20px;
-  width: 20px;
 }

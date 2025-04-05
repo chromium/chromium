@@ -4,8 +4,7 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
+import static org.junit.Assert.assertEquals;
 
 import android.app.Activity;
 
@@ -21,20 +20,14 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.ActivityState;
-import org.chromium.base.ApplicationStatus;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkFolderPickerActivity;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileResolver;
 import org.chromium.chrome.browser.profiles.ProfileResolverJni;
-import org.chromium.components.bookmarks.BookmarkId;
-import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.ui.base.TestActivity;
-
-import java.util.concurrent.TimeoutException;
 
 /** Unit tests for {@link BookmarkManagerOpener}. */
 @Batch(Batch.UNIT_TESTS)
@@ -68,35 +61,14 @@ public class BookmarkManagerOpenerTest {
 
     @Test
     @SmallTest
-    public void testStateChangeForSameActivityTriggersCallback() throws TimeoutException {
-        CallbackHelper callbackHelper = new CallbackHelper();
-        Runnable runnable =
-                () -> {
-                    callbackHelper.notifyCalled();
-                };
-        mBookmarkManagerOpener.startFolderPickerActivity(
-                mActivity, mProfile, runnable, new BookmarkId(0, BookmarkType.NORMAL));
-        ApplicationStatus.onStateChangeForTesting(
-                mBookmarkFolderPickerActivity, ActivityState.CREATED);
-        ApplicationStatus.onStateChangeForTesting(
-                mBookmarkFolderPickerActivity, ActivityState.DESTROYED);
-        callbackHelper.waitForNext();
-    }
+    public void testReopeningBookmarkManagerRecordsMetric() {
+        BookmarkUtils.setLastUsedUrl("https://test.com");
+        UserActionTester userActionTester = new UserActionTester();
 
-    @Test
-    @SmallTest
-    public void testStateChangeForDifferentActivityDoesNotTrigger() {
-        mBookmarkManagerOpener.startFolderPickerActivity(
-                mActivity, mProfile, mRunnable, new BookmarkId(0, BookmarkType.NORMAL));
-        ApplicationStatus.onStateChangeForTesting(
-                mBookmarkFolderPickerActivity, ActivityState.CREATED);
-        ApplicationStatus.onStateChangeForTesting(
-                mBookmarkFolderPickerActivity2, ActivityState.CREATED);
-        ApplicationStatus.onStateChangeForTesting(
-                mBookmarkFolderPickerActivity2, ActivityState.DESTROYED);
-        verifyNoInteractions(mRunnable);
-        ApplicationStatus.onStateChangeForTesting(
-                mBookmarkFolderPickerActivity, ActivityState.DESTROYED);
-        verify(mRunnable).run();
+        mBookmarkManagerOpener.showBookmarkManager(mActivity, mProfile, /* folderId= */ null);
+        assertEquals(
+                1,
+                userActionTester.getActionCount(
+                        "MobileBookmarkManagerReopenBookmarksInSameSession"));
     }
 }

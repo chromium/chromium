@@ -272,7 +272,6 @@ class TouchToFillDelegateAndroidImplUnitTest : public testing::Test {
   std::unique_ptr<TestAutofillDriver> autofill_driver_;
   std::unique_ptr<MockBrowserAutofillManager> browser_autofill_manager_;
   raw_ptr<TouchToFillDelegateAndroidImpl> touch_to_fill_delegate_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;
 };
 
@@ -467,12 +466,6 @@ TEST_P(TouchToFillDelegateAndroidImplPaymentMethodUnitTest,
 class TouchToFillDelegateAndroidImplCreditCardUnitTest
     : public TouchToFillDelegateAndroidImplUnitTest {
  public:
-  TouchToFillDelegateAndroidImplCreditCardUnitTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        features::kAutofillEnableVcnGrayOutForMerchantOptOut,
-        /*enabled=*/false);
-  }
-
   static std::vector<CreditCard> GetCardsToSuggest(
       std::vector<const CreditCard*> credit_cards) {
     std::vector<CreditCard> cards_to_suggest;
@@ -488,7 +481,6 @@ class TouchToFillDelegateAndroidImplCreditCardUnitTest
     TouchToFillDelegateAndroidImplUnitTest::SetUp();
     ConfigureForCreditCards(test::GetCreditCard());
   }
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
@@ -768,39 +760,6 @@ TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
               credit_card.ObfuscatedNumberWithVisibleLastFourDigits(),
               /*has_deactivated_style=*/false))));
 
-  TryToShowTouchToFill(/*expected_success=*/true);
-}
-
-TEST_F(
-    TouchToFillDelegateAndroidImplCreditCardUnitTest,
-    TryToShowTouchToFillDoesNotShowVirtualCardSuggestionsForOptedOutMerchants) {
-  autofill_client_.GetPersonalDataManager()
-      .test_payments_data_manager()
-      .ClearCreditCards();
-  CreditCard credit_card =
-      test::GetMaskedServerCardEnrolledIntoVirtualCardNumber();
-  autofill_client_.GetPersonalDataManager()
-      .payments_data_manager()
-      .AddCreditCard(credit_card);
-
-  ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
-
-  ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
-              autofill_client_.GetAutofillOptimizationGuide()),
-          ShouldBlockFormFieldSuggestion)
-      .WillByDefault(testing::Return(true));
-
-  // Since merchant has opted out of virtual cards and gray-out feature is
-  // disabled, `HasDeactivatedStyle()` should return false for the virtual card
-  // suggestion.
-  EXPECT_CALL(
-      payments_autofill_client(),
-      ShowTouchToFillCreditCard(
-          _, ElementsAre(credit_card),
-          ElementsAre(EqualsSuggestionFields(
-              credit_card.CardNameForAutofillDisplay(credit_card.nickname()),
-              credit_card.ObfuscatedNumberWithVisibleLastFourDigits(),
-              /*has_deactivated_style=*/false))));
   TryToShowTouchToFill(/*expected_success=*/true);
 }
 
@@ -1102,17 +1061,11 @@ class TouchToFillDelegateAndroidImplVcnGrayOutForMerchantOptOutUnitTest
     : public TouchToFillDelegateAndroidImplCreditCardUnitTest {
  public:
   TouchToFillDelegateAndroidImplVcnGrayOutForMerchantOptOutUnitTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        features::kAutofillEnableVcnGrayOutForMerchantOptOut,
-        /*enabled=*/true);
     ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
                 autofill_client_.GetAutofillOptimizationGuide()),
             ShouldBlockFormFieldSuggestion)
         .WillByDefault(testing::Return(true));
   }
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(TouchToFillDelegateAndroidImplVcnGrayOutForMerchantOptOutUnitTest,

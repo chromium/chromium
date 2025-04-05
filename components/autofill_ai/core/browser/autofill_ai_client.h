@@ -10,7 +10,7 @@
 #include "base/functional/callback_forward.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
-#include "components/autofill/core/browser/integrators/autofill_ai_delegate.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_delegate.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.h"
 

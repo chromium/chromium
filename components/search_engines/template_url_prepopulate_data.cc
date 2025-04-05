@@ -26,7 +26,6 @@
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_data_util.h"
-#include "components/version_info/version_info.h"
 #include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 #include "third_party/search_engines_data/resources/definitions/regional_settings.h"
 
@@ -63,18 +62,12 @@ GetPrepopulatedEnginesForEeaRegionCountries(CountryId country_id,
 
   uint64_t profile_seed = prefs.GetInt64(
       prefs::kDefaultSearchProviderChoiceScreenRandomShuffleSeed);
-  int seed_version_number = prefs.GetInteger(
-      prefs::kDefaultSearchProviderChoiceScreenShuffleMilestone);
-  int current_version_number = version_info::GetMajorVersionNumberAsInt();
   // Ensure that the generated seed is not 0 to avoid accidental re-seeding
-  // and re-shuffle on every chrome update.
-  while (profile_seed == 0 || current_version_number != seed_version_number) {
+  // and re-shuffle next time we call this.
+  while (profile_seed == 0) {
     profile_seed = base::RandUint64();
     prefs.SetInt64(prefs::kDefaultSearchProviderChoiceScreenRandomShuffleSeed,
                    profile_seed);
-    prefs.SetInteger(prefs::kDefaultSearchProviderChoiceScreenShuffleMilestone,
-                     current_version_number);
-    seed_version_number = current_version_number;
   }
 
   std::vector<std::unique_ptr<TemplateURLData>> t_urls =
@@ -196,8 +189,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterIntegerPref(prefs::kSearchProviderOverridesVersion, -1);
   registry->RegisterInt64Pref(
       prefs::kDefaultSearchProviderChoiceScreenRandomShuffleSeed, 0);
-  registry->RegisterIntegerPref(
-      prefs::kDefaultSearchProviderChoiceScreenShuffleMilestone, 0);
 }
 
 int GetDataVersion(PrefService* prefs) {

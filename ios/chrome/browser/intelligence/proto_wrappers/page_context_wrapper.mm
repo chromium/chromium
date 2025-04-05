@@ -159,7 +159,6 @@ const char16_t* kInnerTextJavaScript = u"document.body.innerText;";
 
 // Retrieve WebState snapshot. The barrier's callback will be executed for all
 // codepaths in this method.
-
 - (void)processSnapshotWithBarrier:(base::RepeatingClosure)barrier {
   __weak PageContextWrapper* weakSelf = self;
   auto callback = ^(UIImage* image) {

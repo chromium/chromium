@@ -157,17 +157,24 @@ base::Value::Dict GetNetConstants(NetConstantsRequestMode request_mode) {
 
   // Add a dictionary with information about the relationship between
   // CertVerifier::VerifyFlags and their symbolic names.
+  // LINT.IfChange(CertVerifier.VerifyFlags)
   {
-    static_assert(CertVerifier::VERIFY_FLAGS_LAST == (1 << 0),
+    static_assert(CertVerifier::VERIFY_FLAGS_LAST == (1 << 1),
                   "Update with new flags");
-    constants_dict.Set(
-        "certVerifierFlags",
-        base::Value::Dict().Set("VERIFY_DISABLE_NETWORK_FETCHES",
-                                CertVerifier::VERIFY_DISABLE_NETWORK_FETCHES));
-  }
+    constants_dict.Set("certVerifierFlags",
+                       base::Value::Dict()
+                           .Set("VERIFY_DISABLE_NETWORK_FETCHES",
+                                CertVerifier::VERIFY_DISABLE_NETWORK_FETCHES)
+                           .Set("VERIFY_SXG_CT_REQUIREMENTS",
+                                CertVerifier::VERIFY_SXG_CT_REQUIREMENTS)
 
+    );
+  }
+  // LINT.ThenChange(/net/cert/cert_verifier.h:CertVerifier.VerifyFlags)
+
+  // LINT.IfChange(CertVerifyProc.VerifyFlags)
   {
-    static_assert(CertVerifyProc::VERIFY_FLAGS_LAST == (1 << 3),
+    static_assert(CertVerifyProc::VERIFY_FLAGS_LAST == (1 << 4),
                   "Update with new flags");
     constants_dict.Set(
         "certVerifyFlags",
@@ -179,8 +186,11 @@ base::Value::Dict GetNetConstants(NetConstantsRequestMode request_mode) {
             .Set("VERIFY_ENABLE_SHA1_LOCAL_ANCHORS",
                  CertVerifyProc::VERIFY_ENABLE_SHA1_LOCAL_ANCHORS)
             .Set("VERIFY_DISABLE_NETWORK_FETCHES",
-                 CertVerifyProc::VERIFY_DISABLE_NETWORK_FETCHES));
+                 CertVerifyProc::VERIFY_DISABLE_NETWORK_FETCHES)
+            .Set("VERIFY_SXG_CT_REQUIREMENTS",
+                 CertVerifyProc::VERIFY_SXG_CT_REQUIREMENTS));
   }
+  // LINT.ThenChange(/net/cert/cert_verify_proc.h:CertVerifyProc.VerifyFlags)
 
   {
     static_assert(

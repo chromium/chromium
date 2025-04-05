@@ -26,13 +26,14 @@ class GPUQuerySet : public DawnObject<wgpu::QuerySet> {
   GPUQuerySet(const GPUQuerySet&) = delete;
   GPUQuerySet& operator=(const GPUQuerySet&) = delete;
 
-  // gpu_queryset.idl
+  // gpu_queryset.idl {{{
   void destroy();
   V8GPUQueryType type() const;
   uint32_t count() const;
+  // }}} End of WebIDL binding implementation.
 
  private:
-  void setLabelImpl(const String& value) override {
+  void SetLabelImpl(const String& value) override {
     std::string utf8_label = value.Utf8();
     GetHandle().SetLabel(utf8_label.c_str());
   }

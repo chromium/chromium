@@ -501,8 +501,8 @@ DropData PopulateDropDataFromPasteboard(NSPasteboard* pboard) {
   if ([types containsObject:NSPasteboardTypeHTML]) {
     NSString* html = [pboard stringForType:NSPasteboardTypeHTML];
     drop_data.html = base::SysNSStringToUTF16(html);
-  } else if ([types containsObject:ui::kUTTypeChromiumImageAndHTML]) {
-    NSString* html = [pboard stringForType:ui::kUTTypeChromiumImageAndHTML];
+  } else if ([types containsObject:ui::kUTTypeChromiumImageAndHtml]) {
+    NSString* html = [pboard stringForType:ui::kUTTypeChromiumImageAndHtml];
     drop_data.html = base::SysNSStringToUTF16(html);
   } else if ([types containsObject:NSPasteboardTypeRTF]) {
     NSString* html = ui::clipboard_util::GetHTMLFromRTFOnPasteboard(pboard);

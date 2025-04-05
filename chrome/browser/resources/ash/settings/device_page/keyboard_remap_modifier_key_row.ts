@@ -113,6 +113,7 @@ export class KeyboardRemapModifierKeyRowElement extends
   metaKey: MetaKey;
   key: ModifierKey;
   defaultRemappings: {[key: number]: ModifierKey};
+  removeTopBorder: boolean;
 
   override ready(): void {
     super.ready();

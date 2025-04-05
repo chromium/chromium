@@ -15,6 +15,7 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/uninstall_reason.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
@@ -144,7 +145,7 @@ TEST_F(ActivityLogEnabledTest, WatchdogSwitch) {
                            .Set("manifest_version", 2))
           .SetID(kExtensionID)
           .Build();
-  extension_service1->AddExtension(extension.get());
+  ExtensionRegistrar::Get(profile1.get())->AddExtension(extension.get());
 
   EXPECT_EQ(1,
       profile1->GetPrefs()->GetInteger(prefs::kWatchdogExtensionActive));

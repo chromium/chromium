@@ -48,28 +48,19 @@ export class SettingsMultideviceSubpageElement extends
     return getTemplate();
   }
 
-  static get properties() {
-    return {
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kInstantTetheringOnOff,
-          Setting.kMultiDeviceOnOff,
-          Setting.kSmartLockOnOff,
-          Setting.kForgetPhone,
-          Setting.kPhoneHubOnOff,
-          Setting.kPhoneHubCameraRollOnOff,
-          Setting.kPhoneHubNotificationsOnOff,
-          Setting.kPhoneHubTaskContinuationOnOff,
-          Setting.kWifiSyncOnOff,
-          Setting.kPhoneHubAppsOnOff,
-        ]),
-      },
-    };
-  }
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kInstantTetheringOnOff,
+    Setting.kMultiDeviceOnOff,
+    Setting.kSmartLockOnOff,
+    Setting.kForgetPhone,
+    Setting.kPhoneHubOnOff,
+    Setting.kPhoneHubCameraRollOnOff,
+    Setting.kPhoneHubNotificationsOnOff,
+    Setting.kPhoneHubTaskContinuationOnOff,
+    Setting.kWifiSyncOnOff,
+    Setting.kPhoneHubAppsOnOff,
+  ]);
 
   private browserProxy_: MultiDeviceBrowserProxy;
 

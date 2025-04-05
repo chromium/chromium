@@ -109,7 +109,7 @@ IN_PROC_BROWSER_TEST_F(TrustSafetySentimentServiceBrowserTest,
       {"Interacted with Page Info", false}};
   EXPECT_CALL(*mock_hats_service_,
               LaunchSurvey(kHatsSurveyTriggerTrustSafetyTrustedSurface, _, _,
-                           expected_product_specific_data, _));
+                           expected_product_specific_data, _, _, _));
   {
     base::subtle::ScopedTimeClockOverrides override(
         []() {
@@ -153,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(TrustSafetySentimentServiceBrowserTest,
       {"Interacted with Page Info", true}};
   EXPECT_CALL(*mock_hats_service_,
               LaunchSurvey(kHatsSurveyTriggerTrustSafetyTrustedSurface, _, _,
-                           expected_product_specific_data, _));
+                           expected_product_specific_data, _, _, _));
 
   {
     base::subtle::ScopedTimeClockOverrides override(

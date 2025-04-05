@@ -9,6 +9,7 @@
 #include "components/data_sharing/public/logger.h"
 #include "components/data_sharing/public/logger_common.mojom.h"
 #include "components/data_sharing/public/logger_utils.h"
+#include "ui/base/page_transition_types.h"
 
 namespace collaboration::metrics {
 
@@ -153,6 +154,16 @@ std::string_view CollaborationServiceJoinEntryPointToString(
   switch (entry) {
     case CollaborationServiceJoinEntryPoint::kUnknown:
       return "Unknown";
+    case CollaborationServiceJoinEntryPoint::kLinkClick:
+      return "LinkClick";
+    case CollaborationServiceJoinEntryPoint::kUserTyped:
+      return "UserTyped";
+    case CollaborationServiceJoinEntryPoint::kExternalApp:
+      return "ExternalApp";
+    case CollaborationServiceJoinEntryPoint::kForwardBackButton:
+      return "ForwardBackButton";
+    case CollaborationServiceJoinEntryPoint::kRedirect:
+      return "Redirect";
   }
 }
 
@@ -248,6 +259,40 @@ void RecordJoinEntryPoint(data_sharing::Logger* logger,
                                 entry);
   DATA_SHARING_LOG(logger_common::mojom::LogSource::CollaborationService,
                    logger, CreateJoinEntryLogToString(entry));
+}
+
+void RecordJoinPageTransitionType(data_sharing::Logger* logger,
+                                  ui::PageTransition transition) {
+  switch (ui::PageTransitionStripQualifier(transition)) {
+    case ui::PageTransition::PAGE_TRANSITION_LINK:
+      RecordJoinEntryPoint(logger,
+                           CollaborationServiceJoinEntryPoint::kLinkClick);
+      break;
+    case ui::PageTransition::PAGE_TRANSITION_TYPED:
+    case ui::PageTransition::PAGE_TRANSITION_FROM_ADDRESS_BAR:
+      RecordJoinEntryPoint(logger,
+                           CollaborationServiceJoinEntryPoint::kUserTyped);
+      break;
+    case ui::PageTransition::PAGE_TRANSITION_FROM_API:
+      RecordJoinEntryPoint(logger,
+                           CollaborationServiceJoinEntryPoint::kExternalApp);
+      break;
+    case ui::PageTransition::PAGE_TRANSITION_FORWARD_BACK:
+      RecordJoinEntryPoint(
+          logger, CollaborationServiceJoinEntryPoint::kForwardBackButton);
+      break;
+    case ui::PageTransition::PAGE_TRANSITION_CHAIN_START:
+    case ui::PageTransition::PAGE_TRANSITION_CHAIN_END:
+    case ui::PageTransition::PAGE_TRANSITION_CLIENT_REDIRECT:
+    case ui::PageTransition::PAGE_TRANSITION_SERVER_REDIRECT:
+    case ui::PageTransition::PAGE_TRANSITION_IS_REDIRECT_MASK:
+      RecordJoinEntryPoint(logger,
+                           CollaborationServiceJoinEntryPoint::kRedirect);
+      break;
+    default:
+      RecordJoinEntryPoint(logger,
+                           CollaborationServiceJoinEntryPoint::kUnknown);
+  }
 }
 
 void RecordShareOrManageEntryPoint(

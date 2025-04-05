@@ -1522,7 +1522,11 @@ void PdfViewWebPlugin::OnSearchifyStateChange(bool busy) {
 
   if (!show_searchify_in_progress_) {
     show_searchify_in_progress_ = true;
-    SetShowSearchifyInProgress(true);
+    // Executing the script directly may cause a crash in blink as it might be
+    // during layout change, hence posting it (crbug.com/401142034).
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&PdfViewWebPlugin::SetShowSearchifyInProgress,
+                                  weak_factory_.GetWeakPtr(), /*show=*/true));
     return;
   }
 }

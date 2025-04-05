@@ -850,8 +850,8 @@ constexpr CGFloat kActivityLabelAvatarSize = 16;
 // Returns YES if the group is shared.
 - (BOOL)isShared {
   CHECK(_tabGroup);
-  return tab_groups::utils::IsTabGroupShared(
-      _tabGroup.get(), _tabGroupSyncService, _shareKitService);
+  return tab_groups::utils::IsTabGroupShared(_tabGroup.get(),
+                                             _tabGroupSyncService);
 }
 
 // Updates the consumer after a data sharing service update for the current tab

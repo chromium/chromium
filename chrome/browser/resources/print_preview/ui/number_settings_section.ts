@@ -69,16 +69,16 @@ export class PrintPreviewNumberSettingsSectionElement extends
     };
   }
 
-  currentValue: string;
-  defaultValue: string;
-  disabled: boolean;
-  hintMessage: string;
-  inputAriaLabel: string;
-  inputLabel: string;
-  inputValid: boolean;
-  minValue: number;
-  maxValue: number;
-  private errorMessage_: string;
+  declare currentValue: string;
+  declare defaultValue: string;
+  declare disabled: boolean;
+  declare hintMessage: string;
+  declare inputAriaLabel: string;
+  declare inputLabel: string;
+  declare inputValid: boolean;
+  declare minValue: number;
+  declare maxValue: number;
+  declare private errorMessage_: string;
 
   override ready() {
     super.ready();

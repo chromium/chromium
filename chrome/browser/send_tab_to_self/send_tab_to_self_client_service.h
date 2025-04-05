@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/send_tab_to_self/receiving_ui_handler.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
@@ -25,6 +26,9 @@ class SendTabToSelfModel;
 class SendTabToSelfClientService : public KeyedService,
                                    public SendTabToSelfModelObserver {
  public:
+  // `model` must outlive this object. `receiving_ui_handler` must be usable
+  // until this keyed service is Shutdown() (in particular it cannot depend on
+  // any services that are instantiated after this one).
   SendTabToSelfClientService(
       std::unique_ptr<ReceivingUiHandler> receiving_ui_handler,
       SendTabToSelfModel* model);
@@ -51,8 +55,10 @@ class SendTabToSelfClientService : public KeyedService,
   ReceivingUiHandler* GetReceivingUiHandler() const;
 
  private:
-  // Owned by the SendTabToSelfSyncService which should outlive this class
-  raw_ptr<SendTabToSelfModel> model_;
+  // The model outlives this object, so this is fine.
+  base::ScopedObservation<SendTabToSelfModel, SendTabToSelfModelObserver>
+      model_observation_{this};
+  // Reset on Shutdown().
   std::unique_ptr<ReceivingUiHandler> receiving_ui_handler_;
 };
 

@@ -93,21 +93,17 @@ export class AdditionalAccountsSettingsCardElement extends
         },
         readOnly: true,
       },
-
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kAddAccount,
-          Setting.kRemoveAccount,
-        ]),
-      },
     };
   }
 
   accounts: Account[];
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kAddAccount,
+    Setting.kRemoveAccount,
+  ]);
+
   private actionMenuAccount_: Account|null;
   private browserProxy_: AccountManagerBrowserProxy;
   private isChildUser_: boolean;

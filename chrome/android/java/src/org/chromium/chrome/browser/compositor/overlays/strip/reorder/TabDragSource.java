@@ -25,6 +25,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -687,7 +688,7 @@ public class TabDragSource implements View.OnDragListener {
         builder.update(show);
     }
 
-    private DragDropGlobalState getDragDropGlobalState(@Nullable DragEvent dragEvent) {
+    private static DragDropGlobalState getDragDropGlobalState(@Nullable DragEvent dragEvent) {
         return dragEvent != null
                 ? DragDropGlobalState.getState(dragEvent)
                 : DragDropGlobalState.getState(sDragTrackerToken);
@@ -708,6 +709,19 @@ public class TabDragSource implements View.OnDragListener {
         assert dropData != null;
 
         return dropData.isIncognito();
+    }
+
+    public static boolean canMergeIntoGroupOnDrop() {
+        @Nullable
+        TabGroupMetadata tabGroupMetadata =
+                ChromeDragDropUtils.getTabGroupMetadataFromGlobalState(
+                        getDragDropGlobalState(/* dragEvent= */ null));
+        return tabGroupMetadata == null || !tabGroupMetadata.isGroupShared;
+    }
+
+    public static void setDragTrackerTokenForTesting(TrackerToken token) {
+        sDragTrackerToken = token;
+        ResettersForTesting.register(() -> sDragTrackerToken = null);
     }
 
     /**

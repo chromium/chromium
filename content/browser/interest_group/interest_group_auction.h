@@ -29,6 +29,7 @@
 #include "content/browser/interest_group/auction_nonce_manager.h"
 #include "content/browser/interest_group/auction_worklet_manager.h"
 #include "content/browser/interest_group/bidding_and_auction_response.h"
+#include "content/browser/interest_group/dwa_auction_metrics.h"
 #include "content/browser/interest_group/header_direct_from_seller_signals.h"
 #include "content/browser/interest_group/interest_group_auction_reporter.h"
 #include "content/browser/interest_group/interest_group_caching_storage.h"
@@ -174,9 +175,6 @@ class CONTENT_EXPORT InterestGroupAuction
 
   using AdAuctionPageDataCallback =
       base::RepeatingCallback<AdAuctionPageData*()>;
-
-  using PrivateAggregationRequests =
-      std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>;
 
   using FinalizedPrivateAggregationRequests = std::vector<
       auction_worklet::mojom::FinalizedPrivateAggregationRequestPtr>;
@@ -521,6 +519,7 @@ class CONTENT_EXPORT InterestGroupAuction
       const blink::AuctionConfig* config,
       const InterestGroupAuction* parent,
       AuctionMetricsRecorder* auction_metrics_recorder,
+      DwaAuctionMetricsManager* dwa_auction_metrics_manager,
       AuctionWorkletManager* auction_worklet_manager,
       AuctionNonceManager* auction_nonce_manager,
       InterestGroupManagerImpl* interest_group_manager,
@@ -1376,6 +1375,8 @@ class CONTENT_EXPORT InterestGroupAuction
   const network::mojom::IPAddressSpace ip_address_space_;
 
   const raw_ptr<AuctionMetricsRecorder> auction_metrics_recorder_;
+  const raw_ptr<DwaAuctionMetricsManager> dwa_auction_metrics_manager_;
+  raw_ptr<DwaAuctionMetrics> dwa_auction_metrics_ = nullptr;
   const raw_ptr<AuctionWorkletManager> auction_worklet_manager_;
   const raw_ptr<AuctionNonceManager> auction_nonce_manager_;
   const raw_ptr<InterestGroupManagerImpl> interest_group_manager_;

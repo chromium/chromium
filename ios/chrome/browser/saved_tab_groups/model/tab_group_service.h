@@ -26,8 +26,7 @@ class TabGroupService : public KeyedService, public WebStateListGroupsDelegate {
  public:
   explicit TabGroupService(
       ProfileIOS* profile,
-      tab_groups::TabGroupSyncService* tab_group_sync_service,
-      ShareKitService* share_kit_service);
+      tab_groups::TabGroupSyncService* tab_group_sync_service);
   ~TabGroupService() override;
 
   // KeyedService implementation:

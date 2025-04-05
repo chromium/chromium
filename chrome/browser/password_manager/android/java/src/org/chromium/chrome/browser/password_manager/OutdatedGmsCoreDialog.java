@@ -10,6 +10,7 @@ import androidx.annotation.IntDef;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -20,6 +21,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * Dialog that informs user that the GMS Core needs to be updated and confirms whether the user
  * agrees to proceed with the update.
  */
+@NullMarked
 class OutdatedGmsCoreDialog {
     static final String DISMISSAL_REASON_HISTOGRAM =
             "PasswordManager.OutdatedGMSDialogDismissalReason";

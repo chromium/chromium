@@ -66,25 +66,6 @@ class AddressDataCleaner : public AddressDataManager::Observer,
       base::span<const AutofillProfile* const> existing_profiles,
       const AutofillProfileComparator& comparator);
 
-  // Decides whether the `ProfileTokenQuality` stored for the `profile` and
-  // `type` can be considered low quality for deduplication purposes. This is
-  // the case if it has at least four non "neutral" observations, of which at
-  // least two more are considered "bad" than "good" (see implementation for a
-  // definition). If a profile has a `CalculateMinimalIncompatibleTypeSets()` of
-  // size one and the token is considered low quality, this qualifies it for
-  // silent removal. Moreover, this qualifies the token for special treatment
-  // during the import logic.
-  static bool IsTokenLowQualityForDeduplicationPurposes(
-      const AutofillProfile& profile,
-      FieldType type);
-
-  // For metrics purposes, to get a high-level overview of the token and profile
-  // quality, observations are classified as good, neutral and bad based on this
-  // function. The number of good and bad `observations` are returned.
-  static std::pair<size_t, size_t>
-  CountObservationsByQualityForDeduplicationPurposes(
-      base::span<const ProfileTokenQuality::ObservationType> observations);
-
  private:
   friend class AddressDataCleanerTestApi;
 

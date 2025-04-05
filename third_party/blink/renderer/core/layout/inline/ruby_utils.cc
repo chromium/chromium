@@ -235,11 +235,7 @@ bool CanApplyStartOverhang(const LineInfo& line_info,
   if (previous_item.item->Style()->FontSize() > ruby_style.FontSize()) {
     return false;
   }
-  LayoutUnit text_inline_size = previous_item.inline_size;
-  if (RuntimeEnabledFeatures::RubyOverhangOverlapFixEnabled()) {
-    text_inline_size = text_inline_size / 2;
-  }
-  start_overhang = std::min(start_overhang, text_inline_size);
+  start_overhang = std::min(start_overhang, previous_item.inline_size / 2);
   return true;
 }
 
@@ -281,16 +277,11 @@ LayoutUnit CommitPendingEndOverhang(const InlineItem& text_item,
   // requires precise |position_| which takes |end_overhang| into account.
   LayoutUnit text_inline_size =
       LayoutUnit(text_item.TextShapeResult()->Width());
-  if (RuntimeEnabledFeatures::RubyOverhangOverlapFixEnabled()) {
-    text_inline_size = text_inline_size / 2;
-  }
   LayoutUnit end_overhang =
-      std::min(column_item.pending_end_overhang, text_inline_size);
+      std::min(column_item.pending_end_overhang, text_inline_size / 2);
   InlineItemResult& end_item =
       column_item.ruby_column->base_line.MutableResults()->back();
-  DCHECK_EQ(end_item.item->Type(), InlineItem::kRubyLinePlaceholder);
-  DCHECK_EQ(end_item.margins.inline_end, LayoutUnit());
-  end_item.margins.inline_end = -end_overhang;
+  end_item.margins.inline_end -= end_overhang;
   column_item.pending_end_overhang = LayoutUnit();
   return end_overhang;
 }

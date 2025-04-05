@@ -66,7 +66,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_java_prebuilt("androidx_annotation_annotation_jvm_java") {
-    jar_path = "../androidx/cipd/libs/androidx_annotation_annotation_jvm/annotation-jvm-1.9.1.jar"
+    jar_path = "../androidx/cipd/libs/androidx_annotation_annotation_jvm/annotation-jvm-1.10.0-SNAPSHOT.jar"
     output_name = "androidx_annotation_annotation_jvm"
     supports_android = true
     requires_android = true
@@ -2899,9 +2899,7 @@ if (!limit_android_deps) {
       ":androidx_core_core_ktx_java",
       ":androidx_lifecycle_lifecycle_common_java",
       ":androidx_lifecycle_lifecycle_runtime_java",
-      ":androidx_lifecycle_lifecycle_runtime_ktx_java",
       ":androidx_lifecycle_lifecycle_viewmodel_java",
-      ":androidx_lifecycle_lifecycle_viewmodel_ktx_java",
       ":androidx_lifecycle_lifecycle_viewmodel_savedstate_java",
       ":androidx_savedstate_savedstate_java",
       ":androidx_savedstate_savedstate_ktx_java",

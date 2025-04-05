@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/pinned_tab_collection.h"
 #include "chrome/browser/ui/tabs/split_tab_collection.h"
+#include "chrome/browser/ui/tabs/split_tab_id.h"
 #include "chrome/browser/ui/tabs/tab_collection_storage.h"
 #include "chrome/browser/ui/tabs/tab_group_tab_collection.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
@@ -26,6 +27,10 @@
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+// TODO(crbug.com/392950857): Refactor tests so that things that are shared
+// between all tab collections are tested once at the TabCollectionBaseTest
+// level. Then only things specific to individual collections will be tested in
+// their respective test suites.
 class TabCollectionBaseTest : public ::testing::Test {
  public:
   TabCollectionBaseTest() {
@@ -61,6 +66,24 @@ class TabCollectionBaseTest : public ::testing::Test {
         content::WebContents::CreateParams(testing_profile_.get()));
   }
 
+  // Adds a tab to the end of a collection.
+  tabs::TabModel* AppendTab(tabs::TabCollection* collection,
+                            std::unique_ptr<tabs::TabModel> tab) {
+    return collection->AddTab(std::move(tab), collection->ChildCount());
+  }
+
+  // Returns true if the tab model is a direct child of the collection.
+  bool ContainsTab(tabs::TabCollection* collection,
+                   const tabs::TabInterface* tab) {
+    return collection->GetIndexOfTab(tab).has_value();
+  }
+
+  // Returns true if the tab collection tree contains the tab.
+  bool ContainsTabRecursive(tabs::TabCollection* collection,
+                            const tabs::TabInterface* tab) {
+    return collection->GetIndexOfTabRecursive(tab).has_value();
+  }
+
   void AddTabsToPinnedContainer(tabs::PinnedTabCollection* collection,
                                 TabStripModel* tab_strip_model,
                                 int num) {
@@ -68,7 +91,7 @@ class TabCollectionBaseTest : public ::testing::Test {
       std::unique_ptr<tabs::TabModel> tab_model =
           std::make_unique<tabs::TabModel>(MakeWebContents(), tab_strip_model);
       tabs::TabModel* tab_model_ptr = tab_model.get();
-      collection->AppendTab(std::move(tab_model));
+      AppendTab(collection, std::move(tab_model));
       EXPECT_EQ(collection->GetIndexOfTabRecursive(tab_model_ptr),
                 collection->ChildCount() - 1);
     }
@@ -81,7 +104,7 @@ class TabCollectionBaseTest : public ::testing::Test {
       std::unique_ptr<tabs::TabModel> tab_model =
           std::make_unique<tabs::TabModel>(MakeWebContents(), tab_strip_model);
       tabs::TabModel* tab_model_ptr = tab_model.get();
-      collection->AppendTab(std::move(tab_model));
+      AppendTab(collection, std::move(tab_model));
       EXPECT_EQ(collection->GetIndexOfTabRecursive(tab_model_ptr),
                 collection->ChildCount() - 1);
     }
@@ -93,7 +116,7 @@ class TabCollectionBaseTest : public ::testing::Test {
     for (int i = 0; i < num; i++) {
       std::unique_ptr<tabs::TabModel> tab_model =
           std::make_unique<tabs::TabModel>(MakeWebContents(), tab_strip_model);
-      collection->AppendTab(std::move(tab_model));
+      AppendTab(collection, std::move(tab_model));
     }
   }
 
@@ -137,13 +160,13 @@ TEST_F(PinnedTabCollectionTest, AddOperation) {
   tabs::PinnedTabCollection* pinned_collection_instance = pinned_collection();
 
   // Add a tab to the end of the pinned collection.
-  pinned_collection_instance->AppendTab(std::move(tab_model_one));
+  AppendTab(pinned_collection_instance, std::move(tab_model_one));
   EXPECT_TRUE(tab_model_one_ptr->IsPinned());
   EXPECT_EQ(tab_model_one_ptr->GetParentCollectionForTesting(),
             pinned_collection_instance);
 
   EXPECT_TRUE(
-      pinned_collection_instance->ContainsTabRecursive(tab_model_one_ptr));
+      ContainsTabRecursive(pinned_collection_instance, tab_model_one_ptr));
 
   // Add four more tabs to the collection.
   AddTabsToPinnedContainer(pinned_collection_instance, GetTabStripModel(), 4);
@@ -187,22 +210,7 @@ TEST_F(PinnedTabCollectionTest, RemoveOperation) {
   EXPECT_EQ(removed_tab_model.get(), tab_model_one_ptr);
 }
 
-TEST_F(PinnedTabCollectionTest, CloseTabOperation) {
-  // Setup phase of keeping track of a tab.
-  auto tab_model_one =
-      std::make_unique<tabs::TabModel>(MakeWebContents(), GetTabStripModel());
-  tabs::TabModel* tab_model_one_ptr = tab_model_one.get();
-
-  tabs::PinnedTabCollection* pinned_collection_instance = pinned_collection();
-  pinned_collection_instance->AppendTab(std::move(tab_model_one));
-  EXPECT_EQ(pinned_collection_instance->ChildCount(), 1ul);
-
-  // Remove `tab_model_one` from the collection.
-  pinned_collection_instance->CloseTab(tab_model_one_ptr);
-  EXPECT_EQ(pinned_collection_instance->ChildCount(), 0ul);
-}
-
-TEST_F(PinnedTabCollectionTest, CollectionOperationsIsNoop) {
+TEST_F(PinnedTabCollectionTest, CollectionOperations) {
   // Setup phase of keeping track of a tab.
   tabs::PinnedTabCollection* pinned_collection_instance = pinned_collection();
 
@@ -210,44 +218,24 @@ TEST_F(PinnedTabCollectionTest, CollectionOperationsIsNoop) {
   AddTabsToPinnedContainer(pinned_collection_instance, GetTabStripModel(), 4);
 
   std::unique_ptr<tabs::TabCollection> collection =
-      std::make_unique<tabs::UnpinnedTabCollection>();
-  EXPECT_EQ(pinned_collection_instance->MaybeRemoveCollection(collection.get()),
-            nullptr);
-  EXPECT_EQ(pinned_collection_instance->GetIndexOfCollection(collection.get()),
+      std::make_unique<tabs::SplitTabCollection>(
+          split_tabs::SplitTabId::GenerateNew());
+  tabs::TabCollection* collection_ptr = collection.get();
+  EXPECT_EQ(pinned_collection_instance->GetIndexOfCollection(collection_ptr),
             std::nullopt);
-}
+  EXPECT_FALSE(pinned_collection_instance->ContainsCollection(collection_ptr));
 
-TEST_F(PinnedTabCollectionTest, MoveOperation) {
-  // Setup phase of keeping track of a tab.
-  auto tab_model_one =
-      std::make_unique<tabs::TabModel>(MakeWebContents(), GetTabStripModel());
-  tabs::TabModel* tab_model_one_ptr = tab_model_one.get();
-
-  tabs::PinnedTabCollection* pinned_collection_instance = pinned_collection();
-
-  // Add four tabs to the collection.
-  AddTabsToPinnedContainer(pinned_collection_instance, GetTabStripModel(), 4);
-
-  // Add `tab_model_one` to index 3.
-  pinned_collection_instance->AddTab(std::move(tab_model_one), 3ul);
+  EXPECT_EQ(collection_ptr, pinned_collection_instance->AddCollection(
+                                std::move(collection), 2));
+  EXPECT_TRUE(pinned_collection_instance->ContainsCollection(collection_ptr));
+  EXPECT_EQ(2,
+            pinned_collection_instance->GetIndexOfCollection(collection_ptr));
   EXPECT_EQ(
-      pinned_collection_instance->GetIndexOfTabRecursive(tab_model_one_ptr),
-      3ul);
-  EXPECT_EQ(pinned_collection_instance->ChildCount(), 5ul);
-
-  // Move `tab_model_one` to index 1.
-  pinned_collection_instance->MoveTab(tab_model_one_ptr, 1ul);
-  EXPECT_EQ(pinned_collection_instance->ChildCount(), 5ul);
-  EXPECT_EQ(
-      pinned_collection_instance->GetIndexOfTabRecursive(tab_model_one_ptr),
-      1ul);
-
-  // Move `tab_model_one` to index 4.
-  pinned_collection_instance->MoveTab(tab_model_one_ptr, 4ul);
-  EXPECT_EQ(pinned_collection_instance->ChildCount(), 5ul);
-  EXPECT_EQ(
-      pinned_collection_instance->GetIndexOfTabRecursive(tab_model_one_ptr),
-      4ul);
+      collection_ptr,
+      pinned_collection_instance->MaybeRemoveCollection(collection_ptr).get());
+  EXPECT_FALSE(pinned_collection_instance->ContainsCollection(collection_ptr));
+  EXPECT_EQ(std::nullopt,
+            pinned_collection_instance->GetIndexOfCollection(collection_ptr));
 }
 
 class TabGroupTabCollectionTest : public TabCollectionBaseTest {
@@ -285,11 +273,11 @@ TEST_F(TabGroupTabCollectionTest, AddOperation) {
   tabs::TabGroupTabCollection* grouped_collection = GetCollection();
 
   // Add `tab_model_one` to the end of the collection.
-  grouped_collection->AppendTab(std::move(tab_model_one));
+  AppendTab(grouped_collection, std::move(tab_model_one));
   EXPECT_EQ(tab_model_one_ptr->group(), grouped_collection->GetTabGroupId());
   EXPECT_EQ(tab_model_one_ptr->GetParentCollectionForTesting(),
             grouped_collection);
-  EXPECT_TRUE(grouped_collection->ContainsTabRecursive(tab_model_one_ptr));
+  EXPECT_TRUE(ContainsTabRecursive(grouped_collection, tab_model_one_ptr));
 
   // Add four tabs to the collection.
   AddTabsToGroupContainer(GetCollection(), GetTabStripModel(), 4);
@@ -328,33 +316,6 @@ TEST_F(TabGroupTabCollectionTest, RemoveOperation) {
   EXPECT_EQ(removed_tab_model.get(), tab_model_one_ptr);
 }
 
-TEST_F(TabGroupTabCollectionTest, MoveOperation) {
-  // Setup phase of keeping track of a tab.
-  auto tab_model_one =
-      std::make_unique<tabs::TabModel>(MakeWebContents(), GetTabStripModel());
-  tabs::TabModel* tab_model_one_ptr = tab_model_one.get();
-
-  tabs::TabGroupTabCollection* grouped_collection = GetCollection();
-
-  // Add four tabs to the collection.
-  AddTabsToGroupContainer(GetCollection(), GetTabStripModel(), 4);
-
-  // Add `tab_model_one` to index 3.
-  grouped_collection->AddTab(std::move(tab_model_one), 3ul);
-  EXPECT_EQ(grouped_collection->GetIndexOfTabRecursive(tab_model_one_ptr), 3ul);
-  EXPECT_EQ(grouped_collection->ChildCount(), 5ul);
-
-  // Move `tab_model_one` to index 1.
-  grouped_collection->MoveTab(tab_model_one_ptr, 1ul);
-  EXPECT_EQ(grouped_collection->ChildCount(), 5ul);
-  EXPECT_EQ(grouped_collection->GetIndexOfTabRecursive(tab_model_one_ptr), 1ul);
-
-  // Move `tab_model_one` to index 4.
-  grouped_collection->MoveTab(tab_model_one_ptr, 4ul);
-  EXPECT_EQ(grouped_collection->ChildCount(), 5ul);
-  EXPECT_EQ(grouped_collection->GetIndexOfTabRecursive(tab_model_one_ptr), 4ul);
-}
-
 class SplitTabCollectionTest : public TabCollectionBaseTest {
  public:
   SplitTabCollectionTest() {
@@ -374,7 +335,7 @@ class SplitTabCollectionTest : public TabCollectionBaseTest {
       std::unique_ptr<tabs::TabModel> tab_model =
           std::make_unique<tabs::TabModel>(MakeWebContents(), tab_strip_model);
       tabs::TabModel* tab_model_ptr = tab_model.get();
-      collection->AppendTab(std::move(tab_model));
+      AppendTab(collection, std::move(tab_model));
       EXPECT_EQ(collection->GetIndexOfTabRecursive(tab_model_ptr),
                 collection->ChildCount() - 1);
     }
@@ -399,11 +360,11 @@ TEST_F(SplitTabCollectionTest, AddOperation) {
   tabs::SplitTabCollection* split_collection = GetCollection();
 
   // Add `tab_model_one` to the end of the collection.
-  split_collection->AppendTab(std::move(tab_model_one));
+  AppendTab(split_collection, std::move(tab_model_one));
   EXPECT_EQ(tab_model_one_ptr->GetSplit(), split_collection->GetSplitTabId());
   EXPECT_EQ(tab_model_one_ptr->GetParentCollectionForTesting(),
             split_collection);
-  EXPECT_TRUE(split_collection->ContainsTabRecursive(tab_model_one_ptr));
+  EXPECT_TRUE(ContainsTabRecursive(split_collection, tab_model_one_ptr));
 
   // Add two tabs to the collection.
   AddTabsToSplitContainer(GetCollection(), GetTabStripModel(), 2);
@@ -441,33 +402,6 @@ TEST_F(SplitTabCollectionTest, RemoveOperation) {
   EXPECT_EQ(removed_tab_model.get(), tab_model_one_ptr);
 }
 
-TEST_F(SplitTabCollectionTest, MoveOperation) {
-  // Setup phase of keeping track of a tab.
-  auto tab_model_one =
-      std::make_unique<tabs::TabModel>(MakeWebContents(), GetTabStripModel());
-  tabs::TabModel* tab_model_one_ptr = tab_model_one.get();
-
-  tabs::SplitTabCollection* split_collection = GetCollection();
-
-  // Add three tabs to the collection.
-  AddTabsToSplitContainer(GetCollection(), GetTabStripModel(), 3);
-
-  // Add `tab_model_one` to index 2.
-  split_collection->AddTab(std::move(tab_model_one), 2ul);
-  EXPECT_EQ(split_collection->GetIndexOfTabRecursive(tab_model_one_ptr), 2ul);
-  EXPECT_EQ(split_collection->ChildCount(), 4ul);
-
-  // Move `tab_model_one` to index 1.
-  split_collection->MoveTab(tab_model_one_ptr, 1ul);
-  EXPECT_EQ(split_collection->ChildCount(), 4ul);
-  EXPECT_EQ(split_collection->GetIndexOfTabRecursive(tab_model_one_ptr), 1ul);
-
-  // Move `tab_model_one` to index 3.
-  split_collection->MoveTab(tab_model_one_ptr, 3ul);
-  EXPECT_EQ(split_collection->ChildCount(), 4ul);
-  EXPECT_EQ(split_collection->GetIndexOfTabRecursive(tab_model_one_ptr), 3ul);
-}
-
 class UnpinnedTabCollectionTest : public TabCollectionBaseTest {
  public:
   UnpinnedTabCollectionTest() {
@@ -492,7 +426,7 @@ class UnpinnedTabCollectionTest : public TabCollectionBaseTest {
     auto tab_group_one = std::make_unique<tabs::TabGroupTabCollection>(
         group_id, tab_groups::TabGroupVisualData(), GetTabStripModel());
     AddTabsToGroupContainer(tab_group_one.get(), GetTabStripModel(), 2);
-    GetCollection()->AddTabGroup(std::move(tab_group_one), 2);
+    GetCollection()->AddCollection(std::move(tab_group_one), 2);
     AddTabsToUnpinnedContainer(GetCollection(), GetTabStripModel(), 2);
 
     EXPECT_EQ(GetCollection()->ChildCount(), 5ul);
@@ -527,31 +461,29 @@ TEST_F(UnpinnedTabCollectionTest, AddOperation) {
   tabs::UnpinnedTabCollection* unpinned_collection = GetCollection();
 
   // Add the `tab_model_one` to the collection.
-  unpinned_collection->AppendTab(std::move(tab_model_one));
+  AppendTab(unpinned_collection, std::move(tab_model_one));
   EXPECT_EQ(tab_model_one_ptr->GetParentCollectionForTesting(),
             unpinned_collection);
-  EXPECT_TRUE(unpinned_collection->ContainsTabRecursive(tab_model_one_ptr));
+  EXPECT_TRUE(ContainsTabRecursive(unpinned_collection, tab_model_one_ptr));
   EXPECT_FALSE(unpinned_collection->ContainsCollection(tab_group_one_ptr));
 
   // Add a group to the collection at index 2.
-  unpinned_collection->AddTabGroup(std::move(tab_group_one), 2ul);
+  unpinned_collection->AddCollection(std::move(tab_group_one), 2ul);
   EXPECT_EQ(tab_group_one_ptr->GetParentCollection(), unpinned_collection);
-  EXPECT_TRUE(unpinned_collection->ContainsTabRecursive(tab_model_one_ptr));
+  EXPECT_TRUE(ContainsTabRecursive(unpinned_collection, tab_model_one_ptr));
   EXPECT_TRUE(unpinned_collection->ContainsCollection(tab_group_one_ptr));
   EXPECT_EQ(unpinned_collection->GetIndexOfTabRecursive(tab_model_one_ptr),
             6ul);
   EXPECT_EQ(unpinned_collection->GetIndexOfCollection(tab_group_one_ptr), 2ul);
-  EXPECT_EQ(unpinned_collection->GetTabGroupCollection(group_id),
-            tab_group_one_ptr);
 
   auto tab_model_in_group =
       std::make_unique<tabs::TabModel>(MakeWebContents(), GetTabStripModel());
   tabs::TabModel* tab_model_in_group_ptr = tab_model_in_group.get();
 
   // Add tabs to the group and validate index and size. Track one of the tabs.
-  tab_group_one_ptr->AppendTab(
-      std::make_unique<tabs::TabModel>(MakeWebContents(), GetTabStripModel()));
-  tab_group_one_ptr->AppendTab(std::move(tab_model_in_group));
+  AppendTab(tab_group_one_ptr, std::make_unique<tabs::TabModel>(
+                                   MakeWebContents(), GetTabStripModel()));
+  AppendTab(tab_group_one_ptr, std::move(tab_model_in_group));
 
   EXPECT_EQ(unpinned_collection->GetIndexOfTabRecursive(tab_model_in_group_ptr),
             3);
@@ -578,14 +510,14 @@ TEST_F(UnpinnedTabCollectionTest, RemoveOperation) {
 
   // Add the tab and the group at index 2 and index 4 respectively.
   unpinned_collection->AddTab(std::move(tab_model_one), 2ul);
-  unpinned_collection->AddTabGroup(std::move(tab_group_one), 4ul);
+  unpinned_collection->AddCollection(std::move(tab_group_one), 4ul);
 
   // Remove the tab
   std::unique_ptr<tabs::TabModel> removed_tab =
       unpinned_collection->MaybeRemoveTab(tab_model_one_ptr);
   EXPECT_EQ(removed_tab.get(), tab_model_one_ptr);
   EXPECT_EQ(unpinned_collection->ChildCount(), 6ul);
-  EXPECT_FALSE(unpinned_collection->ContainsTabRecursive(tab_model_one_ptr));
+  EXPECT_FALSE(ContainsTabRecursive(unpinned_collection, tab_model_one_ptr));
   EXPECT_EQ(unpinned_collection->TabCountRecursive(), 8ul);
   EXPECT_EQ(unpinned_collection->GetIndexOfCollection(tab_group_one_ptr), 3ul);
 
@@ -597,67 +529,6 @@ TEST_F(UnpinnedTabCollectionTest, RemoveOperation) {
   EXPECT_EQ(unpinned_collection->TabCountRecursive(), 6ul);
   EXPECT_FALSE(unpinned_collection->ContainsCollection(tab_group_one_ptr));
   EXPECT_EQ(removed_collection->GetParentCollection(), nullptr);
-}
-
-TEST_F(UnpinnedTabCollectionTest, CloseTabOperation) {
-  // Use the basic setup scenario and track a tab.
-  PerformBasicSetup();
-  auto tab_model_one =
-      std::make_unique<tabs::TabModel>(MakeWebContents(), GetTabStripModel());
-
-  tabs::TabModel* tab_model_one_ptr = tab_model_one.get();
-  tabs::UnpinnedTabCollection* unpinned_collection = GetCollection();
-
-  // Add the tab and the group to the collection.
-  unpinned_collection->AddTab(std::move(tab_model_one), 0ul);
-
-  EXPECT_TRUE(unpinned_collection->ContainsTabRecursive(tab_model_one_ptr));
-  unpinned_collection->CloseTab(tab_model_one_ptr);
-  EXPECT_FALSE(unpinned_collection->ContainsTabRecursive(tab_model_one_ptr));
-}
-
-TEST_F(UnpinnedTabCollectionTest, CloseGroupOperation) {
-  // Use the basic setup scenario and track a group.
-  PerformBasicSetup();
-  tab_groups::TabGroupId group_id = tab_groups::TabGroupId::GenerateNew();
-  auto tab_group_one = std::make_unique<tabs::TabGroupTabCollection>(
-      group_id, tab_groups::TabGroupVisualData(), GetTabStripModel());
-  tabs::TabGroupTabCollection* tab_group_one_ptr = tab_group_one.get();
-  tabs::UnpinnedTabCollection* unpinned_collection = GetCollection();
-
-  // Add the tab and the group to the collection.
-  unpinned_collection->AddTabGroup(std::move(tab_group_one), 2ul);
-
-  EXPECT_TRUE(unpinned_collection->ContainsCollection(tab_group_one_ptr));
-  unpinned_collection->CloseTabGroup(tab_group_one_ptr);
-  EXPECT_FALSE(unpinned_collection->ContainsCollection(tab_group_one_ptr));
-}
-
-TEST_F(UnpinnedTabCollectionTest, MoveOperation) {
-  // Use the basic setup scenario and track a tab and a group.
-  PerformBasicSetup();
-  auto tab_model_one =
-      std::make_unique<tabs::TabModel>(MakeWebContents(), GetTabStripModel());
-  tab_groups::TabGroupId group_id = tab_groups::TabGroupId::GenerateNew();
-  auto tab_group_one = std::make_unique<tabs::TabGroupTabCollection>(
-      group_id, tab_groups::TabGroupVisualData(), GetTabStripModel());
-
-  tabs::TabModel* tab_model_one_ptr = tab_model_one.get();
-  tabs::TabGroupTabCollection* tab_group_one_ptr = tab_group_one.get();
-  AddTabsToGroupContainer(tab_group_one_ptr, GetTabStripModel(), 2);
-
-  tabs::UnpinnedTabCollection* unpinned_collection = GetCollection();
-
-  // Add the tab and the group.
-  unpinned_collection->AddTab(std::move(tab_model_one), 1ul);
-  unpinned_collection->AddTabGroup(std::move(tab_group_one), 3ul);
-
-  // Move the tab to index 3. Followed by the group to index 0.
-  unpinned_collection->MoveTab(tab_model_one_ptr, 3);
-  unpinned_collection->MoveTabGroup(tab_group_one_ptr, 0);
-
-  EXPECT_EQ(unpinned_collection->GetIndexOfTabRecursive(tab_model_one_ptr), 4);
-  EXPECT_EQ(unpinned_collection->GetIndexOfCollection(tab_group_one_ptr), 0);
 }
 
 class TabStripCollectionTest : public TabCollectionBaseTest {
@@ -691,11 +562,11 @@ class TabStripCollectionTest : public TabCollectionBaseTest {
             tab_groups::TabGroupVisualData(), GetTabStripModel());
     tabs::TabGroupTabCollection* group_one_ptr = group_one.get();
     AddTabsToGroupContainer(group_one_ptr, GetTabStripModel(), 2);
-    unpinned_collection->AddTabGroup(std::move(group_one), 2);
+    tab_strip_collection->AddTabGroup(std::move(group_one), 6);
 
     // Add one more tab.
-    unpinned_collection->AppendTab(std::make_unique<tabs::TabModel>(
-        MakeWebContents(), GetTabStripModel()));
+    AppendTab(unpinned_collection, std::make_unique<tabs::TabModel>(
+                                       MakeWebContents(), GetTabStripModel()));
 
     tabs::TabCollectionStorage* pinned_storage =
         pinned_collection->GetTabCollectionStorageForTesting();
@@ -730,6 +601,18 @@ class TabStripCollectionTest : public TabCollectionBaseTest {
               GetTabInCollectionStorage(unpinned_storage, 3ul));
   }
 
+  void TestAddTabRecursive(size_t index,
+                           std::optional<tab_groups::TabGroupId> new_group_id,
+                           bool new_pinned_state) {
+    tabs::TabStripCollection* tab_strip_collection = GetCollection();
+    std::unique_ptr<tabs::TabModel> tab =
+        std::make_unique<tabs::TabModel>(MakeWebContents(), GetTabStripModel());
+    tabs::TabModel* tab_ptr = tab.get();
+    tab_strip_collection->AddTabRecursive(std::move(tab), index, new_group_id,
+                                          new_pinned_state);
+    EXPECT_EQ(tab_ptr, tab_strip_collection->GetTabAtIndexRecursive(index));
+  }
+
  private:
   std::unique_ptr<tabs::TabStripCollection> tab_strip_collection_;
   tabs::PreventTabFeatureInitialization prevent_;
@@ -756,6 +639,37 @@ TEST_F(TabStripCollectionTest, CollectionOperations) {
             nullptr);
 }
 
+TEST_F(TabStripCollectionTest, GroupOperations) {
+  PerformBasicSetup();
+  tabs::TabStripCollection* tab_strip_collection = GetCollection();
+  EXPECT_EQ(tab_strip_collection->ChildCount(), 2ul);
+
+  tab_groups::TabGroupId group_two_id = tab_groups::TabGroupId::GenerateNew();
+  std::unique_ptr<tabs::TabGroupTabCollection> group_two =
+      std::make_unique<tabs::TabGroupTabCollection>(
+          group_two_id, tab_groups::TabGroupVisualData(), GetTabStripModel());
+  tabs::TabGroupTabCollection* group_two_ptr = group_two.get();
+
+  EXPECT_EQ(nullptr, tab_strip_collection->GetTabGroupCollection(group_two_id));
+
+  // TODO(crbug.com/332586827): Re-enable death testing.
+  // Add group to pinned container.
+  // EXPECT_DEATH_IF_SUPPORTED(
+  //     tab_strip_collection->AddTabGroup(std::move(group_two), 2), "");
+
+  // Add group to unpinned container.
+  EXPECT_EQ(group_two_ptr,
+            tab_strip_collection->AddTabGroup(std::move(group_two), 5));
+  EXPECT_EQ(group_two_ptr,
+            tab_strip_collection->GetTabGroupCollection(group_two_id));
+  EXPECT_EQ(1ul,
+            tab_strip_collection->unpinned_collection()->GetIndexOfCollection(
+                group_two_ptr));
+  EXPECT_EQ(group_two_ptr,
+            tab_strip_collection->RemoveGroup(group_two_ptr).get());
+  EXPECT_EQ(nullptr, tab_strip_collection->GetTabGroupCollection(group_two_id));
+}
+
 TEST_F(TabStripCollectionTest, TabOperations) {
   tabs::TabStripCollection* tab_strip_collection = GetCollection();
 
@@ -774,8 +688,8 @@ TEST_F(TabStripCollectionTest, TabOperations) {
 
   // Add one tab, a group with two tabs and another tab to the unpinned
   // collection.
-  unpinned_collection->AppendTab(
-      std::make_unique<tabs::TabModel>(MakeWebContents(), GetTabStripModel()));
+  AppendTab(unpinned_collection, std::make_unique<tabs::TabModel>(
+                                     MakeWebContents(), GetTabStripModel()));
 
   std::unique_ptr<tabs::TabGroupTabCollection> group_one =
       std::make_unique<tabs::TabGroupTabCollection>(
@@ -784,9 +698,9 @@ TEST_F(TabStripCollectionTest, TabOperations) {
   tabs::TabGroupTabCollection* group_one_ptr = group_one.get();
   AddTabsToGroupContainer(group_one_ptr, GetTabStripModel(), 2);
 
-  unpinned_collection->AddTabGroup(std::move(group_one), 1ul);
-  unpinned_collection->AppendTab(
-      std::make_unique<tabs::TabModel>(MakeWebContents(), GetTabStripModel()));
+  unpinned_collection->AddCollection(std::move(group_one), 1ul);
+  AppendTab(unpinned_collection, std::make_unique<tabs::TabModel>(
+                                     MakeWebContents(), GetTabStripModel()));
 
   std::unique_ptr<tabs::TabModel> tab_not_present =
       std::make_unique<tabs::TabModel>(MakeWebContents(), GetTabStripModel());
@@ -798,15 +712,15 @@ TEST_F(TabStripCollectionTest, TabOperations) {
 
   // tab contains test in tab strip.
   EXPECT_FALSE(
-      tab_strip_collection->ContainsTabRecursive(tab_not_present.get()));
-  EXPECT_TRUE(tab_strip_collection->ContainsTabRecursive(
-      GetTabInCollectionStorage(pinned_storage, 2ul)));
-  EXPECT_TRUE(tab_strip_collection->ContainsTabRecursive(
-      GetTabInCollectionStorage(group_storage, 1ul)));
-  EXPECT_FALSE(tab_strip_collection->ContainsTab(
-      GetTabInCollectionStorage(unpinned_storage, 2ul)));
-  EXPECT_TRUE(tab_strip_collection->ContainsTabRecursive(
-      GetTabInCollectionStorage(unpinned_storage, 2ul)));
+      ContainsTabRecursive(tab_strip_collection, tab_not_present.get()));
+  EXPECT_TRUE(ContainsTabRecursive(
+      tab_strip_collection, GetTabInCollectionStorage(pinned_storage, 2ul)));
+  EXPECT_TRUE(ContainsTabRecursive(
+      tab_strip_collection, GetTabInCollectionStorage(group_storage, 1ul)));
+  EXPECT_FALSE(ContainsTab(tab_strip_collection,
+                           GetTabInCollectionStorage(unpinned_storage, 2ul)));
+  EXPECT_TRUE(ContainsTabRecursive(
+      tab_strip_collection, GetTabInCollectionStorage(unpinned_storage, 2ul)));
 
   // tab recursive index test in tab strip.
   EXPECT_EQ(tab_strip_collection->GetIndexOfTabRecursive(
@@ -847,54 +761,38 @@ TEST_F(TabStripCollectionTest, RecursiveTabIndexOperationTests) {
 
   // Insert Recursive checks -
   // 1. Add to pinned container.
-  tab_strip_collection->AddTabRecursive(
-      std::make_unique<tabs::TabModel>(MakeWebContents(), GetTabStripModel()),
-      2, std::nullopt, true);
+  TestAddTabRecursive(2, std::nullopt, true);
   EXPECT_EQ(pinned_collection->TabCountRecursive(), 5ul);
   // 2. Add as a tab to unpinned container. Now pinned container has 5 tabs.
-  tab_strip_collection->AddTabRecursive(
-      std::make_unique<tabs::TabModel>(MakeWebContents(), GetTabStripModel()),
-      5, std::nullopt, false);
+  TestAddTabRecursive(5, std::nullopt, false);
   EXPECT_EQ(unpinned_collection->TabCountRecursive(), 6ul);
   EXPECT_EQ(unpinned_collection->ChildCount(), 5ul);
 
   // 3. Add to the end of the unpinned container.
-  tab_strip_collection->AddTabRecursive(
-      std::make_unique<tabs::TabModel>(MakeWebContents(), GetTabStripModel()),
-      11, std::nullopt, false);
+  TestAddTabRecursive(11, std::nullopt, false);
   EXPECT_EQ(unpinned_collection->TabCountRecursive(), 7ul);
   EXPECT_EQ(unpinned_collection->ChildCount(), 6ul);
 
   // 4. Add to group container.
-  tab_strip_collection->AddTabRecursive(
-      std::make_unique<tabs::TabModel>(MakeWebContents(), GetTabStripModel()),
-      9, group_one_ptr->GetTabGroupId(), false);
+  TestAddTabRecursive(9, group_one_ptr->GetTabGroupId(), false);
   EXPECT_EQ(group_one_ptr->TabCountRecursive(), 3ul);
   EXPECT_EQ(unpinned_collection->TabCountRecursive(), 8ul);
 
   // 5. Corner case add to boundary of group container.
-  tab_strip_collection->AddTabRecursive(
-      std::make_unique<tabs::TabModel>(MakeWebContents(), GetTabStripModel()),
-      8, group_one_ptr->GetTabGroupId(), false);
+  TestAddTabRecursive(8, group_one_ptr->GetTabGroupId(), false);
   EXPECT_EQ(group_one_ptr->TabCountRecursive(), 4ul);
   EXPECT_EQ(unpinned_collection->TabCountRecursive(), 9ul);
 
-  tab_strip_collection->AddTabRecursive(
-      std::make_unique<tabs::TabModel>(MakeWebContents(), GetTabStripModel()),
-      8, std::nullopt, false);
+  TestAddTabRecursive(8, std::nullopt, false);
   EXPECT_EQ(group_one_ptr->TabCountRecursive(), 4ul);
   EXPECT_EQ(unpinned_collection->TabCountRecursive(), 10ul);
 
   // Now group has 4. And 4 unpinned before the group.
-  tab_strip_collection->AddTabRecursive(
-      std::make_unique<tabs::TabModel>(MakeWebContents(), GetTabStripModel()),
-      13, group_one_ptr->GetTabGroupId(), false);
+  TestAddTabRecursive(13, group_one_ptr->GetTabGroupId(), false);
   EXPECT_EQ(group_one_ptr->TabCountRecursive(), 5ul);
   EXPECT_EQ(unpinned_collection->TabCountRecursive(), 11ul);
 
-  tab_strip_collection->AddTabRecursive(
-      std::make_unique<tabs::TabModel>(MakeWebContents(), GetTabStripModel()),
-      14, std::nullopt, false);
+  TestAddTabRecursive(14, std::nullopt, false);
   EXPECT_EQ(group_one_ptr->TabCountRecursive(), 5ul);
   EXPECT_EQ(unpinned_collection->TabCountRecursive(), 12ul);
 }
@@ -1005,4 +903,109 @@ TEST_F(TabStripCollectionTest, DISABLED_RecursiveTabAddBadInput) {
                                            GetTabStripModel()),
           7ul, tab_groups::TabGroupId::GenerateNew(), true),
       "");
+}
+
+TEST_F(TabStripCollectionTest, UpdateProperties) {
+  // Setup for the main collections.
+  PerformBasicSetup();
+  tabs::TabStripCollection* tab_strip_collection = GetCollection();
+  tabs::PinnedTabCollection* pinned_collection =
+      tab_strip_collection->pinned_collection();
+  tabs::UnpinnedTabCollection* unpinned_collection =
+      tab_strip_collection->unpinned_collection();
+
+  // Get the group collection from the basic setup.
+  tabs::TabGroupTabCollection* group_collection =
+      static_cast<tabs::TabGroupTabCollection*>(
+          GetCollectionInCollectionStorage(
+              unpinned_collection->GetTabCollectionStorageForTesting(), 2ul));
+
+  std::unique_ptr<tabs::TabModel> tab_model =
+      std::make_unique<tabs::TabModel>(MakeWebContents(), GetTabStripModel());
+  tabs::TabModel* tab_model_ptr = tab_model.get();
+  ASSERT_FALSE(tab_model_ptr->IsPinned());
+  ASSERT_FALSE(tab_model_ptr->IsSplit());
+  ASSERT_EQ(std::nullopt, tab_model_ptr->GetGroup());
+
+  // Move to pinned collection.
+  ASSERT_EQ(tab_model_ptr, AppendTab(pinned_collection, std::move(tab_model)));
+  EXPECT_TRUE(tab_model_ptr->IsPinned());
+  EXPECT_FALSE(tab_model_ptr->IsSplit());
+  EXPECT_EQ(std::nullopt, tab_model_ptr->GetGroup());
+
+  // Move to group collection.
+  ASSERT_EQ(tab_model_ptr,
+            AppendTab(group_collection,
+                      pinned_collection->MaybeRemoveTab(tab_model_ptr)));
+  EXPECT_FALSE(tab_model_ptr->IsPinned());
+  EXPECT_FALSE(tab_model_ptr->IsSplit());
+  EXPECT_EQ(group_collection->GetTabGroupId(), tab_model_ptr->GetGroup());
+
+  // Move to split collection.
+  tabs::SplitTabCollection* split_collection =
+      unpinned_collection->AddCollection(
+          std::make_unique<tabs::SplitTabCollection>(
+              split_tabs::SplitTabId::GenerateNew()),
+          unpinned_collection->ChildCount());
+  AppendTab(split_collection, std::make_unique<tabs::TabModel>(
+                                  MakeWebContents(), GetTabStripModel()));
+  ASSERT_EQ(tab_model_ptr,
+            AppendTab(split_collection,
+                      group_collection->MaybeRemoveTab(tab_model_ptr)));
+  EXPECT_FALSE(tab_model_ptr->IsPinned());
+  EXPECT_EQ(split_collection->GetSplitTabId(), tab_model_ptr->GetSplit());
+  EXPECT_EQ(std::nullopt, tab_model_ptr->GetGroup());
+
+  // Move split collection to pinned collection
+  ASSERT_EQ(split_collection,
+            pinned_collection->AddCollection(
+                unpinned_collection->MaybeRemoveCollection(split_collection),
+                pinned_collection->ChildCount()));
+  EXPECT_TRUE(tab_model_ptr->IsPinned());
+  EXPECT_EQ(split_collection->GetSplitTabId(), tab_model_ptr->GetSplit());
+  EXPECT_EQ(std::nullopt, tab_model_ptr->GetGroup());
+
+  // Move split collection to group collection
+  ASSERT_EQ(split_collection,
+            group_collection->AddCollection(
+                pinned_collection->MaybeRemoveCollection(split_collection),
+                group_collection->ChildCount()));
+  EXPECT_FALSE(tab_model_ptr->IsPinned());
+  EXPECT_EQ(split_collection->GetSplitTabId(), tab_model_ptr->GetSplit());
+  EXPECT_EQ(group_collection->GetTabGroupId(), tab_model_ptr->GetGroup());
+}
+
+TEST_F(TabStripCollectionTest, ValidateData) {
+  // Setup for the main collections.
+  PerformBasicSetup();
+  tabs::TabStripCollection* tab_strip_collection = GetCollection();
+  tabs::UnpinnedTabCollection* unpinned_collection =
+      tab_strip_collection->unpinned_collection();
+
+  // Get the group collection from the basic setup.
+  tabs::TabGroupTabCollection* group_one_ptr =
+      static_cast<tabs::TabGroupTabCollection*>(
+          GetCollectionInCollectionStorage(
+              unpinned_collection->GetTabCollectionStorageForTesting(), 2ul));
+
+  tab_strip_collection->ValidateData();
+
+  tab_groups::TabGroupId group_two_id = tab_groups::TabGroupId::GenerateNew();
+  tab_strip_collection->CreateTabGroup(
+      std::make_unique<tabs::TabGroupTabCollection>(
+          group_two_id, tab_groups::TabGroupVisualData(), GetTabStripModel()));
+  // TODO(crbug.com/332586827): Re-enable death testing.
+  // EXPECT_DEATH_IF_SUPPORTED(tab_strip_collection->ValidateData(), "");
+
+  tab_strip_collection->CloseDetachedTabGroup(group_two_id);
+  tab_strip_collection->ValidateData();
+
+  ASSERT_EQ(group_one_ptr->ChildCount(), 2ul);
+  group_one_ptr->MaybeRemoveTab(group_one_ptr->GetTabAtIndexRecursive(0))
+      .reset();
+  group_one_ptr->MaybeRemoveTab(group_one_ptr->GetTabAtIndexRecursive(0))
+      .reset();
+  ASSERT_EQ(group_one_ptr->ChildCount(), 0ul);
+  // TODO(crbug.com/332586827): Re-enable death testing.
+  // EXPECT_DEATH_IF_SUPPORTED(tab_strip_collection->ValidateData(), "");
 }

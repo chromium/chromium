@@ -12,7 +12,7 @@
 #include "chrome/browser/ui/tabs/split_tab_collection.h"
 #include "chrome/browser/ui/tabs/tab_group_tab_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "components/tab_collections/public/tab_interface.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 
@@ -193,13 +193,15 @@ const TabGroupChange::CreateChange* TabGroupChange::GetCreateChange() const {
 std::vector<tabs::TabModel*> TabGroupChange::CreateChange::GetDetachedTabs()
     const {
   CHECK(detached_group_);
-  return detached_group_->GetTabs();
+  std::list tabs = detached_group_->GetTabsRecursive();
+  return std::vector<tabs::TabModel*>{tabs.begin(), tabs.end()};
 }
 
 std::vector<tabs::TabModel*> TabGroupChange::CloseChange::GetDetachedTabs()
     const {
   CHECK(detached_group_);
-  return detached_group_->GetTabs();
+  std::list tabs = detached_group_->GetTabsRecursive();
+  return std::vector<tabs::TabModel*>{tabs.begin(), tabs.end()};
 }
 
 const TabGroupChange::CloseChange* TabGroupChange::GetCloseChange() const {

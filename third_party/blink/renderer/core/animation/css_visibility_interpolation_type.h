@@ -13,7 +13,7 @@ namespace blink {
 
 class CSSVisibilityInterpolationType : public CSSInterpolationType {
  public:
-  CSSVisibilityInterpolationType(PropertyHandle property)
+  explicit CSSVisibilityInterpolationType(PropertyHandle property)
       : CSSInterpolationType(property) {
     DCHECK_EQ(CssProperty().PropertyID(), CSSPropertyID::kVisibility);
   }

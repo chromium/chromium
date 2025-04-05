@@ -132,6 +132,22 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="InterestGroupAuction">
+  <owner>ammedina@google.com</owner>
+  <owner>abigailkatcoff@google.com</owner>
+  <metric name="Result" enum="AuctionResult">
+    <summary>
+      The final result type of running an on-device auction. Recorded on auction
+      completion/cancellation. DWA content key for this event corresponds to the
+      auction's seller's origin (regardless of whether they are top level or
+      not).
+
+      See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+      version of the FLEDGE explainer.
+    </summary>
+  </metric>
+</event>
+
 <event name="PrivacySandbox.AggregationService.ReportSenderAttempt">
   <owner>alexmt@chromium.org</owner>
   <owner>dmcardle@chromium.org</owner>

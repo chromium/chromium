@@ -88,6 +88,18 @@ class GroupSuggestionsServiceImplTest : public testing::Test {
     return candidates;
   }
 
+  std::vector<URLVisitAggregate> GetNonOverlappingCandidates() {
+    std::vector<URLVisitAggregate> candidates;
+    // 5 tabs with new IDs.
+    candidates.push_back(CreateVisitForTab(base::Seconds(60), 11));
+    candidates.push_back(CreateVisitForTab(base::Seconds(250), 12));
+    candidates.push_back(CreateVisitForTab(base::Seconds(300), 14));
+    candidates.push_back(CreateVisitForTab(base::Seconds(500), 15));
+    candidates.push_back(CreateVisitForTab(base::Seconds(500), 16));
+    candidates.push_back(CreateVisitForTab(base::Seconds(800), 17));
+    return candidates;
+  }
+
   GroupSuggestionsDelegate::SuggestionResponseCallback TriggerSuggestions(
       std::vector<URLVisitAggregate> candidates) {
     base::RunLoop wait_for_compute;
@@ -158,9 +170,7 @@ TEST_F(GroupSuggestionsServiceImplTest, NoRepeatedSuggestions) {
   TriggerSuggestions(GetSampleCandidates());
 
   // Remove 2 tabs to generate different suggestion, that should be shown.
-  auto candidates = GetSampleCandidates();
-  candidates.pop_back();
-  candidates.pop_back();
+  auto candidates = GetNonOverlappingCandidates();
   EXPECT_CALL(*mock_delegate_, ShowSuggestion(_, _)).Times(1);
   TriggerSuggestions(std::move(candidates));
 }

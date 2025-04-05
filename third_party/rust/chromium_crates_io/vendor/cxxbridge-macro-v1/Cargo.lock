@@ -41,18 +41,18 @@ dependencies = [
 
 [[package]]
 name = "clap"
-version = "4.5.32"
+version = "4.5.34"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6088f3ae8c3608d19260cd7445411865a485688711b78b5be70d78cd96136f83"
+checksum = "e958897981290da2a852763fe9cdb89cd36977a5d729023127095fa94d95e2ff"
 dependencies = [
  "clap_builder",
 ]
 
 [[package]]
 name = "clap_builder"
-version = "4.5.32"
+version = "4.5.34"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "22a7ef7f676155edfb82daa97f99441f3ebf4a58d5e32f295a56259f1b6facc8"
+checksum = "83b0f35019843db2160b5bb19ae09b4e6411ac33fc6a712003c33e03090e2489"
 dependencies = [
  "anstyle",
  "clap_lex",
@@ -67,10 +67,11 @@ checksum = "f46ad14479a25103f283c0f10005961cf086d8dc42205bb44c46ac563475dca6"
 
 [[package]]
 name = "codespan-reporting"
-version = "0.11.1"
+version = "0.12.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3538270d33cc669650c4b093848450d380def10c331d38c768e34cac80576e6e"
+checksum = "fe6d2e5af09e8c8ad56c969f2157a3d4238cebc7c55f0a517728c38f7b200f81"
 dependencies = [
+ "serde",
  "termcolor",
  "unicode-width",
 ]
@@ -86,23 +87,23 @@ dependencies = [
 
 [[package]]
 name = "cxx"
-version = "1.0.149"
+version = "1.0.152"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "478c837c611bc2a9fdeec08f85a5b198bb4e0bbdb3069f02443d2291383a7b42"
+checksum = "31aca84b8d0b0e5493898b42872bd5c2ab8e71703e31a097c2d063d41a5286d1"
 dependencies = [
  "cc",
  "cxxbridge-cmd",
  "cxxbridge-flags",
- "cxxbridge-macro 1.0.149",
+ "cxxbridge-macro 1.0.152",
  "foldhash",
  "link-cplusplus",
 ]
 
 [[package]]
 name = "cxxbridge-cmd"
-version = "1.0.149"
+version = "1.0.152"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a5fff7916bbde05c2db99469f09dcfaf203bf25b096ccbf4e761a04792412e10"
+checksum = "70f695e85ed7b5a0b04ab36059d472cb900dad5c978cb87d29800400afbbce33"
 dependencies = [
  "clap",
  "codespan-reporting",
@@ -113,15 +114,15 @@ dependencies = [
 
 [[package]]
 name = "cxxbridge-flags"
-version = "1.0.149"
+version = "1.0.152"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4336c994ee47479f439b61a9723ed894ab4551d91e0f217c1e84515d57ea3d4f"
+checksum = "ca3611d4b776dea482c33289b4cc8d75354f917badc3f6090dd29a55258dc63d"
 
 [[package]]
 name = "cxxbridge-macro"
-version = "1.0.149"
+version = "1.0.152"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4212f144792e9bc9d6891e369f87cc3adb7387a552993df8767d352482b3f88a"
+checksum = "49f552a55feb5f232ae1261419fd26f000117dc32291db4077b5030cd4ec51fe"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -131,7 +132,7 @@ dependencies = [
 
 [[package]]
 name = "cxxbridge-macro"
-version = "1.0.150"
+version = "1.0.153"
 dependencies = [
  "clang-ast",
  "cxx",
@@ -310,9 +311,9 @@ checksum = "5a5f39404a5da50712a4c1eecf25e90dd62b613502b7e925fd4e4d19b5c96512"
 
 [[package]]
 name = "unicode-width"
-version = "0.1.14"
+version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7dd6e30e90baa6f72411720665d41d89b9a3d039dc45b8faea1ddd07f617f6af"
+checksum = "1fc81956842c57dac11422a97c3b8195a1ff727f06e85c84ed2e8aa277c9a0fd"
 
 [[package]]
 name = "winapi"

@@ -9,15 +9,18 @@
 """
 
 import argparse
+import abc
+import dataclasses
 import glob
 import json
 import math
 import os
 import subprocess
 import sys
+import tempfile
 
 from multiprocessing import Process, Manager, cpu_count, Pool
-from typing import Mapping, Sequence
+from typing import Mapping, Sequence, Optional
 
 WHOLE_CORPUS_RETRIES = 2
 WHOLE_CORPUS_TIMEOUT_SECS = 1200
@@ -32,6 +35,130 @@ ALL_FUZZER_TYPES = [LIBFUZZER, CENTIPEDE, FUZZILLI]
 REPORT_DIR = 'out/report'
 
 LLVM_PROFDATA = 'third_party/llvm-build/Release+Asserts/bin/llvm-profdata'
+
+
+class EngineRunner(abc.ABC):
+  """This class abstracts running different engines against a full corpus or a
+  bunch of testcases. Implementers might provide different running commands
+  depending on the parameters.
+  """
+
+  @abc.abstractmethod
+  def run_full_corpus(self, env: Mapping[str, str], timeout: float,
+                      annotation: str, corpus_dir: Optional[str]) -> bool:
+    """Runs the current engine against the full corpus. It returns True if the
+    command succeeded and False otherwise.
+
+    Args:
+        env: the extra environment to forward to the command.
+        timeout: the potential timeout for the command.
+        annotation: some annotations for the command.
+        corpus_dir: optional corpus directory to run the engine against. If
+        None, this will run the target without any testcase (does nothing).
+
+    Returns:
+        whether the run succeed.
+    """
+    pass
+
+  @abc.abstractmethod
+  def run_testcases(self, env: Mapping[str, str], timeout: float,
+                    annotation: str, testcases: Sequence[str]) -> bool:
+    """Runs the current engine against some testcases (can be one). It returns
+    True if the command succeeded and False otherwise.
+
+    Args:
+        env: the extra environment to forward to the command.
+        timeout: the potential timeout for the command.
+        annotation: some annotations for the command.
+        testcases: the sequence of testcases.
+
+    Returns:
+        whether the run succeed.
+    """
+    pass
+
+  def _run_command(self, cmd: Sequence[str], env: Mapping[str, str],
+                   timeout: float, annotation: str) -> bool:
+    return _run_and_log(cmd, env, timeout, annotation)
+
+
+@dataclasses.dataclass
+class CmdRunner(EngineRunner):
+  """A simple command runner. Depending on whether it's running in full corpus
+  mode or testcases mode, this will simply append the extra parameters at the
+  end of the provided command.
+  """
+  cmd: Sequence[str]
+
+  def run_full_corpus(self, env: Mapping[str, str], timeout: float,
+                      annotation: str, corpus_dir: Optional[str]) -> bool:
+    run_cmd = self.cmd
+    if corpus_dir:
+      run_cmd += [corpus_dir]
+    return self._run_command(run_cmd, env, timeout, annotation)
+
+  def run_testcases(self, env: Mapping[str, str], timeout: float,
+                    annotation: str, testcases: Sequence[str]) -> bool:
+    return self._run_command(self.cmd + testcases, env, timeout, annotation)
+
+
+@dataclasses.dataclass
+class CentipedeRunner(EngineRunner):
+  """Runs a given target with the centipede fuzzing engine.
+  """
+  centipede_path: str
+  fuzz_target_path: str
+
+  def run_full_corpus(self, env: Mapping[str, str], timeout: float,
+                      annotation: str, corpus_dir: Optional[str]) -> bool:
+    workdir = tempfile.TemporaryDirectory()
+    tmpdir = tempfile.TemporaryDirectory()
+    this_env = env.copy()
+    this_env['TMPDIR'] = tmpdir.name
+    cmd = [
+        self.centipede_path, f'-binary={self.fuzz_target_path}',
+        '-shmem_size_mb=4096', '-address_space_limit_mb=0', '-rss_limit_mb=0',
+        '-symbolizer_path=/dev/null', '-num_runs=0', '-require_pc_table=false',
+        f'-workdir={workdir.name}', '-populate_binary_info=false',
+        '-batch_triage_suspect_only', '-ignore_timeout_reports=true',
+        '-exit_on_crash=true'
+    ]
+    if corpus_dir:
+      cmd += [f'-corpus_dir={corpus_dir}']
+    return self._run_command(cmd, this_env, timeout, annotation)
+
+  def run_testcases(self, env: Mapping[str, str], timeout: float,
+                    annotation: str, testcases: Sequence[str]) -> bool:
+    res = self._run_command([self.fuzz_target_path] + testcases, env, timeout,
+                            annotation)
+    # running Centipede in that particular mode will generate feature files for
+    # each of the testcase. Since we're running in an environment with limited
+    # disk space, we must delete those files after the run.
+    for testcase in testcases:
+      feature_file = f'{testcase}-features'
+      if os.path.exists(feature_file):
+        os.unlink(feature_file)
+    return res
+
+
+@dataclasses.dataclass
+class FuzzilliRunner(CmdRunner):
+  """Runs a given target with Fuzzilli.
+  """
+  corpus_files: Sequence[str]
+
+  def run_full_corpus(self, env: Mapping[str, str], timeout: float,
+                      annotation: str, corpus_dir: Optional[str]) -> bool:
+    # We are not reading the whole directory, since this might generate too
+    # long command lines, but we're rather using the corpus_files we were
+    # passed as arguments.
+    if not corpus_dir:
+      corpus_dir = ""
+    return self._run_command(
+        self.cmd +
+        [os.path.join(corpus_dir, file) for file in self.corpus_files], env,
+        timeout, annotation)
 
 
 def _profdata_merge(inputs: Sequence[str], output: str) -> bool:
@@ -140,7 +267,7 @@ def _run_fuzzer_target(args):
   failed_targets = args[2]
   num_targets = args[3]
   target = target_details['name']
-  cmd = target_details['cmd']
+  cmd_runner = target_details['cmd_runner']
   env = target_details['env']
   corpus_dir = target_details['corpus']
   corpus_files = target_details['files']
@@ -153,15 +280,11 @@ def _run_fuzzer_target(args):
 
   fullcorpus_profraw = os.path.join(profraw_dir, target + "_%p.profraw")
   env['LLVM_PROFILE_FILE'] = fullcorpus_profraw
-  fullcorpus_cmd = cmd.copy()
-  if corpus_files not in [None, '*']:
-    # Fuzzilli's case
-    jsfiles = corpus_files.split()
-    fullcorpus_cmd.extend([os.path.join(corpus_dir, file) for file in jsfiles])
+
   _erase_profraws(fullcorpus_profraw)
   for i in range(WHOLE_CORPUS_RETRIES):
-    ok = _run_and_log(fullcorpus_cmd, env, WHOLE_CORPUS_TIMEOUT_SECS,
-                      f"full corpus attempt {i}")
+    ok = cmd_runner.run_full_corpus(env, WHOLE_CORPUS_TIMEOUT_SECS,
+                                    f"full corpus attempt {i}", corpus_dir)
     if ok:
       break
 
@@ -188,12 +311,10 @@ def _run_fuzzer_target(args):
       specific_test_case_profraw = os.path.join(
           profraw_dir, target + "_" + str(count) + "_%p.profraw")
       test_case = os.path.join(corpus_dir, corpus_entry)
-      specific_test_case_cmd = cmd + [test_case]
       env['LLVM_PROFILE_FILE'] = specific_test_case_profraw
       _erase_profraws(specific_test_case_profraw)
-      _run_and_log(specific_test_case_cmd, env,
-                   INDIVIDUAL_TESTCASE_TIMEOUT_SECS,
-                   f"specific test case {count}")
+      cmd_runner.run_testcases(env, INDIVIDUAL_TESTCASE_TIMEOUT_SECS,
+                               f"specific test case {count}", [test_case])
       resulting_profraws = list(_matching_profraws(specific_test_case_profraw))
       if resulting_profraws:
         # We recorded valid profraws, let's merge them into
@@ -295,10 +416,15 @@ def _get_all_target_details(args):
       if 'DISPLAY' in os.environ:
         # Inherit X settings from the real environment
         env['DISPLAY'] = os.environ['DISPLAY']
+      # This is necessary because some of our fuzzers are having redefinitions
+      # due to some dependencies redefining symbols.
+      env['ASAN_OPTIONS'] = 'detect_odr_violation=0'
       if args.fuzzer == CENTIPEDE:
-        cmd = [centipede_target_binpath, f'--binary={fuzzer_target_binpath}']
+        cmd = CentipedeRunner(centipede_path=centipede_target_binpath,
+                              fuzz_target_path=fuzzer_target_binpath)
       else:  # libfuzzer
-        cmd = [fuzzer_target_binpath]
+        cmd = CmdRunner(
+            [fuzzer_target_binpath, '-runs=0', '-rss_limit_mb=8192'])
       all_target_details.append({
           'name':
           fuzzer_target,
@@ -310,8 +436,8 @@ def _get_all_target_details(args):
           env,
           # RSS limit 8GB. Some of our fuzzers which involve running significant
           # chunks of Chromium code require more than the 2GB default.
-          'cmd':
-          cmd + ['-runs=0', '-rss_limit_mb=8192', fuzzer_target_corporadir],
+          'cmd_runner':
+          cmd,
           'corpus':
           fuzzer_target_corporadir,
           'files':
@@ -340,7 +466,8 @@ def _get_all_target_details(args):
         os.path.join(REPORT_DIR, "chrome.profdata"),
         'env':
         env,
-        'cmd': [chrome_target_binpath],
+        'cmd_runner':
+        CmdRunner([chrome_target_binpath]),
         'corpus':
         None,
         'files':
@@ -386,8 +513,8 @@ def _get_fuzzilli_target_details(args):
           os.path.join(REPORT_DIR, f'{corpora_dir}_{i}.profdata'),
           'env':
           dict(),
-          'cmd':
-          cmd,
+          'cmd_runner':
+          FuzzilliRunner(cmd=cmd, corpus_files=chunk),
           'corpus':
           path_to_js_dir,
           'files':

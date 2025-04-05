@@ -8,7 +8,7 @@
 #import "components/omnibox/browser/autocomplete_match.h"
 #import "components/omnibox/browser/autocomplete_match_type.h"
 #import "components/omnibox/browser/autocomplete_provider.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_match_formatter.h"
+#import "ios/chrome/browser/omnibox/model/autocomplete_match_formatter.h"
 #import "ios/chrome/browser/shared/ui/elements/fade_truncating_label.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"

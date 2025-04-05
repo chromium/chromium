@@ -161,8 +161,11 @@ static void ReleaseFrameResources(
   // resource.
   if (lost_resource) {
     resource->NotifyResourceLost();
-  } else if (resource_provider) {
-    resource_provider->OnResourceReturnedFromCompositor(std::move(resource));
+  } else {
+    // Allow the resource to determine whether it wants to preserve itself for
+    // reuse.
+    auto* raw_resource = resource.get();
+    raw_resource->OnReturnedFromCompositor(std::move(resource));
   }
 }
 
@@ -396,6 +399,19 @@ scoped_refptr<CanvasResourceSharedImage> CanvasResourceSharedImage::Create(
       std::move(context_provider_wrapper), std::move(provider), is_accelerated,
       shared_image_usage_flags));
   return resource->IsValid() ? resource : nullptr;
+}
+
+void CanvasResourceSharedImage::OnReturnedFromCompositor(
+    scoped_refptr<CanvasResource>&& resource) {
+  auto downcast_ref = scoped_refptr<CanvasResourceSharedImage>(this);
+  CHECK_EQ(downcast_ref, resource);
+
+  // Reset the compositor ref to ensure that there is still only one outstanding
+  // ref (necessary for the provider to actually recycle the resource).
+  resource.reset();
+  if (Provider()) {
+    Provider()->OnResourceReturnedFromCompositor(std::move(downcast_ref));
+  }
 }
 
 bool CanvasResourceSharedImage::IsValid() const {

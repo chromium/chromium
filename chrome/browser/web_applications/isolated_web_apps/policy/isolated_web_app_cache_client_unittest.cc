@@ -266,9 +266,11 @@ TEST_P(IwaCacheClientTest, CopyBundleToCache) {
   cache_client()->CopyBundleToCache(original_file, kBundleId, kVersion1,
                                     copy_future.GetCallback());
 
+  base::FilePath bundle_path = GetFullBundlePath(kBundleId, kVersion1);
   EXPECT_THAT(copy_future.Get(),
               ValueIs(Field(&CopyBundleToCacheSuccess::cached_bundle_path,
-                            GetFullBundlePath(kBundleId, kVersion1))));
+                            bundle_path)));
+  EXPECT_TRUE(base::PathExists(bundle_path));
 }
 
 TEST_P(IwaCacheClientTest, FailedToCreateDirForFileCopying) {
@@ -345,13 +347,14 @@ TEST_P(IwaCacheClientTest, CopyAnotherBundleVersion) {
   cache_client()->CopyBundleToCache(original_file, kBundleId, kVersion2,
                                     copy_future.GetCallback());
 
+  base::FilePath updated_bundle_path = GetFullBundlePath(kBundleId, kVersion2);
   EXPECT_THAT(copy_future.Get(),
               ValueIs(Field(&CopyBundleToCacheSuccess::cached_bundle_path,
-                            GetFullBundlePath(kBundleId, kVersion2))));
+                            updated_bundle_path)));
 
   // Check that both versions are cached.
-  base::PathExists(existing_bundle_path);
-  base::PathExists(GetFullBundlePath(kBundleId, kVersion2));
+  EXPECT_TRUE(base::PathExists(existing_bundle_path));
+  EXPECT_TRUE(base::PathExists(updated_bundle_path));
 }
 
 INSTANTIATE_TEST_SUITE_P(

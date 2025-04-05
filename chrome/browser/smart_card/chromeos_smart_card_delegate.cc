@@ -13,7 +13,7 @@
 #include "chrome/browser/smart_card/smart_card_permission_context_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
-#include "components/tab_collections/public/tab_interface.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/features.h"

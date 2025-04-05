@@ -4,6 +4,8 @@
 
 package org.chromium.webapk.shell_apk;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -14,9 +16,8 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Pair;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.webapk.lib.common.WebApkMetaDataKeys;
 import org.chromium.webapk.lib.common.WebApkConstants;
 import org.chromium.webapk.shell_apk.HostBrowserUtils.PackageNameAndComponentName;
@@ -25,9 +26,10 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 /** Convenience wrapper for parameters to {@link HostBrowserLauncher} methods. */
+@NullMarked
 public class HostBrowserLauncherParams {
     private boolean mIsArcChromeOs;
-    @NonNull private PackageNameAndComponentName mHostBrowserPackageNameAndComponentName;
+    private PackageNameAndComponentName mHostBrowserPackageNameAndComponentName;
     private boolean mDialogShown;
     private Intent mOriginalIntent;
     private String mStartUrl;
@@ -35,16 +37,16 @@ public class HostBrowserLauncherParams {
     private boolean mForceNavigation;
     private long mLaunchTimeMs;
     private long mSplashShownTimeMs;
-    private String mSelectedShareTargetActivityClassName;
+    private @Nullable String mSelectedShareTargetActivityClassName;
 
     /**
      * Constructs a HostBrowserLauncherParams object from the passed in Intent and from <meta-data>
      * in the Android Manifest.
      */
-    public static HostBrowserLauncherParams createForIntent(
+    public static @Nullable HostBrowserLauncherParams createForIntent(
             Context context,
             Intent intent,
-            @NonNull PackageNameAndComponentName hostBrowserPackageNameAndComponentName,
+            PackageNameAndComponentName hostBrowserPackageNameAndComponentName,
             boolean dialogShown,
             long launchTimeMs,
             long splashShownTimeMs) {
@@ -69,6 +71,7 @@ public class HostBrowserLauncherParams {
 
         if (Intent.ACTION_SEND.equals(intent.getAction())
                 || Intent.ACTION_SEND_MULTIPLE.equals(intent.getAction())) {
+            assumeNonNull(intent.getComponent());
             selectedShareTargetActivityClassName = intent.getComponent().getClassName();
         }
 
@@ -117,7 +120,7 @@ public class HostBrowserLauncherParams {
                 selectedShareTargetActivityClassName);
     }
 
-    private static Bundle fetchActivityMetaData(
+    private static @Nullable Bundle fetchActivityMetaData(
             Context context, ComponentName shareTargetComponentName) {
         ActivityInfo shareActivityInfo;
         try {
@@ -148,8 +151,8 @@ public class HostBrowserLauncherParams {
      * @param shareTargetMetaData Meta data for the share target activity selected by the user.
      * @param intent Share intent.
      */
-    protected static String computeStartUrlForShareTarget(
-            Bundle shareTargetMetaData, Intent intent) {
+    protected static @Nullable String computeStartUrlForShareTarget(
+            @Nullable Bundle shareTargetMetaData, Intent intent) {
         if (shareTargetMetaData == null) {
             return null;
         }
@@ -166,7 +169,7 @@ public class HostBrowserLauncherParams {
      * @param shareTargetMetaData Meta data for the share target activity selected by the user.
      * @param intent Share intent.
      */
-    private static String computeStartUrlForGETShareTarget(
+    private static @Nullable String computeStartUrlForGETShareTarget(
             Bundle shareTargetMetaData, Intent intent) {
         String shareAction = shareTargetMetaData.getString(WebApkMetaDataKeys.SHARE_ACTION);
         if (TextUtils.isEmpty(shareAction)) {
@@ -229,7 +232,7 @@ public class HostBrowserLauncherParams {
 
     private HostBrowserLauncherParams(
             boolean isArcChromeOs,
-            @NonNull PackageNameAndComponentName hostBrowserPackageNameAndComponentName,
+            PackageNameAndComponentName hostBrowserPackageNameAndComponentName,
             boolean dialogShown,
             Intent originalIntent,
             String startUrl,
@@ -237,7 +240,7 @@ public class HostBrowserLauncherParams {
             boolean forceNavigation,
             long launchTimeMs,
             long splashShownTimeMs,
-            String selectedShareTargetActivityClassName) {
+            @Nullable String selectedShareTargetActivityClassName) {
         mIsArcChromeOs = isArcChromeOs;
         mHostBrowserPackageNameAndComponentName = hostBrowserPackageNameAndComponentName;
         mDialogShown = dialogShown;
@@ -259,7 +262,7 @@ public class HostBrowserLauncherParams {
     }
 
     /** Returns the chosen host browser Package Name. */
-    public @NonNull String getHostBrowserPackageName() {
+    public String getHostBrowserPackageName() {
         return mHostBrowserPackageNameAndComponentName.getPackageName();
     }
 
@@ -313,7 +316,7 @@ public class HostBrowserLauncherParams {
     }
 
     /** Returns the class name of the share activity that the user selected. */
-    public String getSelectedShareTargetActivityClassName() {
+    public @Nullable String getSelectedShareTargetActivityClassName() {
         return mSelectedShareTargetActivityClassName;
     }
 }

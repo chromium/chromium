@@ -33,6 +33,14 @@ export function getHtml(this: ExtensionsSidebarElement) {
     <cr-ripple></cr-ripple>
   </a>
 </cr-menu-selector>
+<div class="separator" ?hidden="${!this.inDevMode}"></div>
+      ${this.inDevMode ? html`
+        <div class="cr-nav-menu-item" id="moreExtensions">
+          <span id="promo-message-text" class="cr-secondary-text"
+            .innerHTML="${this.computeDocsPromoText_()}">
+          </span>
+        </div>
+        `: ''}
 <div class="separator"></div>
 <div class="cr-nav-menu-item" id="moreExtensions">
   <cr-icon id="web-store-icon" icon="extensions-icons:web_store">

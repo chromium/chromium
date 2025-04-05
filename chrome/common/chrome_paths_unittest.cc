@@ -73,11 +73,12 @@ TEST(ChromePaths, UserCacheDir) {
 #if BUILDFLAG(IS_LINUX)
 TEST(ChromePaths, DefaultUserDataDir) {
   std::unique_ptr<base::Environment> env(base::Environment::Create());
-  std::string orig_chrome_config_home;
-  bool chrome_config_home_was_set =
-      env->GetVar("CHROME_CONFIG_HOME", &orig_chrome_config_home);
-  if (chrome_config_home_was_set)
+
+  std::optional<std::string> orig_chrome_config_home =
+      env->GetVar("CHROME_CONFIG_HOME");
+  if (orig_chrome_config_home.has_value()) {
     env->UnSetVar("CHROME_CONFIG_HOME");
+  }
 
   base::FilePath home_dir;
   base::PathService::Get(base::DIR_HOME, &home_dir);
@@ -104,10 +105,11 @@ TEST(ChromePaths, DefaultUserDataDir) {
   // TODO(skobes): It would be nice to test $CHROME_USER_DATA_DIR here too, but
   // it's handled by ChromeMainDelegate instead of GetDefaultUserDataDirectory.
 
-  if (chrome_config_home_was_set)
-    env->SetVar("CHROME_CONFIG_HOME", orig_chrome_config_home);
-  else
+  if (orig_chrome_config_home.has_value()) {
+    env->SetVar("CHROME_CONFIG_HOME", orig_chrome_config_home.value());
+  } else {
     env->UnSetVar("CHROME_CONFIG_HOME");
+  }
 }
 #endif
 

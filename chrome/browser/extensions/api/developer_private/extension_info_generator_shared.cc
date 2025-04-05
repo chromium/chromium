@@ -19,11 +19,11 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/extensions/api/developer_private/developer_private_api.h"
+#include "chrome/browser/extensions/api/developer_private/inspectable_views_finder.h"
 #include "chrome/browser/extensions/error_console/error_console.h"
 #include "chrome/browser/extensions/extension_allowlist.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
@@ -508,6 +508,8 @@ void ExtensionInfoGeneratorShared::FillExtensionInfo(
 
   Profile* profile = Profile::FromBrowserContext(browser_context_);
 
+  bool is_enabled = state == developer::ExtensionState::kEnabled;
+
   info.description = extension.description();
 
   // Disable reasons.
@@ -588,8 +590,8 @@ void ExtensionInfoGeneratorShared::FillExtensionInfo(
 
   // User Scripts toggle.
   info.user_scripts_access.is_enabled =
-      UserScriptManager::CanExtensionUseUserScriptsAPI(extension);
-  const UserScriptManager* user_script_manager =
+      UserScriptManager::IsUserScriptsAPIPermissionAvailable(extension);
+  UserScriptManager* user_script_manager =
       ExtensionSystem::Get(browser_context_)->user_script_manager();
   if (user_script_manager) {  // Not created in some unit tests.
     info.user_scripts_access.is_active =
@@ -690,6 +692,11 @@ void ExtensionInfoGeneratorShared::FillExtensionInfo(
   info.type = GetExtensionType(extension.manifest()->type());
 
   info.version = extension.GetVersionForDisplay();
+
+  if (state != developer::ExtensionState::kTerminated) {
+    info.views = InspectableViewsFinder(profile).GetViewsForExtension(
+        extension, is_enabled);
+  }
 
   // The icon.
   ExtensionResource icon = IconsInfo::GetIconResource(

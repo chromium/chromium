@@ -588,7 +588,6 @@ def _skylab(
         cros_img = None,
         use_lkgm = None,
         cros_model = None,
-        cros_cbx = None,
         autotest_name = None,
         bucket = None,
         dut_pool = None,
@@ -612,8 +611,6 @@ def _skylab(
         use_lkgm: If True, use a ChromeOS image version derived from
             chromeos/CHROMEOS_LKGM file.
         cros_model: Optional ChromeOS DUT model.
-        cros_cbx: Whether to require a CBX DUT for given cros_board. For a
-             board, not all models are CBX-capable.
         autotest_name: The name of the autotest to be executed in
             Skylab.
         bucket: Optional Google Storage bucket where the specified
@@ -638,7 +635,6 @@ def _skylab(
         cros_img = cros_img,
         use_lkgm = use_lkgm,
         cros_model = cros_model,
-        cros_cbx = cros_cbx,
         autotest_name = autotest_name,
         bucket = bucket,
         dut_pool = dut_pool,

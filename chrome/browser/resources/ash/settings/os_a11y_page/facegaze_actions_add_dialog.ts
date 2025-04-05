@@ -265,8 +265,23 @@ export class FaceGazeAddActionDialogElement extends
   private pageNavigation_: Record<AddDialogPage, PageNavigation> =
       FACEGAZE_DEFINED_MACRO_FLOW;
   private detectedGestureCount_ = 0;
-  private holdingGesture_ = false;
+  private disableActionNextButton_: boolean;
+  private disableCustomKeyboardNextButton_: boolean;
+  private disableGestureNextButton_: boolean;
+  private displayGesturePreviousButton_: boolean;
+  private displayThresholdPreviousButton_: boolean;
+  private displayedGestures_: FacialGesture[];
   private eventTracker_: EventTracker = new EventTracker();
+  private holdingGesture_ = false;
+  private keyComboChangeButtonLabel_: string;
+  private localizedGestureCountLabel_: string;
+  private localizedGestureThresholdTitle_: string;
+  private localizedSelectGestureTitle_: string;
+  private shortcutInputLabel_: string;
+  private showCustomKeyboard_: boolean;
+  private showGestureThreshold_: boolean;
+  private showSelectAction_: boolean;
+  private showSelectGesture_: boolean;
   private stream_: MediaStream|null;
   private streamTrack_: MediaStreamTrack|null;
 

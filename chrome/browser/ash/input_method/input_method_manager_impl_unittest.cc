@@ -1574,7 +1574,8 @@ TEST_F(InputMethodManagerImplTest, SetLoginDefaultWithAllowedInputMethods) {
   EXPECT_TRUE(manager_->GetActiveIMEState()->SetAllowedInputMethods(allowed));
   EXPECT_TRUE(manager_->GetActiveIMEState()->ReplaceEnabledInputMethods(
       manager_->GetActiveIMEState()->GetAllowedInputMethodIds()));
-  manager_->GetActiveIMEState()->SetInputMethodLoginDefault();
+  manager_->GetActiveIMEState()->SetInputMethodLoginDefault(
+      /*is_in_oobe_context=*/false);
   EXPECT_THAT(manager_->GetActiveIMEState()->GetEnabledInputMethodIds(),
               testing::ElementsAre(ImeIdFromEngineId("xkb:us::eng"),
                                    ImeIdFromEngineId("xkb:de::ger"),

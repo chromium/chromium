@@ -53,6 +53,9 @@ String TimelineOffset::TimelineRangeNameToString(
 
     case NamedRange::kExitCrossing:
       return "exit-crossing";
+
+    case NamedRange::kScroll:
+      return "scroll";
   }
 }
 

@@ -455,6 +455,7 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
 
   return ContextProperties(
       InputOperandLayout::kNhwc, Resample2DAxes::kChannelsLast,
+      BatchNormalizationAxis::kAny,
       /*tensor_byte_length_limit=*/kTensorByteLengthLimit,
       {/*input=*/kAllDataTypesExceptUint4,
        /*constant=*/kAllDataTypesExceptUint4,
@@ -757,11 +758,13 @@ GraphBuilderTflite::TensorInfo::TensorInfo() = default;
 GraphBuilderTflite::TensorInfo::TensorInfo(int32_t index,
                                            ::tflite::TensorType data_type,
                                            base::span<const int32_t> dimensions,
-                                           std::optional<std::string> name)
+                                           std::optional<std::string> name,
+                                           bool has_quantize_params)
     : index(index),
       data_type(data_type),
       dimensions(dimensions.begin(), dimensions.end()),
-      name(std::move(name)) {}
+      name(std::move(name)),
+      has_quantize_params(has_quantize_params) {}
 GraphBuilderTflite::TensorInfo::~TensorInfo() = default;
 
 GraphBuilderTflite::TensorInfo::TensorInfo(const TensorInfo&) = default;
@@ -808,7 +811,7 @@ GraphBuilderTflite::SerializeOperand(
                                                operand_type, buffer_index,
                                                operand_name, quantize_params));
   TensorInfo tensor_info(tensor_index, operand_type, signed_operand_dimensions,
-                         operand.name);
+                         operand.name, !quantize_params.IsNull());
   operand_to_tensor_info_map_.insert({operand_id, tensor_info});
 
   return tensor_info;
@@ -845,6 +848,17 @@ GraphBuilderTflite::SerializeInputTensorInfo(
   if (it == operand_to_tensor_info_map_.end()) {
     ASSIGN_OR_RETURN(input_tensor_info,
                      SerializeOperand(operand_id, quantize_params));
+  } else if (!quantize_params.IsNull() && !it->second.has_quantize_params) {
+    // If the operand is already serialized but without quantize params, insert
+    // an identity node to attach quantize params.
+    const int32_t temporary_tensor_index = SerializeTemporaryTensor(
+        it->second.dimensions, it->second.data_type, quantize_params);
+    OperatorOffset operator_offset = SerializeIdentityOperation(
+        it->second.index, temporary_tensor_index, it->second.dimensions);
+    operators_.emplace_back(operator_offset);
+    input_tensor_info =
+        TensorInfo(temporary_tensor_index, it->second.data_type,
+                   it->second.dimensions, "", /*has_quantize_params=*/true);
   } else {
     input_tensor_info = it->second;
   }
@@ -1722,11 +1736,13 @@ int32_t GraphBuilderTflite::SerializeTensorWithBuffer(
 
 int32_t GraphBuilderTflite::SerializeTemporaryTensor(
     base::span<const int32_t> dimensions,
-    ::tflite::TensorType tensor_type) {
+    ::tflite::TensorType tensor_type,
+    QuantizateParametersOffset quantize_params) {
   const int32_t temporary_tensor_index =
       base::checked_cast<int32_t>(tensors_.size());
   tensors_.emplace_back(::tflite::CreateTensor(
-      builder_, builder_.CreateVector<int32_t>(dimensions), tensor_type));
+      builder_, builder_.CreateVector<int32_t>(dimensions), tensor_type,
+      /*buffer=*/0, /*name=*/0, quantize_params));
 
   return temporary_tensor_index;
 }

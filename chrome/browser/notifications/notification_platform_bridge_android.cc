@@ -13,7 +13,6 @@
 #include "base/android/jni_string.h"
 #include "base/check.h"
 #include "base/command_line.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
@@ -351,18 +350,6 @@ void NotificationPlatformBridgeAndroid::Display(
       persistent_notification_metadata
           ? persistent_notification_metadata->skip_ua_buttons
           : false);
-
-  // TODO(peilinwang) Some services send excessively large bitmaps. Remove
-  // after fixing https://crbug.com/390677997
-  const int kDumpThresholdKb = 3000;
-  size_t image_size_kb = image_bitmap.computeByteSize() / 1000;
-  if (image_size_kb >= kDumpThresholdKb) {
-    static auto* large_bitmap_key = base::debug::AllocateCrashKeyString(
-        "notification_bitmap_size", base::debug::CrashKeySize::Size32);
-    base::debug::SetCrashKeyString(large_bitmap_key,
-                                   base::StringPrintf("%d", image_size_kb));
-    base::debug::DumpWithoutCrashing();
-  }
 
   regenerated_notification_infos_[notification.id()] =
       RegeneratedNotificationInfo(scope_url, std::nullopt);

@@ -22,18 +22,14 @@ import org.chromium.build.annotations.NullMarked;
 @NullMarked
 public class NativeAndJavaSmartExceptionReporter {
     private static void uploadReport(Throwable exception, Callback<Throwable> pureJavaReport) {
-        PostTask.postTask(
-                TaskTraits.UI_BEST_EFFORT,
-                () -> {
-                    if (PureJavaExceptionHandler.isEnabled()) {
-                        // The Java exception reporter should be called on the UI thread to prevent
-                        // race conditions.
-                        pureJavaReport.onResult(exception);
-                    } else {
-                        // The native exception reporter requires to be called on the UI thread.
-                        JavaExceptionReporter.reportException(exception);
-                    }
-                });
+        if (PureJavaExceptionHandler.isEnabled()) {
+            pureJavaReport.onResult(exception);
+        } else {
+            // The native exception reporter requires to be called on the UI thread.
+            PostTask.postTask(
+                    TaskTraits.UI_BEST_EFFORT,
+                    () -> JavaExceptionReporter.reportException(exception));
+        }
     }
 
     public static void postUploadReport(Throwable exception, Callback<Throwable> pureJavaReport) {

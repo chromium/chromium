@@ -41,10 +41,7 @@ import org.chromium.ui.base.DeviceFormFactor;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @DoNotBatch(reason = "TODO(b/40743432): SyncTestRule doesn't support batching.")
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@EnableFeatures({
-    ChromeFeatureList.TAB_GROUP_SYNC_ANDROID,
-    ChromeFeatureList.TAB_GROUP_PANE_ANDROID
-})
+@EnableFeatures({ChromeFeatureList.TAB_GROUP_SYNC_ANDROID})
 @Restriction({DeviceFormFactor.PHONE, Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
 public class TabGroupSyncRemoteToLocalTest {
     private static final String TEST_URL1 = "/chrome/test/data/simple.html";

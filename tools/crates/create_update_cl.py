@@ -470,10 +470,11 @@ def FinishUpdatingCrate(args, title: str, diff: CratesDiff):
             if old_target_dir != new_target_dir:
                 Git("mv", "--force", old_target_dir, new_target_dir)
     GitAddRustFiles()
-    GitCommit(args,
-              "git mv <old dir> <new dir> (for better diff)",
-              error_if_no_changes=False)
-    Git("reset", "--hard", "HEAD^")  # Undoing `git mv ...`
+    did_commit = GitCommit(args,
+                           "git mv <old dir> <new dir> (for better diff)",
+                           error_if_no_changes=False)
+    if did_commit:
+        Git("reset", "--hard", "HEAD^")  # Undoing `git mv ...`
 
     # gnrt vendor
     print(f"  Running `gnrt vendor`...")
@@ -625,12 +626,14 @@ def GitCommit(args, title, error_if_no_changes=True):
         if args.upload:
             print(f"  Running `git cl upload ...` ...")
             GitClUpload("-m", title)
+        return True
     else:
         if error_if_no_changes:
             raise RuntimeError(
-                f"The '%title' commit unexpectedly has no changes")
+                f"The '{title}' commit unexpectedly has no changes")
         else:
             print("    Nothing to commit")
+            return False
 
 
 def ResolveCrateNameToCrateId(crate_name):

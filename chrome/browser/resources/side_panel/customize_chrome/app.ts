@@ -94,19 +94,20 @@ export class AppElement extends AppElementBase {
         ['#appearanceElement', '#editThemeButton']);
   }
 
-  protected page_: CustomizeChromePage = CustomizeChromePage.OVERVIEW;
-  protected modulesEnabled_: boolean =
+  protected accessor page_: CustomizeChromePage = CustomizeChromePage.OVERVIEW;
+  protected accessor modulesEnabled_: boolean =
       loadTimeData.getBoolean('modulesEnabled');
-  protected selectedCollection_: BackgroundCollection|null = null;
-  protected extensionsCardEnabled_: boolean =
+  protected accessor selectedCollection_: BackgroundCollection|null = null;
+  protected accessor extensionsCardEnabled_: boolean =
       loadTimeData.getBoolean('extensionsCardEnabled');
   // TODO(crbug.com/400952431) Footer section is hidden until the first time the
   // user has a 3P NTP or non-default and non-3P themed 1P NTP
-  protected footerEnabled_: boolean = loadTimeData.getBoolean('footerEnabled');
-  protected wallpaperSearchEnabled_: boolean =
+  protected accessor footerEnabled_: boolean =
+      loadTimeData.getBoolean('footerEnabled');
+  protected accessor wallpaperSearchEnabled_: boolean =
       loadTimeData.getBoolean('wallpaperSearchEnabled');
-  protected isSourceTabFirstPartyNtp_: boolean = true;
-  protected showEditTheme_: boolean = true;
+  protected accessor isSourceTabFirstPartyNtp_: boolean = true;
+  protected accessor showEditTheme_: boolean = true;
   private scrollToSectionListenerId_: number|null = null;
   private attachedTabStateUpdatedId_: number|null = null;
   private setThemeEditableId_: number|null = null;

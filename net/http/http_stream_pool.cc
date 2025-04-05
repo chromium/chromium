@@ -512,15 +512,8 @@ base::WeakPtr<SpdySession> HttpStreamPool::FindAvailableSpdySession(
           spdy_session_key, enable_ip_based_pooling, /*is_websocket=*/false,
           net_log);
   if (spdy_session) {
-    if (RequiresHTTP11(stream_key.destination(),
-                       stream_key.network_anonymization_key())) {
-      spdy_session->MakeUnavailable();
-      Group* group = GetGroup(stream_key);
-      if (group) {
-        group->OnRequiredHttp11();
-      }
-      return nullptr;
-    }
+    CHECK(!RequiresHTTP11(stream_key.destination(),
+                          stream_key.network_anonymization_key()));
   }
   return spdy_session;
 }

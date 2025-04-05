@@ -12,8 +12,9 @@ namespace blink {
 
 class CSSAngleInterpolationType : public CSSInterpolationType {
  public:
-  CSSAngleInterpolationType(PropertyHandle property,
-                            const PropertyRegistration* registration = nullptr)
+  explicit CSSAngleInterpolationType(
+      PropertyHandle property,
+      const PropertyRegistration* registration = nullptr)
       : CSSInterpolationType(property, registration) {
     DCHECK(property.IsCSSCustomProperty());
   }

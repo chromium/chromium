@@ -15,7 +15,7 @@ MAIN_EXPECTATION_FILE = os.path.join(constants.WEB_TEST_ROOT_DIR,
 
 TOP_LEVEL_EXPECTATION_FILES = {
     'ASANExpectations',
-    'CfTTestExpecations',
+    'CfTTestExpectations',
     'LeakExpectations',
     'MSANExpectations',
     # NeverFixTests omitted since they're never expected to be

@@ -33,10 +33,99 @@ chromium-metrics-reviews@google.com.
   <variant name="Moderate" summary="Moderate"/>
 </variants>
 
+<variants name="TriggerTypeAndEagerness">
+  <variant name="SpeculationRule_Conservative"
+      summary="SpeculationRules trigger, Conservative"/>
+  <variant name="SpeculationRule_Eager"
+      summary="SpeculationRules trigger, Eager"/>
+  <variant name="SpeculationRule_Moderate"
+      summary="SpeculationRules trigger, Moderate"/>
+  <variant name="SpeculationRuleFromAutoSpeculationRules_Conservative"
+      summary="SpeculationRulesFromAutoSpeculationRules trigger, Conservative"/>
+  <variant name="SpeculationRuleFromAutoSpeculationRules_Eager"
+      summary="SpeculationRulesFromAutoSpeculationRules trigger, Eager"/>
+  <variant name="SpeculationRuleFromAutoSpeculationRules_Moderate"
+      summary="SpeculationRulesFromAutoSpeculationRules trigger, Moderate"/>
+  <variant name="SpeculationRuleFromIsolatedWorld_Conservative"
+      summary="SpeculationRulesFromIsolatedWorld trigger, Conservative"/>
+  <variant name="SpeculationRuleFromIsolatedWorld_Eager"
+      summary="SpeculationRulesFromIsolatedWorld trigger, Eager"/>
+  <variant name="SpeculationRuleFromIsolatedWorld_Moderate"
+      summary="SpeculationRulesFromIsolatedWorld trigger, Moderate"/>
+</variants>
+
 <variants name="WasServed">
   <variant name="NotServed" summary="not served"/>
   <variant name="Served" summary="served"/>
 </variants>
+
+<histogram
+    name="Prefetch.PrefetchContainer.AddedToHeaderDeterminedSuccessfully.{TriggerTypeAndEagerness}.NoEmbedderSuffix"
+    units="ms" expires_after="2025-10-01">
+  <owner>kenoss@chromium.org</owner>
+  <owner>chrome-loading@chromium.org</owner>
+  <summary>
+    Records duration from when `PrefetchContainer` is added to `PrefetchService`
+    to when `PrefetchContainer` received non-redirect header.
+
+    This metrics is recorded when `PrefetchContainer::dtor()` is called if it
+    received non-redirect header.
+
+    This histgram is only recorded for prefetches of {TriggerTypeAndEagerness}.
+  </summary>
+  <token key="TriggerTypeAndEagerness" variants="TriggerTypeAndEagerness"/>
+</histogram>
+
+<histogram
+    name="Prefetch.PrefetchContainer.AddedToInitialEligibility.{TriggerTypeAndEagerness}.NoEmbedderSuffix"
+    units="ms" expires_after="2025-10-01">
+  <owner>kenoss@chromium.org</owner>
+  <owner>chrome-loading@chromium.org</owner>
+  <summary>
+    Records duration from when `PrefetchContainer` is added to `PrefetchService`
+    to when `PrefetchContainer` received initial eligibility.
+
+    This metrics is recorded when `PrefetchContainer::dtor()` is called if it
+    passed initial eligibility check.
+
+    This histgram is only recorded for prefetches of {TriggerTypeAndEagerness}.
+  </summary>
+  <token key="TriggerTypeAndEagerness" variants="TriggerTypeAndEagerness"/>
+</histogram>
+
+<histogram
+    name="Prefetch.PrefetchContainer.AddedToPrefetchCompletedSuccessfully.{TriggerTypeAndEagerness}.NoEmbedderSuffix"
+    units="ms" expires_after="2025-10-01">
+  <owner>kenoss@chromium.org</owner>
+  <owner>chrome-loading@chromium.org</owner>
+  <summary>
+    Records duration from when `PrefetchContainer` is added to `PrefetchService`
+    to when `PrefetchContainer` finished load successfully.
+
+    This metrics is recorded when `PrefetchContainer::dtor()` is called if it
+    completed the load successfully.
+
+    This histgram is only recorded for prefetches of {TriggerTypeAndEagerness}.
+  </summary>
+  <token key="TriggerTypeAndEagerness" variants="TriggerTypeAndEagerness"/>
+</histogram>
+
+<histogram
+    name="Prefetch.PrefetchContainer.AddedToPrefetchStarted.{TriggerTypeAndEagerness}.NoEmbedderSuffix"
+    units="ms" expires_after="2025-10-01">
+  <owner>kenoss@chromium.org</owner>
+  <owner>chrome-loading@chromium.org</owner>
+  <summary>
+    Records duration from when `PrefetchContainer` is added to `PrefetchService`
+    to when `PrefetchService` starts the load of it.
+
+    This metrics is recorded when `PrefetchContainer::dtor()` is called if it
+    started the load.
+
+    This histgram is only recorded for prefetches of {TriggerTypeAndEagerness}.
+  </summary>
+  <token key="TriggerTypeAndEagerness" variants="TriggerTypeAndEagerness"/>
+</histogram>
 
 <histogram
     name="PrefetchProxy.AfterClick.BlockUntilHeadDuration2.{WasServed}.{SpeculationEagerness}"

@@ -19,6 +19,7 @@ features:
   dynamic_refresh: true
   per_profile: true
 future_on:
+- android
 - fuchsia
 items:
 - caption: Disallow usage of the Developer Tools on apps and extensions

@@ -1135,7 +1135,7 @@ TEST_F(VisibleUnitsLineTest, TextOverflowEllipsis1) {
       font: 10px/10px Ahem;
     })HTML");
   SetBodyContent("<div>foo foo</div>");
-  Element* div = GetDocument().QuerySelector(AtomicString("div"));
+  Element* div = QuerySelector("div");
   Node* text = div->firstChild();
   EXPECT_EQ(
       Position(text, 0),
@@ -1160,7 +1160,7 @@ TEST_F(VisibleUnitsLineTest, TextOverflowEllipsis2) {
       width: 75px; /* Something bigger than 50px */
     })HTML");
   SetBodyContent("<div><span>x</span>&#x20;</div>");
-  Element* span = GetDocument().QuerySelector(AtomicString("span"));
+  Element* span = QuerySelector("span");
 
   // Should not crash
   const PositionWithAffinity& start_of_line =
@@ -1177,7 +1177,7 @@ TEST_F(VisibleUnitsLineTest, InSameLineWithBidiReordering) {
       "<span dir='ltr'>a&#x20;</span>&#x20;"
       "<div></div><div></div>"
       "</span>");
-  Element* span = GetDocument().QuerySelector(AtomicString("span > span"));
+  Element* span = QuerySelector("span > span");
   PositionWithAffinity p1(Position(span->nextSibling(), 0));
   PositionWithAffinity p2(Position(span->firstChild(), 2));
 

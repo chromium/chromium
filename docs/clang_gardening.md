@@ -1,48 +1,77 @@
 # Clang Gardening
 
-Chromium bundles its own pre-built version of [Clang](clang.md). This is done so
-that Chromium developers have access to the latest and greatest developer tools
-provided by Clang and LLVM (ASan, CFI, coverage, etc). In order to [update the
-compiler](updating_clang.md) (roll clang), it has to be tested so that we can be
-confident that it works in the configurations that Chromium cares about.
+Chromium bundles its own pre-built version of [Clang](clang.md) and
+[Rust](rust.md). This is done so that Chromium developers have access to the
+latest and greatest developer tools provided by Clang and LLVM (ASan, CFI,
+coverage, etc). In order to [update the compiler](updating_clang.md)
+(roll clang), it has to be tested so that we can be confident that it works
+in the configurations that Chromium cares about.
 
-We maintain a [waterfall of
-builders](https://ci.chromium.org/p/chromium/g/chromium.clang/console) that
-continuously build fresh versions of Clang and use them to build and test
-Chromium. "Clang gardening" is the process of monitoring that waterfall,
-determining if any compile or test failures are due to an upstream compiler
-change, filing bugs upstream, and often reverting bad changes in LLVM. This
-document describes some of the processes and techniques for doing that.
+The Clang gardener is responsible for monitoring the health of the latest
+versions of Clang + Rust, and how they work with the latest version of
+Chromium; raise any issues by filing bugs; address those issues or find someone
+to do so; and ultimately attempt to update the compiler by performing [a Clang
+roll](updating_clang.md).
 
-Some may find the
-[sheriff-o-matic](https://sheriff-o-matic.appspot.com/chromium.clang)
-view of the waterfall easier to work with.
+There are two main sources of information about the state of the build:
 
-To keep others informed, [file a
-bug](https://bugs.chromium.org/p/chromium/issues/entry).
-earlier rather than later for build breaks likely caused by changes in
-clang or the rest fo the toolchain. Make sure to set the component field to
-`Tools > LLVM`, which will include the entire Chrome toolchain (Lexan) team.
+1. Buildbots on the [tip-of-tree clang
+   waterfall](https://ci.chromium.org/p/chromium/g/chromium.clang/console)
+   continuously build the latest version of Clang and use that to build and
+   test Chromium in various build configurations. These provide the fastest
+   signal about problems such as the compiler crashing, new warnings causing
+   build failures, miscompiles causing test failures, etc. Unlike production
+   buildbots, these build Clang with assertions enabled to detect as many
+   problems as possible. (Clicking 'Log in' in the top right corner with a
+   Google account will reveal a few more bots.)
 
-At the beginning of your gardener rotation, it may be
-useful to [search for recent bot
-breaks](https://bugs.chromium.org/p/chromium/issues/list?q=component%3ATools%3ELLVM&can=2&sort=-modified).
-We prefer searching like this to having gardeners compose status email at the
-end of their week.
+1. Automatically generated [Clang roll
+   CLs](https://chromium-review.googlesource.com/q/path:tools/clang/scripts/update.py)
+   ("dry run CLs"). These are generated every few hours by a Cron job and
+   attempt to package the latest version of Clang and Rust. That process can
+   fail for many reasons, especially due to failures in the compilers' test
+   suites. If the CLs stop being generated, that also needs to be addressed.
 
-In addition to the waterfall, make sure
-[dry run attempts at updating clang](https://chromium-review.googlesource.com/q/path:tools/clang/scripts/update.py)
-are green. As part of the Clang release process we run upstream LLVM tests.
-Ideally these tests are covered by upstream LLVM bots and breakages are
-quickly noticed and fixed by the original author of a breaking commit,
-but that is sadly not always the case.
+Issues should be filed in the [Chromium > Tools >
+LLVM](https://g-issues.chromium.org/issues?q=status:open%20componentid:1457173)
+bug tracker component, and marked as blockers of the tracking bug for the next
+toolchain update. That bug is typically named "roll clang and rust again"
+[example](https://crbug.com/404285928). The tracking bug should be filed as a
+P1 Process bug, and blockers should be filed and treated as P1 bugs.
 
-Each gardener should attempt to update the compiler by performing
-[a Clang roll](updating_clang.md) during their week, assuming the bots are
-green enough.
+Here is a suggested set of steps to iterate over while gardening:
 
-The gardener is also responsible for taking notes during the weekly Chrome toolchain
-(Lexan) status sync-up meeting.
+* If there is no bug for tracking the next toolchain update, file one.
+
+* Go over the blockers of the toolchain update tracking bug. Close obsolete
+  ones, try to fix or find someone to fix the remaining ones.
+
+* Check the [tip-of-tree clang
+  waterfall](https://ci.chromium.org/p/chromium/g/chromium.clang/console) and
+  file bugs for any issues.
+
+* Check the automatic [Clang roll
+  CLs](https://chromium-review.googlesource.com/q/path:tools/clang/scripts/update.py).
+  File a bug for any packaging issues. File a bug if the CLs stop being produced.
+
+* When packaging succeeds on a roll CL, follow the instructions in [update the
+  compiler](updating_clang.md) to push the packages to production and do a
+  commit queue dry run. File a bug for any issues that come up.
+
+* If the commit queue dry run was successful, review and land the CL.
+
+The key to success is to detect as many problems as early as possible. Rather
+than stopping to dig deeply into the first problem encountered, it's better to
+do a broad sweep to find all the problems. That way they can be shared among
+the team. Also, problems are often much easier to address when found early.
+
+The other key to success is communication. The bug tracker is the main tool for
+that, and the other is the team chat room. When it's not clear whether
+something is an issue or not, how to resolve an problem, how something works,
+etc., just ask away.
+
+The gardener is also responsible for taking notes during the weekly Chrome
+toolchain sync meeting.
 
 [TOC]
 
@@ -57,6 +86,9 @@ There are also some Apple bots running at
 http://green.lab.llvm.org/job/llvm.org/ which mirror test failures we see on
 Mac. Reverting the culprit change upstream with a pointer to a public bot
 showing the test failure is encouraged.
+
+See LLVM's [Patch reversion
+policy](https://llvm.org/docs/DeveloperPolicy.html#patch-reversion-policy).
 
 ## Disk out of space
 

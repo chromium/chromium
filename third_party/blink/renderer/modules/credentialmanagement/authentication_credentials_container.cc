@@ -2267,20 +2267,6 @@ void AuthenticationCredentialsContainer::GetForIdentity(
 
   mojom::blink::RpMode rp_mode = mojom::blink::RpMode::kPassive;
   auto v8_rp_mode = identity_options.mode();
-  // TODO(crbug.com/372198646): remove the debugging aid enums after shipping
-  // active mode.
-  if (v8_rp_mode ==
-          blink::V8IdentityCredentialRequestOptionsMode::Enum::kWidget ||
-      v8_rp_mode ==
-          blink::V8IdentityCredentialRequestOptionsMode::Enum::kButton) {
-    resolver->GetExecutionContext()->AddConsoleMessage(
-        MakeGarbageCollected<ConsoleMessage>(
-            mojom::blink::ConsoleMessageSource::kJavaScript,
-            mojom::blink::ConsoleMessageLevel::kWarning,
-            "The mode button/widget are renamed to active/passive "
-            "respectively and will be deprecated soon."));
-  }
-
   rp_mode = mojo::ConvertTo<mojom::blink::RpMode>(v8_rp_mode);
   if (rp_mode == mojom::blink::RpMode::kActive) {
     if (identity_provider_ptrs.size() > 1u) {

@@ -335,38 +335,6 @@ export class SettingsInternetDetailPageElement extends
       proxyExpanded_: Boolean,
 
       dataUsageExpanded_: Boolean,
-
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kConfigureEthernet,
-          Setting.kEthernetAutoConfigureIp,
-          Setting.kEthernetDns,
-          Setting.kEthernetProxy,
-          Setting.kDisconnectWifiNetwork,
-          Setting.kPreferWifiNetwork,
-          Setting.kForgetWifiNetwork,
-          Setting.kWifiAutoConfigureIp,
-          Setting.kWifiDns,
-          Setting.kWifiHidden,
-          Setting.kWifiProxy,
-          Setting.kWifiAutoConnectToNetwork,
-          Setting.kCellularSimLock,
-          Setting.kCellularRoaming,
-          Setting.kCellularApn,
-          Setting.kDisconnectCellularNetwork,
-          Setting.kCellularAutoConfigureIp,
-          Setting.kCellularDns,
-          Setting.kCellularProxy,
-          Setting.kCellularAutoConnectToNetwork,
-          Setting.kDisconnectTetherNetwork,
-          Setting.kWifiMetered,
-          Setting.kCellularMetered,
-        ]),
-      },
     };
   }
 
@@ -388,6 +356,34 @@ export class SettingsInternetDetailPageElement extends
   globalPolicy?: GlobalPolicy;
   guid: string;
   managedNetworkAvailable: boolean;
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kConfigureEthernet,
+    Setting.kEthernetAutoConfigureIp,
+    Setting.kEthernetDns,
+    Setting.kEthernetProxy,
+    Setting.kDisconnectWifiNetwork,
+    Setting.kPreferWifiNetwork,
+    Setting.kForgetWifiNetwork,
+    Setting.kWifiAutoConfigureIp,
+    Setting.kWifiDns,
+    Setting.kWifiHidden,
+    Setting.kWifiProxy,
+    Setting.kWifiAutoConnectToNetwork,
+    Setting.kCellularSimLock,
+    Setting.kCellularRoaming,
+    Setting.kCellularApn,
+    Setting.kDisconnectCellularNetwork,
+    Setting.kCellularAutoConfigureIp,
+    Setting.kCellularDns,
+    Setting.kCellularProxy,
+    Setting.kCellularAutoConnectToNetwork,
+    Setting.kDisconnectTetherNetwork,
+    Setting.kWifiMetered,
+    Setting.kCellularMetered,
+  ]);
+
   private advancedExpanded_: boolean;
   private alwaysOnVpn_: chrome.settingsPrivate.PrefObject<boolean>;
   private applyingChanges_: boolean;

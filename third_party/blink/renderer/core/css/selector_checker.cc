@@ -89,6 +89,7 @@
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition.h"
+#include "third_party/blink/renderer/core/view_transition/view_transition_pseudo_element_base.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
@@ -1655,15 +1656,21 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       return IsLastOfType(element, element.TagQName());
     }
     case CSSSelector::kPseudoOnlyChild: {
-      if (IsTransitionPseudoElement(context.pseudo_id)) {
-        DCHECK(element.IsDocumentElement());
-        DCHECK(context.pseudo_argument);
+      PseudoId pseudo_id_to_check =
+          element.IsPseudoElement() ? element.GetPseudoId() : context.pseudo_id;
+      if (IsTransitionPseudoElement(pseudo_id_to_check)) {
+        DCHECK(element.IsDocumentElement() && context.pseudo_id ||
+               element.IsPseudoElement());
+        DCHECK(context.pseudo_argument || element.IsPseudoElement());
 
         auto* transition =
             ViewTransitionUtils::GetTransition(element.GetDocument());
         DCHECK(transition);
-        return transition->MatchForOnlyChild(context.pseudo_id,
-                                             *context.pseudo_argument);
+        const AtomicString& pseudo_argument = element.IsPseudoElement()
+                                                  ? element.GetPseudoArgument()
+                                                  : *context.pseudo_argument;
+        return transition->MatchForOnlyChild(pseudo_id_to_check,
+                                             pseudo_argument);
       }
 
       ContainerNode* parent = element.ParentElementOrDocumentFragment();
@@ -2464,7 +2471,7 @@ bool SelectorChecker::CheckPseudoElement(const SelectorCheckingContext& context,
   const CSSSelector& selector = *context.selector;
   PseudoId pseudo_id = selector.GetPseudoId(selector.GetPseudoType());
   // Only descend down the ancestors chain if matching a (real) PseudoElement.
-  if (pseudo_id != kPseudoIdNone && pseudo_id <= kLastTrackedPublicPseudoId) {
+  if (pseudo_id != kPseudoIdNone && pseudo_id <= kLastPublicPseudoId) {
     result.DescendToNextPseudoElement();
   }
   Element& element =
@@ -2570,7 +2577,14 @@ bool SelectorChecker::CheckPseudoElement(const SelectorCheckingContext& context,
         return true;
       }
 
-      if (selector_pseudo_id != context.pseudo_id) {
+      // Here, and below, the IsPseudoElement check is for a new pseudo element
+      // rules matching approach, where the matching is done based on actual
+      // PseudoElement object and not Element + pseudo_id. We need to keep both
+      // versions as sometimes the matching is happening the old way and
+      // sometimes the new one.
+      PseudoId pseudo_id_to_check =
+          element.IsPseudoElement() ? element.GetPseudoId() : context.pseudo_id;
+      if (selector_pseudo_id != pseudo_id_to_check) {
         return false;
       }
       result.dynamic_pseudo = context.pseudo_id;
@@ -2581,11 +2595,14 @@ bool SelectorChecker::CheckPseudoElement(const SelectorCheckingContext& context,
       CHECK(!selector.IdentList().empty());
       const AtomicString& name_or_wildcard = selector.IdentList()[0];
 
-      // note that the pseudo_ident_list_ is the class list, and
-      // pseudo_argument_ is the name, while in the selector the IdentList() is
+      const String& pseudo_argument = element.IsPseudoElement()
+                                          ? element.GetPseudoArgument()
+                                          : pseudo_argument_;
+      // note that the pseudo_ident_list is the class list, and
+      // pseudo_argument is the name, while in the selector the IdentList() is
       // both the name and the classes.
       if (name_or_wildcard != CSSSelector::UniversalSelectorAtom() &&
-          name_or_wildcard != pseudo_argument_) {
+          name_or_wildcard != pseudo_argument) {
         return false;
       }
 
@@ -2595,13 +2612,18 @@ bool SelectorChecker::CheckPseudoElement(const SelectorCheckingContext& context,
       // element if the class list value in named elements for the
       // pseudo-element’s view-transition-name contains all of those values.
 
+      const Vector<AtomicString>& pseudo_ident_list =
+          element.IsPseudoElement()
+              ? To<ViewTransitionPseudoElementBase>(element)
+                    .ViewTransitionClassList()
+              : pseudo_ident_list_;
       // selector.IdentList() is equivalent to
       // <pt-name-selector><pt-class-selector>, as in [name, class, class, ...]
       // so we check that all of its items excluding the first one are
-      // contained in the pseudo element's classes (pseudo_ident_list_).
+      // contained in the pseudo element's classes (pseudo_ident_list).
       return std::ranges::all_of(base::span(selector.IdentList()).subspan(1ul),
                                  [&](const AtomicString& class_from_selector) {
-                                   return base::Contains(pseudo_ident_list_,
+                                   return base::Contains(pseudo_ident_list,
                                                          class_from_selector);
                                  });
     }

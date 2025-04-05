@@ -10,7 +10,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/add_account_signin/add_account_signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin/consistency_promo_signin_coordinator.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/fullscreen_signin/fullscreen_signin_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/fullscreen_signin/coordinator/fullscreen_signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/instant_signin/instant_signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator+protected.h"

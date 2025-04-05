@@ -205,47 +205,6 @@ AddressDataCleaner::CalculateMinimalIncompatibleProfileWithTypeSets(
       });
 }
 
-// static
-bool AddressDataCleaner::IsTokenLowQualityForDeduplicationPurposes(
-    const AutofillProfile& profile,
-    FieldType type) {
-  // A token is considered low quality for deduplication purposes, if the
-  // majority of its observers are "bad", as defined by the switch below.
-  auto [count_good, count_bad] =
-      CountObservationsByQualityForDeduplicationPurposes(
-          profile.token_quality().GetObservationTypesForFieldType(type));
-  return count_good + count_bad >= 4 && count_bad - count_good >= 2;
-}
-
-// static
-std::pair<size_t, size_t>
-AddressDataCleaner::CountObservationsByQualityForDeduplicationPurposes(
-    base::span<const ProfileTokenQuality::ObservationType> observations) {
-  using ObservationType = ProfileTokenQuality::ObservationType;
-  size_t count_good = 0, count_bad = 0;
-  for (ObservationType observation : observations) {
-    switch (observation) {
-      case ObservationType::kAccepted:
-        count_good++;
-        break;
-      case ObservationType::kEditedToSimilarValue:
-      case ObservationType::kEditedToDifferentTokenOfSameProfile:
-      case ObservationType::kEditedToSameTokenOfOtherProfile:
-      case ObservationType::kEditedToDifferentTokenOfOtherProfile:
-      case ObservationType::kEditedFallback:
-        count_bad++;
-        break;
-      case ObservationType::kUnknown:
-      case ObservationType::kPartiallyAccepted:
-      case ObservationType::kEditedValueCleared:
-        // These observation types are considered neutral. They are irrelevant
-        // for deduplication purposes.
-        break;
-    }
-  }
-  return {count_good, count_bad};
-}
-
 void AddressDataCleaner::ApplyDeduplicationRoutine() {
   // Since deduplication (more specifically, comparing profiles) depends on the
   // `AlternativeStateNameMap`, make sure that it gets populated first.

@@ -141,6 +141,7 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
       {"safetyCheckExtensionsKeep", IDS_CONFIRM_DOWNLOAD},
       {"stackTrace", IDS_EXTENSIONS_ERROR_STACK_TRACE},
       {"sidebarDiscoverMore", IDS_EXTENSIONS_SIDEBAR_DISCOVER_MORE},
+      {"sidebarDocsPromo", IDS_EXTENSIONS_WHATS_NEW_SIDEBAR_PROMO},
       {"keyboardShortcuts", IDS_EXTENSIONS_SIDEBAR_KEYBOARD_SHORTCUTS},
       {"incognitoInfoWarning", IDS_EXTENSIONS_INCOGNITO_WARNING},
       {"userScriptInfoWarning", IDS_EXTENSIONS_ALLOW_USER_SCRIPTS_WARNING},
@@ -459,6 +460,14 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
                   extension_urls::kExtensionsSidebarUtmSource),
               g_browser_process->GetApplicationLocale())
               .spec()));
+  source->AddString(
+      "extensionsWhatsNewURL",
+      base::ASCIIToUTF16(google_util::AppendGoogleLocaleParam(
+                             extension_urls::AppendUtmSource(
+                                 extension_urls::GetDocsWhatsNewURL(),
+                                 extension_urls::kExtensionsSidebarUtmSource),
+                             g_browser_process->GetApplicationLocale())
+                             .spec()));
   source->AddString(
       "hostPermissionsLearnMoreLink",
       extension_permissions_constants::kRuntimeHostPermissionsHelpURL);

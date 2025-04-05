@@ -128,6 +128,7 @@ public class TabGroupListBottomSheetMediator {
         GroupWindowChecker windowChecker = new GroupWindowChecker(mTabGroupSyncService, mFilter);
         List<SavedTabGroup> sortedTabGroups =
                 windowChecker.getSortedGroupList(
+                        this::shouldShowGroupByState,
                         (a, b) -> Long.compare(b.updateTimeMs, a.updateTimeMs));
         for (SavedTabGroup savedTabGroup : sortedTabGroups) {
             TabGroupListBottomSheetRowMediator rowMediator =
@@ -169,5 +170,10 @@ public class TabGroupListBottomSheetMediator {
         var tabGroupId = tab.getTabGroupId();
         if (tabGroupId == null) return;
         mTabGroupCreationCallback.onTabGroupCreated(tabGroupId);
+    }
+
+    private boolean shouldShowGroupByState(@GroupWindowState int groupWindowState) {
+        return groupWindowState != GroupWindowState.IN_ANOTHER
+                && groupWindowState != GroupWindowState.HIDDEN;
     }
 }

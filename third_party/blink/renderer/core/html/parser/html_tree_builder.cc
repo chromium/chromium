@@ -1035,15 +1035,6 @@ void HTMLTreeBuilder::ProcessStartTagForInBody(AtomicHTMLToken* token) {
     case HTMLTag::kTr:
       ParseError(token);
       break;
-    case HTMLTag::kPermissionOrUnknown:
-      if (RuntimeEnabledFeatures::PermissionElementEnabled(
-              tree_.OwnerDocumentForCurrentNode().GetExecutionContext())) {
-        tree_.ReconstructTheActiveFormattingElements();
-        tree_.InsertSelfClosingHTMLElementDestroyingToken(token);
-        frameset_ok_ = false;
-        break;
-      }
-      [[fallthrough]];
     default:
       if (token->GetName() == mathml_names::kMathTag.LocalName()) {
         tree_.ReconstructTheActiveFormattingElements();

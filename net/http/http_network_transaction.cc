@@ -219,6 +219,9 @@ HttpNetworkTransaction::~HttpNetworkTransaction() {
 int HttpNetworkTransaction::Start(const HttpRequestInfo* request_info,
                                   CompletionOnceCallback callback,
                                   const NetLogWithSource& net_log) {
+  TRACE_EVENT("net", "HttpNetworkTransaction::Start",
+              NetLogWithSourceToFlow(net_log), "url", request_info->url);
+
   if (request_info->load_flags & LOAD_ONLY_FROM_CACHE)
     return ERR_CACHE_MISS;
 
@@ -278,6 +281,9 @@ int HttpNetworkTransaction::RestartIgnoringLastError(
   DCHECK(!stream_request_.get());
   DCHECK_EQ(STATE_NONE, next_state_);
 
+  TRACE_EVENT("net", "HttpNetworkTransaction::RestartIgnoringLastError",
+              NetLogWithSourceToFlow(net_log_));
+
   if (!CheckMaxRestarts())
     return ERR_TOO_MANY_RETRIES;
 
@@ -303,6 +309,9 @@ int HttpNetworkTransaction::RestartWithCertificate(
   DCHECK(!stream_request_.get());
   DCHECK(!stream_.get());
   DCHECK_EQ(STATE_NONE, next_state_);
+
+  TRACE_EVENT("net", "HttpNetworkTransaction::RestartWithCertificate",
+              NetLogWithSourceToFlow(net_log_));
 
   if (!CheckMaxRestarts())
     return ERR_TOO_MANY_RETRIES;
@@ -333,6 +342,9 @@ int HttpNetworkTransaction::RestartWithCertificate(
 
 int HttpNetworkTransaction::RestartWithAuth(const AuthCredentials& credentials,
                                             CompletionOnceCallback callback) {
+  TRACE_EVENT("net", "HttpNetworkTransaction::RestartWithAuth",
+              NetLogWithSourceToFlow(net_log_));
+
   if (!CheckMaxRestarts())
     return ERR_TOO_MANY_RETRIES;
 
@@ -429,6 +441,8 @@ void HttpNetworkTransaction::DidDrainBodyForAuthRestart(bool keep_alive) {
       // Close the stream and mark it as not_reusable.  Even in the
       // keep_alive case, we've determined that the stream_ is not
       // reusable if new_stream is NULL.
+      TRACE_EVENT("net", "HttpNetworkTransaction::DidDrainBodyForAuthRestart",
+                  NetLogWithSourceToFlow(net_log_));
       stream_->Close(true);
       next_state_ = STATE_CREATE_STREAM;
     } else {
@@ -649,6 +663,8 @@ void HttpNetworkTransaction::SetIsSharedDictionaryReadAllowedCallback(
 }
 
 int HttpNetworkTransaction::ResumeNetworkStart() {
+  TRACE_EVENT("net", "HttpNetworkTransaction::ResumeNetworkStart",
+              NetLogWithSourceToFlow(net_log_));
   DCHECK_EQ(next_state_, STATE_CREATE_STREAM);
   return DoLoop(OK);
 }
@@ -946,6 +962,8 @@ int HttpNetworkTransaction::DoLoop(int result) {
 }
 
 int HttpNetworkTransaction::DoNotifyBeforeCreateStream() {
+  TRACE_EVENT("net", "HttpNetworkTransaction::NotifyBeforeCreateStream",
+              NetLogWithSourceToFlow(net_log_));
   next_state_ = STATE_CREATE_STREAM;
   bool defer = false;
   if (!before_network_start_callback_.is_null())
@@ -957,7 +975,8 @@ int HttpNetworkTransaction::DoNotifyBeforeCreateStream() {
 
 int HttpNetworkTransaction::DoCreateStream() {
   TRACE_EVENT("net", "HttpNetworkTransaction::CreateStream",
-              NetLogWithSourceToFlow(net_log_));
+              NetLogWithSourceToFlow(net_log_), "retry_attempts",
+              retry_attempts_, "num_restarts", num_restarts_);
   response_.network_accessed = true;
 
   next_state_ = STATE_CREATE_STREAM_COMPLETE;
@@ -1382,7 +1401,9 @@ int HttpNetworkTransaction::DoReadHeaders() {
 
 int HttpNetworkTransaction::DoReadHeadersComplete(int result) {
   TRACE_EVENT("net", "HttpNetworkTransaction::ReadHeadersComplete",
-              NetLogWithSourceToFlow(net_log_), "result", result);
+              NetLogWithSourceToFlow(net_log_), "result", result,
+              "response_code",
+              response_.headers ? response_.headers->response_code() : -1);
   // We can get a ERR_SSL_CLIENT_AUTH_CERT_NEEDED here due to SSL renegotiation.
   // Server certificate errors are impossible. Rather than reverify the new
   // server certificate, BoringSSL forbids server certificates from changing.
@@ -2099,6 +2120,10 @@ bool HttpNetworkTransaction::CheckMaxRestarts() {
 
 void HttpNetworkTransaction::ResetConnectionAndRequestForResend(
     RetryReason retry_reason) {
+  TRACE_EVENT("net",
+              "HttpNetworkTransaction::ResetConnectionAndRequestForResend",
+              NetLogWithSourceToFlow(net_log_), "retry_reason", retry_reason);
+
   reset_connection_and_request_for_resend_start_time_ = base::TimeTicks::Now();
 
   // TODO:(crbug.com/1495705): Remove this CHECK after fixing the bug.

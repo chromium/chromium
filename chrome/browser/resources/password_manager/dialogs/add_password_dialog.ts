@@ -206,18 +206,18 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
     ];
   }
 
-  private website_: string;
-  private username_: string;
-  private password_: string;
-  private note_: string;
-  private usernamesBySignonRealm_: Map<string, Set<string>>;
-  private websiteErrorMessage_: string|null;
-  private usernameErrorMessage_: string|null;
-  private canAddPassword_: boolean;
-  private isPasswordInvalid_: boolean;
-  private urlCollection_: chrome.passwordsPrivate.UrlCollection|null;
-  private readonly storeOptionAccountValue_: string;
-  private readonly storeOptionDeviceValue_: string;
+  declare private website_: string;
+  declare private username_: string;
+  declare private password_: string;
+  declare private note_: string;
+  declare private usernamesBySignonRealm_: Map<string, Set<string>>;
+  declare private websiteErrorMessage_: string|null;
+  declare private usernameErrorMessage_: string|null;
+  declare private canAddPassword_: boolean;
+  declare private isPasswordInvalid_: boolean;
+  declare private urlCollection_: chrome.passwordsPrivate.UrlCollection|null;
+  declare private readonly storeOptionAccountValue_: string;
+  declare private readonly storeOptionDeviceValue_: string;
 
   private setSavedPasswordsListener_: (
       (entries: chrome.passwordsPrivate.PasswordUiEntry[]) => void)|null = null;

@@ -22,8 +22,12 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/version_info/android/channel_getter.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/download_item_utils.h"
+#include "google_apis/common/api_key_request_util.h"
+#include "google_apis/google_api_keys.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "url/url_constants.h"
 
 namespace safe_browsing {
@@ -200,6 +204,13 @@ void DownloadProtectionDelegateAndroid::PreSerializeRequest(
     return;
   }
   *request_proto.mutable_referring_app_info() = GetReferringAppInfoProto(info);
+}
+
+void DownloadProtectionDelegateAndroid::FinalizeResourceRequest(
+    network::ResourceRequest& resource_request) {
+  google_apis::AddAPIKeyToRequest(
+      resource_request,
+      google_apis::GetAPIKey(version_info::android::GetChannel()));
 }
 
 const GURL& DownloadProtectionDelegateAndroid::GetDownloadRequestUrl() const {

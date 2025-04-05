@@ -1376,10 +1376,7 @@ TEST_P(ImagePaintTimingDetectorFencedFrameTest, NotReported) {
 class ImagePaintTimingDetectorTransparentPlaceholderImageTest
     : public ImagePaintTimingDetectorTest {
  public:
-  ImagePaintTimingDetectorTransparentPlaceholderImageTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kSimplifyLoadingTransparentPlaceholderImage);
-  }
+  ImagePaintTimingDetectorTransparentPlaceholderImageTest() = default;
   ~ImagePaintTimingDetectorTransparentPlaceholderImageTest() override {
     // Must destruct all objects before toggling back feature flags.
     std::unique_ptr<base::test::TaskEnvironment> task_environment;
@@ -1387,7 +1384,6 @@ class ImagePaintTimingDetectorTransparentPlaceholderImageTest
       // Create a TaskEnvironment for the garbage collection below.
       task_environment = std::make_unique<base::test::TaskEnvironment>();
     }
-    scoped_feature_list_.Reset();
     WebHeap::CollectAllGarbageForTesting();
   }
 
@@ -1398,9 +1394,6 @@ class ImagePaintTimingDetectorTransparentPlaceholderImageTest
         url_test_helpers::ToKURL(TRANSPARENT_PLACEHOLDER_IMAGE));
     To<HTMLImageElement>(element)->SetImageForTest(resource->GetContent());
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_PAINT_TEST_SUITE_P(

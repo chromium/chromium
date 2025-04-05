@@ -35,12 +35,6 @@
 
 namespace blink {
 
-SVGPropertyBase* SVGEnumeration::CloneForAnimation(const String& value) const {
-  SVGEnumeration* svg_enumeration = Clone();
-  svg_enumeration->SetValueAsString(value);
-  return svg_enumeration;
-}
-
 String SVGEnumeration::ValueAsString() const {
   if (const char* enum_name = map_.NameFromValue(value_))
     return String(enum_name);

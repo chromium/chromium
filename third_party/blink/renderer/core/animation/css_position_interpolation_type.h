@@ -16,7 +16,7 @@ namespace blink {
 
 class CSSPositionInterpolationType : public CSSLengthListInterpolationType {
  public:
-  CSSPositionInterpolationType(PropertyHandle property)
+  explicit CSSPositionInterpolationType(PropertyHandle property)
       : CSSLengthListInterpolationType(property) {}
 
  private:

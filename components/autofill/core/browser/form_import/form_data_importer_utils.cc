@@ -163,8 +163,8 @@ void FormAssociator::TrackFormAssociations(const url::Origin& origin,
   container.Push(form_signature, origin);
 }
 
-std::optional<FormStructure::FormAssociations>
-FormAssociator::GetFormAssociations(FormSignature form_signature) const {
+FormStructure::FormAssociations FormAssociator::GetFormAssociations(
+    FormSignature form_signature) const {
   FormStructure::FormAssociations associations;
   if (!recent_address_forms_.empty()) {
     associations.last_address_form_submitted = *recent_address_forms_.begin();
@@ -175,7 +175,7 @@ FormAssociator::GetFormAssociations(FormSignature form_signature) const {
   }
   if (associations.last_address_form_submitted != form_signature &&
       associations.last_credit_card_form_submitted != form_signature) {
-    return std::nullopt;
+    return {};
   }
   if (recent_address_forms_.size() > 1) {
     associations.second_last_address_form_submitted =

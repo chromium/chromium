@@ -148,11 +148,6 @@ const char kAllowBackForwardCacheForCacheControlNoStorePageEnabled[] =
 const char kLocalTestPoliciesForNextStartup[] =
     "local_test_policies_for_next_startup";
 
-// A boolean pref indicating whether to fire deprecated/removed mutation events.
-// If false, mutation events might not be fired.
-const char kMutationEventsEnabled[] =
-    "policy.deprecated_mutation_events_enabled";
-
 // Enables the deprecated :--foo syntax of CSS custom state. The :--foo syntax
 // was deprecated and replaced by :state(foo).
 const char kCSSCustomStateDeprecatedSyntaxEnabled[] =

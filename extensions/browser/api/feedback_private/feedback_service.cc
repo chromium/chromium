@@ -33,6 +33,7 @@
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/api/feedback_private/feedback_private_delegate.h"
 #include "extensions/browser/blob_reader.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "net/base/network_change_notifier.h"
 
 #if BUILDFLAG(IS_CHROMEOS)

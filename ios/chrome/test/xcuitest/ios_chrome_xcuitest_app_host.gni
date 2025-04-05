@@ -36,7 +36,10 @@ template("ios_chrome_xcuitest_app_host") {
     if (!defined(deps)) {
       deps = []
     }
-    deps += [ "//ios/chrome/app:main" ]
+    deps += [
+      "//ios/chrome/app:app_trampoline",
+      "//ios/chrome/app:main",
+    ]
     if (defined(use_default_test_hooks) && use_default_test_hooks) {
       deps += [ "//ios/chrome/test/xcuitest:hooks" ]
     }

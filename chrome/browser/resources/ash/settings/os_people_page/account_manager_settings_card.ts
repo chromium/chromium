@@ -91,6 +91,7 @@ export class AccountManagerSettingsCardElement extends
   private isChildUser_: boolean;
   private isDeviceAccountManaged_: boolean;
   private isSecondaryGoogleAccountSigninAllowed_: boolean;
+  private managedByIcon_: string;
 
   private onManagedIconClick_(): void {
     if (this.isChildUser_) {

@@ -28,6 +28,7 @@
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_result.h"
 #include "content/public/test/browser_task_environment.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -126,10 +127,9 @@ TEST_F(ChromeAshMessageCenterClientTest, NotifierSortOrder) {
       static_cast<extensions::TestExtensionSystem*>(
           extensions::ExtensionSystem::Get(profile));
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
-  extensions::ExtensionService* extension_service =
-      test_extension_system->CreateExtensionService(
-          &command_line, base::FilePath() /* install_directory */,
-          false /* autoupdate_enabled*/);
+  test_extension_system->CreateExtensionService(
+      &command_line, base::FilePath() /* install_directory */,
+      false /* autoupdate_enabled*/);
 
   extensions::ExtensionBuilder foo_app;
   // Foo is an app with name Foo and should appear second.
@@ -157,7 +157,7 @@ TEST_F(ChromeAshMessageCenterClientTest, NotifierSortOrder) {
                        "scripts", base::Value::List().Append("background.js"))))
           .Set("permissions", base::Value::List().Append("notifications")));
   foo_app.SetID(kFooId);
-  extension_service->AddExtension(foo_app.Build().get());
+  extensions::ExtensionRegistrar::Get(profile)->AddExtension(foo_app.Build());
 
   extensions::ExtensionBuilder bar_app;
   bar_app.SetManifest(
@@ -172,7 +172,7 @@ TEST_F(ChromeAshMessageCenterClientTest, NotifierSortOrder) {
                        "scripts", base::Value::List().Append("background.js"))))
           .Set("permissions", base::Value::List().Append("notifications")));
   bar_app.SetID(kBarId);
-  extension_service->AddExtension(bar_app.Build().get());
+  extensions::ExtensionRegistrar::Get(profile)->AddExtension(bar_app.Build());
 
   extensions::ExtensionBuilder baz_app;
   baz_app.SetManifest(
@@ -186,7 +186,7 @@ TEST_F(ChromeAshMessageCenterClientTest, NotifierSortOrder) {
                               "scripts",
                               base::Value::List().Append("background.js")))));
   baz_app.SetID(kBazId);
-  extension_service->AddExtension(baz_app.Build().get());
+  extensions::ExtensionRegistrar::Get(profile)->AddExtension(baz_app.Build());
 
   extensions::ExtensionBuilder baf_app;
   baf_app.SetManifest(
@@ -204,7 +204,7 @@ TEST_F(ChromeAshMessageCenterClientTest, NotifierSortOrder) {
                                          "hosted_app/main.html"))));
 
   baf_app.SetID(kBafId);
-  extension_service->AddExtension(baf_app.Build().get());
+  extensions::ExtensionRegistrar::Get(profile)->AddExtension(baf_app.Build());
   CreateClient();
 
   RefreshNotifierList();

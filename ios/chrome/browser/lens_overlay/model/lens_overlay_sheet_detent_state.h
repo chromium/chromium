@@ -13,6 +13,8 @@ typedef NS_ENUM(NSUInteger, SheetDetentState) {
   SheetDetentStateConsentDialog,
   // The bottom sheet is in the peak state.
   SheetDetentStatePeakEnabled,
+  // The bottom sheet is showing an info message.
+  SheetDetentStateInfoMessage,
 };
 
 // Indicates the state of the bottom sheet dimension.
@@ -31,7 +33,9 @@ enum class SheetDimensionState {
   kPeaking = 3,
   // The bottom sheet is displayed with the fixed custom dimensions for consent.
   kConsent = 4,
-  kMaxValue = kConsent,
+  // The bottom sheet is showing an info message.
+  kInfoMessage = 5,
+  kMaxValue = kInfoMessage,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/lens/enums.xml:SheetDimensionState)
 

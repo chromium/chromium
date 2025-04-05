@@ -140,6 +140,10 @@ source_set("browser_prefs") {
     "//ios/web/common:features",
     "//ui/base",
   ]
+
+  if (target_environment != "catalyst") {
+    deps += [ "//ios/chrome/browser/default_browser/model/default_status" ]
+  }
 }
 
 source_set("unit_tests") {

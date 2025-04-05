@@ -540,8 +540,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   };
 
   using BucketTableEntries = std::vector<mojom::BucketTableEntryPtr>;
-  using StorageKeysByType =
-      base::flat_map<blink::mojom::StorageType, std::set<blink::StorageKey>>;
 
   using QuotaSettingsCallback = base::OnceCallback<void(const QuotaSettings&)>;
 
@@ -575,7 +573,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   // is complete.
   void BootstrapDatabase();
   void DidGetBootstrapFlag(bool is_database_bootstrapped);
-  void DidGetStorageKeysForBootstrap(StorageKeysByType storage_keys_by_type);
+  void DidGetStorageKeysForBootstrap(std::set<blink::StorageKey> storage_keys_);
   void DidBootstrapDatabase(QuotaError error);
   void DidSetDatabaseBootstrapped(QuotaError error);
   // Runs all callbacks to QuotaDatabase that have been queued during bootstrap.

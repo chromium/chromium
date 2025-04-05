@@ -1066,8 +1066,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
   self.sessionState = newSessionState;
 
   if (self.sessionState != SessionsSyncUserState::USER_SIGNED_OUT) {
-    [self.signinPromoViewMediator disconnect];
-    self.signinPromoViewMediator = nil;
+    [self disconnectMediator];
   }
 }
 
@@ -1093,8 +1092,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 }
 
 - (void)dismissModals {
-  [self.signinPromoViewMediator disconnect];
-  self.signinPromoViewMediator = nil;
+  [self disconnectMediator];
   [self.tableView.contextMenuInteraction dismissMenu];
 }
 
@@ -1747,8 +1745,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
     // is removed since the section is replaced at each reload.
     // Metrics would be recorded too often.
     // The other device section can be present even without the promo.
-    [self.signinPromoViewMediator disconnect];
-    self.signinPromoViewMediator = nil;
+    [self disconnectMediator];
     return;
   }
   if ([self.tableViewModel hasItemForItemType:ItemTypeOtherDevicesSigninPromo
@@ -1877,6 +1874,12 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 }
 
 #pragma mark - Private Helpers
+
+// Disconnects the mediator.
+- (void)disconnectMediator {
+  [self.signinPromoViewMediator disconnect];
+  self.signinPromoViewMediator = nil;
+}
 
 - (void)didTapPromoActionButton {
   syncer::SyncService* const syncService = self.syncService;

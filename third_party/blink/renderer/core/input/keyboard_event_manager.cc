@@ -592,9 +592,19 @@ void KeyboardEventManager::DefaultEscapeEventHandler(KeyboardEvent* event) {
   if (!page)
     return;
 
-  if (IsSpatialNavigationEnabled(frame_) &&
-      !frame_->GetDocument()->InDesignMode()) {
+  Document& document = *frame_->GetDocument();
+  if (IsSpatialNavigationEnabled(frame_) && !document.InDesignMode()) {
     page->GetSpatialNavigationController().HandleEscapeKeyboardEvent(event);
+  }
+
+  if (RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
+          document.GetExecutionContext())) {
+    // Make a copy of the list, in case the event handlers change its state.
+    auto elements{document.CurrentInterestTargetElements()};
+    for (Element* el : elements) {
+      Element::GainOrLoseInterest(el, el->interestTargetElement(),
+                                  /*interest_gained*/ false);
+    }
   }
 
   frame_->DomWindow()->closewatcher_stack()->EscapeKeyHandler(event);

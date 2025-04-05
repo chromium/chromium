@@ -2531,8 +2531,10 @@ class TableViewFocusTest : public TableViewTest {
 
  protected:
   WidgetDelegate* ConfigureWidgetDelegate() override {
-    delegate_.RegisterDeleteDelegateCallback(base::BindOnce(
-        &TableViewFocusTest::OnDeleteDelegate, base::Unretained(this)));
+    delegate_.RegisterDeleteDelegateCallback(
+        WidgetDelegate::RegisterDeleteCallbackPassKey(),
+        base::BindOnce(&TableViewFocusTest::OnDeleteDelegate,
+                       base::Unretained(this)));
     delegate_.RegisterWidgetInitializedCallback(base::BindOnce(
         &TableViewFocusTest::OnWidgetInitialized, base::Unretained(this)));
     return &delegate_;

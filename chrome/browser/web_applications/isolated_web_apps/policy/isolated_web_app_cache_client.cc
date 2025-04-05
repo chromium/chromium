@@ -165,6 +165,17 @@ bool IsIwaBundleCacheEnabled() {
          (chromeos::IsManagedGuestSession() || chromeos::IsKioskSession());
 }
 
+// static
+std::string IwaCacheClient::CopyErrorToString(
+    IwaCacheClient::CopyBundleToCacheError error) {
+  switch (error) {
+    case IwaCacheClient::CopyBundleToCacheError::kFailedToCreateDir:
+      return "FailedToCreateDir";
+    case IwaCacheClient::CopyBundleToCacheError::kFailedToCopyFile:
+      return "FailedToCopyFile";
+  }
+}
+
 IwaCacheClient::IwaCacheClient()
     : cache_dir_(GetCacheDir(base::PathService::CheckedGet(
           ash::DIR_DEVICE_LOCAL_ACCOUNT_IWA_CACHE))) {

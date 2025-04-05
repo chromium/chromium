@@ -25,6 +25,7 @@
 #include "content/browser/devtools/browser_devtools_agent_host.h"
 #include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/browser/devtools/devtools_manager.h"
+#include "content/browser/devtools/protocol/browser_handler.h"
 #include "content/browser/devtools/protocol/target_auto_attacher.h"
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
 #include "content/browser/devtools/web_contents_devtools_agent_host.h"
@@ -716,6 +717,7 @@ void TargetHandler::Wire(UberDispatcher* dispatcher) {
 Response TargetHandler::Disable() {
   SetAutoAttachInternal(false, false, false, base::DoNothing());
   SetDiscoverTargets(false, {});
+  hidden_target_manager_.Clear();
   auto_attached_sessions_.clear();
   attached_sessions_.clear();
 
@@ -1218,21 +1220,51 @@ Response TargetHandler::CreateTarget(
     std::optional<int> width,
     std::optional<int> height,
     std::optional<std::string> window_state,
-    std::optional<std::string> context_id,
+    std::optional<std::string> browser_context_id,
     std::optional<bool> enable_begin_frame_control,
     std::optional<bool> new_window,
     std::optional<bool> background,
     std::optional<bool> for_tab,
+    std::optional<bool> hidden,
     std::string* out_target_id) {
   if (access_mode_ == AccessMode::kAutoAttachOnly)
     return Response::ServerError(kNotAllowedError);
-  DevToolsManagerDelegate* delegate =
-      DevToolsManager::GetInstance()->delegate();
-  if (!delegate)
-    return Response::ServerError("Not supported");
+
   GURL gurl(url);
   if (gurl.is_empty()) {
     gurl = GURL(url::kAboutBlankURL);
+  }
+
+  if (hidden.value_or(false)) {
+    if (for_tab.value_or(false)) {
+      return protocol::Response::InvalidParams(
+          "Hidden target cannot be created for tab");
+    }
+    if (new_window) {
+      return protocol::Response::InvalidParams(
+          "Hidden target cannot be created in a new window");
+    }
+    if (!background.value_or(true)) {
+      return protocol::Response::InvalidParams(
+          "Hidden target can be created only in background");
+    }
+
+    BrowserContext* browser_context = nullptr;
+    Response response = BrowserHandler::FindBrowserContext(browser_context_id,
+                                                           &browser_context);
+    if (!response.IsSuccess()) {
+      return response;
+    }
+
+    *out_target_id =
+        hidden_target_manager_.CreateHiddenTarget(gurl, browser_context);
+    return Response::Success();
+  }
+
+  DevToolsManagerDelegate* delegate =
+      DevToolsManager::GetInstance()->delegate();
+  if (!delegate) {
+    return Response::ServerError("Not supported");
   }
   content::DevToolsManagerDelegate::TargetType target_type =
       for_tab.value_or(session_mode_ ==

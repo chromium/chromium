@@ -23,6 +23,14 @@ enum Resample2DAxes {
   kChannelsLast,
 };
 
+// Represents supported batchNormalization axis for this context.
+// kChannelsFirst means axis = 1.
+// kAny means any arbitrary axis.
+enum BatchNormalizationAxis {
+  kAny,
+  kChannelsFirst,
+};
+
 struct SupportedDataTypes {
   bool float32;
   bool float16;
@@ -220,6 +228,7 @@ struct DataTypeLimits {
 struct ContextProperties {
   InputOperandLayout input_operand_layout;
   Resample2DAxes resample_2d_axes;
+  BatchNormalizationAxis batch_normalization_axis;
   // All tensors in graph will not exceed the byte length limit.
   uint64 tensor_byte_length_limit;
   DataTypeLimits data_type_limits;

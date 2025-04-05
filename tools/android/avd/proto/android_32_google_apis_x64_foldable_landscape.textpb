@@ -22,4 +22,4 @@ avd_package {
   # Patched gmscore version 25.07.33 in https://crrev.com/c/6377466
   version: "8suNvYCLZCZxPMUCgs0JOXpKVm5XIW8pfef4yETgfTkC"
 }
-avd_name: "android_32_google_apis_x64_foldable_landscape"
+avd_name: "android_32_google_apis_x64_foldable"

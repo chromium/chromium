@@ -261,7 +261,7 @@ void WelcomeScreenHandler::GetAdditionalParameters(base::Value::Dict* dict) {
   }
 
   dict->Set("languageList", std::move(language_list));
-  dict->Set("inputMethodsList", GetAndActivateLoginKeyboardLayouts(
+  dict->Set("inputMethodsList", GetAndActivateOobeInputMethods(
                                     application_locale, selected_input_method,
                                     input_method_manager));
   dict->Set("timezoneList", GetTimezoneList());

@@ -13,7 +13,6 @@
       });
   const {result: {characteristicId: measurementIntervalCharacteristicId}} =
       await bp.BluetoothEmulation.addCharacteristic({
-        address: helper.peripheralAddress(),
         serviceId: heartRateServiceId,
         characteristicUuid:
             BluetoothHelper.MEASUREMENT_INTERVAL_CHARACTERISTIC_UUID,
@@ -22,8 +21,6 @@
 
   // Start the test.
   const result = await bp.BluetoothEmulation.addDescriptor({
-    address: helper.peripheralAddress(),
-    serviceId: heartRateServiceId,
     characteristicId: measurementIntervalCharacteristicId,
     descriptorUuid: 'abc'
   });

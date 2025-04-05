@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.crash;
 import android.app.job.JobInfo;
 import android.content.ComponentName;
 import android.content.Intent;
-import android.os.Build;
 import android.os.PersistableBundle;
 import android.os.Process;
 
@@ -362,16 +361,14 @@ public class MinidumpUploadServiceImpl extends MinidumpUploadService.Impl {
      * Attempts to upload the specified {@param minidumpFile} directly. If Android doesn't allow a
      * direct upload, then fallback to JobScheduler.
      *
-     * Note that the preferred way to upload minidump is only through JobScheduler, use this
+     * <p>Note that the preferred way to upload minidump is only through JobScheduler, use this
      * function if you need to upload it urgently.
      */
     static void tryUploadCrashDumpNow(File minidumpFile) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-                && !(ApplicationStatus.isInitialized()
-                        && ApplicationStatus.hasVisibleActivities())) {
-            // If we are on API 31+, Android does not allow us to start services from the
-            // background. If we are in the background, then go through the JobScheduler path
-            // instead. See crbug.com/1433529 for more details.
+        if (!(ApplicationStatus.isInitialized() && ApplicationStatus.hasVisibleActivities())) {
+            // Android does not allow us to start services from the background. If we are in the
+            // background, then go through the JobScheduler path instead. See crbug.com/1433529
+            // and crbug.com/407575680 for crashes caused by not doing this.
             scheduleUploadJob();
             return;
         }

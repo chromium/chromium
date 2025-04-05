@@ -208,7 +208,7 @@ ConversationController::ConversationController()
       action_module_(
           std::make_unique<chromeos::assistant::action::CrosActionModule>(
               assistant::features::IsAppSupportEnabled(),
-              assistant::features::IsWaitSchedulingEnabled())),
+              /* wait_enabled */ true)),
       mojom_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {
   action_module_->AddObserver(this);
 }
@@ -479,8 +479,6 @@ void ConversationController::OnOpenAndroidApp(
 // Called from Libassistant thread.
 void ConversationController::OnScheduleWait(int id, int time_ms) {
   ENSURE_MOJOM_THREAD(&ConversationController::OnScheduleWait, id, time_ms);
-
-  DCHECK(assistant::features::IsWaitSchedulingEnabled());
 
   // Schedule a wait for |time_ms|, notifying the CrosActionModule when the wait
   // has finished so that it can inform LibAssistant to resume execution.

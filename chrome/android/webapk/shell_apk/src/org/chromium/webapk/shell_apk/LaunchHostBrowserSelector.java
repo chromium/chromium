@@ -13,12 +13,13 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.webapk.lib.common.WebApkMetaDataKeys;
 import org.chromium.webapk.shell_apk.HostBrowserUtils.PackageNameAndComponentName;
 
 /** Selects host browser to launch. */
+@NullMarked
 public class LaunchHostBrowserSelector {
     private static final String LAST_RESORT_HOST_BROWSER = "com.android.chrome";
     private static final String LAST_RESORT_HOST_BROWSER_APPLICATION_NAME = "Google Chrome";

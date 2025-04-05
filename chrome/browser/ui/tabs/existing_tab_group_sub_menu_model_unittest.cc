@@ -101,7 +101,7 @@ TEST_F(ExistingTabGroupSubMenuModelTest, AddNonSelectedTabsToTabGroup) {
   model->AddToNewGroup({1});
 
   // Select the tab at index 2.
-  model->ToggleSelectionAt(2);
+  model->SelectTabAt(2);
 
   // Create the menu on the tab at index 3.
   ExistingTabGroupSubMenuModel menu(nullptr, nullptr, model, 3);
@@ -154,13 +154,11 @@ TEST_F(ExistingTabGroupSubMenuModelTest, AddAllSelectedTabsToAnotherWindow) {
   ExistingTabGroupSubMenuModel menu_1(nullptr, delegate_1.get(), model_1, 1);
 
   // In order to move the 3 un-grouped tabs in `model_1` we must select those
-  // tabs in addition to unselecting the grouped tab. We do this in reverse
-  // order since at this point the only tab that is selected is the grouped tab.
-  // We are unable to deselect this tab first. Doing so creates a state where no
-  // tabs are selected which is not allowed.
-  for (int i = model_1->count() - 1; i >= 0; --i) {
-    model_1->ToggleSelectionAt(i);
+  // tabs in addition to unselecting the grouped tab.
+  for (int i = 1; i < model_1->count(); ++i) {
+    model_1->SelectTabAt(i);
   }
+  model_1->DeselectTabAt(0);
 
   const ui::ListSelectionModel::SelectedIndices selection_indices =
       model_1->selection_model().selected_indices();
@@ -288,9 +286,9 @@ TEST_F(ExistingTabGroupSubMenuModelTest, AddPinnedTabsToTabGroup) {
   model_2->SetTabPinned(3, true);
   model_2->SetTabPinned(4, true);
   // Select the tabs 0, 2, 4
-  model_2->ToggleSelectionAt(0);
-  model_2->ToggleSelectionAt(2);
-  model_2->ToggleSelectionAt(4);
+  model_2->SelectTabAt(0);
+  model_2->SelectTabAt(2);
+  model_2->SelectTabAt(4);
   EXPECT_EQ(model_2->count(), 5);
 
   std::unique_ptr<TabMenuModelDelegate> delegate_1 =

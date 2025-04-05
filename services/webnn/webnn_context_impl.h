@@ -75,6 +75,11 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   void DisconnectAndDestroyWebNNTensorImpl(
       const blink::WebNNTensorToken& handle);
 
+  // Disassociates a `WebNNGraph` instance owned by this context by its handle.
+  // Called when a `WebNNGraph` instance has a connection error. After this
+  // call, it is no longer safe to use the WebNNGraphImpl.
+  void DisconnectAndDestroyWebNNGraphImpl(const blink::WebNNGraphToken& handle);
+
   // Retrieves a `WebNNTensorImpl` instance created from this context.
   // Emits a bad message if a tensor with the given handle does not exist.
   base::optional_ref<WebNNTensorImpl> GetWebNNTensorImpl(
@@ -93,6 +98,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   // TODO(crbug.com/354724062): Move this to either `WebNNGraphImpl` or
   // `WebNNGraphBuilderImpl`.
   virtual void CreateGraphImpl(
+      mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
       mojom::GraphInfoPtr graph_info,
       WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
       base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
@@ -102,7 +108,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   // Pass ownership of a newly-created `graph_impl` to this context.
   void TakeGraph(
       std::unique_ptr<WebNNGraphImpl> graph_impl,
-      mojo::PendingAssociatedReceiver<mojom::WebNNGraph> graph_pending_receiver,
       base::PassKey<WebNNGraphBuilderImpl> pass_key);
 
   // Called by a graph builder to destroy itself.
@@ -180,7 +185,10 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
 
   // GraphsImpls which are stored on the context to allow graph
   // operations to use this context safely via a raw_ptr.
-  mojo::UniqueAssociatedReceiverSet<mojom::WebNNGraph> graph_impls_;
+  base::flat_set<
+      std::unique_ptr<WebNNGraphImpl>,
+      WebNNObjectImpl<blink::WebNNGraphToken>::Comparator<WebNNGraphImpl>>
+      graph_impls_;
 };
 
 }  // namespace webnn

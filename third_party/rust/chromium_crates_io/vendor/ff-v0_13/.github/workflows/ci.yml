@@ -1,0 +1,104 @@
+name: CI checks
+
+on:
+  pull_request:
+  push:
+    branches: main
+
+jobs:
+  test-msrv:
+    name: Test MSRV on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macOS-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run tests
+        run: cargo test --verbose --all-features
+      - name: Run tests (without bitvec)
+        run: cargo test --verbose --no-default-features --features derive
+      - name: Verify working directory is clean
+        run: git diff --exit-code
+
+  test-latest:
+    name: Test latest on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macOS-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        id: toolchain
+      - run: rustup override set ${{steps.toolchain.outputs.name}}
+      - name: Remove lockfile to build with latest dependencies
+        run: rm Cargo.lock
+      - name: Run tests
+        run: cargo test --verbose --all-features
+      - name: Run tests (without bitvec)
+        run: cargo test --verbose --no-default-features --features derive
+      - name: Verify working directory is clean (excluding lockfile)
+        run: git diff --exit-code ':!Cargo.lock'
+
+  build-nodefault:
+    name: Build target ${{ matrix.target }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        target:
+          - wasm32-wasi
+          - thumbv6m-none-eabi
+          - thumbv7em-none-eabihf
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: crate_root
+      # We use a synthetic crate to ensure no dev-dependencies are enabled, which can
+      # be incompatible with some of these targets.
+      - name: Create synthetic crate for testing
+        run: cargo init --edition 2021 --lib ci-build
+      - name: Copy Rust version into synthetic crate
+        run: cp crate_root/rust-toolchain.toml ci-build/
+      - name: Copy patch directives into synthetic crate
+        run: |
+          echo "[patch.crates-io]" >> ./ci-build/Cargo.toml
+          cat ./crate_root/Cargo.toml | sed "0,/.\+\(patch.crates.\+\)/d" >> ./ci-build/Cargo.toml
+      - name: Add no_std pragma to lib.rs
+        run: |
+          echo "#![no_std]" > ./ci-build/src/lib.rs
+      - name: Add ff as a dependency of the synthetic crate
+        working-directory: ./ci-build
+        # run: cargo add --no-default-features --path ../crate_root
+        run: sed -i 's;\[dependencies\];\[dependencies\]\nff = { path = "../crate_root", default-features = false };g' ./Cargo.toml
+      - name: Add target
+        working-directory: ./ci-build
+        run: rustup target add ${{ matrix.target }}
+      - name: Build for target
+        working-directory: ./ci-build
+        run: cargo build --verbose --target ${{ matrix.target }}
+      - name: Enable the bits feature of ff
+        working-directory: ./ci-build
+        # run: cargo add --no-default-features --features bits --path ../crate_root
+        run: sed -i 's;ff = { path = "../crate_root", default-features = false };ff = { path = "../crate_root", default-features = false, features = ["bits"] };g' ./Cargo.toml
+      - name: Build for target with the bits feature
+        working-directory: ./ci-build
+        run: cargo build --verbose --target ${{ matrix.target }}
+
+  doc-links:
+    name: Intra-doc links
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: cargo fetch
+      # Requires #![deny(rustdoc::broken_intra_doc_links)] in crates.
+      - run: sudo apt-get -y install libfontconfig1-dev
+      - name: Check intra-doc links
+        run: cargo doc --all-features --document-private-items
+
+  fmt:
+    name: Rustfmt
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: cargo fmt -- --check

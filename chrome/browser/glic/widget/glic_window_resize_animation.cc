@@ -62,6 +62,10 @@ GlicWindowResizeAnimation::~GlicWindowResizeAnimation() {
 }
 
 void GlicWindowResizeAnimation::AnimateToState(double state) {
+  if (window_controller_->IsDragging()) {
+    End();
+    return;
+  }
   gfx::Rect bounds_to_animate = gfx::Tween::RectValueBetween(
       gfx::Tween::CalculateValue(gfx::Tween::FAST_OUT_SLOW_IN_3, state),
       initial_bounds_, new_bounds_);

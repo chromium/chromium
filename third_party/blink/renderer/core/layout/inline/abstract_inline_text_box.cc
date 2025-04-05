@@ -47,7 +47,7 @@ class AbstractInlineTextBoxCache final {
     MapKey key = ToMapKey(cursor);
     const auto it = map_->find(key);
     auto* const layout_text =
-        To<LayoutText>(cursor.CurrentMutableLayoutObject());
+        To<LayoutText>(cursor.Current().GetMutableLayoutObject());
     if (it != map_->end()) {
       CHECK(layout_text->HasAbstractInlineTextBox());
       return it->value.Get();

@@ -448,10 +448,6 @@ ResourceFetcherInit::ResourceFetcherInit(
   DCHECK(context_lifecycle_notifier || properties.IsDetached());
 }
 
-bool ResourceFetcher::IsSimplifyLoadingTransparentPlaceholderImageEnabled() {
-  return transparent_image_optimization_enabled_;
-}
-
 mojom::blink::RequestContextType ResourceFetcher::DetermineRequestContext(
     ResourceType type,
     IsImageSet is_image_set) {
@@ -822,8 +818,6 @@ ResourceFetcher::ResourceFetcher(const ResourceFetcherInit& init)
       auto_load_images_(true),
       allow_stale_resources_(false),
       image_fetched_(false),
-      transparent_image_optimization_enabled_(base::FeatureList::IsEnabled(
-          features::kSimplifyLoadingTransparentPlaceholderImage)),
       speculative_decode_in_flight_(false) {
   InstanceCounters::IncrementCounter(InstanceCounters::kResourceFetcherCounter);
 
@@ -951,8 +945,7 @@ void ResourceFetcher::DidLoadResourceFromMemoryCache(
   // Only call ResourceLoadObserver callbacks when devtools is opened to get
   // maximum performance.
   if (!(RuntimeEnabledFeatures::SkipCallbacksWhenDevToolsNotOpenEnabled() ||
-        (IsSimplifyLoadingTransparentPlaceholderImageEnabled() &&
-         request.GetKnownTransparentPlaceholderImageIndex() != kNotFound)) ||
+        (request.GetKnownTransparentPlaceholderImageIndex() != kNotFound)) ||
       resource_load_observer_->InterestedInAllRequests()) {
     resource_load_observer_->WillSendRequest(
         request, ResourceResponse() /* redirects */, resource->GetType(),
@@ -1044,9 +1037,8 @@ Resource* ResourceFetcher::CreateResourceForStaticData(
 
   ResourceResponse response;
   scoped_refptr<SharedBuffer> data;
-  if (IsSimplifyLoadingTransparentPlaceholderImageEnabled() &&
-      (params.GetResourceRequest().GetKnownTransparentPlaceholderImageIndex() !=
-       kNotFound)) {
+  if (params.GetResourceRequest().GetKnownTransparentPlaceholderImageIndex() !=
+      kNotFound) {
     // Skip the construction of `data`, since we won't use it.
 
     // We can defer the construction of `response`, but that would result in
@@ -1087,9 +1079,9 @@ Resource* ResourceFetcher::CreateResourceForStaticData(
     case ResourceStatus::kNotStarted:
       // We should not reach here on the transparent placeholder image
       // fast-path.
-      CHECK(!IsSimplifyLoadingTransparentPlaceholderImageEnabled() ||
-            (params.GetResourceRequest()
-                 .GetKnownTransparentPlaceholderImageIndex() == kNotFound));
+      CHECK_EQ(params.GetResourceRequest()
+                   .GetKnownTransparentPlaceholderImageIndex(),
+               kNotFound);
 
       // The below code, with the exception of `NotifyStartLoad()` and
       // `Finish()`, is the same as in
@@ -1110,13 +1102,9 @@ Resource* ResourceFetcher::CreateResourceForStaticData(
 
       // We should only reach here on the transparent placeholder image
       // fast-path.
-      CHECK(IsSimplifyLoadingTransparentPlaceholderImageEnabled());
       CHECK_NE(params.GetResourceRequest()
                    .GetKnownTransparentPlaceholderImageIndex(),
                kNotFound);
-
-      use_counter_->CountUse(
-          WebFeature::kSimplifyLoadingTransparentPlaceholderImage);
 
       // There shouldn't be any `ResourceClient`s that need to be
       // notified of synthetic response received steps.
@@ -1202,8 +1190,7 @@ void ResourceFetcher::UpdateMemoryCacheStats(
     RevalidationPolicyForMetrics policy,
     const FetchParameters& params,
     const ResourceFactory& factory,
-    bool is_static_data,
-    bool same_top_frame_site_resource_cached) const {
+    bool is_static_data) const {
   // Do not count static data or data not associated with the MemoryCache.
   if (is_static_data || !IsMainThread()) {
     return;
@@ -1251,9 +1238,8 @@ ResourceFetcher::UpdateRequestForTransparentPlaceholderImage(
     FetchParameters& params) {
   ResourceRequest& resource_request = params.MutableResourceRequest();
   // Should only be called if request has transparent-placholder-image.
-  DCHECK(IsSimplifyLoadingTransparentPlaceholderImageEnabled() &&
-         (resource_request.GetKnownTransparentPlaceholderImageIndex() !=
-          kNotFound));
+  DCHECK_NE(resource_request.GetKnownTransparentPlaceholderImageIndex(),
+            kNotFound);
   // Since we are not actually sending the request to the server,
   // we skip construction of the full ResourceRequest for performance,
   // and only set the properties needed for observer callbacks.
@@ -1459,7 +1445,6 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
     }
   }
 
-  bool same_top_frame_site_resource_cached = false;
   bool in_cached_resources_map = cached_resources_map_.Contains(
       MemoryCache::RemoveFragmentIdentifierIfNeeded(params.Url()));
 
@@ -1487,12 +1472,6 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
       if (resource) {
         policy = DetermineRevalidationPolicy(resource_type, params, *resource,
                                              is_static_data);
-        scoped_refptr<const SecurityOrigin> top_frame_origin =
-            resource_request.TopFrameOrigin();
-        if (top_frame_origin) {
-          same_top_frame_site_resource_cached =
-              resource->AppendTopFrameSiteForMetrics(*top_frame_origin);
-        }
       }
     }
   }
@@ -1503,7 +1482,7 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
 
   UpdateMemoryCacheStats(
       resource, MapToPolicyForMetrics(policy, resource, defer_policy), params,
-      factory, is_static_data, same_top_frame_site_resource_cached);
+      factory, is_static_data);
 
   switch (policy) {
     case RevalidationPolicy::kReload:
@@ -3578,9 +3557,8 @@ ResourceFetcher::ResourcePrepareHelper::ResourcePrepareHelper(
       params_(params),
       factory_(factory),
       has_transparent_placeholder_image_(
-          fetcher.IsSimplifyLoadingTransparentPlaceholderImageEnabled() &&
-          (params.GetResourceRequest()
-               .GetKnownTransparentPlaceholderImageIndex() != kNotFound)) {}
+          params.GetResourceRequest()
+              .GetKnownTransparentPlaceholderImageIndex() != kNotFound) {}
 
 std::optional<ResourceRequestBlockedReason>
 ResourceFetcher::ResourcePrepareHelper::PrepareRequestForCacheAccess(

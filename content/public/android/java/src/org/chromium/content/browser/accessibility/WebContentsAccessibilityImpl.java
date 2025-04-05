@@ -74,7 +74,6 @@ import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.view.ViewStructure;
 import android.view.accessibility.AccessibilityEvent;
-import android.view.accessibility.AccessibilityManager;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.accessibility.AccessibilityNodeProvider;
 import android.view.autofill.AutofillManager;
@@ -162,7 +161,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     private static final int AUTO_DISABLE_SINGLE_INSTANCE_TOGGLE_LIMIT = 3;
 
     private final AccessibilityDelegate mDelegate;
-    protected AccessibilityManager mAccessibilityManager;
     protected Context mContext;
     private final @Nullable String mProductVersion;
     protected long mNativeObj;
@@ -282,8 +280,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         mView = mDelegate.getContainerView();
         mContext = mView.getContext();
         mProductVersion = mDelegate.getProductVersion();
-        mAccessibilityManager =
-                (AccessibilityManager) mContext.getSystemService(Context.ACCESSIBILITY_SERVICE);
 
         // Need to be initialized before AXTreeUpdate initialization because updateMaxNodesInCache
         // gets called then. Also needs to be initialized before the WindowEventObserver is added,
@@ -526,7 +522,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     public boolean isAccessibilityEnabled() {
         return isNativeInitialized()
                 && (mAccessibilityEnabledOverride
-                        || mAccessibilityManager.isEnabled()
                         || AccessibilityState.isAnyAccessibilityServiceEnabled());
     }
 
@@ -1969,6 +1964,16 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     }
 
     @CalledByNative
+    private void handleActiveDescendantChanged(int id, int activeDescendantId) {
+        if (activeDescendantId != View.NO_ID) {
+            moveAccessibilityFocusToId(activeDescendantId);
+        } else {
+            // Return focus to the node that had the event dispatched upon it.
+            moveAccessibilityFocusToId(id);
+        }
+    }
+
+    @CalledByNative
     private void handleTextSelectionChanged(int id) {
         sendAccessibilityEvent(id, AccessibilityEvent.TYPE_VIEW_TEXT_SELECTION_CHANGED);
     }
@@ -2148,7 +2153,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                 mView.getParent().requestSendAccessibilityEvent(mView, event);
             } catch (IllegalStateException ignored) {
                 // During boot-up of some content shell tests, events will erroneously be sent even
-                // though the AccessibilityManager is not enabled, resulting in a crash.
+                // though accessibility services are not enabled, resulting in a crash.
                 // TODO(mschillaci): Address flakiness to remove this try/catch, crbug.com/1186376.
             }
         }

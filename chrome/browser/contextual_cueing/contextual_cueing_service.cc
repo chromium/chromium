@@ -52,7 +52,9 @@ ContextualCueingService::ContextualCueingService(
       recent_visited_origins_(kVisitedDomainsLimit.Get()),
       page_content_extraction_service_(page_content_extraction_service),
       optimization_guide_keyed_service_(optimization_guide_keyed_service) {
-  CHECK(base::FeatureList::IsEnabled(contextual_cueing::kContextualCueing));
+  CHECK(base::FeatureList::IsEnabled(contextual_cueing::kContextualCueing) ||
+        base::FeatureList::IsEnabled(
+            contextual_cueing::kGlicZeroStateSuggestions));
 
   if (kEnablePageContentExtraction.Get()) {
     page_content_extraction_service_->AddObserver(this);

@@ -70,7 +70,6 @@ class GlicBorderView : public views::View,
     virtual void AnimationStarted() = 0;
     virtual void EmphasisRestarted() = 0;
     virtual void RampDownStarted() = 0;
-    virtual void FocusedTabChanged(const GURL& actual_url) = 0;
   };
   void set_tester(Tester* tester) { tester_ = tester; }
 
@@ -85,7 +84,7 @@ class GlicBorderView : public views::View,
   void ResetEmphasisAndReplay();
 
   // A value from 0 to 1 indicating the opacity of the border.
-  float GetOpacity(base::TimeTicks timestamp) const;
+  float GetOpacity(base::TimeTicks timestamp);
 
   // Sets the necessary bits to start ramping down the opacity once it's called.
   void StartRampingDown();
@@ -126,6 +125,10 @@ class GlicBorderView : public views::View,
 
   bool record_first_ramp_down_frame_ = false;
   base::TimeTicks first_ramp_down_frame_;
+  // See crbug.com/407106595: Allows the border animation to play seamlessly
+  // when the browser UI has lost focus temporarily.
+  // TODO(crbug.com/408210785): Add a test for this case.
+  float ramp_down_opacity_ = 0.f;
 
   bool has_hardware_acceleration_ = false;
   base::ScopedObservation<content::GpuDataManager,

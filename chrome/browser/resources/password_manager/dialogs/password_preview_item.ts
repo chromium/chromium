@@ -57,12 +57,12 @@ export class PasswordPreviewItemElement extends PasswordPreviewItemElementBase {
     };
   }
 
-  passwordId: number;
-  url: string;
-  username: string;
-  password: string;
-  first: boolean;
-  checked: boolean;
+  declare passwordId: number;
+  declare url: string;
+  declare username: string;
+  declare password: string;
+  declare first: boolean;
+  declare checked: boolean;
 
   private getElementClass_(): string {
     return this.first ? '' : 'hr';

@@ -46,7 +46,7 @@ LogicalSize PageBoxDefaultSizeWithSourceOrientation(const Document& document,
                                                     LogicalSize layout_size) {
   DCHECK(ShouldCenterPageOnPaper(document.GetFrame()->GetPrintParams()));
   LogicalSize target_size =
-      PageBoxDefaultSize(document).ConvertToLogical(style.GetWritingMode());
+      ToLogicalSize(PageBoxDefaultSize(document), style.GetWritingMode());
   if (layout_size.inline_size != layout_size.block_size &&
       (target_size.inline_size > target_size.block_size) !=
           (layout_size.inline_size > layout_size.block_size)) {
@@ -121,7 +121,7 @@ LogicalSize DesiredPageContainingBlockSize(const Document& document,
     }
   }
 
-  return layout_size.ConvertToLogical(style.GetWritingMode());
+  return ToLogicalSize(layout_size, style.GetWritingMode());
 }
 
 void ResolvePageBoxGeometry(const BlockNode& page_box,
@@ -228,7 +228,7 @@ float TargetScaleForPage(const PhysicalBoxFragment& page_container) {
                          &geometry, &margins);
   LogicalSize source_size = geometry.border_box_size + margins;
   LogicalSize target_size =
-      page_container.Size().ConvertToLogical(style.GetWritingMode());
+      ToLogicalSize(page_container.Size(), style.GetWritingMode());
 
   return layout_scale * TargetShrinkScaleFactor(target_size, source_size);
 }

@@ -50,9 +50,15 @@ void ExitWithMessage(const std::string& message) {
 namespace variations {
 
 #if !BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+BASE_FEATURE(kFeedbackIncludeVariations,
+             "FeedbackIncludeVariations",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#else
 BASE_FEATURE(kFeedbackIncludeVariations,
              "FeedbackIncludeVariations",
              base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 #endif
 
 void MaybeUnpackVariationsStateFile() {

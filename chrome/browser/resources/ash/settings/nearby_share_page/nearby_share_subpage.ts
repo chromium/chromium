@@ -117,21 +117,6 @@ export class SettingsNearbyShareSubpageElement extends
         value: () => loadTimeData.getBoolean('isQuickShareV2Enabled'),
       },
 
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kNearbyShareOnOff,
-          Setting.kNearbyShareDeviceName,
-          Setting.kNearbyShareDeviceVisibility,
-          Setting.kNearbyShareContacts,
-          Setting.kNearbyShareDataUsage,
-          Setting.kDevicesNearbyAreSharingNotificationOnOff,
-        ]),
-      },
-
       shouldShowFastInititationNotificationToggle_: {
         type: Boolean,
         computed: `computeShouldShowFastInititationNotificationToggle_(
@@ -158,6 +143,17 @@ export class SettingsNearbyShareSubpageElement extends
 
   isSettingsRetreived: boolean;
   settings: NearbySettings;
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kNearbyShareOnOff,
+    Setting.kNearbyShareDeviceName,
+    Setting.kNearbyShareDeviceVisibility,
+    Setting.kNearbyShareContacts,
+    Setting.kNearbyShareDataUsage,
+    Setting.kDevicesNearbyAreSharingNotificationOnOff,
+  ]);
+
   private inHighVisibility_: boolean;
   private isQuickShareV2Enabled_: boolean;
   private manageContactsUrl_: string;

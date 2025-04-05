@@ -195,9 +195,6 @@ TEST_F(SyncUserSettingsImplTest, DefaultSelectedTypesWhileSignedIn) {
       UserSelectableType::kHistory,        UserSelectableType::kTabs,
       UserSelectableType::kApps,           UserSelectableType::kExtensions,
       UserSelectableType::kSavedTabGroups, UserSelectableType::kCookies};
-  if (!base::FeatureList::IsEnabled(kSyncSharedTabGroupDataInTransportMode)) {
-    expected_disabled_types.Put(UserSelectableType::kSharedTabGroupData);
-  }
 
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
   expected_disabled_types.Put(UserSelectableType::kThemes);

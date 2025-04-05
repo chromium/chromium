@@ -15,6 +15,7 @@
 #include "ios/chrome/browser/browsing_data/model/browsing_data_remover.h"
 #include "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #include "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#include "ios/chrome/browser/shared/model/profile/features.h"
 
 AuthenticationServiceDelegateImpl::AuthenticationServiceDelegateImpl(
     BrowsingDataRemover* data_remover,

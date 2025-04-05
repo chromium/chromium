@@ -410,6 +410,7 @@ void AILanguageModel::ModelExecutionCallback(
 void AILanguageModel::PromptGetInputSizeCompletion(
     mojo::RemoteSetElementId responder_id,
     Context::ContextItem current_item,
+    const std::optional<std::string>& response_json_schema,
     std::optional<uint32_t> result) {
   if (!session_) {
     // If the session is destroyed before this callback is invoked, we should
@@ -447,8 +448,8 @@ void AILanguageModel::PromptGetInputSizeCompletion(
   MultimodalMessage request = context_->MakeRequest();
   AddCurrentRequest(request, current_item);
   session_->SetInput(std::move(request));
-  session_->ExecuteModel(
-      PromptApiRequest(),
+  session_->ExecuteModelWithResponseJsonSchema(
+      PromptApiRequest(), response_json_schema,
       base::BindRepeating(&AILanguageModel::ModelExecutionCallback,
                           weak_ptr_factory_.GetWeakPtr(),
                           std::move(current_item), responder_id));
@@ -514,6 +515,7 @@ void AILanguageModel::MultimodalResponder::OnDisconnect() {
 
 void AILanguageModel::Prompt(
     std::vector<blink::mojom::AILanguageModelPromptPtr> prompts,
+    const std::optional<std::string>& response_json_schema,
     mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
         pending_responder) {
   if (!session_) {
@@ -562,7 +564,7 @@ void AILanguageModel::Prompt(
       request.read(),
       base::BindOnce(&AILanguageModel::PromptGetInputSizeCompletion,
                      weak_ptr_factory_.GetWeakPtr(), responder_id,
-                     std::move(item)));
+                     std::move(item), response_json_schema));
 }
 
 void AILanguageModel::Fork(

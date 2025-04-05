@@ -1,21 +1,22 @@
-# Copyright (C) 2024 The Android Open Source Project
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#      http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
 
 from typing import Dict, List, Union
-import license_utils
 import metadata_dictionary
+import constants
 from license_type import LicenseType
+
+
+def get_most_restrictive_type(licenses_names: List[str]) -> LicenseType:
+    """Returns the most restrictive license according to the values of LicenseType."""
+    most_restrictive = LicenseType.UNKNOWN
+    for license_name in licenses_names:
+        if constants.RAW_LICENSE_TO_FORMATTED_DETAILS[license_name][
+                1].value > most_restrictive.value:
+            most_restrictive = constants.RAW_LICENSE_TO_FORMATTED_DETAILS[
+                license_name][1]
+    return most_restrictive
 
 
 class Metadata:
@@ -43,7 +44,7 @@ class Metadata:
     otherwise None is returned."""
         if "git" in self.get_url() or "googlesource" in self.get_url():
             return "Git"
-        elif "hg" in self.get_url():
+        if "hg" in self.get_url():
             return "Hg"
         return None
 
@@ -70,7 +71,7 @@ class Metadata:
         return self.metadata.get("License File", [None])[0]
 
     def get_license_type(self) -> LicenseType:
-        return license_utils.get_most_restrictive_type(self.get_licenses())
+        return get_most_restrictive_type(self.get_licenses())
 
     def to_android_metadata(self):
         third_party_dict = metadata_dictionary.MetadataDictionary(

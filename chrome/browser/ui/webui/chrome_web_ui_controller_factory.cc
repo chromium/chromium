@@ -88,7 +88,7 @@
 #include "ui/gfx/image/image_skia_rep.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
+#if BUILDFLAG(ENABLE_DEVTOOLS_FRONTEND)
 #include "chrome/browser/devtools/devtools_ui_bindings.h"
 #include "chrome/browser/ui/webui/devtools/devtools_ui.h"
 #endif
@@ -167,7 +167,7 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
                                              const GURL& url) {
   // This will get called a lot to check all URLs, so do a quick check of other
   // schemes to filter out most URLs.
-#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
+#if BUILDFLAG(ENABLE_DEVTOOLS_FRONTEND)
   if (!url.SchemeIs(content::kChromeDevToolsScheme)) {
     return nullptr;
   }
@@ -177,7 +177,7 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   return &NewWebUI<DevToolsUI>;
 #else
   return nullptr;
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(ENABLE_DEVTOOLS_FRONTEND)
 }
 
 #if !BUILDFLAG(IS_ANDROID)

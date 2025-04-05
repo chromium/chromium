@@ -351,6 +351,7 @@
 <translation id="2438248248625638801">റെക്കോർഡിംഗിന്റെ പേരുകൾ സൃഷ്ടിക്കുന്നു</translation>
 <translation id="2446553403094072641">ഫ്ലോട്ടിംഗ് പോയിന്റ് കൃത്യത</translation>
 <translation id="2448312741937722512">തരം</translation>
+<translation id="2448857983905133469">ക്ലാസ് ടൂളുകൾ</translation>
 <translation id="2468124392950503650">സൃഷ്ടിക്കാൻ പ്രോംപ്റ്റ് തിരഞ്ഞെടുക്കുക അല്ലെങ്കിൽ <ph name="BEGIN_LINK_PROMPTING_GUIDE" />പ്രോംപ്റ്റ് ഗൈഡ്<ph name="END_LINK_PROMPTING_GUIDE" /> കാണുക</translation>
 <translation id="2472215337771558851">ഒരു ഡ്രാഫ്റ്റ് സൃഷ്ടിക്കാനോ നിലവിലുള്ള വർക്ക് പരിഷ്കരിക്കാനോ, Google AI കൊണ്ട് പ്രവർത്തിക്കുന്ന 'എന്നെ എഴുതാൻ സഹായിക്കൂ' ഉപയോഗിക്കുക</translation>
 <translation id="2475982808118771221">ഒരു പിശക് സംഭവിച്ചു</translation>
@@ -449,6 +450,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">എൻഡ്പോയിന്റ്</translation>
 <translation id="3060579846059757016">ഔട്ട്ലൈനുകൾ</translation>
+<translation id="3060798442805232711">ക്ലാസ് ടൂളുകൾ നിങ്ങളുടെ മൈക്രോഫോൺ ഉപയോഗിക്കുന്നു</translation>
 <translation id="3061850252076394168">'വായിച്ചുകേൾക്കാൻ തിരഞ്ഞെടുക്കുക' പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="3066772729299747758">ചൊവ്വാഴ്ച</translation>
 <translation id="3069085583900247081">ടെസ്റ്റ് പരാജയപ്പെട്ടു</translation>
@@ -458,7 +460,6 @@
 <translation id="3084958266922136097">സ്ക്രീൻ സേവർ പ്രവർത്തനരഹിതമാക്കുക</translation>
 <translation id="3091839911843451378">പ്രിന്റ് ചെയ്യാനായില്ല - പ്രവർത്തനം നിർത്തി</translation>
 <translation id="3102119246920354026">കാഷെ</translation>
-<translation id="3112413615003385433">നിങ്ങളുടെ അദ്ധ്യാപകർ School Tools-ൽ നിന്ന് ഉള്ളടക്കം നീക്കം ചെയ്തു</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">പൂളുകൾ</translation>
 <translation id="3122883569442693641">കൂടുതൽ വിശദാംശങ്ങൾ</translation>
@@ -539,7 +540,6 @@
 <translation id="3488065109653206955">ഭാഗികമായി പ്രവര്‍ത്തനക്ഷമമാക്കി</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_COLOR" /> ടോണോടുകൂടിയ <ph name="OFFICE_STYLE" /> ഓഫീസ്</translation>
 <translation id="3493187369049186498">നിങ്ങളുടെ Chromebook ഉപയോഗിച്ചാണ് ഡാറ്റ അളക്കുന്നത്. ഇത് ദാതാവിന്റെ ഡാറ്റയിൽ നിന്ന് വ്യത്യസ്തമായിരിക്കാം.</translation>
-<translation id="349570724365779960">School Tools വിദ്യാർത്ഥികളുമായി കണക്റ്റ് ചെയ്തിരിക്കുന്നു</translation>
 <translation id="3502426834823382181">എല്ലാ ആപ്പുകളും കാണുക</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />പ്രകടന അടയാള ഡാറ്റ<ph name="END_LINK1" /> അയയ്‌ക്കുക</translation>
 <translation id="3517001332549868749">ChromeOS അപ്ഡേറ്റ്</translation>
@@ -547,7 +547,6 @@
 <translation id="353214771040290298">എഡിറ്റ് ചെയ്യൽ പൂർത്തിയാക്കി</translation>
 <translation id="3532980081107202182">ഏകദേശം <ph name="MIN_REMAINING" /> മിനിറ്റ് ശേഷിക്കുന്നു</translation>
 <translation id="3533790840489634638">പൂൾ</translation>
-<translation id="3535802910192338629">നിങ്ങളുടെ അദ്ധ്യാപകർ School Tools-ലേക്ക് പുതിയ ഉള്ളടക്കം ചേർത്തു</translation>
 <translation id="3547264467365135390">ഫോർമുല</translation>
 <translation id="3557205324756024651">ലോക്കൽ ഐഡന്റിറ്റി (ഓപ്‌ഷണൽ)</translation>
 <translation id="3565064564551103223">അനുവദനീയമായ IP-കൾ</translation>
@@ -913,6 +912,7 @@
 <translation id="5170568018924773124">ഫോള്‍ഡറില്‍ കാണിക്കുക</translation>
 <translation id="517075088756846356">അപ്‌ഡേറ്റ് പ്രക്രിയ തുടരുന്നതിന് <ph name="DEVICE_NAME" /> എന്നതിന്റെ പവർ കേബിൾ അൺപ്ലഗ് ചെയ്ത ശേഷം വീണ്ടും പ്ലഗ് ചെയ്യുക</translation>
 <translation id="5180108905184566358">ബെയോബാബ് മരങ്ങൾ</translation>
+<translation id="5180431943345994173">നിങ്ങളുടെ അദ്ധ്യാപകർ ക്ലാസ് ടൂളുകളിൽ നിന്ന് ഉള്ളടക്കം നീക്കം ചെയ്തു</translation>
 <translation id="5180712487038406644">എക്‌സ്പ്രസീവ്</translation>
 <translation id="5190187232518914472">നിങ്ങളുടെ പ്രിയപ്പെട്ട ഓർമ്മകളെ പുനരുജ്ജീവിപ്പിക്കുക. ആൽബങ്ങൾ ചേർക്കാനോ എഡിറ്റ് ചെയ്യാനോ <ph name="LINK_BEGIN" />Google Photos-ലേക്ക്<ph name="LINK_END" /> പോകുക.</translation>
 <translation id="5212593641110061691">ടാബ്ലോയ്‌ഡ്</translation>
@@ -1006,6 +1006,7 @@
 <translation id="5628106863521633649">ലഭ്യമായ ഭാഷകൾ</translation>
 <translation id="5630438231335788050">ബൗഹൗസ്</translation>
 <translation id="5631759159893697722">സംക്ഷേപം</translation>
+<translation id="5655084389678168978">നിങ്ങളുടെ അദ്ധ്യാപകർ ക്ലാസ് ടൂളുകളിലേക്ക് പുതിയ ഉള്ളടക്കം ചേർത്തു</translation>
 <translation id="5655283760733841251">കീബോർഡ് തെളിച്ചം കൂട്ടുക</translation>
 <translation id="5655296450510165335">ഉപകരണ എൻറോൾമെന്റ്</translation>
 <translation id="5655776422854483175">പ്രിന്റ് ജോലികളൊന്നുമില്ല</translation>
@@ -1235,6 +1236,7 @@
 <translation id="6657240842932274095">നിങ്ങളുടെ ലൊക്കേഷൻ ഉപയോഗിക്കാൻ സിസ്റ്റം സർവീസുകളെ അനുവദിക്കണോ?</translation>
 <translation id="6657585470893396449">പാസ്‌വേഡ്</translation>
 <translation id="66621959568103627">കോറൽ പിങ്ക്</translation>
+<translation id="6669485505082792176">ഇപ്പോൾ ഇതിന്റെ ചിത്രങ്ങൾ സൃഷ്ടിക്കാനാകില്ല. നിങ്ങളുടെ വിവരണം മറ്റൊരു തരത്തിൽ നൽകി വീണ്ടും ശ്രമിക്കുക. നിങ്ങൾക്ക് ആളുകളുടെ ചിത്രങ്ങളും ഹാനികരമോ പ്രായപൂർത്തിയായവർക്കുള്ളതോ ആയ ഉള്ളടക്കമോ സൃഷ്ടിക്കാനാകില്ല എന്ന കാര്യം ഓർമ്മിക്കുക. <ph name="BEGIN_LINK_LEARN_MORE" />കൂടുതലറിയുക<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6673898378497337661">കീബോർഡിന്റെ തെളിച്ചം കൂട്ടുക</translation>
 <translation id="6692996468359469499">നിങ്ങളുടെ തിരഞ്ഞെടുക്കലുമായി ബന്ധപ്പെട്ട വിവരങ്ങൾ നേടുക</translation>
 <translation id="6694534975463174713">ലോക്ക്</translation>
@@ -1440,7 +1442,6 @@
 <translation id="7544853251252956727">ഷഫിൾ ചെയ്യുക</translation>
 <translation id="7550715992156305117">പ്രശ്‌നനിർണ്ണയ ദിനചര്യകൾ</translation>
 <translation id="7551123448725492271">ഉപകരണം ഒരു ഓഡിയോ ഉപകരണമാണ്.</translation>
-<translation id="7553913964854052228">സ്‌കൂൾ ടൂളുകൾ നിങ്ങളുടെ മൈക്രോഫോൺ ഉപയോഗിക്കുന്നു</translation>
 <translation id="7559239713112547082">പ്രിവ്യൂ സ്‌ക്രീൻഷോട്ട്</translation>
 <translation id="7561454561030345039">ഈ പ്രവർത്തനം മാനേജ് ചെയ്യുന്നത് നിങ്ങളുടെ അഡ്‌മിനാണ്</translation>
 <translation id="7561759921596375678">ശബ്ദം ഓണാക്കുക</translation>
@@ -1532,6 +1533,7 @@
 <translation id="7971535376154084247">പൊതുവായ നിയന്ത്രണങ്ങൾ</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> നെറ്റ്‌വർക്കിൽ ചേരാൻ, ക്രമീകരണത്തിലേക്ക് പോകുക</translation>
 <translation id="7978412674231730200">സ്വകാര്യ കീ</translation>
+<translation id="7979468455552394856">ക്ലാസ് ടൂളുകൾ, വിദ്യാർത്ഥികളുമായി ബന്ധിപ്പിച്ചിരിക്കുന്നു</translation>
 <translation id="7982789257301363584">നെറ്റ്‌വർക്ക്</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" സ്വയമേവ ആരംഭിച്ചു}other{# ആപ്പുകൾ സ്വയമേവ ആരംഭിച്ചു}}</translation>
 <translation id="7994702968232966508">EAP രീതി</translation>
@@ -1663,7 +1665,6 @@
 <translation id="8576249514688522074">പ്രവർത്തനമാരംഭിച്ചിട്ടില്ല</translation>
 <translation id="8584654835905316966"><ph name="DEVICE_NAME" /> എന്നതിനുള്ള ഫേംവെയർ <ph name="VERSION" /> പതിപ്പിലേക്ക് ഇൻസ്റ്റാൾ ചെയ്യുന്നത് പൂർത്തിയാക്കാൻ റീസ്റ്റാർട്ട് ചെയ്യേണ്ടതുണ്ട്. നിങ്ങളുടെ കമ്പ്യൂട്ടർ പല തവണ റീബൂട്ട് ചെയ്യുന്നതായി ദൃശ്യമായേക്കാം. ഈ പ്രവർത്തനം പ്രതീക്ഷിച്ചതാണ്.</translation>
 <translation id="8593058461203131755">മീഡിയ തൽക്കാലികമായി നിർത്തുക</translation>
-<translation id="8619169570378509764">School Tools</translation>
 <translation id="8620617069779373398">റോമിംഗ് നില</translation>
 <translation id="8626489604350149811"><ph name="APN_NAME" /> എന്നതിനുള്ള കൂടുതൽ പ്രവർത്തനങ്ങൾ</translation>
 <translation id="86356131183441916">ഇളം പർപ്പിൾ</translation>

@@ -809,8 +809,9 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
       kUpdateHistogramName, ManifestUpdateResult::kWebContentsDestroyed, 1);
 }
 
+// TODO(crbug.com/402699278): Fix and re-enable.
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
-                       CheckCancelledByAppUninstalled) {
+                       DISABLED_CheckCancelledByAppUninstalled) {
   webapps::AppId app_id = InstallWebApp();
   GetManifestUpdateManager(browser()->profile())
       .hang_update_checks_for_testing();

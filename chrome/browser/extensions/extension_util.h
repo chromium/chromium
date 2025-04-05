@@ -19,6 +19,10 @@ namespace extensions {
 class PermissionSet;
 }
 
+namespace user_prefs {
+class PrefRegistrySyncable;
+}
+
 class Profile;
 
 namespace extensions {
@@ -88,6 +92,9 @@ std::u16string GetFixupExtensionNameForUIDisplay(
     const std::u16string& extension_name);
 std::u16string GetFixupExtensionNameForUIDisplay(
     const std::string& extension_name);
+
+// Registers miscellaneous chrome-level extension-related prefs.
+void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
 }  // namespace util
 }  // namespace extensions

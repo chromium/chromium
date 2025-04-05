@@ -140,10 +140,9 @@ class SurfaceAggregatorPerfTest : public VizPerfTest {
         SkColor4f background_color = SkColors::kGreen;
         bool nearest_neighbor = false;
         quad->SetAll(sqs, rect, visible_rect, needs_blending, ResourceId(j),
-                     gfx::Size(), premultiplied_alpha, uv_top_left,
-                     uv_bottom_right, background_color, nearest_neighbor,
-                     /*secure_output_only=*/false,
-                     gfx::ProtectedVideoType::kClear);
+                     premultiplied_alpha, uv_top_left, uv_bottom_right,
+                     background_color, nearest_neighbor,
+                     /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
       }
       sqs = pass->CreateAndAppendSharedQuadState();
       sqs->opacity = opacity;

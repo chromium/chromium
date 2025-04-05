@@ -67,7 +67,7 @@
 #include "components/metrics/content/dwa_web_contents_observer.h"
 #include "components/passage_embeddings/passage_embeddings_features.h"
 #include "components/permissions/permission_indicators_tab_data.h"
-#include "components/tab_collections/public/tab_interface.h"
+#include "components/tabs/public/tab_interface.h"
 #include "net/base/features.h"
 
 #if BUILDFLAG(ENABLE_GLIC)

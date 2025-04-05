@@ -301,6 +301,10 @@ inline constexpr char kInvalidBackgroundScript[] =
     "Invalid value for 'background.scripts[*]'.";
 inline constexpr char16_t kInvalidBackgroundScripts[] =
     u"Invalid value for 'background.scripts'.";
+inline constexpr char kInvalidBackgroundScriptMimeType[] =
+    "Invalid background script mime type for 'background.scripts[*]', a "
+    "background script can only be loaded from supported JavaScript files such "
+    "as .js files.";
 inline constexpr char16_t kInvalidBackgroundServiceWorkerScript[] =
     u"Invalid value for 'background.service_worker'.";
 inline constexpr char16_t kInvalidBackgroundServiceWorkerType[] =

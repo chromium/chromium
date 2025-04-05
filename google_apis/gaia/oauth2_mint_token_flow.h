@@ -26,9 +26,6 @@
 class GoogleServiceAuthError;
 class OAuth2MintTokenFlowTest;
 
-COMPONENT_EXPORT(GOOGLE_APIS)
-extern const char kOAuth2MintTokenApiCallResultHistogram[];
-
 // Values carrying the result of processing a successful API call.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.

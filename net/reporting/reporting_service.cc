@@ -85,8 +85,12 @@ class ReportingServiceImpl : public ReportingService {
   void SendReportsAndRemoveSource(
       const base::UnguessableToken& reporting_source) override {
     DCHECK(!reporting_source.is_empty());
-    context_->delivery_agent()->SendReportsForSource(reporting_source);
-    context_->cache()->SetExpiredSource(reporting_source);
+    // Queue expiration of the reporting sources as backlog tasks if the
+    // reporting service is not yet initialized, so that reports and expirations
+    // remain well-ordered.
+    DoOrBacklogTask(
+        base::BindOnce(&ReportingServiceImpl::DoSendReportsAndRemoveSource,
+                       base::Unretained(this), reporting_source));
   }
 
   void QueueReport(
@@ -201,6 +205,12 @@ class ReportingServiceImpl : public ReportingService {
   }
 
  private:
+  void DoSendReportsAndRemoveSource(
+      const base::UnguessableToken& reporting_source) {
+    context_->delivery_agent()->SendReportsForSource(reporting_source);
+    context_->cache()->SetExpiredSource(reporting_source);
+  }
+
   void DoOrBacklogTask(base::OnceClosure task) {
     if (shut_down_)
       return;

@@ -343,6 +343,10 @@ struct AIPageContentAttributes {
   AIPageContentTableRowData? table_row_data;
 
   array<AIPageContentAnnotatedRole> annotated_roles;
+
+  // A text description of the node. Only populated when actionable elements are
+  // enabled.
+  string? label;
 };
 
 // A semantic chunk of information on a page. It can represent text, structured

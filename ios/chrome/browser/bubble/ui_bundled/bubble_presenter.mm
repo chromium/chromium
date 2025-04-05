@@ -201,9 +201,6 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
 #pragma mark - Bubble presenter methods
 
 - (void)presentDiscoverFeedMenuTipBubble {
-  BubbleArrowDirection arrowDirection = IsHomeCustomizationEnabled()
-                                            ? BubbleArrowDirectionUp
-                                            : BubbleArrowDirectionDown;
   NSString* text =
       l10n_util::GetNSStringWithFixup(IDS_IOS_DISCOVER_FEED_HEADER_IPH);
 
@@ -219,22 +216,16 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
       [menuButton.superview convertPoint:menuButton.frame.origin toView:nil];
 
   // Slightly move IPH to ensure that the bubble doesn't bleed out the screen.
-  if (IsHomeCustomizationEnabled()) {
-    discoverFeedMenuAnchor.x += menuButton.frame.size.width / 2;
-    discoverFeedMenuAnchor.y += menuButton.frame.size.height;
-  } else {
-    discoverFeedMenuAnchor.x += menuButton.frame.size.width / 3;
-  }
+  discoverFeedMenuAnchor.x += menuButton.frame.size.width / 2;
+  discoverFeedMenuAnchor.y += menuButton.frame.size.height;
 
   // If the feature engagement tracker does not consider it valid to display
   // the tip, then end early to prevent the potential reassignment of the
   // existing `discoverFeedHeaderMenuTipBubblePresenter` to nil.
   BubbleViewControllerPresenter* presenter = [self
       presentBubbleForFeature:feature_engagement::kIPHDiscoverFeedHeaderFeature
-                    direction:arrowDirection
-                    alignment:IsHomeCustomizationEnabled()
-                                  ? BubbleAlignmentTopOrLeading
-                                  : BubbleAlignmentBottomOrTrailing
+                    direction:BubbleArrowDirectionUp
+                    alignment:BubbleAlignmentTopOrLeading
                          text:text
         voiceOverAnnouncement:text
                   anchorPoint:discoverFeedMenuAnchor];

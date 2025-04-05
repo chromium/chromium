@@ -532,19 +532,6 @@ void GraphicsContext::DrawText(const Font& font,
   });
 }
 
-// This function is not used if TextCombineEmphasisNG flag is enabled.
-void GraphicsContext::DeprecatedDrawEmphasisMarks(
-    const Font& font,
-    const TextRun& run,
-    const AtomicString& mark,
-    const gfx::PointF& point,
-    const AutoDarkMode& auto_dark_mode) {
-  DrawTextPasses([&](const cc::PaintFlags& flags) {
-    font.DeprecatedDrawEmphasisMarks(
-        canvas_, run, mark, point, DarkModeFlags(this, auto_dark_mode, flags));
-  });
-}
-
 void GraphicsContext::DrawEmphasisMarks(const Font& font,
                                         const TextFragmentPaintInfo& text_info,
                                         const AtomicString& mark,

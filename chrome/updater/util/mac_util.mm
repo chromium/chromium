@@ -8,6 +8,7 @@
 
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
@@ -144,6 +145,28 @@ std::optional<base::FilePath> GetApplicationSupportDirectory(
 
   VLOG(1) << "Could not get applications support path";
   return std::nullopt;
+}
+
+std::vector<base::FilePath> GetApplicationSupportDirectoriesForUsers(
+    UpdaterScope scope) {
+  std::vector<base::FilePath> app_support_dirs;
+  if (IsSystemInstall(scope)) {
+    base::FilePath user_dir;
+    if (!base::apple::GetLocalDirectory(NSUserDirectory, &user_dir)) {
+      return {};
+    }
+    base::FileEnumerator(user_dir, /*recursive=*/false,
+                         base::FileEnumerator::FileType::DIRECTORIES)
+        .ForEach([&app_support_dirs](const base::FilePath& name) {
+          app_support_dirs.push_back(
+              name.Append("Library").Append("Application Support"));
+        });
+  } else if (std::optional<base::FilePath> application_support_dir =
+                 GetApplicationSupportDirectory(UpdaterScope::kUser);
+             application_support_dir) {
+    app_support_dirs.push_back(*application_support_dir);
+  }
+  return app_support_dirs;
 }
 
 std::optional<base::FilePath> GetKSAdminPath(UpdaterScope scope) {

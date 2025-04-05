@@ -42,7 +42,7 @@ inline bool IsTransformFunction(CSSValueID function_id) {
 
 class CSSTransformInterpolationType : public CSSInterpolationType {
  public:
-  CSSTransformInterpolationType(PropertyHandle property)
+  explicit CSSTransformInterpolationType(PropertyHandle property)
       : CSSInterpolationType(property) {
     DCHECK_EQ(CssProperty().PropertyID(), CSSPropertyID::kTransform);
   }

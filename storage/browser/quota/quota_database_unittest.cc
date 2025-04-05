@@ -58,13 +58,6 @@ namespace {
 // Declared to shorten the line lengths.
 static const blink::mojom::StorageType kTemp =
     blink::mojom::StorageType::kTemporary;
-static const blink::mojom::StorageType kSync =
-    blink::mojom::StorageType::kSyncable;
-
-static const blink::mojom::StorageType kStorageTemp =
-    blink::mojom::StorageType::kTemporary;
-static const blink::mojom::StorageType kStorageSync =
-    blink::mojom::StorageType::kSyncable;
 
 static constexpr char kDatabaseName[] = "QuotaManager";
 
@@ -165,7 +158,7 @@ class QuotaDatabaseTest : public testing::TestWithParam<bool> {
               "quota,"
               "persistent,"
               "durability) "
-            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, 0, 0, 0)";
+            "VALUES (?, ?, ?, 0, ?, ?, ?, ?, 0, 0, 0, 0)";
       // clang-format on
       sql::Statement statement;
       statement.Assign(
@@ -179,11 +172,10 @@ class QuotaDatabaseTest : public testing::TestWithParam<bool> {
       statement.BindInt64(0, entry->bucket_id);
       statement.BindString(1, entry->storage_key);
       statement.BindString(2, std::move(storage_key).value().origin().host());
-      statement.BindInt(3, static_cast<int>(entry->type));
-      statement.BindString(4, entry->name);
-      statement.BindInt(5, static_cast<int>(entry->use_count));
-      statement.BindTime(6, entry->last_accessed);
-      statement.BindTime(7, entry->last_modified);
+      statement.BindString(3, entry->name);
+      statement.BindInt(4, static_cast<int>(entry->use_count));
+      statement.BindTime(5, entry->last_accessed);
+      statement.BindTime(6, entry->last_modified);
       EXPECT_TRUE(statement.Run());
     }
     quota_database->Commit();
@@ -300,29 +292,28 @@ TEST_P(QuotaDatabaseTest, GetBucket) {
   StorageKey storage_key =
       StorageKey::CreateFromStringForTesting("http://google/");
   std::string bucket_name = "google_bucket";
-  ASSERT_OK_AND_ASSIGN(
-      BucketInfo created_bucket,
-      db->CreateBucketForTesting(storage_key, bucket_name, kTemp));
+  ASSERT_OK_AND_ASSIGN(BucketInfo created_bucket,
+                       db->CreateBucketForTesting(storage_key, bucket_name));
   ASSERT_GT(created_bucket.id.value(), 0);
   ASSERT_EQ(created_bucket.name, bucket_name);
   ASSERT_EQ(created_bucket.storage_key, storage_key);
   ASSERT_EQ(created_bucket.type, kTemp);
 
   ASSERT_OK_AND_ASSIGN(BucketInfo queried_bucket,
-                       db->GetBucket(storage_key, bucket_name, kTemp));
+                       db->GetBucket(storage_key, bucket_name));
   EXPECT_EQ(queried_bucket.id, created_bucket.id);
   EXPECT_EQ(queried_bucket.name, created_bucket.name);
   EXPECT_EQ(queried_bucket.storage_key, created_bucket.storage_key);
   ASSERT_EQ(queried_bucket.type, created_bucket.type);
 
   // Can't retrieve buckets with name mismatch.
-  EXPECT_THAT(db->GetBucket(storage_key, "does_not_exist", kTemp),
+  EXPECT_THAT(db->GetBucket(storage_key, "does_not_exist"),
               base::test::ErrorIs(QuotaError::kNotFound));
 
   // Can't retrieve buckets with StorageKey mismatch.
   EXPECT_THAT(
       db->GetBucket(StorageKey::CreateFromStringForTesting("http://example/"),
-                    bucket_name, kTemp),
+                    bucket_name),
       base::test::ErrorIs(QuotaError::kNotFound));
 }
 
@@ -334,9 +325,8 @@ TEST_P(QuotaDatabaseTest, GetBucketById) {
   StorageKey storage_key =
       StorageKey::CreateFromStringForTesting("http://google/");
   std::string bucket_name = "google_bucket";
-  ASSERT_OK_AND_ASSIGN(
-      BucketInfo created_bucket,
-      db->CreateBucketForTesting(storage_key, bucket_name, kTemp));
+  ASSERT_OK_AND_ASSIGN(BucketInfo created_bucket,
+                       db->CreateBucketForTesting(storage_key, bucket_name));
   ASSERT_GT(created_bucket.id.value(), 0);
   ASSERT_EQ(created_bucket.name, bucket_name);
   ASSERT_EQ(created_bucket.storage_key, storage_key);
@@ -353,7 +343,7 @@ TEST_P(QuotaDatabaseTest, GetBucketById) {
               base::test::ErrorIs(QuotaError::kNotFound));
 }
 
-TEST_P(QuotaDatabaseTest, GetBucketsForType) {
+TEST_P(QuotaDatabaseTest, GetAllBuckets) {
   auto db = CreateDatabase(use_in_memory_db());
   EXPECT_TRUE(EnsureOpened(db.get()));
 
@@ -364,34 +354,22 @@ TEST_P(QuotaDatabaseTest, GetBucketsForType) {
   const StorageKey storage_key3 =
       StorageKey::CreateFromStringForTesting("http://example-c/");
 
-  ASSERT_OK_AND_ASSIGN(
-      BucketInfo temp_bucket1,
-      db->CreateBucketForTesting(storage_key1, "temp_bucket", kTemp));
+  ASSERT_OK_AND_ASSIGN(BucketInfo bucket1,
+                       db->CreateBucketForTesting(storage_key1, "data"));
+
+  ASSERT_OK_AND_ASSIGN(BucketInfo bucket2,
+                       db->CreateBucketForTesting(storage_key2, "logs"));
 
   ASSERT_OK_AND_ASSIGN(
-      BucketInfo temp_bucket2,
-      db->CreateBucketForTesting(storage_key2, "temp_bucket", kTemp));
+      BucketInfo bucket3,
+      db->CreateBucketForTesting(storage_key3, kDefaultBucketName));
 
-  ASSERT_OK_AND_ASSIGN(
-      BucketInfo sync_bucket1,
-      db->CreateBucketForTesting(storage_key1, kDefaultBucketName, kSync));
-
-  ASSERT_OK_AND_ASSIGN(
-      BucketInfo sync_bucket2,
-      db->CreateBucketForTesting(storage_key3, kDefaultBucketName, kSync));
-
-  ASSERT_OK_AND_ASSIGN(std::set<BucketInfo> result,
-                       db->GetBucketsForType(kTemp));
+  ASSERT_OK_AND_ASSIGN(std::set<BucketInfo> result, db->GetAllBuckets());
   std::set<BucketLocator> buckets = BucketInfosToBucketLocators(result);
-  ASSERT_EQ(2U, buckets.size());
-  EXPECT_TRUE(ContainsBucket(buckets, temp_bucket1));
-  EXPECT_TRUE(ContainsBucket(buckets, temp_bucket2));
-
-  ASSERT_OK_AND_ASSIGN(result, db->GetBucketsForType(kSync));
-  buckets = BucketInfosToBucketLocators(result);
-  ASSERT_EQ(2U, buckets.size());
-  EXPECT_TRUE(ContainsBucket(buckets, sync_bucket1));
-  EXPECT_TRUE(ContainsBucket(buckets, sync_bucket2));
+  ASSERT_EQ(3U, buckets.size());
+  EXPECT_TRUE(ContainsBucket(buckets, bucket1));
+  EXPECT_TRUE(ContainsBucket(buckets, bucket2));
+  EXPECT_TRUE(ContainsBucket(buckets, bucket3));
 }
 
 TEST_P(QuotaDatabaseTest, GetBucketsForHost) {
@@ -399,42 +377,30 @@ TEST_P(QuotaDatabaseTest, GetBucketsForHost) {
   EXPECT_TRUE(EnsureOpened(db.get()));
 
   ASSERT_OK_AND_ASSIGN(
-      BucketInfo temp_example_bucket1,
+      BucketInfo example_bucket1,
       db->CreateBucketForTesting(
           StorageKey::CreateFromStringForTesting("https://example.com/"),
-          kDefaultBucketName, kTemp));
+          kDefaultBucketName));
   ASSERT_OK_AND_ASSIGN(
-      BucketInfo temp_example_bucket2,
+      BucketInfo example_bucket2,
       db->CreateBucketForTesting(
           StorageKey::CreateFromStringForTesting("http://example.com:123/"),
-          kDefaultBucketName, kTemp));
+          kDefaultBucketName));
   ASSERT_OK_AND_ASSIGN(
-      BucketInfo perm_google_bucket1,
+      BucketInfo google_bucket,
       db->CreateBucketForTesting(
           StorageKey::CreateFromStringForTesting("http://google.com/"),
-          kDefaultBucketName, kSync));
-  ASSERT_OK_AND_ASSIGN(
-      BucketInfo temp_google_bucket2,
-      db->CreateBucketForTesting(
-          StorageKey::CreateFromStringForTesting("http://google.com:123/"),
-          kDefaultBucketName, kTemp));
+          kDefaultBucketName));
 
   ASSERT_OK_AND_ASSIGN(std::set<BucketInfo> result,
-                       db->GetBucketsForHost("example.com", kTemp));
+                       db->GetBucketsForHost("example.com"));
   ASSERT_EQ(result.size(), 2U);
-  EXPECT_TRUE(base::Contains(result, temp_example_bucket1));
-  EXPECT_TRUE(base::Contains(result, temp_example_bucket2));
+  EXPECT_TRUE(base::Contains(result, example_bucket1));
+  EXPECT_TRUE(base::Contains(result, example_bucket2));
 
-  ASSERT_OK_AND_ASSIGN(result, db->GetBucketsForHost("example.com", kSync));
-  ASSERT_EQ(result.size(), 0U);
-
-  ASSERT_OK_AND_ASSIGN(result, db->GetBucketsForHost("google.com", kSync));
+  ASSERT_OK_AND_ASSIGN(result, db->GetBucketsForHost("google.com"));
   ASSERT_EQ(result.size(), 1U);
-  EXPECT_TRUE(base::Contains(result, perm_google_bucket1));
-
-  ASSERT_OK_AND_ASSIGN(result, db->GetBucketsForHost("google.com", kTemp));
-  ASSERT_EQ(result.size(), 1U);
-  EXPECT_TRUE(base::Contains(result, temp_google_bucket2));
+  EXPECT_TRUE(base::Contains(result, google_bucket));
 }
 
 TEST_P(QuotaDatabaseTest, GetBucketsForStorageKey) {
@@ -446,34 +412,27 @@ TEST_P(QuotaDatabaseTest, GetBucketsForStorageKey) {
   const StorageKey storage_key2 =
       StorageKey::CreateFromStringForTesting("http://example-b/");
 
-  ASSERT_OK_AND_ASSIGN(
-      BucketInfo temp_bucket1,
-      db->CreateBucketForTesting(storage_key1, "temp_test1", kTemp));
+  ASSERT_OK_AND_ASSIGN(BucketInfo bucket1,
+                       db->CreateBucketForTesting(storage_key1, "test1"));
+
+  ASSERT_OK_AND_ASSIGN(BucketInfo bucket2,
+                       db->CreateBucketForTesting(storage_key1, "test2"));
 
   ASSERT_OK_AND_ASSIGN(
-      BucketInfo temp_bucket2,
-      db->CreateBucketForTesting(storage_key1, "temp_test2", kTemp));
-
-  ASSERT_OK_AND_ASSIGN(
-      BucketInfo sync_bucket1,
-      db->CreateBucketForTesting(storage_key1, kDefaultBucketName, kSync));
-
-  ASSERT_OK_AND_ASSIGN(
-      BucketInfo sync_bucket2,
-      db->CreateBucketForTesting(storage_key2, kDefaultBucketName, kSync));
+      BucketInfo bucket3,
+      db->CreateBucketForTesting(storage_key2, kDefaultBucketName));
 
   ASSERT_OK_AND_ASSIGN(std::set<BucketInfo> result,
-                       db->GetBucketsForStorageKey(storage_key1, kTemp));
+                       db->GetBucketsForStorageKey(storage_key1));
   std::set<BucketLocator> buckets = BucketInfosToBucketLocators(result);
   ASSERT_EQ(2U, buckets.size());
-  EXPECT_TRUE(ContainsBucket(buckets, temp_bucket1));
-  EXPECT_TRUE(ContainsBucket(buckets, temp_bucket2));
+  EXPECT_TRUE(ContainsBucket(buckets, bucket1));
+  EXPECT_TRUE(ContainsBucket(buckets, bucket2));
 
-  ASSERT_OK_AND_ASSIGN(result,
-                       db->GetBucketsForStorageKey(storage_key2, kSync));
+  ASSERT_OK_AND_ASSIGN(result, db->GetBucketsForStorageKey(storage_key2));
   buckets = BucketInfosToBucketLocators(result);
   ASSERT_EQ(1U, buckets.size());
-  EXPECT_TRUE(ContainsBucket(buckets, sync_bucket2));
+  EXPECT_TRUE(ContainsBucket(buckets, bucket3));
 }
 
 TEST_P(QuotaDatabaseTest, BucketLastAccessTimeLRU) {
@@ -481,9 +440,8 @@ TEST_P(QuotaDatabaseTest, BucketLastAccessTimeLRU) {
   EXPECT_TRUE(EnsureOpened(db.get()));
 
   std::set<BucketId> bucket_exceptions;
-  EXPECT_THAT(
-      db->GetBucketsForEviction(kTemp, 1, {}, bucket_exceptions, nullptr),
-      base::test::ErrorIs(QuotaError::kNotFound));
+  EXPECT_THAT(db->GetBucketsForEviction(1, {}, bucket_exceptions, nullptr),
+              base::test::ErrorIs(QuotaError::kNotFound));
 
   // Insert bucket entries into BucketTable.
   base::Time now = base::Time::Now();
@@ -500,25 +458,21 @@ TEST_P(QuotaDatabaseTest, BucketLastAccessTimeLRU) {
   BucketId bucket_id1 = BucketId(1);
   BucketId bucket_id2 = BucketId(2);
   BucketId bucket_id3 = BucketId(3);
-  BucketId bucket_id4 = BucketId(4);
 
-  Entry bucket1 = mojom::BucketTableEntry::New(
-      bucket_id1.value(), storage_key1.Serialize(), kStorageTemp,
-      kDefaultBucketName, -1, 99, now, now);
-  Entry bucket2 = mojom::BucketTableEntry::New(
-      bucket_id2.value(), storage_key2.Serialize(), kStorageTemp,
-      kDefaultBucketName, -1, 0, now, now);
+  Entry bucket1 =
+      mojom::BucketTableEntry::New(bucket_id1.value(), storage_key1.Serialize(),
+                                   kDefaultBucketName, -1, 99, now, now);
+  Entry bucket2 =
+      mojom::BucketTableEntry::New(bucket_id2.value(), storage_key2.Serialize(),
+                                   kDefaultBucketName, -1, 0, now, now);
   Entry bucket3 =
       mojom::BucketTableEntry::New(bucket_id3.value(), storage_key3.Serialize(),
-                                   kStorageTemp, "bucket_c", -1, 1, now, now);
-  Entry bucket4 =
-      mojom::BucketTableEntry::New(bucket_id4.value(), storage_key4.Serialize(),
-                                   kStorageSync, "bucket_d", -1, 5, now, now);
-  Entry kTableEntries[] = {bucket1->Clone(), bucket2->Clone(), bucket3->Clone(),
-                           bucket4->Clone()};
+                                   "bucket_c", -1, 1, now, now);
+  Entry kTableEntries[] = {bucket1->Clone(), bucket2->Clone(),
+                           bucket3->Clone()};
   AssignBucketTable(db.get(), kTableEntries);
 
-  // Update access time for three temporary storages, and
+  // Update access time for three temporary buckets.
   EXPECT_EQ(db->SetBucketLastAccessTime(
                 bucket_id1, base::Time::FromMillisecondsSinceUnixEpoch(10)),
             QuotaError::kNone);
@@ -529,11 +483,6 @@ TEST_P(QuotaDatabaseTest, BucketLastAccessTimeLRU) {
                 bucket_id3, base::Time::FromMillisecondsSinceUnixEpoch(30)),
             QuotaError::kNone);
 
-  // One persistent.
-  EXPECT_EQ(db->SetBucketLastAccessTime(
-                bucket_id4, base::Time::FromMillisecondsSinceUnixEpoch(40)),
-            QuotaError::kNone);
-
   // One non-existent.
   EXPECT_EQ(db->SetBucketLastAccessTime(
                 BucketId(777), base::Time::FromMillisecondsSinceUnixEpoch(40)),
@@ -541,7 +490,7 @@ TEST_P(QuotaDatabaseTest, BucketLastAccessTimeLRU) {
 
   ASSERT_OK_AND_ASSIGN(
       std::set<BucketLocator> result,
-      db->GetBucketsForEviction(kTemp, 1, {}, bucket_exceptions, nullptr));
+      db->GetBucketsForEviction(1, {}, bucket_exceptions, nullptr));
   ASSERT_EQ(1U, result.size());
   EXPECT_EQ(bucket_id1, result.begin()->id);
 
@@ -550,45 +499,40 @@ TEST_P(QuotaDatabaseTest, BucketLastAccessTimeLRU) {
   auto policy = base::MakeRefCounted<MockSpecialStoragePolicy>();
   policy->AddUnlimited(storage_key1.origin().GetURL());
   policy->AddProtected(storage_key2.origin().GetURL());
-  ASSERT_OK_AND_ASSIGN(
-      result,
-      db->GetBucketsForEviction(kTemp, 1, {}, bucket_exceptions, policy.get()));
+  ASSERT_OK_AND_ASSIGN(result, db->GetBucketsForEviction(
+                                   1, {}, bucket_exceptions, policy.get()));
   ASSERT_EQ(1U, result.size());
   EXPECT_EQ(bucket_id2, result.begin()->id);
 
   // Test that durable origins are excluded from eviction.
   policy->AddDurable(storage_key2.origin().GetURL());
-  ASSERT_OK_AND_ASSIGN(
-      result,
-      db->GetBucketsForEviction(kTemp, 1, {}, bucket_exceptions, policy.get()));
+  ASSERT_OK_AND_ASSIGN(result, db->GetBucketsForEviction(
+                                   1, {}, bucket_exceptions, policy.get()));
   ASSERT_EQ(1U, result.size());
   EXPECT_EQ(bucket_id3, result.begin()->id);
 
   // Bucket exceptions exclude specified buckets.
   bucket_exceptions.insert(bucket_id1);
-  ASSERT_OK_AND_ASSIGN(result, db->GetBucketsForEviction(
-                                   kTemp, 1, {}, bucket_exceptions, nullptr));
+  ASSERT_OK_AND_ASSIGN(
+      result, db->GetBucketsForEviction(1, {}, bucket_exceptions, nullptr));
   ASSERT_EQ(1U, result.size());
   EXPECT_EQ(bucket_id2, result.begin()->id);
 
   bucket_exceptions.insert(bucket_id2);
-  ASSERT_OK_AND_ASSIGN(result, db->GetBucketsForEviction(
-                                   kTemp, 1, {}, bucket_exceptions, nullptr));
+  ASSERT_OK_AND_ASSIGN(
+      result, db->GetBucketsForEviction(1, {}, bucket_exceptions, nullptr));
   ASSERT_EQ(1U, result.size());
   EXPECT_EQ(bucket_id3, result.begin()->id);
 
   bucket_exceptions.insert(bucket_id3);
-  EXPECT_THAT(
-      db->GetBucketsForEviction(kTemp, 1, {}, bucket_exceptions, nullptr),
-      base::test::ErrorIs(QuotaError::kNotFound));
+  EXPECT_THAT(db->GetBucketsForEviction(1, {}, bucket_exceptions, nullptr),
+              base::test::ErrorIs(QuotaError::kNotFound));
 
   EXPECT_EQ(db->SetBucketLastAccessTime(bucket_id1, base::Time::Now()),
             QuotaError::kNone);
 
-  BucketLocator bucket_locator =
-      BucketLocator(bucket_id3, storage_key3,
-                    static_cast<blink::mojom::StorageType>(bucket3->type),
-                    bucket3->name == kDefaultBucketName);
+  BucketLocator bucket_locator = BucketLocator(
+      bucket_id3, storage_key3, kTemp, bucket3->name == kDefaultBucketName);
 
   // Delete storage_key/type last access time information.
   ASSERT_OK_AND_ASSIGN(auto deleted, db->DeleteBucketData(bucket_locator));
@@ -596,16 +540,15 @@ TEST_P(QuotaDatabaseTest, BucketLastAccessTimeLRU) {
 
   // Querying again to see if the deletion has worked.
   bucket_exceptions.clear();
-  ASSERT_OK_AND_ASSIGN(result, db->GetBucketsForEviction(
-                                   kTemp, 1, {}, bucket_exceptions, nullptr));
+  ASSERT_OK_AND_ASSIGN(
+      result, db->GetBucketsForEviction(1, {}, bucket_exceptions, nullptr));
   ASSERT_EQ(1U, result.size());
   EXPECT_EQ(bucket_id2, result.begin()->id);
 
   bucket_exceptions.insert(bucket_id1);
   bucket_exceptions.insert(bucket_id2);
-  EXPECT_THAT(
-      db->GetBucketsForEviction(kTemp, 1, {}, bucket_exceptions, nullptr),
-      base::test::ErrorIs(QuotaError::kNotFound));
+  EXPECT_THAT(db->GetBucketsForEviction(1, {}, bucket_exceptions, nullptr),
+              base::test::ErrorIs(QuotaError::kNotFound));
 }
 
 TEST_P(QuotaDatabaseTest, BucketPersistence) {
@@ -613,9 +556,8 @@ TEST_P(QuotaDatabaseTest, BucketPersistence) {
   EXPECT_TRUE(EnsureOpened(db.get()));
 
   std::set<BucketId> bucket_exceptions;
-  EXPECT_THAT(
-      db->GetBucketsForEviction(kTemp, 1, {}, bucket_exceptions, nullptr),
-      base::test::ErrorIs(QuotaError::kNotFound));
+  EXPECT_THAT(db->GetBucketsForEviction(1, {}, bucket_exceptions, nullptr),
+              base::test::ErrorIs(QuotaError::kNotFound));
 
   // Insert bucket entries into BucketTable.
   base::Time now = base::Time::Now();
@@ -629,12 +571,12 @@ TEST_P(QuotaDatabaseTest, BucketPersistence) {
   BucketId bucket_id1 = BucketId(1);
   BucketId bucket_id2 = BucketId(2);
 
-  Entry bucket1 = mojom::BucketTableEntry::New(
-      bucket_id1.value(), storage_key1.Serialize(), kStorageTemp,
-      kDefaultBucketName, -1, 99, now, now);
-  Entry bucket2 = mojom::BucketTableEntry::New(
-      bucket_id2.value(), storage_key2.Serialize(), kStorageTemp,
-      kDefaultBucketName, -1, 0, now, now);
+  Entry bucket1 =
+      mojom::BucketTableEntry::New(bucket_id1.value(), storage_key1.Serialize(),
+                                   kDefaultBucketName, -1, 99, now, now);
+  Entry bucket2 =
+      mojom::BucketTableEntry::New(bucket_id2.value(), storage_key2.Serialize(),
+                                   kDefaultBucketName, -1, 0, now, now);
   Entry kTableEntries[] = {bucket1->Clone(), bucket2->Clone()};
   AssignBucketTable(db.get(), kTableEntries);
 
@@ -647,13 +589,13 @@ TEST_P(QuotaDatabaseTest, BucketPersistence) {
 
   ASSERT_OK_AND_ASSIGN(
       std::set<BucketLocator> result,
-      db->GetBucketsForEviction(kTemp, 1, {}, bucket_exceptions, nullptr));
+      db->GetBucketsForEviction(1, {}, bucket_exceptions, nullptr));
   ASSERT_EQ(1U, result.size());
   EXPECT_EQ(bucket_id1, result.begin()->id);
 
   ASSERT_TRUE(db->UpdateBucketPersistence(bucket_id1, true).has_value());
-  ASSERT_OK_AND_ASSIGN(result, db->GetBucketsForEviction(
-                                   kTemp, 1, {}, bucket_exceptions, nullptr));
+  ASSERT_OK_AND_ASSIGN(
+      result, db->GetBucketsForEviction(1, {}, bucket_exceptions, nullptr));
   ASSERT_EQ(1U, result.size());
   EXPECT_EQ(bucket_id2, result.begin()->id);
 }
@@ -667,14 +609,13 @@ TEST_P(QuotaDatabaseTest, SetStorageKeyLastAccessTime) {
   base::Time now = base::Time::Now();
 
   // Doesn't error if bucket doesn't exist.
-  EXPECT_EQ(db->SetStorageKeyLastAccessTime(storage_key, kTemp, now),
+  EXPECT_EQ(db->SetStorageKeyLastAccessTime(storage_key, now),
             QuotaError::kNone);
 
-  ASSERT_OK_AND_ASSIGN(
-      BucketInfo bucket,
-      db->CreateBucketForTesting(storage_key, kDefaultBucketName, kTemp));
+  ASSERT_OK_AND_ASSIGN(BucketInfo bucket, db->CreateBucketForTesting(
+                                              storage_key, kDefaultBucketName));
 
-  EXPECT_EQ(db->SetStorageKeyLastAccessTime(storage_key, kTemp, now),
+  EXPECT_EQ(db->SetStorageKeyLastAccessTime(storage_key, now),
             QuotaError::kNone);
 
   ASSERT_OK_AND_ASSIGN(mojom::BucketTableEntryPtr info,
@@ -683,7 +624,7 @@ TEST_P(QuotaDatabaseTest, SetStorageKeyLastAccessTime) {
   EXPECT_EQ(1, info->use_count);
 }
 
-TEST_P(QuotaDatabaseTest, GetStorageKeysForType) {
+TEST_P(QuotaDatabaseTest, GetAllStorageKeys) {
   auto db = CreateDatabase(use_in_memory_db());
   EXPECT_TRUE(EnsureOpened(db.get()));
 
@@ -691,26 +632,13 @@ TEST_P(QuotaDatabaseTest, GetStorageKeysForType) {
       StorageKey::CreateFromStringForTesting("http://example-a/");
   const StorageKey storage_key2 =
       StorageKey::CreateFromStringForTesting("http://example-b/");
-  const StorageKey storage_key3 =
-      StorageKey::CreateFromStringForTesting("http://example-c/");
 
-  std::ignore = db->CreateBucketForTesting(storage_key1, "bucket_a", kTemp);
-  std::ignore = db->CreateBucketForTesting(storage_key2, "bucket_b", kTemp);
-  std::ignore =
-      db->CreateBucketForTesting(storage_key2, kDefaultBucketName, kSync);
-  std::ignore =
-      db->CreateBucketForTesting(storage_key3, kDefaultBucketName, kSync);
+  std::ignore = db->CreateBucketForTesting(storage_key1, "bucket_a");
+  std::ignore = db->CreateBucketForTesting(storage_key2, "bucket_b");
 
-  ASSERT_OK_AND_ASSIGN(std::set<StorageKey> result,
-                       db->GetStorageKeysForType(kTemp));
+  ASSERT_OK_AND_ASSIGN(std::set<StorageKey> result, db->GetAllStorageKeys());
   ASSERT_TRUE(base::Contains(result, storage_key1));
   ASSERT_TRUE(base::Contains(result, storage_key2));
-  ASSERT_FALSE(base::Contains(result, storage_key3));
-
-  ASSERT_OK_AND_ASSIGN(result, db->GetStorageKeysForType(kSync));
-  ASSERT_FALSE(base::Contains(result, storage_key1));
-  ASSERT_TRUE(base::Contains(result, storage_key2));
-  ASSERT_TRUE(base::Contains(result, storage_key3));
 }
 
 TEST_P(QuotaDatabaseTest, BucketLastModifiedBetween) {
@@ -719,29 +647,24 @@ TEST_P(QuotaDatabaseTest, BucketLastModifiedBetween) {
 
   ASSERT_OK_AND_ASSIGN(
       std::set<BucketLocator> buckets,
-      db->GetBucketsModifiedBetween(kTemp, base::Time(), base::Time::Max()));
+      db->GetBucketsModifiedBetween(base::Time(), base::Time::Max()));
   EXPECT_TRUE(buckets.empty());
 
   ASSERT_OK_AND_ASSIGN(
       BucketInfo bucket1,
       db->CreateBucketForTesting(
           StorageKey::CreateFromStringForTesting("http://example-a/"),
-          "bucket_a", kTemp));
+          "bucket_a"));
   ASSERT_OK_AND_ASSIGN(
       BucketInfo bucket2,
       db->CreateBucketForTesting(
           StorageKey::CreateFromStringForTesting("http://example-b/"),
-          "bucket_b", kTemp));
+          "bucket_b"));
   ASSERT_OK_AND_ASSIGN(
       BucketInfo bucket3,
       db->CreateBucketForTesting(
           StorageKey::CreateFromStringForTesting("http://example-c/"),
-          "bucket_c", kTemp));
-  ASSERT_OK_AND_ASSIGN(
-      BucketInfo bucket4,
-      db->CreateBucketForTesting(
-          StorageKey::CreateFromStringForTesting("http://example-d/"),
-          kDefaultBucketName, kSync));
+          "bucket_c"));
 
   // Report last modified time for the buckets.
   EXPECT_EQ(db->SetBucketLastModifiedTime(
@@ -753,115 +676,89 @@ TEST_P(QuotaDatabaseTest, BucketLastModifiedBetween) {
   EXPECT_EQ(db->SetBucketLastModifiedTime(
                 bucket3.id, base::Time::FromMillisecondsSinceUnixEpoch(20)),
             QuotaError::kNone);
-  EXPECT_EQ(db->SetBucketLastModifiedTime(
-                bucket4.id, base::Time::FromMillisecondsSinceUnixEpoch(30)),
-            QuotaError::kNone);
 
   // Non-existent bucket.
   EXPECT_EQ(db->SetBucketLastModifiedTime(
                 BucketId(777), base::Time::FromMillisecondsSinceUnixEpoch(0)),
             QuotaError::kNone);
 
-  ASSERT_OK_AND_ASSIGN(buckets, db->GetBucketsModifiedBetween(
-                                    kTemp, base::Time(), base::Time::Max()));
+  ASSERT_OK_AND_ASSIGN(
+      buckets, db->GetBucketsModifiedBetween(base::Time(), base::Time::Max()));
   EXPECT_EQ(3U, buckets.size());
   EXPECT_TRUE(ContainsBucket(buckets, bucket1));
   EXPECT_TRUE(ContainsBucket(buckets, bucket2));
   EXPECT_TRUE(ContainsBucket(buckets, bucket3));
-  EXPECT_FALSE(ContainsBucket(buckets, bucket4));
 
-  ASSERT_OK_AND_ASSIGN(buckets,
-                       db->GetBucketsModifiedBetween(
-                           kTemp, base::Time::FromMillisecondsSinceUnixEpoch(5),
-                           base::Time::Max()));
+  ASSERT_OK_AND_ASSIGN(
+      buckets,
+      db->GetBucketsModifiedBetween(
+          base::Time::FromMillisecondsSinceUnixEpoch(5), base::Time::Max()));
   EXPECT_EQ(2U, buckets.size());
   EXPECT_FALSE(ContainsBucket(buckets, bucket1));
   EXPECT_TRUE(ContainsBucket(buckets, bucket2));
   EXPECT_TRUE(ContainsBucket(buckets, bucket3));
-  EXPECT_FALSE(ContainsBucket(buckets, bucket4));
 
   ASSERT_OK_AND_ASSIGN(
-      buckets, db->GetBucketsModifiedBetween(
-                   kTemp, base::Time::FromMillisecondsSinceUnixEpoch(15),
-                   base::Time::Max()));
+      buckets,
+      db->GetBucketsModifiedBetween(
+          base::Time::FromMillisecondsSinceUnixEpoch(15), base::Time::Max()));
   EXPECT_EQ(1U, buckets.size());
   EXPECT_FALSE(ContainsBucket(buckets, bucket1));
   EXPECT_FALSE(ContainsBucket(buckets, bucket2));
   EXPECT_TRUE(ContainsBucket(buckets, bucket3));
-  EXPECT_FALSE(ContainsBucket(buckets, bucket4));
 
   ASSERT_OK_AND_ASSIGN(
-      buckets, db->GetBucketsModifiedBetween(
-                   kTemp, base::Time::FromMillisecondsSinceUnixEpoch(25),
-                   base::Time::Max()));
+      buckets,
+      db->GetBucketsModifiedBetween(
+          base::Time::FromMillisecondsSinceUnixEpoch(25), base::Time::Max()));
   EXPECT_TRUE(buckets.empty());
 
   ASSERT_OK_AND_ASSIGN(buckets,
                        db->GetBucketsModifiedBetween(
-                           kTemp, base::Time::FromMillisecondsSinceUnixEpoch(5),
+                           base::Time::FromMillisecondsSinceUnixEpoch(5),
                            base::Time::FromMillisecondsSinceUnixEpoch(15)));
   EXPECT_EQ(1U, buckets.size());
   EXPECT_FALSE(ContainsBucket(buckets, bucket1));
   EXPECT_TRUE(ContainsBucket(buckets, bucket2));
   EXPECT_FALSE(ContainsBucket(buckets, bucket3));
-  EXPECT_FALSE(ContainsBucket(buckets, bucket4));
 
   ASSERT_OK_AND_ASSIGN(buckets,
                        db->GetBucketsModifiedBetween(
-                           kTemp, base::Time::FromMillisecondsSinceUnixEpoch(0),
+                           base::Time::FromMillisecondsSinceUnixEpoch(0),
                            base::Time::FromMillisecondsSinceUnixEpoch(20)));
   EXPECT_EQ(2U, buckets.size());
   EXPECT_TRUE(ContainsBucket(buckets, bucket1));
   EXPECT_TRUE(ContainsBucket(buckets, bucket2));
   EXPECT_FALSE(ContainsBucket(buckets, bucket3));
-  EXPECT_FALSE(ContainsBucket(buckets, bucket4));
-
-  ASSERT_OK_AND_ASSIGN(buckets,
-                       db->GetBucketsModifiedBetween(
-                           kSync, base::Time::FromMillisecondsSinceUnixEpoch(0),
-                           base::Time::FromMillisecondsSinceUnixEpoch(35)));
-  EXPECT_EQ(1U, buckets.size());
-  EXPECT_FALSE(ContainsBucket(buckets, bucket1));
-  EXPECT_FALSE(ContainsBucket(buckets, bucket2));
-  EXPECT_FALSE(ContainsBucket(buckets, bucket3));
-  EXPECT_TRUE(ContainsBucket(buckets, bucket4));
 }
 
 TEST_P(QuotaDatabaseTest, RegisterInitialStorageKeyInfo) {
   auto db = CreateDatabase(use_in_memory_db());
 
-  base::flat_map<blink::mojom::StorageType, std::set<StorageKey>>
-      storage_keys_by_type;
-  const StorageKey kStorageKeys[] = {
+  std::set<StorageKey> storage_keys = {
       StorageKey::CreateFromStringForTesting("http://a/"),
       StorageKey::CreateFromStringForTesting("http://b/"),
       StorageKey::CreateFromStringForTesting("http://c/")};
-  storage_keys_by_type.emplace(
-      kTemp, std::set<StorageKey>(kStorageKeys, std::end(kStorageKeys)));
-  storage_keys_by_type.emplace(
-      kSync, std::set<StorageKey>(kStorageKeys, std::end(kStorageKeys)));
 
-  EXPECT_EQ(db->RegisterInitialStorageKeyInfo(storage_keys_by_type),
-            QuotaError::kNone);
+  EXPECT_EQ(db->RegisterInitialStorageKeyInfo(storage_keys), QuotaError::kNone);
 
   ASSERT_OK_AND_ASSIGN(
       BucketInfo bucket_result,
       db->GetBucket(StorageKey::CreateFromStringForTesting("http://a/"),
-                    kDefaultBucketName, kTemp));
+                    kDefaultBucketName));
 
   ASSERT_OK_AND_ASSIGN(mojom::BucketTableEntryPtr info,
                        db->GetBucketInfoForTest(bucket_result.id));
   EXPECT_EQ(0, info->use_count);
 
   EXPECT_EQ(db->SetStorageKeyLastAccessTime(
-                StorageKey::CreateFromStringForTesting("http://a/"), kTemp,
+                StorageKey::CreateFromStringForTesting("http://a/"),
                 base::Time::FromSecondsSinceUnixEpoch(1.0)),
             QuotaError::kNone);
   ASSERT_OK_AND_ASSIGN(info, db->GetBucketInfoForTest(bucket_result.id));
   EXPECT_EQ(1, info->use_count);
 
-  EXPECT_EQ(db->RegisterInitialStorageKeyInfo(storage_keys_by_type),
-            QuotaError::kNone);
+  EXPECT_EQ(db->RegisterInitialStorageKeyInfo(storage_keys), QuotaError::kNone);
 
   ASSERT_OK_AND_ASSIGN(info, db->GetBucketInfoForTest(bucket_result.id));
   EXPECT_EQ(1, info->use_count);
@@ -879,12 +776,12 @@ TEST_P(QuotaDatabaseTest, DumpBucketTable) {
       StorageKey::CreateFromStringForTesting("http://gle/");
 
   Entry kTableEntries[] = {
-      mojom::BucketTableEntry::New(1, storage_key1.Serialize(), kStorageTemp,
+      mojom::BucketTableEntry::New(1, storage_key1.Serialize(),
                                    kDefaultBucketName, -1, 2147483647, now,
                                    now),
-      mojom::BucketTableEntry::New(2, storage_key2.Serialize(), kStorageTemp,
+      mojom::BucketTableEntry::New(2, storage_key2.Serialize(),
                                    kDefaultBucketName, -1, 0, now, now),
-      mojom::BucketTableEntry::New(3, storage_key3.Serialize(), kStorageTemp,
+      mojom::BucketTableEntry::New(3, storage_key3.Serialize(),
                                    kDefaultBucketName, -1, 1, now, now),
   };
 
@@ -910,9 +807,8 @@ TEST_P(QuotaDatabaseTest, DeleteBucketData) {
   {
     auto db = CreateDatabase(/*is_incognito=*/false);
     EXPECT_TRUE(EnsureOpened(db.get()));
-    ASSERT_OK_AND_ASSIGN(
-        BucketInfo result,
-        db->CreateBucketForTesting(storage_key, bucket_name, kTemp));
+    ASSERT_OK_AND_ASSIGN(BucketInfo result,
+                         db->CreateBucketForTesting(storage_key, bucket_name));
     BucketLocator bucket = result.ToBucketLocator();
 
     const base::FilePath idb_bucket_path = CreateClientBucketPath(
@@ -927,7 +823,7 @@ TEST_P(QuotaDatabaseTest, DeleteBucketData) {
     auto db = CreateDatabase(/*is_incognito=*/false);
     EXPECT_TRUE(EnsureOpened(db.get()));
     ASSERT_OK_AND_ASSIGN(BucketInfo result,
-                         db->GetBucket(storage_key, bucket_name, kTemp));
+                         db->GetBucket(storage_key, bucket_name));
     BucketLocator bucket = result.ToBucketLocator();
 
     const base::FilePath bucket_path = CreateBucketPath(ProfilePath(), bucket);
@@ -1006,8 +902,7 @@ TEST_P(QuotaDatabaseTest, QuotaDatabasePathMigration) {
   // Reopen database, check that db is migrated to new path with bucket data.
   {
     auto db = CreateDatabase(/*is_incognito=*/false);
-    EXPECT_TRUE(
-        db->GetBucket(params.storage_key, params.name, kTemp).has_value());
+    EXPECT_TRUE(db->GetBucket(params.storage_key, params.name).has_value());
     EXPECT_FALSE(base::PathExists(kLegacyFilePath));
     EXPECT_TRUE(base::PathExists(DbPath()));
   }
@@ -1031,8 +926,7 @@ TEST_P(QuotaDatabaseTest, QuotaDatabasePathBadMigration) {
   // Reopen database, check that db is migrated and is in a good state.
   {
     auto db = CreateDatabase(/*is_incognito=*/false);
-    EXPECT_TRUE(
-        db->GetBucket(params.storage_key, params.name, kTemp).has_value());
+    EXPECT_TRUE(db->GetBucket(params.storage_key, params.name).has_value());
     EXPECT_TRUE(base::PathExists(DbPath()));
   }
 }
@@ -1451,17 +1345,16 @@ TEST_P(QuotaDatabaseTest, PersistentPolicy) {
 
   // Get evictable bucket --- should be the default one.
   auto policy = base::MakeRefCounted<MockSpecialStoragePolicy>();
-  ASSERT_OK_AND_ASSIGN(
-      std::set<BucketLocator> lru_result,
-      db.GetBucketsForEviction(kTemp, 1, {}, {}, policy.get()));
+  ASSERT_OK_AND_ASSIGN(std::set<BucketLocator> lru_result,
+                       db.GetBucketsForEviction(1, {}, {}, policy.get()));
   ASSERT_EQ(1U, lru_result.size());
   EXPECT_EQ(default_id, lru_result.begin()->id);
 
   // Check that durable policy applies to the default bucket but not the non
   // default (non default buckets use the persist columnn in the database).
   policy->AddDurable(storage_key.origin().GetURL());
-  ASSERT_OK_AND_ASSIGN(
-      lru_result, db.GetBucketsForEviction(kTemp, 1, {}, {}, policy.get()));
+  ASSERT_OK_AND_ASSIGN(lru_result,
+                       db.GetBucketsForEviction(1, {}, {}, policy.get()));
   ASSERT_EQ(1U, lru_result.size());
   EXPECT_EQ(non_default_id, lru_result.begin()->id);
 }

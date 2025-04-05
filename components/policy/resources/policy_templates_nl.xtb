@@ -114,6 +114,15 @@ Op <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> en <ph name="LINUX_OS_NA
 <translation id="1065175969514496951">Als je dit beleid instelt, wordt toegang geboden tot de vermelde URL's tijdens de verificatie (bijvoorbeeld het inlog- en vergrendelscherm), als uitzonderingen op <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />. Zie de beschrijving van dat beleid voor de indeling van items in deze lijst. Als je <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" /> bijvoorbeeld instelt op <ph name="WILDCARD_VALUE" />, worden alle verzoeken geblokkeerd en kun je dit beleid gebruiken om toegang tot een beperkte lijst met URL's toe te staan. Je kunt dit beleid gebruiken om uitzonderingen voor bepaalde schema's, subdomeinen van andere domeinen, poorten of specifieke paden op te geven met de indeling die wordt gespecificeerd op (https://support.google.com/chrome/a?p=url_blocklist_filter_format). Het meest specifieke filter bepaalt of een URL wordt geblokkeerd of toegestaan. Het beleid <ph name="DEVICE_AUTHENTICATION_URL_ALLOWLIST_POLICY_NAME" /> krijgt voorrang op <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />. Dit beleid is beperkt tot 1000 items.
 
 Als je het beleid niet instelt, zijn er geen uitzonderingen toegestaan op <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />.</translation>
+<translation id="1065501094422559251">Dit beleid beheert de instellingen voor dynamische code voor <ph name="PRODUCT_NAME" />.
+
+Als je dynamische code uitzet, verbeter je de beveiliging van <ph name="PRODUCT_NAME" /> door te voorkomen dat potentieel schadelijke dynamische code en code van derden wijzigingen aanbrengen in het gedrag van <ph name="PRODUCT_NAME" />. Dit kan wel compatibiliteitsproblemen veroorzaken met software van derden (zoals bepaalde printerstuurprogramma's) die binnen het browserproces moet worden uitgevoerd.
+
+Als je het beleid instelt op 0 - Default of niet instelt, gebruikt <ph name="PRODUCT_NAME" /> de standaardinstellingen.
+
+Als je het beleid instelt op 1 - DisabledForBrowser, wordt voorkomen dat het browserproces van <ph name="PRODUCT_NAME" /> dynamische code maakt.
+
+Let op: Lees meer informatie over het beleid voor procesbeperking (https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies).</translation>
 <translation id="1068801725746725727">Ontvangst van Safe Browsing-enquêtes aanzetten</translation>
 <translation id="107045325503547419">Afhankelijk van het releaseproces voor de functie.</translation>
 <translation id="1073983258515362346">Informatie rapporteren over de schermverlichting van een apparaat.
@@ -1188,9 +1197,6 @@ De beschikbaarheid van extensies wordt nog steeds beheerd door andere beleidsreg
 <translation id="1858775210076906272">Vooraf ingevulde configuratie voor Kerberos</translation>
 <translation id="1861206724856734193">Hiermee stel je een lijst in met regels ter voorkoming van datalekken.</translation>
 <translation id="1862267110714201519">De functie voor ghostvenster uitzetten.</translation>
-<translation id="1865129144973895592">Dit beleid biedt een tijdelijke aanmelding voor een beëindigde en verwijderde set platformgebeurtenissen met de naam Mutatiegebeurtenissen.
-Als je dit beleid toepast, worden mutatiegebeurtenissen nog steeds geactiveerd, zelfs als ze standaard zijn uitgezet voor normale internetgebruikers. Als je dit beleid niet toepast of niet instelt, worden deze gebeurtenissen misschien niet geactiveerd.
-Dit beleid is een tijdelijke oplossing en wordt verwijderd in M135.</translation>
 <translation id="1865417998205858223">Rechten voor sleutels</translation>
 <translation id="1865867000796030567">Als je het beleid toepast, wordt de waarde van de manifestsleutel <ph name="REQUIRED_PLATFORM_VERSION" /> voor de automatisch gelanceerde kiosk-app zonder vertraging gebruikt als voorvoegsel voor de doelversie van de automatische update.
 
@@ -4311,6 +4317,9 @@ Opmerking: Als je interne URL's met chrome://* en chrome-untrusted://* blokkeert
       In kiosksessies is er geen respijtperiode en zijn er geen meldingen over opnieuw opstarten.
 </translation>
 <translation id="4187576366596772431">De WebHID API op deze sites blokkeren</translation>
+<translation id="4188427466177877986">Als je het beleid toepast of niet instelt, kunnen gebruikers hun pakketten volgen op <ph name="PRODUCT_NAME" /> via de pagina Nieuw tabblad.
+Als je het beleid niet toepast, kunnen gebruikers hun pakketten op <ph name="PRODUCT_NAME" /> niet volgen via de pagina Nieuw tabblad.
+Beëindigd: De functie Pakket volgen is uitgezet sinds M132 en dit beleid heeft sindsdien geen effect.</translation>
 <translation id="4189100643304138928">Lijst met instellingen voor Chrome Enterprise Connectors-services die moeten worden toegepast op de Enterprise Connector <ph name="ON_FILE_ATTACHED_ENTERPRISE_CONNECTOR" />. De lijst wordt geactiveerd als een bestand wordt bijgevoegd in Chrome.
 
       De velden <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> en <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> worden gebruikt om te bepalen of de connector een bestand voor analyse moet sturen als het is gekoppeld aan een specifieke pagina en welke tags moeten worden opgenomen in het analyseverzoek voor dat bestand. Een tag die overeenkomt met een 'enable'-patroon, wordt opgenomen in het analyseverzoek als de pagina-URL overeenkomt met een patroon dat is gekoppeld aan die tag, op voorwaarde dat er geen 'disable'-patroon met dezelfde tag overeenkomt met de pagina-URL. De analyse vindt plaats als er ten minste één tag moet worden opgenomen in het verzoek.
@@ -5962,7 +5971,6 @@ Vanaf <ph name="PRODUCT_NAME" /> versie 92 wordt dit beleid ook ondersteund in d
 <translation id="5373552304217872025">Als je dit beleid instelt op waar of niet instelt, staan <ph name="PRODUCT_NAME" /> en <ph name="LACROS_NAME" /> toe dat er een nieuwe persoon wordt toegevoegd via gebruikersbeheer.
 
       Als je dit beleid instelt op onwaar, staan <ph name="PRODUCT_NAME" /> en <ph name="LACROS_NAME" /> niet toe dat er een nieuwe persoon wordt toegevoegd via gebruikersbeheer.</translation>
-<translation id="5376378981585287162">Bestaande lokale bestanden verwijderen (ondersteund vanaf versie 136)</translation>
 <translation id="5377606826822211923">Het gebruik van Android-apps van niet-vertrouwde bronnen beheren voor de gebruiker</translation>
 <translation id="5377826248281933035">Dit beleid biedt een lijst met sites die gebruikers snel kunnen zoeken met snelkoppelingen in de adresbalk. Gebruikers kunnen een zoekopdracht starten door de snelkoppeling of @snelkoppeling (bijvoorbeeld @werk), gevolgd door de spatiebalk of Tab, in de adresbalk te typen.
 
@@ -7630,6 +7638,15 @@ OPMERKING: Het standaardgedrag voor consumenten- en zakelijke apparaten verschil
       2) De landinstelling van het systeem.
       3) De reservelandinstelling (en-US).</translation>
 <translation id="6493089139124468815">Sites toestaan de gebruiker te vragen om toegang tot het klembord te geven</translation>
+<translation id="6493557163786346587">Als je het beleid instelt, kun je een lijst met URL-patronen maken om aan te geven welke sites gebruikers niet mogen vragen om toegang tot een seriële poort.
+
+Als je het beleid niet instelt, is <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> (indien ingesteld) van toepassing op alle sites. Zo niet, dan gelden de persoonlijke instellingen van de gebruiker.
+
+Als URL-patronen niet overeenkomen met het beleid <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" /> (als er een overeenkomst is), krijgen <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> (indien ingesteld) of de persoonlijke instellingen van de gebruikers voorrang, in die volgorde.
+
+Als URL-patronen conflicteren met <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />, krijgt dit beleid voorrang.
+
+Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige <ph name="URL_LABEL" />-patronen. <ph name="WILDCARD_VALUE" /> is geen geaccepteerde waarde voor dit beleid.</translation>
 <translation id="6493918190032622602">Minimum toegestane <ph name="PRODUCT_OS_NAME" />-versie</translation>
 <translation id="6495337487202227251">Dit beleid is beëindigd en wordt verwijderd in <ph name="PRODUCT_OS_NAME" />-versie 85. Gebruik in plaats daarvan <ph name="SCREEN_LOCK_DELAYS_POLICY_NAME" />.
 
@@ -8063,6 +8080,11 @@ De browser verwijdert automatisch gegevens van de geselecteerde typen die ouder 
 De verwijdering van verlopen gegevens vindt plaats 15 seconden nadat de browser is gestart en daarna elke 30 minuten terwijl de browser actief is.
 
 Tot Chrome 114 moest voor dit beleid het beleid <ph name="SYNC_DISABLED_POLICY_NAME" /> worden ingesteld op Waar. Vanaf Chrome 115 geldt dat als je dit beleid instelt, synchronisatie voor de betreffende gegevenstypen wordt uitgezet als <ph name="CHROME_SYNC_NAME" /> niet is uitgezet door het beleid <ph name="SYNC_DISABLED_POLICY_NAME" /> in te stellen en <ph name="BROWSER_SIGNIN_POLICY_NAME" /> niet is uitgezet.</translation>
+<translation id="6762635531429930846">Geeft de minimale releaseleeftijd aan waarna meldingen voor herstarten agressiever worden. De leeftijd wordt berekend vanaf het moment dat de huidige versie voor het laatst aan clients is geleverd.
+
+Als een nieuwe versie in behandeling is, een browser moet worden herstart of een apparaat opnieuw moet worden opgestart en de huidige versie al langer is vervangen dan het aantal dagen dat is aangegeven in deze instelling, wordt het beleid <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> overschreven naar 2 uur. Als het beleid <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" /> is ingesteld op 1 (Vereist), worden gebruikers gedwongen om aan het einde van de periode te herstarten of opnieuw op te starten.
+
+Als je dit beleid niet instelt of als de releaseleeftijd niet kan worden bepaald, wordt het beleid <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> gebruikt voor alle updates.</translation>
 <translation id="6763023079133439068">Certificaten zonder de extensie subjectAlternativeName toestaan als deze worden uitgegeven door lokale vertrouwensankers</translation>
 <translation id="6766216162565713893">Toestaan dat sites de gebruiker vragen om toegang te verlenen tot een Bluetooth-apparaat in de buurt</translation>
 <translation id="6770454900105963262">Informatie over actieve kiosk-sessies melden</translation>
@@ -8653,17 +8675,6 @@ Opmerking: Als je dit beleid gebruikt om de tijdzone automatisch te wijzigen, mo
 
       Als je het beleid instelt op 'False', kunnen gebruikers, apps en extensies de modus voor volledig scherm niet openen.</translation>
 <translation id="718126088895133062">Met dit beleid wordt de licentiegebruikers-ID voor <ph name="PLUGIN_VM_NAME" /> voor dit apparaat opgegeven.</translation>
-<translation id="7184152751828902217">De batterijconditie kan worden beïnvloed door factoren zoals vaak volledig opladen en langere oplaadtijden. Dit beleid biedt 3 opties om het oplaadgedrag te optimaliseren en deze factoren te beperken, waardoor de levensduur van de batterij wordt verlengd.
-
-Als je het beleid instelt op 1 - Standard (Standaard) of niet instelt, wordt de batterij gewoon opgeladen tot 100%. Hiermee zet je aangepast en beperkt opladen uit.
-
-Als je het beleid instelt op 2 - Adaptive (Aangepast), leert het apparaat je oplaadgewoonten kennen en wordt opladen tot 100% uitgesteld totdat dat nodig is. Zo gaat de batterij langer mee.
-
-Als je het beleid instelt op 3 - Limited (Beperkt), wordt de batterij maar tot ongeveer 80% opgeladen om de levensduur te maximaliseren.
-
-Dit beleid overschrijft <ph name="DEVICE_POWER_ADAPTIVE_CHARGING_ENABLED_POLICY_NAME" />.
-
-Het beleid <ph name="DEVICE_POWER_BATTERY_CHARGING_OPTIMIZATION_POLICY_NAME" /> en het beleid <ph name="DEVICE_POWER_ADAPTIVE_CHARGING_ENABLED_POLICY_NAME" /> hebben altijd voorrang op gebruikersinstellingen.</translation>
 <translation id="7185078796915954712">TLS 1.3</translation>
 <translation id="7185630966939835143">Een Google-webservice gebruiken om spelfouten op te lossen</translation>
 <translation id="7187248416163189586">Rapportage van achtergrondverlichtingsinformatie van apparaat uitzetten</translation>
@@ -10151,6 +10162,15 @@ Opmerking: Dit beleid is een tijdelijke oplossing om de overstap te maken van AP
 <translation id="8371178326720637170">Hiermee kunnen beheerde extensies de Enterprise Hardware Platform-API gebruiken</translation>
 <translation id="8373176843640227330">Rapportage van bluetooth-informatie van apparaat uitzetten</translation>
 <translation id="8375817202037102567">Schrijftoegang tot bestanden en directory's voor deze sites blokkeren</translation>
+<translation id="837805585374308454">Als je het beleid instelt, kun je een lijst met URL-patronen maken om aan te geven welke sites gebruikers mogen vragen om toegang tot een seriële poort.
+
+Als je het beleid niet instelt, is <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> (indien ingesteld) van toepassing op alle sites. Zo niet, dan gelden de persoonlijke instellingen van gebruikers.
+
+Als URL-patronen niet overeenkomen met het beleid <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" /> (als er een overeenkomst is), krijgen <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> (indien ingesteld) of de persoonlijke instellingen van de gebruikers voorrang, in die volgorde.
+
+Als URL-patronen conflicteren met <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" />, worden ze genegeerd.
+
+Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige <ph name="URL_LABEL" />-patronen. <ph name="WILDCARD_VALUE" /> is geen geaccepteerde waarde voor dit beleid.</translation>
 <translation id="8378266419596669629">Het recht voor lokale lettertypen blokkeren op deze sites</translation>
 <translation id="8379281645427937253">Een lijst met TLS-certificaten die <ph name="PRODUCT_NAME" /> moet vertrouwen voor serververificatie.
 Certificaten moeten base64-gecodeerd zijn.</translation>

@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/text/writing_direction_mode.h"
-#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
 namespace blink {
 
@@ -92,8 +91,6 @@ class CORE_EXPORT StringKeyframe : public Keyframe {
         .EnsureScopedValue(tree_scope_.Get());
   }
 
-  bool HasCssProperty() const;
-
   void AddKeyframePropertiesToV8Object(V8ObjectBuilder&,
                                        Element*) const override;
 
@@ -152,8 +149,6 @@ class CORE_EXPORT StringKeyframe : public Keyframe {
     void Trace(Visitor*) const override;
 
    private:
-    Keyframe::PropertySpecificKeyframe* CloneWithOffset(
-        double offset) const override;
     bool IsCSSPropertySpecificKeyframe() const override { return true; }
 
     Member<const CSSValue> value_;
@@ -171,9 +166,6 @@ class CORE_EXPORT StringKeyframe : public Keyframe {
     PropertyResolver(const CSSProperty& property,
                      const MutableCSSPropertyValueSet* property_value_set,
                      bool is_logical);
-
-    static PropertyResolver* CreateCustomVariableResolver(
-        const CSSValue& css_value);
 
     bool IsValid() const;
 

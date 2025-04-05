@@ -9,7 +9,6 @@
 #include "base/functional/callback.h"
 #include "base/strings/strcat.h"
 #include "components/crash/core/common/crash_key.h"
-#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "net/base/features.h"
 #include "storage/browser/blob/blob_impl.h"
@@ -76,8 +75,7 @@ BlobURLStoreImpl::BlobURLStoreImpl(
     base::RepeatingCallback<
         void(const GURL&, std::optional<blink::mojom::PartitioningBlobURLInfo>)>
         partitioning_blob_url_closure,
-    base::RepeatingCallback<void(base::OnceCallback<void(bool)>)>
-        storage_access_check_callback,
+    base::RepeatingCallback<bool()> storage_access_check_callback,
     bool partitioning_disabled_by_policy)
     : storage_key_(storage_key),
       renderer_origin_(renderer_origin),
@@ -135,10 +133,8 @@ void BlobURLStoreImpl::ResolveAsURLLoaderFactory(
     std::move(callback).Run(std::nullopt, std::nullopt);
     return;
   }
-  storage_access_check_callback_.Run(
-      base::BindOnce(&BlobURLStoreImpl::FinishResolveAsURLLoaderFactory,
-                     weak_ptr_factory_.GetWeakPtr(), url, std::move(receiver),
-                     std::move(callback)));
+  FinishResolveAsURLLoaderFactory(url, std::move(receiver), std::move(callback),
+                                  storage_access_check_callback_.Run());
 }
 
 void BlobURLStoreImpl::FinishResolveAsURLLoaderFactory(
@@ -185,12 +181,9 @@ void BlobURLStoreImpl::ResolveAsBlobURLToken(
     std::move(callback).Run(std::nullopt);
     return;
   }
-  storage_access_check_callback_.Run(
-      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-          base::BindOnce(&BlobURLStoreImpl::FinishResolveAsBlobURLToken,
-                         weak_ptr_factory_.GetWeakPtr(), url, std::move(token),
-                         is_top_level_navigation, std::move(callback)),
-          false));
+  FinishResolveAsBlobURLToken(url, std::move(token), is_top_level_navigation,
+                              std::move(callback),
+                              storage_access_check_callback_.Run());
 }
 
 void BlobURLStoreImpl::FinishResolveAsBlobURLToken(

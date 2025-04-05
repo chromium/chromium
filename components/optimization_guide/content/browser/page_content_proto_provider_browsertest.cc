@@ -267,6 +267,30 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
   EXPECT_FALSE(page_content().root_node().content_attributes().has_geometry());
 }
 
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, HitTestNodes) {
+  LoadPage(https_server()->GetURL("/paragraph.html"));
+
+  const auto& hit_test_nodes =
+      page_content().main_frame_data().hit_test_nodes();
+  EXPECT_EQ(hit_test_nodes.size(), 5);
+
+  // The paragraph node is sized to occlude the root, document and body nodes.
+  const auto& p = page_content().root_node().children_nodes()[0];
+  for (int i = 0; i < 4; i++) {
+    SCOPED_TRACE(i);
+    AssertRectsEqual(hit_test_nodes[i].visible_bounding_box(),
+                     p.content_attributes().geometry().visible_bounding_box());
+  }
+  EXPECT_EQ(hit_test_nodes[3].dom_node_id(),
+            p.content_attributes().common_ancestor_dom_node_id());
+
+  const auto& text = p.children_nodes()[0];
+  EXPECT_EQ(hit_test_nodes[4].dom_node_id(),
+            text.content_attributes().common_ancestor_dom_node_id());
+  AssertRectsEqual(hit_test_nodes[4].visible_bounding_box(),
+                   text.content_attributes().geometry().visible_bounding_box());
+}
+
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
                        AIPageContentNoCriticalPath) {
   LoadPage(https_server()->GetURL("/simple.html"),

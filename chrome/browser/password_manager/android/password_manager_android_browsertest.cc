@@ -8,6 +8,7 @@
 #include "base/task/current_thread.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/keyboard_accessory/android/password_accessory_controller.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/android/password_generation_controller.h"
@@ -171,10 +172,15 @@ IN_PROC_BROWSER_TEST_P(PasswordManagerAndroidBrowserTest,
 
   // A user accepts a credential in TouchToFill. That fills in the credential
   // and submits it.
+  base::test::TestFuture<bool> completion_future;
+  driver->FillSuggestion(u"username", u"password",
+                         completion_future.GetCallback());
+  ASSERT_TRUE(completion_future.Wait());
+
+  // TouchToFill tracking starts after filling the form.
   ChromePasswordManagerClient::FromWebContents(GetActiveWebContents())
       ->StartSubmissionTrackingAfterTouchToFill(u"username");
 
-  driver->FillSuggestion(u"username", u"password", base::DoNothing());
   driver->TriggerFormSubmission();
 
   ASSERT_TRUE(observer.Wait());

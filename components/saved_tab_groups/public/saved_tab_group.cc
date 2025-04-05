@@ -273,6 +273,12 @@ SavedTabGroup& SavedTabGroup::SetIsHidden(bool is_hidden) {
   return *this;
 }
 
+SavedTabGroup& SavedTabGroup::SetArchivalTime(
+    std::optional<base::Time> archival_time) {
+  archival_time_ = archival_time;
+  return *this;
+}
+
 SavedTabGroup& SavedTabGroup::AddTabLocally(SavedTabGroupTab tab) {
   InsertTabImpl(tab);
   UpdateTabPositionsImpl();

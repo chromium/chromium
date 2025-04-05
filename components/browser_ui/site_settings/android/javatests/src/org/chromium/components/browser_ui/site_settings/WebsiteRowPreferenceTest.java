@@ -73,7 +73,8 @@ public class WebsiteRowPreferenceTest {
                         mDelegate,
                         website,
                         LayoutInflater.from(mActivity),
-                        /* showRwsMembershipLabels= */ false);
+                        /* showRwsMembershipLabels= */ false,
+                        /* isClickable= */ true);
         mPreference.setOnDeleteCallback(mOnDeleteCallback);
         mPreference.resetEntry();
         verify(mOnDeleteCallback).run();
@@ -94,7 +95,8 @@ public class WebsiteRowPreferenceTest {
                         mDelegate,
                         group,
                         LayoutInflater.from(mActivity),
-                        /* showRwsMembershipLabels= */ false);
+                        /* showRwsMembershipLabels= */ false,
+                        /* isClickable= */ true);
         mPreference.setOnDeleteCallback(mOnDeleteCallback);
         mPreference.resetEntry();
         verify(mOnDeleteCallback).run();
@@ -116,7 +118,8 @@ public class WebsiteRowPreferenceTest {
                         mDelegate,
                         origin1,
                         LayoutInflater.from(mActivity),
-                        /* showRwsMembershipLabels= */ true);
+                        /* showRwsMembershipLabels= */ true,
+                        /* isClickable= */ true);
         assertEquals("5 cookies • Has related sites", mPreference.getSummary().toString());
     }
 }

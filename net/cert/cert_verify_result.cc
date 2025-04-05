@@ -37,6 +37,7 @@ void CertVerifyResult::Reset() {
   scts.clear();
   policy_compliance =
       ct::CTPolicyCompliance::CT_POLICY_COMPLIANCE_DETAILS_NOT_AVAILABLE;
+  ct_requirement_status = ct::CTRequirementsStatus::CT_NOT_REQUIRED;
 }
 
 base::Value::Dict CertVerifyResult::NetLogParams(int net_error) const {
@@ -61,6 +62,8 @@ base::Value::Dict CertVerifyResult::NetLogParams(int net_error) const {
   dict.Set("scts", net::NetLogSignedCertificateTimestampParams(&scts));
   dict.Set("ct_compliance_status",
            CTPolicyComplianceToString(policy_compliance));
+  dict.Set("ct_requirement_status",
+           CTRequirementStatusToString(ct_requirement_status));
 
   return dict;
 }

@@ -68,15 +68,15 @@ export class PrintPreviewDestinationSelectElement extends
     };
   }
 
-  activeUser: string;
-  dark: boolean;
-  destination: Destination;
-  disabled: boolean;
-  loaded: boolean;
-  noDestinations: boolean;
-  pdfPrinterDisabled: boolean;
-  recentDestinationList: Destination[];
-  private pdfDestinationKey_: string;
+  declare activeUser: string;
+  declare dark: boolean;
+  declare destination: Destination;
+  declare disabled: boolean;
+  declare loaded: boolean;
+  declare noDestinations: boolean;
+  declare pdfPrinterDisabled: boolean;
+  declare recentDestinationList: Destination[];
+  declare private pdfDestinationKey_: string;
 
   override focus() {
     this.shadowRoot!.querySelector<HTMLElement>('.md-select')!.focus();

@@ -65,7 +65,7 @@ export class NearbyShareReceiveDialogElement extends PolymerElement {
   static get properties() {
     return {
       /** Mirroring the enum to allow usage in Polymer HTML bindings. */
-      Page: {
+      PageEnum_: {
         type: Object,
         value: Page,
       },

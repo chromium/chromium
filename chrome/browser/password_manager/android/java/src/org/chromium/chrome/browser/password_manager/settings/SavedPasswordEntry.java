@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.password_manager.settings;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * A class representing information about a saved password entry in Chrome's settngs.
  *
@@ -13,6 +15,7 @@ package org.chromium.chrome.browser.password_manager.settings;
  * again would violate our presubmit checks, and https://crbug.com/424792 indicates that the
  * preferred solution is to move the nested class to top-level.
  */
+@NullMarked
 public final class SavedPasswordEntry {
     private final String mUrl;
     private final String mName;

@@ -1015,6 +1015,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2742870351467570537">Eliminar elementos seleccionados</translation>
 <translation id="2743512410823092182">Recursos y equipos para DJ</translation>
 <translation id="2743934314332613923">¿Quieres actualizar la licencia de conducir?</translation>
+<translation id="2759299890026163685">Asegúrate de tener una conexión a Internet estable antes de volver a intentarlo</translation>
 <translation id="2759825833388495838">completar tu contraseña en <ph name="APP_NAME" /></translation>
 <translation id="2764001903315068341">Cómics</translation>
 <translation id="2765217105034171413">Pequeño</translation>
@@ -1280,6 +1281,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="323107829343500871">Ingresar el CVC de la tarjeta <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Siempre detectar contenido importante en este sitio</translation>
 <translation id="323585066388831737">Rojo claro</translation>
+<translation id="3235902901585019063">Los archivos locales se borrarán el <ph name="DATE_TIME" />. Asegúrate de que los datos personales o comerciales importantes se almacenen de forma externa.</translation>
 <translation id="3236212803136366317">Beneficios de tarjeta</translation>
 <translation id="3238395604961564389">Abrir el vínculo en una ventana de incógnito</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab y, luego, Intro para personalizar el estilo del navegador</translation>
@@ -1758,6 +1760,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4031179711345676612">Micrófono permitido</translation>
 <translation id="4036753017940930924">Lotes y terrenos</translation>
 <translation id="4039506337798853114">Para mostrar el cursor, presiona |<ph name="ACCELERATOR" />|</translation>
+<translation id="4045226534284799755">Accede a tu cuenta de Microsoft antes de volver a intentarlo</translation>
 <translation id="4045441967987592849">Volver a abrir</translation>
 <translation id="4047351652147966654">45.72 × 60.96 cm</translation>
 <translation id="404831776305217138">La URL de actualización para la extensión con el ID "<ph name="EXTENSION_ID" />" no es válida o utiliza un esquema no compatible. Los esquemas compatibles son <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> y <ph name="FILE_SCHEME" />.</translation>
@@ -1778,6 +1781,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4073797364926776829">Ver tarjeta</translation>
 <translation id="4075732493274867456">El cliente y el servidor no admiten un conjunto de cifrado o una versión de protocolo SSL en común.</translation>
 <translation id="4079302484614802869">El proxy está configurado para usar una URL de script .pac, no servidores proxy fijos.</translation>
+<translation id="4080855220442581440">desplazamiento y zoom en pestañas compartidas</translation>
 <translation id="4082333119419111506">Papel (preimpreso)</translation>
 <translation id="4082393374666368382">Configuración - Administración</translation>
 <translation id="4084219288110917128">Sobre C1</translation>
@@ -2046,6 +2050,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4521280267704259211">Sobre monarca</translation>
 <translation id="4521916730539354575">Bandeja izquierda</translation>
 <translation id="4522570452068850558">Detalles</translation>
+<translation id="4523580145196408446">Vinculado</translation>
 <translation id="4523643381056109546">Señalización</translation>
 <translation id="4524138615196389145">De ahora en más, usa WebAuthn para verificar las tarjetas más rápido</translation>
 <translation id="45243788195988825">Bloquear <ph name="TOPIC" /></translation>
@@ -2210,6 +2215,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4834250788637067901">Formas de pago, ofertas y direcciones con Google Pay</translation>
 <translation id="4840250757394056958">Ver tu historial de Chrome</translation>
 <translation id="484462545196658690">Automático</translation>
+<translation id="4844937814014739139">Desplazamiento y zoom en pestañas compartidas</translation>
 <translation id="484671803914931257">Obtén descuentos en <ph name="MERCHANT_NAME" /> y más</translation>
 <translation id="484988093836683706">Usar el desbloqueo del dispositivo</translation>
 <translation id="4850886885716139402">Ver</translation>
@@ -2503,6 +2509,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5344522958567249764">Administrar la privacidad en los anuncios</translation>
 <translation id="5344579389779391559">Es posible que esta página intente cobrarte dinero</translation>
 <translation id="5345249337934847112">Papel (recubierto de alto gramaje)</translation>
+<translation id="5348330584842140856">No se movió este archivo porque ya no existe</translation>
 <translation id="5349543692327946794">Etiquetas (inyección de tinta)</translation>
 <translation id="5351548097010183514">Materiales y suministros de construcción</translation>
 <translation id="5354143049423063163">Fondos de cobertura</translation>
@@ -2767,6 +2774,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5826507051599432481">Nombre común (CN)</translation>
 <translation id="5830698870816298009">uso y movimiento de la cámara</translation>
 <translation id="583281660410589416">Desconocido</translation>
+<translation id="5837220895135257862">Libera espacio en <ph name="CLOUD_PROVIDER" /> antes de volver a intentarlo</translation>
 <translation id="5838278095973806738">No debes ingresar información confidencial en este sitio (p. ej., contraseñas o tarjetas de crédito), ya que los atacantes podrían robarla.</translation>
 <translation id="5838732667866024867">Puedes usar la flecha hacia la izquierda o la derecha para revisar los cambios de precio en el gráfico</translation>
 <translation id="5840318881868981258">En tu Cuenta de Google, <ph name="ACCOUNT" /></translation>
@@ -3118,6 +3126,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6405181733356710802">¿Quieres continuar a <ph name="APP_NAME" />?</translation>
 <translation id="6410264514553301377">Ingresar la fecha de vencimiento y el CVC para <ph name="CREDIT_CARD" /></translation>
 <translation id="6411107829285739505">A4x8</translation>
+<translation id="6412543105195503444">Diálogo de aprobación parental</translation>
 <translation id="6414010576370319452">Cuidado dermatológico y de las uñas</translation>
 <translation id="6415778972515849510">Chromium puede ayudarte a proteger tu Cuenta de Google y cambiar tu contraseña.</translation>
 <translation id="6416877227920300343">EDP</translation>
@@ -4027,6 +4036,7 @@ Detalles adicionales:
 <translation id="799149739215780103">Encuadernado</translation>
 <translation id="7992044431894087211">Se reanudó el uso compartido de la pantalla con <ph name="APPLICATION_TITLE" /></translation>
 <translation id="7995512525968007366">Sin especificar</translation>
+<translation id="7997855386298213183">pestañas compartidas</translation>
 <translation id="800218591365569300">Prueba cerrar las demás pestañas o programas para liberar memoria.</translation>
 <translation id="8002230960325005199">Ver sitios relacionados en una pestaña nueva</translation>
 <translation id="8003046808285812021">"<ph name="SEARCH_TERMS" />"</translation>
@@ -4101,6 +4111,7 @@ Detalles adicionales:
 <translation id="812020627659652807">Borrar archivos ahora</translation>
 <translation id="8120720167840853945">Esta política no controla el comportamiento predeterminado de ninguna otra política.</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" no se instaló correctamente en tu computadora o red. Solicita al administrador de TI que corrija este problema.</translation>
+<translation id="8130113808541743942">Mover a…</translation>
 <translation id="8131740175452115882">Confirmar</translation>
 <translation id="8133495915926741232">Elige qué categorías de temas generales se pueden utilizar para personalizar los anuncios. Si desactivas una categoría más general, también se bloquearán los temas relacionados. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="8134058435519644366">Contratación y selección de personal</translation>

@@ -109,4 +109,38 @@ base::flat_set<std::string> GetUserAffiliationIds(ProfileIOS* profile) {
   return {ids.begin(), ids.end()};
 }
 
+::chrome::cros::reporting::proto::UploadEventsRequest CreateUploadEventsRequest(
+    ProfileIOS* profile) {
+  ::chrome::cros::reporting::proto::UploadEventsRequest request;
+  request.mutable_browser()->set_user_agent(
+      web::GetWebClient()->GetUserAgent(web::UserAgentType::MOBILE));
+
+  if (!profile) {
+    return request;
+  }
+
+  request.mutable_profile()->set_profile_path(
+      profile->GetStatePath().AsUTF8Unsafe());
+  ProfileAttributesStorageIOS* storage = GetApplicationContext()
+                                             ->GetProfileManager()
+                                             ->GetProfileAttributesStorage();
+  if (storage) {
+    ProfileAttributesIOS attributes =
+        storage->GetAttributesForProfileWithName(profile->GetProfileName());
+    request.mutable_profile()->set_profile_name(attributes.GetProfileName());
+    request.mutable_profile()->set_gaia_email(attributes.GetUserName());
+  }
+
+  std::optional<std::string> client_id = GetUserClientId(profile);
+  if (client_id) {
+    request.mutable_profile()->set_client_id(*client_id);
+  }
+  std::optional<std::string> user_dm_token = GetUserDmToken(profile);
+  if (user_dm_token) {
+    request.mutable_profile()->set_dm_token(*user_dm_token);
+  }
+
+  return request;
+}
+
 }  // namespace enterprise_connectors

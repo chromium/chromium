@@ -514,6 +514,12 @@ public class PlayerMediatorUnitTest {
     }
 
     @Test
+    public void testOnPlaybackModeChanged() {
+        mMediator.onPlaybackModeChanged(PlaybackMode.OVERVIEW);
+        verify(mDelegate).setPlaybackModeAndApplyToPlayback(eq(PlaybackMode.OVERVIEW));
+    }
+
+    @Test
     public void testOnHighlightingChanged() {
         assertTrue(mHighlightingEnabledSupplier.get());
 

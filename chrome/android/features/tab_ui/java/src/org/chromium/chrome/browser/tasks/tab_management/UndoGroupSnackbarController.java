@@ -12,7 +12,6 @@ import androidx.annotation.Nullable;
 import org.chromium.base.Callback;
 import org.chromium.base.Token;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -253,10 +252,8 @@ public class UndoGroupSnackbarController implements SnackbarManager.SnackbarCont
 
         // The action of merging expands the destination group. If it was originally collapsed, we
         // need to restore that state.
-        if (ChromeFeatureList.sTabStripGroupCollapse.isEnabled()) {
-            if (firstInfo.destinationGroupTitleCollapsed) {
-                filter.setTabGroupCollapsed(firstRootId, true);
-            }
+        if (firstInfo.destinationGroupTitleCollapsed) {
+            filter.setTabGroupCollapsed(firstRootId, true);
         }
 
         for (int i = data.size() - 1; i >= 0; i--) {

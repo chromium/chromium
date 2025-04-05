@@ -261,7 +261,6 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kSuppressDifferentOriginSubframeJSDialogs);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kSyntheticPointerActions);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kTouchDragAndContextMenu);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kTrackEmptyRendererProcessesForReuse);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kUseBrowserCalculatedOrigin);
 #if BUILDFLAG(IS_ANDROID)
 CONTENT_EXPORT extern const base::FeatureParam<int>
     kTouchDragMovementThresholdDip;
@@ -304,6 +303,7 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kAccessibilityUnifiedSnapshots);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kAccessibilityManageBroadcastReceiverOnBackground);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kAndroidOpenPdfInline);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kAndroidWebAppLaunchHandler);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kGinJavaBridgeMojoSkipClearObjectsOnMainDocumentReady);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kReduceGpuPriorityOnBackground);
@@ -314,7 +314,6 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kUserMediaScreenCapturing);
 #if BUILDFLAG(IS_MAC)
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kMacAllowBackgroundingRenderProcesses);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kMacImeLiveConversionFix);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kMacSyscallSandbox);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kSonomaAccessibilityActivationRefinements);
 #endif  // BUILDFLAG(IS_MAC)
 

@@ -37,10 +37,11 @@ class GapIntersection {
   LayoutUnit block_offset;
 
   // Represents whether the intersection point is blocked before or after due to
-  // the presence of a spanning item. For flex, this is used to represent
-  // whether the intersection point is "blocked" by the edge of the container.
+  // the presence of a spanning item.
   bool is_blocked_before = false;
   bool is_blocked_after = false;
+
+  bool is_at_edge_of_container = false;
 };
 
 using GapIntersectionList = Vector<GapIntersection>;
@@ -94,19 +95,6 @@ struct GapGeometry : public GarbageCollected<GapGeometry> {
 
   void SetBlockGapSize(LayoutUnit size) { block_gap_size_ = size; }
   LayoutUnit GetBlockGapSize() const { return block_gap_size_; }
-
-  bool IntersectionIncludesContentEdge(
-      const wtf_size_t intersection_index,
-      wtf_size_t num_intersections,
-      const GapIntersection& intersection) const {
-    // `GapIntersection` objects for flex mark intersections as blocked before
-    // and after if they border a content edge.
-    return container_type_ == ContainerType::kFlex
-               ? (intersection.is_blocked_before ||
-                  intersection.is_blocked_after)
-               : (intersection_index == 0 ||
-                  intersection_index == num_intersections - 1);
-  }
 
  private:
   // TODO(samomekarajr): Potential optimization. This can be a single

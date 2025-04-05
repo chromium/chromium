@@ -535,7 +535,7 @@ export class Service implements ServiceInterface {
     return chrome.developerPrivate.dismissMv2DeprecationNoticeForExtension(id);
   }
 
-  uploadItemToAccount(id: string): Promise<void> {
+  uploadItemToAccount(id: string): Promise<boolean> {
     return chrome.developerPrivate.uploadExtensionToAccount(id);
   }
 

@@ -372,13 +372,9 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"OriginIsolationHeader", raw_ref(features::kOriginIsolationHeader)},
           {"ReduceAcceptLanguage",
            raw_ref(network::features::kReduceAcceptLanguage)},
-          {"Serial",
 #if BUILDFLAG(IS_ANDROID)
-           raw_ref(device::features::kBluetoothRfcommAndroid)
-#else
-           raw_ref(device::features::kSerial)
+          {"Serial", raw_ref(device::features::kBluetoothRfcommAndroid)},
 #endif
-          },
           {"SerialPortConnected", raw_ref(features::kSerialPortConnected)},
           {"SignatureBasedIntegrity",
            raw_ref(network::features::kSRIMessageSignatureEnforcement)},
@@ -406,6 +402,9 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            raw_ref(webnn::mojom::features::
                        kExperimentalWebMachineLearningNeuralNetwork),
            kSetOnlyIfOverridden},
+#if BUILDFLAG(IS_ANDROID)
+          {"WebAppLaunchQueue", raw_ref(features::kAndroidWebAppLaunchHandler)},
+#endif
           {"WebAuthenticationNewBfCacheHandlingBlink",
            raw_ref(device::kWebAuthnNewBfCacheHandling)}};
   for (const auto& mapping : runtimeFeatureNameToChromiumFeatureMapping) {
@@ -461,8 +460,6 @@ void SetRuntimeFeaturesFromCommandLine(const base::CommandLine& command_line) {
       {wrf::EnableScriptedSpeechSynthesis, switches::kDisableSpeechSynthesisAPI,
        false},
       {wrf::EnableSharedWorker, switches::kDisableSharedWorkers, false},
-      {wrf::EnableMutationEvents, blink::switches::kMutationEventsEnabled,
-       true},
       {wrf::EnableKeyboardFocusableScrollers,
        blink::switches::kKeyboardFocusableScrollersEnabled, true},
       {wrf::EnableKeyboardFocusableScrollers,

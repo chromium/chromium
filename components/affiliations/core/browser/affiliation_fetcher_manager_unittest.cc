@@ -16,16 +16,16 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/affiliations/core/browser/affiliation_api.pb.h"
-#include "components/affiliations/core/browser/affiliation_fetcher_delegate.h"
 #include "components/affiliations/core/browser/affiliation_fetcher_factory_impl.h"
+#include "components/affiliations/core/browser/affiliation_fetcher_interface.h"
 #include "components/affiliations/core/browser/fake_affiliation_api.h"
 #include "components/affiliations/core/browser/hash_affiliation_fetcher.h"
-#include "components/affiliations/core/browser/mock_affiliation_fetcher_delegate.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace affiliations {
@@ -51,8 +51,8 @@ class KeylessFetcherFactory : public AffiliationFetcherFactory {
   ~KeylessFetcherFactory() override;
 
   std::unique_ptr<AffiliationFetcherInterface> CreateInstance(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      AffiliationFetcherDelegate* delegate) override;
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+      override;
 
   void SetCanCreateFetcher(bool can_create_fetcher) {
     can_create_fetcher_ = can_create_fetcher;
@@ -67,11 +67,10 @@ KeylessFetcherFactory::~KeylessFetcherFactory() = default;
 
 std::unique_ptr<AffiliationFetcherInterface>
 KeylessFetcherFactory::CreateInstance(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    AffiliationFetcherDelegate* delegate) {
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
   if (can_create_fetcher_) {
     return std::make_unique<HashAffiliationFetcher>(
-        std::move(url_loader_factory), delegate);
+        std::move(url_loader_factory));
   }
   return nullptr;
 }
@@ -82,8 +81,6 @@ class AffiliationFetcherManagerTest : public testing::Test {
   AffiliationFetcherManagerTest() = default;
 
  protected:
-  MockAffiliationFetcherDelegate* mock_delegate() { return &mock_delegate_; }
-
   GURL interception_url() const {
     return HashAffiliationFetcher::BuildQueryURL();
   }
@@ -132,7 +129,7 @@ class AffiliationFetcherManagerTest : public testing::Test {
   // testing::Test:
   void SetUp() override {
     manager_ = std::make_unique<AffiliationFetcherManager>(
-        test_shared_loader_factory_, &mock_delegate_);
+        test_shared_loader_factory_);
     auto fetcher_factory = std::make_unique<KeylessFetcherFactory>();
     keyless_fetcher_factory_ = fetcher_factory.get();
 
@@ -147,7 +144,6 @@ class AffiliationFetcherManagerTest : public testing::Test {
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_ =
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &test_url_loader_factory_);
-  MockAffiliationFetcherDelegate mock_delegate_;
   std::unique_ptr<AffiliationFetcherManager> manager_;
   // Owned by |manager_|.
   raw_ptr<KeylessFetcherFactory> keyless_fetcher_factory_ = nullptr;
@@ -268,43 +264,36 @@ TEST_F(AffiliationFetcherManagerTest, DelegateInvokedOnFetchSuccess) {
       FacetURI::FromCanonicalSpec(kNotExampleAndroidFacetURI));
   base::test::TestFuture<HashAffiliationFetcher::FetchResult>
       completion_callback;
-  std::unique_ptr<AffiliationFetcherDelegate::Result> result_for_delegate;
-  EXPECT_CALL(*mock_delegate(), OnFetchSucceeded)
-      .WillOnce(MoveArg<1>(&result_for_delegate));
   SetupSuccessfulResponse(GetSuccessfulAffiliationResponse());
 
   bool fetch_started = manager()->Fetch(requested_uris, kRequestInfo,
                                         completion_callback.GetCallback());
 
   ASSERT_TRUE(fetch_started);
+  auto affiliation_response = completion_callback.Take().data;
   EXPECT_EQ(0, GetNumPendingRequests());
-  EXPECT_TRUE(result_for_delegate);
-  ASSERT_EQ(2u, result_for_delegate->affiliations.size());
-  EXPECT_THAT(result_for_delegate->affiliations[0],
+  EXPECT_TRUE(affiliation_response);
+  ASSERT_EQ(2u, affiliation_response->affiliations.size());
+  EXPECT_THAT(affiliation_response->affiliations[0],
               testing::UnorderedElementsAre(
                   Facet{FacetURI::FromCanonicalSpec(kExampleWebFacet1URI)},
                   Facet{FacetURI::FromCanonicalSpec(kExampleWebFacet2URI)},
                   Facet{FacetURI::FromCanonicalSpec(kExampleAndroidFacetURI)}));
   EXPECT_THAT(
-      result_for_delegate->affiliations[1],
+      affiliation_response->affiliations[1],
       testing::UnorderedElementsAre(
           Facet{FacetURI::FromCanonicalSpec(kNotExampleWebFacetURI)},
           Facet{FacetURI::FromCanonicalSpec(kNotExampleAndroidFacetURI)}));
-  // Confirm that the result passed to delegate is the same as the one in the
-  // callback.
-  auto affiliation_response = completion_callback.Take().data;
-  EXPECT_EQ(affiliation_response, *result_for_delegate);
   EXPECT_EQ(0u, manager()->GetFetchersForTesting()->size());
 }
 
-TEST_F(AffiliationFetcherManagerTest, DelegateInvokedOnFetchFailed) {
+TEST_F(AffiliationFetcherManagerTest, CallbackInvokedOnFetchFailed) {
   std::vector<FacetURI> requested_uris;
   requested_uris.push_back(FacetURI::FromCanonicalSpec(kExampleWebFacet1URI));
   requested_uris.push_back(
       FacetURI::FromCanonicalSpec(kNotExampleAndroidFacetURI));
   base::test::TestFuture<HashAffiliationFetcher::FetchResult>
       completion_callback;
-  EXPECT_CALL(*mock_delegate(), OnFetchFailed(testing::_));
   SetupServerErrorResponse();
 
   bool fetch_started = manager()->Fetch(requested_uris, kRequestInfo,
@@ -316,14 +305,13 @@ TEST_F(AffiliationFetcherManagerTest, DelegateInvokedOnFetchFailed) {
   EXPECT_EQ(0u, manager()->GetFetchersForTesting()->size());
 }
 
-TEST_F(AffiliationFetcherManagerTest, DelegateInvokedOnMalformedResponse) {
+TEST_F(AffiliationFetcherManagerTest, CallbackInvokedOnMalformedResponse) {
   std::vector<FacetURI> requested_uris;
   requested_uris.push_back(FacetURI::FromCanonicalSpec(kExampleWebFacet1URI));
   requested_uris.push_back(
       FacetURI::FromCanonicalSpec(kNotExampleAndroidFacetURI));
   base::test::TestFuture<HashAffiliationFetcher::FetchResult>
       completion_callback;
-  EXPECT_CALL(*mock_delegate(), OnMalformedResponse(testing::_));
   SetupSuccessfulResponse("gibberish");
 
   bool fetch_started = manager()->Fetch(requested_uris, kRequestInfo,
@@ -335,15 +323,11 @@ TEST_F(AffiliationFetcherManagerTest, DelegateInvokedOnMalformedResponse) {
   EXPECT_EQ(0u, manager()->GetFetchersForTesting()->size());
 }
 
-// The structure of this test is awkward because:
-//  1. It uses mock delegate, meaning the EXPECT_CALL has to be called before
-//  serving the responses. It would be better to implement a fake delegate but
-//  it would be even better to move the delegate logic in the completion
-//  callback.
-//  2. |TestURLLoaderFactory| seeds responses per URL, not per ResourceRequest.
-//  Since all URLs that we request are the same, we can't seed different
-//  responses for different requests. In this test we seed and serve the
-//  responses one-by-one to work around this, which is not perfect.
+// The structure of this test is awkward because |TestURLLoaderFactory| seeds
+// responses per URL, not per ResourceRequest. Since all URLs that we request
+// are the same, we can't seed different responses for different requests. In
+// this test we seed and serve the responses one-by-one to work around this,
+// which is not perfect.
 // However the test case is still valuable to check that consecutive calls can
 // produce different results.
 TEST_F(AffiliationFetcherManagerTest, DelegateInvokedOnAllPossibleResponses) {
@@ -359,17 +343,14 @@ TEST_F(AffiliationFetcherManagerTest, DelegateInvokedOnAllPossibleResponses) {
       completion_callback_3;
 
   // Successful response
-  EXPECT_CALL(*mock_delegate(), OnFetchSucceeded(testing::_, testing::_));
   SetupSuccessfulResponse(GetSuccessfulAffiliationResponse());
   bool fetch_started_1 = manager()->Fetch(requested_uris, kRequestInfo,
                                           completion_callback_1.GetCallback());
   // Failing response
-  EXPECT_CALL(*mock_delegate(), OnFetchFailed(testing::_));
   SetupServerErrorResponse();
   bool fetch_started_2 = manager()->Fetch(requested_uris, kRequestInfo,
                                           completion_callback_2.GetCallback());
   // Malformed response
-  EXPECT_CALL(*mock_delegate(), OnMalformedResponse(testing::_));
   SetupSuccessfulResponse("gibberish");
   bool fetch_started_3 = manager()->Fetch(requested_uris, kRequestInfo,
                                           completion_callback_3.GetCallback());

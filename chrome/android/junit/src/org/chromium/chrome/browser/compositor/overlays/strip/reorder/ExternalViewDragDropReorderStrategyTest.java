@@ -4,6 +4,7 @@
 package org.chromium.chrome.browser.compositor.overlays.strip.reorder;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -25,16 +26,24 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutGroupTitle;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView;
 import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderDelegate.ReorderType;
+import org.chromium.chrome.browser.dragdrop.ChromeDropDataAndroid;
+import org.chromium.chrome.browser.dragdrop.ChromeTabDropDataAndroid;
+import org.chromium.chrome.browser.dragdrop.ChromeTabGroupDropDataAndroid;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
+import org.chromium.ui.dragdrop.DragDropGlobalState;
+import org.chromium.ui.dragdrop.DragDropGlobalState.TrackerToken;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 /** Tests for {@link ExternalViewDragDropReorderStrategy}. */
@@ -75,6 +84,7 @@ public class ExternalViewDragDropReorderStrategyTest extends ReorderStrategyTest
                         mTabWidthSupplier);
         when(mTabWidthSupplier.get()).thenReturn((float) TAB_WIDTH);
         setupStripViews();
+        setupDragDropState(/* isGroupDrag= */ false);
     }
 
     @Test
@@ -129,6 +139,59 @@ public class ExternalViewDragDropReorderStrategyTest extends ReorderStrategyTest
                 mStripTab2.getTrailingMargin(),
                 EPSILON);
         assertTrue("Last tab should have trailing margin", mStripTab3.getTrailingMargin() > 0);
+    }
+
+    @Test
+    public void testHoverCollaborationGroupOverOtherGroup_noTrailingMargins() {
+        // Set up collaboration tab group metadata.
+        setupDragDropState(/* isGroupDrag= */ true);
+
+        // Group and collapse tabs.
+        mockTabInGroup(INTERACTING_VIEW_ROOT_ID, mTabForInteractingView);
+        mockTabInGroup(mStripTab2.getTabId(), mTabForStripTab2);
+        mInteractingTabGroupTitle.setCollapsed(true);
+
+        // Assert: drop to merge to other group not allowed.
+        assertFalse(TabDragSource.canMergeIntoGroupOnDrop());
+
+        // Start reorder to set interacting view - interacting view shouldn't bottom indicator width
+        // if collapsed.
+        mStrategy.startReorderMode(mStripTabs, mGroupTitles, mInteractingTab, DRAG_START_POINT);
+        assertTrue(
+                "Interacting view should not have trailing margin set",
+                mInteractingTab.getTrailingMargin() == 0);
+        assertTrue(
+                "Collapsed group title bottom indicator width should be 0",
+                mInteractingTabGroupTitle.getBottomIndicatorWidth() == 0);
+
+        // Move drag to mStripTab2
+        // Call - endX = end of mStripTab2 (accounting for interacting view's trailing margin)
+        mStrategy.updateReorderPosition(
+                mStripViews,
+                mGroupTitles,
+                mStripTabs,
+                mStripTab2.getDrawX() + TAB_WIDTH + mInteractingTab.getTrailingMargin(),
+                0,
+                ReorderType.DRAG_ONTO_STRIP);
+
+        // Verify
+        verify(mAnimationHost).finishAnimationsAndPushTabUpdates();
+        verify(mAnimationHost, times(2)).startAnimations(anyList(), isNull());
+
+        assertEquals(
+                "mStripTab2 should become interacting view",
+                mStripTab2,
+                mStrategy.getInteractingView());
+        // Verify trailing margins updated
+        assertTrue(
+                "Interacting view should not have trailing margin set",
+                mInteractingTab.getTrailingMargin() == 0);
+        assertTrue(
+                "Interacting view should not have trailing margin set",
+                mStripTab2.getTrailingMargin() == 0);
+        assertTrue(
+                "Collapsed group title bottom indicator width should be 0",
+                mInteractingTabGroupTitle.getBottomIndicatorWidth() == 0);
     }
 
     @Test
@@ -345,5 +408,35 @@ public class ExternalViewDragDropReorderStrategyTest extends ReorderStrategyTest
                 new StripLayoutView[] {
                     mStripTab1, mInteractingTabGroupTitle, mInteractingTab, mStripTab2, mStripTab3
                 };
+    }
+
+    private void setupDragDropState(boolean isGroupDrag) {
+        ChromeDropDataAndroid dropData;
+        if (isGroupDrag) {
+            TabGroupMetadata tabGroupMetadata =
+                    new TabGroupMetadata(
+                            /* rootId= */ mTabForInteractingView.getId(),
+                            /* selectedTabId= */ mTabForInteractingView.getId(),
+                            /* sourceWindowId= */ 1,
+                            /* tabGroupId= */ new Token(2L, 2L),
+                            /* tabIdsToUrls= */ new LinkedHashMap<Integer, String>(),
+                            /* tabGroupColor= */ 0,
+                            /* tabGroupTitle= */ "Collaboration Group",
+                            /* mhtmlTabTitle= */ null,
+                            /* tabGroupCollapsed= */ false,
+                            /* isGroupShared= */ true,
+                            /* isIncognito= */ false);
+            dropData =
+                    new ChromeTabGroupDropDataAndroid.Builder()
+                            .withTabGroupMetadata(tabGroupMetadata)
+                            .build();
+        } else {
+            dropData =
+                    new ChromeTabDropDataAndroid.Builder().withTab(mTabForInteractingView).build();
+        }
+        TrackerToken dragTrackerToken =
+                DragDropGlobalState.store(
+                        /* dragSourceInstanceId= */ 1, dropData, /* dragShadowBuilder= */ null);
+        TabDragSource.setDragTrackerTokenForTesting(dragTrackerToken);
     }
 }

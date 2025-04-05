@@ -165,8 +165,8 @@ public class AdvancedProtectionMediatorTest {
     }
 
     /**
-     * Test that {@link AdvancedProtectionCoordinator#showMessageOnStartupIfNeeded()} shows a
-     * message if a pref is stored and its value is true and advanced-protection-mode is off.
+     * Test that {@link AdvancedProtectionCoordinator#showMessageOnStartupIfNeeded()} does not show
+     * a message if a pref is stored and its value is true and advanced-protection-mode is off.
      */
     @Test
     public void testShowMessagePrefTrueAndDiffers() {
@@ -177,7 +177,7 @@ public class AdvancedProtectionMediatorTest {
 
         var coordinator = new AdvancedProtectionCoordinator(mWindowAndroid);
         coordinator.showMessageOnStartupIfNeeded();
-        verifyEnqueuedMessage();
+        verifyDidNotEnqueueMessage();
 
         assertFalse(
                 sharedPreferences.readBoolean(
@@ -218,12 +218,12 @@ public class AdvancedProtectionMediatorTest {
         var sharedPreferences = ChromeSharedPreferences.getInstance();
         sharedPreferences.writeBoolean(
                 ChromePreferenceKeys.DEFAULT_OS_ADVANCED_PROTECTION_SETTING, true);
-        var provider = setPermissionProvider(/* isAdvancedProtectionRequestedByOs= */ true);
+        var provider = setPermissionProvider(/* isAdvancedProtectionRequestedByOs= */ false);
 
         var coordinator = new AdvancedProtectionCoordinator(mWindowAndroid);
         coordinator.showMessageOnStartupIfNeeded();
         verifyDidNotEnqueueMessage();
-        provider.setAdvancedProtectionRequestedByOs(/* isAdvancedProtectionRequestedByOs= */ false);
+        provider.setAdvancedProtectionRequestedByOs(/* isAdvancedProtectionRequestedByOs= */ true);
         verifyEnqueuedMessage();
 
         coordinator.destroy();

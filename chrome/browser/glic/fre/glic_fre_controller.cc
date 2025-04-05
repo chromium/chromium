@@ -33,7 +33,7 @@
 #include "chrome/common/chrome_features.h"
 #include "components/google/core/common/google_util.h"
 #include "components/prefs/pref_service.h"
-#include "components/tab_collections/public/tab_interface.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 
@@ -387,10 +387,11 @@ void GlicFreController::CreateView() {
     return;
   }
 
-  fre_view_ = std::make_unique<GlicFreDialogView>(
-      profile_, gfx::Size(features::kGlicFreInitialWidth.Get(),
-                          features::kGlicFreInitialHeight.Get()));
+  gfx::Size initial_size(features::kGlicFreInitialWidth.Get(),
+                         features::kGlicFreInitialHeight.Get());
+  fre_view_ = std::make_unique<GlicFreDialogView>(profile_, initial_size);
   web_contents_ = fre_view_->web_contents();
+  web_contents_->Resize(gfx::Rect(initial_size));
   auto* service = GlicKeyedServiceFactory::GetGlicKeyedService(profile_);
   GlicProfileManager::GetInstance()->OnLoadingClientForService(service);
 }

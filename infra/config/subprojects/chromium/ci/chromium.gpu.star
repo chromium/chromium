@@ -81,7 +81,7 @@ ci.gpu.linux_builder(
             target_platform = builder_config.target_platform.ANDROID,
         ),
         android_config = builder_config.android_config(
-            config = "main_builder",
+            config = "base_config",
         ),
         build_gs_bucket = "chromium-gpu-archive",
     ),
@@ -147,7 +147,7 @@ ci.gpu.linux_builder(
             target_platform = builder_config.target_platform.ANDROID,
         ),
         android_config = builder_config.android_config(
-            config = "main_builder",
+            config = "base_config",
         ),
         build_gs_bucket = "chromium-gpu-archive",
     ),

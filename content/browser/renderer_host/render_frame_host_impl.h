@@ -3808,7 +3808,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
       const std::vector<GURL>& redirects,
       const GURL& original_request_url,
       bool is_same_document,
-      bool is_same_document_history_api_navigation);
+      bool is_same_document_history_api_navigation,
+      base::TimeTicks actual_navigation_start);
 
   // Helper to process the beforeunload completion callback. |proceed| indicates
   // whether the navigation or tab close should be allowed to proceed.  If
@@ -4251,7 +4252,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // This runs when fetches to cross-partition, same-origin Blob URL checks for
   // storage access
-  void DoesDocumentHaveStorageAccess(base::OnceCallback<void(bool)> callback);
+  bool DoesDocumentHaveStorageAccess();
 
   // For frames and main thread worklets we use a navigation-associated
   // interface and bind `receiver` to a `BlobURLStore` instance, which

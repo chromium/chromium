@@ -71,6 +71,9 @@ public interface TabList {
         return t;
     }
 
-    /** Returns the index of the given tab in the order of the tab stack. */
-    int indexOf(Tab tab);
+    /**
+     * Returns the index of the given tab in the order of the tab stack, or {@link
+     * #INVALID_TAB_INDEX} if the tab is not found.
+     */
+    int indexOf(@Nullable Tab tab);
 }

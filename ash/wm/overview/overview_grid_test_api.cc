@@ -26,34 +26,6 @@ OverviewGridTestApi::GetBirchChips() const {
   return overview_grid_->birch_bar_view_->chips_;
 }
 
-bool OverviewGridTestApi::IsSaveDeskAsTemplateButtonVisible() const {
-  if (!overview_grid_->IsSaveDeskButtonContainerVisible()) {
-    return false;
-  }
-  const auto* container = GetSaveDeskButtonContainer();
-  return container && container->save_desk_as_template_button() &&
-         container->save_desk_as_template_button()->GetVisible();
-}
-
-bool OverviewGridTestApi::IsSaveDeskForLaterButtonVisible() const {
-  if (!overview_grid_->IsSaveDeskButtonContainerVisible()) {
-    return false;
-  }
-  const auto* container = GetSaveDeskButtonContainer();
-  return container && container->save_desk_for_later_button() &&
-         container->save_desk_for_later_button()->GetVisible();
-}
-
-SavedDeskSaveDeskButton* OverviewGridTestApi::GetSaveDeskAsTemplateButton() {
-  auto* container = GetSaveDeskButtonContainer();
-  return container ? container->save_desk_as_template_button() : nullptr;
-}
-
-SavedDeskSaveDeskButton* OverviewGridTestApi::GetSaveDeskForLaterButton() {
-  auto* container = GetSaveDeskButtonContainer();
-  return container ? container->save_desk_for_later_button() : nullptr;
-}
-
 SavedDeskSaveDeskButtonContainer*
 OverviewGridTestApi::GetSaveDeskButtonContainer() {
   return const_cast<SavedDeskSaveDeskButtonContainer*>(

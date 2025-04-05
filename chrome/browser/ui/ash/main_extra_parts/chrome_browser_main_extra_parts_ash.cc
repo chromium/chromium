@@ -11,6 +11,7 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/display/refresh_rate_controller.h"
 #include "ash/public/cpp/new_window_delegate.h"
+#include "ash/public/cpp/projector/projector_controller.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/quick_pair/keyed_service/quick_pair_mediator.h"
@@ -58,6 +59,7 @@
 #include "chrome/browser/chromeos/tablet_mode/tablet_mode_page_behavior.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/ash/ash_attestation_cleanup_manager.h"
 #include "chrome/browser/exo_parts.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/accessibility/accessibility_controller_client.h"
@@ -322,8 +324,12 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
 
   boca_client_ = std::make_unique<ash::boca::BocaAppClientImpl>();
 
-  projector_app_client_ = std::make_unique<ProjectorAppClientImpl>();
-  projector_client_ = std::make_unique<ProjectorClientImpl>();
+  projector_app_client_ = std::make_unique<ProjectorAppClientImpl>(
+      g_browser_process->local_state(),
+      g_browser_process->GetFeatures()->application_locale_storage());
+  projector_client_ = std::make_unique<ProjectorClientImpl>(
+      g_browser_process->GetFeatures()->application_locale_storage(),
+      ash::ProjectorController::Get());
 
   desks_client_ = std::make_unique<DesksClient>();
 

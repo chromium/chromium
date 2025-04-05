@@ -24,7 +24,7 @@ DawnObjectBase::GetDawnControlClient() const {
 
 void DawnObjectBase::setLabel(const String& value) {
   label_ = value;
-  setLabelImpl(value);
+  SetLabelImpl(value);
 }
 
 void DawnObjectBase::EnsureFlush(scheduler::EventLoop& event_loop) {

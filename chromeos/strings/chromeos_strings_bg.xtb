@@ -458,7 +458,6 @@
 <translation id="3084958266922136097">Деактивиране на скрийнсейвъра</translation>
 <translation id="3091839911843451378">Неуспешно – отпечатването спря</translation>
 <translation id="3102119246920354026">Кеш</translation>
-<translation id="3112413615003385433">Преподавателят ви е премахнал съдържание от инструментите за училище</translation>
 <translation id="3122464029669770682">Процесор</translation>
 <translation id="3122614491980756867">басейни</translation>
 <translation id="3122883569442693641">Още подробности</translation>
@@ -539,7 +538,6 @@
 <translation id="3488065109653206955">Частично активиран</translation>
 <translation id="3492882532495507361">Офис в(ъв) <ph name="OFFICE_STYLE" /> стил с(ъс) <ph name="OFFICE_COLOR" /> тонове</translation>
 <translation id="3493187369049186498">Данните се измерват от вашия Chromebook. Стойностите, отчетени от доставчика, може да са различни.</translation>
-<translation id="349570724365779960">School Tools има връзка с учащите</translation>
 <translation id="3502426834823382181">преглед на всички приложения</translation>
 <translation id="3510890413042482857">Изпращане на <ph name="BEGIN_LINK1" />данните от проследяването на ефективността<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Chrome OS: Актуал.</translation>
@@ -547,7 +545,6 @@
 <translation id="353214771040290298">Край на редактирането</translation>
 <translation id="3532980081107202182">Остават около <ph name="MIN_REMAINING" /> минути</translation>
 <translation id="3533790840489634638">басейн</translation>
-<translation id="3535802910192338629">Преподавателят ви е добавил ново съдържание в инструментите за училище</translation>
 <translation id="3547264467365135390">Формула</translation>
 <translation id="3557205324756024651">Локална самоличност (по избор)</translation>
 <translation id="3565064564551103223">Разрешени IP адреси</translation>
@@ -1235,6 +1232,7 @@
 <translation id="6657240842932274095">Да се разреши ли на системните услуги да използват местоположението ви?</translation>
 <translation id="6657585470893396449">Парола</translation>
 <translation id="66621959568103627">кораловорозов</translation>
+<translation id="6669485505082792176">В момента не могат да се създадат изображения на това. Опитайте да промените описанието. Имайте предвид, че не можете да създавате изображения на хора, на опасно или нецензурно съдържание. <ph name="BEGIN_LINK_LEARN_MORE" />Научете повече<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6673898378497337661">увеличаване на яркостта на клавиатурата</translation>
 <translation id="6692996468359469499">Получаване на информация, свързана с избраното от вас</translation>
 <translation id="6694534975463174713">катинар</translation>
@@ -1440,7 +1438,6 @@
 <translation id="7544853251252956727">Разбъркване</translation>
 <translation id="7550715992156305117">Диагностични процедури</translation>
 <translation id="7551123448725492271">Устройството е за аудио.</translation>
-<translation id="7553913964854052228">School Tools използва микрофона ви</translation>
 <translation id="7559239713112547082">Визуализация на екранната снимка</translation>
 <translation id="7561454561030345039">Това действие се управлява от администратора ви</translation>
 <translation id="7561759921596375678">Включване на звука</translation>
@@ -1663,7 +1660,6 @@
 <translation id="8576249514688522074">Неинициализирана</translation>
 <translation id="8584654835905316966">За да завърши инсталирането на версия <ph name="VERSION" /> на фърмуера за <ph name="DEVICE_NAME" />, се изисква рестартиране. Може да изглежда, че компютърът ви се рестартира няколко пъти. Това поведение е очаквано.</translation>
 <translation id="8593058461203131755">поставяне на мултимедията на пауза</translation>
-<translation id="8619169570378509764">Инструменти за училище</translation>
 <translation id="8620617069779373398">Състояние на роуминга</translation>
 <translation id="8626489604350149811">Още действия за <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Светлолилав</translation>

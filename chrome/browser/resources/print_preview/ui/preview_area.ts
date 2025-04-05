@@ -118,17 +118,17 @@ export class PrintPreviewPreviewAreaElement extends
     ];
   }
 
-  destination: Destination;
-  documentModifiable: boolean;
-  error: Error;
-  margins: Margins;
-  measurementSystem: MeasurementSystem|null;
-  pageSize: Size;
-  previewState: PreviewAreaState;
-  state: State;
-  private pluginLoadComplete_: boolean;
-  private documentReady_: boolean;
-  private previewLoaded_: boolean;
+  declare destination: Destination;
+  declare documentModifiable: boolean;
+  declare error: Error;
+  declare margins: Margins;
+  declare measurementSystem: MeasurementSystem|null;
+  declare pageSize: Size;
+  declare previewState: PreviewAreaState;
+  declare state: State;
+  declare private pluginLoadComplete_: boolean;
+  declare private documentReady_: boolean;
+  declare private previewLoaded_: boolean;
 
   private nativeLayer_: NativeLayer|null = null;
   private lastTicket_: PreviewTicket|null = null;

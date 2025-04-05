@@ -41,6 +41,7 @@
 #include "services/network/shared_dictionary/shared_dictionary_storage.h"
 #include "services/network/url_loader.h"
 #include "services/network/url_loader_factory.h"
+#include "services/network/url_loader_util.h"
 #include "services/network/web_bundle/web_bundle_url_loader_factory.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -418,7 +419,7 @@ void CorsURLLoaderFactory::CreateLoaderAndStart(
   DCHECK(inner_url_loader_factory);
 
   const net::IsolationInfo* isolation_info_ptr = &isolation_info_;
-  auto isolation_info = URLLoader::GetIsolationInfo(
+  auto isolation_info = url_loader_util::GetIsolationInfo(
       isolation_info_, automatically_assign_isolation_info_, resource_request);
   if (isolation_info.has_value()) {
     isolation_info_ptr = &isolation_info.value();

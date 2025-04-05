@@ -41,13 +41,14 @@ base::FilePath GetProfileFileDirectory() {
   base::PathService::Get(base::DIR_TEMP, &path);
   path = path.Append("pgo_profiles/");
 #else
-  std::string prof_template;
+
   std::unique_ptr<base::Environment> env(base::Environment::Create());
-  if (env->GetVar("LLVM_PROFILE_FILE", &prof_template)) {
+  std::optional<std::string> prof_template = env->GetVar("LLVM_PROFILE_FILE");
+  if (prof_template.has_value()) {
 #if BUILDFLAG(IS_WIN)
-    path = base::FilePath(base::UTF8ToWide(prof_template)).DirName();
+    path = base::FilePath(base::UTF8ToWide(*prof_template)).DirName();
 #else
-    path = base::FilePath(prof_template).DirName();
+    path = base::FilePath(*prof_template).DirName();
 #endif
   }
 #endif

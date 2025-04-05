@@ -37,7 +37,7 @@ class ClientCertsTest(ChromeEnterpriseTestCase):
         f'gs://{self.gsbucket}/secrets/certs/server-ca.pem')
     self.install_root_cert(self.win_config['client'], server_ca_cert_path)
 
-  # TODO(crbug.com/403340476): Reenable with `@test` once fixed.
+  @test
   def test_client_cert_installed_and_used(self):
     # Admin console setup:
     # * Create OU "CBCM testing" > "Client certificates".

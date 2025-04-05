@@ -3933,6 +3933,7 @@ TEST_F(NavigationControllerTest, NoURLRewriteForSubframes) {
       false /*is_form_submission*/, std::nullopt,
       blink::mojom::NavigationInitiatorActivationAndAdStatus::
           kDidNotStartWithTransientActivation,
+      base::TimeTicks::Now() /* actual_navigation_start_time */,
       base::TimeTicks::Now() /* navigation_start_time */);
 
   // Clean up the handler.
@@ -3977,6 +3978,7 @@ TEST_F(NavigationControllerTest,
       false /*is_form_submission*/, std::nullopt,
       blink::mojom::NavigationInitiatorActivationAndAdStatus::
           kDidNotStartWithTransientActivation,
+      base::TimeTicks::Now() /* actual_navigation_start_time */,
       base::TimeTicks::Now() /* navigation_start_time */);
   NavigationRequest* request = node->navigation_request();
   ASSERT_TRUE(request);
@@ -4361,6 +4363,7 @@ TEST_F(NavigationControllerFencedFrameTest, NoURLRewriteForFencedFrames) {
       false /*is_form_submission*/, std::nullopt,
       blink::mojom::NavigationInitiatorActivationAndAdStatus::
           kDidNotStartWithTransientActivation,
+      base::TimeTicks::Now() /* actual_navigation_start_time */,
       base::TimeTicks::Now() /* navigation_start_time */);
 
   NavigationRequest* request =

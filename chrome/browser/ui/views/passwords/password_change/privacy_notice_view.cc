@@ -97,13 +97,15 @@ PrivacyNoticeView::PrivacyNoticeView(content::WebContents* web_contents,
   auto* root_view = AddChildView(std::make_unique<views::BoxLayoutView>());
 
   root_view->SetOrientation(views::LayoutOrientation::kVertical);
-  root_view->SetInsideBorderInsets(
-      gfx::Insets::VH(ChromeLayoutProvider::Get()->GetDistanceMetric(
-                          DISTANCE_CONTROL_LIST_VERTICAL),
-                      ChromeLayoutProvider::Get()->GetDistanceMetric(
-                          DISTANCE_CONTROL_LIST_VERTICAL)));
+  const auto* const layout_provider = ChromeLayoutProvider::Get();
+  root_view->SetInsideBorderInsets(gfx::Insets::VH(
+      layout_provider->GetDistanceMetric(views::DISTANCE_CONTROL_LIST_VERTICAL),
+      // TODO(pkasting): Why is this using a vertical distance metric for a
+      // horizontal inset?
+      layout_provider->GetDistanceMetric(
+          views::DISTANCE_CONTROL_LIST_VERTICAL)));
   root_view->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
-  const int spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
+  const int spacing = layout_provider->GetDistanceMetric(
       DISTANCE_RELATED_CONTROL_VERTICAL_SMALL);
   root_view->SetBetweenChildSpacing(spacing);
 

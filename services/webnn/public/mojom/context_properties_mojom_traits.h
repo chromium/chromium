@@ -36,6 +36,16 @@ struct StructTraits<webnn::mojom::ContextPropertiesDataView,
     };
   }
 
+  static webnn::mojom::BatchNormalizationAxis batch_normalization_axis(
+      const webnn::ContextProperties& context_properties) {
+    switch (context_properties.batch_normalization_axis) {
+      case webnn::BatchNormalizationAxis::kChannelsFirst:
+        return webnn::mojom::BatchNormalizationAxis::kChannelsFirst;
+      case webnn::BatchNormalizationAxis::kAny:
+        return webnn::mojom::BatchNormalizationAxis::kAny;
+    };
+  }
+
   static uint64_t tensor_byte_length_limit(
       const webnn::ContextProperties& context_properties) {
     return context_properties.tensor_byte_length_limit;
@@ -65,6 +75,15 @@ struct StructTraits<webnn::mojom::ContextPropertiesDataView,
         break;
       case webnn::mojom::Resample2DAxes::kChannelsLast:
         out->resample_2d_axes = webnn::Resample2DAxes::kChannelsLast;
+        break;
+    }
+    switch (data.batch_normalization_axis()) {
+      case webnn::mojom::BatchNormalizationAxis::kAny:
+        out->batch_normalization_axis = webnn::BatchNormalizationAxis::kAny;
+        break;
+      case webnn::mojom::BatchNormalizationAxis::kChannelsFirst:
+        out->batch_normalization_axis =
+            webnn::BatchNormalizationAxis::kChannelsFirst;
         break;
     }
     out->tensor_byte_length_limit = data.tensor_byte_length_limit();

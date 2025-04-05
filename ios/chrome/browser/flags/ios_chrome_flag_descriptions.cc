@@ -240,6 +240,10 @@ const char kCollaborationMessagingDescription[] =
     "including features such as recent activity, dirty dots, and description "
     "action chips.";
 
+const char kContainedTabGroupName[] = "Contained tab group";
+const char kContainedTabGroupDescription[] =
+    "When enabled the tab group in the tab grid is not presented fullscreen.";
+
 const char kContentNotificationExperimentName[] =
     "Content Notification Experiment";
 const char kContentNotificationExperimentDescription[] =
@@ -523,10 +527,6 @@ const char kFullscreenSmoothScrollingName[] = "Fullscreen Smooth Scrolling";
 const char kFullscreenSmoothScrollingDescription[] =
     "When enabled, the web view's insets are updated for scoll events. If "
     "disabled, the the web view's frame are updated.";
-
-const char kHomeCustomizationName[] = "Home Customization";
-const char kHomeCustomizationDescription[] =
-    "When enabled, adds a menu to personalize the Home surface.";
 
 const char kHomeMemoryImprovementsName[] = "Home Memory Improvements";
 const char kHomeMemoryImprovementsDescription[] =
@@ -1256,6 +1256,11 @@ const char kShareInWebContextMenuIOSDescription[] =
 const char kShopCardName[] = "Enables ShopCard";
 const char kShopCardDescription[] =
     "Enables being able to show ShopCard in the Magic Stack";
+
+const char kShopCardImpressionLimitsName[] =
+    "Enables ShopCard Impression limits";
+const char kShopCardImpressionLimitsDescription[] =
+    "Limits the number of times ShopCards can be shown in the Magic Stack";
 
 const char kShowAutofillTypePredictionsName[] = "Show Autofill predictions";
 const char kShowAutofillTypePredictionsDescription[] =

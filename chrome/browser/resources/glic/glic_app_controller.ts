@@ -10,8 +10,6 @@ import {PrepareForClientResult, ProfileReadyState, WebUiState} from './glic.mojo
 import type {PageInterface} from './glic.mojom-webui.js';
 import type {ApiHostEmbedder} from './glic_api_impl/glic_api_host.js';
 import {WebClientState} from './glic_api_impl/glic_api_host.js';
-import {exceptionFromTransferable} from './glic_api_impl/request_types.js';
-import type {TransferableException} from './glic_api_impl/request_types.js';
 import type {PageType, WebviewDelegate} from './webview.js';
 import {WebviewController} from './webview.js';
 
@@ -298,6 +296,8 @@ export class GlicAppController implements PageInterface, WebviewDelegate,
     this.destroyWebview();
     this.webview = new WebviewController(
         $.webviewContainer, this.browserProxy, this, this);
+    this.webview.getWebClientState().subscribe(
+        this.webClientStateChanged.bind(this));
 
     this.loadingTimer = setTimeout(() => {
       this.setState(WebUiState.kShowLoading);
@@ -328,8 +328,17 @@ export class GlicAppController implements PageInterface, WebviewDelegate,
     // `kMaxWaitTimeMs`. Switch to error state at that time unless interrupted
     // by `webClientReady`.
     this.loadingTimer = setTimeout(() => {
-      console.warn('Exceeded timeout in finishLoading');
-      this.setState(WebUiState.kError);
+      if (this.webview?.waitingOnPanelWillOpen()) {
+        console.warn('Exceeded timeout waiting for notifyPanelWillOpen');
+        this.setState(WebUiState.kError);
+      } else if (
+          this.webview?.getWebClientState().getCurrentValue() ===
+          WebClientState.RESPONSIVE) {
+        this.setState(WebUiState.kReady);
+      } else {
+        console.warn('Exceeded timeout waiting for client to load');
+        this.setState(WebUiState.kError);
+      }
     }, kMaxWaitTimeMs - kMinHoldLoadingTimeMs);
   }
 
@@ -414,25 +423,18 @@ export class GlicAppController implements PageInterface, WebviewDelegate,
     }
   }
 
-  // Called when the web client completes initialization.
-  webClientInitializationDone(
-      success: boolean, exception: TransferableException|undefined): void {
-    if (success) {
-      this.showGuest();
-    } else {
-      if (exception) {
-        console.error(exceptionFromTransferable(exception));
-      }
-      this.setState(WebUiState.kError);
-    }
-  }
-
   webClientStateChanged(state: WebClientState): void {
     switch (state) {
       case WebClientState.RESPONSIVE:
-        if (this.state === WebUiState.kUnresponsive) {
-          this.setState(WebUiState.kReady);
+        // If we're still in a loading state, let it transition naturally
+        // through the loading process.
+        switch (this.state) {
+          case WebUiState.kBeginLoad:
+          case WebUiState.kShowLoading:
+          case WebUiState.kHoldLoading:
+            return;
         }
+        this.setState(WebUiState.kReady);
         break;
       case WebClientState.UNRESPONSIVE:
         this.setState(WebUiState.kUnresponsive);
@@ -440,15 +442,6 @@ export class GlicAppController implements PageInterface, WebviewDelegate,
       case WebClientState.ERROR:
         this.setState(WebUiState.kError);
         break;
-    }
-  }
-
-  // This may also be called when the panel is re-opened by webui after being
-  // hidden, such as when an error panel is shown.
-  // This will do nothing if the app is not in kReady state.
-  private showGuest(): void {
-    if (this.state === WebUiState.kReady) {
-      this.showPanel('guestPanel');
     }
   }
 

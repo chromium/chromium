@@ -304,6 +304,16 @@ source_set("environment") {
   ]
 }
 
+source_set("logging_test") {
+  testonly = true
+  sources = [ "test/logging_test.cc" ]
+  deps = [
+    ":webrtc_component",
+    "//base/test:test_support",
+    "//testing/gtest:gtest",
+  ]
+}
+
 source_set("metronome_like_task_queue_test") {
   configs += webrtc_configs
   public_configs = webrtc_public_configs

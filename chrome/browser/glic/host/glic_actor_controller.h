@@ -18,12 +18,14 @@ namespace actor {
 class ActorCoordinator;
 }
 
+class Profile;
+
 namespace glic {
 
 // Controls the interaction with the actor to complete an action.
 class GlicActorController {
  public:
-  GlicActorController();
+  explicit GlicActorController(Profile* profile);
   GlicActorController(const GlicActorController&) = delete;
   GlicActorController& operator=(const GlicActorController&) = delete;
   ~GlicActorController();

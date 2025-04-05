@@ -111,9 +111,7 @@ class UpgradeDetectorChromeosTest : public ::testing::Test {
     // Fast forward to set current time to local 2am . This is done to align the
     // relaunch deadline within the default relaunch window of 2am to 4am so
     // that it is not adjusted in tests.
-    std::string env_tz;
-    if (env_->GetVar("TZ", &env_tz))
-      original_tz_ = env_tz;
+    original_tz_ = env_->GetVar("TZ");
     env_->SetVar("TZ", "UTC");
     tzset();
     FastForwardBy(base::Hours(2));

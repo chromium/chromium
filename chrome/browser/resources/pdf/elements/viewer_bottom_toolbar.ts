@@ -48,7 +48,7 @@ export class ViewerBottomToolbarElement extends ViewerBottomToolbarElementBase {
     };
   }
 
-  strings?: {[key: string]: string};
+  accessor strings: {[key: string]: string}|undefined;
 
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);

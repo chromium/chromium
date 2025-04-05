@@ -25,9 +25,10 @@ class GPUDeviceLostInfo : public ScriptWrappable {
   GPUDeviceLostInfo(const GPUDeviceLostInfo&) = delete;
   GPUDeviceLostInfo& operator=(const GPUDeviceLostInfo&) = delete;
 
-  // gpu_device_lost_info.idl
+  // gpu_device_lost_info.idl {{{
   V8GPUDeviceLostReason reason() const;
   const String& message() const;
+  // }}} End of WebIDL binding implementation.
 
  private:
   V8GPUDeviceLostReason::Enum reason_;

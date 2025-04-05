@@ -105,8 +105,7 @@ IN_PROC_BROWSER_TEST_F(IPCInterfacesDumper, DumperTest) {
   json.Set("process_interfaces", std::move(process_interface));
 
   // Write the JSON to a file in the IPC_DUMP_PATH directory.
-  std::string file_path;
-  env->GetVar("IPC_DUMP_PATH", &file_path);
+  std::string file_path = env->GetVar("IPC_DUMP_PATH").value_or("");
 
   base::ScopedAllowBlockingForTesting allow_blocking;
 #if BUILDFLAG(IS_WIN)

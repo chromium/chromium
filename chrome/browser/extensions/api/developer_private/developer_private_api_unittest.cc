@@ -733,7 +733,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
       extension_system->user_script_manager();
   ASSERT_TRUE(user_script_manager);
   auto user_scripts_enabled = [&]() {
-    return user_script_manager->IsUserScriptPrefEnabled(id);
+    return user_script_manager->IsUserScriptPrefEnabledForTesting(id);
   };
   TestExtensionPrefSetting(base::BindLambdaForTesting(user_scripts_enabled),
                            "userScriptsAccess", id,
@@ -3634,7 +3634,14 @@ TEST_F(DeveloperPrivateApiTransportModeUnitTest,
       api::DeveloperPrivateUploadExtensionToAccountFunction>();
   upload_function->set_source_context_type(mojom::ContextType::kWebUi);
   upload_function->accept_bubble_for_testing(false);
+
+  // Check that the value returned indicates that the extension was not
+  // uploaded.
   EXPECT_TRUE(RunFunction(upload_function, args));
+  const base::Value::List* results = upload_function->GetResultListForTest();
+  ASSERT_EQ(1u, results->size());
+  ASSERT_TRUE((*results)[0].is_bool());
+  EXPECT_FALSE((*results)[0].GetBool());
 
   // Now pretend the extension is already associated with the user's account.
   AccountExtensionTracker::Get(profile())->SetAccountExtensionTypeForTesting(
@@ -3700,7 +3707,13 @@ TEST_F(DeveloperPrivateApiTransportModeUnitTest,
   upload_function->accept_bubble_for_testing(true);
 
   test_observer.Reset();
+
+  // Check that the value returned indicates that the extension was uploaded.
   EXPECT_TRUE(RunFunction(upload_function, args));
+  const base::Value::List* results = upload_function->GetResultListForTest();
+  ASSERT_EQ(1u, results->size());
+  ASSERT_TRUE((*results)[0].is_bool());
+  EXPECT_TRUE((*results)[0].GetBool());
 
   // Wait for the prefs changed update and verify that the extension is no
   // longer uploadable after being uploaded.

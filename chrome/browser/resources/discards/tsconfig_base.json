@@ -1,5 +1,5 @@
 {
-  "extends": "../../../../tools/typescript/tsconfig_base_polymer_389737066.json",
+  "extends": "../../../../tools/typescript/tsconfig_base_polymer.json",
   "compilerOptions": {
     "allowUmdGlobalAccess": true,
     "lib": ["ES2024", "DOM", "DOM.Iterable"],

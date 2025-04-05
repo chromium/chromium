@@ -34,7 +34,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/prefs/pref_service.h"
-#include "components/tab_collections/public/tab_interface.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/version_info/channel.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"

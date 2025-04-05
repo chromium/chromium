@@ -119,10 +119,7 @@ class SCKAudioInputStreamTest : public PlatformTest {
           .andDo(^(NSInvocation* invocation) {
             __unsafe_unretained id<SCStreamOutput> stream_output;
             [invocation getArgument:&stream_output atIndex:2];
-            stream_outputs_.erase(
-                std::remove(stream_outputs_.begin(), stream_outputs_.end(),
-                            stream_output),
-                stream_outputs_.end());
+            std::erase(stream_outputs_, stream_output);
           })
           .andReturn(TRUE);
 

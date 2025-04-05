@@ -10,6 +10,7 @@ import android.util.Pair;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.multiwindow.WindowId;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
@@ -85,7 +86,7 @@ public interface TabWindowManager {
      * @return {@link Pair} of the window id and the assigned {@link TabModelSelector}, or {@code
      *     null} if there are too many {@link TabModelSelector}s already built.
      */
-    Pair<@WindowId Integer, TabModelSelector> requestSelector(
+    @Nullable Pair<@WindowId Integer, TabModelSelector> requestSelector(
             Activity activity,
             ModalDialogManager modalDialogManager,
             OneshotSupplier<ProfileProvider> profileProviderSupplier,
@@ -113,8 +114,8 @@ public interface TabWindowManager {
     /**
      * @param tab The tab to look for in each model.
      * @return The TabModel containing the given Tab or null if one doesn't exist.
-     **/
-    TabModel getTabModelForTab(Tab tab);
+     */
+    @Nullable TabModel getTabModelForTab(Tab tab);
 
     /**
      * Use {@link #getTabById(int, int)} preferably and when possible for a more efficient lookup.
@@ -122,14 +123,14 @@ public interface TabWindowManager {
      * @param tabId The ID of the tab in question.
      * @return Specified {@link Tab} or {@code null} if the {@link Tab} is not found.
      */
-    Tab getTabById(@TabId int tabId);
+    @Nullable Tab getTabById(@TabId int tabId);
 
     /**
      * @param tabId The ID of the tab in question.
      * @param windowId The ID of the window that holds the tab.
      * @return Specified {@link Tab} or {@code null} if the {@link Tab} is not found.
      */
-    Tab getTabById(@TabId int tabId, @WindowId int windowId);
+    @Nullable Tab getTabById(@TabId int tabId, @WindowId int windowId);
 
     /**
      * @param windowId The ID of the window that holds the tab group.
@@ -137,7 +138,8 @@ public interface TabWindowManager {
      * @param isIncognito Whether the grouped tabs are incognito tabs.
      * @return A list of tabs associated with the root ID, or {@code null} if no tabs are found.
      */
-    List<Tab> getGroupedTabsByWindow(@WindowId int windowId, Token tabGroupId, boolean isIncognito);
+    @Nullable List<Tab> getGroupedTabsByWindow(
+            @WindowId int windowId, Token tabGroupId, boolean isIncognito);
 
     /**
      * Finds the {@link TabModelSelector} bound to an Activity instance of a given id.
@@ -145,7 +147,7 @@ public interface TabWindowManager {
      * @param windowId The window id of {@link TabModelSelector} to get.
      * @return Specified {@link TabModelSelector} or {@code null} if not found.
      */
-    TabModelSelector getTabModelSelectorById(@WindowId int windowId);
+    @Nullable TabModelSelector getTabModelSelectorById(@WindowId int windowId);
 
     /** Gets a Collection of all TabModelSelectors. */
     Collection<TabModelSelector> getAllTabModelSelectors();

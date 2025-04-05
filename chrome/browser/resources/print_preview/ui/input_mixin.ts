@@ -32,7 +32,7 @@ export const InputMixin = dedupingMixin(
           };
         }
 
-        private lastValue_: string|null;
+        declare private lastValue_: string|null;
         /** Timeout used to delay processing of the input, in ms. */
         private timeout_: number|null = null;
 

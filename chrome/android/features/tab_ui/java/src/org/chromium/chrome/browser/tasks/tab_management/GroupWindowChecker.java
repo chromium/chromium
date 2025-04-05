@@ -20,6 +20,17 @@ import java.util.List;
 /** For tab group lists to interact with {@link TabGroupSyncService} and multiple windows. */
 @NullMarked
 public class GroupWindowChecker {
+    /** Used to filter tab groups while processing tab groups. */
+    @FunctionalInterface
+    public interface TabGroupSelectionPredicate {
+        /**
+         * Whether a tab group should be included in a filtered list of tab groups.
+         *
+         * @param groupWindowState The {@link GroupWindowState} for the tab group.
+         */
+        boolean shouldInclude(@GroupWindowState Integer groupWindowState);
+    }
+
     private final @Nullable TabGroupSyncService mSyncService;
     private final TabGroupModelFilter mFilter;
 
@@ -39,9 +50,13 @@ public class GroupWindowChecker {
      * <p>The list includes all synced tab groups, except those that are currently open in other
      * windows. The list is sorted using the provided comparator.
      *
+     * @param tabGroupSelectionPredicate The predicate used for selecting tab groups which should be
+     *     included in the returned list.
      * @param comparator Used for sorting the list.
      */
-    public List<SavedTabGroup> getSortedGroupList(Comparator<SavedTabGroup> comparator) {
+    public List<SavedTabGroup> getSortedGroupList(
+            TabGroupSelectionPredicate tabGroupSelectionPredicate,
+            Comparator<SavedTabGroup> comparator) {
         List<SavedTabGroup> groupList = new ArrayList<>();
         if (mSyncService == null) return groupList;
 
@@ -50,7 +65,8 @@ public class GroupWindowChecker {
             assert savedTabGroup != null && !savedTabGroup.savedTabs.isEmpty();
 
             // To simplify interactions, do not include any groups currently open in other windows.
-            if (getState(savedTabGroup) != GroupWindowState.IN_ANOTHER) {
+            @GroupWindowState int groupWindowState = getState(savedTabGroup);
+            if (tabGroupSelectionPredicate.shouldInclude(groupWindowState)) {
                 groupList.add(savedTabGroup);
             }
         }

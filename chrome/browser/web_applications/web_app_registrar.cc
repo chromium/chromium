@@ -1606,6 +1606,12 @@ base::Time WebAppRegistrar::GetAppFirstInstallTime(
   return web_app ? web_app->first_install_time() : base::Time();
 }
 
+base::Time WebAppRegistrar::GetAppLatestInstallTime(
+    const webapps::AppId& app_id) const {
+  auto* web_app = GetAppById(app_id);
+  return web_app ? web_app->latest_install_time() : base::Time();
+}
+
 std::optional<webapps::WebappInstallSource>
 WebAppRegistrar::GetLatestAppInstallSource(const webapps::AppId& app_id) const {
   const WebApp* web_app = GetAppById(app_id);

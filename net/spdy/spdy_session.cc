@@ -757,14 +757,25 @@ bool SpdySession::CanPool(TransportSecurityState* transport_security_state,
     return false;
   }
 
+  // TODO(crbug.com/41392053): CT enforcement is handled in the cert verifier
+  // service, but SpdySession needs this to tell whether pooling between two
+  // hostnames would conflict with CT policies (if the cert fails CT
+  // verification, but a CT policy allowed it to be used for old_hostname, then
+  // it should not be allowed to pool with a new_hostname if new_hostname isn't
+  // also allowed by the CT policy.)
+  // This should be refactored somehow so that the CT policy does not need
+  // to be duplicated in the network service. One potential option would be to
+  // record whether CT policy was used to bypass a CT error (as a separate enum
+  // value in the ct_requirement_status), and then just always disallow pooling
+  // in that case (assuming that doesn't affect perf too much).
   switch (transport_security_state->CheckCTRequirements(
       new_hostname, ssl_info.is_issued_by_known_root,
       ssl_info.public_key_hashes, ssl_info.cert.get(),
       ssl_info.ct_policy_compliance)) {
-    case TransportSecurityState::CT_REQUIREMENTS_NOT_MET:
+    case ct::CTRequirementsStatus::CT_REQUIREMENTS_NOT_MET:
       return false;
-    case TransportSecurityState::CT_REQUIREMENTS_MET:
-    case TransportSecurityState::CT_NOT_REQUIRED:
+    case ct::CTRequirementsStatus::CT_REQUIREMENTS_MET:
+    case ct::CTRequirementsStatus::CT_NOT_REQUIRED:
       // Intentional fallthrough; this case is just here to make sure that all
       // possible values of CheckCTRequirements() are handled.
       break;

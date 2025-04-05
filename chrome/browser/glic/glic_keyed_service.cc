@@ -91,7 +91,7 @@ GlicKeyedService::GlicKeyedService(Profile* profile,
   }
 
   if (base::FeatureList::IsEnabled(features::kGlicActor)) {
-    actor_controller_ = std::make_unique<GlicActorController>();
+    actor_controller_ = std::make_unique<GlicActorController>(profile_);
   }
 
   // This is only used by automation for tests.

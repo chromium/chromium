@@ -14,6 +14,7 @@ import "services/viz/public/mojom/compositing/filter_operations.mojom";
 import "services/viz/public/mojom/compositing/copy_output_request.mojom";
 import "services/viz/public/mojom/compositing/resource_id.mojom";
 import "services/viz/public/mojom/compositing/subtree_capture_id.mojom";
+import "services/viz/public/mojom/compositing/view_transition_element_resource_id.mojom";
 import "ui/gfx/mojom/transform.mojom";
 
 // Extra fields in a cc::MirrorLayerImpl that has been added to a tree or
@@ -297,6 +298,10 @@ struct EffectNode {
   // The index of the ancestor EffectNode which induces a render surface. Must
   // be a valid index in the same effect tree.
   int32 target_id;
+
+  // Represents a resource id for a resource cached or generated in the Viz
+  // process.
+  ViewTransitionElementResourceId view_transition_element_resource_id;
 
   FilterOperations filters;
   FilterOperations backdrop_filters;

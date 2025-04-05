@@ -66,10 +66,6 @@ namespace storage {
 
 namespace {
 
-// For shorter names.
-const blink::mojom::StorageType kStorageTemp =
-    blink::mojom::StorageType::kTemporary;
-
 // Values in bytes.
 const int64_t kAvailableSpaceForApp = 13377331U;
 const int64_t kMustRemainAvailableForSystem = kAvailableSpaceForApp / 2;
@@ -137,10 +133,9 @@ const storage::mojom::BucketTableEntry* FindBucketTableEntry(
   return it->get();
 }
 
-MATCHER_P3(MatchesBucketTableEntry, storage_key, type, use_count, "") {
+MATCHER_P2(MatchesBucketTableEntry, storage_key, use_count, "") {
   return testing::ExplainMatchResult(storage_key, arg->storage_key,
                                      result_listener) &&
-         testing::ExplainMatchResult(type, arg->type, result_listener) &&
          testing::ExplainMatchResult(use_count, arg->use_count,
                                      result_listener);
 }
@@ -2581,11 +2576,10 @@ TEST_F(QuotaManagerImplTest, DumpBucketTable) {
   task_environment_.RunUntilIdle();
 
   const BucketTableEntries& entries = DumpBucketTable();
-  EXPECT_THAT(
-      entries,
-      testing::UnorderedElementsAre(
-          MatchesBucketTableEntry(kStorageKey1.Serialize(), kStorageTemp, 1),
-          MatchesBucketTableEntry(kStorageKey2.Serialize(), kStorageTemp, 2)));
+  EXPECT_THAT(entries,
+              testing::UnorderedElementsAre(
+                  MatchesBucketTableEntry(kStorageKey1.Serialize(), 1),
+                  MatchesBucketTableEntry(kStorageKey2.Serialize(), 2)));
 }
 
 TEST_F(QuotaManagerImplTest, RetrieveBucketsTable) {
@@ -2615,7 +2609,6 @@ TEST_F(QuotaManagerImplTest, RetrieveBucketsTable) {
   auto* entry1 = FindBucketTableEntry(bucket_table_entries, bucket1->id);
   EXPECT_TRUE(entry1);
   EXPECT_EQ(entry1->storage_key, kStorageKey1.Serialize());
-  EXPECT_EQ(entry1->type, kStorageTemp);
   EXPECT_EQ(entry1->name, kDefaultBucketName);
   EXPECT_EQ(entry1->use_count, 1);
   EXPECT_EQ(entry1->last_accessed, kAccessTime);
@@ -2626,7 +2619,6 @@ TEST_F(QuotaManagerImplTest, RetrieveBucketsTable) {
   auto* entry2 = FindBucketTableEntry(bucket_table_entries, bucket2->id);
   EXPECT_TRUE(entry2);
   EXPECT_EQ(entry2->storage_key, kStorageKey2.Serialize());
-  EXPECT_EQ(entry2->type, kStorageTemp);
   EXPECT_EQ(entry2->name, kDefaultBucketName);
   EXPECT_EQ(entry2->use_count, 1);
   EXPECT_EQ(entry2->last_accessed, kAccessTime);

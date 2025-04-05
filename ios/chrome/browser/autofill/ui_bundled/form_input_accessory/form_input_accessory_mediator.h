@@ -87,6 +87,9 @@ class WebStateList;
 // Replaces the object in charge of providing suggestions.
 - (void)injectProvider:(id<FormInputSuggestionsProvider>)provider;
 
+// Replaces the current provider selected by the mediator.
+- (void)injectCurrentProvider:(id<FormInputSuggestionsProvider>)provider;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_FORM_INPUT_ACCESSORY_FORM_INPUT_ACCESSORY_MEDIATOR_H_

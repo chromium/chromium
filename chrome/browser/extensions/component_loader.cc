@@ -24,9 +24,8 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/component_extensions_allowlist/allowlist.h"
+#include "chrome/browser/extensions/component_loader_factory.h"
 #include "chrome/browser/extensions/data_deleter.h"
-#include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/extensions/profile_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/channel_info.h"
@@ -43,6 +42,7 @@
 #include "content/public/common/content_switches.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/common/constants.h"
@@ -181,13 +181,22 @@ ComponentLoader::ComponentExtensionInfo::operator=(
 
 ComponentLoader::ComponentExtensionInfo::~ComponentExtensionInfo() = default;
 
-ComponentLoader::ComponentLoader(ExtensionSystem* extension_system,
-                                 Profile* profile)
+// static
+ComponentLoader* ComponentLoader::Get(Profile* profile) {
+  return ComponentLoaderFactory::GetForBrowserContext(profile);
+}
+
+ComponentLoader::ComponentLoader(Profile* profile)
     : profile_(profile),
-      extension_system_(extension_system),
+      extension_system_(ExtensionSystem::Get(profile_)),
       ignore_allowlist_for_testing_(false) {}
 
 ComponentLoader::~ComponentLoader() = default;
+
+void ComponentLoader::Shutdown() {
+  profile_ = nullptr;
+  extension_system_ = nullptr;
+}
 
 void ComponentLoader::LoadAll() {
   TRACE_EVENT0("browser,startup", "ComponentLoader::LoadAll");
@@ -310,8 +319,8 @@ void ComponentLoader::Load(const ComponentExtensionInfo& info) {
   }
 
   CHECK_EQ(info.extension_id, extension->id()) << extension->name();
-  extension_system_->extension_service()->AddComponentExtension(
-      extension.get());
+  auto* registrar = ExtensionRegistrar::Get(profile_);
+  registrar->AddComponentExtension(extension.get());
 }
 
 void ComponentLoader::Remove(const base::FilePath& root_directory) {
@@ -609,8 +618,8 @@ void ComponentLoader::
 
 void ComponentLoader::UnloadComponent(ComponentExtensionInfo* component) {
   if (extension_system_->is_ready()) {
-    extension_system_->extension_service()->RemoveComponentExtension(
-        component->extension_id);
+    auto* registrar = ExtensionRegistrar::Get(profile_);
+    registrar->RemoveComponentExtension(component->extension_id);
   }
 }
 

@@ -94,3 +94,11 @@ void SendSafeBrowsingDownloadReport(
   }
 }
 #endif  // BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
+
+#if BUILDFLAG(IS_ANDROID)
+bool ShouldShowSafeBrowsingAndroidDownloadWarnings() {
+  return base::FeatureList::IsEnabled(
+             safe_browsing::kMaliciousApkDownloadCheck) &&
+         !safe_browsing::kMaliciousApkDownloadCheckTelemetryOnly.Get();
+}
+#endif

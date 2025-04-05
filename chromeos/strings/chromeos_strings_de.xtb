@@ -351,6 +351,7 @@
 <translation id="2438248248625638801">Aufzeichnungstitel werden erstellt</translation>
 <translation id="2446553403094072641">Gleitkommagenauigkeit</translation>
 <translation id="2448312741937722512">Art</translation>
+<translation id="2448857983905133469">Unterrichtstools</translation>
 <translation id="2468124392950503650">Prompt zum Erstellen auswählen oder <ph name="BEGIN_LINK_PROMPTING_GUIDE" />Anleitung für Prompts<ph name="END_LINK_PROMPTING_GUIDE" /> aufrufen</translation>
 <translation id="2472215337771558851">Mit der Funktion „Formuliere für mich“, die auf Google AI basiert, kannst du Entwürfe erstellen oder vorhandene Texte optimieren</translation>
 <translation id="2475982808118771221">Ein Fehler ist aufgetreten.</translation>
@@ -449,6 +450,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Endpunkt</translation>
 <translation id="3060579846059757016">Übersicht</translation>
+<translation id="3060798442805232711">Unterrichtstools verwenden dein Mikrofon</translation>
 <translation id="3061850252076394168">Funktion „Vorlesen“ aktivieren</translation>
 <translation id="3066772729299747758">am Dienstag</translation>
 <translation id="3069085583900247081">Fehler beim Test</translation>
@@ -458,7 +460,6 @@
 <translation id="3084958266922136097">Bildschirmschoner deaktivieren</translation>
 <translation id="3091839911843451378">Fehlgeschlagen – Angehalten</translation>
 <translation id="3102119246920354026">Cache</translation>
-<translation id="3112413615003385433">Deine Lehrkraft hat Inhalte aus den Tools der Bildungseinrichtung entfernt</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">Schwimmbecken</translation>
 <translation id="3122883569442693641">Weitere Details</translation>
@@ -539,7 +540,6 @@
 <translation id="3488065109653206955">Teilweise aktiviert</translation>
 <translation id="3492882532495507361">Büro (<ph name="OFFICE_STYLE" />) mit <ph name="OFFICE_COLOR" />en Farbtönen</translation>
 <translation id="3493187369049186498">Die Daten werden von deinem Chromebook gemessen. Sie können sich von den Anbieterdaten unterscheiden.</translation>
-<translation id="349570724365779960">Tools der Bildungseinrichtung sind mit Schülern/Studenten verbunden</translation>
 <translation id="3502426834823382181">Alle Apps anzeigen</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />Leistungs-Trace-Daten<ph name="END_LINK1" /> senden</translation>
 <translation id="3517001332549868749">Chrome OS-Update</translation>
@@ -547,7 +547,6 @@
 <translation id="353214771040290298">Fertig</translation>
 <translation id="3532980081107202182">Noch etwa <ph name="MIN_REMAINING" /> Minuten</translation>
 <translation id="3533790840489634638">Schwimmbecken</translation>
-<translation id="3535802910192338629">Deine Lehrkraft hat neue Inhalte in den Tools der Bildungseinrichtung hinzugefügt</translation>
 <translation id="3547264467365135390">Formel</translation>
 <translation id="3557205324756024651">Lokale Identität (optional)</translation>
 <translation id="3565064564551103223">Zugelassene IPs</translation>
@@ -713,7 +712,7 @@
           Wenn du dein eigenes Hintergrundbild erstellst, wird dein Prompt an Google-Server gesendet, um Bilder zu erstellen und das Produkt gemäß den <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Nutzungsbedingungen und der Datenschutzerklärung von Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> zu verbessern. Gib keine persönlichen, sensiblen oder vertraulichen Informationen an.
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
-          Generative KI kann Fehler machen, auch bei Informationen über Personen – überprüfe daher die Antworten. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Weitere Informationen<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
+          Generative KI kann Fehler machen, auch bei Informationen über Personen. Prüfe die Antworten daher sorgfältig. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Weitere Informationen<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="4258281355379922695">HTTP-Latenz</translation>
 <translation id="4266143281602681663">Garn</translation>
 <translation id="4269815121975886860">Starteinstellungen</translation>
@@ -913,6 +912,7 @@
 <translation id="5170568018924773124">In Ordner zeigen</translation>
 <translation id="517075088756846356">Ziehe zum Fortsetzen des Updates das Netzkabel des Geräts „<ph name="DEVICE_NAME" />“ ab und schließe es wieder an</translation>
 <translation id="5180108905184566358">Affenbrotbäume</translation>
+<translation id="5180431943345994173">Deine Lehrkraft hat Inhalte aus den Unterrichtstools entfernt</translation>
 <translation id="5180712487038406644">Ausdrucksstark</translation>
 <translation id="5190187232518914472">Die schönsten Erinnerungen immer vor Augen. Wenn du Alben hinzufügst oder bearbeiten möchtest, gehe zu <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
@@ -1006,6 +1006,7 @@
 <translation id="5628106863521633649">Verfügbare Sprachen</translation>
 <translation id="5630438231335788050">Bauhaus</translation>
 <translation id="5631759159893697722">Zusammenfassung</translation>
+<translation id="5655084389678168978">Deine Lehrkraft hat neue Inhalte zu den Unterrichtstools hinzugefügt</translation>
 <translation id="5655283760733841251">Tastaturhelligkeit erhöhen</translation>
 <translation id="5655296450510165335">Geräteregistrierung</translation>
 <translation id="5655776422854483175">Keine Druckaufträge</translation>
@@ -1235,6 +1236,7 @@
 <translation id="6657240842932274095">Systemdiensten erlauben, deinen Standort zu verwenden?</translation>
 <translation id="6657585470893396449">Passwort</translation>
 <translation id="66621959568103627">korallrosa</translation>
+<translation id="6669485505082792176">Zu deiner Anfrage können derzeit keine Bilder erstellt werden. Du kannst versuchen, die Beschreibung anders zu formulieren. Beachte, dass du keine Bilder von Personen oder von schädlichen oder anstößigen Inhalten erstellen kannst. <ph name="BEGIN_LINK_LEARN_MORE" />Weitere Informationen<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6673898378497337661">Tastaturhelligkeit erhöhen</translation>
 <translation id="6692996468359469499">Informationen zu deiner Auswahl erhalten</translation>
 <translation id="6694534975463174713">Schloss</translation>
@@ -1440,7 +1442,6 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="7544853251252956727">Zufallsmix</translation>
 <translation id="7550715992156305117">Diagnoseroutinen</translation>
 <translation id="7551123448725492271">Das Gerät ist ein Audiogerät.</translation>
-<translation id="7553913964854052228">Tools der Bildungseinrichtung verwenden dein Mikrofon</translation>
 <translation id="7559239713112547082">Screenshot in der Vorschau anzeigen</translation>
 <translation id="7561454561030345039">Diese Aktion wird von deinem Administrator verwaltet</translation>
 <translation id="7561759921596375678">Ton einschalten</translation>
@@ -1532,6 +1533,7 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="7971535376154084247">Allgemeine Einstellungen</translation>
 <translation id="7977800524392185497">Gehe zu den Einstellungen, um eine Verbindung zu einem Netzwerk (<ph name="NETWORK_NAME" />) herzustellen</translation>
 <translation id="7978412674231730200">Privater Schlüssel</translation>
+<translation id="7979468455552394856">Unterrichtstools sind mit Schülern/Studenten verbunden</translation>
 <translation id="7982789257301363584">Netzwerk</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> wurde automatisch gestartet}other{# Apps wurden automatisch gestartet}}</translation>
 <translation id="7994702968232966508">EAP-Methode</translation>
@@ -1663,7 +1665,6 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="8576249514688522074">Noch nicht initialisiert</translation>
 <translation id="8584654835905316966">Ein Neustart ist erforderlich, um die Installation der Firmware für <ph name="DEVICE_NAME" /> auf Version <ph name="VERSION" /> abzuschließen. Möglicherweise startet dein Computer mehrmals neu. Dieses Verhalten ist so vorgesehen.</translation>
 <translation id="8593058461203131755">Medienwiedergabe pausieren</translation>
-<translation id="8619169570378509764">Tools der Bildungseinrichtung</translation>
 <translation id="8620617069779373398">Roaming-Status</translation>
 <translation id="8626489604350149811">Weitere Aktionen für „<ph name="APN_NAME" />“</translation>
 <translation id="86356131183441916">Hellviolett</translation>

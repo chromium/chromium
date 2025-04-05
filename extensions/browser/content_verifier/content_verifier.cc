@@ -52,28 +52,46 @@ using content_verifier_utils::CanonicalRelativePath;
 // This function converts paths like "//foo/bar", "./foo/bar", and
 // "/foo/bar" to "foo/bar". It also converts path separators to "/".
 base::FilePath NormalizeRelativePath(const base::FilePath& path) {
-  if (path.ReferencesParent())
-    return base::FilePath();
+  // Remove leading separator characters.
+  auto path_trimmed_separators = base::FilePath(base::TrimString(
+      path.value(), base::FilePath::kSeparators, base::TRIM_LEADING));
 
-  std::vector<base::FilePath::StringType> parts = path.GetComponents();
-  if (parts.empty())
+  // Ideally, we shouldn't end up here with an absolute path, but it can happen.
+  // For example, an extension's manifest may contain:
+  //
+  // "icons": { "48": "C:/icon.png" }
+  //
+  // In this case, such icon path is rejected on installation, but not when an
+  // installed extension is loaded.
+  //
+  // TODO(https://crbug.com/407932132): Make sure we only reach here with
+  // relative paths and replace this with a CHECK.
+  if (path_trimmed_separators.IsAbsolute()) {
     return base::FilePath();
+  }
 
-  // Remove the first component if it is '.' or '/' or '//'.
-  const base::FilePath::StringType separators(
-      base::FilePath::kSeparators, base::FilePath::kSeparatorsLength);
-  if (!parts[0].empty() &&
-      (parts[0] == base::FilePath::kCurrentDirectory ||
-       parts[0].find_first_not_of(separators) == std::string::npos))
+  base::FilePath path_normalized =
+      content_verifier_utils::NormalizePathComponents(path_trimmed_separators);
+
+  std::vector<base::FilePath::StringType> parts =
+      path_normalized.GetComponents();
+
+  // Remove all parent directory components from the beginning of the path,
+  // since they're ignored when using the path in the request url, e.g.
+  // chrome-extension://<extension_id>/../foo/bar.html is resolved as
+  // chrome-extension://<extension_id>/foo/bar.html.
+  while (!parts.empty() && parts[0] == base::FilePath::kParentDirectory) {
     parts.erase(parts.begin());
+  }
 
   // Note that elsewhere we always normalize path separators to '/' so this
   // should work for all platforms.
   base::FilePath::StringType normalized_relative_path =
       base::JoinString(parts, base::FilePath::StringType(1, '/'));
   // Preserve trailing separator, if present.
-  if (path.EndsWithSeparator())
-    normalized_relative_path.append(1, '/');
+  if (path.EndsWithSeparator() && !normalized_relative_path.empty()) {
+    normalized_relative_path.push_back('/');
+  }
   return base::FilePath(normalized_relative_path);
 }
 

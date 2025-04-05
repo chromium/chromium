@@ -12,6 +12,7 @@ source_set("ui") {
   deps = [
     ":constants",
     "//components/strings:components_strings_grit",
+    "//ios/chrome/browser/keyboard/ui_bundled",
     "//ios/chrome/browser/shared/ui/bottom_sheet:bottom_sheet_view_controller",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",

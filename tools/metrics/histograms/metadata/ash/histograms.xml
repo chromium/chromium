@@ -4071,13 +4071,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.FullRestore.ShowFullRestoreNotification" enum="BooleanHit"
-    expires_after="2025-09-21">
-  <owner>dandersson@chromium.org</owner>
-  <owner>xdai@chromium.org</owner>
-  <summary>Emitted every time the full restore notification shows up.</summary>
-</histogram>
-
 <histogram name="Ash.FullRestore.ShowInformedRestoreDialog" enum="BooleanHit"
     expires_after="2025-09-21">
   <owner>hewer@chromium.org</owner>

@@ -18,6 +18,7 @@
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_util.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
+#include "components/viz/common/resources/transferable_resource.h"
 #include "components/viz/service/display/output_surface_client.h"
 #include "components/viz/service/display/output_surface_frame.h"
 #include "gpu/GLES2/gl2extchromium.h"
@@ -145,20 +146,10 @@ gpu::SyncToken FakeSkiaOutputSurface::ReleaseImageContexts(
 }
 
 std::unique_ptr<ExternalUseClient::ImageContext>
-FakeSkiaOutputSurface::CreateImageContext(
-    const gpu::Mailbox& mailbox,
-    const gpu::SyncToken& sync_token,
-    uint32_t texture_target,
-    const gfx::Size& size,
-    SharedImageFormat format,
-    bool concurrent_reads,
-    const std::optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
-    sk_sp<SkColorSpace> color_space,
-    GrSurfaceOrigin origin,
-    bool raw_draw_if_possible) {
-  return std::make_unique<ExternalUseClient::ImageContext>(
-      mailbox, sync_token, texture_target, size, format, ycbcr_info,
-      std::move(color_space), origin);
+FakeSkiaOutputSurface::CreateImageContext(const TransferableResource& resource,
+                                          bool concurrent_reads,
+                                          bool raw_draw_if_possible) {
+  return std::make_unique<ExternalUseClient::ImageContext>(resource);
 }
 
 SkCanvas* FakeSkiaOutputSurface::BeginPaintRenderPass(

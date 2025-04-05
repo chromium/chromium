@@ -6,6 +6,12 @@
 
 namespace ios::provider {
 
+void PresentAddToCalendar(UIViewController* presenting_view_controller,
+                          web::WebState* web_state,
+                          EnhancedCalendarConfiguration* config) {}
+
+// TODO(crbug.com/405195613): Cleanup function when provider migration is
+// complete.
 void PresentAddToCalendar(
     UIViewController* presenting_view_controller,
     AddToCalendarIntegrationProvider provider,

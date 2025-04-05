@@ -48,6 +48,7 @@
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/granted_file_entry.h"
 #include "extensions/browser/path_util.h"
 #include "extensions/common/api/file_system.h"

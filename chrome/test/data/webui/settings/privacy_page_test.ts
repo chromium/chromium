@@ -115,7 +115,8 @@ suite('PrivacyPage', function() {
   // <if expr="use_nss_certs">
   // Old certificate manager should not be shown since kEnableCertManagementUIV2
   // feature flag is enabled in SettingsSecurityPageTest constructor.
-  // TODO(crbug.com/40928765): remove this test once feature is rolled out
+  // TODO(crbug.com/390333881): remove this test case once the feature flag
+  // and old implementation are removed.
   test('certificate_manager_visibility', function() {
     Router.getInstance().navigateTo(routes.CERTIFICATES);
     const certManager = page.shadowRoot!.querySelector('certificate-manager');
@@ -369,7 +370,8 @@ suite(`PrivacySandbox`, function() {
 
 // <if expr="use_nss_certs">
 // Test with Certificate Management V2 flag off.
-// TODO(crbug.com/40928765): remove this suite once feature is rolled out
+// TODO(crbug.com/390333881): remove this test suite once the feature flag and
+// old implementation are removed.
 suite(`CertificateManagementV2`, function() {
   let page: SettingsPrivacyPageElement;
   let settingsPrefs: SettingsPrefsElement;

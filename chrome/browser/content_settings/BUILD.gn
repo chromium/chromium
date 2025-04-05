@@ -21,6 +21,7 @@ source_set("content_settings") {
     "//base",
     "//chrome/browser/permissions",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/safe_browsing:advanced_protection",
     "//chrome/browser/ui/tabs:tabs_public",
     "//components/browsing_data/content",
     "//components/content_settings/browser",

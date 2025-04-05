@@ -131,6 +131,7 @@ class TabGroupSyncServiceProxy : public TabGroupSyncService,
       TabGroupSyncService::UrlRestrictionCallback callback) override;
   std::unique_ptr<std::vector<SavedTabGroup>>
   TakeSharedTabGroupsAvailableAtStartupForMessaging() override;
+  void OnLastTabClosed(const SavedTabGroup& saved_tab_group) override;
 
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;

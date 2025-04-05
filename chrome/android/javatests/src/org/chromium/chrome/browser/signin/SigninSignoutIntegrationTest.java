@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.signin;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.contrib.RecyclerViewActions.scrollTo;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -35,6 +34,7 @@ import org.mockito.quality.Strictness;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.settings.MainSettings;
@@ -50,6 +50,8 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.externalauth.ExternalAuthUtils;
+import org.chromium.components.signin.SigninFeatures;
+import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.test.util.TestAccounts;
@@ -180,7 +182,32 @@ public class SigninSignoutIntegrationTest {
 
         verify(mSignInStateObserverMock).onSignedIn();
         verify(mSignInStateObserverMock, never()).onSignedOut();
-        onView(withText(R.string.account_management_sign_out)).check(doesNotExist());
+    }
+
+    @Test
+    @LargeTest
+    @Features.EnableFeatures(SigninFeatures.FORCE_SUPERVISED_SIGNIN_WITH_CAPABILITIES)
+    public void testSecondaryAccountRemovedOnChildAccountSignIn() {
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
+
+        try (var unused = mSigninTestRule.blockGetCoreAccountInfosUpdate(true)) {
+            // Remove TestAccounts.ACCOUNT1 from the device so that its still signed in.
+            mSigninTestRule.removeAccount(TestAccounts.ACCOUNT1.getId());
+
+            // The supervised account must be added as the first account in the account list for
+            // supervision to be enforced
+            mSigninTestRule.addAccount(TestAccounts.CHILD_ACCOUNT);
+            mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
+        }
+
+        // SigninChecker should kick in and switch the primary account to the supervised account.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    CoreAccountInfo account =
+                            mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN);
+                    return account != null
+                            && TestAccounts.CHILD_ACCOUNT.getId().equals(account.getId());
+                });
     }
 
     private void assertSignedOut() {

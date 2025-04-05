@@ -20,6 +20,7 @@
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "content/browser/indexed_db/instance/bucket_context_handle.h"
 #include "content/browser/indexed_db/instance/database.h"
+#include "content/browser/indexed_db/instance/transaction.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
@@ -33,9 +34,9 @@ class IndexedDBKeyRange;
 }
 
 namespace content::indexed_db {
+
 class DatabaseCallbacks;
 class DatabaseError;
-class Transaction;
 class BucketContext;
 
 // This class maps to an IDB database *connection*:
@@ -92,7 +93,7 @@ class CONTENT_EXPORT Connection : public blink::mojom::IDBDatabase {
   Transaction* CreateVersionChangeTransaction(
       int64_t id,
       const std::set<int64_t>& scope,
-      BackingStore::Transaction* backing_store_transaction);
+      std::unique_ptr<Transaction::Delegate> backing_store_transaction);
 
   // Checks if the client is in inactive state and disallow it from activation
   // if so. This is called when the client is not supposed to be inactive,

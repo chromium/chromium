@@ -96,13 +96,6 @@ SVGParsingError SVGPath::SetValueAsString(const String& string) {
   return parse_status;
 }
 
-SVGPropertyBase* SVGPath::CloneForAnimation(const String& value) const {
-  SVGPathByteStreamBuilder builder;
-  BuildByteStreamFromString(value, builder);
-  return MakeGarbageCollected<SVGPath>(
-      *MakeGarbageCollected<CSSPathValue>(builder.CopyByteStream()));
-}
-
 void SVGPath::Add(const SVGPropertyBase* other, const SVGElement*) {
   const auto& other_path_byte_stream = To<SVGPath>(other)->ByteStream();
   if (ByteStream().size() != other_path_byte_stream.size() ||

@@ -37,9 +37,9 @@ enum class BackgroundManifestType {
   kBackgroundPage,
 };
 
-base::FilePath kBackgroundScriptPath(FILE_PATH_LITERAL("foo/bg.txt"));
+base::FilePath kBackgroundScriptPath(FILE_PATH_LITERAL("foo/bg.js"));
 base::FilePath kContentScriptPath(FILE_PATH_LITERAL("foo/content.js"));
-base::FilePath kBackgroundPagePath(FILE_PATH_LITERAL("foo/page.txt"));
+base::FilePath kBackgroundPagePath(FILE_PATH_LITERAL("foo/page.html"));
 base::FilePath kScriptFilePath(FILE_PATH_LITERAL("bar/code.js"));
 base::FilePath kUnknownTypeFilePath(FILE_PATH_LITERAL("bar/code.txt"));
 base::FilePath kHTMLFilePath(FILE_PATH_LITERAL("bar/page.html"));
@@ -188,12 +188,13 @@ class ContentVerifierTest : public ExtensionsTest {
     if (background_manifest_type_ ==
         BackgroundManifestType::kBackgroundScript) {
       base::Value::List background_scripts;
-      background_scripts.Append("foo/bg.txt");
+      background_scripts.Append(kBackgroundScriptPath.AsUTF8Unsafe());
       manifest.SetByDottedPath(manifest_keys::kBackgroundScripts,
                                std::move(background_scripts));
     } else if (background_manifest_type_ ==
                BackgroundManifestType::kBackgroundPage) {
-      manifest.SetByDottedPath(manifest_keys::kBackgroundPage, "foo/page.txt");
+      manifest.SetByDottedPath(manifest_keys::kBackgroundPage,
+                               kBackgroundPagePath.AsUTF8Unsafe());
     }
 
     base::Value::List content_scripts;
@@ -242,22 +243,10 @@ class ContentVerifierTestWithBackgroundType
 // some file paths even if those paths are specified as browser images.
 TEST_P(ContentVerifierTestWithBackgroundType, BrowserImagesShouldBeVerified) {
   std::vector<base::FilePath> files_to_be_verified = {
-      kContentScriptPath, kScriptFilePath, kHTMLFilePath, kHTMFilePath};
+      kContentScriptPath, kScriptFilePath,       kHTMLFilePath,
+      kHTMFilePath,       kBackgroundScriptPath, kBackgroundPagePath};
   std::vector<base::FilePath> files_not_to_be_verified{kIconPath,
                                                        kUnknownTypeFilePath};
-
-  if (GetBackgroundManifestType() ==
-      BackgroundManifestType::kBackgroundScript) {
-    files_to_be_verified.push_back(kBackgroundScriptPath);
-    files_not_to_be_verified.push_back(kBackgroundPagePath);
-  } else if (GetBackgroundManifestType() ==
-             BackgroundManifestType::kBackgroundPage) {
-    files_to_be_verified.push_back(kBackgroundPagePath);
-    files_not_to_be_verified.push_back(kBackgroundScriptPath);
-  } else {
-    files_not_to_be_verified.push_back(kBackgroundScriptPath);
-    files_not_to_be_verified.push_back(kBackgroundPagePath);
-  }
 
   auto generate_test_cases = [](const std::vector<base::FilePath>& input) {
     std::set<base::FilePath> output;
@@ -306,17 +295,31 @@ TEST_F(ContentVerifierTest, NormalizeRelativePath) {
   struct TestData {
     base::FilePath::StringViewType input;
     base::FilePath::StringViewType expected;
-  } test_cases[] = {{FPL("foo/bar"), FPL("foo/bar")},
-                    {FPL("foo//bar"), FPL("foo/bar")},
-                    {FPL("foo/bar/"), FPL("foo/bar/")},
-                    {FPL("foo/bar//"), FPL("foo/bar/")},
-                    {FPL("foo/options.html/"), FPL("foo/options.html/")}};
+  } test_cases[] = {
+      {FPL("foo/bar"), FPL("foo/bar")},
+      {FPL("foo//bar"), FPL("foo/bar")},
+      {FPL("foo/bar/"), FPL("foo/bar/")},
+      {FPL("foo/bar//"), FPL("foo/bar/")},
+      {FPL("foo/options.html/"), FPL("foo/options.html/")},
+      {FPL("foo/./bar"), FPL("foo/bar")},
+      {FPL("foo/../bar"), FPL("bar")},
+      {FPL("foo/../.."), FPL("")},
+      {FPL("./foo"), FPL("foo")},
+      {FPL("../foo"), FPL("foo")},
+      {FPL("foo/../../bar"), FPL("bar")},
+  };
 #undef FPL
   for (const auto& test_case : test_cases) {
     base::FilePath input(test_case.input);
     base::FilePath expected(test_case.expected);
     EXPECT_EQ(expected,
               ContentVerifier::NormalizeRelativePathForTesting(input));
+
+    // A leading separator should be ignored.
+    base::FilePath input_with_root(
+        base::FilePath(FILE_PATH_LITERAL("/")).Append(test_case.input));
+    EXPECT_EQ(expected, ContentVerifier::NormalizeRelativePathForTesting(
+                            input_with_root));
   }
 }
 

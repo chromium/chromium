@@ -492,6 +492,7 @@ BASE_DECLARE_FEATURE(kProductivityLauncherImageSearch);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kLauncherItemColorSync);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kHealthdInternalsTabs);
+COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kHeliumArcvmKiosk);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kHelpAppAppDetailPage);
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -1218,6 +1219,7 @@ bool IsGlanceablesTimeManagementTasksViewAssignedTasksEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool AreAnyGlanceablesTimeManagementViewsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool AreHealthdInternalsTabsEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHeliumArcvmKioskEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHibernateEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHideShelfControlsInTabletModeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHoldingSpaceSuggestionsEnabled();

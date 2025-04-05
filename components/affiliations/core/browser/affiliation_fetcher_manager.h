@@ -11,7 +11,6 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
-#include "components/affiliations/core/browser/affiliation_fetcher_delegate.h"
 #include "components/affiliations/core/browser/affiliation_fetcher_factory.h"
 #include "components/affiliations/core/browser/affiliation_fetcher_interface.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
@@ -22,9 +21,8 @@ namespace affiliations {
 // completion of the started fetch.
 class AffiliationFetcherManager {
  public:
-  AffiliationFetcherManager(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      AffiliationFetcherDelegate* delegate);
+  explicit AffiliationFetcherManager(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
   AffiliationFetcherManager(const AffiliationFetcherManager&) = delete;
   AffiliationFetcherManager& operator=(const AffiliationFetcherManager&) =
       delete;
@@ -65,7 +63,6 @@ class AffiliationFetcherManager {
   std::vector<std::unique_ptr<AffiliationFetcherInterface>> fetchers_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<AffiliationFetcherFactory> fetcher_factory_;
-  raw_ptr<AffiliationFetcherDelegate> delegate_;
 
   base::WeakPtrFactory<AffiliationFetcherManager> weak_ptr_factory_{this};
 };

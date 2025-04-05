@@ -22,6 +22,7 @@
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/version_info/version_info.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/features/feature_channel.h"
@@ -252,8 +253,8 @@ TEST_P(SupervisedUserExtensionsManagerTest,
       MakeExtension("extension_test_1");
   scoped_refptr<const Extension> locally_approved_extn =
       MakeExtension("local_extension_test_1");
-  service()->AddExtension(approved_extn.get());
-  service()->AddExtension(locally_approved_extn.get());
+  registrar()->AddExtension(approved_extn);
+  registrar()->AddExtension(locally_approved_extn);
 
   // Mark one extension as already parent-approved in the corresponding
   // preference.
@@ -493,10 +494,10 @@ TEST_P(SupervisedUserExtensionsManagerTest, RevokeLocalApproval) {
 
   scoped_refptr<const Extension> locally_approved_extn1 =
       MakeExtension("extension_test_1");
-  service()->AddExtension(locally_approved_extn1.get());
+  registrar()->AddExtension(locally_approved_extn1);
   scoped_refptr<const Extension> locally_approved_extn2 =
       MakeExtension("extension_test_2");
-  service()->AddExtension(locally_approved_extn2.get());
+  registrar()->AddExtension(locally_approved_extn2);
 
   // Create the object under test.
   MakeSupervisedUserExtensionsManager();
@@ -527,7 +528,7 @@ TEST_P(SupervisedUserExtensionsManagerTest, RevokeLocalApproval) {
 
   // Granting parent approval (typically from another client) removes the local
   // approval. The extension remains allowed.
-  manager_->AddExtensionApproval(*locally_approved_extn2.get());
+  manager_->AddExtensionApproval(*locally_approved_extn2);
   EXPECT_FALSE(
       local_approved_extensions_pref.contains(locally_approved_extn2->id()));
   EXPECT_TRUE(manager_->IsExtensionAllowed(*locally_approved_extn2));
@@ -631,7 +632,7 @@ TEST_P(AddingSupervisionTest,
 
   scoped_refptr<const Extension> existing_extension =
       MakeExtension("extension_test_2");
-  service()->AddExtension(existing_extension.get());
+  registrar()->AddExtension(existing_extension);
 
   supervised_user::LocallyParentApprovedExtensionsMigrationState
       expected_migragtion_state = supervised_user::

@@ -390,10 +390,9 @@ void RenderInputRouter::OnInputDispatchedToRendererResult(
       event, result == DispatchToRendererResult::kDispatched);
 }
 
-void RenderInputRouter::DidOverscroll(const ui::DidOverscrollParams& params) {
-  if (view_input_) {
-    view_input_->DidOverscroll(params);
-  }
+void RenderInputRouter::DidOverscroll(
+    blink::mojom::DidOverscrollParamsPtr params) {
+  delegate_->DidOverscroll(std::move(params));
 }
 
 void RenderInputRouter::DidStartScrollingViewport() {

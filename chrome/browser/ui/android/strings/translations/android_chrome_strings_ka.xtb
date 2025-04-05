@@ -77,6 +77,7 @@
 <translation id="1298077576058087471">დაზოგეთ მონაცემების 60%-მდე — გაეცანით დღის სიახლეებს</translation>
 <translation id="1303339473099049190">ეს პაროლი ვერ მოიძებნა. შეამოწმეთ მართლწერა და ცადეთ ხელახლა.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> — გამოგზავნილია <ph name="DEVICE_NAME" />-დან</translation>
+<translation id="1318262688555255786">გააზიარეთ ვებგვერდის „<ph name="PAGE_TITLE" />“ ბმული. წყარო: <ph name="PAGE_URL" /></translation>
 <translation id="1320912611264252795">სანიშნეების შენახვის ნაკადის საქაღალდეები გახსნილია სრულ სიმაღლეზე</translation>
 <translation id="1327257854815634930">ნავიგაციის ისტორია გახსნილია</translation>
 <translation id="1331212799747679585">Chrome-ის განახლება ვერ მოხერხდა. დამატებითი ვარიანტები</translation>
@@ -289,6 +290,7 @@
 <translation id="2362083820973145409">შესული ხართ, როგორც <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. გახსნის პარამეტრებს.</translation>
 <translation id="2363734411417672757">წინასწარ ჩაიტვირთება მეტი გვერდი. გვერდები შეიძლება წინასწარ იტვირთებოდეს Google-ის სერვერების მეშვეობით, როცა აღნიშნული მოთხოვნილია სხვა საიტების ან აპების მიერ.</translation>
 <translation id="2366554533468315977">ფასების ისტორია ვებში ამ ვარიანტისთვის</translation>
+<translation id="2367818124433749493">დეველოპერთა მალსახმობები</translation>
 <translation id="2385605401818128172">შეგიძლიათ გადახედოთ საიტებს, რომლებიც მეტისმეტად ბევრ შეტყობინებას გიგზავნით და შეწყვიტოთ მომავალში მათგან შეტყობინებების მიღება</translation>
 <translation id="2386938421315164605">თემების დამალვა და გამოჩენა</translation>
 <translation id="2390510615457643724">გსურთ, ხელახლა ჩამოტვირთოთ <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />)?</translation>
@@ -514,6 +516,7 @@
 <translation id="3435465986463792564">მრავალი ფანჯარა გაქვთ? მათი მართვა აქედან შეგიძლიათ</translation>
 <translation id="3435575784518354875">თქვენს პაროლებზე წვდომის შესანარჩუნებლად დააექსპორტეთ ისინი ახლავე, განაახლეთ Google Play Services და შემდეგ დააიმპორტეთ უკან Google პაროლების მმართველში. <ph name="BEGIN_LINK" />სრული ინსტრუქციის ნახვა<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">უსაფრთხოება</translation>
+<translation id="3435914367318771664">ჩანართის დამატება ახალ ჯგუფში</translation>
 <translation id="3439276997620616816">აქ იპოვით თქვენს ბოლოდროინდელ ჩანართებს</translation>
 <translation id="3443221991560634068">მიმდინარე გვერდის გადატვირთვა</translation>
 <translation id="3444179773590444986">გსურთ, გამოგვეხმაუროთ საიტებისთვის განკუთვნილი მუქი თემის შესახებ?</translation>
@@ -611,6 +614,7 @@
 <translation id="3856096718352044181">დაადასტურეთ პროვაიდერის სისწორე ან ცადეთ მოგვიანებით</translation>
 <translation id="3858860766373142691">სახელი</translation>
 <translation id="3863527519275151528">შეტყობინება მუშავდება</translation>
+<translation id="3866863539038222107">შემოწმება</translation>
 <translation id="3870908470613821006">ყველა მყისიერად დაკარგავს წვდომას ჩანართების ჯგუფზე „<ph name="GROUP_NAME" />“ და ის ამოიშლება ყველა მოწყობილობიდან</translation>
 <translation id="3873174561423636563">გასაგრძელებლად <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ამ საიტს გაუზიარებს თქვენს შემდეგ მონაცემებს: <ph name="FIELDS_STRING" />. გაეცანით ამ საიტის <ph name="BEGIN_LINK1" />მომსახურების პირობებს<ph name="END_LINK1" />.</translation>
 <translation id="3892148308691398805">ტექსტის კოპირება</translation>
@@ -734,7 +738,6 @@
 <translation id="4460861538906892109">{ITEMS_COUNT,plural, =1{1 სანიშნე}other{# სანიშნე}}</translation>
 <translation id="4478161224666880173">ამ საიტზე შეგიძლიათ თქვენი <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ანგარიშის გამოყენება. გასაგრძელებლად შედით <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-ში.</translation>
 <translation id="4479972344484327217">ინსტალირდება <ph name="MODULE" /> Chrome-ისთვის…</translation>
-<translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{სანიშნე შეინახა „<ph name="FOLDER_NAME" />“-ში. ის შენახულია მხოლოდ ამ მოწყობილობაზე.}other{სანიშნეები შეინახა „<ph name="FOLDER_NAME" />“-ში. ისინი შენახულია მხოლოდ ამ მოწყობილობაზე.}}</translation>
 <translation id="4484496141267039529">კავშირი არ არის. ცადეთ მოგვიანებით.</translation>
 <translation id="4487967297491345095">Chrome-ში არსებული აპების მონაცემები სამუდამოდ წაიშლება. მათ შორის, აპებთან დაკავშირებული ყველა ფაილი, პარამეტრი, ანგარიში, მონაცემთა ბაზა და ა.შ.</translation>
 <translation id="4494806687727322324">პაროლის შენახვა ჩართულია თქვენი ადმინისტრატორის მიერ</translation>
@@ -780,6 +783,7 @@
 <translation id="4684427112815847243">ყველაფრის სინქრონიზაცია</translation>
 <translation id="4685741273709472646">აირჩიეთ ჩამოსაშლელი სიიდან</translation>
 <translation id="4687718960473379118">საიტების მიერ შემოთავაზებული რეკლამები</translation>
+<translation id="468924408576231679">დააკოპირეთ ვებგვერდის „<ph name="PAGE_TITLE" />“ ბმული. წყარო: <ph name="PAGE_URL" /></translation>
 <translation id="469286762610133730">მიიღეთ უკეთესი კონტენტი</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 და <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> სხვა}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 და <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> სხვა}}</translation>
 <translation id="4698061626562952596">გადახედეთ უმოქმედო ჩანართებს აქ</translation>
@@ -941,6 +945,7 @@
 <translation id="539881862970320163">შემოთავაზებულია ძლიერი პაროლი. კლავიატურა დამალულია.</translation>
 <translation id="5409881200985013443">გსურთ, გადაუგზავნოთ <ph name="ONE_TIME_CODE" /> <ph name="CLIENT_NAME" />-ს?</translation>
 <translation id="5410300144953132176"><ph name="OWNER_FULL_NAME" /> (<ph name="OWNER_EMAIL" />) გთხოვთ, რომ გაწევრიანდეთ ჩანართების ჯგუფში. ყველას, ვისაც აქვს წვდომა ბმულზე, შეუძლია ნებისმიერი ჩანართის რედაქტირება, შესაბამისად გაწევრიანებისას გამოიჩინეთ სიფრთხილე. ბმულს მოქმედების ვადა ეწურება 48 საათში.</translation>
+<translation id="5412388166586147626">AI ასისტენტის გახსნა ვერ მოხერხდა. ცადეთ ხელახლა.</translation>
 <translation id="5414836363063783498">დადასტურება…</translation>
 <translation id="5415871492522952905">თქვენს ყველა მოწყობილობაზე გექნებათ ისტორია და ჩანართები, რომ მიტოვებული საქმის გაგრძელება შეძლოთ</translation>
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) მყისიერად დაკარგავს წვდომას „<ph name="GROUP_NAME" />“-ის ჩანართების ჯგუფზე</translation>
@@ -1055,6 +1060,7 @@
 <translation id="5907542076239273525">სანიშნე შენახულია საქაღალდეში „<ph name="FOLDER_NAME" />“.</translation>
 <translation id="5916664084637901428">ჩართვა</translation>
 <translation id="5919204609460789179">სინქრონიზაციის დასაწყებად, განაახლეთ <ph name="PRODUCT_NAME" /></translation>
+<translation id="5932881020239635062">სერიული ნომერი</translation>
 <translation id="5938820472109305350">დაემატოს <ph name="INTEREST" /></translation>
 <translation id="5942872142862698679">ძიებისთვის Google გამოიყენება</translation>
 <translation id="5945035219773565305">ამჟამინდელი რეკომენდაცია:  <ph name="RECOMMENDATION" /></translation>
@@ -1120,6 +1126,7 @@
 <translation id="6205314730813004066">სარეკლამო კონფიდენციალურობა</translation>
 <translation id="6210748933810148297">არ ხართ <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">მიმდინარეობს ამ გვერდის გადახედვა</translation>
+<translation id="6212567362666004597">ჩანართის დამატება ჯგუფში</translation>
 <translation id="6221633008163990886">განბლოკეთ თქვენი პაროლის ექსპორტირებისთვის</translation>
 <translation id="6225572914528673855">მისამართთა ზოლი</translation>
 <translation id="6232535412751077445">ფუნქცია „არ ადევნო თვალი“-ს ჩართვის შემთხვევაში, ეს მოთხოვნა თქვენს ვების დათვალიერების ტრაფიკს დაერთვება. მისი ეფექტურობა დამოკიდებულია იმაზე, მოახდენს თუ არა კონკრეტული ვებსაიტი ამ მოთხოვნაზე რეაგირებას და როგორ იქნება ეს მოთხოვნა ინტერპრეტირებული.
@@ -1138,6 +1145,7 @@
 <translation id="6295158916970320988">ყველა საიტი</translation>
 <translation id="6296366034485697675">ექსპორტი და წაშლა</translation>
 <translation id="629730747756840877">ანგარიში</translation>
+<translation id="6301526076346731664">დეველოპერთა ხელსაწყოების გახსნა</translation>
 <translation id="6303969859164067831">გამოსვლა და სინქრონიზაციის გამორთვა</translation>
 <translation id="6307241780749477694">დაადასტურეთ ვინაობა თქვენს ყველა პაროლზე წვდომის მისაღებად</translation>
 <translation id="6312687380483398334">ვებ-აპები (ჩუმი)</translation>
@@ -1146,6 +1154,7 @@
 <translation id="6324916366299863871">მალსახმობის რედაქტირება</translation>
 <translation id="6324977638108296054">გამოყოფილთან ბმულის შექმნა ვერ მოხერხდა</translation>
 <translation id="6333140779060797560">გაზიარების პროგრამა: <ph name="APPLICATION" /></translation>
+<translation id="6335454563754888572">დაარედაქტირეთ URL, რომელიც მიმართულია გვერდზე: <ph name="PAGE_URL" /></translation>
 <translation id="6337234675334993532">დაშიფვრა</translation>
 <translation id="6340526405444716530">პერსონალიზება</translation>
 <translation id="6341580099087024258">შეკითხვა ფაილების შენახვის ადგილის შესახებ</translation>
@@ -1189,6 +1198,7 @@
 <translation id="6486420406192123355">ეს PDF ფაილი დაუცველი კავშირით მოსარგებლე საიტიდან მოდის</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{ფაილი ჩამოიტვირთა}other{# ჩამოტვირთვა დასრულდა}}</translation>
 <translation id="6508722015517270189">Chrome-ის გადატვირთვა</translation>
+<translation id="6513924416597632811">დააკოპირეთ ძიების შედეგების გვერდის ბმული მოთხოვნისთვის: <ph name="SEARCH_QUERY" />. წყარო: <ph name="PAGE_URL" /></translation>
 <translation id="6518133107902771759">გადამოწმება</translation>
 <translation id="6527303717912515753">გაზიარება</translation>
 <translation id="652948702951888897">Chrome ისტორია</translation>
@@ -1334,7 +1344,6 @@
 <translation id="7063006564040364415">ვერ ვუკავშირდებით სინქრონიზაციის სერვერს.</translation>
 <translation id="7071521146534760487">ანგარიშის მართვა</translation>
 <translation id="707155805709242880">ქვემოთ აირჩიეთ, რის სინქრონიზაცია გსურთ</translation>
-<translation id="707702207692430409">{BOOKMARK_COUNT,plural, =1{სანიშნე შეინახა „<ph name="FOLDER_NAME" />“-ში თქვენს ანგარიშში (<ph name="ACCOUNT_EMAIL" />).}other{სანიშნეები შეინახა „<ph name="FOLDER_NAME" />“-ში თქვენს ანგარიშში (<ph name="ACCOUNT_EMAIL" />).}}</translation>
 <translation id="7077143737582773186">SD ბარათი</translation>
 <translation id="7078916049958741685">თქვენი Chrome მონაცემების გასუფთავება ამ მოწყობილობიდანაც</translation>
 <translation id="7085332316435785646">აირჩიეთ, დაერთოს თუ არა Chrome ისტორია, Google სერვისებში უფრო პერსონალიზებული ფუნქციებით რომ ისარგებლოთ</translation>
@@ -1601,6 +1610,7 @@
 <translation id="8221401890884589479">შეგიძლიათ დაბლოკოთ არასასურველი საიტები. გარდა ამისა, Chrome ავტომატურად წაშლის სიიდან 30 დღეზე ძველ საიტებს. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="8221985041778490865">მიმდინარეობს დათვალიერების მონაცემების წაშლა</translation>
 <translation id="8223642481677794647">არხის ბარათის მენიუ</translation>
+<translation id="82296173028782770">დაარედაქტირეთ საძიებო ფრაზა: <ph name="SEARCH_QUERY" /></translation>
 <translation id="8236063039629122676">მარჯვნივ გადაფურცვლა გადაგიყვანთ წინა ნანახ გვერდებზე, ხოლო მარცხნივ გადაფურცვლა გადაგიყვანთ წინ</translation>
 <translation id="8236097722223016103">სანიშნეებში დამატება</translation>
 <translation id="8243077599929149377">დაამატეთ თქვენი მომხმარებლის სახელი</translation>
@@ -1749,6 +1759,7 @@
 <translation id="8890668505403261809">მოიძიეთ ინკოგნიტო ჩანართებში</translation>
 <translation id="8898822736010347272">Google-ს გაუგზავნის თქვენ მიერ მონახულებული ზოგიერთი გვერდის URL-ებს, სისტემის შეზღუდულ ინფორმაციასა და გვერდების გარკვეულ კონტენტს ვების ყველა მომხმარებლისთვის ახალი საფრთხეების აღმოსაჩენად და დასაბლოკად.</translation>
 <translation id="8909135823018751308">გაზიარება…</translation>
+<translation id="8918299437379122615">გააზიარეთ ძიების შედეგების გვერდის ბმული მოთხოვნისთვის: <ph name="SEARCH_QUERY" />. წყარო: <ph name="PAGE_URL" /></translation>
 <translation id="8922289737868596582">ჩამოტვირთეთ გვერდები ხაზგარეშე რეჟიმში გამოსაყენებლად, „დამატებითი ვარიანტების“ ღილაკის მეშვეობით</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> მზად არის</translation>

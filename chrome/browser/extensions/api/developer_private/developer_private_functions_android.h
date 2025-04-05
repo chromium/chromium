@@ -38,9 +38,6 @@ DECLARE_UNIMPLEMENTED_EXTENSION_FUNCTION(DeveloperPrivateLoadDirectoryFunction,
 DECLARE_UNIMPLEMENTED_EXTENSION_FUNCTION(DeveloperPrivateRequestFileSourceFunction,
                    "developerPrivate.requestFileSource",
                    DEVELOPERPRIVATE_REQUESTFILESOURCE);
-DECLARE_UNIMPLEMENTED_EXTENSION_FUNCTION(DeveloperPrivateOpenDevToolsFunction,
-                   "developerPrivate.openDevTools",
-                   DEVELOPERPRIVATE_OPENDEVTOOLS);
 DECLARE_UNIMPLEMENTED_EXTENSION_FUNCTION(DeveloperPrivateRepairExtensionFunction,
                    "developerPrivate.repairExtension",
                    DEVELOPERPRIVATE_REPAIREXTENSION);

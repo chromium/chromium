@@ -125,6 +125,12 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid
   std::u16string GetValueForControl() const override;
   int GetTextContentLengthUTF16() const override;
 
+  // This method firstly checks GetTextContentUTF16(). In the case of accessible
+  // name from kAttribute resulting in GetTextContentUTF16 is empty, it falls
+  // back to first non-empty GetContainerName(), GetContentDescription(), and
+  // GetSupplementalDescription().
+  std::u16string GetAccessibleNameUTF16() const;
+
   typedef base::RepeatingCallback<bool(const std::u16string& partial)>
       EarlyExitPredicate;
   std::u16string GetSubstringTextContentUTF16(
@@ -149,6 +155,8 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid
 
   std::u16string GetStateDescription() const;
   std::u16string GetContainerTitle() const;
+  std::u16string GetContentDescription() const;
+  std::u16string GetSupplementalDescription() const;
   std::u16string GetMultiselectableStateDescription() const;
   std::u16string GetToggleStateDescription() const;
   std::u16string GetCheckboxStateDescription() const;

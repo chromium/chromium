@@ -228,7 +228,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   // Sign in with a managed identity.
   FakeSystemIdentity* fakeManagedIdentity =
       [FakeSystemIdentity fakeManagedIdentity];
-  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+  if ([SigninEarlGrey areSeparateProfilesForManagedAccountsEnabled]) {
     [SigninEarlGrey
         signinWithFakeManagedIdentityInPersonalProfile:fakeManagedIdentity];
   } else {
@@ -256,7 +256,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
                                    IDS_IOS_SIGNOUT_DIALOG_SIGN_OUT_BUTTON)]
       performAction:grey_tap()];
 
-  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
+  if (![SigninEarlGrey areSeparateProfilesForManagedAccountsEnabled]) {
     WaitForSettingDoneButton();
 
     // Verify that sign-in is disabled.

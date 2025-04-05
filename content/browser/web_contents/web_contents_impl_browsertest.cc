@@ -31,6 +31,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
@@ -104,6 +105,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/expectation_handler.h"
 #include "partition_alloc/buildflags.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/network/public/cpp/client_hints.h"
@@ -2634,30 +2636,25 @@ class NoEntryUserAgentInjector : public UserAgentInjector {
 // NavigationEntry is created after the NavigationRequest is.
 IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
                        SetIsOverridingUserAgentNoEntry) {
-  net::test_server::ControllableHttpResponse http_response1(
-      embedded_test_server(), "", true);
-  net::test_server::ControllableHttpResponse http_response2(
-      embedded_test_server(), "", true);
-  net::test_server::ControllableHttpResponse http_response3(
-      embedded_test_server(), "", true);
+  net::test_server::ExpectationHandler handler(embedded_test_server());
+  // Pre-register responses for specific URL
+  handler.OnRequest("/test.html").RespondWith("text/html", "<html>");
+
   ASSERT_TRUE(embedded_test_server()->Start());
 
   shell()->web_contents()->GetController().LoadURLWithParams(
       NavigationController::LoadURLParams(
           embedded_test_server()->GetURL("/test.html")));
-  http_response1.WaitForRequest();
-  http_response1.Send(net::HTTP_OK, "text/html", "<html>");
-  http_response1.Done();
+
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  handler.OnRequest("/test2.html").RespondWith("text/html", "<html>");
+
   shell()->web_contents()->GetController().LoadURLWithParams(
       NavigationController::LoadURLParams(
           embedded_test_server()->GetURL("/test2.html")));
-  http_response2.WaitForRequest();
-  http_response2.Send(net::HTTP_OK, "text/html", "<html>");
-  http_response2.Done();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
 
-  // Register a WebContentsObserver that changes the user-agent.
   const std::string user_agent_override = "foo";
   NoEntryUserAgentInjector injector(shell()->web_contents(),
                                     user_agent_override);
@@ -2680,12 +2677,18 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   EXPECT_TRUE(
       ExecJs(shell()->web_contents(), "history.back(); location.reload();"));
 
-  http_response3.WaitForRequest();
-  http_response3.Send(net::HTTP_OK, "text/html", "<html>");
-  http_response3.Done();
-  EXPECT_EQ(user_agent_override, http_response3.http_request()->headers.at(
-                                     net::HttpRequestHeaders::kUserAgent));
+  base::test::TestFuture<net::test_server::HttpRequest> request_future;
+
+  // Override the previous behavior for the path "/test.html" to also call
+  // GetSequenceBoundCallback().Run() on `request_future` with the HttpRequest
+  // object.
+  handler.OnRequest("/test2.html")
+      .RespondWith("text/html", "<html>")
+      .SetValue(request_future);
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  EXPECT_EQ(user_agent_override, request_future.Get().headers.at(
+                                     net::HttpRequestHeaders::kUserAgent));
+
   auto* controller = &(shell()->web_contents()->GetController());
   EXPECT_EQ(1, controller->GetLastCommittedEntryIndex());
   EXPECT_TRUE(shell()

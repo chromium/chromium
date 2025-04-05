@@ -821,12 +821,6 @@ bool IsSaveToPhotosTitleImprovementEnabled();
 // Returns true if the Save to Photos account picker improvement is enabled.
 bool IsSaveToPhotosAccountPickerImprovementEnabled();
 
-// Feature that enables personalization of the Home surface.
-BASE_DECLARE_FEATURE(kHomeCustomization);
-
-// Returns true if Home Customization is enabled.
-bool IsHomeCustomizationEnabled();
-
 // Feature flag to enable app background refresh.
 // Use IsAppBackgroundRefreshEnabled() instead of this constant directly.
 BASE_DECLARE_FEATURE(kEnableAppBackgroundRefresh);
@@ -868,10 +862,10 @@ bool IsBlueDotOnToolsMenuButtoneEnabled();
 // DO NOT CHECK DIRECTLY, use AreSeparateProfilesForManagedAccountsEnabled()!
 BASE_DECLARE_FEATURE(kSeparateProfilesForManagedAccounts);
 
-// Returns whether the feature to put each managed account into its own separate
-// profile is enabled. This is the case if `kSeparateProfilesForManagedAccounts`
-// is enabled *and* the iOS version is >= 17 (required for multiprofile).
-bool AreSeparateProfilesForManagedAccountsEnabled();
+// Kill switch to turn off `kSeparateProfilesForManagedAccounts`, even if
+// multiple profiles already exist.
+// DO NOT CHECK DIRECTLY, use AreSeparateProfilesForManagedAccountsEnabled()!
+BASE_DECLARE_FEATURE(kSeparateProfilesForManagedAccountsKillSwitch);
 
 // Feature to control resyncing the omaha ping timer on foregrounding.
 BASE_DECLARE_FEATURE(kOmahaResyncTimerOnForeground);
@@ -966,7 +960,7 @@ extern const base::FeatureParam<std::string>
 extern const std::string_view
     kFRESignInSecondaryActionLabelUpdateParamStaySignedOut;
 
-// Returns whether 'kFRESignInSecondaryActionLabelUpdate' is enabled
+// Returns whether 'kFRESignInSecondaryActionLabelUpdate' is enabled.
 bool FRESignInSecondaryActionLabelUpdate();
 
 // Enables passkey syncing follow-up features.
@@ -1093,5 +1087,18 @@ BASE_DECLARE_FEATURE(kNTPBackgroundCustomization);
 
 // Checks if background customization is enabled on the NTP.
 bool IsNTPBackgroundCustomizationEnabled();
+
+// Feature flag to control whether default status API check and reporting are
+// enabled.
+BASE_DECLARE_FEATURE(kRunDefaultStatusCheck);
+
+// Returns whether `kRunDefaultStatusCheck` is enabled.
+bool IsRunDefaultStatusCheckEnabled();
+
+// Feature flag to have the tab group visually contained.
+BASE_DECLARE_FEATURE(kContainedTabGroup);
+
+// Whether the feature associated with contained tab group is enabled.
+bool IsContainedTabGroupEnabled();
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

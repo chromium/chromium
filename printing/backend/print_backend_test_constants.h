@@ -45,13 +45,19 @@ inline const PrinterSemanticCapsAndDefaults::Paper kPaperA3{
     /*display_name=*/"A3", /*vendor_id=*/"67",
     /*size_um=*/gfx::Size(7016, 9921),
     /*printable_area_um=*/gfx::Rect(0, 0, 7016, 9921)};
+
 inline const PrinterSemanticCapsAndDefaults::Paper kPaperA4{
     /*display_name=*/"A4",
     /*vendor_id=*/"12",
     /*size_um=*/gfx::Size(4961, 7016),
     /*printable_area_um=*/gfx::Rect(100, 200, 500, 800),
     /*max_height_um=*/0,
-    /*has_borderless_variant=*/true};
+    /*has_borderless_variant=*/true
+#if BUILDFLAG(IS_CHROMEOS)
+    ,
+    /*supported_margins_um=*/PaperMargins(100, 100, 200, 200)
+#endif  // BUILDFLAG(IS_CHROMEOS)
+};
 inline const PrinterSemanticCapsAndDefaults::Paper kPaperLetter{
     /*display_name=*/"Letter", /*vendor_id=*/"45",
     /*size_um=*/gfx::Size(5100, 6600),

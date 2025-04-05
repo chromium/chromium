@@ -551,6 +551,7 @@ class FakeWebNNContextProvider : public blink_mojom::WebNNContextProvider {
 
     webnn::ContextProperties context_properties(
         webnn::InputOperandLayout::kNchw, webnn::Resample2DAxes::kAny,
+        webnn::BatchNormalizationAxis::kAny,
         /*tensor_byte_length_limit=*/INT_MAX,
         {/*input=*/webnn::SupportedDataTypes::All(),
          /*constant=*/webnn::SupportedDataTypes::All(),

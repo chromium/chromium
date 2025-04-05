@@ -2,6 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("constants") {
+  sources = [
+    "best_features_constants.h",
+    "best_features_constants.mm",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}
+
 source_set("ui") {
   sources = [
     "best_features_cell.h",
@@ -18,6 +26,7 @@ source_set("ui") {
     "metrics_util.mm",
   ]
   deps = [
+    ":constants",
     "//base",
     "//build:branding_buildflags",
     "//ios/chrome/app/strings",
@@ -38,6 +47,31 @@ source_set("ui") {
     "//ios/public/provider/chrome/browser/lottie:lottie_animation_api",
     "//ui/base",
     "//ui/strings",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "best_features_screen_egtest.mm" ]
+  deps = [
+    ":constants",
+    "//components/password_manager/core/browser:browser",
+    "//components/password_manager/core/common",
+    "//ios/chrome/app/strings:ios_branded_strings_grit",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/authentication/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
+    "//ios/chrome/browser/first_run/ui_bundled:constants",
+    "//ios/chrome/browser/settings/ui_bundled/notifications:eg_test_support+eg2",
+    "//ios/chrome/browser/shared/model/application_context:application_context",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/common/ui/confirmation_alert:constants",
+    "//ios/chrome/common/ui/promo_style:constants",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ui/base:base",
   ]
   frameworks = [ "UIKit.framework" ]
 }

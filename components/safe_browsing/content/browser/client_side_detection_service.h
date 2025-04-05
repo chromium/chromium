@@ -245,7 +245,6 @@ class ClientSideDetectionService
   // Called from the host class when the proper requirements are met to inquire
   // the on-device model.
   virtual void InquireOnDeviceModel(
-      ClientPhishingRequest* verdict,
       std::string rendered_texts,
       base::OnceCallback<
           void(std::optional<optimization_guide::proto::ScamDetectionResponse>)>
@@ -347,7 +346,6 @@ class ClientSideDetectionService
   void RenderProcessReady(content::RenderProcessHost* rph) override;
 
   void ModelExecutionCallback(
-      ClientPhishingRequest* verdict,
       optimization_guide::OptimizationGuideModelStreamingExecutionResult
           result);
 

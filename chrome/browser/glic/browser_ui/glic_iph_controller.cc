@@ -8,7 +8,7 @@
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
-#include "components/tab_collections/public/tab_interface.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/user_education/common/user_education_features.h"
 #include "content/public/browser/web_contents.h"

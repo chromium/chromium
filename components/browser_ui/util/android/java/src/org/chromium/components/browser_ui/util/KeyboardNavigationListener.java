@@ -8,7 +8,11 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnKeyListener;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /** This is an abstract class to override keyboard navigation behavior for views. */
+@NullMarked
 public abstract class KeyboardNavigationListener implements OnKeyListener {
     public KeyboardNavigationListener() {
         super();
@@ -36,7 +40,7 @@ public abstract class KeyboardNavigationListener implements OnKeyListener {
      *
      * @return The view to gain focus.
      */
-    public View getNextFocusForward() {
+    public @Nullable View getNextFocusForward() {
         return null;
     }
 
@@ -46,7 +50,7 @@ public abstract class KeyboardNavigationListener implements OnKeyListener {
      *
      * @return The view to gain focus.
      */
-    public View getNextFocusBackward() {
+    public @Nullable View getNextFocusBackward() {
         return null;
     }
 

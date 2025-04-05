@@ -1,0 +1,127 @@
+{
+  "description": "Deliver report in standby upon new navigation received",
+  "api_config": {
+    "needs_delivery_after_new_navigation": true
+  },
+  "input": {
+    "registrations": [
+      {
+        "timestamp": "0",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "source_event_id": "123",
+                "event_report_windows": {
+                  "start_time": 0,
+                  "end_times": [3600, 86400]
+                },
+                "debug_reporting": true
+              }
+            }
+          }
+        ]
+      },
+      {
+        "timestamp": "1000",
+        "registration_request": {
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "event_trigger_data": [
+                  {
+                    "trigger_data": "2"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      // Report time - last navigation <= 1 minute, report not on standby.
+      {
+        "timestamp": "3540000",
+        "navigation": true
+      },
+      // Report time - last navigation > 1 minute, report on standby.
+      {
+        "timestamp": "86339999",
+        "registration_request": {
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "event_trigger_data": [
+                  {
+                    "trigger_data": "3"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      // New navigation, second report now sends after delay.
+      {
+        "timestamp": "90000000",
+        "navigation": true
+      }
+    ]
+  },
+  "output": {
+    "reports": [
+      {
+        "payload": [
+          {
+            "body": {
+              "attribution_destination": "https://destination.test",
+              "source_event_id": "123",
+              "source_site": "https://source.test"
+            },
+            "type": "source-success"
+          }
+        ],
+        "report_time": "0",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": {
+          "attribution_destination": "https://destination.test",
+          "randomized_trigger_rate": 0.0008051,
+          "scheduled_report_time": "3600",
+          "source_event_id": "123",
+          "source_type": "navigation",
+          "trigger_data": "2"
+        },
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
+        "report_time": "3600000"
+      },
+      {
+        "payload": {
+          "attribution_destination": "https://destination.test",
+          "randomized_trigger_rate": 0.0008051,
+          "scheduled_report_time": "86400",
+          "source_event_id": "123",
+          "source_type": "navigation",
+          "trigger_data": "3"
+        },
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
+        "report_time": "90000000"
+      }
+    ]
+  }
+}

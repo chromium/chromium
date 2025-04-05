@@ -11,9 +11,10 @@ import {SearchboxBrowserProxy} from '//resources/cr_components/searchbox/searchb
 import type {SearchboxDropdownElement} from '//resources/cr_components/searchbox/searchbox_dropdown.js';
 import {assert} from '//resources/js/assert.js';
 import {MetricsReporterImpl} from '//resources/js/metrics_reporter/metrics_reporter.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './app.html.js';
+import {getCss} from './app.css.js';
+import {getHtml} from './app.html.js';
 
 // 675px ~= 449px (--cr-realbox-primary-side-min-width) * 1.5 + some margin.
 const canShowSecondarySideMediaQueryList =
@@ -26,16 +27,20 @@ export interface OmniboxPopupAppElement {
 }
 
 // Displays the autocomplete matches in the autocomplete result.
-export class OmniboxPopupAppElement extends PolymerElement {
+export class OmniboxPopupAppElement extends CrLitElement {
   static get is() {
     return 'omnibox-popup-app';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       /**
        * Whether the secondary side can be shown based on the feature state and
@@ -43,25 +48,25 @@ export class OmniboxPopupAppElement extends PolymerElement {
        */
       canShowSecondarySide: {
         type: Boolean,
-        value: () => canShowSecondarySideMediaQueryList.matches,
-        reflectToAttribute: true,
+        reflect: true,
       },
 
       /*
        * Whether the secondary side is currently available to be shown.
        */
       hasSecondarySide: {
-        reflectToAttribute: true,
         type: Boolean,
+        reflect: true,
       },
 
-      result_: Object,
+      result_: {type: Object},
     };
   }
 
-  canShowSecondarySide: boolean;
-  hasSecondarySide: boolean;
-  private result_: AutocompleteResult;
+  accessor canShowSecondarySide: boolean =
+      canShowSecondarySideMediaQueryList.matches;
+  accessor hasSecondarySide: boolean = false;
+  protected accessor result_: AutocompleteResult|null = null;
 
   private callbackRouter_: PageCallbackRouter;
   private autocompleteResultChangedListenerId_: number|null = null;
@@ -110,7 +115,7 @@ export class OmniboxPopupAppElement extends PolymerElement {
     }
   }
 
-  private onResultRepaint_() {
+  protected onResultRepaint_() {
     const metricsReporter = MetricsReporterImpl.getInstance();
     metricsReporter.measure('ResultChanged')
         .then(
@@ -124,6 +129,10 @@ export class OmniboxPopupAppElement extends PolymerElement {
   private onUpdateSelection_(
       oldSelection: OmniboxPopupSelection, selection: OmniboxPopupSelection) {
     this.$.matches.updateSelection(oldSelection, selection);
+  }
+
+  protected onHasSecondarySideChanged_(e: CustomEvent<{value: boolean}>) {
+    this.hasSecondarySide = e.detail.value;
   }
 }
 

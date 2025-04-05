@@ -121,9 +121,10 @@ SVGLayoutResult LayoutSVGForeignObject::UpdateSVGLayout(
   // This is necessary for external/wpt/inert/inert-on-non-html.html.
   // See FullyClipsContents() in fully_clipped_state_stack.cc.
   const float zoom = style.EffectiveZoom();
-  LogicalSize zoomed_size = PhysicalSize(LayoutUnit(viewport_.width() * zoom),
-                                         LayoutUnit(viewport_.height() * zoom))
-                                .ConvertToLogical(style.GetWritingMode());
+  LogicalSize zoomed_size =
+      ToLogicalSize(PhysicalSize(LayoutUnit(viewport_.width() * zoom),
+                                 LayoutUnit(viewport_.height() * zoom)),
+                    style.GetWritingMode());
 
   // Use the zoomed version of the viewport as the location, because we will
   // interpose a transform that "unzooms" the effective zoom to let the children

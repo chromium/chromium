@@ -92,7 +92,12 @@ protocol::Response TargetHandler::CreateTarget(
     std::optional<bool> new_window,
     std::optional<bool> background,
     std::optional<bool> for_tab,
+    std::optional<bool> hidden,
     std::string* out_target_id) {
+  if (hidden.value_or(false)) {
+    // Rely on web contents implementation.
+    return protocol::Response::FallThrough();
+  }
   Profile* profile = nullptr;
   if (browser_context_id.has_value()) {
     std::string profile_id = browser_context_id.value();

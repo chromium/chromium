@@ -54,6 +54,7 @@ import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.browser.customtabs.CustomTabsIntent.CloseButtonPosition;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.MarginLayoutParamsCompat;
 import androidx.core.widget.ImageViewCompat;
 
@@ -2407,7 +2408,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                             getContext(), R.drawable.custom_tabs_url_bar_omnibox_bg);
             mOmniboxBackground.mutate();
             mOmniboxBackground.setTint(
-                    ChromeColors.getSurfaceColor(getContext(), R.dimen.toolbar_text_box_elevation));
+                    ContextCompat.getColor(getContext(), R.color.toolbar_text_box_bg_color));
             mLocationBarFrameLayout.setBackground(mOmniboxBackground);
             var lp = mLocationBarFrameLayout.getLayoutParams();
             lp.height =

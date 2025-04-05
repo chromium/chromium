@@ -15,7 +15,7 @@
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/common/chrome_features.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
-#include "components/tab_collections/public/tab_interface.h"
+#include "components/tabs/public/tab_interface.h"
 
 namespace glic {
 
@@ -44,7 +44,9 @@ void OnGetContextFromFocusedTab(
 
 }  // namespace
 
-GlicActorController::GlicActorController() = default;
+GlicActorController::GlicActorController(Profile* profile) {
+  actor::ActorCoordinator::RegisterWithProfile(profile);
+}
 
 GlicActorController::~GlicActorController() = default;
 

@@ -16,6 +16,7 @@
 #include <unistd.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -89,11 +90,12 @@ void SaveSUIDUnsafeEnvironmentVariables(base::Environment* env) {
     if (!saved_env_var)
       continue;
 
-    std::string value;
-    if (env->GetVar(env_var, &value))
-      env->SetVar(*saved_env_var, value);
-    else
+    std::optional<std::string> value = env->GetVar(env_var);
+    if (value.has_value()) {
+      env->SetVar(*saved_env_var, *value);
+    } else {
       env->UnSetVar(*saved_env_var);
+    }
   }
 }
 

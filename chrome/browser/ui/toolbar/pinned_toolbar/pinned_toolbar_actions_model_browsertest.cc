@@ -50,18 +50,18 @@ class PinnedToolbarActionsModelTestObserver
 
  private:
   // PinnedToolbarActionsModel::Observer:
-  void OnActionAddedLocally(const actions::ActionId& action_id) override {
+  void OnActionAddedLocally(actions::ActionId action_id) override {
     ++inserted_count_;
     last_changed_action_ = action_id;
   }
 
-  void OnActionRemovedLocally(const actions::ActionId& action_id) override {
+  void OnActionRemovedLocally(actions::ActionId action_id) override {
     ++removed_count_;
     last_changed_action_ = action_id;
   }
 
   // Signals that the given action with `id` has been moved in the model.
-  void OnActionMovedLocally(const actions::ActionId& id,
+  void OnActionMovedLocally(actions::ActionId id,
                             int from_index,
                             int to_index) override {
     moved_to_index_ = to_index;

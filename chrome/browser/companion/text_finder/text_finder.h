@@ -47,8 +47,11 @@ class TextFinder : public blink::mojom::AnnotationAgentHost {
   // blink::mojom::AnnotationAgentHost implementation.
   // Calls `did_finish_callback_` and then removes the annotation agent in the
   // renderer process to remove the visual highlight effect.
-  // If not found, `rect` is empty.
-  void DidFinishAttachment(const gfx::Rect& rect) override;
+  // If not found, `rect` is empty. `attachment_result` has the the details why
+  // the annotation is not found.
+  void DidFinishAttachment(
+      const gfx::Rect& rect,
+      blink::mojom::AttachmentResult attachment_result) override;
 
   // Set a callback called upon finishing finding.
   void SetDidFinishHandler(FinishedCallback callback);

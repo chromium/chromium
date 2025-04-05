@@ -15,7 +15,6 @@
 #include "cc/raster/raster_buffer.h"
 #include "cc/raster/raster_buffer_provider.h"
 #include "cc/raster/staging_buffer_pool.h"
-#include "cc/trees/raster_capabilities.h"
 #include "components/viz/client/client_resource_provider.h"
 #include "gpu/command_buffer/common/sync_token.h"
 
@@ -38,7 +37,8 @@ class CC_EXPORT OneCopyRasterBufferProvider : public RasterBufferProvider {
       int max_copy_texture_chromium_size,
       bool use_partial_raster,
       int max_staging_buffer_usage_in_bytes,
-      const RasterCapabilities& raster_caps);
+      const viz::SharedImageFormat& format,
+      bool is_overlay_candidate);
   OneCopyRasterBufferProvider(const OneCopyRasterBufferProvider&) = delete;
   ~OneCopyRasterBufferProvider() override;
 

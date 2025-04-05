@@ -7,6 +7,7 @@
 
 #include "components/collaboration/public/collaboration_flow_entry_point.h"
 #include "components/collaboration/public/collaboration_flow_type.h"
+#include "ui/base/page_transition_types.h"
 
 namespace data_sharing {
 class Logger;
@@ -103,6 +104,8 @@ void RecordJoinOrShareOrManageEvent(
     CollaborationServiceShareOrManageEvent share_or_manage_event);
 void RecordJoinEntryPoint(data_sharing::Logger* logger,
                           CollaborationServiceJoinEntryPoint entry);
+void RecordJoinPageTransitionType(data_sharing::Logger* logger,
+                                  ui::PageTransition transition);
 void RecordShareOrManageEntryPoint(
     data_sharing::Logger* logger,
     CollaborationServiceShareOrManageEntryPoint entry);

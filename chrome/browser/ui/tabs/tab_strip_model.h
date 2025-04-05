@@ -28,9 +28,9 @@
 #include "chrome/browser/ui/tabs/tab_strip_scrubbing_metrics.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "components/sessions/core/session_id.h"
-#include "components/tab_collections/public/tab_interface.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "components/tabs/public/tab_interface.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/base/models/list_selection_model.h"
 #include "ui/base/page_transition_types.h"
@@ -456,7 +456,8 @@ class TabStripModel : public TabGroupController {
   // closed.
   bool IsTabClosable(const content::WebContents* contents) const;
 
-  split_tabs::SplitTabData* GetSplitData(split_tabs::SplitTabId split_id);
+  const split_tabs::SplitTabData* GetSplitData(
+      split_tabs::SplitTabId split_id) const;
 
   // Returns the group that contains the tab at |index|, or nullopt if the tab
   // index is invalid or not grouped.
@@ -477,9 +478,11 @@ class TabStripModel : public TabGroupController {
   // Extends the selection from the anchor to |index|.
   void ExtendSelectionTo(int index);
 
-  // Returns true if the selection was toggled; this can fail if the tabstrip
-  // is not editable.
-  bool ToggleSelectionAt(int index);
+  // This can fail if the tabstrip is not editable.
+  void SelectTabAt(int index);
+
+  // This can fail if the tabstrip is not editable.
+  void DeselectTabAt(int index);
 
   // Makes sure the tabs from the anchor to |index| are selected. This only
   // adds to the selection.

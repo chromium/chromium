@@ -49,7 +49,8 @@ export class PasswordDetailsSectionElement extends
     };
   }
 
-  private selectedGroup_: chrome.passwordsPrivate.CredentialGroup|undefined;
+  declare private selectedGroup_: chrome.passwordsPrivate.CredentialGroup|
+      undefined;
   private savedPasswordsListener_: (
       (entries: chrome.passwordsPrivate.PasswordUiEntry[]) => void)|null = null;
   private passwordManagerAuthTimeoutListener_: () => void;

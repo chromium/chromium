@@ -197,8 +197,7 @@ id Iterator::GetNext() {
 
 - (void)compact {
   DCHECK(!_invocationDepth);
-  _observers.erase(std::remove(_observers.begin(), _observers.end(), nil),
-                   _observers.end());
+  std::erase(_observers, nil);
 }
 
 @end

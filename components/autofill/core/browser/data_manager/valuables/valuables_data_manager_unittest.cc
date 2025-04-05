@@ -54,8 +54,7 @@ TEST_F(ValuablesDataManagerTest, GetLoyaltyCards) {
   const LoyaltyCard card1 = test::CreateLoyaltyCard();
   const LoyaltyCard card2 = test::CreateLoyaltyCard2();
 
-  valuables_table().AddOrUpdateLoyaltyCard(card1);
-  valuables_table().AddOrUpdateLoyaltyCard(card2);
+  valuables_table().SetLoyaltyCards({card1, card2});
 
   ValuablesDataManager valuables_data_manager(&webdata_service());
   EXPECT_THAT(valuables_data_manager.GetLoyaltyCards(), IsEmpty());
@@ -69,7 +68,7 @@ TEST_F(ValuablesDataManagerTest, GetLoyaltyCards) {
 // cards when the Chrome Sync writes them to the database.
 TEST_F(ValuablesDataManagerTest, DataChangedBySync) {
   const LoyaltyCard card1 = test::CreateLoyaltyCard();
-  valuables_table().AddOrUpdateLoyaltyCard(card1);
+  valuables_table().SetLoyaltyCards({card1});
 
   ValuablesDataManager valuables_data_manager(&webdata_service());
   helper().WaitUntilIdle();
@@ -77,7 +76,7 @@ TEST_F(ValuablesDataManagerTest, DataChangedBySync) {
               UnorderedElementsAre(card1));
 
   const LoyaltyCard card2 = test::CreateLoyaltyCard2();
-  valuables_table().AddOrUpdateLoyaltyCard(card2);
+  valuables_table().SetLoyaltyCards({card1, card2});
   // Make sure all async tasks are executed.
   helper().WaitUntilIdle();
 

@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ash/accessibility/mouse_keys/mouse_keys_controller.h"
+
+#include <array>
 
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/drag_event_rewriter.h"
@@ -92,9 +89,7 @@ bool ShouldEndDragOperation(ui::MouseEvent* event) {
 MouseKeysController::MouseKeysController()
     : drag_event_rewriter_(std::make_unique<DragEventRewriter>()) {
   SetMaxSpeed(kDefaultMaxSpeed);
-  for (int c = 0; c < kKeyCount; ++c) {
-    pressed_keys_[c] = false;
-  }
+  pressed_keys_.fill(false);
   Shell::Get()->AddAccessibilityEventHandler(
       this, AccessibilityEventHandlerManager::HandlerType::kMouseKeys);
   mouse_keys_bubble_controller_ = std::make_unique<MouseKeysBubbleController>();

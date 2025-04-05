@@ -239,6 +239,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "chrome/browser/extensions/extension_special_storage_policy.h"
 #include "extensions/browser/extension_pref_store.h"
 #include "extensions/browser/extension_pref_value_map.h"
 #include "extensions/browser/extension_pref_value_map_factory.h"
@@ -246,7 +247,6 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/extensions/extension_special_storage_policy.h"
 #include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
 #include "components/guest_view/browser/guest_view_manager.h"
 #include "extensions/browser/extension_prefs.h"
@@ -1084,7 +1084,7 @@ bool ProfileImpl::AllowsBrowserWindows() const {
 }
 
 ExtensionSpecialStoragePolicy* ProfileImpl::GetExtensionSpecialStoragePolicy() {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (!extension_special_storage_policy_.get()) {
     TRACE_EVENT0("browser", "ProfileImpl::GetExtensionSpecialStoragePolicy");
     extension_special_storage_policy_ =

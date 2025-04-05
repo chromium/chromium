@@ -53,6 +53,106 @@ bool EnumTraits<viz::mojom::SynchronizationType,
 }
 
 // static
+viz::mojom::ResourceSource
+EnumTraits<viz::mojom::ResourceSource,
+           viz::TransferableResource::ResourceSource>::
+    ToMojom(viz::TransferableResource::ResourceSource type) {
+  switch (type) {
+    case viz::TransferableResource::ResourceSource::kUnknown:
+      return viz::mojom::ResourceSource::kUnknown;
+    case viz::TransferableResource::ResourceSource::kAR:
+      return viz::mojom::ResourceSource::kAR;
+    case viz::TransferableResource::ResourceSource::kCanvas:
+      return viz::mojom::ResourceSource::kCanvas;
+    case viz::TransferableResource::ResourceSource::kDrawingBuffer:
+      return viz::mojom::ResourceSource::kDrawingBuffer;
+    case viz::TransferableResource::ResourceSource::kExoBuffer:
+      return viz::mojom::ResourceSource::kExoBuffer;
+    case viz::TransferableResource::ResourceSource::kHeadsUpDisplay:
+      return viz::mojom::ResourceSource::kHeadsUpDisplay;
+    case viz::TransferableResource::ResourceSource::kImageLayerBridge:
+      return viz::mojom::ResourceSource::kImageLayerBridge;
+    case viz::TransferableResource::ResourceSource::kPPBGraphics3D:
+      return viz::mojom::ResourceSource::kPPBGraphics3D;
+    case viz::TransferableResource::ResourceSource::kPepperGraphics2D:
+      return viz::mojom::ResourceSource::kPepperGraphics2D;
+    case viz::TransferableResource::ResourceSource::kViewTransition:
+      return viz::mojom::ResourceSource::kViewTransition;
+    case viz::TransferableResource::ResourceSource::kStaleContent:
+      return viz::mojom::ResourceSource::kStaleContent;
+    case viz::TransferableResource::ResourceSource::kTest:
+      return viz::mojom::ResourceSource::kTest;
+    case viz::TransferableResource::ResourceSource::kTileRasterTask:
+      return viz::mojom::ResourceSource::kTileRasterTask;
+    case viz::TransferableResource::ResourceSource::kUI:
+      return viz::mojom::ResourceSource::kUI;
+    case viz::TransferableResource::ResourceSource::kVideo:
+      return viz::mojom::ResourceSource::kVideo;
+    case viz::TransferableResource::ResourceSource::kWebGPUSwapBuffer:
+      return viz::mojom::ResourceSource::kWebGPUSwapBuffer;
+  }
+  NOTREACHED();
+}
+
+// static
+bool EnumTraits<viz::mojom::ResourceSource,
+                viz::TransferableResource::ResourceSource>::
+    FromMojom(viz::mojom::ResourceSource input,
+              viz::TransferableResource::ResourceSource* out) {
+  switch (input) {
+    case viz::mojom::ResourceSource::kUnknown:
+      *out = viz::TransferableResource::ResourceSource::kUnknown;
+      return true;
+    case viz::mojom::ResourceSource::kAR:
+      *out = viz::TransferableResource::ResourceSource::kAR;
+      return true;
+    case viz::mojom::ResourceSource::kCanvas:
+      *out = viz::TransferableResource::ResourceSource::kCanvas;
+      return true;
+    case viz::mojom::ResourceSource::kDrawingBuffer:
+      *out = viz::TransferableResource::ResourceSource::kDrawingBuffer;
+      return true;
+    case viz::mojom::ResourceSource::kExoBuffer:
+      *out = viz::TransferableResource::ResourceSource::kExoBuffer;
+      return true;
+    case viz::mojom::ResourceSource::kHeadsUpDisplay:
+      *out = viz::TransferableResource::ResourceSource::kHeadsUpDisplay;
+      return true;
+    case viz::mojom::ResourceSource::kImageLayerBridge:
+      *out = viz::TransferableResource::ResourceSource::kImageLayerBridge;
+      return true;
+    case viz::mojom::ResourceSource::kPPBGraphics3D:
+      *out = viz::TransferableResource::ResourceSource::kPPBGraphics3D;
+      return true;
+    case viz::mojom::ResourceSource::kPepperGraphics2D:
+      *out = viz::TransferableResource::ResourceSource::kPepperGraphics2D;
+      return true;
+    case viz::mojom::ResourceSource::kViewTransition:
+      *out = viz::TransferableResource::ResourceSource::kViewTransition;
+      return true;
+    case viz::mojom::ResourceSource::kStaleContent:
+      *out = viz::TransferableResource::ResourceSource::kStaleContent;
+      return true;
+    case viz::mojom::ResourceSource::kTest:
+      *out = viz::TransferableResource::ResourceSource::kTest;
+      return true;
+    case viz::mojom::ResourceSource::kTileRasterTask:
+      *out = viz::TransferableResource::ResourceSource::kTileRasterTask;
+      return true;
+    case viz::mojom::ResourceSource::kUI:
+      *out = viz::TransferableResource::ResourceSource::kUI;
+      return true;
+    case viz::mojom::ResourceSource::kVideo:
+      *out = viz::TransferableResource::ResourceSource::kVideo;
+      return true;
+    case viz::mojom::ResourceSource::kWebGPUSwapBuffer:
+      *out = viz::TransferableResource::ResourceSource::kWebGPUSwapBuffer;
+      return true;
+  }
+  return false;
+}
+
+// static
 bool StructTraits<viz::mojom::TransferableResourceDataView,
                   viz::TransferableResource>::
     Read(viz::mojom::TransferableResourceDataView data,
@@ -68,7 +168,8 @@ bool StructTraits<viz::mojom::TransferableResourceDataView,
       !data.ReadHdrMetadata(&out->hdr_metadata) ||
       !data.ReadYcbcrInfo(&out->ycbcr_info) || !data.ReadId(&id) ||
       !data.ReadSynchronizationType(&out->synchronization_type) ||
-      !data.ReadOrigin(&out->origin)) {
+      !data.ReadOrigin(&out->origin) ||
+      !data.ReadResourceSource(&out->resource_source)) {
     return false;
   }
   out->id = id;

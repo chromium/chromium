@@ -67,6 +67,7 @@
 //ios/chrome/test/data/policy/pref_mapping/PopupsBlockedForUrls.json
 //ios/chrome/test/data/policy/pref_mapping/PrintingEnabled.json
 //ios/chrome/test/data/policy/pref_mapping/ProfileSeparationDataMigrationSettings.json
+//ios/chrome/test/data/policy/pref_mapping/ProvisionalNotificationsAllowed.json
 //ios/chrome/test/data/policy/pref_mapping/RestrictAccountsToPatterns.json
 //ios/chrome/test/data/policy/pref_mapping/SafeBrowsingEnabled.json
 //ios/chrome/test/data/policy/pref_mapping/SafeBrowsingProtectionLevel.json

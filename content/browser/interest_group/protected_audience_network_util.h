@@ -9,6 +9,8 @@
 #include <string>
 
 #include "content/public/browser/frame_tree_node_id.h"
+#include "services/network/public/mojom/client_security_state.mojom.h"
+#include "services/network/public/mojom/ip_address_space.mojom.h"
 
 namespace network {
 struct ResourceRequest;
@@ -45,6 +47,14 @@ std::optional<std::string> GetUserAgentOverrideForProtectedAudience(
 // (OnAuctionWorkletNetworkRequestWillBeSent(), etc).
 void SetUpDevtoolsForRequest(FrameTreeNode* frame_tree_node,
                              network::ResourceRequest& request);
+
+// Creates a ClientSecurityState object for use with ProtectedAudience. Only
+// contains the provided IPAddressSpace, and request policy, and identifies the
+// context as secure. This matches the Protected Audience spec, and avoids
+// leaks.
+network::mojom::ClientSecurityStatePtr
+CreateClientSecurityStateForProtectedAudience(
+    network::mojom::IPAddressSpace ip_address_space);
 
 }  // namespace content
 

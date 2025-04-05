@@ -34,7 +34,6 @@ constexpr char kAppsTypeName[] = "apps";
 constexpr char kReadingListTypeName[] = "readingList";
 constexpr char kTabsTypeName[] = "tabs";
 constexpr char kSavedTabGroupsTypeName[] = "savedTabGroups";
-constexpr char kSharedTabGroupDataTypeName[] = "sharedTabGroupData";
 constexpr char kPaymentsTypeName[] = "payments";
 constexpr char kProductComparisonTypeName[] = "productComparison";
 constexpr char kCookiesTypeName[] = "cookies";
@@ -100,16 +99,6 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(UserSelectableType type) {
       return {kSavedTabGroupsTypeName,
               SAVED_TAB_GROUP,
               {SAVED_TAB_GROUP, SHARED_TAB_GROUP_DATA, COLLABORATION_GROUP,
-               SHARED_TAB_GROUP_ACCOUNT_DATA}};
-    case UserSelectableType::kSharedTabGroupData:
-      // Note: COLLABORATION_GROUP might be re-used for other
-      // features. If this happens, it should probably be in
-      // AlwaysPreferredUserTypes().
-      // TODO(crbug.com/361625648): Remove kSharedTabGroupData as it's not
-      // needed any more.
-      return {kSharedTabGroupDataTypeName,
-              SHARED_TAB_GROUP_DATA,
-              {SHARED_TAB_GROUP_DATA, COLLABORATION_GROUP,
                SHARED_TAB_GROUP_ACCOUNT_DATA}};
     case UserSelectableType::kPayments:
       return {kPaymentsTypeName,
@@ -193,9 +182,6 @@ std::optional<UserSelectableType> GetUserSelectableTypeFromString(
   }
   if (type == kSavedTabGroupsTypeName) {
     return UserSelectableType::kSavedTabGroups;
-  }
-  if (type == kSharedTabGroupDataTypeName) {
-    return UserSelectableType::kSharedTabGroupData;
   }
   if (type == kProductComparisonTypeName) {
     return UserSelectableType::kProductComparison;

@@ -144,9 +144,10 @@ void AnnotationAgentContainerImpl::PerformInitialAttachments() {
 
 AnnotationAgentImpl* AnnotationAgentContainerImpl::CreateUnboundAgent(
     mojom::blink::AnnotationType type,
-    AnnotationSelector& selector) {
+    AnnotationSelector& selector,
+    std::optional<DOMNodeId> search_range_start_node_id) {
   auto* agent_impl = MakeGarbageCollected<AnnotationAgentImpl>(
-      *this, type, selector, PassKey());
+      *this, type, selector, search_range_start_node_id, PassKey());
   agents_.push_back(agent_impl);
 
   // Attachment will happen as part of the document lifecycle in a new frame.
@@ -179,7 +180,8 @@ void AnnotationAgentContainerImpl::CreateAgent(
     mojo::PendingRemote<mojom::blink::AnnotationAgentHost> host_remote,
     mojo::PendingReceiver<mojom::blink::AnnotationAgent> agent_receiver,
     mojom::blink::AnnotationType type,
-    const String& serialized_selector) {
+    const String& serialized_selector,
+    std::optional<DOMNodeId> search_range_start_node_id) {
   TRACE_EVENT("blink", "AnnotationAgentContainerImpl::CreateAgent", "type",
               ToString(type), "selector", serialized_selector);
   DCHECK(GetSupplementable());
@@ -196,7 +198,8 @@ void AnnotationAgentContainerImpl::CreateAgent(
     return;
   }
 
-  auto* agent_impl = CreateUnboundAgent(type, *selector);
+  auto* agent_impl =
+      CreateUnboundAgent(type, *selector, search_range_start_node_id);
   agent_impl->Bind(std::move(host_remote), std::move(agent_receiver));
 }
 
@@ -265,8 +268,8 @@ void AnnotationAgentContainerImpl::DidFinishSelectorGeneration(
   std::move(callback).Run(std::move(selector_creation_result), error,
                           ready_status);
 
-  AnnotationAgentImpl* agent_impl =
-      CreateUnboundAgent(type, *annotation_selector);
+  AnnotationAgentImpl* agent_impl = CreateUnboundAgent(
+      type, *annotation_selector, /*search_range_start_node_id=*/std::nullopt);
   agent_impl->Bind(std::move(pending_host_remote),
                    std::move(pending_agent_receiver));
 }

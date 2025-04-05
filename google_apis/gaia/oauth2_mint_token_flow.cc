@@ -138,42 +138,10 @@ OAuth2Response GetOAuth2ResponseFromErrorReason(const std::string* reason) {
   return kUnknownError;
 }
 
-GoogleServiceAuthError CreateAuthError(
-    int net_error,
-    const network::mojom::URLResponseHead* head,
-    std::unique_ptr<std::string> body) {
-  if (net_error == net::ERR_ABORTED) {
-    return GoogleServiceAuthError(GoogleServiceAuthError::REQUEST_CANCELED);
-  }
-
-  if (net_error != net::OK || !head || !head->headers) {
-    DLOG(WARNING) << "Server returned error: errno " << net_error;
-    return GoogleServiceAuthError::FromConnectionError(net_error);
-  }
-
-  std::string_view response_body;
-  if (body) {
-    response_body = *body;
-  }
-
-  std::optional<base::Value::Dict> dict =
-      base::JSONReader::ReadDict(response_body);
-  const std::string* message = FindMessageInErrorResponse(dict);
-  const std::string* reason = FindReasonInErrorResponse(dict);
-  OAuth2Response oauth2_response = GetOAuth2ResponseFromErrorReason(reason);
-  int http_response_code = head->headers->response_code();
-  auto GetDisplayMessage = [&] {
-    if (message) {
-      return *message;
-    } else if (reason) {
-      return *reason;
-    } else {
-      return base::StringPrintf("Couldn't parse an error. HTTP code %d",
-                                http_response_code);
-    }
-  };
-  std::string display_message = GetDisplayMessage();
-
+GoogleServiceAuthError ConvertErrorOAuth2ResponseToAuthError(
+    OAuth2Response oauth2_response,
+    int http_response_code,
+    const std::string& display_message) {
   using enum OAuth2Response;
   switch (oauth2_response) {
     case kOk:
@@ -182,6 +150,8 @@ GoogleServiceAuthError CreateAuthError(
     case kAdminPolicyEnforced:
     case kUnauthorizedClient:
     case kUnsuportedGrantType:
+    case kConsentRequired:
+    case kTokenBindingChallenge:
       NOTREACHED();
 
     // Transient errors:
@@ -224,6 +194,53 @@ GoogleServiceAuthError CreateAuthError(
   return GoogleServiceAuthError::FromServiceError(display_message);
 }
 
+struct OAuth2ErrorDetails {
+  GoogleServiceAuthError auth_error;
+  std::optional<OAuth2Response> oauth2_response;
+};
+
+OAuth2ErrorDetails ParseErrorResponse(
+    int net_error,
+    const network::mojom::URLResponseHead* head,
+    std::unique_ptr<std::string> body) {
+  if (net_error == net::ERR_ABORTED) {
+    return {GoogleServiceAuthError(GoogleServiceAuthError::REQUEST_CANCELED),
+            std::nullopt};
+  }
+
+  if (net_error != net::OK || !head || !head->headers) {
+    DLOG(WARNING) << "Server returned error: errno " << net_error;
+    return {GoogleServiceAuthError::FromConnectionError(net_error),
+            std::nullopt};
+  }
+
+  std::string_view response_body;
+  if (body) {
+    response_body = *body;
+  }
+
+  std::optional<base::Value::Dict> dict =
+      base::JSONReader::ReadDict(response_body);
+  const std::string* message = FindMessageInErrorResponse(dict);
+  const std::string* reason = FindReasonInErrorResponse(dict);
+  OAuth2Response oauth2_response = GetOAuth2ResponseFromErrorReason(reason);
+  int http_response_code = head->headers->response_code();
+  auto GetDisplayMessage = [&] {
+    if (message) {
+      return *message;
+    } else if (reason) {
+      return *reason;
+    } else {
+      return base::StringPrintf("Couldn't parse an error. HTTP code %d",
+                                http_response_code);
+    }
+  };
+  std::string display_message = GetDisplayMessage();
+  GoogleServiceAuthError error = ConvertErrorOAuth2ResponseToAuthError(
+      oauth2_response, http_response_code, display_message);
+  return {std::move(error), oauth2_response};
+}
+
 std::string FindTokenBindingChallenge(
     int net_error,
     const network::mojom::URLResponseHead* head) {
@@ -240,14 +257,17 @@ bool AreCookiesEqual(const net::CanonicalCookie& lhs,
   return lhs.IsEquivalent(rhs);
 }
 
-void RecordApiCallResult(OAuth2MintTokenApiCallResult result) {
-  base::UmaHistogramEnumeration(kOAuth2MintTokenApiCallResultHistogram, result);
+void RecordApiCallMetrics(OAuth2MintTokenApiCallResult result,
+                          std::optional<OAuth2Response> response) {
+  // TODO(crbug.com/401211492): remove the "ApiCallResult" histogram in favor of
+  // the "Response" one.
+  base::UmaHistogramEnumeration("Signin.OAuth2MintToken.ApiCallResult", result);
+  if (response) {
+    base::UmaHistogramEnumeration("Signin.OAuth2MintToken.Response", *response);
+  }
 }
 
 }  // namespace
-
-const char kOAuth2MintTokenApiCallResultHistogram[] =
-    "Signin.OAuth2MintToken.ApiCallResult";
 
 RemoteConsentResolutionData::RemoteConsentResolutionData() = default;
 RemoteConsentResolutionData::~RemoteConsentResolutionData() = default;
@@ -441,7 +461,8 @@ void OAuth2MintTokenFlow::ProcessApiCallSuccess(
   std::optional<base::Value::Dict> dict =
       base::JSONReader::ReadDict(response_body);
   if (!dict) {
-    RecordApiCallResult(OAuth2MintTokenApiCallResult::kParseJsonFailure);
+    RecordApiCallMetrics(OAuth2MintTokenApiCallResult::kParseJsonFailure,
+                         OAuth2Response::kOkUnexpectedFormat);
     ReportFailure(GoogleServiceAuthError::FromUnexpectedServiceResponse(
         "Not able to parse a JSON object from a service response."));
     return;
@@ -449,8 +470,9 @@ void OAuth2MintTokenFlow::ProcessApiCallSuccess(
 
   std::string* issue_advice_value = dict->FindString(kIssueAdviceKey);
   if (!issue_advice_value) {
-    RecordApiCallResult(
-        OAuth2MintTokenApiCallResult::kIssueAdviceKeyNotFoundFailure);
+    RecordApiCallMetrics(
+        OAuth2MintTokenApiCallResult::kIssueAdviceKeyNotFoundFailure,
+        OAuth2Response::kOkUnexpectedFormat);
     ReportFailure(GoogleServiceAuthError::FromUnexpectedServiceResponse(
         "Not able to find an issueAdvice in a service response."));
     return;
@@ -459,11 +481,13 @@ void OAuth2MintTokenFlow::ProcessApiCallSuccess(
   if (*issue_advice_value == kIssueAdviceValueRemoteConsent) {
     RemoteConsentResolutionData resolution_data;
     if (ParseRemoteConsentResponse(*dict, &resolution_data)) {
-      RecordApiCallResult(OAuth2MintTokenApiCallResult::kRemoteConsentSuccess);
+      RecordApiCallMetrics(OAuth2MintTokenApiCallResult::kRemoteConsentSuccess,
+                           OAuth2Response::kConsentRequired);
       ReportRemoteConsentSuccess(resolution_data);
     } else {
-      RecordApiCallResult(
-          OAuth2MintTokenApiCallResult::kParseRemoteConsentFailure);
+      RecordApiCallMetrics(
+          OAuth2MintTokenApiCallResult::kParseRemoteConsentFailure,
+          OAuth2Response::kOkUnexpectedFormat);
       ReportFailure(GoogleServiceAuthError::FromUnexpectedServiceResponse(
           "Not able to parse the contents of remote consent from a service "
           "response."));
@@ -473,10 +497,12 @@ void OAuth2MintTokenFlow::ProcessApiCallSuccess(
 
   if (std::optional<MintTokenResult> result = ParseMintTokenResponse(*dict);
       result.has_value()) {
-    RecordApiCallResult(OAuth2MintTokenApiCallResult::kMintTokenSuccess);
+    RecordApiCallMetrics(OAuth2MintTokenApiCallResult::kMintTokenSuccess,
+                         OAuth2Response::kOk);
     ReportSuccess(result.value());
   } else {
-    RecordApiCallResult(OAuth2MintTokenApiCallResult::kParseMintTokenFailure);
+    RecordApiCallMetrics(OAuth2MintTokenApiCallResult::kParseMintTokenFailure,
+                         OAuth2Response::kOkUnexpectedFormat);
     ReportFailure(GoogleServiceAuthError::FromUnexpectedServiceResponse(
         "Not able to parse the contents of access token "
         "from a service response."));
@@ -491,14 +517,18 @@ void OAuth2MintTokenFlow::ProcessApiCallFailure(
     std::unique_ptr<std::string> body) {
   std::string challenge = FindTokenBindingChallenge(net_error, head);
   if (!challenge.empty()) {
-    RecordApiCallResult(
-        OAuth2MintTokenApiCallResult::kChallengeResponseRequiredFailure);
+    RecordApiCallMetrics(
+        OAuth2MintTokenApiCallResult::kChallengeResponseRequiredFailure,
+        OAuth2Response::kTokenBindingChallenge);
     ReportFailure(GoogleServiceAuthError::FromTokenBindingChallenge(challenge));
     return;
   }
 
-  RecordApiCallResult(OAuth2MintTokenApiCallResult::kApiCallFailure);
-  ReportFailure(CreateAuthError(net_error, head, std::move(body)));
+  OAuth2ErrorDetails error_details =
+      ParseErrorResponse(net_error, head, std::move(body));
+  RecordApiCallMetrics(OAuth2MintTokenApiCallResult::kApiCallFailure,
+                       error_details.oauth2_response);
+  ReportFailure(std::move(error_details.auth_error));
 }
 
 // static

@@ -1,5 +1,6 @@
 include_rules = [
   "+components/update_client",
+  "+components/zucchini",
   "+mojo/public",
   "+third_party/puffin",
 ]

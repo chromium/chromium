@@ -11,7 +11,7 @@ namespace blink {
 
 class CSSSizeListInterpolationType : public CSSInterpolationType {
  public:
-  CSSSizeListInterpolationType(PropertyHandle property)
+  explicit CSSSizeListInterpolationType(PropertyHandle property)
       : CSSInterpolationType(property) {}
 
   InterpolationValue MaybeConvertStandardPropertyUnderlyingValue(

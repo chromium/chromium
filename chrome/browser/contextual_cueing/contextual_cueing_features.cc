@@ -60,4 +60,15 @@ const base::FeatureParam<bool> kEnablePageContentExtraction(
     "EnablePageContentExtraction",
     true);
 
+const base::FeatureParam<bool> kExtractInnerTextForZeroStateSuggestions(
+    &kGlicZeroStateSuggestions,
+    "ZSSExtractInnerText",
+    true);
+
+const base::FeatureParam<bool>
+    kExtractAnnotatedPageContentForZeroStateSuggestions(
+        &kGlicZeroStateSuggestions,
+        "ZSSExtractAnnotatedPageContent",
+        false);
+
 }  // namespace contextual_cueing

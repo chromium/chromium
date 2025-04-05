@@ -12,7 +12,7 @@
 [package]
 edition = "2021"
 name = "font-types"
-version = "0.8.3"
+version = "0.8.4"
 build = false
 autolib = false
 autobins = false
@@ -27,6 +27,11 @@ repository = "https://github.com/googlefonts/fontations"
 
 [package.metadata.docs.rs]
 all-features = true
+
+[features]
+bytemuck = ["dep:bytemuck"]
+serde = ["dep:serde"]
+std = []
 
 [lib]
 name = "font_types"
@@ -47,8 +52,3 @@ optional = true
 
 [dev-dependencies.serde_json]
 version = "1.0"
-
-[features]
-bytemuck = ["dep:bytemuck"]
-serde = ["dep:serde"]
-std = []

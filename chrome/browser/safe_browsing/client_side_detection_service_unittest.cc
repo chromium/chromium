@@ -933,9 +933,8 @@ TEST_P(ClientSideDetectionServiceTest, TestSessionCreationFailure) {
 
   csd_service_->SetOnDeviceAvailabilityForTesting(true);
 
-  ClientPhishingRequest verdict;
   base::test::TestFuture<std::optional<ScamDetectionResponse>> future;
-  csd_service_->InquireOnDeviceModel(&verdict, "", future.GetCallback());
+  csd_service_->InquireOnDeviceModel("", future.GetCallback());
 
   // The on device model is "available" but the session creation will fail,
   // hence the true value for the histogram
@@ -1017,9 +1016,8 @@ TEST_P(ClientSideDetectionServiceTest, TestSessionCreationSuccess) {
 
   csd_service_->SetOnDeviceAvailabilityForTesting(true);
 
-  ClientPhishingRequest verdict;
   base::test::TestFuture<std::optional<ScamDetectionResponse>> future;
-  csd_service_->InquireOnDeviceModel(&verdict, "", future.GetCallback());
+  csd_service_->InquireOnDeviceModel("", future.GetCallback());
 
   histogram_tester.ExpectUniqueSample(
       "SBClientPhishing.IsOnDeviceModelAvailableAtInquiryTime", true, 1);
@@ -1112,9 +1110,8 @@ TEST_P(ClientSideDetectionServiceTest, TestSessionExecutionFailure) {
 
   csd_service_->SetOnDeviceAvailabilityForTesting(true);
 
-  ClientPhishingRequest verdict;
   base::test::TestFuture<std::optional<ScamDetectionResponse>> future;
-  csd_service_->InquireOnDeviceModel(&verdict, "", future.GetCallback());
+  csd_service_->InquireOnDeviceModel("", future.GetCallback());
 
   histogram_tester.ExpectUniqueSample(
       "SBClientPhishing.IsOnDeviceModelAvailableAtInquiryTime", true, 1);
@@ -1209,9 +1206,8 @@ TEST_P(ClientSideDetectionServiceTest,
 
   csd_service_->SetOnDeviceAvailabilityForTesting(true);
 
-  ClientPhishingRequest verdict;
   base::test::TestFuture<std::optional<ScamDetectionResponse>> future;
-  csd_service_->InquireOnDeviceModel(&verdict, "", future.GetCallback());
+  csd_service_->InquireOnDeviceModel("", future.GetCallback());
 
   histogram_tester.ExpectUniqueSample(
       "SBClientPhishing.IsOnDeviceModelAvailableAtInquiryTime", true, 1);
@@ -1316,9 +1312,8 @@ TEST_P(ClientSideDetectionServiceTest,
 
   csd_service_->SetOnDeviceAvailabilityForTesting(true);
 
-  ClientPhishingRequest verdict;
   base::test::TestFuture<std::optional<ScamDetectionResponse>> future;
-  csd_service_->InquireOnDeviceModel(&verdict, "", future.GetCallback());
+  csd_service_->InquireOnDeviceModel("", future.GetCallback());
 
   histogram_tester.ExpectUniqueSample(
       "SBClientPhishing.IsOnDeviceModelAvailableAtInquiryTime", true, 1);
@@ -1416,9 +1411,8 @@ TEST_P(ClientSideDetectionServiceTest,
 
   csd_service_->SetOnDeviceAvailabilityForTesting(true);
 
-  ClientPhishingRequest verdict;
   base::test::TestFuture<std::optional<ScamDetectionResponse>> future;
-  csd_service_->InquireOnDeviceModel(&verdict, "", future.GetCallback());
+  csd_service_->InquireOnDeviceModel("", future.GetCallback());
 
   histogram_tester.ExpectUniqueSample(
       "SBClientPhishing.IsOnDeviceModelAvailableAtInquiryTime", true, 1);
@@ -1495,9 +1489,8 @@ TEST_P(ClientSideDetectionServiceTest,
   // service class.
   csd_service_->SetOnDeviceAvailabilityForTesting(false);
 
-  ClientPhishingRequest verdict;
   base::test::TestFuture<std::optional<ScamDetectionResponse>> future;
-  csd_service_->InquireOnDeviceModel(&verdict, "", future.GetCallback());
+  csd_service_->InquireOnDeviceModel("", future.GetCallback());
 
   // The on device model is not available as set with the
   // SetOnDeviceAvailabilityForTesting, hence the false value for the histogram

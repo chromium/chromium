@@ -1,7 +1,7 @@
 android.webkit.WebView focusable focused
 ++android.widget.Button role_description='button' clickable focusable interesting name='InnerText0'
 ++android.widget.Button role_description='button' clickable focusable interesting name='InnerText1' hint='Title1'
-++android.widget.Button role_description='button' clickable focusable interesting name='AriaLabel2' hint='Title2'
+++android.widget.Button role_description='button' clickable focusable interesting hint='Title2' content_description='AriaLabel2'
 ++android.widget.Button role_description='button' clickable focusable interesting name='LabelledBy3' hint='Title3'
 ++android.widget.Button role_description='button' clickable focusable interesting name='LabelledBy4' hint='DescribedBy4'
 ++android.widget.Button role_description='button' clickable focusable interesting name='InnerText5' hint='DescribedBy5'

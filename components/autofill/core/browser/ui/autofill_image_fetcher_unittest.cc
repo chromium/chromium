@@ -12,8 +12,8 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
-#include "components/autofill/core/browser/data_model/payments/credit_card_art_image.h"
 #include "components/autofill/core/browser/payments/constants.h"
+#include "components/autofill/core/browser/ui/autofill_image.h"
 #include "components/image_fetcher/core/mock_image_fetcher.h"
 #include "components/image_fetcher/core/request_metadata.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -47,8 +47,7 @@ class TestAutofillImageFetcher : public AutofillImageFetcher {
   }
 
   void SimulateOnImageFetched(
-      base::OnceCallback<void(std::unique_ptr<CreditCardArtImage>)>
-          barrier_callback,
+      base::OnceCallback<void(std::unique_ptr<AutofillImage>)> barrier_callback,
       const GURL& url,
       const std::optional<base::TimeTicks>& fetch_image_request_timestamp,
       const gfx::Image& image) {
@@ -137,14 +136,13 @@ TEST_F(AutofillImageFetcherTest, FetchImage_Success) {
   // Expect callback to be called with some received images.
   std::map<GURL, gfx::Image> received_images;
   const auto callback = base::BindLambdaForTesting(
-      [&](const std::vector<std::unique_ptr<CreditCardArtImage>>&
-              card_art_images) {
+      [&](const std::vector<std::unique_ptr<AutofillImage>>& card_art_images) {
         for (auto& entry : card_art_images) {
-          received_images[entry->card_art_url] = entry->card_art_image;
+          received_images[entry->image_url] = entry->image;
         }
       });
   const auto barrier_callback =
-      base::BarrierCallback<std::unique_ptr<CreditCardArtImage>>(
+      base::BarrierCallback<std::unique_ptr<AutofillImage>>(
           2U, std::move(callback));
 
   base::HistogramTester histogram_tester;
@@ -208,14 +206,13 @@ TEST_F(AutofillImageFetcherTest, FetchImage_ResolveCardArtImage) {
 
   std::map<GURL, gfx::Image> received_images;
   const auto callback = base::BindLambdaForTesting(
-      [&](const std::vector<std::unique_ptr<CreditCardArtImage>>&
-              card_art_images) {
+      [&](const std::vector<std::unique_ptr<AutofillImage>>& card_art_images) {
         for (auto& entry : card_art_images) {
-          received_images[entry->card_art_url] = entry->card_art_image;
+          received_images[entry->image_url] = entry->image;
         }
       });
   const auto barrier_callback =
-      base::BarrierCallback<std::unique_ptr<CreditCardArtImage>>(
+      base::BarrierCallback<std::unique_ptr<AutofillImage>>(
           1U, std::move(callback));
 
   autofill_image_fetcher()->SimulateOnImageFetched(
@@ -238,14 +235,13 @@ TEST_F(AutofillImageFetcherTest, FetchImage_ServerFailure) {
   // Expect callback to be called with some received images.
   std::map<GURL, gfx::Image> received_images;
   const auto callback = base::BindLambdaForTesting(
-      [&](const std::vector<std::unique_ptr<CreditCardArtImage>>&
-              card_art_images) {
+      [&](const std::vector<std::unique_ptr<AutofillImage>>& card_art_images) {
         for (auto& entry : card_art_images) {
-          received_images[entry->card_art_url] = entry->card_art_image;
+          received_images[entry->image_url] = entry->image;
         }
       });
   const auto barrier_callback =
-      base::BarrierCallback<std::unique_ptr<CreditCardArtImage>>(
+      base::BarrierCallback<std::unique_ptr<AutofillImage>>(
           1U, std::move(callback));
 
   base::HistogramTester histogram_tester;
@@ -280,10 +276,9 @@ TEST_F(AutofillImageFetcherTest,
   // Expect callback to be called with some received images.
   std::map<GURL, gfx::Image> received_images;
   const auto callback = base::BindLambdaForTesting(
-      [&](const std::vector<std::unique_ptr<CreditCardArtImage>>&
-              card_art_images) {
+      [&](const std::vector<std::unique_ptr<AutofillImage>>& card_art_images) {
         for (auto& entry : card_art_images) {
-          received_images[entry->card_art_url] = entry->card_art_image;
+          received_images[entry->image_url] = entry->image;
         }
       });
 
@@ -293,9 +288,8 @@ TEST_F(AutofillImageFetcherTest,
   std::vector<GURL> urls = {fake_url1};
 
   // Attempt 1 - Failure.
-  auto barrier_callback =
-      base::BarrierCallback<std::unique_ptr<CreditCardArtImage>>(
-          1U, std::move(callback));
+  auto barrier_callback = base::BarrierCallback<std::unique_ptr<AutofillImage>>(
+      1U, std::move(callback));
   autofill_image_fetcher()->FetchImagesForURLs(
       urls, base::span_from_ref(AutofillImageFetcherBase::ImageSize::kSmall),
       base::DoNothing());
@@ -308,7 +302,7 @@ TEST_F(AutofillImageFetcherTest,
   ValidateResult(std::move(received_images), expected_images);
 
   // Attempt 2 - Failure.
-  barrier_callback = base::BarrierCallback<std::unique_ptr<CreditCardArtImage>>(
+  barrier_callback = base::BarrierCallback<std::unique_ptr<AutofillImage>>(
       1U, std::move(callback));
   autofill_image_fetcher()->FetchImagesForURLs(
       urls, base::span_from_ref(AutofillImageFetcherBase::ImageSize::kSmall),
@@ -340,10 +334,9 @@ TEST_F(AutofillImageFetcherTest,
   // Expect callback to be called with some received images.
   std::map<GURL, gfx::Image> received_images;
   const auto callback = base::BindLambdaForTesting(
-      [&](const std::vector<std::unique_ptr<CreditCardArtImage>>&
-              card_art_images) {
+      [&](const std::vector<std::unique_ptr<AutofillImage>>& card_art_images) {
         for (auto& entry : card_art_images) {
-          received_images[entry->card_art_url] = entry->card_art_image;
+          received_images[entry->image_url] = entry->image;
         }
       });
 
@@ -353,9 +346,8 @@ TEST_F(AutofillImageFetcherTest,
   std::vector<GURL> urls = {fake_url1};
 
   // Attempt 1 - Failure.
-  auto barrier_callback =
-      base::BarrierCallback<std::unique_ptr<CreditCardArtImage>>(
-          1U, std::move(callback));
+  auto barrier_callback = base::BarrierCallback<std::unique_ptr<AutofillImage>>(
+      1U, std::move(callback));
   autofill_image_fetcher()->FetchImagesForURLs(
       urls, base::span_from_ref(AutofillImageFetcherBase::ImageSize::kSmall),
       base::DoNothing());
@@ -368,7 +360,7 @@ TEST_F(AutofillImageFetcherTest,
   ValidateResult(std::move(received_images), expected_images_for_failure);
 
   // Attempt 2 - Success.
-  barrier_callback = base::BarrierCallback<std::unique_ptr<CreditCardArtImage>>(
+  barrier_callback = base::BarrierCallback<std::unique_ptr<AutofillImage>>(
       1U, std::move(callback));
   autofill_image_fetcher()->FetchImagesForURLs(
       urls, base::span_from_ref(AutofillImageFetcherBase::ImageSize::kSmall),
@@ -398,10 +390,9 @@ TEST_F(AutofillImageFetcherTest, FetchImage_Success_SuccessOnRepeatAttempt) {
   // Expect callback to be called with some received images.
   std::map<GURL, gfx::Image> received_images;
   const auto callback = base::BindLambdaForTesting(
-      [&](const std::vector<std::unique_ptr<CreditCardArtImage>>&
-              card_art_images) {
+      [&](const std::vector<std::unique_ptr<AutofillImage>>& card_art_images) {
         for (auto& entry : card_art_images) {
-          received_images[entry->card_art_url] = entry->card_art_image;
+          received_images[entry->image_url] = entry->image;
         }
       });
 
@@ -411,9 +402,8 @@ TEST_F(AutofillImageFetcherTest, FetchImage_Success_SuccessOnRepeatAttempt) {
   std::vector<GURL> urls = {fake_url1};
 
   // Attempt 1 - Success.
-  auto barrier_callback =
-      base::BarrierCallback<std::unique_ptr<CreditCardArtImage>>(
-          1U, std::move(callback));
+  auto barrier_callback = base::BarrierCallback<std::unique_ptr<AutofillImage>>(
+      1U, std::move(callback));
   autofill_image_fetcher()->FetchImagesForURLs(
       urls, base::span_from_ref(AutofillImageFetcherBase::ImageSize::kSmall),
       base::DoNothing());
@@ -428,7 +418,7 @@ TEST_F(AutofillImageFetcherTest, FetchImage_Success_SuccessOnRepeatAttempt) {
   // Attempt 2 - Success. Since image fetching is an async process, it is
   // possible that a second attempt is made before the first attempt has
   // finished.
-  barrier_callback = base::BarrierCallback<std::unique_ptr<CreditCardArtImage>>(
+  barrier_callback = base::BarrierCallback<std::unique_ptr<AutofillImage>>(
       1U, std::move(callback));
   autofill_image_fetcher()->FetchImagesForURLs(
       urls, base::span_from_ref(AutofillImageFetcherBase::ImageSize::kSmall),

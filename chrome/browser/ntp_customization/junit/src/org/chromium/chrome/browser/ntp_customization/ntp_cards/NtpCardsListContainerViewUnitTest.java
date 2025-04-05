@@ -38,8 +38,10 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.magic_stack.HomeModulesConfigManager;
 import org.chromium.chrome.browser.ntp_customization.ListContainerViewDelegate;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationMetricsUtils;
 import org.chromium.chrome.browser.ntp_customization.R;
 
 import java.util.List;
@@ -111,10 +113,12 @@ public class NtpCardsListContainerViewUnitTest {
     public void testSetUpSwitch() {
         HomeModulesConfigManager manager = mock(HomeModulesConfigManager.class);
         NtpCardsListItemView listItemView = mock(NtpCardsListItemView.class);
+        String histogramTurnOnName = "NewTabPage.Customization.TurnOnModule";
+        String histogramTurnOffName = "NewTabPage.Customization.TurnOffModule";
 
         // Verifies that getPrefModuleTypeEnabled() is called.
-        mContainerView.setUpSwitch(manager, listItemView, 10);
-        verify(manager).getPrefModuleTypeEnabled(10);
+        mContainerView.setUpSwitch(manager, listItemView, SINGLE_TAB);
+        verify(manager).getPrefModuleTypeEnabled(SINGLE_TAB);
 
         // Verifies setPrefModuleTypeEnabled() is called inside the OnCheckedChangeListener to
         // update the checked state of the switch.
@@ -122,11 +126,19 @@ public class NtpCardsListContainerViewUnitTest {
         mOnCheckedChangeListenerCaptor
                 .getValue()
                 .onCheckedChanged(mock(CompoundButton.class), true);
-        verify(manager).setPrefModuleTypeEnabled(10, true);
+        verify(manager).setPrefModuleTypeEnabled(SINGLE_TAB, true);
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(histogramTurnOnName, SINGLE_TAB);
+        NtpCustomizationMetricsUtils.recordModuleToggledInBottomSheet(SINGLE_TAB, true);
+        histogramWatcher.assertExpected();
 
         mOnCheckedChangeListenerCaptor
                 .getValue()
                 .onCheckedChanged(mock(CompoundButton.class), false);
-        verify(manager).setPrefModuleTypeEnabled(10, false);
+        verify(manager).setPrefModuleTypeEnabled(SINGLE_TAB, false);
+        histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(histogramTurnOffName, SINGLE_TAB);
+        NtpCustomizationMetricsUtils.recordModuleToggledInBottomSheet(SINGLE_TAB, false);
+        histogramWatcher.assertExpected();
     }
 }

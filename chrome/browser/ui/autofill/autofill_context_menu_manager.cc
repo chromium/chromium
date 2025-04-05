@@ -29,7 +29,7 @@
 #include "components/autofill/core/browser/autofill_feedback_data.h"
 #include "components/autofill/core/browser/foundations/autofill_driver.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
-#include "components/autofill/core/browser/integrators/autofill_ai_delegate.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_delegate.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/core/browser/features/password_features.h"

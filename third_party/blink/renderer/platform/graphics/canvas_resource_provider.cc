@@ -392,7 +392,7 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
     return true;
   }
 
-  scoped_refptr<CanvasResource> CreateResource() {
+  scoped_refptr<CanvasResourceSharedImage> CreateResource() {
     TRACE_EVENT0("blink", "CanvasResourceProviderSharedImage::CreateResource");
 
     if (is_software_) {
@@ -809,8 +809,8 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
   }
 
   void OnResourceReturnedFromCompositor(
-      scoped_refptr<CanvasResource>&& resource) override {
-    if (resource->IsRecycleable() && resource->HasOneRef()) {
+      scoped_refptr<CanvasResourceSharedImage>&& resource) override {
+    if (!resource->IsLost() && resource->HasOneRef()) {
       RecycleResource(std::move(resource));
     }
   }
@@ -822,7 +822,7 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
     }
   }
 
-  void RecycleResource(scoped_refptr<CanvasResource>&& resource) {
+  void RecycleResource(scoped_refptr<CanvasResourceSharedImage>&& resource) {
     // We don't want to keep an arbitrary large number of canvases.
     if (canvas_resources_.size() >
         static_cast<unsigned int>(kMaxRecycledCanvasResources)) {
@@ -842,7 +842,8 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
 
   void ClearUnusedResources() override { canvas_resources_.clear(); }
 
-  void RegisterUnusedResource(scoped_refptr<CanvasResource>&& resource) {
+  void RegisterUnusedResource(
+      scoped_refptr<CanvasResourceSharedImage>&& resource) {
     CHECK(IsResourceUsable(resource.get()));
     canvas_resources_.emplace_back(base::TimeTicks::Now(), std::move(resource));
   }
@@ -876,9 +877,9 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
     MaybePostUnusedResourcesReclaimTask();
   }
 
-  scoped_refptr<CanvasResource> NewOrRecycledResource() {
+  scoped_refptr<CanvasResourceSharedImage> NewOrRecycledResource() {
     if (canvas_resources_.empty()) {
-      scoped_refptr<CanvasResource> resource = CreateResource();
+      scoped_refptr<CanvasResourceSharedImage> resource = CreateResource();
       if (!resource) {
         return nullptr;
       }
@@ -895,17 +896,14 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
       return canvas_resources_.back().resource;
     }
 
-    scoped_refptr<CanvasResource> resource =
+    scoped_refptr<CanvasResourceSharedImage> resource =
         std::move(canvas_resources_.back().resource);
     canvas_resources_.pop_back();
     DCHECK(resource->HasOneRef());
     return resource;
   }
 
-  bool IsResourceUsable(CanvasResource* resource) {
-    // The only resources that should be coming in here are
-    // CanvasResourceSharedImage instances, since that is the only type of
-    // resource that this class creates.
+  bool IsResourceUsable(CanvasResourceSharedImage* resource) {
     return resource->GetClientSharedImage()->usage().HasAll(
         shared_image_usage_flags_);
   }
@@ -943,14 +941,14 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
 
   struct UnusedResource {
     UnusedResource(base::TimeTicks last_use,
-                   scoped_refptr<CanvasResource> resource)
+                   scoped_refptr<CanvasResourceSharedImage> resource)
         : last_use(last_use), resource(std::move(resource)) {}
     base::TimeTicks last_use;
-    scoped_refptr<CanvasResource> resource;
+    scoped_refptr<CanvasResourceSharedImage> resource;
   };
 
   // When and if |resource_recycling_enabled_| is false, |canvas_resources_|
-  // will only hold one CanvasResource at most.
+  // will only hold one resource at most.
   WTF::Vector<UnusedResource> canvas_resources_;
   bool resource_recycling_enabled_ = true;
 
@@ -968,7 +966,7 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
   const bool use_oop_rasterization_;
   bool is_software_ = false;
   bool is_cleared_ = false;
-  scoped_refptr<CanvasResource> resource_;
+  scoped_refptr<CanvasResourceSharedImage> resource_;
   scoped_refptr<StaticBitmapImage> cached_snapshot_;
   PaintImage::ContentId cached_content_id_ = PaintImage::kInvalidContentId;
 

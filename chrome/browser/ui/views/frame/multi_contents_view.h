@@ -61,14 +61,18 @@ class MultiContentsView : public views::View, public views::ResizeAreaDelegate {
   // Returns true if more than one WebContents is displayed.
   bool IsInSplitView();
 
-  // Assigns the given |web_contents| to a ContentsWebView. If |active| it will
-  // be assigned to the active contents view, else it will be assigned to
-  // the inactive contents view.
-  void SetWebContents(content::WebContents* web_contents, bool active);
+  // Assigns the given |web_contents| to the ContentsWebView at |index| in
+  // contents_views_. |index| must be either 0 or 1 as we currently only support
+  // two contents. If |index| is 1 and we are not currently in a split
+  // view, displays the split views.
+  void SetWebContentsAtIndex(content::WebContents* web_contents, int index);
 
-  // Sets the index of the active contents view, as relative to the inactive
-  // contents view. A value of 0 will activate start_contents_view_.
-  void SetActivePosition(int position);
+  // Preserves the active WebContents and hides the second ContentsWebView and
+  // resize handle.
+  void CloseSplitView();
+
+  // Sets the index of the active contents view within contents_views_.
+  void SetActiveIndex(int index);
 
   // Handles a mouse event prior to it being passed along to the WebContents.
   bool PreHandleMouseEvent(const blink::WebMouseEvent& event);
@@ -86,7 +90,7 @@ class MultiContentsView : public views::View, public views::ResizeAreaDelegate {
   void OnPaint(gfx::Canvas* canvas) override;
 
   ContentsWebView* start_contents_view_for_testing() const {
-    return start_contents_view_;
+    return contents_views_[0];
   }
 
   MultiContentsResizeArea* resize_area_for_testing() const {
@@ -94,7 +98,7 @@ class MultiContentsView : public views::View, public views::ResizeAreaDelegate {
   }
 
   ContentsWebView* end_contents_view_for_testing() const {
-    return end_contents_view_;
+    return contents_views_[1];
   }
 
  private:
@@ -104,26 +108,23 @@ class MultiContentsView : public views::View, public views::ResizeAreaDelegate {
 
   raw_ptr<BrowserView> browser_view_;
 
-  // The left contents, in LTR.
-  raw_ptr<ContentsWebView> start_contents_view_ = nullptr;
-
-  // The right contents, in LTR.
-  raw_ptr<ContentsWebView> end_contents_view_ = nullptr;
+  // Holds ContentsWebViews, when not in a split view the second ContentsWebView
+  // is not visible.
+  std::vector<ContentsWebView*> contents_views_;
 
   // The handle responsible for resizing the two contents views as relative to
   // each other.
   raw_ptr<MultiContentsResizeArea> resize_area_ = nullptr;
 
-  // The index of the active context view. A value of 0 corresponds to
-  // start_contents_.
-  int active_position_ = 0;
+  // The index in contents_views_ of the active contents view.
+  int active_index_ = 0;
 
   // Callback to be executed when the user clicks anywhere within the bounds of
   // the inactive contents view.
   WebContentsPressedCallback inactive_view_pressed_callback_;
 
-  // Current ratio of `start_contents_view_` width / overall contents view
-  // width.
+  // Current ratio of |contents_views_|'s first ContentsWebView's width /
+  // overall contents view width.
   double start_ratio_ = 0.5;
 
   // Width of `start_contents_.contents_view_` when a resize action began.

@@ -314,22 +314,6 @@ CA_NAME="req_ca_dn" \
 /bin/sh -c "cat out/common_name_only.key out/common_name_only.pem \
     > ../certificates/common_name_only.pem"
 
-# Issued on 1 May 2018 (after the 30 Apr 2018 CT Requirement date)
-openssl req \
-  -config ../scripts/ee.cnf \
-  -newkey rsa:2048 \
-  -text \
-  -out out/may_2018.req
-CA_NAME="req_ca_dn" \
-  openssl ca \
-    -batch \
-    -extensions user_cert \
-    -startdate 180501000000Z \
-    -enddate   200803000000Z \
-    -in out/may_2018.req \
-    -out ../certificates/may_2018.pem \
-    -config ca.cnf
-
 ## Certificates for testing EV display (DN set with different variations)
 SUBJECT_NAME="req_ev_dn" \
   openssl req -x509 -days ${CERT_LIFETIME} \

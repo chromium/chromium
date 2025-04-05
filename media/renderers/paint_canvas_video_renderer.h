@@ -137,8 +137,8 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
       unsigned int format,
       unsigned int type,
       int level,
-      bool premultiply_alpha,
-      bool flip_y);
+      SkAlphaType dst_alpha_type,
+      GrSurfaceOrigin dst_origin);
 
   // Copy the CPU-side YUV contents of |video_frame| to texture |texture| in
   // context |destination_gl|.
@@ -157,8 +157,8 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
       unsigned int format,
       unsigned int type,
       int level,
-      bool premultiply_alpha,
-      bool flip_y);
+      SkAlphaType dst_alpha_type,
+      GrSurfaceOrigin dst_origin);
 
   // Calls texImage2D where the texture image data source is the contents of
   // |video_frame|. Texture |texture| needs to be created and bound to |target|
@@ -178,8 +178,8 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
                          int internalformat,
                          unsigned format,
                          unsigned type,
-                         bool flip_y,
-                         bool premultiply_alpha);
+                         GrSurfaceOrigin dst_origin,
+                         SkAlphaType dst_alpha_type);
 
   // Calls texSubImage2D where the texture image data source is the contents of
   // |video_frame|.
@@ -197,8 +197,8 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
                             unsigned type,
                             int xoffset,
                             int yoffset,
-                            bool flip_y,
-                            bool premultiply_alpha);
+                            GrSurfaceOrigin dst_origin,
+                            SkAlphaType dst_alpha_type);
 
   // Copies VideoFrame contents to the `destination` shared image. if
   // `use_visible_rect` is set to true, only `VideoFrame::visible_rect()`

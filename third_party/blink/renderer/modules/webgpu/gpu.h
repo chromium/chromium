@@ -81,14 +81,15 @@ class MODULES_EXPORT GPU final : public ScriptWrappable,
   // ExecutionContextLifecycleObserver overrides
   void ContextDestroyed() override;
 
-  // gpu.idl
+  // gpu.idl {{{
   ScriptPromise<IDLNullable<GPUAdapter>> requestAdapter(
       ScriptState* script_state,
       const GPURequestAdapterOptions* options);
   V8GPUTextureFormat getPreferredCanvasFormat();
   WGSLLanguageFeatures* wgslLanguageFeatures() const;
+  // }}} End of WebIDL binding implementation.
 
-  static wgpu::TextureFormat preferred_canvas_format();
+  static wgpu::TextureFormat GetPreferredCanvasFormat();
 
   // Store the buffer in a weak hash set so we can destroy it when the
   // context is destroyed.
@@ -97,7 +98,7 @@ class MODULES_EXPORT GPU final : public ScriptWrappable,
   // destroyed.
   void UntrackMappableBuffer(GPUBuffer* buffer);
 
-  BoxedMappableWGPUBufferHandles* mappable_buffer_handles() const {
+  BoxedMappableWGPUBufferHandles* GetMappableBufferHandles() const {
     return mappable_buffer_handles_.get();
   }
 

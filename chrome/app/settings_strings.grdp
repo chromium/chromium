@@ -634,10 +634,6 @@
   <message name="IDS_SETTINGS_AUTOFILL_AI_MORE_ACTIONS_FOR_ENTITY_INSTANCE" desc="The accessibility label of the More options menu. Options in the menu include 'Edit' and 'Delete'. If including specific verbs in your language adds undo complexity, it's also acceptable to use something like: 'More options for 'label', 'sublabel''. Examples of 'label' and 'sublabel' include 'Toyota Corolla, Vehicle'.">
     More options to edit or delete <ph name="ENTITY_INSTANCE_LABEL">$1<ex>Toyota</ex></ph>, <ph name="ENTITY_INSTANCE_SUBLABEL">$2<ex>Car</ex></ph>
   </message>
-  <!-- TODO(crbug.com/393318914): Change this string in favor of entity specific strings. -->
-  <message name="IDS_SETTINGS_AUTOFILL_AI_DELETE_ENTITY_INSTANCE_DIALOG_TITLE" desc="A title of a dialog within settings that allows a user to delete an entry. The user opened this dialog by choosing 'Delete' from the more options menu.">
-    Delete info?
-  </message>
   <message name="IDS_SETTINGS_AUTOFILL_AI_DELETE_ENTITY_INSTANCE_DIALOG_TEXT" desc="The body text of the delete entity instance confirmation dialog, on the Autofill AI settings page.">
     Autofill won't have this info on this device to help fill out forms
   </message>

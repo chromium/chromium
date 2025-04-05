@@ -346,8 +346,10 @@ MutableProfileOAuth2TokenServiceDelegate::CreateAccessTokenFetcher(
   std::string refresh_token = GetRefreshToken(account_id);
   DCHECK(!refresh_token.empty());
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-  if (token_binding_helper_ &&
-      token_binding_helper_->HasBindingKey(account_id)) {
+  bool is_refresh_token_bound = IsRefreshTokenBound(account_id);
+  if (base::FeatureList::IsEnabled(
+          switches::kUseIssueTokenToFetchAccessTokens) ||
+      is_refresh_token_bound) {
     // `CoreAccountId` is always equal to Gaia ID on DICE platforms.
     // We cannot get Gaia ID from `account_tracker_service_` as it's sometimes
     // unknown and the only way of getting it requires an access token, which
@@ -360,7 +362,7 @@ MutableProfileOAuth2TokenServiceDelegate::CreateAccessTokenFetcher(
         std::string(version_info::GetVersionNumber()),
         std::string(
             version_info::GetChannelString(client_->GetClientChannel())));
-    if (token_binding_challenge.empty()) {
+    if (token_binding_challenge.empty() || !is_refresh_token_bound) {
       return fetcher;
     }
     // `fetcher_wrapper` makes `fetcher` wait until a binding key assertion is

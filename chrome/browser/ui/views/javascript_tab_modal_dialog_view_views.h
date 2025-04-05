@@ -10,7 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser.h"
 #include "components/javascript_dialogs/tab_modal_dialog_view.h"
-#include "components/tab_collections/public/tab_interface.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/javascript_dialog_manager.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"

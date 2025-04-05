@@ -235,6 +235,9 @@ class TabModel {
 
   chrome::android::ActivityType activity_type() const { return activity_type_; }
 
+  // Returns whether the tab is in a tab group.
+  virtual bool IsTabInTabGroup(TabAndroid* tab) = 0;
+
  protected:
   TabModel(Profile* profile, chrome::android::ActivityType activity_type);
   virtual ~TabModel();

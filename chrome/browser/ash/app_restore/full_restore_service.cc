@@ -13,14 +13,10 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
-#include "ash/constants/notifier_catalogs.h"
 #include "ash/constants/web_app_id_constants.h"
 #include "ash/glanceables/post_login_glanceables_metrics_recorder.h"
-#include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/session/session_controller.h"
 #include "ash/shell.h"
-#include "ash/webui/settings/public/constants/routes.mojom.h"
-#include "ash/webui/settings/public/constants/setting.mojom-shared.h"
 #include "ash/wm/desks/templates/saved_desk_controller.h"
 #include "ash/wm/window_restore/informed_restore_controller.h"
 #include "ash/wm/window_restore/window_restore_metrics.h"
@@ -33,23 +29,18 @@
 #include "base/trace_event/trace_event.h"
 #include "base/version.h"
 #include "base/version_info/version_info.h"
-#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/app_restore/app_restore_arc_task_handler.h"
 #include "chrome/browser/ash/app_restore/app_restore_arc_task_handler_factory.h"
 #include "chrome/browser/ash/app_restore/full_restore_app_launch_handler.h"
 #include "chrome/browser/ash/app_restore/full_restore_data_handler.h"
 #include "chrome/browser/ash/app_restore/full_restore_prefs.h"
 #include "chrome/browser/ash/app_restore/new_user_restore_pref_handler.h"
-#include "chrome/browser/ash/policy/scheduled_task_handler/reboot_notifications_scheduler.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/lifetime/termination_notification.h"
-#include "chrome/browser/notifications/notification_display_service.h"
-#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/app_session_service_factory.h"
 #include "chrome/browser/sessions/session_service_factory.h"
-#include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/branded_strings.h"
@@ -69,9 +60,6 @@
 #include "components/url_formatter/url_formatter.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "ui/chromeos/devicetype_utils.h"
-#include "ui/message_center/public/cpp/notification.h"
 
 // Enable VLOG level 1.
 #undef ENABLED_VLOG_LEVEL
@@ -96,16 +84,6 @@ constexpr char kRestoreInitSettingHistogramName[] = "Apps.RestoreInitSetting";
 constexpr char kFullRestoreWindowCountHistogramName[] =
     "Apps.FullRestoreWindowCount2";
 
-// If the reboot occurred due to DeviceScheduledRebootPolicy, change the title
-// to notify the user that the device was rebooted by the administrator.
-int GetRestoreNotificationTitleId(Profile* profile) {
-  if (policy::RebootNotificationsScheduler::ShouldShowPostRebootNotification(
-          profile)) {
-    return IDS_POLICY_DEVICE_POST_REBOOT_TITLE;
-  }
-  return IDS_RESTORE_NOTIFICATION_TITLE;
-}
-
 // Returns true if `profile` is the primary user profile.
 bool IsPrimaryUser(Profile* profile) {
   return ProfileHelper::Get()->GetUserByProfile(profile) ==
@@ -121,13 +99,6 @@ void MaybeInitiateAdminTemplateAutoLaunch() {
 }
 
 }  // namespace
-
-const char kRestoreForCrashNotificationId[] = "restore_for_crash_notification";
-const char kRestoreNotificationId[] = "restore_notification";
-
-const char kRestoreNotificationHistogramName[] = "Apps.RestoreNotification";
-const char kRestoreForCrashNotificationHistogramName[] =
-    "Apps.RestoreForCrashNotification";
 
 class DelegateImpl : public FullRestoreService::Delegate {
  public:
@@ -277,8 +248,7 @@ void FullRestoreService::Init(bool& show_notification) {
   // over update but we do the computations to store the pref for the next
   // session here first. The pref may not be registered in certain unit tests.
   bool is_update = false;
-  if (features::IsForestFeatureEnabled() &&
-      prefs->HasPrefPath(prefs::kInformedRestoreLastVersion)) {
+  if (prefs->HasPrefPath(prefs::kInformedRestoreLastVersion)) {
     const base::Version old_version(
         prefs->GetString(prefs::kInformedRestoreLastVersion));
     const base::Version current_version = version_info::GetVersion();
@@ -293,13 +263,13 @@ void FullRestoreService::Init(bool& show_notification) {
 
     // TODO(crbug.com/388309832): Determine if we should show a notification for
     // crashes if always or never restore setting is set for forest.
-    if (features::IsForestFeatureEnabled() && !IsAskEveryTime(prefs)) {
+    if (!IsAskEveryTime(prefs)) {
       return;
     }
 
     // If the system crashed before reboot, show the crash notification.
-    MaybeShowRestoreNotification(
-        InformedRestoreContentsData::DialogType::kCrash, show_notification);
+    MaybeShowRestoreDialog(InformedRestoreContentsData::DialogType::kCrash,
+                           show_notification);
     return;
   }
 
@@ -343,14 +313,12 @@ void FullRestoreService::Init(bool& show_notification) {
       const auto dialog_type =
           is_update ? InformedRestoreContentsData::DialogType::kUpdate
                     : InformedRestoreContentsData::DialogType::kNormal;
-      MaybeShowRestoreNotification(dialog_type, show_notification);
+      MaybeShowRestoreDialog(dialog_type, show_notification);
       MaybeInitiateAdminTemplateAutoLaunch();
       break;
     }
     case RestoreOption::kDoNotRestore: {
-      if (features::IsForestFeatureEnabled()) {
-        MaybeShowInformedRestoreOnboarding(/*restore_on=*/false);
-      }
+      MaybeShowInformedRestoreOnboarding(/*restore_on=*/false);
       ::full_restore::FullRestoreSaveHandler::GetInstance()->AllowSave();
       MaybeInitiateAdminTemplateAutoLaunch();
       return;
@@ -388,12 +356,6 @@ void FullRestoreService::MaybeCloseNotification(bool allow_save) {
   // shutdown process.
   crashed_lock_.reset();
 
-  if (notification_ && !is_shut_down_) {
-    NotificationDisplayServiceFactory::GetForProfile(profile_)->Close(
-        NotificationHandler::Type::TRANSIENT, notification_->id());
-    accelerator_controller_observer_.Reset();
-  }
-
   if (allow_save) {
     // If the user launches an app or clicks the cancel button, start the save
     // timer.
@@ -404,81 +366,6 @@ void FullRestoreService::MaybeCloseNotification(bool allow_save) {
 void FullRestoreService::Restore() {
   if (app_launch_handler_)
     app_launch_handler_->SetShouldRestore();
-}
-
-void FullRestoreService::Close(bool by_user) {
-  if (!skip_notification_histogram_) {
-    RecordRestoreAction(
-        notification_->id(),
-        by_user ? RestoreAction::kCloseByUser : RestoreAction::kCloseNotByUser);
-  }
-  notification_ = nullptr;
-
-  if (by_user) {
-    // If the user closes the notification, start the save timer. If it is not
-    // closed by the user, the restore button might be clicked, then we need to
-    // wait for the restore finish to start the save timer.
-    ::full_restore::FullRestoreSaveHandler::GetInstance()->AllowSave();
-  }
-}
-
-void FullRestoreService::Click(const std::optional<int>& button_index,
-                               const std::optional<std::u16string>& reply) {
-  DCHECK(notification_);
-  skip_notification_histogram_ = true;
-
-  if (!button_index.has_value() ||
-      button_index.value() ==
-          static_cast<int>(RestoreNotificationButtonIndex::kRestore)) {
-    VLOG(1) << "The restore notification is clicked for "
-            << profile_->GetPath();
-
-    // Restore if the user clicks the notification body.
-    RecordRestoreAction(notification_->id(), RestoreAction::kRestore);
-    Restore();
-
-    // If the user selects restore, don't start the save timer. Wait for the
-    // restore finish.
-    MaybeCloseNotification(/*allow_save=*/false);
-    return;
-  }
-
-  if (notification_->id() == kRestoreNotificationId) {
-    // Show the 'On Startup' OS setting page if the user clicks the settings
-    // button of the restore notification.
-    chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-        profile_, chromeos::settings::mojom::kSystemPreferencesSectionPath,
-        chromeos::settings::mojom::Setting::kRestoreAppsAndPages);
-    return;
-  }
-
-  VLOG(1) << "The crash restore notification is canceled for "
-          << profile_->GetPath();
-
-  // Close the crash notification if the user clicks the cancel button of the
-  // crash notification.
-  RecordRestoreAction(notification_->id(), RestoreAction::kCancel);
-  MaybeCloseNotification();
-}
-
-void FullRestoreService::OnActionPerformed(AcceleratorAction action) {
-  switch (action) {
-    case AcceleratorAction::kNewIncognitoWindow:
-    case AcceleratorAction::kNewTab:
-    case AcceleratorAction::kNewWindow:
-    case AcceleratorAction::kOpenCrosh:
-    case AcceleratorAction::kOpenDiagnostics:
-    case AcceleratorAction::kRestoreTab:
-      MaybeCloseNotification();
-      return;
-    default:
-      return;
-  }
-}
-
-void FullRestoreService::OnAcceleratorControllerWillBeDestroyed(
-    AcceleratorController* controller) {
-  accelerator_controller_observer_.Reset();
 }
 
 void FullRestoreService::OnSessionStateChanged(
@@ -597,20 +484,14 @@ void FullRestoreService::InitInformedRestoreContentsData(
   }
 }
 
-void FullRestoreService::MaybeShowRestoreNotification(
+void FullRestoreService::MaybeShowRestoreDialog(
     InformedRestoreContentsData::DialogType dialog_type,
-    bool& show_notification) {
+    bool& out_show_notification) {
   if (g_last_session_sanitized) {
     return;
   }
 
   if (!app_launch_handler_) {
-    return;
-  }
-
-  // Do not show the notification if we have no restore data.
-  if (!features::IsForestFeatureEnabled() &&
-      !app_launch_handler_->HasRestoreData()) {
     return;
   }
 
@@ -631,10 +512,7 @@ void FullRestoreService::MaybeShowRestoreNotification(
     return;
   }
 
-  const std::string id = last_session_crashed ? kRestoreForCrashNotificationId
-                                              : kRestoreNotificationId;
   if (!app_launch_handler_->HasRestoreData()) {
-    CHECK(features::IsForestFeatureEnabled());
     MaybeShowInformedRestoreOnboarding(/*restore_on=*/true);
     return;
   }
@@ -654,107 +532,34 @@ void FullRestoreService::MaybeShowRestoreNotification(
         ->RecordPostLoginFullRestoreShown();
   }
 
-  if (features::IsForestFeatureEnabled()) {
-    CHECK(delegate_);
+  CHECK(delegate_);
 
-    InitInformedRestoreContentsData(dialog_type);
+  InitInformedRestoreContentsData(dialog_type);
 
-    // Retrieves session service data from browser and app browsers, which
-    // will be used to display favicons and tab titles.
-    SessionServiceBase* service =
-        SessionServiceFactory::GetForProfileForSessionRestore(profile_);
-    SessionServiceBase* app_service =
-        AppSessionServiceFactory::GetForProfileForSessionRestore(profile_);
-    if (service && app_service) {
-      auto barrier = base::BarrierCallback<SessionWindows>(
-          /*num_callbacks=*/2u, /*done_callback=*/base::BindOnce(
-              &FullRestoreService::OnGotAllSessionsAsh,
-              weak_ptr_factory_.GetWeakPtr()));
+  // Retrieves session service data from browser and app browsers, which
+  // will be used to display favicons and tab titles.
+  SessionServiceBase* service =
+      SessionServiceFactory::GetForProfileForSessionRestore(profile_);
+  SessionServiceBase* app_service =
+      AppSessionServiceFactory::GetForProfileForSessionRestore(profile_);
+  if (service && app_service) {
+    auto barrier = base::BarrierCallback<SessionWindows>(
+        /*num_callbacks=*/2u, /*done_callback=*/base::BindOnce(
+            &FullRestoreService::OnGotAllSessionsAsh,
+            weak_ptr_factory_.GetWeakPtr()));
 
-      service->GetLastSession(
-          base::BindOnce(&FullRestoreService::OnGotSessionAsh,
-                         weak_ptr_factory_.GetWeakPtr(), barrier));
-      app_service->GetLastSession(
-          base::BindOnce(&FullRestoreService::OnGotSessionAsh,
-                         weak_ptr_factory_.GetWeakPtr(), barrier));
-    } else {
-      OnGotAllSessionsAsh(/*all_session_windows=*/{});
-    }
-
-    // Set to true as we might want to show the post reboot notification.
-    show_notification = true;
-    return;
-  }
-
-  // For forest, we will handle closing the dialog on the ash side.
-  if (auto* accelerator_controller = AcceleratorController::Get()) {
-    CHECK(!accelerator_controller_observer_.IsObserving());
-    accelerator_controller_observer_.Observe(accelerator_controller);
-  }
-
-  message_center::RichNotificationData notification_data;
-
-  message_center::ButtonInfo restore_button(
-      l10n_util::GetStringUTF16(IDS_RESTORE_NOTIFICATION_RESTORE_BUTTON));
-  notification_data.buttons.push_back(restore_button);
-
-  int button_id;
-  if (id == kRestoreForCrashNotificationId)
-    button_id = IDS_RESTORE_NOTIFICATION_CANCEL_BUTTON;
-  else
-    button_id = IDS_RESTORE_NOTIFICATION_SETTINGS_BUTTON;
-  message_center::ButtonInfo cancel_button(
-      l10n_util::GetStringUTF16(button_id));
-  notification_data.buttons.push_back(cancel_button);
-
-  std::u16string title;
-  if (id == kRestoreForCrashNotificationId) {
-    title = l10n_util::GetStringFUTF16(IDS_RESTORE_CRASH_NOTIFICATION_TITLE,
-                                       ui::GetChromeOSDeviceName());
-    VLOG(1) << "Show the restore notification for crash for "
-            << profile_->GetPath();
+    service->GetLastSession(base::BindOnce(&FullRestoreService::OnGotSessionAsh,
+                                           weak_ptr_factory_.GetWeakPtr(),
+                                           barrier));
+    app_service->GetLastSession(
+        base::BindOnce(&FullRestoreService::OnGotSessionAsh,
+                       weak_ptr_factory_.GetWeakPtr(), barrier));
   } else {
-    title = l10n_util::GetStringUTF16(GetRestoreNotificationTitleId(profile_));
-    VLOG(1) << "Show the restore notification for the normal startup for "
-            << profile_->GetPath();
+    OnGotAllSessionsAsh(/*all_session_windows=*/{});
   }
 
-  int message_id;
-  if (id == kRestoreForCrashNotificationId)
-    message_id = IDS_RESTORE_CRASH_NOTIFICATION_MESSAGE;
-  else
-    message_id = IDS_RESTORE_NOTIFICATION_MESSAGE;
-
-  notification_ = CreateSystemNotificationPtr(
-      message_center::NOTIFICATION_TYPE_SIMPLE, id, title,
-      l10n_util::GetStringUTF16(message_id),
-      l10n_util::GetStringUTF16(IDS_RESTORE_NOTIFICATION_DISPLAY_SOURCE),
-      GURL(),
-      message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
-                                 id, NotificationCatalogName::kFullRestore),
-      notification_data,
-      base::MakeRefCounted<message_center::ThunkNotificationDelegate>(
-          weak_ptr_factory_.GetWeakPtr()),
-      kFullRestoreNotificationIcon,
-      message_center::SystemNotificationWarningLevel::NORMAL);
-  notification_->set_priority(message_center::SYSTEM_PRIORITY);
-
-  auto* notification_display_service =
-      NotificationDisplayServiceFactory::GetForProfile(profile_);
-  DCHECK(notification_display_service);
-  notification_display_service->Display(NotificationHandler::Type::TRANSIENT,
-                                        *notification_,
-                                        /*metadata=*/nullptr);
-  base::UmaHistogramBoolean(kFullRestoreNotificationHistogram, true);
-  show_notification = true;
-}
-
-void FullRestoreService::RecordRestoreAction(const std::string& notification_id,
-                                             RestoreAction restore_action) {
-  base::UmaHistogramEnumeration(notification_id == kRestoreNotificationId
-                                    ? kRestoreNotificationHistogramName
-                                    : kRestoreForCrashNotificationHistogramName,
-                                restore_action);
+  // Set to true as we might want to show the post reboot notification.
+  out_show_notification = true;
 }
 
 void FullRestoreService::OnPreferenceChanged(const std::string& pref_name) {

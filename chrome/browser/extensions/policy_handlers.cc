@@ -21,7 +21,6 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_management_constants.h"
-#include "chrome/browser/extensions/external_policy_loader.h"
 #include "components/crx_file/id_util.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
 #include "components/policy/core/browser/policy_error_map.h"
@@ -34,6 +33,10 @@
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/url_pattern.h"
 #include "url/gurl.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/extensions/external_policy_loader.h"
+#endif
 
 #if BUILDFLAG(IS_WIN)
 #include "base/enterprise_util.h"
@@ -69,6 +72,8 @@ bool IsValidUpdateUrl(const std::string& update_url) {
 
 }  // namespace
 
+// TODO(crbug.com/394876083): Support more extension policy handlers on desktop
+// Android.
 #if !BUILDFLAG(IS_ANDROID)
 // ExtensionListPolicyHandler implementation -----------------------------------
 
