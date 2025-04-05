@@ -112,6 +112,7 @@
 <translation id="1306549533752902673">تطبيقات مقترحة</translation>
 <translation id="1310396869741602366">تغيير أسلوب النص</translation>
 <translation id="1312604459020188865">قوة الإشارة <ph name="SIGNAL_STRENGTH" /></translation>
+<translation id="1314113845887519729">مقبض الحافة العلوية المحدَّد، ويمكن استخدام مفاتيح الأسهم لتحريكه</translation>
 <translation id="1316069254387866896">عرض الرف دائمًا</translation>
 <translation id="132346741904777634">تم توجيه الكاميرا إلى الزاوية العلوية اليسرى. هناك تعارض مع مساحة عرض نظام آخر.</translation>
 <translation id="132415371743256095">إغلاق "<ph name="DESK_NAME" />" والنوافذ</translation>
@@ -187,6 +188,7 @@
 <translation id="1557622599341396706">إظهار اسم سطح المكتب</translation>
 <translation id="1569384531973824928">يتيح هذا الإجراء إمكانية الوصول إلى الكاميرا والميكروفون لجميع التطبيقات والمواقع الإلكترونية التي لديها هذا الإذن. قد تحتاج إلى إعادة تحميل صفحة الويب أو إعادة تشغيل التطبيق.</translation>
 <translation id="1571697193564730395">تبديل حالة "عدم الإزعاج": <ph name="STATE_TEXT" /></translation>
+<translation id="1574691582236909946">مقبض الحافة اليمنى المحدَّد، ويمكن استخدام مفاتيح الأسهم لتحريكه</translation>
 <translation id="1576623706766186887">التصغير عند يكون المكبِّر مفعّلاً</translation>
 <translation id="1582946770779745370">‏ميزة "لوحة بيانات الألعاب" متاحة. اضغط على <ph name="LAUNCHER_KEY_NAME" /> + Shift ‏+ Escape، ثم على <ph name="LAUNCHER_KEY_NAME" /> + g في أي وقت للفتح.</translation>
 <translation id="1586324912145647027">الانتقال إلى سطح المكتب من 1 إلى 8</translation>
@@ -608,6 +610,7 @@
 <translation id="304097922505898963">فتح تطبيق "اختصارات لوحة المفاتيح"</translation>
 <translation id="304417730895741346">تطبيقاتك المثبَّتة والمفتوحة معروضة هنا على الرف. لتثبيت تطبيق في الرف، انقر بزر الماوس الأيمن عليه أو انقر بإصبعين على لوحة اللمس.</translation>
 <translation id="3045488863354895414">مساء الخير،</translation>
+<translation id="3045670165536837541">المقبض المحدَّد في أعلى اليسار، ويمكن استخدام مفاتيح الأسهم لتحريكه</translation>
 <translation id="3047761520276763270">حاوِِل قول:</translation>
 <translation id="3053407068093039599">تفعيل إذن الوصول إلى الكاميرا أو إيقافه</translation>
 <translation id="3055162170959710888">استخدمت هذا الجهاز لمدة <ph name="USED_TIME" /> اليوم</translation>
@@ -1762,6 +1765,7 @@
 <translation id="6696025732084565524">تحتاج لوحة المفاتيح القابلة للفصل إلى تحديث مهم</translation>
 <translation id="6697913454192220372">إضافة جهاز سطح مكتب جديد</translation>
 <translation id="6700713906295497288">‏زر قائمة أداة تحرير أسلوب الإدخال (IME)</translation>
+<translation id="6704073473590541209">مقبض الحافة اليسرى المحدَّد، ويمكن استخدام مفاتيح الأسهم لتحريكه</translation>
 <translation id="6706742084323792866">تثبيت لوحة المفاتيح</translation>
 <translation id="6710213216561001401">السابق</translation>
 <translation id="6723839937902243910">الطاقة</translation>
@@ -1785,6 +1789,7 @@
 <translation id="6781002679438061620">سطح المكتب 9</translation>
 <translation id="6782182743534150858">سطح المكتب 13</translation>
 <translation id="6782919488259222803">البحث في الصفحة الحالية</translation>
+<translation id="6783348167101855071">المقبض المحدَّد في أسفل اليسار، ويمكن استخدام مفاتيح الأسهم لتحريكه</translation>
 <translation id="6786750046913594791">إغلاق المجلد</translation>
 <translation id="6790428901817661496">التشغيل</translation>
 <translation id="6792262051831399889">غير متوفّر</translation>
@@ -1941,6 +1946,7 @@
 <translation id="7371404428569700291">تسجيل فيديو للنافذة</translation>
 <translation id="7372069265635026568">مساحة الذاكرة المتوفّرة: <ph name="AVAILABLE_MEMORY" /> من إجمالي <ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">يتيح هذا الإجراء وصول كل التطبيقات والمواقع الإلكترونية إلى الميكروفون من خلال منحها إذن استخدام الميكروفون.</translation>
+<translation id="7376933029363911338">مقبض الحافة السفلية المحدَّد، ويمكن استخدام مفاتيح الأسهم لتحريكه</translation>
 <translation id="7377169924702866686">‏مفتاح Caps Lock في وضع التفعيل.</translation>
 <translation id="7377481913241237033">الربط باستخدام رمز</translation>
 <translation id="7378203170292176219">يُرجى السحب لتحديد منطقة لتسجيل فيديو لها.</translation>
@@ -2037,6 +2043,7 @@
 <translation id="7658239707568436148">إلغاء</translation>
 <translation id="7659861092419699379">تم إغلاق سطح المكتب والنوافذ.</translation>
 <translation id="7660160718439869192">سيظهر الجهاز <ph name="NAME" /> على الأجهزة المرتبطة بعنوان البريد الإلكتروني <ph name="EMAIL" />.</translation>
+<translation id="7661694115779363471">المقبض المحدَّد في أسفل اليمين، ويمكن استخدام مفاتيح الأسهم لتحريكه</translation>
 <translation id="7662283695561029522">النقر للإعداد</translation>
 <translation id="7670953955701272011">‏فتح هذا التاريخ في "تقويم Google"</translation>
 <translation id="7671610481353807627">تم ترتيب التطبيقات حسب اللون.</translation>
@@ -2205,6 +2212,7 @@
 <translation id="8155628902202578800">فتح مربع حوار المعلومات للبريد الإلكتروني <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">استخدام <ph name="LOCALE_NAME" /></translation>
 <translation id="8168435359814927499">المحتوى</translation>
+<translation id="8172370561760918656">المقبض المحدَّد في أعلى اليمين، ويمكن استخدام مفاتيح الأسهم لتحريكه</translation>
 <translation id="81817143961839203">تعذَّر إدراج الصورة</translation>
 <translation id="8185090165691050712">قائمة تفعيل/إيقاف وضع القفل لميزة تغيير الحجم</translation>
 <translation id="8192727139462702395">بعد إيقاف البلوتوث، سيتم إلغاء ربط هذه الأجهزة الخارجية بجهاز <ph name="DEVICE_TYPE" />:</translation>

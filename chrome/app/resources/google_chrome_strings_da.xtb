@@ -157,7 +157,9 @@
 <translation id="2945997411976714835">Installationsfejl: Installationsprocessen kunne ikke startes.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Login på netværk – Chrome</translation>
 <translation id="2970681950995291301">Hvis du vil fjerne din Google-konto fra Chrome, skal du logge ud af Chrome på siden Indstillinger</translation>
+<translation id="2991167882679440829">Dine adgangskoder og andre Chrome-data, som du har gemt på din Google-konto, fjernes fra denne enhed. Hvis du vil bruge dem igen i Chrome, skal du logge ind igen.</translation>
 <translation id="2994465299455873643">Leverer krypteringstjenester og en sikker måde at gendanne <ph name="BROWSER_NAME" /> på, hvis den forældes. Hvis denne tjeneste deaktiveres, mister <ph name="BROWSER_NAME" /> muligvis adgangen til krypterede data, og <ph name="BROWSER_NAME" /> kan muligvis ikke gendanne sig selv.</translation>
+<translation id="3003694935412297923">Alle opgaver</translation>
 <translation id="3018957014024118866">Slet også data fra Chrome (<ph name="URL" />)</translation>
 <translation id="3019382870990049182">Genstart for at opdatere &amp;ChromeOS Flex</translation>
 <translation id="3037838751736561277">Google Chrome kører i baggrunden.</translation>
@@ -275,6 +277,7 @@
 <translation id="4567424176335768812">Du er logget ind som <ph name="USER_EMAIL_ADDRESS" />. Nu kan du få adgang til dine bogmærker, din historik og andre indstillinger på alle de enheder, hvor du er logget ind.</translation>
 <translation id="4571503333518166079">Gå til indstillinger for Chrome-notifikationer</translation>
 <translation id="459622048091363950">Når Chrome har adgang, kan websites bede dig om adgang.</translation>
+<translation id="4598116752460667024">Søg efter en proces på listen.</translation>
 <translation id="4600710005438004015">Chrome kunne ikke opdateres til den nyeste version, så du går glip af nye funktioner og sikkerhedsrettelser.</translation>
 <translation id="4624065194742029982">Inkognitotilstand i Chrome</translation>
 <translation id="4627412468266359539">Valgfrit: Vær med til at forbedre funktionerne og ydeevnen i ChromeOS Flex ved automatisk at sende diagnostik- og brugsdata til Google.</translation>
@@ -467,6 +470,7 @@
 <translation id="7193885263065350793">Din organisation lukker Chrome, når browseren ikke har været i brug i <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">Du er ved at logge ind med en managerstyret konto og give dens administrator kontrol over din profil i Google Chrome. Dine Chrome-data, f.eks. dine apps, bogmærker, historikdata, adgangskoder og andre indstillinger, knyttes permanent til <ph name="USER_NAME" />. Du kan slette disse data via kontrolpanelet for Google Konti, men du kan ikke knytte disse data til en anden konto. Du kan eventuelt oprette en ny profil for at holde dine eksisterende Chrome-data adskilt. <ph name="LEARN_MORE" /></translation>
 <translation id="7285616922384953075"><ph name="MANAGER" /> administrerer Chrome</translation>
+<translation id="7288567540154601580">Faner og udvidelser</translation>
 <translation id="7296210096911315575">Vigtige oplysninger om brug og sikkerhed</translation>
 <translation id="7302361266603927550">Nogle af dine Chrome-data er endnu ikke gemt på din Google-konto. Prøv at vente et par minutter, før du logger ud. Hvis du logger ud nu, slettes disse data.</translation>
 <translation id="7308322188646931570">Chrome skal have lageradgang for at downloade filer</translation>

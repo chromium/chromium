@@ -19,7 +19,7 @@ Ako je izbrišete, svi će odmah izgubiti pristup grupi kartica "<ph name="TITLE
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Kreirano je prije <ph name="NUM_MINS_ONE" /> minute}one{Kreirano je prije <ph name="NUM_MINS_MANY" /> minute}few{Kreirano je prije <ph name="NUM_MINS_MANY" /> minute}other{Kreirano je prije <ph name="NUM_MINS_MANY" /> minuta}}</translation>
 <translation id="1499635324672558517">Zatvoriti sve anonimne kartice?</translation>
 <translation id="1501480321619201731">Izbriši grupu</translation>
-<translation id="1505526451013346974">Dodaj u: <ph name="TITLE_OF_GROUP" /></translation>
+<translation id="1505526451013346974">Dodavanje u grupu <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1555130319947370107">Plava</translation>
 <translation id="161042844686301425">Cijan</translation>
 <translation id="1645759014353344461">Grupisano je više kartica (ukupno <ph name="TABS_COUNT_MANY" />)</translation>
@@ -214,7 +214,7 @@ Ako je izbrišete, svi će odmah izgubiti pristup grupi kartica "<ph name="TITLE
 <translation id="8820741577754260431">Vidite pad cijena na svojim karticama</translation>
 <translation id="8887921976452567404">Zatvorene kartice i grupe možete ponovo otvoriti iz odjeljaka Nedavne kartice i Grupe kartica.</translation>
 <translation id="8915916167043355778">Zatvori sve</translation>
-<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Premjesti u novi prozor}one{Premjesti u druge prozore}few{Premjesti u druge prozore}other{Premjesti u druge prozore}}</translation>
+<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Premještanje u novi prozor}one{Premještanje u drugi prozor}few{Premještanje u drugi prozor}other{Premještanje u drugi prozor}}</translation>
 <translation id="9090098097337832354">Informacije o ovoj trgovini su zatvorene</translation>
 <translation id="9114502155681725011">Otvaranje menija s radnjama grupe kartica za grupu kartica <ph name="TITLE_OF_GROUP" />, boje <ph name="COLOR_NAME" />.</translation>
 <translation id="9169141410816678175">Svako će odmah izgubiti pristup grupi kartica "<ph name="GROUP_NAME" />", a ona će se izbrisati sa svih uređaja</translation>

@@ -97,6 +97,7 @@
 <translation id="1377508275003315939">Cyfrineiriau</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} o {count} cyfeiriad}zero{{position} o {count} cyfeiriad}two{{position} o {count} gyfeiriad}few{{position} o {count} cyfeiriad}many{{position} o {count} cyfeiriad}other{{position} o {count} cyfeiriad}}</translation>
 <translation id="1383876407941801731">Chwilio</translation>
+<translation id="1385168997509105202">Byddwch yn colli mynediad at y grŵp tab '<ph name="GROUP_NAME" />' ar unwaith, ac ni fydd <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) yn gallu rhyngweithio â chi ar draws gwasanaethau Google mwyach.</translation>
 <translation id="138618066238211776">Parhau fel <ph name="USER_NAME" /></translation>
 <translation id="138692594145659985">Dewisiadau i gadw cerdyn</translation>
 <translation id="1396260204083880024">Wedi mewngofnodi fel <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Agor dewislen cyfrif.</translation>
@@ -511,6 +512,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="3124568093781685165">Rhannu eich cyfrineiriau gyda'ch teulu</translation>
 <translation id="3130863904455712965">Hanes a rhagor</translation>
 <translation id="313283613037595347">Creu tab Anhysbys newydd.</translation>
+<translation id="3136739222562075778">Mae'r cerdyn hwn yn dangos gostyngiadau mewn prisiau ar gynhyrchion yn eich tabiau agored</translation>
 <translation id="3138611310073113613">Cael gwared ar y dewis</translation>
 <translation id="3140825265190223781">Cyfrineiriau a chodau pas wedi'u cadw</translation>
 <translation id="3143515551205905069">Canslo cysoni</translation>
@@ -987,6 +989,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="5197255632782567636">Rhyngrwyd</translation>
 <translation id="5200894869889836319">Opsiynau ar gyfer gosod caniatadau</translation>
 <translation id="5203051773066903947">Dechrau</translation>
+<translation id="5205750905107419335">Bydd <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) yn colli mynediad at y grŵp tabiau '<ph name="GROUP_NAME" />' ar unwaith, ac ni fydd yn gallu rhyngweithio â chi ar draws gwasanaethau Google mwyach.</translation>
 <translation id="5206453674369664567">Allgofnodi a chlirio data</translation>
 <translation id="5210365745912300556">Cau'r tab</translation>
 <translation id="5211488077761630279">Caniatáu i "<ph name="SITE_NAME" />" ddefnyddio eich <ph name="PERMISSION" />?</translation>
@@ -1068,6 +1071,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="5567439033041178034">DYSGU RHAGOR</translation>
 <translation id="5572648434713976849">Byddwch yn cael awgrymiadau gwell yn y bar cyfeiriadau</translation>
 <translation id="5576885723883013398">Ffenestr newydd</translation>
+<translation id="5578543325423650885">Bydd <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) yn colli mynediad i'r grŵp tab '<ph name="GROUP_NAME" />' ar unwaith.</translation>
 <translation id="5578795271662203820">Chwilio <ph name="SEARCH_ENGINE" /> am y llun hwn</translation>
 <translation id="5579012242779565775">Cuddio Rhestr ddarllen</translation>
 <translation id="5585019845078534178">Cardiau</translation>

@@ -157,7 +157,9 @@
 <translation id="2945997411976714835">Error de instalación: No se pudo iniciar el proceso del instalador.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" />: Acceso a la red - Chrome</translation>
 <translation id="2970681950995291301">Sal de Chrome en la página de Configuración para quitar tu Cuenta de Google</translation>
+<translation id="2991167882679440829">Se quitarán de este dispositivo tus contraseñas y otros datos de Chrome que guardaste en tu Cuenta de Google. Para volver a usarlas en Chrome, vuelve a acceder.</translation>
 <translation id="2994465299455873643">Proporciona servicios de encriptación y una forma segura de recuperar <ph name="BROWSER_NAME" /> si está desactualizado. Si se inhabilita este servicio, es posible que <ph name="BROWSER_NAME" /> pierda el acceso a los datos encriptados y que <ph name="BROWSER_NAME" /> no pueda recuperarse.</translation>
+<translation id="3003694935412297923">Todas las tareas</translation>
 <translation id="3018957014024118866">Borrar también datos de Chrome (<ph name="URL" />)</translation>
 <translation id="3019382870990049182">Reiniciar para actualizar ChromeOS Flex</translation>
 <translation id="3037838751736561277">Google Chrome está en modo de segundo plano</translation>
@@ -184,6 +186,7 @@
 <translation id="3282568296779691940">Acceder a Chrome</translation>
 <translation id="3286538390144397061">Reiniciar ahora</translation>
 <translation id="3292333338048274092">Luego, deberás reiniciar Chrome.</translation>
+<translation id="3327226547491422998">Más adelante, Chrome puede preguntarte si quieres usar la información guardada para completar formularios automáticamente</translation>
 <translation id="3360895254066713204">Ayuda de Chrome</translation>
 <translation id="3379938682270551431">{0,plural, =0{Se reiniciará Chrome ahora}=1{Se reiniciará Chrome en 1 segundo}other{Se reiniciará Chrome en # segundos}}</translation>
 <translation id="3396977131400919238">Se produjo un error del sistema operativo durante la instalación. Descargue Google Chrome nuevamente.</translation>
@@ -274,6 +277,7 @@
 <translation id="4567424176335768812">Accediste como <ph name="USER_EMAIL_ADDRESS" />. Ahora puedes ir a los favoritos, al historial y a otras opciones en todos los dispositivos en los que hayas accedido.</translation>
 <translation id="4571503333518166079">Ir a la configuración de notificaciones de Chrome</translation>
 <translation id="459622048091363950">Una vez que Chrome tenga acceso, los sitios web podrán solicitarte acceso.</translation>
+<translation id="4598116752460667024">Busca cualquier proceso de la lista.</translation>
 <translation id="4600710005438004015">Chrome no se pudo actualizar a la última versión, por lo que te estás perdiendo las nuevas funciones y correcciones de seguridad.</translation>
 <translation id="4624065194742029982">Incógnito de Chrome</translation>
 <translation id="4627412468266359539">Opcional: Para ayudar a mejorar las funciones y el rendimiento de ChromeOS Flex, envía automáticamente datos de uso y de diagnóstico a Google.</translation>
@@ -398,6 +402,7 @@
 <translation id="6251759518630934363">Analiza más datos de los sitios que la protección estándar para advertirte sobre sitios peligrosos, incluso sobre los que Google no conocía. Puedes omitir las advertencias de Chrome.</translation>
 <translation id="6277547788421725101">Tu madre o padre desactivaron la opción "Permisos para sitios, apps y extensiones" para Chrome</translation>
 <translation id="627882678981830918">Personaliza y controla Chrome. Establece Chrome como tu navegador predeterminado.</translation>
+<translation id="6288580400488258237">Establece Google Chrome como tu navegador predeterminado y fíjalo a la barra de tareas</translation>
 <translation id="6291089322031436445">Apps de Chrome Dev</translation>
 <translation id="6291549208091401781">Google Chrome ya está instalado para todos los usuarios en tu computadora.</translation>
 <translation id="6319856120645568262">Chrome necesita permiso para comprender tu entorno y hacer un seguimiento de tus manos</translation>
@@ -465,6 +470,7 @@
 <translation id="7193885263065350793">Tu organización cierra Chrome cuando no se usa durante <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">Estás por acceder con una cuenta administrada, lo que significa que proporcionarás al administrador el control sobre tu perfil de Google Chrome. Tus datos de Google Chrome, como las aplicaciones, los favoritos, el historial, las contraseñas y otros parámetros de configuración quedarán vinculados a <ph name="USER_NAME" /> de forma permanente. Podrás eliminar estos datos a través del Panel de control de Cuentas de Google, pero no podrás asociarlos a otra cuenta. También puedes crear un perfil para mantener separados tus datos de Chrome. <ph name="LEARN_MORE" /></translation>
 <translation id="7285616922384953075"><ph name="MANAGER" /> administra Chrome</translation>
+<translation id="7288567540154601580">Pestañas y extensiones</translation>
 <translation id="7296210096911315575">Información importante sobre el uso y la seguridad</translation>
 <translation id="7302361266603927550">Aún no se guardaron algunos de tus datos de Chrome en tu Cuenta de Google. Espera unos minutos antes de salir. Si sales ahora, se borrarán estos datos.</translation>
 <translation id="7308322188646931570">Chrome necesita acceder al almacenamiento para descargar archivos</translation>

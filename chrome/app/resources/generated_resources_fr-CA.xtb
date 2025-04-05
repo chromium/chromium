@@ -4090,6 +4090,7 @@ l'<ph name="BEGIN_LINK" />
 <translation id="3820749202859700794">Courbe elliptique SECG secp521r1 (aussi appelée NIST P-521)</translation>
 <translation id="3821074617718452587">Notifications de la fonctionnalité Phone Hub</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Une extension a été approuvée}one{# extension a été approuvée}other{# extensions ont été approuvées}}</translation>
+<translation id="3822426549715448461">JJ</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Un minimum de <ph name="INSTALL_SIZE" /> d'espace est recommandé pour utiliser Linux.</translation>
 <translation id="3824621460022590830">Le jeton d'inscription d'appareil n'est pas valide. Veuillez communiquer avec l'administrateur ou le propriétaire de votre appareil. Code d'erreur : <ph name="ERROR_CODE" />.</translation>
@@ -4619,6 +4620,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4203769790323223880">Accès à l'appareil photo non autorisé</translation>
 <translation id="4204415812590935863">Impossible de créer un thème pour le moment.</translation>
 <translation id="4205157409548006256">Une erreur s'est produite lors de la configuration de Linux.</translation>
+<translation id="4205643719206044108">Pour proposer des suggestions, les sites que vous visitez et le contenu des pages sont partagés avec Google.</translation>
 <translation id="4206144641569145248">Extraterrestre</translation>
 <translation id="4206323443866416204">Rapport de commentaire</translation>
 <translation id="4206585797409671301">Autorisé à afficher les demandes</translation>
@@ -8761,6 +8763,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7199452998289813782">Suspendre la diffusion sur <ph name="DEVICE_NAME" /></translation>
 <translation id="720110658997053098">Conserver cet appareil en mode kiosque de manière permanente</translation>
 <translation id="7201118060536064622">« <ph name="DELETED_ITEM_NAME" /> » supprimé</translation>
+<translation id="7201336084980086208">Le remplissage automatique peut vous proposer d'enregistrer des renseignements lorsque vous soumettez des formulaires, comme votre numéro de permis de conduire ou de passeport.</translation>
 <translation id="7201420661433230412">Afficher les fichiers</translation>
 <translation id="7201432510117121839">La diffusion du contenu audio de l'ordinateur n'est pas prise en charge sur cet appareil</translation>
 <translation id="7201535955609308429">Veuillez patienter pendant que la vérification est en cours</translation>

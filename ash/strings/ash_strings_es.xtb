@@ -112,6 +112,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1306549533752902673">APLICACIONES RECOMENDADAS</translation>
 <translation id="1310396869741602366">Cambiar tono</translation>
 <translation id="1312604459020188865">Intensidad de la señal: <ph name="SIGNAL_STRENGTH" /></translation>
+<translation id="1314113845887519729">Controlador del borde superior seleccionado, usa las teclas de flecha para moverlo</translation>
 <translation id="1316069254387866896">Mostrar estantería siempre</translation>
 <translation id="132346741904777634">Cámara ajustada a la esquina superior izquierda. Conflicto con la superficie del sistema.</translation>
 <translation id="132415371743256095">Cerrar <ph name="DESK_NAME" /> y ventanas</translation>
@@ -186,6 +187,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1557622599341396706">Mostrar nombre de escritorio</translation>
 <translation id="1569384531973824928">Esto permite el acceso a todas las aplicaciones y sitios web con los permisos de cámara y micrófono. Es posible que tengas que actualizar la página web o reiniciar la aplicación.</translation>
 <translation id="1571697193564730395">Activa o desactiva No molestar. <ph name="STATE_TEXT" /></translation>
+<translation id="1574691582236909946">Controlador del borde izquierdo seleccionado, usa las teclas de flecha para moverlo</translation>
 <translation id="1576623706766186887">Reducir cuando la lupa esté activada</translation>
 <translation id="1582946770779745370">Panel de juego disponible. Pulsa <ph name="LAUNCHER_KEY_NAME" /> + Mayús + Esc y, después, <ph name="LAUNCHER_KEY_NAME" /> + G en cualquier momento para abrirlo.</translation>
 <translation id="1586324912145647027">Ir a un escritorio del 1 al 8</translation>
@@ -609,6 +611,7 @@ De lo contrario, el panel táctil integrado se volverá a habilitar en <ph name=
 <translation id="304097922505898963">Abrir la aplicación Combinaciones de teclas</translation>
 <translation id="304417730895741346">Las aplicaciones fijadas y abiertas están en la estantería. Para fijar una aplicación en la estantería, haz clic con el botón derecho en una aplicación o toca el panel táctil con dos dedos.</translation>
 <translation id="3045488863354895414">Buenas tardes,</translation>
+<translation id="3045670165536837541">Controlador superior derecho seleccionado, usa las teclas de flecha para moverlo</translation>
 <translation id="3047761520276763270">Prueba a decir:</translation>
 <translation id="3053407068093039599">Activar o desactivar el acceso a la cámara</translation>
 <translation id="3055162170959710888">Hoy has utilizado este dispositivo durante <ph name="USED_TIME" /></translation>
@@ -1765,6 +1768,7 @@ Nueva instalación</translation>
 <translation id="6696025732084565524">Tu teclado independiente necesita una actualización crítica</translation>
 <translation id="6697913454192220372">Añadir nuevo escritorio</translation>
 <translation id="6700713906295497288">Botón de menú de IME</translation>
+<translation id="6704073473590541209">Controlador del borde derecho seleccionado, usa las teclas de flecha para moverlo</translation>
 <translation id="6706742084323792866">Fijar teclado</translation>
 <translation id="6710213216561001401">Anterior</translation>
 <translation id="6723839937902243910">Encendido</translation>
@@ -1788,6 +1792,7 @@ Nueva instalación</translation>
 <translation id="6781002679438061620">Escritorio 9</translation>
 <translation id="6782182743534150858">Escritorio 13</translation>
 <translation id="6782919488259222803">Buscar en la página actual</translation>
+<translation id="6783348167101855071">Controlador inferior derecho seleccionado, usa las teclas de flecha para moverlo</translation>
 <translation id="6786750046913594791">Cerrar carpeta</translation>
 <translation id="6790428901817661496">Reproducir</translation>
 <translation id="6792262051831399889">No disponible</translation>
@@ -1943,6 +1948,7 @@ Nueva instalación</translation>
 <translation id="7371404428569700291">Grabar ventana</translation>
 <translation id="7372069265635026568"><ph name="AVAILABLE_MEMORY" /> de memoria disponible de un total de <ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">Esto permite que accedan al micrófono todas las aplicaciones y sitios web con el permiso de micrófono</translation>
+<translation id="7376933029363911338">Controlador del borde inferior seleccionado, usa las teclas de flecha para moverlo</translation>
 <translation id="7377169924702866686">El bloqueo de mayúsculas está activado.</translation>
 <translation id="7377481913241237033">Conectar con un código</translation>
 <translation id="7378203170292176219">Arrastra para seleccionar un área de grabación</translation>
@@ -2039,6 +2045,7 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7659861092419699379">El escritorio y las ventanas se han cerrado</translation>
 <translation id="7660160718439869192">Tu dispositivo <ph name="NAME" /> aparecerá en los dispositivos vinculados con <ph name="EMAIL" /></translation>
+<translation id="7661694115779363471">Controlador inferior izquierdo seleccionado, usa las teclas de flecha para moverlo</translation>
 <translation id="7662283695561029522">Toca para configurar</translation>
 <translation id="7670953955701272011">Abre esta fecha en Google Calendar</translation>
 <translation id="7671610481353807627">Las aplicaciones se han ordenado por color</translation>
@@ -2207,6 +2214,7 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="8155628902202578800">Abre el cuadro de diálogo con información de <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Idioma: <ph name="LOCALE_NAME" /></translation>
 <translation id="8168435359814927499">Contenido</translation>
+<translation id="8172370561760918656">Controlador superior izquierdo seleccionado, usa las teclas de flecha para moverlo</translation>
 <translation id="81817143961839203">No se ha podido insertar la imagen</translation>
 <translation id="8185090165691050712">Activar/Desactivar menú del modo de bloqueo del cambio de tamaño</translation>
 <translation id="8192727139462702395">Cuando desactives el Bluetooth, estos dispositivos externos se desconectarán de tu <ph name="DEVICE_TYPE" />:</translation>

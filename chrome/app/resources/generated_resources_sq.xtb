@@ -4083,6 +4083,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3820749202859700794">Kurba eliptike SECG secp521r1 (e njohur edhe si NIST P-521)</translation>
 <translation id="3821074617718452587">Njoftimet e Phone Hub</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Një shtesë është miratuar}other{# shtesa janë miratuar}}</translation>
+<translation id="3822426549715448461">DD</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Për Linux rekomandohet të paktën <ph name="INSTALL_SIZE" /> hapësirë.</translation>
 <translation id="3824621460022590830">Kodi i regjistrimit të pajisjes është i pavlefshëm. Kontakto me zotëruesin e pajisjes ose administratorin. Kodi i gabimit: <ph name="ERROR_CODE" />.</translation>
@@ -4612,6 +4613,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4203769790323223880">Kamera nuk lejohet</translation>
 <translation id="4204415812590935863">Nuk mund të krijohet një temë për momentin.</translation>
 <translation id="4205157409548006256">Ndodhi një gabim gjatë konfigurimit të Linux.</translation>
+<translation id="4205643719206044108">Për të ofruar sugjerime, sajtet që ti viziton dhe përmbajtjet e faqeve ndahen me Google</translation>
 <translation id="4206144641569145248">Alien</translation>
 <translation id="4206323443866416204">Raporti i komenteve</translation>
 <translation id="4206585797409671301">Lejohet të shfaqë kërkesat</translation>
@@ -6979,6 +6981,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5916655001090539219">Leximi automatik</translation>
 <translation id="5916664084637901428">Aktiv</translation>
 <translation id="59174027418879706">Aktivizuar</translation>
+<translation id="5919305207330938913">Të gjitha të dhënat e mbledhura do të përdoren sipas <ph name="BEGIN_LINK" />Politikës së privatësisë<ph name="END_LINK" /> të Google.</translation>
 <translation id="5920543303088087579">Lidhja me këtë rrjet është çaktivizuar nga administratori yt</translation>
 <translation id="5922963926582976524">Shkëput rrjetin e "Zonës së qasjes për internet në çast"</translation>
 <translation id="5924047253200400718">Kërko ndihmë<ph name="SCANNING_STATUS" /></translation>
@@ -7490,6 +7493,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6283438600881103103">Do të dalësh automatikisht tani.
 <ph name="DOMAIN" /> kërkon që ti ta mbash kartën tënde smart të futur.</translation>
 <translation id="628352644014831790">4 sekonda</translation>
+<translation id="6283823201263716145">Pajisjet në "Modalitetin e demonstrimit" i dërgojnë automatikisht te Google raportet e ndërprerjeve aksidentale, si dhe të dhënat e përdorimit dhe të diagnostikimit, për të ndihmuar në përmirësimin e veçorive dhe performancës.</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> nuk shkarkohet zakonisht dhe mund të jetë i rrezikshëm.</translation>
 <translation id="6285770818046456882">Pajisja që po ndan me ty e anuloi transfertën</translation>
 <translation id="628699625505156622">Përdor vendndodhjen. Lejo që aplikacionet, uebsajtet dhe shërbimet e ChromeOS dhe Android që kanë lejen për vendndodhjen të përdorin vendndodhjen e kësaj pajisjeje. "Saktësia e vendndodhjes" ofron vendndodhje më të saktë për shërbimet dhe aplikacionet për Android. Për ta bërë këtë, Google përpunon në mënyrë periodike informacionet për sensorët e pajisjes dhe sinjalet wireless nga kjo pajisje për të mbledhur vendndodhjet e sinjaleve wireless. Këto përdoren pa identifikuar asnjë individ për të përmirësuar saktësinë e vendndodhjes dhe shërbimet bazuar te vendndodhja, si dhe për të përmirësuar, ofruar dhe mirëmbajtur shërbimet e Google bazuar në interesat legjitimë të Google dhe të palëve të treta për t'u shërbyer nevojave të përdoruesve. <ph name="BEGIN_LINK1" />Mëso më shumë rreth përdorimit të vendndodhjes<ph name="END_LINK1" /></translation>
@@ -8750,6 +8754,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7199452998289813782">Vendose në pauzë transmetimin te <ph name="DEVICE_NAME" /></translation>
 <translation id="720110658997053098">Mbaje pajisjen gjithmonë në modalitetin "kioskë"</translation>
 <translation id="7201118060536064622">"<ph name="DELETED_ITEM_NAME" />" u fshi</translation>
+<translation id="7201336084980086208">Plotësimi automatik mund të ofrojë të ruajë informacionet kur ti dërgon formularë, si p.sh. numrin e lejes së drejtimit ose të pasaportës</translation>
 <translation id="7201420661433230412">Shiko skedarët</translation>
 <translation id="7201432510117121839">Transmetimi i audios së desktopit nuk mbështetet në këtë pajisje</translation>
 <translation id="7201535955609308429">Prit ndërkohë që verifikimi është në progres</translation>
@@ -9351,6 +9356,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7641720519047586765">Çelësi i kalimit u fshi nga ky sajt</translation>
 <translation id="764178579712141045"><ph name="USER_EMAIL" /> u shtua</translation>
 <translation id="7642778300616172920">Fshih përmbajtjet delikate</translation>
+<translation id="7643117827468520640">Rishiko këto kushte</translation>
 <translation id="7643842463591647490">{0,plural, =1{# dritare e hapur}other{# dritare të hapura}}</translation>
 <translation id="7643932971554933646">Do ta lejosh sajtin të shikojë skedarët?</translation>
 <translation id="7644953783774050577">Mos zgjidh asnjë</translation>

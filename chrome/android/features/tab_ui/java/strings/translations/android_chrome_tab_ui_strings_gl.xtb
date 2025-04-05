@@ -19,6 +19,7 @@ Se o eliminas, todas as persoas perderán inmediatamente o acceso ao grupo de pe
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Creouse hai <ph name="NUM_MINS_ONE" /> minuto}other{Creouse hai <ph name="NUM_MINS_MANY" /> minutos}}</translation>
 <translation id="1499635324672558517">Queres pechar todas as pestanas do modo de incógnito?</translation>
 <translation id="1501480321619201731">Eliminar grupo</translation>
+<translation id="1505526451013346974">Engadir a <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1555130319947370107">Azul</translation>
 <translation id="161042844686301425">Ciano</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> pestanas agrupadas</translation>

@@ -97,6 +97,7 @@
 <translation id="1377508275003315939">పాస్‌వర్డ్‌లు</translation>
 <translation id="1381022135873211423">{count,plural, =1{{count} అడ్రస్‌లో {position}వది}other{{count} అడ్రస్‌లలో {position}వది}}</translation>
 <translation id="1383876407941801731">సెర్చ్</translation>
+<translation id="1385168997509105202">మీరు తక్షణమే “<ph name="USER_EMAIL" />" ట్యాబ్ గ్రూప్‌నకు యాక్సెస్‌ను కోల్పోతారు, <ph name="GROUP_NAME" /> (<ph name="USER_NAME" />) ఇకపై Google సర్వీస్‌లలో మీతో ఇంటరాక్ట్ అవ్వలేరు.</translation>
 <translation id="138618066238211776"><ph name="USER_NAME" />గా కొనసాగించండి</translation>
 <translation id="138692594145659985">కార్డ్‌ను సేవ్ చేయడానికి ఆప్షన్‌లు</translation>
 <translation id="1396260204083880024"><ph name="USER_NAME" />‌గా సైన్ ఇన్ చేశారు. <ph name="USER_EMAIL" />. ఖాతా మెనూను తెరవండి.</translation>
@@ -511,6 +512,7 @@
 <translation id="3124568093781685165">మీ పాస్‌వర్డ్‌లను మీ ఫ్యామిలీతో షేర్ చేయండి</translation>
 <translation id="3130863904455712965">హిస్టరీ, ఇంకా మరెన్నో</translation>
 <translation id="313283613037595347">కొత్త అజ్ఞాత ట్యాబ్‌ను క్రియేట్ చేయండి.</translation>
+<translation id="3136739222562075778">ఈ కార్డ్ మీరు తెరిచిన ట్యాబ్‌లలో ప్రోడక్ట్‌లపై ధరల తగ్గుదలలను చూపుతుంది</translation>
 <translation id="3138611310073113613">ఎంపికను విస్మరించండి</translation>
 <translation id="3140825265190223781">సేవ్ చేసిన పాస్‌వర్డ్‌లు, పాస్-కీలు</translation>
 <translation id="3143515551205905069">సింక్‌ను రద్దు చేయండి</translation>
@@ -987,6 +989,7 @@
 <translation id="5197255632782567636">ఇంటర్నెట్</translation>
 <translation id="5200894869889836319">అనుమతులను సెట్ చేయడానికి ఆప్షన్‌లు</translation>
 <translation id="5203051773066903947">Enter</translation>
+<translation id="5205750905107419335"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) తక్షణమే “<ph name="GROUP_NAME" />" ట్యాబ్ గ్రూప్‌నకు యాక్సెస్‌ను కోల్పోతారు, ఇకపై వారు Google సర్వీస్‌లలో మీతో ఇంటరాక్ట్ అవ్వలేరు.</translation>
 <translation id="5206453674369664567">సైన్ అవుట్ చేసి, డేటాను క్లియర్ చేయండి</translation>
 <translation id="5210365745912300556">ట్యాబ్‌ను మూసివేయండి</translation>
 <translation id="5211488077761630279">మీ <ph name="PERMISSION" />‌ను ఉపయోగించడానికి "<ph name="SITE_NAME" />"‌ను అనుమతించాలా?</translation>
@@ -1068,6 +1071,7 @@
 <translation id="5567439033041178034">మరింత తెలుసుకోండి</translation>
 <translation id="5572648434713976849">మీరు అడ్రస్ బార్‌లో మెరుగైన సూచనలను పొందుతారు</translation>
 <translation id="5576885723883013398">కొత్త విండో</translation>
+<translation id="5578543325423650885"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) తక్షణమే “<ph name="GROUP_NAME" />" ట్యాబ్ గ్రూప్‌నకు యాక్సెస్‌ను కోల్పోతారు.</translation>
 <translation id="5578795271662203820">ఈ చిత్రం కోసం <ph name="SEARCH_ENGINE" />లో వెతకండి</translation>
 <translation id="5579012242779565775">చదవాల్సిన లిస్ట్‌ను దాచండి</translation>
 <translation id="5585019845078534178">కార్డ్‌లు</translation>

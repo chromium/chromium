@@ -114,6 +114,15 @@ Sachez que, sur <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> et <ph name
 <translation id="1065175969514496951">Cette règle permet d'autoriser l'accès aux URL listées lors de l'authentification (par exemple, sur les écrans de connexion et de verrouillage) comme exceptions à <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />. Lisez sa description pour connaître le format des entrées listées. Par exemple, définir <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" /> sur <ph name="WILDCARD_VALUE" /> bloque toutes les requêtes, et vous pouvez appliquer cette règle pour autoriser l'accès à une liste limitée d'URL. Utilisez-la pour définir des exceptions à certains schémas, ports, chemins d'accès spécifiques ou sous-domaines d'autres domaines à l'aide du format spécifié sur https://support.google.com/chrome/a?p=url_blocklist_filter_format. Le filtre le plus spécifique détermine si une URL est bloquée ou autorisée. La règle <ph name="DEVICE_AUTHENTICATION_URL_ALLOWLIST_POLICY_NAME" /> prévaut sur <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />. Cette règle est limitée à 1 000 entrées.
 
 Si cette règle n'est pas configurée, aucune exception à <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" /> n'est autorisée.</translation>
+<translation id="1065501094422559251">Cette règle contrôle les paramètres de code dynamique pour <ph name="PRODUCT_NAME" />.
+
+La désactivation du code dynamique améliore la sécurité de <ph name="PRODUCT_NAME" /> en empêchant le code dynamique et le code tiers potentiellement hostiles de modifier le comportement de <ph name="PRODUCT_NAME" />. Toutefois, cela peut entraîner des problèmes de compatibilité avec les logiciels tiers (par exemple, certains pilotes d'imprimante) devant s'exécuter dans le processus du navigateur.
+
+Si cette règle est définie sur 0 - Default ou si elle n'est pas configurée, <ph name="PRODUCT_NAME" /> utilisera les paramètres par défaut.
+
+Si cette règle est définie sur 1 - DisabledForBrowser, le processus de navigateur de <ph name="PRODUCT_NAME" /> ne peut pas créer de code dynamique.
+
+Remarque : pour en savoir plus sur les règles d'atténuation des risques liés aux processus, consultez https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies.</translation>
 <translation id="1068801725746725727">Activer la réception d'enquêtes sur la navigation sécurisée</translation>
 <translation id="107045325503547419">Dépendre du processus de lancement de la fonctionnalité.</translation>
 <translation id="1073983258515362346">Transmettre les informations concernant le rétroéclairage d'un appareil.
@@ -7681,6 +7690,15 @@ REMARQUE : Le comportement par défaut des appareils grand public et profession
       2) La langue du système
       3) La langue de remplacement (en-US).</translation>
 <translation id="6493089139124468815">Autoriser les sites à demander aux utilisateurs l'accès au presse-papiers</translation>
+<translation id="6493557163786346587">Permet de dresser la liste des formats d'URL pour lesquels les sites ne sont pas autorisés à demander aux utilisateurs à accéder à un port série.
+
+Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> s'applique pour tous les sites, à condition qu'elle soit définie. Si ce n'est pas le cas, le paramètre défini par l'utilisateur s'applique.
+
+Si le format d'URL ne correspond pas à celui défini dans cette règle, les règles suivantes s'appliquent, selon l'ordre de priorité suivant : <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" /> (si une correspondance existe), <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> (si elle est définie) ou les paramètres personnels de l'utilisateur.
+
+Si les formats d'URL entrent en conflit avec <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />, cette règle prévaut.
+
+Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez consulter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. La valeur <ph name="WILDCARD_VALUE" /> n'est pas acceptée pour cette règle.</translation>
 <translation id="6493918190032622602">Version minimale autorisée de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="6495337487202227251">Cette règle étant obsolète, elle sera supprimée dans la version 85 de <ph name="PRODUCT_OS_NAME" />. (Veuillez utiliser la règle <ph name="SCREEN_LOCK_DELAYS_POLICY_NAME" />.)
 
@@ -10213,6 +10231,15 @@ Remarque : Cette règle est une solution temporaire pour faciliter la transitio
 <translation id="8371178326720637170">Autorise les extensions gérées à utiliser l'API Enterprise Hardware Platform</translation>
 <translation id="8373176843640227330">Désactiver les rapports Bluetooth de l'appareil</translation>
 <translation id="8375817202037102567">Bloquer l'accès en écriture aux fichiers et répertoires pour ces sites</translation>
+<translation id="837805585374308454">Permet de dresser la liste des formats d'URL pour lesquels les sites sont autorisés à demander aux utilisateurs à accéder à un port série.
+
+Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> s'applique pour tous les sites, à condition qu'elle soit définie. Si ce n'est pas le cas, les paramètres spécifiés par les utilisateurs s'appliquent.
+
+Si le format d'URL ne correspond pas à celui défini dans cette règle, les règles suivantes s'appliquent, selon l'ordre de priorité suivant : <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" /> (si une correspondance existe), <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> (si elle est définie) ou les paramètres personnels de l'utilisateur.
+
+Si les formats d'URL entrent en conflit avec <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" />, ils sont ignorés.
+
+Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez consulter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. La valeur <ph name="WILDCARD_VALUE" /> n'est pas acceptée pour cette règle.</translation>
 <translation id="8378266419596669629">Bloquer l'autorisation des polices locales pour ces sites</translation>
 <translation id="8379281645427937253">Liste des certificats TLS qui devraient être approuvés par <ph name="PRODUCT_NAME" /> pour l'authentification du serveur.
 Les certificats doivent être encodés en base64.</translation>

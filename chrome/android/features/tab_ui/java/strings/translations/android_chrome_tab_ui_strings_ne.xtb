@@ -19,6 +19,7 @@
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> मिनेटअघि बनाइएको}other{<ph name="NUM_MINS_MANY" /> मिनेटअघि बनाइएको}}</translation>
 <translation id="1499635324672558517">सबै इन्कोग्निटो ट्याबहरू बन्द गर्ने हो?</translation>
 <translation id="1501480321619201731">समूह मेट्नुहोस्</translation>
+<translation id="1505526451013346974"><ph name="TITLE_OF_GROUP" /> मा हाल्नुहोस्</translation>
 <translation id="1555130319947370107">निलो</translation>
 <translation id="161042844686301425">सायन</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> वटा ट्याब समूहबद्ध गरिएका छन्</translation>
@@ -213,6 +214,7 @@
 <translation id="8820741577754260431">आफ्ना ट्याबहरूमा मूल्य घटेको कुरासम्बन्धी जानकारी हेर्नुहोस्</translation>
 <translation id="8887921976452567404">तपाईंका बन्द गरिएका ट्याब र समूहहरू "हालसालैका ट्याबहरू" खण्ड र "ट्याब समूहहरू" खण्डमा गई फेरि खोल्न सकिन्छ।</translation>
 <translation id="8915916167043355778">सबै बन्द गर्नुहोस्</translation>
+<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{सारेर नयाँ विन्डोमा लैजानुहोस्}other{सारेर अर्को विन्डोमा लैजानुहोस्}}</translation>
 <translation id="9090098097337832354">यो स्टोरसम्बन्धी जानकारी बन्द गरिएको छ</translation>
 <translation id="9114502155681725011"><ph name="COLOR_NAME" /> रङको <ph name="TITLE_OF_GROUP" /> नामक ट्याब समूहको एक्सन मेनु खोल्नुहोस्।</translation>
 <translation id="9169141410816678175">सबै जना तुरुन्तै "<ph name="GROUP_NAME" />" ट्याब समूहको एक्सेस गुमाउने छन् र यो ट्याब समूह सबै डिभाइसबाट मेटाइने छ</translation>

@@ -4084,6 +4084,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3820749202859700794">Curva elíptica SECG secp521r1 (también conocido como NIST P-521)</translation>
 <translation id="3821074617718452587">Notificaciones de Phone Hub</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Se aprobó una extensión}other{Se aprobaron # extensiones}}</translation>
+<translation id="3822426549715448461">DD</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Se recomienda tener al menos <ph name="INSTALL_SIZE" /> de espacio para Linux.</translation>
 <translation id="3824621460022590830">El token de inscripción del dispositivo no es válido. Comunícate con el administrador o el propietario de tu dispositivo. Código de error: <ph name="ERROR_CODE" />.</translation>
@@ -4613,6 +4614,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4203769790323223880">No se permite la cámara</translation>
 <translation id="4204415812590935863">No se puede crear un tema en este momento.</translation>
 <translation id="4205157409548006256">Se produjo un error al configurar Linux.</translation>
+<translation id="4205643719206044108">Para ofrecer sugerencias, los sitios que visitas y el contenido de las páginas se comparten con Google</translation>
 <translation id="4206144641569145248">Alienígena</translation>
 <translation id="4206323443866416204">Informe de comentarios</translation>
 <translation id="4206585797409671301">Puede mostrar solicitudes</translation>
@@ -6982,6 +6984,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5916655001090539219">Lectura automática</translation>
 <translation id="5916664084637901428">Activado</translation>
 <translation id="59174027418879706">Habilitado</translation>
+<translation id="5919305207330938913">Todos los datos recopilados se usarán de acuerdo con la <ph name="BEGIN_LINK" />Política de Privacidad<ph name="END_LINK" /> de Google.</translation>
 <translation id="5920543303088087579">El administrador inhabilitó la conexión a esta red</translation>
 <translation id="5922963926582976524">Desconectar la red del Hotspot instantáneo</translation>
 <translation id="5924047253200400718">Obtener ayuda<ph name="SCANNING_STATUS" /></translation>
@@ -7493,6 +7496,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6283438600881103103">Saldrás automáticamente.
 <ph name="DOMAIN" /> requiere que no quites la tarjeta inteligente.</translation>
 <translation id="628352644014831790">4 segundos</translation>
+<translation id="6283823201263716145">Los dispositivos en modo de demostración envían automáticamente informes de fallas y datos de uso y de diagnóstico a Google para ayudar a mejorar las funciones y el rendimiento.</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> no es un archivo que se descargue de forma habitual y es posible que sea peligroso.</translation>
 <translation id="6285770818046456882">El dispositivo que compartía contenido contigo canceló la transferencia</translation>
 <translation id="628699625505156622">Usar la ubicación. Permite que las apps, los sitios web y los servicios de ChromeOS y Android que tengan permiso de ubicación usen la ubicación de este dispositivo. La Precisión de la ubicación proporciona una ubicación más precisa para las apps y los servicios de Android. Para ello, Google procesa de forma periódica información sobre los sensores del dispositivo y sus señales inalámbricas para obtener ubicaciones de las señales inalámbricas con participación colectiva. Esta información se utiliza sin identificar a ninguna persona para mejorar la precisión de la ubicación y los servicios basados en ella, además de mejorar, proporcionar y mantener los servicios de Google en función de sus intereses legítimos (y los de terceros) de satisfacer las necesidades de los usuarios. <ph name="BEGIN_LINK1" />Más información sobre el uso de la ubicación<ph name="END_LINK1" /></translation>
@@ -8754,6 +8758,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7199452998289813782">Pausar la transmisión a <ph name="DEVICE_NAME" /></translation>
 <translation id="720110658997053098">Mantener este dispositivo en modo kiosco de forma permanente</translation>
 <translation id="7201118060536064622">Se borró "<ph name="DELETED_ITEM_NAME" />"</translation>
+<translation id="7201336084980086208">Autocompletar puede ofrecer guardar información cuando envíes formularios, como el número de tu licencia de conducir o pasaporte</translation>
 <translation id="7201420661433230412">Ver archivos</translation>
 <translation id="7201432510117121839">La transmisión de audio del escritorio no es compatible con este dispositivo</translation>
 <translation id="7201535955609308429">Espera mientras la verificación está en curso</translation>
@@ -9355,6 +9360,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7641720519047586765">Se borró esta llave de acceso de este sitio</translation>
 <translation id="764178579712141045">Se agregó <ph name="USER_EMAIL" /></translation>
 <translation id="7642778300616172920">Ocultar contenido confidencial</translation>
+<translation id="7643117827468520640">Revisa estas condiciones</translation>
 <translation id="7643842463591647490">{0,plural, =1{# ventana abierta}other{# ventanas abiertas}}</translation>
 <translation id="7643932971554933646">¿Quieres permitir que el sitio vea los archivos?</translation>
 <translation id="7644953783774050577">No seleccionar ninguna</translation>

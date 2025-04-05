@@ -19,6 +19,7 @@ Silsəniz, hər kəs "<ph name="TITLE_OF_GROUP" />" tab qrupuna girişi dərhal 
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> dəqiqə əvvəl yaradıldı}other{<ph name="NUM_MINS_MANY" /> dəqiqə əvvəl yaradıldı}}</translation>
 <translation id="1499635324672558517">Bütün Incognito tabları qapadılsın?</translation>
 <translation id="1501480321619201731">Qrupu silin</translation>
+<translation id="1505526451013346974">Bura əlavə edin: <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1555130319947370107">Mavi</translation>
 <translation id="161042844686301425">Firuzəyi</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> tab qruplaşdırıldı</translation>
@@ -213,6 +214,7 @@ Silsəniz, hər kəs "<ph name="TITLE_OF_GROUP" />" tab qrupuna girişi dərhal 
 <translation id="8820741577754260431">Tablarda qiymət endirimləri göstərilsin</translation>
 <translation id="8887921976452567404">Bağlanmış tab və qrupları Son tablar və ya Tab qrupları bölməsindən yenidən aça bilərsiniz.</translation>
 <translation id="8915916167043355778">Hamısını bağlayın</translation>
+<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Yeni pəncərəyə köçürün}other{Başqa pəncərəyə köçürün}}</translation>
 <translation id="9090098097337832354">Bu mağaza haqqında məlumatlar bağlanıb</translation>
 <translation id="9114502155681725011"><ph name="TITLE_OF_GROUP" /> tab qrupu (rəng <ph name="COLOR_NAME" />) üçün tab qrupunun əməliyyat menyusunu açın.</translation>
 <translation id="9169141410816678175">Hər kəs "<ph name="GROUP_NAME" />" tab qrupuna girişi dərhal itirəcək və o, bütün cihazlardan silinəcək</translation>

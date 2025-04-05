@@ -19,6 +19,7 @@
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> മിനിറ്റ് മുമ്പ് സൃഷ്‌ടിച്ചത്}other{<ph name="NUM_MINS_MANY" /> മിനിറ്റ് മുമ്പ് സൃഷ്‌ടിച്ചത്}}</translation>
 <translation id="1499635324672558517">എല്ലാ അദൃശ്യ ടാബുകളും അടയ്‌ക്കണോ?</translation>
 <translation id="1501480321619201731">ഗ്രൂപ്പ് ഇല്ലാതാക്കൂ</translation>
+<translation id="1505526451013346974"><ph name="TITLE_OF_GROUP" /> എന്നതിലേക്ക് ചേർക്കുക</translation>
 <translation id="1555130319947370107">നീല</translation>
 <translation id="161042844686301425">സിയാൻ</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> ടാബുകൾ ഗ്രൂപ്പ് ചെയ്‌തു</translation>

@@ -4099,6 +4099,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3820749202859700794">SECG elliptikus görbe secp521r1 (vagyis NIST P-521)</translation>
 <translation id="3821074617718452587">Telefonközpont-értesítések</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Egy bővítmény jóváhagyásra került}other{# bővítmény jóváhagyásra került}}</translation>
+<translation id="3822426549715448461">NN</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Ajánlott legalább <ph name="INSTALL_SIZE" /> méretű területet szánni a Linuxra.</translation>
 <translation id="3824621460022590830">Érvénytelen eszközregisztrációs token. Vegye fel a kapcsolatot az eszköz tulajdonosával vagy rendszergazdájával. Hibakód: <ph name="ERROR_CODE" />.</translation>
@@ -4627,6 +4628,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4203769790323223880">Kamerahasználat nem engedélyezett</translation>
 <translation id="4204415812590935863">Most nem lehet témát létrehozni.</translation>
 <translation id="4205157409548006256">Hiba történt a Linux konfigurálásakor.</translation>
+<translation id="4205643719206044108">Hogy javaslatokkal szolgálhassunk, megosztjuk a Google-lal az Ön által felkeresett webhelyeket és az oldalak tartalmát</translation>
 <translation id="4206144641569145248">Idegen</translation>
 <translation id="4206323443866416204">Visszajelzés</translation>
 <translation id="4206585797409671301">Megjeleníthet kérelmeket</translation>
@@ -8771,6 +8773,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7199452998289813782">A következőre való átküldés szüneteltetése: <ph name="DEVICE_NAME" /></translation>
 <translation id="720110658997053098">Az eszköz állandó kioszk módban tartása</translation>
 <translation id="7201118060536064622">„<ph name="DELETED_ITEM_NAME" />” törölve</translation>
+<translation id="7201336084980086208">Az automatikus kitöltés felajánlhatja az adatok (például a jogosítvány vagy az útlevél számának) mentését, amikor Ön űrlapokat küld be</translation>
 <translation id="7201420661433230412">Fájlok megtekintése</translation>
 <translation id="7201432510117121839">Az asztal hangjának átküldése nem támogatott ezen az eszközön</translation>
 <translation id="7201535955609308429">Kérjük, várjon, amíg az ellenőrzés folyamatban van</translation>

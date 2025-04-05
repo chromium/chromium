@@ -97,6 +97,7 @@
 <translation id="1377508275003315939">Գաղտնաբառեր</translation>
 <translation id="1381022135873211423">{count,plural, =1{Հասցե {position}՝ {count}-ից}one{Հասցե {position}՝ {count}-ից}other{Հասցե {position}՝ {count}-ից}}</translation>
 <translation id="1383876407941801731">Որոնում</translation>
+<translation id="1385168997509105202">Ձեզ անմիջապես անհասանելի կդառնա ներդիրների «<ph name="GROUP_NAME" />» խումբը, և <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) օգտատերն այլևս չի կարողանա ձեզ հետ փոխազդել Google-ի ծառայություններում։</translation>
 <translation id="138618066238211776">Շարունակել <ph name="USER_NAME" /> հաշվով</translation>
 <translation id="138692594145659985">Քարտը պահելու կարգավորումներ</translation>
 <translation id="1396260204083880024">Դուք մուտք եք գործել որպես <ph name="USER_NAME" />։ <ph name="USER_EMAIL" />։ Բացել հաշվի ընտրացանկը։</translation>
@@ -511,6 +512,7 @@
 <translation id="3124568093781685165">Կիսվեք ձեր գաղտնաբառերով ընտանիքի անդամների հետ</translation>
 <translation id="3130863904455712965">Պատմություն և այլ տվյալներ</translation>
 <translation id="313283613037595347">Ստեղծել նոր ինկոգնիտո ներդիր</translation>
+<translation id="3136739222562075778">Այս քարտը ցուցադրում է ձեր բաց ներդիրների ապրանքների գնիջեցումները</translation>
 <translation id="3138611310073113613">Չեղարկել ընտրությունը</translation>
 <translation id="3140825265190223781">Պահված գաղտնաբառեր և մուտքի բանալիներ</translation>
 <translation id="3143515551205905069">Չեղարկել համաժամացումը</translation>
@@ -987,6 +989,7 @@
 <translation id="5197255632782567636">Համացանց</translation>
 <translation id="5200894869889836319">Թույլտվությունների պարամետրեր</translation>
 <translation id="5203051773066903947">Մուտքագրել</translation>
+<translation id="5205750905107419335"><ph name="USER_NAME" />-ին (<ph name="USER_EMAIL" />) անմիջապես անհասանելի կդառնա ներդիրների «<ph name="GROUP_NAME" />» խումբը, և նա այլևս չի կարողանա ձեզ հետ փոխազդել Google-ի ծառայություններում։</translation>
 <translation id="5206453674369664567">Դուրս գալ և ջնջել տվյալները</translation>
 <translation id="5210365745912300556">Փակել ներդիրը</translation>
 <translation id="5211488077761630279">Թույլատրե՞լ «<ph name="SITE_NAME" />» կայքին օգտագործել ձեր <ph name="PERMISSION" />։</translation>
@@ -1068,6 +1071,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="5567439033041178034">ԻՄԱՆԱԼ ԱՎԵԼԻՆ</translation>
 <translation id="5572648434713976849">Հասցեագոտում կհայտնվեն բարելավված հուշումներ։</translation>
 <translation id="5576885723883013398">Նոր պատուհան</translation>
+<translation id="5578543325423650885"><ph name="USER_NAME" />-ին (<ph name="USER_EMAIL" />) անմիջապես անհասանելի կդառնա ներդիրների «<ph name="GROUP_NAME" />» խումբը։</translation>
 <translation id="5578795271662203820">Որոնել այս պատկերը <ph name="SEARCH_ENGINE" />-ում</translation>
 <translation id="5579012242779565775">Թաքցնել «Ընթերցանության ցանկ» կետը</translation>
 <translation id="5585019845078534178">Քարտեր</translation>
@@ -1370,6 +1374,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6680416467695217368">Անհատականացնել ընտրացանկը</translation>
 <translation id="6681586159478273915">Ձայնային որոնում</translation>
 <translation id="6681791404926413601">{count,plural, =1{Վճարման {count} եղանակ ցուցադրվում է ստեղնաշարի վերևում։}one{Վճարման {count} եղանակ ցուցադրվում է ստեղնաշարի վերևում։}other{Վճարման {count} եղանակ ցուցադրվում է ստեղնաշարի վերևում։}}</translation>
+<translation id="6682680306647339111">Հիշեցումը հեռացված է</translation>
 <translation id="6684262542644248484">Մուտք գործեք որևէ կայք</translation>
 <translation id="6685259053455152195">Դյուրանցումներ՝ կարգավորումներն արագ փոփոխելու և գործառույթները հասցեագոտուց օգտագործելու համար։</translation>
 <translation id="6689685206615181381">Հասանելի է միայն ինկոգնիտո ռեժիմը</translation>
@@ -1386,6 +1391,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6746338529702829275">Ստուգեք ձեր հաշվի տվյալները</translation>
 <translation id="6755200887046212842">Կառավարել հաշիվները</translation>
 <translation id="6755733078693946548">Գաղտնաբառերի և մուտքի բանալիների հասանելիություն ցանկացած հավելվածից</translation>
+<translation id="6759709389246683070">Որպեսզի էջը նորից այցելելու համար հիշեցում ստեղծեք, սեղմեք ներդիրի վրա և պահեք</translation>
 <translation id="6761393919622941301">Աուդիո</translation>
 <translation id="6779455296366983087">Այցելությունների պատմությունը կջնջվի</translation>
 <translation id="6790502149545262384">Շուտով, երբ նոր ներդիր բացեք, կտեսնեք նորություններ <ph name="CHANNEL_NAME" /> կայքից։</translation>
@@ -1694,6 +1700,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8084285576995584326">Կառավարեք ձեր Google հաշվի տվյալները</translation>
 <translation id="809543534949702122">Որոնում պատմության մեջ</translation>
 <translation id="8095985449280932182">{COUNT,plural, =1{Այստեղ տեղափոխվում են ներդիրները, որոնք չեք օգտագործել {COUNT} օր}one{Այստեղ տեղափոխվում են ներդիրները, որոնք չեք օգտագործել {COUNT} օր}other{Այստեղ տեղափոխվում են ներդիրները, որոնք չեք օգտագործել {COUNT} օր}}</translation>
+<translation id="8096559642098770318">Եթե ուզում եք հետագայում նորից այցելել կայքը, ստեղծեք հիշեցում</translation>
 <translation id="8101409298456377967">Ստեղծեք, պահեք և կառավարեք ձեր գաղտնաբառերը, որպեսզի հեշտությամբ մուտք գործեք կայքեր և հավելվածներ։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="8102130909719902723">Ն</translation>
 <translation id="8114753159095730575">Ֆայլը հասանելի է ներբեռնման համար: Ընտրանքները հասանելի են էկրանի ներքևի հատվածում:</translation>
@@ -1748,6 +1755,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8299417921174340354">Գաղտնաբառերն օգտագործելու համար նախ պետք է ձեր սարքում անցակոդ սահմանեք։</translation>
 <translation id="8307481894409578819">Չհաջողվեց վերբեռնել այս ֆայլը</translation>
 <translation id="8319076807703933069">Նոր որոնում</translation>
+<translation id="8319282042900445670">Ստեղծվեց հիշեցում՝ <ph name="TIME" />, <ph name="DATE" /></translation>
 <translation id="8320212361750431956">Վերջին գործողությունները</translation>
 <translation id="8325455175867928593">Թաքցնել «Կարծիքներ՝ հիմնված ձեր հետաքրքրությունների վրա» քարտը</translation>
 <translation id="833647236762414178">Ստեղծեք, պահեք և կառավարեք ձեր գաղտնաբառերն ու մուտքի բանալիները, որպեսզի հեշտությամբ մուտք գործեք կայքեր և հավելվածներ։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
@@ -1855,6 +1863,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8723088494871522141">Թաքցնել «Ապրանքների մասին կարծիքներ ձեզ համար» քարտը</translation>
 <translation id="872371143724482722">{COUNT,plural, =1{{COUNT} ներդիր}one{{COUNT} ներդիր}other{{COUNT} ներդիր}}</translation>
 <translation id="8725066075913043281">Փորձել կրկին</translation>
+<translation id="8726523474917941818">Հիշեցնել</translation>
 <translation id="8728922029615312208">Փակել բոլորը</translation>
 <translation id="8730621377337864115">Պատրաստ է</translation>
 <translation id="87371078663613140">Ծանոթացեք ընտրացանկի գոտու ընտրանքներին</translation>
@@ -1899,6 +1908,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8879604564928138696">Կրկնակի հպեք փորձելու համար</translation>
 <translation id="8879952635974818770">Անհատականացված բովանդակություն</translation>
 <translation id="8887595428614802520">Փակել բոլոր ներդիրներն ու խմբերը</translation>
+<translation id="8888595487174963247">Հեռացնել հիշեցումը</translation>
 <translation id="8891031436559779793">Մենք կտեղեկացնենք ձեզ, երբ որևէ կայքում գները նվազեն։</translation>
 <translation id="8893208530912252670">Տեսանյութեր</translation>
 <translation id="8898822736010347272">Ուղարկում է Google-ին ձեր այցելած որոշ էջերի URL-ներն ու դրանց բովանդակությունը և համակարգի մասին որոշակի տեղեկություններ, որոնք օգնում են հայտնաբերել համացանցում օգտատերերին սպառնացող նոր վտանգներ։</translation>
@@ -1964,6 +1974,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="9130317582644834675">Թաքցնել «Փոխել տեքստի չափսը» գործողությունը</translation>
 <translation id="913036870884277353">Հեշտությամբ բացեք հղումները այլ հավելվածներում։</translation>
 <translation id="9137013805542155359">Ցույց տալ բնօրինակը</translation>
+<translation id="9144230693397287797">Ստանալ հիշեցումներով ծանուցումներ ներդիրների մասին, այդ թվում՝ այլ սարքերից</translation>
 <translation id="914781932147356857">Նշել բոլորը…</translation>
 <translation id="9148126808321036104">Նորից մուտք գործել</translation>
 <translation id="9159628751968616911">Կայքէջի ուղարկում</translation>

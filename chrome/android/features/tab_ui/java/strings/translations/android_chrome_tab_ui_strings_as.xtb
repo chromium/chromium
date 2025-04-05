@@ -19,6 +19,7 @@
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> মিনিট পূৰ্বে সৃষ্টি কৰা হৈছে}one{<ph name="NUM_MINS_MANY" /> মিনিট পূৰ্বে সৃষ্টি কৰা হৈছে}other{<ph name="NUM_MINS_MANY" /> মিনিট পূৰ্বে সৃষ্টি কৰা হৈছে}}</translation>
 <translation id="1499635324672558517">আটাইবোৰ ইনক’গনিট’ টেব বন্ধ কৰিবনে?</translation>
 <translation id="1501480321619201731">গোট মচক</translation>
+<translation id="1505526451013346974"><ph name="TITLE_OF_GROUP" />ত যোগ দিয়ক</translation>
 <translation id="1555130319947370107">নীলা</translation>
 <translation id="161042844686301425">চাইয়ান</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" />টা টেব এক গোট কৰা হৈছে</translation>

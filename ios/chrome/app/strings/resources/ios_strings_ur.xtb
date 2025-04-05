@@ -97,6 +97,7 @@
 <translation id="1377508275003315939">پاس ورڈز</translation>
 <translation id="1381022135873211423">{count,plural, =1{{count} پتہ میں سے {position}}other{{count} پتے میں سے {position}}}</translation>
 <translation id="1383876407941801731">تلاش کریں</translation>
+<translation id="1385168997509105202">‏آپ فوری طور پر "<ph name="GROUP_NAME" />" ٹیب گروپ تک رسائی سے محروم ہو جائیں گے اور <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) Google سروسز پر آپ کے ساتھ مزید تعامل نہیں کر سکے گا۔</translation>
 <translation id="138618066238211776">بطور <ph name="USER_NAME" /> جاری رکھیں</translation>
 <translation id="138692594145659985">کارڈ محفوظ کرنے کے اختیارات</translation>
 <translation id="1396260204083880024"><ph name="USER_NAME" /> کے بطور سائن ان کردہ۔ <ph name="USER_EMAIL" />۔ اکاؤنٹ مینیو کھولیں۔</translation>
@@ -511,6 +512,7 @@
 <translation id="3124568093781685165">اپنے پاس ورڈز اپنی فیملی کے ساتھ اشتراک کریں</translation>
 <translation id="3130863904455712965">سرگزشت اور مزید</translation>
 <translation id="313283613037595347">نیا پوشیدگی ٹیب بنائیں۔</translation>
+<translation id="3136739222562075778">یہ کارڈ آپ کے کھلے ٹیبز میں پروڈکٹس کی قیمتوں میں کمی کو ظاہر کرتا ہے</translation>
 <translation id="3138611310073113613">انتخاب کو مسترد کریں</translation>
 <translation id="3140825265190223781">محفوظ کردہ پاس ورڈز اور پاس کیز</translation>
 <translation id="3143515551205905069">مطابقت پذیری منسوخ کریں</translation>
@@ -987,6 +989,7 @@
 <translation id="5197255632782567636">انٹرنیٹ</translation>
 <translation id="5200894869889836319">اجازتیں سیٹ کرنے کے لیے اختیارات</translation>
 <translation id="5203051773066903947">Enter</translation>
+<translation id="5205750905107419335">‏‫<ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) فوری طور پر "<ph name="GROUP_NAME" />" ٹیب گروپ تک رسائی سے محروم ہو جائے گا اور Google سروسز پر مزید آپ کے ساتھ تعامل نہیں کر سکے گا۔</translation>
 <translation id="5206453674369664567">سائن آؤٹ کریں اور ڈیٹا کو صاف کریں</translation>
 <translation id="5210365745912300556">ٹیب بند کریں</translation>
 <translation id="5211488077761630279">اپنے <ph name="PERMISSION" /> کا استعمال کرنے کے لیے "<ph name="SITE_NAME" />" کو اجازت دیں؟</translation>
@@ -1068,6 +1071,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="5567439033041178034">مزید جانیں</translation>
 <translation id="5572648434713976849">آپ کو ایڈریس بار میں بہتر کردہ تجاویز حاصل ہوں گی</translation>
 <translation id="5576885723883013398">نئی ونڈو</translation>
+<translation id="5578543325423650885">‫<ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) فوری طور پر "<ph name="GROUP_NAME" />" ٹیب گروپ تک رسائی سے محروم ہو جائے گا۔</translation>
 <translation id="5578795271662203820">اس تصویر کیلئے <ph name="SEARCH_ENGINE" /> تلاش کریں</translation>
 <translation id="5579012242779565775">پڑھنے کی فہرست کو چھپائیں</translation>
 <translation id="5585019845078534178">کارڈز</translation>

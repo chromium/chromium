@@ -97,6 +97,7 @@
 <translation id="1377508275003315939">Пароли</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} от {count} адрес}other{{position} от {count} адреса}}</translation>
 <translation id="1383876407941801731">Търсене</translation>
+<translation id="1385168997509105202">Незабавно ще загубите достъп до групата раздели „<ph name="GROUP_NAME" />“, а <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) вече няма да може да взаимодейства с вас в услугите на Google.</translation>
 <translation id="138618066238211776">Продължаване като <ph name="USER_NAME" /></translation>
 <translation id="138692594145659985">Опции за запазване на картата</translation>
 <translation id="1396260204083880024">Влезли сте като <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Отваряне на менюто на профила.</translation>
@@ -511,6 +512,7 @@
 <translation id="3124568093781685165">Споделете паролите със семейството си</translation>
 <translation id="3130863904455712965">История и др.</translation>
 <translation id="313283613037595347">Създаване на нов раздел в режим „инкогнито“.</translation>
+<translation id="3136739222562075778">Тази карта показва понижения на цените на продуктите в отворените ви раздели</translation>
 <translation id="3138611310073113613">Отхвърляне на избора</translation>
 <translation id="3140825265190223781">Запазени пароли и ключове за достъп</translation>
 <translation id="3143515551205905069">Анулиране на синхронизирането</translation>
@@ -987,6 +989,7 @@
 <translation id="5197255632782567636">Интернет</translation>
 <translation id="5200894869889836319">Опции за задаване на разрешения</translation>
 <translation id="5203051773066903947">Въведете</translation>
+<translation id="5205750905107419335"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) незабавно ще загуби достъп до групата раздели „<ph name="GROUP_NAME" />“ и вече няма да може да взаимодейства с вас в услугите на Google.</translation>
 <translation id="5206453674369664567">Излизане от профила и изчистване на данните</translation>
 <translation id="5210365745912300556">Затваряне на раздела</translation>
 <translation id="5211488077761630279">Да се разреши ли на <ph name="SITE_NAME" /> да използва <ph name="PERMISSION" />?</translation>
@@ -1068,6 +1071,7 @@
 <translation id="5567439033041178034">НАУЧЕТЕ ПОВЕЧЕ</translation>
 <translation id="5572648434713976849">Ще получавате подобрени предложения в адресната лента</translation>
 <translation id="5576885723883013398">Нов прозорец</translation>
+<translation id="5578543325423650885"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) незабавно ще загуби достъп до групата раздели „<ph name="GROUP_NAME" />“.</translation>
 <translation id="5578795271662203820">Търсене на изображението със: <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5579012242779565775">Скриване на „Списък за четене“</translation>
 <translation id="5585019845078534178">Карти</translation>
@@ -1370,6 +1374,7 @@
 <translation id="6680416467695217368">Персонализиране на менюто</translation>
 <translation id="6681586159478273915">Гласово търсене</translation>
 <translation id="6681791404926413601">{count,plural, =1{{count} опция за начин на плащане е налице над клавиатурата ви.}other{{count} опции за начин на плащане са налице над клавиатурата ви.}}</translation>
+<translation id="6682680306647339111">Напомнянето е премахнато</translation>
 <translation id="6684262542644248484">Влезте в уебсайт</translation>
 <translation id="6685259053455152195">Преки пътища за бърза промяна на настройките и за използване на функции от адресната лента.</translation>
 <translation id="6689685206615181381">Налице е само режим „инкогнито“</translation>
@@ -1386,6 +1391,7 @@
 <translation id="6746338529702829275">Преглед на данните за профила ви</translation>
 <translation id="6755200887046212842">Управление на профилите</translation>
 <translation id="6755733078693946548">Осъществявайте достъп до паролите и ключовете за достъп от всяко приложение</translation>
+<translation id="6759709389246683070">Можете да докоснете и задържите този раздел, за да зададете напомняне за повторно посещение по-късно</translation>
 <translation id="6761393919622941301">Аудио</translation>
 <translation id="6779455296366983087">Данните за сърфирането ви ще бъдат изтрити</translation>
 <translation id="6790502149545262384">Скоро ще виждате материали от <ph name="CHANNEL_NAME" />, когато отворите нов раздел.</translation>
@@ -1694,6 +1700,7 @@
 <translation id="8084285576995584326">Управление на данните в профила ви в Google</translation>
 <translation id="809543534949702122">История на търсенията</translation>
 <translation id="8095985449280932182">{COUNT,plural, =1{Разделите, които не използвате, ще бъдат преместени тук след {COUNT} ден}other{Разделите, които не използвате, ще бъдат преместени тук след {COUNT} дни}}</translation>
+<translation id="8096559642098770318">Можете да зададете напомняне за раздел, за да прегледате отново този сайт в бъдеще</translation>
 <translation id="8101409298456377967">Създавайте, запазвайте и управлявайте паролите си, така че лесно да можете да влизате в сайтовете и приложенията. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="8102130909719902723">Н</translation>
 <translation id="8114753159095730575">Наличен е файл за изтегляне. Съответните опции са достъпни в долната част на екрана.</translation>
@@ -1748,6 +1755,7 @@
 <translation id="8299417921174340354">За да използвате паролите, трябва първо да зададете код за достъп на устройството си.</translation>
 <translation id="8307481894409578819">Този файл не бе качен</translation>
 <translation id="8319076807703933069">Ново търсене</translation>
+<translation id="8319282042900445670">Зададено е напомняне за <ph name="TIME" /> на <ph name="DATE" /></translation>
 <translation id="8320212361750431956">Скорошна активност</translation>
 <translation id="8325455175867928593">Скриване на „Отзиви въз основа на интересите ви“</translation>
 <translation id="833647236762414178">Създавайте, запазвайте и управлявайте паролите и ключовете си за достъп, за да влизате лесно в сайтовете и приложенията. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
@@ -1855,6 +1863,7 @@
 <translation id="8723088494871522141">Скриване на „Подходящи за вас отзиви за продукт“</translation>
 <translation id="872371143724482722">{COUNT,plural, =1{{COUNT} раздел}other{{COUNT} раздела}}</translation>
 <translation id="8725066075913043281">Опитайте отново</translation>
+<translation id="8726523474917941818">Напомняне</translation>
 <translation id="8728922029615312208">Затваряне на всички</translation>
 <translation id="8730621377337864115">Готово</translation>
 <translation id="87371078663613140">Разгледайте опциите в лентата с менюта.</translation>
@@ -1899,6 +1908,7 @@
 <translation id="8879604564928138696">Докоснете два пъти за изпробване</translation>
 <translation id="8879952635974818770">Персонализирано съдържание</translation>
 <translation id="8887595428614802520">Затваряне на всички раздели и групи</translation>
+<translation id="8888595487174963247">Премахване на напомнянето</translation>
 <translation id="8891031436559779793">Ще получите известие при понижение на цената в който и да е сайт.</translation>
 <translation id="8893208530912252670">Видеоклипове</translation>
 <translation id="8898822736010347272">Изпраща до Google URL адресите на някои от посетените от вас страници, ограничена системна информация и част от съдържанието на страниците, за да помага за откриването на нови заплахи и да защитава всички потребители на мрежата.</translation>
@@ -1964,6 +1974,7 @@
 <translation id="9130317582644834675">Скриване на „Промяна на мащаба на текста“</translation>
 <translation id="913036870884277353">Лесно отваряйте връзки в други приложения.</translation>
 <translation id="9137013805542155359">Показване на оригинала</translation>
+<translation id="9144230693397287797">Получаване на актуализации за зададените от вас напомняния и за раздели от други устройства</translation>
 <translation id="914781932147356857">Означаване на всички…</translation>
 <translation id="9148126808321036104">Влезте отново</translation>
 <translation id="9159628751968616911">Изпращане на уеб страницата</translation>

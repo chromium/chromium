@@ -161,6 +161,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="2945997411976714835">Uppsetningarvilla: Ekki tókst að ræsa ferli uppsetningarforrits.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – innskráning á net – Chrome</translation>
 <translation id="2970681950995291301">Skráðu þig út af Chrome á stillingarsíðunni til að fjarlægja Google-reikninginn þinn af Chrome</translation>
+<translation id="2991167882679440829">Lykilorðið þitt og önnur Chrome-gögn sem þú vistaðir á Google-reikningnum þínum verða fjarlægð úr þessu tæki. Til að nota þau aftur í Chrome skaltu skrá þig aftur inn.</translation>
 <translation id="2994465299455873643">Sér <ph name="BROWSER_NAME" /> fyrir dulkóðunarþjónustu og öruggri endurheimt ef vafrinn úreldist. Ef slökkt er á þjónustunni kann <ph name="BROWSER_NAME" /> að glata aðgangi að dulkóðuðum gögnum og <ph name="BROWSER_NAME" /> mun hugsanlega ekki geta endurheimt sig.</translation>
 <translation id="3003694935412297923">Öll verkefni</translation>
 <translation id="3018957014024118866">Eyða einnig gögnum frá Chrome (<ph name="URL" />)</translation>
@@ -189,6 +190,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="3282568296779691940">Skráðu þig inn á Chrome</translation>
 <translation id="3286538390144397061">Endurræsa núna</translation>
 <translation id="3292333338048274092">Þú þarft að endurræsa Chrome í kjölfarið.</translation>
+<translation id="3327226547491422998">Chrome getur síðan spurt hvort þú viljir nota vistuðu upplýsingarnar til að fylla út eyðublöð sjálfkrafa síðar</translation>
 <translation id="3360895254066713204">Chrome hjálpari</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome verður endurræst núna}=1{Chrome verður endurræst eftir 1 sekúndu}one{Chrome verður endurræst eftir # sekúndu}other{Chrome verður endurræst eftir # sekúndur}}</translation>
 <translation id="3396977131400919238">Stýrikerfisvilla kom upp við uppsetningu. Sæktu Google Chrome aftur.</translation>
@@ -408,6 +410,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="6251759518630934363">Varar þig við hættulegum vefsvæðum, jafnvel þeim sem Google hafði enga vitneskju um, með því að greina fleiri gögn frá vefsvæðum en hefðbundin vörn. Þú getur valið að sleppa Chrome-viðvörunum.</translation>
 <translation id="6277547788421725101">Foreldri þitt hefur slökkt á „Heimildum fyrir vefsvæði, forrit og viðbætur" fyrir Chrome</translation>
 <translation id="627882678981830918">Sérsníddu og stjórnaðu Chrome. Stilltu Chrome sem sjálfgefinn vafra.</translation>
+<translation id="6288580400488258237">Stilltu Google Chrome sem sjálfgefinn vafra og festu hann við forritastikuna</translation>
 <translation id="6291089322031436445">Chrome Dev forrit</translation>
 <translation id="6291549208091401781">Google Chrome hefur þegar verið sett upp fyrir alla notendur í tölvunni.</translation>
 <translation id="6319856120645568262">Chrome þarfnast heimildar til að kortleggja umhverfið þitt og rekja handahreyfingarnar þínar</translation>

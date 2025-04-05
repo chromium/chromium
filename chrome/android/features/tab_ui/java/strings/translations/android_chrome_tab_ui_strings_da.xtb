@@ -19,6 +19,7 @@ Hvis du sletter den, mister alle øjeblikkeligt adgangen til fanegruppen "<ph na
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Oprettet for <ph name="NUM_MINS_ONE" /> minut siden}one{Oprettet for <ph name="NUM_MINS_MANY" /> minut siden}other{Oprettet for <ph name="NUM_MINS_MANY" /> minutter siden}}</translation>
 <translation id="1499635324672558517">Vil du lukke alle inkognitofaner?</translation>
 <translation id="1501480321619201731">Slet gruppe</translation>
+<translation id="1505526451013346974">Føj til <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1555130319947370107">Blå</translation>
 <translation id="161042844686301425">Cyan</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> faner blev grupperet</translation>

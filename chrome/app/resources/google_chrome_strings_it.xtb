@@ -186,6 +186,7 @@
 <translation id="3282568296779691940">Accedi a Chrome</translation>
 <translation id="3286538390144397061">Riavvia adesso</translation>
 <translation id="3292333338048274092">Dovrai quindi riavviare Chrome.</translation>
+<translation id="3327226547491422998">In un secondo momento, Chrome può chiederti se vuoi usare le informazioni salvate per compilare automaticamente i moduli per te</translation>
 <translation id="3360895254066713204">Supporto Chrome</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome verrà riavviato ora}=1{Chrome verrà riavviato tra 1 secondo}other{Chrome verrà riavviato tra # secondi}}</translation>
 <translation id="3396977131400919238">Durante l'installazione si è verificato un errore del sistema operativo. Scarica nuovamente Google Chrome.</translation>
@@ -400,6 +401,7 @@
 <translation id="6251759518630934363">Ricevi un avviso in caso di siti pericolosi, inclusi quelli di cui Google non era a conoscenza, in base all'analisi di più dati provenienti dai siti rispetto al livello Protezione standard. Puoi scegliere di ignorare gli avvisi di Chrome.</translation>
 <translation id="6277547788421725101">Uno dei tuoi genitori ha disattivato l'impostazione "Autorizzazioni per siti, app ed estensioni" per Chrome</translation>
 <translation id="627882678981830918">Personalizza e controlla Chrome. Imposta Chrome come browser predefinito.</translation>
+<translation id="6288580400488258237">Imposta Google Chrome come browser predefinito e aggancialelo alla barra delle applicazioni</translation>
 <translation id="6291089322031436445">App di Chrome Dev</translation>
 <translation id="6291549208091401781">Google Chrome è già installato per tutti gli utenti sul computer.</translation>
 <translation id="6319856120645568262">Chrome deve avere l'autorizzazione per mappare l'ambiente circostante e monitorare le tue mani</translation>

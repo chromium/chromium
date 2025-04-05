@@ -97,6 +97,7 @@
 <translation id="1377508275003315939">Hasła</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} z {count} adresu}few{{position} z {count} adresów}many{{position} z {count} adresów}other{{position} z {count} adresu}}</translation>
 <translation id="1383876407941801731">Szukaj</translation>
+<translation id="1385168997509105202">Natychmiast utracisz dostęp do grupy kart „<ph name="GROUP_NAME" />”, a <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) nie będzie już mieć możliwości kontaktowania się z Tobą w usługach Google.</translation>
 <translation id="138618066238211776">Kontynuuj jako <ph name="USER_NAME" /></translation>
 <translation id="138692594145659985">Opcje zapisania karty</translation>
 <translation id="1396260204083880024">Zalogowano jako <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Otwórz menu konta.</translation>
@@ -511,6 +512,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3124568093781685165">Udostępniaj hasła członkom grupy rodzinnej</translation>
 <translation id="3130863904455712965">Historia i inne elementy</translation>
 <translation id="313283613037595347">Utwórz nową kartę incognito.</translation>
+<translation id="3136739222562075778">Ta karta pokazuje obniżki cen produktów na otwartych kartach</translation>
 <translation id="3138611310073113613">Odrzuć wybór</translation>
 <translation id="3140825265190223781">Zapisane hasła i klucze dostępu</translation>
 <translation id="3143515551205905069">Anuluj synchronizację</translation>
@@ -987,6 +989,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5200894869889836319">Opcje ustawiania uprawnień</translation>
 <translation id="5203051773066903947">Wpisz</translation>
+<translation id="5205750905107419335"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) natychmiast utraci dostęp do grupy kart „<ph name="GROUP_NAME" />” i nie będzie już mieć możliwości kontaktowania się z Tobą w usługach Google.</translation>
 <translation id="5206453674369664567">Wyloguj się i wyczyść dane</translation>
 <translation id="5210365745912300556">Zamknij kartę</translation>
 <translation id="5211488077761630279">Zezwolić witrynie „<ph name="SITE_NAME" />” na korzystanie z <ph name="PERMISSION" />?</translation>
@@ -1068,6 +1071,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="5567439033041178034">WIĘCEJ INFORMACJI</translation>
 <translation id="5572648434713976849">Będziesz otrzymywać ulepszone sugestie na pasku adresu</translation>
 <translation id="5576885723883013398">Nowe okno</translation>
+<translation id="5578543325423650885"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) natychmiast utraci dostęp do grupy kart „<ph name="GROUP_NAME" />”.</translation>
 <translation id="5578795271662203820">Szukaj tej grafiki w <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5579012242779565775">Ukryj opcję Do przeczytania</translation>
 <translation id="5585019845078534178">Karty</translation>

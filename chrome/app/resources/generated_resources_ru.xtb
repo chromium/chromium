@@ -3962,7 +3962,7 @@
 <translation id="3748424433435232460">Пароль аккаунта уже сохранен на этом устройстве.</translation>
 <translation id="3748706263662799310">Сообщить об ошибке</translation>
 <translation id="3749724428455457489">Подробнее о рекламе, рекомендуемой сайтами</translation>
-<translation id="3752115502500640407">Предоставьте копию своего пароля сайту <ph name="WEBSITE" /></translation>
+<translation id="3752115502500640407">Поделитесь своим паролем к сайту <ph name="WEBSITE" /></translation>
 <translation id="3752253558646317685">Чтобы отпечаток сохранился, ребенок должен немного перемещать палец.</translation>
 <translation id="3753033997400164841">Автозаполнение паролей</translation>
 <translation id="3753142252662437130">Цветовые фильтры</translation>
@@ -5106,7 +5106,7 @@
 <translation id="4554591392113183336">Внешнее расширение не новее существующего.</translation>
 <translation id="4555769855065597957">Тень</translation>
 <translation id="4555863373929230635">Чтобы сохранять пароли в аккаунте Google, войдите в него и включите синхронизацию.</translation>
-<translation id="4556072422434361369">От пользователя <ph name="SENDER_NAME" /> получен пароль для сайта <ph name="WEBSITE_NAME" />. Используйте его в форме входа.</translation>
+<translation id="4556072422434361369">Пользователь <ph name="SENDER_NAME" /> поделился своим паролем от сайта <ph name="WEBSITE_NAME" />. Его можно использовать в форме входа.</translation>
 <translation id="4558426062282641716">Требуется разрешение на автозапуск</translation>
 <translation id="4558542033859106586">Открытие в сервисе "<ph name="TARGET_APP" />".</translation>
 <translation id="4558946868955275132">Здесь показаны только приложения, которые поддерживают выбор языка.</translation>

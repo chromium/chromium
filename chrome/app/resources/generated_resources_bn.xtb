@@ -4101,6 +4101,7 @@
 <translation id="3820749202859700794">SECG এলিপ্টিক কার্ভ secp521r1 (ওরফে NIST P-521)</translation>
 <translation id="3821074617718452587">ফোন হাব সম্পর্কিত বিজ্ঞপ্তি</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{একটি এক্সটেনশনে অনুমোদন দেওয়া হয়েছে}one{#টি এক্সটেনশনে অনুমোদন দেওয়া হয়েছে}other{#টি এক্সটেনশনে অনুমোদন দেওয়া হয়েছে}}</translation>
+<translation id="3822426549715448461">DD</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Linux-এর জন্য কমপক্ষে <ph name="INSTALL_SIZE" />  জায়গা খালি রাখার জন্য সাজেস্ট করা হচ্ছে।</translation>
 <translation id="3824621460022590830">ডিভাইস এনরোলমেন্ট টোকেনটি সঠিক নয়। আপনার ডিভাইসের মালিক বা অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন। সমস্যার কোড: <ph name="ERROR_CODE" /></translation>
@@ -4630,6 +4631,7 @@
 <translation id="4203769790323223880">ক্যামেরা ব্যবহারের অনুমতি নেই</translation>
 <translation id="4204415812590935863">এখন থিম তৈরি করা যাবে না।</translation>
 <translation id="4205157409548006256">Linux কনফিগার করার সময় কোনও সমস্যা হয়েছে।</translation>
+<translation id="4205643719206044108">সাজেশন অফার করতে, আপনার ভিজিট করা সাইট ও তার পৃষ্ঠার কন্টেন্ট Google-এর সাথে শেয়ার করা হবে</translation>
 <translation id="4206144641569145248">ভিনগ্রহবাসী</translation>
 <translation id="4206323443866416204">প্রতিক্রিয়ার প্রতিবেদন</translation>
 <translation id="4206585797409671301">অনুরোধ দেখানোর অনুমতি দেওয়া হয়েছে</translation>
@@ -8776,6 +8778,7 @@
 <translation id="7199452998289813782"><ph name="DEVICE_NAME" />-এ কাস্ট করা পজ করুন</translation>
 <translation id="720110658997053098">স্থায়ীভাবে এই ডিভাইসটিকে কিয়স্ক মোডে রাখুন</translation>
 <translation id="7201118060536064622">'<ph name="DELETED_ITEM_NAME" />' মুছে ফেলা হয়েছে</translation>
+<translation id="7201336084980086208">ফর্ম জমা দেওয়া হলে, অটোফিল আপনাকে তথ্য সেভ করার সুবিধা দেয়, যেমন আপনার ড্রাইভিং লাইসেন্স বা পাসপোর্ট নম্বর</translation>
 <translation id="7201420661433230412">ফাইলগুলি দেখুন</translation>
 <translation id="7201432510117121839">এই ডিভাইসে ডেস্কটপ থেকে অডিও কাস্ট করার সুবিধা কাজ করে না</translation>
 <translation id="7201535955609308429">যাচাইকরণের প্রসেস চলাকালীন অপেক্ষা করুন</translation>

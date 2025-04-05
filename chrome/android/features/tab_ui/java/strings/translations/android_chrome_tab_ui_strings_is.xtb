@@ -19,6 +19,7 @@ Ef þú eyðir honum munu allir notendur umsvifalaust missa aðgang að flipahó
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Búinn til fyrir <ph name="NUM_MINS_ONE" /> mínútu}one{Búinn til fyrir <ph name="NUM_MINS_MANY" /> mínútu}other{Búinn til fyrir <ph name="NUM_MINS_MANY" /> mínútum}}</translation>
 <translation id="1499635324672558517">Loka öllum huliðsflipum?</translation>
 <translation id="1501480321619201731">Eyða hópi</translation>
+<translation id="1505526451013346974">Bæta við <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1555130319947370107">Blár</translation>
 <translation id="161042844686301425">Blár (cyan)</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> flipar flokkaðir</translation>
@@ -213,6 +214,7 @@ Ef þú eyðir honum munu allir notendur umsvifalaust missa aðgang að flipahó
 <translation id="8820741577754260431">Sjá verðlækkanir á flipum</translation>
 <translation id="8887921976452567404">Þú getur opnað lokuðu flipana og hópana þína aftur með því að fara í hlutann „Nýlegir flipar“ eða „Flipahópar“.</translation>
 <translation id="8915916167043355778">Loka öllu</translation>
+<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Færa yfir í nýjan glugga}one{Færa yfir í nýjan glugga}other{Færa yfir í nýjan glugga}}</translation>
 <translation id="9090098097337832354">Upplýsingum um þessa verslun lokað</translation>
 <translation id="9114502155681725011">Opnaðu aðgerðavalmynd flipahópsins „<ph name="TITLE_OF_GROUP" />“ í litnum „<ph name="COLOR_NAME" />“.</translation>
 <translation id="9169141410816678175">Allir notendur munu umsvifalaust missa aðgang að flipahópnum „<ph name="GROUP_NAME" />“ og honum verður eytt úr öllum tækjum</translation>

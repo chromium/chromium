@@ -19,6 +19,7 @@
 <translation id="149054111719651807">{NUM_MINS,plural, =1{ከ<ph name="NUM_MINS_ONE" /> ደቂቃ በፊት የተፈጠረ}one{ከ<ph name="NUM_MINS_MANY" /> ደቂቃ በፊት የተፈጠረ}other{ከ<ph name="NUM_MINS_MANY" /> ደቂቃዎች በፊት የተፈጠረ}}</translation>
 <translation id="1499635324672558517">ሁሉም ማንነት የማያሳውቁ ትሮች ይዘጉ?</translation>
 <translation id="1501480321619201731">ቡድን ሰርዝ</translation>
+<translation id="1505526451013346974">ወደ <ph name="TITLE_OF_GROUP" /> ያክሉ</translation>
 <translation id="1555130319947370107">ሰማያዊ</translation>
 <translation id="161042844686301425">ውሃ ሰማያዊ</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> ትሮች ተሰብስበዋል</translation>

@@ -518,13 +518,13 @@
 <translation id="3439276997620616816">最近開啟的分頁會在這裡顯示</translation>
 <translation id="3443221991560634068">重新載入目前網頁</translation>
 <translation id="3444179773590444986">要就網站深色主題背景提供意見嗎？</translation>
-<translation id="3448874648066942074">使用 AI 歸納網頁摘要</translation>
+<translation id="3448874648066942074">使用 AI 撮要頁面內容</translation>
 <translation id="3452832259067974318">為保障您的私隱，Chrome 不會在此欄位自動填入您的密碼。</translation>
 <translation id="3467081767799433066">廣告評估功能讓各個應用程式分享特定類型的資料 (例如使用者是否在瀏覽網站後購物)，以瞭解廣告成效。</translation>
 <translation id="3474624961160222204">以「<ph name="NAME" />」的身分繼續</translation>
 <translation id="3478363558367712427">您可以選擇搜尋引擎</translation>
 <translation id="3479552764303398839">略過</translation>
-<translation id="3482805106082349287">使用鍵盤、語音、無痕模式或相機搜尋</translation>
+<translation id="3482805106082349287">使用鍵盤、語音、無痕模式或鏡頭搜尋</translation>
 <translation id="3487903178221457900">其他人 (包括應用程式) 或可存取匯出的檔案。匯出後，密碼就會從 Chrome 中刪除。</translation>
 <translation id="3488199663160411179">姓名</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />進一步瞭解<ph name="END_LINK" />建議的內容</translation>
@@ -902,7 +902,7 @@
 <translation id="5174700554036517242">分頁已經還原到初始高度</translation>
 <translation id="5180063720319462041">頁面內容已翻譯成<ph name="TARGET_LANGUAGE" /></translation>
 <translation id="5191251636205085390">瞭解及控制用於取代第三方 Cookie 的全新技術</translation>
-<translation id="5197649123261764478">輕鬆存取書籤</translation>
+<translation id="5197649123261764478">輕鬆取用書籤</translation>
 <translation id="5204967432542742771">輸入密碼</translation>
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{正在下載檔案…}other{正在下載 # 個檔案…}}</translation>
 <translation id="5210286577605176222">跳至上一個分頁</translation>
@@ -932,7 +932,7 @@
 <translation id="5328542107300944283">透過 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 帳戶使用</translation>
 <translation id="5342314432463739672">權限要求</translation>
 <translation id="534580735623577507"><ph name="TIME_PERIOD" />未瀏覽任何網站</translation>
-<translation id="5354716139000094027">使用 AI 歸納摘要</translation>
+<translation id="5354716139000094027">使用 AI 撮要內容</translation>
 <translation id="5355191726083956201">已開啟「強化保護功能」</translation>
 <translation id="5375374982898812658">你將立即無法再存取「<ph name="GROUP_NAME" />」分頁群組，此分頁群組亦會從你的所有裝置刪除</translation>
 <translation id="5375577065097716013">使用「Google 智能鏡頭」搜尋圖片 <ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
@@ -1525,7 +1525,7 @@
 <translation id="7913993612870913335">{FILE_COUNT,plural, =1{機構已封鎖 1 個下載項目}other{機構已封鎖 # 個下載項目}}</translation>
 <translation id="7914399737746719723">已安裝應用程式</translation>
 <translation id="7919123827536834358">自動翻譯這些語言</translation>
-<translation id="7921782882718083488">歸納本頁摘要</translation>
+<translation id="7921782882718083488">撮要頁面內容</translation>
 <translation id="7926975587469166629">信用卡暱稱</translation>
 <translation id="7929962904089429003">開啟選單</translation>
 <translation id="7934668619883965330">無法下載檔案，因為系統不支援檔案格式。</translation>
@@ -1682,7 +1682,7 @@
 <translation id="8540136935098276800">請輸入正確格式的網址</translation>
 <translation id="854522910157234410">開啟此頁</translation>
 <translation id="8547025137714087639">{ARCHIVED_TAB_COUNT,plural, =1{閒置分頁 (1)}other{閒置分頁 (#)}}</translation>
-<translation id="8547466829003330976">使用 AI 審查 PDF</translation>
+<translation id="8547466829003330976">使用 AI 檢查 PDF</translation>
 <translation id="8551513938758868521">離開 Chrome 時鎖定無痕式分頁</translation>
 <translation id="8559961053328923750">Chrome 會限制網站為評估廣告成效而透過瀏覽器分享的總資料量</translation>
 <translation id="8559990750235505898">詢問是否將網頁內容翻譯成其他語言</translation>
@@ -1780,7 +1780,7 @@
 <translation id="9022871169049522985">網站和廣告客戶可評估廣告的效益</translation>
 <translation id="9035378196785279980">移至\u2026</translation>
 <translation id="9042893549633094279">私隱權和安全性</translation>
-<translation id="9047347135558855162">快速啟動 Chrome 搜尋</translation>
+<translation id="9047347135558855162">迅速在 Chrome 中開始搜尋</translation>
 <translation id="9050666287014529139">複雜密碼</translation>
 <translation id="9055497320631373736">已重新將網站加入至潛在網站</translation>
 <translation id="9057030985451135243">瞭解共用分頁群組</translation>

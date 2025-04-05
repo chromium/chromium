@@ -161,7 +161,9 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="2945997411976714835">Installeerfout: Die installeerderproses kon nie begin nie.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Netwerkaanmelding – Chrome</translation>
 <translation id="2970681950995291301">Meld in die Instellings-bladsy by Chrome af om jou Google-rekening uit Chrome te verwyder</translation>
+<translation id="2991167882679440829">Jou wagwoorde en ander Chrome-data wat jy in jou Google-rekening gestoor het, sal van hierdie toestel verwyder word. Meld weer aan as jy hulle weer in Chrome wil gebruik.</translation>
 <translation id="2994465299455873643">Verskaf enkripsiedienste en ’n veilige manier om <ph name="BROWSER_NAME" /> terug te stel as dit verouderd raak. As hierdie diens gedeaktiveer is, kan <ph name="BROWSER_NAME" /> toegang tot geënkripteerde data verloor en kan <ph name="BROWSER_NAME" /> nie hulself terugstel nie.</translation>
+<translation id="3003694935412297923">Alle take</translation>
 <translation id="3018957014024118866">Vee ook data uit Chrome uit (<ph name="URL" />)</translation>
 <translation id="3019382870990049182">Herbegin om Chrome OS Flex op te dateer</translation>
 <translation id="3037838751736561277">Google Chrome is in agtergrondmodus.</translation>
@@ -188,6 +190,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="3282568296779691940">Meld by Chrome aan</translation>
 <translation id="3286538390144397061">Herbegin nou</translation>
 <translation id="3292333338048274092">Jy sal dan Chrome moet herbegin.</translation>
+<translation id="3327226547491422998">Chrome kan jou later vra of jy gestoorde inligting wil gebruik om vorms vir jou te outovul</translation>
 <translation id="3360895254066713204">Chrome-helper</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome sal nou herbegin}=1{Chrome sal oor 1 sekonde herbegin}other{Chrome sal oor # sekondes herbegin}}</translation>
 <translation id="3396977131400919238">'n Bedryfstelselfout het met installering voorgekom. Laai Google Chrome asseblief weer af.</translation>
@@ -278,6 +281,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="4567424176335768812">Jy is as <ph name="USER_EMAIL_ADDRESS" /> aangemeld. Nou kan jy op al jou aangemelde toestelle by jou boekmerke, geskiedenis en ander instellings ingaan.</translation>
 <translation id="4571503333518166079">Gaan na Chrome-kennisgewinginstellings</translation>
 <translation id="459622048091363950">Sodra Chrome toegang het, sal webwerwe jou kan vra vir toegang.</translation>
+<translation id="4598116752460667024">Soek enige proses op die lys.</translation>
 <translation id="4600710005438004015">Chrome kon nie na die nuutste weergawe opdateer nie en daarom het jy nie nuwe kenmerke en sekuriteitregstellings nie.</translation>
 <translation id="4624065194742029982">Chrome Incognito</translation>
 <translation id="4627412468266359539">Opsioneel: Help om Chrome OS Flex-kenmerke en -werkverrigting beter te maak deur outomaties diagnostiese en gebruiksdata na Google toe te stuur.</translation>
@@ -406,6 +410,7 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="6251759518630934363">Waarsku jou oor gevaarlike werwe – selfs werwe waarvan Google nie voorheen geweet het nie – deur meer data van werwe te ontleed as standaardbeskerming. Jy kan kies om Chrome-waarskuwings oor te slaan.</translation>
 <translation id="6277547788421725101">Jou ouer het “Toestemmings vir werwe, apps en uitbreidings” vir Chrome afgeskakel</translation>
 <translation id="627882678981830918">Pasmaak en beheer Chrome. Stel Chrome as jou verstek.</translation>
+<translation id="6288580400488258237">Stel Google Chrome as jou verstekblaaier en speld dit aan jou taakbalk vas</translation>
 <translation id="6291089322031436445">Chrome Dev-programme</translation>
 <translation id="6291549208091401781">Google Chrome is reeds vir alle gebruikers op jou rekenaar geïnstalleer.</translation>
 <translation id="6319856120645568262">Chrome het toestemming nodig om jou omgewing te karteer en jou hande na te spoor</translation>
@@ -473,6 +478,7 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="7193885263065350793">Jou organisasie maak Chrome toe wanneer dit <ph name="TIMEOUT_DURATION" /> lank nie gebruik is nie.</translation>
 <translation id="7242029209006116544">Jy meld tans aan met 'n bestuurde rekening en gee sy administrateur beheer oor jou Google Chrome-profiel. Jou Chrome-data, soos jou programme, boekmerke, geskiedenis, wagwoorde en ander instellings sal permanent aan <ph name="USER_NAME" /> gekoppel word. Jy sal hierdie data via die Google-rekeningekontroleskerm kan uitvee, maar jy sal hierdie data nie met 'n ander rekening kan assosieer nie. Jou ander opsie is om 'n nuwe profiel te skep om jou Chrome-data apart te hou. <ph name="LEARN_MORE" /></translation>
 <translation id="7285616922384953075"><ph name="MANAGER" /> bestuur Chrome</translation>
+<translation id="7288567540154601580">Oortjies en uitbreidings</translation>
 <translation id="7296210096911315575">Belangrike gebruik- en veiligheidinligting</translation>
 <translation id="7302361266603927550">Sommige van jou Chrome-data is nog nie in jou Google-rekening gestoor nie. Probeer om ’n paar minute te wag voordat jy afmeld. As jy nou afmeld, sal hierdie data uitgevee word.</translation>
 <translation id="7308322188646931570">Chrome het bergingtoegang nodig om lêers af te laai</translation>

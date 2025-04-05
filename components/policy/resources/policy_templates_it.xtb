@@ -114,6 +114,15 @@ Tieni presente che su <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> e <ph
 <translation id="1065175969514496951">La configurazione della policy consente di accedere agli URL elencati durante l'autenticazione (ad es. nella schermata di accesso e nella schermata di blocco), sotto forma di eccezioni a <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />. Leggi la descrizione della policy per conoscere il formato delle voci di questo elenco. Ad esempio, se imposti la policy <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" /> su <ph name="WILDCARD_VALUE" />, tutte le richieste verranno bloccate e puoi utilizzare questa policy per consentire l'accesso a un elenco limitato di URL. Utilizzalo per aprire le eccezioni di alcuni schemi, sottodomini di altri domini, porte o percorsi specifici utilizzando il formato specificato all'indirizzo https://support.google.com/chrome/a?p=url_blocklist_filter_format. Il filtro più specifico consente di determinare se un URL è bloccato o consentito. La policy <ph name="DEVICE_AUTHENTICATION_URL_ALLOWLIST_POLICY_NAME" /> ha la precedenza sulla policy <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />. Per questa policy è possibile definire al massimo 1000 voci.
 
 Se la policy non viene configurata, non sono consentite eccezioni a <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />.</translation>
+<translation id="1065501094422559251">Questo criterio consente di controllare le impostazioni del codice dinamico per <ph name="PRODUCT_NAME" />.
+
+La disattivazione del codice dinamico migliora la sicurezza di <ph name="PRODUCT_NAME" /> impedendo a codice dinamico potenzialmente dannoso e codice di terze parti di apportare modifiche al comportamento di <ph name="PRODUCT_NAME" />, ma potrebbe causare problemi di compatibilità con software di terze parti (ad esempio, i driver di alcune stampanti) che devono essere eseguiti all'interno del processo del browser.
+
+Se il criterio viene impostato su 0 - Predefinito o se non viene impostato, <ph name="PRODUCT_NAME" /> utilizzerà le impostazioni predefinite.
+
+Se il criterio viene impostato su 1 - DisabledForBrowser, il processo del browser <ph name="PRODUCT_NAME" /> non potrà creare codice dinamico.
+
+Nota: scopri di più sui criteri relativi alla mitigazione dei processi (https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies).</translation>
 <translation id="1068801725746725727">Attiva la ricezione di sondaggi di Navigazione sicura</translation>
 <translation id="107045325503547419">Dipende dal processo di implementazione della funzionalità.</translation>
 <translation id="1073983258515362346">Consente di segnalare informazioni sulla retroilluminazione del dispositivo.
@@ -7785,6 +7794,15 @@ NOTA: il comportamento predefinito per i dispositivi di consumatori e aziende è
       2) Le impostazioni internazionali di sistema.
       3) Le impostazioni internazionali di riserva (en-US).</translation>
 <translation id="6493089139124468815">Consenti ai siti di chiedere all'utente di concedere l'autorizzazione di accesso dei siti agli appunti</translation>
+<translation id="6493557163786346587">Se il criterio viene configurato, puoi elencare i pattern URL che specificano i siti che non possono chiedere agli utenti l'autorizzazione di accesso a una porta seriale.
+
+Se il criterio non viene configurato, <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> si applica per tutti i siti, se impostato. In caso contrario, viene applicata l'impostazione personale dell'utente.
+
+Per i pattern URL che non presentano corrispondenze con il criterio <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" /> (se una corrispondenza è presente), <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> (se configurato) o le impostazioni personali degli utenti hanno la precedenza in questo ordine.
+
+Se i pattern URL sono in conflitto con <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />, questo criterio avrà la precedenza.
+
+Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questo criterio.</translation>
 <translation id="6493918190032622602">Versione minima consentita di <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="6495337487202227251">Tieni presente che questa policy è obsoleta e verrà rimossa nella versione 85 di <ph name="PRODUCT_OS_NAME" />. Usa la policy <ph name="SCREEN_LOCK_DELAYS_POLICY_NAME" />.
 
@@ -10368,6 +10386,15 @@ Nota: questa policy costituisce una soluzione temporanea per aiutare la transizi
 <translation id="8371178326720637170">Consente alle estensioni gestite di utilizzare l'API Enterprise Hardware Platform</translation>
 <translation id="8373176843640227330">Disattiva i report sulle informazioni Bluetooth del dispositivo</translation>
 <translation id="8375817202037102567">Blocca l'accesso di scrittura di file e directory su questi siti</translation>
+<translation id="837805585374308454">Se il criterio viene configurato, puoi elencare i pattern URL che specificano i siti che possono chiedere agli utenti l'autorizzazione di accesso a una porta seriale.
+
+Se il criterio non viene configurato, <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> si applica per tutti i siti, se impostato. In caso contrario, vengono applicate le impostazioni personali degli utenti.
+
+Per i pattern URL che non presentano corrispondenze con il criterio <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" /> (se una corrispondenza è presente), <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> (se configurato) o le impostazioni personali degli utenti hanno la precedenza in questo ordine.
+
+Se i pattern URL sono in conflitto con <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" />, verranno ignorati.
+
+Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questo criterio.</translation>
 <translation id="8378266419596669629">Blocca l'autorizzazione per i caratteri locali su questi siti</translation>
 <translation id="8379281645427937253">Un elenco di certificati TLS che <ph name="PRODUCT_NAME" /> deve considerare attendibile per l'autenticazione del server.
 I certificati devono essere codificati in base64.</translation>

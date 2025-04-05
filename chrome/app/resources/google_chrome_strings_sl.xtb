@@ -163,6 +163,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="2970681950995291301">Če želite račun Google odstraniti iz Chroma, se na strani z nastavitvami odjavite iz Chroma.</translation>
 <translation id="2991167882679440829">Gesla in drugi podatki v Chromu, ki ste jih shranili v računu Google, bodo odstranjeni iz te naprave. Če jih želite znova uporabljati v Chromu, se znova prijavite.</translation>
 <translation id="2994465299455873643">Zagotavlja storitve šifriranja in varen način za obnovitev brskalnika <ph name="BROWSER_NAME" />, če je zastarel. Če je ta storitev onemogočena, lahko <ph name="BROWSER_NAME" /> izgubi dostop do šifriranih podatkov in <ph name="BROWSER_NAME" /> se morda ne more obnoviti.</translation>
+<translation id="3003694935412297923">Vsa opravila</translation>
 <translation id="3018957014024118866">Izbriši tudi podatke iz Chroma (<ph name="URL" />)</translation>
 <translation id="3019382870990049182">Znova zaženi za posodobitev sistema &amp;ChromeOS Flex</translation>
 <translation id="3037838751736561277">Google Chrome se izvaja v ozadju.</translation>
@@ -189,6 +190,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="3282568296779691940">Prijava v Chrome</translation>
 <translation id="3286538390144397061">Znova zaženi</translation>
 <translation id="3292333338048274092">Nato boste morali znova zagnati Chrome.</translation>
+<translation id="3327226547491422998">Chrome vas lahko pozneje vpraša, ali želite uporabiti shranjene podatke za samodejno izpolnjevanje obrazcev</translation>
 <translation id="3360895254066713204">Pomočnik za Chrome</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome se bo zdaj znova zagnal}=1{Chrome se bo znova zagnal čez eno sekundo}one{Chrome se bo znova zagnal čez # sekundo}two{Chrome se bo znova zagnal čez # sekundi}few{Chrome se bo znova zagnal čez # sekunde}other{Chrome se bo znova zagnal čez # sekund}}</translation>
 <translation id="3396977131400919238">Med namestitvijo je prišlo do napake v operacijskem sistemu. Ponovno prenesite program Google Chrome.</translation>
@@ -279,6 +281,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="4567424176335768812">Prijavljeni ste kot <ph name="USER_EMAIL_ADDRESS" />. Zdaj imate dostop do zaznamkov, zgodovine in drugih nastavitev v vseh napravah, v katerih ste prijavljeni.</translation>
 <translation id="4571503333518166079">Odpri nastavitve obvestil v Chromu</translation>
 <translation id="459622048091363950">Ko bo imel Chrome dostop, vas bodo spletna mesta lahko pozvala k omogočanju dostopa.</translation>
+<translation id="4598116752460667024">Na seznamu poiščite poljubni postopek.</translation>
 <translation id="4600710005438004015">Chroma ni bilo mogoče posodobiti na najnovejšo različico, zato nimate novih funkcij in popravkov varnosti.</translation>
 <translation id="4624065194742029982">Anonimni način v Chromu</translation>
 <translation id="4627412468266359539">Izbirno: Pomagajte izboljšati funkcije sistema ChromeOS Flex ter njegovo delovanje s samodejnim pošiljanjem diagnostičnih podatkov in podatkov o uporabi Googlu.</translation>
@@ -407,6 +410,7 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="6251759518630934363">Opozori vas o nevarnih spletnih mestih, celo tistih, za katere Google prej ni vedel, in sicer tako, da analizira več podatkov s spletnih mest kot standardna zaščita. Izberete lahko, da preskočite opozorila za Chrome.</translation>
 <translation id="6277547788421725101">Tvoj starš je izklopil »Dovoljenja za spletna mesta, aplikacije in razširitve« za Chrome</translation>
 <translation id="627882678981830918">Prilagajanje in nadziranje Chroma. Nastavite Chrome kot privzeto možnost.</translation>
+<translation id="6288580400488258237">Nastavite Google Chrome kot privzeti brskalnik in ga pripnite v opravilno vrstico</translation>
 <translation id="6291089322031436445">Aplikacije za Chrome Dev</translation>
 <translation id="6291549208091401781">Google Chrome je že nameščen za vse uporabnike v računalniku.</translation>
 <translation id="6319856120645568262">Chrome potrebuje dovoljenje za ustvarjanje zemljevida vašega okolja in sledenje rokam</translation>
@@ -474,6 +478,7 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="7193885263065350793">Vaša organizacija zapre Chrome, če se ne uporablja <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">Prijavljate se z upravljanim računom in s tem njegovemu skrbniku omogočate nadzor vašega profila v Google Chromu. Vaši podatki v Chromu, kot so aplikacije, zaznamki, zgodovina, gesla in druge nastavitve, bodo postali trajno povezani z uporabnikom <ph name="USER_NAME" />. Te podatke boste lahko izbrisali z nadzorno ploščo za Google Račune, vendar jih ne boste mogli povezati z drugim računom. Če želite, lahko ustvarite nov profil, da bodo obstoječi podatki v Chromu ostali ločeni. <ph name="LEARN_MORE" /></translation>
 <translation id="7285616922384953075"><ph name="MANAGER" /> upravlja Chrome</translation>
+<translation id="7288567540154601580">Zavihki in razširitve</translation>
 <translation id="7296210096911315575">Pomembne informacije glede uporabe in varnosti</translation>
 <translation id="7302361266603927550">Nekateri podatki v Chromu še niso shranjeni v računu Google. Počakajte nekaj minut, preden se odjavite. Če se odjavite zdaj, bodo ti podatki izbrisani.</translation>
 <translation id="7308322188646931570">Chrome za prenos datotek potrebuje dostop do shrambe</translation>

@@ -97,6 +97,7 @@
 <translation id="1377508275003315939">Heslá</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position}. z {count} adresy}few{{position}. z {count} adries}many{{position} of {count} addresses}other{{position}. z {count} adries}}</translation>
 <translation id="1383876407941801731">Vyhľadávanie</translation>
+<translation id="1385168997509105202">Okamžite stratíte prístup ku skupine kariet <ph name="GROUP_NAME" /> a <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) s vami už nebude môcť komunikovať v službách Googlu.</translation>
 <translation id="138618066238211776">Pokračovať ako <ph name="USER_NAME" /></translation>
 <translation id="138692594145659985">Možnosti uloženia karty</translation>
 <translation id="1396260204083880024">Prihlásili ste sa ako <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Otvorte ponuku účtu.</translation>
@@ -511,6 +512,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="3124568093781685165">Zdieľajte svoje heslá s rodinou</translation>
 <translation id="3130863904455712965">História a ďalšie nastavenia</translation>
 <translation id="313283613037595347">Vytvoriť novú kartu inkognito.</translation>
+<translation id="3136739222562075778">Na tejto karte sú zobrazené poklesy cien výrobkov na otvorených kartách</translation>
 <translation id="3138611310073113613">Zahodiť výber</translation>
 <translation id="3140825265190223781">Uložené heslá a prístupové kľúče</translation>
 <translation id="3143515551205905069">Zrušiť synchronizáciu</translation>
@@ -987,6 +989,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5200894869889836319">Možnosti nastavenia povolení</translation>
 <translation id="5203051773066903947">Zadať</translation>
+<translation id="5205750905107419335"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) okamžite stratí prístup ku skupine kariet <ph name="GROUP_NAME" /> a už s vami nebude môcť komunikovať v službách Googlu.</translation>
 <translation id="5206453674369664567">Odhlásiť sa a vymazať údaje</translation>
 <translation id="5210365745912300556">Zatvoriť kartu</translation>
 <translation id="5211488077761630279">Chcete povoliť webu <ph name="SITE_NAME" /> používať povolenie <ph name="PERMISSION" />?</translation>
@@ -1068,6 +1071,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="5567439033041178034">VIAC INFORMÁCIÍ</translation>
 <translation id="5572648434713976849">V paneli s adresou budete dostávať zlepšené návrhy</translation>
 <translation id="5576885723883013398">Nové okno</translation>
+<translation id="5578543325423650885"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) okamžite stratí prístup ku skupine kariet <ph name="GROUP_NAME" />.</translation>
 <translation id="5578795271662203820">Hľadať obrázok v službe <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5579012242779565775">Skryť čitateľský zoznam</translation>
 <translation id="5585019845078534178">Karty</translation>

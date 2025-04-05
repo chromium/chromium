@@ -214,6 +214,7 @@ Se lo elimini, tutti perderanno immediatamente l'accesso al gruppo di schede "<p
 <translation id="8820741577754260431">Visualizza i cali di prezzo nelle tue schede</translation>
 <translation id="8887921976452567404">Le schede e i gruppi chiusi possono essere riaperti dalle sezioni Schede recenti e Gruppi di schede.</translation>
 <translation id="8915916167043355778">Chiudi tutte</translation>
+<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Sposta in una nuova finestra}other{Sposta in nuove finestre}}</translation>
 <translation id="9090098097337832354">Informazioni su questo negozio chiuse</translation>
 <translation id="9114502155681725011">Apri il menu Azioni del gruppo di schede <ph name="TITLE_OF_GROUP" />, colore <ph name="COLOR_NAME" />.</translation>
 <translation id="9169141410816678175">Tutte le persone perderanno immediatamente l'accesso al gruppo di schede "<ph name="GROUP_NAME" />", che verrà eliminato da tutti i dispositivi</translation>

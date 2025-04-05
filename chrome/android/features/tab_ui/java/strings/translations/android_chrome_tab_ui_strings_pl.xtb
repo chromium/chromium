@@ -19,6 +19,7 @@ Jeśli ją usuniesz, wszyscy natychmiast utracą dostęp do grupy kart „<ph na
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Utworzono <ph name="NUM_MINS_ONE" /> minutę temu}few{Utworzono <ph name="NUM_MINS_MANY" /> minuty temu}many{Utworzono <ph name="NUM_MINS_MANY" /> minut temu}other{Utworzono <ph name="NUM_MINS_MANY" /> minuty temu}}</translation>
 <translation id="1499635324672558517">Zamknąć wszystkie karty incognito?</translation>
 <translation id="1501480321619201731">Usuń grupę</translation>
+<translation id="1505526451013346974">Dodaj do: <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1555130319947370107">Niebieski</translation>
 <translation id="161042844686301425">Cyjan</translation>
 <translation id="1645759014353344461">Utworzono grupę kart. Ich liczba to <ph name="TABS_COUNT_MANY" /></translation>

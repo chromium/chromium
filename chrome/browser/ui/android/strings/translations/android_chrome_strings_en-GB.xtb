@@ -518,11 +518,13 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="3439276997620616816">You’ll find your recent tabs here</translation>
 <translation id="3443221991560634068">Reload the current page</translation>
 <translation id="3444179773590444986">Share feedback on Dark theme for sites?</translation>
+<translation id="3448874648066942074">Summarise page with AI</translation>
 <translation id="3452832259067974318">To protect your privacy, Chrome will not auto-fill your password in this field.</translation>
 <translation id="3467081767799433066">With ad measurement, limited types of data are shared between sites to measure the performance of their ads, such as whether you made a purchase after visiting a site.</translation>
 <translation id="3474624961160222204">Continue as <ph name="NAME" /></translation>
 <translation id="3478363558367712427">You can choose your search engine</translation>
 <translation id="3479552764303398839">Not now</translation>
+<translation id="3482805106082349287">Search using keyboard, voice, Incognito or camera</translation>
 <translation id="3487903178221457900">The exported file may be accessible to others, including apps. Once you export, your passwords are deleted from Chrome.</translation>
 <translation id="3488199663160411179">name</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Find out more<ph name="END_LINK" /> about suggested content</translation>
@@ -784,6 +786,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="4698061626562952596">Review your inactive tabs here</translation>
 <translation id="4699172675775169585">Cached images and files</translation>
 <translation id="4710167854527459075">Sort by newest</translation>
+<translation id="4718044610319080485">Invokes AI assistant</translation>
 <translation id="4719927025381752090">Offer to translate</translation>
 <translation id="4720556299488643018">Unsubscribe</translation>
 <translation id="4732120983431207637">Stack unwinder</translation>
@@ -899,6 +902,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5174700554036517242">Tab is back to initial height</translation>
 <translation id="5180063720319462041">Page translated to <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="5191251636205085390">Learn about and control new technologies that aim to replace third-party cookies</translation>
+<translation id="5197649123261764478">Easily access your bookmarks</translation>
 <translation id="5204967432542742771">Enter password</translation>
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{Downloading file…}other{Downloading # files…}}</translation>
 <translation id="5210286577605176222">Jump to the previous tab</translation>
@@ -928,6 +932,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5328542107300944283">Use with <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="5342314432463739672">Permission requests</translation>
 <translation id="534580735623577507">No sites from the <ph name="TIME_PERIOD" /></translation>
+<translation id="5354716139000094027">Summarise with AI</translation>
 <translation id="5355191726083956201">Enhanced protection is on</translation>
 <translation id="5375374982898812658">You'll immediately lose access to the '<ph name="GROUP_NAME" />' tab group, and it will be deleted from all your devices</translation>
 <translation id="5375577065097716013">Search image with Google Lens <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
@@ -937,6 +942,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="539881862970320163">Strong password suggested. Keyboard hidden.</translation>
 <translation id="5409881200985013443">Submit <ph name="ONE_TIME_CODE" /> on <ph name="CLIENT_NAME" />?</translation>
 <translation id="5410300144953132176"><ph name="OWNER_FULL_NAME" /> (<ph name="OWNER_EMAIL" />) wants you to join a tab group. Anyone with the link can edit all tabs, so join with care. Link expires in 48 hours.</translation>
+<translation id="5412388166586147626">Couldn't open AI assistant. Try again.</translation>
 <translation id="5414836363063783498">Verifying…</translation>
 <translation id="5415871492522952905">You’ll have your history and tabs on all your devices so that you can continue what you were doing</translation>
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) will immediately lose access to the '<ph name="GROUP_NAME" />' tab group</translation>
@@ -971,6 +977,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5556459405103347317">Reload</translation>
 <translation id="555671485580955310">Sync history and tabs</translation>
 <translation id="555816257274242153">Stopped tracking price</translation>
+<translation id="5561445479436807659">Jump into a fun Dino game</translation>
 <translation id="5561549206367097665">Waiting for network…</translation>
 <translation id="5568069709869097550">Can't sign in</translation>
 <translation id="557018954714092179">Create new folder</translation>
@@ -1518,6 +1525,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="7913993612870913335">{FILE_COUNT,plural, =1{1 was blocked by your organisation}other{# were blocked by your organisation}}</translation>
 <translation id="7914399737746719723">App installed</translation>
 <translation id="7919123827536834358">Automatically translate these languages</translation>
+<translation id="7921782882718083488">Summarise this page</translation>
 <translation id="7926975587469166629">Card nickname</translation>
 <translation id="7929962904089429003">Opening the menu</translation>
 <translation id="7934668619883965330">Cannot download file. File format not supported.</translation>
@@ -1674,6 +1682,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="8540136935098276800">Enter a correctly formatted URL</translation>
 <translation id="854522910157234410">Open this page:</translation>
 <translation id="8547025137714087639">{ARCHIVED_TAB_COUNT,plural, =1{Inactive tab (1)}other{Inactive tabs (#)}}</translation>
+<translation id="8547466829003330976">Review PDF with AI</translation>
 <translation id="8551513938758868521">Lock Incognito tabs when you leave Chrome</translation>
 <translation id="8559961053328923750">Chrome limits the total amount of data that sites can share through the browser to measure ad performance</translation>
 <translation id="8559990750235505898">Offer to translate pages in other languages</translation>
@@ -1771,6 +1780,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="9022871169049522985">Sites and advertisers can measure the performance of their ads</translation>
 <translation id="9035378196785279980">Move to\u2026</translation>
 <translation id="9042893549633094279">Privacy and security</translation>
+<translation id="9047347135558855162">Quickly start a search in Chrome</translation>
 <translation id="9050666287014529139">Passphrase</translation>
 <translation id="9055497320631373736">Added site back to potential sites</translation>
 <translation id="9057030985451135243">Learn about shared tab groups</translation>

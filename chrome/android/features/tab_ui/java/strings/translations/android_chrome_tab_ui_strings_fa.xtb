@@ -19,6 +19,7 @@
 <translation id="149054111719651807">{NUM_MINS,plural, =1{‫<ph name="NUM_MINS_ONE" /> دقیقه پیش ایجاد شد}one{‫<ph name="NUM_MINS_MANY" /> دقیقه پیش ایجاد شد}other{‫<ph name="NUM_MINS_MANY" /> دقیقه پیش ایجاد شد}}</translation>
 <translation id="1499635324672558517">همه «برگه‌های ناشناس» بسته شود؟</translation>
 <translation id="1501480321619201731">حذف گروه</translation>
+<translation id="1505526451013346974">افزودن به <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1555130319947370107">آبی</translation>
 <translation id="161042844686301425">فیروزه‌ای</translation>
 <translation id="1645759014353344461">‫<ph name="TABS_COUNT_MANY" /> برگه گروه‌بندی شد</translation>

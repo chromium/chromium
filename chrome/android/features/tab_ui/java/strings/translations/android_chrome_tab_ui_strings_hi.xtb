@@ -19,6 +19,7 @@
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> मिनट पहले बनाया गया}one{<ph name="NUM_MINS_MANY" /> मिनट पहले बनाया गया}other{<ph name="NUM_MINS_MANY" /> मिनट पहले बनाया गया}}</translation>
 <translation id="1499635324672558517">क्या सभी गुप्त टैब बंद करने हैं?</translation>
 <translation id="1501480321619201731">ग्रुप मिटाएं</translation>
+<translation id="1505526451013346974"><ph name="TITLE_OF_GROUP" /> में जोड़ें</translation>
 <translation id="1555130319947370107">नीला</translation>
 <translation id="161042844686301425">स्यान</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> टैब ग्रुप में शामिल किए गए</translation>
@@ -213,6 +214,7 @@
 <translation id="8820741577754260431">अपने टैब पर कीमत में कमी देखें</translation>
 <translation id="8887921976452567404">बंद किए गए टैब और ग्रुप, 'हाल ही के टैब' सेक्शन और 'टैब ग्रुप' सेक्शन में जाकर फिर से खोले जा सकते हैं.</translation>
 <translation id="8915916167043355778">सभी बंद करें</translation>
+<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{नई विंडो में ले जाएं}one{दूसरी विंडो में ले जाएं}other{दूसरी विंडो में ले जाएं}}</translation>
 <translation id="9090098097337832354">इस स्टोर के बारे में जानकारी दिखाने वाली स्क्रीन बंद हो गई है</translation>
 <translation id="9114502155681725011"><ph name="COLOR_NAME" /> रंग में मौजूद टैब ग्रुप <ph name="TITLE_OF_GROUP" /> के लिए, टैब ग्रुप का ऐक्शन मेन्यू खोलें.</translation>
 <translation id="9169141410816678175">सभी लोगों के लिए "<ph name="GROUP_NAME" />" टैब ग्रुप का ऐक्सेस तुरंत हटा दिया जाएगा. साथ ही, इसे सभी डिवाइसों से मिटा दिया जाएगा</translation>

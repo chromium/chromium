@@ -157,6 +157,7 @@
 <translation id="2945997411976714835">安装时出错：安装程序进程未能启动。</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - 网络登录 - Chrome</translation>
 <translation id="2970681950995291301">若要从 Chrome 中移除您的 Google 账号，请在“设置”页面中退出 Chrome</translation>
+<translation id="2991167882679440829">系统将从此设备中移除您已保存在 Google 账号中的密码和其他 Chrome 数据。如需在 Chrome 中重新使用这些数据，请重新登录。</translation>
 <translation id="2994465299455873643">提供加密服务，并提供安全的方式来恢复过期的 <ph name="BROWSER_NAME" />。如果停用此服务，<ph name="BROWSER_NAME" /> 可能无法访问加密数据，并且 <ph name="BROWSER_NAME" /> 可能无法恢复。</translation>
 <translation id="3003694935412297923">所有任务</translation>
 <translation id="3018957014024118866">同时删除 Chrome 中的数据 (<ph name="URL" />)</translation>

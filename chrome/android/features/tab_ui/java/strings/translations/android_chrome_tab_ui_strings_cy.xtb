@@ -19,6 +19,7 @@ Os byddwch yn ei ddileu, bydd pawb yn colli mynediad at y grŵp tabiau "<ph name
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Crëwyd <ph name="NUM_MINS_ONE" /> funud yn ôl}zero{Crëwyd <ph name="NUM_MINS_MANY" /> munud yn ôl}two{Crëwyd <ph name="NUM_MINS_MANY" /> funud yn ôl}few{Crëwyd <ph name="NUM_MINS_MANY" /> munud yn ôl}many{Crëwyd <ph name="NUM_MINS_MANY" /> munud yn ôl}other{Crëwyd <ph name="NUM_MINS_MANY" /> munud yn ôl}}</translation>
 <translation id="1499635324672558517">Cau pob tab Anhysbys</translation>
 <translation id="1501480321619201731">Dileu grŵp</translation>
+<translation id="1505526451013346974">Ychwanegu at <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1555130319947370107">Glas</translation>
 <translation id="161042844686301425">Gwyrddlas</translation>
 <translation id="1645759014353344461">Mae <ph name="TABS_COUNT_MANY" /> o dabiau wedi'u grwpio</translation>

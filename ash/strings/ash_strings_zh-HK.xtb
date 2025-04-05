@@ -112,6 +112,7 @@
 <translation id="1306549533752902673">推薦的應用程式</translation>
 <translation id="1310396869741602366">變更語調</translation>
 <translation id="1312604459020188865">訊號強度係 <ph name="SIGNAL_STRENGTH" /></translation>
+<translation id="1314113845887519729">揀咗頂部嘅控點，用箭咀掣就可以移動</translation>
 <translation id="1316069254387866896">永遠顯示捷徑列</translation>
 <translation id="132346741904777634">攝錄機已經對齊左上角，同系統平台有衝突。</translation>
 <translation id="132415371743256095">關閉<ph name="DESK_NAME" /> 和視窗</translation>
@@ -186,6 +187,7 @@
 <translation id="1557622599341396706">顯示桌面名稱</translation>
 <translation id="1569384531973824928">此操作會允許所有具備相機和麥克風權限的應用程式和網站存取。系統可能會要求你重新整理網頁或重新啟動應用程式。</translation>
 <translation id="1571697193564730395">切換「請勿騷擾」模式。<ph name="STATE_TEXT" /></translation>
+<translation id="1574691582236909946">揀咗左邊嘅控點，用箭咀掣就可以移動</translation>
 <translation id="1576623706766186887">放大鏡開啟時縮小畫面</translation>
 <translation id="1582946770779745370">可以用遊戲資訊主頁。㩒一下<ph name="LAUNCHER_KEY_NAME" /> + Shift + Escape 掣，然後隨時㩒一下<ph name="LAUNCHER_KEY_NAME" />掣 + G 掣就可以打開</translation>
 <translation id="1586324912145647027">前往桌面 1 至 8</translation>
@@ -609,6 +611,7 @@
 <translation id="304097922505898963">開啟「鍵盤快速鍵」應用程式</translation>
 <translation id="304417730895741346">捷徑列會顯示已固定及開啟的應用程式。如要將應用程式固定至捷徑列，請在應用程式上按一下右鍵，或在觸控板上用兩隻手指輕按應用程式。</translation>
 <translation id="3045488863354895414">午安，</translation>
+<translation id="3045670165536837541">揀咗右上方嘅控點，用箭咀掣就可以移動</translation>
 <translation id="3047761520276763270">請嘗試說：</translation>
 <translation id="3053407068093039599">開啟/關閉鏡頭存取權</translation>
 <translation id="3055162170959710888">您今天的裝置使用時間：<ph name="USED_TIME" /></translation>
@@ -1762,6 +1765,7 @@
 <translation id="6696025732084565524">您的拆除式鍵盤需執行重要更新</translation>
 <translation id="6697913454192220372">新增桌面</translation>
 <translation id="6700713906295497288">IME 選單按鈕</translation>
+<translation id="6704073473590541209">揀咗右邊嘅控點，用箭咀掣就可以移動</translation>
 <translation id="6706742084323792866">固定鍵盤</translation>
 <translation id="6710213216561001401">上一個</translation>
 <translation id="6723839937902243910">電源</translation>
@@ -1785,6 +1789,7 @@
 <translation id="6781002679438061620">桌面 9</translation>
 <translation id="6782182743534150858">桌面 13</translation>
 <translation id="6782919488259222803">搜尋目前頁面</translation>
+<translation id="6783348167101855071">揀咗右下方嘅控點，用箭咀掣就可以移動</translation>
 <translation id="6786750046913594791">關閉資料夾</translation>
 <translation id="6790428901817661496">播放</translation>
 <translation id="6792262051831399889">無法使用</translation>
@@ -1940,6 +1945,7 @@
 <translation id="7371404428569700291">記錄視窗</translation>
 <translation id="7372069265635026568">總記憶體係 <ph name="TOTAL_MEMORY" />，仲可以使用 <ph name="AVAILABLE_MEMORY" /></translation>
 <translation id="737315737514430195">此操作會允許具備麥克風權限的所有應用程式和網站存取麥克風</translation>
+<translation id="7376933029363911338">揀咗底部嘅控點，用箭咀掣就可以移動</translation>
 <translation id="7377169924702866686">已啟用大寫鍵。</translation>
 <translation id="7377481913241237033">使用代碼進行連結</translation>
 <translation id="7378203170292176219">拖曳以選取要錄影的範圍</translation>
@@ -2036,6 +2042,7 @@
 <translation id="7658239707568436148">取消</translation>
 <translation id="7659861092419699379">已關閉桌面和視窗</translation>
 <translation id="7660160718439869192">「<ph name="NAME" />」會顯示在與 <ph name="EMAIL" /> 連結的裝置上</translation>
+<translation id="7661694115779363471">揀咗左下方嘅控點，用箭咀掣就可以移動</translation>
 <translation id="7662283695561029522">輕觸即可設定</translation>
 <translation id="7670953955701272011">在「Google 日曆」中開啟此日期</translation>
 <translation id="7671610481353807627">應用程式已按顏色排序</translation>
@@ -2204,6 +2211,7 @@
 <translation id="8155628902202578800">打開 <ph name="USER_EMAIL_ADDRESS" /> 嘅資料對話框</translation>
 <translation id="8167567890448493835">正在使用「<ph name="LOCALE_NAME" />」</translation>
 <translation id="8168435359814927499">內容</translation>
+<translation id="8172370561760918656">揀咗左上方嘅控點，用箭咀掣就可以移動</translation>
 <translation id="81817143961839203">插入唔到圖像</translation>
 <translation id="8185090165691050712">開啟/關閉選單即可調整鎖定模式的大小</translation>
 <translation id="8192727139462702395">關閉藍牙後，這些外部裝置將會中斷與 <ph name="DEVICE_TYPE" /> 的連線：</translation>

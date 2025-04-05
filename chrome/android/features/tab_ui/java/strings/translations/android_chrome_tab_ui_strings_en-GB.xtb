@@ -19,6 +19,7 @@ If you delete it, everyone will immediately lose access to the '<ph name="TITLE_
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Created <ph name="NUM_MINS_ONE" /> minute ago}other{Created <ph name="NUM_MINS_MANY" /> minutes ago}}</translation>
 <translation id="1499635324672558517">Close all Incognito tabs?</translation>
 <translation id="1501480321619201731">Delete group</translation>
+<translation id="1505526451013346974">Add to <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1555130319947370107">Blue</translation>
 <translation id="161042844686301425">Cyan</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> tabs grouped</translation>
@@ -213,6 +214,7 @@ If you delete it, everyone will immediately lose access to the '<ph name="TITLE_
 <translation id="8820741577754260431">See price drops on your tabs</translation>
 <translation id="8887921976452567404">Your closed tabs and groups can be reopened from the Recent tabs section and the Tab groups section.</translation>
 <translation id="8915916167043355778">Close all</translation>
+<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Move to new window}other{Move to other window}}</translation>
 <translation id="9090098097337832354">Information about this shop closed</translation>
 <translation id="9114502155681725011">Open the tab group action menu for tab group <ph name="TITLE_OF_GROUP" />, colour <ph name="COLOR_NAME" />.</translation>
 <translation id="9169141410816678175">Everyone will immediately lose access to the '<ph name="GROUP_NAME" />' tab group, and it will be deleted from all devices</translation>

@@ -157,6 +157,7 @@
 <translation id="2945997411976714835">Błąd instalacji: nie udało się uruchomić procesu instalatora.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – logowanie do sieci – Chrome</translation>
 <translation id="2970681950995291301">Aby usunąć swoje konto Google z Chrome, wyloguj się z Chrome na stronie Ustawienia</translation>
+<translation id="2991167882679440829">Hasła i inne dane z Chrome zapisane na koncie Google zostaną usunięte z tego urządzenia. Aby znowu korzystać z nich w Chrome, zaloguj się ponownie.</translation>
 <translation id="2994465299455873643">Zapewnia usługi szyfrowania i bezpieczny sposób przywracania <ph name="BROWSER_NAME" /> w razie utraty ważności. Jeśli ta usługa zostanie wyłączona, <ph name="BROWSER_NAME" /> może utracić dostęp do zaszyfrowanych danych i nie być w stanie przeprowadzić samoczynnego przywracania.<ph name="BROWSER_NAME" /></translation>
 <translation id="3003694935412297923">Wszystkie zadania</translation>
 <translation id="3018957014024118866">Usuń też dane z Chrome (<ph name="URL" />)</translation>

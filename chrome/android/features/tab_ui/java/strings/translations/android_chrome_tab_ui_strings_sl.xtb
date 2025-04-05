@@ -214,6 +214,7 @@
 <translation id="8820741577754260431">Oglejte si znižanja cen na zavihkih.</translation>
 <translation id="8887921976452567404">Zaprte zavihke in skupine je mogoče znova odpreti v razdelku Nedavni zavihki in razdelku Skupine zavihkov.</translation>
 <translation id="8915916167043355778">Zapri vse</translation>
+<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Premik v novo okno}one{Premik v drugo okno}two{Premik v drugo okno}few{Premik v drugo okno}other{Premik v drugo okno}}</translation>
 <translation id="9090098097337832354">Informacije o tej trgovini so zaprte.</translation>
 <translation id="9114502155681725011">Odpiranje menija z dejanji za skupino zavihkov <ph name="TITLE_OF_GROUP" /> barve <ph name="COLOR_NAME" />.</translation>
 <translation id="9169141410816678175">Vsi bodo takoj izgubili dostop do skupine zavihkov »<ph name="GROUP_NAME" />« in izbrisana bo iz vseh naprav</translation>

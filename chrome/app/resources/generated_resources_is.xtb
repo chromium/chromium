@@ -4101,6 +4101,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3820749202859700794">SECG sporger ferill secp521r1 (e.þ.s. NIST P-521)</translation>
 <translation id="3821074617718452587">Tilkynningar símstöðvar</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Viðbót var samþykkt}one{# viðbót var samþykkt}other{# viðbætur voru samþykktar}}</translation>
+<translation id="3822426549715448461">DD</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Mælt er með að minnsta kosti <ph name="INSTALL_SIZE" /> af lausu plássi til að nota Linux.</translation>
 <translation id="3824621460022590830">Skráningarlykill tækis er ógildur. Hafðu samband við eiganda tækisins eða kerfisstjóra. Villukóði: <ph name="ERROR_CODE" />.</translation>
@@ -4630,6 +4631,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4203769790323223880">Myndavél ekki leyfð</translation>
 <translation id="4204415812590935863">Ekki er hægt að búa til þetta þema eins og stendur.</translation>
 <translation id="4205157409548006256">Villa kom upp við stillingu Linux.</translation>
+<translation id="4205643719206044108">Vefsvæðum sem þú skoðar og efni þeirra er deilt með Google til að geta veitt þér tillögur</translation>
 <translation id="4206144641569145248">Geimvera</translation>
 <translation id="4206323443866416204">Ábendingaskýrsla</translation>
 <translation id="4206585797409671301">Má sýna beiðnir</translation>
@@ -8774,6 +8776,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7199452998289813782">Gera hlé á vörpun yfir í <ph name="DEVICE_NAME" /></translation>
 <translation id="720110658997053098">Halda þessu tæki varanlega í sjálfsalastillingu</translation>
 <translation id="7201118060536064622">„<ph name="DELETED_ITEM_NAME" />“ var eytt</translation>
+<translation id="7201336084980086208">Sjálfvirk útfylling getur boðist til að vista upplýsingar þegar þú sendir inn eyðublöð, t.d. númer ökuskírteinisins þíns eða vegabréfs</translation>
 <translation id="7201420661433230412">Skoða skrár</translation>
 <translation id="7201432510117121839">Þetta tæki styður ekki vörpun á hljóði tölvu</translation>
 <translation id="7201535955609308429">Bíddu á meðan staðfesting stendur yfir</translation>

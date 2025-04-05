@@ -112,6 +112,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1306549533752902673">APLIKASI YANG DIREKOMENDASIKAN</translation>
 <translation id="1310396869741602366">Ubah gaya bahasa</translation>
 <translation id="1312604459020188865">Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" /></translation>
+<translation id="1314113845887519729">Tuas tepi atas dipilih, gunakan tombol panah untuk memindahkan</translation>
 <translation id="1316069254387866896">Selalu tampilkan rak</translation>
 <translation id="132346741904777634">Kamera dipaskan ke pojok kiri atas. Bertentangan dengan platform sistem.</translation>
 <translation id="132415371743256095">Tutup <ph name="DESK_NAME" /> dan jendelanya</translation>
@@ -186,6 +187,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1557622599341396706">Tampilkan nama desktop</translation>
 <translation id="1569384531973824928">Tindakan ini akan mengizinkan akses untuk semua aplikasi serta situs yang memiliki izin kamera dan mikrofon. Anda mungkin perlu memuat ulang halaman web atau memulai ulang aplikasi.</translation>
 <translation id="1571697193564730395">Alihkan mode Jangan Ganggu. <ph name="STATE_TEXT" /></translation>
+<translation id="1574691582236909946">Tuas tepi kiri dipilih, gunakan tombol panah untuk memindahkan</translation>
 <translation id="1576623706766186887">Perkecil saat kaca pembesar diaktifkan</translation>
 <translation id="1582946770779745370">Dasbor Game tersedia. Tekan <ph name="LAUNCHER_KEY_NAME" /> + Shift + Escape, lalu <ph name="LAUNCHER_KEY_NAME" /> + g kapan saja untuk membuka</translation>
 <translation id="1586324912145647027">Membuka desktop 1 sampai 8</translation>
@@ -609,6 +611,7 @@ Jika tidak, touchpad bawaan akan diaktifkan kembali dalam <ph name="TIMEOUT_SECO
 <translation id="304097922505898963">Buka aplikasi Pintasan Keyboard</translation>
 <translation id="304417730895741346">Aplikasi yang disematkan dan terbuka ada di rak. Untuk menyematkan aplikasi ke rak, klik kanan aplikasi atau ketuk touchpad menggunakan dua jari.</translation>
 <translation id="3045488863354895414">Selamat siang,</translation>
+<translation id="3045670165536837541">Tuas kanan atas dipilih, gunakan tombol panah untuk memindahkan</translation>
 <translation id="3047761520276763270">Coba ucapkan:</translation>
 <translation id="3053407068093039599">Aktifkan/nonaktifkan akses kamera</translation>
 <translation id="3055162170959710888">Anda menggunakan perangkat ini selama <ph name="USED_TIME" /> hari ini</translation>
@@ -1764,6 +1767,7 @@ Baru diinstal</translation>
 <translation id="6696025732084565524">Keyboard yang dapat dilepas memerlukan update penting</translation>
 <translation id="6697913454192220372">Tambahkan desktop virtual baru</translation>
 <translation id="6700713906295497288">Tombol menu IME</translation>
+<translation id="6704073473590541209">Tuas tepi kanan dipilih, gunakan tombol panah untuk memindahkan</translation>
 <translation id="6706742084323792866">Sematkan keyboard</translation>
 <translation id="6710213216561001401">Sebelumnya</translation>
 <translation id="6723839937902243910">Daya</translation>
@@ -1787,6 +1791,7 @@ Baru diinstal</translation>
 <translation id="6781002679438061620">Desktop 9</translation>
 <translation id="6782182743534150858">Desktop 13</translation>
 <translation id="6782919488259222803">Telusuri halaman saat ini</translation>
+<translation id="6783348167101855071">Tuas kanan bawah dipilih, gunakan tombol panah untuk memindahkan</translation>
 <translation id="6786750046913594791">Tutup folder</translation>
 <translation id="6790428901817661496">Putar</translation>
 <translation id="6792262051831399889">Tidak tersedia</translation>
@@ -1942,6 +1947,7 @@ Baru diinstal</translation>
 <translation id="7371404428569700291">Rekam jendela</translation>
 <translation id="7372069265635026568"><ph name="AVAILABLE_MEMORY" /> memori tersedia dari total <ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">Tindakan ini akan mengizinkan akses mikrofon untuk semua aplikasi dan situs yang memiliki izin mikrofon</translation>
+<translation id="7376933029363911338">Tuas tepi bawah dipilih, gunakan tombol panah untuk memindahkan</translation>
 <translation id="7377169924702866686">Caps Lock aktif.</translation>
 <translation id="7377481913241237033">Hubungkan dengan kode</translation>
 <translation id="7378203170292176219">Tarik untuk memilih area yang akan direkam</translation>
@@ -2038,6 +2044,7 @@ Untuk mematikan perangkat, tekan lama tombol daya di perangkat lagi.</translatio
 <translation id="7658239707568436148">Batal</translation>
 <translation id="7659861092419699379">Desktop dan jendela telah ditutup</translation>
 <translation id="7660160718439869192"><ph name="NAME" /> Anda akan muncul di perangkat yang ditautkan dengan <ph name="EMAIL" /></translation>
+<translation id="7661694115779363471">Tuas kiri bawah dipilih, gunakan tombol panah untuk memindahkan</translation>
 <translation id="7662283695561029522">Ketuk untuk mengonfigurasi</translation>
 <translation id="7670953955701272011">Buka tanggal ini di Google Kalender</translation>
 <translation id="7671610481353807627">Aplikasi diurutkan menurut warna</translation>
@@ -2206,6 +2213,7 @@ Untuk mematikan perangkat, tekan lama tombol daya di perangkat lagi.</translatio
 <translation id="8155628902202578800">Buka dialog info untuk <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Menggunakan <ph name="LOCALE_NAME" /></translation>
 <translation id="8168435359814927499">Konten</translation>
+<translation id="8172370561760918656">Tuas kiri atas dipilih, gunakan tombol panah untuk memindahkan</translation>
 <translation id="81817143961839203">Penyisipan gambar gagal</translation>
 <translation id="8185090165691050712">Aktifkan/nonaktifkan menu untuk mengubah ukuran mode kunci</translation>
 <translation id="8192727139462702395">Jika Anda menonaktifkan Bluetooth, koneksi perangkat eksternal ini akan diputuskan dari <ph name="DEVICE_TYPE" /> Anda:</translation>

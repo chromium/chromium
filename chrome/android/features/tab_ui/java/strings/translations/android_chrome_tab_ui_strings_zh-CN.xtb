@@ -19,6 +19,7 @@
 <translation id="149054111719651807">{NUM_MINS,plural, =1{创建时间：<ph name="NUM_MINS_ONE" /> 分钟前}other{创建时间：<ph name="NUM_MINS_MANY" /> 分钟前}}</translation>
 <translation id="1499635324672558517">要关闭所有无痕式标签页吗？</translation>
 <translation id="1501480321619201731">删除群组</translation>
+<translation id="1505526451013346974">添加到“<ph name="TITLE_OF_GROUP" />”</translation>
 <translation id="1555130319947370107">蓝色</translation>
 <translation id="161042844686301425">青色</translation>
 <translation id="1645759014353344461">已将 <ph name="TABS_COUNT_MANY" /> 个标签页合为一组</translation>

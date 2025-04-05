@@ -97,6 +97,7 @@
 <translation id="1377508275003315939">Паролі</translation>
 <translation id="1381022135873211423">{count,plural, =1{Адрас на пазіцыі {position} з {count}}one{Адрас на пазіцыі {position} з {count}}few{Адрас на пазіцыі {position} з {count}}many{Адрас на пазіцыі {position} з {count}}other{Адрас на пазіцыі {position} з {count}}}</translation>
 <translation id="1383876407941801731">Пошук</translation>
+<translation id="1385168997509105202">Вы адразу страціце доступ да групы ўкладак "<ph name="GROUP_NAME" />", і <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) больш не зможа ўзаемадзейнічаць з вамі ў сэрвісах Google.</translation>
 <translation id="138618066238211776">Працягнуць як <ph name="USER_NAME" /></translation>
 <translation id="138692594145659985">Параметры захавання карткі</translation>
 <translation id="1396260204083880024">Вы ўвайшлі як <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Адкрыйце меню ўліковага запісу.</translation>
@@ -511,6 +512,7 @@
 <translation id="3124568093781685165">Абагульвайце паролі з сям’ёй</translation>
 <translation id="3130863904455712965">Гісторыя і іншыя даныя</translation>
 <translation id="313283613037595347">Стварыць новую ўкладку ў рэжыме інкогніта.</translation>
+<translation id="3136739222562075778">На гэтай картцы паказваецца зніжэнне цэн на тавары, якія змяшчаюцца ў адкрытых укладках</translation>
 <translation id="3138611310073113613">Адхіліць выбар</translation>
 <translation id="3140825265190223781">Захаваныя паролі і ключы доступу</translation>
 <translation id="3143515551205905069">Скасаваць сінхранізацыю</translation>
@@ -987,6 +989,7 @@
 <translation id="5197255632782567636">Інтэрнэт</translation>
 <translation id="5200894869889836319">Наладжванне дазволаў</translation>
 <translation id="5203051773066903947">Увесці</translation>
+<translation id="5205750905107419335"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) адразу страціць доступ да групы ўкладак "<ph name="GROUP_NAME" />" і больш не зможа ўзаемадзейнічаць з вамі ў сэрвісах Google.</translation>
 <translation id="5206453674369664567">Выйсці з уліковага запісу і выдаліць даныя</translation>
 <translation id="5210365745912300556">Закрыць укладку</translation>
 <translation id="5211488077761630279">Дазволіць сайту <ph name="SITE_NAME" /> выкарыстоўваць <ph name="PERMISSION" />?</translation>
@@ -1068,6 +1071,7 @@
 <translation id="5567439033041178034">ДАВЕДАЦЦА БОЛЬШ</translation>
 <translation id="5572648434713976849">Вы будзеце атрымліваць лепшыя прапановы ў адрасным радку</translation>
 <translation id="5576885723883013398">Новае акно</translation>
+<translation id="5578543325423650885"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) адразу страціць доступ да групы ўкладак "<ph name="GROUP_NAME" />".</translation>
 <translation id="5578795271662203820">Шукаць гэты відарыс праз <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5579012242779565775">Схаваць пункт "Спіс на прагляд"</translation>
 <translation id="5585019845078534178">Карткі</translation>

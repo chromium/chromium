@@ -518,11 +518,13 @@
 <translation id="3439276997620616816">הכרטיסיות האחרונות יופיעו כאן</translation>
 <translation id="3443221991560634068">טעינה מחדש של הדף הנוכחי</translation>
 <translation id="3444179773590444986">רוצה לשתף משוב לגבי עיצוב כהה של אתרים?</translation>
+<translation id="3448874648066942074">‏סיכום הדף באמצעות AI</translation>
 <translation id="3452832259067974318">‏כדי להגן על הפרטיות שלך, לא מתבצע ב-Chrome מילוי אוטומטי של הסיסמה שלך בשדה הזה.</translation>
 <translation id="3467081767799433066">במסגרת מדידת הביצועים של המודעות, רק סוגים מסוימים של נתונים ישותפו בין אתרים כדי למדוד את ביצועי המודעות שלהם. למשל, אם ביצעת רכישה אחרי ביקור באתר.</translation>
 <translation id="3474624961160222204">המשך כ-<ph name="NAME" /></translation>
 <translation id="3478363558367712427">אפשר לבחור את מנוע החיפוש</translation>
 <translation id="3479552764303398839">לא עכשיו</translation>
+<translation id="3482805106082349287">חיפוש בהקלדה, בקול, במצב פרטי או בעזרת המצלמה</translation>
 <translation id="3487903178221457900">‏יכול להיות שאנשים אחרים יוכלו לגשת לקובץ המיובא, כולל אפליקציות. לאחר הייצוא, הסיסמאות שלך יימחקו מ-Chrome.</translation>
 <translation id="3488199663160411179">שם</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /> על הצעות לתוכן</translation>
@@ -784,6 +786,7 @@
 <translation id="4698061626562952596">כאן אפשר לראות את הכרטיסיות הלא פעילות</translation>
 <translation id="4699172675775169585">תמונות וקבצים במטמון</translation>
 <translation id="4710167854527459075">מיון לפי החדש ביותר</translation>
+<translation id="4718044610319080485">‏הפעלת עוזר אישי מבוסס-AI</translation>
 <translation id="4719927025381752090">הצגת הצעות לתרגום</translation>
 <translation id="4720556299488643018">ביטול הרשמה</translation>
 <translation id="4732120983431207637">מודול התרת מחסניות</translation>
@@ -899,6 +902,7 @@
 <translation id="5174700554036517242">הכרטיסייה חזרה לגובה ההתחלתי</translation>
 <translation id="5180063720319462041">הדף תורגם ל<ph name="TARGET_LANGUAGE" /></translation>
 <translation id="5191251636205085390">‏מידע על טכנולוגיות חדשות שמיועדות להחליף קובצי cookie של צד שלישי והוראות לשליטה בהן.</translation>
+<translation id="5197649123261764478">גישה נוחה לסימניות</translation>
 <translation id="5204967432542742771">הזנת סיסמה</translation>
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{מתבצעת הורדה של קובץ…}one{מתבצעת הורדה של # קבצים…}two{מתבצעת הורדה של # קבצים…}other{מתבצעת הורדה של # קבצים…}}</translation>
 <translation id="5210286577605176222">חזרה לכרטיסייה הקודמת</translation>
@@ -928,6 +932,7 @@
 <translation id="5328542107300944283">שימוש עם <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="5342314432463739672">בקשות הרשאה</translation>
 <translation id="534580735623577507">אין ביקורים באתרים מאז <ph name="TIME_PERIOD" /></translation>
+<translation id="5354716139000094027">‏סיכום בעזרת AI</translation>
 <translation id="5355191726083956201">מופעלת הגנה משופרת</translation>
 <translation id="5375374982898812658">הגישה שלך לקבוצת הכרטיסיות '<ph name="GROUP_NAME" />' תאבד באופן מיידי, והיא תימחק מכל המכשירים שלך</translation>
 <translation id="5375577065097716013">‏חיפוש תמונה בעזרת Google Lens <ph name="BEGIN_NEW" />חדש<ph name="END_NEW" /></translation>
@@ -972,6 +977,7 @@
 <translation id="5556459405103347317">טעינה מחדש</translation>
 <translation id="555671485580955310">היסטוריית הסנכרון וכרטיסיות</translation>
 <translation id="555816257274242153">המעקב אחר מחירים הופסק</translation>
+<translation id="5561445479436807659">‏בא לך לשחק ב-Dino?</translation>
 <translation id="5561549206367097665">בהמתנה לרשת…</translation>
 <translation id="5568069709869097550">אי אפשר להיכנס</translation>
 <translation id="557018954714092179">יצירת תיקייה חדשה</translation>
@@ -1519,6 +1525,7 @@
 <translation id="7913993612870913335">{FILE_COUNT,plural, =1{הורדה אחת נחסמה על ידי הארגון שלך}one{‫# הורדות נחסמו על ידי הארגון שלך}two{‫# הורדות נחסמו על ידי הארגון שלך}other{‫# הורדות נחסמו על ידי הארגון שלך}}</translation>
 <translation id="7914399737746719723">האפליקציה הותקנה</translation>
 <translation id="7919123827536834358">תרגום אוטומטי של השפות האלה</translation>
+<translation id="7921782882718083488">סיכום הדף הזה</translation>
 <translation id="7926975587469166629">כינוי הכרטיס</translation>
 <translation id="7929962904089429003">פתיחת התפריט</translation>
 <translation id="7934668619883965330">לא ניתן להוריד את הקובץ. פורמט הקובץ לא נתמך.</translation>
@@ -1675,6 +1682,7 @@
 <translation id="8540136935098276800">‏יש להזין כתובת URL בפורמט חוקי</translation>
 <translation id="854522910157234410">פתיחת דף זה</translation>
 <translation id="8547025137714087639">{ARCHIVED_TAB_COUNT,plural, =1{כרטיסייה לא פעילה אחת}one{כרטיסיות לא פעילות (#)}two{כרטיסיות לא פעילות (#)}other{כרטיסיות לא פעילות (#)}}</translation>
+<translation id="8547466829003330976">‏בדיקת קובץ PDF באמצעות AI</translation>
 <translation id="8551513938758868521">‏נעילת הכרטיסיות הפרטיות כשיוצאים מ-Chrome</translation>
 <translation id="8559961053328923750">‏ב-Chrome מוגדרת מגבלה על כמות הנתונים הכוללת שאתרים רשאים לשתף דרך הדפדפן כדי למדוד את ביצועי המודעות</translation>
 <translation id="8559990750235505898">הצעה לתרגם דפים בשפות אחרות</translation>
@@ -1772,6 +1780,7 @@
 <translation id="9022871169049522985">אתרים ומפרסמים יכולים למדוד את ביצועי המודעות שלהם</translation>
 <translation id="9035378196785279980">‏העברה אל\u2026</translation>
 <translation id="9042893549633094279">פרטיות ואבטחה</translation>
+<translation id="9047347135558855162">‏חיפוש מהיר ב-Chrome</translation>
 <translation id="9050666287014529139">ביטוי סיסמה</translation>
 <translation id="9055497320631373736">האתר הוחזר לאתרים פוטנציאליים</translation>
 <translation id="9057030985451135243">מידע על קבוצות משותפות של כרטיסיות</translation>

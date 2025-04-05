@@ -19,6 +19,7 @@
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> நிமிடத்திற்கு முன் உருவாக்கப்பட்டது}other{<ph name="NUM_MINS_MANY" /> நிமிடங்களுக்கு முன் உருவாக்கப்பட்டது}}</translation>
 <translation id="1499635324672558517">மறைநிலைப் பக்கங்கள் அனைத்தையும் மூடவா?</translation>
 <translation id="1501480321619201731">குழுவை நீக்கு</translation>
+<translation id="1505526451013346974"><ph name="TITLE_OF_GROUP" /> இல் சேர்க்கும்</translation>
 <translation id="1555130319947370107">நீலம்</translation>
 <translation id="161042844686301425">சியான்</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> பக்கங்கள் குழுவாக்கப்பட்டுள்ளன</translation>
@@ -213,6 +214,7 @@
 <translation id="8820741577754260431">தாவல்களில் விலைச் சரிவு குறித்துக் காட்டப்படும்</translation>
 <translation id="8887921976452567404">மூடிய பக்கங்களையும் குழுக்களையும் ‘சமீபத்திய பக்கங்கள்’, ‘பக்கக் குழுக்கள்’ ஆகிய பிரிவுகளுக்குச் சென்று மீண்டும் திறக்கலாம்.</translation>
 <translation id="8915916167043355778">அனைத்தையும் மூடு</translation>
+<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{புதிய சாளரத்திற்கு நகர்த்தும்}other{வேறு சாளரத்திற்கு நகர்த்தும்}}</translation>
 <translation id="9090098097337832354">இந்த ஸ்டோர் குறித்த தகவல்கள் மூடப்பட்டன</translation>
 <translation id="9114502155681725011"><ph name="TITLE_OF_GROUP" /> என்ற பக்கக் குழுவுக்கான பக்கக் குழுச் செயல் மெனுவைத் திறக்கும், <ph name="COLOR_NAME" /> வண்ணம்.</translation>
 <translation id="9169141410816678175">“<ph name="GROUP_NAME" />” பக்கக் குழுவிற்கான அணுகலை எல்லோரும் உடனடியாக இழப்பார்கள். அத்துடன், எல்லாச் சாதனங்களில் இருந்தும் அது நீக்கப்படும்.</translation>

@@ -97,6 +97,7 @@
 <translation id="1377508275003315939">ಪಾಸ್‌ವರ್ಡ್‌ಗಳು</translation>
 <translation id="1381022135873211423">{count,plural, =1{{count} ರಲ್ಲಿ {position} ವಿಳಾಸ}one{{count} ರಲ್ಲಿ {position} ವಿಳಾಸಗಳು}other{{count} ರಲ್ಲಿ {position} ವಿಳಾಸಗಳು}}</translation>
 <translation id="1383876407941801731">ಹುಡುಕಿ</translation>
+<translation id="1385168997509105202">ನೀವು ತಕ್ಷಣವೇ “<ph name="GROUP_NAME" />" ಟ್ಯಾಬ್ ಗುಂಪಿಗೆ ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ಕಳೆದುಕೊಳ್ಳುತ್ತೀರಿ ಮತ್ತು <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) ಇನ್ನು ಮುಂದೆ Google ಸೇವೆಗಳಲ್ಲಿ ನಿಮ್ಮೊಂದಿಗೆ ಸಂವಹನ ನಡೆಸಲು ಸಾಧ್ಯವಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="138618066238211776"><ph name="USER_NAME" /> ಆಗಿ ಮುಂದುವರಿಸಿ</translation>
 <translation id="138692594145659985">ಕಾರ್ಡ್‌ ಅನ್ನು ಉಳಿಸಲು ಆಯ್ಕೆಗಳು</translation>
 <translation id="1396260204083880024"><ph name="USER_NAME" /> ಆಗಿ ಸೈನ್ ಇನ್ ಮಾಡಲಾಗಿದೆ. <ph name="USER_EMAIL" />. ಖಾತೆಯ ಮೆನುವನ್ನು ತೆರೆಯಿರಿ.</translation>
@@ -511,6 +512,7 @@
 <translation id="3124568093781685165">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ನಿಮ್ಮ ಕುಟುಂಬದೊಂದಿಗೆ ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="3130863904455712965">ಇತಿಹಾಸ ಮತ್ತು ಇನ್ನಷ್ಟು</translation>
 <translation id="313283613037595347">ಹೊಸ ಅಜ್ಞಾತ ಟ್ಯಾಬ್ ರಚಿಸಿ</translation>
+<translation id="3136739222562075778">ಈ ಕಾರ್ಡ್ ನಿಮ್ಮ ತೆರೆದ ಟ್ಯಾಬ್‌ಗಳಲ್ಲಿ ಉತ್ಪನ್ನಗಳ ಬೆಲೆ ಕುಸಿತವನ್ನು ತೋರಿಸುತ್ತದೆ</translation>
 <translation id="3138611310073113613">ಆಯ್ಕೆಯನ್ನು ತ್ಯಜಿಸಿ</translation>
 <translation id="3140825265190223781">ಸೇವ್ ಮಾಡಲಾದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಪಾಸ್‌ಕೀಗಳು</translation>
 <translation id="3143515551205905069">ಸಿಂಕ್ ಮಾಡುವಿಕೆಯನ್ನು ರದ್ದುಪಡಿಸಿ</translation>
@@ -987,6 +989,7 @@
 <translation id="5197255632782567636">ಇಂಟರ್ನೆಟ್</translation>
 <translation id="5200894869889836319">ಅನುಮತಿಗಳನ್ನು ಸೆಟ್‌ ಮಾಡಲು ಆಯ್ಕೆಗಳು</translation>
 <translation id="5203051773066903947">ನಮೂದಿಸಿ</translation>
+<translation id="5205750905107419335"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) ಅವರು ತಕ್ಷಣವೇ "<ph name="GROUP_NAME" />" ಟ್ಯಾಬ್ ಗುಂಪಿಗೆ ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ಕಳೆದುಕೊಳ್ಳುತ್ತಾರೆ ಮತ್ತು ಇನ್ನು ಮುಂದೆ Google ಸೇವೆಗಳಾದ್ಯಂತ ನಿಮ್ಮೊಂದಿಗೆ ಸಂವಹನ ನಡೆಸಲು ಸಾಧ್ಯವಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="5206453674369664567">ಸೈನ್‌ ಔಟ್‌ ಮಾಡಿ ಮತ್ತು ಡೇಟಾ ತೆರವುಗೊಳಿಸಿ</translation>
 <translation id="5210365745912300556">ಟ್ಯಾಬ್ ಅನ್ನು ಮುಚ್ಚಿ</translation>
 <translation id="5211488077761630279">ನಿಮ್ಮ <ph name="PERMISSION" /> ಅನ್ನು ಬಳಸಲು "<ph name="SITE_NAME" />" ಗೆ ಅನುಮತಿಸಬೇಕೆ?</translation>
@@ -1068,6 +1071,7 @@
 <translation id="5567439033041178034">ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
 <translation id="5572648434713976849">ನೀವು ವಿಳಾಸ ಪಟ್ಟಿಯಲ್ಲಿ ಸುಧಾರಿತ ಸಲಹೆಗಳನ್ನು ಪಡೆಯುತ್ತೀರಿ</translation>
 <translation id="5576885723883013398">ಹೊಸ ವಿಂಡೋ</translation>
+<translation id="5578543325423650885"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) ತಕ್ಷಣವೇ “<ph name="GROUP_NAME" />” ಟ್ಯಾಬ್ ಗುಂಪಿಗೆ ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ಕಳೆದುಕೊಳ್ಳುತ್ತಾರೆ.</translation>
 <translation id="5578795271662203820">ಈ ಚಿತ್ರಕ್ಕಾಗಿ <ph name="SEARCH_ENGINE" /> ನಲ್ಲಿ ಹುಡುಕಾಡಿ</translation>
 <translation id="5579012242779565775">ಓದುವ ಪಟ್ಟಿಯನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="5585019845078534178">ಕಾರ್ಡ್‌ಗಳು</translation>

@@ -4087,6 +4087,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3820749202859700794">Eliptická křivka SECG secp521r1 (neboli NIST P-521)</translation>
 <translation id="3821074617718452587">Oznámení Telefonního centra</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Rozšíření bylo schváleno}few{# rozšíření byla schválena}many{# rozšíření bylo schváleno}other{# rozšíření bylo schváleno}}</translation>
+<translation id="3822426549715448461">DD</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Pro Linux je doporučeno alespoň <ph name="INSTALL_SIZE" /> místa.</translation>
 <translation id="3824621460022590830">Token registrace zařízení není platný. Kontaktujte vlastníka nebo administrátora zařízení. Kód chyby: <ph name="ERROR_CODE" />.</translation>
@@ -4615,6 +4616,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4203769790323223880">Fotoaparát není povolen</translation>
 <translation id="4204415812590935863">V tuto chvíli motiv nelze vytvořit.</translation>
 <translation id="4205157409548006256">Při konfiguraci Linuxu došlo k chybě.</translation>
+<translation id="4205643719206044108">Aby bylo možné nabízet návrhy, navštívené weby a obsah stránek se sdílí s Googlem</translation>
 <translation id="4206144641569145248">Mimozemšťan</translation>
 <translation id="4206323443866416204">Zpětná vazba</translation>
 <translation id="4206585797409671301">Povoleno zobrazovat žádosti</translation>
@@ -8757,6 +8759,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7199452998289813782">Pozastavit odesílání do zařízení <ph name="DEVICE_NAME" /></translation>
 <translation id="720110658997053098">Trvale toto zařízení ponechat v režimu veřejného terminálu</translation>
 <translation id="7201118060536064622">Položka „<ph name="DELETED_ITEM_NAME" />“ byla smazána</translation>
+<translation id="7201336084980086208">Když odešlete formulář, může vám automatické vyplňování nabídnout uložení údajů, jako je číslo řidičského průkazu nebo pasu</translation>
 <translation id="7201420661433230412">Zobrazit soubory</translation>
 <translation id="7201432510117121839">Odesílání zvuku plochy na tomto zařízení není podporováno</translation>
 <translation id="7201535955609308429">Počkejte prosím, probíhá ověřování</translation>

@@ -4624,7 +4624,7 @@
 <translation id="4203769790323223880">唔批准用攝錄機</translation>
 <translation id="4204415812590935863">目前無法建立主題。</translation>
 <translation id="4205157409548006256">設定 Linux 時發生錯誤。</translation>
-<translation id="4205643719206044108">你造訪的網站和網頁內容會分享給 Google，以提供建議</translation>
+<translation id="4205643719206044108">為提供建議，你瀏覽的網站和頁面內容會與 Google 分享</translation>
 <translation id="4206144641569145248">外星人</translation>
 <translation id="4206323443866416204">意見反映報告</translation>
 <translation id="4206585797409671301">允許咗顯示要求</translation>
@@ -8763,7 +8763,7 @@
 <translation id="7199452998289813782">暫停投放去 <ph name="DEVICE_NAME" /></translation>
 <translation id="720110658997053098">讓此裝置永久使用 Kiosk 模式</translation>
 <translation id="7201118060536064622">已刪除「<ph name="DELETED_ITEM_NAME" />」</translation>
-<translation id="7201336084980086208">你提交表單時，自動填入功能可詢問是否要儲存資訊，例如駕照或護照的號碼</translation>
+<translation id="7201336084980086208">提交表格時，自動填入功能可能會詢問是否要儲存資料，例如駕駛執照或護照號碼</translation>
 <translation id="7201420661433230412">查看檔案</translation>
 <translation id="7201432510117121839">此裝置不支援投放桌面電腦音訊</translation>
 <translation id="7201535955609308429">正在驗證，請稍候</translation>

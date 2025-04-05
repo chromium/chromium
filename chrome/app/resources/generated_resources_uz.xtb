@@ -4087,6 +4087,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3820749202859700794">SECG elliptik egri chiziqli secp521r1 (NIST P-521) ochiq kalit algoritmi</translation>
 <translation id="3821074617718452587">Phone Hub bildirishnomalari</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Kengaytma tasdiqlandi}other{# ta kengaytma tasdiqlandi}}</translation>
+<translation id="3822426549715448461">KK</translation>
 <translation id="3823019343150397277">IBAN (Xalqaro bank hisob raqami)</translation>
 <translation id="3823310065043511710">Linux uchun kamida <ph name="INSTALL_SIZE" />  joy ochilishi tavsiya etiladi.</translation>
 <translation id="3824621460022590830">Qurilmalarni qayd qilish tokeni yaroqsiz. Qurilma egasi yoki administratorga murojaat qiling. Xatolik kodi: <ph name="ERROR_CODE" />.</translation>
@@ -4616,6 +4617,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="4203769790323223880">Kameradan foydalanishga ruxsat berilmagan</translation>
 <translation id="4204415812590935863">Hozirda mavzu yaratish imkonsiz.</translation>
 <translation id="4205157409548006256">Linux tizimini yangilashda xatolik yuz berdi.</translation>
+<translation id="4205643719206044108">Funksiyani yaxshilash maqsadida siz tashrif buyurgan sayt va sahifalar haqidagi axborotlar jamlanadi</translation>
 <translation id="4206144641569145248">O‘zga sayyoralik</translation>
 <translation id="4206323443866416204">Fikr-mulohaza</translation>
 <translation id="4206585797409671301">Soʻrovlar chiqarishga ruxsat berilgan</translation>
@@ -6984,6 +6986,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="5916655001090539219">Avtomatik oʻqish</translation>
 <translation id="5916664084637901428">Yoniq</translation>
 <translation id="59174027418879706">Yoqilgan</translation>
+<translation id="5919305207330938913">Jamlangan barcha maʼlumotlar Google <ph name="BEGIN_LINK" />maxfiylik siyosatiga<ph name="END_LINK" /> muvofiq ishlatiladi.</translation>
 <translation id="5920543303088087579">Bu tarmoqqa ulanish ruxsati administrator tomonidan o‘chirib qo‘yilgan</translation>
 <translation id="5922963926582976524">Tezkor modem aloqasini uzish</translation>
 <translation id="5924047253200400718">Yordam sahifasiga o‘tish<ph name="SCANNING_STATUS" /></translation>
@@ -7495,6 +7498,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6283438600881103103">Hozir hisobingizdan avtomatik chiqarilasiz.
 <ph name="DOMAIN" /> smart karta kiritilishini talab qilmoqda.</translation>
 <translation id="628352644014831790">4 soniya</translation>
+<translation id="6283823201263716145">Funksiyalar va unumdorlikni yaxshilash maqsadida Demo rejimda qurilmalar Google serverlariga xatoliklar hisoboti, shuningdek, diagnostika va foydalanish statistikasi maʼlumotlarini avtomatik yuboradi.</translation>
 <translation id="6285120108426285413">“<ph name="FILE_NAME" />” faylini yuklab olish tavsiya etilmaydi, chunki bu fayl kompyuteringiz uchun xavfli bo‘lishi mumkin.</translation>
 <translation id="6285770818046456882">Fayl yuborayotgan qurilma uzatmani bekor qildi</translation>
 <translation id="628699625505156622">Joylashuv axborotidan foydalanish. Joylashuv axborotiga ruxsati bor ChromeOS, Android ilovalari, veb-saytlar va xizmatlarga bu qurilma joylashuvi haqidagi axborotdan foydalanishiga ruxsat bering. Joylashuvni aniqlash xizmati Android ilova va xizmatlarga yanada aniq joylashuv axborotini taqdim etadi. Buning uchun Google vaqti-vaqti bilan simsiz signallar joylashuvlarining umumiy omborini jamlash orqali qurilma sensorlari hamda simsiz aloqa haqidagi maʼlumotlardan foydalanadi. Anonim maʼlumotlar foydalanuvchining joylashuv axboroti bilan ishlaydigan xizmatlarda joylashuv aniqligini oshirish maqsadida jamlanadi. Bunday maʼlumotlar foydalanuvchilar ehtiyojini qondirish maqsadida Google va tashqi tomonlarga xizmatlarni qonun doirasida yaxshilash, taqdim etish hamda dastaklashga yordam beradi. <ph name="BEGIN_LINK1" />Joylashuv axboroti ishlatilishi haqida batafsil<ph name="END_LINK1" /></translation>
@@ -8755,6 +8759,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7199452998289813782"><ph name="DEVICE_NAME" />ga translatsiyani pauza qilish</translation>
 <translation id="720110658997053098">Qurilmani har doim kiosk rejimida ishga tushirish</translation>
 <translation id="7201118060536064622">“<ph name="DELETED_ITEM_NAME" />” o‘chirildi</translation>
+<translation id="7201336084980086208">Shakllarni toʻldirishda haydovchilik guvuhnomasi yoki pasport raqami kabi maʼlumotlarning avtomatik kiritilishi taklif etiladi</translation>
 <translation id="7201420661433230412">Fayllarni ochish</translation>
 <translation id="7201432510117121839">Bu qurilma desktop audiosini translatsiya qila olmaydi</translation>
 <translation id="7201535955609308429">Tekshiruv tugashini kuting</translation>
@@ -9356,6 +9361,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7641720519047586765">Mazkur kirish kaliti bu saytdan oʻchirilgan</translation>
 <translation id="764178579712141045"><ph name="USER_EMAIL" /> kiritildi</translation>
 <translation id="7642778300616172920">Maxfiy axborotlar berkitilsin</translation>
+<translation id="7643117827468520640">Shartlar bilan tanishing</translation>
 <translation id="7643842463591647490">{0,plural, =1{# ta ochiq oyna}other{# ta ochiq oyna}}</translation>
 <translation id="7643932971554933646">Sayt uchun fayllarni ochishga ruxsat berilsinmi?</translation>
 <translation id="7644953783774050577">Hech biri</translation>

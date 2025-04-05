@@ -19,6 +19,7 @@ Když skupinu karet <ph name="TITLE_OF_GROUP" /> smažete, všichni k ní okam�
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Vytvořeno před <ph name="NUM_MINS_ONE" /> minutou}few{Vytvořeno před <ph name="NUM_MINS_MANY" /> minutami}many{Vytvořeno před <ph name="NUM_MINS_MANY" /> minuty}other{Vytvořeno před <ph name="NUM_MINS_MANY" /> minutami}}</translation>
 <translation id="1499635324672558517">Zavřít všechny anonymní karty?</translation>
 <translation id="1501480321619201731">Smazat skupinu</translation>
+<translation id="1505526451013346974">Přidat do skupiny <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1555130319947370107">Modrá</translation>
 <translation id="161042844686301425">Azurová</translation>
 <translation id="1645759014353344461">Byl seskupen tento počet karet: <ph name="TABS_COUNT_MANY" /></translation>
@@ -213,6 +214,7 @@ Když skupinu karet <ph name="TITLE_OF_GROUP" /> smažete, všichni k ní okam�
 <translation id="8820741577754260431">Zobrazit pokles ceny na kartách</translation>
 <translation id="8887921976452567404">Zavřené karty a skupiny můžete znovu otevřít ze sekcí Nedávno použité karty a Skupiny karet.</translation>
 <translation id="8915916167043355778">Zavřít vše</translation>
+<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Přesunout do nového okna}few{Přesunout do jiného okna}many{Přesunout do jiného okna}other{Přesunout do jiného okna}}</translation>
 <translation id="9090098097337832354">Informace o této prodejně jsou zavřeny</translation>
 <translation id="9114502155681725011">Otevřít nabídku akcí pro skupinu karet <ph name="TITLE_OF_GROUP" />, barva <ph name="COLOR_NAME" /></translation>
 <translation id="9169141410816678175">Ke skupině karet <ph name="GROUP_NAME" /> všichni okamžitě ztratí přístup a bude smazána ze všech zařízení</translation>

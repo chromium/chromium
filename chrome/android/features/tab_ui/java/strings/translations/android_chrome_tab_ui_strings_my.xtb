@@ -19,6 +19,7 @@
 <translation id="149054111719651807">{NUM_MINS,plural, =1{ပြီးခဲ့သော <ph name="NUM_MINS_ONE" /> မိနစ်က ပြုလုပ်ထားသည်}other{ပြီးခဲ့သော <ph name="NUM_MINS_MANY" /> မိနစ်က ပြုလုပ်ထားသည်}}</translation>
 <translation id="1499635324672558517">ရုပ်ဖျက်တဘ်အားလုံး ပိတ်မလား။</translation>
 <translation id="1501480321619201731">အဖွဲ့ကို ဖျက်ရန်</translation>
+<translation id="1505526451013346974"><ph name="TITLE_OF_GROUP" /> သို့ ထည့်ရန်</translation>
 <translation id="1555130319947370107">အပြာရောင်</translation>
 <translation id="161042844686301425">Cyan</translation>
 <translation id="1645759014353344461">တဘ် <ph name="TABS_COUNT_MANY" /> ခုကို အုပ်စုဖွဲ့ထားသည်</translation>

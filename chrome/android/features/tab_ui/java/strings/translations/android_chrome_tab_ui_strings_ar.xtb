@@ -19,6 +19,7 @@
 <translation id="149054111719651807">{NUM_MINS,plural, =1{تم إنشاء المجموعة قبل دقيقة واحدة (<ph name="NUM_MINS_ONE" />)}zero{تم إنشاء المجموعة قبل <ph name="NUM_MINS_MANY" /> دقيقة}two{تم إنشاء المجموعة قبل دقيقتَين (<ph name="NUM_MINS_MANY" />)}few{تم إنشاء المجموعة قبل <ph name="NUM_MINS_MANY" /> دقائق}many{تم إنشاء المجموعة قبل <ph name="NUM_MINS_MANY" /> دقيقة}other{تم إنشاء المجموعة قبل <ph name="NUM_MINS_MANY" /> دقيقة}}</translation>
 <translation id="1499635324672558517">هل تريد إغلاق جميع علامات التبويب في وضع التصفُّح المتخفي؟</translation>
 <translation id="1501480321619201731">حذف مجموعة</translation>
+<translation id="1505526451013346974">الإضافة إلى "<ph name="TITLE_OF_GROUP" />"</translation>
 <translation id="1555130319947370107">أزرق</translation>
 <translation id="161042844686301425">سماوي</translation>
 <translation id="1645759014353344461">عدد علامات التبويب المجمَّعة: <ph name="TABS_COUNT_MANY" /></translation>
@@ -213,6 +214,7 @@
 <translation id="8820741577754260431">الاطّلاع على الأسعار المنخفضة في علامات التبويب</translation>
 <translation id="8887921976452567404">يمكن إعادة فتح علامات التبويب والمجموعات المغلقة من قسمَي "علامات التبويب الأخيرة" و"مجموعات علامات التبويب".</translation>
 <translation id="8915916167043355778">إغلاق الكل</translation>
+<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{النقل إلى نافذة جديدة}zero{النقل إلى نافذة أخرى}two{النقل إلى نافذة أخرى}few{النقل إلى نافذة أخرى}many{النقل إلى نافذة أخرى}other{النقل إلى نافذة أخرى}}</translation>
 <translation id="9090098097337832354">تم إخفاء المعلومات حول هذا المتجر.</translation>
 <translation id="9114502155681725011">فتح قائمة الإجراءات لمجموعة علامات التبويب "<ph name="TITLE_OF_GROUP" />" التي تظهر بلون <ph name="COLOR_NAME" /></translation>
 <translation id="9169141410816678175">سيفقد جميع المستخدمين على الفور إمكانية الوصول إلى مجموعة علامات التبويب "<ph name="GROUP_NAME" />"، وسيتم حذفها من جميع الأجهزة</translation>

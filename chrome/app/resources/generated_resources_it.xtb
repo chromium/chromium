@@ -4087,6 +4087,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3820749202859700794">Curva ellittica SECG secp521r1 (anche nota come NIST P-521)</translation>
 <translation id="3821074617718452587">Notifiche di Phone Hub</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Un'estensione è stata approvata}other{# estensioni sono state approvate}}</translation>
+<translation id="3822426549715448461">GG</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Sono consigliati almeno <ph name="INSTALL_SIZE" /> di spazio libero per Linux.</translation>
 <translation id="3824621460022590830">Token di registrazione dei dispositivi non valido. Contatta l'amministratore o il proprietario del dispositivo. Codice di errore: <ph name="ERROR_CODE" />.</translation>
@@ -4616,6 +4617,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4203769790323223880">Fotocamera non consentita</translation>
 <translation id="4204415812590935863">Al momento non è possibile creare un tema.</translation>
 <translation id="4205157409548006256">Si è verificato un errore durante la configurazione di Linux.</translation>
+<translation id="4205643719206044108">Per poterti offrire suggerimenti, i siti che visiti e i contenuti delle pagine vengono condivisi con Google</translation>
 <translation id="4206144641569145248">Alieno</translation>
 <translation id="4206323443866416204">Report di feedback</translation>
 <translation id="4206585797409671301">Autorizzate a mostrare richieste</translation>
@@ -8755,6 +8757,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7199452998289813782">Metti in pausa la trasmissione su <ph name="DEVICE_NAME" /></translation>
 <translation id="720110658997053098">Mantieni definitivamente questo dispositivo in modalità kiosk</translation>
 <translation id="7201118060536064622">"<ph name="DELETED_ITEM_NAME" />" eliminato</translation>
+<translation id="7201336084980086208">La compilazione automatica può offrire di salvare le informazioni quando invii moduli, come il numero della patente di guida o del passaporto</translation>
 <translation id="7201420661433230412">Visualizza i file</translation>
 <translation id="7201432510117121839">La trasmissione dell'audio del computer non è supportata su questo dispositivo</translation>
 <translation id="7201535955609308429">Attendi mentre è in corso la verifica</translation>

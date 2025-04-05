@@ -4085,6 +4085,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3820749202859700794">SECG kurba eliptikoko secp521r1 (edo, bestela esanda: NIST P-521)</translation>
 <translation id="3821074617718452587">Phone Hub-en jakinarazpenak</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Luzapen bat onartu da}other{# luzapen onartu dira}}</translation>
+<translation id="3822426549715448461">EE</translation>
 <translation id="3823019343150397277">IBANa</translation>
 <translation id="3823310065043511710">Linux instalatzeko, gutxienez <ph name="INSTALL_SIZE" /> eduki behar dira libre.</translation>
 <translation id="3824621460022590830">Gailuaren erregistro-tokenak ez du balio. Jarri harremanetan gailuaren jabearekin edo administratzailearekin. Errore-kodea: <ph name="ERROR_CODE" />.</translation>
@@ -4614,6 +4615,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="4203769790323223880">Ukatu da kamera erabiltzeko baimena</translation>
 <translation id="4204415812590935863">Une honetan, ezin da sortu gairik.</translation>
 <translation id="4205157409548006256">Errore bat gertatu da Linux konfiguratzean.</translation>
+<translation id="4205643719206044108">Iradokizunak eskaintzeko, bisitatzen dituzun webguneen eta orrien edukia Google-rekin partekatzen da</translation>
 <translation id="4206144641569145248">Estralurtarra</translation>
 <translation id="4206323443866416204">Iritzi-txostena</translation>
 <translation id="4206585797409671301">Eskaerak erakusteko baimena du</translation>
@@ -6979,6 +6981,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5916655001090539219">Irakurketa automatikoa</translation>
 <translation id="5916664084637901428">Aktibatuta</translation>
 <translation id="59174027418879706">Gaituta</translation>
+<translation id="5919305207330938913">Google-ren <ph name="BEGIN_LINK" />Pribatutasun-gidalerroei<ph name="END_LINK" /> jarraikiz erabiliko dira bildutako datu guztiak.</translation>
 <translation id="5920543303088087579">Administratzaileak desgaitu du sarera konektatzeko aukera</translation>
 <translation id="5922963926582976524">Deskonektatu istanteko wifi-gunearen sarea</translation>
 <translation id="5924047253200400718">Lortu laguntza<ph name="SCANNING_STATUS" /></translation>
@@ -7489,6 +7492,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="6283438600881103103">Saioa automatikoki amaituko da.
 Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.</translation>
 <translation id="628352644014831790">4 segundo</translation>
+<translation id="6283823201263716145">Demo moduko gailuek hutsegite-txostenak, eta diagnostiko- eta erabilera-datuak automatikoki bidaltzen dizkiote Google-ri, eginbideak eta errendimendua hobetzeko.</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> ez da deskargatzen sarriegi, eta arriskutsua izan liteke.</translation>
 <translation id="6285770818046456882">Zurekin partekatzen ari zen gailuak bertan behera utzi du transferentzia</translation>
 <translation id="628699625505156622">Erabili kokapena. Eman gailuaren kokapena erabiltzeko baimena kokapen-baimena aktibatuta daukaten ChromeOS-erako eta Android-erako aplikazio, webgune eta zerbitzuei. Kokapen-zehaztasuna ezarpenari esker, Android-en aplikazio eta zerbitzuek kokapen zehatzagoa lortzen dute. Horretarako, Google-k gailuaren sentsoreei eta hari gabeko seinaleei buruzko informazioa prozesatzen du aldizka, auzolanean hari gabeko seinaleen kokapenak lortzeko. Inor identifikatu gabe erabiltzen dira datu horiek, kokapen-zehaztasuna eta kokapenean oinarritutako zerbitzuak hobetzeko, baita Google-ren zerbitzuak hobetu, eman eta mantentzeko ere, Google-k eta hirugarrenek erabiltzaileen beharrei erantzuteko duten legezko interesa oinarri hartuta. <ph name="BEGIN_LINK1" />Lortu kokapena erabiltzeari buruzko informazio gehiago<ph name="END_LINK1" /></translation>
@@ -8749,6 +8753,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7199452998289813782">Pausatu <ph name="DEVICE_NAME" /> gailura igortzeko prozesua</translation>
 <translation id="720110658997053098">Ezarri gailu hau kiosko moduan betiko</translation>
 <translation id="7201118060536064622">Ezabatu da "<ph name="DELETED_ITEM_NAME" />"</translation>
+<translation id="7201336084980086208">Betetze automatikoak informazioa gordetzeko eskain dezake inprimakiak bidaltzen dituzunean (adibidez, zure gidabaimenaren edo pasaportearen zenbakia)</translation>
 <translation id="7201420661433230412">Ikusi fitxategiak</translation>
 <translation id="7201432510117121839">Edukia igortzen ari den ordenagailuko audioa ez da onartzen gailu honetan</translation>
 <translation id="7201535955609308429">Itxaron egiaztapena gauzatu bitartean</translation>
@@ -9349,6 +9354,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7641720519047586765">Sarbide-gakoa webgunetik ezabatu da</translation>
 <translation id="764178579712141045">Gehitu da <ph name="USER_EMAIL" /></translation>
 <translation id="7642778300616172920">Ezkutatu kontuzko edukia</translation>
+<translation id="7643117827468520640">Berrikusi baldintza hauek</translation>
 <translation id="7643842463591647490">{0,plural, =1{# leiho dago irekita}other{# leiho daude irekita}}</translation>
 <translation id="7643932971554933646">Fitxategiak ikusteko baimena eman nahi diozu webguneari?</translation>
 <translation id="7644953783774050577">Ez hautatu bat ere</translation>

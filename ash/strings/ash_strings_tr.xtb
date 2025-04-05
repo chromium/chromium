@@ -112,6 +112,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1306549533752902673">ÖNERİLEN UYGULAMALAR</translation>
 <translation id="1310396869741602366">Üslubu değiştir</translation>
 <translation id="1312604459020188865"><ph name="SIGNAL_STRENGTH" /> Sinyal Gücü</translation>
+<translation id="1314113845887519729">Üst kenar tutma yeri seçildi, taşımak için ok tuşlarını kullanın</translation>
 <translation id="1316069254387866896">Rafı her zaman göster</translation>
 <translation id="132346741904777634">Kamera sol üst köşeye tutturuldu. Sistem yüzeyi ile çakışıyor.</translation>
 <translation id="132415371743256095"><ph name="DESK_NAME" /> masasını ve pencerelerini kapat</translation>
@@ -186,6 +187,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1557622599341396706">Masa adını göster</translation>
 <translation id="1569384531973824928">Bu işlem, kamera ve mikrofon izni olan tüm uygulamaların ve web sitelerinin erişmesine izin verir. Web sayfasını yenilemeniz veya uygulamayı yeniden başlatmanız gerekebilir.</translation>
 <translation id="1571697193564730395">Rahatsız Etmeyin modunu aç/kapat. <ph name="STATE_TEXT" /></translation>
+<translation id="1574691582236909946">Sol kenar tutma yeri seçildi, taşımak için ok tuşlarını kullanın</translation>
 <translation id="1576623706766186887">Büyüteç açıkken uzaklaştırın</translation>
 <translation id="1582946770779745370">Oyun Paneli'ni kullanabilirsiniz. Açmak için istediğiniz zaman <ph name="LAUNCHER_KEY_NAME" /> + üst karakter + Escape tuşlarına, ardından <ph name="LAUNCHER_KEY_NAME" /> + g tuşlarına basın</translation>
 <translation id="1586324912145647027">1 ile 8 arasındaki masalara git</translation>
@@ -220,6 +222,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1696984622403682083">Bu özelliği dilediğiniz zaman Ayarlar'dan kapatabilirsiniz. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> zamanlayıcı· <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 adresi: <ph name="ADDRESS" /></translation>
+<translation id="1700782710852683371">Şu anda bu istemle ilgili görsel oluşturulamıyor. Açıklamanızı başka şekilde ifade etmeyi deneyin. Kişilerin, zararlı veya uygunsuz içeriklerin resimlerini oluşturamayacağınızı unutmayın.</translation>
 <translation id="1703117532528082099">Etkin pencere sola sabitlendi.</translation>
 <translation id="1708345662127501511">Masa: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Ağ Ayarları</translation>
@@ -608,6 +611,7 @@ Aksi takdirde yerleşik dokunmatik alan <ph name="TIMEOUT_SECONDS" /> sonra yeni
 <translation id="304097922505898963">Tuş Kısayolları uygulamasını açın</translation>
 <translation id="304417730895741346">Sabitlenen ve açık olan uygulamalarınız rafta bulunur. Bir uygulamayı rafa sabitlemek için ilgili uygulamayı sağ tıklayın veya dokunmatik alana iki parmağınızla dokunun.</translation>
 <translation id="3045488863354895414">İyi günler,</translation>
+<translation id="3045670165536837541">Sağ üst tutma yeri seçildi, taşımak için ok tuşlarını kullanın</translation>
 <translation id="3047761520276763270">Şunu demeyi deneyin:</translation>
 <translation id="3053407068093039599">Kamera erişimini aç/kapat</translation>
 <translation id="3055162170959710888">Bugün bu cihazı <ph name="USED_TIME" /> kullandınız</translation>
@@ -1763,6 +1767,7 @@ Yeni yüklenmiş</translation>
 <translation id="6696025732084565524">Çıkarılabilir klavyenizde kritik bir güncelleme yapılması gerekiyor</translation>
 <translation id="6697913454192220372">Yeni masa ekle</translation>
 <translation id="6700713906295497288">IME menü düğmesi</translation>
+<translation id="6704073473590541209">Sağ kenar tutma yeri seçildi, taşımak için ok tuşlarını kullanın</translation>
 <translation id="6706742084323792866">PIN klavyesi</translation>
 <translation id="6710213216561001401">Önceki</translation>
 <translation id="6723839937902243910">Güç</translation>
@@ -1786,6 +1791,7 @@ Yeni yüklenmiş</translation>
 <translation id="6781002679438061620">Masa 9</translation>
 <translation id="6782182743534150858">Masa 13</translation>
 <translation id="6782919488259222803">Geçerli sayfada ara</translation>
+<translation id="6783348167101855071">Sağ alt tutma yeri seçildi, taşımak için ok tuşlarını kullanın</translation>
 <translation id="6786750046913594791">Klasörü kapat</translation>
 <translation id="6790428901817661496">Oynat</translation>
 <translation id="6792262051831399889">Yok</translation>
@@ -1941,6 +1947,7 @@ Yeni yüklenmiş</translation>
 <translation id="7371404428569700291">Pencereyi kaydet</translation>
 <translation id="7372069265635026568">Toplam <ph name="TOTAL_MEMORY" /> bellekten <ph name="AVAILABLE_MEMORY" /> kullanılabilir</translation>
 <translation id="737315737514430195">Mikrofonun sesinin açılması, izni olan tüm uygulamaların ve web sitelerinin mikrofona erişmesine izin verir</translation>
+<translation id="7376933029363911338">Alt kenar tutma yeri seçildi, taşımak için ok tuşlarını kullanın</translation>
 <translation id="7377169924702866686">Caps Lock açık.</translation>
 <translation id="7377481913241237033">Kod kullanarak bağlanma</translation>
 <translation id="7378203170292176219">Kaydedilecek alanı seçmek için sürükleyin</translation>
@@ -2037,6 +2044,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="7658239707568436148">İptal</translation>
 <translation id="7659861092419699379">Masa ve pencereler kapatıldı</translation>
 <translation id="7660160718439869192"><ph name="NAME" /> cihazınız, <ph name="EMAIL" /> adresine bağlı cihazlarda görünür</translation>
+<translation id="7661694115779363471">Sol alt tutma yeri seçildi, taşımak için ok tuşlarını kullanın</translation>
 <translation id="7662283695561029522">Yapılandırmak için dokunun</translation>
 <translation id="7670953955701272011">Bu tarihi Google Takvim'de aç</translation>
 <translation id="7671610481353807627">Uygulamalar renge göre sıralandı</translation>
@@ -2205,6 +2213,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> için bilgi iletişim kutusunu aç</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> kullanılıyor</translation>
 <translation id="8168435359814927499">İçerik</translation>
+<translation id="8172370561760918656">Sol üst tutma yeri seçildi, taşımak için ok tuşlarını kullanın</translation>
 <translation id="81817143961839203">Resim eklenemedi</translation>
 <translation id="8185090165691050712">Kilit modunu yeniden boyutlandırmak için menüyü açın/kapatın</translation>
 <translation id="8192727139462702395">Bluetooth'u kapattığınızda aşağıdaki harici cihazların, <ph name="DEVICE_TYPE" /> cihazınızla bağlantısı kesilir:</translation>

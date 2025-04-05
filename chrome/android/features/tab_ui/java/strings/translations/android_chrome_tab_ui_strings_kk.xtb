@@ -19,6 +19,7 @@
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> минут бұрын жасалды.}other{<ph name="NUM_MINS_MANY" /> минут бұрын жасалды.}}</translation>
 <translation id="1499635324672558517">Барлық инкогнито қойындысы жабылсын ба?</translation>
 <translation id="1501480321619201731">Топты жою</translation>
+<translation id="1505526451013346974"><ph name="TITLE_OF_GROUP" /> тобына қосу</translation>
 <translation id="1555130319947370107">Көк</translation>
 <translation id="161042844686301425">Көгілдір</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> қойынды топтастырылды.</translation>
@@ -213,6 +214,7 @@
 <translation id="8820741577754260431">Баға төмендеген кезде, оны қойындыдан көріңіз.</translation>
 <translation id="8887921976452567404">Жабылған қойындылар мен топтарды "Соңғы қойындылар" және "Қойындылар топтары" бөлімдерінен қайта ашуға болады.</translation>
 <translation id="8915916167043355778">Барлығын жабу</translation>
+<translation id="8917994835293470029">{WINDOW_COUNT,plural, =1{Жаңа терезеге жылжыту}other{Басқа терезеге жылжыту}}</translation>
 <translation id="9090098097337832354">Бұл дүкеннің жабық екендігі туралы ақпарат</translation>
 <translation id="9114502155681725011"><ph name="COLOR_NAME" /> түсті <ph name="TITLE_OF_GROUP" /> қойындылар тобының әрекеттер мәзірін ашыңыз.</translation>
 <translation id="9169141410816678175">Барлығы "<ph name="GROUP_NAME" />" қойындылар тобын пайдалану рұқсатынан бірден айырылып қалады. Бұл топ барлық құрылғыдан жойылады.</translation>

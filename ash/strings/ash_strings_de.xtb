@@ -112,6 +112,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1306549533752902673">EMPFOHLENE APPS</translation>
 <translation id="1310396869741602366">Tonfall ändern</translation>
 <translation id="1312604459020188865">Signalstärke bei <ph name="SIGNAL_STRENGTH" /></translation>
+<translation id="1314113845887519729">Ziehpunkt am oberen Rand ausgewählt – zum Verschieben Pfeiltasten verwenden</translation>
 <translation id="1316069254387866896">Ablage immer einblenden</translation>
 <translation id="132346741904777634">Kamera ist an der oberen linken Ecke angepinnt. Konflikt mit der Systemoberfläche.</translation>
 <translation id="132415371743256095"><ph name="DESK_NAME" /> und Fenster schließen</translation>
@@ -186,6 +187,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1557622599341396706">Desktopnamen anzeigen</translation>
 <translation id="1569384531973824928">Dadurch erhalten alle Apps und Websites mit Kamera- und Mikrofonberechtigung Zugriff. Möglicherweise musst du die Webseite aktualisieren oder die App neu starten.</translation>
 <translation id="1571697193564730395">„Bitte nicht stören“ aktivieren/deaktivieren. <ph name="STATE_TEXT" /></translation>
+<translation id="1574691582236909946">Ziehpunkt am linken Rand ausgewählt – zum Verschieben Pfeiltasten verwenden</translation>
 <translation id="1576623706766186887">Herauszoomen, wenn die Lupe aktiviert ist</translation>
 <translation id="1582946770779745370">Dashboard für Spiele verfügbar. Zum Öffnen „<ph name="LAUNCHER_KEY_NAME" />“ + Umschalttaste + Esc-Taste drücken und dann „<ph name="LAUNCHER_KEY_NAME" />“ + „g“ drücken.</translation>
 <translation id="1586324912145647027">Zu Desktop 1–8 wechseln</translation>
@@ -609,6 +611,7 @@ Ansonsten wird das integrierte Touchpad in <ph name="TIMEOUT_SECONDS" /> wieder 
 <translation id="304097922505898963">App „Tastenkombinationen“ öffnen</translation>
 <translation id="304417730895741346">Deine angepinnten und geöffneten Apps sind in der Ablage. Um eine App in der Ablage anzupinnen, klicke mit der rechten Maustaste auf die App oder tippe mit zwei Fingern auf das Touchpad.</translation>
 <translation id="3045488863354895414">Guten Tag,</translation>
+<translation id="3045670165536837541">Ziehpunkt rechts oben ausgewählt – zum Verschieben Pfeiltasten verwenden</translation>
 <translation id="3047761520276763270">Sage z. B.:</translation>
 <translation id="3053407068093039599">Kamerazugriff aktivieren / deaktivieren</translation>
 <translation id="3055162170959710888">Du hast das Gerät heute <ph name="USED_TIME" /> verwendet</translation>
@@ -1764,6 +1767,7 @@ Neuinstallation</translation>
 <translation id="6696025732084565524">Wichtiges Update für deine abnehmbare Tastatur</translation>
 <translation id="6697913454192220372">Neuen Desktop hinzufügen</translation>
 <translation id="6700713906295497288">IME-Menüschaltfläche</translation>
+<translation id="6704073473590541209">Ziehpunkt am rechten Rand ausgewählt – zum Verschieben Pfeiltasten verwenden</translation>
 <translation id="6706742084323792866">Tastatur anpinnen</translation>
 <translation id="6710213216561001401">Zurück</translation>
 <translation id="6723839937902243910">Leistung</translation>
@@ -1787,6 +1791,7 @@ Neuinstallation</translation>
 <translation id="6781002679438061620">Desktop 9</translation>
 <translation id="6782182743534150858">Desktop 13</translation>
 <translation id="6782919488259222803">Auf aktueller Seite suchen</translation>
+<translation id="6783348167101855071">Ziehpunkt rechts unten ausgewählt – zum Verschieben Pfeiltasten verwenden</translation>
 <translation id="6786750046913594791">Ordner schließen</translation>
 <translation id="6790428901817661496">Wiedergabe</translation>
 <translation id="6792262051831399889">Nicht verfügbar</translation>
@@ -1942,6 +1947,7 @@ Neuinstallation</translation>
 <translation id="7371404428569700291">Fenster aufzeichnen</translation>
 <translation id="7372069265635026568"><ph name="AVAILABLE_MEMORY" /> von insgesamt <ph name="TOTAL_MEMORY" /> Arbeitsspeicher verfügbar</translation>
 <translation id="737315737514430195">Dies erlaubt den Mikrofonzugriff für alle Apps und Websites mit der Mikrofonberechtigung</translation>
+<translation id="7376933029363911338">Ziehpunkt am unteren Rand ausgewählt – zum Verschieben Pfeiltasten verwenden</translation>
 <translation id="7377169924702866686">Feststelltaste An</translation>
 <translation id="7377481913241237033">Verbindung per Code herstellen</translation>
 <translation id="7378203170292176219">Ziehen, um einen Bereich für die Aufnahme auszuwählen</translation>
@@ -2038,6 +2044,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="7658239707568436148">Abbrechen</translation>
 <translation id="7659861092419699379">Desktop und Fenster wurden geschlossen</translation>
 <translation id="7660160718439869192">Dein Gerät (<ph name="NAME" />) wird auf anderen Geräten angezeigt, die mit <ph name="EMAIL" /> verknüpft sind</translation>
+<translation id="7661694115779363471">Ziehpunkt links unten ausgewählt – zum Verschieben Pfeiltasten verwenden</translation>
 <translation id="7662283695561029522">Zum Konfigurieren tippen</translation>
 <translation id="7670953955701272011">Dieses Datum in Google Kalender öffnen</translation>
 <translation id="7671610481353807627">Apps wurden nach Farbe sortiert</translation>
@@ -2206,6 +2213,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="8155628902202578800">Infodialog für <ph name="USER_EMAIL_ADDRESS" /> öffnen</translation>
 <translation id="8167567890448493835">"<ph name="LOCALE_NAME" />" wird verwendet</translation>
 <translation id="8168435359814927499">Inhalte</translation>
+<translation id="8172370561760918656">Ziehpunkt links oben ausgewählt – zum Verschieben Pfeiltasten verwenden</translation>
 <translation id="81817143961839203">Fehler beim Einfügen des Bildes</translation>
 <translation id="8185090165691050712">Menü für die Größenänderungssperre öffnen/schließen</translation>
 <translation id="8192727139462702395">Wenn du Bluetooth deaktivierst, wird die Verbindung dieser externen Geräte mit deiner/m <ph name="DEVICE_TYPE" /> getrennt:</translation>

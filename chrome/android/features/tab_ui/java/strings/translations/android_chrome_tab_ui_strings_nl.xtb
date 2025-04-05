@@ -19,6 +19,7 @@ Als je de groep verwijdert, raakt iedereen meteen de toegang tot de tabbladgroep
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> minuut geleden gemaakt}other{<ph name="NUM_MINS_MANY" /> minuten geleden gemaakt}}</translation>
 <translation id="1499635324672558517">Alle incognitotabbladen sluiten?</translation>
 <translation id="1501480321619201731">Groep verwijderen</translation>
+<translation id="1505526451013346974">Toevoegen aan <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1555130319947370107">Blauw</translation>
 <translation id="161042844686301425">Cyaan</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> tabbladen gegroepeerd</translation>

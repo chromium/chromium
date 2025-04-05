@@ -97,6 +97,7 @@
 <translation id="1377508275003315939">Wachtwoorden</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} van {count} adres}other{{position} van {count} adressen}}</translation>
 <translation id="1383876407941801731">Zoeken</translation>
+<translation id="1385168997509105202">Je raakt meteen de toegang tot de tabbladgroep <ph name="GROUP_NAME" /> kwijt en <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) kan niet meer met je communiceren via Google-services.</translation>
 <translation id="138618066238211776">Doorgaan als <ph name="USER_NAME" /></translation>
 <translation id="138692594145659985">Opties om een kaart op te slaan</translation>
 <translation id="1396260204083880024">Ingelogd als <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Accountmenu openen.</translation>
@@ -511,6 +512,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="3124568093781685165">Deel je wachtwoorden met je gezin</translation>
 <translation id="3130863904455712965">Geschiedenis en meer</translation>
 <translation id="313283613037595347">Nieuw incognitotabblad maken</translation>
+<translation id="3136739222562075778">Deze kaart toont prijsdalingen voor producten op je geopende tabbladen</translation>
 <translation id="3138611310073113613">Selectie verwijderen</translation>
 <translation id="3140825265190223781">Opgeslagen wachtwoorden en toegangssleutels</translation>
 <translation id="3143515551205905069">Synchronisatie annuleren</translation>
@@ -987,6 +989,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5200894869889836319">Opties om rechten in te stellen</translation>
 <translation id="5203051773066903947">Invoeren</translation>
+<translation id="5205750905107419335"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) raakt meteen de toegang tot de tabbladgroep <ph name="GROUP_NAME" /> kwijt en kan niet meer met jou communiceren via Google-services.</translation>
 <translation id="5206453674369664567">Uitloggen en gegevens wissen</translation>
 <translation id="5210365745912300556">Tabblad sluiten</translation>
 <translation id="5211488077761630279">Toestaan dat <ph name="SITE_NAME" /> je <ph name="PERMISSION" /> gebruikt?</translation>
@@ -1068,6 +1071,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="5567439033041178034">MEER INFORMATIE</translation>
 <translation id="5572648434713976849">Je krijgt verbeterde suggesties in de adresbalk</translation>
 <translation id="5576885723883013398">Nieuw venster</translation>
+<translation id="5578543325423650885"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) raakt meteen de toegang tot de tabbladgroep <ph name="GROUP_NAME" /> kwijt.</translation>
 <translation id="5578795271662203820">Zoeken op <ph name="SEARCH_ENGINE" /> naar afbeelding</translation>
 <translation id="5579012242779565775">Leeslijst verbergen</translation>
 <translation id="5585019845078534178">Kaarten</translation>

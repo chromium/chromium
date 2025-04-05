@@ -97,6 +97,7 @@
 <translation id="1377508275003315939">密碼</translation>
 <translation id="1381022135873211423">{count,plural, =1{第 {position} 個地址，共 {count} 個}other{第 {position} 個地址，共 {count} 個}}</translation>
 <translation id="1383876407941801731">搜尋</translation>
+<translation id="1385168997509105202">你會立即失去「<ph name="GROUP_NAME" />」分頁群組的存取權，<ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) 將無法再透過各項 Google 服務與你互動。</translation>
 <translation id="138618066238211776">以<ph name="USER_NAME" />的身分繼續</translation>
 <translation id="138692594145659985">卡片儲存選項</translation>
 <translation id="1396260204083880024">目前登入的帳戶是<ph name="USER_NAME" />。<ph name="USER_EMAIL" />。開啟帳戶選單。</translation>
@@ -511,6 +512,7 @@
 <translation id="3124568093781685165">與家人共用密碼</translation>
 <translation id="3130863904455712965">歷史記錄和其他資料</translation>
 <translation id="313283613037595347">新增無痕分頁。</translation>
+<translation id="3136739222562075778">這張資訊卡會顯示已開啟分頁中的產品降價資訊</translation>
 <translation id="3138611310073113613">要捨棄所選項目嗎？</translation>
 <translation id="3140825265190223781">已儲存的密碼和密碼金鑰</translation>
 <translation id="3143515551205905069">取消同步處理</translation>
@@ -987,6 +989,7 @@
 <translation id="5197255632782567636">網際網路</translation>
 <translation id="5200894869889836319">權限設定選項</translation>
 <translation id="5203051773066903947">輸入</translation>
+<translation id="5205750905107419335"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) 會立即失去「<ph name="GROUP_NAME" />」分頁群組的存取權，無法再透過各項 Google 服務與你互動。</translation>
 <translation id="5206453674369664567">登出並清除資料</translation>
 <translation id="5210365745912300556">關閉分頁</translation>
 <translation id="5211488077761630279">要允許「<ph name="SITE_NAME" />」使用<ph name="PERMISSION" />嗎？</translation>
@@ -1068,6 +1071,7 @@
 <translation id="5567439033041178034">瞭解詳情</translation>
 <translation id="5572648434713976849">你會在網址列取得更貼近需求的建議</translation>
 <translation id="5576885723883013398">開啟新視窗</translation>
+<translation id="5578543325423650885"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) 會立即失去「<ph name="GROUP_NAME" />」分頁群組的存取權。</translation>
 <translation id="5578795271662203820">透過 <ph name="SEARCH_ENGINE" /> 搜尋這張圖片</translation>
 <translation id="5579012242779565775">隱藏「閱讀清單」</translation>
 <translation id="5585019845078534178">資訊卡</translation>

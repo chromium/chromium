@@ -97,6 +97,7 @@
 <translation id="1377508275003315939">পাছৱৰ্ড</translation>
 <translation id="1381022135873211423">{count,plural, =1{{count} টা ঠিকনাৰ {position} নম্বৰ ঠিকনাটো}one{{count} টা ঠিকনাৰ {position} নম্বৰ ঠিকনাটো}other{{count} টা ঠিকনাৰ {position} নম্বৰ ঠিকনাটো}}</translation>
 <translation id="1383876407941801731">সন্ধান কৰক</translation>
+<translation id="1385168997509105202">আপুনি লগে লগে “<ph name="GROUP_NAME" />" টেবৰ গোটৰ এক্সেছ হেৰুৱাব আৰু <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)এ সমগ্ৰ Google সেৱাত আপোনাৰ সৈতে আৰু ভাব-বিনিময় কৰিব নোৱাৰিব।</translation>
 <translation id="138618066238211776"><ph name="USER_NAME" /> হিচাপে অব্যাহত ৰাখক</translation>
 <translation id="138692594145659985">কাৰ্ড ছেভ কৰাৰ বিকল্পসমূহ</translation>
 <translation id="1396260204083880024"><ph name="USER_NAME" /> হিচাপে ছাইন ইন কৰিছে। <ph name="USER_EMAIL" />। একাউণ্টৰ মেনু খোলক।</translation>
@@ -511,6 +512,7 @@
 <translation id="3124568093781685165">আপোনাৰ পৰিয়ালৰ সৈতে পাছৱৰ্ড শ্বেয়াৰ কৰক</translation>
 <translation id="3130863904455712965">ইতিহাস আৰু অধিক</translation>
 <translation id="313283613037595347">নতুন ইনক’গনিট’ টেব সৃষ্টি কৰক।</translation>
+<translation id="3136739222562075778">এই কাৰ্ডে আপোনাৰ খোলা টেবত থকা প্ৰ’ডাক্টসমূহৰ মূল্য কমাৰ তথ্য দেখুৱায়</translation>
 <translation id="3138611310073113613">বাছনি প্ৰত্যাখ্যান কৰক</translation>
 <translation id="3140825265190223781">ছেভ কৰি থোৱা পাছৱৰ্ড আৰু পাছকী</translation>
 <translation id="3143515551205905069">ছিংক বাতিল কৰক</translation>
@@ -987,6 +989,7 @@
 <translation id="5197255632782567636">ইন্টাৰনেট</translation>
 <translation id="5200894869889836319">অনুমতি ছেট কৰাৰ বিকল্প</translation>
 <translation id="5203051773066903947">দিয়ক</translation>
+<translation id="5205750905107419335"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)এ লগে লগে “<ph name="GROUP_NAME" />” টেবৰ গোটৰ এক্সেছ হেৰুৱাব আৰু তেওঁ সমগ্ৰ Google সেৱাত আপোনাৰ সৈতে ভাব বিনিময় কৰিব নোৱাৰিব।</translation>
 <translation id="5206453674369664567">ছাইন আউট কৰক আৰু ডেটা মচক</translation>
 <translation id="5210365745912300556">টেব বন্ধ কৰক</translation>
 <translation id="5211488077761630279">"<ph name="SITE_NAME" />"ক আপোনাৰ <ph name="PERMISSION" /> ব্যৱহাৰ কৰাৰ অনুমতি দিবনে?</translation>
@@ -1068,6 +1071,7 @@
 <translation id="5567439033041178034">অধিক জানক</translation>
 <translation id="5572648434713976849">আপুনি ঠিকনাৰ বাৰত উন্নত পৰামৰ্শসমূহ পাব</translation>
 <translation id="5576885723883013398">নতুন ৱিণ্ড’</translation>
+<translation id="5578543325423650885"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)এ লগে লগে “<ph name="GROUP_NAME" />” টেবৰ গোটৰ এক্সেছ হেৰুৱাব</translation>
 <translation id="5578795271662203820">এই ছবিৰ বাবে <ph name="SEARCH_ENGINE" />ত সন্ধান কৰক</translation>
 <translation id="5579012242779565775">পঢ়াৰ সূচী লুকুৱাওক</translation>
 <translation id="5585019845078534178">কাৰ্ড</translation>
