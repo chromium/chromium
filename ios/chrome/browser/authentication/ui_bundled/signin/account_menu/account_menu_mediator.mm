@@ -50,8 +50,9 @@
   raw_ptr<PrefService> _prefs;
   raw_ptr<syncer::SyncService> _syncService;
   std::unique_ptr<SyncObserverBridge> _syncObserver;
-  // The primary identity.
-  id<SystemIdentity> _primaryIdentity;
+  // The primary identity. During an authentication flow, it contains the
+  // previous identity.
+  id<SystemIdentity> _primaryIdentityBeforeSignin;
   // The displayed error, if any.
   AccountErrorUIInfo* _error;
   // Whether the UI should not update anymore.
@@ -68,6 +69,9 @@
   NSString* _primaryAccountDisplayedEmail;
   NSString* _primaryAccountDisplayedUserFullName;
   UIImage* _primaryAccountDisplayedAvatar;
+  // If the authentication flow started, the identity is switching to this
+  // profile.
+  id<SystemIdentity> _identityToSignin;
 }
 
 - (instancetype)initWithSyncService:(syncer::SyncService*)syncService
@@ -92,7 +96,7 @@
         std::make_unique<signin::IdentityManagerObserverBridge>(
             _identityManager, self);
     _prefs = prefs;
-    _primaryIdentity = _authenticationService->GetPrimaryIdentity(
+    _primaryIdentityBeforeSignin = _authenticationService->GetPrimaryIdentity(
         signin::ConsentLevel::kSignin);
     _syncService = syncService;
     _syncObserver = std::make_unique<SyncObserverBridge>(self, _syncService);
@@ -112,7 +116,7 @@
   _syncObserver.reset();
   _syncService = nullptr;
   _identities = nil;
-  _primaryIdentity = nullptr;
+  _primaryIdentityBeforeSignin = nullptr;
 }
 
 #pragma mark - AccountMenuDataSource
@@ -155,16 +159,16 @@
 }
 
 - (NSString*)primaryAccountEmail {
-  return _primaryIdentity.userEmail;
+  return _primaryIdentityBeforeSignin.userEmail;
 }
 
 - (NSString*)primaryAccountUserFullName {
-  return _primaryIdentity.userFullName;
+  return _primaryIdentityBeforeSignin.userFullName;
 }
 
 - (UIImage*)primaryAccountAvatar {
   return _accountManagerService->GetIdentityAvatarWithIdentity(
-      _primaryIdentity, IdentityAvatarSize::Large);
+      _primaryIdentityBeforeSignin, IdentityAvatarSize::Large);
 }
 
 - (NSString*)managementDescription {
@@ -185,12 +189,13 @@
   id<SystemIdentity> primaryIdentity =
       _authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   if (primaryIdentity) {
-    _primaryIdentity = primaryIdentity;
+    _primaryIdentityBeforeSignin = primaryIdentity;
     [self updateIdentitiesIfAllowed];
     return;
   }
   // The user is not signed anymore. The account menu can be stopped.
-  // The old value of `_primaryIdentity` can be kept during the shutdown.
+  // The old value of `_primaryIdentityBeforeSignin` can be kept during the
+  // shutdown.
   _blockUpdates = YES;
   self.userInteractionsBlocked = YES;
   [self.delegate mediatorWantsToBeDismissed:self
@@ -254,29 +259,26 @@
     return;
   }
 
-  id<SystemIdentity> newIdentity = nil;
+  CHECK(!_identityToSignin, base::NotFatalUntil::M140);
   for (id<SystemIdentity> identity : _identities) {
     if (identity.gaiaID == gaiaID) {
-      newIdentity = identity;
+      _identityToSignin = identity;
       break;
     }
   }
-  CHECK(newIdentity);
+  CHECK(_identityToSignin);
 
   [self.consumer switchingStarted];
   _blockUpdates = YES;
   self.userInteractionsBlocked = YES;
 
+  _authenticationFlow = [self.delegate authenticationFlow:_identityToSignin
+                                               anchorRect:targetRect];
   __weak __typeof(self) weakSelf = self;
-  id<SystemIdentity> fromIdentity = _primaryIdentity;
-  _authenticationFlow = [self.delegate
-      triggerSigninWithSystemIdentity:newIdentity
-                           anchorRect:targetRect
-                           completion:^(SigninCoordinatorResult result) {
-                             [weakSelf signinEndedWithResult:result
-                                                fromIdentity:fromIdentity
-                                                  toIdentity:newIdentity];
-                           }];
+  [_authenticationFlow
+      startSignInWithCompletion:^(SigninCoordinatorResult result) {
+        [weakSelf signinDidEndWithResult:result];
+      }];
 }
 
 - (void)didTapErrorButton {
@@ -286,10 +288,11 @@
   switch (_error.errorType) {
     case syncer::SyncService::UserActionableError::kSignInNeedsUpdate: {
       if (_authenticationService->HasCachedMDMErrorForIdentity(
-              _primaryIdentity)) {
+              _primaryIdentityBeforeSignin)) {
         base::RecordAction(
             base::UserMetricsAction("Signin_AccountMenu_ErrorButton_MDM"));
-        [self.delegate openMDMErrodDialogWithSystemIdentity:_primaryIdentity];
+        [self.delegate
+            openMDMErrodDialogWithSystemIdentity:_primaryIdentityBeforeSignin];
       } else {
         base::RecordAction(
             base::UserMetricsAction("Signin_AccountMenu_ErrorButton_Reauth"));
@@ -389,23 +392,23 @@
   }
 }
 
-- (void)signinEndedWithResult:(SigninCoordinatorResult)result
-                 fromIdentity:(id<SystemIdentity>)previousIdentity
-                   toIdentity:(id<SystemIdentity>)newIdentity {
+- (void)signinDidEndWithResult:(SigninCoordinatorResult)result {
   CHECK(_authenticationFlow);
+  CHECK(_identityToSignin, base::NotFatalUntil::M140);
   _authenticationFlow = nil;
   BOOL success =
       result == SigninCoordinatorResult::SigninCoordinatorResultSuccess;
   if (success) {
     [_delegate mediatorWantsToBeDismissed:self
                                withResult:result
-                           signedIdentity:newIdentity
+                           signedIdentity:_identityToSignin
                           userTappedClose:NO];
-  } else if (_accountManagerService->IsValidIdentity(previousIdentity)) {
+  } else if (_accountManagerService->IsValidIdentity(
+                 _primaryIdentityBeforeSignin)) {
     // If the sign-in failed, sign back in previous account if possible and
     // restart using the account menu.
     _authenticationService->SignIn(
-        previousIdentity,
+        _primaryIdentityBeforeSignin,
         signin_metrics::AccessPoint::kAccountMenuFailedSwitch);
     self.userInteractionsBlocked = NO;
     [self restartUpdates];
@@ -415,6 +418,7 @@
                            signedIdentity:nil
                           userTappedClose:NO];
   }
+  _identityToSignin = nil;
 }
 
 #pragma mark - Private
@@ -442,7 +446,7 @@
   NSMutableArray<NSString*>* gaiaIDsToKeep = [NSMutableArray array];
   for (id<SystemIdentity> secondaryIdentity : identitiesOnDevice) {
     NSString* gaiaID = secondaryIdentity.gaiaID;
-    if (secondaryIdentity == _primaryIdentity) {
+    if (secondaryIdentity == _primaryIdentityBeforeSignin) {
       continue;
     }
     BOOL mustAdd = YES;
@@ -462,7 +466,7 @@
   for (NSUInteger i = 0; i < _identities.count; ++i) {
     id<SystemIdentity> identity = _identities[i];
     if (![identitiesOnDevice containsObject:identity] ||
-        identity == _primaryIdentity) {
+        identity == _primaryIdentityBeforeSignin) {
       [gaiaIDsToRemove addObject:identity.gaiaID];
       [_identities removeObjectAtIndex:i--];
       // There will be a new object at place `i`. So we must decrease `i`.

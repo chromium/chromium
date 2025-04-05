@@ -291,11 +291,8 @@
   }
 }
 
-- (AuthenticationFlow*)
-    triggerSigninWithSystemIdentity:(id<SystemIdentity>)identity
-                         anchorRect:(CGRect)anchorRect
-                         completion:
-                             (signin_ui::SigninCompletionCallback)completion {
+- (AuthenticationFlow*)authenticationFlow:(id<SystemIdentity>)identity
+                               anchorRect:(CGRect)anchorRect {
   AuthenticationFlow* authenticationFlow = [[AuthenticationFlow alloc]
                initWithBrowser:self.browser
                       identity:identity
@@ -306,13 +303,6 @@
       presentingViewController:_navigationController
                     anchorView:_viewController.view
                     anchorRect:anchorRect];
-
-  [authenticationFlow
-      startSignInWithCompletion:^(SigninCoordinatorResult result) {
-        if (completion) {
-          completion(result);
-        }
-      }];
   return authenticationFlow;
 }
 
