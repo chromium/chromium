@@ -354,17 +354,27 @@ void ExtensionService::Init() {
 
   LoadExtensionsFromCommandLineFlag(::switches::kDisableExtensionsExcept);
   if (load_command_line_extensions) {
-    if (safe_browsing::IsEnhancedProtectionEnabled(*profile_->GetPrefs())) {
+    bool command_line_blocked = true;
+    if (base::FeatureList::IsEnabled(
+            extensions_features::kDisableLoadExtensionCommandLineSwitch)) {
+      LOG(WARNING)
+          << "--load-extension is not allowed in Google Chrome, ignoring.";
+    } else if (safe_browsing::IsEnhancedProtectionEnabled(
+                   *profile_->GetPrefs())) {
       VLOG(1) << "--load-extension is not allowed for users opted into "
               << "Enhanced Safe Browsing, ignoring.";
     } else if (ShouldBlockCommandLineExtension(*profile_)) {
+      // TODO(crbug.com/401529219): Deprecate this restriction once
+      // --load-extension switch is restricted on Chrome builds.
       VLOG(1)
           << "--load-extension is not allowed for users that have the policy "
-          << "have the policy ExtensionInstallTypeBlocklist::command_line, "
-          << "ignoring.";
+          << "ExtensionInstallTypeBlocklist::command_line, ignoring.";
     } else {
       LoadExtensionsFromCommandLineFlag(switches::kLoadExtension);
+      command_line_blocked = false;
     }
+    base::UmaHistogramBoolean("Extensions.LoadingFromCommandLineBlocked",
+                              command_line_blocked);
   }
   EnabledReloadableExtensions();
   delayed_install_manager_->FinishInstallationsDelayedByShutdown();

@@ -5943,6 +5943,7 @@ TEST_F(ExtensionServiceTest, WillNotLoadFromCommandLineForESBUsers) {
 
 // Tests --load-extension works for non-ESB users.
 TEST_F(ExtensionServiceTest, LoadsFromCommandLineForNonESBUsers) {
+  base::HistogramTester histograms;
   InitializeEmptyExtensionServiceWithTestingPrefs();
   // Disable ESB.
   profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, false);
@@ -5957,6 +5958,9 @@ TEST_F(ExtensionServiceTest, LoadsFromCommandLineForNonESBUsers) {
   EXPECT_EQ(0u, GetErrors().size());
   ASSERT_EQ(1u, loaded_extensions().size());
   ValidatePrefKeyCount(1);
+
+  histograms.ExpectUniqueSample("Extensions.LoadingFromCommandLineBlocked",
+                                false, 1);
 }
 
 // Tests that --load-extension is ignored for users with policy
@@ -5994,6 +5998,33 @@ TEST_F(ExtensionServiceTest, LoadsFromCommandLineForUsersWithoutPolicy) {
   EXPECT_EQ(0u, GetErrors().size());
   ASSERT_EQ(1u, loaded_extensions().size());
   ValidatePrefKeyCount(1);
+}
+
+TEST_F(ExtensionServiceTest, DisableLoadExtensionCommandLineSwitch) {
+  base::HistogramTester histograms;
+  base::test::ScopedFeatureList feature_list(
+      /*enable_feature=*/extensions_features::
+          kDisableLoadExtensionCommandLineSwitch);
+  InitializeEmptyExtensionServiceWithTestingPrefs();
+
+  // Try to load an extension from command line.
+  base::FilePath path =
+      base::MakeAbsoluteFilePath(data_dir().AppendASCII("good_unpacked"));
+  base::CommandLine::ForCurrentProcess()->AppendSwitchPath(
+      switches::kLoadExtension, path);
+  service()->Init();
+
+  ExtensionSystem* extension_system = ExtensionSystem::Get(profile());
+  // Wait until the extension system is ready.
+  base::RunLoop run_loop;
+  extension_system->ready().Post(FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+
+  ASSERT_EQ(0u, loaded_extensions().size());
+  ValidatePrefKeyCount(0);
+
+  histograms.ExpectUniqueSample("Extensions.LoadingFromCommandLineBlocked",
+                                true, 1);
 }
 
 // Tests that we generate IDs when they are not specified in the manifest for

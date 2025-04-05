@@ -238,6 +238,9 @@ BASE_DECLARE_FEATURE(kSilentDebuggerExtensionAPI);
 // nothing breaks.
 BASE_DECLARE_FEATURE(kRemoveCoreSiteInstance);
 
+// Disables loading extensions via the `--load-extension` command line switch.
+BASE_DECLARE_FEATURE(kDisableLoadExtensionCommandLineSwitch);
+
 // Changes the chrome.userScript API to be enabled by a per-extension toggle
 // rather than the developer mode toggle on chrome://extensions.
 BASE_DECLARE_FEATURE(kUserScriptUserExtensionToggle);

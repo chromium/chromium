@@ -3661,6 +3661,17 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
+<histogram name="Extensions.LoadingFromCommandLineBlocked" enum="Boolean"
+    expires_after="2025-09-30">
+  <owner>richche@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records when loading extensions via the &quot;--load-extension&quot; command
+    line switch is blocked. Emitted once per profile start while extensions are
+    loading.
+  </summary>
+</histogram>
+
 <histogram name="Extensions.LoadNoExtensionAction" units="units"
     expires_after="2023-07-07">
   <owner>rdevlin.cronin@chromium.org</owner>
