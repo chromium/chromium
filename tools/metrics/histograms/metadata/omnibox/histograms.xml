@@ -153,7 +153,9 @@ Keep consistent with active providers. Doesn't need to include every provider in
   <variant name="Builtin"/>
   <variant name="Calculator"/>
   <variant name="Clipboard"/>
+  <variant name="ContextualSearch"/>
   <variant name="Document"/>
+  <variant name="EnterpriseSearchAggregator"/>
   <variant name="FeaturedSearch"/>
   <variant name="HistoryCluster"/>
   <variant name="HistoryEmbeddings"/>
@@ -166,8 +168,10 @@ Keep consistent with active providers. Doesn't need to include every provider in
   <variant name="OnDeviceHead"/>
   <variant name="OpenTab"/>
   <variant name="QueryTile"/>
+  <variant name="RecentlyClosedTabs"/>
   <variant name="Search"/>
   <variant name="Shortcuts"/>
+  <variant name="UnscopedExtension"/>
   <variant name="VerbatimMatch"/>
   <variant name="VoiceSuggest"/>
   <variant name="ZeroSuggest"/>
