@@ -17,8 +17,8 @@ Are you a Google employee? See
     \>=32GB/>=16GB of swap for machines with 8GB/16GB of RAM respectively.
 * At least 100GB of free disk space. It does not have to be on the same drive;
  Allocate ~50-80GB on HDD for build.
-* You must have Git and Python v3.8+ installed already (and `python3` must point
-    to a Python v3.8+ binary). Depot_tools bundles an appropriate version
+* You must have Git and Python v3.9+ installed already (and `python3` must point
+    to a Python v3.9+ binary). Depot_tools bundles an appropriate version
     of Python in `$depot_tools/python-bin`, if you don't have an appropriate
     version already on your system.
 * `libc++` is currently the only supported STL. `clang` is the only

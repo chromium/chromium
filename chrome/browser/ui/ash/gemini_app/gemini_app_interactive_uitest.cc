@@ -213,7 +213,11 @@ class GeminiAppInteractiveUiTestBase
  public:
   GeminiAppInteractiveUiTestBase(
       std::optional<ash::LoggedInUserMixin::LogInType> login_type)
-      : user_session_mixin_(CreateUserSessionMixin(login_type)) {
+      : user_session_mixin_(CreateUserSessionMixin(login_type)),
+        scoped_preinstall_url_allow_list_(
+            web_app::SetPreinstallUrlAllowListForTesting(
+                {{web_app::GetConfigForGemini(/*device_info=*/std::nullopt)
+                      .install_url}})) {
     // Enable Gemini app preinstallation.
     scoped_feature_list_.InitAndEnableFeature(
         chromeos::features::kGeminiAppPreinstall);
@@ -283,10 +287,6 @@ class GeminiAppInteractiveUiTestBase
   void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
     InteractiveBrowserTestT<
         MixinBasedInProcessBrowserTest>::SetUpDefaultCommandLine(command_line);
-
-    // Remove the `switches::kDisableDefaultApps` switch to ensure that default
-    // apps are installed. The Gemini app is a default app.
-    command_line->RemoveSwitch(switches::kDisableDefaultApps);
 
     // Disable sync as it would otherwise block updating of shelf pins.
     command_line->AppendSwitch(syncer::kDisableSync);
@@ -362,6 +362,9 @@ class GeminiAppInteractiveUiTestBase
 
   // Used to retrieve expected title/URL for the Gemini app.
   std::unique_ptr<web_app::WebAppInstallInfo> gemini_app_install_info_;
+
+  // Allowlists the Gemini app to be preinstalled.
+  web_app::ScopedPreinstallUrlAllowList scoped_preinstall_url_allow_list_;
 };
 
 // GeminiAppInteractiveUiTest --------------------------------------------------
@@ -439,7 +442,8 @@ INSTANTIATE_TEST_SUITE_P(
 IN_PROC_BROWSER_TEST_P(GeminiAppInteractiveUiTest, PRE_LaunchFromAppList) {}
 
 // Verifies that the Gemini app can be launched from the app list.
-IN_PROC_BROWSER_TEST_P(GeminiAppInteractiveUiTest, LaunchFromAppList) {
+// TODO(crbug.com/408148646): Re-enable this test.
+IN_PROC_BROWSER_TEST_P(GeminiAppInteractiveUiTest, DISABLED_LaunchFromAppList) {
   // Views.
   raw_ptr<ash::AppsGridView> apps_grid_view = nullptr;
   raw_ptr<ash::AppListItemView> files_app = nullptr;

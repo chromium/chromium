@@ -238,6 +238,7 @@ source_set("profiles_extra_parts_impl") {
     "//chrome/browser/permissions",
     "//chrome/browser/persisted_state_db",
     "//chrome/browser/prefs",
+    "//chrome/browser/preloading/search_preload",
     "//chrome/browser/reading_list",
     "//chrome/browser/regional_capabilities",
     "//chrome/browser/safe_browsing",

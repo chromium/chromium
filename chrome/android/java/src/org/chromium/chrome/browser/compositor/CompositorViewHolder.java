@@ -696,6 +696,14 @@ public class CompositorViewHolder extends FrameLayout
         return consumed;
     }
 
+    @Override
+    public boolean dispatchGenericMotionEvent(MotionEvent e) {
+        if (mLayoutManager != null && mLayoutManager.dispatchGenericMotionEvent(e)) {
+            return true;
+        }
+        return super.dispatchGenericMotionEvent(e);
+    }
+
     private void updateIsInGesture(MotionEvent e) {
         int eventAction = e.getActionMasked();
         if (eventAction == MotionEvent.ACTION_DOWN

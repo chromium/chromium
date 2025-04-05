@@ -244,7 +244,7 @@ void ClickSignOutInAccountSettings() {
   // Sign in with managed account.
   FakeSystemIdentity* fakeManagedIdentity =
       [FakeSystemIdentity fakeManagedIdentity];
-  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+  if ([SigninEarlGrey areSeparateProfilesForManagedAccountsEnabled]) {
     [SigninEarlGrey
         signinWithFakeManagedIdentityInPersonalProfile:fakeManagedIdentity];
   } else {

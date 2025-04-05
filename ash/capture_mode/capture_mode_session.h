@@ -203,6 +203,7 @@ class ASH_EXPORT CaptureModeSession
   void OnSearchResultsPanelCreated(views::Widget* panel_widget) override;
   bool TakeFocusForSearchResultsPanel(bool reverse) override;
   void ClearPseudoFocus() override;
+  void SetA11yOverrideWindowToSearchResultsPanel() override;
 
   // ui::LayerDelegate:
   void OnPaintLayer(const ui::PaintContext& context) override;

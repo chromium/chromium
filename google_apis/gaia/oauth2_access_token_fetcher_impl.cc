@@ -268,6 +268,8 @@ void OAuth2AccessTokenFetcherImpl::EndGetAccessToken(
   switch (response) {
     case kOk:
     case kOkUnexpectedFormat:
+    case kTokenBindingChallenge:
+    case kConsentRequired:
       NOTREACHED();
 
     case kRateLimitExceeded:

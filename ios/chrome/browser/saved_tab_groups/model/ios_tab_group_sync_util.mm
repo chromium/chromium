@@ -14,7 +14,6 @@
 #import "components/saved_tab_groups/public/types.h"
 #import "components/saved_tab_groups/public/utils.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
-#import "ios/chrome/browser/share_kit/model/share_kit_service.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
@@ -293,11 +292,8 @@ bool IsSaveableNavigation(web::NavigationContext* navigation_context) {
 }
 
 bool IsTabGroupShared(const TabGroup* tab_group,
-                      TabGroupSyncService* sync_service,
-                      ShareKitService* share_kit_service) {
-  BOOL is_shared_tab_group_supported =
-      share_kit_service && share_kit_service->IsSupported();
-  if (!is_shared_tab_group_supported || !sync_service || !tab_group) {
+                      TabGroupSyncService* sync_service) {
+  if (!sync_service || !tab_group) {
     return false;
   }
 

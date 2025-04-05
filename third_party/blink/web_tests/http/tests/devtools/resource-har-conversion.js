@@ -52,9 +52,19 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
     request.setServiceWorkerResponseSource('cache-storage');
   }
 
-  const test_url = findRequestByURL(/inspected-page\.html$/);
-  addCookieHeadersToRequest(test_url);
-  addServiceWorkerInfoToRequest(test_url);
+  function addServiceWorkerRoutingInfoToRequest(request) {
+    const routerInfo = {
+      ruleIdMatched: 3,
+      matchedSourceType: Protocol.Network.ServiceWorkerRouterSource.Cache,
+      actualSourceType: Protocol.Network.ServiceWorkerRouterSource.Cache,
+    };
+    request.serviceWorkerRouterInfo = routerInfo;
+  }
+
+  const request = findRequestByURL(/inspected-page\.html$/);
+  addCookieHeadersToRequest(request);
+  addServiceWorkerInfoToRequest(request);
+  addServiceWorkerRoutingInfoToRequest(request);
   const requests = NetworkTestRunner.networkRequests();
   var log = await NetworkTestRunner.buildHARLog(requests, {sanitize: false});
   // Filter out favicon.ico requests that only appear on certain platforms.

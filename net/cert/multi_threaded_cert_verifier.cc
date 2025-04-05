@@ -138,6 +138,9 @@ void MultiThreadedCertVerifier::InternalRequest::Start(
   if (params.flags() & CertVerifier::VERIFY_DISABLE_NETWORK_FETCHES) {
     flags |= CertVerifyProc::VERIFY_DISABLE_NETWORK_FETCHES;
   }
+  if (params.flags() & CertVerifier::VERIFY_SXG_CT_REQUIREMENTS) {
+    flags |= CertVerifyProc::VERIFY_SXG_CT_REQUIREMENTS;
+  }
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},

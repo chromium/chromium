@@ -91,6 +91,7 @@ class BookmarksSidePanelUI
  private:
   // side_panel::mojom::BookmarksPageHandlerFactory:
   void CreateBookmarksPageHandler(
+      mojo::PendingRemote<side_panel::mojom::BookmarksPage> page,
       mojo::PendingReceiver<side_panel::mojom::BookmarksPageHandler> receiver)
       override;
 

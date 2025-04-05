@@ -17,6 +17,19 @@ const char kMostVisitedUrlBlacklistedAction[] = "MostVisited_UrlBlacklisted";
 const char kShowReturnToRecentTabTileAction[] =
     "IOS.StartSurface.ShowReturnToRecentTabTile";
 const char kOpenMostRecentTabAction[] = "IOS.StartSurface.OpenMostRecentTab";
+const char kTabResumptionWithPriceDropOpenTab[] =
+    "IOS.MagicStack.TabResumption.PriceDrop.OpenTab";
+const char kTabResumptionWithPriceTrackingOpenTab[] =
+    "IOS.MagicStack.TabResumption.PriceTracking.OpenTab";
+const char kTabResumptionOpenTab[] =
+    "IOS.MagicStack.TabResumption.Regular.OpenTab";
+const char kTabResumptionWithPriceDropImpression[] =
+    "IOS.MagicStack.TabResumption.PriceDrop.Impression";
+const char kTabResumptionWithPriceTrackingImpression[] =
+    "IOS.MagicStack.TabResumption.PriceTracking.Impression";
+const char kTabResumptionImpression[] =
+    "IOS.MagicStack.TabResumption.Regular.Impression";
+
 const char kContentNotificationSnackbarAction[] =
     "ContentNotifications.Promo.Snackbar.ActionButtonTapped";
 

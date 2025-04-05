@@ -33,11 +33,10 @@ class ToolbarController : public views::MenuDelegate,
   // Manages action-based pinned toolbar elements.
   class PinnedActionsDelegate {
    public:
-    virtual actions::ActionItem* GetActionItemFor(
-        const actions::ActionId& id) = 0;
+    virtual actions::ActionItem* GetActionItemFor(actions::ActionId id) = 0;
 
     // Returns true if the corresponding element is hidden.
-    virtual bool IsOverflowed(const actions::ActionId& id) = 0;
+    virtual bool IsOverflowed(actions::ActionId id) = 0;
 
     virtual views::View* GetContainerView() = 0;
 
@@ -179,11 +178,6 @@ class ToolbarController : public views::MenuDelegate,
   };
 
   // PinnedToolbarActionsModel::Observer
-  void OnActionAddedLocally(const actions::ActionId& id) override {}
-  void OnActionRemovedLocally(const actions::ActionId& id) override {}
-  void OnActionMovedLocally(const actions::ActionId& id,
-                            int from_index,
-                            int to_index) override {}
   void OnActionsChanged() override;
 
   // Return the default responsive elements list in the toolbar.

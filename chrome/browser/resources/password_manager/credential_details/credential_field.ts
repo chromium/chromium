@@ -64,12 +64,12 @@ export class CredentialFieldElement extends PolymerElement {
     };
   }
 
-  label: string;
-  copyButtonLabel: string;
-  valueCopiedToastLabel: string;
-  value: string;
-  placeholder: string;
-  interactionId: PasswordViewPageInteractions;
+  declare label: string;
+  declare copyButtonLabel: string;
+  declare valueCopiedToastLabel: string;
+  declare value: string;
+  declare placeholder: string;
+  declare interactionId: PasswordViewPageInteractions;
 
   override connectedCallback() {
     super.connectedCallback();

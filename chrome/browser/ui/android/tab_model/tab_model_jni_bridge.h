@@ -70,8 +70,10 @@ class TabModelJniBridge : public TabModel {
   // tab model selector.
   bool IsActiveModel() const override;
 
-  // Return whether |tab| is grouped together with other Tab objects.
-  static bool IsTabInTabGroup(TabAndroid* tab);
+  // Acquires dependences in a more round about way, prefer instanced version.
+  static bool IsTabInTabGroupLegacy(TabAndroid* tab);
+  // Return whether |tab| is in a tab group.
+  bool IsTabInTabGroup(TabAndroid* tab) override;
 
   void AddObserver(TabModelObserver* observer) override;
   void RemoveObserver(TabModelObserver* observer) override;

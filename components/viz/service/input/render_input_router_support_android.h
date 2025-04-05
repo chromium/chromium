@@ -65,7 +65,6 @@ class VIZ_SERVICE_EXPORT RenderInputRouterSupportAndroid
   void ProcessAckedTouchEvent(
       const input::TouchEventWithLatencyInfo& touch,
       blink::mojom::InputEventResultState ack_result) override;
-  void DidOverscroll(const ui::DidOverscrollParams& params) override;
   FrameSinkId GetRootFrameSinkId() override;
   SurfaceId GetCurrentSurfaceId() const override;
   bool TransformPointToCoordSpaceForView(

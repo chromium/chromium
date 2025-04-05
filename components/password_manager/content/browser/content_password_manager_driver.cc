@@ -180,11 +180,12 @@ int ContentPasswordManagerDriver::GetFrameId() const {
   return render_frame_host_->GetFrameTreeNodeId().value();
 }
 
-void ContentPasswordManagerDriver::SetPasswordFillData(
+void ContentPasswordManagerDriver::PropagateFillDataOnParsingCompletion(
     const autofill::PasswordFormFillData& form_data) {
   password_autofill_manager_.OnAddPasswordFillData(form_data);
   if (const auto& agent = GetPasswordAutofillAgent()) {
-    agent->SetPasswordFillData(autofill::MaybeClearPasswordValues(form_data));
+    agent->ApplyFillDataOnParsingCompletion(
+        autofill::MaybeClearPasswordValues(form_data));
   }
 }
 

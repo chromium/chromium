@@ -6601,40 +6601,40 @@ void AXObjectCacheImpl::ComputeNodesOnLine(const LayoutObject* layout_object) {
             << " runs.";
         break;
       }
-      auto* line_object = line_cursor.CurrentMutableLayoutObject();
+      auto* line_object = line_cursor.Current().GetLayoutObject();
       line_cursor.MoveToNextInlineLeafOnLine();
 
       if (!line_object) [[unlikely]] {
         break;
       }
-        auto* next_line_object =
-            line_cursor ? line_cursor.CurrentMutableLayoutObject() : nullptr;
+      auto* next_line_object =
+          line_cursor ? line_cursor.Current().GetLayoutObject() : nullptr;
 
-        if (line_object == next_line_object) [[unlikely]] {
-          // TODO(crbug.com/378761505): Move DUMP_WILL_BE_NOTREACHED() to
-          // CHECK().
-          DUMP_WILL_BE_NOTREACHED()
-              << "InlineCursor says it moved to the next inline leaf object "
-                 "for a different LayyoutObject, but returned value is the "
-                 "same as previous inline leaf."
-              << "same object was: " << line_object << "(" << Get(line_object)
-              << ") while processing " << layout_object << " after " << runs
-              << " runs.";
-          break;
-        }
-        if (next_line_object) {
-          next_on_line_map_.insert(line_object, next_line_object);
-          previous_on_line_map_.insert(next_line_object, line_object);
-        } else {
-          // Reached the end of the line. Check if it contains a trailing white
-          // space that was not visited by the inline cursor because it was
-          // collapsed.
-          // The white space at the end of the line is important for a11y
-          // because if it is not part of the line text, a screen reader may not
-          // know that it has reached a previous line when going back to the
-          // previous line.
-          ConnectToTrailingWhitespaceOnLine(*line_object, *block_flow);
-        }
+      if (line_object == next_line_object) [[unlikely]] {
+        // TODO(crbug.com/378761505): Move DUMP_WILL_BE_NOTREACHED() to
+        // CHECK().
+        DUMP_WILL_BE_NOTREACHED()
+            << "InlineCursor says it moved to the next inline leaf object "
+               "for a different LayyoutObject, but returned value is the "
+               "same as previous inline leaf."
+            << "same object was: " << line_object << "(" << Get(line_object)
+            << ") while processing " << layout_object << " after " << runs
+            << " runs.";
+        break;
+      }
+      if (next_line_object) {
+        next_on_line_map_.insert(line_object, next_line_object);
+        previous_on_line_map_.insert(next_line_object, line_object);
+      } else {
+        // Reached the end of the line. Check if it contains a trailing white
+        // space that was not visited by the inline cursor because it was
+        // collapsed.
+        // The white space at the end of the line is important for a11y because
+        // if it is not part of the line text, a screen reader may not know
+        // that it has reached a previous line when going back to the previous
+        // line.
+        ConnectToTrailingWhitespaceOnLine(*line_object, *block_flow);
+      }
     }
     cursor.MoveToNextLine();
   } while (cursor);

@@ -79,11 +79,8 @@ function dumpTree(element) {
   buildAccessibilityTree(accessibilityController.accessibleElementById(element.id), 0, ['AXInlineTextBox','AXStaticText']);
 }
 
-const kAlt = "\uE00A";
-const kArrowUp = '\uE013';
 const kEscape = '\uE00C';
 function loseInterest(element) {
-  element.focus();
   return new test_driver.Actions()
     .keyDown(kEscape)
     .keyUp(kEscape)
@@ -91,12 +88,7 @@ function loseInterest(element) {
 }
 function showInterest(element) {
   element.focus();
-  return (new test_driver.Actions())
-    .keyDown(kAlt)
-    .keyDown(kArrowUp)
-    .keyUp(kArrowUp)
-    .keyUp(kAlt)
-    .send();
+  return new Promise(resolve => requestAnimationFrame(resolve));
 }
 function assert_true(cond,message) {
   if (!cond) {

@@ -11,6 +11,13 @@
 #include "media/mojo/mojom/speech_recognizer.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include <list>
+
+#include "base/containers/flat_map.h"
+#include "components/soda/soda_installer.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 class PrefService;
 
 namespace content {
@@ -25,6 +32,9 @@ namespace speech {
 
 class OnDeviceSpeechRecognitionImpl
     : public content::DocumentUserData<OnDeviceSpeechRecognitionImpl>,
+#if !BUILDFLAG(IS_ANDROID)
+      public speech::SodaInstaller::Observer,
+#endif  // !BUILDFLAG(IS_ANDROID)
       public media::mojom::OnDeviceSpeechRecognition {
  public:
   OnDeviceSpeechRecognitionImpl(const OnDeviceSpeechRecognitionImpl&) = delete;
@@ -46,6 +56,15 @@ class OnDeviceSpeechRecognitionImpl
       OnDeviceSpeechRecognitionImpl::InstallOnDeviceSpeechRecognitionCallback
           callback) override;
 
+#if !BUILDFLAG(IS_ANDROID)
+  // SodaInstaller::Observer:
+  void OnSodaInstalled(speech::LanguageCode language_code) override;
+  void OnSodaInstallError(speech::LanguageCode language_code,
+                          speech::SodaInstaller::ErrorCode error_code) override;
+  void OnSodaProgress(speech::LanguageCode language_code,
+                      int combined_progress) override {}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
  private:
   friend class content::DocumentUserData<OnDeviceSpeechRecognitionImpl>;
   explicit OnDeviceSpeechRecognitionImpl(content::RenderFrameHost* frame_host);
@@ -54,8 +73,19 @@ class OnDeviceSpeechRecognitionImpl
   // explicit user consent.
   bool CanInstallWithoutUserConsent(const std::string& language);
 
+#if !BUILDFLAG(IS_ANDROID)
+  void RunAndRemoveInstallationCallbacks(const std::string& language,
+                                         bool installation_success);
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   raw_ptr<PrefService> pref_service_;
   std::unique_ptr<language::LanguagePrefs> language_prefs_;
+
+#if !BUILDFLAG(IS_ANDROID)
+  base::flat_map<std::string,
+                 std::list<InstallOnDeviceSpeechRecognitionCallback>>
+      language_installation_callbacks_;
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   mojo::Receiver<media::mojom::OnDeviceSpeechRecognition> receiver_{this};
 

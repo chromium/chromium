@@ -16,6 +16,7 @@ typedef NS_ENUM(NSInteger, NTPCollectionShortcutType);
 enum class ContentNotificationSnackbarEvent;
 enum class ContentSuggestionsModuleType;
 enum class SetUpListItemType;
+@class ShopCardData;
 
 // Metrics recorder for the content suggestions.
 @interface ContentSuggestionsMetricsRecorder : NSObject
@@ -40,7 +41,14 @@ enum class SetUpListItemType;
 - (void)recordShortcutTileTapped:(NTPCollectionShortcutType)shortcutType;
 
 // Logs a tab resumption tab opened.
-- (void)recordTabResumptionTabOpened;
+- (void)recordTabResumptionTabOpened:(ShopCardData*)shopCardData;
+
+// Logs a tab resumption impression including if the tab resumption
+// module contained a price drop, was the price tracking variant or
+// is the regular tab resumnption.
+- (void)recordTabResumptionImpressionWithCustomization:
+            (ShopCardData*)shopCardData
+                                               atIndex:(int)index;
 
 // Logs the most visited tiles being shown.
 - (void)recordMostVisitedTilesShown;

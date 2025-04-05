@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.toolbar.back_button;
 
+import android.animation.ObjectAnimator;
 import android.content.res.ColorStateList;
 import android.view.View;
 import android.widget.ImageButton;
@@ -57,6 +58,8 @@ public class BackButtonCoordinator {
         final var model =
                 new PropertyModel.Builder(BackButtonProperties.ALL_KEYS)
                         .with(BackButtonProperties.TINT_COLOR_LIST, iconColorList)
+                        .with(BackButtonProperties.IS_ENABLED, view.isEnabled())
+                        .with(BackButtonProperties.IS_FOCUSABLE, view.isFocusable())
                         .build();
         mMediator =
                 new BackButtonMediator(
@@ -89,6 +92,52 @@ public class BackButtonCoordinator {
      */
     public void setTabSwitcherMode(boolean isTabSwitcherMode) {
         mMediator.setTabSwitcherMode(isTabSwitcherMode);
+    }
+
+    /**
+     * Prepares the view for fade animation and returns an alpha animator.
+     *
+     * @param shouldShow indicated fade in or out animation type
+     * @return {@link ObjectAnimator} that animates view's alpha
+     */
+    public ObjectAnimator getFadeAnimator(boolean shouldShow) {
+        return mMediator.getFadeAnimator(shouldShow);
+    }
+
+    /**
+     * Sets back button visibility.
+     *
+     * @param isVisible indicated whether view should be visible or gone.
+     */
+    public void setVisibility(boolean isVisible) {
+        mMediator.setVisibility(isVisible);
+    }
+
+    /**
+     * Checks whether view is focusable or not.
+     *
+     * @return true - view is focusable, false - view is not focusable.
+     */
+    public boolean isFocusable() {
+        return mMediator.isFocusable();
+    }
+
+    /**
+     * Requests current view to gain focus.
+     *
+     * @return true - if view successfully gained focus, false - if view failed to gain focus.
+     */
+    public boolean focus() {
+        return mView.requestFocus();
+    }
+
+    /**
+     * Sets a key event listener on back button.
+     *
+     * @param listener {@link View.OnKeyListener}
+     */
+    public void setOnKeyListener(View.OnKeyListener listener) {
+        mMediator.setOnKeyListener(listener);
     }
 
     /**

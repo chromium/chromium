@@ -8,6 +8,12 @@
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/platform/ax_mode_observer.h"
 
+#if BUILDFLAG(IS_WIN)
+#include <oleacc.h>
+
+#include <uiautomation.h>
+#endif  // BUILDFLAG(IS_WIN)
+
 namespace ui {
 
 namespace {
@@ -107,6 +113,25 @@ void AXPlatform::SetUiaProviderEnabled(bool is_enabled) {
   CHECK_EQ(uia_provider_enablement_, UiaProviderEnablement::kVariations);
   uia_provider_enablement_ = is_enabled ? UiaProviderEnablement::kEnabled
                                         : UiaProviderEnablement::kDisabled;
+}
+
+void AXPlatform::DisableActiveUiaProvider() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (uia_provider_enablement_ == UiaProviderEnablement::kDisabled) {
+    // Already disabled.
+    return;
+  }
+
+  uia_provider_enablement_ = UiaProviderEnablement::kDisabled;
+
+  // We must call this *after* we disabled the UIA provider to ensure that we
+  // don't respond with the same provider to a re-entrant WM_GETOBJECT call. See
+  // https://learn.microsoft.com/en-us/windows/win32/api/uiautomationcoreapi/nf-uiautomationcoreapi-uiadisconnectallproviders
+  // for more info.
+  HRESULT hr = ::UiaDisconnectAllProviders();
+  DCHECK(SUCCEEDED(hr));
+
+  delegate_->OnUiaProviderDisabled();
 }
 
 bool AXPlatform::IsUiaProviderEnabled() const {

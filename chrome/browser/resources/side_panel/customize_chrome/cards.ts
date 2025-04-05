@@ -55,12 +55,12 @@ export class CardsElement extends CrLitElement {
     };
   }
 
-  protected modules_: ModuleSettings[] = [];
-  protected show_: boolean = false;
-  protected managedByPolicy_: boolean = false;
+  protected accessor modules_: ModuleSettings[] = [];
+  protected accessor show_: boolean = false;
+  protected accessor managedByPolicy_: boolean = false;
   private pageHandler_: CustomizeChromePageHandlerInterface;
   private setModulesSettingsListenerId_: number|null = null;
-  protected initialized_: boolean = false;
+  protected accessor initialized_: boolean = false;
 
   constructor() {
     super();

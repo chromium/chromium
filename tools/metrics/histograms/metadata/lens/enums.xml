@@ -219,6 +219,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Medium"/>
   <int value="3" label="Peaking"/>
   <int value="4" label="Consent"/>
+  <int value="5" label="InfoMessage"/>
 </enum>
 
 <!-- LINT.ThenChange(//ios/chrome/browser/lens_overlay/model/lens_overlay_sheet_detent_state.h:SheetDimensionState) -->

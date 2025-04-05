@@ -73,22 +73,18 @@ export class SettingsAndroidAppsSubpageElement extends
 
       /** Whether Arc VM manage usb subpage should be shown. */
       isArcVmManageUsbAvailable: Boolean,
-
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kManageAndroidPreferences,
-          Setting.kRemovePlayStore,
-        ]),
-      },
     };
   }
 
   androidAppsInfo: AndroidAppsInfo;
   isArcVmManageUsbAvailable: boolean;
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kManageAndroidPreferences,
+    Setting.kRemovePlayStore,
+  ]);
+
   private dialogBody_: string;
   private playStoreEnabled_: boolean;
 

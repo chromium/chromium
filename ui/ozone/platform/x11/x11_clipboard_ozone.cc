@@ -41,7 +41,7 @@ void X11ClipboardOzone::RequestClipboardData(
     const std::string& mime_type,
     PlatformClipboard::RequestDataClosure callback) {
   DCHECK(!callback.is_null());
-  auto atoms = mime_type == kMimeTypeText
+  auto atoms = mime_type == kMimeTypePlainText
                    ? helper_->GetTextAtoms()
                    : helper_->GetAtomsForFormat(
                          ClipboardFormatType::CustomPlatformType(mime_type));

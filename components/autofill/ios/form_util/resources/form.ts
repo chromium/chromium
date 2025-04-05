@@ -8,7 +8,7 @@
 
 import {RENDERER_ID_NOT_SET} from '//components/autofill/ios/form_util/resources/fill_constants.js';
 import {getRemoteFrameToken} from '//components/autofill/ios/form_util/resources/fill_util.js';
-import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {sendWebKitMessage, trim} from '//ios/web/public/js_messaging/resources/utils.js';
 
 /**
@@ -283,7 +283,7 @@ function getFormElementFromRendererId(identifier: number): HTMLFormElement|
     return null;
   }
   for (const form of document.forms) {
-    if (identifier.toString() === gCrWeb.fill.getUniqueID(form)) {
+    if (identifier.toString() === gCrWebLegacy.fill.getUniqueID(form)) {
       return form;
     }
   }
@@ -298,7 +298,7 @@ function getFormElementFromRendererId(identifier: number): HTMLFormElement|
  * makes an edited field unedited.
  */
 function fieldWasEditedByUser(element: Element) {
-  return !gCrWeb.autofill_form_features
+  return !gCrWebLegacy.autofill_form_features
               .isAutofillCorrectUserEditedBitInParsedField() ||
       (wasEditedByUser.get(element) ?? false);
 }
@@ -327,10 +327,10 @@ function formSubmitted(
 
   const message = {
     command: 'form.submit',
-    frameID: gCrWeb.message.getFrameId(),
-    formName: gCrWeb.form.getFormIdentifier(form),
+    frameID: gCrWebLegacy.message.getFrameId(),
+    formName: gCrWebLegacy.form.getFormIdentifier(form),
     href: getFullyQualifiedUrl(action),
-    formData: gCrWeb.fill.autofillSubmissionData(form),
+    formData: gCrWebLegacy.fill.autofillSubmissionData(form),
     remoteFrameToken: includeRemoteFrameToken ? getRemoteFrameToken() :
                                                 undefined,
     programmaticSubmission: programmaticSubmission,
@@ -339,7 +339,7 @@ function formSubmitted(
   sendWebKitMessage(messageHandler, message);
 }
 
-gCrWeb.form = {
+gCrWebLegacy.form = {
   wasEditedByUser,
   isFormControlElement,
   getFormControlElements,

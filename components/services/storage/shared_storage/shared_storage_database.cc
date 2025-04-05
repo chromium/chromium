@@ -10,15 +10,19 @@
 #include <climits>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/checked_math.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
+#include "base/types/optional_ref.h"
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
 #include "components/services/storage/shared_storage/shared_storage_database_migrations.h"
 #include "components/services/storage/shared_storage/shared_storage_options.h"
@@ -180,7 +184,7 @@ SharedStorageDatabase::GetResult::GetResult(OperationResult result)
 SharedStorageDatabase::GetResult::GetResult(std::u16string data,
                                             base::Time last_used_time,
                                             OperationResult result)
-    : data(data), last_used_time(last_used_time), result(result) {}
+    : data(std::move(data)), last_used_time(last_used_time), result(result) {}
 
 SharedStorageDatabase::GetResult::~GetResult() = default;
 
@@ -288,8 +292,8 @@ void SharedStorageDatabase::TrimMemory() {
 }
 
 SharedStorageDatabase::GetResult SharedStorageDatabase::Get(
-    url::Origin context_origin,
-    std::u16string key) {
+    const url::Origin& context_origin,
+    std::u16string_view key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_LE(key.size(), max_string_length_);
 
@@ -324,7 +328,7 @@ SharedStorageDatabase::GetResult SharedStorageDatabase::Get(
     if (!statement.ColumnBlobAsString16(0, &value)) {
       return GetResult();
     }
-    return GetResult(value, last_used_time, op_result);
+    return GetResult(std::move(value), last_used_time, op_result);
   }
 
   if (!statement.Succeeded())
@@ -334,9 +338,9 @@ SharedStorageDatabase::GetResult SharedStorageDatabase::Get(
 }
 
 SharedStorageDatabase::OperationResult SharedStorageDatabase::Set(
-    url::Origin context_origin,
-    std::u16string key,
-    std::u16string value,
+    const url::Origin& context_origin,
+    std::u16string_view key,
+    std::u16string_view value,
     SetBehavior behavior) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!key.empty());
@@ -357,27 +361,26 @@ SharedStorageDatabase::OperationResult SharedStorageDatabase::Set(
   if (get_result.result == OperationResult::kSuccess &&
       behavior == SharedStorageDatabase::SetBehavior::kIgnoreIfPresent) {
     // We re-insert the old key-value pair with an updated `last_used_time`.
-    std::optional<std::u16string> previous_value = get_result.data;
     if (!UpdateValuesMapping(origin_str, key, get_result.data,
-                             std::move(previous_value))) {
+                             /*previous_value=*/get_result.data)) {
       return OperationResult::kSqlError;
     }
     return OperationResult::kIgnored;
   }
 
-  std::optional<std::u16string> previous_value =
+  auto previous_value =
       (get_result.result == OperationResult::kNotFound)
-          ? std::nullopt
-          : std::optional<std::u16string>(std::move(get_result.data));
+          ? base::optional_ref<const std::u16string>()
+          : base::optional_ref<const std::u16string>(get_result.data);
 
   return InternalSetOrAppend(origin_str, key, value, get_result.result,
-                             std::move(previous_value));
+                             previous_value);
 }
 
 SharedStorageDatabase::OperationResult SharedStorageDatabase::Append(
-    url::Origin context_origin,
-    std::u16string key,
-    std::u16string tail_value) {
+    const url::Origin& context_origin,
+    std::u16string_view key,
+    std::u16string_view tail_value) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!key.empty());
   DCHECK_LE(key.size(), max_string_length_);
@@ -393,32 +396,32 @@ SharedStorageDatabase::OperationResult SharedStorageDatabase::Append(
     return OperationResult::kSqlError;
   }
 
-  std::u16string new_value;
   std::string origin_str(SerializeOrigin(context_origin));
-  std::optional<std::u16string> previous_value;
 
   if (get_result.result == OperationResult::kSuccess) {
-    previous_value = get_result.data;
-    new_value = std::move(get_result.data);
-    new_value.append(tail_value);
-
-    if (new_value.size() > max_string_length_) {
+    if (size_t new_size;
+        !base::CheckAdd(get_result.data.size(), tail_value.size())
+             .AssignIfValid(&new_size) ||
+        new_size > max_string_length_) {
       return OperationResult::kInvalidAppend;
     }
-  } else if (get_result.result == OperationResult::kExpired) {
-    previous_value = std::move(get_result.data);
-    new_value = std::move(tail_value);
-  } else {
-    new_value = std::move(tail_value);
-  }
 
-  return InternalSetOrAppend(origin_str, key, new_value, get_result.result,
-                             std::move(previous_value));
+    std::u16string new_value = base::StrCat({get_result.data, tail_value});
+
+    return InternalSetOrAppend(origin_str, key, new_value, get_result.result,
+                               /*previous_value=*/get_result.data);
+  } else if (get_result.result == OperationResult::kExpired) {
+    return InternalSetOrAppend(origin_str, key, tail_value, get_result.result,
+                               /*previous_value=*/get_result.data);
+  } else {
+    return InternalSetOrAppend(origin_str, key, tail_value, get_result.result,
+                               /*previous_value=*/std::nullopt);
+  }
 }
 
 SharedStorageDatabase::OperationResult SharedStorageDatabase::Delete(
-    url::Origin context_origin,
-    std::u16string key) {
+    const url::Origin& context_origin,
+    std::u16string_view key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_LE(key.size(), max_string_length_);
 
@@ -466,7 +469,7 @@ SharedStorageDatabase::OperationResult SharedStorageDatabase::Delete(
 }
 
 SharedStorageDatabase::OperationResult SharedStorageDatabase::Clear(
-    url::Origin context_origin,
+    const url::Origin& context_origin,
     DataClearSource source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -592,7 +595,7 @@ SharedStorageDatabase::BatchUpdateResult SharedStorageDatabase::BatchUpdate(
                            /*inner_method_results=*/std::move(results));
 }
 
-int64_t SharedStorageDatabase::Length(url::Origin context_origin) {
+int64_t SharedStorageDatabase::Length(const url::Origin& context_origin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (LazyInit(DBCreationPolicy::kIgnoreIfAbsent) != InitStatus::kSuccess) {
@@ -844,7 +847,7 @@ SharedStorageDatabase::OperationResult SharedStorageDatabase::Entries(
   return OperationResult::kSuccess;
 }
 
-int64_t SharedStorageDatabase::BytesUsed(url::Origin context_origin) {
+int64_t SharedStorageDatabase::BytesUsed(const url::Origin& context_origin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (LazyInit(DBCreationPolicy::kIgnoreIfAbsent) != InitStatus::kSuccess) {
@@ -880,7 +883,7 @@ SharedStorageDatabase::PurgeMatchingOrigins(
 
   static constexpr char kSelectSql[] =
       "SELECT distinct context_origin FROM values_mapping "
-      "WHERE last_used_time BETWEEN ? AND ? ";
+      "WHERE last_used_time BETWEEN ? AND ?";
   sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kSelectSql));
   statement.BindTime(0, begin);
   statement.BindTime(1, end);
@@ -1044,8 +1047,9 @@ std::vector<mojom::StorageUsageInfoPtr> SharedStorageDatabase::FetchOrigins() {
 }
 
 SharedStorageDatabase::OperationResult
-SharedStorageDatabase::MakeBudgetWithdrawal(net::SchemefulSite context_site,
-                                            double bits_debit) {
+SharedStorageDatabase::MakeBudgetWithdrawal(
+    const net::SchemefulSite& context_site,
+    double bits_debit) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_GT(bits_debit, 0.0);
 
@@ -1067,7 +1071,7 @@ SharedStorageDatabase::MakeBudgetWithdrawal(net::SchemefulSite context_site,
 }
 
 SharedStorageDatabase::BudgetResult SharedStorageDatabase::GetRemainingBudget(
-    net::SchemefulSite context_site) {
+    const net::SchemefulSite& context_site) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (LazyInit(DBCreationPolicy::kIgnoreIfAbsent) != InitStatus::kSuccess) {
@@ -1098,7 +1102,7 @@ SharedStorageDatabase::BudgetResult SharedStorageDatabase::GetRemainingBudget(
 }
 
 SharedStorageDatabase::TimeResult SharedStorageDatabase::GetCreationTime(
-    url::Origin context_origin) {
+    const url::Origin& context_origin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (LazyInit(DBCreationPolicy::kIgnoreIfAbsent) != InitStatus::kSuccess) {
@@ -1119,7 +1123,7 @@ SharedStorageDatabase::TimeResult SharedStorageDatabase::GetCreationTime(
 }
 
 SharedStorageDatabase::MetadataResult SharedStorageDatabase::GetMetadata(
-    url::Origin context_origin) {
+    const url::Origin& context_origin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   MetadataResult metadata;
 
@@ -1142,7 +1146,8 @@ SharedStorageDatabase::MetadataResult SharedStorageDatabase::GetMetadata(
 }
 
 SharedStorageDatabase::EntriesResult
-SharedStorageDatabase::GetEntriesForDevTools(url::Origin context_origin) {
+SharedStorageDatabase::GetEntriesForDevTools(
+    const url::Origin& context_origin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   EntriesResult entries;
 
@@ -1190,7 +1195,8 @@ SharedStorageDatabase::GetEntriesForDevTools(url::Origin context_origin) {
 }
 
 SharedStorageDatabase::OperationResult
-SharedStorageDatabase::ResetBudgetForDevTools(url::Origin context_origin) {
+SharedStorageDatabase::ResetBudgetForDevTools(
+    const url::Origin& context_origin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (LazyInit(DBCreationPolicy::kIgnoreIfAbsent) != InitStatus::kSuccess) {
@@ -1227,7 +1233,7 @@ SharedStorageDatabase::InitStatus SharedStorageDatabase::DBStatusForTesting()
 }
 
 bool SharedStorageDatabase::OverrideCreationTimeForTesting(
-    url::Origin context_origin,
+    const url::Origin& context_origin,
     base::Time new_creation_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -1254,8 +1260,8 @@ bool SharedStorageDatabase::OverrideCreationTimeForTesting(
 }
 
 bool SharedStorageDatabase::OverrideLastUsedTimeForTesting(
-    url::Origin context_origin,
-    std::u16string key,
+    const url::Origin& context_origin,
+    std::u16string_view key,
     base::Time new_last_used_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -1272,10 +1278,9 @@ bool SharedStorageDatabase::OverrideLastUsedTimeForTesting(
   if (result.result == OperationResult::kNotFound)
     return true;
 
-  std::optional<std::u16string> previous_value = result.data;
   if (!UpdateValuesMappingWithTime(SerializeOrigin(context_origin), key,
                                    result.data, new_last_used_time,
-                                   std::move(previous_value))) {
+                                   /*previous_value=*/result.data)) {
     return false;
   }
   return true;
@@ -1294,7 +1299,7 @@ void SharedStorageDatabase::OverrideSpecialStoragePolicyForTesting(
 }
 
 int64_t SharedStorageDatabase::GetNumBudgetEntriesForTesting(
-    net::SchemefulSite context_site) {
+    const net::SchemefulSite& context_site) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (LazyInit(DBCreationPolicy::kIgnoreIfAbsent) != InitStatus::kSuccess) {
@@ -1526,7 +1531,7 @@ bool SharedStorageDatabase::Vacuum() {
   return db_.Execute("VACUUM");
 }
 
-bool SharedStorageDatabase::Purge(const std::string& context_origin,
+bool SharedStorageDatabase::Purge(std::string_view context_origin,
                                   DataClearSource source) {
   sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
@@ -1552,11 +1557,11 @@ bool SharedStorageDatabase::Purge(const std::string& context_origin,
 
 SharedStorageDatabase::OperationResult
 SharedStorageDatabase::InternalSetOrAppend(
-    const std::string& context_origin,
-    const std::u16string& key,
-    const std::u16string& value,
+    std::string_view context_origin,
+    std::u16string_view key,
+    std::u16string_view value,
     OperationResult result_for_get,
-    std::optional<std::u16string> previous_value) {
+    base::optional_ref<const std::u16string> previous_value) {
   int64_t delta_bytes = 2 * value.size();
   delta_bytes += (result_for_get == OperationResult::kNotFound)
                      ? 2 * key.size()
@@ -1570,8 +1575,7 @@ SharedStorageDatabase::InternalSetOrAppend(
     // the `num_bytes` column in `per_origin_mapping` for `context_origin` says
     // that there should be enough quota left for the additional bytes. So we go
     // ahead and try to set the value.
-    if (!UpdateValuesMapping(context_origin, key, value,
-                             std::move(previous_value))) {
+    if (!UpdateValuesMapping(context_origin, key, value, previous_value)) {
       return OperationResult::kSqlError;
     }
     return OperationResult::kSet;
@@ -1591,15 +1595,14 @@ SharedStorageDatabase::InternalSetOrAppend(
     return OperationResult::kSqlError;
   }
 
-  if (result_for_get == OperationResult::kExpired) {
-    // If the previous value was expired, it has now been manually purged. So
-    // the `UpdateValuesMapping()` call below should see the previous value as
-    // nonexistent, i.e. std::nullopt.
-    previous_value = std::nullopt;
-  }
-
-  if (!UpdateValuesMapping(context_origin, key, value,
-                           std::move(previous_value))) {
+  if (!UpdateValuesMapping(
+          context_origin, key, value,
+          // If the previous value was expired, it has now been manually
+          // purged. So the `UpdateValuesMapping()` call below should see
+          // the previous value as nonexistent, i.e. std::nullopt.
+          result_for_get == OperationResult::kExpired
+              ? base::optional_ref<const std::u16string>()
+              : previous_value)) {
     return OperationResult::kSqlError;
   }
 
@@ -1607,7 +1610,7 @@ SharedStorageDatabase::InternalSetOrAppend(
 }
 
 int64_t SharedStorageDatabase::NumEntriesManualCountExcludeExpired(
-    const std::string& context_origin) {
+    std::string_view context_origin) {
   static constexpr char kCountSql[] =
       "SELECT COUNT(*) FROM values_mapping "
       "WHERE context_origin=? AND last_used_time>=?";
@@ -1627,7 +1630,7 @@ int64_t SharedStorageDatabase::NumEntriesManualCountExcludeExpired(
 }
 
 int64_t SharedStorageDatabase::NumBytesUsedIncludeExpired(
-    const std::string& context_origin) {
+    std::string_view context_origin) {
   // In theory, there ought to be at most one entry found. But we make no
   // assumption about the state of the disk. In the rare case that multiple
   // entries are found, we return only the `num_bytes` from the first entry
@@ -1653,7 +1656,7 @@ int64_t SharedStorageDatabase::NumBytesUsedIncludeExpired(
 }
 
 int64_t SharedStorageDatabase::NumBytesUsedManualCountExcludeExpired(
-    const std::string& context_origin) {
+    std::string_view context_origin) {
   static constexpr char kCountSql[] =
       "SELECT SUM(LENGTH(key) + LENGTH(value)) FROM values_mapping "
       "WHERE context_origin=? AND last_used_time>=?";
@@ -1675,8 +1678,8 @@ int64_t SharedStorageDatabase::NumBytesUsedManualCountExcludeExpired(
 }
 
 std::optional<std::u16string> SharedStorageDatabase::MaybeGetValueFor(
-    const std::string& context_origin,
-    const std::u16string& key) {
+    std::string_view context_origin,
+    std::u16string_view key) {
   static constexpr char kSelectSql[] =
       "SELECT value FROM values_mapping "
       "WHERE context_origin=? AND key=? "
@@ -1694,7 +1697,7 @@ std::optional<std::u16string> SharedStorageDatabase::MaybeGetValueFor(
 }
 
 SharedStorageDatabase::OperationResult SharedStorageDatabase::GetOriginInfo(
-    const std::string& context_origin,
+    std::string_view context_origin,
     int64_t* out_num_bytes,
     base::Time* out_creation_time) {
   DCHECK(out_creation_time);
@@ -1723,7 +1726,7 @@ SharedStorageDatabase::OperationResult SharedStorageDatabase::GetOriginInfo(
   return OperationResult::kNotFound;
 }
 
-bool SharedStorageDatabase::UpdateBytes(const std::string& context_origin,
+bool SharedStorageDatabase::UpdateBytes(std::string_view context_origin,
                                         int64_t delta_bytes) {
   // No-op if delta is zero.
   if (delta_bytes == 0L) {
@@ -1760,11 +1763,11 @@ bool SharedStorageDatabase::UpdateBytes(const std::string& context_origin,
 }
 
 bool SharedStorageDatabase::UpdateValuesMappingWithTime(
-    const std::string& context_origin,
-    const std::u16string& key,
-    const std::u16string& value,
+    std::string_view context_origin,
+    std::u16string_view key,
+    std::u16string_view value,
     base::Time last_used_time,
-    std::optional<std::u16string> previous_value) {
+    base::optional_ref<const std::u16string> previous_value) {
   sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
     return false;
@@ -1819,16 +1822,16 @@ bool SharedStorageDatabase::UpdateValuesMappingWithTime(
 }
 
 bool SharedStorageDatabase::UpdateValuesMapping(
-    const std::string& context_origin,
-    const std::u16string& key,
-    const std::u16string& value,
-    std::optional<std::u16string> previous_value) {
+    std::string_view context_origin,
+    std::u16string_view key,
+    std::u16string_view value,
+    base::optional_ref<const std::u16string> previous_value) {
   return UpdateValuesMappingWithTime(context_origin, key, value, clock_->Now(),
-                                     std::move(previous_value));
+                                     previous_value);
 }
 
 bool SharedStorageDatabase::DeleteFromPerOriginMapping(
-    const std::string& context_origin,
+    std::string_view context_origin,
     DataClearSource source) {
   if (source != DataClearSource::kSite) {
     // In theory, there ought to be at most one entry found. But we make no
@@ -1866,7 +1869,7 @@ bool SharedStorageDatabase::DeleteFromPerOriginMapping(
 }
 
 bool SharedStorageDatabase::InsertIntoPerOriginMapping(
-    const std::string& context_origin,
+    std::string_view context_origin,
     base::Time creation_time,
     uint64_t num_bytes) {
   static constexpr char kInsertSql[] =
@@ -1882,7 +1885,7 @@ bool SharedStorageDatabase::InsertIntoPerOriginMapping(
 }
 
 bool SharedStorageDatabase::UpdatePerOriginMapping(
-    const std::string& context_origin,
+    std::string_view context_origin,
     base::Time creation_time,
     uint64_t num_bytes,
     bool origin_exists) {
@@ -1910,7 +1913,7 @@ bool SharedStorageDatabase::UpdatePerOriginMapping(
 }
 
 bool SharedStorageDatabase::HasCapacityIncludingExpired(
-    const std::string& context_origin,
+    std::string_view context_origin,
     int64_t delta_bytes) {
   CHECK_GT(delta_bytes, 0);
 
@@ -1919,7 +1922,7 @@ bool SharedStorageDatabase::HasCapacityIncludingExpired(
 }
 
 bool SharedStorageDatabase::ManualPurgeExpiredValues(
-    const std::string& context_origin) {
+    std::string_view context_origin) {
   sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
     return false;

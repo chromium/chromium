@@ -5,16 +5,22 @@
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 
 #include <string>
+#include <tuple>
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/location.h"
 #include "base/logging.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/test/bind.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/test_switches.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
-#include "testing/gmock/include/gmock/gmock.h"
+#include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest-spi.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -25,6 +31,41 @@ IN_PROC_BROWSER_TEST_F(WebUIMochaUnitTest, CanonicalizeTestName) {
   std::string name("a b!c");
   webui::CanonicalizeTestName(&name);
   ASSERT_THAT(name, testing::MatchesRegex("[A-Za-z0-9_]{5}"));
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIMochaUnitTest, ProcessMessagesFromJsTest) {
+  auto* web_contents = chrome_test_utils::GetActiveWebContents(this);
+
+  bool success;
+  std::vector<SubTestResult> results;
+  base::RunLoop run_loop;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        std::tuple<bool, std::vector<SubTestResult>> t =
+            webui::ProcessMessagesFromJsTest(web_contents);
+        success = std::get<0>(t);
+        results = std::move(std::get<1>(t));
+        run_loop.Quit();
+      }));
+
+  EXPECT_EQ(true, content::EvalJs(web_contents, R"(
+    window.domAutomationController.send({
+      fullTitle: "test1",
+      duration: 1
+    });
+    window.domAutomationController.send({
+      fullTitle: "test2",
+      duration: 2,
+      failureReason: "failureReason"
+    });
+    window.domAutomationController.send("SUCCESS");
+  )"));
+
+  run_loop.Run();
+  EXPECT_EQ(success, true);
+  EXPECT_EQ(results.size(), 2ul);
+  EXPECT_EQ(results[0].name, "test1");
+  EXPECT_EQ(results[1].name, "test2");
 }
 
 // Test that code coverage metrics are reported from WebUIMochaBrowserTest

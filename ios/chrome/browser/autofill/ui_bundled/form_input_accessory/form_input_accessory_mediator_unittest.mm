@@ -4,10 +4,17 @@
 
 #import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_input_accessory_mediator.h"
 
+#import "base/metrics/histogram_base.h"
+#import "base/test/metrics/histogram_tester.h"
+#import "base/test/scoped_feature_list.h"
+#import "components/autofill/core/browser/filling/filling_product.h"
+#import "components/autofill/ios/browser/form_suggestion.h"
+#import "components/autofill/ios/browser/form_suggestion_provider.h"
 #import "components/autofill/ios/common/javascript_feature_util.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/autofill/ios/form_util/test_form_activity_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
+#import "ios/chrome/browser/autofill/model/features.h"
 #import "ios/chrome/browser/autofill/model/form_input_suggestions_provider.h"
 #import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_input_accessory_consumer.h"
 #import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_input_accessory_mediator_handler.h"
@@ -16,6 +23,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
+#import "ios/chrome/common/ui/reauthentication/reauthentication_event.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
@@ -42,6 +50,54 @@ FormActivityParams CreateFormActivityParams(const std::string field_type) {
 }
 
 }  // namespace
+
+// Test implementation of FormSuggestionProvider.
+@interface TestFormSuggestionProvider : NSObject <FormSuggestionProvider>
+@end
+
+@implementation TestFormSuggestionProvider
+
+#pragma mark - Public
+
+// Sets the SuggestionProviderType returned when using the -type getter.
+- (void)setType:(SuggestionProviderType)type {
+  _type = type;
+}
+
+// Sets the FillingProduct returned when using the -mainFillingProduct getter.
+- (void)setMainFillingProduct:(autofill::FillingProduct)mainFillingProduct {
+  _mainFillingProduct = mainFillingProduct;
+}
+
+#pragma mark - FormSuggestionProvider
+
+@synthesize type = _type;
+@synthesize mainFillingProduct = _mainFillingProduct;
+
+- (void)checkIfSuggestionsAvailableForForm:
+            (FormSuggestionProviderQuery*)formQuery
+                            hasUserGesture:(BOOL)hasUserGesture
+                                  webState:(web::WebState*)webState
+                         completionHandler:
+                             (SuggestionsAvailableCompletion)completion {
+}
+
+- (void)retrieveSuggestionsForForm:(FormSuggestionProviderQuery*)formQuery
+                          webState:(web::WebState*)webState
+                 completionHandler:(SuggestionsReadyCompletion)completion {
+}
+
+- (void)didSelectSuggestion:(FormSuggestion*)suggestion
+                    atIndex:(NSInteger)index
+                       form:(NSString*)formName
+             formRendererID:(autofill::FormRendererId)formRendererID
+            fieldIdentifier:(NSString*)fieldIdentifier
+            fieldRendererID:(autofill::FieldRendererId)fieldRendererID
+                    frameID:(NSString*)frameID
+          completionHandler:(SuggestionHandledCompletion)completion {
+}
+
+@end
 
 class FormInputAccessoryMediatorTest : public PlatformTest {
  protected:
@@ -83,7 +139,7 @@ class FormInputAccessoryMediatorTest : public PlatformTest {
                                         accountPasswordStore:nullptr
                                         securityAlertHandler:nil
                                       reauthenticationModule:nil
-                                           engagementTracker:nil];
+                                           engagementTracker:nullptr];
   }
 
   void TearDown() override {
@@ -146,6 +202,8 @@ TEST_F(FormInputAccessoryMediatorTest, ShowSuggestions) {
         [invocation getArgument:&completion atIndex:4];
         suggestionsQueryCompletion = [completion copy];
       });
+  OCMStub([providerMock mainFillingProduct])
+      .andReturn(autofill::FillingProduct::kAutocomplete);
 
   // Emit a form registration event to trigger the show suggestions code path.
   test_form_activity_tab_helper_.FormActivityRegistered(main_frame_.get(),
@@ -166,6 +224,69 @@ TEST_F(FormInputAccessoryMediatorTest, ShowSuggestions) {
   // Run the completion block to trigger the code path that updates suggestion
   // in the view model.
   suggestionsQueryCompletion(suggestions, providerMock);
+
+  EXPECT_EQ(autofill::FillingProduct::kAutocomplete,
+            mediator_.currentProviderMainFillingProduct);
+
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Tests showing suggestions when Stateless is enabled.
+TEST_F(FormInputAccessoryMediatorTest, ShowSuggestions_WhenStateless) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      kStatelessFormSuggestionController};
+
+  id providerMock = OCMProtocolMock(@protocol(FormInputSuggestionsProvider));
+  [mediator_ injectProvider:providerMock];
+
+  TestFormSuggestionProvider* testSuggestionProvider =
+      [[TestFormSuggestionProvider alloc] init];
+  // Set a provider type that doesn't reach a code path that can't be handled in
+  // test.
+  [testSuggestionProvider
+      setType:SuggestionProviderType::SuggestionProviderTypeUnknown];
+  [testSuggestionProvider
+      setMainFillingProduct:autofill::FillingProduct::kAutocomplete];
+
+  FormActivityParams params = CreateFormActivityParams(/*field_type=*/"text");
+
+  __block FormSuggestionsReadyCompletion suggestionsQueryCompletion;
+
+  OCMStub([providerMock
+              retrieveSuggestionsForForm:params
+                                webState:web_state_list_.GetActiveWebState()
+                accessoryViewUpdateBlock:OCMOCK_ANY])
+      .andDo(^(NSInvocation* invocation) {
+        __weak FormSuggestionsReadyCompletion completion;
+        [invocation getArgument:&completion atIndex:4];
+        suggestionsQueryCompletion = [completion copy];
+      });
+
+  // Emit a form registration event to trigger the show suggestions code path.
+  test_form_activity_tab_helper_.FormActivityRegistered(main_frame_.get(),
+                                                        params);
+
+  FormSuggestion* suggestion = [FormSuggestion
+      suggestionWithValue:@"value"
+       displayDescription:@"display-description"
+                     icon:nil
+                     type:autofill::SuggestionType::kAutocompleteEntry
+                  payload:autofill::Suggestion::Payload()
+           requiresReauth:NO];
+  suggestion = [FormSuggestion copy:suggestion
+                       andSetParams:params
+                           provider:testSuggestionProvider];
+  NSArray<FormSuggestion*>* suggestions = [NSArray arrayWithObject:suggestion];
+
+  // Expect to update the view model with the suggestions from the query.
+  OCMExpect([consumer_ showAccessorySuggestions:suggestions]);
+
+  // Run the completion block to trigger the code path that updates suggestion
+  // in the view model.
+  suggestionsQueryCompletion(suggestions, providerMock);
+
+  EXPECT_EQ(autofill::FillingProduct::kAutocomplete,
+            mediator_.currentProviderMainFillingProduct);
 
   EXPECT_OCMOCK_VERIFY(consumer_);
 }
@@ -234,4 +355,59 @@ TEST_F(FormInputAccessoryMediatorTest, ShowSuggestions_WithConcurrentQueries) {
    objectAtIndex:1](suggestions_from_second_query, providerMock);
 
   EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Tests that selecting a suggestion when Stateless is enabled is correctly
+// handled when no reauthentication is needed.
+TEST_F(FormInputAccessoryMediatorTest, DidSelectSuggestion_NoReauth) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      kStatelessFormSuggestionController};
+
+  base::HistogramTester histogram_tester;
+
+  id formInputSuggestionProviderMock =
+      OCMProtocolMock(@protocol(FormInputSuggestionsProvider));
+  [mediator_ injectCurrentProvider:formInputSuggestionProviderMock];
+
+  // Make a credit card suggestion that wraps all the information needed by
+  // Stateless.
+  FormActivityParams params = CreateFormActivityParams(/*field_type=*/"text");
+  TestFormSuggestionProvider* testSuggestionProvider =
+      [[TestFormSuggestionProvider alloc] init];
+  [testSuggestionProvider
+      setType:SuggestionProviderType::SuggestionProviderTypeAutofill];
+  FormSuggestion* suggestion = [FormSuggestion
+      suggestionWithValue:@"value"
+       displayDescription:@"display-description"
+                     icon:nil
+                     type:autofill::SuggestionType::kCreditCardEntry
+                  payload:autofill::Suggestion::Payload()
+           requiresReauth:NO];
+  suggestion = [FormSuggestion copy:suggestion
+                       andSetParams:params
+                           provider:testSuggestionProvider];
+
+  const NSInteger suggestionIndex = 0;
+
+  OCMExpect([formInputSuggestionProviderMock
+      didSelectSuggestion:[OCMArg any]
+                  atIndex:suggestionIndex]);
+
+  [mediator_ didSelectSuggestion:suggestion atIndex:suggestionIndex];
+
+  // Look the authentication metrics associated with the type of the selected
+  // provided are correctly recorded.
+  histogram_tester.ExpectTotalCount("IOS.Reauth.CreditCard.Autofill", 2);
+  histogram_tester.ExpectBucketCount("IOS.Reauth.CreditCard.Autofill",
+                                     /*sample=*/
+                                     static_cast<base::HistogramBase::Sample32>(
+                                         ReauthenticationEvent::kAttempt),
+                                     /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount("IOS.Reauth.CreditCard.Autofill",
+                                     /*sample=*/
+                                     static_cast<base::HistogramBase::Sample32>(
+                                         ReauthenticationEvent::kSuccess),
+                                     /*expected_count=*/1);
+
+  EXPECT_OCMOCK_VERIFY(formInputSuggestionProviderMock);
 }

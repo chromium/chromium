@@ -17,10 +17,10 @@ import org.chromium.base.Log;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.SnackbarActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkImageFetcher;
+import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpener;
 import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpenerImpl;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkModelObserver;
-import org.chromium.chrome.browser.bookmarks.BookmarkMoveSnackbarManager;
 import org.chromium.chrome.browser.bookmarks.BookmarkTextInputLayout;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
@@ -33,7 +33,6 @@ import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowViewBinder;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
@@ -56,18 +55,20 @@ public class BookmarkEditActivity extends SnackbarActivity {
 
     private static final String TAG = "BookmarkEdit";
 
-    private ImprovedBookmarkRowCoordinator mFolderSelectRowCoordinator;
     private BookmarkModel mModel;
+    private Profile mProfile;
+    private BookmarkUiPrefs mBookmarkUiPrefs;
+    private BookmarkManagerOpener mBookmarkManagerOpener;
     private BookmarkId mBookmarkId;
     private boolean mInFolderSelect;
+    private PropertyModel mFolderSelectRowModel;
+
+    private ImprovedBookmarkRowCoordinator mFolderSelectRowCoordinator;
+    private ImprovedBookmarkRow mFolderSelectRow;
     private BookmarkTextInputLayout mTitleEditText;
     private BookmarkTextInputLayout mUrlEditText;
     private MenuItem mDeleteButton;
-    private BookmarkUiPrefs mBookmarkUiPrefs;
     private FrameLayout mFolderPickerRowContainer;
-    private ImprovedBookmarkRow mFolderSelectRow;
-    private PropertyModel mFolderSelectRowModel;
-    private BookmarkMoveSnackbarManager mBookmarkMoveSnackbarManager;
 
     private BookmarkUiPrefs.Observer mBookmarkUiPrefsObserver =
             new BookmarkUiPrefs.Observer() {
@@ -95,7 +96,9 @@ public class BookmarkEditActivity extends SnackbarActivity {
     @Override
     protected void onProfileAvailable(Profile profile) {
         super.onProfileAvailable(profile);
+        mProfile = profile;
         mModel = BookmarkModel.getForProfile(profile);
+        mBookmarkManagerOpener = new BookmarkManagerOpenerImpl();
         mBookmarkId =
                 BookmarkId.getBookmarkIdFromString(getIntent().getStringExtra(INTENT_BOOKMARK_ID));
         mModel.addObserver(mBookmarkModelObserver);
@@ -105,14 +108,6 @@ public class BookmarkEditActivity extends SnackbarActivity {
             return;
         }
 
-        mBookmarkMoveSnackbarManager =
-                new BookmarkMoveSnackbarManager(
-                        /* context= */ this,
-                        profile,
-                        mModel,
-                        getSnackbarManager(),
-                        IdentityServicesProvider.get()
-                                .getIdentityManager(profile.getOriginalProfile()));
         setContentView(R.layout.bookmark_edit);
         mTitleEditText = findViewById(R.id.title_text);
         mUrlEditText = findViewById(R.id.url_text);
@@ -231,9 +226,6 @@ public class BookmarkEditActivity extends SnackbarActivity {
         if (mBookmarkUiPrefs != null) {
             mBookmarkUiPrefs.removeObserver(mBookmarkUiPrefsObserver);
         }
-        if (mBookmarkMoveSnackbarManager != null) {
-            mBookmarkMoveSnackbarManager.destroy();
-        }
         super.onDestroy();
     }
 
@@ -264,8 +256,8 @@ public class BookmarkEditActivity extends SnackbarActivity {
         mFolderSelectRowModel.set(
                 ImprovedBookmarkRowProperties.ROW_CLICK_LISTENER,
                 () ->
-                        mBookmarkMoveSnackbarManager.startFolderPickerAndObserveResult(
-                                new BookmarkManagerOpenerImpl(), mBookmarkId));
+                        mBookmarkManagerOpener.startFolderPickerActivity(
+                                /* context= */ this, mProfile, mBookmarkId));
 
         mFolderSelectRow =
                 ImprovedBookmarkRow.buildView(this, displayPref == BookmarkRowDisplayPref.VISUAL);

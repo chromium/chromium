@@ -215,7 +215,6 @@ class TestingBrowserProcess : public BrowserProcess {
 
   void Init();
 
-  std::string app_locale_;
   bool is_shutting_down_ = false;
 
   std::unique_ptr<policy::ChromeBrowserPolicyConnector>

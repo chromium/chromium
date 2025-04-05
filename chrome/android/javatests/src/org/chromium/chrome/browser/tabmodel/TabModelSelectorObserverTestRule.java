@@ -123,6 +123,13 @@ public class TabModelSelectorObserverTestRule extends ChromeBrowserTestRule {
                     }
 
                     @Override
+                    public TabGroupModelFilter getFilter(boolean incognito) {
+                        return mSelector
+                                .getTabGroupModelFilterProvider()
+                                .getTabGroupModelFilter(incognito);
+                    }
+
+                    @Override
                     public TabModel getCurrentModel() {
                         return mSelector.getCurrentModel();
                     }

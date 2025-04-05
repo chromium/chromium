@@ -710,39 +710,6 @@ void Document::MarkTopLevelFormsDirty() {
   top_level_forms_.MarkDirty();
 }
 
-ExplicitlySetAttrElementsMap* Document::GetExplicitlySetAttrElementsMap(
-    const Element* element) {
-  DCHECK(element);
-  DCHECK(element->GetDocument() == this);
-  auto add_result =
-      element_explicitly_set_attr_elements_map_.insert(element, nullptr);
-  if (add_result.is_new_entry) {
-    add_result.stored_value->value =
-        MakeGarbageCollected<ExplicitlySetAttrElementsMap>();
-  }
-  return add_result.stored_value->value.Get();
-}
-
-bool Document::HasExplicitlySetAttrElements(const Element* element) const {
-  auto it = element_explicitly_set_attr_elements_map_.find(element);
-  if (it == element_explicitly_set_attr_elements_map_.end()) {
-    return false;
-  }
-  return !it->value->empty();
-}
-
-void Document::MoveElementExplicitlySetAttrElementsMapToNewDocument(
-    const Element* element,
-    Document& new_document) {
-  DCHECK(element);
-  auto it = element_explicitly_set_attr_elements_map_.find(element);
-  if (it != element_explicitly_set_attr_elements_map_.end()) {
-    new_document.element_explicitly_set_attr_elements_map_.insert(element,
-                                                                  it->value);
-    element_explicitly_set_attr_elements_map_.erase(it);
-  }
-}
-
 CachedAttrAssociatedElementsMap* Document::GetCachedAttrAssociatedElementsMap(
     Element* element) {
   DCHECK(element);
@@ -8188,11 +8155,10 @@ void Document::SetDialogPointerdownTarget(const HTMLDialogElement* dialog) {
   dialog_pointerdown_target_ = dialog;
 }
 
-void Document::SetKeyboardInterestTargetElement(Element* element) {
-  CHECK(!element || RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
-                        element->GetDocument().GetExecutionContext()));
-  CHECK(!element || element->interestTargetElement());
-  keyboard_interest_target_element_ = element;
+HeapLinkedHashSet<Member<Element>>& Document::CurrentInterestTargetElements() {
+  DCHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
+      GetExecutionContext()));
+  return current_interest_target_elements_;
 }
 
 void Document::exitPointerLock() {
@@ -8935,7 +8901,7 @@ void Document::Trace(Visitor* visitor) const {
   visitor->Trace(popovers_waiting_to_hide_);
   visitor->Trace(all_open_popovers_);
   visitor->Trace(all_open_dialogs_);
-  visitor->Trace(keyboard_interest_target_element_);
+  visitor->Trace(current_interest_target_elements_);
   visitor->Trace(document_part_root_);
   visitor->Trace(load_event_delay_timer_);
   visitor->Trace(plugin_loading_timer_);
@@ -8983,7 +8949,6 @@ void Document::Trace(Visitor* visitor) const {
   visitor->Trace(mime_handler_view_before_unload_event_listener_);
   visitor->Trace(cookie_jar_);
   visitor->Trace(fragment_directive_);
-  visitor->Trace(element_explicitly_set_attr_elements_map_);
   visitor->Trace(element_cached_attr_associated_elements_map_);
   visitor->Trace(display_lock_document_state_);
   visitor->Trace(render_blocking_resource_manager_);
@@ -9648,6 +9613,9 @@ void Document::UpdateScrollMarkerGroupRelations() {
   if (!needs_scroll_marker_contain_relations_update_) {
     return;
   }
+  if (scroll_marker_group_to_scrollable_areas_.empty()) {
+    return;
+  }
   for (auto& [scroll_marker_group, scrollable_areas] :
        scroll_marker_group_to_scrollable_areas_) {
     for (PaintLayerScrollableArea* scrollable_area : scrollable_areas) {
@@ -9658,7 +9626,7 @@ void Document::UpdateScrollMarkerGroupRelations() {
   }
   scroll_marker_group_to_scrollable_areas_.clear();
   if (document_element_) {
-    ::blink::RecalcScrollMarkerContainRelations(*document_element_, nullptr);
+    RecalcScrollMarkerContainRelations(*document_element_, nullptr);
   }
   needs_scroll_marker_contain_relations_update_ = false;
 }
@@ -9670,6 +9638,7 @@ void Document::UpdateScrollMarkerGroupToScrollableAreasMap() {
   for (auto& [scroll_marker_group, scrollable_areas] :
        scroll_marker_group_to_scrollable_areas_) {
     scroll_marker_group->UpdateScrollableAreaSubscriptions(scrollable_areas);
+    scroll_marker_group->UpdateSelectedScrollMarker();
   }
   needs_scroll_marker_groups_map_update_ = false;
 }

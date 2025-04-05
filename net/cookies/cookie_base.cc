@@ -13,6 +13,8 @@
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/cookie_util.h"
+#include "net/cookies/ref_unique_cookie_key.h"
+#include "net/cookies/unique_cookie_key.h"
 
 namespace net {
 
@@ -568,6 +570,12 @@ std::string CookieBase::DomainWithoutDot() const {
   return cookie_util::CookieDomainAsHost(domain_);
 }
 
+UniqueCookieKey CookieBase::StrictlyUniqueKey() const {
+  return UniqueCookieKey::Strict(base::PassKey<CookieBase>(), partition_key_,
+                                 name_, domain_, path_, source_scheme_,
+                                 source_port_);
+}
+
 UniqueCookieKey CookieBase::UniqueKey() const {
   std::optional<CookieSourceScheme> source_scheme =
       cookie_util::IsSchemeBoundCookiesEnabled()
@@ -586,6 +594,26 @@ UniqueCookieKey CookieBase::UniqueKey() const {
 
   return UniqueCookieKey::Domain(base::PassKey<CookieBase>(), partition_key_,
                                  name_, domain_, path_, source_scheme);
+}
+
+RefUniqueCookieKey CookieBase::RefUniqueKey() const {
+  std::optional<CookieSourceScheme> source_scheme =
+      cookie_util::IsSchemeBoundCookiesEnabled()
+          ? std::make_optional(source_scheme_)
+          : std::nullopt;
+
+  if (IsHostCookie()) {
+    std::optional<int> source_port = cookie_util::IsPortBoundCookiesEnabled()
+                                         ? std::make_optional(source_port_)
+                                         : std::nullopt;
+
+    return RefUniqueCookieKey::Host(base::PassKey<CookieBase>(), partition_key_,
+                                    name_, domain_, path_, source_scheme,
+                                    source_port);
+  }
+
+  return RefUniqueCookieKey::Domain(base::PassKey<CookieBase>(), partition_key_,
+                                    name_, domain_, path_, source_scheme);
 }
 
 UniqueCookieKey CookieBase::LegacyUniqueKey() const {

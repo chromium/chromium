@@ -17,6 +17,10 @@
 #include "components/offline_items_collection/core/fail_state.h"
 #include "components/offline_items_collection/core/offline_content_aggregator.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_features.h"
+#endif
+
 using offline_items_collection::ContentId;
 using offline_items_collection::FailState;
 using offline_items_collection::OfflineItem;
@@ -48,10 +52,12 @@ OfflineItemModel::OfflineItemModel(OfflineItemModelManager* manager,
 OfflineItemModel::OfflineItemModel(
     OfflineItemModelManager* manager,
     const OfflineItem& offline_item,
-    std::unique_ptr<DownloadUIModel::StatusTextBuilderBase> status_text_builder)
+    std::unique_ptr<DownloadUIModel::StatusTextBuilderBase> status_text_builder,
+    bool user_canceled)
     : DownloadUIModel(std::move(status_text_builder)),
       manager_(manager),
-      offline_item_(std::make_unique<OfflineItem>(offline_item)) {
+      offline_item_(std::make_unique<OfflineItem>(offline_item)),
+      user_canceled_(user_canceled) {
   Profile* profile = Profile::FromBrowserContext(manager_->browser_context());
   offline_items_collection::OfflineContentAggregator* aggregator =
       OfflineContentAggregatorFactory::GetForKey(profile->GetProfileKey());
@@ -128,10 +134,14 @@ void OfflineItemModel::OpenDownload() {
   if (!offline_item_)
     return;
 
+#if BUILDFLAG(IS_CHROMEOS)
   offline_items_collection::OpenParams open_params(
-      offline_items_collection::LaunchLocation::DOWNLOAD_SHELF);
+      ash::features::IsOfflineItemsInNotificationsEnabled()
+          ? offline_items_collection::LaunchLocation::NOTIFICATION
+          : offline_items_collection::LaunchLocation::DOWNLOAD_SHELF);
   // TODO(crbug.com/40121163): Determine if we ever need to open in incognito.
   GetProvider()->OpenItem(open_params, offline_item_->id);
+#endif
 }
 
 void OfflineItemModel::Pause() {
@@ -151,7 +161,7 @@ void OfflineItemModel::Resume() {
 void OfflineItemModel::Cancel(bool user_cancel) {
   if (!offline_item_)
     return;
-
+  user_canceled_ = user_canceled_ || user_cancel;
   GetProvider()->CancelDownload(offline_item_->id);
 }
 
@@ -274,6 +284,10 @@ void OfflineItemModel::OnItemUpdated(
 }
 
 FailState OfflineItemModel::GetLastFailState() const {
+  // If we know the user canceled, return that. Otherwise, rely on heuristic.
+  if (user_canceled_) {
+    return FailState::USER_CANCELED;
+  }
   return offline_item_ ? offline_item_->fail_state : FailState::USER_CANCELED;
 }
 

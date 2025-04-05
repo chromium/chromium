@@ -11,7 +11,8 @@ enum MediaKeyStatus {
     "output-restricted",
     "output-downscaled",
     "status-pending",
-    "internal-error"
+    "internal-error",
+    "usable-in-future",
 };
 
 [

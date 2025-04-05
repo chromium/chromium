@@ -95,11 +95,17 @@ void GlicBackgroundModeManager::OnProfileAdded(Profile* profile) {
   if (!service) {
     return;
   }
+  // Recompute whether the background launcher should change state based on the
+  // updated policy and FRE completion state.
   GlicEnabling& enabling = service->enabling();
-  profile_subscriptions_.emplace(
-      profile, enabling.RegisterAllowedChanged(base::BindRepeating(
-                   &GlicBackgroundModeManager::OnProfileAllowedChanged,
-                   base::Unretained(this))));
+  profile_enabled_subscriptions_.emplace(
+      profile,
+      enabling.RegisterAllowedChanged(base::BindRepeating(
+          &GlicBackgroundModeManager::UpdateState, base::Unretained(this))));
+  profile_consent_subscriptions_.emplace(
+      profile,
+      enabling.RegisterOnConsentChanged(base::BindRepeating(
+          &GlicBackgroundModeManager::UpdateState, base::Unretained(this))));
   auto [it, inserted] = profile_observers_.emplace(profile, this);
   it->second.Observe(profile);
 
@@ -113,7 +119,8 @@ void GlicBackgroundModeManager::OnProfileAdded(Profile* profile) {
 
 void GlicBackgroundModeManager::OnProfileWillBeDestroyed(Profile* profile) {
   profile_observers_.erase(profile);
-  profile_subscriptions_.erase(profile);
+  profile_enabled_subscriptions_.erase(profile);
+  profile_consent_subscriptions_.erase(profile);
 
   // If a profile is removed while in background mode, check if it must now be
   // exited.
@@ -201,12 +208,6 @@ void GlicBackgroundModeManager::UpdateState() {
   if (status_icon_) {
     status_icon_->UpdateHotkey(actual_registered_hotkey_);
   }
-}
-
-void GlicBackgroundModeManager::OnProfileAllowedChanged() {
-  // Recompute whether the background launcher should change state based on the
-  // updated policy.
-  UpdateState();
 }
 
 bool GlicBackgroundModeManager::IsEnabledInAnyLoadedProfile() {

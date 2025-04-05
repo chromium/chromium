@@ -58,9 +58,9 @@ class _OptionalExit(contextlib.AbstractContextManager):
   _exit: bool
 
   def __init__(self, inner_context_manager: contextlib.AbstractContextManager,
-               exit: bool):
+               do_exit: bool):
     self._inner_context_manager = inner_context_manager
-    self._exit = exit
+    self._exit = do_exit
 
   def __enter__(self):
     return self._inner_context_manager.__enter__()
@@ -68,6 +68,7 @@ class _OptionalExit(contextlib.AbstractContextManager):
   def __exit__(self, exc_type, exc_val, exc_tb):
     if self._exit:
       return self._inner_context_manager.__exit__(exc_type, exc_val, exc_tb)
+    return None
 
 
 def _run_license_generation() -> int:
@@ -221,7 +222,7 @@ def _fill_desc_file_for_arch(arch, desc_file, delete_temporary_files):
   # beneath the repository root until gn2bp is tweaked to
   # deal with this small differences.
   with _OptionalExit(tempfile.TemporaryDirectory(dir=_OUT_DIR),
-                     exit=delete_temporary_files) as gn_out_dir:
+                     do_exit=delete_temporary_files) as gn_out_dir:
     cronet_utils.gn(gn_out_dir,
                     ' '.join(cronet_utils.get_gn_args_for_aosp(arch)))
     if _write_desc_json(gn_out_dir, desc_file) != 0:

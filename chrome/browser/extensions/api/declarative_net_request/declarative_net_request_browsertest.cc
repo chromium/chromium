@@ -8685,8 +8685,9 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestAllowChromeURLsBrowserTest,
 // --extensions-on-chrome-urls switch is used.
 // TODO(crbug.com/393191910): Port to desktop Android. This test fails with
 // no logging and no stack.
+// TODO(crbug.com/408364840): Re-enable flaky test.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestAllowChromeURLsBrowserTest,
-                       CrossExtensionNavigationRequestBlocking) {
+                       DISABLED_CrossExtensionNavigationRequestBlocking) {
   set_config_flags(ConfigFlag::kConfig_HasBackgroundScript |
                    ConfigFlag::kConfig_HasFeedbackPermission |
                    ConfigFlag::kConfig_HasManifestSandbox);

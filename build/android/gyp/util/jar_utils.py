@@ -15,7 +15,7 @@ _JDEPS_PATH = _SRC_PATH / 'third_party/jdk/current/bin/jdeps'
 _IGNORED_JAR_PATHS = [
     # This matches org_ow2_asm_asm_commons and org_ow2_asm_asm_analysis, both of
     # which fail jdeps (not sure why), see: https://crbug.com/348423879
-    'third_party/android_deps/cipd/libs/org_ow2_asm_asm',
+    'cipd/libs/org_ow2_asm_asm',
 ]
 
 def _should_ignore(jar_path: pathlib.Path) -> bool:

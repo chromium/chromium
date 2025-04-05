@@ -9,7 +9,7 @@
 
 import {CHILD_FRAME_REMOTE_TOKEN_ATTRIBUTE} from '//components/autofill/ios/form_util/resources/fill_constants.js';
 import {getFrameId} from '//ios/web/public/js_messaging/resources/frame_id.js';
-import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {generateRandomId, sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
 /**
@@ -99,7 +99,7 @@ function registerSelfWithRemoteToken(remoteId: string): void {
  * @param {MessageEvent} payload The data sent via postMessage.
  */
 function processChildFrameMessage(payload: MessageEvent): void {
-  if (!gCrWeb.autofill_form_features.isAutofillAcrossIframesEnabled()) {
+  if (!gCrWebLegacy.autofill_form_features.isAutofillAcrossIframesEnabled()) {
     return;
   }
   const command: unknown = payload.data?.command;
@@ -131,18 +131,18 @@ function processChildFrameMessage(payload: MessageEvent): void {
  *      cached or a freshly generated one.
  */
 function getRemoteIdForFrame(frame: HTMLIFrameElement): string {
-  if (!gCrWeb.hasOwnProperty('remoteFrameIdRegistrar')) {
-    gCrWeb.remoteFrameIdRegistrar = new Map();
+  if (!gCrWebLegacy.hasOwnProperty('remoteFrameIdRegistrar')) {
+    gCrWebLegacy.remoteFrameIdRegistrar = new Map();
   }
 
   // Return the cached remote token if the frame was already registered.
-  if (gCrWeb.remoteFrameIdRegistrar.has(frame)) {
-    return gCrWeb.remoteFrameIdRegistrar.get(frame);
+  if (gCrWebLegacy.remoteFrameIdRegistrar.has(frame)) {
+    return gCrWebLegacy.remoteFrameIdRegistrar.get(frame);
   }
 
   // Otherwise, create a remote ID for the frame and cache it.
   const remoteId: string = generateRandomId();
-  gCrWeb.remoteFrameIdRegistrar.set(frame, remoteId);
+  gCrWebLegacy.remoteFrameIdRegistrar.set(frame, remoteId);
   return remoteId;
 }
 
@@ -200,7 +200,7 @@ function registerChildFrame(frame: HTMLIFrameElement): string {
   return remoteFrameId;
 }
 
-gCrWeb.remoteFrameRegistration = {
+gCrWebLegacy.remoteFrameRegistration = {
   processChildFrameMessage,
   registerChildFrame,
   registerSelfWithRemoteToken,

@@ -151,6 +151,27 @@ void SetupCmdExe(UpdaterScope scope,
   return service.IsValid() || ::GetLastError() == ERROR_SERVICE_EXISTS;
 }
 
+[[nodiscard]] bool DisableService(const std::wstring& service_name) {
+  ScopedScHandle scm(::OpenSCManager(
+      nullptr, nullptr, SC_MANAGER_CONNECT | SC_MANAGER_CREATE_SERVICE));
+  if (!scm.IsValid()) {
+    return false;
+  }
+
+  ScopedScHandle service(
+      ::OpenService(scm.Get(), service_name.c_str(),
+                    SERVICE_QUERY_CONFIG | SERVICE_CHANGE_CONFIG));
+  if (!service.IsValid()) {
+    return true;
+  }
+
+  return ::ChangeServiceConfig(service.Get(), SERVICE_NO_CHANGE,
+                               SERVICE_DISABLED, SERVICE_NO_CHANGE, nullptr,
+                               nullptr, nullptr, nullptr, nullptr, nullptr,
+                               nullptr) ||
+         (::GetLastError() == ERROR_SERVICE_MARKED_FOR_DELETE);
+}
+
 CSecurityDesc GetEveryoneDaclSecurityDescriptor(ACCESS_MASK accessmask) {
   CSecurityDesc sd;
   CDacl dacl;

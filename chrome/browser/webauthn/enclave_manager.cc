@@ -210,22 +210,6 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 // valid protobuf, which is handy for debugging.
 static const uint8_t kHashPrefix[] = {0x82, 0x40, 32};
 
-// These values are detailed failure reasons. They are emitted whenever
-// PinRenewal::kFailure is emitted and give more detailed information about
-// why the attempt failed.
-enum class PinRenewalFailureCause {
-  kDuringDownload = 1,
-  kGettingAccessToken = 2,
-  kEnclaveRequest1 = 3,
-  kEnclaveRequest2 = 4,
-  kEnclaveResponse1 = 5,
-  kEnclaveResponse2 = 6,
-  kRKSUpload = 7,
-  kJoiningToDomain = 8,
-
-  kMaxValue = kJoiningToDomain,
-};
-
 static const char kPinRenewalFailureHistogram[] =
     "WebAuthentication.PinRenewalFailureCause";
 
@@ -1964,6 +1948,35 @@ class EnclaveManager::StateMachine {
       state_ = State::kStop;
       return;
     }
+
+    if (manager_->IsSecurityDomainReset(*result)) {
+      // The security domain has been reset. Clear the registration and bail
+      // out.
+      manager_->ClearRegistration();
+      FIDO_LOG(ERROR) << "The security domain has been reset.";
+      state_ = State::kStop;
+      if (is_pin_renewal_) {
+        base::UmaHistogramEnumeration(
+            kPinRenewalFailureHistogram,
+            PinRenewalFailureCause::kSecurityDomainReset);
+      }
+      return;
+    }
+
+    if (!result->gpm_pin_metadata && (is_pin_renewal_ || is_pin_update_)) {
+      // Chrome is trying to renew or update a PIN but the security domain
+      // reports there is no PIN. Don't delete the local PIN state in case
+      // there's a bug in the server, but also don't try renewing or updating it
+      // as this risks joining to an out of date PIN.
+      FIDO_LOG(ERROR) << "Tried to change the PIN, but SDS repots no PIN";
+      if (is_pin_renewal_) {
+        base::UmaHistogramEnumeration(
+            kPinRenewalFailureHistogram,
+            PinRenewalFailureCause::kSecurityDomainReportsNoPin);
+      }
+      state_ = State::kStop;
+      return;
+    }
     if (result->gpm_pin_metadata) {
       // This code saves the PIN public key even if the security domain reports
       // it is not usable or if it is invalid. This is necessary because the
@@ -2918,14 +2931,7 @@ bool EnclaveManager::ConsiderSecurityDomainState(
   CHECK(user_);
   bool ret = is_ready();
 
-  if (user_->joined() &&
-      state.state !=
-          trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult::
-              State::kError &&
-      (!state.key_version.has_value() ||
-       user_->wrapped_security_domain_secrets().find(*state.key_version) ==
-           user_->wrapped_security_domain_secrets().end())) {
-    // The security domain has been reset.
+  if (IsSecurityDomainReset(state)) {
     ClearRegistration();
     FIDO_LOG(EVENT) << "The security domain has been reset.";
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -3966,6 +3972,22 @@ void EnclaveManager::OnRenewalComplete(bool success) {
       success ? PinRenewalEvent::kSuccess : PinRenewalEvent::kFailure);
 
   is_renewing_ = false;
+}
+
+bool EnclaveManager::IsSecurityDomainReset(
+    const trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult&
+        state) {
+  // If the local state indicates that the user has joined the security domain,
+  // but the security domain is not initialized or does not match the key
+  // version, assume the security domain has been reset by another client.
+  return user_->joined() &&
+         state.state !=
+             trusted_vault::
+                 DownloadAuthenticationFactorsRegistrationStateResult::State::
+                     kError &&
+         (!state.key_version.has_value() ||
+          user_->wrapped_security_domain_secrets().find(*state.key_version) ==
+              user_->wrapped_security_domain_secrets().end());
 }
 
 base::WeakPtr<EnclaveManager> EnclaveManager::GetWeakPtr() {

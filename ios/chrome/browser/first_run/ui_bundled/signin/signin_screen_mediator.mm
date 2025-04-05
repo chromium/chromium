@@ -23,10 +23,10 @@
 #import "ios/chrome/browser/first_run/model/first_run_metrics.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_util.h"
 #import "ios/chrome/browser/first_run/ui_bundled/signin/signin_screen_consumer.h"
+#import "ios/chrome/browser/first_run/ui_bundled/signin/signin_screen_mediator_delegate.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
-#import "ios/chrome/browser/signin/model/chrome_account_manager_service_observer_bridge.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/sync/model/enterprise_utils.h"
 
@@ -42,8 +42,7 @@ enum class SigninScreenState {
 };
 }  // namespace
 
-@interface SigninScreenMediator () <ChromeAccountManagerServiceObserver,
-                                    IdentityManagerObserverBridgeDelegate> {
+@interface SigninScreenMediator () <IdentityManagerObserverBridgeDelegate> {
 }
 
 // Application local pref.
@@ -70,8 +69,6 @@ enum class SigninScreenState {
   raw_ptr<AuthenticationService> _authenticationService;
   // Identity manager to retrieve Chrome identities.
   raw_ptr<signin::IdentityManager> _identityManager;
-  std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
-      _accountManagerServiceObserver;
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityManagerObserver;
   // State of the sign-in screen.
@@ -100,9 +97,6 @@ enum class SigninScreenState {
     _UMAReportingUserChoice = kDefaultMetricsReportingCheckboxValue;
     _accountManagerService = accountManagerService;
     _authenticationService = authenticationService;
-    _accountManagerServiceObserver =
-        std::make_unique<ChromeAccountManagerServiceObserverBridge>(
-            self, _accountManagerService);
     _identityManager = identityManager;
     _identityManagerObserver =
         std::make_unique<signin::IdentityManagerObserverBridge>(
@@ -155,19 +149,19 @@ enum class SigninScreenState {
 }
 
 - (void)disconnect {
+  _consumer = nil;
+  _delegate = nil;
   _accountManagerService = nullptr;
   _authenticationService = nullptr;
   _identityManager = nullptr;
   self.localPrefService = nullptr;
   self.prefService = nullptr;
   self.syncService = nullptr;
-  _accountManagerServiceObserver.reset();
   _identityManagerObserver.reset();
 }
 
 - (void)startSignInWithAuthenticationFlow:
-            (AuthenticationFlow*)authenticationFlow
-                               completion:(ProceduralBlock)completion {
+    (AuthenticationFlow*)authenticationFlow {
   [self userAttemptedToSignin];
   RecordMetricsReportingDefaultState();
 
@@ -178,18 +172,10 @@ enum class SigninScreenState {
         base::NotFatalUntil::M140);
   [self.consumer setUIEnabled:NO];
   __weak __typeof(self) weakSelf = self;
-  [authenticationFlow startSignInWithCompletion:^(
-                          SigninCoordinatorResult result) {
-    [weakSelf.consumer setUIEnabled:YES];
-    if (result != SigninCoordinatorResultSuccess) {
-      return;
-    }
-    [weakSelf.logger logSigninCompletedWithResult:SigninCoordinatorResultSuccess
-                                     addedAccount:weakSelf.addedAccount];
-    if (completion) {
-      completion();
-    }
-  }];
+  [authenticationFlow
+      startSignInWithCompletion:^(SigninCoordinatorResult result) {
+        [weakSelf authenticationFlowCompletion:result];
+      }];
 }
 
 - (void)cancelSignInScreenWithCompletion:(ProceduralBlock)completion {
@@ -310,6 +296,17 @@ enum class SigninScreenState {
 
 #pragma mark - Private
 
+// Completion for the authentication flow.
+- (void)authenticationFlowCompletion:(SigninCoordinatorResult)result {
+  [self.consumer setUIEnabled:YES];
+  if (result != SigninCoordinatorResultSuccess) {
+    return;
+  }
+  [self.logger logSigninCompletedWithResult:SigninCoordinatorResultSuccess
+                               addedAccount:self.addedAccount];
+  [self.delegate signinScreenMediatorDidFinishSignin:self];
+}
+
 - (bool)selectedIdentityIsValid {
   if (self.selectedIdentity) {
     GaiaId gaia(self.selectedIdentity.gaiaID);
@@ -345,13 +342,6 @@ enum class SigninScreenState {
   }
 }
 
-- (void)handleIdentityListChanged {
-  if (![self selectedIdentityIsValid]) {
-    self.selectedIdentity = signin::GetDefaultIdentityOnDevice(
-        _identityManager, _accountManagerService);
-  }
-}
-
 - (void)handleIdentityUpdated:(id<SystemIdentity>)identity {
   if ([self.selectedIdentity isEqual:identity]) {
     [self updateConsumerIdentity];
@@ -373,24 +363,19 @@ enum class SigninScreenState {
   __weak __typeof(self) weakSelf = self;
   FetchManagedStatusForIdentity(identity, base::BindOnce(^(bool managed) {
                                   if (managed) {
-                                    [weakSelf identityUpdated:identity];
+                                    [weakSelf handleIdentityUpdated:identity];
                                   }
                                 }));
   return NO;
 }
 
-#pragma mark - ChromeAccountManagerServiceObserver
-
-- (void)onChromeAccountManagerServiceShutdown:
-    (ChromeAccountManagerService*)accountManagerService {
-  // TODO(crbug.com/40284086): Remove `[self disconnect]`.
-  [self disconnect];
-}
-
 #pragma mark -  IdentityManagerObserver
 
 - (void)onAccountsOnDeviceChanged {
-  [self handleIdentityListChanged];
+  if (![self selectedIdentityIsValid]) {
+    self.selectedIdentity = signin::GetDefaultIdentityOnDevice(
+        _identityManager, _accountManagerService);
+  }
 }
 
 - (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
@@ -398,4 +383,5 @@ enum class SigninScreenState {
       _accountManagerService->GetIdentityOnDeviceWithGaiaID(info.gaia);
   [self handleIdentityUpdated:identity];
 }
+
 @end

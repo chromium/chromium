@@ -1,6 +1,7 @@
 {
   "codesearch-gen-chrome-internal-android": {
     "gn_args": {
+      "android_static_analysis": "off",
       "blink_enable_generated_code_formatting": true,
       "clang_use_chrome_plugins": false,
       "debuggable_apks": false,

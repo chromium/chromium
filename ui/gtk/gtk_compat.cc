@@ -324,6 +324,7 @@ void GtkCssProviderLoadFromData(GtkCssProvider* css_provider,
   }
 }
 
+DISABLE_CFI_DLSYM
 ScopedGObject<GListModel> Gtk4FileChooserGetFiles(GtkFileChooser* dialog) {
   DCHECK(GtkCheckVersion(4));
   static void* get = DlSym(GetLibGtk(), "gtk_file_chooser_get_files");

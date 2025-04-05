@@ -49,6 +49,7 @@
 #include "ui/base/ime/text_input_type.h"
 #include "ui/display/display.h"
 #include "ui/display/screen_infos.h"
+#include "ui/events/blink/did_overscroll_params.h"
 #include "ui/events/event_constants.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
@@ -155,6 +156,8 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
 
   float GetDeviceScaleFactor() const final;
   bool IsPointerLocked() override;
+
+  virtual void DidOverscroll(const ui::DidOverscrollParams& params) {}
 
   // Identical to `CopyFromSurface()`, except that this method issues the
   // `viz::CopyOutputRequest` against the exact `viz::Surface` currently

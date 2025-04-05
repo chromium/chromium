@@ -10,7 +10,15 @@
 // The error domain for safe browsing errors.
 extern const NSErrorDomain kSafeBrowsingErrorDomain;
 
-// Error code for navigations to unsafe resources
-extern const NSInteger kUnsafeResourceErrorCode;
+// Error codes for safe browsing errors.
+enum class SafeBrowsingErrorCode : NSInteger {
+  // Error code for navigations to unsafe resources.
+  kUnsafeResource = 1,
+  // Error code for navigations to blocked enterprise resources.
+  kEnterpriseBlock,
+  // Error code for navigations to enterprise resources for which a warning
+  // should be displayed.
+  kEnterpriseWarn,
+};
 
 #endif  // IOS_COMPONENTS_SECURITY_INTERSTITIALS_SAFE_BROWSING_SAFE_BROWSING_ERROR_H_

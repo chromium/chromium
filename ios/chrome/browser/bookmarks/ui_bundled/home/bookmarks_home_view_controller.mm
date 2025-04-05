@@ -1744,22 +1744,28 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
 // Show scrim overlay and hide toolbar.
 - (void)showScrim {
   self.navigationController.toolbarHidden = YES;
-  self.scrimView.alpha = 0.0f;
-  [self.tableView addSubview:self.scrimView];
+  UIView* scrimView = self.scrimView;
+  UITableView* tableView = self.tableView;
+  UIView* superview = tableView.superview;
+  scrimView.alpha = 0.0f;
+  [tableView addSubview:scrimView];
   // We attach our constraints to the superview because the tableView is
   // a scrollView and it seems that we get an empty frame when attaching to it.
-  AddSameConstraints(self.scrimView, self.view.superview);
-  self.tableView.accessibilityElementsHidden = YES;
-  self.tableView.scrollEnabled = NO;
-  __weak BookmarksHomeViewController* weakSelf = self;
+  [NSLayoutConstraint activateConstraints:@[
+    [scrimView.leadingAnchor constraintEqualToAnchor:superview.leadingAnchor],
+    [scrimView.trailingAnchor constraintEqualToAnchor:superview.trailingAnchor],
+    [scrimView.bottomAnchor constraintEqualToAnchor:superview.bottomAnchor],
+    [scrimView.topAnchor
+        constraintEqualToAnchor:self.navigationController.navigationBar
+                                    .bottomAnchor],
+
+  ]];
+  tableView.accessibilityElementsHidden = YES;
+  tableView.scrollEnabled = NO;
   [UIView animateWithDuration:kTableViewNavigationScrimFadeDuration
                    animations:^{
-                     BookmarksHomeViewController* strongSelf = weakSelf;
-                     if (!strongSelf) {
-                       return;
-                     }
-                     strongSelf.scrimView.alpha = 1.0f;
-                     [strongSelf.view layoutIfNeeded];
+                     scrimView.alpha = 1.0f;
+                     [superview layoutIfNeeded];
                    }];
 }
 

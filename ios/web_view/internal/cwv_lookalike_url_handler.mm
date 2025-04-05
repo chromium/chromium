@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "base/memory/weak_ptr.h"
 #import "ios/components/security_interstitials/lookalikes/lookalike_url_tab_allow_list.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web_view/internal/cwv_lookalike_url_handler_internal.h"
 #import "net/base/apple/url_conversions.h"
 
 @implementation CWVLookalikeURLHandler {
-  web::WebState* _webState;
+  base::WeakPtr<web::WebState> _webState;
   std::unique_ptr<LookalikeUrlContainer::LookalikeUrlInfo> _lookalikeURLInfo;
   base::OnceCallback<void(NSString*)> _htmlCallback;
 }
@@ -20,7 +21,7 @@
         htmlCallback:(base::OnceCallback<void(NSString*)>)htmlCallback {
   self = [super init];
   if (self) {
-    _webState = webState;
+    _webState = webState->GetWeakPtr();
     _lookalikeURLInfo = std::move(lookalikeURLInfo);
     _htmlCallback = std::move(htmlCallback);
   }
@@ -48,10 +49,13 @@
 }
 
 - (BOOL)commitDecision:(CWVLookalikeURLHandlerDecision)decision {
+  if (!_webState) {
+    return NO;
+  }
   switch (decision) {
     case CWVLookalikeURLHandlerDecisionProceedToRequestURL: {
-      LookalikeUrlTabAllowList::FromWebState(_webState)->AllowDomain(
-          _lookalikeURLInfo->request_url.host());
+      LookalikeUrlTabAllowList::FromWebState(_webState.get())
+          ->AllowDomain(_lookalikeURLInfo->request_url.host());
       _webState->GetNavigationManager()->Reload(web::ReloadType::NORMAL,
                                                 /*check_for_repost=*/true);
       return YES;

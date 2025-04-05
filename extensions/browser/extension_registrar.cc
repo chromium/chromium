@@ -114,7 +114,7 @@ void ExtensionRegistrar::AddExtension(
     NOTREACHED();
   }
 
-  if (!delegate_->CanAddExtension(extension.get())) {
+  if (!CanAddExtension(extension.get())) {
     return;
   }
 
@@ -196,7 +196,7 @@ void ExtensionRegistrar::AddNewExtension(
     // of this class, and ExtensionService checks when loading installed
     // extensions.
     registry_->AddBlocklisted(extension);
-  } else if (delegate_->ShouldBlockExtension(extension.get())) {
+  } else if (ShouldBlockExtension(extension.get())) {
     DCHECK(!Manifest::IsComponentLocation(extension->location()));
     registry_->AddBlocked(extension);
   } else if (extension_prefs_->IsExtensionDisabled(extension->id())) {
@@ -205,6 +205,23 @@ void ExtensionRegistrar::AddNewExtension(
     registry_->AddEnabled(extension);
     ActivateExtension(extension.get(), true);
   }
+}
+
+void ExtensionRegistrar::AddNewOrUpdatedExtension(
+    const Extension* extension,
+    const base::flat_set<int>& disable_reasons,
+    int install_flags,
+    const syncer::StringOrdinal& page_ordinal,
+    const std::string& install_parameter,
+    base::Value::Dict ruleset_install_prefs) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  extension_prefs_->OnExtensionInstalled(
+      extension, disable_reasons, page_ordinal, install_flags,
+      install_parameter, std::move(ruleset_install_prefs));
+
+  delegate_->OnAddNewOrUpdatedExtension(extension);
+
+  FinishInstallation(extension);
 }
 
 void ExtensionRegistrar::RemoveExtension(const ExtensionId& extension_id,
@@ -451,6 +468,31 @@ base::flat_set<int> ExtensionRegistrar::GetDisableReasonsOnInstalled(
   }
 
   return {};
+}
+
+void ExtensionRegistrar::AddComponentExtension(const Extension* extension) {
+  extension_prefs_->ClearInapplicableDisableReasonsForComponentExtension(
+      extension->id());
+  const std::string old_version_string(
+      extension_prefs_->GetVersionString(extension->id()));
+  const base::Version old_version(old_version_string);
+
+  VLOG(1) << "AddComponentExtension " << extension->name();
+  if (!old_version.IsValid() || old_version != extension->version()) {
+    VLOG(1) << "Component extension " << extension->name() << " ("
+            << extension->id() << ") installing/upgrading from '"
+            << old_version_string << "' to "
+            << extension->version().GetString();
+
+    // TODO(crbug.com/40508457): If needed, add support for Declarative Net
+    // Request to component extensions and pass the ruleset install prefs here.
+    AddNewOrUpdatedExtension(extension, {}, kInstallFlagNone,
+                             syncer::StringOrdinal(), std::string(),
+                             /*ruleset_install_prefs=*/{});
+    return;
+  }
+
+  AddExtension(extension);
 }
 
 void ExtensionRegistrar::RemoveComponentExtension(
@@ -718,6 +760,11 @@ bool ExtensionRegistrar::CanBlockExtension(const Extension* extension) const {
 // locked. Extensions are no longer considered enabled or disabled. Blocklisted
 // extensions are now considered both blocklisted and locked.
 void ExtensionRegistrar::BlockAllExtensions() {
+  if (block_extensions_) {
+    return;
+  }
+  block_extensions_ = true;
+
   // Blocklisted extensions are already unloaded, need not be blocked.
   const ExtensionSet extensions = registry_->GenerateInstalledExtensionsSet(
       ExtensionRegistry::ENABLED | ExtensionRegistry::DISABLED |
@@ -735,7 +782,11 @@ void ExtensionRegistrar::BlockAllExtensions() {
   }
 }
 
+// All locked extensions should revert to being either enabled or disabled
+// as appropriate.
 void ExtensionRegistrar::UnblockAllExtensions() {
+  block_extensions_ = false;
+
   const ExtensionSet to_unblock =
       registry_->GenerateInstalledExtensionsSet(ExtensionRegistry::BLOCKED);
 
@@ -743,6 +794,10 @@ void ExtensionRegistrar::UnblockAllExtensions() {
     registry_->RemoveBlocked(extension->id());
     AddExtension(extension.get());
   }
+
+  // While extensions are blocked, we won't display any external install
+  // warnings. Now that they are unblocked, we should update the error.
+  delegate_->UpdateExternalExtensionAlert();
 }
 
 void ExtensionRegistrar::OnBlocklistStateRemoved(
@@ -857,6 +912,11 @@ void ExtensionRegistrar::GrantPermissionsAndEnableExtension(
   EnableExtension(extension.id());
 }
 
+void ExtensionRegistrar::AddDisableFlagExemptedExtension(
+    const ExtensionId& extension_id) {
+  disable_flag_exempted_extensions_.insert(extension_id);
+}
+
 void ExtensionRegistrar::TerminateExtension(const ExtensionId& extension_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -902,8 +962,9 @@ bool ExtensionRegistrar::IsExtensionEnabled(
     return false;
   }
 
-  if (delegate_->ShouldBlockExtension(nullptr))
+  if (ShouldBlockExtension(nullptr)) {
     return false;
+  }
 
   // If the extension hasn't been loaded yet, check the prefs for it. Assume
   // enabled unless otherwise noted.
@@ -1122,6 +1183,32 @@ void ExtensionRegistrar::OnStartedTrackingServiceWorkerInstance(
   // worker-based extensions is to keep the host around for the target
   // auto-attacher to do its job.
   orphaned_dev_tools_.erase(worker_id.extension_id);
+}
+
+bool ExtensionRegistrar::CanAddExtension(const Extension* extension) const {
+  // TODO(jstritar): We may be able to get rid of this branch by overriding the
+  // default extension state to DISABLED when the --disable-extensions flag
+  // is set (http://crbug.com/29067).
+  if (!extensions_enabled() &&
+      !Manifest::ShouldAlwaysLoadExtension(extension->location(),
+                                           extension->is_theme()) &&
+      disable_flag_exempted_extensions_.count(extension->id()) == 0) {
+    return false;
+  }
+  return true;
+}
+
+bool ExtensionRegistrar::ShouldBlockExtension(
+    const Extension* extension) const {
+  if (!block_extensions_) {
+    return false;
+  }
+
+  // Blocked extensions aren't marked as such in prefs, thus if
+  // `block_extensions_` is true then CanBlockExtension() must be called with an
+  // Extension object. If `extension` is not loaded, assume it should be
+  // blocked.
+  return !extension || CanBlockExtension(extension);
 }
 
 }  // namespace extensions

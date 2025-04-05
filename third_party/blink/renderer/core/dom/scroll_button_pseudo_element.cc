@@ -75,11 +75,18 @@ void ScrollButtonPseudoElement::DefaultEventHandler(Event& event) {
   Element& scrolling_element = UltimateOriginatingElement();
   auto* scroller = DynamicTo<LayoutBox>(scrolling_element.GetLayoutObject());
 
-  bool should_intercept = scroller && scroller->IsScrollContainer() &&
+  bool is_originating_element_scroller =
+      scroller &&
+      (scroller->IsScrollContainer() || scroller->IsDocumentElement());
+  bool should_intercept = is_originating_element_scroller &&
                           event.target() == this &&
                           (is_click || is_enter_or_space);
   if (should_intercept) {
-    PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();
+    PaintLayerScrollableArea* scrollable_area =
+        scroller->IsDocumentElement()
+            ? scroller->GetFrameView()->LayoutViewport()
+            : scroller->GetScrollableArea();
+    CHECK(scrollable_area);
 
     LogicalToPhysical<bool> mapping(
         scrolling_element.GetComputedStyle()->GetWritingDirection(),
@@ -130,10 +137,14 @@ bool ScrollButtonPseudoElement::UpdateSnapshotInternal() {
   }
   LayoutBox* scroller =
       DynamicTo<LayoutBox>(UltimateOriginatingElement().GetLayoutObject());
-  if (!scroller || !scroller->IsScrollContainer()) {
+  if (!scroller ||
+      (!scroller->IsScrollContainer() && !scroller->IsDocumentElement())) {
     return true;
   }
-  ScrollableArea* scrollable_area = scroller->GetScrollableArea();
+  ScrollableArea* scrollable_area =
+      scroller->IsDocumentElement() ? scroller->GetFrameView()->LayoutViewport()
+                                    : scroller->GetScrollableArea();
+  CHECK(scrollable_area);
   // Scrolls are rounded to the nearest offset pixel in
   // ScrollableArea::SetScrollOffset. We apply the same offsets in the
   // calculations here to ensure that the snap limit agrees between them.

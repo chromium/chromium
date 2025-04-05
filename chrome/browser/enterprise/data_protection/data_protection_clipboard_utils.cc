@@ -127,21 +127,12 @@ void HandleStringData(
             // would avoid a copy.
 
             bool text_blocked =
-                result.text_results.empty() || !result.text_results[0];
-            if (text_blocked && !result.image_result) {
+                !result.text_results.empty() && !result.text_results[0];
+            bool image_blocked =
+                !clipboard_paste_data.png.empty() && !result.image_result;
+            if (text_blocked || image_blocked) {
               std::move(callback).Run(std::nullopt);
               return;
-            }
-
-            if (text_blocked) {
-              clipboard_paste_data.text.clear();
-              clipboard_paste_data.html.clear();
-              clipboard_paste_data.svg.clear();
-              clipboard_paste_data.rtf.clear();
-              clipboard_paste_data.custom_data.clear();
-            }
-            if (!result.image_result) {
-              clipboard_paste_data.png.clear();
             }
 
             std::move(callback).Run(std::move(clipboard_paste_data));

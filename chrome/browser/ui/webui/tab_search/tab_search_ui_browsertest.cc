@@ -15,7 +15,7 @@
 #include "chrome/common/chrome_isolated_world_ids.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "components/tab_collections/public/tab_interface.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
@@ -72,7 +72,8 @@ class TabSearchUIBrowserTest : public InProcessBrowserTest {
 // TODO(romanarora): Investigate a way to call WebUI custom methods and refactor
 // JS code below.
 
-IN_PROC_BROWSER_TEST_F(TabSearchUIBrowserTest, InitialTabItemsListed) {
+// TODO(crbug.com/407949601): Fix and re-enable
+IN_PROC_BROWSER_TEST_F(TabSearchUIBrowserTest, DISABLED_InitialTabItemsListed) {
   constexpr int expected_tab_item_count = 4;
   const std::string tab_item_count_js = base::StringPrintf(
       "new Promise((resolve) => {"

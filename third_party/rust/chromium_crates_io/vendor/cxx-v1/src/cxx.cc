@@ -344,6 +344,12 @@ Str::operator std::string() const {
   return std::string(this->data(), this->size());
 }
 
+#if __cplusplus >= 201703L
+Str::operator std::string_view() const {
+  return std::string_view(this->data(), this->size());
+}
+#endif
+
 const char *Str::data() const noexcept { return cxxbridge1$str$ptr(this); }
 
 std::size_t Str::size() const noexcept { return cxxbridge1$str$len(this); }

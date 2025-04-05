@@ -94,10 +94,6 @@ bool IsReadingListAccountStorageEnabled() {
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
-BASE_FEATURE(kSyncSharedTabGroupDataInTransportMode,
-             "SyncSharedTabGroupDataInTransportMode",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSyncEnableWalletMetadataInTransportMode,
              "SyncEnableWalletMetadataInTransportMode",
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)

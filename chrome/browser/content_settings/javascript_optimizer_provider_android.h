@@ -6,21 +6,24 @@
 #define CHROME_BROWSER_CONTENT_SETTINGS_JAVASCRIPT_OPTIMIZER_PROVIDER_ANDROID_H_
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
+#include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "components/content_settings/core/browser/content_settings_observable_provider.h"
+
+class Profile;
 
 // Provides ContentSettingsType::JAVASCRIPT_OPTIMIZER default from OS.
 class JavascriptOptimizerProviderAndroid
-    : public content_settings::ObservableProvider {
+    : public content_settings::ObservableProvider,
+      public safe_browsing::AdvancedProtectionStatusManager::
+          StatusChangedObserver {
  public:
-  // Callback returns whether the OS has granted permission to use the
-  // Javascript Optimizer.
-  typedef base::RepeatingCallback<bool()> CheckPermissionCallback;
-
-  explicit JavascriptOptimizerProviderAndroid(bool should_record_metrics);
-
-  // The callback must be thread-safe.
-  JavascriptOptimizerProviderAndroid(CheckPermissionCallback,
+  JavascriptOptimizerProviderAndroid(Profile* profile,
                                      bool should_record_metrics);
+  JavascriptOptimizerProviderAndroid(
+      safe_browsing::AdvancedProtectionStatusManager*
+          advanced_protection_manager,
+      bool should_record_metrics);
 
   JavascriptOptimizerProviderAndroid(
       const JavascriptOptimizerProviderAndroid&) = delete;
@@ -56,12 +59,13 @@ class JavascriptOptimizerProviderAndroid
   void ShutdownOnUIThread() override;
 
  private:
-  bool QueryHasPermission() const;
+  void OnAdvancedProtectionStatusChanged(bool enrolled) override;
 
   void RecordHistogramMetrics();
 
-  // Thread-safe.
-  CheckPermissionCallback has_permission_callback_;
+  raw_ptr<safe_browsing::AdvancedProtectionStatusManager>
+      advanced_protection_manager_;
+  bool is_under_advanced_protection_;
 };
 
 #endif  // CHROME_BROWSER_CONTENT_SETTINGS_JAVASCRIPT_OPTIMIZER_PROVIDER_ANDROID_H_

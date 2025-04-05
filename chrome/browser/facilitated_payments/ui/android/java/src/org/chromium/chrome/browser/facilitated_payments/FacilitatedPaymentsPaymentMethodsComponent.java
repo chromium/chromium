@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.facilitated_payments;
 
 import android.content.Context;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.autofill.payments.BankAccount;
 import org.chromium.components.autofill.payments.Ewallet;
@@ -18,6 +19,7 @@ import java.util.List;
  * This component allows to select a facilitated payments method. It acts as a 1-tap surface (bottom
  * sheet).
  */
+@NullMarked
 interface FacilitatedPaymentsPaymentMethodsComponent {
     /**
      * This delegate is called when the FacilitatedPaymentsPaymentMethods component is interacted

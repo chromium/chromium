@@ -408,6 +408,10 @@ void TestRenderFrameHost::SendNavigateWithParamsAndInterfaceParams(
     mojom::DidCommitProvisionalLoadInterfaceParamsPtr interface_params,
     bool was_within_same_document) {
   last_commit_was_error_page_ = params->url_is_unreachable;
+  if (params->commit_navigation_start.is_null()) {
+    params->commit_navigation_start = base::TimeTicks::Now();
+    params->commit_navigation_end = base::TimeTicks::Now();
+  }
   if (was_within_same_document) {
     SendDidCommitSameDocumentNavigation(
         std::move(params), blink::mojom::SameDocumentNavigationType::kFragment,
@@ -426,6 +430,10 @@ void TestRenderFrameHost::SendDidCommitSameDocumentNavigation(
       same_document_navigation_type;
   same_doc_params->should_replace_current_entry = should_replace_current_entry;
   params->http_status_code = last_http_status_code();
+  if (params->commit_navigation_start.is_null()) {
+    params->commit_navigation_start = base::TimeTicks::Now();
+    params->commit_navigation_end = base::TimeTicks::Now();
+  }
   DidCommitSameDocumentNavigation(std::move(params),
                                   std::move(same_doc_params));
 }
@@ -705,6 +713,9 @@ TestRenderFrameHost::BuildDidCommitParams(bool did_create_new_entry,
 
   params->page_state = blink::PageState::CreateForTestingWithSequenceNumbers(
       url, params->item_sequence_number, params->document_sequence_number);
+
+  params->commit_navigation_start = base::TimeTicks::Now();
+  params->commit_navigation_end = base::TimeTicks::Now();
 
   return params;
 }

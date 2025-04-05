@@ -5,19 +5,9 @@
 #include "extensions/browser/api/extensions_api_client.h"
 
 #include "build/build_config.h"
-#include "extensions/browser/api/device_permissions_prompt.h"
-#include "extensions/browser/api/system_display/display_info_provider.h"
-#include "extensions/browser/api/virtual_keyboard_private/virtual_keyboard_delegate.h"
-#include "extensions/browser/supervised_user_extensions_delegate.h"
-
-#if BUILDFLAG(ENABLE_GUEST_VIEW)
-#include "extensions/browser/guest_view/extensions_guest_view_manager_delegate.h"
-#include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest_delegate.h"
-#include "extensions/browser/guest_view/web_view/web_view_permission_helper_delegate.h"
-#endif
+#include "extensions/browser/api/messaging/native_message_host.h"
 
 namespace extensions {
-class AppViewGuestDelegate;
 
 namespace {
 ExtensionsAPIClient* g_instance = nullptr;
@@ -86,7 +76,7 @@ ExtensionsAPIClient::CreateExtensionOptionsGuestDelegate(
 
 std::unique_ptr<guest_view::GuestViewManagerDelegate>
 ExtensionsAPIClient::CreateGuestViewManagerDelegate() const {
-  return std::make_unique<ExtensionsGuestViewManagerDelegate>();
+  return nullptr;
 }
 
 std::unique_ptr<MimeHandlerViewGuestDelegate>
@@ -103,7 +93,7 @@ WebViewGuestDelegate* ExtensionsAPIClient::CreateWebViewGuestDelegate(
 WebViewPermissionHelperDelegate* ExtensionsAPIClient::
     CreateWebViewPermissionHelperDelegate(
         WebViewPermissionHelper* web_view_permission_helper) const {
-  return new WebViewPermissionHelperDelegate(web_view_permission_helper);
+  return nullptr;
 }
 #endif
 
@@ -118,7 +108,7 @@ scoped_refptr<ContentRulesRegistry>
 ExtensionsAPIClient::CreateContentRulesRegistry(
     content::BrowserContext* browser_context,
     RulesCacheDelegate* cache_delegate) const {
-  return scoped_refptr<ContentRulesRegistry>();
+  return nullptr;
 }
 
 std::unique_ptr<DevicePermissionsPrompt>
@@ -192,6 +182,14 @@ void ExtensionsAPIClient::SaveImageDataToClipboard(
 
 AutomationInternalApiDelegate*
 ExtensionsAPIClient::GetAutomationInternalApiDelegate() {
+  return nullptr;
+}
+
+std::unique_ptr<NativeMessagePortDispatcher>
+ExtensionsAPIClient::CreateNativeMessagePortDispatcher(
+    std::unique_ptr<NativeMessageHost> host,
+    base::WeakPtr<NativeMessagePort> port,
+    scoped_refptr<base::SingleThreadTaskRunner> message_service_task_runner) {
   return nullptr;
 }
 

@@ -19,8 +19,6 @@ inline constexpr char kDialogScreenshotVisibility[] =
 inline constexpr char kInformedRestoreOnboardingHistogram[] =
     "Ash.Pine.OnboardingDialog.TurnRestoreOn";
 
-inline constexpr char kFullRestoreNotificationHistogram[] =
-    "Ash.FullRestore.ShowFullRestoreNotification";
 inline constexpr char kFullRestoreDialogHistogram[] =
     "Ash.FullRestore.ShowInformedRestoreDialog";
 

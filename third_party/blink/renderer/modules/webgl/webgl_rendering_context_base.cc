@@ -293,7 +293,7 @@ ScopedRGBEmulationColorMask::~ScopedRGBEmulationColorMask() {
 }
 
 gfx::Rect WebGLRenderingContextBase::TexImageParams::GetSourceRect(
-    gfx::Size source_size) {
+    gfx::Size source_size) const {
   gfx::Rect rect(unpack_skip_pixels, unpack_skip_rows,
                  width.value_or(source_size.width()),
                  height.value_or(source_size.height()));
@@ -318,8 +318,13 @@ gfx::Rect WebGLRenderingContextBase::TexImageParams::GetSourceRect(
 }
 
 GrSurfaceOrigin
-WebGLRenderingContextBase::TexImageParams::GetDestinationOrigin() {
+WebGLRenderingContextBase::TexImageParams::GetDestinationOrigin() const {
   return unpack_flip_y ? kBottomLeft_GrSurfaceOrigin : kTopLeft_GrSurfaceOrigin;
+}
+
+SkAlphaType WebGLRenderingContextBase::TexImageParams::GetDestinationAlphaType()
+    const {
+  return unpack_premultiply_alpha ? kPremul_SkAlphaType : kUnpremul_SkAlphaType;
 }
 
 void WebGLRenderingContextBase::InitializeWebGLContextLimits(
@@ -5350,9 +5355,8 @@ void WebGLRenderingContextBase::TexImageSkImage(TexImageParams params,
     // during readPixels, if needed. If the input is opaque, do not change it
     // (readPixels fails if the source is opaque and the destination is not).
     if (converted_info.alphaType() != kOpaque_SkAlphaType) {
-      converted_info = converted_info.makeAlphaType(
-          params.unpack_premultiply_alpha ? kPremul_SkAlphaType
-                                          : kUnpremul_SkAlphaType);
+      converted_info =
+          converted_info.makeAlphaType(params.GetDestinationAlphaType());
     }
 
     // Set the color type to perform pixel format conversion during readPixels,
@@ -5393,11 +5397,11 @@ void WebGLRenderingContextBase::TexImageSkImage(TexImageParams params,
   // the source and the requested premultiplication format.
   WebGLImageConversion::AlphaOp alpha_op =
       WebGLImageConversion::kAlphaDoNothing;
-  if (params.unpack_premultiply_alpha &&
+  if (params.GetDestinationAlphaType() == kPremul_SkAlphaType &&
       pixmap.alphaType() == kUnpremul_SkAlphaType) {
     alpha_op = WebGLImageConversion::kAlphaDoPremultiply;
   }
-  if (!params.unpack_premultiply_alpha &&
+  if (params.GetDestinationAlphaType() == kUnpremul_SkAlphaType &&
       pixmap.alphaType() == kPremul_SkAlphaType) {
     alpha_op = WebGLImageConversion::kAlphaDoUnmultiply;
   }
@@ -5842,7 +5846,7 @@ void WebGLRenderingContextBase::TexImageHelperHTMLImageElement(
   }
 
   ImageExtractor image_extractor(
-      image_for_render.get(), params.unpack_premultiply_alpha,
+      image_for_render.get(), params.GetDestinationAlphaType(),
       params.unpack_colorspace_conversion
           ? PredefinedColorSpaceToSkColorSpace(unpack_color_space_)
           : nullptr);
@@ -5984,14 +5988,14 @@ void WebGLRenderingContextBase::TexImageViaGPU(
     if (source_image) {
       source_image->CopyToTexture(
           ContextGL(), params.target, target_texture, params.level,
-          params.unpack_premultiply_alpha, params.GetDestinationOrigin(),
+          params.GetDestinationAlphaType(), params.GetDestinationOrigin(),
           gfx::Point(params.xoffset, params.yoffset), source_sub_rectangle);
     } else {
       WebGLRenderingContextBase* gl = source_canvas_webgl_context;
       ScopedTexture2DRestorer inner_restorer(gl);
       if (!gl->GetDrawingBuffer()->CopyToPlatformTexture(
               ContextGL(), params.target, target_texture, params.level,
-              params.unpack_premultiply_alpha, params.GetDestinationOrigin(),
+              params.GetDestinationAlphaType(), params.GetDestinationOrigin(),
               gfx::Point(params.xoffset, params.yoffset), source_sub_rectangle,
               kBackBuffer)) {
         NOTREACHED();
@@ -6269,24 +6273,20 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
         video_renderer->CopyVideoFrameTexturesToGLTexture(
             raster_context_provider, ContextGL(), media_video_frame,
             params.target, texture->Object(), adjusted_internalformat,
-            params.format, params.type, params.level, unpack_premultiply_alpha_,
-            unpack_flip_y_)) {
+            params.format, params.type, params.level,
+            params.GetDestinationAlphaType(), params.GetDestinationOrigin())) {
       return;
     }
 
     // For certain video frame formats (e.g. I420/YUV), if they start on the CPU
     // (e.g. video camera frames): upload them to the GPU, do a GPU decode, and
     // then copy into the target texture.
-    //
-    // TODO(crbug.com/1180879): I420A should be supported, but currently fails
-    // conformance/textures/misc/texture-video-transparent.html.
     if (!media_video_frame->HasSharedImage() &&
-        media::IsOpaque(media_video_frame->format()) &&
         video_renderer->CopyVideoFrameYUVDataToGLTexture(
             raster_context_provider, ContextGL(), media_video_frame,
             params.target, texture->Object(), adjusted_internalformat,
-            params.format, params.type, params.level, unpack_premultiply_alpha_,
-            unpack_flip_y_)) {
+            params.format, params.type, params.level,
+            params.GetDestinationAlphaType(), params.GetDestinationOrigin())) {
       return;
     }
   }
@@ -6299,20 +6299,24 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
     ScopedUnpackParametersResetRestore unpack_params(
         this, unpack_flip_y_ || unpack_premultiply_alpha_);
 
-    const bool premultiply_alpha =
-        unpack_premultiply_alpha_ && unpack_colorspace_conversion_ == GL_NONE;
+    // TODO(crbug.com/378688985): UNPACK_COLORSPACE_CONVERSION_WEBGL shouldn't
+    // affect alpha type (and the format doesn't even have alpha channel).
+    const auto alpha_type = unpack_colorspace_conversion_ == GL_NONE
+                                ? params.GetDestinationAlphaType()
+                                : kUnpremul_SkAlphaType;
 
     if (params.function_id == kTexImage2D &&
         media::PaintCanvasVideoRenderer::TexImage2D(
             params.target, texture->Object(), ContextGL(), caps,
             media_video_frame.get(), params.level, adjusted_internalformat,
-            params.format, params.type, unpack_flip_y_, premultiply_alpha)) {
+            params.format, params.type, params.GetDestinationOrigin(),
+            alpha_type)) {
       return;
     } else if (params.function_id == kTexSubImage2D &&
                media::PaintCanvasVideoRenderer::TexSubImage2D(
                    params.target, ContextGL(), media_video_frame.get(),
                    params.level, params.format, params.type, params.xoffset,
-                   params.yoffset, unpack_flip_y_, premultiply_alpha)) {
+                   params.yoffset, params.GetDestinationOrigin(), alpha_type)) {
       return;
     }
   }

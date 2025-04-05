@@ -2395,13 +2395,13 @@ void GLES2TraceImplementation::CopySharedImageToTextureINTERNAL(
     GLint src_y,
     GLsizei width,
     GLsizei height,
-    GLboolean flip_y,
+    GLboolean is_dst_origin_top_left,
     const GLbyte* src_mailbox) {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu",
                                 "GLES2Trace::CopySharedImageToTextureINTERNAL");
   gl_->CopySharedImageToTextureINTERNAL(texture, target, internal_format, type,
-                                        src_x, src_y, width, height, flip_y,
-                                        src_mailbox);
+                                        src_x, src_y, width, height,
+                                        is_dst_origin_top_left, src_mailbox);
 }
 
 GLboolean GLES2TraceImplementation::ReadbackARGBImagePixelsINTERNAL(

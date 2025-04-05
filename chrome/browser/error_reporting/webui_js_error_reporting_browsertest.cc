@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include <memory>
-#include <string_view>
 
 #include "base/containers/contains.h"
 #include "base/test/scoped_feature_list.h"
@@ -108,7 +107,7 @@ class ScopedLogMessageWatcher {
 
  private:
   static bool MessageHandler(int severity,
-                             std::string_view file,
+                             const char* file,
                              int line,
                              size_t message_start,
                              const std::string& str) {

@@ -112,18 +112,6 @@ export class SettingsPerDevicePointingStickSubsectionElement extends
 
       pointingStick: {type: Object},
 
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kPointingStickAcceleration,
-          Setting.kPointingStickSpeed,
-          Setting.kPointingStickSwapPrimaryButtons,
-        ]),
-      },
-
       pointingStickIndex: {
         type: Number,
       },
@@ -155,6 +143,13 @@ export class SettingsPerDevicePointingStickSubsectionElement extends
       this.attemptDeepLink();
     }
   }
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kPointingStickAcceleration,
+    Setting.kPointingStickSpeed,
+    Setting.kPointingStickSwapPrimaryButtons,
+  ]);
 
   private pointingStick: PointingStick;
   private sensitivityValues: number[];

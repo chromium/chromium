@@ -22,6 +22,27 @@ enum SynchronizationType {
   kReleaseFence,
 };
 
+// See viz::TransferableResource::ResourceSource in
+// components/viz/common/resources/transferable_resource.h
+enum ResourceSource {
+  kUnknown,
+  kAR,
+  kCanvas,
+  kDrawingBuffer,
+  kExoBuffer,
+  kHeadsUpDisplay,
+  kImageLayerBridge,
+  kPPBGraphics3D,
+  kPepperGraphics2D,
+  kViewTransition,
+  kStaleContent,
+  kTest,
+  kTileRasterTask,
+  kUI,
+  kVideo,
+  kWebGPUSwapBuffer,
+};
+
 // Represents a visual resource (e.g., image, video frame) that can be
 // transferred between processes for rendering and compositing within Chromium's
 // Viz display system. Encapsulates the resource's data, format, and metadata
@@ -49,4 +70,5 @@ struct TransferableResource {
   bool needs_detiling;
   gpu.mojom.VulkanYCbCrInfo? ycbcr_info;
   skia.mojom.SurfaceOrigin origin;
+  ResourceSource resource_source;
 };

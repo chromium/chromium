@@ -273,6 +273,7 @@ public class TabGroupListMediator {
         GroupWindowChecker sortUtil = new GroupWindowChecker(mTabGroupSyncService, mFilter);
         List<SavedTabGroup> sortedTabGroups =
                 sortUtil.getSortedGroupList(
+                        this::shouldShowGroupByState,
                         (a, b) -> Long.compare(b.creationTimeMs, a.creationTimeMs));
         for (SavedTabGroup savedTabGroup : sortedTabGroups) {
             TabGroupRowMediator rowMediator =
@@ -389,5 +390,9 @@ public class TabGroupListMediator {
         // There can only one message card.
         mModelList.removeAt(0);
         assert mModelList.isEmpty() || mModelList.get(0).type != RowType.TAB_GROUP_REMOVED_CARD;
+    }
+
+    private boolean shouldShowGroupByState(@GroupWindowState int groupWindowState) {
+        return groupWindowState != GroupWindowState.IN_ANOTHER;
     }
 }

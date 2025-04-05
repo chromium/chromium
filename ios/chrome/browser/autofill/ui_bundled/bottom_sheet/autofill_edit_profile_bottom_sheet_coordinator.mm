@@ -85,7 +85,8 @@
          initWithDelegate:self
       personalDataManager:_personalDataManager
           autofillProfile:_autofillProfile.get()
-        isMigrationPrompt:[_handler isMigrationToAccount]];
+        isMigrationPrompt:[_handler isMigrationToAccount]
+         addManualAddress:[_handler addingManualAddress]];
 
   // Bottom sheet table VC
   AutofillEditProfileBottomSheetTableViewController* editModalViewController =

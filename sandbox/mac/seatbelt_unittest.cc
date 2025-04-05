@@ -11,6 +11,7 @@
 #include <unistd.h>
 
 #include <iterator>
+#include <optional>
 
 #include "base/containers/span.h"
 #include "base/files/file.h"
@@ -60,11 +61,11 @@ MULTIPROCESS_TEST_MAIN(Ftruncate) {
 
   std::unique_ptr<base::Environment> env = base::Environment::Create();
 
-  std::string fd_string;
-  CHECK(env->GetVar("FD_TO_TRUNCATE", &fd_string));
+  std::optional<std::string> fd_string = env->GetVar("FD_TO_TRUNCATE");
+  CHECK(fd_string.has_value());
 
   int fd;
-  CHECK(base::StringToInt(fd_string, &fd));
+  CHECK(base::StringToInt(*fd_string, &fd));
 
   const char kTestBuf[] = "hello";
   CHECK_EQ(static_cast<ssize_t>(strlen(kTestBuf)),

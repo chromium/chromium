@@ -85,17 +85,15 @@ export class OsSyncControlsSubpageElement extends
         value: true,
         computed: `computeDataTypeTogglesDisabled_(osSyncPrefs.syncAllOsTypes)`,
       },
-
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([Setting.kSplitSyncOnOff]),
-      },
     };
   }
 
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kSplitSyncOnOff,
+  ]);
+
+  override hidden: boolean;
   private areDataTypeTogglesDisabled_: boolean;
   private supportedSettingsIds: Set<Setting>;
   private browserProxy_: OsSyncBrowserProxy;

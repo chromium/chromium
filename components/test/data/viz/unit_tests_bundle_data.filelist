@@ -36,6 +36,14 @@
 //components/test/data/viz/backdrop_filter_on_scaled_layer_skia_graphite.png
 //components/test/data/viz/backdrop_filter_on_scaled_layer_skia_vk.png
 //components/test/data/viz/backdrop_filter_on_scaled_layer_sw.png
+//components/test/data/viz/backdrop_filter_quality_0_33skia_gl.png
+//components/test/data/viz/backdrop_filter_quality_0_33skia_graphite.png
+//components/test/data/viz/backdrop_filter_quality_0_33skia_vk.png
+//components/test/data/viz/backdrop_filter_quality_0_33sw.png
+//components/test/data/viz/backdrop_filter_quality_1_0skia_gl.png
+//components/test/data/viz/backdrop_filter_quality_1_0skia_graphite.png
+//components/test/data/viz/backdrop_filter_quality_1_0skia_vk.png
+//components/test/data/viz/backdrop_filter_quality_1_0sw.png
 //components/test/data/viz/backdrop_filter_rotated_skia_gl.png
 //components/test/data/viz/backdrop_filter_rotated_skia_graphite.png
 //components/test/data/viz/backdrop_filter_rotated_skia_vk.png

@@ -52,28 +52,30 @@ constexpr char kDefaultConfigFileName[] = "default_config.json";
 
 const aggregation_service::TestHpkeKey kHpkeKey;
 
-base::FilePath GetInputDir() {
-  base::FilePath input_dir;
+std::vector<base::FilePath> GetInputDirs() {
+  base::FilePath input_dir, interop_dir, interop_private_dir;
   base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &input_dir);
-  return input_dir.AppendASCII(
-      "content/test/data/attribution_reporting/interop");
+  interop_dir =
+      input_dir.AppendASCII("content/test/data/attribution_reporting/interop");
+  interop_private_dir = input_dir.AppendASCII(
+      "content/test/data/attribution_reporting/interop_private");
+  return {interop_dir, interop_private_dir};
 }
 
 std::vector<base::FilePath> GetInputs() {
-  base::FilePath input_dir = GetInputDir();
-
   std::vector<base::FilePath> input_paths;
+  for (base::FilePath input_dir : GetInputDirs()) {
+    base::FileEnumerator e(input_dir, /*recursive=*/false,
+                           base::FileEnumerator::FILES,
+                           FILE_PATH_LITERAL("*.json"));
 
-  base::FileEnumerator e(input_dir, /*recursive=*/false,
-                         base::FileEnumerator::FILES,
-                         FILE_PATH_LITERAL("*.json"));
+    for (base::FilePath name = e.Next(); !name.empty(); name = e.Next()) {
+      if (name.BaseName().MaybeAsASCII() == kDefaultConfigFileName) {
+        continue;
+      }
 
-  for (base::FilePath name = e.Next(); !name.empty(); name = e.Next()) {
-    if (name.BaseName().MaybeAsASCII() == kDefaultConfigFileName) {
-      continue;
+      input_paths.push_back(std::move(name));
     }
-
-    input_paths.push_back(std::move(name));
   }
 
   return input_paths;
@@ -243,7 +245,7 @@ class AttributionInteropTest : public ::testing::TestWithParam<base::FilePath> {
   static void SetUpTestSuite() {
     ASSERT_OK_AND_ASSIGN(
         g_config_, ParseAttributionInteropConfig(ParseDictFromFile(
-                       GetInputDir().AppendASCII(kDefaultConfigFileName))));
+                       GetInputDirs()[0].AppendASCII(kDefaultConfigFileName))));
   }
 
  protected:

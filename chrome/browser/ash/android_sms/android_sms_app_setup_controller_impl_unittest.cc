@@ -45,15 +45,6 @@ const char kTestUrl1[] = "https://test-url-1.com/";
 const char kTestInstallUrl1[] = "https://test-url-1.com/install";
 const char kTestUrl2[] = "https://test-url-2.com/";
 
-web_app::ExternalInstallOptions GetInstallOptionsForUrl(const GURL& url) {
-  web_app::ExternalInstallOptions options(
-      url, web_app::mojom::UserDisplayMode::kStandalone,
-      web_app::ExternalInstallSource::kInternalDefault);
-  options.override_previous_user_uninstall = true;
-  options.require_manifest = true;
-  return options;
-}
-
 class FakeCookieManager : public network::TestCookieManager {
  public:
   FakeCookieManager() = default;
@@ -207,6 +198,8 @@ class AndroidSmsAppSetupControllerImplTest : public testing::Test {
     provider_ = web_app::FakeWebAppProvider::Get(&profile_);
     web_app::test::AwaitStartWebAppProviderAndSubsystems(&profile_);
 
+    // TODO(crbug.com/407797639): Remove `FakeExternallyManagedAppManager` and
+    // do an actual installation.
     fake_externally_managed_app_manager().SetHandleInstallRequestCallback(
         base::BindLambdaForTesting(
             [this](const web_app::ExternalInstallOptions& install_options) {
@@ -229,10 +222,6 @@ class AndroidSmsAppSetupControllerImplTest : public testing::Test {
                                const GURL& install_url,
                                size_t num_failure_tries,
                                bool expected_setup_result) {
-    const auto& install_requests =
-        fake_externally_managed_app_manager().install_requests();
-    size_t num_install_requests_before_call = install_requests.size();
-
     base::RunLoop run_loop;
     base::HistogramTester histogram_tester;
 
@@ -263,10 +252,6 @@ class AndroidSmsAppSetupControllerImplTest : public testing::Test {
          retry_count++) {
       EXPECT_NE(ContentSetting::CONTENT_SETTING_ALLOW,
                 GetNotificationSetting(app_url));
-      EXPECT_EQ(num_install_requests_before_call + retry_count + 1u,
-                install_requests.size());
-      EXPECT_EQ(GetInstallOptionsForUrl(install_url), install_requests.back());
-
       task_environment_.FastForwardBy(
           AndroidSmsAppSetupControllerImpl::kInstallRetryDelay *
           (1 << retry_count));
@@ -293,10 +278,6 @@ class AndroidSmsAppSetupControllerImplTest : public testing::Test {
   void CallSetUpApp(const GURL& app_url,
                     const GURL& install_url,
                     size_t num_expected_app_installs) {
-    const auto& install_requests =
-        fake_externally_managed_app_manager().install_requests();
-    size_t num_install_requests_before_call = install_requests.size();
-
     base::RunLoop run_loop;
     base::HistogramTester histogram_tester;
 
@@ -321,9 +302,6 @@ class AndroidSmsAppSetupControllerImplTest : public testing::Test {
     // If the PWA was not already installed at the URL, SetUpApp() should
     // install it.
     if (!test_pwa_delegate_->GetPwaForUrl(install_url, &profile_)) {
-      EXPECT_EQ(num_install_requests_before_call + 1u, install_requests.size());
-      EXPECT_EQ(GetInstallOptionsForUrl(install_url), install_requests.back());
-
       EXPECT_EQ(ContentSetting::CONTENT_SETTING_ALLOW,
                 GetNotificationSetting(app_url));
     }

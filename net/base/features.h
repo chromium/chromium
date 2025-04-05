@@ -89,9 +89,6 @@ NET_EXPORT extern const base::FeatureParam<int>
 NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kUseDnsHttpsSvcbSecureExtraTimeMin;
 
-// Update protocol using ALPN information in HTTPS DNS records.
-NET_EXPORT BASE_DECLARE_FEATURE(kUseDnsHttpsSvcbAlpn);
-
 // If enabled, HostResolver will use the new HostResolverCache that separately
 // caches by DNS type, unlike the old HostCache that always cached by merged
 // request results. May enable related behavior such as separately sorting DNS
@@ -352,26 +349,33 @@ NET_EXPORT BASE_DECLARE_FEATURE(kAsyncQuicSession);
 // A flag to make multiport context creation asynchronous.
 NET_EXPORT BASE_DECLARE_FEATURE(kAsyncMultiPortPath);
 
+// Enables the Probabilistic Reveal Tokens feature.
+NET_EXPORT BASE_DECLARE_FEATURE(kEnableProbabilisticRevealTokens);
+
+// Sets the name of the probabilistic reveal token issuer server.
+NET_EXPORT extern const base::FeatureParam<std::string>
+    kProbabilisticRevealTokenServer;
+
+// Sets the path of the probabilistic reveal token server URL used for issuing
+// tokens.
+NET_EXPORT extern const base::FeatureParam<std::string>
+    kProbabilisticRevealTokenServerPath;
+
+// If true, probabilistic reveal tokens will be attached to all proxied requests
+// regardless of whether the request domain is registered.
+NET_EXPORT extern const base::FeatureParam<bool>
+    kAttachProbabilisticRevealTokensOnAllProxiedRequests;
+
 // Enables custom proxy configuration for the IP Protection experimental proxy.
 NET_EXPORT BASE_DECLARE_FEATURE(kEnableIpProtectionProxy);
 
 // Sets the name of the IP protection auth token server.
 NET_EXPORT extern const base::FeatureParam<std::string> kIpPrivacyTokenServer;
 
-NET_EXPORT extern const base::FeatureParam<std::string>
-    kIpPrivacyProbabilisticRevealTokenServer;
-
 // Sets the path component of the IP protection auth token server URL used for
 // getting initial token signing data.
 NET_EXPORT extern const base::FeatureParam<std::string>
     kIpPrivacyTokenServerGetInitialDataPath;
-
-NET_EXPORT extern const base::FeatureParam<std::string>
-    kIpPrivacyProbabilisticRevealTokenServerPath;
-
-// If true, the probabilistic reveal tokens will be stored to disk.
-NET_EXPORT extern const base::FeatureParam<bool>
-    kIpPrivacyStoreProbabilisticRevealTokens;
 
 // Sets the path component of the IP protection auth token server URL used for
 // getting blind-signed tokens.

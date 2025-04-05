@@ -577,7 +577,6 @@ public class AutofillProvider {
                     new AutofillSuggestion.Builder()
                             .setLabel(datalistValues[i])
                             .setSubLabel(datalistLabels[i])
-                            .setItemTag("")
                             .setSuggestionType(SuggestionType.DATALIST_ENTRY)
                             .setFeatureForIph("")
                             .build();

@@ -4,11 +4,11 @@
 
 import * as fillConstants from '//components/autofill/ios/form_util/resources/fill_constants.js';
 import type {AutofillFormData} from '//components/autofill/ios/form_util/resources/fill_util.js';
-import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {isTextField, sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
 /**
- * @fileoverview Installs Passwords management functions on the gCrWeb object.
+ * @fileoverview Installs Passwords management functions on the gCrWebLegacy object.
  *
  * It scans the DOM, extracting and storing password forms and returns a JSON
  * string representing an array of objects, each of which represents an Password
@@ -50,7 +50,7 @@ const kFillResultForFailure: FillResult = {
 function findPasswordForms(): string {
   const formDataList: AutofillFormData[] = [];
   getPasswordFormDataList(formDataList);
-  return gCrWeb.stringify(formDataList);
+  return gCrWebLegacy.stringify(formDataList);
 }
 
 /**
@@ -84,7 +84,7 @@ function addSubmitButtonTouchEndHandler(form: HTMLFormElement) {
  */
 function onSubmitButtonTouchEnd(evt: Event) {
   const form = (evt.currentTarget as HTMLFormElement)['form'];
-  const formData = gCrWeb.passwords.getPasswordFormData(form);
+  const formData = gCrWebLegacy.passwords.getPasswordFormData(form);
   if (!formData) {
     return;
   }
@@ -101,7 +101,7 @@ function findInputByFieldRendererID(
     return null;
   }
   for (const input of inputs) {
-    if (identifier.toString() === gCrWeb.fill.getUniqueID(input)) {
+    if (identifier.toString() === gCrWebLegacy.fill.getUniqueID(input)) {
       return input;
     }
   }
@@ -114,7 +114,7 @@ function findInputByFieldRendererID(
  *   are returned.
  */
 function getFormInputElements(form: HTMLFormElement): HTMLInputElement[] {
-  return gCrWeb.form.getFormControlElements(form).filter((element: Element) => {
+  return gCrWebLegacy.form.getFormControlElements(form).filter((element: Element) => {
     return element.tagName === 'INPUT';
   });
 }
@@ -128,17 +128,17 @@ function getPasswordFormDataAsString(identifier: number): string {
   const hasFormTag =
       identifier.toString() !== fillConstants.RENDERER_ID_NOT_SET;
   const form =
-      hasFormTag ? gCrWeb.form.getFormElementFromRendererId(identifier) : null;
+      hasFormTag ? gCrWebLegacy.form.getFormElementFromRendererId(identifier) : null;
   if (!form && hasFormTag) {
     return '{}';
   }
   const formData = hasFormTag ?
-      gCrWeb.passwords.getPasswordFormData(form) :
-      gCrWeb.passwords.getPasswordFormDataFromUnownedElements();
+    gCrWebLegacy.passwords.getPasswordFormData(form) :
+    gCrWebLegacy.passwords.getPasswordFormDataFromUnownedElements();
   if (!formData) {
     return '{}';
   }
-  return gCrWeb.stringify(formData);
+  return gCrWebLegacy.stringify(formData);
 }
 
 /**
@@ -156,7 +156,7 @@ function getPasswordFormDataAsString(identifier: number): string {
 function fillPasswordForm(
     formData: AutofillFormData, username: string,
     password: string): FillResult {
-  const form = gCrWeb.form.getFormElementFromRendererId(formData.renderer_id);
+  const form = gCrWebLegacy.form.getFormElementFromRendererId(formData.renderer_id);
   if (form) {
     const inputs = getFormInputElements(form);
     return fillUsernameAndPassword(inputs, formData, username, password);
@@ -164,7 +164,7 @@ function fillPasswordForm(
 
   // Check fields that are not inside any <form> tag.
   const unownedInputs =
-      gCrWeb.fill.getUnownedAutofillableFormFieldElements(document.all, []);
+      gCrWebLegacy.fill.getUnownedAutofillableFormFieldElements(document.all, []);
   if (unownedInputs.length > 0) {
     return fillUsernameAndPassword(unownedInputs, formData, username, password);
   }
@@ -212,13 +212,13 @@ function fillGeneratedPassword(
     formIdentifier: number, newPasswordIdentifier: number,
     confirmPasswordIdentifier: number, password: string,
     hasFormTag: boolean): boolean {
-  const form = gCrWeb.form.getFormElementFromRendererId(formIdentifier);
+  const form = gCrWebLegacy.form.getFormElementFromRendererId(formIdentifier);
   if (!form && hasFormTag) {
     return false;
   }
   const inputs = hasFormTag ?
       getFormInputElements(form) :
-      gCrWeb.fill.getUnownedAutofillableFormFieldElements(document.all, []);
+      gCrWebLegacy.fill.getUnownedAutofillableFormFieldElements(document.all, []);
   const newPasswordField =
       findInputByFieldRendererID(inputs, newPasswordIdentifier);
   if (!newPasswordField) {
@@ -226,12 +226,12 @@ function fillGeneratedPassword(
   }
   // Avoid resetting if same value, as it moves cursor to the end.
   if (newPasswordField.value !== password) {
-    gCrWeb.fill.setInputElementValue(password, newPasswordField);
+    gCrWebLegacy.fill.setInputElementValue(password, newPasswordField);
   }
   const confirmPasswordField =
       findInputByFieldRendererID(inputs, confirmPasswordIdentifier);
   if (confirmPasswordField && confirmPasswordField.value !== password) {
-    gCrWeb.fill.setInputElementValue(password, confirmPasswordField);
+    gCrWebLegacy.fill.setInputElementValue(password, confirmPasswordField);
   }
   return true;
 }
@@ -322,13 +322,13 @@ function fillUsernameAndPassword(
   // pre-filled by the website.
   const didFillUsername: boolean =
       (isUsernameEditable &&
-       gCrWeb.fill.setInputElementValue(username, usernameInput)) as boolean;
+       gCrWebLegacy.fill.setInputElementValue(username, usernameInput)) as boolean;
 
   // Fill the password if needed.
   const didFillPassword: boolean =
       Boolean(
           !!passwordInput &&
-          gCrWeb.fill.setInputElementValue(password, passwordInput)) as boolean;
+              gCrWebLegacy.fill.setInputElementValue(password, passwordInput)) as boolean;
 
   return {
     didFillUsername,
@@ -366,7 +366,7 @@ function getPasswordFormDataList(formDataList: AutofillFormData[]) {
     }
   }
   const unownedFormData =
-      gCrWeb.passwords.getPasswordFormDataFromUnownedElements();
+  gCrWebLegacy.passwords.getPasswordFormDataFromUnownedElements();
   if (unownedFormData && isRecognizedCredentialForm(unownedFormData)) {
     formDataList.push(unownedFormData);
   }
@@ -380,13 +380,13 @@ function getPasswordFormDataList(formDataList: AutofillFormData[]) {
 function getPasswordFormDataFromUnownedElements(): object|null {
   const fieldsets: fillConstants.FormControlElement[] = [];
   const unownedControlElements =
-      gCrWeb.fill.getUnownedAutofillableFormFieldElements(
+  gCrWebLegacy.fill.getUnownedAutofillableFormFieldElements(
           document.all, fieldsets);
   if (unownedControlElements.length === 0) {
     return null;
   }
-  const unownedForm = new gCrWeb['common'].JSONSafeObject();
-  const hasUnownedForm = gCrWeb.fill.unownedFormElementsAndFieldSetsToFormData(
+  const unownedForm = new gCrWebLegacy['common'].JSONSafeObject();
+  const hasUnownedForm = gCrWebLegacy.fill.unownedFormElementsAndFieldSetsToFormData(
       window, fieldsets, unownedControlElements, /* iframeElements= */[], false,
       unownedForm);
   return hasUnownedForm ? unownedForm : null;
@@ -400,13 +400,13 @@ function getPasswordFormDataFromUnownedElements(): object|null {
 function getPasswordFormData(
     formElement: HTMLFormElement): AutofillFormData|null {
   const formData = {} as AutofillFormData;
-  const ok = gCrWeb.fill.webFormElementToFormData(
+  const ok = gCrWebLegacy.fill.webFormElementToFormData(
       window, formElement, /*formControlElement=*/ null, formData,
       /*field=*/ null);
   return ok ? formData : null;
 }
 
-gCrWeb.passwords = {
+gCrWebLegacy.passwords = {
   findPasswordForms,
   getPasswordFormDataAsString,
   fillPasswordForm,

@@ -120,7 +120,7 @@ class FormDataImporter : public AddressDataManager::Observer,
                           const history::DeletionInfo& deletion_info) override;
 
   // See `FormAssociator::GetFormAssociations()`.
-  std::optional<FormStructure::FormAssociations> GetFormAssociations(
+  FormStructure::FormAssociations GetFormAssociations(
       FormSignature form_signature) const {
     return form_associator_.GetFormAssociations(form_signature);
   }
@@ -275,21 +275,6 @@ class FormDataImporter : public AddressDataManager::Observer,
 
   // Helper function which extracts the IBAN from the form structure.
   Iban ExtractIbanFromForm(const FormStructure& form);
-
-  // Returns true if credit card upload, local save, or cvc local save should be
-  // offered to user. `extracted_credit_card` is the credit card imported from
-  // the form if there is any. If no valid card was imported, it is set to
-  // nullopt. It might be set to a copy of a LOCAL_CARD or SERVER_CARD we have
-  // already saved if we were able to find a matching copy.
-  // |is_credit_card_upstream_enabled| denotes whether the user has credit card
-  // upload enabled. This function is used to prevent offering upload card save
-  // or local card save in situations where it would be invalid to offer them.
-  // For example, we should not offer to upload card if it is already a valid
-  // server card.
-  // TODO(crbug.com/40270301): Move to CreditCardSaveManger.
-  bool ShouldOfferCreditCardSave(
-      const std::optional<CreditCard>& extracted_credit_card,
-      bool is_credit_card_upstream_enabled);
 
   // If the `profile`'s country is not empty, complements it with
   // `AddressDataManager::GetDefaultCountryCodeForNewAddress()`, while logging

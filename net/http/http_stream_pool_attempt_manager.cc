@@ -351,6 +351,7 @@ HttpStreamPool::AttemptManager::AttemptManager(Group* group, NetLog* net_log)
       net_log_(NetLogWithSource::Make(
           net_log,
           NetLogSourceType::HTTP_STREAM_POOL_ATTEMPT_MANAGER)),
+      created_time_(base::TimeTicks::Now()),
       jobs_(NUM_PRIORITIES),
       stream_attempt_delay_(GetStreamAttemptDelay()),
       should_block_stream_attempt_(!stream_attempt_delay_.is_zero()) {
@@ -374,6 +375,8 @@ HttpStreamPool::AttemptManager::AttemptManager(Group* group, NetLog* net_log)
 }
 
 HttpStreamPool::AttemptManager::~AttemptManager() {
+  base::UmaHistogramTimes("Net.HttpStreamPool.AttemptManagerAliveTime",
+                          base::TimeTicks::Now() - created_time_);
   net_log().EndEvent(NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_ALIVE);
   group_->net_log().AddEventReferencingSource(
       NetLogEventType::HTTP_STREAM_POOL_GROUP_ATTEMPT_MANAGER_DESTROYED,
@@ -612,6 +615,7 @@ HttpStreamPool::AttemptManager::GetSSLConfig(InFlightAttempt* attempt) {
   const bool svcb_optional = IsSvcbOptional();
   for (auto& endpoint : service_endpoint_request_->GetEndpointResults()) {
     if (!IsEndpointUsableForTcpBasedAttempt(endpoint, svcb_optional)) {
+      unusable_endpoints_for_tcp_based_attempt_.emplace_back(endpoint);
       continue;
     }
     const std::vector<IPEndPoint>& ip_endpoints =
@@ -624,6 +628,7 @@ HttpStreamPool::AttemptManager::GetSSLConfig(InFlightAttempt* attempt) {
     }
   }
 
+  aborted_endpoints_for_tcp_based_attempt_.emplace_back(attempt->ip_endpoint());
   attempt->set_is_aborted(true);
   return base::unexpected(TlsStreamAttempt::GetSSLConfigError::kAbort);
 }
@@ -862,10 +867,6 @@ bool HttpStreamPool::AttemptManager::IsStalledByPoolLimit() {
     case CanAttemptResult::kReachedGroupLimit:
       return false;
   }
-}
-
-void HttpStreamPool::AttemptManager::OnRequiredHttp11() {
-  HandleFinalError(ERR_HTTP_1_1_REQUIRED);
 }
 
 void HttpStreamPool::AttemptManager::OnQuicTaskComplete(
@@ -1353,10 +1354,18 @@ void HttpStreamPool::AttemptManager::MaybeAttemptConnection(
           ConnectionAttempts connection_attempts = connection_attempts_;
           std::vector<ServiceEndpoint> endpoints =
               service_endpoint_request_->GetEndpointResults();
+          std::vector<ServiceEndpoint> unusable_endpoints =
+              unusable_endpoints_for_tcp_based_attempt_;
+          std::vector<IPEndPoint> aborted_endpoints =
+              aborted_endpoints_for_tcp_based_attempt_;
           base::debug::Alias(&is_svcb_optional);
           base::debug::Alias(&connection_attempts_);
           base::debug::Alias(&endpoints);
           base::debug::Alias(endpoints.data());
+          base::debug::Alias(&unusable_endpoints);
+          base::debug::Alias(unusable_endpoints.data());
+          base::debug::Alias(&aborted_endpoints);
+          base::debug::Alias(aborted_endpoints.data());
           DEBUG_ALIAS_FOR_GURL(url_buf, stream_key().destination().GetURL());
           NOTREACHED();
         }

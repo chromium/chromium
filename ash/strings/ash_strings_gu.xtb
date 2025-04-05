@@ -112,6 +112,7 @@
 <translation id="1306549533752902673">ભલામણ કરેલ ઍપ</translation>
 <translation id="1310396869741602366">ટોન બદલો</translation>
 <translation id="1312604459020188865">સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" /></translation>
+<translation id="1314113845887519729">સૌથી ઉપરની કિનારીનું હૅન્ડલ પસંદ કર્યું, ખસેડવા માટે ઍરો કીનો ઉપયોગ કરો</translation>
 <translation id="1316069254387866896">હંમેશાં શેલ્ફ બતાવો</translation>
 <translation id="132346741904777634">કૅમેરાને ઉપરના ડાબા ખૂણામાં સ્નેપ કર્યો. સિસ્ટમની સપાટીને ઓવરલેપ કરે છે.</translation>
 <translation id="132415371743256095"><ph name="DESK_NAME" /> અને તેની તમામ વિન્ડો બંધ કરો</translation>
@@ -186,6 +187,7 @@
 <translation id="1557622599341396706">ડેસ્કનું નામ બતાવો</translation>
 <translation id="1569384531973824928">આમ કરવાથી કૅમેરા અને માઇક્રોફોનની પરવાનગીઓ ધરાવતી બધી ઍપ તથા વેબસાઇટ માટે, ઍક્સેસની મંજૂરી આપવામાં આવે છે. તમારે વેેબપેજ રિફ્રેશ કરવાની અથવા ઍપ ફરી શરૂ કરવાની જરૂર પડી શકે છે.</translation>
 <translation id="1571697193564730395">'ખલેલ પાડશો નહીં' બટનને ટૉગલ કરો. <ph name="STATE_TEXT" /></translation>
+<translation id="1574691582236909946">ડાબી બાજુની કિનારીનું હૅન્ડલ પસંદ કર્યું, ખસેડવા માટે ઍરો કીનો ઉપયોગ કરો</translation>
 <translation id="1576623706766186887">મેગ્નિફાયર ચાલુ હોય, ત્યારે નાનું કરો</translation>
 <translation id="1582946770779745370">ગેમ ડૅશબોર્ડ ઉપલબ્ધ છે. કોઈપણ સમયે ખોલવા માટે, <ph name="LAUNCHER_KEY_NAME" /> + Shift + Escape, પછી <ph name="LAUNCHER_KEY_NAME" /> + g દબાવો</translation>
 <translation id="1586324912145647027">ડેસ્ક 1 થી 8 પર જાઓ</translation>
@@ -220,6 +222,7 @@
 <translation id="1696984622403682083">તમે સેટિંગમાં જઈને કોઈપણ સમયે આ સુવિધા બંધ કરી શકો છો. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> ટાઇમર · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 સરનામું: <ph name="ADDRESS" /></translation>
+<translation id="1700782710852683371">હાલમાં આની છબીઓ બનાવી શકાતી નથી. તમારા વર્ણનના શબ્દોમાં ફેરબદલ કરવાનો પ્રયાસ કરો. ધ્યાનમાં રાખો કે તમે લોકોની, હાનિકારક કે અયોગ્ય કન્ટેન્ટ ધરાવતી કોઈ છબી બનાવી શકશો નહીં.</translation>
 <translation id="1703117532528082099">સક્રિય વિન્ડોને ડાબે ડૉક કરી.</translation>
 <translation id="1708345662127501511">ડેસ્કટૉપ: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">નેટવર્ક સેટિંગ</translation>
@@ -608,6 +611,7 @@
 <translation id="304097922505898963">Key Shortcuts ઍપ ખોલો</translation>
 <translation id="304417730895741346">તમારી પિન કરેલી અને ખુલ્લી ઍપ શેલ્ફ પર છે. ઍપને શેલ્ફ પર પિન કરવા માટે, ઍપને રાઇટ ક્લિક કરો અથવા તમારા ટચપૅડને બે આંગળી વડે ટૅપ કરો.</translation>
 <translation id="3045488863354895414">ગુડ આફ્ટરનૂન,</translation>
+<translation id="3045670165536837541">સૌથી ઉપર જમણી બાજુનું હૅન્ડલ પસંદ કર્યું, ખસેડવા માટે ઍરો કીનો ઉપયોગ કરો</translation>
 <translation id="3047761520276763270">આ પ્રમાણે બોલીને જુઓ:</translation>
 <translation id="3053407068093039599">કૅમેરાનો ઍક્સેસ ચાલુ/બંધ કરો</translation>
 <translation id="3055162170959710888">આજે તમે <ph name="USED_TIME" /> માટે આ ડિવાઇસનો ઉપયોગ કર્યો છે</translation>
@@ -1763,6 +1767,7 @@
 <translation id="6696025732084565524">અલગ પાડી શકાય તેવા તમારા કીબોર્ડ માટે મહત્ત્વપૂર્ણ અપડેટ જરૂરી છે</translation>
 <translation id="6697913454192220372">નવું ડેસ્ક ઉમેરો</translation>
 <translation id="6700713906295497288">IME મેનૂ બટન</translation>
+<translation id="6704073473590541209">જમણી બાજુની કિનારીનું હૅન્ડલ પસંદ કર્યું, ખસેડવા માટે ઍરો કીનો ઉપયોગ કરો</translation>
 <translation id="6706742084323792866">કીબોર્ડને પિન કરો</translation>
 <translation id="6710213216561001401">પાછલી</translation>
 <translation id="6723839937902243910">પાવર</translation>
@@ -1786,6 +1791,7 @@
 <translation id="6781002679438061620">ડેસ્ક 9</translation>
 <translation id="6782182743534150858">ડેસ્ક 13</translation>
 <translation id="6782919488259222803">વર્તમાન પેજમાં શોધો</translation>
+<translation id="6783348167101855071">સૌથી નીચે જમણી બાજુનું હૅન્ડલ પસંદ કર્યું, ખસેડવા માટે ઍરો કીનો ઉપયોગ કરો</translation>
 <translation id="6786750046913594791">ફોલ્ડર બંધ કરો</translation>
 <translation id="6790428901817661496">ચલાવો</translation>
 <translation id="6792262051831399889">અનુપલબ્ધ</translation>
@@ -1941,6 +1947,7 @@
 <translation id="7371404428569700291">વિન્ડો રેકોર્ડ કરો</translation>
 <translation id="7372069265635026568">કુલ <ph name="TOTAL_MEMORY" />માંથી <ph name="AVAILABLE_MEMORY" />મેમરી ઉપલબ્ધ છે</translation>
 <translation id="737315737514430195">આ માઇક્રોફોનની પરવાનગી ધરાવતી બધી ઍપ અને વેબસાઇટ માટે, માઇક્રોફોનના ઍક્સેસની મંજૂરી આપે છે</translation>
+<translation id="7376933029363911338">સૌથી નીચેની કિનારીનું હૅન્ડલ પસંદ કર્યું, ખસેડવા માટે ઍરો કીનો ઉપયોગ કરો</translation>
 <translation id="7377169924702866686">Caps Lock ચાલુ છે.</translation>
 <translation id="7377481913241237033">કોડ વડે કનેક્ટ કરો</translation>
 <translation id="7378203170292176219">રેકોર્ડ કરવાના વિસ્તારને પસંદ કરવા માટે ખેંચો</translation>
@@ -2037,6 +2044,7 @@
 <translation id="7658239707568436148">રદ કરો</translation>
 <translation id="7659861092419699379">ડેસ્ક અને વિન્ડો બંધ કરવામાં આવી છે</translation>
 <translation id="7660160718439869192"><ph name="EMAIL" />ની સાથે લિંક કરેલાં ડિવાઇસ પર તમારું <ph name="NAME" /> દેખાશે</translation>
+<translation id="7661694115779363471">સૌથી નીચે ડાબી બાજુનું હૅન્ડલ પસંદ કર્યું, ખસેડવા માટે ઍરો કીનો ઉપયોગ કરો</translation>
 <translation id="7662283695561029522">ગોઠવવા માટે ટૅપ કરો</translation>
 <translation id="7670953955701272011">Google Calendarમાં આ તારીખ ખોલો</translation>
 <translation id="7671610481353807627">ઍપને રંગ અનુસાર સૉર્ટ કરવામાં આવી છે</translation>
@@ -2205,6 +2213,7 @@
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> માટે માહિતી સંવાદ ખોલો</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" />નો ઉપયોગ કરી રહ્યા છે</translation>
 <translation id="8168435359814927499">કન્ટેન્ટ</translation>
+<translation id="8172370561760918656">સૌથી ઉપર ડાબી બાજુનું હૅન્ડલ પસંદ કર્યું, ખસેડવા માટે ઍરો કીનો ઉપયોગ કરો</translation>
 <translation id="81817143961839203">છબી ઉમેરવામાં નિષ્ફળ રહ્યાં</translation>
 <translation id="8185090165691050712">લૉક મોડનું કદ બદલવા માટે મેનૂ ચાલુ/બંધ કરો</translation>
 <translation id="8192727139462702395">જ્યારે તમે બ્લૂટૂથ બંધ કરો, ત્યારે આ બાહ્ય ડિવાઇસ તમારા <ph name="DEVICE_TYPE" />થી ડિસ્કનેક્ટ થઈ જશે:</translation>

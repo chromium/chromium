@@ -475,7 +475,9 @@ public class AccessibilityNodeInfoBuilder {
             int[] suggestionEnds,
             String[] suggestions,
             String stateDescription,
-            String containerTitle) {
+            String containerTitle,
+            String contentDescription,
+            String supplementalDescription) {
         long now = SystemClock.elapsedRealtimeNanos() / 1000;
 
         CharSequence computedText =
@@ -498,9 +500,19 @@ public class AccessibilityNodeInfoBuilder {
             node.setContainerTitle(containerTitle);
         }
 
+        // We add the contentDescription attribute when it is non-null and not empty.
+        if (contentDescription != null && !contentDescription.isEmpty()) {
+            node.setContentDescription(contentDescription);
+        }
+
+        // We add the supplementalDescription attribute when it is non-null and not empty.
+        if (supplementalDescription != null && !supplementalDescription.isEmpty()) {
+            node.setSupplementalDescription(supplementalDescription);
+        }
+
         // We expose the nested structure of links, which results in the roles of all nested nodes
-        // being read. Use content description in the case of links to prevent verbose TalkBack
-        if (annotateAsLink) {
+        // being read. Use content description in the case of links to prevent verbose TalkBack.
+        if (annotateAsLink && (contentDescription == null || contentDescription.isEmpty())) {
             node.setContentDescription(computedText);
         } else {
             node.setText(computedText);
@@ -522,6 +534,8 @@ public class AccessibilityNodeInfoBuilder {
             String[] suggestions,
             String stateDescription,
             String containerTitle,
+            String contentDescription,
+            String supplementalDescription,
             float textSize,
             int textStyle,
             int textColor,
@@ -563,9 +577,19 @@ public class AccessibilityNodeInfoBuilder {
             node.setContainerTitle(containerTitle);
         }
 
+        // We add the contentDescription attribute when it is non-null and not empty.
+        if (contentDescription != null && !contentDescription.isEmpty()) {
+            node.setContentDescription(contentDescription);
+        }
+
+        // We add the supplementalDescription attribute when it is non-null and not empty.
+        if (supplementalDescription != null && !supplementalDescription.isEmpty()) {
+            node.setSupplementalDescription(supplementalDescription);
+        }
+
         // We expose the nested structure of links, which results in the roles of all nested nodes
         // being read. Use content description in the case of links to prevent verbose TalkBack
-        if (annotateAsLink) {
+        if (annotateAsLink && (contentDescription == null || contentDescription.isEmpty())) {
             node.setContentDescription(computedText);
         } else {
             node.setText(computedText);

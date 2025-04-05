@@ -124,14 +124,16 @@ ShareThisTabDialogView::ShareThisTabDialogView(
   CHECK(!auto_accept_this_tab_capture_ || !auto_reject_this_tab_capture_);
 
   SetModalType(params.modality);
-  RegisterDeleteDelegateCallback(base::BindOnce(
-      [](ShareThisTabDialogView* dialog) {
-        // If the dialog is being closed then notify the parent about it.
-        if (dialog->parent_) {
-          dialog->parent_->NotifyDialogResult(content::DesktopMediaID());
-        }
-      },
-      this));
+  RegisterDeleteDelegateCallback(
+      RegisterDeleteCallbackPassKey(),
+      base::BindOnce(
+          [](ShareThisTabDialogView* dialog) {
+            // If the dialog is being closed then notify the parent about it.
+            if (dialog->parent_) {
+              dialog->parent_->NotifyDialogResult(content::DesktopMediaID());
+            }
+          },
+          this));
 
   const ChromeLayoutProvider* const provider = ChromeLayoutProvider::Get();
   gfx::Insets dialog_insets = provider->GetDialogInsetsForContentType(

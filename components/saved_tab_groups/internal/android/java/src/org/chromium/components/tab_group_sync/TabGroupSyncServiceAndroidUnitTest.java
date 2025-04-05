@@ -75,6 +75,7 @@ public class TabGroupSyncServiceAndroidUnitTest {
         Assert.assertEquals(3, group.savedTabs.size());
         Assert.assertEquals("creator_cache_guid", group.creatorCacheGuid);
         Assert.assertEquals("last_updater_cache_guid", group.lastUpdaterCacheGuid);
+        Assert.assertNotNull(group.archivalTimeMs);
 
         SavedTabGroupTab tab1 = group.savedTabs.get(0);
         Assert.assertNotNull(tab1.syncId);

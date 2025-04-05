@@ -114,12 +114,12 @@ constexpr base::TimeDelta kMaxExpirationTimeDelta = base::Days(3);
 
 network::ResourceRequest CreateFetchRequest(version_info::Channel channel) {
   const std::string& get_prt_server_path =
-      net::features::kIpPrivacyProbabilisticRevealTokenServerPath.Get();
+      net::features::kProbabilisticRevealTokenServerPath.Get();
   GURL::Replacements replacements;
   replacements.SetPathStr(get_prt_server_path);
   network::ResourceRequest resource_request;
   resource_request.url =
-      GURL(net::features::kIpPrivacyProbabilisticRevealTokenServer.Get())
+      GURL(net::features::kProbabilisticRevealTokenServer.Get())
           .ReplaceComponents(replacements);
   resource_request.method = net::HttpRequestHeaders::kPostMethod;
   resource_request.credentials_mode = network::mojom::CredentialsMode::kOmit;

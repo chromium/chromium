@@ -215,6 +215,7 @@ declare global {
         typeNameAsString: string;
         addEntityTypeString: string;
         editEntityTypeString: string;
+        deleteEntityTypeString: string;
       }
 
       export interface DateValue {

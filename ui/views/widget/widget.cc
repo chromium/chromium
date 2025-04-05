@@ -147,8 +147,10 @@ class DefaultWidgetDelegate : public WidgetDelegate {
     // is used as a container, so that we want focus to advance to the top-level
     // widget. A good example of this is the find bar.
     SetFocusTraversesOut(true);
-    RegisterDeleteDelegateCallback(base::BindOnce(
-        &DefaultWidgetDelegate::Destroy, base::Unretained(this)));
+    RegisterDeleteDelegateCallback(
+        RegisterDeleteCallbackPassKey(),
+        base::BindOnce(&DefaultWidgetDelegate::Destroy,
+                       base::Unretained(this)));
   }
 
   DefaultWidgetDelegate(const DefaultWidgetDelegate&) = delete;

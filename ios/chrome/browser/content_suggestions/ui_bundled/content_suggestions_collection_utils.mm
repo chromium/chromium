@@ -262,7 +262,7 @@ CGFloat HeightForLogoHeader(BOOL logo_is_showing,
 }
 
 CGFloat HeaderBottomPadding(UITraitCollection* trait_collection) {
-  if (IsHomeCustomizationEnabled() && IsSplitToolbarMode(trait_collection)) {
+  if (IsSplitToolbarMode(trait_collection)) {
     return GetDeprecateFeedHeaderParameterValueAsDouble(
         kDeprecateFeedHeaderParameterHeaderBottomPadding, 0);
   }

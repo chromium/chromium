@@ -7,11 +7,14 @@ package org.chromium.chrome.browser.password_manager;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** This class should contain helpers for recording Password Manager metrics. */
+@NullMarked
 public class PasswordMetricsUtil {
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
@@ -120,7 +123,7 @@ public class PasswordMetricsUtil {
      * @param result is the value to be recorded
      */
     public static void logPasswordsExportResult(
-            String callerMetricsId, @HistogramExportResult int result) {
+            @Nullable String callerMetricsId, @HistogramExportResult int result) {
         RecordHistogram.recordEnumeratedHistogram(
                 callerMetricsId + EXPORT_RESULT_HISTOGRAM_SUFFIX,
                 result,

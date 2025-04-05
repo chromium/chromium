@@ -336,7 +336,7 @@ class UnderlyingShapeConversionChecker final
     visitor->Trace(value_);
   }
 
-  bool IsValid(const InterpolationEnvironment&,
+  bool IsValid(const CSSInterpolationEnvironment&,
                const InterpolationValue& underlying) const final {
     return value_->GetWindRule() ==
                To<ShapeNonInterpolableValue>(*underlying.non_interpolable_value)

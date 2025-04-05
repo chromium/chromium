@@ -41,13 +41,9 @@ namespace {
 
 void CopyToActiveInterpolationsMap(
     const HeapVector<Member<Interpolation>>& source,
-    EffectStack::PropertyHandleFilter property_handle_filter,
     ActiveInterpolationsMap& target) {
   for (const auto& interpolation : source) {
     PropertyHandle property = interpolation->GetProperty();
-    if (property_handle_filter && !property_handle_filter(property))
-      continue;
-
     ActiveInterpolationsMap::AddResult entry =
         target.insert(property, MakeGarbageCollected<ActiveInterpolations>());
     ActiveInterpolations* active_interpolations = entry.stored_value->value;
@@ -70,13 +66,12 @@ void CopyToActiveInterpolationsMap(
 
 void CopyNewAnimationsToActiveInterpolationsMap(
     const HeapVector<Member<const InertEffect>>& new_animations,
-    EffectStack::PropertyHandleFilter property_handle_filter,
     ActiveInterpolationsMap& result) {
   for (const auto& new_animation : new_animations) {
     HeapVector<Member<Interpolation>> sample;
     new_animation->Sample(sample);
     if (!sample.empty())
-      CopyToActiveInterpolationsMap(sample, property_handle_filter, result);
+      CopyToActiveInterpolationsMap(sample, result);
   }
 }
 
@@ -164,7 +159,6 @@ ActiveInterpolationsMap EffectStack::ActiveInterpolations(
     const HeapVector<Member<const InertEffect>>* new_animations,
     const HeapHashSet<Member<const Animation>>* suppressed_animations,
     KeyframeEffect::Priority priority,
-    PropertyHandleFilter property_handle_filter,
     KeyframeEffect* partial_effect_stack_cutoff) {
   ActiveInterpolationsMap result;
 
@@ -189,14 +183,12 @@ ActiveInterpolationsMap EffectStack::ActiveInterpolations(
            suppressed_animations->Contains(
                sampled_effect->Effect()->GetAnimation())))
         continue;
-      CopyToActiveInterpolationsMap(sampled_effect->Interpolations(),
-                                    property_handle_filter, result);
+      CopyToActiveInterpolationsMap(sampled_effect->Interpolations(), result);
     }
   }
 
   if (new_animations) {
-    CopyNewAnimationsToActiveInterpolationsMap(*new_animations,
-                                               property_handle_filter, result);
+    CopyNewAnimationsToActiveInterpolationsMap(*new_animations, result);
   }
   return result;
 }

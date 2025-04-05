@@ -101,6 +101,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/installer/util/google_update_settings.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/breadcrumbs/core/application_breadcrumbs_logger.h"
 #include "components/breadcrumbs/core/breadcrumb_persistent_storage_util.h"
 #include "components/breadcrumbs/core/breadcrumbs_status.h"
@@ -446,6 +447,18 @@ void BrowserProcessImpl::Init() {
 
   features_ = GlobalFeatures::CreateGlobalFeatures();
   features_->Init();
+
+  // `Unretained` is safe as CallbackListSubscription does not outlive `this`.
+  on_locale_changed_callback_subscription_ =
+      features_->application_locale_storage()->RegisterOnLocaleChangedCallback(
+          base::BindRepeating(&BrowserProcessImpl::OnLocaleChanged,
+                              base::Unretained(this)));
+
+  // Initialize the locale.
+  const std::string& locale =
+      startup_data_->chrome_feature_list_creator()->actual_locale();
+  CHECK(!locale.empty());
+  features_->application_locale_storage()->Set(locale);
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -1016,16 +1029,24 @@ const std::string& BrowserProcessImpl::GetApplicationLocale() {
   // TODO(crbug.com/40663419): Remove #if.
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #endif
-  DCHECK(!locale_.empty());
-  return locale_;
+
+  // TODO(crbug.com/407681800): Replace this with CHECK(features_) once we've
+  // confirmed no such code path exists.
+  if (!features_) {
+    return startup_data_->chrome_feature_list_creator()->actual_locale();
+  }
+
+  CHECK(features_->application_locale_storage());
+  const std::string& locale = features_->application_locale_storage()->Get();
+  DCHECK(!locale.empty());
+  return locale;
 }
 
 void BrowserProcessImpl::SetApplicationLocale(
     const std::string& actual_locale) {
-  locale_ = actual_locale;
-  ChromeContentBrowserClient::SetApplicationLocale(actual_locale);
-  translate::TranslateDownloadManager::GetInstance()->set_application_locale(
-      actual_locale);
+  CHECK(features_);
+  CHECK(features_->application_locale_storage());
+  features_->application_locale_storage()->Set(actual_locale);
 }
 
 DownloadStatusUpdater* BrowserProcessImpl::download_status_updater() {
@@ -1622,6 +1643,18 @@ void BrowserProcessImpl::ApplyDefaultBrowserPolicy() {
     set_browser_worker->set_interactive_permitted(false);
     set_browser_worker->StartSetAsDefault(base::NullCallback());
   }
+}
+
+void BrowserProcessImpl::OnLocaleChanged(const std::string& new_locale) {
+  // TODO(crbug.com/406985310): The cache for IO thread should be integrated
+  // into ApplicationLocaleStorage.
+  ChromeContentBrowserClient::SetApplicationLocale(new_locale);
+
+  // TODO(crbug.com/406985310): Implement ApplicationLocaleStorage::Observer for
+  // TranslateDownloadManager, or refactor //components/translate so that it can
+  // directly depend on ApplicationLocaleStorage.
+  translate::TranslateDownloadManager::GetInstance()->set_application_locale(
+      new_locale);
 }
 
 void BrowserProcessImpl::Pin() {

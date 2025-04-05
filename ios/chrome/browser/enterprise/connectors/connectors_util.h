@@ -7,6 +7,7 @@
 
 #import "base/containers/flat_set.h"
 #import "base/values.h"
+#import "components/enterprise/common/proto/upload_request_response.pb.h"
 
 class ProfileIOS;
 
@@ -32,6 +33,11 @@ std::optional<std::string> GetUserClientId(ProfileIOS* profile);
 // Returns affiliation IDs contained in the PolicyData corresponding to the
 // profile.
 base::flat_set<std::string> GetUserAffiliationIds(ProfileIOS* profile);
+
+// Creates and returns an UploadEventsRequest proto with the Device, Browser and
+// Profile fields set.
+::chrome::cros::reporting::proto::UploadEventsRequest CreateUploadEventsRequest(
+    ProfileIOS* profile);
 
 }  // namespace enterprise_connectors
 

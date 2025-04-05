@@ -21,7 +21,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_PRESERVE_ASPECT_RATIO_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_PRESERVE_ASPECT_RATIO_H_
 
-#include "third_party/blink/renderer/core/svg/properties/svg_property_helper.h"
+#include "third_party/blink/renderer/core/svg/properties/svg_property.h"
 #include "third_party/blink/renderer/core/svg/svg_parsing_error.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
@@ -35,8 +35,7 @@ namespace blink {
 class AffineTransform;
 class SVGPreserveAspectRatioTearOff;
 
-class SVGPreserveAspectRatio final
-    : public SVGPropertyHelper<SVGPreserveAspectRatio> {
+class SVGPreserveAspectRatio final : public SVGPropertyBase {
  public:
   enum SVGPreserveAspectRatioType {
     kSvgPreserveaspectratioUnknown = 0,
@@ -102,6 +101,7 @@ class SVGPreserveAspectRatio final
   static AnimatedPropertyType ClassType() {
     return kAnimatedPreserveAspectRatio;
   }
+  AnimatedPropertyType GetType() const override { return ClassType(); }
 
   void SetDefault();
 

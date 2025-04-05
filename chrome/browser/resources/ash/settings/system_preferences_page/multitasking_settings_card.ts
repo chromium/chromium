@@ -44,18 +44,15 @@ export class MultitaskingSettingsCardElement extends
         type: Object,
         notify: true,
       },
-
-      /**
-       * Used by DeepLinkingMixin to focus this element's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([Setting.kSnapWindowSuggestions]),
-      },
     };
   }
 
   prefs: PrefsState;
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kSnapWindowSuggestions,
+  ]);
 
   override currentRouteChanged(newRoute: Route): void {
     if (newRoute !== routes.SYSTEM_PREFERENCES) {

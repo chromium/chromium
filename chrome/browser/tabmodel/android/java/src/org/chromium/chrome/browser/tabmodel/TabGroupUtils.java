@@ -82,11 +82,13 @@ public class TabGroupUtils {
      * @param tabGroupModelFilter The {@link TabGroupModelFilter} to act on.
      * @param tabs The list of tabs to be merged to a group.
      * @param tabGroupMetadata The metadata used to regrouped the tabs.
+     * @param shouldApplyCollapse Whether to apply the collapsed state.
      */
     public static void regroupTabs(
             TabGroupModelFilter tabGroupModelFilter,
             List<Tab> tabs,
-            TabGroupMetadata tabGroupMetadata) {
+            TabGroupMetadata tabGroupMetadata,
+            boolean shouldApplyCollapse) {
         // 1. Extract tab group properties from the metadata.
         int rootId = tabGroupMetadata.rootId;
         Token tabGroupId = tabGroupMetadata.tabGroupId;
@@ -109,7 +111,10 @@ public class TabGroupUtils {
 
         // 4. Apply the tab group attributes (color, collapsed state, and title).
         tabGroupModelFilter.setTabGroupColor(rootId, tabGroupColor);
-        tabGroupModelFilter.setTabGroupCollapsed(rootId, tabGroupCollapsed, /* animate= */ false);
         tabGroupModelFilter.setTabGroupTitle(rootId, tabGroupTitle);
+        if (shouldApplyCollapse) {
+            tabGroupModelFilter.setTabGroupCollapsed(
+                    rootId, tabGroupCollapsed, /* animate= */ false);
+        }
     }
 }

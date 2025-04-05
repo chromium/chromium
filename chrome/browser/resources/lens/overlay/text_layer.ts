@@ -117,6 +117,7 @@ export class TextLayerElement extends PolymerElement implements TextLayerBase {
 
   static get properties() {
     return {
+      currentTranslateLanguage: String,
       renderedWords: {
         type: Array,
         value: () => [],
@@ -126,6 +127,7 @@ export class TextLayerElement extends PolymerElement implements TextLayerBase {
         reflectToAttribute: true,
       },
       highlightedLines: Array,
+      renderedTranslateLines: Array,
       selectionStartIndex: {
         type: Number,
         value: -1,
@@ -155,17 +157,17 @@ export class TextLayerElement extends PolymerElement implements TextLayerBase {
   // text.
   private context: CanvasRenderingContext2D;
   // The words rendered in this layer.
-  private renderedWords: Word[];
+  declare private renderedWords: Word[];
   // Whether to render the translated text received on the overlay rather than
   // the detected text.
-  private shouldRenderTranslateWords: boolean;
+  declare private shouldRenderTranslateWords: boolean;
   // The current target language the user requested to translate to.
-  private currentTranslateLanguage: string;
+  declare private currentTranslateLanguage: string;
   // All of the translated words returned in OnTextReceived with failed
   // translations replaced with their non-translated counterpart.
   private renderedTranslateWords: Word[];
   // The rendered translated lines in order from OnTextReceived.
-  private renderedTranslateLines: TranslatedLineData[];
+  declare private renderedTranslateLines: TranslatedLineData[];
   // The rendered translated paragraphs keyed by the paragraph number.
   private renderedTranslateParagraphs:
       {[paragraphNumber: number]: TranslatedParagraph};
@@ -174,19 +176,19 @@ export class TextLayerElement extends PolymerElement implements TextLayerBase {
   // detected words when rendering the translated text.
   private detectedWordToTranslateIndex: {[detectedWordIndex: number]: number};
   // The currently selected lines.
-  private highlightedLines: HighlightedLine[];
+  declare private highlightedLines: HighlightedLine[];
   // The index of the word in renderedWords at the start of the current
   // selection. -1 if no current selection.
-  private selectionStartIndex: number;
+  declare private selectionStartIndex: number;
   // The index of the word in renderedWords at the end of the current selection.
   // -1 if no current selection.
-  private selectionEndIndex: number;
-  private debugMode: boolean;
+  declare private selectionEndIndex: number;
+  declare private debugMode: boolean;
   // Whether the user is currently selecting text.
-  private isSelectingText: boolean;
+  declare private isSelectingText: boolean;
   // The bounds of the parent element. This is updated by the parent to avoid
   // this class needing to call getBoundingClientRect()
-  private selectionOverlayRect: DOMRect;
+  declare private selectionOverlayRect: DOMRect;
 
   // An array that corresponds 1:1 to renderedWords, where lineNumbers[i] is the
   // line number for renderedWords[i]. In addition, the index at lineNumbers[i]

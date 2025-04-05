@@ -840,8 +840,7 @@ void RootWindowController::ShowContextMenu(
     ui::mojom::MenuSourceType source_type) {
   // Show birch bar context menu for the primary user in clamshell mode Overview
   // without a partial split screen.
-  if (features::IsForestFeatureEnabled() &&
-      Shell::Get()->session_controller()->IsUserPrimary() &&
+  if (Shell::Get()->session_controller()->IsUserPrimary() &&
       OverviewController::Get()->InOverviewSession() &&
       !split_view_overview_session_) {
     root_window_menu_model_adapter_ = BuildBirchMenuModelAdapter(source_type);
@@ -1176,11 +1175,9 @@ void RootWindowController::CreateContainers() {
                   non_lock_screen_containers);
 
   aura::Window* shutdown_screenshot_container = non_lock_screen_containers;
-  if (features::IsForestFeatureEnabled()) {
-    shutdown_screenshot_container = CreateContainer(
-        kShellWindowId_ShutdownScreenshotContainer,
-        "ShutdownScreenshotContainer", non_lock_screen_containers);
-  }
+  shutdown_screenshot_container = CreateContainer(
+      kShellWindowId_ShutdownScreenshotContainer, "ShutdownScreenshotContainer",
+      non_lock_screen_containers);
 
   for (const auto& id : desks_util::GetDesksContainersIds()) {
     aura::Window* container =

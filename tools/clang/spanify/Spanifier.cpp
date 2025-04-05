@@ -1127,9 +1127,7 @@ std::string GenerateClassName(std::string var_name) {
     }
     prev = c;
   }
-  // Now we need to remove the '_'s from the string, recall std::remove moves
-  // everything to the end and then returns the first '_' (or end()). We then
-  // call erase from there to the end to actually remove.
+  // Now we need to remove the '_'s from the string.
   llvm::erase(var_name, '_');
   return var_name;
 }

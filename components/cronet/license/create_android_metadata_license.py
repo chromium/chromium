@@ -12,7 +12,7 @@ from typing import Dict, Callable, List, Set
 from pathlib import Path
 
 from license_type import LicenseType
-import license_utils as license_utils
+import license_utils
 
 REPOSITORY_ROOT = os.path.abspath(
     os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir))
@@ -71,13 +71,13 @@ def _create_metadata_file(repo_path: str, directory_path: str, content: str,
 
 
 def _create_module_license_file(repo_path: str, directory_path: str,
-                                licenses: List[str], verify_only: bool):
+                                licenses_names: List[str], verify_only: bool):
     """Creates a MODULE_LICENSE_XYZ files."""
-    for license in licenses:
+    for license_name in licenses_names:
         license_file = Path(
             os.path.join(
                 directory_path,
-                f"MODULE_LICENSE_{license_utils.get_license_file_format(license)}"
+                f"MODULE_LICENSE_{license_utils.get_license_file_format(license_name)}"
             ))
         if verify_only:
             if not license_file.exists():
@@ -126,7 +126,7 @@ def _map_rust_license_path_to_directory(license_file_path: str) -> str:
 
 def get_all_readme(repo_path: str):
     """Fetches all README.chromium files under |repo_path|."""
-    return glob.glob("**/README.chromium", root_dir=repo_path, recursive=True)
+    return glob.glob("**/README.chromium", root_dir=repo_path, recursive=True)  # pylint: disable=unexpected-keyword-arg
 
 
 def get_all_readme_through_gn(repo_path: str, targets: Set[str]):
@@ -173,12 +173,10 @@ def should_skip_readme_file(readme_path: str) -> bool:
     return readme_path in constants.IGNORED_README
 
 
-def update_license(
-        repo_path: str = _ROOT_CRONET,
-        post_process_dict: Dict[str,
-                                Callable] = constants.POST_PROCESS_OPERATION,
-        verify_only: bool = False,
-        reachable_through_dependencies: bool = True):
+def update_license(repo_path: str = _ROOT_CRONET,
+                   post_process_dict: Dict[str, Callable] = None,
+                   verify_only: bool = False,
+                   reachable_through_dependencies: bool = True):
     """
   Updates the licensing files for the entire repository of external/cronet.
 
@@ -200,7 +198,8 @@ def update_license(
   will only process README.chromium files that are reachable through cronet
   as a transitive dependency.
   """
-
+    if post_process_dict is None:
+        post_process_dict = constants.POST_PROCESS_OPERATION
     readme_files_to_process = None
     if reachable_through_dependencies:
         readme_files_to_process = get_all_readme_through_gn(

@@ -204,10 +204,7 @@ base::Value::Dict IOSRealtimeReportingClient::GetContext() {
 
 ::chrome::cros::reporting::proto::UploadEventsRequest
 IOSRealtimeReportingClient::CreateUploadEventsRequest() {
-  ::chrome::cros::reporting::proto::UploadEventsRequest request;
-
-  // TODO(crbug.com/394098919): Implement this before starting reporting events.
-  return request;
+  return ::enterprise_connectors::CreateUploadEventsRequest(profile_);
 }
 
 void IOSRealtimeReportingClient::OnClientError(

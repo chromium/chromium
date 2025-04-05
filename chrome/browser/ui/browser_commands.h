@@ -32,6 +32,10 @@ class NavigationHandle;
 class WebContents;
 }  // namespace content
 
+namespace bookmarks {
+class BookmarkModel;
+}  // namespace bookmarks
+
 namespace chrome {
 
 // For all commands, where a tab is not specified, the active tab is assumed.
@@ -158,7 +162,9 @@ void Exit();
 void BookmarkCurrentTab(Browser* browser);
 // Bookmarks the current tab in the given folder and does not show the edit
 // dialog.
-void BookmarkCurrentTabInFolder(Browser* browser, int64_t folder_id);
+void BookmarkCurrentTabInFolder(Browser* browser,
+                                bookmarks::BookmarkModel* model,
+                                int64_t folder_id);
 bool CanBookmarkCurrentTab(const Browser* browser);
 void BookmarkAllTabs(Browser* browser);
 bool CanBookmarkAllTabs(const Browser* browser);

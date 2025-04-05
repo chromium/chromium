@@ -177,8 +177,8 @@ bool NameInfo::SetInfoWithVerificationStatus(const AutofillType& type,
         ? GetRootForType(type.GetStorableType())
               ->SetValueForType(type.GetStorableType(), value, status)
         : GetRootForType(type.GetStorableType())
-              ->SetValueForTypeAndResetSubstructure(type.GetStorableType(),
-                                                    value, status);
+              ->SetValueForType(type.GetStorableType(), value, status,
+                                /*invalidate_child_nodes=*/true);
     return true;
   }
   SetRawInfoWithVerificationStatus(type.GetStorableType(), value, status);

@@ -8,6 +8,7 @@
 #include <limits>
 
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
+#include "third_party/blink/renderer/core/style/superellipse.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink::cssvalue {

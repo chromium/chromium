@@ -502,6 +502,16 @@ struct StructTraits<autofill::mojom::FormFieldDataPredictionsDataView,
     return r.overall_type;
   }
 
+  static const std::string& autofill_ai_type(
+      const autofill::FormFieldDataPredictions& r) {
+    return r.autofill_ai_type;
+  }
+
+  static const std::string& format_string(
+      const autofill::FormFieldDataPredictions& r) {
+    return r.format_string;
+  }
+
   static const std::string& parseable_name(
       const autofill::FormFieldDataPredictions& r) {
     return r.parseable_name;

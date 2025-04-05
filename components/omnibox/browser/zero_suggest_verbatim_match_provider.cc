@@ -154,7 +154,11 @@ void ZeroSuggestVerbatimMatchProvider::CreateVerbatimMatch(
               url_service->search_terms_data())) {
         dse->ExtractSearchTermsFromURL(match.destination_url,
                                        url_service->search_terms_data(),
-                                       &match.fill_into_edit);
+                                       &match.contents);
+        // Upgrade Verbatim Match to a SEARCH_WHAY_YOU_TYPED.
+        match.type = AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED;
+        match.keyword = dse->keyword();
+        match.fill_into_edit = match.contents;
         if (match.description.empty() ||
             match.description ==
                 base::UTF8ToUTF16(match.destination_url.spec())) {

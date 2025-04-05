@@ -422,6 +422,13 @@ VideoDecoderPipeline::GetSupportedConfigs(
     });
   }
 
+  if (workarounds.disable_accelerated_av1_decode) {
+    std::erase_if(configs.value(), [](const auto& config) {
+      return config.profile_min >= AV1PROFILE_MIN &&
+             config.profile_max <= AV1PROFILE_MAX;
+    });
+  }
+
   return configs;
 }
 

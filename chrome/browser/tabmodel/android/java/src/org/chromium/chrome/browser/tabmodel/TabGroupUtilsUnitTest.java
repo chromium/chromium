@@ -7,9 +7,12 @@ package org.chromium.chrome.browser.tabmodel;
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -136,6 +139,15 @@ public class TabGroupUtilsUnitTest {
 
     @Test
     public void testRegroupTabs() {
+        verifyRegroupTabs(/* shouldApplyCollapse= */ true);
+    }
+
+    @Test
+    public void testRegroupTabs_CollapseStateNotApplied() {
+        verifyRegroupTabs(/* shouldApplyCollapse= */ false);
+    }
+
+    private void verifyRegroupTabs(boolean shouldApplyCollapse) {
         List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, mTab2, mTab3));
         TabGroupMetadata tabGroupMetadata =
                 new TabGroupMetadata(
@@ -150,7 +162,8 @@ public class TabGroupUtilsUnitTest {
                         /* tabGroupCollapsed= */ true,
                         /* isGroupShared= */ false,
                         /* isIncognito= */ false);
-        TabGroupUtils.regroupTabs(mTabGroupModelFilter, tabs, tabGroupMetadata);
+        TabGroupUtils.regroupTabs(
+                mTabGroupModelFilter, tabs, tabGroupMetadata, shouldApplyCollapse);
 
         for (Tab tab : tabs) {
             verify(mTabGroupModelFilter).mergeTabsToGroup(eq(tab.getId()), eq(TAB1_ID), eq(true));
@@ -158,8 +171,13 @@ public class TabGroupUtilsUnitTest {
             verify(tab).setRootId(TAB1_ID);
         }
         verify(mTabGroupModelFilter).setTabGroupColor(eq(TAB1_ID), eq(0));
-        verify(mTabGroupModelFilter).setTabGroupCollapsed(eq(TAB1_ID), eq(true), eq(false));
         verify(mTabGroupModelFilter).setTabGroupTitle(eq(TAB1_ID), eq(TAB_GROUP_TITLE));
+        if (shouldApplyCollapse) {
+            verify(mTabGroupModelFilter).setTabGroupCollapsed(eq(TAB1_ID), eq(true), eq(false));
+        } else {
+            verify(mTabGroupModelFilter, never())
+                    .setTabGroupCollapsed(anyInt(), anyBoolean(), anyBoolean());
+        }
     }
 
     private void createTabGroup(List<Tab> tabs, int rootId) {

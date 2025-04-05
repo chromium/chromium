@@ -7,6 +7,7 @@ package org.chromium.components.messages;
 import static org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.ScrollDirection.DOWN;
 import static org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.ScrollDirection.UP;
 import static org.chromium.components.messages.MessageBannerProperties.CONTENT_ALPHA;
+import static org.chromium.components.messages.MessageBannerProperties.IS_WITHIN_TAP_PROTECTION_PERIOD_SUPPLIER;
 import static org.chromium.components.messages.MessageBannerProperties.MARGIN_TOP;
 import static org.chromium.components.messages.MessageBannerProperties.TRANSLATION_X;
 import static org.chromium.components.messages.MessageBannerProperties.TRANSLATION_Y;
@@ -21,7 +22,10 @@ import android.view.MotionEvent;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.MathUtils;
+import org.chromium.base.ResettersForTesting;
+import org.chromium.base.TimeUtils;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
@@ -55,6 +59,8 @@ class MessageBannerMediator implements SwipeHandler {
         int GESTURE = 3;
     }
 
+    private static final long TAP_PROTECTION_DURATION_MS = 500;
+
     private static final int ENTER_DURATION_MS = 550;
     private static final int EXIT_DURATION_MS = 350;
     private static final TimeInterpolator TRANSLATION_ENTER_INTERPOLATOR =
@@ -62,6 +68,8 @@ class MessageBannerMediator implements SwipeHandler {
     private static final TimeInterpolator ALPHA_ENTER_INTERPOLATOR =
             Interpolators.EMPHASIZED_DECELERATE;
     private static final TimeInterpolator EXIT_INTERPOLATOR = Interpolators.EMPHASIZED_DECELERATE;
+
+    private static long sTapProtectionDurationMsForTesting;
 
     private final PropertyModel mModel;
     private final Supplier<Integer> mMaxTranslationYSupplier;
@@ -131,6 +139,20 @@ class MessageBannerMediator implements SwipeHandler {
             assert fromIndex == Position.BACK;
             mModel.set(TRANSLATION_Y, mModel.get(MARGIN_TOP) - mDefaultMarginTop);
             mModel.set(MARGIN_TOP, mDefaultMarginTop);
+        }
+        if (toIndex == Position.FRONT
+                && (!BuildConfig.IS_FOR_TEST || sTapProtectionDurationMsForTesting > 0)) {
+            long startTimestamp = TimeUtils.elapsedRealtimeMillis();
+            long protectionDuration =
+                    sTapProtectionDurationMsForTesting > 0
+                            ? sTapProtectionDurationMsForTesting
+                            : TAP_PROTECTION_DURATION_MS;
+            mModel.set(
+                    IS_WITHIN_TAP_PROTECTION_PERIOD_SUPPLIER,
+                    () -> {
+                        return TimeUtils.elapsedRealtimeMillis()
+                                < ENTER_DURATION_MS / 2 + protectionDuration + startTimestamp;
+                    });
         }
         cancelAnyAnimations();
         return startAnimation(
@@ -394,5 +416,11 @@ class MessageBannerMediator implements SwipeHandler {
 
     private boolean isResting() {
         return mModel.get(TRANSLATION_Y) == 0.f && mModel.get(TRANSLATION_X) == 0.f;
+    }
+
+    /** Set duration of tap protection period. */
+    static void setTapProtectionDurationMsForTesting(long duration) {
+        sTapProtectionDurationMsForTesting = duration;
+        ResettersForTesting.register(() -> sTapProtectionDurationMsForTesting = -1);
     }
 }

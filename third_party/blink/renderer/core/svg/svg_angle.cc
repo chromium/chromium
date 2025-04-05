@@ -175,7 +175,7 @@ SVGAngle::~SVGAngle() = default;
 
 void SVGAngle::Trace(Visitor* visitor) const {
   visitor->Trace(orient_type_);
-  SVGPropertyHelper<SVGAngle>::Trace(visitor);
+  SVGPropertyBase::Trace(visitor);
 }
 
 SVGAngle* SVGAngle::Clone() const {

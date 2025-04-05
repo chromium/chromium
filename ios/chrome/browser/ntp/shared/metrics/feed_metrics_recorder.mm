@@ -291,35 +291,11 @@ using feed::FeedUserActionType;
       base::UserMetricsAction(kDiscoverFeedUserActionPreviewTapped));
 }
 
-- (void)recordHeaderMenuLearnMoreTapped {
-  [self
-      recordDiscoverFeedUserActionHistogram:FeedUserActionType::kTappedLearnMore
-                              asInteraction:NO];
-  base::RecordAction(
-      base::UserMetricsAction(kDiscoverFeedUserActionLearnMoreTapped));
-}
-
 - (void)recordHeaderMenuManageTapped {
   [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::kTappedManage
                                 asInteraction:NO];
   base::RecordAction(
       base::UserMetricsAction(kDiscoverFeedUserActionManageTapped));
-}
-
-- (void)recordHeaderMenuManageActivityTapped {
-  [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
-                                                  kTappedManageActivity
-                                asInteraction:NO];
-  base::RecordAction(
-      base::UserMetricsAction(kDiscoverFeedUserActionManageActivityTapped));
-}
-
-- (void)recordHeaderMenuManageHiddenTapped {
-  [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
-                                                  kTappedManageHidden
-                                asInteraction:NO];
-  base::RecordAction(
-      base::UserMetricsAction(kDiscoverFeedUserActionManageHiddenTapped));
 }
 
 - (void)recordHeaderMenuManageFollowingTapped {
@@ -328,20 +304,6 @@ using feed::FeedUserActionType;
                                 asInteraction:NO];
   base::RecordAction(
       base::UserMetricsAction(kDiscoverFeedUserActionManageFollowingTapped));
-}
-
-- (void)recordDiscoverFeedVisibilityChanged:(BOOL)visible {
-  if (visible) {
-    [self
-        recordDiscoverFeedUserActionHistogram:FeedUserActionType::kTappedTurnOn
-                                asInteraction:NO];
-    base::RecordAction(base::UserMetricsAction(kDiscoverFeedUserActionTurnOn));
-  } else {
-    [self
-        recordDiscoverFeedUserActionHistogram:FeedUserActionType::kTappedTurnOff
-                                asInteraction:NO];
-    base::RecordAction(base::UserMetricsAction(kDiscoverFeedUserActionTurnOff));
-  }
 }
 
 - (void)recordOpenURLInSameTab {

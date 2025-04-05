@@ -8,7 +8,7 @@
  *
  */
 
-import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
 // The implementation of the cr module is located in
@@ -60,7 +60,7 @@ function revertTranslation() {
 }
 
 // Mark: Public API
-gCrWeb.translate = {
+gCrWebLegacy.translate = {
   installCallbacks,
   startTranslation,
   revertTranslation,

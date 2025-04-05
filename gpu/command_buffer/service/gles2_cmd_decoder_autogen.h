@@ -5251,7 +5251,8 @@ error::Error GLES2DecoderImpl::HandleCopySharedImageToTextureINTERNALImmediate(
   GLint src_y = static_cast<GLint>(c.src_y);
   GLsizei width = static_cast<GLsizei>(c.width);
   GLsizei height = static_cast<GLsizei>(c.height);
-  GLboolean flip_y = static_cast<GLboolean>(c.flip_y);
+  GLboolean is_dst_origin_top_left =
+      static_cast<GLboolean>(c.is_dst_origin_top_left);
   uint32_t src_mailbox_size;
   if (!GLES2Util::ComputeDataSize<GLbyte, 16>(1, &src_mailbox_size)) {
     return error::kOutOfBounds;
@@ -5276,8 +5277,8 @@ error::Error GLES2DecoderImpl::HandleCopySharedImageToTextureINTERNALImmediate(
     return error::kOutOfBounds;
   }
   DoCopySharedImageToTextureINTERNAL(texture, target, internal_format, type,
-                                     src_x, src_y, width, height, flip_y,
-                                     src_mailbox);
+                                     src_x, src_y, width, height,
+                                     is_dst_origin_top_left, src_mailbox);
   return error::kNoError;
 }
 

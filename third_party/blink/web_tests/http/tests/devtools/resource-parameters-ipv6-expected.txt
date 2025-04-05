@@ -48,6 +48,9 @@ http://[::1]:8000/devtools/resources/post-target.cgi?queryParam1=queryValue1&que
         _fetchedViaServiceWorker : false
         _responseCacheStorageCacheName : undefined
         _serviceWorkerResponseSource : undefined
+        _serviceWorkerRouterActualSourceType : undefined
+        _serviceWorkerRouterMatchedSourceType : undefined
+        _serviceWorkerRouterRuleIdMatched : undefined
         _transferSize : <number>
         bodySize : <number>
         content : {

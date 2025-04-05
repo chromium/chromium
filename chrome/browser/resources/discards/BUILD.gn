@@ -22,11 +22,13 @@ build_webui("build") {
   non_web_component_files = [
     "discards.ts",
     "graph.ts",
-    "sorted_table_mixin.ts",
     "sorted_table_mixin_lit.ts",
   ]
 
-  css_files = [ "database_tab.css" ]
+  css_files = [
+    "database_tab.css",
+    "discards_tab.css",
+  ]
 
   mojo_files_deps = [
     "//chrome/browser/resource_coordinator:mojo_bindings_ts__generator",

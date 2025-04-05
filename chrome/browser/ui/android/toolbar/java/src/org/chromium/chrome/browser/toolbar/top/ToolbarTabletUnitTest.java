@@ -62,6 +62,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBarAnimatingView;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
+import org.chromium.chrome.browser.toolbar.back_button.BackButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.reload_button.ReloadButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbarAllowCaptureReason;
@@ -89,6 +90,7 @@ public final class ToolbarTabletUnitTest {
     @Mock private ToolbarDataProvider mToolbarDataProvider;
     @Mock private NewTabPageDelegate mNewTabPageDelegate;
     @Mock private ReloadButtonCoordinator mReloadButtonCoordinator;
+    @Mock private BackButtonCoordinator mBackButtonCoordinator;
     private Activity mActivity;
     private ToolbarTablet mToolbarTablet;
     private LinearLayout mToolbarTabletLayout;
@@ -118,6 +120,7 @@ public final class ToolbarTabletUnitTest {
         mToolbarTablet.setTabStripTransitionCoordinator(mTabStripTransitionCoordinator);
         mToolbarTablet.setToolbarColorObserver(mToolbarColorObserver);
         mToolbarTablet.setReloadButtonCoordinator(mReloadButtonCoordinator);
+        mToolbarTablet.setBackButtonCoordinator(mBackButtonCoordinator);
         mToolbarTabletLayout =
                 (LinearLayout) mToolbarTablet.findViewById(R.id.toolbar_tablet_layout);
         mHomeButton = mToolbarTablet.findViewById(R.id.home_button);
@@ -133,6 +136,10 @@ public final class ToolbarTabletUnitTest {
         when(mReloadButtonCoordinator.getFadeAnimator(false))
                 .thenReturn(ObjectAnimator.ofFloat(mReloadingButton, View.ALPHA, 0.f));
         when(mReloadButtonCoordinator.getFadeAnimator(true))
+                .thenReturn(ObjectAnimator.ofFloat(mReloadingButton, View.ALPHA, 1.f));
+        when(mBackButtonCoordinator.getFadeAnimator(false))
+                .thenReturn(ObjectAnimator.ofFloat(mReloadingButton, View.ALPHA, 0.f));
+        when(mBackButtonCoordinator.getFadeAnimator(true))
                 .thenReturn(ObjectAnimator.ofFloat(mReloadingButton, View.ALPHA, 1.f));
     }
 
@@ -177,7 +184,8 @@ public final class ToolbarTabletUnitTest {
                 null,
                 null,
                 mProgressBar,
-                mReloadButtonCoordinator);
+                mReloadButtonCoordinator,
+                mBackButtonCoordinator);
         when(mToolbarDataProvider.getNewTabPageDelegate()).thenReturn(mNewTabPageDelegate);
         when(mToolbarDataProvider.isIncognitoBranded()).thenReturn(true);
         mToolbarTablet.onTabOrModelChanged();
@@ -232,13 +240,13 @@ public final class ToolbarTabletUnitTest {
     public void onMeasureShortWidth_hidesToolbarButtons() {
         mToolbarTablet.measure(300, 300);
 
-        ImageButton[] btns = mToolbarTablet.getToolbarButtons();
-        for (ImageButton btn : btns) {
-            assertEquals(
-                    "Toolbar button visibility is not as expected", View.GONE, btn.getVisibility());
-        }
+        assertEquals(
+                "Toolbar button visibility is not as expected",
+                View.GONE,
+                mForwardButton.getVisibility());
 
         verify(mReloadButtonCoordinator).setVisibility(false);
+        verify(mBackButtonCoordinator).setVisibility(false);
     }
 
     @Test
@@ -246,15 +254,13 @@ public final class ToolbarTabletUnitTest {
         mToolbarTablet.setToolbarButtonsVisibleForTesting(false);
         mToolbarTablet.measure(700, 300);
 
-        ImageButton[] btns = mToolbarTablet.getToolbarButtons();
-        for (ImageButton btn : btns) {
-            assertEquals(
-                    "Toolbar button visibility is not as expected",
-                    View.VISIBLE,
-                    btn.getVisibility());
-        }
+        assertEquals(
+                "Toolbar button visibility is not as expected",
+                View.VISIBLE,
+                mForwardButton.getVisibility());
 
         verify(mReloadButtonCoordinator).setVisibility(true);
+        verify(mBackButtonCoordinator).setVisibility(true);
     }
 
     @Test
@@ -272,7 +278,8 @@ public final class ToolbarTabletUnitTest {
                 null,
                 null,
                 mProgressBar,
-                mReloadButtonCoordinator);
+                mReloadButtonCoordinator,
+                mBackButtonCoordinator);
         when(mToolbarDataProvider.getNewTabPageDelegate()).thenReturn(mNewTabPageDelegate);
         when(mToolbarDataProvider.isIncognitoBranded()).thenReturn(true);
         mToolbarTablet.onTabOrModelChanged();
@@ -296,10 +303,9 @@ public final class ToolbarTabletUnitTest {
     @Test
     public void onMeasureSmallWidthWithAnimation_hidesToolbarButtons() {
         doReturn(true).when(mToolbarTablet).isShown();
-        for (ImageButton btn : mToolbarTablet.getToolbarButtons()) {
-            when(mLocationBar.createHideButtonAnimatorForTablet(btn))
-                    .thenReturn(ObjectAnimator.ofFloat(btn, View.ALPHA, 0.f));
-        }
+
+        when(mLocationBar.createHideButtonAnimatorForTablet(mForwardButton))
+                .thenReturn(ObjectAnimator.ofFloat(mForwardButton, View.ALPHA, 0.f));
         when(mLocationBar.getHideButtonsWhenUnfocusedAnimatorsForTablet(anyInt()))
                 .thenReturn(new ArrayList<>());
 
@@ -309,11 +315,10 @@ public final class ToolbarTabletUnitTest {
         verify(mTabStripTransitionCoordinator).requestDeferTabStripTransitionToken();
         Shadows.shadowOf(Looper.getMainLooper()).idle();
         // Verify
-        ImageButton[] btns = mToolbarTablet.getToolbarButtons();
-        for (ImageButton btn : btns) {
-            assertEquals(
-                    "Toolbar button visibility is not as expected", View.GONE, btn.getVisibility());
-        }
+        assertEquals(
+                "Toolbar button visibility is not as expected",
+                View.GONE,
+                mForwardButton.getVisibility());
         verify(mReloadButtonCoordinator).setVisibility(false);
         verify(mTabStripTransitionCoordinator, atLeastOnce()).releaseTabStripToken(anyInt());
     }
@@ -323,10 +328,9 @@ public final class ToolbarTabletUnitTest {
         doReturn(true).when(mToolbarTablet).isShown();
         mToolbarTablet.setToolbarButtonsVisibleForTesting(false);
         mToolbarTablet.enableButtonVisibilityChangeAnimationForTesting();
-        for (ImageButton btn : mToolbarTablet.getToolbarButtons()) {
-            when(mLocationBar.createShowButtonAnimatorForTablet(btn))
-                    .thenReturn(ObjectAnimator.ofFloat(btn, View.ALPHA, 1.f));
-        }
+
+        when(mLocationBar.createShowButtonAnimatorForTablet(mForwardButton))
+                .thenReturn(ObjectAnimator.ofFloat(mForwardButton, View.ALPHA, 1.f));
         when(mLocationBar.getShowButtonsWhenUnfocusedAnimatorsForTablet(anyInt()))
                 .thenReturn(new ArrayList<>());
         // Call
@@ -334,13 +338,10 @@ public final class ToolbarTabletUnitTest {
         verify(mTabStripTransitionCoordinator).requestDeferTabStripTransitionToken();
         Shadows.shadowOf(Looper.getMainLooper()).idle();
         // Verify
-        ImageButton[] btns = mToolbarTablet.getToolbarButtons();
-        for (ImageButton btn : btns) {
-            assertEquals(
-                    "Toolbar button visibility is not as expected",
-                    View.VISIBLE,
-                    btn.getVisibility());
-        }
+        assertEquals(
+                "Toolbar button visibility is not as expected",
+                View.VISIBLE,
+                mForwardButton.getVisibility());
         verify(mReloadButtonCoordinator).setVisibility(true);
         verify(mTabStripTransitionCoordinator, atLeastOnce()).releaseTabStripToken(anyInt());
     }

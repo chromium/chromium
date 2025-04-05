@@ -46,12 +46,15 @@ public class WebsiteRowPreference extends ChromeImageViewPreference {
 
     private boolean mShowRwsMembershipLabels;
 
+    private boolean mIsClickable;
+
     WebsiteRowPreference(
             Context context,
             SiteSettingsDelegate siteSettingsDelegate,
             WebsiteEntry siteEntry,
             LayoutInflater layoutInflater,
-            boolean showRwsMembershipLabels) {
+            boolean showRwsMembershipLabels,
+            boolean isClickable) {
         super(context);
         mSiteSettingsDelegate = siteSettingsDelegate;
         mSiteEntry = siteEntry;
@@ -59,6 +62,7 @@ public class WebsiteRowPreference extends ChromeImageViewPreference {
         // Initialize with an empty callback.
         mOnDeleteCallback = CallbackUtils.emptyRunnable();
         mShowRwsMembershipLabels = showRwsMembershipLabels;
+        mIsClickable = isClickable;
 
         // To make sure the layout stays stable throughout, we assign a
         // transparent drawable as the icon initially. This is so that
@@ -114,6 +118,8 @@ public class WebsiteRowPreference extends ChromeImageViewPreference {
                     mSiteEntry.getFaviconUrl(), this::onFaviconAvailable);
             mFaviconFetched = true;
         }
+
+        setViewClickable(mIsClickable);
     }
 
     public void setOnDeleteCallback(Runnable callback) {

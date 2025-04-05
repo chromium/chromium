@@ -26,7 +26,6 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {assertExhaustive} from '../assert_extras.js';
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {RouteOriginMixin} from '../common/route_origin_mixin.js';
-import type {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import type {Route} from '../router.js';
 import {Router, routes} from '../router.js';
 
@@ -48,14 +47,6 @@ export class FilesSettingsCardElement extends FilesSettingsCardElementBase {
 
   static get properties() {
     return {
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([]),
-      },
-
       bulkPinningPrefEnabled_: Boolean,
       mirrorSyncPrefEnabled_: Boolean,
 

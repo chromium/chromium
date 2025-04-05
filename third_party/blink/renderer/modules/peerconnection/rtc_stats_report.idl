@@ -152,6 +152,7 @@ dictionary RTCOutboundRtpStreamStats : RTCSentRtpStreamStats {
   DOMString            mediaSourceId;
   DOMString            remoteId;
   DOMString            rid;
+  unsigned long        encodingIndex;
   unsigned long long   headerBytesSent;
   unsigned long long   retransmittedPacketsSent;
   unsigned long long   retransmittedBytesSent;

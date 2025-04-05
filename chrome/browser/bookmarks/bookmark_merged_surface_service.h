@@ -131,6 +131,10 @@ class BookmarkMergedSurfaceService : public KeyedService,
   bool IsNodeManaged(const bookmarks::BookmarkNode* node) const;
 
   bookmarks::BookmarkModel* bookmark_model() { return model_; }
+  const bookmarks::BookmarkModel* bookmark_model() const { return model_; }
+  const bookmarks::ManagedBookmarkService* managed_bookmark_service() const {
+    return managed_bookmark_service_;
+  }
 
   // Must be called for trackers to be initialized.
   // `BookmarkModel` also must complete loading for this to complete loading.

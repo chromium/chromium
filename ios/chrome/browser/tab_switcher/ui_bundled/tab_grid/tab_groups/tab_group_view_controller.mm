@@ -55,6 +55,12 @@ constexpr CGFloat kSpace = 8;
 constexpr CGFloat kFacePileWidth = 84;
 constexpr CGFloat kFacePileHeight = 44;
 
+// Container constraints.
+constexpr CGFloat kContainerMargin = 12;
+constexpr CGFloat kContainerMultiplier = 0.8;
+constexpr CGFloat kContainerCornerRadius = 24;
+constexpr CGFloat kContainerBackgroundAlpha = 0.8;
+
 }  // namespace
 
 @interface TabGroupViewController () <TabGridToolbarsGridDelegate,
@@ -94,6 +100,8 @@ constexpr CGFloat kFacePileHeight = 44;
   // The face pile view controller that displays the share button or
   // the face pile.
   UIViewController* _facePileViewController;
+  // Container for the content of the ViewController.
+  UIView* _container;
 }
 
 #pragma mark - Public
@@ -154,13 +162,23 @@ constexpr CGFloat kFacePileHeight = 44;
 
 - (void)fadeBlurIn {
   if (UIAccessibilityIsReduceTransparencyEnabled()) {
-    self.view.backgroundColor = UIColor.blackColor;
+    if (IsContainedTabGroupEnabled()) {
+      self.view.backgroundColor = [UIColor colorNamed:kStaticGrey600Color];
+    } else {
+      self.view.backgroundColor = UIColor.blackColor;
+    }
   } else {
-    self.view.backgroundColor = [[UIColor colorNamed:kStaticGrey900Color]
-        colorWithAlphaComponent:kBackgroundAlpha];
-    UIBlurEffect* blurEffect =
-        [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
-    _blurView.effect = blurEffect;
+    if (IsContainedTabGroupEnabled()) {
+      UIBlurEffect* blurEffect = [UIBlurEffect
+          effectWithStyle:UIBlurEffectStyleSystemUltraThinMaterial];
+      _blurView.effect = blurEffect;
+    } else {
+      self.view.backgroundColor = [[UIColor colorNamed:kStaticGrey900Color]
+          colorWithAlphaComponent:kBackgroundAlpha];
+      UIBlurEffect* blurEffect =
+          [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
+      _blurView.effect = blurEffect;
+    }
   }
 }
 
@@ -198,6 +216,7 @@ constexpr CGFloat kFacePileHeight = 44;
   self.view.accessibilityIdentifier = kTabGroupViewIdentifier;
   self.view.accessibilityViewIsModal = YES;
   self.view.backgroundColor = UIColor.clearColor;
+
   if (!UIAccessibilityIsReduceTransparencyEnabled()) {
     _blurView = [[UIVisualEffectView alloc] initWithEffect:nil];
     _blurView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -207,23 +226,56 @@ constexpr CGFloat kFacePileHeight = 44;
 
   [self fadeBlurIn];
 
+  _container = [[UIView alloc] init];
+  _container.translatesAutoresizingMaskIntoConstraints = NO;
+  [self.view addSubview:_container];
+
+  if (IsContainedTabGroupEnabled()) {
+    _container.backgroundColor =
+        [UIColor.blackColor colorWithAlphaComponent:kContainerBackgroundAlpha];
+    _container.layer.cornerRadius = kContainerCornerRadius;
+
+    [NSLayoutConstraint activateConstraints:@[
+      [self.view.centerXAnchor
+          constraintEqualToAnchor:_container.centerXAnchor],
+      [self.view.centerYAnchor
+          constraintEqualToAnchor:_container.centerYAnchor],
+      [_container.heightAnchor constraintEqualToAnchor:self.view.heightAnchor
+                                            multiplier:kContainerMultiplier],
+      [self.view.trailingAnchor
+          constraintEqualToAnchor:_container.trailingAnchor
+                         constant:kContainerMargin],
+      [self.view.leadingAnchor constraintEqualToAnchor:_container.leadingAnchor
+                                              constant:-kContainerMargin],
+    ]];
+  } else {
+    AddSameConstraints(self.view, _container);
+  }
+
   [self configureNavigationBar];
 
   UIView* gridView = _gridViewController.view;
   gridView.translatesAutoresizingMaskIntoConstraints = NO;
   [self addChildViewController:_gridViewController];
-  [self.view addSubview:gridView];
+  [_container insertSubview:gridView belowSubview:_navigationBar];
 
   [self updateGridInsets];
 
   [_gridViewController didMoveToParentViewController:self];
 
   [NSLayoutConstraint activateConstraints:@[
-    [gridView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
-    [gridView.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor],
-    [gridView.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor],
-    [gridView.topAnchor constraintEqualToAnchor:_navigationBar.bottomAnchor],
+    [gridView.leadingAnchor constraintEqualToAnchor:_container.leadingAnchor],
+    [gridView.trailingAnchor constraintEqualToAnchor:_container.trailingAnchor],
+    [gridView.bottomAnchor constraintEqualToAnchor:_container.bottomAnchor],
   ]];
+
+  if (IsContainedTabGroupEnabled()) {
+    [gridView.topAnchor constraintEqualToAnchor:_container.topAnchor].active =
+        YES;
+  } else {
+    [gridView.topAnchor constraintEqualToAnchor:_navigationBar.bottomAnchor]
+        .active = YES;
+  }
 
   // Add the toolbar after the grid to make sure it is above it.
   [self configureBottomToolbar];
@@ -484,15 +536,15 @@ constexpr CGFloat kFacePileHeight = 44;
 
   _navigationBar.tintColor = UIColor.whiteColor;
   _navigationBar.delegate = self;
-  [self.view addSubview:_navigationBar];
+  [_container addSubview:_navigationBar];
 
   [NSLayoutConstraint activateConstraints:@[
     [_navigationBar.topAnchor
-        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor],
+        constraintEqualToAnchor:_container.safeAreaLayoutGuide.topAnchor],
     [_navigationBar.leadingAnchor
-        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor],
+        constraintEqualToAnchor:_container.safeAreaLayoutGuide.leadingAnchor],
     [_navigationBar.trailingAnchor
-        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor],
+        constraintEqualToAnchor:_container.safeAreaLayoutGuide.trailingAnchor],
   ]];
 }
 
@@ -529,14 +581,15 @@ constexpr CGFloat kFacePileHeight = 44;
     [bottomToolbar setTabGroupFeedbackVisible:YES];
   }
 
-  [self.view addSubview:bottomToolbar];
+  [_container addSubview:bottomToolbar];
 
   [NSLayoutConstraint activateConstraints:@[
-    [bottomToolbar.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor],
+    [bottomToolbar.bottomAnchor
+        constraintEqualToAnchor:_container.bottomAnchor],
     [bottomToolbar.leadingAnchor
-        constraintEqualToAnchor:self.view.leadingAnchor],
+        constraintEqualToAnchor:_container.leadingAnchor],
     [bottomToolbar.trailingAnchor
-        constraintEqualToAnchor:self.view.trailingAnchor],
+        constraintEqualToAnchor:_container.trailingAnchor],
   ]];
 
   [self updateGridInsets];
@@ -728,6 +781,12 @@ constexpr CGFloat kFacePileHeight = 44;
 // Updates the safe area inset of the grid based on this VC safe areas and the
 // bottom toolbar, except the top one as the grid is below a toolbar.
 - (void)updateGridInsets {
+  if (IsContainedTabGroupEnabled()) {
+    _gridViewController.contentInsets =
+        UIEdgeInsetsMake(_navigationBar.intrinsicContentSize.height, 0,
+                         _bottomToolbar.intrinsicContentSize.height, 0);
+    return;
+  }
   CGFloat bottomToolbarInset = 0;
   if (IsTabGroupIndicatorEnabled() && HasTabGroupIndicatorButtonsUpdated()) {
     BOOL shouldUseCompactLayout = self.traitCollection.verticalSizeClass ==

@@ -421,6 +421,9 @@ RTCOutboundRtpStreamStats* ToV8Stat(
   if (webrtc_stat.rid.has_value()) {
     v8_stat->setRid(String::FromUTF8(*webrtc_stat.rid));
   }
+  if (webrtc_stat.encoding_index.has_value()) {
+    v8_stat->setEncodingIndex(*webrtc_stat.encoding_index);
+  }
   if (webrtc_stat.header_bytes_sent.has_value()) {
     v8_stat->setHeaderBytesSent(*webrtc_stat.header_bytes_sent);
   }

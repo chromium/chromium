@@ -99,7 +99,7 @@
 #include "components/permissions/test/permission_request_observer.h"
 #include "components/prefs/pref_service.h"
 #include "components/sessions/content/session_tab_helper.h"
-#include "components/tab_collections/public/tab_interface.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/navigation_controller.h"
@@ -950,8 +950,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       bubble_widget->widget_delegate()->AsBubbleDialogDelegate();
   ClickBubbleDialogButton(bubble_widget_delegate,
                           bubble_widget_delegate->GetOkButton());
-  // Wait for the bubble to be destroyed.
-  views::test::WidgetDestroyedWaiter(bubble_widget).Wait();
   ASSERT_FALSE(controller->get_lens_permission_bubble_controller_for_testing()
                    ->HasOpenDialogWidget());
 
@@ -1013,8 +1011,6 @@ IN_PROC_BROWSER_TEST_F(
       bubble_widget->widget_delegate()->AsBubbleDialogDelegate();
   ClickBubbleDialogButton(bubble_widget_delegate,
                           bubble_widget_delegate->GetOkButton());
-  // Wait for the bubble to be destroyed.
-  views::test::WidgetDestroyedWaiter(bubble_widget).Wait();
   ASSERT_FALSE(controller->get_lens_permission_bubble_controller_for_testing()
                    ->HasOpenDialogWidget());
 
@@ -1074,8 +1070,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       bubble_widget->widget_delegate()->AsBubbleDialogDelegate();
   ClickBubbleDialogButton(bubble_widget_delegate,
                           bubble_widget_delegate->GetCancelButton());
-  // Wait for the bubble to be destroyed.
-  views::test::WidgetDestroyedWaiter(bubble_widget).Wait();
   ASSERT_FALSE(controller->get_lens_permission_bubble_controller_for_testing()
                    ->HasOpenDialogWidget());
 
@@ -5437,6 +5431,9 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
   const GURL new_url = embedded_test_server()->GetURL(kPdfDocumentWithForm);
   LoadPdfGetExtensionHost(new_url);
 
+  // Focus the searchbox.
+  controller->OnFocusChangedForTesting(true);
+
   // Issue a new searchbox query.
   controller->IssueSearchBoxRequestForTesting(
       "oranges", AutocompleteMatchType::SEARCH_SUGGEST,
@@ -5557,14 +5554,6 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
   // Focus the searchbox.
   controller->OnFocusChangedForTesting(true);
 
-  // Verify a new full image and page content request was sent. Both requests
-  // happen async, so need to wait for both to be sent before continuing to
-  // prevent flakiness.
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return fake_query_controller->num_full_image_requests_sent() == 2 &&
-           fake_query_controller->num_page_content_update_requests_sent() == 2;
-  }));
-
   // Issue a query.
   controller->IssueSearchBoxRequestForTesting(
       "red", AutocompleteMatchType::Type::SEARCH_SUGGEST,
@@ -5588,8 +5577,8 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
   // state. Both requests happen async, so need to wait for both to be sent
   // before continuing to prevent flakiness.
   ASSERT_TRUE(base::test::RunUntil([&]() {
-    return fake_query_controller->num_full_image_requests_sent() == 3 &&
-           fake_query_controller->num_page_content_update_requests_sent() == 3;
+    return fake_query_controller->num_full_image_requests_sent() == 2 &&
+           fake_query_controller->num_page_content_update_requests_sent() == 2;
   }));
 }
 
@@ -5770,18 +5759,24 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
   const GURL pdf_url = embedded_test_server()->GetURL(kPdfDocumentWithForm);
   LoadPdfGetExtensionHost(pdf_url);
 
+  // Focus the searchbox.
+  controller->OnFocusChangedForTesting(true);
+
   // Issue a new searchbox query.
   controller->IssueSearchBoxRequestForTesting(
       "oranges", AutocompleteMatchType::SEARCH_SUGGEST,
       /*is_zero_prefix_suggestion=*/false,
       /*additional_query_params=*/{});
 
+  // Verify transitions to live page.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kLivePageAndResults; }));
+
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return !fake_query_controller->last_sent_underlying_content_bytes().empty();
   }));
   ASSERT_EQ(lens::MimeType::kPdf,
             fake_query_controller->last_sent_underlying_content_type());
-  controller->OnFocusChangedForTesting(true);
 
   CloseOverlayAndWaitForOff(controller,
                             LensOverlayDismissalSource::kOverlayCloseButton);
@@ -6331,6 +6326,9 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // Change page.
   WaitForPaint(kDocumentWithNamedElement);
+
+  // Focus the searchbox.
+  controller->OnFocusChangedForTesting(true);
 
   // Issue a new searchbox query.
   controller->IssueSearchBoxRequestForTesting(
@@ -7245,6 +7243,9 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Change page.
   WaitForPaint(kDocumentWithNamedElement);
 
+  // Focus the searchbox.
+  controller->OnFocusChangedForTesting(true);
+
   // Issue a new searchbox query.
   controller->IssueSearchBoxRequestForTesting(
       "oranges", AutocompleteMatchType::SEARCH_SUGGEST,
@@ -8015,8 +8016,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerContextualFeaturesDisabledTest,
       bubble_widget->widget_delegate()->AsBubbleDialogDelegate();
   ClickBubbleDialogButton(bubble_widget_delegate,
                           bubble_widget_delegate->GetOkButton());
-  // Wait for the bubble to be destroyed.
-  views::test::WidgetDestroyedWaiter(bubble_widget).Wait();
   ASSERT_FALSE(controller->get_lens_permission_bubble_controller_for_testing()
                    ->HasOpenDialogWidget());
 
@@ -8075,8 +8074,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerContextualFeaturesDisabledTest,
       bubble_widget->widget_delegate()->AsBubbleDialogDelegate();
   ClickBubbleDialogButton(bubble_widget_delegate,
                           bubble_widget_delegate->GetCancelButton());
-  // Wait for the bubble to be destroyed.
-  views::test::WidgetDestroyedWaiter(bubble_widget).Wait();
   ASSERT_FALSE(controller->get_lens_permission_bubble_controller_for_testing()
                    ->HasOpenDialogWidget());
 
@@ -8119,8 +8116,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerContextualFeaturesDisabledTest,
 
   // Simulate pref being enabled elsewhere.
   prefs->SetBoolean(lens::prefs::kLensSharingPageScreenshotEnabled, true);
-  // Wait for the bubble to be destroyed.
-  views::test::WidgetDestroyedWaiter(bubble_widget).Wait();
   ASSERT_FALSE(controller->get_lens_permission_bubble_controller_for_testing()
                    ->HasOpenDialogWidget());
 

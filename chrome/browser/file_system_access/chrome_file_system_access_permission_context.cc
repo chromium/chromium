@@ -551,6 +551,8 @@ InterpretSafeBrowsingResult(safe_browsing::DownloadCheckResult result) {
     case Result::UNKNOWN:
     case Result::SAFE:
     case Result::ALLOWLISTED_BY_POLICY:
+    case Result::SENSITIVE_CONTENT_WARNING:
+    case Result::DEEP_SCANNED_SAFE:
       return ChromeFileSystemAccessPermissionContext::AfterWriteCheckResult::
           kAllow;
 
@@ -562,15 +564,13 @@ InterpretSafeBrowsingResult(safe_browsing::DownloadCheckResult result) {
     case Result::BLOCKED_TOO_LARGE:
     case Result::DANGEROUS_ACCOUNT_COMPROMISE:
     case Result::BLOCKED_SCAN_FAILED:
+    case Result::SENSITIVE_CONTENT_BLOCK:
       return ChromeFileSystemAccessPermissionContext::AfterWriteCheckResult::
           kBlock;
 
     // This shouldn't be returned for File System Access write checks.
     case Result::ASYNC_SCANNING:
     case Result::ASYNC_LOCAL_PASSWORD_SCANNING:
-    case Result::SENSITIVE_CONTENT_WARNING:
-    case Result::SENSITIVE_CONTENT_BLOCK:
-    case Result::DEEP_SCANNED_SAFE:
     case Result::PROMPT_FOR_SCANNING:
     case Result::PROMPT_FOR_LOCAL_PASSWORD_SCANNING:
     case Result::DEEP_SCANNED_FAILED:

@@ -310,6 +310,7 @@ extern const char kDisplayLock[];
 extern const char kDevtools[];
 extern const char kAnchorPositioning[];
 extern const char kScrollMarkersChanged[];
+extern const char kOutOfFlowAlignmentChanged[];
 }  // namespace layout_invalidation_reason
 
 // LayoutInvalidationReasonForTracing is strictly for tracing. Blink logic must

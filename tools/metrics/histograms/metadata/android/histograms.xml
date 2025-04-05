@@ -902,8 +902,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     Recorded when a user navigates to a URL by a navigation gesture or a
     navigation button and then a backfalsing event happens. Recorded for both
-    swipes and clicks in both 3-button mode and gesture navigation mode. Android
-    only.
+    swipes and clicks in both 3-button mode and gesture navigation mode.
   </summary>
 </histogram>
 
@@ -999,6 +998,20 @@ chromium-metrics-reviews@google.com.
     <variant name=".SeparateTask"
         summary="custom tab is from a separate task."/>
   </token>
+</histogram>
+
+<histogram name="Android.BackPress.StrictBackfalsing"
+    enum="NavigationDirection" expires_after="2025-07-27">
+  <owner>eleanorlee@google.com</owner>
+  <owner>lazzzis@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
+  <summary>
+    Another version of Android.BackPress.Backfalsing2 with strict definition of
+    &quot;Backfalsing&quot;. Recorded when a user navigates to a URL by a
+    navigation gesture or a navigation button and then a backfalsing event
+    happens within **3 seconds**. Recorded for both swipes and clicks in both
+    3-button mode and gesture navigation mode.
+  </summary>
 </histogram>
 
 <histogram name="Android.BackPress.SwipeEdge{Type}" enum="SwipeEdge"
@@ -1422,7 +1435,6 @@ chromium-metrics-reviews@google.com.
     enum="DeviceAuthSource" expires_after="2025-09-07">
   <owner>ioanap@chromium.org</owner>
   <owner>friedrichh@chromium.org</owner>
-  <owner>theocristea@google.com</owner>
   <owner>clhager@google.com</owner>
   <summary>
     Recorded when a UI surface/flow in Chrome on Android chooses to re-auth the
@@ -7729,10 +7741,9 @@ chromium-metrics-reviews@google.com.
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Records whether a given URL is allowed to be loaded by the current device
-    user. This is based on a combination of a call to GMS Core, which checks if
-    the url is allowed, and the setting
-    AwFeatures.WEBVIEW_SUPERVISED_USER_SITE_BLOCK, which determines if we
-    actually block urls or only log the results.
+    user. This is based on a call to GMS Core, which checks if the url is
+    allowed. This is recorded during each URL load, however only for the
+    resource types which undergo this type of URL check.
   </summary>
 </histogram>
 
@@ -7742,7 +7753,9 @@ chromium-metrics-reviews@google.com.
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Records the time taken to return from the call to GMS Core that checks if a
-    given URL is allowed to be loaded by the current device user.
+    given URL is allowed to be loaded by the current device user. This is
+    recorded during each URL load, however only for the resource types which
+    undergo this type of URL check.
   </summary>
 </histogram>
 
@@ -7753,7 +7766,9 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the time taken to return from the call to GMS Core that checks if a
     given URL is allowed to be loaded by the current device user. This metric is
-    only recorded on the first call to GMS Core.
+    only recorded on the first call to GMS Core. This is recorded only for the
+    first URL load, and only for the resource types which undergo this type of
+    URL check.
   </summary>
 </histogram>
 
@@ -7764,7 +7779,9 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the time taken to return from the call to GMS Core that checks if a
     given URL is allowed to be loaded by the current device user. This metric is
-    not recorded on the first call, only on subsequent ones.
+    not recorded on the first call, only on subsequent ones. This is recorded
+    during each URL load after the initial load, however only for the resource
+    types which undergo this type of URL check.
   </summary>
 </histogram>
 

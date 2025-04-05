@@ -136,15 +136,7 @@ public class DropdownAdapter extends ArrayAdapter<DropdownItem> {
             sublabelView.setVisibility(View.VISIBLE);
         }
 
-        ImageView iconViewStart = (ImageView) layout.findViewById(R.id.start_dropdown_icon);
-        ImageView iconViewEnd = (ImageView) layout.findViewById(R.id.end_dropdown_icon);
-        if (item.isIconAtStart()) {
-            iconViewEnd.setVisibility(View.GONE);
-        } else {
-            iconViewStart.setVisibility(View.GONE);
-        }
-
-        ImageView iconView = item.isIconAtStart() ? iconViewStart : iconViewEnd;
+        ImageView iconView = (ImageView) layout.findViewById(R.id.end_dropdown_icon);
         if (item.getIconId() == DropdownItem.NO_ICON) {
             iconView.setVisibility(View.GONE);
         } else {

@@ -15,6 +15,7 @@
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
 #import "ios/chrome/common/ui/table_view/favicon_table_view_cell.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
+#import "ios/chrome/credential_provider_extension/favicon_util.h"
 #import "ios/chrome/credential_provider_extension/metrics_util.h"
 #import "ios/chrome/credential_provider_extension/ui/credential_list_global_header_view.h"
 #import "ios/chrome/credential_provider_extension/ui/credential_list_header_view.h"
@@ -237,33 +238,19 @@ UIColor* BackgroundColor() {
   id<Credential> credential = [self credentialForIndexPath:indexPath];
   DCHECK(credential);
   DCHECK(cell);
-  CredentialListCell* credentialCell =
+  __weak CredentialListCell* credentialCell =
       base::apple::ObjCCastStrict<CredentialListCell>(cell);
   NSString* serviceIdentifier = credential.serviceIdentifier;
 
-  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
-    NSURL* filePath = [app_group::SharedFaviconAttributesFolder()
-        URLByAppendingPathComponent:credential.favicon
-                        isDirectory:NO];
-    NSError* error = nil;
-    NSData* data = [NSData dataWithContentsOfURL:filePath
-                                         options:0
-                                           error:&error];
-    if (data && !error) {
-      NSKeyedUnarchiver* unarchiver =
-          [[NSKeyedUnarchiver alloc] initForReadingFromData:data error:nil];
-      unarchiver.requiresSecureCoding = NO;
-      FaviconAttributes* attributes =
-          [unarchiver decodeObjectForKey:NSKeyedArchiveRootObjectKey];
-      // Only set favicon if the cell hasn't been reused.
-      if ([credentialCell.uniqueIdentifier isEqualToString:serviceIdentifier]) {
-        // Update the UI on the main thread.
-        dispatch_async(dispatch_get_main_queue(), ^{
-          if (attributes) {
-            [credentialCell.faviconView configureWithAttributes:attributes];
-          }
-        });
-      }
+  FetchFaviconAsync(credential.favicon, ^(FaviconAttributes* attributes) {
+    // Only set favicon if the cell hasn't been reused.
+    if ([credentialCell.uniqueIdentifier isEqualToString:serviceIdentifier]) {
+      // Update the UI on the main thread.
+      dispatch_async(dispatch_get_main_queue(), ^{
+        if (attributes) {
+          [credentialCell.faviconView configureWithAttributes:attributes];
+        }
+      });
     }
   });
 }

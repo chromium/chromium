@@ -253,6 +253,9 @@ UIStackView* CarouselStackView() {
       return self.isHighlighted;
     case kRightArrow:
       return self.isHighlighted;
+    case kReturnKey:
+      // Return is currently handled in OmniboxPopupViewController.
+      return NO;
   }
   return NO;
 }

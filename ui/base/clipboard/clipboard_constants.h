@@ -11,8 +11,6 @@
 #if BUILDFLAG(IS_APPLE)
 #ifdef __OBJC__
 @class NSString;
-#else
-class NSString;
 #endif
 #endif  // BUILDFLAG(IS_APPLE)
 
@@ -20,63 +18,69 @@ namespace ui {
 
 // ----- PLATFORM NEUTRAL MIME TYPES -----
 
-COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES) extern const char kMimeTypeText[];
-COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES) extern const char kMimeTypeTextUtf8[];
-COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES) extern const char kMimeTypeURIList[];
+inline constexpr char kMimeTypePlainText[] = "text/plain";
+inline constexpr char16_t kMimeTypePlainText16[] = u"text/plain";
+inline constexpr char kMimeTypeUtf8PlainText[] = "text/plain;charset=utf-8";
+inline constexpr char kMimeTypeUriList[] = "text/uri-list";
+inline constexpr char16_t kMimeTypeUriList16[] = u"text/uri-list";
 // Non-standard type for downloading files after drop events. Only works on
-// Windows. See https://crbug.com/860557 and https://crbug.com/425170.
-COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES)
-extern const char kMimeTypeDownloadURL[];
-COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES)
-extern const char kMimeTypeMozillaURL[];
-COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES) extern const char kMimeTypeHTML[];
-COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES) extern const char kMimeTypeHTMLUtf8[];
-COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES) extern const char kMimeTypeSvg[];
-COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES) extern const char kMimeTypeRTF[];
-COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES) extern const char kMimeTypePNG[];
-COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES)
-extern const char kMimeTypeOctetStream[];
-COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES)
-extern const char kMimeTypeWindowDrag[];
+// Windows. See https://crbug.com/41399675 and https://crbug.com/40390016.
+inline constexpr char kMimeTypeDownloadUrl[] = "downloadurl";
+inline constexpr char kMimeTypeMozillaUrl[] = "text/x-moz-url";
+inline constexpr char16_t kMimeTypeMozillaUrl16[] = u"text/x-moz-url";
+inline constexpr char kMimeTypeHtml[] = "text/html";
+inline constexpr char16_t kMimeTypeHtml16[] = u"text/html";
+inline constexpr char kMimeTypeUtf8Html[] = "text/html;charset=utf-8";
+inline constexpr char kMimeTypeSvg[] = "image/svg+xml";
+inline constexpr char16_t kMimeTypeSvg16[] = u"image/svg+xml";
+inline constexpr char kMimeTypeRtf[] = "text/rtf";
+inline constexpr char16_t kMimeTypeRtf16[] = u"text/rtf";
+inline constexpr char kMimeTypePng[] = "image/png";
+inline constexpr char16_t kMimeTypePng16[] = u"image/png";
+// Used for image drag & drop on X11 and Wayland.
+inline constexpr char kMimeTypeOctetStream[] = "application/octet-stream";
+// Used for window dragging on some platforms.
+inline constexpr char kMimeTypeWindowDrag[] = "chromium/x-window-drag";
 
 // ----- LINUX & CHROMEOS & FUCHSIA MIME TYPES -----
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
-COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES)
-extern const char kMimeTypeLinuxUtf8String[];
-COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES)
-extern const char kMimeTypeLinuxString[];
-COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES)
-extern const char kMimeTypeLinuxText[];
-COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES)
+inline constexpr char kMimeTypeLinuxUtf8String[] = "UTF8_STRING";
+inline constexpr char kMimeTypeLinuxString[] = "STRING";
+inline constexpr char kMimeTypeLinuxText[] = "TEXT";
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_FUCHSIA)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA) || \
     BUILDFLAG(IS_ANDROID)
-extern const char kMimeTypeSourceUrl[];
+inline constexpr char kMimeTypeSourceUrl[] = "chromium/x-source-url";
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_ANDROID)
 
 // ----- EVERYTHING EXCEPT FOR APPLE MIME TYPES -----
 
 #if !BUILDFLAG(IS_APPLE)
-// TODO(dcheng): This name is temporary. See crbug.com/106449.
-COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES)
-extern const char kMimeTypeDataTransferCustomData[];
-COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES)
-extern const char kMimeTypeWebkitSmartPaste[];
+
+// TODO(dcheng): This name is temporary. See https://crbug.com/40123727.
+inline constexpr char kMimeTypeDataTransferCustomData[] =
+    "chromium/x-web-custom-data";
+inline constexpr char16_t kMimeTypeDataTransferCustomData16[] =
+    u"chromium/x-web-custom-data";
+inline constexpr char kMimeTypeWebkitSmartPaste[] = "chromium/x-webkit-paste";
+
 #else
 
 // ----- APPLE UNIFORM TYPES -----
 
+#ifdef __OBJC__
+
 // Mail.app and TextEdit accept drags that have both HTML and image types on
-// them, but don't process them correctly <http://crbug.com/55879>. Therefore,
-// if there is an image type, don't put the HTML data on as HTML, but rather
-// put it on as this Chrome-only type. External apps won't see HTML but
-// Chrome will know enough to read it as HTML. <http://crbug.com/55879>
+// them, but don't process them correctly <https://crbug.com/40445637>.
+// Therefore, if there is an image type, don't put the HTML data on as HTML, but
+// rather put it on as this Chrome-only type. External apps won't see HTML but
+// Chrome will know enough to read it as HTML.
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES)
-extern NSString* const kUTTypeChromiumImageAndHTML;
+extern NSString* const kUTTypeChromiumImageAndHtml;
 
 // Data type always placed on dragging pasteboards. There is never any data
 // associated with this type; it's only used to ensure that Chromium supports
@@ -115,7 +119,7 @@ COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES)
 extern NSString* const kUTTypeConfidentialData;
 
 // A publicly-used type for the name of a URL.
-COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES) extern NSString* const kUTTypeURLName;
+COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES) extern NSString* const kUTTypeUrlName;
 
 // A type specifying that WebKit or a WebKit-derived browser engine like Blink
 // was the last to write to the pasteboard. There's no data associated with this
@@ -125,19 +129,21 @@ extern NSString* const kUTTypeWebKitWebSmartPaste;
 
 // A type used by WebKit to add an array of URLs with titles to the clipboard.
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES)
-extern NSString* const kUTTypeWebKitWebURLsWithTitles;
+extern NSString* const kUTTypeWebKitWebUrlsWithTitles;
 
 // A type used to track the source URL of data put in the clipboard.
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES)
-extern NSString* const kUTTypeChromiumSourceURL;
+extern NSString* const kUTTypeChromiumSourceUrl;
+
+#endif  //  __OBJC__
 
 #endif  // BUILDFLAG(IS_APPLE)
 
 // ----- ANDROID MIME TYPES -----
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES)
-extern const char kMimeTypeImageURI[];
+inline constexpr char kMimeTypeImageUri[] = "image-uri";
+inline constexpr char16_t kMimeTypeImageUri16[] = u"image-uri";
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 // ----- OTHER RELATED CONSTANTS -----
@@ -147,12 +153,11 @@ extern const char kMimeTypeImageURI[];
 // some amount of unique formats, and there's no way to un-register these
 // formats. For these clipboards, we use a conservative limit to avoid
 // registering too many formats.
-COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES)
-extern const int kMaxRegisteredClipboardFormats;
+inline constexpr int kMaxRegisteredClipboardFormats = 100;
 
 // Web prefix for web custom format types.
-COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES)
-extern const char kWebClipboardFormatPrefix[];
+inline constexpr char kWebClipboardFormatPrefix[] = "web ";
+inline constexpr char16_t kWebClipboardFormatPrefix16[] = u"web ";
 
 }  // namespace ui
 

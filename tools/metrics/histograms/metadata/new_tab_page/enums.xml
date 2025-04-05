@@ -31,6 +31,19 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="HTTP cache hit"/>
 </enum>
 
+<enum name="BottomSheetType">
+  <summary/>
+  <int value="0" label="Main Bottom Sheet"/>
+  <int value="1" label="New Tab Page Cards Bottom Sheet"/>
+  <int value="2" label="Discover Feed Bottom Sheet"/>
+</enum>
+
+<enum name="Entry">
+  <summary/>
+  <int value="0" label="App Menu"/>
+  <int value="1" label="Customization button in toolbar"/>
+</enum>
+
 <enum name="FailToShowHomeSurfaceReason">
   <int value="0" label="Fail to create a NTP Tab"/>
   <int value="1" label="Fail to find a NTP Tab"/>

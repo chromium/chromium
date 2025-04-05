@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {ActionSource, SortOrder, ViewType} from 'chrome://bookmarks-side-panel.top-chrome/bookmarks.mojom-webui.js';
+import type {ActionSource, BookmarksPageRemote, BookmarksTreeNode, SortOrder, ViewType} from 'chrome://bookmarks-side-panel.top-chrome/bookmarks.mojom-webui.js';
+import {BookmarksPageCallbackRouter} from 'chrome://bookmarks-side-panel.top-chrome/bookmarks.mojom-webui.js';
 import type {BookmarksApiProxy} from 'chrome://bookmarks-side-panel.top-chrome/bookmarks_api_proxy.js';
 import type {ClickModifiers} from 'chrome://resources/mojo/ui/base/mojom/window_open_disposition.mojom-webui.js';
 import {FakeChromeEvent} from 'chrome://webui-test/fake_chrome_event.js';
@@ -10,13 +11,11 @@ import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestBookmarksApiProxy extends TestBrowserProxy implements
     BookmarksApiProxy {
-  private folders_: chrome.bookmarks.BookmarkTreeNode[] = [];
+  private allBookmarks_: BookmarksTreeNode[] = [];
+  pageCallbackRouter: BookmarksPageCallbackRouter;
+  callbackRouterRemote: BookmarksPageRemote;
+
   callbackRouter: {
-    onChanged: FakeChromeEvent,
-    onChildrenReordered: FakeChromeEvent,
-    onCreated: FakeChromeEvent,
-    onMoved: FakeChromeEvent,
-    onRemoved: FakeChromeEvent,
     onTabActivated: FakeChromeEvent,
     onTabUpdated: FakeChromeEvent,
   };
@@ -24,10 +23,8 @@ export class TestBookmarksApiProxy extends TestBrowserProxy implements
   constructor() {
     super([
       'getActiveUrl',
-      'getFolders',
       'bookmarkCurrentTabInFolder',
       'openBookmark',
-      'cutBookmark',
       'contextMenuOpenBookmarkInNewTab',
       'contextMenuOpenBookmarkInNewWindow',
       'contextMenuOpenBookmarkInIncognitoWindow',
@@ -37,38 +34,31 @@ export class TestBookmarksApiProxy extends TestBrowserProxy implements
       'contextMenuAddToBookmarksBar',
       'contextMenuRemoveFromBookmarksBar',
       'contextMenuDelete',
-      'copyBookmark',
       'createFolder',
       'editBookmarks',
       'deleteBookmarks',
-      'pasteToBookmark',
       'renameBookmark',
       'setSortOrder',
       'setViewType',
       'showContextMenu',
       'showUi',
       'undo',
+      'getAllBookmarks',
     ]);
 
     this.callbackRouter = {
-      onChanged: new FakeChromeEvent(),
-      onChildrenReordered: new FakeChromeEvent(),
-      onCreated: new FakeChromeEvent(),
-      onMoved: new FakeChromeEvent(),
-      onRemoved: new FakeChromeEvent(),
       onTabActivated: new FakeChromeEvent(),
       onTabUpdated: new FakeChromeEvent(),
     };
+
+    this.pageCallbackRouter = new BookmarksPageCallbackRouter();
+    this.callbackRouterRemote =
+        this.pageCallbackRouter.$.bindNewPipeAndPassRemote();
   }
 
   getActiveUrl() {
     this.methodCalled('getActiveUrl');
     return Promise.resolve('http://www.test.com');
-  }
-
-  getFolders() {
-    this.methodCalled('getFolders');
-    return Promise.resolve(this.folders_);
   }
 
   bookmarkCurrentTabInFolder() {
@@ -79,10 +69,6 @@ export class TestBookmarksApiProxy extends TestBrowserProxy implements
       id: string, depth: number, clickModifiers: ClickModifiers,
       source: ActionSource) {
     this.methodCalled('openBookmark', id, depth, clickModifiers, source);
-  }
-
-  setFolders(folders: chrome.bookmarks.BookmarkTreeNode[]) {
-    this.folders_ = folders;
   }
 
   contextMenuOpenBookmarkInNewTab(ids: string[], source: ActionSource) {
@@ -128,9 +114,9 @@ export class TestBookmarksApiProxy extends TestBrowserProxy implements
   }
 
   createFolder(parentId: string, title: string):
-      Promise<chrome.bookmarks.BookmarkTreeNode> {
+      Promise<{newFolderId: string}> {
     this.methodCalled('createFolder', parentId, title);
-    return Promise.resolve({id: '0', title: 'foo'});
+    return Promise.resolve({newFolderId: '0'});
   }
 
   cutBookmark(id: string) {
@@ -175,5 +161,14 @@ export class TestBookmarksApiProxy extends TestBrowserProxy implements
 
   undo() {
     this.methodCalled('undo');
+  }
+
+  setAllBookmarks(allBookmarks: BookmarksTreeNode[]) {
+    this.allBookmarks_ = allBookmarks;
+  }
+
+  getAllBookmarks(): Promise<{nodes: BookmarksTreeNode[]}> {
+    this.methodCalled('getAllBookmarks');
+    return Promise.resolve({nodes: this.allBookmarks_});
   }
 }

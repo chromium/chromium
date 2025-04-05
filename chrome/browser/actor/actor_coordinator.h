@@ -22,6 +22,8 @@ namespace optimization_guide::proto {
 class BrowserAction;
 }  // namespace optimization_guide::proto
 
+class Profile;
+
 namespace actor {
 
 // Coordinates the execution of a multi-step task.
@@ -33,6 +35,8 @@ class ActorCoordinator {
   ActorCoordinator(const ActorCoordinator&) = delete;
   ActorCoordinator& operator=(const ActorCoordinator&) = delete;
   ~ActorCoordinator();
+
+  static void RegisterWithProfile(Profile* profile);
 
   // Performs the next action.
   void Act(tabs::TabInterface& tab,

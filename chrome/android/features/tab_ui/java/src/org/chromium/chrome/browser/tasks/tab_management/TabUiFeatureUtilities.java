@@ -33,11 +33,6 @@ public class TabUiFeatureUtilities {
         return XrUtils.isXrDevice();
     }
 
-    /** Returns if the tab group pane should be displayed in the hub. */
-    public static boolean isTabGroupPaneEnabled() {
-        return ChromeFeatureList.sTabGroupPaneAndroid.isEnabled();
-    }
-
     /** Returns whether drag drop from tab strip to create new instance is enabled. */
     public static boolean isTabDragToCreateInstanceSupported() {
         // TODO(crbug/328511660): Add OS version check once available.

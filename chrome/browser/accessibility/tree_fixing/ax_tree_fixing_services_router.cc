@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_accessibility_state.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_iterator.h"
@@ -25,19 +26,46 @@
 namespace tree_fixing {
 
 AXTreeFixingServicesRouter::AXTreeFixingWebContentsObserver::
-    AXTreeFixingWebContentsObserver(content::WebContents& web_contents)
-    : content::WebContentsObserver(&web_contents) {}
+    AXTreeFixingWebContentsObserver(content::WebContents& web_contents,
+                                    AXTreeFixingServicesRouter* router)
+    : content::WebContentsObserver(&web_contents), router_(router) {}
 
 AXTreeFixingServicesRouter::AXTreeFixingWebContentsObserver::
     ~AXTreeFixingWebContentsObserver() = default;
 
 void AXTreeFixingServicesRouter::AXTreeFixingWebContentsObserver::
-    DidStopLoading() {
-  if (!web_contents()->IsDocumentOnLoadCompletedInPrimaryMainFrame()) {
-    return;
-  }
+    DocumentOnLoadCompletedInPrimaryMainFrame() {
+  retry_attempts_ = 0;
+  TryIdentifyMainNode();
+}
 
-  // TODO(crbug.com/401308988): Run fixes here using details.updates.
+void AXTreeFixingServicesRouter::AXTreeFixingWebContentsObserver::
+    TryIdentifyMainNode() {
+  bool request_processed = router_->IdentifyMainNode(
+      web_contents()->RequestAXTreeSnapshotWithinBrowserProcess(),
+      base::BindOnce(&AXTreeFixingServicesRouter::
+                         AXTreeFixingWebContentsObserver::OnMainNodeIdentified,
+                     base::Unretained(this)));
+
+  // If the request was not processed, it likely means that the accessibility
+  // engine is still spinning-up (e.g. no root BrowserAccessibilityManager yet).
+  // We will retry after a pause, since this is likely a transient state.
+  if (!request_processed && retry_attempts_ <= 3) {
+    retry_attempts_++;
+    content::GetUIThreadTaskRunner({})->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&AXTreeFixingServicesRouter::
+                           AXTreeFixingWebContentsObserver::TryIdentifyMainNode,
+                       base::Unretained(this)),
+        base::Seconds(retry_attempts_));
+  }
+}
+
+void AXTreeFixingServicesRouter::AXTreeFixingWebContentsObserver::
+    OnMainNodeIdentified(ui::AXTreeID tree_id, ui::AXNodeID node_id) {
+  retry_attempts_ = 0;
+  web_contents()->ApplyAXTreeFixingResult(tree_id, node_id,
+                                          ax::mojom::Role::kMain);
 }
 
 AXTreeFixingServicesRouter::AXTreeFixingServicesRouter(Profile* profile)
@@ -70,7 +98,7 @@ AXTreeFixingServicesRouter::AXTreeFixingServicesRouter(Profile* profile)
 
 AXTreeFixingServicesRouter::~AXTreeFixingServicesRouter() = default;
 
-void AXTreeFixingServicesRouter::IdentifyMainNode(
+bool AXTreeFixingServicesRouter::IdentifyMainNode(
     const ui::AXTreeUpdate& ax_tree,
     MainNodeIdentificationCallback callback) {
   // This should never be called if the feature is not enabled.
@@ -86,43 +114,47 @@ void AXTreeFixingServicesRouter::IdentifyMainNode(
 
   // If the AXTreeUpdate is empty, do not process the request.
   if (ax_tree.nodes.empty()) {
-    return;
+    return false;
   }
 
   // We must wait for the ScreenAI service to be ready for requests. We will
   // queue the request for convenience and to keep the services layer obscured
   // from clients.
   if (!can_make_main_node_identification_requests_) {
-    request_queue_.emplace(ax_tree, std::move(callback));
-    return;
+    // TODO(401308988): Handle queueing requests, or allow observer to have
+    // clearer signal of when to make additional requests; pending UX.
+    // screen_ai_request_queue_.emplace(ax_tree, std::move(callback));
+    return false;
   }
 
   MakeMainNodeRequestToScreenAI(ax_tree, std::move(callback));
+  return true;
 }
 
 void AXTreeFixingServicesRouter::MakeMainNodeRequestToScreenAI(
     const ui::AXTreeUpdate& ax_tree,
     MainNodeIdentificationCallback callback) {
   // Store the callback for later use, and make a request to ScreenAI.
-  pending_callbacks_.emplace_back(next_request_id_, std::move(callback));
-  screen_ai_service_->IdentifyMainNode(ax_tree, next_request_id_);
-  next_request_id_++;
+  pending_screen_ai_callbacks_.emplace_back(next_screen_ai_request_id_,
+                                            std::move(callback));
+  screen_ai_service_->IdentifyMainNode(ax_tree, next_screen_ai_request_id_);
+  next_screen_ai_request_id_++;
 }
 
 void AXTreeFixingServicesRouter::OnMainNodeIdentified(ui::AXTreeID tree_id,
                                                       ui::AXNodeID node_id,
                                                       int request_id) {
-  CHECK(!pending_callbacks_.empty());
+  CHECK(!pending_screen_ai_callbacks_.empty());
 
   // Find the callback associated with the returned request ID, and call it with
   // the identified tree_id and node_id for the upstream client to use. Remove
   // the pending callback since we have fulfilled the contract.
-  for (auto it = pending_callbacks_.begin(); it != pending_callbacks_.end();
-       ++it) {
+  for (auto it = pending_screen_ai_callbacks_.begin();
+       it != pending_screen_ai_callbacks_.end(); ++it) {
     if (it->first == request_id) {
       MainNodeIdentificationCallback callback = std::move(it->second);
-      pending_callbacks_.erase(it);
-      std::move(callback).Run(std::make_pair(tree_id, node_id));
+      pending_screen_ai_callbacks_.erase(it);
+      std::move(callback).Run(tree_id, node_id);
       return;
     }
   }
@@ -134,13 +166,42 @@ void AXTreeFixingServicesRouter::OnServiceStateChanged(bool service_ready) {
 
   // If the service is now ready, process any queued requests.
   if (service_ready) {
-    while (!request_queue_.empty()) {
-      auto& [ax_tree, callback] = request_queue_.front();
+    while (!screen_ai_request_queue_.empty()) {
+      auto& [ax_tree, callback] = screen_ai_request_queue_.front();
       auto ax_tree_copy = std::move(ax_tree);
-      request_queue_.pop();
+      screen_ai_request_queue_.pop();
       MakeMainNodeRequestToScreenAI(ax_tree_copy, std::move(callback));
     }
   }
+}
+
+void AXTreeFixingServicesRouter::RequestScreenshot(
+    const raw_ptr<content::WebContents> web_contents,
+    ScreenshotCallback callback) {
+  // Store the callback for later use, and request a screenshot.
+  pending_screenshot_callbacks_.emplace_back(next_screenshot_request_id_,
+                                             std::move(callback));
+  screenshotter_->RequestScreenshot(web_contents, next_screenshot_request_id_);
+  next_screenshot_request_id_++;
+}
+
+void AXTreeFixingServicesRouter::OnScreenshotCaptured(const SkBitmap& bitmap,
+                                                      int request_id) {
+  CHECK(!pending_screenshot_callbacks_.empty());
+
+  // Find the callback associated with the returned request ID, and call it with
+  // the screenshot for the upstream client to use. Remove the pending callback
+  // since we have fulfilled the contract.
+  for (auto it = pending_screenshot_callbacks_.begin();
+       it != pending_screenshot_callbacks_.end(); ++it) {
+    if (it->first == request_id) {
+      ScreenshotCallback callback = std::move(it->second);
+      pending_screenshot_callbacks_.erase(it);
+      std::move(callback).Run(bitmap);
+      return;
+    }
+  }
+  NOTREACHED();
 }
 
 void AXTreeFixingServicesRouter::ToggleEnabledState() {
@@ -176,7 +237,7 @@ void AXTreeFixingServicesRouter::ToggleEnabledState() {
       continue;
     }
     web_contents_observers_.push_back(
-        std::make_unique<AXTreeFixingWebContentsObserver>(*web_contents));
+        std::make_unique<AXTreeFixingWebContentsObserver>(*web_contents, this));
   }
 }
 

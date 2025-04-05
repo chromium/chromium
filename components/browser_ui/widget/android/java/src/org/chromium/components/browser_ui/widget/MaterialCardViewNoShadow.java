@@ -10,15 +10,17 @@ import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
 
+import androidx.annotation.ColorInt;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
 /**
  * Extension of {@link FrameLayout} that sets background resource to a rounded corner rectangle,
- * with dynamic background color from ElevationOverlayProvider based on card elevation.
- * Reuse the name of MaterialCardViewNoShadow to keep the same usage.
- * But this class is no longer an extension of MaterialCardView.
+ * with dynamic background color from ElevationOverlayProvider based on card elevation. Reuse the
+ * name of MaterialCardViewNoShadow to keep the same usage. But this class is no longer an extension
+ * of MaterialCardView.
  */
 @NullMarked
 public class MaterialCardViewNoShadow extends FrameLayout {
@@ -36,17 +38,20 @@ public class MaterialCardViewNoShadow extends FrameLayout {
                         R.styleable.MaterialCardViewNoShadow,
                         defStyleAttr,
                         R.style.MaterialCardStyle);
+        // LINT.IfChange(MaterialCardStyle)
         final float cornerSize =
                 typedArray.getDimensionPixelSize(
                         R.styleable.MaterialCardViewNoShadow_cornerRadius, 0);
-        final float elevation =
-                typedArray.getDimensionPixelSize(
-                        R.styleable.MaterialCardViewNoShadow_cardElevation, 0);
+        final @ColorInt int backgroundColor =
+                typedArray.getColor(
+                        R.styleable.MaterialCardViewNoShadow_cardBackgroundColor,
+                        SemanticColorUtils.getCardBackgroundColor(context));
+        // LINT.ThenChange(//components/browser_ui/widget/android/java/res/values/styles.xml)
         typedArray.recycle();
 
         setBackgroundResource(R.drawable.card_with_corners_background);
         GradientDrawable gradientDrawable = (GradientDrawable) getBackground();
         gradientDrawable.setCornerRadius(cornerSize);
-        gradientDrawable.setColor(ChromeColors.getSurfaceColor(getContext(), elevation));
+        gradientDrawable.setColor(backgroundColor);
     }
 }

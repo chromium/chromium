@@ -73,7 +73,7 @@ public abstract class BookmarkModelObserver {
     }
 
     /**
-     * Invoked when the title or url of a node changes.
+     * Invoked when the favicon, title, or url of a node changes.
      *
      * @param node The node being changed.
      */

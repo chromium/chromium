@@ -20,12 +20,14 @@ import type {FocusedTabData as FocusedTabDataMojo, GetTabContextOptionsMojoType 
 import {SettingsPageField as SettingsPageFieldMojo, WebClientHandlerRemote, WebClientMode, WebClientReceiver, WebClientSizingMode} from '../glic.mojom-webui.js';
 import type {ActInFocusedTabParams, DraggableArea, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, Screenshot, ScrollToParams, TabContextOptions, WebPageData} from '../glic_api/glic_api.js';
 import {ActInFocusedTabErrorReason, CaptureScreenshotErrorReason, DEFAULT_INNER_TEXT_BYTES_LIMIT, DEFAULT_PDF_SIZE_LIMIT, ScrollToErrorReason} from '../glic_api/glic_api.js';
+import {ObservableValue} from '../observable.js';
+import type {ObservableValueReadOnly} from '../observable.js';
 
 import {replaceProperties} from './conversions.js';
 import type {PostMessageRequestHandler} from './post_message_transport.js';
 import {newSenderId, PostMessageRequestReceiver, PostMessageRequestSender, ResponseExtras} from './post_message_transport.js';
 import type {ActInFocusedTabResultPrivate, AnnotatedPageDataPrivate, FocusedTabDataPrivate, HostRequestTypes, PdfDocumentDataPrivate, RequestRequestType, RequestResponseType, RgbaImage, TabContextResultPrivate, TabDataPrivate, TransferableException, WebClientInitialStatePrivate} from './request_types.js';
-import {ErrorWithReasonImpl, ImageAlphaType, ImageColorType, requestTypeToHistogramSuffix} from './request_types.js';
+import {ErrorWithReasonImpl, exceptionFromTransferable, ImageAlphaType, ImageColorType, requestTypeToHistogramSuffix} from './request_types.js';
 
 export enum WebClientState {
   UNINITIALIZED,
@@ -39,16 +41,9 @@ export interface ApiHostEmbedder {
   // Called when the guest requests resize.
   onGuestResizeRequest(size: {width: number, height: number}): void;
 
-  // Called when the web client completes initialization.
-  webClientInitializationDone(
-      success: boolean, exception: TransferableException|undefined): void;
-
   // Called when the notifyPanelWillOpen promise resolves to open the panel
   // when triggered from the browser.
   webClientReady(): void;
-
-  // Called when the web client state is changed.
-  webClientStateChanged(state: WebClientState): void;
 }
 
 // Turn everything except void into a promise.
@@ -66,25 +61,20 @@ type HostMessageHandlerInterface = {
 
 class WebClientImpl implements WebClientInterface {
   constructor(
-      private sender: PostMessageRequestSender,
+      private sender: PostMessageRequestSender, private host: GlicApiHost,
       private embedder: ApiHostEmbedder) {}
-
-  notifyPanelOpened(attachedToWindowId: (number|null)): void {
-    this.sender.requestNoResponse('glicWebClientNotifyPanelOpened', {
-      attachedToWindowId: optionalWindowIdToClient(attachedToWindowId),
-    });
-  }
-
-  async notifyPanelClosed(): Promise<void> {
-    await this.sender.requestWithResponse(
-        'glicWebClientNotifyPanelClosed', undefined);
-  }
 
   async notifyPanelWillOpen(panelOpeningData: PanelOpeningDataMojo):
       Promise<{openPanelInfo: OpenPanelInfoMojo}> {
-    const result = await this.sender.requestWithResponse(
-        'glicWebClientNotifyPanelWillOpen',
-        {panelOpeningData: panelOpeningDataToClient(panelOpeningData)});
+    this.host.setWaitingOnPanelWillOpen(true);
+    let result;
+    try {
+      result = await this.sender.requestWithResponse(
+          'glicWebClientNotifyPanelWillOpen',
+          {panelOpeningData: panelOpeningDataToClient(panelOpeningData)});
+    } finally {
+      this.host.setWaitingOnPanelWillOpen(false);
+    }
 
     // The web client is ready to show, ensure the webview is
     // displayed.
@@ -202,8 +192,11 @@ class HostMessageHandler implements HostMessageHandlerInterface {
 
   async glicBrowserWebClientCreated(_request: void, extras: ResponseExtras):
       Promise<{initialState: WebClientInitialStatePrivate}> {
-    this.receiver =
-        new WebClientReceiver(new WebClientImpl(this.sender, this.embedder));
+    if (this.receiver) {
+      throw new Error('web client already created');
+    }
+    this.receiver = new WebClientReceiver(
+        new WebClientImpl(this.sender, this.host, this.embedder));
     const {initialState} = await this.handler.webClientCreated(
         this.receiver.$.bindNewPipeAndPassRemote());
     const chromeVersion = initialState.chromeVersion.components;
@@ -233,14 +226,17 @@ class HostMessageHandler implements HostMessageHandlerInterface {
       request: {success: boolean, exception?: TransferableException}) {
     // The webview may have been re-shown by webui, having previously been
     // opened by the browser. In that case, show the guest frame again.
-    this.embedder.webClientInitializationDone(
-        request.success, request.exception);
+
+    if (request.exception) {
+      console.warn(exceptionFromTransferable(request.exception));
+    }
 
     if (request.success) {
       this.handler.webClientInitialized();
       this.host.webClientInitialized();
     } else {
       this.handler.webClientInitializeFailed();
+      this.host.webClientInitializeFailed();
     }
   }
 
@@ -452,17 +448,33 @@ class HostMessageHandler implements HostMessageHandlerInterface {
     function getMojoSelector(): ScrollToSelectorMojo {
       const {selector} = params;
       if (selector.exactText !== undefined) {
+        if (selector.exactText.searchRangeStartNodeId !== undefined &&
+            params.documentId === undefined) {
+          throw new ErrorWithReasonImpl(
+              'scrollTo', ScrollToErrorReason.NOT_SUPPORTED,
+              'searchRangeStartNodeId without documentId');
+        }
         return {
           exactTextSelector: {
             text: selector.exactText.text,
+            searchRangeStartNodeId:
+                selector.exactText.searchRangeStartNodeId ?? null,
           },
         };
       }
       if (selector.textFragment !== undefined) {
+        if (selector.textFragment.searchRangeStartNodeId !== undefined &&
+            params.documentId === undefined) {
+          throw new ErrorWithReasonImpl(
+              'scrollTo', ScrollToErrorReason.NOT_SUPPORTED,
+              'searchRangeStartNodeId without documentId');
+        }
         return {
           textFragmentSelector: {
             textStart: selector.textFragment.textStart,
             textEnd: selector.textFragment.textEnd,
+            searchRangeStartNodeId:
+                selector.textFragment.searchRangeStartNodeId ?? null,
           },
         };
       }
@@ -559,17 +571,18 @@ export class GlicApiHost implements PostMessageRequestHandler {
   private readonly postMessageReceiver: PostMessageRequestReceiver;
   private sender: PostMessageRequestSender;
   private handler: WebClientHandlerRemote;
-  private embedder: ApiHostEmbedder|undefined;  // Undefined after destroy().
   private bootstrapPingIntervalId: number|undefined;
   private webClientResponsivenessCheckInternalId: number|undefined;
   private webClientUnresponsiveUiTimer: OneShotTimer;
-  private webClientState: WebClientState = WebClientState.UNINITIALIZED;
+  private webClientState =
+      ObservableValue.withValue<WebClientState>(WebClientState.UNINITIALIZED);
+  private waitingOnPanelWillOpenValue = false;
 
   constructor(
       private browserProxy: BrowserProxy, private windowProxy: WindowProxy,
       private embeddedOrigin: string, embedder: ApiHostEmbedder) {
     this.postMessageReceiver = new PostMessageRequestReceiver(
-        embeddedOrigin, windowProxy, this, 'glic_api_host');
+        embeddedOrigin, this.senderId, windowProxy, this, 'glic_api_host');
     this.postMessageReceiver.setLoggingEnabled(
         loadTimeData.getBoolean('loggingEnabled'));
     this.sender = new PostMessageRequestSender(
@@ -580,7 +593,6 @@ export class GlicApiHost implements PostMessageRequestHandler {
         this.handler.$.bindNewPipeAndPassReceiver());
     this.messageHandler =
         new HostMessageHandler(this.handler, this.sender, embedder, this);
-    this.embedder = embedder;
     this.webClientUnresponsiveUiTimer = new OneShotTimer(
         loadTimeData.getInteger('clientUnresponsiveUiMaxTimeMs'));
 
@@ -590,8 +602,8 @@ export class GlicApiHost implements PostMessageRequestHandler {
   }
 
   destroy() {
-    // prevent calling into embedder on destruction.
-    this.embedder = undefined;
+    this.webClientState =
+        ObservableValue.withValue<WebClientState>(WebClientState.UNINITIALIZED);
     window.clearInterval(this.bootstrapPingIntervalId);
     this.stopWebClientResponsivenessCheck();
     this.stopUnresponsiveUiTimer();
@@ -608,10 +620,30 @@ export class GlicApiHost implements PostMessageRequestHandler {
     this.stopBootstrapPing();
   }
 
+  waitingOnPanelWillOpen() {
+    return this.waitingOnPanelWillOpenValue;
+  }
+
+  setWaitingOnPanelWillOpen(value: boolean): void {
+    this.waitingOnPanelWillOpenValue = value;
+  }
+
   // Called when the web client is initialized.
   webClientInitialized() {
-    this.webClientState = WebClientState.RESPONSIVE;
+    this.setWebClientState(WebClientState.RESPONSIVE);
     this.startWebClientResponsivenessCheck();
+  }
+
+  webClientInitializeFailed() {
+    this.setWebClientState(WebClientState.ERROR);
+  }
+
+  setWebClientState(state: WebClientState) {
+    this.webClientState.assignAndSignal(state);
+  }
+
+  getWebClientState(): ObservableValueReadOnly<WebClientState> {
+    return this.webClientState;
   }
 
   // Sends a message to the webview which is required to initialize the client.
@@ -664,16 +696,16 @@ export class GlicApiHost implements PostMessageRequestHandler {
           try {
             await Promise.race([responsePromise, timeoutPromise]);
             clearTimeout(timeoutId);
-            if (this.webClientState !== WebClientState.RESPONSIVE) {
-              this.webClientState = WebClientState.RESPONSIVE;
-              this.embedder?.webClientStateChanged(WebClientState.RESPONSIVE);
+            if (this.webClientState.getCurrentValue() !==
+                WebClientState.RESPONSIVE) {
+              this.setWebClientState(WebClientState.RESPONSIVE);
               this.stopUnresponsiveUiTimer();
             }
           } catch (e) {
             console.warn(e);
-            if (this.webClientState !== WebClientState.UNRESPONSIVE) {
-              this.webClientState = WebClientState.UNRESPONSIVE;
-              this.embedder?.webClientStateChanged(WebClientState.UNRESPONSIVE);
+            if (this.webClientState.getCurrentValue() !==
+                WebClientState.UNRESPONSIVE) {
+              this.setWebClientState(WebClientState.UNRESPONSIVE);
               this.startUnresponsiveUiTimer();
             }
           }
@@ -689,8 +721,7 @@ export class GlicApiHost implements PostMessageRequestHandler {
 
   startUnresponsiveUiTimer() {
     this.webClientUnresponsiveUiTimer.start(() => {
-      this.webClientState = WebClientState.ERROR;
-      this.embedder?.webClientStateChanged(WebClientState.ERROR);
+      this.setWebClientState(WebClientState.ERROR);
       this.stopWebClientResponsivenessCheck();
     });
   }

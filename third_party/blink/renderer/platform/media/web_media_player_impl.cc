@@ -4210,6 +4210,12 @@ void WebMediaPlayerImpl::RecordVideoOcclusionState(
       std::string(occlusion_state));
 }
 
+void WebMediaPlayerImpl::RecordAutoPictureInPictureInfo(
+    const WebString& auto_picture_in_picture_info) {
+  media_log_->AddEvent<MediaLogEvent::kAutoPictureInPictureInfoChanged>(
+      auto_picture_in_picture_info.Utf8());
+}
+
 void WebMediaPlayerImpl::ReportSessionUMAs() const {
   if (renderer_type_ != media::RendererType::kRendererImpl &&
       renderer_type_ != media::RendererType::kMediaFoundation) {

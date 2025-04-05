@@ -34,6 +34,7 @@
 #include "media/audio/audio_device_description.h"
 #include "media/base/media_content_type.h"
 #include "media/base/media_switches.h"
+#include "media/base/picture_in_picture_events_info.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "services/media_session/public/cpp/media_image_manager.h"
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
@@ -1320,6 +1321,7 @@ void MediaSessionImpl::EnterAutoPictureInPicture() {
       media_session::mojom::MediaSessionAction::kEnterPictureInPicture);
   uma_helper_.RecordEnterPictureInPicture(
       MediaSessionUmaHelper::EnterPictureInPictureType::kRegisteredAutomatic);
+  OnAutoPictureInPictureInfoChanged();
 }
 
 void MediaSessionImpl::SetAudioSinkId(const std::optional<std::string>& id) {
@@ -2158,6 +2160,21 @@ void MediaSessionImpl::ResetDurationUpdateGuard() {
   duration_update_allowance_ = kDurationUpdateMaxAllowance;
   is_throttling_ = false;
   guarding_player_id_.reset();
+}
+
+void MediaSessionImpl::OnAutoPictureInPictureInfoChanged() {
+  ContentClient* content_client = GetContentClient();
+  const auto auto_picture_in_picture_reason =
+      media::PictureInPictureEventsInfo::AutoPipReasonToString(
+          content_client->browser()->GetAutoPipReason(*web_contents()));
+
+  ForAllPlayers(base::BindRepeating(
+      [](std::string_view auto_picture_in_picture_reason,
+         const PlayerIdentifier& player) {
+        player.observer->OnAutoPictureInPictureInfoChanged(
+            player.player_id, auto_picture_in_picture_reason);
+      },
+      auto_picture_in_picture_reason));
 }
 
 void MediaSessionImpl::SetShouldThrottleDurationUpdateForTest(

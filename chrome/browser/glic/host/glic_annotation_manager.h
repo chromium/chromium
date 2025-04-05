@@ -55,7 +55,9 @@ class GlicAnnotationManager {
     void MaybeFailTask(mojom::ScrollToErrorReason error_reason);
 
     // blink::mojom::AnnotationAgentHost overrides.
-    void DidFinishAttachment(const gfx::Rect& document_relative_rect) override;
+    void DidFinishAttachment(
+        const gfx::Rect& document_relative_rect,
+        blink::mojom::AttachmentResult attachment_result) override;
 
    private:
     mojo::Remote<blink::mojom::AnnotationAgent> annotation_agent_;

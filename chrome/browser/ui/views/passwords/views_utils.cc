@@ -272,7 +272,7 @@ std::unique_ptr<views::View> CreateTitleView(const std::u16string& title) {
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
           GooglePasswordManagerVectorIcon(), ui::kColorIcon,
           layout_provider->GetDistanceMetric(
-              DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE))));
+              views::DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE))));
   views::Label* title_label = header->AddChildView(
       views::BubbleFrameView::CreateDefaultTitleLabel(title));
 

@@ -697,6 +697,9 @@ enum class TipsNotificationType;
 // Copies `text` into the clipboard from the app's perspective.
 + (void)copyTextToPasteboard:(NSString*)text;
 
+// Copies `link` into pasteboard as a NSURL.
++ (void)copyLinkAsURLToPasteBoard:(NSString*)link;
+
 #pragma mark - Watcher utilities
 
 // Starts monitoring for buttons (based on traits) with the given

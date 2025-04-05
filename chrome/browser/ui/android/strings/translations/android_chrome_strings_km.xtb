@@ -455,6 +455,7 @@
 <translation id="3072980200212375806"><ph name="APP_NAME" /> នឹងបើកនៅក្នុង Chrome។ ប្រសិនបើបន្ត មានន័យថា​អ្នកយល់ព្រម​តាម<ph name="BEGIN_LINK1" />លក្ខខណ្ឌ​ប្រើប្រាស់ Google<ph name="END_LINK1" /> និង<ph name="BEGIN_LINK2" />លក្ខខណ្ឌ​ប្រើប្រាស់​បន្ថែមរបស់ Google Chrome និង ChromeOS<ph name="END_LINK2" />។ <ph name="BEGIN_LINK3" />គោលការណ៍​ឯកជនភាព<ph name="END_LINK3" />ក៏អនុវត្តផងដែរ។</translation>
 <translation id="3080525922482950719">អ្នកអាចរក្សាទុកទំព័រ ដើម្បីអាននៅពេលក្រោយ ឬពេលគ្មានអ៊ីនធឺណិត</translation>
 <translation id="3087734570205094154">ខាងក្រោម</translation>
+<translation id="3088687687599869821">ការរុករក​ទំព័រ</translation>
 <translation id="3091010850649238832">បង្ហាញខ្លឹមសារឃ្លីបបត</translation>
 <translation id="3098745985164956033">រូបភាពមួយចំនួន​ត្រូវបានផ្ញើទៅ Google ដើម្បីកែលម្អ​ការពណ៌នា​សម្រាប់អ្នក</translation>
 <translation id="3114507951000454849">អាន​ព័ត៌មាននៅថ្ងៃនេះ <ph name="NEWS_ICON" /></translation>
@@ -612,6 +613,7 @@
 <translation id="3856096718352044181">សូមផ្ទៀងផ្ទាត់ថា នេះគឺជាក្រុមហ៊ុនផ្ដល់សេវាត្រឹមត្រូវ ឬព្យាយាមម្ដងទៀតនៅពេលក្រោយ</translation>
 <translation id="3858860766373142691">ឈ្មោះ</translation>
 <translation id="3863527519275151528">កំពុង​ដំណើរការ​ការជូនដំណឹង</translation>
+<translation id="3866863539038222107">តាមដាន</translation>
 <translation id="3870908470613821006">អ្នកគ្រប់គ្នា​នឹង​បាត់បង់​សិទ្ធិចូលប្រើ​ក្រុមផ្ទាំង “<ph name="GROUP_NAME" />” ភ្លាមៗ ហើយ​វានឹង​ត្រូវបាន​លុបចេញពី​ឧបករណ៍​ទាំងអស់</translation>
 <translation id="3873174561423636563">ដើម្បី​បន្ត <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> នឹង​ចែករំលែក<ph name="FIELDS_STRING" />របស់អ្នក​ជាមួយ​គេហទំព័រ​នេះ។ សូមមើល<ph name="BEGIN_LINK1" />លក្ខខណ្ឌ​ប្រើប្រាស់<ph name="END_LINK1" />របស់​គេហទំព័រ​នេះ។</translation>
 <translation id="3892148308691398805">ចម្លង​អត្ថបទ</translation>
@@ -735,7 +737,6 @@
 <translation id="4460861538906892109">{ITEMS_COUNT,plural, =1{ចំណាំ 1}other{ចំណាំ #}}</translation>
 <translation id="4478161224666880173">អ្នកអាចប្រើគណនី <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> របស់អ្នកនៅលើគេហទំព័រនេះ។ ដើម្បី​បន្ត សូម​ចូល <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />។</translation>
 <translation id="4479972344484327217">កំពុងដំឡើង <ph name="MODULE" /> សម្រាប់ Chrome…</translation>
-<translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{បានរក្សាទុក​ចំណាំ​ទៅក្នុង "<ph name="FOLDER_NAME" />"។ វាត្រូវបាន​រក្សាទុក​ទៅក្នុង​ឧបករណ៍នេះ​តែប៉ុណ្ណោះ។}other{បានរក្សាទុក​ចំណាំ​ទៅក្នុង "<ph name="FOLDER_NAME" />"។ វា​ត្រូវបាន​រក្សាទុក​ទៅក្នុង​ឧបករណ៍នេះ​តែប៉ុណ្ណោះ។}}</translation>
 <translation id="4484496141267039529">មិនមាន​អ៊ីនធឺណិត​ទេ។ សូមព្យាយាមម្តងទៀតនៅពេលក្រោយ។</translation>
 <translation id="4487967297491345095">ទិន្នន័យ​កម្មវិធី​របស់ Chrome ទាំងអស់​នឹងត្រូវ​បានលុប​ជា​អចិន្ត្រៃយ៍។ វា​រាប់បញ្ចូល​ទាំង​ឯកសារ ការកំណត់ គណនី មូលដ្ឋាន​ទិន្នន័យ​ទាំងអស់ ។ល។</translation>
 <translation id="4494806687727322324">ការរក្សាទុកពាក្យសម្ងាត់ត្រូវបានបើកដោយអ្នកគ្រប់គ្រងរបស់អ្នក</translation>
@@ -942,6 +943,7 @@
 <translation id="539881862970320163">បានណែនាំ​ពាក្យសម្ងាត់ខ្លាំង។ បាន​លាក់​ក្ដារចុច។</translation>
 <translation id="5409881200985013443">ដាក់បញ្ជូន <ph name="ONE_TIME_CODE" /> នៅលើ <ph name="CLIENT_NAME" /> ឬ?</translation>
 <translation id="5410300144953132176"><ph name="OWNER_FULL_NAME" /> (<ph name="OWNER_EMAIL" />) ចង់ឱ្យ​អ្នកចូលរួម​ក្រុមផ្ទាំង។ គ្រប់គ្នាដែល​មានតំណនេះ​អាចកែ​ផ្ទាំង​ទាំងអស់​បាន ដូច្នេះ​សូមចូលរួម​ដោយ​ប្រុងប្រយ័ត្ន។ តំណនេះ​ផុតកំណត់​ក្នុង​រយៈពេល 48 ម៉ោង។</translation>
+<translation id="5412388166586147626">មិនអាច​បើក​ជំនួយការ AI បានទេ។ សូមព្យាយាមម្ដងទៀត។</translation>
 <translation id="5414836363063783498">កំពុងផ្ទៀងផ្ទាត់…</translation>
 <translation id="5415871492522952905">អ្នកនឹង​មានប្រវត្តិ និង​ផ្ទាំង​របស់អ្នក​នៅលើ​ឧបករណ៍​ទាំងអស់​របស់អ្នក ដូច្នេះ​អ្នកអាច​បន្តធ្វើ​អ្វីដែលអ្នក​កំពុង​ធ្វើ</translation>
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) នឹង​បាត់បង់​សិទ្ធិចូលប្រើ​ក្រុមផ្ទាំង “<ph name="GROUP_NAME" />” ភ្លាមៗ</translation>
@@ -1056,6 +1058,7 @@
 <translation id="5907542076239273525">បាន​រក្សាទុក​ចំណាំទៅ <ph name="FOLDER_NAME" /></translation>
 <translation id="5916664084637901428">បើក</translation>
 <translation id="5919204609460789179">អាប់ដេត <ph name="PRODUCT_NAME" /> ដើម្បីចាប់ផ្តើមធ្វើសមកាលកម្ម</translation>
+<translation id="5932881020239635062">លេខសេរ៊ី</translation>
 <translation id="5938820472109305350">បញ្ចូល <ph name="INTEREST" /></translation>
 <translation id="5942872142862698679">ប្រើ Google ដើម្បីធ្វើការស្វែងរក</translation>
 <translation id="5945035219773565305">ការណែនាំបច្ចុប្បន្ន៖  <ph name="RECOMMENDATION" /></translation>
@@ -1336,7 +1339,6 @@
 <translation id="7063006564040364415">មិនអាចភ្ជាប់ទៅម៉ាស៊ីនមេសមកម្មទេ។</translation>
 <translation id="7071521146534760487">គ្រប់គ្រងគណនី</translation>
 <translation id="707155805709242880">ជ្រើសរើសអ្វីដែលត្រូវធ្វើ​សម​កាល​កម្មនៅខាងក្រោម</translation>
-<translation id="707702207692430409">{BOOKMARK_COUNT,plural, =1{បាន​រក្សាទុក​ចំណាំ​ទៅក្នុង "<ph name="FOLDER_NAME" />" នៅ​ក្នុង​គណនី <ph name="ACCOUNT_EMAIL" /> របស់អ្នក។}other{បាន​រក្សាទុក​ចំណាំ​ទៅក្នុង "<ph name="FOLDER_NAME" />" នៅ​ក្នុង​គណនី <ph name="ACCOUNT_EMAIL" /> របស់អ្នក។}}</translation>
 <translation id="7077143737582773186">កាត​ SD</translation>
 <translation id="7078916049958741685">លុបទិន្នន័យ Chrome របស់អ្នកពី​ឧបករណ៍នេះផងដែរ</translation>
 <translation id="7085332316435785646">ជ្រើសរើសថាត្រូវរួមបញ្ចូលប្រវត្តិ Chrome ដើម្បីទទួលបានបទពិសោធន៍ប្រើប្រាស់កាន់តែស្របនឹងបុគ្គលនៅក្នុងសេវាកម្ម Google ឬអត់</translation>

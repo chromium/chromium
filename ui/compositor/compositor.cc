@@ -15,6 +15,7 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
@@ -38,8 +39,11 @@
 #include "cc/metrics/begin_main_frame_metrics.h"
 #include "cc/metrics/custom_metrics_recorder.h"
 #include "cc/metrics/frame_sequence_tracker.h"
+#include "cc/trees/clip_node.h"
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/layer_tree_settings.h"
+#include "cc/trees/property_ids.h"
+#include "cc/trees/property_tree.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
@@ -63,6 +67,7 @@
 #include "ui/compositor/overscroll/scroll_input_handler.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/display_switches.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/icc_profile.h"
 #include "ui/gfx/presentation_feedback.h"
@@ -413,6 +418,15 @@ void Compositor::SetRootLayer(Layer* root_layer) {
   root_cc_layer_->RemoveAllChildren();
   if (root_layer_)
     root_layer_->SetCompositor(this, root_cc_layer_);
+
+  if (uses_layer_lists_) {
+    cc::ClipTree& ui_clip_tree = property_trees_->clip_tree_mutable();
+    if (ui_clip_tree.size() > 2) {
+      ui_clip_tree.RemoveNodes(ui_clip_tree.size() - 2);
+      // TODO(crbug.com/389771428): Figure out what to do w/ needs_update.
+      ui_clip_tree.set_needs_update(true);
+    }
+  }
 }
 
 void Compositor::DisableAnimations() {
@@ -490,6 +504,23 @@ void Compositor::SetScaleAndSize(float scale,
     size_ = size_in_pixel;
     host_->SetViewportRectAndScale(gfx::Rect(size_in_pixel), scale,
                                    local_surface_id);
+    if (uses_layer_lists_) {
+      cc::ClipTree& ui_clip_tree = property_trees_->clip_tree_mutable();
+      if (viewport_clip_id_ == cc::kInvalidPropertyNodeId) {
+        cc::ClipNode clip_node;
+        clip_node.clip = gfx::RectF(size_);
+        clip_node.transform_id = cc::kRootPropertyNodeId;
+        viewport_clip_id_ =
+            ui_clip_tree.Insert(clip_node, cc::kRootPropertyNodeId);
+      } else {
+        ui_clip_tree.Node(viewport_clip_id_)->clip = gfx::RectF(size_);
+      }
+      ui_clip_tree.SetViewportClip(gfx::RectF(size_));
+
+      // TODO(crbug.com/389771428): Figure out what to do w/ needs_update.
+      ui_clip_tree.set_needs_update(true);
+    }
+
     root_cc_layer_->SetBounds(size_in_pixel);
     if (display_private_ && (size_changed || disabled_swap_until_resize_)) {
       display_private_->Resize(size_in_pixel);
@@ -1083,10 +1114,32 @@ void Compositor::RemoveScopedKeepSurfaceAlive(
   pending_surface_copies_.erase(scoped_keep_surface_alive_id);
 }
 
+const cc::PropertyTrees* Compositor::property_trees() const {
+  CHECK(uses_layer_lists_);
+  CHECK(property_trees_.has_value());
+  return &property_trees_.value();
+}
+
 void Compositor::CheckPropertyTrees() const {
-  DCHECK(property_trees_.has_value());
-  // TODO(crbug.com/389771428): Make this work.
-  // DCHECK_EQ(property_trees_.value(), *host_->property_trees());
+  DCHECK(uses_layer_lists_);
+  // TODO(crbug.com/389771428): Make this work for all of the property trees.
+
+#if DCHECK_IS_ON()
+  // Check that just the first two nodes and the viewport clip are correct.
+  // TODO: Get the whole clip tree to pass, not just the first two nodes.
+  const cc::ClipTree& ui_clip_tree = property_trees_->clip_tree();
+  const cc::ClipTree& cc_clip_tree = host_->property_trees()->clip_tree();
+  DCHECK_EQ(*ui_clip_tree.Node(cc::kRootPropertyNodeId),
+            *cc_clip_tree.Node(cc::kRootPropertyNodeId));
+  DCHECK_EQ(ui_clip_tree.ViewportClip(), cc_clip_tree.ViewportClip());
+  DCHECK_NE(viewport_clip_id_, cc::kInvalidPropertyNodeId);
+  DCHECK_EQ(*ui_clip_tree.Node(viewport_clip_id_),
+            *cc_clip_tree.Node(viewport_clip_id_));
+
+  if (!root_layer()) {
+    DCHECK_EQ(ui_clip_tree.size(), (unsigned long)2);
+  }
+#endif
 }
 
 }  // namespace ui

@@ -31,6 +31,9 @@ message AutofillValuableSpecifics {
 
     // The loyalty card text code.
     optional string loyalty_card_number = 4;
+
+    // Merchant domains associated to the loyalty card.
+    repeated string merchant_domains = 5;
   }
 
   oneof valuable_data {

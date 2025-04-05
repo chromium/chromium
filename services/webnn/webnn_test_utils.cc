@@ -576,6 +576,7 @@ ContextProperties GetContextPropertiesForTesting() {
   static constexpr SupportedRanks kMaxRank = SupportedRanks::UpTo(8);
   return WebNNContextImpl::IntersectWithBaseProperties(ContextProperties(
       InputOperandLayout::kNchw, Resample2DAxes::kAny,
+      BatchNormalizationAxis::kAny,
       /*tensor_byte_length_limit=*/INT_MAX,
       {/*input=*/SupportedDataTypes::All(),
        /*constant=*/SupportedDataTypes::All(),

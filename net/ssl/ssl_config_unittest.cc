@@ -4,6 +4,8 @@
 
 #include "net/ssl/ssl_config.h"
 
+#include "net/base/proxy_chain.h"
+#include "net/base/session_usage.h"
 #include "net/cert/cert_verifier.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -29,6 +31,17 @@ TEST(SSLConfigTest, GetCertVerifyFlags) {
                        /*disable_cert_verification_network_fetches*/ false);
   CheckCertVerifyFlags(&ssl_config,
                        /*disable_cert_verification_network_fetches*/ true);
+}
+
+TEST(SSLConfigTest, DefaultProxyChain) {
+  SSLConfig ssl_config;
+  EXPECT_TRUE(ssl_config.proxy_chain.is_direct());
+  EXPECT_EQ(ssl_config.proxy_chain_index, 0);
+}
+
+TEST(SSLConfigTest, DefaultSessionUsage) {
+  SSLConfig ssl_config;
+  EXPECT_EQ(ssl_config.session_usage, SessionUsage::kDestination);
 }
 
 }  // namespace net

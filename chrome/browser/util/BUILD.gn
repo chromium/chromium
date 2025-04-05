@@ -17,6 +17,7 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/util/HashUtil.java",
     "android/java/src/org/chromium/chrome/browser/util/KeyNavigationUtil.java",
     "android/java/src/org/chromium/chrome/browser/util/PlatformUtil.java",
+    "android/java/src/org/chromium/chrome/browser/util/WindowFeatures.java",
   ]
   deps = [
     "//base:base_java",

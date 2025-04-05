@@ -162,7 +162,6 @@ class ScalableIphE2EBrowserTest : public ash::ScalableIphBrowserTestBase {
   void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
     ScalableIphBrowserTestBase::SetUpDefaultCommandLine(command_line);
 
-    command_line->RemoveSwitch(switches::kDisableDefaultApps);
     command_line->AppendSwitch(
         ash::switches::kAllowDefaultShelfPinLayoutIgnoringSync);
   }

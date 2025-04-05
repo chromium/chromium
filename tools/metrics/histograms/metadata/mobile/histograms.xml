@@ -55,6 +55,8 @@ chromium-metrics-reviews@google.com.
       summary="Recorded for PermissionsInfobar."/>
   <variant name="InfobarTypeSaveCard"
       summary="Recorded for Save Card Infobar."/>
+  <variant name="InfobarTypeSignin"
+      summary="Recorded for non modal sign-in promo Infobar."/>
   <variant name="InfobarTypeSyncError"
       summary="Recorded for Sync Error Infobar."/>
   <variant name="InfobarTypeTailoredSecurityService"

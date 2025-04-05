@@ -16,7 +16,7 @@
 namespace glic {
 
 void ForceSigninAndModelExecutionCapability(Profile* profile) {
-  SetFRECompletion(profile, true);
+  SetFRECompletion(profile, prefs::FreStatus::kCompleted);
   SigninWithPrimaryAccount(profile);
   SetModelExecutionCapability(profile, true);
 }
@@ -45,9 +45,9 @@ void SetModelExecutionCapability(Profile* profile, bool enabled) {
   signin::UpdateAccountInfoForAccount(identity_manager, primary_account);
 }
 
-void SetFRECompletion(Profile* profile, bool completed) {
+void SetFRECompletion(Profile* profile, prefs::FreStatus fre_status) {
   profile->GetPrefs()->SetInteger(prefs::kGlicCompletedFre,
-                                  static_cast<int>(completed));
+                                  static_cast<int>(fre_status));
 }
 
 void InvalidateAccount(Profile* profile) {

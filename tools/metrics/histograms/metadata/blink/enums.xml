@@ -5505,7 +5505,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4938" label="FoldableAPIs"/>
   <int value="4939" label="SnapEvent"/>
   <int value="4940" label="StaticPropertyInAnimation"/>
-  <int value="4941" label="SimplifyLoadingTransparentPlaceholderImage"/>
+  <int value="4941"
+      label="OBSOLETE_SimplifyLoadingTransparentPlaceholderImage"/>
   <int value="4942" label="IdentityDigitalCredentialsSuccess"/>
   <int value="4943"
       label="OBSOLETE_V8DeviceProperties_UniqueId_AttributeGetter"/>
@@ -5604,7 +5605,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5032" label="ButtonTypeAttrInvalid"/>
   <int value="5033" label="ButtonTypeAttrEmptyString"/>
   <int value="5034" label="ProtectedAudienceDirectFromSellerSignals"/>
-  <int value="5035" label="WebGPUSubgroupsFeatures"/>
+  <int value="5035" label="OBSOLETE_WebGPUSubgroupsFeatures"/>
   <int value="5036" label="AudioContextOnError"/>
   <int value="5037" label="NoVarySearchPrerender"/>
   <int value="5038" label="OBSOLETE_V8AITextSession_Clone_Method"/>
@@ -8093,6 +8094,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="312" label="WebAppManifestUpdateToken"/>
   <int value="313" label="ReadingFlow"/>
   <int value="314" label="ComposedRanges"/>
+  <int value="315" label="CompressionDictionaryTransport"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->

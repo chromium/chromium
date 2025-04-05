@@ -11,6 +11,8 @@ shown first, followed by targets with one dep that needs annotation, etc.
 
 import argparse
 import collections
+import csv
+import datetime
 import json
 import pathlib
 import re
@@ -55,17 +57,14 @@ def gen_build_target_graph(out_dir: pathlib.Path, include_testonly: bool,
         data = json.load(f)
     outbound = collections.defaultdict(set)
     inbound = collections.defaultdict(set)
-    if include_testonly:
-        print('WARNING: testonly targets are not yet supported by errorprone, '
-              'so they are skipped in this script.')
     skip = set()
-    # Remove testonly targets as they do not yet support errorprone.
-    for target, info in data['targets'].items():
-        if not info['testonly']:
-            continue
-        # If it exists, it should always be True.
-        assert info['testonly'], f'{target} has false testonly value.'
-        skip.add(target)
+    if not include_testonly:
+        for target, info in data['targets'].items():
+            if not info['testonly']:
+                continue
+            # If it exists, it should always be True.
+            assert info['testonly'], f'{target} has false testonly value.'
+            skip.add(target)
     for target, info in data['targets'].items():
         if target in skip:
             continue
@@ -105,6 +104,9 @@ def main():
         type=pathlib.Path,
         help='Used to generate project.json in the outdir and use it for the '
         'target graph. Defaults to out/Debug.')
+    parser.add_argument('--csv',
+                        type=pathlib.Path,
+                        help='Also output a .csv file for further processing')
     parser.add_argument(
         '-v',
         '--verbose',
@@ -181,7 +183,7 @@ def main():
             if '__' in t:
                 t = t.split('__')[0]
             # Skip these jni ones, not interesting.
-            if 'jni_headers_java' in t:
+            if 'jni_headers_java' in t or 'jni_java' in t:
                 continue
             if t in skipped_targets:
                 continue
@@ -275,6 +277,19 @@ For the status prefix:[A B C] <target-name>:
 this target.
 - C (shows up only with -v and -a) is the number of unmarked targets that this \
 target depends on.''')
+
+    if args.csv:
+        timestamp = datetime.datetime.now(datetime.UTC).timestamp()
+        print(f"Writing csv to {args.csv}")
+        with open(args.csv, 'w') as csv_output_file:
+            csv_writer = csv.writer(csv_output_file)
+            for t in targets_list:
+                status = [
+                    t[2:], targets_num_unmarked[t],
+                    len(targets_unmarked_dependents[t]),
+                    len(targets_unmarked_deps[t]), timestamp
+                ]
+                csv_writer.writerow(status)
 
 
 if __name__ == '__main__':

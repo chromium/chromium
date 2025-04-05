@@ -705,6 +705,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="LocalStorage.MojoTimeToPrimeAblationDelay" units="ms"
+    expires_after="2025-09-20">
+  <owner>fergal@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Time (in ms) added to loading of LocalStorage into the renderer-side cache
+    used for ablation study purposes.
+  </summary>
+</histogram>
+
 <histogram name="LocalStorage.MojoTimeToPrimeFor{LocalStorageSizes}" units="ms"
     expires_after="2025-09-20">
   <owner>fergal@chromium.org</owner>

@@ -39,6 +39,7 @@ import org.chromium.ui.util.ColorUtils;
 public class StripLayoutTabTest {
 
     private static final String TAG = "StripLayoutTabTest";
+    private static final float DIVIDER_FOLIO_LIGHT_OPACITY = 0.3f;
 
     private Context mContext;
     private StripLayoutTab mNormalTab;
@@ -154,13 +155,13 @@ public class StripLayoutTabTest {
         expectedColor =
                 ColorUtils.setAlphaComponentWithFloat(
                         SemanticColorUtils.getDefaultIconColorAccent1(mContext),
-                        StripLayoutTab.DIVIDER_FOLIO_LIGHT_OPACITY);
+                        DIVIDER_FOLIO_LIGHT_OPACITY);
         assertEquals(
                 "Light mode divider uses 20% icon color",
                 expectedColor, mNormalTab.getDividerTint());
 
         // Incognito.
-        expectedColor = mContext.getColor(R.color.divider_line_bg_color_light);
+        expectedColor = mContext.getColor(R.color.tab_strip_tablet_divider_bg_incognito);
         assertEquals(
                 "Incognito dividers use the baseline color.",
                 expectedColor,

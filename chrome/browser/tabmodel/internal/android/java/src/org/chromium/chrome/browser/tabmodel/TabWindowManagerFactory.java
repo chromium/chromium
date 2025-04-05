@@ -4,11 +4,12 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Factory for creating {@link TabWindowManager}. */
+@NullMarked
 public class TabWindowManagerFactory {
-    /**
-     * @return New instance of {@link TabWindowManagerImpl}.
-     */
+    /** Returns a new instance of {@link TabWindowManagerImpl}. */
     public static TabWindowManager createInstance(
             TabModelSelectorFactory selectorFactory,
             AsyncTabParamsManager asyncTabParamsManager,

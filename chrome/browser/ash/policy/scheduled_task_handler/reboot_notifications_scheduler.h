@@ -60,10 +60,6 @@ class RebootNotificationsScheduler
   // Registers boolean pref for showing post reboot notification.
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
-  // Returns true if the pref for showing the post reboot notification is set
-  // for the |profile|.
-  static bool ShouldShowPostRebootNotification(Profile* profile);
-
   // Schedules timers for showing pending reboot notification and dialog or
   // shows them right away if the scheduled reboot time is soon. If there
   // already is a scheduled notification, either reschedules notification or

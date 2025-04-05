@@ -31,6 +31,7 @@ import android.util.Pair;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityManager;
 import android.view.autofill.AutofillManager;
+
 import androidx.annotation.RequiresApi;
 
 import org.jni_zero.CalledByNative;
@@ -140,6 +141,10 @@ public class AccessibilityState {
         // False otherwise.
         public final boolean isTextShowPasswordEnabled;
 
+        // True when the autofill manager is enabled and the autofill service is the only service
+        // running that requires accessibility.
+        public final boolean isOnlyAutofillRunning;
+
         // True when we suspect that only password managers are enabled, based on the information
         // from running accessibility services. False otherwise.
         public final boolean isOnlyPasswordManagersEnabled;
@@ -152,6 +157,7 @@ public class AccessibilityState {
                 boolean isAccessibilityToolPresent,
                 boolean isSpokenFeedbackServicePresent,
                 boolean isTextShowPasswordEnabled,
+                boolean isOnlyAutofillRunning,
                 boolean isOnlyPasswordManagersEnabled) {
             this.isScreenReaderEnabled = isScreenReaderEnabled;
             this.isTouchExplorationEnabled = isTouchExplorationEnabled;
@@ -160,6 +166,7 @@ public class AccessibilityState {
             this.isAccessibilityToolPresent = isAccessibilityToolPresent;
             this.isSpokenFeedbackServicePresent = isSpokenFeedbackServicePresent;
             this.isTextShowPasswordEnabled = isTextShowPasswordEnabled;
+            this.isOnlyAutofillRunning = isOnlyAutofillRunning;
             this.isOnlyPasswordManagersEnabled = isOnlyPasswordManagersEnabled;
         }
 
@@ -180,6 +187,8 @@ public class AccessibilityState {
                     + isSpokenFeedbackServicePresent
                     + ", isTextShowPasswordEnabled="
                     + isTextShowPasswordEnabled
+                    + ", isOnlyAutofillRunning="
+                    + isOnlyAutofillRunning
                     + ", isOnlyPasswordManagersEnabled="
                     + isOnlyPasswordManagersEnabled
                     + '}';
@@ -367,6 +376,11 @@ public class AccessibilityState {
     public static boolean isTextShowPasswordEnabled() {
         if (!sInitialized) updateAccessibilityServices();
         return assumeNonNull(sState).isTextShowPasswordEnabled;
+    }
+
+    public static boolean isOnlyAutofillRunning() {
+        if (!sInitialized) updateAccessibilityServices();
+        return assumeNonNull(sState).isOnlyAutofillRunning;
     }
 
     public static boolean isOnlyPasswordManagersEnabled() {
@@ -597,7 +611,7 @@ public class AccessibilityState {
     protected static void updateAccessibilityServices() {
         long now = SystemClock.elapsedRealtimeNanos() / 1000;
         if (!sInitialized) {
-            sState = new State(false, false, false, false, false, false, false, false);
+            sState = new State(false, false, false, false, false, false, false, false, false);
             fetchAccessibilityManager();
         }
         sInitialized = true;
@@ -789,6 +803,7 @@ public class AccessibilityState {
                         isAccessibilityToolPresent,
                         isSpokenFeedbackServicePresent,
                         isTextShowPasswordEnabled,
+                        isOnlyAutofillRunning,
                         isOnlyPasswordManagersEnabled));
     }
 
@@ -1110,6 +1125,7 @@ public class AccessibilityState {
                         oldState.isAccessibilityToolPresent,
                         oldState.isSpokenFeedbackServicePresent,
                         oldState.isTextShowPasswordEnabled,
+                        oldState.isOnlyAutofillRunning,
                         oldState.isOnlyPasswordManagersEnabled);
 
         updateAndNotifyStateChange(newState);
@@ -1128,6 +1144,7 @@ public class AccessibilityState {
                         oldState.isAccessibilityToolPresent,
                         oldState.isSpokenFeedbackServicePresent,
                         oldState.isTextShowPasswordEnabled,
+                        oldState.isOnlyAutofillRunning,
                         oldState.isOnlyPasswordManagersEnabled);
 
         updateAndNotifyStateChange(newState);
@@ -1146,6 +1163,7 @@ public class AccessibilityState {
                         oldState.isAccessibilityToolPresent,
                         oldState.isSpokenFeedbackServicePresent,
                         oldState.isTextShowPasswordEnabled,
+                        oldState.isOnlyAutofillRunning,
                         oldState.isOnlyPasswordManagersEnabled);
 
         updateAndNotifyStateChange(newState);
@@ -1164,6 +1182,7 @@ public class AccessibilityState {
                         oldState.isAccessibilityToolPresent,
                         oldState.isSpokenFeedbackServicePresent,
                         oldState.isTextShowPasswordEnabled,
+                        oldState.isOnlyAutofillRunning,
                         oldState.isOnlyPasswordManagersEnabled);
 
         updateAndNotifyStateChange(newState);
@@ -1182,6 +1201,7 @@ public class AccessibilityState {
                         enabled,
                         oldState.isSpokenFeedbackServicePresent,
                         oldState.isTextShowPasswordEnabled,
+                        oldState.isOnlyAutofillRunning,
                         oldState.isOnlyPasswordManagersEnabled);
 
         updateAndNotifyStateChange(newState);
@@ -1200,6 +1220,7 @@ public class AccessibilityState {
                         oldState.isAccessibilityToolPresent,
                         enabled,
                         oldState.isTextShowPasswordEnabled,
+                        oldState.isOnlyAutofillRunning,
                         oldState.isOnlyPasswordManagersEnabled);
 
         updateAndNotifyStateChange(newState);
@@ -1217,6 +1238,26 @@ public class AccessibilityState {
                         oldState.isAnyAccessibilityServiceEnabled,
                         oldState.isAccessibilityToolPresent,
                         oldState.isSpokenFeedbackServicePresent,
+                        enabled,
+                        oldState.isOnlyAutofillRunning,
+                        oldState.isOnlyPasswordManagersEnabled);
+
+        updateAndNotifyStateChange(newState);
+    }
+
+    public static void setIsOnlyAutofillRunningForTesting(boolean enabled) {
+        if (!sInitialized) initializeForTesting();
+        State oldState = assumeNonNull(sState);
+
+        State newState =
+                new State(
+                        oldState.isScreenReaderEnabled,
+                        oldState.isTouchExplorationEnabled,
+                        oldState.isPerformGesturesEnabled,
+                        oldState.isAnyAccessibilityServiceEnabled,
+                        oldState.isAccessibilityToolPresent,
+                        oldState.isSpokenFeedbackServicePresent,
+                        oldState.isTextShowPasswordEnabled,
                         enabled,
                         oldState.isOnlyPasswordManagersEnabled);
 
@@ -1236,6 +1277,7 @@ public class AccessibilityState {
                         oldState.isAccessibilityToolPresent,
                         oldState.isSpokenFeedbackServicePresent,
                         oldState.isTextShowPasswordEnabled,
+                        oldState.isOnlyAutofillRunning,
                         enabled);
 
         updateAndNotifyStateChange(newState);
@@ -1288,7 +1330,7 @@ public class AccessibilityState {
     }
 
     private static void initializeForTesting() {
-        sState = new State(false, false, false, false, false, false, false, false);
+        sState = new State(false, false, false, false, false, false, false, false, false);
         fetchAccessibilityManager();
         sInitialized = true;
         sIsInTestingMode = true;

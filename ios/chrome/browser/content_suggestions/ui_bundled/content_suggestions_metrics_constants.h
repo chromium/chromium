@@ -17,6 +17,12 @@ extern const char kMostVisitedAction[];
 extern const char kMostVisitedUrlBlacklistedAction[];
 extern const char kShowReturnToRecentTabTileAction[];
 extern const char kOpenMostRecentTabAction[];
+extern const char kTabResumptionWithPriceDropOpenTab[];
+extern const char kTabResumptionWithPriceTrackingOpenTab[];
+extern const char kTabResumptionOpenTab[];
+extern const char kTabResumptionWithPriceDropImpression[];
+extern const char kTabResumptionWithPriceTrackingImpression[];
+extern const char kTabResumptionImpression[];
 extern const char kContentNotificationSnackbarAction[];
 
 #pragma mark - Enums

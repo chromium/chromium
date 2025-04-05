@@ -228,6 +228,11 @@ class ASH_EXPORT BaseCaptureModeSession : public ui::LayerOwner,
   // Clears the focus ring from any currently pseudo focused item if possible.
   virtual void ClearPseudoFocus() = 0;
 
+  // Set the A11y override window to the search results panel's native window.
+  // Called when the panel's web contents request focus and the override window
+  // needs to be manually updated.
+  virtual void SetA11yOverrideWindowToSearchResultsPanel() = 0;
+
   // ShellObserver:
   void OnRootWindowWillShutdown(aura::Window* root_window) override;
 

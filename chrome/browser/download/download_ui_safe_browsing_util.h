@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "build/build_config.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/safe_browsing/buildflags.h"
 
@@ -57,5 +58,12 @@ void SendSafeBrowsingDownloadReport(
     bool did_proceed,
     download::DownloadItem* item);
 #endif  // BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
+
+#if BUILDFLAG(IS_ANDROID)
+// Whether Safe Browsing Android Download Protection warnings should be shown
+// in the UI (for malicious APK downloads). This checks the feature state only;
+// Safe Browsing state is checked elsewhere.
+bool ShouldShowSafeBrowsingAndroidDownloadWarnings();
+#endif
 
 #endif  // CHROME_BROWSER_DOWNLOAD_DOWNLOAD_UI_SAFE_BROWSING_UTIL_H_

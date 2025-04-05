@@ -26,6 +26,8 @@ config("compiler") {
     triplet_cpu = "armv7"
   } else if (current_cpu == "arm64") {
     triplet_cpu = "arm64"
+  } else if (current_cpu == "arm64e") {
+    triplet_cpu = "arm64e"
   } else {
     assert(false, "unsupported cpu: $current_cpu")
   }

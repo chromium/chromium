@@ -32,6 +32,7 @@
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/install_flag.h"
 #include "extensions/browser/install_prefs_helper.h"
@@ -69,6 +70,13 @@ const char kImportMissing[] = "'import' extension is not installed.";
 const char kImportNotSharedModule[] = "'import' is not a shared module.";
 
 }  // namespace
+
+// static
+scoped_refptr<UnpackedInstaller> UnpackedInstaller::Create(Profile* profile) {
+  CHECK(profile);
+  return scoped_refptr<UnpackedInstaller>(new UnpackedInstaller(
+      ExtensionSystem::Get(profile)->extension_service()));
+}
 
 // static
 scoped_refptr<UnpackedInstaller> UnpackedInstaller::Create(

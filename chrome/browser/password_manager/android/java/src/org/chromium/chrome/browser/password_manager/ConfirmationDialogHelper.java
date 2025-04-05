@@ -4,10 +4,14 @@
 
 package org.chromium.chrome.browser.password_manager;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.res.Resources;
 
 import org.chromium.base.CallbackUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -17,12 +21,13 @@ import org.chromium.ui.modaldialog.SimpleModalDialogController;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Helps to show a confirmation. */
+@NullMarked
 public class ConfirmationDialogHelper {
     private final Context mContext;
     private ModalDialogManager mModalDialogManager;
-    private PropertyModel mDialogModel;
-    private Runnable mConfirmedCallback;
-    private Runnable mDeclinedCallback;
+    private @Nullable PropertyModel mDialogModel;
+    private @Nullable Runnable mConfirmedCallback;
+    private @Nullable Runnable mDeclinedCallback;
 
     public ConfirmationDialogHelper(Context context) {
         mContext = context;
@@ -109,9 +114,11 @@ public class ConfirmationDialogHelper {
     private void onDismiss(@DialogDismissalCause int dismissalCause) {
         switch (dismissalCause) {
             case DialogDismissalCause.POSITIVE_BUTTON_CLICKED:
+                assumeNonNull(mConfirmedCallback);
                 mConfirmedCallback.run();
                 break;
             case DialogDismissalCause.NEGATIVE_BUTTON_CLICKED:
+                assumeNonNull(mDeclinedCallback);
                 mDeclinedCallback.run();
                 break;
             default:

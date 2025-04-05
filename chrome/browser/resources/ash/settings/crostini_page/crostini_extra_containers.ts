@@ -129,6 +129,7 @@ export class ExtraContainersElement extends ExtraContainersElementBase {
   private allSharedVmDevices_: SharedVmDevices[];
   private allVms_: string[];
   private browserProxy_: CrostiniBrowserProxy;
+  private enableButtons_: boolean;
   private exportImportInProgress_: boolean;
   private installerShowing_: boolean;
   private lastMenuContainerInfo_: CrostiniContainerInfo|null;

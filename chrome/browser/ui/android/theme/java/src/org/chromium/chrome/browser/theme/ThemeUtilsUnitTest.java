@@ -10,13 +10,14 @@ import android.content.Context;
 import android.graphics.Color;
 import android.view.ContextThemeWrapper;
 
+import androidx.core.content.ContextCompat;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.ui.util.ColorUtils;
 
 @RunWith(BaseRobolectricTestRunner.class)
@@ -89,8 +90,7 @@ public class ThemeUtilsUnitTest {
 
     @Test
     public void getTextBoxColorForToolbarBackgroundInNonNativePage_anyDefault() {
-        float tabElevation = mContext.getResources().getDimension(R.dimen.default_elevation_4);
-        int expectedColor = ChromeColors.getSurfaceColor(mContext, tabElevation);
+        int expectedColor = ContextCompat.getColor(mContext, R.color.toolbar_text_box_bg_color);
 
         int themeColor =
                 ThemeUtils.getTextBoxColorForToolbarBackgroundInNonNativePage(

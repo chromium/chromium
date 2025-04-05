@@ -106,6 +106,14 @@ class ExternalProviderInterface {
   // and is independent of the external loader calling LoadFinished(). This
   // method does not load the prefs, but uses the ones present in the provider.
   virtual void TriggerOnExternalExtensionFound() = 0;
+
+  // Sets underlying prefs and notifies provider. Only to be called by the
+  // owned ExternalLoader instance.
+  virtual void SetPrefs(base::Value::Dict prefs) {}
+
+  // Updates the underlying prefs and notifies provider.
+  // Only to be called by the owned ExternalLoader instance.
+  virtual void UpdatePrefs(base::Value::Dict prefs) {}
 };
 
 using ProviderCollection =

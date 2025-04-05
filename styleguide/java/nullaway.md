@@ -238,17 +238,33 @@ Fix this by:
   for the parameters.
 * As a bonus, the constructor may also allow you to mark fields as `final`.
 
-### Rarely-Nullable Return Types
+### Effectively Non-Null Return Types
 
-In order to reduce excessive use of `assumeNonNull()`, here are two options
-for what to do with a method that rarely returns `null`:
+Some methods are technically `@Nullable`, but effectively `@NonNull`. That is,
+they are marked as having `@NonNull` return types despite sometimes returning
+`null`. Examples:
+   * [`Activity.findViewById()`]
+   * `Context.getSystemService()`
+   * `PreferenceManager.findPreference()` (this one via [`ChromeNullAwayLibraryModel`])
 
-1) Mark it as: `@NullUnmarked // Do not force assumeNonNull() at call sites`
-   * This is what [`Activity.findViewById()`] does.
-   * Non-null parameters must be marked as `@NonNull` to not also be considered
-     to have unknown nullness (so that nullness of parameters is still checked).
-2) Add sibling `*Checked()` methods that assert their return value is non-null.
-   * The nullable `TabModel.getTabById()` has a non-nullable `TabModel.getTabByIdChecked()`
+Enforcing null checks for these would be detrimental to readability.
+
+For Chromium-authored code that falls into this bucket, prefer to add
+companion "Checked" methods over mis-annotating nullability.
+
+Example:
+
+```java
+// When you're not sure if the tab exists:
+public @Nullable Tab getTabById(String tabId) {
+    ...
+}
+
+// When you know the tab exists:
+public Tab getTabByIdChecked(String tabId) {
+    return assertNonNull(getTabById(key));
+}
+```
 
 [`Activity.findViewById()`]: https://cs.android.com/android/platform/superproject/main/+/main:frameworks/base/core/java/android/app/Activity.java?q=symbol%3A%5Cbandroid.app.Activity.findViewById%5Cb%20case%3Ayes
 

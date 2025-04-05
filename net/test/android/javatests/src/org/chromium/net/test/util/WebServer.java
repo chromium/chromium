@@ -299,7 +299,8 @@ public class WebServer implements AutoCloseable {
         }
     }
 
-    public void setServerHost(String hostname) {
+    /** Changes the host name - returns the fully qualified origin */
+    public String setServerHost(String hostname) {
         try {
             mServerUri =
                     new java.net.URI(
@@ -311,8 +312,10 @@ public class WebServer implements AutoCloseable {
                                     null,
                                     null)
                             .toString();
+            return mServerUri;
         } catch (java.net.URISyntaxException e) {
             Log.wtf(TAG, e.getMessage());
+            return null;
         }
     }
 

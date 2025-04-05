@@ -248,20 +248,12 @@ int HttpStreamPool::JobController::Preconnect(
 
   SpdySessionKey spdy_session_key =
       origin_stream_key_.CalculateSpdySessionKey();
-  bool had_spdy_session = spdy_session_pool()->HasAvailableSession(
-      spdy_session_key, /*enable_ip_based_pooling=*/true,
-      /*is_websocket=*/false);
   if (pool_->FindAvailableSpdySession(origin_stream_key_, spdy_session_key,
                                       /*enable_ip_based_pooling=*/true)) {
     net_log_.AddEvent(
         NetLogEventType::
             HTTP_STREAM_POOL_JOB_CONTROLLER_FOUND_EXISTING_SPDY_SESSION);
     return OK;
-  }
-  if (had_spdy_session) {
-    // We had a SPDY session but the server required HTTP/1.1. The session is
-    // going away right now.
-    return ERR_HTTP_1_1_REQUIRED;
   }
 
   Group& group = pool_->GetOrCreateGroup(origin_stream_key_, origin_quic_key_);

@@ -38,7 +38,8 @@ def start() -> None:
     # oemcrypto, media, kernel:syscall
     run_ffx_command(cmd=('trace', 'start', '--background', '--categories',
                          'gfx,memory_monitor,system_metrics', '--output',
-                         FXT_FILE))
+                         FXT_FILE, '--buffer-size', '32', '--buffering-mode',
+                         'streaming'))
 
 
 def stop(prefix: Optional[str] = None) -> None:

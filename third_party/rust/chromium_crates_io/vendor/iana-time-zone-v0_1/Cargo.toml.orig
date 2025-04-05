@@ -1,7 +1,7 @@
 [package]
 name = "iana-time-zone"
 description = "get the IANA time zone for the current system"
-version = "0.1.62"
+version = "0.1.63"
 authors = [
     "Andrew Straw <strawman@astraw.com>",
     "René Kijewski <rene.kijewski@fu-berlin.de>",
@@ -13,7 +13,7 @@ keywords = ["IANA", "time"]
 categories = ["date-and-time", "internationalization", "os"]
 readme = "README.md"
 edition = "2021"
-rust-version = "1.61.0"
+rust-version = "1.62.0"
 
 [features]
 # When enabled, the library will succeed to compile for unknown target platforms, and return an `Err(GetTimezoneError::OsError)` at runtime.
@@ -26,7 +26,7 @@ android_system_properties = "0.1.5"
 core-foundation-sys = "0.8.6"
 
 [target.'cfg(target_os = "windows")'.dependencies]
-windows-core = { version = ">=0.50, <=0.52" }
+windows-core = ">=0.56, <=0.61"
 
 [target.'cfg(all(target_arch = "wasm32", target_os = "unknown"))'.dependencies]
 js-sys = "0.3.66"

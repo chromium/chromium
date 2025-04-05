@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
 /**
@@ -43,7 +43,7 @@ function canTriggerBottomSheet(focusedElement: Element) {
   // Verify that the window's layout viewport has a height and a width and also
   // that the element is visible.
   return window.innerHeight > 0 && window.innerWidth > 0 &&
-      gCrWeb.fill.isVisibleNode(focusedElement);
+      gCrWebLegacy.fill.isVisibleNode(focusedElement);
 }
 
 /*
@@ -65,16 +65,16 @@ function showBottomSheet(hasUserGesture: boolean): void {
     form = lastBlurredElement_;
   }
 
-  // TODO(crbug.com/40261693): convert these "gCrWeb.fill" and "gCrWeb.form"
-  // calls to import and call the functions directly once the conversion to
-  // TypeScript is done.
+  // TODO(crbug.com/40261693): convert these "gCrWebLegacy.fill" and
+  // "gCrWebLegacy.form" calls to import and call the functions directly once
+  // the conversion to TypeScript is done.
 
   const msg = {
-    'frameID': gCrWeb.message.getFrameId(),
-    'formName': gCrWeb.form.getFormIdentifier(form),
-    'formRendererID': gCrWeb.fill.getUniqueID(form),
-    'fieldIdentifier': gCrWeb.form.getFieldIdentifier(field),
-    'fieldRendererID': gCrWeb.fill.getUniqueID(field),
+    'frameID': gCrWebLegacy.message.getFrameId(),
+    'formName': gCrWebLegacy.form.getFormIdentifier(form),
+    'formRendererID': gCrWebLegacy.fill.getUniqueID(form),
+    'fieldIdentifier': gCrWebLegacy.form.getFieldIdentifier(field),
+    'fieldRendererID': gCrWebLegacy.fill.getUniqueID(field),
     'fieldType': fieldType,
     'type': 'focus',
     'value': fieldValue,
@@ -118,7 +118,7 @@ function focusEventHandler(event: Event): void {
  */
 function detachListenersInternal(rendererIds: number[]): void {
   for (const rendererId of rendererIds) {
-    const element = gCrWeb.fill.getElementByUniqueID(rendererId);
+    const element = gCrWebLegacy.fill.getElementByUniqueID(rendererId);
     const index = observedElements_.indexOf(element);
     if (index > -1) {
       element.removeEventListener('focus', focusEventHandler, true);
@@ -138,14 +138,14 @@ function attachListeners(rendererIds: number[], allowAutofocus: boolean): void {
   let elementToBlur: HTMLElement|null = null;
   const elementsToObserve: Element[] = [];
   for (const renderer_id of rendererIds) {
-    const element = gCrWeb.fill.getElementByUniqueID(renderer_id);
+    const element = gCrWebLegacy.fill.getElementByUniqueID(renderer_id);
     // Only add element to list of observed elements if we aren't already
     // observing it.
     if (element && isObservable(element) &&
         !observedElements_.find(elem => elem === element)) {
       const autofocused = document.activeElement === element;
       if (allowAutofocus || !autofocused ||
-          !gCrWeb.autofill_form_features
+          !gCrWebLegacy.autofill_form_features
                .isAutofillFixPaymentSheetSpamEnabled()) {
         // Observe element if eligible.
         elementsToObserve.push(element);
@@ -205,7 +205,7 @@ function detachListeners(rendererIds: number[], refocus: boolean): void {
   }
 }
 
-gCrWeb.bottomSheet = {
+gCrWebLegacy.bottomSheet = {
   attachListeners,
   detachListeners,
   refocusLastBlurredElement,

@@ -11,6 +11,7 @@ import static org.chromium.chrome.browser.password_manager.settings.PasswordAcce
 import android.view.View;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.password_manager.R;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -19,6 +20,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * Maps {@link PasswordAccessLossExportDialogProperties} changes in a {@link PropertyModel} to
  * suitable methods in {@link PasswordAccessLossExportDialogFragment}'s content view.
  */
+@NullMarked
 class PasswordAccessLossExportDialogBinder {
     private PasswordAccessLossExportDialogBinder() {}
 

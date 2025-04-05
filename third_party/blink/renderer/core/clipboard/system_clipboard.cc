@@ -20,7 +20,6 @@
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
-#include "third_party/blink/renderer/core/clipboard/clipboard_mime_types.h"
 #include "third_party/blink/renderer/core/clipboard/clipboard_utilities.h"
 #include "third_party/blink/renderer/core/clipboard/data_object.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
@@ -34,6 +33,7 @@
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/clipboard/clipboard_constants.h"
 
 namespace blink {
 
@@ -379,11 +379,11 @@ void SystemClipboard::WriteDataObject(DataObject* data_object) {
   WebDragData data = data_object->ToWebDragData();
   for (const WebDragData::Item& item : data.Items()) {
     if (const auto* string_item = std::get_if<WebDragData::StringItem>(&item)) {
-      if (string_item->type == kMimeTypeTextPlain) {
+      if (string_item->type == ui::kMimeTypePlainText) {
         clipboard_->WriteText(NonNullString(string_item->data));
-      } else if (string_item->type == kMimeTypeTextHTML) {
+      } else if (string_item->type == ui::kMimeTypeHtml) {
         clipboard_->WriteHtml(NonNullString(string_item->data), KURL());
-      } else if (string_item->type != kMimeTypeDownloadURL) {
+      } else if (string_item->type != ui::kMimeTypeDownloadUrl) {
         custom_data.insert(string_item->type, NonNullString(string_item->data));
       }
     }

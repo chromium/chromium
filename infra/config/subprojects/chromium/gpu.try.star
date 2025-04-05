@@ -147,6 +147,7 @@ gpu_android_builder(
         configs = [
             "gpu_fyi_tests",
             "android_builder",
+            "android_fastbuild",
             "release_builder",
             "try_builder",
             "remoteexec",

@@ -12,13 +12,9 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
-#import "ios/chrome/browser/signin/model/chrome_account_manager_service_observer_bridge.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 
-@interface IdentityChooserMediator () <ChromeAccountManagerServiceObserver,
-                                       IdentityManagerObserverBridgeDelegate> {
-  std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
-      _accountManagerServiceObserver;
+@interface IdentityChooserMediator () <IdentityManagerObserverBridgeDelegate> {
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityManagerObserver;
 }
@@ -54,9 +50,6 @@
 }
 
 - (void)start {
-  _accountManagerServiceObserver =
-      std::make_unique<ChromeAccountManagerServiceObserverBridge>(
-          self, _accountManagerService);
   _identityManagerObserver =
       std::make_unique<signin::IdentityManagerObserverBridge>(_identityManager,
                                                               self);
@@ -64,7 +57,6 @@
 }
 
 - (void)disconnect {
-  _accountManagerServiceObserver.reset();
   _accountManagerService = nullptr;
   _identityManagerObserver.reset();
   _identityManager = nullptr;
@@ -161,14 +153,6 @@
   TableViewIdentityItem* item =
       [self.consumer tableViewIdentityItemWithGaiaID:identity.gaiaID];
   [self updateTableViewIdentityItem:item withIdentity:identity];
-}
-
-#pragma mark - ChromeAccountManagerServiceObserver
-
-- (void)onChromeAccountManagerServiceShutdown:
-    (ChromeAccountManagerService*)accountManagerService {
-  // TODO(crbug.com/40284086): Remove `[self disconnect]`.
-  [self disconnect];
 }
 
 #pragma mark - IdentityManagerObserverBridgeDelegate

@@ -169,38 +169,39 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
     };
   }
 
-  protected comboboxItems_: ComboxItems = {
+  protected accessor comboboxItems_: ComboxItems = {
     a: [],
     b: [],
     c: [],
   };
-  private descriptors_: Descriptors|null = null;
-  protected descriptorD_: string[] = DESCRIPTOR_D_VALUE.map(value => value.hex);
+  private accessor descriptors_: Descriptors|null = null;
+  protected accessor descriptorD_: string[] =
+      DESCRIPTOR_D_VALUE.map(value => value.hex);
   private errorCallback_: (() => void)|undefined;
-  protected errorState_: ErrorState|null = null;
-  private expandedCategories_: {[categoryIndex: number]: boolean} = {};
-  protected history_: WallpaperSearchResult[] = [];
-  protected inspirationGroups_: InspirationGroup[] = [];
-  protected inspirationCardEnabled_: boolean =
+  protected accessor errorState_: ErrorState|null = null;
+  private accessor expandedCategories_: {[categoryIndex: number]: boolean} = {};
+  protected accessor history_: WallpaperSearchResult[] = [];
+  protected accessor inspirationGroups_: InspirationGroup[] = [];
+  protected accessor inspirationCardEnabled_: boolean =
       loadTimeData.getBoolean('wallpaperSearchInspirationCardEnabled');
-  protected inspirationToggleIcon_: string = '';
-  protected loading_: boolean = false;
-  protected openInspirations_: boolean = false;
-  protected results_: WallpaperSearchResult[] = [];
-  private resultsDescriptors_: ResultDescriptors|null = null;
+  protected accessor inspirationToggleIcon_: string = '';
+  protected accessor loading_: boolean = false;
+  protected accessor openInspirations_: boolean = false;
+  protected accessor results_: WallpaperSearchResult[] = [];
+  private accessor resultsDescriptors_: ResultDescriptors|null = null;
   private resultsPromises_: Array<Promise<WallpaperSearchResponse>> = [];
   private selectedDefaultColor_: string|undefined;
-  protected selectedDescriptorA_: string|null = null;
-  protected selectedDescriptorB_: string|null = null;
-  protected selectedDescriptorC_: string|null = null;
-  private selectedDescriptorD_: DescriptorDValue|null = null;
-  protected selectedFeedbackOption_: CrFeedbackOption =
+  protected accessor selectedDescriptorA_: string|null = null;
+  protected accessor selectedDescriptorB_: string|null = null;
+  protected accessor selectedDescriptorC_: string|null = null;
+  private accessor selectedDescriptorD_: DescriptorDValue|null = null;
+  protected accessor selectedFeedbackOption_: CrFeedbackOption =
       CrFeedbackOption.UNSPECIFIED;
-  protected selectedHue_: number|null = null;
-  protected shouldShowHistory_: boolean = false;
-  protected shouldShowInspiration_: boolean = false;
-  private status_: WallpaperSearchStatus = WallpaperSearchStatus.kOk;
-  private theme_?: Theme;
+  protected accessor selectedHue_: number|null = null;
+  protected accessor shouldShowHistory_: boolean = false;
+  protected accessor shouldShowInspiration_: boolean = false;
+  private accessor status_: WallpaperSearchStatus = WallpaperSearchStatus.kOk;
+  private accessor theme_: Theme|undefined;
 
   private callbackRouter_: CustomizeChromePageCallbackRouter;
   private pageHandler_: CustomizeChromePageHandlerInterface;

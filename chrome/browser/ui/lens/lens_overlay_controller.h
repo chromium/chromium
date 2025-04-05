@@ -50,7 +50,7 @@
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/sessions/core/session_id.h"
-#include "components/tab_collections/public/tab_interface.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/url_matcher/regex_set_matcher.h"
 #include "components/url_matcher/url_matcher.h"
 #include "components/url_matcher/url_util.h"

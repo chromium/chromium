@@ -29,6 +29,8 @@ android_resources("java_resources") {
     "java/res/anim/iph_touch_point_background_animation.xml",
     "java/res/anim/tab_switcher_context_menu_animation_in.xml",
     "java/res/anim/tab_switcher_context_menu_animation_out.xml",
+    "java/res/color-night/tab_grid_dialog_bg_color.xml",
+    "java/res/color/tab_grid_dialog_bg_color.xml",
     "java/res/drawable/archived_tab_icon.xml",
     "java/res/drawable/chevron_right.xml",
     "java/res/drawable/color_picker_color_icon.xml",

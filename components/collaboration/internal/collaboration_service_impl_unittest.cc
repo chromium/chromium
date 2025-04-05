@@ -119,14 +119,20 @@ TEST_F(CollaborationServiceImplTest, GetCurrentUserRoleForGroup) {
 }
 
 TEST_F(CollaborationServiceImplTest, GetServiceStatus_Disabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({},
+                                {data_sharing::features::kDataSharingFeature,
+                                 data_sharing::features::kDataSharingJoinOnly});
+  InitService();
+
   EXPECT_EQ(service_->GetServiceStatus().collaboration_status,
             CollaborationStatus::kDisabled);
 }
 
 TEST_F(CollaborationServiceImplTest, GetServiceStatus_JoinOnly) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      data_sharing::features::kDataSharingJoinOnly);
+  feature_list.InitWithFeatures({data_sharing::features::kDataSharingJoinOnly},
+                                {data_sharing::features::kDataSharingFeature});
   InitService();
 
   EXPECT_EQ(service_->GetServiceStatus().collaboration_status,
@@ -135,8 +141,8 @@ TEST_F(CollaborationServiceImplTest, GetServiceStatus_JoinOnly) {
 
 TEST_F(CollaborationServiceImplTest, GetServiceStatus_Create) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      data_sharing::features::kDataSharingFeature);
+  feature_list.InitWithFeatures({data_sharing::features::kDataSharingFeature},
+                                {data_sharing::features::kDataSharingJoinOnly});
   InitService();
 
   EXPECT_EQ(service_->GetServiceStatus().collaboration_status,

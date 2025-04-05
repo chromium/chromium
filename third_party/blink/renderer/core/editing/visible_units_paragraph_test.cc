@@ -265,10 +265,8 @@ TEST_F(VisibleUnitsParagraphTest, StartOfNextParagraphAfterTableCell) {
       "<input style='display: table-cell' type='file' "
       "maxlength='100'><select>");
 
-  const Position& input =
-      Position::BeforeNode(*GetDocument().QuerySelector(AtomicString("input")));
-  const Position& select = Position::BeforeNode(
-      *GetDocument().QuerySelector(AtomicString("select")));
+  const Position& input = Position::BeforeNode(*QuerySelector("input"));
+  const Position& select = Position::BeforeNode(*QuerySelector("select"));
 
   const VisiblePosition& input_position = CreateVisiblePosition(input);
   const VisiblePosition& after_input =
@@ -288,8 +286,7 @@ TEST_F(VisibleUnitsParagraphTest,
 
   const Position& text_end =
       Position::LastPositionInNode(*GetDocument().body()->firstChild());
-  const Position& before_div =
-      Position::BeforeNode(*GetDocument().QuerySelector(AtomicString("div")));
+  const Position& before_div = Position::BeforeNode(*QuerySelector("div"));
   const VisiblePosition& upstream =
       CreateVisiblePosition(before_div, TextAffinity::kUpstream);
   const VisiblePosition& downstream =
@@ -310,7 +307,7 @@ TEST_F(VisibleUnitsParagraphTest, endOfParagraphCannotBeBeforePosition) {
   SetBodyContent(
       "<span contenteditable>x<br contenteditable=false>"
       "<br contenteditable=false></span>");
-  Element* span = GetDocument().QuerySelector(AtomicString("span"));
+  Element* span = QuerySelector("span");
   const Position& p1 = Position(span, 2);
   const Position& p2 = Position::LastPositionInNode(*span);
   const Position& p3 = Position::AfterNode(*span);
@@ -368,7 +365,7 @@ TEST_F(VisibleUnitsParagraphTest, startOfParagraphCannotBeAfterPosition) {
   SetBodyContent(
       "<span contenteditable><br contenteditable=false>"
       "<br contenteditable=false>x</span>");
-  Element* span = GetDocument().QuerySelector(AtomicString("span"));
+  Element* span = QuerySelector("span");
   const Position& p1 = Position(span, 1);
   const Position& p2 = Position::FirstPositionInNode(*span);
   const Position& p3 = Position::BeforeNode(*span);

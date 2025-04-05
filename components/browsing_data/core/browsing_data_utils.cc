@@ -51,7 +51,7 @@ std::u16string CreatePasswordDomainExamples(
   return domains_list;
 }
 
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 // Constructs the text to be displayed by the history counter from the given
 // `history_result`. The string is based on the unique domains within the
 // deletion range and if there are synced entries within the deletion range.
@@ -104,7 +104,7 @@ std::u16string CreateHistoryCounterString(
   return l10n_util::GetStringFUTF16(
       IDS_DEL_BROWSING_HISTORY_COUNTER_SINGLE_DOMAIN_TEXT, last_visited_domain);
 }
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }  // namespace
 
 namespace browsing_data {
@@ -287,14 +287,13 @@ std::u16string GetCounterTextFromResult(
     NOTREACHED();
   }
 
-  // TODO(crbug.com/397187800): Migrate to displaying the domains for Desktop
-  // and iOS.
+  // TODO(crbug.com/397187800): Migrate to displaying the domains for Desktop.
   if (pref_name == prefs::kDeleteBrowsingHistory) {
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
     // History counter.
     return CreateHistoryCounterString(
         static_cast<const HistoryCounter::HistoryResult*>(result));
-#else   // !BUILDFLAG(IS_ANDROID)
+#else   // !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS))
     // History counter.
     const HistoryCounter::HistoryResult* history_result =
         static_cast<const HistoryCounter::HistoryResult*>(result);
@@ -305,7 +304,7 @@ std::u16string GetCounterTextFromResult(
                      IDS_DEL_BROWSING_HISTORY_COUNTER_SYNCED, local_item_count)
                : l10n_util::GetPluralStringFUTF16(
                      IDS_DEL_BROWSING_HISTORY_COUNTER, local_item_count);
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   }
 
   if (pref_name == prefs::kDeleteFormData) {

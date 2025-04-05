@@ -116,7 +116,7 @@ std::unique_ptr<views::View> CastDialogSinkView::CreateLabelView(
   const int icon_label_spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_RELATED_LABEL_HORIZONTAL);
   const int vertical_spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
-                                   DISTANCE_CONTROL_LIST_VERTICAL) /
+                                   views::DISTANCE_CONTROL_LIST_VERTICAL) /
                                2;
 
   auto label_container = std::make_unique<views::View>();
@@ -172,7 +172,7 @@ std::unique_ptr<views::View> CastDialogSinkView::CreateButtonsView(
   button_container->SetProperty(
       views::kMarginsKey,
       gfx::Insets::TLBR(-ChromeLayoutProvider::Get()->GetDistanceMetric(
-                            DISTANCE_CONTROL_LIST_VERTICAL) /
+                            views::DISTANCE_CONTROL_LIST_VERTICAL) /
                             2,
                         0, 0, button_spacing));
 

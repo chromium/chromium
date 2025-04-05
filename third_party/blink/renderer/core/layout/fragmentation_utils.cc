@@ -1587,7 +1587,7 @@ LayoutUnit BlockSizeForFragmentation(
     // other kind of monolithic content.
     WritingMode writing_mode = container_writing_direction.GetWritingMode();
     LogicalSize logical_size =
-        result.GetPhysicalFragment().Size().ConvertToLogical(writing_mode);
+        ToLogicalSize(result.GetPhysicalFragment().Size(), writing_mode);
     block_size = logical_size.block_size;
 
     // Then remove any block-end trimming, since it shouldn't take up space in

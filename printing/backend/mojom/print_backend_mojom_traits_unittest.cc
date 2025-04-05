@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <map>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -115,6 +116,26 @@ TEST(PrintBackendMojomTraitsTest, TestPaperCtors) {
       "display_name", "vendor_id", kNonEmptySize, kNonEmptyPrintableArea,
       /*max_height_um=*/200, /*has_borderless_variant=*/true);
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Paper>(input, output));
+
+#if BUILDFLAG(IS_CHROMEOS)
+  input = PrinterSemanticCapsAndDefaults::Paper(
+      "display_name", "vendor_id", kNonEmptySize, kNonEmptyPrintableArea,
+      /*max_height_um=*/200, /*has_borderless_variant=*/true,
+      /*supported_margins_um=*/PaperMargins(100, 200, 300, 400));
+  EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Paper>(input, output));
+
+  input = PrinterSemanticCapsAndDefaults::Paper(
+      "display_name", "vendor_id", kNonEmptySize, kNonEmptyPrintableArea,
+      /*max_height_um=*/200, /*has_borderless_variant=*/true, std::nullopt);
+  EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Paper>(input, output));
+
+  input = PrinterSemanticCapsAndDefaults::Paper(
+      "display_name", "vendor_id", kNonEmptySize, kNonEmptyPrintableArea,
+      /*max_height_um=*/200, /*has_borderless_variant=*/true,
+      /*supported_margins_um=*/PaperMargins(100, -200, 300, 400));
+  EXPECT_FALSE(
+      mojo::test::SerializeAndDeserialize<mojom::Paper>(input, output));
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 TEST(PrintBackendMojomTraitsTest, TestPaperEmpty) {
@@ -134,8 +155,7 @@ TEST(PrintBackendMojomTraitsTest, TestPaperInvalidCustomSize) {
       /*size_um=*/gfx::Size(4000, 7000),
       /*printable_area_um=*/gfx::Rect(0, 0, 4000, 7000),
       /*max_height_um=*/6000,
-      /*has_borderless_variant=*/true,
-  };
+      /*has_borderless_variant=*/true};
   PrinterSemanticCapsAndDefaults::Paper output;
 
   EXPECT_FALSE(
@@ -206,6 +226,38 @@ TEST(PrintBackendMojomTraitsTest, TestPaperNegativePrintableArea) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
+TEST(PrintBackendMojomTraitsTest, TestValidMargins) {
+  PrinterSemanticCapsAndDefaults::Paper input{
+      /*display_name=*/"display_name",
+      /*vendor_id=*/"vendor_id",
+      /*size_um=*/gfx::Size(4000, 7000),
+      /*printable_area_um=*/gfx::Rect(10, 10, 3500, 6000),
+      /*max_height_um=*/0,
+      /*has_borderless_variant=*/false,
+      /*supported_margins_um=*/PaperMargins(100, 300, 400, 50)};
+  PrinterSemanticCapsAndDefaults::Paper output;
+
+  EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Paper>(input, output));
+}
+
+TEST(PrintBackendMojomTraitsTest, TestInvalidMargins) {
+  // The printable area is valid, but the margins are invalid, so it should be
+  // invalid. The margins are invalid because content width and the top margins
+  // are negative.
+  PrinterSemanticCapsAndDefaults::Paper input{
+      /*display_name=*/"display_name",
+      /*vendor_id=*/"vendor_id",
+      /*size_um=*/gfx::Size(4000, 7000),
+      /*printable_area_um=*/gfx::Rect(10, 10, 3500, 6000),
+      /*max_height_um=*/0,
+      /*has_borderless_variant=*/false,
+      /*supported_margins_um=*/PaperMargins(-10, 10, 10, 10)};
+  PrinterSemanticCapsAndDefaults::Paper output;
+
+  EXPECT_FALSE(
+      mojo::test::SerializeAndDeserialize<mojom::Paper>(input, output));
+}
+
 TEST(PrintBackendMojomTraitsTest,
      TestSerializeAndDeserializeAdvancedCapability) {
   for (const auto& advanced_capability : kAdvancedCapabilities) {

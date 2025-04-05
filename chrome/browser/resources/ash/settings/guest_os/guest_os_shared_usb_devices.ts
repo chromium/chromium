@@ -123,23 +123,19 @@ export class SettingsGuestOsSharedUsbDevicesElement extends
           return [];
         },
       },
-
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kGuestUsbNotification,
-          Setting.kGuestUsbPersistentPassthrough,
-        ]),
-      },
     };
   }
 
   defaultGuestId: GuestId;
   guestOsType: GuestOsType;
   hasContainers: boolean;
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kGuestUsbNotification,
+    Setting.kGuestUsbPersistentPassthrough,
+  ]);
+
   private allContainers_: ContainerInfo[];
   private browserProxy_: GuestOsBrowserProxy;
   private reassignDevice_: GuestOsSharedUsbDevice|null;

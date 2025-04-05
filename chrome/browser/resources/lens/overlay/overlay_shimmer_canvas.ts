@@ -274,13 +274,13 @@ export class OverlayShimmerCanvasElement extends PolymerElement {
 
 
   // Canvas height property for setting the pixel height of the canvas element.
-  private canvasHeight: number;
+  declare private canvasHeight: number;
   // Canvas width property for setting the pixel width of the canvas element.
-  private canvasWidth: number;
+  declare private canvasWidth: number;
   // Shader rgba colors.
-  private shaderLayerRgbaColors: string[];
+  declare private shaderLayerRgbaColors: string[];
   // The overlay theme.
-  private theme: OverlayTheme;
+  declare private theme: OverlayTheme;
 
   // The properties of circles currently being rendered.
   private circles: ShimmerCircle[] = [];

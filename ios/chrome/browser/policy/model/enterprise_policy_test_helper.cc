@@ -50,7 +50,8 @@ EnterprisePolicyTestHelper::EnterprisePolicyTestHelper(
   profile_policy_connector_ = std::make_unique<ProfilePolicyConnector>();
   profile_policy_connector_->Init(
       browser_policy_connector_->GetSchemaRegistry(),
-      browser_policy_connector_.get(), /*user_policy_provider=*/nullptr);
+      browser_policy_connector_.get(), /*user_policy_provider=*/nullptr,
+      /*policy_store=*/nullptr);
   scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry(
       new user_prefs::PrefRegistrySyncable);
   RegisterProfilePrefs(pref_registry.get());

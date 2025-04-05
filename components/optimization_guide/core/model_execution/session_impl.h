@@ -72,6 +72,10 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session {
   void ExecuteModel(
       const google::protobuf::MessageLite& request_metadata,
       OptimizationGuideModelExecutionResultStreamingCallback callback) override;
+  void ExecuteModelWithResponseJsonSchema(
+      const google::protobuf::MessageLite& request_metadata,
+      const std::optional<std::string>& response_json_schema,
+      OptimizationGuideModelExecutionResultStreamingCallback callback) override;
   void GetSizeInTokens(
       const std::string& text,
       OptimizationGuideModelSizeInTokenCallback callback) override;

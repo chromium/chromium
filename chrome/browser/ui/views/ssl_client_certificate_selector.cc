@@ -104,17 +104,20 @@ SSLClientCertificateSelector::SSLClientCertificateSelector(
           std::make_unique<SSLClientAuthObserverImpl>(web_contents,
                                                       cert_request_info,
                                                       std::move(delegate))) {
-  RegisterDeleteDelegateCallback(base::BindOnce(
-      [](SSLClientCertificateSelector* dialog) {
-        // This is here and not in Cancel() to give WebContentsDestroyed a
-        // chance to abort instead of proceeding with a null certificate. (This
-        // will be ignored if there was a previous call to CertificateSelected
-        // or CancelCertificateSelection.)
-        if (dialog->auth_observer_impl_) {
-          dialog->auth_observer_impl_->CertificateSelected(nullptr, nullptr);
-        }
-      },
-      this));
+  RegisterDeleteDelegateCallback(
+      RegisterDeleteCallbackPassKey(),
+      base::BindOnce(
+          [](SSLClientCertificateSelector* dialog) {
+            // This is here and not in Cancel() to give WebContentsDestroyed a
+            // chance to abort instead of proceeding with a null certificate.
+            // (This will be ignored if there was a previous call to
+            // CertificateSelected or CancelCertificateSelection.)
+            if (dialog->auth_observer_impl_) {
+              dialog->auth_observer_impl_->CertificateSelected(nullptr,
+                                                               nullptr);
+            }
+          },
+          this));
 }
 
 SSLClientCertificateSelector::~SSLClientCertificateSelector() = default;

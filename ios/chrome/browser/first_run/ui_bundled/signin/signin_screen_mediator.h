@@ -14,6 +14,7 @@ class AuthenticationService;
 class ChromeAccountManagerService;
 class PrefService;
 @protocol SigninScreenConsumer;
+@protocol SigninScreenMediatorDelegate;
 namespace signin {
 class IdentityManager;
 }  // namespace signin
@@ -44,6 +45,8 @@ class SyncService;
 @property(nonatomic, assign) BOOL addedAccount;
 // Whether dismiss gestures should be ignored (e.g. swipe away).
 @property(nonatomic, assign, readonly) BOOL ignoreDismissGesture;
+// Delegate of the mediator.
+@property(nonatomic, weak) id<SigninScreenMediatorDelegate> delegate;
 
 // The designated initializer.
 // `accountManagerService` account manager service.
@@ -70,8 +73,7 @@ class SyncService;
 
 // Sign in the selected account.
 - (void)startSignInWithAuthenticationFlow:
-            (AuthenticationFlow*)authenticationFlow
-                               completion:(ProceduralBlock)completion;
+    (AuthenticationFlow*)authenticationFlow;
 
 // Signs out the user if needed.
 - (void)cancelSignInScreenWithCompletion:(ProceduralBlock)completion;

@@ -18,7 +18,7 @@
 
 namespace blink {
 
-class InterpolationEnvironment;
+class CSSInterpolationEnvironment;
 
 // Subclasses of InterpolationType implement the logic for a specific value type
 // of a specific PropertyHandle to:
@@ -39,7 +39,7 @@ class CORE_EXPORT InterpolationType {
 
   // ConversionCheckers are returned from calls to maybeConvertPairwise() and
   // maybeConvertSingle() to enable the caller to check whether the result is
-  // still valid given changes in the InterpolationEnvironment and underlying
+  // still valid given changes in the CSSInterpolationEnvironment and underlying
   // InterpolationValue.
   class ConversionChecker : public GarbageCollected<ConversionChecker> {
    public:
@@ -50,7 +50,7 @@ class CORE_EXPORT InterpolationType {
 
     void SetType(const InterpolationType& type) { type_ = &type; }
     const InterpolationType& GetType() const { return *type_; }
-    virtual bool IsValid(const InterpolationEnvironment&,
+    virtual bool IsValid(const CSSInterpolationEnvironment&,
                          const InterpolationValue& underlying) const = 0;
 
    protected:
@@ -62,7 +62,7 @@ class CORE_EXPORT InterpolationType {
   virtual PairwiseInterpolationValue MaybeConvertPairwise(
       const PropertySpecificKeyframe& start_keyframe,
       const PropertySpecificKeyframe& end_keyframe,
-      const InterpolationEnvironment& environment,
+      const CSSInterpolationEnvironment& environment,
       const InterpolationValue& underlying,
       ConversionCheckers& conversion_checkers) const {
     InterpolationValue start = MaybeConvertSingle(
@@ -78,7 +78,7 @@ class CORE_EXPORT InterpolationType {
 
   virtual InterpolationValue MaybeConvertSingle(
       const PropertySpecificKeyframe&,
-      const InterpolationEnvironment&,
+      const CSSInterpolationEnvironment&,
       const InterpolationValue& underlying,
       ConversionCheckers&) const = 0;
 
@@ -93,7 +93,7 @@ class CORE_EXPORT InterpolationType {
   }
 
   virtual InterpolationValue MaybeConvertUnderlyingValue(
-      const InterpolationEnvironment&) const = 0;
+      const CSSInterpolationEnvironment&) const = 0;
 
   virtual void Composite(UnderlyingValueOwner& underlying_value_owner,
                          double underlying_fraction,
@@ -107,7 +107,7 @@ class CORE_EXPORT InterpolationType {
 
   virtual void Apply(const InterpolableValue&,
                      const NonInterpolableValue*,
-                     InterpolationEnvironment&) const = 0;
+                     CSSInterpolationEnvironment&) const = 0;
 
   // If this returns true, then transition-behavior:allow-discrete must be set
   // in order to use this InterpolationType. Discrete properties generally don't

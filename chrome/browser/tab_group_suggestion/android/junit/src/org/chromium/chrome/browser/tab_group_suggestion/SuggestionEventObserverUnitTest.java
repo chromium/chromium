@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -87,9 +88,19 @@ public class SuggestionEventObserverUnitTest {
 
     @Test
     public void testDidSelectTab() {
-        mTabModelObserverCaptor.getValue().didSelectTab(mTab, 0, 0);
+        mTabModelObserverCaptor.getValue().didSelectTab(mTab, TabSelectionType.FROM_USER, 0);
 
-        verify(mGroupSuggestionsService).didSelectTab(eq(TAB_ID), eq(0), eq(0));
+        verify(mGroupSuggestionsService)
+                .didSelectTab(eq(TAB_ID), eq(TabSelectionType.FROM_USER), eq(0));
+    }
+
+    @Test
+    public void testDidSelectTab_IgnoreTypes() {
+        mTabModelObserverCaptor.getValue().didSelectTab(mTab, TabSelectionType.FROM_CLOSE, 0);
+        mTabModelObserverCaptor.getValue().didSelectTab(mTab, TabSelectionType.FROM_EXIT, 0);
+        mTabModelObserverCaptor.getValue().didSelectTab(mTab, TabSelectionType.FROM_UNDO, 0);
+
+        verify(mGroupSuggestionsService, never()).didSelectTab(anyInt(), anyInt(), anyInt());
     }
 
     @Test
@@ -98,11 +109,24 @@ public class SuggestionEventObserverUnitTest {
                 .getValue()
                 .didAddTab(
                         mTab,
-                        TabLaunchType.FROM_RESTORE,
+                        TabLaunchType.FROM_CHROME_UI,
                         TabCreationState.LIVE_IN_FOREGROUND,
                         /* markedForSelection= */ true);
 
-        verify(mGroupSuggestionsService).didAddTab(eq(TAB_ID), eq(TabLaunchType.FROM_RESTORE));
+        verify(mGroupSuggestionsService).didAddTab(eq(TAB_ID), eq(TabLaunchType.FROM_CHROME_UI));
+    }
+
+    @Test
+    public void testDidAddTab_IgnoreRestore() {
+        mTabModelObserverCaptor
+                .getValue()
+                .didAddTab(
+                        mTab,
+                        TabLaunchType.FROM_RESTORE,
+                        TabCreationState.FROZEN_ON_RESTORE,
+                        /* markedForSelection= */ true);
+
+        verify(mGroupSuggestionsService, never()).didAddTab(anyInt(), anyInt());
     }
 
     @Test

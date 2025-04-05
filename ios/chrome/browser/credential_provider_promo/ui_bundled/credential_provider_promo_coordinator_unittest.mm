@@ -121,16 +121,8 @@ TEST_F(CredentialProviderPromoCoordinatorTest,
 
 // Tests that tapping the primary CTA in both the first and second step of the
 // promo will result in two primary actions being recorded correctly.
-// TODO(crbug.com/404244113): Fails on device.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_CredentialProviderPromoTwoStepPrimaryActionRecorded \
-  CredentialProviderPromoTwoStepPrimaryActionRecorded
-#else
-#define MAYBE_CredentialProviderPromoTwoStepPrimaryActionRecorded \
-  DISABLED_CredentialProviderPromoTwoStepPrimaryActionRecorded
-#endif
 TEST_F(CredentialProviderPromoCoordinatorTest,
-       MAYBE_CredentialProviderPromoTwoStepPrimaryActionRecorded) {
+       CredentialProviderPromoTwoStepPrimaryActionRecorded) {
   // Disable the Passkeys M2 feature.
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(kIOSPasskeysM2);
@@ -246,8 +238,9 @@ TEST_F(CredentialProviderPromoCoordinatorTest,
 
 // Tests that tapping the "Turn on AutoFill…" primary action results in
 // recording the right histogram.
+// TODO(crbug.com/404244113): Test is flaky.
 TEST_F(CredentialProviderPromoCoordinatorTest,
-       CredentialProviderPromoTurnOnAutoFillPromptOutcomeRecorded) {
+       FLAKY_CredentialProviderPromoTurnOnAutoFillPromptOutcomeRecorded) {
   // The "Turn on AutoFill…" action is only available on iOS 18+.
   if (@available(iOS 18.0, *)) {
     // Enable the Passkeys M2 feature.

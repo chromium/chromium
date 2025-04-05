@@ -251,8 +251,9 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
     <ignore regexp="The resource `R.string.adaptive_toolbar_button_page_summary_iph` appears to be unused"/>
     <ignore regexp="The resource `R.string.adaptive_toolbar_button_review_pdf_iph` appears to be unused"/>
 
-    <!--TODO(crbug.com/40208161): Remove unused resources when UX is finalized. -->
+    <!--TODO(crbug.com/408284509): Remove unused shopping string resources. -->
     <ignore regexp="The resource `R.string.price_tracking_title` appears to be unused"/>
+    <ignore regexp="The resource `R.string.discount_icon_expanded_text` appears to be unused"/>
 
     <!-- TODO(crbug.com/40227734): Remove unused resources when UX is finalized. -->
     <ignore regexp="The resource `R.string.search_resumption_module_title_short` appears to be unused"/>

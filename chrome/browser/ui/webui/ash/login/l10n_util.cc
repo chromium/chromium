@@ -500,7 +500,7 @@ std::string FindMostRelevantLocale(
   return fallback_locale;
 }
 
-base::Value::List GetAndActivateLoginKeyboardLayouts(
+base::Value::List GetAndActivateOobeInputMethods(
     const std::string& locale,
     const std::string& selected,
     input_method::InputMethodManager* input_method_manager) {
@@ -508,24 +508,24 @@ base::Value::List GetAndActivateLoginKeyboardLayouts(
   input_method::InputMethodUtil* util =
       input_method_manager->GetInputMethodUtil();
 
-  const std::vector<std::string>& hardware_login_input_methods =
-      util->GetHardwareLoginInputMethodIds();
+  const std::vector<std::string>& hardware_input_methods =
+      util->GetHardwareInputMethodIds();
 
   DCHECK(
       ProfileHelper::IsSigninProfile(ProfileManager::GetActiveUserProfile()));
-  input_method_manager->GetActiveIMEState()->EnableLoginLayouts(
-      locale, hardware_login_input_methods);
+  input_method_manager->GetActiveIMEState()->EnableOobeInputMethods(
+      locale, hardware_input_methods);
 
   input_method::InputMethodDescriptors input_methods(
       input_method_manager->GetActiveIMEState()->GetEnabledInputMethods());
   std::set<std::string> input_methods_added;
 
-  for (const auto& hardware_login_input_method : hardware_login_input_methods) {
+  for (const auto& hardware_input_method : hardware_input_methods) {
     const input_method::InputMethodDescriptor* ime =
-        util->GetInputMethodDescriptorFromId(hardware_login_input_method);
+        util->GetInputMethodDescriptorFromId(hardware_input_method);
     // Do not crash in case of misconfiguration.
     if (ime) {
-      input_methods_added.insert(hardware_login_input_method);
+      input_methods_added.insert(hardware_input_method);
       input_methods_list.Append(CreateInputMethodsEntry(*ime, selected, util));
     } else {
       NOTREACHED();

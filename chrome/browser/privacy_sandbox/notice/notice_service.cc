@@ -17,6 +17,11 @@ using notice::mojom::PrivacySandboxNoticeEvent;
 
 using privacy_sandbox::notice::mojom::PrivacySandboxNotice;
 
+template <typename T>
+std::unique_ptr<Notice> Make(NoticeId id) {
+  return std::make_unique<T>(id);
+}
+
 // Defines all existing notices and populates the notice catalog.
 void PopulateNoticeCatalog(std::unique_ptr<NoticeCatalog>& catalog) {
   // TODO(crbug.com/392612108): Add all eligibility and result callbacks.
@@ -26,7 +31,8 @@ void PopulateNoticeCatalog(std::unique_ptr<NoticeCatalog>& catalog) {
   NoticeApi* measurement = catalog->RegisterAndRetrieveNewApi();
 
   // Define Notices.
-  catalog->RegisterNoticeGroup<privacy_sandbox::Consent>(
+  catalog->RegisterNoticeGroup(
+      &Make<Consent>,
       {{{PrivacySandboxNotice::kTopicsConsentNotice,
          SurfaceType::kDesktopNewTab},
         &privacy_sandbox::kTopicsConsentDesktopModalFeature},
@@ -37,7 +43,8 @@ void PopulateNoticeCatalog(std::unique_ptr<NoticeCatalog>& catalog) {
         &privacy_sandbox::kTopicsConsentModalClankCCTFeature}},
       {topics});
 
-  catalog->RegisterNoticeGroup<Notice>(
+  catalog->RegisterNoticeGroup(
+      &Make<Notice>,
       {{{PrivacySandboxNotice::kThreeAdsApisNotice,
          SurfaceType::kDesktopNewTab},
         &privacy_sandbox::kThreeAdsAPIsNoticeModalFeature},
@@ -48,7 +55,8 @@ void PopulateNoticeCatalog(std::unique_ptr<NoticeCatalog>& catalog) {
         &privacy_sandbox::kThreeAdsAPIsNoticeModalClankCCTFeature}},
       {topics, fledge, measurement});
 
-  catalog->RegisterNoticeGroup<Notice>(
+  catalog->RegisterNoticeGroup(
+      &Make<Notice>,
       {{{PrivacySandboxNotice::kProtectedAudienceMeasurementNotice,
          SurfaceType::kDesktopNewTab},
         &privacy_sandbox::kProtectedAudienceMeasurementNoticeModalFeature},
@@ -62,7 +70,8 @@ void PopulateNoticeCatalog(std::unique_ptr<NoticeCatalog>& catalog) {
             kProtectedAudienceMeasurementNoticeModalClankCCTFeature}},
       {fledge, measurement});
 
-  catalog->RegisterNoticeGroup<Notice>(
+  catalog->RegisterNoticeGroup(
+      &Make<Notice>,
       {{{PrivacySandboxNotice::kMeasurementNotice, SurfaceType::kDesktopNewTab},
         &privacy_sandbox::kMeasurementNoticeModalFeature},
        {{PrivacySandboxNotice::kMeasurementNotice, SurfaceType::kClankBrApp},
@@ -84,6 +93,11 @@ PrivacySandboxNoticeService::PrivacySandboxNoticeService(Profile* profile)
   CHECK(notice_storage_);
   CHECK(catalog_);
 
+#if !BUILDFLAG(IS_ANDROID)
+  desktop_view_manager_ = std::make_unique<DesktopViewManager>();
+  CHECK(desktop_view_manager_);
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   PopulateNoticeCatalog(catalog_);
 }
 
@@ -102,7 +116,8 @@ void PrivacySandboxNoticeService::EventOccurred(
   auto it = catalog_->GetNoticeMap().find(notice_id);
   CHECK(it != catalog_->GetNoticeMap().end())
       << "EventOccurred on unregistered notice id for noticeId "
-      << notice_id.first << " and surfaceType " << notice_id.second;
+      << notice_id.first << " and surfaceType "
+      << static_cast<int>(notice_id.second);
 
   Notice* notice = it->second.get();
   std::string_view name = notice->GetFeature()->name;
@@ -121,7 +136,8 @@ void PrivacySandboxNoticeService::EventOccurred(
 }
 
 // TODO(crbug.com/392612108): Implement this function.
-std::vector<PrivacySandboxNotice> GetRequiredNotices(SurfaceType surface) {
+std::vector<PrivacySandboxNotice>
+PrivacySandboxNoticeService::GetRequiredNotices(SurfaceType surface) {
   std::vector<PrivacySandboxNotice> required_notices;
   return required_notices;
 }
@@ -137,5 +153,11 @@ PrefService* PrivacySandboxNoticeService::GetPrefService() {
 NoticeCatalog* PrivacySandboxNoticeService::GetCatalog() {
   return catalog_.get();
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+DesktopViewManager* PrivacySandboxNoticeService::GetDesktopViewManager() {
+  return desktop_view_manager_.get();
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace privacy_sandbox

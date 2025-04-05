@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.data_sharing;
 import org.chromium.base.Callback;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.data_sharing.DataSharingNetworkLoader;
 import org.chromium.components.data_sharing.DataSharingSDKDelegate;
 import org.chromium.components.data_sharing.DataSharingSDKDelegateProtoResponseCallback;
@@ -22,6 +23,7 @@ import org.chromium.components.data_sharing.protocol.ReadGroupsParams;
 import org.chromium.components.data_sharing.protocol.RemoveMemberParams;
 
 /** Implementation of {@link DataSharingSDKDelegate}. */
+@NullMarked
 public class NoOpDataSharingSDKDelegateImpl implements DataSharingSDKDelegate {
 
     @Override

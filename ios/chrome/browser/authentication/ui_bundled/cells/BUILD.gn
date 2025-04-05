@@ -31,6 +31,7 @@ source_set("cells") {
     "//ios/chrome/browser/ntp/ui_bundled",
     "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/settings/ui_bundled/cells:public",
+    "//ios/chrome/browser/shared/model/profile:features",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",

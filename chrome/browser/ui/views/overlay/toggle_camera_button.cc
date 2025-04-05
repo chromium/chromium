@@ -4,10 +4,12 @@
 
 #include "chrome/browser/ui/views/overlay/toggle_camera_button.h"
 
+#include "base/feature_list.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/overlay/constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
+#include "media/base/media_switches.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -36,11 +38,22 @@ void ToggleCameraButton::UpdateImageAndTooltipText() {
     return;
   }
 
-  const auto& icon = is_turned_on_ ? vector_icons::kVideocamIcon
-                                   : vector_icons::kVideocamOffIcon;
+  const bool is_2024_ui = base::FeatureList::IsEnabled(
+      media::kVideoPictureInPictureControlsUpdate2024);
+
+  const auto& icon =
+      is_2024_ui ? (is_turned_on_ ? vector_icons::kVideocamChromeRefreshIcon
+                                  : vector_icons::kVideocamOffChromeRefreshIcon)
+                 : (is_turned_on_ ? vector_icons::kVideocamIcon
+                                  : vector_icons::kVideocamOffIcon);
+
   auto text = is_turned_on_ ? IDS_PICTURE_IN_PICTURE_TURN_OFF_CAMERA_TEXT
                             : IDS_PICTURE_IN_PICTURE_TURN_ON_CAMERA_TEXT;
-  const int icon_size = std::max(0, width() - (2 * kPipWindowIconPadding));
+
+  const int icon_padding =
+      is_2024_ui ? kPipWindowIconPadding2024 : kPipWindowIconPadding;
+
+  const int icon_size = std::max(0, width() - (2 * icon_padding));
 
   SetImageModel(views::Button::STATE_NORMAL,
                 ui::ImageModel::FromVectorIcon(icon, kColorPipWindowForeground,

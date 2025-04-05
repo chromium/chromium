@@ -43,6 +43,7 @@
 #include "chrome/browser/glic/fre/glic_fre.mojom.h"
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
@@ -477,7 +478,8 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest, PreloadFreOnNudge) {
   auto* service = glic::GlicKeyedServiceFactory::GetGlicKeyedService(
       browser()->GetProfile());
   auto& window_controller = service->window_controller();
-  glic::SetFRECompletion(browser()->profile(), false);
+  glic::SetFRECompletion(browser()->profile(),
+                         glic::prefs::FreStatus::kNotStarted);
   EXPECT_TRUE(window_controller.fre_controller()->ShouldShowFreDialog());
   EXPECT_FALSE(window_controller.fre_controller()->IsWarmed());
 

@@ -35,6 +35,7 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
         typeNameAsString: 'Vehicle',
         addEntityTypeString: 'Add vehicle',
         editEntityTypeString: 'Edit vehicle',
+        deleteEntityTypeString: 'Delete vehicle',
       },
       attributeInstances: [
         {
@@ -331,6 +332,7 @@ suite('AutofillAiAddOrEditDialogSelectElementUiTest', function() {
         typeNameAsString: 'Passport',
         addEntityTypeString: 'Add passport',
         editEntityTypeString: 'Edit passport',
+        deleteEntityTypeString: 'Delete passport',
       },
       attributeInstances: [],
       guid: 'e4bbe384-ee63-45a4-8df3-713a58fdc181',

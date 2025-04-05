@@ -43,8 +43,14 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
 
   static override get properties() {
     return {
-      hasActionedText: {type: Boolean, reflect: true},
-      hideHighlightedLines: {type: Boolean, reflect: true},
+      hasActionedText: {
+        type: Boolean,
+        reflect: true,
+      },
+      hideHighlightedLines: {
+        type: Boolean,
+        reflect: true,
+      },
       highlightedLines: {type: Array},
     };
   }
@@ -59,12 +65,12 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
 
   // Whether the user has actioned on the text pertaining to the newest region
   // selection made either by attempting to copy or translate.
-  protected hasActionedText: boolean = false;
+  protected accessor hasActionedText: boolean = false;
   // Whether to hide the highlighted lines in the region. Starts off true so
   // highlighted lines can initially fade in.
-  protected hideHighlightedLines: boolean = true;
+  protected accessor hideHighlightedLines: boolean = true;
   // The currently selected lines.
-  protected highlightedLines: HighlightedLine[] = [];
+  protected accessor highlightedLines: HighlightedLine[] = [];
 
   // The lens text response corresponding to the full image response.
   private fullTextResponse: TextResponse|null = null;

@@ -34,7 +34,11 @@ public interface TabModelDelegate {
     // TODO(aurimas): clean these methods up.
     TabModel getCurrentModel();
 
+    /** Provides the top level tab manager object for the current scope. */
     TabModel getModel(boolean incognito);
+
+    /** Provides the top level tab group manager object for the current scope. */
+    TabGroupModelFilter getFilter(boolean incognito);
 
     boolean isSessionRestoreInProgress();
 

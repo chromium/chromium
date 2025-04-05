@@ -327,7 +327,6 @@ public class KeyboardAccessoryViewTest {
                                                 new AutofillSuggestion.Builder()
                                                         .setLabel("Johnathan")
                                                         .setSubLabel("Smith")
-                                                        .setItemTag("")
                                                         .setSuggestionType(
                                                                 SuggestionType.ADDRESS_ENTRY)
                                                         .setFeatureForIph("")
@@ -446,7 +445,6 @@ public class KeyboardAccessoryViewTest {
                         new AutofillSuggestion.Builder()
                                 .setLabel("Create plus address")
                                 .setSubLabel("")
-                                .setItemTag("")
                                 .setSuggestionType(SuggestionType.CREATE_NEW_PLUS_ADDRESS)
                                 .setFeatureForIph("")
                                 .setApplyDeactivatedStyle(false)
@@ -487,7 +485,6 @@ public class KeyboardAccessoryViewTest {
                         new AutofillSuggestion.Builder()
                                 .setLabel("Card Info Retrieval")
                                 .setSubLabel("")
-                                .setItemTag("")
                                 .setSuggestionType(SuggestionType.CREDIT_CARD_ENTRY)
                                 .setIphDescriptionText(descriptionText)
                                 .setApplyDeactivatedStyle(false)
@@ -526,7 +523,6 @@ public class KeyboardAccessoryViewTest {
                         new AutofillSuggestion.Builder()
                                 .setLabel("Johnathan")
                                 .setSubLabel("Smith")
-                                .setItemTag("")
                                 .setSuggestionType(SuggestionType.PASSWORD_ENTRY)
                                 .setFeatureForIph("")
                                 .setApplyDeactivatedStyle(false)
@@ -564,7 +560,6 @@ public class KeyboardAccessoryViewTest {
                         new AutofillSuggestion.Builder()
                                 .setLabel("Johnathan")
                                 .setSubLabel("Smith")
-                                .setItemTag("")
                                 .setSuggestionType(SuggestionType.ADDRESS_ENTRY)
                                 .setFeatureForIph("")
                                 .setApplyDeactivatedStyle(false)
@@ -600,7 +595,6 @@ public class KeyboardAccessoryViewTest {
                         new AutofillSuggestion.Builder()
                                 .setLabel("Johnathan")
                                 .setSubLabel("Smith")
-                                .setItemTag("")
                                 .setSuggestionType(SuggestionType.CREDIT_CARD_ENTRY)
                                 .setFeatureForIph("")
                                 .setApplyDeactivatedStyle(false)
@@ -668,13 +662,11 @@ public class KeyboardAccessoryViewTest {
     @Test
     @MediumTest
     public void testDismissesPaymentOfferEducationBubbleOnFilling() throws InterruptedException {
-        String itemTag = "Cashback linked";
         AutofillBarItem itemWithIph =
                 new AutofillBarItem(
                         new AutofillSuggestion.Builder()
                                 .setLabel("Johnathan")
                                 .setSubLabel("Smith")
-                                .setItemTag(itemTag)
                                 .setIconId(R.drawable.ic_offer_tag)
                                 .setSuggestionType(SuggestionType.CREDIT_CARD_ENTRY)
                                 .setFeatureForIph("")
@@ -693,7 +685,6 @@ public class KeyboardAccessoryViewTest {
                 });
 
         onViewWaiting(withText("Johnathan"));
-        waitForHelpBubble(withText(itemTag));
         assertThat(mKeyboardAccessoryView.take().areClicksAllowedWhenObscured(), is(true));
         onView(withText("Johnathan")).perform(click());
 
@@ -854,7 +845,6 @@ public class KeyboardAccessoryViewTest {
                                                 new AutofillSuggestion.Builder()
                                                         .setLabel("Virtual Card")
                                                         .setSubLabel("Disabled")
-                                                        .setItemTag("")
                                                         .setSuggestionType(
                                                                 SuggestionType.CREDIT_CARD_ENTRY)
                                                         .setFeatureForIph("")
@@ -938,7 +928,6 @@ public class KeyboardAccessoryViewTest {
                 new AutofillSuggestion.Builder()
                         .setLabel(label)
                         .setSubLabel("Smith")
-                        .setItemTag("")
                         .setSuggestionType(SuggestionType.ADDRESS_ENTRY)
                         .setFeatureForIph("")
                         .setApplyDeactivatedStyle(false)

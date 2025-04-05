@@ -64,6 +64,10 @@ UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kUsingCorrectWorkArea);
 
 // Enables the new ETC1 encoder (used in tab and back/forward thumbnails).
 UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kUseNewEtc1Encoder);
+
+// Enables using occlusion information from Android to save CPU and memory.
+UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kAndroidWindowOcclusion);
+
 }  // namespace ui
 
 #endif  // UI_ANDROID_UI_ANDROID_FEATURES_H_

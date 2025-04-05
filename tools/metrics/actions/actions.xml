@@ -2555,6 +2555,33 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="AddAddressManually_AddressSaved">
+  <owner>sinhasourav@google.com</owner>
+  <owner>bling-transactions@google.com</owner>
+  <description>
+    Recorded when the user taps on &quot;Save&quot; button to save a new address
+    from scratch manually. iOS only.
+  </description>
+</action>
+
+<action name="AddAddressManually_Opened">
+  <owner>sinhasourav@google.com</owner>
+  <owner>bling-transactions@google.com</owner>
+  <description>
+    Recorded when the user opens a surface for manually adding a new address.
+    iOS only.
+  </description>
+</action>
+
+<action name="AddressInfobar_AddressSaved">
+  <owner>sinhasourav@google.com</owner>
+  <owner>bling-transactions@google.com</owner>
+  <description>
+    Recorded when the user taps on &quot;Save&quot; button to save a new address
+    through an infobar. iOS only.
+  </description>
+</action>
+
 <action name="AddSupervisionDialog_AttemptedSignoutAfterEnrollment">
   <owner>tobyhuang@chromium.org</owner>
   <owner>michaelpg@chromium.org</owner>
@@ -12509,6 +12536,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="GlicPanelResized">
+  <owner>fsenra@google.com</owner>
+  <owner>dewittj@google.com</owner>
+  <description>
+    Recorded when the glic panel is resized. The resizing can be triggered by an
+    animation, by the content expanding or by the user resizing the window.
+  </description>
+</action>
+
 <action name="GlicResponse">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
@@ -15120,6 +15156,39 @@ should be able to be added at any place in this file.
   <description>
     Reported when an insecure form is submitted anyway despite the warning. iOS
     only.
+  </description>
+</action>
+
+<action name="IOS.MagicStack.TabResumption.PriceDrop.OpenTab">
+  <owner>davidjm@chromium.org</owner>
+  <owner>thegreenfrog@google.com</owner>
+  <owner>gloriafang@google.com</owner>
+  <description>
+    Recorded when the user taps the Tab Resumption card in the Magic Stack
+    (which opens the Tab Resumption URL) when the Tab Resumption module is the
+    variation which contains a price drop.
+  </description>
+</action>
+
+<action name="IOS.MagicStack.TabResumption.PriceTracking.OpenTab">
+  <owner>davidjm@chromium.org</owner>
+  <owner>thegreenfrog@google.com</owner>
+  <owner>gloriafang@google.com</owner>
+  <description>
+    Recorded when the user taps the Tab Resumption card in the Magic Stack
+    (which opens the Tab Resumption URL) when the Tab Resumption card is the
+    variation which enables the user to price track the URL.
+  </description>
+</action>
+
+<action name="IOS.MagicStack.TabResumption.Regular.OpenTab">
+  <owner>davidjm@chromium.org</owner>
+  <owner>thegreenfrog@google.com</owner>
+  <owner>gloriafang@google.com</owner>
+  <description>
+    Recorded when the user taps the Tab Resumption card in the Magic Stack
+    (which opens the Tab Resumption URL) for the regular Tab Resumption module
+    (no price drop or price tracking variant).
   </description>
 </action>
 
@@ -24210,6 +24279,15 @@ should be able to be added at any place in this file.
   <owner>jinsukkim@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <description>User pressed 'New Window' in the app menu.</description>
+</action>
+
+<action name="MobileMenuNtpCustomization">
+  <owner>hanxi@chromium.org</owner>
+  <owner>yanlinghu@google.com</owner>
+  <owner>clank-start@google.com</owner>
+  <description>
+    User pressed 'Customize new tab page' in the app menu.
+  </description>
 </action>
 
 <action name="MobileMenuOpenTabs">
@@ -48948,6 +49026,18 @@ should be able to be added at any place in this file.
   <suffix name="LongTapMenu"
       label="Users opened a new incognito tab by long tap menu"/>
   <affected-action name="MobileMenuNewIncognitoTab"/>
+</action-suffix>
+
+<action-suffix separator="." ordering="suffix">
+  <suffix name="LongTapMenu"
+      label="Users added a tab to a tab group by long tap menu"/>
+  <affected-action name="MobileMenuAddToGroup"/>
+</action-suffix>
+
+<action-suffix separator="." ordering="suffix">
+  <suffix name="LongTapMenu"
+      label="Users created a new tab group by long tap menu"/>
+  <affected-action name="MobileMenuAddToNewGroup"/>
 </action-suffix>
 
 <action-suffix separator="." ordering="suffix">

@@ -925,6 +925,9 @@ public class TabGridDialogView extends FrameLayout {
         if (faviconDrawable != null) {
             cardFavicon.setImageDrawable(faviconDrawable);
         } else {
+            // In the event the we are unable to draw anything below, draw nothing.
+            cardFavicon.setImageDrawable(null);
+
             // Draw the tab group color dot to the bitmap and put it in the favicon container as it
             // isn't possible to clone the whole view.
             FrameLayout containerView = view.findViewById(R.id.tab_group_color_view_container);
@@ -932,12 +935,14 @@ public class TabGridDialogView extends FrameLayout {
             if (childCount != 0) {
                 assert childCount == 1;
                 View v = containerView.getChildAt(0);
-
-                Bitmap bitmap =
-                        Bitmap.createBitmap(v.getWidth(), v.getHeight(), Bitmap.Config.ARGB_8888);
-                Canvas canvas = new Canvas(bitmap);
-                v.draw(canvas);
-                cardFavicon.setImageBitmap(bitmap);
+                int width = v.getWidth();
+                int height = v.getHeight();
+                if (width != 0 && height != 0) {
+                    Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+                    Canvas canvas = new Canvas(bitmap);
+                    v.draw(canvas);
+                    cardFavicon.setImageBitmap(bitmap);
+                }
             }
         }
 

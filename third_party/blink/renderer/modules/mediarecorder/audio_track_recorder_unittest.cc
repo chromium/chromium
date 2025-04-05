@@ -418,8 +418,10 @@ class AudioTrackRecorderTest : public testing::TestWithParam<ATRTestParams> {
     // We create the encoder sequence and provide it to the recorder so we can
     // hold onto a reference to the task runner. This allows us to post tasks to
     // the sequence and apply the necessary overrides, without friending the
-    // class.
-    encoder_task_runner_ = base::ThreadPool::CreateSingleThreadTaskRunner({});
+    // class. Allow blocking, as the encoder must dynamically load the Media
+    // Foundation DLLs on Windows.
+    encoder_task_runner_ =
+        base::ThreadPool::CreateSingleThreadTaskRunner({base::MayBlock{}});
     audio_track_recorder_ = std::make_unique<AudioTrackRecorder>(
         scheduler::GetSingleThreadTaskRunnerForTesting(), codec_,
         media_stream_component_, mock_callback_interface_->GetWeakCell(),

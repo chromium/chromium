@@ -13,7 +13,6 @@ path = "main.rs"
 
 [dependencies]
 anyhow = "1"
-cargo_metadata = "0.15"
 cargo-platform = "0.1"
 clap = {version = "4", features = ["derive"]}
 handlebars = "4.3.7"

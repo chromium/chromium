@@ -28,7 +28,7 @@
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
 #include "ui/views/controls/menu/menu_runner.h"
-#include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/flex_layout.h"
 #include "ui/views/view_class_properties.h"
 
 namespace glic {
@@ -70,9 +70,8 @@ GlicButton::GlicButton(TabStripController* tab_strip_controller,
   SetFocusBehavior(FocusBehavior::ALWAYS);
 
   auto* const layout_manager =
-      SetLayoutManager(std::make_unique<views::BoxLayout>());
-  layout_manager->set_main_axis_alignment(
-      views::BoxLayout::MainAxisAlignment::kStart);
+      SetLayoutManager(std::make_unique<views::FlexLayout>());
+  layout_manager->SetMainAxisAlignment(views::LayoutAlignment::kStart);
 }
 
 GlicButton::~GlicButton() = default;

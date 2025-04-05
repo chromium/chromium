@@ -52,6 +52,9 @@ class VIZ_SERVICE_EXPORT RenderInputRouterDelegateImpl
         const base::UnguessableToken& grouping_id) = 0;
     virtual std::optional<bool> IsDelegatedInkHovering(
         const FrameSinkId& frame_sink_id) = 0;
+    virtual void DidOverscroll(const FrameSinkId& frame_sink_id,
+                               const base::UnguessableToken& grouping_id,
+                               blink::mojom::DidOverscrollParamsPtr params) = 0;
     virtual GpuServiceImpl* GetGpuService() = 0;
   };
 
@@ -98,6 +101,7 @@ class VIZ_SERVICE_EXPORT RenderInputRouterDelegateImpl
   bool IsRendererProcessBlocked() override;
   void OnInputEventAckTimeout() override {}
   void RendererIsResponsive() override {}
+  void DidOverscroll(blink::mojom::DidOverscrollParamsPtr params) override;
 
   void SetIsBlocked(bool blocked) { is_blocked_ = blocked; }
 

@@ -359,7 +359,6 @@ pub fn build_rule_from_dep(
                     NameLibStyle::LibLiteral => "lib".to_string(),
                 },
                 deps::DependencyKind::Build => "buildrs_support".to_string(),
-                _ => unreachable!(),
             };
             let (crate_name, epoch) = match name_lib_style {
                 NameLibStyle::PackageName => (None, None),
@@ -377,7 +376,6 @@ pub fn build_rule_from_dep(
             lib_detail.features = match &dep_kind {
                 Normal => requested_features_for_normal.clone(),
                 Build => requested_features_for_build.clone(),
-                _ => unreachable!(), // The for loop here is over [Normal, Build].
             };
 
             // TODO(danakj): Crates in the 'sandbox' group should have their
@@ -691,6 +689,10 @@ fn target_arch_to_condition(target_arch: &str) -> Condition {
         ("arm", "current_cpu == \"arm\""),
         ("x86", "current_cpu == \"x86\""),
         ("x86_64", "current_cpu == \"x64\""),
+        // `riscv64gc-unknown-linux-gnu` from `build/config/rust.gni` resolves to
+        // `target_os = "riscv64"`.  And `gn help target_cpu` says that this has
+        // the same spelling as GN's `current_cpu`.
+        ("riscv64", "current_cpu == \"riscv64\""),
     ] {
         if *t == target_arch {
             return Condition::Expr(c.to_string());
@@ -721,16 +723,14 @@ fn target_env_to_condition(target_env: &str) -> Condition {
         // OTOH, maybe this is not quite right, because Chromium also supports triples like
         // "i686-unknown-linux-gnu".
         //
-        // TODO(https://crbug.com/402096443): Would returning `Condition::Expr("!is_win")`
-        // or `Condition::Expr("(is_linux || is_chromeos) && !is_android")`
-        // be more correct?  Looking more at https://crbug.com/402096443#comment6 may help to
-        // decide...
+        // TODO(https://crbug.com/402096443): Would returning
+        // `Condition::Expr(CONDITION_FOR_TARGET_OS_LINUX.to_string())` be more correct?
+        // OTOH `AlwaysFalse` will trim a dependency, but a more complicated
+        // expression that may be equivalent to `AlwaysFalse` will not trim...
         ("gnu", Condition::AlwaysFalse),
-        // Empty string is used as a condition in `getrandom` package.
-        //
-        // We give up and return `Ignored` because of difficulty of capturing all the different
-        // triples that report `target_env=""` in https://crbug.com/402096443#comment6
-        ("", Condition::Ignored),
+        // Based on https://crbug.com/402096443#comment6, an empty `target_env` is only
+        // used in the following cases:
+        ("", Condition::Expr("is_android || is_apple || is_fuchsia".to_string())),
     ] {
         if *t == target_env {
             return c.clone();
@@ -767,11 +767,14 @@ fn target_family_to_condition(target_family: &str) -> Condition {
 fn target_os_to_condition(target_os: &str) -> Condition {
     for (t, c) in &[
         ("android", "is_android"),
-        ("darwin", "is_mac"),
+        // `rustc --print=cfg --target=aarch64-apple-darwin` prints `macos`, not `darwin`.
+        ("macos", "is_mac"),
         ("fuchsia", "is_fuchsia"),
         ("ios", "is_ios"),
-        ("linux", "is_linux || is_chromeos"),
+        ("linux", CONDITION_FOR_TARGET_OS_LINUX),
         ("windows", "is_win"),
+        // TODO(https://crbug.com/402096443): Consider also mapping "tvos"
+        // (since `aarch64-apple-tvos` is listed in `build/config/rust.gni`)
     ] {
         if *t == target_os {
             return Condition::Expr(c.to_string());
@@ -785,6 +788,12 @@ fn target_os_to_condition(target_os: &str) -> Condition {
 
 /// `target_vendor` should correspond to https://doc.rust-lang.org/reference/conditional-compilation.html#target_vendor
 fn target_vendor_to_condition(target_vendor: &str) -> Condition {
+    for (t, c) in &[("apple", "is_apple"), ("pc", "is_win")] {
+        if *t == target_vendor {
+            return Condition::Expr(c.to_string());
+        }
+    }
+
     const UNSUPPORTED_VENDORS: [&str; 2] = [
         "fortanix", // Used as condition in `dlmalloc` package used in `std` library.
         "uwp",      // Used as condition in some `windows...` crates.
@@ -793,12 +802,17 @@ fn target_vendor_to_condition(target_vendor: &str) -> Condition {
         return Condition::AlwaysFalse;
     }
 
-    if target_vendor == "apple" {
-        return Condition::Expr("is_apple".to_string());
-    }
-
     Condition::Unsupported(format!("unknown `target_vendor` name: `{target_vendor}`"))
 }
+
+/// GN condition corresponding to `target_os` being set to `linux` in `rustc`.
+///
+/// `//build/config/BUILDCONFIG.gn` treats `is_linux` and `is_chromeos` as
+/// mutually exclusive, but at `rustc`-level they are both `target_os = "linux"`
+/// (and `target_env = "gnu"`).  Both of these `rustc`-level values can be taken
+/// directly from the target triple, but we have also directly verified via
+/// `rustc --print=cfg` - see https://crbug.com/402096443#comment6.
+const CONDITION_FOR_TARGET_OS_LINUX: &str = "is_linux || is_chromeos";
 
 #[cfg(test)]
 mod tests {
@@ -878,6 +892,58 @@ mod tests {
                      not(windows_raw_dylib))"
             ),
             Condition::AlwaysFalse,
+        );
+
+        // Cfg expressions taken from `getrandom-0.3` => `libc` dependency.
+        assert_eq!(
+            condition_from_test_expr(
+                "any(                         \
+                    target_os = \"ios\",      \
+                    target_os = \"visionos\", \
+                    target_os = \"watchos\",  \
+                    target_os = \"tvos\")",
+            ),
+            Condition::Expr("is_ios".to_string()),
+        );
+        assert_eq!(
+            condition_from_test_expr(
+                "any(                        \
+                    target_os = \"macos\",   \
+                    target_os = \"openbsd\", \
+                    target_os = \"vita\",    \
+                    target_os = \"emscripten\")",
+            ),
+            Condition::Expr("is_mac".to_string()),
+        );
+        assert_eq!(
+            condition_from_test_expr(
+                // Simplification of one of the real expressions below.
+                "all(target_os = \"linux\", target_env = \"\")",
+            ),
+            // TODO(lukasza): Ideally `gnrt` would understand that the condition below is kind of
+            // equivalent to `AlwaysFalse`... :-/
+            Condition::Expr(
+                "(is_android || is_apple || is_fuchsia) && \
+                 (is_linux || is_chromeos)"
+                    .to_string()
+            ),
+        );
+        assert_eq!(
+            condition_from_test_expr(
+                "all(                                                      \
+                    any(target_os = \"linux\", target_os = \"android\"),   \
+                    not(any(                                               \
+                            all(target_os = \"linux\", target_env = \"\"), \
+                            getrandom_backend = \"custom\",                \
+                            getrandom_backend = \"linux_raw\",             \
+                            getrandom_backend = \"rdrand\",                \
+                            getrandom_backend = \"rndr\")))",
+            ),
+            Condition::Expr(
+                "(!((is_android || is_apple || is_fuchsia) && (is_linux || is_chromeos))) && \
+                 ((is_android) || (is_linux || is_chromeos))"
+                    .to_string()
+            ),
         );
     }
 }

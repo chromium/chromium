@@ -13,11 +13,14 @@ import android.os.Build;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.webapk.lib.common.splash.SplashLayout;
 import org.chromium.webapk.shell_apk.R;
 import org.chromium.webapk.shell_apk.WebApkUtils;
 
 /** Contains splash screen related utility methods. */
+@NullMarked
 public class SplashUtils {
     /**
      * The maximum image size to PNG-encode. JPEG encoding is > 2 times faster on large bitmaps.
@@ -62,7 +65,7 @@ public class SplashUtils {
      * Returns bitmap with screenshot of passed-in view. Downsamples screenshot so that it is no
      * more than {@maxSizeInBytes}.
      */
-    public static Bitmap screenshotView(View view, int maxSizeBytes) {
+    public static @Nullable Bitmap screenshotView(View view, int maxSizeBytes) {
         // Implementation copied from Android shared element code -
         // TransitionUtils#createViewBitmap().
 
@@ -100,7 +103,7 @@ public class SplashUtils {
     }
 
     /** Creates splash view with the passed-in dimensions and screenshots it. */
-    public static Bitmap createAndImmediatelyScreenshotSplashView(
+    public static @Nullable Bitmap createAndImmediatelyScreenshotSplashView(
             Context context, int splashWidth, int splashHeight, int maxSizeBytes) {
         if (splashWidth <= 0 || splashHeight <= 0) return null;
 

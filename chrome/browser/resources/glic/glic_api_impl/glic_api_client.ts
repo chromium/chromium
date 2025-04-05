@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {ActInFocusedTabParams, ActInFocusedTabResult, AnnotatedPageData, ChromeVersion, CreateTabOptions, DraggableArea, FocusedTabData, GlicBrowserHost, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, ObservableValue, OpenPanelInfo, OpenSettingsOptions, PanelOpeningData, PanelState, PdfDocumentData, ResizeWindowOptions, Screenshot, ScrollToParams, Subscriber, TabContextOptions, TabContextResult, TabData, UserProfileInfo} from '../glic_api/glic_api.js';
+import type {ActInFocusedTabParams, ActInFocusedTabResult, AnnotatedPageData, ChromeVersion, CreateTabOptions, DraggableArea, FocusedTabData, GlicBrowserHost, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, ObservableValue, OpenPanelInfo, OpenSettingsOptions, PanelOpeningData, PanelState, PdfDocumentData, ResizeWindowOptions, Screenshot, ScrollToParams, TabContextOptions, TabContextResult, TabData, UserProfileInfo} from '../glic_api/glic_api.js';
+import {ObservableValue as ObservableValueImpl} from '../observable.js';
 
 import {replaceProperties} from './conversions.js';
 import {newSenderId, PostMessageRequestReceiver, PostMessageRequestSender} from './post_message_transport.js';
@@ -54,14 +55,6 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
   constructor(
       private webClient: GlicWebClient, private host: GlicBrowserHostImpl) {}
 
-  glicWebClientNotifyPanelOpened(payload: {
-    attachedToWindowId: string|undefined,
-  }): void {
-    if (this.webClient.notifyPanelOpened) {
-      this.webClient.notifyPanelOpened(payload.attachedToWindowId);
-    }
-  }
-
   async glicWebClientNotifyPanelWillOpen(payload: {
     panelOpeningData: PanelOpeningData,
   }): Promise<{openPanelInfo?: OpenPanelInfo}> {
@@ -77,12 +70,6 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
       console.warn(e);
     }
     return {openPanelInfo};
-  }
-
-  glicWebClientNotifyPanelClosed(): void {
-    if (this.webClient.notifyPanelClosed) {
-      this.webClient.notifyPanelClosed();
-    }
   }
 
   async glicWebClientNotifyPanelWasClosed(): Promise<void> {
@@ -193,7 +180,7 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     this.sender = new PostMessageRequestSender(
         windowProxy, 'chrome://glic', this.hostId, 'glic_api_client');
     this.receiver = new PostMessageRequestReceiver(
-        'chrome://glic', windowProxy, this, 'glic_api_client');
+        'chrome://glic', this.hostId, windowProxy, this, 'glic_api_client');
     this.webClientMessageHandler =
         new WebClientMessageHandler(this.webClient, this);
     this.metrics = new GlicBrowserHostMetricsImpl(this.sender);
@@ -634,63 +621,4 @@ function convertActInFocusedTabResultFromPrivate(
   const tabContextResult =
       convertTabContextResultFromPrivate(data.tabContextResult);
   return replaceProperties(data, {tabContextResult});
-}
-
-class ObservableSubscription<T> implements Subscriber {
-  constructor(
-      public onChange: (newValue: T) => void,
-      private onUnsubscribe: (self: ObservableSubscription<T>) => void) {}
-
-  unsubscribe(): void {
-    this.onUnsubscribe(this);
-  }
-}
-
-/**
- * A observable value that can change over time. If value is initialized, sends
- * it to new subscribers upon subscribe().
- */
-class ObservableValueImpl<T> implements ObservableValue<T> {
-  private subscribers: Set<ObservableSubscription<T>> = new Set();
-
-  private constructor(private isSet: boolean, private value: T|undefined) {}
-
-  /** Create an ObservableValue which has an initial value. */
-  static withValue<T>(value: T) {
-    return new ObservableValueImpl(true, value);
-  }
-
-  /**
-   * Create an Observable which has no initial value. Subscribers will not be
-   * called until after assignAndSignal() is called the first time.
-   */
-  static withNoValue<T>() {
-    return new ObservableValueImpl<T>(false, undefined);
-  }
-
-  assignAndSignal(v: T) {
-    this.isSet = true;
-    this.value = v;
-    this.subscribers.forEach((sub) => {
-      // Ignore if removed since forEach was called.
-      if (this.subscribers.has(sub)) {
-        try {
-          sub.onChange(v);
-        } catch (e) {
-          console.warn(e);
-        }
-      }
-    });
-  }
-
-  // Observable impl.
-  subscribe(change: (newValue: T) => void): Subscriber {
-    const newSub = new ObservableSubscription(
-        change, (sub) => this.subscribers.delete(sub));
-    this.subscribers.add(newSub);
-    if (this.isSet) {
-      change(this.value!);
-    }
-    return newSub;
-  }
 }

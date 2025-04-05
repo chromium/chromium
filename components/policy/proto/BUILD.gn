@@ -69,6 +69,9 @@ proto_library("proto_internal") {
     "//third_party/private_membership:private_membership_proto",
   ]
 
+  generator_visibility =
+      [ "//chrome/browser/ash/policy/tools:device_policy_remover_generate" ]
+
   cc_generator_options = "dllexport_decl=POLICY_PROTO_EXPORT:"
   cc_include = "components/policy/proto/policy_proto_export.h"
   component_build_force_source_set = true

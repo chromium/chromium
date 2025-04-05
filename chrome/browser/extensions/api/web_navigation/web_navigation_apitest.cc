@@ -617,6 +617,7 @@ IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType,
 
   Browser* otr_browser = OpenURLOffTheRecord(browser()->profile(), url);
   WebContents* tab = otr_browser->tab_strip_model()->GetActiveWebContents();
+  content::SimulateEndOfPaintHoldingOnPrimaryMainFrame(tab);
 
   // There's a link with target=_blank on a.html. Click on it to open it in a
   // new tab.

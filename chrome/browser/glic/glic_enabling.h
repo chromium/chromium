@@ -66,6 +66,10 @@ class GlicEnabling : public signin::IdentityManager::Observer {
   // runtime.
   static bool IsEnabledAndConsentForProfile(Profile* profile);
 
+  // Returns true if the given profile was shown the FRE but did not complete
+  // it. This value can change at runtime.
+  static bool DidDismissForProfile(Profile* profile);
+
   // Whether or not the profile is currently ready for Glic. This means no
   // additional steps must be taken before opening Glic.
   static bool IsReadyForProfile(Profile* profile);
@@ -101,10 +105,18 @@ class GlicEnabling : public signin::IdentityManager::Observer {
   // If all entry-points have been disabled, then glic is functionally disabled.
   bool IsAllowed();
 
+  // Returns true if the given profile has completed the FRE and false
+  // otherwise.
+  bool HasConsented();
+
   // This is called anytime IsAllowed() might return a different value.
   using EnableChangedCallback = base::RepeatingClosure;
   base::CallbackListSubscription RegisterAllowedChanged(
       EnableChangedCallback callback);
+
+  using ConsentChangedCallback = base::RepeatingClosure;
+  base::CallbackListSubscription RegisterOnConsentChanged(
+      ConsentChangedCallback callback);
 
  private:
   void OnGlicSettingsPolicyChanged();
@@ -128,11 +140,14 @@ class GlicEnabling : public signin::IdentityManager::Observer {
       override;
 
   void UpdateEnabledStatus();
+  void UpdateConsentStatus();
 
   raw_ptr<Profile> profile_;
   raw_ptr<ProfileAttributesStorage> profile_attributes_storage_;
   using EnableChangedCallbackList = base::RepeatingCallbackList<void()>;
   EnableChangedCallbackList enable_changed_callback_list_;
+  using OnConsentChangeCallbackList = base::RepeatingCallbackList<void()>;
+  OnConsentChangeCallbackList consent_changed_callback_list_;
   PrefChangeRegistrar pref_registrar_;
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>

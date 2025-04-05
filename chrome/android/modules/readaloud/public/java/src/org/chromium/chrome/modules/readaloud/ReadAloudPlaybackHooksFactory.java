@@ -4,8 +4,10 @@
 
 package org.chromium.chrome.modules.readaloud;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 
+@NullMarked
 public interface ReadAloudPlaybackHooksFactory {
     /** Creates or returns an instance associated with the specified Profile. */
     public ReadAloudPlaybackHooks getForProfile(Profile profile);

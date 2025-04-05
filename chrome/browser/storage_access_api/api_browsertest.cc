@@ -447,6 +447,19 @@ class StorageAccessAPIBaseBrowserTest : public policy::PolicyTest {
         browser_ptr ? browser_ptr : browser(), main_url));
   }
 
+  void NavigateToPageWithFrameBlockingStorageAccessPermissionsPolicy(
+      std::string_view host) {
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(),
+        https_server_.GetURL(host, base::StrCat({
+                                       "/cross_site_iframe_factory.html?",
+                                       host,
+                                       "(",
+                                       host,
+                                       "{disallow-storage-access})",
+                                   }))));
+  }
+
   void NavigateToNewTabWithFrame(std::string_view host) {
     GURL main_url(https_server_.GetURL(host, "/iframe.html"));
     ui_test_utils::NavigateToURLWithDisposition(
@@ -3190,6 +3203,11 @@ class StorageAccessHeadersBrowserTest : public StorageAccessAPIBrowserTest {
   std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
     return {
         {network::features::kStorageAccessHeaders, {}},
+        // TODO(crbug.com/382291442): Remove below two once permissions policies
+        // are launched.
+        {{network::features::kPopulatePermissionsPolicyOnRequest}, {}},
+        {{network::features::kStorageAccessHeadersRespectPermissionsPolicy},
+         {}},
     };
   }
 };
@@ -3213,6 +3231,30 @@ IN_PROC_BROWSER_TEST_F(StorageAccessHeadersBrowserTest, RetryHeader) {
                   Pair(net::HttpRequestHeaders::kCookie, "cross-site=b.test"),
                   Pair(kSecFetchStorageAccess, "active"))));
   EXPECT_EQ(retry_path_fetch_count_, 2);
+}
+
+IN_PROC_BROWSER_TEST_F(StorageAccessHeadersBrowserTest,
+                       RetryHeader_WithBlockingPermissionsPolicy) {
+  SetBlockThirdPartyCookies(true);
+  SetRetryAllowedOriginFromHost(kHostA);
+
+  // Pre-seed with a <A, B> permission grant.
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(EchoCookiesURL(kHostB));
+  prompt_factory()->set_response_type(
+      permissions::PermissionRequestManager::ACCEPT_ALL);
+  ASSERT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
+
+  // Now attempt to use that permission grant for a B subresource fetched by an
+  // A document, without invoking the Storage Access API.
+  NavigateToPageWithFrameBlockingStorageAccessPermissionsPolicy(kHostA);
+  EXPECT_THAT(
+      ContentFromFetch(ChildFrameAt(GetPrimaryMainFrame(), 0), kHostB,
+                       kRetryPath),
+      HeadersAre(UnorderedElementsAre(
+          Pair(net::HttpRequestHeaders::kCookie, kHeaderNotProvidedSentinel),
+          Pair(kSecFetchStorageAccess, "none"))));
+  EXPECT_EQ(retry_path_fetch_count_, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(StorageAccessHeadersBrowserTest, RetryHeader_Wildcard) {
@@ -3353,6 +3395,26 @@ IN_PROC_BROWSER_TEST_F(StorageAccessHeadersBrowserTest, LoadHeader) {
   NavigateFrameTo(GetURL(kHostB, "/set-header?Activate-Storage-Access: load"));
   // No need to request storage access, because we already have it.
   EXPECT_TRUE(storage::test::HasStorageAccessForFrame(GetFrame()));
+}
+
+IN_PROC_BROWSER_TEST_F(StorageAccessHeadersBrowserTest,
+                       LoadHeader_WithBlockingPermissionsPolicy) {
+  SetBlockThirdPartyCookies(true);
+
+  // Pre-seed with a <A, B> permission grant.
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(EchoCookiesURL(kHostB));
+  prompt_factory()->set_response_type(
+      permissions::PermissionRequestManager::ACCEPT_ALL);
+  ASSERT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
+
+  // Now attempt to use that permission grant for a cross-site iframe, without
+  // invoking the Storage Access API.
+  NavigateToPageWithFrameBlockingStorageAccessPermissionsPolicy(kHostA);
+  NavigateFrameTo(GetURL(kHostB, "/set-header?Activate-Storage-Access: load"),
+                  nullptr, "child-0");
+  // No storage access was activated because permissions policy blocked it.
+  EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
 }
 
 IN_PROC_BROWSER_TEST_F(StorageAccessHeadersBrowserTest,

@@ -75,10 +75,11 @@ CompositorKeyframeValue* CompositorKeyframeValueFactory::Create(
       const AtomicString& property_name = property.CustomPropertyName();
       const CSSValue* value = style.GetVariableValue(property_name);
 
-      const auto* primitive_value = DynamicTo<CSSPrimitiveValue>(value);
-      if (primitive_value && primitive_value->IsNumber()) {
-        return MakeGarbageCollected<CompositorKeyframeDouble>(
-            primitive_value->GetFloatValue());
+      if (const auto* number_value = DynamicTo<CSSNumericLiteralValue>(value)) {
+        if (number_value->IsNumber()) {
+          return MakeGarbageCollected<CompositorKeyframeDouble>(
+              number_value->GetFloatValue());
+        }
       }
 
       // TODO: Add supported for interpolable color values from

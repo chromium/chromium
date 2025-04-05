@@ -115,13 +115,7 @@ component("service") {
     ]
   }
   if (is_mac) {
-    sources += [
-      "built_in_shader_cache_loader.cc",
-      "built_in_shader_cache_loader.h",
-      "built_in_shader_cache_writer.cc",
-      "built_in_shader_cache_writer.h",
-      "image_transport_surface_mac.mm",
-    ]
+    sources += [ "image_transport_surface_mac.mm" ]
     deps += [
       "//ui/accelerated_widget_mac",
       "//ui/display:display",

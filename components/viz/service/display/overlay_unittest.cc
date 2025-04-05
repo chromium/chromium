@@ -759,7 +759,6 @@ class OverlayTest : public testing::Test {
                          kUVBottomRight, SkColors::kTransparent,
                          nearest_neighbor,
                          /*secure_output=*/false, protected_video_type);
-    overlay_quad->set_resource_size_in_pixels(resource_size_in_pixels);
 
     return overlay_quad;
   }
@@ -1199,32 +1198,6 @@ TEST_F(FullscreenOverlayTest, AlphaFail) {
   EXPECT_EQ(1U, main_pass->quad_list.size());
   // Check that we have only one overlay.
   EXPECT_EQ(0U, candidate_list.size());
-}
-
-TEST_F(FullscreenOverlayTest, SuccessfulResourceSizeInPixels) {
-  auto pass = CreateRenderPass();
-  TextureDrawQuad* original_quad = CreateFullscreenCandidateQuad(
-      pass->shared_quad_state_list.back(), pass.get());
-  original_quad->set_resource_size_in_pixels(gfx::Size(64, 64));
-
-  // Check for potential candidates.
-  OverlayCandidateList candidate_list;
-  OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-  OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
-  AggregatedRenderPassList pass_list;
-  AggregatedRenderPass* main_pass = pass.get();
-  pass_list.push_back(std::move(pass));
-  SurfaceDamageRectList surface_damage_rect_list;
-
-  overlay_processor_->ProcessForOverlays(
-      resource_provider(), &pass_list, GetIdentityColorMatrix(),
-      render_pass_filters, render_pass_backdrop_filters,
-      std::move(surface_damage_rect_list), nullptr, &candidate_list,
-      &damage_rect_, &content_bounds_);
-  ASSERT_EQ(1U, candidate_list.size());
-
-  // Check that the quad is gone.
-  EXPECT_EQ(0U, main_pass->quad_list.size());
 }
 
 TEST_F(FullscreenOverlayTest, OnTopFail) {
@@ -1872,7 +1845,6 @@ TEST_F(SingleOverlayOnTopTest, StablePrioritizeIntervalFrame) {
                        kUVBottomRight, SkColors::kTransparent,
                        false /*nearest_neighbor*/, false /*secure_output_only*/,
                        gfx::ProtectedVideoType::kClear);
-    quad_small->set_resource_size_in_pixels(kCandidateRectA.size());
     AddExpectedRectToOverlayProcessor(gfx::RectF(kCandidateRectA));
 
     SharedQuadState* shared_quad_state_b =
@@ -1887,7 +1859,6 @@ TEST_F(SingleOverlayOnTopTest, StablePrioritizeIntervalFrame) {
                      SkColors::kTransparent, false /*nearest_neighbor*/,
                      false /*secure_output_only*/,
                      gfx::ProtectedVideoType::kClear);
-    quad_big->set_resource_size_in_pixels(kCandidateRectB.size());
 
     shared_quad_state_b->overlay_damage_index = 1;
     AddExpectedRectToOverlayProcessor(gfx::RectF(kCandidateRectB));
@@ -3150,7 +3121,6 @@ TEST_F(ChangeSingleOnTopTest, DoNotPromoteIfContentsDontChange) {
         false /*premultiplied_alpha*/, kUVTopLeft, kUVBottomRight,
         SkColors::kTransparent, false /*nearest_neighbor*/,
         false /*secure_output_only*/, gfx::ProtectedVideoType::kClear);
-    original_quad->set_resource_size_in_pixels(pass->output_rect.size());
 
     // Add something behind it.
     CreateFullscreenOpaqueQuad(pass->shared_quad_state_list.back(), main_pass);
@@ -3240,11 +3210,8 @@ TEST_F(FullThresholdTest, ThresholdTestForPrioritization) {
         nearly_occluded ? nearly_occluding_quad : kOverlayTopLeftRect);
 
     // Create a quad with the resource ID selected above.
-    TextureDrawQuad* quad_candidate = CreateCandidateQuadAt(
-
-        pass->shared_quad_state_list.back(), pass.get(), kOverlayRect);
-
-    quad_candidate->set_resource_size_in_pixels(pass->output_rect.size());
+    CreateCandidateQuadAt(pass->shared_quad_state_list.back(), pass.get(),
+                          kOverlayRect);
 
     // Add something behind it.
     CreateFullscreenOpaqueQuad(pass->shared_quad_state_list.back(), main_pass);
@@ -3354,8 +3321,6 @@ TEST_F(OverlayHysteresisTest, HysteresisResumeWhenCandidateComeBackActive) {
           /*premultiplied=*/false, kUVTopLeft, kUVBottomRight,
           SkColors::kTransparent, /*nearest=*/false,
           /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
-      quad_candidate_no_occlusion->set_resource_size_in_pixels(
-          kOverlayTopLeftRect.size());
       TrackingIdData track_data_top_left{
           quad_candidate_no_occlusion->rect,
           resource_factory_->resource_provider()

@@ -80,11 +80,6 @@ bool AllowedToPropagateToParent(
 ALWAYS_INLINE ScrollableArea* GetScrollableAreaForLayoutBox(
     const LayoutBox& box,
     const mojom::blink::ScrollIntoViewParamsPtr& params) {
-  // Root element with ::scroll-marker-group pseudo element should use
-  // root frame viewport.
-  if (box.IsDocumentElement() && box.IsScrollContainerWithScrollMarkerGroup()) {
-    return box.GetFrameView()->GetRootFrameViewport();
-  }
   if (box.IsScrollContainer() && !box.IsLayoutView()) {
     return box.GetScrollableArea();
   } else if (!box.ContainingBlock()) {
@@ -195,10 +190,13 @@ std::optional<PhysicalRect> PerformBubblingScrollIntoView(
   const LayoutBox* current_box = &box;
   HeapHashSet<Member<const LayoutBox>> stop_at;
   if (const LayoutObject* halt_object =
-          container ? current_box->CommonAncestor(*container) : nullptr) {
-    for (const LayoutBox* halt_box = halt_object->EnclosingBox(); halt_box;
-         halt_box = halt_box->ParentBox()) {
-      stop_at.insert(halt_box);
+          container && !container->IsDocumentElement()
+              ? current_box->CommonAncestor(*container)
+              : nullptr) {
+    for (; halt_object; halt_object = halt_object->Parent()) {
+      if (const LayoutBox* halt_box = DynamicTo<LayoutBox>(halt_object)) {
+        stop_at.insert(halt_box);
+      }
     }
   }
   while (current_box) {
@@ -297,6 +295,15 @@ std::optional<PhysicalRect> PerformBubblingScrollIntoView(
     }
 
     LayoutBox* next_box = *next_box_opt;
+
+    // TODO(https://crbug.com/391627364): for now, we should not leave the frame
+    // for scroll-marker-group containers, and `container` check indicates this
+    // case. But later we will support more cases where `container` is not
+    // nullptr.
+    if (container && next_box &&
+        next_box->GetFrame() != current_box->GetFrame()) {
+      break;
+    }
 
     AdjustRectAndParamsForParentFrame(*current_box, next_box,
                                       absolute_rect_to_scroll, params);

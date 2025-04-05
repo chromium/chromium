@@ -458,7 +458,6 @@
 <translation id="3084958266922136097">Отключить заставку</translation>
 <translation id="3091839911843451378">Сбой: остановка работы</translation>
 <translation id="3102119246920354026">Кеш</translation>
-<translation id="3112413615003385433">Преподаватель удалил контент из School Tools.</translation>
 <translation id="3122464029669770682">Процессор</translation>
 <translation id="3122614491980756867">пруды</translation>
 <translation id="3122883569442693641">Подробнее</translation>
@@ -539,7 +538,6 @@
 <translation id="3488065109653206955">Частично активировано</translation>
 <translation id="3492882532495507361">Офис: стиль – <ph name="OFFICE_STYLE" />, цвет – <ph name="OFFICE_COLOR" /></translation>
 <translation id="3493187369049186498">Объем использованного трафика измеряется на устройстве. Значения могут отличаться от данных оператора связи.</translation>
-<translation id="349570724365779960">Приложение School Tools доступно для учащихся.</translation>
 <translation id="3502426834823382181">посмотреть все приложения</translation>
 <translation id="3510890413042482857">Отправлять <ph name="BEGIN_LINK1" />данные отслеживания производительности<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Обновление Chrome OS</translation>
@@ -547,7 +545,6 @@
 <translation id="353214771040290298">Завершить изменение</translation>
 <translation id="3532980081107202182">Осталось примерно <ph name="MIN_REMAINING" /> мин.</translation>
 <translation id="3533790840489634638">пруд</translation>
-<translation id="3535802910192338629">Преподаватель добавил новый контент в School Tools.</translation>
 <translation id="3547264467365135390">Формула</translation>
 <translation id="3557205324756024651">Локальное удостоверение (необязательно)</translation>
 <translation id="3565064564551103223">Разрешенные IP-адреса</translation>
@@ -1235,6 +1232,7 @@
 <translation id="6657240842932274095">Разрешить системным службам доступ к данным о местоположении?</translation>
 <translation id="6657585470893396449">Пароль</translation>
 <translation id="66621959568103627">кораллово-розовый</translation>
+<translation id="6669485505082792176">Не удалось сгенерировать изображение. Попробуйте перефразировать описание. Обратите внимание, что нельзя создавать изображения с людьми, а также вредоносные материалы и контент для взрослых. <ph name="BEGIN_LINK_LEARN_MORE" />Подробнее…<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6673898378497337661">увеличить яркость клавиатуры</translation>
 <translation id="6692996468359469499">Получайте информацию об объектах на экране</translation>
 <translation id="6694534975463174713">Блокировка</translation>
@@ -1440,7 +1438,6 @@
 <translation id="7544853251252956727">Перемешать</translation>
 <translation id="7550715992156305117">Программы диагностики</translation>
 <translation id="7551123448725492271">Это аудиоустройство.</translation>
-<translation id="7553913964854052228">Приложение School Tools использует ваш микрофон.</translation>
 <translation id="7559239713112547082">Предварительный просмотр скриншота</translation>
 <translation id="7561454561030345039">Этим действием управляет администратор.</translation>
 <translation id="7561759921596375678">Включить звук</translation>
@@ -1663,7 +1660,6 @@
 <translation id="8576249514688522074">Без инициализации</translation>
 <translation id="8584654835905316966">Чтобы завершить установку встроенного ПО версии <ph name="VERSION" /> на устройстве <ph name="DEVICE_NAME" />, перезапустите устройство. Вам может показаться, что компьютер перезагружается несколько раз. Это нормально.</translation>
 <translation id="8593058461203131755">приостановить воспроизведение</translation>
-<translation id="8619169570378509764">School Tools</translation>
 <translation id="8620617069779373398">Статус роуминга</translation>
 <translation id="8626489604350149811">Другие действия для точки доступа <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Светло-фиолетовый</translation>

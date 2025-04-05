@@ -234,20 +234,6 @@ export class SettingsInternetSubpageElement extends
         type: Number,
         value: null,
       },
-
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kWifiOnOff,
-          Setting.kWifiAddNetwork,
-          Setting.kMobileOnOff,
-          Setting.kInstantTetheringOnOff,
-          Setting.kAddESimNetwork,
-        ]),
-      },
     };
   }
 
@@ -267,6 +253,16 @@ export class SettingsInternetSubpageElement extends
   showSpinner: boolean;
   tetherDeviceState: OncMojo.DeviceStateProperties|undefined;
   vpnProviders: VpnProvider[];
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kWifiOnOff,
+    Setting.kWifiAddNetwork,
+    Setting.kMobileOnOff,
+    Setting.kInstantTetheringOnOff,
+    Setting.kAddESimNetwork,
+  ]);
+
   private alwaysOnVpnMode_: AlwaysOnVpnMode|undefined;
   private alwaysOnVpnService_: string|undefined;
   private browserProxy_: InternetPageBrowserProxy;

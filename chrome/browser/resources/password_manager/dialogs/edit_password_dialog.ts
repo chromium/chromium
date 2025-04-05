@@ -116,14 +116,14 @@ export class EditPasswordDialogElement extends EditPasswordDialogElementBase {
     };
   }
 
-  credential: chrome.passwordsPrivate.PasswordUiEntry;
-  showRedirect: boolean;
-  private username_: string;
-  private password_: string;
-  private note_: string;
-  private conflictingUsernames_: Map<string, string>;
-  private usernameErrorMessage_: string|null;
-  private canEditPassword_: boolean;
+  declare credential: chrome.passwordsPrivate.PasswordUiEntry;
+  declare showRedirect: boolean;
+  declare private username_: string;
+  declare private password_: string;
+  declare private note_: string;
+  declare private conflictingUsernames_: Map<string, string>;
+  declare private usernameErrorMessage_: string|null;
+  declare private canEditPassword_: boolean;
   private setSavedPasswordsListener_: (
       (entries: chrome.passwordsPrivate.PasswordUiEntry[]) => void)|null = null;
 

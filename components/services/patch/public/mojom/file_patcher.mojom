@@ -7,15 +7,37 @@ module patch.mojom;
 import "mojo/public/mojom/base/file.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
 
+// Keep in sync with //components/zucchini/zucchini.h.
+enum ZucchiniStatus {
+  kStatusSuccess,
+  kStatusInvalidParam,
+  kStatusFileReadError,
+  kStatusFileWriteError,
+  kStatusPatchReadError,
+  kStatusPatchWriteError,
+  kStatusInvalidOldImage,
+  kStatusInvalidNewImage,
+  kStatusDiskFull,
+  kStatusIoError,
+  kStatusFatal,
+};
+
 // Interface to the out-of-process file patcher. The file patcher runs
 // utilities to apply a differential patch to a file, often for the purposes of
 // software updates.
 [ServiceSandbox=sandbox.mojom.Sandbox.kService]
 interface FilePatcher {
-  // Patch |input_file_path| with |patch_file_path| using the Puffin PuffPatch
-  // algorithm and place the output in |output_file_path|.
-  // Returns |result| puffin::Status::P_OK on success.
+  // Patches `input_file` with `patch_file` using the PuffPatch algorithm and
+  // writes the output to `output_file`. Returns `result` puffin::Status::P_OK
+  // (0) on success.
   PatchFilePuffPatch(mojo_base.mojom.ReadOnlyFile input_file,
                      mojo_base.mojom.ReadOnlyFile patch_file,
                      mojo_base.mojom.File output_file) => (int32 result);
+
+  // Patches `input_file` with `patch_file` using the Zucchini algorithm and
+  // writes the output to `output_file`. Returns 0 on success.
+  PatchFileZucchini(mojo_base.mojom.ReadOnlyFile input_file,
+                    mojo_base.mojom.ReadOnlyFile patch_file,
+                    mojo_base.mojom.File output_file)
+      => (ZucchiniStatus result);
 };

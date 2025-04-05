@@ -92,6 +92,8 @@
 #include "net/cookies/cookie_store_test_callbacks.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/site_for_cookies.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 #include "net/device_bound_sessions/session_service.h"
@@ -534,8 +536,14 @@ class NetworkContextTest : public testing::Test {
                           time_source),
         network_change_notifier_(
             net::NetworkChangeNotifier::CreateMockIfNeeded()),
-        network_service_(NetworkService::CreateForTesting()) {}
-  ~NetworkContextTest() override {}
+        network_service_(NetworkService::CreateForTesting()) {
+    // TODO(crbug.com/382291442): Remove features when launched.
+    features_.InitWithFeatures(
+        {network::features::kPopulatePermissionsPolicyOnRequest,
+         network::features::kStorageAccessHeadersRespectPermissionsPolicy},
+        {});
+  }
+  ~NetworkContextTest() override = default;
 
   std::unique_ptr<NetworkContext> CreateContextWithParams(
       mojom::NetworkContextParamsPtr context_params
@@ -695,6 +703,19 @@ class NetworkContextTest : public testing::Test {
                                          std::string("5"), nullptr);
   }
 
+  std::unique_ptr<network::PermissionsPolicy>
+  CreateStorageAccessPermissionsPolicy(const GURL& url,
+                                       bool matches_all_origins = false) {
+    return PermissionsPolicy::CreateFromParentPolicy(
+        /*parent_policy=*/nullptr,
+        /*header_policy=*/
+        {{{mojom::PermissionsPolicyFeature::kStorageAccessAPI,
+           /*allowed_origins=*/{},
+           /*self_if_matches=*/std::nullopt, matches_all_origins,
+           /*matches_opaque_src=*/false}}},
+        /*container_policy=*/{}, url::Origin::Create(url));
+  }
+
  protected:
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<net::NetworkChangeNotifier> network_change_notifier_;
@@ -703,6 +724,9 @@ class NetworkContextTest : public testing::Test {
   // NetworkContext. Not strictly needed, but seems best to mimic real-world
   // usage.
   mojo::Remote<mojom::NetworkContext> network_context_remote_;
+
+ private:
+  base::test::ScopedFeatureList features_;
 };
 
 class NetworkContextTestWithMockTime : public NetworkContextTest {
@@ -8662,6 +8686,8 @@ TEST_F(NetworkContextTest,
   ResourceRequest my_request;
   my_request.trust_token_params =
       OptionalTrustTokenParams(mojom::TrustTokenParams::New());
+  my_request.permissions_policy =
+      *CreateStorageAccessPermissionsPolicy(my_request.url);
 
   std::unique_ptr<TestURLLoaderClient> client = FetchRequest(
       my_request, network_context.get(), mojom::kURLLoadOptionNone,
@@ -9102,6 +9128,8 @@ TEST_F(NetworkContextTest,
 
   ResourceRequest my_request;
   my_request.url = test_server.GetURL("a.test", "/empty.html");
+  my_request.permissions_policy =
+      *CreateStorageAccessPermissionsPolicy(my_request.url);
   my_request.trust_token_params =
       OptionalTrustTokenParams(mojom::TrustTokenParams::New());
   my_request.trust_token_params->operation =
@@ -10501,6 +10529,20 @@ class StorageAccessHeaderNetworkContextTest : public NetworkContextTest {
   }
 };
 
+class StorageAccessHeaderNetworkContextParameterizedTest
+    : public StorageAccessHeaderNetworkContextTest,
+      public testing::WithParamInterface<
+          bool /* permissions_policy_matches_all_origins */> {
+ public:
+  StorageAccessHeaderNetworkContextParameterizedTest() = default;
+  bool permissions_policy_matches_all_origins() const { return GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    StorageAccessHeaderNetworkContextParameterizedTest,
+    testing::Bool() /* permissions_policy_matches_all_origins */);
+
 // This test fetches `kStorageAccessRetryPath`, but the browser does not retry
 // the request since there is no matching content setting (and therefore
 // retrying the request would be a waste of time).
@@ -10522,6 +10564,8 @@ TEST_F(StorageAccessHeaderNetworkContextTest, RetryWithoutContentSetting) {
 
   ResourceRequest request;
   request.url = request_url;
+  request.permissions_policy =
+      *CreateStorageAccessPermissionsPolicy(request.url);
   auto params = mojom::URLLoaderFactoryParams::New();
   params->is_trusted = true;
   params->process_id = mojom::kBrowserProcessId;
@@ -10560,6 +10604,8 @@ TEST_F(StorageAccessHeaderNetworkContextTest, Retry_WithoutBlockingCookies) {
 
   ResourceRequest request;
   request.url = request_url;
+  request.permissions_policy =
+      *CreateStorageAccessPermissionsPolicy(request.url);
   auto params = mojom::URLLoaderFactoryParams::New();
   params->is_trusted = true;
   params->process_id = mojom::kBrowserProcessId;
@@ -10582,8 +10628,13 @@ TEST_F(StorageAccessHeaderNetworkContextTest, Retry_WithoutBlockingCookies) {
 // the request (including unpartitioned cookies, if applicable). The second
 // response still includes the header, but the browser ignores it the second
 // time, since retrying would not make any difference.
-TEST_F(StorageAccessHeaderNetworkContextTest, Retry) {
-  set_retry_response_sequence({ResponseKind::kOk, ResponseKind::kOk});
+TEST_P(StorageAccessHeaderNetworkContextParameterizedTest, Retry) {
+  if (permissions_policy_matches_all_origins()) {
+    set_retry_response_sequence({ResponseKind::kOk, ResponseKind::kOk});
+  } else {
+    set_retry_response_sequence({ResponseKind::kOk});
+  }
+
   StartTestServerWithRequestHeaderMonitorAndRetryHandler();
 
   const GURL request_url =
@@ -10611,6 +10662,8 @@ TEST_F(StorageAccessHeaderNetworkContextTest, Retry) {
 
   ResourceRequest request;
   request.url = request_url;
+  request.permissions_policy = *CreateStorageAccessPermissionsPolicy(
+      request.url, permissions_policy_matches_all_origins());
   auto params = mojom::URLLoaderFactoryParams::New();
   params->is_trusted = true;
   params->process_id = mojom::kBrowserProcessId;
@@ -10625,11 +10678,18 @@ TEST_F(StorageAccessHeaderNetworkContextTest, Retry) {
 
   client->RunUntilComplete();
 
-  EXPECT_THAT(cookie_headers(), ElementsAre("None", "3PCookie=1"));
+  EXPECT_THAT(cookie_headers(),
+              testing::Conditional(permissions_policy_matches_all_origins(),
+                                   ElementsAre("None", "3PCookie=1"),
+                                   ElementsAre("None")));
 }
 
 struct StorageAccessRedirectData {
   std::string redirect_dest_host;
+  bool is_redirect_dest_enabled_by_permissions_policy;
+  // TODO(crbug.com/382291442): Delete `is_respect_permissions_policy_enabled`
+  // once launched.
+  bool is_respect_permissions_policy_enabled;
   std::vector<std::string> expected_storage_access_header_sequence;
   std::vector<std::string> expected_cookie_header_sequence;
 };
@@ -10639,11 +10699,33 @@ class StorageAccessHeaderRedirectNetworkContextTest
       public testing::WithParamInterface<StorageAccessRedirectData> {
  public:
   StorageAccessHeaderRedirectNetworkContextTest() {
-    features_.InitAndEnableFeature(network::features::kStorageAccessHeaders);
+    // TODO(crbug.com/382291442): Remove once launched.
+    std::vector<base::test::FeatureRef> permissions_policy_features = {
+        network::features::kPopulatePermissionsPolicyOnRequest,
+        network::features::kStorageAccessHeadersRespectPermissionsPolicy,
+    };
+    if (is_respect_permissions_policy_enabled()) {
+      features_.InitWithFeatures(
+          /*enabled_features=*/permissions_policy_features,
+          /*disabled_features=*/{});
+    } else {
+      features_.InitWithFeatures(
+          /*enabled_features=*/{},
+          /*disabled_features=*/permissions_policy_features);
+    }
   }
 
   std::string redirect_dest_host() const {
     return GetParam().redirect_dest_host;
+  }
+
+  bool is_redirect_dest_enabled_by_permissions_policy() const {
+    return GetParam().is_redirect_dest_enabled_by_permissions_policy;
+  }
+
+  // TODO(crbug.com/382291442): Delete once launched.
+  bool is_respect_permissions_policy_enabled() const {
+    return GetParam().is_respect_permissions_policy_enabled;
   }
 
   std::vector<testing::Matcher<net::test_server::HttpRequest::HeaderMap>>
@@ -10665,34 +10747,126 @@ class StorageAccessHeaderRedirectNetworkContextTest
   base::test::ScopedFeatureList features_;
 };
 
-INSTANTIATE_TEST_SUITE_P(,
-                         StorageAccessHeaderRedirectNetworkContextTest,
-                         testing::ValuesIn({
-                             // Redirect to the top-level site
-                             StorageAccessRedirectData{
-                                 "b.test",
-                                 {"inactive", "active", "inactive"},
-                                 {"None", "3PCookie=1", "None"},
-                             },
-                             // Redirect to a different 3P
-                             StorageAccessRedirectData{
-                                 "c.test",
-                                 {"inactive", "active", "none"},
-                                 {"None", "3PCookie=1", "None"},
-                             },
-                             // Same-origin redirect
-                             StorageAccessRedirectData{
-                                 "a.test",
-                                 {"inactive", "active", "active"},
-                                 {"None", "3PCookie=1", "3PCookie=1"},
-                             },
-                             // Same-site, cross-origin redirect
-                             StorageAccessRedirectData{
-                                 "sub.a.test",
-                                 {"inactive", "active", "inactive"},
-                                 {"None", "3PCookie=1", "None"},
-                             },
-                         }));
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    StorageAccessHeaderRedirectNetworkContextTest,
+    testing::ValuesIn({
+        // Redirect to the top-level site, enabled PP
+        StorageAccessRedirectData{
+            "b.test",
+            /*is_redirect_dest_enabled_by_permissions_policy=*/true,
+            /*is_respect_permissions_policy_enabled=*/true,
+            {"inactive", "active", "inactive"},
+            {"None", "3PCookie=1", "None"},
+        },
+        // Redirect to a different 3P, enabled PP
+        StorageAccessRedirectData{
+            "c.test",
+            /*is_redirect_dest_enabled_by_permissions_policy=*/true,
+            /*is_respect_permissions_policy_enabled=*/true,
+            {"inactive", "active", "none"},
+            {"None", "3PCookie=1", "None"},
+        },
+        // Same-origin redirect, enabled PP
+        StorageAccessRedirectData{
+            "a.test",
+            /*is_redirect_dest_enabled_by_permissions_policy=*/true,
+            /*is_respect_permissions_policy_enabled=*/true,
+            {"inactive", "active", "active"},
+            {"None", "3PCookie=1", "3PCookie=1"},
+        },
+        // Same-site, cross-origin redirect, enabled PP
+        StorageAccessRedirectData{
+            "sub.a.test",
+            /*is_redirect_dest_enabled_by_permissions_policy=*/true,
+            /*is_respect_permissions_policy_enabled=*/true,
+            {"inactive", "active", "inactive"},
+            {"None", "3PCookie=1", "None"},
+        },
+        // Redirect to the top-level site, disabled PP
+        StorageAccessRedirectData{
+            "b.test",
+            /*is_redirect_dest_enabled_by_permissions_policy=*/false,
+            /*is_respect_permissions_policy_enabled=*/true,
+            {"inactive", "active", "none"},
+            {"None", "3PCookie=1", "None"},
+        },
+        // Redirect to a different 3P, disabled PP
+        StorageAccessRedirectData{
+            "c.test",
+            /*is_redirect_dest_enabled_by_permissions_policy=*/false,
+            /*is_respect_permissions_policy_enabled=*/true,
+            {"inactive", "active", "none"},
+            {"None", "3PCookie=1", "None"},
+        },
+        // Same-site, cross-origin redirect, disabled PP
+        StorageAccessRedirectData{
+            "sub.a.test",
+            /*is_redirect_dest_enabled_by_permissions_policy=*/false,
+            /*is_respect_permissions_policy_enabled=*/true,
+            {"inactive", "active", "none"},
+            {"None", "3PCookie=1", "None"},
+        },
+
+        // TODO(crbug.com/382291442): Delete test below once launched.
+
+        // Redirect to the top-level site, enabled PP, disabled feature
+        StorageAccessRedirectData{
+            "b.test",
+            /*is_redirect_dest_enabled_by_permissions_policy=*/true,
+            /*is_respect_permissions_policy_enabled=*/false,
+            {"inactive", "active", "inactive"},
+            {"None", "3PCookie=1", "None"},
+        },
+        // Redirect to a different 3P, enabled PP, disabled feature
+        StorageAccessRedirectData{
+            "c.test",
+            /*is_redirect_dest_enabled_by_permissions_policy=*/true,
+            /*is_respect_permissions_policy_enabled=*/false,
+            {"inactive", "active", "none"},
+            {"None", "3PCookie=1", "None"},
+        },
+        // Same-origin redirect, enabled PP, disabled feature
+        StorageAccessRedirectData{
+            "a.test",
+            /*is_redirect_dest_enabled_by_permissions_policy=*/true,
+            /*is_respect_permissions_policy_enabled=*/false,
+            {"inactive", "active", "active"},
+            {"None", "3PCookie=1", "3PCookie=1"},
+        },
+        // Same-site, cross-origin redirect, enabled PP, disabled feature
+        StorageAccessRedirectData{
+            "sub.a.test",
+            /*is_redirect_dest_enabled_by_permissions_policy=*/true,
+            /*is_respect_permissions_policy_enabled=*/false,
+            {"inactive", "active", "inactive"},
+            {"None", "3PCookie=1", "None"},
+        },
+        // Redirect to the top-level site, disabled PP, disabled feature
+        StorageAccessRedirectData{
+            "b.test",
+            /*is_redirect_dest_enabled_by_permissions_policy=*/false,
+            /*is_respect_permissions_policy_enabled=*/false,
+            {"inactive", "active", "inactive"},
+            {"None", "3PCookie=1", "None"},
+        },
+        // Redirect to a different 3P, disabled PP, disabled feature
+        StorageAccessRedirectData{
+            "c.test",
+            /*is_redirect_dest_enabled_by_permissions_policy=*/false,
+            /*is_respect_permissions_policy_enabled=*/false,
+            {"inactive", "active", "none"},
+            {"None", "3PCookie=1", "None"},
+        },
+        // Same-site, cross-origin redirect, disabled PP, disabled feature
+        StorageAccessRedirectData{
+            "sub.a.test",
+            /*is_redirect_dest_enabled_by_permissions_policy=*/false,
+            /*is_respect_permissions_policy_enabled=*/false,
+            {"inactive", "active", "inactive"},
+            {"None", "3PCookie=1", "None"},
+        },
+    }));
 
 // Issues a cross-site request to "a.test" (with a top-level site of "b.test"),
 // which redirects to somewhere else after going through the "retry" flow.
@@ -10732,6 +10906,23 @@ TEST_P(StorageAccessHeaderRedirectNetworkContextTest, RetryThenRedirect) {
 
   ResourceRequest request;
   request.url = request_url;
+
+  std::vector<network::OriginWithPossibleWildcards> allowed_origins = {
+      *network::OriginWithPossibleWildcards::FromOrigin(
+          url::Origin::Create(request.url))};
+  if (is_redirect_dest_enabled_by_permissions_policy()) {
+    allowed_origins.emplace_back(
+        *network::OriginWithPossibleWildcards::FromOrigin(
+            url::Origin::Create(redirect_dest)));
+  }
+  request.permissions_policy = *PermissionsPolicy::CreateFromParentPolicy(
+      /*parent_policy=*/nullptr,
+      /*header_policy=*/
+      {{{mojom::PermissionsPolicyFeature::kStorageAccessAPI, allowed_origins,
+         /*self_if_matches=*/std::nullopt, /*matches_all_origins=*/false,
+         /*matches_opaque_src=*/false}}},
+      /*container_policy=*/{}, url::Origin::Create(request.url));
+
   auto params = mojom::URLLoaderFactoryParams::New();
   params->is_trusted = true;
   params->process_id = mojom::kBrowserProcessId;
@@ -10762,10 +10953,68 @@ TEST_P(StorageAccessHeaderRedirectNetworkContextTest, RetryThenRedirect) {
               ElementsAreArray(ExpectedStorageAccessHeaderSequence()));
 }
 
-// Regression test for https://crbug.com/352722603.
+// TODO(crbug.com/382291442): Delete once the feature is launched.
+// Tests that the `kStorageAccessHeadersRespectPermissionsPolicy` killswitch is
+// working as expected. Issues a cross-site request to "a.test" (with a
+// top-level site of "b.test"), with the feature disabled and without including
+// a permissions policy on the request. The test would crash with the feature
+// enabled but, since the feature is disabled, it issues a request with
+// `Sec-Fetch-Storage-Access: inactive`.
 TEST_F(StorageAccessHeaderNetworkContextTest,
+       CrossSiteRequest_WithoutPermissionsPolicy) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(
+      network::features::kStorageAccessHeadersRespectPermissionsPolicy);
+  StartTestServerWithRequestHeaderMonitorAndRetryHandler();
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+  network_context->cookie_manager()->BlockThirdPartyCookies(true);
+  const GURL request_url = test_server_.GetURL("a.test", "/defaultresponse");
+  const GURL top_level_url = test_server_.GetURL("b.test", "/");
+  SetContentSettings(
+      network_context->cookie_manager(), ContentSettingsType::STORAGE_ACCESS,
+      {
+          {
+              ContentSettingsPattern::FromURLToSchemefulSitePattern(
+                  request_url),
+              ContentSettingsPattern::FromURLToSchemefulSitePattern(
+                  top_level_url),
+              CONTENT_SETTING_ALLOW,
+          },
+      });
+
+  ResourceRequest request;
+  request.url = request_url;
+  request.permissions_policy = std::nullopt;
+  request.credentials_mode = mojom::CredentialsMode::kInclude;
+  auto params = mojom::URLLoaderFactoryParams::New();
+  params->is_trusted = true;
+  params->process_id = mojom::kBrowserProcessId;
+  params->is_orb_enabled = false;
+  params->isolation_info = net::IsolationInfo::Create(
+      net::IsolationInfo::RequestType::kOther,
+      url::Origin::Create(top_level_url), url::Origin::Create(request.url),
+      request.site_for_cookies);
+  std::unique_ptr<TestURLLoaderClient> client =
+      FetchRequest(request, network_context.get(), mojom::kURLLoadOptionNone,
+                   mojom::kBrowserProcessId, std::move(params));
+
+  client->RunUntilComplete();
+
+  EXPECT_THAT(most_recent_request_headers(),
+              ElementsAre(Contains(Pair(kSecFetchStorageAccess, "inactive"))));
+}
+
+// Regression test for https://crbug.com/352722603.
+TEST_P(StorageAccessHeaderNetworkContextParameterizedTest,
        RetryABAWithResourceRequestOptIn) {
-  set_retry_response_sequence({ResponseKind::kOk, ResponseKind::kOk});
+  if (permissions_policy_matches_all_origins()) {
+    set_retry_response_sequence({ResponseKind::kOk, ResponseKind::kOk});
+  } else {
+    set_retry_response_sequence({ResponseKind::kOk});
+  }
+
   StartTestServerWithRequestHeaderMonitorAndRetryHandler();
 
   const GURL request_url =
@@ -10793,6 +11042,8 @@ TEST_F(StorageAccessHeaderNetworkContextTest,
 
   ResourceRequest request;
   request.url = request_url;
+  request.permissions_policy = *CreateStorageAccessPermissionsPolicy(
+      request.url, permissions_policy_matches_all_origins());
   // The SiteForCookies makes this a cross-site context. Since the top-level
   // site and request URL's site are same-site, this is an "ABA" fetch.
   request.site_for_cookies = net::SiteForCookies();
@@ -10818,7 +11069,10 @@ TEST_F(StorageAccessHeaderNetworkContextTest,
 
   client->RunUntilComplete();
 
-  EXPECT_THAT(cookie_headers(), ElementsAre("None", "3PCookie=1"));
+  EXPECT_THAT(cookie_headers(),
+              testing::Conditional(permissions_policy_matches_all_origins(),
+                                   ElementsAre("None", "3PCookie=1"),
+                                   ElementsAre("None")));
 }
 
 // Regression test for https://crbug.com/371011222. This sends a request that
@@ -10855,6 +11109,8 @@ TEST_F(StorageAccessHeaderNetworkContextTest, OptedInViaResourceRequest) {
 
   ResourceRequest request;
   request.url = request_url;
+  request.permissions_policy =
+      *CreateStorageAccessPermissionsPolicy(request.url);
   request.storage_access_api_status =
       net::StorageAccessApiStatus::kAccessViaAPI;
   request.request_initiator = url::Origin::Create(request_url);
@@ -10913,6 +11169,8 @@ TEST_F(StorageAccessHeaderNetworkContextTest, Retry_OmitCredentials) {
 
   ResourceRequest request;
   request.url = request_url;
+  request.permissions_policy =
+      *CreateStorageAccessPermissionsPolicy(request.url);
   request.credentials_mode = mojom::CredentialsMode::kOmit;
   auto params = mojom::URLLoaderFactoryParams::New();
   params->is_trusted = true;
@@ -10935,7 +11193,7 @@ TEST_F(StorageAccessHeaderNetworkContextTest, Retry_OmitCredentials) {
               ElementsAre(Not(Contains(Key(kSecFetchStorageAccess)))));
 }
 
-TEST_F(StorageAccessHeaderNetworkContextTest, Load) {
+TEST_P(StorageAccessHeaderNetworkContextParameterizedTest, Load) {
   StartTestServerWithRequestHeaderMonitorAndRetryHandler();
 
   const GURL top_level_url = test_server_.GetURL("a.test", "/");
@@ -10963,6 +11221,8 @@ TEST_F(StorageAccessHeaderNetworkContextTest, Load) {
 
   ResourceRequest request;
   request.url = request_url;
+  request.permissions_policy = *CreateStorageAccessPermissionsPolicy(
+      request.url, permissions_policy_matches_all_origins());
   auto params = mojom::URLLoaderFactoryParams::New();
   params->is_trusted = true;
   params->process_id = mojom::kBrowserProcessId;
@@ -10979,12 +11239,14 @@ TEST_F(StorageAccessHeaderNetworkContextTest, Load) {
 
   // Cookies were blocked on the request, since the server did not request them.
   EXPECT_THAT(cookie_headers(), ElementsAre("None"));
-  // But the server *is* able to request that the response is loaded with
-  // storage access.
-  EXPECT_TRUE(client->response_head()->load_with_storage_access);
+  // But, if the permissions policy allows, the server *is* able to request that
+  // the response is loaded with storage access.
+  EXPECT_EQ(client->response_head()->load_with_storage_access,
+            permissions_policy_matches_all_origins());
 }
 
-TEST_F(StorageAccessHeaderNetworkContextTest, Load_CredentialsOmit) {
+TEST_P(StorageAccessHeaderNetworkContextParameterizedTest,
+       Load_CredentialsOmit) {
   StartTestServerWithRequestHeaderMonitorAndRetryHandler();
 
   const GURL top_level_url = test_server_.GetURL("a.test", "/");
@@ -11012,6 +11274,8 @@ TEST_F(StorageAccessHeaderNetworkContextTest, Load_CredentialsOmit) {
 
   ResourceRequest request;
   request.url = request_url;
+  request.permissions_policy = *CreateStorageAccessPermissionsPolicy(
+      request.url, permissions_policy_matches_all_origins());
   request.credentials_mode = mojom::CredentialsMode::kOmit;
   auto params = mojom::URLLoaderFactoryParams::New();
   params->is_trusted = true;
@@ -11029,9 +11293,11 @@ TEST_F(StorageAccessHeaderNetworkContextTest, Load_CredentialsOmit) {
 
   // Cookies were blocked on the request, since the server did not request them.
   EXPECT_THAT(cookie_headers(), ElementsAre("None"));
-  // But the server *is* able to request that the response is loaded with
+  // But, if the permissions policy allows, the server *is* able to request that
+  // the response is loaded with
   // storage access.
-  EXPECT_TRUE(client->response_head()->load_with_storage_access);
+  EXPECT_EQ(client->response_head()->load_with_storage_access,
+            permissions_policy_matches_all_origins());
 }
 
 // Server requests `load` in a Storage-Access-Activation header, and a redirect.
@@ -11064,6 +11330,8 @@ TEST_F(StorageAccessHeaderNetworkContextTest, RedirectWithLoad) {
 
   ResourceRequest request;
   request.url = request_url;
+  request.permissions_policy =
+      *CreateStorageAccessPermissionsPolicy(request.url);
   request.trusted_params.emplace();
   request.trusted_params->include_request_cookies_with_response = true;
 
@@ -11126,6 +11394,8 @@ TEST_F(StorageAccessHeaderNetworkContextTest, RedirectThenLoad) {
   ResourceRequest request;
   request.url = test_server_.GetURL(
       "/server-redirect?" + base::EscapeAllExceptUnreserved(final_url.spec()));
+  request.permissions_policy = *CreateStorageAccessPermissionsPolicy(
+      request.url, /*matches_all_origins=*/true);
   request.trusted_params.emplace();
   request.trusted_params->include_request_cookies_with_response = true;
 
@@ -11164,6 +11434,8 @@ TEST_F(StorageAccessHeaderNetworkContextTest,
 
   ResourceRequest request;
   request.url = test_server_.GetURL("/defaultresponse");
+  request.permissions_policy =
+      *CreateStorageAccessPermissionsPolicy(request.url);
   request.site_for_cookies = net::SiteForCookies::FromUrl(request.url);
   mojom::URLLoaderFactoryParamsPtr params =
       mojom::URLLoaderFactoryParams::New();
@@ -11198,6 +11470,8 @@ TEST_F(StorageAccessHeaderNetworkContextTest,
 
   ResourceRequest request;
   request.url = test_server_.GetURL("/defaultresponse");
+  request.permissions_policy =
+      *CreateStorageAccessPermissionsPolicy(request.url);
   const url::Origin kTopFrameOrigin =
       url::Origin::Create(GURL("https://b.test"));
   request.credentials_mode = mojom::CredentialsMode::kOmit;
@@ -11232,6 +11506,8 @@ TEST_F(StorageAccessHeaderNetworkContextTest, RequestHeader_None) {
 
   ResourceRequest request;
   request.url = test_server_.GetURL("/defaultresponse");
+  request.permissions_policy =
+      *CreateStorageAccessPermissionsPolicy(request.url);
   const url::Origin kTopFrameOrigin =
       url::Origin::Create(GURL("https://b.test"));
 
@@ -11262,11 +11538,14 @@ TEST_F(StorageAccessHeaderNetworkContextTest, RequestHeader_None) {
       /*expected_bucket_count=*/1);
 }
 
-TEST_F(StorageAccessHeaderNetworkContextTest, RequestHeader_Inactive) {
+TEST_P(StorageAccessHeaderNetworkContextParameterizedTest,
+       RequestHeader_InactiveOrNone_DependingOnPermissionsPolicy) {
   StartTestServerWithRequestHeaderMonitorAndRetryHandler();
 
   ResourceRequest request;
   request.url = test_server_.GetURL("/defaultresponse");
+  request.permissions_policy = *CreateStorageAccessPermissionsPolicy(
+      request.url, permissions_policy_matches_all_origins());
   request.request_initiator = url::Origin::Create(GURL("https://c.test"));
   const url::Origin kTopFrameOrigin =
       url::Origin::Create(GURL("https://b.test"));
@@ -11293,20 +11572,34 @@ TEST_F(StorageAccessHeaderNetworkContextTest, RequestHeader_Inactive) {
   RunRequestToCompletion(std::move(network_context), std::move(params),
                          request);
 
-  EXPECT_THAT(most_recent_request_headers(),
-              ElementsAre(IsSupersetOf({
-                  Pair(kSecFetchStorageAccess, "inactive"),
-                  Pair(net::HttpRequestHeaders::kOrigin, "https://c.test"),
-              })));
-  histogram_tester.ExpectUniqueSample(
-      kStorageAccessStatusHistogram,
-      /*sample=*/
-      net::cookie_util::StorageAccessStatusOutcome::kValueInactive,
-      /*expected_bucket_count=*/1);
-  histogram_tester.ExpectUniqueSample(
-      kSecFetchStorageAccessHistogram, /*sample=*/
-      net::cookie_util::SecFetchStorageAccessOutcome::kValueInactive,
-      /*expected_bucket_count=*/1);
+  if (permissions_policy_matches_all_origins()) {
+    EXPECT_THAT(most_recent_request_headers(),
+                ElementsAre(IsSupersetOf({
+                    Pair(kSecFetchStorageAccess, "inactive"),
+                    Pair(net::HttpRequestHeaders::kOrigin, "https://c.test"),
+                })));
+    histogram_tester.ExpectUniqueSample(
+        kStorageAccessStatusHistogram,
+        /*sample=*/
+        net::cookie_util::StorageAccessStatusOutcome::kValueInactive,
+        /*expected_bucket_count=*/1);
+    histogram_tester.ExpectUniqueSample(
+        kSecFetchStorageAccessHistogram, /*sample=*/
+        net::cookie_util::SecFetchStorageAccessOutcome::kValueInactive,
+        /*expected_bucket_count=*/1);
+  } else {
+    EXPECT_THAT(most_recent_request_headers(),
+                ElementsAre(Contains(Pair(kSecFetchStorageAccess, "none"))));
+    histogram_tester.ExpectUniqueSample(
+        kStorageAccessStatusHistogram,
+        /*sample=*/
+        net::cookie_util::StorageAccessStatusOutcome::kValueNone,
+        /*expected_bucket_count=*/1);
+    histogram_tester.ExpectUniqueSample(
+        kSecFetchStorageAccessHistogram, /*sample=*/
+        net::cookie_util::SecFetchStorageAccessOutcome::kValueNone,
+        /*expected_bucket_count=*/1);
+  }
 }
 
 TEST_F(StorageAccessHeaderNetworkContextTest, RequestHeader_Active) {
@@ -11314,6 +11607,8 @@ TEST_F(StorageAccessHeaderNetworkContextTest, RequestHeader_Active) {
 
   ResourceRequest request;
   request.url = test_server_.GetURL("/defaultresponse");
+  request.permissions_policy =
+      *CreateStorageAccessPermissionsPolicy(request.url);
   request.storage_access_api_status =
       net::StorageAccessApiStatus::kAccessViaAPI;
   const url::Origin kTopFrameOrigin =
@@ -11358,12 +11653,19 @@ TEST_F(StorageAccessHeaderNetworkContextTest, RequestHeader_Active) {
 // This test recreates the case of StorageAccessHeaderRetry, with the
 // additional logic of demonstrating an initial call that receives an inactive
 // response.
-TEST_F(StorageAccessHeaderNetworkContextTest, RetryAfterInactive) {
-  set_retry_response_sequence({ResponseKind::kOk, ResponseKind::kOk});
+TEST_P(StorageAccessHeaderNetworkContextParameterizedTest, RetryAfterInactive) {
+  if (permissions_policy_matches_all_origins()) {
+    set_retry_response_sequence({ResponseKind::kOk, ResponseKind::kOk});
+  } else {
+    set_retry_response_sequence({ResponseKind::kOk});
+  }
+
   StartTestServerWithRequestHeaderMonitorAndRetryHandler();
 
   ResourceRequest request;
   request.url = test_server_.GetURL("a.test", kStorageAccessRetryPath);
+  request.permissions_policy = *CreateStorageAccessPermissionsPolicy(
+      request.url, permissions_policy_matches_all_origins());
   request.request_initiator = url::Origin::Create(GURL("https://c.test"));
   const url::Origin kTopFrameOrigin =
       url::Origin::Create(GURL("https://b.test"));
@@ -11395,34 +11697,52 @@ TEST_F(StorageAccessHeaderNetworkContextTest, RetryAfterInactive) {
   RunRequestToCompletion(std::move(network_context), std::move(params),
                          request);
 
-  EXPECT_THAT(
-      most_recent_request_headers(),
-      ElementsAre(IsSupersetOf({
-                      Pair(kSecFetchStorageAccess, "inactive"),
-                      Pair(net::HttpRequestHeaders::kOrigin, "https://c.test"),
-                  }),
-                  Contains(Pair(kSecFetchStorageAccess, "active"))));
-  // Values we expect after the request has been retried
-  EXPECT_THAT(cookie_headers(), ElementsAre("None", "3PCookie=1"));
+  if (permissions_policy_matches_all_origins()) {
+    EXPECT_THAT(
+        most_recent_request_headers(),
+        ElementsAre(
+            IsSupersetOf({
+                Pair(kSecFetchStorageAccess, "inactive"),
+                Pair(net::HttpRequestHeaders::kOrigin, "https://c.test"),
+            }),
+            Contains(Pair(kSecFetchStorageAccess, "active"))));
 
-  histogram_tester.ExpectBucketCount(
-      kStorageAccessStatusHistogram,
-      /*sample=*/
-      net::cookie_util::StorageAccessStatusOutcome::kValueInactive,
-      /*expected_count=*/1);
-  histogram_tester.ExpectBucketCount(
-      kStorageAccessStatusHistogram,
-      /*sample=*/
-      net::cookie_util::StorageAccessStatusOutcome::kValueActive,
-      /*expected_count=*/1);
-  histogram_tester.ExpectBucketCount(
-      kSecFetchStorageAccessHistogram, /*sample=*/
-      net::cookie_util::SecFetchStorageAccessOutcome::kValueInactive,
-      /*expected_count=*/1);
-  histogram_tester.ExpectBucketCount(
-      kSecFetchStorageAccessHistogram, /*sample=*/
-      net::cookie_util::SecFetchStorageAccessOutcome::kValueActive,
-      /*expected_count=*/1);
+    // Values we expect after the request has been retried
+    EXPECT_THAT(cookie_headers(), ElementsAre("None", "3PCookie=1"));
+
+    histogram_tester.ExpectBucketCount(
+        kStorageAccessStatusHistogram,
+        /*sample=*/
+        net::cookie_util::StorageAccessStatusOutcome::kValueInactive,
+        /*expected_count=*/1);
+    histogram_tester.ExpectBucketCount(
+        kStorageAccessStatusHistogram,
+        /*sample=*/
+        net::cookie_util::StorageAccessStatusOutcome::kValueActive,
+        /*expected_count=*/1);
+    histogram_tester.ExpectBucketCount(
+        kSecFetchStorageAccessHistogram, /*sample=*/
+        net::cookie_util::SecFetchStorageAccessOutcome::kValueInactive,
+        /*expected_count=*/1);
+    histogram_tester.ExpectBucketCount(
+        kSecFetchStorageAccessHistogram, /*sample=*/
+        net::cookie_util::SecFetchStorageAccessOutcome::kValueActive,
+        /*expected_count=*/1);
+  } else {
+    EXPECT_THAT(most_recent_request_headers(),
+                ElementsAre(Contains(Pair(kSecFetchStorageAccess, "none"))));
+    EXPECT_THAT(cookie_headers(), ElementsAre("None"));
+
+    histogram_tester.ExpectBucketCount(
+        kStorageAccessStatusHistogram,
+        /*sample=*/
+        net::cookie_util::StorageAccessStatusOutcome::kValueNone,
+        /*expected_count=*/1);
+    histogram_tester.ExpectBucketCount(
+        kSecFetchStorageAccessHistogram, /*sample=*/
+        net::cookie_util::SecFetchStorageAccessOutcome::kValueNone,
+        /*expected_count=*/1);
+  }
 }
 
 }  // namespace

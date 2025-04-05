@@ -191,8 +191,8 @@ class SavedTabGroupBarUnitTest : public TestWithBrowserView {
     return guids;
   }
 
-  void Pin(const base::Uuid& sync_id) {
-    service()->UpdateGroupPosition(sync_id, true, 0);
+  void Pin(const base::Uuid& sync_id, int position = 0) {
+    service()->UpdateGroupPosition(sync_id, true, position);
     Wait();
   }
 
@@ -342,15 +342,19 @@ TEST_F(SavedTabGroupBarUnitTest, MoveButtonFromModelMove) {
   const base::Uuid sync_id_2 = AddGroupFromLocal();
   const base::Uuid sync_id_3 = AddGroupFromLocal();
 
+  Wait();
   ASSERT_THAT(GetButtonGUIDs(),
               testing::ElementsAre(sync_id_3, sync_id_2, sync_id_1));
-  service()->UpdateGroupPosition(sync_id_2, std::nullopt, 2);
+
+  Pin(sync_id_2, 2);
   EXPECT_THAT(GetButtonGUIDs(),
               testing::ElementsAre(sync_id_3, sync_id_1, sync_id_2));
-  service()->UpdateGroupPosition(sync_id_2, std::nullopt, 0);
+
+  Pin(sync_id_2, 0);
   EXPECT_THAT(GetButtonGUIDs(),
               testing::ElementsAre(sync_id_2, sync_id_3, sync_id_1));
-  service()->UpdateGroupPosition(sync_id_2, std::nullopt, 1);
+
+  Pin(sync_id_2, 1);
   EXPECT_THAT(GetButtonGUIDs(),
               testing::ElementsAre(sync_id_3, sync_id_2, sync_id_1));
 }

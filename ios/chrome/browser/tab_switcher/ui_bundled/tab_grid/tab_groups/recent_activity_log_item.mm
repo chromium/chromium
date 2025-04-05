@@ -4,6 +4,9 @@
 
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/recent_activity_log_item.h"
 
+#import "components/collaboration/public/messaging/activity_log.h"
+#import "components/collaboration/public/messaging/message.h"
+
 @implementation RecentActivityLogItem
 
 #pragma mark NSObject

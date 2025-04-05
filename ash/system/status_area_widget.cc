@@ -46,12 +46,14 @@
 #include "ash/system/video_conference/video_conference_tray.h"
 #include "ash/system/virtual_keyboard/virtual_keyboard_tray.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/window_pin_util.h"
 #include "ash/wm_mode/wm_mode_button_tray.h"
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
 #include "base/i18n/time_formatting.h"
 #include "base/metrics/histogram_macros.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
+#include "chromeos/ui/base/window_pin_type.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/display.h"
@@ -79,6 +81,8 @@ StatusAreaWidget::StatusAreaWidget(aura::Window* status_container, Shelf* shelf)
   Init(std::move(params));
   set_focus_on_creation(false);
   SetContentsView(status_area_widget_delegate_);
+
+  Shell::Get()->AddShellObserver(this);
 }
 
 void StatusAreaWidget::Initialize() {
@@ -174,6 +178,7 @@ void StatusAreaWidget::Initialize() {
 }
 
 StatusAreaWidget::~StatusAreaWidget() {
+  Shell::Get()->RemoveShellObserver(this);
   Shell::Get()->session_controller()->RemoveObserver(this);
 
   // Resets `animation_controller_` before destroying
@@ -391,6 +396,18 @@ void StatusAreaWidget::UpdateTargetBoundsForGesture(int shelf_position) {
     target_bounds_.set_y(shelf_position);
   } else {
     target_bounds_.set_x(shelf_position);
+  }
+}
+
+void StatusAreaWidget::OnPinnedStateChanged(aura::Window* pinned_window) {
+  // Close all tray bubbles when in locked fullscreen mode to prevent users from
+  // exiting this mode.
+  if (GetWindowPinType(pinned_window) ==
+      chromeos::WindowPinType::kTrustedPinned) {
+    for (ash::TrayBackgroundView* const tray_button : tray_buttons_) {
+      tray_button->CloseBubble(
+          TrayBackgroundView::CloseReason::kWindowActivation);
+    }
   }
 }
 

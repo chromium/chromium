@@ -197,8 +197,6 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
-#include "chromeos/components/mgs/managed_guest_session_utils.h"
-#include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/enterprise/buildflags/buildflags.h"
@@ -219,7 +217,7 @@
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "components/sync/service/sync_service.h"
-#include "components/tab_collections/public/tab_interface.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
@@ -310,6 +308,8 @@
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view_chromeos.h"
 #include "chrome/browser/ui/views/frame/top_controls_slide_controller_chromeos.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
+#include "chromeos/components/mgs/managed_guest_session_utils.h"
+#include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "chromeos/ui/frame/caption_buttons/frame_size_button.h"
 #include "chromeos/ui/wm/desks/desks_helper.h"
 #include "ui/compositor/compositor_metrics_tracker.h"
@@ -1487,25 +1487,24 @@ void BrowserView::ShowSplitView() {
       browser_->tab_strip_model()->GetTabAtIndex(active_index)->GetSplit();
 
   CHECK(split_tab_id.has_value());
-  split_tabs::SplitTabData* split_tab_data =
+  const split_tabs::SplitTabData* split_tab_data =
       browser_->tab_strip_model()->GetSplitData(split_tab_id.value());
 
   std::vector<tabs::TabInterface*> split_tabs = split_tab_data->ListTabs();
 
+  for (int i = 0; i < static_cast<int>(split_tabs.size()); i++) {
+    multi_contents_view_->SetWebContentsAtIndex(split_tabs[i]->GetContents(),
+                                                i);
+  }
   const int first_split_tab_index =
       browser_->tab_strip_model()->GetIndexOfTab(split_tabs[0]);
   const int relative_active_position = active_index - first_split_tab_index;
-  multi_contents_view_->SetActivePosition(relative_active_position);
-
-  for (int i = 0; i < static_cast<int>(split_tabs.size()); i++) {
-    multi_contents_view_->SetWebContents(split_tabs[i]->GetContents(),
-                                         i == relative_active_position);
-  }
+  multi_contents_view_->SetActiveIndex(relative_active_position);
 }
 
 void BrowserView::HideSplitView() {
   CHECK(multi_contents_view_);
-  multi_contents_view_->SetWebContents(nullptr, false);
+  multi_contents_view_->CloseSplitView();
 }
 
 void BrowserView::ActivateWebContents(content::WebContents* web_contents) {

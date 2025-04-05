@@ -4,9 +4,13 @@
 
 #include "chrome/browser/privacy_sandbox/notice/notice_model.h"
 
+#include "base/containers/adapters.h"
 #include "components/privacy_sandbox/privacy_sandbox_notice_storage.h"
 
+class PrefService;
+
 namespace privacy_sandbox {
+
 using notice::mojom::PrivacySandboxNoticeEvent;
 
 // NoticeApi class definitions.
@@ -44,7 +48,8 @@ void NoticeApi::UpdateResult(bool enabled) {
   }
 }
 
-bool NoticeApi::IsFulfilled() {
+bool NoticeApi::IsFulfilled(PrivacySandboxNoticeStorage* notice_storage,
+                            PrefService* pref_service) {
   EligibilityLevel eligibility = GetEligibilityLevel();
 
   for (Notice* notice : linked_notices_) {
@@ -52,15 +57,13 @@ bool NoticeApi::IsFulfilled() {
         notice->GetNoticeType() == NoticeType::kNotice) {
       continue;
     }
-    return notice->WasFulfilled();
+    return notice->WasFulfilled(notice_storage, pref_service);
   }
   return false;
 }
 
 // Notice class definitions.
-Notice::Notice(NoticeId notice_id, const base::Feature* feature)
-    : notice_id_(notice_id), feature_(feature) {}
-Notice::Notice(const Notice& other) = default;
+Notice::Notice(NoticeId notice_id) : notice_id_(notice_id) {}
 Notice::~Notice() = default;
 
 const std::vector<raw_ptr<NoticeApi>>& Notice::GetTargetApis() {
@@ -69,6 +72,11 @@ const std::vector<raw_ptr<NoticeApi>>& Notice::GetTargetApis() {
 
 const std::vector<raw_ptr<NoticeApi>>& Notice::GetPreReqApis() {
   return pre_req_apis_;
+}
+
+Notice* Notice::SetFeature(const base::Feature* feature) {
+  feature_ = feature;
+  return this;
 }
 
 Notice* Notice::SetPreReqApis(const std::vector<NoticeApi*>& apis) {
@@ -94,9 +102,21 @@ const base::Feature* Notice::GetFeature() {
   return feature_;
 }
 
-bool Notice::WasFulfilled() {
-  // TODO(crbug.com/392612108): Check if an action was taken on this notice, if
-  // it was check if it was one of the fulfillment actions.
+bool Notice::WasFulfilled(PrivacySandboxNoticeStorage* notice_storage,
+                          PrefService* pref_service) {
+  auto notice_data =
+      notice_storage->ReadNoticeData(pref_service, GetFeature()->name);
+  if (!notice_data.has_value()) {
+    return false;
+  }
+
+  const auto notice_events = notice_data->GetNoticeEvents();
+  for (const auto& notice_event : base::Reversed(notice_events)) {
+    if (IsFulfillmentEvent(notice_event.first)) {
+      return true;
+    }
+  }
+
   return false;
 }
 
@@ -151,8 +171,7 @@ const std::set<PrivacySandboxNoticeEvent>& Notice::DisablementFulfillEvents() {
 }
 
 // Consent class definitions.
-Consent::Consent(NoticeId notice_id, const base::Feature* feature)
-    : Notice(notice_id, feature) {}
+Consent::Consent(NoticeId notice_id) : Notice(notice_id) {}
 
 NoticeType Consent::GetNoticeType() {
   return NoticeType::kConsent;
@@ -181,6 +200,27 @@ NoticeApi* NoticeCatalog::RegisterAndRetrieveNewApi() {
 
 const std::vector<std::unique_ptr<NoticeApi>>& NoticeCatalog::GetNoticeApis() {
   return apis_;
+}
+
+Notice* NoticeCatalog::RegisterAndRetrieveNewNotice(
+    std::unique_ptr<Notice> (*notice_creator)(NoticeId),
+    NoticeId notice_id) {
+  notices_.emplace(notice_id, notice_creator(notice_id));
+  return notices_[notice_id].get();
+}
+
+void NoticeCatalog::RegisterNoticeGroup(
+    std::unique_ptr<Notice> (*notice_creator)(NoticeId),
+    std::vector<std::pair<NoticeId, const base::Feature*>>&& notice_ids,
+    std::vector<NoticeApi*>&& target_apis,
+    std::vector<NoticeApi*>&& pre_req_apis) {
+  const std::vector<NoticeApi*>& pre_req_apis1 = pre_req_apis;
+  for (auto [notice_id, feature] : notice_ids) {
+    RegisterAndRetrieveNewNotice(notice_creator, notice_id)
+        ->SetFeature(feature)
+        ->SetTargetApis(target_apis)
+        ->SetPreReqApis(pre_req_apis1);
+  }
 }
 
 const NoticeMap& NoticeCatalog::GetNoticeMap() {

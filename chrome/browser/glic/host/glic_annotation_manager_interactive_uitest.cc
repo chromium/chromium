@@ -62,7 +62,8 @@ class FakeAnnotationAgentContainer
           pending_host_remote,
       mojo::PendingReceiver<blink::mojom::AnnotationAgent> agent_receiver,
       blink::mojom::AnnotationType type,
-      const std::string& serialized_selector) override {
+      const std::string& serialized_selector,
+      std::optional<int> search_range_start_node_id) override {
     if (agent_receiver_.is_bound()) {
       agent_disconnected_ = false;
       agent_receiver_.reset();
@@ -97,8 +98,8 @@ class FakeAnnotationAgentContainer
     NOTREACHED();
   }
 
-  void NotifyAttachment(gfx::Rect rect) {
-    host_remote_->DidFinishAttachment(rect);
+  void NotifyAttachment(gfx::Rect rect, blink::mojom::AttachmentResult result) {
+    host_remote_->DidFinishAttachment(rect, result);
   }
 
   bool HighlightIsActive() {
@@ -157,21 +158,23 @@ class GlicAnnotationManagerUiTest : public test::InteractiveGlicTest {
   }
 
   // Calls scrollTo() and waits until the promise resolves and succeeds.
-  auto ScrollTo(base::Value::Dict selector) {
+  using NodeIdCallback = base::OnceCallback<int()>;
+  using Selector = base::OnceCallback<base::Value::Dict()>;
+  auto ScrollTo(Selector selector) {
     return Steps(CheckJsResult(kGlicContentsElementId,
                                content::JsReplace(R"js(
                         () => {
                           return client.browser.scrollTo({selector: $1});
                         }
                       )js",
-                                                  std::move(selector))));
+                                                  std::move(selector).Run())));
   }
 
-  // Similar to the above method, but also includes documentId in the params. If
-  // `document_id` is not set, it uses a value retrieved from
+  // Similar to the above method, but also includes documentId in the params.
+  // If `document_id` is not set, it uses a value retrieved from
   // `annotated_page_content_`.
   auto ScrollToWithDocumentId(
-      base::Value::Dict selector,
+      Selector selector,
       std::optional<std::string> document_id = std::nullopt) {
     return Steps(InAnyContext(WithElement(
         kGlicContentsElementId, [&, selector = std::move(selector),
@@ -187,7 +190,7 @@ class GlicAnnotationManagerUiTest : public test::InteractiveGlicTest {
                   });
                 })();
               )js",
-              std::move(selector),
+              std::move(selector).Run(),
               document_id.value_or(GetDocumentIdFromAnnotatedPageContent()));
           ASSERT_TRUE(content::ExecJs(glic_contents, std::move(script)));
         })));
@@ -195,7 +198,7 @@ class GlicAnnotationManagerUiTest : public test::InteractiveGlicTest {
 
   // Calls scrollTo() and waits until the promise rejects with an error.
   // Note: This will fail the test if the promise succeeds.
-  auto ScrollToExpectingError(base::Value::Dict selector,
+  auto ScrollToExpectingError(Selector selector,
                               glic::mojom::ScrollToErrorReason error_reason) {
     return Steps(CheckJsResult(kGlicContentsElementId,
                                content::JsReplace(R"js(
@@ -207,15 +210,15 @@ class GlicAnnotationManagerUiTest : public test::InteractiveGlicTest {
                           }
                         }
                       )js",
-                                                  std::move(selector)),
+                                                  std::move(selector).Run()),
                                ::testing::Eq(static_cast<int>(error_reason))));
   }
 
-  // Similar to the above method, but also includes documentId in the params. If
-  // `document_id` is not set, it uses a value retrieved from
+  // Similar to the above method, but also includes documentId and domNodeId in
+  // the params. If `document_id` is not set, it uses a value retrieved from
   // `annotated_page_content_`.
   auto ScrollToWithDocumentIdExpectingError(
-      base::Value::Dict selector,
+      Selector selector,
       glic::mojom::ScrollToErrorReason error_reason,
       std::optional<std::string> document_id = std::nullopt) {
     return Steps(InAnyContext(WithElement(
@@ -237,7 +240,7 @@ class GlicAnnotationManagerUiTest : public test::InteractiveGlicTest {
                   }
                 })();
               )js",
-              std::move(selector),
+              std::move(selector).Run(),
               document_id.value_or(GetDocumentIdFromAnnotatedPageContent()));
           EXPECT_EQ(content::EvalJs(glic_contents, std::move(script)),
                     static_cast<int>(error_reason));
@@ -245,7 +248,7 @@ class GlicAnnotationManagerUiTest : public test::InteractiveGlicTest {
   }
 
   // Calls scrollTo() and returns immediately.
-  auto ScrollToAsync(base::Value::Dict selector) {
+  auto ScrollToAsync(Selector selector) {
     return Steps(
         ExecuteJs(kGlicContentsElementId,
                   content::JsReplace(
@@ -257,7 +260,7 @@ class GlicAnnotationManagerUiTest : public test::InteractiveGlicTest {
         });
       }
     )js",
-                      std::move(selector)),
+                      std::move(selector).Run()),
                   InteractiveBrowserTestApi::ExecuteJsMode::kFireAndForget));
   }
 
@@ -323,18 +326,39 @@ class GlicAnnotationManagerUiTest : public test::InteractiveGlicTest {
     });
   }
 
-  base::Value::Dict ExactTextSelector(std::string exact_text) {
-    return base::Value::Dict().Set("exactText",
-                                   base::Value::Dict()  //
-                                       .Set("text", exact_text));
+  Selector ExactTextSelector(
+      std::string text,
+      std::optional<NodeIdCallback> node_id_cb = std::nullopt) {
+    return base::BindOnce(
+        [](std::string text, std::optional<NodeIdCallback> node_id_cb) {
+          base::Value::Dict dict;
+          dict.Set("text", text);
+          if (node_id_cb.has_value()) {
+            dict.Set("searchRangeStartNodeId",
+                     std::move(node_id_cb.value()).Run());
+          }
+          return base::Value::Dict().Set("exactText", std::move(dict));
+        },
+        std::move(text), std::move(node_id_cb));
   }
 
-  base::Value::Dict TextFragmentSelector(std::string text_start,
-                                         std::string text_end) {
-    return base::Value::Dict().Set("textFragment",
-                                   base::Value::Dict()  //
-                                       .Set("textStart", text_start)
-                                       .Set("textEnd", text_end));
+  Selector TextFragmentSelector(
+      std::string text_start,
+      std::string text_end,
+      std::optional<NodeIdCallback> node_id_cb = std::nullopt) {
+    return base::BindOnce(
+        [](std::string text_start, std::string text_end,
+           std::optional<NodeIdCallback> node_id_cb) {
+          base::Value::Dict dict;
+          dict.Set("textStart", text_start);
+          dict.Set("textEnd", text_end);
+          if (node_id_cb.has_value()) {
+            dict.Set("searchRangeStartNodeId",
+                     std::move(node_id_cb.value()).Run());
+          }
+          return base::Value::Dict().Set("textFragment", std::move(dict));
+        },
+        std::move(text_start), std::move(text_end), std::move(node_id_cb));
   }
 
   FakeAnnotationAgentContainer* fake_service() { return fake_service_.get(); }
@@ -345,6 +369,21 @@ class GlicAnnotationManagerUiTest : public test::InteractiveGlicTest {
     return annotated_page_content_->main_frame_data()
         .document_identifier()
         .serialized_token();
+  }
+
+  int GetRootDomNodeIdFromAnnotatedPageContent() {
+    CHECK(annotated_page_content_);
+    return annotated_page_content_->root_node()
+        .content_attributes()
+        .common_ancestor_dom_node_id();
+  }
+
+  int GetInvalidDomNodeIdFromAnnotatedPageContent() {
+    CHECK(annotated_page_content_);
+    return annotated_page_content_->root_node()
+               .content_attributes()
+               .common_ancestor_dom_node_id() +
+           9999;
   }
 
  private:
@@ -462,8 +501,10 @@ IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
       OpenGlicWindow(GlicWindowMode::kAttached),  //
       InsertFakeAnnotationService(),              //
       ScrollToAsync(ExactTextSelector("does not matter")),
-      WaitForEvent(kBrowserViewElementId, kScrollToRequestReceived),
-      Do([&]() { fake_service()->NotifyAttachment(gfx::Rect(20, 20)); }),
+      WaitForEvent(kBrowserViewElementId, kScrollToRequestReceived), Do([&]() {
+        fake_service()->NotifyAttachment(
+            gfx::Rect(20, 20), blink::mojom::AttachmentResult::kSuccess);
+      }),
       WaitForEvent(kBrowserViewElementId, kScrollStarted),
       Check([&]() { return fake_service()->HighlightIsActive(); },
             "Agent connection should still be alive."));
@@ -484,8 +525,10 @@ IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
       FocusWebContents(kGlicContentsElementId),   //
       InsertFakeAnnotationService(),              //
       ScrollToAsync(ExactTextSelector("does not matter")),
-      WaitForEvent(kBrowserViewElementId, kScrollToRequestReceived),
-      Do([&]() { fake_service()->NotifyAttachment(gfx::Rect(20, 20)); }),
+      WaitForEvent(kBrowserViewElementId, kScrollToRequestReceived), Do([&]() {
+        fake_service()->NotifyAttachment(
+            gfx::Rect(20, 20), blink::mojom::AttachmentResult::kSuccess);
+      }),
       WaitForEvent(kBrowserViewElementId, kScrollStarted),
       FocusWebContents(kActiveTabId),  //
       WaitUntilGlicFocusedTabIs(kActiveTabId),
@@ -531,6 +574,75 @@ IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
       ScrollToWithDocumentIdExpectingError(
           ExactTextSelector("Some text"),
           mojom::ScrollToErrorReason::kNoMatchingDocument));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest, TextFocusedAfterScroll) {
+  RunTestSequence(
+      InstrumentTab(kActiveTabId),
+      NavigateWebContents(
+          kActiveTabId,
+          embedded_test_server()->GetURL("/scrollable_page_with_content.html")),
+      OpenGlicWindow(GlicWindowMode::kDetached),
+      ExecuteJs(kActiveTabId,
+                "() => { document.getElementById('text').tabIndex = 0; }"),
+      ScrollTo(ExactTextSelector("Some text")),
+      WaitForJsResult(kActiveTabId, "() => did_scroll"),
+      CheckJsResult(kActiveTabId, "() => { return document.activeElement.id; }",
+                    ::testing::Eq("text")));
+}
+
+// Search the exact text from the range with the start node id which is
+// extracted from `annotated_page_content_`.
+IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
+                       ScrollToExactTextWithStartDomNodeId) {
+  NodeIdCallback range_start_id_cb = base::BindOnce(
+      &GlicAnnotationManagerUiTest::GetRootDomNodeIdFromAnnotatedPageContent,
+      base::Unretained(this));
+  RunTestSequence(InstrumentTab(kActiveTabId),
+                  NavigateWebContents(
+                      kActiveTabId, embedded_test_server()->GetURL(
+                                        "/scrollable_page_with_content.html")),
+                  OpenGlicWindow(GlicWindowMode::kAttached),
+                  GetPageContextFromFocusedTab(),  //
+                  ScrollToWithDocumentId(ExactTextSelector(
+                      "Some text", std::move(range_start_id_cb))),
+                  WaitForJsResult(kActiveTabId, "() => did_scroll"));
+}
+
+// Search the text fragment from the range with the start node id which is
+// extracted from `annotated_page_content_`.
+IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
+                       ScrollToTextFragmentWithStartDomNodeId) {
+  NodeIdCallback range_start_id_cb = base::BindOnce(
+      &GlicAnnotationManagerUiTest::GetRootDomNodeIdFromAnnotatedPageContent,
+      base::Unretained(this));
+  RunTestSequence(InstrumentTab(kActiveTabId),
+                  NavigateWebContents(
+                      kActiveTabId, embedded_test_server()->GetURL(
+                                        "/scrollable_page_with_content.html")),
+                  OpenGlicWindow(GlicWindowMode::kAttached),
+                  GetPageContextFromFocusedTab(),  //
+                  ScrollToWithDocumentId(TextFragmentSelector(
+                      "Some", "text", std::move(range_start_id_cb))),
+                  WaitForJsResult(kActiveTabId, "() => did_scroll"));
+}
+
+// If the start node id is not from `annotated_page_content_`, throw an invalid
+// range error.
+IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
+                       NoMatchFoundWithStartDomNodeId) {
+  NodeIdCallback invalid_id_cb = base::BindOnce(
+      &GlicAnnotationManagerUiTest::GetInvalidDomNodeIdFromAnnotatedPageContent,
+      base::Unretained(this));
+  RunTestSequence(InstrumentTab(kActiveTabId),
+                  NavigateWebContents(
+                      kActiveTabId, embedded_test_server()->GetURL(
+                                        "/scrollable_page_with_content.html")),
+                  OpenGlicWindow(GlicWindowMode::kAttached),
+                  GetPageContextFromFocusedTab(),  //
+                  ScrollToWithDocumentIdExpectingError(
+                      ExactTextSelector("Some text", std::move(invalid_id_cb)),
+                      glic::mojom::ScrollToErrorReason::kSearchRangeInvalid));
 }
 
 class GlicAnnotationManagerWithScrollToDisabledUiTest

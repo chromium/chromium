@@ -16,6 +16,7 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extensions_test.h"
+#include "extensions/browser/management_policy.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/browser/test_extensions_browser_client.h"
 #include "extensions/common/extension.h"
@@ -42,6 +43,8 @@ using testing::_;
 
 using LoadErrorBehavior = ExtensionRegistrar::LoadErrorBehavior;
 
+// Supplies dependencies needed by the tests. Specifically,
+// ExtensionRegistrar::CanBlockExtension() depends on ManagementPolicy.
 class TestExtensionSystem : public MockExtensionSystem {
  public:
   explicit TestExtensionSystem(content::BrowserContext* context)
@@ -51,6 +54,12 @@ class TestExtensionSystem : public MockExtensionSystem {
   TestExtensionSystem& operator=(const TestExtensionSystem&) = delete;
 
   ~TestExtensionSystem() override {}
+
+  // ExtensionSystem:
+  ManagementPolicy* management_policy() override { return &policy_; }
+
+ private:
+  ManagementPolicy policy_;
 };
 
 class TestExtensionRegistrarDelegate : public ExtensionRegistrar::Delegate {
@@ -65,10 +74,10 @@ class TestExtensionRegistrarDelegate : public ExtensionRegistrar::Delegate {
   ~TestExtensionRegistrarDelegate() override = default;
 
   // ExtensionRegistrar::Delegate:
-  MOCK_METHOD1(CanAddExtension, bool(const Extension*));
   MOCK_METHOD2(PreAddExtension,
                void(const Extension* extension,
                     const Extension* old_extension));
+  MOCK_METHOD1(OnAddNewOrUpdatedExtension, void(const Extension* extension));
   MOCK_METHOD1(PostActivateExtension,
                void(scoped_refptr<const Extension> extension));
   MOCK_METHOD1(PostDeactivateExtension,
@@ -90,6 +99,7 @@ class TestExtensionRegistrarDelegate : public ExtensionRegistrar::Delegate {
   MOCK_METHOD1(CanDisableExtension, bool(const Extension* extension));
   MOCK_METHOD1(ShouldBlockExtension, bool(const Extension* extension));
   MOCK_METHOD1(GrantActivePermissions, void(const Extension* extension));
+  MOCK_METHOD0(UpdateExternalExtensionAlert, void());
 };
 
 }  // namespace
@@ -112,14 +122,10 @@ class ExtensionRegistrarTest : public ExtensionsTest {
                      base::FilePath());
 
     // Mock defaults.
-    ON_CALL(delegate_, CanAddExtension(extension_.get()))
-        .WillByDefault(Return(true));
     ON_CALL(delegate_, CanEnableExtension(extension_.get()))
         .WillByDefault(Return(true));
     ON_CALL(delegate_, CanDisableExtension(extension_.get()))
         .WillByDefault(Return(true));
-    ON_CALL(delegate_, ShouldBlockExtension(extension_.get()))
-        .WillByDefault(Return(false));
     EXPECT_CALL(delegate_, PostActivateExtension(_)).Times(0);
     EXPECT_CALL(delegate_, PostDeactivateExtension(_)).Times(0);
   }
@@ -452,8 +458,7 @@ TEST_F(ExtensionRegistrarTest, AddBlocklisted) {
 
 TEST_F(ExtensionRegistrarTest, AddBlocked) {
   // Block extensions.
-  ON_CALL(*delegate(), ShouldBlockExtension(extension().get()))
-      .WillByDefault(Return(true));
+  registrar()->BlockAllExtensions();
 
   // A blocked extension can be added.
   AddBlockedExtension();
@@ -528,6 +533,28 @@ TEST_F(ExtensionRegistrarTest, ReloadTerminatedExtension) {
   // enabled once re-added to the registrar, since ExtensionPrefs shouldn't say
   // it's disabled.
   AddEnabledExtension();
+}
+
+TEST_F(ExtensionRegistrarTest, AddDisableFlagExemptedExtension) {
+  // Disable extensions but exempt the test extension.
+  registrar()->set_extensions_enabled_for_test(false);
+  registrar()->AddDisableFlagExemptedExtension(extension()->id());
+
+  // Add the test extension.
+  AddEnabledExtension();
+
+  // The extension is enabled because it was exempted from disablement.
+  ExpectInSet(ExtensionRegistry::ENABLED);
+}
+
+TEST_F(ExtensionRegistrarTest, AddAndRemoveComponentExtension) {
+  EXPECT_CALL(*delegate(), PostActivateExtension(extension()));
+  registrar()->AddComponentExtension(extension().get());
+  ExpectInSet(ExtensionRegistry::ENABLED);
+
+  EXPECT_CALL(*delegate(), PostDeactivateExtension(extension()));
+  registrar()->RemoveComponentExtension(extension()->id());
+  ExpectInSet(ExtensionRegistry::NONE);
 }
 
 }  // namespace extensions

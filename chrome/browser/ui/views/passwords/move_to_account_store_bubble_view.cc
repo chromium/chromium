@@ -274,7 +274,7 @@ MoveToAccountStoreBubbleView::MoveToAccountStoreBubbleView(
       .SetDefault(
           views::kMarginsKey,
           gfx::Insets::VH(ChromeLayoutProvider::Get()->GetDistanceMetric(
-                              DISTANCE_CONTROL_LIST_VERTICAL),
+                              views::DISTANCE_CONTROL_LIST_VERTICAL),
                           0));
 
   AddChildView(CreateDescription(controller_.GetProfileEmail()));

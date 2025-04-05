@@ -104,6 +104,7 @@ ContextProperties ContextImplDml::GetProperties(
   // TODO: crbug.com/345271830 - specify data types for all parameters.
   ContextProperties properties(
       /*input_operand_layout=*/InputOperandLayout::kNchw, Resample2DAxes::kAny,
+      BatchNormalizationAxis::kAny,
       /*tensor_byte_length_limit=*/kTensorByteLengthLimit,
       {/*input=*/DataTypeConstraint::kAllDataTypesAtLeast8bits,
        /*constant=*/DataTypeConstraint::kAllDataTypesAtLeast8bits,
@@ -607,21 +608,23 @@ void ContextImplDml::SetBackendForTesting(
 }
 
 void ContextImplDml::CreateGraphImpl(
+    mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
     mojom::GraphInfoPtr graph_info,
     WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
     base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
         constant_operands,
     WebNNContextImpl::CreateGraphImplCallback callback) {
   if (g_backend_for_testing) {
-    g_backend_for_testing->CreateGraphImpl(
-        this, std::move(compute_resource_info), std::move(callback));
+    g_backend_for_testing->CreateGraphImpl(std::move(receiver), this,
+                                           std::move(compute_resource_info),
+                                           std::move(callback));
     return;
   }
 
   GraphImplDml::CreateAndBuild(
-      adapter_, weak_factory_.GetWeakPtr(), std::move(graph_info),
-      std::move(compute_resource_info), std::move(constant_operands),
-      std::move(callback),
+      std::move(receiver), adapter_, weak_factory_.GetWeakPtr(),
+      std::move(graph_info), std::move(compute_resource_info),
+      std::move(constant_operands), std::move(callback),
       gpu_feature_info_->IsWorkaroundEnabled(
           gpu::DISABLE_DML_META_COMMANDS_FOR_GPU));
 }

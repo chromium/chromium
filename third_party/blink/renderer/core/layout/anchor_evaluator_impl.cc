@@ -371,7 +371,7 @@ LayoutUnit PhysicalAnchorQuery::EvaluateSize(
     WritingMode self_writing_mode) const {
   const PhysicalSize& physical_size = reference.rect.size;
   LogicalSize logical_size =
-      physical_size.ConvertToLogical(container_writing_mode);
+      ToLogicalSize(physical_size, container_writing_mode);
 
   switch (anchor_size_value) {
     case CSSAnchorSizeValue::kInline:

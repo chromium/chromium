@@ -12,7 +12,6 @@
 #import "ios/chrome/browser/data_sharing/model/data_sharing_service_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_local_update_observer.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
-#import "ios/chrome/browser/share_kit/model/share_kit_service_factory.h"
 #import "ios/chrome/browser/share_kit/model/test_share_kit_service.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
@@ -47,17 +46,6 @@ std::unique_ptr<KeyedService> CreateMockSyncService(
   return std::make_unique<::testing::NiceMock<MockTabGroupSyncService>>();
 }
 
-// Creates a test ShareKitService.
-std::unique_ptr<KeyedService> BuildTestShareKitService(
-    web::BrowserState* context) {
-  ProfileIOS* profile = static_cast<ProfileIOS*>(context);
-  data_sharing::DataSharingService* data_sharing_service =
-      data_sharing::DataSharingServiceFactory::GetForProfile(profile);
-
-  return std::make_unique<TestShareKitService>(data_sharing_service, nullptr,
-                                               nullptr);
-}
-
 // Returns the tab ID for the web state at `index` in `browser`.
 web::WebStateID GetTabIDForWebStateAt(int index, Browser* browser) {
   web::WebState* web_state = browser->GetWebStateList()->GetWebStateAt(index);
@@ -73,14 +61,10 @@ class TabGroupSyncUtilTest : public PlatformTest {
     test_profile_builder.AddTestingFactory(
         TabGroupSyncServiceFactory::GetInstance(),
         base::BindRepeating(&CreateMockSyncService));
-    test_profile_builder.AddTestingFactory(
-        ShareKitServiceFactory::GetInstance(),
-        base::BindRepeating(&BuildTestShareKitService));
     profile_ = std::move(test_profile_builder).Build();
 
     mock_service_ = static_cast<MockTabGroupSyncService*>(
         TabGroupSyncServiceFactory::GetForProfile(profile_.get()));
-    share_kit_service_ = ShareKitServiceFactory::GetForProfile(profile_.get());
 
     browser_ = std::make_unique<TestBrowser>(profile_.get());
     other_browser_ = std::make_unique<TestBrowser>(profile_.get());
@@ -125,7 +109,6 @@ class TabGroupSyncUtilTest : public PlatformTest {
   raw_ptr<BrowserList> browser_list_;
   raw_ptr<MockTabGroupSyncService> mock_service_;
   std::unique_ptr<TabGroupLocalUpdateObserver> local_observer_;
-  raw_ptr<ShareKitService> share_kit_service_;
 };
 
 // Tests that a tab group with one tab is moved from one regular browser to
@@ -581,12 +564,8 @@ TEST_F(TabGroupSyncUtilTest, IsTabGroupSharedWithShared) {
   EXPECT_CALL(*mock_service_, GetGroup(tab_group_id))
       .WillOnce(testing::Return(saved_group));
 
-  EXPECT_NE(nullptr, share_kit_service_.get());
-  EXPECT_TRUE(
-      IsTabGroupShared(local_group, mock_service_, share_kit_service_.get()));
-  EXPECT_FALSE(
-      IsTabGroupShared(local_group, nullptr, share_kit_service_.get()));
-  EXPECT_FALSE(IsTabGroupShared(local_group, mock_service_, nullptr));
+  EXPECT_TRUE(IsTabGroupShared(local_group, mock_service_));
+  EXPECT_FALSE(IsTabGroupShared(local_group, nullptr));
 }
 
 // Tests the `IsTabGroupShared` method with a non shared group.
@@ -606,11 +585,8 @@ TEST_F(TabGroupSyncUtilTest, IsTabGroupSharedWithNonShared) {
   EXPECT_CALL(*mock_service_, GetGroup(tab_group_id))
       .WillOnce(testing::Return(saved_group));
 
-  EXPECT_NE(nullptr, share_kit_service_.get());
-  EXPECT_FALSE(
-      IsTabGroupShared(local_group, mock_service_, share_kit_service_.get()));
-  EXPECT_FALSE(
-      IsTabGroupShared(local_group, nullptr, share_kit_service_.get()));
+  EXPECT_FALSE(IsTabGroupShared(local_group, mock_service_));
+  EXPECT_FALSE(IsTabGroupShared(local_group, nullptr));
 }
 
 // Tests the `GetTabGroupCollabID` method with a shared group.

@@ -89,6 +89,10 @@ struct ViewClickCountsForProviderAndEligible {
   ListOfTimestampAndCounts compacted_click_events;
 };
 
+// Reason why a database lookup couldn't produce a result. It could be an
+// error, or just because there is nothing there.
+enum class MissingReason { kNotInDb, kDbError, kDecodeError };
+
 const base::FilePath::CharType kDatabasePath[] =
     FILE_PATH_LITERAL("InterestGroups");
 
@@ -191,6 +195,18 @@ const int kCompatibleVersionNumber = 33;
 // Latest version of the database that cannot be upgraded to
 // |kCurrentVersionNumber| without razing the database.
 const int kDeprecatedVersionNumber = 5;
+
+// Truncates `in` down to the hour.
+base::Time TruncateToHour(base::Time in) {
+  return base::Time::FromDeltaSinceWindowsEpoch(
+      in.ToDeltaSinceWindowsEpoch().FloorToMultiple(base::Hours(1)));
+}
+
+// Truncates `in` down to the day.
+base::Time TruncateToDay(base::Time in) {
+  return base::Time::FromDeltaSinceWindowsEpoch(
+      in.ToDeltaSinceWindowsEpoch().FloorToMultiple(base::Days(1)));
+}
 
 std::string Serialize(base::ValueView value_view) {
   std::optional<std::string> json_output = base::WriteJson(value_view);
@@ -4630,14 +4646,11 @@ void DoUpdateLastKAnonymityReported(sql::Database& db,
 }
 
 // Loads the view and click data for `provider_origin`, `eligible_origin`.
-// Returns std::nullopt on failure, and an empty
-// `ViewClickCountsForProviderAndEligible` if no counts are stored for the given
-// (`provider_origin`, `eligible_origin`) tuple.
-std::optional<ViewClickCountsForProviderAndEligible>
+// Returns data if available, or reason if there isn't otherwise.
+base::expected<ViewClickCountsForProviderAndEligible, MissingReason>
 DoGetViewClickCountsForProviderAndEligible(sql::Database& db,
                                            const url::Origin& provider_origin,
                                            const url::Origin& eligible_origin) {
-  ViewClickCountsForProviderAndEligible result;
   sql::Statement get_counts(
       db.GetCachedStatement(SQL_FROM_HERE,
                             "SELECT uncompacted_view_events,"
@@ -4647,21 +4660,19 @@ DoGetViewClickCountsForProviderAndEligible(sql::Database& db,
                             "FROM view_and_click_events "
                             "WHERE provider_origin=? AND eligible_origin=?"));
   if (!get_counts.is_valid()) {
-    DLOG(ERROR) << "GetViewClickCountsForProviderAndEligible SQL statement did "
-                   "not compile: "
-                << db.GetErrorMessage();
-    return std::nullopt;
+    return base::unexpected(MissingReason::kDbError);
   }
   get_counts.Reset(true);
   get_counts.BindString(0, provider_origin.Serialize());
   get_counts.BindString(1, eligible_origin.Serialize());
   if (!get_counts.Step()) {
-    // No counts stored, return empty counts lists.
-    return result;
+    // No counts stored.
+    return base::unexpected(MissingReason::kNotInDb);
   }
   if (!get_counts.Succeeded()) {
-    return std::nullopt;
+    return base::unexpected(MissingReason::kDbError);
   }
+  ViewClickCountsForProviderAndEligible result;
   if (!result.uncompacted_view_events.ParseFromString(
           get_counts.ColumnStringView(0)) ||
       !result.compacted_view_events.ParseFromString(
@@ -4673,7 +4684,7 @@ DoGetViewClickCountsForProviderAndEligible(sql::Database& db,
     base::UmaHistogramEnumeration(
         "Storage.InterestGroup.ProtoDeserializationResult.ListOfTimestamps",
         InterestGroupStorageProtoSerializationResult::kFailed);
-    return std::nullopt;
+    return base::unexpected(MissingReason::kDecodeError);
   } else {
     base::UmaHistogramEnumeration(
         "Storage.InterestGroup.ProtoDeserializationResult.ListOfTimestamps",
@@ -4706,7 +4717,6 @@ void DoIncrementViewClickCounts(base::Time now,
     view_or_click_counts->past_90_days += count;
   }
   // Older expired events may exist -- maintenance will eventually remove them.
-  // TODO(crbug.com/394108643): Implement click / view removal logic.
 }
 
 // Mutates `group`'s browser signals, filling in loaded view and click counts.
@@ -4729,13 +4739,19 @@ void DoIncrementViewClickCounts(base::Time now,
 
   for (const url::Origin& provider_origin :
        *group.interest_group.view_and_click_counts_providers) {
-    std::optional<ViewClickCountsForProviderAndEligible> partial_counts =
-        DoGetViewClickCountsForProviderAndEligible(
+    base::expected<ViewClickCountsForProviderAndEligible, MissingReason>
+        partial_counts = DoGetViewClickCountsForProviderAndEligible(
             /*db=*/db,
             /*provider_origin=*/provider_origin,
             /*eligible_origin=*/group.interest_group.owner);
-    if (!partial_counts) {
-      return false;
+    if (!partial_counts.has_value()) {
+      switch (partial_counts.error()) {
+        case MissingReason::kDbError:
+        case MissingReason::kDecodeError:
+          return false;
+        case MissingReason::kNotInDb:
+          continue;
+      }
     }
 
     for (int64_t timestamp :
@@ -6061,6 +6077,281 @@ bool ClearExpiredCachedKAnonymityHashes(sql::Database& db, base::Time now) {
   return clear_expired_cache_entries.Run();
 }
 
+// Used by CompactClickiness(). The number of events that occurred at the
+// base::Time in CompactionMap.
+using ClickinessCount = int64_t;
+// Used by CompactClickiness(). The raw integer timestamp stored in the database
+// for clickiness events. Stored as microseconds since the Windows epoch.
+using ClickinessIntTimestamp = int64_t;
+// Used by CompactClickiness(). Temporary storage used during the compaction
+// process.
+using CompactionMap = std::map<base::Time, ClickinessCount>;
+
+// A helper function for ClickinessCompactionRawToMap(), which is itself a
+// helper for CompactClickiness(). For a given raw `int_timestamp` loaded from
+// the database (which is in microseconds since the Windows epoch) and `count`
+// of events at that timestamp, update the count at the compacted time.
+//
+// Events older than 1 hour (determined using `now`) will be grouped by hour,
+// and events older than 1 day will be grouped by day.
+void ClickinessCompactionAddTimestampToMap(base::Time now,
+                                           ClickinessIntTimestamp int_timestamp,
+                                           ClickinessCount count,
+                                           CompactionMap& map) {
+  base::Time timestamp =
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(int_timestamp));
+  base::TimeDelta event_age = now - timestamp;
+  if (event_age <= base::Hours(1)) {
+    // Count can be > 1 here if the clock is rolled back.
+    map[timestamp] += count;
+  } else if (event_age <= base::Days(1)) {
+    map[TruncateToHour(timestamp)] += count;
+  } else if (event_age <= base::Days(90)) {
+    map[TruncateToDay(timestamp)] += count;
+  }
+}
+
+// A helper function for CompactClickiness(). For each compacted and uncompacted
+// events protobuf loaded from the database (`raw`), compact those events into
+// the returned map.
+//
+// Events older than 1 hour (determined using `now`) will be grouped by hour,
+// and events older than 1 day will be grouped by day.
+//
+// ClickinessCompactionMapToRaw() will then convert the returned map back into
+// raw protobuf form that can be written to the database, splitting events into
+// compacted and uncompacted events, with events younger than an hour going into
+// uncompacted events.
+//
+// Returns std::nullopt on error.
+std::optional<CompactionMap> ClickinessCompactionRawToMap(
+    base::Time now,
+    const InterestGroupStorage::ClickinessCompactionRawEvents& raw) {
+  CompactionMap map;
+
+  {
+    // Write raw uncompacted events.
+    ListOfTimestamps uncompacted_events;
+    if (!uncompacted_events.ParseFromString(raw.uncompacted_events)) {
+      base::UmaHistogramEnumeration(
+          "Storage.InterestGroup.ProtoDeserializationResult.ListOfTimestamps",
+          InterestGroupStorageProtoSerializationResult::kFailed);
+      return std::nullopt;
+    }
+    base::UmaHistogramEnumeration(
+        "Storage.InterestGroup.ProtoDeserializationResult.ListOfTimestamps",
+        InterestGroupStorageProtoSerializationResult::kSucceeded);
+    for (ClickinessIntTimestamp int_timestamp :
+         uncompacted_events.timestamps()) {
+      ClickinessCompactionAddTimestampToMap(now, int_timestamp, /*count=*/1,
+                                            map);
+    }
+  }
+
+  {
+    // Add raw compacted events.
+    ListOfTimestampAndCounts compacted_events;
+    if (!compacted_events.ParseFromString(raw.compacted_events)) {
+      base::UmaHistogramEnumeration(
+          "Storage.InterestGroup.ProtoDeserializationResult.ListOfTimestamps",
+          InterestGroupStorageProtoSerializationResult::kFailed);
+      return std::nullopt;
+    }
+    base::UmaHistogramEnumeration(
+        "Storage.InterestGroup.ProtoDeserializationResult.ListOfTimestamps",
+        InterestGroupStorageProtoSerializationResult::kSucceeded);
+    for (ListOfTimestampAndCounts_Entry entry :
+         compacted_events.timestamp_and_counts()) {
+      ClickinessCompactionAddTimestampToMap(now, entry.timestamp(),
+                                            /*count=*/entry.count(), map);
+    }
+  }
+
+  return map;
+}
+
+// A helper function for CompactClickiness(). Converts `map` (produced by
+// ClickinessCompactionRawToMap()) back to the raw protobuf form that can be
+// written to the database, splitting events into compacted and uncompacted
+// events, with events younger than an hour going into
+// uncompacted events.
+//
+// Returns std::nullopt on error.
+std::optional<InterestGroupStorage::ClickinessCompactionRawEvents>
+ClickinessCompactionMapToRaw(base::Time now, const CompactionMap& map) {
+  InterestGroupStorage::ClickinessCompactionRawEvents raw;
+  ListOfTimestamps uncompacted_events;
+  ListOfTimestampAndCounts compacted_events;
+
+  // Populate proto objects.
+  for (const auto& [timestamp, count] : map) {
+    base::TimeDelta event_age = now - timestamp;
+
+    if (event_age <= base::Hours(1)) {
+      for (int i = 0; i < count; i++) {
+        // While (possibly) rare, it's possible for more than one of the same
+        // event to be recorded at the same time.
+        uncompacted_events.add_timestamps(
+            timestamp.ToDeltaSinceWindowsEpoch().InMicroseconds());
+      }
+    } else {
+      ListOfTimestampAndCounts_Entry* entry =
+          compacted_events.add_timestamp_and_counts();
+      entry->set_timestamp(
+          timestamp.ToDeltaSinceWindowsEpoch().InMicroseconds());
+      entry->set_count(count);
+    }
+  }
+
+  // Serialize proto objects to raw strings.
+  if (!uncompacted_events.SerializeToString(&raw.uncompacted_events) ||
+      !compacted_events.SerializeToString(&raw.compacted_events)) {
+    base::UmaHistogramEnumeration(
+        "Storage.InterestGroup.ProtoSerializationResult.ListOfTimestamps",
+        InterestGroupStorageProtoSerializationResult::kFailed);
+    return std::nullopt;
+  }
+
+  base::UmaHistogramEnumeration(
+      "Storage.InterestGroup.ProtoSerializationResult.ListOfTimestamps",
+      InterestGroupStorageProtoSerializationResult::kSucceeded);
+
+  return raw;
+}
+
+// Computation portion of compaction --- takes in raw protobufs from database,
+// and returns compacted portion, unless it fails.
+std::optional<InterestGroupStorage::ClickinessCompactionRawEvents>
+ComputeCompactClickiness(
+    base::Time now,
+    const InterestGroupStorage::ClickinessCompactionRawEvents& raw) {
+  // Perform the compaction in a std::map. This avoids n^2 performance of
+  // in-place insertions. The raw -> map and map -> raw phases are separate for
+  // better structuring. The map -> raw phase will write events back
+  // to the uncompacted list that are less than an hour old.
+  std::optional<CompactionMap> map = ClickinessCompactionRawToMap(now, raw);
+  if (!map) {
+    return std::nullopt;
+  }
+  return ClickinessCompactionMapToRaw(now, *map);
+}
+
+// To reduce storage utilization for view and click events, compact events older
+// than an hour to store only a per-hour count, and events older than a day to
+// store only a per-day count.
+bool CompactClickiness(sql::Database& db, base::Time now) {
+  sql::Transaction transaction(&db);
+  if (!transaction.Begin()) {
+    return false;
+  }
+  // For each primary key in view_and_click_events (which is the
+  // (provider_origin, eligible_origin) tuple), we load all uncompacted and
+  // compacted view and click events, compact them in memory, then write the
+  // results back to that (provider_origin, eligible_origin).
+
+  sql::Statement get_all_rows_sql(
+      db.GetCachedStatement(SQL_FROM_HERE,
+                            "SELECT provider_origin,"
+                            "eligible_origin,"
+                            "uncompacted_view_events,"
+                            "compacted_view_events,"
+                            "uncompacted_click_events,"
+                            "compacted_click_events "
+                            "FROM view_and_click_events"));
+  if (!get_all_rows_sql.is_valid()) {
+    return false;
+  }
+
+  sql::Statement update_row(
+      db.GetCachedStatement(SQL_FROM_HERE,
+                            "UPDATE view_and_click_events "
+                            "SET uncompacted_view_events=?,"
+                            "compacted_view_events=?,"
+                            "uncompacted_click_events=?,"
+                            "compacted_click_events=? "
+                            "WHERE provider_origin=? AND eligible_origin=?"));
+  if (!update_row.is_valid()) {
+    return false;
+  }
+
+  sql::Statement delete_row(
+      db.GetCachedStatement(SQL_FROM_HERE,
+                            "DELETE FROM view_and_click_events "
+                            "WHERE provider_origin=? AND eligible_origin=?"));
+  if (!delete_row.is_valid()) {
+    return false;
+  }
+
+  // For each (provider_origin, eligible_origin) in view_and_click_events,
+  // compact that (provider_origin, eligible_origin), and write the updated
+  // results:
+  while (get_all_rows_sql.Step()) {
+    update_row.Reset(/*clear_bound_vars=*/true);
+
+    // Read raw compacted and uncompacted events into `raw`, and compact them
+    // for both view and clicks, clearing memory we don't need anymore as
+    // we go to reduce peak memory consumption, avoiding keeping excess copies
+    // of all events in memory.
+    std::string provider_origin(get_all_rows_sql.ColumnStringView(0));
+    std::string eligible_origin(get_all_rows_sql.ColumnStringView(1));
+    // Views
+    std::optional<InterestGroupStorage::ClickinessCompactionRawEvents>
+        raw_views;
+    {
+      InterestGroupStorage::ClickinessCompactionRawEvents raw;
+      raw.uncompacted_events = get_all_rows_sql.ColumnStringView(2);
+      raw.compacted_events = get_all_rows_sql.ColumnStringView(3);
+      raw_views = ComputeCompactClickiness(now, raw);
+    }
+    if (!raw_views) {
+      return false;
+    }
+
+    // Clicks
+    std::optional<InterestGroupStorage::ClickinessCompactionRawEvents>
+        raw_clicks;
+    {
+      InterestGroupStorage::ClickinessCompactionRawEvents raw;
+      raw.uncompacted_events = get_all_rows_sql.ColumnStringView(4);
+      raw.compacted_events = get_all_rows_sql.ColumnStringView(5);
+      raw_clicks = ComputeCompactClickiness(now, raw);
+    }
+    if (!raw_clicks) {
+      return false;
+    }
+
+    // Done compacting this (provider_origin, eligible_origin) row.
+    // If something is left, write the results back to the database,
+    // otherwise delete it.
+    if (raw_views->uncompacted_events.empty() &&
+        raw_views->compacted_events.empty() &&
+        raw_clicks->uncompacted_events.empty() &&
+        raw_clicks->compacted_events.empty()) {
+      delete_row.BindString(0, provider_origin);
+      delete_row.BindString(1, eligible_origin);
+      if (!delete_row.Run()) {
+        return false;
+      }
+    } else {
+      update_row.BindString(0, raw_views->uncompacted_events);
+      update_row.BindString(1, raw_views->compacted_events);
+      update_row.BindString(2, raw_clicks->uncompacted_events);
+      update_row.BindString(3, raw_clicks->compacted_events);
+      update_row.BindString(4, provider_origin);
+      update_row.BindString(5, eligible_origin);
+
+      if (!update_row.Run()) {
+        return false;
+      }
+    }
+  }
+  if (!get_all_rows_sql.Succeeded()) {
+    return false;
+  }
+
+  return transaction.Commit();
+}
+
 bool DoSetBiddingAndAuctionServerKeys(sql::Database& db,
                                       const url::Origin& coordinator,
                                       std::string_view serialized_keys,
@@ -6294,6 +6585,9 @@ bool DoPerformDatabaseMaintenance(sql::Database& db,
     return false;
   }
   if (!ClearExpiredCachedKAnonymityHashes(db, now)) {
+    return false;
+  }
+  if (!CompactClickiness(db, now)) {
     return false;
   }
   return transaction.Commit();
@@ -7156,6 +7450,28 @@ InterestGroupStorage::CreateWithIdlePeriodForTesting(
 
 void InterestGroupStorage::ResetIdleTimerForTesting() {
   EnsureDBInitialized();
+}
+
+// static
+std::optional<InterestGroupStorage::ClickinessCompactionRawEvents>
+InterestGroupStorage::ComputeCompactClickinessForTesting(
+    base::Time now,
+    const InterestGroupStorage::ClickinessCompactionRawEvents& raw) {
+  return ComputeCompactClickiness(now, raw);
+}
+
+bool InterestGroupStorage::
+    CheckViewClickCountsForProviderAndEligibleNotInDbForTesting(
+        const url::Origin& provider_origin,
+        const url::Origin& eligible_origin) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!EnsureDBInitialized()) {
+    return false;
+  }
+
+  auto status = DoGetViewClickCountsForProviderAndEligible(
+      *db_, provider_origin, eligible_origin);
+  return !status.has_value() && status.error() == MissingReason::kNotInDb;
 }
 
 void InterestGroupStorage::DatabaseErrorCallback(int extended_error,

@@ -183,7 +183,9 @@ viz::SharedImageFormat GpuRasterBufferProvider::GetFormat() const {
 }
 
 bool GpuRasterBufferProvider::IsResourcePremultiplied() const {
-  return !ShouldUnpremultiplyAndDitherResource(GetFormat());
+  // TODO(crbug.com/40042400): Consider supporting unpremultiply and dither for
+  // 4444 tiles on low end devices.
+  return true;
 }
 
 bool GpuRasterBufferProvider::IsResourceReadyToDraw(
@@ -399,14 +401,9 @@ void GpuRasterBufferProvider::RasterBufferImpl::RasterizeSource(
       const_cast<RasterSource*>(raster_source)->max_op_size_hint());
   ri->EndRasterCHROMIUM();
 
-  // TODO(ericrk): Handle unpremultiply+dither for 4444 cases.
-  // https://crbug.com/789153
-}
-
-bool GpuRasterBufferProvider::ShouldUnpremultiplyAndDitherResource(
-    viz::SharedImageFormat format) const {
-  // TODO(crbug.com/40042400): Re-enable for OOPR.
-  return false;
+  // TODO(crbug.com/40042400): Consider supporting unpremultiply and dither for
+  // 4444 tiles on low end devices (further history on
+  // https://crbug.com/789153).
 }
 
 }  // namespace cc

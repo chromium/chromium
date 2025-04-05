@@ -12,9 +12,14 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationView
 
 import android.content.Context;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 import android.view.View;
 import android.widget.ViewFlipper;
 
+import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.feed.FeedFeatures;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
@@ -44,17 +49,20 @@ public class NtpCustomizationMediator {
     private final PropertyModel mViewFlipperPropertyModel;
     private final List<Integer> mListContent;
     private final PropertyModel mContainerPropertyModel;
+    private final Supplier<ProfileProvider> mProfileSupplier;
     private Integer mCurrentBottomSheet;
 
     public NtpCustomizationMediator(
             BottomSheetController bottomSheetController,
             NtpCustomizationBottomSheetContent bottomSheetContent,
             PropertyModel viewFlipperPropertyModel,
-            PropertyModel containerPropertyModel) {
+            PropertyModel containerPropertyModel,
+            Supplier<ProfileProvider> profileSupplier) {
         mBottomSheetController = bottomSheetController;
         mBottomSheetContent = bottomSheetContent;
         mViewFlipperPropertyModel = viewFlipperPropertyModel;
         mContainerPropertyModel = containerPropertyModel;
+        mProfileSupplier = profileSupplier;
         mViewFlipperMap = new HashMap<>();
         mTypeToListenersMap = new HashMap<>();
         mListContent = buildListContent();
@@ -101,6 +109,7 @@ public class NtpCustomizationMediator {
         if (shouldRequestShowContent) {
             mBottomSheetController.requestShowContent(mBottomSheetContent, /* animate= */ true);
         }
+        NtpCustomizationMetricsUtils.recordBottomSheetShown(type);
     }
 
     /** Handles system back press and back button clicks on the bottom sheet. */
@@ -177,12 +186,23 @@ public class NtpCustomizationMediator {
         mTypeToListenersMap.put(type, listener);
     }
 
-    /** Returns the content of the list displayed in the main bottom sheet. */
+    /**
+     * Returns the content of the list displayed in the main bottom sheet and includes the "Discover
+     * Feed" list item only if the feed section exists in the new tab page.
+     */
+    @VisibleForTesting
     List<Integer> buildListContent() {
+        if (!mProfileSupplier.hasValue()) {
+            return List.of(NTP_CARDS);
+        }
+
+        Profile profile = mProfileSupplier.get().getOriginalProfile();
         List<Integer> content = new ArrayList<>();
         content.add(NTP_CARDS);
-        // TODO(crbug.com/397439004): Add logics to hide the "feeds" list item.
-        content.add(DISCOVER_FEED);
+
+        if (FeedFeatures.isFeedEnabled(profile)) {
+            content.add(DISCOVER_FEED);
+        }
         return content;
     }
 

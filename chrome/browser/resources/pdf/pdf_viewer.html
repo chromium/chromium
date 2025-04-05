@@ -76,10 +76,8 @@ import {AnnotationMode} from './constants.js';
           <viewer-bottom-toolbar .strings="${this.strings}"
               toolbar-name="${AnnotationMode.DRAW}">
           </viewer-bottom-toolbar>
-          <div toolbar-name="${AnnotationMode.TEXT}"
-              style="background-color: lightgray; position: fixed; bottom: 0;">
-            Text Annotation coming soon
-          </div>
+          <viewer-text-bottom-toolbar toolbar-name="${AnnotationMode.TEXT}">
+          </viewer-text-bottom-toolbar>
         </cr-page-selector>` : ''}
     </if>
   </div>

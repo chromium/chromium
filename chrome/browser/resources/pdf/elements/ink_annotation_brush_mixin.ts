@@ -74,9 +74,9 @@ export const InkAnnotationBrushMixin = <T extends Constructor<CrLitElement>>(
     }
 
     private tracker_: EventTracker = new EventTracker();
-    currentColor: Color = {r: 0, g: 0, b: 0};
-    currentSize: number = PEN_SIZES[0]!.size;
-    currentType: AnnotationBrushType = AnnotationBrushType.PEN;
+    accessor currentColor: Color = {r: 0, g: 0, b: 0};
+    accessor currentSize: number = PEN_SIZES[0]!.size;
+    accessor currentType: AnnotationBrushType = AnnotationBrushType.PEN;
 
     constructor(..._args: any[]) {
       super();

@@ -8,7 +8,7 @@
 // For performance reasons, we remove the visibility check, use
 // getElementsByTagName(), and retrieve only <p> and <pre> elements once.
 
-import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
 interface Result {
@@ -139,6 +139,6 @@ function retrieveDOMFeatures(): void {
 
 // Mark: Public API
 
-gCrWeb.readerMode = {
+gCrWebLegacy.readerMode = {
   retrieveDOMFeatures,
 };

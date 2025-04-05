@@ -220,6 +220,8 @@ def _GetAbisToDigitMask(build_number, patch_number):
             '32_64': 1,
             '64_32': 2,
             '64_32_high': 3,
+            # This is not shipped, so fine that there's a dupe.
+            '64_high': 4,
             '64': 4,
         },
         'intel': {

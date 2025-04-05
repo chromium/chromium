@@ -46,6 +46,7 @@
 #include "net/base/trace_constants.h"
 #include "net/base/tracing.h"
 #include "net/base/url_util.h"
+#include "net/cert/cert_status_flags.h"
 #include "net/cert/cert_verifier.h"
 #include "net/cert/ct_verifier.h"
 #include "net/cert/sct_auditing_delegate.h"
@@ -1122,8 +1123,13 @@ ssl_verify_result_t SSLClientSocketImpl::HandleVerifyResult() {
 
   // If the connection was good, check HPKP and CT status simultaneously,
   // but prefer to treat the HPKP error as more serious, if there was one.
-  if (result == OK) {
-    int ct_result = CheckCTRequirements();
+  if (result == OK || result == ERR_CERTIFICATE_TRANSPARENCY_REQUIRED) {
+    if (context_->sct_auditing_delegate()) {
+      context_->sct_auditing_delegate()->MaybeEnqueueReport(
+          host_and_port_, server_cert_verify_result_.verified_cert.get(),
+          server_cert_verify_result_.scts);
+    }
+
     TransportSecurityState::PKPStatus pin_validity =
         context_->transport_security_state()->CheckPublicKeyPins(
             host_and_port_.host(),
@@ -1142,8 +1148,6 @@ ssl_verify_result_t SSLClientSocketImpl::HandleVerifyResult() {
         // Do nothing.
         break;
     }
-    if (result != ERR_SSL_PINNED_KEY_NOT_IN_CERT_CHAIN && ct_result != OK)
-      result = ct_result;
   }
 
   is_fatal_cert_error_ =
@@ -1170,34 +1174,6 @@ ssl_verify_result_t SSLClientSocketImpl::HandleVerifyResult() {
 
   OpenSSLPutNetError(FROM_HERE, result);
   return ssl_verify_invalid;
-}
-
-int SSLClientSocketImpl::CheckCTRequirements() {
-  TransportSecurityState::CTRequirementsStatus ct_requirement_status =
-      context_->transport_security_state()->CheckCTRequirements(
-          host_and_port_.host(),
-          server_cert_verify_result_.is_issued_by_known_root,
-          server_cert_verify_result_.public_key_hashes,
-          server_cert_verify_result_.verified_cert.get(),
-          server_cert_verify_result_.policy_compliance);
-
-  if (context_->sct_auditing_delegate()) {
-    context_->sct_auditing_delegate()->MaybeEnqueueReport(
-        host_and_port_, server_cert_verify_result_.verified_cert.get(),
-        server_cert_verify_result_.scts);
-  }
-
-  switch (ct_requirement_status) {
-    case TransportSecurityState::CT_REQUIREMENTS_NOT_MET:
-      server_cert_verify_result_.cert_status |=
-          CERT_STATUS_CERTIFICATE_TRANSPARENCY_REQUIRED;
-      return ERR_CERTIFICATE_TRANSPARENCY_REQUIRED;
-    case TransportSecurityState::CT_REQUIREMENTS_MET:
-    case TransportSecurityState::CT_NOT_REQUIRED:
-      return OK;
-  }
-
-  NOTREACHED();
 }
 
 void SSLClientSocketImpl::DoConnectCallback(int rv) {
@@ -1572,6 +1548,9 @@ SSLClientSessionCache::Key SSLClientSocketImpl::GetSessionCacheKey(
     key.network_anonymization_key = ssl_config_.network_anonymization_key;
   }
   key.privacy_mode = ssl_config_.privacy_mode;
+  key.proxy_chain = ssl_config_.proxy_chain;
+  key.proxy_chain_index = ssl_config_.proxy_chain_index;
+  key.session_usage = ssl_config_.session_usage;
   return key;
 }
 

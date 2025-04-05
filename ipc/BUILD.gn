@@ -30,6 +30,8 @@ component("ipc") {
     "param_traits_read_macros.h",
     "param_traits_write_macros.h",
     "struct_constructor_macros.h",
+    "tracing_helpers.h",
+    "tracing_helpers_internal.h",
   ]
 
   if (use_blink) {
@@ -299,6 +301,7 @@ if (use_blink) {
       "ipc_sync_message_unittest.cc",
       "ipc_sync_message_unittest.h",
       "sync_socket_unittest.cc",
+      "tracing_helpers_unittest.cc",
     ]
 
     if (is_posix || is_fuchsia) {

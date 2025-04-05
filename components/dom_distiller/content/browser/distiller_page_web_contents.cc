@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/dom_distiller/content/browser/distiller_javascript_utils.h"
 #include "components/dom_distiller/core/distiller_page.h"
@@ -183,7 +184,8 @@ void DistillerPageWebContents::OnWebContentsDistillationDone(
 
   if (!javascript_start.is_null()) {
     base::TimeDelta javascript_time = base::TimeTicks::Now() - javascript_start;
-    DVLOG(1) << "DomDistiller.Time.RunJavaScript = " << javascript_time;
+    base::UmaHistogramTimes("DomDistiller.Time.RunDistillationJavaScript",
+                            javascript_time);
   }
 
   DistillerPage::OnDistillationDone(page_url, &value);

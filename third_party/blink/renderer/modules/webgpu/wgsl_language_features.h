@@ -23,14 +23,14 @@ class WGSLLanguageFeatures : public ScriptWrappable,
   explicit WGSLLanguageFeatures(
       const std::vector<wgpu::WGSLLanguageFeatureName>& features);
 
-  bool has(const String& feature) const;
+  const HashSet<String>& FeatureNameSet() const { return features_; }
+
+  // wgsl_language_features.idl {{{
   bool hasForBinding(ScriptState* script_state,
                      const String& feature,
                      ExceptionState& exception_state) const;
-
   unsigned size() const { return features_.size(); }
-
-  const HashSet<String>& FeatureNameSet() const { return features_; }
+  // }}} End of WebIDL binding implementation.
 
  private:
   HashSet<String> features_;

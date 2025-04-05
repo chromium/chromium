@@ -70,25 +70,25 @@ const ClipboardFormatType& ClipboardFormatType::WebCustomFormatMap() {
 
 // static
 const ClipboardFormatType& ClipboardFormatType::FilenamesType() {
-  static base::NoDestructor<ClipboardFormatType> type(kMimeTypeURIList);
+  static base::NoDestructor<ClipboardFormatType> type(kMimeTypeUriList);
   return *type;
 }
 
 // static
 const ClipboardFormatType& ClipboardFormatType::UrlType() {
-  static base::NoDestructor<ClipboardFormatType> type(kMimeTypeMozillaURL);
+  static base::NoDestructor<ClipboardFormatType> type(kMimeTypeMozillaUrl);
   return *type;
 }
 
 // static
 const ClipboardFormatType& ClipboardFormatType::PlainTextType() {
-  static base::NoDestructor<ClipboardFormatType> type(kMimeTypeText);
+  static base::NoDestructor<ClipboardFormatType> type(kMimeTypePlainText);
   return *type;
 }
 
 // static
 const ClipboardFormatType& ClipboardFormatType::HtmlType() {
-  static base::NoDestructor<ClipboardFormatType> type(kMimeTypeHTML);
+  static base::NoDestructor<ClipboardFormatType> type(kMimeTypeHtml);
   return *type;
 }
 
@@ -100,13 +100,13 @@ const ClipboardFormatType& ClipboardFormatType::SvgType() {
 
 // static
 const ClipboardFormatType& ClipboardFormatType::RtfType() {
-  static base::NoDestructor<ClipboardFormatType> type(kMimeTypeRTF);
+  static base::NoDestructor<ClipboardFormatType> type(kMimeTypeRtf);
   return *type;
 }
 
 // static
 const ClipboardFormatType& ClipboardFormatType::PngType() {
-  static base::NoDestructor<ClipboardFormatType> type(kMimeTypePNG);
+  static base::NoDestructor<ClipboardFormatType> type(kMimeTypePng);
   return *type;
 }
 

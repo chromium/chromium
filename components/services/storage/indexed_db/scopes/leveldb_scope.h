@@ -102,11 +102,6 @@ class LevelDBScope {
     return buffer_batch_.ApproximateSize();
   }
 
-  uint64_t GetApproximateBytesWritten() const {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return approximate_bytes_written_.ValueOrDie();
-  }
-
  private:
   friend class LevelDBScopes;
   class UndoLogWriter;
@@ -181,7 +176,6 @@ class LevelDBScope {
 
   leveldb::WriteBatch buffer_batch_;
   bool buffer_batch_empty_ = true;
-  base::CheckedNumeric<uint64_t> approximate_bytes_written_ = 0;
   bool has_written_to_disk_ = false;
   bool committed_ = false;
 

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import android.content.Context;
+
 import androidx.annotation.Nullable;
 
 import org.chromium.components.browser_ui.widget.async_image.AsyncImageView;
@@ -31,5 +33,13 @@ public class TabCardLabelData {
         this.textResolver = textResolver;
         this.asyncImageFactory = asyncImageFactory;
         this.contentDescriptionResolver = contentDescriptionResolver;
+    }
+
+    /** Resolve the card label content description with a text fallback if null. */
+    public CharSequence resolveContentDescriptionWithTextFallback(Context context) {
+        if (this.contentDescriptionResolver != null) {
+            return this.contentDescriptionResolver.resolve(context);
+        }
+        return this.textResolver.resolve(context);
     }
 }

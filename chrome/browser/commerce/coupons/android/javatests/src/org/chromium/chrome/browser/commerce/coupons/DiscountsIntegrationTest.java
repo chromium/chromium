@@ -118,7 +118,7 @@ public class DiscountsIntegrationTest {
         ViewUtils.waitForVisibleView(
                 allOf(
                         withId(R.id.optional_toolbar_button),
-                        withContentDescription(R.string.discount_icon_expanded_text)));
+                        withContentDescription(R.string.discount_container_title)));
     }
 
     @Test
@@ -150,11 +150,11 @@ public class DiscountsIntegrationTest {
         ViewUtils.waitForVisibleView(
                 allOf(
                         withId(R.id.optional_toolbar_button),
-                        withContentDescription(R.string.discount_icon_expanded_text)));
+                        withContentDescription(R.string.discount_container_title)));
         onView(
                         allOf(
                                 withId(R.id.optional_toolbar_button),
-                                withContentDescription(R.string.discount_icon_expanded_text)))
+                                withContentDescription(R.string.discount_container_title)))
                 .perform(click());
         ViewUtils.waitForVisibleView(withId(R.id.commerce_bottom_sheet_content_container));
     }

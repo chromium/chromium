@@ -4,6 +4,7 @@
 
 #include "components/ip_protection/common/ip_protection_probabilistic_reveal_token_data_storage.h"
 
+#include <cstdint>
 #include <string>
 
 #include "base/base64.h"
@@ -83,6 +84,15 @@ class ProbabilisticRevealTokenDataStorageTest : public testing::Test {
     return s.ColumnInt(0);
   }
 
+  size_t CountTokenEntriesWithBatchSize(sql::Database& db, int64_t batch_size) {
+    static const char kCountSQL[] =
+        "SELECT COUNT(*) FROM tokens WHERE batch_size = ?";
+    sql::Statement s(db.GetUniqueStatement(kCountSQL));
+    s.BindInt64(0, batch_size);
+    EXPECT_TRUE(s.Step());
+    return s.ColumnInt(0);
+  }
+
   void OpenDatabase() {
     storage_.reset();
     storage_ =
@@ -126,11 +136,11 @@ TEST_F(ProbabilisticRevealTokenDataStorageTest,
   // [tokens], [meta].
   EXPECT_EQ(2u, sql::test::CountSQLTables(&db));
 
-  EXPECT_EQ(3, VersionFromMetaTable(db));
+  EXPECT_EQ(4, VersionFromMetaTable(db));
 
   // `version`, `u`, `e`, `epoch_id`, `expiration`, `num_tokens_with_signal`,
-  // and `public_key`.
-  EXPECT_EQ(7u, sql::test::CountTableColumns(&db, "tokens"));
+  // `public_key`, and `batch_size`.
+  EXPECT_EQ(8u, sql::test::CountTableColumns(&db, "tokens"));
 
   EXPECT_EQ(0u, CountTokenEntries(db));
 }
@@ -138,7 +148,7 @@ TEST_F(ProbabilisticRevealTokenDataStorageTest,
 TEST_F(ProbabilisticRevealTokenDataStorageTest,
        LoadFromFile_CurrentVersion_Success) {
   ASSERT_TRUE(sql::test::CreateDatabaseFromSQL(
-      DbPath(), GetSqlFilePath("probabilistic_reveal_tokens_v3.sql")));
+      DbPath(), GetSqlFilePath("probabilistic_reveal_tokens_v4.sql")));
 
   OpenDatabase();
   // Trigger the lazy-initialization.
@@ -150,14 +160,14 @@ TEST_F(ProbabilisticRevealTokenDataStorageTest,
   sql::Database db(sql::test::kTestTag);
   EXPECT_TRUE(db.Open(DbPath()));
   EXPECT_EQ(2u, sql::test::CountSQLTables(&db));
-  EXPECT_EQ(3, VersionFromMetaTable(db));
+  EXPECT_EQ(4, VersionFromMetaTable(db));
   EXPECT_EQ(1u, CountTokenEntries(db));
 }
 
 TEST_F(ProbabilisticRevealTokenDataStorageTest,
        LoadFromFile_VersionTooOld_Failure) {
   ASSERT_TRUE(sql::test::CreateDatabaseFromSQL(
-      DbPath(), GetSqlFilePath("probabilistic_reveal_tokens_v2.too_old.sql")));
+      DbPath(), GetSqlFilePath("probabilistic_reveal_tokens_v3.too_old.sql")));
 
   OpenDatabase();
   // Trigger the lazy-initialization.
@@ -169,14 +179,14 @@ TEST_F(ProbabilisticRevealTokenDataStorageTest,
   sql::Database db(sql::test::kTestTag);
   EXPECT_TRUE(db.Open(DbPath()));
   EXPECT_EQ(2u, sql::test::CountSQLTables(&db));
-  EXPECT_EQ(3, VersionFromMetaTable(db));
+  EXPECT_EQ(4, VersionFromMetaTable(db));
   EXPECT_EQ(0u, CountTokenEntries(db));
 }
 
 TEST_F(ProbabilisticRevealTokenDataStorageTest,
        LoadFromFile_VersionTooNew_Failure) {
   ASSERT_TRUE(sql::test::CreateDatabaseFromSQL(
-      DbPath(), GetSqlFilePath("probabilistic_reveal_tokens_v4.too_new.sql")));
+      DbPath(), GetSqlFilePath("probabilistic_reveal_tokens_v5.too_new.sql")));
 
   OpenDatabase();
   // Trigger the lazy-initialization.
@@ -188,7 +198,7 @@ TEST_F(ProbabilisticRevealTokenDataStorageTest,
   sql::Database db(sql::test::kTestTag);
   EXPECT_TRUE(db.Open(DbPath()));
   EXPECT_EQ(2u, sql::test::CountSQLTables(&db));
-  EXPECT_EQ(3, VersionFromMetaTable(db));
+  EXPECT_EQ(4, VersionFromMetaTable(db));
   EXPECT_EQ(0u, CountTokenEntries(db));
 }
 
@@ -233,6 +243,8 @@ TEST_F(ProbabilisticRevealTokenDataStorageTest, StoreTokenOutcome) {
   EXPECT_EQ(3u, CountTokenEntries(db));
   EXPECT_EQ(1u, CountTokenEntriesOnPublicKey(db, "public_key"));
   EXPECT_EQ(2u, CountTokenEntriesOnPublicKey(db, "public_key_2"));
+  EXPECT_EQ(1u, CountTokenEntriesWithBatchSize(db, outcome.tokens.size()));
+  EXPECT_EQ(2u, CountTokenEntriesWithBatchSize(db, outcome2.tokens.size()));
   CloseDatabase();
 }
 

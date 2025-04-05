@@ -23,6 +23,7 @@ namespace net {
 class X509Certificate;
 
 // The result of certificate verification.
+// LINT.IfChange(CertVerifyResult)
 class NET_EXPORT CertVerifyResult {
  public:
   CertVerifyResult();
@@ -90,7 +91,11 @@ class NET_EXPORT CertVerifyResult {
   // The result of evaluating whether the certificate complies with the
   // Certificate Transparency policy.
   ct::CTPolicyCompliance policy_compliance;
+
+  // The result of evaluating CT requirements.
+  ct::CTRequirementsStatus ct_requirement_status;
 };
+// LINT.ThenChange(/services/network/public/cpp/net_ipc_param_traits.cc:CertVerifyResult)
 
 }  // namespace net
 

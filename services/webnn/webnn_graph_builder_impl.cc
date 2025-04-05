@@ -2735,12 +2735,15 @@ void WebNNGraphBuilderImpl::CreateGraph(mojom::GraphInfoPtr graph_info,
     return;
   }
 
+  mojo::PendingAssociatedRemote<mojom::WebNNGraph> remote;
+  auto receiver = remote.InitWithNewEndpointAndPassReceiver();
   context_->CreateGraphImpl(
-      std::move(graph_info),
+      std::move(receiver), std::move(graph_info),
       std::move(validate_graph_result->compute_resource_info),
       std::move(validate_graph_result->constant_operands),
       base::BindOnce(&WebNNGraphBuilderImpl::DidCreateGraph,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_factory_.GetWeakPtr(), std::move(callback),
+                     std::move(remote)));
 }
 
 void WebNNGraphBuilderImpl::SetId(
@@ -2761,6 +2764,7 @@ void WebNNGraphBuilderImpl::IsValidGraphForTesting(
 
 void WebNNGraphBuilderImpl::DidCreateGraph(
     CreateGraphCallback callback,
+    mojo::PendingAssociatedRemote<mojom::WebNNGraph> remote,
     base::expected<std::unique_ptr<WebNNGraphImpl>, mojom::ErrorPtr> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -2774,11 +2778,10 @@ void WebNNGraphBuilderImpl::DidCreateGraph(
     return;
   }
 
-  mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver;
-  std::move(callback).Run(mojom::CreateGraphResult::NewGraphRemote(
-      receiver.InitWithNewEndpointAndPassRemote()));
+  std::move(callback).Run(
+      mojom::CreateGraphResult::NewGraphRemote(std::move(remote)));
 
-  context_->TakeGraph(*std::move(result), std::move(receiver),
+  context_->TakeGraph(*std::move(result),
                       base::PassKey<WebNNGraphBuilderImpl>());
 }
 

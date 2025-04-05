@@ -6,6 +6,7 @@
 
 #import "base/functional/callback.h"
 #import "base/functional/callback_forward.h"
+#import "ios/chrome/browser/authentication/ui_bundled/change_profile_continuation_provider.h"
 
 namespace {
 
@@ -14,8 +15,16 @@ void DoNothingContinuationImpl(SceneState* scene_state,
   std::move(closure).Run();
 }
 
+ChangeProfileContinuation DoNothingContinuationImplProvider() {
+  return DoNothingContinuation();
+}
+
 }  // namespace
 
 ChangeProfileContinuation DoNothingContinuation() {
   return base::BindOnce(&DoNothingContinuationImpl);
+}
+
+ChangeProfileContinuationProvider DoNothingContinuationProvider() {
+  return base::BindRepeating(&DoNothingContinuationImplProvider);
 }

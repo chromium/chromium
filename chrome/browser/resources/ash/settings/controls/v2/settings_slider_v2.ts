@@ -193,6 +193,8 @@ export class SettingsSliderV2Element extends SettingsSliderV2ElementBase {
     ];
   }
 
+  override ariaDescription: string;
+  override ariaLabel: string;
   ticks: SliderTick[]|number[];
   scale: number;
   min: number;

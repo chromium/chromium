@@ -333,9 +333,9 @@ TEST_F(DownloadWarningDesktopHatsUtilsTest,
   EXPECT_TRUE(launcher.TryScheduleTask(
       DownloadWarningHatsType::kDownloadBubbleIgnore, item_.get()));
   launcher.RecordBrowserActivity();
-  EXPECT_CALL(
-      *mock_hats_service_,
-      LaunchSurvey(kHatsSurveyTriggerDownloadWarningBubbleIgnore, _, _, _, _));
+  EXPECT_CALL(*mock_hats_service_,
+              LaunchSurvey(kHatsSurveyTriggerDownloadWarningBubbleIgnore, _, _,
+                           _, _, _, _));
   task_environment_.FastForwardBy(kIgnoreDelay);
 }
 
@@ -384,7 +384,7 @@ TEST_F(DownloadWarningDesktopHatsUtilsTest,
         *mock_hats_service_,
         LaunchSurvey(
             kHatsSurveyTriggerDownloadWarningBubbleIgnore, _, _, _,
-            Contains(Pair(Fields::kFilename, HasSubstr("my_file.pdf")))));
+            Contains(Pair(Fields::kFilename, HasSubstr("my_file.pdf"))), _, _));
     task_environment_.FastForwardBy(kIgnoreDelay / 2);
   }
   launcher.RecordBrowserActivity();
@@ -393,7 +393,8 @@ TEST_F(DownloadWarningDesktopHatsUtilsTest,
         *mock_hats_service_,
         LaunchSurvey(
             kHatsSurveyTriggerDownloadWarningBubbleIgnore, _, _, _,
-            Contains(Pair(Fields::kFilename, HasSubstr("other_file.pdf")))));
+            Contains(Pair(Fields::kFilename, HasSubstr("other_file.pdf"))), _,
+            _));
     task_environment_.FastForwardBy(kIgnoreDelay / 2);
   }
 }
@@ -409,9 +410,9 @@ TEST_F(DownloadWarningDesktopHatsUtilsTest,
   DelayedDownloadWarningHatsLauncher launcher{profile_.get(), kIgnoreDelay};
   launcher.TryScheduleTask(DownloadWarningHatsType::kDownloadBubbleIgnore,
                            item_.get());
-  EXPECT_CALL(
-      *mock_hats_service_,
-      LaunchSurvey(kHatsSurveyTriggerDownloadWarningBubbleIgnore, _, _, _, _))
+  EXPECT_CALL(*mock_hats_service_,
+              LaunchSurvey(kHatsSurveyTriggerDownloadWarningBubbleIgnore, _, _,
+                           _, _, _, _))
       .Times(0);
   task_environment_.FastForwardBy(2 * kIgnoreDelay);
 }
@@ -430,9 +431,9 @@ TEST_F(DownloadWarningDesktopHatsUtilsTest,
   item_.reset();
 
   launcher.RecordBrowserActivity();
-  EXPECT_CALL(
-      *mock_hats_service_,
-      LaunchSurvey(kHatsSurveyTriggerDownloadWarningBubbleIgnore, _, _, _, _))
+  EXPECT_CALL(*mock_hats_service_,
+              LaunchSurvey(kHatsSurveyTriggerDownloadWarningBubbleIgnore, _, _,
+                           _, _, _, _))
       .Times(0);
   task_environment_.FastForwardBy(kIgnoreDelay);
 

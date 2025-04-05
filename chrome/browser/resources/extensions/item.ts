@@ -22,7 +22,7 @@ import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {getCss} from './item.css.js';
 import {getHtml} from './item.html.js';
 import {ItemMixin} from './item_mixin.js';
-import {computeInspectableViewLabel, createDummyExtensionInfo, EnableControl, getEnableControl, getEnableToggleAriaLabel, getEnableToggleTooltipText, getItemSource, getItemSourceString, isEnabled, sortViews, SourceType, userCanChangeEnablement} from './item_util.js';
+import {computeInspectableViewLabel, createDummyExtensionInfo, EnableControl, getEnableControl, getEnableToggleAriaLabel, getEnableToggleTooltipText, getItemSource, getItemSourceString, isEnabled, sortViews, SourceType, UPLOAD_EXTENSION_TO_ACCOUNT_ITEMS_LIST_PAGE_HISTOGRAM_NAME, userCanChangeEnablement} from './item_util.js';
 import {Mv2ExperimentStage} from './mv2_deprecation_util.js';
 import {navigation, Page} from './navigation_helper.js';
 
@@ -52,7 +52,7 @@ export interface ItemDelegate {
       reason: chrome.developerPrivate.SafetyCheckWarningReason): void;
   setShowAccessRequestsInToolbar(id: string, showRequests: boolean): void;
   setItemPinnedToToolbar(id: string, pinnedToToolbar: boolean): void;
-  uploadItemToAccount(id: string): Promise<void>;
+  uploadItemToAccount(id: string): Promise<boolean>;
 
   // TODO(tjudkins): This function is not specific to items, so should be pulled
   // out to a more generic place when we need to access it from elsewhere.
@@ -106,7 +106,7 @@ export class DummyItemDelegate {
   setShowAccessRequestsInToolbar(_id: string, _showRequests: boolean) {}
   setItemPinnedToToolbar(_id: string, _pinnedToToolbar: boolean) {}
   uploadItemToAccount(_id: string) {
-    return Promise.resolve();
+    return Promise.resolve(false);
   }
   recordUserAction(_metricName: string) {}
   getItemStateChangedTarget() {
@@ -268,9 +268,11 @@ export class ExtensionsItemElement extends ExtensionsItemElementBase {
     this.reloadItem().catch((loadError) => this.fire('load-error', loadError));
   }
 
-  protected onUploadClick_() {
+  protected async onUploadClick_() {
     assert(this.delegate);
-    this.delegate.uploadItemToAccount(this.data.id);
+    const uploaded = await this.delegate.uploadItemToAccount(this.data.id);
+    chrome.metricsPrivate.recordBoolean(
+        UPLOAD_EXTENSION_TO_ACCOUNT_ITEMS_LIST_PAGE_HISTOGRAM_NAME, uploaded);
   }
 
   protected onRepairClick_() {

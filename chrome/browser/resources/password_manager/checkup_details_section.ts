@@ -74,6 +74,10 @@ export class CheckupDetailsSectionElement extends
         observer: 'updateShownCredentials_',
       },
 
+      groups_: {
+        type: Array,
+      },
+
       allInsecureCredentials_: {
         type: Array,
         observer: 'updateShownCredentials_',
@@ -88,13 +92,22 @@ export class CheckupDetailsSectionElement extends
         type: Array,
       },
 
+      mutedCompromisedCredentials_: {
+        type: Array,
+      },
+
+      activeListItem_: {
+        type: Object,
+        value: null,
+      },
+
       /**
        * The ids of insecure credentials for which user clicked "Change
        * Password" button
        */
       clickedChangePasswordIds_: {
         type: Object,
-        value: new Set(),
+        value: () => new Set(),
       },
 
       isMutingDisabled_: {
@@ -105,19 +118,20 @@ export class CheckupDetailsSectionElement extends
     };
   }
 
-  private pageTitle_: string;
-  private pageSubtitle_: string;
-  private insecurityType_: CheckupSubpage|undefined;
-  private groups_: chrome.passwordsPrivate.CredentialGroup[] = [];
-  private allInsecureCredentials_: chrome.passwordsPrivate.PasswordUiEntry[];
-  private shownInsecureCredentials_: chrome.passwordsPrivate.PasswordUiEntry[];
-  private credentialsWithReusedPassword_: ReusedPasswordInfo[];
-  private mutedCompromisedCredentials_:
+  declare private pageTitle_: string;
+  declare private pageSubtitle_: string;
+  declare private insecurityType_: CheckupSubpage|undefined;
+  declare private groups_: chrome.passwordsPrivate.CredentialGroup[];
+  declare private allInsecureCredentials_:
       chrome.passwordsPrivate.PasswordUiEntry[];
-  private activeListItem_: CheckupListItemElement|null;
-  private clickedChangePasswordIds_: Set<number>;
-  private isMutingDisabled_: boolean;
-  private activeCredential_: chrome.passwordsPrivate.PasswordUiEntry|undefined;
+  declare private shownInsecureCredentials_:
+      chrome.passwordsPrivate.PasswordUiEntry[];
+  declare private credentialsWithReusedPassword_: ReusedPasswordInfo[];
+  declare private mutedCompromisedCredentials_:
+      chrome.passwordsPrivate.PasswordUiEntry[];
+  declare private activeListItem_: CheckupListItemElement|null;
+  declare private clickedChangePasswordIds_: Set<number>;
+  declare private isMutingDisabled_: boolean;
   private insecureCredentialsChangedListener_: CredentialsChangedListener|null =
       null;
 

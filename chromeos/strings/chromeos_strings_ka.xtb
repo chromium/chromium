@@ -458,7 +458,6 @@
 <translation id="3084958266922136097">ეკრანმზოგის გათიშვა</translation>
 <translation id="3091839911843451378">ვერ მოხერხდა — შეწყვიტა მუშაობა</translation>
 <translation id="3102119246920354026">ქეში</translation>
-<translation id="3112413615003385433">თქვენმა მასწავლებელმა ამოშალა კონტენტი სკოლის ხელსაწყოებიდან</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">აუზები</translation>
 <translation id="3122883569442693641">დაწვრილებით</translation>
@@ -539,7 +538,6 @@
 <translation id="3488065109653206955">ნაწილობრივ გააქტიურებული</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_STYLE" /> ოფისი <ph name="OFFICE_COLOR" /> ტონებით</translation>
 <translation id="3493187369049186498">მონაცემთა მოხმარებას ითვლის თქვენი Chromebook. მისი გამოთვლები, შესაძლოა, განსხვავდებოდეს თქვენი პროვაიდერის მონაცემებისგან.</translation>
-<translation id="349570724365779960">სასკოლო ხელსაწყოები დაკავშირებულია სტუდენტებთან</translation>
 <translation id="3502426834823382181">ყველა აპის ნახვა</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />ეფექტურობის ტრასირების მონაცემების<ph name="END_LINK1" /> გაგზავნა</translation>
 <translation id="3517001332549868749">ChromeOS განახლება</translation>
@@ -547,7 +545,6 @@
 <translation id="353214771040290298">რედაქტირების დასრულება</translation>
 <translation id="3532980081107202182">დარჩენილია დაახლოებით <ph name="MIN_REMAINING" /> წუთი</translation>
 <translation id="3533790840489634638">აუზი</translation>
-<translation id="3535802910192338629">თქვენმა მასწავლებელმა დაამატა ახალი კონტენტი სკოლის ხელსაწყოებში</translation>
 <translation id="3547264467365135390">ფორმულა</translation>
 <translation id="3557205324756024651">ადგილობრივი იდენტობა (არასავალდებულო)</translation>
 <translation id="3565064564551103223">დაშვებული IP-ები</translation>
@@ -1441,7 +1438,6 @@
 <translation id="7544853251252956727">არეულად დაკვრა</translation>
 <translation id="7550715992156305117">დიაგნოსტიკის რუტინები</translation>
 <translation id="7551123448725492271">მოწყობილობა არის აუდიო მოწყობილობა.</translation>
-<translation id="7553913964854052228">სასკოლო ხელსაწყოები იყენებს თქვენს მიკროფონს</translation>
 <translation id="7559239713112547082">ეკრანის ანაბეჭდის გადახედვა</translation>
 <translation id="7561454561030345039">ამ მოქმედებას მართავს თქვენი ადმინისტრატორი</translation>
 <translation id="7561759921596375678">ხმის ჩართვა</translation>
@@ -1664,7 +1660,6 @@
 <translation id="8576249514688522074">არაინიცირებული</translation>
 <translation id="8584654835905316966"><ph name="DEVICE_NAME" />-ის <ph name="VERSION" /> ვერსიის ჩაშენებული პროგრამული უზრუნველყოფის განახლების დასასრულებლად საჭიროა გადატვირთვა. თქვენი კომპიუტერი შეიძლება რამდენჯერმე გადაიტვირთოს. ასეთი ქცევა მოსალოდნელია.</translation>
 <translation id="8593058461203131755">მედიის დაპაუზება</translation>
-<translation id="8619169570378509764">სკოლის ხელსაწყოები</translation>
 <translation id="8620617069779373398">როუმინგის სტატუსი</translation>
 <translation id="8626489604350149811">სხვა ქმედებები <ph name="APN_NAME" />-ისთვის</translation>
 <translation id="86356131183441916">ღია მეწამული</translation>

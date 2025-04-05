@@ -90,7 +90,7 @@ float SVGViewportResolver::ViewportDimension(SVGLengthMode mode) const {
 float ValueForLength(const Length& length, float zoom, float dimension) {
   DCHECK_NE(zoom, 0);
   // Only "specified" lengths have meaning for SVG.
-  if (!length.IsSpecified()) {
+  if (!length.HasOnlyFixedAndPercent()) {
     return 0;
   }
   return FloatValueForLength(length, dimension * zoom) / zoom;

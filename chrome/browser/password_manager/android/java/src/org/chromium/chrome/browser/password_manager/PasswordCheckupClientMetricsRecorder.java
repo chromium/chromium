@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.password_manager;
 import android.os.SystemClock;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerError;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper.PasswordCheckOperation;
 
@@ -14,9 +15,10 @@ import java.util.Optional;
 
 /**
  * Records metrics for an asynchronous job or a series of jobs. The job is expected to have started
- * when the {@link PasswordCheckupClientMetricsRecorder} instance is created. Latency is reported
- * in {@link #recordMetrics(Optional<Exception>) recordMetrics} under that assumption.
+ * when the {@link PasswordCheckupClientMetricsRecorder} instance is created. Latency is reported in
+ * {@link #recordMetrics(Optional<Exception>) recordMetrics} under that assumption.
  */
+@NullMarked
 class PasswordCheckupClientMetricsRecorder {
     private static final String PASSWORD_CHECKUP_HISTOGRAM_BASE = "PasswordManager.PasswordCheckup";
     private static final String RUN_PASSWORD_CHECKUP_OPERATION_SUFFIX = "RunPasswordCheckup";

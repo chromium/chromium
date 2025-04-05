@@ -8,7 +8,7 @@
  */
 
 import {MS_DELAY_BEFORE_TRIGGER, NO_DECORATION_NODE_NAMES, NON_TEXT_NODE_NAMES} from '//ios/web/annotations/resources/annotations_constants.js';
-import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
 // Mark: Private properties
@@ -734,7 +734,7 @@ function rectFromElement(element: Element) {
   };
 }
 
-gCrWeb.annotations = {
+gCrWebLegacy.annotations = {
   extractText,
   decorateAnnotations,
   removeDecorations,

@@ -66,10 +66,6 @@ class FormStructureTestApi {
                   /*server_types=*/overall_types);
   }
 
-  mojom::SubmissionIndicatorEvent get_submission_event() const {
-    return form_structure_->submission_event_;
-  }
-
   // Returns a vote type if a field contains a vote relating USERNAME correction
   // (CREDENTIALS_REUSED, USERNAME_OVERWRITTEN, USERNAME_EDITED). If none,
   // returns NO_INFORMATION.

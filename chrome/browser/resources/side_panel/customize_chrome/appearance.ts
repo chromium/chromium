@@ -89,24 +89,24 @@ export class AppearanceElement extends AppearanceElementBase {
     };
   }
 
-  protected theme_?: Theme;
-  protected editThemeButtonText_: string = '';
-  protected thirdPartyThemeId_: string|null = null;
-  protected thirdPartyThemeName_: string|null = null;
-  protected showBottomDivider_: boolean = false;
-  protected showClassicChromeButton_: boolean = false;
-  protected showColorPicker_: boolean = false;
-  protected showDeviceThemeToggle_: boolean = false;
-  protected showThemeSnapshot_: boolean = false;
-  protected showUploadedImageButton_: boolean = false;
-  protected showSearchedImageButton_: boolean = false;
-  protected showManagedDialog_: boolean = false;
-  protected wallpaperSearchButtonEnabled_: boolean =
+  protected accessor theme_: Theme|undefined;
+  protected accessor editThemeButtonText_: string = '';
+  protected accessor thirdPartyThemeId_: string|null = null;
+  protected accessor thirdPartyThemeName_: string|null = null;
+  protected accessor showBottomDivider_: boolean = false;
+  protected accessor showClassicChromeButton_: boolean = false;
+  protected accessor showColorPicker_: boolean = false;
+  protected accessor showDeviceThemeToggle_: boolean = false;
+  protected accessor showThemeSnapshot_: boolean = false;
+  protected accessor showUploadedImageButton_: boolean = false;
+  protected accessor showSearchedImageButton_: boolean = false;
+  protected accessor showManagedDialog_: boolean = false;
+  protected accessor wallpaperSearchButtonEnabled_: boolean =
       loadTimeData.getBoolean('wallpaperSearchButtonEnabled');
-  private wallpaperSearchEnabled_: boolean =
+  private accessor wallpaperSearchEnabled_: boolean =
       loadTimeData.getBoolean('wallpaperSearchEnabled');
-  protected isSourceTabFirstPartyNtp_: boolean = true;
-  protected showEditTheme_: boolean = true;
+  protected accessor isSourceTabFirstPartyNtp_: boolean = true;
+  protected accessor showEditTheme_: boolean = true;
   protected ntpManagedByName_: string = '';
   private setThemeEditableId_: number|null = null;
   private setThemeListenerId_: number|null = null;

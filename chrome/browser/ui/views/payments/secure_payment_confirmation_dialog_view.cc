@@ -36,8 +36,6 @@
 
 namespace payments {
 
-using features::SecurePaymentConfirmationNetworkAndIssuerIconsTreatment;
-
 namespace {
 
 class BorderedRowView : public views::View {
@@ -66,8 +64,8 @@ std::unique_ptr<views::View> CreateSpacer(
 
 std::u16string GetTitleText(std::u16string title_text,
                             std::u16string relying_party_id) {
-  if (features::GetNetworkAndIssuerIconsTreatment() !=
-      SecurePaymentConfirmationNetworkAndIssuerIconsTreatment::kInline) {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kSecurePaymentConfirmationNetworkAndIssuerIcons)) {
     return title_text;
   }
   return base::ReplaceStringPlaceholders(title_text, relying_party_id, nullptr);
@@ -298,10 +296,10 @@ void SecurePaymentConfirmationDialogView::InitChildViews() {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(), 0));
 
-  // When the network/issuer icons are inline with the title for the transaction
-  // UX, we don't draw an additional logo on top.
-  if (features::GetNetworkAndIssuerIconsTreatment() !=
-      SecurePaymentConfirmationNetworkAndIssuerIconsTreatment::kInline) {
+  // When the network/issuer icons are shown for the transaction UX, we don't
+  // draw an additional logo on top.
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kSecurePaymentConfirmationNetworkAndIssuerIcons)) {
     AddChildView(CreateSecurePaymentConfirmationHeaderIcon(
         static_cast<int>(DialogViewID::HEADER_ICON)));
   }
@@ -349,8 +347,8 @@ SecurePaymentConfirmationDialogView::CreateBodyView() {
       CreateSecurePaymentConfirmationTitleLabel(
           GetTitleText(model_->title(), model_->relying_party_id()));
   title_text->SetID(static_cast<int>(DialogViewID::TITLE));
-  if (features::GetNetworkAndIssuerIconsTreatment() ==
-      SecurePaymentConfirmationNetworkAndIssuerIconsTreatment::kInline) {
+  if (base::FeatureList::IsEnabled(
+          blink::features::kSecurePaymentConfirmationNetworkAndIssuerIcons)) {
     body_view->AddChildView(CreateSecurePaymentConfirmationInlineImageTitleView(
         std::move(title_text), *model_->network_icon(),
         static_cast<int>(DialogViewID::NETWORK_ICON), *model_->issuer_icon(),
@@ -383,8 +381,8 @@ SecurePaymentConfirmationDialogView::CreateBodyView() {
   std::unique_ptr<views::View> total_line_view =
       CreateRowView(model_->total_label(), DialogViewID::TOTAL_LABEL,
                     model_->total_value(), DialogViewID::TOTAL_VALUE);
-  if (features::GetNetworkAndIssuerIconsTreatment() !=
-      SecurePaymentConfirmationNetworkAndIssuerIconsTreatment::kNone) {
+  if (base::FeatureList::IsEnabled(
+          blink::features::kSecurePaymentConfirmationNetworkAndIssuerIcons)) {
     body_view->AddChildView(std::move(total_line_view));
   }
 
@@ -393,28 +391,9 @@ SecurePaymentConfirmationDialogView::CreateBodyView() {
                     model_->instrument_value(), DialogViewID::INSTRUMENT_VALUE,
                     model_->instrument_icon(), DialogViewID::INSTRUMENT_ICON));
 
-  if (features::GetNetworkAndIssuerIconsTreatment() ==
-      SecurePaymentConfirmationNetworkAndIssuerIconsTreatment::kNone) {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kSecurePaymentConfirmationNetworkAndIssuerIcons)) {
     body_view->AddChildView(std::move(total_line_view));
-  }
-
-  // Add the Network and Issuer icons, if the flag is enabled and an icon was
-  // specified and successfully downloaded.
-  if (features::GetNetworkAndIssuerIconsTreatment() ==
-      SecurePaymentConfirmationNetworkAndIssuerIconsTreatment::kRows) {
-    if (!model_->network_icon()->drawsNothing()) {
-      body_view->AddChildView(
-          CreateRowView(model_->network_label(), DialogViewID::NETWORK_LABEL,
-                        model_->network_value(), DialogViewID::NETWORK_VALUE,
-                        model_->network_icon(), DialogViewID::NETWORK_ICON));
-    }
-
-    if (!model_->issuer_icon()->drawsNothing()) {
-      body_view->AddChildView(
-          CreateRowView(model_->issuer_label(), DialogViewID::ISSUER_LABEL,
-                        model_->issuer_value(), DialogViewID::ISSUER_VALUE,
-                        model_->issuer_icon(), DialogViewID::ISSUER_ICON));
-    }
   }
 
   return body_view;

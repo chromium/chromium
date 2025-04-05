@@ -76,6 +76,10 @@ class ChromeKeepAliveRequestTrackerTestBase : public testing::Test {
     request.keepalive = true;
     request.keepalive_token = base::UnguessableToken::Create();
     request.is_fetch_later_api = IsFetchLaterRequest();
+    request.attribution_reporting_eligibility =
+        IsAttributionReportingEligibleRequest()
+            ? network::mojom::AttributionReportingEligibility::kTrigger
+            : network::mojom::AttributionReportingEligibility::kUnset;
 
     return request;
   }
@@ -83,7 +87,7 @@ class ChromeKeepAliveRequestTrackerTestBase : public testing::Test {
   std::unique_ptr<ChromeKeepAliveRequestTracker> CreateTracker(
       const network::ResourceRequest& request) const {
     return ChromeKeepAliveRequestTracker::MaybeCreateKeepAliveRequestTracker(
-        request, GetUkmSourceId(), IsAttributionReportingEligibleRequest(),
+        request, GetUkmSourceId(),
         /*is_context_detached_callback=*/base::BindRepeating([]() {
           return false;
         }));

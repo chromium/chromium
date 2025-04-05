@@ -43,6 +43,7 @@
 #import "ios/chrome/browser/shared/public/commands/activity_service_share_url_command.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/enhanced_calendar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/mini_map_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reading_list_add_command.h"
@@ -293,7 +294,9 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
             HandlerForProtocol(self.browser->GetCommandDispatcher(),
                                MiniMapCommands),
             HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                               UnitConversionCommands));
+                               UnitConversionCommands),
+            HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                               EnhancedCalendarCommands));
     if (result && result.elements) {
       [menuElements addObjectsFromArray:result.elements];
       menuTitle = result.title;
@@ -835,10 +838,16 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
 // on Show Full URL button from the context menu.
 - (void)showFullURLPopUp:(web::ContextMenuParams)params
                URLString:(NSString*)URLString {
-  UIAlertController* alert =
-      [UIAlertController alertControllerWithTitle:@""
-                                          message:URLString
-                                   preferredStyle:UIAlertControllerStyleAlert];
+  // Due to a UIKit bug, UIAlertController that show a URL may truncate their
+  // last line. To avoid masking useful information, add an artificial empty
+  // last line that can be truncated safely.
+  // The "..." will still be visible but no useful information will be lost.
+  // TODO(crbug.com/407565099): remove workaround.
+  UIAlertController* alert = [UIAlertController
+      alertControllerWithTitle:@""
+                       message:[URLString
+                                   stringByAppendingString:@"\u00a0\n\u00a0"]
+                preferredStyle:UIAlertControllerStyleAlert];
 
   UIAlertAction* defaultAction = [UIAlertAction
       actionWithTitle:l10n_util::GetNSString(IDS_IOS_CLOSE_ALERT_BUTTON_LABEL)

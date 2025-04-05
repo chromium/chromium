@@ -10,8 +10,6 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.android_webview.AwFeatureMap;
-import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.AwSupervisedUserUrlClassifierDelegate;
 import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.base.ContextUtils;
@@ -51,12 +49,10 @@ public class AwSupervisedUserUrlClassifier {
 
         synchronized (sInstanceLock) {
             if (!sInitialized) {
-                if (AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_SUPERVISED_USER_SITE_BLOCK)) {
-                    AwSupervisedUserUrlClassifierDelegate delegate =
-                            PlatformServiceBridge.getInstance().getUrlClassifierDelegate();
-                    if (delegate != null) {
-                        sInstance = new AwSupervisedUserUrlClassifier(delegate);
-                    }
+                AwSupervisedUserUrlClassifierDelegate delegate =
+                        PlatformServiceBridge.getInstance().getUrlClassifierDelegate();
+                if (delegate != null) {
+                    sInstance = new AwSupervisedUserUrlClassifier(delegate);
                 }
                 sInitialized = true;
             }

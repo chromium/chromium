@@ -56,6 +56,7 @@ class IpProtectionTelemetryUma final : public IpProtectionTelemetry {
       base::TimeDelta duration) override;
   void IsProbabilisticRevealTokenAvailable(bool is_initial_request,
                                            bool is_token_available) override;
+  void QuicProxiesFailed(int after_requests) override;
 };
 
 }  // namespace ip_protection

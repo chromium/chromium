@@ -585,6 +585,7 @@ PrefetchContainer::~PrefetchContainer() {
 
   MaybeRecordPrefetchStatusToUMA(
       prefetch_status_.value_or(PrefetchStatus::kPrefetchNotStarted));
+  RecordDurationFromAdded();
 
   ukm::builders::PrefetchProxy_PrefetchedResource builder(ukm_source_id_);
   builder.SetResourceType(/*mainframe*/ 1);
@@ -926,6 +927,10 @@ PrefetchContainer::LoadState PrefetchContainer::GetLoadState() const {
   return load_state_;
 }
 
+void PrefetchContainer::OnAddedToPrefetchService() {
+  time_added_to_prefetch_service_ = base::TimeTicks::Now();
+}
+
 void PrefetchContainer::OnEligibilityCheckComplete(
     PreloadingEligibility eligibility) {
   SinglePrefetch& this_prefetch = GetCurrentSinglePrefetchToPrefetch();
@@ -956,6 +961,8 @@ void PrefetchContainer::OnEligibilityCheckComplete(
       // added.
       attempt_->SetEligibility(eligibility);
     }
+
+    time_initial_eligibility_got_ = base::TimeTicks::Now();
 
     // Recording an eligiblity for PrefetchReferringPageMetrics.
     // TODO(crbug.com/40946257): Current code doesn't support
@@ -1315,6 +1322,10 @@ void PrefetchContainer::Reader::OnPrefetchProbeResult(
 }
 
 void PrefetchContainer::OnDeterminedHead() {
+  if (GetNonRedirectHead()) {
+    time_header_determined_successfully_ = base::TimeTicks::Now();
+  }
+
   // Propagates the header to `no_vary_search_data_` if a non-redirect response
   // header is got.
   MaybeSetNoVarySearchData();
@@ -1400,6 +1411,7 @@ void PrefetchContainer::OnPrefetchComplete(
   }
 
   if (net_error == net::OK) {
+    time_prefetch_completed_successfully_ = base::TimeTicks::Now();
     RecordPrefetchProxyPrefetchMainframeBodyLength(body_length);
   }
 
@@ -1644,6 +1656,7 @@ void PrefetchContainer::OnDetectedCookiesChange(
 
 void PrefetchContainer::OnPrefetchStarted() {
   SetLoadState(PrefetchContainer::LoadState::kStarted);
+  time_prefetch_started_ = base::TimeTicks::Now();
 }
 
 bool PrefetchContainer::HasSameReferringURLForMetrics(
@@ -2203,6 +2216,102 @@ void PrefetchContainer::OnServiceWorkerStateDetermined(
     case PrefetchServiceWorkerState::kControlled:
       NOTREACHED();
   }
+}
+
+const char* PrefetchContainer::GetMetricsSuffixTriggerTypeAndEagerness() {
+  switch (prefetch_type_.trigger_type()) {
+    case PreloadingTriggerType::kSpeculationRule:
+      switch (prefetch_type_.GetEagerness()) {
+        case blink::mojom::SpeculationEagerness::kEager:
+          return "SpeculationRule_Eager";
+        case blink::mojom::SpeculationEagerness::kModerate:
+          return "SpeculationRule_Moderate";
+        case blink::mojom::SpeculationEagerness::kConservative:
+          return "SpeculationRule_Conservative";
+      }
+    case PreloadingTriggerType::kSpeculationRuleFromIsolatedWorld:
+      switch (prefetch_type_.GetEagerness()) {
+        case blink::mojom::SpeculationEagerness::kEager:
+          return "SpeculationRuleFromIsolatedWorld_Eager";
+        case blink::mojom::SpeculationEagerness::kModerate:
+          return "SpeculationRuleFromIsolatedWorld_Moderate";
+        case blink::mojom::SpeculationEagerness::kConservative:
+          return "SpeculationRuleFromIsolatedWorld_Conservative";
+      }
+    case PreloadingTriggerType::kSpeculationRuleFromAutoSpeculationRules:
+      switch (prefetch_type_.GetEagerness()) {
+        case blink::mojom::SpeculationEagerness::kEager:
+          return "SpeculationRuleFromAutoSpeculationRules_Eager";
+        case blink::mojom::SpeculationEagerness::kModerate:
+          return "SpeculationRuleFromAutoSpeculationRules_Moderate";
+        case blink::mojom::SpeculationEagerness::kConservative:
+          return "SpeculationRuleFromAutoSpeculationRules_Conservative";
+      }
+    case PreloadingTriggerType::kEmbedder:
+      // TODO(crrev.com/c/6367815): Add "_<embedder_histogram_suffix>".
+      return "Embedder";
+  }
+}
+
+void PrefetchContainer::RecordDurationFromAdded() {
+  // TODO(crrev.com/c/6367815): Update
+  // `GetMetricsSuffixTriggerTypeAndEagerness()` and remove suffix
+  // `.NoEmbedderSuffix`.
+
+  if (!time_added_to_prefetch_service_.has_value()) {
+    return;
+  }
+
+  if (!time_initial_eligibility_got_.has_value()) {
+    return;
+  }
+
+  base::UmaHistogramTimes(
+      base::StrCat({
+          "Prefetch.PrefetchContainer.AddedToInitialEligibility.",
+          GetMetricsSuffixTriggerTypeAndEagerness(),
+          ".NoEmbedderSuffix",
+      }),
+      time_initial_eligibility_got_.value() -
+          time_added_to_prefetch_service_.value());
+
+  if (!time_prefetch_started_.has_value()) {
+    return;
+  }
+
+  base::UmaHistogramTimes(
+      base::StrCat({
+          "Prefetch.PrefetchContainer.AddedToPrefetchStarted.",
+          GetMetricsSuffixTriggerTypeAndEagerness(),
+          ".NoEmbedderSuffix",
+      }),
+      time_prefetch_started_.value() - time_added_to_prefetch_service_.value());
+
+  if (!time_header_determined_successfully_.has_value()) {
+    return;
+  }
+
+  base::UmaHistogramTimes(base::StrCat({
+                              "Prefetch.PrefetchContainer."
+                              "AddedToHeaderDeterminedSuccesfully.",
+                              GetMetricsSuffixTriggerTypeAndEagerness(),
+                              ".NoEmbedderSuffix",
+                          }),
+                          time_header_determined_successfully_.value() -
+                              time_added_to_prefetch_service_.value());
+
+  if (!time_prefetch_completed_successfully_.has_value()) {
+    return;
+  }
+
+  base::UmaHistogramTimes(base::StrCat({
+                              "Prefetch.PrefetchContainer."
+                              "AddedToPrefetchCompletedSuccessfully.",
+                              GetMetricsSuffixTriggerTypeAndEagerness(),
+                              ".NoEmbedderSuffix",
+                          }),
+                          time_prefetch_completed_successfully_.value() -
+                              time_added_to_prefetch_service_.value());
 }
 
 }  // namespace content

@@ -533,7 +533,7 @@ SkColor4f ScrollbarThemeAura::ThumbColor(const Scrollbar& scrollbar) const {
 }
 
 bool ScrollbarThemeAura::UsesNinePatchTrackAndButtonsResource() const {
-  return RuntimeEnabledFeatures::AuraScrollbarUsesNinePatchTrackEnabled();
+  return true;
 }
 
 gfx::Size ScrollbarThemeAura::NinePatchTrackAndButtonsCanvasSize(

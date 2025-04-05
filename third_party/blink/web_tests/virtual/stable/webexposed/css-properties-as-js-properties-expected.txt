@@ -368,6 +368,8 @@ printColorAdjust
 quotes
 r
 range
+readingFlow
+readingOrder
 removeProperty
 resize
 right

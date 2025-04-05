@@ -8,8 +8,8 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "third_party/blink/renderer/core/animation/css_interpolation_environment.h"
 #include "third_party/blink/renderer/core/animation/interpolated_svg_path_source.h"
-#include "third_party/blink/renderer/core/animation/interpolation_environment.h"
 #include "third_party/blink/renderer/core/animation/svg_path_seg_interpolation_functions.h"
 #include "third_party/blink/renderer/core/css/css_path_value.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
@@ -119,7 +119,7 @@ class UnderlyingPathSegTypesChecker final
         .GetWindRule();
   }
 
-  bool IsValid(const InterpolationEnvironment&,
+  bool IsValid(const CSSInterpolationEnvironment&,
                const InterpolationValue& underlying) const final {
     return path_seg_types_ == GetPathSegTypes(underlying) &&
            wind_rule_ == GetWindRule(underlying);

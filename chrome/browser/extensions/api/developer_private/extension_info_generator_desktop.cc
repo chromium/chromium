@@ -6,7 +6,6 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/account_extension_tracker.h"
-#include "chrome/browser/extensions/api/developer_private/inspectable_views_finder.h"
 #include "chrome/browser/extensions/commands/command_service.h"
 #include "chrome/browser/extensions/extension_allowlist.h"
 #include "chrome/browser/extensions/extension_safety_check_utils.h"
@@ -211,11 +210,6 @@ void ExtensionInfoGenerator::FillExtensionInfo(
 
   info.update_url =
       extension_management->GetEffectiveUpdateURL(extension).spec();
-
-  if (state != developer::ExtensionState::kTerminated) {
-    info.views = InspectableViewsFinder(profile).GetViewsForExtension(
-        extension, is_enabled);
-  }
 
   // Show access requests in toolbar.
   info.show_access_requests_in_toolbar =

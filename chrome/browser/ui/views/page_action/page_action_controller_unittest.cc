@@ -15,12 +15,15 @@
 #include "chrome/browser/ui/toolbar/toolbar_pref_names.h"
 #include "chrome/browser/ui/views/page_action/page_action_model.h"
 #include "chrome/browser/ui/views/page_action/page_action_model_observer.h"
+#include "chrome/browser/ui/views/page_action/test_support/fake_tab_interface.h"
 #include "chrome/browser/ui/views/page_action/test_support/mock_page_action_model.h"
 #include "chrome/browser/ui/views/page_action/test_support/page_action_properties.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "components/tab_collections/public/tab_interface.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_renderer_host.h"
+#include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/actions/actions.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -45,38 +48,6 @@ using ::testing::_;
 using TestPageActionModelObservation =
     ::base::ScopedObservation<PageActionModelInterface,
                               PageActionModelObserver>;
-
-class FakeTabInterface : public tabs::MockTabInterface {
- public:
-  ~FakeTabInterface() override = default;
-
-  base::CallbackListSubscription RegisterDidActivate(
-      base::RepeatingCallback<void(TabInterface*)> cb) override {
-    return activation_callbacks_.Add(cb);
-  }
-
-  base::CallbackListSubscription RegisterWillDeactivate(
-      base::RepeatingCallback<void(TabInterface*)> cb) override {
-    return deactivation_callbacks_.Add(cb);
-  }
-
-  void Activate() {
-    is_activated_ = true;
-    activation_callbacks_.Notify(this);
-  }
-
-  void Deactivate() {
-    is_activated_ = false;
-    deactivation_callbacks_.Notify(this);
-  }
-
-  bool IsActivated() const override { return is_activated_; }
-
- private:
-  bool is_activated_ = false;
-  base::RepeatingCallbackList<void(TabInterface*)> activation_callbacks_;
-  base::RepeatingCallbackList<void(TabInterface*)> deactivation_callbacks_;
-};
 
 class PageActionTestObserver : public PageActionModelObserver {
  public:
@@ -115,12 +86,14 @@ class PageActionControllerTest : public ::testing::Test {
   PageActionControllerTest() = default;
 
   void SetUp() override {
-    profile_ = std::make_unique<TestingProfile>();
+    test_web_contents_ =
+        content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
     pinned_actions_model_ =
-        std::make_unique<PinnedToolbarActionsModel>(profile_.get());
+        std::make_unique<PinnedToolbarActionsModel>(&profile_);
     controller_ = std::make_unique<PageActionController>(
         GetPageActionControllerTestProperties(), pinned_actions_model_.get());
-    tab_interface_ = std::make_unique<FakeTabInterface>();
+    tab_interface_ =
+        std::make_unique<FakeTabInterface>(test_web_contents_.get());
     tab_interface_->Activate();
   }
 
@@ -128,7 +101,6 @@ class PageActionControllerTest : public ::testing::Test {
     actions::ActionManager::Get().ResetForTesting();
     controller_.reset();
     pinned_actions_model_.reset();
-    profile_.reset();
     tab_interface_.reset();
   }
 
@@ -136,7 +108,7 @@ class PageActionControllerTest : public ::testing::Test {
   PinnedToolbarActionsModel* pinned_actions_model() {
     return pinned_actions_model_.get();
   }
-  TestingProfile* profile() { return profile_.get(); }
+  TestingProfile* profile() { return &profile_; }
 
   FakeTabInterface* tab_interface() { return tab_interface_.get(); }
 
@@ -150,9 +122,12 @@ class PageActionControllerTest : public ::testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
+
+  TestingProfile profile_;
+  content::RenderViewHostTestEnabler test_render_host_factories_;
+  std::unique_ptr<content::WebContents> test_web_contents_;
   std::unique_ptr<PageActionController> controller_;
   std::unique_ptr<PinnedToolbarActionsModel> pinned_actions_model_;
-  std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<ActionItem> action_item_;
   std::unique_ptr<FakeTabInterface> tab_interface_;
 };
@@ -403,17 +378,26 @@ class PageActionControllerMockModelTest : public ::testing::Test {
   PageActionControllerMockModelTest()
       : controller_(GetPageActionControllerTestProperties(),
                     /*pinned_actions_model=*/nullptr,
-                    &model_factory_) {}
+                    &model_factory_) {
+    test_web_contents_ =
+        content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
+    tab_interface_ =
+        std::make_unique<FakeTabInterface>(test_web_contents_.get());
+  }
 
   PageActionController& controller() { return controller_; }
   MockPageActionModelFactory& models() { return model_factory_; }
-  FakeTabInterface& tab_interface() { return tab_interface_; }
+  FakeTabInterface& tab_interface() { return *tab_interface_; }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
+
+  TestingProfile profile_;
+  content::RenderViewHostTestEnabler test_render_host_factories_;
+  std::unique_ptr<content::WebContents> test_web_contents_;
   MockPageActionModelFactory model_factory_;
   PageActionController controller_;
-  FakeTabInterface tab_interface_;
+  std::unique_ptr<FakeTabInterface> tab_interface_;
 };
 
 TEST_F(PageActionControllerMockModelTest, SetAndClearOverrideText) {

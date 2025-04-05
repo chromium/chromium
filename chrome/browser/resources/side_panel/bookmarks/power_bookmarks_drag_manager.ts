@@ -132,6 +132,13 @@ class DragSession {
   }
 }
 
+// Listens to standard drag events for taking care of drag and drop events
+// generating from the Side Panel.
+// Listens to `chrome.bookmarkManagerPrivate` for events that originates from
+// different sources and affect the Side Panel - e.g. drop event in the Side
+// Panel that originates from the BookmarkBar.
+// Dependency on the chrome extension private API is an exception here since it
+// allows to get information from different sources.
 export class PowerBookmarksDragManager {
   private delegate_: PowerBookmarksDragDelegate;
   private dragSession_: DragSession|null;

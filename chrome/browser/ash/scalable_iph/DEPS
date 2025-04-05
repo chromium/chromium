@@ -51,5 +51,8 @@ include_rules = [
 specific_include_rules = {
   "scalable_iph_browser_test_base.cc" : [
     "+chrome/browser/signin/identity_manager_factory.h"
-  ]
+  ],
+  "scalable_iph_browsertest.cc" : [
+    "+chrome/browser/web_applications/preinstalled_web_apps"
+  ],
 }

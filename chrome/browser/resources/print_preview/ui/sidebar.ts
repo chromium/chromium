@@ -133,20 +133,20 @@ export class PrintPreviewSidebarElement extends PrintPreviewSidebarElementBase {
     };
   }
 
-  controlsManaged: boolean;
-  destination: Destination|null;
-  destinationState: DestinationState;
-  error: Error;
-  isPdf: boolean;
-  pageCount: number;
-  state: State;
-  private controlsDisabled_: boolean;
-  private firstLoad_: boolean;
-  private isInAppKioskMode_: boolean;
-  private settingsExpandedByUser_: boolean;
-  maxSheets: number;
-  private sheetCount_: number;
-  private shouldShowMoreSettings_: boolean;
+  declare controlsManaged: boolean;
+  declare destination: Destination|null;
+  declare destinationState: DestinationState;
+  declare error: Error;
+  declare isPdf: boolean;
+  declare pageCount: number;
+  declare state: State;
+  declare private controlsDisabled_: boolean;
+  declare private firstLoad_: boolean;
+  declare private isInAppKioskMode_: boolean;
+  declare private settingsExpandedByUser_: boolean;
+  declare maxSheets: number;
+  declare private sheetCount_: number;
+  declare private shouldShowMoreSettings_: boolean;
 
   /**
    * @param defaultPrinter The system default printer ID.

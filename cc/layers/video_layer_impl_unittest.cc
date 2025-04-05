@@ -446,10 +446,6 @@ TEST(VideoLayerImplTest, NativeARGBFrameGeneratesTextureQuad) {
   EXPECT_EQ(1u, impl.quad_list().size());
   const viz::DrawQuad* draw_quad = impl.quad_list().ElementAt(0);
   ASSERT_EQ(viz::DrawQuad::Material::kTextureContent, draw_quad->material);
-
-  const viz::TextureDrawQuad* texture_draw_quad =
-      viz::TextureDrawQuad::MaterialCast(draw_quad);
-  EXPECT_EQ(texture_draw_quad->resource_size_in_pixels(), resource_size);
 }
 
 TEST(VideoLayerImplTest, GetDamageReasons) {

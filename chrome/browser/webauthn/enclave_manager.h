@@ -134,6 +134,28 @@ class EnclaveManager : public EnclaveManagerInterface {
     std::optional<webauthn::LocalAuthenticationToken> local_auth_token;
   };
 
+  // These values are detailed failure reasons. They are emitted whenever PIN
+  // renewal fails and give detailed information about why the attempt failed.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(PinRenewalFailureCause)
+  enum class PinRenewalFailureCause {
+    kDuringDownload = 1,
+    kGettingAccessToken = 2,
+    kEnclaveRequest1 = 3,
+    kEnclaveRequest2 = 4,
+    kEnclaveResponse1 = 5,
+    kEnclaveResponse2 = 6,
+    kRKSUpload = 7,
+    kJoiningToDomain = 8,
+    kSecurityDomainReportsNoPin = 9,
+    kSecurityDomainReset = 10,
+
+    kMaxValue = kSecurityDomainReset,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/enums.xml:PinRenewalFailureCauseEnum)
+
   EnclaveManager(
       const base::FilePath& base_dir,
       signin::IdentityManager* identity_manager,
@@ -385,6 +407,13 @@ class EnclaveManager : public EnclaveManagerInterface {
   // Check whether the GPM PIN Vault should be renewed.
   void ConsiderPinRenewal();
   void OnRenewalComplete(bool success);
+
+  // Returns true if |state| indicates that the security domain has been reset,
+  // i.e. that the local Chrome state no longer matches what's on the security
+  // domain.
+  bool IsSecurityDomainReset(
+      const trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult&
+          state);
 
   const base::FilePath file_path_;
   const raw_ptr<signin::IdentityManager> identity_manager_;

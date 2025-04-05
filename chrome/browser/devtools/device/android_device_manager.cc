@@ -49,7 +49,7 @@ const int kBufferSize = 16 * 1024;
 
 static const char kModelOffline[] = "Offline";
 
-static const char kRequestLineFormat[] = "PUT %s HTTP/1.1";
+static const char kRequestLineFormat[] = "GET %s HTTP/1.1";
 
 net::NetworkTrafficAnnotationTag kAndroidDeviceManagerTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("android_device_manager_socket", R"(

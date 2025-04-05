@@ -67,7 +67,7 @@ PasswordCrossDomainConfirmationPopupViewViews::
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
           GooglePasswordManagerVectorIcon(), ui::kColorIcon,
           layout_provider->GetDistanceMetric(
-              DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE))));
+              views::DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE))));
   headline->AddChildView(
       views::Builder<views::Label>()
           .SetText(controller->GetTitleText())

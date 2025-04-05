@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/enterprise/browser/reporting/report_util.h"
+
 #include "base/files/file_path.h"
 #include "crypto/sha2.h"
 

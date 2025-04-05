@@ -30,18 +30,17 @@ class GPUSupportedFeatures : public ScriptWrappable,
 
   void AddFeatureName(const V8GPUFeatureName feature_name);
 
-  bool has(const String& feature) const;
+  const HashSet<String>& FeatureNameSet() const { return features_; }
+  // Fast path, it allows to avoid hash computation from string for
+  // checking features.
+  bool Has(const V8GPUFeatureName::Enum feature) const;
+
+  // gpu_supported_features.idl {{{
   bool hasForBinding(ScriptState* script_state,
                      const String& feature,
                      ExceptionState& exception_state) const;
-
-  // Fast path, it allows to avoid hash computation from string for
-  // checking features.
-  bool has(const V8GPUFeatureName::Enum feature) const;
-
   unsigned size() const { return features_.size(); }
-
-  const HashSet<String>& FeatureNameSet() const { return features_; }
+  // }}} End of WebIDL binding implementation.
 
  private:
   HashSet<String> features_;

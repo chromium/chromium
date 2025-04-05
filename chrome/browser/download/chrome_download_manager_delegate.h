@@ -206,12 +206,15 @@ class ChromeDownloadManagerDelegate
   bool ShouldBlockFile(download::DownloadItem* item,
                        download::DownloadDangerType danger_type) const;
 
-#if !BUILDFLAG(IS_ANDROID)
-  // Schedules the ephemeral warning download to be canceled. It will only be
+  // Schedules an ephemeral warning download to be canceled. It will only be
   // canceled if it continues to be an ephemeral warning that hasn't been acted
-  // on when the scheduled time arrives.
+  // on when the scheduled time arrives. This should be scheduled after the user
+  // sees the warning in the UI, i.e. should not be scheduled before the user
+  // has a chance to see the warning.
+  // Note: Any scheduled cancellations will be abandoned at browser shutdown,
+  // but the cancellation should occur when the browser next starts up, in
+  // CancelAllEphemeralWarnings().
   void ScheduleCancelForEphemeralWarning(const std::string& guid);
-#endif
 
   // Returns true if |path| should open in the browser.
   virtual bool IsOpenInBrowserPreferredForFile(const base::FilePath& path);
@@ -346,9 +349,6 @@ class ChromeDownloadManagerDelegate
   // multiple downloads are associated with the same file path.
   bool IsMostRecentDownloadItemAtFilePath(download::DownloadItem* download);
 
-  // TODO(crbug.com/397407934): Enable ephemeral warning cancellation on
-  // Android.
-#if !BUILDFLAG(IS_ANDROID)
   // Cancels a download if it's still an ephemeral warning (and has not been
   // acted on by the user).
   void CancelForEphemeralWarning(const std::string& guid);
@@ -356,7 +356,6 @@ class ChromeDownloadManagerDelegate
   // that were not cleaned up. This function cleans them up on startup, when the
   // download manager is initialized.
   void CancelAllEphemeralWarnings();
-#endif
 
   // content::DownloadManager::Observer
   void OnManagerInitialized() override;

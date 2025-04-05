@@ -35,26 +35,27 @@ void GroupIndicatorLayer::SetConstants(int reorder_background_top_margin,
       reorder_background_corner_radius;
 }
 
-void GroupIndicatorLayer::SetProperties(int id,
-                                        int tint,
-                                        int reorder_background_tint,
-                                        int bubble_tint,
-                                        bool incognito,
-                                        bool foreground,
-                                        bool show_bubble,
-                                        bool show_reorder_background,
-                                        float x,
-                                        float y,
-                                        float width,
-                                        float height,
-                                        float title_start_padding,
-                                        float title_end_padding,
-                                        float corner_radius,
-                                        float bottom_indicator_width,
-                                        float bottom_indicator_height,
-                                        float bubble_padding,
-                                        float bubble_size,
-                                        float tab_strip_height) {
+void GroupIndicatorLayer::SetProperties(
+    const tab_groups::TabGroupId& group_token,
+    int tint,
+    int reorder_background_tint,
+    int bubble_tint,
+    bool incognito,
+    bool foreground,
+    bool show_bubble,
+    bool show_reorder_background,
+    float x,
+    float y,
+    float width,
+    float height,
+    float title_start_padding,
+    float title_end_padding,
+    float corner_radius,
+    float bottom_indicator_width,
+    float bottom_indicator_height,
+    float bubble_padding,
+    float bubble_size,
+    float tab_strip_height) {
   // Update group indicator properties.
   foreground_ = foreground;
   group_indicator_->SetPosition(gfx::PointF(x, y));
@@ -68,9 +69,9 @@ void GroupIndicatorLayer::SetProperties(int id,
 
   // Show title if needed.
   DecorationIconTitle* title_layer = nullptr;
-  // Only pull if group id is valid.
-  if (layer_title_cache_ && id != -1) {
-    title_layer = layer_title_cache_->GetGroupTitleLayer(id, incognito);
+  if (layer_title_cache_) {
+    title_layer =
+        layer_title_cache_->GetGroupTitleLayer(group_token, incognito);
   }
   if (title_layer) {
     // Ensure we're using the updated title bitmap prior to accessing/updating

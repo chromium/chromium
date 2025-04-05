@@ -17,13 +17,13 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/ip_protection/common/ip_protection_probabilistic_reveal_token_crypter.h"
 #include "components/ip_protection/common/ip_protection_probabilistic_reveal_token_fetcher.h"
-#include "net/base/features.h"
 #include "net/base/net_errors.h"
+#include "services/network/public/cpp/network_switches.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "sql/test/test_helpers.h"
@@ -788,12 +788,9 @@ TEST_F(IpProtectionProbabilisticRevealTokenManagerTest,
 
 TEST_F(IpProtectionProbabilisticRevealTokenManagerTest,
        StoreTokensWhenFeatureIsEnabled) {
-  std::map<std::string, std::string> parameters;
-  parameters[net::features::kIpPrivacyStoreProbabilisticRevealTokens.name] =
-      "true";
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      net::features::kEnableIpProtectionProxy, std::move(parameters));
+  base::test::ScopedCommandLine command_line;
+  command_line.GetProcessCommandLine()->AppendSwitch(
+      network::switches::kStoreProbabilisticRevealTokens);
 
   const base::Time expiration = base::Time::Now() + base::Hours(8);
   const base::Time next_start = base::Time::Now() + base::Hours(4);

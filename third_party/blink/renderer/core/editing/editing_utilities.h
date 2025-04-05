@@ -263,6 +263,9 @@ int16_t ComparePositions(const PositionInFlatTree&, const PositionInFlatTree&);
 // Returns true if `node` in `range`, otherwise false.
 // Note: This function resides in "editing_utilities.cc".
 bool IsNodeFullyContained(const EphemeralRange& range, const Node& node);
+// Returns true if the element's visibility or display
+// style is changed to visible or inline, respectively.
+bool EnsureNodeVisibility(HTMLElement*);
 
 // boolean functions on Position
 

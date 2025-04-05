@@ -19,11 +19,9 @@
 namespace affiliations {
 
 AffiliationFetcherManager::AffiliationFetcherManager(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    AffiliationFetcherDelegate* delegate)
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : url_loader_factory_(url_loader_factory),
-      fetcher_factory_(std::make_unique<AffiliationFetcherFactoryImpl>()),
-      delegate_(delegate) {}
+      fetcher_factory_(std::make_unique<AffiliationFetcherFactoryImpl>()) {}
 
 AffiliationFetcherManager::~AffiliationFetcherManager() = default;
 
@@ -33,7 +31,7 @@ bool AffiliationFetcherManager::Fetch(
     base::OnceCallback<void(AffiliationFetcherInterface::FetchResult)>
         completion_callback) {
   std::unique_ptr<AffiliationFetcherInterface> fetcher =
-      fetcher_factory_->CreateInstance(url_loader_factory_, delegate_);
+      fetcher_factory_->CreateInstance(url_loader_factory_);
   if (!fetcher) {
     std::move(completion_callback)
         .Run(AffiliationFetcherInterface::FetchResult());

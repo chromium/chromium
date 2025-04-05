@@ -12,7 +12,6 @@ import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.ViewElementMatchesCondition;
 import org.chromium.base.test.transit.ViewSpec;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.R;
@@ -44,11 +43,9 @@ public class RegularTabSwitcherStation extends TabSwitcherStation {
     @Override
     public void declareElements(Elements.Builder elements) {
         super.declareElements(elements);
-        if (ChromeFeatureList.sTabGroupPaneAndroid.isEnabled() || mIncognitoTabsExist) {
-            assert mRegularTabsButton != null;
-            elements.declareEnterCondition(
-                    new ViewElementMatchesCondition(mRegularTabsButton, isSelected()));
-        }
+        assert mRegularTabsButton != null;
+        elements.declareEnterCondition(
+                new ViewElementMatchesCondition(mRegularTabsButton, isSelected()));
         if (!mRegularTabsExist) {
             elements.declareView(EMPTY_STATE_TEXT);
         }

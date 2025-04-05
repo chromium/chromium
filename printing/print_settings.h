@@ -115,9 +115,9 @@ class COMPONENT_EXPORT(PRINTING_SETTINGS) PrintSettings {
   // Reinitialize the settings to the default values.
   void Clear();
 
-  void SetCustomMargins(const PageMargins& requested_margins_in_points);
-  const PageMargins& requested_custom_margins_in_points() const {
-    return requested_custom_margins_in_points_;
+  void SetCustomMargins(const PageMargins& requested_margins_in_microns);
+  const PageMargins& requested_custom_margins_in_microns() const {
+    return requested_custom_margins_in_microns_;
   }
   void set_margin_type(mojom::MarginType margin_type) {
     margin_type_ = margin_type;
@@ -320,6 +320,11 @@ class COMPONENT_EXPORT(PRINTING_SETTINGS) PrintSettings {
       const {
     return printer_status_reason_;
   }
+
+  void set_print_scaling(mojom::PrintScalingType print_scaling) {
+    print_scaling_ = print_scaling;
+  }
+  mojom::PrintScalingType print_scaling() const { return print_scaling_; }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
@@ -424,7 +429,7 @@ class COMPONENT_EXPORT(PRINTING_SETTINGS) PrintSettings {
   bool is_modifiable_;
 
   // If margin type is custom, this is what was requested.
-  PageMargins requested_custom_margins_in_points_;
+  PageMargins requested_custom_margins_in_microns_;
 
   // Number of pages per sheet.
   int pages_per_sheet_;
@@ -458,6 +463,10 @@ class COMPONENT_EXPORT(PRINTING_SETTINGS) PrintSettings {
   // The printer status reason shown for the selected printer at the time print
   // is requested. Only local CrOS printers set printer statuses.
   std::optional<crosapi::mojom::StatusReason::Reason> printer_status_reason_;
+
+  // Print scaling type.
+  mojom::PrintScalingType print_scaling_ =
+      mojom::PrintScalingType::kUnknownPrintScalingType;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 };
 

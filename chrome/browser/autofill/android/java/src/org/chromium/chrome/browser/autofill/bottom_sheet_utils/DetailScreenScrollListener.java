@@ -6,15 +6,16 @@ package org.chromium.chrome.browser.autofill.bottom_sheet_utils;
 
 import static org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState.HALF;
 
-import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
 /**
  * Listener for scroll events of the recycler view holding addresses and credit cards.
  * TODO(crbug.com/40260900): Add test coverage for this class.
  */
+@NullMarked
 public class DetailScreenScrollListener extends RecyclerView.OnScrollListener {
     private final BottomSheetController mBottomSheetController;
 
@@ -25,7 +26,7 @@ public class DetailScreenScrollListener extends RecyclerView.OnScrollListener {
     }
 
     @Override
-    public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+    public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
         super.onScrolled(recyclerView, dx, dy);
         mY = recyclerView.computeVerticalScrollOffset();
         if (isScrolledToTop() && mBottomSheetController.getSheetState() == HALF) {

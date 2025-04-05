@@ -98,6 +98,7 @@ export class ViewerToolbarElement extends CrLitElement {
         reflect: true,
       },
 
+      displayAnnotations_: {type: Boolean},
       fittingType_: {type: Number},
       pdfAnnotationsEnabled_: {type: Boolean},
       printingEnabled_: {type: Boolean},
@@ -125,47 +126,47 @@ export class ViewerToolbarElement extends CrLitElement {
     };
   }
 
-  docTitle: string = '';
-  docLength: number = 0;
-  embeddedViewer: boolean = false;
-  hasEdits: boolean = false;
-  hasEnteredAnnotationMode: boolean = false;
-  formFieldFocus: FormFieldFocusType = FormFieldFocusType.NONE;
-  loadProgress: number = 0;
-  pageNo: number = 0;
-  pdfCr23Enabled: boolean = false;
-  rotated: boolean = false;
-  strings?: LoadTimeDataRaw;
-  viewportZoom: number = 0;
-  zoomBounds: {min: number, max: number} = {min: 0, max: 0};
-  sidenavCollapsed: boolean = false;
-  twoUpViewEnabled: boolean = false;
-  protected displayAnnotations_: boolean = true;
-  private fittingType_: FittingType = FittingType.FIT_TO_PAGE;
-  protected moreMenuOpen_: boolean = false;
-  protected loading_: boolean = true;
-  private pdfAnnotationsEnabled_: boolean = false;
-  protected printingEnabled_: boolean = false;
-  private viewportZoomPercent_: number = 0;
+  accessor docTitle: string = '';
+  accessor docLength: number = 0;
+  accessor embeddedViewer: boolean = false;
+  accessor hasEdits: boolean = false;
+  accessor hasEnteredAnnotationMode: boolean = false;
+  accessor formFieldFocus: FormFieldFocusType = FormFieldFocusType.NONE;
+  accessor loadProgress: number = 0;
+  accessor pageNo: number = 0;
+  accessor pdfCr23Enabled: boolean = false;
+  accessor rotated: boolean = false;
+  accessor strings: LoadTimeDataRaw|undefined;
+  accessor viewportZoom: number = 0;
+  accessor zoomBounds: {min: number, max: number} = {min: 0, max: 0};
+  accessor sidenavCollapsed: boolean = false;
+  accessor twoUpViewEnabled: boolean = false;
+  protected accessor displayAnnotations_: boolean = true;
+  private accessor fittingType_: FittingType = FittingType.FIT_TO_PAGE;
+  protected accessor moreMenuOpen_: boolean = false;
+  protected accessor loading_: boolean = true;
+  private accessor pdfAnnotationsEnabled_: boolean = false;
+  protected accessor printingEnabled_: boolean = false;
+  private accessor viewportZoomPercent_: number = 0;
 
   // <if expr="enable_ink or enable_pdf_ink2">
   // Reactive properties common to ink and ink2
-  annotationAvailable: boolean = false;
-  annotationMode: AnnotationMode = AnnotationMode.NONE;
+  accessor annotationAvailable: boolean = false;
+  accessor annotationMode: AnnotationMode = AnnotationMode.NONE;
   // </if>
 
   // <if expr="enable_ink">
   // Ink reactive properties
-  protected showAnnotationsModeDialog_: boolean = false;
+  protected accessor showAnnotationsModeDialog_: boolean = false;
   // </if>
 
   // <if expr="enable_pdf_ink2">
   // Ink2 reactive properties
-  hasInk2Edits: boolean = false;
-  pdfInk2Enabled: boolean = false;
-  protected canRedoAnnotation_: boolean = false;
-  protected canUndoAnnotation_: boolean = false;
-  protected pdfTextAnnotationsEnabled_: boolean = false;
+  accessor hasInk2Edits: boolean = false;
+  accessor pdfInk2Enabled: boolean = false;
+  protected accessor canRedoAnnotation_: boolean = false;
+  protected accessor canUndoAnnotation_: boolean = false;
+  protected accessor pdfTextAnnotationsEnabled_: boolean = false;
 
   // Ink2 class members
   private currentStroke: number = 0;

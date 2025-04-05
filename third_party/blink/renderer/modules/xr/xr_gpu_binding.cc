@@ -54,14 +54,14 @@ XRGPUBinding* XRGPUBinding::Create(XRSession* session,
     return nullptr;
   }
 
-  if (device->destroyed()) {
+  if (device->IsDestroyed()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Cannot create an XRGPUBinding with a "
                                       "destroyed WebGPU device.");
     return nullptr;
   }
 
-  if (!device->adapter()->isXRCompatible()) {
+  if (!device->adapter()->IsXRCompatible()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "WebGPU device must be created by an XR compatible adapter in order to "
@@ -216,7 +216,7 @@ gfx::Rect XRGPUBinding::GetViewportForView(XRProjectionLayer* layer,
 V8GPUTextureFormat XRGPUBinding::getPreferredColorFormat() {
   // TODO(crbug.com/5818595): Ensure the backend swap chain format matches this.
   // Till then the copy between formats is done in XRGPUTextureArraySwapChain.
-  return FromDawnEnum(GPU::preferred_canvas_format());
+  return FromDawnEnum(GPU::GetPreferredCanvasFormat());
 }
 
 bool XRGPUBinding::CanCreateLayer(ExceptionState& exception_state) {
@@ -227,7 +227,7 @@ bool XRGPUBinding::CanCreateLayer(ExceptionState& exception_state) {
     return false;
   }
 
-  if (device_->destroyed()) {
+  if (device_->IsDestroyed()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Cannot create a new layer with a "
                                       "destroyed WebGPU device.");

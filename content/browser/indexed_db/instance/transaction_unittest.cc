@@ -158,9 +158,11 @@ class TransactionTest : public testing::Test {
 
     std::unique_ptr<Transaction> transaction = std::make_unique<Transaction>(
         id, connection, object_store_ids, mode,
+        blink::mojom::IDBTransactionDurability::Relaxed,
         BucketContextHandle(*bucket_context_),
-        new FakeTransaction(commit_phase_two_error_status, mode,
-                            bucket_context_->backing_store()->AsWeakPtr()));
+        std::make_unique<FakeTransaction>(
+            commit_phase_two_error_status, mode,
+            bucket_context_->backing_store()->AsWeakPtr()));
 
     Transaction* transaction_reference = transaction.get();
     connection->transactions_[id] = std::move(transaction);

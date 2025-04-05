@@ -7,7 +7,7 @@
 
 /* eslint-disable no-console */
 
-import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
 type LogLevel = 'log'|'debug'|'info'|'warn'|'error';
@@ -20,7 +20,7 @@ function sendConsoleMessage(logLevel: LogLevel, originalArgs: unknown[]) {
   } catch (err) {
   }
   sendWebKitMessage('ConsoleMessageHandler', {
-    'sender_frame': gCrWeb.message.getFrameId(),
+    'sender_frame': gCrWebLegacy.message.getFrameId(),
     'log_level': logLevel,
     'message': message,
     'url': document.location.href,

@@ -8,6 +8,7 @@
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/themes/theme_service_factory.h"
 #include "extensions/browser/api/declarative/rules_registry_service.h"
 
 namespace glic {
@@ -30,6 +31,7 @@ GlicKeyedServiceFactory::GlicKeyedServiceFactory()
     : ProfileKeyedServiceFactory("GlicKeyedService",
                                  ProfileSelections::BuildForRegularProfile()) {
   DependsOn(IdentityManagerFactory::GetInstance());
+  DependsOn(ThemeServiceFactory::GetInstance());
 }
 
 GlicKeyedServiceFactory::~GlicKeyedServiceFactory() = default;

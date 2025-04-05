@@ -142,6 +142,7 @@ blink_core_sources_dom = [
   "events/tree_scope_event_context.h",
   "events/window_event_context.cc",
   "events/window_event_context.h",
+  "explicitly_set_attr_elements_map.h",
   "first_letter_pseudo_element.cc",
   "first_letter_pseudo_element.h",
   "flat_tree_node_data.cc",

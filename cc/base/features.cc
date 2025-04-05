@@ -33,6 +33,10 @@ BASE_FEATURE(kSynchronizedScrolling,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+BASE_FEATURE(kZeroCopyRBPPartialRasterWithGpuCompositor,
+             "ZeroCopyRBPPartialRasterWithGpuCompositor",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kMainRepaintScrollPrefersNewContent,
              "MainRepaintScrollPrefersNewContent",
              base::FEATURE_ENABLED_BY_DEFAULT);

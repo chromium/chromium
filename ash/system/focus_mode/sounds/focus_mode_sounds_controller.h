@@ -179,6 +179,7 @@ class ASH_EXPORT FocusModeSoundsController
   void set_simulate_playback_for_testing() {
     simulate_playback_for_testing_ = true;
   }
+  bool has_audio_focus_for_testing() { return has_audio_focus_; }
 
   bool IsMinorUser();
   void SetIsMinorUserForTesting(bool is_minor_user);

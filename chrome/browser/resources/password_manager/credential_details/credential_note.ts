@@ -33,11 +33,12 @@ export class CredentialNoteElement extends CredentialNoteElementBase {
   static get properties() {
     return {
       note: String,
+      showNoteFully_: Boolean,
     };
   }
 
-  note: string;
-  private showNoteFully_: boolean;
+  declare note: string;
+  declare private showNoteFully_: boolean;
 
   override connectedCallback() {
     super.connectedCallback();

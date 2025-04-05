@@ -322,18 +322,6 @@ class DeveloperPrivateRequestFileSourceFunction
   std::optional<api::developer_private::RequestFileSource::Params> params_;
 };
 
-class DeveloperPrivateOpenDevToolsFunction
-    : public DeveloperPrivateAPIFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("developerPrivate.openDevTools",
-                             DEVELOPERPRIVATE_OPENDEVTOOLS)
-  DeveloperPrivateOpenDevToolsFunction();
-
- protected:
-  ~DeveloperPrivateOpenDevToolsFunction() override;
-  ResponseAction Run() override;
-};
-
 class DeveloperPrivateRepairExtensionFunction
     : public DeveloperPrivateAPIFunction {
  public:

@@ -31,7 +31,7 @@ IndexWriter::IndexWriter(const IndexedDBIndexMetadata& index_metadata,
 IndexWriter::~IndexWriter() {}
 
 bool IndexWriter::VerifyIndexKeys(BackingStore* backing_store,
-                                  BackingStore::Transaction* transaction,
+                                  Transaction::Delegate* transaction,
                                   int64_t database_id,
                                   int64_t object_store_id,
                                   int64_t index_id,
@@ -63,7 +63,7 @@ bool IndexWriter::VerifyIndexKeys(BackingStore* backing_store,
 Status IndexWriter::WriteIndexKeys(
     const BackingStore::RecordIdentifier& record_identifier,
     BackingStore* backing_store,
-    BackingStore::Transaction* transaction,
+    Transaction::Delegate* transaction,
     int64_t database_id,
     int64_t object_store_id) const {
   int64_t index_id = index_metadata_.id;
@@ -79,7 +79,7 @@ Status IndexWriter::WriteIndexKeys(
 }
 
 bool IndexWriter::AddingKeyAllowed(BackingStore* backing_store,
-                                   BackingStore::Transaction* transaction,
+                                   Transaction::Delegate* transaction,
                                    int64_t database_id,
                                    int64_t object_store_id,
                                    int64_t index_id,

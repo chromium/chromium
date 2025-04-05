@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_CROWDSOURCING_RANDOMIZED_ENCODER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_CROWDSOURCING_RANDOMIZED_ENCODER_H_
 
-#include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -21,13 +21,6 @@ namespace autofill {
 // in go/autofill-metadata-upload (Google internal link).
 class RandomizedEncoder {
  public:
-  struct EncodingInfo {
-    AutofillRandomizedValue_EncodingType encoding_type;
-    size_t chunk_length_in_bytes;
-    size_t bit_offset;
-    size_t bit_stride;
-  };
-
   // Form-level data-type identifiers.
   static constexpr char kFormId[] = "form-id";
   static constexpr char kFormName[] = "form-name";
@@ -61,11 +54,16 @@ class RandomizedEncoder {
       "url_keyed_anonymized_data_collection.enabled";
 
   // Factory Function
-  static std::unique_ptr<RandomizedEncoder> Create(PrefService* pref_service);
+  static std::optional<RandomizedEncoder> Create(PrefService* pref_service);
 
   RandomizedEncoder(std::string seed,
                     AutofillRandomizedValue_EncodingType encoding_type,
                     bool anonymous_url_collection_is_enabled);
+  RandomizedEncoder(RandomizedEncoder&&);
+  RandomizedEncoder& operator=(RandomizedEncoder&&);
+  RandomizedEncoder(const RandomizedEncoder&) = delete;
+  RandomizedEncoder& operator=(const RandomizedEncoder&) = delete;
+  ~RandomizedEncoder();
 
   // Encode |data_value| using this instance's |encoding_type_|.
   // If |data_type!=FORM_URL|, the output value's length is limited by
@@ -81,11 +79,9 @@ class RandomizedEncoder {
                                std::u16string_view data_value) const;
 
   AutofillRandomizedValue_EncodingType encoding_type() const {
-    DCHECK(encoding_info_);
-    return encoding_info_
-               ? encoding_info_->encoding_type
-               : AutofillRandomizedValue_EncodingType_UNSPECIFIED_ENCODING_TYPE;
+    return encoding_type_;
   }
+
   bool AnonymousUrlCollectionIsEnabled() const {
     return anonymous_url_collection_is_enabled_;
   }
@@ -111,10 +107,19 @@ class RandomizedEncoder {
                     std::string_view data_type) const;
 
  private:
-  const std::string seed_;
-  const raw_ptr<const EncodingInfo> encoding_info_;
-  const bool anonymous_url_collection_is_enabled_;
+  struct EncodingInfo {
+    size_t chunk_length_in_bytes;
+    size_t bit_offset;
+    size_t bit_stride;
+  };
+
+  const EncodingInfo& encoding_info() const;
+
+  std::string seed_;
+  AutofillRandomizedValue_EncodingType encoding_type_;
+  bool anonymous_url_collection_is_enabled_;
 };
+
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_CROWDSOURCING_RANDOMIZED_ENCODER_H_

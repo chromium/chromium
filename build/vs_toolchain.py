@@ -59,7 +59,7 @@ from gn_helpers import ToGNString
 # * docs/windows_build_instructions.md
 #   Make sure any version numbers in the documentation match the code.
 #
-TOOLCHAIN_HASH = '076960eda6'
+TOOLCHAIN_HASH = '68a20d6dee'
 SDK_VERSION = '10.0.26100.0'
 
 # Visual Studio versions are listed in descending order of priority.

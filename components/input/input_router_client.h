@@ -14,7 +14,6 @@
 
 namespace ui {
 class LatencyInfo;
-struct DidOverscrollParams;
 }  // namespace ui
 
 namespace input {
@@ -50,7 +49,7 @@ class COMPONENT_EXPORT(INPUT) InputRouterClient {
 
   // Called when the router has received an overscroll notification from the
   // renderer.
-  virtual void DidOverscroll(const ui::DidOverscrollParams& params) = 0;
+  virtual void DidOverscroll(blink::mojom::DidOverscrollParamsPtr params) = 0;
 
   // Called when the router has received an allowed touch action notification
   // from the renderer.

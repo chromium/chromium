@@ -15,7 +15,6 @@ class Window;
 
 namespace ash {
 class BirchChipButton;
-class SavedDeskSaveDeskButton;
 class SavedDeskSaveDeskButtonContainer;
 
 class OverviewGridTestApi {
@@ -42,14 +41,6 @@ class OverviewGridTestApi {
   int num_unsupported_windows() const {
     return overview_grid_->num_unsupported_windows_;
   }
-
-  bool IsSaveDeskAsTemplateButtonVisible() const;
-  bool IsSaveDeskForLaterButtonVisible() const;
-
-  // Returns the save desk as template button or save desk for later button if
-  // available, otherwise null.
-  SavedDeskSaveDeskButton* GetSaveDeskAsTemplateButton();
-  SavedDeskSaveDeskButton* GetSaveDeskForLaterButton();
 
   // Returns the save button container if available, otherwise null.
   SavedDeskSaveDeskButtonContainer* GetSaveDeskButtonContainer();

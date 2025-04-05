@@ -27,6 +27,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ntp_customization.ntp_cards.NtpCardsCoordinator;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -48,7 +49,8 @@ public class NtpCustomizationCoordinatorUnitTest {
     public void setUp() {
         mContext = ApplicationProvider.getApplicationContext();
         mNtpCustomizationCoordinator =
-                new NtpCustomizationCoordinator(mContext, mBottomSheetController);
+                new NtpCustomizationCoordinator(
+                        mContext, mBottomSheetController, mock(Supplier.class));
         mNtpCustomizationCoordinator.setViewFlipperForTesting(mViewFlipper);
         mNtpCustomizationCoordinator.setMediatorForTesting(mMediator);
     }

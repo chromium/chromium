@@ -112,6 +112,7 @@
 <translation id="1306549533752902673">แอปแนะนำ</translation>
 <translation id="1310396869741602366">เปลี่ยนน้ำเสียง</translation>
 <translation id="1312604459020188865">ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" /></translation>
+<translation id="1314113845887519729">เลือกแฮนเดิลขอบด้านบนแล้ว ใช้แป้นลูกศรเพื่อย้าย</translation>
 <translation id="1316069254387866896">แสดงชั้นวางเสมอ</translation>
 <translation id="132346741904777634">จัดกล้องพอดีกับมุมซ้ายบนแล้ว เนื่องจากขัดแย้งกับแพลตฟอร์มของระบบ</translation>
 <translation id="132415371743256095">ปิด <ph name="DESK_NAME" /> และหน้าต่าง</translation>
@@ -186,6 +187,7 @@
 <translation id="1557622599341396706">แสดงชื่อเดสก์</translation>
 <translation id="1569384531973824928">การดำเนินการนี้ช่วยให้แอปและเว็บไซต์ทั้งหมดที่มีสิทธิ์สามารถเข้าถึงกล้องและไมโครโฟนได้ คุณอาจต้องรีเฟรชหน้าเว็บหรือรีสตาร์ทแอป</translation>
 <translation id="1571697193564730395">เปิด/ปิดโหมดห้ามรบกวน <ph name="STATE_TEXT" /></translation>
+<translation id="1574691582236909946">เลือกแฮนเดิลขอบด้านซ้ายแล้ว ใช้แป้นลูกศรเพื่อย้าย</translation>
 <translation id="1576623706766186887">ซูมออกเมื่อแว่นขยายเปิดอยู่</translation>
 <translation id="1582946770779745370">แดชบอร์ดเกมพร้อมใช้งาน กด <ph name="LAUNCHER_KEY_NAME" /> + Shift + Escape จากนั้นกด <ph name="LAUNCHER_KEY_NAME" /> + g ได้ทุกเมื่อเพื่อเปิด</translation>
 <translation id="1586324912145647027">ไปที่เดสก์ 1 ถึง 8</translation>
@@ -220,6 +222,7 @@
 <translation id="1696984622403682083">คุณปิดฟีเจอร์นี้ได้ทุกเมื่อในการตั้งค่า <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910">ตัวจับเวลา <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">ที่อยู่ IPv6: <ph name="ADDRESS" /></translation>
+<translation id="1700782710852683371">สร้างรูปภาพจากคำอธิบายนี้ไม่ได้ในขณะนี้ โปรดลองปรับเปลี่ยนคำอธิบาย โปรดทราบว่าคุณไม่สามารถสร้างรูปภาพบุคคล เนื้อหาที่เป็นอันตราย หรือเนื้อหาที่อาจไม่เหมาะสมได้</translation>
 <translation id="1703117532528082099">ตรึงหน้าต่างที่ใช้งานไว้ทางด้านซ้ายแล้ว</translation>
 <translation id="1708345662127501511">เดสก์: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">การตั้งค่าเครือข่าย</translation>
@@ -608,6 +611,7 @@
 <translation id="304097922505898963">เปิดแอปแป้นพิมพ์ลัด</translation>
 <translation id="304417730895741346">แอปที่ปักหมุดและเปิดไว้จะอยู่ในแถบ หากต้องการปักหมุดแอปในแถบ ให้คลิกขวาที่แอปหรือใช้ 2 นิ้วแตะทัชแพด</translation>
 <translation id="3045488863354895414">สวัสดียามบ่าย</translation>
+<translation id="3045670165536837541">เลือกแฮนเดิลด้านขวาบนแล้ว ใช้แป้นลูกศรเพื่อย้าย</translation>
 <translation id="3047761520276763270">ลองพูดว่า</translation>
 <translation id="3053407068093039599">เปิด/ปิดสิทธิ์เข้าถึงกล้อง</translation>
 <translation id="3055162170959710888">วันนี้คุณใช้อุปกรณ์เครื่องนี้ไป <ph name="USED_TIME" /></translation>
@@ -1758,6 +1762,7 @@
 <translation id="6696025732084565524">แป้มพิมพ์ที่ถอดได้ต้องได้รับอัปเดตที่สำคัญ</translation>
 <translation id="6697913454192220372">เพิ่มเดสก์ใหม่</translation>
 <translation id="6700713906295497288">ปุ่มเมนู IME</translation>
+<translation id="6704073473590541209">เลือกแฮนเดิลขอบด้านขวาแล้ว ใช้แป้นลูกศรเพื่อย้าย</translation>
 <translation id="6706742084323792866">ปักหมุดแป้นพิมพ์</translation>
 <translation id="6710213216561001401">ก่อนหน้า</translation>
 <translation id="6723839937902243910">พลังงาน</translation>
@@ -1781,6 +1786,7 @@
 <translation id="6781002679438061620">เดสก์ที่ 9</translation>
 <translation id="6782182743534150858">เดสก์ที่ 13</translation>
 <translation id="6782919488259222803">ค้นหาหน้าปัจจุบัน</translation>
+<translation id="6783348167101855071">เลือกแฮนเดิลด้านขวาล่างแล้ว ใช้แป้นลูกศรเพื่อย้าย</translation>
 <translation id="6786750046913594791">ปิดโฟลเดอร์</translation>
 <translation id="6790428901817661496">เล่น</translation>
 <translation id="6792262051831399889">ไม่พร้อมใช้งาน</translation>
@@ -1936,6 +1942,7 @@
 <translation id="7371404428569700291">หน้าต่างการบันทึก</translation>
 <translation id="7372069265635026568">เหลือหน่วยความจำ <ph name="AVAILABLE_MEMORY" /> จากทั้งหมด <ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">การตั้งค่านี้ช่วยให้แอปและเว็บไซต์ทั้งหมดที่มีสิทธิ์เข้าถึงไมโครโฟนได้</translation>
+<translation id="7376933029363911338">เลือกแฮนเดิลขอบด้านล่างแล้ว ใช้แป้นลูกศรเพื่อย้าย</translation>
 <translation id="7377169924702866686">Caps Lock เปิดอยู่</translation>
 <translation id="7377481913241237033">เชื่อมต่อด้วยรหัส</translation>
 <translation id="7378203170292176219">ลากเพื่อเลือกพื้นที่ที่จะบันทึก</translation>
@@ -2032,6 +2039,7 @@
 <translation id="7658239707568436148">ยกเลิก</translation>
 <translation id="7659861092419699379">ปิดเดสก์และหน้าต่างแล้ว</translation>
 <translation id="7660160718439869192"><ph name="NAME" /> ของคุณจะปรากฏในอุปกรณ์ที่ลิงก์กับ <ph name="EMAIL" /></translation>
+<translation id="7661694115779363471">เลือกแฮนเดิลด้านซ้ายล่างแล้ว ใช้แป้นลูกศรเพื่อย้าย</translation>
 <translation id="7662283695561029522">แตะเพื่อกำหนดค่า</translation>
 <translation id="7670953955701272011">เปิดวันที่นี้ใน Google ปฏิทิน</translation>
 <translation id="7671610481353807627">จัดเรียงแอปตามสีแล้ว</translation>
@@ -2200,6 +2208,7 @@
 <translation id="8155628902202578800">เปิดกล่องโต้ตอบข้อมูลของ <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">กำลังใช้<ph name="LOCALE_NAME" /></translation>
 <translation id="8168435359814927499">เนื้อหา</translation>
+<translation id="8172370561760918656">เลือกแฮนเดิลด้านซ้ายบนแล้ว ใช้แป้นลูกศรเพื่อย้าย</translation>
 <translation id="81817143961839203">แทรกรูปภาพไม่สำเร็จ</translation>
 <translation id="8185090165691050712">เปิด/ปิดเมนูเพื่อปรับขนาดโหมดล็อก</translation>
 <translation id="8192727139462702395">เมื่อปิดบลูทูธ อุปกรณ์ภายนอกเหล่านี้จะยกเลิกการเชื่อมต่อกับ <ph name="DEVICE_TYPE" /> ของคุณ</translation>

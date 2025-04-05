@@ -70,21 +70,17 @@ export class SettingsFingerprintListSubpageElement extends
         type: Boolean,
         value: true,
       },
-
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kAddFingerprintV2,
-          Setting.kRemoveFingerprintV2,
-        ]),
-      },
     };
   }
 
   authToken: string|undefined;
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kAddFingerprintV2,
+    Setting.kRemoveFingerprintV2,
+  ]);
+
   private fingerprints_: string[];
   private showSetupFingerprintDialog_: boolean;
   private allowAddAnotherFinger_: boolean;

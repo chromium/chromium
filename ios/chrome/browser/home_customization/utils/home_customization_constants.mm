@@ -69,6 +69,11 @@ NSString* const kCustomizationCollectionMagicStackIdentifier =
 NSString* const kCustomizationCollectionDiscoverIdentifier =
     @"kCustomizationCollectionDiscoverIdentifier";
 
+NSString* const kBackgroundCellIdentifier = @"kBackgroundCellIdentifier";
+
+NSString* const kBackgroundPickerCellIdentifier =
+    @"kBackgroundPickerCellIdentifier";
+
 const char kDiscoverFollowingURL[] =
     "https://google.com/preferences/interests/yourinterests";
 const char kDiscoverHiddenURL[] =
@@ -78,4 +83,5 @@ const char kDiscoverActivityURL[] =
 const char kDiscoverLearnMoreURL[] = "https://support.google.com/chrome/"
                                      "?p=new_tab&co=GENIE.Platform%3DiOS&oco=1";
 
+const NSInteger kNumberOfRecentBackgrounds = 3;
 const CGFloat kToggleIconPointSize = 18;

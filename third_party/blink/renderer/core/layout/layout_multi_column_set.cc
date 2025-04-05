@@ -396,7 +396,7 @@ void LayoutMultiColumnSet::UpdateGeometry() {
                    border_padding_scrollbar.VerticalSum());
   LogicalSize logical_size;
   logical_size.inline_size =
-      content_size.ConvertToLogical(writing_mode).inline_size;
+      ToLogicalSize(content_size, writing_mode).inline_size;
 
   // TODO(layout-dev): Ideally we should not depend on the layout tree structure
   // because it may be different from the tree for the physical fragments.

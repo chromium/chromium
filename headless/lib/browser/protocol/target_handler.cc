@@ -27,6 +27,17 @@ void TargetHandler::Wire(UberDispatcher* dispatcher) {
 }
 
 Response TargetHandler::Disable() {
+  while (!hidden_web_contents_.empty()) {
+    // Destroy all existing hidden targets when session is closed. Some of them
+    // can be already closed.
+    auto target_id = *hidden_web_contents_.begin();
+    auto agent_host = content::DevToolsAgentHost::GetForId(target_id);
+    if (agent_host) {
+      // The target is still alive, so destroy it.
+      agent_host->Close();
+    }
+    hidden_web_contents_.erase(hidden_web_contents_.begin());
+  }
   return Response::Success();
 }
 
@@ -42,6 +53,7 @@ Response TargetHandler::CreateTarget(
     std::optional<bool> new_window,
     std::optional<bool> background,
     std::optional<bool> for_tab,
+    std::optional<bool> hidden,
     std::string* out_target_id) {
 #if BUILDFLAG(IS_MAC)
   if (enable_begin_frame_control.value_or(false)) {
@@ -77,6 +89,33 @@ Response TargetHandler::CreateTarget(
   GURL gurl(url);
   if (gurl.is_empty()) {
     gurl = GURL(url::kAboutBlankURL);
+  }
+
+  if (hidden.value_or(false)) {
+    if (for_tab.value_or(false)) {
+      return protocol::Response::InvalidParams(
+          "Hidden target cannot be created for tab");
+    }
+    if (new_window) {
+      return protocol::Response::InvalidParams(
+          "Hidden target cannot be created in a new window");
+    }
+    if (!background.value_or(true)) {
+      return protocol::Response::InvalidParams(
+          "Hidden target can be created only in background");
+    }
+
+    // Create a hidden target.
+    HeadlessWebContentsImpl* web_contents_impl = HeadlessWebContentsImpl::From(
+        context->CreateWebContentsBuilder().SetInitialURL(gurl).Build());
+
+    *out_target_id = content::DevToolsAgentHost::GetOrCreateFor(
+                         web_contents_impl->web_contents())
+                         ->GetId();
+    // Keep hidden target's ID in the hidden_web_contents_ to close it when the
+    // session is closed.
+    hidden_web_contents_.insert(*out_target_id);
+    return Response::Success();
   }
 
   const gfx::Rect target_window_bounds(

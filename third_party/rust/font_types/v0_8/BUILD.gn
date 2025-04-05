@@ -35,7 +35,7 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "0.8.3"
+  cargo_pkg_version = "0.8.4"
   cargo_pkg_name = "font-types"
   cargo_pkg_description = "Scalar types used in fonts."
   library_configs -= [ "//build/config/coverage:default_coverage" ]

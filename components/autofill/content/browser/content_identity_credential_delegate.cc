@@ -60,8 +60,11 @@ ContentIdentityCredentialDelegate::GetVerifiedAutofillSuggestions(
         base::UTF8ToUTF16(account->identity_provider->idp_for_display)));
     suggestion.labels.push_back({Suggestion::Text(l10n_util::GetStringUTF16(
         IDS_AUTOFILL_IDENTITY_CREDENTIAL_EMAIL_LABEL))});
-    suggestion.payload = Suggestion::IdentityCredentialPayload(
+    auto payload = Suggestion::IdentityCredentialPayload(
         account->identity_provider->idp_metadata.config_url, account->id);
+    // TODO(crbug.com/380367784): add more field types.
+    payload.fields[HtmlFieldType::kEmail] = base::UTF8ToUTF16(account->email);
+    suggestion.payload = payload;
     suggestions.push_back(std::move(suggestion));
   }
 

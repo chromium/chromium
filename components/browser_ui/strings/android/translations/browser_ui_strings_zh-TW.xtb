@@ -440,7 +440,7 @@
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">受保護內容</translation>
 <translation id="662080504995468778">不離開</translation>
-<translation id="6653342741369270081">按下返回按鈕即可結束全螢幕模式。</translation>
+<translation id="6635327442719709864">如果啟用，網站就可以要求使用序列埠。如果停用，網站將無法使用序列埠。</translation>
 <translation id="6683865262523156564">這個網站所屬的群組可以查看你的活動。這是由 <ph name="RWS_OWNER" /> 定義的群組</translation>
 <translation id="6689172468748959065">個人資料相片</translation>
 <translation id="6697925417670533197">正在下載的項目</translation>

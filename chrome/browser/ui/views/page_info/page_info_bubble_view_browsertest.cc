@@ -43,6 +43,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
+#include "chrome/browser/ui/views/page_info/page_info_ad_personalization_content_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_cookies_content_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_permission_content_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
@@ -277,6 +278,13 @@ class PageInfoBubbleViewBrowserTest : public InProcessBrowserTest {
                     ->presenter_for_testing();
     DCHECK(presenter);
     return presenter;
+  }
+
+  void SetAdPersonalizationInfo(
+      const PageInfoUI::AdPersonalizationInfo& identity_info) {
+    auto* presenter = GetPresenter();
+    EXPECT_TRUE(presenter->ui_for_testing());
+    presenter->ui_for_testing()->SetAdPersonalizationInfo(identity_info);
   }
 
   void SetPageInfoBubbleIdentityInfo(
@@ -896,6 +904,46 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest,
       GetPageInfoBubbleViewDetailText(),
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_SOCIAL_ENGINEERING_DETAILS) +
           u" " + l10n_util::GetStringUTF16(IDS_LEARN_MORE));
+}
+
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest, AdPrivacyStrings) {
+  base::UserActionTester user_actions_stats;
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.AddDefaultHandlers(
+      base::FilePath(FILE_PATH_LITERAL("chrome/test/data")));
+  ASSERT_TRUE(https_server.Start());
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server.GetURL("/simple.html")));
+
+  // Setup the bogus ad personalization info.
+  PageInfoUI::AdPersonalizationInfo info;
+  info.has_joined_user_to_interest_group = true;
+
+  auto* pscs = content_settings::PageSpecificContentSettings::GetForFrame(
+      browser()
+          ->tab_strip_model()
+          ->GetActiveWebContents()
+          ->GetPrimaryMainFrame());
+  pscs->OnTopicAccessed(
+      url::Origin::Create(GURL("https://a.test")), false,
+      privacy_sandbox::CanonicalTopic(browsing_topics::Topic(1), 1));
+
+  OpenPageInfoBubble(browser());
+
+  SetAdPersonalizationInfo(info);
+
+  views::View* button =
+      GetView(PageInfoViewFactory::VIEW_ID_PAGE_INFO_AD_PERSONALIZATION_BUTTON);
+  PerformMouseClickOnView(button);
+
+  auto* label = PageInfoBubbleView::GetPageInfoBubbleForTesting()->GetViewByID(
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_AD_PERSONALIZATION_LABEL);
+  ASSERT_TRUE(label);
+
+  EXPECT_EQ(user_actions_stats.GetActionCount(
+                "PageInfo.AdPersonalization.OpenedWithTopics"),
+            1);
 }
 
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest, UnwantedSoftwareStrings) {

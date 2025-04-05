@@ -84,12 +84,15 @@ export function createEmptyCreditCardEntry():
 /**
  * Creates a new random credit card entry for testing.
  */
-export function createCreditCardEntry():
-    chrome.autofillPrivate.CreditCardEntry {
+export function createCreditCardEntry(
+    isNewFopDisplay: boolean = true,
+    hasIdentifier: boolean = false): chrome.autofillPrivate.CreditCardEntry {
   const cards = ['Visa', 'Mastercard', 'Discover', 'Card'];
   const card = cards[Math.floor(Math.random() * cards.length)];
   const cardNumber = appendLuhnCheckBit(patternMaker('xxxxxxxxxxxxxxx', 10));
   const now = new Date();
+  const networkAndLastFour = card + ' ' +
+      '****' + cardNumber.substr(-4);
   return {
     guid: makeGuid(),
     name: 'Jane Doe',
@@ -101,9 +104,10 @@ export function createCreditCardEntry():
     imageSrc: 'chrome://theme/IDR_AUTOFILL_CC_GENERIC',
     metadata: {
       isLocal: true,
-      summaryLabel: card + ' ' +
-          '****' + cardNumber.substr(-4),
-      summarySublabel: 'Jane Doe',
+      summaryLabel: hasIdentifier ? `My Credit Card` : networkAndLastFour,
+      summarySublabel: isNewFopDisplay ?
+          (hasIdentifier ? networkAndLastFour : '') :
+          'Jane Doe',
     },
   };
 }

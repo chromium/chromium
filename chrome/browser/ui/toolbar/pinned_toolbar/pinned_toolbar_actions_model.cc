@@ -65,15 +65,13 @@ bool PinnedToolbarActionsModel::CanUpdate() {
   return profile_->IsRegularProfile();
 }
 
-bool PinnedToolbarActionsModel::Contains(
-    const actions::ActionId& action_id) const {
+bool PinnedToolbarActionsModel::Contains(actions::ActionId action_id) const {
   auto iter = std::ranges::find(pinned_action_ids_, action_id);
   return iter != pinned_action_ids_.end();
 }
 
-void PinnedToolbarActionsModel::UpdatePinnedState(
-    const actions::ActionId& action_id,
-    const bool should_pin) {
+void PinnedToolbarActionsModel::UpdatePinnedState(actions::ActionId action_id,
+                                                  const bool should_pin) {
   if (!CanUpdate()) {
     // At a minimum, incognito should be read-only. Guest mode should not be
     // able to modify the prefs either.
@@ -103,9 +101,8 @@ void PinnedToolbarActionsModel::UpdatePinnedState(
   }
 }
 
-void PinnedToolbarActionsModel::MovePinnedAction(
-    const actions::ActionId& action_id,
-    int target_index) {
+void PinnedToolbarActionsModel::MovePinnedAction(actions::ActionId action_id,
+                                                 int target_index) {
   if (!CanUpdate()) {
     // At a minimum, incognito should be read-only. Guest mode should not be
     // able to modify the prefs either.
@@ -154,7 +151,7 @@ void PinnedToolbarActionsModel::MovePinnedAction(
   }
 }
 
-void PinnedToolbarActionsModel::PinAction(const actions::ActionId& action_id) {
+void PinnedToolbarActionsModel::PinAction(actions::ActionId action_id) {
   std::vector<actions::ActionId> updated_pinned_action_ids = pinned_action_ids_;
 
   updated_pinned_action_ids.push_back(action_id);
@@ -168,8 +165,7 @@ void PinnedToolbarActionsModel::PinAction(const actions::ActionId& action_id) {
   }
 }
 
-void PinnedToolbarActionsModel::UnpinAction(
-    const actions::ActionId& action_id) {
+void PinnedToolbarActionsModel::UnpinAction(actions::ActionId action_id) {
   std::vector<actions::ActionId> updated_pinned_action_ids = pinned_action_ids_;
   std::erase(updated_pinned_action_ids, action_id);
 

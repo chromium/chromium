@@ -50,14 +50,18 @@ AXTreeFixingScreenAIService::~AXTreeFixingScreenAIService() = default;
 void AXTreeFixingScreenAIService::IdentifyMainNode(
     const ui::AXTreeUpdate& ax_tree_update,
     int request_id) {
-  // Client should not be sending requests for trees that have a kMain node.
+  // For simplicity, if a client makes a request with a tree that already
+  // contains a main node, simply return that node id.
+  // TODO(401308988): Ideally clients should not be sending requests for trees
+  // that have a kMain node, but until we have a UX it will make Canary testing
+  // easier to not force errors. Consider adding NOTREACHED in future.
   for (const ui::AXNodeData& node : ax_tree_update.nodes) {
     if (node.role == ax::mojom::Role::kMain) {
       base::UmaHistogramEnumeration(
           kAXTreeFixingClientRequestTypeHistogramName,
           AXTreeFixingClientScreenAIRequestType::kMainLandmarkAlreadyPresent);
-      NOTREACHED() << "A node with the main landmark is already present in the "
-                      "accessibility tree.";
+      main_node_identification_delegate_->OnMainNodeIdentified(
+          ax_tree_update.tree_data.tree_id, node.id, request_id);
     }
   }
 

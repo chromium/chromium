@@ -101,6 +101,8 @@ class FakeAutocompleteController : public AutocompleteController {
   using AutocompleteController::ShouldRunProvider;
   using AutocompleteController::UpdateAssociatedKeywords;
   using AutocompleteController::UpdateResult;
+  using AutocompleteController::UpdateSearchboxStats;
+  using AutocompleteController::UpdateShownInSession;
 
   // AutocompleteController (fields):
   using AutocompleteController::input_;

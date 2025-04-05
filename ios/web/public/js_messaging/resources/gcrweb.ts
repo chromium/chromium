@@ -22,4 +22,4 @@ if (!(window as WindowWithGcrWeb).__gCrWeb) {
   (window as WindowWithGcrWeb).__gCrWeb = {};
 }
 
-export const gCrWeb: any = (window as WindowWithGcrWeb).__gCrWeb;
+export const gCrWebLegacy: any = (window as WindowWithGcrWeb).__gCrWeb;

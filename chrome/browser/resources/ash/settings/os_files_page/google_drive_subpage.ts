@@ -82,15 +82,6 @@ export class SettingsGoogleDriveSubpageElement extends
   static get properties() {
     return {
       /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>(
-            [Setting.kGoogleDriveRemoveAccess, Setting.kGoogleDriveFileSync]),
-      },
-
-      /**
        * Ensures the data binding is updated on the UI when
        * `contentCacheSize_` is updated.
        */
@@ -136,6 +127,12 @@ export class SettingsGoogleDriveSubpageElement extends
       `updateBulkPinningVisible_(prefs.drivefs.bulk_pinning.visible.value)`,
     ];
   }
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kGoogleDriveRemoveAccess,
+    Setting.kGoogleDriveFileSync,
+  ]);
 
   /**
    * Reflects the state of `prefs.gdata.disabled` pref.
@@ -193,7 +190,8 @@ export class SettingsGoogleDriveSubpageElement extends
 
   private updateContentCacheSizeInterval_: number;
 
-  private isDriveFsBulkPinningEnabled_: boolean;
+  private readonly isDriveFsBulkPinningEnabled_: boolean;
+  private readonly isDriveFsMirrorSyncEnabled_: boolean;
 
   /**
    * Returns the browser proxy page handler (to invoke functions).

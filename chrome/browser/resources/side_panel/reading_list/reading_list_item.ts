@@ -54,7 +54,7 @@ export class ReadingListItemElement extends ReadingListItemElementBase {
     };
   }
 
-  data: ReadLaterEntry = {
+  accessor data: ReadLaterEntry = {
     title: '',
     url: {url: ''},
     displayUrl: '',
@@ -63,7 +63,7 @@ export class ReadingListItemElement extends ReadingListItemElementBase {
     displayTimeSinceUpdate: '',
   };
 
-  buttonRipples: boolean = false;
+  accessor buttonRipples: boolean = false;
   private apiProxy_: ReadingListApiProxy =
       ReadingListApiProxyImpl.getInstance();
 

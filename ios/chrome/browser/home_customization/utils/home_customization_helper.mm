@@ -47,7 +47,7 @@
       } else if (commerce::kShopCardVariation.Get() ==
                  commerce::kShopCardArm2) {
         return l10n_util::GetNSString(
-            IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_REVIEWS_ALT_TITLE);
+            IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_REVIEWS_CUSTOMIZE_CARDS_ALT_2);
       }
       return @"";
   }

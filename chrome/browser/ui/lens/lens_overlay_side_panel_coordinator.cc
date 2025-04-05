@@ -31,7 +31,7 @@
 #include "components/lens/lens_overlay_side_panel_result.h"
 #include "components/shared_highlighting/core/common/fragment_directives_utils.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/tab_collections/public/tab_interface.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"

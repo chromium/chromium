@@ -282,6 +282,16 @@ void LocalFilesMigrationManager::InitializeFromPrefs() {
   local_user_files_allowed_ = LocalUserFilesAllowed();
   migration_destination_ = GetMigrationDestination();
 
+  // For kDelete, retry cleanup even after kMaxRetryCount failures to ensure
+  // policy-enforced deletion. Other destinations treat kFailure as final.
+  if (state_ == State::kFailure &&
+      migration_destination_ == MigrationDestination::kDelete) {
+    current_retry_count_ = 0;
+    pref_service->SetInteger(prefs::kSkyVaultMigrationRetryCount,
+                             current_retry_count_);
+    SetState(State::kCleanup);
+  }
+
   LocalStorageHistograms(profile, local_user_files_allowed_);
 
   if (local_user_files_allowed_ ||
@@ -678,7 +688,8 @@ void LocalFilesMigrationManager::OnMigrationDone(
     notification_manager_->ShowMigrationCompletedNotification(
         migration_destination_, upload_root_path);
     VLOG(1) << "Local files migration done";
-    SkyVaultMigrationDoneHistograms(migration_destination_, true, duration);
+    SkyVaultMigrationDoneHistograms(migration_destination_, /*success=*/true,
+                                    duration);
     SetState(State::kCleanup);
     CleanupLocalFiles();
     return;
@@ -689,7 +700,8 @@ void LocalFilesMigrationManager::OnMigrationDone(
       prefs::kSkyVaultMigrationRetryCount, current_retry_count_);
 
   if (failed) {
-    SkyVaultMigrationDoneHistograms(migration_destination_, false, duration);
+    SkyVaultMigrationDoneHistograms(migration_destination_, /*success=*/false,
+                                    duration);
     SetState(State::kFailure);
     LOG(ERROR) << "Local files migration failed.";
     ProcessErrors(std::move(errors), error_log_path);
@@ -750,24 +762,46 @@ void LocalFilesMigrationManager::OnCleanupDone(
   }
 
   cleanup_in_progress_ = false;
+  const bool cleanup_failed = error_message.has_value();
+
+  // Cleanup is called even if migration destination isn't specified if there
+  // are no local files, but skip recording in that case.
   if (migration_destination_ != MigrationDestination::kNotSpecified) {
-    // Cleanup is called even if migration destination isn't specified if there
-    // are no local files, but skip recording in that case.
     SkyVaultMigrationCleanupErrorHistogram(migration_destination_,
-                                           error_message.has_value());
+                                           cleanup_failed);
   }
-  if (error_message.has_value()) {
-    // TODO(402074191): UMA when failed.
+
+  if (cleanup_failed) {
     LOG(ERROR) << "Local files cleanup failed: " << error_message.value();
+
+    bool failed_too_many_times = ++current_retry_count_ > kMaxRetryCount;
+    Profile::FromBrowserContext(context_)->GetPrefs()->SetInteger(
+        prefs::kSkyVaultMigrationRetryCount, current_retry_count_);
+    if (failed_too_many_times) {
+      SkyVaultDeletionDoneHistogram(/*success=*/false);
+      SetState(State::kFailure);
+      LOG(ERROR) << "Local files cleanup failed too many times.";
+      return;
+    }
+    // Retry cleanup if deletion is enforced by policy.
+    if (migration_destination_ == MigrationDestination::kDelete) {
+      SkyVaultDeletionRetryHistogram(current_retry_count_);
+      SetState(State::kCleanup);
+      CleanupLocalFiles();
+      return;
+    }
   } else {
     VLOG(1) << "Local files cleanup done";
+    // Notify success and show notification after successful deletion if it's
+    // enforced by policy.
+    if (migration_destination_ == MigrationDestination::kDelete) {
+      SkyVaultDeletionDoneHistogram(/*success=*/true);
+      NotifySuccess();
+      notification_manager_->ShowDeletionCompletedNotification();
+    }
   }
+
   SetLocalUserFilesWriteEnabled(/*enabled=*/false);
-  if (migration_destination_ == MigrationDestination::kDelete) {
-    // Notify to remove folders after deletion.
-    NotifySuccess();
-    notification_manager_->ShowDeletionCompletedNotification();
-  }
   SetState(State::kCompleted);
 }
 

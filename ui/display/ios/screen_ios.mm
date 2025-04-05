@@ -91,6 +91,8 @@ class ScreenIos : public ScreenBase, public ScreenNotification {
       scale = Display::GetForcedDeviceScaleFactor();
     }
     display.set_device_scale_factor(scale);
+
+#if !BUILDFLAG(IS_IOS_TVOS)
     Display::Rotation rotation = Display::ROTATE_0;
     switch (UIDevice.currentDevice.orientation) {
       case UIDeviceOrientationPortrait:
@@ -113,6 +115,8 @@ class ScreenIos : public ScreenBase, public ScreenNotification {
     display.set_touch_support(Display::TouchSupport::AVAILABLE);
     display.set_accelerometer_support(Display::AccelerometerSupport::AVAILABLE);
     AddInternalDisplayId(display_id);
+#endif
+
     ProcessDisplayChanged(display, true /* is_primary */);
   }
 

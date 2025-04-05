@@ -34,6 +34,11 @@ chromium-metrics-reviews@google.com.
   <variant name=".RecentTabs" summary="Recent (offline) tabs"/>
 </variants>
 
+<variants name="ModuleToggleState">
+  <variant name="TurnOffModule"/>
+  <variant name="TurnOnModule"/>
+</variants>
+
 <variants name="NewTabPage_BackgroundService_RequestLatency">
   <variant name=".Failure"
       summary="Failed to fetch data from background service"/>
@@ -316,6 +321,48 @@ chromium-metrics-reviews@google.com.
   <token key="ContentSuggestionCategory" variants="ContentSuggestionCategory">
     <variant name=""/>
   </token>
+</histogram>
+
+<histogram name="NewTabPage.Customization.BottomSheet.Shown"
+    enum="BottomSheetType" expires_after="2025-08-31">
+  <owner>hanxi@chromium.org</owner>
+  <owner>yanlinghu@google.com</owner>
+  <owner>clank-start@google.com</owner>
+  <summary>
+    Android: Records the type of bottom sheet each time the customization bottom
+    sheet is shown. The histogram is logged when the user opens a NTP
+    customization bottom sheet, regardless of whether the bottom sheet has been
+    opened before.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.Customization.OpenBottomSheetEntry" enum="Entry"
+    expires_after="2025-08-31">
+  <owner>hanxi@chromium.org</owner>
+  <owner>xinyiji@chromium.org</owner>
+  <owner>yanlinghu@google.com</owner>
+  <owner>clank-start@google.com</owner>
+  <summary>
+    Android: Records the number of times the initial NTP customization bottom
+    sheet is opened by the user, categorized by the specific source of the
+    opening action. This initial bottom sheet is the entry point to the NTP
+    customization flow. The histogram is logged in response to user clicking on
+    the main menu or on the toolbar to open the initial NTP customization bottom
+    sheet.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.Customization.{ModuleToggleState}"
+    enum="ModuleType" expires_after="2025-08-31">
+  <owner>hanxi@chromium.org</owner>
+  <owner>yanlinghu@google.com</owner>
+  <owner>clank-start@google.com</owner>
+  <summary>
+    Android: Records when a module is activated or deactivated in the NTP Cards
+    bottom sheet. The histogram is logged in response to a user clicking on the
+    toggle switch on the NTP Cards bottom sheet. Each press of the toggle switch
+    is counted as a separate count.
+  </summary>
 </histogram>
 
 <histogram name="NewTabPage.CustomizeChromeBackgroundAction"

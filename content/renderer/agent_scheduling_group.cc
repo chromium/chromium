@@ -4,7 +4,6 @@
 
 #include "content/renderer/agent_scheduling_group.h"
 
-#include <map>
 #include <utility>
 
 #include "base/containers/map_util.h"
@@ -23,6 +22,7 @@
 #include "ipc/ipc_channel_mojo.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_sync_channel.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/blink/public/common/page/browsing_context_group_info.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
 #include "third_party/blink/public/mojom/page/page.mojom.h"

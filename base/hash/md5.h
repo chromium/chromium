@@ -19,11 +19,19 @@
 #endif
 
 // MD5 stands for Message Digest algorithm 5.
-// MD5 is a robust hash function, designed for cyptography, but often used
-// for file checksums.  The code is complex and slow, but has few
-// collisions.
-// See Also:
-//   http://en.wikipedia.org/wiki/MD5
+//
+// DANGER DANGER DANGER:
+// MD5 is extremely obsolete and it is trivial for a malicious party to find MD5
+// collisions. Do not use MD5 for any security-related purposes whatsoever, and
+// especially do not use MD5 to validate that files or other data have not been
+// modified maliciously. This entire interface is obsolete and you should either
+// use a non-cryptographic hash (which will be much faster) or a cryptographic
+// hash (which will be collision-resistant against adversarial inputs). If you
+// believe you need to add a new use of MD5, consult a member of
+// //CRYPTO_OWNERS.
+//
+// NEW USES OF THIS API ARE FORBIDDEN FOR ANY PURPOSE. INSTEAD, YOU MUST USE
+// //crypto/obsolete/md5.h.
 
 // These functions perform MD5 operations. The simplest call is MD5Sum() to
 // generate the MD5 sum of the given data.

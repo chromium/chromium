@@ -437,7 +437,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Download.InsecureBlocking.Extensions"
+<histogram
+    name="Download.InsecureBlocking.Extensions.{InitiatorSecurity}.{DownloadSecurity}"
     enum="InsecureDownloadExtensions" expires_after="2024-02-25">
   <owner>jdeblasio@chromium.org</owner>
   <owner>estark@chromium.org</owner>
@@ -447,6 +448,17 @@ chromium-metrics-reviews@google.com.
     file download blocking. Warning: this histogram was expired from M94 through
     M95; data may be missing.
   </summary>
+  <token key="InitiatorSecurity">
+    <variant name="InitiatorInferredInsecure"/>
+    <variant name="InitiatorInferredSecure"/>
+    <variant name="InitiatorInsecure"/>
+    <variant name="InitiatorSecure"/>
+    <variant name="InitiatorUnknown"/>
+  </token>
+  <token key="DownloadSecurity">
+    <variant name="DownloadInsecure"/>
+    <variant name="DownloadSecure"/>
+  </token>
 </histogram>
 
 <histogram name="Download.InsecureBlocking.Totals"

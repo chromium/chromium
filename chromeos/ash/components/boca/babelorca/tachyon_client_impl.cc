@@ -61,7 +61,8 @@ void TachyonClientImpl::StartRequest(
                                         request_data->content_type);
   if (request_data->max_retries > 0) {
     const int retry_mode = network::SimpleURLLoader::RETRY_ON_5XX |
-                           network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE;
+                           network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE |
+                           network::SimpleURLLoader::RETRY_ON_NAME_NOT_RESOLVED;
     url_loader_ptr->SetRetryOptions(request_data->max_retries, retry_mode);
   }
   url_loader_ptr->DownloadToString(

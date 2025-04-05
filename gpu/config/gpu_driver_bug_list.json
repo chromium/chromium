@@ -3455,6 +3455,26 @@
       "features": [
         "force_rgb10a2_overlay_support"
       ]
+    },
+    {
+      "id": 443,
+      "description": "Linux hardware video decoding doesn't support some newer chipsets",
+      "cr_bugs": [406006668],
+      "os": {
+        "type": "linux"
+      },
+      "vendor_id": "0x8086",
+      "device_id": [
+        "0x7d45"
+      ],
+      "features": [
+        "disable_accelerated_av1_decode",
+        "disable_accelerated_vp8_decode",
+        "disable_accelerated_vp9_decode",
+        "disable_accelerated_vp9_profile2_decode",
+        "disable_accelerated_hevc_decode",
+        "disable_accelerated_h264_decode"
+      ]
     }
   ]
 }

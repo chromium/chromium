@@ -322,8 +322,13 @@ void InputHandlerProxy::HandleInputEventWithLatencyInfo(
                     ChromeLatencyInfo2::Step::STEP_HANDLE_INPUT_EVENT_IMPL);
               });
 
+  bool is_fling =
+      WebInputEvent::Type::kGestureScrollUpdate == event->Event().GetType() &&
+      static_cast<const WebGestureEvent&>(event->Event())
+              .data.scroll_update.inertial_phase ==
+          WebGestureEvent::InertialPhaseState::kMomentum;
   DCHECK(input_handler_);
-  input_handler_->NotifyInputEvent();
+  input_handler_->NotifyInputEvent(is_fling);
 
   // Prevent the events to be counted into INP metrics if there is an active
   // scroll.

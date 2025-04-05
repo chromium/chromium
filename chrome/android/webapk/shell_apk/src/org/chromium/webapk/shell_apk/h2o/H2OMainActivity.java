@@ -8,6 +8,8 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.pm.PackageManager;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.webapk.shell_apk.HostBrowserLauncher;
 import org.chromium.webapk.shell_apk.HostBrowserLauncherParams;
 import org.chromium.webapk.shell_apk.HostBrowserUtils;
@@ -17,6 +19,7 @@ import org.chromium.webapk.shell_apk.TransparentLauncherActivity;
  * Handles android.intent.action.MAIN intents if the host browser does not support "showing a
  * transparent window in WebAPK mode till the URL has been loaded".
  */
+@NullMarked
 public class H2OMainActivity extends TransparentLauncherActivity {
     /** Minimum interval between requests for the host browser to relaunch the WebAPK. */
     private static final long MINIMUM_INTERVAL_BETWEEN_RELAUNCHES_MS = 20000;
@@ -35,7 +38,7 @@ public class H2OMainActivity extends TransparentLauncherActivity {
     }
 
     @Override
-    protected void onHostBrowserSelected(HostBrowserLauncherParams params) {
+    protected void onHostBrowserSelected(@Nullable HostBrowserLauncherParams params) {
         if (params == null) {
             return;
         }

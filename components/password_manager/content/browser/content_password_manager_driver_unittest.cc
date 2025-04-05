@@ -94,7 +94,7 @@ class FakePasswordAutofillAgent
 
   // autofill::mojom::PasswordAutofillAgent:
   MOCK_METHOD(void,
-              SetPasswordFillData,
+              ApplyFillDataOnParsingCompletion,
               (const PasswordFormFillData&),
               (override));
   MOCK_METHOD(void,
@@ -335,8 +335,9 @@ TEST_F(ContentPasswordManagerDriverTest, ClearPasswordsOnAutofill) {
 
   PasswordFormFillData fill_data = GetTestPasswordFormFillData();
   fill_data.wait_for_username = true;
-  EXPECT_CALL(fake_agent_, SetPasswordFillData(WerePasswordsCleared()));
-  driver->SetPasswordFillData(fill_data);
+  EXPECT_CALL(fake_agent_,
+              ApplyFillDataOnParsingCompletion(WerePasswordsCleared()));
+  driver->PropagateFillDataOnParsingCompletion(fill_data);
   base::RunLoop().RunUntilIdle();
 }
 
@@ -559,7 +560,8 @@ TEST_F(ContentPasswordManagerDriverTest,
   // Install a the PasswordAutofillAgent mock. Verify it do not receive commands
   // from the browser side.
   FakePasswordAutofillAgent credentialless_fake_agent;
-  EXPECT_CALL(credentialless_fake_agent, SetPasswordFillData(_)).Times(0);
+  EXPECT_CALL(credentialless_fake_agent, ApplyFillDataOnParsingCompletion)
+      .Times(0);
   credentialless_rfh_1->GetRemoteAssociatedInterfaces()
       ->OverrideBinderForTesting(
           autofill::mojom::PasswordAutofillAgent::Name_,
@@ -574,7 +576,7 @@ TEST_F(ContentPasswordManagerDriverTest,
   std::unique_ptr<ContentPasswordManagerDriver> driver(
       std::make_unique<ContentPasswordManagerDriver>(
           credentialless_rfh_1, &password_manager_client_));
-  driver->SetPasswordFillData(GetTestPasswordFormFillData());
+  driver->PropagateFillDataOnParsingCompletion(GetTestPasswordFormFillData());
   base::RunLoop().RunUntilIdle();
 }
 

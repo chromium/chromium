@@ -20,8 +20,8 @@ std::unique_ptr<syncer::EntityData> CreateEntityDataFromLoyaltyCard(
     const LoyaltyCard& loyalty_card);
 
 // Converts the given valuable `specifics` into an equivalent LoyaltyCard
-// instance or returns `nullopt` if specifics are invalid.
-std::optional<LoyaltyCard> CreateAutofillLoyaltyCardFromSpecifics(
+// instance.
+LoyaltyCard CreateAutofillLoyaltyCardFromSpecifics(
     const sync_pb::AutofillValuableSpecifics& specifics);
 
 // Tests if the valuable `specifics` are valid and can be converted into an

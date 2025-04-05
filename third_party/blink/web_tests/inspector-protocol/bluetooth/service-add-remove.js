@@ -46,14 +46,12 @@
       await session.evaluateAsync(getPrimaryServices)}`);
 
   await bp.BluetoothEmulation.removeService({
-    address: helper.peripheralAddress(),
     serviceId: batteryServiceId,
   });
   testRunner.log(`After removing battery service: ${
       await session.evaluateAsync(getPrimaryServices)}`);
 
   await bp.BluetoothEmulation.removeService({
-    address: helper.peripheralAddress(),
     serviceId: heartRateServiceId,
   });
   testRunner.log(`After removing heart rate service: ${

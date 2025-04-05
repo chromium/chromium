@@ -23,7 +23,6 @@
 #include "ash/style/system_shadow.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/wm/overview/overview_controller.h"
-#include "ash/wm/overview/overview_observer.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
@@ -497,19 +496,9 @@ class HotseatWidget::DelegateView : public HotseatTransitionAnimator::Observer,
 
   // The type of highlight border.
   views::HighlightBorder::Type border_type_;
-
-  // Tracks whether the forest flag was enabled when entering overview.
-  // TODO(sammiequon): This is temporary while the secret key exists. After the
-  // secret key is removed, entering/exiting overview should never need to
-  // remove/readd blur.
-  std::optional<bool> was_forest_on_overview_enter_;
 };
 
-HotseatWidget::DelegateView::~DelegateView() {
-  OverviewController* overview_controller = Shell::Get()->overview_controller();
-  if (overview_controller)
-    overview_controller->RemoveObserver(this);
-}
+HotseatWidget::DelegateView::~DelegateView() = default;
 
 void HotseatWidget::DelegateView::Init(
     ScrollableShelfView* scrollable_shelf_view,
@@ -517,14 +506,6 @@ void HotseatWidget::DelegateView::Init(
   hotseat_widget_ = hotseat_widget;
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
-  OverviewController* overview_controller = Shell::Get()->overview_controller();
-  if (overview_controller) {
-    overview_controller->AddObserver(this);
-    if (overview_controller->InOverviewSession() &&
-        !features::IsForestFeatureEnabled()) {
-      ++blur_lock_;
-    }
-  }
   DCHECK(scrollable_shelf_view);
   scrollable_shelf_view_ = scrollable_shelf_view;
 
@@ -604,9 +585,7 @@ SkColor HotseatWidget::DelegateView::GetBackgroundColor() {
   auto* widget = GetWidget();
   CHECK(widget);
   aura::Window* window = widget->GetNativeWindow();
-  // A forest session uses system-on-base.
-  if (features::IsForestFeatureEnabled() &&
-      OverviewController::Get()->InOverviewSession() &&
+  if (OverviewController::Get()->InOverviewSession() &&
       !SplitViewController::Get(window)->InSplitViewMode()) {
     return widget->GetColorProvider()->GetColor(
         cros_tokens::kCrosSysSystemOnBase);
@@ -719,28 +698,10 @@ bool HotseatWidget::DelegateView::CanActivate() const {
 }
 
 void HotseatWidget::DelegateView::OnOverviewModeWillStart() {
-  // Forest uses background blur in overview.
-  was_forest_on_overview_enter_ = features::IsForestFeatureEnabled();
-  if (*was_forest_on_overview_enter_) {
-    return;
-  }
-  DCHECK_LE(blur_lock_, 2);
-
-  SetBackgroundBlur(false);
-  ++blur_lock_;
 }
 
 void HotseatWidget::DelegateView::OnOverviewModeEndingAnimationComplete(
     bool canceled) {
-  // Forest uses background blur in overview.
-  if (was_forest_on_overview_enter_.value_or(true)) {
-    was_forest_on_overview_enter_.reset();
-    return;
-  }
-  DCHECK_GT(blur_lock_, 0);
-
-  --blur_lock_;
-  SetBackgroundBlur(true);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

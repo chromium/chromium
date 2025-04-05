@@ -28,6 +28,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -81,6 +82,8 @@ public class NavigateTest {
     @Rule
     public FreshCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
+
+    @Rule public FakeTimeTestRule mFakeTime = new FakeTimeTestRule();
 
     private static final String HTTPS_SCHEME = "https://";
 
@@ -601,6 +604,60 @@ public class NavigateTest {
         ChromeTabUtils.waitForTabPageLoaded(tab, urls[0]);
 
         watcher.assertExpected("Should record backfalsing histogram");
+    }
+
+    /**
+     * Test that the histogram is not recorded when two consecutive navigations happen over 3
+     * seconds.
+     */
+    @Test
+    @MediumTest
+    @Feature("Navigation")
+    public void testBackFalsing_timeOut() throws Exception {
+        final String[] urls = {
+            mTestServer.getURL("/chrome/test/data/android/navigate/one.html"),
+            mTestServer.getURL("/chrome/test/data/android/navigate/two.html"),
+        };
+        navigateAndObserve(urls[0]);
+
+        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        // Record FORWARD if the first gesture triggered by gesture and second gesture is FORWARD.
+        navigateAndObserve(urls[1]);
+        ThreadUtils.runOnUiThreadBlocking(tab::goBack);
+        ChromeTabUtils.waitForTabPageLoaded(tab, urls[0]);
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.BackPress.Backfalsing2",
+                                BackPressMetrics.NavigationDirection.FORWARD)
+                        .expectIntRecord(
+                                "Android.BackPress.StrictBackfalsing",
+                                BackPressMetrics.NavigationDirection.FORWARD)
+                        .build();
+        ThreadUtils.runOnUiThreadBlocking(tab::goForward);
+        ChromeTabUtils.waitForTabPageLoaded(tab, urls[1]);
+
+        watcher.assertExpected("Should record backfalsing histogram");
+
+        ThreadUtils.runOnUiThreadBlocking(tab::goBack);
+        ChromeTabUtils.waitForTabPageLoaded(tab, urls[0]);
+
+        // Record BACKWARD if the first gesture triggered by gesture and second gesture is BACKWARD.
+        ThreadUtils.runOnUiThreadBlocking(tab::goForward);
+        ChromeTabUtils.waitForTabPageLoaded(tab, urls[1]);
+        watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.BackPress.Backfalsing2",
+                                BackPressMetrics.NavigationDirection.BACKWARD)
+                        .expectNoRecords("Android.BackPress.StrictBackfalsing")
+                        .build();
+        mFakeTime.advanceMillis(4 * 1000);
+        ThreadUtils.runOnUiThreadBlocking(tab::goBack);
+        ChromeTabUtils.waitForTabPageLoaded(tab, urls[0]);
+
+        watcher.assertExpected(
+                "Should not record strict backfalsing histogram if navigations are over 3 seconds");
     }
 
     /** Test the histogram should not be recorded if the url does not change when navigating. */

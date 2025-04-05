@@ -56,10 +56,10 @@ export abstract class PdfViewerBaseElement extends CrLitElement {
   protected lastViewportPosition: Point|null = null;
   protected originalUrl: string = '';
   protected paramsParser: OpenPdfParamsParser|null = null;
-  protected pdfCr23Enabled: boolean = false;
+  protected accessor pdfCr23Enabled: boolean = false;
   protected pdfOopifEnabled: boolean = false;
-  showErrorDialog: boolean = false;
-  protected strings?: LoadTimeDataRaw;
+  accessor showErrorDialog: boolean = false;
+  protected accessor strings: LoadTimeDataRaw|undefined;
   protected tracker: EventTracker = new EventTracker();
   private delayedScriptingMessages_: MessageEvent[] = [];
   private initialLoadComplete_: boolean = false;

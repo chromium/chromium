@@ -146,7 +146,7 @@ TEST_F(ExtensionInfoTest, ExtensionTerminated) {
 
 TEST_F(ExtensionInfoTest, ExtensionBlocked) {
   auto extension = BuildExtension();
-  service()->BlockAllExtensions();
+  registrar()->BlockAllExtensions();
 
   em::ChromeUserProfileInfo info;
   AppendExtensionInfoIntoProfileReport(profile(), &info);

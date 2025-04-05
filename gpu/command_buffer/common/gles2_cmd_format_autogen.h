@@ -15441,7 +15441,7 @@ struct CopySharedImageToTextureINTERNALImmediate {
             GLint _src_y,
             GLsizei _width,
             GLsizei _height,
-            GLboolean _flip_y,
+            GLboolean _is_dst_origin_top_left,
             const GLbyte* _src_mailbox) {
     SetHeader();
     texture = _texture;
@@ -15452,7 +15452,7 @@ struct CopySharedImageToTextureINTERNALImmediate {
     src_y = _src_y;
     width = _width;
     height = _height;
-    flip_y = _flip_y;
+    is_dst_origin_top_left = _is_dst_origin_top_left;
     memcpy(ImmediateDataAddress(this), _src_mailbox, ComputeDataSize());
   }
 
@@ -15465,11 +15465,11 @@ struct CopySharedImageToTextureINTERNALImmediate {
             GLint _src_y,
             GLsizei _width,
             GLsizei _height,
-            GLboolean _flip_y,
+            GLboolean _is_dst_origin_top_left,
             const GLbyte* _src_mailbox) {
     static_cast<ValueType*>(cmd)->Init(_texture, _target, _internal_format,
                                        _type, _src_x, _src_y, _width, _height,
-                                       _flip_y, _src_mailbox);
+                                       _is_dst_origin_top_left, _src_mailbox);
     const uint32_t size = ComputeSize();
     return NextImmediateCmdAddressTotalSize<ValueType>(cmd, size);
   }
@@ -15483,7 +15483,7 @@ struct CopySharedImageToTextureINTERNALImmediate {
   int32_t src_y;
   int32_t width;
   int32_t height;
-  uint32_t flip_y;
+  uint32_t is_dst_origin_top_left;
 };
 
 static_assert(sizeof(CopySharedImageToTextureINTERNALImmediate) == 40,
@@ -15516,9 +15516,10 @@ static_assert(
 static_assert(
     offsetof(CopySharedImageToTextureINTERNALImmediate, height) == 32,
     "offset of CopySharedImageToTextureINTERNALImmediate height should be 32");
-static_assert(
-    offsetof(CopySharedImageToTextureINTERNALImmediate, flip_y) == 36,
-    "offset of CopySharedImageToTextureINTERNALImmediate flip_y should be 36");
+static_assert(offsetof(CopySharedImageToTextureINTERNALImmediate,
+                       is_dst_origin_top_left) == 36,
+              "offset of CopySharedImageToTextureINTERNALImmediate "
+              "is_dst_origin_top_left should be 36");
 
 struct ReadbackARGBImagePixelsINTERNAL {
   typedef ReadbackARGBImagePixelsINTERNAL ValueType;

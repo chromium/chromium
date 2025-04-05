@@ -351,6 +351,7 @@
 <translation id="2438248248625638801">A criar títulos de gravações</translation>
 <translation id="2446553403094072641">Precisão da vírgula flutuante</translation>
 <translation id="2448312741937722512">Tipo</translation>
+<translation id="2448857983905133469">Ferramentas para sala de aula</translation>
 <translation id="2468124392950503650">Selecione o comando para criar ou veja o <ph name="BEGIN_LINK_PROMPTING_GUIDE" />guia de comandos<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Use a funcionalidade Ajuda-me a escrever para criar um rascunho ou refinar um trabalho existente com tecnologia de IA da Google</translation>
 <translation id="2475982808118771221">Ocorreu um erro</translation>
@@ -449,6 +450,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Ponto final</translation>
 <translation id="3060579846059757016">Destaques</translation>
+<translation id="3060798442805232711">A app ferramentas para sala de aula está a usar o seu microfone</translation>
 <translation id="3061850252076394168">ative a funcionalidade Selecionar para falar</translation>
 <translation id="3066772729299747758">na terça-feira</translation>
 <translation id="3069085583900247081">O teste falhou</translation>
@@ -458,7 +460,6 @@
 <translation id="3084958266922136097">Desativar proteção de ecrã</translation>
 <translation id="3091839911843451378">Falha – Parou</translation>
 <translation id="3102119246920354026">Cache</translation>
-<translation id="3112413615003385433">O professor removeu conteúdo nas School Tools</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">piscinas</translation>
 <translation id="3122883569442693641">Mais detalhes</translation>
@@ -539,7 +540,6 @@
 <translation id="3488065109653206955">Parcialmente activado</translation>
 <translation id="3492882532495507361">Um escritório <ph name="OFFICE_STYLE" /> com tons <ph name="OFFICE_COLOR" /></translation>
 <translation id="3493187369049186498">Os dados são medidos pelo seu Chromebook. Estes dados podem ser diferentes dos dados do fornecedor.</translation>
-<translation id="349570724365779960">A app School Tools está ligada aos alunos</translation>
 <translation id="3502426834823382181">ver todas as apps</translation>
 <translation id="3510890413042482857">Enviar <ph name="BEGIN_LINK1" />dados de rastreio do desempenho<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Atualiz. Chrome OS</translation>
@@ -547,7 +547,6 @@
 <translation id="353214771040290298">Edição concluída</translation>
 <translation id="3532980081107202182">Faltam cerca de <ph name="MIN_REMAINING" /> minutos.</translation>
 <translation id="3533790840489634638">piscina</translation>
-<translation id="3535802910192338629">O professor adicionou novo conteúdo nas School Tools</translation>
 <translation id="3547264467365135390">Fórmula</translation>
 <translation id="3557205324756024651">Identidade local (opcional)</translation>
 <translation id="3565064564551103223">IPs permitidos</translation>
@@ -913,6 +912,7 @@
 <translation id="5170568018924773124">Mostrar numa pasta</translation>
 <translation id="517075088756846356">Desligue e volte a ligar o cabo de alimentação do dispositivo <ph name="DEVICE_NAME" /> para continuar o processo de atualização</translation>
 <translation id="5180108905184566358">embondeiros</translation>
+<translation id="5180431943345994173">O docente removeu conteúdo nas ferramentas para sala de aula</translation>
 <translation id="5180712487038406644">Expressiva</translation>
 <translation id="5190187232518914472">Reviva as suas memórias favoritas. Para adicionar ou editar álbuns, aceda ao <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
@@ -1006,6 +1006,7 @@
 <translation id="5628106863521633649">Idiomas disponíveis</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">resumo</translation>
+<translation id="5655084389678168978">O docente adicionou novo conteúdo nas ferramentas para sala de aula</translation>
 <translation id="5655283760733841251">Aumentar o brilho do teclado</translation>
 <translation id="5655296450510165335">Inscrição de dispositivo</translation>
 <translation id="5655776422854483175">Nenhuma tarefa de impressão</translation>
@@ -1441,7 +1442,6 @@ Transfira o modelo de transcrição (até 100 MB) para ver estas transcrições.
 <translation id="7544853251252956727">Aleatório</translation>
 <translation id="7550715992156305117">Rotinas de diagnóstico</translation>
 <translation id="7551123448725492271">O dispositivo é um dispositivo de áudio.</translation>
-<translation id="7553913964854052228">A app School Tools está a usar o seu microfone</translation>
 <translation id="7559239713112547082">Pré-visualizar captura de ecrã</translation>
 <translation id="7561454561030345039">Esta ação é gerida pelo seu administrador.</translation>
 <translation id="7561759921596375678">Ative o volume</translation>
@@ -1533,6 +1533,7 @@ Transfira o modelo de transcrição (até 100 MB) para ver estas transcrições.
 <translation id="7971535376154084247">Controlos gerais</translation>
 <translation id="7977800524392185497">Para estabelecer ligação a uma rede <ph name="NETWORK_NAME" />, aceda às Definições</translation>
 <translation id="7978412674231730200">Chave privada</translation>
+<translation id="7979468455552394856">A app ferramentas para sala de aula está associada aos alunos</translation>
 <translation id="7982789257301363584">Rede</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{A app "<ph name="APP_NAME_1" />" foi iniciada automaticamente}other{# apps foram iniciadas automaticamente}}</translation>
 <translation id="7994702968232966508">Método EAP</translation>
@@ -1664,7 +1665,6 @@ Transfira o modelo de transcrição (até 100 MB) para ver estas transcrições.
 <translation id="8576249514688522074">Não iniciada</translation>
 <translation id="8584654835905316966">É necessário reiniciar para concluir a instalação do firmware do <ph name="DEVICE_NAME" /> para a versão <ph name="VERSION" />. O computador pode reiniciar várias vezes. Este comportamento é o esperado.</translation>
 <translation id="8593058461203131755">pausar o conteúdo multimédia</translation>
-<translation id="8619169570378509764">School Tools</translation>
 <translation id="8620617069779373398">Estado do roaming</translation>
 <translation id="8626489604350149811">Mais ações para <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Roxo-claro</translation>

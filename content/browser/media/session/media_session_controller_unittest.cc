@@ -175,6 +175,12 @@ class TestMediaPlayer : public media::mojom::MediaPlayer {
     expected_visibility_ = expected_visibility;
   }
 
+  void RecordAutoPictureInPictureInfo(
+      const std::string& auto_picture_in_picture_info) override {
+    auto_picture_in_picture_info_ = auto_picture_in_picture_info;
+    run_loop_->Quit();
+  }
+
   // Getters used from MediaSessionControllerTest.
   bool received_play() const { return received_play_; }
 
@@ -200,6 +206,10 @@ class TestMediaPlayer : public media::mojom::MediaPlayer {
     return received_set_audio_sink_id_;
   }
 
+  const std::string& received_auto_picture_in_picture_info() const {
+    return auto_picture_in_picture_info_;
+  }
+
  private:
   std::unique_ptr<base::RunLoop> run_loop_;
   std::unique_ptr<base::RunLoop> run_loop_for_volume_;
@@ -213,6 +223,7 @@ class TestMediaPlayer : public media::mojom::MediaPlayer {
   base::TimeDelta received_seek_to_time_;
   std::string received_set_audio_sink_id_;
   bool expected_visibility_ = false;
+  std::string auto_picture_in_picture_info_;
 };
 
 // Helper class to mock `RequestVisibility` callbacks.
@@ -812,6 +823,19 @@ TEST_F(MediaSessionControllerTest, SetAudioSinkId) {
   // The hashed version of the default device ID equals the unhashed version.
   EXPECT_EQ(media_player_->received_set_audio_sink_id(),
             media::AudioDeviceDescription::kDefaultDeviceId);
+}
+
+TEST_F(MediaSessionControllerTest, AutoPictureInPictureInfoChanged) {
+  EXPECT_TRUE(media_player_->received_auto_picture_in_picture_info().empty());
+
+  const std::string auto_picture_in_picture_info =
+      "Auto Picture In Picture Info";
+  controller_->OnAutoPictureInPictureInfoChanged(
+      controller_->get_player_id_for_testing(), auto_picture_in_picture_info);
+  media_player_->WaitUntilReceivedMessage();
+
+  EXPECT_EQ(media_player_->received_auto_picture_in_picture_info(),
+            auto_picture_in_picture_info);
 }
 
 }  // namespace content

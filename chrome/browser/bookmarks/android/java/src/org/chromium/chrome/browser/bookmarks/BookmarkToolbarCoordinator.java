@@ -39,7 +39,6 @@ public class BookmarkToolbarCoordinator {
             BookmarkUiPrefs bookmarkUiPrefs,
             ModalDialogManager modalDialogManager,
             Runnable endSearchRunnable,
-            BookmarkMoveSnackbarManager bookmarkMoveSnackbarManager,
             BooleanSupplier incognitoEnabledSupplier,
             BookmarkManagerOpener bookmarkManagerOpener) {
         mToolbar =
@@ -72,7 +71,6 @@ public class BookmarkToolbarCoordinator {
                 bookmarkUiPrefs,
                 new BookmarkAddNewFolderCoordinator(context, modalDialogManager, bookmarkModel),
                 endSearchRunnable,
-                bookmarkMoveSnackbarManager,
                 incognitoEnabledSupplier,
                 bookmarkManagerOpener);
 

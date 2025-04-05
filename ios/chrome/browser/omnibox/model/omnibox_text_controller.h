@@ -57,6 +57,9 @@ class OmniboxViewIOS;
 /// Clears the Omnibox text.
 - (void)clearText;
 
+/// Accepts the current input / default suggestion.
+- (void)acceptInput;
+
 /// Prepares the omnibox for scribble.
 - (void)prepareForScribble;
 

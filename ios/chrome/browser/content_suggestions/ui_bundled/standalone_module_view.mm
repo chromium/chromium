@@ -119,7 +119,7 @@ const CGFloat kSeparatorHeight = 0.5;
   titleLabel.numberOfLines = 1;
   titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
   titleLabel.font =
-      CreateDynamicFont(UIFontTextStyleFootnote, UIFontWeightSemibold, self);
+      PreferredFontForTextStyle(UIFontTextStyleFootnote, UIFontWeightSemibold);
   titleLabel.adjustsFontForContentSizeCategory = YES;
   titleLabel.text = _config.titleText;
   titleLabel.isAccessibilityElement = YES;

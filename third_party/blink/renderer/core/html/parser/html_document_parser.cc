@@ -1012,7 +1012,7 @@ void HTMLDocumentParser::Append(const String& input_source) {
   if (GetDocument()->IsPrefetchOnly()) {
     if (preload_scanner_) {
       preload_scanner_->AppendToEnd(source);
-      // TODO(Richard.Townsend@arm.com): add test coverage of this branch.
+      // TODO(ritownsend@google.com): add test coverage of this branch.
       // The crash in crbug.com/1166786 indicates that text documents are being
       // speculatively prefetched.
       ScanAndPreload(preload_scanner_.get());

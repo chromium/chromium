@@ -14,13 +14,9 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView.LayoutParams;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import androidx.core.view.MarginLayoutParamsCompat;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -96,20 +92,6 @@ public class AutofillDropdownAdapter extends ArrayAdapter<DropdownItem> {
             divider.setDividerColor(dividerColor);
         }
 
-        // Layout of the item tag view, which has a smaller font and sits below the sub
-        // label.
-        TextView itemTagView =
-                populateLabelView(layout, R.id.dropdown_item_tag, item.getItemTag(), false);
-        if (itemTagView != null) {
-            itemTagView.setTextSize(
-                    TypedValue.COMPLEX_UNIT_PX,
-                    mContext.getResources().getDimension(item.getSublabelFontSizeResId()));
-            itemTagView.setTextColor(mContext.getColor(item.getSublabelFontColorResId()));
-            height +=
-                    mContext.getResources()
-                            .getDimensionPixelSize(R.dimen.autofill_dropdown_item_tag_height);
-        }
-
         // Note: trying to set the height of the root LinearLayout breaks accessibility,
         // so we have to adjust the height of this LinearLayout that wraps the TextViews
         // instead. If you need to modify this layout, don't forget to test it with TalkBack and
@@ -179,22 +161,6 @@ public class AutofillDropdownAdapter extends ArrayAdapter<DropdownItem> {
             secondarySublabelView.setTextColor(mContext.getColor(item.getSublabelFontColorResId()));
         }
 
-        ImageView iconViewStart = (ImageView) layout.findViewById(R.id.start_dropdown_icon);
-        ImageView iconViewEnd = (ImageView) layout.findViewById(R.id.end_dropdown_icon);
-        if (item.isIconAtStart()) {
-            iconViewEnd.setVisibility(View.GONE);
-            iconViewStart.setVisibility(View.VISIBLE);
-        } else {
-            iconViewStart.setVisibility(View.GONE);
-            iconViewEnd.setVisibility(View.VISIBLE);
-        }
-
-        ImageView iconView =
-                populateIconView(item.isIconAtStart() ? iconViewStart : iconViewEnd, item);
-        if (iconView != null) {
-            iconView.setLayoutParams(getSizeAndMarginParamsForIconView(iconView, item));
-        }
-
         return layout;
     }
 
@@ -231,59 +197,5 @@ public class AutofillDropdownAdapter extends ArrayAdapter<DropdownItem> {
         labelView.setEnabled(isEnabled);
         labelView.setVisibility(View.VISIBLE);
         return labelView;
-    }
-
-    /**
-     * Sets the drawable in the given ImageView to the resource identified in the item, or sets
-     * iconView to visibility GONE if no icon is given.
-     *
-     * @param iconView the ImageView which should be modified.
-     * @param item the DropdownItem for this row.
-     * @return |iconView| if it has been set to be visible; null otherwise.
-     */
-    private @Nullable ImageView populateIconView(ImageView iconView, DropdownItem item) {
-        // If there is no icon, remove the icon view.
-        if (item.getIconDrawable() == null) {
-            iconView.setVisibility(View.GONE);
-            return null;
-        }
-        iconView.setImageDrawable(item.getIconDrawable());
-        iconView.setVisibility(View.VISIBLE);
-        // TODO(crbug.com/40589327): Add accessible text for this icon.
-        return iconView;
-    }
-
-    /**
-     * @param iconView the ImageView for which params are being generated.
-     * @param item the DropdownItem for this row.
-     * @return a MarginLayoutParams object with values suitable for sizing iconView.
-     */
-    private ViewGroup.MarginLayoutParams getSizeParamsForIconView(
-            ImageView iconView, DropdownItem item) {
-        ViewGroup.MarginLayoutParams iconLayoutParams =
-                (ViewGroup.MarginLayoutParams) iconView.getLayoutParams();
-        int iconSizeResId = item.getIconSizeResId();
-        int iconSize =
-                iconSizeResId == 0
-                        ? LayoutParams.WRAP_CONTENT
-                        : mContext.getResources().getDimensionPixelSize(iconSizeResId);
-        iconLayoutParams.width = iconSize;
-        iconLayoutParams.height = iconSize;
-        return iconLayoutParams;
-    }
-
-    /**
-     * @param iconView the ImageView for which params are being generated.
-     * @param item the DropdownItem for this row.
-     * @return the same as |getSizeParamsForIconView|, but with additional margin-related params
-     * set.
-     */
-    private ViewGroup.MarginLayoutParams getSizeAndMarginParamsForIconView(
-            ImageView iconView, DropdownItem item) {
-        ViewGroup.MarginLayoutParams params = getSizeParamsForIconView(iconView, item);
-        int iconMargin = mContext.getResources().getDimensionPixelSize(item.getIconMarginResId());
-        MarginLayoutParamsCompat.setMarginStart(params, iconMargin);
-        MarginLayoutParamsCompat.setMarginEnd(params, iconMargin);
-        return params;
     }
 }

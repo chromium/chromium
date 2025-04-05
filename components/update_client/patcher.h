@@ -26,6 +26,11 @@ class Patcher : public base::RefCountedThreadSafe<Patcher> {
                               base::File output_file_path,
                               PatchCompleteCallback callback) const = 0;
 
+  virtual void PatchZucchini(base::File input_file_path,
+                             base::File patch_file_path,
+                             base::File output_file_path,
+                             PatchCompleteCallback callback) const = 0;
+
  protected:
   friend class base::RefCountedThreadSafe<Patcher>;
   Patcher() = default;

@@ -13,12 +13,29 @@
 
 namespace gaia {
 
+// Parameters for the fake ListAccounts response.
+struct CookieParams {
+  std::string email;
+  GaiaId gaia_id;
+  bool valid;
+  bool signed_out;
+  bool verified;
+};
+
 std::string GenerateOAuth2MintTokenConsentResult(
     std::optional<bool> approved,
     const std::optional<std::string>& encrypted_approval_data,
     const std::optional<GaiaId>& obfuscated_id,
     base::Base64UrlEncodePolicy encode_policy =
         base::Base64UrlEncodePolicy::OMIT_PADDING);
+
+// Creates the content for listing accounts in binary format.
+std::string CreateListAccountsResponseInBinaryFormat(
+    const std::vector<CookieParams>& params);
+
+// Creates the content for listing accounts.
+std::string CreateListAccountsResponseInLegacyFormat(
+    const std::vector<CookieParams>& params);
 
 }  // namespace gaia
 

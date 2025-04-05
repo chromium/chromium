@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 package org.chromium.webapk.lib.common.splash;
-import org.chromium.build.annotations.NullMarked;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -15,6 +14,9 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * Contains utility methods for drawing splash screen. The methods are applicable for both home
@@ -31,7 +33,8 @@ public class SplashLayout {
      * example, the icon must not be generated (nor missing) and has to have the length of both its
      * edges above `R.dimen.webapp_splash_image_size_minimum` to be usable.
      */
-    public static int selectLayout(Resources resources, Bitmap icon, boolean wasIconGenerated) {
+    public static int selectLayout(
+            Resources resources, @Nullable Bitmap icon, boolean wasIconGenerated) {
         if (icon == null || wasIconGenerated) {
             return R.layout.webapp_splash_screen_no_icon;
         }
@@ -56,7 +59,7 @@ public class SplashLayout {
     public static void createLayout(
             Context appContext,
             ViewGroup parentView,
-            Bitmap icon,
+            @Nullable Bitmap icon,
             boolean isIconAdaptive,
             boolean isIconGenerated,
             String text,
@@ -76,7 +79,7 @@ public class SplashLayout {
         ImageView splashIconView = (ImageView) layout.findViewById(R.id.webapp_splash_screen_icon);
         if (splashIconView == null) return;
 
-        if (isIconAdaptive) {
+        if (isIconAdaptive && icon != null) {
             splashIconView.setImageIcon(Icon.createWithAdaptiveBitmap(icon));
         } else {
             splashIconView.setImageBitmap(icon);

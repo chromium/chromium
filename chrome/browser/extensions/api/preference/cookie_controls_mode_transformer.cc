@@ -33,10 +33,10 @@ CookieControlsModeTransformer::BrowserToExtensionPref(
       static_cast<content_settings::CookieControlsMode>(browser_pref.GetInt());
 
   bool third_party_cookies_allowed = cookie_control_mode == kOff;
-  if ((third_party_cookies_allowed &&
+  if (cookie_control_mode == kIncognitoOnly ||
+      (third_party_cookies_allowed &&
        base::FeatureList::IsEnabled(
-           privacy_sandbox::kAlwaysBlock3pcsIncognito)) ||
-      cookie_control_mode == kIncognitoOnly) {
+           privacy_sandbox::kAlwaysBlock3pcsIncognito))) {
     third_party_cookies_allowed = !is_incognito_profile;
   }
   return base::Value(third_party_cookies_allowed);

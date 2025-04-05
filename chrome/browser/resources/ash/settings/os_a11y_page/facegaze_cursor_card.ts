@@ -134,6 +134,14 @@ export class FaceGazeCursorCardElement extends FaceGazeCursorCardElementBase {
     ];
   }
 
+  cursorSpeedTicks: number[];
+  maxCursorSpeed: number;
+  maxCursorTuning: number;
+  minCursorSpeed: number;
+  minCursorTuning: number;
+  velocityThresholdTicks: number[];
+  private readonly precisionClickSpeedFactorOptions_:
+      Array<{value: number, name: string}>;
   private syntheticCombinedCursorSpeedPref_:
       chrome.settingsPrivate.PrefObject<number>;
   private shouldAnnounceA11yCursorSettingsReset_ = false;

@@ -1144,13 +1144,75 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Webapp.InstallResult" enum="WebAppInstallResultCode"
+<histogram name="Webapp.InstallResult.{Type}" enum="WebAppInstallResultCode"
     expires_after="2025-09-28">
-<!-- Name completed by histogram_suffixes name="WebappType" -->
-
   <owner>dmurph@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
-  <summary>Records the result code of Web App installs.</summary>
+  <summary>Records the result code of Web App installs. {Type}</summary>
+  <token key="Type">
+    <variant name="Default" summary="Default-installed app"/>
+    <variant name="Policy" summary="Policy-installed app"/>
+    <variant name="Sync" summary="Sync-installed app"/>
+    <variant name="System" summary="System-installed app"/>
+    <variant name="System.Apps.Boca" summary="System-installed app: Boca"/>
+    <variant name="System.Apps.Camera" summary="System-installed app: Camera"/>
+    <variant name="System.Apps.ConnectivityDiagnostics"
+        summary="System-installed app: Connectivity Diagnostics"/>
+    <variant name="System.Apps.Crosh" summary="System-installed app: Crosh"/>
+    <variant name="System.Apps.DemoMode"
+        summary="System-installed app: DemoMode"/>
+    <variant name="System.Apps.Diagnostics"
+        summary="System-installed app: Diagnostics"/>
+    <variant name="System.Apps.Eche" summary="System-installed app: Eche"/>
+    <variant name="System.Apps.FaceML"
+        summary="System-installed app: Face ML (Deprecated)"/>
+    <variant name="System.Apps.FirmwareUpdate"
+        summary="System-installed app: FirmwareUpdate"/>
+    <variant name="System.Apps.Graduation"
+        summary="System-installed app: Graduation"/>
+    <variant name="System.Apps.Help" summary="System-installed app: Help"/>
+    <variant name="System.Apps.Mall" summary="System-installed app: App Mall"/>
+    <variant name="System.Apps.Media" summary="System-installed app: Media"/>
+    <variant name="System.Apps.OSFeedback"
+        summary="System-installed app: OSFeedback"/>
+    <variant name="System.Apps.OsFlags"
+        summary="System-installed app: OsFlags"/>
+    <variant name="System.Apps.OSSettings"
+        summary="System-installed app: OS Settings"/>
+    <variant name="System.Apps.Personalization"
+        summary="System-installed app: Personalization"/>
+    <variant name="System.Apps.PrintManagement"
+        summary="System-installed app: PrintManagement"/>
+    <variant name="System.Apps.PrintPreviewCrOS"
+        summary="System-installed app: Print Preview CrOS"/>
+    <variant name="System.Apps.Projector"
+        summary="System-installed app: Projector"/>
+    <variant name="System.Apps.Recorder"
+        summary="System-installed app: Recorder"/>
+    <variant name="System.Apps.Sample" summary="System-installed app: Sample"/>
+    <variant name="System.Apps.Sanitize"
+        summary="System-installed app: Sanitize"/>
+    <variant name="System.Apps.Scanning"
+        summary="System-installed app: Scanning"/>
+    <variant name="System.Apps.ShimlessRMA"
+        summary="System-installed app: Shimless RMA"/>
+    <variant name="System.Apps.ShortcutCustomization"
+        summary="System-installed app: ShortcutCustomization"/>
+    <variant name="System.Apps.Terminal"
+        summary="System-installed app: Terminal"/>
+    <variant name="System.Apps.VcBackground"
+        summary="System-installed app: VC Background"/>
+    <variant name="System.Profiles.Ephemeral"
+        summary="System-installed app: Per-Profile: Guest or incognito"/>
+    <variant name="System.Profiles.Kiosk"
+        summary="System-installed app: Per-Profile: Kiosk app"/>
+    <variant name="System.Profiles.Other"
+        summary="System-installed app: Per-Profile: Other profile"/>
+    <variant name="System.Profiles.Primary"
+        summary="System-installed app: Per-Profile: Regular user"/>
+    <variant name="System.Profiles.SigninOrLockScreen"
+        summary="System-installed app: Per-Profile: Sign in or lockscreen"/>
+  </token>
 </histogram>
 
 <histogram name="WebApp.Isolated.FirstPolicyProcessingDelay" units="seconds"

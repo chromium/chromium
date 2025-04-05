@@ -73,6 +73,9 @@ class CookieControlsController final
   // Returns whether any ACT features should be shown.
   bool ShowActFeatures();
 
+  // Record UMA for toggling ACT User Bypass.
+  void RecordActMetrics(bool protections_on);
+
   // Returns whether the cookie blocking setting for the current site was
   // changed by the user via user bypass.
   bool HasUserChangedCookieBlockingForSite();

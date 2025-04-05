@@ -169,7 +169,7 @@ BASE_DECLARE_FEATURE(kLoginDbDeprecationAndroid);
 
 inline constexpr base::FeatureParam<int> kLoginDbDeprecationExportDelay = {
     &kLoginDbDeprecationAndroid,
-    /*name=*/"login-db-deprecation-export-delay-seconds", /*default_value=*/15};
+    /*name=*/"login-db-deprecation-export-delay-seconds", /*default_value=*/5};
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Improves PSL matching capabilities by utilizing PSL-extension list from

@@ -41,7 +41,7 @@ TransitionInterpolation::CurrentNonInterpolableValue() const {
 }
 
 void TransitionInterpolation::Apply(
-    InterpolationEnvironment& environment) const {
+    CSSInterpolationEnvironment& environment) const {
   type_.Apply(CurrentInterpolableValue(), CurrentNonInterpolableValue(),
               environment);
 }

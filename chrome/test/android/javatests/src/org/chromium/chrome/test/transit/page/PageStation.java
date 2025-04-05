@@ -274,9 +274,6 @@ public class PageStation extends Station<ChromeTabbedActivity> {
             elements.declareEnterCondition(
                     new PageUrlContainsCondition(mExpectedUrlSubstring, mPageLoadedSupplier));
         }
-
-        elements.declareEnterCondition(
-                new LayoutTypeVisibleCondition(mActivityElement, LayoutType.BROWSING));
     }
 
     public boolean isIncognito() {

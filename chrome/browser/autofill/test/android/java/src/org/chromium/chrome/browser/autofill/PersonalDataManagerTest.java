@@ -443,7 +443,7 @@ public class PersonalDataManagerTest {
     @Test
     @SmallTest
     @Feature({"Autofill"})
-    public void testCreditCardArtUrlIsFormattedWithImageSpecs() throws TimeoutException {
+    public void testFifeUrlIsFormattedWithImageSpecs() throws TimeoutException {
         GURL capitalOneIconUrl = new GURL(AutofillUiUtils.CAPITAL_ONE_ICON_URL);
         GURL cardArtUrl = new GURL("http://google.com/test");
         int widthPixels = 32;
@@ -451,7 +451,7 @@ public class PersonalDataManagerTest {
 
         // The URL should be updated as `cardArtUrl=w{width}-h{height}`.
         assertThat(
-                        AutofillUiUtils.getCreditCardIconUrlWithParams(
+                        AutofillUiUtils.getFifeIconUrlWithParams(
                                 capitalOneIconUrl, widthPixels, heightPixels))
                 .isEqualTo(
                         new GURL(
@@ -460,9 +460,7 @@ public class PersonalDataManagerTest {
                                         + widthPixels
                                         + "-h"
                                         + heightPixels));
-        assertThat(
-                        AutofillUiUtils.getCreditCardIconUrlWithParams(
-                                cardArtUrl, widthPixels, heightPixels))
+        assertThat(AutofillUiUtils.getFifeIconUrlWithParams(cardArtUrl, widthPixels, heightPixels))
                 .isEqualTo(
                         new GURL(cardArtUrl.getSpec() + "=w" + widthPixels + "-h" + heightPixels));
     }

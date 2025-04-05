@@ -161,11 +161,6 @@ unit tests.
 - sha1_2016.pem
     Used to test the handling of SHA1 certificates expiring in 2016.
 
-- may_2018.pem
-   An 825-day certificate issued on May 1, 2018, the official start of
-   enforcement requiring Certificate Transparency for new certificates. This
-   certificate does not have any embedded SCTs.
-
 - x509_verify_results.chain.pem : A simple certificate chain used to test that
     the correctly ordered, filtered certificate chain is returned during
     verification, regardless of the order in which the intermediate/root CA

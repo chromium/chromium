@@ -10,7 +10,6 @@
 #include <optional>
 #include <set>
 #include <tuple>
-#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -113,6 +112,7 @@
 #include "skia/ext/platform_canvas.h"
 #include "skia/ext/skia_utils_base.h"
 #include "storage/browser/file_system/isolated_context.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/widget/constants.h"
@@ -177,9 +177,7 @@ bool g_check_for_pending_visual_properties_ack = true;
 // <process id, routing id>
 using RenderWidgetHostID = std::pair<int32_t, int32_t>;
 using RoutingIDWidgetMap =
-    std::unordered_map<RenderWidgetHostID,
-                       RenderWidgetHostImpl*,
-                       base::IntPairHash<RenderWidgetHostID>>;
+    absl::flat_hash_map<RenderWidgetHostID, RenderWidgetHostImpl*>;
 base::LazyInstance<RoutingIDWidgetMap>::DestructorAtExit
     g_routing_id_widget_map = LAZY_INSTANCE_INITIALIZER;
 
@@ -232,17 +230,17 @@ std::vector<DropData::Metadata> DropDataToMetaData(const DropData& drop_data) {
   std::vector<DropData::Metadata> metadata;
   if (drop_data.text) {
     metadata.push_back(DropData::Metadata::CreateForMimeType(
-        DropData::Kind::STRING, base::ASCIIToUTF16(ui::kMimeTypeText)));
+        DropData::Kind::STRING, ui::kMimeTypePlainText16));
   }
 
   if (drop_data.url.is_valid()) {
     metadata.push_back(DropData::Metadata::CreateForMimeType(
-        DropData::Kind::STRING, base::ASCIIToUTF16(ui::kMimeTypeURIList)));
+        DropData::Kind::STRING, ui::kMimeTypeUriList16));
   }
 
   if (drop_data.html) {
     metadata.push_back(DropData::Metadata::CreateForMimeType(
-        DropData::Kind::STRING, base::ASCIIToUTF16(ui::kMimeTypeHTML)));
+        DropData::Kind::STRING, ui::kMimeTypeHtml16));
   }
 
   // On Aura, filenames are available before drop.
@@ -2469,6 +2467,17 @@ void RenderWidgetHostImpl::RendererIsResponsive() {
     if (delegate_) {
       delegate_->RendererResponsive(this);
     }
+  }
+}
+
+void RenderWidgetHostImpl::DidOverscroll(
+    blink::mojom::DidOverscrollParamsPtr params) {
+  if (view_) {
+    ui::DidOverscrollParams overscroll_params = {
+        params->accumulated_overscroll, params->latest_overscroll_delta,
+        params->current_fling_velocity, params->causal_event_viewport_point,
+        params->overscroll_behavior};
+    view_->DidOverscroll(overscroll_params);
   }
 }
 

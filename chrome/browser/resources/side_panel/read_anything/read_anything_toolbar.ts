@@ -125,23 +125,23 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   }
 
   // Reactive properties below
-  availableVoices: SpeechSynthesisVoice[] = [];
-  enabledLangs: string[] = [];
+  accessor availableVoices: SpeechSynthesisVoice[] = [];
+  accessor enabledLangs: string[] = [];
   // If Read Aloud is playing speech.
-  isSpeechActive: boolean = false;
+  accessor isSpeechActive: boolean = false;
   // If speech is actually playing. Due to latency with the TTS engine, there
   // can be a delay between when the user presses play and speech actually
   // plays.
-  isAudioCurrentlyPlaying: boolean = false;
+  accessor isAudioCurrentlyPlaying: boolean = false;
   // If Read Aloud is playable. Certain states, such as when Read Anything does
   // not have content or when the speech engine is loading should disable
   // certain toolbar buttons like the play / pause button should be disabled.
   // This is set from the parent element via one way data binding.
-  isReadAloudPlayable: boolean = false;
-  localeToDisplayName: {[lang: string]: string} = {};
-  previewVoicePlaying?: SpeechSynthesisVoice;
-  rateOptions: number[] = [0.5, 0.8, 1, 1.2, 1.5, 2, 3, 4];
-  settingsPrefs: SettingsPrefs = {
+  accessor isReadAloudPlayable: boolean = false;
+  accessor localeToDisplayName: {[lang: string]: string} = {};
+  accessor previewVoicePlaying: SpeechSynthesisVoice|undefined;
+  accessor rateOptions: number[] = [0.5, 0.8, 1, 1.2, 1.5, 2, 3, 4];
+  accessor settingsPrefs: SettingsPrefs = {
     letterSpacing: 0,
     lineSpacing: 0,
     theme: 0,
@@ -149,16 +149,16 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     font: '',
     highlightGranularity: 0,
   };
-  selectedVoice?: SpeechSynthesisVoice;
-  protected fontOptions_: string[] = [];
-  protected hideSpinner_: boolean = true;
+  accessor selectedVoice: SpeechSynthesisVoice|undefined;
+  protected accessor fontOptions_: string[] = [];
+  protected accessor hideSpinner_: boolean = true;
   protected isReadAloudEnabled_: boolean = true;
   // Overflow buttons on the toolbar that open a menu of options.
-  protected moreOptionsButtons_: MenuButton[] = [];
-  protected speechRate_: number = 1;
+  protected accessor moreOptionsButtons_: MenuButton[] = [];
+  protected accessor speechRate_: number = 1;
   // Buttons on the toolbar that open a menu of options.
-  protected textStyleOptions_: MenuButton[] = [];
-  protected textStyleToggles_: ToggleButton[] = [
+  protected accessor textStyleOptions_: MenuButton[] = [];
+  protected accessor textStyleToggles_: ToggleButton[] = [
     {
       id: LINK_TOGGLE_BUTTON_ID,
       icon: chrome.readingMode.linksEnabled?
@@ -168,8 +168,8 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
                loadTimeData.getString('enableLinksLabel'),
     },
   ];
-  private areFontsLoaded_: boolean = false;
-  private fontName_: string = '';
+  private accessor areFontsLoaded_: boolean = false;
+  private accessor fontName_: string = '';
 
   // Member variables below
   private startTime_: number = Date.now();

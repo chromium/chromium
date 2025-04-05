@@ -73,8 +73,8 @@ export class PasswordManagerSideBarElement extends
     };
   }
 
-  private selectedPage_: Page;
-  private compromisedPasswords_: number;
+  declare private selectedPage_: Page;
+  declare private compromisedPasswords_: number;
   private insecureCredentialsChangedListener_: CredentialsChangedListener|null =
       null;
 

@@ -9,6 +9,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/omnibox/common/omnibox_features.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/ntp_home_constant.h"
 #import "ios/chrome/browser/omnibox/eg_tests/omnibox_app_interface.h"
 #import "ios/chrome/browser/omnibox/eg_tests/omnibox_earl_grey.h"
@@ -17,6 +18,7 @@
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_constants.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_popup_accessibility_identifier_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -38,6 +40,15 @@ id<GREYMatcher> PopupRowWithUrl(GURL url) {
           chrome_test_util::StaticTextWithAccessibilityLabel(urlString)),
       grey_sufficientlyVisible(), nil);
   return grey_allOf(chrome_test_util::OmniboxPopupRow(), URLMatcher, nil);
+}
+
+id<GREYMatcher> LinkYouCopiedRow() {
+  NSString* linkYouCopiedLabel =
+      l10n_util::GetNSString(IDS_LINK_FROM_CLIPBOARD);
+  id<GREYMatcher> linkYouCopiedMatch = grey_allOf(
+      chrome_test_util::OmniboxPopupRow(),
+      grey_descendant(grey_accessibilityLabel(linkYouCopiedLabel)), nil);
+  return linkYouCopiedMatch;
 }
 
 /// Returns the switch to open tab element for the `url`.
@@ -571,6 +582,12 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 - (void)setUp {
   [super setUp];
+
+  // Start a server to be able to navigate to a web page.
+  self.testServer->RegisterRequestHandler(
+      base::BindRepeating(&omnibox::OmniboxHTTPResponses));
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+
   if (![ChromeTestCase forceRestartAndWipe]) {
     [ChromeEarlGrey clearBrowsingHistory];
   }
@@ -669,6 +686,38 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
               OmniboxWithLeadingImageElement(
                   kOmniboxLeadingImageSuggestionImageAccessibilityIdentifier),
               nil)];
+}
+
+// Tests that user can use the hardware keyboard to select the "link you copied"
+// suggeston.
+- (void)testHardwareKeyboardSelectLinkYouCopied {
+  const GURL pageURL = self.testServer->GetURL(omnibox::PageURL(1));
+  // Copy link in clipboard.
+  [ChromeEarlGrey
+      copyLinkAsURLToPasteBoard:base::SysUTF8ToNSString(pageURL.spec())];
+
+  // Focus omnibox from Web.
+  [ChromeEarlGrey loadURL:GURL("about:blank")];
+  [ChromeEarlGreyUI focusOmnibox];
+
+  // Wait for the clipboard suggestion to show.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:LinkYouCopiedRow()];
+
+  // The omnibox popup may update multiple times.  Don't downArrow until this
+  // is done.
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(1));
+
+  // Highlight the text you copied row. Accept with Return.
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"downArrow" flags:0];
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.1));
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"downArrow" flags:0];
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.1));
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\r" flags:0];
+
+  // The web page should load.
+  [ChromeEarlGrey waitForWebStateContainingText:omnibox::PageContent(1)];
+
+  [ChromeEarlGrey clearPasteboard];
 }
 
 @end

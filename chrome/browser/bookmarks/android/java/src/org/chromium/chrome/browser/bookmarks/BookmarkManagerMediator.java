@@ -380,7 +380,6 @@ class BookmarkManagerMediator
     private final PendingRunnable mPendingRefresh =
             new PendingRunnable(
                     TaskTraits.UI_DEFAULT, mCallbackController.makeCancelable(this::refresh));
-    private final BookmarkMoveSnackbarManager mBookmarkMoveSnackbarManager;
     private final BookmarkManagerOpener mBookmarkManagerOpener;
     private final PriceDropNotificationManager mPriceDropNotificationManager;
 
@@ -421,7 +420,6 @@ class BookmarkManagerMediator
             SnackbarManager snackbarManager,
             BooleanSupplier canShowSigninPromo,
             Consumer<OnScrollListener> onScrollListenerConsumer,
-            BookmarkMoveSnackbarManager bookmarkMoveSnackbarManager,
             BookmarkManagerOpener bookmarkManagerOpener,
             PriceDropNotificationManager priceDropNotificationManager) {
         mContext = activity;
@@ -465,7 +463,6 @@ class BookmarkManagerMediator
                             mContext, mProfile.getOriginalProfile(), this::updateHeader);
         }
         mBookmarkUndoController = bookmarkUndoController;
-        mBookmarkMoveSnackbarManager = bookmarkMoveSnackbarManager;
         mBookmarkManagerOpener = bookmarkManagerOpener;
         mPriceDropNotificationManager = priceDropNotificationManager;
         if (CommerceFeatureUtils.isShoppingListEligible(mShoppingService)) {
@@ -530,7 +527,6 @@ class BookmarkManagerMediator
         mCallbackController.destroy();
 
         mBookmarkUiPrefs.removeObserver(mBookmarkUiPrefsObserver);
-        mBookmarkMoveSnackbarManager.destroy();
 
         if (mShoppingService != null
                 && CommerceFeatureUtils.isShoppingListEligible(mShoppingService)) {
@@ -1490,8 +1486,8 @@ class BookmarkManagerMediator
                                 bookmarkItem.getId(), /* read= */ false);
                         RecordUserAction.record("Android.BookmarkPage.ReadingList.MarkAsUnread");
                     } else if (textId == R.string.bookmark_item_move) {
-                        mBookmarkMoveSnackbarManager.startFolderPickerAndObserveResult(
-                                mBookmarkManagerOpener, bookmarkId);
+                        mBookmarkManagerOpener.startFolderPickerActivity(
+                                mContext, mProfile, bookmarkId);
                         RecordUserAction.record("MobileBookmarkManagerMoveToFolder");
                     } else if (textId == R.string.bookmark_item_delete) {
                         if (mBookmarkModel != null) {

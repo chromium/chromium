@@ -38,7 +38,7 @@ std::string GetBnplPaymentInstrumentForFetchingVcnRequest::GetRequestUrlPath() {
 
 std::string
 GetBnplPaymentInstrumentForFetchingVcnRequest::GetRequestContentType() {
-  return "application/json/x-www-form-urlencoded";
+  return "application/x-www-form-urlencoded";
 }
 
 std::string GetBnplPaymentInstrumentForFetchingVcnRequest::GetRequestContent() {

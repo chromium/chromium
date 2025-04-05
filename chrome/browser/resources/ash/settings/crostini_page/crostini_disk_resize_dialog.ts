@@ -101,7 +101,7 @@ export class SettingsCrostiniDiskResizeDialogElement extends PolymerElement {
       /**
        * Enable the html template to use DisplayState.
        */
-      DisplayState: {
+      DisplayStateEnum_: {
         type: Object,
         value: DisplayState,
       },
@@ -109,7 +109,7 @@ export class SettingsCrostiniDiskResizeDialogElement extends PolymerElement {
       /**
        * Enable the html template to use ResizeState.
        */
-      ResizeState: {
+      ResizeStateEnum_: {
         type: Object,
         value: ResizeState,
       },

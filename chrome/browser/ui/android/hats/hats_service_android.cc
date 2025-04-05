@@ -154,7 +154,9 @@ void HatsServiceAndroid::LaunchSurvey(
     base::OnceClosure success_callback,
     base::OnceClosure failure_callback,
     const SurveyBitsData& product_specific_bits_data,
-    const SurveyStringData& product_specific_string_data) {
+    const SurveyStringData& product_specific_string_data,
+    const std::optional<std::string>& supplied_trigger_id,
+    const SurveyOptions& survey_options) {
   NOTIMPLEMENTED();
 }
 

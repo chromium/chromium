@@ -560,13 +560,13 @@ export class PrintPreviewModelElement extends PolymerElement {
     ];
   }
 
-  settings: Settings;
-  settingsManaged: boolean;
-  destination: Destination;
-  documentSettings: DocumentSettings;
-  margins: Margins;
-  pageSize: Size;
-  maxSheets: number;
+  declare settings: Settings;
+  declare settingsManaged: boolean;
+  declare destination: Destination;
+  declare documentSettings: DocumentSettings;
+  declare margins: Margins;
+  declare pageSize: Size;
+  declare maxSheets: number;
 
   private initialized_: boolean = false;
   private stickySettings_: SerializedSettings|null = null;

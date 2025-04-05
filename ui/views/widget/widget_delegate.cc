@@ -531,16 +531,18 @@ void WidgetDelegate::RegisterWidgetInitializedCallback(
   widget_initialized_callbacks_->emplace_back(std::move(callback));
 }
 
-void WidgetDelegate::RegisterWindowWillCloseCallback(
-    base::OnceClosure callback) {
-  window_will_close_callbacks_.emplace_back(std::move(callback));
-}
-
 void WidgetDelegate::RegisterWindowClosingCallback(base::OnceClosure callback) {
   window_closing_callbacks_.emplace_back(std::move(callback));
 }
 
+void WidgetDelegate::RegisterWindowWillCloseCallback(
+    RegisterWillCloseCallbackPassKey,
+    base::OnceClosure callback) {
+  window_will_close_callbacks_.emplace_back(std::move(callback));
+}
+
 void WidgetDelegate::RegisterDeleteDelegateCallback(
+    RegisterDeleteCallbackPassKey,
     base::OnceClosure callback) {
   delete_delegate_callbacks_.emplace_back(std::move(callback));
 }

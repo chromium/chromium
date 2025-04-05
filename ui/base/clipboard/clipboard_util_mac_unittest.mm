@@ -46,8 +46,8 @@ TEST_F(ClipboardUtilMacTest, PasteboardItemsFromUrlsRoundtrip) {
   EXPECT_NSEQ(url.absoluteString, url_string_1);
 
   // Only the first item should have the "web urls and titles" data.
-  EXPECT_TRUE([items[0].types containsObject:kUTTypeWebKitWebURLsWithTitles]);
-  EXPECT_FALSE([items[1].types containsObject:kUTTypeWebKitWebURLsWithTitles]);
+  EXPECT_TRUE([items[0].types containsObject:kUTTypeWebKitWebUrlsWithTitles]);
+  EXPECT_FALSE([items[1].types containsObject:kUTTypeWebKitWebUrlsWithTitles]);
 }
 
 TEST_F(ClipboardUtilMacTest, PasteboardUrlsFromString) {

@@ -284,6 +284,10 @@ AX_BASE_EXPORT bool IsPlainContentElement(const ax::mojom::Role role);
 AX_BASE_EXPORT bool SupportsArrowKeysForExpandCollapse(
     const ax::mojom::Role role);
 
+// Returns true if the provided role supports naming from child content.
+// https://www.w3.org/WAI/ARIA/apg/practices/names-and-descriptions/#naming_with_child_content.
+AX_BASE_EXPORT bool SupportsNamingWithChildContent(const ax::mojom::Role role);
+
 }  // namespace ui
 
 #endif  // UI_ACCESSIBILITY_AX_ROLE_PROPERTIES_H_

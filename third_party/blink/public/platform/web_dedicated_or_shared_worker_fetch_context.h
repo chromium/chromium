@@ -63,16 +63,9 @@ class BLINK_PLATFORM_EXPORT WebDedicatedOrSharedWorkerFetchContext
       mojo::PendingRemote<mojom::ResourceLoadInfoNotifier>
           pending_resource_load_info_notifier);
 
-  // Clones this fetch context for a nested worker.
-  // For non-PlzDedicatedWorker. This will be removed once PlzDedicatedWorker is
-  // enabled by default.
-  virtual scoped_refptr<WebDedicatedOrSharedWorkerFetchContext>
-  CloneForNestedWorkerDeprecated(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner) = 0;
-
-  // For PlzDedicatedWorker. The cloned fetch context does not inherit some
-  // fields (e.g., blink::WebServiceWorkerProviderContext) from this fetch
-  // context, and instead that takes values passed from the browser process.
+  // The cloned fetch context does not inherit some fields (e.g.,
+  // blink::WebServiceWorkerProviderContext) from this fetch context, and
+  // instead that takes values passed from the browser process.
   virtual scoped_refptr<WebDedicatedOrSharedWorkerFetchContext>
   CloneForNestedWorker(
       WebServiceWorkerProviderContext* service_worker_provider_context,

@@ -13,7 +13,7 @@
 
 namespace blink {
 
-using StyleImageList = HeapVector<Member<StyleImage>, 1>;
+using StyleImageList = GCedHeapVector<Member<StyleImage>, 1>;
 
 class ImageListPropertyFunctions {
  public:

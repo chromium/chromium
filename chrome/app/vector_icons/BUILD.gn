@@ -270,7 +270,6 @@ aggregate_vector_icons("chrome_vector_icons") {
       "autocorrect_undo.icon",
       "crostini_mascot.icon",
       "floating_workspace_notification.icon",
-      "full_restore_notification.icon",
       "game_controls_add.icon",
       "game_controls_delete.icon",
       "game_controls_done.icon",

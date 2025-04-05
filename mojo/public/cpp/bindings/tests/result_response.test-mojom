@@ -5,9 +5,26 @@
 module mojo.test.mojom;
 
 interface TestResultInterface {
-    // Echos the input value with success.
-    TestSuccess(int32 value) => result<int32, bool>;
+  // Echos the input value with success.
+  TestSuccess(int32 value) => result<int32, bool>;
 
-    // Echos the failure message with failure.
-    TestFailure(string failure) => result<bool, string>;
+  // Echos the failure message with failure.
+  TestFailure(string failure) => result<bool, string>;
+};
+
+struct ResultValue {
+  int32 value;
+};
+
+struct ResultError {
+  bool is_catastrophic;
+  string msg;
+};
+
+interface TestResultInterfaceWithTrait {
+  // Returns a success with a value of '1'.
+  TestSuccess() => result<ResultValue, ResultError>;
+
+  // Returns a failure with a a nuclear metldown.
+  TestFailure() => result<ResultValue, ResultError>;
 };

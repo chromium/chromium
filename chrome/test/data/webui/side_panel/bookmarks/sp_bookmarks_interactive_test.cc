@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/strings/stringprintf.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "components/power_bookmarks/core/power_bookmark_features.h"
@@ -11,6 +12,15 @@ class SidePanelBookmarksTest : public WebUIMochaFocusTest {
  protected:
   SidePanelBookmarksTest() {
     set_test_loader_host(chrome::kChromeUIBookmarksSidePanelHost);
+  }
+};
+
+class SidePanelBookmarksListTest : public SidePanelBookmarksTest {
+ protected:
+  void RunTestSuite(const std::string& suiteName) {
+    SidePanelBookmarksTest::RunTest(
+        "side_panel/bookmarks/power_bookmarks_list_test.js",
+        base::StringPrintf("runMochaSuite('%s');", suiteName.c_str()));
   }
 };
 
@@ -35,8 +45,16 @@ IN_PROC_BROWSER_TEST_F(SidePanelPowerBookmarksTest, EditDialog) {
           "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(SidePanelPowerBookmarksTest, List) {
-  RunTest("side_panel/bookmarks/power_bookmarks_list_test.js", "mocha.run()");
+IN_PROC_BROWSER_TEST_F(SidePanelBookmarksListTest, General) {
+  RunTestSuite("General");
+}
+
+IN_PROC_BROWSER_TEST_F(SidePanelBookmarksListTest, TransportMode) {
+  RunTestSuite("TransportMode");
+}
+
+IN_PROC_BROWSER_TEST_F(SidePanelBookmarksListTest, TreeView) {
+  RunTestSuite("TreeView");
 }
 
 IN_PROC_BROWSER_TEST_F(SidePanelPowerBookmarksTest, Service) {

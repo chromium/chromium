@@ -113,6 +113,7 @@ export class PasswordManagerAppElement extends PasswordManagerAppElementBase {
 
       pageTitle_: {
         type: String,
+        value: () => loadTimeData.getString('passwordManagerTitle'),
       },
 
       /*
@@ -146,14 +147,14 @@ export class PasswordManagerAppElement extends PasswordManagerAppElementBase {
     };
   }
 
-  private prefs_: {[key: string]: any};
-  private selectedPage_: Page;
-  private narrow_: boolean;
-  private collapsed_: boolean;
-  private pageTitle_: string = this.i18n('passwordManagerTitle');
-  private toastMessage_: string;
-  private showUndo_: boolean;
-  private focusConfig_: FocusConfig;
+  declare private prefs_: {[key: string]: any};
+  declare private selectedPage_: Page;
+  declare private narrow_: boolean;
+  declare private collapsed_: boolean;
+  declare private pageTitle_: string;
+  declare private toastMessage_: string;
+  declare private showUndo_: boolean;
+  declare private focusConfig_: FocusConfig;
   private eventTracker_: EventTracker = new EventTracker();
 
   override connectedCallback() {

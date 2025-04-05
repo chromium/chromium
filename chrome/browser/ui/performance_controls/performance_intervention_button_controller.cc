@@ -162,12 +162,7 @@ void PerformanceInterventionButtonController::OnTabStripModelChanged(
       std::optional<resource_attribution::PageContext> removed_page_context =
           resource_attribution::PageContext::FromWebContents(tab.contents);
       CHECK(removed_page_context.has_value());
-      const auto iter_position =
-          std::remove(actionable_cpu_tabs_.begin(), actionable_cpu_tabs_.end(),
-                      removed_page_context);
-      if (iter_position != actionable_cpu_tabs_.end()) {
-        actionable_cpu_tabs_.erase(iter_position);
-      }
+      std::erase(actionable_cpu_tabs_, removed_page_context);
     }
 
     if (actionable_cpu_tabs_.empty()) {

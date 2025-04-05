@@ -3063,6 +3063,7 @@ InterestGroupAuction::InterestGroupAuction(
     const blink::AuctionConfig* config,
     const InterestGroupAuction* parent,
     AuctionMetricsRecorder* auction_metrics_recorder,
+    DwaAuctionMetricsManager* dwa_auction_metrics_manager,
     AuctionWorkletManager* auction_worklet_manager,
     AuctionNonceManager* auction_nonce_manager,
     InterestGroupManagerImpl* interest_group_manager,
@@ -3079,6 +3080,7 @@ InterestGroupAuction::InterestGroupAuction(
       main_frame_origin_(main_frame_origin),
       ip_address_space_(ip_address_space),
       auction_metrics_recorder_(auction_metrics_recorder),
+      dwa_auction_metrics_manager_(dwa_auction_metrics_manager),
       auction_worklet_manager_(auction_worklet_manager),
       auction_nonce_manager_(auction_nonce_manager),
       interest_group_manager_(interest_group_manager),
@@ -3123,15 +3125,15 @@ InterestGroupAuction::InterestGroupAuction(
     // Top-level server auctions are not supported.
     DCHECK(!is_server_auction_);
     component_auctions_.emplace(
-        child_pos,
-        std::make_unique<InterestGroupAuction>(
-            kanon_mode_, url_loader_factory_, main_frame_origin,
-            ip_address_space, &component_auction_config,
-            /*parent=*/this, auction_metrics_recorder_, auction_worklet_manager,
-            auction_nonce_manager, interest_group_manager,
-            get_data_decoder_callback_, auction_start_time_,
-            is_interest_group_api_allowed_callback_,
-            maybe_log_private_aggregation_web_features_callback_));
+        child_pos, std::make_unique<InterestGroupAuction>(
+                       kanon_mode_, url_loader_factory_, main_frame_origin,
+                       ip_address_space, &component_auction_config,
+                       /*parent=*/this, auction_metrics_recorder_,
+                       dwa_auction_metrics_manager_, auction_worklet_manager,
+                       auction_nonce_manager, interest_group_manager,
+                       get_data_decoder_callback_, auction_start_time_,
+                       is_interest_group_api_allowed_callback_,
+                       maybe_log_private_aggregation_web_features_callback_));
     ++child_pos;
   }
 
@@ -3158,7 +3160,11 @@ InterestGroupAuction::~InterestGroupAuction() {
   if (is_server_auction_) {
     uma_prefix = "Ads.InterestGroup.ServerAuction.";
   }
-
+  // Record DWA metrics for this auction (recording happens for both top-level
+  // and component auctions).
+  if (dwa_auction_metrics_) {
+    dwa_auction_metrics_->OnAuctionEnd(*final_auction_result_);
+  }
   // TODO(mmenke): Record histograms for component auctions.
   if (!parent_) {
     base::UmaHistogramEnumeration(
@@ -3226,7 +3232,14 @@ void InterestGroupAuction::StartLoadInterestGroupsPhase(
 
   load_interest_groups_phase_callback_ =
       std::move(load_interest_groups_phase_callback);
-
+  // Create DWA instance for this auction.
+  if (dwa_auction_metrics_manager_) {
+    dwa_auction_metrics_ =
+        dwa_auction_metrics_manager_->CreateDwaAuctionMetrics();
+  }
+  if (dwa_auction_metrics_) {
+    dwa_auction_metrics_->SetSellerInfo(config_->seller);
+  }
   // If the seller can't participate in the auction, fail the auction.
   if (!is_interest_group_api_allowed_callback_.Run(
           ContentBrowserClient::InterestGroupApiOperation::kSell,

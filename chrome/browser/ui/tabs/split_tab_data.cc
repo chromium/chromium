@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/tabs/split_tab_data.h"
 
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "components/tab_collections/public/tab_interface.h"
+#include "components/tabs/public/tab_interface.h"
 
 namespace split_tabs {
 

@@ -283,12 +283,11 @@ public class TabGroupColorViewProviderUnitTest {
 
         Resources res = mContext.getResources();
         @Px
-        int expectedMarginStart =
-                res.getDimensionPixelSize(R.dimen.tab_group_color_icon_stroke) / 2;
-        int marginStart =
-                ((FrameLayout.LayoutParams) colorView.getChildAt(0).getLayoutParams())
-                        .getMarginStart();
-        assertEquals(expectedMarginStart, marginStart);
+        int expectedMargin =
+                res.getDimensionPixelSize(R.dimen.tab_group_color_icon_stroke);
+        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) colorView.getChildAt(0).getLayoutParams();
+        assertEquals(expectedMargin, params.getMarginStart());
+        assertEquals(expectedMargin, params.topMargin);
 
         @Px
         int size = res.getDimensionPixelSize(R.dimen.tab_group_color_icon_with_avatar_item_size);

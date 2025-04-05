@@ -69,7 +69,9 @@ public class GroupWindowCheckerUnitTest {
         when(mSyncService.getGroup("id2")).thenReturn(group2);
 
         List<SavedTabGroup> sortedList =
-                mSyncUtils.getSortedGroupList((g1, g2) -> g1.title.compareToIgnoreCase(g2.title));
+                mSyncUtils.getSortedGroupList(
+                        this::tabGroupSelectionPredicate,
+                        (g1, g2) -> g1.title.compareToIgnoreCase(g2.title));
 
         assertEquals(2, sortedList.size());
         assertEquals("title1", sortedList.get(0).title);
@@ -97,7 +99,9 @@ public class GroupWindowCheckerUnitTest {
         when(mTab1.getTabGroupId()).thenReturn(token1);
 
         List<SavedTabGroup> sortedList =
-                mSyncUtils.getSortedGroupList((g1, g2) -> g1.title.compareToIgnoreCase(g2.title));
+                mSyncUtils.getSortedGroupList(
+                        this::tabGroupSelectionPredicate,
+                        (g1, g2) -> g1.title.compareToIgnoreCase(g2.title));
 
         assertEquals(1, sortedList.size());
         assertEquals("title1", sortedList.get(0).title);
@@ -107,7 +111,9 @@ public class GroupWindowCheckerUnitTest {
     public void testGetSortedGroupList_empty() {
         when(mSyncService.getAllGroupIds()).thenReturn(new String[] {});
         List<SavedTabGroup> sortedList =
-                mSyncUtils.getSortedGroupList((g1, g2) -> g1.title.compareToIgnoreCase(g2.title));
+                mSyncUtils.getSortedGroupList(
+                        this::tabGroupSelectionPredicate,
+                        (g1, g2) -> g1.title.compareToIgnoreCase(g2.title));
         assertEquals(0, sortedList.size());
     }
 
@@ -166,5 +172,9 @@ public class GroupWindowCheckerUnitTest {
         tabGroup.savedTabs = new ArrayList<>();
         tabGroup.title = title;
         return tabGroup;
+    }
+
+    private boolean tabGroupSelectionPredicate(@GroupWindowState int groupWindowState) {
+        return groupWindowState != GroupWindowState.IN_ANOTHER;
     }
 }
