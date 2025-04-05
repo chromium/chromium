@@ -146,12 +146,14 @@ AnnotationAgentImpl::AnnotationAgentImpl(
     AnnotationAgentContainerImpl& owning_container,
     mojom::blink::AnnotationType annotation_type,
     AnnotationSelector& selector,
+    std::optional<DOMNodeId> search_range_start_node_id,
     AnnotationAgentContainerImpl::PassKey)
     : agent_host_(owning_container.GetSupplementable()->GetExecutionContext()),
       receiver_(this,
                 owning_container.GetSupplementable()->GetExecutionContext()),
       owning_container_(&owning_container),
       selector_(&selector),
+      search_range_start_node_id_(search_range_start_node_id),
       type_(annotation_type) {
   DCHECK(!IsAttached());
   DCHECK(!IsRemoved());
@@ -195,9 +197,30 @@ void AnnotationAgentImpl::Attach(AnnotationAgentContainerImpl::PassKey) {
   // collapsed due to DOM changes.
   attached_range_.Clear();
 
+  // Create the search range within which the agent will attempt to match the
+  // selector in.
+  Document* document = owning_container_->GetSupplementable();
+  Range* search_range = document->createRange();
+  if (document->body()) {
+    search_range->selectNode(document->body());
+  }
+
+  if (search_range_start_node_id_.has_value()) {
+    Node* search_range_start_node =
+        Node::FromDomNodeId(search_range_start_node_id_.value());
+    // Check if the search range start node is null, which is not in the
+    // document.
+    if (!search_range_start_node || search_range->collapsed()) {
+      needs_attachment_ = false;
+      agent_host_->DidFinishAttachment(
+          gfx::Rect(), mojom::blink::AttachmentResult::kRangeInvalid);
+      return;
+    }
+    search_range->setStart(search_range_start_node, 0);
+  }
+
   needs_attachment_ = false;
-  Document& document = *owning_container_->GetSupplementable();
-  selector_->FindRange(document, AnnotationSelector::kSynchronous,
+  selector_->FindRange(*search_range, AnnotationSelector::kSynchronous,
                        WTF::BindOnce(&AnnotationAgentImpl::DidFinishFindRange,
                                      WrapWeakPersistent(this)));
 }
@@ -452,8 +475,10 @@ void AnnotationAgentImpl::ProcessAttachmentFinished() {
       range_rect_in_document = view->FrameToDocument(rect_in_frame);
     }
 
-    // Empty rect means the selector didn't find its content.
-    agent_host_->DidFinishAttachment(range_rect_in_document);
+    mojom::blink::AttachmentResult attachment_result =
+        IsAttached() ? mojom::blink::AttachmentResult::kSuccess
+                     : mojom::blink::AttachmentResult::kSelectorNotMatched;
+    agent_host_->DidFinishAttachment(range_rect_in_document, attachment_result);
   }
 }
 

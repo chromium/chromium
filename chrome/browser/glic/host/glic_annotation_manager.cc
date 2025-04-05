@@ -29,12 +29,24 @@ void GlicAnnotationManager::ScrollTo(
 
   mojom::ScrollToSelector* selector = params->selector.get();
   std::optional<shared_highlighting::TextFragment> text_fragment;
+  std::optional<int> search_range_start_node_id = std::nullopt;
 
   if (selector->is_exact_text_selector()) {
-    const std::string& exact_text = selector->get_exact_text_selector()->text;
+    auto* exact_text_selector = selector->get_exact_text_selector().get();
+    const std::string& exact_text = exact_text_selector->text;
     if (exact_text.empty()) {
       std::move(callback).Run(mojom::ScrollToErrorReason::kNotSupported);
       return;
+    }
+    if (exact_text_selector->search_range_start_node_id.has_value()) {
+      if (!params->document_id) {
+        mojo::ReportBadMessage(
+            "When the range_start_node_id is set, the document_id should be "
+            "set as well.");
+        return;
+      }
+      search_range_start_node_id =
+          exact_text_selector->search_range_start_node_id;
     }
     text_fragment = shared_highlighting::TextFragment(exact_text);
   } else if (selector->is_text_fragment_selector()) {
@@ -48,6 +60,16 @@ void GlicAnnotationManager::ScrollTo(
     if (text_end.empty()) {
       std::move(callback).Run(mojom::ScrollToErrorReason::kNotSupported);
       return;
+    }
+    if (text_fragment_selector->search_range_start_node_id.has_value()) {
+      if (!params->document_id) {
+        mojo::ReportBadMessage(
+            "When the range_start_node_id is set, the document_id should be "
+            "set as well.");
+        return;
+      }
+      search_range_start_node_id =
+          text_fragment_selector->search_range_start_node_id;
     }
     text_fragment = shared_highlighting::TextFragment(text_start, text_end,
                                                       /*prefix=*/std::string(),
@@ -111,7 +133,8 @@ void GlicAnnotationManager::ScrollTo(
       blink::mojom::AnnotationType::kGlic,
       text_fragment->ToEscapedString(
           shared_highlighting::TextFragment::EscapedStringFormat::
-              kWithoutTextDirective));
+              kWithoutTextDirective),
+      search_range_start_node_id);
   annotation_task_ = std::make_unique<AnnotationTask>(
       std::move(agent_remote), std::move(agent_host_receiver),
       std::move(callback));
@@ -145,15 +168,22 @@ void GlicAnnotationManager::AnnotationTask::MaybeFailTask(
 }
 
 void GlicAnnotationManager::AnnotationTask::DidFinishAttachment(
-    const gfx::Rect& document_relative_rect) {
-  if (document_relative_rect.IsEmpty()) {
-    std::move(scroll_to_callback_)
-        .Run(mojom::ScrollToErrorReason::kNoMatchFound);
-    return;
+    const gfx::Rect& document_relative_rect,
+    blink::mojom::AttachmentResult attachment_result) {
+  switch (attachment_result) {
+    case blink::mojom::AttachmentResult::kSelectorNotMatched:
+      std::move(scroll_to_callback_)
+          .Run(mojom::ScrollToErrorReason::kNoMatchFound);
+      break;
+    case blink::mojom::AttachmentResult::kRangeInvalid:
+      std::move(scroll_to_callback_)
+          .Run(mojom::ScrollToErrorReason::kSearchRangeInvalid);
+      break;
+    case blink::mojom::AttachmentResult::kSuccess:
+      annotation_agent_->ScrollIntoView(/*applies_focus=*/true);
+      std::move(scroll_to_callback_).Run(std::nullopt);
+      break;
   }
-
-  annotation_agent_->ScrollIntoView(/*applies_focus=*/true);
-  std::move(scroll_to_callback_).Run(std::nullopt);
 }
 
 void GlicAnnotationManager::MaybeFailAndResetTask(

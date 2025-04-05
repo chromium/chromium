@@ -96,15 +96,19 @@ class CORE_EXPORT AnnotationAgentContainerImpl final
       mojom::blink::AnnotationType type);
 
   // Use from within Blink to create an agent in this container.
-  AnnotationAgentImpl* CreateUnboundAgent(mojom::blink::AnnotationType type,
-                                          AnnotationSelector& selector);
+  AnnotationAgentImpl* CreateUnboundAgent(
+      mojom::blink::AnnotationType type,
+      AnnotationSelector& selector,
+      std::optional<DOMNodeId> search_range_start_node_id = std::nullopt);
 
   // mojom::blink::AnnotationAgentContainer
   void CreateAgent(
       mojo::PendingRemote<mojom::blink::AnnotationAgentHost> host_remote,
       mojo::PendingReceiver<mojom::blink::AnnotationAgent> agent_receiver,
       mojom::blink::AnnotationType type,
-      const String& serialized_selector) override;
+      const String& serialized_selector,
+      std::optional<DOMNodeId> search_range_start_node_id =
+          std::nullopt) override;
   void CreateAgentFromSelection(
       mojom::blink::AnnotationType type,
       CreateAgentFromSelectionCallback callback) override;

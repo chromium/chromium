@@ -67,7 +67,8 @@ TEST_F(NodeAnnotationSelectorTest, FindRangeNodeFound) {
   NodeAnnotationSelector* selector =
       MakeGarbageCollected<NodeAnnotationSelector>(target_node_id);
   base::test::TestFuture<const RangeInFlatTree*> future;
-  selector->FindRange(document, AnnotationSelector::SearchType::kSynchronous,
+  selector->FindRange(*document.createRange(),
+                      AnnotationSelector::SearchType::kSynchronous,
                       future.GetCallback());
 
   const RangeInFlatTree* range_result = future.Take();
@@ -100,7 +101,8 @@ TEST_F(NodeAnnotationSelectorTest, FindRangeNodeFoundMultipleTextNodes) {
   NodeAnnotationSelector* selector =
       MakeGarbageCollected<NodeAnnotationSelector>(target_node_id);
   base::test::TestFuture<const RangeInFlatTree*> future;
-  selector->FindRange(document, AnnotationSelector::SearchType::kSynchronous,
+  selector->FindRange(*document.createRange(),
+                      AnnotationSelector::SearchType::kSynchronous,
                       future.GetCallback());
 
   const RangeInFlatTree* range_result = future.Take();
@@ -138,7 +140,8 @@ TEST_F(NodeAnnotationSelectorTest,
   NodeAnnotationSelector* selector =
       MakeGarbageCollected<NodeAnnotationSelector>(target_node_id);
   base::test::TestFuture<const RangeInFlatTree*> future;
-  selector->FindRange(document, AnnotationSelector::SearchType::kSynchronous,
+  selector->FindRange(*document.createRange(),
+                      AnnotationSelector::SearchType::kSynchronous,
                       future.GetCallback());
 
   const RangeInFlatTree* range_result = future.Take();
@@ -173,7 +176,8 @@ TEST_F(NodeAnnotationSelectorTest, FindRangeNodeFoundButNoText) {
   NodeAnnotationSelector* selector =
       MakeGarbageCollected<NodeAnnotationSelector>(target_node_id);
   base::test::TestFuture<const RangeInFlatTree*> future;
-  selector->FindRange(document, AnnotationSelector::SearchType::kSynchronous,
+  selector->FindRange(*document.createRange(),
+                      AnnotationSelector::SearchType::kSynchronous,
                       future.GetCallback());
 
   const RangeInFlatTree* range_result = future.Take();
@@ -195,7 +199,8 @@ TEST_F(NodeAnnotationSelectorTest, FindRangeNodeNotFound) {
   NodeAnnotationSelector* selector =
       MakeGarbageCollected<NodeAnnotationSelector>(target_node_id);
   base::test::TestFuture<const RangeInFlatTree*> future;
-  selector->FindRange(document, AnnotationSelector::SearchType::kSynchronous,
+  selector->FindRange(*document.createRange(),
+                      AnnotationSelector::SearchType::kSynchronous,
                       future.GetCallback());
 
   const RangeInFlatTree* range_result = future.Take();

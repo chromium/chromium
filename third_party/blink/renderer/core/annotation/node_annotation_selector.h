@@ -13,8 +13,6 @@
 
 namespace blink {
 
-class Document;
-
 // NodeAnnotationSelector allows attaching to DOM based on a provided node id.
 class CORE_EXPORT NodeAnnotationSelector : public AnnotationSelector {
  public:
@@ -24,7 +22,7 @@ class CORE_EXPORT NodeAnnotationSelector : public AnnotationSelector {
   void Trace(Visitor* visitor) const override;
   // AnnotationSelector Interface
   String Serialize() const override;
-  void FindRange(Document& document,
+  void FindRange(Range& search_range,
                  SearchType type,
                  FinishedCallback finished_cb) override;
   bool IsTextSelector() const override { return false; }

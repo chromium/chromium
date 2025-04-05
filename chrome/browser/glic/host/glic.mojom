@@ -236,6 +236,10 @@ union ScrollToSelector {
 struct ScrollToTextSelector {
   // Exact text to select.
   string text;
+  // The DOMNodeId of the start node for the search range (the end is always
+  // the end of the document). If not specified, the search range will be the
+  // entire document.
+  int32? search_range_start_node_id;
 };
 
 // Used to specify a text fragment to scroll to and highlight. Text selected
@@ -246,10 +250,15 @@ struct ScrollToTextFragmentSelector {
   string text_start;
   // End of text to select.
   string text_end;
+  // The DOMNodeId of the start node for the search range (the end is always
+  // the end of the document). If not specified, the search range will be the
+  // entire document.
+  int32? search_range_start_node_id;
 };
 
 // Note: This must be kept in sync with the corresponding enum (same name) in
 // glic_api.ts
+// Next version: 6
 [Stable, Extensible]
 enum ScrollToErrorReason {
   // Default error reason. Used when the browser doesn't support ScrollTo, the
@@ -262,7 +271,8 @@ enum ScrollToErrorReason {
   // There is no tab currently in focus.
   [MinVersion=1] kNoFocusedTab,
 
-  // The input selector did not match any content in the document.
+  // The input selector did not match any content in the document or a given
+  // range.
   [MinVersion=1] kNoMatchFound,
 
   // The currently focused tab changed or navigated while processing the
@@ -274,6 +284,9 @@ enum ScrollToErrorReason {
   // navigated away, may not currently be in focus, or may not be in a primary
   // main frame (we don't currently support iframes).
   [MinVersion=2] kNoMatchingDocument,
+
+  // The search range starting from DOMNodeId did not result in a valid range.
+  [MinVersion=5] kSearchRangeInvalid,
 };
 
 // Access to the browser from the web client by proxy through the WebUI.

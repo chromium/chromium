@@ -32,9 +32,11 @@ String NodeAnnotationSelector::Serialize() const {
   return builder.ToString();
 }
 
-void NodeAnnotationSelector::FindRange(Document& document,
+void NodeAnnotationSelector::FindRange(Range& search_range,
                                        SearchType type,
                                        FinishedCallback finished_cb) {
+  // TODO(crbug.com/404235365): Check if the node is from the given search range and make sure
+  // to always search with this range.
   Node* node = Node::FromDomNodeId(node_id_);
   if (!node) {
     // If text not found call FinishedCallback with nullptr to match

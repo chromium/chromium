@@ -448,17 +448,33 @@ class HostMessageHandler implements HostMessageHandlerInterface {
     function getMojoSelector(): ScrollToSelectorMojo {
       const {selector} = params;
       if (selector.exactText !== undefined) {
+        if (selector.exactText.searchRangeStartNodeId !== undefined &&
+            params.documentId === undefined) {
+          throw new ErrorWithReasonImpl(
+              'scrollTo', ScrollToErrorReason.NOT_SUPPORTED,
+              'searchRangeStartNodeId without documentId');
+        }
         return {
           exactTextSelector: {
             text: selector.exactText.text,
+            searchRangeStartNodeId:
+                selector.exactText.searchRangeStartNodeId ?? null,
           },
         };
       }
       if (selector.textFragment !== undefined) {
+        if (selector.textFragment.searchRangeStartNodeId !== undefined &&
+            params.documentId === undefined) {
+          throw new ErrorWithReasonImpl(
+              'scrollTo', ScrollToErrorReason.NOT_SUPPORTED,
+              'searchRangeStartNodeId without documentId');
+        }
         return {
           textFragmentSelector: {
             textStart: selector.textFragment.textStart,
             textEnd: selector.textFragment.textEnd,
+            searchRangeStartNodeId:
+                selector.textFragment.searchRangeStartNodeId ?? null,
           },
         };
       }
