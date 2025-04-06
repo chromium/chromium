@@ -21,13 +21,6 @@ struct NET_EXPORT LoadTimingInternalInfo {
   bool operator==(const LoadTimingInternalInfo& other) const;
   ~LoadTimingInternalInfo();
 
-  // The time taken for HTTP stream creating to finish.
-  base::TimeDelta create_stream_delay;
-
-  // The time between when a URLRequest calls a CONNECTED delegate that can
-  // block it, and when the delegate allows the request to resume.
-  base::TimeDelta url_request_delegate_connected_delay;
-
   // The time taken for HTTP stream initialization to finish if the
   // initialization was blocked.
   base::TimeDelta initialize_stream_delay;
