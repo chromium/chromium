@@ -1,6 +1,6 @@
 {
-  "version": "52.1",
-  "log_list_timestamp": "2025-04-02T12:56:10Z",
+  "version": "53.4",
+  "log_list_timestamp": "2025-04-06T12:54:30Z",
   "operators": [
     {
       "name": "Google",
@@ -212,8 +212,8 @@
           "url": "https://nessie2025.ct.digicert.com/log/",
           "mmd": 86400,
           "state": {
-            "usable": {
-              "timestamp": "2022-11-01T18:54:00Z"
+            "retired": {
+              "timestamp": "2025-04-15T23:00:00Z"
             }
           },
           "temporal_interval": {
