@@ -282,12 +282,10 @@ if (!limit_android_deps) {
       ":androidx_appcompat_appcompat_java",
       ":androidx_core_core_java",
       ":androidx_fragment_fragment_java",
-      ":androidx_lifecycle_lifecycle_common_java",
       ":androidx_lifecycle_lifecycle_common_java8_java",
       ":androidx_lifecycle_lifecycle_livedata_core_java",
       ":androidx_lifecycle_lifecycle_viewmodel_java",
       "//third_party/android_deps:org_jspecify_jspecify_java",
-      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
 
