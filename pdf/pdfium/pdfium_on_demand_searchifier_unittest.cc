@@ -326,11 +326,9 @@ TEST_P(PDFiumOnDemandSearchifierTest, AddedTextPreservedAfterUnload) {
   for (int page = 0; page < kPageCount; page++) {
     GetPDFiumPageForTest(*engine(), page).Unload();
   }
-  // TODO(crbug.com/407730667): It's expected to preserve added text after page
-  // unload.
-  EXPECT_EQ(GetPageText(GetPDFiumPageForTest(*engine(), 0)), "OCR T");
+  EXPECT_EQ(GetPageText(GetPDFiumPageForTest(*engine(), 0)), "OCR Text 0");
   EXPECT_EQ(GetPageText(GetPDFiumPageForTest(*engine(), 1)), "OCR Text 1");
-  EXPECT_EQ(GetPageText(GetPDFiumPageForTest(*engine(), 2)), "OCR T");
+  EXPECT_EQ(GetPageText(GetPDFiumPageForTest(*engine(), 2)), "OCR Text 2");
   EXPECT_EQ(GetPageText(GetPDFiumPageForTest(*engine(), 3)), "OCR Text 3");
 }
 
