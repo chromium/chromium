@@ -2607,9 +2607,9 @@ crbug.com/383880384 [ Win ] external/wpt/css/css-properties-values-api/registere
 [ Linux ] external/wpt/webdriver/tests/bidi/network/continue_response/cookies.py [ Pass Timeout ]
 
 # ====== New tests from wpt-importer added here ======
-[ Mac14 ] external/wpt/html/cross-origin-opener-policy/iframe-popup-unsafe-none-to-unsafe-none.https.html?7-8 [ Crash ]
-[ Mac12 ] external/wpt/html/semantics/popovers/popover-focus-2.html [ Skip Timeout ]
-[ Mac12 ] virtual/html-anchor-attribute-disabled/external/wpt/html/semantics/popovers/popover-focus-2.html [ Skip Timeout ]
+crbug.com/408539325 [ Mac14 ] external/wpt/html/cross-origin-opener-policy/iframe-popup-unsafe-none-to-unsafe-none.https.html?7-8 [ Crash ]
+crbug.com/408571502 [ Mac12 ] external/wpt/html/semantics/popovers/popover-focus-2.html [ Skip Timeout ]
+crbug.com/408571502 [ Mac12 ] virtual/html-anchor-attribute-disabled/external/wpt/html/semantics/popovers/popover-focus-2.html [ Skip Timeout ]
 crbug.com/408039461 [ Win11-arm64 ] external/wpt/css/css-text/white-space/control-chars-01D.html [ Failure ]
 crbug.com/408034113 [ Win11-arm64 ] external/wpt/service-workers/service-worker/fetch-mixed-content-to-inscope.https.html [ Crash ]
 crbug.com/408039452 [ Win11-arm64 ] external/wpt/webaudio/the-audio-api/the-audioworklet-interface/audioworkletnode-constructor-options.https.html [ Timeout ]
