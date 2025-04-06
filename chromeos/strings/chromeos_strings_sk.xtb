@@ -351,6 +351,7 @@
 <translation id="2438248248625638801">Vytvárajú sa názvy nahrávok</translation>
 <translation id="2446553403094072641">Presnosť pohyblivej rádovej čiarky</translation>
 <translation id="2448312741937722512">Typ</translation>
+<translation id="2448857983905133469">Učebné nástroje</translation>
 <translation id="2468124392950503650">Vyberte pokyn na vytvorenie alebo si pozrite <ph name="BEGIN_LINK_PROMPTING_GUIDE" />sprievodcu pokynmi<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Pomocou asistenta pri písaní používajúceho umelú inteligenciu od Googlu môžete vytvoriť koncept alebo spresniť existujúcu prácu</translation>
 <translation id="2475982808118771221">Vyskytla sa chyba</translation>
@@ -449,6 +450,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Konečný bod</translation>
 <translation id="3060579846059757016">Ohraničenie</translation>
+<translation id="3060798442805232711">Učebné nástroje používajú váš mikrofón</translation>
 <translation id="3061850252076394168">povoliť počúvanie vybraného textu</translation>
 <translation id="3066772729299747758">v utorok</translation>
 <translation id="3069085583900247081">Nepodarilo sa otestovať</translation>
@@ -910,6 +912,7 @@
 <translation id="5170568018924773124">Zobraziť v priečinku</translation>
 <translation id="517075088756846356">Ak chcete pokračovať v aktualizácii, odpojte napájací kábel zariadenia <ph name="DEVICE_NAME" /> a znova ho pripojte</translation>
 <translation id="5180108905184566358">baobaby</translation>
+<translation id="5180431943345994173">Učiteľ odstránil obsah v učebných nástrojoch</translation>
 <translation id="5180712487038406644">Výrazná</translation>
 <translation id="5190187232518914472">Pripomeňte si obľúbené spomienky. Ak chcete pridať alebo upraviť albumy, prejdite do <ph name="LINK_BEGIN" />Fotiek Google<ph name="LINK_END" />.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
@@ -1003,6 +1006,7 @@
 <translation id="5628106863521633649">Dostupné jazyky</translation>
 <translation id="5630438231335788050">bauhausu</translation>
 <translation id="5631759159893697722">abstrakt</translation>
+<translation id="5655084389678168978">Učiteľ pridal nový obsah do učebných nástrojov</translation>
 <translation id="5655283760733841251">Zvýšenie jasu obrazovky</translation>
 <translation id="5655296450510165335">Registrácia zariadenia</translation>
 <translation id="5655776422854483175">Žiadne tlačové úlohy</translation>
@@ -1529,6 +1533,7 @@ Ak chcete mať tieto prepisy k dispozícii, stiahnite si model prepisov (až 10
 <translation id="7971535376154084247">Všeobecné ovládanie</translation>
 <translation id="7977800524392185497">Ak sa chcete pripojiť k sieti <ph name="NETWORK_NAME" />, prejdite do Nastavení</translation>
 <translation id="7978412674231730200">Súkromný kľúč</translation>
+<translation id="7979468455552394856">Učebné nástroje sú pripojené k študentom</translation>
 <translation id="7982789257301363584">Sieť</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{Aplikácia <ph name="APP_NAME_1" /> bola spustená automaticky}few{# aplikácie boli spustené automaticky}many{# apps were started automatically}other{# aplikácií bolo spustených automaticky}}</translation>
 <translation id="7994702968232966508">Metóda EAP</translation>
