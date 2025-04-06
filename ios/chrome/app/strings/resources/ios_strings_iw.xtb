@@ -97,6 +97,7 @@
 <translation id="1377508275003315939">סיסמאות</translation>
 <translation id="1381022135873211423">{count,plural, =1{‫{position} מתוך כתובת אחת ({count})}one{‫{position} מתוך {count} כתובות}two{‫{position} מתוך {count} כתובות}other{‫{position} מתוך {count} כתובות}}</translation>
 <translation id="1383876407941801731">חיפוש</translation>
+<translation id="1385168997509105202">‏הגישה שלך לקבוצת הכרטיסיות "<ph name="GROUP_NAME" />", וגם האפשרות של <ph name="USER_NAME" /> ‏(<ph name="USER_EMAIL" />) ליצור איתך קשר בשירותי Google, יבוטלו באופן מיידי.</translation>
 <translation id="138618066238211776">המשך בתור <ph name="USER_NAME" /></translation>
 <translation id="138692594145659985">אפשרויות לשמירת כרטיס</translation>
 <translation id="1396260204083880024">נכנסת לחשבון בתור <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. לפתיחת תפריט החשבון.</translation>
@@ -511,6 +512,7 @@
 <translation id="3124568093781685165">שיתוף הסיסמאות שלך עם הקבוצה המשפחתית</translation>
 <translation id="3130863904455712965">היסטוריה ועוד</translation>
 <translation id="313283613037595347">יצירת כרטיסיית מצב אנונימי חדשה.</translation>
+<translation id="3136739222562075778">הכרטיס הזה מציג ירידות במחיר של מוצרים בכרטיסיות הפתוחות</translation>
 <translation id="3138611310073113613">ביטול הבחירה</translation>
 <translation id="3140825265190223781">סיסמאות ומפתחות גישה שמורים</translation>
 <translation id="3143515551205905069">ביטול סנכרון</translation>
@@ -987,6 +989,7 @@
 <translation id="5197255632782567636">אינטרנט</translation>
 <translation id="5200894869889836319">אפשרויות להגדרת הרשאות</translation>
 <translation id="5203051773066903947">‏מקש Enter</translation>
+<translation id="5205750905107419335">‏הגישה של <ph name="USER_NAME" /> ‏(<ph name="USER_EMAIL" />) לקבוצת הכרטיסיות "<ph name="GROUP_NAME" />", וגם האפשרות ליצור איתך קשר בשירותי Google, יבוטלו באופן מיידי.</translation>
 <translation id="5206453674369664567">יציאה וניקוי נתונים</translation>
 <translation id="5210365745912300556">סגירת הכרטיסייה</translation>
 <translation id="5211488077761630279">לאפשר לאתר <ph name="SITE_NAME" /> להשתמש ב<ph name="PERMISSION" />?</translation>
@@ -1068,6 +1071,7 @@
 <translation id="5567439033041178034">למידע נוסף</translation>
 <translation id="5572648434713976849">בסרגל הכתובות יוצגו הצעות משופרות</translation>
 <translation id="5576885723883013398">חלון חדש</translation>
+<translation id="5578543325423650885">הגישה של <ph name="USER_NAME" /> ‏(<ph name="USER_EMAIL" />) לקבוצת הכרטיסיות "<ph name="GROUP_NAME" />" תבוטל באופן מיידי.</translation>
 <translation id="5578795271662203820">חיפוש התמונה הזו ב-<ph name="SEARCH_ENGINE" /></translation>
 <translation id="5579012242779565775">הסתרה של רשימת הקריאה</translation>
 <translation id="5585019845078534178">כרטיסיות</translation>
