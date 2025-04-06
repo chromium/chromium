@@ -8,8 +8,11 @@
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/web/web_print_params.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
+#include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/size_f.h"
 #include "v8/include/v8-forward.h"
 
 class SkImage;
@@ -20,6 +23,11 @@ class Size;
 }  // namespace gfx
 
 namespace chrome_pdf {
+
+// blink::WebPrintParams takes values in CSS pixels, not points.
+inline constexpr gfx::SizeF kUSLetterSize = {816, 1056};
+inline constexpr gfx::RectF kUSLetterRect = {{0, 0}, kUSLetterSize};
+inline constexpr gfx::RectF kPrintableAreaRect = {{24, 24}, {768, 977.33333}};
 
 // Resolves a file path within //pdf/test/data. `path` must be relative. Returns
 // the empty path if the source root can't be found.
@@ -64,6 +72,9 @@ v8::Isolate* GetBlinkIsolate();
 
 // Stores the `v8::Isolate` the test harness created when initializing blink.
 void SetBlinkIsolate(v8::Isolate* isolate);
+
+// Get print parameters for general use in tests.
+blink::WebPrintParams GetDefaultPrintParams();
 
 }  // namespace chrome_pdf
 
