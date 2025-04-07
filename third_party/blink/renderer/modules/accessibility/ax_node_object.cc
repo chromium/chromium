@@ -6644,7 +6644,7 @@ String AXNodeObject::TextAlternativeFromTooltip(
   if (RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
           GetElement()->GetDocument().GetExecutionContext())) {
     popover_ax_object =
-        AXObjectCache().Get(GetElement()->interestTargetElement());
+        AXObjectCache().Get(GetElement()->InterestTargetElement());
   }
   if (popover_ax_object) {
     DCHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
@@ -7627,7 +7627,7 @@ String AXNodeObject::Description(
   if (RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
           element->GetDocument().GetExecutionContext()) &&
       name_from != ax::mojom::blink::NameFrom::kInterestTarget) {
-    if (Element* interest_target = element->interestTargetElement()) {
+    if (Element* interest_target = element->InterestTargetElement()) {
       DCHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
           element->GetDocument().GetExecutionContext()));
       description_from = ax::mojom::blink::DescriptionFrom::kInterestTarget;

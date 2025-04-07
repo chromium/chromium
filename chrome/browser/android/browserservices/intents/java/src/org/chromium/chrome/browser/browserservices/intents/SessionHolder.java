@@ -6,10 +6,8 @@ package org.chromium.chrome.browser.browserservices.intents;
 
 import android.content.Intent;
 
-import androidx.annotation.OptIn;
 import androidx.browser.auth.AuthTabIntent;
 import androidx.browser.auth.AuthTabSessionToken;
-import androidx.browser.auth.ExperimentalAuthTab;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 
 import org.chromium.base.IntentUtils;
@@ -22,7 +20,6 @@ import org.chromium.build.annotations.Nullable;
  * @param <T> The type of the session; either {@link CustomTabsSessionToken} or {@link
  *     AuthTabSessionToken}.
  */
-@OptIn(markerClass = ExperimentalAuthTab.class)
 @NullMarked
 public class SessionHolder<T> {
     private final T mSession;

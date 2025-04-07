@@ -1887,7 +1887,7 @@ protocol::Response InspectorDOMAgent::getElementByRelation(
   } else if (relation == protocol::DOM::GetElementByRelation::RelationEnum::
                              InterestTarget) {
     if (auto* invoker = DynamicTo<Element>(node)) {
-      element = invoker->interestTargetElement();
+      element = invoker->InterestTargetElement();
     }
   }
 

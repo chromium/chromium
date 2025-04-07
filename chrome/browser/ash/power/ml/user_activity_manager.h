@@ -118,8 +118,12 @@ class UserActivityManager : public ui::UserActivityObserver,
 
   // Converts a Smart Dim model |prediction| into a yes/no decision about
   // whether to defer the screen dim and provides the result via |callback|.
-  void HandleSmartDimDecision(base::OnceCallback<void(bool)> callback,
-                              UserActivityEvent::ModelPrediction prediction);
+  // |prediction| should be empty if Smart Dim made no decision (e.g. call was
+  // canceled). In this case, |callback| is invoked with default decision of
+  // |false| (i.e. allow screen dim).
+  void HandleSmartDimDecision(
+      base::OnceCallback<void(bool)> callback,
+      std::optional<UserActivityEvent::ModelPrediction> prediction);
 
   // session_manager::SessionManagerObserver overrides:
   void OnSessionStateChanged() override;

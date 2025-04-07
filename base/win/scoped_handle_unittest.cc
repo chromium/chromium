@@ -13,8 +13,12 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/scoped_native_library.h"
+#include "base/test/gmock_expected_support.h"
+#include "base/test/gtest_util.h"
 #include "base/test/multiprocess_test.h"
 #include "base/test/test_timeouts.h"
+#include "base/types/expected.h"
+#include "base/win/windows_handle_util.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
@@ -66,6 +70,29 @@ TEST_F(ScopedHandleTest, ScopedHandle) {
   ::SetLastError(magic_error);
   handle_holder = std::move(handle_source);
   EXPECT_EQ(magic_error, ::GetLastError());
+}
+
+TEST_F(ScopedHandleTest, InvalidHandles) {
+  base::win::ScopedHandle empty;
+  // Should not get INVALID_HANDLE_VALUE from an empty handle.
+  EXPECT_EQ(empty.get(), nullptr);
+  // Do not allow pseudo handles as scoped handles.
+  base::win::ScopedHandle cur_proc(::GetCurrentProcess());
+  EXPECT_FALSE(cur_proc.is_valid());
+  base::win::ScopedHandle cur_thread(::GetCurrentThread());
+  EXPECT_FALSE(cur_thread.is_valid());
+  cur_thread.Set(::GetCurrentThread());
+  EXPECT_FALSE(cur_thread.is_valid());
+  // Should not get INVALID_HANDLE_VALUE from an invalid handle.
+  EXPECT_EQ(cur_thread.get(), nullptr);
+  // Disallow values that come from uint32_t to ensure casting is working right.
+  base::win::ScopedHandle proc_from_u32(Uint32ToHandle(0xfffffffful));
+  EXPECT_FALSE(proc_from_u32.is_valid());
+  proc_from_u32.Set(Uint32ToHandle(0xfffffffful));
+  EXPECT_FALSE(proc_from_u32.is_valid());
+  EXPECT_EQ(proc_from_u32.get(), nullptr);
+  base::win::ScopedHandle thread_from_u32(Uint32ToHandle(0xfffffffeul));
+  EXPECT_FALSE(thread_from_u32.is_valid());
 }
 
 TEST_F(ScopedHandleDeathTest, HandleVerifierTrackedHasBeenClosed) {
@@ -142,6 +169,45 @@ TEST_F(ScopedHandleDeathTest, HandleVerifierUntrackedHandle) {
       FailureMessage("Closing an untracked handle"));
 
   ASSERT_TRUE(::CloseHandle(handle));
+}
+
+TEST(TakeHandleOfTypeTest, NullHandle) {
+  auto handle_or_error = TakeHandleOfType(kNullProcessHandle, L"Process");
+  ASSERT_FALSE(handle_or_error.has_value());
+  ASSERT_EQ(handle_or_error.error(), STATUS_INVALID_HANDLE);
+}
+
+TEST(TakeHandleOfTypeTest, InvalidHandle) {
+  auto handle_or_error = TakeHandleOfType(INVALID_HANDLE_VALUE, L"Process");
+  ASSERT_FALSE(handle_or_error.has_value());
+  ASSERT_EQ(handle_or_error.error(), STATUS_INVALID_HANDLE);
+}
+
+TEST(TakeHandleOfTypeTest, CurrentProcess) {
+  auto handle_or_error = TakeHandleOfType(::GetCurrentProcess(), L"Process");
+  ASSERT_FALSE(handle_or_error.has_value());
+  ASSERT_EQ(handle_or_error.error(), STATUS_INVALID_HANDLE);
+}
+
+TEST(TakeHandleOfTypeTest, CrazyHandle) {
+  auto handle_or_error =
+      TakeHandleOfType(Uint32ToHandle(0x12345678U), L"Process");
+  ASSERT_FALSE(handle_or_error.has_value());
+  ASSERT_EQ(handle_or_error.error(), STATUS_INVALID_HANDLE);
+}
+
+TEST(TakeHandleOfTypeTest, ValidTypeMatch) {
+  Process this_process = Process::Open(GetCurrentProcId());
+  HANDLE process_handle = this_process.Handle();
+  ASSERT_OK_AND_ASSIGN(ScopedHandle process,
+                       TakeHandleOfType(this_process.Release(), L"Process"));
+  ASSERT_TRUE(process.is_valid());
+  ASSERT_EQ(process.get(), process_handle);
+}
+
+TEST(TakeHandleOfTypeDeathTest, ValidTypeMismatch) {
+  EXPECT_CHECK_DEATH((void)TakeHandleOfType(
+      Process::Open(GetCurrentProcId()).Release(), L"Section"));
 }
 
 // Under ASan, the multi-process test crashes during process shutdown for

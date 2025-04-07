@@ -112,7 +112,7 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
     return PopoverTriggerSupport::kNone;
   }
 
-  Element* interestTargetElement() override;
+  Element* InterestTargetElement() const override;
 
   void DefaultEventHandler(Event&) override;
 

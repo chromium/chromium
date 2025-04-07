@@ -618,7 +618,7 @@ void HTMLAnchorElementBase::NavigateToHyperlink(
   }
 }
 
-Element* HTMLAnchorElementBase::interestTargetElement() {
+Element* HTMLAnchorElementBase::InterestTargetElement() const {
   if (!RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
           GetDocument().GetExecutionContext())) {
     return nullptr;

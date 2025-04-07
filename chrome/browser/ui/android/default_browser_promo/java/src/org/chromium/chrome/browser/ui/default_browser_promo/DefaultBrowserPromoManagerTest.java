@@ -16,20 +16,16 @@ import android.content.Context;
 import android.content.Intent;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
+import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.chrome.browser.util.DefaultBrowserInfo;
 import org.chromium.chrome.browser.util.DefaultBrowserInfo.DefaultBrowserState;
-import org.chromium.chrome.browser.util.DefaultBrowserInfo.DefaultInfo;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.base.WindowAndroid.IntentCallback;
 
@@ -37,16 +33,17 @@ import org.chromium.ui.base.WindowAndroid.IntentCallback;
 @RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class DefaultBrowserPromoManagerTest {
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock WindowAndroid mWindowAndroid;
     @Mock Activity mActivity;
     @Mock RoleManager mRoleManager;
     @Mock Intent mIntent;
     @Mock DefaultBrowserPromoImpressionCounter mImpressionCounter;
+    @Mock DefaultBrowserStateProvider mStateProvider;
 
     @Before
     public void setup() {
+        MockitoAnnotations.initMocks(this);
         doReturn(mRoleManager).when(mActivity).getSystemService(Context.ROLE_SERVICE);
         doReturn(mIntent).when(mRoleManager).createRequestRoleIntent(RoleManager.ROLE_BROWSER);
     }
@@ -135,7 +132,9 @@ public class DefaultBrowserPromoManagerTest {
             @DefaultBrowserState int currentState,
             @DefaultBrowserState int outcomeState,
             String extraHistogram) {
-        var manager = new DefaultBrowserPromoManager(mActivity, mWindowAndroid, mImpressionCounter);
+        var manager =
+                new DefaultBrowserPromoManager(
+                        mActivity, mWindowAndroid, mImpressionCounter, mStateProvider);
 
         String outcomeHistogram =
                 currentState == DefaultBrowserState.NO_DEFAULT
@@ -153,25 +152,13 @@ public class DefaultBrowserPromoManagerTest {
         var histogram = histogramBuilder.build();
 
         doReturn(1).when(mWindowAndroid).showCancelableIntent(any(Intent.class), any(), any());
-        setDefaultInfoForTests(currentState);
+        when(mStateProvider.getCurrentDefaultBrowserState()).thenReturn(currentState, outcomeState);
         ArgumentCaptor<IntentCallback> onShowCallbackCaptor =
                 ArgumentCaptor.forClass(IntentCallback.class);
         manager.promoByRoleManager();
         verify(mWindowAndroid)
                 .showCancelableIntent(eq(mIntent), onShowCallbackCaptor.capture(), any());
-        setDefaultInfoForTests(outcomeState);
         onShowCallbackCaptor.getValue().onIntentCompleted(1, null);
-        histogram.assertExpected();
-    }
-
-    private void setDefaultInfoForTests(@DefaultBrowserState int defaultState) {
-        DefaultBrowserInfo.setDefaultInfoForTests(
-                new DefaultInfo(
-                        defaultState,
-                        /* isChromeSystem= */ true,
-                        /* isDefaultSystem= */ true,
-                        /* browserCount= */ 2,
-                        /* systemCount= */ 0,
-                        /* isChromePreStableInstalled */ false));
+        histogram.assertExpected("BrowserState is not correctly recorded");
     }
 }

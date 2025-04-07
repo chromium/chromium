@@ -256,4 +256,28 @@ void CalculateIsInManagedEnvironmentAsync(
                                std::move(network_service))));
 }
 
+remoting::ChromeOsEnterpriseRequestOrigin
+ConvertToChromeOsEnterpriseRequestOrigin(
+    StartCrdSessionJobDelegate::RequestOrigin request_origin) {
+  switch (request_origin) {
+    case StartCrdSessionJobDelegate::RequestOrigin::kClassManagement:
+      return remoting::ChromeOsEnterpriseRequestOrigin::kClassManagement;
+    case StartCrdSessionJobDelegate::RequestOrigin::kEnterpriseAdmin:
+      return remoting::ChromeOsEnterpriseRequestOrigin::kEnterpriseAdmin;
+  }
+  NOTREACHED();
+}
+
+StartCrdSessionJobDelegate::RequestOrigin
+ConvertToStartCrdSessionJobDelegateRequestOrigin(
+    SharedCrdSession::RequestOrigin request_origin) {
+  switch (request_origin) {
+    case SharedCrdSession::RequestOrigin::kClassManagement:
+      return StartCrdSessionJobDelegate::RequestOrigin::kClassManagement;
+    case SharedCrdSession::RequestOrigin::kEnterpriseAdmin:
+      return StartCrdSessionJobDelegate::RequestOrigin::kEnterpriseAdmin;
+  }
+  NOTREACHED();
+}
+
 }  // namespace policy

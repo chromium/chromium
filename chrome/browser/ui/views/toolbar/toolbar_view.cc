@@ -640,8 +640,10 @@ void ToolbarView::ShowIntentPickerBubble(
   if (bubble_type == IntentPickerBubbleView::BubbleType::kClickToCall) {
     highlighted_button =
         GetPageActionIconView(PageActionIconType::kClickToCall);
+  } else if (IsPageActionMigrated(PageActionIconType::kIntentPicker)) {
+    highlighted_button = GetPageActionView(kActionShowIntentPicker);
   } else if (apps::features::ShouldShowLinkCapturingUX()) {
-    highlighted_button = GetIntentChip();
+    highlighted_button = GetIntentChipButton();
   } else {
     highlighted_button =
         GetPageActionIconView(PageActionIconType::kIntentPicker);
@@ -1158,13 +1160,6 @@ ToolbarButton* ToolbarView::GetBackButton() {
 
 ReloadButton* ToolbarView::GetReloadButton() {
   return reload_;
-}
-
-views::Button* ToolbarView::GetIntentChip() {
-  if (IsPageActionMigrated(PageActionIconType::kIntentPicker)) {
-    return GetPageActionView(kActionShowIntentPicker);
-  }
-  return GetIntentChipButton();
 }
 
 IntentChipButton* ToolbarView::GetIntentChipButton() {

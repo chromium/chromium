@@ -381583,19 +381583,19 @@
       []
      ],
      "playback-destroy-persistent-license.js": [
-      "8a6cacedb40ad424ffe3a4bd5bb3c6c2c1dfd831",
+      "ce3ede67b654ea3302a9d371b7d11e02d1dacc18",
       []
      ],
      "playback-persistent-license-events.js": [
-      "2d99f679f4cf489703a20b105a7e3952e40a3bef",
+      "7a381bb2f9d090424f0bf60d254c056fdac3f7d2",
       []
      ],
      "playback-persistent-license.js": [
-      "c7e56e3aeaf30c809ea3563548f6198925e0c2c2",
+      "9b1f9da4cdd997b3ca9f45a4e577090b264352de",
       []
      ],
      "playback-retrieve-persistent-license.js": [
-      "83cba34028e92a38b2079bcf78460a4b2fa29e31",
+      "ad9728e01adf66fe07822d39a2631567d5800e61",
       []
      ],
      "playback-temporary-encrypted-clear-segmented-sources.js": [
@@ -398694,7 +398694,13 @@
       "quirk-origin-check-expected.txt": [
        "a5e4c87b5d4ed66359fe70245681c41f3cf2adec",
        []
-      ]
+      ],
+      "resources": {
+       "quirk-stylesheet.css.txt": [
+        "d2ae382583192b0284aa44c038811e7254a9386b",
+        []
+       ]
+      }
      }
     },
     "meta": {
@@ -402673,10 +402679,6 @@
        "12efbb6b1e4934de6b32df60304cd40a44548301",
        []
       ],
-      "popover-focus-2-expected.txt": [
-       "2121245eb74b4d2a0c404f35d04de04eebb4b817",
-       []
-      ],
       "popover-hidden-display-ref.html": [
        "2dc0d558b634279a09703798e9a531748215a563",
        []
@@ -402711,7 +402713,7 @@
         []
        ],
        "popover-utils.js": [
-        "544ec843152cedacc6c6ebb5ecfa14f33fd5b2ff",
+        "6ab5a08898d53bbfec92be2664e68897600b035f",
         []
        ]
       }
@@ -636268,6 +636270,13 @@
       }
      },
      "stylesheet": {
+      "quirk-origin-check-positive.html": [
+       "02ab832cbe207c9bbfb1d16cbdc9a685b474372c",
+       [
+        null,
+        {}
+       ]
+      ],
       "quirk-origin-check-recursive-import.html": [
        "c0053f1f29ad8f23dbebdd41b38dbdd8537e9e27",
        [
@@ -646908,7 +646917,27 @@
        ]
       ],
       "popover-focus-2.html": [
-       "6f361698f54e7ceee7aabaa08c5d0f13d190d8d4",
+       "cd03c6a8434f821183ebf64fc2ff2136f387f8b0",
+       [
+        null,
+        {
+         "testdriver": true,
+         "timeout": "long"
+        }
+       ]
+      ],
+      "popover-focus-3.html": [
+       "bcf49cb19e38e4811e5415b937c4b81e28980efa",
+       [
+        null,
+        {
+         "testdriver": true,
+         "timeout": "long"
+        }
+       ]
+      ],
+      "popover-focus-4.html": [
+       "81a2f26e3b3ffc8976fe3214aa70762a834d1f34",
        [
         null,
         {

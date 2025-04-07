@@ -50,7 +50,7 @@ class CORE_EXPORT HTMLButtonElement final : public HTMLFormControlElement {
   HTMLSelectElement* OwnerSelect() const;
 
   // Invoker Commands (https://github.com/whatwg/html/pull/9841)
-  Element* commandForElement();
+  Element* commandForElement() const;
   AtomicString command() const;
   void setCommand(const AtomicString& type);
   CommandEventType GetCommandEventType(const AtomicString& type) const;

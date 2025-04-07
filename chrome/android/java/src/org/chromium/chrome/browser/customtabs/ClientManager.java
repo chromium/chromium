@@ -18,9 +18,7 @@ import android.util.SparseBooleanArray;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.OptIn;
 import androidx.annotation.VisibleForTesting;
-import androidx.browser.auth.ExperimentalAuthTab;
 import androidx.browser.customtabs.CustomTabsCallback;
 import androidx.browser.customtabs.CustomTabsService;
 import androidx.browser.customtabs.CustomTabsService.Relation;
@@ -60,7 +58,6 @@ import java.util.Map;
 import java.util.Set;
 
 /** Manages the clients' state for Custom Tabs. This class is threadsafe. */
-@OptIn(markerClass = ExperimentalAuthTab.class)
 class ClientManager {
     // Values for the "CustomTabs.MayLaunchUrlType" UMA histogram. Append-only.
     @IntDef({

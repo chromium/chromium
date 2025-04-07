@@ -14,7 +14,7 @@ namespace content::indexed_db {
 
 BASE_FEATURE(kIdbInSessionDbCleanup,
              "IdbInSessionDbCleanup",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 constexpr base::TimeDelta kMaximumTimeBetweenRuns = base::Minutes(50);

@@ -16,6 +16,8 @@
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/api/extension_action/action_info.h"
 
+class BrowserContextKeyedServiceFactory;
+
 namespace content {
 class BrowserContext;
 }
@@ -44,7 +46,8 @@ class ExtensionActionManager : public KeyedService,
   // the manifest key.
   ExtensionAction* GetExtensionAction(const Extension& extension) const;
 
-  static void EnsureFactoryBuilt();
+  // Retrieves the factory instance for the ExtensionActionManager.
+  static BrowserContextKeyedServiceFactory* GetFactory();
 
  private:
   // Implement ExtensionRegistryObserver.
