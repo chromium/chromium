@@ -26,6 +26,7 @@ _EXCLUSIONS = [
     re.compile(r'.*lib.java/.*'),  # Never need java intermediates.
 
     # Test filter files:
+    re.compile(r'.*/clank/build/bot/filters/.*'),
     re.compile(r'.*/testing/buildbot/filters/.*'),
 
     # Chrome external extensions config file.
@@ -36,9 +37,12 @@ _EXCLUSIONS = [
     re.compile(r'.*icudtl\.bin'),
 
     # Scripts that are needed by swarming, but not on devices:
+    re.compile(r'.*goldctl'),
+    re.compile(r'.*llvm-readelf'),
+    re.compile(r'.*llvm-readobj'),
     re.compile(r'.*llvm-symbolizer'),
-    re.compile(r'.*devil_util_(?:bin|dist)'),
-    re.compile(r'.*md5sum_(?:bin|dist)'),
+    re.compile(r'.*devil_util_(?:bin|dist|host)'),
+    re.compile(r'.*md5sum_(?:bin|dist|host)'),
     re.compile(r'.*/development/scripts/stack'),
     re.compile(r'.*/build/android/pylib/symbols'),
     re.compile(r'.*/build/android/stacktrace'),
@@ -50,6 +54,7 @@ _EXCLUSIONS = [
 
     # Our tests don't need these.
     re.compile(r'.*/devtools-frontend/.*front_end/.*'),
+    re.compile(r'.*/devtools-frontend/.*inspector_overlay/.*'),
 
     # Build artifacts:
     re.compile(r'.*\.stamp'),
