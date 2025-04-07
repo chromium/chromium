@@ -266,8 +266,9 @@
       break;
 
     case SceneActivationLevelDisconnected:
-      [_connectedSceneStates removeObject:sceneState];
       [sceneState removeObserver:self];
+      [_connectedSceneStates removeObject:sceneState];
+      [_observers profileState:self sceneDisconnected:sceneState];
       break;
 
     case SceneActivationLevelBackground:

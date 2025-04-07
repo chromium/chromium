@@ -590,7 +590,7 @@ void AccountProfileMapper::Assigner::DeleteProfileNamed(std::string_view name) {
   CHECK(is_updating_profile_attributes_storage_);
 
   if (handler_) {
-    [handler_ deleteProfile:name completion:base::DoNothing()];
+    [handler_ deleteProfile:name];
     return;
   }
 
