@@ -1883,6 +1883,32 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, HiddenTargetCanBeClosed) {
   EXPECT_EQ(1u, result()->FindList("targetInfos")->size());
 }
 
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, HiddenTargetIsTheLastOne) {
+  AttachToBrowserTarget();
+
+  ASSERT_EQ(browser()->tab_strip_model()->count(), 1);
+
+  SendCommandSync("Target.getTargets");
+  ASSERT_EQ(1u, result()->FindList("targetInfos")->size());
+  const std::string targetId(*result()
+                                  ->FindList("targetInfos")
+                                  ->front()
+                                  .GetDict()
+                                  .FindString("targetId"));
+
+  SendCommandSync(
+      "Target.createTarget",
+      base::Value::Dict().Set("url", "about:blank").Set("hidden", true));
+
+  SendCommandSync("Target.getTargets");
+  EXPECT_EQ(2u, result()->FindList("targetInfos")->size());
+
+  SendCommandSync("Target.closeTarget",
+                  base::Value::Dict().Set("targetId", targetId));
+
+  ui_test_utils::WaitForBrowserToClose();
+}
+
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
                        NotHiddenTargetIsVisibleInTabStrip) {
   AttachToBrowserTarget();
