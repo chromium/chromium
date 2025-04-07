@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/structured_shared_memory.h"
@@ -26,6 +27,7 @@
 #include "components/performance_manager/scenarios/performance_scenario_data.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
+#include "third_party/perfetto/include/perfetto/tracing/string_helpers.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace performance_manager {
@@ -33,6 +35,21 @@ namespace performance_manager {
 using performance_scenarios::ScenarioScope;
 
 namespace {
+
+void MaybeEmitNestingChangeEvent(
+    const perfetto::NamedTrack* track,
+    size_t old_nesting_level,
+    size_t new_nesting_level,
+    base::span<const perfetto::StaticString> event_names) {
+  // Close trace events for each removed nesting level.
+  for (size_t i = old_nesting_level; track && i > new_nesting_level; --i) {
+    TRACE_EVENT_END("performance_scenarios", *track);
+  }
+  // Open trace events for each added nesting level.
+  for (size_t i = old_nesting_level; track && i < new_nesting_level; ++i) {
+    TRACE_EVENT_BEGIN("performance_scenarios", event_names.at(i), *track);
+  }
+}
 
 // Generic methods that change according to the Scenario type.
 template <typename Scenario>
@@ -42,11 +59,14 @@ struct ScenarioTraits {
   // Returns a reference to the Scenario slot in shared memory.
   std::atomic<Scenario>& ScenarioRef();
 
-  // Opens a trace event for `scenario` if a tracing track is registered.
-  void MaybeBeginTraceEvent(Scenario scenario) const;
+  // Returns the trace event nesting level for `scenario`. Implement this if
+  // this Scenario type nests cleanly in traces.
+  size_t NestingLevel(Scenario scenario) const;
 
-  // Closes the trace event for `scenario` if a tracing track is registered.
-  void MaybeEndTraceEvent(Scenario scenario) const;
+  // Records trace events for a switch from `old_scenario` to `new_scenario` if
+  // a tracing track is registered.
+  void MaybeRecordTraceEvent(Scenario old_scenario,
+                             Scenario new_scenario) const;
 };
 
 template <>
@@ -58,46 +78,26 @@ struct ScenarioTraits<LoadingScenario> {
     return state_ptr->shared_state().WritableRef().loading;
   }
 
-  void MaybeBeginTraceEvent(LoadingScenario scenario) const {
-    if (!state_ptr->loading_tracing_track()) {
-      return;
-    }
+  size_t NestingLevel(LoadingScenario scenario) const {
     switch (scenario) {
       case LoadingScenario::kNoPageLoading:
-        // No trace event.
-        return;
+        return 0;
       case LoadingScenario::kBackgroundPageLoading:
-        TRACE_EVENT_BEGIN("performance_scenarios", "BackgroundPageLoading",
-                          *state_ptr->loading_tracing_track());
-        return;
+        return 1;
       case LoadingScenario::kVisiblePageLoading:
-        TRACE_EVENT_BEGIN("performance_scenarios", "VisiblePageLoading",
-                          *state_ptr->loading_tracing_track());
-        return;
+        return 2;
       case LoadingScenario::kFocusedPageLoading:
-        TRACE_EVENT_BEGIN("performance_scenarios", "FocusedPageLoading",
-                          *state_ptr->loading_tracing_track());
-        return;
+        return 3;
     }
     NOTREACHED();
   }
 
-  void MaybeEndTraceEvent(LoadingScenario scenario) const {
-    if (!state_ptr->loading_tracing_track()) {
-      return;
-    }
-    switch (scenario) {
-      case LoadingScenario::kNoPageLoading:
-        // No trace event.
-        return;
-      case LoadingScenario::kBackgroundPageLoading:
-      case LoadingScenario::kVisiblePageLoading:
-      case LoadingScenario::kFocusedPageLoading:
-        TRACE_EVENT_END("performance_scenarios",
-                        *state_ptr->loading_tracing_track());
-        return;
-    }
-    NOTREACHED();
+  void MaybeRecordTraceEvent(LoadingScenario old_scenario,
+                             LoadingScenario new_scenario) const {
+    MaybeEmitNestingChangeEvent(
+        state_ptr->loading_tracing_track(), NestingLevel(old_scenario),
+        NestingLevel(new_scenario),
+        {"AnyPageLoading", "VisiblePageLoading", "FocusedPageLoading"});
   }
 
   raw_ptr<PerformanceScenarioData> state_ptr;
@@ -112,36 +112,21 @@ struct ScenarioTraits<InputScenario> {
     return state_ptr->shared_state().WritableRef().input;
   }
 
-  void MaybeBeginTraceEvent(InputScenario scenario) const {
-    if (!state_ptr->input_tracing_track()) {
-      return;
-    }
+  size_t NestingLevel(InputScenario scenario) const {
     switch (scenario) {
       case InputScenario::kNoInput:
-        // No trace event.
-        return;
+        return 0;
       case InputScenario::kTyping:
-        TRACE_EVENT_BEGIN("performance_scenarios", "Typing",
-                          *state_ptr->input_tracing_track());
-        return;
+        return 1;
     }
     NOTREACHED();
   }
 
-  void MaybeEndTraceEvent(InputScenario scenario) const {
-    if (!state_ptr->input_tracing_track()) {
-      return;
-    }
-    switch (scenario) {
-      case InputScenario::kNoInput:
-        // No trace event.
-        return;
-      case InputScenario::kTyping:
-        TRACE_EVENT_END("performance_scenarios",
-                        *state_ptr->input_tracing_track());
-        return;
-    }
-    NOTREACHED();
+  void MaybeRecordTraceEvent(InputScenario old_scenario,
+                             InputScenario new_scenario) const {
+    MaybeEmitNestingChangeEvent(state_ptr->input_tracing_track(),
+                                NestingLevel(old_scenario),
+                                NestingLevel(new_scenario), {"Typing"});
   }
 
   raw_ptr<PerformanceScenarioData> state_ptr;
@@ -185,8 +170,7 @@ void SetScenarioValue(Scenario new_scenario,
     Scenario old_scenario =
         traits.ScenarioRef().exchange(new_scenario, std::memory_order_relaxed);
     if (old_scenario != new_scenario) {
-      traits.MaybeEndTraceEvent(old_scenario);
-      traits.MaybeBeginTraceEvent(new_scenario);
+      traits.MaybeRecordTraceEvent(old_scenario, new_scenario);
     }
   }
 }
