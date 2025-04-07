@@ -11,12 +11,14 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/command_line.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/trace_event/trace_event.h"
 #include "base/win/win_util.h"
+#include "base/win/windows_version.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/aura/client/aura_constants.h"
@@ -32,6 +34,8 @@
 #include "ui/base/win/event_creation_utils.h"
 #include "ui/base/win/hwnd_metrics.h"
 #include "ui/base/win/win_cursor.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider_key.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/paint_context.h"
@@ -112,6 +116,12 @@ void UpdateMouseLockRegion(aura::Window* window, bool locked) {
   ::ClipCursor(&window_rect);
 }
 
+bool ShouldApplySystemBackdrop() {
+  return base::win::GetVersion() >= base::win::Version::WIN11_22H2 &&
+         !base::CommandLine::ForCurrentProcess()->HasSwitch(
+             switches::kUseWUCForWindowBackdrop);
+}
+
 }  // namespace
 
 DEFINE_UI_CLASS_PROPERTY_KEY(aura::Window*, kContentWindowForRootWindow, NULL)
@@ -175,13 +185,18 @@ void DesktopWindowTreeHostWin::FinishTouchDrag(gfx::Point screen_point) {
 ////////////////////////////////////////////////////////////////////////////////
 // DesktopWindowTreeHostWin, WidgetObserver implementation:
 void DesktopWindowTreeHostWin::OnWidgetThemeChanged(Widget* widget) {
-  // Ensure that DWM knows to apply the correct color scheme to the window
-  // backdrop whenever it changes.
-  BOOL use_dark_mode =
-      widget->GetColorMode() == ui::ColorProviderKey::ColorMode::kDark;
-  HRESULT hr = DwmSetWindowAttribute(GetHWND(), DWMWA_USE_IMMERSIVE_DARK_MODE,
-                                     &use_dark_mode, sizeof(use_dark_mode));
-  CHECK_EQ(hr, S_OK);
+  if (ShouldApplySystemBackdrop()) {
+    // Ensure that DWM knows to apply the correct color scheme to the window
+    // backdrop whenever it changes.
+    BOOL use_dark_mode =
+        widget->GetColorMode() == ui::ColorProviderKey::ColorMode::kDark;
+    HRESULT hr = DwmSetWindowAttribute(GetHWND(), DWMWA_USE_IMMERSIVE_DARK_MODE,
+                                       &use_dark_mode, sizeof(use_dark_mode));
+    CHECK_EQ(hr, S_OK);
+    return;
+  }
+  wuc_backdrop_->UpdateBackdropColor(
+      GetWidget()->GetColorProvider()->GetColor(ui::kColorFrameActive));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -227,20 +242,30 @@ void DesktopWindowTreeHostWin::Init(const Widget::InitParams& params) {
       !message_handler_->is_translucent()) {
     // Observe the widget to update the backdrop when the color mode changes.
     widget_observation_.Observe(GetWidget());
-
     // Ensure that the hwnd has been created.
     CHECK(GetHWND());
-    DWM_SYSTEMBACKDROP_TYPE backdrop = DWMSBT_TRANSIENTWINDOW;
-    HRESULT hr = DwmSetWindowAttribute(GetHWND(), DWMWA_SYSTEMBACKDROP_TYPE,
-                                       &backdrop, sizeof(backdrop));
-    CHECK_EQ(hr, S_OK);
 
-    // Ensure that the backdrop honors the OS dark mode setting.
-    BOOL use_dark_mode =
-        GetWidget()->GetColorMode() == ui::ColorProviderKey::ColorMode::kDark;
-    hr = DwmSetWindowAttribute(GetHWND(), DWMWA_USE_IMMERSIVE_DARK_MODE,
-                               &use_dark_mode, sizeof(use_dark_mode));
-    CHECK_EQ(hr, S_OK);
+    // Apply backdrop to the window. If on Win10 or older versions of Win11, use
+    // WUC for the backdrop. If on Win11 22H2 or newer, use DWM since it has the
+    // functionality included.
+    if (ShouldApplySystemBackdrop()) {
+      DWM_SYSTEMBACKDROP_TYPE backdrop = DWMSBT_TRANSIENTWINDOW;
+      HRESULT hr = DwmSetWindowAttribute(GetHWND(), DWMWA_SYSTEMBACKDROP_TYPE,
+                                         &backdrop, sizeof(backdrop));
+      CHECK_EQ(hr, S_OK);
+
+      // Ensure that the backdrop honors the OS dark mode setting.
+      BOOL use_dark_mode =
+          GetWidget()->GetColorMode() == ui::ColorProviderKey::ColorMode::kDark;
+      hr = DwmSetWindowAttribute(GetHWND(), DWMWA_USE_IMMERSIVE_DARK_MODE,
+                                 &use_dark_mode, sizeof(use_dark_mode));
+      CHECK_EQ(hr, S_OK);
+    } else {
+      wuc_backdrop_ = std::make_unique<gfx::WUCBackdrop>(GetHWND());
+
+      wuc_backdrop_->UpdateBackdropColor(
+          GetWidget()->GetColorProvider()->GetColor(ui::kColorFrameActive));
+    }
   }
 
   CreateCompositor(params.force_software_compositing);

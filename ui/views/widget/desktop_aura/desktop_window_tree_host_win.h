@@ -13,6 +13,7 @@
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/mojom/window_show_state.mojom-forward.h"
+#include "ui/gfx/win/wuc_backdrop.h"
 #include "ui/views/views_export.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host.h"
 #include "ui/views/widget/widget_observer.h"
@@ -342,6 +343,9 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin : public DesktopWindowTreeHost,
 
   // True if the window is allow to take screenshots, by default is true.
   bool allow_screenshots_ = true;
+
+  // A Windows.Ui.Composition visual tree that represents the window backdrop.
+  std::unique_ptr<gfx::WUCBackdrop> wuc_backdrop_;
 
   base::ScopedObservation<Widget, WidgetObserver> widget_observation_{this};
 

@@ -638,12 +638,13 @@ bool ShouldUseDCompSurfacesForDelegatedInk() {
 bool ShouldRemoveRedirectionBitmap() {
   // Redirection bitmap should not be removed if Direct Composition is
   // disabled. On devices with DComp disabled, ANGLE draws to the redirection
-  // bitmap via a blit swap chain. DWM_SYSTEMBACKDROP_TYPE is only available
-  // on Win11 22H2+, therefore limit the bitmap removal to those versions or
-  // higher so that an appropriate background replacement is available.
+  // bitmap via a blit swap chain. Windows.UI.Composition DesktopWindowTarget
+  // is supported on on Win10 version 1511 and higher, therefore limit the
+  // bitmap removal to those versions or higher so that an appropriate
+  // background replacement is available.
   // Note: the disable-direct-composition command line check is a workaround for
   // https://crbug.com/40276881.
-  return base::win::GetVersion() >= base::win::Version::WIN11_22H2 &&
+  return base::win::GetVersion() >= base::win::Version::WIN10_RS4 &&
          !base::CommandLine::ForCurrentProcess()->HasSwitch(
              switches::kDisableDirectComposition) &&
          base::FeatureList::IsEnabled(kRemoveRedirectionBitmap);
