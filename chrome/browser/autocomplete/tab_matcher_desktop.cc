@@ -86,6 +86,27 @@ bool TabMatcherDesktop::IsTabOpenWithURL(const GURL& url,
   return false;
 }
 
+bool TabMatcherDesktop::IsTabOpenWithSameTitleOrSimilarURL(
+    const std::u16string& title,
+    const GURL& url,
+    const GURL::Replacements& replacements,
+    bool exclude_active_tab) const {
+  auto strip_url = [&](const GURL& url) -> GURL {
+    return AutocompleteMatch::GURLToStrippedGURL(
+        url.ReplaceComponents(replacements), AutocompleteInput(),
+        template_url_service_, std::u16string(),
+        /*keep_search_intent_params=*/false);
+  };
+
+  for (auto* web_contents : GetOpenWebContents(exclude_active_tab)) {
+    if (title == web_contents->GetTitle() ||
+        strip_url(url) == strip_url(web_contents->GetLastCommittedURL())) {
+      return true;
+    }
+  }
+  return false;
+}
+
 std::vector<TabMatcher::TabWrapper> TabMatcherDesktop::GetOpenTabs(
     const AutocompleteInput* input) const {
   std::vector<TabMatcher::TabWrapper> open_tabs;
