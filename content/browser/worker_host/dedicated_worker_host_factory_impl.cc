@@ -125,7 +125,8 @@ void DedicatedWorkerHostFactoryImpl::CreateWorkerHostAndStartScriptLoad(
       ancestor_render_frame_host_id_, creator_storage_key_, renderer_origin,
       isolation_info_, std::move(creator_client_security_state_),
       std::move(creator_coep_reporter_), std::move(ancestor_coep_reporter_),
-      pending_remote_host.InitWithNewPipeAndPassReceiver());
+      pending_remote_host.InitWithNewPipeAndPassReceiver(),
+      storage_access_api_status);
   mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker> broker;
   host->BindBrowserInterfaceBrokerReceiver(
       broker.InitWithNewPipeAndPassReceiver());

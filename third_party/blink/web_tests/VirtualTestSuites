@@ -1066,7 +1066,8 @@
       "external/wpt/FileAPI/BlobURL/cross-partition.https.html",
       "external/wpt/FileAPI/BlobURL/cross-partition-worker-creation.https.html",
       "external/wpt/FileAPI/BlobURL/cross-partition-navigation.https.html",
-      "external/wpt/storage-access-api/storage-access-beyond-cookies.blobStorage.sub.https.window.html"
+      "external/wpt/storage-access-api/storage-access-beyond-cookies.blobStorage.sub.https.window.html",
+      "external/wpt/storage-access-api/storage-access-beyond-cookies.BlobURLDedicatedWorker.sub.https.tentative.window.html"
     ],
     "args": ["--enable-features=BlockCrossPartitionBlobUrlFetching,EnforceNoopenerOnBlobURLNavigation"],
     "expires": "Sep 1, 2025",

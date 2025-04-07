@@ -230,6 +230,8 @@ void ServiceWorkerHost::CreateBlobUrlStoreProvider(
   storage_partition_impl->GetBlobUrlRegistry()->AddReceiver(
       version()->key(), version()->key().origin(),
       GetProcessHost()->GetDeprecatedID(), std::move(receiver),
+      // Storage access can only be granted to dedicated workers.
+      base::BindRepeating([]() -> bool { return false; }),
       !(GetContentClient()->browser()->IsBlobUrlPartitioningEnabled(
           GetProcessHost()->GetBrowserContext())));
 }

@@ -604,6 +604,8 @@ void SharedWorkerHost::CreateBlobUrlStoreProvider(
   storage_partition_impl->GetBlobUrlRegistry()->AddReceiver(
       GetStorageKey(), instance().renderer_origin(),
       GetProcessHost()->GetDeprecatedID(), std::move(receiver),
+      // Storage access can only be granted to dedicated workers.
+      base::BindRepeating([]() -> bool { return false; }),
       !(GetContentClient()->browser()->IsBlobUrlPartitioningEnabled(
           GetProcessHost()->GetBrowserContext())),
       storage::BlobURLValidityCheckBehavior::

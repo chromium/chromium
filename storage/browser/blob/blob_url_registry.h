@@ -69,13 +69,16 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobUrlRegistry {
 
   // Binds receivers corresponding to connections from renderer worker
   // contexts and stores them in `worker_receivers_`.
-  void AddReceiver(const blink::StorageKey& storage_key,
-                   const url::Origin& renderer_origin,
-                   int render_process_host_id,
-                   mojo::PendingReceiver<blink::mojom::BlobURLStore> receiver,
-                   bool partitioning_disabled_by_policy = false,
-                   BlobURLValidityCheckBehavior validity_check_behavior =
-                       BlobURLValidityCheckBehavior::DEFAULT);
+  void AddReceiver(
+      const blink::StorageKey& storage_key,
+      const url::Origin& renderer_origin,
+      int render_process_host_id,
+      mojo::PendingReceiver<blink::mojom::BlobURLStore> receiver,
+      base::RepeatingCallback<bool()> storage_access_check_callback =
+          base::BindRepeating([]() -> bool { return false; }),
+      bool partitioning_disabled_by_policy = false,
+      BlobURLValidityCheckBehavior validity_check_behavior =
+          BlobURLValidityCheckBehavior::DEFAULT);
 
   // Returns the receivers corresponding to renderer frame contexts for use in
   // tests.

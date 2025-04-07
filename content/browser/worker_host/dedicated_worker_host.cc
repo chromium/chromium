@@ -81,7 +81,8 @@ DedicatedWorkerHost::DedicatedWorkerHost(
     network::mojom::ClientSecurityStatePtr creator_client_security_state,
     base::WeakPtr<CrossOriginEmbedderPolicyReporter> creator_coep_reporter,
     base::WeakPtr<CrossOriginEmbedderPolicyReporter> ancestor_coep_reporter,
-    mojo::PendingReceiver<blink::mojom::DedicatedWorkerHost> host)
+    mojo::PendingReceiver<blink::mojom::DedicatedWorkerHost> host,
+    net::StorageAccessApiStatus storage_access_api_status)
     : service_(service),
       token_(token),
       worker_process_host_(worker_process_host),
@@ -101,7 +102,8 @@ DedicatedWorkerHost::DedicatedWorkerHost(
       ancestor_coep_reporter_(std::move(ancestor_coep_reporter)),
       code_cache_host_receivers_(GetProcessHost()
                                      ->GetStoragePartition()
-                                     ->GetGeneratedCodeCacheContext()) {
+                                     ->GetGeneratedCodeCacheContext()),
+      storage_access_api_status_(storage_access_api_status) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(worker_process_host_);
   DCHECK(worker_process_host_->IsInitializedAndNotDead());
@@ -791,6 +793,15 @@ void DedicatedWorkerHost::CreateBroadcastChannelProvider(
       std::move(receiver));
 }
 
+bool DedicatedWorkerHost::WasStorageAccessGranted() {
+  switch (storage_access_api_status_) {
+    case net::StorageAccessApiStatus::kAccessViaAPI:
+      return true;
+    case net::StorageAccessApiStatus::kNone:
+      return false;
+  }
+}
+
 void DedicatedWorkerHost::CreateBlobUrlStoreProvider(
     mojo::PendingReceiver<blink::mojom::BlobURLStore> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -800,6 +811,14 @@ void DedicatedWorkerHost::CreateBlobUrlStoreProvider(
   storage_partition_impl->GetBlobUrlRegistry()->AddReceiver(
       GetStorageKey(), renderer_origin_, GetProcessHost()->GetDeprecatedID(),
       std::move(receiver),
+      base::BindRepeating(
+          [](base::WeakPtr<DedicatedWorkerHost> host) -> bool {
+            if (!host) {
+              return false;
+            }
+            return host->WasStorageAccessGranted();
+          },
+          weak_factory_.GetWeakPtr()),
       !(GetContentClient()->browser()->IsBlobUrlPartitioningEnabled(
           GetProcessHost()->GetBrowserContext())),
       storage::BlobURLValidityCheckBehavior::
