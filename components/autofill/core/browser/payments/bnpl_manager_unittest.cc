@@ -605,7 +605,8 @@ TEST_F(BnplManagerTest,
   EXPECT_CALL(*payments_network_interface_,
               GetBnplPaymentInstrumentForFetchingUrl)
       .WillOnce(base::test::RunOnceCallback<1>(
-          PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure,
+          PaymentsAutofillClient::PaymentsRpcResult::
+              kVcnRetrievalPermanentFailure,
           response));
 
   OnIssuerSelected(linked_issuer);

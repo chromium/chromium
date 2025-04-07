@@ -44,6 +44,12 @@ bool ShouldShowBnplOptionForIssuer(const BnplIssuer& bnpl_issuer,
          base::FeatureList::IsEnabled(features::kAutofillEnableBuyNowPayLater);
 }
 
+bool ShouldShowPermanentErrorDialog(
+    PaymentsAutofillClient::PaymentsRpcResult result) {
+  return result == PaymentsAutofillClient::PaymentsRpcResult::
+                       kVcnRetrievalPermanentFailure;
+}
+
 }  // namespace
 
 BnplManager::OngoingFlowState::OngoingFlowState() = default;
@@ -196,9 +202,7 @@ void BnplManager::OnVcnDetailsFetched(
   } else {
     payments_autofill_client().ShowAutofillErrorDialog(
         AutofillErrorDialogContext::WithBnplPermanentOrTemporaryError(
-            /*is_permanent_error=*/result ==
-            PaymentsAutofillClient::PaymentsRpcResult::
-                kVcnRetrievalPermanentFailure));
+            /*is_permanent_error=*/ShouldShowPermanentErrorDialog(result)));
   }
   Reset();
 }
@@ -266,8 +270,7 @@ void BnplManager::OnDidGetDetailsForCreateBnplPaymentInstrument(
 
   payments_autofill_client().ShowAutofillErrorDialog(
       AutofillErrorDialogContext::WithBnplPermanentOrTemporaryError(
-          /*is_permanent_error=*/result ==
-          PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure));
+          /*is_permanent_error=*/ShouldShowPermanentErrorDialog(result)));
 
   Reset();
 }
@@ -345,8 +348,7 @@ void BnplManager::OnRedirectUrlFetched(
   } else {
     payments_autofill_client().ShowAutofillErrorDialog(
         AutofillErrorDialogContext::WithBnplPermanentOrTemporaryError(
-            /*is_permanent_error=*/result ==
-            PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure));
+            /*is_permanent_error=*/ShouldShowPermanentErrorDialog(result)));
     Reset();
   }
 }
@@ -497,9 +499,7 @@ void BnplManager::OnBnplPaymentInstrumentCreated(
   } else {
     payments_autofill_client().ShowAutofillErrorDialog(
         AutofillErrorDialogContext::WithBnplPermanentOrTemporaryError(
-            /*is_permanent_error=*/result ==
-            PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure));
-
+            /*is_permanent_error=*/ShouldShowPermanentErrorDialog(result)));
     Reset();
   }
 }
