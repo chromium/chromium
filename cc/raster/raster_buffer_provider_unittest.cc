@@ -200,7 +200,8 @@ class RasterBufferProviderTest
         raster_caps.use_gpu_rasterization = true;
         raster_buffer_provider_ = std::make_unique<GpuRasterBufferProvider>(
             context_provider_.get(), worker_context_provider_.get(),
-            raster_caps, gfx::Size(), pending_raster_queries_.get(), 1);
+            raster_caps.tile_format, raster_caps.tile_overlay_candidate,
+            gfx::Size(), pending_raster_queries_.get(), 1);
         break;
       case RASTER_BUFFER_PROVIDER_TYPE_BITMAP:
         CreateSoftwareResourceProvider();

@@ -87,7 +87,8 @@ LayerTreeHostPixelResourceTest::CreateRasterBufferProvider(
 
       raster_caps.use_gpu_rasterization = true;
       return std::make_unique<GpuRasterBufferProvider>(
-          compositor_context_provider, worker_context_provider, raster_caps,
+          compositor_context_provider, worker_context_provider,
+          raster_caps.tile_format, raster_caps.tile_overlay_candidate,
           gfx::Size(), host_impl->GetRasterQueryQueueForTesting());
     case TestRasterType::kZeroCopy:
       EXPECT_TRUE(compositor_context_provider);

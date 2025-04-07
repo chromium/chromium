@@ -16,7 +16,6 @@
 #include "cc/raster/raster_buffer.h"
 #include "cc/raster/raster_buffer_provider.h"
 #include "cc/raster/raster_query_queue.h"
-#include "cc/trees/raster_capabilities.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/common/sync_token.h"
 
@@ -40,7 +39,8 @@ class CC_EXPORT GpuRasterBufferProvider : public RasterBufferProvider {
   GpuRasterBufferProvider(
       viz::RasterContextProvider* compositor_context_provider,
       viz::RasterContextProvider* worker_context_provider,
-      const RasterCapabilities& raster_caps,
+      const viz::SharedImageFormat& format,
+      bool is_overlay_candidate,
       const gfx::Size& max_tile_size,
       RasterQueryQueue* const pending_raster_queries,
       float raster_metric_probability = kRasterMetricProbability);

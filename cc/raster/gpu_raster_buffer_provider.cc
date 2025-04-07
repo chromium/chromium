@@ -122,14 +122,15 @@ bool GpuRasterBufferProvider::RasterBufferImpl::
 GpuRasterBufferProvider::GpuRasterBufferProvider(
     viz::RasterContextProvider* compositor_context_provider,
     viz::RasterContextProvider* worker_context_provider,
-    const RasterCapabilities& raster_caps,
+    const viz::SharedImageFormat& format,
+    bool is_overlay_candidate,
     const gfx::Size& max_tile_size,
     RasterQueryQueue* const pending_raster_queries,
     float raster_metric_probability)
     : compositor_context_provider_(compositor_context_provider),
       worker_context_provider_(worker_context_provider),
-      tile_format_(raster_caps.tile_format),
-      tile_overlay_candidate_(raster_caps.tile_overlay_candidate),
+      tile_format_(format),
+      tile_overlay_candidate_(is_overlay_candidate),
       max_tile_size_(max_tile_size),
       pending_raster_queries_(pending_raster_queries),
       raster_metric_probability_(raster_metric_probability),
