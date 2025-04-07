@@ -192,8 +192,70 @@ message ActionInformation {
 }
 
 // A single set of actions to be taken by Chrome before responding.
-// Next ID: 2
+// Next ID: 4
 message BrowserAction {
   // The actions to be taken by Chrome.
   repeated ActionInformation action_information = 1;
+
+  // The task id of the action.
+  int32 task_id = 2;
+
+  // The id of the tab the action will be taken in.
+  int32 tab_id = 3;
+}
+
+// The state of the browser after an action is taken.
+// Currently only used for extension APIs, but should directly reflect the
+// production state of the browser returned in glic.mojom.
+// Next ID: 7
+message BrowserActionResult {
+  // The page content at the time after the action.
+  AnnotatedPageContent annotated_page_content = 1;
+
+  // The screenshot of the page at the time after the action.
+  bytes screenshot = 2;
+
+  // The mime type of the |screenshot|.
+  string screenshot_mime_type = 3;
+
+  // The result of the action.
+  int32 action_result = 4;
+
+  // The task id of the action.
+  int32 task_id = 5;
+
+  // The id of the tab the action was taken in.
+  int32 tab_id = 6;
+}
+
+// A request to start a task.
+// Next ID: 1
+
+message BrowserStartTask {
+}
+
+// The response to a request to start a task.
+// Next ID: 4
+message BrowserStartTaskResult {
+  // The id of the task that was created.
+  int32 task_id = 1;
+
+  // The id of the tab the action will be taken in.
+  int32 tab_id = 2;
+
+  // The status of the start task request. If not SUCCESS, the task_id and
+  // tab_id may not be set.
+  StartTaskStatus status = 3;
+
+  enum StartTaskStatus {
+    // Unknown start task status. This should not be used.
+    START_TASK_STATUS_UNKNOWN = 0;
+
+    // The task was started successfully.
+    SUCCESS = 1;
+
+    // The task was not started because there were too many tasks already
+    // running.
+    OVER_TASK_LIMIT = 2;
+  }
 }

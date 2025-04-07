@@ -213,6 +213,7 @@ message AnnotatedPageContent {
   PageInteractionInfo page_interaction_info = 4;
 
   // The rect of the viewport for the tab. i.e., screenshot dimensions.
+  // Dimensions are in captured pixels.
   BoundingRect viewport_geometry = 5;
 }
 
@@ -290,7 +291,11 @@ message ContentAttributes {
   // This is the geometry of the common_ancestor_dom_node_id.
   Geometry geometry = 4;
 
-  // The interaction information for the content node.
+  // The interaction information for the content node. This information is only
+  // computed for proto version
+  // ANNOTATED_PAGE_CONTENT_VERSION_ONLY_ACTIONABLE_ELEMENTS_1_0.
+  //
+  // Unless otherwise specified, all nodes are selectable.
   InteractionInfo interaction_info = 21;
 
   // These can come from the aria role, the html tag, or are assumed from some
