@@ -285,6 +285,11 @@ def main():
   run_copybara = not args.skip_copybara
   delete_temporary_files = not args.keep_temporary_files
 
+  if os.listdir(os.path.join(REPOSITORY_ROOT, 'clank')):
+    raise RuntimeError(
+        'gn2bp should not be run with an internal code checkout, as copybara'
+        ' may end up leaking internal code to the destination')
+
   try:
     arch_to_desc_file = {
         arch:
