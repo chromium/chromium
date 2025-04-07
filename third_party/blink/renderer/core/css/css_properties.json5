@@ -3630,6 +3630,7 @@
       typedom_types: ["Keyword"],
       default_value: "auto",
       invalidate: [],
+      affected_by_all: false,
       runtime_flag: "CSSInert",
     },
     {
