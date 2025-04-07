@@ -12,6 +12,9 @@
 #import "ios/web/public/thread/web_thread.h"
 
 @implementation LegacySnapshotManager {
+  // The snapshot generator which is used to generate snapshots.
+  LegacySnapshotGenerator* _snapshotGenerator;
+
   // The unique ID for WebState's snapshot.
   SnapshotID _snapshotID;
 
