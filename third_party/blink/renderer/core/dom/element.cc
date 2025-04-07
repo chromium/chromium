@@ -112,6 +112,7 @@
 #include "third_party/blink/renderer/core/dom/popover_data.h"
 #include "third_party/blink/renderer/core/dom/presentation_attribute_style.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
+#include "third_party/blink/renderer/core/dom/qualified_name.h"
 #include "third_party/blink/renderer/core/dom/scriptable_document_parser.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_pseudo_element.h"
@@ -3136,6 +3137,10 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
     UpdateClassList(params.old_value, params.new_value);
   } else if (name == html_names::kNameAttr) {
     SetHasName(!params.new_value.IsNull());
+  } else if (HasTagName(html_names::kATag) && name == html_names::kHrefAttr) {
+    // <a> element is a potential scroll marker, set flag to check and update if
+    // needed.
+    GetDocument().SetNeedsScrollMarkerGroupRelationsUpdate();
   } else if (name == html_names::kPartAttr) {
     part().DidUpdateAttributeValue(params.old_value, params.new_value);
     GetDocument().GetStyleEngine().PartChangedForElement(*this);
