@@ -31,12 +31,10 @@ struct ScheduledNotificationRequest {
 // framework for implementing push notification support. Feature teams that
 // intend to support push notifications should create a class that inherits from
 // the PushNotificationClient class.
-// TODO(crbug.com/325254943): Update this class and subclasses to accept an
-// injected ProfileIOS* and not internally fetch a profile via
-// GetlastUsedProfile. Update tests as well.
 class PushNotificationClient {
  public:
-  PushNotificationClient(PushNotificationClientId client_id);
+  PushNotificationClient(PushNotificationClientId client_id,
+                         PushNotificationClientScope scope);
   virtual ~PushNotificationClient() = 0;
 
   // When the user interacts with a push notification, this function is called
@@ -69,7 +67,10 @@ class PushNotificationClient {
   virtual void OnSceneActiveForegroundBrowserReady();
 
   // Returns the feature's `client_id_`.
-  PushNotificationClientId GetClientId();
+  PushNotificationClientId GetClientId() const;
+
+  // Returns the feature's `client_scope_`.
+  PushNotificationClientScope GetClientScope() const;
 
   // Loads a url in a new tab once an active browser is ready.
   // TODO(crbug.com/41497027): This API should includes an identifier of the
@@ -101,7 +102,11 @@ class PushNotificationClient {
   // their destination feature. This identifier must match the identifier
   // used inside the notification's payload when sending the notification to the
   // push notification server.
-  PushNotificationClientId client_id_;
+  const PushNotificationClientId client_id_;
+
+  // The operational scope of this client, indicating whether it's app-wide
+  // or per-Profile.
+  const PushNotificationClientScope client_scope_;
 
   // Returns an arbitrary profile amongst the currently loaded profile. This
   // means that this API is not safe when there are multiple profiles. Instead
@@ -114,6 +119,13 @@ class PushNotificationClient {
   // Returns the first active browser found with scene level
   // SceneActivationLevelForegroundActive.
   Browser* GetSceneLevelForegroundActiveBrowser();
+
+  // Similar to `GetSceneLevelForegroundActiveBrowser()`, but specifically
+  // searches for a browser associated with the provided `profile`. Returns the
+  // first matching browser with scene level
+  // `SceneActivationLevelForegroundActive`, or `nullptr` if none exists for
+  // this profile.
+  Browser* GetSceneLevelForegroundActiveBrowserForProfile(ProfileIOS* profile);
 
  private:
   friend class ::CommercePushNotificationClientTest;

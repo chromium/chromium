@@ -47,7 +47,8 @@ NSString* kUntrackPriceTitle = @"Untrack price";
 }  // namespace
 
 CommercePushNotificationClient::CommercePushNotificationClient()
-    : PushNotificationClient(PushNotificationClientId::kCommerce) {}
+    : PushNotificationClient(PushNotificationClientId::kCommerce,
+                             PushNotificationClientScope::kPerProfile) {}
 
 CommercePushNotificationClient::~CommercePushNotificationClient() = default;
 

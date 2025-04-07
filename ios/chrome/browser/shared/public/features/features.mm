@@ -1151,6 +1151,14 @@ bool IOSPasskeysM2Enabled() {
   return base::FeatureList::IsEnabled(kIOSPasskeysM2);
 }
 
+BASE_FEATURE(kIOSPushNotificationMultiProfile,
+             "IOSPushNotificationMultiProfile",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsIOSMultiProfilePushNotificationHandlingEnabled() {
+  return base::FeatureList::IsEnabled(kIOSPushNotificationMultiProfile);
+}
+
 const char kFullscreenTransitionSlower[] = "SlowFullscreenTransitionSpeed";
 const char kFullscreenTransitionDefaultSpeed[] =
     "MediumFullscreenTransitionSpeed";

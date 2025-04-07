@@ -22,13 +22,18 @@
 #import "ios/public/provider/chrome/browser/user_feedback/user_feedback_sender.h"
 
 PushNotificationClient::PushNotificationClient(
-    PushNotificationClientId client_id)
-    : client_id_(client_id) {}
+    PushNotificationClientId client_id,
+    PushNotificationClientScope client_scope)
+    : client_id_(client_id), client_scope_(client_scope) {}
 
 PushNotificationClient::~PushNotificationClient() = default;
 
-PushNotificationClientId PushNotificationClient::GetClientId() {
+PushNotificationClientId PushNotificationClient::GetClientId() const {
   return client_id_;
+}
+
+PushNotificationClientScope PushNotificationClient::GetClientScope() const {
+  return client_scope_;
 }
 
 void PushNotificationClient::OnSceneActiveForegroundBrowserReady() {
@@ -74,11 +79,18 @@ void PushNotificationClient::OnSceneActiveForegroundBrowserReady() {
   }
 }
 
-// TODO(crbug.com/41497027): Current implementation returns any Scene. Instead
-// the notification should includes some way to identify the associated profile
-// to use (maybe by including the gaia id of the associated profile).
 Browser* PushNotificationClient::GetSceneLevelForegroundActiveBrowser() {
   ProfileIOS* profile = GetAnyProfile();
+
+  if (!profile) {
+    return nullptr;
+  }
+
+  return GetSceneLevelForegroundActiveBrowserForProfile(profile);
+}
+
+Browser* PushNotificationClient::GetSceneLevelForegroundActiveBrowserForProfile(
+    ProfileIOS* profile) {
   if (!profile) {
     return nullptr;
   }
@@ -93,6 +105,7 @@ Browser* PushNotificationClient::GetSceneLevelForegroundActiveBrowser() {
       return browser;
     }
   }
+
   return nullptr;
 }
 

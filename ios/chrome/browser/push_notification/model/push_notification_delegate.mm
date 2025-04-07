@@ -13,9 +13,6 @@
 #import "base/timer/timer.h"
 #import "base/values.h"
 #import "components/prefs/pref_service.h"
-#import "components/search_engines/template_url.h"
-#import "components/search_engines/template_url_prepopulate_data.h"
-#import "components/search_engines/template_url_service.h"
 #import "components/send_tab_to_self/features.h"
 #import "components/sync_device_info/device_info_sync_service.h"
 #import "google_apis/gaia/gaia_id.h"
@@ -36,11 +33,11 @@
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_manager.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_configuration.h"
-#import "ios/chrome/browser/push_notification/model/push_notification_delegate.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_profile_service.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_profile_service_factory.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_util.h"
-#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -167,6 +164,86 @@ void SendNAUFConfigurationForProfileWithSettings(
       ->SendNAUForConfiguration(config);
 }
 
+// Records a failure to access the PushNotificationClientManager at a specific
+// point.
+void RecordClientManagerAccessFailure(
+    PushNotificationClientManagerFailurePoint failure_point) {
+  base::UmaHistogramEnumeration(
+      "IOS.PushNotification.ClientManagerAccessFailure", failure_point);
+}
+
+// Helper function to get the profile-specific PushNotificationClientManager
+// directly from a ProfileIOS object. Returns nullptr if the manager cannot be
+// retrieved.
+PushNotificationClientManager* GetClientManagerForProfile(ProfileIOS* profile) {
+  CHECK(IsIOSMultiProfilePushNotificationHandlingEnabled());
+
+  if (!profile) {
+    RecordClientManagerAccessFailure(PushNotificationClientManagerFailurePoint::
+                                         kGetClientManagerNullProfileInput);
+
+    return nullptr;
+  }
+
+  PushNotificationProfileService* profile_service =
+      PushNotificationProfileServiceFactory::GetForProfile(profile);
+
+  if (!profile_service) {
+    RecordClientManagerAccessFailure(
+        PushNotificationClientManagerFailurePoint::
+            kGetClientManagerMissingProfileService);
+
+    return nullptr;
+  }
+
+  return profile_service->GetPushNotificationClientManager();
+}
+
+// Helper function to get the profile-specific PushNotificationClientManager
+// using userInfo containing the profile name. Returns nullptr if the profile
+// cannot be found or the manager cannot be retrieved.
+PushNotificationClientManager* GetClientManagerForUserInfo(
+    NSDictionary* user_info) {
+  CHECK(IsIOSMultiProfilePushNotificationHandlingEnabled());
+
+  NSString* profile_name_ns = user_info[kOriginatingProfileNameKey];
+
+  if (!profile_name_ns) {
+    RecordClientManagerAccessFailure(
+        PushNotificationClientManagerFailurePoint::
+            kGetClientManagerMissingProfileNameInUserInfo);
+
+    return nullptr;
+  }
+
+  std::string profile_name = base::SysNSStringToUTF8(profile_name_ns);
+
+  ProfileManagerIOS* profile_manager =
+      GetApplicationContext()->GetProfileManager();
+
+  ProfileIOS* profile = profile_manager->GetProfileWithName(profile_name);
+
+  if (!profile) {
+    // TODO(crbug.com/407999350): Enable PushNotificationClientManager to switch
+    // to potentially unloaded Profiles for proper notification handling.
+    // Replace this nullptr return with Profile loading functionality once
+    // implemented.
+    //
+    // Note: Currently, this metric is logged when the Profile matching
+    // `profile_name` is not already loaded. After the refactor described
+    // in the TODO above (to handle unloaded Profiles), this metric will
+    // signify that the Profile truly could not be found by name.
+    RecordClientManagerAccessFailure(
+        PushNotificationClientManagerFailurePoint::
+            kGetClientManagerProfileNotFoundByName);
+
+    return nullptr;
+  }
+
+  // Now that we have the profile, delegate to the other helper.
+  return GetClientManagerForProfile(profile);
+}
+
 }  // anonymous namespace
 
 @interface PushNotificationDelegate () <AppStateObserver,
@@ -224,15 +301,34 @@ void SendNAUFConfigurationForProfileWithSettings(
                  completionHandler {
   [self recordLifeCycleEvent:PushNotificationLifecycleEvent::
                                  kNotificationForegroundPresentation];
-  // This method is invoked by iOS to process a notification that arrived while
-  // the app was running in the foreground.
-  auto* clientManager = GetApplicationContext()
-                            ->GetPushNotificationService()
-                            ->GetPushNotificationClientManager();
-  DCHECK(clientManager);
-  clientManager->HandleNotificationReception(
+
+  if (IsIOSMultiProfilePushNotificationHandlingEnabled()) {
+    PushNotificationClientManager* clientManager =
+        GetClientManagerForUserInfo(notification.request.content.userInfo);
+
+    if (clientManager) {
+      clientManager->HandleNotificationReception(
+          notification.request.content.userInfo);
+    } else {
+      RecordClientManagerAccessFailure(
+          PushNotificationClientManagerFailurePoint::kWillPresentNotification);
+    }
+  }
+
+  // This method is invoked by iOS to process a notification that arrived
+  // while the app was running in the foreground.
+  auto* appWideClientManager = GetApplicationContext()
+                                   ->GetPushNotificationService()
+                                   ->GetPushNotificationClientManager();
+  DCHECK(appWideClientManager);
+  appWideClientManager->HandleNotificationReception(
       notification.request.content.userInfo);
 
+  // Per Apple's guidance for delegate methods handling notifications: "You
+  // must execute [completionHandler] at some point…to let the system know that
+  // you are done." Therefore, `completionHandler` is always invoked below, even
+  // if a `PushNotificationClientManager` could not be found for the `Profile`,
+  // to avoid leaving the system in an indeterminate state.
   if (completionHandler) {
     // If the app is foregrounded, Send Tab push notifications should not be
     // displayed.
@@ -240,9 +336,13 @@ void SendNAUFConfigurationForProfileWithSettings(
             intValue] == static_cast<int>(PushNotificationClientId::kSendTab) &&
         self.foregroundActiveScene) {
       completionHandler(UNNotificationPresentationOptionNone);
+    } else {
+      // TODO(crbug.com/408085973): Add PushNotificationDelegate unittest suite.
+      // Cover critical paths and error cases.
+      completionHandler(UNNotificationPresentationOptionBanner);
     }
-    completionHandler(UNNotificationPresentationOptionBanner);
   }
+
   base::UmaHistogramEnumeration(kAppLaunchSource,
                                 AppLaunchSource::NOTIFICATION);
 }
@@ -264,21 +364,50 @@ void SendNAUFConfigurationForProfileWithSettings(
 
   double incomingNotificationTime =
       base::Time::Now().InSecondsFSinceUnixEpoch();
-  auto* clientManager = GetApplicationContext()
-                            ->GetPushNotificationService()
-                            ->GetPushNotificationClientManager();
-  DCHECK(clientManager);
+
+  UIBackgroundFetchResult profileResult = UIBackgroundFetchResultFailed;
+  UIBackgroundFetchResult appWideResult = UIBackgroundFetchResultFailed;
+  bool profileManagerCalledAndSuccessful = false;
+
+  if (IsIOSMultiProfilePushNotificationHandlingEnabled()) {
+    PushNotificationClientManager* clientManager =
+        GetClientManagerForUserInfo(userInfo);
+
+    if (clientManager) {
+      profileResult = clientManager->HandleNotificationReception(userInfo);
+
+      profileManagerCalledAndSuccessful = true;
+    } else {
+      RecordClientManagerAccessFailure(
+          PushNotificationClientManagerFailurePoint::
+              kWillProcessIncomingRemoteNotification);
+    }
+  }
+
+  // Always notify the app-wide client manager.
+  PushNotificationClientManager* appWideClientManager =
+      GetApplicationContext()
+          ->GetPushNotificationService()
+          ->GetPushNotificationClientManager();
+  DCHECK(appWideClientManager);
+  appWideResult = appWideClientManager->HandleNotificationReception(userInfo);
+
+  // Determine the final result to return.
+  // Prioritize the profile manager's result if it was found and called.
+  // Otherwise, use the app-wide manager's result.
   UIBackgroundFetchResult result =
-      clientManager->HandleNotificationReception(userInfo);
+      profileManagerCalledAndSuccessful ? profileResult : appWideResult;
 
   double processingTime =
       base::Time::Now().InSecondsFSinceUnixEpoch() - incomingNotificationTime;
+
   UmaHistogramCustomTimes(
       "IOS.PushNotification.IncomingNotificationProcessingTime",
       base::Milliseconds(processingTime),
       kTimeRangeIncomingNotificationHistogramMin,
       kTimeRangeIncomingNotificationHistogramMax,
       kTimeRangeHistogramBucketCount);
+
   return result;
 }
 
@@ -292,13 +421,30 @@ void SendNAUFConfigurationForProfileWithSettings(
     return;
   }
 
+  if (IsIOSMultiProfilePushNotificationHandlingEnabled()) {
+    PushNotificationClientManager* clientManager =
+        GetClientManagerForProfile(profile);
+
+    // Gracefully handle the case where a clientManager couldn't be retrieved
+    // (e.g., if the Profile is `nullptr` or its service isn't available).
+    if (clientManager) {
+      // Registers Chrome's PushNotificationClients' Actionable Notifications
+      // with iOS.
+      clientManager->RegisterActionableNotifications();
+    } else {
+      RecordClientManagerAccessFailure(
+          PushNotificationClientManagerFailurePoint::kDidRegisterWithAPNS);
+    }
+  }
+
   PushNotificationService* notificationService =
       GetApplicationContext()->GetPushNotificationService();
 
   // Registers Chrome's PushNotificationClients' Actionable Notifications with
   // iOS.
-  notificationService->GetPushNotificationClientManager()
-      ->RegisterActionableNotifications();
+  PushNotificationClientManager* appWideClientManager =
+      notificationService->GetPushNotificationClientManager();
+  appWideClientManager->RegisterActionableNotifications();
 
   PushNotificationConfiguration* config =
       [[PushNotificationConfiguration alloc] init];
@@ -411,12 +557,25 @@ void SendNAUFConfigurationForProfileWithSettings(
 
 // Notifies the client manager that the scene is "foreground active".
 - (void)appDidEnterForeground:(SceneState*)sceneState {
-  PushNotificationClientManager* clientManager =
+  if (IsIOSMultiProfilePushNotificationHandlingEnabled()) {
+    PushNotificationClientManager* clientManager =
+        GetClientManagerForProfile(sceneState.profileState.profile);
+
+    if (clientManager) {
+      clientManager->OnSceneActiveForegroundBrowserReady();
+    } else {
+      RecordClientManagerAccessFailure(
+          PushNotificationClientManagerFailurePoint::kAppDidEnterForeground);
+    }
+  }
+
+  PushNotificationClientManager* appWideClientManager =
       GetApplicationContext()
           ->GetPushNotificationService()
           ->GetPushNotificationClientManager();
-  DCHECK(clientManager);
-  clientManager->OnSceneActiveForegroundBrowserReady();
+  DCHECK(appWideClientManager);
+  appWideClientManager->OnSceneActiveForegroundBrowserReady();
+
   for (ProceduralBlock block in _runAfterForeground) {
     block();
   }
@@ -588,11 +747,25 @@ void SendNAUFConfigurationForProfileWithSettings(
 - (void)handleNotificationResponse:(UNNotificationResponse*)response {
   DCHECK_GE(_appState.initStage,
             AppInitStage::kBrowserObjectsForBackgroundHandlers);
-  PushNotificationClientManager* clientManager =
+
+  if (IsIOSMultiProfilePushNotificationHandlingEnabled()) {
+    PushNotificationClientManager* clientManager = GetClientManagerForUserInfo(
+        response.notification.request.content.userInfo);
+
+    if (clientManager) {
+      clientManager->HandleNotificationInteraction(response);
+    } else {
+      RecordClientManagerAccessFailure(
+          PushNotificationClientManagerFailurePoint::
+              kHandleNotificationResponse);
+    }
+  }
+
+  PushNotificationClientManager* appWideClientManager =
       GetApplicationContext()
           ->GetPushNotificationService()
           ->GetPushNotificationClientManager();
-  clientManager->HandleNotificationInteraction(response);
+  appWideClientManager->HandleNotificationInteraction(response);
 }
 
 // Shows the app's notification settings in the first foreground active

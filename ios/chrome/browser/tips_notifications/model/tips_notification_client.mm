@@ -127,7 +127,8 @@ void SetUserType(PrefService* local_state, TipsNotificationUserType user_type) {
 }  // namespace
 
 TipsNotificationClient::TipsNotificationClient()
-    : PushNotificationClient(PushNotificationClientId::kTips) {
+    : PushNotificationClient(PushNotificationClientId::kTips,
+                             PushNotificationClientScope::kAppWide) {
   local_state_ = GetApplicationContext()->GetLocalState();
   pref_change_registrar_.Init(local_state_);
   PrefChangeRegistrar::NamedChangeCallback pref_callback = base::BindRepeating(

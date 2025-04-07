@@ -1404,6 +1404,22 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/ios/chrome/browser/push_notification/model/push_notification_client_id.h:PushNotificationClientId) -->
 
+<!-- LINT.IfChange(PushNotificationClientManagerFailurePoint) -->
+
+<enum name="PushNotificationClientManagerFailurePoint">
+  <int value="0" label="Will Present Notification"/>
+  <int value="1" label="Did Register With APNS"/>
+  <int value="2" label="App Did Enter Foreground"/>
+  <int value="3" label="Handle Notification Response"/>
+  <int value="4" label="Will Process Incoming Remote Notification"/>
+  <int value="5" label="GetClientManager: Null Profile Input"/>
+  <int value="6" label="GetClientManager: Missing Profile Service"/>
+  <int value="7" label="GetClientManager: Missing Profile Name in UserInfo"/>
+  <int value="8" label="GetClientManager: Profile Not Found By Name"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/push_notification/model/constants.h:PushNotificationClientManagerFailurePoint) -->
+
 <enum name="PushNotificationLifecycleEvent">
   <int value="0" label="Notification received on device"/>
   <int value="1"

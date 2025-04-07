@@ -7,8 +7,8 @@
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 
 TestPushNotificationClient::TestPushNotificationClient(size_t client_id)
-    : PushNotificationClient(static_cast<PushNotificationClientId>(client_id)) {
-}
+    : PushNotificationClient(static_cast<PushNotificationClientId>(client_id),
+                             PushNotificationClientScope::kPerProfile) {}
 TestPushNotificationClient::~TestPushNotificationClient() = default;
 
 bool TestPushNotificationClient::HandleNotificationInteraction(

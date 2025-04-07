@@ -4145,6 +4145,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.PushNotification.ClientManagerAccessFailure"
+    enum="PushNotificationClientManagerFailurePoint" expires_after="2025-07-01">
+  <owner>bwwilliams@google.com</owner>
+  <owner>scottyoder@google.com</owner>
+  <owner>treib@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <summary>
+    Logs the specific code path where obtaining the
+    PushNotificationClientManager for the current Profile failed during
+    notification processing. Helps identify failures caused by
+    PushNotificationProfileService unavailability. Essential for monitoring the
+    health of the multi-Profile push notification infrastructure, especially
+    during its initial rollout and migration.
+  </summary>
+</histogram>
+
 <histogram name="IOS.PushNotification.EnabledPermisisons"
     enum="PushNotificationPermissionPromptStatus" expires_after="2025-08-24">
   <owner>danieltwhite@google.com</owner>

@@ -9,6 +9,7 @@
 #import <UserNotifications/UserNotifications.h>
 
 #import "base/functional/callback_forward.h"
+#import "base/memory/raw_ptr.h"
 #import "base/memory/scoped_refptr.h"
 #import "base/memory/weak_ptr.h"
 #import "base/sequence_checker.h"
@@ -19,6 +20,7 @@
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
 
 class Browser;
+class ProfileIOS;
 
 // A push notification client for managing Safety Check-related notifications.
 // Observes Safety Check state changes to ensure notifications are accurate, and
@@ -27,7 +29,16 @@ class SafetyCheckNotificationClient
     : public PushNotificationClient,
       public IOSChromeSafetyCheckManagerObserver {
  public:
+  // Constructs a SafetyCheckNotificationClient without specific Profile
+  // context. Use this when multi-Profile push notification handling
+  // (kIOSPushNotificationMultiProfile) is disabled (legacy behavior).
   explicit SafetyCheckNotificationClient(
+      const scoped_refptr<base::SequencedTaskRunner> task_runner);
+  // Constructs a Profile-aware SafetyCheckNotificationClient. Use this when
+  // multi-Profile push notification handling (kIOSPushNotificationMultiProfile)
+  // is enabled, providing the associated `profile`.
+  explicit SafetyCheckNotificationClient(
+      ProfileIOS* profile,
       const scoped_refptr<base::SequencedTaskRunner> task_runner);
   ~SafetyCheckNotificationClient() override;
 
@@ -63,6 +74,13 @@ class SafetyCheckNotificationClient
   // Calls `completion` with all pending requests matching `identifiers`.
   void GetPendingRequests(NSArray<NSString*>* identifiers,
                           GetPendingRequestsCallback completion);
+
+  // Returns the active foreground browser relevant to this client's context.
+  // If multi-Profile handling is enabled, attempts to
+  // return the browser associated specifically with `profile_`. Otherwise,
+  // falls back to finding any active foreground browser. Returns nullptr if
+  // no suitable browser is found.
+  Browser* GetActiveForegroundBrowser();
 
   // Returns true if the user has enabled Safety Check notifications, either in
   // the Notifications Settings UI or through an opt-in prompt (e.g., Magic
@@ -152,6 +170,9 @@ class SafetyCheckNotificationClient
   // foreground scenes, this will store notification metadata so it can
   // be handled when there is a foreground scene.
   NSDictionary* interacted_notification_metadata_;
+
+  // The profile associated with this notification client.
+  raw_ptr<ProfileIOS> profile_ = nullptr;
 
   // Validates asynchronous `PushNotificationClient` events are evaluated on the
   // same sequence that `SafetyCheckNotificationClient` was created on.

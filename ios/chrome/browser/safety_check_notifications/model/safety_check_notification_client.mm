@@ -107,9 +107,23 @@ NotificationType NotificationTypeForSafetyCheckNotificationType(
 
 SafetyCheckNotificationClient::SafetyCheckNotificationClient(
     const scoped_refptr<base::SequencedTaskRunner> task_runner)
-    : PushNotificationClient(PushNotificationClientId::kSafetyCheck),
+    : PushNotificationClient(PushNotificationClientId::kSafetyCheck,
+                             PushNotificationClientScope::kPerProfile),
       task_runner_(task_runner) {
   CHECK(task_runner);
+  CHECK(!IsIOSMultiProfilePushNotificationHandlingEnabled());
+}
+
+SafetyCheckNotificationClient::SafetyCheckNotificationClient(
+    ProfileIOS* profile,
+    const scoped_refptr<base::SequencedTaskRunner> task_runner)
+    : PushNotificationClient(PushNotificationClientId::kSafetyCheck,
+                             PushNotificationClientScope::kPerProfile),
+      profile_(profile),
+      task_runner_(task_runner) {
+  CHECK(profile_);
+  CHECK(task_runner);
+  CHECK(IsIOSMultiProfilePushNotificationHandlingEnabled());
 }
 
 SafetyCheckNotificationClient::~SafetyCheckNotificationClient() = default;
@@ -183,7 +197,7 @@ void SafetyCheckNotificationClient::OnSceneActiveForegroundBrowserReady(
   // `IOSChromeSafetyCheckManager` before registering itself as an observer for
   // Safety Check updates.
   if (!IOSChromeSafetyCheckManagerObserver::IsInObserverList()) {
-    Browser* browser = GetSceneLevelForegroundActiveBrowser();
+    Browser* browser = GetActiveForegroundBrowser();
 
     if (!browser) {
       std::move(completion).Run();
@@ -304,6 +318,20 @@ void SafetyCheckNotificationClient::GetPendingRequests(
       getPendingNotificationRequestsWithCompletionHandler:callback];
 }
 
+Browser* SafetyCheckNotificationClient::GetActiveForegroundBrowser() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (IsIOSMultiProfilePushNotificationHandlingEnabled()) {
+    // When multi-Profile handling is enabled, `profile_` should be set.
+    // This invariant is checked in the constructor used for this mode.
+    CHECK(profile_);
+
+    return GetSceneLevelForegroundActiveBrowserForProfile(profile_);
+  } else {
+    return GetSceneLevelForegroundActiveBrowser();
+  }
+}
+
 bool SafetyCheckNotificationClient::IsPermitted() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -328,7 +356,7 @@ bool SafetyCheckNotificationClient::IsPermitted() {
 bool SafetyCheckNotificationClient::IsSceneLevelForegroundActive() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  return GetSceneLevelForegroundActiveBrowser() != nullptr;
+  return GetActiveForegroundBrowser() != nullptr;
 }
 
 void SafetyCheckNotificationClient::OnNotificationsCleared(
@@ -451,7 +479,7 @@ void SafetyCheckNotificationClient::ClearAndRescheduleSafetyCheckNotifications(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if ([interacted_notification_metadata_ count]) {
-    Browser* browser = GetSceneLevelForegroundActiveBrowser();
+    Browser* browser = GetActiveForegroundBrowser();
 
     if (browser) {
       [HandlerForProtocol(browser->GetCommandDispatcher(), ApplicationCommands)
@@ -481,6 +509,7 @@ void SafetyCheckNotificationClient::ShowUIForNotificationMetadata(
     base::WeakPtr<Browser> weak_browser) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   Browser* browser = weak_browser.get();
+
   if (!browser) {
     // The Scene has been closed while preparing to present the notification.
     return;

@@ -9,7 +9,8 @@
 
 ReminderNotificationClient::ReminderNotificationClient(
     ProfileManagerIOS* profile_manager)
-    : PushNotificationClient(PushNotificationClientId::kReminders) {
+    : PushNotificationClient(PushNotificationClientId::kReminders,
+                             PushNotificationClientScope::kPerProfile) {
   CHECK(profile_manager);
   profile_manager_observation_.Observe(profile_manager);
 }

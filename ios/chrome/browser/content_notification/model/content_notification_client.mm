@@ -16,7 +16,8 @@
 #import "url/gurl.h"
 
 ContentNotificationClient::ContentNotificationClient()
-    : PushNotificationClient(PushNotificationClientId::kContent) {}
+    : PushNotificationClient(PushNotificationClientId::kContent,
+                             PushNotificationClientScope::kPerProfile) {}
 
 ContentNotificationClient::~ContentNotificationClient() = default;
 

@@ -43,6 +43,42 @@ enum class NotificationOptInAccessPoint {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml)
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(PushNotificationClientManagerFailurePoint)
+enum class PushNotificationClientManagerFailurePoint {
+  // Failed to get Profile-based `PushNotificationClientManager` when handling
+  // foreground presentation.
+  kWillPresentNotification = 0,
+  // Failed to get Profile-based `PushNotificationClientManager` during APNS
+  // registration.
+  kDidRegisterWithAPNS = 1,
+  // Failed to get Profile-based `PushNotificationClientManager` when the app
+  // entered foreground.
+  kAppDidEnterForeground = 2,
+  // Failed to get Profile-based `PushNotificationClientManager` when handling a
+  // user interaction response.
+  kHandleNotificationResponse = 3,
+  // Failed to get Profile-based `PushNotificationClientManager` when processing
+  // an incoming remote notification
+  // in the background.
+  kWillProcessIncomingRemoteNotification = 4,
+  // Failed inside GetClientManagerForProfile because the input ProfileIOS* was
+  // nullptr.
+  kGetClientManagerNullProfileInput = 5,
+  // Failed inside GetClientManagerForProfile because the
+  // PushNotificationProfileService couldn't be retrieved.
+  kGetClientManagerMissingProfileService = 6,
+  // Failed inside GetClientManagerForUserInfo because the Profile name key was
+  // missing from user info dictionary.
+  kGetClientManagerMissingProfileNameInUserInfo = 7,
+  // Failed inside GetClientManagerForUserInfo because the Profile couldn't be
+  // found using the name from user info.
+  kGetClientManagerProfileNotFoundByName = 8,
+  kMaxValue = kGetClientManagerProfileNotFoundByName,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:PushNotificationClientManagerFailurePoint)
+
 // Enum for the NAU implementation for Content notifications. Change
 // NotificationActionType enum when this one changes.
 typedef NS_ENUM(NSInteger, NAUActionType) {
@@ -134,5 +170,10 @@ extern const int kDeliveredNAUMaxSendsPerSession;
 // Key for the Push Notification Client Id type in notification payload. Used
 // for Send Tab notifications.
 extern NSString* const kPushNotificationClientIdKey;
+
+// Key used in UNNotificationContent.userInfo to store the Profile name that
+// originated the local notification. Used for mapping local notifications to
+// the correct Profile on the device.
+extern NSString* const kOriginatingProfileNameKey;
 
 #endif  // IOS_CHROME_BROWSER_PUSH_NOTIFICATION_MODEL_CONSTANTS_H_

@@ -37,6 +37,7 @@ source_set("profile_service_factory") {
     "//ios/chrome/browser/commerce/model/push_notification",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin/model",
   ]
 }
@@ -65,6 +66,49 @@ source_set("push_notification_util") {
   ]
 }
 
+source_set("push_notification_delegate") {
+  sources = [
+    "push_notification_delegate.h",
+    "push_notification_delegate.mm",
+  ]
+  deps = [
+    ":constants",
+    ":profile_service",
+    ":profile_service_factory",
+    ":push_notification_client_id",
+    ":push_notification_service",
+    ":push_notification_service_header",
+    ":push_notification_settings_util_header",
+    ":push_notification_util",
+    "//base",
+    "//components/prefs",
+    "//components/search_engines",
+    "//components/send_tab_to_self",
+    "//components/sync_device_info",
+    "//google_apis",
+    "//ios/chrome/app/application_delegate:app_state",
+    "//ios/chrome/app/profile",
+    "//ios/chrome/app/startup:startup_basic",
+    "//ios/chrome/browser/content_notification/model:content_notification_nau_configuration",
+    "//ios/chrome/browser/content_notification/model:content_notification_service",
+    "//ios/chrome/browser/content_notification/model:content_notification_service_factory",
+    "//ios/chrome/browser/content_notification/model:util",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_observer",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/utils",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/sync/model:device_info_sync_service_factory",
+    "//ios/chrome/common/app_group",
+  ]
+}
+
 source_set("push_notification_service") {
   sources = [
     "provisional_push_notification_util.h",
@@ -75,8 +119,6 @@ source_set("push_notification_service") {
     "push_notification_client_manager.mm",
     "push_notification_configuration.h",
     "push_notification_configuration.mm",
-    "push_notification_delegate.h",
-    "push_notification_delegate.mm",
     "push_notification_service.mm",
     "push_notification_settings_util.mm",
   ]

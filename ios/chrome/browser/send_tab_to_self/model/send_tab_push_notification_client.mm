@@ -39,7 +39,8 @@ NSString* const kGuidKey = @"SendTabGuid";
 }  // namespace
 
 SendTabPushNotificationClient::SendTabPushNotificationClient()
-    : PushNotificationClient(PushNotificationClientId::kSendTab) {}
+    : PushNotificationClient(PushNotificationClientId::kSendTab,
+                             PushNotificationClientScope::kPerProfile) {}
 
 SendTabPushNotificationClient::~SendTabPushNotificationClient() = default;
 

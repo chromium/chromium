@@ -479,6 +479,7 @@ source_set("app_internal") {
     "//ios/chrome/browser/omaha/model",
     "//ios/chrome/browser/passwords/model",
     "//ios/chrome/browser/promos_manager/model:factory",
+    "//ios/chrome/browser/push_notification/model:push_notification_delegate",
     "//ios/chrome/browser/push_notification/model:push_notification_service",
     "//ios/chrome/browser/push_notification/model:push_notification_util",
     "//ios/chrome/browser/saved_tab_groups/model",
