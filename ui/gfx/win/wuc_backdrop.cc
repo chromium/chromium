@@ -4,7 +4,7 @@
 
 #include "ui/gfx/win/wuc_backdrop.h"
 
-#include <dispatcherqueue.h>
+#include <DispatcherQueue.h>
 #include <windows.ui.composition.core.h>
 #include <wrl/client.h>
 
