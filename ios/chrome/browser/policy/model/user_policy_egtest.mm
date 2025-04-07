@@ -558,6 +558,23 @@ id<GREYMatcher> DeclineManagementButtonMatcher() {
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeManagedIdentity];
 }
 
+// Tests the chrome://policy page when there are user level policies.
+- (void)testPolicyPageManagedWithUserPolicy {
+  // Sign in with a managed account.
+  FakeSystemIdentity* fakeManagedIdentity = [FakeSystemIdentity
+      identityWithEmail:base::SysUTF8ToNSString(GetTestEmail())];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeManagedIdentity];
+  VerifyThatPoliciesAreSet();
+
+  // Open the policy page and check if there is a user management status box.
+  [ChromeEarlGrey loadURL:GURL(kChromeUIPolicyURL)];
+  [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
+                                                    IDS_POLICY_STATUS_USER)];
+  [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
+                                                    IDS_POLICY_LABEL_USERNAME)];
+  [ChromeEarlGrey waitForWebStateContainingText:GetTestEmail()];
+}
+
 #pragma mark - Private
 
 // Starts the sign-in flow up to the point where it may ask for the confirmation

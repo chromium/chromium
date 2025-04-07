@@ -27,6 +27,8 @@ const char kChromeUIOfflineURL[] = "chrome://offline/";
 const char kChromeUIOnDeviceLlmInternalsURL[] =
     "chrome://on-device-llm-internals/";
 const char kChromeUIPolicyURL[] = "chrome://policy/";
+const char kChromeUIPolicyLogsURL[] = "chrome://policy/logs";
+const char kChromeUIPolicyTestURL[] = "chrome://policy/test";
 const char kChromeUISettingsURL[] = "chrome://settings/";
 const char kChromeUITermsURL[] = "chrome://terms/";
 const char kChromeUIVersionURL[] = "chrome://version/";
