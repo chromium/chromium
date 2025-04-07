@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/first_run/ui_bundled/signin/signin_screen_view_controller.h"
+#import "ios/chrome/browser/authentication/ui_bundled/fullscreen_signin_screen/ui/fullscreen_signin_screen_view_controller.h"
 
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
@@ -31,7 +31,7 @@ constexpr CGFloat kEnterpriseIconPointSize = 13;
 
 }  // namespace
 
-@interface SigninScreenViewController ()
+@interface FullscreenSigninScreenViewController ()
 
 // Button controlling the display of the selected identity.
 @property(nonatomic, strong) IdentityButtonControl* identityControl;
@@ -43,7 +43,7 @@ constexpr CGFloat kEnterpriseIconPointSize = 13;
 
 @end
 
-@implementation SigninScreenViewController
+@implementation FullscreenSigninScreenViewController
 
 @dynamic delegate;
 @synthesize hasPlatformPolicies = _hasPlatformPolicies;
@@ -284,7 +284,7 @@ constexpr CGFloat kEnterpriseIconPointSize = 13;
   }
 }
 
-#pragma mark - SigninScreenConsumer
+#pragma mark - FullscreenSigninScreenConsumer
 
 - (void)setSelectedIdentityUserName:(NSString*)userName
                               email:(NSString*)email

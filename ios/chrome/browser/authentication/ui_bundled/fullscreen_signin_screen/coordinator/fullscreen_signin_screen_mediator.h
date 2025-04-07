@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_FIRST_RUN_UI_BUNDLED_SIGNIN_SIGNIN_SCREEN_MEDIATOR_H_
-#define IOS_CHROME_BROWSER_FIRST_RUN_UI_BUNDLED_SIGNIN_SIGNIN_SCREEN_MEDIATOR_H_
+#ifndef IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_FULLSCREEN_SIGNIN_SCREEN_COORDINATOR_FULLSCREEN_SIGNIN_SCREEN_MEDIATOR_H_
+#define IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_FULLSCREEN_SIGNIN_SCREEN_COORDINATOR_FULLSCREEN_SIGNIN_SCREEN_MEDIATOR_H_
 
 #import <Foundation/Foundation.h>
 
@@ -12,9 +12,9 @@
 @class AuthenticationFlow;
 class AuthenticationService;
 class ChromeAccountManagerService;
+@protocol FullscreenSigninScreenConsumer;
+@protocol FullscreenSigninScreenMediatorDelegate;
 class PrefService;
-@protocol SigninScreenConsumer;
-@protocol SigninScreenMediatorDelegate;
 namespace signin {
 class IdentityManager;
 }  // namespace signin
@@ -27,11 +27,11 @@ class SyncService;
 }  // namespace syncer
 @protocol SystemIdentity;
 
-// Mediator that handles the sign-in operation.
-@interface SigninScreenMediator : NSObject
+// Mediator that handles the fullscreen sign-in operation.
+@interface FullscreenSigninScreenMediator : NSObject
 
 // Consumer for this mediator.
-@property(nonatomic, weak) id<SigninScreenConsumer> consumer;
+@property(nonatomic, weak) id<FullscreenSigninScreenConsumer> consumer;
 // The identity currently selected.
 @property(nonatomic, strong) id<SystemIdentity> selectedIdentity;
 // Contains the user choice for UMA reporting. This value is set to the default
@@ -46,7 +46,7 @@ class SyncService;
 // Whether dismiss gestures should be ignored (e.g. swipe away).
 @property(nonatomic, assign, readonly) BOOL ignoreDismissGesture;
 // Delegate of the mediator.
-@property(nonatomic, weak) id<SigninScreenMediatorDelegate> delegate;
+@property(nonatomic, weak) id<FullscreenSigninScreenMediatorDelegate> delegate;
 
 // The designated initializer.
 // `accountManagerService` account manager service.
@@ -87,4 +87,4 @@ class SyncService;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_FIRST_RUN_UI_BUNDLED_SIGNIN_SIGNIN_SCREEN_MEDIATOR_H_
+#endif  // IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_FULLSCREEN_SIGNIN_SCREEN_COORDINATOR_FULLSCREEN_SIGNIN_SCREEN_MEDIATOR_H_

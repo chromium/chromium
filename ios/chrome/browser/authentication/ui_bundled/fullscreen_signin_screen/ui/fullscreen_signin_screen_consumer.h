@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_FIRST_RUN_UI_BUNDLED_SIGNIN_SIGNIN_SCREEN_CONSUMER_H_
-#define IOS_CHROME_BROWSER_FIRST_RUN_UI_BUNDLED_SIGNIN_SIGNIN_SCREEN_CONSUMER_H_
+#ifndef IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_FULLSCREEN_SIGNIN_SCREEN_UI_FULLSCREEN_SIGNIN_SCREEN_CONSUMER_H_
+#define IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_FULLSCREEN_SIGNIN_SCREEN_UI_FULLSCREEN_SIGNIN_SCREEN_CONSUMER_H_
 
 #import <UIKit/UIKit.h>
 
@@ -29,8 +29,8 @@ typedef NS_ENUM(NSUInteger, SigninScreenConsumerScreenIntent) {
   SigninScreenConsumerScreenIntentWelcomeWithoutUMAAndSignin,
 };
 
-// Handles sign-in screen UI updates.
-@protocol SigninScreenConsumer <NSObject>
+// Handles the fullscreen sign-in screen UI updates.
+@protocol FullscreenSigninScreenConsumer <NSObject>
 
 // Shows details (an icon and a footer) that Chrome is managed by platform
 // policies. This property needs to be set before the view is loaded.
@@ -61,4 +61,4 @@ typedef NS_ENUM(NSUInteger, SigninScreenConsumerScreenIntent) {
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_FIRST_RUN_UI_BUNDLED_SIGNIN_SIGNIN_SCREEN_CONSUMER_H_
+#endif  // IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_FULLSCREEN_SIGNIN_SCREEN_UI_FULLSCREEN_SIGNIN_SCREEN_CONSUMER_H_

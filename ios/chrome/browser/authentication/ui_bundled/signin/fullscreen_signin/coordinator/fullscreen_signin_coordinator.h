@@ -9,7 +9,9 @@
 
 @class ScreenProvider;
 
-// Coordinator to present a fullscreen sign-in promo.
+// Main coordinator that manages the overall fullscreen sign-in flow.
+// It contains a child coordinator, FullscreenSigninScreenCoordinator,
+// which is responsible for presenting the actual fullscreen sign-in screen.
 @interface FullscreenSigninCoordinator : SigninCoordinator
 
 // Initiate the coordinator.

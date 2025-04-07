@@ -10,6 +10,7 @@
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
+#import "ios/chrome/browser/authentication/ui_bundled/fullscreen_signin_screen/coordinator/fullscreen_signin_screen_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/interruptible_chrome_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/logging/upgrade_signin_logger.h"
@@ -17,7 +18,6 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator+protected.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/uno_signin_screen_provider.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_util.h"
-#import "ios/chrome/browser/first_run/ui_bundled/signin/signin_screen_coordinator.h"
 #import "ios/chrome/browser/screen/ui_bundled/screen_provider.h"
 #import "ios/chrome/browser/screen/ui_bundled/screen_type.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -38,7 +38,7 @@ using base::UserMetricsAction;
 @implementation TwoScreensSigninCoordinator {
   signin_metrics::PromoAction _promoAction;
 
-  // This can be either the SigninScreenCoordinator or the
+  // This can be either the FullscreenSigninScreenCoordinator or the
   // HistorySyncCoordinator depending on which step the user is on.
   ChromeCoordinator* _childCoordinator;
 
@@ -157,7 +157,7 @@ using base::UserMetricsAction;
 - (ChromeCoordinator*)createChildCoordinatorWithScreenType:(ScreenType)type {
   switch (type) {
     case kSignIn:
-      return [[SigninScreenCoordinator alloc]
+      return [[FullscreenSigninScreenCoordinator alloc]
           initWithBaseNavigationController:_navigationController
                                    browser:self.browser
                                   delegate:self

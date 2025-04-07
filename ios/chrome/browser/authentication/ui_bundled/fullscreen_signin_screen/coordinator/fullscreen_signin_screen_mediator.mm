@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/first_run/ui_bundled/signin/signin_screen_mediator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/fullscreen_signin_screen/coordinator/fullscreen_signin_screen_mediator.h"
 
 #import "base/containers/contains.h"
 #import "base/metrics/histogram_functions.h"
@@ -17,13 +17,13 @@
 #import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow.h"
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/enterprise_utils.h"
+#import "ios/chrome/browser/authentication/ui_bundled/fullscreen_signin_screen/coordinator/fullscreen_signin_screen_mediator_delegate.h"
+#import "ios/chrome/browser/authentication/ui_bundled/fullscreen_signin_screen/ui/fullscreen_signin_screen_consumer.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/logging/first_run_signin_logger.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/logging/user_signin_logger.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/first_run/model/first_run_metrics.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_util.h"
-#import "ios/chrome/browser/first_run/ui_bundled/signin/signin_screen_consumer.h"
-#import "ios/chrome/browser/first_run/ui_bundled/signin/signin_screen_mediator_delegate.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -42,7 +42,8 @@ enum class SigninScreenState {
 };
 }  // namespace
 
-@interface SigninScreenMediator () <IdentityManagerObserverBridgeDelegate> {
+@interface FullscreenSigninScreenMediator () <
+    IdentityManagerObserverBridgeDelegate> {
 }
 
 // Application local pref.
@@ -62,7 +63,7 @@ enum class SigninScreenState {
 
 @end
 
-@implementation SigninScreenMediator {
+@implementation FullscreenSigninScreenMediator {
   // Account manager service to retrieve Chrome identities.
   raw_ptr<ChromeAccountManagerService> _accountManagerService;
   // Authentication service for sign in.
@@ -222,7 +223,7 @@ enum class SigninScreenState {
 
 #pragma mark - Properties
 
-- (void)setConsumer:(id<SigninScreenConsumer>)consumer {
+- (void)setConsumer:(id<FullscreenSigninScreenConsumer>)consumer {
   DCHECK(consumer);
   DCHECK(!_consumer);
   _consumer = consumer;
@@ -304,7 +305,7 @@ enum class SigninScreenState {
   }
   [self.logger logSigninCompletedWithResult:SigninCoordinatorResultSuccess
                                addedAccount:self.addedAccount];
-  [self.delegate signinScreenMediatorDidFinishSignin:self];
+  [self.delegate fullscreenSigninScreenMediatorDidFinishSignin:self];
 }
 
 - (bool)selectedIdentityIsValid {

@@ -2,11 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/first_run/ui_bundled/signin/signin_screen_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/fullscreen_signin_screen/coordinator/fullscreen_signin_screen_coordinator.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow.h"
+#import "ios/chrome/browser/authentication/ui_bundled/fullscreen_signin_screen/coordinator/fullscreen_signin_screen_mediator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/fullscreen_signin_screen/coordinator/fullscreen_signin_screen_mediator_delegate.h"
+#import "ios/chrome/browser/authentication/ui_bundled/fullscreen_signin_screen/ui/fullscreen_signin_screen_consumer.h"
+#import "ios/chrome/browser/authentication/ui_bundled/fullscreen_signin_screen/ui/fullscreen_signin_screen_view_controller.h"
 #import "ios/chrome/browser/authentication/ui_bundled/identity_chooser/identity_chooser_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/identity_chooser/identity_chooser_coordinator_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/interruptible_chrome_coordinator.h"
@@ -16,10 +20,6 @@
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_constants.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_screen_delegate.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_util.h"
-#import "ios/chrome/browser/first_run/ui_bundled/signin/signin_screen_consumer.h"
-#import "ios/chrome/browser/first_run/ui_bundled/signin/signin_screen_mediator.h"
-#import "ios/chrome/browser/first_run/ui_bundled/signin/signin_screen_mediator_delegate.h"
-#import "ios/chrome/browser/first_run/ui_bundled/signin/signin_screen_view_controller.h"
 #import "ios/chrome/browser/first_run/ui_bundled/tos/tos_coordinator.h"
 #import "ios/chrome/browser/first_run/ui_bundled/uma/uma_coordinator.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -34,19 +34,21 @@
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 
-@interface SigninScreenCoordinator () <IdentityChooserCoordinatorDelegate,
-                                       SigninScreenMediatorDelegate,
-                                       SigninScreenViewControllerDelegate,
-                                       TOSCommands,
-                                       UIAdaptivePresentationControllerDelegate,
-                                       UMACoordinatorDelegate>
+@interface FullscreenSigninScreenCoordinator () <
+    FullscreenSigninScreenMediatorDelegate,
+    FullscreenSigninScreenViewControllerDelegate,
+    IdentityChooserCoordinatorDelegate,
+    TOSCommands,
+    UIAdaptivePresentationControllerDelegate,
+    UMACoordinatorDelegate>
 
 // First run screen delegate.
 @property(nonatomic, weak) id<FirstRunScreenDelegate> delegate;
 // Sign-in screen view controller.
-@property(nonatomic, strong) SigninScreenViewController* viewController;
+@property(nonatomic, strong)
+    FullscreenSigninScreenViewController* viewController;
 // Sign-in screen mediator.
-@property(nonatomic, strong) SigninScreenMediator* mediator;
+@property(nonatomic, strong) FullscreenSigninScreenMediator* mediator;
 // Account manager service.
 @property(nonatomic, assign) ChromeAccountManagerService* accountManagerService;
 // Authentication service.
@@ -64,7 +66,7 @@
 
 @end
 
-@implementation SigninScreenCoordinator {
+@implementation FullscreenSigninScreenCoordinator {
   signin_metrics::AccessPoint _accessPoint;
   signin_metrics::PromoAction _promoAction;
 }
@@ -97,7 +99,7 @@
                    forProtocol:@protocol(TOSCommands)];
   id<TOSCommands> TOSHandler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), TOSCommands);
-  self.viewController = [[SigninScreenViewController alloc] init];
+  self.viewController = [[FullscreenSigninScreenViewController alloc] init];
   self.viewController.TOSHandler = TOSHandler;
   self.viewController.delegate = self;
 
@@ -118,7 +120,7 @@
   PrefService* localPrefService = GetApplicationContext()->GetLocalState();
   PrefService* prefService = profile->GetPrefs();
   syncer::SyncService* syncService = SyncServiceFactory::GetForProfile(profile);
-  self.mediator = [[SigninScreenMediator alloc]
+  self.mediator = [[FullscreenSigninScreenMediator alloc]
       initWithAccountManagerService:self.accountManagerService
               authenticationService:self.authenticationService
                     identityManager:identityManager
@@ -247,9 +249,10 @@
   [self.UMACoordinator start];
 }
 
-#pragma mark - SigninScreenMediatorDelegate
+#pragma mark - FullscreenSigninScreenMediatorDelegate
 
-- (void)signinScreenMediatorDidFinishSignin:(SigninScreenMediator*)mediator {
+- (void)fullscreenSigninScreenMediatorDidFinishSignin:
+    (FullscreenSigninScreenMediator*)mediator {
   CHECK_EQ(mediator, self.mediator, base::NotFatalUntil::M140);
   [self finishPresentingWithSignIn:YES];
 }
@@ -315,7 +318,7 @@
   }
 }
 
-#pragma mark - SigninScreenViewControllerDelegate
+#pragma mark - FullscreenSigninScreenViewControllerDelegate
 
 - (void)showAccountPickerFromPoint:(CGPoint)point {
   DCHECK(!self.identityChooserCoordinator);
