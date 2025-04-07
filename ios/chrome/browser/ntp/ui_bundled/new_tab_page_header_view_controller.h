@@ -133,9 +133,6 @@
 // Sets the tabgroupIndicatorView.
 - (void)setTabGroupIndicatorView:(TabGroupIndicatorView*)view;
 
-// Sets the user signed-in status
-- (void)setUserSignedIn:(BOOL)signedIn;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_HEADER_VIEW_CONTROLLER_H_

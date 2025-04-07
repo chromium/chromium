@@ -97,10 +97,12 @@ const CGFloat kMarginMultiplier = 2;
 @property(nonatomic, strong) NSLayoutConstraint* fakeOmniboxHeightConstraint;
 @property(nonatomic, strong) NSLayoutConstraint* fakeOmniboxTopMarginConstraint;
 @property(nonatomic, strong) NSLayoutConstraint* headerViewHeightConstraint;
-@property(nonatomic, assign) BOOL logoFetched;
 
 // Whether the Google logo or doodle is being shown.
 @property(nonatomic, assign) BOOL logoIsShowing;
+
+// Whether or not the user is signed in.
+@property(nonatomic, assign) BOOL isSignedIn;
 
 @end
 
@@ -112,8 +114,6 @@ const CGFloat kMarginMultiplier = 2;
   NSLayoutConstraint* _identityDiscWidthConstraint;
   // Trailing Anchor for the identity disc button.
   NSLayoutConstraint* _identityDiscTrailingConstraint;
-  // Whether or not the user is signed in
-  BOOL _isSignedIn;
 }
 
 - (instancetype)initWithUseNewBadgeForLensButton:(BOOL)useNewBadgeForLensButton
@@ -372,14 +372,6 @@ const CGFloat kMarginMultiplier = 2;
   self.headerView.tabGroupIndicatorView = view;
 }
 
-- (void)setUserSignedIn:(BOOL)signedIn {
-  _isSignedIn = signedIn;
-  if (self.identityDiscButton) {
-    [self updateIdentityDiscConstraints];
-    [self updateIdentityDiscState];
-  }
-}
-
 #pragma mark - FakeboxButtonsSnapshotProvider
 
 - (UIView*)fakeboxButtonsSnapshot {
@@ -564,7 +556,7 @@ const CGFloat kMarginMultiplier = 2;
   DCHECK(self.identityDiscImage);
   DCHECK(self.identityDiscAccessibilityLabel);
 
-  if (!IsSignInButtonNoAvatarEnabled() || _isSignedIn) {
+  if (!IsSignInButtonNoAvatarEnabled() || self.isSignedIn) {
     [self.identityDiscButton setTitle:nil forState:UIControlStateNormal];
     [self.identityDiscButton setTitleColor:nil forState:UIControlStateNormal];
     [self.identityDiscButton setAttributedTitle:nil
@@ -863,6 +855,8 @@ const CGFloat kMarginMultiplier = 2;
   self.identityDiscImage = DefaultSymbolTemplateWithPointSize(
       kPersonCropCircleSymbol, ntp_home::kSignedOutIdentityIconSize);
 
+  self.isSignedIn = NO;
+
   self.identityDiscAccessibilityLabel = l10n_util::GetNSString(
       IDS_IOS_IDENTITY_DISC_SIGNED_OUT_ACCESSIBILITY_LABEL);
 
@@ -882,6 +876,8 @@ const CGFloat kMarginMultiplier = 2;
   DCHECK(email);
 
   self.identityDiscImage = image;
+
+  self.isSignedIn = YES;
 
   [self updateIdentityDiscAccessibilityLabelWithName:name email:email];
 }
@@ -929,11 +925,25 @@ const CGFloat kMarginMultiplier = 2;
 
 #pragma mark - Private
 
+- (void)setIsSignedIn:(BOOL)isSignedIn {
+  BOOL wasSignedIn = _isSignedIn;
+  _isSignedIn = isSignedIn;
+  if (wasSignedIn != _isSignedIn) {
+    [self updateIdentityDiscConstraints];
+    // `self.identityDiscButton` should not be updated if the view has not been
+    // created or initialized yet.
+    if (self.identityDiscButton && self.identityDiscImage &&
+        self.identityDiscAccessibilityLabel) {
+      [self updateIdentityDiscState];
+    }
+  }
+}
+
 // Activates or deactivates the identity disc constraints based on sign-in
 // state.
 - (void)updateIdentityDiscConstraints {
   BOOL showSignInButtonWithoutAvatar =
-      IsSignInButtonNoAvatarEnabled() && !_isSignedIn;
+      IsSignInButtonNoAvatarEnabled() && !self.isSignedIn;
 
   CGFloat dimension = ntp_home::kIdentityAvatarDimension +
                       kMarginMultiplier * ntp_home::kHeaderIconMargin;

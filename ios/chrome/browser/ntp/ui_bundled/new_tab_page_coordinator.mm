@@ -634,9 +634,6 @@
   self.logoVendor = ios::provider::CreateLogoVendor(browser, self.webState);
   self.NTPViewController = [componentFactory NTPViewController];
   self.headerViewController = [componentFactory headerViewController];
-  [self.headerViewController
-      setUserSignedIn:self.authService && self.authService->HasPrimaryIdentity(
-                                              signin::ConsentLevel::kSignin)];
   self.NTPMediator =
       [componentFactory NTPMediatorForBrowser:browser
                      identityDiscImageUpdater:self.headerViewController];
@@ -1464,10 +1461,6 @@
   }
   signin::PrimaryAccountChangeEvent::Type eventType =
       event.GetEventTypeFor(signin::ConsentLevel::kSignin);
-  [self.headerViewController
-      setUserSignedIn:eventType ==
-                      signin::PrimaryAccountChangeEvent::Type::kSet];
-
   switch (eventType) {
     case signin::PrimaryAccountChangeEvent::Type::kSet:
     case signin::PrimaryAccountChangeEvent::Type::kCleared: {
