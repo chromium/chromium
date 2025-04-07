@@ -308111,138 +308111,6 @@
        {}
       ]
      ],
-     "reftests": {
-      "discard-check-remove-duplicate.svg": [
-       "e99e7b0e5776acdf446f0d3a5c671b71100b688c",
-       [
-        null,
-        [
-         [
-          "/svg/animations/reftests/reference/green-100x100.svg",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "discard-check-remove-duplicate2.svg": [
-       "aae13b64988a13adb5ff42da2636c2def382d7e9",
-       [
-        null,
-        [
-         [
-          "/svg/animations/reftests/reference/green-100x100.svg",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "discard-check-remove-replace.svg": [
-       "efca35c13689dcfe043c81bca94cbeef23be6be3",
-       [
-        null,
-        [
-         [
-          "/svg/animations/reftests/reference/green-100x100.svg",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "discard-check-remove-replace2.svg": [
-       "20c61bb985ca7398a164b01ecdacae41674258dc",
-       [
-        null,
-        [
-         [
-          "/svg/animations/reftests/reference/green-100x100.svg",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "discard-check-remove.svg": [
-       "a63eee29c93f2f295e26ad6e5ecf96b59dc519fa",
-       [
-        null,
-        [
-         [
-          "/svg/animations/reftests/reference/green-100x100.svg",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "discard-check-remove2.html": [
-       "92ecaec9d2137f9c70c1160af24536800f50ec53",
-       [
-        null,
-        [
-         [
-          "/svg/animations/reftests/reference/green-100x100.svg",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "discard-rect-as-child.svg": [
-       "93e14c0d73e6ea14d910507047a3ba00c637cf74",
-       [
-        null,
-        [
-         [
-          "/svg/animations/reftests/reference/green-100x100.svg",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "discard-rect-as-href.svg": [
-       "e9cf560991e86f9751b20ac7cd1a6227ad3d5861",
-       [
-        null,
-        [
-         [
-          "/svg/animations/reftests/reference/green-100x100.svg",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "discard-rect-with-anim-child-a.svg": [
-       "57e6cb2d442a67284d8eed3690d47228bf8de28b",
-       [
-        null,
-        [
-         [
-          "/svg/animations/reftests/reference/green-100x100.svg",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "discard-rect-with-anim-child-b.svg": [
-       "5b1fc113c4fac8f28357e1c2fced67786fd91138",
-       [
-        null,
-        [
-         [
-          "/svg/animations/reftests/reference/green-100x100.svg",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ]
-     },
      "scripted": {
       "animateMotion-animated-line.svg": [
        "5e853dab03a547f2e963e0ecc51048a9ea3ea307",
@@ -318985,7 +318853,7 @@
     ],
     "support": {
      "clear-cache-helper.sub.js": [
-      "2b2d35abfc571969f414d6f8f7d61f9ac189f284",
+      "5db0caf834cbf6a598f02761beda267dc8f1bcf8",
       []
      ],
      "clear-site-data-cache.py": [
@@ -388210,7 +388078,7 @@
          []
         ],
         "helper.sub.js": [
-         "a1d18d108e808ba128a200ab4c0ee0f5d64e3ccb",
+         "7df1a30549ae428908e6dd51236dd6c76db6c6d1",
          []
         ],
         "inflight-fetch-helper.js": [
@@ -393315,7 +393183,7 @@
       },
       "yaml": {
        "color_space.yaml": [
-        "0582f4953470c05d1b0f0704d40e778ebfc4dff1",
+        "118ca1e4d3880ca543d29a3203f3f664745621f5",
         []
        ],
        "color_type.yaml": [
@@ -393359,7 +393227,7 @@
         []
        ],
        "pixel-manipulation.yaml": [
-        "6721f5ffde52ac54372d6e6dbb6f0511baf58a3f",
+        "0dfa9a4329e067fdcdb21a075b24c7d837212703",
         []
        ],
        "reset.yaml": [
@@ -423603,14 +423471,18 @@
       []
      ],
      "storage-access-beyond-cookies-iframe-iframe.html": [
-      "44ac9cd8986067b611196836210511b07bbb2a61",
+      "9c0bd0194accfb9cd15f5d80707919e54c497c62",
       []
      ],
      "storage-access-beyond-cookies-iframe.sub.html": [
-      "7d43a06bc7eeb942c498f52856eb7e50b37b26b0",
+      "45fd60b834ae5f9c1d6741f0fb3fb5515f79047a",
       []
      ]
     },
+    "storage-access-beyond-cookies.BlobURLDedicatedWorker.sub.https.tentative.window-expected.txt": [
+     "29c9c6525cebe703e920d6b02e155c6f48a4c3ef",
+     []
+    ],
     "storage-access-beyond-cookies.SharedWorker.sub.https.window-expected.txt": [
      "62f9206e3ca86c0f2f2d50a6f52b72fe53bb4ea1",
      []
@@ -471877,6 +471749,16 @@
     ]
    },
    "clear-site-data": {
+    "clear-cache-bfcache.sub.https.html": [
+     "61d810f453b827946cb6ef943b4509b24e5f3246",
+     [
+      null,
+      {
+       "testdriver": true,
+       "timeout": "long"
+      }
+     ]
+    ],
     "clear-cache-partitioning.https.html": [
      "2deadeef2d0853d08a559a9af8050646fb8e3163",
      [
@@ -519714,6 +519596,13 @@
      ],
      "2d-transform-inline-js.html": [
       "0c842ddd66fc948de7b4680e01961939d219c02a",
+      [
+       null,
+       {}
+      ]
+     ],
+     "3d-point-mapping-coplanar.html": [
+      "0ae0ab1ee483f627c9a1142f82d9976ce7ee5a3c",
       [
        null,
        {}
@@ -610351,6 +610240,27 @@
          {}
         ]
        ],
+       "2d.imageData.createImageBitmap.p3.rgba.unorm8.html": [
+        "09d12ff82bc12ef093bf41524e71496a8c935484",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.imageData.createImageBitmap.srgb.rgba.float16.html": [
+        "61519ebce984004d58a7b74f01c1ed38402c1ba7",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.imageData.createImageBitmap.srgb.rgba.unorm8.html": [
+        "eee3846cf5aba02583a9ea7fcb31b194f79effa6",
+        [
+         null,
+         {}
+        ]
+       ],
        "2d.imageData.get.basic.html": [
         "71b2d5ab2f205d987b2ac187133d34a897e625fd",
         [
@@ -610519,6 +610429,13 @@
          {}
         ]
        ],
+       "2d.imageData.object.ctor.pixelFormat.html": [
+        "9d4c4ccc7ee04dd8ee08f6059b437a902e1bc7f7",
+        [
+         null,
+         {}
+        ]
+       ],
        "2d.imageData.object.ctor.size.bounds.html": [
         "5ea899ac861aac26bf97320213370d88f9372bab",
         [
@@ -610541,7 +610458,7 @@
         ]
        ],
        "2d.imageData.object.properties.html": [
-        "de586fda3ff90d9f879bb2f4c530d5dae7b93c48",
+        "72f314bf66035ae3664d360e437f80ad7dfb716a",
         [
          null,
          {}
@@ -610591,6 +610508,13 @@
        ],
        "2d.imageData.put.basic.html": [
         "7ea6e58f805233208b133206810caf1f56420d69",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.imageData.put.basic.rgba.float16.html": [
+        "8307f7fda46883e1ec6e6d2430e9bc6f9532aac5",
         [
          null,
          {}
@@ -612410,7 +612334,7 @@
         ]
        ],
        "2d.color.space.p3.to.srgb.html": [
-        "8320a2948517ce39da51a6e89c6b289414a539da",
+        "abfda62cb522d97b56e391bc687fdb91ebf29a52",
         [
          null,
          {}
@@ -622827,6 +622751,48 @@
          {}
         ]
        ],
+       "2d.imageData.createImageBitmap.p3.rgba.unorm8.html": [
+        "4712a13acfd26b11522c5614d8f3bc6c5ed6f7c5",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.imageData.createImageBitmap.p3.rgba.unorm8.worker.js": [
+        "51034aad72c5df91b5d00e8ce3edbb0c3372857c",
+        [
+         "html/canvas/offscreen/pixel-manipulation/2d.imageData.createImageBitmap.p3.rgba.unorm8.worker.html",
+         {}
+        ]
+       ],
+       "2d.imageData.createImageBitmap.srgb.rgba.float16.html": [
+        "3b31076d7c791e72b1a13454324d30caa8b23325",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.imageData.createImageBitmap.srgb.rgba.float16.worker.js": [
+        "c0e2b265600cb6f699af2824598b3f6ba93d1b87",
+        [
+         "html/canvas/offscreen/pixel-manipulation/2d.imageData.createImageBitmap.srgb.rgba.float16.worker.html",
+         {}
+        ]
+       ],
+       "2d.imageData.createImageBitmap.srgb.rgba.unorm8.html": [
+        "687ffc2a29ea4eca2b5760b4f261133c608196f4",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.imageData.createImageBitmap.srgb.rgba.unorm8.worker.js": [
+        "77993c46b4cc8f81b16bdd6c7d44a6ccef9ae48b",
+        [
+         "html/canvas/offscreen/pixel-manipulation/2d.imageData.createImageBitmap.srgb.rgba.unorm8.worker.html",
+         {}
+        ]
+       ],
        "2d.imageData.get.basic.html": [
         "c92771eab51798806f7440983fd9f630a4a2d638",
         [
@@ -623122,14 +623088,14 @@
         ]
        ],
        "2d.imageData.object.properties.html": [
-        "f936938b7fc6b9bea322952de0426965c42ffdec",
+        "5c334ceb301c96f7754cef7af1f3bfd199805f2c",
         [
          null,
          {}
         ]
        ],
        "2d.imageData.object.properties.worker.js": [
-        "e428e0d4fcead269bcc1c85a1212386754e129d6",
+        "6c2026c8eae371c15593b387d97e77d3d2ea5960",
         [
          "html/canvas/offscreen/pixel-manipulation/2d.imageData.object.properties.worker.html",
          {}
@@ -623223,6 +623189,20 @@
         "8387dd78bc36943163a85cb4466ef73afd461c65",
         [
          null,
+         {}
+        ]
+       ],
+       "2d.imageData.put.basic.rgba.float16.html": [
+        "f8bd9ad8a731812e78756b4760a0a12e40067e39",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.imageData.put.basic.rgba.float16.worker.js": [
+        "06496eae05f0c41e01fb36814d52f8f481bdbccd",
+        [
+         "html/canvas/offscreen/pixel-manipulation/2d.imageData.put.basic.rgba.float16.worker.html",
          {}
         ]
        ],
@@ -626641,14 +626621,14 @@
         ]
        ],
        "2d.color.space.p3.to.srgb.html": [
-        "0197c10ad2882fae964b8963e32961791816a2ed",
+        "7d22528bc5b6878a565e358f7cf62e327396e5d9",
         [
          null,
          {}
         ]
        ],
        "2d.color.space.p3.to.srgb.worker.js": [
-        "da84a683bcfadaae54c5f31cf63a0bf50b661514",
+        "13ee21933dbfc3a6cf5f0a1eae945f1f7f573e5f",
         [
          "html/canvas/offscreen/wide-gamut-canvas/2d.color.space.p3.to.srgb.worker.html",
          {}
@@ -712245,6 +712225,24 @@
       }
      ]
     ],
+    "storage-access-beyond-cookies.BlobURLDedicatedWorker.sub.https.tentative.window.js": [
+     "2d04c2ee405fcff67dd0e6e79fbddc385ef05510",
+     [
+      "storage-access-api/storage-access-beyond-cookies.BlobURLDedicatedWorker.sub.https.tentative.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/testdriver.js"
+        ],
+        [
+         "script",
+         "/resources/testdriver-vendor.js"
+        ]
+       ]
+      }
+     ]
+    ],
     "storage-access-beyond-cookies.BroadcastChannel.sub.https.window.js": [
      "feb268b4b8146290eec743779c4a8d9567bc74b3",
      [
@@ -725148,6 +725146,13 @@
        {}
       ]
      ],
+     "historical.html": [
+      "2a807125296bac8f2338ac9e1b94a0c42a2ac409",
+      [
+       null,
+       {}
+      ]
+     ],
      "interval-restart-events.html": [
       "3c3ad89a3230bb03048dc3fc9727558de511bee9",
       [
@@ -726367,7 +726372,7 @@
       ]
      ],
      "script-content.svg": [
-      "94836f7c0331cb8a1caebacef02a75018b2b4ddb",
+      "b882160b4e68d4eeb27cc498d2f3ed8967bbdd7d",
       [
        null,
        {}
