@@ -195,7 +195,6 @@ class OzonePlatformX11 : public OzonePlatform,
       properties->supports_vulkan_swap_chain = true;
       properties->skia_can_fall_back_to_x11 = true;
       properties->platform_shows_drag_image = false;
-      properties->supports_global_application_menus = true;
       properties->app_modal_dialogs_use_event_blocker = true;
       properties->fetch_buffer_formats_for_gmb_on_gpu = true;
 
@@ -219,6 +218,7 @@ class OzonePlatformX11 : public OzonePlatform,
     properties.supports_server_window_menus =
         x11::Connection::Get()->WmSupportsHint(
             x11::GetAtom("_GTK_SHOW_WINDOW_MENU"));
+    properties.supports_global_application_menus = true;
 
     return properties;
   }

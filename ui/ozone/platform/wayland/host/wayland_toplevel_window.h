@@ -31,6 +31,7 @@ enum class TooltipTrigger;
 namespace ui {
 
 class GtkSurface1;
+class OrgKdeKwinAppmenu;
 class XdgToplevel;
 
 class WaylandToplevelWindow : public WaylandWindow,
@@ -130,6 +131,9 @@ class WaylandToplevelWindow : public WaylandWindow,
       bool allow_system_drag) override;
   bool SupportsPointerLock() override;
   void LockPointer(bool enabled) override;
+  void SetAppmenu(const std::string& service_name,
+                  const std::string& object_path) override;
+  void UnsetAppmenu() override;
 
   // WorkspaceExtension:
   std::string GetWorkspace() const override;
@@ -189,6 +193,9 @@ class WaylandToplevelWindow : public WaylandWindow,
   // configure-time stages of the toplevel window initialization.
   void UpdateSessionStateIfNeeded();
 
+  // Try to announce the appmenu associated with this toplevel, if there's any.
+  void TryAnnounceAppmenu();
+
   std::unique_ptr<XdgToplevel> xdg_toplevel_;
 
   // True if it's maximized before requesting the window state change from the
@@ -244,6 +251,11 @@ class WaylandToplevelWindow : public WaylandWindow,
   base::ScopedObservation<XdgSession, XdgSession::Observer> session_observer_{
       this};
   std::unique_ptr<XdgToplevelSession> toplevel_session_;
+
+  // Global application menu integration.
+  std::unique_ptr<OrgKdeKwinAppmenu> appmenu_;
+  std::string appmenu_service_name_;
+  std::string appmenu_object_path_;
 
   base::WeakPtrFactory<WaylandToplevelWindow> weak_ptr_factory_{this};
 };

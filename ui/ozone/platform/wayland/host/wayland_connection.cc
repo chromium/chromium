@@ -34,6 +34,7 @@
 #include "ui/ozone/platform/wayland/host/fractional_scale_manager.h"
 #include "ui/ozone/platform/wayland/host/gtk_primary_selection_device_manager.h"
 #include "ui/ozone/platform/wayland/host/gtk_shell1.h"
+#include "ui/ozone/platform/wayland/host/org_kde_kwin_appmenu.h"
 #include "ui/ozone/platform/wayland/host/org_kde_kwin_idle.h"
 #include "ui/ozone/platform/wayland/host/overlay_prioritizer.h"
 #include "ui/ozone/platform/wayland/host/proxy/wayland_proxy_impl.h"
@@ -156,6 +157,8 @@ bool WaylandConnection::Initialize(bool use_threaded_polling) {
                               &GtkPrimarySelectionDeviceManager::Instantiate);
   RegisterGlobalObjectFactory(GtkShell1::kInterfaceName,
                               &GtkShell1::Instantiate);
+  RegisterGlobalObjectFactory(OrgKdeKwinAppmenuManager::kInterfaceName,
+                              &OrgKdeKwinAppmenuManager::Instantiate);
   RegisterGlobalObjectFactory(OrgKdeKwinIdle::kInterfaceName,
                               &OrgKdeKwinIdle::Instantiate);
   RegisterGlobalObjectFactory(OverlayPrioritizer::kInterfaceName,

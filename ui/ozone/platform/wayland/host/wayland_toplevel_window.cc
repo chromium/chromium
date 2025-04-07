@@ -23,6 +23,7 @@
 #include "ui/ozone/platform/wayland/host/dump_util.h"
 #include "ui/ozone/platform/wayland/host/gtk_shell1.h"
 #include "ui/ozone/platform/wayland/host/gtk_surface1.h"
+#include "ui/ozone/platform/wayland/host/org_kde_kwin_appmenu.h"
 #include "ui/ozone/platform/wayland/host/wayland_bubble.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
@@ -162,6 +163,7 @@ void WaylandToplevelWindow::Hide() {
 
   toplevel_session_.reset();
   xdg_toplevel_.reset();
+  appmenu_.reset();
   ClearInFlightRequestsSerial();
 
   connection()->Flush();
@@ -710,6 +712,22 @@ void WaylandToplevelWindow::LockPointer(bool enabled) {
     pointer_constraints->UnlockPointer();
 }
 
+void WaylandToplevelWindow::SetAppmenu(const std::string& service_name,
+                                       const std::string& object_path) {
+  appmenu_service_name_ = service_name;
+  appmenu_object_path_ = object_path;
+
+  if (xdg_toplevel_) {
+    TryAnnounceAppmenu();
+  }
+}
+
+void WaylandToplevelWindow::UnsetAppmenu() {
+  appmenu_.reset();
+  appmenu_service_name_.clear();
+  appmenu_object_path_.clear();
+}
+
 void WaylandToplevelWindow::SetSystemModal(bool modal) {
   system_modal_ = modal;
   if (xdg_toplevel_) {
@@ -878,6 +896,8 @@ void WaylandToplevelWindow::SetUpShellIntegration() {
     gtk_surface1_ =
         connection()->gtk_shell1()->GetGtkSurface1(root_surface()->surface());
   }
+
+  TryAnnounceAppmenu();
 }
 
 void WaylandToplevelWindow::OnDecorationModeChanged() {
@@ -920,6 +940,15 @@ void WaylandToplevelWindow::UpdateSessionStateIfNeeded() {
     toplevel_session_ = session_->TrackToplevel(this, session_data.window_id,
                                                 XdgSession::Action::kAdd);
     connection()->Flush();
+  }
+}
+
+void WaylandToplevelWindow::TryAnnounceAppmenu() {
+  if (auto* appmenu_manager = connection()->org_kde_kwin_appmenu_manager()) {
+    if (!appmenu_service_name_.empty() && !appmenu_object_path_.empty()) {
+      appmenu_ = appmenu_manager->Create(root_surface()->surface());
+      appmenu_->SetAddress(appmenu_service_name_, appmenu_object_path_);
+    }
   }
 }
 

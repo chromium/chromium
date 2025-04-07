@@ -16,6 +16,8 @@
 #include "dbus/message.h"
 #include "dbus/object_path.h"
 #include "dbus/object_proxy.h"
+#include "ui/platform_window/extensions/wayland_extension.h"
+#include "ui/platform_window/extensions/x11_extension.h"
 
 namespace {
 
@@ -42,13 +44,18 @@ void DbusAppmenuRegistrar::OnMenuBarCreated(DbusAppmenu* menu) {
 void DbusAppmenuRegistrar::OnMenuBarDestroyed(DbusAppmenu* menu) {
   DCHECK(base::Contains(menus_, menu));
   if (menus_[menu] == kRegistered) {
-    dbus::MethodCall method_call(kAppMenuRegistrarInterface,
-                                 "UnregisterWindow");
-    dbus::MessageWriter writer(&method_call);
-    writer.AppendUint32(menu->browser_frame_id());
-    registrar_proxy_->CallMethod(&method_call,
-                                 dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-                                 base::DoNothing());
+    if (auto* toplevel_extension =
+            ui::GetWaylandToplevelExtension(*menu->platform_window())) {
+      toplevel_extension->UnsetAppmenu();
+    } else if (ui::GetX11Extension(*menu->platform_window())) {
+      dbus::MethodCall method_call(kAppMenuRegistrarInterface,
+                                   "UnregisterWindow");
+      dbus::MessageWriter writer(&method_call);
+      writer.AppendUint32(menu->browser_frame_id());
+      registrar_proxy_->CallMethod(&method_call,
+                                   dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+                                   base::DoNothing());
+    }
   }
   menus_.erase(menu);
 }
@@ -77,12 +84,19 @@ void DbusAppmenuRegistrar::RegisterMenu(DbusAppmenu* menu) {
   DCHECK(base::Contains(menus_, menu));
   DCHECK(menus_[menu] == kInitializeSucceeded || menus_[menu] == kRegistered);
   menus_[menu] = kRegistered;
-  dbus::MethodCall method_call(kAppMenuRegistrarInterface, "RegisterWindow");
-  dbus::MessageWriter writer(&method_call);
-  writer.AppendUint32(menu->browser_frame_id());
-  writer.AppendObjectPath(dbus::ObjectPath(menu->GetPath()));
-  registrar_proxy_->CallMethod(
-      &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, base::DoNothing());
+
+  if (auto* toplevel_extension =
+          ui::GetWaylandToplevelExtension(*menu->platform_window())) {
+    toplevel_extension->SetAppmenu(bus_->GetConnectionName(), menu->GetPath());
+  } else if (ui::GetX11Extension(*menu->platform_window())) {
+    dbus::MethodCall method_call(kAppMenuRegistrarInterface, "RegisterWindow");
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendUint32(menu->browser_frame_id());
+    writer.AppendObjectPath(dbus::ObjectPath(menu->GetPath()));
+    registrar_proxy_->CallMethod(&method_call,
+                                 dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+                                 base::DoNothing());
+  }
 }
 
 void DbusAppmenuRegistrar::OnMenuInitialized(DbusAppmenu* menu, bool success) {

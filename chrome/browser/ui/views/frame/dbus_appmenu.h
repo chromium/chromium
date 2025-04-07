@@ -29,6 +29,7 @@
 
 namespace ui {
 class Accelerator;
+class PlatformWindow;
 }
 
 class Browser;
@@ -49,7 +50,9 @@ class DbusAppmenu : public AvatarMenuObserver,
                     public sessions::TabRestoreServiceObserver,
                     public ui::SimpleMenuModel::Delegate {
  public:
-  DbusAppmenu(BrowserView* browser_view, uint32_t browser_frame_id);
+  DbusAppmenu(BrowserView* browser_view,
+              ui::PlatformWindow* platform_window,
+              uint32_t browser_frame_id);
 
   DbusAppmenu(const DbusAppmenu&) = delete;
   DbusAppmenu& operator=(const DbusAppmenu&) = delete;
@@ -62,6 +65,7 @@ class DbusAppmenu : public AvatarMenuObserver,
   std::string GetPath() const;
 
   uint32_t browser_frame_id() const { return browser_frame_id_; }
+  ui::PlatformWindow* platform_window() const { return platform_window_; }
 
  private:
   struct HistoryItem;
@@ -144,6 +148,7 @@ class DbusAppmenu : public AvatarMenuObserver,
   const raw_ptr<Browser> browser_;
   raw_ptr<Profile> profile_;
   raw_ptr<BrowserView> browser_view_;
+  raw_ptr<ui::PlatformWindow> platform_window_;
   // XID of the browser's frame window that owns this menu.  Deliberately stored
   // as plain int (and not as x11::Window) because it is never used for any
   // calls to the X server, but it is always used for building string paths and

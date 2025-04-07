@@ -3601,25 +3601,16 @@ static_library("ui") {
 
     if (use_dbus) {
       sources += [
+        "views/frame/dbus_appmenu.cc",
+        "views/frame/dbus_appmenu.h",
+        "views/frame/dbus_appmenu_registrar.cc",
+        "views/frame/dbus_appmenu_registrar.h",
         "views/status_icons/concat_menu_model.cc",
         "views/status_icons/concat_menu_model.h",
         "views/status_icons/status_icon_linux_dbus.cc",
         "views/status_icons/status_icon_linux_dbus.h",
       ]
       deps += [ "//components/dbus" ]
-    }
-
-    # TODO(crbug.com/40193891): ozone_platform_x11 should not be leaked outside
-    # ozone.
-    if (use_dbus && ozone_platform_x11) {
-      sources += [
-        "views/frame/dbus_appmenu.cc",
-        "views/frame/dbus_appmenu.h",
-        "views/frame/dbus_appmenu_registrar.cc",
-        "views/frame/dbus_appmenu_registrar.h",
-      ]
-      defines += [ "USE_DBUS_MENU" ]
-      deps += [ "//ui/gfx/x" ]
     }
   }
 

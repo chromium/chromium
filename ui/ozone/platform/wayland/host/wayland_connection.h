@@ -42,6 +42,7 @@ struct TouchscreenDevice;
 
 class GtkPrimarySelectionDeviceManager;
 class GtkShell1;
+class OrgKdeKwinAppmenuManager;
 class OrgKdeKwinIdle;
 class OverlayPrioritizer;
 class SinglePixelBuffer;
@@ -220,6 +221,10 @@ class WaylandConnection {
 
   GtkShell1* gtk_shell1() { return gtk_shell1_.get(); }
 
+  OrgKdeKwinAppmenuManager* org_kde_kwin_appmenu_manager() const {
+    return org_kde_kwin_appmenu_manager_.get();
+  }
+
   OrgKdeKwinIdle* org_kde_kwin_idle() { return org_kde_kwin_idle_.get(); }
 
   ZwpPrimarySelectionDeviceManager* zwp_primary_selection_device_manager()
@@ -334,6 +339,7 @@ class WaylandConnection {
   friend class FractionalScaleManager;
   friend class GtkPrimarySelectionDeviceManager;
   friend class GtkShell1;
+  friend class OrgKdeKwinAppmenuManager;
   friend class OrgKdeKwinIdle;
   friend class OverlayPrioritizer;
   friend class SinglePixelBuffer;
@@ -489,6 +495,7 @@ class WaylandConnection {
   std::unique_ptr<GtkShell1> gtk_shell1_;
 
   // Objects specific to KDE Plasma desktop environment.
+  std::unique_ptr<OrgKdeKwinAppmenuManager> org_kde_kwin_appmenu_manager_;
   std::unique_ptr<OrgKdeKwinIdle> org_kde_kwin_idle_;
 
   std::unique_ptr<WaylandDataDragController> data_drag_controller_;
