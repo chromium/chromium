@@ -505,8 +505,8 @@ uint64_t GetTraceIdForTransaction(int transaction_id) {
   // Xor with a mask to reduce likelihood of flow id collision with non-surface
   // tasks. First 64-bits of SHA256 hash of "SurfaceControl::Transaction",
   // interpreted as a big-endian integer. Python snippet:
-  // hashlib.sha256(b'SurfaceControl::Transaction').hexdigest()[:8]
-  constexpr uint64_t kMask = 0x11119f59;
+  // hashlib.sha256(b'SurfaceControl::Transaction').hexdigest()[:16]
+  constexpr uint64_t kMask = 0x11119f59bb2a2b31;
   return kMask ^ transaction_id;
 }
 
