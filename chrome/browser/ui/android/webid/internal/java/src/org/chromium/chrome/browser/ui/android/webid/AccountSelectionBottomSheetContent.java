@@ -227,18 +227,12 @@ public class AccountSelectionBottomSheetContent implements BottomSheetContent {
 
     @Override
     public float getFullHeightRatio() {
-        if (mRpMode == RpMode.PASSIVE) {
-            if (!mIsMultipleIdps) {
-                computeAndUpdateAccountListHeightForPassiveSingleIdp();
-                return HeightMode.WRAP_CONTENT;
-            }
-            // In multi IDP passive mode, only let the container take half the viewport.
-            return Math.min(
-                            getMaximumSheetHeightPx(),
-                            mBottomSheetController.getContainerHeight() / 2)
-                    / (float) mBottomSheetController.getContainerHeight();
+        if (mRpMode == RpMode.PASSIVE && !mIsMultipleIdps) {
+            computeAndUpdateAccountListHeightForPassiveSingleIdp();
         }
-        // WRAP_CONTENT would be the right fit but this disables the HALF state.
+        // WRAP_CONTENT would be the right fit but this disables the HALF state and this does not
+        // work properly when we transition from a multi IDP UI to a single IDP UI, for unknown
+        // reasons.
         return Math.min(getMaximumSheetHeightPx(), mBottomSheetController.getContainerHeight())
                 / (float) mBottomSheetController.getContainerHeight();
     }
