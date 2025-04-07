@@ -10,6 +10,7 @@
 #include "components/country_codes/country_codes.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/policy/policy_constants.h"
+#include "components/regional_capabilities/regional_capabilities_prefs.h"
 #include "components/regional_capabilities/regional_capabilities_switches.h"
 #include "components/regional_capabilities/regional_capabilities_test_utils.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_metrics_service_accessor.h"
@@ -27,6 +28,7 @@ SearchEngineChoiceServiceTestBase::SearchEngineChoiceServiceTestBase::
   TemplateURLService::RegisterProfilePrefs(pref_service_.registry());
   DefaultSearchManager::RegisterProfilePrefs(pref_service_.registry());
   TemplateURLPrepopulateData::RegisterProfilePrefs(pref_service_.registry());
+  regional_capabilities::prefs::RegisterProfilePrefs(pref_service_.registry());
   local_state_.registry()->RegisterBooleanPref(
       metrics::prefs::kMetricsReportingEnabled, true);
   local_state_.registry()->RegisterInt64Pref(

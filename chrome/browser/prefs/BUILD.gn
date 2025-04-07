@@ -107,6 +107,7 @@ source_set("impl") {
     "//components/privacy_sandbox:tpcd",
     "//components/proxy_config",
     "//components/reading_list/core",
+    "//components/regional_capabilities",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/saved_tab_groups/public:prefs",

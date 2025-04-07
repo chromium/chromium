@@ -5,6 +5,7 @@
 #include "components/regional_capabilities/regional_capabilities_service.h"
 
 #include <optional>
+#include <vector>
 
 #include "base/callback_list.h"
 #include "base/check_is_test.h"
@@ -18,6 +19,7 @@
 #include "components/regional_capabilities/regional_capabilities_metrics.h"
 #include "components/regional_capabilities/regional_capabilities_switches.h"
 #include "components/regional_capabilities/regional_capabilities_utils.h"
+#include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
@@ -153,6 +155,23 @@ CountryId RegionalCapabilitiesService::GetCountryIdInternal() {
 
 CountryIdHolder RegionalCapabilitiesService::GetCountryId() {
   return CountryIdHolder(GetCountryIdInternal());
+}
+
+std::vector<const TemplateURLPrepopulateData::PrepopulatedEngine*>
+RegionalCapabilitiesService::GetRegionalPrepopulatedEngines() {
+  if (HasSearchEngineCountryListOverride()) {
+    auto country_override = std::get<SearchEngineCountryListOverride>(
+        GetSearchEngineCountryOverride().value());
+
+    switch (country_override) {
+      case SearchEngineCountryListOverride::kEeaAll:
+        return GetAllEeaRegionPrepopulatedEngines();
+      case SearchEngineCountryListOverride::kEeaDefault:
+        return GetDefaultPrepopulatedEngines();
+    }
+  }
+
+  return GetPrepopulatedEngines(GetCountryIdInternal(), profile_prefs_.get());
 }
 
 bool RegionalCapabilitiesService::IsInEeaCountry() {

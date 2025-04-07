@@ -7,6 +7,7 @@ import("//tools/json_to_struct/json_to_struct.gni")
 json_to_struct("prepopulated_engines") {
   visibility = [
     ":*",
+    "//components/regional_capabilities:*",
     "//components/search_engines:*",
   ]
 
@@ -17,7 +18,10 @@ json_to_struct("prepopulated_engines") {
 }
 
 json_to_struct("regional_settings") {
-  visibility = [ "//components/search_engines:*" ]
+  visibility = [
+    "//components/regional_capabilities:*",
+    "//components/search_engines:test_support",
+  ]
 
   source = "resources/definitions/regional_settings.json"
   schema_file = "regional_settings_schema.json"

@@ -6,6 +6,7 @@
 #define COMPONENTS_REGIONAL_CAPABILITIES_REGIONAL_CAPABILITIES_SERVICE_H_
 
 #include <optional>
+#include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
@@ -18,6 +19,10 @@
 #endif
 
 class PrefService;
+
+namespace TemplateURLPrepopulateData {
+struct PrepopulatedEngine;
+}
 
 namespace regional_capabilities {
 
@@ -80,6 +85,9 @@ class RegionalCapabilitiesService : public KeyedService {
   // Note: Access to the raw value is restricted, see `CountryIdHolder` for
   // more details.
   CountryIdHolder GetCountryId();
+
+  std::vector<const TemplateURLPrepopulateData::PrepopulatedEngine*>
+  GetRegionalPrepopulatedEngines();
 
   // Returns whether the profile country is a EEA member.
   //

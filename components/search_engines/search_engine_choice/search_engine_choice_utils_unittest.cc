@@ -22,6 +22,7 @@
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/regional_capabilities/regional_capabilities_prefs.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/template_url_data_util.h"
@@ -43,6 +44,8 @@ class SearchEngineChoiceUtilsTest : public ::testing::Test {
  public:
   SearchEngineChoiceUtilsTest() {
     TemplateURLPrepopulateData::RegisterProfilePrefs(pref_service_.registry());
+    regional_capabilities::prefs::RegisterProfilePrefs(
+        pref_service_.registry());
   }
 
   ~SearchEngineChoiceUtilsTest() override = default;

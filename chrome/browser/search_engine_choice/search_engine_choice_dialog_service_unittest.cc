@@ -590,14 +590,14 @@ TEST_P(SearchEngineListCountryOverrideParametrizedTest,
       search_engine_list_override.value() ==
           regional_capabilities::SearchEngineCountryListOverride::kEeaDefault) {
     expected_search_engine_list_size =
-        TemplateURLPrepopulateData::GetDefaultPrepopulatedEngines().size();
+        regional_capabilities::GetDefaultPrepopulatedEngines().size();
   }
 
   if (search_engine_list_override.has_value() &&
       search_engine_list_override.value() ==
           regional_capabilities::SearchEngineCountryListOverride::kEeaAll) {
     expected_search_engine_list_size =
-        TemplateURLPrepopulateData::GetAllEeaRegionPrepopulatedEngines().size();
+        regional_capabilities::GetAllEeaRegionPrepopulatedEngines().size();
   }
 
   EXPECT_EQ(search_engine_choice_service->GetSearchEngines().size(),

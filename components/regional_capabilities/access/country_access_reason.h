@@ -14,9 +14,6 @@ class SearchEngineChoiceDialogService;
 namespace search_engines {
 class SearchEngineChoiceService;
 }
-namespace TemplateURLPrepopulateData {
-class Resolver;
-}
 
 namespace regional_capabilities {
 
@@ -31,10 +28,6 @@ enum class CountryAccessReason {
   // just been shown, when metrics reporting needs to be delayed.
   // Added with the initial access control migration, see crbug.com/328040066.
   kSearchEngineChoiceServiceCacheChoiceScreenData,
-
-  // Used for computing of the list of prepopulated search engines.
-  // Added with the initial access control migration, see crbug.com/328040066.
-  kTemplateURLPrepopulateDataResolution,
 
   // Used to determine whether the local database of search engines needs to
   // be refreshed with the latest prepopulated data set. The value obtained
@@ -64,7 +57,6 @@ class CountryAccessKey {
   const CountryAccessReason reason;
 
  private:
-  friend class TemplateURLPrepopulateData::Resolver;
   friend class search_engines::SearchEngineChoiceService;
   friend class RegionalCapabilitiesService;
   friend class ::TemplateURLService;

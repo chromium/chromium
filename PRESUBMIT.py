@@ -919,7 +919,7 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
             r'content/browser/webid/federated_auth_request_impl\.cc',
             r'media/cast/test/utility/udp_proxy\.h',
             r'sql/recover_module/module_unittest\.cc',
-            r'components/search_engines/template_url_prepopulate_data.cc',
+            r'components/regional_capabilities/regional_capabilities_utils.cc',
             # Do not add new entries to this list. If you have a use case which is
             # not satisfied by the current APIs (i.e. you need an explicitly-seeded
             # sequence, or stability of some sort is required), please contact

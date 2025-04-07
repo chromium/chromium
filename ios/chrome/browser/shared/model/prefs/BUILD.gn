@@ -66,6 +66,7 @@ source_set("browser_prefs") {
     "//components/prefs",
     "//components/proxy_config",
     "//components/reading_list/core",
+    "//components/regional_capabilities",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/saved_tab_groups/public",
     "//components/search_engines",
