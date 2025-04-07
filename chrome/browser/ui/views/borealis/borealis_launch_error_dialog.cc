@@ -40,6 +40,8 @@ namespace {
 // Views uses tricks like this to ensure singleton-ness of dialogs.
 static Widget* g_instance_ = nullptr;
 
+}  // namespace
+
 class BorealisLaunchErrorDialog : public DialogDelegate {
  public:
   explicit BorealisLaunchErrorDialog(Profile* profile,
@@ -215,7 +217,6 @@ class BorealisLaunchErrorDialog : public DialogDelegate {
   FailureType failure_;
   raw_ptr<views::Checkbox> feedback_checkbox_ = nullptr;
 };
-}  // namespace
 
 void ShowBorealisLaunchErrorView(Profile* profile,
                                  BorealisStartupResult error) {

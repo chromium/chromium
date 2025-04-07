@@ -35,8 +35,6 @@
 
 namespace ash {
 
-namespace {
-
 class AuthDialogContentsViewPixelTest : public AshTestBase {
  public:
   AuthDialogContentsViewPixelTest() = default;
@@ -307,7 +305,5 @@ TEST_F(AuthDialogContentsViewPixelTest, AllFactorAndThemeChange) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "fingerprint_light", /*revision_number=*/4, widget.get()));
 }
-
-}  // namespace
 
 }  // namespace ash

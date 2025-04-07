@@ -66,6 +66,8 @@ class WidgetResizeWaiter : public views::WidgetObserver {
   base::RunLoop run_loop_;
 };
 
+}  // namespace
+
 class WebDialogBrowserTest : public InProcessBrowserTest {
  public:
   WebDialogBrowserTest() = default;
@@ -122,8 +124,6 @@ void WebDialogBrowserTest::SimulateEscapeKey() {
         false, false));
   }
 }
-
-}  // namespace
 
 // Windows has some issues resizing windows. An off by one problem, and a
 // minimum size that seems too big. See http://crbug.com/52602.

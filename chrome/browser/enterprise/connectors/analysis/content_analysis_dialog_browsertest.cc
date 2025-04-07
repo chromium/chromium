@@ -50,57 +50,6 @@
 
 namespace enterprise_connectors {
 
-namespace {
-
-constexpr base::TimeDelta kNoDelay = base::Seconds(0);
-constexpr base::TimeDelta kSmallDelay = base::Milliseconds(300);
-constexpr base::TimeDelta kNormalDelay = base::Milliseconds(500);
-
-constexpr char kBlockingScansForDlpAndMalware[] = R"(
-{
-  "service_provider": "google",
-  "enable": [
-    {
-      "url_list": ["*"],
-      "tags": ["dlp", "malware"]
-    }
-  ],
-  "block_until_verdict": 1
-})";
-
-constexpr char kBlockingScansForDlp[] = R"(
-{
-  "service_provider": "google",
-  "enable": [
-    {
-      "url_list": ["*"],
-      "tags": ["dlp"]
-    }
-  ],
-  "block_until_verdict": 1
-})";
-
-constexpr char kBlockingScansForDlpAndMalwareWithCustomMessage[] = R"(
-{
-  "service_provider": "google",
-  "enable": [
-    {
-      "url_list": ["*"],
-      "tags": ["dlp", "malware"]
-    }
-  ],
-  "block_until_verdict": 1,
-  "custom_messages": [{
-    "message": "Custom message",
-    "learn_more_url": "http://www.example.com/",
-    "tag": "dlp"
-  }]
-})";
-
-std::string text() {
-  return std::string(100, 'a');
-}
-
 // Tests the behavior of the dialog in the following ways:
 // - It shows the appropriate buttons depending on its state.
 // - It transitions from states in the correct order.
@@ -328,6 +277,57 @@ class ContentAnalysisDialogBehaviorBrowserTest
   int ax_events_count_when_first_shown_ = 0;
   views::test::AXEventCounter ax_event_counter_;
 };
+
+namespace {
+
+constexpr base::TimeDelta kNoDelay = base::Seconds(0);
+constexpr base::TimeDelta kSmallDelay = base::Milliseconds(300);
+constexpr base::TimeDelta kNormalDelay = base::Milliseconds(500);
+
+constexpr char kBlockingScansForDlpAndMalware[] = R"(
+{
+  "service_provider": "google",
+  "enable": [
+    {
+      "url_list": ["*"],
+      "tags": ["dlp", "malware"]
+    }
+  ],
+  "block_until_verdict": 1
+})";
+
+constexpr char kBlockingScansForDlp[] = R"(
+{
+  "service_provider": "google",
+  "enable": [
+    {
+      "url_list": ["*"],
+      "tags": ["dlp"]
+    }
+  ],
+  "block_until_verdict": 1
+})";
+
+constexpr char kBlockingScansForDlpAndMalwareWithCustomMessage[] = R"(
+{
+  "service_provider": "google",
+  "enable": [
+    {
+      "url_list": ["*"],
+      "tags": ["dlp", "malware"]
+    }
+  ],
+  "block_until_verdict": 1,
+  "custom_messages": [{
+    "message": "Custom message",
+    "learn_more_url": "http://www.example.com/",
+    "tag": "dlp"
+  }]
+})";
+
+std::string text() {
+  return std::string(100, 'a');
+}
 
 // Tests the behavior of the dialog in the following ways:
 // - It closes when the "Cancel" button is clicked.

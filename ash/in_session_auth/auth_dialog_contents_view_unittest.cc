@@ -24,8 +24,6 @@
 
 namespace ash {
 
-namespace {
-
 class AuthDialogContentsViewTest : public AshTestBase {
  public:
   AuthDialogContentsViewTest() = default;
@@ -147,7 +145,5 @@ TEST_F(AuthDialogContentsViewTest, AccessibleProperties) {
       .GetAccessibleNodeData(&data);
   EXPECT_EQ(data.role, ax::mojom::Role::kStaticText);
 }
-
-}  // namespace
 
 }  // namespace ash

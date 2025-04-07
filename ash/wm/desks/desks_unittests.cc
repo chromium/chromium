@@ -176,6 +176,30 @@
 
 namespace ash {
 
+// A widget delegate that refuses to close.
+class StuckWidgetDelegate : public views::WidgetDelegate {
+ public:
+  StuckWidgetDelegate() {
+    SetCanMaximize(true);
+    SetCanMinimize(true);
+    SetCanResize(true);
+    SetOwnedByWidget(true);
+  }
+  StuckWidgetDelegate(const StuckWidgetDelegate& other) = delete;
+  StuckWidgetDelegate& operator=(const StuckWidgetDelegate& other) = delete;
+  ~StuckWidgetDelegate() override = default;
+
+  // Overridden from WidgetDelegate:
+  std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
+      views::Widget* widget) override {
+    return Shell::Get()->CreateDefaultNonClientFrameView(widget);
+  }
+
+  bool OnCloseRequested(views::Widget::ClosedReason close_reason) override {
+    return false;
+  }
+};
+
 namespace {
 
 using ::testing::ElementsAre;
@@ -425,30 +449,6 @@ class FullScreenStateObserver : public ShellObserver {
 
  private:
   bool is_fullscreen_ = false;
-};
-
-// A widget delegate that refuses to close.
-class StuckWidgetDelegate : public views::WidgetDelegate {
- public:
-  StuckWidgetDelegate() {
-    SetCanMaximize(true);
-    SetCanMinimize(true);
-    SetCanResize(true);
-    SetOwnedByWidget(true);
-  }
-  StuckWidgetDelegate(const StuckWidgetDelegate& other) = delete;
-  StuckWidgetDelegate& operator=(const StuckWidgetDelegate& other) = delete;
-  ~StuckWidgetDelegate() override = default;
-
-  // Overridden from WidgetDelegate:
-  std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
-      views::Widget* widget) override {
-    return Shell::Get()->CreateDefaultNonClientFrameView(widget);
-  }
-
-  bool OnCloseRequested(views::Widget::ClosedReason close_reason) override {
-    return false;
-  }
 };
 
 struct DesksTestParams {

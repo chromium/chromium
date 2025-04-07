@@ -33,12 +33,12 @@
 #include "ui/views/view.h"
 #include "ui/views/window/dialog_client_view.h"
 
-namespace {
-
 using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::ReturnRefOfCopy;
+
+namespace {
 
 class MockDownloadBubbleNavigationHandler
     : public DownloadBubbleNavigationHandler {
@@ -89,6 +89,8 @@ std::unique_ptr<KeyedService> BuildMockDownloadCoreService(
     content::BrowserContext* browser_context) {
   return std::make_unique<MockDownloadCoreService>();
 }
+
+}  // namespace
 
 class DownloadBubbleContentsViewTest
     : public ChromeViewsTestBase,
@@ -433,5 +435,3 @@ TEST_P(DownloadBubbleContentsViewTest,
       OfflineItemUtils::GetContentIdForDownload(download_items_[0].get()),
       DownloadCommands::Command::DISCARD);
 }
-
-}  // namespace

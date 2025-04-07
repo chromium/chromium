@@ -32,16 +32,6 @@ using TokenError = content::IdentityCredentialTokenError;
 using DismissReason = content::IdentityRequestDialogController::DismissReason;
 class FedCmAccountSelectionViewDesktopTest;
 
-namespace {
-
-constexpr char kTopFrameEtldPlusOne[] = "top-frame-example.com";
-constexpr char kIdpEtldPlusOne[] = "idp-example.com";
-constexpr char kConfigUrl[] = "https://idp-example.com/fedcm.json";
-constexpr char kLoginUrl[] = "https://idp-example.com/login";
-
-constexpr char kAccountId1[] = "account_id1";
-constexpr char kAccountId2[] = "account_id2";
-
 // Mock AccountSelectionViewBase which tracks state.
 class TestAccountSelectionView : public AccountSelectionViewBase,
                                  public views::WidgetDelegate {
@@ -126,6 +116,16 @@ class TestAccountSelectionView : public AccountSelectionViewBase,
   std::optional<SheetType> sheet_type_{SheetType::kLoading};
   std::vector<std::string> account_ids_;
 };
+
+namespace {
+
+constexpr char kTopFrameEtldPlusOne[] = "top-frame-example.com";
+constexpr char kIdpEtldPlusOne[] = "idp-example.com";
+constexpr char kConfigUrl[] = "https://idp-example.com/fedcm.json";
+constexpr char kLoginUrl[] = "https://idp-example.com/login";
+
+constexpr char kAccountId1[] = "account_id1";
+constexpr char kAccountId2[] = "account_id2";
 
 // Mock version of FedCmModalDialogView for injection during tests.
 class MockFedCmModalDialogView : public FedCmModalDialogView {

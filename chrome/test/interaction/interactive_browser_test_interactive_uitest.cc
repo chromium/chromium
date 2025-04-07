@@ -693,6 +693,8 @@ DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(LastHoverEventObserver, kHoverView3State);
 BEGIN_METADATA(HoverDetectionView)
 END_METADATA
 
+}  // namespace
+
 class HoverDetectionBubbleView : public views::FlexLayoutView,
                                  public views::BubbleDialogDelegate {
   METADATA_HEADER(HoverDetectionBubbleView, views::FlexLayoutView)
@@ -729,8 +731,6 @@ class HoverDetectionBubbleView : public views::FlexLayoutView,
 
 BEGIN_METADATA(HoverDetectionBubbleView)
 END_METADATA
-
-}  // namespace
 
 class InteractiveBrowserTestHoverUiTest : public InteractiveBrowserTestUiTest {
  public:

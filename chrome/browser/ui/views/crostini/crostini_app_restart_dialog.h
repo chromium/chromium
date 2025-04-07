@@ -5,12 +5,28 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_CROSTINI_CROSTINI_APP_RESTART_DIALOG_H_
 #define CHROME_BROWSER_UI_VIEWS_CROSTINI_CROSTINI_APP_RESTART_DIALOG_H_
 
+#include <memory>
+
 #include "ui/gfx/native_widget_types.h"
+
+namespace views {
+class DialogDelegate;
+class View;
+}  // namespace views
 
 namespace crostini {
 
-void ShowAppRestartDialog(int64_t display_id);
-void ShowAppRestartDialogForTesting(gfx::NativeWindow context);
+class AppRestartDialog {
+ public:
+  static void Show(int64_t display_id);
+  static void ShowForTesting(gfx::NativeWindow context);
+
+ private:
+  static void ShowInternal(gfx::NativeWindow context);
+  static std::unique_ptr<views::View> MakeCrostiniAppRestartView();
+  static std::unique_ptr<views::DialogDelegate> MakeCrostiniAppRestartDelegate(
+      std::unique_ptr<views::View> contents);
+};
 
 }  // namespace crostini
 

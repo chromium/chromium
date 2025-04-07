@@ -141,15 +141,6 @@ void ExpectAllContainers() {
   EXPECT_FALSE(Shell::GetContainer(root_window, kShellWindowId_PhantomWindow));
 }
 
-std::unique_ptr<views::WidgetDelegateView> CreateModalWidgetDelegate() {
-  auto delegate = std::make_unique<views::WidgetDelegateView>();
-  delegate->SetCanResize(true);
-  delegate->SetModalType(ui::mojom::ModalType::kSystem);
-  delegate->SetOwnedByWidget(true);
-  delegate->SetTitle(u"Modal Window");
-  return delegate;
-}
-
 class SimpleMenuDelegate : public ui::SimpleMenuModel::Delegate {
  public:
   SimpleMenuDelegate() = default;
@@ -170,6 +161,16 @@ class SimpleMenuDelegate : public ui::SimpleMenuModel::Delegate {
 
 class ShellTest : public AshTestBase {
  public:
+  static std::unique_ptr<views::WidgetDelegateView>
+  CreateModalWidgetDelegate() {
+    auto delegate = std::make_unique<views::WidgetDelegateView>();
+    delegate->SetCanResize(true);
+    delegate->SetModalType(ui::mojom::ModalType::kSystem);
+    delegate->SetOwnedByWidget(true);
+    delegate->SetTitle(u"Modal Window");
+    return delegate;
+  }
+
   void TestCreateWindow(views::Widget::InitParams::Type type,
                         bool always_on_top,
                         aura::Window* expected_container) {

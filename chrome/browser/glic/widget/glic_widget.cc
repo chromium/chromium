@@ -26,6 +26,8 @@ bool UserResizeEnabled() {
   return base::FeatureList::IsEnabled(features::kGlicUserResize);
 }
 
+}  // namespace
+
 class GlicWidgetDelegate : public views::WidgetDelegate {
  public:
   GlicWidgetDelegate() {
@@ -44,7 +46,6 @@ class GlicWidgetDelegate : public views::WidgetDelegate {
  private:
   void Destroy() { delete this; }
 };
-}  // namespace
 
 void* kGlicWidgetIdentifier = &kGlicWidgetIdentifier;
 

@@ -78,6 +78,8 @@ class TestFocusRules : public wm::BaseFocusRules {
   bool can_activate_ = true;
 };
 
+}  // namespace
+
 class NativeWidgetAuraTest : public ViewsTestBase {
  public:
   NativeWidgetAuraTest() = default;
@@ -1125,5 +1127,4 @@ TEST_F(NativeWidgetAuraWithNoDelegateTest, UpdateVisualStateTest) {
   native_widget_->UpdateVisualState();
 }
 
-}  // namespace
 }  // namespace views

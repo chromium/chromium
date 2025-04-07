@@ -27,8 +27,6 @@
 
 namespace ash {
 
-namespace {
-
 // A login implementation of WidgetDelegate.
 class LoginTestWidgetDelegate : public views::WidgetDelegate {
  public:
@@ -50,8 +48,6 @@ class LoginTestWidgetDelegate : public views::WidgetDelegate {
  private:
   raw_ptr<views::Widget> widget_;
 };
-
-}  // namespace
 
 class LockLayoutManagerTest : public AshTestBase {
  public:
