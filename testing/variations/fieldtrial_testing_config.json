@@ -26560,6 +26560,21 @@
             ]
         }
     ],
+    "WebRtcUseAbsCapTimeForG2gMetric": [
+        {
+            "platforms": [
+                "linux",
+                "windows",
+                "mac",
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled,_20250408"
+                }
+            ]
+        }
+    ],
     "WebUIBundledCodeCache": [
         {
             "platforms": [
