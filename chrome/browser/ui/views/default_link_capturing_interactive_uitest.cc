@@ -12,6 +12,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/intent_picker_tab_helper.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/web_apps/web_app_link_capturing_test_utils.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -38,6 +40,27 @@
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/widget/any_widget_observer.h"
 
+namespace {
+
+// Helper function to generate test names for IntentChipButton tests.
+std::string GenerateIntentChipTestName(
+    const testing::TestParamInfo<
+        std::tuple<apps::test::LinkCapturingFeatureVersion, bool>>&
+        param_info) {
+  std::string test_name;
+  test_name.append(apps::test::ToString(
+      std::get<apps::test::LinkCapturingFeatureVersion>(param_info.param)));
+  test_name.append("_");
+  if (std::get<bool>(param_info.param)) {
+    test_name.append("page_action_on");
+  } else {
+    test_name.append("page_action_off");
+  }
+  return test_name;
+}
+
+}  // namespace
+
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/apps/link_capturing/mac_intent_picker_helpers.h"
 #endif  // BUILDFLAG(IS_MAC)
@@ -48,11 +71,20 @@
 class DefaultLinkCapturingInteractiveUiTest
     : public web_app::WebAppNavigationBrowserTest,
       public testing::WithParamInterface<
-          apps::test::LinkCapturingFeatureVersion> {
+          std::tuple<apps::test::LinkCapturingFeatureVersion, bool>> {
  public:
   DefaultLinkCapturingInteractiveUiTest() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        apps::test::GetFeaturesToEnableLinkCapturingUX(GetParam()), {});
+    std::vector<base::test::FeatureRefAndParams> features_to_enable =
+        apps::test::GetFeaturesToEnableLinkCapturingUX(
+            std::get<apps::test::LinkCapturingFeatureVersion>(GetParam()));
+
+    if (IsMigrationEnabled()) {
+      features_to_enable.push_back(
+          {::features::kPageActionsMigration,
+           {{::features::kPageActionsMigrationIntentPicker.name, "true"}}});
+    }
+
+    feature_list_.InitWithFeaturesAndParameters(features_to_enable, {});
   }
 
   void SetUpOnMainThread() override {
@@ -92,8 +124,10 @@ class DefaultLinkCapturingInteractiveUiTest
     return {outer_app_id, inner_app_id};
   }
 
+  bool IsMigrationEnabled() const { return std::get<bool>(GetParam()); }
+
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(DefaultLinkCapturingInteractiveUiTest,
@@ -176,7 +210,7 @@ IN_PROC_BROWSER_TEST_P(DefaultLinkCapturingInteractiveUiTest,
   // Verify that no icon was shown.
   EXPECT_TRUE(web_app::AwaitIntentPickerTabHelperIconUpdateComplete(
       browser()->tab_strip_model()->GetActiveWebContents()));
-  ASSERT_FALSE(web_app::GetIntentPickerIcon(browser())->GetVisible());
+  ASSERT_FALSE(web_app::GetIntentPickerButton(browser())->GetVisible());
 
   // Load a different page while simulating it having a native app.
   apps::OverrideMacAppForUrlForTesting(true, kFinderAppPath);
@@ -185,11 +219,17 @@ IN_PROC_BROWSER_TEST_P(DefaultLinkCapturingInteractiveUiTest,
   // Verify app icon shows up in the intent picker.
   EXPECT_TRUE(web_app::AwaitIntentPickerTabHelperIconUpdateComplete(
       browser()->tab_strip_model()->GetActiveWebContents()));
-  IntentChipButton* intent_picker_icon =
-      web_app::GetIntentPickerIcon(browser());
+  views::Button* intent_picker_icon = web_app::GetIntentPickerButton(browser());
   ASSERT_NE(intent_picker_icon, nullptr);
 
-  ui::ImageModel app_icon = intent_picker_icon->GetAppIconForTesting();
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_NE(web_contents, nullptr);
+
+  IntentPickerTabHelper* tab_helper =
+      IntentPickerTabHelper::FromWebContents(web_contents);
+
+  ui::ImageModel app_icon = tab_helper->app_icon();
 
   SkColor final_color = app_icon.GetImage().AsBitmap().getColor(8, 8);
   EXPECT_TRUE(
@@ -200,6 +240,8 @@ IN_PROC_BROWSER_TEST_P(DefaultLinkCapturingInteractiveUiTest,
 INSTANTIATE_TEST_SUITE_P(
     All,
     DefaultLinkCapturingInteractiveUiTest,
-    testing::Values(apps::test::LinkCapturingFeatureVersion::kV2DefaultOff,
-                    apps::test::LinkCapturingFeatureVersion::kV2DefaultOn),
-    apps::test::LinkCapturingVersionToString);
+    testing::Combine(
+        testing::Values(apps::test::LinkCapturingFeatureVersion::kV2DefaultOff,
+                        apps::test::LinkCapturingFeatureVersion::kV2DefaultOn),
+        testing::Bool()),
+    GenerateIntentChipTestName);
