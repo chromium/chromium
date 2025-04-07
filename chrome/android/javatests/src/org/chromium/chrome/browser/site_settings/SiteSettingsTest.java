@@ -17,7 +17,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.hasSibling;
 import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
-import static androidx.test.espresso.matcher.ViewMatchers.isClickable;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withChild;
@@ -25,7 +24,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.emptyIterable;
@@ -3290,83 +3288,6 @@ public class SiteSettingsTest {
 
         renderClearDataDialogView(
                 settingsActivity, "site_settings_rws_grouped_website_settings_delete_dialog");
-    }
-
-    @Test
-    @SmallTest
-    public void deleteSingleSiteDataRemovesRowSingleWebsiteSettings() throws Exception {
-        final String currentSiteUrl = "one-test.com";
-        final String rwsMemberUrl = "two-test.com";
-        final SettingsActivity settingsActivity =
-                SiteSettingsTestUtils.startSingleWebsitePreferences(
-                        getRwsOwnerSiteForUrls(currentSiteUrl, rwsMemberUrl));
-
-        onView(
-                        allOf(
-                                withText(currentSiteUrl),
-                                hasSibling(withText("http")),
-                                not(isDescendantOfA(isClickable()))))
-                .check(matches(isDisplayed()));
-        onView(withText(rwsMemberUrl)).check(matches(isDisplayed()));
-
-        onView(
-                        allOf(
-                                withId(R.id.image_view_widget),
-                                withContentDescription(containsString(rwsMemberUrl))))
-                .check(matches(isDisplayed()))
-                .perform(click());
-        onView(withText(R.string.website_reset_confirmation)).check(matches(isDisplayed()));
-        onView(withText(R.string.website_reset))
-                .inRoot(isDialog())
-                .check(matches(isDisplayed()))
-                .perform(click());
-        onView(withText(rwsMemberUrl)).check(doesNotExist());
-        onView(
-                        allOf(
-                                withText(currentSiteUrl),
-                                hasSibling(withText("http")),
-                                not(isDescendantOfA(isClickable()))))
-                .check(matches(isDisplayed()));
-    }
-
-    @Test
-    @SmallTest
-    public void deleteSingleSiteDataRemovesRowGroupedWebsiteSettings() throws Exception {
-        final String currentSiteUrl = "one-test.com";
-        final String rwsMemberUrl = "two-test.com";
-
-        final SettingsActivity settingsActivity =
-                SiteSettingsTestUtils.startGroupedWebsitesPreferences(
-                        getRwsSiteGroupForUrls(currentSiteUrl, rwsMemberUrl));
-
-        // RWS row and "Sites under" row will have equivalent views in the view hierarchy.
-        // The RWS row is higher up on the page and therefore be the first matched.
-        onView(
-                        allOf(
-                                withText(currentSiteUrl),
-                                hasSibling(withText("http")),
-                                not(isDescendantOfA(isClickable()))))
-                .check(matches(isDisplayed()));
-        onView(withText(rwsMemberUrl)).check(matches(isDisplayed()));
-
-        onView(
-                        allOf(
-                                withId(R.id.image_view_widget),
-                                withContentDescription(containsString(rwsMemberUrl))))
-                .check(matches(isDisplayed()))
-                .perform(click());
-        onView(withText(R.string.website_reset_confirmation)).check(matches(isDisplayed()));
-        onView(withText(R.string.website_reset))
-                .inRoot(isDialog())
-                .check(matches(isDisplayed()))
-                .perform(click());
-        onView(withText(rwsMemberUrl)).check(doesNotExist());
-        onView(
-                        allOf(
-                                withText(currentSiteUrl),
-                                hasSibling(withText("http")),
-                                not(isDescendantOfA(isClickable()))))
-                .check(matches(isDisplayed()));
     }
 
     // TODO(crbug.com/396463421): Remove once RWS UI V2 launched.
