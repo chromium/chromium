@@ -16,13 +16,22 @@
 namespace privacy_sandbox {
 namespace {
 
-using privacy_sandbox::notice::mojom::PrivacySandboxNotice;
-using privacy_sandbox::notice::mojom::PrivacySandboxNoticeEvent;
+using testing::Combine;
+using testing::Test;
+using testing::Values;
+using testing::WithParamInterface;
 
-class NoticeServiceTest : public testing::Test,
-                          public testing::WithParamInterface<NoticeId> {
+using enum privacy_sandbox::notice::mojom::PrivacySandboxNotice;
+using enum privacy_sandbox::SurfaceType;
+using privacy_sandbox::notice::mojom::PrivacySandboxNotice;
+using Event = privacy_sandbox::notice::mojom::PrivacySandboxNoticeEvent;
+
+class PrivacySandboxNoticeServiceTest
+    : public Test,
+      public WithParamInterface<
+          std::tuple<SurfaceType, std::pair<PrivacySandboxNotice, Event>>> {
  public:
-  NoticeServiceTest() {
+  PrivacySandboxNoticeServiceTest() {
     profile_ = IdentityTestEnvironmentProfileAdaptor::
         CreateProfileForIdentityTestEnvironment();
     notice_service_ =
@@ -40,56 +49,36 @@ class NoticeServiceTest : public testing::Test,
   std::unique_ptr<PrivacySandboxNoticeService> notice_service_;
 };
 
-TEST_P(NoticeServiceTest, EventOccurredRegisteredInNoticeStorage) {
-  NoticeId notice_id = GetParam();
+TEST_P(PrivacySandboxNoticeServiceTest,
+       EventOccurredRegisteredInNoticeStorage) {
+  auto [surface, notice_id_event] = GetParam();
+  auto [notice, event] = notice_id_event;
 
-  notice_service()->EventOccurred(notice_id, PrivacySandboxNoticeEvent::kShown);
-  notice_service()->EventOccurred(notice_id, PrivacySandboxNoticeEvent::kAck);
+  notice_service()->EventOccurred({notice, surface}, Event::kShown);
+  notice_service()->EventOccurred({notice, surface}, event);
 
   std::string_view notice_name = notice_service()
                                      ->GetCatalog()
                                      ->GetNoticeMap()
-                                     .find(notice_id)
+                                     .find({notice, surface})
                                      ->second->GetFeature()
                                      ->name;
   // Pref
   auto actual = notice_service()->GetNoticeStorage()->ReadNoticeData(
       notice_service()->GetPrefService(), notice_name);
   EXPECT_EQ(actual->GetNoticeActionTakenForFirstShownFromEvents()->first,
-            PrivacySandboxNoticeEvent::kAck);
+            event);
   EXPECT_EQ(actual->GetNoticeEvents().size(), 2u);
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    NoticeServiceTest,
-    NoticeServiceTest,
-    testing::Values(
-        std::make_pair(PrivacySandboxNotice::kTopicsConsentNotice,
-                       SurfaceType::kDesktopNewTab),
-        std::make_pair(PrivacySandboxNotice::kTopicsConsentNotice,
-                       SurfaceType::kClankBrApp),
-        std::make_pair(PrivacySandboxNotice::kTopicsConsentNotice,
-                       SurfaceType::kClankCustomTab),
-        std::make_pair(PrivacySandboxNotice::kThreeAdsApisNotice,
-                       SurfaceType::kDesktopNewTab),
-        std::make_pair(PrivacySandboxNotice::kThreeAdsApisNotice,
-                       SurfaceType::kClankBrApp),
-        std::make_pair(PrivacySandboxNotice::kThreeAdsApisNotice,
-                       SurfaceType::kClankCustomTab),
-        std::make_pair(
-            PrivacySandboxNotice::kProtectedAudienceMeasurementNotice,
-            SurfaceType::kDesktopNewTab),
-        std::make_pair(
-            PrivacySandboxNotice::kProtectedAudienceMeasurementNotice,
-            SurfaceType::kClankBrApp),
-        std::make_pair(
-            PrivacySandboxNotice::kProtectedAudienceMeasurementNotice,
-            SurfaceType::kClankCustomTab),
-        std::make_pair(PrivacySandboxNotice::kMeasurementNotice,
-                       SurfaceType::kDesktopNewTab),
-        std::make_pair(PrivacySandboxNotice::kMeasurementNotice,
-                       SurfaceType::kClankBrApp),
-        std::make_pair(PrivacySandboxNotice::kMeasurementNotice,
-                       SurfaceType::kClankCustomTab)));
+    PrivacySandboxNoticeServiceTest,
+    PrivacySandboxNoticeServiceTest,
+    Combine(Values(kDesktopNewTab, kClankBrApp, kClankCustomTab),
+            Values(std::make_pair(kTopicsConsentNotice, Event::kOptIn),
+                   std::make_pair(kThreeAdsApisNotice, Event::kAck),
+                   std::make_pair(kProtectedAudienceMeasurementNotice,
+                                  Event::kAck),
+                   std::make_pair(kMeasurementNotice, Event::kAck))));
 }  // namespace
 }  // namespace privacy_sandbox
