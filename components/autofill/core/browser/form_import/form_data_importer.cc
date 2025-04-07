@@ -908,6 +908,8 @@ std::optional<CreditCard> FormDataImporter::ExtractCreditCard(
   auto [candidate, form_has_duplicate_cc_type] =
       ExtractCreditCardFromForm(form);
   if (form_has_duplicate_cc_type) {
+    AutofillMetrics::LogSubmittedCardStateMetric(
+        AutofillMetrics::HAS_DUPLICATE_FORM_FIELDS);
     return std::nullopt;
   }
 
@@ -929,6 +931,8 @@ std::optional<CreditCard> FormDataImporter::ExtractCreditCard(
   // the expiration date fix flow. However, cards with invalid card numbers must
   // still be ignored.
   if (!candidate.HasValidCardNumber()) {
+    AutofillMetrics::LogSubmittedCardStateMetric(
+        AutofillMetrics::INVALID_CARD_NUMBER);
     return std::nullopt;
   }
 

@@ -6099,12 +6099,23 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.SubmittedCardState" enum="AutofillSubmittedCardState"
-    expires_after="2025-07-01">
+    expires_after="M137">
   <owner>jsaul@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Metric to measure credit card state when form is submitted, specifically if
     it had a valid card number and/or expiration date.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.SubmittedCardState2"
+    enum="AutofillSubmittedCardState" expires_after="2025-11-01">
+  <owner>jsaul@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Metric to measure credit card state when form is submitted, specifically if
+    it had a valid card number and/or expiration date, and if the form has
+    duplicate fields or invalid card number.
   </summary>
 </histogram>
 

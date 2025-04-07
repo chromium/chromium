@@ -148,7 +148,7 @@ AutofillMetrics::AutocompleteStateForSubmittedField(
 void AutofillMetrics::LogSubmittedCardStateMetric(
     SubmittedCardStateMetric metric) {
   DCHECK_LT(metric, NUM_SUBMITTED_CARD_STATE_METRICS);
-  UMA_HISTOGRAM_ENUMERATION("Autofill.SubmittedCardState", metric,
+  UMA_HISTOGRAM_ENUMERATION("Autofill.SubmittedCardState2", metric,
                             NUM_SUBMITTED_CARD_STATE_METRICS);
 }
 

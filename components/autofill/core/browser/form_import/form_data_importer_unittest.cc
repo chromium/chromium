@@ -1877,7 +1877,7 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_Valid) {
       ExtractCreditCard(*form_structure);
   EXPECT_TRUE(extracted_credit_card);
   histogram_tester.ExpectUniqueSample(
-      "Autofill.SubmittedCardState",
+      "Autofill.SubmittedCardState2",
       AutofillMetrics::HAS_CARD_NUMBER_AND_EXPIRATION_DATE, 1);
   payments_data_manager().OnAcceptedLocalCreditCardSave(*extracted_credit_card);
 
@@ -1886,6 +1886,33 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_Valid) {
       "");  // Imported cards have no billing info.
   EXPECT_THAT(payments_data_manager().GetCreditCards(),
               UnorderedElementsCompareEqual(expected));
+}
+
+// Tests that a credit card is not extracted when the form has duplicate fields.
+TEST_F(FormDataImporterTest, ExtractCreditCard_DuplicateFields) {
+  FormData form;
+  form.set_url(GURL("https://www.foo.com"));
+  form.set_fields(
+      {CreateTestFormField("Name on card:", "name_on_card", "John MMYY",
+                           FormControlType::kInputText),
+       CreateTestFormField("Card Number:", "card_number", "4111111111111111",
+                           FormControlType::kInputText),
+       CreateTestFormField("Card Number:", "card_number", "4111111111111112",
+                           FormControlType::kInputText),
+       CreateTestFormField("Exp Date:", "exp_date", "05/45",
+                           FormControlType::kInputText, "cc-exp", 5)});
+
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromFormData(form);
+  base::HistogramTester histogram_tester;
+  std::optional<CreditCard> extracted_credit_card =
+      ExtractCreditCard(*form_structure);
+  EXPECT_FALSE(extracted_credit_card);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SubmittedCardState2",
+      AutofillMetrics::HAS_DUPLICATE_FORM_FIELDS, 1);
+
+  ASSERT_EQ(0U, payments_data_manager().GetCreditCards().size());
 }
 
 // Tests that an invalid credit card number is not extracted.
@@ -1899,9 +1926,10 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_InvalidCardNumber) {
   std::optional<CreditCard> extracted_credit_card =
       ExtractCreditCard(*form_structure);
   EXPECT_FALSE(extracted_credit_card);
-  histogram_tester.ExpectUniqueSample("Autofill.SubmittedCardState",
-                                      AutofillMetrics::HAS_EXPIRATION_DATE_ONLY,
-                                      1);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.SubmittedCardState2"),
+      BucketsAre(base::Bucket(AutofillMetrics::HAS_EXPIRATION_DATE_ONLY, 1),
+                 base::Bucket(AutofillMetrics::INVALID_CARD_NUMBER, 1)));
 
   ASSERT_EQ(0U, payments_data_manager().GetCreditCards().size());
 }
@@ -1954,7 +1982,7 @@ TEST_F(FormDataImporterTest,
   std::optional<CreditCard> extracted_credit_card =
       ExtractCreditCard(*form_structure);
   EXPECT_TRUE(extracted_credit_card);
-  histogram_tester.ExpectUniqueSample("Autofill.SubmittedCardState",
+  histogram_tester.ExpectUniqueSample("Autofill.SubmittedCardState2",
                                       AutofillMetrics::HAS_CARD_NUMBER_ONLY, 1);
 }
 
@@ -1971,7 +1999,7 @@ TEST_F(FormDataImporterTest,
   std::optional<CreditCard> extracted_credit_card =
       ExtractCreditCard(*form_structure);
   EXPECT_TRUE(extracted_credit_card);
-  histogram_tester.ExpectUniqueSample("Autofill.SubmittedCardState",
+  histogram_tester.ExpectUniqueSample("Autofill.SubmittedCardState2",
                                       AutofillMetrics::HAS_CARD_NUMBER_ONLY, 1);
 }
 
@@ -1996,7 +2024,7 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_MonthSelectInvalidText) {
       ExtractCreditCard(*form_structure);
   EXPECT_TRUE(extracted_credit_card);
   histogram_tester.ExpectUniqueSample(
-      "Autofill.SubmittedCardState",
+      "Autofill.SubmittedCardState2",
       AutofillMetrics::HAS_CARD_NUMBER_AND_EXPIRATION_DATE, 1);
   payments_data_manager().OnAcceptedLocalCreditCardSave(*extracted_credit_card);
 

@@ -129,6 +129,10 @@ class AutofillMetrics {
     // Submitted card has a valid expiration date but an invalid or missing card
     // number.
     HAS_EXPIRATION_DATE_ONLY = 2,
+    // Submitted card has invalid credit card number.
+    INVALID_CARD_NUMBER = 3,
+    // Submitted card has duplicate fields.
+    HAS_DUPLICATE_FORM_FIELDS = 4,
     NUM_SUBMITTED_CARD_STATE_METRICS,
   };
 
