@@ -21,7 +21,8 @@ class UsageStatsProviderImpl : public UsageStatsProvider {
   UsageStatsProviderImpl() = default;
 
   // TODO(crbug.com/40821596): Implement.
-  bool AnyAppEnablesUsageStats() override { return false; }
+  bool AnyAppEnablesUsageStats() const override { return false; }
+  bool RemoteEventLoggingAllowed() const override { return false; }
 };
 
 std::unique_ptr<UsageStatsProvider> UsageStatsProvider::Create(
