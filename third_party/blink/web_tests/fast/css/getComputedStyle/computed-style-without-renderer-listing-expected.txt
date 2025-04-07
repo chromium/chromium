@@ -145,7 +145,7 @@ column-rule-style: none
 column-rule-width: 0px
 column-span: none
 column-width: auto
-column-wrap: nowrap
+column-wrap: auto
 contain-intrinsic-block-size: none
 contain-intrinsic-height: none
 contain-intrinsic-inline-size: none

@@ -1521,7 +1521,8 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
     case CSSPropertyID::kColumnFill:
       return value_id == CSSValueID::kAuto || value_id == CSSValueID::kBalance;
     case CSSPropertyID::kColumnWrap:
-      return value_id == CSSValueID::kWrap || value_id == CSSValueID::kNowrap;
+      return value_id == CSSValueID::kAuto || value_id == CSSValueID::kWrap ||
+             value_id == CSSValueID::kNowrap;
     case CSSPropertyID::kAlignContent:
       // FIXME: Per CSS alignment, this property should accept an optional
       // <overflow-position>. We should share this parsing code with

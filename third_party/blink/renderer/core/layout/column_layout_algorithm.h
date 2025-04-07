@@ -126,6 +126,17 @@ class CORE_EXPORT ColumnLayoutAlgorithm
     return LogicalSize(column_inline_size_, ChildAvailableSize().block_size);
   }
 
+  bool ShouldWrapColumns() const {
+    if (Style().ColumnWrap() == EColumnWrap::kWrap) {
+      return true;
+    }
+    if (Style().ColumnWrap() == EColumnWrap::kNowrap) {
+      return false;
+    }
+    DCHECK_EQ(Style().ColumnWrap(), EColumnWrap::kAuto);
+    return !Style().HasAutoColumnHeight();
+  }
+
   ConstraintSpace CreateConstraintSpaceForBalancing(
       const LogicalSize& column_size) const;
   ConstraintSpace CreateConstraintSpaceForSpanner(
