@@ -6,8 +6,6 @@
 
 #include <stddef.h>
 
-#include <string_view>
-
 #include "ash/constants/ash_features.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
@@ -33,7 +31,7 @@ std::vector<std::string>& GetStandardLogs() {
 }
 
 bool HandleStandardLogMessage(int severity,
-                              std::string_view file,
+                              const char* file,
                               int line,
                               size_t message_start,
                               const std::string& str) {

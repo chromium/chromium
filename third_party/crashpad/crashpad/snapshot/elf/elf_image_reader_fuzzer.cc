@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <string_view>
-
 #include <inttypes.h>
 
 #include "base/logging.h"
@@ -47,11 +45,10 @@ class FakeProcessMemory : public ProcessMemory {
 
 extern "C" int LLVMFuzzerInitialize(int* argc, char*** argv) {
   // Swallow all logs to avoid spam.
-  logging::SetLogMessageHandler([](logging::LogSeverity,
-                                   std::string_view,
-                                   int,
-                                   size_t,
-                                   const std::string&) { return true; });
+  logging::SetLogMessageHandler(
+      [](logging::LogSeverity, const char*, int, size_t, const std::string&) {
+        return true;
+      });
   return 0;
 }
 

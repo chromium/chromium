@@ -530,8 +530,8 @@ void BrowserTestBase::SetUp() {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kEnableTracing)) {
     DCHECK(!logging::GetLogMessageHandler());
-    logging::SetLogMessageHandler([](int severity, std::string_view file,
-                                     int line, size_t message_start,
+    logging::SetLogMessageHandler([](int severity, const char* file, int line,
+                                     size_t message_start,
                                      const std::string& str) {
       // TODO(crbug.com/40161080): Print the message to the console before
       // calling this to ensure that the message is still printed if something
