@@ -6248,49 +6248,6 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
     video_renderer = local_video_renderer.get();
   }
 
-  // Format of source VideoFrame may be 16-bit format, e.g. Y16
-  // format. glCopyTextureCHROMIUM requires the source texture to be in
-  // 8-bit format. Converting 16-bits formatted source texture to 8-bits
-  // formatted texture will cause precision lost. So, uploading such video
-  // texture to half float or float texture can not use GPU-GPU path.
-  if (use_copy_texture_chromium) {
-    DCHECK(Extensions3DUtil::CanUseCopyTextureCHROMIUM(params.target));
-    DCHECK_EQ(params.xoffset, 0);
-    DCHECK_EQ(params.yoffset, 0);
-    DCHECK_EQ(params.zoffset, 0);
-
-    viz::RasterContextProvider* raster_context_provider = nullptr;
-    if (auto wrapper = SharedGpuContext::ContextProviderWrapper()) {
-      raster_context_provider =
-          wrapper->ContextProvider().RasterContextProvider();
-    }
-
-    // Go through the fast path doing a GPU-GPU textures copy without a readback
-    // to system memory if possible.  Otherwise, it will fall back to the normal
-    // SW path.
-
-    if (media_video_frame->HasSharedImage() &&
-        video_renderer->CopyVideoFrameTexturesToGLTexture(
-            raster_context_provider, ContextGL(), media_video_frame,
-            params.target, texture->Object(), adjusted_internalformat,
-            params.format, params.type, params.level,
-            params.GetDestinationAlphaType(), params.GetDestinationOrigin())) {
-      return;
-    }
-
-    // For certain video frame formats (e.g. I420/YUV), if they start on the CPU
-    // (e.g. video camera frames): upload them to the GPU, do a GPU decode, and
-    // then copy into the target texture.
-    if (!media_video_frame->HasSharedImage() &&
-        video_renderer->CopyVideoFrameYUVDataToGLTexture(
-            raster_context_provider, ContextGL(), media_video_frame,
-            params.target, texture->Object(), adjusted_internalformat,
-            params.format, params.type, params.level,
-            params.GetDestinationAlphaType(), params.GetDestinationOrigin())) {
-      return;
-    }
-  }
-
   if (source_image_rect_is_default && media_video_frame->IsMappable() &&
       media_video_frame->format() == media::PIXEL_FORMAT_Y16 &&
       unpack_color_space_is_srgb) {
@@ -6317,6 +6274,47 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
                    params.target, ContextGL(), media_video_frame.get(),
                    params.level, params.format, params.type, params.xoffset,
                    params.yoffset, params.GetDestinationOrigin(), alpha_type)) {
+      return;
+    }
+  }
+  // Format of source VideoFrame may be 16-bit format, e.g. Y16
+  // format. glCopyTextureCHROMIUM requires the source texture to be in
+  // 8-bit format. Converting 16-bits formatted source texture to 8-bits
+  // formatted texture will cause precision lost. So, uploading such video
+  // texture to half float or float texture can not use GPU-GPU path.
+  else if (use_copy_texture_chromium) {
+    DCHECK(Extensions3DUtil::CanUseCopyTextureCHROMIUM(params.target));
+    DCHECK_EQ(params.xoffset, 0);
+    DCHECK_EQ(params.yoffset, 0);
+    DCHECK_EQ(params.zoffset, 0);
+
+    viz::RasterContextProvider* raster_context_provider = nullptr;
+    if (auto wrapper = SharedGpuContext::ContextProviderWrapper()) {
+      raster_context_provider =
+          wrapper->ContextProvider().RasterContextProvider();
+    }
+
+    // For certain video frame formats (e.g. I420/YUV), if they start on the CPU
+    // (e.g. video camera frames): upload them to the GPU, do a GPU decode, and
+    // then copy into the target texture.
+    if (!media_video_frame->HasSharedImage() &&
+        video_renderer->CopyVideoFrameYUVDataToGLTexture(
+            raster_context_provider, ContextGL(), media_video_frame,
+            params.target, texture->Object(), adjusted_internalformat,
+            params.format, params.type, params.level,
+            params.GetDestinationAlphaType(), params.GetDestinationOrigin())) {
+      return;
+    }
+
+    // Go through the fast path doing a GPU-GPU textures copy without a readback
+    // to system memory if possible.  Otherwise, it will fall back to the normal
+    // SW path.
+    if (media_video_frame->HasSharedImage() &&
+        video_renderer->CopyVideoFrameTexturesToGLTexture(
+            raster_context_provider, ContextGL(), media_video_frame,
+            params.target, texture->Object(), adjusted_internalformat,
+            params.format, params.type, params.level,
+            params.GetDestinationAlphaType(), params.GetDestinationOrigin())) {
       return;
     }
   }
