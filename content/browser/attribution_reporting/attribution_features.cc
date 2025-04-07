@@ -19,4 +19,8 @@ const base::FeatureParam<base::TimeDelta>
         &kAttributionReportDeliveryOnNewNavigation, "navigation_window",
         base::Minutes(2)};
 
+BASE_FEATURE(kAttributionReportExpiry,
+             "AttributionReportExpiry",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace content

@@ -56,6 +56,7 @@
 #include "content/browser/aggregation_service/report_scheduler_timer.h"
 #include "content/browser/attribution_reporting/aggregatable_attribution_utils.h"
 #include "content/browser/attribution_reporting/aggregatable_debug_report.h"
+#include "content/browser/attribution_reporting/attribution_constants.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_debug_report.h"
@@ -123,7 +124,8 @@ enum class ConversionReportSendOutcome {
   kFailed = 1,
   kDropped = 2,
   kFailedToAssemble = 3,
-  kMaxValue = kFailedToAssemble,
+  kExpired = 4,
+  kMaxValue = kExpired,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/attribution_reporting/enums.xml:ConversionReportSendOutcome)
 
@@ -293,6 +295,8 @@ ConversionReportSendOutcome ConvertToConversionReportSendOutcome(
       return ConversionReportSendOutcome::kFailed;
     case SendResult::Status::kDropped:
       return ConversionReportSendOutcome::kDropped;
+    case SendResult::Status::kExpired:
+      return ConversionReportSendOutcome::kExpired;
     case SendResult::Status::kAssemblyFailure:
     case SendResult::Status::kTransientAssemblyFailure:
       return ConversionReportSendOutcome::kFailedToAssemble;
@@ -424,6 +428,7 @@ void RecordTimeSinceLastNavigationOnReportComplete(
           /*buckets=*/100);
       break;
     case SendResult::Status::kDropped:
+    case SendResult::Status::kExpired:
     case SendResult::Status::kAssemblyFailure:
     case SendResult::Status::kTransientAssemblyFailure:
       break;
@@ -1157,11 +1162,18 @@ void AttributionManagerImpl::SendReport(base::OnceClosure web_ui_callback,
     return;
   }
 
+  // Drop the report on the floor if the report is expired. We need to make sure
+  // we forward that the report was "sent" to ensure it is deleted from storage,
+  // etc. This simulates sending the report through a null channel.
+  if (base::FeatureList::IsEnabled(kAttributionReportExpiry) && now > report.initial_report_time() + kReportExpiry) {
+    OnReportSent(std::move(web_ui_callback), std::move(report),
+                 SendResult(SendResult::Expired()));
+    return;
+  }
+
   if (!IsReportAllowed(report)) {
-    // If measurement is disallowed, just drop the report on the floor. We
-    // need to make sure we forward that the report was "sent" to ensure it is
-    // deleted from storage, etc. This simulates sending the report through a
-    // null channel.
+    // If measurement is disallowed, just drop the report on the floor the same
+    // way we do above.
     OnReportSent(std::move(web_ui_callback), std::move(report),
                  SendResult(SendResult::Dropped()));
     return;
@@ -1238,6 +1250,9 @@ void AttributionManagerImpl::OnReportSent(base::OnceClosure done,
                        }
                      },
                      [](SendResult::Dropped) -> std::optional<base::Time> {
+                       return std::nullopt;
+                     },
+                     [](SendResult::Expired) -> std::optional<base::Time> {
                        return std::nullopt;
                      },
                      [&](SendResult::AssemblyFailure failure)

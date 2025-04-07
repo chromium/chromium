@@ -392,6 +392,9 @@ void AttributionInternalsHandlerImpl::OnReportSent(
           [](SendResult::Sent sent) {
             return ReportStatus::NewNetworkStatus(NetworkStatus(sent.status));
           },
+          [](SendResult::Expired) {
+            return ReportStatus::NewExpired(Empty::New());
+          },
           [](SendResult::Dropped) {
             return ReportStatus::NewProhibitedByBrowserPolicy(Empty::New());
           },

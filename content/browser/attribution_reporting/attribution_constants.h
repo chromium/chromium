@@ -5,10 +5,14 @@
 #ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_CONSTANTS_H_
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_CONSTANTS_H_
 
+#include "base/time/time.h"
+
 namespace content {
 
 inline constexpr char kAttributionReportingInfoHeader[] =
     "Attribution-Reporting-Info";
+
+inline constexpr base::TimeDelta kReportExpiry = base::Days(30);
 
 }  // namespace content
 

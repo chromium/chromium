@@ -856,6 +856,8 @@ std::ostream& operator<<(std::ostream& out, SendResult::Status status) {
       return out << "kTransientFailure";
     case SendResult::Status::kFailure:
       return out << "kFailure";
+    case SendResult::Status::kExpired:
+      return out << "kExpired";
     case SendResult::Status::kDropped:
       return out << "kDropped";
     case SendResult::Status::kAssemblyFailure:
@@ -883,6 +885,7 @@ std::ostream& operator<<(std::ostream& out, const SendResult& info) {
                    out << ",status=" << sent.status << "}}";
                  },
                  [&](SendResult::Dropped) { out << "{Dropped={}}"; },
+                 [&](SendResult::Expired) { out << "{Expired={}}"; },
                  [&](SendResult::AssemblyFailure failure) {
                    out << "{AssemblyFailure={transient=" << failure.transient
                        << "}}";

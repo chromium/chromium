@@ -299,6 +299,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Failed due to error"/>
   <int value="2" label="Dropped due to embedder disabling the API"/>
   <int value="3" label="Failed to assemble"/>
+  <int value="4" label="Expired"/>
 </enum>
 
 <!-- LINT.ThenChange(//content/browser/attribution_reporting/attribution_manager_impl.cc:ConversionReportSendOutcome) -->

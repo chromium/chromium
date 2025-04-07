@@ -55,6 +55,7 @@
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
 #include "content/browser/attribution_reporting/aggregatable_attribution_utils.h"
 #include "content/browser/attribution_reporting/aggregatable_debug_report.h"
+#include "content/browser/attribution_reporting/attribution_constants.h"
 #include "content/browser/attribution_reporting/attribution_debug_report.h"
 #include "content/browser/attribution_reporting/attribution_features.h"
 #include "content/browser/attribution_reporting/attribution_input_event.h"
@@ -779,15 +780,46 @@ TEST_F(AttributionManagerImplTest, QueuedReportAlwaysFails_StopsSending) {
       "Conversions.EventLevelReport.ReportRetriesTillSuccessOrFailure", 3, 1);
 }
 
-TEST_F(AttributionManagerImplTest, ReportExpiredAtStartup_Sent) {
+TEST_F(AttributionManagerImplTest, ReportExpiredAtStartup_Deleted) {
+  base::HistogramTester histograms;
+
+  EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
+      .Times(0);
+
+  attribution_manager_->HandleSource(TestAggregatableSourceProvider()
+                                         .GetBuilder()
+                                         .SetExpiry(kImpressionExpiry)
+                                         .Build(),
+                                     kFrameId);
+  attribution_manager_->HandleTrigger(
+      DefaultAggregatableTriggerBuilder().Build(), kFrameId);
+
+  ShutdownManager();
+
+  // Fast-forward past report expiry.
+  task_environment_.FastForwardBy(kImpressionExpiry + kReportExpiry);
+
+  // Simulate startup and ensure the report is deleted.
+  CreateManager();
+
+  task_environment_.FastForwardBy(kDefaultOfflineReportDelay.max);
+  EXPECT_THAT(StoredReports(), IsEmpty());
+  // kExpired = 4
+  histograms.ExpectBucketCount("Conversions.ReportSendOutcome3", 4, 1);
+  histograms.ExpectBucketCount(
+      "Conversions.AggregatableReport.ReportSendOutcome2", 4, 1);
+}
+
+TEST_F(AttributionManagerImplTest, ReportSourceExpiredAtStartup_Sent) {
   attribution_manager_->HandleSource(
       SourceBuilder().SetExpiry(kImpressionExpiry).Build(), kFrameId);
+  task_environment_.FastForwardBy(base::Microseconds(1));
   attribution_manager_->HandleTrigger(DefaultTrigger(), kFrameId);
 
   ShutdownManager();
 
   // Fast-forward past source expiry.
-  task_environment_.FastForwardBy(kImpressionExpiry + base::Microseconds(1));
+  task_environment_.FastForwardBy(kImpressionExpiry - base::Microseconds(1));
 
   // Simulate startup and ensure the report is sent.
   // Advance by the max offline report delay, per
@@ -795,6 +827,8 @@ TEST_F(AttributionManagerImplTest, ReportExpiredAtStartup_Sent) {
   CreateManager();
 
   EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _));
+  EXPECT_THAT(StoredReports(), SizeIs(1));
+  EXPECT_THAT(StoredSources(), IsEmpty());
   task_environment_.FastForwardBy(kDefaultOfflineReportDelay.max);
 }
 
@@ -813,6 +847,33 @@ TEST_F(AttributionManagerImplTest, ReportSent_Deleted) {
 
   // kSent = 0.
   histograms.ExpectUniqueSample("Conversions.ReportSendOutcome3", 0, 1);
+}
+
+TEST_F(AttributionManagerImplTest, ExpiredReportSend_Deleted) {
+  base::HistogramTester histograms;
+
+  EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
+      .Times(0);
+
+  attribution_manager_->HandleSource(TestAggregatableSourceProvider()
+                                         .GetBuilder()
+                                         .SetExpiry(kImpressionExpiry)
+                                         .Build(),
+                                     kFrameId);
+  attribution_manager_->HandleTrigger(
+      DefaultAggregatableTriggerBuilder().Build(), kFrameId);
+  task_environment_.FastForwardBy(base::Microseconds(1));
+
+  // Delay report send until after report expiry.
+  task_environment_.AdvanceClock(kImpressionExpiry + kReportExpiry);
+
+  task_environment_.FastForwardBy(kDefaultOfflineReportDelay.max);
+
+  EXPECT_THAT(StoredReports(), IsEmpty());
+  // kExpired = 4
+  histograms.ExpectBucketCount("Conversions.ReportSendOutcome3", 4, 1);
+  histograms.ExpectBucketCount(
+      "Conversions.AggregatableReport.ReportSendOutcome2", 4, 1);
 }
 
 TEST_F(AttributionManagerImplTest, QueuedReportSent_ObserversNotified) {
@@ -1948,6 +2009,45 @@ TEST_F(AttributionManagerImplTest, Offline_NoReportSent) {
 
   SetConnectionTypeAndWaitForObserversToBeNotified(
       network::mojom::ConnectionType::CONNECTION_UNKNOWN);
+}
+
+TEST_F(AttributionManagerImplTest, Offline_ExpiredReportDeleted) {
+  base::HistogramTester histograms;
+  Checkpoint checkpoint;
+  {
+    InSequence seq;
+
+    EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
+        .Times(0);
+    EXPECT_CALL(checkpoint, Call(1));
+    EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
+        .Times(0);
+  }
+
+  attribution_manager_->HandleSource(TestAggregatableSourceProvider()
+                                         .GetBuilder()
+                                         .SetExpiry(kImpressionExpiry)
+                                         .Build(),
+                                     kFrameId);
+  attribution_manager_->HandleTrigger(
+      DefaultAggregatableTriggerBuilder().Build(), kFrameId);
+  EXPECT_THAT(StoredReports(), SizeIs(2));
+
+  SetConnectionTypeAndWaitForObserversToBeNotified(
+      network::mojom::ConnectionType::CONNECTION_NONE);
+  task_environment_.FastForwardBy(kImpressionExpiry + kReportExpiry);
+
+  checkpoint.Call(1);
+
+  SetConnectionTypeAndWaitForObserversToBeNotified(
+      network::mojom::ConnectionType::CONNECTION_UNKNOWN);
+
+  task_environment_.FastForwardBy(kDefaultOfflineReportDelay.max);
+  EXPECT_THAT(StoredReports(), IsEmpty());
+  // kExpired = 4
+  histograms.ExpectBucketCount("Conversions.ReportSendOutcome3", 4, 1);
+  histograms.ExpectBucketCount(
+      "Conversions.AggregatableReport.ReportSendOutcome2", 4, 1);
 }
 
 class AttributionManagerImplOnlineConnectionTypeTest

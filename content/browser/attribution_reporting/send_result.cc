@@ -23,6 +23,7 @@ SendResult::Status SendResult::status() const {
                          }
                        },
                        [](Dropped) { return Status::kDropped; },
+                       [](Expired) { return Status::kExpired; },
                        [](AssemblyFailure failure) {
                          return failure.transient
                                     ? Status::kTransientAssemblyFailure
