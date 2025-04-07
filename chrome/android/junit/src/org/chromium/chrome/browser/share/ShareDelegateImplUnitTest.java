@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.share.android_share_sheet.TabGroupSharingCont
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetCoordinator;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.browser_ui.share.ShareParams;
@@ -66,6 +67,10 @@ import java.util.List;
         })
 public class ShareDelegateImplUnitTest {
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
+
+    @Rule
+    public AutomotiveContextWrapperTestRule mAutomotiveContextWrapperTestRule =
+            new AutomotiveContextWrapperTestRule();
 
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private Profile mProfile;
@@ -153,6 +158,8 @@ public class ShareDelegateImplUnitTest {
     @Test
     @Config(sdk = 34)
     public void shareWithAndroidShareSheetForU() {
+        mAutomotiveContextWrapperTestRule.setIsAutomotive(false);
+
         Assert.assertFalse("ShareHub enabled.", mShareDelegate.isSharingHubEnabled());
 
         HistogramWatcher histogramWatcher =
@@ -177,6 +184,23 @@ public class ShareDelegateImplUnitTest {
     @Test
     public void androidShareSheetDisableNonU() {
         Assert.assertTrue("ShareHub should be enabled T-.", mShareDelegate.isSharingHubEnabled());
+    }
+
+    @Test
+    public void share_automotive_useCustomShareSheet() {
+        mAutomotiveContextWrapperTestRule.setIsAutomotive(true);
+        Assert.assertTrue(
+                "Custom share sheet should still be used on U- auto devices.",
+                mShareDelegate.isSharingHubEnabled());
+    }
+
+    @Test
+    @Config(sdk = 35)
+    public void share_automotiveV_useAndroidShareSheet() {
+        mAutomotiveContextWrapperTestRule.setIsAutomotive(true);
+        Assert.assertFalse(
+                "Automotive devices should be using the OS share sheet on V+.",
+                mShareDelegate.isSharingHubEnabled());
     }
 
     @Test

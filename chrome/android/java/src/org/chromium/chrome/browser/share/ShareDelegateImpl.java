@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
@@ -296,6 +297,10 @@ public class ShareDelegateImpl implements ShareDelegate {
 
     @Override
     public boolean isSharingHubEnabled() {
+        if (DeviceInfo.isAutomotive()
+                && Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+            return true;
+        }
         return !(mIsCustomTab || Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE);
     }
 
