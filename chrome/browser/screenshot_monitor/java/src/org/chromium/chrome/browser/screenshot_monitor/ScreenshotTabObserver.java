@@ -4,11 +4,13 @@
 
 package org.chromium.chrome.browser.screenshot_monitor;
 
-import androidx.annotation.Nullable;
+import static org.chromium.build.NullUtil.assumeNonNull;
 
 import org.chromium.base.UserData;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.ukm.UkmRecorder;
@@ -16,6 +18,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 
 /** A {@link TabObserver} that also handles screenshot related events. */
+@NullMarked
 public class ScreenshotTabObserver extends EmptyTabObserver implements UserData {
     // Enum for logging Screenshot UMA. These match the TabScreenshotAction enum in enums.xml, and
     // must not be changed.  New ones can be added if we also add them in enums.xml.
@@ -26,14 +29,14 @@ public class ScreenshotTabObserver extends EmptyTabObserver implements UserData 
     public static final int SCREENSHOT_ACTION_COUNT = 3;
 
     private static final Class<ScreenshotTabObserver> USER_DATA_KEY = ScreenshotTabObserver.class;
-    private Runnable mOnReportCompleteForTesting;
+    private @Nullable Runnable mOnReportCompleteForTesting;
 
     /**
      * Gets the existing observer if it exists, otherwise creates one.
      * @param tab The Tab for which to create the observer.
      * @return ScreenshotTabObserver to use, or null if the tab was null.
      */
-    public static ScreenshotTabObserver from(Tab tab) {
+    public static @Nullable ScreenshotTabObserver from(Tab tab) {
         if (tab == null || !tab.isInitialized()) return null;
         // Get the current observer from the tab using UserData, if any.  If not, create a new
         // observer and put it into the UserData for the tab.
@@ -62,7 +65,7 @@ public class ScreenshotTabObserver extends EmptyTabObserver implements UserData 
     /** Actions performed after a screenshot was taken. */
     private int mScreenshotAction;
 
-    private Tab mTab;
+    private @Nullable Tab mTab;
 
     public ScreenshotTabObserver(Tab tab) {
         mTab = tab;
@@ -72,6 +75,7 @@ public class ScreenshotTabObserver extends EmptyTabObserver implements UserData 
 
     @Override
     public void destroy() {
+        assumeNonNull(mTab);
         mTab.removeObserver(this);
         mTab = null;
     }

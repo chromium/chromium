@@ -8,6 +8,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
@@ -20,14 +22,15 @@ import org.chromium.content_public.browser.SelectionPopupController;
  * model and notifies whether the current selection popup controller is going to intercept the
  * back press.
  */
+@NullMarked
 public class SelectionPopupBackPressHandler extends EmptyTabObserver
         implements BackPressHandler, TabModelObserver, Destroyable {
     private final ObservableSupplierImpl<Boolean> mBackPressChangedSupplier =
             new ObservableSupplierImpl<>();
     private final Callback<Boolean> mCallback = this::onActionBarShowingChanged;
 
-    private SelectionPopupController mPopupController;
-    private Tab mTab;
+    private @Nullable SelectionPopupController mPopupController;
+    private @Nullable Tab mTab;
 
     /**
      * @param tabModelSelector A {@link TabModelSelector} which can provide {@link
@@ -75,7 +78,7 @@ public class SelectionPopupBackPressHandler extends EmptyTabObserver
         mBackPressChangedSupplier.set(false);
     }
 
-    private void updatePopupControllerObserving(Tab tab) {
+    private void updatePopupControllerObserving(@Nullable Tab tab) {
         if (mPopupController != null) {
             mPopupController.isSelectActionBarShowingSupplier().removeObserver(mCallback);
             mPopupController = null;
@@ -94,7 +97,7 @@ public class SelectionPopupBackPressHandler extends EmptyTabObserver
         mBackPressChangedSupplier.set(isShowing);
     }
 
-    SelectionPopupController getPopupControllerForTesting() {
+    @Nullable SelectionPopupController getPopupControllerForTesting() {
         return mPopupController;
     }
 }

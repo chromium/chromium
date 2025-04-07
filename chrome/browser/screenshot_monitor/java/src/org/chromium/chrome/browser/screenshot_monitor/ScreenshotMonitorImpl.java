@@ -23,6 +23,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.display.DisplayAndroid;
 
@@ -31,12 +33,13 @@ import org.chromium.ui.display.DisplayAndroid;
  * storages, and notifies the ScreenshotMonitorDelegate. The caller should use
  * @{link ScreenshotMonitor#create(ScreenshotMonitorDelegate)} to create an instance.
  */
+@NullMarked
 public class ScreenshotMonitorImpl extends ScreenshotMonitor {
     private static final String TAG = "ScreenshotMonitor";
     private final ScreenshotMonitorContentObserver mContentObserver;
 
-    private ContentResolver mContentResolverForTesting;
-    private DisplayAndroid mDisplayAndroidForTesting;
+    private @Nullable ContentResolver mContentResolverForTesting;
+    private @Nullable DisplayAndroid mDisplayAndroidForTesting;
 
     /** Observe content changes in the Media database looking for screenshots. */
     private class ScreenshotMonitorContentObserver extends ContentObserver {
@@ -50,11 +53,11 @@ public class ScreenshotMonitorImpl extends ScreenshotMonitor {
 
         // ContentObsever implementation.
         @Override
-        public void onChange(boolean selfChange, Uri uri) {
+        public void onChange(boolean selfChange, @Nullable Uri uri) {
             checkAndNotify(uri);
         }
 
-        private void checkAndNotify(Uri uri) {
+        private void checkAndNotify(@Nullable Uri uri) {
             if (uri == null) return;
 
             Log.d(TAG, "Detected change to the media database " + uri);

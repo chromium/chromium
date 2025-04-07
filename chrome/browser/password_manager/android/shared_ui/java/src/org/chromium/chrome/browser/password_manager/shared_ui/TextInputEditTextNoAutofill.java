@@ -10,10 +10,13 @@ import android.view.ViewStructure;
 
 import com.google.android.material.textfield.TextInputEditText;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * A wrapper class around {@link TextInputEditText} to stop Android Autofill from showing the save
  * password prompt. This is achieved by overriding the {@code onProvideAutofillStructure} method.
  */
+@NullMarked
 public class TextInputEditTextNoAutofill extends TextInputEditText {
 
     public TextInputEditTextNoAutofill(Context context, AttributeSet attrs) {
