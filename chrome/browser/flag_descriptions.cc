@@ -761,12 +761,6 @@ const char kAutofillEnableVcn3dsAuthenticationDescription[] =
     "card retrieval if a challenge is required, 3DS authentication is "
     "available for the card, and FIDO is not.";
 
-const char kAutofillEnableVcnGrayOutForMerchantOptOutName[] =
-    "Enable virtual card suggestion graying out for opted-out merchants";
-const char kAutofillEnableVcnGrayOutForMerchantOptOutDescription[] =
-    "When enabled, Chrome will display grayed out virtual card suggestions on "
-    "merchant websites where the merchant has opted-out of virtual cards.";
-
 const char kAutofillImprovedLabelsName[] =
     "Autofill suggestions with improved labels";
 const char kAutofillImprovedLabelsDescription[] =

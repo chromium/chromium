@@ -193,12 +193,6 @@ BASE_FEATURE(kAutofillEnableVcn3dsAuthentication,
              "AutofillEnableVcn3dsAuthentication",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, Chrome will display grayed out virtual card suggestions on
-// merchant websites where the merchant has opted-out of virtual cards.
-BASE_FEATURE(kAutofillEnableVcnGrayOutForMerchantOptOut,
-             "AutofillEnableVcnGrayOutForMerchantOptOut",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_IOS)
 // When enabled, save card bottomsheet will be shown when the user has not
 // previously rejected the offer to save the card, and both a valid expiry date
