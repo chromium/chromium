@@ -182,8 +182,6 @@ viz::SharedImageFormat GpuRasterBufferProvider::GetFormat() const {
 }
 
 bool GpuRasterBufferProvider::IsResourcePremultiplied() const {
-  // TODO(crbug.com/40042400): Consider supporting unpremultiply and dither for
-  // 4444 tiles on low end devices.
   return true;
 }
 
@@ -399,10 +397,6 @@ void GpuRasterBufferProvider::RasterBufferImpl::RasterizeSource(
       playback_settings.raster_inducing_scroll_offsets,
       const_cast<RasterSource*>(raster_source)->max_op_size_hint());
   ri->EndRasterCHROMIUM();
-
-  // TODO(crbug.com/40042400): Consider supporting unpremultiply and dither for
-  // 4444 tiles on low end devices (further history on
-  // https://crbug.com/789153).
 }
 
 }  // namespace cc

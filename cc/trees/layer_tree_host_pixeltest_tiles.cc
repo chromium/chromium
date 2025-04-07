@@ -391,7 +391,6 @@ class LayerTreeHostTilesTestPartialInvalidationLowBitDepth
   void InitializeSettings(LayerTreeSettings* settings) override {
     LayerTreeHostTilesPixelTest::InitializeSettings(settings);
     settings->use_rgba_4444 = true;
-    settings->unpremultiply_and_dither_low_bit_depth_tiles = true;
   }
 };
 
