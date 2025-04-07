@@ -230,6 +230,7 @@ class CookieControlsController final
       std::vector<TrackingProtectionFeature> features,
       bool protections_on,
       bool controls_visible);
+  bool SiteDataAccessAttempted();
   content::WebContents* GetWebContents() const;
 
   std::unique_ptr<TabObserver> tab_observer_;

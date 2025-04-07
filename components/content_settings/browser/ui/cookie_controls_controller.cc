@@ -164,16 +164,21 @@ void CookieControlsController::Update(content::WebContents* web_contents) {
     tab_observer_ = std::make_unique<TabObserver>(this, web_contents);
     SetUserChangedCookieBlockingForSite(false);
   }
+  if (observers_.empty()) {
+    return;
+  }
   auto status = GetStatus(web_contents);
+  const bool icon_visible = ShouldUserBypassIconBeVisible(
+      status.features, status.protections_on, status.controls_visible);
+  const bool should_highlight =
+      ShouldHighlightUserBypass(status.protections_on);
   for (auto& observer : observers_) {
     observer.OnStatusChanged(status.controls_visible, status.protections_on,
                              status.enforcement, status.blocking_status,
                              status.expiration, status.features);
     observer.OnCookieControlsIconStatusChanged(
-        ShouldUserBypassIconBeVisible(status.features, status.protections_on,
-                                      status.controls_visible),
-        status.protections_on, status.blocking_status,
-        ShouldHighlightUserBypass(status.protections_on));
+        icon_visible, status.protections_on, status.blocking_status,
+        should_highlight);
   }
 }
 
@@ -491,13 +496,18 @@ bool CookieControlsController::GetIsSubresourceProxied() const {
 }
 
 void CookieControlsController::UpdateUserBypass() {
+  if (observers_.empty()) {
+    return;
+  }
   auto status = GetStatus(GetWebContents());
+  const bool icon_visible = ShouldUserBypassIconBeVisible(
+      status.features, status.protections_on, status.controls_visible);
+  const bool should_highlight =
+      ShouldHighlightUserBypass(status.protections_on);
   for (auto& observer : observers_) {
     observer.OnCookieControlsIconStatusChanged(
-        ShouldUserBypassIconBeVisible(status.features, status.protections_on,
-                                      status.controls_visible),
-        status.protections_on, status.blocking_status,
-        ShouldHighlightUserBypass(status.protections_on));
+        icon_visible, status.protections_on, status.blocking_status,
+        should_highlight);
   }
 }
 
@@ -675,6 +685,9 @@ bool CookieControlsController::ShouldUserBypassIconBeVisible(
     std::vector<TrackingProtectionFeature> features,
     bool protections_on,
     bool controls_visible) {
+  if (!controls_visible) {
+    return false;
+  }
   if (ShowActFeatures()) {
     bool has_controllable_feature = false;
     std::vector<TrackingProtectionFeature>::iterator it;
@@ -687,26 +700,24 @@ bool CookieControlsController::ShouldUserBypassIconBeVisible(
       return false;
     }
   }
-
-  // If no 3P sites have attempted to access site data, nor were any stateful
-  // bounces recorded, the icon should not be displayed. Take into account both
-  // allow and blocked counts, since the breakage might be related to storage
-  // partitioning. Partitioned site will be allowed to access partitioned
-  // storage.
-  bool site_data_access_attempted =
-      GetAllowedThirdPartyCookiesSitesCount() +
-          GetBlockedThirdPartyCookiesSitesCount() + GetStatefulBounceCount() !=
-      0;
-
   // 3PCD prevents SameSite=None cookies from being sent when the top-level
   // document is sandboxed without `allow-origin`. For instance when loaded
   // with: `Content-Security-Policy: sandbox`. In that case, we render the UI to
   // allow the user to opt into sending SameSite=None cookies again in those
   // contexts.
-  return controls_visible &&
-         (HasOriginSandboxedTopLevelDocument() || !protections_on ||
-          site_data_access_attempted || GetIsSubresourceBlocked() ||
-          GetIsSubresourceProxied());
+  return HasOriginSandboxedTopLevelDocument() || !protections_on ||
+         // If no 3P sites have attempted to access site data, nor were any
+         // stateful bounces recorded, the icon should not be displayed. Take
+         // into account both allow and blocked counts, since the breakage might
+         // be related to storage partitioning. Partitioned site will be allowed
+         // to access partitioned storage.
+         SiteDataAccessAttempted() || GetIsSubresourceBlocked() ||
+         GetIsSubresourceProxied();
+}
+
+bool CookieControlsController::SiteDataAccessAttempted() {
+  return GetStatefulBounceCount() || GetAllowedThirdPartyCookiesSitesCount() ||
+         GetBlockedThirdPartyCookiesSitesCount();
 }
 
 CookieControlsController::TabObserver::TabObserver(
