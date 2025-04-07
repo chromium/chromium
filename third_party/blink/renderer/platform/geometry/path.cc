@@ -306,10 +306,6 @@ PointAndTangent Path::PositionCalculator::PointAndNormalAtLength(float length) {
   return {gfx::SkPointToPointF(path_.getPoint(0)), 0};
 }
 
-void Path::Clear() {
-  path_.reset();
-}
-
 bool Path::IsEmpty() const {
   return path_.isEmpty();
 }
@@ -320,10 +316,6 @@ bool Path::IsClosed() const {
 
 bool Path::IsLine() const {
   return path_.isLine(nullptr);
-}
-
-void Path::SetIsVolatile(bool is_volatile) {
-  path_.setIsVolatile(is_volatile);
 }
 
 void Path::MoveTo(const gfx::PointF& point) {
@@ -343,42 +335,6 @@ void Path::AddBezierCurveTo(const gfx::PointF& p1,
 
 void Path::CloseSubpath() {
   path_.close();
-}
-
-void Path::AddEllipse(const gfx::PointF& c,
-                      float radius_x,
-                      float radius_y,
-                      float start_angle,
-                      float end_angle) {
-  DCHECK(EllipseIsRenderable(start_angle, end_angle));
-  DCHECK_GE(start_angle, 0);
-  DCHECK_LT(start_angle, kTwoPiFloat);
-
-  const SkRect oval = SkRect::MakeLTRB(c.x() - radius_x, c.y() - radius_y,
-                                       c.x() + radius_x, c.y() + radius_y);
-
-  const float start_degrees = Rad2deg(start_angle);
-  const float sweep_degrees = Rad2deg(end_angle - start_angle);
-
-  // We can't use SkPath::addOval(), because addOval() makes a new sub-path.
-  // addOval() calls moveTo() and close() internally.
-
-  // Use 180, not 360, because SkPath::arcTo(oval, angle, 360, false) draws
-  // nothing.
-  // TODO(fmalita): we should fix that in Skia.
-  if (WebCoreFloatNearlyEqual(std::abs(sweep_degrees), 360)) {
-    // incReserve() results in a single allocation instead of multiple as is
-    // done by multiple calls to arcTo().
-    path_.incReserve(10, 5, 4);
-    // SkPath::arcTo can't handle the sweepAngle that is equal to or greater
-    // than 2Pi.
-    const float sweep180 = std::copysign(180, sweep_degrees);
-    path_.arcTo(oval, start_degrees, sweep180, false);
-    path_.arcTo(oval, start_degrees + sweep180, sweep180, false);
-    return;
-  }
-
-  path_.arcTo(oval, start_degrees, sweep_degrees, false);
 }
 
 Path Path::MakeRect(const gfx::RectF& rect) {
@@ -402,10 +358,6 @@ Path Path::MakeEllipse(const gfx::PointF& center,
                        float radius_x,
                        float radius_y) {
   return PathBuilder().AddEllipse(center, radius_x, radius_y).Finalize();
-}
-
-void Path::AddPath(const Path& src, const AffineTransform& transform) {
-  path_.addPath(src.GetSkPath(), transform.ToSkMatrix());
 }
 
 void Path::Translate(const gfx::Vector2dF& offset) {

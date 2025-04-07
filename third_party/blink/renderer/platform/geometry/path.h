@@ -139,15 +139,9 @@ class PLATFORM_EXPORT Path {
     SkScalar accumulated_length_;
   };
 
-  void Clear();
   bool IsEmpty() const;
   bool IsClosed() const;
   bool IsLine() const;
-
-  // Specify whether this path is volatile. Temporary paths that are discarded
-  // or modified after use should be marked as volatile. This is a hint to the
-  // device to not cache this path.
-  void SetIsVolatile(bool);
 
   // TODO(crbug.com/378688986): convert clients to PathBuilder and remove all
   // editing (non-const) methods.
@@ -157,8 +151,6 @@ class PLATFORM_EXPORT Path {
                         const gfx::PointF& control_point2,
                         const gfx::PointF& end_point);
   void CloseSubpath();
-
-  void AddPath(const Path&, const AffineTransform&);
 
   void Translate(const gfx::Vector2dF&);
   const SkPath& GetSkPath() const { return path_; }
@@ -179,11 +171,6 @@ class PLATFORM_EXPORT Path {
                           float radius_y);
 
  private:
-  void AddEllipse(const gfx::PointF&,
-                  float radius_x,
-                  float radius_y,
-                  float start_angle,
-                  float end_angle);
   SkPath StrokePath(const StrokeData&, float stroke_precision) const;
 
   SkPath path_;
