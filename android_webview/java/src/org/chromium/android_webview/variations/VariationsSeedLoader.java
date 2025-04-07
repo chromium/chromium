@@ -40,6 +40,7 @@ import org.chromium.components.variations.LoadSeedResult;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Date;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
@@ -116,6 +117,7 @@ public class VariationsSeedLoader {
 
     private FutureTask<SeedLoadResult> mLoadTask;
     private final SeedServerCallback mSeedServerCallback = new SeedServerCallback();
+    private AtomicBoolean mIsServiceBound = new AtomicBoolean();
 
     private static void recordLoadSeedResult(@LoadSeedResult int result) {
         RecordHistogram.recordEnumeratedHistogram(
@@ -374,6 +376,7 @@ public class VariationsSeedLoader {
         public void onServiceConnectedImpl(ComponentName name, IBinder service) {
             // onServiceConnected is called on the app's main thread. Punt this back to the
             // background thread as this work is not time critical.
+            mIsServiceBound.set(true);
             PostTask.postTask(
                     TaskTraits.BEST_EFFORT_MAY_BLOCK,
                     () -> {
@@ -385,14 +388,18 @@ public class VariationsSeedLoader {
                         } catch (RemoteException e) {
                             Log.e(TAG, "Faild requesting seed", e);
                         } finally {
-                            ContextUtils.getApplicationContext().unbindService(this);
+                            if (mIsServiceBound.get()) {
+                                ContextUtils.getApplicationContext().unbindService(this);
+                            }
                             VariationsUtils.closeSafely(mNewSeedFd);
                         }
                     });
         }
 
         @Override
-        public void onServiceDisconnected(ComponentName name) {}
+        public void onServiceDisconnected(ComponentName name) {
+            mIsServiceBound.set(false);
+        }
     }
 
     private static class SeedServerCallback extends IVariationsSeedServerCallback.Stub {
