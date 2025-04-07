@@ -256,13 +256,6 @@ const base::FeatureParam<bool> kCreateSpeculativeRFHFilterRestore{
 const base::FeatureParam<int> kCreateSpeculativeRFHDelayMs{
     &kDeferSpeculativeRFHCreation, "create_speculative_rfh_delay_ms", 0};
 
-// Clears session cookies last accessed/modified more than 7 days ago on startup
-// even when session restore is enabled.
-// See crbug.com/40285083 for more info.
-BASE_FEATURE(kDeleteStaleSessionCookiesOnStartup,
-             "DeleteStaleSessionCookiesOnStartup",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When a device bound session
 // (https://github.com/w3c/webappsec-dbsc/blob/main/README.md) is
 // terminated, evict pages with cache-control:no-store from the

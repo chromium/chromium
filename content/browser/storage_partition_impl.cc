@@ -1963,20 +1963,16 @@ StoragePartitionImpl::GetCookieDeprecationLabelManager() {
 
 void StoragePartitionImpl::DeleteStaleSessionData() {
   GetDOMStorageContext()->StartScavengingUnusedSessionStorage();
-
-  if (base::FeatureList::IsEnabled(
-          features::kDeleteStaleSessionCookiesOnStartup)) {
-    // We need to delay deleting stale session cookies until after the cookie db
-    // has initialized, otherwise we will bypass lazy loading and block.
-    // See crbug.com/40285083 for more info.
-    CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
-    GetUIThreadTaskRunner({})->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(
-            &StoragePartitionImpl::DeleteStaleSessionOnlyCookiesAfterDelay,
-            weak_factory_.GetWeakPtr()),
-        delete_stale_session_only_cookies_delay_);
-  }
+  // We need to delay deleting stale session cookies until after the cookie db
+  // has initialized, otherwise we will bypass lazy loading and block.
+  // See crbug.com/40285083 for more info.
+  CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
+  GetUIThreadTaskRunner({})->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(
+          &StoragePartitionImpl::DeleteStaleSessionOnlyCookiesAfterDelay,
+          weak_factory_.GetWeakPtr()),
+      delete_stale_session_only_cookies_delay_);
 }
 
 void StoragePartitionImpl::DeleteStaleSessionOnlyCookiesAfterDelay() {

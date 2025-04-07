@@ -4326,15 +4326,10 @@ IN_PROC_BROWSER_TEST_F(TabbedAppSessionRestoreTest, RestorePinnedAppTab) {
   EXPECT_TRUE(app_checked);
 }
 
-class SessionRestoreStaleSessionCookieDeletionTest
-    : public SessionRestoreTest,
-      public testing::WithParamInterface<bool> {
+class SessionRestoreStaleSessionCookieDeletionTest : public SessionRestoreTest {
  public:
   SessionRestoreStaleSessionCookieDeletionTest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
-    feature_list_.InitWithFeatureState(
-        features::kDeleteStaleSessionCookiesOnStartup,
-        ShouldDeleteStaleSessionCookiesOnStartup());
   }
 
   void SetUpOnMainThread() override {
@@ -4344,8 +4339,6 @@ class SessionRestoreStaleSessionCookieDeletionTest
     ASSERT_TRUE(https_server_.Start());
     SessionRestoreTest::SetUpOnMainThread();
   }
-
-  bool ShouldDeleteStaleSessionCookiesOnStartup() { return GetParam(); }
 
   net::EmbeddedTestServer* https_server() { return &https_server_; }
 
@@ -4391,16 +4384,10 @@ class SessionRestoreStaleSessionCookieDeletionTest
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   net::EmbeddedTestServer https_server_;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    /* no prefix */,
-    SessionRestoreStaleSessionCookieDeletionTest,
-    testing::Bool());
-
-IN_PROC_BROWSER_TEST_P(SessionRestoreStaleSessionCookieDeletionTest,
+IN_PROC_BROWSER_TEST_F(SessionRestoreStaleSessionCookieDeletionTest,
                        CookieStorage) {
   GURL open_page = https_server()->GetURL("a.test", "/empty.html");
   GURL other_page = https_server()->GetURL("b.test", "/empty.html");
@@ -4442,7 +4429,7 @@ IN_PROC_BROWSER_TEST_P(SessionRestoreStaleSessionCookieDeletionTest,
   ASSERT_EQ(open_page,
             new_browser->tab_strip_model()->GetActiveWebContents()->GetURL());
   // No cookies should have been cleared except for the stale session cookie on
-  // a page that wasn't restored when kDeleteStaleSessionCookiesOnStartup is on.
+  // a page that wasn't restored.
   EXPECT_TRUE(HasCookie(new_browser, "open_page_persistent_cookie"));
   EXPECT_TRUE(HasCookie(new_browser, "open_page_persistent_stale_cookie"));
   EXPECT_TRUE(HasCookie(new_browser, "open_page_session_cookie"));
@@ -4450,8 +4437,7 @@ IN_PROC_BROWSER_TEST_P(SessionRestoreStaleSessionCookieDeletionTest,
   EXPECT_TRUE(HasCookie(new_browser, "other_page_persistent_cookie"));
   EXPECT_TRUE(HasCookie(new_browser, "other_page_persistent_stale_cookie"));
   EXPECT_TRUE(HasCookie(new_browser, "other_page_session_cookie"));
-  EXPECT_EQ(HasCookie(new_browser, "other_page_session_stale_cookie"),
-            !ShouldDeleteStaleSessionCookiesOnStartup());
+  EXPECT_FALSE(HasCookie(new_browser, "other_page_session_stale_cookie"));
 }
 
 class SavedTabGroupSessionRestoreTest
