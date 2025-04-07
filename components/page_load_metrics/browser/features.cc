@@ -18,6 +18,12 @@ BASE_FEATURE(kBeaconLeakageLogging,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(std::string,
+                   kBeaconLeakageLoggingCategoryParamName,
+                   &kBeaconLeakageLogging,
+                   "category_param_name",
+                   /*default_value=*/"category");
+
+BASE_FEATURE_PARAM(std::string,
                    kBeaconLeakageLoggingCategoryPrefix,
                    &kBeaconLeakageLogging,
                    "category_prefix",

@@ -3257,6 +3257,29 @@
             ]
         }
     ],
+    "BeaconLeakageLogging": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_v1",
+                    "params": {
+                        "category_param_name": "category",
+                        "category_prefix": "acrcp_v1_"
+                    },
+                    "enable_features": [
+                        "BeaconLeakageLogging"
+                    ]
+                }
+            ]
+        }
+    ],
     "BiometricAuthPwdFillAndroid": [
         {
             "platforms": [
