@@ -513,7 +513,7 @@ GpuFeatureInfo ComputeGpuFeatureInfo(const GPUInfo& gpu_info,
       std::string use_angle =
           command_line->GetSwitchValueASCII(switches::kUseANGLE);
       if (use_angle == gl::kANGLEImplementationSwiftShaderForWebGLName ||
-          use_angle == gl::kANGLEImplementationD3D11WarpName) {
+          use_angle == gl::kANGLEImplementationD3D11WarpForWebGLName) {
         return ComputeGpuFeatureInfoForSoftwareGL();
       }
     }
