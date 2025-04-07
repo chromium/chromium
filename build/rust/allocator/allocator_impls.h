@@ -20,6 +20,8 @@ unsigned char* realloc(unsigned char* p,
                        size_t new_size);
 unsigned char* alloc_zeroed(size_t size, size_t align);
 
+void crash_immediately();
+
 }  // namespace rust_allocator_internal
 
 #endif  // BUILD_RUST_ALLOCATOR_ALLOCATOR_IMPLS_H_

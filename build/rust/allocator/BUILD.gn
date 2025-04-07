@@ -12,6 +12,9 @@ if (build_with_chromium) {
   rust_allocator_uses_partition_alloc = use_partition_alloc_as_malloc
 }
 
+use_cpp_allocator_impls =
+    rust_allocator_uses_partition_alloc || (is_win && is_asan)
+
 buildflag_header("buildflags") {
   header = "buildflags.h"
   flags = [
@@ -30,16 +33,24 @@ if (toolchain_has_rust) {
     crate_root = "lib.rs"
     cxx_bindings = [ "lib.rs" ]
 
-    deps = [
-      ":allocator_impls",
-      ":allocator_shim_definitions",
-    ]
+    deps = [ ":allocator_impls" ]
 
     no_chromium_prelude = true
     no_allocator_crate = true
     allow_unsafe = true
+
+    if (use_cpp_allocator_impls) {
+      rustflags = [
+        "--cfg",
+        "use_cpp_allocator_impls",
+      ]
+    }
+
+    configs -= [ "//build/config/compiler:disallow_unstable_features" ]
   }
 
+  # TODO(crbug.com/408221149): don't build this when `use_cpp_allocator_impls`
+  # is false.
   static_library("allocator_impls") {
     public_deps = []
     if (rust_allocator_uses_partition_alloc) {
@@ -47,44 +58,19 @@ if (toolchain_has_rust) {
     }
 
     sources = [
-      "allocator_impls.cc",
-      "allocator_impls.h",
-    ]
-
-    deps = [
-      ":allocator_cpp_shared",
-      ":buildflags",
-
-      # TODO(crbug.com/408221149): remove the C++ -> Rust dependency for the
-      # default allocator.
-      "//build/rust/std",
-    ]
-
-    visibility = [ ":*" ]
-  }
-
-  source_set("allocator_shim_definitions") {
-    sources = [ "allocator_shim_definitions.cc" ]
-
-    deps = [ ":allocator_cpp_shared" ]
-
-    visibility = [ ":*" ]
-  }
-
-  source_set("allocator_cpp_shared") {
-    sources = [
       # `alias.*`, `compiler_specific.h`, and `immediate_crash.*` have been
       # copied from `//base`.
       # TODO(crbug.com/40279749): Avoid duplication / reuse code.
       "alias.cc",
       "alias.h",
+      "allocator_impls.cc",
+      "allocator_impls.h",
       "compiler_specific.h",
       "immediate_crash.h",
     ]
 
-    visibility = [
-      ":allocator_impls",
-      ":allocator_shim_definitions",
-    ]
+    deps = [ ":buildflags" ]
+
+    visibility = [ ":*" ]
   }
 }

@@ -101,16 +101,6 @@
 #define USE_WIN_ALIGNED_MALLOC 0
 #endif
 
-// The default allocator functions provided by the Rust standard library.
-extern "C" void* __rdl_alloc(size_t size, size_t align);
-extern "C" void __rdl_dealloc(void* p, size_t size, size_t align);
-extern "C" void* __rdl_realloc(void* p,
-                               size_t old_size,
-                               size_t align,
-                               size_t new_size);
-
-extern "C" void* __rdl_alloc_zeroed(size_t size, size_t align);
-
 namespace rust_allocator_internal {
 
 unsigned char* alloc(size_t size, size_t align) {
@@ -129,7 +119,8 @@ unsigned char* alloc(size_t size, size_t align) {
 #elif USE_WIN_ALIGNED_MALLOC
   return static_cast<unsigned char*>(_aligned_malloc(size, align));
 #else
-  return static_cast<unsigned char*>(__rdl_alloc(size, align));
+  // TODO(crbug.com/408221149): don't build this file in this case.
+  IMMEDIATE_CRASH();
 #endif
 }
 
@@ -143,7 +134,8 @@ void dealloc(unsigned char* p, size_t size, size_t align) {
 #elif USE_WIN_ALIGNED_MALLOC
   return _aligned_free(p);
 #else
-  __rdl_dealloc(p, size, align);
+  // TODO(crbug.com/408221149): don't build this file in this case.
+  IMMEDIATE_CRASH();
 #endif
 }
 
@@ -162,8 +154,8 @@ unsigned char* realloc(unsigned char* p,
 #elif USE_WIN_ALIGNED_MALLOC
   return static_cast<unsigned char*>(_aligned_realloc(p, new_size, align));
 #else
-  return static_cast<unsigned char*>(
-      __rdl_realloc(p, old_size, align, new_size));
+  // TODO(crbug.com/408221149): don't build this file in this case.
+  IMMEDIATE_CRASH();
 #endif
 }
 
@@ -179,8 +171,14 @@ unsigned char* alloc_zeroed(size_t size, size_t align) {
   }
   return p;
 #else
-  return static_cast<unsigned char*>(__rdl_alloc_zeroed(size, align));
+  // TODO(crbug.com/408221149): don't build this file in this case.
+  IMMEDIATE_CRASH();
 #endif
+}
+
+void crash_immediately() {
+  NO_CODE_FOLDING();
+  IMMEDIATE_CRASH();
 }
 
 }  // namespace rust_allocator_internal
