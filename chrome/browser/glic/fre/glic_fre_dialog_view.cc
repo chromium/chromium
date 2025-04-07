@@ -6,12 +6,14 @@
 
 #include <memory>
 
+#include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/view_class_properties.h"
@@ -32,6 +34,7 @@ GlicFreDialogView::GlicFreDialogView(Profile* profile,
   // TODO(cuianthony): Share this constant in GlicWindowController to use with
   // both the FRE dialog and the main glic window.
   set_corner_radius(12);
+  SetAccessibleTitle(l10n_util::GetStringUTF16(IDS_GLIC_WINDOW_TITLE));
 
   SetUseDefaultFillLayout(true);
 
