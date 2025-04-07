@@ -305,7 +305,7 @@ CSSBorderImageLengthBoxInterpolationType::MaybeConvertInherit(
 
 InterpolationValue CSSBorderImageLengthBoxInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState*,
+    const StyleResolverState&,
     ConversionCheckers&) const {
   const auto* quad = DynamicTo<CSSQuadValue>(value);
   if (!quad)

@@ -138,7 +138,7 @@ InterpolationValue CSSPathInterpolationType::MaybeConvertInherit(
 
 InterpolationValue CSSPathInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState*,
+    const StyleResolverState&,
     ConversionCheckers&) const {
   const cssvalue::CSSPathValue* path_value = nullptr;
   if (const auto* list = DynamicTo<CSSValueList>(value)) {

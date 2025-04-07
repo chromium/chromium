@@ -301,7 +301,7 @@ InterpolationValue CSSInterpolationType::MaybeConvertSingleInternal(
     return MaybeConvertInherit(state, conversion_checkers);
   }
 
-  return MaybeConvertValue(*value, &state, conversion_checkers);
+  return MaybeConvertValue(*value, state, conversion_checkers);
 }
 
 InterpolationValue CSSInterpolationType::MaybeConvertCustomPropertyDeclaration(
@@ -375,7 +375,7 @@ InterpolationValue CSSInterpolationType::MaybeConvertCustomPropertyDeclaration(
   }
 
   DCHECK(value);
-  return MaybeConvertValue(*value, &state, conversion_checkers);
+  return MaybeConvertValue(*value, state, conversion_checkers);
 }
 
 InterpolationValue CSSInterpolationType::MaybeConvertUnderlyingValue(

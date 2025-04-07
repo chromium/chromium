@@ -19,7 +19,7 @@ class CSSPositionAxisListInterpolationType
 
  private:
   InterpolationValue MaybeConvertValue(const CSSValue&,
-                                       const StyleResolverState*,
+                                       const StyleResolverState&,
                                        ConversionCheckers&) const final;
 };
 

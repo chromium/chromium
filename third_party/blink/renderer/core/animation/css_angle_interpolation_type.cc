@@ -18,7 +18,7 @@ InterpolationValue CSSAngleInterpolationType::MaybeConvertNeutral(
 
 InterpolationValue CSSAngleInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState*,
+    const StyleResolverState&,
     ConversionCheckers&) const {
   auto* primitive_value = DynamicTo<CSSPrimitiveValue>(value);
   if (!primitive_value || !primitive_value->IsAngle()) {

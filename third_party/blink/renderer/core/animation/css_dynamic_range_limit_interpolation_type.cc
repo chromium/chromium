@@ -59,7 +59,7 @@ InterpolationValue CSSDynamicRangeLimitInterpolationType::MaybeConvertInherit(
 
 InterpolationValue CSSDynamicRangeLimitInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState* state,
+    const StyleResolverState&,
     ConversionCheckers& conversion_checkers) const {
   return ConvertDynamicRangeLimit(
       StyleBuilderConverterBase::ConvertDynamicRangeLimit(value));

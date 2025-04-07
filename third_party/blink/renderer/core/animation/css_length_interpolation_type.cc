@@ -93,7 +93,7 @@ InterpolationValue CSSLengthInterpolationType::MaybeConvertInherit(
 
 InterpolationValue CSSLengthInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState* state,
+    const StyleResolverState& state,
     ConversionCheckers& conversion_checkers) const {
   if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
     CSSValueID value_id = identifier_value->GetValueID();
@@ -101,8 +101,7 @@ InterpolationValue CSSLengthInterpolationType::MaybeConvertValue(
     if (LengthPropertyFunctions::CanAnimateKeyword(CssProperty(), value_id)) {
       return InterpolationValue(MakeGarbageCollected<InterpolableLength>(
           value_id,
-          state ? std::make_optional(state->StyleBuilder().InterpolateSize())
-                : std::nullopt));
+          std::make_optional(state.StyleBuilder().InterpolateSize())));
     }
 
     double pixels;

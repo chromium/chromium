@@ -42,10 +42,9 @@ CSSCustomTransformInterpolationType::MaybeConvertTransformList(
 
 InterpolationValue CSSCustomTransformInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState* state,
+    const StyleResolverState& state,
     ConversionCheckers&) const {
-  CHECK(state);
-  return MaybeConvertTransformList(value, state->CssToLengthConversionData());
+  return MaybeConvertTransformList(value, state.CssToLengthConversionData());
 }
 
 const CSSValue* CSSCustomTransformInterpolationType::CreateCSSValue(

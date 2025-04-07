@@ -104,7 +104,7 @@ InterpolationValue CSSTextIndentInterpolationType::MaybeConvertInherit(
 
 InterpolationValue CSSTextIndentInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState*,
+    const StyleResolverState&,
     ConversionCheckers&) const {
   InterpolationValue length = nullptr;
 

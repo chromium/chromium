@@ -667,7 +667,7 @@ InterpolationValue CSSShapeInterpolationType::MaybeConvertInherit(
 
 InterpolationValue CSSShapeInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState*,
+    const StyleResolverState&,
     ConversionCheckers&) const {
   const CSSValue* first_value = &value;
   if (const auto* list = DynamicTo<CSSValueList>(value)) {

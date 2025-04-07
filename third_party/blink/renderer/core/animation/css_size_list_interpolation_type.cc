@@ -145,7 +145,7 @@ InterpolationValue CSSSizeListInterpolationType::MaybeConvertInherit(
 
 InterpolationValue CSSSizeListInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState*,
+    const StyleResolverState&,
     ConversionCheckers&) const {
   return MaybeConvertCSSSizeList(value);
 }

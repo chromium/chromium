@@ -142,10 +142,10 @@ CSSFontVariationSettingsInterpolationType::MaybeConvertInherit(
 
 InterpolationValue CSSFontVariationSettingsInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState* state,
+    const StyleResolverState& state,
     ConversionCheckers&) const {
   scoped_refptr<FontVariationSettings> settings =
-      StyleBuilderConverter::ConvertFontVariationSettings(*state, value);
+      StyleBuilderConverter::ConvertFontVariationSettings(state, value);
   return ConvertFontVariationSettings(settings.get());
 }
 

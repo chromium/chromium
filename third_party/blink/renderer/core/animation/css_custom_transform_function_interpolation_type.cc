@@ -38,11 +38,10 @@ CSSCustomTransformFunctionInterpolationType::MaybeConvertTransformFunction(
 InterpolationValue
 CSSCustomTransformFunctionInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState* state,
+    const StyleResolverState& state,
     ConversionCheckers&) const {
-  CHECK(state);
   return MaybeConvertTransformFunction(value,
-                                       state->CssToLengthConversionData());
+                                       state.CssToLengthConversionData());
 }
 
 const CSSValue* CSSCustomTransformFunctionInterpolationType::CreateCSSValue(

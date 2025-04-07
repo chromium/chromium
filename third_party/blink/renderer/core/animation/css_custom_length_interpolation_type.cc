@@ -17,7 +17,7 @@ InterpolationValue CSSCustomLengthInterpolationType::MaybeConvertNeutral(
 
 InterpolationValue CSSCustomLengthInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState*,
+    const StyleResolverState&,
     ConversionCheckers&) const {
   InterpolableLength* maybe_length =
       InterpolableLength::MaybeConvertCSSValue(value);

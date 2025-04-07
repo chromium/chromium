@@ -191,10 +191,10 @@ InterpolationValue CSSSuperellipseInterpolationType::MaybeConvertInherit(
 
 InterpolationValue CSSSuperellipseInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState* state,
+    const StyleResolverState& state,
     ConversionCheckers&) const {
   return CreateNumberValue(
-      StyleBuilderConverter::ConvertCornerShape(*state, value));
+      StyleBuilderConverter::ConvertCornerShape(state, value));
 }
 
 InterpolationValue

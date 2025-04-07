@@ -123,7 +123,7 @@ InterpolationValue CSSOffsetRotateInterpolationType::MaybeConvertInherit(
 
 InterpolationValue CSSOffsetRotateInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState*,
+    const StyleResolverState&,
     ConversionCheckers&) const {
   if (auto* identifier = DynamicTo<CSSIdentifierValue>(value)) {
     DCHECK_EQ(identifier->GetValueID(), CSSValueID::kAuto);

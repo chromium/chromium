@@ -28,10 +28,9 @@ InterpolationValue CSSResolutionInterpolationType::MaybeConvertResolution(
 
 InterpolationValue CSSResolutionInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState* state,
+    const StyleResolverState& state,
     ConversionCheckers&) const {
-  CHECK(state);
-  return MaybeConvertResolution(value, state->CssToLengthConversionData());
+  return MaybeConvertResolution(value, state.CssToLengthConversionData());
 }
 
 const CSSValue* CSSResolutionInterpolationType::CreateCSSValue(

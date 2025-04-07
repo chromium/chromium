@@ -190,7 +190,7 @@ InterpolationValue CSSScaleInterpolationType::MaybeConvertInherit(
 
 InterpolationValue CSSScaleInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState* state,
+    const StyleResolverState& state,
     ConversionCheckers&) const {
   if (!value.IsBaseValueList())
     return CreateInterpolationValue();
@@ -198,9 +198,7 @@ InterpolationValue CSSScaleInterpolationType::MaybeConvertValue(
   const auto& list = To<CSSValueList>(value);
   DCHECK(list.length() >= 1 && list.length() <= 3);
 
-  CSSToLengthConversionData conversion_data =
-      state ? state->CssToLengthConversionData()
-            : CSSToLengthConversionData(/*element=*/nullptr);
+  CSSToLengthConversionData conversion_data = state.CssToLengthConversionData();
   if (list.length() == 1) {
     InterpolableNumber* scale =
         CSSValueToInterpolableNumber(list.Item(0), conversion_data);

@@ -114,7 +114,7 @@ InterpolationValue CSSFontSizeAdjustInterpolationType::MaybeConvertInherit(
 
 InterpolationValue CSSFontSizeAdjustInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState* state,
+    const StyleResolverState& state,
     ConversionCheckers& conversion_checkers) const {
   auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
   if (identifier_value && identifier_value->GetValueID() == CSSValueID::kNone) {

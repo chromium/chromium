@@ -114,7 +114,7 @@ InterpolationValue CSSImageListInterpolationType::MaybeConvertInherit(
 
 InterpolationValue CSSImageListInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState*,
+    const StyleResolverState&,
     ConversionCheckers&) const {
   auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
   if (identifier_value && identifier_value->GetValueID() == CSSValueID::kNone)

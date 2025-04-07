@@ -285,8 +285,9 @@ InterpolationValue CSSRayInterpolationType::MaybeConvertInitial(
 InterpolationValue CSSRayInterpolationType::MaybeConvertInherit(
     const StyleResolverState& state,
     ConversionCheckers& conversion_checkers) const {
-  if (!state.ParentStyle())
+  if (!state.ParentStyle()) {
     return nullptr;
+  }
 
   const auto& [inherited_ray, coord_box] = GetRay(*state.ParentStyle());
   if (!inherited_ray)
@@ -325,9 +326,8 @@ CSSRayInterpolationType::MaybeConvertStandardPropertyUnderlyingValue(
 
 InterpolationValue CSSRayInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState* state,
+    const StyleResolverState& state,
     ConversionCheckers&) const {
-  DCHECK(state);
   BasicShape* shape = nullptr;
   CoordBox coord_box = CoordBox::kBorderBox;
   const CSSPrimitiveValue* angle = nullptr;
@@ -335,20 +335,20 @@ InterpolationValue CSSRayInterpolationType::MaybeConvertValue(
   if (const auto* list = DynamicTo<CSSValueList>(value)) {
     if (list->First().IsRayValue()) {
       angle = &To<cssvalue::CSSRayValue>(list->First()).Angle();
-      shape = BasicShapeForValue(*state, list->First());
+      shape = BasicShapeForValue(state, list->First());
       if (list->length() == 2) {
         coord_box = To<CSSIdentifierValue>(list->Last()).ConvertTo<CoordBox>();
       }
     }
   } else if (value.IsRayValue()) {
     angle = &To<cssvalue::CSSRayValue>(value).Angle();
-    shape = BasicShapeForValue(*state, value);
+    shape = BasicShapeForValue(state, value);
   }
   if (!shape) {
     return nullptr;
   }
   return CreateValue(*angle, To<StyleRay>(*shape), coord_box, CssProperty(),
-                     state->ParentStyle()->EffectiveZoom());
+                     state.ParentStyle()->EffectiveZoom());
 }
 
 }  // namespace blink

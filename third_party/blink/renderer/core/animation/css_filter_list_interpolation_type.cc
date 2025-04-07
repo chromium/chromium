@@ -181,7 +181,7 @@ InterpolationValue CSSFilterListInterpolationType::MaybeConvertInherit(
 
 InterpolationValue CSSFilterListInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState* state,
+    const StyleResolverState& state,
     ConversionCheckers&) const {
   auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
   if (identifier_value && identifier_value->GetValueID() == CSSValueID::kNone) {

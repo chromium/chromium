@@ -83,7 +83,7 @@ InterpolationValue CSSPercentageInterpolationType::MaybeConvertInherit(
 
 InterpolationValue CSSPercentageInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState*,
+    const StyleResolverState&,
     ConversionCheckers&) const {
   const auto* primitive_value = DynamicTo<CSSPrimitiveValue>(value);
   if (!primitive_value || !primitive_value->IsPercentage()) {

@@ -245,20 +245,20 @@ InterpolationValue CSSGridTemplatePropertyInterpolationType::
 
 InterpolationValue CSSGridTemplatePropertyInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState* state,
+    const StyleResolverState& state,
     ConversionCheckers&) const {
-  if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
+  if (const auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
     DCHECK_EQ(identifier_value->GetValueID(), CSSValueID::kNone);
     return InterpolationValue(nullptr);
   }
 
   ComputedGridTrackList computed_grid_track_list;
   StyleBuilderConverter::ConvertGridTrackList(
-      value, computed_grid_track_list, *const_cast<StyleResolverState*>(state));
+      value, computed_grid_track_list, const_cast<StyleResolverState&>(state));
   return InterpolationValue(
       CreateInterpolableGridTrackList(computed_grid_track_list.track_list,
                                       CssProperty(),
-                                      state->StyleBuilder().EffectiveZoom()),
+                                      state.StyleBuilder().EffectiveZoom()),
       MakeGarbageCollected<CSSGridTrackListNonInterpolableValue>(
           computed_grid_track_list.named_grid_lines,
           computed_grid_track_list.ordered_named_grid_lines));

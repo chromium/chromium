@@ -85,7 +85,7 @@ InterpolationValue CSSNumberInterpolationType::MaybeConvertInherit(
 
 InterpolationValue CSSNumberInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState*,
+    const StyleResolverState&,
     ConversionCheckers&) const {
   auto* primitive_value = DynamicTo<CSSPrimitiveValue>(value);
   if (!primitive_value || !primitive_value->IsNumber()) {

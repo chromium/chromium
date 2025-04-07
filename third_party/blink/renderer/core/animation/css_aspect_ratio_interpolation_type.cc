@@ -132,10 +132,10 @@ CSSAspectRatioInterpolationType::MaybeConvertStandardPropertyUnderlyingValue(
 
 InterpolationValue CSSAspectRatioInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState* state,
+    const StyleResolverState& state,
     ConversionCheckers&) const {
   StyleAspectRatio ratio =
-      StyleBuilderConverter::ConvertAspectRatio(*state, value);
+      StyleBuilderConverter::ConvertAspectRatio(state, value);
   return InterpolationValue(
       CreateInterpolableAspectRatio(ratio),
       MakeGarbageCollected<CSSAspectRatioNonInterpolableValue>(

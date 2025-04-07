@@ -203,7 +203,7 @@ InterpolationValue CSSImageSliceInterpolationType::MaybeConvertInherit(
 
 InterpolationValue CSSImageSliceInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState*,
+    const StyleResolverState&,
     ConversionCheckers&) const {
   if (!IsA<cssvalue::CSSBorderImageSliceValue>(value))
     return nullptr;

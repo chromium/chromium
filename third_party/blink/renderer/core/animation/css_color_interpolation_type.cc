@@ -277,19 +277,18 @@ enum InterpolableColorPairIndex : unsigned {
 
 InterpolationValue CSSColorInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState* state,
+    const StyleResolverState& state,
     ConversionCheckers& conversion_checkers) const {
   if (CssProperty().PropertyID() == CSSPropertyID::kColor) {
     auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
     if (identifier_value &&
         identifier_value->GetValueID() == CSSValueID::kCurrentcolor) {
-      DCHECK(state);
-      return MaybeConvertInherit(*state, conversion_checkers);
+      return MaybeConvertInherit(state, conversion_checkers);
     }
   }
 
   InterpolableColor* interpolable_color =
-      MaybeCreateInterpolableColor(value, state);
+      MaybeCreateInterpolableColor(value, &state);
   if (!interpolable_color) {
     return nullptr;
   }

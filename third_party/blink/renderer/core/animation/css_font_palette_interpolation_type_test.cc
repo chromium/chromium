@@ -74,8 +74,10 @@ TEST_F(CSSFontPaletteInterpolationTypeTest, MaybeConvertValue) {
   CSSValue* value =
       MakeGarbageCollected<CSSCustomIdentValue>(AtomicString("--palette"));
 
+  StyleResolverState dummy_state(GetDocument(),
+                                 *GetDocument().documentElement());
   InterpolationValue result =
-      font_palette_interpolation_type->MaybeConvertValue(*value, nullptr,
+      font_palette_interpolation_type->MaybeConvertValue(*value, dummy_state,
                                                          conversion_checkers);
 
   const InterpolableFontPalette* interpolable_font_palette =

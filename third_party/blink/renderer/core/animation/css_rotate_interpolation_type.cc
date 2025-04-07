@@ -207,7 +207,7 @@ InterpolationValue CSSRotateInterpolationType::MaybeConvertInherit(
 
 InterpolationValue CSSRotateInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState* state,
+    const StyleResolverState& state,
     ConversionCheckers&) const {
   if (!value.IsBaseValueList()) {
     return ConvertRotation(OptionalRotation());
@@ -224,7 +224,7 @@ InterpolationValue CSSRotateInterpolationType::MaybeConvertValue(
   // rewriting Quaternion and Rotation to have unresolved versions.
   return ConvertRotation(
       OptionalRotation(StyleBuilderConverter::ConvertRotation(
-          CSSToLengthConversionData(&state->GetElement()), value)));
+          CSSToLengthConversionData(&state.GetElement()), value)));
 }
 
 InterpolationValue

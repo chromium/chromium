@@ -37,16 +37,17 @@ InterpolationValue CSSCustomListInterpolationType::MaybeConvertNeutral(
 
 InterpolationValue CSSCustomListInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState* state,
+    const StyleResolverState& state,
     ConversionCheckers&) const {
   const auto* list = DynamicTo<CSSValueList>(value);
-  if (!list)
+  if (!list) {
     return nullptr;
+  }
 
   ConversionCheckers null_checkers;
 
   return ListInterpolationFunctions::CreateList(
-      list->length(), [this, list, state, &null_checkers](wtf_size_t index) {
+      list->length(), [this, list, &state, &null_checkers](wtf_size_t index) {
         return inner_interpolation_type_->MaybeConvertValue(
             list->Item(index), state, null_checkers);
       });

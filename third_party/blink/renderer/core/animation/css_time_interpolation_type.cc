@@ -31,10 +31,9 @@ InterpolationValue CSSTimeInterpolationType::MaybeConvertTime(
 
 InterpolationValue CSSTimeInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState* state,
+    const StyleResolverState& state,
     ConversionCheckers&) const {
-  CHECK(state);
-  return MaybeConvertTime(value, state->CssToLengthConversionData());
+  return MaybeConvertTime(value, state.CssToLengthConversionData());
 }
 
 const CSSValue* CSSTimeInterpolationType::CreateCSSValue(

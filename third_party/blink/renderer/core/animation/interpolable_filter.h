@@ -36,7 +36,7 @@ class CORE_EXPORT InterpolableFilter final : public InterpolableValue {
       mojom::blink::ColorScheme color_scheme,
       const ui::ColorProvider* color_provider);
   static InterpolableFilter* MaybeConvertCSSValue(const CSSValue&,
-                                                  const StyleResolverState*);
+                                                  const StyleResolverState&);
 
   // Create an InterpolableFilter representing the 'initial value for
   // interpolation' for the given OperationType.
