@@ -72,8 +72,8 @@ class PerformanceScenarioData final
 
   // Creates tracing tracks under the ProcessTrack for `process_node`. The
   // tracks will log trace events when updating scenarios in the shared memory
-  // region. If `process_node` is null, tracks for the global scenario state
-  // will be created under the current ProcessTrack.
+  // region. If `process_node` is null, creates tracks for the global scenario
+  // state.
   void EnsureTracingTracks(const ProcessNode* process_node = nullptr);
 
  private:

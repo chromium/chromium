@@ -67,15 +67,15 @@ struct ScenarioTraits<LoadingScenario> {
         // No trace event.
         return;
       case LoadingScenario::kBackgroundPageLoading:
-        TRACE_EVENT_BEGIN("loading", "BackgroundPageLoading",
+        TRACE_EVENT_BEGIN("performance_scenarios", "BackgroundPageLoading",
                           *state_ptr->loading_tracing_track());
         return;
       case LoadingScenario::kVisiblePageLoading:
-        TRACE_EVENT_BEGIN("loading", "VisiblePageLoading",
+        TRACE_EVENT_BEGIN("performance_scenarios", "VisiblePageLoading",
                           *state_ptr->loading_tracing_track());
         return;
       case LoadingScenario::kFocusedPageLoading:
-        TRACE_EVENT_BEGIN("loading", "FocusedPageLoading",
+        TRACE_EVENT_BEGIN("performance_scenarios", "FocusedPageLoading",
                           *state_ptr->loading_tracing_track());
         return;
     }
@@ -93,7 +93,8 @@ struct ScenarioTraits<LoadingScenario> {
       case LoadingScenario::kBackgroundPageLoading:
       case LoadingScenario::kVisiblePageLoading:
       case LoadingScenario::kFocusedPageLoading:
-        TRACE_EVENT_END("loading", *state_ptr->loading_tracing_track());
+        TRACE_EVENT_END("performance_scenarios",
+                        *state_ptr->loading_tracing_track());
         return;
     }
     NOTREACHED();
@@ -120,7 +121,8 @@ struct ScenarioTraits<InputScenario> {
         // No trace event.
         return;
       case InputScenario::kTyping:
-        TRACE_EVENT_BEGIN("input", "Typing", *state_ptr->input_tracing_track());
+        TRACE_EVENT_BEGIN("performance_scenarios", "Typing",
+                          *state_ptr->input_tracing_track());
         return;
     }
     NOTREACHED();
@@ -135,7 +137,8 @@ struct ScenarioTraits<InputScenario> {
         // No trace event.
         return;
       case InputScenario::kTyping:
-        TRACE_EVENT_END("input", *state_ptr->input_tracing_track());
+        TRACE_EVENT_END("performance_scenarios",
+                        *state_ptr->input_tracing_track());
         return;
     }
     NOTREACHED();

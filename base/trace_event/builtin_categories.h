@@ -153,6 +153,13 @@ PERFETTO_DEFINE_CATEGORIES_IN_NAMESPACE_WITH_ATTRS(
     perfetto::Category("page-serialization"),
     perfetto::Category("paint_preview"),
     perfetto::Category("pepper"),
+    perfetto::Category("performance_scenarios").SetDescription(
+        "Includes events when processes enter and leave states defined in "
+        "//components/performance_manager/scenario_api/"
+        "performance_scenarios.h. For each scenario type, events for "
+        "ScenarioScope::kCurrentProcess are emitted to an async track under "
+        "each process track, and events for ScenarioScope::kGlobal are emitted "
+        "to global async tracks."),
     perfetto::Category("persistent_cache"),
     perfetto::Category("PlatformMalloc"),
     perfetto::Category("power"),

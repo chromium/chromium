@@ -24,8 +24,7 @@ perfetto::NamedTrack CreateTracingTrack(const ProcessNode* process_node,
   if (process_node) {
     return CreateProcessTracingTrack(process_node, name, track_id);
   } else {
-    return perfetto::NamedTrack(name, track_id,
-                                perfetto::ProcessTrack::Current());
+    return perfetto::NamedTrack(name, track_id, perfetto::Track::Global(0));
   }
 }
 
