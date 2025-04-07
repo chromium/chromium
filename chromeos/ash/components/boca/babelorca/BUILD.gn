@@ -117,6 +117,7 @@ source_set("test_support") {
 
   deps = [
     ":babelorca",
+    "//ash/constants",
     "//base",
     "//components/live_caption",
     "//components/live_caption:constants",
@@ -124,8 +125,10 @@ source_set("test_support") {
     "//components/live_caption:utils",
     "//components/prefs",
     "//components/prefs:test_support",
+    "//components/soda",
     "//media/mojo/mojom:speech_recognition",
     "//net/traffic_annotation",
+    "//testing/gmock",
     "//third_party/protobuf:protobuf_lite",
     "//ui/native_theme",
   ]
