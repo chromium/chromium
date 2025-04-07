@@ -31,7 +31,7 @@ public abstract class OsAdditionalSecurityPermissionProvider {
      * querying from any thread.
      */
     public boolean isAdvancedProtectionRequestedByOs() {
-        return !hasJavascriptOptimizerPermission();
+        return false;
     }
 
     /**
@@ -39,7 +39,7 @@ public abstract class OsAdditionalSecurityPermissionProvider {
      * Implementations must allow querying from any thread.
      */
     public boolean hasJavascriptOptimizerPermission() {
-        return false;
+        return !isAdvancedProtectionRequestedByOs();
     }
 
     /**
