@@ -497,16 +497,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="FirstUserAction.BackgroundTimeNewTask"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="GridTabSwitcherAnimationType" separator=".">
-  <suffix name="Expand" label="Grid to Tab"/>
-  <suffix name="Shrink" label="Tab to Grid"/>
-  <affected-histogram
-      name="Android.GridTabSwitcher.Animation.FirstFrameLatency"/>
-  <affected-histogram name="Android.GridTabSwitcher.Animation.TotalDuration"/>
-  <affected-histogram name="GridTabSwitcher.FramePerSecond"/>
-  <affected-histogram name="GridTabSwitcher.MaxFrameInterval"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="HiddenWhileFlushing" separator=".">
   <suffix name="HiddenWhileFlushing"
       label="Tab hidden while flushing FCP value."/>
