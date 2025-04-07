@@ -333,8 +333,8 @@ class WebIdlSchemaTest(unittest.TestCase):
   # support for shared types to the new parser.
   def testMissingBrowserInterfaceError(self):
     expected_error_regex = (
-        '.* File\(test\/web_idl\/missing_browser_interface.idl\): Required'
-        ' partial Browser interface not found in schema\.')
+        r'.* File\(test\/web_idl\/missing_browser_interface.idl\): Required'
+        r' partial Browser interface not found in schema\.')
     self.assertRaisesRegex(
         SchemaCompilerError,
         expected_error_regex,
@@ -346,8 +346,8 @@ class WebIdlSchemaTest(unittest.TestCase):
   # throws an error.
   def testMissingAttributeOnBrowserError(self):
     expected_error_regex = (
-        '.* Interface\(Browser\): The partial Browser interface should have'
-        ' exactly one attribute for the name the API will be exposed under\.')
+        r'.* Interface\(Browser\): The partial Browser interface should have'
+        r' exactly one attribute for the name the API will be exposed under\.')
     self.assertRaisesRegex(
         Exception,
         expected_error_regex,
@@ -359,8 +359,8 @@ class WebIdlSchemaTest(unittest.TestCase):
   # doesn't support yet throws an error.
   def testUnsupportedBasicTypeError(self):
     expected_error_regex = (
-        '.* PrimitiveType\(float\): Unsupported basic type found when'
-        ' processing type\.')
+        r'.* PrimitiveType\(float\): Unsupported basic type found when'
+        r' processing type\.')
     self.assertRaisesRegex(
         SchemaCompilerError,
         expected_error_regex,
@@ -372,7 +372,7 @@ class WebIdlSchemaTest(unittest.TestCase):
   # doesn't support yet throws an error.
   def testUnsupportedTypeClassError(self):
     expected_error_regex = (
-        '.* Any\(\): Unsupported type class when processing type\.')
+        r'.* Any\(\): Unsupported type class when processing type\.')
     self.assertRaisesRegex(
         SchemaCompilerError,
         expected_error_regex,
@@ -385,8 +385,8 @@ class WebIdlSchemaTest(unittest.TestCase):
   # always be copyright lines and not part of the description).
   def testDocumentationCommentReachedTopOfFileError(self):
     expected_error_regex = (
-        '.* Reached top of file when trying to parse description from file'
-        ' comment. Make sure there is a blank line before the comment.')
+        r'.* Reached top of file when trying to parse description from file'
+        r' comment. Make sure there is a blank line before the comment.')
     self.assertRaisesRegex(
         SchemaCompilerError,
         expected_error_regex,
@@ -398,8 +398,8 @@ class WebIdlSchemaTest(unittest.TestCase):
   # 'void' has been deprecated and 'undefined' should be used instead.
   def testVoidUsageTriggersError(self):
     expected_error_regex = (
-        'Error processing node PrimitiveType\(void\): Usage of "void" in IDL is'
-        ' deprecated, use "Undefined" instead.')
+        r'Error processing node PrimitiveType\(void\): Usage of "void" in IDL'
+        r' is deprecated, use "Undefined" instead.')
     self.assertRaisesRegex(
         SchemaCompilerError,
         expected_error_regex,
@@ -411,8 +411,8 @@ class WebIdlSchemaTest(unittest.TestCase):
   # processing for results in a schema compiler error.
   def testUnknownNamespaceExtendedAttributeNameError(self):
     expected_error_regex = (
-        '.* Interface\(TestWebIdl\): Unknown extended attribute with name'
-        ' "UnknownExtendedAttribute" when processing namespace.')
+        r'.* Interface\(TestWebIdl\): Unknown extended attribute with name'
+        r' "UnknownExtendedAttribute" when processing namespace.')
     self.assertRaisesRegex(
         SchemaCompilerError,
         expected_error_regex,
