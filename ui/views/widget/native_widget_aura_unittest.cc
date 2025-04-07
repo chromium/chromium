@@ -863,7 +863,6 @@ TEST_F(NativeWidgetAuraTest, VisibilityOfChildBubbleWindow) {
 TEST_F(NativeWidgetAuraTest, TransientChildModalWindowVisibility) {
   // Create the delegate first so it's destroyed last.
   auto delegate_owned = std::make_unique<WidgetDelegate>();
-  delegate_owned->SetOwnedByWidget(false);
   // Create a parent window.
   auto parent = std::make_unique<Widget>();
   Widget::InitParams parent_params(Widget::InitParams::CLIENT_OWNS_WIDGET,

@@ -32,9 +32,8 @@ BnplTosDialog::BnplTosDialog(
     : controller_(controller), link_opener_(link_opener) {
   // Set the ownership of the delegate, not the View. The View is owned by the
   // Widget as a child view.
-  // TODO(crbug.com/338254375): Remove the following two lines once this is the
-  // default state for widgets and the delegates.
-  SetOwnedByWidget(/*delete_self=*/false);
+  // TODO(crbug.com/338254375): Remove the following line once this is the
+  // default state for widgets.
   SetOwnershipOfNewWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   SetAcceptCallbackWithClose(
       base::BindRepeating(&BnplTosDialog::OnAccepted, base::Unretained(this)));

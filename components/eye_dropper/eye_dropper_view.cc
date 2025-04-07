@@ -202,8 +202,6 @@ EyeDropperView::EyeDropperView(gfx::NativeView parent,
       view_position_handler_(std::make_unique<ViewPositionHandler>(this)),
       screen_capturer_(std::make_unique<ScreenCapturer>(this)) {
   SetModalType(ui::mojom::ModalType::kWindow);
-  // This is owned as a unique_ptr<EyeDropper> elsewhere.
-  SetOwnedByWidget(false);
   // TODO(pbos): Remove this, perhaps by separating the contents view from the
   // EyeDropper/WidgetDelegate.
   set_owned_by_client();

@@ -97,9 +97,8 @@ EditAddressProfileView::EditAddressProfileView(
     : controller_(controller) {
   DCHECK(controller);
 
-  // TODO(crbug.com/338254375): Remove the following two lines once this is the
-  // default state for widgets and the delegates.
-  SetOwnedByWidget(false);
+  // TODO(crbug.com/338254375): Remove the following line once this is the
+  // default state for widgets.
   SetOwnershipOfNewWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
 
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk) |

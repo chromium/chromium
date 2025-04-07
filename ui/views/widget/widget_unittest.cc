@@ -165,9 +165,7 @@ class WidgetTestBubbleDialogDelegateView : public BubbleDialogDelegateView {
 
  public:
   explicit WidgetTestBubbleDialogDelegateView(View* anchor)
-      : BubbleDialogDelegateView(anchor, BubbleBorder::NONE) {
-    SetOwnedByWidget(false);
-  }
+      : BubbleDialogDelegateView(anchor, BubbleBorder::NONE) {}
   ~WidgetTestBubbleDialogDelegateView() override = default;
 
   bool ShouldShowCloseButton() const override {

@@ -62,6 +62,7 @@ AutoPipSettingView::AutoPipSettingView(
     views::BubbleBorder::Arrow arrow)
     : views::BubbleDialogDelegate(anchor_view, arrow),
       result_cb_(std::move(result_cb)) {
+  SetOwnedByWidget(true);
   DialogDelegate::SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   CHECK(result_cb_);
   SetAnchorView(anchor_view);

@@ -28,7 +28,6 @@ GlicFreDialogView::GlicFreDialogView(Profile* profile,
   SetShowCloseButton(false);
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetModalType(ui::mojom::ModalType::kChild);
-  SetOwnedByWidget(false);
   SetOwnershipOfNewWidget(
       views::Widget::InitParams::Ownership::CLIENT_OWNS_WIDGET);
   // TODO(cuianthony): Share this constant in GlicWindowController to use with

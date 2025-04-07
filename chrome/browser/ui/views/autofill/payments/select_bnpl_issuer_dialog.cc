@@ -83,9 +83,8 @@ SelectBnplIssuerDialog::SelectBnplIssuerDialog(
     : controller_(controller), web_contents_(web_contents->GetWeakPtr()) {
   // Set the ownership of the delegate, not the View. The View is owned by the
   // Widget as a child view.
-  // TODO(crbug.com/338254375): Remove the following two lines once this is the
-  // default state for widgets and the delegates.
-  views::WidgetDelegate::SetOwnedByWidget(false);
+  // TODO(crbug.com/338254375): Remove the following line once this is the
+  // default state for widgets.
   SetOwnershipOfNewWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
 
   // TODO(crbug.com/363332740): Initialize the UI.

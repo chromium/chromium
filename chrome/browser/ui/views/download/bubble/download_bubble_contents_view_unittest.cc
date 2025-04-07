@@ -161,6 +161,7 @@ class DownloadBubbleContentsViewTest
                          views::Widget::InitParams::TYPE_WINDOW);
     auto bubble_delegate = std::make_unique<views::BubbleDialogDelegate>(
         anchor_widget_->GetContentsView(), views::BubbleBorder::TOP_RIGHT);
+    bubble_delegate->SetOwnedByWidget(true);
     bubble_delegate_ = bubble_delegate.get();
     navigation_handler_ =
         std::make_unique<MockDownloadBubbleNavigationHandler>();

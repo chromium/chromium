@@ -46,9 +46,8 @@ AuthenticatorRequestDialogView::AuthenticatorRequestDialogView(
       model_(model),
       web_contents_hidden_(web_contents->GetVisibility() ==
                            content::Visibility::HIDDEN) {
-  // TODO(crbug.com/338254375): Remove the following two lines once this is the
-  // default state for widgets and the delegates.
-  SetOwnedByWidget(false);  // Already owned-by-widget as the content view.
+  // TODO(crbug.com/338254375): Remove the following line once this is the
+  // default state for widgets.
   SetOwnershipOfNewWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
 
   SetShowTitle(false);
