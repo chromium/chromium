@@ -153,6 +153,10 @@ static mojom::blink::ColorScheme GetColorSchemeFromCanvas(
 
 namespace {
 
+BASE_FEATURE(kFixContextLostReset,
+             "FixContextLostReset",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace
 
 CanvasRenderingContext* CanvasRenderingContext2D::Factory::Create(
@@ -290,6 +294,9 @@ void CanvasRenderingContext2D::TryRestoreContextEvent(TimerBase* timer) {
                          ? canvas() != nullptr
                          : IsPaintable();
   if (context_lost_mode_ == kRealLostContext && can_restore && Restore()) {
+    if (base::FeatureList::IsEnabled(kFixContextLostReset)) {
+      Host()->set_context_lost(false);
+    }
     try_restore_context_event_timer_.Stop();
     DispatchContextRestoredEvent(nullptr);
     return;
@@ -335,7 +342,9 @@ bool CanvasRenderingContext2D::Restore() {
       host->ReplaceResourceProvider(nullptr);
       // FIXME: draw sad canvas picture into new buffer crbug.com/243842
     } else {
-      host->set_context_lost(false);
+      if (!base::FeatureList::IsEnabled(kFixContextLostReset)) {
+        host->set_context_lost(false);
+      }
     }
   }
 
