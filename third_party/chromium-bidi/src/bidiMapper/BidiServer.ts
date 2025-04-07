@@ -69,8 +69,11 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
   };
 
   #processOutgoingMessage = async (messageEntry: OutgoingMessage) => {
-    // Enrich message with channel data.
-    const message = {...messageEntry.message, ...messageEntry.channel};
+    const message = messageEntry.message;
+
+    if (messageEntry.googChannel !== null) {
+      message['goog:channel'] = messageEntry.googChannel;
+    }
 
     await this.#transport.sendMessage(message);
   };

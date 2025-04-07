@@ -15,28 +15,31 @@
  * limitations under the License.
  */
 
-import type {BidiPlusChannel} from '../protocol/chromium-bidi.js';
+import type {GoogChannel} from '../protocol/chromium-bidi.js';
 import type {ChromiumBidi} from '../protocol/protocol.js';
 import type {Result} from '../utils/result.js';
 
 export class OutgoingMessage {
   readonly #message: ChromiumBidi.Message;
-  readonly #channel: BidiPlusChannel;
+  readonly #googChannel: GoogChannel;
 
-  private constructor(message: ChromiumBidi.Message, channel: BidiPlusChannel) {
+  private constructor(
+    message: ChromiumBidi.Message,
+    googChannel: GoogChannel = null,
+  ) {
     this.#message = message;
-    this.#channel = channel;
+    this.#googChannel = googChannel;
   }
 
   static createFromPromise(
     messagePromise: Promise<Result<ChromiumBidi.Message>>,
-    channel: BidiPlusChannel,
+    googChannel: GoogChannel,
   ): Promise<Result<OutgoingMessage>> {
     return messagePromise.then((message) => {
       if (message.kind === 'success') {
         return {
           kind: 'success',
-          value: new OutgoingMessage(message.value, channel),
+          value: new OutgoingMessage(message.value, googChannel),
         };
       }
       return message;
@@ -45,11 +48,11 @@ export class OutgoingMessage {
 
   static createResolved(
     message: ChromiumBidi.Message,
-    channel: BidiPlusChannel,
+    googChannel: GoogChannel = null,
   ): Promise<Result<OutgoingMessage>> {
     return Promise.resolve({
       kind: 'success',
-      value: new OutgoingMessage(message, channel),
+      value: new OutgoingMessage(message, googChannel),
     });
   }
 
@@ -57,7 +60,7 @@ export class OutgoingMessage {
     return this.#message;
   }
 
-  get channel(): BidiPlusChannel {
-    return this.#channel;
+  get googChannel(): GoogChannel {
+    return this.#googChannel;
   }
 }

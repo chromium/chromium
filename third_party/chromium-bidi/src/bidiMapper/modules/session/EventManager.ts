@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import type {BidiPlusChannel} from '../../../protocol/chromium-bidi.js';
+import type {GoogChannel} from '../../../protocol/chromium-bidi.js';
 import {
   type Browser,
   ChromiumBidi,
@@ -105,11 +105,11 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
    */
   #eventBuffers = new Map<string, Buffer<EventWrapper>>();
   /**
-   * Maps `eventName` + `browsingContext` to  Map of json stringified channel to last id.
+   * Maps `eventName` + `browsingContext` to  Map of goog:channel to last id.
    * Used to avoid sending duplicated events when user
    * subscribes -> unsubscribes -> subscribes.
    */
-  #lastMessageSent = new Map<string, Map<string, number>>();
+  #lastMessageSent = new Map<string, Map<string | null, number>>();
   #subscriptionManager: SubscriptionManager;
   #browsingContextStorage: BrowsingContextStorage;
   /**
@@ -184,19 +184,19 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
     eventName: ChromiumBidi.EventNames,
   ): void {
     const eventWrapper = new EventWrapper(event, contextId);
-    const sortedChannels =
-      this.#subscriptionManager.getChannelsSubscribedToEvent(
+    const sortedGoogChannels =
+      this.#subscriptionManager.getGoogChannelsSubscribedToEvent(
         eventName,
         contextId,
       );
     this.#bufferEvent(eventWrapper, eventName);
     // Send events to channels in the subscription priority.
-    for (const channel of sortedChannels) {
+    for (const googChannel of sortedGoogChannels) {
       this.emit(EventManagerEvents.Event, {
-        message: OutgoingMessage.createFromPromise(event, channel),
+        message: OutgoingMessage.createFromPromise(event, googChannel),
         event: eventName,
       });
-      this.#markEventSent(eventWrapper, channel, eventName);
+      this.#markEventSent(eventWrapper, googChannel, eventName);
     }
   }
 
@@ -205,16 +205,18 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
     eventName: ChromiumBidi.EventNames,
   ): void {
     const eventWrapper = new EventWrapper(event, null);
-    const sortedChannels =
-      this.#subscriptionManager.getChannelsSubscribedToEventGlobally(eventName);
+    const sortedGoogChannels =
+      this.#subscriptionManager.getGoogChannelsSubscribedToEventGlobally(
+        eventName,
+      );
     this.#bufferEvent(eventWrapper, eventName);
-    // Send events to channels in the subscription priority.
-    for (const channel of sortedChannels) {
+    // Send events to goog:channels in the subscription priority.
+    for (const googChannel of sortedGoogChannels) {
       this.emit(EventManagerEvents.Event, {
-        message: OutgoingMessage.createFromPromise(event, channel),
+        message: OutgoingMessage.createFromPromise(event, googChannel),
         event: eventName,
       });
-      this.#markEventSent(eventWrapper, channel, eventName);
+      this.#markEventSent(eventWrapper, googChannel, eventName);
     }
   }
 
@@ -222,7 +224,7 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
     eventNames: ChromiumBidi.EventNames[],
     contextIds: BrowsingContext.BrowsingContext[],
     userContextIds: Browser.UserContext[],
-    channel: BidiPlusChannel,
+    googChannel: GoogChannel,
   ): Promise<string> {
     for (const name of eventNames) {
       assertSupportedEvent(name);
@@ -274,7 +276,7 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
       eventNames,
       contextIds,
       userContextIds,
-      channel,
+      googChannel,
     );
 
     for (const eventName of subscription.eventNames) {
@@ -282,17 +284,17 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
         for (const eventWrapper of this.#getBufferedEvents(
           eventName,
           contextId,
-          channel,
+          googChannel,
         )) {
           // The order of the events is important.
           this.emit(EventManagerEvents.Event, {
             message: OutgoingMessage.createFromPromise(
               eventWrapper.event,
-              channel,
+              googChannel,
             ),
             event: eventName,
           });
-          this.#markEventSent(eventWrapper, channel, eventName);
+          this.#markEventSent(eventWrapper, googChannel, eventName);
         }
       }
     }
@@ -311,12 +313,12 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
   async unsubscribe(
     eventNames: ChromiumBidi.EventNames[],
     contextIds: BrowsingContext.BrowsingContext[],
-    channel: BidiPlusChannel,
+    googChannel: GoogChannel,
   ): Promise<void> {
     for (const name of eventNames) {
       assertSupportedEvent(name);
     }
-    this.#subscriptionManager.unsubscribe(eventNames, contextIds, channel);
+    this.#subscriptionManager.unsubscribe(eventNames, contextIds, googChannel);
     await this.toggleModulesIfNeeded();
   }
 
@@ -367,11 +369,11 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
   }
 
   /**
-   * If the event is buffer-able, mark it as sent to the given contextId and channel.
+   * If the event is buffer-able, mark it as sent to the given contextId and goog:channel.
    */
   #markEventSent(
     eventWrapper: EventWrapper,
-    channel: BidiPlusChannel,
+    googChannel: GoogChannel,
     eventName: ChromiumBidi.EventNames,
   ) {
     if (!eventBufferLength.has(eventName)) {
@@ -385,34 +387,32 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
     );
 
     const lastId = Math.max(
-      this.#lastMessageSent.get(lastSentMapKey)?.get(JSON.stringify(channel)) ??
-        0,
+      this.#lastMessageSent.get(lastSentMapKey)?.get(googChannel) ?? 0,
       eventWrapper.id,
     );
 
-    const channelMap = this.#lastMessageSent.get(lastSentMapKey);
-    if (channelMap) {
-      channelMap.set(JSON.stringify(channel), lastId);
+    const googChannelMap = this.#lastMessageSent.get(lastSentMapKey);
+    if (googChannelMap) {
+      googChannelMap.set(googChannel, lastId);
     } else {
       this.#lastMessageSent.set(
         lastSentMapKey,
-        new Map([[JSON.stringify(channel), lastId]]),
+        new Map([[googChannel, lastId]]),
       );
     }
   }
 
   /**
-   * Returns events which are buffered and not yet sent to the given channel events.
+   * Returns events which are buffered and not yet sent to the given goog:channel events.
    */
   #getBufferedEvents(
     eventName: ChromiumBidi.EventNames,
     contextId: BrowsingContext.BrowsingContext | null,
-    channel: BidiPlusChannel,
+    googChannel: GoogChannel,
   ): EventWrapper[] {
     const bufferMapKey = EventManager.#getMapKey(eventName, contextId);
     const lastSentMessageId =
-      this.#lastMessageSent.get(bufferMapKey)?.get(JSON.stringify(channel)) ??
-      -Infinity;
+      this.#lastMessageSent.get(bufferMapKey)?.get(googChannel) ?? -Infinity;
 
     const result: EventWrapper[] =
       this.#eventBuffers
@@ -431,7 +431,7 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
             this.#browsingContextStorage.hasContext(_contextId),
         )
         .map((_contextId) =>
-          this.#getBufferedEvents(eventName, _contextId, channel),
+          this.#getBufferedEvents(eventName, _contextId, googChannel),
         )
         .forEach((events) => result.push(...events));
     }

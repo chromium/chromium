@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import type {BidiPlusChannel} from '../../../protocol/chromium-bidi.js';
+import type {GoogChannel} from '../../../protocol/chromium-bidi.js';
 import {
   type Browser,
   type BrowsingContext,
@@ -85,7 +85,7 @@ export interface Subscription {
   userContextIds: Set<string>;
   // Never empty.
   eventNames: Set<ChromiumBidi.EventNames>;
-  channel: BidiPlusChannel;
+  googChannel: GoogChannel;
 }
 
 export class SubscriptionManager {
@@ -97,43 +97,33 @@ export class SubscriptionManager {
     this.#browsingContextStorage = browsingContextStorage;
   }
 
-  getChannelsSubscribedToEvent(
+  getGoogChannelsSubscribedToEvent(
     eventName: ChromiumBidi.EventNames,
     contextId: BrowsingContext.BrowsingContext,
-  ): BidiPlusChannel[] {
-    // Maps JSON stringified channel to a channel.
-    // TODO: switch to `Set` of `goog:channel` once legacy `channel` is removed.
-    const channels = new Map<string, BidiPlusChannel>();
+  ): GoogChannel[] {
+    const googChannels = new Set<GoogChannel>();
 
     for (const subscription of this.#subscriptions) {
       if (this.#isSubscribedTo(subscription, eventName, contextId)) {
-        channels.set(
-          JSON.stringify(subscription.channel),
-          subscription.channel,
-        );
+        googChannels.add(subscription.googChannel);
       }
     }
 
-    return Array.from(channels.values());
+    return Array.from(googChannels);
   }
 
-  getChannelsSubscribedToEventGlobally(
+  getGoogChannelsSubscribedToEventGlobally(
     eventName: ChromiumBidi.EventNames,
-  ): BidiPlusChannel[] {
-    // Maps JSON stringified channel to a channel.
-    // TODO: switch to `Set` of `goog:channel` once legacy `channel` is removed.
-    const channels = new Map<string, BidiPlusChannel>();
+  ): GoogChannel[] {
+    const googChannels = new Set<GoogChannel>();
 
     for (const subscription of this.#subscriptions) {
       if (this.#isSubscribedTo(subscription, eventName)) {
-        channels.set(
-          JSON.stringify(subscription.channel),
-          subscription.channel,
-        );
+        googChannels.add(subscription.googChannel);
       }
     }
 
-    return Array.from(channels.values());
+    return Array.from(googChannels);
   }
 
   #isSubscribedTo(
@@ -207,10 +197,7 @@ export class SubscriptionManager {
   }
 
   /**
-   * Subscribes to event in the given context and channel.
-   * @param {EventNames} event
-   * @param {BrowsingContext.BrowsingContext | null} contextId
-   * @param {BidiPlusChannel} channel
+   * Subscribes to event in the given context and goog:channel.
    * @return {SubscriptionItem[]} List of
    * subscriptions. If the event is a whole module, it will return all the specific
    * events. If the contextId is null, it will return all the top-level contexts which were
@@ -220,7 +207,7 @@ export class SubscriptionManager {
     eventNames: ChromiumBidi.EventNames[],
     contextIds: BrowsingContext.BrowsingContext[],
     userContextIds: Browser.UserContext[],
-    channel: BidiPlusChannel,
+    googChannel: GoogChannel,
   ): Subscription {
     // All the subscriptions are handled on the top-level contexts.
     const subscription: Subscription = {
@@ -239,7 +226,7 @@ export class SubscriptionManager {
         }),
       ),
       userContextIds: new Set(userContextIds),
-      channel,
+      googChannel,
     };
     this.#subscriptions.push(subscription);
     this.#knownSubscriptionIds.add(subscription.id);
@@ -254,7 +241,7 @@ export class SubscriptionManager {
   unsubscribe(
     inputEventNames: ChromiumBidi.EventNames[],
     inputContextIds: BrowsingContext.BrowsingContext[],
-    channel: BidiPlusChannel,
+    googChannel: GoogChannel,
   ) {
     const eventNames = new Set(unrollEvents(inputEventNames));
 
@@ -279,8 +266,7 @@ export class SubscriptionManager {
     const eventsMatched = new Set<ChromiumBidi.EventNames>();
     const contextsMatched = new Set<BrowsingContext.BrowsingContext>();
     for (const subscription of this.#subscriptions) {
-      // `channel` is undefined or an object with 1 field, so `JSON.stringify` is stable.
-      if (JSON.stringify(subscription.channel) !== JSON.stringify(channel)) {
+      if (subscription.googChannel !== googChannel) {
         newSubscriptions.push(subscription);
         continue;
       }
@@ -348,7 +334,7 @@ export class SubscriptionManager {
         for (const [eventName, remainingContextIds] of eventMap) {
           const partialSubscription: Subscription = {
             id: subscription.id,
-            channel: subscription.channel,
+            googChannel: subscription.googChannel,
             eventNames: new Set([eventName]),
             topLevelTraversableIds: remainingContextIds,
             userContextIds: new Set(),

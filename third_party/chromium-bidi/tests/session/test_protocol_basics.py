@@ -97,12 +97,12 @@ async def test_channel_non_empty(websocket):
             "id": 6000,
             "method": "session.status",
             "params": {},
-            "channel": "SOME_CHANNEL"
+            "goog:channel": "SOME_CHANNEL"
         })
     resp = await read_JSON_message(websocket)
     assert resp == {
         "id": 6000,
-        "channel": "SOME_CHANNEL",
+        "goog:channel": "SOME_CHANNEL",
         "type": "success",
         "result": {
             "ready": False,
@@ -117,7 +117,7 @@ async def test_channel_empty(websocket):
         "id": 7000,
         "method": "session.status",
         "params": {},
-        "channel": ""
+        "goog:channel": ""
     })
     resp = await read_JSON_message(websocket)
     assert resp == {

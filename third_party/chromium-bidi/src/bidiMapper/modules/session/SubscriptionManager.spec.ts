@@ -43,8 +43,8 @@ const ANOTHER_CONTEXT = 'ANOTHER_CONTEXT';
 const ANOTHER_USER_CONTEXT = 'ANOTHER_USER_CONTEXT';
 const ANOTHER_NESTED_CONTEXT = 'ANOTHER_NESTED_CONTEXT';
 
-const SOME_CHANNEL = {'goog:channel': 'SOME_CHANNEL'};
-const ANOTHER_CHANNEL = {'goog:channel': 'ANOTHER_CHANNEL'};
+const SOME_CHANNEL = 'SOME_CHANNEL';
+const ANOTHER_CHANNEL = 'ANOTHER_CHANNEL';
 
 describe('SubscriptionManager', () => {
   let subscriptionManager: SubscriptionManager;
@@ -98,8 +98,8 @@ describe('SubscriptionManager', () => {
     subscriptionManager = new SubscriptionManager(browsingContextStorage);
   });
 
-  describe('getChannelsSubscribedToEvent', () => {
-    it('should maintain channel subscription order', () => {
+  describe('getGoogChannelsSubscribedToEvent', () => {
+    it('should maintain goog:channel subscription order', () => {
       subscriptionManager.subscribe([SOME_EVENT], [], [], SOME_CHANNEL);
       subscriptionManager.subscribe([SOME_EVENT], [], [], ANOTHER_CHANNEL);
       subscriptionManager.subscribe([ANOTHER_EVENT], [], [], ANOTHER_CHANNEL);
@@ -112,9 +112,9 @@ describe('SubscriptionManager', () => {
         ANOTHER_CHANNEL,
       );
 
-      // `SOME_EVENT` was fist subscribed in `SOME_CHANNEL`.
+      // `SOME_EVENT` was fist subscribed in `SOME_GOOG_CHANNEL`.
       expect(
-        subscriptionManager.getChannelsSubscribedToEvent(
+        subscriptionManager.getGoogChannelsSubscribedToEvent(
           SOME_EVENT,
           SOME_CONTEXT,
         ),
@@ -122,7 +122,7 @@ describe('SubscriptionManager', () => {
 
       // `ANOTHER_EVENT` was fist subscribed in `ANOTHER_CHANNEL`.
       expect(
-        subscriptionManager.getChannelsSubscribedToEvent(
+        subscriptionManager.getGoogChannelsSubscribedToEvent(
           ANOTHER_EVENT,
           SOME_CONTEXT,
         ),
@@ -131,7 +131,7 @@ describe('SubscriptionManager', () => {
       // `YET_ANOTHER_EVENT` was first subscribed in `SOME_CHANNEL` via
       // `ALL_EVENTS`.
       expect(
-        subscriptionManager.getChannelsSubscribedToEvent(
+        subscriptionManager.getGoogChannelsSubscribedToEvent(
           YET_ANOTHER_EVENT,
           SOME_CONTEXT,
         ),
@@ -144,7 +144,7 @@ describe('SubscriptionManager', () => {
       subscriptionManager.unsubscribe([SOME_EVENT], [], SOME_CHANNEL);
       subscriptionManager.subscribe([SOME_EVENT], [], [], SOME_CHANNEL);
       expect(
-        subscriptionManager.getChannelsSubscribedToEvent(
+        subscriptionManager.getGoogChannelsSubscribedToEvent(
           SOME_EVENT,
           SOME_CONTEXT,
         ),
@@ -161,7 +161,7 @@ describe('SubscriptionManager', () => {
         SOME_CHANNEL,
       );
       expect(
-        subscriptionManager.getChannelsSubscribedToEvent(
+        subscriptionManager.getGoogChannelsSubscribedToEvent(
           SOME_EVENT,
           SOME_CONTEXT,
         ),
@@ -178,7 +178,7 @@ describe('SubscriptionManager', () => {
       subscriptionManager.subscribe([SOME_EVENT], [], [], ANOTHER_CHANNEL);
       subscriptionManager.subscribe([SOME_EVENT], [], [], SOME_CHANNEL);
       expect(
-        subscriptionManager.getChannelsSubscribedToEvent(
+        subscriptionManager.getGoogChannelsSubscribedToEvent(
           SOME_EVENT,
           SOME_CONTEXT,
         ),
@@ -199,7 +199,7 @@ describe('SubscriptionManager', () => {
         ANOTHER_CHANNEL,
       );
       expect(
-        subscriptionManager.getChannelsSubscribedToEvent(
+        subscriptionManager.getGoogChannelsSubscribedToEvent(
           SOME_EVENT,
           SOME_CONTEXT,
         ),
@@ -231,7 +231,7 @@ describe('SubscriptionManager', () => {
         SOME_CHANNEL,
       );
       expect(
-        subscriptionManager.getChannelsSubscribedToEvent(
+        subscriptionManager.getGoogChannelsSubscribedToEvent(
           SOME_EVENT,
           SOME_CONTEXT,
         ),

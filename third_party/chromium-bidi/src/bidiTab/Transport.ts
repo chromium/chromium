@@ -15,7 +15,7 @@
  * limitations under the License. *
  */
 import type {BidiTransport} from '../bidiMapper/BidiMapper.js';
-import type {BidiPlusChannel} from '../protocol/chromium-bidi.js';
+import type {GoogChannel} from '../protocol/chromium-bidi.js';
 import {
   type ChromiumBidi,
   ErrorCode,
@@ -41,8 +41,8 @@ export class WindowBidiTransport implements BidiTransport {
         this.#onMessage?.call(null, command);
       } catch (e: unknown) {
         const error = e instanceof Error ? e : new Error(e as string);
-        // Transport-level error does not provide channel.
-        this.#respondWithError(message, ErrorCode.InvalidArgument, error, {});
+        // Transport-level error does not provide goog:channel.
+        this.#respondWithError(message, ErrorCode.InvalidArgument, error, null);
       }
     };
   }
@@ -66,7 +66,7 @@ export class WindowBidiTransport implements BidiTransport {
     plainCommandData: string,
     errorCode: ErrorCode,
     error: Error,
-    channel: BidiPlusChannel,
+    googChannel: GoogChannel,
   ) {
     const errorResponse = WindowBidiTransport.#getErrorResponse(
       plainCommandData,
@@ -74,10 +74,14 @@ export class WindowBidiTransport implements BidiTransport {
       error,
     );
 
-    this.sendMessage({
-      ...errorResponse,
-      ...(channel ?? {}),
-    });
+    if (googChannel) {
+      this.sendMessage({
+        ...errorResponse,
+        'goog:channel': googChannel,
+      });
+    } else {
+      this.sendMessage(errorResponse);
+    }
   }
 
   static #getJsonType(value: unknown) {
@@ -117,13 +121,7 @@ export class WindowBidiTransport implements BidiTransport {
   }
 
   static #parseBidiMessage(message: string): ChromiumBidi.Command {
-    let command: {
-      id?: unknown;
-      method?: unknown;
-      params?: unknown;
-      channel?: unknown;
-      'goog:channel'?: unknown;
-    };
+    let command: ChromiumBidi.Command;
     try {
       command = JSON.parse(message);
     } catch {
@@ -139,7 +137,7 @@ export class WindowBidiTransport implements BidiTransport {
     const {id, method, params} = command;
 
     const idType = WindowBidiTransport.#getJsonType(id);
-    if (idType !== 'number' || !Number.isInteger(id) || (id as number) < 0) {
+    if (idType !== 'number' || !Number.isInteger(id) || id < 0) {
       // TODO: should uint64_t be the upper limit?
       // https://tools.ietf.org/html/rfc7049#section-2.1
       throw new Error(`Expected unsigned integer but got ${idType}`);
@@ -155,34 +153,24 @@ export class WindowBidiTransport implements BidiTransport {
       throw new Error(`Expected object params but got ${paramsType}`);
     }
 
-    let channel: BidiPlusChannel = {};
-    if (command['goog:channel'] !== undefined) {
-      const channelType = WindowBidiTransport.#getJsonType(
-        command['goog:channel'],
-      );
-      if (channelType !== 'string') {
-        throw new Error(
-          `Expected string value of 'goog:channel' but got ${channelType}`,
-        );
+    let googChannel = command['goog:channel'];
+    if (googChannel !== undefined) {
+      const googChannelType = WindowBidiTransport.#getJsonType(googChannel);
+      if (googChannelType !== 'string') {
+        throw new Error(`Expected string channel but got ${googChannelType}`);
       }
-      if (command['goog:channel'] !== '') {
-        channel = {'goog:channel': command['goog:channel'] as string};
-      }
-    } else if (command.channel !== undefined) {
-      log(
-        WindowBidiTransport.LOGGER_PREFIX_WARN,
-        'Legacy `channel` parameter is deprecated and will not supported soon. Use `goog:channel` instead.',
-      );
-      const channelType = WindowBidiTransport.#getJsonType(command.channel);
-      if (channelType !== 'string') {
-        throw new Error(`Expected string 'channel' but got ${channelType}`);
-      }
-      if (command.channel !== '') {
-        channel = {channel: command.channel as string};
+      // Empty string goog:channel is considered as no goog:channel provided.
+      if (googChannel === '') {
+        googChannel = undefined;
       }
     }
 
-    return {id, method, params, channel} as ChromiumBidi.Command;
+    return {
+      id,
+      method,
+      params,
+      'goog:channel': googChannel,
+    } as ChromiumBidi.Command;
   }
 }
 
