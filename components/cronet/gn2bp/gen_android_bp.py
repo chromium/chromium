@@ -75,11 +75,14 @@ def initialize_globals(import_channel: str):
 
   global additional_args
   additional_args = {
-      f'{MODULE_PREFIX}net_third_party_quiche_net_quic_test_tools_proto_gen_headers':
-      [('export_include_dirs', {
-          "net/third_party/quiche/src",
-      })],
-      f'{MODULE_PREFIX}net_third_party_quiche_net_quic_test_tools_proto_gen__testing_headers':
+      # TODO: operating on the final module names means we have to use short
+      # names which are less readable. Find a better way.
+      f'{MODULE_PREFIX}39ea1a33_quiche_net_quic_test_tools_proto_gen_h': [
+          ('export_include_dirs', {
+              "net/third_party/quiche/src",
+          })
+      ],
+      f'{MODULE_PREFIX}39ea1a33_quiche_net_quic_test_tools_proto_gen__testing_h':
       [('export_include_dirs', {
           "net/third_party/quiche/src",
       })],
@@ -993,9 +996,18 @@ class Blueprint:
     return ret
 
 
-def label_to_module_name(label):
+def label_to_module_name(label, short=False):
   """Turn a GN label (e.g., //:perfetto_tests) into a module name."""
   module = re.sub(r'^//:?', '', label)
+
+  if short:
+    # We want the module name to be short, but we still need it to be unique and
+    # somewhat readable. To do this we replace just the path by a short hash.
+    parts = module.rsplit('/', maxsplit=1)
+    if len(parts) > 1 and len(parts[0]) > 10:
+      module = hashlib.sha256(
+          parts[0].encode('utf-8')).hexdigest()[:8] + '_' + parts[1]
+
   module = re.sub(r'[^a-zA-Z0-9_]', '_', module)
 
   if not module.startswith(MODULE_PREFIX):
@@ -1225,7 +1237,13 @@ def create_proto_modules(blueprint, gn, target):
   cpp_out_dir = get_value_arg('--cc-out-dir')
   assert cpp_out_dir is not None, target.name
   cpp_out_dir = cpp_out_dir.removeprefix('gen/')
-  target_module_name = label_to_module_name(target.name)
+  # We need to keep these module names short because the modules end up in
+  # `generated_headers` which propagate throughout the build graph. If the names
+  # are too long we can easily end up with long lists of generated headers with
+  # long names, which in turn trigger "argument list too long" errors due to the
+  # sheer size of `-I` include dir parameter lists being passed to the C++
+  # compiler.
+  target_module_name = label_to_module_name(target.name, short=True)
 
   # In GN builds the proto path is always relative to the output directory
   # (out/tmp.xxx).
@@ -1251,8 +1269,7 @@ def create_proto_modules(blueprint, gn, target):
   blueprint.add_module(source_module)
   source_module.srcs.update(sources)
 
-  header_module = Module('cc_genrule', source_module_name + '_headers',
-                         target.name)
+  header_module = Module('cc_genrule', source_module_name + '_h', target.name)
   blueprint.add_module(header_module)
   header_module.srcs = set(source_module.srcs)
 
