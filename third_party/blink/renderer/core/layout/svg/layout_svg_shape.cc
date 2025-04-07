@@ -56,6 +56,12 @@ void ClampBoundsToFinite(gfx::RectF& bounds) {
   bounds.set_height(ClampTo<float>(bounds.height()));
 }
 
+// Returns true if style would make this object have relative lengths i.e.
+// lengths as percentage of the viewport.
+bool ComputeHasRelativeLengths(const ComputedStyle& style) {
+  return style.StrokeWidth().length().HasPercent();
+}
+
 }  // namespace
 
 LayoutSVGShape::LayoutSVGShape(SVGGeometryElement* node)
@@ -365,6 +371,7 @@ SVGLayoutResult LayoutSVGShape::UpdateSVGLayout(
 
   const bool has_viewport_dependence =
       GetElement()->SelfHasRelativeLengths() ||
+      ComputeHasRelativeLengths(StyleRef()) ||
       (transform_uses_reference_box_ &&
        StyleRef().TransformBox() == ETransformBox::kViewBox);
 
@@ -377,8 +384,12 @@ SVGLayoutResult LayoutSVGShape::UpdateSVGLayout(
 
 bool LayoutSVGShape::UpdateAfterSVGLayout(const SVGLayoutInfo& layout_info,
                                           bool bbox_changed) {
+  bool needs_paint_invalidation = false;
+  if (layout_info.viewport_changed && ComputeHasRelativeLengths(StyleRef())) {
+    needs_paint_invalidation = true;
+  }
   if (bbox_changed) {
-    SetShouldDoFullPaintInvalidation();
+    needs_paint_invalidation = true;
 
     // Invalidate all resources of this client if our reference box changed.
     if (EverHadLayout()) {
@@ -387,6 +398,11 @@ bool LayoutSVGShape::UpdateAfterSVGLayout(const SVGLayoutInfo& layout_info,
       resource_invalidator.InvalidatePaints();
     }
   }
+
+  if (needs_paint_invalidation) {
+    SetShouldDoFullPaintInvalidation();
+  }
+
   if (!needs_transform_update_ && transform_uses_reference_box_) {
     needs_transform_update_ =
         CheckForImplicitTransformChange(layout_info, bbox_changed);
