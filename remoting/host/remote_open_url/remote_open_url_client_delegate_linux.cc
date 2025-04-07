@@ -114,8 +114,8 @@ RemoteOpenUrlClientDelegateLinux::~RemoteOpenUrlClientDelegateLinux() = default;
 
 void RemoteOpenUrlClientDelegateLinux::OpenUrlOnFallbackBrowser(
     const GURL& url) {
-  std::string current_desktop;
-  environment_->GetVar(kXdgCurrentDesktopEnvVar, &current_desktop);
+  std::string current_desktop =
+      environment_->GetVar(kXdgCurrentDesktopEnvVar).value_or(std::string());
 
   const char* host_setting_key = kLinuxPreviousDefaultWebBrowserGeneric;
   if (base::Contains(current_desktop, "Cinnamon")) {

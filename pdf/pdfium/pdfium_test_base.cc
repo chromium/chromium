@@ -34,9 +34,9 @@ namespace {
 base::FilePath GetTestFontsDir() {
   // base::TestSuite::Initialize() should have already set this.
   std::unique_ptr<base::Environment> env(base::Environment::Create());
-  std::string fontconfig_sysroot;
-  CHECK(env->GetVar("FONTCONFIG_SYSROOT", &fontconfig_sysroot));
-  return base::FilePath(fontconfig_sysroot).AppendASCII("test_fonts");
+  auto fontconfig_sysroot = env->GetVar("FONTCONFIG_SYSROOT");
+  CHECK(fontconfig_sysroot.has_value());
+  return base::FilePath(fontconfig_sysroot.value()).AppendASCII("test_fonts");
 }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
