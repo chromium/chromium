@@ -7,6 +7,7 @@ package org.chromium.base;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 
 import java.util.Optional;
@@ -43,6 +44,7 @@ public interface Callback<T extends @Nullable Object> {
      * @param callback The {@link Callback} to run.
      * @param object The payload to provide to the callback (may be null).
      */
+    @NullUnmarked // https://github.com/uber/NullAway/issues/1075
     static <T extends @Nullable Object> void runNullSafe(@Nullable Callback<T> callback, T object) {
         if (callback != null) callback.onResult(object);
     }
