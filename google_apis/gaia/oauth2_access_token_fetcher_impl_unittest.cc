@@ -405,6 +405,10 @@ class OAuth2ErrorCodesTest
       return GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
           kAdminPolicyEnforced;
     }
+    if (error_code == "access_denied") {
+      return GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+          kAccessDenied;
+    }
     NOTREACHED();
   }
 };
@@ -437,7 +441,7 @@ const OAuth2ErrorCodesTestParam kOAuth2ErrorCodesTable[] = {
      OAuth2Response::kAdminPolicyEnforced,
      GoogleServiceAuthError::SCOPE_LIMITED_UNRECOVERABLE_ERROR},
     {"access_denied", net::HTTP_FORBIDDEN, OAuth2Response::kAccessDenied,
-     GoogleServiceAuthError::SERVICE_UNAVAILABLE},
+     GoogleServiceAuthError::SCOPE_LIMITED_UNRECOVERABLE_ERROR},
     {"", net::HTTP_BAD_REQUEST, OAuth2Response::kErrorUnexpectedFormat,
      GoogleServiceAuthError::SERVICE_ERROR},
     {"", net::HTTP_OK, OAuth2Response::kOkUnexpectedFormat,

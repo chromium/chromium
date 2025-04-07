@@ -95,6 +95,10 @@ FromMojoScopeLimitedUnrecoverableErrorReason(
         kRemoteConsentResolutionRequired:
       return GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
           kRemoteConsentResolutionRequired;
+    case cm::GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+        kAccessDenied:
+      return GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+          kAccessDenied;
   }
 }
 
@@ -122,6 +126,10 @@ ToMojoScopeLimitedUnrecoverableErrorReason(
         kRemoteConsentResolutionRequired:
       return cm::GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
           kRemoteConsentResolutionRequired;
+    case GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+        kAccessDenied:
+      return cm::GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+          kAccessDenied;
   }
 }
 
