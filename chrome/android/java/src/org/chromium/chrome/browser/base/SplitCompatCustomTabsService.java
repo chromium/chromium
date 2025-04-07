@@ -10,9 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 
-import androidx.annotation.OptIn;
 import androidx.browser.auth.AuthTabSessionToken;
-import androidx.browser.auth.ExperimentalAuthTab;
 import androidx.browser.customtabs.CustomTabsService;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.browser.customtabs.EngagementSignalsCallback;
@@ -29,7 +27,6 @@ import java.util.List;
  * CustomTabsService base class which will call through to the given {@link Impl}. This class must
  * be present in the base module, while the Impl can be in the chrome module.
  */
-@OptIn(markerClass = ExperimentalAuthTab.class)
 @NullMarked
 public class SplitCompatCustomTabsService extends CustomTabsService {
     private String mServiceClassName;

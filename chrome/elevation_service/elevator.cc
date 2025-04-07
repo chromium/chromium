@@ -21,7 +21,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/version_info/version_info.h"
 #include "base/win/scoped_localalloc.h"
-#include "base/win/win_util.h"
+#include "base/win/windows_handle_util.h"
 #include "build/branding_buildflags.h"
 #include "chrome/elevation_service/caller_validation.h"
 #include "chrome/elevation_service/elevated_recovery_impl.h"

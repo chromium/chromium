@@ -33,6 +33,7 @@ export function generateStatsLabel(report) {
   if (['outbound-rtp', 'remote-outbound-rtp', 'inbound-rtp',
       'remote-inbound-rtp'].includes(report.type) && report.stats.values) {
     labels = ['kind', 'mid', 'rid', 'ssrc', 'rtxSsrc', 'fecSsrc',
+      'frameHeight', 'contentType',
       'scalabilityMode',
       'encoderImplementation', 'decoderImplementation',
       'powerEfficientEncoder', 'powerEfficientDecoder',

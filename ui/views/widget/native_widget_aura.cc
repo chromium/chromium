@@ -482,8 +482,6 @@ void NativeWidgetAura::CenterWindow(const gfx::Size& size) {
     return;
   }
 
-  window_->SetProperty(aura::client::kPreferredSize, size);
-
   gfx::Rect parent_bounds(window_->parent()->GetBoundsInRootWindow());
   // When centering window, we take the intersection of the host and
   // the parent. We assume the root window represents the visible

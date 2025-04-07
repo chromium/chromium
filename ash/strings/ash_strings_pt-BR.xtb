@@ -112,6 +112,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1306549533752902673">APPS RECOMENDADOS</translation>
 <translation id="1310396869741602366">Mudar tom</translation>
 <translation id="1312604459020188865">Intensidade do sinal em <ph name="SIGNAL_STRENGTH" /></translation>
+<translation id="1314113845887519729">Alça da borda de cima selecionada, use as teclas de seta para mover</translation>
 <translation id="1316069254387866896">Sempre mostrar a barra</translation>
 <translation id="132346741904777634">Câmera alinhada ao canto esquerdo de cima. Conflito com a superfície do sistema.</translation>
 <translation id="132415371743256095">Fechar o <ph name="DESK_NAME" /> e as janelas</translation>
@@ -186,6 +187,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1557622599341396706">Mostrar nome do espaço de trabalho</translation>
 <translation id="1569384531973824928">Essa ação libera o acesso para todos os apps e sites com as permissões de câmera e microfone. Talvez seja necessário atualizar a página da Web ou reiniciar o app.</translation>
 <translation id="1571697193564730395">Alternar "Não perturbe". <ph name="STATE_TEXT" /></translation>
+<translation id="1574691582236909946">Alça da borda esquerda selecionada, use as teclas de seta para mover</translation>
 <translation id="1576623706766186887">Diminuir zoom quando a lupa estiver ativada</translation>
 <translation id="1582946770779745370">Painel de jogo disponível. Pressione "<ph name="LAUNCHER_KEY_NAME" /> + Shift + Esc" e, em seguida, "<ph name="LAUNCHER_KEY_NAME" /> + g" a qualquer momento para abrir</translation>
 <translation id="1586324912145647027">Ir para o espaço de trabalho 1 a 8</translation>
@@ -609,6 +611,7 @@ Caso contrário, o touchpad integrado será reativado em <ph name="TIMEOUT_SECON
 <translation id="304097922505898963">Abrir o app Atalhos do teclado</translation>
 <translation id="304417730895741346">Os apps fixados e abertos estão na estante. Para fixar um app na estante, clique nele com o botão direito do mouse ou toque no touchpad com dois dedos.</translation>
 <translation id="3045488863354895414">Boa tarde,</translation>
+<translation id="3045670165536837541">Alça superior direita selecionada, use as teclas de seta para mover</translation>
 <translation id="3047761520276763270">Tente dizer:</translation>
 <translation id="3053407068093039599">Ativar/desativar o acesso à câmera</translation>
 <translation id="3055162170959710888">Você usou este dispositivo por <ph name="USED_TIME" /> hoje</translation>
@@ -1764,6 +1767,7 @@ Nova instalação</translation>
 <translation id="6696025732084565524">Seu teclado removível precisa de uma atualização crítica</translation>
 <translation id="6697913454192220372">Adicionar novo espaço de trabalho</translation>
 <translation id="6700713906295497288">Botão do menu do IME</translation>
+<translation id="6704073473590541209">Alça da borda direita selecionada, use as teclas de seta para mover</translation>
 <translation id="6706742084323792866">Fixar teclado</translation>
 <translation id="6710213216561001401">Anterior</translation>
 <translation id="6723839937902243910">Energia</translation>
@@ -1787,6 +1791,7 @@ Nova instalação</translation>
 <translation id="6781002679438061620">Espaço de trabalho 9</translation>
 <translation id="6782182743534150858">Espaço de trabalho 13</translation>
 <translation id="6782919488259222803">Pesquisar a página atual</translation>
+<translation id="6783348167101855071">Alça inferior direita selecionada, use as teclas de seta para mover</translation>
 <translation id="6786750046913594791">Fechar pasta</translation>
 <translation id="6790428901817661496">Reproduzir</translation>
 <translation id="6792262051831399889">Indisponível</translation>
@@ -1942,6 +1947,7 @@ Nova instalação</translation>
 <translation id="7371404428569700291">Gravar janela</translation>
 <translation id="7372069265635026568">Memória disponível: <ph name="AVAILABLE_MEMORY" /> de um total de <ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">Dá acesso ao microfone para todos os apps e sites com essa permissão</translation>
+<translation id="7376933029363911338">Alça da borda de baixo selecionada, use as teclas de seta para mover</translation>
 <translation id="7377169924702866686">O Caps Lock está ativado.</translation>
 <translation id="7377481913241237033">Conectar com um código</translation>
 <translation id="7378203170292176219">Arraste para selecionar uma área para a gravação</translation>
@@ -2038,6 +2044,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7659861092419699379">O espaço de trabalho e as janelas foram fechadas</translation>
 <translation id="7660160718439869192">Seu dispositivo <ph name="NAME" /> será mostrado nos dispositivos vinculados a <ph name="EMAIL" /></translation>
+<translation id="7661694115779363471">Alça inferior esquerda selecionada, use as teclas de seta para mover</translation>
 <translation id="7662283695561029522">Toque para configurar</translation>
 <translation id="7670953955701272011">Abrir esta data no Google Agenda</translation>
 <translation id="7671610481353807627">Os apps estão ordenados por cor</translation>
@@ -2206,6 +2213,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8155628902202578800">Abrir a caixa de diálogo de informações da conta <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Usando <ph name="LOCALE_NAME" /></translation>
 <translation id="8168435359814927499">Conteúdo</translation>
+<translation id="8172370561760918656">Alça superior esquerda selecionada, use as teclas de seta para mover</translation>
 <translation id="81817143961839203">Falha na inserção da imagem</translation>
 <translation id="8185090165691050712">Ativar/desativar o menu para redimensionar o modo de bloqueio</translation>
 <translation id="8192727139462702395">Quando você desativar o Bluetooth, estes dispositivos externos serão desconectados do <ph name="DEVICE_TYPE" />:</translation>

@@ -2810,7 +2810,7 @@ AXObject* AXObject::GetInterestTargetForInvoker() const {
     return nullptr;
   }
 
-  Element* popover = GetElement()->interestTargetElement();
+  Element* popover = GetElement()->InterestTargetElement();
   if (ElementTraversal::NextSkippingChildren(*GetElement()) == popover) {
     // The next element is already the popover.
     return nullptr;

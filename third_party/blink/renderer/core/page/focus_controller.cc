@@ -287,32 +287,21 @@ Element* AdjustPreviousForCarouselFocusOrder(const Element& current,
 }
 // End of carousel helpers.
 
-bool IsOpenPopoverWithInvoker(const Node* node) {
+Element* InvokerForOpenPopover(const Node* node) {
   auto* popover = DynamicTo<HTMLElement>(node);
-  return popover && popover->HasPopoverAttribute() && popover->popoverOpen() &&
-         popover->GetPopoverData()->invoker();
+  if (!popover || !popover->popoverOpen()) {
+    return nullptr;
+  }
+  return popover->GetPopoverData()->invoker();
 }
 
 const Element* InclusiveAncestorOpenPopoverWithInvoker(const Element* element) {
   for (; element; element = FlatTreeTraversal::ParentElement(*element)) {
-    if (IsOpenPopoverWithInvoker(element)) {
+    if (InvokerForOpenPopover(element)) {
       return element;  // Return the popover
     }
   }
   return nullptr;
-}
-
-bool IsOpenPopoverInvoker(const Node* node) {
-  auto* invoker = DynamicTo<HTMLFormControlElement>(node);
-  if (!invoker)
-    return false;
-  HTMLElement* popover = const_cast<HTMLFormControlElement*>(invoker)
-                             ->popoverTargetElement()
-                             .popover;
-  // There could be more than one invoker for a given popover. Only return true
-  // if this invoker was the one that was actually used.
-  return popover && popover->popoverOpen() &&
-         popover->GetPopoverData()->invoker() == invoker;
 }
 
 // If node is a reading-flow container or a display: contents element whose
@@ -607,8 +596,8 @@ class FocusNavigation final {
       owner = node.ParentOrShadowHostElement();
     } else if (&node == node.GetTreeScope().RootNode()) {
       owner = TreeOwner(&node);
-    } else if (IsOpenPopoverWithInvoker(&node)) {
-      owner = DynamicTo<HTMLElement>(node)->GetPopoverData()->invoker();
+    } else if (auto* invoker = InvokerForOpenPopover(&node)) {
+      owner = invoker;
     } else if (node.parentNode()) {
       owner = FindOwner(*node.parentNode());
     }
@@ -735,8 +724,9 @@ Element* ScopedFocusNavigation::Owner() {
   Element* owner = navigation_.Owner();
   // TODO(crbug.com/335909581): If the returned owner is a reading-flow
   // scope owner and a popover, we want the scope owner to be the invoker.
-  if (IsOpenPopoverWithInvoker(owner) && IsReadingFlowScopeOwner(owner)) {
-    return DynamicTo<HTMLElement>(owner)->GetPopoverData()->invoker();
+  if (auto* invoker = InvokerForOpenPopover(owner);
+      invoker && IsReadingFlowScopeOwner(owner)) {
+    return invoker;
   }
   return owner;
 }
@@ -798,12 +788,8 @@ ScopedFocusNavigation ScopedFocusNavigation::OwnedByIFrame(
 ScopedFocusNavigation ScopedFocusNavigation::OwnedByPopoverInvoker(
     const Element& invoker,
     FocusController::OwnerMap& owner_map) {
-  DCHECK(IsA<HTMLFormControlElement>(invoker));
-  HTMLElement* popover =
-      DynamicTo<HTMLFormControlElement>(const_cast<Element&>(invoker))
-          ->popoverTargetElement()
-          .popover;
-  DCHECK(IsOpenPopoverWithInvoker(popover));
+  HTMLElement* popover = invoker.GetOpenPopoverTarget();
+  DCHECK(InvokerForOpenPopover(popover));
   return ScopedFocusNavigation(*popover, nullptr, owner_map);
 }
 
@@ -1273,18 +1259,20 @@ Element* FindFocusableElementAcrossFocusScopesForward(
     FocusController::OwnerMap& owner_map) {
   const Element* current = scope.CurrentElement();
   Element* found = nullptr;
-  if (current && IsShadowHostWithoutCustomFocusLogic(*current)) {
-    ScopedFocusNavigation inner_scope =
-        ScopedFocusNavigation::OwnedByShadowHost(*current, owner_map);
-    found = FindFocusableElementRecursivelyForward(inner_scope, owner_map);
-  } else if (IsOpenPopoverInvoker(current)) {
-    ScopedFocusNavigation inner_scope =
-        ScopedFocusNavigation::OwnedByPopoverInvoker(*current, owner_map);
-    found = FindFocusableElementRecursivelyForward(inner_scope, owner_map);
-  } else if (current && IsReadingFlowScopeOwner(current)) {
-    ScopedFocusNavigation inner_scope =
-        ScopedFocusNavigation::OwnedByReadingFlow(*current, owner_map);
-    found = FindFocusableElementRecursivelyForward(inner_scope, owner_map);
+  if (current) {
+    if (IsShadowHostWithoutCustomFocusLogic(*current)) {
+      ScopedFocusNavigation inner_scope =
+          ScopedFocusNavigation::OwnedByShadowHost(*current, owner_map);
+      found = FindFocusableElementRecursivelyForward(inner_scope, owner_map);
+    } else if (current->GetOpenPopoverTarget()) {
+      ScopedFocusNavigation inner_scope =
+          ScopedFocusNavigation::OwnedByPopoverInvoker(*current, owner_map);
+      found = FindFocusableElementRecursivelyForward(inner_scope, owner_map);
+    } else if (IsReadingFlowScopeOwner(current)) {
+      ScopedFocusNavigation inner_scope =
+          ScopedFocusNavigation::OwnedByReadingFlow(*current, owner_map);
+      found = FindFocusableElementRecursivelyForward(inner_scope, owner_map);
+    }
   }
   if (!found)
     found = FindFocusableElementRecursivelyForward(scope, owner_map);
@@ -1308,7 +1296,7 @@ Element* FindFocusableElementAcrossFocusScopesBackward(
     FocusController::OwnerMap& owner_map) {
   Element* found = FindFocusableElementRecursivelyBackward(scope, owner_map);
 
-  while (IsOpenPopoverInvoker(found)) {
+  while (found && found->GetOpenPopoverTarget()) {
     ScopedFocusNavigation inner_scope =
         ScopedFocusNavigation::OwnedByPopoverInvoker(*found, owner_map);
     // If no inner element is focusable, then focus should be on the current
@@ -1330,7 +1318,7 @@ Element* FindFocusableElementAcrossFocusScopesBackward(
       break;
     if ((IsKeyboardFocusableShadowHost(*owner) &&
          !owner->IsShadowHostWithDelegatesFocus()) ||
-        IsOpenPopoverInvoker(owner) ||
+        owner->GetOpenPopoverTarget() ||
         IsKeyboardFocusableReadingFlowOwner(*owner)) {
       found = owner;
       break;

@@ -578,12 +578,6 @@ bool HttpNetworkTransaction::GetLoadTimingInfo(
 
 void HttpNetworkTransaction::PopulateLoadTimingInternalInfo(
     LoadTimingInternalInfo* load_timing_internal_info) const {
-  if (!create_stream_start_time_.is_null() &&
-      !create_stream_end_time_.is_null()) {
-    CHECK_LE(create_stream_start_time_, create_stream_end_time_);
-    load_timing_internal_info->create_stream_delay =
-        create_stream_end_time_ - create_stream_start_time_;
-  }
   if (!initialize_stream_start_time_.is_null() &&
       !initialize_stream_end_time_.is_null()) {
     CHECK_LE(initialize_stream_start_time_, initialize_stream_end_time_);
@@ -1009,7 +1003,6 @@ int HttpNetworkTransaction::DoCreateStreamComplete(int result) {
   RecordStreamRequestResult(result);
   CopyConnectionAttemptsFromStreamRequest();
   if (result == OK) {
-    create_stream_end_time_ = base::TimeTicks::Now();
     next_state_ = STATE_CONNECTED_CALLBACK;
     DCHECK(stream_.get());
     CHECK(!create_stream_start_time_.is_null());

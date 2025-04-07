@@ -1183,10 +1183,6 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // Internal load timing information that is not exposed to the web.
   LoadTimingInternalInfo load_timing_internal_info_;
 
-  // Timing information for the connected delegate.
-  base::TimeTicks delegate_connected_start_time_;
-  base::TimeTicks delegate_connected_end_time_;
-
   // The proxy chain used for this request, if any.
   ProxyChain proxy_chain_;
 

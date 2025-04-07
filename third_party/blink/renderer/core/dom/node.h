@@ -1016,6 +1016,11 @@ class CORE_EXPORT Node : public EventTarget {
     return data_ ? data_->GetDOMParts() : nullptr;
   }
 
+  DOMNodeId NodeID() const {
+    return data_ ? data_->NodeId() : kInvalidDOMNodeId;
+  }
+  DOMNodeId& EnsureNodeID() { return EnsureRareData().NodeId(); }
+
   // For the imperative slot distribution API.
   void SetManuallyAssignedSlot(HTMLSlotElement* slot);
   HTMLSlotElement* ManuallyAssignedSlot();

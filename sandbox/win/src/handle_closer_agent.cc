@@ -15,6 +15,7 @@
 #include "base/logging.h"
 #include "base/win/static_constants.h"
 #include "base/win/win_util.h"
+#include "base/win/windows_handle_util.h"
 #include "sandbox/win/src/heap_helper.h"
 #include "sandbox/win/src/sandbox_nt_util.h"
 #include "sandbox/win/src/win_utils.h"

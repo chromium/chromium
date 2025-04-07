@@ -4040,7 +4040,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3798449238516105146">Verze</translation>
 <translation id="3798632811625902122">Zařízení Bluetooth <ph name="DEVICE" /> žádá o povolení ke spárování.</translation>
 <translation id="3798670284305777884">Reproduktor (interní)</translation>
-<translation id="3799128412641261490">Nastavení přístupu pomocí přepínačů</translation>
+<translation id="3799128412641261490">Nastavení ovládání přepínači</translation>
 <translation id="3800764353337460026">Symbolický styl</translation>
 <translation id="3800828618615365228">Doplňující smluvní podmínky prohlížeče Google Chrome a systému ChromeOS</translation>
 <translation id="3800898876950197674">Pokud toto rozšíření chcete povolit, zadejte své heslo.</translation>
@@ -9891,7 +9891,7 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="7988876720343145286">Další nastavení a oprávnění systému Android</translation>
 <translation id="7990863024647916394">Hlas <ph name="DISPLAY_NAME" /> <ph name="COUNT" /></translation>
 <translation id="7990958035181555539">Automaticky přenést Wi-Fi z telefonu Android</translation>
-<translation id="7991296728590311172">Nastavení přístupu pomocí přepínačů</translation>
+<translation id="7991296728590311172">Nastavení ovládání přepínači</translation>
 <translation id="7992080146463834191">Shrne obsah, zjednoduší složitý text a odpoví na otázky</translation>
 <translation id="7992203134935383159">Syntéza řeči</translation>
 <translation id="7997826902155442747">Priorita procesu</translation>
@@ -10966,7 +10966,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8740086188450289493">Použít heslo k účtu Google</translation>
 <translation id="8740247629089392745">Tento Chromebook můžete předat uživateli <ph name="SUPERVISED_USER_NAME" />. Nastavení je skoro hotové. Pak bude čas prozkoumat obsah.</translation>
 <translation id="8740672167979365981">Je vyžadována aktualizace systému ChromeOS Flex</translation>
-<translation id="8741944563400125534">Průvodce nastavením přístupu pomocí přepínačů</translation>
+<translation id="8741944563400125534">Průvodce nastavením ovládání přepínači</translation>
 <translation id="8742395827132970586">Instalace se nezdařila, probíhá čištění</translation>
 <translation id="8742998548129056176">Toto jsou obecné informace o vašem zařízení a způsobu jeho používání (např. stav baterie, aktivita systému a aplikací nebo chyby). Data budou využívána k vylepšení systému Android. Některé souhrnné informace pomohou s vylepšováním aplikací a služeb také našim partnerům, například vývojářům Androidu.</translation>
 <translation id="8743357966416354615">Spravované vývojové prostředí (<ph name="GENERAL_NAME" />)</translation>

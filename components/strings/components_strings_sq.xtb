@@ -528,6 +528,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1890171020361705182">Loja Dino. Një dinozaur i pikselizuar shmang kaktuset dhe pterodaktilët ndërsa vrapon përgjatë një peizazhi të shkretuar. Kur dëgjon një sinjalizim audioje, trokit për të kapërcyer mbi pengesa.</translation>
 <translation id="1898423065542865115">Filtrimi</translation>
 <translation id="1901443836186977402">{1,plural, =1{Ky server nuk mund të vërtetonte se është <ph name="DOMAIN" />; certifikata e tij e sigurisë ka skaduar një ditë më parë. Kjo mund të jetë shkaktuar nga një konfigurim i gabuar ose nga ndërhyrja e një sulmuesi në lidhjen tënde. Ora e kompjuterit tënd është caktuar aktualisht në <ph name="CURRENT_DATE" />. A është e saktë kjo? Nëse jo, duhet të korrigjosh orën e sistemit tënd dhe më pas ta rifreskosh këtë faqe.}other{Ky server nuk mund të vërtetonte se është <ph name="DOMAIN" />; certifikata e tij e sigurisë ka skaduar # ditë më parë. Kjo mund të jetë shkaktuar nga një konfigurim i gabuar ose nga ndërhyrja e një sulmuesi në lidhjen tënde. Ora e kompjuterit tënd është caktuar aktualisht në <ph name="CURRENT_DATE" />. A është e saktë kjo? Nëse jo, duhet të korrigjosh orën e sistemit tënd dhe më pas ta rifreskosh këtë faqe.}}</translation>
+<translation id="190166348986967700">Administratori yt do të fillojë ngarkimin e skedarëve të tu në <ph name="CLOUD_PROVIDER" /> më <ph name="DATE_TIME" />. Mbaje pajisjen të lidhur derisa ngarkimi i skedarit të përfundojë. Gjatë ngarkimit, do të mund të lexosh vetëm skedarët lokalë.</translation>
 <translation id="1902576642799138955">Periudha e vlefshmërisë</translation>
 <translation id="1908217026282415406">Përdorimi dhe lëvizja e kamerës</translation>
 <translation id="1908690643053136980">Administratori yt nuk lejon <ph name="PERMISSION" /> për këtë sajt</translation>
@@ -2153,6 +2154,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="473775607612524610">Përditësoje</translation>
 <translation id="4738601419177586157">Sugjerim kërkimi për <ph name="TEXT" /></translation>
 <translation id="4742407542027196863">Menaxho fjalëkalimet…</translation>
+<translation id="474270528725216349">Nga të paktën 1 sajt në pajisjet e sinkronizuara</translation>
 <translation id="4743275772928623722">Sistemi yt u përditësua, por disa nga aplikacionet dhe skedarët e tu nuk mund të rikuperoheshin. Aplikacionet e tua do të shkarkohen përsëri automatikisht.</translation>
 <translation id="4744514002166662487">Krijo prezantim</translation>
 <translation id="4744603770635761495">Shtegu i ekzekutueshëm</translation>
@@ -2283,6 +2285,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="495170559598752135">Veprimet</translation>
 <translation id="4953689047182316270">Reago ndaj ngjarjeve të qasshmërisë</translation>
 <translation id="4957080528849277028">Butoni "Shiko historikun tënd të Chrome". Aktivizoje për të shikuar dhe menaxhuar historikun tënd të shfletimit te cilësimet e Chrome</translation>
+<translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{+ 1 sajt}other{+ # sajte}}</translation>
 <translation id="4958444002117714549">Zgjero listën</translation>
 <translation id="4960068118612257147">Mund të bësh ndryshime te cilësimet e privatësisë së reklamave të Chrome</translation>
 <translation id="4960203958361543136">Zgjidh motorin e kërkimit</translation>
@@ -2617,8 +2620,10 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="553377674408670169">Punë në arsim</translation>
 <translation id="5534785731327961487">Ofertë e mirë tani</translation>
 <translation id="5536214594743852365">Shfaq seksionin "<ph name="SECTION" />"</translation>
+<translation id="5536471014287260753">{DOMAIN_COUNT,plural, =1{+ 1 sajt (më shumë në pajisjet e sinkronizuara)}other{+ # sajte (më shumë në pajisjet e sinkronizuara)}}</translation>
 <translation id="553782666181800029">Zarf Chou 2</translation>
 <translation id="5538270463355278784">ekrani i plotë automatik</translation>
+<translation id="5538859347764346097"><ph name="KEYWORD_SHORTCUT" />, kërko në <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="5539243836947087108">Bazamenti i kapjes</translation>
 <translation id="5540224163453853">Artikulli i kërkuar nuk u gjet.</translation>
 <translation id="5540969246441091044">Hipizmi</translation>
@@ -2777,6 +2782,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5838278095973806738">Nuk duhet të futësh asnjë informacion delikat në këtë sajt (p.sh. fjalëkalimet ose karta krediti) pasi mund të vidhet nga sulmuesit.</translation>
 <translation id="5838732667866024867">Mund të përdorësh shigjetën majtas/djathtas për të shqyrtuar ndryshimet e çmimeve në grafik</translation>
 <translation id="5840318881868981258">Në "Llogarinë tënde të Google", <ph name="ACCOUNT" /></translation>
+<translation id="5841007907672481419">Nga <ph name="TYPE_1" /></translation>
 <translation id="5841338463993781099">Të ruhet te llogaria?</translation>
 <translation id="5843987376989109187">Kjo gjuhë nuk mbështetet ende.
     <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
@@ -2790,6 +2796,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5863515189965725638">Modifiko numrin IBAN</translation>
 <translation id="5863847714970149516">Faqja në vijim mund të përpiqet të të tarifojë në para</translation>
 <translation id="5866257070973731571">Shto numër telefoni</translation>
+<translation id="5866327164731551901">Nga <ph name="TYPE_1" /> <ph name="TYPE_2" /></translation>
 <translation id="5866898949289125849">Po shikon një faqe të veglave të zhvilluesit</translation>
 <translation id="5869405914158311789">Ky sajt është i paarritshëm</translation>
 <translation id="5869522115854928033">Fjalëkalimet e ruajtura</translation>
@@ -3498,6 +3505,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="7075452647191940183">Kërkesa është tepër e madhe</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
+<translation id="7079783554682867524">Nga <ph name="TYPE_1" /> (më shumë në pajisjet e sinkronizuara)</translation>
 <translation id="7081311540357715807">Shitësit me pakicë të ushqimeve dhe produkteve ushqimore</translation>
 <translation id="7083258188081898530">Tabakaja 9</translation>
 <translation id="7086090958708083563">Përditësimi u kërkua nga përdoruesi</translation>
@@ -4153,6 +4161,7 @@ Detaje shtesë:
 <translation id="8216640997712497593">14 x 18 inç</translation>
 <translation id="8218327578424803826">Vendndodhja e caktuar:</translation>
 <translation id="8220602974062798186">Të bllokohet temat "<ph name="TOPIC" />" dhe çdo temë e ngjashme?</translation>
+<translation id="8226408512771130794"><ph name="KEYWORD_SHORTCUT" />, pyet <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="8228419419708659934">Pamja me dy faqe</translation>
 <translation id="8228477714872026922"><ph name="ORIGIN" /> dëshiron të ketë qasje te një pajisje në rrjetin tënd:</translation>
 <translation id="822925450938886901">Për informacione shtesë dhe politikat që mund të zbatohen, hap chrome://management në shfletuesin tënd.</translation>

@@ -14,10 +14,8 @@ import android.graphics.Color;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.OptIn;
 import androidx.browser.auth.AuthTabColorSchemeParams;
 import androidx.browser.auth.AuthTabIntent;
-import androidx.browser.auth.ExperimentalAuthTab;
 import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.Log;
@@ -26,7 +24,6 @@ import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.ui.util.ColorUtils;
 
 /** {@link ColorProvider} implementation used for Auth Tab. */
-@OptIn(markerClass = ExperimentalAuthTab.class)
 public class AuthTabColorProvider implements ColorProvider {
     private static final String TAG = "AuthTabColorProvider";
 

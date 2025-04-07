@@ -553,8 +553,24 @@ class HttpStreamPool::AttemptManager
 
   // TODO(crbug.com/403373872): Remove below fields once we identify the cause
   // of the bug.
-  std::vector<ServiceEndpoint> unusable_endpoints_for_tcp_based_attempt_;
-  std::vector<IPEndPoint> aborted_endpoints_for_tcp_based_attempt_;
+  enum class AttemptAbortReason : int {
+    kEndpointResultsEmpty = 0,
+    kEndpointUnusable = 1,
+    kEndpointNotInResults = 2,
+  };
+  struct AbortedAttempt {
+    AttemptAbortReason reason;
+    bool svcb_optional;
+    bool service_endpoint_request_finished;
+    IPEndPoint endpoint;
+    base::TimeDelta start_to_abort_time;
+    base::TimeDelta ssl_config_wait_to_abort_time;
+  };
+  std::vector<AbortedAttempt> aborted_tcp_based_attempts_;
+
+  // TODO(crbug.com/406936736): Remove this once we identify the cause of the
+  // bug.
+  bool ip_matching_spdy_session_found_ = false;
 
   // An error code to notify jobs when `this` cannot make any further progress.
   // Set to an error from service endpoint resolution failure, the last stream

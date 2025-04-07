@@ -320,7 +320,7 @@ void PDFiumPrint::FitContentsToPrintableArea(FPDF_DOCUMENT doc,
 }
 
 std::vector<uint8_t> PDFiumPrint::PrintPagesAsPdf(
-    const std::vector<int>& page_indices,
+    base::span<const int> page_indices,
     const blink::WebPrintParams& print_params) {
   ScopedFPDFDocument output_doc = CreatePrintPdf(page_indices, print_params);
   if (print_params.rasterize_pdf) {
@@ -333,7 +333,7 @@ std::vector<uint8_t> PDFiumPrint::PrintPagesAsPdf(
 }
 
 ScopedFPDFDocument PDFiumPrint::CreatePrintPdf(
-    const std::vector<int>& page_indices,
+    base::span<const int> page_indices,
     const blink::WebPrintParams& print_params) {
   ScopedFPDFDocument output_doc(FPDF_CreateNewDocument());
   DCHECK(output_doc);

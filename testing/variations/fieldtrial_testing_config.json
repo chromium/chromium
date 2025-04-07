@@ -2764,27 +2764,6 @@
             ]
         }
     ],
-    "AutofillVoteWhenInactive": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20241207",
-                    "enable_features": [
-                        "AutofillVoteWhenInactive"
-                    ]
-                }
-            ]
-        }
-    ],
     "AvatarsCloudMigration": [
         {
             "platforms": [

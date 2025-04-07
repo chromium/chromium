@@ -14,7 +14,7 @@
 
 #include "base/notreached.h"
 #include "base/win/scoped_handle.h"
-#include "base/win/win_util.h"
+#include "base/win/windows_handle_util.h"
 #include "sandbox/win/src/internal_types.h"
 #include "sandbox/win/src/ipc_tags.h"
 #include "sandbox/win/src/nt_internals.h"

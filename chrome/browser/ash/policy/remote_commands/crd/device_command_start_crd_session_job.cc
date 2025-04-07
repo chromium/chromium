@@ -28,11 +28,13 @@
 #include "chrome/browser/ash/policy/remote_commands/crd/crd_remote_command_utils.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/crd_uma_logger.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/public/crd_session_result_codes.h"
+#include "chrome/browser/ash/policy/remote_commands/crd/start_crd_session_job_delegate.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/pref_names.h"
+#include "components/policy/policy_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
 #include "remoting/host/chromeos/features.h"
@@ -309,6 +311,8 @@ void DeviceCommandStartCrdSessionJob::StartCrdHostAndGetCode(
   parameters.allow_file_transfer = ShouldAllowFileTransfer();
   parameters.allow_remote_input = kAllowRemoteInput;
   parameters.allow_clipboard_sync = kAllowClipboardSync;
+  parameters.request_origin =
+      StartCrdSessionJobDelegate::RequestOrigin::kEnterpriseAdmin;
   if (ShouldAutoAcceptSession(is_in_managed_environment)) {
     parameters.connection_auto_accept_timeout = kConnectionAutoAcceptTimeout;
   }

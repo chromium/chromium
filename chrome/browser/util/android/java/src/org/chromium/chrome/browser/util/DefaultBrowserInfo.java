@@ -36,6 +36,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public final class DefaultBrowserInfo {
     static final String CHROME_STABLE_PACKAGE_NAME = "com.android.chrome";
 
+    // TODO(crbug.com/40697015): move to some util class for reuse.
     static final String[] CHROME_PRE_STABLE_PACKAGE_NAMES = {
         "org.chromium.chrome", "com.chrome.canary", "com.chrome.beta", "com.chrome.dev"
     };
@@ -104,9 +105,6 @@ public final class DefaultBrowserInfo {
 
     private static @Nullable DefaultInfoTask sDefaultInfoTask;
 
-    /** A lock to synchronize background tasks to retrieve browser information. */
-    private static final Object sDirCreationLock = new Object();
-
     /** Don't instantiate me. */
     private DefaultBrowserInfo() {}
 
@@ -121,23 +119,6 @@ public final class DefaultBrowserInfo {
         ThreadUtils.checkUiThread();
         if (sDefaultInfoTask == null) sDefaultInfoTask = new DefaultInfoTask();
         sDefaultInfoTask.get(callback);
-    }
-
-    /**
-     * Retrieves various information about browsers on the system. Waits if necessary for the
-     * computation to complete.
-     *
-     * @return DefaultInfo
-     */
-    public static @Nullable DefaultInfo getDefaultBrowserInfoSync() {
-        ThreadUtils.checkUiThread();
-        synchronized (sDirCreationLock) {
-            if (sDefaultInfoTask == null) {
-                sDefaultInfoTask = new DefaultInfoTask();
-                sDefaultInfoTask.executeWithTaskTraits(TaskTraits.USER_BLOCKING_MAY_BLOCK);
-            }
-        }
-        return sDefaultInfoTask.getResultSync();
     }
 
     /** Cancel and reset the current DefaultInfoTask. */
@@ -202,22 +183,6 @@ public final class DefaultBrowserInfo {
                     }
                 }
                 mObservers.addObserver(callback);
-            }
-        }
-
-        /**
-         * Similar to {@link AsyncTask#get}. Wrapped for testing purpose. If the task has not been
-         * started, this will start it. If the task is finished, this will send the result. If the
-         * task is running this will queue the callback up until the task is done.
-         *
-         * @param callback The {@link Callback} to notify with the right {@link DefaultInfo}.
-         */
-        public @Nullable DefaultInfo getResultSync() {
-            try {
-                return sTestInfo == null ? get() : sTestInfo.get();
-            } catch (InterruptedException | ExecutionException e) {
-                // Fall and return null
-                return null;
             }
         }
 

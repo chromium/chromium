@@ -7815,11 +7815,7 @@ const char kEnableNetworkServiceSandboxDescription[] =
 const char kUseOutOfProcessVideoDecodingName[] =
     "Use out-of-process video decoding (OOP-VD)";
 const char kUseOutOfProcessVideoDecodingDescription[] =
-    "Start utility processes to do hardware video decoding. Note: on LaCrOS, "
-    "this task is delegated to ash-chrome by requesting a "
-    "media.stable.mojom.StableVideoDecoderFactory through the crosapi (so "
-    "chrome://flags#expose-out-of-process-video-decoding-to-lacros must be "
-    "enabled in ash-chrome).";
+    "Start utility processes to do hardware video decoding.";
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)

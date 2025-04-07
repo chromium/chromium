@@ -24,8 +24,8 @@ BASE_FEATURE(kAllowUserInstalledChromeApps,
              "AllowUserInstalledChromeApps",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kAllowUserInstalledChromeAppsInKioskSessions,
-             "AllowUserInstalledChromeAppsInKioskSessions",
+BASE_FEATURE(kAllowChromeAppsInKioskSessions,
+             "AllowChromeAppsInKioskSessions",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
@@ -151,6 +151,35 @@ bool IsUserInstalled(std::string_view app_id, Profile* profile) {
   return location == extensions::mojom::ManifestLocation::kInternal ||
          location == extensions::mojom::ManifestLocation::kUnpacked;
 }
+
+DeprecationStatus HandleUserInstalledApp(const extensions::Extension& app,
+                                         Profile* profile) {
+  // TODO(crbug.com/379261516): Block the execution in M139.
+  if (IsAllowlisted(app.id())) {
+    return DeprecationStatus::kLaunchAllowed;
+  }
+
+  if (base::FeatureList::IsEnabled(kAllowUserInstalledChromeApps)) {
+    ShowNotification(app, profile);
+    return DeprecationStatus::kLaunchAllowed;
+  }
+
+  return DeprecationStatus::kLaunchBlocked;
+}
+
+DeprecationStatus HandleKioskSessionApp(const extensions::Extension& app,
+                                        Profile* profile) {
+  // TODO(crbug.com/379262711): Block the execution in M151.
+  if (base::FeatureList::IsEnabled(kAllowChromeAppsInKioskSessions)) {
+    return DeprecationStatus::kLaunchAllowed;
+  }
+
+  if (profile->GetPrefs()->GetBoolean(prefs::kKioskChromeAppsForceAllowed)) {
+    return DeprecationStatus::kLaunchAllowed;
+  }
+
+  return DeprecationStatus::kLaunchBlocked;
+}
 }  // namespace
 
 DeprecationStatus HandleDeprecation(std::string_view app_id, Profile* profile) {
@@ -163,24 +192,9 @@ DeprecationStatus HandleDeprecation(std::string_view app_id, Profile* profile) {
   }
 
   if (IsUserInstalled(app_id, profile)) {
-    // TODO(crbug.com/379264039): Block the execution in M139.
-    if (IsAllowlisted(app_id)) {
-      return DeprecationStatus::kLaunchAllowed;
-    }
-
-    if (base::FeatureList::IsEnabled(kAllowUserInstalledChromeApps)) {
-      ShowNotification(*app, profile);
-      return DeprecationStatus::kLaunchAllowed;
-    } else {
-      return DeprecationStatus::kLaunchBlocked;
-    }
+    return HandleUserInstalledApp(*app, profile);
   } else if (chromeos::IsKioskSession()) {
-    return (base::FeatureList::IsEnabled(
-                kAllowUserInstalledChromeAppsInKioskSessions) ||
-            profile->GetPrefs()->GetBoolean(
-                prefs::kKioskChromeAppsForceAllowed))
-               ? DeprecationStatus::kLaunchAllowed
-               : DeprecationStatus::kLaunchBlocked;
+    return HandleKioskSessionApp(*app, profile);
   }
 
   return DeprecationStatus::kLaunchAllowed;

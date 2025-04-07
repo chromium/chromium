@@ -65,7 +65,7 @@
 #include "base/test/file_path_reparse_point_win.h"
 #include "base/test/gtest_util.h"
 #include "base/win/scoped_handle.h"
-#include "base/win/win_util.h"
+#include "base/win/windows_handle_util.h"
 #endif
 
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)

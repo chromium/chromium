@@ -148,9 +148,6 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoder : public VideoDecoder,
   // Returns false if the codec is unsupported.
   bool InitializeAcceleratedDecoder(const VideoDecoderConfig& config);
 
-  // Query the video device for a specific decoder ID.
-  bool DeviceHasDecoderID(GUID decoder_guid);
-
   // Create new PictureBuffers.  Currently, this completes synchronously, but
   // really should have an async interface since it must do some work on the
   // gpu main thread.
