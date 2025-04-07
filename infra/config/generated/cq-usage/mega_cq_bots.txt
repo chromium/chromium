@@ -10,7 +10,6 @@ chromium/try/android-14-arm64-rel
 chromium/try/android-14-tablet-landscape-arm64-rel
 chromium/try/android-15-x64-rel
 chromium/try/android-arm-compile-dbg
-chromium/try/android-arm64-all-targets-dbg
 chromium/try/android-arm64-rel
 chromium/try/android-bfcache-rel
 chromium/try/android-cast-arm-dbg

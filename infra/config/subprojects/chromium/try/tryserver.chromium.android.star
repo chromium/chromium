@@ -1271,25 +1271,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "android-arm64-all-targets-dbg",
-    mirrors = [
-        "ci/Android arm64 Builder All Targets (dbg)",
-    ],
-    gn_args = gn_args.config(
-        configs = [
-            "android_builder",
-            "debug_try_builder",
-            "enable_android_secondary_abi",
-            "remoteexec",
-            "compile_only",
-            "arm64",
-            "android_fastbuild",
-        ],
-    ),
-    execution_timeout = 8 * time.hour,
-)
-
-try_.builder(
     name = "android_blink_rel",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(

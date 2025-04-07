@@ -582,7 +582,6 @@
     "android-15-x64-rel": "try/android-15-x64-rel/gn-args.json",
     "android-16-x64-fyi-rel": "try/android-16-x64-fyi-rel/gn-args.json",
     "android-arm-compile-dbg": "try/android-arm-compile-dbg/gn-args.json",
-    "android-arm64-all-targets-dbg": "try/android-arm64-all-targets-dbg/gn-args.json",
     "android-arm64-rel": "try/android-arm64-rel/gn-args.json",
     "android-bfcache-rel": "try/android-bfcache-rel/gn-args.json",
     "android-binary-size": "try/android-binary-size/gn-args.json",
