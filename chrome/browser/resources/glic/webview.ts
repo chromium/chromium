@@ -162,6 +162,7 @@ export class WebviewController {
   private onExit(e: any): void {
     if (e.reason !== 'normal') {
       this.destroyHost(WebClientState.ERROR);
+      chrome.metricsPrivate.recordUserAction('GlicSessionWebClientCrash');
       console.warn(`webview exit. reason: ${e.reason}`);
     }
   }
