@@ -37,8 +37,6 @@ source_set("popup") {
     "omnibox_popup_provider.h",
     "omnibox_popup_view_ios.h",
     "omnibox_popup_view_ios.mm",
-    "pedal_suggestion_wrapper.h",
-    "pedal_suggestion_wrapper.mm",
   ]
   deps = [
     ":popup_icon",

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/pedal_suggestion_wrapper.h"
+#import "ios/chrome/browser/omnibox/model/pedal_suggestion_wrapper.h"
 
 #import "base/notreached.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"

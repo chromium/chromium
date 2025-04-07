@@ -22,6 +22,7 @@ source_set("ui_bundled_interface") {
     "omnibox_text_controller.h",
     "omnibox_text_controller_delegate.h",
     "pedal_section_extractor.h",
+    "pedal_suggestion_wrapper.h",
   ]
   deps = [
     "//ios/chrome/browser/favicon/model",
@@ -41,6 +42,7 @@ source_set("model") {
     "omnibox_pedal_annotator.mm",
     "omnibox_text_controller.mm",
     "pedal_section_extractor.mm",
+    "pedal_suggestion_wrapper.mm",
   ]
   deps = [
     "//base",

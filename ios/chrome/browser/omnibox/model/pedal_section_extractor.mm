@@ -11,7 +11,7 @@
 #import "ios/chrome/browser/omnibox/model/autocomplete_suggestion.h"
 #import "ios/chrome/browser/omnibox/model/autocomplete_suggestion_group_impl.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_pedal.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/pedal_suggestion_wrapper.h"
+#import "ios/chrome/browser/omnibox/model/pedal_suggestion_wrapper.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/popup_match_preview_delegate.h"
 
 namespace {
