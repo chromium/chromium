@@ -106,6 +106,9 @@ public class LocalTabGroupMutationHelper {
             mTabGroupSyncService.updateLocalTabId(
                     localTabGroupId, syncTabId, tabIdMappings.get(syncTabId));
         }
+
+        // On any tab group open through the sync service, reset the archival timestamp and status.
+        mTabGroupSyncService.updateArchivalStatus(tabGroup.syncId, /* archivalStatus= */ false);
     }
 
     /**
