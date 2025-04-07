@@ -128,13 +128,10 @@
   _navigationController = nil;
 
   if (result != SigninCoordinatorResultSuccess && _signOutIfDeclined) {
-    signin::MultiProfileSignOut(
-        self.browser,
+    signin::ProfileSignoutRequest(
         signin_metrics::ProfileSignout::
-            kUserDeclinedHistorySyncAfterDedicatedSignIn,
-        /*force_snackbar_over_toolbar=*/false,
-        /*snackbar_message=*/nil,
-        /*signout_completion=*/nil);
+            kUserDeclinedHistorySyncAfterDedicatedSignIn)
+        .Run(self.browser);
   }
   [self.delegate historySyncPopupCoordinator:self didFinishWithResult:result];
 }

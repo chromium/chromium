@@ -114,14 +114,10 @@ void PolicyWatcherBrowserAgent::ForceSignOutIfSigninDisabled() {
       sign_out_in_progress_ = true;
       base::UmaHistogramBoolean("Enterprise.BrowserSigninIOS.SignedOutByPolicy",
                                 true);
-      base::WeakPtr<PolicyWatcherBrowserAgent> weak_ptr =
-          weak_factory_.GetWeakPtr();
-      signin::MultiProfileSignOut(
-          browser_, signin_metrics::ProfileSignout::kPrefChanged,
-          /*force_snackbar_over_toolbar=*/false, /*snackbar_message=*/nil,
-          ^{
-          },
-          /*should_record_metrics=*/false);
+      signin::ProfileSignoutRequest(
+          signin_metrics::ProfileSignout::kPrefChanged)
+          .SetShouldRecordMetrics(false)
+          .Run(browser_);
     }
   }
 }

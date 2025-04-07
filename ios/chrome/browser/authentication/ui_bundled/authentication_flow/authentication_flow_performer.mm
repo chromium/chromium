@@ -113,10 +113,9 @@ void HandleSignoutForSnackbar(
         ->SetSelectedType(clear_selected_type.value(), false);
   }
 
-  signin::MultiProfileSignOut(
-      browser, signin_metrics::ProfileSignout::kUserTappedUndoRightAfterSignIn,
-      /*force_snackbar_over_toolbar=*/false,
-      /*snackbar_message=*/nil, /*signout_completion=*/nil);
+  signin::ProfileSignoutRequest(
+      signin_metrics::ProfileSignout::kUserTappedUndoRightAfterSignIn)
+      .Run(browser);
 }
 
 }  // namespace

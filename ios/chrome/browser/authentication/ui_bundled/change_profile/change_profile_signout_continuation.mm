@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/authentication/ui_bundled/change_profile/change_profile_signout_continuation.h"
 
+#import "base/check.h"
+#import "base/functional/callback.h"
 #import "base/functional/callback_helpers.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
@@ -114,12 +116,12 @@ ChangeProfileContinuation CreateChangeProfileSignoutContinuation(
     BOOL force_snackbar_over_toolbar,
     BOOL should_record_metrics,
     MDCSnackbarMessage* snackbar_message,
-    ProceduralBlock signout_completion) {
+    base::OnceClosure signout_completion) {
+  CHECK(!signout_completion.is_null());
   return base::BindOnce(&ChangeProfileSignoutContinuation,
                         signout_source_metric, force_snackbar_over_toolbar,
                         should_record_metrics, snackbar_message,
-                        signout_completion ? base::BindOnce(signout_completion)
-                                           : base::DoNothing());
+                        std::move(signout_completion));
 }
 
 ChangeProfileContinuation CreateChangeProfileForceSignoutContinuation() {

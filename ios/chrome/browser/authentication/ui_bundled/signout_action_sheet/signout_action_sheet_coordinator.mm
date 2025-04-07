@@ -246,10 +246,12 @@ using signin_metrics::SignoutDataLossAlertReason;
   MDCSnackbarMessage* snackbarMessage = [self signoutSnackbarMessage];
 
   __weak __typeof(self) weakSelf = self;
-  signin::MultiProfileSignOut(self.browser, _signoutSourceMetric,
-                              _forceSnackbarOverToolbar, snackbarMessage, ^{
-                                [weakSelf signOutDidFinish];
-                              });
+  signin::ProfileSignoutRequest(_signoutSourceMetric)
+      .SetSnackbarMessage(snackbarMessage, _forceSnackbarOverToolbar)
+      .SetCompletionCallback(base::BindOnce(^{
+        [weakSelf signOutDidFinish];
+      }))
+      .Run(self.browser);
 }
 
 // Called when the sign-out is done.

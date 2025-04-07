@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "base/ios/block_types.h"
+#import "base/functional/callback_forward.h"
 #import "ios/chrome/app/change_profile_continuation.h"
 
 @class MDCSnackbarMessage;
@@ -23,7 +23,7 @@ ChangeProfileContinuation CreateChangeProfileSignoutContinuation(
     BOOL force_snackbar_over_toolbar,
     BOOL should_record_metrics,
     MDCSnackbarMessage* snackbar_message,
-    ProceduralBlock signout_completion);
+    base::OnceClosure signout_completion);
 
 // Returns a ChangeProfileContinuation that shows a force sign out prompt.
 ChangeProfileContinuation CreateChangeProfileForceSignoutContinuation();
