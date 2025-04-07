@@ -4,10 +4,7 @@
 
 #include "chrome/browser/privacy_sandbox/notice/notice_model.h"
 
-#include "base/containers/adapters.h"
 #include "components/privacy_sandbox/privacy_sandbox_notice_storage.h"
-
-class PrefService;
 
 namespace privacy_sandbox {
 
@@ -48,8 +45,7 @@ void NoticeApi::UpdateResult(bool enabled) {
   }
 }
 
-bool NoticeApi::IsFulfilled(PrivacySandboxNoticeStorage* notice_storage,
-                            PrefService* pref_service) {
+bool NoticeApi::IsFulfilled() {
   EligibilityLevel eligibility = GetEligibilityLevel();
 
   for (Notice* notice : linked_notices_) {
@@ -57,7 +53,7 @@ bool NoticeApi::IsFulfilled(PrivacySandboxNoticeStorage* notice_storage,
         notice->GetNoticeType() == NoticeType::kNotice) {
       continue;
     }
-    return notice->WasFulfilled(notice_storage, pref_service);
+    return notice->WasFulfilled();
   }
   return false;
 }
@@ -102,21 +98,9 @@ const base::Feature* Notice::GetFeature() {
   return feature_;
 }
 
-bool Notice::WasFulfilled(PrivacySandboxNoticeStorage* notice_storage,
-                          PrefService* pref_service) {
-  auto notice_data =
-      notice_storage->ReadNoticeData(pref_service, GetFeature()->name);
-  if (!notice_data.has_value()) {
-    return false;
-  }
-
-  const auto notice_events = notice_data->GetNoticeEvents();
-  for (const auto& notice_event : base::Reversed(notice_events)) {
-    if (IsFulfillmentEvent(notice_event.first)) {
-      return true;
-    }
-  }
-
+bool Notice::WasFulfilled() {
+  // TODO(crbug.com/392612108): Check if an action was taken on this notice, if
+  // it was check if it was one of the fulfillment actions.
   return false;
 }
 

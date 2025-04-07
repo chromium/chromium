@@ -11,10 +11,9 @@
 #include "components/privacy_sandbox/privacy_sandbox_notice.mojom.h"
 #include "components/privacy_sandbox/privacy_sandbox_notice_storage.h"
 
-class PrefService;
-
 namespace privacy_sandbox {
 class NoticeApi;
+
 // Types of notices that can be shown.
 enum class NoticeType {
   kNotice,   // This type of notice requires a user to have acknowledged it.
@@ -56,9 +55,7 @@ class Notice {
   Notice* SetPreReqApis(const std::vector<NoticeApi*>& apis);
   Notice* SetFeature(const base::Feature* feature);
 
-  // Return true if the notice had a fulfillment action taken on it.
-  bool WasFulfilled(PrivacySandboxNoticeStorage* notice_storage,
-                    PrefService* pref_service);
+  bool WasFulfilled();
 
   // Accessors.
   const std::vector<raw_ptr<NoticeApi>>& GetTargetApis();
@@ -132,8 +129,7 @@ class NoticeApi {
   void CanBeFulfilledBy(Notice* notice);
 
   // Returns whether the api was fulfilled.
-  bool IsFulfilled(PrivacySandboxNoticeStorage* notice_storage,
-                   PrefService* pref_service);
+  bool IsFulfilled();
 
   // Callbacks.
   NoticeApi* SetEligibilityCallback(
