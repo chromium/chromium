@@ -254,7 +254,6 @@ component("bluetooth") {
     ]
     frameworks = [
       "CoreBluetooth.framework",
-      "IOKit.framework",
       "Foundation.framework",
     ]
   }
@@ -276,7 +275,10 @@ component("bluetooth") {
       "bluetooth_socket_mac.h",
       "bluetooth_socket_mac.mm",
     ]
-    frameworks += [ "IOBluetooth.framework" ]
+    frameworks += [
+      "IOBluetooth.framework",
+      "IOKit.framework",
+    ]
   }
 
   if (is_ios) {

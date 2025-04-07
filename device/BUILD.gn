@@ -367,7 +367,6 @@ test("device_unittests") {
     ldflags = [ "-ObjC" ]
     frameworks = [
       "CoreBluetooth.framework",
-      "IOKit.framework",
       "Foundation.framework",
     ]
   }
@@ -375,6 +374,7 @@ test("device_unittests") {
   if (is_mac) {
     frameworks += [
       "IOBluetooth.framework",
+      "IOKit.framework",
       "Security.framework",
       "AuthenticationServices.framework",
     ]

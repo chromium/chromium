@@ -140,7 +140,6 @@ component("gamepad") {
       "CoreFoundation.framework",
       "Foundation.framework",
       "GameController.framework",
-      "IOKit.framework",
     ]
 
     if (is_mac) {
@@ -156,7 +155,10 @@ component("gamepad") {
         "xbox_data_fetcher_mac.cc",
         "xbox_data_fetcher_mac.h",
       ]
-      frameworks += [ "ForceFeedback.framework" ]
+      frameworks += [
+        "ForceFeedback.framework",
+        "IOKit.framework",
+      ]
     }
   }
 
