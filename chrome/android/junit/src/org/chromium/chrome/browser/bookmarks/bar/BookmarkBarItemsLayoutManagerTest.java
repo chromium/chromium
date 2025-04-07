@@ -14,6 +14,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import android.view.View;
+import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -81,6 +82,7 @@ public class BookmarkBarItemsLayoutManagerTest {
         mItemSpacing = res.getDimensionPixelSize(R.dimen.bookmark_bar_item_spacing);
 
         mLayoutManager = new BookmarkBarItemsLayoutManager(context);
+        mLayoutManager.setItemMaxWidth(mItemMaxWidth);
 
         mView = new RecyclerView(context);
         mView.setAdapter(mAdapter);
@@ -236,6 +238,20 @@ public class BookmarkBarItemsLayoutManagerTest {
         mModel.set(buildItemList(itemWidths, itemHeight));
 
         // Perform layout of view and validate widths do not exceed constraints.
+        mView.layout(0, 0, calculateLayoutWidth(itemWidths), itemHeight);
+        assertEquals(itemWidths.size(), mView.getChildCount());
+        for (int i = 0; i < itemWidths.size(); i++) {
+            final var itemView = mView.getChildAt(i);
+            final int itemWidth = Math.min(itemWidths.get(i), mItemMaxWidth);
+            assertEquals(itemWidth, itemView.getWidth());
+        }
+
+        // Update constraints.
+        mItemMaxWidth -= 1;
+        mLayoutManager.setItemMaxWidth(mItemMaxWidth);
+
+        // Perform measure/layout of view and validate widths do not exceed constraints.
+        mView.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
         mView.layout(0, 0, calculateLayoutWidth(itemWidths), itemHeight);
         assertEquals(itemWidths.size(), mView.getChildCount());
         for (int i = 0; i < itemWidths.size(); i++) {

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.bookmarks.bar;
 
 import android.app.Activity;
+import android.content.res.Configuration;
 import android.view.KeyEvent;
 import android.view.View;
 
@@ -22,6 +23,8 @@ import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkOpener;
 import org.chromium.chrome.browser.bookmarks.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
@@ -44,13 +47,16 @@ class BookmarkBarMediator
         implements BookmarkBarItemsProvider.Observer, BrowserControlsStateProvider.Observer {
 
     private final Activity mActivity;
+    private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private final PropertyModel mAllBookmarksButtonModel;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
+    private final ConfigurationChangedObserver mConfigurationChangeObserver;
     private final Callback<Integer> mHeightChangeCallback;
     private final ObservableSupplierImpl<Integer> mHeightSupplier;
     private final ModelList mItemsModel;
     private final ObservableSupplier<Boolean> mItemsOverflowSupplier;
     private final Callback<Boolean> mItemsOverflowSupplierObserver;
+    private final Callback<Integer> mItemMaxWidthChangeCallback;
     private final PropertyModel mModel;
     private final ObservableSupplier<Profile> mProfileSupplier;
     private final Callback<Profile> mProfileSupplierObserver;
@@ -63,28 +69,32 @@ class BookmarkBarMediator
     /**
      * Constructs the bookmark bar mediator.
      *
-     * @param activity the activity which is hosting the bookmark bar.
-     * @param allBookmarksButtonModel the model for the 'All Bookmarks' button.
-     * @param browserControlsStateProvider the state provider for browser control
-     *     positioning/visibility.
-     * @param heightChangeCallback a callback to notify of bookmark bar height change events.
-     * @param itemsModel the model for the items which are rendered within the bookmark bar.
-     * @param itemsOverflowSupplier the supplier for the current state of items overflow.
-     * @param model the model used to read/write bookmark bar properties.
-     * @param profileSupplier the supplier for the currently active profile.
+     * @param activity The activity which is hosting the bookmark bar.
+     * @param activityLifecycleDispatcher The lifecycle dispatcher for the host activity.
+     * @param allBookmarksButtonModel The model for the 'All Bookmarks' button.
+     * @param browserControlsStateProvider The state provider for browser controls.
+     * @param heightChangeCallback A callback to notify of bookmark bar height change events.
+     * @param itemsModel The model for the items which are rendered within the bookmark bar.
+     * @param itemsOverflowSupplier The supplier for the current state of items overflow.
+     * @param itemMaxWidthChangeCallback A callback to notify of item max width change events.
+     * @param model The model used to read/write bookmark bar properties.
+     * @param profileSupplier The supplier for the currently active profile.
      */
     public BookmarkBarMediator(
             @NonNull Activity activity,
+            @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher,
             @NonNull PropertyModel allBookmarksButtonModel,
             @NonNull BrowserControlsStateProvider browserControlsStateProvider,
             @NonNull Callback<Integer> heightChangeCallback,
             @NonNull ModelList itemsModel,
             @NonNull ObservableSupplier<Boolean> itemsOverflowSupplier,
+            @NonNull Callback<Integer> itemMaxWidthChangeCallback,
             @NonNull PropertyModel model,
             @NonNull ObservableSupplier<Profile> profileSupplier,
             @NonNull BookmarkOpener bookmarkOpener,
             @NonNull ObservableSupplier<BookmarkManagerOpener> bookmarkManagerOpenerSupplier) {
         mActivity = activity;
+        mActivityLifecycleDispatcher = activityLifecycleDispatcher;
 
         mAllBookmarksButtonModel = allBookmarksButtonModel;
         mAllBookmarksButtonModel.set(
@@ -104,6 +114,9 @@ class BookmarkBarMediator
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mBrowserControlsStateProvider.addObserver(this);
 
+        mConfigurationChangeObserver = this::onConfigurationChange;
+        mActivityLifecycleDispatcher.register(mConfigurationChangeObserver);
+
         // NOTE: Height will be updated when binding the `HEIGHT_CHANGE_CALLBACK` property.
         mHeightSupplier = new ObservableSupplierImpl<Integer>(0);
         mHeightChangeCallback = heightChangeCallback;
@@ -114,6 +127,8 @@ class BookmarkBarMediator
         mItemsOverflowSupplier = itemsOverflowSupplier;
         mItemsOverflowSupplierObserver = this::onItemsOverflowChange;
         mItemsOverflowSupplier.addObserver(mItemsOverflowSupplierObserver);
+
+        mItemMaxWidthChangeCallback = itemMaxWidthChangeCallback;
 
         mModel = model;
         mModel.set(BookmarkBarProperties.HEIGHT_CHANGE_CALLBACK, mHeightSupplier::set);
@@ -128,12 +143,14 @@ class BookmarkBarMediator
         mBookmarkOpener = bookmarkOpener;
         mBookmarkManagerOpenerSupplier = bookmarkManagerOpenerSupplier;
 
+        updateItemMaxWidth();
         updateTopMargin();
         updateVisibility();
     }
 
     /** Destroys the bookmark bar mediator. */
     public void destroy() {
+        mActivityLifecycleDispatcher.unregister(mConfigurationChangeObserver);
         mAllBookmarksButtonModel.set(BookmarkBarButtonProperties.CLICK_CALLBACK, null);
         mBrowserControlsStateProvider.removeObserver(this);
         mHeightSupplier.removeObserver(mHeightChangeCallback);
@@ -277,6 +294,10 @@ class BookmarkBarMediator
         mBookmarkOpener.openBookmarkInCurrentTab(item.getId(), profile.isOffTheRecord());
     }
 
+    private void onConfigurationChange(@NonNull Configuration newConfig) {
+        updateItemMaxWidth();
+    }
+
     private void onItemsOverflowChange(boolean itemsOverflow) {
         mModel.set(
                 BookmarkBarProperties.OVERFLOW_BUTTON_VISIBILITY,
@@ -355,6 +376,13 @@ class BookmarkBarMediator
                     // running the callback for the wrong profile/model.
                     callback.accept(profileAfterLoading, modelAfterLoading);
                 });
+    }
+
+    private void updateItemMaxWidth() {
+        mItemMaxWidthChangeCallback.onResult(
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.bookmark_bar_item_max_width));
     }
 
     // TODO(crbug.com/339492600): Replace w/ positioning construct akin to `BottomControlsStacker`.

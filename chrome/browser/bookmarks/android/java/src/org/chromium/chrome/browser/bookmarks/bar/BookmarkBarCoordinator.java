@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpener;
 import org.chromium.chrome.browser.bookmarks.BookmarkOpener;
 import org.chromium.chrome.browser.bookmarks.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -39,6 +40,7 @@ public class BookmarkBarCoordinator {
      * Constructs the bookmark bar coordinator.
      *
      * @param activity The activity which is hosting the bookmark bar.
+     * @param activityLifecycleDispatcher The lifecycle dispatcher for the host activity.
      * @param browserControlsStateProvider The state provider for browser controls.
      * @param heightChangeCallback A callback to notify of bookmark bar height change events.
      * @param profileSupplier The supplier for the currently active profile.
@@ -48,6 +50,7 @@ public class BookmarkBarCoordinator {
      */
     public BookmarkBarCoordinator(
             @NonNull Activity activity,
+            @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher,
             @NonNull BrowserControlsStateProvider browserControlsStateProvider,
             @NonNull Callback<Integer> heightChangeCallback,
             @NonNull ObservableSupplier<Profile> profileSupplier,
@@ -85,11 +88,13 @@ public class BookmarkBarCoordinator {
         mMediator =
                 new BookmarkBarMediator(
                         activity,
+                        activityLifecycleDispatcher,
                         allBookmarksButtonModel,
                         browserControlsStateProvider,
                         heightChangeCallback,
                         itemsModel,
                         itemsLayoutManager.getItemsOverflowSupplier(),
+                        itemsLayoutManager::setItemMaxWidth,
                         model,
                         profileSupplier,
                         bookmarkOpener,

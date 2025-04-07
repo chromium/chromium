@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.bookmarks.bar;
 
+import static android.util.TypedValue.COMPLEX_UNIT_DIP;
+import static android.util.TypedValue.applyDimension;
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
@@ -15,8 +17,10 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.content.res.Resources;
 import android.graphics.Rect;
 import android.view.View;
+import android.view.View.MeasureSpec;
 import android.view.ViewGroup.LayoutParams;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.view.ViewStub;
@@ -38,6 +42,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
+import org.robolectric.RuntimeEnvironment;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -52,6 +58,8 @@ import org.chromium.chrome.browser.bookmarks.BookmarkOpener;
 import org.chromium.chrome.browser.bookmarks.FakeBookmarkModel;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.page_image_service.ImageServiceBridgeJni;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelperJni;
@@ -75,6 +83,7 @@ public class BookmarkBarCoordinatorTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock private BrowserControlsManager mBrowserControlsManager;
     @Mock private FaviconHelperJni mFaviconHelperJni;
     @Mock private Callback<Integer> mHeightChangeCallback;
@@ -121,6 +130,12 @@ public class BookmarkBarCoordinatorTest {
         assertEquals(item.getTitle(), renderedItem.getTitleForTesting());
     }
 
+    private void assertItemWidthAtIndex(int index, int width) {
+        final var renderedItem = (BookmarkBarButton) mItemsContainer.getChildAt(index);
+        assertNotNull(renderedItem);
+        assertEquals(width, renderedItem.getWidth());
+    }
+
     private void assertItemsRenderedCount(int count) {
         // NOTE: Use `Criteria` rather than `Assert` to allow polling via `CriteriaHelper`.
         Criteria.checkThat(mItemsContainer.getChildCount(), equalTo(count));
@@ -139,6 +154,7 @@ public class BookmarkBarCoordinatorTest {
         mCoordinator =
                 new BookmarkBarCoordinator(
                         activity,
+                        mActivityLifecycleDispatcher,
                         mBrowserControlsManager,
                         mHeightChangeCallback,
                         mProfileSupplier,
@@ -347,6 +363,55 @@ public class BookmarkBarCoordinatorTest {
                     assertItemsRenderedCount(2);
                     assertItemRenderedAtIndex(itemIds.get(0), 0);
                     assertItemRenderedAtIndex(itemIds.get(1), 1);
+                });
+    }
+
+    @Test
+    @SmallTest
+    @Config(qualifiers = "w600dp")
+    public void testOnConfigurationChanged() {
+        onActivity(
+                activity -> {
+                    // Verify observer registration.
+                    var observer = ArgumentCaptor.forClass(ConfigurationChangedObserver.class);
+                    verify(mActivityLifecycleDispatcher).register(observer.capture());
+
+                    // Set up item with a long title.
+                    setItemsWithinDesktopFolder(List.of("Title".repeat(100)));
+                    Robolectric.flushForegroundThreadScheduler();
+
+                    // Verify item max width constraint at "w600dp".
+                    var metrics = activity.getResources().getDisplayMetrics();
+                    assertItemsRenderedCount(1);
+                    assertItemWidthAtIndex(
+                            /* index= */ 0,
+                            /* width= */ Math.round(
+                                    applyDimension(COMPLEX_UNIT_DIP, 187, metrics)));
+
+                    // Change configuration to below "w600dp".
+                    RuntimeEnvironment.setQualifiers("w599dp");
+                    var newConfig = Resources.getSystem().getConfiguration();
+                    activity.onConfigurationChanged(newConfig);
+                    observer.getValue().onConfigurationChanged(newConfig);
+
+                    // NOTE: Robolectric does not automatically re-measure/-layout the view.
+                    mItemsContainer.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
+                    mItemsContainer.layout(
+                            mItemsContainer.getLeft(),
+                            mItemsContainer.getTop(),
+                            mItemsContainer.getRight(),
+                            mItemsContainer.getBottom());
+
+                    // Verify item max width constraint below "w600dp".
+                    assertItemsRenderedCount(1);
+                    assertItemWidthAtIndex(
+                            /* index= */ 0,
+                            /* width= */ Math.round(
+                                    applyDimension(COMPLEX_UNIT_DIP, 124, metrics)));
+
+                    // Verify observer unregistration.
+                    mCoordinator.destroy();
+                    verify(mActivityLifecycleDispatcher).unregister(observer.getValue());
                 });
     }
 
