@@ -123,11 +123,6 @@ class PasswordManagerBrowserTestBase : public CertVerifierBrowserTest {
   void TearDownOnMainThread() override;
   void SetUpCommandLine(base::CommandLine* command_line) override;
 
-  // Creates a new tab with all the password manager test hooks and returns it.
-  // Closes previously active tab when `open_new_tab` is false.
-  static content::WebContents* GetNewTab(Browser* browser,
-                                         bool open_new_tab = false);
-
   // Make sure that the password store associated with the given browser
   // processed all the previous calls, calls executed on another thread.
   static void WaitForPasswordStore(Browser* browser);

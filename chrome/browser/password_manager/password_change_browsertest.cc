@@ -102,22 +102,6 @@ std::unique_ptr<KeyedService> CreateOptimizationService(
       testing::NiceMock<MockOptimizationGuideKeyedService>>();
 }
 
-content::WebContents* OpenNewTabInBackground(base::WeakPtr<Browser> browser,
-                                             const GURL& url,
-                                             content::WebContents*) {
-  if (!browser) {
-    return nullptr;
-  }
-  int preexisting_tab = browser->tab_strip_model()->active_index();
-  content::WebContents* contents = PasswordManagerBrowserTestBase::GetNewTab(
-      browser.get(), /*open_new_tab=*/true);
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser.get(), url, WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_NO_WAIT);
-  browser->tab_strip_model()->ActivateTabAt(preexisting_tab);
-  return contents;
-}
-
 // Verifies that |test_ukm_recorder| recorder has a single entry called |entry|
 // and returns it.
 const ukm::mojom::UkmEntry* GetMetricEntry(
@@ -855,10 +839,11 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
           "/password/update_form_empty_fields.html")));
 
   // Open new tab.
-  OpenNewTabInBackground(browser()->AsWeakPtr(),
-                         embedded_test_server()->GetURL("/password/done.html"),
-                         nullptr);
-  browser()->tab_strip_model()->ActivateTabAt(1);
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), embedded_test_server()->GetURL("/password/done.html"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_NO_WAIT);
+
   BubbleObserver prompt_observer(
       browser()->tab_strip_model()->GetActiveWebContents());
 

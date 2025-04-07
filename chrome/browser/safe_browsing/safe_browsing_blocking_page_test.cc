@@ -2737,7 +2737,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageDelayedWarningBrowserTest,
 
   // This is needed for tests using BubbleObserver
   content::WebContents* contents =
-      PasswordManagerBrowserTestBase::GetNewTab(browser());
+      browser()->tab_strip_model()->GetActiveWebContents();
 
   // Navigate to the page.
   content::TestNavigationObserver observer1(contents);
@@ -2749,13 +2749,13 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageDelayedWarningBrowserTest,
 
   // Submit a password.
   PasswordsNavigationObserver observer2(contents);
-  std::unique_ptr<BubbleObserver> prompt_observer(new BubbleObserver(contents));
+  BubbleObserver prompt_observer(contents);
   std::string fill_and_submit =
       "document.getElementById('retry_password_field').value = 'pw';"
       "document.getElementById('retry_submit_button').click()";
   ASSERT_TRUE(content::ExecJs(contents, fill_and_submit));
   ASSERT_TRUE(observer2.Wait());
-  EXPECT_FALSE(prompt_observer->IsSavePromptShownAutomatically());
+  EXPECT_FALSE(prompt_observer.IsSavePromptShownAutomatically());
   PasswordManagerBrowserTestBase::WaitForPasswordStore(browser());
   AssertNoInterstitial(browser());
 
