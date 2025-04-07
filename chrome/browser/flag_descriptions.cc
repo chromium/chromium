@@ -4835,6 +4835,9 @@ const char kReadLaterDescription[] =
     "Allow users to save tabs for later. Enables a new button and menu for "
     "accessing tabs saved for later.";
 
+const char kReaderModeAutoDistillName[] = "Reader Mode auto distillation";
+const char kReaderModeAutoDistillDescription[] =
+    "Automatically distills web contents on every page.";
 const char kReaderModeDevEntryPointName[] = "Reader Mode developer entry point";
 const char kReaderModeDevEntryPointDescription[] =
     "Shows a button in the app overflow menu to force reader mode.";

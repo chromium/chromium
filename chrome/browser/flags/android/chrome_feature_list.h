@@ -172,6 +172,7 @@ BASE_DECLARE_FEATURE(kReadAloudPlayback);
 BASE_DECLARE_FEATURE(kReadAloudTapToSeek);
 BASE_DECLARE_FEATURE(kReadAloudServerExperiments);
 BASE_DECLARE_FEATURE(kReadAloudIPHMenuButtonHighlightCCT);
+BASE_DECLARE_FEATURE(kReaderModeAutoDistill);
 BASE_DECLARE_FEATURE(kReaderModeDevEntryPoint);
 BASE_DECLARE_FEATURE(kReengagementNotification);
 BASE_DECLARE_FEATURE(kRecordSuppressionMetrics);

@@ -7809,6 +7809,11 @@
     "expiry_milestone": 145
   },
   {
+    "name": "reader-mode-auto-distill",
+    "owners": ["wylieb@google.com", "chrome-reader-mode-team@google.com"],
+    "expiry_milestone": 145
+  },
+  {
     "name": "reader-mode-dev-entry-point",
     "owners": ["wylieb@google.com", "chrome-reader-mode-team@google.com"],
     "expiry_milestone": 145

@@ -2849,6 +2849,8 @@ extern const char kReadAloudTapToSeekDescription[];
 
 extern const char kReadAloudTapToSeekName[];
 extern const char kReadAloudTapToSeekDescription[];
+extern const char kReaderModeAutoDistillName[];
+extern const char kReaderModeAutoDistillDescription[];
 extern const char kReaderModeDevEntryPointName[];
 extern const char kReaderModeDevEntryPointDescription[];
 extern const char kReaderModeHeuristicsName[];

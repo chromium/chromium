@@ -9471,6 +9471,7 @@ from previous Chrome versions.
   <int value="-1859244524" label="NtpRealboxCr23ExpandedStateIcons:disabled"/>
   <int value="-1859095876" label="Previews:disabled"/>
   <int value="-1858742756" label="FirmwareUpdateUIV2:disabled"/>
+  <int value="-1858709632" label="ReaderModeAutoDistill:enabled"/>
   <int value="-1858614075" label="IsolateSandboxedIframes:enabled"/>
   <int value="-1858284725" label="TabGroupsFeedback:enabled"/>
   <int value="-1856902397" label="LoadingWithMojo:enabled"/>
@@ -18335,6 +18336,7 @@ from previous Chrome versions.
   <int value="1572371872" label="MostVisitedTilesNewScoring:enabled"/>
   <int value="1572464760" label="pwa-update-dialog-for-name-and-icon:disabled"/>
   <int value="1573323485" label="ViewportHeightClientHintHeader:enabled"/>
+  <int value="1573565148" label="ReaderModeAutoDistill:disabled"/>
   <int value="1573754862" label="AutofillEnableFIDOProgressDialog:disabled"/>
   <int value="1573860827" label="EnableImeSandbox:enabled"/>
   <int value="1574392127" label="CanvasNoise:enabled"/>

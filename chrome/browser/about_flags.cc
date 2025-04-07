@@ -5098,6 +5098,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kContextualPageActionsShareModelDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(
          segmentation_platform::features::kContextualPageActionShareModel)},
+    {"reader-mode-auto-distill", flag_descriptions::kReaderModeAutoDistillName,
+     flag_descriptions::kReaderModeAutoDistillDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kReaderModeAutoDistill)},
     {"reader-mode-dev-entry-point",
      flag_descriptions::kReaderModeDevEntryPointName,
      flag_descriptions::kReaderModeDevEntryPointDescription, kOsAndroid,

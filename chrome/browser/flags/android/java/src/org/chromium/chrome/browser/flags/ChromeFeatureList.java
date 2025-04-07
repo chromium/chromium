@@ -480,6 +480,7 @@ public abstract class ChromeFeatureList {
     public static final String READALOUD_TAP_TO_SEEK = "ReadAloudTapToSeek";
     public static final String READALOUD_IPH_MENU_BUTTON_HIGHLIGHT_CCT =
             "ReadAloudIPHMenuButtonHighlightCCT";
+    public static final String READER_MODE_AUTO_DISTILL = "ReaderModeAutoDistill";
     public static final String READER_MODE_DEV_ENTRY_POINT = "ReaderModeDevEntryPoint";
     public static final String RECORD_SUPPRESSION_METRICS = "RecordSuppressionMetrics";
     public static final String REENGAGEMENT_NOTIFICATION = "ReengagementNotification";
