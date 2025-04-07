@@ -1564,6 +1564,23 @@ source_set("platform_browser_tests") {
       ]
     }
   }
+
+  if (enable_devtools_frontend) {
+    sources += [ "../browser/devtools/devtools_browsertest.cc" ]
+    deps += [
+      ":sync_integration_test_support",
+      "//chrome/browser/devtools:test_support",
+      "//chrome/browser/ui/autofill",
+      "//components/infobars/content",
+      "//components/javascript_dialogs",
+      "//components/language/core/browser",
+      "//components/variations/service",
+      "//ui/compositor",
+    ]
+    if (!is_android) {
+      deps += [ "//chrome/browser/ui/browser_window" ]
+    }
+  }
 }
 
 if (is_android) {
@@ -2940,7 +2957,6 @@ if (!is_android) {
       "../browser/devtools/device/devtools_android_bridge_browsertest.cc",
       "../browser/devtools/device/port_forwarding_browsertest.cc",
       "../browser/devtools/device/usb/android_usb_browsertest.cc",
-      "../browser/devtools/devtools_browsertest.cc",
       "../browser/devtools/global_confirm_info_bar_browsertest.cc",
       "../browser/devtools/protocol/devtools_autofill_browsertest.cc",
       "../browser/devtools/protocol/devtools_extensions_browsertest.cc",

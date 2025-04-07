@@ -394,12 +394,26 @@ static_library("test_support") {
   deps = []
   testonly = true
 
-  if (!is_android) {
+  if (enable_devtools_frontend) {
     deps += [
       ":devtools",
       "//base",
       "//chrome/browser",
       "//chrome/browser/ui",
+      "//content/public/browser",
+      "//content/test:test_support",
+    ]
+
+    sources += [
+      "devtools_window_testing.cc",
+      "devtools_window_testing.h",
+    ]
+  }
+
+  if (!is_android) {
+    deps += [
+      ":devtools",
+      "//base",
       "//content/public/browser",
       "//content/test:test_support",
       "//net",
@@ -409,8 +423,6 @@ static_library("test_support") {
     sources += [
       "device/adb/mock_adb_server.cc",
       "device/adb/mock_adb_server.h",
-      "devtools_window_testing.cc",
-      "devtools_window_testing.h",
     ]
 
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
