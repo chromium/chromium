@@ -20,6 +20,7 @@ typedef NS_ENUM(NSUInteger, SigninCoordinatorResult);
 @protocol SystemIdentity;
 class TabGroup;
 class TabGroupFaviconsGridConfigurator;
+class TabGroupService;
 
 namespace collaboration {
 
@@ -28,7 +29,8 @@ class IOSCollaborationControllerDelegate
     : public CollaborationControllerDelegate {
  public:
   IOSCollaborationControllerDelegate(Browser* browser,
-                                     UIViewController* base_view_controller);
+                                     UIViewController* base_view_controller,
+                                     TabGroupService* tab_group_service);
 
   IOSCollaborationControllerDelegate(
       const IOSCollaborationControllerDelegate&) = delete;
@@ -124,8 +126,15 @@ class IOSCollaborationControllerDelegate
   // something is happening and prevent interaction with the rest of the app.
   UIView* scrim_view_ = nil;
 
+  // The tab group service for this collaboration delegate.
+  raw_ptr<TabGroupService> tab_group_service_;
+
   // Callback that needs to be called to dismiss the join screen.
   base::OnceCallback<void()> dismiss_join_screen_callback_;
+
+  // The tab group id used to register this delegate to the TabGroupService, if
+  // any.
+  std::optional<tab_groups::LocalTabGroupID> tab_group_service_registration_id_;
 
   base::WeakPtrFactory<IOSCollaborationControllerDelegate> weak_ptr_factory_{
       this};

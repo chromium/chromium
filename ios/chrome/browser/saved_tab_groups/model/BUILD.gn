@@ -63,6 +63,7 @@ source_set("tab_group_service") {
     ":model",
     "//base",
     "//components/keyed_service/core",
+    "//components/saved_tab_groups/public",
     "//ios/chrome/browser/collaboration/model:features",
     "//ios/chrome/browser/ntp/model",
     "//ios/chrome/browser/shared/model/profile",

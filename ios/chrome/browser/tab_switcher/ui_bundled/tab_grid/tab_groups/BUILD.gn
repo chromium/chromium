@@ -47,6 +47,7 @@ source_set("tab_groups") {
     "//ios/chrome/browser/saved_tab_groups/favicon/coordinator",
     "//ios/chrome/browser/saved_tab_groups/favicon/ui",
     "//ios/chrome/browser/saved_tab_groups/model",
+    "//ios/chrome/browser/saved_tab_groups/model:tab_group_service",
     "//ios/chrome/browser/share_kit/model",
     "//ios/chrome/browser/share_kit/model:constants",
     "//ios/chrome/browser/share_kit/model:factory",

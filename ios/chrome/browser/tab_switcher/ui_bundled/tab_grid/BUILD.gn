@@ -55,6 +55,7 @@ source_set("tab_grid") {
     "//ios/chrome/browser/recent_tabs/ui_bundled:coordinator",
     "//ios/chrome/browser/recent_tabs/ui_bundled:ui",
     "//ios/chrome/browser/saved_tab_groups/model",
+    "//ios/chrome/browser/saved_tab_groups/model:tab_group_service",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/sessions/model",
     "//ios/chrome/browser/share_kit/model",

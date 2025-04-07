@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/saved_tab_groups/favicon/ui/tab_group_favicons_grid.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_action_context.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
+#import "ios/chrome/browser/saved_tab_groups/model/tab_group_service.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_flow_outcome.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_join_configuration.h"
@@ -85,10 +86,15 @@ CollaborationControllerDelegate::Outcome ConvertOutcome(
 
 IOSCollaborationControllerDelegate::IOSCollaborationControllerDelegate(
     Browser* browser,
-    UIViewController* base_view_controller)
-    : browser_(browser), base_view_controller_(base_view_controller) {
+    UIViewController* base_view_controller,
+    TabGroupService* tab_group_service)
+    : browser_(browser),
+      base_view_controller_(base_view_controller),
+      tab_group_service_(tab_group_service) {
   CHECK(browser_);
   CHECK(base_view_controller_);
+  // TODO(crbug.com/399289392): uncomment once downstream is landed.
+  //  CHECK(tab_group_service_);
   ProfileIOS* profile = browser_->GetProfile();
 
   share_kit_service_ = ShareKitServiceFactory::GetForProfile(profile);
@@ -252,6 +258,13 @@ void IOSCollaborationControllerDelegate::ShowShareDialog(
     return;
   }
 
+  tab_group_service_registration_id_ =
+      std::make_optional(tab_group->tab_group_id());
+  // TODO(crbug.com/399289392): uncomment once downstream is landed.
+  //  tab_group_service_->RegisterCollaborationControllerDelegate(
+  //      tab_group_service_registration_id_.value(),
+  //      weak_ptr_factory_.GetWeakPtr());
+
   auto callback = base::BindOnce(
       &IOSCollaborationControllerDelegate::ConfigureAndShareTabGroup,
       weak_ptr_factory_.GetWeakPtr(), either_id, std::move(result), tab_group);
@@ -320,6 +333,11 @@ void IOSCollaborationControllerDelegate::PromoteCurrentScreen() {
 }
 
 void IOSCollaborationControllerDelegate::OnFlowFinished() {
+  if (tab_group_service_registration_id_) {
+    // TODO(crbug.com/399289392): uncomment once downstream is landed.
+    //    tab_group_service_->UnregisterCollaborationControllerDelegate(
+    //        tab_group_service_registration_id_.value());
+  }
   if (dismiss_join_screen_callback_) {
     // The dismissal should be handled before the end of the flow.
     NOTREACHED(base::NotFatalUntil::M140);

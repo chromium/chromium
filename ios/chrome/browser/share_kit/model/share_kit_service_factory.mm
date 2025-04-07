@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
 #import "ios/chrome/browser/collaboration/model/features.h"
 #import "ios/chrome/browser/data_sharing/model/data_sharing_service_factory.h"
+#import "ios/chrome/browser/saved_tab_groups/model/tab_group_service_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_service.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_service_configuration.h"
@@ -38,6 +39,7 @@ ShareKitServiceFactory::ShareKitServiceFactory()
   DependsOn(data_sharing::DataSharingServiceFactory::GetInstance());
   DependsOn(collaboration::CollaborationServiceFactory::GetInstance());
   DependsOn(tab_groups::TabGroupSyncServiceFactory::GetInstance());
+  DependsOn(TabGroupServiceFactory::GetInstance());
 }
 
 ShareKitServiceFactory::~ShareKitServiceFactory() = default;
@@ -57,6 +59,8 @@ std::unique_ptr<KeyedService> ShareKitServiceFactory::BuildServiceInstanceFor(
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile);
   collaboration::CollaborationService* collaboration_service =
       collaboration::CollaborationServiceFactory::GetForProfile(profile);
+  TabGroupService* tab_group_service =
+      TabGroupServiceFactory::GetForProfile(profile);
 
   // Give the opportunity for the test hook to override the service from
   // the provider (allowing EG tests to use a test ShareKitService).
@@ -69,6 +73,7 @@ std::unique_ptr<KeyedService> ShareKitServiceFactory::BuildServiceInstanceFor(
       std::make_unique<ShareKitServiceConfiguration>(
           IdentityManagerFactory::GetForProfile(profile),
           AuthenticationServiceFactory::GetForProfile(profile),
-          data_sharing_service, collaboration_service, sync_service);
+          data_sharing_service, collaboration_service, sync_service,
+          tab_group_service);
   return ios::provider::CreateShareKitService(std::move(configuration));
 }

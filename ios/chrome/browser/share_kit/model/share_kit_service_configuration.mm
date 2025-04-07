@@ -9,11 +9,13 @@ ShareKitServiceConfiguration::ShareKitServiceConfiguration(
     raw_ptr<AuthenticationService> authentication_service,
     raw_ptr<data_sharing::DataSharingService> data_sharing_service,
     raw_ptr<collaboration::CollaborationService> collaboration_service,
-    raw_ptr<tab_groups::TabGroupSyncService> sync_service)
+    raw_ptr<tab_groups::TabGroupSyncService> sync_service,
+    raw_ptr<TabGroupService> tab_group_service)
     : identity_manager(identity_manager),
       authentication_service(authentication_service),
       data_sharing_service(data_sharing_service),
       collaboration_service(collaboration_service),
-      sync_service(sync_service) {}
+      sync_service(sync_service),
+      tab_group_service(tab_group_service) {}
 
 ShareKitServiceConfiguration::~ShareKitServiceConfiguration() = default;

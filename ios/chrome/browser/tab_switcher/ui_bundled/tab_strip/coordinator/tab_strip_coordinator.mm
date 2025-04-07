@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/collaboration/model/ios_collaboration_controller_delegate.h"
 #import "ios/chrome/browser/collaboration/model/messaging/messaging_backend_service_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
+#import "ios/chrome/browser/saved_tab_groups/model/tab_group_service_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
@@ -450,7 +451,8 @@
 
   std::unique_ptr<collaboration::CollaborationControllerDelegate> delegate =
       std::make_unique<collaboration::IOSCollaborationControllerDelegate>(
-          browser, self.baseViewController);
+          browser, self.baseViewController,
+          TabGroupServiceFactory::GetForProfile(self.profile));
   collaborationService->StartShareOrManageFlow(
       std::move(delegate), tabGroup->tab_group_id(),
       collaboration::CollaborationServiceShareOrManageEntryPoint::kUnknown);
