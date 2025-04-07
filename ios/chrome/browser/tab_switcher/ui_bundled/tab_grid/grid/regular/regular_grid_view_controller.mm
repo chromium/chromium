@@ -188,7 +188,7 @@ NSArray<UIView*>* GetTabGroupViewsToAnimateClosure(
   // Register InactiveTabsButtonCell.
   auto configureInactiveTabsButtonCell =
       ^(InactiveTabsButtonCell* cell, NSIndexPath* indexPath, id item) {
-        [weakSelf configureInativeTabsButtonCell:cell];
+        [weakSelf configureInactiveTabsButtonCell:cell];
       };
   _inactiveTabsButtonCellRegistration = [UICollectionViewCellRegistration
       registrationWithCellClass:InactiveTabsButtonCell.class
@@ -294,7 +294,7 @@ NSArray<UIView*>* GetTabGroupViewsToAnimateClosure(
 }
 
 // Configures `cell` according to the current state.
-- (void)configureInativeTabsButtonCell:(InactiveTabsButtonCell*)cell {
+- (void)configureInactiveTabsButtonCell:(InactiveTabsButtonCell*)cell {
   cell.count = _inactiveTabsCount;
   cell.daysThreshold = _inactiveTabsDaysThreshold;
 }
