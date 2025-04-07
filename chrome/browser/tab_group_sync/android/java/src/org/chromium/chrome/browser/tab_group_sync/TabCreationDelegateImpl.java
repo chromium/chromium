@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tab_group_sync;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncControllerImpl.TabCreationDelegate;
@@ -15,6 +17,7 @@ import org.chromium.url.GURL;
  * Utility class for creating and navigation a tab. Designed to handle creating tabs in background
  * and deferring navigation until the user switches back to the tab.
  */
+@NullMarked
 public class TabCreationDelegateImpl implements TabCreationDelegate {
     private static final String TAG = "TG.TabCreationDelegate";
 
@@ -33,7 +36,8 @@ public class TabCreationDelegateImpl implements TabCreationDelegate {
     }
 
     @Override
-    public Tab createBackgroundTab(GURL url, String title, Tab parent, int position) {
+    public @Nullable Tab createBackgroundTab(
+            GURL url, String title, @Nullable Tab parent, int position) {
         LogUtils.log(TAG, "createBackgroundTab " + url);
         LoadUrlParams loadUrlParams = new LoadUrlParams(url);
         mNavigationTracker.setNavigationWasFromSync(loadUrlParams.getNavigationHandleUserData());

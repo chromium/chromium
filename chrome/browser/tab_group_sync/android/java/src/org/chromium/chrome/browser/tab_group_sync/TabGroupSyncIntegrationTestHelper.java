@@ -8,10 +8,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.chrome.browser.tab_group_sync.TabGroupSyncUtils.NEW_TAB_TITLE;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 
+import org.chromium.build.annotations.EnsuresNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.sync.SyncTestRule;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
@@ -35,6 +39,7 @@ import java.util.Map;
 import java.util.Set;
 
 /** Helper class for integration tests. */
+@NullMarked
 public class TabGroupSyncIntegrationTestHelper {
     public static final String TAB_GROUP_SYNC_DATA_TYPE = "Saved Tab Group";
 
@@ -76,7 +81,7 @@ public class TabGroupSyncIntegrationTestHelper {
         public long position;
 
         // Required for connecting with tabs. We don't use it for validation.
-        public String syncId;
+        public @Nullable String syncId;
 
         /**
          * @param title The title of the tab.
@@ -97,7 +102,7 @@ public class TabGroupSyncIntegrationTestHelper {
         public List<TabInfo> tabs = new ArrayList<>();
 
         // Required for connecting with tabs. We don't use it for validation.
-        public String syncId;
+        public @Nullable String syncId;
 
         /**
          * @param title The title of the tab group.
@@ -131,6 +136,7 @@ public class TabGroupSyncIntegrationTestHelper {
     }
 
     /** Resets the GUID iterator for creating groups. */
+    @EnsuresNonNull("mGuidIterator")
     public void resetGuidIterator() {
         mGuidIterator = sGuids.iterator();
     }
@@ -209,7 +215,7 @@ public class TabGroupSyncIntegrationTestHelper {
                             specifics.getTab().getTitle(),
                             specifics.getTab().getUrl(),
                             specifics.getTab().getPosition());
-            groupInfos.get(groupGuid).addTab(tabInfo);
+            assertNonNull(groupInfos.get(groupGuid)).addTab(tabInfo);
         }
 
         return new ArrayList<>(groupInfos.values());
@@ -273,15 +279,16 @@ public class TabGroupSyncIntegrationTestHelper {
 
     /** Returns the regular tab model filter. */
     public TabGroupModelFilter getTabGroupFilter() {
-        return mSyncTestRule
-                .getActivity()
-                .getTabModelSelector()
-                .getTabGroupModelFilterProvider()
-                .getTabGroupModelFilter(false);
+        return assertNonNull(
+                mSyncTestRule
+                        .getActivity()
+                        .getTabModelSelector()
+                        .getTabGroupModelFilterProvider()
+                        .getTabGroupModelFilter(false));
     }
 
     /** Gets the {@link SyncEntity} for a particular sync GUID. */
-    public SyncEntity getSyncEntityWithUuid(String guid) {
+    public @Nullable SyncEntity getSyncEntityWithUuid(String guid) {
         List<SyncEntity> entities = getSyncEntities();
         for (SyncEntity entity : entities) {
             if (entity.getSpecifics().getSavedTabGroup().getGuid().equals(guid)) {
@@ -406,7 +413,7 @@ public class TabGroupSyncIntegrationTestHelper {
         Set<Integer> rootIds = new HashSet<>();
         TabModel tabModel = getTabModel();
         for (int i = 0; i < tabModel.getCount(); i++) {
-            Tab tab = tabModel.getTabAt(i);
+            Tab tab = tabModel.getTabAtChecked(i);
             if (tab.getTabGroupId() == null) continue;
             rootIds.add(tab.getRootId());
         }

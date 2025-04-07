@@ -4,11 +4,13 @@
 
 package org.chromium.chrome.browser.tab_group_sync;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.url.GURL;
 
 /** Test utils for tab group sync. */
+@NullMarked
 public class TabGroupSyncTestUtils {
     /** Create a test saved tab group. */
     public static SavedTabGroup createSavedTabGroup() {

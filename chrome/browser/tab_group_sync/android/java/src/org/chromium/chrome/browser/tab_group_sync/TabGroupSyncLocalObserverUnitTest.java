@@ -168,6 +168,7 @@ public class TabGroupSyncLocalObserverUnitTest {
         savedTab2.localId = TAB_ID_2;
         savedGroup.savedTabs.add(savedTab1);
         savedGroup.savedTabs.add(savedTab2);
+        savedTab2.lastUpdaterCacheGuid = remoteGuid;
         when(mTabGroupSyncService.getGroup(LOCAL_TAB_GROUP_ID_1)).thenReturn(savedGroup);
         when(mTabGroupSyncService.isRemoteDevice(remoteGuid)).thenReturn(true);
 

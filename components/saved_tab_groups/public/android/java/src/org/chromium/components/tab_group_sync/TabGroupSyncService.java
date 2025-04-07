@@ -234,7 +234,7 @@ public interface TabGroupSyncService {
      * @param localGroupId The local ID of the group to be returned.
      * @return The associated {@link SavedTabGroup}.
      */
-    SavedTabGroup getGroup(LocalTabGroupId localGroupId);
+    @Nullable SavedTabGroup getGroup(LocalTabGroupId localGroupId);
 
     /**
      * Updates the in-memory mapping between sync and local tab group IDs.

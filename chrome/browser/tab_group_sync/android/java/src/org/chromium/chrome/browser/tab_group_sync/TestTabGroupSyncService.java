@@ -6,9 +6,9 @@ package org.chromium.chrome.browser.tab_group_sync;
 
 import android.text.TextUtils;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.tab_group_sync.ClosingSource;
 import org.chromium.components.tab_group_sync.EventDetails;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** Test implementation of {@link TabGroupSyncService} that can be used for unit tests. */
+@NullMarked
 class TestTabGroupSyncService implements TabGroupSyncService {
     public static final String SYNC_ID_1 = "SYNC_ID_1";
     public static final String LOCAL_DEVICE_CACHE_GUID = "LocalDevice";
@@ -45,7 +46,7 @@ class TestTabGroupSyncService implements TabGroupSyncService {
     public void removeGroup(String syncTabGroupId) {}
 
     @Override
-    public void updateVisualData(LocalTabGroupId tabGroupId, @NonNull String title, int color) {}
+    public void updateVisualData(LocalTabGroupId tabGroupId, String title, int color) {}
 
     @Override
     public void addTab(
@@ -62,13 +63,14 @@ class TestTabGroupSyncService implements TabGroupSyncService {
     public void moveTab(LocalTabGroupId tabGroupId, int tabId, int newIndexInGroup) {}
 
     @Override
-    public void onTabSelected(LocalTabGroupId tabGroupId, int tabId, String tabTitle) {}
+    public void onTabSelected(@Nullable LocalTabGroupId tabGroupId, int tabId, String tabTitle) {}
 
     @Override
-    public void makeTabGroupShared(LocalTabGroupId tabGroupId, @NonNull String collaborationId) {}
+    public void makeTabGroupShared(LocalTabGroupId tabGroupId, String collaborationId) {}
 
     @Override
-    public void aboutToUnShareTabGroup(LocalTabGroupId tabGroupId, Callback<Boolean> callback) {}
+    public void aboutToUnShareTabGroup(
+            LocalTabGroupId tabGroupId, @Nullable Callback<Boolean> callback) {}
 
     @Override
     public void onTabGroupUnShareComplete(LocalTabGroupId tabGroupId, boolean success) {}
@@ -79,7 +81,7 @@ class TestTabGroupSyncService implements TabGroupSyncService {
     }
 
     @Override
-    public SavedTabGroup getGroup(String syncGroupId) {
+    public @Nullable SavedTabGroup getGroup(String syncGroupId) {
         for (SavedTabGroup group : mTabGroups) {
             if (syncGroupId.equals(group.syncId)) return group;
         }
@@ -87,7 +89,7 @@ class TestTabGroupSyncService implements TabGroupSyncService {
     }
 
     @Override
-    public SavedTabGroup getGroup(LocalTabGroupId localGroupId) {
+    public @Nullable SavedTabGroup getGroup(LocalTabGroupId localGroupId) {
         for (SavedTabGroup group : mTabGroups) {
             if (localGroupId.equals(group.localId)) return group;
         }

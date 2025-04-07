@@ -6,10 +6,10 @@ package org.chromium.chrome.browser.tab_group_sync;
 
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
@@ -27,6 +27,7 @@ import org.chromium.components.tab_group_sync.TriggerSource;
  * to the tab model. Additionally manages disabling and enabling local observers to avoid looping
  * updates back to sync. Updates for other windows are ignored.
  */
+@NullMarked
 public final class TabGroupSyncRemoteObserver implements TabGroupSyncService.Observer {
     private static final String TAG = "TG.RemoteObserver";
     private final TabGroupModelFilter mTabGroupModelFilter;
@@ -77,6 +78,7 @@ public final class TabGroupSyncRemoteObserver implements TabGroupSyncService.Obs
     public void onTabGroupAdded(SavedTabGroup tabGroup, @TriggerSource int source) {
         if (source != TriggerSource.REMOTE) return;
         if (!mIsActiveWindowSupplier.get()) return;
+        if (tabGroup.syncId == null) return;
         if (mTabGroupSyncService.wasTabGroupClosedLocally(tabGroup.syncId)) return;
 
         LogUtils.log(TAG, "onTabGroupAdded, tabGroup = " + tabGroup);
