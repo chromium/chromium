@@ -5898,6 +5898,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "lens-overlay-disable-iph-pan-gesture",
+    "owners": [ "stkhapugin@chromium.org", "christianxu@chromium.org", "lens-chrome@google.com" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "lens-overlay-disable-price-insights",
     "owners": ["christianxu@google.com", "stkhapugin@chromium.org"],
     "expiry_milestone": 135

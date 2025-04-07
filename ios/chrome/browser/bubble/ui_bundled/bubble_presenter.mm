@@ -933,6 +933,16 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   bubbleViewControllerPresenter.customBubbleVisibilityDuration =
       [self bubbleVisibilityDurationForFeature:feature];
 
+  BOOL shouldDisablePanRecognizer =
+      base::FeatureList::IsEnabled(kLensOverlayDisableIPHPanGesture);
+  BOOL isLensOverlayIPH =
+      (feature.name ==
+           feature_engagement::kIPHiOSLensOverlayEscapeHatchTipFeature.name ||
+       feature.name ==
+           feature_engagement::kIPHiOSLensOverlayEntrypointTipFeature.name);
+  bubbleViewControllerPresenter.forceDisablePanGestureRecognizer =
+      shouldDisablePanRecognizer && isLensOverlayIPH;
+
   return bubbleViewControllerPresenter;
 }
 
