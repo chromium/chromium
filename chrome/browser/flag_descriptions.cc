@@ -767,11 +767,6 @@ const char kAutofillEnableVcnGrayOutForMerchantOptOutDescription[] =
     "When enabled, Chrome will display grayed out virtual card suggestions on "
     "merchant websites where the merchant has opted-out of virtual cards.";
 
-const char kAutofillEnableVerveCardSupportName[] =
-    "Enable autofill support for Verve cards";
-const char kAutofillEnableVerveCardSupportDescription[] =
-    "When enabled, Verve-branded card art will be shown for Verve cards.";
-
 const char kAutofillImprovedLabelsName[] =
     "Autofill suggestions with improved labels";
 const char kAutofillImprovedLabelsDescription[] =

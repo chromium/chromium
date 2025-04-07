@@ -199,11 +199,6 @@ BASE_FEATURE(kAutofillEnableVcnGrayOutForMerchantOptOut,
              "AutofillEnableVcnGrayOutForMerchantOptOut",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// When enabled, Verve-branded card art will be shown for Verve cards.
-BASE_FEATURE(kAutofillEnableVerveCardSupport,
-             "AutofillEnableVerveCardSupport",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_IOS)
 // When enabled, save card bottomsheet will be shown when the user has not
 // previously rejected the offer to save the card, and both a valid expiry date

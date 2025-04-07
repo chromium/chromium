@@ -188,11 +188,9 @@ const char* GetCardNetwork(std::u16string_view number) {
       return kEloCard;
     }
 
-    if (((first_six_digits >= 506099 && first_six_digits <= 506198) ||
-         (first_six_digits >= 507865 && first_six_digits <= 507964) ||
-         (first_six_digits >= 650002 && first_six_digits <= 650027)) &&
-        base::FeatureList::IsEnabled(
-            features::kAutofillEnableVerveCardSupport)) {
+    if ((first_six_digits >= 506099 && first_six_digits <= 506198) ||
+        (first_six_digits >= 507865 && first_six_digits <= 507964) ||
+        (first_six_digits >= 650002 && first_six_digits <= 650027)) {
       return kVerveCard;
     }
   }

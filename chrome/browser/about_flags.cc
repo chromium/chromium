@@ -10602,11 +10602,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid, MULTI_VALUE_TYPE(kReplaceSyncPromosWithSignInPromosChoices)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
-    {"autofill-enable-verve-card-support",
-     flag_descriptions::kAutofillEnableVerveCardSupportName,
-     flag_descriptions::kAutofillEnableVerveCardSupportDescription, kOsAll,
-     FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableVerveCardSupport)},
-
 #if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
     {"cert-management-v2-ui", flag_descriptions::kEnableCertManagementV2UIName,
      flag_descriptions::kEnableCertManagementV2UIDescription,

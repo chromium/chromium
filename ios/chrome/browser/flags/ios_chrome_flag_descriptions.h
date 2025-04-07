@@ -78,9 +78,6 @@ extern const char kAutofillEnableRankingFormulaCreditCardsDescription[];
 extern const char kAutofillEnableSupportForHomeAndWorkName[];
 extern const char kAutofillEnableSupportForHomeAndWorkDescription[];
 
-extern const char kAutofillEnableVerveCardSupportName[];
-extern const char kAutofillEnableVerveCardSupportDescription[];
-
 extern const char kAutofillIsolatedWorldForJavascriptIOSName[];
 extern const char kAutofillIsolatedWorldForJavascriptIOSDescription[];
 

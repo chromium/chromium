@@ -1128,8 +1128,7 @@ TEST(CreditCardTest, CompareCardInfoRetrievalEnrollmentState) {
 TEST(CreditCardTest, IconResourceId_NewFopDisplayOff) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatureStates(
-      {{features::kAutofillEnableNewFopDisplayDesktop, false},
-       {features::kAutofillEnableVerveCardSupport, true}});
+      {{features::kAutofillEnableNewFopDisplayDesktop, false}});
   EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_AMEX_OLD,
             CreditCard::IconResourceId(Suggestion::Icon::kCardAmericanExpress));
   EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_DINERS_OLD,
@@ -1158,8 +1157,7 @@ TEST(CreditCardTest, IconResourceId_NewFopDisplayOff) {
 TEST(CreditCardTest, IconResourceIdFromString_NewFopDisplayOff) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatureStates(
-      {{features::kAutofillEnableNewFopDisplayDesktop, false},
-       {features::kAutofillEnableVerveCardSupport, true}});
+      {{features::kAutofillEnableNewFopDisplayDesktop, false}});
   EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_AMEX_OLD,
             CreditCard::IconResourceId(kAmericanExpressCard));
   EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_DINERS_OLD,
@@ -1189,8 +1187,8 @@ TEST(CreditCardTest, IconResourceIdFromString_NewFopDisplayOff) {
 TEST(CreditCardTest, IconResourceId) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatureStates(
-      {{features::kAutofillEnableNewFopDisplayDesktop, true},
-       {features::kAutofillEnableVerveCardSupport, true}});
+      {{features::kAutofillEnableNewFopDisplayDesktop, true}});
+
   EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_AMEX,
             CreditCard::IconResourceId(Suggestion::Icon::kCardAmericanExpress));
   EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_DINERS,
@@ -1219,8 +1217,8 @@ TEST(CreditCardTest, IconResourceId) {
 TEST(CreditCardTest, IconResourceIdFromString) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatureStates(
-      {{features::kAutofillEnableNewFopDisplayDesktop, true},
-       {features::kAutofillEnableVerveCardSupport, true}});
+      {{features::kAutofillEnableNewFopDisplayDesktop, true}});
+
   EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_AMEX,
             CreditCard::IconResourceId(kAmericanExpressCard));
   EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_DINERS,

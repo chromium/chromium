@@ -119,11 +119,6 @@ const char kAutofillEnableSupportForHomeAndWorkName[] =
 const char kAutofillEnableSupportForHomeAndWorkDescription[] =
     "When enabled, chrome will support home and work addresses from account.";
 
-const char kAutofillEnableVerveCardSupportName[] =
-    "Enable autofill support for Verve cards";
-const char kAutofillEnableVerveCardSupportDescription[] =
-    "When enabled, Verve-branded card art will be shown for Verve cards.";
-
 const char kAutofillIsolatedWorldForJavascriptIOSName[] =
     "Isolated content world for Autofill";
 const char kAutofillIsolatedWorldForJavascriptIOSDescription[] =
