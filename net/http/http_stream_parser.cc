@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "net/http/http_stream_parser.h"
 
 #include <algorithm>
@@ -267,18 +262,17 @@ int HttpStreamParser::SendRequest(
     request_headers_ = base::MakeRefCounted<DrainableIOBuffer>(
         merged_request_headers_and_body, merged_size);
 
-    memcpy(request_headers_->data(), request.data(), request_headers_length_);
-    request_headers_->DidConsume(request_headers_length_);
+    request_headers_->span().copy_prefix_from(base::as_byte_span(request));
+    // Size of IOBuffers always fits within an int, so if `request` can't fit
+    // within an int, the above copy_prefix_from() would have triggered a CHECK.
+    request_headers_->DidConsume(static_cast<int>(request.size()));
 
-    uint64_t todo = upload_data_stream_->size();
-    while (todo) {
-      int consumed = upload_data_stream_->Read(request_headers_.get(),
-                                               static_cast<int>(todo),
-                                               CompletionOnceCallback());
+    while (int remaining = request_headers_->BytesRemaining() > 0) {
+      int consumed = upload_data_stream_->Read(
+          request_headers_.get(), remaining, CompletionOnceCallback());
       // Read() must succeed synchronously if not chunked and in memory.
-      DCHECK_GT(consumed, 0);
+      CHECK_GT(consumed, 0);
       request_headers_->DidConsume(consumed);
-      todo -= consumed;
     }
     DCHECK(upload_data_stream_->IsEOF());
     // Reset the offset, so the buffer can be read from the beginning.
@@ -458,7 +452,7 @@ int HttpStreamParser::DoSendHeaders() {
 int HttpStreamParser::DoSendHeadersComplete(int result) {
   if (result < 0) {
     // In the unlikely case that the headers and body were merged, all the
-    // the headers were sent, but not all of the body way, and |result| is
+    // the headers were sent, but not all of the body was, and |result| is
     // an error that this should try reading after, stash the error for now and
     // act like the request was successfully sent.
     io_state_ = STATE_SEND_REQUEST_COMPLETE;
