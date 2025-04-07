@@ -14,7 +14,6 @@
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
-#include "third_party/skia/include/core/SkPath.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
 // GoogleTest macros trigger a bug in IWYU:
@@ -76,10 +75,10 @@ TEST_F(CanvasPathTest, LineBoundingRect) {
   path->lineTo(end.x(), end.y());
   EXPECT_TRUE(path->IsLine());
 
-  SkPath sk_path;
-  sk_path.moveTo(gfx::PointFToSkPoint(start));
-  sk_path.lineTo(gfx::PointFToSkPoint(end));
-  Path path_from_sk_path(sk_path);
+  PathBuilder path_builder;
+  path_builder.MoveTo(start);
+  path_builder.LineTo(end);
+  Path path_from_sk_path(path_builder.Finalize());
 
   EXPECT_EQ(path->BoundingRect(), path_from_sk_path.BoundingRect());
 }
@@ -123,10 +122,10 @@ TEST_F(CanvasPathTest, MultipleMoveTos) {
   const gfx::PointF next(2, 3);
   path->moveTo(next.x(), next.y());
 
-  SkPath sk_path;
-  sk_path.moveTo(gfx::PointFToSkPoint(start));
-  sk_path.moveTo(gfx::PointFToSkPoint(next));
-  Path path_from_sk_path(sk_path);
+  PathBuilder path_builder;
+  path_builder.MoveTo(start);
+  path_builder.MoveTo(next);
+  Path path_from_sk_path(path_builder.Finalize());
 
   EXPECT_EQ(path->GetPath(), path_from_sk_path);
 }
