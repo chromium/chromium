@@ -313,20 +313,22 @@ void GtkUi::InitializeFontSettings() {
       base::SplitString(pango_font_description_get_family(desc), ",",
                         base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
 
-  constexpr double kPangoScale = PANGO_SCALE;
+  double pango_size =
+      pango_font_description_get_size(desc) / static_cast<double>(PANGO_SCALE);
+  if (GtkCheckVersion(4)) {
+    pango_size /= FontScale();
+  }
   double size_pixels;
   if (pango_font_description_get_size_is_absolute(desc)) {
     // If the size is absolute, it's specified in Pango units. There are
     // PANGO_SCALE Pango units in a device unit (pixel).
-    size_pixels = pango_font_description_get_size(desc) / kPangoScale;
+    size_pixels = pango_size;
     query.pixel_size = std::round(size_pixels);
   } else {
     // Non-absolute sizes are in points (again scaled by PANGO_SIZE).
     // Round the value when converting to pixels to match GTK's logic.
-    const double size_points =
-        pango_font_description_get_size(desc) / kPangoScale;
-    size_pixels = size_points * kDefaultDPI / 72.0;
-    query.point_size = std::round(size_points);
+    size_pixels = pango_size * kDefaultDPI / 72.0;
+    query.point_size = std::round(pango_size);
   }
   if (!platform_->IncludeFontScaleInDeviceScale()) {
     size_pixels *= FontScale();
@@ -673,7 +675,15 @@ int GtkUi::GetCursorThemeSize() {
   g_object_get(gtk_settings_get_default(), "gtk-cursor-theme-size", &size,
                nullptr);
   if (platform_->IncludeScaleInCursorSize()) {
-    size *= display_config().primary_scale;
+    CHECK(GtkCheckVersion(4));
+    GdkDisplay* display = gdk_display_get_default();
+    GListModel* list = gdk_display_get_monitors(display);
+    auto n_monitors = g_list_model_get_n_items(list);
+    if (n_monitors) {
+      GdkMonitor* primary =
+          static_cast<GdkMonitor*>(g_list_model_get_item(list, 0));
+      size *= gdk_monitor_get_scale_factor(primary);
+    }
   }
   return size;
 }
