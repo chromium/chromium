@@ -140,6 +140,9 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
         mContainerView =
                 (ViewGroup) LayoutInflater.from(activity).inflate(snackbarLayout, mParent, false);
 
+        // Make sure clicks are not consumed by content beneath the container view.
+        mContainerView.setClickable(true);
+
         mSnackbarView = mContainerView.findViewById(R.id.snackbar);
         mAnimationDuration =
                 mContainerView.getResources().getInteger(android.R.integer.config_mediumAnimTime);
