@@ -2460,6 +2460,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.MagicStack.TabResumption.{Type}.Impression" units="index"
+    expires_after="2025-09-30">
+  <owner>davidjm@chromium.org</owner>
+  <owner>thegreenfrog@google.com</owner>
+  <owner>gloriafang@google.com</owner>
+  <summary>
+    Records impressions for different variations of the Tab Resumption module in
+    the magic stack. In this instance, {Type}.
+  </summary>
+  <token key="Type">
+    <variant name="PriceDrop"
+        summary="a price drop is shown on Tab Resumption, if a price drop
+                 exists for the URL"/>
+    <variant name="PriceTracking"
+        summary="the user can price track the tab resumption URL, if it is
+                 price trackable"/>
+    <variant name="Regular"
+        summary="regular Tab Resumption is shown with no variation"/>
+  </token>
+</histogram>
+
 <histogram name="IOS.MainFrameNavigationIsInBrowserLockdownMode" enum="Boolean"
     expires_after="2025-11-03">
   <owner>joemerramos@chromium.org</owner>
