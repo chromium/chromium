@@ -10,11 +10,13 @@ import android.view.View;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.ui.base.WindowAndroid;
 
 /** A factory for creating an {@link AppMenuCoordinator}. */
+@NullMarked
 public class AppMenuCoordinatorFactory {
     private AppMenuCoordinatorFactory() {}
 

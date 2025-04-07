@@ -133,8 +133,8 @@ class ReloadButtonMediator implements ThemeColorProvider.TintObserver {
 
     @Override
     public void onTintChanged(
-            ColorStateList tint,
-            ColorStateList activityFocusTint,
+            @Nullable ColorStateList tint,
+            @Nullable ColorStateList activityFocusTint,
             @BrandedColorScheme int brandedColorScheme) {
         mModel.set(ReloadButtonProperties.TINT_LIST, activityFocusTint);
         updateBackgroundHighlight(brandedColorScheme);

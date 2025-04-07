@@ -9,11 +9,13 @@ import android.content.Context;
 import androidx.annotation.ColorInt;
 import androidx.core.content.res.ResourcesCompat;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.theme.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.util.ColorUtils;
 
 /** Chrome specific version of {@link SemanticColorUtils}. */
+@NullMarked
 public class ChromeSemanticColorUtils {
     /**
      * Returns the semantic color value that corresponds to

@@ -10,12 +10,14 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 
 import org.chromium.blink.mojom.RpContext;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content.webid.IdentityRequestDialogDisclosureField;
 
 /**
  * Holds data associated with the identity provider in FedCM dialogs. Android counterpart of
  * IdentityProviderData in //content/public/browser/identity_request_dialog_controller.h
  */
+@NullMarked
 public class IdentityProviderData {
     private final String mIdpForDisplay;
     private final IdentityProviderMetadata mIdpMetadata;

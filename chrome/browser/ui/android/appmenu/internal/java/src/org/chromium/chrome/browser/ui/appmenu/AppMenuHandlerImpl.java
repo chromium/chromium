@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.appmenu;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Configuration;
@@ -14,12 +16,15 @@ import android.view.ContextThemeWrapper;
 import android.view.Display;
 import android.view.View;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
@@ -45,10 +50,11 @@ import java.util.Map;
  * Object responsible for handling the creation, showing, hiding of the AppMenu and notifying the
  * AppMenuObservers about these actions.
  */
+@NullMarked
 class AppMenuHandlerImpl
         implements AppMenuHandler, StartStopWithNativeObserver, ConfigurationChangedObserver {
-    private AppMenu mAppMenu;
-    private AppMenuDragHelper mAppMenuDragHelper;
+    private @Nullable AppMenu mAppMenu;
+    private @Nullable AppMenuDragHelper mAppMenuDragHelper;
     private final List<AppMenuBlocker> mBlockers;
     private final List<AppMenuObserver> mObservers;
     private final View mHardwareButtonMenuAnchor;
@@ -61,16 +67,17 @@ class AppMenuHandlerImpl
     private final Supplier<Rect> mAppRect;
     private final WindowAndroid mWindowAndroid;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
-    private ModelList mModelList;
+    private @Nullable ModelList mModelList;
     private ListObserver<Void> mListObserver;
-    private Callback<Integer> mTestOptionsItemSelectedListener;
-    private KeyboardVisibilityDelegate.KeyboardVisibilityListener mKeyboardVisibilityListener;
+    private @Nullable Callback<Integer> mTestOptionsItemSelectedListener;
+    private @MonotonicNonNull KeyboardVisibilityDelegate.KeyboardVisibilityListener
+            mKeyboardVisibilityListener;
 
     /**
      * The resource id of the menu item to highlight when the menu next opens. A value of {@code
      * null} means no item will be highlighted. This value will be cleared after the menu is opened.
      */
-    private Integer mHighlightMenuId;
+    private @Nullable Integer mHighlightMenuId;
 
     /**
      * Constructs an AppMenuHandlerImpl object.
@@ -131,7 +138,7 @@ class AppMenuHandlerImpl
 
                     @Override
                     public void onItemRangeRemoved(ListObservable source, int index, int count) {
-                        assert mModelList != null;
+                        assert mModelList != null && mAppMenu != null;
                         updateModelForHighlightAndClick(
                                 mModelList,
                                 mHighlightMenuId,
@@ -145,9 +152,11 @@ class AppMenuHandlerImpl
     /** Called when the containing activity is being destroyed. */
     void destroy() {
         // Prevent the menu window from leaking.
-        mWindowAndroid
-                .getKeyboardDelegate()
-                .removeKeyboardVisibilityListener(mKeyboardVisibilityListener);
+        if (mKeyboardVisibilityListener != null) {
+            mWindowAndroid
+                    .getKeyboardDelegate()
+                    .removeKeyboardVisibilityListener(mKeyboardVisibilityListener);
+        }
         hideAppMenu();
 
         mActivityLifecycleDispatcher.unregister(this);
@@ -164,13 +173,14 @@ class AppMenuHandlerImpl
     }
 
     @Override
-    public void setMenuHighlight(Integer highlightItemId) {
+    public void setMenuHighlight(@Nullable Integer highlightItemId) {
         boolean highlighting = highlightItemId != null;
         setMenuHighlight(highlightItemId, highlighting);
     }
 
     @Override
-    public void setMenuHighlight(Integer highlightItemId, boolean shouldHighlightMenuButton) {
+    public void setMenuHighlight(
+            @Nullable Integer highlightItemId, boolean shouldHighlightMenuButton) {
         if (mHighlightMenuId == null && highlightItemId == null) return;
         if (mHighlightMenuId != null && mHighlightMenuId.equals(highlightItemId)) return;
         mHighlightMenuId = highlightItemId;
@@ -193,7 +203,7 @@ class AppMenuHandlerImpl
      */
     // TODO(crbug.com/40479664): Fix this properly.
     @SuppressLint("ResourceType")
-    boolean showAppMenu(View anchorView, boolean startDragging) {
+    boolean showAppMenu(@Nullable View anchorView, boolean startDragging) {
         if (!shouldShowAppMenu() || isAppMenuShowing()) return false;
 
         TextBubble.dismissBubbles();
@@ -270,6 +280,7 @@ class AppMenuHandlerImpl
             mKeyboardVisibilityListener =
                     isShowing -> {
                         if (!isShowing) {
+                            assert mAppMenu != null;
                             setDisplayAndShowAppMenu(
                                     wrapper,
                                     finalAnchorView,
@@ -278,8 +289,10 @@ class AppMenuHandlerImpl
                                     mAppRect.get(),
                                     customViewBinders,
                                     startDragging);
-                            keyboardVisibilityDelegate
-                                    .removeKeyboardVisibilityListener(mKeyboardVisibilityListener);
+                            // https://github.com/uber/NullAway/issues/1190
+                            assumeNonNull(mKeyboardVisibilityListener);
+                            keyboardVisibilityDelegate.removeKeyboardVisibilityListener(
+                                    mKeyboardVisibilityListener);
                         }
                     };
             keyboardVisibilityDelegate.addKeyboardVisibilityListener(mKeyboardVisibilityListener);
@@ -298,6 +311,7 @@ class AppMenuHandlerImpl
     }
 
     void appMenuDismissed() {
+        assumeNonNull(mAppMenuDragHelper);
         mAppMenuDragHelper.finishDragging();
         mDelegate.onMenuDismissed();
     }
@@ -310,11 +324,11 @@ class AppMenuHandlerImpl
     /**
      * @return The App Menu that the menu handler is interacting with.
      */
-    public AppMenu getAppMenu() {
+    public @Nullable AppMenu getAppMenu() {
         return mAppMenu;
     }
 
-    AppMenuDragHelper getAppMenuDragHelper() {
+    @Nullable AppMenuDragHelper getAppMenuDragHelper() {
         return mAppMenuDragHelper;
     }
 
@@ -477,7 +491,9 @@ class AppMenuHandlerImpl
     }
 
     void setupModelForHighlightAndClick(
-            ModelList modelList, Integer highlightedId, AppMenuClickHandler appMenuClickHandler) {
+            ModelList modelList,
+            @Nullable Integer highlightedId,
+            AppMenuClickHandler appMenuClickHandler) {
         updateModelForHighlightAndClick(
                 modelList,
                 highlightedId,
@@ -488,7 +504,7 @@ class AppMenuHandlerImpl
 
     private void updateModelForHighlightAndClick(
             ModelList modelList,
-            Integer highlightedId,
+            @Nullable Integer highlightedId,
             AppMenuClickHandler appMenuClickHandler,
             int startIndex,
             boolean withAssertions) {
@@ -541,7 +557,7 @@ class AppMenuHandlerImpl
 
     private int getCustomItemViewType(
             int id,
-            List<CustomViewBinder> customViewBinders,
+            @Nullable List<CustomViewBinder> customViewBinders,
             Map<CustomViewBinder, Integer> customViewTypeOffsetMap) {
         if (customViewBinders == null || customViewTypeOffsetMap == null) {
             return CustomViewBinder.NOT_HANDLED;
@@ -551,7 +567,7 @@ class AppMenuHandlerImpl
             CustomViewBinder binder = customViewBinders.get(i);
             int binderViewType = binder.getItemViewType(id);
             if (binderViewType != CustomViewBinder.NOT_HANDLED) {
-                return binderViewType + customViewTypeOffsetMap.get(binder);
+                return binderViewType + assumeNonNull(customViewTypeOffsetMap.get(binder));
             }
         }
         return CustomViewBinder.NOT_HANDLED;
@@ -562,8 +578,7 @@ class AppMenuHandlerImpl
         AppMenu.setExceptionReporter(reporter);
     }
 
-    @Nullable
-    ModelList getModelListForTesting() {
+    @Nullable ModelList getModelListForTesting() {
         return mModelList;
     }
 
@@ -571,13 +586,14 @@ class AppMenuHandlerImpl
         return mDecorView;
     }
 
+    @RequiresNonNull("mAppMenu")
     private void setDisplayAndShowAppMenu(
             ContextThemeWrapper wrapper,
             View anchorView,
             boolean isByPermanentButton,
             Integer rotation,
             Rect appRect,
-            List<CustomViewBinder> customViewBinders,
+            @Nullable List<CustomViewBinder> customViewBinders,
             boolean startDragging) {
         // Use full size of window for abnormal appRect.
         if (appRect.left < 0 && appRect.top < 0) {
@@ -608,6 +624,7 @@ class AppMenuHandlerImpl
                 customViewBinders,
                 mDelegate.isMenuIconAtStart(),
                 mBrowserControlsStateProvider.getControlsPosition());
+        assumeNonNull(mAppMenuDragHelper);
         mAppMenuDragHelper.onShow(startDragging);
         clearMenuHighlight();
         RecordUserAction.record("MobileMenuShow");

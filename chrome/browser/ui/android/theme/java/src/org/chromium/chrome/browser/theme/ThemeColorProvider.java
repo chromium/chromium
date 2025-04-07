@@ -8,13 +8,14 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.ObserverList;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 
 /** An abstract class that provides the current theme color. */
+@NullMarked
 public abstract class ThemeColorProvider {
     /** An interface to be notified about changes to the theme color. */
     public interface ThemeColorObserver {
@@ -37,8 +38,8 @@ public abstract class ThemeColorProvider {
          * @param brandedColorScheme The {@link BrandedColorScheme} the observer should use.
          */
         void onTintChanged(
-                ColorStateList tint,
-                ColorStateList activityFocusTint,
+                @Nullable ColorStateList tint,
+                @Nullable ColorStateList activityFocusTint,
                 @BrandedColorScheme int brandedColorScheme);
     }
 
@@ -52,10 +53,10 @@ public abstract class ThemeColorProvider {
      * The primary icon tint for the current theme, that does not take the activity focus state into
      * account.
      */
-    private ColorStateList mTint;
+    private @Nullable ColorStateList mTint;
 
     /** The icon tint for the current theme, that takes the activity focus state into account. */
-    private ColorStateList mActivityFocusTint;
+    private @Nullable ColorStateList mActivityFocusTint;
 
     /** List of {@link ThemeColorObserver}s. These are used to broadcast events to listeners. */
     private final ObserverList<ThemeColorObserver> mThemeColorObservers;
@@ -113,14 +114,14 @@ public abstract class ThemeColorProvider {
      * @return The current tint of this provider, that does not take the activity focus state into
      *     account.
      */
-    public ColorStateList getTint() {
+    public @Nullable ColorStateList getTint() {
         return mTint;
     }
 
     /**
      * @return The tint that takes the current activity's focus state into account.
      */
-    public ColorStateList getActivityFocusTint() {
+    public @Nullable ColorStateList getActivityFocusTint() {
         return mActivityFocusTint;
     }
 
@@ -146,8 +147,8 @@ public abstract class ThemeColorProvider {
     }
 
     protected void updateTint(
-            @NonNull ColorStateList tint,
-            @NonNull ColorStateList activityFocusTint,
+            @Nullable ColorStateList tint,
+            @Nullable ColorStateList activityFocusTint,
             @BrandedColorScheme int brandedColorScheme) {
         if (tint == mTint && activityFocusTint == mActivityFocusTint) return;
         mTint = tint;

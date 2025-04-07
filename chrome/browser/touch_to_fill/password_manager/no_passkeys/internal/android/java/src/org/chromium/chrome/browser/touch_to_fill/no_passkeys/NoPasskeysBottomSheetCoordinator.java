@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.touch_to_fill.no_passkeys;
 
 import android.content.Context;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
 import java.lang.ref.WeakReference;
@@ -15,6 +16,7 @@ import java.lang.ref.WeakReference;
  *
  * <p>This component shows a bottom sheet to inform the user that no passkeys are available.
  */
+@NullMarked
 public class NoPasskeysBottomSheetCoordinator {
     interface NativeDelegate {
         /** Notifies the native side when the user selects "Use another device" option. */

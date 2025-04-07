@@ -9,6 +9,8 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Promise;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.WebContents;
 
 import java.util.Arrays;
@@ -16,6 +18,7 @@ import java.util.List;
 
 /** Provides native methods for java code to call. */
 @JNINamespace("wallet")
+@NullMarked
 public class BoardingPassBridge {
 
     private BoardingPassBridge() {}
@@ -36,7 +39,7 @@ public class BoardingPassBridge {
      * @param webContents web contents of current tab.
      * @return Detected boarding passes raw string.
      */
-    public static Promise<List<String>> detectBoardingPass(WebContents webContents) {
+    public static Promise<List<String>> detectBoardingPass(@Nullable WebContents webContents) {
         Promise<List<String>> promise = new Promise<>();
         BoardingPassBridgeJni.get()
                 .detectBoardingPass(
@@ -53,6 +56,6 @@ public class BoardingPassBridge {
     public interface Natives {
         boolean shouldDetect(String url);
 
-        void detectBoardingPass(WebContents webContents, Callback<String[]> callback);
+        void detectBoardingPass(@Nullable WebContents webContents, Callback<String[]> callback);
     }
 }

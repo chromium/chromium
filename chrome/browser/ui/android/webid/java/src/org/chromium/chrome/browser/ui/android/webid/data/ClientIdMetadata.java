@@ -9,12 +9,14 @@ import android.graphics.Bitmap;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.url.GURL;
 
 /**
  * This class holds the data used to represent client ID metadata for display
  * in the account chooser dialog.
  */
+@NullMarked
 public class ClientIdMetadata {
     private final GURL mTermsOfServiceUrl;
     private final GURL mPrivacyPolicyUrl;

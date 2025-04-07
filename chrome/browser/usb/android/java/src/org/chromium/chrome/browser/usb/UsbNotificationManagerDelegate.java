@@ -6,7 +6,10 @@ package org.chromium.chrome.browser.usb;
 
 import android.content.Intent;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Delegate for {@link UsbNotificationManager}. */
+@NullMarked
 public interface UsbNotificationManagerDelegate {
     /**
      * Creates an Intent to bring an Activity for a particular Tab back to the

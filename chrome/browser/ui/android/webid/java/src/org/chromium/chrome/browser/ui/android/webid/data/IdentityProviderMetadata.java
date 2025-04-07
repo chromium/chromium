@@ -6,18 +6,19 @@ package org.chromium.chrome.browser.ui.android.webid.data;
 
 import android.graphics.Bitmap;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
 
 /** Holds data used to represent identity provider for display in the "account chooser" dialog. */
+@NullMarked
 public class IdentityProviderMetadata {
-    private final Integer mBrandTextColor;
-    private final Integer mBrandBackgroundColor;
+    private final @Nullable Integer mBrandTextColor;
+    private final @Nullable Integer mBrandBackgroundColor;
     private final Bitmap mBrandIconBitmap;
     private final GURL mConfigUrl;
     private final GURL mLoginUrl;

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.appmenu;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
@@ -17,6 +19,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.widget.ImageViewCompat;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.appmenu.internal.R;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
@@ -30,6 +33,7 @@ import org.chromium.ui.widget.ChromeImageButton;
 import org.chromium.ui.widget.ChromeImageView;
 
 /** The binder to bind the app menu {@link PropertyModel} with the view. */
+@NullMarked
 class AppMenuItemViewBinder {
     /** IDs of all of the buttons in icon_row_menu_item.xml. */
     private static final int[] BUTTON_IDS = {
@@ -141,6 +145,7 @@ class AppMenuItemViewBinder {
             }
 
             if (checkable) {
+                assumeNonNull(buttonModel);
                 // Display a checkbox for the MenuItem.
                 button.setVisibility(View.GONE);
                 checkbox.setVisibility(View.VISIBLE);
@@ -151,6 +156,7 @@ class AppMenuItemViewBinder {
                                 checkbox.getContext(), R.color.selection_control_button_tint_list));
                 setupMenuButton(checkbox, buttonModel, appMenuClickHandler);
             } else if (subIcon != null) {
+                assumeNonNull(buttonModel);
                 // Display an icon alongside the MenuItem.
                 checkbox.setVisibility(View.GONE);
                 button.setVisibility(View.VISIBLE);

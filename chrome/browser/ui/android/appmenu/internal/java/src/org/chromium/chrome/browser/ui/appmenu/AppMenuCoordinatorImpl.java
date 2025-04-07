@@ -14,13 +14,16 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.ui.base.WindowAndroid;
 
 /** A UI coordinator the app menu. */
+@NullMarked
 class AppMenuCoordinatorImpl implements AppMenuCoordinator {
-    private static Boolean sHasPermanentMenuKeyForTesting;
+    private static @Nullable Boolean sHasPermanentMenuKeyForTesting;
 
     /** Factory which creates the AppMenuHandlerImpl. */
     @VisibleForTesting

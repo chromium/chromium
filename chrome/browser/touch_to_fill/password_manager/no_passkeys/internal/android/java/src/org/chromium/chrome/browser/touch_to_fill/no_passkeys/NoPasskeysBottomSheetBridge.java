@@ -11,6 +11,7 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.ui.base.WindowAndroid;
@@ -18,6 +19,7 @@ import org.chromium.ui.base.WindowAndroid;
 import java.lang.ref.WeakReference;
 
 /** JNI wrapper for C++ NoPasskeysBottomSheetBridge. Delegates calls from native to Java. */
+@NullMarked
 class NoPasskeysBottomSheetBridge implements NoPasskeysBottomSheetCoordinator.NativeDelegate {
     private final NoPasskeysBottomSheetCoordinator mNoPasskeysSheet;
     private long mNativeBridge;

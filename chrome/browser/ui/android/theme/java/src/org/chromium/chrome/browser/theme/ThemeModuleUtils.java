@@ -6,13 +6,15 @@ package org.chromium.chrome.browser.theme;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ServiceLoaderUtil;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 /** Utility class for interactions with ThemeOverlayProvider. */
+@NullMarked
 public final class ThemeModuleUtils {
 
-    private static ThemeOverlayProvider sInstance;
+    private static @Nullable ThemeOverlayProvider sInstance;
 
     private ThemeModuleUtils() {}
 

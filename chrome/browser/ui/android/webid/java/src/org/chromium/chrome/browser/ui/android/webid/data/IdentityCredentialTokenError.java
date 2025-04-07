@@ -7,9 +7,11 @@ package org.chromium.chrome.browser.ui.android.webid.data;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.url.GURL;
 
 /** Holds data used to represent an error for display in the "error" dialog. */
+@NullMarked
 public class IdentityCredentialTokenError {
     private final String mCode;
     private final GURL mUrl;

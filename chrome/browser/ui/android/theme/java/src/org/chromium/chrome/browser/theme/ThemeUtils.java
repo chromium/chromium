@@ -10,11 +10,12 @@ import android.graphics.Color;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -25,6 +26,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.util.ColorUtils;
 
 /** Utility methods for theme colors. */
+@NullMarked
 public class ThemeUtils {
     /**
      * Alpha used when TextBox color is computed by brightening the Toolbar color using Color.WHITE.

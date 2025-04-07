@@ -7,10 +7,10 @@ package org.chromium.chrome.browser.usb;
 import android.content.Context;
 import android.content.Intent;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.ContextUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
@@ -37,6 +37,7 @@ import java.util.Set;
  * Creates and destroys the WebUSB notification when a website is connected
  * to a USB device.
  */
+@NullMarked
 public class UsbNotificationManager {
     private static final String NOTIFICATION_NAMESPACE = "UsbNotificationManager";
 
@@ -106,7 +107,11 @@ public class UsbNotificationManager {
      * @param startId Id for the service start request
      */
     private void updateNotification(
-            int notificationId, boolean isConnected, String url, boolean isIncognito, int startId) {
+            int notificationId,
+            boolean isConnected,
+            @Nullable String url,
+            boolean isIncognito,
+            int startId) {
         destroyNotification(notificationId);
         if (isConnected) createNotification(notificationId, url, isIncognito);
         if (mNotificationIds.size() == 0) mDelegate.stopSelf(startId);
@@ -129,7 +134,7 @@ public class UsbNotificationManager {
      * @param url Url of the website interacting with USB devices.
      * @param isIncognito Whether the notification comes from incognito mode.
      */
-    private void createNotification(int notificationId, String url, boolean isIncognito) {
+    private void createNotification(int notificationId, @Nullable String url, boolean isIncognito) {
         Context appContext = ContextUtils.getApplicationContext();
         NotificationWrapperBuilder builder =
                 NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(
