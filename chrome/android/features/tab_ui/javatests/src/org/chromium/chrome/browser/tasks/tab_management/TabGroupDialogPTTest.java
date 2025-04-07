@@ -20,12 +20,14 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.Journeys;
@@ -37,8 +39,11 @@ import org.chromium.chrome.test.transit.hub.TabSwitcherStation;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.ServiceStatus;
+
+import java.io.IOException;
 
 /** Public transit tests for the Tab Group Dialog representing tab groups. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -55,6 +60,13 @@ public class TabGroupDialogPTTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    @Rule
+    public ChromeRenderTestRule mRenderTestRule =
+            ChromeRenderTestRule.Builder.withPublicCorpus()
+                    .setRevision(1)
+                    .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_TAB_GROUPS)
+                    .build();
+
     @Mock private CollaborationService mCollaborationService;
     @Mock private ServiceStatus mServiceStatus;
 
@@ -68,7 +80,8 @@ public class TabGroupDialogPTTest {
 
     @Test
     @MediumTest
-    public void testNewTabCreation() {
+    @Feature({"RenderTest"})
+    public void testNewTabCreation() throws IOException {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
         WebPageStation pageStation =
                 Journeys.prepareTabsWithThumbnails(
@@ -78,6 +91,10 @@ public class TabGroupDialogPTTest {
         TabSwitcherGroupCardFacility groupCard = Journeys.mergeAllTabsToNewGroup(tabSwitcher);
 
         TabGroupDialogFacility<TabSwitcherStation> tabGroupDialogFacility = groupCard.clickCard();
+        mRenderTestRule.render(
+                mCtaTestRule.getActivity().findViewById(R.id.dialog_container_view),
+                "tab_grid_dialog-normal_mode");
+
         RegularNewTabPageStation secondPage = tabGroupDialogFacility.openNewRegularTab();
 
         // Assert we have gone back to PageStation for InitialStateRule to reset
@@ -86,7 +103,8 @@ public class TabGroupDialogPTTest {
 
     @Test
     @MediumTest
-    public void testIncognitoNewTabCreation() {
+    @Feature({"RenderTest"})
+    public void testIncognitoNewTabCreation() throws IOException {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
         WebPageStation pageStation =
                 Journeys.prepareTabsWithThumbnails(
@@ -96,6 +114,10 @@ public class TabGroupDialogPTTest {
         TabSwitcherGroupCardFacility groupCard = Journeys.mergeAllTabsToNewGroup(tabSwitcher);
 
         TabGroupDialogFacility<TabSwitcherStation> tabGroupDialogFacility = groupCard.clickCard();
+        mRenderTestRule.render(
+                mCtaTestRule.getActivity().findViewById(R.id.dialog_container_view),
+                "tab_grid_dialog-incognito_mode");
+
         IncognitoNewTabPageStation secondPage = tabGroupDialogFacility.openNewIncognitoTab();
 
         // Assert we have gone back to PageStation for InitialStateRule to reset

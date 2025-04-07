@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerCoordinator.ColorPickerLayoutType;
 import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridDialogMediator.AnimationSourceViewProvider;
+import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.CreationMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.TabListEditorController;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.GridCardOnClickListenerProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
@@ -50,7 +51,6 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
-import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.ServiceStatus;
@@ -173,7 +173,9 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                         DataSharingServiceFactory.getForProfile(originalProfile);
 
                 @ColorInt
-                int backgroundColor = SemanticColorUtils.getDialogBgColor(mDialogView.getContext());
+                int backgroundColor =
+                        TabUiThemeProvider.getTabGridDialogBackgroundColor(
+                                mDialogView.getContext(), /* isIncognito= */ false);
                 SharedImageTilesConfig config =
                         new SharedImageTilesConfig.Builder(activity)
                                 .setBorderColor(backgroundColor)
@@ -336,7 +338,8 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             mModalDialogManager,
                             // Parent container handles desktop window state.
                             /* desktopWindowStateManager= */ null,
-                            /* edgeToEdgeSupplier= */ null);
+                            /* edgeToEdgeSupplier= */ null,
+                            CreationMode.DIALOG);
         }
 
         return mTabListEditorCoordinator.getController();
