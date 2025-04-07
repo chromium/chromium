@@ -2305,9 +2305,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
 #endif // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #endif // BUILDFLAG(ENABLE_EXTENSIONS)
 #if !BUILDFLAG(IS_ANDROID)
-  { key::kTabOrganizerSettings,
-    optimization_guide::prefs::kTabOrganizationEnterprisePolicyAllowed,
-    base::Value::Type::INTEGER},
   { key::kAutofillPredictionSettings,
     optimization_guide::prefs::kAutofillPredictionImprovementsEnterprisePolicyAllowed,
     base::Value::Type::INTEGER},
@@ -3338,9 +3335,6 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
   gen_ai_default_policies.emplace_back(
       key::kHelpMeWriteSettings,
       optimization_guide::prefs::kComposeEnterprisePolicyAllowed);
-  gen_ai_default_policies.emplace_back(
-      key::kTabOrganizerSettings,
-      optimization_guide::prefs::kTabOrganizationEnterprisePolicyAllowed);
   gen_ai_default_policies.emplace_back(
       key::kCreateThemesSettings,
       optimization_guide::prefs::kWallpaperSearchEnterprisePolicyAllowed);

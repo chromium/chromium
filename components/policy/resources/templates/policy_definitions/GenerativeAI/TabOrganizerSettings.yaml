@@ -1,5 +1,5 @@
 caption: Settings for Tab Organizer
-
+deprecated: true
 desc: |-
   Tab Organizer is an AI-based tool that automatically creates tab groups based on a user's open tabs. Suggestions are based on open tabs (but not page content).
 
@@ -39,7 +39,7 @@ schema:
 tags:
 - google-sharing
 supported_on:
-- chrome.*:121-
-- chrome_os:121-
+- chrome.*:121-136
+- chrome_os:121-136
 tags: []
 type: int-enum

@@ -26,9 +26,6 @@
           "optimization_guide.model_execution.tab_compare_settings_enterprise_policy": {
             "value": 0
           },
-          "optimization_guide.model_execution.tab_organization_enterprise_policy_allowed": {
-            "value": 0
-          },
           "optimization_guide.model_execution.wallpaper_search_enterprise_policy_allowed": {
             "value": 0
           }
@@ -52,9 +49,6 @@
             "value": 1
           },
           "optimization_guide.model_execution.tab_compare_settings_enterprise_policy": {
-            "value": 1
-          },
-          "optimization_guide.model_execution.tab_organization_enterprise_policy_allowed": {
             "value": 1
           },
           "optimization_guide.model_execution.wallpaper_search_enterprise_policy_allowed": {
@@ -82,9 +76,6 @@
           "optimization_guide.model_execution.tab_compare_settings_enterprise_policy": {
             "value": 2
           },
-          "optimization_guide.model_execution.tab_organization_enterprise_policy_allowed": {
-            "value": 2
-          },
           "optimization_guide.model_execution.wallpaper_search_enterprise_policy_allowed": {
             "value": 2
           }
@@ -108,9 +99,6 @@
           "optimization_guide.model_execution.tab_compare_settings_enterprise_policy": {
             "default_value": 0
           },
-          "optimization_guide.model_execution.tab_organization_enterprise_policy_allowed": {
-            "default_value": 0
-          },
           "optimization_guide.model_execution.wallpaper_search_enterprise_policy_allowed": {
             "default_value": 0
           }
@@ -124,8 +112,7 @@
           "DevToolsGenAiSettings": 2,
           "HelpMeWriteSettings": 2,
           "HistorySearchSettings": 2,
-          "TabCompareSettings": 2,
-          "TabOrganizerSettings": 2
+          "TabCompareSettings": 2
         },
         "prefs": {
           "devtools.gen_ai_settings": {
@@ -141,9 +128,6 @@
             "value": 2
           },
           "optimization_guide.model_execution.tab_compare_settings_enterprise_policy": {
-            "value": 2
-          },
-          "optimization_guide.model_execution.tab_organization_enterprise_policy_allowed": {
             "value": 2
           },
           "optimization_guide.model_execution.wallpaper_search_enterprise_policy_allowed": {
@@ -193,9 +177,6 @@
           "optimization_guide.model_execution.tab_compare_settings_enterprise_policy": {
             "value": 0
           },
-          "optimization_guide.model_execution.tab_organization_enterprise_policy_allowed": {
-            "value": 0
-          },
           "optimization_guide.model_execution.wallpaper_search_enterprise_policy_allowed": {
             "value": 0
           },
@@ -243,9 +224,6 @@
           "optimization_guide.model_execution.tab_compare_settings_enterprise_policy": {
             "value": 1
           },
-          "optimization_guide.model_execution.tab_organization_enterprise_policy_allowed": {
-            "value": 1
-          },
           "optimization_guide.model_execution.wallpaper_search_enterprise_policy_allowed": {
             "value": 1
           },
@@ -275,8 +253,7 @@
           "HelpMeReadSettings": 2,
           "HelpMeWriteSettings": 2,
           "HistorySearchSettings": 2,
-          "TabCompareSettings": 2,
-          "TabOrganizerSettings": 2
+          "TabCompareSettings": 2
         },
         "prefs": {
           "ash.gen_ai_photo_editing_settings": {
@@ -307,9 +284,6 @@
             "value": 2
           },
           "optimization_guide.model_execution.tab_compare_settings_enterprise_policy": {
-            "value": 2
-          },
-          "optimization_guide.model_execution.tab_organization_enterprise_policy_allowed": {
             "value": 2
           },
           "optimization_guide.model_execution.wallpaper_search_enterprise_policy_allowed": {
