@@ -25,11 +25,13 @@
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/scoped_ignore_content_verifier_for_test.h"
 #include "extensions/browser/service_worker/service_worker_test_utils.h"
+#include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_paths.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/manifest_handlers/background_info.h"
+#include "extensions/test/extension_background_page_waiter.h"
 #include "extensions/test/extension_test_notification_observer.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -400,6 +402,32 @@ void ExtensionPlatformBrowserTest::UninstallExtension(
 void ExtensionPlatformBrowserTest::EnableExtension(
     const extensions::ExtensionId& extension_id) {
   extension_registrar()->EnableExtension(extension_id);
+}
+
+void ExtensionPlatformBrowserTest::ReloadExtension(
+    const extensions::ExtensionId& extension_id) {
+  scoped_refptr<const Extension> extension =
+      extension_registry()->GetInstalledExtension(extension_id);
+  ASSERT_TRUE(extension);
+  TestExtensionRegistryObserver observer(extension_registry(), extension_id);
+  extension_registrar()->ReloadExtension(
+      extension_id, ExtensionRegistrar::LoadErrorBehavior::kNoisy);
+  // Re-grab the extension after the reload to get the updated copy.
+  extension = observer.WaitForExtensionLoaded();
+  // We need to let other ExtensionRegistryObservers handle the extension load
+  // in order to finish initialization.
+  base::RunLoop().RunUntilIdle();
+
+  // Wait for the background context, if any, to start up.
+  std::string reason_unused;
+  if (extension_registry()->enabled_extensions().Contains(extension_id) &&
+      ExtensionBackgroundPageWaiter::CanWaitFor(*extension, reason_unused)) {
+    ExtensionBackgroundPageWaiter(profile(), *extension)
+        .WaitForBackgroundInitialized();
+  }
+
+  // Wait for any additionally-registered extension views to load.
+  test_notification_observer_->WaitForExtensionViewsToLoad();
 }
 
 content::WebContents* ExtensionPlatformBrowserTest::GetActiveWebContents()

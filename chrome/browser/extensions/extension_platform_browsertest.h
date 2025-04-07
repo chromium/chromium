@@ -119,6 +119,9 @@ class ExtensionPlatformBrowserTest : public PlatformBrowserTest,
   // Enables the extension with the given `extension_id`.
   void EnableExtension(const ExtensionId& extension_id);
 
+  // Reloads the extension with the given `extension_id`.
+  void ReloadExtension(const ExtensionId& extension_id);
+
   // Returns the WebContents of the currently active tab.
   // Note that when the test first launches, this will be the same as the
   // default tab's web_contents(). However, if the test creates new tabs and

@@ -73,7 +73,6 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/service_worker/service_worker_test_utils.h"
-#include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/browser/uninstall_reason.h"
 #include "extensions/browser/updater/extension_cache_fake.h"
 #include "extensions/common/api/web_accessible_resources.h"
@@ -468,31 +467,6 @@ const Extension* ExtensionBrowserTest::InstallOrUpdateExtension(
   // Even though we can already get the Extension from the CrxInstaller,
   // ensure it's also in the list of enabled extensions.
   return registry->enabled_extensions().GetByID(installer->extension()->id());
-}
-
-void ExtensionBrowserTest::ReloadExtension(
-    const extensions::ExtensionId& extension_id) {
-  scoped_refptr<const Extension> extension =
-      extension_registry()->GetInstalledExtension(extension_id);
-  ASSERT_TRUE(extension);
-  TestExtensionRegistryObserver observer(extension_registry(), extension_id);
-  extension_service()->ReloadExtension(extension_id);
-  // Re-grab the extension after the reload to get the updated copy.
-  extension = observer.WaitForExtensionLoaded();
-  // We need to let other ExtensionRegistryObservers handle the extension load
-  // in order to finish initialization.
-  base::RunLoop().RunUntilIdle();
-
-  // Wait for the background context, if any, to start up.
-  std::string reason_unused;
-  if (extension_registry()->enabled_extensions().Contains(extension_id) &&
-      ExtensionBackgroundPageWaiter::CanWaitFor(*extension, reason_unused)) {
-    ExtensionBackgroundPageWaiter(profile(), *extension)
-        .WaitForBackgroundInitialized();
-  }
-
-  // Wait for any additionally-registered extension views to load.
-  test_notification_observer()->WaitForExtensionViewsToLoad();
 }
 
 bool ExtensionBrowserTest::WaitForPageActionVisibilityChangeTo(int count) {

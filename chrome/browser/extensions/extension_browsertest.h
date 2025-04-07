@@ -179,8 +179,6 @@ class ExtensionBrowserTest : public ExtensionPlatformBrowserTest {
                                     0);
   }
 
-  void ReloadExtension(const extensions::ExtensionId& extension_id);
-
   // Wait for the number of visible page actions to change to |count|.
   bool WaitForPageActionVisibilityChangeTo(int count);
 
