@@ -559,5 +559,21 @@ TEST_F(GlicMetricsTest, AttachStateChanges) {
   histogram_tester_.ExpectBucketCount("Glic.Session.AttachStateChanges", 4, 1);
 }
 
+TEST_F(GlicMetricsTest, TimeElapsedBetweenSessions) {
+  base::TimeDelta elapsed_time = base::Hours(2);
+
+  metrics_->OnGlicWindowClose();
+  task_environment_.FastForwardBy(elapsed_time);
+
+  metrics_->OnGlicWindowOpen(/*attached=*/true,
+                             mojom::InvocationSource::kOsButton);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.PanelWebUi.ElapsedTimeBetweenSessions",
+      /*expected_count=*/1);
+  histogram_tester_.ExpectBucketCount(
+      "Glic.PanelWebUi.ElapsedTimeBetweenSessions", elapsed_time.InSeconds(),
+      1);
+}
+
 }  // namespace
 }  // namespace glic

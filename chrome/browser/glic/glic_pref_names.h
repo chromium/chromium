@@ -62,6 +62,10 @@ inline constexpr char kGlicTabContextEnabled[] = "glic.tab_context_enabled";
 // the FreStatus enum.
 inline constexpr char kGlicCompletedFre[] = "glic.completed_fre";
 
+// Time pref that records the last time a user dismissed the Glic window.
+inline constexpr char kGlicWindowLastDismissedTime[] =
+    "glic.window.last_dimissed_time";
+
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 

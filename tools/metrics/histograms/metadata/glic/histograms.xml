@@ -268,6 +268,16 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Glic.PanelWebUi.ElapsedTimeBetweenSessions" units="seconds"
+    expires_after="2026-01-15">
+  <owner>fsenra@google.com</owner>
+  <owner>dewittj@google.com</owner>
+  <summary>
+    Records the elapsed time between the current and last session. Recorded when
+    the Glic panel is opened.
+  </summary>
+</histogram>
+
 <histogram name="Glic.PanelWebUi.Size.Area" units="DIPs"
     expires_after="2026-01-15">
   <owner>fsenra@google.com</owner>
