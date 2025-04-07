@@ -27,11 +27,8 @@ class BrowserProcessPlatformPartChromeOS
 
  protected:
   // Returns true if we can restore URLs for `profile`. Restoring URLs should
-  // only be allowed for regular signed-in users. This is currently virtual as
-  // lacros-chrome and ash-chrome check this in different ways.
-  // TODO(tluk): Have both ash-chrome and lacros-chrome share the same profile
-  // check code.
-  virtual bool CanRestoreUrlsForProfile(const Profile* profile) const;
+  // only be allowed for regular signed-in users.
+  bool CanRestoreUrlsForProfile(const Profile* profile) const;
 
  private:
   // An observer that restores urls based on the on startup setting after a new

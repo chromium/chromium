@@ -366,13 +366,6 @@ BrowserProcessPlatformPart::GetAccountManagerFactory() {
   return account_manager_factory_.get();
 }
 
-bool BrowserProcessPlatformPart::CanRestoreUrlsForProfile(
-    const Profile* profile) const {
-  return profile->IsRegularProfile() && !profile->IsSystemProfile() &&
-         ash::ProfileHelper::IsUserProfile(profile) &&
-         !ash::ProfileHelper::IsEphemeralUserProfile(profile);
-}
-
 // static
 void BrowserProcessPlatformPart::EnsureFactoryBuilt() {
   PrimaryProfileServicesShutdownNotifierFactory::GetInstance();

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/browser_process_platform_part_chromeos.h"
 
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
@@ -30,7 +31,9 @@ BrowserProcessPlatformPartChromeOS::~BrowserProcessPlatformPartChromeOS() =
 
 bool BrowserProcessPlatformPartChromeOS::CanRestoreUrlsForProfile(
     const Profile* profile) const {
-  return profile->IsRegularProfile();
+  return profile->IsRegularProfile() && !profile->IsSystemProfile() &&
+         ash::ProfileHelper::IsUserProfile(profile) &&
+         !ash::ProfileHelper::IsEphemeralUserProfile(profile);
 }
 
 BrowserProcessPlatformPartChromeOS::BrowserRestoreObserver::

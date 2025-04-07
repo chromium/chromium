@@ -171,10 +171,6 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartChromeOS {
 
   static void EnsureFactoryBuilt();
 
- protected:
-  // BrowserProcessPlatformPartChromeOS:
-  bool CanRestoreUrlsForProfile(const Profile* profile) const override;
-
  private:
   friend class BrowserProcessPlatformPartTestApi;
 
