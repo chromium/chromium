@@ -1360,13 +1360,26 @@ const FeatureEntry::FeatureParam kOmniboxSearchAggregatorAlternateParams[] = {
      "https://discoveryengine.googleapis.com/v1alpha/projects/301214329925/"
      "locations/global/collections/default_collection/engines/"
      "neuravibeblendedsearch_1727383849310/completionConfig:completeQuery"}};
+const FeatureEntry::FeatureParam kOmniboxSearchAggregatorDemoParams[] = {
+    {"name", "NeuraVibe"},
+    {"shortcut", "nv"},
+    {"icon_url", "https://gstatic.com/vertexaisearch/favicon.png"},
+    {"search_url",
+     "https://vertexaisearch.cloud.google.com/home/cid/"
+     "f6cd931b-d10e-475f-b424-6270982c15f6?q={searchTerms}"},
+    {"suggest_url",
+     "https://discoveryengine.googleapis.com/v1alpha/projects/121968733869/"
+     "locations/global/collections/default_collection/engines/"
+     "neuravibeapp_1738849257936/completionConfig:completeQuery"}};
 const FeatureEntry::FeatureVariation kOmniboxSearchAggregatorVariations[] = {
     {"prod", kOmniboxSearchAggregatorProdParams,
      std::size(kOmniboxSearchAggregatorProdParams), nullptr},
     {"staging", kOmniboxSearchAggregatorStagingParams,
      std::size(kOmniboxSearchAggregatorStagingParams), nullptr},
     {"alternate", kOmniboxSearchAggregatorAlternateParams,
-     std::size(kOmniboxSearchAggregatorAlternateParams), nullptr}};
+     std::size(kOmniboxSearchAggregatorAlternateParams), nullptr},
+    {"demo", kOmniboxSearchAggregatorDemoParams,
+     std::size(kOmniboxSearchAggregatorDemoParams), nullptr}};
 
 const FeatureEntry::FeatureParam kOmniboxUrlSuggestionsOnFocusTwoDayWindow[] = {
     {"OnFocusMostVisitedRecencyWindow", "1"},
