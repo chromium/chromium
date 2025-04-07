@@ -48,7 +48,6 @@
 #include "services/network/public/mojom/cookie_manager.mojom-blink.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-blink.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/notifications/notification.mojom-blink.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging.mojom-blink.h"
@@ -1551,8 +1550,8 @@ void ServiceWorkerGlobalScope::StartFetchEvent(
   // main resource load -> only resultingClientId.
   // sub resource load -> only clientId.
   // worker script load -> only clientId. (treated as subresource)
-  // * PlzDecicatedWorker makes this as main resource load.
-  //   We should fix this.
+  // * TODO(crbug.com/1064920): PlzDedicatedWorker makes this as main resource
+  //   load. We should fix this.
   //
   // Expected behavior:
   // main resource load -> clientId and resultingClientId.
@@ -1572,7 +1571,6 @@ void ServiceWorkerGlobalScope::StartFetchEvent(
     if (is_main_resource_load &&
         params->request->destination ==
             network::mojom::RequestDestination::kWorker) {
-      CHECK(base::FeatureList::IsEnabled(features::kPlzDedicatedWorker));
       is_main_resource_load = false;
     }
     event_init->setClientId(is_main_resource_load ? String()

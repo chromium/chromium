@@ -4227,12 +4227,9 @@ class ServiceWorkerBrowserTestWithStoragePartitioning
     : public base::test::WithFeatureOverride,
       public ServiceWorkerBrowserTest {
  public:
-  // Dedicated worker clients only exist with PlzDedicatedWorker enabled, so
-  // turn on that flag.
   ServiceWorkerBrowserTestWithStoragePartitioning()
       : base::test::WithFeatureOverride(
-            net::features::kThirdPartyStoragePartitioning),
-        scoped_feature_list_(blink::features::kPlzDedicatedWorker) {}
+            net::features::kThirdPartyStoragePartitioning) {}
   bool ThirdPartyStoragePartitioningEnabled() const {
     return IsParamFeatureEnabled();
   }
@@ -4371,9 +4368,6 @@ class ServiceWorkerBrowserTestWithStoragePartitioning
           testing::UnorderedElementsAre(child_url));
     }
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(

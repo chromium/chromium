@@ -10,14 +10,12 @@
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/worker_host/dedicated_worker_host.h"
 #include "content/public/browser/browser_thread.h"
-#include "third_party/blink/public/common/features.h"
 
 namespace content {
 
 // static
 WorkerDevToolsManager& WorkerDevToolsManager::GetInstance() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  CHECK(base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker));
   return *base::Singleton<WorkerDevToolsManager>::get();
 }
 

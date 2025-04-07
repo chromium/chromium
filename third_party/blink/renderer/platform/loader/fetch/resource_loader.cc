@@ -934,20 +934,6 @@ void ResourceLoader::DidReceiveResponseInternal(
     return;
   }
 
-  // https://wicg.github.io/cross-origin-embedder-policy/#integration-html
-  // TODO(crbug.com/1064920): Remove this once PlzDedicatedWorker ships.
-  if (options.reject_coep_unsafe_none &&
-      !network::CompatibleWithCrossOriginIsolated(
-          response.GetCrossOriginEmbedderPolicy()) &&
-      !response.CurrentRequestUrl().ProtocolIsData() &&
-      !response.CurrentRequestUrl().ProtocolIs("blob")) {
-    DCHECK(!base::FeatureList::IsEnabled(features::kPlzDedicatedWorker));
-    HandleError(ResourceError::BlockedByResponse(
-        response.CurrentRequestUrl(), network::mojom::BlockedByResponseReason::
-                                          kCoepFrameResourceNeedsCoepHeader));
-    return;
-  }
-
   // Redirect information for possible post-request checks below.
   const std::optional<ResourceRequest::RedirectInfo>& previous_redirect_info =
       request.GetRedirectInfo();

@@ -12,7 +12,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/content_security_policy.mojom-blink-forward.h"
-#include "services/network/public/mojom/url_loader_factory.mojom-blink.h"
 #include "third_party/blink/public/common/loader/worker_main_script_load_parameters.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom-blink-forward.h"
@@ -193,14 +192,6 @@ class CORE_EXPORT DedicatedWorker final
   scoped_refptr<WebWorkerFetchContext> CreateWebWorkerFetchContext();
   // May return nullptr.
   std::unique_ptr<WebContentSettingsClient> CreateWebContentSettingsClient();
-
-  void OnHostCreated(
-      mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>
-          blob_url_loader_factory,
-      const network::CrossOriginEmbedderPolicy& parent_coep,
-      CrossVariantMojoRemote<
-          mojom::blink::BackForwardCacheControllerHostInterfaceBase>
-          back_forward_cache_controller_host);
 
   // Callbacks for |classic_script_loader_|.
   void OnResponse();
