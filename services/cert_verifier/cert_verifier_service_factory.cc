@@ -387,7 +387,7 @@ void CertVerifierServiceFactoryImpl::UpdateChromeRootStore(
     return;
   }
 
-  if (root_store_data->anchors().empty()) {
+  if (root_store_data->trust_anchors().empty()) {
     LOG(ERROR) << "parsed root store contained no anchors";
     return;
   }
@@ -406,7 +406,7 @@ void CertVerifierServiceFactoryImpl::GetChromeRootStoreInfo(
   InitializeRootStoreDataIfNecessary();
   info_ptr->version = proc_params_.root_store_data->version();
 
-  for (const auto& anchor : proc_params_.root_store_data->anchors()) {
+  for (const auto& anchor : proc_params_.root_store_data->trust_anchors()) {
     if (!IsAnchorTrustedOnThisChromeVersion(anchor)) {
       continue;
     }

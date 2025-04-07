@@ -473,6 +473,10 @@ bool EmbeddedTestServer::GenerateCertAndKey() {
       intermediate->SetCertificatePolicies(cert_config_.policy_oids);
   }
 
+  if (!cert_config_.qwac_qc_types.empty()) {
+    leaf->SetQwacQcStatements(cert_config_.qwac_qc_types);
+  }
+
   if (!cert_config_.dns_names.empty() || !cert_config_.ip_addresses.empty()) {
     leaf->SetSubjectAltNames(cert_config_.dns_names, cert_config_.ip_addresses);
   } else {

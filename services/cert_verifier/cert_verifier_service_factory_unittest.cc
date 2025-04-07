@@ -617,7 +617,8 @@ TEST(CertVerifierServiceFactoryTest, RootStoreInfoWithCompiledRootStore) {
   // In cases where the compiled Chrome Root Store has roots with version
   // constraints, there might be less trusted roots depending on what version #
   // the test is running at.
-  EXPECT_LE(info_ptr->root_cert_info.size(), root_store_data.anchors().size());
+  EXPECT_LE(info_ptr->root_cert_info.size(),
+            root_store_data.trust_anchors().size());
   EXPECT_GT(info_ptr->root_cert_info.size(), static_cast<std::size_t>(0));
 }
 

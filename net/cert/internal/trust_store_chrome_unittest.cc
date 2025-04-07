@@ -48,14 +48,16 @@ TEST(TrustStoreChromeTestNoFixture, ContainsCert) {
   std::unique_ptr<TrustStoreChrome> trust_store_chrome =
       TrustStoreChrome::CreateTrustStoreForTesting(
           base::span<const ChromeRootCertInfo>(kChromeRootCertList),
+          base::span(kEutlRootCertList),
           /*version=*/1);
 
   // Check every certificate in test_store.certs is included.
   CertificateList certs = CreateCertificateListFromFile(
       GetTestNetDataDirectory().AppendASCII("ssl/chrome_root_store"),
       "test_store.certs", X509Certificate::FORMAT_PEM_CERT_SEQUENCE);
-  ASSERT_EQ(certs.size(), 2u);
+  ASSERT_EQ(certs.size(), 3u);
 
+  size_t eutl_certs = 0;
   for (const auto& cert : certs) {
     std::shared_ptr<const bssl::ParsedCertificate> parsed =
         ToParsedCertificate(*cert);
@@ -63,7 +65,15 @@ TEST(TrustStoreChromeTestNoFixture, ContainsCert) {
     bssl::CertificateTrust trust = trust_store_chrome->GetTrust(parsed.get());
     EXPECT_EQ(bssl::CertificateTrust::ForTrustAnchor().ToDebugString(),
               trust.ToDebugString());
+    // Count how many certs are on the EUTL.
+    bssl::CertificateTrust eutl_trust =
+        trust_store_chrome->eutl_trust_store()->GetTrust(parsed.get());
+    if (eutl_trust.type == bssl::CertificateTrustType::TRUSTED_ANCHOR) {
+      eutl_certs++;
+    }
   }
+  // There should be one cert from test_store.certs on the EUTL.
+  EXPECT_EQ(eutl_certs, 1);
 
   // Other certificates should not be included. Which test cert used here isn't
   // important as long as it isn't one of the certificates in the
@@ -80,10 +90,51 @@ TEST(TrustStoreChromeTestNoFixture, ContainsCert) {
             trust.ToDebugString());
 }
 
+TEST(TrustStoreChromeTestNoFixture, ContainsEutlCert) {
+  std::unique_ptr<TrustStoreChrome> trust_store_chrome =
+      TrustStoreChrome::CreateTrustStoreForTesting(
+          base::span<const ChromeRootCertInfo>(kChromeRootCertList),
+          base::span(kEutlRootCertList),
+          /*version=*/1);
+
+  // Check that the single certificate in test_additional.certs is included in
+  // the EUTL trust store, but not trusted for TLS connection establishment.
+  CertificateList certs = CreateCertificateListFromFile(
+      GetTestNetDataDirectory().AppendASCII("ssl/chrome_root_store"),
+      "test_additional.certs", X509Certificate::FORMAT_PEM_CERT_SEQUENCE);
+  ASSERT_EQ(certs.size(), 1u);
+  std::shared_ptr<const bssl::ParsedCertificate> parsed =
+      ToParsedCertificate(*certs[0]);
+
+  bssl::CertificateTrust eutl_trust =
+      trust_store_chrome->eutl_trust_store()->GetTrust(parsed.get());
+  EXPECT_EQ(bssl::CertificateTrust::ForTrustAnchor().ToDebugString(),
+            eutl_trust.ToDebugString());
+
+  EXPECT_FALSE(trust_store_chrome->Contains(parsed.get()));
+  bssl::CertificateTrust trust = trust_store_chrome->GetTrust(parsed.get());
+  EXPECT_EQ(bssl::CertificateTrust::ForUnspecified().ToDebugString(),
+            trust.ToDebugString());
+
+  // Other certificates should not be included. Which test cert used here isn't
+  // important as long as it isn't one of the certificates in the
+  // chrome_root_store/test_store.certs.
+  scoped_refptr<X509Certificate> other_cert =
+      ImportCertFromFile(GetTestCertsDirectory(), "root_ca_cert.pem");
+  ASSERT_TRUE(other_cert);
+  std::shared_ptr<const bssl::ParsedCertificate> other_parsed =
+      ToParsedCertificate(*other_cert);
+  eutl_trust =
+      trust_store_chrome->eutl_trust_store()->GetTrust(other_parsed.get());
+  EXPECT_EQ(bssl::CertificateTrust::ForUnspecified().ToDebugString(),
+            eutl_trust.ToDebugString());
+}
+
 TEST(TrustStoreChromeTestNoFixture, Constraints) {
   std::unique_ptr<TrustStoreChrome> trust_store_chrome =
       TrustStoreChrome::CreateTrustStoreForTesting(
           base::span<const ChromeRootCertInfo>(kChromeRootCertList),
+          base::span(kEutlRootCertList),
           /*version=*/1);
 
   const std::string kUnconstrainedCertHash =
@@ -97,7 +148,7 @@ TEST(TrustStoreChromeTestNoFixture, Constraints) {
   CertificateList certs = CreateCertificateListFromFile(
       GetTestNetDataDirectory().AppendASCII("ssl/chrome_root_store"),
       "test_store.certs", X509Certificate::FORMAT_PEM_CERT_SEQUENCE);
-  ASSERT_EQ(certs.size(), 2u);
+  ASSERT_EQ(certs.size(), 3u);
   for (const auto& cert : certs) {
     std::shared_ptr<const bssl::ParsedCertificate> parsed =
         ToParsedCertificate(*cert);
@@ -213,6 +264,7 @@ TEST(TrustStoreChromeTestNoFixture, OverrideConstraints) {
   std::unique_ptr<TrustStoreChrome> trust_store_chrome =
       TrustStoreChrome::CreateTrustStoreForTesting(
           std::move(root_cert_info),
+          /*eutl_certs=*/{},
           /*version=*/1, std::move(override_constraints));
 
   {

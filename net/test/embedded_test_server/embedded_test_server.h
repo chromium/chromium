@@ -333,6 +333,11 @@ class EmbeddedTestServer {
     // intermediate cert (if an intermediate is configured).
     std::vector<std::string> policy_oids;
 
+    // QWAC QC types for the QcStatements extension. If non-empty, the
+    // QcStatements extension will be set on the leaf cert containing values
+    // appropriate for a QWAC with the given QC types.
+    std::vector<bssl::der::Input> qwac_qc_types;
+
     // Value to use for leaf's basicConstraints isCA field
     bool leaf_is_ca = false;
 

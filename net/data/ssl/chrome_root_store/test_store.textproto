@@ -29,3 +29,17 @@ trust_anchors {
     permitted_dns_names: "baz.example.com"
   }
 }
+
+# CN=Actalis Authentication Root CA, O=Actalis S.p.A./03358520967, L=Milan, C=IT
+# https://ssltest-a.actalis.it:8443
+trust_anchors {
+  sha256_hex: "55926084ec963a64b96e2abe01ce0ba86a64fbfebcc7aab5afc155b37fd76066"
+  ev_policy_oids: "2.23.140.1.1"
+  eutl: true
+}
+
+# "CN=Qualified e-Szigno TLS CA 2018,O=Microsec Ltd.,L=Budapest,C=HU,2.5.4.97=#130e56415448552d3233353834343937"
+additional_certs {
+  sha256_hex: "f7c7e28fb5e79f314aaac6bbba932f15e1a72069f435d4c9e707f93ca1482ee3"
+  eutl: true
+}
