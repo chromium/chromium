@@ -281,7 +281,6 @@ bool PrivacySandboxPromptHelper::ProfileRequiresPrompt(Profile* profile) {
   bool eligible = GetRequiredPromptType(profile) !=
                   PrivacySandboxService::PromptType::kNone;
 
-#if !BUILDFLAG(IS_ANDROID)
   if (auto* privacy_sandbox_service =
           PrivacySandboxServiceFactory::GetForProfile(profile)) {
     privacy_sandbox::PrivacySandboxQueueManager& queue_manager =
@@ -294,7 +293,6 @@ bool PrivacySandboxPromptHelper::ProfileRequiresPrompt(Profile* profile) {
     eligible ? queue_manager.MaybeQueueNotice()
              : queue_manager.MaybeUnqueueNotice();
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   return eligible;
 }

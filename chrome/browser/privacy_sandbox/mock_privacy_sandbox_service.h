@@ -9,9 +9,12 @@
 
 #include "chrome/browser/privacy_sandbox/mock_queue_manager.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_countries.h"
-#include "chrome/browser/privacy_sandbox/privacy_sandbox_queue_manager.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_queue_manager.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace content {
 class BrowserContext;

@@ -11,7 +11,6 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_countries.h"
-#include "chrome/browser/privacy_sandbox/privacy_sandbox_queue_manager.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -22,6 +21,10 @@
 #include "components/user_education/common/product_messaging_controller.h"
 #include "content/public/browser/interest_group_manager.h"
 #include "net/base/schemeful_site.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_queue_manager.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 class Browser;
 

@@ -980,13 +980,11 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
 // show_after_ and blocked_by_ lists passed to QueueRequiredNotice() calls to
 // the product_messaging_controller. These calls usually live within individual
 // services. Queue is kicked off a frame or two later.
-#if !BUILDFLAG(IS_ANDROID)
   if (auto* privacy_sandbox_service =
           PrivacySandboxServiceFactory::GetForProfile(browser_->profile())) {
     privacy_sandbox_service->GetPrivacySandboxNoticeQueueManager()
         .MaybeQueueNotice();
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   browser_->tab_strip_model()->AddObserver(this);
   immersive_mode_controller_ = chrome::CreateImmersiveModeController(this);

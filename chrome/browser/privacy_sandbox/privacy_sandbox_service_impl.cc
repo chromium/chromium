@@ -24,7 +24,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_countries.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_notice_confirmation.h"
-#include "chrome/browser/privacy_sandbox/privacy_sandbox_queue_manager.h"
 #include "chrome/browser/privacy_sandbox/profile_bucket_metrics.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -66,6 +65,7 @@
 #include "ui/base/l10n/l10n_util.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_queue_manager.h"
 #include "ui/views/widget/widget.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
