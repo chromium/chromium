@@ -326,10 +326,6 @@ bool ResourceRequest::EqualsForTesting(const ResourceRequest& request) const {
          upgrade_if_insecure == request.upgrade_if_insecure &&
          is_revalidating == request.is_revalidating &&
          throttling_profile_id == request.throttling_profile_id &&
-         custom_proxy_pre_cache_headers.ToString() ==
-             request.custom_proxy_pre_cache_headers.ToString() &&
-         custom_proxy_post_cache_headers.ToString() ==
-             request.custom_proxy_post_cache_headers.ToString() &&
          fetch_window_id == request.fetch_window_id &&
          devtools_request_id == request.devtools_request_id &&
          is_fetch_like_api == request.is_fetch_like_api &&

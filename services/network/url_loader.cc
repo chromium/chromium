@@ -421,8 +421,6 @@ URLLoader::URLLoader(
       expected_public_keys_(request.expected_public_keys),
       resource_scheduler_client_(context.GetResourceSchedulerClient()),
       keepalive_statistics_recorder_(std::move(keepalive_statistics_recorder)),
-      custom_proxy_pre_cache_headers_(request.custom_proxy_pre_cache_headers),
-      custom_proxy_post_cache_headers_(request.custom_proxy_post_cache_headers),
       fetch_window_id_(request.fetch_window_id),
       private_network_access_checker_(
           request,

@@ -275,14 +275,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
                    const GURL& url,
                    const net::SiteForCookies& site_for_cookies) const;
 
-  const net::HttpRequestHeaders& custom_proxy_pre_cache_headers() const {
-    return custom_proxy_pre_cache_headers_;
-  }
-
-  const net::HttpRequestHeaders& custom_proxy_post_cache_headers() const {
-    return custom_proxy_post_cache_headers_;
-  }
-
   const std::optional<GURL>& new_redirect_url() const {
     return new_redirect_url_;
   }
@@ -707,9 +699,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   bool first_auth_attempt_ = true;
 
   std::unique_ptr<ScopedThrottlingToken> throttling_token_;
-
-  const net::HttpRequestHeaders custom_proxy_pre_cache_headers_;
-  const net::HttpRequestHeaders custom_proxy_post_cache_headers_;
 
   // Indicates the originating frame of the request, see
   // network::ResourceRequest::fetch_window_id for details.

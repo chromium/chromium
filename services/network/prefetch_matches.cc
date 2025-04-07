@@ -98,8 +98,6 @@ namespace {
   DO_FIELD(upgrade_if_insecure) __VA_ARGS__                    \
   DO_FIELD(is_revalidating) __VA_ARGS__                        \
   DO_FIELD(throttling_profile_id) __VA_ARGS__                  \
-  DO_FIELD(custom_proxy_pre_cache_headers) __VA_ARGS__         \
-  DO_FIELD(custom_proxy_post_cache_headers) __VA_ARGS__        \
   DO_FIELD(fetch_window_id) __VA_ARGS__                        \
   DO_FIELD(devtools_request_id) __VA_ARGS__                    \
   DO_FIELD(devtools_stack_id) __VA_ARGS__                      \
@@ -199,8 +197,8 @@ enum class FieldsForUma {
   kUpgradeIfInsecure = 38,
   kIsRevalidating = 39,
   kThrottlingProfileId = 40,
-  kCustomProxyPreCacheHeaders = 41,
-  kCustomProxyPostCacheHeaders = 42,
+  // DEPRECATED: kCustomProxyPreCacheHeaders = 41,
+  // DEPRECATED: kCustomProxyPostCacheHeaders = 42,
   kFetchWindowId = 43,
   kDevtoolsRequestId = 44,
   kDevtoolsStackId = 45,
@@ -275,10 +273,6 @@ constexpr auto kUmaEnumMap = base::MakeFixedFlatMap<Fields, FieldsForUma>({
     {Fields::kupgrade_if_insecure, FieldsForUma::kUpgradeIfInsecure},
     {Fields::kis_revalidating, FieldsForUma::kIsRevalidating},
     {Fields::kthrottling_profile_id, FieldsForUma::kThrottlingProfileId},
-    {Fields::kcustom_proxy_pre_cache_headers,
-     FieldsForUma::kCustomProxyPreCacheHeaders},
-    {Fields::kcustom_proxy_post_cache_headers,
-     FieldsForUma::kCustomProxyPostCacheHeaders},
     {Fields::kfetch_window_id, FieldsForUma::kFetchWindowId},
     {Fields::kdevtools_request_id, FieldsForUma::kDevtoolsRequestId},
     {Fields::kdevtools_stack_id, FieldsForUma::kDevtoolsStackId},

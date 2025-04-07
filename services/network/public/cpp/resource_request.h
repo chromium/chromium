@@ -200,8 +200,6 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   bool upgrade_if_insecure = false;
   bool is_revalidating = false;
   std::optional<base::UnguessableToken> throttling_profile_id;
-  net::HttpRequestHeaders custom_proxy_pre_cache_headers;
-  net::HttpRequestHeaders custom_proxy_post_cache_headers;
   std::optional<base::UnguessableToken> fetch_window_id;
   std::optional<std::string> devtools_request_id;
   std::optional<std::string> devtools_stack_id;
