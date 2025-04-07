@@ -730,7 +730,7 @@ id<SystemIdentity> GetDisplayedIdentity(
       // by the mediator. We should not have no identity. This can be reproduced
       // with EGtests with bots. The identity notification might not have
       // received yet. Let's update the promo identity.
-      [self handleIdentityListChanged];
+      [self onAccountsOnDeviceChanged];
     }
     DCHECK(self.displayedIdentity)
         << base::SysNSStringToUTF8([self description]);
@@ -1034,7 +1034,9 @@ id<SystemIdentity> GetDisplayedIdentity(
   return self.dataTypeToWaitForInitialSync != syncer::DataType::UNSPECIFIED;
 }
 
-- (void)handleIdentityListChanged {
+#pragma mark -  IdentityManagerObserver
+
+- (void)onAccountsOnDeviceChanged {
   id<SystemIdentity> currentIdentity = self.displayedIdentity;
   id<SystemIdentity> displayedIdentity = GetDisplayedIdentity(
       _authService, _identityManager, _accountManagerService);
@@ -1046,18 +1048,8 @@ id<SystemIdentity> GetDisplayedIdentity(
   }
 }
 
-- (void)handleIdentityUpdated {
-  [self sendConsumerNotificationWithIdentityChanged:NO];
-}
-
-#pragma mark -  IdentityManagerObserver
-
-- (void)onAccountsOnDeviceChanged {
-  [self handleIdentityListChanged];
-}
-
 - (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
-  [self handleIdentityUpdated];
+  [self sendConsumerNotificationWithIdentityChanged:NO];
 }
 
 #pragma mark - SigninPromoViewDelegate

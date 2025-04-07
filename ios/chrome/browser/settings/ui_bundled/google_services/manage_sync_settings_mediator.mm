@@ -753,17 +753,6 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
 
 #pragma mark - Private
 
-- (void)handleIdentityUpdated:(id<SystemIdentity>)identity {
-  if ([_signedInIdentity isEqual:identity]) {
-    [self updatePrimaryAccountDetails];
-    [self updateSyncItemsNotifyConsumer:YES];
-    [self updateSyncErrorsSection:YES];
-    [self updateBatchUploadSectionWithNotifyConsumer:YES firstLoad:NO];
-    [self updateEncryptionItem:YES];
-    [self fetchLocalDataDescriptionsForBatchUploadWithFirstLoad:NO];
-  }
-}
-
 // Creates a SyncSwitchItem or TableViewInfoButtonItem instance if the item is
 // managed.
 - (TableViewItem*)tableViewItemWithDataType:
@@ -943,7 +932,14 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
 - (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
   id<SystemIdentity> identity =
       _chromeAccountManagerService->GetIdentityOnDeviceWithGaiaID(info.gaia);
-  [self handleIdentityUpdated:identity];
+  if ([_signedInIdentity isEqual:identity]) {
+    [self updatePrimaryAccountDetails];
+    [self updateSyncItemsNotifyConsumer:YES];
+    [self updateSyncErrorsSection:YES];
+    [self updateBatchUploadSectionWithNotifyConsumer:YES firstLoad:NO];
+    [self updateEncryptionItem:YES];
+    [self fetchLocalDataDescriptionsForBatchUploadWithFirstLoad:NO];
+  }
 }
 
 - (void)onPrimaryAccountChanged:

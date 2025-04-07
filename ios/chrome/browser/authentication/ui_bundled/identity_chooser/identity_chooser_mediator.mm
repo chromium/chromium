@@ -134,7 +134,17 @@
   [self.consumer itemHasChanged:item];
 }
 
-- (void)handleIdentityListChanged {
+#pragma mark - IdentityManagerObserverBridgeDelegate
+
+- (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
+  id<SystemIdentity> identity =
+      _accountManagerService->GetIdentityOnDeviceWithGaiaID(info.gaia);
+  TableViewIdentityItem* item =
+      [self.consumer tableViewIdentityItemWithGaiaID:identity.gaiaID];
+  [self updateTableViewIdentityItem:item withIdentity:identity];
+}
+
+- (void)onAccountsOnDeviceChanged {
   if (!_accountManagerService || !_identityManager) {
     return;
   }
@@ -147,24 +157,6 @@
     self.selectedIdentity = signin::GetDefaultIdentityOnDevice(
         _identityManager, _accountManagerService);
   }
-}
-
-- (void)handleIdentityUpdated:(id<SystemIdentity>)identity {
-  TableViewIdentityItem* item =
-      [self.consumer tableViewIdentityItemWithGaiaID:identity.gaiaID];
-  [self updateTableViewIdentityItem:item withIdentity:identity];
-}
-
-#pragma mark - IdentityManagerObserverBridgeDelegate
-
-- (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
-  id<SystemIdentity> identity =
-      _accountManagerService->GetIdentityOnDeviceWithGaiaID(info.gaia);
-  [self handleIdentityUpdated:identity];
-}
-
-- (void)onAccountsOnDeviceChanged {
-  [self handleIdentityListChanged];
 }
 
 @end

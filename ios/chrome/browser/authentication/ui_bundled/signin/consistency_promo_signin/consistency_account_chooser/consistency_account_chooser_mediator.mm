@@ -146,15 +146,11 @@
   [self.consumer reloadIdentityForIdentityItemConfigurator:configurator];
 }
 
-- (void)handleIdentityListChanged {
-  [self loadIdentityItemConfigurators];
-  [self.consumer reloadAllIdentities];
-}
-
 #pragma mark -  IdentityManagerObserver
 
 - (void)onAccountsOnDeviceChanged {
-  [self handleIdentityListChanged];
+  [self loadIdentityItemConfigurators];
+  [self.consumer reloadAllIdentities];
 }
 
 - (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {

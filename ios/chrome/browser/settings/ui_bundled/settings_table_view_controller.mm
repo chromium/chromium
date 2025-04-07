@@ -1476,12 +1476,6 @@ struct EnhancedSafeBrowsingActivePromoData
   _manageSyncSettingsCoordinator = nil;
 }
 
-- (void)handleIdentityUpdated:(id<SystemIdentity>)identity {
-  if ([_identity isEqual:identity]) {
-    [self reloadAccountCell];
-  }
-}
-
 - (void)showGoogleServices {
   if (_googleServicesSettingsCoordinator &&
       self.navigationController.topViewController != self) {
@@ -2392,7 +2386,9 @@ struct EnhancedSafeBrowsingActivePromoData
 - (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
   id<SystemIdentity> identity =
       _accountManagerService->GetIdentityOnDeviceWithGaiaID(info.gaia);
-  [self handleIdentityUpdated:identity];
+  if ([_identity isEqual:identity]) {
+    [self reloadAccountCell];
+  }
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate

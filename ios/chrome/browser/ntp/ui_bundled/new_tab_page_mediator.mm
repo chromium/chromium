@@ -234,7 +234,8 @@
   if (info.gaia != GaiaId(_signedInIdentity.gaiaID)) {
     return;
   }
-  [self handleIdentityUpdated];
+  [self updateAccountImage];
+  [self updateAccountErrorBadge];
 }
 
 #pragma mark - PrefObserverDelegate
@@ -347,11 +348,6 @@
       updateADPBadgeWithErrorFound:primaryIdentityHasError
                               name:_signedInIdentity.userFullName
                              email:_signedInIdentity.userEmail];
-}
-
-- (void)handleIdentityUpdated {
-  [self updateAccountImage];
-  [self updateAccountErrorBadge];
 }
 
 @end

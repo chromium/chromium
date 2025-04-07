@@ -284,10 +284,6 @@ NSString* GetPromoLabelString(
                                         managed:isManaged];
 }
 
-- (void)handleIdentityListChanged {
-  [self selectSelectedIdentity];
-}
-
 - (void)handleIdentityUpdated:(id<SystemIdentity>)identity {
   if ([self.selectedIdentity isEqual:identity]) {
     [self updateSelectedIdentityUI];
@@ -318,7 +314,7 @@ NSString* GetPromoLabelString(
 #pragma mark -  IdentityManagerObserver
 
 - (void)onAccountsOnDeviceChanged {
-  [self handleIdentityListChanged];
+  [self selectSelectedIdentity];
 }
 
 - (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {

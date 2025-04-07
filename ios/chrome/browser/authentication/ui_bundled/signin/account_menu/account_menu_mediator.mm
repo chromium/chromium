@@ -205,11 +205,11 @@
 }
 
 - (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
-  [self handleIdentityUpdated];
+  [self updateIdentitiesIfAllowed];
 }
 
 - (void)onAccountsOnDeviceChanged {
-  [self handleIdentityListChanged];
+  [self updateIdentitiesIfAllowed];
 }
 
 #pragma mark - SyncObserverModelBridge
@@ -423,14 +423,6 @@
 }
 
 #pragma mark - Private
-
-- (void)handleIdentityListChanged {
-  [self updateIdentitiesIfAllowed];
-}
-
-- (void)handleIdentityUpdated {
-  [self updateIdentitiesIfAllowed];
-}
 
 // Updates the identity list in `_identities`, and sends an notification to
 // the consumer.

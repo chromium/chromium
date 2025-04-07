@@ -145,17 +145,13 @@
 - (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
   id<SystemIdentity> identity =
       _accountManagerService->GetIdentityOnDeviceWithGaiaID(info.gaia);
-  [self handleIdentityUpdated:identity];
-}
-
-#pragma mark - Private
-
-- (void)handleIdentityUpdated:(id<SystemIdentity>)identity {
   if ([identity isEqual:_authenticationService->GetPrimaryIdentity(
                             signin::ConsentLevel::kSignin)]) {
     [self updateAvatarImageWithIdentity:identity];
   }
 }
+
+#pragma mark - Private
 
 // Updates the avatar image for the consumer from `identity`.
 - (void)updateAvatarImageWithIdentity:(id<SystemIdentity>)identity {
