@@ -14,6 +14,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/location.h"
 #include "base/types/expected.h"
+#include "base/win/windows_handle_util.h"
 #include "base/win/windows_types.h"
 #include "build/build_config.h"
 
@@ -146,9 +147,14 @@ class HandleTraits {
   // Closes the handle.
   static bool BASE_EXPORT CloseHandle(HANDLE handle);
 
-  // Returns true if the handle value is valid.
+  // Returns true if `handle` is neither null nor a pseudo handle like
+  // GetCurrentProcess() or INVALID_HANDLE_VALUE. This means it has a value in
+  // the range used for real handle values. It is still possible for `handle` to
+  // not be associated with an actual open handle.
+  // Note: Use TakeHandleOfType() to adopt a handle of a particular type with
+  // additional validation.
   static bool IsHandleValid(HANDLE handle) {
-    return handle != nullptr && handle != INVALID_HANDLE_VALUE;
+    return handle != nullptr && !base::win::IsPseudoHandle(handle);
   }
 
   // Returns NULL handle value.

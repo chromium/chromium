@@ -72,6 +72,29 @@ TEST_F(ScopedHandleTest, ScopedHandle) {
   EXPECT_EQ(magic_error, ::GetLastError());
 }
 
+TEST_F(ScopedHandleTest, InvalidHandles) {
+  base::win::ScopedHandle empty;
+  // Should not get INVALID_HANDLE_VALUE from an empty handle.
+  EXPECT_EQ(empty.get(), nullptr);
+  // Do not allow pseudo handles as scoped handles.
+  base::win::ScopedHandle cur_proc(::GetCurrentProcess());
+  EXPECT_FALSE(cur_proc.is_valid());
+  base::win::ScopedHandle cur_thread(::GetCurrentThread());
+  EXPECT_FALSE(cur_thread.is_valid());
+  cur_thread.Set(::GetCurrentThread());
+  EXPECT_FALSE(cur_thread.is_valid());
+  // Should not get INVALID_HANDLE_VALUE from an invalid handle.
+  EXPECT_EQ(cur_thread.get(), nullptr);
+  // Disallow values that come from uint32_t to ensure casting is working right.
+  base::win::ScopedHandle proc_from_u32(Uint32ToHandle(0xfffffffful));
+  EXPECT_FALSE(proc_from_u32.is_valid());
+  proc_from_u32.Set(Uint32ToHandle(0xfffffffful));
+  EXPECT_FALSE(proc_from_u32.is_valid());
+  EXPECT_EQ(proc_from_u32.get(), nullptr);
+  base::win::ScopedHandle thread_from_u32(Uint32ToHandle(0xfffffffeul));
+  EXPECT_FALSE(thread_from_u32.is_valid());
+}
+
 TEST_F(ScopedHandleDeathTest, HandleVerifierTrackedHasBeenClosed) {
   HANDLE handle = ::CreateMutex(nullptr, false, nullptr);
   ASSERT_NE(HANDLE(nullptr), handle);

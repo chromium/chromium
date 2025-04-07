@@ -65,6 +65,7 @@ void OnHandleBeingClosed(HANDLE handle, HandleOperation operation) {
 expected<ScopedHandle, NTSTATUS> TakeHandleOfType(
     HANDLE handle,
     std::wstring_view object_type_name) {
+  // Invalid and pseudo handle values are rejected by GetObjectTypeName().
   auto type_name = GetObjectTypeName(handle);
   if (!type_name.has_value()) {
     // `handle` is invalid. Return the error to the caller.
