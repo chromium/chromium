@@ -33,8 +33,8 @@ def LoadPList(path):
     return plistlib.load(f)
 
 
-# This contains binaries from Xcode 16.2 (16C5032) along with
-# the macOS SDK 15.2 (24C94). To build these packages, see comments in
+# This contains binaries from Xcode 16.3 (16E140) along with
+# the macOS SDK 15.4 (24E241). To build these packages, see comments in
 # build/xcode_binaries.yaml.
 # To update the version numbers, open Xcode's "About Xcode" or run
 # `xcodebuild -version` for the Xcode version, and run
@@ -44,7 +44,7 @@ def LoadPList(path):
 # it's the part after the colon.
 
 MAC_BINARIES_LABEL = 'infra_internal/ios/xcode/xcode_binaries/mac-amd64'
-MAC_BINARIES_TAG = 'o5KxJtacGXzkEoORkVUIOEPgGnL2okJzM4Km91eod9EC'
+MAC_BINARIES_TAG = 'mTokcQKuRc0gN_OU1e_CxtZJq6Gy8TnPTbmjyXA5kR4C'
 
 # The toolchain will not be downloaded if the minimum OS version is not met. 19
 # is the major version number for macOS 10.15. Xcode 15.0 only runs on macOS

@@ -10,7 +10,8 @@
 #      a.) The version information can be found in "About Xcode",
 #          or by running `xcodebuild -version`
 # To deploy the newly created cipd package across the fleet, modify
-# ./mac_toolchain.py to point to the new cipd hash.
+# ./mac_toolchain.py to point to the new cipd hash, and update the
+# mac_sdk_official_* variables in build/config/mac/mac_sdk.gni.
 #
 # Note that the Chromium build looks for the mac binaries in
 # build/mac_files/xcode_binaries; it won't see the build/xcode_binaries that
