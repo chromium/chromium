@@ -11,7 +11,6 @@ import android.content.Context;
 import android.os.Build;
 
 import org.chromium.base.CommandLine;
-import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
@@ -22,9 +21,6 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.util.DefaultBrowserInfo;
-import org.chromium.chrome.browser.util.DefaultBrowserInfo.DefaultBrowserState;
-import org.chromium.chrome.browser.util.DefaultBrowserInfo.DefaultInfo;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.messages.MessageDispatcher;
@@ -34,8 +30,6 @@ import org.chromium.ui.base.WindowAndroid;
 /** A utility class providing information regarding states of default browser. */
 @NullMarked
 public class DefaultBrowserPromoUtils {
-    static final String CHROME_STABLE_PACKAGE_NAME = "com.android.chrome";
-
     /**
      * An interface for receiving updates related to the trigger state of the default browser promo.
      */
@@ -45,20 +39,27 @@ public class DefaultBrowserPromoUtils {
     }
 
     private final DefaultBrowserPromoImpressionCounter mImpressionCounter;
+    private final DefaultBrowserStateProvider mStateProvider;
 
     private static @Nullable DefaultBrowserPromoUtils sInstance;
 
     private final ObserverList<DefaultBrowserPromoTriggerStateListener>
             mDefaultBrowserPromoTriggerStateListeners;
 
-    DefaultBrowserPromoUtils(DefaultBrowserPromoImpressionCounter impressionCounter) {
+    DefaultBrowserPromoUtils(
+            DefaultBrowserPromoImpressionCounter impressionCounter,
+            DefaultBrowserStateProvider stateProvider) {
         mImpressionCounter = impressionCounter;
+        mStateProvider = stateProvider;
         mDefaultBrowserPromoTriggerStateListeners = new ObserverList<>();
     }
 
     public static DefaultBrowserPromoUtils getInstance() {
         if (sInstance == null) {
-            sInstance = new DefaultBrowserPromoUtils(new DefaultBrowserPromoImpressionCounter());
+            sInstance =
+                    new DefaultBrowserPromoUtils(
+                            new DefaultBrowserPromoImpressionCounter(),
+                            new DefaultBrowserStateProvider());
         }
         return sInstance;
     }
@@ -84,7 +85,8 @@ public class DefaultBrowserPromoUtils {
         mImpressionCounter.onPromoShown();
         tracker.notifyEvent("role_manager_default_browser_promos_shown");
         DefaultBrowserPromoManager manager =
-                new DefaultBrowserPromoManager(activity, windowAndroid, mImpressionCounter);
+                new DefaultBrowserPromoManager(
+                        activity, windowAndroid, mImpressionCounter, mStateProvider);
         manager.promoByRoleManager();
         return true;
     }
@@ -131,7 +133,7 @@ public class DefaultBrowserPromoUtils {
     public boolean shouldShowNonRoleManagerPromo(Context context) {
         return !shouldShowRoleManagerPromo(context)
                 && mImpressionCounter.shouldShowPromo(/* ignoreMaxCount= */ true)
-                && shouldShowPromoForDefaultBrowserState();
+                && mStateProvider.shouldShowPromo();
     }
 
     /**
@@ -149,7 +151,7 @@ public class DefaultBrowserPromoUtils {
         }
 
         return mImpressionCounter.shouldShowPromo(/* ignoreMaxCount= */ false)
-                && shouldShowPromoForDefaultBrowserState();
+                && mStateProvider.shouldShowPromo();
     }
 
     /** Increment session count for triggering feature in the future. */
@@ -193,40 +195,6 @@ public class DefaultBrowserPromoUtils {
         boolean isRoleAvailable = roleManager.isRoleAvailable(RoleManager.ROLE_BROWSER);
         boolean isRoleHeld = roleManager.isRoleHeld(RoleManager.ROLE_BROWSER);
         return isRoleAvailable && !isRoleHeld;
-    }
-
-    /**
-     * This decides whether the promo should be promoted base on the current default browser state.
-     * Return false if any of following criteria is met:
-     *
-     * <ol>
-     *   <li>Any chrome, including pre-stable, has been set as default.
-     *   <li>On Chrome stable, no default browser is set and multiple chrome channels are installed.
-     * </ol>
-     *
-     * @return boolean if promo dialog can be displayed.
-     */
-    public boolean shouldShowPromoForDefaultBrowserState() {
-        DefaultInfo info = DefaultBrowserInfo.getDefaultBrowserInfoSync();
-        if (info == null) {
-            return false;
-        }
-        switch (info.defaultBrowserState) {
-            case DefaultBrowserState.NO_DEFAULT:
-                // Criteria 2
-                return !isChromeStable() || !info.isChromePreStableInstalled;
-            case DefaultBrowserState.OTHER_DEFAULT:
-                return true;
-            default:
-                // CHROME_DEFAULT and OTHER_CHROME_DEFAULT (Criteria 1)
-                return false;
-        }
-    }
-
-    boolean isChromeStable() {
-        return ContextUtils.getApplicationContext()
-                .getPackageName()
-                .equals(CHROME_STABLE_PACKAGE_NAME);
     }
 
     public static void setInstanceForTesting(DefaultBrowserPromoUtils testInstance) {

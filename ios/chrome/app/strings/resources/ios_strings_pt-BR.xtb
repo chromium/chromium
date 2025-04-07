@@ -97,6 +97,7 @@
 <translation id="1377508275003315939">Senhas</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} de {count} endereço}one{{position} de {count} endereço}other{{position} de {count} endereços}}</translation>
 <translation id="1383876407941801731">Pesquisar</translation>
+<translation id="1385168997509105202">Você vai perder imediatamente o acesso ao grupo de guias "<ph name="GROUP_NAME" />", e <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) não poderá mais interagir com você nos Serviços do Google.</translation>
 <translation id="138618066238211776">Continuar como <ph name="USER_NAME" /></translation>
 <translation id="138692594145659985">Opções para salvar cartão</translation>
 <translation id="1396260204083880024">Login feito como <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Abra o menu de contas.</translation>
@@ -512,6 +513,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3124568093781685165">Compartilhe suas senhas com a família</translation>
 <translation id="3130863904455712965">Histórico e mais</translation>
 <translation id="313283613037595347">Criar nova guia anônima.</translation>
+<translation id="3136739222562075778">Este card mostra reduções no preço de produtos nas suas guias abertas</translation>
 <translation id="3138611310073113613">Descartar seleção</translation>
 <translation id="3140825265190223781">Senhas e chaves de acesso salvas</translation>
 <translation id="3143515551205905069">Cancelar sincronização</translation>
@@ -987,6 +989,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5200894869889836319">Opções para definir permissões</translation>
 <translation id="5203051773066903947">Inserir</translation>
+<translation id="5205750905107419335"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) vai perder imediatamente o acesso ao grupo de guias "<ph name="GROUP_NAME" />" e não poderá mais interagir com você nos Serviços do Google.</translation>
 <translation id="5206453674369664567">Sair e limpar dados</translation>
 <translation id="5210365745912300556">Fechar guia</translation>
 <translation id="5211488077761630279">Permitir que o site <ph name="SITE_NAME" /> use <ph name="PERMISSION" />?</translation>
@@ -1068,6 +1071,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="5567439033041178034">SAIBA MAIS</translation>
 <translation id="5572648434713976849">Você vai receber sugestões melhores na barra de endereço</translation>
 <translation id="5576885723883013398">Nova janela</translation>
+<translation id="5578543325423650885"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) vai perder imediatamente o acesso ao grupo de guias "<ph name="GROUP_NAME" />".</translation>
 <translation id="5578795271662203820">Pesquisar imagem no <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5579012242779565775">Ocultar a lista de leitura</translation>
 <translation id="5585019845078534178">Cards</translation>

@@ -351,6 +351,7 @@
 <translation id="2438248248625638801">Бичлэгийн нэрийг үүсгэж байна</translation>
 <translation id="2446553403094072641">Хөвөгч цэгийн нарийвчлал</translation>
 <translation id="2448312741937722512">Төрөл</translation>
+<translation id="2448857983905133469">Хичээлийн хэрэглэгдэхүүн</translation>
 <translation id="2468124392950503650">Үүсгэх заавар сонгох эсвэл <ph name="BEGIN_LINK_PROMPTING_GUIDE" />зааврын хөтчийг<ph name="END_LINK_PROMPTING_GUIDE" /> харна уу</translation>
 <translation id="2472215337771558851">Ноорог үүсгэх эсвэл одоо байгаа ажлыг боловсронгуй болгоход Google AI-аар дэмжигдсэн Надад бичихэд тусал онцлогийг ашиглана уу</translation>
 <translation id="2475982808118771221">Алдаа гарлаа</translation>
@@ -449,6 +450,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />мA</translation>
 <translation id="3056720590588772262">Төгсгөлийн цэг</translation>
 <translation id="3060579846059757016">Тойм</translation>
+<translation id="3060798442805232711">Хичээлийн хэрэглэгдэхүүн таны микрофоныг ашиглаж байна</translation>
 <translation id="3061850252076394168">ярихаар сонгохыг идэвхжүүлэх</translation>
 <translation id="3066772729299747758">Мягмар гарагт</translation>
 <translation id="3069085583900247081">Туршилт амжилтгүй боллоо</translation>
@@ -910,6 +912,7 @@
 <translation id="5170568018924773124">Хавтсанд харуул</translation>
 <translation id="517075088756846356">Шинэчлэх явцыг үргэлжлүүлэхийн тулд <ph name="DEVICE_NAME" />-н цахилгааны утсыг салгаад, дахин залгана уу</translation>
 <translation id="5180108905184566358">адансон модод</translation>
+<translation id="5180431943345994173">Танай багш Хичээлийн хэрэглэгдэхүүнээс контент хаслаа</translation>
 <translation id="5180712487038406644">Илэрхийлэлтэй</translation>
 <translation id="5190187232518914472">Дуртай дурсамжуудаа сэргээгээрэй. Цомог нэмэх эсвэл засахын тулд <ph name="LINK_BEGIN" />Google Зураг<ph name="LINK_END" /> руу очно уу.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
@@ -1003,6 +1006,7 @@
 <translation id="5628106863521633649">Боломжтой хэлнүүд</translation>
 <translation id="5630438231335788050">баухаус</translation>
 <translation id="5631759159893697722">хураангуй</translation>
+<translation id="5655084389678168978">Танай багш Хичээлийн хэрэглэгдэхүүнд шинэ контент нэмлээ</translation>
 <translation id="5655283760733841251">Гарны гэрэлтүүлгийг нэмэгдүүлэх</translation>
 <translation id="5655296450510165335">Төхөөрөмж бүртгүүлэх</translation>
 <translation id="5655776422854483175">Ямар ч хэвлэх ажил байхгүй</translation>
@@ -1529,6 +1533,7 @@
 <translation id="7971535376154084247">Ерөнхий тохиргоо</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> сүлжээнд нэгдэхийн тулд Тохиргоо руу очно уу</translation>
 <translation id="7978412674231730200">Хувийн түлхүүр</translation>
+<translation id="7979468455552394856">Хичээлийн хэрэглэгдэхүүн сурагчидтай холбогдсон</translation>
 <translation id="7982789257301363584">Сүлжээ</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />"-г автоматаар эхлүүлсэн}other{# аппыг автоматаар эхлүүлсэн}}</translation>
 <translation id="7994702968232966508">EAP арга</translation>

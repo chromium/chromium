@@ -13,7 +13,7 @@
 #include "base/process/launch.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/win/win_util.h"
+#include "base/win/windows_handle_util.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/win/test/test_inheritable_event.h"

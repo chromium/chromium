@@ -24,6 +24,12 @@ class StartCrdSessionJobDelegate {
                               const std::string&)>;
   using SessionEndCallback = base::OnceCallback<void(base::TimeDelta)>;
 
+  // The caller who initiated the request.
+  enum class RequestOrigin {
+    kEnterpriseAdmin,
+    kClassManagement,
+  };
+
   // Session parameters used to start the CRD host.
   struct SessionParameters {
     SessionParameters();
@@ -36,6 +42,7 @@ class StartCrdSessionJobDelegate {
 
     std::string user_name = "";
     std::optional<std::string> admin_email;
+    RequestOrigin request_origin = RequestOrigin::kEnterpriseAdmin;
     bool terminate_upon_input = false;
     bool show_confirmation_dialog = false;
     bool curtain_local_user_session = false;

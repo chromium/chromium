@@ -196,7 +196,7 @@ void SVGAElement::DefaultEventHandler(Event& event) {
   SVGGraphicsElement::DefaultEventHandler(event);
 }
 
-Element* SVGAElement::interestTargetElement() {
+Element* SVGAElement::InterestTargetElement() const {
   if (!RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
           GetDocument().GetExecutionContext())) {
     return nullptr;

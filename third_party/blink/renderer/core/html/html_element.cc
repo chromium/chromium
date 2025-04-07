@@ -55,6 +55,7 @@
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/id_target_observer.h"
+#include "third_party/blink/renderer/core/dom/invoker_data.h"
 #include "third_party/blink/renderer/core/dom/node_lists_node_data.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/dom/popover_data.h"
@@ -1581,7 +1582,7 @@ void HTMLElement::ShowPopoverInternal(Element* invoker,
   original_document.AddToTopLayer(this);
   // Make the popover match `:popover-open` and remove `display:none` styling:
   GetPopoverData()->setVisibilityState(PopoverVisibilityState::kShowing);
-  GetPopoverData()->setInvoker(invoker);
+  SetPopoverInvoker(invoker);
   SetImplicitAnchor(invoker);
 
   PseudoStateChanged(CSSSelector::kPseudoPopoverOpen);
@@ -1631,6 +1632,16 @@ void HTMLElement::ShowPopoverInternal(Element* invoker,
             element->DispatchEvent(*event);
           },
           WrapPersistent(this), WrapPersistent(after_event))));
+}
+
+void HTMLElement::SetPopoverInvoker(Element* invoker) {
+  if (Element* oldInvoker = GetPopoverData()->invoker()) {
+    oldInvoker->GetInvokerData()->SetInvokedPopover(nullptr);
+  }
+  GetPopoverData()->setInvoker(invoker);
+  if (invoker) {
+    invoker->EnsureInvokerData().SetInvokedPopover(this);
+  }
 }
 
 // static
@@ -1798,7 +1809,7 @@ void HTMLElement::HidePopoverInternal(
   }
 
   MarkPopoverInvokersDirty(*this);
-  GetPopoverData()->setInvoker(nullptr);
+  SetPopoverInvoker(nullptr);
   // Events are only fired in the case that the popover is not being removed
   // from the document.
   if (transition_behavior ==

@@ -7,11 +7,14 @@
 #include "base/check_is_test.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/intent_picker_bubble_view.h"
 #include "chrome/browser/ui/views/location_bar/intent_chip_button.h"
+#include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/browser/web_applications/link_capturing_features.h"
 #include "chrome/common/chrome_features.h"
 #include "ui/events/event.h"
@@ -28,6 +31,15 @@ IntentChipButton* GetIntentPickerIcon(Browser* browser) {
   return BrowserView::GetBrowserViewForBrowser(browser)
       ->toolbar_button_provider()
       ->GetIntentChipButton();
+}
+
+views::Button* GetIntentPickerButton(Browser* browser) {
+  if (IsPageActionMigrated(PageActionIconType::kIntentPicker)) {
+    return BrowserView::GetBrowserViewForBrowser(browser)
+        ->toolbar_button_provider()
+        ->GetPageActionView(kActionShowIntentPicker);
+  }
+  return GetIntentPickerIcon(browser);
 }
 
 IntentPickerBubbleView* intent_picker_bubble() {
@@ -53,16 +65,25 @@ testing::AssertionResult WaitForIntentPickerToShow(Browser* browser) {
   if (!result) {
     return result;
   }
-  IntentChipButton* intent_picker_icon = GetIntentPickerIcon(browser);
-  if (!intent_picker_icon) {
-    return testing::AssertionFailure() << "Intent picker icon does not exist.";
-  }
-
-  if (!intent_picker_icon->GetVisible()) {
-    IntentChipVisibilityObserver(intent_picker_icon).WaitForChipToBeVisible();
-    if (!intent_picker_icon->GetVisible()) {
+  if (IsPageActionMigrated(PageActionIconType::kIntentPicker)) {
+    views::Button* intent_picker_button = GetIntentPickerButton(browser);
+    if (!intent_picker_button) {
       return testing::AssertionFailure()
-             << "Intent picker icon never became visible.";
+             << "Intent picker icon does not exist.";
+    }
+  } else {
+    IntentChipButton* intent_picker_icon = GetIntentPickerIcon(browser);
+    if (!intent_picker_icon) {
+      return testing::AssertionFailure()
+             << "Intent picker icon does not exist.";
+    }
+
+    if (!intent_picker_icon->GetVisible()) {
+      IntentChipVisibilityObserver(intent_picker_icon).WaitForChipToBeVisible();
+      if (!intent_picker_icon->GetVisible()) {
+        return testing::AssertionFailure()
+               << "Intent picker icon never became visible.";
+      }
     }
   }
 
@@ -70,12 +91,13 @@ testing::AssertionResult WaitForIntentPickerToShow(Browser* browser) {
 }
 
 testing::AssertionResult ClickIntentPickerChip(Browser* browser) {
-  auto result = WaitForIntentPickerToShow(browser);
+  testing::AssertionResult result = WaitForIntentPickerToShow(browser);
+
   if (!result) {
     return result;
   }
 
-  views::test::ButtonTestApi test_api(GetIntentPickerIcon(browser));
+  views::test::ButtonTestApi test_api(GetIntentPickerButton(browser));
   test_api.NotifyClick(ui::MouseEvent(
       ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
       base::TimeTicks(), ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));

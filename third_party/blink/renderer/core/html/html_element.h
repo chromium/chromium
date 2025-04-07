@@ -399,6 +399,8 @@ class CORE_EXPORT HTMLElement : public Element {
 
   void HandleKeypressEvent(KeyboardEvent&);
 
+  void SetPopoverInvoker(Element* invoker);
+
   static void CloseEntirePopoverStack(
       HeapVector<Member<HTMLElement>>& stack,
       HidePopoverFocusBehavior focus_behavior,

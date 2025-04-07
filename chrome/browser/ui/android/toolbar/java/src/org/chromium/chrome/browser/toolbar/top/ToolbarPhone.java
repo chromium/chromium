@@ -50,7 +50,9 @@ import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.MathUtils;
+import org.chromium.base.TimeUtils;
 import org.chromium.base.TraceEvent;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
@@ -262,6 +264,7 @@ public class ToolbarPhone extends ToolbarLayout
     private int mPreTextureCaptureVisibility;
 
     private boolean mOptionalButtonAnimationRunning;
+    private long mOptionalButtonAnimationStartTimeMs;
     private int mUrlFocusTranslationX;
 
     private boolean mDropdownListScrolled;
@@ -1634,10 +1637,27 @@ public class ToolbarPhone extends ToolbarLayout
             return CaptureReadinessResult.notReady(
                     TopToolbarBlockCaptureReason.URL_BAR_FOCUS_IN_PROGRESS);
         } else if (mOptionalButtonAnimationRunning) {
+            long timeSinceAnimationStartMs =
+                    TimeUtils.elapsedRealtimeMillis() - mOptionalButtonAnimationStartTimeMs;
+            if (timeSinceAnimationStartMs
+                    > CaptureReadinessResult.STUCK_ON_ANIMATION_BLOCK_REASON_THRESHOLD_MS) {
+                RecordHistogram.recordMediumTimesHistogram(
+                        "Android.TopToolbar.CaptureBlocked.OptionalButtonAnimationDuration",
+                        timeSinceAnimationStartMs);
+            }
             return CaptureReadinessResult.notReady(
                     TopToolbarBlockCaptureReason.OPTIONAL_BUTTON_ANIMATION_IN_PROGRESS);
         } else if (mLocationBar.getStatusCoordinator() != null
                 && mLocationBar.getStatusCoordinator().isStatusIconAnimating()) {
+            long timeSinceAnimationStartMs =
+                    TimeUtils.elapsedRealtimeMillis()
+                            - mLocationBar.getStatusCoordinator().getAnimationStartTimeMs();
+            if (timeSinceAnimationStartMs
+                    > CaptureReadinessResult.STUCK_ON_ANIMATION_BLOCK_REASON_THRESHOLD_MS) {
+                RecordHistogram.recordMediumTimesHistogram(
+                        "Android.TopToolbar.CaptureBlocked.StatusIconAnimationDuration",
+                        timeSinceAnimationStartMs);
+            }
             // TODO(crbug.com/40860241): It may be possible to remove the above null check.
             return CaptureReadinessResult.notReady(
                     TopToolbarBlockCaptureReason.STATUS_ICON_ANIMATION_IN_PROGRESS);
@@ -2580,6 +2600,9 @@ public class ToolbarPhone extends ToolbarLayout
 
             mOptionalButtonCoordinator.setTransitionStartedCallback(
                     transitionType -> {
+                        if (!mOptionalButtonAnimationRunning) {
+                            mOptionalButtonAnimationStartTimeMs = TimeUtils.elapsedRealtimeMillis();
+                        }
                         mOptionalButtonAnimationRunning = true;
                         keepControlsShownForAnimation();
 

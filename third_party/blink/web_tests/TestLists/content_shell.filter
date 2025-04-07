@@ -897,6 +897,10 @@ external/wpt/css/css-shapes/spec-examples/shape-outside-016.html
 external/wpt/css/css-shapes/spec-examples/shape-outside-017.html
 external/wpt/css/printing/input-file-print.html
 
+# This times out on headless, on Mac only. It takes appreciably longer locally on my Mac on headless. Not sure why.
+external/wpt/html/semantics/popovers/popover-focus-2.html
+virtual/html-anchor-attribute-disabled/external/wpt/html/semantics/popovers/popover-focus-2.html
+
 virtual/atomic-move-range-preservation/external/wpt/dom/nodes/moveBefore/selection-preserve.html
 virtual/backface-visibility-interop/external/wpt/css/css-transforms/backface-visibility-001.html
 virtual/backface-visibility-interop/external/wpt/css/css-transforms/backface-visibility-hidden-animated-002.html

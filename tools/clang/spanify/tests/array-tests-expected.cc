@@ -142,3 +142,14 @@ void test_func_params() {
   c_array_param(arr);
   c_array_nosize_param(arr);
 }
+
+struct ProgramInfo {
+  // Expected rewrite:
+  // mutable std::array<int, 10> filename_offsets;
+  mutable std::array<int, 10> filename_offsets;
+};
+
+void test_with_mutable() {
+  const ProgramInfo info;
+  info.filename_offsets[UnsafeIndex()] = 0xdead;
+}

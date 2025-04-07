@@ -86,6 +86,15 @@ scoped_refptr<CommandBufferHelper> CreateCommandBufferHelper(
   return holder->helper;
 }
 
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+bool ShouldUseDXVADeviceForHEVCRangeExtension(const VideoDecoderConfig& config,
+                                              ComD3D11Device device) {
+  return config.profile() == HEVCPROFILE_REXT &&
+         (base::FeatureList::IsEnabled(kD3D12VideoDecoder) ||
+          SupportsHEVCRangeExtensionDXVAProfile(device));
+}
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+
 }  // namespace
 
 std::unique_ptr<VideoDecoder> D3D11VideoDecoder::Create(
@@ -173,8 +182,11 @@ bool D3D11VideoDecoder::InitializeAcceleratedDecoder(
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
   } else if (config.codec() == VideoCodec::kHEVC) {
     DCHECK(base::FeatureList::IsEnabled(kPlatformHEVCDecoderSupport));
+    bool use_dxva_device_for_hevc_rext =
+        ShouldUseDXVADeviceForHEVCRangeExtension(config, device_);
     accelerated_video_decoder_ = std::make_unique<H265Decoder>(
-        std::make_unique<D3D11H265Accelerator>(this, media_log_.get()),
+        std::make_unique<D3D11H265Accelerator>(this, media_log_.get(),
+                                               use_dxva_device_for_hevc_rext),
         profile_, config.color_space_info());
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
   } else {
@@ -210,7 +222,7 @@ bool D3D11VideoDecoder::ResetD3DVideoDecoder() {
 
   auto decoder_configurator = D3D11DecoderConfigurator::Create(
       gpu_preferences_, gpu_workarounds_, config_, bit_depth, chroma_sampling_,
-      media_log_.get(), use_shared_handle_);
+      media_log_.get(), use_shared_handle_, device_);
   if (!decoder_configurator) {
     NotifyError(D3D11StatusCode::kDecoderUnsupportedProfile);
     return false;

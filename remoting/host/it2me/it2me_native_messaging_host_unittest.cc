@@ -34,6 +34,7 @@
 #include "components/policy/policy_constants.h"
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/base/oauth_token_getter.h"
+#include "remoting/host/chromeos/chromeos_enterprise_params.h"
 #include "remoting/host/chromoting_host_context.h"
 #include "remoting/host/it2me/it2me_constants.h"
 #include "remoting/host/it2me/it2me_helpers.h"
@@ -712,7 +713,10 @@ TEST_F(It2MeNativeMessagingHostTest,
   params.suppress_notifications = true;
   params.terminate_upon_input = true;
   params.curtain_local_user_session = true;
+  params.allow_remote_input = false;
+  params.allow_clipboard_sync = false;
   params.connection_auto_accept_timeout = base::Hours(8);
+  params.request_origin = ChromeOsEnterpriseRequestOrigin::kEnterpriseAdmin;
   connect_message.Merge(params.ToDict());
   WriteMessageToInputPipe(connect_message);
   VerifyConnectResponses(next_id);
@@ -722,8 +726,12 @@ TEST_F(It2MeNativeMessagingHostTest,
   ASSERT_TRUE(get_chrome_os_enterprise_params()->suppress_notifications);
   ASSERT_TRUE(get_chrome_os_enterprise_params()->terminate_upon_input);
   ASSERT_TRUE(get_chrome_os_enterprise_params()->curtain_local_user_session);
+  ASSERT_FALSE(get_chrome_os_enterprise_params()->allow_remote_input);
+  ASSERT_FALSE(get_chrome_os_enterprise_params()->allow_clipboard_sync);
   ASSERT_EQ(get_chrome_os_enterprise_params()->connection_auto_accept_timeout,
             base::Hours(8));
+  ASSERT_EQ(get_chrome_os_enterprise_params()->request_origin,
+            ChromeOsEnterpriseRequestOrigin::kEnterpriseAdmin);
 #else
   ASSERT_FALSE(get_chrome_os_enterprise_params().has_value());
 #endif

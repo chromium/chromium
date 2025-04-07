@@ -21,9 +21,16 @@ import java.lang.annotation.RetentionPolicy;
  */
 public class CaptureReadinessResult {
     /**
+     * TODO(peilinwang): For debugging https://crbug.com/398845668, if an animation is blocking a
+     * capture and this much time has passed, we assume something went wrong and that we are
+     * incorrectly stuck on that block reason.
+     */
+    static final int STUCK_ON_ANIMATION_BLOCK_REASON_THRESHOLD_MS = 10_000;
+
+    /**
      * Reasons to allow toolbar captures. Treat this list as append only and keep it in sync with
      * TopToolbarAllowCaptureReason in enums.xml, as well as the proto in chrome_track_event.proto.
-     **/
+     */
     @IntDef({
         TopToolbarAllowCaptureReason.UNKNOWN,
         TopToolbarAllowCaptureReason.FORCE_CAPTURE,

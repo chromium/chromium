@@ -1248,6 +1248,7 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="185111092974636561"><ph name="BEGIN_PARAGRAPH1" />Përpara se të regjistrohesh, ti duhet të pastrosh TPM-në në mënyrë që <ph name="DEVICE_OS" /> të marrë në zotërim pajisjen.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Gjithashtu, ti mund ta çaktivizosh plotësisht pajisjen TPM. Të dhënat e tua do të ruhen në mënyrë të sigurt me enkriptimin e softuerit, por veçori të caktuara të sigurisë, si p.sh. certifikatat e mbështetura nga hardueri, do të çaktivizohen.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Mund t'i ndryshosh cilësimet e tua të TPM duke rindezur dhe futur cilësimet BIOS/UEFI të sistemit. Hapat ndryshojnë në varësi të modelit të pajisjes. Për më shumë informacion, hap dokumentacionin e <ph name="DEVICE_OS" /> në një pajisje të veçantë përpara se ta rindezësh: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="1851551847729706116">Po ndahet <ph name="TAB_NAME" /> në këtë skedë</translation>
 <translation id="1852799913675865625">Pati një gabim gjatë leximit të skedarit: <ph name="ERROR_TEXT" />.</translation>
 <translation id="1854180393107901205">Ndalo transmetimin</translation>
 <translation id="1856715684130786728">Shto një vendndodhje...</translation>
@@ -11273,6 +11274,7 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="8963117664422609631">Shko te cilësimet e faqes</translation>
 <translation id="8964927371396953727">Verifiko që je ti për të përdorur dhe ruajtur fjalëkalimet në llogarinë tënde <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8965037249707889821">Fut fjalëkalimin e vjetër</translation>
+<translation id="8967403839792635452">Po zhvillon shtesa? Qëndro i përditësuar te <ph name="BEGIN_LINK" />Ç'të reja ka<ph name="END_LINK" /> me dokumentacionin e zhvilluesit për shtesat e Chrome.</translation>
 <translation id="8967427617812342790">Shto te lista e leximit</translation>
 <translation id="8967548289042494261">Hiq <ph name="VM_NAME" /></translation>
 <translation id="8968527460726243404">Shkruesi i imazheve të sistemit të ChromeOS</translation>

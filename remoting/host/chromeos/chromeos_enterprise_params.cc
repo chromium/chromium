@@ -5,6 +5,7 @@
 #include "remoting/host/chromeos/chromeos_enterprise_params.h"
 
 #include "base/json/values_util.h"
+#include "base/notreached.h"
 #include "base/time/time.h"
 
 namespace remoting {
@@ -23,6 +24,45 @@ constexpr char kConnectionAutoAcceptTimeout[] = "connectionAutoAcceptTimeout";
 constexpr char kMaximumSessionDuration[] = "maximumSessionDuration";
 constexpr char kAllowRemoteInput[] = "allowRemoteInput";
 constexpr char kAllowClipboardSync[] = "allowClipboardSync";
+constexpr char kChromeOsEnterpriseRequestOrigin[] =
+    "chromeOsEnterpriseRequestOrigin";
+constexpr char kRequestOriginClassManagement[] = "classManagement";
+constexpr char kRequestOriginEnterpriseAdmin[] = "enterpriseAdmin";
+constexpr char kRequestOriginUknown[] = "requestOriginUnknown";
+
+ChromeOsEnterpriseRequestOrigin ConvertStringToChromeOsEnterpriseRequestOrigin(
+    const std::string& request_origin) {
+  if (request_origin == kRequestOriginClassManagement) {
+    return ChromeOsEnterpriseRequestOrigin::kClassManagement;
+  }
+  if (request_origin == kRequestOriginEnterpriseAdmin) {
+    return ChromeOsEnterpriseRequestOrigin::kEnterpriseAdmin;
+  }
+  if (request_origin == kRequestOriginUknown) {
+    return ChromeOsEnterpriseRequestOrigin::kUnknown;
+  }
+  NOTREACHED();
+}
+
+std::string ConvertChromeOsEnterpriseRequestOriginToString(
+    ChromeOsEnterpriseRequestOrigin request_origin) {
+  switch (request_origin) {
+    case ChromeOsEnterpriseRequestOrigin::kClassManagement:
+      return kRequestOriginClassManagement;
+    case ChromeOsEnterpriseRequestOrigin::kEnterpriseAdmin:
+      return kRequestOriginEnterpriseAdmin;
+    case ChromeOsEnterpriseRequestOrigin::kUnknown:
+      return kRequestOriginUknown;
+  }
+}
+
+ChromeOsEnterpriseRequestOrigin GetRequestOriginOrDefault(
+    const std::string* input_request_origin,
+    ChromeOsEnterpriseRequestOrigin default_request_origin) {
+  return input_request_origin ? ConvertStringToChromeOsEnterpriseRequestOrigin(
+                                    *input_request_origin)
+                              : default_request_origin;
+}
 }  // namespace
 
 ChromeOsEnterpriseParams::ChromeOsEnterpriseParams() = default;
@@ -62,6 +102,10 @@ ChromeOsEnterpriseParams ChromeOsEnterpriseParams::FromDict(
       dict.FindBool(kAllowFileTransfer).value_or(false);
   params.connection_dialog_required =
       dict.FindBool(kConnectionDialogRequired).value_or(false);
+  params.request_origin = GetRequestOriginOrDefault(
+      dict.FindString(kChromeOsEnterpriseRequestOrigin),
+      /* default_request_origin= */ ChromeOsEnterpriseRequestOrigin::
+          kEnterpriseAdmin);
   params.connection_auto_accept_timeout =
       base::ValueToTimeDelta(dict.Find(kConnectionAutoAcceptTimeout))
           .value_or(base::TimeDelta());
@@ -77,11 +121,14 @@ base::Value::Dict ChromeOsEnterpriseParams::ToDict() const {
       .Set(kMaximumSessionDuration,
            base::TimeDeltaToValue(maximum_session_duration))
       .Set(kAllowRemoteInput, allow_remote_input)
+      .Set(kAllowClipboardSync, allow_clipboard_sync)
       .Set(kShowTroubleshootingTools, show_troubleshooting_tools)
       .Set(kAllowTroubleshootingTools, allow_troubleshooting_tools)
       .Set(kAllowReconnections, allow_reconnections)
       .Set(kAllowFileTransfer, allow_file_transfer)
       .Set(kConnectionDialogRequired, connection_dialog_required)
+      .Set(kChromeOsEnterpriseRequestOrigin,
+           ConvertChromeOsEnterpriseRequestOriginToString(request_origin))
       .Set(kConnectionAutoAcceptTimeout,
            base::TimeDeltaToValue(connection_auto_accept_timeout));
 }

@@ -103,7 +103,7 @@ class HTMLElement;
 class HTMLTemplateElement;
 class Image;
 class InputDeviceCapabilities;
-class InterestInvokerData;
+class InvokerData;
 class InterestInvokerTargetData;
 class KURL;
 class Locale;
@@ -1114,6 +1114,19 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
     return false;
   }
 
+  // If this element is a triggering element for an *open* popover, in one of
+  // several ways, this returns the targeted popover. These forms of triggering
+  // are supported:
+  //   <button popovertarget=foo>
+  //   <button command=*-popover commandfor=foo>
+  //   <button interesttarget=foo>
+  //   (JS) popover.showPopover({source: foo})
+  // Note: this function returns the *target* popover. Or nullptr if there isn't
+  // a target, it isn't a popover, or the popover isn't open as the result of
+  // this triggering element. (E.g. if the popover is just open on its own and
+  // wasn't triggered by this invoker, this will return nullptr.)
+  HTMLElement* GetOpenPopoverTarget() const;
+
   // Implementation of the `interesttarget` feature. These are called on the
   // element with the `interesttarget` attribute, and not on the target itself.
   // These are called when interest is actually gained or lost on the element,
@@ -1124,7 +1137,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // Returns the target of the `interesttarget` attribute, if any, and only if
   // the element supports this attribute. For example, `interesttarget` is not
   // allowed on a `<div>`.
-  virtual Element* interestTargetElement() { return nullptr; }
+  virtual Element* InterestTargetElement() const { return nullptr; }
   // Returns true if this element is an interest invoker that currently "has
   // interest".
   bool HasInterest();
@@ -1564,9 +1577,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   PopoverData& EnsurePopoverData();
   PopoverData* GetPopoverData() const;
 
-  void RemoveInterestInvokerData();
-  InterestInvokerData& EnsureInterestInvokerData();
-  InterestInvokerData* GetInterestInvokerData() const;
+  InvokerData& EnsureInvokerData();
+  InvokerData* GetInvokerData() const;
 
   void RemoveInterestInvokerTargetData();
   InterestInvokerTargetData& EnsureInterestInvokerTargetData();

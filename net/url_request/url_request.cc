@@ -871,22 +871,11 @@ bool URLRequest::failed() const {
 
 int URLRequest::NotifyConnected(const TransportInfo& info,
                                 CompletionOnceCallback callback) {
-  delegate_connected_start_time_ = base::TimeTicks::Now();
   OnCallToDelegate(NetLogEventType::URL_REQUEST_DELEGATE_CONNECTED);
   int result = delegate_->OnConnected(
       this, info,
       base::BindOnce(
           [](URLRequest* request, CompletionOnceCallback callback, int result) {
-            // Record a histogram.
-            request->delegate_connected_end_time_ = base::TimeTicks::Now();
-            CHECK(!request->delegate_connected_start_time_.is_null());
-            CHECK_LE(request->delegate_connected_start_time_,
-                     request->delegate_connected_end_time_);
-            base::UmaHistogramTimes(
-                "Net.URLRequest.DelegateConnectedDelay",
-                request->delegate_connected_end_time_ -
-                    request->delegate_connected_start_time_);
-
             request->OnCallToDelegateComplete(result);
             std::move(callback).Run(result);
           },
@@ -1045,8 +1034,6 @@ void URLRequest::PrepareToRestart() {
   load_timing_info_.request_start = base::TimeTicks::Now();
 
   load_timing_internal_info_ = LoadTimingInternalInfo();
-  delegate_connected_start_time_ = base::TimeTicks();
-  delegate_connected_end_time_ = base::TimeTicks();
 
   status_ = OK;
   is_pending_ = false;
@@ -1281,12 +1268,6 @@ void URLRequest::OnHeadersComplete() {
     ConvertRealLoadTimesToBlockingTimes(&load_timing_info_);
 
     job_->PopulateLoadTimingInternalInfo(&load_timing_internal_info_);
-    if (!delegate_connected_start_time_.is_null() &&
-        !delegate_connected_end_time_.is_null()) {
-      CHECK_LE(delegate_connected_start_time_, delegate_connected_end_time_);
-      load_timing_internal_info_.url_request_delegate_connected_delay =
-          delegate_connected_end_time_ - delegate_connected_start_time_;
-    }
   }
 }
 
