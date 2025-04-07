@@ -98,3 +98,27 @@ tools/clang/scripts/update.py --package your-package-name
 
 [an example of adding a new package](https://chromium-review.googlesource.com/c/chromium/src/+/5463029)
 [example bug]: https://crbug.com/335730441
+
+# On local patches and cherry-picks
+
+Except for the addition of Clang plugins, which do not affect the compiler
+output, Chromium's LLVM binaries are vanilla builds of the upstream source code
+at a specific revision, with no alterations.
+
+We believe this helps when working with upstream: our compiler should behave
+exactly the same as if someone else built LLVM at the same revision, making
+collaboration easier.
+
+It also creates an incentive for stabilizing the HEAD revision of LLVM: since
+we ship a vanilla build of an upstream revision, we have to ensure that a
+revision can be found which is stable enough to build Chromium and pass all its
+tests. While allowing local cherry-picks, reverts, or other patches, would
+probably allow more regular toolchain releases, we believe we can perform
+toolchain testing and fix issues fast enough that finding a stable revision is
+possible, and that this is the right trade-off for us and for the LLVM
+community.
+
+For Rust, since the interface between tip-of-tree rustc and LLVM is less
+stable, and since landing fixes in Rust is much slower (even after approval, a
+patch can take more than 24 hours to land), we allow cherry-picks of such fixes
+in our Rust toolchain build.
