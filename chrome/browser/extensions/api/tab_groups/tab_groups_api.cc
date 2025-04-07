@@ -78,6 +78,8 @@ bool IndexSupportsGroupMove(TabStripModel* tab_strip,
 ExtensionFunction::ResponseAction TabGroupsGetFunction::Run() {
   std::optional<api::tab_groups::Get::Params> params =
       api::tab_groups::Get::Params::Create(args());
+  DCHECK(params.has_value());
+
   EXTENSION_FUNCTION_VALIDATE(params);
   int group_id = params->group_id;
 
@@ -165,6 +167,12 @@ ExtensionFunction::ResponseAction TabGroupsQueryFunction::Run() {
       if (params->query_info.color != api::tab_groups::Color::kNone &&
           params->query_info.color !=
               ExtensionTabUtil::ColorIdToColor(visual_data->color())) {
+        continue;
+      }
+
+      if (params->query_info.shared.has_value() &&
+          ExtensionTabUtil::GetSharedStateOfGroup(id) !=
+              params->query_info.shared.value()) {
         continue;
       }
 

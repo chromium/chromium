@@ -75,6 +75,12 @@
                 "optional": true,
                 "description": "Match group titles against a pattern."
               },
+              "shared": {
+                "nodoc": true,
+                "type": "boolean",
+                "optional": true,
+                "description": "Whether the group is shared."
+              },
               "windowId": {
                 "type": "integer",
                 "optional": true,

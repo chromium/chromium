@@ -21,6 +21,7 @@
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/sessions/session_tab_helper_factory.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
@@ -29,7 +30,9 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/test_browser_window.h"
+#include "components/data_sharing/public/features.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/tab_groups/tab_group_color.h"
@@ -110,11 +113,11 @@ class TabGroupsApiUnitTest : public ExtensionServiceTestBase {
     return web_contentses_[index];
   }
 
- private:
   // ExtensionServiceTestBase:
   void SetUp() override;
   void TearDown() override;
 
+ private:
   // The browser (and accompanying window).
   std::unique_ptr<TestBrowserWindow> browser_window_;
   std::unique_ptr<Browser> browser_;
@@ -278,6 +281,102 @@ TEST_F(TabGroupsApiUnitTest, TabGroupsQueryColor) {
   ASSERT_EQ(base::Value::Type::DICT, group_info.type());
   EXPECT_EQ(ExtensionTabUtil::GetGroupId(group3),
             *group_info.GetDict().FindInt("id"));
+}
+
+class SharedTabGroupExtensionsTabUtilTest : public TabGroupsApiUnitTest {
+ public:
+  SharedTabGroupExtensionsTabUtilTest() {
+    feature_list_.InitWithFeatures(
+        {
+            tab_groups::kTabGroupSyncServiceDesktopMigration,
+            data_sharing::features::kDataSharingFeature,
+        },
+        {});
+  }
+
+  SharedTabGroupExtensionsTabUtilTest(
+      const SharedTabGroupExtensionsTabUtilTest&) = delete;
+  SharedTabGroupExtensionsTabUtilTest& operator=(
+      const SharedTabGroupExtensionsTabUtilTest&) = delete;
+
+  void SetUp() override {
+    TabGroupsApiUnitTest ::SetUp();
+    tab_groups::TabGroupSyncService* service =
+        static_cast<tab_groups::TabGroupSyncService*>(
+            tab_groups::TabGroupSyncServiceFactory::GetForProfile(
+                browser()->profile()));
+    service->SetIsInitializedForTesting(true);
+  }
+
+  void ShareTabGroup(const tab_groups::TabGroupId& group_id,
+                     const std::string& collaboration_id) {
+    tab_groups::TabGroupSyncService* service =
+        static_cast<tab_groups::TabGroupSyncService*>(
+            tab_groups::TabGroupSyncServiceFactory::GetForProfile(
+                browser()->profile()));
+    service->MakeTabGroupSharedForTesting(group_id, collaboration_id);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Test that querying groups by color returns the correct groups.
+TEST_F(SharedTabGroupExtensionsTabUtilTest, TabGroupsQueryShared) {
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  ASSERT_TRUE(tab_strip_model->SupportsTabGroups());
+
+  TabGroupModel* tab_group_model = tab_strip_model->group_model();
+
+  // Create a group that is unshared.
+  tab_groups::TabGroupId group1 = tab_strip_model->AddToNewGroup({0});
+  tab_groups::TabGroupVisualData visual_data1(
+      std::u16string(), tab_groups::TabGroupColorId::kGrey);
+  tab_group_model->GetTabGroup(group1)->SetVisualData(visual_data1);
+
+  const char* not_shared_query = R"([{"shared": false}])";
+  const char* shared_query = R"([{"shared": true}])";
+
+  {  // Query unshared groups.
+    scoped_refptr<const Extension> extension = CreateTabGroupsExtension();
+
+    base::Value::List groups_list = RunTabGroupsQueryFunction(
+        browser()->profile(), extension.get(), not_shared_query);
+    ASSERT_EQ(1u, groups_list.size());
+
+    const base::Value& group_info = groups_list[0];
+    ASSERT_EQ(base::Value::Type::DICT, group_info.type());
+    EXPECT_EQ(ExtensionTabUtil::GetGroupId(group1),
+              *group_info.GetDict().FindInt("id"));
+  }
+
+  {  // Query shared groups.
+    scoped_refptr<const Extension> extension = CreateTabGroupsExtension();
+    base::Value::List groups_list =
+        RunTabGroupsQueryFunction(profile(), extension.get(), shared_query);
+    ASSERT_EQ(0u, groups_list.size());
+  }
+
+  ShareTabGroup(group1, "collaboration_id_1");
+
+  {  // Query unshared groups.
+    scoped_refptr<const Extension> extension = CreateTabGroupsExtension();
+    base::Value::List groups_list =
+        RunTabGroupsQueryFunction(profile(), extension.get(), not_shared_query);
+    ASSERT_EQ(0u, groups_list.size());
+  }
+
+  {  // Query shared groups.
+    scoped_refptr<const Extension> extension = CreateTabGroupsExtension();
+    base::Value::List groups_list =
+        RunTabGroupsQueryFunction(profile(), extension.get(), shared_query);
+    ASSERT_EQ(1u, groups_list.size());
+
+    const base::Value& group_info = groups_list[0];
+    ASSERT_EQ(base::Value::Type::DICT, group_info.type());
+    EXPECT_EQ(ExtensionTabUtil::GetGroupId(group1),
+              *group_info.GetDict().FindInt("id"));
+  }
 }
 
 // Test that getting a group returns the correct metadata.
