@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_results_page_presenter_delegate.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_result_page_view_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 namespace {
 
@@ -217,6 +218,9 @@ const CGFloat kOpacityAnimationDuration = 0.4;
 
   _presentingAnimationInProgress = YES;
   [self monitorResultsBottomSheetPosition];
+
+  _presentationNavigationController.view.backgroundColor =
+      [UIColor colorNamed:kPrimaryBackgroundColor];
 
   __weak __typeof(self) weakSelf = self;
   [_baseViewController
