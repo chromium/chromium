@@ -39,6 +39,62 @@
 
 using signin_metrics::SignoutDataLossAlertReason;
 
+// Wrapper around the SignoutActionSheetCoordinator completion taking care
+// of properly handling cancellation and profile change.
+@interface SignoutActionSheetCompletionWrapper : NSObject
+
+- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithCompletion:(signin_ui::SignoutCompletionCallback)block
+    NS_DESIGNATED_INITIALIZER;
+
+// Record whether a change of profile is expected (if true, then calls to
+// -coordinatorStopped are ignored).
+@property(nonatomic, assign) BOOL willChangeProfile;
+
+// Called when the sign-out operation completes, invoke the completion
+// with success unless the coordinator was stopped and the sign-out
+// operation did not change the profile.
+- (void)signoutComplete;
+
+// Called when the coordinator is stopped. Will invoke the completion
+// with failure unless the sign-out operation requires changing the
+// profile (as this will destroy the UI and thus stop the coordinator).
+- (void)coordinatorStopped;
+
+@end
+
+@implementation SignoutActionSheetCompletionWrapper {
+  // Completion callback.
+  signin_ui::SignoutCompletionCallback _completion;
+}
+
+- (instancetype)initWithCompletion:(signin_ui::SignoutCompletionCallback)block {
+  if ((self = [super init])) {
+    _completion = block;
+    DCHECK(_completion);
+  }
+  return self;
+}
+
+- (void)signoutComplete {
+  [self invokeCompletion:YES];
+}
+
+- (void)coordinatorStopped {
+  if (!_willChangeProfile) {
+    [self invokeCompletion:NO];
+  }
+}
+
+- (void)invokeCompletion:(BOOL)success {
+  if (signin_ui::SignoutCompletionCallback completion = _completion) {
+    _completion = nil;
+    completion(success);
+  }
+}
+
+@end
+
 @interface SignoutActionSheetCoordinator () {
   // YES if the coordinator asked its delegate to block the user interaction.
   // This boolean makes sure the user interaction is allowed when `stop` is
@@ -56,8 +112,8 @@ using signin_metrics::SignoutDataLossAlertReason;
   BOOL _forceSnackbarOverToolbar;
   // Signin and syncing state.
   SignedInUserState _signedInUserState;
-  // Completion callback.
-  signin_ui::SignoutCompletionCallback _signoutCompletion;
+  // Wrapper around the completion callback.
+  SignoutActionSheetCompletionWrapper* _completionWrapper;
 }
 
 // Service for managing identity authentication.
@@ -86,7 +142,8 @@ using signin_metrics::SignoutDataLossAlertReason;
     _view = view;
     _signoutSourceMetric = source;
     _forceSnackbarOverToolbar = forceSnackbarOverToolbar;
-    _signoutCompletion = block;
+    _completionWrapper =
+        [[SignoutActionSheetCompletionWrapper alloc] initWithCompletion:block];
   }
   return self;
 }
@@ -94,7 +151,6 @@ using signin_metrics::SignoutDataLossAlertReason;
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  DCHECK(_signoutCompletion);
   DCHECK(self.authenticationService->HasPrimaryIdentity(
       signin::ConsentLevel::kSignin));
   PrefService* profilePrefService = self.profile->GetPrefs();
@@ -113,8 +169,9 @@ using signin_metrics::SignoutDataLossAlertReason;
     [self allowUserInteraction];
   }
   [self dismissActionSheetCoordinator];
+  [_completionWrapper coordinatorStopped];
+  _completionWrapper = nil;
   _stopped = YES;
-  [self callCompletionBlock:NO];
 }
 
 - (void)dealloc {
@@ -164,6 +221,13 @@ using signin_metrics::SignoutDataLossAlertReason;
   DCHECK(_userActionBlocked);
   _userActionBlocked = NO;
   [self.delegate signoutActionSheetCoordinatorAllowUserInteraction:self];
+}
+
+// Wraps -allowUserInteraction and does nothing if -stop has been called.
+- (void)allowUserInteractionIfNotStopped {
+  if (!_stopped) {
+    [self allowUserInteraction];
+  }
 }
 
 // Fetches for unsynced data, and the sign-out continued after (with unsynced
@@ -223,7 +287,9 @@ using signin_metrics::SignoutDataLossAlertReason;
     [self handleSignOut];
     [self dismissActionSheetCoordinator];
   } else {
-    [self callCompletionBlock:NO];
+    [_completionWrapper coordinatorStopped];
+    _completionWrapper = nil;
+
     [self dismissActionSheetCoordinator];
   }
 }
@@ -237,7 +303,8 @@ using signin_metrics::SignoutDataLossAlertReason;
 
   if (!self.authenticationService->HasPrimaryIdentity(
           signin::ConsentLevel::kSignin)) {
-    [self callCompletionBlock:YES];
+    [_completionWrapper signoutComplete];
+    _completionWrapper = nil;
     return;
   }
   [self preventUserInteraction];
@@ -245,24 +312,22 @@ using signin_metrics::SignoutDataLossAlertReason;
   // The snackbar message might be nil if the snackbar is not needed.
   MDCSnackbarMessage* snackbarMessage = [self signoutSnackbarMessage];
 
+  // Strongly retain completionWrapper in the blocks to ensure that the
+  // completion callback will be invoked even if the UI is destroyed
+  // (e.g. when the sign-out operation needs to change profile).
+  SignoutActionSheetCompletionWrapper* completionWrapper = _completionWrapper;
+
   __weak __typeof(self) weakSelf = self;
   signin::ProfileSignoutRequest(_signoutSourceMetric)
       .SetSnackbarMessage(snackbarMessage, _forceSnackbarOverToolbar)
+      .SetPrepareCallback(base::BindOnce(^(bool will_change_profile) {
+        completionWrapper.willChangeProfile = will_change_profile;
+      }))
       .SetCompletionCallback(base::BindOnce(^{
-        [weakSelf signOutDidFinish];
+        [weakSelf allowUserInteractionIfNotStopped];
+        [completionWrapper signoutComplete];
       }))
       .Run(self.browser);
-}
-
-// Called when the sign-out is done.
-- (void)signOutDidFinish {
-  if (_stopped) {
-    // The coordinator has been stopped. The UI has been unblocked, and the
-    // owner doesn't expect the completion call anymore.
-    return;
-  }
-  [self allowUserInteraction];
-  [self callCompletionBlock:YES];
 }
 
 // Returns snackbar if needed.
@@ -283,17 +348,6 @@ using signin_metrics::SignoutDataLossAlertReason;
   MDCSnackbarMessage* message =
       CreateSnackbarMessage(l10n_util::GetNSString(message_id));
   return message;
-}
-
-// Calls `self.signoutCompletion` if available, and sets it to `null` before the
-// call.
-- (void)callCompletionBlock:(BOOL)signedOut {
-  if (!_signoutCompletion) {
-    return;
-  }
-  signin_ui::SignoutCompletionCallback completion = _signoutCompletion;
-  _signoutCompletion = nil;
-  completion(signedOut);
 }
 
 @end
