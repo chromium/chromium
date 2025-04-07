@@ -7,13 +7,13 @@ package org.chromium.chrome.browser.magic_stack;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.AUXILIARY_SEARCH;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.DEFAULT_BROWSER_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.DEPRECATED_EDUCATIONAL_TIP;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.DEPRECATED_TAB_RESUMPTION;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.PRICE_CHANGE;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.QUICK_DELETE_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.SAFETY_HUB;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.SINGLE_TAB;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.TAB_GROUP_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.TAB_GROUP_SYNC_PROMO;
-import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.TAB_RESUMPTION;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -109,8 +109,6 @@ public class HomeModulesMetricsUtils {
                 return "SingleTab";
             case PRICE_CHANGE:
                 return "PriceChange";
-            case TAB_RESUMPTION:
-                return "TabResumption";
             case SAFETY_HUB:
                 return "SafetyHub";
             case AUXILIARY_SEARCH:
@@ -135,8 +133,6 @@ public class HomeModulesMetricsUtils {
                 return SINGLE_TAB;
             case "PriceChange":
                 return PRICE_CHANGE;
-            case "TabResumption":
-                return TAB_RESUMPTION;
             case "SafetyHub":
                 return SAFETY_HUB;
             case "AuxiliarySearch":
@@ -159,7 +155,8 @@ public class HomeModulesMetricsUtils {
     static HashSet<Integer> getAllActiveModulesForTesting() {
         HashSet<Integer> set = new HashSet<>();
         for (@ModuleType int moduleType = 0; moduleType < ModuleType.NUM_ENTRIES; moduleType++) {
-            if (moduleType == DEPRECATED_EDUCATIONAL_TIP) {
+            if (moduleType == DEPRECATED_EDUCATIONAL_TIP
+                    || moduleType == DEPRECATED_TAB_RESUMPTION) {
                 continue;
             }
             set.add(moduleType);

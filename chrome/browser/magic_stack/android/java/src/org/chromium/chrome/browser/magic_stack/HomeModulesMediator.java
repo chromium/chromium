@@ -11,7 +11,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.segmentation_platform.client_util.HomeModulesRankingHelper;
@@ -558,18 +557,12 @@ public class HomeModulesMediator {
      * enabled.
      */
     void onModuleConfigChanged(@ModuleType int moduleType, boolean isEnabled) {
-        // The single tab module and the tab resumption modules are controlled by the same
-        // preference key. Once it is turned on or off, both modules will be enabled or disabled.
-        // The educational tip modules are also controlled by the same preference key. Once it is
+        // The educational tip modules are controlled by the same preference key. Once it is
         // turned on or off, all of the educational tip modules will be enabled or disabled.
         if (isEnabled) {
             // If the mEnabledModuleSet hasn't been initialized yet, skip here.
             if (mEnabledModuleSet != null) {
-                if (moduleType == ModuleType.SINGLE_TAB
-                        || moduleType == ModuleType.TAB_RESUMPTION) {
-                    mEnabledModuleSet.add(ModuleType.SINGLE_TAB);
-                    mEnabledModuleSet.add(ModuleType.TAB_RESUMPTION);
-                } else if (HomeModulesUtils.belongsToEducationalTipModule(moduleType)) {
+                if (HomeModulesUtils.belongsToEducationalTipModule(moduleType)) {
                     mEnabledModuleSet.addAll(HomeModulesUtils.getEducationalTipModuleList());
                 } else {
                     mEnabledModuleSet.add(moduleType);
@@ -578,11 +571,7 @@ public class HomeModulesMediator {
         } else {
             // If the mEnabledModuleSet hasn't been initialized yet, skip here.
             if (mEnabledModuleSet != null) {
-                if (moduleType == ModuleType.SINGLE_TAB
-                        || moduleType == ModuleType.TAB_RESUMPTION) {
-                    mEnabledModuleSet.remove(ModuleType.SINGLE_TAB);
-                    mEnabledModuleSet.remove(ModuleType.TAB_RESUMPTION);
-                } else if (HomeModulesUtils.belongsToEducationalTipModule(moduleType)) {
+                if (HomeModulesUtils.belongsToEducationalTipModule(moduleType)) {
                     mEnabledModuleSet.removeAll(HomeModulesUtils.getEducationalTipModuleList());
                 } else {
                     mEnabledModuleSet.remove(moduleType);
@@ -600,14 +589,12 @@ public class HomeModulesMediator {
     Set<Integer> getFilteredEnabledModuleSet() {
         ensureEnabledModuleSetCreated();
         Set<Integer> set = new HashSet<>(mEnabledModuleSet);
-        assert !set.contains(ModuleType.DEPRECATED_EDUCATIONAL_TIP);
+        assert !set.contains(ModuleType.DEPRECATED_EDUCATIONAL_TIP)
+                && !set.contains(ModuleType.DEPRECATED_TAB_RESUMPTION);
 
         boolean isHomeSurface = mModuleDelegateHost.isHomeSurface();
-        boolean addAll = ChromeFeatureList.sMagicStackAndroidShowAllModules.getValue();
 
-        if (isHomeSurface && !addAll) {
-            set.remove(ModuleType.TAB_RESUMPTION);
-        } else if (!isHomeSurface) {
+        if (!isHomeSurface) {
             set.remove(ModuleType.SINGLE_TAB);
         }
 

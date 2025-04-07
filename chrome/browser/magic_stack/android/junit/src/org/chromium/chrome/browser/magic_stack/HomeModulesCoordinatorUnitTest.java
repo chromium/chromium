@@ -479,7 +479,7 @@ public class HomeModulesCoordinatorUnitTest {
         verify(mHomeModulesRankingHelperJniMock)
                 .getClassificationResult(
                         any(), any(), any(), mClassificationResultCaptor.capture());
-        String[] orderedLabels = {"SingleTab", "TabResumption"};
+        String[] orderedLabels = {"SingleTab", "PriceChange"};
         ClassificationResult result =
                 new ClassificationResult(
                         PredictionStatus.SUCCEEDED, orderedLabels, /* requestId= */ 0);

@@ -284,15 +284,6 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
         if (!isEnabled) {
             removeModule(moduleType);
 
-            // The single tab module and the tab resumption modules are controlled by the same
-            // preference key. Once it is turned on or off, both modules will be enabled or
-            // disabled.
-            if (moduleType == ModuleType.SINGLE_TAB) {
-                removeModule(ModuleType.TAB_RESUMPTION);
-            } else if (moduleType == ModuleType.TAB_RESUMPTION) {
-                removeModule(ModuleType.SINGLE_TAB);
-            }
-
             // All the educational tip modules are controlled by the same preference key. Once it is
             // turned on or off, all educational tip modules will be enabled or disabled.
             if (HomeModulesUtils.belongsToEducationalTipModule(moduleType)) {

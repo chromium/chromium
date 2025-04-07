@@ -204,14 +204,12 @@ const char kTabletProductivityUserModelLabelHigh[] = "High";
 // Labels for Android Home modules for ranking.
 const char kSingleTab[] = "SingleTab";
 const char kPriceChange[] = "PriceChange";
-const char kTabResumptionForAndroidHome[] = "TabResumption";
 const char kSafetyHub[] = "SafetyHub";
 const char kAuxiliarySearch[] = "AuxiliarySearch";
 
 // Input Context keys for freshness for Android Home modules.
 const char kSingleTabFreshness[] = "single_tab_freshness";
 const char kPriceChangeFreshness[] = "price_change_freshness";
-const char kTabResumptionForAndroidHomeFreshness[] = "tab_resumption_freshness";
 const char kSafetyHubFreshness[] = "safety_hub_freshness";
 const char kAuxiliarySearchFreshness[] = "auxiliary_search_freshness";
 

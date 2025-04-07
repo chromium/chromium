@@ -52,7 +52,7 @@ public class HomeModulesContextMenuManagerUnitTest {
 
     private static final String EXPECTED_OPTION_1 = "Hide Chrome tips card";
     private static final String EXPECTED_OPTION_2 = "Customize";
-    private static final int MODULE_TYPE = ModuleType.TAB_RESUMPTION;
+    private static final int MODULE_TYPE = ModuleType.PRICE_CHANGE;
     @Mock private ModuleProvider mModuleProvider;
     @Mock private View mView;
     @Mock private ModuleDelegate mModuleDelegate;
