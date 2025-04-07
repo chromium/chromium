@@ -44,11 +44,4 @@ BASE_FEATURE(kKeyboardAccessibleTooltipInViews,
              "KeyboardAccessibleTooltipInViews",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Whether the window appearance follows the color provider's color mode.
-// This is only effective for mac. Some plumbing is not restricted to mac,
-// therefore this flag is included in all platforms.
-BASE_FEATURE(kMacWindowFollowsColorProviderColorMode,
-             "MacWindowFollowsColorProviderColorMode",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 }  // namespace views::features
