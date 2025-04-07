@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/frame/multi_contents_resize_area.h"
 
-#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view.h"
 #include "chrome/grit/generated_resources.h"
@@ -13,7 +12,6 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/focus_ring.h"
@@ -21,9 +19,10 @@
 #include "ui/views/layout/flex_layout.h"
 
 namespace {
+const int kHandleCornerRadius = 2;
 const int kHandleHeight = 24;
-const int kHandleWidth = 16;
-const int kHandlePadding = 8;
+const int kHandlePadding = 6;
+const int kHandleWidth = 4;
 }  // namespace
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(MultiContentsResizeHandle,
@@ -37,13 +36,35 @@ MultiContentsResizeHandle::MultiContentsResizeHandle() {
   SetCanProcessEventsWithinSubtree(false);
   SetFocusBehavior(FocusBehavior::ALWAYS);
   views::FocusRing::Install(this);
-  SetImage(ui::ImageModel::FromVectorIcon(
-      kDragHandleIcon, kColorSidePanelResizeAreaHandle, kHandleWidth));
   GetViewAccessibility().SetRole(ax::mojom::Role::kSlider);
   GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_ACCNAME_SPLIT_TABS_RESIZE));
   SetProperty(views::kElementIdentifierKey,
               kMultiContentsResizeHandleElementId);
+}
+
+void MultiContentsResizeHandle::UpdateVisibility(bool visible) {
+  if (visible) {
+    const SkColor resize_handle_color =
+        GetColorProvider()->GetColor(kColorSidePanelHoverResizeAreaHandle);
+    SetBackground(views::CreateRoundedRectBackground(resize_handle_color,
+                                                     kHandleCornerRadius));
+  } else {
+    SetBackground(nullptr);
+  }
+}
+
+void MultiContentsResizeHandle::AddedToWidget() {
+  GetFocusManager()->AddFocusChangeListener(this);
+}
+
+void MultiContentsResizeHandle::RemovedFromWidget() {
+  GetFocusManager()->RemoveFocusChangeListener(this);
+}
+
+void MultiContentsResizeHandle::OnWillChangeFocus(views::View* before,
+                                                  views::View* now) {
+  UpdateVisibility(now == this);
 }
 
 BEGIN_METADATA(MultiContentsResizeHandle)
@@ -75,6 +96,14 @@ bool MultiContentsResizeArea::OnKeyPressed(const ui::KeyEvent& event) {
     return true;
   }
   return false;
+}
+
+void MultiContentsResizeArea::OnMouseMoved(const ui::MouseEvent& event) {
+  resize_handle_->UpdateVisibility(true);
+}
+
+void MultiContentsResizeArea::OnMouseExited(const ui::MouseEvent& event) {
+  resize_handle_->UpdateVisibility(false);
 }
 
 BEGIN_METADATA(MultiContentsResizeArea)
