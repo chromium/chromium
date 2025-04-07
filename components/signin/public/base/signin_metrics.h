@@ -269,10 +269,13 @@ enum class AccessPoint : int {
   // Access point triggered when a user attempts to opt-in to history sync from
   // the history sync opt-in expanded pill.
   kHistorySyncOptinExpansionPill = 77,
+  // Access point triggered when the account used in widget is different from
+  // the one used in the app. iOS only.
+  kWidget = 78,
   // Add values above this line with a corresponding label to the
   // "SigninAccessPoint" enum in
   // tools/metrics/histograms/metadata/signin/enums.xml.
-  kMaxValue = kHistorySyncOptinExpansionPill,  // This must be last.
+  kMaxValue = kWidget,  // This must be last.
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/signin/enums.xml)
 

@@ -691,6 +691,7 @@ chromium-metrics-reviews@google.com.
   <int value="75" label="History page (Android only)"/>
   <int value="76" label="Join collaboration tab group authentication"/>
   <int value="77" label="History Sync Opt-in Expanded Pill"/>
+  <int value="78" label="Widget (iOS only)"/>
 </enum>
 
 <enum name="SigninAccountReconcilorState">
