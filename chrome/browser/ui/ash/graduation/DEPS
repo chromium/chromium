@@ -1,6 +1,4 @@
 include_rules = [
-  "-chrome",
-
   "+chrome/browser/apps/app_service",
   "+chrome/browser/ash/base/locale_util.h",
   "+chrome/browser/ash/login/test",
