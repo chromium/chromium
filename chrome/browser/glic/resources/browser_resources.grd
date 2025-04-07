@@ -259,6 +259,9 @@ found in the LICENSE file.
       <message name="IDS_GLIC_UNPIN" translateable="false" desc="Name of the context menu item for toggling Glic pinning, when glic is pinned.">
         Unpin Glic
       </message>
+      <message name="IDS_GLIC_CONTEXTUAL_CUEING_ANNOUNCEMENT" desc="Polite announcement that happens when a contextual nudge is shown next to the Glic button." translateable="false">
+        To open Glic in Chrome, press <ph name="GLOBAL_HOTKEY">⌘+G</ph>
+      </message>
 
       <!-- Screenpicker Menu String -->
       <message name="IDS_GLIC_SCREEN_PICKER_REQUESTER" desc="Text shown on screen picker dialog that indicates the requesting source is Glic." translateable="false">
@@ -277,6 +280,12 @@ found in the LICENSE file.
       <!-- Glic Window Title -->
       <message name="IDS_GLIC_WINDOW_TITLE" desc="Accessible title for the Glic Window." translateable="false">
         Glic
+      </message>
+      <message name="IDS_GLIC_WINDOW_TITLE_FIRST_LOAD" desc="Accessible title for the Glic Window. Only included on first load." translateable="false">
+        Glic. To return to where you were on the page press <ph name="FOCUS_TOGGLE_HOTKEY">Ctrl+⌘+G</ph>
+      </message>
+      <message name="IDS_GLIC_WINDOW_FIRST_FOCUS_LOST_ANNOUNCEMENT" desc="Announcement triggered the first time the Glic window loses focus." translateable="false">
+        To return to Glic, press <ph name="FOCUS_TOGGLE_HOTKEY">Ctrl+⌘+G</ph>
       </message>
 
       <!-- Task Manager -->
