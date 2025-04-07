@@ -953,32 +953,6 @@ void ProcessServerPredictionsQueryResponse(
     AutofillMetrics::LogServerResponseHasDataForForm(std::ranges::any_of(
         form->fields(), [](FieldType t) { return t != NO_SERVER_DATA; },
         &AutofillField::server_type));
-
-    form->RationalizeFormStructure(log_manager);
-
-    AssignSections(form->fields());
-
-    // Since this step requires the sections to be available, it is done after
-    // the sectioning logic is ran. Note that since this step doesn't change the
-    // types of the individual field, this should not break any assumption that
-    // was made to compute the sections.
-    form->RationalizePhoneNumberFieldsForFilling();
-
-    // Log the field type predicted by rationalization.
-    // The sections are mapped to consecutive natural numbers starting at 1.
-    std::map<Section, size_t> section_id_map;
-    for (const auto& field : form->fields()) {
-      if (!base::Contains(section_id_map, field->section())) {
-        size_t next_section_id = section_id_map.size() + 1;
-        section_id_map[field->section()] = next_section_id;
-      }
-      field->AppendLogEventIfNotRepeated(RationalizationFieldLogEvent{
-          .field_type = field->Type().GetStorableType(),
-          .section_id = section_id_map[field->section()],
-          .type_changed = field->Type().GetStorableType() !=
-                          field->ComputedType().GetStorableType(),
-      });
-    }
   }
 
   AutofillMetrics::ServerQueryMetric metric;

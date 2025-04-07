@@ -225,10 +225,21 @@ void FormStructure::DetermineHeuristicTypes(
                          GetActiveRegexFeatures(), log_manager);
   FieldCandidatesMap regex_predictions = ParseFieldTypesWithPatterns(context);
   AssignBestFieldTypes(regex_predictions, HeuristicSource::kRegexes);
+  RationalizeAndAssignSections(log_manager);
+  LogDetermineHeuristicTypesMetrics();
+}
 
-  AssignSections(fields_);
-  RationalizeFormStructure(log_manager);
-  RationalizePhoneNumberFieldsForFilling();
+void FormStructure::RationalizeAndAssignSections(LogManager* log_manager,
+                                                 bool legacy_order) {
+  if (!legacy_order) {
+    AssignSections(fields_);
+    RationalizeFormStructure(log_manager);
+    RationalizePhoneNumberFieldsForFilling();
+  } else {
+    RationalizeFormStructure(log_manager);
+    AssignSections(fields_);
+    RationalizePhoneNumberFieldsForFilling();
+  }
 
   // Log the field type predicted by rationalization.
   // The sections are mapped to consecutive natural numbers starting at 1.
@@ -245,8 +256,6 @@ void FormStructure::DetermineHeuristicTypes(
                         field->ComputedType().GetStorableType(),
     });
   }
-
-  LogDetermineHeuristicTypesMetrics();
 }
 
 // static

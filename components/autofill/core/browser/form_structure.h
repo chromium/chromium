@@ -71,6 +71,17 @@ class FormStructure {
       const GeoIpCountryCode& client_country,
       LogManager* log_manager);
 
+  // Runs rationalization and sectioning. This is to be run after the field
+  // types change.
+  //
+  // For historical reasons, the order of rationalization and sectioning is
+  // context-dependent: Usually, sectioning comes first. But for server
+  // predictions (or `legacy_order` is true), parts of the rationalization
+  // happens before sectioning.
+  // TODO(crbug.com/408497919): Make the order consistent.
+  void RationalizeAndAssignSections(LogManager* log_manager,
+                                    bool legacy_order = false);
+
   // Returns predictions using the details from the given |form_structures| and
   // their fields' predicted types.
   static std::vector<FormDataPredictions> GetFieldTypePredictions(
