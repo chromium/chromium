@@ -520,7 +520,7 @@ IpczResult Transport::DeserializeObject(
   }
 
 #if BUILDFLAG(IS_WIN)
-  DCHECK(handles.empty());
+  CHECK(handles.empty());
   size_t num_handles = header.num_handles;
   const HandleOwner handle_owner = header.handle_owner;
 
