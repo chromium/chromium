@@ -9072,6 +9072,9 @@ crbug.com/407374335 [ Debug ] virtual/scalefactor200/external/wpt/largest-conten
 # Gardener 2025-04-02
 crbug.com/407865639 external/wpt/css/css-grid/grid-extrinsically-sized-mutations.html [ Failure Pass ]
 
+# Gardener 2025-04-07
+crbug.com/409121557 [ Release Win11-arm64 ] http/tests/inspector-protocol/fedcm/fedcm-open-url.js [ Failure Pass ]
+
 # Recent WebNN test failures on Mac14 which need to be investigated:
 crbug.com/407486638 [ Mac14 ] virtual/webnn-service-on-npu/external/wpt/webnn/conformance_tests/gru.https.any.html?npu [ Failure Pass ]
 crbug.com/407486638 [ Mac14-arm64 ] virtual/webnn-service-on-npu/external/wpt/webnn/conformance_tests/gru.https.any.html?npu [ Failure Pass ]
