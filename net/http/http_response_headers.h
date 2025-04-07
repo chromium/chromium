@@ -137,7 +137,7 @@ class NET_EXPORT HttpResponseHeaders
   //
   // HttpResponseHeaders does not perform any encoding changes on the input.
   //
-  explicit HttpResponseHeaders(const std::string& raw_headers);
+  explicit HttpResponseHeaders(std::string_view raw_headers);
 
   // Initializes from the representation stored in the given pickle.  The data
   // for this object is found relative to the given pickle_iter, which should
@@ -473,15 +473,14 @@ class NET_EXPORT HttpResponseHeaders
   ~HttpResponseHeaders();
 
   // Initializes from the given raw headers.
-  void Parse(const std::string& raw_input);
+  void Parse(std::string_view raw_input);
 
   // Helper function for ParseStatusLine.
   // Tries to extract the "HTTP/X.Y" from a status line formatted like:
   //    HTTP/1.1 200 OK
   // with line_begin and end pointing at the begin and end of this line.  If the
   // status line is malformed, returns HttpVersion(0,0).
-  static HttpVersion ParseVersion(std::string::const_iterator line_begin,
-                                  std::string::const_iterator line_end);
+  static HttpVersion ParseVersion(std::string_view line);
 
   // Tries to extract the status line from a header block, given the first
   // line of said header block.  If the status line is malformed, we'll
@@ -489,9 +488,7 @@ class NET_EXPORT HttpResponseHeaders
   //    HTTP/1.1 200 OK
   // with line_begin and end pointing at the begin and end of this line.
   // Output will be a normalized version of this.
-  void ParseStatusLine(std::string::const_iterator line_begin,
-                       std::string::const_iterator line_end,
-                       bool has_headers);
+  void ParseStatusLine(std::string_view line, bool has_headers);
 
   // Find the header in our list (case-insensitive) starting with |parsed_| at
   // index |from|.  Returns string::npos if not found.

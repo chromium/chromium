@@ -237,7 +237,7 @@ scoped_refptr<HttpResponseHeaders> HttpResponseHeaders::Builder::Build() {
                                                    status_, headers_);
 }
 
-HttpResponseHeaders::HttpResponseHeaders(const std::string& raw_input)
+HttpResponseHeaders::HttpResponseHeaders(std::string_view raw_input)
     : response_code_(-1) {
   Parse(raw_input);
 
@@ -630,23 +630,22 @@ void HttpResponseHeaders::UpdateWithNewRange(const HttpByteRange& byte_range,
   AddHeader(kLengthHeader, base::StringPrintf("%" PRId64, range_len));
 }
 
-void HttpResponseHeaders::Parse(const std::string& raw_input) {
+void HttpResponseHeaders::Parse(std::string_view raw_input) {
   raw_headers_.reserve(raw_input.size());
   // TODO(crbug.com/40277776): Call reserve() on `parsed_` with an
   // appropriate value.
 
   // ParseStatusLine adds a normalized status line to raw_headers_
-  std::string::const_iterator line_begin = raw_input.begin();
-  std::string::const_iterator line_end = std::ranges::find(raw_input, '\0');
+  size_t line_end = raw_input.find('\0');
   // has_headers = true, if there is any data following the status line.
   // Used by ParseStatusLine() to decide if a HTTP/0.9 is really a HTTP/1.0.
   bool has_headers =
-      (line_end != raw_input.end() && (line_end + 1) != raw_input.end() &&
-       *(line_end + 1) != '\0');
-  ParseStatusLine(line_begin, line_end, has_headers);
+      (line_end != std::string::npos && (line_end + 1) != raw_input.size() &&
+       raw_input[line_end + 1] != '\0');
+  ParseStatusLine(raw_input.substr(0, line_end), has_headers);
   raw_headers_.push_back('\0');  // Terminate status line with a null.
 
-  if (line_end == raw_input.end()) {
+  if (line_end == std::string::npos) {
     raw_headers_.push_back('\0');  // Ensure the headers end with a double null.
 
     DCHECK_EQ('\0', raw_headers_[raw_headers_.size() - 2]);
@@ -654,12 +653,12 @@ void HttpResponseHeaders::Parse(const std::string& raw_input) {
     return;
   }
 
-  // Including a terminating null byte.
+  // Length of the written status line, including the terminating null byte.
   size_t status_line_len = raw_headers_.size();
 
-  // Now, we add the rest of the raw headers to raw_headers_, and begin parsing
-  // it (to populate our parsed_ vector).
-  raw_headers_.append(line_end + 1, raw_input.end());
+  // Now, we add the rest of the raw headers to `raw_headers_`, and begin
+  // parsing it (to populate our `parsed_` vector).
+  raw_headers_.append(raw_input.substr(line_end + 1));
 
   // Ensure the headers end with a double null.
   while (raw_headers_.size() < 2 ||
@@ -668,11 +667,8 @@ void HttpResponseHeaders::Parse(const std::string& raw_input) {
     raw_headers_.push_back('\0');
   }
 
-  // Adjust to point at the null byte following the status line
-  line_end = raw_headers_.begin() + status_line_len - 1;
-
-  HttpUtil::HeadersIterator headers(line_end + 1, raw_headers_.end(),
-                                    std::string(1, '\0'));
+  HttpUtil::HeadersIterator headers(raw_headers_.begin() + status_line_len,
+                                    raw_headers_.end(), std::string(1, '\0'));
   while (headers.GetNext()) {
     AddHeader(headers.name_begin(), headers.name_end(), headers.values_begin(),
               headers.values_end(), ContainsCommas::kMaybe);
@@ -815,30 +811,27 @@ HttpResponseHeaders::~HttpResponseHeaders() = default;
 // Note: this implementation implicitly assumes that line_end points at a valid
 // sentinel character (such as '\0').
 // static
-HttpVersion HttpResponseHeaders::ParseVersion(
-    std::string::const_iterator line_begin,
-    std::string::const_iterator line_end) {
-  std::string::const_iterator p = line_begin;
+HttpVersion HttpResponseHeaders::ParseVersion(std::string_view line) {
+  size_t p = 0;
 
   // RFC9112 Section 2.3:
   // HTTP-version  = HTTP-name "/" DIGIT "." DIGIT
   // HTTP-name     = %s"HTTP"
 
-  if (!base::StartsWith(base::MakeStringPiece(line_begin, line_end), "http",
-                        base::CompareCase::INSENSITIVE_ASCII)) {
+  if (!base::StartsWith(line, "http", base::CompareCase::INSENSITIVE_ASCII)) {
     DVLOG(1) << "missing status line";
     return HttpVersion();
   }
 
   p += 4;
 
-  if (p >= line_end || *p != '/') {
+  if (p >= line.size() || line[p] != '/') {
     DVLOG(1) << "missing version";
     return HttpVersion();
   }
 
-  std::string::const_iterator dot = std::find(p, line_end, '.');
-  if (dot == line_end) {
+  size_t dot = line.find('.', p);
+  if (dot == std::string_view::npos || dot + 1 == line.size()) {
     DVLOG(1) << "malformed version";
     return HttpVersion();
   }
@@ -846,25 +839,23 @@ HttpVersion HttpResponseHeaders::ParseVersion(
   ++p;  // from / to first digit.
   ++dot;  // from . to second digit.
 
-  if (!(base::IsAsciiDigit(*p) && base::IsAsciiDigit(*dot))) {
+  if (!(base::IsAsciiDigit(line[p]) && base::IsAsciiDigit(line[dot]))) {
     DVLOG(1) << "malformed version number";
     return HttpVersion();
   }
 
-  uint16_t major = *p - '0';
-  uint16_t minor = *dot - '0';
+  uint16_t major = line[p] - '0';
+  uint16_t minor = line[dot] - '0';
 
   return HttpVersion(major, minor);
 }
 
 // Note: this implementation implicitly assumes that line_end points at a valid
 // sentinel character (such as '\0').
-void HttpResponseHeaders::ParseStatusLine(
-    std::string::const_iterator line_begin,
-    std::string::const_iterator line_end,
-    bool has_headers) {
+void HttpResponseHeaders::ParseStatusLine(std::string_view line,
+                                          bool has_headers) {
   // Extract the version number
-  HttpVersion parsed_http_version = ParseVersion(line_begin, line_end);
+  HttpVersion parsed_http_version = ParseVersion(line);
 
   // Clamp the version number to one of: {0.9, 1.0, 1.1, 2.0}
   if (parsed_http_version == HttpVersion(0, 9) && !has_headers) {
@@ -887,17 +878,16 @@ void HttpResponseHeaders::ParseStatusLine(
   }
 
   // TODO(eroman): this doesn't make sense if ParseVersion failed.
-  std::string::const_iterator p = std::find(line_begin, line_end, ' ');
+  size_t space = line.find(' ');
 
-  if (p == line_end) {
+  if (space == std::string_view::npos) {
     DVLOG(1) << "missing response status; assuming 200 OK";
     raw_headers_.append(" 200 OK");
     response_code_ = HTTP_OK;
     return;
   }
 
-  response_code_ =
-      ParseStatus(base::MakeStringPiece(p + 1, line_end), raw_headers_);
+  response_code_ = ParseStatus(line.substr(space + 1), raw_headers_);
 }
 
 size_t HttpResponseHeaders::FindHeader(size_t from,
