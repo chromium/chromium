@@ -2281,6 +2281,11 @@ void RenderViewContextMenu::AppendLinkToTextItems() {
     return;
   }
 
+  // Disable for glic.
+  if (IsGlicWindow(this, browser_context_)) {
+    return;
+  }
+
   // Only show copy link to highlight for publicly accessible web pages.
   if (!params_.page_url.SchemeIsHTTPOrHTTPS()) {
     return;
