@@ -23,12 +23,6 @@ chromium/try/android-cronet-arm-rel
 chromium/try/android-cronet-arm64-dbg
 chromium/try/android-cronet-arm64-rel
 chromium/try/android-cronet-asan-arm-rel
-chromium/try/android-cronet-mainline-clang-arm64-dbg
-chromium/try/android-cronet-mainline-clang-arm64-rel
-chromium/try/android-cronet-mainline-clang-riscv64-dbg
-chromium/try/android-cronet-mainline-clang-riscv64-rel
-chromium/try/android-cronet-mainline-clang-x86-dbg
-chromium/try/android-cronet-mainline-clang-x86-rel
 chromium/try/android-cronet-riscv64-dbg
 chromium/try/android-cronet-riscv64-rel
 chromium/try/android-cronet-x64-dbg

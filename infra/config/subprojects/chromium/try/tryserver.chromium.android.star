@@ -636,55 +636,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "android-cronet-mainline-clang-arm64-dbg",
-    mirrors = ["ci/android-cronet-mainline-clang-arm64-dbg"],
-    gn_args = "ci/android-cronet-mainline-clang-arm64-dbg",
-    contact_team_email = "cronet-team@google.com",
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
-)
-
-try_.builder(
-    name = "android-cronet-mainline-clang-arm64-rel",
-    mirrors = ["ci/android-cronet-mainline-clang-arm64-rel"],
-    gn_args = "ci/android-cronet-mainline-clang-arm64-rel",
-    contact_team_email = "cronet-team@google.com",
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
-)
-
-try_.builder(
-    name = "android-cronet-mainline-clang-riscv64-dbg",
-    mirrors = ["ci/android-cronet-mainline-clang-riscv64-dbg"],
-    gn_args = "ci/android-cronet-mainline-clang-riscv64-dbg",
-    contact_team_email = "cronet-team@google.com",
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
-)
-
-try_.builder(
-    name = "android-cronet-mainline-clang-riscv64-rel",
-    mirrors = ["ci/android-cronet-mainline-clang-riscv64-rel"],
-    gn_args = "ci/android-cronet-mainline-clang-riscv64-rel",
-    contact_team_email = "cronet-team@google.com",
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
-)
-
-try_.builder(
-    name = "android-cronet-mainline-clang-x86-dbg",
-    branch_selector = branches.selector.ANDROID_BRANCHES,
-    mirrors = ["ci/android-cronet-mainline-clang-x86-dbg"],
-    gn_args = "ci/android-cronet-mainline-clang-x86-dbg",
-    contact_team_email = "cronet-team@google.com",
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
-)
-
-try_.builder(
-    name = "android-cronet-mainline-clang-x86-rel",
-    mirrors = ["ci/android-cronet-mainline-clang-x86-rel"],
-    gn_args = "ci/android-cronet-mainline-clang-x86-rel",
-    contact_team_email = "cronet-team@google.com",
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
-)
-
-try_.builder(
     name = "android-cronet-riscv64-dbg",
     mirrors = ["ci/android-cronet-riscv64-dbg"],
     gn_args = "ci/android-cronet-riscv64-dbg",

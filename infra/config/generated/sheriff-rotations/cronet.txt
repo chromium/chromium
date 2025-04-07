@@ -3,12 +3,6 @@ ci/android-cronet-arm-rel
 ci/android-cronet-arm64-dbg
 ci/android-cronet-arm64-rel
 ci/android-cronet-asan-arm-rel
-ci/android-cronet-mainline-clang-arm64-dbg
-ci/android-cronet-mainline-clang-arm64-rel
-ci/android-cronet-mainline-clang-riscv64-dbg
-ci/android-cronet-mainline-clang-riscv64-rel
-ci/android-cronet-mainline-clang-x86-dbg
-ci/android-cronet-mainline-clang-x86-rel
 ci/android-cronet-riscv64-dbg
 ci/android-cronet-riscv64-rel
 ci/android-cronet-x64-dbg
