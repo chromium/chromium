@@ -49,7 +49,7 @@ BASE_FEATURE(kAutofillEnableBuyNowPayLater,
 // When enabled, buy now pay later (BNPL) data will be synced to Chrome clients.
 BASE_FEATURE(kAutofillEnableBuyNowPayLaterSyncing,
              "AutofillEnableBuyNowPayLaterSyncing",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, card benefits offered by American Express will be shown in
 // Payments Autofill UI.
