@@ -549,7 +549,7 @@ void NativeWidgetMac::InitModalType(ui::mojom::ModalType modal_type) {
   // Everything happens upon show.
 }
 
-void NativeWidgetMac::SetColorMode(ui::ColorProviderKey::ColorMode color_mode) {
+void NativeWidgetMac::OnWidgetThemeChanged(ui::ColorProviderKey::ColorMode color_mode) {
   if (ns_window_host_) {
     ns_window_host_->SetColorMode(color_mode);
   }

@@ -579,7 +579,7 @@ void Widget::Init(InitParams params) {
     parent_->OnChildAdded(this);
   }
 
-  native_widget_->SetColorMode(GetColorMode());
+  native_widget_->OnWidgetThemeChanged(GetColorMode());
 
   UpdateAccessibleNameForRootView();
   native_theme_observation_.Observe(GetNativeTheme());
@@ -1442,7 +1442,7 @@ void Widget::ThemeChanged() {
   NotifyColorProviderChanged();
 
   if (native_widget_) {
-    native_widget_->SetColorMode(GetColorMode());
+    native_widget_->OnWidgetThemeChanged(GetColorMode());
   }
 }
 

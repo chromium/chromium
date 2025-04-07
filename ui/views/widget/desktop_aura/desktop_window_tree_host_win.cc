@@ -182,24 +182,6 @@ void DesktopWindowTreeHostWin::FinishTouchDrag(gfx::Point screen_point) {
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// DesktopWindowTreeHostWin, WidgetObserver implementation:
-void DesktopWindowTreeHostWin::OnWidgetThemeChanged(Widget* widget) {
-  if (ShouldApplySystemBackdrop()) {
-    // Ensure that DWM knows to apply the correct color scheme to the window
-    // backdrop whenever it changes.
-    BOOL use_dark_mode =
-        widget->GetColorMode() == ui::ColorProviderKey::ColorMode::kDark;
-    HRESULT hr = DwmSetWindowAttribute(GetHWND(), DWMWA_USE_IMMERSIVE_DARK_MODE,
-                                       &use_dark_mode, sizeof(use_dark_mode));
-    CHECK_EQ(hr, S_OK);
-    return;
-  }
-  wuc_backdrop_->UpdateBackdropColor(
-      GetWidget()->GetColorProvider()->GetColor(ui::kColorFrameActive));
-}
-
-////////////////////////////////////////////////////////////////////////////////
 // DesktopWindowTreeHostWin, DesktopWindowTreeHost implementation:
 
 void DesktopWindowTreeHostWin::Init(const Widget::InitParams& params) {
@@ -240,8 +222,6 @@ void DesktopWindowTreeHostWin::Init(const Widget::InitParams& params) {
   if (((message_handler_->window_ex_style() & WS_EX_NOREDIRECTIONBITMAP) ==
        WS_EX_NOREDIRECTIONBITMAP) &&
       !message_handler_->is_translucent()) {
-    // Observe the widget to update the backdrop when the color mode changes.
-    widget_observation_.Observe(GetWidget());
     // Ensure that the hwnd has been created.
     CHECK(GetHWND());
 
@@ -301,6 +281,25 @@ void DesktopWindowTreeHostWin::OnNativeWidgetCreated(
 void DesktopWindowTreeHostWin::OnActiveWindowChanged(bool active) {}
 
 void DesktopWindowTreeHostWin::OnWidgetInitDone() {}
+
+void DesktopWindowTreeHostWin::OnWidgetThemeChanged(
+    ui::ColorProviderKey::ColorMode color_mode) {
+  if (ShouldApplySystemBackdrop()) {
+    // Ensure that DWM knows to apply the correct color scheme to the window
+    // backdrop whenever it changes.
+    BOOL use_dark_mode =
+        color_mode == ui::ColorProviderKey::ColorMode::kDark;
+    HRESULT hr = DwmSetWindowAttribute(GetHWND(), DWMWA_USE_IMMERSIVE_DARK_MODE,
+                                       &use_dark_mode, sizeof(use_dark_mode));
+    CHECK_EQ(hr, S_OK);
+    return;
+  }
+
+  if (GetWidget() && wuc_backdrop_) {
+    wuc_backdrop_->UpdateBackdropColor(
+        GetWidget()->GetColorProvider()->GetColor(ui::kColorFrameActive));
+  }
+}
 
 std::unique_ptr<corewm::Tooltip> DesktopWindowTreeHostWin::CreateTooltip() {
   return std::make_unique<corewm::TooltipAura>();

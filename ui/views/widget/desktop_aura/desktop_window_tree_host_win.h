@@ -16,7 +16,6 @@
 #include "ui/gfx/win/wuc_backdrop.h"
 #include "ui/views/views_export.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host.h"
-#include "ui/views/widget/widget_observer.h"
 #include "ui/views/win/hwnd_message_handler_delegate.h"
 #include "ui/wm/public/animation_host.h"
 
@@ -46,11 +45,11 @@ namespace test {
 class DesktopWindowTreeHostWinTestApi;
 }
 
-class VIEWS_EXPORT DesktopWindowTreeHostWin : public DesktopWindowTreeHost,
-                                              public wm::AnimationHost,
-                                              public aura::WindowTreeHost,
-                                              public HWNDMessageHandlerDelegate,
-                                              public WidgetObserver {
+class VIEWS_EXPORT DesktopWindowTreeHostWin
+    : public DesktopWindowTreeHost,
+      public wm::AnimationHost,
+      public aura::WindowTreeHost,
+      public HWNDMessageHandlerDelegate {
  public:
   DesktopWindowTreeHostWin(
       internal::NativeWidgetDelegate* native_widget_delegate,
@@ -100,6 +99,8 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin : public DesktopWindowTreeHost,
   void OnNativeWidgetCreated(const Widget::InitParams& params) override;
   void OnActiveWindowChanged(bool active) override;
   void OnWidgetInitDone() override;
+  void OnWidgetThemeChanged(
+      ui::ColorProviderKey::ColorMode color_mode) override;
   std::unique_ptr<corewm::Tooltip> CreateTooltip() override;
   std::unique_ptr<aura::client::DragDropClient> CreateDragDropClient() override;
   void Close() override;
@@ -270,9 +271,6 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin : public DesktopWindowTreeHost,
   void HandleWindowScaleFactorChanged(float window_scale_factor) override;
   void HandleHeadlessWindowBoundsChanged(const gfx::Rect& bounds) override;
 
-  // Overridden from WidgetObserver.
-  void OnWidgetThemeChanged(Widget* widget) override;
-
   Widget* GetWidget();
   const Widget* GetWidget() const;
   HWND GetHWND() const;
@@ -346,8 +344,6 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin : public DesktopWindowTreeHost,
 
   // A Windows.Ui.Composition visual tree that represents the window backdrop.
   std::unique_ptr<gfx::WUCBackdrop> wuc_backdrop_;
-
-  base::ScopedObservation<Widget, WidgetObserver> widget_observation_{this};
 
   // Visibility of the cursor. On Windows we can have multiple root windows and
   // the implementation of ::ShowCursor() is based on a counter, so making this

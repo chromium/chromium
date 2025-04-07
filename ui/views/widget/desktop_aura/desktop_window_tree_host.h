@@ -64,6 +64,9 @@ class VIEWS_EXPORT DesktopWindowTreeHost {
   // Called from DesktopNativeWidgetAura::OnWidgetInitDone().
   virtual void OnWidgetInitDone() = 0;
 
+  virtual void OnWidgetThemeChanged(
+      ui::ColorProviderKey::ColorMode color_mode) = 0;
+
   // Called from DesktopNativeWidgetAura::OnWindowActivated().
   // `active`: if `DesktopNativeWidgetAura::content_window()` contains the
   // `aura::Window` that gains active.

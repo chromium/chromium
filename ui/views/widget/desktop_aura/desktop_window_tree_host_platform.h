@@ -70,6 +70,8 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
   void Init(const Widget::InitParams& params) override;
   void OnNativeWidgetCreated(const Widget::InitParams& params) override;
   void OnWidgetInitDone() override;
+  void OnWidgetThemeChanged(
+      ui::ColorProviderKey::ColorMode color_mode) override;
   void OnActiveWindowChanged(bool active) override;
   std::unique_ptr<corewm::Tooltip> CreateTooltip() override;
   std::unique_ptr<aura::client::DragDropClient> CreateDragDropClient() override;

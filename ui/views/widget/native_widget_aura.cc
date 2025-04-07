@@ -564,7 +564,7 @@ void NativeWidgetAura::InitModalType(ui::mojom::ModalType modal_type) {
   }
 }
 
-void NativeWidgetAura::SetColorMode(
+void NativeWidgetAura::OnWidgetThemeChanged(
     ui::ColorProviderKey::ColorMode color_mode) {
   // Intentional no-op.
   // The window frame is drawn by views. The OS does not need to know about

@@ -173,8 +173,10 @@ class VIEWS_EXPORT NativeWidgetPrivate : public NativeWidget {
   // initially parented.
   virtual void InitModalType(ui::mojom::ModalType modal_type) = 0;
 
-  // Sets the color mode used for window styling.
-  virtual void SetColorMode(ui::ColorProviderKey::ColorMode color_mode) = 0;
+  // Notifies the NativeWidget that the widget theme has changed.
+  // At the moment, the platform window only cares about the color mode.
+  virtual void OnWidgetThemeChanged(
+      ui::ColorProviderKey::ColorMode color_mode) = 0;
 
   // See method documentation in Widget.
   virtual gfx::Rect GetWindowBoundsInScreen() const = 0;
