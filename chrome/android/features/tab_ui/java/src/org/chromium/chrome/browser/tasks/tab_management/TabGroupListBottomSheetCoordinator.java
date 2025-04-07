@@ -119,7 +119,7 @@ public class TabGroupListBottomSheetCoordinator {
         FaviconResolver faviconResolver =
                 TabGroupListFaviconResolverFactory.build(context, profile, mTabListFaviconProvider);
         @Nullable TabGroupSyncService tabGroupSyncService =
-                TabGroupSyncServiceFactory.getForProfile(profile);
+                profile.isOffTheRecord() ? null : TabGroupSyncServiceFactory.getForProfile(profile);
 
         CollaborationService collaborationService =
                 CollaborationServiceFactory.getForProfile(profile);

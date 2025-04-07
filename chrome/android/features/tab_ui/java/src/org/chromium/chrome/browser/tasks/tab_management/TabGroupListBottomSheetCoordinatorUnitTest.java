@@ -60,6 +60,7 @@ public class TabGroupListBottomSheetCoordinatorUnitTest {
     @Mock private Tab mTab;
     private final SavedTabGroup mSavedTabGroup = new SavedTabGroup();
     private final SavedTabGroupTab mSavedTabGroupTab = new SavedTabGroupTab();
+    private Context mContext;
     private TabGroupListBottomSheetCoordinator mCoordinator;
 
     @Before
@@ -72,13 +73,13 @@ public class TabGroupListBottomSheetCoordinatorUnitTest {
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {TAB_GROUP_ID_STRING});
         when(mTabGroupSyncService.getGroup(TAB_GROUP_ID_STRING)).thenReturn(mSavedTabGroup);
 
-        Context context =
+        mContext =
                 new ContextThemeWrapper(
                         ApplicationProvider.getApplicationContext(),
                         R.style.Theme_BrowserUI_DayNight);
         mCoordinator =
                 new TabGroupListBottomSheetCoordinator(
-                        context,
+                        mContext,
                         mProfile,
                         ignored -> {},
                         mFilter,
@@ -125,5 +126,13 @@ public class TabGroupListBottomSheetCoordinatorUnitTest {
                         eq(true),
                         eq(StateChangeReason.INTERACTION_COMPLETE));
         verify(mCoordinator).destroy();
+    }
+
+    @Test
+    public void testIncognito_dontFetchTabGroupSyncService() {
+        when(mProfile.isOffTheRecord()).thenReturn(true);
+        // Test that the Coordinator can be constructed without crashing.
+        new TabGroupListBottomSheetCoordinator(
+                mContext, mProfile, ignored -> {}, mFilter, mBottomSheetController, true, false);
     }
 }
