@@ -220,8 +220,8 @@ PrepareResourceRequestForCacheAccess(
   const ReportingDisposition reporting_disposition =
       CalculateReportingDisposition(params);
 
-  if (!RuntimeEnabledFeatures::PreloadLinkRelDataUrlsEnabled() &&
-      !params.IsPreloadedResponseCandidatePresent() &&
+  if (!params.IsPreloadedResponseCandidatePresent() ||
+      !RuntimeEnabledFeatures::PreloadLinkRelDataUrlsEnabled() ||
       !RuntimeEnabledFeatures::BypassCSPForPreloadsEnabled()) {
     // Note that resource_request.GetRedirectInfo() may be non-null here since
     // e.g. ThreadableLoader may create a new Resource from a ResourceRequest

@@ -250,9 +250,7 @@ void WorkerFetchContext::PopulateResourceRequestBeforeCacheAccess(
     ResourceRequest& request,
     FetchParameters::HasPreloadedResponseCandidate
         has_preloaded_response_candidate) {
-  if (!RuntimeEnabledFeatures::PreloadLinkRelDataUrlsEnabled()) {
-    ModifyRequestForMixedContentUpgrade(request);
-  }
+  ModifyRequestForMixedContentUpgrade(request);
   request.SetTopFrameOrigin(GetTopFrameOrigin());
 }
 

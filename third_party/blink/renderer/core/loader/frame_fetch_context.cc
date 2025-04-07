@@ -843,22 +843,16 @@ void FrameFetchContext::PopulateResourceRequestBeforeCacheAccess(
     probe::SetDevToolsIds(Probe(), request, options.initiator_info);
   }
 
-  if (!RuntimeEnabledFeatures::PreloadLinkRelDataUrlsEnabled()) {
-    CHECK(!has_preloaded_response_candidate);
-    // CSP may change the url, if Upgrade-Insecure-Request is enforced for
-    // mixed content.
-    ModifyRequestForMixedContentUpgrade(request);
-    if (!request.Url().IsValid()) {
-      return;
-    }
+  // CSP may change the url, if Upgrade-Insecure-Request is enforced for
+  // mixed content.
+  ModifyRequestForMixedContentUpgrade(request);
+  if (!request.Url().IsValid()) {
+    return;
   }
-  const bool has_inspector_agents =
-      CoreProbeSink::HasAgentsGlobal(CoreProbeSink::kInspectorEmulationAgent |
-                                     CoreProbeSink::kInspectorNetworkAgent);
-  if (!has_preloaded_response_candidate || has_inspector_agents) {
-    SetFirstPartyCookie(request);
-  }
-  if (has_inspector_agents) {
+
+  SetFirstPartyCookie(request);
+  if (CoreProbeSink::HasAgentsGlobal(CoreProbeSink::kInspectorEmulationAgent |
+                                     CoreProbeSink::kInspectorNetworkAgent)) {
     request.SetRequiresUpgradeForLoader();
   }
   if (document_loader_->ForceFetchCacheMode()) {

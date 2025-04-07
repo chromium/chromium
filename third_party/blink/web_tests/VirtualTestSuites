@@ -4309,6 +4309,61 @@
     ]
    },
    {
+    "prefix": "preload-link-rel-dataurls-disabled",
+    "owners": ["nidhijaju@chromium.org"],
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "wpt_internal/content-security-policy/reporting-api/reporting-api-report-only-sends-reports-on-violation.https.sub.html",
+      "wpt_internal/content-security-policy/securitypolicyviolation/input-time.https.html",
+      "external/wpt/content-security-policy/inside-worker",
+      "external/wpt/content-security-policy/reporting-api/reporting-api-report-only-sends-reports-on-violation.https.sub.html",
+      "external/wpt/content-security-policy/reporting",
+      "external/wpt/content-security-policy/script-src/script-src-report-only-policy-works-with-external-hash-policy.html",
+      "external/wpt/content-security-policy/securitypolicyviolation/upgrade-insecure-requests-reporting.https.html",
+      "http/tests/inspector-protocol/issues/content-security-policy-issue-report-only.js",
+      "http/tests/inspector-protocol/issues/mixed-content-issue-creation-img.js",
+      "http/tests/inspector-protocol/no-crash-with-stack-id-and-stale-while-revalidate.js",
+      "http/tests/security/contentSecurityPolicy/nonces/style-reportonly-allowed.php",
+      "external/wpt/upgrade-insecure-requests/gen/iframe-blank-inherit.meta/upgrade",
+      "external/wpt/upgrade-insecure-requests/gen/sharedworker-classic-data.http-rp/upgrade",
+      "external/wpt/upgrade-insecure-requests/gen/srcdoc-inherit.meta/upgrade",
+      "external/wpt/upgrade-insecure-requests/gen/top.http-rp/upgrade",
+      "external/wpt/upgrade-insecure-requests/gen/top.meta/upgrade"
+    ],
+    "args": [
+      "--disable-features=PreloadLinkRelDataUrls,BypassCSPForPreloads"
+    ],
+    "expires": "Jul 3, 2025"
+   },
+   {
+    "prefix": "bypass-csp-for-preloads-disabled",
+    "owners": ["nidhijaju@chromium.org"],
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "wpt_internal/content-security-policy/reporting-api/reporting-api-report-only-sends-reports-on-violation.https.sub.html",
+      "wpt_internal/content-security-policy/securitypolicyviolation/input-time.https.html",
+      "external/wpt/content-security-policy/inside-worker",
+      "external/wpt/content-security-policy/reporting-api/reporting-api-report-only-sends-reports-on-violation.https.sub.html",
+      "external/wpt/content-security-policy/reporting",
+      "external/wpt/content-security-policy/script-src/script-src-report-only-policy-works-with-external-hash-policy.html",
+      "external/wpt/content-security-policy/securitypolicyviolation/upgrade-insecure-requests-reporting.https.html",
+      "http/tests/inspector-protocol/issues/content-security-policy-issue-report-only.js",
+      "http/tests/inspector-protocol/issues/mixed-content-issue-creation-img.js",
+      "http/tests/inspector-protocol/no-crash-with-stack-id-and-stale-while-revalidate.js",
+      "http/tests/security/contentSecurityPolicy/nonces/style-reportonly-allowed.php",
+      "external/wpt/upgrade-insecure-requests/gen/iframe-blank-inherit.meta/upgrade",
+      "external/wpt/upgrade-insecure-requests/gen/sharedworker-classic-data.http-rp/upgrade",
+      "external/wpt/upgrade-insecure-requests/gen/srcdoc-inherit.meta/upgrade",
+      "external/wpt/upgrade-insecure-requests/gen/top.http-rp/upgrade",
+      "external/wpt/upgrade-insecure-requests/gen/top.meta/upgrade"
+    ],
+    "args": [
+      "--enable-features=PreloadLinkRelDataUrls",
+      "--disable-features=BypassCSPForPreloads"
+    ],
+    "expires": "Jul 3, 2025"
+   },
+   {
     "prefix": "delegates-focus-text-control-disabled",
     "owners": ["dizhangg@google.com"],
     "platforms": ["Linux", "Mac", "Win"],

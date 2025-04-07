@@ -1370,33 +1370,6 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
   }
 
   const ResourceType resource_type = factory.GetType();
-  auto preloads_list_iterator = preloads_.end();
-  bool is_stale_revalidation = params.IsStaleRevalidation();
-
-  if (RuntimeEnabledFeatures::PreloadLinkRelDataUrlsEnabled()) {
-    Context().ModifyRequestForMixedContentUpgrade(resource_request);
-    if (!resource_request.Url().IsValid()) {
-      auto* resource = ResourceForBlockedRequest(
-          params, factory, ResourceRequestBlockedReason::kOther, client);
-      StorePerformanceTimingInitiatorInformation(
-          resource, params.GetRenderBlockingBehavior());
-      auto info = resource_timing_info_map_.Take(resource);
-      if (!info.is_null()) {
-        PopulateAndAddResourceTimingInfo(
-            resource, info,
-            /*response_end=*/base::TimeTicks::Now());
-      }
-      return resource;
-    }
-
-    resource_request.SetCanChangeUrl(false);
-    if (!is_stale_revalidation && !archive_) {
-      preloads_list_iterator =
-          preloads_.find(PreloadKey(params.Url(), resource_type));
-      params.SetIsPreloadedResponseCandidatePresent(preloads_list_iterator !=
-                                                    preloads_.end());
-    }
-  }
 
   WebScopedVirtualTimePauser pauser;
 
@@ -1414,6 +1387,19 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
                                        /*response_end=*/base::TimeTicks::Now());
     }
     return resource;
+  }
+
+  auto preloads_list_iterator = preloads_.end();
+  bool is_stale_revalidation = params.IsStaleRevalidation();
+
+  if (RuntimeEnabledFeatures::PreloadLinkRelDataUrlsEnabled()) {
+    resource_request.SetCanChangeUrl(false);
+    if (!is_stale_revalidation && !archive_) {
+      preloads_list_iterator =
+          preloads_.find(PreloadKey(params.Url(), resource_type));
+      params.SetIsPreloadedResponseCandidatePresent(preloads_list_iterator !=
+                                                    preloads_.end());
+    }
   }
 
   Resource* resource = nullptr;
@@ -3571,11 +3557,8 @@ ResourceFetcher::ResourcePrepareHelper::PrepareRequestForCacheAccess(
     return fetcher_.UpdateRequestForTransparentPlaceholderImage(params_);
   }
   ResourceRequest& resource_request = params_.MutableResourceRequest();
-  if (!RuntimeEnabledFeatures::PreloadLinkRelDataUrlsEnabled() &&
-      !params_.IsPreloadedResponseCandidatePresent()) {
-    bundle_url_for_uuid_resources_ =
-        fetcher_.PrepareRequestForWebBundle(resource_request);
-  }
+  bundle_url_for_uuid_resources_ =
+      fetcher_.PrepareRequestForWebBundle(resource_request);
 
   ResourceType resource_type = factory_.GetType();
   const ResourceLoaderOptions& options = params_.Options();
