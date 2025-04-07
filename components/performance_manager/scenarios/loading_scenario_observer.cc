@@ -12,12 +12,16 @@
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/sequence_checker.h"
+#include "base/trace_event/typed_macros.h"
+#include "base/unguessable_token.h"
 #include "components/performance_manager/graph/graph_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/scenario_api/performance_scenarios.h"
 #include "components/performance_manager/scenarios/browser_performance_scenarios.h"
 #include "components/performance_manager/scenarios/loading_scenario_data.h"
+#include "third_party/perfetto/include/perfetto/tracing/tracing.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace performance_manager {
 
@@ -47,6 +51,32 @@ LoadingScenario CalculateLoadingScenario(const LoadingScenarioCounts& counts) {
     return LoadingScenario::kBackgroundPageLoading;
   }
   return LoadingScenario::kNoPageLoading;
+}
+
+void RecordLoadingTraceEvent(const PageNode* page_node,
+                             bool was_loading,
+                             bool is_loading) {
+  static perfetto::NamedTrack loading_state_track = [] {
+    // Each PageNode gets its own track, which is grouped under this track.
+    perfetto::NamedTrack track{"PageNodeLoadingState", 0,
+                               perfetto::Track::Global(0)};
+    if (perfetto::Tracing::IsInitialized()) {
+      // Because the track doesn't get any events of its own it must manually
+      // emit the track descriptor. SetTrackDescriptor may crash in unit tests
+      // where tracing isn't initialized.
+      base::TrackEvent::SetTrackDescriptor(track, track.Serialize());
+    }
+    return track;
+  }();
+  const base::UnguessableToken page_token =
+      PageNodeImpl::FromNode(page_node)->page_token().value();
+  perfetto::Track page_track(base::UnguessableTokenHash()(page_token),
+                             loading_state_track);
+  if (is_loading && !was_loading) {
+    TRACE_EVENT_BEGIN("performance_scenarios", "PageNode Loading", page_track);
+  } else if (was_loading && !is_loading) {
+    TRACE_EVENT_END("performance_scenarios", page_track);
+  }
 }
 
 }  // namespace
@@ -116,6 +146,8 @@ void LoadingScenarioObserver::OnBeforePageNodeRemoved(
     DecrementLoadingCounts(process_nodes, page_node->IsVisible(),
                            page_node->IsFocused());
     UpdateLoadingScenarios(process_nodes);
+    RecordLoadingTraceEvent(page_node, /*was_loading=*/true,
+                            /*is_loading=*/false);
   }
 }
 
@@ -165,6 +197,7 @@ void LoadingScenarioObserver::OnLoadingStateChanged(
                              page_node->IsFocused());
     }
     UpdateLoadingScenarios(process_nodes);
+    RecordLoadingTraceEvent(page_node, was_loading, is_loading);
   }
 }
 
