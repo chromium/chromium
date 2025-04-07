@@ -10,6 +10,7 @@ import androidx.activity.BackEventCompat;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.Type;
 import org.chromium.ui.UiUtils;
@@ -22,6 +23,7 @@ import java.lang.annotation.RetentionPolicy;
  * A utility class to record back press related histograms. TODO(crbug.com/41481803): Move other
  * histogram recording to this class.
  */
+@NullMarked
 public class BackPressMetrics {
     private static final String EDGE_HISTOGRAM = "Android.BackPress.SwipeEdge";
     private static final String TAB_HISTORY_EDGE_HISTOGRAM =

@@ -8,17 +8,19 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.activity.OnBackPressedDispatcher;
 import androidx.lifecycle.LifecycleOwner;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 
 /**
- * Helper class for back press event handling via {@link OnBackPressedDisptacher}. This is
- * a recommended way over {@link Activity#onBackPressed}. Refer to the Android developer's guide
+ * Helper class for back press event handling via {@link OnBackPressedDisptacher}. This is a
+ * recommended way over {@link Activity#onBackPressed}. Refer to the Android developer's guide
  * {@link https://developer.android.com/guide/navigation/navigation-custom-back}.
  */
+@NullMarked
 public final class BackPressHelper {
     /**
      * @deprecated Handles back press event. #onBackPressed is deprecated starting from U. Prefer
-     * {@link BackPressHandler} whenever possible.
+     *     {@link BackPressHandler} whenever possible.
      */
     public interface ObsoleteBackPressedHandler {
         /**

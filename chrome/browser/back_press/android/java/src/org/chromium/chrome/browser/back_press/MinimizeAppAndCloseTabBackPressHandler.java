@@ -16,6 +16,8 @@ import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAssociatedApp;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
@@ -28,6 +30,7 @@ import java.util.function.Predicate;
  * The back press handler as the final step of back press handling. This is always enabled in order
  * to manually minimize app and close tab if necessary.
  */
+@NullMarked
 public class MinimizeAppAndCloseTabBackPressHandler implements BackPressHandler, Destroyable {
     static final String HISTOGRAM = "Android.BackPress.MinimizeAppAndCloseTab";
     static final String HISTOGRAM_CUSTOM_TAB_SAME_TASK =
@@ -44,12 +47,12 @@ public class MinimizeAppAndCloseTabBackPressHandler implements BackPressHandler,
     private final ObservableSupplierImpl<Boolean> mNonSystemBackPressSupplier =
             new ObservableSupplierImpl<>();
     private final Predicate<Tab> mBackShouldCloseTab;
-    private final Callback<Tab> mSendToBackground;
+    private final Callback<@Nullable Tab> mSendToBackground;
     private final Callback<Tab> mOnTabChanged = this::onTabChanged;
     private final ObservableSupplier<Tab> mActivityTabSupplier;
     private final boolean mUseSystemBack;
 
-    private static Integer sVersionForTesting;
+    private static @Nullable Integer sVersionForTesting;
 
     @IntDef({
         MinimizeAppAndCloseTabType.MINIMIZE_APP,
@@ -96,7 +99,7 @@ public class MinimizeAppAndCloseTabBackPressHandler implements BackPressHandler,
     public MinimizeAppAndCloseTabBackPressHandler(
             ObservableSupplier<Tab> activityTabSupplier,
             Predicate<Tab> backShouldCloseTab,
-            Callback<Tab> sendToBackground) {
+            Callback<@Nullable Tab> sendToBackground) {
         mBackShouldCloseTab = backShouldCloseTab;
         mSendToBackground = sendToBackground;
         mActivityTabSupplier = activityTabSupplier;
