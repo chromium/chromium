@@ -192,9 +192,10 @@ void DesktopPaymentsWindowManager::CreatePopup(const GURL& url,
       client_->GetPaymentsAutofillClient()->ShowAutofillErrorDialog(
           AutofillErrorDialogContext::WithVirtualCardPermanentOrTemporaryError(
               /*is_permanent_error=*/false));
-    } else {
-      // TODO(crbug.com/356443046): Add handling for BNPL pop-up window not
-      // being shown.
+    } else if (bnpl_context_.has_value()) {
+      client_->GetPaymentsAutofillClient()->ShowAutofillErrorDialog(
+          AutofillErrorDialogContext::WithBnplPermanentOrTemporaryError(
+              /*is_permanent_error=*/false));
     }
   }
 }
