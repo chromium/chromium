@@ -359,13 +359,10 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService,
 #endif
 
   // Fake implementation for current and blocked topics.
-  static constexpr int kFakeTaxonomyVersion = 1;
-  std::set<privacy_sandbox::CanonicalTopic> fake_current_topics_ = {
-      {browsing_topics::Topic(1), kFakeTaxonomyVersion},
-      {browsing_topics::Topic(2), kFakeTaxonomyVersion}};
-  std::set<privacy_sandbox::CanonicalTopic> fake_blocked_topics_ = {
-      {browsing_topics::Topic(3), kFakeTaxonomyVersion},
-      {browsing_topics::Topic(4), kFakeTaxonomyVersion}};
+  // TODO(crbug.com/409048902): Moved initialization to constructor to prevent
+  // potential initialization order issues.
+  std::set<privacy_sandbox::CanonicalTopic> fake_current_topics_;
+  std::set<privacy_sandbox::CanonicalTopic> fake_blocked_topics_;
 
   // Record user action metrics based on the |action|.
   void RecordPromptActionMetrics(PrivacySandboxService::PromptAction action);

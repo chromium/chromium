@@ -516,6 +516,12 @@ PrivacySandboxServiceImpl::PrivacySandboxServiceImpl(
       browsing_topics_service_(browsing_topics_service),
       first_party_sets_policy_service_(first_party_sets_service),
       privacy_sandbox_countries_(privacy_sandbox_countries) {
+  static constexpr int kFakeTaxonomyVersion = 1;
+  fake_current_topics_ = {{browsing_topics::Topic(1), kFakeTaxonomyVersion},
+                          {browsing_topics::Topic(2), kFakeTaxonomyVersion}};
+  fake_blocked_topics_ = {{browsing_topics::Topic(3), kFakeTaxonomyVersion},
+                          {browsing_topics::Topic(4), kFakeTaxonomyVersion}};
+
   // Create notice storage
   notice_storage_ =
       std::make_unique<privacy_sandbox::PrivacySandboxNoticeStorage>();
