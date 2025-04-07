@@ -22,6 +22,7 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.BinderCallsListener;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
@@ -84,6 +85,8 @@ public class StartupLoadingMetricsTest {
             "Startup.Android.Warm.MainIntentTimeToFirstDraw";
     private static final String NTP_TIME_TO_FIRST_DRAW_COLD_HISTOGRAM =
             "Startup.Android.Cold.NewTabPage.TimeToFirstDraw";
+    private static final String NTP_COLD_START_BINDER_HISTOGRAM =
+            "Startup.Android.Cold.NewTabPage.TimeSpentInBinder";
 
     private CustomTabsConnection mConnectionToCleanup;
 
@@ -395,6 +398,36 @@ public class StartupLoadingMetricsTest {
         assertMainIntentLaunchColdStartHistogramRecorded(0);
         waitForHistogram(ntpColdStartWatcher);
         assertHistogramsRecordedWithForegroundStart(0, TABBED_SUFFIX);
+    }
+
+    @Test
+    @LargeTest
+    public void testNtpBinderMetricRecordedCorrectly() throws Exception {
+        // Install BinderCallsListener.
+        boolean success =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            BinderCallsListener listener = BinderCallsListener.getInstance();
+                            return listener.installListener();
+                        });
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            // THe API was added in Android 10, but don't skip tests in earlier
+            // releases to check we don't cause crashes there.
+            Assert.assertFalse(success);
+            return;
+        }
+        Assert.assertTrue(success);
+
+        HistogramWatcher ntpBinderWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecordTimes(NTP_COLD_START_BINDER_HISTOGRAM, 1)
+                        .build();
+        runAndWaitForPageLoadMetricsRecorded(
+                () -> mTabbedActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL));
+        waitForHistogram(ntpBinderWatcher);
+
+        // Clean up listener.
+        BinderCallsListener.setInstanceForTesting(null);
     }
 
     /**

@@ -391,6 +391,27 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Startup.Android.Cold.{StartupType}.TimeSpentInBinder"
+    units="ms" expires_after="2025-10-14">
+  <owner>nafisabedin@google.com</owner>
+  <owner>yfriedman@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Records the total time spent handling Binder calls on a cold start for a
+    particular {StartupType}.
+
+    Metric is recorded once per application lifetime during a cold start, only
+    when the cold start metric (e.g. TimeToFirstDraw) pertaining to
+    {StartupType} is also recorded.
+
+    The underlying mechanism used to time this relies on undocumented Android
+    APIs, meaning that it may break in the future.
+  </summary>
+  <token key="StartupType">
+    <variant name="NewTabPage"/>
+  </token>
+</histogram>
+
 <histogram name="Startup.Android.DurationSinceLastBackgroundTime" units="ms"
     expires_after="2025-08-10">
   <owner>hanxi@chromium.org</owner>
