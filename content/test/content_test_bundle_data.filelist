@@ -7121,6 +7121,7 @@ data/gpu/pixel_webgl_preserved_after_tab_switch.html
 data/gpu/pixel_webgl_read_pixels_tab_switch.html
 data/gpu/pixel_webgl_resized_canvas.html
 data/gpu/pixel_webgl_sad_canvas.html
+data/gpu/pixel_webgl_texture_from_webgl_readback.html
 data/gpu/pixel_webgl_util.js
 data/gpu/pixel_webgl_webcodecs_breakoutbox_displays_frame.html
 data/gpu/pixel_webgpu_cached_swap_buffer_invalidated.html

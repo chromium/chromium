@@ -482,6 +482,9 @@ crbug.com/370694819 [ win ] Pixel_WebGPUDestroyed_TransferToOffscreenCanvas* [ F
 crbug.com/370694819 [ mac asan ] Pixel_WebGPUDestroyed_OffscreenCanvas* [ Failure ]
 crbug.com/370694819 [ mac asan ] Pixel_WebGPUDestroyed_OnscreenCanvas* [ Failure ]
 
+# ChromeOS produces flipped results
+crbug.com/378688985 [ chromeos ] Pixel_WebGLTextureFromWebGLReadback [ Failure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
