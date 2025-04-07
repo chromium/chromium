@@ -6,10 +6,10 @@
 
 #import "base/check.h"
 #import "base/metrics/histogram_functions.h"
+#import "ios/chrome/browser/omnibox/model/suggest_action.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_icon_view.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/row/actions/actions_view.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/row/actions/suggest_action.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/row/omnibox_popup_row_delegate.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/row/omnibox_popup_row_util.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"

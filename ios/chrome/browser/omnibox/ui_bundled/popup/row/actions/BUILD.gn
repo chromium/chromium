@@ -11,8 +11,6 @@ source_set("actions") {
     "omnibox_popup_actions_row_content_view.h",
     "omnibox_popup_actions_row_content_view.mm",
     "omnibox_popup_actions_row_delegate.h",
-    "suggest_action.h",
-    "suggest_action.mm",
   ]
   deps = [
     "//components/omnibox/browser",

@@ -23,8 +23,10 @@ source_set("ui_bundled_interface") {
     "omnibox_text_controller_delegate.h",
     "pedal_section_extractor.h",
     "pedal_suggestion_wrapper.h",
+    "suggest_action.h",
   ]
   deps = [
+    "//components/omnibox/browser",
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/omnibox/ui_bundled/popup:popup_ui_protocols",
     "//ui/base:types",
@@ -43,6 +45,7 @@ source_set("model") {
     "omnibox_text_controller.mm",
     "pedal_section_extractor.mm",
     "pedal_suggestion_wrapper.mm",
+    "suggest_action.mm",
   ]
   deps = [
     "//base",
@@ -59,6 +62,7 @@ source_set("model") {
     "//ios/chrome/browser/omnibox/ui_bundled:model_interface",
     "//ios/chrome/browser/omnibox/ui_bundled:omnibox_util",
     "//ios/chrome/browser/omnibox/ui_bundled/popup",
+    "//ios/chrome/browser/omnibox/ui_bundled/popup:popup_accessibility_identifier_constants",
     "//ios/chrome/browser/omnibox/ui_bundled/popup:popup_internal",
     "//ios/chrome/browser/omnibox/ui_bundled/popup:popup_swift",
     "//ios/chrome/browser/omnibox/ui_bundled/popup:popup_ui_protocols",
