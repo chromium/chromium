@@ -45,3 +45,11 @@
 -org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.testUnacceptedPrivacy
 -org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.testAllInternalStatesVisitedResolvingTap
 -org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.testResolveGestureSelects
+
+# crbug.com/401321001
+-org.chromium.chrome.browser.safety_hub.SafetyHubTest.testSafeBrowsingLearnMoreLink_OpensInCct
+
+# crbug.com/408282366
+-org.chromium.chrome.browser.download.DownloadTest.testUrlEscaping
+-org.chromium.chrome.browser.download.DownloadTest.testHttpPostDownload
+-org.chromium.chrome.browser.download.DownloadTest.testHttpGetDownload

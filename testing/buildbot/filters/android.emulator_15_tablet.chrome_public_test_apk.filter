@@ -35,3 +35,8 @@
 
 # crbug.com/393388366
 -org.chromium.chrome.browser.desktop_windowing.AppHeaderCoordinatorBrowserTest.testKeyboardInDesktopWindow_RootViewPadded
+
+# crbug.com/408282366
+-org.chromium.chrome.browser.download.DownloadTest.testUrlEscaping
+-org.chromium.chrome.browser.download.DownloadTest.testHttpPostDownload
+-org.chromium.chrome.browser.download.DownloadTest.testHttpGetDownload
