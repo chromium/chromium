@@ -18,10 +18,12 @@
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
+#include "components/autofill/core/browser/payments/test/mock_bnpl_manager.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
 namespace autofill {
 
+class MockBnplManager;
 class AutofillDriver;
 class FormStructure;
 class TestPersonalDataManager;
@@ -71,6 +73,7 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
 
   // BrowserAutofillManager overrides.
   const gfx::Image& GetCardImage(const CreditCard& credit_card) override;
+  testing::NiceMock<MockBnplManager>* GetPaymentsBnplManager() override;
 
   // Unique to TestBrowserAutofillManager:
 
@@ -109,6 +112,8 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
 
  private:
   const gfx::Image card_image_ = gfx::test::CreateImage(40, 24);
+
+  testing::NiceMock<MockBnplManager> mock_bnpl_manager_{this};
 
   TestAutofillManagerWaiter waiter_{*this};
 };

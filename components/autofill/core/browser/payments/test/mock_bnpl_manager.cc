@@ -4,10 +4,13 @@
 
 #include "components/autofill/core/browser/payments/test/mock_bnpl_manager.h"
 
+#include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
+
 namespace autofill {
 
-MockBnplManager::MockBnplManager(TestAutofillClient* test_autofill_client)
-    : BnplManager(test_autofill_client) {
+MockBnplManager::MockBnplManager(
+    TestBrowserAutofillManager* test_browser_autofill_manager)
+    : BnplManager(test_browser_autofill_manager) {
   ON_CALL(*this, NotifyOfSuggestionGeneration)
       .WillByDefault(
           [this](const AutofillSuggestionTriggerSource trigger_source) {

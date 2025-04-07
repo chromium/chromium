@@ -3850,6 +3850,27 @@ TEST_F(
   EXPECT_EQ(1U, payments_data_manager().GetLinkedBnplIssuers().size());
   EXPECT_EQ(2U, payments_data_manager().GetEwalletAccounts().size());
 }
+
+TEST_F(PaymentsDataManagerTest, ShouldShowBnplSettings) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableBuyNowPayLater};
+  prefs_.get()->SetBoolean(prefs::kAutofillHasSeenBnpl, true);
+  EXPECT_TRUE(payments_data_manager().ShouldShowBnplSettings());
+
+  prefs_.get()->SetBoolean(prefs::kAutofillHasSeenBnpl, false);
+  EXPECT_FALSE(payments_data_manager().ShouldShowBnplSettings());
+}
+
+TEST_F(PaymentsDataManagerTest, ShouldShowBnplSettings_FlagOff) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kAutofillEnableBuyNowPayLater);
+  prefs_.get()->SetBoolean(prefs::kAutofillHasSeenBnpl, true);
+  EXPECT_FALSE(payments_data_manager().ShouldShowBnplSettings());
+
+  prefs_.get()->SetBoolean(prefs::kAutofillHasSeenBnpl, false);
+  EXPECT_FALSE(payments_data_manager().ShouldShowBnplSettings());
+}
+
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 

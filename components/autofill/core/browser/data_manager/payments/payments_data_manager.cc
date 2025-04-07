@@ -463,6 +463,23 @@ void PaymentsDataManager::OnWebDataServiceRequestDone(
   NotifyObservers();
 }
 
+bool PaymentsDataManager::ShouldShowBnplSettings() const {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+  // Check `kAutofillEnableBuyNowPayLater` only if the user has seen a BNPL
+  // suggestion before to avoid unnecessary feature flag checks. Ensures that
+  // only relevant sessions are included in BNPL related A/B experiments.
+  // Otherwise, users that navigate to the settings page can enroll in the
+  // experiment, with very little guarantee they will actually use the BNPL
+  // feature.
+  return IsAutofillHasSeenBnplPrefEnabled() &&
+         base::FeatureList::IsEnabled(features::kAutofillEnableBuyNowPayLater);
+#else
+  return false;
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
+}
+
 CoreAccountInfo PaymentsDataManager::GetAccountInfoForPaymentsServer() const {
   // Return the account of the active signed-in user irrespective of whether
   // they enabled sync or not.

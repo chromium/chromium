@@ -606,10 +606,7 @@ TEST_F(AmountExtractionManagerTest, ResponseBeforeTimeout) {
 // extraction receives a empty result.
 TEST_F(AmountExtractionManagerTest,
        OnCheckoutAmountReceived_EmptyResult_BnplManagerNotified) {
-  MockBnplManager& bnpl_manager_ = autofill_client_->GetPaymentsAutofillClient()
-                                       ->CreateOrGetMockBnplManager();
-
-  EXPECT_CALL(bnpl_manager_,
+  EXPECT_CALL(*autofill_manager_->GetPaymentsBnplManager(),
               OnAmountExtractionReturned(std::optional<uint64_t>()))
       .Times(1);
 
@@ -620,11 +617,9 @@ TEST_F(AmountExtractionManagerTest,
 // extraction receives a result with correct format.
 TEST_F(AmountExtractionManagerTest,
        OnCheckoutAmountReceived_AmountInCorrectFormat_BnplManagerNotified) {
-  MockBnplManager& bnpl_manager_ = autofill_client_->GetPaymentsAutofillClient()
-                                       ->CreateOrGetMockBnplManager();
-
-  EXPECT_CALL(bnpl_manager_, OnAmountExtractionReturned(
-                                 std::optional<uint64_t>(123'450'000ULL)))
+  EXPECT_CALL(
+      *autofill_manager_->GetPaymentsBnplManager(),
+      OnAmountExtractionReturned(std::optional<uint64_t>(123'450'000ULL)))
       .Times(1);
 
   FakeCheckoutAmountReceived("$ 123.45");

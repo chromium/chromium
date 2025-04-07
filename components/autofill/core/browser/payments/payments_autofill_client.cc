@@ -243,10 +243,6 @@ PaymentsAutofillClient::GetOrCreatePaymentsMandatoryReauthManager() {
   return nullptr;
 }
 
-payments::BnplManager* PaymentsAutofillClient::GetPaymentsBnplManager() {
-  return nullptr;
-}
-
 void PaymentsAutofillClient::ShowCreditCardSaveAndFillDialog() {}
 
 void PaymentsAutofillClient::ShowSelectBnplIssuerDialog(

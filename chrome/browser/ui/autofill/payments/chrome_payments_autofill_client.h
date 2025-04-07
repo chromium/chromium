@@ -71,7 +71,6 @@ class VirtualCardEnrollmentManager;
 namespace payments {
 
 struct BnplIssuerContext;
-class BnplManager;
 class MandatoryReauthManager;
 class PaymentsWindowManager;
 class SelectBnplIssuerDialogControllerImpl;
@@ -205,7 +204,6 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
   CreateCreditCardInternalAuthenticator(AutofillDriver* driver) override;
   payments::MandatoryReauthManager* GetOrCreatePaymentsMandatoryReauthManager()
       override;
-  payments::BnplManager* GetPaymentsBnplManager() override;
   PaymentsDataManager& GetPaymentsDataManager() final;
   void ShowCreditCardSaveAndFillDialog() override;
   void ShowSelectBnplIssuerDialog(
@@ -326,8 +324,6 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
 
   std::unique_ptr<payments::MandatoryReauthManager>
       payments_mandatory_reauth_manager_;
-
-  std::unique_ptr<payments::BnplManager> bnpl_manager_;
 
   std::unique_ptr<SaveAndFillDialogControllerImpl>
       save_and_fill_dialog_controller_;

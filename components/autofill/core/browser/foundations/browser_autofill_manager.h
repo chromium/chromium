@@ -45,6 +45,7 @@
 #include "components/autofill/core/browser/metrics/log_event.h"
 #include "components/autofill/core/browser/payments/amount_extraction_manager.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
+#include "components/autofill/core/browser/payments/bnpl_manager.h"
 #include "components/autofill/core/browser/payments/card_unmask_delegate.h"
 #include "components/autofill/core/browser/payments/full_card_request.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
@@ -208,6 +209,11 @@ class BrowserAutofillManager : public AutofillManager {
 
   CreditCardAccessManager& GetCreditCardAccessManager();
   const CreditCardAccessManager& GetCreditCardAccessManager() const;
+
+  // Gets the payments BNPL manager owned by `this`. This will be used to
+  // handle BNPL flows. May return nullptr if BNPL is not supported on the
+  // current platform.
+  virtual payments::BnplManager* GetPaymentsBnplManager();
 
   // Handles post-filling logic of `form_structure`, like notifying observers
   // and logging form metrics.
@@ -631,6 +637,10 @@ class BrowserAutofillManager : public AutofillManager {
   // Lazily initialized: access only through GetCreditCardAccessManager().
   std::unique_ptr<CreditCardAccessManager> credit_card_access_manager_;
 
+  // Manages Buy Now, Pay Later related autofill flows and logic.
+  // Lazily initialized: access only through GetPaymentsBnplManager().
+  std::unique_ptr<payments::BnplManager> bnpl_manager_;
+
   // The amount extraction manager, used to trigger the final checkout
   // amount from merchant websites.
   std::unique_ptr<payments::AmountExtractionManager>
@@ -643,9 +653,9 @@ class BrowserAutofillManager : public AutofillManager {
       std::make_unique<FormFiller>(*this);
 
   // Contains a list of four digit combinations that were found in the webpage
-  // DOM. Populated after a standalone cvc field is processed on a form. Used to
-  // confirm that the virtual card last four is present in the webpage for card
-  // on file case.
+  // DOM. Populated after a standalone cvc field is processed on a form.
+  // Used to confirm that the virtual card last four is present in the webpage
+  // for card on file case.
   std::vector<std::string> four_digit_combinations_in_dom_;
 
   std::u16string last_unlocked_credit_card_cvc_;

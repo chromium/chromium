@@ -91,6 +91,7 @@
 #include "chrome/grit/settings_resources_map.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/payments/bnpl_manager.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/commerce/core/commerce_feature_list.h"
@@ -419,8 +420,8 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       "shouldShowPayOverTimeSettings",
       autofill::ContentAutofillClient::FromWebContents(web_ui->GetWebContents())
           ->GetPaymentsAutofillClient()
-          ->GetPaymentsBnplManager()
-          ->ShouldShowBnplSettings());
+          ->GetPaymentsDataManager()
+          .ShouldShowBnplSettings());
 
   AddSettingsPageUIHandler(std::make_unique<AboutHandler>(profile));
   AddSettingsPageUIHandler(std::make_unique<ResetSettingsHandler>(profile));

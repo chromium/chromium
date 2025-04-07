@@ -58,7 +58,6 @@ enum class WebauthnDialogCallbackType;
 namespace payments {
 
 struct BnplIssuerContext;
-class BnplManager;
 class MandatoryReauthManager;
 class PaymentsNetworkInterface;
 class PaymentsWindowManager;
@@ -563,11 +562,6 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // used to handle payments mandatory re-auth related flows.
   virtual payments::MandatoryReauthManager*
   GetOrCreatePaymentsMandatoryReauthManager();
-
-  // Gets the payments BNPL manager owned by the client. This will be used to
-  // handle BNPL flows. It is not implemented on iOS and iOS WebView, and should
-  // not be used on those platforms.
-  virtual payments::BnplManager* GetPaymentsBnplManager();
 
   // Shows the `Save and Fill` modal dialog.
   virtual void ShowCreditCardSaveAndFillDialog();

@@ -13,6 +13,8 @@
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager_test_api.h"
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
+#include "components/autofill/core/browser/foundations/test_autofill_driver.h"
+#include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/integrators/optimization_guide/mock_autofill_optimization_guide.h"
 #include "components/autofill/core/browser/metrics/payments/bnpl_metrics.h"
 #include "components/autofill/core/browser/payments/bnpl_manager_test_api.h"
@@ -155,8 +157,13 @@ class BnplManagerTest : public Test {
             autofill_client_.get()));
     autofill_client_->GetPaymentsAutofillClient()
         ->set_payments_network_interface(std::move(payments_network_interface));
-
-    bnpl_manager_ = std::make_unique<BnplManager>(autofill_client_.get());
+    autofill_driver_ =
+        std::make_unique<TestAutofillDriver>(autofill_client_.get());
+    autofill_driver_->set_autofill_manager(
+        std::make_unique<TestBrowserAutofillManager>(autofill_driver_.get()));
+    bnpl_manager_ =
+        std::make_unique<BnplManager>(static_cast<BrowserAutofillManager*>(
+            &autofill_driver_->GetAutofillManager()));
   }
 
   // Sets up the PersonalDataManager with a unlinked bnpl issuer.
@@ -221,6 +228,7 @@ class BnplManagerTest : public Test {
  protected:
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TestAutofillClient> autofill_client_;
+  std::unique_ptr<TestAutofillDriver> autofill_driver_;
   std::unique_ptr<BnplManager> bnpl_manager_;
   raw_ptr<PaymentsNetworkInterfaceMock> payments_network_interface_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -1292,89 +1300,6 @@ TEST_F(BnplManagerTest, AddBnplSuggestion_BnplManagerNotNotified) {
 
   bnpl_manager_->OnSuggestionsShown(suggestions, callback.Get());
   bnpl_manager_->OnAmountExtractionReturned(1'234'560'000ULL);
-}
-
-// Tests that BNPL settings toggle should not be shown if all BNPL
-// feature flags are disabled.
-TEST_F(BnplManagerTest, BnplSettingsToggleNotShown_BnplFeatureDisabled) {
-  // Add one linked issuer and one unlinked issuer to payments data manager.
-  SetUpLinkedBnplIssuer(/*price_lower_bound_in_micros=*/40'000'000,
-                        /*price_higher_bound_in_micros=*/1'000'000'000,
-                        std::string(kBnplAffirmIssuerId),
-                        /*instrument_id=*/1234);
-  SetUpUnlinkedBnplIssuer(/*price_lower_bound_in_micros=*/1'000'000'000,
-                          /*price_higher_bound_in_micros=*/2'000'000'000,
-                          std::string(kBnplZipIssuerId));
-
-  // Enable `HasSeenBnpl` flag by generating BNPL suggestion.
-  TriggerBnplUpdateSuggestionsFlow(
-      /*expect_suggestions_are_updated=*/true,
-      /*extracted_amount=*/1'234'560'000ULL);
-
-  EXPECT_TRUE(bnpl_manager_->ShouldShowBnplSettings());
-
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{features::kAutofillEnableBuyNowPayLaterSyncing,
-                             features::kAutofillEnableBuyNowPayLater});
-
-  EXPECT_FALSE(bnpl_manager_->ShouldShowBnplSettings());
-}
-
-// Tests that BNPL settings toggle should not be shown if BNPL
-// issuer feature flags are disabled.
-TEST_F(BnplManagerTest, BnplSettingsToggleNotShown_BnplIssuerFeaturesDisabled) {
-  // Add one linked issuer and one unlinked issuer to payments data manager.
-  SetUpLinkedBnplIssuer(/*price_lower_bound_in_micros=*/40'000'000,
-                        /*price_higher_bound_in_micros=*/1'000'000'000,
-                        std::string(kBnplAffirmIssuerId),
-                        /*instrument_id=*/1234);
-  SetUpUnlinkedBnplIssuer(/*price_lower_bound_in_micros=*/1'000'000'000,
-                          /*price_higher_bound_in_micros=*/2'000'000'000,
-                          std::string(kBnplZipIssuerId));
-
-  // Enable `HasSeenBnpl` flag by generating BNPL suggestion.
-  TriggerBnplUpdateSuggestionsFlow(
-      /*expect_suggestions_are_updated=*/true,
-      /*extracted_amount=*/1'234'560'000ULL);
-
-  EXPECT_TRUE(bnpl_manager_->ShouldShowBnplSettings());
-
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillEnableBuyNowPayLaterSyncing},
-      /*disabled_features=*/{features::kAutofillEnableBuyNowPayLater});
-
-  EXPECT_FALSE(bnpl_manager_->ShouldShowBnplSettings());
-}
-
-// Tests that BNPL settings toggle should be shown only after BNPL suggestions
-// have been generated before.
-TEST_F(BnplManagerTest, BnplSettingsToggleNotShown_HasSeenBnpl) {
-  // Add one linked issuer and one unlinked issuer to payments data manager.
-  SetUpLinkedBnplIssuer(/*price_lower_bound_in_micros=*/40'000'000,
-                        /*price_higher_bound_in_micros=*/1'000'000'000,
-                        std::string(kBnplAffirmIssuerId),
-                        /*instrument_id=*/1234);
-  SetUpUnlinkedBnplIssuer(/*price_lower_bound_in_micros=*/1'000'000'000,
-                          /*price_higher_bound_in_micros=*/2'000'000'000,
-                          std::string(kBnplZipIssuerId));
-
-  EXPECT_FALSE(autofill_client_->GetPersonalDataManager()
-                   .payments_data_manager()
-                   .IsAutofillHasSeenBnplPrefEnabled());
-  EXPECT_FALSE(bnpl_manager_->ShouldShowBnplSettings());
-
-  // Enable `HasSeenBnpl` flag by generating BNPL suggestion.
-  TriggerBnplUpdateSuggestionsFlow(
-      /*expect_suggestions_are_updated=*/true,
-      /*extracted_amount=*/1'234'560'000ULL);
-
-  EXPECT_TRUE(autofill_client_->GetPersonalDataManager()
-                  .payments_data_manager()
-                  .IsAutofillHasSeenBnplPrefEnabled());
-  EXPECT_TRUE(bnpl_manager_->ShouldShowBnplSettings());
 }
 
 // Tests that when CreateBnplPaymentInstrument and responds with a success

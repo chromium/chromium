@@ -1365,29 +1365,29 @@ void AutofillExternalDelegate::DidAcceptPaymentsSuggestion(
           base::BindOnce(&AutofillExternalDelegate::OnCreditCardScanned,
                          GetWeakPtr()));
       break;
-    case SuggestionType::kBnplEntry:
+    case SuggestionType::kBnplEntry: {
       CHECK(suggestion.GetPayload<Suggestion::PaymentsPayload>()
                 .extracted_amount_in_micros.has_value());
-      manager_->client()
-          .GetPaymentsAutofillClient()
-          ->GetPaymentsBnplManager()
-          ->InitBnplFlow(
-              /*final_checkout_amount=*/suggestion
-                  .GetPayload<Suggestion::PaymentsPayload>()
-                  .extracted_amount_in_micros.value(),
-              base::BindOnce(
-                  [](base::WeakPtr<AutofillExternalDelegate> delegate,
-                     const CreditCard& card) {
-                    if (delegate) {
-                      delegate->manager_->FillOrPreviewCreditCardForm(
-                          mojom::ActionPersistence::kFill,
-                          delegate->query_form_,
-                          delegate->query_field_.global_id(), card,
-                          AutofillTriggerSource::kPopup);
-                    }
-                  },
-                  GetWeakPtr()));
+      payments::BnplManager* bnpl_manager = manager_->GetPaymentsBnplManager();
+      CHECK(bnpl_manager);
+
+      bnpl_manager->InitBnplFlow(
+          /*final_checkout_amount=*/suggestion
+              .GetPayload<Suggestion::PaymentsPayload>()
+              .extracted_amount_in_micros.value(),
+          base::BindOnce(
+              [](base::WeakPtr<AutofillExternalDelegate> delegate,
+                 const CreditCard& card) {
+                if (delegate) {
+                  delegate->manager_->FillOrPreviewCreditCardForm(
+                      mojom::ActionPersistence::kFill, delegate->query_form_,
+                      delegate->query_field_.global_id(), card,
+                      AutofillTriggerSource::kPopup);
+                }
+              },
+              GetWeakPtr()));
       break;
+    }
     default:
       NOTREACHED();  // Should be handled elsewhere
   }

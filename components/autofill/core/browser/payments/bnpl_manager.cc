@@ -18,6 +18,7 @@
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
+#include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/integrators/optimization_guide/autofill_optimization_guide.h"
 #include "components/autofill/core/browser/metrics/payments/bnpl_metrics.h"
 #include "components/autofill/core/browser/payments/constants.h"
@@ -49,8 +50,8 @@ BnplManager::OngoingFlowState::OngoingFlowState() = default;
 
 BnplManager::OngoingFlowState::~OngoingFlowState() = default;
 
-BnplManager::BnplManager(AutofillClient* autofill_client)
-    : autofill_client_(CHECK_DEREF(autofill_client)) {}
+BnplManager::BnplManager(AutofillManager* autofill_manager)
+    : autofill_manager_(CHECK_DEREF(autofill_manager)) {}
 
 BnplManager::~BnplManager() = default;
 
@@ -68,7 +69,7 @@ void BnplManager::InitBnplFlow(
   ongoing_flow_state_ = std::make_unique<OngoingFlowState>();
 
   ongoing_flow_state_->final_checkout_amount = final_checkout_amount;
-  ongoing_flow_state_->app_locale = autofill_client_->GetAppLocale();
+  ongoing_flow_state_->app_locale = autofill_manager_->client().GetAppLocale();
   ongoing_flow_state_->billing_customer_number =
       GetBillingCustomerId(payments_autofill_client().GetPaymentsDataManager());
   ongoing_flow_state_->on_bnpl_vcn_fetched_callback =
@@ -124,26 +125,6 @@ void BnplManager::OnAmountExtractionReturned(
             kAmountExtractionFailure);
     has_logged_bnpl_suggestion_not_shown_reason_ = true;
   }
-}
-
-bool BnplManager::ShouldShowBnplSettings() const {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
-  const PaymentsDataManager& payments_data_manager =
-      payments_autofill_client().GetPaymentsDataManager();
-
-  // Check `kAutofillEnableBuyNowPayLater` only if user has seen a BNPL
-  // suggestion before to avoid unnecessary feature flag checks. Ensures that
-  // only relevant sessions are included in BNPL related A/B experiments.
-  // Otherwise, users that navigate to the settings page can enroll in the
-  // experiment, with very little guarantee they will actually use the BNPL
-  // feature.
-  return payments_data_manager.IsAutofillHasSeenBnplPrefEnabled() &&
-         base::FeatureList::IsEnabled(features::kAutofillEnableBuyNowPayLater);
-#else
-  return false;
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_CHROMEOS)
 }
 
 void BnplManager::FetchVcnDetails(GURL url) {
@@ -242,8 +223,8 @@ void BnplManager::GetDetailsForCreateBnplPaymentInstrument() {
       ongoing_flow_state_->billing_customer_number;
   request_details.issuer_id = ongoing_flow_state_->issuer.issuer_id();
 
-  autofill_client_->GetPaymentsAutofillClient()
-      ->GetPaymentsNetworkInterface()
+  payments_autofill_client()
+      .GetPaymentsNetworkInterface()
       ->GetDetailsForCreateBnplPaymentInstrument(
           std::move(request_details),
           base::BindOnce(
@@ -315,7 +296,9 @@ void BnplManager::FetchRedirectUrl() {
   request_details.instrument_id = ongoing_flow_state_->instrument_id;
   request_details.risk_data = ongoing_flow_state_->risk_data;
   request_details.merchant_domain =
-      autofill_client_->GetLastCommittedPrimaryMainFrameOrigin().GetURL();
+      autofill_manager_->client()
+          .GetLastCommittedPrimaryMainFrameOrigin()
+          .GetURL();
   request_details.total_amount = ongoing_flow_state_->final_checkout_amount;
   // Only `USD` is supported for MVP.
   request_details.currency = "USD";
@@ -523,9 +506,10 @@ void BnplManager::OnBnplPaymentInstrumentCreated(
 
 std::vector<BnplIssuerContext> BnplManager::GetSortedBnplIssuerContext() {
   AutofillOptimizationGuide* autofill_optimization_guide =
-      autofill_client_->GetAutofillOptimizationGuide();
-  const GURL& merchant_url =
-      autofill_client_->GetLastCommittedPrimaryMainFrameOrigin().GetURL();
+      autofill_manager_->client().GetAutofillOptimizationGuide();
+  const GURL& merchant_url = autofill_manager_->client()
+                                 .GetLastCommittedPrimaryMainFrameOrigin()
+                                 .GetURL();
 
   // Check BNPL issuer eligibility for the current page and save the
   // eligibility with the corresponding issuer to the vector of

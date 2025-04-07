@@ -34,7 +34,6 @@
 #include "components/autofill/core/browser/metrics/payments/risk_data_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
-#include "components/autofill/core/browser/payments/bnpl_manager.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
 #include "components/autofill/core/browser/payments/credit_card_otp_authenticator.h"
@@ -929,14 +928,6 @@ ChromePaymentsAutofillClient::GetOrCreatePaymentsMandatoryReauthManager() {
   }
 
   return payments_mandatory_reauth_manager_.get();
-}
-
-payments::BnplManager* ChromePaymentsAutofillClient::GetPaymentsBnplManager() {
-  if (!bnpl_manager_) {
-    bnpl_manager_ = std::make_unique<payments::BnplManager>(&client_.get());
-  }
-
-  return bnpl_manager_.get();
 }
 
 PaymentsDataManager& ChromePaymentsAutofillClient::GetPaymentsDataManager() {

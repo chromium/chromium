@@ -178,9 +178,7 @@ void AmountExtractionManager::OnCheckoutAmountReceived(
   std::optional<uint64_t> parsed_extracted_amount =
       MaybeParseAmountToMonetaryMicroUnits(extracted_amount);
 
-  if (BnplManager* bnpl_manager = autofill_manager_->client()
-                                      .GetPaymentsAutofillClient()
-                                      ->GetPaymentsBnplManager()) {
+  if (BnplManager* bnpl_manager = autofill_manager_->GetPaymentsBnplManager()) {
     bnpl_manager->OnAmountExtractionReturned(parsed_extracted_amount);
   }
   if constexpr (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||

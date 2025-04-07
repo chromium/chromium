@@ -369,6 +369,10 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 
+  // Returns if the user has seen a BNPL suggestion before and if the BNPL
+  // feature is enabled. Does not check for user's locale.
+  bool ShouldShowBnplSettings() const;
+
   // Returns whether sync's integration with payments is on.
   virtual bool IsAutofillWalletImportEnabled() const;
 

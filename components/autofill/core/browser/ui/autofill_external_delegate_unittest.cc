@@ -260,6 +260,8 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
     test_api(*this).set_credit_card_access_manager(
         std::make_unique<TestCreditCardAccessManager>(
             this, test_api(*this).credit_card_form_event_logger()));
+    test_api(*this).set_bnpl_manager(
+        std::make_unique<testing::NiceMock<MockBnplManager>>(this));
   }
   MockBrowserAutofillManager(const MockBrowserAutofillManager&) = delete;
   MockBrowserAutofillManager& operator=(const MockBrowserAutofillManager&) =
@@ -753,14 +755,13 @@ TEST_F(AutofillExternalDelegateTest, DuplicateAutocompleteDatalistValues) {
   OnSuggestionsReturned(queried_field().global_id(), autocomplete_items);
 }
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
 // Test that `BnplManager::OnSuggestionsShown` will not be called if the
 // suggestion list doesn't contain a credit card entry.
-TEST_F(AutofillExternalDelegateTest, SuggestionsShownWithoutCreditCardEntry) {
-  // Set up `BnplManager` for testing.
-  MockBnplManager& bnpl_manager =
-      client().GetPaymentsAutofillClient()->CreateOrGetMockBnplManager();
-
-  EXPECT_CALL(bnpl_manager, OnSuggestionsShown).Times(0);
+TEST_F(AutofillExternalDelegateTest,
+       BnplSuggestionsNotShownWithoutCreditCardEntry) {
+  EXPECT_CALL(*manager().GetPaymentsBnplManager(), OnSuggestionsShown).Times(0);
 
   const std::vector<Suggestion> suggestions = {
       test::CreateAutofillSuggestion(SuggestionType::kAddressEntry),
@@ -772,12 +773,8 @@ TEST_F(AutofillExternalDelegateTest, SuggestionsShownWithoutCreditCardEntry) {
 
 // Test that `BnplManager::OnSuggestionsShown` will be called if the
 // suggestion list contains a credit card entry.
-TEST_F(AutofillExternalDelegateTest, SuggestionsShownWithCreditCardEntry) {
-  // Set up `BnplManager` for testing.
-  MockBnplManager& bnpl_manager =
-      client().GetPaymentsAutofillClient()->CreateOrGetMockBnplManager();
-
-  EXPECT_CALL(bnpl_manager, OnSuggestionsShown).Times(1);
+TEST_F(AutofillExternalDelegateTest, BnplSuggestionsShownWithCreditCardEntry) {
+  EXPECT_CALL(*manager().GetPaymentsBnplManager(), OnSuggestionsShown).Times(1);
 
   const std::vector<Suggestion> suggestions = {
       test::CreateAutofillSuggestion(SuggestionType::kCreditCardEntry),
@@ -795,9 +792,9 @@ TEST_F(AutofillExternalDelegateTest, AcceptedBnplEntry_FormIsFilled) {
   card.set_issuer_id(payments::BnplManager::GetSupportedBnplIssuerIds()[0]);
 
   const uint64_t expected_amount = 50'000'000;
-  EXPECT_CALL(
-      client().GetPaymentsAutofillClient()->CreateOrGetMockBnplManager(),
-      InitBnplFlow(expected_amount, _))
+
+  EXPECT_CALL(*manager().GetPaymentsBnplManager(),
+              InitBnplFlow(expected_amount, _))
       .WillOnce(RunOnceCallback<1>(card));
   EXPECT_CALL(manager(),
               FillOrPreviewCreditCardForm(
@@ -812,6 +809,8 @@ TEST_F(AutofillExternalDelegateTest, AcceptedBnplEntry_FormIsFilled) {
                                      payments_payload),
       {});
 }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
 // Test that the Autofill popup is able to display warnings explaining why
 // Autofill is disabled for a website.

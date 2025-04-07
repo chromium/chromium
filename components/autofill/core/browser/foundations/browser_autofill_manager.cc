@@ -705,6 +705,18 @@ BrowserAutofillManager::GetCreditCardAccessManager() const {
       ->GetCreditCardAccessManager();
 }
 
+payments::BnplManager* BrowserAutofillManager::GetPaymentsBnplManager() {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+  if (!bnpl_manager_) {
+    bnpl_manager_ = std::make_unique<payments::BnplManager>(this);
+  }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
+
+  return bnpl_manager_.get();
+}
+
 bool BrowserAutofillManager::ShouldShowScanCreditCard(
     const FormData& form,
     const FormFieldData& field) {
@@ -1454,8 +1466,7 @@ void BrowserAutofillManager::OnGenerateSuggestionsComplete(
           context,
           ShouldSuppressSuggestions(context.suppress_reason, log_manager()),
           !suggestions.empty(), autofill_field->Type().GetStorableType())) {
-    if (payments::BnplManager* bnpl_manager =
-            client().GetPaymentsAutofillClient()->GetPaymentsBnplManager()) {
+    if (payments::BnplManager* bnpl_manager = GetPaymentsBnplManager()) {
       bnpl_manager->NotifyOfSuggestionGeneration(trigger_source);
     }
     amount_extraction_manager_->TriggerCheckoutAmountExtraction();
@@ -1936,8 +1947,8 @@ void BrowserAutofillManager::DidShowSuggestions(
 
   // Notify the BNPL manager about suggestion shown if the current shown
   // suggestion list contains a credit card entry.
-  if (payments::BnplManager* bnpl_manager =
-          client().GetPaymentsAutofillClient()->GetPaymentsBnplManager();
+
+  if (payments::BnplManager* bnpl_manager = GetPaymentsBnplManager();
       bnpl_manager &&
       shown_suggestion_types.contains(SuggestionType::kCreditCardEntry)) {
     bnpl_manager->OnSuggestionsShown(suggestions, update_suggestions_callback);
