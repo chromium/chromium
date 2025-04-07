@@ -775,7 +775,8 @@ void TileManager::InitializeTilesWithResourcesForTesting(
     bool exported = resource_pool_->PrepareForExport(
         resource, viz::TransferableResource::ResourceSource::kTest);
     DCHECK(exported);
-    draw_info.SetResource(std::move(resource), false, false);
+    draw_info.SetResource(std::move(resource), false,
+                          /*is_premultiplied=*/true);
     draw_info.set_resource_ready_for_draw();
   }
 }
