@@ -1044,7 +1044,6 @@ class NoVarySearchHintPrerenderHostObserver : public PrerenderHost::Observer {
   }
 
   void OnWaitingForHeadersFinished(
-      NavigationHandle& navigation_handle,
       PrerenderHost::WaitingForHeadersFinishedReason reason) override {
     ASSERT_FALSE(wait_for_headers_finish_reason_.has_value());
     wait_for_headers_finish_reason_ = reason;
