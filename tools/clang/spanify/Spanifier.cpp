@@ -1487,6 +1487,14 @@ std::pair<std::string, std::string> RewriteStdArrayWithInitList(
       closing_brackets_replacement_directive);
 }
 
+static bool IsMutable(const clang::DeclaratorDecl* decl) {
+  if (const auto* field_decl =
+          clang::dyn_cast_or_null<clang::FieldDecl>(decl)) {
+    return field_decl->isMutable();
+  }
+  return false;
+}
+
 static bool IsConstexpr(const clang::DeclaratorDecl* decl) {
   if (const auto* var_decl = clang::dyn_cast_or_null<clang::VarDecl>(decl)) {
     return var_decl->isConstexpr();
@@ -1566,6 +1574,11 @@ std::string getNodeFromArrayDecl(const clang::TypeLoc* type_loc,
   const clang::QualType& original_element_type = array_type->getElementType();
 
   std::stringstream qualifier_string;
+  if (IsMutable(array_decl)) {
+    // While 'mutable' is a storage class specifier, include it with other
+    // declaration specifiers that precede the type in source code.
+    qualifier_string << "mutable ";
+  }
   if (IsConstexpr(array_decl)) {
     qualifier_string << "constexpr ";
   }
