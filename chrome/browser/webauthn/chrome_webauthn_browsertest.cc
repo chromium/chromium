@@ -1830,7 +1830,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnImmediateGetTest, NoCreds_NotFoundError) {
         kRequestWithPasswordTemplate, {request_password},
         /*offsets=*/nullptr);
     const auto& result = content::EvalJs(web_contents, script);
-    EXPECT_THAT(result.ExtractString(), testing::HasSubstr("NotFoundError"));
+    EXPECT_THAT(result.ExtractString(), testing::HasSubstr("NotAllowedError"));
   }
 }
 
@@ -1847,7 +1847,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnImmediateGetTest,
         kRequestWithPasswordTemplate, {request_password},
         /*offsets=*/nullptr);
     const auto& result = content::EvalJs(web_contents, script);
-    EXPECT_THAT(result.ExtractString(), testing::HasSubstr("NotFoundError"));
+    EXPECT_THAT(result.ExtractString(), testing::HasSubstr("NotAllowedError"));
   }
 }
 

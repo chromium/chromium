@@ -1217,7 +1217,7 @@ DOMException* AuthenticatorStatusToDOMException(
           "to the credential manager.");
     case AuthenticatorStatus::IMMEDIATE_NOT_FOUND:
       return MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kNotFoundError,
+          DOMExceptionCode::kNotAllowedError,
           "No immediate discoverable credentials are found.");
   }
   return nullptr;
