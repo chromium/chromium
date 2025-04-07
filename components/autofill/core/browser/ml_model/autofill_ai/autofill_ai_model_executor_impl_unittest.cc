@@ -9,6 +9,7 @@
 
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
+#include "base/test/mock_callback.h"
 #include "base/test/protobuf_matchers.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -41,6 +42,8 @@ using ::testing::_;
 using ::testing::An;
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
+using MockOnModelExecutedCallback =
+    base::MockCallback<base::OnceCallback<void(const FormGlobalId&)>>;
 
 class AutofillAiModelExecutorImplTest : public testing::Test {
  public:
@@ -76,6 +79,7 @@ TEST_F(AutofillAiModelExecutorImplTest, ValidResponse) {
     field_response->set_field_index(0);
   }
 
+  MockOnModelExecutedCallback on_model_executed;
   EXPECT_CALL(
       *model_executor(),
       ExecuteModel(
@@ -92,8 +96,9 @@ TEST_F(AutofillAiModelExecutorImplTest, ValidResponse) {
              ElementsAre(FieldIdentifier{
                  .signature = CalculateFieldSignatureForField(form.fields()[0]),
                  .rank_in_signature_group = 0})));
+  EXPECT_CALL(on_model_executed, Run(form.global_id()));
 
-  engine()->GetPredictions(form, std::nullopt);
+  engine()->GetPredictions(form, on_model_executed.Get(), std::nullopt);
 }
 
 // Tests that if the field index of a prediction is out of bounds of the
@@ -108,6 +113,7 @@ TEST_F(AutofillAiModelExecutorImplTest, FieldIndexOutOfBounds) {
     field_response->set_field_index(1);
   }
 
+  MockOnModelExecutedCallback on_model_executed;
   EXPECT_CALL(
       *model_executor(),
       ExecuteModel(
@@ -122,8 +128,9 @@ TEST_F(AutofillAiModelExecutorImplTest, FieldIndexOutOfBounds) {
       model_cache(),
       Update(CalculateFormSignature(form),
              base::test::EqualsProto(AutofillAiTypeResponse()), IsEmpty()));
+  EXPECT_CALL(on_model_executed, Run(form.global_id()));
 
-  engine()->GetPredictions(form, std::nullopt);
+  engine()->GetPredictions(form, on_model_executed.Get(), std::nullopt);
 }
 
 // Tests that if the field index of a prediction is negative, then nothing is
@@ -138,6 +145,7 @@ TEST_F(AutofillAiModelExecutorImplTest, FieldIndexNegative) {
     field_response->set_field_index(-1);
   }
 
+  MockOnModelExecutedCallback on_model_executed;
   EXPECT_CALL(
       *model_executor(),
       ExecuteModel(
@@ -152,8 +160,9 @@ TEST_F(AutofillAiModelExecutorImplTest, FieldIndexNegative) {
       model_cache(),
       Update(CalculateFormSignature(form),
              base::test::EqualsProto(AutofillAiTypeResponse()), IsEmpty()));
+  EXPECT_CALL(on_model_executed, Run(form.global_id()));
 
-  engine()->GetPredictions(form, std::nullopt);
+  engine()->GetPredictions(form, on_model_executed.Get(), std::nullopt);
 }
 
 // Tests that if there are duplicate field indices, then nothing is written
@@ -174,6 +183,7 @@ TEST_F(AutofillAiModelExecutorImplTest, DuplicateFieldIndices) {
     field_response->set_field_index(0);
   }
 
+  MockOnModelExecutedCallback on_model_executed;
   EXPECT_CALL(
       *model_executor(),
       ExecuteModel(
@@ -188,8 +198,9 @@ TEST_F(AutofillAiModelExecutorImplTest, DuplicateFieldIndices) {
       model_cache(),
       Update(CalculateFormSignature(form),
              base::test::EqualsProto(AutofillAiTypeResponse()), IsEmpty()));
+  EXPECT_CALL(on_model_executed, Run(form.global_id()));
 
-  engine()->GetPredictions(form, std::nullopt);
+  engine()->GetPredictions(form, on_model_executed.Get(), std::nullopt);
 }
 
 // Tests that if there is an ongoing request with the same form signature, then
@@ -236,14 +247,14 @@ TEST_F(AutofillAiModelExecutorImplTest, OngoingRequestWithSameSignature) {
               .signature = CalculateFieldSignatureForField(form1.fields()[0]),
               .rank_in_signature_group = 0})));
 
-  engine()->GetPredictions(form1, std::nullopt);
+  engine()->GetPredictions(form1, base::DoNothing(), std::nullopt);
 
   // We expect this call not to trigger a run.
-  engine()->GetPredictions(form1, std::nullopt);
+  engine()->GetPredictions(form1, base::DoNothing(), std::nullopt);
 
   // The simulated model call for a different form runs immediately and
   // completes successfully.
-  engine()->GetPredictions(form2, std::nullopt);
+  engine()->GetPredictions(form2, base::DoNothing(), std::nullopt);
   ASSERT_TRUE(model_callback2);
   std::move(model_callback2)
       .Run(OptimizationGuideModelExecutionResult(
@@ -263,6 +274,7 @@ TEST_F(AutofillAiModelExecutorImplTest, OngoingRequestWithSameSignature) {
 // Tests that model errors are handled by writing an empty entry into the cache.
 TEST_F(AutofillAiModelExecutorImplTest, ModelError) {
   const FormData form;
+  MockOnModelExecutedCallback on_model_executed;
   EXPECT_CALL(
       *model_executor(),
       ExecuteModel(
@@ -280,14 +292,16 @@ TEST_F(AutofillAiModelExecutorImplTest, ModelError) {
       model_cache(),
       Update(CalculateFormSignature(form),
              base::test::EqualsProto(AutofillAiTypeResponse()), IsEmpty()));
+  EXPECT_CALL(on_model_executed, Run(form.global_id()));
 
-  engine()->GetPredictions(form, std::nullopt);
+  engine()->GetPredictions(form, on_model_executed.Get(), std::nullopt);
 }
 
 // Tests that wrongly typed model responses are handled by writing an empty
 // entry into the cache.
 TEST_F(AutofillAiModelExecutorImplTest, WrongTypeReturned) {
   const FormData form;
+  MockOnModelExecutedCallback on_model_executed;
   EXPECT_CALL(
       *model_executor(),
       ExecuteModel(
@@ -301,8 +315,9 @@ TEST_F(AutofillAiModelExecutorImplTest, WrongTypeReturned) {
       model_cache(),
       Update(CalculateFormSignature(form),
              base::test::EqualsProto(AutofillAiTypeResponse()), IsEmpty()));
+  EXPECT_CALL(on_model_executed, Run(form.global_id()));
 
-  engine()->GetPredictions(form, std::nullopt);
+  engine()->GetPredictions(form, on_model_executed.Get(), std::nullopt);
 }
 
 }  // namespace

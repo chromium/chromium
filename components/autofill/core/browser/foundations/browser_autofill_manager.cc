@@ -624,8 +624,20 @@ void MaybeImportFromSubmittedForm(AutofillClient& client,
 
 // Retrieves the AutofillAI predictions for `form` in `cache` and adds them to
 // `form`'s fields.
-void AddAutofillAiPredictions(const AutofillAiModelCache& cache,
-                              FormStructure& form) {
+void AddCachedAutofillAiPredictions(const AutofillAiModelCache& cache,
+                                    FormStructure& form) {
+  // Mixing Autofill AI model predictions (which come from the online LLM) and
+  // Autofill AI server predictions (which come from the Autofill crowdsourcing
+  // server) may lead to too many false positives. We therefore favor server
+  // predictions over model predictions. (There's no specific reason for this
+  // precedence -- preferring model predictions may work just as well.)
+  if (std::ranges::any_of(
+          form.fields(), [](const std::unique_ptr<AutofillField>& field) {
+            return field->GetAutofillAiServerTypePredictions().has_value();
+          })) {
+    return;
+  }
+
   using FieldIdentifier = AutofillAiModelCache::FieldIdentifier;
   using ModelFieldPrediction = AutofillAiModelCache::FieldPrediction;
   const base::flat_map<FieldIdentifier, ModelFieldPrediction> predictions =
@@ -2145,6 +2157,7 @@ void BrowserAutofillManager::OnLoadedServerPredictionsImpl(
     base::span<const raw_ptr<FormStructure, VectorExperimental>> forms) {
   const AutofillAiModelCache* const model_cache =
       client().GetAutofillAiModelCache();
+
   if (!model_cache) {
     return;
   }
@@ -2155,15 +2168,10 @@ void BrowserAutofillManager::OnLoadedServerPredictionsImpl(
     }
 
     if (model_cache->Contains(form->form_signature())) {
-      // Do not override server predictions.
       if (MayPerformAutofillAiAction(
               client(),
-              AutofillAiAction::kUseCachedServerClassificationModelResults) &&
-          std::ranges::none_of(
-              form->fields(), [](const std::unique_ptr<AutofillField>& field) {
-                return field->GetAutofillAiServerTypePredictions().has_value();
-              })) {
-        AddAutofillAiPredictions(*model_cache, *form);
+              AutofillAiAction::kUseCachedServerClassificationModelResults)) {
+        AddCachedAutofillAiPredictions(*model_cache, *form);
       }
       continue;
     }
@@ -2192,19 +2200,43 @@ void BrowserAutofillManager::OnLoadedServerPredictionsImpl(
       continue;
     }
 
+    auto deferred_add_cached_autofill_ai_predictions =
+        [](base::WeakPtr<AutofillManager> self, const FormGlobalId& form_id) {
+          if (!self) {
+            return;
+          }
+          AutofillAiModelCache* model_cache =
+              self->client().GetAutofillAiModelCache();
+          if (!model_cache) {
+            return;
+          }
+          FormStructure* form = self->FindCachedFormById(form_id);
+          if (!form) {
+            return;
+          }
+          AddCachedAutofillAiPredictions(*model_cache, *form);
+          form->RationalizeAndAssignSections(
+              self->client().GetCurrentLogManager());
+        };
     if (features::kAutofillAiServerModelSendPageContent.Get()) {
       LOG_AF(log_manager())
           << LoggingScope::kAutofillAi
           << "Requesting page page content for model run for form." << Br{}
           << *form;
-      client().GetAiPageContent(
-          base::BindOnce(&AutofillAiModelExecutor::GetPredictions,
-                         model_executor->GetWeakPtr(), form->ToFormData()));
+      client().GetAiPageContent(base::BindOnce(
+          &AutofillAiModelExecutor::GetPredictions,
+          model_executor->GetWeakPtr(), form->ToFormData(),
+          base::BindOnce(deferred_add_cached_autofill_ai_predictions,
+                         GetWeakPtr())));
     } else {
       LOG_AF(log_manager())
           << LoggingScope::kAutofillAi << "Requesting model run for form."
           << Br{} << *form;
-      model_executor->GetPredictions(form->ToFormData(), {});
+      model_executor->GetPredictions(
+          form->ToFormData(),
+          base::BindOnce(deferred_add_cached_autofill_ai_predictions,
+                         GetWeakPtr()),
+          std::nullopt);
     }
   }
 }

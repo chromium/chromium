@@ -7,7 +7,9 @@
 
 #include <optional>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace optimization_guide::proto {
@@ -30,6 +32,7 @@ class AutofillAiModelExecutor : public KeyedService {
   // model.
   virtual void GetPredictions(
       FormData form_data,
+      base::OnceCallback<void(const FormGlobalId&)> on_model_executed,
       std::optional<optimization_guide::proto::AnnotatedPageContent>
           annotated_page_content) = 0;
 

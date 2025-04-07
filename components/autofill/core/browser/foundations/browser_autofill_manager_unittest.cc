@@ -7007,7 +7007,7 @@ TEST_F(BrowserAutofillManagerTest_AutofillAi_WithModel,
   EXPECT_CALL(client(), GetAiPageContent)
       .WillOnce(RunOnceCallback<0>(
           optimization_guide::proto::AnnotatedPageContent()));
-  EXPECT_CALL(executor(), GetPredictions(_, Not(Eq(std::nullopt))));
+  EXPECT_CALL(executor(), GetPredictions(_, _, Not(Eq(std::nullopt))));
   SeeForm(/*may_run_model=*/true);
 }
 
