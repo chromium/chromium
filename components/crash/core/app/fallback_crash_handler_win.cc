@@ -18,7 +18,7 @@
 #include "base/process/process_handle.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/win/scoped_handle.h"
-#include "base/win/win_util.h"
+#include "base/win/windows_handle_util.h"
 #include "build/build_config.h"
 #include "components/crash/core/app/minidump_with_crashpad_info.h"
 

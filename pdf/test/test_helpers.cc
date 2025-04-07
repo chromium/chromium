@@ -13,6 +13,7 @@
 #include "pdf/pdfium/pdfium_engine_exports.h"
 #include "printing/units.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/web/web_print_params.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -73,7 +74,7 @@ base::FilePath::StringType GetTestDataPathWithPlatformSuffix(
   return path.InsertBeforeExtension(kSuffix).value();
 #else
   return base::FilePath(filename).value();
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 }
 
 testing::AssertionResult MatchesPngFile(
@@ -138,6 +139,14 @@ v8::Isolate* GetBlinkIsolate() {
 
 void SetBlinkIsolate(v8::Isolate* isolate) {
   g_isolate = isolate;
+}
+
+blink::WebPrintParams GetDefaultPrintParams() {
+  blink::WebPrintParams params;
+  params.default_page_description.size = kUSLetterSize;
+  params.printable_area_in_css_pixels = kUSLetterRect;
+  params.print_scaling_option = printing::mojom::PrintScalingOption::kNone;
+  return params;
 }
 
 }  // namespace chrome_pdf

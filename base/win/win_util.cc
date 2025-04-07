@@ -52,7 +52,6 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/heap_array.h"
-#include "base/debug/alias.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/files/file_path.h"
@@ -1188,21 +1187,6 @@ expected<std::wstring, NTSTATUS> GetObjectTypeName(HANDLE handle) {
   }
   return std::wstring(type_info->TypeName.Buffer,
                       type_info->TypeName.Length / sizeof(wchar_t));
-}
-
-expected<ScopedHandle, NTSTATUS> TakeHandleOfType(
-    HANDLE handle,
-    std::wstring_view object_type_name) {
-  auto type_name = GetObjectTypeName(handle);
-  if (!type_name.has_value()) {
-    // `handle` is invalid. Return the error to the caller.
-    return unexpected(type_name.error());
-  }
-  // Crash if `handle` is an unexpected type. This represents a dangerous
-  // type confusion condition that should never happen.
-  base::debug::Alias(&handle);
-  CHECK_EQ(*type_name, object_type_name);
-  return ScopedHandle(handle);  // Ownership of `handle` goes to the caller.
 }
 
 ProcessPowerState GetProcessEcoQoSState(HANDLE process) {

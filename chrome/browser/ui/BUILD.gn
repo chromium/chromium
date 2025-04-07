@@ -987,6 +987,17 @@ static_library("ui") {
     # TODO(b/335257259): Resolve circular deps.
     # Any circular includes must depend on the target "//chrome/browser:browser_public_dependencies".
     allow_circular_includes_from += [ "//chrome/browser/facilitated_payments" ]
+
+    if (enable_extensions_core) {
+      sources += [
+        "android/toolbar/toolbar_action_icon_bridge.cc",
+        "android/toolbar/toolbar_action_icon_bridge.h",
+        "android/toolbar/toolbar_actions_bridge.cc",
+        "android/toolbar/toolbar_actions_bridge.h",
+        "android/toolbar/toolbar_actions_bridge_factory.cc",
+        "android/toolbar/toolbar_actions_bridge_factory.h",
+      ]
+    }
   } else {
     # !is_android
     sources += [
@@ -1336,10 +1347,6 @@ static_library("ui") {
       "toolbar/toolbar_action_view_controller.h",
       "toolbar/toolbar_action_view_delegate.h",
       "toolbar/toolbar_actions_bar_bubble_delegate.h",
-      "toolbar/toolbar_actions_model.cc",
-      "toolbar/toolbar_actions_model.h",
-      "toolbar/toolbar_actions_model_factory.cc",
-      "toolbar/toolbar_actions_model_factory.h",
       "toolbar/toolbar_pref_names.cc",
       "toolbar/toolbar_pref_names.h",
       "translate/translate_bubble_factory.cc",
@@ -5290,6 +5297,10 @@ static_library("ui") {
     sources += [
       "extensions/extension_install_ui.cc",
       "extensions/extension_install_ui.h",
+      "toolbar/toolbar_actions_model.cc",
+      "toolbar/toolbar_actions_model.h",
+      "toolbar/toolbar_actions_model_factory.cc",
+      "toolbar/toolbar_actions_model_factory.h",
       "webui/extensions/extensions_ui.cc",
       "webui/extensions/extensions_ui.h",
       "webui/favicon_source.cc",

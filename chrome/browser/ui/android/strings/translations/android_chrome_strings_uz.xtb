@@ -77,6 +77,7 @@
 <translation id="1298077576058087471">60% gacha trafikni tejang va bugungi yangiliklar bilan tanishing</translation>
 <translation id="1303339473099049190">Bu parol topilmadi. Xatosiz kiritilganini tekshiring va qayta urining.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> orqali <ph name="DEVICE_NAME" /> qurilmasidan yuborildi</translation>
+<translation id="1318262688555255786">Havolani <ph name="PAGE_TITLE" /> sahifasiga ulashing. Manba: <ph name="PAGE_URL" /></translation>
 <translation id="1320912611264252795">Bukmarklarni saqlash jarayoni jildi yarim balandlikda ochiq</translation>
 <translation id="1327257854815634930">Sahifalar tarixi ochildi</translation>
 <translation id="1331212799747679585">Chrome yangilanmadi. Boshqa sozlamalar</translation>
@@ -515,6 +516,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="3435465986463792564">Koʻp oynalar ochildimi? Ularni bu yerdan boshqarish mumkin</translation>
 <translation id="3435575784518354875">Parollardan foydalanishda davom etish uchun ularni hoziroq eksport qilib, Googel Play xizmatlarini yangilang va Google Parollar meneriga qayta import qiling. <ph name="BEGIN_LINK" />Toʻliq koʻrsatmalar<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">Xavfsizlik</translation>
+<translation id="3435914367318771664">Varaqni yangi guruhga kiritish</translation>
 <translation id="3439276997620616816">Oxirgi ochilgan varaqlar shu yerda chiqadi</translation>
 <translation id="3443221991560634068">Joriy sahifani qayta yuklash</translation>
 <translation id="3444179773590444986">Saytlar uchun tungi mavzuda oid fikr-mulohaza yuborilsinmi?</translation>
@@ -780,6 +782,7 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="4684427112815847243">Hamma narsa sinxronlansin</translation>
 <translation id="4685741273709472646">Pastga ochiluvchi roʻyxatdan tanlang</translation>
 <translation id="4687718960473379118">Saytlar taklif qiladigan reklamalar</translation>
+<translation id="468924408576231679">Havolani <ph name="PAGE_TITLE" /> sahifasiga nusxalang. Manba: <ph name="PAGE_URL" /></translation>
 <translation id="469286762610133730">Yanada qiziqarli kontent oling</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 va yana <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ta}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 va yana <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ta}}</translation>
 <translation id="4698061626562952596">Nofaol varaqlar shu yerda chiqadi</translation>
@@ -1122,6 +1125,7 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="6205314730813004066">Reklamalardagi maxfiylik</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> emasmi?</translation>
 <translation id="6211386937064921208">Bu sahifaga razm solyapsiz</translation>
+<translation id="6212567362666004597">Varaqni guruhga kiritish</translation>
 <translation id="6221633008163990886">Parollarni eksport qilish uchun qulfni oching.</translation>
 <translation id="6225572914528673855">Manzil qatori</translation>
 <translation id="6232535412751077445">Agar “Kuzatilmasin” parametri yoniq bo‘lsa, brauzer so‘rovlariga maxsus buyruq qo‘shiladi. Natijasi sayt so‘rovga javob berishi va so‘rov qanday ma’noda tushunilganligiga bog‘liq bo‘ladi.
@@ -1149,6 +1153,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="6324916366299863871">Yorliqni tahrirlash</translation>
 <translation id="6324977638108296054">Tanlangan matnga havola yaratish imkonsiz</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> orqali ulashish</translation>
+<translation id="6335454563754888572"><ph name="PAGE_URL" /> manzilidagi sahifaga olib boruvchi URL havolani tahrirlash</translation>
 <translation id="6337234675334993532">Shifrlash</translation>
 <translation id="6340526405444716530">Personalizatsiya</translation>
 <translation id="6341580099087024258">Fayllar qayerga saqlanishi so‘ralsin</translation>
@@ -1192,6 +1197,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="6486420406192123355">Bu PDF fayl himoyasiz ulanishli saytdan olingan</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{Fayl yuklab olindi}other{# ta fayl yuklab olindi}}</translation>
 <translation id="6508722015517270189">Chrome’ni qaytadan ishga tushiring</translation>
+<translation id="6513924416597632811">Havolani <ph name="SEARCH_QUERY" /> boʻyicha qidiruv natijalari sahifasiga nusxalang. Manba: <ph name="PAGE_URL" /></translation>
 <translation id="6518133107902771759">Tasdiqlash</translation>
 <translation id="6527303717912515753">Ulashish</translation>
 <translation id="652948702951888897">Chrome tarixi</translation>
@@ -1603,6 +1609,7 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="8221401890884589479">Istalgan saytni bloklash mumkin. Shuningdek, Chrome roʻyxatdagi 30 kundan eskirgan saytlarni avtomatik oʻchiradi. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="8221985041778490865">Brauzer maʼlumotlari oʻchirilmoqda</translation>
 <translation id="8223642481677794647">Quyi bildirgi menyu</translation>
+<translation id="82296173028782770">Qidiruv soʻrovini tahrirlash: <ph name="SEARCH_QUERY" /></translation>
 <translation id="8236063039629122676">Endi avvalgi sahifaga qaytish uchun chapga surish va oldinga oʻtish uchun oʻngga surish mumkin</translation>
 <translation id="8236097722223016103">Bukmarklash</translation>
 <translation id="8243077599929149377">Foydalanuvchi nomini qoʻshish</translation>
@@ -1751,6 +1758,7 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="8890668505403261809">Inkognito varaqlardan qidirish</translation>
 <translation id="8898822736010347272">Ochilgan sahifalarning URL manzillari, cheklangan tizim va sahifalar axborotini anonim ravishda Google serverlariga yuboradi va internetdagi yangi tahdidlarni aniqlashga yordam berib, barcha foydalanuvchilarni bu tahdidlardan himoya qiladi.</translation>
 <translation id="8909135823018751308">Ulashish…</translation>
+<translation id="8918299437379122615">Havolani <ph name="SEARCH_QUERY" /> boʻyicha qidiruv natijalari sahifasiga ulashing. Manba: <ph name="PAGE_URL" /></translation>
 <translation id="8922289737868596582">Saytlarni oflayn ko‘rish uchun “Boshqa parametrlar” tugmasidan foydalanib, yuklab oling</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> tayyor</translation>

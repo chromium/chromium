@@ -405,9 +405,10 @@ void ThrottlingURLLoader::Start(
     network::ResourceRequest* url_request,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     std::optional<std::vector<std::string>> cors_exempt_header_list) {
-  TRACE_EVENT_WITH_FLOW0("loading", "ThrottlingURLLoader::Start",
+  TRACE_EVENT_WITH_FLOW1("loading", "ThrottlingURLLoader::Start",
                          TRACE_ID_LOCAL(this),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
+                         "request_id", request_id);
   DCHECK_EQ(DEFERRED_NONE, deferred_stage_);
   DCHECK(!loader_completed_);
 

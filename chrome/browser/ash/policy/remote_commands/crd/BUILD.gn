@@ -116,6 +116,7 @@ source_set("unit_tests") {
     "//components/session_manager/core",
     "//content/test:test_support",
     "//mojo/public/cpp/bindings",
+    "//remoting/host:enterprise_params",
     "//remoting/host/chromeos:features",
     "//remoting/host/mojom",
     "//remoting/protocol:errors",

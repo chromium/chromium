@@ -77,6 +77,7 @@
 <translation id="1298077576058087471">৬০% পৰ্যন্ত ডেটা ৰাহি কৰক, আজিৰ বাতৰি পঢ়ক</translation>
 <translation id="1303339473099049190">সেই পাছৱর্ডটো বিচাৰিব নোৱাৰি। আপোনাৰ বানান পৰীক্ষা কৰক আৰু পুনৰ চেষ্টা কৰক।</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - <ph name="DEVICE_NAME" />ৰ পৰা পঠিওৱা</translation>
+<translation id="1318262688555255786">ৱেবপৃষ্ঠাখনত <ph name="PAGE_TITLE" /> লিংক শ্বেয়াৰ কৰক। উৎস: <ph name="PAGE_URL" /></translation>
 <translation id="1320912611264252795">বুকমাৰ্ক ছেভ কৰাৰ ফ্ল’ৰ ফ'ল্ডাৰসমূহ পূৰ্ণ উচ্চতাত খোলা হৈছে</translation>
 <translation id="1327257854815634930">নেভিগেশ্বন ইতিহাস খোলা আছে</translation>
 <translation id="1331212799747679585">Chrome আপডে’ট কৰিব নোৱাৰি। অধিক বিকল্প</translation>
@@ -515,6 +516,7 @@
 <translation id="3435465986463792564">বহুতো ৱিণ্ড’ পাইছেনে? আপুনি ইয়াৰ পৰা সেইবোৰ পৰিচালনা কৰিব পাৰে</translation>
 <translation id="3435575784518354875">আপোনাৰ পাছৱৰ্ডসমূহৰ এক্সেছ ৰাখিবলৈ, সেইসমূহ এতিয়াই ৰপ্তানি কৰক, Google Play সেৱাসমূহ আপডে’ট কৰক আৰু তাৰ পাছত সেইসমূহ পুনৰ Google Password Managerলৈ আমদানি কৰক। <ph name="BEGIN_LINK" />সম্পূৰ্ণ নিৰ্দেশনাৱলী চাওক<ph name="END_LINK" />।</translation>
 <translation id="3435738964857648380">সুৰক্ষা</translation>
+<translation id="3435914367318771664">নতুন গোটত টেব যোগ দিয়ক</translation>
 <translation id="3439276997620616816">ইয়াত আপুনি নিজৰ শেহতীয়া টেবসমূহ বিচাৰি পাব</translation>
 <translation id="3443221991560634068">বর্তমানৰ পৃষ্ঠাটো পুনৰ ল’ড কৰক</translation>
 <translation id="3444179773590444986">ছাইটৰ বাবে গাঢ় ৰঙৰ থীম সম্পৰ্কে মতামত শ্বেয়াৰ কৰিব নেকি?</translation>
@@ -780,6 +782,7 @@
 <translation id="4684427112815847243">সকলো ছিংক কৰক</translation>
 <translation id="4685741273709472646">ড্ৰপডাউন সূচীৰ পৰা বাছনি কৰক</translation>
 <translation id="4687718960473379118">ছাইটে পৰামৰ্শ দিয়া বিজ্ঞাপন</translation>
+<translation id="468924408576231679">ৱেবপৃষ্ঠা <ph name="PAGE_TITLE" />লৈ লিংকটো প্ৰতিলিপি কৰক। উৎস: <ph name="PAGE_URL" /></translation>
 <translation id="469286762610133730">অধিক ভাল সমল পাওক</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 আৰু <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />টা}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 আৰু <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />টা}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 আৰু <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />টা}}</translation>
 <translation id="4698061626562952596">আপোনাৰ নিস্ক্ৰিয় টেবসমূহ ইয়াত পৰ্যালোচনা কৰক</translation>
@@ -1122,6 +1125,7 @@
 <translation id="6205314730813004066">বিজ্ঞাপনৰ গোপনীয়তা</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> নহয় নেকি?</translation>
 <translation id="6211386937064921208">এই পৃষ্ঠাখনৰ পূৰ্বদৰ্শন কৰি আছে</translation>
+<translation id="6212567362666004597">গোটত টেব যোগ দিয়ক</translation>
 <translation id="6221633008163990886">আপোনাৰ পাছৱৰ্ড ৰপ্তানি কৰিবলৈ আনলক কৰক</translation>
 <translation id="6225572914528673855">ঠিকনাৰ বাৰ</translation>
 <translation id="6232535412751077445">"ট্ৰেক নকৰিব" সুবিধাটো সক্ষম কৰা মানে আপোনাৰ ব্ৰাউজিং ট্ৰেফিকৰ সৈতে এটা অনুৰোধ অন্তর্ভুক্ত কৰা হ’ব। কোনো ৱেবছাইটে অনুৰোধটোক সঁহাৰি জনোৱা বা নজনোৱা আৰু অনুৰোধটো কেনেকৈ কার্যকৰী কৰে তাৰ ওপৰত ফলাফলসমূহ নির্ভৰ কৰে।
@@ -1149,6 +1153,7 @@
 <translation id="6324916366299863871">শ্বৰ্টকাট সম্পাদনা কৰক</translation>
 <translation id="6324977638108296054">হাইলাইটৰ লিংক সৃষ্টি কৰিব নোৱাৰি</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" />ৰ জৰিয়তে শ্বেয়াৰ কৰক</translation>
+<translation id="6335454563754888572">ইয়াত পৃষ্ঠাখন নির্দেশ কৰা URL সম্পাদনা কৰক: <ph name="PAGE_URL" /></translation>
 <translation id="6337234675334993532">এনক্ৰিপশ্বন</translation>
 <translation id="6340526405444716530">ব্যক্তিগতকৰণ</translation>
 <translation id="6341580099087024258">ফাইল ক’ত ছেভ কৰিব লাগে সোধক</translation>
@@ -1192,6 +1197,7 @@
 <translation id="6486420406192123355">এই PDF ফাইলটো কোনো অসুৰক্ষিত সংযোগ ব্যৱহাৰ কৰি এটা ছাইট পৰা লোৱা</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{ফাইল ডাউনল’ড কৰা হ’ল}one{# টা ডাউনল’ড সম্পূৰ্ণ হ’ল}other{# টা ডাউনল’ড সম্পূৰ্ণ হ’ল}}</translation>
 <translation id="6508722015517270189">Chrome ৰিষ্টাৰ্ট কৰক</translation>
+<translation id="6513924416597632811">ইয়াৰ বাবে সন্ধানৰ ফলাফলৰ পৃষ্ঠাখনত লিংক প্ৰতিলিপি কৰক: <ph name="SEARCH_QUERY" />. উৎস: <ph name="PAGE_URL" /></translation>
 <translation id="6518133107902771759">সত্যাপন কৰক</translation>
 <translation id="6527303717912515753">শ্বেয়াৰ কৰক</translation>
 <translation id="652948702951888897">Chromeৰ ইতিহাস</translation>
@@ -1603,6 +1609,7 @@
 <translation id="8221401890884589479">আপুনি নিবিচৰা ছাইটসমূহ অৱৰোধ কৰিব পাৰে। Chromeএ লগতে ৩০ দিনতকৈ পুৰণি ছাইটসমূহ সূচীখনৰ পৰা স্বয়ংক্ৰিয়ভাৱে মচে। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="8221985041778490865">ব্ৰাউজিঙৰ ডেটা মচি থকা হৈছে</translation>
 <translation id="8223642481677794647">ফীড কাৰ্ড মেনু</translation>
+<translation id="82296173028782770">সন্ধানৰ কুৱেৰী সম্পাদনা কৰক: <ph name="SEARCH_QUERY" /></translation>
 <translation id="8236063039629122676">এতিয়া, এবাৰ সোঁফালে ছোৱাইপ কৰিলে আপুনি পূৰ্বে চোৱা পৃষ্ঠাখনলৈ যাব পাৰিব আৰু বাওঁফালে এবাৰ ছোৱাইপ কৰিলে পৰৱৰ্তী পৃষ্ঠাখনলৈ যাব পাৰিব</translation>
 <translation id="8236097722223016103">বুকমাৰ্কত যোগ দিয়ক</translation>
 <translation id="8243077599929149377">আপোনাৰ ব্যৱহাৰকাৰীৰ নাম যোগ দিয়ক</translation>
@@ -1751,6 +1758,7 @@
 <translation id="8890668505403261809">আপোনাৰ ইনক’গ্নিট’ টেবসমূহ সন্ধান কৰক</translation>
 <translation id="8898822736010347272">নতুন ভাবুকিবোৰ বিচাৰি পোৱাত আৰু ৱেবত থকা সকলোকে সুৰক্ষিত কৰাত সহায় কৰিবলৈ আপুনি চোৱা কিছুমান পৃষ্ঠাৰ URLসমূহ, সীমিত ছিষ্টেমৰ তথ্য আৰু কিছুমান পৃষ্ঠাৰ সমল Googleলৈ পঠিয়ায়।</translation>
 <translation id="8909135823018751308">শ্বেয়াৰ কৰক…</translation>
+<translation id="8918299437379122615">ইয়াৰ বাবে সন্ধানৰ ফলাফলৰ পৃষ্ঠাখনত লিংক শ্বেয়াৰ কৰক: <ph name="SEARCH_QUERY" />. উৎস: <ph name="PAGE_URL" /></translation>
 <translation id="8922289737868596582">পৃষ্ঠাসমূহ অফলাইনত ব্যৱহাৰ কৰিবলৈ সেইসমূহ 'অধিক' বিকল্পৰ বুটামটোৰ পৰা ডাউনল’ড কৰক</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> সাজু আছে</translation>

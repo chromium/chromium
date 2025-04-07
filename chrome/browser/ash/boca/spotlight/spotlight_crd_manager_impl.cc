@@ -79,6 +79,8 @@ void SpotlightCrdManagerImpl::InitiateSpotlightSession(
   parameters.terminate_upon_input = false;
   parameters.allow_remote_input = false;
   parameters.allow_clipboard_sync = false;
+  parameters.request_origin =
+      policy::SharedCrdSession::RequestOrigin::kClassManagement;
 
   crd_session_->StartCrdHost(parameters, std::move(callback),
                              base::BindOnce(&LogCrdError));

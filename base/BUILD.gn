@@ -1950,6 +1950,7 @@ component("base") {
       "win/window_enumerator.h",
       "win/windows_defines.inc",
       "win/windows_h_disallowed.h",
+      "win/windows_handle_util.h",
       "win/windows_types.h",
       "win/windows_undefines.inc",
       "win/windows_version.cc",

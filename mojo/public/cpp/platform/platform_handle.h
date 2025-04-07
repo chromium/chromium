@@ -13,7 +13,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_handle.h"
-#include "base/win/win_util.h"
+#include "base/win/windows_handle_util.h"
 #elif BUILDFLAG(IS_FUCHSIA)
 #include <lib/zx/handle.h>
 #elif BUILDFLAG(IS_APPLE)

@@ -1719,6 +1719,7 @@
       priority: 1,
       computable: false,
       invalidate: ["layout", "paint"],
+      valid_for_marker: true,
     },
     {
       name: "-webkit-text-orientation",
@@ -1727,6 +1728,7 @@
       type_name: "TextOrientation",
       priority: 1,
       surrogate_for: "text-orientation",
+      valid_for_marker: true,
     },
     {
       name: "writing-mode",

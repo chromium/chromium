@@ -8,15 +8,15 @@
 #endif
 
 #include <windows.h>
+#include <winternl.h>
 
 #include <ntstatus.h>
 #include <stdlib.h>
-#include <winternl.h>
 
 #include <memory>
 
 #include "base/memory/page_size.h"
-#include "base/win/win_util.h"
+#include "base/win/windows_handle_util.h"
 #include "sandbox/win/src/crosscall_client.h"
 #include "sandbox/win/src/filesystem_interception.h"
 #include "sandbox/win/src/ipc_tags.h"

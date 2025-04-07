@@ -44,7 +44,7 @@ class ResizeObservation;
 class StyleScopeData;
 class CustomElementDefinition;
 class PopoverData;
-class InterestInvokerData;
+class InvokerData;
 class InterestInvokerTargetData;
 class OutOfFlowData;
 class HTMLElement;
@@ -86,7 +86,7 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
     kRestrictionTargetId = 28,
     kStyleScopeData = 29,
     kOutOfFlowData = 30,
-    kInterestInvokerData = 31,
+    kInvokerData = 31,
     kInterestInvokerTargetData = 32,
     kScrollMarkerGroupData = 33,
     kScrollMarkerGroupContainerData = 34,
@@ -274,9 +274,8 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
   PopoverData& EnsurePopoverData();
   void RemovePopoverData();
 
-  InterestInvokerData* GetInterestInvokerData() const;
-  InterestInvokerData& EnsureInterestInvokerData();
-  void RemoveInterestInvokerData();
+  InvokerData* GetInvokerData() const;
+  InvokerData& EnsureInvokerData();
 
   InterestInvokerTargetData* GetInterestInvokerTargetData() const;
   InterestInvokerTargetData& EnsureInterestInvokerTargetData();

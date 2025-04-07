@@ -11,10 +11,8 @@ import android.graphics.drawable.Drawable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.OptIn;
 import androidx.browser.auth.AuthTabIntent;
 import androidx.browser.auth.AuthTabSessionToken;
-import androidx.browser.auth.ExperimentalAuthTab;
 import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.IntentUtils;
@@ -36,7 +34,6 @@ import org.chromium.url.GURL;
  * re-created when color scheme changes, which happens automatically since color scheme change leads
  * to activity re-creation.
  */
-@OptIn(markerClass = ExperimentalAuthTab.class)
 public class AuthTabIntentDataProvider extends BrowserServicesIntentDataProvider {
     private final @NonNull Intent mIntent;
     private final @Nullable String mClientPackageName;

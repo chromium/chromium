@@ -23,6 +23,7 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/crd_remote_command_utils.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/fake_start_crd_session_job_delegate.h"
+#include "chrome/browser/ash/policy/remote_commands/crd/start_crd_session_job_delegate.h"
 #include "chrome/browser/ash/policy/remote_commands/fake_cros_network_config.h"
 #include "chrome/browser/ash/policy/remote_commands/user_session_type_test_util.h"
 #include "chrome/browser/ash/settings/device_settings_test_helper.h"
@@ -32,6 +33,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/services/network_config/in_process_instance.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
+#include "components/policy/policy_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -583,6 +585,15 @@ TEST_F(DeviceCommandStartCrdSessionJobTest, ShouldPassAdminEmailToDelegate) {
       RunJobAndWaitForResult(Payload().Set("adminEmail", "email@admin.com")));
 
   EXPECT_EQ("email@admin.com", delegate().session_parameters().admin_email);
+}
+
+TEST_F(DeviceCommandStartCrdSessionJobTest, ShouldPassRequestOriginToDelegate) {
+  LogInAsAffiliatedUser();
+  Result result = RunJobAndWaitForResult();
+
+  EXPECT_SUCCESS(result);
+  EXPECT_EQ(StartCrdSessionJobDelegate::RequestOrigin::kEnterpriseAdmin,
+            delegate().session_parameters().request_origin);
 }
 
 TEST_F(DeviceCommandStartCrdSessionJobTest, ShouldCheckNetworkManagedStatus) {

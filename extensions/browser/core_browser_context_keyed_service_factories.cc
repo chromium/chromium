@@ -46,7 +46,7 @@ void EnsureCoreBrowserContextKeyedServiceFactoriesBuilt() {
 #endif
   EnsureExtensionURLLoaderFactoryShutdownNotifierFactoryBuilt();
   EventRouterFactory::GetInstance();
-  ExtensionActionManager::EnsureFactoryBuilt();
+  ExtensionActionManager::GetFactory();
   ExtensionFunction::EnsureShutdownNotifierFactoryBuilt();
   ExtensionPrefsFactory::GetInstance();
   ExtensionPrefsHelperFactory::GetInstance();

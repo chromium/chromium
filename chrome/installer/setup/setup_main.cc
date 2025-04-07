@@ -56,7 +56,7 @@
 #include "base/win/resource_exhaustion.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/scoped_handle.h"
-#include "base/win/win_util.h"
+#include "base/win/windows_handle_util.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/win_key_network_delegate.h"

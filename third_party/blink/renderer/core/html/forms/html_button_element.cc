@@ -159,7 +159,7 @@ void HTMLButtonElement::ParseAttribute(
   }
 }
 
-Element* HTMLButtonElement::commandForElement() {
+Element* HTMLButtonElement::commandForElement() const {
   if (!RuntimeEnabledFeatures::HTMLCommandAttributesEnabled()) {
     return nullptr;
   }
