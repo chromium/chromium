@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/test/simple_test_clock.h"
+#include "components/network_session_configurator/common/network_switches.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "content/browser/btm/btm_browsertest_utils.h"
 #include "content/browser/btm/btm_page_visit_observer_test_utils.h"
@@ -16,12 +17,18 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
+#include "content/public/test/content_mock_cert_verifier.h"
 #include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/shell/browser/shell.h"
+#include "net/base/features.h"
+#include "net/cert/cert_verify_result.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_status_code.h"
+#include "net/test/cert_test_util.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
+#include "net/test/quic_simple_test_server.h"
+#include "net/test/test_data_directory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-shared.h"
 #include "url/gurl.h"
@@ -47,6 +54,15 @@ using blink::mojom::StorageTypeAccessed;
 
 class BtmPageVisitObserverBrowserTest : public ContentBrowserTest {
  public:
+  BtmPageVisitObserverBrowserTest() {
+    // Needed to make QuicSimpleTestServer work on Android.
+    feature_list_.InitWithFeatures(
+        std::vector<base::test::FeatureRef>{
+            net::features::kSplitCacheByNetworkIsolationKey},
+        std::vector<base::test::FeatureRef>{
+            net::features::kMigrateSessionsOnNetworkChangeV2});
+  }
+
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     embedded_https_test_server().AddDefaultHandlers(GetTestDataFilePath());
@@ -55,6 +71,23 @@ class BtmPageVisitObserverBrowserTest : public ContentBrowserTest {
     ASSERT_TRUE(embedded_https_test_server().Start());
 
     ukm_recorder_.emplace();
+
+    // Configure the certificate for the QUIC server.
+    auto test_cert =
+        net::ImportCertFromFile(net::GetTestCertsDirectory(), "quic-chain.pem");
+    net::CertVerifyResult verify_result;
+    verify_result.verified_cert = test_cert;
+    mock_cert_verifier_.mock_cert_verifier()->AddResultForCert(
+        test_cert, verify_result, net::OK);
+    mock_cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ASSERT_TRUE(net::QuicSimpleTestServer::Start());
+    command_line->AppendSwitchASCII(
+        switches::kOriginToForceQuicOn,
+        net::QuicSimpleTestServer::GetHostPort().ToString());
+    mock_cert_verifier_.SetUpCommandLine(command_line);
   }
 
   void PreRunTestOnMainThread() override {
@@ -62,12 +95,93 @@ class BtmPageVisitObserverBrowserTest : public ContentBrowserTest {
     ukm::InitializeSourceUrlRecorderForWebContents(shell()->web_contents());
   }
 
+  void TearDown() override {
+    // Needed by net::QuicSimpleTestServer::Shutdown() below.
+    base::ScopedAllowBaseSyncPrimitivesForTesting allow_wait;
+    net::QuicSimpleTestServer::Shutdown();
+  }
+
   const ukm::TestAutoSetUkmRecorder& ukm_recorder() {
     return ukm_recorder_.value();
   }
 
+  void SetUpInProcessBrowserTestFixture() override {
+    mock_cert_verifier_.SetUpInProcessBrowserTestFixture();
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    mock_cert_verifier_.TearDownInProcessBrowserTestFixture();
+  }
+
  protected:
+  GURL RegisterSubresourceQuicResponseWithCookies() {
+    constexpr static const char path[] = "/early.css";
+    quiche::HttpHeaderBlock response_headers;
+    response_headers[":path"] = path;
+    response_headers[":status"] = base::ToString(net::HTTP_OK);
+    response_headers["content-type"] = "text/css";
+    response_headers["cache-control"] = "max-age=3600";
+    response_headers["set-cookie"] = "foo=bar;";
+    net::QuicSimpleTestServer::AddResponse(path, std::move(response_headers),
+                                           "/* empty body */");
+    return net::QuicSimpleTestServer::GetFileURL(path);
+  }
+
+  GURL RegisterPageQuicResponseWithEarlyHints() {
+    constexpr static const char path[] = "/early_hints.html";
+
+    quiche::HttpHeaderBlock response_headers;
+    response_headers[":path"] = path;
+    response_headers[":status"] = base::ToString(net::HTTP_OK);
+    response_headers["content-type"] = "text/html";
+
+    // Early Hint header.
+    quiche::HttpHeaderBlock early_hint_header;
+    early_hint_header["link"] = "</early.css>; rel=preload; as=style";
+    std::vector<quiche::HttpHeaderBlock> early_hints;
+    early_hints.push_back(std::move(early_hint_header));
+
+    net::QuicSimpleTestServer::AddResponseWithEarlyHints(
+        path, std::move(response_headers),
+        R"(<link rel="stylesheet" href="/early.css" />)",
+        std::move(early_hints));
+    return net::QuicSimpleTestServer::GetFileURL(path);
+  }
+
+  GURL RegisterRedirectQuicResponseWithEarlyHints(const GURL& final_url) {
+    static constexpr const char path[] = "/redirect_with_early_hints.html";
+    quiche::HttpHeaderBlock response_headers;
+    response_headers[":path"] = path;
+    response_headers[":status"] = base::ToString(net::HTTP_FOUND);
+    response_headers["location"] = final_url.spec();
+
+    // Early Hint header.
+    quiche::HttpHeaderBlock early_hint_header;
+    early_hint_header["link"] = "</early.css>; rel=preload; as=style";
+    std::vector<quiche::HttpHeaderBlock> early_hints;
+    early_hints.push_back(std::move(early_hint_header));
+
+    net::QuicSimpleTestServer::AddResponseWithEarlyHints(
+        path, std::move(response_headers), /*response_body=*/"",
+        std::move(early_hints));
+    return net::QuicSimpleTestServer::GetFileURL(path);
+  }
+
+  GURL RegisterPageQuicResponse() {
+    static constexpr const char path[] = "/empty.html";
+    quiche::HttpHeaderBlock response_headers;
+    response_headers[":path"] = path;
+    response_headers[":status"] = base::ToString(net::HTTP_OK);
+    response_headers["content-type"] = "text/html";
+
+    net::QuicSimpleTestServer::AddResponse(path, std::move(response_headers),
+                                           /*response_body=*/"");
+    return net::QuicSimpleTestServer::GetFileURL(path);
+  }
+
   std::optional<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
+  base::test::ScopedFeatureList feature_list_;
+  ContentMockCertVerifier mock_cert_verifier_;
 };
 
 IN_PROC_BROWSER_TEST_F(BtmPageVisitObserverBrowserTest, SmokeTest) {
@@ -916,6 +1030,156 @@ IN_PROC_BROWSER_TEST_F(BtmPageVisitObserverBrowserTest,
               HasUrlAndMatchingSourceId(url3, &ukm_recorder()));
 
   EXPECT_EQ(recorder.visits().size(), 3u);
+}
+
+IN_PROC_BROWSER_TEST_F(BtmPageVisitObserverBrowserTest,
+                       EarlyHintsWithCookieWrite) {
+  GURL subresource_url = RegisterSubresourceQuicResponseWithCookies();
+  GURL url_with_early_hints = RegisterPageQuicResponseWithEarlyHints();
+
+  const GURL url2 =
+      embedded_https_test_server().GetURL("b.test", "/empty.html");
+
+  WebContents* web_contents = shell()->web_contents();
+  BtmPageVisitRecorder recorder(web_contents);
+
+  URLCookieAccessObserver access_observer(web_contents, subresource_url,
+                                          CookieOperation::kChange);
+  ASSERT_TRUE(NavigateToURL(web_contents, url_with_early_hints));
+  access_observer.Wait();
+  ASSERT_TRUE(NavigateToURL(web_contents, url2));
+  ASSERT_TRUE(recorder.WaitForSize(2));
+
+  const auto& first_visit = recorder.visits()[0];
+  EXPECT_THAT(first_visit.navigation.destination,
+              HasUrlAndMatchingSourceId(url_with_early_hints, &ukm_recorder()));
+
+  const auto& second_visit = recorder.visits()[1];
+  EXPECT_THAT(second_visit.navigation.destination,
+              HasUrlAndMatchingSourceId(url2, &ukm_recorder()));
+  // Currently cookie accesses by subresources loaded through early hints are
+  // ignored *if* the notification arrives through the
+  // OnCookiesAccessed(NavigationHandle*) override, otherwise they are
+  // attributed to the frame.
+  // TODO - https://crbug.com/408168195: Uncomment the line when we always
+  // attribute the access to the correct URL.
+  // EXPECT_TRUE(second_visit.prev_page.had_active_storage_access);
+}
+
+IN_PROC_BROWSER_TEST_F(BtmPageVisitObserverBrowserTest,
+                       DelayedEarlyHintsWithCookieWrite) {
+  GURL subresource_url = RegisterSubresourceQuicResponseWithCookies();
+  GURL url_with_early_hints = RegisterPageQuicResponseWithEarlyHints();
+
+  const GURL url2 =
+      embedded_https_test_server().GetURL("b.test", "/empty.html");
+
+  WebContents* web_contents = shell()->web_contents();
+  BtmPageVisitRecorder recorder(web_contents);
+  CookieAccessInterceptor interceptor(*web_contents);
+
+  URLCookieAccessObserver access_observer(web_contents, subresource_url,
+                                          CookieOperation::kChange);
+  ASSERT_TRUE(NavigateToURL(web_contents, url_with_early_hints));
+  access_observer.Wait();
+  ASSERT_TRUE(NavigateToURL(web_contents, url2));
+  ASSERT_TRUE(recorder.WaitForSize(2));
+
+  const auto& first_visit = recorder.visits()[0];
+  EXPECT_THAT(first_visit.navigation.destination,
+              HasUrlAndMatchingSourceId(url_with_early_hints, &ukm_recorder()));
+
+  const auto& second_visit = recorder.visits()[1];
+  EXPECT_THAT(second_visit.navigation.destination,
+              HasUrlAndMatchingSourceId(url2, &ukm_recorder()));
+  // Delayed cookie accesses by subresources loaded through early hints are
+  // reported on the frame, so they are attributed to the visit.
+  EXPECT_TRUE(second_visit.prev_page.had_active_storage_access);
+}
+
+IN_PROC_BROWSER_TEST_F(BtmPageVisitObserverBrowserTest,
+                       RedirectWithEarlyHints) {
+  const GURL subresource_url = RegisterSubresourceQuicResponseWithCookies();
+  const GURL destination_url = RegisterPageQuicResponse();
+  const GURL redirect_with_early_hints_url =
+      RegisterRedirectQuicResponseWithEarlyHints(destination_url);
+
+  const GURL url2 =
+      embedded_https_test_server().GetURL("b.test", "/empty.html");
+
+  WebContents* web_contents = shell()->web_contents();
+  BtmPageVisitRecorder recorder(web_contents);
+
+  URLCookieAccessObserver access_observer(web_contents, subresource_url,
+                                          CookieOperation::kChange);
+  ASSERT_TRUE(NavigateToURL(web_contents, redirect_with_early_hints_url,
+                            destination_url));
+  access_observer.Wait();
+  ASSERT_TRUE(NavigateToURL(web_contents, url2));
+  ASSERT_TRUE(recorder.WaitForSize(2));
+
+  const auto& first_visit = recorder.visits()[0];
+  EXPECT_THAT(first_visit.navigation.destination,
+              HasUrlAndMatchingSourceId(destination_url, &ukm_recorder()));
+  EXPECT_THAT(first_visit.navigation.server_redirects[0],
+              HasUrlAndMatchingSourceId(redirect_with_early_hints_url,
+                                        &ukm_recorder()));
+
+  // Currently cookie accesses by subresources loaded through early hints are
+  // ignored.
+  // TODO - https://crbug.com/408168195: Switch to EXPECT_TRUE once we can
+  // correctly attribute these accesses.
+  EXPECT_FALSE(first_visit.navigation.server_redirects[0].did_write_cookies);
+
+  const auto& second_visit = recorder.visits()[1];
+  EXPECT_THAT(second_visit.navigation.destination,
+              HasUrlAndMatchingSourceId(url2, &ukm_recorder()));
+  EXPECT_FALSE(second_visit.prev_page.had_active_storage_access);
+}
+
+IN_PROC_BROWSER_TEST_F(BtmPageVisitObserverBrowserTest,
+                       DelayedRedirectWithEarlyHints) {
+  const GURL subresource_url = RegisterSubresourceQuicResponseWithCookies();
+  const GURL destination_url = RegisterPageQuicResponse();
+  const GURL redirect_with_early_hints_url =
+      RegisterRedirectQuicResponseWithEarlyHints(destination_url);
+
+  const GURL url2 =
+      embedded_https_test_server().GetURL("b.test", "/empty.html");
+
+  WebContents* web_contents = shell()->web_contents();
+  BtmPageVisitRecorder recorder(web_contents);
+  CookieAccessInterceptor interceptor(*web_contents);
+
+  URLCookieAccessObserver access_observer(web_contents, subresource_url,
+                                          CookieOperation::kChange);
+  ASSERT_TRUE(NavigateToURL(web_contents, redirect_with_early_hints_url,
+                            destination_url));
+  access_observer.Wait();
+  ASSERT_TRUE(NavigateToURL(web_contents, url2));
+  ASSERT_TRUE(recorder.WaitForSize(2));
+
+  const auto& first_visit = recorder.visits()[0];
+  EXPECT_THAT(first_visit.navigation.destination,
+              HasUrlAndMatchingSourceId(destination_url, &ukm_recorder()));
+  EXPECT_THAT(first_visit.navigation.server_redirects[0],
+              HasUrlAndMatchingSourceId(redirect_with_early_hints_url,
+                                        &ukm_recorder()));
+  // Currently cookie accesses by subresources loaded through early hints are
+  // ignored.
+  // TODO - https://crbug.com/408168195: Switch to EXPECT_TRUE once we can
+  // correctly attribute these accesses.
+  EXPECT_FALSE(first_visit.navigation.server_redirects[0].did_write_cookies);
+
+  const auto& second_visit = recorder.visits()[1];
+  EXPECT_THAT(second_visit.navigation.destination,
+              HasUrlAndMatchingSourceId(url2, &ukm_recorder()));
+  // Delayed cookie accesses by subresources loaded through early hints from a
+  // redirect are incorrectly reported on the frame, so they are attributed to
+  // the visit.
+  // TODO - https://crbug.com/408168195: Switch to EXPECT_TRUE once we can
+  // correctly attribute these accesses.
+  EXPECT_TRUE(second_visit.prev_page.had_active_storage_access);
 }
 
 class BtmPageVisitObserverClientRedirectBrowserTest
