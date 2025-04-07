@@ -842,8 +842,10 @@ bool GPUCanvasContext::CopyTextureToResourceProvider(
     return false;
   }
 
+  gpu::SyncToken sync_token;
   auto dst_client_si =
-      resource_provider->GetBackingClientSharedImageForOverwrite();
+      resource_provider->GetBackingClientSharedImageForExternalWrite(
+          &sync_token, gpu::SharedImageUsageSet());
   if (!dst_client_si) {
     return false;
   }
@@ -862,8 +864,6 @@ bool GPUCanvasContext::CopyTextureToResourceProvider(
   DCHECK(reservation.texture);
   wgpu::Texture reserved_texture = wgpu::Texture::Acquire(reservation.texture);
 
-  gpu::SyncToken sync_token;
-  ri->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
   webgpu->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
   wgpu::TextureUsage usage =
       wgpu::TextureUsage::CopyDst | wgpu::TextureUsage::RenderAttachment;
