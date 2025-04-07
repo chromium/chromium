@@ -204,7 +204,7 @@ const base::FeatureParam<int> kAutofillRankingFormulaVirtualCardBoostHalfLife{
 // address storage.
 BASE_FEATURE(kAutofillEnableAccountStorageForIneligibleCountries,
              "AutofillEnableAccountStorageForIneligibleCountries",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables a new implementation for address field parsing that is based on
 // backtracking.

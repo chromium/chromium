@@ -20,6 +20,7 @@
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/test_utils/test_profiles.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -487,8 +488,13 @@ TEST_F(ShowSigninPromoTestWithFeatureFlags,
   EXPECT_FALSE(ShouldShowAddressSignInPromo(*profile(), address));
 }
 
+// TODO(crbug.com/40100455): Remove when
+// kAutofillEnableAccountStorageForIneligibleCountries is cleaned up.
 TEST_F(ShowSigninPromoTestWithFeatureFlags,
        DoNotShowAddressIfCountryNotEligibleForAccountStorage) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndDisableFeature(
+      autofill::features::kAutofillEnableAccountStorageForIneligibleCountries);
   const std::string non_eligible_country_code("IR");
 
   ASSERT_FALSE(
