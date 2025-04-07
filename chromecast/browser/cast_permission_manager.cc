@@ -139,9 +139,10 @@ void CastPermissionManager::RequestPermissions(
     base::OnceCallback<void(const std::vector<blink::mojom::PermissionStatus>&)>
         callback) {
   std::vector<blink::mojom::PermissionStatus> permission_statuses;
-  for (auto permission : request_description.permissions) {
+  for (const auto& permission : request_description.permissions) {
     permission_statuses.push_back(GetPermissionStatusInternal(
-        permission, render_frame_host, request_description.requesting_origin));
+        blink::PermissionDescriptorToPermissionType(permission),
+        render_frame_host, request_description.requesting_origin));
   }
   std::move(callback).Run(permission_statuses);
 }
@@ -156,9 +157,10 @@ void CastPermissionManager::RequestPermissionsFromCurrentDocument(
     base::OnceCallback<void(const std::vector<blink::mojom::PermissionStatus>&)>
         callback) {
   std::vector<blink::mojom::PermissionStatus> permission_statuses;
-  for (auto permission : request_description.permissions) {
+  for (const auto& permission : request_description.permissions) {
     permission_statuses.push_back(GetPermissionStatusInternal(
-        permission, render_frame_host,
+        blink::PermissionDescriptorToPermissionType(permission),
+        render_frame_host,
         render_frame_host->GetLastCommittedOrigin().GetURL()));
   }
   std::move(callback).Run(permission_statuses);
