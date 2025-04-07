@@ -304,7 +304,12 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testDoNothing) {
 
 // Checks that all tests in api_test.ts have a corresponding test case in this
 // file.
-IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testAllTestsAreRegistered) {
+#if defined(SLOW_BINARY)
+#define MAYBE_testAllTestsAreRegistered DISABLED_testAllTestsAreRegistered
+#else
+#define MAYBE_testAllTestsAreRegistered testAllTestsAreRegistered
+#endif
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, MAYBE_testAllTestsAreRegistered) {
   ExecuteJsTest();
   ASSERT_TRUE(step_data()->is_list());
   ::testing::UnitTest* unit_test = ::testing::UnitTest::GetInstance();
@@ -374,7 +379,13 @@ IN_PROC_BROWSER_TEST_F(GlicApiTest, testInitializeFailsWindowOpen) {
   WaitForWebUiState(mojom::WebUiState::kReady);
 }
 
-IN_PROC_BROWSER_TEST_F(GlicApiTest, testReload) {
+// TODO(crbug.com/409042450): This is a flaky on MSAN.
+#if defined(SLOW_BINARY)
+#define MAYBE_testReload DISABLED_testReload
+#else
+#define MAYBE_testReload testReload
+#endif
+IN_PROC_BROWSER_TEST_F(GlicApiTest, MAYBE_testReload) {
   RunTestSequence(
       OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone));
   WebUIStateListener listener(&window_controller());
