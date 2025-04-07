@@ -125,7 +125,7 @@ class GlobalMediaControlsCastStartTest : public InProcessBrowserTest {
   mojo::Remote<global_media_controls::mojom::DeviceListClient>
       device_list_client_;
 
-  // Mocks for objects in Lacros that communicate with Chromecast devices.
+  // Mocks for objects in ash browser that communicate with Chromecast devices.
   global_media_controls::test::MockDeviceService device_service_;
   global_media_controls::test::MockDeviceListHost device_list_host_;
 };
