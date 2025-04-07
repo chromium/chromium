@@ -61,54 +61,6 @@ blink::mojom::AILanguageModelPromptPtr MakeTextPrompt(
       role, blink::mojom::AILanguageModelPromptContent::NewText(text));
 }
 
-// Get the corresponding ml::Token for the given `role`.
-ml::Token GetMLToken(blink::mojom::AILanguageModelPromptRole role) {
-  switch (role) {
-    case blink::mojom::AILanguageModelPromptRole::kSystem:
-      return ml::Token::kSystem;
-    case blink::mojom::AILanguageModelPromptRole::kUser:
-      return ml::Token::kUser;
-    case blink::mojom::AILanguageModelPromptRole::kAssistant:
-      return ml::Token::kModel;
-  }
-  NOTREACHED();
-}
-
-// Convert `prompts` to an on-device model input sequence.
-on_device_model::mojom::InputPtr BuildOnDeviceModelInput(
-    const std::vector<blink::mojom::AILanguageModelPromptPtr>& prompts) {
-  auto current_role = ml::Token::kEnd;
-  auto input = on_device_model::mojom::Input::New();
-
-  // Add `prompts` to `input`, interleaving role tokens as needed.
-  for (const auto& prompt : prompts) {
-    ml::Token new_role = GetMLToken(prompt->role);
-    if (new_role != current_role) {
-      input->pieces.emplace_back(new_role);
-      current_role = new_role;
-    }
-    if (prompt->content->is_text()) {
-      input->pieces.emplace_back(prompt->content->get_text());
-    } else if (prompt->content->is_bitmap()) {
-      input->pieces.emplace_back(prompt->content->get_bitmap());
-    } else if (prompt->content->is_audio()) {
-      // TODO: Export services/on_device_model/ml/chrome_ml_types_traits.cc.
-      const on_device_model::mojom::AudioDataPtr& audio_data =
-          prompt->content->get_audio();
-      ml::AudioBuffer audio_buffer;
-      audio_buffer.sample_rate_hz = audio_data->sample_rate;
-      audio_buffer.num_channels = audio_data->channel_count;
-      audio_buffer.num_frames = audio_data->frame_count;
-      audio_buffer.data = audio_data->data;
-      input->pieces.push_back(audio_buffer);
-    } else {
-      NOTREACHED();
-    }
-  }
-  input->pieces.emplace_back(ml::Token::kEnd);
-  return input;
-}
-
 // Construct an empty multimodal PromptApiRequest message.
 MultimodalMessage EmptyMessage() {
   return MultimodalMessage((PromptApiRequest()));
@@ -296,27 +248,6 @@ void AILanguageModel::SetInitialPrompts(
   }
   for (auto& prompt : initial_prompts) {
     item.prompts.emplace_back(std::move(prompt));
-  }
-  // TODO(crbug.com/385173789): Remove hacky multimodal prototype workarounds.
-  // If multimodal input is enabled, the initial prompts have to get added
-  // manually.
-  if (base::FeatureList::IsEnabled(
-          blink::features::kAIPromptAPIMultimodalInput)) {
-    if (system_prompt) {
-      auto system_prompt_ptr = blink::mojom::AILanguageModelPrompt::New();
-      system_prompt_ptr->role =
-          blink::mojom::AILanguageModelPromptRole::kSystem;
-      system_prompt_ptr->content =
-          blink::mojom::AILanguageModelPromptContent::NewText(*system_prompt);
-      initial_prompts.insert(initial_prompts.begin(),
-                             std::move(system_prompt_ptr));
-    }
-    if (!initial_prompts.empty()) {
-      auto append_options = on_device_model::mojom::AppendOptions::New();
-      append_options->input = BuildOnDeviceModelInput(initial_prompts);
-      append_options->max_tokens = context_->max_tokens();
-      session_->GetSession().Append(std::move(append_options), {});
-    }
   }
   MultimodalMessage request = MakeInitialPrompt(item);
   session_->GetContextSizeInTokens(
@@ -523,30 +454,6 @@ void AILanguageModel::Prompt(
         std::move(pending_responder));
     responder->OnError(
         blink::mojom::ModelStreamingResponseStatus::kErrorSessionDestroyed);
-    return;
-  }
-
-  // TODO(crbug.com/385173789): Remove hacky multimodal prototype workarounds.
-  // This lacks overflow handling, etc.
-  if (base::FeatureList::IsEnabled(
-          blink::features::kAIPromptAPIMultimodalInput)) {
-    mojo::PendingRemote<on_device_model::mojom::StreamingResponder>
-        response_remote;
-    mojo::PendingRemote<on_device_model::mojom::ContextClient> context_remote;
-    multimodal_responder_ = std::make_unique<MultimodalResponder>(
-        this, response_remote.InitWithNewPipeAndPassReceiver(),
-        context_remote.InitWithNewPipeAndPassReceiver(),
-        std::move(pending_responder));
-    auto append_options = on_device_model::mojom::AppendOptions::New();
-    append_options->input = BuildOnDeviceModelInput(prompts);
-    append_options->max_tokens = context_->max_tokens();
-    // Append the model token to make sure the model knows to give output.
-    append_options->input->pieces.push_back(ml::Token::kModel);
-    session_->GetSession().Append(std::move(append_options),
-                                  std::move(context_remote));
-    session_->GetSession().Generate(
-        on_device_model::mojom::GenerateOptions::New(),
-        std::move(response_remote));
     return;
   }
 
