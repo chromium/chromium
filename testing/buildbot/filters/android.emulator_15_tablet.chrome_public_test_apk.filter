@@ -40,3 +40,13 @@
 -org.chromium.chrome.browser.download.DownloadTest.testUrlEscaping
 -org.chromium.chrome.browser.download.DownloadTest.testHttpPostDownload
 -org.chromium.chrome.browser.download.DownloadTest.testHttpGetDownload
+
+# crbug.com/401292006
+-org.chromium.chrome.browser.contextmenu.ContextMenuTest.testCopyImage
+
+# crbug.com/401272905
+-org.chromium.chrome.browser.keyboard_accessory.PasswordGenerationIntegrationTest.testManualGenerationCancel
+
+# crbug.com/401287512
+-org.chromium.chrome.browser.contextualsearch.ContextualSearchInstrumentationTest.testNonResolveGesture
+-org.chromium.chrome.browser.contextualsearch.ContextualSearchInstrumentationTest.testResolveGesture
