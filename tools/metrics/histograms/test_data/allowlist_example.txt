@@ -1,2 +1,0 @@
-UMA.FileMetricsProvider.InitialAccessResult
-UMA.FileMetricsProvider.AccessResult

@@ -19,8 +19,9 @@ class WellKnownAllowlistPath(enum.Enum):
   constants or duplicated code among users of this check.
   """
 
-  ANDROID_WEBVIEW = os.path.join('android_webview', 'java', 'res', 'raw',
-                                 'histograms_allowlist.txt')
+  ANDROID_WEBVIEW = os.path.join('android_webview', 'java', 'src', 'org',
+                                 'chromium', 'android_webview', 'metrics',
+                                 'HistogramsAllowlist.java')
 
   def relative_path(self):
     """Returns the path of the allowlist file relative to src/."""
@@ -31,8 +32,19 @@ class WellKnownAllowlistPath(enum.Enum):
 
 
 def get_histograms_allowlist_content(allowlist_path):
+  histogramNames = []
   with open(allowlist_path) as file:
-    return [line.rstrip() for line in file]
+    shouldParse = False
+    for line in file:
+      if line.strip() == '// histograms_allowlist_check START_PARSING':
+        shouldParse = True
+        continue
+      if line.strip() == '// histograms_allowlist_check END_PARSING':
+        break
+      if shouldParse:
+        # Remove white space, quotes and commas from the entries.
+        histogramNames.append(line.strip().replace('"', '').replace(',', ''))
+  return histogramNames
 
 
 def check_histograms_allowlist(output_api, allowlist_path, histograms_files):
