@@ -8,20 +8,21 @@ found in the LICENSE file.
 <resources>
   <dimen name="privacy_sandbox_dialog_illustration_margin_top">32dp</dimen>
   <dimen name="privacy_sandbox_dialog_logo_margin">8dp</dimen>
-  <dimen name="privacy_sandbox_dialog_eea_dialog_logo_vertical_margin">16dp</dimen>
+  <dimen name="privacy_sandbox_dialog_dialog_logo_vertical_margin">16dp</dimen>
   <dimen name="privacy_sandbox_dialog_illustration_margin_vertical">16dp</dimen>
   <dimen name="privacy_sandbox_dialog_max_width">600dp</dimen>
+  <dimen name="privacy_sandbox_dialog_max_landscape_width">880dp</dimen>
   <dimen name="privacy_sandbox_consent_button_margin_between">8dp</dimen>
   <dimen name="privacy_sandbox_notice_dialog_dropdown_button_height">48dp</dimen>
   <dimen name="privacy_sandbox_notice_margin_bottom">32dp</dimen>
   <dimen name="privacy_sandbox_dialog_title_margin">20dp</dimen>
   <dimen name="privacy_sandbox_chrome_logo_width">40dp</dimen>
   <dimen name="privacy_sandbox_chrome_logo_height">40dp</dimen>
-  <dimen name="privacy_sandbox_eea_dialog_logo_width">72dp</dimen>
-  <dimen name="privacy_sandbox_eea_dialog_logo_height">72dp</dimen>
+  <dimen name="privacy_sandbox_dialog_logo_width">72dp</dimen>
+  <dimen name="privacy_sandbox_dialog_logo_height">72dp</dimen>
   <dimen name="privacy_sandbox_card_logo_width">24dp</dimen>
   <dimen name="privacy_sandbox_card_logo_height">24dp</dimen>
-  <dimen name="privacy_sandbox_consent_dropdown_button_height_v3">20dp</dimen>
+  <dimen name="privacy_sandbox_dropdown_button_height_v3">20dp</dimen>
   <dimen name="privacy_sandbox_margin_between_cards">8dp</dimen>
   <dimen name="privacy_sandbox_card_padding">16dp</dimen>
   <dimen name="privacy_sandbox_card_text_start_margin">8dp</dimen>
