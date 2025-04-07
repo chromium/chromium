@@ -7660,5 +7660,82 @@ TEST_P(PrefetchServiceAddPrefetchContainerTest,
     ASSERT_EQ(attempt1.get(), prefetch_container->preloading_attempt().get());
   }
 }
+
+TEST_P(PrefetchServiceTest,
+       UMA_Prefetch_PrefetchContainer_AddedTo_Embedder_Success) {
+  base::HistogramTester histogram_tester;
+
+  NavigateAndCommit(GURL("https://example.com"));
+  MakePrefetchService(
+      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>(
+          /*num_on_prefetch_likely_calls=*/0));
+
+  const auto url = GURL("https://example.com/prefetched");
+  auto handle = MakePrefetchFromBrowserContext(url, std::nullopt, {}, nullptr);
+  task_environment()->RunUntilIdle();
+
+  task_environment()->FastForwardBy(base::Milliseconds(kHeaderLatency));
+
+  MakeResponseAndWait(net::HTTP_OK, net::OK, kHTMLMimeType,
+                      /*use_prefetch_proxy=*/false,
+                      {{"X-Testing", "Hello World"}}, kHTMLBody);
+
+  // Call `PrefetchContainer::dtor()` to record UMAs.
+  handle.reset();
+
+  histogram_tester.ExpectUniqueSample(
+      "Prefetch.PrefetchContainer.AddedToInitialEligibility.Embedder."
+      "NoEmbedderSuffix",
+      0, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Prefetch.PrefetchContainer.AddedToPrefetchStarted.Embedder."
+      "NoEmbedderSuffix",
+      0, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Prefetch.PrefetchContainer.AddedToHeaderDeterminedSuccesfully."
+      "Embedder.NoEmbedderSuffix",
+      kHeaderLatency, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Prefetch.PrefetchContainer.AddedToPrefetchCompletedSuccessfully."
+      "Embedder.NoEmbedderSuffix",
+      kHeaderLatency, 1);
+}
+
+TEST_P(PrefetchServiceTest,
+       UMA_Prefetch_PrefetchContainer_AddedTo_Embedder_Fail) {
+  base::HistogramTester histogram_tester;
+
+  NavigateAndCommit(GURL("https://example.com"));
+  MakePrefetchService(
+      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>(
+          /*num_on_prefetch_likely_calls=*/0));
+
+  const auto url = GURL("https://example.com/prefetched");
+  auto handle = MakePrefetchFromBrowserContext(url, std::nullopt, {}, nullptr);
+  task_environment()->RunUntilIdle();
+
+  task_environment()->FastForwardBy(base::Milliseconds(kHeaderLatency));
+
+  // Call `PrefetchContainer::dtor()` to record UMAs.
+  handle.reset();
+
+  histogram_tester.ExpectUniqueSample(
+      "Prefetch.PrefetchContainer.AddedToInitialEligibility.Embedder."
+      "NoEmbedderSuffix",
+      0, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Prefetch.PrefetchContainer.AddedToPrefetchStarted.Embedder."
+      "NoEmbedderSuffix",
+      0, 1);
+  histogram_tester.ExpectTotalCount(
+      "Prefetch.PrefetchContainer.AddedToHeaderDeterminedSuccesfully."
+      "Embedder.NoEmbedderSuffix",
+      0);
+  histogram_tester.ExpectTotalCount(
+      "Prefetch.PrefetchContainer.AddedToPrefetchCompletedSuccessfully."
+      "Embedder.NoEmbedderSuffix",
+      0);
+}
+
 }  // namespace
 }  // namespace content

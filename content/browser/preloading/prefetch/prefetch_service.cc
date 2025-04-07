@@ -469,10 +469,12 @@ void PrefetchService::AddPrefetchContainerWithoutStartingPrefetch(
       ResetPrefetchContainer(prefetch_iter->second->GetWeakPtr());
       owned_prefetches_[prefetch_container_key] =
           std::move(owned_prefetch_container);
+      owned_prefetches_[prefetch_container_key]->OnAddedToPrefetchService();
       break;
     case Action::kTakeNew:
       owned_prefetches_[prefetch_container_key] =
           std::move(owned_prefetch_container);
+      owned_prefetches_[prefetch_container_key]->OnAddedToPrefetchService();
       break;
   }
 }
