@@ -5168,7 +5168,7 @@ Press an assigned switch or key to remove assignment.
     Subscription is installed on this device only and not synced with other devices under your account. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_SETTINGS_INTERNET_PASSPOINT_SUBSCRIPTION_EXPIRATION" desc="Label of the subscription expiration date.">
-    Expiry date
+    Expiration date
   </message>
   <message name="IDS_SETTINGS_INTERNET_PASSPOINT_SOURCE" desc="Label of the source that installed the Passpoint subscription.">
     Passpoint provider
