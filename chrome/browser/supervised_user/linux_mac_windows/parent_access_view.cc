@@ -36,8 +36,7 @@
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
-#include "ui/views/layout/flex_layout.h"
-#include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view.h"
@@ -50,7 +49,7 @@
 namespace {
 
 constexpr int kViewWidth = 448;
-constexpr int kViewHeight = 440;
+constexpr int kViewHeight = 390;
 constexpr int kMaxWebViewHeight = 540;
 constexpr gfx::Size kViewPreferredSize = gfx::Size(kViewWidth, kViewHeight);
 constexpr gfx::Size kErrorViewPreferredSize =
@@ -372,11 +371,9 @@ content::WebContents* ParentAccessView::GetWebViewContents() {
 }
 
 void ParentAccessView::Initialize(const GURL& pacp_url, int corner_radius) {
-  auto layout = std::make_unique<views::FlexLayout>();
-  layout->SetOrientation(views::LayoutOrientation::kHorizontal);
-  layout->SetMainAxisAlignment(views::LayoutAlignment::kCenter);
-  layout->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
-  SetLayoutManager(std::move(layout));
+  // A FillLayout is enough as the dialog only displays a child view at a time
+  // (web_view_ or error_view_).
+  SetLayoutManager(std::make_unique<views::FillLayout>());
 
   // Loads the PACP widget's url. This creates the new web_contents of the
   // dialog.
