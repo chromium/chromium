@@ -383,6 +383,14 @@
             "_bug_id": "crbug.com/1369088"
           },
           {
+            "match": "android.autofillservice.cts.dropdown.WebViewActivityTest#testAutofillNoDatasets",
+            "_bug_id": "crbug.com/408979469"
+          },
+          {
+            "match": "android.autofillservice.cts.dropdown.WebViewActivityTest#testAutofillOneDataset",
+            "_bug_id": "crbug.com/408979469"
+          },
+          {
             "match": "android.autofillservice.cts.dropdown.WebViewActivityTest#testSaveOnly",
             "_bug_id": "crbug.com/1369088"
           },
@@ -533,6 +541,14 @@
             "_bug_id": "crbug.com/1369088"
           },
           {
+            "match": "android.autofillservice.cts.dropdown.WebViewActivityTest#testAutofillNoDatasets",
+            "_bug_id": "crbug.com/408979469"
+          },
+          {
+            "match": "android.autofillservice.cts.dropdown.WebViewActivityTest#testAutofillOneDataset",
+            "_bug_id": "crbug.com/408979469"
+          },
+          {
             "match": "android.autofillservice.cts.dropdown.WebViewActivityTest#testSaveOnly",
             "_bug_id": "crbug.com/1369088"
           },
@@ -669,6 +685,14 @@
             "_bug_id": "crbug.com/1369088"
           },
           {
+            "match": "android.autofillservice.cts.dropdown.WebViewActivityTest#testAutofillNoDatasets",
+            "_bug_id": "crbug.com/408979469"
+          },
+          {
+            "match": "android.autofillservice.cts.dropdown.WebViewActivityTest#testAutofillOneDataset",
+            "_bug_id": "crbug.com/408979469"
+          },
+          {
             "match": "android.autofillservice.cts.dropdown.WebViewActivityTest#testSaveOnly",
             "_bug_id": "crbug.com/1369088"
           },
@@ -803,6 +827,14 @@
           {
             "match": "android.autofillservice.cts.dropdown.WebViewActivityTest#testAutofillAndSave_withExternalViews_loadWebViewFirst",
             "_bug_id": "crbug.com/1369088"
+          },
+          {
+            "match": "android.autofillservice.cts.dropdown.WebViewActivityTest#testAutofillNoDatasets",
+            "_bug_id": "crbug.com/408979469"
+          },
+          {
+            "match": "android.autofillservice.cts.dropdown.WebViewActivityTest#testAutofillOneDataset",
+            "_bug_id": "crbug.com/408979469"
           },
           {
             "match": "android.autofillservice.cts.dropdown.WebViewActivityTest#testSaveOnly",
