@@ -5,7 +5,6 @@
 #ifndef UI_BASE_GLIB_GSETTINGS_H_
 #define UI_BASE_GLIB_GSETTINGS_H_
 
-#include "base/component_export.h"
 #include "ui/base/glib/scoped_gobject.h"
 
 using GSettings = struct _GSettings;
@@ -14,7 +13,6 @@ namespace ui {
 
 // Creates a new GSettings object for the given schema.  If the schema does not
 // exist, this will return nullptr.
-COMPONENT_EXPORT(UI_BASE)
 ScopedGObject<GSettings> GSettingsNew(const char* schema);
 
 }  // namespace ui

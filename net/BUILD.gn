@@ -1301,6 +1301,9 @@ component("net") {
       "proxy_resolution/proxy_config_service_linux.cc",
       "proxy_resolution/proxy_config_service_linux.h",
     ]
+    if (use_glib) {
+      deps += [ "//ui/base/glib" ]
+    }
   }
 
   if (is_linux || is_chromeos || is_android) {

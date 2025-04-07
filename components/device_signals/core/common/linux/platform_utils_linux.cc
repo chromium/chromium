@@ -31,6 +31,7 @@
 #include "components/device_signals/core/common/common_types.h"
 #include "components/device_signals/core/common/platform_utils.h"
 #include "components/device_signals/core/common/signals_constants.h"
+#include "ui/base/glib/gsettings.h"
 
 namespace {
 std::string ReadFile(std::string path_str) {
@@ -75,20 +76,18 @@ SettingValue GetScreenlockSecured() {
       desktop_env == base::nix::DESKTOP_ENVIRONMENT_CINNAMON ? "cinnamon"
                                                              : "gnome");
 
-  GSettingsSchema* screensaver_schema = g_settings_schema_source_lookup(
-      g_settings_schema_source_get_default(), settings_schema.c_str(), FALSE);
-  GSettings* screensaver_settings = nullptr;
-  if (!screensaver_schema ||
-      !g_settings_schema_has_key(screensaver_schema, kLockScreenKey)) {
-    return SettingValue::UNKNOWN;
-  }
-  screensaver_settings = g_settings_new(settings_schema.c_str());
+  auto screensaver_settings = ui::GSettingsNew(settings_schema.c_str());
   if (!screensaver_settings) {
     return SettingValue::UNKNOWN;
   }
+  GSettingsSchema* screensaver_schema = g_settings_schema_source_lookup(
+      g_settings_schema_source_get_default(), settings_schema.c_str(), true);
+  if (!g_settings_schema_has_key(screensaver_schema, kLockScreenKey)) {
+    return SettingValue::UNKNOWN;
+  }
+  g_settings_schema_unref(screensaver_schema);
   gboolean lock_screen_enabled =
       g_settings_get_boolean(screensaver_settings, kLockScreenKey);
-  g_object_unref(screensaver_settings);
 
   return lock_screen_enabled ? SettingValue::ENABLED : SettingValue::DISABLED;
 #else
