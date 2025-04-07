@@ -1003,7 +1003,7 @@ scoped_refptr<VideoFrame> VideoFrame::WrapUnacceleratedIOSurface(
   // add a destruction callback to unlock the IOSurface.
   kern_return_t lock_result =
       IOSurfaceLock(io_surface.get(), kIOSurfaceLockReadOnly, nullptr);
-  if (lock_result != kIOReturnSuccess) {
+  if (lock_result != KERN_SUCCESS) {
     DLOG(ERROR) << "Failed to lock IOSurface.";
     return nullptr;
   }

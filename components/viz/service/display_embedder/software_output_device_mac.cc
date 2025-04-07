@@ -78,10 +78,10 @@ void SoftwareOutputDeviceMac::UpdateAndCopyBufferDamage(
 
   {
     TRACE_EVENT0("browser", "IOSurfaceLock for software copy");
-    IOReturn io_result = IOSurfaceLock(
+    kern_return_t io_result = IOSurfaceLock(
         previous_io_surface, kIOSurfaceLockReadOnly | kIOSurfaceLockAvoidSync,
         nullptr);
-    if (io_result) {
+    if (io_result != KERN_SUCCESS) {
       DLOG(ERROR) << "Failed to lock previous IOSurface " << io_result;
       return;
     }
@@ -101,11 +101,12 @@ void SoftwareOutputDeviceMac::UpdateAndCopyBufferDamage(
 
   {
     TRACE_EVENT0("browser", "IOSurfaceUnlock");
-    IOReturn io_result = IOSurfaceUnlock(
+    kern_return_t io_result = IOSurfaceUnlock(
         previous_io_surface, kIOSurfaceLockReadOnly | kIOSurfaceLockAvoidSync,
         nullptr);
-    if (io_result)
+    if (io_result != KERN_SUCCESS) {
       DLOG(ERROR) << "Failed to unlock previous IOSurface " << io_result;
+    }
   }
 }
 
@@ -156,9 +157,10 @@ SkCanvas* SoftwareOutputDeviceMac::BeginPaint(
   // |current_paint_canvas_|.
   {
     TRACE_EVENT0("browser", "IOSurfaceLock for software paint");
-    IOReturn io_result = IOSurfaceLock(current_paint_buffer_->io_surface.get(),
-                                       kIOSurfaceLockAvoidSync, nullptr);
-    if (io_result) {
+    kern_return_t io_result =
+        IOSurfaceLock(current_paint_buffer_->io_surface.get(),
+                      kIOSurfaceLockAvoidSync, nullptr);
+    if (io_result != KERN_SUCCESS) {
       DLOG(ERROR) << "Failed to lock IOSurface " << io_result;
       current_paint_buffer_ = nullptr;
       return nullptr;
@@ -186,11 +188,12 @@ void SoftwareOutputDeviceMac::EndPaint() {
 
   {
     TRACE_EVENT0("browser", "IOSurfaceUnlock");
-    IOReturn io_result =
+    kern_return_t io_result =
         IOSurfaceUnlock(current_paint_buffer_->io_surface.get(),
                         kIOSurfaceLockAvoidSync, nullptr);
-    if (io_result)
+    if (io_result != KERN_SUCCESS) {
       DLOG(ERROR) << "Failed to unlock IOSurface " << io_result;
+    }
   }
   current_paint_canvas_.reset();
 

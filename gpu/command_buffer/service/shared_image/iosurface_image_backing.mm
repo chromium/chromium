@@ -56,12 +56,12 @@ using GraphiteTextureHolder = SkiaImageRepresentation::GraphiteTextureHolder;
 struct ScopedIOSurfaceLock {
   ScopedIOSurfaceLock(IOSurfaceRef iosurface, IOSurfaceLockOptions options)
       : io_surface_(iosurface) {
-    IOReturn r = IOSurfaceLock(io_surface_, options, nullptr);
-    CHECK_EQ(kIOReturnSuccess, r);
+    kern_return_t r = IOSurfaceLock(io_surface_, options, nullptr);
+    CHECK_EQ(KERN_SUCCESS, r);
   }
   ~ScopedIOSurfaceLock() {
-    IOReturn r = IOSurfaceUnlock(io_surface_, 0, nullptr);
-    CHECK_EQ(kIOReturnSuccess, r);
+    kern_return_t r = IOSurfaceUnlock(io_surface_, 0, nullptr);
+    CHECK_EQ(KERN_SUCCESS, r);
   }
 
   ScopedIOSurfaceLock(const ScopedIOSurfaceLock&) = delete;

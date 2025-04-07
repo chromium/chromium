@@ -325,10 +325,10 @@ base::apple::ScopedCFTypeRef<IOSurfaceRef> CreateIOSurface(
   if (should_clear) {
     // Zero-initialize the IOSurface. Calling IOSurfaceLock/IOSurfaceUnlock
     // appears to be sufficient. https://crbug.com/584760#c17
-    IOReturn r = IOSurfaceLock(surface.get(), 0, nullptr);
-    DCHECK_EQ(kIOReturnSuccess, r);
+    kern_return_t r = IOSurfaceLock(surface.get(), 0, nullptr);
+    DCHECK_EQ(KERN_SUCCESS, r);
     r = IOSurfaceUnlock(surface.get(), 0, nullptr);
-    DCHECK_EQ(kIOReturnSuccess, r);
+    DCHECK_EQ(KERN_SUCCESS, r);
   }
 
   // Ensure that all IOSurfaces start as sRGB.
