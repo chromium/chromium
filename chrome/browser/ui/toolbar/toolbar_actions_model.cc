@@ -20,14 +20,11 @@
 #include "base/one_shot_event.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/profile_util.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/extensions/extension_action_view_controller.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model_factory.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -42,6 +39,10 @@
 #include "extensions/common/extension_set.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/permissions/permissions_data.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/extension_management.h"
+#endif
 
 ToolbarActionsModel::ToolbarActionsModel(
     Profile* profile,
@@ -121,9 +122,11 @@ void ToolbarActionsModel::OnExtensionUninstalled(
   RemovePref(extension->id());
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 void ToolbarActionsModel::OnExtensionManagementSettingsChanged() {
   UpdatePinnedActionIds();
 }
+#endif
 
 void ToolbarActionsModel::OnExtensionPermissionsUpdated(
     const extensions::Extension& extension,
@@ -164,9 +167,13 @@ void ToolbarActionsModel::OnReady() {
   permissions_manager_observation_.Observe(
       extensions::PermissionsManager::Get(profile_));
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  // TODO(crbug.com/394876083): Always enable this when we get to compile
+  // ExtensionManagement on Android.
   auto* management =
       extensions::ExtensionManagementFactory::GetForBrowserContext(profile_);
   extension_management_observation_.Observe(management);
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   actions_initialized_ = true;
   for (Observer& observer : observers_) {
@@ -252,6 +259,7 @@ bool ToolbarActionsModel::IsRestrictedUrl(const GURL& url) const {
   });
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 bool ToolbarActionsModel::IsPolicyBlockedHost(const GURL& url) const {
   extensions::ManagementPolicy* policy =
       extensions::ExtensionSystem::Get(profile_)->management_policy();
@@ -285,15 +293,22 @@ bool ToolbarActionsModel::IsPolicyBlockedHost(const GURL& url) const {
   // extension.
   return true;
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 bool ToolbarActionsModel::IsActionPinned(const ActionId& action_id) const {
   return base::Contains(pinned_action_ids_, action_id);
 }
 
 bool ToolbarActionsModel::IsActionForcePinned(const ActionId& action_id) const {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   auto* management =
       extensions::ExtensionManagementFactory::GetForBrowserContext(profile_);
   return base::Contains(management->GetForcePinnedList(), action_id);
+#else
+  // TODO(crbug.com/394876083): Remove this guard when we get to compile
+  // ExtensionManagement on Android.
+  return false;
+#endif
 }
 
 void ToolbarActionsModel::MovePinnedAction(const ActionId& action_id,
@@ -528,12 +543,17 @@ std::vector<ToolbarActionsModel::ActionId>
 ToolbarActionsModel::GetFilteredPinnedActionIds() const {
   // Force-pinned extensions should always be present in the output vector.
   extensions::ExtensionIdList pinned = extension_prefs_->GetPinnedExtensions();
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  // TODO(crbug.com/394876083): Always enable this when we get to compile
+  // ExtensionManagement on Android.
   auto* management =
       extensions::ExtensionManagementFactory::GetForBrowserContext(profile_);
   // O(n^2), but there are typically very few force-pinned extensions.
   std::ranges::copy_if(
       management->GetForcePinnedList(), std::back_inserter(pinned),
       [&pinned](const std::string& id) { return !base::Contains(pinned, id); });
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   // TODO(pbos): Make sure that the pinned IDs are pruned from ExtensionPrefs on
   // startup so that we don't keep saving stale IDs.

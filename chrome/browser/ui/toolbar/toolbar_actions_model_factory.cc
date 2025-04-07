@@ -4,9 +4,7 @@
 
 #include "chrome/browser/ui/toolbar/toolbar_actions_model_factory.h"
 
-#include "chrome/browser/extensions/chrome_extension_system_factory.h"
 #include "chrome/browser/extensions/extension_action_dispatcher.h"
-#include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "extensions/browser/extension_prefs.h"
@@ -14,6 +12,10 @@
 #include "extensions/browser/extension_registry_factory.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/permissions_manager.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/extension_management.h"
+#endif
 
 // static
 ToolbarActionsModel* ToolbarActionsModelFactory::GetForProfile(
@@ -43,8 +45,11 @@ ToolbarActionsModelFactory::ToolbarActionsModelFactory()
   DependsOn(extensions::ExtensionActionDispatcher::GetFactoryInstance());
   DependsOn(extensions::ExtensionPrefsFactory::GetInstance());
   DependsOn(extensions::ExtensionRegistryFactory::GetInstance());
-  DependsOn(extensions::ChromeExtensionSystemFactory::GetInstance());
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   DependsOn(extensions::ExtensionManagementFactory::GetInstance());
+#endif
+  DependsOn(
+      extensions::ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
   DependsOn(extensions::PermissionsManager::GetFactory());
 }
 
