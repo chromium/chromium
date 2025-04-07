@@ -748,7 +748,7 @@ BASE_FEATURE(kEnableRootNsDnsProxy,
 // Settings > Privacy controls.
 BASE_FEATURE(kEnableToggleCameraShortcut,
              "EnableToggleCameraShortcut",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // TODO:(b/345017297): If enabled, touchscreen mapping experience is visible in
 // settings.
@@ -1186,7 +1186,7 @@ BASE_FEATURE(kGameDashboardUtilities,
 // Enables the App launch keyboard shortcut.
 BASE_FEATURE(kAppLaunchShortcut,
              "AppLaunchShortcut",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables the Game Dashboard's Record Game feature. This flag is to be enabled
 // by the feature management module.
