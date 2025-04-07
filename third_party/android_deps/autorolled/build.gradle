@@ -381,6 +381,52 @@ repositories {
     mavenCentral()
 }
 
+// See https://github.com/google/guava/releases/tag/v33.3.1
+dependencies.constraints {
+    compile("com.google.guava:guava:33.3.1-android") {
+        attributes {
+            attribute(
+                    TargetJvmEnvironment.TARGET_JVM_ENVIRONMENT_ATTRIBUTE,
+                    objects.named(TargetJvmEnvironment, TargetJvmEnvironment.ANDROID))
+        }
+    }
+    compileLatest("com.google.guava:guava:33.3.1-android") {
+        attributes {
+            attribute(
+                    TargetJvmEnvironment.TARGET_JVM_ENVIRONMENT_ATTRIBUTE,
+                    objects.named(TargetJvmEnvironment, TargetJvmEnvironment.ANDROID))
+        }
+    }
+    buildCompile("com.google.guava:guava:33.3.1-jre") {
+        attributes {
+            attribute(
+                    TargetJvmEnvironment.TARGET_JVM_ENVIRONMENT_ATTRIBUTE,
+                    objects.named(TargetJvmEnvironment, TargetJvmEnvironment.STANDARD_JVM))
+        }
+    }
+    buildCompileLatest("com.google.guava:guava:33.3.1-jre") {
+        attributes {
+            attribute(
+                    TargetJvmEnvironment.TARGET_JVM_ENVIRONMENT_ATTRIBUTE,
+                    objects.named(TargetJvmEnvironment, TargetJvmEnvironment.STANDARD_JVM))
+        }
+    }
+    testCompile("com.google.guava:guava:33.3.1-jre") {
+        attributes {
+            attribute(
+                    TargetJvmEnvironment.TARGET_JVM_ENVIRONMENT_ATTRIBUTE,
+                    objects.named(TargetJvmEnvironment, TargetJvmEnvironment.STANDARD_JVM))
+        }
+    }
+    testCompileLatest("com.google.guava:guava:33.3.1-jre") {
+        attributes {
+            attribute(
+                    TargetJvmEnvironment.TARGET_JVM_ENVIRONMENT_ATTRIBUTE,
+                    objects.named(TargetJvmEnvironment, TargetJvmEnvironment.STANDARD_JVM))
+        }
+    }
+}
+
 dependencies {
     // Use testCompile to have is_robolectric = true set on targets.
     testCompileLatest "org.robolectric:robolectric:+"

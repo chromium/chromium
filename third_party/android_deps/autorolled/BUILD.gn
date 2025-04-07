@@ -39,7 +39,7 @@ template("define_autorolled_targets") {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("com_google_guava_guava_java") {
     jar_path =
-        "autorolled/cipd/libs/com_google_guava_guava/guava-33.3.1-android.jar"
+        "autorolled/cipd/libs/com_google_guava_guava/guava-33.3.1-jre.jar"
     output_name = "com_google_guava_guava"
     enable_bytecode_checks = false
     deps = [
