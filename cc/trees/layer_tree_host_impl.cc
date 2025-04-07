@@ -3265,11 +3265,9 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
 
   viz::CompositorFrame compositor_frame;
   compositor_frame.metadata = std::move(metadata);
-  if (!settings_.is_display_tree) {
     resource_provider_->PrepareSendToParent(
         resources, &compositor_frame.resource_list,
         layer_tree_frame_sink_->context_provider());
-  }
   compositor_frame.render_pass_list = std::move(frame->render_passes);
 
   // We should always have a valid LocalSurfaceId in LayerTreeImpl unless we

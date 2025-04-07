@@ -49,6 +49,8 @@ class LayerContextImpl : public cc::LayerTreeHostImplClient,
 
   void ReturnResources(std::vector<ReturnedResource> resources);
 
+  void DoReturnResources(std::vector<ReturnedResource> resources);
+
  private:
   // cc::LayerTreeHostImplClient:
   void DidLoseLayerTreeFrameSinkOnImplThread() override;
@@ -115,6 +117,8 @@ class LayerContextImpl : public cc::LayerTreeHostImplClient,
   // cc::TileDisplayLayerImpl::Client:
   void DidAppendQuadsWithResources(
       const std::vector<TransferableResource>& resources) override;
+  void ImportResource(TransferableResource resource) override;
+  void DiscardResource(ResourceId resource) override;
 
   // mojom::LayerContext:
   void SetVisible(bool visible) override;
@@ -135,6 +139,7 @@ class LayerContextImpl : public cc::LayerTreeHostImplClient,
   const std::unique_ptr<cc::LayerTreeHostImpl> host_impl_;
 
   std::vector<TransferableResource> next_frame_resources_;
+  std::vector<ReturnedResource> resources_to_return_;
 
   raw_ptr<cc::LayerTreeFrameSinkClient> frame_sink_client_ = nullptr;
 };

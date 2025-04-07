@@ -31,6 +31,7 @@
 #include "cc/trees/layer_tree_settings.h"
 #include "cc/trees/property_tree.h"
 #include "cc/trees/task_runner_provider.h"
+#include "components/viz/client/client_resource_provider.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
@@ -943,6 +944,7 @@ LayerContextImpl::LayerContextImpl(CompositorFrameSinkSupport* compositor_sink,
 
 LayerContextImpl::~LayerContextImpl() {
   host_impl_->ReleaseLayerTreeFrameSink();
+  DoReturnResources(std::move(resources_to_return_));
 }
 
 void LayerContextImpl::BeginFrame(const BeginFrameArgs& args) {
@@ -968,8 +970,14 @@ void LayerContextImpl::BeginFrame(const BeginFrameArgs& args) {
 
 void LayerContextImpl::ReturnResources(
     std::vector<ReturnedResource> resources) {
-  // TODO(crbug.com/40902503): Release resources at some point.
-  NOTIMPLEMENTED();
+  host_impl_->resource_provider()->ReceiveReturnsFromParent(
+      std::move(resources));
+  DoReturnResources(std::move(resources_to_return_));
+}
+
+void LayerContextImpl::DoReturnResources(
+    std::vector<ReturnedResource> resources) {
+  compositor_sink_->DoReturnResources(std::move(resources));
 }
 
 void LayerContextImpl::DidLoseLayerTreeFrameSinkOnImplThread() {
@@ -1110,11 +1118,6 @@ void LayerContextImpl::SubmitCompositorFrame(CompositorFrame frame,
 
   frame.metadata.send_frame_token_to_embedder = true;
 
-  frame.resource_list.insert(frame.resource_list.end(),
-                             next_frame_resources_.begin(),
-                             next_frame_resources_.end());
-  next_frame_resources_.clear();
-
   std::optional<HitTestRegionList> hit_test_region_list =
       host_impl_->BuildHitTestData();
 
@@ -1140,6 +1143,27 @@ void LayerContextImpl::DidAppendQuadsWithResources(
     const std::vector<TransferableResource>& resources) {
   next_frame_resources_.insert(next_frame_resources_.end(), resources.begin(),
                                resources.end());
+}
+
+void LayerContextImpl::ImportResource(TransferableResource resource) {
+  auto release_callback = base::BindOnce(
+      [](LayerContextImpl* impl, ResourceId id,
+         const gpu::SyncToken& sync_token, bool is_lost) {
+        impl->resources_to_return_.emplace_back(
+            id, sync_token,
+            /*release_fence=*/gfx::GpuFenceHandle(),
+            /*count=*/1, is_lost);
+      },
+      base::Unretained(this), resource.id);
+
+  host_impl_->resource_provider()->ImportResource(
+      resource, /*impl_release_callback=*/std::move(release_callback),
+      /*main_thread_release_callback=*/base::NullCallback(),
+      /*evicted_callback=*/base::NullCallback());
+}
+
+void LayerContextImpl::DiscardResource(ResourceId resource) {
+  host_impl_->resource_provider()->RemoveImportedResource(resource);
 }
 
 void LayerContextImpl::SetVisible(bool visible) {

@@ -281,6 +281,7 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   friend class CompositorFrameSinkSupportTestBase;
   friend class DisplayTest;
   friend class FrameSinkManagerTest;
+  friend class LayerContextImpl;
   friend class OnBeginFrameAcksCompositorFrameSinkSupportTest;
   friend class SurfaceAggregatorWithResourcesTest;
 
@@ -360,6 +361,8 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
 
   void ForAllReservedResourceDelegates(
       base::FunctionRef<void(ReservedResourceDelegate&)> func);
+
+  void DoReturnResources(std::vector<ReturnedResource> resources);
 
   const raw_ptr<mojom::CompositorFrameSinkClient> client_;
 

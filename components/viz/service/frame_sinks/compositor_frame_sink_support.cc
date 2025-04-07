@@ -477,6 +477,11 @@ void CompositorFrameSinkSupport::ReturnResources(
     return;
   }
 
+  DoReturnResources(std::move(resources));
+}
+
+void CompositorFrameSinkSupport::DoReturnResources(
+    std::vector<ReturnedResource> resources) {
   // When features::OnBeginFrameAcks is disabled we attempt to return resources
   // in DidReceiveCompositorFrameAck. However if there are no pending frames
   // then we don't expect that signal soon. In which case we return the
