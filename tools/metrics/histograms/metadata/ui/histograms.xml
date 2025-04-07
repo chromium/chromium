@@ -802,9 +802,9 @@ features through Chrome Labs. -->
     <variant name="DistillPage"/>
     <variant name="EnterFullScreen"/>
     <variant name="Exit"/>
-    <variant name="ExploreExtensions"/>
     <variant name="Feedback"/>
     <variant name="Find"/>
+    <variant name="FindExtensions"/>
     <variant name="HelpPage"/>
     <variant name="ImportSettings"/>
     <variant name="InstallPwa"/>

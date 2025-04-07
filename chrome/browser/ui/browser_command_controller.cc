@@ -920,7 +920,7 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       ShowExtensions(browser_->GetBrowserForOpeningWebUi());
       break;
     case IDC_EXTENSIONS_SUBMENU_VISIT_CHROME_WEB_STORE:
-    case IDC_EXPLORE_EXTENSIONS:
+    case IDC_FIND_EXTENSIONS:
       ShowWebStore(browser_, extension_urls::kAppMenuUtmSource);
       break;
     case IDC_PERFORMANCE:
@@ -1618,7 +1618,7 @@ void BrowserCommandController::UpdateCommandsForExtensionsMenu() {
       /*state=*/true);
   command_updater_.UpdateCommandEnabled(
       IDC_EXTENSIONS_SUBMENU_VISIT_CHROME_WEB_STORE, /*state=*/true);
-  command_updater_.UpdateCommandEnabled(IDC_EXPLORE_EXTENSIONS,
+  command_updater_.UpdateCommandEnabled(IDC_FIND_EXTENSIONS,
                                         /*state=*/true);
 }
 

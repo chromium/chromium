@@ -282,7 +282,7 @@
 #define IDC_CREATE_NEW_COMPARISON_TABLE_WITH_TAB 40292
 #define IDC_SHOW_HISTORY_SIDE_PANEL     40293
 #define IDC_OPEN_GLIC                   40294
-#define IDC_EXPLORE_EXTENSIONS  40295
+#define IDC_FIND_EXTENSIONS  40295
 
 // Spell-check
 // Insert any additional suggestions before _LAST; these have to be consecutive.

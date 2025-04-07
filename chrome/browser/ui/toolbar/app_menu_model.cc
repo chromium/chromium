@@ -1205,12 +1205,12 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       }
       LogMenuAction(MENU_ACTION_VISIT_CHROME_WEB_STORE);
       break;
-    case IDC_EXPLORE_EXTENSIONS:
+    case IDC_FIND_EXTENSIONS:
       if (!uma_action_recorded_) {
-        base::UmaHistogramMediumTimes(
-            "WrenchMenu.TimeToAction.ExploreExtensions", delta);
+        base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.FindExtensions",
+                                      delta);
       }
-      LogMenuAction(MENU_ACTION_EXPLORE_EXTENSIONS);
+      LogMenuAction(MENU_ACTION_FIND_EXTENSIONS);
       break;
     // Recent tabs menu.
     case IDC_RESTORE_TAB:
@@ -1913,10 +1913,10 @@ void AppMenuModel::Build() {
   // Extensions sub menu.
   if (base::FeatureList::IsEnabled(features::kExtensionsCollapseMainMenu) &&
       !extensions::ui_util::HasManageableExtensions(browser_->profile())) {
-    AddItemWithStringIdAndVectorIcon(this, IDC_EXPLORE_EXTENSIONS,
-                                     IDS_EXPLORE_EXTENSIONS,
+    AddItemWithStringIdAndVectorIcon(this, IDC_FIND_EXTENSIONS,
+                                     IDS_FIND_EXTENSIONS,
                                      vector_icons::kExtensionChromeRefreshIcon);
-    SetElementIdentifierAt(GetIndexOfCommandId(IDC_EXPLORE_EXTENSIONS).value(),
+    SetElementIdentifierAt(GetIndexOfCommandId(IDC_FIND_EXTENSIONS).value(),
                            ExtensionsMenuModel::kVisitChromeWebStoreMenuItem);
   } else {
     sub_menus_.push_back(std::make_unique<ExtensionsMenuModel>(this, browser_));

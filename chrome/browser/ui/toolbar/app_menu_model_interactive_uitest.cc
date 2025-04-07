@@ -284,13 +284,13 @@ IN_PROC_BROWSER_TEST_P(AppMenuModelExtensionsInteractiveTest,
   histograms_.ExpectTotalCount("WrenchMenu.TimeToAction.ManageExtensions", 1);
   histograms_.ExpectTotalCount("WrenchMenu.TimeToAction.VisitChromeWebStore",
                                0);
-  histograms_.ExpectTotalCount("WrenchMenu.TimeToAction.ExploreExtensions", 0);
+  histograms_.ExpectTotalCount("WrenchMenu.TimeToAction.FindExtensions", 0);
   histograms_.ExpectBucketCount("WrenchMenu.MenuAction",
                                 MENU_ACTION_MANAGE_EXTENSIONS, 1);
   histograms_.ExpectBucketCount("WrenchMenu.MenuAction",
                                 MENU_ACTION_VISIT_CHROME_WEB_STORE, 0);
   histograms_.ExpectBucketCount("WrenchMenu.MenuAction",
-                                MENU_ACTION_EXPLORE_EXTENSIONS, 0);
+                                MENU_ACTION_FIND_EXTENSIONS, 0);
 }
 
 // Test to confirm that the visit Chrome Web Store menu item navigates to the
@@ -315,15 +315,14 @@ IN_PROC_BROWSER_TEST_P(AppMenuModelExtensionsInteractiveTest,
 
   histograms_.ExpectTotalCount("WrenchMenu.TimeToAction.VisitChromeWebStore",
                                collapse ? 0 : 1);
-  histograms_.ExpectTotalCount("WrenchMenu.TimeToAction.ExploreExtensions",
+  histograms_.ExpectTotalCount("WrenchMenu.TimeToAction.FindExtensions",
                                collapse ? 1 : 0);
   histograms_.ExpectTotalCount("WrenchMenu.TimeToAction.ManageExtensions", 0);
   histograms_.ExpectBucketCount("WrenchMenu.MenuAction",
                                 MENU_ACTION_VISIT_CHROME_WEB_STORE,
                                 collapse ? 0 : 1);
   histograms_.ExpectBucketCount("WrenchMenu.MenuAction",
-                                MENU_ACTION_EXPLORE_EXTENSIONS,
-                                collapse ? 1 : 0);
+                                MENU_ACTION_FIND_EXTENSIONS, collapse ? 1 : 0);
   histograms_.ExpectBucketCount("WrenchMenu.MenuAction",
                                 MENU_ACTION_MANAGE_EXTENSIONS, 0);
 }

@@ -441,7 +441,7 @@ TEST_P(ExtensionsMenuModelTest, ExtensionsMenu) {
   model.Init();
 
   if (GetParam()) {
-    const auto index = model.GetIndexOfCommandId(IDC_EXPLORE_EXTENSIONS);
+    const auto index = model.GetIndexOfCommandId(IDC_FIND_EXTENSIONS);
     ASSERT_TRUE(index.has_value());
     EXPECT_EQ(nullptr, model.GetSubmenuModelAt(*index));
   } else {
