@@ -476,6 +476,14 @@ TEST_F(MessagingBackendServiceImplTest, TestActivityLogCollaborationEvents) {
       .WillRepeatedly(Return(CreatePartialMember(
           GaiaId("gaia_2"), "gaia2@gmail.com", "Display Name 2", "")));
 
+  tab_groups::SavedTabGroup tab_group =
+      CreateSharedTabGroup(collaboration_group_id);
+  std::vector<tab_groups::SavedTabGroup> all_groups = {tab_group};
+  EXPECT_CALL(*mock_tab_group_sync_service_, GetAllGroups())
+      .WillRepeatedly(Return(all_groups));
+  EXPECT_CALL(*mock_tab_group_sync_service_, GetGroup(tab_group.saved_guid()))
+      .WillRepeatedly(Return(tab_group));
+
   ActivityLogQueryParams params;
   params.collaboration_id = collaboration_group_id;
   std::vector<ActivityLogItem> activity_log = service_->GetActivityLog(params);
@@ -541,6 +549,9 @@ TEST_F(MessagingBackendServiceImplTest, TestTabActivityLogCollaborationEvents) {
           Return(CreatePartialMember(GaiaId("gaia_1"), "gaia1@gmail.com",
                                      "Display Name", "Given Name 1")));
 
+  std::vector<tab_groups::SavedTabGroup> all_groups = {tab_group};
+  EXPECT_CALL(*mock_tab_group_sync_service_, GetAllGroups())
+      .WillRepeatedly(Return(all_groups));
   EXPECT_CALL(*mock_tab_group_sync_service_, GetGroup(tab_group.saved_guid()))
       .WillRepeatedly(Return(tab_group));
 
@@ -710,6 +721,9 @@ TEST_F(MessagingBackendServiceImplTest, TestActivityLogTabGroupEvents) {
           Return(CreatePartialMember(GaiaId("gaia_2"), "gaia2@gmail.com",
                                      "Display Name", "Given Name 2")));
 
+  std::vector<tab_groups::SavedTabGroup> all_groups = {tab_group};
+  EXPECT_CALL(*mock_tab_group_sync_service_, GetAllGroups())
+      .WillRepeatedly(Return(all_groups));
   EXPECT_CALL(*mock_tab_group_sync_service_, GetGroup(tab_group.saved_guid()))
       .WillRepeatedly(Return(tab_group));
 
@@ -1214,6 +1228,9 @@ TEST_F(MessagingBackendServiceImplTest, TestActivityLogTabEvents) {
                                             Eq(GaiaId("gaia_3"))))
       .WillRepeatedly(Return(std::nullopt));
 
+  std::vector<tab_groups::SavedTabGroup> all_groups = {tab_group};
+  EXPECT_CALL(*mock_tab_group_sync_service_, GetAllGroups())
+      .WillRepeatedly(Return(all_groups));
   EXPECT_CALL(*mock_tab_group_sync_service_, GetGroup(tab_group.saved_guid()))
       .WillRepeatedly(Return(tab_group));
 

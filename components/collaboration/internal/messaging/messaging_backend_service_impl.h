@@ -153,9 +153,9 @@ class MessagingBackendServiceImpl : public MessagingBackendService,
       const collaboration_pb::Message& message,
       const std::optional<tab_groups::SavedTabGroup>& tab_group);
 
-  // Tries to retrieve the correct tab group based on data in the Message.
-  std::optional<tab_groups::SavedTabGroup> GetTabGroupFromMessage(
-      const collaboration_pb::Message& message);
+  // Tries to retrieve the tab group from CollaborationId.
+  std::optional<tab_groups::SavedTabGroup> GetTabGroupFromCollaborationId(
+      const std::string& collaboration_id);
 
   // Uses the available data to look up a GroupMember.
   std::optional<data_sharing::GroupMember> GetGroupMemberFromGaiaId(
