@@ -36,7 +36,9 @@ public class HistorySyncView extends LinearLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        // TODO(crbug.com/41493766): Set up scrollView.
+        // ScrollView sets focusable to true during construction. So setting focusable to false in
+        // xml file doesn't work. It has to be set after the construction of ScrollView.
+        findViewById(R.id.sync_consent_scroll_view).setFocusable(false);
         mAccountImage = findViewById(R.id.history_sync_account_image);
         mTitle = findViewById(R.id.history_sync_title);
         mSubtitle = findViewById(R.id.history_sync_subtitle);
