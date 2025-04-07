@@ -308,7 +308,13 @@ suite('CrLitElement', function() {
     assertThrows(function() {
       element.$.foo;
       assertNotReached('Previous statement should have thrown an exception');
-    }, 'CrLitElement CR-DUMMY-LIT $ dictionary accessed before element is connected at least once.');
+    }, 'CrLitElement CR-DUMMY-LIT accessed \'$.foo\' before connected at least once.');
+
+    assertThrows(function() {
+      element.id = 'dummyId';
+      element.$.foo;
+      assertNotReached('Previous statement should have thrown an exception');
+    }, 'CrLitElement CR-DUMMY-LIT#dummyId accessed \'$.foo\' before connected at least once.');
 
     assertDeepEquals([], element.lifecycleCallbacks);
   });
