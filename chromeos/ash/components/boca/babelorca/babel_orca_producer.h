@@ -37,6 +37,18 @@ class TranscriptSenderRateLimiter;
 // Class to control captions handling behavior in producer mode.
 class BabelOrcaProducer : public BabelOrcaController {
  public:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused. Public for testing.
+  //
+  // LINT.IfChange(SendingStoppedReason)
+  enum class SendingStoppedReason {
+    kSessionEnded = 0,
+    kSessionCaptionTurnedOff = 1,
+    kTachyonSendMessagesError = 2,
+    kMaxValue = kTachyonSendMessagesError,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/ash/enums.xml:BabelOrcaSendingStoppedReason)
+
   static std::unique_ptr<BabelOrcaController> Create(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::unique_ptr<BabelOrcaSpeechRecognizer> speech_recognizer,

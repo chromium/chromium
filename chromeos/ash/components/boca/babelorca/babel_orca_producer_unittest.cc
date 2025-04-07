@@ -15,6 +15,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/boca/babelorca/babel_orca_speech_recognizer.h"
@@ -46,6 +47,8 @@ namespace ash::babelorca {
 namespace {
 
 const std::string kLanguage = "en-US";
+constexpr char kSendingStoppedReasonUma[] =
+    "Ash.Boca.Babelorca.SendingStoppedReason";
 
 class MockSpeechRecognizer : public BabelOrcaSpeechRecognizer {
  public:
@@ -112,6 +115,7 @@ class BabelOrcaProducerTest : public testing::Test {
   base::WeakPtr<FakeBabelOrcaTranslationDispatcher> translation_dispatcher_;
   std::unique_ptr<BabelOrcaCaptionTranslator> translator_;
   TestingPrefServiceSimple pref_service_;
+  base::HistogramTester uma_recorder_;
 };
 
 TEST_F(BabelOrcaProducerTest, EnableLocalCaptionsOutOfSession) {
@@ -232,6 +236,11 @@ TEST_F(BabelOrcaProducerTest, EnableSessionCaptionsThenLocalCaptionsInSession) {
   producer.OnSessionCaptionConfigUpdated(/*session_captions_enabled=*/false,
                                          /*translations_enabled=*/false);
   EXPECT_FALSE(caption_controller_delegate_ptr->IsCaptionBubbleAlive());
+  EXPECT_EQ(
+      uma_recorder_.GetBucketCount(
+          kSendingStoppedReasonUma,
+          BabelOrcaProducer::SendingStoppedReason::kSessionCaptionTurnedOff),
+      1);
 }
 
 TEST_F(BabelOrcaProducerTest, EnableLocalCaptionsThenSessionCaptionsInSession) {
@@ -410,6 +419,10 @@ TEST_F(BabelOrcaProducerTest, SessionEndLocalCaptionsDisabled) {
       .Times(2);
   EXPECT_CALL(*speech_recognizer_ptr, Stop).Times(2);
   producer.OnSessionEnded();
+  EXPECT_EQ(uma_recorder_.GetBucketCount(
+                kSendingStoppedReasonUma,
+                BabelOrcaProducer::SendingStoppedReason::kSessionEnded),
+            1);
 }
 
 TEST_F(BabelOrcaProducerTest, SessionEndLocalCaptionsEnabled) {

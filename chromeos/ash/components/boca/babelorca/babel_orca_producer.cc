@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/boca/babelorca/babel_orca_caption_translator.h"
@@ -29,6 +30,12 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace ash::babelorca {
+namespace {
+
+constexpr char kSendingStoppedReasonUma[] =
+    "Ash.Boca.Babelorca.SendingStoppedReason";
+
+}  // namespace
 
 // static
 std::unique_ptr<BabelOrcaController> BabelOrcaProducer::Create(
@@ -75,6 +82,10 @@ void BabelOrcaProducer::OnSessionStarted() {
 
 void BabelOrcaProducer::OnSessionEnded() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (in_session_ && session_captions_enabled_) {
+    base::UmaHistogramEnumeration(kSendingStoppedReasonUma,
+                                  SendingStoppedReason::kSessionEnded);
+  }
   in_session_ = false;
   session_captions_enabled_ = false;
   rate_limited_sender_.reset();
@@ -87,6 +98,11 @@ void BabelOrcaProducer::OnSessionCaptionConfigUpdated(
     bool session_captions_enabled,
     bool translations_enabled) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (in_session_ && session_captions_enabled_ && !session_captions_enabled) {
+    base::UmaHistogramEnumeration(
+        kSendingStoppedReasonUma,
+        SendingStoppedReason::kSessionCaptionTurnedOff);
+  }
   if (!in_session_) {
     LOG(ERROR) << "Session caption config event called out of session.";
     return;
@@ -207,6 +223,9 @@ void BabelOrcaProducer::OnLanguageIdentificationEvent(
 void BabelOrcaProducer::OnSendFailed() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // TODO(crbug.com/373692250): report error.
+  base::UmaHistogramEnumeration(
+      kSendingStoppedReasonUma,
+      SendingStoppedReason::kTachyonSendMessagesError);
   LOG(ERROR) << "Transcript send permanently failed";
   session_captions_enabled_ = false;
   rate_limited_sender_.reset();

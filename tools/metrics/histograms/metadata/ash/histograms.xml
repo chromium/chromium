@@ -1240,6 +1240,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Boca.Babelorca.SendingStoppedReason"
+    enum="BabelOrcaSendingStoppedReason" expires_after="2026-03-21">
+  <owner>anasr@google.com</owner>
+  <owner>cros-edu-eng@google.com</owner>
+  <summary>
+    Records why sending captions was turned off at the producer, whether this
+    was by the user turning off captions, or ending the session or because of a
+    request error that needs user manual retry.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Boca.Babelorca.StreamEndReason"
     enum="BabelOrcaStreamEndReason" expires_after="2026-03-21">
   <owner>anasr@google.com</owner>
