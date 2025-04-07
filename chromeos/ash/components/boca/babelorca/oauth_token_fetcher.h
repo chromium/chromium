@@ -29,7 +29,8 @@ class OAuthTokenFetcher : public TokenFetcher {
  public:
   explicit OAuthTokenFetcher(
       signin::IdentityManager* identity_manager,
-      const std::string& scope = GaiaConstants::kTachyonOAuthScope);
+      const std::string& scope = GaiaConstants::kTachyonOAuthScope,
+      const std::string& uma_name = "Tachyon");
 
   OAuthTokenFetcher(const OAuthTokenFetcher&) = delete;
   OAuthTokenFetcher& operator=(const OAuthTokenFetcher&) = delete;
@@ -50,6 +51,7 @@ class OAuthTokenFetcher : public TokenFetcher {
   SEQUENCE_CHECKER(sequence_checker_);
   raw_ptr<signin::IdentityManager> identity_manager_;
   const std::string scope_;
+  const std::string uma_name_;
   std::unique_ptr<signin::AccessTokenFetcher> access_token_fetcher_
       GUARDED_BY_CONTEXT(sequence_checker_);
   base::OneShotTimer retry_timer_;

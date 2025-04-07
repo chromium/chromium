@@ -1274,6 +1274,19 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Ash.Boca.Babelorca.{Scope}.OAuthFetchError"
+    enum="GoogleServiceAuthError" expires_after="2026-03-21">
+  <owner>anasr@google.com</owner>
+  <owner>cros-edu-eng@google.com</owner>
+  <summary>
+    Records the OAuth token fetch result for BabelOrca requests.
+  </summary>
+  <token key="Scope">
+    <variant name="SchoolTools"/>
+    <variant name="Tachyon"/>
+  </token>
+</histogram>
+
 <histogram name="Ash.Boca.NumberOfActiveStudentsWhenSessionEnded"
     units="students" expires_after="2025-08-10">
   <owner>caott@google.com</owner>
