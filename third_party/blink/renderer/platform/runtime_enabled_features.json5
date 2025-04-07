@@ -658,6 +658,7 @@
       // Enables bypassing CSP checks when we consume a preload.
       // https://crbug.com/348442535
       name: "BypassCSPForPreloads",
+      status: "experimental",
     },
     {
       // Bypasses the enforcement of the Page Embedded Permission Control
@@ -3421,6 +3422,7 @@
       // Used to allow preloading data: URLs with link rel=preload.
       // https://crbug.com/348442535
       name: "PreloadLinkRelDataUrls",
+      status: "experimental",
     },
     {
       // Used to allow chrome://flags to turn off prerendering. (Without using

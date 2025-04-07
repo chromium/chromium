@@ -18141,6 +18141,30 @@
             ]
         }
     ],
+    "PreloadInlineDeferredImages": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_Preload_20250402",
+                    "enable_features": [
+                        "DocumentPolicyExpectNoLinkedResources",
+                        "PreloadLinkRelDataUrls"
+                    ],
+                    "disable_features": [
+                        "BypassCSPForPreloads"
+                    ]
+                }
+            ]
+        }
+    ],
     "PreloadTopChromeWebUI": [
         {
             "platforms": [
