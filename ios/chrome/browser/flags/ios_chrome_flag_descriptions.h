@@ -276,6 +276,9 @@ extern const char kEnhancedCalendarDescription[];
 extern const char kEnhancedSafeBrowsingPromoName[];
 extern const char kEnhancedSafeBrowsingPromoDescription[];
 
+extern const char kEnterpriseRealtimeEventReportingOnIOSName[];
+extern const char kEnterpriseRealtimeEventReportingOnIOSDescription[];
+
 extern const char kFeedBackgroundRefreshName[];
 extern const char kFeedBackgroundRefreshDescription[];
 
@@ -332,6 +335,9 @@ extern const char kIOSDockingPromoDescription[];
 
 extern const char kIOSEnableDeleteAllSavedCredentialsName[];
 extern const char kIOSEnableDeleteAllSavedCredentialsDescription[];
+
+extern const char kIOSEnableRealtimeEventReportingName[];
+extern const char kIOSEnableRealtimeEventReportingDescription[];
 
 extern const char kIOSKeyboardAccessoryUpgradeName[];
 extern const char kIOSKeyboardAccessoryUpgradeDescription[];

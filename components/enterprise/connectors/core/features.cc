@@ -14,4 +14,8 @@ BASE_FEATURE(kEnterpriseUrlFilteringEventReportingOnAndroid,
              "EnterpriseUrlFilteringEventReportingOnAndroid",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnterpriseRealtimeEventReportingOnIOS,
+             "EnterpriseRealtimeEventReportingOnIOS",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace enterprise_connectors

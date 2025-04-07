@@ -480,6 +480,11 @@ const char kEnhancedSafeBrowsingPromoDescription[] =
     "When enabled, the Enhanced Safe Browsing inline and infobar promos are "
     "displayed given certain preconditions are met.";
 
+const char kEnterpriseRealtimeEventReportingOnIOSName[] =
+    "Enable realtime event reporting for Enterprise on iOS";
+const char kEnterpriseRealtimeEventReportingOnIOSDescription[] =
+    "When enabled, realtime events will be reported to the user's organization";
+
 const char kFeedBackgroundRefreshName[] = "Enable feed background refresh";
 const char kFeedBackgroundRefreshDescription[] =
     "Schedules a feed background refresh after some minimum period of time has "
@@ -575,6 +580,12 @@ extern const char kIOSEnableDeleteAllSavedCredentialsName[] =
     "Enable delete all saved credentials in PWM";
 extern const char kIOSEnableDeleteAllSavedCredentialsDescription[] =
     "When enabled, the delete all data button in PWM will be presented.";
+
+extern const char kIOSEnableRealtimeEventReportingName[] =
+    "Enable realtime event reporting on iOS";
+extern const char kIOSEnableRealtimeEventReportingDescription[] =
+    "When enabled, realtime events will be reported to the user's "
+    "organization.";
 
 const char kIOSKeyboardAccessoryUpgradeName[] =
     "Enable the keyboard accessory upgrade on iOS";

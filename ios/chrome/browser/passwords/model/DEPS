@@ -1,6 +1,7 @@
 include_rules = [
   "+ios/chrome/browser/affiliations/model",
   "+ios/chrome/browser/autofill/model",
+  "+ios/chrome/browser/enterprise/connectors/reporting",
   "+ios/chrome/browser/infobars/model",
   "+ios/chrome/browser/optimization_guide/model",
   "+ios/chrome/browser/safe_browsing/model",

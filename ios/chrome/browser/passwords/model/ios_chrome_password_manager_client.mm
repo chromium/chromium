@@ -16,6 +16,8 @@
 #import "components/autofill/core/browser/logging/log_manager.h"
 #import "components/autofill/core/browser/logging/log_router.h"
 #import "components/autofill/ios/browser/autofill_client_ios.h"
+#import "components/enterprise/connectors/core/features.h"
+#import "components/enterprise/connectors/core/reporting_event_router.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_form_manager_for_ui.h"
@@ -29,6 +31,7 @@
 #import "components/sync/service/sync_service.h"
 #import "components/translate/core/browser/translate_manager.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
+#import "ios/chrome/browser/enterprise/connectors/reporting/ios_reporting_event_router_factory.h"
 #import "ios/chrome/browser/passwords/model/features.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_reuse_manager_factory.h"
@@ -56,6 +59,13 @@ using password_manager::PasswordManagerMetricsRecorder;
 using password_manager::PasswordStore;
 using password_manager::PasswordStoreInterface;
 using password_manager::metrics_util::PasswordType;
+
+namespace {
+
+// The check was triggered by the user entering a password on a webpage.
+inline constexpr char kPasswordBreachEntryTrigger[] = "PASSWORD_ENTRY";
+
+}  // namespace
 
 IOSChromePasswordManagerClient::IOSChromePasswordManagerClient(
     id<IOSChromePasswordManagerClientBridge> bridge)
@@ -220,6 +230,27 @@ void IOSChromePasswordManagerClient::NotifySuccessfulLoginWithExistingPassword(
 
 bool IOSChromePasswordManagerClient::IsPasswordChangeOngoing() {
   return false;
+}
+
+// TODO(crbug.com/409047852): Add unit test to confirm the event trigger.
+void IOSChromePasswordManagerClient::MaybeReportEnterprisePasswordBreachEvent(
+    const std::vector<std::pair<GURL, std::u16string>>& identities) const {
+  // Guard the realtime event reporting feature on iOS behind the feature flag.
+  if (!base::FeatureList::IsEnabled(
+          enterprise_connectors::kEnterpriseRealtimeEventReportingOnIOS)) {
+    return;
+  }
+
+  enterprise_connectors::ReportingEventRouter* router =
+      enterprise_connectors::IOSReportingEventRouterFactory::GetForProfile(
+          bridge_.profile);
+  if (!router) {
+    return;
+  }
+
+  // The router is responsible for checking if the reporting of this event type
+  // is enabled by the admin.
+  router->OnPasswordBreach(kPasswordBreachEntryTrigger, identities);
 }
 
 void IOSChromePasswordManagerClient::NotifyStorePasswordCalled() {
