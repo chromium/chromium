@@ -26,6 +26,7 @@
 #include "components/sync/engine/get_updates_processor.h"
 #include "components/sync/engine/sync_protocol_error.h"
 #include "components/sync/engine/syncer_error.h"
+#include "components/sync/engine/update_handler.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "net/http/http_status_code.h"
 
@@ -81,6 +82,23 @@ SyncerErrorValueForUma GetSyncerErrorValueForUma(const SyncerError& error) {
       return SyncerErrorValueForUma::kProtocolViolationError;
   }
   NOTREACHED();
+}
+
+// Returns the NudgedUpdateResult corresponding to the given SyncerError. Not
+// used for `kSuccess`.
+UpdateHandler::NudgedUpdateResult SyncerErrorToNudgedUpdateResult(
+    const SyncerError& error) {
+  switch (error.type()) {
+    case SyncerError::Type::kNetworkError:
+      return UpdateHandler::NudgedUpdateResult::kDownloadRequestNetworkError;
+    case SyncerError::Type::kHttpError:
+    case SyncerError::Type::kProtocolError:
+    case SyncerError::Type::kProtocolViolationError:
+      // Return server error for all non-network errors.
+      return UpdateHandler::NudgedUpdateResult::kDownloadRequestServerError;
+    case SyncerError::Type::kSuccess:
+      NOTREACHED();
+  }
 }
 
 // Returns invalidation info after applying updates. This is used to drop
@@ -217,8 +235,14 @@ bool Syncer::DownloadAndApplyUpdates(DataTypeSet* request_types,
   *request_types = Union(download_types, requested_commit_only_types);
 
   // Exit without applying if we're shutting down or an error was detected.
-  if (download_result.type() != SyncerError::Type::kSuccess ||
-      ExitRequested()) {
+  if (ExitRequested()) {
+    return false;
+  }
+
+  if (download_result.type() != SyncerError::Type::kSuccess) {
+    get_updates_processor.RecordDownloadFailure(
+        Union(download_types, data_types_with_failure),
+        SyncerErrorToNudgedUpdateResult(download_result));
     return false;
   }
 

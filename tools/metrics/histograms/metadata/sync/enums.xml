@@ -175,10 +175,12 @@ chromium-metrics-reviews@google.com.
 <enum name="NudgedUpdateResult">
   <int value="0" label="Success"/>
   <int value="1" label="Empty response"/>
-  <int value="2" label="Failed to download data"/>
+  <int value="2" label="Partial failure"/>
+  <int value="3" label="Server error"/>
+  <int value="4" label="Network error"/>
 </enum>
 
-<!-- LINT.ThenChange(/components/sync/engine/data_type_worker.cc:NudgedUpdateResult) -->
+<!-- LINT.ThenChange(/components/sync/engine/update_handler.h:NudgedUpdateResult) -->
 
 <!-- LINT.IfChange(OutgoingPasswordSharingInvitationCommitError) -->
 

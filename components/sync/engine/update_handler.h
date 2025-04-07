@@ -28,6 +28,31 @@ class StatusController;
 // from the sync server.
 class UpdateHandler {
  public:
+  // Result of a GetUpdates request for a data type that was nudged (contained
+  // at least one invalidation hint for the data type). These values are
+  // persisted to logs. Entries should not be renumbered and numeric values
+  // should never be reused. LINT.IfChange(NudgedUpdateResult)
+  enum class NudgedUpdateResult {
+    // The data type successfully downloaded at least one entity.
+    kSuccess = 0,
+
+    // No entities were downloaded when data type was invalidated.
+    kEmptyResponse = 1,
+
+    // The data type failed to download updates during a sync cycle while a
+    // GetUpdates request succeeded.
+    kDownloadPartialFailure = 2,
+
+    // The whole GetUpdates request failed due to a server error.
+    kDownloadRequestServerError = 3,
+
+    // The whole GetUpdates request failed due to a network error.
+    kDownloadRequestNetworkError = 4,
+
+    kMaxValue = kDownloadRequestNetworkError,
+  };
+  // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:NudgedUpdateResult)
+
   virtual ~UpdateHandler() = default;
 
   // Returns true if initial sync was performed for this type.
@@ -45,7 +70,8 @@ class UpdateHandler {
       std::unique_ptr<SyncInvalidation> incoming) = 0;
 
   // Records a failure during a GetUpdates request.
-  virtual void RecordDownloadFailure() const = 0;
+  virtual void RecordDownloadFailure(
+      NudgedUpdateResult failure_result) const = 0;
 
   // Fill invalidation related fields in GetUpdates request.
   virtual void CollectPendingInvalidations(sync_pb::GetUpdateTriggers* msg) = 0;
