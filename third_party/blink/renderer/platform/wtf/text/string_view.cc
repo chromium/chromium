@@ -157,14 +157,21 @@ std::string StringView::Utf8(Utf8ConversionMode mode) const {
   return std::string(buffer_vector.data(), buffer_written);
 }
 
+bool StringView::IsLowerASCII() const {
+  if (StringImpl* impl = SharedImpl()) {
+    return impl->IsLowerASCII();
+  }
+  return VisitCharacters(*this,
+                         [](auto chars) { return WTF::IsLowerASCII(chars); });
+}
+
 bool StringView::ContainsOnlyASCIIOrEmpty() const {
   if (StringImpl* impl = SharedImpl())
     return impl->ContainsOnlyASCIIOrEmpty();
   if (empty())
     return true;
-  ASCIIStringAttributes attrs =
-      Is8Bit() ? CharacterAttributes(Characters8(), length())
-               : CharacterAttributes(Characters16(), length());
+  ASCIIStringAttributes attrs = VisitCharacters(
+      *this, [](auto chars) { return CharacterAttributes(chars); });
   return attrs.contains_only_ascii;
 }
 

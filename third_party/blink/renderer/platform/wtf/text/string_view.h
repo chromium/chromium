@@ -189,14 +189,7 @@ class WTF_EXPORT StringView {
 
   bool IsAtomic() const { return SharedImpl() && SharedImpl()->IsAtomic(); }
 
-  bool IsLowerASCII() const {
-    if (StringImpl* impl = SharedImpl())
-      return impl->IsLowerASCII();
-    if (Is8Bit())
-      return WTF::IsLowerASCII(Characters8(), length());
-    return WTF::IsLowerASCII(Characters16(), length());
-  }
-
+  bool IsLowerASCII() const;
   bool ContainsOnlyASCIIOrEmpty() const;
 
   bool SubstringContainsOnlyWhitespaceOrEmpty(unsigned from, unsigned to) const;

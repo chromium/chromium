@@ -167,9 +167,8 @@ void StringImpl::DestroyIfNeeded() const {
 }
 
 unsigned StringImpl::ComputeASCIIFlags() const {
-  ASCIIStringAttributes ascii_attributes =
-      Is8Bit() ? CharacterAttributes(Characters8(), length())
-               : CharacterAttributes(Characters16(), length());
+  ASCIIStringAttributes ascii_attributes = VisitCharacters(
+      *this, [](auto chars) { return CharacterAttributes(chars); });
   uint32_t new_flags = ASCIIStringAttributesToFlags(ascii_attributes);
   const uint32_t previous_flags =
       hash_and_flags_.fetch_or(new_flags, std::memory_order_relaxed);
