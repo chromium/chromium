@@ -164,6 +164,8 @@ DEFINE_VARIATION_PARAM(kIPHTabGroupShareNoticeFeature,
                        "IPH_TabGroupShareNotice");
 DEFINE_VARIATION_PARAM(kIPHTabGroupShareNotificationBubbleOnStripFeature,
                        "IPH_TabGroupSharedNotificationBubbleOnStrip");
+DEFINE_VARIATION_PARAM(kIPHTabGroupShareUpdateFeature,
+                       "IPH_TabGroupShareUpdate");
 DEFINE_VARIATION_PARAM(kIPHTabGroupsRemoteGroupFeature,
                        "IPH_TabGroupsRemoteGroup");
 DEFINE_VARIATION_PARAM(kIPHTabGroupsSurfaceFeature, "IPH_TabGroupsSurface");
@@ -615,6 +617,7 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHShoppingListSaveFlowFeature),
         VARIATION_ENTRY(kIPHTabGroupCreationDialogSyncTextFeature),
         VARIATION_ENTRY(kIPHTabGroupShareNoticeFeature),
+        VARIATION_ENTRY(kIPHTabGroupShareUpdateFeature),
         VARIATION_ENTRY(kIPHTabGroupsDragAndDropFeature),
         VARIATION_ENTRY(kIPHTabGroupsRemoteGroupFeature),
         VARIATION_ENTRY(kIPHTabGroupsSurfaceFeature),

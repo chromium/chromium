@@ -57,7 +57,7 @@ public class TabGroupTitleUtils {
      * @return A non-null string that can be shown to users.
      */
     public static String getDisplayableTitle(
-            Context context, TabGroupModelFilter tabGroupModelFilter, Token tabGroupId) {
+            Context context, TabGroupModelFilter tabGroupModelFilter, @Nullable Token tabGroupId) {
         int rootId = tabGroupModelFilter.getRootIdFromTabGroupId(tabGroupId);
         @Nullable String explicitTitle =
                 rootId == Tab.INVALID_TAB_ID ? null : tabGroupModelFilter.getTabGroupTitle(rootId);

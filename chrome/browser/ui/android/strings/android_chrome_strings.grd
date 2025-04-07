@@ -4156,6 +4156,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
           other {Restore tab group of <ph name="TAB_COUNT_MANY">%1$s<ex>5</ex></ph> tabs, color <ph name="COLOR_NAME">%2$s<ex>Blue</ex></ph>, as a new background tab group.}
         }
       </message>
+      <message name="IDS_TAB_GROUP_UPDATE_IPH_TEXT" desc="Text to describe that a blue dot on the tab switcher means there's tab group share activity.">
+         <ph name="TAB_GROUP_TITLE">%s<ex>Vacation</ex></ph> tab group has new activity
+      </message>
       <message name="IDS_WEB_FEED_AWARENESS" desc="Educating the user about the web feed.">
         Explore content to follow
       </message>

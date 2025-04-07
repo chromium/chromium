@@ -71,6 +71,7 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.FEED_CARD_MENU_FEATURE,
     FeatureConstants.IDENTITY_DISC_FEATURE,
     FeatureConstants.TAB_GROUP_SHARE_NOTICE_FEATURE,
+    FeatureConstants.TAB_GROUP_SHARE_UPDATE_FEATURE,
     FeatureConstants.TAB_GROUPS_DRAG_AND_DROP_FEATURE,
     FeatureConstants.TAB_GROUPS_REMOTE_GROUP,
     FeatureConstants.TAB_GROUPS_SURFACE,
@@ -235,6 +236,12 @@ public @interface FeatureConstants {
      * visible to everyone.
      */
     String TAB_GROUP_SHARE_NOTICE_FEATURE = "IPH_TabGroupShareNotice";
+
+    /**
+     * A simple IPH bubble and highlight on the tab switcher button the first time there's an
+     * activity dot visible. Teaches the user what the dot means.
+     */
+    String TAB_GROUP_SHARE_UPDATE_FEATURE = "IPH_TabGroupShareUpdate";
 
     /**
      * An IPH feature that shows a notification bubble for updated tab groups. The bubble appears on

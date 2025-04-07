@@ -404,7 +404,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
     }
 
     private final TabModelNotificationDotManager mTabModelNotificationDotManager =
-            new TabModelNotificationDotManager();
+            new TabModelNotificationDotManager(this);
     // Supplier for a dependency to inform about the type of intent used to launch Chrome.
     private final OneshotSupplierImpl<ToolbarIntentMetadata> mIntentMetadataOneshotSupplier =
             new OneshotSupplierImpl<>();

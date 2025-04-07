@@ -29,12 +29,12 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.LooperMode;
 
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.tab_ui.TabModelDotInfo;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.R;
@@ -46,7 +46,7 @@ import org.chromium.components.feature_engagement.FeatureConstants;
 import java.util.HashSet;
 import java.util.Set;
 
-/** Unit tests for ToggleTabStackButtonCoordinator. */
+/** Unit tests for {@link ToggleTabStackButtonCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @LooperMode(LooperMode.Mode.LEGACY)
 public class ToggleTabStackButtonCoordinatorTest {
@@ -65,8 +65,8 @@ public class ToggleTabStackButtonCoordinatorTest {
 
     @Captor private ArgumentCaptor<IphCommand> mIphCommandCaptor;
 
-    private final ObservableSupplierImpl<Boolean> mNotificationDotSupplier =
-            new ObservableSupplierImpl<>(false);
+    private final ObservableSupplierImpl<TabModelDotInfo> mNotificationDotSupplier =
+            new ObservableSupplierImpl<>(TabModelDotInfo.HIDE);
     private final OneshotSupplierImpl<Boolean> mPromoShownOneshotSupplier =
             new OneshotSupplierImpl<>();
 
@@ -74,8 +74,6 @@ public class ToggleTabStackButtonCoordinatorTest {
     private boolean mOverviewOpen;
     private Set<LayoutStateProvider.LayoutStateObserver> mLayoutStateObserverSet;
     private OneshotSupplierImpl<LayoutStateProvider> mLayoutSateProviderOneshotSupplier;
-    private ObservableSupplier<Integer> mTabCountSupplier;
-    private ObservableSupplierImpl<Integer> mArchivedTabCountSupplier;
 
     private ToggleTabStackButtonCoordinator mCoordinator;
     private ObservableSupplierImpl<TabModelSelector> mTabModelSelectorSupplier;
@@ -129,11 +127,12 @@ public class ToggleTabStackButtonCoordinatorTest {
                         mLayoutSateProviderOneshotSupplier,
                         new ObservableSupplierImpl<>(),
                         mTabModelSelectorSupplier);
+
         coordinator.initializeWithNative(
                 mOnClickListener,
                 mOnLongClickListener,
-                mTabCountSupplier,
-                mArchivedTabCountSupplier,
+                /* tabCountSupplier= */ null,
+                /* archivedTabCountSupplier= */ null,
                 mNotificationDotSupplier,
                 () -> {},
                 () -> {});

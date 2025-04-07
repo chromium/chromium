@@ -778,6 +778,19 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPHTabGroupShareUpdateFeature.name == feature->name) {
+    // Allows an IPH for showing the tab group share update explanation the
+    // first time the activity bubble appears. This will only be shown once.
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = Comparator(ANY, 0);
+    config.session_rate = Comparator(EQUAL, 0);
+    config.trigger =
+        EventConfig("tab_group_share_update_iph_triggered",
+                    Comparator(LESS_THAN, 1), k10YearsInDays, k10YearsInDays);
+    return config;
+  }
+
   if (kIPHTabGroupCreationDialogSyncTextFeature.name == feature->name) {
     // A config that allows the sync text IPH on the TabGroupCreationDialog to
     // be shown up to 3 times total (10 year max in place of unlimited window).

@@ -33,6 +33,7 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.tab_ui.TabModelDotInfo;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
@@ -50,8 +51,8 @@ public class TabSwitcherPaneDrawableMediatorUnitTest {
 
     private final ObservableSupplierImpl<Integer> mTabCountSupplier =
             new ObservableSupplierImpl<>();
-    private final ObservableSupplierImpl<Boolean> mNotificationDotSupplier =
-            new ObservableSupplierImpl<>(false);
+    private final ObservableSupplierImpl<TabModelDotInfo> mNotificationDotSupplier =
+            new ObservableSupplierImpl<>(TabModelDotInfo.HIDE);
 
     private Context mContext;
     private PropertyModel mModel;
@@ -93,7 +94,7 @@ public class TabSwitcherPaneDrawableMediatorUnitTest {
         assertEquals(mTabCountSupplier.get().intValue(), mModel.get(TAB_COUNT));
         assertFalse(mModel.get(SHOW_NOTIFICATION_DOT));
 
-        mNotificationDotSupplier.set(true);
+        mNotificationDotSupplier.set(new TabModelDotInfo(true, "title"));
         assertTrue(mModel.get(SHOW_NOTIFICATION_DOT));
 
         mediator.destroy();

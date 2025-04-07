@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegateSupplier;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab_ui.TabModelDotInfo;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.components.browser_ui.share.ShareHelper;
 import org.chromium.ui.base.ActivityWindowAndroid;
@@ -210,7 +211,8 @@ public class CustomTabToolbarCoordinator {
                 /* bookmarkClickHandler= */ null,
                 /* customTabsBackClickHandler= */ v -> onCloseButtonClick(),
                 /* archivedTabCountSupplier= */ null,
-                /* tabModelNotificationDotSupplier= */ new ObservableSupplierImpl<Boolean>(false));
+                /* tabModelNotificationDotSupplier= */ new ObservableSupplierImpl<TabModelDotInfo>(
+                        TabModelDotInfo.HIDE));
         mInitializedToolbarWithNative = true;
     }
 
