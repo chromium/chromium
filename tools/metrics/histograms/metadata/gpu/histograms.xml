@@ -1684,15 +1684,19 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Skia.VulkanMemoryAllocator.AmountAllocated" units="KB"
-    expires_after="2024-09-01">
+    expires_after="2026-01-01">
   <owner>egdaniel@google.com</owner>
-  <owner>bsalomon@google.com</owner>
+  <owner>michaelludwig@google.com</owner>
+  <owner>skia-gpu-team@google.com</owner>
   <summary>
     The total amount of memory that the VulkanMemoryAllocator used by Skia's
     Vulkan backend has allocated. This is GPU memory for VkImages and VkBuffers.
     Note that the allocator may be shared with other users outside of Skia and
     this amount includes their uses as well. This is collected each time we
     request an allocation from Skia.
+
+    Warning: this histogram was expired from 2024-09-01 to 2025-04-02; data may
+    be missing.
   </summary>
 </histogram>
 
