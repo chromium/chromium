@@ -37,18 +37,11 @@ namespace autofill_ai {
 
 namespace {
 
-// The padding between the header (image and title) and the elements around it.
-constexpr int kHeaderPadding = 20;
 constexpr int kBubbleWidth = 320;
 constexpr int kNewOrUpdatedAttributeDotSize = 4;
 constexpr int kNewOrUpdatedAttributeDotRightSpacing = 4;
 constexpr int kNewOrUpdatedAttributeDotTopSpacing = 8;
-
-int GetVerticaSpaceBetweenDialogSections() {
-  return ChromeLayoutProvider::Get()->GetDistanceMetric(
-             views::DISTANCE_CONTROL_LIST_VERTICAL) *
-         2;
-}
+constexpr int kSubTitleBottomMargin = 16;
 
 gfx::Insets GetBubbleInnerMargins() {
   return ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
@@ -120,17 +113,21 @@ SaveOrUpdateAutofillAiDataBubbleView::SaveOrUpdateAutofillAiDataBubbleView(
       views::BoxLayout::Orientation::kVertical));
   set_margins(GetBubbleInnerMargins());
   SetAccessibleTitle(controller_->GetDialogTitle());
+  SetTitle(controller_->GetDialogTitle());
 
-  auto* main_content_wrapper = AddChildView(
-      views::Builder<views::BoxLayoutView>()
-          .SetOrientation(views::BoxLayout::Orientation::kVertical)
-          .SetBetweenChildSpacing(GetVerticaSpaceBetweenDialogSections())
-          .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
-          .Build());
-
-  const bool is_save_prompt = controller_->IsSavePrompt();
-  if (is_save_prompt) {
-    main_content_wrapper->AddChildView(
+  auto* main_content_wrapper =
+      AddChildView(views::Builder<views::BoxLayoutView>()
+                       .SetOrientation(views::BoxLayout::Orientation::kVertical)
+                       .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
+                       .Build());
+  if (controller_->IsSavePrompt()) {
+    auto subtititle_container =
+        views::Builder<views::BoxLayoutView>()
+            .SetOrientation(views::BoxLayout::Orientation::kVertical)
+            .SetInsideBorderInsets(
+                gfx::Insets::TLBR(0, 0, kSubTitleBottomMargin, 0))
+            .Build();
+    subtititle_container->AddChildView(
         views::Builder<views::Label>()
             .SetText(l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_AI_SAVE_ENTITY_DIALOG_SUBTITLE))
@@ -139,6 +136,7 @@ SaveOrUpdateAutofillAiDataBubbleView::SaveOrUpdateAutofillAiDataBubbleView(
             .SetMultiLine(true)
             .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
             .Build());
+    main_content_wrapper->AddChildView(std::move(subtititle_container));
   }
 
   auto* attributes_wrapper = main_content_wrapper->AddChildView(
@@ -146,7 +144,7 @@ SaveOrUpdateAutofillAiDataBubbleView::SaveOrUpdateAutofillAiDataBubbleView(
           .SetOrientation(views::BoxLayout::Orientation::kVertical)
           .SetBetweenChildSpacing(
               ChromeLayoutProvider::Get()->GetDistanceMetric(
-                  views::DISTANCE_CONTROL_LIST_VERTICAL))
+                  DISTANCE_CONTENT_LIST_VERTICAL_SINGLE))
           .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
           .SetAccessibleRole(ax::mojom::Role::kDescriptionList)
           .Build());
@@ -305,36 +303,15 @@ void SaveOrUpdateAutofillAiDataBubbleView::OnViewBoundsChanged(
 }
 
 void SaveOrUpdateAutofillAiDataBubbleView::AddedToWidget() {
-  auto header_container =
-      views::Builder<views::BoxLayoutView>()
-          .SetOrientation(views::BoxLayout::Orientation::kVertical)
-          .SetBetweenChildSpacing(GetVerticaSpaceBetweenDialogSections())
-          // The bottom padding has to be subtracted by the distance between the
-          // information that will be saved, so to avoid double padding.
-          .SetInsideBorderInsets(gfx::Insets::TLBR(
-              kHeaderPadding, kHeaderPadding,
-              std::min(0, kHeaderPadding -
-                              ChromeLayoutProvider::Get()->GetDistanceMetric(
-                                  views::DISTANCE_CONTROL_LIST_VERTICAL)),
-              kHeaderPadding))
-          .Build();
   if (controller_->IsSavePrompt()) {
     std::pair<int, int> images = controller_->GetTitleImagesResourceId();
-    header_container->AddChildView(
+    GetBubbleFrameView()->SetHeaderView(
         std::make_unique<ThemeTrackingNonAccessibleImageView>(
             ui::ImageModel::FromResourceId(images.first),
             ui::ImageModel::FromResourceId(images.second),
             base::BindRepeating(&views::BubbleDialogDelegate::background_color,
                                 base::Unretained(this))));
   }
-  header_container->AddChildView(
-      views::Builder<views::Label>()
-          .SetText(controller_->GetDialogTitle())
-          .SetTextStyle(views::style::STYLE_HEADLINE_4)
-          .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
-          .SetAccessibleRole(ax::mojom::Role::kHeading)
-          .Build());
-  GetBubbleFrameView()->SetHeaderView(std::move(header_container));
 }
 
 void SaveOrUpdateAutofillAiDataBubbleView::WindowClosing() {
