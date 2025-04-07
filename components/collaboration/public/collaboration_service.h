@@ -81,6 +81,13 @@ class CollaborationService : public KeyedService,
       const tab_groups::EitherGroupID& either_id,
       CollaborationServiceShareOrManageEntryPoint entry) = 0;
 
+  // Starts a new leave or delete flow. This will cancel all existing ongoing
+  // flows in the same browser instance.
+  virtual void StartLeaveOrDeleteFlow(
+      std::unique_ptr<CollaborationControllerDelegate> delegate,
+      const tab_groups::EitherGroupID& either_id,
+      CollaborationServiceLeaveOrDeleteEntryPoint entry) = 0;
+
   // Cancels all the flows currently displayed.
   virtual void CancelAllFlows(base::OnceCallback<void()> finish_callback) = 0;
 

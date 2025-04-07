@@ -272,10 +272,13 @@ enum class AccessPoint : int {
   // Access point triggered when the account used in widget is different from
   // the one used in the app. iOS only.
   kWidget = 78,
+  // Access point triggered when a user attempts to leave or delete a tab group
+  // without being signed in or synced.
+  kCollaborationLeaveOrDeleteTabGroup = 79,
   // Add values above this line with a corresponding label to the
   // "SigninAccessPoint" enum in
   // tools/metrics/histograms/metadata/signin/enums.xml.
-  kMaxValue = kWidget,  // This must be last.
+  kMaxValue = kCollaborationLeaveOrDeleteTabGroup,  // This must be last.
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/signin/enums.xml)
 

@@ -39664,6 +39664,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Signin_Signin_FromCollaborationLeaveOrDeleteTabGroup">
+  <owner>gambard@chromium.org</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
+  <description>
+    Recorded on sign in start from access point
+    signin_metrics::AccessPoint::kCollaborationLeaveOrDeleteTabGroup.
+  </description>
+</action>
+
 <action name="Signin_Signin_FromCollaborationShareTabGroup">
   <owner>gambard@chromium.org</owner>
   <owner>chrome-signin-mobile-team@google.com</owner>

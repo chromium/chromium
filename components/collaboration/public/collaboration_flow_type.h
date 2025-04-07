@@ -12,6 +12,7 @@ namespace collaboration {
 enum class FlowType {
   kJoin = 0,
   kShareOrManage = 1,
+  kLeaveOrDelete = 2,
 };
 
 }  // namespace collaboration

@@ -133,6 +133,7 @@ bool IsSupportedAccessPoint(signin_metrics::AccessPoint access_point) {
     case signin_metrics::AccessPoint::kCollaborationJoinTabGroup:
     case signin_metrics::AccessPoint::kHistorySyncOptinExpansionPill:
     case signin_metrics::AccessPoint::kWidget:
+    case signin_metrics::AccessPoint::kCollaborationLeaveOrDeleteTabGroup:
       return false;
   }
 }
@@ -227,6 +228,7 @@ void RecordImpressionsTilSigninButtonsHistogramForAccessPoint(
     case signin_metrics::AccessPoint::kCollaborationJoinTabGroup:
     case signin_metrics::AccessPoint::kHistorySyncOptinExpansionPill:
     case signin_metrics::AccessPoint::kWidget:
+    case signin_metrics::AccessPoint::kCollaborationLeaveOrDeleteTabGroup:
       NOTREACHED() << "Unexpected value for access point "
                    << static_cast<int>(access_point);
   }
@@ -322,6 +324,7 @@ void RecordImpressionsTilXButtonHistogramForAccessPoint(
     case signin_metrics::AccessPoint::kCollaborationJoinTabGroup:
     case signin_metrics::AccessPoint::kHistorySyncOptinExpansionPill:
     case signin_metrics::AccessPoint::kWidget:
+    case signin_metrics::AccessPoint::kCollaborationLeaveOrDeleteTabGroup:
       NOTREACHED() << "Unexpected value for access point "
                    << static_cast<int>(access_point);
   }
@@ -406,6 +409,7 @@ const char* DisplayedCountPreferenceKey(
     case signin_metrics::AccessPoint::kCollaborationJoinTabGroup:
     case signin_metrics::AccessPoint::kHistorySyncOptinExpansionPill:
     case signin_metrics::AccessPoint::kWidget:
+    case signin_metrics::AccessPoint::kCollaborationLeaveOrDeleteTabGroup:
       return nullptr;
   }
 }
@@ -489,6 +493,7 @@ const char* AlreadySeenSigninViewPreferenceKey(
     case signin_metrics::AccessPoint::kCollaborationJoinTabGroup:
     case signin_metrics::AccessPoint::kHistorySyncOptinExpansionPill:
     case signin_metrics::AccessPoint::kWidget:
+    case signin_metrics::AccessPoint::kCollaborationLeaveOrDeleteTabGroup:
       return nullptr;
   }
 }

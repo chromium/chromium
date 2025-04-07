@@ -203,6 +203,9 @@ void IOSCollaborationControllerDelegate::ShowAuthenticationUi(
     case FlowType::kShareOrManage:
       access_point = AccessPoint::kCollaborationShareTabGroup;
       break;
+    case FlowType::kLeaveOrDelete:
+      access_point = AccessPoint::kCollaborationLeaveOrDeleteTabGroup;
+      break;
   }
 
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
@@ -293,6 +296,18 @@ void IOSCollaborationControllerDelegate::ShowManageDialog(
 
   favicons_grid_configurator_->FetchFaviconsGrid(tab_group,
                                                  std::move(callback));
+}
+
+void IOSCollaborationControllerDelegate::ShowLeaveDialog(
+    const tab_groups::EitherGroupID& either_id,
+    ResultCallback result) {
+  std::move(result).Run(CollaborationControllerDelegate::Outcome::kFailure);
+}
+
+void IOSCollaborationControllerDelegate::ShowDeleteDialog(
+    const tab_groups::EitherGroupID& either_id,
+    ResultCallback result) {
+  std::move(result).Run(CollaborationControllerDelegate::Outcome::kFailure);
 }
 
 void IOSCollaborationControllerDelegate::PromoteTabGroup(

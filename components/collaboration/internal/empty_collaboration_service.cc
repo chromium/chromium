@@ -28,6 +28,11 @@ void EmptyCollaborationService::StartShareOrManageFlow(
     const tab_groups::EitherGroupID& either_id,
     CollaborationServiceShareOrManageEntryPoint entry) {}
 
+void EmptyCollaborationService::StartLeaveOrDeleteFlow(
+    std::unique_ptr<CollaborationControllerDelegate> delegate,
+    const tab_groups::EitherGroupID& either_id,
+    CollaborationServiceLeaveOrDeleteEntryPoint entry) {}
+
 ServiceStatus EmptyCollaborationService::GetServiceStatus() {
   return ServiceStatus();
 }

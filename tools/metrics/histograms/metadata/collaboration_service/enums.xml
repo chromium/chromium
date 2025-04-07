@@ -80,6 +80,14 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/collaboration/internal/metrics.h:CollaborationServiceJoinEvent) -->
 
+<!-- LINT.IfChange(CollaborationServiceLeaveOrDeleteEntryPoint) -->
+
+<enum name="CollaborationServiceLeaveOrDeleteEntryPoint">
+  <int value="0" label="Unknown"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/collaboration/public/collaboration_flow_entry_point.h:CollaborationServiceLeaveOrDeleteEntryPoint) -->
+
 <!-- LINT.IfChange(CollaborationServiceShareOrManageEntryPoint) -->
 
 <enum name="CollaborationServiceShareOrManageEntryPoint">

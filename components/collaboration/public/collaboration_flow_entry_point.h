@@ -48,6 +48,18 @@ enum class CollaborationServiceShareOrManageEntryPoint {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/collaboration_service/enums.xml:CollaborationServiceShareOrManageEntryPoint)
 
+// Types of entry point to start a leave or delete collaboration flow.
+// These values are persisted to logs. Entries should not be renumbered and
+// number values should never be reused.
+// LINT.IfChange(CollaborationServiceLeaveOrDeleteEntryPoint)
+// GENERATED_JAVA_ENUM_PACKAGE: (
+//   org.chromium.components.collaboration)
+enum class CollaborationServiceLeaveOrDeleteEntryPoint {
+  kUnknown = 0,
+  kMaxValue = kUnknown,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/collaboration_service/enums.xml:CollaborationServiceLeaveOrDeleteEntryPoint)
+
 }  // namespace collaboration
 
 #endif  // COMPONENTS_COLLABORATION_PUBLIC_COLLABORATION_FLOW_ENTRY_POINT_H_

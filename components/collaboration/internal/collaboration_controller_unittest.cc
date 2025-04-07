@@ -16,6 +16,7 @@
 #include "components/collaboration/public/collaboration_flow_type.h"
 #include "components/collaboration/test_support/mock_collaboration_controller_delegate.h"
 #include "components/collaboration/test_support/mock_collaboration_service.h"
+#include "components/data_sharing/public/data_sharing_service.h"
 #include "components/data_sharing/public/group_data.h"
 #include "components/data_sharing/test_support/mock_data_sharing_service.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
@@ -802,7 +803,7 @@ TEST_F(CollaborationControllerTest, CheckingFlowRequirementsManageFlow) {
       OnCollaborationRemoved(syncer::CollaborationId(kGroupId.value())));
   EXPECT_CALL(*data_sharing_service_, OnCollaborationGroupRemoved(kGroupId));
   EXPECT_CALL(*delegate_, OnFlowFinished());
-  std::move(manage_dialog_callback).Run(Outcome::kDeleteOrLeaveGroup);
+  std::move(manage_dialog_callback).Run(Outcome::kGroupLeftOrDeleted);
 }
 
 TEST_F(CollaborationControllerTest, ShareFlowCanceledBeforeSignin) {
@@ -855,6 +856,50 @@ TEST_F(CollaborationControllerTest, ShareFlowCanceledBeforeSignin) {
   histogram_tester.ExpectBucketCount(
       "CollaborationService.ShareOrManageFlow",
       metrics::CollaborationServiceShareOrManageEvent::kFlowRequirementsMet, 0);
+}
+
+TEST_F(CollaborationControllerTest, LeaveFlow) {
+  // Start leave flow.
+  tab_groups::LocalTabGroupID local_id =
+      tab_groups::test::GenerateRandomTabGroupID();
+  tab_groups::EitherGroupID either_id = local_id;
+  SavedTabGroup tab_group(std::u16string(u"title"),
+                          tab_groups::TabGroupColorId::kGrey, {});
+  tab_group.SetLocalGroupId(local_id);
+  tab_group.SetCollaborationId(tab_groups::CollaborationId(kGroupId.value()));
+  EXPECT_CALL(*tab_group_sync_service_, GetGroup(either_id))
+      .WillRepeatedly(Return(tab_group));
+  InitializeController(base::DoNothing(),
+                       Flow(FlowType::kLeaveOrDelete, either_id));
+  EXPECT_EQ(controller_->GetStateForTesting(), StateId::kPending);
+
+  // Simulate that the user is part of the group as member.
+  EXPECT_CALL(*collaboration_service_, GetCurrentUserRoleForGroup(kGroupId))
+      .WillRepeatedly(Return(data_sharing::MemberRole::kMember));
+  base::OnceCallback<void(Outcome)> leave_dialog_callback;
+  EXPECT_CALL(*delegate_, ShowLeaveDialog(either_id, IsNotNullCallback()))
+      .WillOnce(MoveArg<1>(&leave_dialog_callback));
+
+  controller_->SetStateForTesting(StateId::kCheckingFlowRequirements);
+  EXPECT_EQ(controller_->GetStateForTesting(), StateId::kLeavingGroup);
+
+  // Leave the collaboration group.
+  base::OnceCallback<void(
+      data_sharing::DataSharingService::PeopleGroupActionOutcome)>
+      people_group_action_callback;
+  EXPECT_CALL(*data_sharing_service_, LeaveGroup(kGroupId, IsNotNullCallback()))
+      .WillOnce(MoveArg<1>(&people_group_action_callback));
+  std::move(leave_dialog_callback).Run(Outcome::kSuccess);
+
+  // Clean up the tab group.
+  EXPECT_CALL(
+      *tab_group_sync_service_,
+      OnCollaborationRemoved(syncer::CollaborationId(kGroupId.value())));
+  EXPECT_CALL(*data_sharing_service_, OnCollaborationGroupRemoved(kGroupId));
+  EXPECT_CALL(*delegate_, OnFlowFinished());
+  std::move(people_group_action_callback)
+      .Run(
+          data_sharing::DataSharingService::PeopleGroupActionOutcome::kSuccess);
 }
 
 }  // namespace collaboration

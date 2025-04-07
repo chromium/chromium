@@ -692,6 +692,7 @@ chromium-metrics-reviews@google.com.
   <int value="76" label="Join collaboration tab group authentication"/>
   <int value="77" label="History Sync Opt-in Expanded Pill"/>
   <int value="78" label="Widget (iOS only)"/>
+  <int value="79" label="Leave or delete collaboration tab group"/>
 </enum>
 
 <enum name="SigninAccountReconcilorState">

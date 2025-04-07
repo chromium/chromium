@@ -239,6 +239,7 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
                 intent = createFullscreenSigninIntent();
                 break;
             case FlowType.SHARE_OR_MANAGE:
+            case FlowType.LEAVE_OR_DELETE:
                 intent = createBottomSheetSigninIntent();
                 break;
             default:
@@ -345,11 +346,14 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
                         .historySyncTitleId(R.string.collaboration_sync_title)
                         .historySyncSubtitleId(R.string.collaboration_sync_description)
                         .build();
+        @SigninAccessPoint int accessPoint;
+        if (mFlowType == FlowType.SHARE_OR_MANAGE) {
+            accessPoint = SigninAccessPoint.COLLABORATION_SHARE_TAB_GROUP;
+        } else {
+            accessPoint = SigninAccessPoint.COLLABORATION_LEAVE_OR_DELETE_TAB_GROUP;
+        }
         return mSigninAndHistorySyncActivityLauncher.createBottomSheetSigninIntentOrShowError(
-                mActivity,
-                mDataSharingTabManager.getProfile(),
-                bottomSheetConfig,
-                SigninAccessPoint.COLLABORATION_SHARE_TAB_GROUP);
+                mActivity, mDataSharingTabManager.getProfile(), bottomSheetConfig, accessPoint);
     }
 
     private Intent createFullscreenSigninIntent() {
@@ -561,6 +565,32 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
                 () -> {
                     mDataSharingTabManager.getUiDelegate().destroyFlow(sessionId);
                 };
+    }
+
+    /**
+     * Show the leave dialog screen.
+     *
+     * @param syncId The sync id of the tab group
+     * @param localId The local id of the tab group.
+     * @param resultCallback The callback to notify the outcome of the UI screen.
+     */
+    @CalledByNative
+    void showLeaveDialog(String syncId, LocalTabGroupId localId, long resultCallback) {
+        CollaborationControllerDelegateImplJni.get()
+                .runResultCallback(Outcome.FAILURE, resultCallback);
+    }
+
+    /**
+     * Show the delete dialog screen.
+     *
+     * @param syncId The sync id of the tab group
+     * @param localId The local id of the tab group.
+     * @param resultCallback The callback to notify the outcome of the UI screen.
+     */
+    @CalledByNative
+    void showDeleteDialog(String syncId, LocalTabGroupId localId, long resultCallback) {
+        CollaborationControllerDelegateImplJni.get()
+                .runResultCallback(Outcome.FAILURE, resultCallback);
     }
 
     /**

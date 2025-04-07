@@ -237,6 +237,18 @@ void CollaborationControllerDelegateDesktop::ShowManageDialog(
   controller->Show(*request_info);
 }
 
+void CollaborationControllerDelegateDesktop::ShowLeaveDialog(
+    const tab_groups::EitherGroupID& either_id,
+    ResultCallback result) {
+  std::move(result).Run(CollaborationControllerDelegate::Outcome::kFailure);
+}
+
+void CollaborationControllerDelegateDesktop::ShowDeleteDialog(
+    const tab_groups::EitherGroupID& either_id,
+    ResultCallback result) {
+  std::move(result).Run(CollaborationControllerDelegate::Outcome::kFailure);
+}
+
 void CollaborationControllerDelegateDesktop::PromoteTabGroup(
     const data_sharing::GroupId& group_id,
     ResultCallback result) {
@@ -321,7 +333,7 @@ void CollaborationControllerDelegateDesktop::OnManageDialogClosing(
        action == data_sharing::mojom::GroupAction::kDeleteGroup) &&
       progress == data_sharing::mojom::GroupActionProgress::kSuccess) {
     std::move(result).Run(
-        CollaborationControllerDelegate::Outcome::kDeleteOrLeaveGroup);
+        CollaborationControllerDelegate::Outcome::kGroupLeftOrDeleted);
   } else {
     std::move(result).Run(CollaborationControllerDelegate::Outcome::kSuccess);
   }

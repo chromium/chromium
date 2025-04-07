@@ -475,6 +475,10 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
       base::RecordAction(base::UserMetricsAction(
           "Signin_Signin_FromCollaborationJoinTabGroup"));
       break;
+    case AccessPoint::kCollaborationLeaveOrDeleteTabGroup:
+      base::RecordAction(base::UserMetricsAction(
+          "Signin_Signin_FromCollaborationLeaveOrDeleteTabGroup"));
+      break;
     case AccessPoint::kSafetyCheck:
       VLOG(1) << "Signin_Signin_From* user action is not recorded "
               << "for access point " << static_cast<int>(access_point);
@@ -750,6 +754,7 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::kCollaborationJoinTabGroup:
     case AccessPoint::kHistorySyncOptinExpansionPill:
     case AccessPoint::kWidget:
+    case AccessPoint::kCollaborationLeaveOrDeleteTabGroup:
       NOTREACHED() << "Signin_Impression_From* user actions are not recorded "
                       "for access point "
                    << static_cast<int>(access_point);

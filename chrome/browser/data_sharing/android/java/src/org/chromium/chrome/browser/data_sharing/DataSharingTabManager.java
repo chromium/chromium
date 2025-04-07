@@ -786,7 +786,7 @@ public class DataSharingTabManager {
                         // TODO(haileywang): remove assert if we don't observe any crash
                         assert callback != null;
                         if (callback != null) {
-                            callback.onResult(Outcome.DELETE_OR_LEAVE_GROUP);
+                            callback.onResult(Outcome.GROUP_LEFT_OR_DELETED);
                         }
                     }
 

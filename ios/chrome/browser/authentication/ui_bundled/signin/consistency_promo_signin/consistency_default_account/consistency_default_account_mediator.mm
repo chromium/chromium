@@ -151,6 +151,7 @@ NSString* GetPromoLabelString(
     case signin_metrics::AccessPoint::kCollaborationJoinTabGroup:
     case signin_metrics::AccessPoint::kHistorySyncOptinExpansionPill:
     case signin_metrics::AccessPoint::kWidget:
+    case signin_metrics::AccessPoint::kCollaborationLeaveOrDeleteTabGroup:
       // Nothing prevents instantiating ConsistencyDefaultAccountViewController
       // with an arbitrary entry point, API-wise. In doubt, no label is a good,
       // generic default that fits all entry points.

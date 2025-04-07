@@ -57,6 +57,10 @@ class CollaborationServiceImpl : public CollaborationService,
       std::unique_ptr<CollaborationControllerDelegate> delegate,
       const tab_groups::EitherGroupID& either_id,
       CollaborationServiceShareOrManageEntryPoint entry) override;
+  void StartLeaveOrDeleteFlow(
+      std::unique_ptr<CollaborationControllerDelegate> delegate,
+      const tab_groups::EitherGroupID& either_id,
+      CollaborationServiceLeaveOrDeleteEntryPoint entry) override;
   void CancelAllFlows(base::OnceCallback<void()> finish_callback) override;
   ServiceStatus GetServiceStatus() override;
   data_sharing::MemberRole GetCurrentUserRoleForGroup(
@@ -89,7 +93,7 @@ class CollaborationServiceImpl : public CollaborationService,
 
   // Called to clean up a flow given a GroupToken.
   void FinishJoinFlow(const data_sharing::GroupToken& token);
-  void FinishShareFlow(const tab_groups::EitherGroupID& group_id);
+  void FinishCollaborationFlow(const tab_groups::EitherGroupID& group_id);
 
  private:
   SyncStatus GetSyncStatus();
@@ -99,9 +103,10 @@ class CollaborationServiceImpl : public CollaborationService,
   void StartJoinFlowInternal(
       std::unique_ptr<CollaborationControllerDelegate> delegate,
       const data_sharing::GroupToken& token);
-  void StartShareOrManageFlowInternal(
+  void StartCollaborationFlowInternal(
       std::unique_ptr<CollaborationControllerDelegate> delegate,
-      const tab_groups::EitherGroupID& group_id);
+      const tab_groups::EitherGroupID& either_id,
+      FlowType type);
   void OnCollaborationGroupRemoved(
       const data_sharing::GroupId& group_id,
       base::OnceCallback<void(bool)> callback,
@@ -136,7 +141,7 @@ class CollaborationServiceImpl : public CollaborationService,
   std::map<data_sharing::GroupToken, std::unique_ptr<CollaborationController>>
       join_controllers_;
   std::map<tab_groups::EitherGroupID, std::unique_ptr<CollaborationController>>
-      share_controllers_;
+      collaboration_controllers_;
 
   base::WeakPtrFactory<CollaborationServiceImpl> weak_ptr_factory_{this};
 };

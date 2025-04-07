@@ -227,6 +227,8 @@ class SigninMetricsTest : public ::testing::Test {
         return "HistorySyncOptinExpansionPill";
       case AccessPoint::kWidget:
         return "Widget";
+      case AccessPoint::kCollaborationLeaveOrDeleteTabGroup:
+        return "CollaborationLeaveOrDeleteTabGroup";
     }
   }
 };

@@ -185,6 +185,7 @@ void MaybeRecordWebSigninToChromeSigninTimes(
     case signin_metrics::AccessPoint::kCollaborationJoinTabGroup:
     case signin_metrics::AccessPoint::kHistorySyncOptinExpansionPill:
     case signin_metrics::AccessPoint::kWidget:
+    case signin_metrics::AccessPoint::kCollaborationLeaveOrDeleteTabGroup:
       return;
   }
 

@@ -36,6 +36,7 @@ public interface SigninAndHistorySyncActivityLauncher {
         SigninAccessPoint.CCT_ACCOUNT_MISMATCH_NOTIFICATION,
         SigninAccessPoint.COLLABORATION_JOIN_TAB_GROUP,
         SigninAccessPoint.COLLABORATION_SHARE_TAB_GROUP,
+        SigninAccessPoint.COLLABORATION_LEAVE_OR_DELETE_TAB_GROUP,
     })
     @Retention(RetentionPolicy.SOURCE)
     @interface AccessPoint {}
