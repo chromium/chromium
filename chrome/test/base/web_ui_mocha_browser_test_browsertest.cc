@@ -109,7 +109,7 @@ class WebUIMochaSuccessFailureTest : public WebUIMochaBrowserTest {
     s_test_ = this;
     // Some of these tests contain intentionally failing JS tests.
     // These should not be reported individually.
-    DisableSubTestResultReporting();
+    SetSubTestResultReportingEnabled(false);
   }
 
  protected:
@@ -165,6 +165,19 @@ IN_PROC_BROWSER_TEST_F(WebUIMochaSuccessFailureTest, TestFileErrorFails) {
   EXPECT_FATAL_FAILURE(RunTestStatic("does_not_exist.js", "mocha.run();"), "");
 }
 
+// Test that when the test name is too long, the test fails.
+IN_PROC_BROWSER_TEST_F(WebUIMochaSuccessFailureTest, TestWithLongNameFails) {
+  // SubTestResult reporting must be enabled to reach the code that fails the
+  // test with a long test name. Though it is enabled, it should stop short of
+  // reporting any failing SubTestResults.
+  SetSubTestResultReportingEnabled(true);
+
+  EXPECT_FATAL_FAILURE(
+      RunTestStatic("js/long_test_name_test_suite_self_test.js",
+                    "mocha.run();"),
+      "Test name too long");
+}
+
 // Test that when the underlying Mocha test fails, the C++ test also fails.
 IN_PROC_BROWSER_TEST_F(WebUIMochaSuccessFailureTest, TestFailureFails) {
   EXPECT_FATAL_FAILURE(
@@ -216,6 +229,20 @@ IN_PROC_BROWSER_TEST_F(WebUIMochaSuccessFailureWithoutTestLoaderTest,
       RunTestWithoutTestLoaderStatic("does_not_exist.js", "mocha.run();"),
       "TypeError: Failed to fetch dynamically imported module: "
       "chrome://webui-test/does_not_exist.js");
+}
+
+// Test that when the test name is too long, the test fails.
+IN_PROC_BROWSER_TEST_F(WebUIMochaSuccessFailureWithoutTestLoaderTest,
+                       TestWithLongNameFails) {
+  // SubTestResult reporting must be enabled to reach the code that fails the
+  // test with a long test name. Though it is enabled, it should stop short of
+  // reporting any failing SubTestResults.
+  SetSubTestResultReportingEnabled(true);
+
+  EXPECT_FATAL_FAILURE(
+      RunTestStatic("js/long_test_name_test_suite_self_test.js",
+                    "mocha.run();"),
+      "Test name too long");
 }
 
 // Test that when the underlying Mocha test fails, the C++ test also fails.

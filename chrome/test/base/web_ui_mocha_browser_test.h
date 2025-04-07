@@ -102,10 +102,10 @@ class WebUIMochaBrowserTest : public PlatformBrowserTest {
       const std::string& trigger,
       const bool& skip_test_loader);
 
-  // Tests may optionally call this before calling RunTest to opt out of
-  // SubTestResult reporting. This is useful for GTests that run intentionally
-  // failing JS tests.
-  void DisableSubTestResultReporting();
+  // Tests may optionally call this before calling RunTest to opt into or out
+  // of SubTestResult reporting. This is useful for GTests that run
+  // intentionally failing JS tests.
+  void SetSubTestResultReportingEnabled(bool enabled);
 
   // Hook for subclasses that need to perform additional setup steps that
   // involve the WebContents, before the Mocha test runs.
