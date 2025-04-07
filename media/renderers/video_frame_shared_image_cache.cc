@@ -105,10 +105,9 @@ VideoFrameSharedImageCache::GetOrCreateSharedImage(
   auto* sii = provider_->SharedImageInterface();
   CHECK(sii);
 
-  // Create a multiplanar shared image to upload the data to.
   shared_image_ = sii->CreateSharedImage(
       {format, video_frame->coded_size(), color_space, kTopLeft_GrSurfaceOrigin,
-       kUnpremul_SkAlphaType, usage, "VideoFrameYUV"},
+       kUnpremul_SkAlphaType, usage, "VideoFrameSharedImageCache"},
       gpu::kNullSurfaceHandle);
   CHECK(shared_image_);
   video_frame_id_ = video_frame->unique_id();
