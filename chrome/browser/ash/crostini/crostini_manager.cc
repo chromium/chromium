@@ -1778,6 +1778,7 @@ void CrostiniManager::SetUpBaguetteUser(
   request.add_group_names("cdrom");
   request.add_group_names("dialout");
   request.add_group_names("floppy");
+  request.add_group_names("kvm");
   request.add_group_names("netdev");
   request.add_group_names("sudo");
   request.add_group_names("tss");
