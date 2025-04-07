@@ -4,14 +4,10 @@
 
 #include "net/http/http_cache_writers.h"
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include <algorithm>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -585,8 +581,8 @@ void HttpCache::Writers::CompleteWaitingForReadTransactions(int result) {
     if (result >= 0) {  // success
       // Save the data in the waiting transaction's read buffer.
       it->second.write_len = std::min(it->second.read_buf_len, result);
-      memcpy(it->second.read_buf->data(), read_buf_->data(),
-             it->second.write_len);
+      it->second.read_buf->span().copy_prefix_from(
+          read_buf_->first(it->second.write_len));
       callback_result = it->second.write_len;
     }
 
