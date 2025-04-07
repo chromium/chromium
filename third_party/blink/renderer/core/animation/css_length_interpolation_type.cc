@@ -262,7 +262,7 @@ void CSSLengthInterpolationType::ApplyStandardPropertyValue(
     const ComputedStyle* after_style = builder.CloneStyle();
     DCHECK(
         LengthPropertyFunctions::GetLength(CssProperty(), *after_style, after));
-    if (before.IsSpecified() && after.IsSpecified()) {
+    if (before.HasOnlyFixedAndPercent() && after.HasOnlyFixedAndPercent()) {
       // A relative error of 1/100th of a percent is likely not noticeable.
       // This check can be triggered with a tight tolerance such as 1e-6 for
       // suitably ill-conditioned animations (crbug.com/1204099).

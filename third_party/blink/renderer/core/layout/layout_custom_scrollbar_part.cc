@@ -112,7 +112,7 @@ int LayoutCustomScrollbarPart::ComputeSize(const Length& length,
                                            int container_size) const {
   NOT_DESTROYED();
   if (!length.HasAutoOrContentOrIntrinsic() && !length.HasStretch()) {
-    CHECK(length.IsSpecified());
+    CHECK(length.HasOnlyFixedAndPercent());
     return MinimumValueForLength(length, LayoutUnit(container_size)).ToInt();
   }
   return CustomScrollbarTheme::GetCustomScrollbarTheme()->ScrollbarThickness(
