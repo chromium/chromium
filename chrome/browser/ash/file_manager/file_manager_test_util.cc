@@ -136,16 +136,15 @@ void AddDefaultComponentExtensionsOnMainThread(Profile* profile) {
   CHECK(profile);
 
   extensions::ComponentLoader::EnableBackgroundExtensionsForTesting();
-  extensions::ExtensionService* service =
-      extensions::ExtensionSystem::Get(profile)->extension_service();
-  service->component_loader()->AddDefaultComponentExtensions(false);
+  auto* component_loader = extensions::ComponentLoader::Get(profile);
+  component_loader->AddDefaultComponentExtensions(false);
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // QuickOffice loads from rootfs at /usr/share/chromeos-assets/quickoffce
   // which does not exist on bots for tests, so load test version.
   base::FilePath data_dir;
   CHECK(base::PathService::Get(chrome::DIR_TEST_DATA, &data_dir));
   base::RunLoop run_loop;
-  service->component_loader()->AddComponentFromDirWithManifestFilename(
+  component_loader->AddComponentFromDirWithManifestFilename(
       data_dir.Append("chromeos/file_manager/quickoffice"),
       extension_misc::kQuickOfficeComponentExtensionId,
       extensions::kManifestFilename, extensions::kManifestFilename,
@@ -157,6 +156,8 @@ void AddDefaultComponentExtensionsOnMainThread(Profile* profile) {
   // Invoke it here as well, otherwise migrated extensions will remain installed
   // for the duration of the test. Note this may result in immediately
   // uninstalling an extension just installed above.
+  extensions::ExtensionService* service =
+      extensions::ExtensionSystem::Get(profile)->extension_service();
   service->UninstallMigratedExtensionsForTest();
 }
 

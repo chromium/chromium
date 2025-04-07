@@ -127,7 +127,7 @@ void ExtensionCleanupHandler::ReinstallExtensions() {
       ->ReinstallProviderExtensions();
 
   // Reinstall component extensions.
-  extension_service_->component_loader()->AddDefaultComponentExtensions(
+  extensions::ComponentLoader::Get(profile_)->AddDefaultComponentExtensions(
       /*skip_session_components=*/false);
 
   std::move(callback_).Run(std::nullopt);
