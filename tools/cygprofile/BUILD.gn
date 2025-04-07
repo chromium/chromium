@@ -20,9 +20,11 @@ template("generate_orderfile_test") {
     enable_android_wrapper = true
 
     args = [
-      # Assume that we are running this script from the output directory.
+      # Currently tools/cygprofile/android_profile_tool.py runs run_benchmark
+      # from the root dir instead of the out dir, so the out dir needs to be
+      # relative to the source root dir.
       "--out-dir",
-      ".",
+      rebase_path(root_build_dir, "//"),
       "--android-browser",
       invoker.browser_name,
       "--target-arch",
