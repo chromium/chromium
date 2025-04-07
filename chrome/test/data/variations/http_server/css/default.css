@@ -1,0 +1,407 @@
+/* This is a snapshot of css style from
+https://www.chromium.org/_stylesheets/default.css.
+Its source is available here:
+https://source.chromium.org/chromium/chromium/src/+/main:docs/website/site/_stylesheets/default.scss
+which is CC-Attribute Licensed, but it is actually based on the MIT-licensed
+Andy Bell's "modern reset" https://github.com/hankchizljaw/modern-css-reset
+*/
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+figure,
+blockquote,
+dl,
+dd,
+pre {
+  margin: 0;
+}
+
+body {
+  min-height: 100vh;
+}
+
+ul[role=list],
+ol[role=list] {
+  list-style: none;
+}
+
+ul,
+ol {
+  list-style-position: inside;
+}
+
+a:not([class]) {
+  text-decoration-skip-ink: auto;
+}
+
+img {
+  display: block;
+  height: auto;
+  max-width: 100%;
+}
+
+p img {
+  display: inline-block;
+  vertical-align: sub;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+  letter-spacing: inherit;
+  word-spacing: inherit;
+}
+
+iframe {
+  border: 0;
+}
+
+img:not([alt]) {
+  filter: blur(10px);
+}
+
+hr {
+  height: 1px;
+  margin: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01s !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01s !important;
+  }
+}
+/* fonts */
+/* colors */
+/* page-wide settings */
+a {
+  color: rgb(0, 102, 204);
+}
+a.disabled {
+  color: rgb(102, 102, 102);
+  text-decoration: none;
+}
+
+b {
+  font-weight: 700;
+}
+
+body {
+  background-color: rgb(247, 247, 247);
+  color: rgb(0, 0, 0);
+  font-family: Arial, Verdana, sans-serif;
+}
+
+code {
+  background: rgb(239, 239, 239);
+  color: rgb(0, 96, 0);
+  font-family: monospace;
+}
+
+em,
+i {
+  font-style: italic;
+}
+
+pre {
+  background: rgb(239, 239, 239);
+  border: 1px solid rgb(211, 211, 211);
+  margin: 1em;
+  padding: 0.5em 1em 0.5em 1em;
+}
+
+header {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin: 5px 5px 5px 10px;
+}
+header a {
+  align-items: center;
+  color: rgb(0, 102, 204);
+  display: flex;
+  text-decoration: none;
+}
+header a h2 {
+  width: 100%;
+}
+header img {
+  display: block;
+  margin-right: 10px;
+}
+
+/* main panel */
+#main-wrapper {
+  display: flex;
+}
+
+#sidebar-left {
+  flex: 0 auto;
+  font-size: 12px;
+  line-height: 1.33em;
+  min-width: 160px;
+  width: 160px;
+}
+#sidebar-left section {
+  background-color: rgb(255, 255, 255);
+  margin: 0 5px 6px 5px;
+  padding: 0 0 0 5px;
+}
+#sidebar-left a {
+  color: rgb(0, 102, 204);
+  display: block;
+  text-decoration: none;
+}
+#sidebar-left a.selected {
+  color: black;
+  font-weight: bold;
+}
+#sidebar-left h4 {
+  color: rgb(72, 72, 72);
+  font-weight: 700;
+  font-size: 13px;
+  margin-bottom: 1px;
+  padding: 3px 0 2px 0;
+}
+#sidebar-left #license {
+  background-color: rgb(255, 255, 255);
+  color: rgb(94, 106, 114);
+  font-size: 10px;
+  line-height: normal;
+  margin: 0 5px 6px 5px;
+  padding: 11px 5px 5px 5px;
+}
+#sidebar-left #license a {
+  display: inline;
+  text-decoration: underline;
+}
+#sidebar-left a#edit-this-page {
+  background-color: rgb(3, 25, 79);
+  border: 1px solid rgb(192, 192, 192);
+  color: rgb(255, 255, 255);
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  margin: 20px auto;
+  padding: 6px 12px;
+  text-align: center;
+  text-decoration: none;
+  width: 90%;
+}
+
+main {
+  background-color: rgb(255, 255, 255);
+  border: 1px solid rgb(211, 211, 211);
+  flex: 1 100%;
+  font-family: Arial, Verdana, sans-serif;
+  font-size: 13.333px;
+  line-height: 1.3;
+  margin-right: 5px;
+  padding: 20px;
+  /* Rules for particular extensions */
+}
+main a:visited {
+  color: rgb(71, 18, 100);
+}
+main a.header-anchor {
+  color: inherit;
+  text-decoration: inherit;
+}
+main blockquote {
+  background-color: rgb(255, 253, 231);
+  border-left: 0.2em solid rgb(250, 183, 0);
+  color: rgb(0, 0, 0);
+  margin-bottom: 1em;
+  padding: 0.2em 1em;
+}
+main del {
+  background-color: rgb(244, 204, 204);
+  text-decoration: inherit;
+}
+main h1 {
+  font-size: 22px;
+  font-weight: 700;
+  margin: 10px 0 1.4em;
+}
+main h1 a {
+  color: rgb(0, 102, 204);
+}
+main h2 {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 1.2em 0 0.8em 0;
+}
+main h3 {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 1.2em 0 0.7em 0;
+}
+main h4 {
+  font-weight: 700;
+  margin: 1.2em 0 0.6em 0;
+}
+main h4 a {
+  color: rgb(0, 102, 204);
+}
+main h4 i a {
+  color: rgb(0, 102, 204);
+  font-weight: 400;
+}
+main ins {
+  background-color: rgb(217, 234, 211);
+  text-decoration: inherit;
+}
+main p {
+  margin-bottom: 13.33px;
+  margin-top: 1.4em;
+}
+main pre {
+  white-space: break-spaces;
+  word-break: break-all;
+}
+main #title-crumbs {
+  padding: 6px 0 0 10px;
+}
+main #title-crumbs + h3 {
+  margin-top: 6px;
+}
+main ul {
+  display: block;
+  list-style-position: outside;
+  list-style-type: disc;
+  margin-bottom: 1em;
+  margin-top: 1em;
+  padding-left: 40px;
+}
+main ul li {
+  margin-bottom: 5px;
+  margin-top: 5px;
+}
+main ul li > p:first-of-type {
+  display: inline;
+}
+main ul ul {
+  list-style-type: circle;
+  margin-bottom: 0;
+  margin-top: 0;
+}
+main ul ul ul {
+  list-style-type: square;
+}
+main ol {
+  list-style-position: outside;
+  list-style-type: decimal;
+  padding-left: 40px;
+  margin: 1em 0;
+}
+main ol li {
+  margin: 5px 0;
+}
+main ol li p {
+  margin: 0.5em 0;
+}
+main ol li > p:first-of-type {
+  display: inline;
+}
+main ol ul {
+  list-style-type: circle;
+  margin-bottom: 0;
+  margin-top: 0;
+}
+main table {
+  border-collapse: collapse;
+  border-spacing: 0px;
+  border-width: 1px solid rgb(217, 217, 217);
+  margin: 1.3em 0 1.3em 0;
+}
+main table td,
+main table th {
+  border: 1px solid rgb(217, 217, 217);
+  padding: 5px 10px 5px 10px;
+  vertical-align: top;
+}
+main nav.subpage-listing {
+  background-color: rgb(241, 241, 241);
+  border: 1px solid rgb(211, 211, 211);
+}
+main nav.subpage-listing details {
+  margin-left: -1em;
+}
+main nav.subpage-listing h4 {
+  margin: inherit;
+  padding: 0.5em 0 0 0.5em;
+}
+main nav.subpage-listing li {
+  font-weight: normal;
+  list-style: none;
+  list-style-image: none;
+  margin-left: 1.2em;
+  padding-left: 1.3em;
+}
+main nav.subpage-listing li a {
+  text-decoration: none;
+}
+main nav.subpage-listing ul {
+  padding-left: 0px;
+}
+main nav.subpage-listing > ul {
+  margin: 0.5em 0 0.5em 0;
+}
+main nav.subpage-listing > ul > li {
+  border-top: 1px solid white;
+  font-weight: bold;
+  margin: 3px 0 3px 0;
+  padding: 2px 0 2px 1.3em;
+}
+main .table-of-contents {
+  border: 1px solid rgb(211, 211, 211);
+  background-color: rgb(241, 241, 241);
+  display: table;
+  font-size: 12px;
+  margin-left: 1em;
+  padding: 1em 2em 1em 1em;
+}
+main .table-of-contents a {
+  text-decoration: none;
+}
+main .table-of-contents > ol::before {
+  content: "Contents";
+  display: block;
+  font-weight: 700;
+  margin: 0 0 0.5em -1em;
+}
+main .table-of-contents ol {
+  line-height: 1.1em;
+  margin: 0;
+  padding-left: 1.2em;
+}
+main .table-of-contents ol li {
+  list-style-type: none;
+}
+main .two-column-container {
+  align-items: flex-start;
+  display: flex;
+}
+main .two-column-container > div.column {
+  flex: 50%;
+  margin: 0;
+  padding-right: 30px;
+}
+
+/*# sourceMappingURL=default.css.map */
