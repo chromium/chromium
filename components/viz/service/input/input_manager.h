@@ -6,6 +6,7 @@
 #define COMPONENTS_VIZ_SERVICE_INPUT_INPUT_MANAGER_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -52,6 +53,19 @@ struct FrameSinkMetadata {
   base::UnguessableToken grouping_id;
   std::unique_ptr<RenderInputRouterSupportBase> rir_support;
   std::unique_ptr<RenderInputRouterDelegateImpl> rir_delegate;
+
+  struct Operation {
+    enum class Type {
+      kRecreateSupport,
+      kRegisterFrameSinkHierarchy,
+      kUnregisterFrameSinkHierarchy,
+    } type;
+    // The value is set only for (un)RegisterFrameSinkHierarchy operations.
+    std::optional<FrameSinkId> parent_frame_sink_id;
+    base::TimeDelta time_since_metadata_creation;
+  };
+  std::vector<Operation> operations;
+  base::TimeTicks creation_time;
 };
 
 class VIZ_SERVICE_EXPORT InputManager
@@ -82,6 +96,12 @@ class VIZ_SERVICE_EXPORT InputManager
   // FrameSinkObserver overrides.
   void OnDestroyedCompositorFrameSink(
       const FrameSinkId& frame_sink_id) override;
+  void OnRegisteredFrameSinkHierarchy(
+      const FrameSinkId& parent_frame_sink_id,
+      const FrameSinkId& child_frame_sink_id) override;
+  void OnUnregisteredFrameSinkHierarchy(
+      const FrameSinkId& parent_frame_sink_id,
+      const FrameSinkId& child_frame_sink_id) override;
   void OnFrameSinkDeviceScaleFactorChanged(const FrameSinkId& frame_sink_id,
                                            float device_scale_factor) override;
 
@@ -198,6 +218,8 @@ class VIZ_SERVICE_EXPORT InputManager
 #endif  // BUILDFLAG(IS_ANDROID)
 
   friend class MockInputManager;
+
+  std::string EmitFrameSinkOperations(const FrameSinkId& frame_sink_id);
 
   // Keeps track of InputEventRouter corresponding to FrameSinkIds using a
   // CompositorFrameSink grouping_id sent from the browser, allowing mirroring
