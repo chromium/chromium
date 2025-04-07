@@ -373,7 +373,10 @@ message DeviceRegisterRequest {
   // enrollment process.
   optional string oidc_profile_enrollment_state = 22;
 
-  // Next id: 23.
+  // Information from the device's SMBIOS.
+  optional SmbiosInfo smbios_info = 23;
+
+  // Next id: 24.
 }
 
 // Identification of a device used during its registration.
