@@ -60,7 +60,7 @@ TEST(ChromeOSSystemExtensionInfo, AcerExtension) {
 }
 
 TEST(ChromeOSSystemExtensionInfo, LenovoExtension) {
-  const auto& lenovo_extension_id = "abpkjagfgndmbkendplbabnefkjkgdcf";
+  const auto& lenovo_extension_id = "mconamggkmbalafmibfjlcmimnlbgmlb";
   ASSERT_TRUE(chromeos::IsChromeOSSystemExtension(lenovo_extension_id));
 
   const auto& extension_info =

@@ -73,7 +73,7 @@ ChromeOSSystemExtensionInfoMap ConstructMap() {
            /*pwa_origin=*/"https://acerpartners.com/*",
            /*iwa_id=*/std::nullopt,
        }},
-      {/*extension_id=*/"abpkjagfgndmbkendplbabnefkjkgdcf",
+      {/*extension_id=*/"mconamggkmbalafmibfjlcmimnlbgmlb",
        {
            /*manufacturers=*/{"Lenovo"},
            /*pwa_origin=*/"https://chromebookdiags.lenovo.com/*",

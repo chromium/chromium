@@ -109,7 +109,7 @@ const std::vector<ExtensionInfoTestParams> kAllExtensionInfoTestParams{
         /*matches_origin=*/"https://acerpartners.com/*",
         /*manufacturer=*/"Acer"),
     ExtensionInfoTestParams(
-        /*extension_id=*/"abpkjagfgndmbkendplbabnefkjkgdcf",
+        /*extension_id=*/"mconamggkmbalafmibfjlcmimnlbgmlb",
         /*app_ui_url=*/"https://chromebookdiags.lenovo.com",
         /*matches_origin=*/"https://chromebookdiags.lenovo.com/*",
         /*manufacturer=*/"Lenovo"),
