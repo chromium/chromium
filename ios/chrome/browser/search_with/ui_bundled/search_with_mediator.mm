@@ -9,7 +9,6 @@
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "base/metrics/histogram_functions.h"
-#import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/search_engines/template_url.h"
 #import "components/search_engines/template_url_service.h"
@@ -57,7 +56,7 @@ void LogTrigger(bool incognito, bool search_engine_google) {
 
 // Log the number of characters selected.
 void LogSelectedNumberChar(NSUInteger textLength) {
-  UMA_HISTOGRAM_COUNTS_1000("IOS.SearchWith.CharSelected", textLength);
+  base::UmaHistogramCounts1000("IOS.SearchWith.CharSelected", textLength);
 }
 
 }  // namespace
