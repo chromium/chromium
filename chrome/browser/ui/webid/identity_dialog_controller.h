@@ -158,7 +158,7 @@ class IdentityDialogController
   LoginToIdPCallback on_login_;
   MoreDetailsCallback on_more_details_;
   AccountsDisplayedCallback on_accounts_displayed_;
-  raw_ptr<content::WebContents> rp_web_contents_;
+  raw_ptr<content::WebContents> rp_web_contents_{nullptr};
   blink::mojom::RpMode rp_mode_;
 
   // Service which returns a recommendation for UI volume.
