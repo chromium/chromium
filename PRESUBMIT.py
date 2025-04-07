@@ -6147,10 +6147,13 @@ def ChecksCommon(input_api, output_api):
             input_api, output_api))
 
     presubmit_py_filter = lambda f: input_api.FilterSourceFile(
-        f, files_to_check=[r'.*PRESUBMIT\.py$'])
-    for f in input_api.AffectedFiles(include_deletes=False,
-                                     file_filter=presubmit_py_filter):
-        full_path = input_api.os_path.dirname(f.AbsoluteLocalPath())
+        f, files_to_check=[r'.*PRESUBMIT(?:_test)?\.py$'])
+    potential_paths = set(
+        map(
+            lambda f: input_api.os_path.dirname(f.AbsoluteLocalPath()),
+            input_api.AffectedFiles(include_deletes=False,
+                                    file_filter=presubmit_py_filter)))
+    for full_path in potential_paths:
         test_file = input_api.os_path.join(full_path, 'PRESUBMIT_test.py')
         # The PRESUBMIT.py file (and the directory containing it) might have
         # been affected by being moved or removed, so only try to run the tests
