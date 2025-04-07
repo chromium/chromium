@@ -539,8 +539,21 @@ CanvasResourceProvider* OffscreenCanvas::GetOrCreateResourceProvider() {
     return nullptr;
   }
 
-  if (ResourceProvider()) {
-    return ResourceProvider();
+  if (CanvasResourceProvider* provider = ResourceProvider()) {
+    if (!provider->IsValid()) {
+      // The canvas context is not lost but the provider is invalid. This
+      // happens if the GPU process dies in the middle of a render task. The
+      // canvas is notified of GPU context losses via the `NotifyGpuContextLost`
+      // callback and restoration happens in `TryRestoreContextEvent`. Both
+      // callbacks are executed in their own separate task. If the GPU context
+      // goes invalid in the middle of a render task, the canvas won't
+      // immediately know about it and canvas APIs will continue using the
+      // provider that is now invalid. We can early return here, trying to
+      // re-create the provider right away would just fail. We need to let
+      // `TryRestoreContextEvent` wait for the GPU process to up again.
+      return nullptr;
+    }
+    return provider;
   }
 
   if (!IsValidImageSize(Size()) && !Size().IsEmpty()) {

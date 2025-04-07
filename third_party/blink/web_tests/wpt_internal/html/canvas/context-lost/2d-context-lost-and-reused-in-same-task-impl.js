@@ -1,8 +1,3 @@
-<!doctype html>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<canvas id="canvas"></canvas>
-<script>
 assert_true(!!window.chrome && !!chrome.gpuBenchmarking,
   'This test requires chrome.gpuBenchmarking.');
 
@@ -10,8 +5,7 @@ assert_true(!!window.chrome && !!chrome.gpuBenchmarking,
  * Test losing the GPU context and keep using the canvas in the same task,
  * before the canvas realizes that the context is lost.
  */
-promise_test(async () => {
-  const canvas = document.getElementById('canvas');
+async function TestLosingAndReusingCanvasInSameTask(canvas) {
   const ctx = canvas.getContext('2d',
                                 // Stay on GPU acceleration despite read-backs.
                                 {willReadFrequently: false});
@@ -53,6 +47,4 @@ promise_test(async () => {
   assert_array_equals(
       ctx.getImageData(2, 2, 1, 1).data, [0, 255, 0, 255],
       `The canvas should be usable after it's restored.`);
-}, 'Test losing the GPU process and keep using it in the same task.');
-
-</script>
+}
