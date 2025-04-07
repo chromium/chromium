@@ -857,7 +857,7 @@ void HTMLPermissionElement::AdjustStyle(ComputedStyleBuilder& builder) {
       IsBorderSufficientlyDistinctFromBackgroundColor(builder.CloneStyle());
 
   if (unlimited_width_allowed) {
-    if (builder.PaddingRight().IsSpecified() &&
+    if (builder.PaddingRight().HasOnlyFixedAndPercent() &&
         !builder.PaddingRight().IsZero() &&
         builder.PaddingLeft() != builder.PaddingRight()) {
       AddConsoleError(
@@ -874,9 +874,10 @@ void HTMLPermissionElement::AdjustStyle(ComputedStyleBuilder& builder) {
     // If width is set to auto and there is left padding specified, we will
     // respect the padding (up to a certain maximum), otherwise the padding has
     // no effect. We treat height and top/bottom padding similarly.
-    if (builder.Width().IsAuto() && builder.PaddingLeft().IsSpecified() &&
+    if (builder.Width().IsAuto() &&
+        builder.PaddingLeft().HasOnlyFixedAndPercent() &&
         !builder.PaddingLeft().IsZero()) {
-      if (builder.PaddingRight().IsSpecified() &&
+      if (builder.PaddingRight().HasOnlyFixedAndPercent() &&
           !builder.PaddingRight().IsZero() &&
           builder.PaddingLeft() != builder.PaddingRight()) {
         AddConsoleError(
@@ -898,9 +899,10 @@ void HTMLPermissionElement::AdjustStyle(ComputedStyleBuilder& builder) {
     }
   }
 
-  if (builder.Height().IsAuto() && builder.PaddingTop().IsSpecified() &&
+  if (builder.Height().IsAuto() &&
+      builder.PaddingTop().HasOnlyFixedAndPercent() &&
       !builder.PaddingTop().IsZero()) {
-    if (builder.PaddingBottom().IsSpecified() &&
+    if (builder.PaddingBottom().HasOnlyFixedAndPercent() &&
         !builder.PaddingBottom().IsZero() &&
         builder.PaddingTop() != builder.PaddingBottom()) {
       AddConsoleError(

@@ -296,12 +296,17 @@ class PLATFORM_EXPORT Length {
   bool HasMinIntrinsic() const { return IsMinIntrinsic(); }
   bool HasFitContent() const;
 
-  // IsSpecified() is true for any Lengths that are a fixed length, a percent,
-  // or a calc() expression.  Note that this *includes* calc-size()
+  // CanConvertToCalculation() is true for any Lengths that are a fixed length,
+  // a percent, or a calc() expression.  Note that this *includes* calc-size()
   // expressions that contain sizing keywords, which may not be what you want.
+  //
   // Compare to HasOnlyFixedAndPercent.  (The difference is relevant only when
   // sizing keywords may be present.)
-  bool IsSpecified() const {
+  //
+  // Note that in some contexts sizing keywords can be converted to
+  // calculation expressions, but this function does *not* return true for
+  // those cases; the caller is required to convert appropriately.
+  bool CanConvertToCalculation() const {
     return GetType() == kFixed || GetType() == kPercent ||
            GetType() == kCalculated;
   }
@@ -310,8 +315,8 @@ class PLATFORM_EXPORT Length {
   // a percent, or calc() expressions that consist only of those.  (This
   // excludes calc() expressions with calc-size() that depend on sizing
   // keywords.)
-  // Compare to IsSpecified.  (The difference is relevant only when sizing
-  // keywords may be present.)
+  // Compare to CanConvertToCalculation.  (The difference is relevant only
+  // when sizing keywords may be present.)
   bool HasOnlyFixedAndPercent() const;
 
   bool IsCalculated() const { return GetType() == kCalculated; }
@@ -354,8 +359,8 @@ class PLATFORM_EXPORT Length {
   bool IsDeviceHeight() const { return GetType() == kDeviceHeight; }
 
   Length Blend(const Length& from, double progress, ValueRange range) const {
-    DCHECK(IsSpecified());
-    DCHECK(from.IsSpecified());
+    DCHECK(CanConvertToCalculation());
+    DCHECK(from.CanConvertToCalculation());
 
     if (progress == 0.0)
       return from;

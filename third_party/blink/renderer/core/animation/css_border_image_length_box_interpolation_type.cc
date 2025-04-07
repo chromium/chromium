@@ -111,7 +111,7 @@ SideType GetSideType(const BorderImageLength& side) {
   if (side.length().IsAuto()) {
     return SideType::kAuto;
   }
-  DCHECK(side.length().IsSpecified());
+  DCHECK(side.length().HasOnlyFixedAndPercent());
   return SideType::kLength;
 }
 
