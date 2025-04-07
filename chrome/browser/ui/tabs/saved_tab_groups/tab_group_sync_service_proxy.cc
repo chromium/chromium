@@ -329,6 +329,11 @@ void TabGroupSyncServiceProxy::RecordTabGroupEvent(
   NOTIMPLEMENTED();
 }
 
+void TabGroupSyncServiceProxy::UpdateArchivalStatus(const base::Uuid& sync_id,
+                                                    bool success) {
+  NOTIMPLEMENTED();
+}
+
 TabGroupSyncMetricsLogger*
 TabGroupSyncServiceProxy::GetTabGroupSyncMetricsLogger() {
   return service_->GetTabGroupSyncMetricsLogger();

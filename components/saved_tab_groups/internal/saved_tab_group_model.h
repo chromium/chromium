@@ -248,6 +248,9 @@ class SavedTabGroupModel {
   void OnSyncBridgeUpdateTypeChanged(
       SyncBridgeUpdateType sync_bridge_update_type);
 
+  // Update the archival status and archival timestamp of the local tab group.
+  void UpdateArchivalStatus(const base::Uuid& id, bool archivalStatus);
+
  private:
   // Returns mutable group containing tab with ID `saved_tab_guid`, otherwise
   // returns null.

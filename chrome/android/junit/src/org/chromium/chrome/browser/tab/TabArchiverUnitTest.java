@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
+import org.chromium.components.tab_group_sync.TabGroupSyncService;
 
 /** Tests for {@link TabArchiveSettings}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -50,6 +51,7 @@ public class TabArchiverUnitTest {
     private @Mock Profile mProfile;
     private @Mock Profile mIncognitoProfile;
     private @Mock WebContentsState mWebContentsState;
+    private @Mock TabGroupSyncService mTabGroupSyncService;
 
     private MockTab mArchivedTab;
     private MockTabModelSelector mTabModelSelector;
@@ -78,7 +80,8 @@ public class TabArchiverUnitTest {
                         mArchivedTabGroupModelFilter,
                         mArchivedTabCreator,
                         mTabArchiveSettings,
-                        mClock);
+                        mClock,
+                        mTabGroupSyncService);
     }
 
     private void setupTabModels() {

@@ -408,4 +408,16 @@ TEST_F(TabGroupSyncServiceAndroidTest, OnTabSelected) {
       non_grouped_tab_id, j_tab_title);
 }
 
+TEST_F(TabGroupSyncServiceAndroidTest, UpdateArchivalStatus) {
+  auto* env = AttachCurrentThread();
+
+  base::Uuid uuid = base::Uuid::ParseCaseInsensitive(kTestUuid);
+  auto j_uuid = UuidToJavaString(env, uuid);
+
+  EXPECT_CALL(tab_group_sync_service_, UpdateArchivalStatus(uuid, true))
+      .Times(1);
+  Java_TabGroupSyncServiceAndroidUnitTest_testUpdateArchivalStatus(
+      env, j_test_, j_uuid, true);
+}
+
 }  // namespace tab_groups

@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.tab.TabArchiveSettings;
 import org.chromium.chrome.browser.tab.TabArchiver;
 import org.chromium.chrome.browser.tab.TabArchiverImpl;
 import org.chromium.chrome.browser.tab.tab_restore.HistoricalTabModelObserver;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.ArchivedTabCreator;
 import org.chromium.chrome.browser.tabmodel.ArchivedTabModelSelectorHolder;
@@ -47,6 +48,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabmodel.TabWindowManager;
 import org.chromium.chrome.browser.tabmodel.TabbedModeTabPersistencePolicy;
+import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.lang.ref.WeakReference;
@@ -489,6 +491,8 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
 
         mTabArchiveSettings = new TabArchiveSettings(ChromeSharedPreferences.getInstance());
         mTabArchiveSettings.addObserver(mTabArchiveSettingsObserver);
+        TabGroupSyncService tabGroupSyncService =
+                TabGroupSyncServiceFactory.getForProfile(mProfile);
         mTabArchiver =
                 new TabArchiverImpl(
                         mTabModelSelector
@@ -496,7 +500,8 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
                                 .getTabGroupModelFilter(/* isIncognito= */ false),
                         mArchivedTabCreator,
                         mTabArchiveSettings,
-                        System::currentTimeMillis);
+                        System::currentTimeMillis,
+                        tabGroupSyncService);
         mTabArchiver.addObserver(mTabArchiverObserver);
     }
 

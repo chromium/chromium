@@ -161,6 +161,11 @@ class TabGroupSyncServiceAndroid : public base::SupportsUserData::Data,
                            jint j_opening_source,
                            jint j_closing_source);
 
+  void UpdateArchivalStatus(JNIEnv* env,
+                            const JavaParamRef<jobject>& j_caller,
+                            const JavaParamRef<jstring>& j_sync_group_id,
+                            const jboolean j_archival_status);
+
  private:
   // A reference to the Java counterpart of this class.  See
   // TabGroupSyncServiceImpl.java.

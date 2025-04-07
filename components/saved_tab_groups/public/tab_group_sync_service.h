@@ -363,6 +363,11 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
   // close tab group events only, but see implementation for more details.
   virtual void RecordTabGroupEvent(const EventDetails& event_details) = 0;
 
+  // Method to update the archival status via timestamp of the local tab group.
+  // No timestamp indicates that the tab group is not currently archived.
+  virtual void UpdateArchivalStatus(const base::Uuid& sync_id,
+                                    bool archival_status) = 0;
+
   // For accessing the centralized metrics logger.
   virtual TabGroupSyncMetricsLogger* GetTabGroupSyncMetricsLogger() = 0;
 

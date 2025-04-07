@@ -1057,6 +1057,18 @@ void TabGroupSyncServiceImpl::RecordTabGroupEvent(
   metrics_logger_->LogEvent(event_details, group, tab);
 }
 
+void TabGroupSyncServiceImpl::UpdateArchivalStatus(const base::Uuid& sync_id,
+                                                   bool archival_status) {
+  VLOG(2) << __func__;
+
+  std::optional<SavedTabGroup> group = GetGroup(sync_id);
+  if (!group.has_value()) {
+    return;
+  }
+
+  model_->UpdateArchivalStatus(sync_id, archival_status);
+}
+
 TabGroupSyncMetricsLogger*
 TabGroupSyncServiceImpl::GetTabGroupSyncMetricsLogger() {
   return metrics_logger_.get();

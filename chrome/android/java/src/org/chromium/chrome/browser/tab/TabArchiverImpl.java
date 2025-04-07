@@ -18,6 +18,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.TabArchiver.Observer;
 import org.chromium.chrome.browser.tab.state.ArchivePersistedTabData;
@@ -27,12 +28,17 @@ import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.components.tab_group_sync.LocalTabGroupId;
+import org.chromium.components.tab_group_sync.SavedTabGroup;
+import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /** Responsible for moving tabs to/from the archived {@link TabModel}. */
@@ -49,6 +55,7 @@ public class TabArchiverImpl implements TabArchiver {
     private final TabGroupModelFilter mArchivedTabGroupModelFilter;
     private final TabCreator mArchivedTabCreator;
     private final TabArchiveSettings mTabArchiveSettings;
+    private final TabGroupSyncService mTabGroupSyncService;
 
     private Clock mClock;
 
@@ -56,17 +63,20 @@ public class TabArchiverImpl implements TabArchiver {
      * @param archivedTabGroupModelFilter The archived {@link TabGroupModelFilter}.
      * @param archivedTabCreator The {@link TabCreator} for the archived TabModel.
      * @param tabArchiveSettings The settings for tab archiving/deletion.
-     * @param clock A clock object to get the current time..
+     * @param clock A clock object to get the current time.
+     * @param tabGroupSyncService The {@link TabGroupSyncService}.
      */
     public TabArchiverImpl(
             TabGroupModelFilter archivedTabGroupModelFilter,
             TabCreator archivedTabCreator,
             TabArchiveSettings tabArchiveSettings,
-            Clock clock) {
+            Clock clock,
+            TabGroupSyncService tabGroupSyncService) {
         mArchivedTabGroupModelFilter = archivedTabGroupModelFilter;
         mArchivedTabCreator = archivedTabCreator;
         mTabArchiveSettings = tabArchiveSettings;
         mClock = clock;
+        mTabGroupSyncService = tabGroupSyncService;
     }
 
     @Override
@@ -208,12 +218,32 @@ public class TabArchiverImpl implements TabArchiver {
         ThreadUtils.assertOnUiThread();
 
         List<Tab> archivedTabs = new ArrayList<>();
+        Set<Token> archivedTabGroupIds = new HashSet<>();
         // Add tabs to the archived tab model first to prevent tab loss if the operation is aborted.
         for (Tab tab : tabs) {
             TabState tabState = prepareTabState(tab);
             Tab archivedTab =
                     mArchivedTabCreator.createFrozenTab(tabState, tab.getId(), INVALID_TAB_INDEX);
             archivedTabs.add(archivedTab);
+
+            @Nullable Token tabGroupId = tab.getTabGroupId();
+            if (ChromeFeatureList.sAndroidTabDeclutterArchiveTabGroups.isEnabled()
+                    && tabGroupId != null
+                    && !archivedTabGroupIds.contains(tabGroupId)) {
+                archivedTabGroupIds.add(tabGroupId);
+            }
+        }
+
+        if (ChromeFeatureList.sAndroidTabDeclutterArchiveTabGroups.isEnabled()
+                && mTabGroupSyncService != null) {
+            for (Token tabGroupId : archivedTabGroupIds) {
+                LocalTabGroupId localTabGroupId = new LocalTabGroupId(tabGroupId);
+                SavedTabGroup savedTabGroup = mTabGroupSyncService.getGroup(localTabGroupId);
+                if (savedTabGroup != null) {
+                    mTabGroupSyncService.updateArchivalStatus(
+                            savedTabGroup.syncId, /* archivalStatus= */ true);
+                }
+            }
         }
 
         int tabCount = tabs.size();

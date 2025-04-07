@@ -402,6 +402,11 @@ void FakeTabGroupSyncService::RecordTabGroupEvent(
   // No op.
 }
 
+void FakeTabGroupSyncService::UpdateArchivalStatus(const base::Uuid& sync_id,
+                                                   bool archival_status) {
+  // No op.
+}
+
 TabGroupSyncMetricsLogger*
 FakeTabGroupSyncService::GetTabGroupSyncMetricsLogger() {
   return nullptr;

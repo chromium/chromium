@@ -159,6 +159,10 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   std::set<LocalTabID> GetSelectedTabs() override;
 
   void RecordTabGroupEvent(const EventDetails& event_details) override;
+
+  void UpdateArchivalStatus(const base::Uuid& sync_id,
+                            bool archival_status) override;
+
   TabGroupSyncMetricsLogger* GetTabGroupSyncMetricsLogger() override;
 
   base::WeakPtr<syncer::DataTypeControllerDelegate>

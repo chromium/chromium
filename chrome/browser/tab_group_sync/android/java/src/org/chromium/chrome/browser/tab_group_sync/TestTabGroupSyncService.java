@@ -135,4 +135,7 @@ class TestTabGroupSyncService implements TabGroupSyncService {
 
     @Override
     public void recordTabGroupEvent(EventDetails eventDetails) {}
+
+    @Override
+    public void updateArchivalStatus(String syncTabGroupId, boolean archivalStatus) {}
 }

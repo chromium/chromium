@@ -308,4 +308,12 @@ public interface TabGroupSyncService {
      *     associated tab group info.
      */
     void recordTabGroupEvent(EventDetails eventDetails);
+
+    /**
+     * Update the archival status of the local tab group.
+     *
+     * @param syncTabGroupId The sync ID of the tab group to be updated.
+     * @param archivalStatus Whether the tab group should be archived locally or not.
+     */
+    void updateArchivalStatus(String syncTabGroupId, boolean archivalStatus);
 }

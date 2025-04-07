@@ -1372,6 +1372,31 @@ TEST_F(TabGroupSyncServiceTest, RecordTabGroupEvent) {
                                     1u);
 }
 
+TEST_F(TabGroupSyncServiceTest, UpdateArchivalStatus) {
+  auto group = tab_group_sync_service_->GetGroup(group_1_.saved_guid());
+  EXPECT_TRUE(group.has_value());
+
+  // Verify the archive status is defaulted to off.
+  EXPECT_FALSE(group->archival_time().has_value());
+
+  // Expect the observers to be called each time the status is updated.
+  EXPECT_CALL(*observer_, OnTabGroupUpdated(UuidEq(group_1_.saved_guid()),
+                                            Eq(TriggerSource::LOCAL)))
+      .Times(2);
+
+  // Set the archival status and verify.
+  tab_group_sync_service_->UpdateArchivalStatus(group_1_.saved_guid(), true);
+  group = tab_group_sync_service_->GetGroup(group_1_.saved_guid());
+  WaitForPostedTasks();
+  EXPECT_TRUE(group->archival_time().has_value());
+
+  // Reset the archival status and verify.
+  tab_group_sync_service_->UpdateArchivalStatus(group_1_.saved_guid(), false);
+  group = tab_group_sync_service_->GetGroup(group_1_.saved_guid());
+  WaitForPostedTasks();
+  EXPECT_FALSE(group->archival_time().has_value());
+}
+
 TEST_F(TabGroupSyncServiceTest, UpdateLocalTabId) {
   auto tab_guid = group_1_.saved_tabs()[0].saved_tab_guid();
   auto local_tab_id_2 = test::GenerateRandomTabID();

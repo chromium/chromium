@@ -966,4 +966,19 @@ void SavedTabGroupModel::TogglePinState(base::Uuid id) {
   }
 }
 
+void SavedTabGroupModel::UpdateArchivalStatus(const base::Uuid& id,
+                                              bool archival_status) {
+  SavedTabGroup* const group = GetMutableGroup(id);
+  CHECK(group);
+  std::optional<base::Time> archival_time;
+  if (archival_status) {
+    archival_time = base::Time::Now();
+  }
+  group->SetArchivalTime(archival_time);
+
+  for (auto& observer : observers_) {
+    observer.SavedTabGroupUpdatedLocally(id, /*tab_guid=*/std::nullopt);
+  }
+}
+
 }  // namespace tab_groups
