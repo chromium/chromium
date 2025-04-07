@@ -734,7 +734,9 @@ TEST_F(OnDeviceModelServiceControllerTest, BaseModelAvailableAfterInit) {
 TEST_F(OnDeviceModelServiceControllerTest, MidSessionModelUpdate) {
   Initialize(standard_assets_);
 
-  auto session = CreateSession();
+  auto session = test_controller_->CreateSession(
+      kFeature, base::BindRepeating(BadRequestRemote), logger_.GetWeakPtr(),
+      /*config_params=*/std::nullopt);
 
   // Simulate a model update.
   FakeBaseModelAsset next_model({
@@ -743,12 +745,10 @@ TEST_F(OnDeviceModelServiceControllerTest, MidSessionModelUpdate) {
   on_device_component_state_manager_.SetReady(next_model);
   task_environment_.RunUntilIdle();
 
-  // Verify the existing session still works.
+  // Existing session will fail / fallback to remote.
   session->ExecuteModel(PageUrlRequest("foo"),
                         response_.GetStreamingCallback());
-  ASSERT_TRUE(response_.GetFinalStatus());
-  // Note that the session does not execute with the new model.
-  EXPECT_EQ(*response_.value(), "Context: execute:foo off:0 max:1024\n");
+  ASSERT_FALSE(response_.GetFinalStatus());
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, SessionBeforeAndAfterModelUpdate) {

@@ -184,16 +184,15 @@ OnDeviceModelServiceController::CreateSession(
   }
 
   CHECK(base_model_controller_->model_metadata());
-  on_device_model::ModelAssetPaths model_paths =
-      base_model_controller_->PopulateModelPaths();
   CHECK(features::internal::GetOptimizationTargetForCapability(feature));
   auto* adaptation_metadata = GetFeatureMetadata(feature);
   CHECK(adaptation_metadata);
 
   OnDeviceOptions opts;
   opts.model_client = std::make_unique<OnDeviceModelClient>(
-      feature, weak_ptr_factory_.GetWeakPtr(), model_paths,
-      base::OptionalFromPtr(adaptation_metadata->asset_paths()));
+      feature, weak_ptr_factory_.GetWeakPtr(),
+      base_model_controller_->GetOrCreateFeatureController(
+          feature, base::OptionalFromPtr(adaptation_metadata->asset_paths())));
   opts.model_versions =
       GetModelVersions(*base_model_controller_->model_metadata(),
                        safety_client_, adaptation_metadata->version());
@@ -232,27 +231,6 @@ void OnDeviceModelServiceController::GetEstimatedPerformanceClass(
               base::DoNothingWithBoundArgs(std::move(controller)))));
 }
 
-mojo::Remote<on_device_model::mojom::OnDeviceModel>&
-OnDeviceModelServiceController::GetOrCreateModelRemote(
-    ModelBasedCapabilityKey feature,
-    const on_device_model::ModelAssetPaths& model_paths,
-    base::optional_ref<const on_device_model::AdaptationAssetPaths>
-        adaptation_assets) {
-  base_model_controller_->GetOrCreateRemote(model_paths);
-  if (!adaptation_assets.has_value()) {
-    return base_model_controller_->DirectUse();
-  }
-  auto it = model_adaptation_controllers_.find(feature);
-  if (it == model_adaptation_controllers_.end()) {
-    it = model_adaptation_controllers_
-             .emplace(
-                 std::piecewise_construct, std::forward_as_tuple(feature),
-                 std::forward_as_tuple(feature, weak_ptr_factory_.GetWeakPtr()))
-             .first;
-  }
-  return it->second.GetOrCreateModelRemote(*adaptation_assets);
-}
-
 void OnDeviceModelServiceController::SetLanguageDetectionModel(
     base::optional_ref<const ModelInfo> model_info) {
   safety_client_.SetLanguageDetectionModel(model_info);
@@ -269,7 +247,6 @@ void OnDeviceModelServiceController::UpdateModel(
     std::unique_ptr<OnDeviceModelMetadata> model_metadata) {
   bool did_model_change =
       !model_metadata.get() != !base_model_controller_->model_metadata();
-  model_adaptation_controllers_.clear();
   base_model_controller_.emplace(weak_ptr_factory_.GetSafeRef(),
                                  std::move(model_metadata));
 
@@ -283,13 +260,19 @@ void OnDeviceModelServiceController::MaybeUpdateModelAdaptation(
     std::unique_ptr<OnDeviceModelAdaptationMetadata> adaptation_metadata) {
   if (!adaptation_metadata) {
     model_adaptation_metadata_.erase(feature);
-  } else {
-    model_adaptation_metadata_.emplace(feature, *adaptation_metadata);
+    base_model_controller_->EraseController(feature);
+    NotifyModelAvailabilityChange(feature);
+    return;
   }
-  auto it = model_adaptation_controllers_.find(feature);
-  if (it != model_adaptation_controllers_.end()) {
-    model_adaptation_controllers_.erase(it);
+  auto it = model_adaptation_metadata_.find(feature);
+  if (it != model_adaptation_metadata_.end() &&
+      it->second == *adaptation_metadata) {
+    // Duplicate update (can be caused by multiple profiles).
+    // Don't invalidate the existing controller.
+    return;
   }
+  model_adaptation_metadata_.emplace(feature, *adaptation_metadata);
+  base_model_controller_->EraseController(feature);
   NotifyModelAvailabilityChange(feature);
 }
 
@@ -310,13 +293,10 @@ void OnDeviceModelServiceController::OnServiceDisconnected(
 OnDeviceModelServiceController::OnDeviceModelClient::OnDeviceModelClient(
     ModelBasedCapabilityKey feature,
     base::WeakPtr<OnDeviceModelServiceController> controller,
-    const on_device_model::ModelAssetPaths& model_paths,
-    base::optional_ref<const on_device_model::AdaptationAssetPaths>
-        adaptation_assets)
+    base::WeakPtr<ModelController> model_controller)
     : feature_(feature),
-      controller_(controller),
-      model_paths_(model_paths),
-      adaptation_assets_(adaptation_assets.CopyAsOptional()) {}
+      controller_(std::move(controller)),
+      model_controller_(std::move(model_controller)) {}
 
 OnDeviceModelServiceController::OnDeviceModelClient::~OnDeviceModelClient() =
     default;
@@ -324,11 +304,11 @@ OnDeviceModelServiceController::OnDeviceModelClient::~OnDeviceModelClient() =
 std::unique_ptr<OnDeviceOptions::Client>
 OnDeviceModelServiceController::OnDeviceModelClient::Clone() const {
   return std::make_unique<OnDeviceModelServiceController::OnDeviceModelClient>(
-      feature_, controller_, model_paths_, adaptation_assets_);
+      feature_, controller_, model_controller_);
 }
 
 bool OnDeviceModelServiceController::OnDeviceModelClient::ShouldUse() {
-  return controller_ &&
+  return controller_ && model_controller_ &&
          controller_->access_controller_->ShouldStartNewSession() ==
              OnDeviceModelEligibilityReason::kSuccess;
 }
@@ -336,9 +316,8 @@ bool OnDeviceModelServiceController::OnDeviceModelClient::ShouldUse() {
 void OnDeviceModelServiceController::OnDeviceModelClient::StartSession(
     mojo::PendingReceiver<on_device_model::mojom::Session> pending,
     on_device_model::mojom::SessionParamsPtr params) {
-  controller_
-      ->GetOrCreateModelRemote(feature_, model_paths_, adaptation_assets_)
-      ->StartSession(std::move(pending), std::move(params));
+  model_controller_->GetOrCreateRemote()->StartSession(std::move(pending),
+                                                       std::move(params));
 }
 
 void OnDeviceModelServiceController::OnDeviceModelClient::
@@ -426,16 +405,44 @@ OnDeviceModelServiceController::BaseModelController::BaseModelController(
 OnDeviceModelServiceController::BaseModelController::~BaseModelController() =
     default;
 
+base::WeakPtr<ModelController> OnDeviceModelServiceController::
+    BaseModelController::GetOrCreateFeatureController(
+        ModelBasedCapabilityKey feature,
+        base::optional_ref<const on_device_model::AdaptationAssetPaths>
+            adaptation_assets) {
+  if (!adaptation_assets.has_value()) {
+    has_direct_use_ = true;
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+  auto it = model_adaptation_controllers_.find(feature);
+  if (it == model_adaptation_controllers_.end()) {
+    it = model_adaptation_controllers_
+             .emplace(std::piecewise_construct, std::forward_as_tuple(feature),
+                      std::forward_as_tuple(feature, GetWeakPtr(),
+                                            *adaptation_assets))
+             .first;
+  }
+  // Path should be equal.
+  return it->second.GetWeakPtr();
+}
+
+void OnDeviceModelServiceController::BaseModelController::EraseController(
+    ModelBasedCapabilityKey feature) {
+  auto it = model_adaptation_controllers_.find(feature);
+  if (it != model_adaptation_controllers_.end()) {
+    model_adaptation_controllers_.erase(it);
+  }
+}
+
 mojo::Remote<on_device_model::mojom::OnDeviceModel>&
-OnDeviceModelServiceController::BaseModelController::GetOrCreateRemote(
-    const on_device_model::ModelAssetPaths& model_paths) {
+OnDeviceModelServiceController::BaseModelController::GetOrCreateRemote() {
   if (remote_) {
     return remote_;
   }
   controller_->service_client_.AddPendingUsage();  // Warm up the service.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&on_device_model::LoadModelAssets, model_paths),
+      base::BindOnce(&on_device_model::LoadModelAssets, PopulateModelPaths()),
       base::BindOnce(
           [](base::WeakPtr<BaseModelController> self,
              mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel>
@@ -453,14 +460,9 @@ OnDeviceModelServiceController::BaseModelController::GetOrCreateRemote(
       &BaseModelController::OnDisconnect, base::Unretained(this)));
   // By default the model will be reset immediately when idle. If a feature is
   // going using the base model, the idle handler will be set explicitly there.
-  remote_.reset_on_idle_timeout(base::TimeDelta());
-  return remote_;
-}
-
-mojo::Remote<on_device_model::mojom::OnDeviceModel>&
-OnDeviceModelServiceController::BaseModelController::DirectUse() {
-  // The base model is being used by a feature directly, so extend idle timeout.
-  remote_.reset_on_idle_timeout(features::GetOnDeviceModelIdleTimeout());
+  remote_.reset_on_idle_timeout(has_direct_use_
+                                    ? features::GetOnDeviceModelIdleTimeout()
+                                    : base::TimeDelta());
   return remote_;
 }
 
@@ -509,8 +511,8 @@ void OnDeviceModelServiceController::BaseModelController::StartValidation() {
   }
 
   mojo::Remote<on_device_model::mojom::Session> session;
-  GetOrCreateRemote(PopulateModelPaths())
-      ->StartSession(session.BindNewPipeAndPassReceiver(), nullptr);
+  GetOrCreateRemote()->StartSession(session.BindNewPipeAndPassReceiver(),
+                                    nullptr);
   model_validator_ = std::make_unique<OnDeviceModelValidator>(
       model_metadata_->validation_config(),
       base::BindOnce(&BaseModelController::FinishValidation,
@@ -526,5 +528,8 @@ void OnDeviceModelServiceController::BaseModelController::FinishValidation(
   model_validator_ = nullptr;
   access_controller().OnValidationFinished(result);
 }
+
+ModelController::ModelController() = default;
+ModelController::~ModelController() = default;
 
 }  // namespace optimization_guide

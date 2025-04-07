@@ -46,6 +46,10 @@ struct COMPONENT_EXPORT(ON_DEVICE_MODEL_CPP) AdaptationAssetPaths {
   AdaptationAssetPaths(const AdaptationAssetPaths&);
   ~AdaptationAssetPaths();
 
+  bool operator==(const AdaptationAssetPaths& other) const {
+    return weights == other.weights;
+  }
+
   base::FilePath weights;
 };
 

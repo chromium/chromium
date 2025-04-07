@@ -36,6 +36,8 @@ class OnDeviceModelAdaptationMetadata {
   OnDeviceModelAdaptationMetadata(const OnDeviceModelAdaptationMetadata&);
   ~OnDeviceModelAdaptationMetadata();
 
+  bool operator==(const OnDeviceModelAdaptationMetadata& other) const;
+
   const on_device_model::AdaptationAssetPaths* asset_paths() const {
     return base::OptionalToPtr(asset_paths_);
   }

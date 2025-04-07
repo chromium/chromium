@@ -100,6 +100,11 @@ OnDeviceModelAdaptationMetadata::OnDeviceModelAdaptationMetadata(
     const OnDeviceModelAdaptationMetadata&) = default;
 OnDeviceModelAdaptationMetadata::~OnDeviceModelAdaptationMetadata() = default;
 
+bool OnDeviceModelAdaptationMetadata::operator==(
+    const OnDeviceModelAdaptationMetadata& other) const {
+  return version_ == other.version_ && asset_paths_ == other.asset_paths_;
+}
+
 OnDeviceModelAdaptationLoader::OnDeviceModelAdaptationLoader(
     ModelBasedCapabilityKey feature,
     OptimizationGuideModelProvider* model_provider,
