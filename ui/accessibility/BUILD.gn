@@ -453,8 +453,6 @@ test("accessibility_unittests") {
         "platform/browser_accessibility_manager_auralinux_unittest.cc",
       ]
 
-      deps += [ "//ui/base/glib" ]
-
       configs += [ "//build/config/linux/atk" ]
     }
   }

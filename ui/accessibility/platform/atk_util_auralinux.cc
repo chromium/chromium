@@ -27,7 +27,6 @@
 #include "ui/accessibility/platform/ax_platform.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/accessibility/platform/ax_platform_node_auralinux.h"
-#include "ui/base/glib/gsettings.h"
 
 namespace {
 
@@ -167,9 +166,18 @@ bool AtkUtilAuraLinux::ShouldEnableAccessibility() {
   }
 
   // Check enabled accessibility based on GSettings
-  auto settings = ui::GSettingsNew("org.gnome.desktop.interface");
-  if (settings) {
-    return g_settings_get_boolean(settings, "toolkit-accessibility");
+  GSettingsSchemaSource* source = g_settings_schema_source_get_default();
+  GSettingsSchema* gschema = nullptr;
+
+  gschema = g_settings_schema_source_lookup(
+      source, "org.gnome.desktop.interface", TRUE);
+  if (gschema) {
+    GSettings* settings = g_settings_new("org.gnome.desktop.interface");
+    const bool accessibilityEnabled =
+        g_settings_get_boolean(settings, "toolkit-accessibility");
+    g_settings_schema_unref(gschema);
+    g_object_unref(settings);
+    return accessibilityEnabled;
   }
 #endif
 

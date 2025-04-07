@@ -124,7 +124,6 @@ component("gtk") {
     "//ui/base",
     "//ui/base:buildflags",
     "//ui/base:ozone_buildflags",
-    "//ui/base/glib",
     "//ui/base/ime",
     "//ui/base/ime/linux",
     "//ui/color",

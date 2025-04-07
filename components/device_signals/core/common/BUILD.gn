@@ -42,7 +42,6 @@ static_library("common") {
   }
 
   if (is_linux) {
-    deps += [ "//ui/base/glib" ]
     sources += [ "linux/platform_utils_linux.cc" ]
   }
 
