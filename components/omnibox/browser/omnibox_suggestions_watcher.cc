@@ -18,10 +18,11 @@ void OmniboxSuggestionsWatcher::RemoveObserver(Observer* observer) {
 }
 
 void OmniboxSuggestionsWatcher::NotifySuggestionsReady(
-    extensions::api::omnibox::SendSuggestions::Params* suggestions,
+    const std::vector<ExtensionSuggestion>& suggestions,
+    const int request_id,
     const std::string& extension_id) {
   for (auto& observer : observers_)
-    observer.OnOmniboxSuggestionsReady(suggestions, extension_id);
+    observer.OnOmniboxSuggestionsReady(suggestions, request_id, extension_id);
 }
 
 void OmniboxSuggestionsWatcher::NotifyDefaultSuggestionChanged() {

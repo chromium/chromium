@@ -13,6 +13,7 @@
 #include "chrome/browser/extensions/api/omnibox/suggestion_parser.h"
 #include "chrome/common/extensions/api/omnibox.h"
 #include "components/omnibox/browser/autocomplete_match.h"
+#include "components/omnibox/browser/extension_suggestion.h"
 #include "components/search_engines/template_url_service.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_function.h"
@@ -106,8 +107,10 @@ class OmniboxSendSuggestionsFunction : public ExtensionFunction {
   // Notifies the omnibox that the suggestions have been prepared.
   void NotifySuggestionsReady();
 
-  // The suggestion parameters passed by the extension API call.
-  std::optional<api::omnibox::SendSuggestions::Params> params_;
+  // The parsed `params_.suggest_results`.
+  std::vector<ExtensionSuggestion> extension_suggestions_;
+
+  int request_id_;
 };
 
 class OmniboxAPI : public BrowserContextKeyedAPI,
@@ -217,7 +220,8 @@ void ApplyDefaultSuggestionForExtensionKeyword(
 // This function converts style information populated by the JSON schema
 // // compiler into an ACMatchClassifications object.
 ACMatchClassifications StyleTypesToACMatchClassifications(
-    const api::omnibox::SuggestResult &suggestion);
+    const std::vector<api::omnibox::MatchClassification>* description_styles,
+    const std::string& suggestion_description);
 
 }  // namespace extensions
 

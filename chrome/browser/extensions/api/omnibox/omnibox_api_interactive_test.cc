@@ -228,6 +228,7 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTest, MAYBE_SendSuggestions) {
   // should be to invoke with suggestions from the extension.
   const AutocompleteResult& result = autocomplete_controller->result();
   ASSERT_EQ(4U, result.size()) << AutocompleteResultAsString(result);
+  int first_match_relevance = result.match_at(0).relevance;
 
   // Invoke the keyword with what we typed.
   EXPECT_EQ(u"alpha", result.match_at(0).keyword);
@@ -247,6 +248,8 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTest, MAYBE_SendSuggestions) {
     std::u16string rich_description =
         u"Description with style: <match>, [dim], (url)";
     EXPECT_EQ(rich_description, result.match_at(1).contents);
+    EXPECT_EQ(first_match_relevance - 1, result.match_at(1).relevance);
+
     const ExpectedMatchComponents expected_components = {
         {u"Description with style: ", ACMatchClassification::NONE},
         {u"<match>", ACMatchClassification::MATCH},
@@ -270,6 +273,7 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTest, MAYBE_SendSuggestions) {
     EXPECT_EQ(AutocompleteProvider::TYPE_KEYWORD,
               result.match_at(2).provider->type());
     EXPECT_EQ(simple_description, result.match_at(2).contents);
+    EXPECT_EQ(first_match_relevance - 2, result.match_at(2).relevance);
     VerifyMatchComponents(expected_components, result.match_at(2));
 
     EXPECT_EQ(u"alpha", result.match_at(3).keyword);
@@ -277,6 +281,7 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTest, MAYBE_SendSuggestions) {
     EXPECT_EQ(AutocompleteProvider::TYPE_KEYWORD,
               result.match_at(3).provider->type());
     EXPECT_EQ(simple_description, result.match_at(3).contents);
+    EXPECT_EQ(first_match_relevance - 3, result.match_at(3).relevance);
     VerifyMatchComponents(expected_components, result.match_at(3));
   }
 }

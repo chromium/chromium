@@ -203,6 +203,8 @@ static_library("browser") {
     "enterprise_search_aggregator_provider.h",
     "enterprise_search_aggregator_suggestions_service.cc",
     "enterprise_search_aggregator_suggestions_service.h",
+    "extension_suggestion.cc",
+    "extension_suggestion.h",
     "favicon_cache.cc",
     "favicon_cache.h",
     "featured_search_provider.cc",

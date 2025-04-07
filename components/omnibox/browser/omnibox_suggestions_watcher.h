@@ -9,16 +9,7 @@
 #include "base/observer_list_types.h"
 #include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
-
-namespace extensions {
-namespace api {
-namespace omnibox {
-namespace SendSuggestions {
-struct Params;
-}  // namespace SendSuggestions
-}  // namespace omnibox
-}  // namespace api
-}  // namespace extensions
+#include "components/omnibox/browser/extension_suggestion.h"
 
 // This KeyedService is meant to observe omnibox suggestions and provide
 // notifications to observers on suggestion changes.
@@ -29,7 +20,8 @@ class OmniboxSuggestionsWatcher : public KeyedService {
   class Observer : public base::CheckedObserver {
    public:
     virtual void OnOmniboxSuggestionsReady(
-        extensions::api::omnibox::SendSuggestions::Params* suggestions,
+        const std::vector<ExtensionSuggestion>& suggestions,
+        const int request_id,
         const std::string& extension_id) {}
 
     virtual void OnOmniboxDefaultSuggestionChanged() {}
@@ -42,7 +34,8 @@ class OmniboxSuggestionsWatcher : public KeyedService {
       delete;
 
   void NotifySuggestionsReady(
-      extensions::api::omnibox::SendSuggestions::Params* suggestions,
+      const std::vector<ExtensionSuggestion>& suggestions,
+      const int request_id,
       const std::string& extension_id);
   void NotifyDefaultSuggestionChanged();
 

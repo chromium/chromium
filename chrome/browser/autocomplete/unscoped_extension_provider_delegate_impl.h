@@ -56,13 +56,14 @@ class UnscopedExtensionProviderDelegateImpl
   void OnOmniboxInputEntered() override;
   // OmniboxSuggestionsWatcher::Observer:
   void OnOmniboxSuggestionsReady(
-      omnibox_api::SendSuggestions::Params* suggestions,
+      const std::vector<ExtensionSuggestion>& suggestions,
+      const int request_id,
       const std::string& extension_id) override;
 
  private:
   // Creates an `AutocompleteMatch` for the suggestion.
   AutocompleteMatch CreateAutocompleteMatch(
-      const omnibox_api::SuggestResult& suggestion,
+      const ExtensionSuggestion& suggestion,
       int relevance,
       const std::string& extension_id);
 
