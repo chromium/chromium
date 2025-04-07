@@ -14,6 +14,8 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/strings/stringprintf.h"
+#include "base/syslog_logging.h"
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
@@ -44,7 +46,9 @@ void PasswordUpdateFlow::Start(std::unique_ptr<UserContext> user_context,
                                AuthErrorCallback error_callback) {
   DCHECK(user_context);
   DCHECK(user_context->GetAuthSessionId().empty());
-  LOGIN_LOG(USER) << "Attempting to update user password";
+  const std::string msg = "(LOGIN) Attempting to update user password";
+  SYSLOG(INFO) << msg;
+  LOGIN_LOG(USER) << msg;
 
   bool is_ephemeral_user =
       user_manager::UserManager::Get()->IsUserCryptohomeDataEphemeral(
@@ -67,8 +71,11 @@ void PasswordUpdateFlow::ContinueWithAuthSession(
   DCHECK(user_context);
 
   if (error.has_value()) {
-    LOGIN_LOG(ERROR) << "Error starting AuthSession for key migration "
-                     << error.value().get_cryptohome_code();
+    const std::string error_message = base::StringPrintf(
+        "(LOGIN) Error starting AuthSession for key migration %d",
+        error.value().get_cryptohome_code());
+    LOGIN_LOG(ERROR) << error_message;
+    SYSLOG(INFO) << error_message;
     std::move(error_callback).Run(std::move(user_context), error.value());
     return;
   }
