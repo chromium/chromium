@@ -568,6 +568,16 @@
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 			<key>Title</key>
+                        <string>Enable Reader Mode HTML override</string>
+			<key>Key</key>
+			<string>ForceReaderModeDebugHTMLOverride</string>
+			<key>DefaultValue</key>
+			<false/>
+                </dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
 			<string>Enable AI Prototyping Menu</string>
 			<key>Key</key>
 			<string>EnableAIPrototypingMenu</string>

@@ -40,6 +40,8 @@ NSString* const kForceExperienceForDeviceSwitcherExperimentalSettings =
     @"ForceExperienceForDeviceSwitcher";
 NSString* const kForceExperienceForShopperExperimentalSettings =
     @"ForceExperienceForShopper";
+NSString* const kForceReaderModeDebugHTMLOverride =
+    @"ForceReaderModeDebugHTMLOverride";
 NSString* const kSafetyCheckUpdateChromeStateOverride =
     @"SafetyCheckUpdateChromeStateOverride";
 NSString* const kSafetyCheckPasswordStateOverride =
@@ -353,6 +355,11 @@ bool AlwaysShowTheFirstPartyIncognitoUI() {
 bool EnableAIPrototypingMenu() {
   return [[NSUserDefaults standardUserDefaults]
       boolForKey:@"EnableAIPrototypingMenu"];
+}
+
+bool ShouldForceReaderModeDebugHTMLOverride() {
+  return [[NSUserDefaults standardUserDefaults]
+      boolForKey:@"ForceReaderModeDebugHTMLOverride"];
 }
 
 }  // namespace experimental_flags

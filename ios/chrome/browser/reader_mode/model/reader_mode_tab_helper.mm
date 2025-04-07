@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 
 #import "base/metrics/histogram_macros.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/time/time.h"
 #import "components/dom_distiller/core/extraction_utils.h"
@@ -14,6 +15,7 @@
 #import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_java_script_feature.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "services/metrics/public/cpp/ukm_builders.h"
@@ -21,23 +23,6 @@
 #import "third_party/dom_distiller_js/dom_distiller_json_converter.h"
 
 namespace {
-
-// Determine if the page load is eligible for triggering the reader mode
-// heuristic.
-bool CanTriggerReaderModeHeuristic() {
-  if (!base::FeatureList::IsEnabled(kEnableReaderModeDistillerHeuristic)) {
-    return false;
-  }
-  const double page_load_probability =
-      kReaderModeDistillerPageLoadProbability.Get();
-  if (page_load_probability <= 0.0 || page_load_probability > 1.0) {
-    // Invalid probability range. Disable the Reader Mode feature.
-    return false;
-  }
-
-  const double rand_double = base::RandDouble();
-  return rand_double < page_load_probability;
-}
 
 // Records the classification accuracy of the Reader Mode heuristic by
 // comparing the distillation of the page to the heuristic result.
@@ -146,6 +131,10 @@ void ReaderModeTabHelper::PageLoaded(
     web::PageLoadCompletionStatus load_completion_status) {
   CHECK_EQ(web_state, web_state_);
   if (load_completion_status == web::PageLoadCompletionStatus::SUCCESS) {
+    // Reset the overridden URL state if there is a new navigation.
+    if (web_state_->GetVisibleURL() != overridden_url_for_debug_) {
+      overridden_url_for_debug_ = GURL();
+    }
     // Guarantee that there is only one trigger heuristic running at a time.
     if (trigger_reader_mode_timer_.IsRunning()) {
       trigger_reader_mode_timer_.Stop();
@@ -233,6 +222,27 @@ void ReaderModeTabHelper::RecordReaderModeHeuristicLatency(
   }
 }
 
+bool ReaderModeTabHelper::CanTriggerReaderModeHeuristic() {
+  if (!base::FeatureList::IsEnabled(kEnableReaderModeDistillerHeuristic)) {
+    return false;
+  }
+  // If the Reader Mode HTML has already been overridden for this page, do not
+  // trigger the heuristic again.
+  if (experimental_flags::ShouldForceReaderModeDebugHTMLOverride() &&
+      overridden_url_for_debug_.spec() == web_state_->GetVisibleURL().spec()) {
+    return false;
+  }
+  const double page_load_probability =
+      kReaderModeDistillerPageLoadProbability.Get();
+  if (page_load_probability <= 0.0 || page_load_probability > 1.0) {
+    // Invalid probability range. Disable the Reader Mode feature.
+    return false;
+  }
+
+  const double rand_double = base::RandDouble();
+  return rand_double < page_load_probability;
+}
+
 void ReaderModeTabHelper::TriggerReaderModeHeuristic() {
   if (!CanTriggerReaderModeHeuristic()) {
     return;
@@ -282,6 +292,14 @@ void ReaderModeTabHelper::PageDistillationCompleted(
   RecordReaderModeHeuristicClassification(is_distillable_page,
                                           heuristic_result);
   RecordReaderModeForAmpDistill(is_distillable_page, web_state_);
+
+  if (is_distillable_page &&
+      experimental_flags::ShouldForceReaderModeDebugHTMLOverride()) {
+    overridden_url_for_debug_ = web_state_->GetVisibleURL();
+    web_state_->LoadSimulatedRequest(
+        web_state_->GetVisibleURL(),
+        base::SysUTF8ToNSString(distiller_result->distilled_content().html()));
+  }
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(ReaderModeTabHelper)

@@ -22,6 +22,7 @@ source_set("model") {
     "//components/ukm/ios:ukm_url_recorder",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/url",
+    "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
     "//services/metrics/public/cpp:ukm_builders",

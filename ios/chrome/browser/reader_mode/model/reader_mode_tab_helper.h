@@ -41,6 +41,10 @@ class ReaderModeTabHelper : public web::WebStateObserver,
  private:
   friend class web::WebStateUserData<ReaderModeTabHelper>;
 
+  // Determine if the page load is eligible for triggering the reader mode
+  // heuristic.
+  bool CanTriggerReaderModeHeuristic();
+
   // Trigger the heuristic to determine reader mode eligibility.
   void TriggerReaderModeHeuristic();
 
@@ -51,6 +55,7 @@ class ReaderModeTabHelper : public web::WebStateObserver,
 
   raw_ptr<web::WebState> web_state_ = nullptr;
   base::OneShotTimer trigger_reader_mode_timer_;
+  GURL overridden_url_for_debug_;
   base::WeakPtrFactory<ReaderModeTabHelper> weak_ptr_factory_{this};
 
   WEB_STATE_USER_DATA_KEY_DECL();
