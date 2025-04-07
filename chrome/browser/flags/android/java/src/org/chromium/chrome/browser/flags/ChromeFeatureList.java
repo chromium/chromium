@@ -714,10 +714,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sDrawKeyNativeEdgeToEdge =
             newCachedFlag(DRAW_KEY_NATIVE_EDGE_TO_EDGE, true);
     public static final CachedFlag sEdgeToEdgeBottomChin =
-            newCachedFlag(
-                    EDGE_TO_EDGE_BOTTOM_CHIN,
-                    /* defaultValue= */ false,
-                    /* defaultValueInTests= */ true);
+            newCachedFlag(EDGE_TO_EDGE_BOTTOM_CHIN, /* defaultValue= */ true);
     public static final CachedFlag sEdgeToEdgeEverywhere =
             newCachedFlag(
                     EDGE_TO_EDGE_EVERYWHERE,
@@ -994,7 +991,7 @@ public abstract class ChromeFeatureList {
     public static final MutableFlagWithSafeDefault sDynamicSafeAreaInsets =
             newMutableFlagWithSafeDefault(DYNAMIC_SAFE_AREA_INSETS, false);
     public static final MutableFlagWithSafeDefault sEdgeToEdgeSafeAreaConstraint =
-            newMutableFlagWithSafeDefault(EDGE_TO_EDGE_SAFE_AREA_CONSTRAINT, false);
+            newMutableFlagWithSafeDefault(EDGE_TO_EDGE_SAFE_AREA_CONSTRAINT, true);
     // Defaulted to true in native, but since it is being used as a kill switch set the default
     // value pre-native to false as it is safer if the feature needs to be killed via Finch config.
     public static final MutableFlagWithSafeDefault sEmptyTabListAnimationKillSwitch =
@@ -1269,7 +1266,7 @@ public abstract class ChromeFeatureList {
      */
     public static final StringCachedFeatureParam sEdgeToEdgeBottomChinOemMinVersions =
             newStringCachedFeatureParam(
-                    EDGE_TO_EDGE_BOTTOM_CHIN, "e2e_field_trial_oem_min_versions", "");
+                    EDGE_TO_EDGE_BOTTOM_CHIN, "e2e_field_trial_oem_min_versions", "34,34");
 
     public static final StringCachedFeatureParam sEdgeToEdgeEverywhereOemMinVersions =
             newStringCachedFeatureParam(
@@ -1281,7 +1278,8 @@ public abstract class ChromeFeatureList {
      * #sEdgeToEdgeBottomChinOemMinVersions}.
      */
     public static final StringCachedFeatureParam sEdgeToEdgeBottomChinOemList =
-            newStringCachedFeatureParam(EDGE_TO_EDGE_BOTTOM_CHIN, "e2e_field_trial_oem_list", "");
+            newStringCachedFeatureParam(
+                    EDGE_TO_EDGE_BOTTOM_CHIN, "e2e_field_trial_oem_list", "oppo,xiaomi");
 
     public static final StringCachedFeatureParam sEdgeToEdgeEverywhereOemList =
             newStringCachedFeatureParam(EDGE_TO_EDGE_EVERYWHERE, "e2e_field_trial_oem_list", "");
@@ -1458,7 +1456,7 @@ public abstract class ChromeFeatureList {
     public static final MutableBooleanParamWithSafeDefault
             sDisableBottomControlsStackerYOffsetDispatching =
                     sBottomBrowserControlsRefactor.newBooleanParam(
-                            "disable_bottom_controls_stacker_y_offset", true);
+                            "disable_bottom_controls_stacker_y_offset", false);
     public static final MutableIntParamWithSafeDefault sTabSwitcherColorBlendAnimateDurationMs =
             sTabSwitcherColorBlendAnimate.newIntParam("animation_duration_ms", 240);
     public static final MutableIntParamWithSafeDefault sTabSwitcherColorBlendAnimateInterpolator =

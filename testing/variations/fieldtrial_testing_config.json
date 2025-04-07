@@ -8828,51 +8828,6 @@
             ]
         }
     ],
-    "EdgeToEdgeAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_133",
-                    "params": {
-                        "disable_bottom_controls_stacker_y_offset": "false",
-                        "e2e_field_trial_oem_list": "oppo,xiaomi",
-                        "e2e_field_trial_oem_min_versions": "34,34",
-                        "scrollable_when_stacking": "true"
-                    },
-                    "enable_features": [
-                        "BottomBrowserControlsRefactor",
-                        "DrawCutoutEdgeToEdge",
-                        "DrawKeyNativeEdgeToEdge",
-                        "DynamicSafeAreaInsets",
-                        "DynamicSafeAreaInsetsOnScroll",
-                        "EdgeToEdgeBottomChin",
-                        "EdgeToEdgeSafeAreaConstraint",
-                        "EdgeToEdgeWebOptIn"
-                    ]
-                },
-                {
-                    "name": "Enabled_WebOptInAndKeyNativePages_131",
-                    "params": {
-                        "disable_bottom_controls_stacker_y_offset": "false",
-                        "e2e_field_trial_oem_list": "oppo,xiaomi",
-                        "e2e_field_trial_oem_min_versions": "34,34"
-                    },
-                    "enable_features": [
-                        "BottomBrowserControlsRefactor",
-                        "DrawCutoutEdgeToEdge",
-                        "DrawKeyNativeEdgeToEdge",
-                        "DynamicSafeAreaInsets",
-                        "DynamicSafeAreaInsetsOnScroll",
-                        "EdgeToEdgeBottomChin",
-                        "EdgeToEdgeWebOptIn"
-                    ]
-                }
-            ]
-        }
-    ],
     "EdgeToEdgeEverywhere": [
         {
             "platforms": [

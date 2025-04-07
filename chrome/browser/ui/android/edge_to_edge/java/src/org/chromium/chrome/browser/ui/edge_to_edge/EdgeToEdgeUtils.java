@@ -142,7 +142,7 @@ public class EdgeToEdgeUtils {
                 && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                         ChromeFeatureList.EDGE_TO_EDGE_SAFE_AREA_CONSTRAINT,
                         PARAM_SAFE_AREA_CONSTRAINT_SCROLLABLE_WHEN_STACKING,
-                        false);
+                        true);
     }
 
     /**

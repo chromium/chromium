@@ -1789,11 +1789,13 @@
     // controls visibility.
     {
       name: "DynamicSafeAreaInsets",
+      status: {"Android": "stable"},
     },
     // Dynamically change the safe area insets as browser controls scrolls.
     {
       name: "DynamicSafeAreaInsetsOnScroll",
-      depends_on: ["DynamicSafeAreaInsets"]
+      depends_on: ["DynamicSafeAreaInsets"],
+      status: {"Android": "stable"},
     },
     {
       // Fix for https://crbug.com/40821646. When enabled, it prevents
