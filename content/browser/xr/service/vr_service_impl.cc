@@ -28,6 +28,7 @@
 #include "content/browser/xr/webxr_internals/webxr_internals_handler_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/permission_request_description.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -577,8 +578,10 @@ void VRServiceImpl::DoRequestPermissions(
 
   permission_controller->RequestPermissionsFromCurrentDocument(
       render_frame_host_,
-      PermissionRequestDescription(request_permissions,
-                                   /*user_gesture=*/true),
+      PermissionRequestDescription(
+          PermissionDescriptorUtil::
+              CreatePermissionDescriptorForPermissionTypes(request_permissions),
+          /*user_gesture=*/true),
       std::move(result_callback));
 }
 

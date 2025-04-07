@@ -14,7 +14,6 @@
 #include "content/public/browser/disallow_activation_reason.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_controller_delegate.h"
-#include "content/public/browser/permission_request_description.h"
 #include "content/public/browser/permission_result.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -135,7 +134,7 @@ PermissionResult VerifyContextOfCurrentDocument(
 }
 
 bool IsRequestAllowed(
-    const std::vector<blink::PermissionType>& permissions,
+    const std::vector<blink::mojom::PermissionDescriptorPtr>& permissions,
     RenderFrameHost* render_frame_host,
     base::OnceCallback<void(const std::vector<PermissionStatus>&)>& callback) {
   if (!render_frame_host) {
@@ -156,16 +155,18 @@ bool IsRequestAllowed(
 
   // Verify each permission independently to generate proper warning messages.
   bool is_permission_allowed = true;
-  for (PermissionType permission : permissions) {
+  for (const auto& permission : permissions) {
+    PermissionType permission_type =
+        blink::PermissionDescriptorToPermissionType(permission);
     PermissionResult result =
-        VerifyContextOfCurrentDocument(permission, render_frame_host);
+        VerifyContextOfCurrentDocument(permission_type, render_frame_host);
 
     if (result.status == PermissionStatus::DENIED) {
       switch (result.source) {
         case PermissionStatusSource::FENCED_FRAME:
           render_frame_host->GetOutermostMainFrame()->AddMessageToConsole(
               blink::mojom::ConsoleMessageLevel::kWarning,
-              blink::GetPermissionString(permission) +
+              blink::GetPermissionString(permission_type) +
                   " permission has been blocked because it was requested "
                   "inside a fenced frame. Fenced frames don't currently "
                   "support permission requests.");
@@ -174,7 +175,7 @@ bool IsRequestAllowed(
         case PermissionStatusSource::FEATURE_POLICY:
           render_frame_host->GetOutermostMainFrame()->AddMessageToConsole(
               blink::mojom::ConsoleMessageLevel::kWarning,
-              blink::GetPermissionString(permission) +
+              blink::GetPermissionString(permission_type) +
                   " permission has been blocked because of a permissions "
                   "policy applied to the current document. See "
                   "https://goo.gl/EuHzyv for more details.");
@@ -253,14 +254,16 @@ std::vector<std::optional<blink::mojom::PermissionStatus>> OverridePermissions(
     PermissionRequestDescription& description,
     RenderFrameHost* render_frame_host,
     const PermissionOverrides& permission_overrides) {
-  std::vector<blink::PermissionType> permissions_without_overrides;
+  std::vector<blink::mojom::PermissionDescriptorPtr>
+      permissions_without_overrides;
   std::vector<std::optional<blink::mojom::PermissionStatus>> results;
   const url::Origin& origin = render_frame_host->GetLastCommittedOrigin();
   for (const auto& permission : description.permissions) {
     std::optional<blink::mojom::PermissionStatus> override_status =
-        permission_overrides.Get(origin, permission);
+        permission_overrides.Get(
+            origin, blink::PermissionDescriptorToPermissionType(permission));
     if (!override_status) {
-      permissions_without_overrides.push_back(permission);
+      permissions_without_overrides.push_back(permission.Clone());
     }
     results.push_back(override_status);
   }
@@ -428,8 +431,11 @@ void PermissionControllerImpl::RequestPermissions(
     return;
   }
 
-  for (PermissionType permission : request_description.permissions) {
-    NotifySchedulerAboutPermissionRequest(render_frame_host, permission);
+  for (const blink::mojom::PermissionDescriptorPtr& permission :
+       request_description.permissions) {
+    NotifySchedulerAboutPermissionRequest(
+        render_frame_host,
+        blink::PermissionDescriptorToPermissionType(permission));
   }
 
   std::vector<std::optional<blink::mojom::PermissionStatus>> override_results =
@@ -475,8 +481,10 @@ void PermissionControllerImpl::RequestPermissionsFromCurrentDocument(
     return;
   }
 
-  for (PermissionType permission : request_description.permissions) {
-    NotifySchedulerAboutPermissionRequest(render_frame_host, permission);
+  for (const auto& permission : request_description.permissions) {
+    NotifySchedulerAboutPermissionRequest(
+        render_frame_host,
+        blink::PermissionDescriptorToPermissionType(permission));
   }
 
   request_description.requesting_origin =

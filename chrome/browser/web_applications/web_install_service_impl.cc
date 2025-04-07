@@ -18,6 +18,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/permission_request_description.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
@@ -146,7 +147,6 @@ void WebInstallServiceImpl::RequestWebInstallPermission(
   }
 
   // Check if the permission status is already set.
-  std::vector<blink::PermissionType> permission_requests;
   content::PermissionResult permission_status =
       permission_controller->GetPermissionResultForCurrentDocument(
           blink::PermissionType::WEB_APP_INSTALLATION, &render_frame_host());
@@ -162,7 +162,6 @@ void WebInstallServiceImpl::RequestWebInstallPermission(
     case PermissionStatus::ASK:
       break;
   }
-  permission_requests.push_back(blink::PermissionType::WEB_APP_INSTALLATION);
 
   GURL requesting_origin =
       render_frame_host().GetLastCommittedOrigin().GetURL();
@@ -170,7 +169,10 @@ void WebInstallServiceImpl::RequestWebInstallPermission(
   permission_controller->RequestPermissionsFromCurrentDocument(
       &render_frame_host(),
       content::PermissionRequestDescription(
-          permission_requests, /*user_gesture=*/true, requesting_origin),
+          content::PermissionDescriptorUtil::
+              CreatePermissionDescriptorForPermissionType(
+                  blink::PermissionType::WEB_APP_INSTALLATION),
+          /*user_gesture=*/true, requesting_origin),
       std::move(callback));
 }
 

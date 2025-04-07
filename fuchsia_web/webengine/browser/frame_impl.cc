@@ -44,6 +44,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host.h"
@@ -1469,11 +1470,13 @@ void FrameImpl::RequestMediaAccessPermission(
     content::MediaResponseCallback callback) {
   DCHECK_EQ(web_contents_.get(), web_contents);
 
-  std::vector<blink::PermissionType> permissions;
+  std::vector<blink::mojom::PermissionDescriptorPtr> permissions;
 
   if (request.audio_type ==
       blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE) {
-    permissions.push_back(blink::PermissionType::AUDIO_CAPTURE);
+    permissions.push_back(content::PermissionDescriptorUtil::
+                              CreatePermissionDescriptorForPermissionType(
+                                  blink::PermissionType::AUDIO_CAPTURE));
   } else if (request.audio_type != blink::mojom::MediaStreamType::NO_SERVICE) {
     std::move(callback).Run(
         blink::mojom::StreamDevicesSet(),
@@ -1483,7 +1486,9 @@ void FrameImpl::RequestMediaAccessPermission(
 
   if (request.video_type ==
       blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE) {
-    permissions.push_back(blink::PermissionType::VIDEO_CAPTURE);
+    permissions.push_back(content::PermissionDescriptorUtil::
+                              CreatePermissionDescriptorForPermissionType(
+                                  blink::PermissionType::VIDEO_CAPTURE));
   } else if (request.video_type != blink::mojom::MediaStreamType::NO_SERVICE) {
     std::move(callback).Run(
         blink::mojom::StreamDevicesSet(),
@@ -1512,10 +1517,10 @@ void FrameImpl::RequestMediaAccessPermission(
   content::PermissionController* permission_controller =
       web_contents_->GetBrowserContext()->GetPermissionController();
   DCHECK(permission_controller);
-
   permission_controller->RequestPermissionsFromCurrentDocument(
       render_frame_host,
-      content::PermissionRequestDescription(permissions, request.user_gesture),
+      content::PermissionRequestDescription(std::move(permissions),
+                                            request.user_gesture),
       base::BindOnce(&HandleMediaPermissionsRequestResult, request,
                      std::move(callback)));
 }

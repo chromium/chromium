@@ -116,6 +116,7 @@
 #include "content/public/browser/login_delegate.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/permission_result.h"
 #include "content/public/browser/private_aggregation_data_model.h"
 #include "content/public/browser/private_network_device_delegate.h"
@@ -2261,7 +2262,9 @@ void StoragePartitionImpl::OnLocalNetworkAccessPermissionRequired(
     permission_controller->RequestPermissionFromCurrentDocument(
         rfh,
         PermissionRequestDescription(
-            blink::PermissionType::LOCAL_NETWORK_ACCESS),
+            content::PermissionDescriptorUtil::
+                CreatePermissionDescriptorForPermissionType(
+                    blink::PermissionType::LOCAL_NETWORK_ACCESS)),
         base::BindOnce(
             [](OnLocalNetworkAccessPermissionRequiredCallback cb,
                PermissionStatus status) {

@@ -67,14 +67,14 @@ class PermissionManager::PendingRequest {
  public:
   PendingRequest(
       content::RenderFrameHost* render_frame_host,
-      const std::vector<ContentSettingsType>& permissions,
+      std::vector<blink::mojom::PermissionDescriptorPtr> permissions,
       base::OnceCallback<void(const std::vector<ContentSetting>&)> callback)
       : render_process_id_(render_frame_host->GetProcess()->GetDeprecatedID()),
         render_frame_id_(render_frame_host->GetRoutingID()),
         callback_(std::move(callback)),
-        permissions_(permissions),
+        remaining_results_(permissions.size()),
         results_(permissions.size(), CONTENT_SETTING_BLOCK),
-        remaining_results_(permissions.size()) {}
+        permissions_(std::move(permissions)) {}
 
   void SetContentSetting(int permission_id, ContentSetting content_setting) {
     DCHECK(!IsComplete());
@@ -92,7 +92,10 @@ class PermissionManager::PendingRequest {
     return std::move(callback_);
   }
 
-  std::vector<ContentSettingsType> permissions() const { return permissions_; }
+  const std::vector<blink::mojom::PermissionDescriptorPtr>& permissions()
+      const {
+    return permissions_;
+  }
 
   std::vector<ContentSetting> results() const { return results_; }
 
@@ -100,9 +103,9 @@ class PermissionManager::PendingRequest {
   int render_process_id_;
   int render_frame_id_;
   base::OnceCallback<void(const std::vector<ContentSetting>&)> callback_;
-  std::vector<ContentSettingsType> permissions_;
-  std::vector<ContentSetting> results_;
   size_t remaining_results_;
+  std::vector<ContentSetting> results_;
+  std::vector<blink::mojom::PermissionDescriptorPtr> permissions_;
 };
 
 // Object to track the callback passed to
@@ -225,31 +228,35 @@ void PermissionManager::RequestPermissionsInternal(
     const content::PermissionRequestDescription& request_description,
     base::OnceCallback<void(const std::vector<PermissionStatus>&)>
         permission_status_callback) {
-  std::vector<ContentSettingsType> permissions;
-  std::ranges::transform(request_description.permissions,
-                         back_inserter(permissions),
-                         PermissionUtil::PermissionTypeToContentSettingsType);
+  std::vector<blink::mojom::PermissionDescriptorPtr> permissions;
+  permissions.reserve(request_description.permissions.size());
+  for (const auto& permission : request_description.permissions) {
+    permissions.push_back(permission.Clone());
+  }
 
   base::OnceCallback<void(const std::vector<ContentSetting>&)> callback =
       base::BindOnce(&PermissionStatusVectorCallbackWrapper,
                      std::move(permission_status_callback));
 
-  if (permissions.empty()) {
+  if (request_description.permissions.empty()) {
     std::move(callback).Run(std::vector<ContentSetting>());
     return;
   }
 
   auto request_local_id = request_local_id_generator_.GenerateNextId();
   pending_requests_.AddWithID(
-      std::make_unique<PendingRequest>(render_frame_host, permissions,
-                                       std::move(callback)),
+      std::make_unique<PendingRequest>(
+          render_frame_host, std::move(permissions), std::move(callback)),
       request_local_id);
 
   const PermissionRequestID request_id(render_frame_host, request_local_id);
   const GURL embedding_origin = GetEmbeddingOrigin(
       render_frame_host, request_description.requesting_origin);
-  for (size_t i = 0; i < permissions.size(); ++i) {
-    const ContentSettingsType permission = permissions[i];
+  for (size_t i = 0; i < request_description.permissions.size(); ++i) {
+    const ContentSettingsType permission =
+        PermissionUtil::PermissionTypeToContentSettingsType(
+            blink::PermissionDescriptorToPermissionType(
+                request_description.permissions[i]));
     const GURL canonical_requesting_origin = PermissionUtil::GetCanonicalOrigin(
         permission, request_description.requesting_origin, embedding_origin);
 

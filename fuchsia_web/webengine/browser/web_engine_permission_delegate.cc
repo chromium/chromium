@@ -26,7 +26,8 @@ void WebEnginePermissionDelegate::RequestPermissions(
   FrameImpl* frame = FrameImpl::FromRenderFrameHost(render_frame_host);
   DCHECK(frame);
   frame->permission_controller()->RequestPermissions(
-      request_description.permissions,
+      blink::PermissionDescriptorToPermissionTypes(
+          request_description.permissions),
       url::Origin::Create(request_description.requesting_origin),
       std::move(callback));
 }
@@ -48,9 +49,9 @@ void WebEnginePermissionDelegate::RequestPermissionsFromCurrentDocument(
   FrameImpl* frame = FrameImpl::FromRenderFrameHost(render_frame_host);
   DCHECK(frame);
   frame->permission_controller()->RequestPermissions(
-      request_description.permissions,
-      render_frame_host->GetLastCommittedOrigin(),
-      std::move(callback));
+      blink::PermissionDescriptorToPermissionTypes(
+          request_description.permissions),
+      render_frame_host->GetLastCommittedOrigin(), std::move(callback));
 }
 
 blink::mojom::PermissionStatus WebEnginePermissionDelegate::GetPermissionStatus(

@@ -23,6 +23,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/permission_request_description.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_client.h"
@@ -125,8 +126,11 @@ void FontAccessManager::EnumerateLocalFonts(
 
   permission_controller->RequestPermissionFromCurrentDocument(
       rfh,
-      PermissionRequestDescription(blink::PermissionType::LOCAL_FONTS,
-                                   /*user_gesture=*/true),
+      PermissionRequestDescription(
+          content::PermissionDescriptorUtil::
+              CreatePermissionDescriptorForPermissionType(
+                  blink::PermissionType::LOCAL_FONTS),
+          /*user_gesture=*/true),
       base::BindOnce(&FontAccessManager::DidRequestPermission,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }

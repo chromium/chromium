@@ -81,7 +81,6 @@ class PermissionServiceImpl : public blink::mojom::PermissionService {
 
   void RequestPermissionsInternal(
       BrowserContext* browser_context,
-      const std::vector<blink::mojom::PermissionDescriptorPtr>& permissions,
       PermissionRequestDescription request_description,
       RequestPermissionsCallback callback);
 

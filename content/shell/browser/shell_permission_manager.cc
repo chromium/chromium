@@ -103,9 +103,11 @@ void ShellPermissionManager::RequestPermissions(
   }
   std::vector<blink::mojom::PermissionStatus> result;
   for (const auto& permission : request_description.permissions) {
-    result.push_back(IsAllowlistedPermissionType(permission)
-                         ? blink::mojom::PermissionStatus::GRANTED
-                         : blink::mojom::PermissionStatus::DENIED);
+    result.push_back(
+        IsAllowlistedPermissionType(
+            blink::PermissionDescriptorToPermissionType(permission))
+            ? blink::mojom::PermissionStatus::GRANTED
+            : blink::mojom::PermissionStatus::DENIED);
   }
   std::move(callback).Run(result);
 }
@@ -129,9 +131,11 @@ void ShellPermissionManager::RequestPermissionsFromCurrentDocument(
   }
   std::vector<blink::mojom::PermissionStatus> result;
   for (const auto& permission : request_description.permissions) {
-    result.push_back(IsAllowlistedPermissionType(permission)
-                         ? blink::mojom::PermissionStatus::GRANTED
-                         : blink::mojom::PermissionStatus::DENIED);
+    result.push_back(
+        IsAllowlistedPermissionType(
+            blink::PermissionDescriptorToPermissionType(permission))
+            ? blink::mojom::PermissionStatus::GRANTED
+            : blink::mojom::PermissionStatus::DENIED);
   }
   std::move(callback).Run(result);
 }

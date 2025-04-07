@@ -71,7 +71,7 @@ const url::Origin& PermissionUtil::ExtractDomainOverride(
 }
 
 bool PermissionUtil::ValidateDomainOverride(
-    const std::vector<blink::PermissionType>& types,
+    const std::vector<blink::mojom::PermissionDescriptorPtr>& types,
     RenderFrameHost* rfh,
     const blink::mojom::PermissionDescriptorPtr& descriptor) {
   if (types.size() > 1) {

@@ -12,6 +12,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_features.h"
 #include "media/base/media_switches.h"
@@ -93,7 +94,10 @@ void CheckPermissionOnUIThread(
   permission_controller->RequestPermissionFromCurrentDocument(
       capturer_rfhi,
       PermissionRequestDescription(
-          blink::PermissionType::CAPTURED_SURFACE_CONTROL, user_gesture),
+          content::PermissionDescriptorUtil::
+              CreatePermissionDescriptorForPermissionType(
+                  blink::PermissionType::CAPTURED_SURFACE_CONTROL),
+          user_gesture),
       WrapCallback(std::move(callback)));
 }
 

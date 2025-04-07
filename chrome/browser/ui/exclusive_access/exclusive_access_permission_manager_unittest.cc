@@ -9,7 +9,6 @@
 #include "base/time/time.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "content/public/browser/permission_controller.h"
-#include "content/public/browser/permission_request_description.h"
 #include "content/public/browser/permission_result.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -64,7 +63,8 @@ class ExclusiveAccessPermissionManagerTest : public BrowserWithTestWindowTest {
                 base::OnceCallback<void(
                     const std::vector<blink::mojom::PermissionStatus>&)>
                     callback) {
-              switch (description.permissions.at(0)) {
+              switch (blink::PermissionDescriptorToPermissionType(
+                  description.permissions.at(0))) {
                 case blink::PermissionType::POINTER_LOCK:
                   if (pointer_lock_response) {
                     std::move(callback).Run({*pointer_lock_response});

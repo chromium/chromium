@@ -14,6 +14,7 @@
 #include "components/permissions/permission_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/permission_result.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -90,7 +91,7 @@ void MediaStreamDevicesController::RequestPermissions(
       new MediaStreamDevicesController(web_contents, enumerator, request,
                                        std::move(callback)));
 
-  std::vector<blink::PermissionType> permission_types;
+  std::vector<blink::mojom::PermissionDescriptorPtr> permission_types;
 
   content::PermissionController* permission_controller =
       web_contents->GetBrowserContext()->GetPermissionController();
@@ -114,7 +115,9 @@ void MediaStreamDevicesController::RequestPermissions(
       return;
     }
 
-    permission_types.push_back(blink::PermissionType::AUDIO_CAPTURE);
+    permission_types.push_back(content::PermissionDescriptorUtil::
+                                   CreatePermissionDescriptorForPermissionType(
+                                       blink::PermissionType::AUDIO_CAPTURE));
     requested_audio_capture_device_ids = request.requested_audio_device_ids;
   }
   if (controller->ShouldRequestVideo()) {
@@ -133,7 +136,9 @@ void MediaStreamDevicesController::RequestPermissions(
       return;
     }
 
-    permission_types.push_back(blink::PermissionType::VIDEO_CAPTURE);
+    permission_types.push_back(content::PermissionDescriptorUtil::
+                                   CreatePermissionDescriptorForPermissionType(
+                                       blink::PermissionType::VIDEO_CAPTURE));
     requested_video_capture_device_ids = request.requested_video_device_ids;
 
     bool has_pan_tilt_zoom_camera = controller->HasAvailableDevices(
@@ -154,12 +159,15 @@ void MediaStreamDevicesController::RequestPermissions(
         return;
       }
 
-      permission_types.push_back(blink::PermissionType::CAMERA_PAN_TILT_ZOOM);
+      permission_types.push_back(
+          content::PermissionDescriptorUtil::
+              CreatePermissionDescriptorForPermissionType(
+                  blink::PermissionType::CAMERA_PAN_TILT_ZOOM));
     }
   }
 
   content::PermissionRequestDescription permission_request_description{
-      permission_types, request.user_gesture};
+      std::move(permission_types), request.user_gesture};
   permission_request_description.requested_audio_capture_device_ids =
       requested_audio_capture_device_ids;
   permission_request_description.requested_video_capture_device_ids =

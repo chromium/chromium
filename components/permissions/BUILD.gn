@@ -109,7 +109,6 @@ source_set("permissions") {
     "permission_usage_session.cc",
     "permission_usage_session.h",
     "permission_util.cc",
-    "permission_util.h",
     "permissions_client.cc",
     "permissions_client.h",
     "pref_names.cc",

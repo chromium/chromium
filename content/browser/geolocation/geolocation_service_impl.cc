@@ -10,6 +10,7 @@
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/permission_request_description.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -45,8 +46,11 @@ void GeolocationServiceImplContext::RequestPermission(
       ->GetPermissionController()
       ->RequestPermissionFromCurrentDocument(
           render_frame_host,
-          PermissionRequestDescription(blink::PermissionType::GEOLOCATION,
-                                       user_gesture),
+          PermissionRequestDescription(
+              content::PermissionDescriptorUtil::
+                  CreatePermissionDescriptorForPermissionType(
+                      blink::PermissionType::GEOLOCATION),
+              user_gesture),
           base::BindOnce(&GeolocationServiceImplContext::HandlePermissionStatus,
                          weak_factory_.GetWeakPtr(), std::move(callback)));
 }

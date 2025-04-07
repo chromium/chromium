@@ -17,7 +17,8 @@ void TestFontAccessPermissionManager::RequestPermissionsFromCurrentDocument(
     const PermissionRequestDescription& request_description,
     base::OnceCallback<void(const std::vector<blink::mojom::PermissionStatus>&)>
         callback) {
-  EXPECT_EQ(request_description.permissions[0],
+  EXPECT_EQ(blink::PermissionDescriptorToPermissionType(
+                request_description.permissions[0]),
             blink::PermissionType::LOCAL_FONTS);
   EXPECT_TRUE(request_description.user_gesture);
   request_callback_.Run(std::move(callback));

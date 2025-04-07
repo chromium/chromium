@@ -263,7 +263,8 @@ void AwPermissionManager::RequestPermissions(
     base::OnceCallback<void(const std::vector<PermissionStatus>&)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto const& permissions = request_description.permissions;
+  auto const& permissions = blink::PermissionDescriptorToPermissionTypes(
+      request_description.permissions);
   if (permissions.empty()) {
     std::move(callback).Run(std::vector<PermissionStatus>());
     return;

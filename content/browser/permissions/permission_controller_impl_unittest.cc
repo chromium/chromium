@@ -11,6 +11,7 @@
 #include "base/test/mock_callback.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_controller_delegate.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_permission_manager.h"
 #include "content/public/test/navigation_simulator.h"
@@ -280,19 +281,24 @@ TEST_F(PermissionControllerImplTest,
       if (test_case.expect_death) {
         // Death tests cannot track these expectations but arguments should be
         // forwarded to ensure death occurs.
-        ON_CALL(*mock_manager(), RequestPermissionsFromCurrentDocument(
-                                     rfh,
-                                     PermissionRequestDescription(
-                                         test_case.delegated_permissions,
-                                         /*user_gesture*/ true, GURL(kTestUrl)),
-                                     testing::_))
+        ON_CALL(*mock_manager(),
+                RequestPermissionsFromCurrentDocument(
+                    rfh,
+                    PermissionRequestDescription(
+                        content::PermissionDescriptorUtil::
+                            CreatePermissionDescriptorForPermissionTypes(
+                                test_case.delegated_permissions),
+                        /*user_gesture*/ true, GURL(kTestUrl)),
+                    testing::_))
             .WillByDefault(testing::Invoke(forward_callbacks));
       } else {
         EXPECT_CALL(*mock_manager(),
                     RequestPermissionsFromCurrentDocument(
                         rfh,
                         PermissionRequestDescription(
-                            test_case.delegated_permissions,
+                            content::PermissionDescriptorUtil::
+                                CreatePermissionDescriptorForPermissionTypes(
+                                    test_case.delegated_permissions),
                             /*user_gesture*/ true, GURL(kTestUrl)),
                         testing::_))
             .WillOnce(testing::Invoke(forward_callbacks));
@@ -309,8 +315,11 @@ TEST_F(PermissionControllerImplTest,
       EXPECT_DEATH_IF_SUPPORTED(
           PermissionControllerRequestPermissionsFromCurrentDocument(
               rfh,
-              PermissionRequestDescription(kTypesToQuery,
-                                           /*user_gesture*/ true),
+              PermissionRequestDescription(
+                  content::PermissionDescriptorUtil::
+                      CreatePermissionDescriptorForPermissionTypes(
+                          kTypesToQuery),
+                  /*user_gesture*/ true),
               callback.Get()),
           "");
     } else {
@@ -319,7 +328,10 @@ TEST_F(PermissionControllerImplTest,
                   Run(testing::ElementsAreArray(test_case.expected_results)));
       PermissionControllerRequestPermissionsFromCurrentDocument(
           rfh,
-          PermissionRequestDescription(kTypesToQuery, /*user_gesture*/ true),
+          PermissionRequestDescription(
+              content::PermissionDescriptorUtil::
+                  CreatePermissionDescriptorForPermissionTypes(kTypesToQuery),
+              /*user_gesture*/ true),
           callback.Get());
     }
   }
@@ -368,20 +380,25 @@ TEST_F(PermissionControllerImplTest,
         // Death tests cannot track these expectations but arguments should be
         // forwarded to ensure death occurs.
         ON_CALL(*mock_manager(),
-                RequestPermissions(rfh,
-                                   PermissionRequestDescription(
-                                       test_case.delegated_permissions,
-                                       /*user_gesture*/ true, GURL(kTestUrl)),
-                                   testing::_))
+                RequestPermissions(
+                    rfh,
+                    PermissionRequestDescription(
+                        content::PermissionDescriptorUtil::
+                            CreatePermissionDescriptorForPermissionTypes(
+                                test_case.delegated_permissions),
+                        /*user_gesture*/ true, GURL(kTestUrl)),
+                    testing::_))
             .WillByDefault(testing::Invoke(forward_callbacks));
       } else {
-        EXPECT_CALL(
-            *mock_manager(),
-            RequestPermissions(rfh,
-                               PermissionRequestDescription(
-                                   test_case.delegated_permissions,
-                                   /*user_gesture*/ true, GURL(kTestUrl)),
-                               testing::_))
+        EXPECT_CALL(*mock_manager(),
+                    RequestPermissions(
+                        rfh,
+                        PermissionRequestDescription(
+                            content::PermissionDescriptorUtil::
+                                CreatePermissionDescriptorForPermissionTypes(
+                                    test_case.delegated_permissions),
+                            /*user_gesture*/ true, GURL(kTestUrl)),
+                        testing::_))
             .WillOnce(testing::Invoke(forward_callbacks));
       }
     } else {
@@ -396,8 +413,11 @@ TEST_F(PermissionControllerImplTest,
       EXPECT_DEATH_IF_SUPPORTED(
           PermissionControllerRequestPermissions(
               rfh,
-              PermissionRequestDescription(kTypesToQuery, /*user_gesture*/ true,
-                                           GURL(kTestUrl)),
+              PermissionRequestDescription(
+                  content::PermissionDescriptorUtil::
+                      CreatePermissionDescriptorForPermissionTypes(
+                          kTypesToQuery),
+                  /*user_gesture*/ true, GURL(kTestUrl)),
               callback.Get()),
           "");
     } else {
@@ -406,8 +426,10 @@ TEST_F(PermissionControllerImplTest,
                   Run(testing::ElementsAreArray(test_case.expected_results)));
       PermissionControllerRequestPermissions(
           rfh,
-          PermissionRequestDescription(kTypesToQuery, /*user_gesture*/ true,
-                                       GURL(kTestUrl)),
+          PermissionRequestDescription(
+              content::PermissionDescriptorUtil::
+                  CreatePermissionDescriptorForPermissionTypes(kTypesToQuery),
+              /*user_gesture*/ true, GURL(kTestUrl)),
           callback.Get());
     }
   }

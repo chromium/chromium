@@ -27,6 +27,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_host.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/permission_request_description.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_switches.h"
@@ -346,7 +347,10 @@ void PushMessagingManager::Register(PushMessagingManager::RegisterData data) {
               ->RequestPermissionFromCurrentDocument(
                   render_frame_host_impl,
                   PermissionRequestDescription(
-                      blink::PermissionType::NOTIFICATIONS, user_gesture),
+                      PermissionDescriptorUtil::
+                          CreatePermissionDescriptorForPermissionType(
+                              blink::PermissionType::NOTIFICATIONS),
+                      user_gesture),
                   base::BindOnce(
                       &PushMessagingManager::DidRequestPermissionInIncognito,
                       AsWeakPtr(), std::move(data)));

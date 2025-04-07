@@ -55,6 +55,7 @@
 #include "content/public/browser/child_process_host.h"
 #include "content/public/browser/devtools_background_services_context.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/permission_result.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -817,7 +818,10 @@ void PushMessagingServiceImpl::SubscribeFromDocument(
   profile_->GetPermissionController()->RequestPermissionFromCurrentDocument(
       render_frame_host,
       content::PermissionRequestDescription(
-          blink::PermissionType::NOTIFICATIONS, user_gesture),
+          content::PermissionDescriptorUtil::
+              CreatePermissionDescriptorForPermissionType(
+                  blink::PermissionType::NOTIFICATIONS),
+          user_gesture),
       base::BindOnce(&PushMessagingServiceImpl::DoSubscribe,
                      weak_factory_.GetWeakPtr(), std::move(app_identifier),
                      std::move(options), std::move(callback), render_process_id,
