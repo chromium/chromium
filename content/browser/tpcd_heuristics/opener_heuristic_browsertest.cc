@@ -53,6 +53,7 @@
 #include "services/network/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/switches.h"
@@ -133,26 +134,6 @@ class PopupObserver : public WebContentsObserver {
 
   const WindowOpenDisposition open_disposition_;
   raw_ptr<WebContents> popup_ = nullptr;
-  base::RunLoop run_loop_;
-};
-
-// Waits for a navigation in the primary main frame to finish.
-class NavigationFinishObserver : public WebContentsObserver {
- public:
-  explicit NavigationFinishObserver(WebContents* web_contents)
-      : WebContentsObserver(web_contents) {}
-
-  void Wait() { run_loop_.Run(); }
-
- private:
-  // WebContentsObserver overrides:
-  void DidFinishNavigation(NavigationHandle* navigation_handle) override {
-    if (!navigation_handle->IsInPrimaryMainFrame()) {
-      return;
-    }
-    run_loop_.Quit();
-  }
-
   base::RunLoop run_loop_;
 };
 
@@ -250,8 +231,15 @@ class OpenerHeuristicBrowserTest : public ContentBrowserTest,
     dips->storage()->FlushPostedTasksForTesting();
   }
 
-  // Open a popup window with the given URL and return its WebContents.
+  // Open a popup window, navigate it to `url`, and return its WebContents.
   base::expected<WebContents*, std::string> OpenPopup(const GURL& url) {
+    return OpenPopup(url, url);
+  }
+
+  // Open a popup window, start a navigation to `initial_url`, confirm that it
+  // lands on `final_url`, and return its WebContents.
+  base::expected<WebContents*, std::string> OpenPopup(const GURL& initial_url,
+                                                      const GURL& final_url) {
     auto* web_contents = GetActiveWebContents();
     if (web_contents->GetLastCommittedURL().is_empty()) {
       // We can't call window.open() if we're not on a page. Go to about:blank.
@@ -261,13 +249,21 @@ class OpenerHeuristicBrowserTest : public ContentBrowserTest,
     }
     PopupObserver observer(web_contents);
     if (!ExecJs(web_contents,
-                JsReplace("window.open($1, '', 'popup');", url))) {
+                JsReplace("window.open($1, '', 'popup');", initial_url))) {
       return base::unexpected("window.open failed");
     }
     observer.Wait();
 
     // Wait for the popup to finish navigating to its initial URL.
-    NavigationFinishObserver(observer.popup()).Wait();
+    if (!WaitForLoadStop(observer.popup())) {
+      return base::unexpected("popup navigation failed");
+    }
+
+    if (observer.popup()->GetLastCommittedURL() != final_url) {
+      return base::unexpected(absl::StrFormat(
+          "popup navigated to %s (expected %s)",
+          observer.popup()->GetLastCommittedURL().spec(), final_url.spec()));
+    }
 
     // Wait for the read of the past interaction from the DIPS DB to complete,
     // so the PopupPastInteraction UKM event is reported.
@@ -780,8 +776,7 @@ IN_PROC_BROWSER_TEST_P(OpenerHeuristicPastInteractionGrantBrowserTest,
   GURL final_url = embedded_test_server()->GetURL("c.test", "/title1.html");
   RecordUserActivationInteraction(initial_url, clock_.Now() - base::Hours(3));
   ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), opener_url));
-  ASSERT_OK_AND_ASSIGN(WebContents * popup, OpenPopup(initial_url));
-  ASSERT_EQ(popup->GetLastCommittedURL(), final_url);
+  ASSERT_THAT(OpenPopup(initial_url, final_url), HasValue());
 
   // Expect that cookie access was granted for the Popup With Past Interaction
   // heuristic, if the feature is enabled.
@@ -842,11 +837,12 @@ IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   GURL popup_url =
       embedded_test_server()->GetURL("a.test", "/server-redirect?title1.html");
+  GURL final_url = embedded_test_server()->GetURL("a.test", "/title1.html");
 
   RecordUserActivationInteraction(GURL("https://a.test"),
                                   clock_.Now() - base::Hours(3));
 
-  ASSERT_THAT(OpenPopup(popup_url), HasValue());
+  ASSERT_THAT(OpenPopup(popup_url, final_url), HasValue());
 
   std::vector<ukm::TestAutoSetUkmRecorder::HumanReadableUkmEntry> entries =
       ukm_recorder.GetEntries("OpenerHeuristic.PopupPastInteraction",
@@ -872,13 +868,15 @@ IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
 IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
                        MAYBE_PopupPastInteractionIsReported_ClientRedirect) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
-  GURL popup_url =
-      embedded_test_server()->GetURL("a.test", "/client-redirect?title1.html");
+  GURL popup_url = embedded_test_server()->GetURL("a.test", "/title1.html");
+  GURL final_url = embedded_test_server()->GetURL("b.test", "/title1.html");
 
   RecordUserActivationInteraction(GURL("https://a.test"),
                                   clock_.Now() - base::Hours(3));
 
-  ASSERT_THAT(OpenPopup(popup_url), HasValue());
+  ASSERT_OK_AND_ASSIGN(WebContents * popup, OpenPopup(popup_url));
+  // Perform a client-side redirect.
+  ASSERT_TRUE(NavigateToURLFromRendererWithoutUserGesture(popup, final_url));
 
   std::vector<ukm::TestAutoSetUkmRecorder::HumanReadableUkmEntry> entries =
       ukm_recorder.GetEntries("OpenerHeuristic.PopupPastInteraction",
@@ -1115,8 +1113,7 @@ IN_PROC_BROWSER_TEST_P(OpenerHeuristicCurrentInteractionGrantBrowserTest,
       "b.test", "/cross-site/c.test/title1.html");
   GURL final_url = embedded_test_server()->GetURL("c.test", "/title1.html");
   ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), opener_url));
-  ASSERT_OK_AND_ASSIGN(WebContents * popup, OpenPopup(initial_url));
-  ASSERT_EQ(popup->GetLastCommittedURL(), final_url);
+  ASSERT_OK_AND_ASSIGN(WebContents * popup, OpenPopup(initial_url, final_url));
   clock_.Advance(base::Minutes(1));
   SimulateMouseClick(popup);
 
@@ -1227,7 +1224,7 @@ IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
 
 // TODO(crbug.com/408234441): Re-enable this test
 // Very flaky on macOS 11 Tests: https://crbug.com/1486448
-#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_PopupInteraction_IsFollowedByPostPopupCookieAccess \
   DISABLED_PopupInteraction_IsFollowedByPostPopupCookieAccess
 #else
@@ -1399,17 +1396,8 @@ IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
                              /*exclusion=*/{"ExcludeThirdPartyPhaseout"});
 }
 
-// TODO(crbug.com/408234441): Re-enable this test
-#if BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_TopLevelIsReported_PastInteraction_NoSameSiteIframe \
-  DISABLED_TopLevelIsReported_PastInteraction_NoSameSiteIframe
-#else
-#define MAYBE_TopLevelIsReported_PastInteraction_NoSameSiteIframe \
-  TopLevelIsReported_PastInteraction_NoSameSiteIframe
-#endif
-IN_PROC_BROWSER_TEST_F(
-    OpenerHeuristicBrowserTest,
-    MAYBE_TopLevelIsReported_PastInteraction_NoSameSiteIframe) {
+IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
+                       TopLevelIsReported_PastInteraction_NoSameSiteIframe) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   GURL toplevel_url = embedded_test_server()->GetURL("a.test", "/title1.html");
   GURL popup_url = embedded_test_server()->GetURL("b.test", "/title1.html");
@@ -1438,16 +1426,8 @@ IN_PROC_BROWSER_TEST_F(
               ValueIs(OptionalBool::kFalse));
 }
 
-// TODO(crbug.com/408234441): Re-enable this test
-#if BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_TopLevelIsReported_HasSameSiteIframe \
-  DISABLED_TopLevelIsReported_HasSameSiteIframe
-#else
-#define MAYBE_TopLevelIsReported_HasSameSiteIframe \
-  TopLevelIsReported_HasSameSiteIframe
-#endif
 IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
-                       MAYBE_TopLevelIsReported_HasSameSiteIframe) {
+                       TopLevelIsReported_HasSameSiteIframe) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   GURL toplevel_url =
       embedded_test_server()->GetURL("a.test", "/page_with_blank_iframe.html");
@@ -1481,14 +1461,7 @@ IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
               ValueIs(OptionalBool::kTrue));
 }
 
-// TODO(crbug.com/408234441): Re-enable this test
-#if BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_TopLevel_PopupProvider DISABLED_TopLevel_PopupProvider
-#else
-#define MAYBE_TopLevel_PopupProvider TopLevel_PopupProvider
-#endif
-IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
-                       MAYBE_TopLevel_PopupProvider) {
+IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest, TopLevel_PopupProvider) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   GURL toplevel_url = embedded_test_server()->GetURL("a.test", "/title1.html");
   GURL popup_url = embedded_test_server()->GetURL("google.com", "/title1.html");
@@ -1509,13 +1482,7 @@ IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
             static_cast<int64_t>(PopupProvider::kGoogle));
 }
 
-// TODO(crbug.com/408234441): Re-enable this test
-#if BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_TopLevel_PopupId DISABLED_TopLevel_PopupId
-#else
-#define MAYBE_TopLevel_PopupId TopLevel_PopupId
-#endif
-IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest, MAYBE_TopLevel_PopupId) {
+IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest, TopLevel_PopupId) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   GURL toplevel_url = embedded_test_server()->GetURL("a.test", "/title1.html");
   GURL popup_url = embedded_test_server()->GetURL("google.com", "/title1.html");
@@ -1636,8 +1603,7 @@ IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
   SimulateMouseClick(GetActiveWebContents());
 
   ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), opener_url));
-  ASSERT_OK_AND_ASSIGN(WebContents * popup, OpenPopup(initial_url));
-  ASSERT_EQ(popup->GetLastCommittedURL(), final_url);
+  ASSERT_OK_AND_ASSIGN(WebContents * popup, OpenPopup(initial_url, final_url));
   clock_.Advance(base::Minutes(1));
   SimulateMouseClick(popup);
   GetDipsService()->storage()->FlushPostedTasksForTesting();
@@ -1709,17 +1675,8 @@ class OpenerHeuristicBackfillGrantBrowserTest
 
 // Test the backfill grants created by OpenerHeuristicService when tracking
 // protection is onboarded.
-// TODO(crbug.com/408234441): Re-enable this test
-#if BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_TrackingProtectionOnboardingCreatesBackfillGrants \
-  DISABLED_TrackingProtectionOnboardingCreatesBackfillGrants
-#else
-#define MAYBE_TrackingProtectionOnboardingCreatesBackfillGrants \
-  TrackingProtectionOnboardingCreatesBackfillGrants
-#endif
-IN_PROC_BROWSER_TEST_P(
-    OpenerHeuristicBackfillGrantBrowserTest,
-    MAYBE_TrackingProtectionOnboardingCreatesBackfillGrants) {
+IN_PROC_BROWSER_TEST_P(OpenerHeuristicBackfillGrantBrowserTest,
+                       TrackingProtectionOnboardingCreatesBackfillGrants) {
   GURL opener_url = embedded_test_server()->GetURL("a.test", "/title1.html");
   GURL popup_url_1 = embedded_test_server()->GetURL("b.test", "/title1.html");
   GURL popup_url_2 = embedded_test_server()->GetURL("c.test", "/title1.html");
