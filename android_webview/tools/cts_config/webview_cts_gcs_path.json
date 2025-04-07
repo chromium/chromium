@@ -274,6 +274,14 @@
             "_bug_id": "crbug.com/1369088"
           },
           {
+            "match": "android.autofillservice.cts.inline.InlineWebViewActivityTest#testAutofillNoDatasets",
+            "_bug_id": "crbug.com/409004450"
+          },
+          {
+            "match": "android.autofillservice.cts.inline.InlineWebViewActivityTest#testAutofillOneDataset",
+            "_bug_id": "crbug.com/409004450"
+          },
+          {
             "match": "android.autofillservice.cts.inline.InlineAugmentedWebViewActivityTest#testAugmentedAutoFill_startTypingHideInline",
             "_bug_id": "crbug.com/1369088"
           }
