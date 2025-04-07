@@ -190,24 +190,26 @@ class GlicApiTest : public test::InteractiveGlicTest {
   }
 
   void WaitForGuest() {
-    ASSERT_TRUE(base::test::RunUntil([&]() {
-      return FindGlicGuestMainFrame() != nullptr;
-    })) << "Timed out waiting for the frame";
-    auto end_time = base::TimeTicks::Now() + base::Seconds(5);
+    auto end_time = base::TimeTicks::Now() + base::Seconds(10);
+    content::RenderFrameHost* frame = nullptr;
     while (base::TimeTicks::Now() < end_time) {
-      content::RenderFrameHost* frame = FindGlicGuestMainFrame();
-      ASSERT_TRUE(frame) << "Guest frame deleted";
-      auto result =
-          content::EvalJs(frame, {"typeof runApiTest !== 'undefined'"});
-      if (result.error.empty() && result.ExtractBool()) {
-        return;
+      // Note: Sometimes the previous guest frame is still around, but it won't
+      // have the runApiTest function. Loop until both conditions are met.
+      frame = FindGlicGuestMainFrame();
+      if (frame) {
+        auto result =
+            content::EvalJs(frame, {"typeof runApiTest !== 'undefined'"});
+        if (result.error.empty() && result.ExtractBool()) {
+          return;
+        }
       }
       base::RunLoop run_loop;
       base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(200));
       run_loop.Run();
     }
-    FAIL() << "Timed out waiting for guest frame";
+    FAIL() << "Timed out waiting for guest frame. Has guest frame: "
+           << (frame != nullptr);
   }
 
   content::RenderFrameHost* FindGlicGuestMainFrame() {
@@ -348,8 +350,7 @@ IN_PROC_BROWSER_TEST_F(GlicApiTest, testLoadWhileWindowClosed) {
   WaitForWebUiState(mojom::WebUiState::kReady);
 }
 
-// TODO(harringtond): This is a flaky.
-IN_PROC_BROWSER_TEST_F(GlicApiTest, DISABLED_testInitializeFailsWindowClosed) {
+IN_PROC_BROWSER_TEST_F(GlicApiTest, testInitializeFailsWindowClosed) {
   // Immediately close the window to check behavior while window is closed.
   // Fail client initialization, should see error page.
   RunTestSequence(
@@ -400,8 +401,7 @@ IN_PROC_BROWSER_TEST_F(GlicApiTest, MAYBE_testReload) {
   });
 }
 
-// TODO(harringtond): This is a flaky.
-IN_PROC_BROWSER_TEST_F(GlicApiTest, DISABLED_testInitializeFailsAfterReload) {
+IN_PROC_BROWSER_TEST_F(GlicApiTest, testInitializeFailsAfterReload) {
   RunTestSequence(
       OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kNone));
   WebUIStateListener listener(&window_controller());
@@ -417,9 +417,7 @@ IN_PROC_BROWSER_TEST_F(GlicApiTest, DISABLED_testInitializeFailsAfterReload) {
   listener.WaitForWebUiState(mojom::WebUiState::kError);
 }
 
-// TODO(harringtond): This is a flaky.
-IN_PROC_BROWSER_TEST_F(GlicApiTestWithFastTimeout,
-                       DISABLED_testInitializeTimesOut) {
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithFastTimeout, testInitializeTimesOut) {
 #if defined(SLOW_BINARY)
   GTEST_SKIP() << "skip timeout test for slow binary";
 #else
