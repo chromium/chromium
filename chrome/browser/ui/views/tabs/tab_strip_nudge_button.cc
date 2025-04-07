@@ -18,7 +18,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/highlight_path_generator.h"
-#include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {
@@ -45,8 +45,9 @@ TabStripNudgeButton::TabStripNudgeButton(
                             Edge::kNone,
                             flat_edge) {
   auto* const layout_manager =
-      SetLayoutManager(std::make_unique<views::FlexLayout>());
-  layout_manager->SetMainAxisAlignment(views::LayoutAlignment::kEnd);
+      SetLayoutManager(std::make_unique<views::BoxLayout>());
+  layout_manager->set_main_axis_alignment(
+      views::BoxLayout::MainAxisAlignment::kEnd);
 
   SetProperty(views::kElementIdentifierKey, element_identifier);
 
