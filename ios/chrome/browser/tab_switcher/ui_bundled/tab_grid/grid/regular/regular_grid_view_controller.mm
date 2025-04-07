@@ -215,6 +215,7 @@ NSArray<UIView*>* GetTabGroupViewsToAnimateClosure(
 
   GridSnapshot* snapshot = [self.diffableDataSource snapshot];
   [self updateInactiveTabsButtonInSnapshot:snapshot];
+  [self.diffableDataSource applySnapshot:snapshot animatingDifferences:YES];
 }
 
 - (void)updateInactiveTabsDaysThreshold:(NSInteger)daysThreshold {
@@ -225,6 +226,7 @@ NSArray<UIView*>* GetTabGroupViewsToAnimateClosure(
 
   GridSnapshot* snapshot = [self.diffableDataSource snapshot];
   [self updateInactiveTabsButtonInSnapshot:snapshot];
+  [self.diffableDataSource applySnapshot:snapshot animatingDifferences:YES];
 }
 
 #pragma mark - Private
@@ -271,7 +273,6 @@ NSArray<UIView*>* GetTabGroupViewsToAnimateClosure(
       ]];
     }
   }
-  [self.diffableDataSource applySnapshot:snapshot animatingDifferences:YES];
 }
 
 // Adds the inactive tabs button to `snapshot` if it is not there yet.
