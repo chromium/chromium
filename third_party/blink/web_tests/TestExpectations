@@ -2607,6 +2607,7 @@ crbug.com/383880384 [ Win ] external/wpt/css/css-properties-values-api/registere
 [ Linux ] external/wpt/webdriver/tests/bidi/network/continue_response/cookies.py [ Pass Timeout ]
 
 # ====== New tests from wpt-importer added here ======
+[ Mac12 ] external/wpt/css/css-overflow/scroll-marker-contain-005.tentative.html [ Failure ]
 crbug.com/408539325 [ Mac14 ] external/wpt/html/cross-origin-opener-policy/iframe-popup-unsafe-none-to-unsafe-none.https.html?7-8 [ Crash ]
 crbug.com/408571502 [ Mac12 ] external/wpt/html/semantics/popovers/popover-focus-2.html [ Skip Timeout ]
 crbug.com/408571502 [ Mac12 ] virtual/html-anchor-attribute-disabled/external/wpt/html/semantics/popovers/popover-focus-2.html [ Skip Timeout ]
