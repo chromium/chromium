@@ -34,7 +34,6 @@ import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
@@ -140,7 +139,6 @@ public class ToolbarPhone extends ToolbarLayout
     private ViewGroup mToolbarButtonsContainer;
     // Non-null after inflation occurs.
     private @NonNull ImageView mHomeButton;
-    private TextView mUrlBar;
     protected View mUrlActionContainer;
     private OptionalButtonCoordinator mOptionalButtonCoordinator;
 
@@ -329,7 +327,6 @@ public class ToolbarPhone extends ToolbarLayout
 
             mToolbarButtonsContainer = findViewById(R.id.toolbar_buttons);
             mHomeButton = findViewById(R.id.home_button);
-            mUrlBar = findViewById(R.id.url_bar);
             mUrlActionContainer = findViewById(R.id.url_action_container);
             mToolbarBackground =
                     new ColorDrawable(getToolbarColorForVisualState(VisualState.NORMAL));
@@ -470,7 +467,7 @@ public class ToolbarPhone extends ToolbarLayout
      * @param shouldUseFocusColor True if should return the color for focus state.
      */
     private @ColorInt int getToolbarDefaultColor(boolean shouldUseFocusColor) {
-        if (mLocationBar.getPhoneCoordinator().hasFocus() || shouldUseFocusColor) {
+        if (urlHasFocus() || shouldUseFocusColor) {
             if (mDropdownListScrolled) {
                 return isIncognitoBranded()
                         ? getContext().getColor(R.color.omnibox_scrolled_bg_incognito)
@@ -493,7 +490,7 @@ public class ToolbarPhone extends ToolbarLayout
      */
     private @ColorInt int getLocationBarDefaultColorForToolbarColor(
             @ColorInt int toolbarColor, boolean shouldUseFocusColor) {
-        if (mLocationBar.getPhoneCoordinator().hasFocus() || shouldUseFocusColor) {
+        if (urlHasFocus() || shouldUseFocusColor) {
 
             // Omnibox has same background as the Omnibox suggestion.
             return OmniboxResourceProvider.getStandardSuggestionBackgroundColor(
@@ -579,7 +576,7 @@ public class ToolbarPhone extends ToolbarLayout
     @Override
     public void onClick(View v) {
         // Don't allow clicks while the omnibox is being focused.
-        if (mLocationBar != null && mLocationBar.getPhoneCoordinator().hasFocus()) {
+        if (mLocationBar != null && urlHasFocus()) {
             return;
         }
         if (mHomeButton == v) {
@@ -845,7 +842,7 @@ public class ToolbarPhone extends ToolbarLayout
             case VisualState.INCOGNITO:
                 return ChromeColors.getDefaultThemeColor(getContext(), true);
             case VisualState.BRAND_COLOR:
-                if (mLocationBar.getPhoneCoordinator().hasFocus()) {
+                if (urlHasFocus()) {
                     return getToolbarDefaultColor(/* shouldUseFocusColor= */ false);
                 }
                 return getToolbarDataProvider().getPrimaryColor();
@@ -1122,8 +1119,7 @@ public class ToolbarPhone extends ToolbarLayout
             // focusing on the NTP. In NTP, toolbar and locationbar need to transite color only when
             // the omnibox is focused. When the fake omnibox is scrolled, the color should not
             // change.
-            if ((mLocationBar.getPhoneCoordinator().hasFocus() || !isLocationBarShownInNtp)
-                    && mTabSwitcherState == STATIC_TAB) {
+            if ((urlHasFocus() || !isLocationBarShownInNtp) && mTabSwitcherState == STATIC_TAB) {
                 boolean isInGeneralNtp =
                         isLocationBarShownInGeneralNtp() || mIsInLoadingPhaseFromNtpToWebpage;
                 // Add a special case for general NTP to the defaultColor to ensure that the color
@@ -1187,7 +1183,7 @@ public class ToolbarPhone extends ToolbarLayout
                             - getResources()
                                     .getDimensionPixelSize(R.dimen.location_bar_url_action_offset);
             int toolbarSidePaddingChange = mToolbarSidePaddingForNtp - mToolbarSidePadding;
-            if (mLocationBar.getPhoneCoordinator().hasFocus()) {
+            if (urlHasFocus()) {
                 urlActionsTranslationX =
                         MathUtils.flipSignIf(
                                 (toolbarSidePaddingChange + urlActionContainerEndMarginChange)
@@ -1247,7 +1243,7 @@ public class ToolbarPhone extends ToolbarLayout
         }
 
         if (!mUrlFocusChangeInProgress && getToolbarShadow() != null) {
-            getToolbarShadow().setAlpha(mUrlBar.hasFocus() ? 0.f : 1.f);
+            getToolbarShadow().setAlpha(urlHasFocus() ? 0.f : 1.f);
         }
 
         mLocationBar.getPhoneCoordinator().setAlpha(1);
@@ -1279,7 +1275,7 @@ public class ToolbarPhone extends ToolbarLayout
         setClipToPadding(!isExpanded);
         if (!mUrlFocusChangeInProgress) {
             float alpha = 0.f;
-            if (!mUrlBar.hasFocus() && mNtpSearchBoxScrollFraction == 1.f) {
+            if (!urlHasFocus() && mNtpSearchBoxScrollFraction == 1.f) {
                 alpha = 1.f;
             }
             getToolbarShadow().setAlpha(alpha);
