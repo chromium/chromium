@@ -5007,7 +5007,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="4507401683427517298">Cliquez sur "Ajouter un raccourci"</translation>
 <translation id="450867954911715010">Paramètres d'accessibilité</translation>
 <translation id="4508765956121923607">Afficher la s&amp;ource</translation>
-<translation id="4509277363725254222">Lorsque vous partagez une copie de votre <ph name="BEGIN_BOLD_USERNAME" />nom d'utilisateur<ph name="END_BOLD_USERNAME" /> et de votre <ph name="BEGIN_BOLD_PASSWORD" />mot de passe<ph name="END_BOLD_PASSWORD" />, le membre de votre famille peut les renseigner à l'aide du Gestionnaire de mots de passe de Google</translation>
+<translation id="4509277363725254222">Lorsque vous partagez une copie de votre <ph name="BEGIN_BOLD_USERNAME" />nom d'utilisateur<ph name="END_BOLD_USERNAME" /> et de votre <ph name="BEGIN_BOLD_PASSWORD" />mot de passe<ph name="END_BOLD_PASSWORD" />, le membre de votre famille peut les renseigner à l'aide du Gestionnaire de mots de passe de Google.</translation>
 <translation id="4509421746503122514">Redémarrer pour mettre à jour</translation>
 <translation id="4509741852167209430">Seuls quelques types de données sont partagés entre les sites pour mesurer les performances de leurs annonces (par exemple, si vous avez effectué un achat ou non après avoir consulté un site)</translation>
 <translation id="4510195992002502722">Échec de l'envoi des commentaires. Nouvelle tentative…</translation>
@@ -7966,7 +7966,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6666559645296300656">Annuler la mise à niveau Linux</translation>
 <translation id="6667086124612170548">Fichier trop volumineux pour cet appareil</translation>
 <translation id="6667092961374478614">Découvrabilité du <ph name="FEATURE_NAME" /></translation>
-<translation id="6667187897999649121">Pour le moment, vous ne pouvez partager des mots de passe qu'avec des membres de votre famille. <ph name="BEGIN_LINK" />Créez un groupe familial<ph name="END_LINK" /> avec jusqu'à six membres, et profitez pleinement de vos produits et abonnements sur Google.</translation>
+<translation id="6667187897999649121">Pour le moment, vous ne pouvez partager des mots de passe qu'avec des membres de votre famille. <ph name="BEGIN_LINK" />Créez un groupe familial<ph name="END_LINK" /> réunissant jusqu'à six personnes, et profitez pleinement de vos produits et abonnements sur Google.</translation>
 <translation id="666731172850799929">Ouvrir dans <ph name="APP_NAME" /></translation>
 <translation id="6669195257625975787">Les données sont traitées de la même manière que le site que vous consultez</translation>
 <translation id="6670142487971298264"><ph name="APP_NAME" /> désormais disponible</translation>
