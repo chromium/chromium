@@ -26,6 +26,7 @@ void PasskeyModelObserverBridge::OnPasskeysChanged(
     const std::vector<webauthn::PasskeyModelChange>& changes) {}
 
 void PasskeyModelObserverBridge::OnPasskeyModelShuttingDown() {
+  [observer_ passKeyModelShuttingDown:passkey_model_];
   scoped_observation_.Reset();
 }
 

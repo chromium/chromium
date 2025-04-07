@@ -9,6 +9,7 @@
 #import "components/webauthn/core/browser/passkey_model.h"
 
 @protocol PasskeyModelObserverDelegate
+- (void)passKeyModelShuttingDown:(webauthn::PasskeyModel*)passkeyModel;
 - (void)passkeyModelIsReady:(webauthn::PasskeyModel*)passkeyModel;
 @end
 
