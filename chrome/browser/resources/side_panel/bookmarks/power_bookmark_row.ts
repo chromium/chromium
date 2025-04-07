@@ -74,12 +74,13 @@ export class PowerBookmarkRowElement extends CrLitElement {
     };
   }
 
-  bookmark: chrome.bookmarks.BookmarkTreeNode = {id: '', title: ''};
+  bookmark: chrome.bookmarks.BookmarkTreeNode;
   compact: boolean = false;
   contextMenuBookmark: chrome.bookmarks.BookmarkTreeNode|undefined;
   bookmarksTreeViewEnabled: boolean =
       loadTimeData.getBoolean('bookmarksTreeViewEnabled');
   depth: number = 0;
+  forceHover: boolean = false;
   hasCheckbox: boolean = false;
   selectedBookmarks: chrome.bookmarks.BookmarkTreeNode[];
   renamingId: string = '';
@@ -107,7 +108,7 @@ export class PowerBookmarkRowElement extends CrLitElement {
     this.onInputDisplayChange_();
     this.addEventListener('keydown', this.onKeydown_);
     this.addEventListener('focus', this.onFocus_);
-    this.isPriceTracked = this.isPriceTracked_();
+    this.isPriceTracked = this.isPriceTracked_(this.bookmark);
 
     const callbackRouter = this.priceTrackingProxy_.getCallbackRouter();
     this.shoppingListenerIds_.push(
@@ -237,8 +238,8 @@ export class PowerBookmarkRowElement extends CrLitElement {
     }));
   }
 
-  protected isRenamingItem_(): boolean {
-    return this.bookmark.id === this.renamingId;
+  protected renamingItem_(id: string) {
+    return id === this.renamingId;
   }
 
   protected isCheckboxChecked_(): boolean {
@@ -250,7 +251,7 @@ export class PowerBookmarkRowElement extends CrLitElement {
   }
 
   protected showTrailingIcon_(): boolean {
-    return !this.isRenamingItem_() && !this.hasCheckbox;
+    return !this.renamingItem_(this.bookmark?.id) && !this.hasCheckbox;
   }
 
   protected onExpandedChanged_(event: CustomEvent<{value: boolean}>) {
@@ -290,7 +291,8 @@ export class PowerBookmarkRowElement extends CrLitElement {
     // Ignore clicks on the row when it has an input, to ensure the row doesn't
     // eat input clicks. Also ignore clicks if the row has no associated
     // bookmark, or if the event is a right-click.
-    if (this.isRenamingItem_() || !this.bookmark || event.button === 2) {
+    if (this.renamingItem_(this.bookmark?.id) || !this.bookmark ||
+        event.button === 2) {
       return;
     }
     // In compact view, if the item is a folder, ignore row clicks to toggle
@@ -302,7 +304,7 @@ export class PowerBookmarkRowElement extends CrLitElement {
     }
     event.preventDefault();
     event.stopPropagation();
-    if (this.hasCheckbox && this.canEdit_()) {
+    if (this.hasCheckbox && this.canEdit_(this.bookmark)) {
       // Clicking the row should trigger a checkbox click rather than a
       // standard row click.
       const checkbox =
@@ -412,16 +414,18 @@ export class PowerBookmarkRowElement extends CrLitElement {
     this.dispatchEvent(this.createInputChangeEvent_(null));
   }
 
-  private isPriceTracked_(): boolean {
-    return !!this.bookmarksService?.getPriceTrackedInfo(this.bookmark);
+  private isPriceTracked_(bookmark: chrome.bookmarks.BookmarkTreeNode):
+      boolean {
+    return !!this.bookmarksService?.getPriceTrackedInfo(bookmark);
   }
 
   /**
    * Whether the given price-tracked bookmark should display as if discounted.
    */
-  protected showDiscountedPrice_(): boolean {
+  protected showDiscountedPrice_(bookmark: chrome.bookmarks.BookmarkTreeNode):
+      boolean {
     const bookmarkProductInfo =
-        this.bookmarksService?.getPriceTrackedInfo(this.bookmark);
+        this.bookmarksService?.getPriceTrackedInfo(bookmark);
     if (bookmarkProductInfo) {
       return bookmarkProductInfo.info.previousPrice.length > 0;
     }
@@ -450,8 +454,9 @@ export class PowerBookmarkRowElement extends CrLitElement {
     }
   }
 
-  protected getBookmarkForceHover_(): boolean {
-    return this.bookmark === this.contextMenuBookmark;
+  protected getBookmarkForceHover_(bookmark: chrome.bookmarks.BookmarkTreeNode):
+      boolean {
+    return bookmark === this.contextMenuBookmark;
   }
 
   protected shouldExpand_(): boolean|undefined {
@@ -459,14 +464,14 @@ export class PowerBookmarkRowElement extends CrLitElement {
         this.compact;
   }
 
-  protected canEdit_(): boolean {
-    return this.bookmark?.id !== loadTimeData.getString('bookmarksBarId') &&
-        this.bookmark?.id !==
-        loadTimeData.getString('managedBookmarksFolderId');
+  protected canEdit_(bookmark: chrome.bookmarks.BookmarkTreeNode): boolean {
+    return bookmark?.id !== loadTimeData.getString('bookmarksBarId') &&
+        bookmark?.id !== loadTimeData.getString('managedBookmarksFolderId');
   }
 
-  protected isShoppingCollection_(): boolean {
-    return this.bookmark?.id === this.shoppingCollectionFolderId;
+  protected isShoppingCollection_(bookmark: chrome.bookmarks.BookmarkTreeNode):
+      boolean {
+    return bookmark?.id === this.shoppingCollectionFolderId;
   }
 
   protected getBookmarkDescription_(
@@ -498,19 +503,20 @@ export class PowerBookmarkRowElement extends CrLitElement {
     }
   }
 
-  protected getBookmarkImageUrls_(): string[] {
+  protected getBookmarkImageUrls_(bookmark: chrome.bookmarks.BookmarkTreeNode):
+      string[] {
     const imageUrls: string[] = [];
-    if (this.bookmark?.url) {
+    if (bookmark?.url) {
       const imageUrl = Object.entries(this.imageUrls)
-                           .find(([key, _val]) => key === this.bookmark.id)
+                           .find(([key, _val]) => key === bookmark.id)
                            ?.[1];
       if (imageUrl) {
         imageUrls.push(imageUrl);
       }
     } else if (
-        this.canEdit_() && this.bookmark?.children &&
-        !this.isShoppingCollection_()) {
-      this.bookmark?.children.forEach(child => {
+        this.canEdit_(bookmark) && bookmark?.children &&
+        !this.isShoppingCollection_(bookmark)) {
+      bookmark?.children.forEach((child) => {
         const childImageUrl: string =
             Object.entries(this.imageUrls)
                 .find(([key, _val]) => key === child.id)
@@ -523,32 +529,38 @@ export class PowerBookmarkRowElement extends CrLitElement {
     return imageUrls;
   }
 
-  protected getBookmarkMenuA11yLabel_(): string {
-    return loadTimeData.getStringF(
-        this.bookmark.url ? 'bookmarkMenuLabel' : 'folderMenuLabel',
-        this.bookmark.title);
+  protected getBookmarkMenuA11yLabel_(url: string|undefined, title: string):
+      string {
+    if (url) {
+      return loadTimeData.getStringF('bookmarkMenuLabel', title);
+    } else {
+      return loadTimeData.getStringF('folderMenuLabel', title);
+    }
   }
 
-  protected getBookmarkA11yLabel_(): string {
+  protected getBookmarkA11yLabel_(url: string|undefined, title: string):
+      string {
     if (this.hasCheckbox) {
       if (this.isCheckboxChecked_()) {
-        return loadTimeData.getStringF(
-            this.bookmark.url ? 'deselectBookmarkLabel' : 'deselectFolderLabel',
-            this.bookmark.title);
+        if (url) {
+          return loadTimeData.getStringF('deselectBookmarkLabel', title);
+        }
+        return loadTimeData.getStringF('deselectFolderLabel', title);
+      } else {
+        if (url) {
+          return loadTimeData.getStringF('selectBookmarkLabel', title);
+        }
+        return loadTimeData.getStringF('selectFolderLabel', title);
       }
-
-      return loadTimeData.getStringF(
-          this.bookmark.url ? 'selectBookmarkLabel' : 'selectFolderLabel',
-          this.bookmark.title);
     }
-
-    return loadTimeData.getStringF(
-        this.bookmark.url ? 'openBookmarkLabel' : 'openFolderLabel',
-        this.bookmark.title);
+    if (url) {
+      return loadTimeData.getStringF('openBookmarkLabel', title);
+    }
+    return loadTimeData.getStringF('openFolderLabel', title);
   }
 
-  protected getBookmarkA11yDescription_(): string {
-    const bookmark = this.bookmark;
+  protected getBookmarkA11yDescription_(
+      bookmark: chrome.bookmarks.BookmarkTreeNode): string {
     let description = '';
     if (this.bookmarksService?.getPriceTrackedInfo(bookmark)) {
       description += loadTimeData.getStringF(
@@ -563,14 +575,15 @@ export class PowerBookmarkRowElement extends CrLitElement {
     return description;
   }
 
-  protected getBookmarkDescriptionMeta_() {
+  protected getBookmarkDescriptionMeta_(bookmark:
+                                            chrome.bookmarks.BookmarkTreeNode) {
     // If there is a price available for the product and it isn't being
     // tracked, return the current price which will be added to the description
     // meta section.
     const productInfo =
-        this.bookmarksService?.getAvailableProductInfo(this.bookmark);
+        this.bookmarksService?.getAvailableProductInfo(bookmark);
     if (productInfo && productInfo.info.currentPrice &&
-        !this.isPriceTracked_()) {
+        !this.isPriceTracked_(bookmark)) {
       return productInfo.info.currentPrice;
     }
 
