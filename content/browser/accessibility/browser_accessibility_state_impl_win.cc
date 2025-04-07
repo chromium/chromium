@@ -221,7 +221,8 @@ std::vector<AssistiveTechInfo> DiscoverAssistiveTech() {
   DWORD narrator_value = 0;
   if (base::win::RegKey(HKEY_CURRENT_USER, kNarratorRegistryKey,
                         KEY_QUERY_VALUE)
-          .ReadValueDW(kNarratorRunningStateValueName, &narrator_value) &&
+              .ReadValueDW(kNarratorRunningStateValueName, &narrator_value) ==
+          ERROR_SUCCESS &&
       narrator_value) {
     discovered_ats.push_back({AccessibilityTarget::kNarrator, std::nullopt});
   }
