@@ -888,7 +888,7 @@ std::optional<ModelError> NigoriSyncBridgeImpl::TryDecryptPendingKeysWith(
   DCHECK(key_bag.HasKey(new_default_key_name));
 
   NigoriKeyBag new_key_bag = NigoriKeyBag::CreateEmpty();
-  for (auto key : decrypted_pending_keys.key()) {
+  for (const sync_pb::NigoriKey& key : decrypted_pending_keys.key()) {
     new_key_bag.AddKeyFromProto(key);
   }
 
