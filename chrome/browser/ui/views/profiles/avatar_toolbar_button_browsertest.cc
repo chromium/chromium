@@ -19,6 +19,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
@@ -46,6 +47,7 @@
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/management/management_service.h"
+#include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
@@ -1093,11 +1095,20 @@ class AvatarToolbarButtonEnterpriseBadgingBrowserTest
   }
 
   void SetUpOnMainThread() override {
+    scoped_browser_management_ =
+        std::make_unique<policy::ScopedManagementServiceOverrideForTesting>(
+            policy::ManagementServiceFactory::GetForProfile(
+                browser()->profile()),
+            policy::EnterpriseManagementAuthority::CLOUD);
     AvatarToolbarButtonBrowserTest::SetUpOnMainThread();
   }
 
+  void TearDownOnMainThread() override { scoped_browser_management_.reset(); }
+
  protected:
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
+  std::unique_ptr<policy::ScopedManagementServiceOverrideForTesting>
+      scoped_browser_management_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -1116,12 +1127,12 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
     EXPECT_NE(avatar_button->GetText(), work_label);
     clear_closure.RunAndReset();
     EXPECT_EQ(avatar_button->GetText(), work_label);
-    EXPECT_EQ(GetProfileAttributesEntry(browser()->profile())
-                  ->GetEnterpriseProfileLabel(),
-              work_label);
-    EXPECT_EQ(
-        GetProfileAttributesEntry(browser()->profile())->GetLocalProfileName(),
-        work_label);
+    // The profile name should be the default profile name.
+    std::u16string local_name =
+        GetProfileAttributesEntry(browser()->profile())->GetLocalProfileName();
+    EXPECT_TRUE(g_browser_process->profile_manager()
+                    ->GetProfileAttributesStorage()
+                    .IsDefaultProfileName(local_name, true));
   }
 
   {
@@ -1337,7 +1348,7 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
 #endif
 // Tests the flow for a managed sign-in.
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
-                       PRE_SignedInWithNewSessionKeepWorkBadge) {
+                       MAYBE_PRE_SignedInWithNewSessionKeepWorkBadge) {
   // Sign in.
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
   std::u16string name(u"TestName");
@@ -1356,22 +1367,30 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
   // Management is usually accepted by the time the greeting is finished. The
   // work badgge should be shown once this happens.
   enterprise_util::SetUserAcceptedAccountManagement(browser()->profile(), true);
-  EXPECT_EQ(avatar->GetText(), u"Work");
+  browser()->profile()->GetPrefs()->SetString(
+      prefs::kEnterpriseCustomLabelForProfile, "Custom Label");
+
+  EXPECT_EQ(avatar->GetText(), u"Custom Label");
 }
 
-// Test that the work badge remains upon restart for a user that has already
-// accepted management.
+// Test that the work badge remains upon restart for a user that is managed.
+// Note that we need to unset and reset UserAcceptedAccountManagement due to the
+// management service override.
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
-                       SignedInWithNewSessionKeepWorkBadge) {
+                       MAYBE_SignedInWithNewSessionKeepWorkBadge) {
   signin::WaitForRefreshTokensLoaded(GetIdentityManager());
+  enterprise_util::SetUserAcceptedAccountManagement(browser()->profile(),
+                                                    false);
+  enterprise_util::SetUserAcceptedAccountManagement(browser()->profile(), true);
+
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
-  EXPECT_EQ(avatar->GetText(), u"Work");
+  EXPECT_EQ(avatar->GetText(), u"Custom Label");
   EXPECT_EQ(GetProfileAttributesEntry(browser()->profile())
                 ->GetEnterpriseProfileLabel(),
-            u"Work");
+            u"Custom Label");
   EXPECT_EQ(
       GetProfileAttributesEntry(browser()->profile())->GetLocalProfileName(),
-      u"Work");
+      u"Custom Label");
   // Previously added image on signin should still be shown in the new session.
   EXPECT_TRUE(IsSignedInImageUsed());
 }

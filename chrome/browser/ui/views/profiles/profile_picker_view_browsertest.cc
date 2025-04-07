@@ -2523,7 +2523,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
   ASSERT_NE(entry, nullptr);
   EXPECT_NE(entry->GetGAIAId(), GaiaId());
   EXPECT_FALSE(entry->IsEphemeral());
-  EXPECT_EQ(entry->GetLocalProfileName(), u"Work");
+  EXPECT_EQ(entry->GetLocalProfileName(), u"enterprise.com");
 
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile_being_created);
@@ -2591,7 +2591,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
   ASSERT_NE(entry, nullptr);
   EXPECT_NE(entry->GetGAIAId(), GaiaId());
   EXPECT_FALSE(entry->IsEphemeral());
-  EXPECT_EQ(entry->GetLocalProfileName(), u"Work");
+  EXPECT_EQ(entry->GetLocalProfileName(), u"acme.com");
 
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile_being_created);
@@ -2641,7 +2641,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
           .GetProfileAttributesWithPath(profile_being_created->GetPath());
   ASSERT_NE(entry, nullptr);
   EXPECT_FALSE(entry->IsEphemeral());
-  EXPECT_EQ(entry->GetLocalProfileName(), u"Work");
+  EXPECT_EQ(entry->GetLocalProfileName(), u"enterprise.com");
 
   // Sync is disabled.
   EXPECT_NE(entry->GetGAIAId(), GaiaId());
@@ -2699,7 +2699,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
   ASSERT_NE(entry, nullptr);
   EXPECT_NE(entry->GetGAIAId(), GaiaId());
   EXPECT_FALSE(entry->IsEphemeral());
-  EXPECT_EQ(entry->GetLocalProfileName(), u"Work");
+  EXPECT_EQ(entry->GetLocalProfileName(), u"enterprise.com");
 
   // Sync is getting configured.
   EXPECT_TRUE(entry->IsAuthenticated());

@@ -11,12 +11,14 @@
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/host_port_pair.h"
 #include "net/cert/x509_certificate.h"
@@ -117,7 +119,26 @@ TEST_F(ManagedBrowserUtilsTest, WorkProfileDefaultLabel) {
 
   {
     enterprise_util::SetUserAcceptedAccountManagement(profile(), true);
+    policy::ScopedManagementServiceOverrideForTesting platform_management(
+        policy::ManagementServiceFactory::GetForProfile(profile()),
+        policy::EnterpriseManagementAuthority::CLOUD);
     EXPECT_EQ(enterprise_util::GetEnterpriseLabel(profile()), work_label);
+  }
+
+  {
+    enterprise_util::SetUserAcceptedAccountManagement(profile(), false);
+    policy::ScopedManagementServiceOverrideForTesting platform_management(
+        policy::ManagementServiceFactory::GetForProfile(profile()),
+        policy::EnterpriseManagementAuthority::CLOUD);
+    EXPECT_NE(enterprise_util::GetEnterpriseLabel(profile()), work_label);
+  }
+
+  {
+    enterprise_util::SetUserAcceptedAccountManagement(profile(), true);
+    policy::ScopedManagementServiceOverrideForTesting platform_management(
+        policy::ManagementServiceFactory::GetForProfile(profile()),
+        policy::EnterpriseManagementAuthority::NONE);
+    EXPECT_NE(enterprise_util::GetEnterpriseLabel(profile()), work_label);
   }
 
   {
@@ -133,6 +154,9 @@ TEST_F(ManagedBrowserUtilsTest, DefaultLabelDisabledbyPolicy) {
   profile()->GetPrefs()->SetInteger(
       prefs::kEnterpriseProfileBadgeToolbarSettings, 1);
   enterprise_util::SetUserAcceptedAccountManagement(profile(), true);
+  policy::ScopedManagementServiceOverrideForTesting platform_management(
+      policy::ManagementServiceFactory::GetForProfile(profile()),
+      policy::EnterpriseManagementAuthority::CLOUD);
 
   // There should be no text because the policy fully disables badging.
   EXPECT_EQ(enterprise_util::GetEnterpriseLabel(profile()), std::u16string());
@@ -146,6 +170,9 @@ TEST_F(ManagedBrowserUtilsTest, CustomLabelDisabledbyPolicy) {
   profile()->GetPrefs()->SetInteger(
       prefs::kEnterpriseProfileBadgeToolbarSettings, 1);
   enterprise_util::SetUserAcceptedAccountManagement(profile(), true);
+  policy::ScopedManagementServiceOverrideForTesting platform_management(
+      policy::ManagementServiceFactory::GetForProfile(profile()),
+      policy::EnterpriseManagementAuthority::CLOUD);
 
   // There should be no label because the policy fully disables badging.
   EXPECT_EQ(enterprise_util::GetEnterpriseLabel(profile()), std::u16string());
@@ -157,6 +184,9 @@ TEST_F(ManagedBrowserUtilsTest, CustomLabelTruncated) {
   profile()->GetPrefs()->SetString(prefs::kEnterpriseCustomLabelForProfile,
                                    "Custom Label Can Be Max 16 Characters");
   enterprise_util::SetUserAcceptedAccountManagement(profile(), true);
+  policy::ScopedManagementServiceOverrideForTesting platform_management(
+      policy::ManagementServiceFactory::GetForProfile(profile()),
+      policy::EnterpriseManagementAuthority::CLOUD);
 
   EXPECT_EQ(enterprise_util::GetEnterpriseLabel(profile()),
             u"Custom Label Can Be Max 16 Characters");
@@ -169,6 +199,9 @@ TEST_F(ManagedBrowserUtilsTest, DefaultLabelGatedBehindFeature) {
   scoped_feature_list_.InitAndDisableFeature(
       features::kEnterpriseProfileBadgingForAvatar);
   enterprise_util::SetUserAcceptedAccountManagement((profile()), true);
+  policy::ScopedManagementServiceOverrideForTesting platform_management(
+      policy::ManagementServiceFactory::GetForProfile(profile()),
+      policy::EnterpriseManagementAuthority::CLOUD);
 
   // The text should be truncated to 16 characters followed by ellipsis.
   EXPECT_EQ(enterprise_util::GetEnterpriseLabel((profile())), std::u16string());

@@ -107,14 +107,26 @@ class EnterpriseBadgingTest
 
   void SetUpOnMainThread() override {
     SetUserAcceptedAccountManagement(browser()->profile(), managed_profile());
+    if (managed_profile()) {
+      scoped_browser_management_ =
+          std::make_unique<policy::ScopedManagementServiceOverrideForTesting>(
+              policy::ManagementServiceFactory::GetForProfile(
+                  browser()->profile()),
+              policy::EnterpriseManagementAuthority::CLOUD);
+    }
     InProcessBrowserTest::SetUpOnMainThread();
   }
+
+  void TearDownOnMainThread() override { scoped_browser_management_.reset(); }
+
   bool avatar_feature_enabled() { return std::get<0>(GetParam()); }
   bool profile_menu_feature_enabled() { return std::get<1>(GetParam()); }
   bool policies_feature_enabled() { return std::get<2>(GetParam()); }
   bool managed_profile() { return std::get<3>(GetParam()); }
 
  private:
+  std::unique_ptr<policy::ScopedManagementServiceOverrideForTesting>
+      scoped_browser_management_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

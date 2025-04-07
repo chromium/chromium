@@ -35,8 +35,6 @@ class BrowserManagementService : public ManagementService, public KeyedService {
  private:
   // Updates the management icon used to indicate profile level management.
   void UpdateManagementIconForProfile(Profile* profile);
-  // Updates the management label used to indicate profile level management.
-  void UpdateEnterpriseLabelForProfile(Profile* profile);
   void SetManagementIconForProfile(const gfx::Image& management_icon);
 
   PrefChangeRegistrar pref_change_registrar_;
