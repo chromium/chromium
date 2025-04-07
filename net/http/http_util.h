@@ -311,18 +311,6 @@ class NET_EXPORT HttpUtil {
     // header name and values.
     bool GetNext();
 
-    // Iterates through the list of headers, starting with the current position
-    // and looks for the specified header.  Note that the name _must_ be
-    // lower cased.
-    // If the header was found, the return value will be true and the current
-    // position points to the header.  If the return value is false, the
-    // current position will be at the end of the headers.
-    bool AdvanceTo(const char* lowercase_name);
-
-    void Reset() {
-      lines_.Reset();
-    }
-
     std::string::const_iterator name_begin() const {
       return name_begin_;
     }

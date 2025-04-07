@@ -938,21 +938,6 @@ bool HttpUtil::HeadersIterator::GetNext() {
   return false;
 }
 
-bool HttpUtil::HeadersIterator::AdvanceTo(const char* name) {
-  DCHECK(name != nullptr);
-  DCHECK_EQ(0, base::ToLowerASCII(name).compare(name))
-      << "the header name must be in all lower case";
-
-  while (GetNext()) {
-    if (base::EqualsCaseInsensitiveASCII(
-            base::MakeStringPiece(name_begin_, name_end_), name)) {
-      return true;
-    }
-  }
-
-  return false;
-}
-
 HttpUtil::ValuesIterator::ValuesIterator(std::string_view values,
                                          char delimiter,
                                          bool ignore_empty_values)
