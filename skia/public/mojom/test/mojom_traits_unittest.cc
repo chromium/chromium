@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "include/core/SkPathBuilder.h"
+#include "include/core/SkRRect.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
 #pragma allow_unsafe_libc_calls
@@ -19,12 +21,15 @@
 #include "skia/public/mojom/skcolorspace_mojom_traits.h"
 #include "skia/public/mojom/skcolorspace_primaries.mojom.h"
 #include "skia/public/mojom/skcolorspace_primaries_mojom_traits.h"
+#include "skia/public/mojom/skpath.mojom.h"
+#include "skia/public/mojom/skpath_mojom_traits.h"
 #include "skia/public/mojom/tile_mode.mojom.h"
 #include "skia/public/mojom/tile_mode_mojom_traits.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColorFilter.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
+#include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkString.h"
 #include "third_party/skia/include/core/SkTileMode.h"
 #include "third_party/skia/modules/skcms/skcms.h"
@@ -96,6 +101,14 @@ mojo::StructPtr<skia::mojom::ImageInfo> ConstructImageInfo(
   mojom_info->width = width;
   mojom_info->height = height;
   return mojom_info;
+}
+
+void TestSkPathSerialization(const SkPath& input) {
+  SkPath output;
+  ASSERT_TRUE(
+      mojo::test::SerializeAndDeserialize<skia::mojom::SkPath>(input, output));
+
+  EXPECT_EQ(input, output);
 }
 
 TEST(StructTraitsTest, ImageInfo) {
@@ -210,6 +223,18 @@ TEST(StructTraitsTest, TileMode) {
   ASSERT_TRUE(mojo::test::SerializeAndDeserialize<skia::mojom::TileMode>(
       input, output));
   EXPECT_EQ(input, output);
+}
+
+TEST(StructTraitsTest, SkPath) {
+  TestSkPathSerialization(SkPath::Rect(SkRect::MakeWH(100, 200)));
+  TestSkPathSerialization(SkPath::Circle(100, 0, 30));
+  TestSkPathSerialization(
+      SkPath::Polygon({{0, 10}, {10, 0}, {10, 10}}, /*isClosed=*/true));
+  TestSkPathSerialization(SkPathBuilder()
+                              .addRRect(SkRRect::MakeRectXY(
+                                  SkRect::MakeLTRB(10, 10, 30, 50), 2.5, 3))
+                              .cubicTo({0, 10}, {30, 50}, {-5, .8})
+                              .detach());
 }
 
 TEST(StructTraitsTest, Bitmap) {
