@@ -42,6 +42,14 @@ namespace blink {
 
 namespace {
 
+bool ShouldReduceScreenSize(const LocalDOMWindow* window) {
+  CHECK(window);
+
+  // TODO(408932088): Take the current state of the window management permission
+  // (`mojom::blink::PermissionName::WINDOW_MANAGEMENT`) into account here.
+  return RuntimeEnabledFeatures::ReduceScreenSizeEnabled();
+}
+
 }  // namespace
 
 Screen::Screen(LocalDOMWindow* window, int64_t display_id)
@@ -100,12 +108,22 @@ bool Screen::AreWebExposedScreenPropertiesEqual(
 int Screen::height() const {
   if (!DomWindow())
     return 0;
+
+  if (ShouldReduceScreenSize(DomWindow())) {
+    return DomWindow()->innerHeight();
+  }
+
   return GetRect(/*available=*/false).height();
 }
 
 int Screen::width() const {
   if (!DomWindow())
     return 0;
+
+  if (ShouldReduceScreenSize(DomWindow())) {
+    return DomWindow()->innerWidth();
+  }
+
   return GetRect(/*available=*/false).width();
 }
 
@@ -122,24 +140,44 @@ unsigned Screen::pixelDepth() const {
 int Screen::availLeft() const {
   if (!DomWindow())
     return 0;
+
+  if (ShouldReduceScreenSize(DomWindow())) {
+    return 0;
+  }
+
   return GetRect(/*available=*/true).x();
 }
 
 int Screen::availTop() const {
   if (!DomWindow())
     return 0;
+
+  if (ShouldReduceScreenSize(DomWindow())) {
+    return 0;
+  }
+
   return GetRect(/*available=*/true).y();
 }
 
 int Screen::availHeight() const {
   if (!DomWindow())
     return 0;
+
+  if (ShouldReduceScreenSize(DomWindow())) {
+    return DomWindow()->innerHeight();
+  }
+
   return GetRect(/*available=*/true).height();
 }
 
 int Screen::availWidth() const {
   if (!DomWindow())
     return 0;
+
+  if (ShouldReduceScreenSize(DomWindow())) {
+    return DomWindow()->innerWidth();
+  }
+
   return GetRect(/*available=*/true).width();
 }
 

@@ -3583,6 +3583,13 @@
       base_feature: "none",
     },
     {
+      // If enabled, the screen sizes reported through the `Screen` interface
+      // will be limited to the size of the viewport unless Window Management
+      // permission has been granted.
+      name: "ReduceScreenSize",
+      settable_from_internals: true,
+    },
+    {
       // If enabled, the deviceModel will be reduced to "K" and the
       // androidVersion will be reduced to a static "10" string in android
       // User-Agent string.
