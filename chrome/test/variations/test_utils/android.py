@@ -10,6 +10,7 @@ import subprocess
 import sys
 
 import packaging
+import logging
 from typing import List, Optional
 
 from chrome.test.variations.test_utils import SRC_DIR
@@ -52,7 +53,11 @@ def install_chrome(channel: str, device: device_utils.DeviceUtils) -> str:
     f'--adb={adb_wrapper.AdbWrapper.GetAdbPath()}',
   ]
   args.append('--signed' if _is_require_signed(channel) else '--unsigned')
-  subprocess.check_call(args=args)
+  try:
+    subprocess.check_output(args=args)
+  except subprocess.CalledProcessError as e:
+    logging.error('Subprocess error caught %s', e.output.decode())
+    raise RuntimeError('Chrome installation failed.')
   return _package_name(channel)
 
 
@@ -67,7 +72,11 @@ def install_webview(
     f'--adb={adb_wrapper.AdbWrapper.GetAdbPath()}',
   ]
   args.append('--signed' if _is_require_signed(channel) else '--unsigned')
-  subprocess.check_call(args=args)
+  try:
+    subprocess.check_output(args=args)
+  except subprocess.CalledProcessError as e:
+    logging.error('Subprocess error caught %s', e.output.decode())
+    raise RuntimeError('Webview installation failed.')
 
   version_regex = r'\s*Preferred WebView package[^:]*[^\d]*([^\)]+)'
   version_output = device.RunShellCommand(['dumpsys' ,'webviewupdate'])
