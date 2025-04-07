@@ -271,7 +271,6 @@ per_channel_workflow(
       push_to_refs_for = "main",
       # TODO(crbug.com/372534509): Replace reviewer with team-based Gerrit
       # account once it is set up.
-      reviewers = ["aymanm@google.com"],
       labels = ["Presubmit-Ready+1"]
   ),
   mode = "SQUASH",
