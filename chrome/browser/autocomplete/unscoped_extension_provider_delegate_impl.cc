@@ -216,7 +216,8 @@ UnscopedExtensionProviderDelegateImpl::CreateAutocompleteMatch(
           base::BindRepeating(
               &UnscopedExtensionProviderDelegateImpl::OnActionExecuted,
               weak_factory_.GetWeakPtr(), extension_id, action.name,
-              suggestion.content)));
+              suggestion.content),
+          action.icon));
     }
   }
 

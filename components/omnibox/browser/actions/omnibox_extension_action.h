@@ -16,17 +16,20 @@ class OmniboxExtensionAction : public OmniboxAction {
  public:
   OmniboxExtensionAction(const std::u16string& label,
                          const std::u16string& tooltip,
-                         base::RepeatingClosure on_action_executed);
+                         base::RepeatingClosure on_action_executed,
+                         gfx::Image icon);
 
   // OmniboxAction:
   void Execute(ExecutionContext& context) const override;
   OmniboxActionId ActionId() const override;
+  gfx::Image GetIconImage() const override;
 
  protected:
   ~OmniboxExtensionAction() override;
 
  private:
   base::RepeatingClosure on_action_executed_;
+  gfx::Image icon_image_;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_ACTIONS_OMNIBOX_EXTENSION_ACTION_H_

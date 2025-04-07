@@ -111,6 +111,10 @@ const gfx::VectorIcon& OmniboxAction::GetVectorIcon() const {
 }
 #endif
 
+gfx::Image OmniboxAction::GetIconImage() const {
+  return gfx::Image();
+}
+
 size_t OmniboxAction::EstimateMemoryUsage() const {
   size_t total = 0;
   total += base::trace_event::EstimateMemoryUsage(url_);

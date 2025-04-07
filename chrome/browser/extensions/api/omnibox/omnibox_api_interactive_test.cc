@@ -43,6 +43,7 @@
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/gfx/image/image_unittest_util.h"
 
 namespace extensions {
 
@@ -1436,6 +1437,78 @@ IN_PROC_BROWSER_TEST_P(UnscopedOmniboxApiTest, OnActionExecuted) {
   ASSERT_TRUE(listener.WaitUntilSatisfied());
   EXPECT_EQ("do_something-sending input", listener.message());
   EXPECT_TRUE(listener.had_user_gesture());
+}
+
+// Tests that extensions can add actions with custom icons to Omnibox
+// suggestions.
+IN_PROC_BROWSER_TEST_P(UnscopedOmniboxApiTest, ActionIconAppliedToMatch) {
+  constexpr char kManifest[] =
+      R"({
+           "name": "Basic Action with icon",
+           "manifest_version": 2,
+           "version": "0.1",
+           "omnibox": { "keyword": "alpha" },
+           "background": { "scripts": [ "background.js" ], "persistent": true },
+           "permissions" : [ "omnibox.directInput" ]
+         })";
+  // This extension will create a suggestion with an action that has a green
+  // icon.
+  constexpr char kBackground[] =
+      R"(
+         chrome.omnibox.onInputChanged.addListener((text, suggest) => {
+          const canvas = new OffscreenCanvas(16, 16);
+          const context = canvas.getContext('2d');
+          context.fillStyle = '#00FF00';
+          context.fillRect(0, 0, 16, 16);
+           suggest([
+             {
+               content: text,
+               description: 'description',
+               actions: [{
+                 name: 'do_something',
+                 label: 'Do something',
+                 tooltipText: 'Do something the user wants',
+                 icon: context.getImageData(0, 0, 16, 16)
+               }]
+             }
+           ]);
+         });
+
+         chrome.omnibox.onActionExecuted.addListener((actionExecution) => {
+           chrome.test.sendMessage(
+               actionExecution.actionName + "-" + actionExecution.content);
+         });)";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackground);
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  ExtensionTestMessageListener listener("do_something-sending input");
+  AutocompleteController* autocomplete_controller = GetAutocompleteController();
+  chrome::FocusLocationBar(browser());
+
+  // Send an input to the extension and wait for the sggestion to arrive before
+  // we can select it.
+  AutocompleteInput input(u"sending input", metrics::OmniboxEventProto::NTP,
+                          ChromeAutocompleteSchemeClassifier(profile()));
+  autocomplete_controller->Start(input);
+  WaitForAutocompleteDone(browser());
+  ASSERT_TRUE(autocomplete_controller->done());
+
+  {
+    const AutocompleteResult& result = autocomplete_controller->result();
+    // First match  is for the default search entry, so directly check the
+    // second match.
+    AutocompleteMatch match = result.match_at(1);
+    // Manually construct an all-green icon and compare to the action icon.
+    SkBitmap bitmap;
+    bitmap.allocN32Pixels(16, 16);
+    bitmap.eraseColor(SK_ColorGREEN);
+    gfx::test::AreImagesEqual(match.actions[0]->GetIconImage(),
+                              gfx::Image::CreateFrom1xBitmap(bitmap));
+  }
 }
 
 // Tests that multiple unscoped extensions work at the same time and are

@@ -371,7 +371,26 @@ ExtensionFunction::ResponseAction OmniboxSendSuggestionsFunction::Run() {
         }
         actions.reserve(suggestion.actions->size());
         for (const auto& action : *suggestion.actions) {
-          actions.emplace_back(action.name, action.label, action.tooltip_text);
+          base::Value::Dict canvas_set =
+              action.icon ? action.icon->ToValue() : base::Value::Dict();
+          gfx::ImageSkia image_skia;
+          if (!canvas_set.empty()) {
+            base::Value::Dict& image_data = *canvas_set.FindDict("imageData");
+            // The image data should have been verified by the pre-validation
+            // param update.
+            CHECK(!image_data.empty());
+            // TODO(crbug.com/408069174): Move ParseIconFromCanvasDictionary
+            // outside `ExtensionAction` into a common file.
+            if (ExtensionAction::ParseIconFromCanvasDictionary(image_data,
+                                                               &image_skia) !=
+                ExtensionAction::IconParseResult::kSuccess) {
+              return RespondNow(Error(base::StringPrintf(
+                  ExtensionOmniboxEventRouter::kActionIconError,
+                  suggestion.description, action.name)));
+            }
+          }
+          actions.emplace_back(action.name, action.label, action.tooltip_text,
+                               gfx::Image(image_skia));
         }
       }
 

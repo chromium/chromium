@@ -6,10 +6,12 @@
 
 ExtensionSuggestion::Action::Action(std::string name,
                                     std::string label,
-                                    std::string tooltip_text)
+                                    std::string tooltip_text,
+                                    gfx::Image icon)
     : name(std::move(name)),
       label(std::move(label)),
-      tooltip_text(std::move(tooltip_text)) {}
+      tooltip_text(std::move(tooltip_text)),
+      icon(std::move(icon)) {}
 ExtensionSuggestion::Action::~Action() = default;
 ExtensionSuggestion::Action::Action(ExtensionSuggestion::Action&& rhs) =
     default;

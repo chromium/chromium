@@ -22,7 +22,10 @@
 struct ExtensionSuggestion {
   // An action button attached to a suggest result.
   struct Action {
-    Action(std::string name, std::string label, std::string tooltip_text);
+    Action(std::string name,
+           std::string label,
+           std::string tooltip_text,
+           gfx::Image icon);
 
     ~Action();
     Action(const Action&) = delete;
@@ -39,6 +42,9 @@ struct ExtensionSuggestion {
 
     // The action button hover tooltip text.
     std::string tooltip_text;
+
+    // The deserialized image data of an action icon.
+    gfx::Image icon;
   };
 
   ExtensionSuggestion(std::string content,

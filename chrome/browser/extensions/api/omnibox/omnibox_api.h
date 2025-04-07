@@ -48,6 +48,9 @@ class ExtensionOmniboxEventRouter {
       "actions per suggestion.";
   static constexpr char kActionsRequireDirectInputPermissionError[] =
       "Actions in suggest results require omnibox.directInput permission.";
+  static constexpr char kActionIconError[] =
+      "Action icon failed to parse for suggestion description: %s and action "
+      "name: %s.";
 
   ExtensionOmniboxEventRouter(const ExtensionOmniboxEventRouter&) = delete;
   ExtensionOmniboxEventRouter& operator=(const ExtensionOmniboxEventRouter&) =

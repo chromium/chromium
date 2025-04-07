@@ -19,6 +19,7 @@
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
 #if (!BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !BUILDFLAG(IS_IOS)
@@ -172,6 +173,9 @@ class OmniboxAction : public base::RefCountedThreadSafe<OmniboxAction> {
   // Returns the vector icon to represent this Action.
   virtual const gfx::VectorIcon& GetVectorIcon() const;
 #endif
+
+  // Returns a custom (non vector icon) image for the action.
+  virtual gfx::Image GetIconImage() const;
 
   // Estimates RAM usage in bytes for this Action.
   virtual size_t EstimateMemoryUsage() const;

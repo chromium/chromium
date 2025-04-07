@@ -6,13 +6,16 @@
 
 #include <utility>
 
+#include "base/base64.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/image/image.h"
 
 OmniboxExtensionAction::OmniboxExtensionAction(
     const std::u16string& label,
     const std::u16string& tooltip,
-    base::RepeatingClosure on_action_executed)
+    base::RepeatingClosure on_action_executed,
+    gfx::Image icon)
     : OmniboxAction(OmniboxAction::LabelStrings(
                         label,
                         tooltip,
@@ -20,7 +23,8 @@ OmniboxExtensionAction::OmniboxExtensionAction(
                             IDS_ACC_OMNIBOX_ACTION_IN_EXTENSION_SUGGEST_SUFFIX),
                         tooltip),
                     GURL()),
-      on_action_executed_(std::move(on_action_executed)) {
+      on_action_executed_(std::move(on_action_executed)),
+      icon_image_(std::move(icon)) {
   CHECK(on_action_executed_);
 }
 
@@ -32,4 +36,8 @@ void OmniboxExtensionAction::Execute(ExecutionContext& context) const {
 
 OmniboxActionId OmniboxExtensionAction::ActionId() const {
   return OmniboxActionId::EXTENSION_ACTION;
+}
+
+gfx::Image OmniboxExtensionAction::GetIconImage() const {
+  return icon_image_;
 }
