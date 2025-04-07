@@ -20,6 +20,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/accessibility/ax_mode.h"
+#include "ui/accessibility/ax_node_id_forward.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "base/callback_list.h"
@@ -42,13 +43,14 @@ class WebContents;
 }  // namespace content
 
 namespace ui {
+class AXTreeID;
 struct AXTreeUpdate;
 }  // namespace ui
 
 namespace tree_fixing {
 
 using MainNodeIdentificationCallback =
-    base::OnceCallback<void(ui::AXTreeID, ui::AXNodeID)>;
+    base::OnceCallback<void(const ui::AXTreeID&, ui::AXNodeID)>;
 
 using ScreenshotCallback = base::OnceCallback<void(SkBitmap)>;
 
@@ -84,10 +86,13 @@ class AXTreeFixingServicesRouter
 
    private:
     void TryIdentifyMainNode();
-    void OnMainNodeIdentified(ui::AXTreeID tree_id, ui::AXNodeID node_id);
+    void OnMainNodeIdentified(const ui::AXTreeID& tree_id,
+                              ui::AXNodeID node_id);
 
     uint32_t retry_attempts_ = 0;
     raw_ptr<AXTreeFixingServicesRouter> router_;
+    base::WeakPtrFactory<AXTreeFixingWebContentsObserver> weak_ptr_factory_{
+        this};
   };
 
   explicit AXTreeFixingServicesRouter(Profile* profile);
@@ -114,7 +119,7 @@ class AXTreeFixingServicesRouter
 
  private:
   // AXTreeFixingScreenAIService::MainNodeIdentificationDelegate overrides:
-  void OnMainNodeIdentified(ui::AXTreeID tree_id,
+  void OnMainNodeIdentified(const ui::AXTreeID& tree_id,
                             ui::AXNodeID node_id,
                             int request_id) override;
   void OnServiceStateChanged(bool service_ready) override;
@@ -160,7 +165,7 @@ class AXTreeFixingServicesRouter
   base::ScopedObservation<ui::AXPlatform, ui::AXModeObserver>
       ax_mode_observation_{this};
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  base::WeakPtrFactory<AXTreeFixingServicesRouter> weak_factory_{this};
+  base::WeakPtrFactory<AXTreeFixingServicesRouter> weak_ptr_factory_{this};
 };
 
 }  // namespace tree_fixing

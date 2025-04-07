@@ -52,7 +52,7 @@ class AXTreeFixingScreenAIService final {
     // requests in parallel and uniquely identify each response. It is the
     // responsibility of the client to handle the logic behind a request_id,
     // this service simply passes the id through.
-    virtual void OnMainNodeIdentified(ui::AXTreeID tree_id,
+    virtual void OnMainNodeIdentified(const ui::AXTreeID& tree_id,
                                       ui::AXNodeID node_id,
                                       int request_id) = 0;
 

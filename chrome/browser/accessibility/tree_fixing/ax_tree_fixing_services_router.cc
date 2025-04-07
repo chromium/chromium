@@ -17,6 +17,7 @@
 #include "content/public/browser/render_widget_host_iterator.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/accessibility/accessibility_features.h"
+#include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_tree_update.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -45,7 +46,7 @@ void AXTreeFixingServicesRouter::AXTreeFixingWebContentsObserver::
       web_contents()->RequestAXTreeSnapshotWithinBrowserProcess(),
       base::BindOnce(&AXTreeFixingServicesRouter::
                          AXTreeFixingWebContentsObserver::OnMainNodeIdentified,
-                     base::Unretained(this)));
+                     weak_ptr_factory_.GetWeakPtr()));
 
   // If the request was not processed, it likely means that the accessibility
   // engine is still spinning-up (e.g. no root BrowserAccessibilityManager yet).
@@ -56,13 +57,13 @@ void AXTreeFixingServicesRouter::AXTreeFixingWebContentsObserver::
         FROM_HERE,
         base::BindOnce(&AXTreeFixingServicesRouter::
                            AXTreeFixingWebContentsObserver::TryIdentifyMainNode,
-                       base::Unretained(this)),
+                       weak_ptr_factory_.GetWeakPtr()),
         base::Seconds(retry_attempts_));
   }
 }
 
 void AXTreeFixingServicesRouter::AXTreeFixingWebContentsObserver::
-    OnMainNodeIdentified(ui::AXTreeID tree_id, ui::AXNodeID node_id) {
+    OnMainNodeIdentified(const ui::AXTreeID& tree_id, ui::AXNodeID node_id) {
   retry_attempts_ = 0;
   web_contents()->ApplyAXTreeFixingResult(tree_id, node_id,
                                           ax::mojom::Role::kMain);
@@ -75,7 +76,7 @@ AXTreeFixingServicesRouter::AXTreeFixingServicesRouter(Profile* profile)
   pref_change_registrar_.Add(
       prefs::kAccessibilityAXTreeFixingEnabled,
       base::BindRepeating(&AXTreeFixingServicesRouter::ToggleEnabledState,
-                          weak_factory_.GetWeakPtr()));
+                          weak_ptr_factory_.GetWeakPtr()));
 
   // If the AXTreeFixing feature flag is not enabled, do not initialize.
   if (!features::IsAXTreeFixingEnabled()) {
@@ -88,7 +89,7 @@ AXTreeFixingServicesRouter::AXTreeFixingServicesRouter(Profile* profile)
     accessibility_status_subscription_ =
         accessibility_manager->RegisterCallback(base::BindRepeating(
             &AXTreeFixingServicesRouter::OnAccessibilityStatusEvent,
-            base::Unretained(this)));
+            weak_ptr_factory_.GetWeakPtr()));
   }
 #else
   ax_mode_observation_.Observe(&ui::AXPlatform::GetInstance());
@@ -141,9 +142,10 @@ void AXTreeFixingServicesRouter::MakeMainNodeRequestToScreenAI(
   next_screen_ai_request_id_++;
 }
 
-void AXTreeFixingServicesRouter::OnMainNodeIdentified(ui::AXTreeID tree_id,
-                                                      ui::AXNodeID node_id,
-                                                      int request_id) {
+void AXTreeFixingServicesRouter::OnMainNodeIdentified(
+    const ui::AXTreeID& tree_id,
+    ui::AXNodeID node_id,
+    int request_id) {
   CHECK(!pending_screen_ai_callbacks_.empty());
 
   // Find the callback associated with the returned request ID, and call it with
