@@ -141,6 +141,42 @@
     <option>..</option>
   </select>
 
+  <!-- <selectedcontent> as descendant of <div>, <span> -->
+  <select>
+    <button>
+      <div>
+        <selectedcontent></selectedcontent>
+      </div>
+    </button>
+  </select>
+
+  <select>
+    <button>
+      <span>
+        <selectedcontent></selectedcontent>
+      </span>
+    </button>
+  </select>
+
+  <!-- Allowed phrasing content as descendant of <button> and <div> -->
+  <select>
+    <button>
+      <div>
+        <small>Text</small>
+      </div>
+      <small>Text</small>
+    </button>
+  </select>
+
+  <select>
+    <button>
+      <selectedcontent></selectedcontent>
+      <svg width="100" height="100">
+        <circle cx="50" cy="50" r="40" stroke="black" stroke-width="3" fill="red" />
+      </svg>
+    </button>
+  </select>
+
   <!-- <selectedcontent> and <option> content with multiple levels of children -->
   <select>
     <button>
@@ -342,6 +378,18 @@
         console.log("<script> element");
       </script>
     </option>
+  </select>
+
+  <!-- Comments -->
+  <select>
+    <!-- 1 -->
+    <optgroup>
+      <!-- 2 -->
+      <option>
+        <!-- 3 -->
+        ..
+      </option>
+    </optgroup>
   </select>
 
 <script>

@@ -17,6 +17,20 @@ CONSOLE WARNING: A selectedcontent tag was parsed inside of a <select> which was
 CONSOLE WARNING: A button tag was parsed inside of a <select> which was not inserted into the document. This is not valid HTML and the behavior may be changed in future versions of chrome.
 CONSOLE WARNING: A selectedcontent tag was parsed inside of a <select> which was not inserted into the document. This is not valid HTML and the behavior may be changed in future versions of chrome.
 CONSOLE WARNING: A button tag was parsed inside of a <select> which was not inserted into the document. This is not valid HTML and the behavior may be changed in future versions of chrome.
+CONSOLE WARNING: A div tag was parsed inside of a <select> which was not inserted into the document. This is not valid HTML and the behavior may be changed in future versions of chrome.
+CONSOLE WARNING: A selectedcontent tag was parsed inside of a <select> which was not inserted into the document. This is not valid HTML and the behavior may be changed in future versions of chrome.
+CONSOLE WARNING: A button tag was parsed inside of a <select> which was not inserted into the document. This is not valid HTML and the behavior may be changed in future versions of chrome.
+CONSOLE WARNING: A span tag was parsed inside of a <select> which was not inserted into the document. This is not valid HTML and the behavior may be changed in future versions of chrome.
+CONSOLE WARNING: A selectedcontent tag was parsed inside of a <select> which was not inserted into the document. This is not valid HTML and the behavior may be changed in future versions of chrome.
+CONSOLE WARNING: A button tag was parsed inside of a <select> which was not inserted into the document. This is not valid HTML and the behavior may be changed in future versions of chrome.
+CONSOLE WARNING: A div tag was parsed inside of a <select> which was not inserted into the document. This is not valid HTML and the behavior may be changed in future versions of chrome.
+CONSOLE WARNING: A small tag was parsed inside of a <select> which was not inserted into the document. This is not valid HTML and the behavior may be changed in future versions of chrome.
+CONSOLE WARNING: A small tag was parsed inside of a <select> which was not inserted into the document. This is not valid HTML and the behavior may be changed in future versions of chrome.
+CONSOLE WARNING: A button tag was parsed inside of a <select> which was not inserted into the document. This is not valid HTML and the behavior may be changed in future versions of chrome.
+CONSOLE WARNING: A selectedcontent tag was parsed inside of a <select> which was not inserted into the document. This is not valid HTML and the behavior may be changed in future versions of chrome.
+CONSOLE WARNING: A svg tag was parsed inside of a <select> which was not inserted into the document. This is not valid HTML and the behavior may be changed in future versions of chrome.
+CONSOLE WARNING: A circle tag was parsed inside of a <select> which was not inserted into the document. This is not valid HTML and the behavior may be changed in future versions of chrome.
+CONSOLE WARNING: A button tag was parsed inside of a <select> which was not inserted into the document. This is not valid HTML and the behavior may be changed in future versions of chrome.
 CONSOLE WARNING: A selectedcontent tag was parsed inside of a <select> which was not inserted into the document. This is not valid HTML and the behavior may be changed in future versions of chrome.
 CONSOLE WARNING: A span tag was parsed inside of a <select> which was not inserted into the document. This is not valid HTML and the behavior may be changed in future versions of chrome.
 CONSOLE WARNING: A svg tag was parsed inside of a <select> which was not inserted into the document. This is not valid HTML and the behavior may be changed in future versions of chrome.
@@ -75,7 +89,7 @@ CONSOLE MESSAGE: <script> element
 ..
      
 ..
- 
+     
 .. ..
  
 ..
@@ -114,3 +128,5 @@ some text
 ..
  
  
+ 
+..
