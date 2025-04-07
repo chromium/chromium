@@ -40,6 +40,20 @@ def run(command, **kwargs):
   return subprocess.call(command, **kwargs)
 
 
+def run_and_get_stdout(command, **kwargs):
+  """See the official documentation for subprocess.run.
+
+  Args:
+    command (list[str]): command to be executed
+
+  Returns:
+    str: stdout for the executed command
+  """
+  print('Executing: ' + ' '.join(shlex.quote(arg) for arg in command))
+  return subprocess.run(command, capture_output=True,
+                        check=True, **kwargs).stdout.decode('utf-8').strip()
+
+
 def gn(out_dir, gn_args, gn_extra=None, **kwargs):
   """ Executes `gn gen`.
 
