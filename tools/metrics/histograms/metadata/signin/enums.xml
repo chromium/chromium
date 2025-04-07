@@ -1009,6 +1009,11 @@ chromium-metrics-reviews@google.com.
   <int value="37" label="User disabled allow chrome sign-in toggle">
     User disabled &quot;Allow Chrome sign-in&quot; toggle.
   </int>
+  <int value="38"
+      label="Signed out before a forced sign-in with a supervised account">
+    A sign-out was triggered to allow a switch to a supervised account that was
+    added to the device. Android only.
+  </int>
 </enum>
 
 <enum name="SigninSSOIdentityListRequestCacheState">
