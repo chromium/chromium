@@ -351,6 +351,7 @@
 <translation id="2438248248625638801">جارٍ إنشاء عناوين التسجيلات</translation>
 <translation id="2446553403094072641">دقة النقطة العائمة</translation>
 <translation id="2448312741937722512">النوع</translation>
+<translation id="2448857983905133469">أدوات الدراسة</translation>
 <translation id="2468124392950503650">اختَر طلبًا لإنشاء الصور أو اطّلِع على <ph name="BEGIN_LINK_PROMPTING_GUIDE" />دليل الطلبات<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">‏حسِّن نصًا سبقت كتابته أو أنشئ مسوّدة باستخدام ميزة "مساعدة في الكتابة" التي تستند إلى تكنولوجيات الذكاء الاصطناعي من Google</translation>
 <translation id="2475982808118771221">حدث خطأ</translation>
@@ -449,6 +450,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> ميلي أمبير</translation>
 <translation id="3056720590588772262">نقطة النهاية</translation>
 <translation id="3060579846059757016">المخططات</translation>
+<translation id="3060798442805232711">الميكروفون مُستخدَم حاليًا بواسطة "أدوات الدراسة"</translation>
 <translation id="3061850252076394168">تفعيل ميزة "سماع الاختيار"</translation>
 <translation id="3066772729299747758">يوم الثلاثاء</translation>
 <translation id="3069085583900247081">تعذّر إجراء اختبار</translation>
@@ -910,6 +912,7 @@
 <translation id="5170568018924773124">العرض في المجلد</translation>
 <translation id="517075088756846356">عليك فصل كابل الطاقة الخاص بجهاز "<ph name="DEVICE_NAME" />" عن مصدر الطاقة وإعادة توصيله لمواصلة عملية التحديث</translation>
 <translation id="5180108905184566358">أشجار الباوباب</translation>
+<translation id="5180431943345994173">أزال المُعلّم المحتوى في "أدوات الدراسة"</translation>
 <translation id="5180712487038406644">معبِّر</translation>
 <translation id="5190187232518914472">‏استرجِع ذكرياتك المفضّلة. ولإضافة أي ألبومات أو تعديلها، انتقِل إلى <ph name="LINK_BEGIN" />صور Google<ph name="LINK_END" />.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
@@ -1003,6 +1006,7 @@
 <translation id="5628106863521633649">اللغات المتاحة</translation>
 <translation id="5630438231335788050">فن الباوهاوس</translation>
 <translation id="5631759159893697722">نبذة مختصرة</translation>
+<translation id="5655084389678168978">أضاف المُعلّم محتوى جديدًا في "أدوات الدراسة"</translation>
 <translation id="5655283760733841251">زيادة سطوع لوحة المفاتيح</translation>
 <translation id="5655296450510165335">تسجيل الجهاز</translation>
 <translation id="5655776422854483175">ما مِن مهام طباعة</translation>
@@ -1026,7 +1030,6 @@
 <translation id="5760715441271661976">حالة المدخل</translation>
 <translation id="5763838252932650682">إعادة تشغيل "<ph name="APP_NAME" />" وتحديثه</translation>
 <translation id="576835345334454681">زيادة سطوع الشاشة</translation>
-<translation id="5775340474232476653">أنهى مُعلّمك الصف</translation>
 <translation id="5779818640587041940">إبقاء الشاشة مشغَّلة أثناء التسجيل</translation>
 <translation id="57838592816432529">كتم الصوت</translation>
 <translation id="5784136236926853061">‏وقت استجابة بروتوكول HTTP طويل.</translation>
@@ -1529,6 +1532,7 @@
 <translation id="7971535376154084247">عناصر التحكّم العامة</translation>
 <translation id="7977800524392185497">للانضمام إلى شبكة <ph name="NETWORK_NAME" />، انتقِل إلى "الإعدادات".</translation>
 <translation id="7978412674231730200">مفتاح خاص</translation>
+<translation id="7979468455552394856">الطلاب متّصلون حاليًا بجلسة "أدوات الدراسة"</translation>
 <translation id="7982789257301363584">الشبكة</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{تم بدء تشغيل "<ph name="APP_NAME_1" />" تلقائيًا}zero{تم بدء تشغيل # تطبيق تلقائيًا}two{تم بدء تشغيل تطبيقَين تلقائيًا}few{تم بدء تشغيل # تطبيقات تلقائيًا}many{تم بدء تشغيل # تطبيقًا تلقائيًا}other{تم بدء تشغيل # تطبيق تلقائيًا}}</translation>
 <translation id="7994702968232966508">‏طريقة EAP</translation>

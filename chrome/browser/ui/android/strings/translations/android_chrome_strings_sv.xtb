@@ -77,6 +77,7 @@
 <translation id="1298077576058087471">Spara upp till 60 % data och läs dagens nyheter</translation>
 <translation id="1303339473099049190">Det gick inte att hitta lösenordet. Kontrollera stavningen och försök igen.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> – Skickades från <ph name="DEVICE_NAME" /></translation>
+<translation id="1318262688555255786">Dela länk till webbsidan <ph name="PAGE_TITLE" />. Källa: <ph name="PAGE_URL" /></translation>
 <translation id="1320912611264252795">Mappar i flöde för att spara bokmärken har öppnats över hela skärmen</translation>
 <translation id="1327257854815634930">Navigeringshistoriken har öppnats</translation>
 <translation id="1331212799747679585">Det går inte att uppdatera Chrome. Fler alternativ</translation>
@@ -515,6 +516,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="3435465986463792564">Har du många fönster? Du kan hantera dem härifrån</translation>
 <translation id="3435575784518354875">Om du vill behålla åtkomsten till dina lösenord kan du exportera dem nu, uppdatera Google Play-tjänster och sedan importera dem till Google Lösenordshantering. <ph name="BEGIN_LINK" />Se fullständiga instruktioner<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">Säkerhet</translation>
+<translation id="3435914367318771664">Lägg till fliken i en ny grupp</translation>
 <translation id="3439276997620616816">Du hittar dina senaste flikar här</translation>
 <translation id="3443221991560634068">Läs in den aktuella sidan igen</translation>
 <translation id="3444179773590444986">Vill du dela feedback om mörkt tema för webbplatser?</translation>
@@ -782,6 +784,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="4684427112815847243">Synkronisera allt</translation>
 <translation id="4685741273709472646">Välj i rullgardinsmenyn</translation>
 <translation id="4687718960473379118">Föreslagna annonser på webbplatser</translation>
+<translation id="468924408576231679">Kopiera länk till webbsidan <ph name="PAGE_TITLE" />. Källa: <ph name="PAGE_URL" /></translation>
 <translation id="469286762610133730">Få bättre innehåll</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 och <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> till}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 och <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> till}}</translation>
 <translation id="4698061626562952596">Granska dina inaktiva flikar här</translation>
@@ -1124,6 +1127,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="6205314730813004066">Annonsintegritet</translation>
 <translation id="6210748933810148297">Inte <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Förhandsgranskar sidan</translation>
+<translation id="6212567362666004597">Lägg till fliken i gruppen</translation>
 <translation id="6221633008163990886">Lås upp om du vill exportera dina lösenord</translation>
 <translation id="6225572914528673855">Adressfält</translation>
 <translation id="6232535412751077445">Om du aktiverar Do Not Track inkluderas en begäran i din surftrafik. Eventuella effekter beror på om webbplatsen svarar på begäran och hur begäran tolkas.
@@ -1151,6 +1155,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6324916366299863871">Redigera genväg</translation>
 <translation id="6324977638108296054">Det gick inte att skapa en länk till markeringen</translation>
 <translation id="6333140779060797560">Dela via <ph name="APPLICATION" /></translation>
+<translation id="6335454563754888572">Redigera webbadress som pekar på sidan på: <ph name="PAGE_URL" /></translation>
 <translation id="6337234675334993532">Kryptering</translation>
 <translation id="6340526405444716530">Anpassning</translation>
 <translation id="6341580099087024258">Fråga var filerna ska sparas</translation>
@@ -1194,6 +1199,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6486420406192123355">Den här PDF-filen kommer från en webbplats som använder en osäker anslutning</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{Filen har laddats ned}other{# nedladdningar har slutförts}}</translation>
 <translation id="6508722015517270189">Starta om Chrome</translation>
+<translation id="6513924416597632811">Kopiera länken till sökresultatsidan för: <ph name="SEARCH_QUERY" />. Källa: <ph name="PAGE_URL" /></translation>
 <translation id="6518133107902771759">Verifiera</translation>
 <translation id="6527303717912515753">Dela</translation>
 <translation id="652948702951888897">Chrome-historik</translation>
@@ -1605,6 +1611,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="8221401890884589479">Du kan blockera webbplatser som du inte vill ha. Chrome raderar även webbplatser som är äldre än 30 dagar automatiskt. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="8221985041778490865">Radera webbinformation</translation>
 <translation id="8223642481677794647">Menyn med flödeskort</translation>
+<translation id="82296173028782770">Redigera sökfråga: <ph name="SEARCH_QUERY" /></translation>
 <translation id="8236063039629122676">Med ett svep åt höger kan du nu återgå till tidigare sidor du besökt, medan ett svep åt vänster tar dig framåt</translation>
 <translation id="8236097722223016103">Lägg till i bokmärken</translation>
 <translation id="8243077599929149377">Lägg till ditt användarnamn</translation>
@@ -1753,6 +1760,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="8890668505403261809">Sök bland inkognitoflikar</translation>
 <translation id="8898822736010347272">Skickar webbadresser till vissa sidor som du besöker, vissa systemuppgifter och visst sidinnehåll till Google för att upptäcka och blockera nya hot och skydda alla användare på internet.</translation>
 <translation id="8909135823018751308">Dela …</translation>
+<translation id="8918299437379122615">Dela länken till sökresultatsidan för: <ph name="SEARCH_QUERY" />. Källa: <ph name="PAGE_URL" /></translation>
 <translation id="8922289737868596582">Ladda ned sidor via knappen Fler alternativ så att du kan använda dem offline</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> är redo</translation>

@@ -1633,6 +1633,7 @@
 <translation id="2121825465123208577">调整大小</translation>
 <translation id="2123766928840368256">另选一个文件</translation>
 <translation id="2124930039827422115">{1,plural, =1{已有一位用户给出了 <ph name="AVERAGE_RATING" /> 的评分。}other{已有 # 位用户给出评分，平均评分为 <ph name="AVERAGE_RATING" />。}}</translation>
+<translation id="2125715366913703594">探索扩展程序(&amp;E)</translation>
 <translation id="2126167708562367080">您的管理员已停用同步。</translation>
 <translation id="2127372758936585790">低功率充电器</translation>
 <translation id="212862741129535676">频率状态占用率</translation>

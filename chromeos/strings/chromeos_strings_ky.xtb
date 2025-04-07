@@ -351,6 +351,7 @@
 <translation id="2438248248625638801">Жаздыруунун аталыштары түзүлүүдө</translation>
 <translation id="2446553403094072641">Калкыма чекиттин тактыгы</translation>
 <translation id="2448312741937722512">Түрү</translation>
+<translation id="2448857983905133469">Окуу куралдары</translation>
 <translation id="2468124392950503650">Түзүү үчүн сурамды тандап же <ph name="BEGIN_LINK_PROMPTING_GUIDE" />сурам боюнча жетектемени<ph name="END_LINK_PROMPTING_GUIDE" /> караңыз</translation>
 <translation id="2472215337771558851">"Жазууга жардам бер" функциясы Google сунуштаган ЖИ технологиялары аркылуу жумушчу вариант түзүп же учурдагы текстти өркүндөтүүгө жардам берет</translation>
 <translation id="2475982808118771221">Ката кетти</translation>
@@ -449,6 +450,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />мА</translation>
 <translation id="3056720590588772262">Аяктоо чекити</translation>
 <translation id="3060579846059757016">Тышкы сызыктар</translation>
+<translation id="3060798442805232711">Окуу куралдары микрофонуңузду колдонуп жатат</translation>
 <translation id="3061850252076394168">"Басып туруп угуңуз" функциясын иштетүү</translation>
 <translation id="3066772729299747758">бейшембиде</translation>
 <translation id="3069085583900247081">Сыналган жок</translation>
@@ -910,6 +912,7 @@
 <translation id="5170568018924773124">Куржунда көрсөтүү</translation>
 <translation id="517075088756846356">Жаңыртуу процессин улантуу үчүн <ph name="DEVICE_NAME" /> түзмөгүнүн электр кубатынын кабелин сууруп, кайра сайыңыз</translation>
 <translation id="5180108905184566358">баобаб дарактары</translation>
+<translation id="5180431943345994173">Мугалимиңиз Окуу куралдарындагы материалды өчүрдү</translation>
 <translation id="5180712487038406644">Даана</translation>
 <translation id="5190187232518914472">Эсте калган учурларды кайра көз алдыңыздан өткөрүңүз. Альбомдорду кошуу же түзөтүү үчүн <ph name="LINK_BEGIN" />Google Фотого<ph name="LINK_END" /> өтүңүз.</translation>
 <translation id="5212593641110061691">Таблоид</translation>
@@ -1003,6 +1006,7 @@
 <translation id="5628106863521633649">Жеткиликтүү тилдер</translation>
 <translation id="5630438231335788050">баухаус</translation>
 <translation id="5631759159893697722">аннотация</translation>
+<translation id="5655084389678168978">МугалимиңизОкуу куралдарына жаңы материал кошту</translation>
 <translation id="5655283760733841251">Баскычтоптун жарыктыгын көбөйтүү</translation>
 <translation id="5655296450510165335">Түзмөктү каттоо</translation>
 <translation id="5655776422854483175">Басып чыгаруу тапшырмалары жок</translation>
@@ -1026,7 +1030,6 @@
 <translation id="5760715441271661976">Порталдын абалы</translation>
 <translation id="5763838252932650682"><ph name="APP_NAME" /> колдонмосун өчүрүп күйгүзүү жана жаңыртуу</translation>
 <translation id="576835345334454681">Дисплейдин жарыктыгын көбөйтүү</translation>
-<translation id="5775340474232476653">Мугалим сабакты бүтүрдү</translation>
 <translation id="5779818640587041940">Жаздырып жатканда экранды күйүк калтырыңыз</translation>
 <translation id="57838592816432529">Үнсүз</translation>
 <translation id="5784136236926853061">HTTP күтүү убакыты жогору</translation>
@@ -1529,6 +1532,7 @@
 <translation id="7971535376154084247">Жалпы башкаруу элементтери</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> тармагына кошулуу үчүн Параметрлерге өтүңүз</translation>
 <translation id="7978412674231730200">Жеке ачкыч</translation>
+<translation id="7979468455552394856">Окуучулар класс куралдарына туташтырылды</translation>
 <translation id="7982789257301363584">Тармак</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" колдонмосу автоматтык түрдө ачылды}other{# колдонмо автоматтык түрдө ачылды}}</translation>
 <translation id="7994702968232966508">EAP ыкмасы</translation>

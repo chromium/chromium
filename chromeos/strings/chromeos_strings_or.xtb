@@ -351,6 +351,7 @@
 <translation id="2438248248625638801">ରେକର୍ଡିଂ ଟାଇଟେଲ ତିଆରି କରାଯାଉଛି</translation>
 <translation id="2446553403094072641">ଫ୍ଲୋଟିଂ ପଏଣ୍ଟର ସଠିକତା</translation>
 <translation id="2448312741937722512">ପ୍ରକାର</translation>
+<translation id="2448857983905133469">କ୍ଲାସ ଟୁଲ</translation>
 <translation id="2468124392950503650"><ph name="BEGIN_LINK_PROMPTING_GUIDE" />ପ୍ରମ୍ପ୍ଟ ଗାଇଡ<ph name="END_LINK_PROMPTING_GUIDE" /> ତିଆରି କରିବା କିମ୍ବା ଦେଖିବା ପାଇଁ ପ୍ରମ୍ପ୍ଟକୁ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="2472215337771558851">ଏକ ଡ୍ରାଫ୍ଟ ତିଆରି କରିବା କିମ୍ବା Google AI ଦ୍ୱାରା ପରିଚାଳିତ ପୂର୍ବରୁ ଥିବା କାର୍ଯ୍ୟକୁ ରିଫାଇନ କରିବା ପାଇଁ 'ଲେଖିବାରେ ମୋତେ ସାହାଯ୍ୟ କରନ୍ତୁ'କୁ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="2475982808118771221">ଏକ ତ୍ରୁଟି ଦେଖାଦେଲା</translation>
@@ -449,6 +450,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">ଏଣ୍ଡପଏଣ୍ଟ</translation>
 <translation id="3060579846059757016">ଆଉଟଲାଇନଗୁଡ଼ିକ</translation>
+<translation id="3060798442805232711">କ୍ଲାସ ଟୁଲଗୁଡ଼ିକ ତୁମ ମାଇକ୍ରୋଫୋନ ବ୍ୟବହାର କରୁଛି</translation>
 <translation id="3061850252076394168">ସିଲେକ୍ଟ ଟୁ ସ୍ପିକ ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="3066772729299747758">ମଙ୍ଗଳବାର ଦିନ</translation>
 <translation id="3069085583900247081">ଟେଷ୍ଟ ବିଫଳ ହୋଇଛି</translation>
@@ -910,6 +912,7 @@
 <translation id="5170568018924773124">ଫୋଲ୍ଡରରେ ଦେଖାନ୍ତୁ</translation>
 <translation id="517075088756846356">ଅପଡେଟ ପ୍ରକ୍ରିୟା ଜାରି ରଖିବାକୁ <ph name="DEVICE_NAME" />ର ପାୱାର କେବୁଲକୁ ଅନପ୍ଲଗ କରି ପୁଣି ପ୍ଲଗ କରନ୍ତୁ</translation>
 <translation id="5180108905184566358">ବାଓବାବ ଗଛ</translation>
+<translation id="5180431943345994173">ତୁମ ଶିକ୍ଷକ କ୍ଲାସ ଟୁଲରୁ ବିଷୟବସ୍ତୁ କାଢ଼ି ଦେଇଛନ୍ତି</translation>
 <translation id="5180712487038406644">ଏକ୍ସପ୍ରେସିଭ</translation>
 <translation id="5190187232518914472">ଆପଣଙ୍କର ପ୍ରିୟ ସ୍ମୃତିଗୁଡ଼ିକୁ ପୁନର୍ଜୀବିତ କରନ୍ତୁ। ଆଲବମଗୁଡ଼ିକ ଯୋଗ କରିବା କିମ୍ବା ସେଗୁଡ଼ିକୁ ଏଡିଟ୍ କରିବା ପାଇଁ <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />କୁ ଯାଆନ୍ତୁ।</translation>
 <translation id="5212593641110061691">ଟାବଲଏଡ୍</translation>
@@ -1003,6 +1006,7 @@
 <translation id="5628106863521633649">ଉପଲବ୍ଧ ଭାଷା</translation>
 <translation id="5630438231335788050">ବଉହସ</translation>
 <translation id="5631759159893697722">ସାରାଂଶ</translation>
+<translation id="5655084389678168978">ତୁମ ଶିକ୍ଷକ କ୍ଲାସ ଟୁଲଗୁଡ଼ିକରେ ନୂଆ ବିଷୟବସ୍ତୁ ଯୋଗ କରିଛନ୍ତି</translation>
 <translation id="5655283760733841251">କୀବୋର୍ଡର ଉଜ୍ଜ୍ୱଳତା ବଢ଼ାନ୍ତୁ</translation>
 <translation id="5655296450510165335">ଡିଭାଇସର ପଞ୍ଜିକରଣ</translation>
 <translation id="5655776422854483175">କୌଣସି ପ୍ରିଣ୍ଟ ଜବ ନାହିଁ</translation>
@@ -1026,7 +1030,6 @@
 <translation id="5760715441271661976">ପୋର୍ଟାଲ୍ ସ୍ଥିତି</translation>
 <translation id="5763838252932650682"><ph name="APP_NAME" />କୁ ରିଷ୍ଟାର୍ଟ କରାଯାଇ ଅପଡେଟ କରାଯାଉଛି</translation>
 <translation id="576835345334454681">ଡିସପ୍ଲେର ଉଜ୍ଜ୍ୱଳତା ବଢ଼ାନ୍ତୁ</translation>
-<translation id="5775340474232476653">ତୁମ ଶିକ୍ଷକ କ୍ଲାସକୁ ସମାପ୍ତ କରିଛନ୍ତି</translation>
 <translation id="5779818640587041940">ରେକର୍ଡିଂ କରିବା ସମୟରେ ସ୍କ୍ରିନକୁ ଚାଲୁ ରଖନ୍ତୁ</translation>
 <translation id="57838592816432529">ମ୍ୟୁଟ୍‌</translation>
 <translation id="5784136236926853061">HTTPର ଅଧିକ ଲାଟେନ୍ସି</translation>
@@ -1529,6 +1532,7 @@
 <translation id="7971535376154084247">ସାଧାରଣ ନିୟନ୍ତ୍ରଣଗୁଡ଼ିକ</translation>
 <translation id="7977800524392185497">ଏକ <ph name="NETWORK_NAME" /> ନେଟୱାର୍କରେ ଯୋଗ ଦେବା ପାଇଁ, ସେଟିଂସକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="7978412674231730200">ବ୍ୟକ୍ତିଗତ କୀ</translation>
+<translation id="7979468455552394856">କ୍ଲାସ ଟୁଲଗୁଡ଼ିକ ଛାତ୍ର/ଛାତ୍ରୀମାନଙ୍କ ସହ କନେକ୍ଟ ହୋଇଛି</translation>
 <translation id="7982789257301363584">ନେଟୱାର୍କ</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" ସ୍ୱତଃ ଆରମ୍ଭ ହୋଇଛି}other{# ଆପ୍ସ ସ୍ୱତଃ ଆରମ୍ଭ ହୋଇଛି}}</translation>
 <translation id="7994702968232966508">EAP ପଦ୍ଧତି</translation>

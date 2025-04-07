@@ -351,6 +351,7 @@
 <translation id="2438248248625638801">録音のタイトルを作成しています</translation>
 <translation id="2446553403094072641">浮動小数点数精度</translation>
 <translation id="2448312741937722512">種類</translation>
+<translation id="2448857983905133469">授業用ツール</translation>
 <translation id="2468124392950503650">プロンプトを選択して作成するか、<ph name="BEGIN_LINK_PROMPTING_GUIDE" />プロンプト ガイド<ph name="END_LINK_PROMPTING_GUIDE" />をご覧ください</translation>
 <translation id="2472215337771558851">文書作成サポートを使用すると、Google AI の活用により文章の下書きを作成したり既存の文章を改良したりできます</translation>
 <translation id="2475982808118771221">エラーが発生しました</translation>
@@ -449,6 +450,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">エンドポイント</translation>
 <translation id="3060579846059757016">アウトライン</translation>
+<translation id="3060798442805232711">授業用ツールでマイクを使用しています</translation>
 <translation id="3061850252076394168">「選択して読み上げ」を有効にする</translation>
 <translation id="3066772729299747758">火曜日</translation>
 <translation id="3069085583900247081">テストに失敗しました</translation>
@@ -910,6 +912,7 @@
 <translation id="5170568018924773124">フォルダを開く</translation>
 <translation id="517075088756846356">更新プロセスを続行するには、<ph name="DEVICE_NAME" /> の電源ケーブルを取り外してから、もう一度差し込んでください</translation>
 <translation id="5180108905184566358">バオバブの木々</translation>
+<translation id="5180431943345994173">教師が授業用ツールのコンテンツを削除しました</translation>
 <translation id="5180712487038406644">Expressive</translation>
 <translation id="5190187232518914472">いつでも思い出の写真を。アルバムを追加または編集するには、<ph name="LINK_BEGIN" />Google フォト<ph name="LINK_END" />にアクセスしてください。</translation>
 <translation id="5212593641110061691">タブロイド</translation>
@@ -1003,6 +1006,7 @@
 <translation id="5628106863521633649">対応言語</translation>
 <translation id="5630438231335788050">バウハウス</translation>
 <translation id="5631759159893697722">概要</translation>
+<translation id="5655084389678168978">教師が授業用ツールに新しいコンテンツを追加しました</translation>
 <translation id="5655283760733841251">キーボードの明るさを上げる</translation>
 <translation id="5655296450510165335">デバイスの登録</translation>
 <translation id="5655776422854483175">印刷ジョブなし</translation>
@@ -1026,7 +1030,6 @@
 <translation id="5760715441271661976">ポータル状態</translation>
 <translation id="5763838252932650682"><ph name="APP_NAME" /> を更新して再起動しています</translation>
 <translation id="576835345334454681">ディスプレイの明るさを上げる</translation>
-<translation id="5775340474232476653">教師がクラスを終了しました</translation>
 <translation id="5779818640587041940">録音中は常に画面を表示する</translation>
 <translation id="57838592816432529">ミュート</translation>
 <translation id="5784136236926853061">HTTP レイテンシが高くなっています</translation>
@@ -1529,6 +1532,7 @@
 <translation id="7971535376154084247">一般設定</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> ネットワークに接続するには、[設定] に移動します</translation>
 <translation id="7978412674231730200">秘密鍵</translation>
+<translation id="7979468455552394856">授業用ツールを学生に接続しています</translation>
 <translation id="7982789257301363584">ネットワーク</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{「<ph name="APP_NAME_1" />」が自動的に起動されました}other{# 個のアプリが自動的に起動されました}}</translation>
 <translation id="7994702968232966508">EAP 方式</translation>

@@ -11302,7 +11302,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="8963117664422609631">Idite u postavke web lokacije</translation>
 <translation id="8964927371396953727">Potvrdite identitet da koristite i sačuvate lozinke na računu <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8965037249707889821">Unesite staru lozinku</translation>
-<translation id="8967403839792635452">Razvijate li proširenja? Pratite odjeljak <ph name="BEGIN_LINK" />Novosti<ph name="END_LINK" /> u dokumentaciji za razvojne programere Chromeovog proširenja.</translation>
+<translation id="8967403839792635452">Programirate ekstenzije? Budite u toku (<ph name="BEGIN_LINK" />Šta je novo<ph name="END_LINK" />) uz dokumentaciju programera za ekstenziju za Chrome.</translation>
 <translation id="8967427617812342790">Dodaj na listu za čitanje</translation>
 <translation id="8967548289042494261">Uklanjanje stavke <ph name="VM_NAME" /></translation>
 <translation id="8968527460726243404">Pisanje slika sistema ChromeOS</translation>

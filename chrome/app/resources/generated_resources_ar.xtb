@@ -1255,6 +1255,7 @@
 <translation id="185111092974636561">‏<ph name="BEGIN_PARAGRAPH1" />قبل التسجيل، عليك محو وحدة النظام الأساسي الموثوقة (TPM) ليتمكّن نظام التشغيل <ph name="DEVICE_OS" /> من الحصول على ملكية الجهاز.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />يمكنك أيضًا إيقاف الجهاز الذي يتضمَّن وحدة TPM بالكامل. وستظل بياناتك مخزَّنة بشكل آمن من خلال برمجيات التشفير، إلا أنّ بعض ميزات الأمان، مثل الشهادات المستنِدة إلى الأجهزة، سيتم إيقافها.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />يمكنك تغيير إعدادات TPM عن طريق إعادة التشغيل والدخول إلى إعدادات BIOS/UEFI للنظام. وتختلف الخطوات باختلاف طراز الجهاز. ولمزيد من المعلومات، افتح مستندات نظام التشغيل <ph name="DEVICE_OS" /> على جهاز منفصل قبل إعادة التشغيل: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="1851551847729706116">جارٍ مشاركة <ph name="TAB_NAME" /> مع علامة التبويب هذه</translation>
 <translation id="1852799913675865625">حدث خطأ أثناء محاولة قراءة الملف: <ph name="ERROR_TEXT" />.</translation>
 <translation id="1854180393107901205">إيقاف البث</translation>
 <translation id="1856715684130786728">إضافة موقع...</translation>
@@ -11299,6 +11300,7 @@
 <translation id="8963117664422609631">الانتقال إلى إعدادات الموقع الإلكتروني</translation>
 <translation id="8964927371396953727">يُرجى إثبات هويتك لاستخدام كلمات المرور وحفظها في حسابك (<ph name="ACCOUNT_EMAIL" />)</translation>
 <translation id="8965037249707889821">إدخال كلمة المرور القديمة</translation>
+<translation id="8967403839792635452">‏هل تعمل على تطوير إضافات؟ يمكنك الاطّلاع على <ph name="BEGIN_LINK" />كل جديد<ph name="END_LINK" /> من خلال مستندات مطوّري "إضافة Chrome".</translation>
 <translation id="8967427617812342790">الإضافة إلى قائمة القراءة</translation>
 <translation id="8967548289042494261">إزالة "<ph name="VM_NAME" />"</translation>
 <translation id="8968527460726243404">‏كاتب الصور لنظام ChromeOS</translation>

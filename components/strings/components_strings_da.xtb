@@ -1290,7 +1290,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3248329428895535435">Vis ikke for dette website</translation>
 <translation id="3249102948665905108">Filupload til <ph name="CLOUD_PROVIDER" /> er gennemført med fejl</translation>
 <translation id="3252772880526154546">Arkitektur</translation>
-<translation id="3253225298092156258">Ikke tilgængeligt</translation>
+<translation id="3253225298092156258">Ikke tilgængelig</translation>
 <translation id="3254301855501243548">18 x 22 tommer</translation>
 <translation id="3255926992597692024">Chromium forsøger at ændre indstillinger for udfyldning af betalingsmetoder.</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, tryk på Tab-tasten efterfulgt af Enter for hurtigt at oprette en ny begivenhed i Google Kalender</translation>
@@ -1924,6 +1924,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4282346679996504092">Underretninger for dette produkt er deaktiveret, og bogmærket er fjernet</translation>
 <translation id="4285498937028063278">Frigør</translation>
 <translation id="4287495839370498922">Forbedret privatliv vedrørende annoncering i Chrome</translation>
+<translation id="4288101205645068104">Slet køretøj</translation>
 <translation id="4290920330097335010">Tillad aldrig</translation>
 <translation id="4296207570293932800">En ny privatlivsfunktion for annoncer er nu tilgængelig</translation>
 <translation id="4297502707443874121">Miniature for siden <ph name="THUMBNAIL_PAGE" /></translation>
@@ -4198,6 +4199,7 @@ Yderligere oplysninger:
 <translation id="8280630997017109758">Bakke 11</translation>
 <translation id="8281730697546299650">Andre privatlivsfunktioner til annoncer er nu tilgængelige</translation>
 <translation id="8281886186245836920">Spring over</translation>
+<translation id="8282292167096638950">Slet kørekort</translation>
 <translation id="8282409409360764263">Havepleje</translation>
 <translation id="8282947398454257691">Kende dit unikke enheds-id</translation>
 <translation id="8284769179630993263">Administrer Beskyttet browsing m.m. i Chrome-indstillingerne</translation>
@@ -4225,6 +4227,7 @@ Yderligere oplysninger:
 <translation id="8321476692217554900">notifikationer</translation>
 <translation id="8322402665880479974">Senge og hovedgærder</translation>
 <translation id="8323505966575306467">Få bedre beskyttelse af dine adgangskoder</translation>
+<translation id="832547548543012337">Slet pas</translation>
 <translation id="832567874344484841">Morgenmadsprodukter</translation>
 <translation id="8329068931308448247">Konvolut nr. 14</translation>
 <translation id="8332188693563227489">Adgangen til <ph name="HOST_NAME" /> blev nægtet</translation>

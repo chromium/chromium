@@ -554,6 +554,12 @@ Se la policy non viene configurata, i link vengono aperti per impostazione prede
 <translation id="1417888712677507140">Blocca le finestre di dialogo JavaScript attivate da un diverso frame secondario di origine.</translation>
 <translation id="1418387035898607074">Salta i controlli di Navigazione sicura per i file scaricati da fonti attendibili</translation>
 <translation id="1419020637569060510">Aggiungi limitazioni all'utilizzo di un account gestito come account secondario su ChromeOS</translation>
+<translation id="1423359855587524289">Se la policy viene attivata o se non viene configurata, l'app può utilizzare
+l'autorizzazione delle notifiche "temporanee" di iOS per presentare le notifiche nel
+Centro notifiche di iOS.
+
+Se la policy viene disattivata, l'app non utilizzerà notifiche
+temporanee.</translation>
 <translation id="142346659686073702">Consenti agli utenti non affiliati di usare Crostini</translation>
 <translation id="1423900783955065155">Questa policy consente di stabilire se una pagina con l'intestazione <ph name="CACHE_CONTROL_NO_STORE_NAME" /> può essere memorizzata o meno nella cache back-forward. L'impostazione del sito web per questa intestazione potrebbe non prevedere il ripristino della pagina dalla cache back-forward perché alcune informazioni sensibili potrebbero essere ancora visualizzate dopo il ripristino, anche se non sono più accessibili.
 
@@ -9085,6 +9091,7 @@ Se questa policy viene impostata su False, viene attivato il comportamento prece
 <translation id="7366637365754181686">Attiva il reporting su cloud degli indicatori di sicurezza utente</translation>
 <translation id="7366948865469126526">Disattiva conversione unità di Risposte rapide</translation>
 <translation id="7367734504783638685">Sincronizzazione delle password tra fornitori di servizi SSO di terze parti e dispositivi Chrome</translation>
+<translation id="7372818045062294211">Consenti all'app di utilizzare l'autorizzazione delle notifiche temporanee</translation>
 <translation id="7372831798009983116">Attiva la funzione di accessibilità di clic automatico</translation>
 <translation id="7373200034079131670">Riavvia all'uscita dell'utente se si avvia Android o una VM.</translation>
 <translation id="7374784840090523241">Imposta come predefinita la creazione di passkey in altri spazi di archiviazione, ad esempio il profilo <ph name="PRODUCT_NAME" />.</translation>
@@ -10442,6 +10449,7 @@ Se questa policy viene impostata su <ph name="PROVISION_MANAGED_CLIENT_CERTIFICA
 <translation id="8421202694245456861">Configura la funzionalità per i sottotitoli di <ph name="CLASS_TOOLS_NAME" /></translation>
 <translation id="8422658829373743789">Gestisci il nuovo comportamento per l'esecuzione di eventi sui controlli dei moduli disattivati</translation>
 <translation id="8423237137411858515">Mantieni i file locali in modalità di sola lettura</translation>
+<translation id="8424056332208748750">Non consentire all'app di utilizzare l'autorizzazione delle notifiche temporanee</translation>
 <translation id="8424255554404582727">Imposta la rotazione predefinita dello schermo, riapplicata a ogni riavvio</translation>
 <translation id="8426231401662877819">Ruota lo schermo in senso orario di 90°</translation>
 <translation id="8426326725481825773">Questa policy determina il comportamento della rimappatura dei tasti Inizio/Fine
@@ -10584,6 +10592,7 @@ Il rollback alla versione 106 o precedente di <ph name="PRODUCT_OS_NAME" /> non 
 <translation id="8520064498689833152">Viene forzato l'uso almeno del livello medio di SafeSearch nella Ricerca Google e nella Modalità con restrizioni di YouTube</translation>
 <translation id="8520950040439618600">Consenti metodi di autenticazione con PIN e accoppiamento per gli host di accesso remoto</translation>
 <translation id="8524334245528364388">URL per un file JSON con un elenco di server di stampa.</translation>
+<translation id="8525282442896658040">Consente all'app di utilizzare l'autorizzazione delle notifiche temporanee su iOS</translation>
 <translation id="8525526490824335042">Container Linux</translation>
 <translation id="8526745614158856826">La configurazione della policy consente di elencare i siti a cui viene concessa automaticamente l'autorizzazione di accesso a tutti i dispositivi disponibili.
 

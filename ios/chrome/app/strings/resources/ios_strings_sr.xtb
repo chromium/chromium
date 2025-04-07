@@ -1127,6 +1127,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="573974402615125334">Да бисте делили групе картица, придруживали им се и сарађивали у њима, синхронизујте историју и картице</translation>
 <translation id="5740123193752401435">Претражите картице…</translation>
 <translation id="5744274077973758795">Обавештења су укључена за <ph name="FEATURE_NAME" /></translation>
+<translation id="5745598824054949526">Текст није пронађен</translation>
 <translation id="574762237186762643">Догађаји</translation>
 <translation id="5749158352074143502">Наставите са овом картицом</translation>
 <translation id="5753021559215751319">Сачувај лозинку</translation>
@@ -1290,6 +1291,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6410883413783534063">Отворите картице да бисте истовремено посетили различите странице</translation>
 <translation id="6416807286621280684">Праћени пакети и новости о испоруци.</translation>
 <translation id="6418346271604475326">Припрема PDF датотеке</translation>
+<translation id="6421038304268477484">Преведени текст</translation>
 <translation id="6429213933892582367">Отворите Опције лозинки</translation>
 <translation id="6434591244308415567">Дошло је до грешке. Пробајте поново касније.</translation>
 <translation id="6435307030888827407">Останите одјављени</translation>
@@ -1968,6 +1970,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="9097506547406246598">Опозивање праћења није успело. Дошло је до грешке.</translation>
 <translation id="9098541895599151034">Желите ли да избришете лозинке за <ph name="NUMBER_OF_ACCOUNTS" /> налога?</translation>
 <translation id="9099233023029360602">Сваки пут питај који налог желим да користим</translation>
+<translation id="9099821309562615674">Уверите се да је текст који преводите јасан и у кадру.</translation>
 <translation id="9100610230175265781">Потребна је приступна фраза</translation>
 <translation id="91023216973987714">Начини плаћања</translation>
 <translation id="9106655997975673326">Са телефона <ph name="SOURCE_DEVICE" /></translation>

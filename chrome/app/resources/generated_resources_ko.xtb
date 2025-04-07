@@ -1260,6 +1260,7 @@
 <translation id="185111092974636561"><ph name="BEGIN_PARAGRAPH1" />등록하기 전에 <ph name="DEVICE_OS" />에서 기기 소유권을 가질 수 있도록 TPM을 삭제해야 합니다.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />TPM 기기를 완전히 끌 수도 있습니다. 데이터는 소프트웨어 암호화를 통해 계속 안전하게 저장되지만 하드웨어 지원 인증서와 같은 특정 보안 기능은 중지됩니다.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />재부팅하고 시스템 BIOS/UEFI 설정을 입력하여 TPM 설정을 변경할 수 있습니다. 기기 모델에 따라 설정을 변경하는 단계가 다를 수 있습니다. 자세한 내용을 확인하려면 재부팅하기 전에 별도의 기기에서 <ph name="DEVICE_OS" /> 도움말(g.co/flex/TPMHelp)을 참고하세요.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="1851551847729706116">이 탭에 <ph name="TAB_NAME" /> 공유</translation>
 <translation id="1852799913675865625">파일을 읽는 중에 오류가 발생했습니다. <ph name="ERROR_TEXT" /></translation>
 <translation id="1854180393107901205">전송 중지</translation>
 <translation id="1856715684130786728">위치 추가...</translation>
@@ -1651,6 +1652,7 @@
 <translation id="2121825465123208577">크기 조정</translation>
 <translation id="2123766928840368256">다른 파일 선택</translation>
 <translation id="2124930039827422115">{1,plural, =1{1명의 사용자가 별표 <ph name="AVERAGE_RATING" />개로 평가했습니다.}other{#명의 사용자가 별표 <ph name="AVERAGE_RATING" />개로 평가했습니다.}}</translation>
+<translation id="2125715366913703594">확장 프로그램 살펴보기(&amp;E)</translation>
 <translation id="2126167708562367080">관리자가 동기화를 사용 중지했습니다.</translation>
 <translation id="2127372758936585790">저출력 충전기</translation>
 <translation id="212862741129535676">주파수 상태 점유율</translation>
@@ -11296,6 +11298,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8963117664422609631">사이트 설정으로 이동</translation>
 <translation id="8964927371396953727"><ph name="ACCOUNT_EMAIL" /> 계정에서 비밀번호를 사용하고 저장하려면 본인 인증을 완료하세요</translation>
 <translation id="8965037249707889821">이전 비밀번호 입력</translation>
+<translation id="8967403839792635452">확장 프로그램을 개발 중이신가요? Chrome 확장 프로그램 개발자 문서를 통해 <ph name="BEGIN_LINK" />새로운 소식<ph name="END_LINK" />을 확인하세요.</translation>
 <translation id="8967427617812342790">읽기 목록에 추가</translation>
 <translation id="8967548289042494261"><ph name="VM_NAME" /> 삭제</translation>
 <translation id="8968527460726243404">ChromeOS 시스템 이미지 작성기</translation>

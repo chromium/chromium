@@ -351,6 +351,7 @@
 <translation id="2438248248625638801">მიმდინარეობს ჩანაწერების სათაურების შექმნა</translation>
 <translation id="2446553403094072641">მოლივლივე წერტილის სიზუსტე</translation>
 <translation id="2448312741937722512">ტიპი</translation>
+<translation id="2448857983905133469">საკლასო ხელსაწყოები</translation>
 <translation id="2468124392950503650">აირჩიეთ მოთხოვნა, რომ შექმნათ ან ნახოთ <ph name="BEGIN_LINK_PROMPTING_GUIDE" />მოთხოვნის სახელმძღვანელო<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">ისარგებლეთ დაწერაში დახმარებით, რომ Google-ის ხელოვნური ინტელექტის მეშვეობით შექმნათ მონახაზი, ან დახვეწოთ არსებული ნამუშევარი.</translation>
 <translation id="2475982808118771221">შეცდომა მოხდა</translation>
@@ -449,6 +450,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> მა</translation>
 <translation id="3056720590588772262">საბოლოო წერტილი</translation>
 <translation id="3060579846059757016">კონტურები</translation>
+<translation id="3060798442805232711">საკლასო ხელსაწყოები იყენებს თქვენს მიკროფონს</translation>
 <translation id="3061850252076394168">ჩართეთ „მონიშვნა წარმოსათქმელად“</translation>
 <translation id="3066772729299747758">სამშაბათს</translation>
 <translation id="3069085583900247081">ტესტი წარუმატებლად დასრულდა</translation>
@@ -910,6 +912,7 @@
 <translation id="5170568018924773124">საქაღალდეში ჩვენება</translation>
 <translation id="517075088756846356">გამოაერთეთ და ისევ შეაერთეთ <ph name="DEVICE_NAME" />-ის ელკვების კაბელი, რომ განახლება განაგრძოთ</translation>
 <translation id="5180108905184566358">ბაობაბები</translation>
+<translation id="5180431943345994173">თქვენმა მასწავლებელმა ამოშალა კონტენტი საკლასო ხელსაწყოებიდან</translation>
 <translation id="5180712487038406644">ექსპრესიული</translation>
 <translation id="5190187232518914472">გააცოცხლეთ თქვენი ყველაზე თბილი მოგონებები. ალბომების დასამატებლად ან რედაქტირებისთვის გადადით <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />-ზე.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
@@ -1003,6 +1006,7 @@
 <translation id="5628106863521633649">ხელმისაწვდომი ენები</translation>
 <translation id="5630438231335788050">ბაუჰაუსი</translation>
 <translation id="5631759159893697722">რეზიუმე</translation>
+<translation id="5655084389678168978">თქვენმა მასწავლებელმა დაამატა ახალი კონტენტი საკლასო ხელსაწყოებში</translation>
 <translation id="5655283760733841251">კლავიატურის სიკაშკაშის მომატება</translation>
 <translation id="5655296450510165335">მოწყობილობის რეგისტრაცია</translation>
 <translation id="5655776422854483175">ბეჭდვის დავალებები არ არის</translation>
@@ -1026,7 +1030,6 @@
 <translation id="5760715441271661976">პორტალის მდგომარეობა</translation>
 <translation id="5763838252932650682">მიმდინარეობს <ph name="APP_NAME" />-ის გადატვირთვა და განახლება</translation>
 <translation id="576835345334454681">ეკრანის სიკაშკაშის მომატება</translation>
-<translation id="5775340474232476653">თქვენმა მასწავლებელმა დაასრულა გაკვეთილი</translation>
 <translation id="5779818640587041940">ეკრანის ჩართულად დატოვება ჩაწერისას</translation>
 <translation id="57838592816432529">დადუმება</translation>
 <translation id="5784136236926853061">HTTP რეაგირების დრო დიდია</translation>
@@ -1529,6 +1532,7 @@
 <translation id="7971535376154084247">მართვის ზოგადი საშუალებები</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> ქსელთან მისაერთებლად გადადით პარამეტრებზე</translation>
 <translation id="7978412674231730200">პირადი გასაღები</translation>
+<translation id="7979468455552394856">საკლასო ხელსაწყოები დაკავშირებულია სტუდენტებთან</translation>
 <translation id="7982789257301363584">ქსელი</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{„<ph name="APP_NAME_1" />“ ავტომატურად გაეშვა}other{# აპი ავტომატურად გაეშვა}}</translation>
 <translation id="7994702968232966508">EAP მეთოდი</translation>

@@ -261,6 +261,7 @@
 <translation id="2010008505735295285">重新加载</translation>
 <translation id="2015722694326466240">要想查看密码，您必须先在设备上设置密码。</translation>
 <translation id="201759455285471444">展开标签页分组。</translation>
+<translation id="202070562065520783">向我解释</translation>
 <translation id="2021670401941426298">查看您所用搜索引擎的说明，了解如何删除您的搜索记录（若适用）。</translation>
 <translation id="2044394949148788042">打开标签页网格</translation>
 <translation id="20485545164632846">新项</translation>
@@ -1125,6 +1126,7 @@
 <translation id="573974402615125334">如需分享、加入标签页分组并在其中协作，请同步历史记录和标签页</translation>
 <translation id="5740123193752401435">搜索标签页…</translation>
 <translation id="5744274077973758795">“<ph name="FEATURE_NAME" />”通知已开启</translation>
+<translation id="5745598824054949526">找不到文字</translation>
 <translation id="574762237186762643">活动</translation>
 <translation id="5749158352074143502">继续使用此标签页</translation>
 <translation id="5753021559215751319">保存密码</translation>
@@ -1288,6 +1290,7 @@
 <translation id="6410883413783534063">打开多个标签页即可同时访问不同网页</translation>
 <translation id="6416807286621280684">您跟踪的包裹和送货动态。</translation>
 <translation id="6418346271604475326">正在准备 PDF 文件</translation>
+<translation id="6421038304268477484">译文</translation>
 <translation id="6429213933892582367">打开“密码选项”</translation>
 <translation id="6434591244308415567">发生错误，请稍后重试。</translation>
 <translation id="6435307030888827407">保持退出账号状态</translation>
@@ -1966,6 +1969,7 @@
 <translation id="9097506547406246598">无法取消关注。出了点问题。</translation>
 <translation id="9098541895599151034">删除 <ph name="NUMBER_OF_ACCOUNTS" /> 个密码？</translation>
 <translation id="9099233023029360602">每次都询问要使用哪个账号</translation>
+<translation id="9099821309562615674">请确保要翻译的文字清晰可辨且位于画面内。</translation>
 <translation id="9100610230175265781">必须提供密码</translation>
 <translation id="91023216973987714">支付方式</translation>
 <translation id="9106655997975673326">来自“<ph name="SOURCE_DEVICE" />”</translation>

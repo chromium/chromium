@@ -351,6 +351,7 @@
 <translation id="2438248248625638801">녹화 파일 제목 생성 중</translation>
 <translation id="2446553403094072641">부동 소수점 정확성</translation>
 <translation id="2448312741937722512">유형</translation>
+<translation id="2448857983905133469">수업 도구</translation>
 <translation id="2468124392950503650">프롬프트를 선택하여 만들거나 <ph name="BEGIN_LINK_PROMPTING_GUIDE" />프롬프트 가이드<ph name="END_LINK_PROMPTING_GUIDE" />를 확인하세요.</translation>
 <translation id="2472215337771558851">작성 지원 기능을 사용하여 Google AI를 기반으로 초안을 작성하거나 기존 과제물을 다듬어 보세요.</translation>
 <translation id="2475982808118771221">오류가 발생했습니다.</translation>
@@ -449,6 +450,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">엔드포인트</translation>
 <translation id="3060579846059757016">개요</translation>
+<translation id="3060798442805232711">수업 도구에서 마이크를 사용 중입니다.</translation>
 <translation id="3061850252076394168">텍스트 읽어주기 사용 설정</translation>
 <translation id="3066772729299747758">화요일</translation>
 <translation id="3069085583900247081">테스트 실패</translation>
@@ -910,6 +912,7 @@
 <translation id="5170568018924773124">폴더 열기</translation>
 <translation id="517075088756846356">업데이트를 계속하려면 <ph name="DEVICE_NAME" />에서 전원 케이블을 분리했다가 다시 연결하세요.</translation>
 <translation id="5180108905184566358">바오밥나무</translation>
+<translation id="5180431943345994173">선생님이 수업 도구에서 콘텐츠를 삭제했습니다.</translation>
 <translation id="5180712487038406644">생생함</translation>
 <translation id="5190187232518914472">소중한 추억을 되새겨 보세요. 앨범을 추가하거나 수정하려면 <ph name="LINK_BEGIN" />Google 포토<ph name="LINK_END" />로 이동하세요.</translation>
 <translation id="5212593641110061691">타블로이드</translation>
@@ -1003,6 +1006,7 @@
 <translation id="5628106863521633649">지원 언어</translation>
 <translation id="5630438231335788050">바우하우스</translation>
 <translation id="5631759159893697722">초록</translation>
+<translation id="5655084389678168978">선생님이 수업 도구에 새 콘텐츠를 추가했습니다.</translation>
 <translation id="5655283760733841251">키보드 밝기 높이기</translation>
 <translation id="5655296450510165335">기기 등록</translation>
 <translation id="5655776422854483175">인쇄 작업 없음</translation>
@@ -1026,7 +1030,6 @@
 <translation id="5760715441271661976">포털 상태</translation>
 <translation id="5763838252932650682"><ph name="APP_NAME" /> 다시 시작 및 업데이트</translation>
 <translation id="576835345334454681">디스플레이 밝기 높이기</translation>
-<translation id="5775340474232476653">선생님이 수업을 종료했습니다.</translation>
 <translation id="5779818640587041940">녹음 중 화면 켜두기</translation>
 <translation id="57838592816432529">음소거</translation>
 <translation id="5784136236926853061">HTTP 지연 시간 높음</translation>
@@ -1529,6 +1532,7 @@
 <translation id="7971535376154084247">일반 컨트롤</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> 네트워크에 참여하려면 설정으로 이동하세요.</translation>
 <translation id="7978412674231730200">비공개 키</translation>
+<translation id="7979468455552394856">수업 도구가 학생에게 연결되어 있습니다.</translation>
 <translation id="7982789257301363584">네트워크</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" 앱이 자동으로 시작되었습니다}other{#개 앱이 자동으로 시작되었습니다}}</translation>
 <translation id="7994702968232966508">EAP 방식</translation>

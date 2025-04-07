@@ -8207,6 +8207,7 @@ Catatan: Memulai ulang dan logout akan menghapus cache.</translation>
 <translation id="6583473893541367102">Jika kebijakan ini disetel, artinya Anda menentukan daftar URL yang polanya cocok dengan asal keamanan URL yang meminta. Jika terdapat kecocokan, akses ke perangkat perekaman video akan diberikan tanpa permintaan izin
 
       Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Namun, perlu diperhatikan bahwa pola "*", yang cocok dengan URL apa pun, tidak didukung oleh kebijakan ini.</translation>
+<translation id="6583517553738784213">Nonaktifkan fitur kontrol dengan wajah</translation>
 <translation id="6584122839583172231">Setelan F12 menggunakan pintasan yang berisi tombol pengubah ctrl dan shift</translation>
 <translation id="6584541828182430328">Nonaktifkan tampilkan peringatan layar penuh</translation>
 <translation id="6588634282328239769">Tampilkan URL lengkap</translation>
@@ -8525,6 +8526,7 @@ Di <ph name="MS_WIN_NAME" />, kebijakan ini hanya tersedia di instance yang dihu
       Jika kebijakan disetel ke Nonaktif, ikon fitur eksperimental browser akan dihapus dari toolbar.
 
       chrome://flags dan cara lain untuk menonaktifkan dan mengaktifkan fitur browser akan tetap berperilaku sebagaimana mestinya terlepas dari apakah kebijakan ini disetel ke Aktif atau Nonaktif.</translation>
+<translation id="6794273802619210652">Mengaktifkan fitur aksesibilitas kontrol dengan wajah</translation>
 <translation id="6795485990775913659">Hanya izinkan pencetakan tanpa PIN</translation>
 <translation id="6796215185873669533">Mengembalikan setelan browser untuk versi string Agen Pengguna ke defaultnya.</translation>
 <translation id="6800181452282128474">Jangan kueri Server Quirks</translation>
@@ -9646,6 +9648,7 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
 <translation id="7635106595080609261">Jika kebijakan disetel ke Aktif atau tidak disetel, Chrome akan dapat menampilkan dialog pemilihan file, dan pengguna dapat membukanya.
 
       Jika kebijakan disetel ke Nonaktif, pesan akan muncul setiap kali pengguna melakukan tindakan yang memicu dialog pemilihan file, seperti mengimpor bookmark, mengupload file, atau menyimpan link. Pengguna dianggap telah mengklik Batal pada dialog pemilihan file.</translation>
+<translation id="7637522465980672147">Aktifkan fitur kontrol dengan wajah</translation>
 <translation id="7638300388094655454">Google Cast</translation>
 <translation id="7638764766629234761">Izinkan penggunaan notifikasi sistem</translation>
 <translation id="7642740497103044368">Jika kebijakan ini disetel ke Aktif, kebijakan yang terkait dengan akun terkelola akan diizinkan untuk digabungkan ke kebijakan tingkat perangkat.
@@ -10604,6 +10607,17 @@ Informasi selengkapnya tentang teknologi lama dapat ditemukan di https://chromes
 <translation id="8319678975002906774">Menyetel nilai konfigurasi terkelola bagi situs untuk sumber tertentu</translation>
 <translation id="8320149248919453401">Mode pengisian daya baterai</translation>
 <translation id="8320576119308783142">Tampilkan keyboard virtual jika diperlukan.</translation>
+<translation id="8321089199245028304">Mengaktifkan fitur aksesibilitas kontrol dengan wajah. Jika fitur kontrol dengan wajah aktif, Anda
+dapat menggunakan kepala untuk mengontrol kursor mouse dan menggunakan gestur wajah untuk melakukan
+tindakan sistem. Hal ini memungkinkan Anda mengontrol perangkat secara handsfree.
+
+Jika kebijakan ini disetel ke aktif, fitur kontrol dengan wajah akan selalu diaktifkan.
+
+Jika kebijakan ini disetel ke nonaktif, fitur kontrol dengan wajah akan selalu dinonaktifkan.
+
+Jika kebijakan ini ditetapkan, pengguna tidak dapat mengubah atau menggantinya.
+
+Jika kebijakan ini tidak disetel, fitur kontrol dengan wajah mula-mula akan dinonaktifkan, tetapi dapat diaktifkan oleh pengguna kapan saja.</translation>
 <translation id="8327651196906278510">Mengizinkan tangkapan Tab berdasarkan asal berikut</translation>
 <translation id="8329434144708110">Picu alur autentikasi untuk menyinkronkan sandi dengan penyedia SSO</translation>
 <translation id="8329984337216493753">Kebijakan ini aktif dalam mode eceran saja.

@@ -1924,6 +1924,7 @@
 <translation id="4282346679996504092">ปิดการแจ้งเตือนสำหรับผลิตภัณฑ์นี้และนำบุ๊กมาร์กออกแล้ว</translation>
 <translation id="4285498937028063278">เลิกปักหมุด</translation>
 <translation id="4287495839370498922">ความเป็นส่วนตัวเกี่ยวกับโฆษณาบน Chrome ที่เพิ่มมากขึ้น</translation>
+<translation id="4288101205645068104">ลบยานพาหนะ</translation>
 <translation id="4290920330097335010">ไม่อนุญาต</translation>
 <translation id="4296207570293932800">ฟีเจอร์ใหม่ด้านความเป็นส่วนตัวเกี่ยวกับโฆษณาพร้อมใช้งานแล้ว</translation>
 <translation id="4297502707443874121">ภาพขนาดย่อของหน้า <ph name="THUMBNAIL_PAGE" /></translation>
@@ -4206,6 +4207,7 @@
 <translation id="8280630997017109758">ถาด 11</translation>
 <translation id="8281730697546299650">ฟีเจอร์อื่นๆ ด้านความเป็นส่วนตัวเกี่ยวกับโฆษณาพร้อมใช้งานแล้ว</translation>
 <translation id="8281886186245836920">ข้าม</translation>
+<translation id="8282292167096638950">ลบใบขับขี่</translation>
 <translation id="8282409409360764263">การบำรุงรักษาสนาม</translation>
 <translation id="8282947398454257691">ทราบตัวระบุอุปกรณ์ที่ไม่ซ้ำกัน</translation>
 <translation id="8284769179630993263">จัดการ Google Safe Browsing และอื่นๆ ในการตั้งค่า Chrome</translation>
@@ -4233,6 +4235,7 @@
 <translation id="8321476692217554900">การแจ้งเตือน</translation>
 <translation id="8322402665880479974">เตียงและหัวเตียง</translation>
 <translation id="8323505966575306467">เพิ่มการปกป้องให้รหัสผ่านของคุณ</translation>
+<translation id="832547548543012337">ลบหนังสือเดินทาง</translation>
 <translation id="832567874344484841">อาหารเช้า</translation>
 <translation id="8329068931308448247">Envelope #14</translation>
 <translation id="8332188693563227489">การเข้าถึง <ph name="HOST_NAME" /> ถูกปฏิเสธ</translation>

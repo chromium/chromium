@@ -345,6 +345,7 @@
 <translation id="2438248248625638801">Notiek ierakstu nosaukumu izveide</translation>
 <translation id="2446553403094072641">Peldošā punkta precizitāte</translation>
 <translation id="2448312741937722512">Tips</translation>
+<translation id="2448857983905133469">Klases rīki</translation>
 <translation id="2468124392950503650">Atlasiet uzvedni, lai izveidotu vai skatītu <ph name="BEGIN_LINK_PROMPTING_GUIDE" />norādījumus par uzvednēm<ph name="END_LINK_PROMPTING_GUIDE" />.</translation>
 <translation id="2472215337771558851">Lai izveidotu melnrakstu vai uzlabotu esošo darbu, izmantojiet funkciju “Palīdzība rakstīšanā”, ko nodrošina Google MI.</translation>
 <translation id="2475982808118771221">Radās kļūda</translation>
@@ -443,6 +444,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Beigu punkts</translation>
 <translation id="3060579846059757016">Struktūras</translation>
+<translation id="3060798442805232711">Klases rīki izmanto jūsu mikrofonu</translation>
 <translation id="3061850252076394168">iespējot funkciju “Atlasīt, lai izrunātu”</translation>
 <translation id="3066772729299747758">otrdien</translation>
 <translation id="3069085583900247081">Testēšana neizdevās</translation>
@@ -898,6 +900,7 @@
 <translation id="5170568018924773124">Rādīt mapē</translation>
 <translation id="517075088756846356">Lai turpinātu atjaunināšanas procesu, atvienojiet un atkārtoti pievienojiet ierīces (<ph name="DEVICE_NAME" />) barošanas vadu.</translation>
 <translation id="5180108905184566358">baobabi</translation>
+<translation id="5180431943345994173">Jūsu skolotājs noņēma saturu no Klases rīkiem.</translation>
 <translation id="5180712487038406644">Izteiksmīga</translation>
 <translation id="5190187232518914472">Iedzīviniet savas mīļākās atmiņas. Lai pievienotu vai rediģētu albumus, pārejiet uz pakalpojumu <ph name="LINK_BEGIN" />Google fotoattēli<ph name="LINK_END" />.</translation>
 <translation id="5212593641110061691">Neliela formāta laikraksts</translation>
@@ -991,6 +994,7 @@
 <translation id="5628106863521633649">Pieejamās valodas</translation>
 <translation id="5630438231335788050">Bauhaus</translation>
 <translation id="5631759159893697722">kopsavilkums</translation>
+<translation id="5655084389678168978">Jūsu skolotājs pievienoja jaunu saturu Klases rīkos</translation>
 <translation id="5655283760733841251">Palielināt tastatūras spilgtumu</translation>
 <translation id="5655296450510165335">Ierīces reģistrācija</translation>
 <translation id="5655776422854483175">Nav neviena drukas darba.</translation>
@@ -1014,7 +1018,6 @@
 <translation id="5760715441271661976">Portāla statuss</translation>
 <translation id="5763838252932650682">Lietotnes <ph name="APP_NAME" /> restartēšana un atjaunināšana</translation>
 <translation id="576835345334454681">Palielināt displeja spilgtumu</translation>
-<translation id="5775340474232476653">Skolotājs pabeidza nodarbību</translation>
 <translation id="5779818640587041940">Saglabāt ekrānu ieslēgtu ierakstīšanas laikā</translation>
 <translation id="57838592816432529">Izslēgt skaņu</translation>
 <translation id="5784136236926853061">Liels HTTP latentums</translation>
@@ -1517,6 +1520,7 @@ Lai varētu izveidot šādas transkripcijas, lejupielādējiet transkribēšanas
 <translation id="7971535376154084247">Vispārīgas vadīklas</translation>
 <translation id="7977800524392185497">Lai izveidotu savienojumu ar <ph name="NETWORK_NAME" /> tīklu, pārejiet uz iestatījumiem.</translation>
 <translation id="7978412674231730200">Privātā atslēga</translation>
+<translation id="7979468455552394856">Klases rīkiem ir izveidots savienojums ar skolēniem</translation>
 <translation id="7982789257301363584">Tīkls</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{Lietotne <ph name="APP_NAME_1" /> tika palaista automātiski}zero{# lietotnes tika palaistas automātiski}one{# lietotne tika palaista automātiski}other{# lietotnes tika palaistas automātiski}}</translation>
 <translation id="7994702968232966508">EAP metode</translation>

@@ -351,6 +351,7 @@
 <translation id="2438248248625638801">Se creează titluri de înregistrări</translation>
 <translation id="2446553403094072641">Precizia virgulei mobile</translation>
 <translation id="2448312741937722512">Tipul</translation>
+<translation id="2448857983905133469">Class Tools</translation>
 <translation id="2468124392950503650">Selectează solicitarea pentru a crea sau a vedea <ph name="BEGIN_LINK_PROMPTING_GUIDE" />ghidul pentru solicitări<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Folosește funcția Ajută-mă să scriu pentru a crea o schiță sau a rafina lucrările existente, pe bază de Google AI</translation>
 <translation id="2475982808118771221">A apărut o eroare</translation>
@@ -449,6 +450,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Punct final</translation>
 <translation id="3060579846059757016">Scheme</translation>
+<translation id="3060798442805232711">Class Tools folosește microfonul</translation>
 <translation id="3061850252076394168">activează Selectează și ascultă</translation>
 <translation id="3066772729299747758">marți</translation>
 <translation id="3069085583900247081">Testul nu a reușit</translation>
@@ -910,6 +912,7 @@
 <translation id="5170568018924773124">Afișează în dosar</translation>
 <translation id="517075088756846356">Deconectează și reconectează cablul de alimentare pentru <ph name="DEVICE_NAME" /> pentru a continua procesul de actualizare</translation>
 <translation id="5180108905184566358">baobabi</translation>
+<translation id="5180431943345994173">Profesorul tău a eliminat conținut din Class Tools</translation>
 <translation id="5180712487038406644">Expresiv</translation>
 <translation id="5190187232518914472">Retrăiește amintirile preferate. Pentru a adăuga sau a edita albume, accesează <ph name="LINK_BEGIN" />Google Foto<ph name="LINK_END" />.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
@@ -1003,6 +1006,7 @@
 <translation id="5628106863521633649">Limbi disponibile</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">rezumat</translation>
+<translation id="5655084389678168978">Profesorul tău a adăugat conținut nou în Class Tools</translation>
 <translation id="5655283760733841251">Creșterea luminozității tastaturii</translation>
 <translation id="5655296450510165335">Înregistrarea dispozitivului</translation>
 <translation id="5655776422854483175">Nicio sarcină de printare</translation>
@@ -1026,7 +1030,6 @@
 <translation id="5760715441271661976">Starea portalului</translation>
 <translation id="5763838252932650682">Se repornește și se actualizează <ph name="APP_NAME" /></translation>
 <translation id="576835345334454681">Creșterea luminozității ecranului</translation>
-<translation id="5775340474232476653">Profesorul a încheiat cursul</translation>
 <translation id="5779818640587041940">Menține ecranul activat în timpul înregistrării</translation>
 <translation id="57838592816432529">Dezactivează sunetul</translation>
 <translation id="5784136236926853061">Latență mare a solicitărilor HTTP</translation>
@@ -1529,6 +1532,7 @@ Descarcă modelul de transcriere (până la 100 MB) pentru a obține aceste tran
 <translation id="7971535376154084247">Comenzi generale</translation>
 <translation id="7977800524392185497">Pentru a te conecta la o rețea <ph name="NETWORK_NAME" />, accesează Setările</translation>
 <translation id="7978412674231730200">Cheie privată</translation>
+<translation id="7979468455552394856">Class Tools este conectat la elevi</translation>
 <translation id="7982789257301363584">Rețea</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> a pornit automat}few{# aplicații au pornit automat}other{# de aplicații au pornit automat}}</translation>
 <translation id="7994702968232966508">Metodă EAP</translation>

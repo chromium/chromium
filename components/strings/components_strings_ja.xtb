@@ -528,6 +528,7 @@
 <translation id="1890171020361705182">Dino ゲーム。ピクセル画像の恐竜がサボテンやプテロダクティルスをよけながら、荒地を走り抜けます。合図の音が聞こえたら、タップして障害物を飛び越えましょう。</translation>
 <translation id="1898423065542865115">フィルタ</translation>
 <translation id="1901443836186977402">{1,plural, =1{このサーバーが <ph name="DOMAIN" /> であることを確認できませんでした。セキュリティ証明書の期限が昨日で切れています。原因として、設定が不適切であるか、悪意のあるユーザーが接続を妨害していることが考えられます。パソコンの時計は現在 <ph name="CURRENT_DATE" /> に設定されています。この時刻が正しくない場合は、システムの時計を修正して、このページを更新してください。}other{このサーバーが <ph name="DOMAIN" /> であることを確認できませんでした。セキュリティ証明書の期限が # 日前に切れています。原因として、設定が不適切であるか、悪意のあるユーザーが接続を妨害していることが考えられます。パソコンの時計は現在 <ph name="CURRENT_DATE" /> に設定されています。この時刻が正しくない場合は、システムの時計を修正して、このページを更新してください。}}</translation>
+<translation id="190166348986967700">管理者は <ph name="DATE_TIME" /> に <ph name="CLOUD_PROVIDER" /> へのファイルのアップロードを開始します。ファイルのアップロードが完了するまでデバイスを接続したままにしてください。アップロード中は、ローカル ファイルの読み取りのみが可能です。</translation>
 <translation id="1902576642799138955">有効期間</translation>
 <translation id="1908217026282415406">カメラの使用と移動</translation>
 <translation id="1908690643053136980">このサイトの <ph name="PERMISSION" /> の使用は管理者が禁止しています</translation>
@@ -1924,6 +1925,7 @@
 <translation id="4282346679996504092">この商品のアラートをオフにし、ブックマークを削除しました</translation>
 <translation id="4285498937028063278">固定を解除</translation>
 <translation id="4287495839370498922">Chrome で表示される広告に対するプライバシー強化について</translation>
+<translation id="4288101205645068104">車両情報の削除</translation>
 <translation id="4290920330097335010">許可しない</translation>
 <translation id="4296207570293932800">新しい広告のプライバシー機能をご利用いただけるようになりました</translation>
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" /> ページのサムネイル</translation>
@@ -2153,6 +2155,7 @@
 <translation id="473775607612524610">更新</translation>
 <translation id="4738601419177586157"><ph name="TEXT" /> の検索候補</translation>
 <translation id="4742407542027196863">パスワードを管理…</translation>
+<translation id="474270528725216349">同期デバイスの 1 件以上のサイトから</translation>
 <translation id="4743275772928623722">システムは更新されましたが、一部のアプリやファイルを復元できませんでした。アプリは自動的に再ダウンロードされます。</translation>
 <translation id="4744514002166662487">プレゼンテーションを作成</translation>
 <translation id="4744603770635761495">実行ファイルのパス</translation>
@@ -2283,6 +2286,7 @@
 <translation id="495170559598752135">操作</translation>
 <translation id="4953689047182316270">ユーザー補助機能のイベントへの応答</translation>
 <translation id="4957080528849277028">[Chrome 履歴を表示] ボタンです。実行すると、Chrome の設定で閲覧履歴を表示、管理できます</translation>
+<translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{と 1 件のサイト}other{と # 件のサイト}}</translation>
 <translation id="4958444002117714549">リストを展開する</translation>
 <translation id="4960068118612257147">Chrome の広告プライバシー設定で変更できます</translation>
 <translation id="4960203958361543136">検索エンジンの選択</translation>
@@ -2617,8 +2621,10 @@
 <translation id="553377674408670169">教育系の求人情報</translation>
 <translation id="5534785731327961487">買い時</translation>
 <translation id="5536214594743852365">「<ph name="SECTION" />」セクションを表示します</translation>
+<translation id="5536471014287260753">{DOMAIN_COUNT,plural, =1{と 1 件のサイト（同期デバイスではそれ以上のサイト）}other{と # 件のサイト（同期デバイスではそれ以上のサイト）}}</translation>
 <translation id="553782666181800029">長形 2 号封筒</translation>
 <translation id="5538270463355278784">自動全画面表示</translation>
+<translation id="5538859347764346097"><ph name="KEYWORD_SHORTCUT" />、<ph name="KEYWORD_SUFFIX" /> を検索</translation>
 <translation id="5539243836947087108">ラフト</translation>
 <translation id="5540224163453853">リクエストされた記事が見つかりませんでした。</translation>
 <translation id="5540969246441091044">馬術</translation>
@@ -2777,6 +2783,7 @@
 <translation id="5838278095973806738">このサイトでは機密情報（パスワード、クレジット カードなど）を入力しないでください。悪意のあるユーザーに情報が盗まれる恐れがあります。</translation>
 <translation id="5838732667866024867">左右の矢印を使って、グラフで価格の変動を確認できます</translation>
 <translation id="5840318881868981258">保存先の Google アカウント: <ph name="ACCOUNT" /></translation>
+<translation id="5841007907672481419"><ph name="TYPE_1" /> から</translation>
 <translation id="5841338463993781099">アカウントに保存しますか？</translation>
 <translation id="5843987376989109187">この言語はまだサポートされていません。
     <ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
@@ -2790,6 +2797,7 @@
 <translation id="5863515189965725638">IBAN の編集</translation>
 <translation id="5863847714970149516">表示しようとしているページでは課金される恐れがあります</translation>
 <translation id="5866257070973731571">電話番号の追加</translation>
+<translation id="5866327164731551901"><ph name="TYPE_1" /> <ph name="TYPE_2" /> から</translation>
 <translation id="5866898949289125849">デベロッパー ツール ページを表示しています</translation>
 <translation id="5869405914158311789">このサイトにアクセスできません</translation>
 <translation id="5869522115854928033">保存したパスワード</translation>
@@ -3499,6 +3507,7 @@
 <translation id="7075452647191940183">リクエストが大きすぎます</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
+<translation id="7079783554682867524"><ph name="TYPE_1" /> から（同期デバイスではそれ以上のサイト）</translation>
 <translation id="7081311540357715807">食料品小売業</translation>
 <translation id="7083258188081898530">トレイ 9</translation>
 <translation id="7086090958708083563">ユーザーからアップロードがリクエストされました</translation>
@@ -4156,6 +4165,7 @@
 <translation id="8216640997712497593">14x18 インチ</translation>
 <translation id="8218327578424803826">割り当てられた場所:</translation>
 <translation id="8220602974062798186"><ph name="TOPIC" /> とその関連トピックをブロックしますか？</translation>
+<translation id="8226408512771130794"><ph name="KEYWORD_SHORTCUT" />、<ph name="KEYWORD_SUFFIX" /> に聞く</translation>
 <translation id="8228419419708659934">2 ページ表示</translation>
 <translation id="8228477714872026922"><ph name="ORIGIN" /> がご利用のネットワーク上のデバイスへのアクセスを求めています。</translation>
 <translation id="822925450938886901">詳細と適用される可能性のあるポリシーについては、ブラウザで chrome://management を開いてください。</translation>
@@ -4199,6 +4209,7 @@
 <translation id="8280630997017109758">トレイ 11</translation>
 <translation id="8281730697546299650">その他の広告のプライバシー機能がリリースされました</translation>
 <translation id="8281886186245836920">スキップ</translation>
+<translation id="8282292167096638950">運転免許証の削除</translation>
 <translation id="8282409409360764263">庭のメンテナンス</translation>
 <translation id="8282947398454257691">デバイス固有の ID の認識</translation>
 <translation id="8284769179630993263">Chrome の設定でセーフ ブラウジングなどを管理します</translation>
@@ -4226,6 +4237,7 @@
 <translation id="8321476692217554900">通知</translation>
 <translation id="8322402665880479974">ベッド、ヘッドボード</translation>
 <translation id="8323505966575306467">パスワードの保護を強化</translation>
+<translation id="832547548543012337">パスポートの削除</translation>
 <translation id="832567874344484841">朝食</translation>
 <translation id="8329068931308448247">#14 封筒</translation>
 <translation id="8332188693563227489"><ph name="HOST_NAME" /> へのアクセスが拒否されました</translation>

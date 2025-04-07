@@ -351,6 +351,7 @@
 <translation id="2438248248625638801">रेकर्डिङका शीर्षकहरू बनाइँदै छन्</translation>
 <translation id="2446553403094072641">फ्लोटिङ पोइन्टको सटीकता</translation>
 <translation id="2448312741937722512">प्रकार</translation>
+<translation id="2448857983905133469">कक्षाका टुलहरू</translation>
 <translation id="2468124392950503650">सिर्जना गर्न प्रम्प्ट चयन गर्नुहोस् वा <ph name="BEGIN_LINK_PROMPTING_GUIDE" />प्रम्प्टसम्बन्धी गाइड<ph name="END_LINK_PROMPTING_GUIDE" /> हेर्नुहोस्</translation>
 <translation id="2472215337771558851">Google AI को लेख्न मद्दत गर्ने सुविधा प्रयोग गरी ड्राफ्ट बनाउनुहोस् वा पहिले नै लेखिएको सामग्री परिष्कृत गर्नुहोस्</translation>
 <translation id="2475982808118771221">त्रुटि भयो</translation>
@@ -449,6 +450,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">इन्डपोइन्ट</translation>
 <translation id="3060579846059757016">आउटलाइन</translation>
+<translation id="3060798442805232711">कक्षाका टुलहरूले तपाईंको माइक्रोफोन प्रयोग गर्दै छ</translation>
 <translation id="3061850252076394168">सेलेक्ट टु स्पिक अन गर्नुहोस्</translation>
 <translation id="3066772729299747758">मङ्गलवार</translation>
 <translation id="3069085583900247081">परीक्षण गर्न सकिएन</translation>
@@ -910,6 +912,7 @@
 <translation id="5170568018924773124">फोल्डरमा देखाउनुहोस्</translation>
 <translation id="517075088756846356">अपडेट गर्ने प्रक्रिया जारी राख्न <ph name="DEVICE_NAME" /> को पावर केबल निकालेर फेरि जोड्नुहोस्</translation>
 <translation id="5180108905184566358">बाओबाब ट्री</translation>
+<translation id="5180431943345994173">तपाईंका शिक्षकले कक्षाका टुलहरूमा भएको कन्टेन्ट हटाउनुभएको छ</translation>
 <translation id="5180712487038406644">एक्स्प्रेसिभ</translation>
 <translation id="5190187232518914472">आफूलाई स्मरणीय पलहरूको आनन्द लिनुहोस्। एल्बमहरू हाल्न वा परिवर्तन गर्न <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> मा जानुहोस्।</translation>
 <translation id="5212593641110061691">ट्याब्लोइड</translation>
@@ -1003,6 +1006,7 @@
 <translation id="5628106863521633649">उपलब्ध भाषाहरू</translation>
 <translation id="5630438231335788050">बाउहाउस</translation>
 <translation id="5631759159893697722">अमूर्त</translation>
+<translation id="5655084389678168978">तपाईंका शिक्षकले कक्षाका टुलहरूमा नयाँ कन्टेन्ट हाल्नुभएको छ</translation>
 <translation id="5655283760733841251">किबोर्डको चमक बढाउने की</translation>
 <translation id="5655296450510165335">डिभाइस दर्ता गर्ने प्रक्रिया</translation>
 <translation id="5655776422854483175">कुनै पनि प्रिन्टसम्बन्धी कार्य भइरहेको छैन</translation>
@@ -1026,7 +1030,6 @@
 <translation id="5760715441271661976">पोर्टलको स्थिति</translation>
 <translation id="5763838252932650682"><ph name="APP_NAME" /> रिस्टार्ट र अपडेट गरिँदै छ</translation>
 <translation id="576835345334454681">डिस्प्लेको चमक बढाउने की</translation>
-<translation id="5775340474232476653">तपाईंका शिक्षक वा शिक्षिकाले कक्षा अन्त्य गर्नुभएको छ</translation>
 <translation id="5779818640587041940">रेकर्ड गरिरहेका बेला स्क्रिन अन राखिराख्नुहोस्</translation>
 <translation id="57838592816432529">म्यूट गर्नुहोस्</translation>
 <translation id="5784136236926853061">HTTP को विलम्बता धेरै छ</translation>
@@ -1529,6 +1532,7 @@
 <translation id="7971535376154084247">सामान्य कन्ट्रोलहरू</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> नेटवर्कमा कनेक्ट गर्न सेटिङमा जानुहोस्</translation>
 <translation id="7978412674231730200">निजी कुञ्जी</translation>
+<translation id="7979468455552394856">विद्यार्थीहरू "कक्षाका टुलहरू" सेसनमा सामेल भएका छन्</translation>
 <translation id="7982789257301363584">सञ्जाल</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" स्वतः खोलियो}other{# वटा एप स्वतः खोलिए}}</translation>
 <translation id="7994702968232966508">EAP विधि</translation>

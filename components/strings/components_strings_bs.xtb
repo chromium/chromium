@@ -528,7 +528,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="1890171020361705182">Igra s dinosaurom. Pikselizirani dinosaur izbjegava kaktuse i pterodaktile dok trči pustim krajolicima. Kada čujete zvučni signal, dodirnite da preskačete prepreke.</translation>
 <translation id="1898423065542865115">Filtriranje</translation>
 <translation id="1901443836186977402">{1,plural, =1{Ovaj server ne može dokazati da pripada domeni <ph name="DOMAIN" />; njegova potvrda sigurnosti je istekla jučer. Uzrok tome može biti pogrešna konfiguracija ili napadač koji je prekinuo vašu vezu. Sat na vašem računaru je trenutno postavljen na <ph name="CURRENT_DATE" />. Je li to uredu? Ako nije, trebate podesiti sistemski sat i zatim osvježiti stranicu.}one{Ovaj server ne može dokazati da pripada domeni <ph name="DOMAIN" />; njegova potvrda sigurnosti je istekla prije # dan. Uzrok tome može biti pogrešna konfiguracija ili napadač koji je prekinuo vašu vezu. Sat na vašem računaru je trenutno postavljen na <ph name="CURRENT_DATE" />. Je li to uredu? Ako nije, trebate podesiti sistemski sat i zatim osvježiti stranicu.}few{Ovaj server ne može dokazati da pripada domeni <ph name="DOMAIN" />; njegova potvrda sigurnosti je istekla prije # dana. Uzrok tome može biti pogrešna konfiguracija ili napadač koji je prekinuo vašu vezu. Sat na vašem računaru je trenutno postavljen na <ph name="CURRENT_DATE" />. Je li to uredu? Ako nije, trebate podesiti sistemski sat i zatim osvježiti stranicu.}other{Ovaj server ne može dokazati da pripada domeni <ph name="DOMAIN" />; njegova potvrda sigurnosti je istekla prije # dana. Uzrok tome može biti pogrešna konfiguracija ili napadač koji je prekinuo vašu vezu. Sat na vašem računaru je trenutno postavljen na <ph name="CURRENT_DATE" />. Je li to uredu? Ako nije, trebate podesiti sistemski sat i zatim osvježiti stranicu.}}</translation>
-<translation id="190166348986967700">Administrator će početi prenositi vaše datoteke na uslugu <ph name="CLOUD_PROVIDER" /> <ph name="DATE_TIME" />. Neka uređaj ostane povezan dok se prijenos datoteka ne dovrši. Tijekom prijenosa moći ćete čitati samo lokalne datoteke.</translation>
+<translation id="190166348986967700">Administrator će početi otpremati fajlove na uslugu <ph name="CLOUD_PROVIDER" /> <ph name="DATE_TIME" />. Ostavite uređaj povezan dok se otpremanje fajlova ne završi. Tokom otpremanja ćete moći samo čitati lokalne fajlove.</translation>
 <translation id="1902576642799138955">Period važenja</translation>
 <translation id="1908217026282415406">Korištenje kamere i pomjeranje</translation>
 <translation id="1908690643053136980">Administrator nije dao odobrenje "<ph name="PERMISSION" />" ovoj web lokaciji</translation>
@@ -2155,7 +2155,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="473775607612524610">Ažuriraj</translation>
 <translation id="4738601419177586157">Prijedlog za pretraživanje: <ph name="TEXT" /></translation>
 <translation id="4742407542027196863">Upravljanje lozinkama…</translation>
-<translation id="474270528725216349">S najmanje jedne web-lokacije na sinkroniziranim uređajima</translation>
+<translation id="474270528725216349">S najmanje 1 web lokacije na sinhroniziranim uređajima</translation>
 <translation id="4743275772928623722">Sistem je ažuriran, ali neke aplikacije i fajlovi se nisu mogli vratiti. Vaše aplikacije će se automatski ponovo preuzeti.</translation>
 <translation id="4744514002166662487">Kreiraj prezentaciju</translation>
 <translation id="4744603770635761495">Izvršna putanja</translation>
@@ -2286,7 +2286,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="495170559598752135">Radnje</translation>
 <translation id="4953689047182316270">Odgovori na događaje vezane za pristupačnost</translation>
 <translation id="4957080528849277028">Dugme Upravljaj historijom Chromea, aktivirajte da pregledate historiju pregledanja i upravljate njome u postavkama Chromea</translation>
-<translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{i još jedna web-lokacija}one{i još # web-lokacija}few{i još # web-lokacije}other{i još # web-lokacija}}</translation>
+<translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{i još 1 web lokacija}one{i još # web lokacija}few{i još # web lokacije}other{i još # web lokacija}}</translation>
 <translation id="4958444002117714549">Proširi listu</translation>
 <translation id="4960068118612257147">Možete unijeti promjene u postavkama privatnosti pri izloženosti oglasima u Chromeu</translation>
 <translation id="4960203958361543136">Odaberite pretraživač</translation>
@@ -2621,10 +2621,10 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="553377674408670169">Poslovi u obrazovanju</translation>
 <translation id="5534785731327961487">Dobra ponuda sada</translation>
 <translation id="5536214594743852365">Prikaži odjeljak "<ph name="SECTION" />"</translation>
-<translation id="5536471014287260753">{DOMAIN_COUNT,plural, =1{i još 1 web-lokacija (više na sinkroniziranim uređajima)}one{i još # web-lokacija (više na sinkroniziranim uređajima)}few{i još # web-lokacije (više na sinkroniziranim uređajima)}other{i još # web-lokacija (više na sinkroniziranim uređajima)}}</translation>
+<translation id="5536471014287260753">{DOMAIN_COUNT,plural, =1{i još 1 web lokacija (i druge na sinhroniziranim uređajima)}one{i još # web lokacija (i druge na sinhroniziranim uređajima)}few{i još # web lokacije (i druge na sinhroniziranim uređajima)}other{i još # web lokacija (i druge na sinhroniziranim uređajima)}}</translation>
 <translation id="553782666181800029">Koverta Chou 2</translation>
 <translation id="5538270463355278784">automatski prikaz preko cijelog ekrana</translation>
-<translation id="5538859347764346097"><ph name="KEYWORD_SHORTCUT" />, Pretraži <ph name="KEYWORD_SUFFIX" /></translation>
+<translation id="5538859347764346097"><ph name="KEYWORD_SHORTCUT" />, pretraživanje usluge <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="5539243836947087108">Baza</translation>
 <translation id="5540224163453853">Traženi članak nije pronađen.</translation>
 <translation id="5540969246441091044">Konjički sportovi</translation>
@@ -3507,7 +3507,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="7075452647191940183">Zahtjev je prevelik</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
-<translation id="7079783554682867524">Izvor: <ph name="TYPE_1" /> (više na sinkroniziranim uređajima)</translation>
+<translation id="7079783554682867524">Izvor: <ph name="TYPE_1" /> (i druge na sinhroniziranim uređajima)</translation>
 <translation id="7081311540357715807">Maloprodaja hrane i namirnica</translation>
 <translation id="7083258188081898530">Ladica 9</translation>
 <translation id="7086090958708083563">Otpremanje je zatražio korisnik</translation>
@@ -4164,7 +4164,7 @@ Dodatni detalji:
 <translation id="8216640997712497593">14 x 18 in</translation>
 <translation id="8218327578424803826">Dodijeljena lokacija:</translation>
 <translation id="8220602974062798186">Blokirati temu <ph name="TOPIC" /> i sve povezane teme?</translation>
-<translation id="8226408512771130794"><ph name="KEYWORD_SHORTCUT" />, Pitajte <ph name="KEYWORD_SUFFIX" /></translation>
+<translation id="8226408512771130794"><ph name="KEYWORD_SHORTCUT" />, postavljanje pitanja asistentu <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="8228419419708659934">Prikaži na dvije stranice</translation>
 <translation id="8228477714872026922"><ph name="ORIGIN" /> želi pristupiti uređaju na vašoj mreži:</translation>
 <translation id="822925450938886901">Za dodatne informacije i pravila koja se možda primjenjuju otvorite chrome://management u pregledniku.</translation>

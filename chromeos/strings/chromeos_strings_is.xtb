@@ -351,6 +351,7 @@
 <translation id="2438248248625638801">Býr til titla á upptökur</translation>
 <translation id="2446553403094072641">Nákvæmni hlaupakommu</translation>
 <translation id="2448312741937722512">Gerð</translation>
+<translation id="2448857983905133469">Hjálpargögn bekkjar</translation>
 <translation id="2468124392950503650">Veldu skipun til að búa til mynd eða skoðaðu <ph name="BEGIN_LINK_PROMPTING_GUIDE" />leiðbeiningar um skipanir<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Notaðu rithjálp til að búa til drög eða fínpússa fyrirliggjandi skrif með aðstoð gervigreindar Google</translation>
 <translation id="2475982808118771221">Villa kom upp</translation>
@@ -449,6 +450,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">Endastaður</translation>
 <translation id="3060579846059757016">Útlínur</translation>
+<translation id="3060798442805232711">Hjálpargögn bekkjar eru að nota hljóðnemann þinn</translation>
 <translation id="3061850252076394168">kveikja á textaupplestri</translation>
 <translation id="3066772729299747758">á þriðjudaginn</translation>
 <translation id="3069085583900247081">Próf mistókst</translation>
@@ -910,6 +912,7 @@
 <translation id="5170568018924773124">Sýna í möppu</translation>
 <translation id="517075088756846356">Taktu rafmagnssnúru <ph name="DEVICE_NAME" /> úr sambandi og settu hana aftur í samband til að halda uppfærsluferlinu áfram</translation>
 <translation id="5180108905184566358">apabrauðstrjám</translation>
+<translation id="5180431943345994173">Kennarinn þinn fjarlægði efni úr hjálpargögnum bekkjar</translation>
 <translation id="5180712487038406644">Tjáningarríkur</translation>
 <translation id="5190187232518914472">Upplifðu uppáhaldsstundirnar aftur. Opnaðu <ph name="LINK_BEGIN" />Google-myndir<ph name="LINK_END" /> til að bæta við eða breyta albúmum.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
@@ -1003,6 +1006,7 @@
 <translation id="5628106863521633649">Tiltæk tungumál</translation>
 <translation id="5630438231335788050">bauhausstíl</translation>
 <translation id="5631759159893697722">ágrip</translation>
+<translation id="5655084389678168978">Kennarinn þinn bætti nýju efni við hjálpargögn bekkjar</translation>
 <translation id="5655283760733841251">Auka birtustig lyklaborðs</translation>
 <translation id="5655296450510165335">Skráning tækis</translation>
 <translation id="5655776422854483175">Engin prentverk</translation>
@@ -1026,7 +1030,6 @@
 <translation id="5760715441271661976">Vefgáttarstaða</translation>
 <translation id="5763838252932650682">Endurræsir og uppfærir <ph name="APP_NAME" /></translation>
 <translation id="576835345334454681">Auka birtustig skjás</translation>
-<translation id="5775340474232476653">Kennarinn þinn hefur lokið tímanum</translation>
 <translation id="5779818640587041940">Hafa kveikt á skjá á meðan á upptöku stendur</translation>
 <translation id="57838592816432529">Þagga</translation>
 <translation id="5784136236926853061">Langur HTTP-biðtími</translation>
@@ -1529,6 +1532,7 @@ Sæktu umritunarlíkanið (allt að 100 MB) til að fá þessar textauppskriftir
 <translation id="7971535376154084247">Almennar stýringar</translation>
 <translation id="7977800524392185497">Opnaðu stillingarnar til að tengjast <ph name="NETWORK_NAME" /> netkerfi</translation>
 <translation id="7978412674231730200">Einkalykill</translation>
+<translation id="7979468455552394856">Hjálpargögn bekkjar eru tengd við nemendur</translation>
 <translation id="7982789257301363584">Net</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{„<ph name="APP_NAME_1" />“ var ræst sjálfkrafa}one{# forrit var ræst sjálfkrafa}other{# forrit voru ræst sjálfkrafa}}</translation>
 <translation id="7994702968232966508">EAP-aðferð</translation>

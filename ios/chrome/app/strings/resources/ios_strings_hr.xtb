@@ -1127,6 +1127,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="573974402615125334">Da biste dijelili, pridruživali se i surađivali u grupama kartica, sinkronizirajte povijest i kartice</translation>
 <translation id="5740123193752401435">Pretražite kartice…</translation>
 <translation id="5744274077973758795">Uključene su obavijesti značajke <ph name="FEATURE_NAME" /></translation>
+<translation id="5745598824054949526">Tekst nije pronađen</translation>
 <translation id="574762237186762643">Događaji</translation>
 <translation id="5749158352074143502">Nastavi s ovom karticom</translation>
 <translation id="5753021559215751319">Spremi zaporku</translation>
@@ -1290,6 +1291,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="6410883413783534063">Otvorite kartice da biste istovremeno posjetili različite stranice</translation>
 <translation id="6416807286621280684">Vaši praćeni paketi i novosti o isporuci.</translation>
 <translation id="6418346271604475326">Priprema PDF-a</translation>
+<translation id="6421038304268477484">Prevedeni tekst</translation>
 <translation id="6429213933892582367">Otvorite Opcije zaporke</translation>
 <translation id="6434591244308415567">Došlo je do pogreške. Pokušajte ponovo kasnije.</translation>
 <translation id="6435307030888827407">Ostanite odjavljeni</translation>
@@ -1968,6 +1970,7 @@ Web-lokacije mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregledava
 <translation id="9097506547406246598">Prestanak praćenja nije uspio. Nešto nije u redu.</translation>
 <translation id="9098541895599151034">Želite li izbrisati zaporke (<ph name="NUMBER_OF_ACCOUNTS" />)?</translation>
 <translation id="9099233023029360602">Svaki put pitaj koji račun upotrijebiti</translation>
+<translation id="9099821309562615674">Tekst koji želite prevesti treba biti čitljiv i nalaziti se u kadru.</translation>
 <translation id="9100610230175265781">Potrebna je zaporka</translation>
 <translation id="91023216973987714">Načini plaćanja</translation>
 <translation id="9106655997975673326">S uređaja <ph name="SOURCE_DEVICE" /></translation>

@@ -11302,7 +11302,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="8963117664422609631">Pumunta sa mga setting ng site</translation>
 <translation id="8964927371396953727">I-verify na ikaw ito para magamit at ma-save ang mga password sa iyong account, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8965037249707889821">Ilagay ang lumang password</translation>
-<translation id="8967403839792635452">Nagde-develop ng mga extension? Manatiling up to date sa <ph name="BEGIN_LINK" />Ano'ng Bago<ph name="END_LINK" /> gamit ang dokumentasyon ng developer ng Extension ng Chrome.</translation>
+<translation id="8967403839792635452">Nagde-develop ng mga extension? Manatiling up to date sa <ph name="BEGIN_LINK" />Ano'ng Bago<ph name="END_LINK" /> gamit ang developer documentation ng Extension ng Chrome.</translation>
 <translation id="8967427617812342790">Idagdag sa listahan ng babasahin</translation>
 <translation id="8967548289042494261">Alisin ang <ph name="VM_NAME" /></translation>
 <translation id="8968527460726243404">Pangsulat ng Larawan ng ChromeOS na System</translation>

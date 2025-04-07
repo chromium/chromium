@@ -1253,6 +1253,7 @@
 <translation id="185111092974636561"><ph name="BEGIN_PARAGRAPH1" />Перед регистрацией нужно очистить TPM, чтобы операционная система <ph name="DEVICE_OS" /> могла управлять устройством.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Вы также можете полностью отключить TPM на устройстве. В этом случае данные по-прежнему будут программно шифроваться во время хранения, но некоторые функции безопасности, например аппаратные сертификаты, станут недоступны.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Параметры TPM можно изменить в настройках BIOS/UEFI во время перезагрузки системы. Конкретные действия зависят от модели. Перед перезагрузкой изучите документацию <ph name="DEVICE_OS" /> на другом устройстве: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="1851551847729706116">Демонстрация вкладки "<ph name="TAB_NAME" />" на этой вкладке</translation>
 <translation id="1852799913675865625">Произошла ошибка при чтении файла: <ph name="ERROR_TEXT" />.</translation>
 <translation id="1854180393107901205">Прекратить трансляцию</translation>
 <translation id="1856715684130786728">Добавить папку...</translation>
@@ -1642,6 +1643,7 @@
 <translation id="2121825465123208577">Изменить размер</translation>
 <translation id="2123766928840368256">Выбрать другой файл</translation>
 <translation id="2124930039827422115">{1,plural, =1{1 пользователь поставил оценку <ph name="AVERAGE_RATING" />.}one{# пользователь поставил оценку <ph name="AVERAGE_RATING" />.}few{# пользователя поставили оценку <ph name="AVERAGE_RATING" />.}many{# пользователей поставили оценку <ph name="AVERAGE_RATING" />.}other{# пользователя поставили оценку <ph name="AVERAGE_RATING" />.}}</translation>
+<translation id="2125715366913703594">Посмотреть &amp;расширения</translation>
 <translation id="2126167708562367080">Ваш администратор отключил синхронизацию.</translation>
 <translation id="2127372758936585790">Маломощное зарядное устройство</translation>
 <translation id="212862741129535676">Продолжительность работы процессора на разных ступенях частоты в процентах</translation>
@@ -11291,6 +11293,7 @@
 <translation id="8963117664422609631">Открыть настройки сайтов</translation>
 <translation id="8964927371396953727">Подтвердите свою личность, чтобы использовать и сохранять пароли в аккаунте <ph name="ACCOUNT_EMAIL" />.</translation>
 <translation id="8965037249707889821">Введите старый пароль</translation>
+<translation id="8967403839792635452">Вы создаете расширения? Следите за новостями в документации для разработчиков расширений Chrome на странице <ph name="BEGIN_LINK" />Что нового<ph name="END_LINK" />.</translation>
 <translation id="8967427617812342790">Добавить в список для чтения</translation>
 <translation id="8967548289042494261">Удаление <ph name="VM_NAME" /></translation>
 <translation id="8968527460726243404">Системное средство записи изображений в Chrome OS</translation>

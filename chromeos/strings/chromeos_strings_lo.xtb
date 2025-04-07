@@ -351,6 +351,7 @@
 <translation id="2438248248625638801">ກຳລັງສ້າງຊື່ການບັນທຶກ</translation>
 <translation id="2446553403094072641">ຄວາມຖືກຕ້ອງຂອງຈຸດລອຍຕົວ</translation>
 <translation id="2448312741937722512">ປະ​ເພດ</translation>
+<translation id="2448857983905133469">ເຄື່ອງມືສຳລັບຫ້ອງຮຽນ</translation>
 <translation id="2468124392950503650">ເລືອກ prompt ເພື່ອສ້າງ ຫຼື ເບິ່ງ <ph name="BEGIN_LINK_PROMPTING_GUIDE" />ຄຳແນະນຳການໃຊ້ prompt<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">ໃຊ້ຊ່ວຍຂ້ອຍຂຽນເພື່ອສ້າງສະບັບຮ່າງ ຫຼື ປັບປ່ຽນວຽກທີ່ມີຢູ່ແລ້ວ, ຂັບເຄື່ອນໂດຍ Google AI</translation>
 <translation id="2475982808118771221">ເກີດຄວາມຜິດພາດຂຶ້ນ.</translation>
@@ -449,6 +450,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">ຈຸດສິ້ນສຸດ</translation>
 <translation id="3060579846059757016">ໂຄງຮ່າງ</translation>
+<translation id="3060798442805232711">ເຄື່ອງມືສຳລັບຫ້ອງຮຽນກຳລັງໃຊ້ໄມໂຄຣໂຟນຂອງທ່ານ</translation>
 <translation id="3061850252076394168">ເປີດການນຳໃຊ້ຄຸນສົມບັດເລືອກເພື່ອເວົ້າ</translation>
 <translation id="3066772729299747758">ໃນວັນອັງຄານ</translation>
 <translation id="3069085583900247081">ທົດສອບບໍ່ສຳເລັດ</translation>
@@ -910,6 +912,7 @@
 <translation id="5170568018924773124">ສະ​ແດງ​ຢູ່​ໃນ​ໂຟລ​ເດີ</translation>
 <translation id="517075088756846356">ຖອດປລັກ ແລ້ວສຽບປລັກສາຍໄຟ <ph name="DEVICE_NAME" /> ຄືນໃໝ່ເພື່ອສືບຕໍ່ຂັ້ນຕອນການອັບເດດ</translation>
 <translation id="5180108905184566358">ຕົ້ນບາວບັບ</translation>
+<translation id="5180431943345994173">ຄູຂອງທ່ານໄດ້ລຶບເນື້ອຫາໃນເຄື່ອງມືສຳລັບຫ້ອງຮຽນອອກ</translation>
 <translation id="5180712487038406644">ຊັດເຈນ</translation>
 <translation id="5190187232518914472">ຫວນຄືນຄວາມຊົງຈຳທີ່ທ່ານມັກ. ເພື່ອເພີ່ມ ຫຼື ແກ້ໄຂອະລະບໍ້າ, ກະລຸນາໄປທີ່ <ph name="LINK_BEGIN" />Google ຮູບພາບ<ph name="LINK_END" />.</translation>
 <translation id="5212593641110061691">ແທັບລອຍ</translation>
@@ -1003,6 +1006,7 @@
 <translation id="5628106863521633649">ພາສາທີ່ສາມາດໃຊ້ໄດ້</translation>
 <translation id="5630438231335788050">ສະຖາບັນເບົາເຮົາສ໌</translation>
 <translation id="5631759159893697722">ບົດຄັດຫຍໍ້</translation>
+<translation id="5655084389678168978">ຄູຂອງທ່ານໄດ້ເພີ່ມເນື້ອຫາໃໝ່ໃນເຄື່ອງມືສຳລັບຫ້ອງຮຽນ</translation>
 <translation id="5655283760733841251">ແປ້ນພິມເພີ່ມຄວາມສະຫວ່າງ</translation>
 <translation id="5655296450510165335">ການລົງທະບຽນອຸປະກອນ</translation>
 <translation id="5655776422854483175">ບໍ່​ມີ​ວຽກ​​ການ​ພິມ</translation>
@@ -1026,7 +1030,6 @@
 <translation id="5760715441271661976">ສະຖານະຜອດໂທລ</translation>
 <translation id="5763838252932650682">ກຳລັງຣີສະຕາດ ແລະ ອັບເດດ <ph name="APP_NAME" /></translation>
 <translation id="576835345334454681">ເພີ່ມຄວາມສະຫວ່າງການສະແດງຜົນ</translation>
-<translation id="5775340474232476653">ຄູຂອງທ່ານສິ້ນສຸດຫ້ອງຮຽນແລ້ວ</translation>
 <translation id="5779818640587041940">ເປີດໜ້າຈໍຄ້າງໄວ້ເມື່ອບັນທຶກ</translation>
 <translation id="57838592816432529">ປິດສຽງ</translation>
 <translation id="5784136236926853061">ການຕອບສະໜອງ HTTP ສູງ</translation>
@@ -1530,6 +1533,7 @@
 <translation id="7971535376154084247">ການຄວບຄຸມທົ່ວໄປ</translation>
 <translation id="7977800524392185497">ເພື່ອເຂົ້າຮ່ວມເຄືອຂ່າຍ <ph name="NETWORK_NAME" />, ໃຫ້ເຂົ້າໄປຫາການຕັ້ງຄ່າ</translation>
 <translation id="7978412674231730200">ປຸ່ມສ່ວນຕົວ</translation>
+<translation id="7979468455552394856">ເຄື່ອງມືສຳລັບຫ້ອງຮຽນເຊື່ອມຕໍ່ກັບນັກຮຽນແລ້ວ</translation>
 <translation id="7982789257301363584">ເຄືອ​ຂ່າຍ</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{ເລີ່ມ "<ph name="APP_NAME_1" />" ອັດຕະໂນມັດແລ້ວ}other{ເລີ່ມ # ອັດຕະໂນມັດແລ້ວ}}</translation>
 <translation id="7994702968232966508">ວິທີການ EAP</translation>

@@ -1127,6 +1127,7 @@
 <translation id="573974402615125334">ట్యాబ్ గ్రూప్‌లలో షేర్ చేయడానికి, చేరడానికి, సహకరించడానికి, మీ హిస్టరీని, ట్యాబ్‌లను సింక్ చేయండి</translation>
 <translation id="5740123193752401435">ట్యాబ్‌లలో సెర్చ్ చేయండి…</translation>
 <translation id="5744274077973758795"><ph name="FEATURE_NAME" /> నోటిఫికేషన్‌లు ఆన్ చేయబడ్డాయి</translation>
+<translation id="5745598824054949526">ఎటువంటి టెక్స్ట్ కనుగొనబడలేదు</translation>
 <translation id="574762237186762643">ఈవెంట్‌లు</translation>
 <translation id="5749158352074143502">ఈ ట్యాబ్‌తో కొనసాగించండి</translation>
 <translation id="5753021559215751319">పాస్‌వర్డ్‌ను సేవ్ చేయండి</translation>
@@ -1290,6 +1291,7 @@
 <translation id="6410883413783534063">ఒకే సమయంలో వేర్వేరు పేజీలను సందర్శించడానికి ట్యాబ్‌లను తెరవండి</translation>
 <translation id="6416807286621280684">మీరు ట్రాక్ చేసిన ప్యాకేజీలు, డెలివరీ అప్‌డేట్‌లు.</translation>
 <translation id="6418346271604475326">PDF సిద్ధపరు.</translation>
+<translation id="6421038304268477484">అనువదించిన టెక్స్ట్</translation>
 <translation id="6429213933892582367">పాస్‌వర్డ్ ఆప్షన్‌లను తెరవండి</translation>
 <translation id="6434591244308415567">ఎర్రర్ ఏర్పడింది. తర్వాత మళ్లీ ట్రై చేయండి.</translation>
 <translation id="6435307030888827407">సైన్ అవుట్ అయి ఉండండి</translation>
@@ -1968,6 +1970,7 @@
 <translation id="9097506547406246598">అన్-ఫాలో చేయడం సాధ్యం కాదు. ఏదో తప్పు జరిగింది.</translation>
 <translation id="9098541895599151034"><ph name="NUMBER_OF_ACCOUNTS" /> URLలకు సంబంధించిన పాస్‌వర్డ్‌లను తొలగించాలా?</translation>
 <translation id="9099233023029360602">ప్రతిసారీ ఏ ఖాతాను ఉపయోగించాలో అడగండి</translation>
+<translation id="9099821309562615674">మీరు అనువదిస్తున్న టెక్స్ట్ స్పష్టంగా ఉండేలా, ఫ్రేమ్‌లో ఉండేలా చూసుకోండి.</translation>
 <translation id="9100610230175265781">రహస్య పదబంధం అవసరం</translation>
 <translation id="91023216973987714">పేమెంట్ ఆప్షన్‌లు</translation>
 <translation id="9106655997975673326">"<ph name="SOURCE_DEVICE" />" నుండి</translation>

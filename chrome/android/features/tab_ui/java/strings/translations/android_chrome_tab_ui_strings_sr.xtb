@@ -14,6 +14,7 @@
 Ако је избришете, сви ће одмах изгубити приступ групи картица <ph name="TITLE_OF_GROUP" /> и она ће бити избрисана са свих уређаја.</translation>
 <translation id="1329584516321524826">Ажурирано је малопре</translation>
 <translation id="1340839264183302272">Напусти групу</translation>
+<translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{Проширите дељену групу картица <ph name="TITLE_OF_GROUP" /> са <ph name="TABS_COUNT_ONE" /> картицом, боје <ph name="COLOR_NAME" />, са ознаком <ph name="CARD_LABEL" />.}one{Проширите дељену групу картица <ph name="TITLE_OF_GROUP" /> са <ph name="TABS_COUNT_MANY" /> картицом, боје <ph name="COLOR_NAME" />, са ознаком <ph name="CARD_LABEL" />.}few{Проширите дељену групу картица <ph name="TITLE_OF_GROUP" /> са <ph name="TABS_COUNT_MANY" /> картице, боје <ph name="COLOR_NAME" />, са ознаком <ph name="CARD_LABEL" />.}other{Проширите дељену групу картица <ph name="TITLE_OF_GROUP" /> са <ph name="TABS_COUNT_MANY" /> картица, боје <ph name="COLOR_NAME" />, са ознаком <ph name="CARD_LABEL" />.}}</translation>
 <translation id="1419023007528516122">Овим ћете трајно избрисати групу са уређаја</translation>
 <translation id="1486715732399361704">Овде можете да пронађете све групе картица</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Направљено је пре <ph name="NUM_MINS_ONE" /> минут}one{Направљено је пре <ph name="NUM_MINS_MANY" /> минут}few{Направљено је пре <ph name="NUM_MINS_MANY" /> минута}other{Направљено је пре <ph name="NUM_MINS_MANY" /> минута}}</translation>
@@ -108,6 +109,7 @@
 <translation id="4895402777090717310">{TABS_COUNT,plural, =1{Затвори картицу}one{Затвори картице}few{Затвори картице}other{Затвори картице}}</translation>
 <translation id="4908147833782857886">Групе (<ph name="USER_EMAIL" />) су сачуване (затвориће се картице и избрисати групе)</translation>
 <translation id="492284538114688557">Уочено је снижење</translation>
+<translation id="4937582754153367435">{NUMBER_OF_TABS,plural, =1{Проширите дељену групу картица са <ph name="TABS_COUNT_ONE" /> картицом, боје <ph name="COLOR_NAME" />, са ознаком <ph name="CARD_LABEL" />.}one{Проширите дељену групу картица са <ph name="TABS_COUNT_MANY" /> картицом, боје <ph name="COLOR_NAME" />, са ознаком <ph name="CARD_LABEL" />.}few{Проширите дељену групу картица са <ph name="TABS_COUNT_MANY" /> картице, боје <ph name="COLOR_NAME" />, са ознаком <ph name="CARD_LABEL" />.}other{Проширите дељену групу картица са <ph name="TABS_COUNT_MANY" /> картица, боје <ph name="COLOR_NAME" />, са ознаком <ph name="CARD_LABEL" />.}}</translation>
 <translation id="5007392906805964215">Прегледај</translation>
 <translation id="5073204694187207510">Сакријте приказ мреже на целом екрану</translation>
 <translation id="5076161749301278626">Желите да видите рецензије продавница?</translation>

@@ -351,6 +351,7 @@
 <translation id="2438248248625638801">Creu teitlau recordiadau</translation>
 <translation id="2446553403094072641">Cywirdeb pwynt rhydd</translation>
 <translation id="2448312741937722512">Math</translation>
+<translation id="2448857983905133469">Offer Dosbarth</translation>
 <translation id="2468124392950503650">Dewiswch anogwr i greu neu weld y <ph name="BEGIN_LINK_PROMPTING_GUIDE" />canllaw anogwr<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Defnyddiwch Helpu fi i ysgrifennu i greu drafft neu fireinio gwaith sy'n bodoli eisoes, wedi'i bweru gan AI Google</translation>
 <translation id="2475982808118771221">Bu gwall</translation>
@@ -449,6 +450,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">Diweddbwynt</translation>
 <translation id="3060579846059757016">Amlinelliadau</translation>
+<translation id="3060798442805232711">Mae Offer Dosbarth yn defnyddio eich meicroffon</translation>
 <translation id="3061850252076394168">galluogi dewis i siarad</translation>
 <translation id="3066772729299747758">ar ddydd Mawrth</translation>
 <translation id="3069085583900247081">Gwnaeth y prawf fethu</translation>
@@ -910,6 +912,7 @@
 <translation id="5170568018924773124">Dangos yn y ffolder</translation>
 <translation id="517075088756846356">Dadblygiwch ac ail-blygiwch y cebl pŵer <ph name="DEVICE_NAME" /> i barhau â'r broses ddiweddaru</translation>
 <translation id="5180108905184566358">coed baobab</translation>
+<translation id="5180431943345994173">Mae eich athro wedi tynnu cynnwys yn Offer Dosbarth</translation>
 <translation id="5180712487038406644">Mynegiannol</translation>
 <translation id="5190187232518914472">Ail-fyw eich hoff atgofion. I ychwanegu neu olygu albymau, ewch i <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
@@ -1003,6 +1006,7 @@
 <translation id="5628106863521633649">Ieithoedd sydd ar gael</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">crynodeb</translation>
+<translation id="5655084389678168978">Mae eich athro wedi ychwanegu cynnwys newydd yn Offer Dosbarth</translation>
 <translation id="5655283760733841251">Disgleirdeb y bysellfwrdd i fyny</translation>
 <translation id="5655296450510165335">Cofrestru dyfais</translation>
 <translation id="5655776422854483175">Dim tasgau argraffu</translation>
@@ -1026,7 +1030,6 @@
 <translation id="5760715441271661976">Cyflwr y Porth</translation>
 <translation id="5763838252932650682">Ailgychwyn a diweddaru <ph name="APP_NAME" /></translation>
 <translation id="576835345334454681">Disgleirdeb y sgrîn i fyny</translation>
-<translation id="5775340474232476653">Mae eich athro wedi gorffen dosbarth</translation>
 <translation id="5779818640587041940">Cadw'r sgrîn ymlaen wrth recordio</translation>
 <translation id="57838592816432529">Distewi</translation>
 <translation id="5784136236926853061">Cuddni HTTP uchel</translation>
@@ -1529,6 +1532,7 @@ Lawrlwythwch y model trawsgrifio (hyd at 100MB) i gael y trawsgrifiadau hyn.</tr
 <translation id="7971535376154084247">Rheolyddion cyffredinol</translation>
 <translation id="7977800524392185497">I ymuno â rhwydwaith <ph name="NETWORK_NAME" />, ewch i'r Gosodiadau</translation>
 <translation id="7978412674231730200">Allwedd breifat</translation>
+<translation id="7979468455552394856">Mae Offer Dosbarth yn gysylltiedig â myfyrwyr</translation>
 <translation id="7982789257301363584">Rhwydwaith</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{Dechreuwyd ‘<ph name="APP_NAME_1" />' yn awtomatig}zero{Dechreuwyd # apiau yn awtomatig}two{Dechreuwyd # ap yn awtomatig}few{Dechreuwyd # ap yn awtomatig}many{Dechreuwyd # ap yn awtomatig}other{Dechreuwyd # ap yn awtomatig}}</translation>
 <translation id="7994702968232966508">Dull EAP</translation>

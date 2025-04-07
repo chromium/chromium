@@ -351,6 +351,7 @@
 <translation id="2438248248625638801">Создание названий записей</translation>
 <translation id="2446553403094072641">Точность чисел с плавающей запятой</translation>
 <translation id="2448312741937722512">Тип</translation>
+<translation id="2448857983905133469">Инструменты для уроков</translation>
 <translation id="2468124392950503650">Выберите запрос или посмотрите <ph name="BEGIN_LINK_PROMPTING_GUIDE" />руководство по его составлению<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Генератор текстов создаст черновик или поможет улучшить существующий текст, используя технологии ИИ от Google.</translation>
 <translation id="2475982808118771221">Произошел сбой.</translation>
@@ -449,6 +450,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> мА</translation>
 <translation id="3056720590588772262">Конечная точка</translation>
 <translation id="3060579846059757016">Описание</translation>
+<translation id="3060798442805232711">Инструменты для уроков используют ваш микрофон.</translation>
 <translation id="3061850252076394168">включить озвучивание при нажатии</translation>
 <translation id="3066772729299747758">во вторник</translation>
 <translation id="3069085583900247081">Проверка не пройдена</translation>
@@ -910,6 +912,7 @@
 <translation id="5170568018924773124">Показать в папке</translation>
 <translation id="517075088756846356">Чтобы продолжить обновление, отключите и снова вставьте кабель питания устройства "<ph name="DEVICE_NAME" />".</translation>
 <translation id="5180108905184566358">баобабы</translation>
+<translation id="5180431943345994173">Преподаватель удалил контент из инструментов для уроков.</translation>
 <translation id="5180712487038406644">Выразительная</translation>
 <translation id="5190187232518914472">Вспоминайте яркие моменты своей жизни. Чтобы добавить или изменить альбом, перейдите в <ph name="LINK_BEGIN" />Google Фото<ph name="LINK_END" />.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
@@ -1003,6 +1006,7 @@
 <translation id="5628106863521633649">Доступные языки</translation>
 <translation id="5630438231335788050">баухаус</translation>
 <translation id="5631759159893697722">аннотация</translation>
+<translation id="5655084389678168978">Преподаватель добавил контент в инструменты для уроков.</translation>
 <translation id="5655283760733841251">Увеличение яркости клавиатуры</translation>
 <translation id="5655296450510165335">Регистрация устройства</translation>
 <translation id="5655776422854483175">Заданий печати нет</translation>
@@ -1026,7 +1030,6 @@
 <translation id="5760715441271661976">Состояние страницы входа</translation>
 <translation id="5763838252932650682">Перезапуск и обновление приложения "<ph name="APP_NAME" />"</translation>
 <translation id="576835345334454681">Увеличение яркости экрана</translation>
-<translation id="5775340474232476653">Преподаватель завершил занятие.</translation>
 <translation id="5779818640587041940">Не отключать экран во время записи</translation>
 <translation id="57838592816432529">Отключить звук</translation>
 <translation id="5784136236926853061">большое время ожидания HTTP</translation>
@@ -1529,6 +1532,7 @@
 <translation id="7971535376154084247">Общие настройки</translation>
 <translation id="7977800524392185497">Чтобы подключиться к сети <ph name="NETWORK_NAME" />, перейдите в настройки.</translation>
 <translation id="7978412674231730200">Закрытый ключ</translation>
+<translation id="7979468455552394856">Учащиеся подключены к инструментам для уроков.</translation>
 <translation id="7982789257301363584">Сеть</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{Приложение "<ph name="APP_NAME_1" />" открылось автоматически}one{# приложение открылось автоматически}few{# приложения открылись автоматически}many{# приложений открылись автоматически}other{# приложения открылись автоматически}}</translation>
 <translation id="7994702968232966508">Метод EAP</translation>

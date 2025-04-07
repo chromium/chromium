@@ -1260,6 +1260,7 @@
     <ph name="BEGIN_PARAGRAPH2" />您亦可完全關閉 TPM 裝置。系統仍會透過軟件加密功能安全儲存您的資料，但會停用硬件支援憑證等特定安全性功能。<ph name="END_PARAGRAPH2" />
     
 <ph name="BEGIN_PARAGRAPH3" />如要變更 TPM 設定，請重新啟動並進入系統的 BIOS/UEFI 設定。操作步驟根據裝置型號而有所不同。如需更多資料，請在重新啟動前使用其他裝置開啟 <ph name="DEVICE_OS" /> 文件：g.co/flex/TPMHelp。<ph name="END_PARAGRAPH3" /></translation>
+<translation id="1851551847729706116">正在與此分頁共用「<ph name="TAB_NAME" />」</translation>
 <translation id="1852799913675865625">嘗試讀取檔案時發生錯誤：<ph name="ERROR_TEXT" /></translation>
 <translation id="1854180393107901205">停止投放</translation>
 <translation id="1856715684130786728">新增位置…</translation>
@@ -1650,6 +1651,7 @@
 <translation id="2121825465123208577">調整大小</translation>
 <translation id="2123766928840368256">選擇其他檔案</translation>
 <translation id="2124930039827422115">{1,plural, =1{已有一位使用者給予 <ph name="AVERAGE_RATING" /> 分。}other{已有 # 位使用者給予 <ph name="AVERAGE_RATING" /> 分。}}</translation>
+<translation id="2125715366913703594">探索擴充程式 (&amp;E)</translation>
 <translation id="2126167708562367080">管理員已停用同步功能。</translation>
 <translation id="2127372758936585790">低功率充電器</translation>
 <translation id="212862741129535676">頻率狀態佔用率</translation>
@@ -11277,6 +11279,7 @@
 <translation id="8963117664422609631">前往網站設定</translation>
 <translation id="8964927371396953727">請驗證你的身分，以在帳戶 <ph name="ACCOUNT_EMAIL" /> 中使用及儲存密碼</translation>
 <translation id="8965037249707889821">輸入舊密碼</translation>
+<translation id="8967403839792635452">正在開發擴充程式嗎？參閱 Chrome 擴充功能開發人員文件，掌握<ph name="BEGIN_LINK" />最新資訊<ph name="END_LINK" />。</translation>
 <translation id="8967427617812342790">加入閱讀清單</translation>
 <translation id="8967548289042494261">移除 <ph name="VM_NAME" /></translation>
 <translation id="8968527460726243404">Chrome 作業系統圖片撰寫工具</translation>

@@ -1258,6 +1258,7 @@
 <translation id="185111092974636561">‏<ph name="BEGIN_PARAGRAPH1" />پیش‌از ثبت‌نام، باید TPM را پاک کنید تا <ph name="DEVICE_OS" /> بتواند مالک این دستگاه شود.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />همچنین می‌توانید دستگاه TPM را به‌طور کامل خاموش کنید. داده‌های شما همچنان بااستفاده از رمزگذاری نرم‌افزار به‌طور ایمن ذخیره می‌شود، اما برخی‌از ویژگی‌های امنیتی مثل گواهینامه‌های دارای پشتیبان سخت‌افزاری غیرفعال می‌شود.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />می‌توانید با بازراه‌اندازی سیستم و وارد شدن به تنظیمات BIOS/UEFI سیستم، تنظیمات TPM را تغییر دهید. مراحل بسته به مدل دستگاه متفاوت است. برای کسب اطلاعات بیشتر، پیش‌از بازراه‌اندازی، اسناد <ph name="DEVICE_OS" /> را در دستگاه دیگری باز کنید: g.co/flex/TPMHelp<ph name="END_PARAGRAPH3" /></translation>
+<translation id="1851551847729706116">درحال هم‌رسانی <ph name="TAB_NAME" /> در این برگه</translation>
 <translation id="1852799913675865625">خطایی در حین خواندن این فایل وجود داشت: <ph name="ERROR_TEXT" /></translation>
 <translation id="1854180393107901205">توقف فرستادن</translation>
 <translation id="1856715684130786728">افزودن موقعیت مکانی...</translation>
@@ -11294,6 +11295,7 @@
 <translation id="8963117664422609631">رفتن به تنظیمات سایت</translation>
 <translation id="8964927371396953727">برای استفاده از گذرواژه‌ها و ذخیره کردن آن‌ها در حسابتان (<ph name="ACCOUNT_EMAIL" />)، هویت خود را به‌تأیید برسانید</translation>
 <translation id="8965037249707889821">گذرواژه قدیمی را وارد کنید</translation>
+<translation id="8967403839792635452">‏درحال توسعه دادن افزونه هستید؟ با مستندات توسعه‌دهنده «افزونه Chrome» از <ph name="BEGIN_LINK" />ویژگی‌های جدید<ph name="END_LINK" /> مطلع شوید.</translation>
 <translation id="8967427617812342790">افزودن به فهرست خواندن</translation>
 <translation id="8967548289042494261">حذف <ph name="VM_NAME" /></translation>
 <translation id="8968527460726243404">‏ایجادکننده تصویر سیستمی ChromeOS</translation>

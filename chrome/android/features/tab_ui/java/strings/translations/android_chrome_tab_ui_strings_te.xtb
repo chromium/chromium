@@ -14,6 +14,7 @@
 మీరు దీన్ని తొలగించినట్లయితే, అందరూ వెంటనే "<ph name="TITLE_OF_GROUP" />" ట్యాబ్ గ్రూప్‌నకు యాక్సెస్ కోల్పోతారు, ఇంకా ఇది అన్ని పరికరాల నుండి తొలగించబడుతుంది.</translation>
 <translation id="1329584516321524826">ఇప్పుడే అప్‌డేట్ చేయబడింది</translation>
 <translation id="1340839264183302272">గ్రూప్ నుండి నిష్క్రమించండి</translation>
+<translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ట్యాబ్, <ph name="COLOR_NAME" /> రంగు, <ph name="CARD_LABEL" /> లేబుల్ ఉన్న షేర్ చేసిన <ph name="TITLE_OF_GROUP" /> ట్యాబ్ గ్రూప్‌ను విస్తరించండి.}other{<ph name="TABS_COUNT_MANY" /> ట్యాబ్‌లు, <ph name="COLOR_NAME" /> రంగు, <ph name="CARD_LABEL" /> లేబుల్ ఉన్న షేర్ చేసిన <ph name="TITLE_OF_GROUP" /> ట్యాబ్ గ్రూప్‌ను విస్తరించండి.}}</translation>
 <translation id="1419023007528516122">ఇలా చేస్తే, మీ పరికరం నుండి గ్రూప్ శాశ్వతంగా తొలగించబడుతుంది</translation>
 <translation id="1486715732399361704">మీరు మీ అన్ని ట్యాబ్ గ్రూప్‌లను ఇక్కడ కనుగొనవచ్చు</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> నిమిషం క్రితం క్రియేట్ చేయడం జరిగింది}other{<ph name="NUM_MINS_MANY" /> నిమిషాల క్రితం క్రియేట్ చేయడం జరిగింది}}</translation>
@@ -108,6 +109,7 @@
 <translation id="4895402777090717310">{TABS_COUNT,plural, =1{ట్యాబ్‌ను మూసివేయండి}other{ట్యాబ్‌లను మూసివేయండి}}</translation>
 <translation id="4908147833782857886"><ph name="USER_EMAIL" /> గ్రూప్‌లు సేవ్ చేయబడ్డాయి (ట్యాబ్‌లను మూసివేసి, గ్రూప్‌లను తొలగిస్తుంది)</translation>
 <translation id="492284538114688557">ధర తగ్గింపు గుర్తించబడింది</translation>
+<translation id="4937582754153367435">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ట్యాబ్, <ph name="COLOR_NAME" /> రంగు, <ph name="CARD_LABEL" /> లేబుల్ ఉన్న షేర్ చేసిన ట్యాబ్ గ్రూప్‌ను విస్తరించండి.}other{<ph name="TABS_COUNT_MANY" /> ట్యాబ్‌లు, <ph name="COLOR_NAME" /> రంగు, <ph name="CARD_LABEL" /> లేబుల్ ఉన్న షేర్ చేసిన ట్యాబ్ గ్రూప్‌ను విస్తరించండి.}}</translation>
 <translation id="5007392906805964215">రివ్యూ చేయండి</translation>
 <translation id="5073204694187207510">ఫుల్-స్క్రీన్‌ గ్రిడ్‌‌ను దాచిపెట్టు</translation>
 <translation id="5076161749301278626">స్టోర్ రివ్యూలను చూడాలనుకుంటున్నారా?</translation>

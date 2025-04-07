@@ -1260,6 +1260,7 @@
 <translation id="185111092974636561"><ph name="BEGIN_PARAGRAPH1" />Катталуудан мурун <ph name="DEVICE_OS" /> түзмөктү ээлей ала тургандай кылып TPM түзмөгүн тазалашыңыз керек.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Ошондой эле, TPM түзмөгүн толугу менен өчүрө аласыз. Дайын-даректериңиз программалык шифрлөө менен коопсуз сакталат, бирок аппараттык камсыздоо колдоого алган тастыктамалар сыяктуу айрым коопсуздук функциялары өчөт.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />TPM параметрлериңизди өзгөртүү үчүн түзмөктү өчүрүп-күйгүзүп, системанын BIOS/UEFI параметрлерине кириңиз. Кадамдар түзмөктүн үлгүсүнө жараша айырмаланат. Кеңири маалымат алуу үчүн өчүрүп-күйгүзүүдөн мурун <ph name="DEVICE_OS" /> документтерин өзүнчө түзмөктө ачыңыз: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="1851551847729706116"><ph name="TAB_NAME" /> түзмөгүн бул түзмөк менен бөлүшүү</translation>
 <translation id="1852799913675865625">Файлды окуюн дегенде ката кетти: <ph name="ERROR_TEXT" />.</translation>
 <translation id="1854180393107901205">Тышкы экранга чыгарууну токтотуу</translation>
 <translation id="1856715684130786728">Жайгашкан жерди кошуу…</translation>
@@ -1650,6 +1651,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2121825465123208577">Өлчөмүн өзгөртүү</translation>
 <translation id="2123766928840368256">Башка файлды тандоо</translation>
 <translation id="2124930039827422115">{1,plural, =1{Бир колдонуучу <ph name="AVERAGE_RATING" /> деп баалады.}other{# колдонуучу <ph name="AVERAGE_RATING" /> деп баалады.}}</translation>
+<translation id="2125715366913703594">&amp;Extensions карап чыгуу</translation>
 <translation id="2126167708562367080">Шайкештирүү функциясын администраторуңуз өчүрүп койгон.</translation>
 <translation id="2127372758936585790">Кубаты төмөн кубаттагыч</translation>
 <translation id="212862741129535676">Жыштык абалынын сыйымдуулук катышы</translation>
@@ -11293,6 +11295,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8963117664422609631">Сайттын параметрлерине өтүү</translation>
 <translation id="8964927371396953727">Аккаунтуңузга (<ph name="ACCOUNT_EMAIL" />) сырсөздөрдү сактоо жана колдонуу үчүн өзүңүздү ырастаңыз</translation>
 <translation id="8965037249707889821">Эски сырсөздү киргизүү</translation>
+<translation id="8967403839792635452">Кеңейтүүлөрдү иштеп чыгып жатасызбы? Chrome кеңейтүүсүнүн иштеп чыгуучунун документтери менен <ph name="BEGIN_LINK" />Жаңылыктардан<ph name="END_LINK" /> кабардар болуп туруңуз.</translation>
 <translation id="8967427617812342790">Окуу тизмесине кошуу</translation>
 <translation id="8967548289042494261">Өчүрүү: <ph name="VM_NAME" /></translation>
 <translation id="8968527460726243404">ChromeOS Тутумунун элес жазгычы</translation>

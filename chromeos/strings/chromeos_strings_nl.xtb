@@ -351,6 +351,7 @@ Generatieve AI is experimenteel, in vroege ontwikkeling en op dit moment beperkt
 <translation id="2438248248625638801">Opnametitels maken</translation>
 <translation id="2446553403094072641">Nauwkeurigheid van zwevendekommagetallen</translation>
 <translation id="2448312741937722512">Type</translation>
+<translation id="2448857983905133469">Tools voor lesgroepen</translation>
 <translation id="2468124392950503650">Selecteer een prompt die je wilt maken of bekijk de <ph name="BEGIN_LINK_PROMPTING_GUIDE" />handleiding voor prompts<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Gebruik Help me met schrijven om een conceptversie te maken of bestaand werk te verfijnen, mogelijk gemaakt door AI van Google</translation>
 <translation id="2475982808118771221">Er is een fout opgetreden</translation>
@@ -449,6 +450,7 @@ Generatieve AI is experimenteel, in vroege ontwikkeling en op dit moment beperkt
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Eindpunt</translation>
 <translation id="3060579846059757016">Details</translation>
+<translation id="3060798442805232711">Tools voor lesgroepen gebruikt je microfoon</translation>
 <translation id="3061850252076394168">Selecteer om voor te lezen aanzetten</translation>
 <translation id="3066772729299747758">op dinsdag</translation>
 <translation id="3069085583900247081">Test mislukt</translation>
@@ -910,6 +912,7 @@ Generatieve AI kan fouten maken, ook in informatie over mensen, dus dubbelcheck 
 <translation id="5170568018924773124">Tonen in map</translation>
 <translation id="517075088756846356">Koppel de stroomkabel van je <ph name="DEVICE_NAME" /> los en sluit deze weer aan om door te gaan met het updateproces</translation>
 <translation id="5180108905184566358">baobabbomen</translation>
+<translation id="5180431943345994173">Je docent heeft content in Tools voor lesgroepen verwijderd</translation>
 <translation id="5180712487038406644">Expressief</translation>
 <translation id="5190187232518914472">Beleef je favoriete herinneringen opnieuw. Ga naar <ph name="LINK_BEGIN" />Google Foto's<ph name="LINK_END" /> om albums toe te voegen of te bewerken.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
@@ -1003,6 +1006,7 @@ Generatieve AI kan fouten maken, ook in informatie over mensen, dus dubbelcheck 
 <translation id="5628106863521633649">Beschikbare talen</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">uittreksel</translation>
+<translation id="5655084389678168978">Je docent heeft nieuwe content aan Tools voor lesgroepen toegevoegd</translation>
 <translation id="5655283760733841251">Helderheid van toetsenbord verhogen</translation>
 <translation id="5655296450510165335">Apparaatinschrijving</translation>
 <translation id="5655776422854483175">Geen afdruktaken</translation>
@@ -1026,7 +1030,6 @@ Generatieve AI kan fouten maken, ook in informatie over mensen, dus dubbelcheck 
 <translation id="5760715441271661976">Status van portal</translation>
 <translation id="5763838252932650682"><ph name="APP_NAME" /> opnieuw opstarten en updaten</translation>
 <translation id="576835345334454681">Helderheid van scherm verhogen</translation>
-<translation id="5775340474232476653">Je docent heeft de les beëindigd</translation>
 <translation id="5779818640587041940">Scherm aan laten tijdens opnemen</translation>
 <translation id="57838592816432529">Geluid uitzetten</translation>
 <translation id="5784136236926853061">Hoge HTTP-vertraging</translation>
@@ -1529,6 +1532,7 @@ Download het transcriptiemodel (maximaal 100 MB) om deze transcripties te krijg
 <translation id="7971535376154084247">Algemene bedieningselementen</translation>
 <translation id="7977800524392185497">Ga naar Instellingen als je verbinding wilt maken met een <ph name="NETWORK_NAME" />-netwerk</translation>
 <translation id="7978412674231730200">Privésleutel</translation>
+<translation id="7979468455552394856">Tools voor lesgroepen is verbonden met leerlingen</translation>
 <translation id="7982789257301363584">Netwerk</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> is automatisch gestart}other{# apps zijn automatisch gestart}}</translation>
 <translation id="7994702968232966508">EAP-methode</translation>

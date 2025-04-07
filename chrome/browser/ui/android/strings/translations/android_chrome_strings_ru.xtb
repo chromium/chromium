@@ -77,6 +77,7 @@
 <translation id="1298077576058087471">Экономьте до 60 % трафика и читайте ежедневные новости.</translation>
 <translation id="1303339473099049190">Пароль не найден. Убедитесь, что он указан правильно, и повторите попытку.</translation>
 <translation id="1303507811548703290">Домен: <ph name="DOMAIN" />. Отправлено с устройства "<ph name="DEVICE_NAME" />".</translation>
+<translation id="1318262688555255786">Поделиться ссылкой на веб-страницу "<ph name="PAGE_TITLE" />". Источник: <ph name="PAGE_URL" />.</translation>
 <translation id="1320912611264252795">Страница сохранения закладки, открытая на весь экран</translation>
 <translation id="1327257854815634930">История переходов открыта</translation>
 <translation id="1331212799747679585">Не удалось обновить Chrome. Другие настройки</translation>
@@ -455,6 +456,7 @@
 <translation id="3072980200212375806">Приложение "<ph name="APP_NAME" />" откроется в Chrome. Продолжая, вы принимаете <ph name="BEGIN_LINK1" />Условия использования Google<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Дополнительные условия использования Chrome и Chrome OS<ph name="END_LINK2" />. Также действует <ph name="BEGIN_LINK3" />Политика конфиденциальности<ph name="END_LINK3" />.</translation>
 <translation id="3080525922482950719">Сохраняйте страницы, чтобы продолжить чтение позже или в офлайн-режиме.</translation>
 <translation id="3087734570205094154">Снизу</translation>
+<translation id="3088687687599869821">НАВИГАЦИЯ ПО СТРАНИЦАМ</translation>
 <translation id="3091010850649238832">Показать содержимое буфера обмена</translation>
 <translation id="3098745985164956033">Передавать некоторые изображения в Google, чтобы улучшить их описание</translation>
 <translation id="3114507951000454849">Будьте в курсе новостей <ph name="NEWS_ICON" /></translation>
@@ -515,6 +517,7 @@
 <translation id="3435465986463792564">Открыто много окон? Ими можно управлять здесь.</translation>
 <translation id="3435575784518354875">Экспортируйте пароли, обновите сервисы Google Play и импортируйте пароли обратно в Google Менеджер паролей. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="3435738964857648380">Безопасность</translation>
+<translation id="3435914367318771664">Добавить вкладку в новую группу</translation>
 <translation id="3439276997620616816">Здесь будут ваши недавние вкладки</translation>
 <translation id="3443221991560634068">Обновить страницу</translation>
 <translation id="3444179773590444986">Отправить отзыв о тёмной теме для сайтов?</translation>
@@ -781,6 +784,7 @@
 <translation id="4684427112815847243">Синхронизировать все</translation>
 <translation id="4685741273709472646">Выберите из списка</translation>
 <translation id="4687718960473379118">Реклама, предлагаемая сайтами</translation>
+<translation id="468924408576231679">Скопировать ссылку на веб-страницу "<ph name="PAGE_TITLE" />". Источник: <ph name="PAGE_URL" />.</translation>
 <translation id="469286762610133730">Более интересный контент</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> способ доставки}one{<ph name="SHIPPING_OPTION_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> способ доставки}few{<ph name="SHIPPING_OPTION_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> способа доставки}many{<ph name="SHIPPING_OPTION_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> способов доставки}other{<ph name="SHIPPING_OPTION_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> способа доставки}}</translation>
 <translation id="4698061626562952596">Просмотр неактивных вкладок</translation>
@@ -1123,6 +1127,7 @@
 <translation id="6205314730813004066">Конфиденциальность в рекламе</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> не ваш аккаунт?</translation>
 <translation id="6211386937064921208">Включен режим предпросмотра.</translation>
+<translation id="6212567362666004597">Добавить вкладку в группу</translation>
 <translation id="6221633008163990886">Чтобы экспортировать пароли, разблокируйте экран</translation>
 <translation id="6225572914528673855">Адресная строка</translation>
 <translation id="6232535412751077445">Если вы запретите отслеживание, в запросы браузера будет включена специальная команда. Сайты могут интерпретировать ее и отвечать на нее по-разному.
@@ -1150,6 +1155,7 @@
 <translation id="6324916366299863871">Изменить ярлык</translation>
 <translation id="6324977638108296054">Невозможно создать ссылку на выделенный текст.</translation>
 <translation id="6333140779060797560">Отправить с помощью <ph name="APPLICATION" /></translation>
+<translation id="6335454563754888572">Изменить URL страницы на сайте: <ph name="PAGE_URL" />.</translation>
 <translation id="6337234675334993532">Шифрование</translation>
 <translation id="6340526405444716530">Персонализация</translation>
 <translation id="6341580099087024258">Спрашивать, куда сохранять файлы</translation>
@@ -1193,6 +1199,7 @@
 <translation id="6486420406192123355">Этот PDF-файл расположен на сайте, подключение к которому не защищено.</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{Скачан 1 файл.}one{Скачан # файл.}few{Скачано # файла.}many{Скачано # файлов.}other{Скачано # файла.}}</translation>
 <translation id="6508722015517270189">Перезапустите Google Chrome.</translation>
+<translation id="6513924416597632811">Скопировать ссылку на страницу результатов поиска по запросу: <ph name="SEARCH_QUERY" />. Источник: <ph name="PAGE_URL" />.</translation>
 <translation id="6518133107902771759">Подтвердить</translation>
 <translation id="6527303717912515753">Поделиться</translation>
 <translation id="652948702951888897">История Chrome</translation>
@@ -1604,6 +1611,7 @@
 <translation id="8221401890884589479">Вы можете заблокировать ненужные сайты. Chrome также автоматически удаляет из списка сайты, добавленные более 30 дней назад. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="8221985041778490865">Удаление данных о работе в браузере</translation>
 <translation id="8223642481677794647">Меню карточки из ленты</translation>
+<translation id="82296173028782770">Изменить поисковый запрос: <ph name="SEARCH_QUERY" /></translation>
 <translation id="8236063039629122676">Теперь чтобы вернуться на предыдущую страницу, проведите по экрану вправо, а чтобы перейти дальше – влево.</translation>
 <translation id="8236097722223016103">Добавить в закладки</translation>
 <translation id="8243077599929149377">Добавьте свое имя пользователя</translation>
@@ -1752,6 +1760,7 @@
 <translation id="8890668505403261809">Поиск по вкладкам инкогнито</translation>
 <translation id="8898822736010347272">Отправлять в Google URL и контент некоторых посещенных страниц, а также определенную информацию о системе (это помогает обнаруживать новые угрозы и защищать всех пользователей интернета)</translation>
 <translation id="8909135823018751308">Поделиться...</translation>
+<translation id="8918299437379122615">Поделиться ссылкой на страницу результатов поиска по запросу: <ph name="SEARCH_QUERY" />. Источник: <ph name="PAGE_URL" />.</translation>
 <translation id="8922289737868596582">Скачивайте страницы через меню кнопки "Ещё" и открывайте их без подключения к Интернету</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" />: языковой пакет готов.</translation>
