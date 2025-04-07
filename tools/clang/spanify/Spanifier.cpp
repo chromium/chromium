@@ -981,7 +981,7 @@ static void EmitSingleVariableSpan(const std::string& key,
   EmitReplacement(
       key, GetReplacementDirective(
                getExprRange(operand_expr, source_manager, lang_opts).getEnd(),
-               ")", source_manager));
+               ", 1u)", source_manager));
 }
 
 static std::string getNodeFromSizeExpr(const clang::Expr* size_expr,

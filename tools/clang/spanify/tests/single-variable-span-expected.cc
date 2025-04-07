@@ -15,8 +15,8 @@ void processIntBuffer(base::span<int> buf) {
 void testPointerPassing() {
   int singleInt;
   // Expected rewrite:
-  // processIntBuffer(base::span<int, 1>(&singleInt))
-  processIntBuffer(base::span<int, 1>(&singleInt));
+  // processIntBuffer(base::span<int, 1>(&singleInt, 1u))
+  processIntBuffer(base::span<int, 1>(&singleInt, 1u));
 
   int intArray[10];
   // Not using &.
@@ -43,8 +43,8 @@ void processIntPointerBuffer(base::span<int*> pointerToData) {
 void testPointerToPointerPassing() {
   int* singleIntPointer;
   // Expected rewrite:
-  // processIntPointerBuffer(base::span<int*, 1>(&singleIntPointer));
-  processIntPointerBuffer(base::span<int*, 1>(&singleIntPointer));
+  // processIntPointerBuffer(base::span<int*, 1>(&singleIntPointer, 1u));
+  processIntPointerBuffer(base::span<int*, 1>(&singleIntPointer, 1u));
 
   int* intArrayOfPointers[10];
   // Not using &.
@@ -69,12 +69,12 @@ struct MyStruct {
 void testFieldPointerPassing() {
   MyStruct myStruct;
   // Expected rewrite:
-  // processIntBuffer(base::span<int, 1>(&myStruct.field));
-  processIntBuffer(base::span<int, 1>(&myStruct.field));
+  // processIntBuffer(base::span<int, 1>(&myStruct.field, 1u));
+  processIntBuffer(base::span<int, 1>(&myStruct.field, 1u));
 }
 
 void testParamPointerPassing(int param) {
   // Expected rewrite:
-  // processIntBuffer(base::span<int, 1>(&param));
-  processIntBuffer(base::span<int, 1>(&param));
+  // processIntBuffer(base::span<int, 1>(&param, 1u));
+  processIntBuffer(base::span<int, 1>(&param, 1u));
 }
