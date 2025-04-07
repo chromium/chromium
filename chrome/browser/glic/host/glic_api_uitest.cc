@@ -25,6 +25,7 @@
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
+#include "chrome/browser/permissions/system/mock_platform_handle.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -32,6 +33,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/metrics/metrics_service.h"
 #include "components/variations/synthetic_trial_registry.h"
 #include "content/public/browser/render_frame_host.h"
@@ -57,6 +59,7 @@ std::vector<std::string> GetTestSuiteNames() {
       "GlicApiTest",
       "GlicApiTestWithOneTab",
       "GlicApiTestWithFastTimeout",
+      "GlicApiTestSystemSettingsTest",
   };
 }
 
@@ -727,5 +730,85 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testSetMinimumWidgetSize) {
   RunTestSequence(CheckWidgetMinimumSize(gfx::Size(width, height)));
   ContinueJsTest();
 }
+
+class GlicApiTestSystemSettingsTest : public GlicApiTestWithOneTab {
+ public:
+  GlicApiTestSystemSettingsTest() {
+    system_permission_settings::SetInstanceForTesting(&mock_platform_handle);
+  }
+
+  ~GlicApiTestSystemSettingsTest() override {
+    system_permission_settings::SetInstanceForTesting(nullptr);
+  }
+
+  testing::NiceMock<system_permission_settings::MockPlatformHandle>
+      mock_platform_handle;
+};
+
+// Opening system settings is only available for MacOS. These tests are not
+// fully gated behind the mac buildflag, because
+// GlicApiTestWithOneTab#testAllTestsAreRegistered checks if all the tests in JS
+// are registered in a CC test.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_testOpenOsMediaPermissionSettings \
+  testOpenOsMediaPermissionSettings
+#else
+#define MAYBE_testOpenOsMediaPermissionSettings \
+  DISABLED_testOpenOsMediaPermissionSettings
+#endif
+IN_PROC_BROWSER_TEST_F(GlicApiTestSystemSettingsTest,
+                       MAYBE_testOpenOsMediaPermissionSettings) {
+  base::test::TestFuture<void> signal;
+  EXPECT_CALL(
+      mock_platform_handle,
+      OpenSystemSettings(testing::_, ContentSettingsType::MEDIASTREAM_MIC))
+      .WillOnce(base::test::InvokeFuture(signal));
+
+  // Trigger the openOsPermissionSettingsMenu API with 'media'.
+  ExecuteJsTest();
+  // Wait for OpenSystemSettings to be called.
+  EXPECT_TRUE(signal.Wait());
+}
+
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_testOpenOsGeoPermissionSettings testOpenOsGeoPermissionSettings
+#else
+#define MAYBE_testOpenOsGeoPermissionSettings \
+  DISABLED_testOpenOsGeoPermissionSettings
+#endif
+IN_PROC_BROWSER_TEST_F(GlicApiTestSystemSettingsTest,
+                       MAYBE_testOpenOsGeoPermissionSettings) {
+  base::test::TestFuture<void> signal;
+  EXPECT_CALL(mock_platform_handle,
+              OpenSystemSettings(testing::_, ContentSettingsType::GEOLOCATION))
+      .WillOnce(base::test::InvokeFuture(signal));
+
+  // Trigger the openOsPermissionSettingsMenu API with 'geolocation'.
+  ExecuteJsTest();
+  // Wait for OpenSystemSettings to be called.
+  EXPECT_TRUE(signal.Wait());
+}
+
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_testIncompatiblePermissionWithOsPermissionSettings \
+  testIncompatiblePermissionWithOsPermissionSettings
+#else
+#define MAYBE_testIncompatiblePermissionWithOsPermissionSettings \
+  DISABLED_testIncompatiblePermissionWithOsPermissionSettings
+#endif
+IN_PROC_BROWSER_TEST_F(
+    GlicApiTestSystemSettingsTest,
+    MAYBE_testIncompatiblePermissionWithOsPermissionSettings) {
+  EXPECT_CALL(mock_platform_handle, OpenSystemSettings(testing::_, testing::_))
+      .Times(0);
+
+  // Trigger the openOsPermissionSettingsMenu API with 'notifications', which is
+  // not supported by Glic.
+  ExecuteJsTest();
+
+  // Wait for eventual calls of OpenSystemSettings, which is async.
+  base::RunLoop().RunUntilIdle();
+}
+
 }  // namespace
 }  // namespace glic

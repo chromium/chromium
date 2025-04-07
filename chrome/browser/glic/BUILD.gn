@@ -349,6 +349,7 @@ source_set("interactive_ui_tests") {
     "//chrome/browser:global_features",
     "//chrome/browser/actor:test_support",
     "//chrome/browser/background/glic",
+    "//chrome/browser/permissions:test_support",
     "//chrome/browser/ui",
     "//chrome/common",
     "//chrome/test:test_support",

@@ -520,6 +520,21 @@ class ApiTests extends ApiTestFixtureBase {
     await this.advanceToNextStep(minSize);
   }
 
+  async testOpenOsMediaPermissionSettings() {
+    assertTrue(!!this.host.openOsPermissionSettingsMenu);
+    this.host.openOsPermissionSettingsMenu('media');
+  }
+
+  async testOpenOsGeoPermissionSettings() {
+    assertTrue(!!this.host.openOsPermissionSettingsMenu);
+    this.host.openOsPermissionSettingsMenu('geolocation');
+  }
+
+  async testIncompatiblePermissionWithOsPermissionSettings() {
+    assertTrue(!!this.host.openOsPermissionSettingsMenu);
+    this.host.openOsPermissionSettingsMenu('notifications');
+  }
+
   private async waitForPanelState(kind: PanelStateKind): Promise<void> {
     assertTrue(!!this.host.getPanelState);
     await observeSequence(this.host.getPanelState())
@@ -825,4 +840,3 @@ function sleep(timeoutMs: number): Promise<void> {
 }
 
 main();
-
