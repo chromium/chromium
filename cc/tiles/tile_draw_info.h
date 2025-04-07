@@ -93,8 +93,7 @@ class CC_EXPORT TileDrawInfo {
   friend class TileManager;
 
   void SetResource(ResourcePool::InUsePoolResource resource,
-                   bool resource_is_checker_imaged,
-                   bool is_premultiplied);
+                   bool resource_is_checker_imaged);
   ResourcePool::InUsePoolResource TakeResource();
 
   void set_resource_ready_for_draw() {

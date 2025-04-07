@@ -775,8 +775,7 @@ void TileManager::InitializeTilesWithResourcesForTesting(
     bool exported = resource_pool_->PrepareForExport(
         resource, viz::TransferableResource::ResourceSource::kTest);
     DCHECK(exported);
-    draw_info.SetResource(std::move(resource), false,
-                          /*is_premultiplied=*/true);
+    draw_info.SetResource(std::move(resource), false);
     draw_info.set_resource_ready_for_draw();
   }
 }
@@ -1721,8 +1720,7 @@ void TileManager::OnRasterTaskCompleted(
   TileDrawInfo& draw_info = tile->draw_info();
   if (exported) {
     draw_info.SetResource(std::move(resource),
-                          raster_task_was_scheduled_with_checker_images,
-                          /*is_premultiplied=*/true);
+                          raster_task_was_scheduled_with_checker_images);
   } else {
     resource_pool_->ReleaseResource(std::move(resource));
     draw_info.set_oom();

@@ -23,15 +23,16 @@ void TileDrawInfo::AsValueInto(base::trace_event::TracedValue* state) const {
 }
 
 void TileDrawInfo::SetResource(ResourcePool::InUsePoolResource resource,
-                               bool resource_is_checker_imaged,
-                               bool is_premultiplied) {
+                               bool resource_is_checker_imaged) {
   DCHECK(!resource_);
   DCHECK(resource);
 
   mode_ = RESOURCE_MODE;
   is_resource_ready_to_draw_ = false;
   resource_is_checker_imaged_ = resource_is_checker_imaged;
-  is_premultiplied_ = is_premultiplied;
+
+  // Resources that come in via this path are always premultiplied.
+  is_premultiplied_ = true;
   resource_ = std::move(resource);
 }
 
