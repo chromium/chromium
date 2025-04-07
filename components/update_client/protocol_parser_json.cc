@@ -106,7 +106,7 @@ base::expected<ProtocolParser::Operation, std::string> ParseOperation(
   op.type = type.value();
   op.sha256_out = ParseWithDefault(node, "out", "sha256", {});
   op.sha256_in = ParseWithDefault(node, "in", "sha256", {});
-  op.sha256_from = ParseWithDefault(node, "from", "sha256", {});
+  op.sha256_previous = ParseWithDefault(node, "previous", "sha256", {});
   op.path = ParseWithDefault(node, "path", {});
   op.arguments = ParseWithDefault(node, "arguments", {});
   op.size = ParseNumberWithDefault(node, "size", 0);

@@ -41,7 +41,7 @@ class ProtocolParser {
     std::string type;
     std::string sha256_in;
     std::string sha256_out;
-    std::string sha256_from;
+    std::string sha256_previous;
     std::string path;
     std::string arguments;
     int64_t size = 0;

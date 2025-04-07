@@ -254,9 +254,10 @@ std::queue<Operation> MakeOperations(
                          download_progress_callback)));
     } else if (operation.type == "puff") {
       ops.push(SkipIfCached(
-          cache_check, base::BindOnce(&PuffOperation, crx_cache,
-                                      config->GetPatcherFactory()->Create(),
-                                      event_adder, id, operation.sha256_from)));
+          cache_check,
+          base::BindOnce(&PuffOperation, crx_cache,
+                         config->GetPatcherFactory()->Create(), event_adder, id,
+                         operation.sha256_previous)));
     } else if (operation.type == "xz") {
       ops.push(SkipIfCached(
           cache_check,
@@ -264,9 +265,10 @@ std::queue<Operation> MakeOperations(
                          event_adder)));
     } else if (operation.type == "zucc") {
       ops.push(SkipIfCached(
-          cache_check, base::BindOnce(&ZucchiniOperation, crx_cache,
-                                      config->GetPatcherFactory()->Create(),
-                                      event_adder, id, operation.sha256_from)));
+          cache_check,
+          base::BindOnce(&ZucchiniOperation, crx_cache,
+                         config->GetPatcherFactory()->Create(), event_adder, id,
+                         operation.sha256_previous)));
     } else if (operation.type == "crx3") {
       ops.push(base::BindOnce(
           &InstallOperation, crx_cache, config->GetUnzipperFactory()->Create(),
