@@ -57,6 +57,29 @@
 
 namespace {
 
+// Initiate synchronously the change to `profile`, then run `continuation`
+// when the change completes asynchronously. The UI (thus `scene_state`)
+// will be destroyed synchronously, so this function should not be called
+// directly, instead it should be posted as a task.
+//
+// Destroying the UI will destroy the SceneState, the SceneController and
+// the Browser. As the SceneState is an Objective-C class and the Browser
+// is a C++ class, this method take a SceneState* as parameter to avoid
+// risking accessing a dangling pointer to a C++ object.
+void SwitchToProfileSynchronously(const std::string& profile_name,
+                                  __weak SceneState* weak_scene_state,
+                                  ChangeProfileContinuation continuation) {
+  if (SceneState* scene_state = weak_scene_state) {
+    id<ChangeProfileCommands> change_profile_handler = HandlerForProtocol(
+        scene_state.profileState.appState.appCommandDispatcher,
+        ChangeProfileCommands);
+
+    [change_profile_handler changeProfile:profile_name
+                                 forScene:scene_state
+                             continuation:std::move(continuation)];
+  }
+}
+
 // Maximum delay to wait for fetching the account capabilities before showing
 // the sign-in upgrade promo. If fetching the account capabilities takes more
 // than the delay, then the promo is suppressed - it may be shown on the next
@@ -106,25 +129,28 @@ bool ShouldSwitchProfileAtSignout(AuthenticationService* authentication_service,
          is_work_profile;
 }
 
-// Switch from a managed profile to a personal profile then run `continuation`.
+// Post an asynchronous request to switch to `profile`, running `continuation`
+// when the change completes.
+void SwitchToProfile(Browser* browser,
+                     const std::string& profile_name,
+                     ChangeProfileContinuation continuation) {
+  __weak SceneState* weak_scene_state = browser->GetSceneState();
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&SwitchToProfileSynchronously, profile_name,
+                                weak_scene_state, std::move(continuation)));
+}
+
+// Post an asynchronous request to switch from a managed profile to the
+// personal profile, running `continuation` when the change completes.
 void SwitchToPersonalProfile(Browser* browser,
                              ChangeProfileContinuation continuation) {
-  SceneState* scene_state = browser->GetSceneState();
-
   ProfileManagerIOS* profile_manager =
       GetApplicationContext()->GetProfileManager();
-  std::string default_profile_name =
+  std::string personal_profile_name =
       profile_manager->GetProfileAttributesStorage()->GetPersonalProfileName();
+  CHECK(profile_manager->HasProfileWithName(personal_profile_name));
 
-  CHECK(profile_manager->HasProfileWithName(default_profile_name));
-
-  id<ChangeProfileCommands> change_profile_handler =
-      HandlerForProtocol(scene_state.profileState.appState.appCommandDispatcher,
-                         ChangeProfileCommands);
-
-  [change_profile_handler changeProfile:default_profile_name
-                               forScene:scene_state
-                           continuation:std::move(continuation)];
+  SwitchToProfile(browser, personal_profile_name, std::move(continuation));
 }
 
 }  // namespace
