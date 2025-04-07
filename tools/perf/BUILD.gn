@@ -82,6 +82,9 @@ group("perf_without_chrome") {
     # For Speedometer benchmarks.
     "//third_party/speedometer",
 
+    # For Jetstream benchmarks.
+    "//third_party/jetstream",
+
     # For smoothness.tough_canvas_cases
     "//chrome/test/data/perf/",
 

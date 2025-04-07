@@ -434,11 +434,13 @@ def _crossbench_motionmark1_3_1(estimated_runtime=360):
                           'motionmark_1.3.1',
                           estimated_runtime=estimated_runtime)
 
-def _crossbench_motionmark1_3(estimated_runtime=360):
+
+def _crossbench_motionmark1_3(estimated_runtime=360, arguments=None):
   """Alias for the latest MotionMark 1.3.X version."""
   return CrossbenchConfig('motionmark1.3.crossbench',
                           'motionmark_1.3',
-                          estimated_runtime=estimated_runtime)
+                          estimated_runtime=estimated_runtime,
+                          arguments=arguments)
 
 
 def _crossbench_motionmark_main(estimated_runtime=360):
@@ -466,11 +468,12 @@ def _crossbench_jetstream2_2(estimated_runtime=180):
                           estimated_runtime=estimated_runtime)
 
 
-def _crossbench_jetstream2(estimated_runtime=180):
+def _crossbench_jetstream2(estimated_runtime=180, arguments=None):
   """Alias of the latest JetStream 2.X version."""
   return CrossbenchConfig('jetstream2.crossbench',
                           'jetstream_2.2',
-                          estimated_runtime=estimated_runtime)
+                          estimated_runtime=estimated_runtime,
+                          arguments=arguments)
 
 
 def _crossbench_jetstream_main(estimated_runtime=180):
@@ -525,12 +528,13 @@ _CROSSBENCH_ANDROID = frozenset([
 ])
 
 _CROSSBENCH_PIXEL9 = frozenset([
-    _crossbench_jetstream2(),
-    _crossbench_speedometer3_1(arguments=['--fileserver']),
-    _crossbench_motionmark1_3(),
+    _crossbench_jetstream2(arguments=['--fileserver', '--debug']),
+    _crossbench_speedometer3_1(arguments=['--fileserver', '--debug']),
+    _crossbench_motionmark1_3(arguments=['--fileserver', '--debug']),
     _crossbench_loadline_phone(arguments=[
         '--cool-down-threshold=moderate',
         '--no-splash',
+        '--debug',
     ]),
 ])
 
