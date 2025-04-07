@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_GLIC_FRE_GLIC_FRE_DIALOG_VIEW_H_
 #define CHROME_BROWSER_GLIC_FRE_GLIC_FRE_DIALOG_VIEW_H_
 
+#include "chrome/browser/glic/fre/fre_webui_contents_container.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -17,17 +18,21 @@ namespace glic {
 // View, which is the preferred structure.
 class GlicFreDialogView : public views::DialogDelegateView {
  public:
-  GlicFreDialogView(Profile* profile, const gfx::Size& initial_size);
+  GlicFreDialogView(Profile* profile, GlicFreController* fre_controller);
   GlicFreDialogView(const GlicFreDialogView&) = delete;
   GlicFreDialogView& operator=(const GlicFreDialogView&) = delete;
   ~GlicFreDialogView() override;
 
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kWebViewElementIdForTesting);
 
-  content::WebContents* web_contents() { return web_contents_.get(); }
+  content::WebContents* web_contents() { return contents_->web_contents(); }
+
+  views::WebView* web_view() { return web_view_; }
 
  private:
-  std::unique_ptr<content::WebContents> web_contents_;
+  std::unique_ptr<FreWebUIContentsContainer> contents_;
+
+  raw_ptr<views::WebView> web_view_;
 };
 
 }  // namespace glic

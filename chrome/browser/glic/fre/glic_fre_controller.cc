@@ -391,11 +391,9 @@ void GlicFreController::CreateView() {
     return;
   }
 
-  gfx::Size initial_size(features::kGlicFreInitialWidth.Get(),
-                         features::kGlicFreInitialHeight.Get());
-  fre_view_ = std::make_unique<GlicFreDialogView>(profile_, initial_size);
+  fre_view_ = std::make_unique<GlicFreDialogView>(profile_, this);
   web_contents_ = fre_view_->web_contents();
-  web_contents_->Resize(gfx::Rect(initial_size));
+  web_contents_->Resize(gfx::Rect(GetFreInitialSize()));
   auto* service = GlicKeyedServiceFactory::GetGlicKeyedService(profile_);
   GlicProfileManager::GetInstance()->OnLoadingClientForService(service);
 }
@@ -412,6 +410,19 @@ void GlicFreController::RecordMetricsIfDialogIsShowingAndReady() {
 
 bool GlicFreController::IsShowingDialog() const {
   return !!fre_widget_;
+}
+
+gfx::Size GlicFreController::GetFreInitialSize() {
+  return gfx::Size(features::kGlicFreInitialWidth.Get(),
+                   features::kGlicFreInitialHeight.Get());
+}
+
+void GlicFreController::UpdateFreWidgetBounds(const gfx::Rect& bounds) {
+  if (!fre_widget_) {
+    return;
+  }
+
+  fre_widget_->SetBounds(bounds);
 }
 
 }  // namespace glic

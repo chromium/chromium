@@ -86,6 +86,8 @@ source_set("impl") {
     "browser_ui/theme_util.h",
     "fre/fre_util.cc",
     "fre/fre_util.h",
+    "fre/fre_webui_contents_container.cc",
+    "fre/fre_webui_contents_container.h",
     "fre/glic_fre_controller.cc",
     "fre/glic_fre_controller.h",
     "fre/glic_fre_dialog_view.cc",

@@ -267,11 +267,22 @@ export class FreAppController {
     }, MAX_WAIT_TIME_MS - MIN_HOLD_LOADING_TIME_MS);
   }
 
+  onSizeChanged(e: any): void {
+    window.resizeTo(e.newWidth, e.newHeight);
+  }
+
   private createWebview(): chrome.webviewTag.WebView {
     const webview =
         document.createElement('webview') as chrome.webviewTag.WebView;
     webview.id = 'freGuestFrame';
+    // TODO(crbug.com/408475473): Update the webviewTag definition to be able to
+    // define properties rather than using setAttribute.
     webview.setAttribute('partition', 'glicfrepart');
+    webview.setAttribute('autosize', 'true');
+    webview.setAttribute('minheight', window.outerHeight.toString());
+    webview.setAttribute('minwidth', window.outerWidth.toString());
+    webview.setAttribute('maxwidth', window.outerWidth.toString());
+    webview.setAttribute('maxheight', window.screen.availHeight.toString());
     $.webviewContainer.appendChild(webview);
 
     this.webviewEventTracker.add(
@@ -280,6 +291,8 @@ export class FreAppController {
         webview, 'contentload', this.onContentLoad.bind(this));
     this.webviewEventTracker.add(
         webview, 'newwindow', this.onNewWindow.bind(this));
+    this.webviewEventTracker.add(
+        webview, 'sizechanged', this.onSizeChanged.bind(this));
 
     return webview;
   }
