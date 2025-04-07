@@ -404,6 +404,19 @@ class MemorySaverChipInteractiveTest
                        index));
   }
 
+  // Sets discard usage on the active tab for deterministic UI testing.
+  auto SetTabPreDiscardMemoryUsageKb(size_t index, int64_t usage_kb) {
+    return Do(base::BindLambdaForTesting([=, this]() {
+      content::WebContents* web_contents =
+          browser()->tab_strip_model()->GetWebContentsAt(index);
+      auto* pre_discard_resource_usage =
+          performance_manager::user_tuning::UserPerformanceTuningManager::
+              PreDiscardResourceUsage::FromWebContents(web_contents);
+      pre_discard_resource_usage->UpdateDiscardInfo(
+          usage_kb, ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
+    }));
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -541,31 +554,25 @@ IN_PROC_BROWSER_TEST_P(MemorySaverChipInteractiveTest, CloseBubbleOnTabSwitch) {
 
 // TODO(crbug.com/407785192): Fix and re-enable
 IN_PROC_BROWSER_TEST_P(MemorySaverChipInteractiveTest,
-                       DISABLED_BubbleCorrectlyReportingMemorySaved) {
+                       BubbleCorrectlyReportingMemorySaved) {
+  // Simulate a page larger than the threshold for showing savings UI.
+  constexpr int64_t kMemoryUsageKb = 1024 * 1024;
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
       NavigateWebContents(kFirstTabContents, GetURL()),
       AddInstrumentedTab(kSecondTabContents, GURL(kChromePage)),
-      ForceRefreshMemoryMetrics(), DiscardAndReloadTab(0, kFirstTabContents),
-      PressPageActionButton(),
+      DiscardAndReloadTab(0, kFirstTabContents),
+      SetTabPreDiscardMemoryUsageKb(0, kMemoryUsageKb), PressPageActionButton(),
       WaitForShow(MemorySaverResourceView::
                       kMemorySaverResourceViewMemorySavingsElementId),
-      CheckView(
-          MemorySaverResourceView::
-              kMemorySaverResourceViewMemorySavingsElementId,
-          base::BindOnce(
-              [](Browser* browser, views::Label* label) {
-                content::WebContents* web_contents =
-                    browser->tab_strip_model()->GetWebContentsAt(0);
-                auto* pre_discard_resource_usage = performance_manager::
-                    user_tuning::UserPerformanceTuningManager::
-                        PreDiscardResourceUsage::FromWebContents(web_contents);
-                int memory_estimate =
-                    pre_discard_resource_usage->memory_footprint_estimate_kb();
-                return label->GetText().find(ui::FormatBytes(
-                           memory_estimate * 1024)) != std::string::npos;
-              },
-              browser())));
+      CheckView(MemorySaverResourceView::
+                    kMemorySaverResourceViewMemorySavingsElementId,
+                [](views::Label* label) {
+                  return label->GetText().find(ui::FormatBytes(
+                             kMemoryUsageKb * 1024)) != std::string::npos;
+                })
+
+  );
 }
 
 // Memory Saver Dialog bubble should add the site it is currently on
@@ -677,16 +684,7 @@ IN_PROC_BROWSER_TEST_P(MemorySaverChipInteractiveTest,
       NavigateWebContents(kFirstTabContents, GetURL()),
       AddInstrumentedTab(kSecondTabContents, GURL(kChromePage)),
       ForceRefreshMemoryMetrics(), DiscardAndReloadTab(0, kFirstTabContents),
-      Do(base::BindLambdaForTesting([&]() {
-        content::WebContents* web_contents =
-            browser()->tab_strip_model()->GetWebContentsAt(0);
-        auto* pre_discard_resource_usage =
-            performance_manager::user_tuning::UserPerformanceTuningManager::
-                PreDiscardResourceUsage::FromWebContents(web_contents);
-        pre_discard_resource_usage->UpdateDiscardInfo(
-            135 * 1024, ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
-      })),
-      PressPageActionButton(),
+      SetTabPreDiscardMemoryUsageKb(0, 135 * 1024), PressPageActionButton(),
       WaitForShow(
           MemorySaverBubbleView::kMemorySaverDialogResourceViewElementId),
       Screenshot(MemorySaverBubbleView::kMemorySaverDialogResourceViewElementId,
