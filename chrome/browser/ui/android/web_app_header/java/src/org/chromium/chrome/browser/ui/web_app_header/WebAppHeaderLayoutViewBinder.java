@@ -1,0 +1,15 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.ui.web_app_header;
+
+import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel;
+
+class WebAppHeaderLayoutViewBinder {
+
+    private WebAppHeaderLayoutViewBinder() {}
+
+    public static void bind(PropertyModel model, WebAppHeaderLayout view, PropertyKey key) {}
+}

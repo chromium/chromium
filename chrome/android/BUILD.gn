@@ -527,6 +527,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/ui/android/signin:java",
       "//chrome/browser/ui/android/theme:java",
       "//chrome/browser/ui/android/toolbar:java",
+      "//chrome/browser/ui/android/web_app_header:java",
       "//chrome/browser/ui/android/whats_new:java",
       "//chrome/browser/ui/messages/android:java",
       "//chrome/browser/uid/android:java",
