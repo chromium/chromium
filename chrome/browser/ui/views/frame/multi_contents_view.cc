@@ -223,8 +223,6 @@ void MultiContentsView::OnPaint(gfx::Canvas* canvas) {
 
 MultiContentsView::ContentsContainerView::ContentsContainerView(
     std::unique_ptr<ContentsWebView> contents_view) {
-  // SetPaintToLayer();
-  // layer()->SetFillsBoundsOpaquely(false);
   SetUseDefaultFillLayout(true);
   contents_view_ = AddChildView(std::move(contents_view));
 }
