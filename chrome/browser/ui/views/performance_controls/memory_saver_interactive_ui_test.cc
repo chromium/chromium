@@ -82,9 +82,9 @@ constexpr char kDocumentWithAudio[] = "/autoplay_audio.html";
 constexpr char kDocumentWithVideo[] = "/media/bigbuck-player.html";
 constexpr char kDocumentWithForm[] = "/form_interaction.html";
 
-// Any Chrome page that can be reliably discarded. This was previously the NTP,
-// but NTP is sometimes ineligible for proactive tab discard.
-constexpr std::string_view kChromePage = chrome::kChromeUIVersionURL;
+// The URL to load in a secondary tab, opened to deactivate the discardable
+// tab under test.
+constexpr std::string_view kOtherPage = chrome::kChromeUINewTabURL;
 
 }  // namespace
 
@@ -146,15 +146,8 @@ class MemorySaverDiscardPolicyInteractiveTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Check that a tab playing a video in the background won't be discarded
-// TODO(crbug.com/408399396): Re-enable flaky test on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_TabWithVideoNotDiscarded DISABLED_TabWithVideoNotDiscarded
-#else
-#define MAYBE_TabWithVideoNotDiscarded TabWithVideoNotDiscarded
-#endif
 IN_PROC_BROWSER_TEST_P(MemorySaverDiscardPolicyInteractiveTest,
-                       MAYBE_TabWithVideoNotDiscarded) {
+                       TabWithVideoNotDiscarded) {
   DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kVideoIsPlaying);
   const char kPlayVideo[] = "(el) => { el.play(); }";
   const DeepQuery video = {"#video"};
@@ -173,7 +166,7 @@ IN_PROC_BROWSER_TEST_P(MemorySaverDiscardPolicyInteractiveTest,
                           embedded_test_server()->GetURL(kDocumentWithVideo)),
       ExecuteJsAt(kFirstTabContents, video, kPlayVideo),
       WaitForStateChange(kFirstTabContents, video_is_playing),
-      AddInstrumentedTab(kSecondTabContents, GURL(kChromePage)),
+      AddInstrumentedTab(kSecondTabContents, GURL(kOtherPage)),
       TryDiscardTab(0), CheckTabIsDiscarded(0, false));
 }
 
@@ -196,7 +189,7 @@ IN_PROC_BROWSER_TEST_P(MemorySaverDiscardPolicyInteractiveTest,
                           embedded_test_server()->GetURL(kDocumentWithAudio)),
       ExecuteJsAt(kFirstTabContents, audio, "(el) => { el.play(); }"),
       WaitForEvent(kFirstTabContents, kAudioIsAudible),
-      AddInstrumentedTab(kSecondTabContents, GURL(kChromePage)),
+      AddInstrumentedTab(kSecondTabContents, GURL(kOtherPage)),
       TryDiscardTab(0), CheckTabIsDiscarded(0, false));
 }
 
@@ -238,7 +231,7 @@ IN_PROC_BROWSER_TEST_P(MemorySaverDiscardPolicyInteractiveTest,
       WaitForStateChange(kFirstTabContents, input_is_focused), PressKeyboard(),
       WaitForStateChange(kFirstTabContents, input_value_updated),
 
-      AddInstrumentedTab(kSecondTabContents, GURL(kChromePage), 1),
+      AddInstrumentedTab(kSecondTabContents, GURL(kOtherPage), 1),
       TryDiscardTab(0), CheckTabIsDiscarded(0, false));
 }
 
@@ -260,7 +253,7 @@ IN_PROC_BROWSER_TEST_P(MemorySaverDiscardPolicyInteractiveTest,
                       kFirstTabContents,
                       https_server.GetURL(
                           "a.test", "/notifications/notification_tester.html")),
-                  AddInstrumentedTab(kSecondTabContents, GURL(kChromePage)),
+                  AddInstrumentedTab(kSecondTabContents, GURL(kOtherPage)),
                   TryDiscardTab(0), CheckTabIsDiscarded(0, false));
 }
 
@@ -426,7 +419,7 @@ class MemorySaverChipInteractiveTest
 IN_PROC_BROWSER_TEST_P(MemorySaverChipInteractiveTest, PageActionChipShows) {
   RunTestSequence(InstrumentTab(kFirstTabContents, 0),
                   NavigateWebContents(kFirstTabContents, GetURL()),
-                  AddInstrumentedTab(kSecondTabContents, GURL(kChromePage)),
+                  AddInstrumentedTab(kSecondTabContents, GURL(kOtherPage)),
                   SelectTab(kTabStripElementId, 0),
                   EnsureNotPresent(kMemorySaverChipElementId),
                   DiscardTabUntilChipStopsExpanding(0, 1, kFirstTabContents),
@@ -476,9 +469,17 @@ IN_PROC_BROWSER_TEST_P(MemorySaverChipInteractiveTest,
 // Page Action chip should only show on discarded non-chrome pages
 IN_PROC_BROWSER_TEST_P(MemorySaverChipInteractiveTest,
                        ChipShowsOnNonChromeSites) {
+  // Any Chrome page that can be reliably discarded. This was
+  // previously the NTP, but NTP is sometimes ineligible for proactive tab
+  // discard.
+  constexpr std::string_view kDiscardableInternalPage =
+      chrome::kChromeUIVersionURL;
+
   RunTestSequence(InstrumentTab(kFirstTabContents, 0),
                   NavigateWebContents(kFirstTabContents, GetURL()),
-                  AddInstrumentedTab(kSecondTabContents, GURL(kChromePage)),
+                  AddInstrumentedTab(kSecondTabContents,
+
+                                     GURL(kDiscardableInternalPage)),
 
                   // Discards tab on non-chrome page
                   DiscardAndReloadTab(0, kFirstTabContents),
@@ -496,7 +497,7 @@ IN_PROC_BROWSER_TEST_P(MemorySaverChipInteractiveTest,
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
       NavigateWebContents(kFirstTabContents, GetURL()),
-      AddInstrumentedTab(kSecondTabContents, GURL(kChromePage)),
+      AddInstrumentedTab(kSecondTabContents, GURL(kOtherPage)),
       DiscardAndReloadTab(0, kFirstTabContents), PressPageActionButton(),
       WaitForShow(MemorySaverBubbleView::kMemorySaverDialogBodyElementId),
       PressButton(MemorySaverBubbleView::kMemorySaverDialogOkButton),
@@ -512,7 +513,7 @@ IN_PROC_BROWSER_TEST_P(MemorySaverChipInteractiveTest,
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
       NavigateWebContents(kFirstTabContents, GetURL()),
-      AddInstrumentedTab(kSecondTabContents, GURL(kChromePage)),
+      AddInstrumentedTab(kSecondTabContents, GURL(kOtherPage)),
       DiscardAndReloadTab(0, kFirstTabContents), PressPageActionButton(),
       WaitForShow(MemorySaverBubbleView::kMemorySaverDialogBodyElementId),
       NameView(
@@ -530,7 +531,7 @@ IN_PROC_BROWSER_TEST_P(MemorySaverChipInteractiveTest, CloseBubbleOnChipClick) {
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
       NavigateWebContents(kFirstTabContents, GetURL()),
-      AddInstrumentedTab(kSecondTabContents, GURL(kChromePage)),
+      AddInstrumentedTab(kSecondTabContents, GURL(kOtherPage)),
       DiscardAndReloadTab(0, kFirstTabContents), PressPageActionButton(),
       WaitForShow(MemorySaverBubbleView::kMemorySaverDialogBodyElementId),
       MousePressPageActionButton(),
@@ -545,7 +546,7 @@ IN_PROC_BROWSER_TEST_P(MemorySaverChipInteractiveTest, CloseBubbleOnTabSwitch) {
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
       NavigateWebContents(kFirstTabContents, GetURL()),
-      AddInstrumentedTab(kSecondTabContents, GURL(kChromePage)),
+      AddInstrumentedTab(kSecondTabContents, GURL(kOtherPage)),
       DiscardAndReloadTab(0, kFirstTabContents), PressPageActionButton(),
       WaitForShow(MemorySaverBubbleView::kMemorySaverDialogBodyElementId),
       NameTab(1, kSecondTab), MoveMouseTo(kSecondTab), ClickMouse(),
@@ -560,7 +561,7 @@ IN_PROC_BROWSER_TEST_P(MemorySaverChipInteractiveTest,
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
       NavigateWebContents(kFirstTabContents, GetURL()),
-      AddInstrumentedTab(kSecondTabContents, GURL(kChromePage)),
+      AddInstrumentedTab(kSecondTabContents, GURL(kOtherPage)),
       DiscardAndReloadTab(0, kFirstTabContents),
       SetTabPreDiscardMemoryUsageKb(0, kMemoryUsageKb), PressPageActionButton(),
       WaitForShow(MemorySaverResourceView::
@@ -584,7 +585,7 @@ IN_PROC_BROWSER_TEST_P(MemorySaverChipInteractiveTest,
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
       NavigateWebContents(kFirstTabContents, GetURL()),
-      AddInstrumentedTab(kSecondTabContents, GURL(kChromePage)),
+      AddInstrumentedTab(kSecondTabContents, GURL(kOtherPage)),
       DiscardAndReloadTab(0, kFirstTabContents), PressPageActionButton(),
       WaitForShow(MemorySaverBubbleView::kMemorySaverDialogBodyElementId),
       CheckViewProperty(
@@ -682,7 +683,7 @@ IN_PROC_BROWSER_TEST_P(MemorySaverChipInteractiveTest,
                               kSkipPixelTestsReason),
       InstrumentTab(kFirstTabContents, 0),
       NavigateWebContents(kFirstTabContents, GetURL()),
-      AddInstrumentedTab(kSecondTabContents, GURL(kChromePage)),
+      AddInstrumentedTab(kSecondTabContents, GURL(kOtherPage)),
       ForceRefreshMemoryMetrics(), DiscardAndReloadTab(0, kFirstTabContents),
       SetTabPreDiscardMemoryUsageKb(0, 135 * 1024), PressPageActionButton(),
       WaitForShow(
@@ -719,7 +720,7 @@ IN_PROC_BROWSER_TEST_P(MemorySaverDiscardIndicatorIPHTest,
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
       NavigateWebContents(kFirstTabContents, GetURL()),
-      AddInstrumentedTab(kSecondTabContents, GURL(kChromePage)),
+      AddInstrumentedTab(kSecondTabContents, GURL(kOtherPage)),
       TryDiscardTab(0), CheckTabIsDiscarded(0, true),
       WaitForPromo(feature_engagement::kIPHDiscardRingFeature),
       PressNonDefaultPromoButton(), InstrumentTab(kThirdTabContents, 2),
@@ -770,7 +771,7 @@ IN_PROC_BROWSER_TEST_P(MemorySaverImprovedFaviconTreatmentTest,
                               kSkipPixelTestsReason),
       InstrumentTab(kFirstTabContents, 0),
       NavigateWebContents(kFirstTabContents, GetURL()),
-      AddInstrumentedTab(kSecondTabContents, GURL(kChromePage)),
+      AddInstrumentedTab(kSecondTabContents, GURL(kOtherPage)),
       Do(base::BindLambdaForTesting(
           [=, this]() { GetTabStrip()->StopAnimating(true); })),
       TryDiscardTab(0), CheckTabIsDiscarded(0, true),
