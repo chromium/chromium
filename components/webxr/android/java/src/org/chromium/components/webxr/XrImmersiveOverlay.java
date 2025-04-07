@@ -4,6 +4,8 @@
 
 package org.chromium.components.webxr;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.pm.ActivityInfo;
@@ -14,9 +16,10 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.base.Log;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.ScreenOrientationDelegate;
 import org.chromium.content_public.browser.ScreenOrientationProvider;
 import org.chromium.content_public.browser.WebContents;
@@ -30,6 +33,7 @@ import java.util.Map;
  * Provides a fullscreen overlay for immersive sessions, allows tailoring setup/etc. due to the
  * particular needs of AR/VR sessions via the XrImmersiveOverlay.Delegate interface.
  */
+@NullMarked
 public class XrImmersiveOverlay
         implements SurfaceHolder.Callback2, View.OnTouchListener, ScreenOrientationDelegate {
     /**
@@ -104,7 +108,7 @@ public class XrImmersiveOverlay
     private Delegate mOverlayDelegate;
     private Activity mActivity;
     private boolean mSurfaceReportedReady;
-    private Integer mRestoreOrientation;
+    private @Nullable Integer mRestoreOrientation;
     private boolean mCleanupInProgress;
     private XrSurfaceView mXrSurfaceView;
     private WebContents mWebContents;
@@ -112,19 +116,18 @@ public class XrImmersiveOverlay
     // Set containing all currently touching pointers.
     private HashMap<Integer, PointerData> mPointerIdToData;
     // ID of primary pointer (if present).
-    private Integer mPrimaryPointerId;
+    private @Nullable Integer mPrimaryPointerId;
 
+    @Initializer
     public void show(
-            @NonNull Delegate overlayDelegate,
-            @NonNull WebContents webContents,
-            @NonNull XrSessionCoordinator caller) {
+            Delegate overlayDelegate, WebContents webContents, XrSessionCoordinator caller) {
         if (DEBUG_LOGS) Log.i(TAG, "constructor");
         mXrSessionCoordinator = caller;
 
         mWebContents = webContents;
         mOverlayDelegate = overlayDelegate;
 
-        mActivity = XrSessionCoordinator.getActivity(webContents);
+        mActivity = assumeNonNull(XrSessionCoordinator.getActivity(webContents));
 
         mPointerIdToData = new HashMap<Integer, PointerData>();
         mPrimaryPointerId = null;
@@ -147,7 +150,7 @@ public class XrImmersiveOverlay
     }
 
     private class XrSurfaceView {
-        private SurfaceView mSurfaceView;
+        private @Nullable SurfaceView mSurfaceView;
         private WebContentsObserver mWebContentsObserver;
         private boolean mSurfaceViewNeedsDestruction;
         private boolean mDestructionFromVisibilityChanged;
@@ -479,6 +482,7 @@ public class XrImmersiveOverlay
         // transport even if the currently-visible part in the surface view is smaller than this. We
         // shouldn't get resize events since we're using FLAG_LAYOUT_STABLE and are locking screen
         // orientation.
+        assumeNonNull(mWebContents.getTopLevelNativeWindow());
         DisplayAndroid display = mWebContents.getTopLevelNativeWindow().getDisplay();
         if (mSurfaceReportedReady) {
             int rotation = display.getRotation();

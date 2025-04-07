@@ -7,12 +7,15 @@ package org.chromium.components.webxr;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Helper class for interacting with Cardboard SDK from Java code. */
 @JNINamespace("webxr")
+@NullMarked
 public class CardboardUtils {
     /**
-     * Forces to always return Cardboard Viewer v1 device parameters to prevent
-     * any disk read or write and the QR code scanner activity to be launched.
+     * Forces to always return Cardboard Viewer v1 device parameters to prevent any disk read or
+     * write and the QR code scanner activity to be launched.
      */
     public static void useCardboardV1DeviceParamsForTesting() {
         CardboardUtilsJni.get().nativeUseCardboardV1DeviceParamsForTesting();
