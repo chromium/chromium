@@ -121,8 +121,8 @@ ExtensionAction* ExtensionActionManager::GetExtensionAction(
 }
 
 // static
-void ExtensionActionManager::EnsureFactoryBuilt() {
-  ExtensionActionManagerFactory::GetInstance();
+BrowserContextKeyedServiceFactory* ExtensionActionManager::GetFactory() {
+  return ExtensionActionManagerFactory::GetInstance();
 }
 
 }  // namespace extensions
