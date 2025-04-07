@@ -46,7 +46,8 @@
 // This file runs the respective JS tests from
 // chrome/test/data/webui/glic/api_test.ts.
 
-#if defined(ADDRESS_SANITIZER) || defined(THREAD_SANITIZER)
+#if defined(ADDRESS_SANITIZER) || defined(THREAD_SANITIZER) || \
+    defined(MEMORY_SANITIZER)
 #define SLOW_BINARY
 #endif
 
