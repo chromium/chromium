@@ -1110,10 +1110,8 @@ void RasterDecoderImpl::Destroy(bool have_context) {
     DoEndRasterCHROMIUM();
   }
 
-  if (have_context) {
-    if (use_gpu_raster_) {
-      transfer_cache()->DeleteAllEntriesForDecoder(raster_decoder_id_);
-    }
+  if (have_context && use_gpu_raster_ && transfer_cache()) {
+    transfer_cache()->DeleteAllEntriesForDecoder(raster_decoder_id_);
   }
 
   if (query_manager_) {
