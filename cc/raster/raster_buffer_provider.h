@@ -55,9 +55,6 @@ class CC_EXPORT RasterBufferProvider {
   // Returns the format to use for the tiles.
   virtual viz::SharedImageFormat GetFormat() const = 0;
 
-  // Determines if the resource is premultiplied.
-  virtual bool IsResourcePremultiplied() const = 0;
-
   // Determine if the RasterBufferProvider can handle partial raster into
   // the Resource provided in AcquireBufferForRaster.
   virtual bool CanPartialRasterIntoProvidedResource() const = 0;

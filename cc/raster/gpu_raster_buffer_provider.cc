@@ -181,10 +181,6 @@ viz::SharedImageFormat GpuRasterBufferProvider::GetFormat() const {
   return tile_format_;
 }
 
-bool GpuRasterBufferProvider::IsResourcePremultiplied() const {
-  return true;
-}
-
 bool GpuRasterBufferProvider::IsResourceReadyToDraw(
     const ResourcePool::InUsePoolResource& resource) {
   FlushIfNeeded();

@@ -1719,10 +1719,9 @@ void TileManager::OnRasterTaskCompleted(
 
   TileDrawInfo& draw_info = tile->draw_info();
   if (exported) {
-    bool is_premultiplied = raster_buffer_provider_->IsResourcePremultiplied();
     draw_info.SetResource(std::move(resource),
                           raster_task_was_scheduled_with_checker_images,
-                          is_premultiplied);
+                          /*is_premultiplied=*/true);
   } else {
     resource_pool_->ReleaseResource(std::move(resource));
     draw_info.set_oom();

@@ -178,12 +178,6 @@ viz::SharedImageFormat OneCopyRasterBufferProvider::GetFormat() const {
   return tile_format_;
 }
 
-bool OneCopyRasterBufferProvider::IsResourcePremultiplied() const {
-  // TODO(ericrk): Handle unpremultiply/dither in one-copy case as well.
-  // https://crbug.com/789153
-  return true;
-}
-
 bool OneCopyRasterBufferProvider::CanPartialRasterIntoProvidedResource() const {
   // While OneCopyRasterBufferProvider has an internal partial raster
   // implementation, it cannot directly partial raster into the externally

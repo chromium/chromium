@@ -37,10 +37,6 @@ viz::SharedImageFormat FakeRasterBufferProviderImpl::GetFormat() const {
                       : viz::SinglePlaneFormat::kRGBA_8888;
 }
 
-bool FakeRasterBufferProviderImpl::IsResourcePremultiplied() const {
-  return true;
-}
-
 bool FakeRasterBufferProviderImpl::CanPartialRasterIntoProvidedResource()
     const {
   return true;

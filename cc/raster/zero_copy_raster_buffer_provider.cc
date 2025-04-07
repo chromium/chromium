@@ -204,10 +204,6 @@ viz::SharedImageFormat ZeroCopyRasterBufferProvider::GetFormat() const {
   return tile_format_;
 }
 
-bool ZeroCopyRasterBufferProvider::IsResourcePremultiplied() const {
-  return true;
-}
-
 bool ZeroCopyRasterBufferProvider::CanPartialRasterIntoProvidedResource()
     const {
   return is_software_ ||
