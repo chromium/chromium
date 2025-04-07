@@ -57,7 +57,12 @@ interface TestWebIdl {
   // |arg2|: This second argument uses a custom type.
   static undefined parameterComments(boolean arg1, ExampleType arg2);
 
+  static attribute OnTestOneEvent onTestOne;
+  static attribute OnTestTwoEvent onTestTwo;
 };
+
+interface OnTestOneEvent {};
+interface OnTestTwoEvent {};
 
 dictionary ExampleType {
   // Attribute comment attached to ExampleType.someString.

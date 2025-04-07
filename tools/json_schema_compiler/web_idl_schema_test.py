@@ -50,6 +50,25 @@ def getType(schema: dict, name: str) -> dict:
   raise KeyError('Could not find "type" with id "%s" in schema' % name)
 
 
+def getEvent(schema: dict, name: str) -> dict:
+  """Gets the event dictionary with the specified name from the schema.
+
+  Args:
+    schema: The processed API schema dictionary to look for the event in.
+    name: The name of the event to look for.
+
+  Returns:
+    The dictionary for the event with the specified name.
+
+  Raises:
+    KeyError: If the given event name was not found in the list of events.
+  """
+  for item in schema['events']:
+    if item['name'] == name:
+      return item
+  raise KeyError('Could not find "event" with name "%s" in schema' % name)
+
+
 def getFunctionReturn(schema: dict, name: str) -> dict:
   """Gets the return dictionary for the function with the specified name.
 
@@ -265,6 +284,22 @@ class WebIdlSchemaTest(unittest.TestCase):
             'name': 'arg2',
             '$ref': 'ExampleType'
         }, function_parameters[1])
+
+  # Tests that API events are processed as expected.
+  # TODO(crbug.com/379052294): Add description and parameter testing when they
+  # are added to the processor.
+  def testEvents(self):
+    schema = self.idl_basics
+
+    event_one = getEvent(schema, 'onTestOne')
+    # This is a bit of a tautology for now, as getEvent() uses name to retrieve
+    # the object and raises a KeyError if it is not found.
+    self.assertEqual('onTestOne', event_one.get('name'))
+    self.assertEqual('function', event_one.get('type'))
+
+    event_two = getEvent(schema, 'onTestTwo')
+    self.assertEqual('onTestTwo', event_two.get('name'))
+    self.assertEqual('function', event_two.get('type'))
 
   # Tests that Dictionaries defined on the top level of the IDL file are
   # processed into types on the resulting namespace.

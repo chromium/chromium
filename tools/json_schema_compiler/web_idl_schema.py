@@ -514,6 +514,33 @@ class Dictionary:
     return result
 
 
+class Event:
+  """Represents an API event and processes the details of it.
+
+  Given an IDLNode of class Attribute for an event, extracts out the details of
+  the associated event callback and converts it to a Python dictionary
+  representing it.
+  TODO(crbug.com/340297705): Add in processing for the description and
+  parameters for events.
+
+  Attributes:
+    node: The IDLNode for the Attribute definition for this event.
+  """
+
+  def __init__(self, node: IDLNode) -> None:
+    self.node = node
+
+  def process(self) -> dict:
+    properties = OrderedDict()
+    properties['name'] = self.node.GetName()
+
+    # Events just store the details of the event callback function, hence the
+    # type is considered 'function'.
+    properties['type'] = 'function'
+
+    return properties
+
+
 class Namespace:
   """Represents an API namespace and processes individual details of it.
 
@@ -541,18 +568,24 @@ class Namespace:
   def process(self) -> dict:
     functions = []
     types = []
+    events = []
     description = ProcessNodeDescription(self.namespace).description
     nodoc = False
     platforms = None
 
+    # Functions are defined as Operations on the API Interface definition.
     for node in self.namespace.GetListOf('Operation'):
       functions.append(Operation(node).process())
 
-    # Types are defined as dictionaries at the top level of the IDL file, which
-    # are found on the parent node of the Interface being processed for this
-    # namespace.
+    # Types are defined as Dictionaries at the top level of the IDL file, which
+    # are found on the parent node of the API Interface definition.
     for node in self.namespace.GetParent().GetListOf('Dictionary'):
       types.append(Dictionary(node).process())
+
+    # Events are defined as Attributes on the API Interface definition, which
+    # use types that are defined as Interfaces on the top level of the IDL file.
+    for node in self.namespace.GetListOf('Attribute'):
+      events.append(Event(node).process())
 
     for extended_attribute in GetExtendedAttributes(self.namespace):
       attribute_name = extended_attribute.GetName()
@@ -569,6 +602,7 @@ class Namespace:
         'namespace': self.name,
         'functions': functions,
         'types': types,
+        'events': events,
         'nodoc': nodoc,
         'description': description,
         'platforms': platforms
