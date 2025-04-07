@@ -31,8 +31,6 @@ void TileDrawInfo::SetResource(ResourcePool::InUsePoolResource resource,
   is_resource_ready_to_draw_ = false;
   resource_is_checker_imaged_ = resource_is_checker_imaged;
 
-  // Resources that come in via this path are always premultiplied.
-  is_premultiplied_ = true;
   resource_ = std::move(resource);
 }
 
@@ -47,7 +45,6 @@ ResourcePool::InUsePoolResource TileDrawInfo::TakeResource() {
   DCHECK(resource_);
   is_resource_ready_to_draw_ = false;
   resource_is_checker_imaged_ = false;
-  is_premultiplied_ = false;
   return std::move(resource_);
 }
 

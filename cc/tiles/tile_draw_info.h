@@ -68,8 +68,6 @@ class CC_EXPORT TileDrawInfo {
     return solid_color_;
   }
 
-  bool is_premultiplied() const { return is_premultiplied_; }
-
   bool requires_resource() const {
     return mode_ == RESOURCE_MODE || mode_ == OOM_MODE;
   }
@@ -111,7 +109,6 @@ class CC_EXPORT TileDrawInfo {
   Mode mode_ = RESOURCE_MODE;
   SkColor4f solid_color_ = SkColors::kWhite;
   ResourcePool::InUsePoolResource resource_;
-  bool is_premultiplied_ = false;
   bool is_resource_ready_to_draw_ = false;
 
   // Set to true if |resource_| was rasterized with checker-imaged content. The
