@@ -1560,6 +1560,26 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
   <token key="PSNoticeAction" variants="PSNoticeAction"/>
 </histogram>
 
+<histogram name="PrivacySandbox.Notice.NotHoldingHandle.InQueue" units="counts"
+    expires_after="2026-03-28">
+  <owner>aashnas@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the number of times a notice that tries to show is not holding the
+    handle, because it is waiting in the queue.
+  </summary>
+</histogram>
+
+<histogram name="PrivacySandbox.Notice.NotHoldingHandle.NotInQueue"
+    units="counts" expires_after="2026-03-28">
+  <owner>aashnas@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the number of times a notice that tries to show is not holding the
+    handle, because it is not queued.
+  </summary>
+</histogram>
+
 <!-- DO NOT USE. To be deprecated soon, use PrivacySandbox.Notice.NoticeEvent.{PSNotice} instead. -->
 
 <histogram name="PrivacySandbox.Notice.NoticeAction.{PSNotice}"
