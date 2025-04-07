@@ -1395,14 +1395,14 @@ const FeatureEntry::FeatureVariation kReaderModeDistillerHeuristicOptions[] = {
      nullptr},
 };
 
-const FeatureEntry::FeatureParam kBeforeSearchExplainGeminiEditMenu[] = {
+const FeatureEntry::FeatureParam kAfterEditExplainGeminiEditMenu[] = {
     {kExplainGeminiEditMenuParams, "1"}};
 const FeatureEntry::FeatureParam kAfterSearchExplainGeminiEditMenu[] = {
     {kExplainGeminiEditMenuParams, "2"}};
 
 const FeatureEntry::FeatureVariation kExplainGeminiEditMenuVariations[] = {
-    {"Before Search Gemini Edit Menu", kBeforeSearchExplainGeminiEditMenu,
-     std::size(kBeforeSearchExplainGeminiEditMenu), nullptr},
+    {"After Edit Gemini Edit Menu", kAfterEditExplainGeminiEditMenu,
+     std::size(kAfterEditExplainGeminiEditMenu), nullptr},
     {"After Search Gemini Edit Menu", kAfterSearchExplainGeminiEditMenu,
      std::size(kAfterSearchExplainGeminiEditMenu), nullptr}};
 

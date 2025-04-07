@@ -18,7 +18,9 @@ source_set("ui_bundled") {
     "//base",
     "//components/search_engines",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/explain_with_gemini/coordinator",
     "//ios/chrome/browser/fullscreen/ui_bundled",
+    "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/link_to_text/model",
     "//ios/chrome/browser/link_to_text/ui_bundled",
     "//ios/chrome/browser/main/model",
@@ -62,6 +64,7 @@ source_set("ui") {
     "//base",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/browser_container/model",
+    "//ios/chrome/browser/explain_with_gemini/coordinator",
     "//ios/chrome/browser/link_to_text/ui_bundled",
     "//ios/chrome/browser/partial_translate/ui_bundled",
     "//ios/chrome/browser/search_with/ui_bundled",
@@ -81,7 +84,10 @@ source_set("edit_menu_utils") {
     "browser_edit_menu_utils.h",
     "browser_edit_menu_utils.mm",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/intelligence/features",
+  ]
 }
 
 source_set("edit_menu_alert_delegate") {

@@ -211,7 +211,8 @@ void LogSelectedNumberChar(NSUInteger textLength) {
       };
   UIDeferredMenuElement* deferredMenuElement =
       [UIDeferredMenuElement elementWithProvider:provider];
-  edit_menu::AddElementToChromeMenu(builder, deferredMenuElement);
+  edit_menu::AddElementToChromeMenu(builder, deferredMenuElement,
+                                    /*primary*/ YES);
 }
 
 @end

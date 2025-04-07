@@ -6,7 +6,8 @@
 
 namespace edit_menu {
 
-// The ID for the Chrome menu.
 NSString* const kBrowserEditMenuChromeMenuId = @"chromecommand.menu";
+NSString* const kBrowserEditMenuSecondaryMenuId =
+    @"chromecommand.secondary.menu";
 
 }  // namespace edit_menu

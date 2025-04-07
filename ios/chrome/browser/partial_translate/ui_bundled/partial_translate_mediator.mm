@@ -329,7 +329,8 @@ const NSUInteger kPartialTranslateCharactersLimit = 1000;
   // selection and updated on selection change.
   UIDeferredMenuElement* deferredMenuElement =
       [UIDeferredMenuElement elementWithProvider:provider];
-  edit_menu::AddElementToChromeMenu(builder, deferredMenuElement);
+  edit_menu::AddElementToChromeMenu(builder, deferredMenuElement,
+                                    /*primary*/ YES);
 
   auto childrenTransformBlock =
       ^NSArray<UIMenuElement*>*(NSArray<UIMenuElement*>* oldElements) {

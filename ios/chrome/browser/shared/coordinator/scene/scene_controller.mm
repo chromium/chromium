@@ -1831,6 +1831,7 @@ using UserFeedbackDataCallback =
       UrlLoadParams::InNewTab(command.URL, command.virtualURL);
   params.SetInBackground(command.inBackground);
   params.web_params.referrer = command.referrer;
+  params.web_params.extra_headers = [command.extraHeaders copy];
   params.in_incognito = command.inIncognito;
   params.append_to = command.appendTo;
   params.origin_point = command.originPoint;

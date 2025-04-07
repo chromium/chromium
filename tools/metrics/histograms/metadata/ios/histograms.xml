@@ -1693,6 +1693,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.ExplainWithGemini.CharSelected" units="characters"
+    expires_after="2025-08-31">
+  <owner>prasanaa@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    Records the number of characters selected when performing a Explain With
+    Gemini.
+  </summary>
+</histogram>
+
 <histogram name="IOS.ExternalAction" enum="IOSExternalAction"
     expires_after="2026-01-31">
   <owner>nicolasmacbeth@google.com</owner>
