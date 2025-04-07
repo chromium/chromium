@@ -59,7 +59,7 @@ constexpr net::NetworkTrafficAnnotationTag kCardArtImageTrafficAnnotation =
 
 AutofillImageFetcher::~AutofillImageFetcher() = default;
 
-void AutofillImageFetcher::FetchImagesForURLs(
+void AutofillImageFetcher::FetchCreditCardArtImagesForURLs(
     base::span<const GURL> image_urls,
     base::span<const AutofillImageFetcherBase::ImageSize> image_sizes_unused) {
   if (!GetImageFetcher()) {

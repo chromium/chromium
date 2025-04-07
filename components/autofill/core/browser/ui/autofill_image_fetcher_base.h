@@ -53,8 +53,9 @@ class AutofillImageFetcherBase {
   // on the urls. `image_urls` is a span of urls that needs to be downloaded. If
   // an image has already been fetched, it won't be fetched again. `image_sizes`
   // is the different sizes in which each image_url should be downloaded.
-  virtual void FetchImagesForURLs(base::span<const GURL> image_urls,
-                                  base::span<const ImageSize> image_sizes) = 0;
+  virtual void FetchCreditCardArtImagesForURLs(
+      base::span<const GURL> image_urls,
+      base::span<const ImageSize> image_sizes) = 0;
 
   // Fetches images for the `image_urls`, treats them according to Pix image
   // specifications, and caches them in memory.

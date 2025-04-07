@@ -52,7 +52,7 @@ public class AutofillImageFetcher {
      * @param imageSizes The list of image sizes that should be fetched for each of the above URLs.
      */
     @CalledByNative
-    void prefetchImages(
+    void prefetchCardArtImages(
             @JniType("base::span<const GURL>") GURL[] urls, @ImageSize int[] imageSizes) {
         Context context = ContextUtils.getApplicationContext();
 

@@ -44,7 +44,7 @@ class TestAutofillImageFetcher : public AutofillImageFetcher {
     card_art_image_override_ = card_art_image_override;
   }
 
-  void SimulateOnImageFetched(
+  void SimulateOnCardArtImageFetched(
       const GURL& url,
       const std::optional<base::TimeTicks>& fetch_image_request_timestamp,
       const gfx::Image& image) {
@@ -124,15 +124,17 @@ TEST_F(AutofillImageFetcherTest, FetchImage_Success) {
       FetchImageAndData_(GURL(fake_url1.spec() + "=w32-h20-n"), _, _, _));
   EXPECT_CALL(*mock_image_fetcher(), FetchImageAndData_(fake_url2, _, _, _));
   std::vector<GURL> urls = {fake_url1, fake_url2};
-  autofill_image_fetcher()->FetchImagesForURLs(
+  autofill_image_fetcher()->FetchCreditCardArtImagesForURLs(
       urls, base::span_from_ref(AutofillImageFetcherBase::ImageSize::kSmall));
 
   // Advance the time to make the latency values more realistic.
   task_environment().FastForwardBy(base::Milliseconds(200));
   // Simulate successful image fetching (for image with URL) -> expect the
   // callback to be called.
-  autofill_image_fetcher()->SimulateOnImageFetched(fake_url1, now, fake_image1);
-  autofill_image_fetcher()->SimulateOnImageFetched(fake_url2, now, fake_image2);
+  autofill_image_fetcher()->SimulateOnCardArtImageFetched(fake_url1, now,
+                                                          fake_image1);
+  autofill_image_fetcher()->SimulateOnCardArtImageFetched(fake_url2, now,
+                                                          fake_image2);
 
   EXPECT_TRUE(gfx::test::AreImagesEqual(
       fake_image1, *autofill_image_fetcher()->GetCachedImageForUrl(fake_url1)));
@@ -158,7 +160,7 @@ TEST_F(AutofillImageFetcherTest, FetchImage_ResolveCardArtURL) {
       .Times(0);
   EXPECT_CALL(*mock_image_fetcher(), FetchImageAndData_(override_url, _, _, _));
   std::vector<GURL> urls = {fake_url1};
-  autofill_image_fetcher()->FetchImagesForURLs(
+  autofill_image_fetcher()->FetchCreditCardArtImagesForURLs(
       urls, base::span_from_ref(AutofillImageFetcherBase::ImageSize::kSmall));
 }
 
@@ -171,7 +173,7 @@ TEST_F(AutofillImageFetcherTest, FetchImage_ResolveCardArtImage) {
   GURL fake_url1 = GURL("https://www.example.com/fake_image1");
   gfx::Image fake_image1 = gfx::test::CreateImage(1, 2);
 
-  autofill_image_fetcher()->SimulateOnImageFetched(
+  autofill_image_fetcher()->SimulateOnCardArtImageFetched(
       fake_url1, base::TimeTicks::Now(), fake_image1);
 
   // The received image should be `override_image`, because ResolveCardArtImage
@@ -190,13 +192,13 @@ TEST_F(AutofillImageFetcherTest, FetchImage_ServerFailure) {
   // Expect to be called once.
   EXPECT_CALL(*mock_image_fetcher(), FetchImageAndData_(_, _, _, _));
   std::vector<GURL> urls = {fake_url1};
-  autofill_image_fetcher()->FetchImagesForURLs(
+  autofill_image_fetcher()->FetchCreditCardArtImagesForURLs(
       urls, base::span_from_ref(AutofillImageFetcherBase::ImageSize::kSmall));
 
   task_environment().FastForwardBy(base::Milliseconds(200));
   // Simulate successful image fetching (for image with URL).
-  autofill_image_fetcher()->SimulateOnImageFetched(fake_url1, now,
-                                                   gfx::Image());
+  autofill_image_fetcher()->SimulateOnCardArtImageFetched(fake_url1, now,
+                                                          gfx::Image());
 
   // Empty images are not cached, so the result should be a `nullptr`.
   EXPECT_FALSE(autofill_image_fetcher()->GetCachedImageForUrl(fake_url1));
@@ -219,22 +221,22 @@ TEST_F(AutofillImageFetcherTest,
   std::vector<GURL> urls = {fake_url1};
 
   // Attempt 1 - Failure.
-  autofill_image_fetcher()->FetchImagesForURLs(
+  autofill_image_fetcher()->FetchCreditCardArtImagesForURLs(
       urls, base::span_from_ref(AutofillImageFetcherBase::ImageSize::kSmall));
   task_environment().FastForwardBy(base::Milliseconds(200));
   // Simulate successful image fetching (for image with URL).
-  autofill_image_fetcher()->SimulateOnImageFetched(fake_url1, now,
-                                                   gfx::Image());
+  autofill_image_fetcher()->SimulateOnCardArtImageFetched(fake_url1, now,
+                                                          gfx::Image());
   // Empty images are not cached, so the result should be a `nullptr`.
   EXPECT_FALSE(autofill_image_fetcher()->GetCachedImageForUrl(fake_url1));
 
   // Attempt 2 - Failure.
-  autofill_image_fetcher()->FetchImagesForURLs(
+  autofill_image_fetcher()->FetchCreditCardArtImagesForURLs(
       urls, base::span_from_ref(AutofillImageFetcherBase::ImageSize::kSmall));
   task_environment().FastForwardBy(base::Milliseconds(100));
   // Simulate successful image fetching (for image with URL).
-  autofill_image_fetcher()->SimulateOnImageFetched(fake_url1, now,
-                                                   gfx::Image());
+  autofill_image_fetcher()->SimulateOnCardArtImageFetched(fake_url1, now,
+                                                          gfx::Image());
 
   // Empty images are not cached, so the result should be a `nullptr`.
   EXPECT_FALSE(autofill_image_fetcher()->GetCachedImageForUrl(fake_url1));
@@ -261,24 +263,25 @@ TEST_F(AutofillImageFetcherTest,
   std::vector<GURL> urls = {fake_url1};
 
   // Attempt 1 - Failure.
-  autofill_image_fetcher()->FetchImagesForURLs(
+  autofill_image_fetcher()->FetchCreditCardArtImagesForURLs(
       urls, base::span_from_ref(AutofillImageFetcherBase::ImageSize::kSmall));
   task_environment().FastForwardBy(base::Milliseconds(200));
   // Simulate failed image fetching (for image with URL) -> expect the
   // callback to be called.
-  autofill_image_fetcher()->SimulateOnImageFetched(fake_url1, now,
-                                                   gfx::Image());
+  autofill_image_fetcher()->SimulateOnCardArtImageFetched(fake_url1, now,
+                                                          gfx::Image());
 
   // Empty images are not cached, so the result should be a `nullptr`.
   EXPECT_FALSE(autofill_image_fetcher()->GetCachedImageForUrl(fake_url1));
 
   // Attempt 2 - Success.
-  autofill_image_fetcher()->FetchImagesForURLs(
+  autofill_image_fetcher()->FetchCreditCardArtImagesForURLs(
       urls, base::span_from_ref(AutofillImageFetcherBase::ImageSize::kSmall));
   task_environment().FastForwardBy(base::Milliseconds(100));
   // Simulate successful image fetching (for image with URL) -> expect the
   // callback to be called.
-  autofill_image_fetcher()->SimulateOnImageFetched(fake_url1, now, fake_image1);
+  autofill_image_fetcher()->SimulateOnCardArtImageFetched(fake_url1, now,
+                                                          fake_image1);
 
   EXPECT_TRUE(gfx::test::AreImagesEqual(
       fake_image1, *autofill_image_fetcher()->GetCachedImageForUrl(fake_url1)));
@@ -302,24 +305,26 @@ TEST_F(AutofillImageFetcherTest, FetchImage_Success_SuccessOnRepeatAttempt) {
   std::vector<GURL> urls = {fake_url1};
 
   // Attempt 1 - Success.
-  autofill_image_fetcher()->FetchImagesForURLs(
+  autofill_image_fetcher()->FetchCreditCardArtImagesForURLs(
       urls, base::span_from_ref(AutofillImageFetcherBase::ImageSize::kSmall));
   task_environment().FastForwardBy(base::Milliseconds(200));
   // Simulate successful image fetching (for image with URL) -> expect the
   // callback to be called.
-  autofill_image_fetcher()->SimulateOnImageFetched(fake_url1, now, fake_image1);
+  autofill_image_fetcher()->SimulateOnCardArtImageFetched(fake_url1, now,
+                                                          fake_image1);
 
   EXPECT_TRUE(gfx::test::AreImagesEqual(
       fake_image1, *autofill_image_fetcher()->GetCachedImageForUrl(fake_url1)));
 
   // Attempt 2 - The image has been cached already, it shouldn't be fetched
   // again.
-  autofill_image_fetcher()->FetchImagesForURLs(
+  autofill_image_fetcher()->FetchCreditCardArtImagesForURLs(
       urls, base::span_from_ref(AutofillImageFetcherBase::ImageSize::kSmall));
   task_environment().FastForwardBy(base::Milliseconds(100));
   // Simulate successful image fetching (for image with URL) -> expect the
   // callback to be called.
-  autofill_image_fetcher()->SimulateOnImageFetched(fake_url1, now, fake_image1);
+  autofill_image_fetcher()->SimulateOnCardArtImageFetched(fake_url1, now,
+                                                          fake_image1);
 
   EXPECT_TRUE(gfx::test::AreImagesEqual(
       fake_image1, *autofill_image_fetcher()->GetCachedImageForUrl(fake_url1)));

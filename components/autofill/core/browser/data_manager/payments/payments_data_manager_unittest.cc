@@ -262,7 +262,7 @@ class MockAutofillImageFetcher : public AutofillImageFetcherBase {
  public:
   MOCK_METHOD(
       void,
-      FetchImagesForURLs,
+      FetchCreditCardArtImagesForURLs,
       (base::span<const GURL> card_art_urls,
        base::span<const AutofillImageFetcherBase::ImageSize> image_sizes),
       (override));
@@ -2292,7 +2292,7 @@ TEST_F(PaymentsDataManagerTest, EwalletAccountsIconsFetched_DatabaseUpdated) {
   ASSERT_TRUE(
       GetServerDataTable()->SetPaymentInstruments({payment_instrument}));
 
-  EXPECT_CALL(mock_image_fetcher, FetchImagesForURLs);
+  EXPECT_CALL(mock_image_fetcher, FetchCreditCardArtImagesForURLs);
 
   // We need to call `Refresh()` to ensure that the eWallet payment instruments
   // are loaded again from the WebDatabase which triggers the call to fetch
@@ -2671,7 +2671,7 @@ TEST_F(PaymentsDataManagerTest, ProcessCardArtUrlChanges) {
   test_api(payments_data_manager()).SetImageFetcher(&mock_image_fetcher);
   auto wait_for_fetch_images_for_url = [&] {
     base::RunLoop run_loop;
-    EXPECT_CALL(mock_image_fetcher, FetchImagesForURLs)
+    EXPECT_CALL(mock_image_fetcher, FetchCreditCardArtImagesForURLs)
         .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
     run_loop.Run();
   };

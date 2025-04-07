@@ -40,9 +40,10 @@ class AutofillImageFetcher : public AutofillImageFetcherBase {
   // The image sizes passed in the arguments are unused as this param is only
   // used for Android. For Desktop, the implementation of this method has
   // hardcoded image sizes.
-  void FetchImagesForURLs(base::span<const GURL> image_urls,
-                          base::span<const AutofillImageFetcherBase::ImageSize>
-                              image_sizes_unused) override;
+  void FetchCreditCardArtImagesForURLs(
+      base::span<const GURL> image_urls,
+      base::span<const AutofillImageFetcherBase::ImageSize> image_sizes_unused)
+      override;
   void FetchPixAccountImages(base::span<const GURL> image_urls) override;
   const gfx::Image* GetCachedImageForUrl(const GURL& image_url) const override;
 

@@ -1141,7 +1141,8 @@ public class PersonalDataManager implements Destroyable {
         for (int i = 0; i < size; ++i) {
             cardArtUrls[i] = cardsToSuggest.get(i).getCardArtUrl();
         }
-        mImageFetcher.prefetchImages(cardArtUrls, new int[] {ImageSize.SMALL, ImageSize.LARGE});
+        mImageFetcher.prefetchCardArtImages(
+                cardArtUrls, new int[] {ImageSize.SMALL, ImageSize.LARGE});
     }
 
     /**

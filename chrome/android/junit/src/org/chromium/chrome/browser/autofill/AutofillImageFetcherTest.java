@@ -54,7 +54,7 @@ public class AutofillImageFetcherTest {
 
     @Test
     @SmallTest
-    public void testPrefetchImages_validUrl_successfulImageFetch() {
+    public void testPrefetchCardArtImages_validUrl_successfulImageFetch() {
         GURL validUrl1 = new GURL("https://www.google.com/valid-image-url-1");
         GURL validUrl2 = new GURL("https://www.google.com/valid-image-url-2");
         CardIconSpecs cardIconSpecsSmall =
@@ -80,7 +80,7 @@ public class AutofillImageFetcherTest {
                 AutofillUiUtils.resizeAndAddRoundedCornersAndGreyBorder(
                         TEST_CARD_ART_IMAGE, cardIconSpecsLarge, true);
 
-        mImageFetcher.prefetchImages(
+        mImageFetcher.prefetchCardArtImages(
                 new GURL[] {validUrl1, validUrl2}, new int[] {ImageSize.SMALL, ImageSize.LARGE});
         Map<String, Bitmap> cachedImages = mImageFetcher.getCachedImagesForTesting();
 
@@ -95,22 +95,22 @@ public class AutofillImageFetcherTest {
 
     @Test
     @SmallTest
-    public void testPrefetchImages_validUrl_unsuccessfulImageFetch() {
+    public void testPrefetchCardArtImages_validUrl_unsuccessfulImageFetch() {
         mImageFetcher = new AutofillImageFetcher(new TestImageFetcher(null));
         GURL validUrl = new GURL("https://www.google.com/valid-image-url");
 
-        mImageFetcher.prefetchImages(new GURL[] {validUrl}, new int[] {ImageSize.SMALL});
+        mImageFetcher.prefetchCardArtImages(new GURL[] {validUrl}, new int[] {ImageSize.SMALL});
 
         assertTrue(mImageFetcher.getCachedImagesForTesting().isEmpty());
     }
 
     @Test
     @SmallTest
-    public void testPrefetchImages_invalidOrEmptyUrl() {
+    public void testPrefetchCardArtImages_invalidOrEmptyUrl() {
         GURL invalidUrl = new GURL("invalid-image-url");
         GURL emptyUrl = new GURL("");
 
-        mImageFetcher.prefetchImages(
+        mImageFetcher.prefetchCardArtImages(
                 new GURL[] {invalidUrl, emptyUrl}, new int[] {ImageSize.SMALL});
 
         assertTrue(mImageFetcher.getCachedImagesForTesting().isEmpty());
@@ -118,10 +118,10 @@ public class AutofillImageFetcherTest {
 
     @Test
     @SmallTest
-    public void testPrefetchImages_capitalOneStaticImageUrl_notFetched() {
+    public void testPrefetchCardArtImages_capitalOneStaticImageUrl_notFetched() {
         GURL capitalOneStaticImageUrl = new GURL(AutofillUiUtils.CAPITAL_ONE_ICON_URL);
 
-        mImageFetcher.prefetchImages(
+        mImageFetcher.prefetchCardArtImages(
                 new GURL[] {capitalOneStaticImageUrl}, new int[] {ImageSize.SMALL});
 
         assertTrue(mImageFetcher.getCachedImagesForTesting().isEmpty());

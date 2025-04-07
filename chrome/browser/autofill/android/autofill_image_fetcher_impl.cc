@@ -21,7 +21,7 @@ AutofillImageFetcherImpl::AutofillImageFetcherImpl(ProfileKey* key)
 
 AutofillImageFetcherImpl::~AutofillImageFetcherImpl() = default;
 
-void AutofillImageFetcherImpl::FetchImagesForURLs(
+void AutofillImageFetcherImpl::FetchCreditCardArtImagesForURLs(
     base::span<const GURL> image_urls,
     base::span<const AutofillImageFetcherBase::ImageSize> image_sizes) {
   if (image_urls.empty()) {
@@ -35,7 +35,7 @@ void AutofillImageFetcherImpl::FetchImagesForURLs(
   std::transform(image_sizes.begin(), image_sizes.end(),
                  std::back_inserter(image_sizes_vector),
                  [](auto image_size) { return static_cast<int>(image_size); });
-  Java_AutofillImageFetcher_prefetchImages(
+  Java_AutofillImageFetcher_prefetchCardArtImages(
       env, GetOrCreateJavaImageFetcher(), image_urls,
       base::android::ToJavaIntArray(env, image_sizes_vector));
 }
