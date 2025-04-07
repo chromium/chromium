@@ -3361,6 +3361,21 @@
             ]
         }
     ],
+    "BlingDiscoFeed": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableDiscoFeedEndpoint"
+                    ]
+                }
+            ]
+        }
+    ],
     "BlockAcceptClientHints": [
         {
             "platforms": [
