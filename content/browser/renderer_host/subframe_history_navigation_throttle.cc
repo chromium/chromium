@@ -44,10 +44,13 @@ const char* SubframeHistoryNavigationThrottle::GetNameForLogging() {
 }
 
 void SubframeHistoryNavigationThrottle::Resume() {
-  if (state_ == State::kDeferred) {
-    NavigationThrottle::Resume();
-  }
+  const bool should_resume = state_ == State::kDeferred;
   state_ = State::kRunningAfterResumeSignal;
+  if (should_resume) {
+    NavigationThrottle::Resume();
+    // `Resume()` can synchronously delete this navigation throttle, so no code
+    // after this call should reference the throttle instance.
+  }
 }
 
 void SubframeHistoryNavigationThrottle::Cancel() {
