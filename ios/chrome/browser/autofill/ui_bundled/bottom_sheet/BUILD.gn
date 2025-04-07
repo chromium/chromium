@@ -6,6 +6,7 @@ group("unit_tests") {
   testonly = true
   deps = [
     ":bottom_sheet_unit_tests",
+    ":save_card_bottom_sheet_mediator_unittest",
     ":virtual_card_enrollment_bottom_sheet_coordinator_unittest",
     ":virtual_card_enrollment_bottom_sheet_mediator_unittest",
   ]
@@ -194,12 +195,19 @@ source_set("save_card_bottom_sheet_coordinator") {
   frameworks = [ "UIKit.framework" ]
 }
 
+source_set("save_card_bottom_sheet_consumer") {
+  sources = [ "save_card_bottom_sheet_consumer.h" ]
+  deps = []
+  frameworks = [ "UIKit.framework" ]
+}
+
 source_set("save_card_bottom_sheet_view_controller") {
   sources = [
     "save_card_bottom_sheet_view_controller.h",
     "save_card_bottom_sheet_view_controller.mm",
   ]
   deps = [
+    ":save_card_bottom_sheet_consumer",
     "//build:branding_buildflags",
     "//ios/chrome/browser/shared/ui/bottom_sheet:table_view_bottom_sheet_view_controller",
     "//ios/chrome/browser/shared/ui/symbols",
@@ -213,10 +221,26 @@ source_set("save_card_bottom_sheet_mediator") {
     "save_card_bottom_sheet_mediator.mm",
   ]
   deps = [
+    ":save_card_bottom_sheet_consumer",
     "//base",
     "//ios/chrome/browser/autofill/model/bottom_sheet:save_card_bottom_sheet_model",
+    "//ios/chrome/browser/shared/ui/util",
   ]
   frameworks = [ "UIKit.framework" ]
+}
+
+source_set("save_card_bottom_sheet_mediator_unittest") {
+  testonly = true
+  sources = [ "save_card_bottom_sheet_mediator_unittest.mm" ]
+  deps = [
+    ":save_card_bottom_sheet_consumer",
+    ":save_card_bottom_sheet_mediator",
+    "//base",
+    "//components/autofill/core/browser",
+    "//components/resources:components_scaled_resources_grit",
+    "//ios/chrome/browser/autofill/model/bottom_sheet:save_card_bottom_sheet_model",
+    "//testing/gtest",
+  ]
 }
 
 # Virtual Card Enrollment Bottom Sheet related classes are below:

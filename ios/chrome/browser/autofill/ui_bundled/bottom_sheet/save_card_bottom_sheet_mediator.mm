@@ -7,6 +7,9 @@
 #import <memory>
 #import <utility>
 
+#import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+
 // TODO(crbug.com/402511942): Implement SaveCardBottomSheetMediator.
 @implementation SaveCardBottomSheetMediator {
   // The model layer component providing resources and callbacks for
@@ -27,6 +30,21 @@
 
 - (void)disconnect {
   // TODO:(crbug.com/402511942): Stop observing the model
+}
+
+- (void)setConsumer:(id<SaveCardBottomSheetConsumer>)consumer {
+  _consumer = consumer;
+  [self.consumer
+      setAboveTitleImage:NativeImage(
+                             _saveCardBottomSheetModel->logo_icon_id())];
+  [self.consumer
+      setAboveTitleImageDescription:base::SysUTF16ToNSString(
+                                        _saveCardBottomSheetModel
+                                            ->logo_icon_description())];
+  [self.consumer
+      setTitle:base::SysUTF16ToNSString(_saveCardBottomSheetModel->title())];
+  [self.consumer setSubtitle:base::SysUTF16ToNSString(
+                                 _saveCardBottomSheetModel->subtitle())];
 }
 
 @end
