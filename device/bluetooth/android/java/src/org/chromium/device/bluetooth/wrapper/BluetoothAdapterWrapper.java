@@ -173,4 +173,9 @@ public class BluetoothAdapterWrapper {
 
         return set;
     }
+
+    public DeviceBondStateReceiverWrapper createDeviceBondStateReceiver(
+            DeviceBondStateReceiverWrapper.Callback callback) {
+        return new DeviceBondStateReceiverWrapper(callback);
+    }
 }

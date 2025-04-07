@@ -50,6 +50,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -138,7 +139,7 @@ class Fakes {
         private final FakeBluetoothLeScanner mFakeScanner;
         private boolean mPowered = true;
         private int mEnabledDeviceTransport = BluetoothDevice.DEVICE_TYPE_DUAL;
-        private final ArraySet<BluetoothDeviceWrapper> mFakePairedDevices = new ArraySet();
+        final ArraySet<BluetoothDeviceWrapper> mFakePairedDevices = new ArraySet<>();
         private DeviceBondStateReceiverWrapper.Callback mDeviceBondStateCallback;
         final long mNativeBluetoothTestAndroid;
 
@@ -367,7 +368,8 @@ class Fakes {
         }
 
         @CalledByNative("FakeBluetoothAdapter")
-        public @JniType("std::string") String simulatePairedClassicDevice(int deviceOrdinal) {
+        public @JniType("std::string") String simulatePairedClassicDevice(
+                int deviceOrdinal, boolean notifyCallback) {
             final FakeBluetoothDevice device;
             switch (deviceOrdinal) {
                 case 0:
@@ -402,7 +404,30 @@ class Fakes {
             }
 
             mFakePairedDevices.add(device);
+            if (notifyCallback && mDeviceBondStateCallback != null) {
+                mDeviceBondStateCallback.onDeviceBondStateChanged(
+                        device, BluetoothDevice.BOND_BONDED);
+            }
             return device.getAddress();
+        }
+
+        @CalledByNative("FakeBluetoothAdapter")
+        public void unpairDevice(@JniType("std::string") String address) {
+            FakeBluetoothDevice removedDevice = null;
+            Iterator pairedDeviceIterator = mFakePairedDevices.iterator();
+            while (pairedDeviceIterator.hasNext()) {
+                BluetoothDeviceWrapper device =
+                        (BluetoothDeviceWrapper) pairedDeviceIterator.next();
+                if (device.getAddress().equals(address)) {
+                    pairedDeviceIterator.remove();
+                    removedDevice = (FakeBluetoothDevice) device;
+                    break;
+                }
+            }
+            if (removedDevice != null && mDeviceBondStateCallback != null) {
+                mDeviceBondStateCallback.onDeviceBondStateChanged(
+                        removedDevice, BluetoothDevice.BOND_NONE);
+            }
         }
 
         @CalledByNative("FakeBluetoothAdapter")
@@ -508,6 +533,13 @@ class Fakes {
             }
 
             return mFakePairedDevices;
+        }
+
+        @Override
+        public DeviceBondStateReceiverWrapper createDeviceBondStateReceiver(
+                DeviceBondStateReceiverWrapper.Callback callback) {
+            mDeviceBondStateCallback = callback;
+            return super.createDeviceBondStateReceiver(callback);
         }
     }
 
@@ -795,11 +827,10 @@ class Fakes {
 
         @Override
         public int getBondState() {
-            if (mType == BluetoothDevice.DEVICE_TYPE_LE) {
-                return BluetoothDevice.BOND_NONE;
-            } else {
+            if (mAdapter.mFakePairedDevices.contains(this)) {
                 return BluetoothDevice.BOND_BONDED;
             }
+            return BluetoothDevice.BOND_NONE;
         }
 
         @Override

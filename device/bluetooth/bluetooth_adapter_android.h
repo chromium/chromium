@@ -124,8 +124,13 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterAndroid final
       const base::android::JavaParamRef<jobject>& caller,
       const base::android::JavaParamRef<jstring>& address,
       const base::android::JavaParamRef<jobject>&
-          bluetooth_device_wrapper  // Java Type: bluetoothDeviceWrapper
-  );
+          bluetooth_device_wrapper,  // Java Type: bluetoothDeviceWrapper
+      bool from_broadcast_receiver);
+
+  // Called when the Android system notifies us that a device is unpaired.
+  void OnDeviceUnpaired(JNIEnv* env,
+                        const base::android::JavaParamRef<jobject>& caller,
+                        const base::android::JavaParamRef<jstring>& address);
 
  protected:
   BluetoothAdapterAndroid();

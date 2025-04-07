@@ -311,8 +311,8 @@ void BluetoothAdapterAndroid::PopulatePairedDevice(
     const base::android::JavaParamRef<jobject>& caller,
     const base::android::JavaParamRef<jstring>& address,
     const base::android::JavaParamRef<jobject>&
-        bluetooth_device_wrapper  // Java Type: bluetoothDeviceWrapper
-) {
+        bluetooth_device_wrapper,  // Java Type: bluetoothDeviceWrapper
+    bool from_broadcast_receiver) {
   std::string device_address = ConvertJavaStringToUTF8(env, address);
   auto iter = devices_.find(device_address);
 
@@ -324,12 +324,44 @@ void BluetoothAdapterAndroid::PopulatePairedDevice(
   std::unique_ptr<BluetoothDeviceAndroid> device_owner =
       BluetoothDeviceAndroid::Create(this, bluetooth_device_wrapper,
                                      ui_task_runner_, socket_thread_);
+  BluetoothDeviceAndroid* device = device_owner.get();
   devices_[device_address] = std::move(device_owner);
 
-  // We don't notify observers for populated paired devices because there is no
-  // current need to monitor device bond states. We always fetch the list of
-  // paired devices when GetDevices() is called. See crbug.com/387371131 for
-  // more details.
+  // We don't notify observers for populated paired devices unless it's from
+  // bonded state broadcast receiver. See crbug.com/387371131 for more details.
+  if (!from_broadcast_receiver) {
+    return;
+  }
+
+  for (auto& observer : observers_) {
+    observer.DeviceAdded(this, device);
+  }
+}
+
+void BluetoothAdapterAndroid::OnDeviceUnpaired(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& caller,
+    const base::android::JavaParamRef<jstring>& address) {
+  std::string device_address = ConvertJavaStringToUTF8(env, address);
+  auto iter = devices_.find(device_address);
+  if (iter == devices_.end()) {
+    return;
+  }
+
+  base::TimeDelta duration_before_expiry = iter->second->GetLastUpdateTime() +
+                                           BluetoothAdapter::timeoutSec -
+                                           base::Time::NowFromSystemTime();
+  if (duration_before_expiry.is_negative() ||
+      duration_before_expiry.is_zero()) {
+    RemoveTimedOutDevices();
+    return;
+  }
+
+  ui_task_runner_->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&BluetoothAdapterAndroid::RemoveTimedOutDevices,
+                     weak_ptr_factory_.GetWeakPtr()),
+      duration_before_expiry);
 }
 
 BluetoothAdapterAndroid::BluetoothAdapterAndroid() {}

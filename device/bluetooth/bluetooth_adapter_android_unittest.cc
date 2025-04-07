@@ -350,14 +350,45 @@ TEST_F(BluetoothAdapterAndroidTest, GetPairedDevices) {
 
   InitWithFakeAdapter();
 
+  TestBluetoothAdapterObserver observer(adapter_.get());
+
   SimulatePairedClassicDevice(1);
   SimulatePairedClassicDevice(2);
 
-  adapter_->GetDevices();
-
   BluetoothAdapter::DeviceList list = adapter_->GetDevices();
+  std::unordered_set<std::string> addresses;
+  for (auto* device : list) {
+    addresses.insert(device->GetAddress());
+  }
+  EXPECT_EQ(addresses.size(), 2u);
+  EXPECT_NE(addresses.find(kTestDeviceAddress1), addresses.end());
+  EXPECT_NE(addresses.find(kTestDeviceAddress2), addresses.end());
+
+  // We explicitly omit observer notifications for new paired devices found
+  // during GetDevices.
+  EXPECT_EQ(observer.device_added_count(), 0);
+
   EXPECT_TRUE(adapter_->GetDevice(kTestDeviceAddress1));
   EXPECT_TRUE(adapter_->GetDevice(kTestDeviceAddress2));
+}
+
+TEST_F(BluetoothAdapterAndroidTest, NotifyObserversForNewPairedDevices) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kBluetoothRfcommAndroid);
+
+  InitWithFakeAdapter();
+
+  TestBluetoothAdapterObserver observer(adapter_.get());
+
+  adapter_->GetDevices();
+
+  SimulatePairedClassicDevice(1, true);
+  ASSERT_EQ(observer.device_added_count(), 1);
+  EXPECT_EQ(observer.last_device()->GetAddress(), kTestDeviceAddress1);
+
+  SimulatePairedClassicDevice(2, true);
+  ASSERT_EQ(observer.device_added_count(), 2);
+  EXPECT_EQ(observer.last_device()->GetAddress(), kTestDeviceAddress2);
 }
 
 TEST_F(BluetoothAdapterAndroidTest, ExposeUuidFromPairedDevices) {
@@ -381,6 +412,72 @@ TEST_F(BluetoothAdapterAndroidTest, ExposeUuidFromPairedDevices) {
   ASSERT_EQ(uuids.size(), 1u);
   EXPECT_EQ(uuids.begin()->canonical_value(),
             "00001101-0000-1000-8000-00805f9b34fb");
+}
+
+TEST_F(BluetoothAdapterAndroidTest, RemoveExpiredDevicesOnUnpaired) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kBluetoothRfcommAndroid);
+
+  InitWithFakeAdapter();
+
+  SimulatePairedClassicDevice(1);
+  SimulatePairedClassicDevice(2);
+
+  TestBluetoothAdapterObserver observer(adapter_.get());
+
+  UnpairDevice(kTestDeviceAddress1);
+  ASSERT_EQ(observer.device_removed_count(), 1);
+  EXPECT_EQ(observer.last_device_address(), kTestDeviceAddress1);
+
+  EXPECT_FALSE(adapter_->GetDevice(kTestDeviceAddress1));
+  EXPECT_TRUE(adapter_->GetDevice(kTestDeviceAddress2));
+}
+
+TEST_F(BluetoothAdapterAndroidTest, RemoveUnpairedDevicesAfterTimeOut) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kBluetoothRfcommAndroid);
+
+  InitWithFakeAdapter();
+
+  SimulatePairedClassicDevice(1);
+  SimulatePairedClassicDevice(2);
+
+  TestBluetoothAdapterObserver observer(adapter_.get());
+
+  // Simulate situations where these devices were found in scanning as well.
+  for (BluetoothDevice* device : adapter_->GetDevices()) {
+    device->UpdateTimestamp();
+  }
+
+  UnpairDevice(kTestDeviceAddress1);
+  EXPECT_EQ(observer.device_removed_count(), 0);
+  EXPECT_TRUE(adapter_->GetDevice(kTestDeviceAddress1));
+
+  // RemoveTimedOutDevices uses base::Time::NowFromSystemTime, so we have to
+  // explicitly set devices to be expired.
+  for (BluetoothDevice* device : adapter_->GetDevices()) {
+    device->SetAsExpiredForTesting();
+  }
+
+  task_environment_.FastForwardBy(BluetoothAdapter::timeoutSec +
+                                  base::Seconds(1));
+
+  ASSERT_EQ(observer.device_removed_count(), 1);
+  EXPECT_EQ(observer.last_device_address(), kTestDeviceAddress1);
+
+  EXPECT_FALSE(adapter_->GetDevice(kTestDeviceAddress1));
+  EXPECT_TRUE(adapter_->GetDevice(kTestDeviceAddress2));
+}
+
+TEST_F(BluetoothAdapterAndroidTest, UnknownDeviceUnpaired) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kBluetoothRfcommAndroid);
+
+  InitWithFakeAdapter();
+
+  adapter_->GetDevices();
+
+  UnpairDevice(kTestDeviceAddress1);
 }
 
 TEST_F(BluetoothAdapterAndroidTest, ScanFailsWithoutLeSupport) {
