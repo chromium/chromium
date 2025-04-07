@@ -33,11 +33,7 @@ export type Command = {
 export type CommandData =
   | SendCommandCommand
   | GetSessionCommand
-  | ResolveRealmCommand
-  // https://github.com/GoogleChromeLabs/chromium-bidi/issues/2844
-  | DeprecatedSendCommandCommand
-  | DeprecatedGetSessionCommand
-  | DeprecatedResolveRealmCommand;
+  | ResolveRealmCommand;
 
 export interface CommandResponse {
   type: 'success';
@@ -48,11 +44,6 @@ export type ResultData =
   | SendCommandResult
   | GetSessionResult
   | ResolveRealmResult;
-
-export interface DeprecatedSendCommandCommand {
-  method: 'cdp.sendCommand';
-  params: SendCommandParameters;
-}
 
 export interface SendCommandCommand {
   method: 'goog:cdp.sendCommand';
@@ -73,11 +64,6 @@ export interface SendCommandResult {
   session?: Protocol.Target.SessionID;
 }
 
-export interface DeprecatedGetSessionCommand {
-  method: 'cdp.getSession';
-  params: GetSessionParameters;
-}
-
 export interface GetSessionCommand {
   method: 'goog:cdp.getSession';
   params: GetSessionParameters;
@@ -89,11 +75,6 @@ export interface GetSessionParameters {
 
 export interface GetSessionResult {
   session?: Protocol.Target.SessionID;
-}
-
-export interface DeprecatedResolveRealmCommand {
-  method: 'cdp.resolveRealm';
-  params: ResolveRealmParameters;
 }
 
 export interface ResolveRealmCommand {
@@ -113,16 +94,7 @@ export type Event = {
   type: 'event';
 } & EventData;
 
-export type EventData =
-  | EventDataFor<keyof ProtocolMapping.Events>
-  | DeprecatedEventDataFor<keyof ProtocolMapping.Events>;
-
-export interface DeprecatedEventDataFor<
-  EventName extends keyof ProtocolMapping.Events,
-> {
-  method: `cdp.${EventName}`;
-  params: EventParametersFor<EventName>;
-}
+export type EventData = EventDataFor<keyof ProtocolMapping.Events>;
 
 export interface EventDataFor<EventName extends keyof ProtocolMapping.Events> {
   method: `goog:cdp.${EventName}`;

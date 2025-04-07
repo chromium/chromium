@@ -606,7 +606,7 @@ async def test_unsubscribeIsAtomic(websocket, context_id, iframe_id):
 async def test_unsubscribe_from_detached_target(websocket, context_id,
                                                 read_messages):
     events = [
-        'bluetooth', 'browser', 'browsingContext', 'cdp', 'input', 'log',
+        'bluetooth', 'browser', 'browsingContext', 'goog:cdp', 'input', 'log',
         'network', 'script', 'session'
     ]
 

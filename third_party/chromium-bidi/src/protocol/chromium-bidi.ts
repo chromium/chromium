@@ -38,7 +38,6 @@ export enum BiDiModule {
   Browser = 'browser',
   BrowsingContext = 'browsingContext',
   Cdp = 'goog:cdp',
-  DeprecatedCdp = 'cdp',
   Input = 'input',
   Log = 'log',
   Network = 'network',

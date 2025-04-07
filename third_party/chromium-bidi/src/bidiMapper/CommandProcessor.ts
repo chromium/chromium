@@ -262,34 +262,6 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
           this.#parser.parseSendCommandParams(command.params),
         );
       // keep-sorted end
-      // CDP deprecated domain.
-      // https://github.com/GoogleChromeLabs/chromium-bidi/issues/2844
-      // keep-sorted start block=yes
-      case 'cdp.getSession':
-        this.#logger?.(
-          LogType.debugWarn,
-          `Legacy '${command.method}' command is deprecated and will not supported soon. Use 'goog:${command.method}' instead.`,
-        );
-        return this.#cdpProcessor.getSession(
-          this.#parser.parseGetSessionParams(command.params),
-        );
-      case 'cdp.resolveRealm':
-        this.#logger?.(
-          LogType.debugWarn,
-          `Legacy '${command.method}' command is deprecated and will not supported soon. Use 'goog:${command.method}' instead.`,
-        );
-        return this.#cdpProcessor.resolveRealm(
-          this.#parser.parseResolveRealmParams(command.params),
-        );
-      case 'cdp.sendCommand':
-        this.#logger?.(
-          LogType.debugWarn,
-          `Legacy '${command.method}' command is deprecated and will not supported soon. Use 'goog:${command.method}' instead.`,
-        );
-        return await this.#cdpProcessor.sendCommand(
-          this.#parser.parseSendCommandParams(command.params),
-        );
-      // keep-sorted end
 
       // Emulation module
       // keep-sorted start block=yes

@@ -133,7 +133,7 @@ export class SubscriptionManager {
   ): boolean {
     let includesEvent = false;
     for (const eventName of subscription.eventNames) {
-      // This also covers the `cdp` case where
+      // This also covers the `goog:cdp` case where
       // we don't unroll the event names
       if (
         // Event explicitly subscribed

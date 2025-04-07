@@ -23,17 +23,11 @@ from test_helpers import (ANY_TIMESTAMP, AnyExtending, execute_command,
                           wait_for_event)
 
 
-# https://github.com/GoogleChromeLabs/chromium-bidi/issues/2844
-@pytest.fixture(params=["", "goog:"])
-def cdp_prefix(request):
-    return request.param
-
-
 @pytest.mark.asyncio
-async def test_cdp_sendCommand_resultReturned(websocket, cdp_prefix):
+async def test_cdp_sendCommand_resultReturned(websocket):
     command_result = await execute_command(
         websocket, {
-            "method": f"{cdp_prefix}cdp.sendCommand",
+            "method": "goog:cdp.sendCommand",
             "params": {
                 "method": "Target.getTargets",
                 "params": {}
@@ -45,14 +39,14 @@ async def test_cdp_sendCommand_resultReturned(websocket, cdp_prefix):
 
 @pytest.mark.asyncio
 async def test_cdp_subscribe_toSpecificEvent(websocket, context_id,
-                                             get_cdp_session_id, cdp_prefix):
-    await subscribe(websocket, [f"{cdp_prefix}cdp.Runtime.consoleAPICalled"])
+                                             get_cdp_session_id):
+    await subscribe(websocket, ["goog:cdp.Runtime.consoleAPICalled"])
 
     session_id = await get_cdp_session_id(context_id)
 
     await send_JSON_command(
         websocket, {
-            "method": f"{cdp_prefix}cdp.sendCommand",
+            "method": "goog:cdp.sendCommand",
             "params": {
                 "method": "Runtime.evaluate",
                 "params": {
@@ -65,7 +59,7 @@ async def test_cdp_subscribe_toSpecificEvent(websocket, context_id,
 
     assert resp == AnyExtending({
         "type": "event",
-        "method": f"{cdp_prefix}cdp.Runtime.consoleAPICalled",
+        "method": "goog:cdp.Runtime.consoleAPICalled",
         "params": {
             "event": "Runtime.consoleAPICalled",
             "params": {
@@ -86,14 +80,14 @@ async def test_cdp_subscribe_toSpecificEvent(websocket, context_id,
 
 @pytest.mark.asyncio
 async def test_cdp_subscribe_to_all_cdp_events(websocket, get_cdp_session_id,
-                                               context_id, cdp_prefix):
-    await subscribe(websocket, [f"{cdp_prefix}cdp"])
+                                               context_id):
+    await subscribe(websocket, ["goog:cdp"])
 
     session_id = await get_cdp_session_id(context_id)
 
     await send_JSON_command(
         websocket, {
-            "method": f"{cdp_prefix}cdp.sendCommand",
+            "method": "goog:cdp.sendCommand",
             "params": {
                 "method": "Runtime.evaluate",
                 "params": {
@@ -103,12 +97,11 @@ async def test_cdp_subscribe_to_all_cdp_events(websocket, get_cdp_session_id,
             }
         })
 
-    resp = await wait_for_event(websocket,
-                                f"{cdp_prefix}cdp.Runtime.consoleAPICalled")
+    resp = await wait_for_event(websocket, "goog:cdp.Runtime.consoleAPICalled")
 
     assert resp == AnyExtending({
         "type": "event",
-        "method": f"{cdp_prefix}cdp.Runtime.consoleAPICalled",
+        "method": "goog:cdp.Runtime.consoleAPICalled",
         "params": {
             "event": "Runtime.consoleAPICalled",
             "params": {
@@ -128,15 +121,14 @@ async def test_cdp_subscribe_to_all_cdp_events(websocket, get_cdp_session_id,
 
 
 @pytest.mark.asyncio
-async def test_cdp_wait_for_event(websocket, get_cdp_session_id, context_id,
-                                  cdp_prefix):
-    await subscribe(websocket, [f"{cdp_prefix}cdp.Runtime.consoleAPICalled"])
+async def test_cdp_wait_for_event(websocket, get_cdp_session_id, context_id):
+    await subscribe(websocket, ["goog:cdp.Runtime.consoleAPICalled"])
 
     session_id = await get_cdp_session_id(context_id)
 
     await send_JSON_command(
         websocket, {
-            "method": f"{cdp_prefix}cdp.sendCommand",
+            "method": "goog:cdp.sendCommand",
             "params": {
                 "method": "Runtime.evaluate",
                 "params": {
@@ -146,11 +138,11 @@ async def test_cdp_wait_for_event(websocket, get_cdp_session_id, context_id,
             }
         })
 
-    event_response = await wait_for_event(
-        websocket, f"{cdp_prefix}cdp.Runtime.consoleAPICalled")
+    event_response = await wait_for_event(websocket,
+                                          "goog:cdp.Runtime.consoleAPICalled")
     assert event_response == AnyExtending({
         "type": "event",
-        "method": f"{cdp_prefix}cdp.Runtime.consoleAPICalled",
+        "method": "goog:cdp.Runtime.consoleAPICalled",
         "params": {
             "event": "Runtime.consoleAPICalled",
             "params": {
@@ -171,7 +163,7 @@ async def test_cdp_wait_for_event(websocket, get_cdp_session_id, context_id,
 
 @pytest.mark.asyncio
 async def test_cdp_no_extraneous_events(websocket, get_cdp_session_id,
-                                        create_context, url_base, cdp_prefix):
+                                        create_context, url_base):
     new_context_id = await create_context()
     await execute_command(
         websocket, {
@@ -183,13 +175,13 @@ async def test_cdp_no_extraneous_events(websocket, get_cdp_session_id,
             }
         })
 
-    await subscribe(websocket, [f"{cdp_prefix}cdp"], [new_context_id])
+    await subscribe(websocket, ["goog:cdp"], [new_context_id])
 
     session_id = await get_cdp_session_id(new_context_id)
 
     id = await send_JSON_command(
         websocket, {
-            "method": f"{cdp_prefix}cdp.sendCommand",
+            "method": "goog:cdp.sendCommand",
             "params": {
                 "method": "Target.attachToTarget",
                 "params": {
@@ -212,8 +204,3 @@ async def test_cdp_no_extraneous_events(websocket, get_cdp_session_id,
                 events.append(event)
             event = await asyncio.wait_for(read_JSON_message(websocket),
                                            timeout=1.0)
-
-    for event in events:
-        if event['method'].startswith(f"{cdp_prefix}cdp.") and event['params'][
-                'session'] == session_id:
-            raise Exception("Unrelated CDP events detected")

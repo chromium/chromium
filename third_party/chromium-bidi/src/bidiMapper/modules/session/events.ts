@@ -28,16 +28,6 @@ export function isCdpEvent(name: string): boolean {
     name.split('.').at(0)?.startsWith(ChromiumBidi.BiDiModule.Cdp) ?? false
   );
 }
-/**
- * Returns true if the given event is a deprecated CDP event.
- * @see https://chromedevtools.github.io/devtools-protocol/
- */
-export function isDeprecatedCdpEvent(name: string): boolean {
-  return (
-    name.split('.').at(0)?.startsWith(ChromiumBidi.BiDiModule.DeprecatedCdp) ??
-    false
-  );
-}
 
 /**
  * Asserts that the given event is known to BiDi or BiDi+, or throws otherwise.
@@ -45,11 +35,7 @@ export function isDeprecatedCdpEvent(name: string): boolean {
 export function assertSupportedEvent(
   name: string,
 ): asserts name is ChromiumBidi.EventNames {
-  if (
-    !ChromiumBidi.EVENT_NAMES.has(name as never) &&
-    !isCdpEvent(name) &&
-    !isDeprecatedCdpEvent(name)
-  ) {
+  if (!ChromiumBidi.EVENT_NAMES.has(name as never) && !isCdpEvent(name)) {
     throw new InvalidArgumentException(`Unknown event: ${name}`);
   }
 }
