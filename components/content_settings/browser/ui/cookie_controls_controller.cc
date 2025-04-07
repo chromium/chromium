@@ -688,18 +688,6 @@ bool CookieControlsController::ShouldUserBypassIconBeVisible(
   if (!controls_visible) {
     return false;
   }
-  if (ShowActFeatures()) {
-    bool has_controllable_feature = false;
-    std::vector<TrackingProtectionFeature>::iterator it;
-    for (it = features.begin(); it != features.end(); it++) {
-      has_controllable_feature |=
-          it->enforcement == CookieControlsEnforcement::kNoEnforcement;
-    }
-    // Don't show UB if none of the ACT features can be controlled
-    if (!has_controllable_feature) {
-      return false;
-    }
-  }
   // 3PCD prevents SameSite=None cookies from being sent when the top-level
   // document is sandboxed without `allow-origin`. For instance when loaded
   // with: `Content-Security-Policy: sandbox`. In that case, we render the UI to
