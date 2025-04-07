@@ -12,15 +12,17 @@ import androidx.annotation.DimenRes;
 import androidx.annotation.DrawableRes;
 import androidx.core.content.res.ResourcesCompat;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.theme.ChromeSemanticColorUtils;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.util.ColorUtils;
 
 /**
- * Common tab UI theme utils for public use.
- * Internal themes are provided via @{@link TabUiThemeProvider}
+ * Common tab UI theme utils for public use. Internal themes are provided via @{@link
+ * TabUiThemeProvider}
  */
+@NullMarked
 public class TabUiThemeUtil {
     private static final float MAX_TAB_STRIP_TAB_WIDTH_DP = 265.f;
     private static final float DIVIDER_FOLIO_LIGHT_OPACITY = 0.3f;
