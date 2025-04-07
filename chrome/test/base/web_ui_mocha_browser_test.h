@@ -47,14 +47,6 @@ class SubTestReporter {
                       std::optional<std::string_view> failure_message) const;
 };
 
-// Production implementation of SubTestReporter interface.
-class SubTestReporterImpl : public SubTestReporter {
- public:
-  void Report(std::string_view name,
-              testing::TimeInMillis elapsed_time,
-              std::optional<std::string_view> failure_message) const override;
-};
-
 namespace webui {
 
 // Convert all non-alphanumeric characters to underscore in-place. Assumes

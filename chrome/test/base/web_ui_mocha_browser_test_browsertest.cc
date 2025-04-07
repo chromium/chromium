@@ -167,9 +167,6 @@ IN_PROC_BROWSER_TEST_F(WebUIMochaSuccessFailureTest, TestFileErrorFails) {
 
 // Test that when the underlying Mocha test fails, the C++ test also fails.
 IN_PROC_BROWSER_TEST_F(WebUIMochaSuccessFailureTest, TestFailureFails) {
-  // This JS test is expected to fail, so it should not be reported.
-  DisableSubTestResultReporting();
-
   EXPECT_FATAL_FAILURE(
       RunTestStatic("js/test_suite_self_test.js",
                     "mocha.fgrep('TestSuiteSelfTest Failure').run();"),
