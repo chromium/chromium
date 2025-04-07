@@ -661,12 +661,7 @@ int BrowserViewLayout::LayoutToolbar(int top) {
   SetViewVisibility(toolbar_, toolbar_visible);
   toolbar_->SetBounds(vertical_layout_rect_.x(), top, browser_view_width,
                       height);
-  if (bookmark_bar_ && bookmark_bar_->GetVisible()) {
-    // Remove the clip if the toolbar is not at the bottom.
-    toolbar_->SetClipPath({});
-  } else {
-    SetClipPathWithBottomAllowance(toolbar_);
-  }
+  SetClipPathWithBottomAllowance(toolbar_);
   return toolbar_->bounds().bottom();
 }
 
@@ -719,13 +714,15 @@ int BrowserViewLayout::LayoutBookmarkBar(int top) {
   bookmark_bar_->SetBounds(vertical_layout_rect_.x(), top,
                            vertical_layout_rect_.width(), bookmark_bar_height);
   SetClipPathWithBottomAllowance(bookmark_bar_);
-  // Make sure the contents separator is painted last as the background for
-  // BookmarkVieBar/ToolbarView may paint over it otherwise.
-  // TODO(crbug.com/41344902): Remove once the pixel canvas is enabled on
-  // all aura platforms.
-  if (top_container_ == bookmark_bar_->parent()) {
-    top_container_->ReorderChildView(contents_separator_,
-                                     top_container_->children().size());
+  if (!ui::IsPixelCanvasRecordingEnabled()) {
+    // Make sure the contents separator is painted last as the background for
+    // BookmarkVieBar/ToolbarView may paint over it otherwise.
+    // TODO(crbug.com/41344902): Remove once the pixel canvas is enabled on
+    // all aura platforms.
+    if (top_container_ == bookmark_bar_->parent()) {
+      top_container_->ReorderChildView(contents_separator_,
+                                       top_container_->children().size());
+    }
   }
 
   // Set visibility after setting bounds, as the visibility update uses the
