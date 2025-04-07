@@ -153,7 +153,9 @@ class DirectReceiver {
   // Binds this object to `receiver` to receive IPC directly on the calling
   // thread.
   void Bind(PendingReceiver<T> receiver) {
-    receiver_.Bind(PendingReceiver<T>{node_->AdoptPipe(receiver.PassPipe())});
+    receiver_.Bind(receiver.is_valid() ? PendingReceiver<T>(node_->AdoptPipe(
+                                             receiver.PassPipe()))
+                                       : std::move(receiver));
   }
 
   internal::ThreadLocalNode& node_for_testing() { return *node_; }

@@ -396,4 +396,17 @@ TEST_F(DirectReceiverTest, UniqueNodePerThread) {
   });
 }
 
+TEST_F(DirectReceiverTest, BindInvalidPendingReceiver) {
+  base::Thread io_thread("Test IO thread 1");
+  io_thread.StartWithOptions(
+      base::Thread::Options{base::MessagePumpType::IO, 0});
+
+  RunOn(io_thread, [&] {
+    EXPECT_FALSE(internal::ThreadLocalNode::CurrentThreadHasInstance());
+    auto impl = std::make_unique<ServiceImpl>(io_thread.task_runner());
+    impl->receiver().Bind(NullReceiver());
+    EXPECT_FALSE(impl->receiver().receiver_for_testing().is_bound());
+  });
+}
+
 }  // namespace mojo::test::direct_receiver_unittest
