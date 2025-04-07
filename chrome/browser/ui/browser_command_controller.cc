@@ -1524,7 +1524,7 @@ void BrowserCommandController::InitCommandState() {
   command_updater_.UpdateCommandEnabled(
       IDC_GLIC_TOGGLE_PIN, glic::GlicEnabling::IsProfileEligible(profile()));
   command_updater_.UpdateCommandEnabled(
-      IDC_OPEN_GLIC, glic::GlicEnabling::IsProfileEligible(profile()));
+      IDC_OPEN_GLIC, glic::GlicEnabling::IsEnabledForProfile(profile()));
   command_updater_.UpdateCommandEnabled(
       IDC_GLIC_TOGGLE_FOCUS, glic::GlicEnabling::IsProfileEligible(profile()));
 #endif
