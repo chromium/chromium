@@ -1246,6 +1246,73 @@ TEST_F(EnclaveManagerTest, RenewUnusablePINFromLocalData) {
   EXPECT_NE(security_domain_service_->GetPinMemberPublicKey(), "Bad PK");
 }
 
+// Regression test for crbug.com/407171373.
+// Attempts renewing a PIN after the security domain has been reset.
+TEST_F(EnclaveManagerTest, RenewPINAfterSecurityDomainReset) {
+  base::HistogramTester histogram_tester;
+  const std::string kPin = "123456";
+
+  // Set up the manager with the PIN.
+  ASSERT_TRUE(Register());
+  BoolFuture setup_future;
+  manager_.SetupWithPIN(kPin, setup_future.GetCallback());
+  ASSERT_TRUE(setup_future.Wait());
+  ASSERT_TRUE(manager_.is_ready());
+  ASSERT_TRUE(manager_.has_wrapped_pin());
+  ASSERT_TRUE(manager_.is_registered());
+  ASSERT_EQ(security_domain_service_->num_physical_members(), 1u);
+  ASSERT_EQ(security_domain_service_->num_pin_members(), 1u);
+  const std::string initial_pin_key =
+      security_domain_service_->GetPinMemberPublicKey();
+
+  // Reset the security domain.
+  security_domain_service_->ResetSecurityDomain();
+
+  // Attempt to renew the PIN. This should clear the registration data.
+  BoolFuture renew_future;
+  manager_.RenewPIN(renew_future.GetCallback());
+  ASSERT_TRUE(renew_future.Wait());
+  EXPECT_FALSE(renew_future.Get());
+  EXPECT_EQ(security_domain_service_->num_pin_members(), 0u);
+  EXPECT_FALSE(manager_.is_registered());
+  histogram_tester.ExpectUniqueSample(
+      "WebAuthentication.PinRenewalFailureCause",
+      EnclaveManager::PinRenewalFailureCause::kSecurityDomainReset, 1);
+}
+
+// Regression test for crbug.com/407171373.
+// Attempts renewing a PIN when the security domain reports that the user
+// doesn't have a GPM PIN at all.
+TEST_F(EnclaveManagerTest, RenewPINAfterSecurityDomainReportsNoPin) {
+  base::HistogramTester histogram_tester;
+  const std::string kPin = "123456";
+
+  // Set up the manager with the PIN.
+  ASSERT_TRUE(Register());
+  BoolFuture setup_future;
+  manager_.SetupWithPIN(kPin, setup_future.GetCallback());
+  ASSERT_TRUE(setup_future.Wait());
+  ASSERT_TRUE(manager_.is_ready());
+  ASSERT_TRUE(manager_.has_wrapped_pin());
+  ASSERT_EQ(security_domain_service_->num_physical_members(), 1u);
+  ASSERT_EQ(security_domain_service_->num_pin_members(), 1u);
+  const std::string initial_pin_key =
+      security_domain_service_->GetPinMemberPublicKey();
+
+  // Remove the PIN member from the security domain.
+  security_domain_service_->RemovePinMember();
+
+  // Try to renew the PIN. This shouldn't do anything.
+  BoolFuture renew_future;
+  manager_.RenewPIN(renew_future.GetCallback());
+  ASSERT_TRUE(renew_future.Wait());
+  EXPECT_FALSE(renew_future.Get());
+  EXPECT_EQ(security_domain_service_->num_pin_members(), 0u);
+  histogram_tester.ExpectUniqueSample(
+      "WebAuthentication.PinRenewalFailureCause",
+      EnclaveManager::PinRenewalFailureCause::kSecurityDomainReportsNoPin, 1);
+}
+
 TEST_F(EnclaveManagerTest, EpochChanged) {
   ASSERT_TRUE(Register());
 

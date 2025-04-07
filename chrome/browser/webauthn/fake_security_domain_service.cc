@@ -70,6 +70,8 @@ class FakeSecurityDomainServiceImpl : public FakeSecurityDomainService {
     pretend_there_are_members_ = true;
   }
 
+  void ResetSecurityDomain() override { members_.clear(); }
+
   void MakePinMemberUnusable() override {
     auto pin_member =
         std::ranges::find_if(members_, [](const auto& member) -> bool {
@@ -81,6 +83,14 @@ class FakeSecurityDomainServiceImpl : public FakeSecurityDomainService {
     pin_member->mutable_member_metadata()
         ->clear_google_password_manager_pin_metadata();
     pin_member->mutable_member_metadata()->set_usable_for_retrieval(false);
+  }
+
+  void RemovePinMember() override {
+    CHECK(std::erase_if(members_, [](const auto& member) -> bool {
+      return member.member_type() ==
+             trusted_vault_pb::SecurityDomainMember::
+                 MEMBER_TYPE_GOOGLE_PASSWORD_MANAGER_PIN;
+    }));
   }
 
   void SetPinMemberPublicKey(std::string public_key) override {
