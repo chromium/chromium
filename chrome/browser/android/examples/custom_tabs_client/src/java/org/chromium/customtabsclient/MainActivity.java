@@ -71,11 +71,14 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.Px;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.browser.auth.AuthTabCallback;
 import androidx.browser.auth.AuthTabColorSchemeParams;
 import androidx.browser.auth.AuthTabIntent;
+import androidx.browser.auth.AuthTabSession;
 import androidx.browser.customtabs.CustomTabsCallback;
 import androidx.browser.customtabs.CustomTabsClient;
 import androidx.browser.customtabs.CustomTabsIntent;
+import androidx.browser.customtabs.CustomTabsService;
 import androidx.browser.customtabs.CustomTabsServiceConnection;
 import androidx.browser.customtabs.CustomTabsSession;
 import androidx.browser.customtabs.EngagementSignalsCallback;
@@ -153,6 +156,7 @@ public class MainActivity extends AppCompatActivity
     private static final int DEFAULT_BREAKPOINT = 840;
     private static CustomTabsClient sClient;
     private AutoCompleteTextView mEditUrl;
+    private AuthTabSession mAuthTabSession;
     private CustomTabsSession mCustomTabsSession;
     private CustomTabsServiceConnection mConnection;
     private String mPackageNameToBind;
@@ -260,6 +264,30 @@ public class MainActivity extends AppCompatActivity
                     mHandler.postDelayed(this, 1000);
                 }
             };
+
+    private static class AuthTabNavigationCallback implements AuthTabCallback {
+        @Override
+        public void onExtraCallback(String callbackName, Bundle args) {}
+
+        @Override
+        public Bundle onExtraCallbackWithResult(String callbackName, Bundle args) {
+            // Return a signal to signal that the callback was successfully handled.
+            Bundle result = new Bundle();
+            result.putBoolean(CustomTabsService.KEY_SUCCESS, true);
+
+            return result;
+        }
+
+        @Override
+        public void onNavigationEvent(int navigationEvent, Bundle extras) {
+            Log.w(TAG, "onNavigationEvent: Code = " + navigationEvent);
+        }
+
+        @Override
+        public void onWarmupCompleted(Bundle extras) {
+            Log.w(TAG, "onWarmUpCompleted");
+        }
+    }
 
     private static class NavigationCallback extends CustomTabsCallback {
         @Override
@@ -953,6 +981,16 @@ public class MainActivity extends AppCompatActivity
         return mCustomTabsSession;
     }
 
+    private @Nullable AuthTabSession getAuthSession() {
+        if (sClient == null) {
+            mAuthTabSession = null;
+        } else if (mAuthTabSession == null) {
+            mAuthTabSession = sClient.newAuthTabSession(new AuthTabNavigationCallback(), null);
+            SessionHelper.setCurrentAuthSession(mAuthTabSession);
+        }
+        return mAuthTabSession;
+    }
+
     private void bindCustomTabsService() {
         if (sClient != null) return;
 
@@ -1198,6 +1236,7 @@ public class MainActivity extends AppCompatActivity
         Bitmap closeIcon = BitmapFactory.decodeResource(getResources(), closeIconId);
         AuthTabIntent authIntent =
                 new AuthTabIntent.Builder()
+                        .setSession(getAuthSession())
                         .setColorScheme(colorScheme)
                         .setDefaultColorSchemeParams(builder.build())
                         .setCloseButtonIcon(closeIcon)
