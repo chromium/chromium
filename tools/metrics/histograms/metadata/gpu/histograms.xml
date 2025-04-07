@@ -1618,6 +1618,20 @@ chromium-metrics-reviews@google.com.
   <token key="ExoSurfaceCodePaths" variants="ExoSurfaceCodePaths"/>
 </histogram>
 
+<histogram name="Skia.Graphite.PipelineCache.PipelineUsesInEpoch" units="count"
+    expires_after="2026-01-01">
+  <owner>robertphillips@google.com</owner>
+  <owner>michaelludwig@google.com</owner>
+  <owner>skia-gpu-team@google.com</owner>
+  <summary>
+    This reports the number of Pipelines used in a five-minute window. This
+    provides information regarding the size of the optimal Pipeline active set.
+
+    This is only recorded on clients using both Graphite and Precompilation. It
+    is recorded every five minutes.
+  </summary>
+</histogram>
+
 <histogram name="Skia.Graphite.PipelineCreationRace"
     enum="SkiaPipelineCreationRace" expires_after="2025-11-06">
   <owner>robertphillips@google.com</owner>
