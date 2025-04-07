@@ -59,6 +59,10 @@ void EnterpriseReportingPrivateEventRouter::OnUrlFilteringVerdict(
     }
   }
 
+  if (rules_list.empty()) {
+    return;
+  }
+
   event_router_->BroadcastEvent(std::make_unique<Event>(
       events::ENTERPRISE_REPORTING_PRIVATE_ON_DATA_MASKING_RULES_TRIGGERED,
       api::enterprise_reporting_private::OnDataMaskingRulesTriggered::

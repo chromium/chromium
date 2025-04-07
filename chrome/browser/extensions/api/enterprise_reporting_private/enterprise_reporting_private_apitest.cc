@@ -1161,8 +1161,23 @@ IN_PROC_BROWSER_TEST_F(EnterpriseOnDataMaskingRulesTriggeredTest,
       async function asyncAssertions() {
         chrome.enterprise.reportingPrivate.onDataMaskingRulesTriggered.addListener(
           rules => {
-            chrome.test.assertEq(rules, []);
-            chrome.test.succeed();
+            if (rules.length === 0) {
+              chrome.test.fail(
+                  'There should not be an event when no rules are triggered');
+            } else {
+              chrome.test.assertEq(rules, [
+                {
+                  level:'mask_type',
+                  regex_pattern:'pattern',
+                  triggeredRuleInfo:{
+                    matchedDetectors:[],
+                    ruleId:'rule_id',
+                    ruleName:'rule_name'
+                  },
+                  url:'https://foo.bar/'
+                }]);
+              chrome.test.succeed();
+            }
           }
         );
       }
@@ -1178,10 +1193,27 @@ IN_PROC_BROWSER_TEST_F(EnterpriseOnDataMaskingRulesTriggeredTest,
 
   ResultCatcher result_catcher;
 
-  EnterpriseReportingPrivateEventRouterFactory::GetInstance()
-      ->GetForProfile(profile())
-      ->OnUrlFilteringVerdict(GURL(kTestUrl),
-                              safe_browsing::RTLookupResponse());
+  auto* router = EnterpriseReportingPrivateEventRouterFactory::GetInstance()
+                     ->GetForProfile(profile());
+
+  // This first call should not produce any result as there are no triggered
+  // rules in the response.
+  router->OnUrlFilteringVerdict(GURL(kTestUrl),
+                                safe_browsing::RTLookupResponse());
+
+  safe_browsing::RTLookupResponse response;
+
+  auto* rule =
+      response.add_threat_info()->mutable_matched_url_navigation_rule();
+  rule->set_rule_id("rule_id");
+  rule->set_rule_name("rule_name");
+
+  auto* data_masking = rule->add_data_masking_actions();
+  data_masking->set_display_name("display_name");
+  data_masking->set_mask_type("mask_type");
+  data_masking->set_pattern("pattern");
+
+  router->OnUrlFilteringVerdict(GURL(kTestUrl), response);
 
   ASSERT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 }
@@ -1194,34 +1226,34 @@ IN_PROC_BROWSER_TEST_F(EnterpriseOnDataMaskingRulesTriggeredTest, WithRules) {
           rules => {
             chrome.test.assertEq(rules, [
               {
-                'level':'mask_type_1',
-                'regex_pattern':'pattern_1',
-                'triggeredRuleInfo':{
-                  'matchedDetectors':[],
-                  'ruleId':'rule_id_1',
-                  'ruleName':'rule_name_1'
+                level:'mask_type_1',
+                regex_pattern:'pattern_1',
+                triggeredRuleInfo:{
+                  matchedDetectors:[],
+                  ruleId:'rule_id_1',
+                  ruleName:'rule_name_1'
                 },
-                'url':'https://foo.bar/'
+                url:'https://foo.bar/'
               },
               {
-                'level':'mask_type_2',
-                'regex_pattern':'pattern_2',
-                'triggeredRuleInfo':{
-                  'matchedDetectors':[],
-                  'ruleId':'rule_id_1',
-                  'ruleName':'rule_name_1'
+                level:'mask_type_2',
+                regex_pattern:'pattern_2',
+                triggeredRuleInfo:{
+                  matchedDetectors:[],
+                  ruleId:'rule_id_1',
+                  ruleName:'rule_name_1'
                 },
-                'url':'https://foo.bar/'
+                url:'https://foo.bar/'
               },
               {
-                'level':'mask_type_3',
-                'regex_pattern':'pattern_3',
-                'triggeredRuleInfo':{
-                  'matchedDetectors':[],
-                  'ruleId':'rule_id_2',
-                  'ruleName':'rule_name_2'
+                level:'mask_type_3',
+                regex_pattern:'pattern_3',
+                triggeredRuleInfo:{
+                  matchedDetectors:[],
+                  ruleId:'rule_id_2',
+                  ruleName:'rule_name_2'
                 },
-                'url':'https://foo.bar/'
+                url:'https://foo.bar/'
               }]);
             chrome.test.succeed();
           }
