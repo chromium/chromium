@@ -226,6 +226,7 @@ chromium-metrics-reviews@google.com.
   <int value="902803399"
       label="UMA.PersistentAllocator.CrashpadMetrics.UsedPct"/>
   <int value="910415681" label="DevTools.ExperimentEnabledAtLaunch"/>
+  <int value="1090332742" label="Blink.UseCounter.AboutBlankOrSrcdoc.Features"/>
   <int value="1096524200" label="DevTools.IssueCreated"/>
   <int value="1120293692" label="DocumentEventTiming.BeforeUnloadDuration"/>
   <int value="1126499749"

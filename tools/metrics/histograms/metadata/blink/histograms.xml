@@ -5029,6 +5029,24 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Blink.UseCounter.AboutBlankOrSrcdoc.Features"
+    enum="FeatureObserver" expires_after="2025-10-07">
+  <owner>wjmaclean@chromium.org</owner>
+  <owner>feature-control@chromium.org</owner>
+  <summary>
+    Count of how many about:blank and about:srcdoc pages use various features
+    across all frames in the page. This histogram has the same semantics as
+    &quot;Blink.UseCounter.Features&quot;, but applies only to `about:blank` and
+    `about:srcdoc` URLs (which that histogram does not include). Metrics are
+    emitted either at the time a document commits, or via
+    UseCounterImpl::ReportMeasurement(), depending on which feature is involved.
+    For example, SandboxedSrcdocFrameResolvesRelativeURL reports at most once
+    per PageVisit, and only when the feature is activated.
+
+    Refer to &quot;Blink.UseCounter.Features&quot; for more details.
+  </summary>
+</histogram>
+
 <histogram name="Blink.UseCounter.AnimatedCSSProperties"
     enum="MappedCSSProperties" expires_after="never">
 <!-- expires-never: used by Chrome Platform Status dashboard -->

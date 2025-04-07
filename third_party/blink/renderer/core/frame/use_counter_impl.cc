@@ -148,6 +148,8 @@ void UseCounterImpl::DidCommitLoad(const LocalFrame* frame) {
     context_ = kFileContext;
   } else if (url.ProtocolIsInHTTPFamily()) {
     context_ = kDefaultContext;
+  } else if (url.IsAboutBlankURL() || url.IsAboutSrcdocURL()) {
+    context_ = kAboutBlankOrSrcdoc;
   } else {
     // UseCounter is disabled for all other URL schemes.
     context_ = kDisabledContext;
@@ -280,6 +282,10 @@ void UseCounterImpl::CountFeature(WebFeature feature) const {
       return;
     case kFileContext:
       UMA_HISTOGRAM_ENUMERATION("Blink.UseCounter.File.Features", feature);
+      return;
+    case kAboutBlankOrSrcdoc:
+      UMA_HISTOGRAM_ENUMERATION("Blink.UseCounter.AboutBlankOrSrcdoc.Features",
+                                feature);
       return;
     case kDisabledContext:
       NOTREACHED();
