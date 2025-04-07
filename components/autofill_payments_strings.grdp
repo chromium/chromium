@@ -749,18 +749,6 @@
       Copied
     </message>
   </if>
-  <message name="IDS_AUTOFILL_PAYMENTS_MANUAL_FALLBACK_AUTOFILL_POPUP_CC_NUMBER_SUGGESTION_LABEL" desc="The text displayed as a secondary label in the Autofill popup entry suggesting to fill in the user's credit card number">
-    Card number
-  </message>
-  <message name="IDS_AUTOFILL_PAYMENTS_MANUAL_FALLBACK_AUTOFILL_POPUP_CC_EXPIRY_DATE_SUGGESTION_LABEL" desc="The text displayed as a secondary label in the Autofill popup entry suggesting to fill in the user's credit card expiry date">
-    Expiry date
-  </message>
-  <message name="IDS_AUTOFILL_PAYMENTS_MANUAL_FALLBACK_AUTOFILL_POPUP_CC_EXPIRY_YEAR_SUGGESTION_LABEL" desc="The text displayed as a secondary label in the Autofill popup entry suggesting to fill in the user's credit card expiry year">
-    Expiry year
-  </message>
-  <message name="IDS_AUTOFILL_PAYMENTS_MANUAL_FALLBACK_AUTOFILL_POPUP_CC_EXPIRY_MONTH_SUGGESTION_LABEL" desc="The text displayed as a secondary label in the Autofill popup entry suggesting to fill in the user's credit card expiry month">
-    Expiry month
-  </message>
   <message name="IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_IPH_BUBBLE_LABEL" desc="Text shown in the IPH bubble for the virtual card option in the suggestion dropdown bubble.">
       Use your virtual card for added security
   </message>
