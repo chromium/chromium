@@ -605,7 +605,7 @@ TEST_F(TestAppMenuModelSafetyHubTest, SafetyHubMenuNotification) {
 TEST_F(TestAppMenuModelSafetyHubTest, HaTSControlTrigger) {
   EXPECT_CALL(*mock_hats_service(),
               LaunchSurvey(kHatsSurveyTriggerSafetyHubOneOffExperimentControl,
-                           _, _, _, _))
+                           _, _, _, _, _, _))
       .Times(1);
 
   // Attempting to show the safety hub item in the app menu should trigger the

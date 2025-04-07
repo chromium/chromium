@@ -216,17 +216,24 @@ void HatsServiceDesktop::LaunchSurvey(
     base::OnceClosure success_callback,
     base::OnceClosure failure_callback,
     const SurveyBitsData& product_specific_bits_data,
-    const SurveyStringData& product_specific_string_data) {
+    const SurveyStringData& product_specific_string_data,
+    const std::optional<std::string>& supplied_trigger_id,
+    const SurveyOptions& survey_options) {
+  CHECK(!survey_options.custom_invitation.has_value() &&
+        !survey_options.message_identifier.has_value())
+      << "Custom invitation strings and message types are not supported on "
+         "desktop.";
   if (!ShouldShowSurvey(trigger)) {
     if (!failure_callback.is_null()) {
       std::move(failure_callback).Run();
     }
     return;
   }
-  LaunchSurveyForBrowser(
-      chrome::FindLastActiveWithProfile(profile()), trigger,
-      std::move(success_callback), std::move(failure_callback),
-      product_specific_bits_data, product_specific_string_data);
+  LaunchSurveyForBrowser(chrome::FindLastActiveWithProfile(profile()), trigger,
+                         std::move(success_callback),
+                         std::move(failure_callback),
+                         product_specific_bits_data,
+                         product_specific_string_data, supplied_trigger_id);
 }
 
 void HatsServiceDesktop::LaunchSurveyForWebContents(
@@ -259,13 +266,15 @@ bool HatsServiceDesktop::LaunchDelayedSurvey(
     const SurveyStringData& product_specific_string_data) {
   void (HatsServiceDesktop::*launch_survey)(
       const std::string&, base::OnceClosure, base::OnceClosure,
-      const SurveyBitsData&, const SurveyStringData&) =
+      const SurveyBitsData&, const SurveyStringData&,
+      const std::optional<std::string>&, const SurveyOptions&) =
       &HatsServiceDesktop::LaunchSurvey;
   return base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(launch_survey, weak_ptr_factory_.GetWeakPtr(), trigger,
                      base::DoNothing(), base::DoNothing(),
-                     product_specific_bits_data, product_specific_string_data),
+                     product_specific_bits_data, product_specific_string_data,
+                     std::nullopt, SurveyOptions()),
       base::Milliseconds(timeout_ms));
 }
 
