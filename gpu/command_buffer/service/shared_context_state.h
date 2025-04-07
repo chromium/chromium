@@ -18,6 +18,7 @@
 #include "base/observer_list.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/constants.h"
@@ -57,6 +58,7 @@ class VulkanContextProvider;
 
 namespace skgpu::graphite {
 class Context;
+class PrecompileContext;
 class Recorder;
 }  // namespace skgpu::graphite
 
@@ -410,6 +412,10 @@ class GPU_GLES2_EXPORT SharedContextState
       nullptr;
   std::unique_ptr<skgpu::graphite::Recorder> gpu_main_graphite_recorder_;
   std::unique_ptr<skgpu::graphite::Recorder> viz_compositor_graphite_recorder_;
+
+  // These two are only used if Precompilation is enabled
+  std::unique_ptr<skgpu::graphite::PrecompileContext> precompile_context_;
+  base::RepeatingTimer pipeline_cache_stats_timer_;
 
   scoped_refptr<gl::GLShareGroup> share_group_;
   scoped_refptr<gl::GLContext> context_;

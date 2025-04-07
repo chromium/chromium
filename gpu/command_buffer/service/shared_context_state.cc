@@ -105,9 +105,16 @@ size_t MaxNumSkSurface() {
 #endif
 }
 
+void ReportPipelineCacheStats(
+    skgpu::graphite::PrecompileContext* precompileContext) {
+  precompileContext->reportPipelineStats(
+      skgpu::graphite::PrecompileContext::StatOptions::kPipelineCache);
+}
+
 void ReportPrecompilationStats(
     std::unique_ptr<skgpu::graphite::PrecompileContext> precompileContext) {
-  precompileContext->reportPipelineStats();
+  precompileContext->reportPipelineStats(
+      skgpu::graphite::PrecompileContext::StatOptions::kPrecompile);
 }
 
 void InitiatePrecompilation(skgpu::graphite::Context* context) {
@@ -650,6 +657,15 @@ bool SharedContextState::InitializeGraphite(
   if (features::IsSkiaGraphitePrecompilationEnabled(
           base::CommandLine::ForCurrentProcess())) {
     InitiatePrecompilation(graphite_context_);
+
+    precompile_context_ = graphite_context_->makePrecompileContext();
+
+    // Every 5 minutes report how many new pipelines have been encountered
+    // since the last call
+    pipeline_cache_stats_timer_.Start(
+        FROM_HERE, base::Minutes(5),
+        base::BindRepeating(&ReportPipelineCacheStats,
+                            precompile_context_.get()));
   }
 
   // We need image providers for both the OOP-R (gpu_main) recorder and the
