@@ -754,6 +754,14 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
                 return;
             }
 
+            String readyToPayServiceName = mIsReadyToPayServices.get(packageName);
+            debugLogPaymentAppServicePresence(
+                    packageName, ACTION_IS_READY_TO_PAY, readyToPayServiceName);
+
+            String updatePaymentDetailsServiceName = mUpdatePaymentDetailsServices.get(packageName);
+            debugLogPaymentAppServicePresence(
+                    packageName, ACTION_UPDATE_PAYMENT_DETAILS, updatePaymentDetailsServiceName);
+
             // Dedupe corresponding payment handler which is registered with the default
             // payment method name as the scope and the scope is used as the app Id.
             String webAppIdCanDeduped =
@@ -769,8 +777,8 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
                             mFactoryDelegate.getDialogController(),
                             packageName,
                             resolveInfo.activityInfo.name,
-                            mIsReadyToPayServices.get(packageName),
-                            mUpdatePaymentDetailsServices.get(packageName),
+                            readyToPayServiceName,
+                            updatePaymentDetailsServiceName,
                             label.toString(),
                             mPackageManagerDelegate.getAppIcon(resolveInfo),
                             mIsOffTheRecord,
@@ -787,6 +795,24 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
 
         // The same method may be added multiple times.
         app.addMethodName(methodName);
+    }
+
+    private static void debugLogPaymentAppServicePresence(
+            String packageName, String actionIntentFilterName, @Nullable String serviceName) {
+        if (TextUtils.isEmpty(serviceName)) {
+            Log.e(
+                    TAG,
+                    "Payment app \"%s\": No \"%s\" service.",
+                    packageName,
+                    actionIntentFilterName);
+        } else {
+            Log.i(
+                    TAG,
+                    "Payment app \"%s\": \"%s\" service in \"%s\".",
+                    packageName,
+                    actionIntentFilterName,
+                    serviceName);
+        }
     }
 
     private SupportedDelegations getAppsSupportedDelegations(ActivityInfo activityInfo) {
