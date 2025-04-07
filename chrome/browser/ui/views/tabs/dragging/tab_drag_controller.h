@@ -399,12 +399,6 @@ class TabDragController : public views::WidgetObserver
   // Reverts a cancelled drag operation.
   void RevertDrag();
 
-  // Reverts the drag for all the tabs belonging to a group.
-  void RevertHeaderDrag(tab_groups::TabGroupId group_id);
-
-  // Reverts the tab at `drag_index` in `drag_data_`.
-  void RevertDragAt(size_t drag_index);
-
   // Selects the dragged tabs in `model`. Does nothing if there are no longer
   // any dragged contents (as happens when a WebContents is deleted out from
   // under us).
@@ -412,6 +406,12 @@ class TabDragController : public views::WidgetObserver
 
   // Restores `initial_selection_model_` to the `source_context_`.
   void RestoreInitialSelection();
+
+  // Reverts the drag the group starting at `drag_index_`.
+  void RevertGroupAt(size_t drag_index);
+
+  // Reverts the tab at `drag_index` in `drag_data_`.
+  void RevertTabAt(size_t drag_index);
 
   // Finishes a successful drag operation.
   void CompleteDrag();

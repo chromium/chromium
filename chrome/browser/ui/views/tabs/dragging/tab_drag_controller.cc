@@ -1680,23 +1680,40 @@ void TabDragController::EndDragImpl(EndDragType type) {
 
 void TabDragController::RevertDrag() {
   CHECK(attached_context_);
+  CHECK(source_context_);
 
   // If we're dragging a saved tab group, suspend tracking during the revert.
   // Otherwise, the group will get emptied out as we revert all the tabs.
   MaybePauseTrackingSavedTabGroup();
 
-  if (drag_data_.group_drag_data_.has_value()) {
-    RevertHeaderDrag(drag_data_.group_drag_data_.value().group);
-  } else {
-    for (size_t i = first_tab_index(); i < drag_data_.tab_drag_data_.size();
-         ++i) {
-      if (drag_data_.tab_drag_data_[i].contents) {
-        // Contents is NULL if a tab was destroyed while the drag was under way.
-        RevertDragAt(i);
-      }
+  base::AutoReset<bool> is_mutating_setter(&is_mutating_, true);
+  base::AutoReset<bool> is_removing_last_tab_setter(
+      &is_removing_last_tab_for_revert_, true);
+
+  if (attached_context_ != source_context_) {
+    for (TabDragData& tab_datum : drag_data_.tab_drag_data_) {
+      tab_datum.attached_view->set_detached();
+      tab_datum.attached_view = nullptr;
     }
   }
 
+  // Revert each tab and group. N.B. we manually increment `i` because each
+  // group has multiple entries in `tab_drag_data_`.
+  for (size_t i = 0; i < drag_data_.tab_drag_data_.size();) {
+    const TabDragData tab_data = drag_data_.tab_drag_data_[i];
+    if (tab_data.view_type == TabSlotView::ViewType::kTab) {
+      RevertTabAt(i);
+      i++;
+    } else {
+      RevertGroupAt(i);
+      // Skip all the tabs in the group too.
+      i += source_context_->GetTabStripModel()
+               ->group_model()
+               ->GetTabGroup(tab_data.tab_group_data->group_id)
+               ->tab_count() +
+           1;
+    }
+  }
   MaybeResumeTrackingSavedTabGroup();
 
   if (did_restore_window_) {
@@ -1704,10 +1721,6 @@ void TabDragController::RevertDrag() {
   }
   if (attached_context_ == source_context_) {
     source_context_->StoppedDragging();
-    if (drag_data_.group_drag_data_.has_value()) {
-      source_context_->GetTabStripModel()->MoveTabGroup(
-          drag_data_.group_drag_data_.value().group);
-    }
   } else {
     attached_context_->DraggedTabsDetached();
   }
@@ -1729,9 +1742,7 @@ void TabDragController::RevertDrag() {
         initial_selection_model_);
   }
 
-  if (source_context_) {
-    source_context_->GetWidget()->Activate();
-  }
+  source_context_->GetWidget()->Activate();
 }
 
 void TabDragController::ResetSelection(TabStripModel* model) {
@@ -1800,40 +1811,52 @@ void TabDragController::RestoreInitialSelection() {
   source_context_->GetTabStripModel()->SetSelectionFromModel(selection_model);
 }
 
-void TabDragController::RevertHeaderDrag(tab_groups::TabGroupId group_id) {
-  CHECK_NE(current_state_, DragState::kNotStarted);
-  CHECK(source_context_);
+void TabDragController::RevertGroupAt(size_t drag_index) {
+  const tab_groups::TabGroupId group_id =
+      drag_data_.tab_drag_data_[drag_index].tab_group_data->group_id;
+  const TabDragData first_tab_in_group =
+      drag_data_.tab_drag_data_[drag_index + 1];
+  int target_index = first_tab_in_group.source_model_index.value();
+  if (attached_context_ != source_context_) {
+    source_context_->GetTabStripModel()->InsertDetachedTabGroupAt(
+        attached_context_->GetTabStripModel()->DetachTabGroupForInsertion(
+            group_id),
+        target_index);
+    source_context_->GetTabStripModel()
+        ->group_model()
+        ->GetTabGroup(group_id)
+        ->SetVisualData(first_tab_in_group.tab_group_data->group_visual_data);
+    return;
+  }
 
-  const size_t first_tab_in_group_index = first_tab_index();
-  CHECK(drag_data_.tab_drag_data_[first_tab_in_group_index].contents);
+  const int index =
+      attached_context_->GetTabStripModel()->GetIndexOfWebContents(
+          first_tab_in_group.contents);
+  CHECK_NE(index, TabStripModel::kNoTab);
 
-  if (attached_context_ && attached_context_ == source_context_) {
-    base::AutoReset<bool> setter(&is_mutating_, true);
-    attached_context_->GetTabStripModel()->MoveGroupTo(
-        group_id, drag_data_.tab_drag_data_[first_tab_in_group_index]
-                      .source_model_index.value());
-  } else {
-    const tab_groups::TabGroupVisualData og_visual_data =
-        drag_data_.source_view_drag_data()
-            ->tab_group_data.value()
-            .group_visual_data;
-
-    source_context_->GetTabStripModel()->AddTabGroup(
-        drag_data_.group_drag_data_.value().group, og_visual_data);
-
-    // Drop the group header ptr before it is destroyed during revert.
-    drag_data_.tab_drag_data_[0].attached_view = nullptr;
-    for (size_t i = first_tab_index(); i < drag_data_.tab_drag_data_.size();
-         ++i) {
-      if (drag_data_.tab_drag_data_[i].contents) {
-        // Contents is NULL if a tab was destroyed while the drag was under way.
-        RevertDragAt(i);
+  if (target_index > index) {
+    for (size_t i = drag_index + 1; i < drag_data_.tab_drag_data_.size(); ++i) {
+      const TabDragData other_tab = drag_data_.tab_drag_data_[i];
+      // Ignore group headers, they don't have model indices to skip over.
+      if (other_tab.view_type != TabSlotView::ViewType::kTab) {
+        continue;
       }
+      // Ignore other tabs in this group, they will get moved along with us
+      // so we won't skip over them.
+      if (other_tab.tab_group_data.has_value() &&
+          other_tab.tab_group_data->group_id == group_id) {
+        continue;
+      }
+
+      ++target_index;
     }
   }
+
+  source_context_->GetTabStripModel()->MoveGroupTo(
+      first_tab_in_group.tab_group_data->group_id, target_index);
 }
 
-void TabDragController::RevertDragAt(size_t drag_index) {
+void TabDragController::RevertTabAt(size_t drag_index) {
   CHECK_NE(current_state_, DragState::kNotStarted);
   CHECK(attached_context_);
   CHECK(source_context_);
@@ -1841,47 +1864,32 @@ void TabDragController::RevertDragAt(size_t drag_index) {
   // a group header.
   CHECK(drag_data_.tab_drag_data_[drag_index].contents);
 
-  base::AutoReset<bool> setter(&is_mutating_, true);
-  TabDragData* data = &(drag_data_.tab_drag_data_[drag_index]);
-  // The index we will try to insert the tab at. It may or may not end up at
-  // this index, if the source tabstrip has changed since the drag began.
-  int target_index = data->source_model_index.value();
+  const TabDragData tab_data = drag_data_.tab_drag_data_[drag_index];
 
-  std::optional<TabDragData::TabGroupData> drag_data = data->tab_group_data;
-
-  // Create the group if not present in the group model.
+  // The tab can be reverted into its original group if it still exists.
   const std::optional<tab_groups::TabGroupId> existing_group =
-      drag_data.has_value() &&
+      tab_data.tab_group_data.has_value() &&
               source_context_->GetTabStripModel()
                   ->group_model()
-                  ->ContainsTabGroup(drag_data.value().group_id)
-          ? std::make_optional(drag_data.value().group_id)
+                  ->ContainsTabGroup(tab_data.tab_group_data->group_id)
+          ? std::make_optional(tab_data.tab_group_data->group_id)
           : std::nullopt;
 
-  const int index =
+  const int from_index =
       attached_context_->GetTabStripModel()->GetIndexOfWebContents(
-          data->contents);
+          tab_data.contents);
+  CHECK_NE(from_index, TabStripModel::kNoTab);
+  int target_index = tab_data.source_model_index.value();
+
   if (attached_context_ != source_context_) {
-    std::unique_ptr<base::AutoReset<bool>> removing_last_tab_setter;
-    if (attached_context_->GetTabStripModel()->count() == 1) {
-      removing_last_tab_setter = std::make_unique<base::AutoReset<bool>>(
-          &is_removing_last_tab_for_revert_, true);
-    }
     // The Tab was inserted into another TabDragContext. We need to
-    // put it back into the original one. Marking the view as detached tells
-    // the TabStrip to not animate its closure, as it's actually being moved.
-    data->attached_view->set_detached();
-    // Drop the ptr, as this view will be deleted as part of detaching.
-    data->attached_view = nullptr;
+    // put it back into the original one.
     std::unique_ptr<tabs::TabModel> detached_tab =
-        attached_context_->GetTabStripModel()->DetachTabAtForInsertion(index);
-    // No-longer removing the last tab, so reset state.
-    removing_last_tab_setter.reset();
-    // TODO(beng): (Cleanup) seems like we should use Attach() for this
-    //             somehow.
+        attached_context_->GetTabStripModel()->DetachTabAtForInsertion(
+            from_index);
     source_context_->GetTabStripModel()->InsertDetachedTabAt(
         target_index, std::move(detached_tab),
-        (data->pinned ? AddTabTypes::ADD_PINNED : 0), existing_group);
+        (tab_data.pinned ? AddTabTypes::ADD_PINNED : 0), existing_group);
   } else {
     // The Tab was moved within the TabDragContext where the drag
     // was initiated. Move it back to the starting location.
@@ -1890,7 +1898,7 @@ void TabDragController::RevertDragAt(size_t drag_index) {
     // occupying indices between this tab and the target index. Those
     // unreverted tabs will later be reverted to the right of the target
     // index, so we skip those indices.
-    if (target_index > index) {
+    if (target_index > from_index) {
       for (size_t i = drag_index + 1; i < drag_data_.tab_drag_data_.size();
            ++i) {
         if (drag_data_.tab_drag_data_[i].contents) {
@@ -1898,8 +1906,9 @@ void TabDragController::RevertDragAt(size_t drag_index) {
         }
       }
     }
+
     source_context_->GetTabStripModel()->MoveWebContentsAt(
-        index, target_index, false, existing_group);
+        from_index, target_index, false, existing_group);
   }
 }
 
