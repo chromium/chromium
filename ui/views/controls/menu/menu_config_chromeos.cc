@@ -6,6 +6,8 @@
 
 namespace views {
 
-void MenuConfig::InitPlatform() {}
+void MenuConfig::InitPlatform() {
+  use_bubble_border = true;
+}
 
 }  // namespace views
