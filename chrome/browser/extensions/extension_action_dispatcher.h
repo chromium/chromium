@@ -12,6 +12,7 @@
 #include "base/scoped_observation.h"
 #include "base/values.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 
 namespace content {
@@ -71,10 +72,12 @@ class ExtensionActionDispatcher : public BrowserContextKeyedAPI {
                     content::WebContents* web_contents,
                     content::BrowserContext* browser_context);
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   // Dispatches the onClicked event for extension that owns the given action.
   void DispatchExtensionActionClicked(const ExtensionAction& extension_action,
                                       content::WebContents* web_contents,
                                       const Extension* extension);
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   // Called when the action for the given extension is pinned or unpinned from
   // the toolbar. Dispatches the onUserSettingsChanged event for extension that

@@ -1294,6 +1294,11 @@ class NET_EXPORT SpdySession
   // nullptr.
   raw_ptr<NetworkQualityEstimator> network_quality_estimator_;
 
+  // Set to the error and reason why this session is draining.
+  // TODO(crbug.com/405934874): Remove once we identify the cause of the bug.
+  std::optional<Error> drain_error_;
+  std::string drain_description_;
+
   // Represents how this session is created.
   const MultiplexedSessionCreationInitiator session_creation_initiator_;
 

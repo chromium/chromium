@@ -32,9 +32,7 @@ constexpr int kRoundIterations = 11;
 class LevelDBCleanupSchedulerTest : public testing::Test,
                                     public LevelDBCleanupScheduler::Delegate {
  public:
-  LevelDBCleanupSchedulerTest() {
-    scoped_feature_list_.InitAndEnableFeature(kIdbInSessionDbCleanup);
-  }
+  LevelDBCleanupSchedulerTest() = default;
 
   void SetUp() override {
     SetupRealDB();
@@ -89,7 +87,6 @@ class LevelDBCleanupSchedulerTest : public testing::Test,
  protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<LevelDBCleanupScheduler> scheduler_;
   base::HistogramTester tester_;
   std::unique_ptr<TransactionalLevelDBDatabase> in_memory_db_;
@@ -127,7 +124,9 @@ class LevelDBCleanupSchedulerTest : public testing::Test,
   }
 };
 
-TEST_F(LevelDBCleanupSchedulerTest, WithPostPone) {
+TEST_F(LevelDBCleanupSchedulerTest, WithPostpone) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kIdbInSessionDbCleanup);
   EXPECT_FALSE(scheduler_->GetRunningStateForTesting().has_value());
 
   // Schedule a run to occur after 4 seconds.
@@ -189,6 +188,8 @@ TEST_F(LevelDBCleanupSchedulerTest, WithPostPone) {
 }
 
 TEST_F(LevelDBCleanupSchedulerTest, SecondRunTooQuick) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kIdbInSessionDbCleanup);
   scheduler_->OnTransactionStart();
   scheduler_->Initialize();
   scheduler_->OnTransactionComplete();
@@ -219,6 +220,8 @@ TEST_F(LevelDBCleanupSchedulerTest, SecondRunTooQuick) {
 }
 
 TEST_F(LevelDBCleanupSchedulerTest, PrematureTermination) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kIdbInSessionDbCleanup);
   EXPECT_FALSE(scheduler_->GetRunningStateForTesting().has_value());
   scheduler_->OnTransactionStart();
   scheduler_->Initialize();
@@ -236,7 +239,8 @@ TEST_F(LevelDBCleanupSchedulerTest, PrematureTermination) {
 }
 
 TEST_F(LevelDBCleanupSchedulerTest, FeatureDisabled) {
-  scoped_feature_list_.Reset();
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kIdbInSessionDbCleanup);
   EXPECT_FALSE(scheduler_->GetRunningStateForTesting().has_value());
   scheduler_->OnTransactionStart();
   scheduler_->Initialize();

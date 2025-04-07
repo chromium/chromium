@@ -17,7 +17,7 @@
 #include "base/process/process_handle.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/multiprocess_test.h"
-#include "base/win/win_util.h"
+#include "base/win/windows_handle_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
 

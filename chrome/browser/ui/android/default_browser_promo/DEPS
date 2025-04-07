@@ -9,7 +9,6 @@ include_rules = [
   "+chrome/browser/flags",
   "+chrome/browser/profiles/android",
   "+chrome/browser/preferences",
-  "+chrome/browser/util/android",
   "+chrome/test/android",
   "+components/browser_ui/widget/android",
   "+components/feature_engagement/public",

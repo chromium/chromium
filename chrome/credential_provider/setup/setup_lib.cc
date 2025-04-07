@@ -26,7 +26,7 @@
 #include "base/win/atl.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_handle.h"
-#include "base/win/win_util.h"
+#include "base/win/windows_handle_util.h"
 #include "base/win/windows_version.h"
 #include "chrome/credential_provider/common/gcp_strings.h"
 #include "chrome/credential_provider/extension/extension_strings.h"

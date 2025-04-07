@@ -16,7 +16,7 @@
 #include "base/logging.h"
 #include "base/process/process.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/win/win_util.h"
+#include "base/win/windows_handle_util.h"
 #include "chrome/windows_services/service_program/switches.h"
 
 ScopedLogGrabber::ScopedLogGrabber() {

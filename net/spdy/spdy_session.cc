@@ -35,6 +35,7 @@
 #include "base/trace_event/memory_usage_estimator.h"
 #include "base/values.h"
 #include "net/base/features.h"
+#include "net/base/privacy_mode.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_string_util.h"
 #include "net/base/tracing.h"
@@ -42,6 +43,7 @@
 #include "net/cert/asn1_util.h"
 #include "net/cert/cert_verify_result.h"
 #include "net/cert/ct_policy_status.h"
+#include "net/dns/public/secure_dns_policy.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_server_properties.h"
 #include "net/http/http_util.h"
@@ -1386,6 +1388,11 @@ void SpdySession::MaybeFinishGoingAway() {
 }
 
 base::Value::Dict SpdySession::GetInfoAsValue() const {
+  int pending_create_stream_request_count = 0;
+  for (const auto& queue : pending_create_stream_queues_) {
+    pending_create_stream_request_count += queue.size();
+  }
+
   auto dict =
       base::Value::Dict()
           .Set("source_id", static_cast<int>(net_log_.source().id))
@@ -1394,6 +1401,9 @@ base::Value::Dict SpdySession::GetInfoAsValue() const {
           .Set("network_anonymization_key",
                spdy_session_key_.network_anonymization_key().ToDebugString())
           .Set("active_streams", static_cast<int>(active_streams_.size()))
+          .Set("created_streams", static_cast<int>(created_streams_.size()))
+          .Set("pending_create_stream_request_count",
+               pending_create_stream_request_count)
           .Set("negotiated_protocol",
                NextProtoToString(socket_->GetNegotiatedProtocol()))
           .Set("error", error_on_close_)
@@ -1401,14 +1411,34 @@ base::Value::Dict SpdySession::GetInfoAsValue() const {
                static_cast<int>(max_concurrent_streams_))
           .Set("streams_initiated_count", streams_initiated_count_)
           .Set("streams_abandoned_count", streams_abandoned_count_)
+          .Set("stream_hi_water_mark", static_cast<int>(stream_hi_water_mark_))
           .Set("frames_received", buffered_spdy_framer_.get()
                                       ? buffered_spdy_framer_->frames_received()
                                       : 0)
           .Set("send_window_size", session_send_window_size_)
           .Set("recv_window_size", session_recv_window_size_)
           .Set("unacked_recv_window_bytes", session_unacked_recv_window_bytes_)
+          .Set("support_websocket", support_websocket_)
           .Set("availability_state",
                AvailabilityStateToString(availability_state_));
+
+  // TODO(crbug.com/405934874): Remove once we identify the cause of the bug.
+  {
+    base::Value::Dict key_dict;
+    key_dict.Set("privacy_mode",
+                 PrivacyModeToDebugString(spdy_session_key_.privacy_mode()));
+    key_dict.Set(
+        "secure_dns_policy",
+        SecureDnsPolicyToDebugString(spdy_session_key_.secure_dns_policy()));
+    key_dict.Set("disable_cert_verification_network_fetches",
+                 spdy_session_key_.disable_cert_verification_network_fetches());
+    dict.Set("spdy_session_key", std::move(key_dict));
+  }
+  if (drain_error_.has_value()) {
+    CHECK(!drain_description_.empty());
+    dict.Set("drain_error", *drain_error_);
+    dict.Set("drain_description", drain_description_);
+  }
 
   if (!pooled_aliases_.empty()) {
     base::Value::List alias_list;
@@ -2587,6 +2617,8 @@ void SpdySession::DoDrainSession(Error err,
     return;
   }
   MakeUnavailable();
+  drain_error_ = err;
+  drain_description_ = description;
 
   // Mark host_port_pair requiring HTTP/1.1 for subsequent connections.
   if (err == ERR_HTTP_1_1_REQUIRED) {
