@@ -2942,7 +2942,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="PasswordManager.PasswordNoteActionInSettings2"
-    enum="PasswordNoteAction" expires_after="2025-05-11">
+    enum="PasswordNoteAction" expires_after="2025-08-11">
   <owner>derinel@google.com</owner>
   <owner>mamir@chromium.org</owner>
   <summary>
