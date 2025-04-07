@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.hub;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Factory for creating {@link HubLayoutAnimationRunner}s. */
+@NullMarked
 public class HubLayoutAnimationRunnerFactory {
     /**
      * Creates a new instance of {@link HubLayoutAnimatorRunner} to run the provided animation.

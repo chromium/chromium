@@ -4,12 +4,13 @@
 
 package org.chromium.chrome.browser.hub;
 
-import androidx.annotation.NonNull;
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * Factory for creating {@link HubLayoutAnimatorProvider}s for translate animations. These
  * animations are primiarly used for large form factor devices.
  */
+@NullMarked
 public class TranslateHubLayoutAnimationFactory {
 
     /**
@@ -22,8 +23,8 @@ public class TranslateHubLayoutAnimationFactory {
      * @return a {@link HubLayoutAnimatorProvider} that provides the animation.
      */
     public static HubLayoutAnimatorProvider createTranslateUpAnimatorProvider(
-            @NonNull HubContainerView hubContainerView,
-            @NonNull ScrimController scrimController,
+            HubContainerView hubContainerView,
+            ScrimController scrimController,
             long durationMs,
             float yOffset) {
         return TranslateHubLayoutAnimationFactoryImpl.createTranslateUpAnimatorProvider(
@@ -40,8 +41,8 @@ public class TranslateHubLayoutAnimationFactory {
      * @return a {@link HubLayoutAnimatorProvider} that provides the animation.
      */
     public static HubLayoutAnimatorProvider createTranslateDownAnimatorProvider(
-            @NonNull HubContainerView hubContainerView,
-            @NonNull ScrimController scrimController,
+            HubContainerView hubContainerView,
+            ScrimController scrimController,
             long durationMs,
             float yOffset) {
         return TranslateHubLayoutAnimationFactoryImpl.createTranslateDownAnimatorProvider(
