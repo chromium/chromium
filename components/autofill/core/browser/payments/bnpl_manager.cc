@@ -161,8 +161,6 @@ void BnplManager::FetchVcnDetails(GURL url) {
       /*cancel_callback=*/base::BindOnce(
           [](base::WeakPtr<BnplManager> manager) {
             if (manager) {
-              // TODO(crbug.com/400528473): Log cancel metrics.
-
               // Note: Does not call
               // `PaymentsAutofillClient::CloseAutofillProgressDialog()` as this
               // is expected to be handled by dialog UI code.
