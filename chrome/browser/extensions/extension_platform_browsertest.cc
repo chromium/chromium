@@ -30,6 +30,7 @@
 #include "extensions/common/extension_paths.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/manifest_handlers/background_info.h"
+#include "extensions/test/extension_test_notification_observer.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
@@ -273,6 +274,8 @@ void ExtensionPlatformBrowserTest::SetUpOnMainThread() {
   if (web_contents) {
     web_contents_ = web_contents->GetWeakPtr();
   }
+
+  test_notification_observer_ = CreateTestNotificationObserver();
 }
 
 void ExtensionPlatformBrowserTest::TearDown() {
@@ -680,6 +683,15 @@ void ExtensionPlatformBrowserTest::SetUpTestProtocolHandler() {
 
 void ExtensionPlatformBrowserTest::TearDownTestProtocolHandler() {
   SetExtensionProtocolTestHandler(nullptr);
+}
+
+bool ExtensionPlatformBrowserTest::WaitForExtensionViewsToLoad() {
+  return test_notification_observer_->WaitForExtensionViewsToLoad();
+}
+
+std::unique_ptr<ExtensionTestNotificationObserver>
+ExtensionPlatformBrowserTest::CreateTestNotificationObserver() {
+  return std::make_unique<ExtensionTestNotificationObserver>(profile());
 }
 
 Profile* ExtensionPlatformBrowserTest::profile() {

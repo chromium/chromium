@@ -35,7 +35,7 @@ class ExtensionTestNotificationObserver {
   ExtensionTestNotificationObserver& operator=(
       const ExtensionTestNotificationObserver&) = delete;
 
-  ~ExtensionTestNotificationObserver();
+  virtual ~ExtensionTestNotificationObserver();
 
   // Waits for all extension views to load.
   bool WaitForExtensionViewsToLoad();

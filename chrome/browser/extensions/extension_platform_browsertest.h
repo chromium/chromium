@@ -35,6 +35,7 @@ class ExtensionBrowserTestPlatformDelegate;
 class ExtensionHost;
 class ExtensionRegistrar;
 class ExtensionSet;
+class ExtensionTestNotificationObserver;
 class ProcessManager;
 class ScopedIgnoreContentVerifierForTest;
 
@@ -231,6 +232,14 @@ class ExtensionPlatformBrowserTest : public PlatformBrowserTest,
   // Tears down test protocol handler.
   void TearDownTestProtocolHandler();
 
+  // Wait for all extension views to load.
+  bool WaitForExtensionViewsToLoad();
+
+  // Creates the ExtensionTestNotificationObserver to use; this allows other
+  // implementations to use a more specialized variant.
+  virtual std::unique_ptr<ExtensionTestNotificationObserver>
+  CreateTestNotificationObserver();
+
   // Lower case to match the style of InProcessBrowserTest.
   virtual Profile* profile();
 
@@ -242,6 +251,10 @@ class ExtensionPlatformBrowserTest : public PlatformBrowserTest,
   }
   void set_last_loaded_extension_id(ExtensionId id) {
     last_loaded_extension_id_ = std::move(id);
+  }
+
+  ExtensionTestNotificationObserver* test_notification_observer() {
+    return test_notification_observer_.get();
   }
 
   // Set to "chrome/test/data/extensions". Derived classes may override.
@@ -283,6 +296,9 @@ class ExtensionPlatformBrowserTest : public PlatformBrowserTest,
   // Used to disable CRX publisher signature checking.
   SandboxedUnpacker::ScopedVerifierFormatOverrideForTest
       verifier_format_override_;
+
+  std::unique_ptr<ExtensionTestNotificationObserver>
+      test_notification_observer_;
 
   // Listens to extension loaded notifications.
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>

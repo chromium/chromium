@@ -123,6 +123,14 @@ ExtensionService* ExtensionBrowserTest::extension_service() {
   return ExtensionSystem::Get(profile())->extension_service();
 }
 
+std::unique_ptr<ExtensionTestNotificationObserver>
+ExtensionBrowserTest::CreateTestNotificationObserver() {
+  return browser() ? std::make_unique<ChromeExtensionTestNotificationObserver>(
+                         browser())
+                   : std::make_unique<ChromeExtensionTestNotificationObserver>(
+                         profile());
+}
+
 Profile* ExtensionBrowserTest::profile() {
   if (!profile_) {
     if (browser()) {
@@ -166,11 +174,6 @@ void ExtensionBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
 void ExtensionBrowserTest::SetUpOnMainThread() {
   ExtensionPlatformBrowserTest::SetUpOnMainThread();
 
-  observer_ =
-      browser()
-          ? std::make_unique<ChromeExtensionTestNotificationObserver>(browser())
-          : std::make_unique<ChromeExtensionTestNotificationObserver>(
-                profile());
   ExtensionUpdater* updater = ExtensionUpdater::Get(profile());
   if (updater->enabled()) {
     updater->SetExtensionCacheForTesting(test_extension_cache_.get());
@@ -454,7 +457,7 @@ const Extension* ExtensionBrowserTest::InstallOrUpdateExtension(
         .WaitForBackgroundInitialized();
   }
 
-  if (!observer_->WaitForExtensionViewsToLoad()) {
+  if (!test_notification_observer()->WaitForExtensionViewsToLoad()) {
     return nullptr;
   }
 
@@ -489,25 +492,24 @@ void ExtensionBrowserTest::ReloadExtension(
   }
 
   // Wait for any additionally-registered extension views to load.
-  observer_->WaitForExtensionViewsToLoad();
+  test_notification_observer()->WaitForExtensionViewsToLoad();
 }
 
 bool ExtensionBrowserTest::WaitForPageActionVisibilityChangeTo(int count) {
-  return observer_->WaitForPageActionVisibilityChangeTo(count);
-}
-
-bool ExtensionBrowserTest::WaitForExtensionViewsToLoad() {
-  return observer_->WaitForExtensionViewsToLoad();
+  return GetChromeExtensionTestNotificationObserver()
+      ->WaitForPageActionVisibilityChangeTo(count);
 }
 
 bool ExtensionBrowserTest::WaitForExtensionIdle(
     const extensions::ExtensionId& extension_id) {
-  return observer_->WaitForExtensionIdle(extension_id);
+  return GetChromeExtensionTestNotificationObserver()->WaitForExtensionIdle(
+      extension_id);
 }
 
 bool ExtensionBrowserTest::WaitForExtensionNotIdle(
     const extensions::ExtensionId& extension_id) {
-  return observer_->WaitForExtensionNotIdle(extension_id);
+  return GetChromeExtensionTestNotificationObserver()->WaitForExtensionNotIdle(
+      extension_id);
 }
 
 WindowController* ExtensionBrowserTest::GetWindowController() {
@@ -517,6 +519,12 @@ WindowController* ExtensionBrowserTest::GetWindowController() {
 #else
   return browser() ? browser()->extension_window_controller() : nullptr;
 #endif
+}
+
+ChromeExtensionTestNotificationObserver*
+ExtensionBrowserTest::GetChromeExtensionTestNotificationObserver() {
+  return static_cast<ChromeExtensionTestNotificationObserver*>(
+      test_notification_observer());
 }
 
 }  // namespace extensions

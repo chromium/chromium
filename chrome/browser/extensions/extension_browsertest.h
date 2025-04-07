@@ -72,6 +72,8 @@ class ExtensionBrowserTest : public ExtensionPlatformBrowserTest {
   void SetUpOnMainThread() override;
 
   // ExtensionPlatformBrowserTest:
+  std::unique_ptr<ExtensionTestNotificationObserver>
+  CreateTestNotificationObserver() final;
   Profile* profile() final;
 
   // These functions intentionally shadow the versions in the base class
@@ -182,9 +184,6 @@ class ExtensionBrowserTest : public ExtensionPlatformBrowserTest {
   // Wait for the number of visible page actions to change to |count|.
   bool WaitForPageActionVisibilityChangeTo(int count);
 
-  // Wait for all extension views to load.
-  bool WaitForExtensionViewsToLoad();
-
   // Wait for the extension to be idle.
   bool WaitForExtensionIdle(const extensions::ExtensionId& extension_id);
 
@@ -196,8 +195,6 @@ class ExtensionBrowserTest : public ExtensionPlatformBrowserTest {
   // already logged in.
   bool set_chromeos_user_;
 #endif
-
-  std::unique_ptr<ChromeExtensionTestNotificationObserver> observer_;
 
  private:
   // Temporary directory for testing.
@@ -242,6 +239,11 @@ class ExtensionBrowserTest : public ExtensionPlatformBrowserTest {
 
   // Returns the WindowController for this test's browser window.
   WindowController* GetWindowController();
+
+  // A convenience method to get the ExtensionTestNotificationObserver as its
+  // Chrome-side implementation.
+  ChromeExtensionTestNotificationObserver*
+  GetChromeExtensionTestNotificationObserver();
 
   // Disable external install UI.
   FeatureSwitch::ScopedOverride override_prompt_for_external_extensions_;
