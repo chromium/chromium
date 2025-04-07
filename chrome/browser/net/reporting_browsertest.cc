@@ -628,6 +628,8 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTest,
 #if defined(ADDRESS_SANITIZER)
 #define MAYBE_CrashReport DISABLED_CrashReport
 #define MAYBE_CrashReportUnresponsive DISABLED_CrashReportUnresponsive
+#define MAYBE_CrashReportUnresponsiveCrossOriginIframe \
+  DISABLED_CrashReportUnresponsiveCrossOriginIframe
 #define MAYBE_MainPageOptedIn DISABLED_MainPageOptedIn
 #define MAYBE_MainPageNotOptedIn DISABLED_MainPageNotOptedIn
 #define MAYBE_IframeUnresponsiveWithJSCallStackOptedIn \
