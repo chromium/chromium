@@ -46,9 +46,7 @@ void AccessibilityExtensionLoader::SetBrowserContext(
 
   // If the extension was already enabled, but not for this profile, add it
   // to this profile.
-  auto* extension_service =
-      extensions::ExtensionSystem::Get(browser_context_)->extension_service();
-  auto* component_loader = extension_service->component_loader();
+  auto* component_loader = extensions::ComponentLoader::Get(browser_context_);
   if (!component_loader->Exists(extension_id_)) {
     LoadExtension(browser_context_, std::move(done_callback));
   }
@@ -106,7 +104,7 @@ void AccessibilityExtensionLoader::LoadExtension(
         weak_ptr_factory_.GetWeakPtr(), browser_context, std::move(done_cb));
   }
 
-  extension_service->component_loader()
+  extensions::ComponentLoader::Get(browser_context)
       ->AddComponentFromDirWithManifestFilename(
           extension_path_, extension_id_.c_str(), manifest_filename_,
           guest_manifest_filename_, std::move(done_cb));
@@ -123,7 +121,7 @@ void AccessibilityExtensionLoader::ReinstallExtensionForKiosk(
   extension_service->UninstallExtension(
       extension_id_, extensions::UninstallReason::UNINSTALL_REASON_REINSTALL,
       &error);
-  extension_service->component_loader()->Reload(extension_id_);
+  extensions::ComponentLoader::Get(browser_context)->Reload(extension_id_);
 
   if (done_cb)
     std::move(done_cb).Run();
@@ -131,9 +129,7 @@ void AccessibilityExtensionLoader::ReinstallExtensionForKiosk(
 
 void AccessibilityExtensionLoader::UnloadExtension(
     content::BrowserContext* browser_context) {
-  auto* extension_service =
-      extensions::ExtensionSystem::Get(browser_context)->extension_service();
-  extension_service->component_loader()->Remove(extension_id_);
+  extensions::ComponentLoader::Get(browser_context)->Remove(extension_id_);
 }
 
 }  // namespace ash

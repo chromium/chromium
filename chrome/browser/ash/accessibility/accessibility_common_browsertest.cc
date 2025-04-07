@@ -7,7 +7,6 @@
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
 #include "chrome/browser/extensions/component_loader.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -16,7 +15,6 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_host_test_helper.h"
-#include "extensions/browser/extension_system.h"
 #include "extensions/common/features/feature_channel.h"
 #include "ui/accessibility/accessibility_features.h"
 
@@ -43,10 +41,8 @@ class AccessibilityCommonTest
   }
 
   bool DoesComponentExtensionExist(const std::string& id) {
-    return extensions::ExtensionSystem::Get(
+    return extensions::ComponentLoader::Get(
                AccessibilityManager::Get()->profile())
-        ->extension_service()
-        ->component_loader()
         ->Exists(id);
   }
 

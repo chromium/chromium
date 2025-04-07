@@ -10,7 +10,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/component_loader.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "content/public/browser/browser_accessibility_state.h"
@@ -18,7 +17,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_file_task_runner.h"
-#include "extensions/browser/extension_system.h"
 #include "extensions/common/extension_l10n_util.h"
 #include "extensions/common/file_util.h"
 
@@ -55,19 +53,6 @@ std::optional<base::Value::Dict> LoadManifestOnFileThread(
     CHECK(localized) << error;
   }
   return manifest;
-}
-
-extensions::ComponentLoader* GetComponentLoader(Profile* profile) {
-  auto* extension_system = extensions::ExtensionSystem::Get(profile);
-  if (!extension_system) {
-    // May be missing on the Lacros login profile.
-    return nullptr;
-  }
-  auto* extension_service = extension_system->extension_service();
-  if (!extension_service) {
-    return nullptr;
-  }
-  return extension_service->component_loader();
 }
 
 }  // namespace
@@ -237,7 +222,7 @@ void EmbeddedA11yExtensionLoader::UpdateProfile(
 void EmbeddedA11yExtensionLoader::MaybeRemoveExtension(
     Profile* profile,
     const std::string& extension_id) {
-  auto* component_loader = GetComponentLoader(profile);
+  auto* component_loader = extensions::ComponentLoader::Get(profile);
   if (!component_loader || !component_loader->Exists(extension_id)) {
     return;
   }
@@ -254,7 +239,7 @@ void EmbeddedA11yExtensionLoader::MaybeInstallExtension(
     const base::FilePath::CharType* manifest_name,
     bool should_localize) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  auto* component_loader = GetComponentLoader(profile);
+  auto* component_loader = extensions::ComponentLoader::Get(profile);
   if (!component_loader || component_loader->Exists(extension_id)) {
     return;
   }
