@@ -11,8 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.util.DefaultBrowserInfo;
-import org.chromium.chrome.browser.util.DefaultBrowserInfo.DefaultInfo;
+import org.chromium.chrome.browser.util.DefaultBrowserInfo.DefaultBrowserState;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
@@ -24,37 +23,40 @@ public class DefaultBrowserPromoManager {
     private final Activity mActivity;
     private final WindowAndroid mWindowAndroid;
     private final DefaultBrowserPromoImpressionCounter mImpressionCounter;
+    private final DefaultBrowserStateProvider mStateProvider;
 
     /**
      * @param activity Activity to show promo dialogs.
      * @param windowAndroid The {@link WindowAndroid} for sending an intent.
      * @param impressionCounter The {@link DefaultBrowserPromoImpressionCounter}
+     * @param stateProvider The {@link DefaultBrowserStateProvider}
      */
     public DefaultBrowserPromoManager(
             Activity activity,
             WindowAndroid windowAndroid,
-            DefaultBrowserPromoImpressionCounter impressionCounter) {
+            DefaultBrowserPromoImpressionCounter impressionCounter,
+            DefaultBrowserStateProvider stateProvider) {
         mActivity = activity;
         mWindowAndroid = windowAndroid;
         mImpressionCounter = impressionCounter;
+        mStateProvider = stateProvider;
     }
 
     @SuppressLint({"WrongConstant", "NewApi"})
     void promoByRoleManager() {
         RoleManager roleManager = (RoleManager) mActivity.getSystemService(Context.ROLE_SERVICE);
 
-        DefaultInfo defaultInfo = DefaultBrowserInfo.getDefaultBrowserInfoSync();
-        if (defaultInfo == null) {
-            return;
-        }
-        DefaultBrowserPromoMetrics.recordRoleManagerShow(defaultInfo.defaultBrowserState);
+        @DefaultBrowserState int currentState = mStateProvider.getCurrentDefaultBrowserState();
+        DefaultBrowserPromoMetrics.recordRoleManagerShow(currentState);
 
         Intent intent = roleManager.createRequestRoleIntent(RoleManager.ROLE_BROWSER);
         mWindowAndroid.showCancelableIntent(
                 intent,
                 (resultCode, data) -> {
                     DefaultBrowserPromoMetrics.recordOutcome(
-                            defaultInfo.defaultBrowserState, mImpressionCounter.getPromoCount());
+                            currentState,
+                            mStateProvider.getCurrentDefaultBrowserState(),
+                            mImpressionCounter.getPromoCount());
                 },
                 null);
     }
