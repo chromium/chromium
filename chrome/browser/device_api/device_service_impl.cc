@@ -8,6 +8,7 @@
 #include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "build/build_config.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
@@ -23,12 +24,14 @@
 #include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/common/pref_names.h"
 #include "components/permissions/features.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -164,6 +167,39 @@ bool IsTrustedContext(content::RenderFrameHost& host,
   return IsForceInstalledOrigin(host, origin);
 }
 
+bool IsIwa(content::RenderFrameHost& host) {
+  if (auto* web_app_id = web_app::WebAppTabHelper::GetAppId(
+          content::WebContents::FromRenderFrameHost(&host))) {
+    return web_app::WebAppProvider::GetForWebApps(GetProfile(host))
+        ->registrar_unsafe()
+        .IsIsolated(*web_app_id);
+  }
+  return false;
+}
+
+bool IsPermissionsPolicyFeatureEnabled() {
+  return base::FeatureList::IsEnabled(
+      blink::features::kDeviceAttributesPermissionPolicy);
+}
+
+bool IsAllowedByPermissionsPolicy(content::RenderFrameHost& host) {
+  if (!IsPermissionsPolicyFeatureEnabled()) {
+    return true;
+  }
+  return host.IsFeatureEnabled(
+      network::mojom::PermissionsPolicyFeature::kDeviceAttributes);
+}
+
+bool IsBlockedByAdminPolicy(content::RenderFrameHost& host,
+                            const url::Origin& origin) {
+  if (IsPermissionsPolicyFeatureEnabled() && IsIwa(host)) {
+    return false;
+  }
+  return !policy::IsOriginInAllowlist(
+      origin.GetURL(), GetPrefs(host),
+      prefs::kDeviceAttributesAllowedForOrigins);
+}
+
 }  // namespace
 
 DeviceServiceImpl::DeviceServiceImpl(
@@ -211,6 +247,11 @@ void DeviceServiceImpl::Create(
                         host->GetMainFrame()->GetLastCommittedOrigin())) {
     // Not sending bad message here since the API is always exposed to the end
     // user.
+    return;
+  }
+  if (!IsAllowedByPermissionsPolicy(*host)) {
+    mojo::ReportBadMessage(
+        "Permissions policy blocks access to Device Attribtes.");
     return;
   }
   // The object is bound to the lifetime of |host| and the mojo
@@ -294,9 +335,7 @@ void DeviceServiceImpl::GetDeviceAttribute(
     return;
   }
 
-  if (!policy::IsOriginInAllowlist(origin().GetURL(),
-                                   GetPrefs(render_frame_host()),
-                                   prefs::kDeviceAttributesAllowedForOrigins)) {
+  if (IsBlockedByAdminPolicy(render_frame_host(), origin())) {
     device_attribute_api_->ReportNotAllowedError(std::move(callback));
     return;
   }

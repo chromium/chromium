@@ -8453,6 +8453,7 @@ domain Page
       cross-origin-isolated
       deferred-fetch
       deferred-fetch-minimal
+      device-attributes
       digital-credentials-get
       direct-sockets
       direct-sockets-private

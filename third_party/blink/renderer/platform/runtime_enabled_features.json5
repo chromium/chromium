@@ -1529,6 +1529,10 @@
       },
     },
     {
+      name: "DeviceAttributesPermissionPolicy",
+      status: "experimental",
+    },
+    {
       name: "DeviceBoundSessionCredentials",
       origin_trial_feature_name: "DeviceBoundSessionCredentials",
       origin_trial_os: ["win"],

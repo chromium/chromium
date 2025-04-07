@@ -4,7 +4,10 @@
 
 #include "third_party/blink/renderer/modules/managed_device/navigator_managed_data.h"
 
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
@@ -13,6 +16,8 @@
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
+#include "third_party/blink/renderer/platform/bindings/exception_code.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -28,6 +33,21 @@ const char kServiceConnectionExceptionMessage[] =
 const char kManagedConfigNotSupported[] =
     "Managed Configuration API is not supported on this platform.";
 #endif  // BUILDFLAG(IS_ANDROID)
+
+const char kDeviceAttributesNotAllowedByPermissionsPolicy[] =
+    "Permissions-Policy: device-attributes are disabled.";
+
+bool IsDeviceAttributesPermissionsPolicyFeatureEnabled() {
+  return RuntimeEnabledFeatures::DeviceAttributesPermissionPolicyEnabled();
+}
+
+bool AreDeviceAttributesAllowedByPermissionsPolicy(ExecutionContext* context) {
+  if (!IsDeviceAttributesPermissionsPolicyFeatureEnabled()) {
+    return true;
+  }
+  return context->IsFeatureEnabled(
+      network::mojom::PermissionsPolicyFeature::kDeviceAttributes);
+}
 
 }  // namespace
 
@@ -154,16 +174,18 @@ NavigatorManagedData::getManagedConfiguration(ScriptState* script_state,
 }
 
 ScriptPromise<IDLNullable<IDLString>> NavigatorManagedData::getDirectoryId(
-    ScriptState* script_state) {
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
+  if (!CheckDeviceAttributesAllowed(exception_state)) {
+    return EmptyPromise();
+  }
+
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLNullable<IDLString>>>(
           script_state);
   pending_promises_.insert(resolver);
-
   auto promise = resolver->Promise();
-  if (!GetExecutionContext()) {
-    return promise;
-  }
+
   GetService()->GetDirectoryId(WTF::BindOnce(
       &NavigatorManagedData::OnAttributeReceived, WrapWeakPersistent(this),
       WrapPersistent(script_state), WrapPersistent(resolver)));
@@ -171,16 +193,18 @@ ScriptPromise<IDLNullable<IDLString>> NavigatorManagedData::getDirectoryId(
 }
 
 ScriptPromise<IDLNullable<IDLString>> NavigatorManagedData::getHostname(
-    ScriptState* script_state) {
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
+  if (!CheckDeviceAttributesAllowed(exception_state)) {
+    return EmptyPromise();
+  }
+
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLNullable<IDLString>>>(
           script_state);
   pending_promises_.insert(resolver);
-
   auto promise = resolver->Promise();
-  if (!GetExecutionContext()) {
-    return promise;
-  }
+
   GetService()->GetHostname(WTF::BindOnce(
       &NavigatorManagedData::OnAttributeReceived, WrapWeakPersistent(this),
       WrapPersistent(script_state), WrapPersistent(resolver)));
@@ -188,16 +212,18 @@ ScriptPromise<IDLNullable<IDLString>> NavigatorManagedData::getHostname(
 }
 
 ScriptPromise<IDLNullable<IDLString>> NavigatorManagedData::getSerialNumber(
-    ScriptState* script_state) {
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
+  if (!CheckDeviceAttributesAllowed(exception_state)) {
+    return EmptyPromise();
+  }
+
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLNullable<IDLString>>>(
           script_state);
   pending_promises_.insert(resolver);
-
   auto promise = resolver->Promise();
-  if (!GetExecutionContext()) {
-    return promise;
-  }
+
   GetService()->GetSerialNumber(WTF::BindOnce(
       &NavigatorManagedData::OnAttributeReceived, WrapWeakPersistent(this),
       WrapPersistent(script_state), WrapPersistent(resolver)));
@@ -205,16 +231,18 @@ ScriptPromise<IDLNullable<IDLString>> NavigatorManagedData::getSerialNumber(
 }
 
 ScriptPromise<IDLNullable<IDLString>> NavigatorManagedData::getAnnotatedAssetId(
-    ScriptState* script_state) {
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
+  if (!CheckDeviceAttributesAllowed(exception_state)) {
+    return EmptyPromise();
+  }
+
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLNullable<IDLString>>>(
           script_state);
   pending_promises_.insert(resolver);
-
   auto promise = resolver->Promise();
-  if (!GetExecutionContext()) {
-    return promise;
-  }
+
   GetService()->GetAnnotatedAssetId(WTF::BindOnce(
       &NavigatorManagedData::OnAttributeReceived, WrapWeakPersistent(this),
       WrapPersistent(script_state), WrapPersistent(resolver)));
@@ -222,20 +250,37 @@ ScriptPromise<IDLNullable<IDLString>> NavigatorManagedData::getAnnotatedAssetId(
 }
 
 ScriptPromise<IDLNullable<IDLString>>
-NavigatorManagedData::getAnnotatedLocation(ScriptState* script_state) {
+NavigatorManagedData::getAnnotatedLocation(ScriptState* script_state,
+                                           ExceptionState& exception_state) {
+  if (!CheckDeviceAttributesAllowed(exception_state)) {
+    return EmptyPromise();
+  }
+
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLNullable<IDLString>>>(
           script_state);
   pending_promises_.insert(resolver);
-
   auto promise = resolver->Promise();
-  if (!GetExecutionContext()) {
-    return promise;
-  }
+
   GetService()->GetAnnotatedLocation(WTF::BindOnce(
       &NavigatorManagedData::OnAttributeReceived, WrapWeakPersistent(this),
       WrapPersistent(script_state), WrapPersistent(resolver)));
   return promise;
+}
+
+bool NavigatorManagedData::CheckDeviceAttributesAllowed(
+    ExceptionState& exception_state) {
+  ExecutionContext* const context = GetExecutionContext();
+  if (!context) {
+    return false;
+  }
+  if (!AreDeviceAttributesAllowedByPermissionsPolicy(context)) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotAllowedError,
+        kDeviceAttributesNotAllowedByPermissionsPolicy);
+    return false;
+  }
+  return true;
 }
 
 void NavigatorManagedData::OnConfigurationReceived(

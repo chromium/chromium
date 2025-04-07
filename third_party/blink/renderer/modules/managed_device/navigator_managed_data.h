@@ -63,13 +63,19 @@ class MODULES_EXPORT NavigatorManagedData final
                                   kManagedconfigurationchange)
 
   // Device Attributes API:
-  ScriptPromise<IDLNullable<IDLString>> getDirectoryId(ScriptState*);
-  ScriptPromise<IDLNullable<IDLString>> getHostname(ScriptState*);
-  ScriptPromise<IDLNullable<IDLString>> getSerialNumber(ScriptState*);
-  ScriptPromise<IDLNullable<IDLString>> getAnnotatedAssetId(ScriptState*);
-  ScriptPromise<IDLNullable<IDLString>> getAnnotatedLocation(ScriptState*);
+  ScriptPromise<IDLNullable<IDLString>> getDirectoryId(ScriptState*,
+                                                       ExceptionState&);
+  ScriptPromise<IDLNullable<IDLString>> getHostname(ScriptState*,
+                                                    ExceptionState&);
+  ScriptPromise<IDLNullable<IDLString>> getSerialNumber(ScriptState*,
+                                                        ExceptionState&);
+  ScriptPromise<IDLNullable<IDLString>> getAnnotatedAssetId(ScriptState*,
+                                                            ExceptionState&);
+  ScriptPromise<IDLNullable<IDLString>> getAnnotatedLocation(ScriptState*,
+                                                             ExceptionState&);
 
  private:
+  bool CheckDeviceAttributesAllowed(ExceptionState&);
   // ManagedConfigurationObserver:
   void OnConfigurationChanged() override;
 

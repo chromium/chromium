@@ -1128,6 +1128,7 @@ source_set("web_applications_browser_tests") {
   if (is_chromeos) {
     sources += [
       "commands/install_app_from_verified_manifest_command_browsertest.cc",
+      "isolated_web_apps/isolated_web_app_device_attributes_browsertest.cc",
       "isolated_web_apps/isolated_web_app_managed_configuration_api_browsertest.cc",
       "isolated_web_apps/policy/isolated_web_app_cache_browsertest.cc",
       "isolated_web_apps/policy/isolated_web_app_policy_manager_ash_browsertest.cc",
@@ -1200,6 +1201,7 @@ source_set("web_applications_browser_tests") {
       "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
       "//chrome/browser/ui/ash/login",
       "//chrome/browser/web_applications/ash/migrations:browser_tests",
+      "//chromeos/ash/components/system:system",
     ]
   }
 

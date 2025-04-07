@@ -275,6 +275,11 @@
       depends_on: ["FetchLaterAPI"],
     },
     {
+      name: "DeviceAttributes",
+      permissions_policy_name: "device-attributes",
+      depends_on: ["DeviceAttributes"],
+    },
+    {
       name: "DigitalCredentialsGet",
       permissions_policy_name: "digital-credentials-get",
       depends_on: ["WebIdentityDigitalCredentials"],
