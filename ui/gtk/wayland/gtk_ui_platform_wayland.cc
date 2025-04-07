@@ -172,4 +172,8 @@ bool GtkUiPlatformWayland::IncludeFontScaleInDeviceScale() const {
   return base::FeatureList::IsEnabled(features::kWaylandUiScale);
 }
 
+bool GtkUiPlatformWayland::IncludeScaleInCursorSize() const {
+  return false;
+}
+
 }  // namespace gtk

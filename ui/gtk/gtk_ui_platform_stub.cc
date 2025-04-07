@@ -54,4 +54,8 @@ bool GtkUiPlatformStub::IncludeFontScaleInDeviceScale() const {
   return false;
 }
 
+bool GtkUiPlatformStub::IncludeScaleInCursorSize() const {
+  return false;
+}
+
 }  // namespace gtk

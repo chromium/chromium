@@ -37,6 +37,7 @@ class GtkUiPlatformX11 : public GtkUiPlatform {
   std::unique_ptr<ui::LinuxInputMethodContext> CreateInputMethodContext(
       ui::LinuxInputMethodContextDelegate* delegate) const override;
   bool IncludeFontScaleInDeviceScale() const override;
+  bool IncludeScaleInCursorSize() const override;
 
  private:
   GdkDisplay* GetGdkDisplay();
