@@ -524,6 +524,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.ShouldPreload" enum="Boolean" expires_after="2026-01-15">
+  <owner>dullweber@chromium.org</owner>
+  <owner>vollick@chromium.org</owner>
+  <summary>
+    Record whether the current profile is eligible to preload glic. Recorded
+    each time we try to preload if the user has glic enabled and went through
+    the FRE.
+  </summary>
+</histogram>
+
 <histogram name="Glic.TabContext.PdfContentsRequested" enum="PdfRequestStates"
     expires_after="2026-01-15">
   <owner>carlosk@chromium.org</owner>

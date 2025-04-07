@@ -11,6 +11,7 @@
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/location.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/glic/glic_enabling.h"
@@ -351,7 +352,14 @@ void GlicKeyedService::TryPreload() {
   CHECK(glic_profile_manager_);
 
   Profile* profile = profile_;
-  if (!glic_profile_manager_->ShouldPreloadForProfile(profile)) {
+  bool should_preload = glic_profile_manager_->ShouldPreloadForProfile(profile);
+
+  if (base::FeatureList::IsEnabled(features::kGlicWarming) && profile &&
+      GlicEnabling::IsEnabledAndConsentForProfile(profile)) {
+    base::UmaHistogramBoolean("Glic.ShouldPreload", should_preload);
+  }
+
+  if (!should_preload) {
     return;
   }
 
