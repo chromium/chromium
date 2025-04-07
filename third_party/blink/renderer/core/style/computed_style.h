@@ -601,8 +601,7 @@ class ComputedStyle final : public ComputedStyleBase {
     // contain a gap decoration, which is a visible separator (such as a line)
     // painted between adjacent boxes.
     // See https://drafts.csswg.org/css-gaps-1/#gap-decorations
-    return (!HasAutoColumnCount() || !HasAutoColumnWidth()) ||
-           IsDisplayFlexibleBox() || IsDisplayGridBox() ||
+    return SpecifiesColumns() || IsDisplayFlexibleBox() || IsDisplayGridBox() ||
            IsDisplayMasonryBox();
   }
 
@@ -985,7 +984,8 @@ class ComputedStyle final : public ComputedStyleBase {
 
   // Column utility functions.
   bool SpecifiesColumns() const {
-    return !HasAutoColumnCount() || !HasAutoColumnWidth();
+    return !HasAutoColumnCount() || !HasAutoColumnWidth() ||
+           !HasAutoColumnHeight();
   }
   bool ColumnRuleIsTransparent() const {
     return ColumnRuleColor()
