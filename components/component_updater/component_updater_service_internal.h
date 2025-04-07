@@ -13,6 +13,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/component_updater/update_scheduler.h"
 #include "components/update_client/persisted_data.h"
@@ -134,6 +135,8 @@ class CrxUpdateService : public ComponentUpdateService,
   // for that media type. Only the most recently-registered component is
   // tracked. May include the IDs of un-registered components.
   std::map<std::string, std::string> component_ids_by_mime_type_;
+
+  base::WeakPtrFactory<CrxUpdateService> weak_ptr_factory_{this};
 };
 
 }  // namespace component_updater

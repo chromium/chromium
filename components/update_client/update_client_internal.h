@@ -13,6 +13,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "components/update_client/crx_downloader.h"
@@ -92,6 +93,7 @@ class UpdateClientImpl : public UpdateClient {
   scoped_refptr<PingManager> ping_manager_;
   scoped_refptr<UpdateEngine> update_engine_;
   base::ObserverList<Observer>::Unchecked observer_list_;
+  base::WeakPtrFactory<UpdateClientImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace update_client

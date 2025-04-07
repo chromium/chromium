@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/weak_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "components/update_client/net/network_chromium.h"
 #include "net/base/load_flags.h"
@@ -132,10 +133,10 @@ void NetworkFetcherImpl::PostRequest(
   // `Content-Type` header present in the |ResourceRequest| above.
   simple_url_loader->AttachStringForUpload(post_data, content_type);
   simple_url_loader->SetOnResponseStartedCallback(base::BindOnce(
-      &NetworkFetcherImpl::OnResponseStartedCallback, base::Unretained(this),
-      std::move(response_started_callback)));
+      &NetworkFetcherImpl::OnResponseStartedCallback,
+      weak_ptr_factory_.GetWeakPtr(), std::move(response_started_callback)));
   simple_url_loader->SetOnDownloadProgressCallback(base::BindRepeating(
-      &NetworkFetcherImpl::OnProgressCallback, base::Unretained(this),
+      &NetworkFetcherImpl::OnProgressCallback, weak_ptr_factory_.GetWeakPtr(),
       std::move(progress_callback)));
   constexpr size_t kMaxResponseSize = 1024 * 1024;
   simple_url_loader->DownloadToString(
@@ -181,10 +182,10 @@ base::OnceClosure NetworkFetcherImpl::DownloadToFile(
       network::SimpleURLLoader::RetryMode::RETRY_ON_NETWORK_CHANGE);
   simple_url_loader->SetAllowPartialResults(true);
   simple_url_loader->SetOnResponseStartedCallback(base::BindOnce(
-      &NetworkFetcherImpl::OnResponseStartedCallback, base::Unretained(this),
-      std::move(response_started_callback)));
+      &NetworkFetcherImpl::OnResponseStartedCallback,
+      weak_ptr_factory_.GetWeakPtr(), std::move(response_started_callback)));
   simple_url_loader->SetOnDownloadProgressCallback(base::BindRepeating(
-      &NetworkFetcherImpl::OnProgressCallback, base::Unretained(this),
+      &NetworkFetcherImpl::OnProgressCallback, weak_ptr_factory_.GetWeakPtr(),
       std::move(progress_callback)));
   simple_url_loader->DownloadToFile(
       shared_url_network_factory_.get(),
