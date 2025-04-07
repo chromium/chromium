@@ -12759,26 +12759,6 @@
             ]
         }
     ],
-    "IOSTabGroupIndicator": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "tab-group-indicator-below-omnibox": "false",
-                        "tab-group-indicator-buttons": "true",
-                        "tab-group-indicator-visible": "true"
-                    },
-                    "enable_features": [
-                        "TabGroupIndicator"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSTabGroupSynciPad": [
         {
             "platforms": [
@@ -12788,6 +12768,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "TabGroupIndicator",
                         "TabGroupSync"
                     ]
                 }
