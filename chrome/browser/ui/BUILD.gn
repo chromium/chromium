@@ -987,6 +987,15 @@ static_library("ui") {
     # TODO(b/335257259): Resolve circular deps.
     # Any circular includes must depend on the target "//chrome/browser:browser_public_dependencies".
     allow_circular_includes_from += [ "//chrome/browser/facilitated_payments" ]
+
+    if (enable_extensions_core) {
+      sources += [
+        "android/toolbar/toolbar_actions_bridge.cc",
+        "android/toolbar/toolbar_actions_bridge.h",
+        "android/toolbar/toolbar_actions_bridge_factory.cc",
+        "android/toolbar/toolbar_actions_bridge_factory.h",
+      ]
+    }
   } else {
     # !is_android
     sources += [

@@ -498,6 +498,10 @@
 #include "chrome/browser/extensions/keyed_services/browser_context_keyed_service_factories.h"
 #include "extensions/browser/browser_context_keyed_service_factories.h"
 #include "extensions/browser/extensions_browser_client.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/android/toolbar/toolbar_actions_bridge_factory.h"
+#endif
 #endif
 
 #if BUILDFLAG(ENABLE_GLIC)
@@ -1327,6 +1331,9 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
 #if BUILDFLAG(IS_ANDROID)
   thin_webview::android::ChromeThinWebViewInitializer::Initialize();
+#endif
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE) && BUILDFLAG(IS_ANDROID)
+  ToolbarActionsBridgeFactory::GetInstance();
 #endif
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   ToolbarActionsModelFactory::GetInstance();
