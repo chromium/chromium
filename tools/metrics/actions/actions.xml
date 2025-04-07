@@ -12509,6 +12509,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="GlicPanelResized">
+  <owner>fsenra@google.com</owner>
+  <owner>dewittj@google.com</owner>
+  <description>
+    Recorded when the glic panel is resized. The resizing can be triggered by an
+    animation, by the content expanding or by the user resizing the window.
+  </description>
+</action>
+
 <action name="GlicResponse">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>

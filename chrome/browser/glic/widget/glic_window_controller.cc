@@ -662,6 +662,7 @@ void GlicWindowController::AuthCheckDoneBeforeShow(
   }
 
   NotifyIfPanelStateChanged();
+  glic_service_->metrics()->OnGlicWindowShown();
 }
 
 // static
@@ -979,10 +980,11 @@ void GlicWindowController::Resize(const gfx::Size& size,
                                   base::TimeDelta duration,
                                   base::OnceClosure callback) {
   glic_size_ = size;
+  glic_service_->metrics()->OnGlicWindowResize();
 
   // TODO(https://crbug.com/379164689): Drive resize animations for error states
   // from the browser. For now, we allow animations during the waiting state.
-  // TOOD(https://crbug.com/392668958): If the widget is ready and asks for a
+  // TODO(https://crbug.com/392668958): If the widget is ready and asks for a
   // resize before the opening animation is finished, we will stop the current
   // animation and resize to the final size. Investigate a smoother way to
   // animate this transition.
