@@ -43,6 +43,8 @@ struct OnDeviceBaseModelSpec {
   ~OnDeviceBaseModelSpec();
   OnDeviceBaseModelSpec(const OnDeviceBaseModelSpec&);
 
+  bool operator==(const OnDeviceBaseModelSpec& other) const;
+
   // The name of the base model currently available on-device.
   std::string model_name;
   // The version of the base model currently available on-device.

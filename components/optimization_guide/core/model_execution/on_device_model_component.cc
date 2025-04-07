@@ -97,6 +97,13 @@ OnDeviceBaseModelSpec::~OnDeviceBaseModelSpec() = default;
 OnDeviceBaseModelSpec::OnDeviceBaseModelSpec(const OnDeviceBaseModelSpec&) =
     default;
 
+bool OnDeviceBaseModelSpec::operator==(
+    const OnDeviceBaseModelSpec& other) const {
+  return model_name == other.model_name &&
+         model_version == other.model_version &&
+         supported_performance_hints == other.supported_performance_hints;
+}
+
 void OnDeviceModelComponentStateManager::UninstallComplete() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   local_state_->ClearPref(model_execution::prefs::localstate::
