@@ -77,6 +77,7 @@
 <translation id="1298077576058087471">توفير ما يصل إلى 60% من البيانات والاطّلاع على أخبار اليوم</translation>
 <translation id="1303339473099049190">يتعذّر العثور على كلمة المرور هذه. يجب إجراء تدقيق إملائي وإعادة المحاولة.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - تم الإرسال من <ph name="DEVICE_NAME" /></translation>
+<translation id="1318262688555255786">يؤدي النقر على الزرّ إلى مشاركة رابط صفحة الويب "<ph name="PAGE_TITLE" />". المصدر: <ph name="PAGE_URL" /></translation>
 <translation id="1320912611264252795">تم فتح مجلدات مسار حفظ الإشارات المرجعية بطول الشاشة.</translation>
 <translation id="1327257854815634930">يتم فتح سجلّ التنقُّل.</translation>
 <translation id="1331212799747679585">‏يتعذَّر تحديث Chrome. يُرجى الاطِّلاع على مزيد من الخيارات</translation>
@@ -517,6 +518,7 @@
 <translation id="3435465986463792564">هل لديك العديد من النوافذ؟ يمكنك إدارتها من هنا.</translation>
 <translation id="3435575784518354875">‏للحفاظ على إمكانية الوصول إلى كلمات المرور، عليك تصديرها الآن وتحديث "خدمات Google Play" ثمّ استيرادها مرة أخرى إلى "مدير كلمات المرور في Google". <ph name="BEGIN_LINK" />الاطّلاع على التعليمات الكاملة<ph name="END_LINK" /></translation>
 <translation id="3435738964857648380">أمن المعلومات</translation>
+<translation id="3435914367318771664">إضافة علامة تبويب واحدة إلى مجموعة جديدة</translation>
 <translation id="3439276997620616816">ستظهر لك هنا علامات التبويب الأخيرة.</translation>
 <translation id="3443221991560634068">إعادة تحميل الصفحة الحالية</translation>
 <translation id="3444179773590444986">هل تريد مشاركة ملاحظاتك وآرائك حول وضع "المظهر الداكن" للمواقع الإلكترونية؟</translation>
@@ -783,6 +785,7 @@
 <translation id="4684427112815847243">مزامنة جميع البيانات</translation>
 <translation id="4685741273709472646">الاختيار من القائمة المنسدلة</translation>
 <translation id="4687718960473379118">الإعلانات المقترَحة من المواقع الإلكترونية</translation>
+<translation id="468924408576231679">يؤدي النقر على الزرّ إلى نسخ رابط صفحة الويب "<ph name="PAGE_TITLE" />". المصدر: <ph name="PAGE_URL" /></translation>
 <translation id="469286762610133730">عرض اقتراحات محتوى أفضل</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{‏<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 وخيار إضافي واحد (<ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />)}zero{‏<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 و<ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> خيار إضافي}two{‏<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 وخياران إضافيان (<ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />)}few{‏<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 و<ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> خيارات إضافية}many{‏<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 و<ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> خيارًا إضافيًا}other{‏<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 و<ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> خيار إضافي}}</translation>
 <translation id="4698061626562952596">يمكنك مراجعة علامات التبويب غير النشطة هنا</translation>
@@ -1125,6 +1128,7 @@
 <translation id="6205314730813004066">الخصوصية في عرض الإعلانات</translation>
 <translation id="6210748933810148297">ليس <ph name="EMAIL" />؟</translation>
 <translation id="6211386937064921208">جارٍ معاينة هذه الصفحة</translation>
+<translation id="6212567362666004597">إضافة علامة التبويب إلى المجموعة</translation>
 <translation id="6221633008163990886">فتح القفل لتصدير كلمات المرور</translation>
 <translation id="6225572914528673855">شريط العناوين</translation>
 <translation id="6232535412751077445">إن تفعيل ميزة "عدم التعقب" يعني أنه سيتم تضمين طلب في حركة بيانات التصفّح. ويعتمد أي تأثير يحدث على ما إذا كان الموقع الإلكتروني سيستجيب للطلب، وعلى كيفية تفسير الطلب.
@@ -1152,6 +1156,7 @@
 <translation id="6324916366299863871">تعديل الاختصار</translation>
 <translation id="6324977638108296054">يتعذّر إنشاء رابط يؤدي إلى النصوص التي تم تمييزها.</translation>
 <translation id="6333140779060797560">المشاركة عن طريق <ph name="APPLICATION" /></translation>
+<translation id="6335454563754888572">‏يؤدي النقر على الزرّ إلى تعديل عنوان URL الذي يشير إلى صفحة على <ph name="PAGE_URL" /></translation>
 <translation id="6337234675334993532">التشفير</translation>
 <translation id="6340526405444716530">التخصيص</translation>
 <translation id="6341580099087024258">السؤال عن مكان حفظ الملفات</translation>
@@ -1195,6 +1200,7 @@
 <translation id="6486420406192123355">‏ملف PDF هذا متوفّر على موقع إلكتروني يستخدم اتصالاً غير آمن</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{تم تنزيل ملف واحد.}zero{اكتملت # عملية تنزيل.}two{اكتملت عمليتا تنزيل.}few{اكتملت # عمليات تنزيل.}many{اكتملت # عملية تنزيل.}other{اكتملت # علمية تنزيل.}}</translation>
 <translation id="6508722015517270189">‏إعادة تشغيل Chrome</translation>
+<translation id="6513924416597632811">يؤدي النقر على الزرّ إلى نسخ رابط صفحة نتائج البحث عن "<ph name="SEARCH_QUERY" />". المصدر: <ph name="PAGE_URL" /></translation>
 <translation id="6518133107902771759">تحقق</translation>
 <translation id="6527303717912515753">مشاركة</translation>
 <translation id="652948702951888897">‏سجل Chrome</translation>
@@ -1608,6 +1614,7 @@
 <translation id="8221401890884589479">‏يمكنك حظر المواقع الإلكترونية التي لا تريدها. بالإضافة إلى ذلك، يحذف Chrome تلقائيًا المواقع الإلكترونية التي يمر أكثر من 30 يومًا على إضافتها إلى قائمة "المواقع الإلكترونية التي تقترح الإعلانات". <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="8221985041778490865">جارٍ حذف بيانات التصفّح</translation>
 <translation id="8223642481677794647">قائمة بطاقات الخلاصة</translation>
+<translation id="82296173028782770">تعديل طلب البحث "<ph name="SEARCH_QUERY" />"</translation>
 <translation id="8236063039629122676">يمكنك الآن التمرير سريعًا لليمين للرجوع إلى الصفحات السابقة التي زرتها، ويمكنك التمرير سريعًا لليسار للانتقال إلى الأمام</translation>
 <translation id="8236097722223016103">الإضافة إلى الإشارات المرجعية</translation>
 <translation id="8243077599929149377">إضافة اسم المستخدم</translation>
@@ -1756,6 +1763,7 @@
 <translation id="8890668505403261809">البحث في علامات التبويب في وضع التصفّح المتخفي</translation>
 <translation id="8898822736010347272">‏إرسال عناوين URL الخاصّة ببعض الصفحات التي تزورها، وعدد محدود من معلومات النظام، وبعض أنواع محتوى الصفحات إلى Google، وذلك للمساعدة على اكتشاف التهديدات الجديدة وتوفير الحماية لجميع المستخدمين على الويب</translation>
 <translation id="8909135823018751308">مشاركة…</translation>
+<translation id="8918299437379122615">يؤدي النقر على الزرّ إلى مشاركة رابط صفحة نتائج البحث عن "<ph name="SEARCH_QUERY" />". المصدر: <ph name="PAGE_URL" /></translation>
 <translation id="8922289737868596582">تنزيل الصفحات من الزر "مزيد من الخيارات" لاستخدامها بلا اتصال بالإنترنت</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> جاهز</translation>

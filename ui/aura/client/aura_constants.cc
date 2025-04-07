@@ -58,7 +58,6 @@ DEFINE_UI_CLASS_PROPERTY_KEY(bool, kUseWindowBoundsForShadow, true)
 DEFINE_UI_CLASS_PROPERTY_KEY(gfx::NativeViewAccessible,
                              kParentNativeViewAccessibleKey,
                              nullptr)
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::Size, kPreferredSize)
 DEFINE_UI_CLASS_PROPERTY_KEY(int, kResizeBehaviorKey, kResizeBehaviorCanResize)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::Rect, kRestoreBoundsKey)
 DEFINE_UI_CLASS_PROPERTY_KEY(ui::mojom::WindowShowState,

@@ -1,0 +1,73 @@
+This is a testharness.js-based test.
+[FAIL] cast float32 4D tensor to uint32
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, output 'output' data type uint32 must be one of [float32,float16,int32]."
+[FAIL] cast float32 4D tensor to int64
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, output 'output' data type int64 must be one of [float32,float16,int32]."
+[FAIL] cast float32 4D tensor to int8
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, output 'output' data type int8 must be one of [float32,float16,int32]."
+[FAIL] cast float32 4D tensor to uint8
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, output 'output' data type uint8 must be one of [float32,float16,int32]."
+[FAIL] cast float16 4D tensor to uint32
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, output 'output' data type uint32 must be one of [float32,float16,int32]."
+[FAIL] cast float16 4D tensor to int64
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, output 'output' data type int64 must be one of [float32,float16,int32]."
+[FAIL] cast float16 4D tensor to int8
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, output 'output' data type int8 must be one of [float32,float16,int32]."
+[FAIL] cast float16 4D tensor to uint8
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, output 'output' data type uint8 must be one of [float32,float16,int32]."
+[FAIL] cast int32 4D tensor to int64
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, output 'output' data type int64 must be one of [float32,float16,int32]."
+[FAIL] cast int32 4D tensor to int8
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, output 'output' data type int8 must be one of [float32,float16,int32]."
+[FAIL] cast int32 4D tensor to uint8
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, output 'output' data type uint8 must be one of [float32,float16,int32]."
+[FAIL] cast uint32 4D tensor to float32
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, input 'input' data type uint32 must be one of [float32,float16,int32]."
+[FAIL] cast uint32 4D tensor to float16
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, input 'input' data type uint32 must be one of [float32,float16,int32]."
+[FAIL] cast uint32 4D tensor to int32
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, input 'input' data type uint32 must be one of [float32,float16,int32]."
+[FAIL] cast uint32 4D tensor to int64
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, input 'input' data type uint32 must be one of [float32,float16,int32]."
+[FAIL] cast uint32 4D tensor to int8
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, input 'input' data type uint32 must be one of [float32,float16,int32]."
+[FAIL] cast uint32 4D tensor to uint8
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, input 'input' data type uint32 must be one of [float32,float16,int32]."
+[FAIL] cast int64 4D tensor to float32
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, input 'input' data type int64 must be one of [float32,float16,int32]."
+[FAIL] cast int64 4D tensor to float16
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, input 'input' data type int64 must be one of [float32,float16,int32]."
+[FAIL] cast int64 4D tensor to int32
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, input 'input' data type int64 must be one of [float32,float16,int32]."
+[FAIL] cast int64 4D tensor to uint32
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, input 'input' data type int64 must be one of [float32,float16,int32]."
+[FAIL] cast int64 4D tensor to int8
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, input 'input' data type int64 must be one of [float32,float16,int32]."
+[FAIL] cast int64 4D tensor to uint8
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, input 'input' data type int64 must be one of [float32,float16,int32]."
+[FAIL] cast int8 4D tensor to float32
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, input 'input' data type int8 must be one of [float32,float16,int32]."
+[FAIL] cast int8 4D tensor to float16
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, input 'input' data type int8 must be one of [float32,float16,int32]."
+[FAIL] cast int8 4D tensor to int32
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, input 'input' data type int8 must be one of [float32,float16,int32]."
+[FAIL] cast int8 4D tensor to uint32
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, input 'input' data type int8 must be one of [float32,float16,int32]."
+[FAIL] cast int8 4D tensor to int64
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, input 'input' data type int8 must be one of [float32,float16,int32]."
+[FAIL] cast int8 4D tensor to uint8
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, input 'input' data type int8 must be one of [float32,float16,int32]."
+[FAIL] cast uint8 4D tensor to float32
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, input 'input' data type uint8 must be one of [float32,float16,int32]."
+[FAIL] cast uint8 4D tensor to float16
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, input 'input' data type uint8 must be one of [float32,float16,int32]."
+[FAIL] cast uint8 4D tensor to int32
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, input 'input' data type uint8 must be one of [float32,float16,int32]."
+[FAIL] cast uint8 4D tensor to uint32
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, input 'input' data type uint8 must be one of [float32,float16,int32]."
+[FAIL] cast uint8 4D tensor to int64
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, input 'input' data type uint8 must be one of [float32,float16,int32]."
+[FAIL] cast uint8 4D tensor to int8
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, input 'input' data type uint8 must be one of [float32,float16,int32]."
+Harness: the test ran to completion.
+

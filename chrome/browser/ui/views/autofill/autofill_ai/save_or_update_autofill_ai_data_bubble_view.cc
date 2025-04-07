@@ -190,6 +190,7 @@ SaveOrUpdateAutofillAiDataBubbleView::GetAttributeValueView(
           .SetTextStyle(views::style::STYLE_BODY_3_MEDIUM)
           .SetAccessibleRole(ax::mojom::Role::kDefinition)
           .SetMultiLine(true)
+          .SetAllowCharacterBreak(true)
           .SetMaximumWidth(GetEntityAttributeAndValueLabelMaxWidth())
           .Build();
   attribute_values_observation_.AddObservation(label.get());

@@ -335,7 +335,7 @@ IN_PROC_BROWSER_TEST_F(KeyboardLockInteractiveBrowserTest,
 }
 
 // https://crbug.com/1108391 Flakey on ChromeOS.
-// https://crbug.com/1121172 Also flaky on Lacros and Mac
+// https://crbug.com/1121172 Also flaky on Mac
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 #define MAYBE_SubsequentLockCallSupersedesPreviousCall \
   DISABLED_SubsequentLockCallSupersedesPreviousCall

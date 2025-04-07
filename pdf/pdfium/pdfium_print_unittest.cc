@@ -4,6 +4,7 @@
 
 #include "pdf/pdfium/pdfium_print.h"
 
+#include <array>
 #include <memory>
 #include <optional>
 #include <string_view>
@@ -34,11 +35,6 @@ using ::testing::ElementsAre;
 
 namespace {
 
-// blink::WebPrintParams takes values in CSS pixels, not points.
-constexpr gfx::SizeF kUSLetterSize = {816, 1056};
-constexpr gfx::RectF kUSLetterRect = {{0, 0}, kUSLetterSize};
-constexpr gfx::RectF kPrintableAreaRect = {{24, 24}, {768, 977.33333}};
-
 using ExpectedDimensions = std::vector<gfx::SizeF>;
 
 std::string GenerateRendererSpecificFileName(const std::string& file_name,
@@ -50,14 +46,6 @@ std::string GenerateRendererSpecificFileName(const std::string& file_name,
 base::FilePath GetReferenceFilePath(std::string_view test_filename) {
   return base::FilePath(FILE_PATH_LITERAL("pdfium_print"))
       .AppendASCII(test_filename);
-}
-
-blink::WebPrintParams GetDefaultPrintParams() {
-  blink::WebPrintParams params;
-  params.default_page_description.size = kUSLetterSize;
-  params.printable_area_in_css_pixels = kUSLetterRect;
-  params.print_scaling_option = printing::mojom::PrintScalingOption::kNone;
-  return params;
 }
 
 void CheckPdfDimensions(const std::vector<uint8_t>& pdf_data,
@@ -127,31 +115,34 @@ TEST_P(PDFiumPrintTest, Basic) {
     // Print 2 pages.
     const ExpectedDimensions kExpectedDimensions = {{612.0, 792.0},
                                                     {612.0, 792.0}};
-    const std::vector<int> pages = {0, 1};
-    std::vector<uint8_t> pdf_data = print.PrintPagesAsPdf(pages, print_params);
+    static constexpr std::array<int, 2> kPageIndices = {0, 1};
+    std::vector<uint8_t> pdf_data =
+        print.PrintPagesAsPdf(kPageIndices, print_params);
     CheckPdfDimensions(pdf_data, kExpectedDimensions);
 
-    pdf_data = print.PrintPagesAsPdf(pages, print_params_raster);
+    pdf_data = print.PrintPagesAsPdf(kPageIndices, print_params_raster);
     CheckPdfDimensions(pdf_data, kExpectedDimensions);
   }
   {
     // Print 1 page.
     const ExpectedDimensions kExpectedDimensions = {{612.0, 792.0}};
-    const std::vector<int> pages = {0};
-    std::vector<uint8_t> pdf_data = print.PrintPagesAsPdf(pages, print_params);
+    static constexpr std::array<int, 1> kPageIndices = {0};
+    std::vector<uint8_t> pdf_data =
+        print.PrintPagesAsPdf(kPageIndices, print_params);
     CheckPdfDimensions(pdf_data, kExpectedDimensions);
 
-    pdf_data = print.PrintPagesAsPdf(pages, print_params_raster);
+    pdf_data = print.PrintPagesAsPdf(kPageIndices, print_params_raster);
     CheckPdfDimensions(pdf_data, kExpectedDimensions);
   }
   {
     // Print the other page.
     const ExpectedDimensions kExpectedDimensions = {{612.0, 792.0}};
-    const std::vector<int> pages = {1};
-    std::vector<uint8_t> pdf_data = print.PrintPagesAsPdf(pages, print_params);
+    static constexpr std::array<int, 1> kPageIndices = {1};
+    std::vector<uint8_t> pdf_data =
+        print.PrintPagesAsPdf(kPageIndices, print_params);
     CheckPdfDimensions(pdf_data, kExpectedDimensions);
 
-    pdf_data = print.PrintPagesAsPdf(pages, print_params_raster);
+    pdf_data = print.PrintPagesAsPdf(kPageIndices, print_params_raster);
     CheckPdfDimensions(pdf_data, kExpectedDimensions);
   }
 }
@@ -165,18 +156,19 @@ TEST_P(PDFiumPrintTest, AlterScalingDefault) {
   PDFiumPrint print(engine.get());
 
   const ExpectedDimensions kExpectedDimensions = {{612.0, 792.0}};
-  const std::vector<int> pages = {0};
+  static constexpr std::array<int, 1> kPageIndices = {0};
 
   blink::WebPrintParams print_params = GetDefaultPrintParams();
   print_params.printable_area_in_css_pixels = kPrintableAreaRect;
-  std::vector<uint8_t> pdf_data = print.PrintPagesAsPdf(pages, print_params);
+  std::vector<uint8_t> pdf_data =
+      print.PrintPagesAsPdf(kPageIndices, print_params);
   CheckPdfDimensions(pdf_data, kExpectedDimensions);
   CheckPdfRendering(
       pdf_data, 0, kExpectedDimensions[0],
       GenerateRendererSpecificFileName("alter_scaling_default",
                                        /*use_skia_renderer=*/GetParam()));
   print_params.rasterize_pdf = true;
-  pdf_data = print.PrintPagesAsPdf(pages, print_params);
+  pdf_data = print.PrintPagesAsPdf(kPageIndices, print_params);
   CheckPdfDimensions(pdf_data, kExpectedDimensions);
   CheckPdfRendering(
       pdf_data, 0, kExpectedDimensions[0],
@@ -193,20 +185,21 @@ TEST_P(PDFiumPrintTest, AlterScalingFitPaper) {
   PDFiumPrint print(engine.get());
 
   const ExpectedDimensions kExpectedDimensions = {{612.0, 792.0}};
-  const std::vector<int> pages = {0};
+  static constexpr std::array<int, 1> kPageIndices = {0};
 
   blink::WebPrintParams print_params = GetDefaultPrintParams();
   print_params.printable_area_in_css_pixels = kPrintableAreaRect;
   print_params.print_scaling_option =
       printing::mojom::PrintScalingOption::kFitToPaper;
-  std::vector<uint8_t> pdf_data = print.PrintPagesAsPdf(pages, print_params);
+  std::vector<uint8_t> pdf_data =
+      print.PrintPagesAsPdf(kPageIndices, print_params);
   CheckPdfDimensions(pdf_data, kExpectedDimensions);
   CheckPdfRendering(
       pdf_data, 0, kExpectedDimensions[0],
       GenerateRendererSpecificFileName("alter_scaling_fit-paper",
                                        /*use_skia_renderer=*/GetParam()));
   print_params.rasterize_pdf = true;
-  pdf_data = print.PrintPagesAsPdf(pages, print_params);
+  pdf_data = print.PrintPagesAsPdf(kPageIndices, print_params);
   CheckPdfDimensions(pdf_data, kExpectedDimensions);
   CheckPdfRendering(
       pdf_data, 0, kExpectedDimensions[0],
@@ -223,20 +216,21 @@ TEST_P(PDFiumPrintTest, AlterScalingFitPrintable) {
   PDFiumPrint print(engine.get());
 
   const ExpectedDimensions kExpectedDimensions = {{612.0, 792.0}};
-  const std::vector<int> pages = {0};
+  static constexpr std::array<int, 1> kPageIndices = {0};
 
   blink::WebPrintParams print_params = GetDefaultPrintParams();
   print_params.printable_area_in_css_pixels = kPrintableAreaRect;
   print_params.print_scaling_option =
       printing::mojom::PrintScalingOption::kFitToPrintableArea;
-  std::vector<uint8_t> pdf_data = print.PrintPagesAsPdf(pages, print_params);
+  std::vector<uint8_t> pdf_data =
+      print.PrintPagesAsPdf(kPageIndices, print_params);
   CheckPdfDimensions(pdf_data, kExpectedDimensions);
   CheckPdfRendering(
       pdf_data, 0, kExpectedDimensions[0],
       GenerateRendererSpecificFileName("alter_scaling_fit-printable",
                                        /*use_skia_renderer=*/GetParam()));
   print_params.rasterize_pdf = true;
-  pdf_data = print.PrintPagesAsPdf(pages, print_params);
+  pdf_data = print.PrintPagesAsPdf(kPageIndices, print_params);
   CheckPdfDimensions(pdf_data, kExpectedDimensions);
   CheckPdfRendering(
       pdf_data, 0, kExpectedDimensions[0],
