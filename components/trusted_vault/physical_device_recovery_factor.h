@@ -13,8 +13,8 @@
 #include "components/trusted_vault/local_recovery_factor.h"
 #include "components/trusted_vault/proto/local_trusted_vault.pb.h"
 #include "components/trusted_vault/standalone_trusted_vault_storage.h"
-#include "components/trusted_vault/trusted_vault_connection.h"
 #include "components/trusted_vault/trusted_vault_histograms.h"
+#include "components/trusted_vault/trusted_vault_throttling_connection.h"
 #include "google_apis/gaia/gaia_id.h"
 
 namespace trusted_vault {
@@ -36,8 +36,7 @@ class PhysicalDeviceRecoveryFactor : public LocalRecoveryFactor {
       delete;
   ~PhysicalDeviceRecoveryFactor() override;
 
-  void AttemptRecovery(TrustedVaultConnection* connection,
-                       bool connection_requests_throttled,
+  void AttemptRecovery(TrustedVaultThrottlingConnection* connection,
                        AttemptRecoveryCallback cb,
                        AttemptRecoveryFailureCallback failure_cb) override;
 
@@ -46,8 +45,7 @@ class PhysicalDeviceRecoveryFactor : public LocalRecoveryFactor {
   void ClearRegistrationAttemptInfo(const GaiaId& gaia_id) override;
 
   TrustedVaultDeviceRegistrationStateForUMA MaybeRegister(
-      TrustedVaultConnection* connection,
-      bool connection_requests_throttled,
+      TrustedVaultThrottlingConnection* connection,
       RegisterCallback cb) override;
 
  private:

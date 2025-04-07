@@ -20,16 +20,12 @@
 #include "components/trusted_vault/local_recovery_factor.h"
 #include "components/trusted_vault/proto/local_trusted_vault.pb.h"
 #include "components/trusted_vault/standalone_trusted_vault_storage.h"
-#include "components/trusted_vault/trusted_vault_connection.h"
 #include "components/trusted_vault/trusted_vault_degraded_recoverability_handler.h"
 #include "components/trusted_vault/trusted_vault_histograms.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
+#include "components/trusted_vault/trusted_vault_throttling_connection.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
-
-namespace base {
-class Clock;
-}  // namespace base
 
 namespace signin {
 class AccountsInCookieJarInfo;
@@ -146,20 +142,24 @@ class StandaloneTrustedVaultBackend
   void SetLastRegistrationReturnedLocalDataObsoleteForTesting(
       const GaiaId& gaia_id);
 
-  void SetClockForTesting(base::Clock* clock);
-
   bool HasPendingTrustedRecoveryMethodForTesting() const;
 
-  bool AreConnectionRequestsThrottledForTesting();
-
-  // Specifies how long requests shouldn't be retried after encountering
-  // transient error. Note, that this doesn't affect requests related to
-  // degraded recoverability.
-  // Exposed for testing.
-  static constexpr base::TimeDelta kThrottlingDuration = base::Days(1);
+  static scoped_refptr<StandaloneTrustedVaultBackend> CreateForTesting(
+      SecurityDomainId security_domain_id,
+      std::unique_ptr<StandaloneTrustedVaultStorage> storage,
+      std::unique_ptr<Delegate> delegate,
+      std::unique_ptr<TrustedVaultThrottlingConnection> connection);
 
  private:
   friend class base::RefCountedThreadSafe<StandaloneTrustedVaultBackend>;
+
+  // Constructor which allows specifying a TrustedVaultThrottlingConnection.
+  // Only used in tests.
+  StandaloneTrustedVaultBackend(
+      SecurityDomainId security_domain_id,
+      std::unique_ptr<StandaloneTrustedVaultStorage> storage,
+      std::unique_ptr<Delegate> delegate,
+      std::unique_ptr<TrustedVaultThrottlingConnection> connection);
 
   static TrustedVaultDownloadKeysStatusForUMA
   GetDownloadKeysStatusForUMAFromResponse(
@@ -211,16 +211,6 @@ class StandaloneTrustedVaultBackend
   void FulfillOngoingFetchKeys(
       std::optional<TrustedVaultDownloadKeysStatusForUMA> status_for_uma);
 
-  // Returns true if the last failed request time imply that upcoming requests
-  // should be throttled now (certain amount of time should pass since the last
-  // failed request). Handles the situation, when last failed request time is
-  // set to the future.
-  bool AreConnectionRequestsThrottled();
-
-  // Records request failure time, that will be used to determine whether new
-  // requests should be throttled.
-  void RecordFailedConnectionRequestForThrottling();
-
   // Removes all data for non-primary accounts if they were previously marked
   // for deletion due to accounts in cookie jar changes.
   void RemoveNonPrimaryAccountKeysIfMarkedForDeletion();
@@ -236,10 +226,12 @@ class StandaloneTrustedVaultBackend
   // Used for communication with trusted vault server. Can be null, in this case
   // functionality that involves interaction with vault service (such as device
   // registration, keys downloading, etc.) will be disabled.
+  // Note: |connection_| depends on |storage_|, so it needs to be destroyed
+  // first. Thus, the field order matters.
   // TODO(crbug.com/40143544): |connection_| can be null if URL passed as
   // kTrustedVaultServiceURLSwitch is not valid, consider making it non-nullable
   // even in this case and clean up related logic.
-  const std::unique_ptr<TrustedVaultConnection> connection_;
+  const std::unique_ptr<TrustedVaultThrottlingConnection> connection_;
 
   // Only current |primary_account_| can be used for communication with trusted
   // vault server.
@@ -295,10 +287,6 @@ class StandaloneTrustedVaultBackend
   // TODO(crbug.com/40178774): Move elsewhere.
   std::unique_ptr<TrustedVaultConnection::Request>
       ongoing_add_recovery_method_request_;
-
-  // Used to determine current time, set to base::DefaultClock in prod and can
-  // be overridden in tests.
-  raw_ptr<base::Clock> clock_;
 
   // Used to take care of polling the degraded recoverability state from the
   // server for the |primary_account|. Instance changes whenever

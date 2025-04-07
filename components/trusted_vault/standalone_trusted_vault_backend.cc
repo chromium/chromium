@@ -14,14 +14,12 @@
 #include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
 #include "base/stl_util.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/time/clock.h"
-#include "base/time/default_clock.h"
-#include "base/time/time.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/trusted_vault/features.h"
@@ -34,6 +32,7 @@
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "components/trusted_vault/trusted_vault_histograms.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
+#include "components/trusted_vault/trusted_vault_throttling_connection_impl.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -172,10 +171,35 @@ StandaloneTrustedVaultBackend::StandaloneTrustedVaultBackend(
     : security_domain_id_(security_domain_id),
       storage_(std::move(storage)),
       delegate_(std::move(delegate)),
-      connection_(std::move(connection)),
-      clock_(base::DefaultClock::GetInstance()) {}
+      connection_(connection
+                      ? std::make_unique<TrustedVaultThrottlingConnectionImpl>(
+                            std::move(connection),
+                            storage_.get())
+                      : nullptr) {}
+
+StandaloneTrustedVaultBackend::StandaloneTrustedVaultBackend(
+    SecurityDomainId security_domain_id,
+    std::unique_ptr<StandaloneTrustedVaultStorage> storage,
+    std::unique_ptr<Delegate> delegate,
+    std::unique_ptr<TrustedVaultThrottlingConnection> connection)
+    : security_domain_id_(security_domain_id),
+      storage_(std::move(storage)),
+      delegate_(std::move(delegate)),
+      connection_(std::move(connection)) {}
 
 StandaloneTrustedVaultBackend::~StandaloneTrustedVaultBackend() = default;
+
+// static
+scoped_refptr<StandaloneTrustedVaultBackend>
+StandaloneTrustedVaultBackend::CreateForTesting(
+    SecurityDomainId security_domain_id,
+    std::unique_ptr<StandaloneTrustedVaultStorage> storage,
+    std::unique_ptr<StandaloneTrustedVaultBackend::Delegate> delegate,
+    std::unique_ptr<TrustedVaultThrottlingConnection> connection) {
+  return base::WrapRefCounted(new StandaloneTrustedVaultBackend(
+      security_domain_id, std::move(storage), std::move(delegate),
+      std::move(connection)));
+}
 
 void StandaloneTrustedVaultBackend::WriteDegradedRecoverabilityState(
     const trusted_vault_pb::LocalTrustedVaultDegradedRecoverabilityState&
@@ -253,7 +277,7 @@ void StandaloneTrustedVaultBackend::AttemptRecoveryFactor(
   CHECK(local_recovery_factor >= 0 &&
         local_recovery_factor < local_recovery_factors_.size());
   local_recovery_factors_[local_recovery_factor]->AttemptRecovery(
-      connection_.get(), AreConnectionRequestsThrottled(),
+      connection_.get(),
       // |this| outlives |local_recovery_factors_|, and destroying
       // |local_recovery_factors_| guarantees cancellation of all callbacks.
       base::BindOnce(&StandaloneTrustedVaultBackend::OnKeysDownloaded,
@@ -594,17 +618,9 @@ void StandaloneTrustedVaultBackend::
   WriteDataToDiskAndNotify();
 }
 
-void StandaloneTrustedVaultBackend::SetClockForTesting(base::Clock* clock) {
-  clock_ = clock;
-}
-
 bool StandaloneTrustedVaultBackend::HasPendingTrustedRecoveryMethodForTesting()
     const {
   return pending_trusted_recovery_method_.has_value();
-}
-
-bool StandaloneTrustedVaultBackend::AreConnectionRequestsThrottledForTesting() {
-  return AreConnectionRequestsThrottled();
 }
 
 void StandaloneTrustedVaultBackend::ResetLocalRecoveryFactors() {
@@ -637,7 +653,7 @@ StandaloneTrustedVaultBackend::MaybeRegisterDevice() {
   // Unretained because |this| outlives |local_recovery_factors_| (and
   // destroying |local_recovery_factors_| cancels all callbacks).
   return local_recovery_factors_[0]->MaybeRegister(
-      connection_.get(), AreConnectionRequestsThrottled(),
+      connection_.get(),
       base::BindOnce(&StandaloneTrustedVaultBackend::OnDeviceRegistered,
                      base::Unretained(this)));
 }
@@ -706,7 +722,7 @@ void StandaloneTrustedVaultBackend::OnDeviceRegistered(
       // Request wasn't sent to the server, so there is no need for throttling.
       return;
     case TrustedVaultRegistrationStatus::kOtherError:
-      RecordFailedConnectionRequestForThrottling();
+      connection_->RecordFailedRequestForThrottling(*primary_account_);
       return;
   }
 }
@@ -750,7 +766,7 @@ void StandaloneTrustedVaultBackend::OnKeysDownloaded(
       // download. This is bad because key download attempts are triggered for
       // the case where local keys have been marked as stale, which means the
       // user is likely in an unrecoverable state.
-      RecordFailedConnectionRequestForThrottling();
+      connection_->RecordFailedRequestForThrottling(*primary_account_);
       // Persist the keys anyway, since some old keys could be removed from the
       // server.
       StoreKeys(primary_account_->gaia, downloaded_vault_keys,
@@ -766,7 +782,7 @@ void StandaloneTrustedVaultBackend::OnKeysDownloaded(
       // Request wasn't sent to the server, so there is no need for throttling.
       break;
     case TrustedVaultDownloadKeysStatus::kOtherError:
-      RecordFailedConnectionRequestForThrottling();
+      connection_->RecordFailedRequestForThrottling(*primary_account_);
       break;
   }
 
@@ -833,38 +849,6 @@ void StandaloneTrustedVaultBackend::FulfillFetchKeys(
   }
 
   std::move(callback).Run(vault_keys);
-}
-
-bool StandaloneTrustedVaultBackend::AreConnectionRequestsThrottled() {
-  DCHECK(clock_);
-  DCHECK(primary_account_.has_value());
-
-  trusted_vault_pb::LocalTrustedVaultPerUser* per_user_vault =
-      storage_->FindUserVault(primary_account_->gaia);
-  DCHECK(per_user_vault);
-
-  const base::Time current_time = clock_->Now();
-  base::Time last_failed_request_time = ProtoTimeToTime(
-      per_user_vault->last_failed_request_millis_since_unix_epoch());
-
-  // Fix |last_failed_request_time| if it's set to the future.
-  if (last_failed_request_time > current_time) {
-    // Immediately unthrottle, but don't write new state to the file.
-    last_failed_request_time = base::Time();
-  }
-
-  return last_failed_request_time + kThrottlingDuration > current_time;
-}
-
-void StandaloneTrustedVaultBackend::
-    RecordFailedConnectionRequestForThrottling() {
-  DCHECK(clock_);
-  DCHECK(primary_account_.has_value());
-
-  storage_->FindUserVault(primary_account_->gaia)
-      ->set_last_failed_request_millis_since_unix_epoch(
-          TimeToProtoTime(clock_->Now()));
-  WriteDataToDiskAndNotify();
 }
 
 void StandaloneTrustedVaultBackend::

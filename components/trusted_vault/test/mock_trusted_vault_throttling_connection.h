@@ -1,24 +1,25 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_TRUSTED_VAULT_TEST_MOCK_TRUSTED_VAULT_CONNECTION_H_
-#define COMPONENTS_TRUSTED_VAULT_TEST_MOCK_TRUSTED_VAULT_CONNECTION_H_
+#ifndef COMPONENTS_TRUSTED_VAULT_TEST_MOCK_TRUSTED_VAULT_THROTTLING_CONNECTION_H_
+#define COMPONENTS_TRUSTED_VAULT_TEST_MOCK_TRUSTED_VAULT_THROTTLING_CONNECTION_H_
 
 #include <memory>
 
 #include "base/functional/callback.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/trusted_vault/securebox.h"
-#include "components/trusted_vault/trusted_vault_connection.h"
+#include "components/trusted_vault/trusted_vault_throttling_connection.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace trusted_vault {
 
-class MockTrustedVaultConnection : public TrustedVaultConnection {
+class MockTrustedVaultThrottlingConnection
+    : public TrustedVaultThrottlingConnection {
  public:
-  MockTrustedVaultConnection();
-  ~MockTrustedVaultConnection() override;
+  MockTrustedVaultThrottlingConnection();
+  ~MockTrustedVaultThrottlingConnection() override;
   MOCK_METHOD(std::unique_ptr<Request>,
               RegisterAuthenticationFactor,
               (const CoreAccountInfo& account_info,
@@ -52,8 +53,16 @@ class MockTrustedVaultConnection : public TrustedVaultConnection {
                DownloadAuthenticationFactorsRegistrationStateCallback callback,
                base::RepeatingClosure keep_alive_callback),
               (override));
+  MOCK_METHOD(bool,
+              AreRequestsThrottled,
+              (const CoreAccountInfo& account_info),
+              (override));
+  MOCK_METHOD(void,
+              RecordFailedRequestForThrottling,
+              (const CoreAccountInfo& account_info),
+              (override));
 };
 
 }  // namespace trusted_vault
 
-#endif  // COMPONENTS_TRUSTED_VAULT_TEST_MOCK_TRUSTED_VAULT_CONNECTION_H_
+#endif  // COMPONENTS_TRUSTED_VAULT_TEST_MOCK_TRUSTED_VAULT_THROTTLING_CONNECTION_H_

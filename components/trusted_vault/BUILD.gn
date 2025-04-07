@@ -61,6 +61,9 @@ static_library("trusted_vault") {
       "trusted_vault_request.h",
       "trusted_vault_server_constants.cc",
       "trusted_vault_server_constants.h",
+      "trusted_vault_throttling_connection.h",
+      "trusted_vault_throttling_connection_impl.cc",
+      "trusted_vault_throttling_connection_impl.h",
     ]
 
     deps = [
@@ -94,6 +97,7 @@ if (!is_android) {
       "trusted_vault_degraded_recoverability_handler_unittest.cc",
       "trusted_vault_request_unittest.cc",
       "trusted_vault_server_constants_unittest.cc",
+      "trusted_vault_throttling_connection_impl_unittest.cc",
     ]
 
     configs += [ "//build/config:precompiled_headers" ]
@@ -138,10 +142,12 @@ static_library("test_support") {
 
   if (!is_android) {
     sources += [
+      "test/fake_file_access.cc",
+      "test/fake_file_access.h",
       "test/fake_security_domains_server.cc",
       "test/fake_security_domains_server.h",
-      "test/mock_trusted_vault_connection.cc",
-      "test/mock_trusted_vault_connection.h",
+      "test/mock_trusted_vault_throttling_connection.cc",
+      "test/mock_trusted_vault_throttling_connection.h",
     ]
 
     public_deps += [

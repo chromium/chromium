@@ -10,8 +10,8 @@
 
 #include "base/functional/callback.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "components/trusted_vault/trusted_vault_connection.h"
 #include "components/trusted_vault/trusted_vault_histograms.h"
+#include "components/trusted_vault/trusted_vault_throttling_connection.h"
 #include "google_apis/gaia/gaia_id.h"
 
 namespace trusted_vault {
@@ -43,10 +43,7 @@ class LocalRecoveryFactor {
   virtual ~LocalRecoveryFactor() = default;
 
   // Attempts a key recovery.
-  // Note: If `connection_requests_throttled` is true, implementations of this
-  // method are not allowed to make requests to `connection`.
-  virtual void AttemptRecovery(TrustedVaultConnection* connection,
-                               bool connection_requests_throttled,
+  virtual void AttemptRecovery(TrustedVaultThrottlingConnection* connection,
                                AttemptRecoveryCallback cb,
                                AttemptRecoveryFailureCallback failure_cb) = 0;
 
@@ -61,11 +58,8 @@ class LocalRecoveryFactor {
   // and currently available local data is sufficient to do it. It returns an
   // enum representing the registration state, intended to be used for metric
   // recording.
-  // Note: If `connection_requests_throttled` is true, implementations of this
-  // method are not allowed to make requests to `connection`.
   virtual TrustedVaultDeviceRegistrationStateForUMA MaybeRegister(
-      TrustedVaultConnection* connection,
-      bool connection_requests_throttled,
+      TrustedVaultThrottlingConnection* connection,
       RegisterCallback cb) = 0;
 };
 
