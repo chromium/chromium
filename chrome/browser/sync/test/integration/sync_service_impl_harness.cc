@@ -613,6 +613,14 @@ SyncCycleSnapshot SyncServiceImplHarness::GetLastCycleSnapshot() const {
   return SyncCycleSnapshot();
 }
 
+base::test::TestFuture<syncer::DataTypeSet>
+SyncServiceImplHarness::GetTypesWithUnsyncedData(
+    syncer::DataTypeSet requested_types) const {
+  base::test::TestFuture<syncer::DataTypeSet> future;
+  service()->GetTypesWithUnsyncedData(requested_types, future.GetCallback());
+  return future;
+}
+
 std::string SyncServiceImplHarness::GetServiceStatus() {
   // This method is only used in test code for debugging purposes, so it's fine
   // to include sensitive data in ConstructAboutInformation().

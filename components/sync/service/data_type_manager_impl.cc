@@ -913,8 +913,9 @@ void DataTypeManagerImpl::GetTypesWithUnsyncedData(
   for (DataType type : requested_types) {
     auto it = controllers_.find(type);
     if (it == controllers_.end()) {
-      // This should be rare, but can happen e.g. if a requested type is
-      // disabled via feature flag.
+      // This can happen if the requested data type is not supported on the
+      // current platform, or in some rare cases, for example, if the requested
+      // data type is disabled via feature flag.
       helper->OnReceivedResultForType(type, /*has_unsynced_data=*/false);
       continue;
     }
