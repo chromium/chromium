@@ -103,6 +103,11 @@ tast_disabled_tests_from_chrome_all = [
   "terminal.SSH",
   "arc.Print.vm_t",
 
+  # b/409064294
+  "apps.SystemWebAppsInstallGuest",
+  "peripherals.LaunchAppFromGuestSession.diagnostics",
+  "health.MonitorKeyboardDiagnosticEvent.non_tablet_mode_form_factors",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
