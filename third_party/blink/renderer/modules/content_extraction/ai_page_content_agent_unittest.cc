@@ -2541,7 +2541,7 @@ TEST_F(AIPageContentAgentTest, PaidContentRootOnly) {
                    mojom::blink::AIPageContentAnnotatedRole::kPaidContent));
 }
 
-TEST_F(AIPageContentAgentTest, PaidContentMicrodata) {
+TEST_F(AIPageContentAgentTest, DISABLED_PaidContentMicrodata) {
   frame_test_helpers::LoadHTMLString(
       helper_.LocalMainFrame(), R"HTML(
       <script type="application/ld+json">{

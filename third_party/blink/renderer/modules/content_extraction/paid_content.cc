@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/static_node_list.h"
+#include "third_party/blink/renderer/core/html/html_head_element.h"
 #include "third_party/blink/renderer/core/html/html_script_element.h"
 #include "third_party/blink/renderer/platform/json/json_parser.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
@@ -83,18 +84,20 @@ bool PaidContent::IsPaidElement(const Element* element) const {
 
 bool PaidContent::QueryPaidElements(Document& document) {
   bool paid_content_present = false;
-  bool has_part_found = false;
 
-  // check each ld+json script
-  StaticElementList* scripts = document.QuerySelectorAll(
-      AtomicString("script[type='application/ld+json']"));
-  for (unsigned i = 0; i < scripts->length(); i++) {
-    Element* script = scripts->item(i);
-    if (!script->IsScriptElement()) {
+  // check each ld+json script child of the head element
+  const HTMLHeadElement* head = document.head();
+  if (!head) {
+    return paid_content_present;
+  }
+  for (HTMLScriptElement& script_element :
+       Traversal<HTMLScriptElement>::ChildrenOf(*head)) {
+    ScriptElementBase& script_element_base =
+        static_cast<ScriptElementBase&>(script_element);
+    if (script_element_base.TypeAttributeValue() != "application/ld+json") {
       continue;
     }
-    HTMLScriptElement* script_element = To<HTMLScriptElement>(script);
-    auto json_value = ParseJSON(script_element->textContent());
+    auto json_value = ParseJSON(script_element.textContent());
     if (!json_value.get() || json_value->GetType() != JSONValue::kTypeObject) {
       // JSON parsing failed.
       continue;
@@ -124,7 +127,6 @@ bool PaidContent::QueryPaidElements(Document& document) {
     // Check for hasPart with isAccessibleForFree=false and a cssSelector
     JSONValue* hasPart_val = script_obj->Get("hasPart");
     if (hasPart_val) {
-      has_part_found = true;
       auto hasPart_type = hasPart_val->GetType();
       if (hasPart_type == JSONValue::kTypeArray) {
         JSONArray* hasPart_array = JSONArray::Cast(hasPart_val);
@@ -138,23 +140,6 @@ bool PaidContent::QueryPaidElements(Document& document) {
       } else if (hasPart_type == JSONValue::kTypeObject) {
         JSONObject* hasPart_obj = JSONObject::Cast(hasPart_val);
         AppendHasPartElements(document, *hasPart_obj);
-      }
-    }
-
-    // Assume that pages will only use either ld+json or microdata.
-    // If ld+json hasPart exists, don't check for microdata to save
-    // the cost of this lookup (that could be expensive for large docs).
-    if (has_part_found) {
-      return paid_content_present;
-    }
-
-    // look for microdata annotation (meta tags with isAccessibleForFree=false)
-    StaticElementList* elements = document.QuerySelectorAll(AtomicString(
-        ":has(> meta[itemprop=isAccessibleForFree][content=false])"));
-
-    if (elements) {
-      for (unsigned j = 0; j < elements->length(); j++) {
-        paid_elements_->push_back(elements->item(j));
       }
     }
     return paid_content_present;
