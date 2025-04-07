@@ -305,6 +305,10 @@ void BocaSessionManager::NotifyAppReload() {
   }
 }
 
+bool BocaSessionManager::disabled_on_non_managed_network() {
+  return disabled_on_non_managed_network_;
+}
+
 void BocaSessionManager::SetSessionCaptionInitializer(
     SessionCaptionInitializer session_caption_initializer) {
   session_caption_initializer_ = session_caption_initializer;

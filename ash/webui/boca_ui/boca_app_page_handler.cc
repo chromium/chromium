@@ -270,6 +270,16 @@ void BocaAppHandler::ListAssignments(const std::string& course_id,
 
 void BocaAppHandler::CreateSession(mojom::ConfigPtr config,
                                    CreateSessionCallback callback) {
+  if (config->caption_config) {
+    NotifyLocalCaptionConfigUpdate(config->caption_config->Clone());
+  }
+
+  if (BocaAppClient::Get()
+          ->GetSessionManager()
+          ->disabled_on_non_managed_network()) {
+    std::move(callback).Run(false);
+    return;
+  }
   std::unique_ptr<CreateSessionRequest> request =
       std::make_unique<CreateSessionRequest>(
           session_client_impl_->sender(), base_url_, user_identity_,
@@ -316,10 +326,6 @@ void BocaAppHandler::CreateSession(mojom::ConfigPtr config,
   }
 
   session_client_impl_->CreateSession(std::move(request));
-
-  if (auto caption_config = std::move(config->caption_config)) {
-    NotifyLocalCaptionConfigUpdate(std::move(caption_config));
-  }
 }
 
 void BocaAppHandler::GetSession(GetSessionCallback callback) {
@@ -543,6 +549,12 @@ void BocaAppHandler::SetFloatMode(bool is_float_mode,
 
 void BocaAppHandler::SubmitAccessCode(const std::string& access_code,
                                       SubmitAccessCodeCallback callback) {
+  if (BocaAppClient::Get()
+          ->GetSessionManager()
+          ->disabled_on_non_managed_network()) {
+    std::move(callback).Run(mojom::SubmitAccessCodeError::kInvalid);
+    return;
+  }
   std::unique_ptr<JoinSessionRequest> request =
       std::make_unique<JoinSessionRequest>(
           session_client_impl_->sender(), base_url_, user_identity_,

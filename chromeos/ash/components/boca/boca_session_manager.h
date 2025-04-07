@@ -188,6 +188,8 @@ class BocaSessionManager
   // Triggered by SWA delegate to notify app reload events.
   virtual void NotifyAppReload();
 
+  virtual bool disabled_on_non_managed_network();
+
   void SetSessionCaptionInitializer(
       SessionCaptionInitializer session_caption_initializer);
   void RemoveSessionCaptionInitializer();
