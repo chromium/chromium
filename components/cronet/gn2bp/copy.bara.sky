@@ -266,7 +266,7 @@ def per_channel_workflow(name, destination, mode):
 per_channel_workflow(
   name = "import_cronet_to_aosp_gerrit",
   destination = git.gerrit_destination(
-      url = "https://android-review.googlesource.com/platform/external/cronet",
+      url = "https://googleplex-android.googlesource.com/platform/external/cronet",
       fetch = "main",
       push_to_refs_for = "main",
       # TODO(crbug.com/372534509): Replace reviewer with team-based Gerrit
