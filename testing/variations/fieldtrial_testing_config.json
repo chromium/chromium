@@ -24855,21 +24855,6 @@
             ]
         }
     ],
-    "UseBuiltInMetalShaderCache": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "UseBuiltInMetalShaderCache"
-                    ]
-                }
-            ]
-        }
-    ],
     "UseClientGmbInterface": [
         {
             "platforms": [
