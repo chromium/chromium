@@ -35,7 +35,7 @@ class TranscriptSenderImpl : public TranscriptSender {
  public:
   struct Options {
     size_t max_allowed_char = 200;
-    size_t max_errors_num = 2;
+    size_t max_errors_num = 5;
   };
 
   TranscriptSenderImpl(TachyonAuthedClient* authed_client,
