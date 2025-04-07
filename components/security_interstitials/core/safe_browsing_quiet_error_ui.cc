@@ -71,10 +71,6 @@ void SafeBrowsingQuietErrorUI::PopulateStringsForHtml(
       PopulateBillingLoadTimeData(load_time_data);
       break;
   }
-
-  // Not used by this interstitial.
-  load_time_data.Set("recurrentErrorParagraph", "");
-  load_time_data.Set("show_recurrent_error_paragraph", false);
 }
 
 void SafeBrowsingQuietErrorUI::SetGiantWebViewForTesting(
