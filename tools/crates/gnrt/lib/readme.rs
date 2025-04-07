@@ -67,7 +67,7 @@ pub fn readme_file_from_package<'a>(
     find_security_critical: &mut dyn FnMut(&'a PackageId) -> Option<bool>,
     find_shipped: &mut dyn FnMut(&'a PackageId) -> Option<bool>,
 ) -> Result<(PathBuf, ReadmeFile)> {
-    let epoch = crates::Epoch::from_version(&package.version());
+    let epoch = crates::Epoch::from_version(package.version());
     let dir = paths
         .third_party
         .join(crates::NormalizedName::from_crate_name(package.name()).to_string())

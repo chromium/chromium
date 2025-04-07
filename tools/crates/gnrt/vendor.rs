@@ -52,7 +52,7 @@ fn download_crates(args: &VendorCommandArgs, paths: &paths::ChromiumPaths) -> Re
             .map(|p| p.into())
             .collect();
     let is_removed = |guppy_package_id: &guppy::PackageId| -> bool {
-        let p = graph.metadata(&guppy_package_id).unwrap();
+        let p = graph.metadata(guppy_package_id).unwrap();
         config.resolve.remove_crates.contains(p.name())
             || !guppy_resolved_package_ids.contains(&(&p).into())
     };
@@ -117,7 +117,7 @@ fn download_crates(args: &VendorCommandArgs, paths: &paths::ChromiumPaths) -> Re
             println!("Downloading {}", &crate_dir);
             download_crate(p.name(), p.version(), paths)?;
             let skip_patches = match &args.no_patches {
-                Some(v) => v.is_empty() || v.iter().find(|x| *x == p.name()).is_some(),
+                Some(v) => v.is_empty() || v.iter().any(|x| *x == p.name()),
                 None => false,
             };
             if skip_patches {
@@ -432,11 +432,8 @@ fn get_placeholder_crate_metadata<'a>(
         .direct_links()
         .filter(|link| !link.dev_only())
         .map(|link| {
-            let feature_dep_info = [link.normal(), link.build()]
-                .into_iter()
-                .filter(|req| req.is_present())
-                .next()
-                .unwrap();
+            let feature_dep_info =
+                [link.normal(), link.build()].into_iter().find(|req| req.is_present()).unwrap();
             PlaceholderDependency {
                 name: link.to().name(),
                 version: link.version_req().to_string(),

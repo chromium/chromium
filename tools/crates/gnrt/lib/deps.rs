@@ -5,10 +5,7 @@
 //! Utilities to process `cargo metadata` dependency graph.
 
 use crate::{
-    config::BuildConfig,
-    crates,
-    gn::{target_spec_to_condition, Condition},
-    group::Group,
+    condition::Condition, config::BuildConfig, crates, group::Group,
     inherit::find_inherited_privilege_group,
 };
 
@@ -457,7 +454,7 @@ fn get_condition(platform_status: PlatformStatus) -> Condition {
         PlatformDependent { eval } => eval
             .target_specs()
             .iter()
-            .map(target_spec_to_condition)
+            .map(Condition::from_target_spec)
             .fold(Condition::AlwaysFalse, Condition::or),
     }
 }
