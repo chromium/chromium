@@ -714,7 +714,33 @@ TEST(AreHttpRequestHeadersCompatible, IgnoreRTT) {
       /*potential_activation_additional_headers=*/"",
 #endif  // BUILDFLAG(IS_ANDROID)
       prerender_headers, PreloadingTriggerType::kSpeculationRule,
-      /*embedder_histogram_suffix=*/"", reason));
+      /*embedder_histogram_suffix=*/"", /*allow_x_header_mismatch=*/false,
+      reason));
+}
+
+TEST(AreHttpRequestHeadersCompatible, XHeaders) {
+  PrerenderCancellationReason reason = PrerenderCancellationReason(
+      PrerenderFinalStatus::kActivationNavigationParameterMismatch);
+  const std::string prerender_headers = "x-hello: 1";
+  const std::string potential_activation_headers = "X-world: 2";
+
+  EXPECT_FALSE(PrerenderHost::AreHttpRequestHeadersCompatible(
+      potential_activation_headers,
+#if BUILDFLAG(IS_ANDROID)
+      /*potential_activation_additional_headers=*/"",
+#endif  // BUILDFLAG(IS_ANDROID)
+      prerender_headers, PreloadingTriggerType::kSpeculationRule,
+      /*embedder_histogram_suffix=*/"", /*allow_x_header_mismatch=*/false,
+      reason));
+
+  EXPECT_TRUE(PrerenderHost::AreHttpRequestHeadersCompatible(
+      potential_activation_headers,
+#if BUILDFLAG(IS_ANDROID)
+      /*potential_activation_additional_headers=*/"",
+#endif  // BUILDFLAG(IS_ANDROID)
+      prerender_headers, PreloadingTriggerType::kSpeculationRule,
+      /*embedder_histogram_suffix=*/"", /*allow_x_header_mismatch=*/true,
+      reason));
 }
 
 }  // namespace
