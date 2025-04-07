@@ -19,6 +19,10 @@ namespace download {
 class DownloadItem;
 }
 
+namespace network {
+struct ResourceRequest;
+}
+
 namespace safe_browsing {
 
 class ClientDownloadRequest;
@@ -56,6 +60,12 @@ class DownloadProtectionDelegate {
   // the request. `item` is the download this pertains to, which may be null.
   virtual void PreSerializeRequest(const download::DownloadItem* item,
                                    ClientDownloadRequest& request_proto) {}
+
+  // Called immediately prior to consuming the ResourceRequest used to send out
+  // a download ping. Allows the delegate to make final modifications to the
+  // ResourceRequest.
+  virtual void FinalizeResourceRequest(
+      network::ResourceRequest& resource_request) {}
 
   // Returns the URL that will be contacted for download protection requests.
   virtual const GURL& GetDownloadRequestUrl() const = 0;
