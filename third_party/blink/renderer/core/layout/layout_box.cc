@@ -454,17 +454,6 @@ void RecalcFragmentScrollableOverflow(RecalcScrollableOverflowResult& result,
   }
 }
 
-// Returns the logical offset in the LocationContainer() coordination system,
-// and its WritingMode.
-std::tuple<LogicalOffset, WritingMode> LogicalLocation(const LayoutBox& box) {
-  LayoutBox* container = box.LocationContainer();
-  WritingMode writing_mode = container->StyleRef().GetWritingMode();
-  WritingModeConverter converter({writing_mode, TextDirection::kLtr},
-                                 PhysicalSize(container->Size()));
-  return {converter.ToLogical(box.PhysicalLocation(), PhysicalSize(box.Size())),
-          writing_mode};
-}
-
 }  // namespace
 
 LayoutBoxRareData::LayoutBoxRareData()
@@ -1323,22 +1312,10 @@ LayoutUnit LayoutBox::DefaultIntrinsicContentBlockSize() const {
   return kIndefiniteSize;
 }
 
-LayoutUnit LayoutBox::LogicalLeft() const {
+LogicalRect LayoutBox::LogicalRectInContainer() const {
   NOT_DESTROYED();
-  auto [offset, container_writing_mode] = LogicalLocation(*this);
-  return IsParallelWritingMode(container_writing_mode,
-                               StyleRef().GetWritingMode())
-             ? offset.inline_offset
-             : offset.block_offset;
-}
-
-LayoutUnit LayoutBox::LogicalTop() const {
-  NOT_DESTROYED();
-  auto [offset, container_writing_mode] = LogicalLocation(*this);
-  return IsParallelWritingMode(container_writing_mode,
-                               StyleRef().GetWritingMode())
-             ? offset.block_offset
-             : offset.inline_offset;
+  return LocationContainer()->CreateWritingModeConverter().ToLogical(
+      PhysicalRect(PhysicalLocation(), Size()));
 }
 
 gfx::QuadF LayoutBox::AbsoluteContentQuad(MapCoordinatesFlags flags) const {

@@ -393,8 +393,9 @@ PhysicalOffset LayoutMultiColumnFlowThread::VisualPointToFlowThreadPoint(
   for (const LayoutMultiColumnSet* candidate = FirstMultiColumnSet(); candidate;
        candidate = candidate->NextSiblingMultiColumnSet()) {
     column_set = candidate;
-    if (candidate->LogicalBottom() > block_offset)
+    if (candidate->LogicalRectInContainer().BlockEndOffset() > block_offset) {
       break;
+    }
   }
   if (!column_set) {
     return visual_point;

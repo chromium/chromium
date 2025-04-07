@@ -216,21 +216,20 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   LayoutBox* FirstChildBox() const;
   LayoutBox* LastChildBox() const;
 
-  LayoutUnit LogicalLeft() const;
-  LayoutUnit LogicalRight() const {
-    NOT_DESTROYED();
-    return LogicalLeft() + LogicalWidth();
-  }
-  LayoutUnit LogicalTop() const;
-  LayoutUnit LogicalBottom() const {
-    NOT_DESTROYED();
-    return LogicalTop() + LogicalHeight();
-  }
+  // Returns the LogicalRect of this box for LocationContainer()'s writing-mode.
+  // The coordinate origin is the border corner of the LocationContainer().
+  // This function doesn't take into account of TextDirection.
+  LogicalRect LogicalRectInContainer() const;
+
+  // Returns the inline-size for this box's writing-mode.  It might be
+  // different from container's writing-mode.
   LayoutUnit LogicalWidth() const {
     NOT_DESTROYED();
     PhysicalSize size = Size();
     return StyleRef().IsHorizontalWritingMode() ? size.width : size.height;
   }
+  // Returns the block-size for this box's writing-mode.  It might be
+  // different from container's writing-mode.
   LayoutUnit LogicalHeight() const {
     NOT_DESTROYED();
     PhysicalSize size = Size();
