@@ -37,8 +37,6 @@ class PassageEmbeddingsServiceController : public EmbedderMetadataProvider {
   // Returns the embedder used to generate embeddings.
   Embedder* GetEmbedder();
 
-  void SetEmbedderForTesting(std::unique_ptr<Embedder> embedder);
-
  protected:
   // EmbedderMetadataProvider:
   void AddObserver(EmbedderMetadataObserver* observer) override;
@@ -120,7 +118,7 @@ class PassageEmbeddingsServiceController : public EmbedderMetadataProvider {
   // This holds the main scheduler that receives requests from multiple clients,
   // prioritizes all the jobs, and ultimately submits batches of work via
   // `GetEmbeddings` when the time is right.
-  std::unique_ptr<Embedder> embedder_;
+  const std::unique_ptr<Embedder> embedder_;
 
   // Used to generate weak pointers to self.
   base::WeakPtrFactory<PassageEmbeddingsServiceController> weak_ptr_factory_{

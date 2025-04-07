@@ -25,10 +25,8 @@ namespace passage_embeddings {
 
 namespace {
 
-using ComputePassagesEmbeddingsFuture =
-    base::test::TestFuture<std::vector<std::string>,
-                           std::vector<Embedding>,
-                           Embedder::TaskId,
+using GetEmbeddingsTestFuture =
+    base::test::TestFuture<std::vector<mojom::PassageEmbeddingsResultPtr>,
                            ComputeEmbeddingsStatus>;
 
 class FakePassageEmbedder : public mojom::PassageEmbedder {
@@ -49,9 +47,10 @@ class FakePassageEmbedder : public mojom::PassageEmbedder {
       if (input == "error") {
         return std::move(callback).Run({});
       }
+
+      // Otherwise just copy the inputs to the passages to provide a signal that
+      // the PassageEmbedder was executed.
       results.push_back(mojom::PassageEmbeddingsResult::New());
-      results.back()->embeddings =
-          std::vector<float>(kEmbeddingsModelOutputSize, 1.0);
       results.back()->passage = input;
     }
     std::move(callback).Run(std::move(results));
@@ -110,43 +109,6 @@ class FakePassageEmbeddingsServiceController
   std::unique_ptr<FakePassageEmbeddingsService> service_;
 };
 
-class FakeEmbedder : public Embedder {
- public:
-  explicit FakeEmbedder(
-      FakePassageEmbeddingsServiceController::GetEmbeddingsCallback
-          get_embeddings_callback)
-      : get_embeddings_callback_(get_embeddings_callback) {}
-
-  // Embedder:
-  Embedder::TaskId ComputePassagesEmbeddings(
-      PassagePriority priority,
-      std::vector<std::string> passages,
-      ComputePassagesEmbeddingsCallback callback) override {
-    get_embeddings_callback_.Run(
-        passages, priority,
-        base::BindOnce(
-            [](std::vector<std::string> passages,
-               ComputePassagesEmbeddingsCallback callback,
-               std::vector<mojom::PassageEmbeddingsResultPtr> results,
-               ComputeEmbeddingsStatus status) {
-              std::vector<Embedding> embeddings;
-              if (status == ComputeEmbeddingsStatus::kSuccess) {
-                embeddings = ComputeEmbeddingsForPassages(passages);
-              }
-              std::move(callback).Run(passages, embeddings, kInvalidTaskId,
-                                      status);
-            },
-            passages, std::move(callback)));
-    return kInvalidTaskId;
-  }
-
-  bool TryCancel(TaskId task_id) override { return false; }
-
- private:
-  FakePassageEmbeddingsServiceController::GetEmbeddingsCallback
-      get_embeddings_callback_;
-};
-
 class MetadataObserver : public EmbedderMetadataObserver {
  public:
   explicit MetadataObserver(
@@ -176,11 +138,6 @@ class PassageEmbeddingsServiceControllerTest : public testing::Test {
         std::make_unique<FakePassageEmbeddingsServiceController>();
     metadata_observer_.emplace(service_controller_.get(),
                                &embedder_metadata_future_);
-    service_controller_->SetEmbedderForTesting(std::make_unique<FakeEmbedder>(
-        /*get_embeddings_callback=*/
-        base::BindRepeating(
-            &FakePassageEmbeddingsServiceController::GetEmbeddings,
-            base::Unretained(service_controller_.get()))));
 
     EXPECT_FALSE(embedder_metadata_future()->IsReady());
   }
@@ -195,7 +152,9 @@ class PassageEmbeddingsServiceControllerTest : public testing::Test {
     return &embedder_metadata_future_;
   }
 
-  Embedder* embedder() { return service_controller_->GetEmbedder(); }
+  FakePassageEmbeddingsServiceController* service_controller() {
+    return service_controller_.get();
+  }
 
   base::test::TaskEnvironment task_environment_;
   base::HistogramTester histogram_tester_;
@@ -275,34 +234,33 @@ TEST_F(PassageEmbeddingsServiceControllerTest,
       1);
 }
 
-TEST_F(PassageEmbeddingsServiceControllerTest, ReceivesEmptyPassages) {
+TEST_F(PassageEmbeddingsServiceControllerTest, GetEmbeddingsEmpty) {
   EXPECT_TRUE(service_controller_->MaybeUpdateModelInfo(
       *GetBuilderWithValidModelInfo().Build()));
 
-  ComputePassagesEmbeddingsFuture future;
-  embedder()->ComputePassagesEmbeddings(PassagePriority::kPassive, {},
-                                        future.GetCallback());
-  auto [passages, embeddings, task_id, status] = future.Get();
+  GetEmbeddingsTestFuture future;
+  service_controller()->GetEmbeddings({}, PassagePriority::kPassive,
+                                      future.GetCallback());
+
+  auto [results, status] = future.Take();
 
   EXPECT_EQ(status, ComputeEmbeddingsStatus::kSuccess);
-  EXPECT_TRUE(passages.empty());
-  EXPECT_TRUE(embeddings.empty());
+  EXPECT_TRUE(results.empty());
 }
 
-TEST_F(PassageEmbeddingsServiceControllerTest, ReturnsEmbeddings) {
+TEST_F(PassageEmbeddingsServiceControllerTest, GetEmbeddingsNonEmpty) {
   EXPECT_TRUE(service_controller_->MaybeUpdateModelInfo(
       *GetBuilderWithValidModelInfo().Build()));
 
-  ComputePassagesEmbeddingsFuture future;
-  embedder()->ComputePassagesEmbeddings(PassagePriority::kPassive,
-                                        {"foo", "bar"}, future.GetCallback());
-  auto [passages, embeddings, task_id, status] = future.Get();
+  GetEmbeddingsTestFuture future;
+  service_controller()->GetEmbeddings({"foo", "bar"}, PassagePriority::kPassive,
+                                      future.GetCallback());
+  auto [results, status] = future.Take();
 
   EXPECT_EQ(status, ComputeEmbeddingsStatus::kSuccess);
-  EXPECT_EQ(passages[0], "foo");
-  EXPECT_EQ(passages[1], "bar");
-  EXPECT_EQ(embeddings[0].Dimensions(), kEmbeddingsModelOutputSize);
-  EXPECT_EQ(embeddings[1].Dimensions(), kEmbeddingsModelOutputSize);
+  ASSERT_EQ(results.size(), 2u);
+  EXPECT_EQ(results[0]->passage, "foo");
+  EXPECT_EQ(results[1]->passage, "bar");
 }
 
 TEST_F(PassageEmbeddingsServiceControllerTest,
@@ -313,69 +271,59 @@ TEST_F(PassageEmbeddingsServiceControllerTest,
 
   EXPECT_FALSE(service_controller_->MaybeUpdateModelInfo(*builder.Build()));
 
-  ComputePassagesEmbeddingsFuture future;
-  embedder()->ComputePassagesEmbeddings(PassagePriority::kPassive,
-                                        {"foo", "bar"}, future.GetCallback());
-  auto [passages, embeddings, task_id, status] = future.Get();
+  GetEmbeddingsTestFuture future;
+  service_controller()->GetEmbeddings({"foo", "bar"}, PassagePriority::kPassive,
+                                      future.GetCallback());
+  auto [results, status] = future.Take();
 
   EXPECT_EQ(status, ComputeEmbeddingsStatus::kModelUnavailable);
-  EXPECT_EQ(passages[0], "foo");
-  EXPECT_EQ(passages[1], "bar");
-  EXPECT_TRUE(embeddings.empty());
+  EXPECT_EQ(results.size(), 0u);
 }
 
 TEST_F(PassageEmbeddingsServiceControllerTest, ReturnsExecutionFailure) {
   EXPECT_TRUE(service_controller_->MaybeUpdateModelInfo(
       *GetBuilderWithValidModelInfo().Build()));
 
-  ComputePassagesEmbeddingsFuture future;
-  embedder()->ComputePassagesEmbeddings(PassagePriority::kPassive,
-                                        {"error", "baz"}, future.GetCallback());
-  auto [passages, embeddings, task_id, status] = future.Get();
+  GetEmbeddingsTestFuture future;
+  service_controller()->GetEmbeddings(
+      {"error", "bar"}, PassagePriority::kPassive, future.GetCallback());
+  auto [results, status] = future.Take();
 
   EXPECT_EQ(status, ComputeEmbeddingsStatus::kExecutionFailure);
-  EXPECT_EQ(passages[0], "error");
-  EXPECT_EQ(passages[1], "baz");
-  EXPECT_TRUE(embeddings.empty());
+  EXPECT_EQ(results.size(), 0u);
 }
 
 TEST_F(PassageEmbeddingsServiceControllerTest, EmbedderRunningStatus) {
   EXPECT_TRUE(service_controller_->MaybeUpdateModelInfo(
       *GetBuilderWithValidModelInfo().Build()));
+
+  const auto get_embeddings = [this] {
+    GetEmbeddingsTestFuture future;
+    service_controller()->GetEmbeddings(
+        {"foo", "bar"}, PassagePriority::kPassive, future.GetCallback());
+    return future;
+  };
+
   {
-    ComputePassagesEmbeddingsFuture future1;
-    embedder()->ComputePassagesEmbeddings(
-        PassagePriority::kPassive, {"foo", "bar"}, future1.GetCallback());
-    // Embedder is running.
+    GetEmbeddingsTestFuture future1 = get_embeddings();
     EXPECT_TRUE(service_controller_->EmbedderRunning());
 
-    ComputePassagesEmbeddingsFuture future2;
-    embedder()->ComputePassagesEmbeddings(
-        PassagePriority::kPassive, {"baz", "qux"}, future2.GetCallback());
-    // Embedder is running.
+    GetEmbeddingsTestFuture future2 = get_embeddings();
     EXPECT_TRUE(service_controller_->EmbedderRunning());
 
-    auto status1 = future1.Get<3>();
-    EXPECT_EQ(status1, ComputeEmbeddingsStatus::kSuccess);
+    EXPECT_EQ(future1.Get<1>(), ComputeEmbeddingsStatus::kSuccess);
     // Embedder is still running.
     EXPECT_TRUE(service_controller_->EmbedderRunning());
 
-    auto status2 = future2.Get<3>();
-    EXPECT_EQ(status2, ComputeEmbeddingsStatus::kSuccess);
+    EXPECT_EQ(future2.Get<1>(), ComputeEmbeddingsStatus::kSuccess);
     // Embedder is NOT running.
     EXPECT_FALSE(service_controller_->EmbedderRunning());
   }
   {
-    ComputePassagesEmbeddingsFuture future1;
-    embedder()->ComputePassagesEmbeddings(
-        PassagePriority::kPassive, {"foo", "bar"}, future1.GetCallback());
-    // Embedder is running.
+    GetEmbeddingsTestFuture future1 = get_embeddings();
     EXPECT_TRUE(service_controller_->EmbedderRunning());
 
-    ComputePassagesEmbeddingsFuture future2;
-    embedder()->ComputePassagesEmbeddings(
-        PassagePriority::kPassive, {"baz", "qux"}, future2.GetCallback());
-    // Embedder is running.
+    GetEmbeddingsTestFuture future2 = get_embeddings();
     EXPECT_TRUE(service_controller_->EmbedderRunning());
 
     // Callbacks are invoked synchronously on embedder remote disconnect.
@@ -383,45 +331,30 @@ TEST_F(PassageEmbeddingsServiceControllerTest, EmbedderRunningStatus) {
     // Embedder is NOT running.
     EXPECT_FALSE(service_controller_->EmbedderRunning());
 
-    auto status1 = future1.Get<3>();
-    EXPECT_EQ(status1, ComputeEmbeddingsStatus::kExecutionFailure);
-    auto status2 = future2.Get<3>();
-    EXPECT_EQ(status2, ComputeEmbeddingsStatus::kExecutionFailure);
+    EXPECT_EQ(future1.Get<1>(), ComputeEmbeddingsStatus::kExecutionFailure);
+    EXPECT_EQ(future2.Get<1>(), ComputeEmbeddingsStatus::kExecutionFailure);
   }
   {
     // Calling `ComputePassagesEmbeddings()` again launches the service.
-    ComputePassagesEmbeddingsFuture future1;
-    embedder()->ComputePassagesEmbeddings(
-        PassagePriority::kPassive, {"foo", "bar"}, future1.GetCallback());
-    // Embedder is running.
+    GetEmbeddingsTestFuture future1 = get_embeddings();
     EXPECT_TRUE(service_controller_->EmbedderRunning());
 
-    ComputePassagesEmbeddingsFuture future2;
-    embedder()->ComputePassagesEmbeddings(
-        PassagePriority::kPassive, {"baz", "qux"}, future2.GetCallback());
-    // Embedder is running.
+    GetEmbeddingsTestFuture future2 = get_embeddings();
     EXPECT_TRUE(service_controller_->EmbedderRunning());
 
-    auto status1 = future1.Get<3>();
-    EXPECT_EQ(status1, ComputeEmbeddingsStatus::kSuccess);
+    EXPECT_EQ(future1.Get<1>(), ComputeEmbeddingsStatus::kSuccess);
     // Embedder is still running.
     EXPECT_TRUE(service_controller_->EmbedderRunning());
 
-    auto status2 = future2.Get<3>();
-    EXPECT_EQ(status2, ComputeEmbeddingsStatus::kSuccess);
+    EXPECT_EQ(future2.Get<1>(), ComputeEmbeddingsStatus::kSuccess);
     // Embedder is NOT running.
     EXPECT_FALSE(service_controller_->EmbedderRunning());
   }
   {
-    ComputePassagesEmbeddingsFuture future1;
-    embedder()->ComputePassagesEmbeddings(
-        PassagePriority::kPassive, {"foo", "bar"}, future1.GetCallback());
-    // Embedder is running.
+    GetEmbeddingsTestFuture future1 = get_embeddings();
     EXPECT_TRUE(service_controller_->EmbedderRunning());
 
-    ComputePassagesEmbeddingsFuture future2;
-    embedder()->ComputePassagesEmbeddings(
-        PassagePriority::kPassive, {"baz", "qux"}, future2.GetCallback());
+    GetEmbeddingsTestFuture future2 = get_embeddings();
     // Embedder is still running.
     EXPECT_TRUE(service_controller_->EmbedderRunning());
 
@@ -430,10 +363,8 @@ TEST_F(PassageEmbeddingsServiceControllerTest, EmbedderRunningStatus) {
     // Embedder is NOT running.
     EXPECT_FALSE(service_controller_->EmbedderRunning());
 
-    auto status1 = future1.Get<3>();
-    EXPECT_EQ(status1, ComputeEmbeddingsStatus::kExecutionFailure);
-    auto status2 = future2.Get<3>();
-    EXPECT_EQ(status2, ComputeEmbeddingsStatus::kExecutionFailure);
+    EXPECT_EQ(future1.Get<1>(), ComputeEmbeddingsStatus::kExecutionFailure);
+    EXPECT_EQ(future2.Get<1>(), ComputeEmbeddingsStatus::kExecutionFailure);
   }
 }
 

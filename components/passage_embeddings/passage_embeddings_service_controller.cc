@@ -170,11 +170,6 @@ Embedder* PassageEmbeddingsServiceController::GetEmbedder() {
   return embedder_.get();
 }
 
-void PassageEmbeddingsServiceController::SetEmbedderForTesting(
-    std::unique_ptr<Embedder> embedder) {
-  embedder_ = std::move(embedder);
-}
-
 void PassageEmbeddingsServiceController::AddObserver(
     EmbedderMetadataObserver* observer) {
   if (EmbedderReady()) {
