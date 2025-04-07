@@ -6,21 +6,20 @@ package org.chromium.chrome.browser.hub;
 
 import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController.MenuOrKeyboardActionHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 
 /** A base interface representing a UI that will be displayed as a Pane in the Hub. */
+@NullMarked
 public interface Pane extends BackPressHandler {
     /** Returns the {@link PaneId} corresponding to this Pane. */
     @PaneId
     int getPaneId();
 
     /** Returns the {@link ViewGroup} containing the contents of the Pane. */
-    @NonNull
     ViewGroup getRootView();
 
     /** Returns the {@link MenuOrKeyboardActionHandler} for the Pane. */
@@ -54,15 +53,12 @@ public interface Pane extends BackPressHandler {
     void notifyLoadHint(@LoadHint int loadHint);
 
     /** Returns button data for the primary action on the page, such as adding a tab. */
-    @NonNull
     ObservableSupplier<FullButtonData> getActionButtonDataSupplier();
 
     /** Returns the visuals for creating a button to navigate to this pane. */
-    @NonNull
     ObservableSupplier<DisplayButtonData> getReferenceButtonDataSupplier();
 
     /** Returns whether to show the hairline for the pane. */
-    @NonNull
     ObservableSupplier<Boolean> getHairlineVisibilitySupplier();
 
     /** Returns an optional listener for animation progress. */
@@ -75,9 +71,8 @@ public interface Pane extends BackPressHandler {
      *
      * @param hubContainerView The {@link HubContainerView} that should show.
      */
-    @NonNull
     HubLayoutAnimatorProvider createShowHubLayoutAnimatorProvider(
-            @NonNull HubContainerView hubContainerView);
+            HubContainerView hubContainerView);
 
     /**
      * Create a {@link HubLayoutAnimatorProvider} to use when hiding the {@link HubLayout} if this
@@ -85,11 +80,9 @@ public interface Pane extends BackPressHandler {
      *
      * @param hubContainerView The {@link HubContainerView} that should hide.
      */
-    @NonNull
     HubLayoutAnimatorProvider createHideHubLayoutAnimatorProvider(
-            @NonNull HubContainerView hubContainerView);
+            HubContainerView hubContainerView);
 
     /** Returns whether to enable the state of hub search. */
-    @NonNull
     ObservableSupplier<Boolean> getHubSearchEnabledStateSupplier();
 }

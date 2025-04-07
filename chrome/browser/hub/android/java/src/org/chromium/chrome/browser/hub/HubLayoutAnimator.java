@@ -6,16 +6,17 @@ package org.chromium.chrome.browser.hub;
 
 import android.animation.AnimatorSet;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * A class for holding an animator that animates {@link HubLayout} transitions. This class is
  * supplied by an implementation of {@link HubLayoutAnimatorSupplier}.
  */
+@NullMarked
 public class HubLayoutAnimator {
     private final @HubLayoutAnimationType int mAnimationType;
-    private final @NonNull AnimatorSet mAnimatorSet;
+    private final AnimatorSet mAnimatorSet;
     private final @Nullable HubLayoutAnimationListener mListener;
 
     /**
@@ -27,7 +28,7 @@ public class HubLayoutAnimator {
      */
     HubLayoutAnimator(
             @HubLayoutAnimationType int animationType,
-            @NonNull AnimatorSet animatorSet,
+            AnimatorSet animatorSet,
             @Nullable HubLayoutAnimationListener listener) {
         mAnimationType = animationType;
         mAnimatorSet = animatorSet;
@@ -38,7 +39,7 @@ public class HubLayoutAnimator {
         return mAnimationType;
     }
 
-    public @NonNull AnimatorSet getAnimatorSet() {
+    public AnimatorSet getAnimatorSet() {
         return mAnimatorSet;
     }
 

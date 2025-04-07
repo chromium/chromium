@@ -8,11 +8,10 @@ import android.animation.AnimatorSet;
 import android.graphics.Bitmap;
 import android.view.View;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.SyncOneshotSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * Interface for providing an {@link HubLayoutAnimator} that may have async dependencies.
@@ -22,6 +21,7 @@ import org.chromium.base.supplier.SyncOneshotSupplier;
  * registering {@link HubLayoutAnimationListeners}, and running of the actual animation. This serves
  * to cleanly divide the API of the {@link AnimatorSet} between setup and observation + execution.
  */
+@NullMarked
 public interface HubLayoutAnimatorProvider {
 
     /**
@@ -37,7 +37,6 @@ public interface HubLayoutAnimatorProvider {
      * <p>The animator will be started once the {@link HubContainerView} is laid out to the match
      * its containers width and height and will be in {@link View#INVISIBLE} state.
      */
-    @NonNull
     SyncOneshotSupplier<HubLayoutAnimator> getAnimatorSupplier();
 
     /**

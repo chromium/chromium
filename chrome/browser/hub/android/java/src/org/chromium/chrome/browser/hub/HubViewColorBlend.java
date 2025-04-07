@@ -8,7 +8,10 @@ import android.animation.Animator;
 
 import androidx.annotation.ColorInt;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Helper class to manage Animator object creation for views during a hub color scheme change. */
+@NullMarked
 public interface HubViewColorBlend {
 
     interface ColorGetter {
