@@ -327,7 +327,7 @@ bool HasPriceDropOnTab(TabResumptionItem* item) {
   CGFloat containerSize;
   if (_item.contentImage &&
       (IsTabResumptionImagesSalientEnabled() ||
-       IsTabResumptionImagesThumbnailsEnabled()) &&
+       IsTabResumptionImagesThumbnailsEnabled() || HasPriceDropOnTab(_item)) &&
       _item.contentImage.size.width && _item.contentImage.size.height) {
     hasSalientImage = YES;
     containerSize = kImageSalientContainerSize;
