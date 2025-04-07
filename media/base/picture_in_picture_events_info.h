@@ -35,9 +35,20 @@ class MEDIA_EXPORT PictureInPictureEventsInfo {
     kMaxValue = kMediaPlayback,
   };
 
+  struct MEDIA_EXPORT AutoPipInfo {
+    AutoPipReason auto_pip_reason = AutoPipReason::kUnknown;
+    bool has_audio_focus = false;
+    bool is_playing = false;
+    bool was_recently_audible = false;
+    bool has_safe_url = false;
+    bool meets_media_engagement_conditions = false;
+    bool blocked_due_to_content_setting = false;
+  };
+
   using AutoPipReasonCallback = base::RepeatingCallback<AutoPipReason(void)>;
 
   static std::string AutoPipReasonToString(AutoPipReason auto_pip_reason);
+  static std::string AutoPipInfoToString(AutoPipInfo auto_pip_info);
 };
 }  // namespace media
 

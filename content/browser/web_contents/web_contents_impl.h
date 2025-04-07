@@ -948,7 +948,7 @@ class CONTENT_EXPORT WebContentsImpl
   void OnFirstContentfulPaintInPrimaryMainFrame() override;
   gfx::NativeWindow GetOwnerNativeWindow() override;
 
-  media::PictureInPictureEventsInfo::AutoPipReason GetAutoPipReason()
+  media::PictureInPictureEventsInfo::AutoPipInfo GetAutoPipInfo()
       const override;
 
   // RenderViewHostDelegate ----------------------------------------------------

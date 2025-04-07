@@ -782,9 +782,8 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   // Returns the top-level native window for the associated WebContents.
   virtual gfx::NativeWindow GetOwnerNativeWindow();
 
-  // Gets the delegate reason for entering picture in picture automatically.
-  virtual media::PictureInPictureEventsInfo::AutoPipReason GetAutoPipReason()
-      const;
+  // Gets the delegate auto picture in picture information.
+  virtual media::PictureInPictureEventsInfo::AutoPipInfo GetAutoPipInfo() const;
 
  protected:
   virtual ~RenderFrameHostDelegate() = default;

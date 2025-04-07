@@ -159,6 +159,11 @@ class AutoPictureInPictureTabHelper
   media::PictureInPictureEventsInfo::AutoPipReason GetAutoPipTriggerReason()
       const;
 
+  // Returns information related to auto picture in picture. This information
+  // includes the reason for entering picture in picture automatically, if
+  // known, and various conditions that are used to allow/deny autopip requests.
+  media::PictureInPictureEventsInfo::AutoPipInfo GetAutoPipInfo() const;
+
  private:
   explicit AutoPictureInPictureTabHelper(content::WebContents* web_contents);
   friend class content::WebContentsUserData<AutoPictureInPictureTabHelper>;

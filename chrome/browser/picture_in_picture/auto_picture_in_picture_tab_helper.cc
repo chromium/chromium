@@ -278,6 +278,10 @@ void AutoPictureInPictureTabHelper::MediaSessionActionsChanged(
 void AutoPictureInPictureTabHelper::MaybeEnterAutoPictureInPicture() {
   if (!IsEligibleForAutoPictureInPicture(
           /*should_record_blocking_metrics=*/true)) {
+    if (content::MediaSession* media_session =
+            content::MediaSession::GetIfExists(web_contents())) {
+      media_session->ReportAutoPictureInPictureInfoChanged();
+    }
     return;
   }
   auto_picture_in_picture_activation_time_ =
@@ -558,6 +562,19 @@ AutoPictureInPictureTabHelper::GetAutoPipReason() const {
   }
 
   return media::PictureInPictureEventsInfo::AutoPipReason::kUnknown;
+}
+
+media::PictureInPictureEventsInfo::AutoPipInfo
+AutoPictureInPictureTabHelper::GetAutoPipInfo() const {
+  return media::PictureInPictureEventsInfo::AutoPipInfo{
+      .auto_pip_reason = GetAutoPipTriggerReason(),
+      .has_audio_focus = has_audio_focus_,
+      .is_playing = is_playing_,
+      .was_recently_audible = WasRecentlyAudible(),
+      .has_safe_url = has_safe_url_,
+      .meets_media_engagement_conditions = MeetsMediaEngagementConditions(),
+      .blocked_due_to_content_setting = blocked_due_to_content_setting_,
+  };
 }
 
 media::PictureInPictureEventsInfo::AutoPipReason

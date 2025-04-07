@@ -3873,6 +3873,30 @@ void DevToolsInspectorLogWatcher::DispatchProtocolMessage(
 
   if (notification->find("Media.") != std::string::npos) {
     last_media_notification_ = *notification;
+
+    if (*notification == "Media.playerEventsAdded") {
+      bool last_auto_pip_event_info_set = false;
+      const base::Value::List* events =
+          parsed_message.FindListByDottedPath("params.events");
+      if (events) {
+        for (const base::Value& event : *events) {
+          const auto* dict = event.GetIfDict();
+          if (!dict) {
+            continue;
+          }
+          const std::string* text = dict->FindString("value");
+          if ((text != nullptr) &&
+              ((*text).find("auto_picture_in_picture_info") !=
+               std::string::npos)) {
+            last_auto_picture_in_picture_event_info_ = *text;
+            last_auto_pip_event_info_set = true;
+          }
+        }
+      }
+      if (last_auto_pip_event_info_set) {
+        NotifyLastAutoPipEventInfoSet();
+      }
+    }
   }
 }
 
@@ -3893,6 +3917,12 @@ void DevToolsInspectorLogWatcher::FlushAndStopWatching() {
   }
 
   run_loop_disable_log_.Run();
+}
+
+void DevToolsInspectorLogWatcher::NotifyLastAutoPipEventInfoSet() {
+  for (DevToolsInspectorLogWatcherObserver& obs : observers_) {
+    obs.OnLastAutoPipEventInfoSet();
+  }
 }
 
 namespace {

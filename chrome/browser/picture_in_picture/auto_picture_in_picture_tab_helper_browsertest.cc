@@ -8,6 +8,7 @@
 
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "base/scoped_observation.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "build/build_config.h"
@@ -192,6 +193,45 @@ class WasRecentlyAudibleWaiter {
 
   std::unique_ptr<base::RunLoop> run_loop_;
   std::optional<bool> was_recently_audible_;
+};
+
+// Helper class to wait for DevTools to receive auto picture in picture events
+// information.
+class AutoPipInfoDevToolsWaiter : public content::DevToolsInspectorLogWatcher::
+                                      DevToolsInspectorLogWatcherObserver {
+ public:
+  explicit AutoPipInfoDevToolsWaiter(
+      content::DevToolsInspectorLogWatcher* log_watcher) {
+    auto_pip_dev_tools_waiter_observation_.Observe(log_watcher);
+  }
+  AutoPipInfoDevToolsWaiter(const AutoPipInfoDevToolsWaiter&) = delete;
+  AutoPipInfoDevToolsWaiter(AutoPipInfoDevToolsWaiter&&) = delete;
+  AutoPipInfoDevToolsWaiter& operator=(const AutoPipInfoDevToolsWaiter&) =
+      delete;
+
+  void WaitUntilDone() {
+    if (auto_pip_event_info_set_) {
+      return;
+    }
+    run_loop_ = std::make_unique<base::RunLoop>();
+    run_loop_->Run();
+  }
+
+ private:
+  void OnLastAutoPipEventInfoSet() override {
+    auto_pip_event_info_set_ = true;
+    if (run_loop_) {
+      run_loop_->Quit();
+    }
+    auto_pip_dev_tools_waiter_observation_.Reset();
+  }
+
+  std::unique_ptr<base::RunLoop> run_loop_;
+  bool auto_pip_event_info_set_ = false;
+  base::ScopedObservation<
+      content::DevToolsInspectorLogWatcher,
+      content::DevToolsInspectorLogWatcher::DevToolsInspectorLogWatcherObserver>
+      auto_pip_dev_tools_waiter_observation_{this};
 };
 
 class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
@@ -679,8 +719,10 @@ class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
 
   media::PictureInPictureEventsInfo::AutoPipReason GetAutoPipReason(
       const content::WebContents& web_contents) {
-    return content::GetContentClientForTesting()->browser()->GetAutoPipReason(
-        web_contents);
+    return content::GetContentClientForTesting()
+        ->browser()
+        ->GetAutoPipInfo(web_contents)
+        .auto_pip_reason;
   }
 
   ukm::TestAutoSetUkmRecorder* ukm_recorder() { return ukm_recorder_.get(); }
@@ -2570,4 +2612,41 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   EXPECT_EQ(expected_reason, GetAutoPipReason(*web_contents));
 
   CloseBrowserSynchronously(browser());
+}
+
+IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
+                       AutoPipInfoRecordedInDevTools) {
+  LoadAutoDocumentPipPage(browser());
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  PlayVideo(web_contents);
+  WaitForAudioFocusGained();
+  WaitForMediaSessionPlaying(web_contents);
+  SetExpectedHasHighEngagement(true);
+  WaitForWasRecentlyAudible(web_contents);
+
+  {
+    // Start watching the DevTools logs and clear the latest media notification.
+    content::DevToolsInspectorLogWatcher log_watcher(
+        web_contents, content::DevToolsInspectorLogWatcher::Domain::Media);
+    log_watcher.ClearLastAutoPictureInPictureEventInfo();
+
+    // Generate media logs.
+    AutoPipInfoDevToolsWaiter pip_devtools_info_waiter(&log_watcher);
+    SwitchToNewTabAndBackAndExpectAutopip(/*should_video_pip=*/false,
+                                          /*should_document_pip=*/true);
+    pip_devtools_info_waiter.WaitUntilDone();
+
+    // Verify that the auto picture in picture information was recorded in the
+    // DevTools media logs.
+    log_watcher.FlushAndStopWatching();
+    ASSERT_FALSE(log_watcher.last_auto_picture_in_picture_event_info().empty());
+    const std::string expected_auto_pip_info =
+        "{\"auto_picture_in_picture_info\":\"{Reason: MediaPlayback, has audio "
+        "focus: true, is_playing: true, was recently audible: true, has safe "
+        "url: true, meets media engagement conditions: true, blocked due to "
+        "content setting: "
+        "false}\",\"event\":\"kAutoPictureInPictureInfoChanged\"}";
+    EXPECT_EQ(expected_auto_pip_info,
+              log_watcher.last_auto_picture_in_picture_event_info());
+  }
 }

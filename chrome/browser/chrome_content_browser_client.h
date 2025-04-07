@@ -809,7 +809,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   std::unique_ptr<content::VideoOverlayWindow>
   CreateWindowForVideoPictureInPicture(
       content::VideoPictureInPictureWindowController* controller) override;
-  media::PictureInPictureEventsInfo::AutoPipReason GetAutoPipReason(
+  media::PictureInPictureEventsInfo::AutoPipInfo GetAutoPipInfo(
       const content::WebContents& web_contents) const override;
   void RegisterRendererPreferenceWatcher(
       content::BrowserContext* browser_context,

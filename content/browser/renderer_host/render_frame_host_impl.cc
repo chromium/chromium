@@ -18587,7 +18587,7 @@ RenderFrameHostImpl::CreateAutoPipReasonCallback() {
         if (rfh == nullptr) {
           return media::PictureInPictureEventsInfo::AutoPipReason::kUnknown;
         }
-        return rfh->delegate()->GetAutoPipReason();
+        return rfh->delegate()->GetAutoPipInfo().auto_pip_reason;
       },
       weak_ptr_factory_.GetWeakPtr());
 }

@@ -1352,9 +1352,9 @@ ContentBrowserClient::CreateWindowForVideoPictureInPicture(
   return nullptr;
 }
 
-media::PictureInPictureEventsInfo::AutoPipReason
-ContentBrowserClient::GetAutoPipReason(const WebContents& web_contents) const {
-  return media::PictureInPictureEventsInfo::AutoPipReason::kUnknown;
+media::PictureInPictureEventsInfo::AutoPipInfo
+ContentBrowserClient::GetAutoPipInfo(const WebContents& web_contents) const {
+  return media::PictureInPictureEventsInfo::AutoPipInfo();
 }
 
 void ContentBrowserClient::RegisterRendererPreferenceWatcher(

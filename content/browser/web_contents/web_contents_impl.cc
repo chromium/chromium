@@ -7254,9 +7254,9 @@ gfx::NativeWindow WebContentsImpl::GetOwnerNativeWindow() {
   return GetTopLevelNativeWindow();
 }
 
-media::PictureInPictureEventsInfo::AutoPipReason
-WebContentsImpl::GetAutoPipReason() const {
-  return GetContentClient()->browser()->GetAutoPipReason(*this);
+media::PictureInPictureEventsInfo::AutoPipInfo WebContentsImpl::GetAutoPipInfo()
+    const {
+  return GetContentClient()->browser()->GetAutoPipInfo(*this);
 }
 
 void WebContentsImpl::NotifyChangedNavigationState(

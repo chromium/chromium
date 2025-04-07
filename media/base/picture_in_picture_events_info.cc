@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/notreached.h"
+#include "base/strings/stringprintf.h"
 
 namespace media {
 
@@ -28,6 +29,22 @@ std::string PictureInPictureEventsInfo::AutoPipReasonToString(
 
   NOTREACHED() << "Invalid auto_pip_reason provided: "
                << static_cast<int>(auto_pip_reason);
+}
+
+// static
+std::string PictureInPictureEventsInfo::AutoPipInfoToString(
+    AutoPipInfo auto_pip_info) {
+  return base::StringPrintf(
+      "{Reason: %s, has audio focus: %s, is_playing: %s, was recently audible: "
+      "%s, has safe url: %s, meets media engagement conditions: %s, blocked "
+      "due to content setting: %s}",
+      AutoPipReasonToString(auto_pip_info.auto_pip_reason),
+      auto_pip_info.has_audio_focus ? "true" : "false",
+      auto_pip_info.is_playing ? "true" : "false",
+      auto_pip_info.was_recently_audible ? "true" : "false",
+      auto_pip_info.has_safe_url ? "true" : "false",
+      auto_pip_info.meets_media_engagement_conditions ? "true" : "false",
+      auto_pip_info.blocked_due_to_content_setting ? "true" : "false");
 }
 
 }  // namespace media

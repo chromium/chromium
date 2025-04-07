@@ -21,6 +21,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/process/process.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -2136,10 +2138,33 @@ class DevToolsInspectorLogWatcher : public DevToolsAgentHostClient {
   std::string last_media_notification() { return last_media_notification_; }
   void ClearLastMediaNotification() { last_media_notification_.clear(); }
 
+  std::string last_auto_picture_in_picture_event_info() {
+    return last_auto_picture_in_picture_event_info_;
+  }
+  void ClearLastAutoPictureInPictureEventInfo() {
+    last_auto_picture_in_picture_event_info_.clear();
+  }
+
   // DevToolsAgentHostClient:
   void DispatchProtocolMessage(DevToolsAgentHost* host,
                                base::span<const uint8_t> message) override;
   void AgentHostClosed(DevToolsAgentHost* host) override;
+
+  class DevToolsInspectorLogWatcherObserver : public base::CheckedObserver {
+   public:
+    virtual void OnLastAutoPipEventInfoSet() = 0;
+  };
+
+  void AddObserver(DevToolsInspectorLogWatcherObserver* observer) {
+    observers_.AddObserver(observer);
+  }
+  void RemoveObserver(DevToolsInspectorLogWatcherObserver* observer) {
+    observers_.RemoveObserver(observer);
+  }
+
+  // Notifies observers that the last auto picture in picture event information
+  // was set.
+  void NotifyLastAutoPipEventInfoSet();
 
  private:
   scoped_refptr<DevToolsAgentHost> host_;
@@ -2149,6 +2174,8 @@ class DevToolsInspectorLogWatcher : public DevToolsAgentHostClient {
   GURL last_url_;
   Domain domain_;
   std::string last_media_notification_;
+  std::string last_auto_picture_in_picture_event_info_;
+  base::ObserverList<DevToolsInspectorLogWatcherObserver> observers_;
 };
 
 // Static methods that simulates Mojo methods as if they were called by a

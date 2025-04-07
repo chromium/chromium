@@ -2477,9 +2477,9 @@ class CONTENT_EXPORT ContentBrowserClient {
   CreateWindowForVideoPictureInPicture(
       VideoPictureInPictureWindowController* controller);
 
-  // Returns the reason for entering picture in picture automatically. This is
-  // recorded in metrics.
-  virtual media::PictureInPictureEventsInfo::AutoPipReason GetAutoPipReason(
+  // Returns information related to auto picture in picture. The auto picture in
+  // picture reason is recorded in metrics.
+  virtual media::PictureInPictureEventsInfo::AutoPipInfo GetAutoPipInfo(
       const WebContents& web_contents) const;
 
   // Registers the watcher to observe updates in RendererPreferences.

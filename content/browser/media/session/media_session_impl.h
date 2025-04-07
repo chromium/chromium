@@ -319,6 +319,10 @@ class MediaSessionImpl : public MediaSession,
       int desired_size_px,
       GetMediaImageBitmapCallback callback) override;
 
+  // Called to report to all players that the auto picture in picture
+  // information changed.
+  void ReportAutoPictureInPictureInfoChanged() override;
+
   const base::UnguessableToken& audio_focus_group_id() const {
     return audio_focus_group_id_;
   }
@@ -529,10 +533,6 @@ class MediaSessionImpl : public MediaSession,
   void IncreaseDurationUpdateAllowance();
 
   void ResetDurationUpdateGuard();
-
-  // Called when any of the normal players auto picture in picture information
-  // changes.
-  void OnAutoPictureInPictureInfoChanged();
 
   CONTENT_EXPORT void SetShouldThrottleDurationUpdateForTest(
       bool should_throttle);

@@ -7194,17 +7194,16 @@ ChromeContentBrowserClient::CreateWindowForVideoPictureInPicture(
   return content::VideoOverlayWindow::Create(controller);
 }
 
-media::PictureInPictureEventsInfo::AutoPipReason
-ChromeContentBrowserClient::GetAutoPipReason(
+media::PictureInPictureEventsInfo::AutoPipInfo
+ChromeContentBrowserClient::GetAutoPipInfo(
     const content::WebContents& web_contents) const {
 #if BUILDFLAG(IS_ANDROID)
-  return media::PictureInPictureEventsInfo::AutoPipReason::kUnknown;
+  return media::PictureInPictureEventsInfo::AutoPipInfo();
 #else
   auto* auto_pip_tab_helper =
       AutoPictureInPictureTabHelper::FromWebContents(&web_contents);
-  return auto_pip_tab_helper
-             ? auto_pip_tab_helper->GetAutoPipTriggerReason()
-             : media::PictureInPictureEventsInfo::AutoPipReason::kUnknown;
+  return auto_pip_tab_helper ? auto_pip_tab_helper->GetAutoPipInfo()
+                             : media::PictureInPictureEventsInfo::AutoPipInfo();
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
