@@ -23,6 +23,7 @@ namespace {
 
 class GlicFreControllerBrowserTest : public glic::test::InteractiveGlicTest {
  public:
+  GlicFreControllerBrowserTest() = default;
   ~GlicFreControllerBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -44,15 +45,29 @@ class GlicFreControllerBrowserTest : public glic::test::InteractiveGlicTest {
   }
 
   void WaitForFreShow() {
-    ASSERT_TRUE(base::test::RunUntil(
-        [&]() { return glic_fre_controller()->IsShowingDialog(); }));
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return glic_fre_controller()->IsShowingDialog();
+    })) << "FRE dialog should have been shown";
+  }
+
+  void WaitForFreClose() {
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return !glic_fre_controller()->IsShowingDialog();
+    })) << "FRE dialog should have been closed";
+  }
+
+  void WaitForGlicPanelShow() {
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return glic_test_environment().GetService()->IsWindowShowing();
+    })) << "Glic panel should have been shown";
   }
 
   void EnsureFreDoesNotShow() {
     auto end_time = base::TimeTicks::Now() + base::Milliseconds(500);
     ASSERT_TRUE(base::test::RunUntil(
         [&]() { return end_time < base::TimeTicks::Now(); }));
-    ASSERT_FALSE(glic_fre_controller()->IsShowingDialog());
+    ASSERT_FALSE(glic_fre_controller()->IsShowingDialog())
+        << "FRE dialog should not have been shown";
   }
 };
 
@@ -226,6 +241,19 @@ IN_PROC_BROWSER_TEST_F(GlicFreControllerBrowserTest,
   // Destroy the WebContents that the dialog is being shown on.
   browser()->tab_strip_model()->CloseWebContentsAt(
       0, TabCloseTypes::CLOSE_USER_GESTURE);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicFreControllerBrowserTest, FreAcceptance) {
+  // Open the FRE dialog in a tab.
+  chrome::AddTabAt(browser(), GURL("about:blank"), 0, true);
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  glic_fre_controller()->ShowFreDialog(browser());
+  WaitForFreShow();
+
+  // Accept the FRE and confirm it closed and the glic panel opened.
+  glic_fre_controller()->AcceptFre();
+  WaitForFreClose();
+  WaitForGlicPanelShow();
 }
 
 }  // namespace
