@@ -54,11 +54,17 @@ testing::AssertionResult FuzzyMatchesPngFile(
 
 // Takes `pdf_data` and loads it using PDFium. Then renders the page at
 // `page_index` to a bitmap of `size_in_points` and checks if it matches
-// `expected_png_file`.
+// `expected_png_file` exactly.
 void CheckPdfRendering(base::span<const uint8_t> pdf_data,
                        int page_index,
                        const gfx::Size& size_in_points,
                        const base::FilePath& expected_png_file);
+
+// Same as CheckPdfRendering(), but with a fuzzy pixel comparator.
+void CheckFuzzyPdfRendering(base::span<const uint8_t> pdf_data,
+                            int page_index,
+                            const gfx::Size& size_in_points,
+                            const base::FilePath& expected_png_file);
 
 // Creates a Skia surface with dimensions `size` and filled with `color`.
 sk_sp<SkSurface> CreateSkiaSurfaceForTesting(const gfx::Size& size,
