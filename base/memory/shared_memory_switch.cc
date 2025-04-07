@@ -18,7 +18,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
-#include "base/types/expected.h"
 #include "base/unguessable_token.h"
 
 // On Apple platforms, the shared memory handle is shared using a Mach port
@@ -36,7 +35,9 @@
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
-#include "base/win/win_util.h"
+#include "base/types/expected.h"
+#include "base/win/scoped_handle.h"
+#include "base/win/windows_handle_util.h"
 #endif
 
 #if BUILDFLAG(IS_FUCHSIA)

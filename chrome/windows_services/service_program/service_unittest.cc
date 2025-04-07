@@ -40,7 +40,7 @@
 #include "base/types/expected.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_com_initializer.h"
-#include "base/win/win_util.h"
+#include "base/win/windows_handle_util.h"
 #include "chrome/common/env_vars.h"
 #include "chrome/windows_services/service_program/test_service_idl.h"
 #include "chrome/windows_services/service_program/test_support/service_environment.h"

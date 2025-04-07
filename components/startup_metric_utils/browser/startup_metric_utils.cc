@@ -31,10 +31,9 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
-
 #include <winternl.h>
 
-#include "base/win/win_util.h"
+#include "base/win/windows_handle_util.h"
 
 namespace {
 

@@ -7,7 +7,7 @@
 #include "base/command_line.h"
 #include "base/process/launch.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/win/win_util.h"
+#include "base/win/windows_handle_util.h"
 #include "testing/multiprocess_func_list.h"
 
 namespace elevated_tracing_service {

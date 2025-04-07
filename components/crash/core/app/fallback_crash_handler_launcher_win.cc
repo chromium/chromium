@@ -12,7 +12,7 @@
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/win/win_util.h"
+#include "base/win/windows_handle_util.h"
 
 namespace crash_reporter {
 

@@ -22,7 +22,7 @@
 #include "base/threading/thread.h"
 #include "base/types/expected.h"
 #include "base/win/scoped_bstr.h"
-#include "base/win/win_util.h"
+#include "base/win/windows_handle_util.h"
 #include "chrome/common/chrome_version.h"
 #include "chrome/common/win/eventlog_messages.h"
 #include "chrome/windows_services/service_program/crash_reporting.h"

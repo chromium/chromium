@@ -10,7 +10,7 @@
 
 #include "base/strings/string_util.h"
 #include "base/win/scoped_handle.h"
-#include "base/win/win_util.h"
+#include "base/win/windows_handle_util.h"
 #include "sandbox/win/src/crosscall_client.h"
 #include "sandbox/win/src/interception.h"
 #include "sandbox/win/src/interceptors.h"
