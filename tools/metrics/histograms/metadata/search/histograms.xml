@@ -302,7 +302,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Search.ChoiceDebug.ScrollStateWithMoreButtonClick"
     enum="SearchEngineChoiceScrollState" expires_after="2025-08-24">
-  <owner>jyammine@google.com</owner>
+  <owner>dgn@chromium.org</owner>
   <owner>chrome-waffle-eng@google.com</owner>
   <summary>
     Records an enum that represents the search engine choice page scroll state
@@ -981,7 +981,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Search.OsDefaultsChoice.DelayFromDialogShownToFirstStatus"
     units="ms" expires_after="2025-09-14">
-  <owner>dgn@google.com</owner>
+  <owner>dgn@chromium.org</owner>
   <owner>triploblastic@google.com</owner>
   <owner>chrome-waffle-eng@google.com</owner>
   <summary>
@@ -1001,7 +1001,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Search.OsDefaultsChoice.DelayFromObservationToFirstStatus"
     units="ms" expires_after="2025-09-14">
-  <owner>dgn@google.com</owner>
+  <owner>dgn@chromium.org</owner>
   <owner>triploblastic@google.com</owner>
   <owner>chrome-waffle-eng@google.com</owner>
   <summary>
@@ -1018,7 +1018,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Search.OsDefaultsChoice.DialogShownAttempt" units="attempts"
     expires_after="2025-09-14">
-  <owner>dgn@google.com</owner>
+  <owner>dgn@chromium.org</owner>
   <owner>triploblastic@google.com</owner>
   <owner>chrome-waffle-eng@google.com</owner>
   <summary>
@@ -1038,7 +1038,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Search.OsDefaultsChoice.DialogStatusChange"
     enum="OsDefaultsChoiceDialogStatus" expires_after="2025-09-14">
-  <owner>dgn@google.com</owner>
+  <owner>dgn@chromium.org</owner>
   <owner>triploblastic@google.com</owner>
   <owner>chrome-waffle-eng@google.com</owner>
   <summary>
@@ -1056,7 +1056,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Search.OsDefaultsChoice.DialogStatusOnAppOpen"
     enum="OsDefaultsChoiceDialogStatus" expires_after="2025-09-14">
-  <owner>dgn@google.com</owner>
+  <owner>dgn@chromium.org</owner>
   <owner>triploblastic@google.com</owner>
   <owner>chrome-waffle-eng@google.com</owner>
   <summary>
@@ -1067,7 +1067,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Search.OsDefaultsChoice.DialogSuppressionStatus"
     enum="OsDefaultsChoiceDialogSuppressionStatus" expires_after="2025-09-14">
-  <owner>dgn@google.com</owner>
+  <owner>dgn@chromium.org</owner>
   <owner>triploblastic@google.com</owner>
   <owner>chrome-waffle-eng@google.com</owner>
   <summary>
@@ -1086,7 +1086,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Search.OsDefaultsChoice.LaunchChoiceScreenTapHandlingStatus"
     enum="LaunchOsChoiceScreenTapHandlingStatus" expires_after="2025-08-24">
-  <owner>dgn@google.com</owner>
+  <owner>dgn@chromium.org</owner>
   <owner>triploblastic@google.com</owner>
   <owner>chrome-waffle-eng@google.com</owner>
   <summary>

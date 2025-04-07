@@ -6491,7 +6491,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ChooseDefaultSearchEngine">
-  <owner>jyammine@google.com</owner>
+  <owner>dgn@chromium.org</owner>
   <owner>chrome-waffle-eng@google.com</owner>
   <description>
     Action indicating that the user clicked on the &quot;Change&quot; button in
@@ -6815,8 +6815,8 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ClearBrowsingData_SignOut">
-  <owner>gabolvr@google.com</owner>
   <owner>droger@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
   <description>
     User signed out from the Clear Browsing Data footer.
   </description>
@@ -10647,7 +10647,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ExpandSearchEngineDescription">
-  <owner>jyammine@google.com</owner>
+  <owner>dgn@chromium.org</owner>
   <owner>chrome-waffle-eng@google.com</owner>
   <description>
     Action indicating that the user expanded the chevron in the search engine
@@ -31514,7 +31514,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="OsDefaultsChoiceDialogClosed">
-  <owner>dgn@google.com</owner>
+  <owner>dgn@chromium.org</owner>
   <owner>triploblastic@google.com</owner>
   <owner>chrome-waffle-eng@google.com</owner>
   <description>
@@ -31525,7 +31525,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="OsDefaultsChoiceDialogShown" not_user_triggered="true">
-  <owner>dgn@google.com</owner>
+  <owner>dgn@chromium.org</owner>
   <owner>triploblastic@google.com</owner>
   <owner>chrome-waffle-eng@google.com</owner>
   <description>
@@ -31535,7 +31535,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="OsDefaultsChoiceDialogUnblocked" not_user_triggered="true">
-  <owner>dgn@google.com</owner>
+  <owner>dgn@chromium.org</owner>
   <owner>triploblastic@google.com</owner>
   <owner>chrome-waffle-eng@google.com</owner>
   <description>
@@ -34914,7 +34914,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="SearchEngineChoiceScreenShown">
-  <owner>jyammine@google.com</owner>
+  <owner>dgn@chromium.org</owner>
   <owner>chrome-waffle-eng@google.com</owner>
   <description>
     Recorded when the search engine choice screen is displayed. The screen could
