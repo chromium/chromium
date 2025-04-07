@@ -239,10 +239,16 @@ TEST_F(OnTaskSessionManagerTest,
 
 TEST_F(OnTaskSessionManagerTest, ShouldCloseBocaSWAOnSessionEnd) {
   const SessionID kWindowId = SessionID::NewUnique();
+  Sequence s;
   EXPECT_CALL(*system_web_app_manager_ptr_, GetActiveSystemWebAppWindowID())
-      .WillOnce(Return(kWindowId));
+      .WillRepeatedly(Return(kWindowId));
+  EXPECT_CALL(*system_web_app_manager_ptr_,
+              SetPinStateForSystemWebAppWindow(false, kWindowId))
+      .Times(1)
+      .InSequence(s);
   EXPECT_CALL(*system_web_app_manager_ptr_, CloseSystemWebAppWindow(kWindowId))
-      .Times(1);
+      .Times(1)
+      .InSequence(s);
   session_manager_->OnSessionEnded("test_session_id");
 
   // Verify session end notification was shown and window lock state was reset.
@@ -256,7 +262,7 @@ TEST_F(OnTaskSessionManagerTest, ShouldReEnableExtensionsOnSessionEnd) {
   const SessionID kWindowId = SessionID::NewUnique();
   EXPECT_CALL(*system_web_app_manager_ptr_, GetActiveSystemWebAppWindowID())
       .WillRepeatedly(Return(kWindowId));
-  EXPECT_CALL(*extensions_manager_ptr_, ReEnableExtensions).Times(1);
+  EXPECT_CALL(*extensions_manager_ptr_, ReEnableExtensions).Times(AtLeast(1));
   session_manager_->OnSessionEnded("test_session_id");
 
   // Verify session end notification was shown.
