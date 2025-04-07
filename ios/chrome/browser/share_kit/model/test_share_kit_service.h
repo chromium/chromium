@@ -11,6 +11,7 @@
 
 #import "base/memory/weak_ptr.h"
 #import "components/data_sharing/public/protocol/group_data.pb.h"
+#import "components/saved_tab_groups/public/tab_group_sync_service.h"
 #import "components/saved_tab_groups/public/types.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_service.h"
 
@@ -21,10 +22,6 @@ class CollaborationService;
 namespace data_sharing {
 class DataSharingService;
 }  // namespace data_sharing
-
-namespace tab_groups {
-class TabGroupSyncService;
-}  // namespace tab_groups
 
 // Test implementation of the ShareKitService.
 class TestShareKitService : public ShareKitService {
@@ -74,12 +71,22 @@ class TestShareKitService : public ShareKitService {
                                         base::Uuid group_guid,
                                         NSString* collab_id);
 
+  // Used as a callback called when a group `saved_group_guid` is shared.
+  // `result` represents if sharing a group succeeded.
+  void ProcessTabGroupSharingResult(
+      base::Uuid saved_group_guid,
+      tab_groups::TabGroupSyncService::TabGroupSharingResult result);
+
   // Map containing the role of `foo1` identity for each group, based on its
   // collaboration id.
   std::map<std::string, data_sharing_pb::MemberRole> group_to_membership_;
 
   raw_ptr<data_sharing::DataSharingService> data_sharing_service_;
   raw_ptr<tab_groups::TabGroupSyncService> tab_group_sync_service_;
+
+  // The set of group ID that is being shared.
+  std::set<base::Uuid> processing_group_guids_;
+
   base::WeakPtrFactory<TestShareKitService> weak_pointer_factory_{this};
 };
 

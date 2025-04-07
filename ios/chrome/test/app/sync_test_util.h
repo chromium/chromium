@@ -174,6 +174,10 @@ void AddCollaborationGroupToFakeServer(const std::string& collaboration_id);
 // Deletes the shared group with `uuid` on the server.
 void DeleteSharedGroupFromFakeServer(const base::Uuid& uuid);
 
+// Deletes all `data_type` entities from the server without creating
+// tombstones.
+void DeleteAllEntitiesForDataType(syncer::DataType data_type);
+
 }  // namespace chrome_test_util
 
 #endif  // IOS_CHROME_TEST_APP_SYNC_TEST_UTIL_H_

@@ -10,7 +10,6 @@
 #import "components/data_sharing/public/data_sharing_service.h"
 #import "components/saved_tab_groups/public/collaboration_finder.h"
 #import "components/saved_tab_groups/public/saved_tab_group.h"
-#import "components/saved_tab_groups/public/tab_group_sync_service.h"
 #import "ios/chrome/browser/data_sharing/model/data_sharing_sdk_delegate_ios.h"
 #import "ios/chrome/browser/data_sharing/model/data_sharing_ui_delegate_ios.h"
 #import "ios/chrome/browser/share_kit/model/fake_share_kit_flow_view_controller.h"
@@ -298,10 +297,11 @@ void TestShareKitService::SetTabGroupCollabIdFromGroupId(
     chrome_test_util::AddCollaborationGroupToFakeServer(
         collaboration_id.value());
     chrome_test_util::TriggerSyncCycle(syncer::COLLABORATION_GROUP);
-    // TODO(crbug.com/382557489): implement the callback.
     tab_group_sync_service_->MakeTabGroupShared(
         tab_group_id, collaboration_id.value(),
-        tab_groups::TabGroupSyncService::TabGroupSharingCallback());
+        base::BindOnce(&TestShareKitService::ProcessTabGroupSharingResult,
+                       weak_pointer_factory_.GetWeakPtr(),
+                       saved_group.value().saved_guid()));
   }
 }
 
@@ -316,6 +316,29 @@ void TestShareKitService::SetTabGroupCollabIdFromGroupGuid(
     SetTabGroupCollabIdFromGroupId(owner, saved_group->local_group_id().value(),
                                    collab_id);
   }
+}
+
+void TestShareKitService::ProcessTabGroupSharingResult(
+    base::Uuid saved_group_guid,
+    tab_groups::TabGroupSyncService::TabGroupSharingResult result) {
+  if (result !=
+      tab_groups::TabGroupSyncService::TabGroupSharingResult::kSuccess) {
+    return;
+  }
+
+  processing_group_guids_.erase(saved_group_guid);
+  if (processing_group_guids_.size() > 0) {
+    // If the process to share a group is still on-going, do not delete
+    // entities.
+    return;
+  }
+
+  // Delete `SAVED_TAB_GROUP` entities after all groups are successfully shared
+  // and keep only `SHARED_TAB_GROUP_DATA` entities in order to fake the
+  // behavior of sharing a group across different accounts. The fake server
+  // doesn't support multiple accounts and a member in a shared group shouldn't
+  // receieve the `SAVED_TAB_GROUP` data.
+  chrome_test_util::DeleteAllEntitiesForDataType(syncer::SAVED_TAB_GROUP);
 }
 
 void TestShareKitService::CreateSharedTabGroupInFakeServer(
@@ -333,6 +356,9 @@ void TestShareKitService::CreateSharedTabGroupInFakeServer(
   chrome_test_util::AddGroupToFakeServer(
       CreateGroup(u"shared group", tabs, group_guid));
   chrome_test_util::TriggerSyncCycle(syncer::SAVED_TAB_GROUP);
+
+  // Add `group_guid` to keep the track of which group is being shared.
+  processing_group_guids_.insert(group_guid);
 
   // Post delayed task in order to make sure that `NotifyTabGroupAdded` is
   // called first.

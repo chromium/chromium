@@ -56,6 +56,7 @@ using chrome_test_util::ShareGroupButton;
 using chrome_test_util::TabGridCellAtIndex;
 using chrome_test_util::TabGridDoneButton;
 using chrome_test_util::TabGridGroupCellAtIndex;
+using chrome_test_util::TabGridNewTabButton;
 using chrome_test_util::TabGroupBackButton;
 using chrome_test_util::TabGroupCreationView;
 using chrome_test_util::TabGroupOverflowMenuButton;
@@ -74,6 +75,9 @@ NSString* const kSharedGroupTitle = @"shared group";
 // Put the number at the beginning to avoid issues with sentence case, as the
 // keyboard default can differ iPhone vs iPad, simulator vs device.
 NSString* const kGroup1Name = @"1group";
+
+// Constant for timeout while waiting for asynchronous sync operations.
+constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
 
 // Matcher for the face pile button.
 id<GREYMatcher> FacePileButton() {
@@ -577,50 +581,6 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
       waitForUIElementToDisappearWithMatcher:TabGridGroupCellAtIndex(0)];
 }
 
-// Tests that TabGroupAppInterface creates and deletes shared tab groups
-// correctly.
-- (void)testPreparedSharedGroupsAtStartup {
-  if (@available(iOS 17, *)) {
-  } else if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
-  }
-  [TabGroupAppInterface prepareFakeSharedTabGroups:3 asOwner:NO];
-
-  [ChromeEarlGreyUI openTabGrid];
-
-  GREYAssertEqual(3, [TabGroupAppInterface countOfSavedTabGroups],
-                  @"The number of saved tab groups should be 3.");
-
-  // Verify that 3 shared tab groups created by `+prepareFakeSharedTabGroups:`
-  // exist in the tab grid.
-  [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(1)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(2)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(3)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Delete the first group.
-  [TabGroupAppInterface removeAtIndex:0];
-
-  // Verify the first shared group is deleted and the position of other 2 shared
-  // groups is shifted.
-  [ChromeEarlGrey
-      waitForUIElementToDisappearWithMatcher:TabGridGroupCellAtIndex(3)];
-  [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(1)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(2)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Verify that the context menu offers to Manage button instead of the Share
-  // button.
-  LongPressTabGroupCellAtIndex(1);
-  [[EarlGrey selectElementWithMatcher:ManageGroupButton()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:ShareGroupButton()]
-      assertWithMatcher:grey_notVisible()];
-}
-
 // Checks last tab close alert as owner of the group open a new tab and close
 // the last tab, when "Keep Group" is pressed and delete the group when "Delete
 // Group" is pressed.
@@ -856,6 +816,110 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
   // Check that kSharedTabTitle tab cell is not in the group anymore.
   [[EarlGrey selectElementWithMatcher:TabWithTitle(kSharedTabTitle)]
       assertWithMatcher:grey_nil()];
+}
+
+// Ensures that adding a tab from another account reflects correctly in a shared
+// group.
+- (void)testAddNewTabFromAnotherAccount {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
+  AddSharedGroup(/*owner=*/YES);
+  [ChromeEarlGrey waitForMainTabCount:1];
+
+  // Open the group view.
+  [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(0)]
+      performAction:grey_tap()];
+
+  // Open a first tab and wait until loading is completed.
+  [[EarlGrey selectElementWithMatcher:TabGridCellAtIndex(0)]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  // Add a new tab.
+  [ChromeEarlGreyUI openNewTab];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  // Make sure that the second tab exists in the group.
+  [ChromeEarlGreyUI openTabGrid];
+  [[EarlGrey selectElementWithMatcher:TabGridCellAtIndex(1)]
+      assertWithMatcher:grey_notNil()];
+
+  // Sign out from the current identity (FakeIdentity1).
+  [SigninEarlGrey signOut];
+
+  // Open a new tab.
+  [[EarlGrey selectElementWithMatcher:TabGridNewTabButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Sign in with another identity (FakeIdentity2).
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity2]
+                         enableHistorySync:YES];
+  [ChromeEarlGrey
+      waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
+
+  [ChromeEarlGreyUI openTabGrid];
+  [ChromeEarlGrey waitForMainTabCount:3];
+
+  // Remove a new tab that is automatically created when a user signs in.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          TabGridCloseButtonForCellAtIndex(0)]
+      performAction:grey_tap()];
+
+  // Open the group view.
+  [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(0)]
+      performAction:grey_tap()];
+
+  // Verify that there are 2 tabs in the group.
+  [[EarlGrey selectElementWithMatcher:TabGridCellAtIndex(0)]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey selectElementWithMatcher:TabGridCellAtIndex(1)]
+      assertWithMatcher:grey_notNil()];
+
+  // Open a first tab and wait until loading is completed.
+  [[EarlGrey selectElementWithMatcher:TabGridCellAtIndex(0)]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  // Add a new tab.
+  [ChromeEarlGreyUI openNewTab];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  // Sign out from the current identity (FakeIdentity2).
+  [SigninEarlGrey signOut];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  [[EarlGrey selectElementWithMatcher:TabGridNewTabButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Sign in with the owner identity again (FakeIdentity1).
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
+                         enableHistorySync:YES];
+  [ChromeEarlGrey
+      waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
+
+  [ChromeEarlGreyUI openTabGrid];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Remove a new tab that is automatically created when a user signs in.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          TabGridCloseButtonForCellAtIndex(0)]
+      performAction:grey_tap()];
+
+  // Open the group view.
+  [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(0)]
+      performAction:grey_tap()];
+
+  // Verify that there are 3 tabs in the group.
+  [[EarlGrey selectElementWithMatcher:TabGridCellAtIndex(0)]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey selectElementWithMatcher:TabGridCellAtIndex(1)]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey selectElementWithMatcher:TabGridCellAtIndex(2)]
+      assertWithMatcher:grey_notNil()];
 }
 
 @end

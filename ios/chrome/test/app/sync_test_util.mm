@@ -611,4 +611,8 @@ void DeleteSharedGroupFromFakeServer(const base::Uuid& uuid) {
   }
 }
 
+void DeleteAllEntitiesForDataType(syncer::DataType data_type) {
+  gSyncFakeServer->DeleteAllEntitiesForDataType(data_type);
+}
+
 }  // namespace chrome_test_util

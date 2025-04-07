@@ -126,15 +126,17 @@ ACTION_TEMPLATE(InvokeCallbackArgument,
       GetTabGroupSyncService()->GetAllGroups();
   tab_groups::SavedTabGroup groupToRemove = groups[index];
 
+  chrome_test_util::DeleteTabOrGroupFromFakeServer(groupToRemove.saved_guid());
+  chrome_test_util::TriggerSyncCycle(syncer::SAVED_TAB_GROUP);
+
+  // When a group is shared, the fake server stores the data of the group as
+  // syncer::SAVED_TAB_GROUP and syncer::SHARED_TAB_GROUP_DATA. Remove the both
+  // data from the fake server.
   if (groupToRemove.is_shared_tab_group()) {
     chrome_test_util::DeleteSharedGroupFromFakeServer(
         groupToRemove.saved_guid());
-  } else {
-    chrome_test_util::DeleteTabOrGroupFromFakeServer(
-        groupToRemove.saved_guid());
+    chrome_test_util::TriggerSyncCycle(syncer::SHARED_TAB_GROUP_DATA);
   }
-
-  chrome_test_util::TriggerSyncCycle(syncer::SAVED_TAB_GROUP);
 }
 
 + (void)cleanup {
