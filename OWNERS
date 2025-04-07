@@ -99,6 +99,7 @@ per-file third_party/chromite=*
 per-file third_party/clang-format/script=*
 per-file third_party/cld_3/src=*
 per-file third_party/colorama/src=*
+per-file third_party/compiler-rt/src=*
 per-file third_party/content_analysis_sdk/src=*
 per-file third_party/cpu_features/src=*
 per-file third_party/cpuinfo/src=*
