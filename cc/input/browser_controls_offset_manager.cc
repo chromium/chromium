@@ -279,7 +279,6 @@ void BrowserControlsOffsetManager::OnBrowserControlsParamsChanged(
                                ? BottomControlsShownRatio() *
                                      old_bottom_height / BottomControlsHeight()
                                : BottomControlsShownRatio();
-
   if (!animate_changes) {
     // If the min-heights changed when the controls were at the min-height, the
     // shown ratios need to be snapped to the new min-shown-ratio to keep the
@@ -287,10 +286,15 @@ void BrowserControlsOffsetManager::OnBrowserControlsParamsChanged(
     // keep them fully shown even after the heights changed. For any other
     // cases, we should update the shown ratio so the visible height remains the
     // same.
-    if (TopControlsShownRatio() == OldTopControlsMinShownRatio())
+    bool min_height_changed =
+        TopControlsMinHeight() !=
+        old_browser_controls_params_.top_controls_min_height;
+    if (min_height_changed &&
+        TopControlsShownRatio() == OldTopControlsMinShownRatio()) {
       new_top_ratio = TopControlsMinShownRatio();
-    else if (TopControlsShownRatio() == 1.f)
+    } else if (TopControlsShownRatio() == 1.f) {
       new_top_ratio = 1.f;
+    }
 
     if (BottomControlsShownRatio() == OldBottomControlsMinShownRatio())
       new_bottom_ratio = BottomControlsMinShownRatio();
