@@ -1911,6 +1911,16 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         if (mAccessibilityFocusId == id) {
             sendAccessibilityEvent(id, AccessibilityEvent.TYPE_VIEW_CLICKED);
         }
+
+        if (isAccessibilityEnabled()) {
+            AccessibilityEvent event =
+                    AccessibilityEvent.obtain(AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
+            if (event == null) return;
+
+            event.setContentChangeTypes(AccessibilityEvent.CONTENT_CHANGE_TYPE_CHECKED);
+            event.setSource(mView, id);
+            requestSendAccessibilityEvent(event);
+        }
     }
 
     @CalledByNative

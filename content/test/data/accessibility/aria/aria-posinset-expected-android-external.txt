@@ -20,7 +20,7 @@ WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="ro
 ++TextView text:"Banana" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]
 ++View text:"Cake" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="group"]
 ++++View text:"Cake" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="legend"]
-++++RadioButton text:"Chiffon cakes" stateDescription:"Checked. In group, option 1 of 2" checkable checked clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="radioButton", clickableScore="300", roleDescription="radio button"]
+++++RadioButton text:"Chiffon cakes" stateDescription:"Checked. In group, option 1 of 2" checkable clickable focusable checked actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="radioButton", clickableScore="300", roleDescription="radio button"]
 ++++View text:"\n" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="lineBreak"]
 ++++RadioButton text:"Chocolate cakes" stateDescription:"Not checked. In group, option 2 of 2" checkable clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="radioButton", clickableScore="300", roleDescription="radio button"]
 ++View actions:[AX_FOCUS] bundle:[chromeRole="sectionWithoutName"]

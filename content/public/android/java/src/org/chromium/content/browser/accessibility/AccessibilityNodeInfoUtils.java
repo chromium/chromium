@@ -136,9 +136,6 @@ public class AccessibilityNodeInfoUtils {
         if (node.isCheckable()) {
             builder.append(" checkable");
         }
-        if (node.isChecked()) {
-            builder.append(" checked");
-        }
         if (node.isClickable()) {
             builder.append(" clickable");
         }
@@ -200,6 +197,11 @@ public class AccessibilityNodeInfoUtils {
         }
         if (node.getExpandedState() != AccessibilityNodeInfo.EXPANDED_STATE_UNDEFINED) {
             builder.append(" expandedState:").append(node.getExpandedState());
+        }
+        if (node.getChecked() == AccessibilityNodeInfo.CHECKED_STATE_TRUE) {
+            builder.append(" checked");
+        } else if (node.getChecked() == AccessibilityNodeInfo.CHECKED_STATE_PARTIAL) {
+            builder.append(" partiallyChecked");
         }
 
         // Child objects - print for non-null cases.

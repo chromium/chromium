@@ -85,6 +85,14 @@ enum {
   ANDROID_VIEW_ACCESSIBILITY_SELECTION_MODE_MULTIPLE = 2,
 };
 
+// These are enums from
+// android.view.accessibility.AccessibilityNodeInfo.CheckedState in Java:
+enum {
+  ANDROID_VIEW_ACCESSIBILITY_CHECKED_STATE_FALSE = 0,
+  ANDROID_VIEW_ACCESSIBILITY_CHECKED_STATE_TRUE = 1,
+  ANDROID_VIEW_ACCESSIBILITY_CHECKED_STATE_PARTIAL = 2,
+};
+
 }  // namespace
 
 namespace ui {
@@ -350,13 +358,6 @@ bool BrowserAccessibilityAndroid::IsRangeControlWithoutAriaValueText() const {
   return GetData().IsRangeValueSupported() &&
          !HasStringAttribute(ax::mojom::StringAttribute::kValue) &&
          HasFloatAttribute(ax::mojom::FloatAttribute::kValueForRange);
-}
-
-bool BrowserAccessibilityAndroid::IsReportingCheckable() const {
-  // To communicate kMixed state Checkboxes, we will rely on state description,
-  // so we will not report node as checkable to avoid duplicate utterances.
-  return IsCheckable() &&
-         GetData().GetCheckedState() != ax::mojom::CheckedState::kMixed;
 }
 
 bool BrowserAccessibilityAndroid::IsRequired() const {
@@ -999,13 +1000,8 @@ std::u16string BrowserAccessibilityAndroid::GetStateDescription() const {
     state_descs.push_back(GetMultiselectableStateDescription());
   }
 
-  // For Checkboxes, if we are in a kMixed state, we will communicate
-  // "partially checked" through the state description. This is mutually
-  // exclusive with the on/off of toggle buttons below.
-  if (IsCheckable() && !IsReportingCheckable()) {
-    state_descs.push_back(GetCheckboxStateDescription());
-  } else if (GetRole() == ax::mojom::Role::kToggleButton ||
-             GetRole() == ax::mojom::Role::kSwitch) {
+  if (GetRole() == ax::mojom::Role::kToggleButton ||
+      GetRole() == ax::mojom::Role::kSwitch) {
     // For Toggle buttons and switches, we will append "on"/"off" in the state
     // description.
     state_descs.push_back(GetToggleStateDescription());
@@ -1110,11 +1106,6 @@ std::u16string BrowserAccessibilityAndroid::GetToggleStateDescription() const {
   }
 
   return GetLocalizedString(IDS_AX_TOGGLE_BUTTON_OFF);
-}
-
-std::u16string BrowserAccessibilityAndroid::GetCheckboxStateDescription()
-    const {
-  return GetLocalizedString(IDS_AX_CHECKBOX_PARTIALLY_CHECKED);
 }
 
 std::u16string BrowserAccessibilityAndroid::GetAriaCurrentStateDescription()
@@ -1276,6 +1267,19 @@ std::u16string BrowserAccessibilityAndroid::GetComboboxExpandedTextFallback()
 
 std::string BrowserAccessibilityAndroid::GetRoleString() const {
   return ui::ToString(GetRole());
+}
+
+int BrowserAccessibilityAndroid::GetChecked() const {
+  ax::mojom::CheckedState checkedState = GetData().GetCheckedState();
+  switch (checkedState) {
+    case ax::mojom::CheckedState::kNone:
+    case ax::mojom::CheckedState::kFalse:
+      return ANDROID_VIEW_ACCESSIBILITY_CHECKED_STATE_FALSE;
+    case ax::mojom::CheckedState::kTrue:
+      return ANDROID_VIEW_ACCESSIBILITY_CHECKED_STATE_TRUE;
+    case ax::mojom::CheckedState::kMixed:
+      return ANDROID_VIEW_ACCESSIBILITY_CHECKED_STATE_PARTIAL;
+  }
 }
 
 std::u16string BrowserAccessibilityAndroid::GetRoleDescription() const {

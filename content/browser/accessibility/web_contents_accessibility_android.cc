@@ -1246,11 +1246,10 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
   }
 
   Java_AccessibilityNodeInfoBuilder_setAccessibilityNodeInfoBooleanAttributes(
-      env, obj, info, unique_id, node->IsReportingCheckable(),
-      node->IsChecked(), node->IsClickable(), node->IsContentInvalid(),
-      node->IsEnabled(), node->IsFocusable(), node->IsFocused(),
-      node->HasImage(), node->IsPasswordField(), node->IsScrollable(),
-      node->IsSelected(), node->IsVisibleToUser(),
+      env, obj, info, unique_id, node->IsCheckable(), node->IsClickable(),
+      node->IsContentInvalid(), node->IsEnabled(), node->IsFocusable(),
+      node->IsFocused(), node->HasImage(), node->IsPasswordField(),
+      node->IsScrollable(), node->IsSelected(), node->IsVisibleToUser(),
       node->HasCharacterLocations(), node->IsRequired());
 
   Java_AccessibilityNodeInfoBuilder_addAccessibilityNodeInfoActions(
@@ -1275,7 +1274,7 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
       node->ClickableScore(), GetCanonicalJNIString(env, node->GetCSSDisplay()),
       base::android::ConvertUTF16ToJavaString(env, node->GetBrailleLabel()),
       GetCanonicalJNIString(env, node->GetBrailleRoleDescription()),
-      node->ExpandedState());
+      node->ExpandedState(), node->GetChecked());
 
   ScopedJavaLocalRef<jintArray> suggestion_starts_java;
   ScopedJavaLocalRef<jintArray> suggestion_ends_java;

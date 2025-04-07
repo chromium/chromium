@@ -198,6 +198,8 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid
   int GetMaxScrollY() const;
   bool Scroll(int direction, bool is_page_scroll) const;
 
+  int GetChecked() const;
+
   int GetTextChangeFromIndex() const;
   int GetTextChangeAddedCount() const;
   int GetTextChangeRemovedCount() const;

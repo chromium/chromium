@@ -206,7 +206,6 @@ public class AccessibilityNodeInfoBuilder {
             AccessibilityNodeInfoCompat node,
             int virtualViewId,
             boolean checkable,
-            boolean checked,
             boolean clickable,
             boolean contentInvalid,
             boolean enabled,
@@ -220,7 +219,6 @@ public class AccessibilityNodeInfoBuilder {
             boolean hasCharacterLocations,
             boolean isRequired) {
         node.setCheckable(checkable);
-        node.setChecked(checked);
         node.setClickable(clickable);
         node.setEnabled(enabled);
         node.setFocusable(focusable);
@@ -406,7 +404,8 @@ public class AccessibilityNodeInfoBuilder {
             String display,
             String brailleLabel,
             String brailleRoleDescription,
-            int expandedState) {
+            int expandedState,
+            int checked) {
         node.setUniqueId(String.valueOf(virtualViewId));
         node.setClassName(className);
 
@@ -460,6 +459,8 @@ public class AccessibilityNodeInfoBuilder {
         if (clickableScore > 0) {
             bundle.putInt(EXTRAS_KEY_CLICKABLE_SCORE, clickableScore);
         }
+
+        node.setChecked(checked);
     }
 
     @SuppressLint("NewApi")

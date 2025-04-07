@@ -27,7 +27,6 @@ namespace {
 // clang-format off
 const char* const BOOL_ATTRIBUTES[] = {
     "checkable",
-    "checked",
     "clickable",
     "collapsed",
     "collection",
@@ -82,6 +81,7 @@ const char* const INT_ATTRIBUTES[] = {
     "text_change_removed_count",
     "selection_mode",
     "expanded_state",
+    "checked",
 };
 
 const char* const ACTION_ATTRIBUTES[] = {
@@ -168,7 +168,6 @@ void AccessibilityTreeFormatterAndroid::AddProperties(
 
   // Bool attributes.
   dict->Set("checkable", android_node->IsCheckable());
-  dict->Set("checked", android_node->IsChecked());
   dict->Set("clickable", android_node->IsClickable());
   dict->Set("collapsed", android_node->IsCollapsed());
   dict->Set("collection", android_node->IsCollection());
@@ -225,6 +224,7 @@ void AccessibilityTreeFormatterAndroid::AddProperties(
             android_node->GetTextChangeRemovedCount());
   dict->Set("selection_mode", android_node->GetSelectionMode());
   dict->Set("expanded_state", android_node->ExpandedState());
+  dict->Set("checked", android_node->GetChecked());
 
   // Actions.
   dict->Set("action_expand", android_node->IsCollapsed());

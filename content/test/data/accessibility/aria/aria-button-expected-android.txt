@@ -1,11 +1,11 @@
 android.webkit.WebView focusable focused
 ++android.widget.Button role_description='button' clickable focusable interesting name='Button1'
-++android.widget.ToggleButton role_description='toggle button' checkable checked clickable focusable interesting name='Button2' state_description='On'
+++android.widget.ToggleButton role_description='toggle button' checkable clickable focusable interesting name='Button2' state_description='On' checked=1
 ++android.widget.ToggleButton role_description='toggle button' checkable clickable focusable interesting name='Button3' state_description='Off'
 ++android.widget.Button role_description='menu pop up button' clickable focusable interesting name='Button4'
 ++android.widget.Button role_description='button' clickable focusable interesting name='Button5'
 ++android.widget.Button role_description='button' clickable focusable interesting name='Complex button '
-++android.widget.ToggleButton role_description='toggle button' checkable checked clickable focusable interesting name='Complex toggle button ' state_description='On'
+++android.widget.ToggleButton role_description='toggle button' checkable clickable focusable interesting name='Complex toggle button ' state_description='On' checked=1
 ++++android.widget.TextView name='Complex toggle button '
 ++++android.widget.EditText clickable editable_text focusable interesting input_type=1
 ++android.widget.Button role_description='menu pop up button' clickable focusable interesting name='Complex pop up button '
