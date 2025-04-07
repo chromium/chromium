@@ -24,11 +24,14 @@
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
 #include "chrome/browser/enterprise/reporting/prefs.h"
 #include "chrome/browser/policy/dm_token_utils.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/ui/webui/management/management_ui_constants.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"
 #include "components/enterprise/browser/reporting/real_time_report_type.h"
@@ -87,7 +90,6 @@
 #include "chrome/browser/net/stub_resolver_config_reader.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/ui/webui/management/management_ui_handler_chromeos.h"
-#include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/dbus/shill/shill_service_client.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
@@ -143,18 +145,22 @@ struct ContextualManagementSourceUpdate {
   std::u16string management_overview;
   std::u16string update_required_eol;
   bool show_monitored_network_privacy_disclosure;
+  bool show_windows_notice_for_desk_sync;
+  bool show_cookies_notice_for_desk_sync;
 #else
   std::u16string browser_management_notice;
 #endif  // BUILDFLAG(IS_CHROMEOS)
   bool managed;
 };
 
-#if BUILDFLAG(IS_CHROMEOS)
 namespace {
 const char kUser[] = "user@domain.com";
+#if BUILDFLAG(IS_CHROMEOS)
 const GaiaId::Literal kGaiaId("gaia_id");
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }  // namespace
 
+#if BUILDFLAG(IS_CHROMEOS)
 // This class is just to mock the behaviour of the few flags we need for
 // simulating the behaviour of the policy::DeviceStatusCollector.
 // The expected flags are passed to the constructor.
@@ -227,7 +233,7 @@ class TestDeviceCloudPolicyManagerAsh
 using ManagementUIHandlerBase = ManagementUIHandlerChromeOS;
 #else
 using ManagementUIHandlerBase = ManagementUIHandler;
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 class TestManagementUIHandler : public ManagementUIHandlerBase {
  public:
   TestManagementUIHandler() : ManagementUIHandlerBase(/*profile=*/nullptr) {}
@@ -320,8 +326,7 @@ class TestManagementUIHandler : public ManagementUIHandlerBase {
 // better separated.
 class ManagementUIHandlerTests :
 #if BUILDFLAG(IS_CHROMEOS)
-    public ash::DeviceSettingsTestBase,
-    public Profile::Delegate
+    public ash::DeviceSettingsTestBase
 #else
     public testing::Test
 #endif
@@ -394,10 +399,12 @@ class ManagementUIHandlerTests :
 #if BUILDFLAG(IS_CHROMEOS)
     extracted_.management_overview = ExtractPathFromDict(data, "overview");
     extracted_.update_required_eol = ExtractPathFromDict(data, "eolMessage");
-    std::optional<bool> showProxyDisclosure =
-        data.FindBool("showMonitoredNetworkPrivacyDisclosure");
     extracted_.show_monitored_network_privacy_disclosure =
-        showProxyDisclosure.has_value() && showProxyDisclosure.value();
+        data.FindBool("showMonitoredNetworkPrivacyDisclosure").value_or(false);
+    extracted_.show_windows_notice_for_desk_sync =
+        data.FindBool("showWindowsNoticeForDeskSync").value_or(false);
+    extracted_.show_cookies_notice_for_desk_sync =
+        data.FindBool("showCookiesNoticeForDeskSync").value_or(false);
 #else
     extracted_.browser_management_notice =
         ExtractPathFromDict(data, "browserManagementNotice");
@@ -424,7 +431,7 @@ class ManagementUIHandlerTests :
     bool crostini_report_usage;
     bool cloud_reporting_enabled;
     bool cloud_profile_reporting_enabled;
-    std::string profile_name;
+    std::string profile_name = kUser;
     bool override_policy_connector_is_managed;
     bool managed_account;
     bool managed_browser;
@@ -439,6 +446,8 @@ class ManagementUIHandlerTests :
     base::Value::List report_website_telemetry;
     base::Value::List report_website_activity_allowlist;
     base::Value::List report_website_telemetry_allowlist;
+    bool sync_windows;
+    bool sync_cookies;
   };
 
   void ResetTestConfig() { ResetTestConfig(true); }
@@ -459,7 +468,7 @@ class ManagementUIHandlerTests :
     setup_config_.crostini_report_usage = default_value;
     setup_config_.cloud_reporting_enabled = default_value;
     setup_config_.cloud_profile_reporting_enabled = default_value;
-    setup_config_.profile_name = "";
+    setup_config_.profile_name = kUser;
     setup_config_.override_policy_connector_is_managed = false;
     setup_config_.managed_account = true;
     setup_config_.managed_browser = true;
@@ -473,19 +482,17 @@ class ManagementUIHandlerTests :
     setup_config_.report_website_telemetry_allowlist = base::Value::List();
     setup_config_.legacy_tech_reporting_enabled = false;
     setup_config_.real_time_url_check_connector_enabled = default_value;
-  }
-
-  void SetUpLocalState() {
-    RegisterLocalState(local_state_.registry());
-    TestingBrowserProcess::GetGlobal()->SetLocalState(&local_state_);
+    setup_config_.sync_windows = false;
+    setup_config_.sync_cookies = false;
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
   void SetUp() override {
-    SetUpLocalState();
-
+    profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal(), &local_state_);
+    ASSERT_TRUE(profile_manager_->SetUp());
     fake_user_manager_.Reset(
-        std::make_unique<user_manager::FakeUserManager>(&local_state_));
+        std::make_unique<user_manager::FakeUserManager>(local_state_.Get()));
 
     const AccountId account_id(AccountId::FromUserEmailGaiaId(kUser, kGaiaId));
     fake_user_manager_->AddGaiaUser(account_id,
@@ -502,7 +509,7 @@ class ManagementUIHandlerTests :
         std::make_unique<ash::NetworkHandlerTestHelper>();
     ash::NetworkMetadataStore::RegisterPrefs(user_prefs_.registry());
     stub_resolver_config_reader_ =
-        std::make_unique<StubResolverConfigReader>(&local_state_);
+        std::make_unique<StubResolverConfigReader>(local_state_.Get());
     SystemNetworkContextManager::set_stub_resolver_config_reader_for_testing(
         stub_resolver_config_reader_.get());
     // The |DeviceSettingsTestBase| setup above instantiates
@@ -518,9 +525,13 @@ class ManagementUIHandlerTests :
     manager_.reset();
     DeviceSettingsTestBase::TearDown();
     install_attributes_.reset();
+    web_contents_.reset();
+    fake_user_manager_->OnUserProfileWillBeDestroyed(
+        AccountId::FromUserEmailGaiaId(GetTestConfig().profile_name, kGaiaId));
+    profile_ = nullptr;
+    profile_manager_.reset();
     user_ = nullptr;
     fake_user_manager_.Reset();
-    TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
   }
 
   void SetUpConnectManager() {
@@ -530,7 +541,7 @@ class ManagementUIHandlerTests :
             base::SingleThreadTaskRunner::GetCurrentDefault());
     manager_ = std::make_unique<TestDeviceCloudPolicyManagerAsh>(
         std::move(store), &state_keys_broker_);
-    manager_.get()->Initialize(&local_state_);
+    manager_.get()->Initialize(local_state_.Get());
   }
 
   base::Value::List SetUpForReportingInfo() {
@@ -540,7 +551,7 @@ class ManagementUIHandlerTests :
       return {};
     }
     const TestDeviceStatusCollector status_collector(
-        &local_state_, GetTestConfig().report_activity_times,
+        local_state_.Get(), GetTestConfig().report_activity_times,
         GetTestConfig().report_nics, GetTestConfig().report_hardware_data,
         GetTestConfig().report_users, GetTestConfig().report_crash_info,
         GetTestConfig().report_app_info_and_activity);
@@ -561,8 +572,8 @@ class ManagementUIHandlerTests :
     profile_->GetPrefs()->SetBoolean(
         crostini::prefs::kReportCrostiniUsageEnabled,
         GetTestConfig().crostini_report_usage);
-    local_state_.SetBoolean(enterprise_reporting::kCloudReportingEnabled,
-                            GetTestConfig().cloud_reporting_enabled);
+    local_state_.Get()->SetBoolean(enterprise_reporting::kCloudReportingEnabled,
+                                   GetTestConfig().cloud_reporting_enabled);
     profile_->GetPrefs()->SetInteger(
         enterprise_connectors::kEnterpriseRealTimeUrlCheckMode, 1);
     profile_->GetPrefs()->SetInteger(
@@ -616,59 +627,61 @@ class ManagementUIHandlerTests :
     }
     return result;
   }
-
-  void OnProfileCreationStarted(Profile* profile,
-                                Profile::CreateMode create_mode) override {
-    ash::AnnotatedAccountId::Set(
-        profile, AccountId::FromUserEmailGaiaId(kUser, kGaiaId));
-  }
-
-  void OnProfileCreationFinished(Profile* profile,
-                                 Profile::CreateMode create_mode,
-                                 bool success,
-                                 bool is_new_profile) override {
-    // Do nothing.
-  }
-
 #else
-  void SetUp() override { SetUpLocalState(); }
-  void TearDown() override {
-    TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
+  void SetUp() override {
+    profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal(), &local_state_);
+    ASSERT_TRUE(profile_manager_->SetUp());
   }
+  void TearDown() override {
+    web_contents_.reset();
+    profile_ = nullptr;
+    profile_manager_.reset();
+  }
+
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   [[nodiscard]] bool SetUpProfileAndHandler() {
     if (profile_) {
       return false;
     }
-    TestingProfile::Builder builder;
-    builder.SetProfileName(GetTestConfig().profile_name);
+    profile_ =
+        profile_manager_->CreateTestingProfile(GetTestConfig().profile_name);
     if (GetTestConfig().override_policy_connector_is_managed) {
-      builder.OverridePolicyConnectorIsManagedForTesting(true);
+      profile_->GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
     }
-#if BUILDFLAG(IS_CHROMEOS)
-    builder.SetDelegate(this);
-#endif  // BUILDFLAG(IS_CHROMEOS)
-    profile_ = builder.Build();
 
 #if BUILDFLAG(IS_CHROMEOS)
-    fake_user_manager_->OnUserProfileCreated(
-        AccountId::FromUserEmailGaiaId(kUser, kGaiaId), profile_->GetPrefs());
+    const AccountId account_id =
+        AccountId::FromUserEmailGaiaId(GetTestConfig().profile_name, kGaiaId);
+    fake_user_manager_->UserLoggedIn(
+        account_id,
+        user_manager::FakeUserManager::GetFakeUsernameHash(account_id));
+    fake_user_manager_->SwitchActiveUser(account_id);
+    fake_user_manager_->OnUserProfileCreated(account_id, profile_->GetPrefs());
+    // Set Floating Workspace (responsible for syncing windows) pref.
+    profile_->GetTestingPrefService()->SetManagedPref(
+        ash::prefs::kFloatingWorkspaceV2Enabled,
+        std::make_unique<base::Value>(GetTestConfig().sync_windows));
+    // Set Floating SSO (responsible for syncing cookies) pref.
+    profile_->GetTestingPrefService()->SetManagedPref(
+        prefs::kFloatingSsoEnabled,
+        std::make_unique<base::Value>(GetTestConfig().sync_cookies));
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
     web_contents_ = content::WebContents::Create(
-        content::WebContents::CreateParams(profile_.get()));
+        content::WebContents::CreateParams(profile_));
     web_ui_.set_web_contents(web_contents_.get());
     handler_.SetAccountManagedForTesting(GetTestConfig().managed_account);
 #if BUILDFLAG(IS_CHROMEOS)
     handler_.SetDeviceManagedForTesting(GetTestConfig().managed_device);
     handler_.SetDeviceDomain(GetTestConfig().device_domain);
-    handler_.CreateSecureDnsManagerForTesting(&local_state_, *user_.get());
+    handler_.CreateSecureDnsManagerForTesting(local_state_.Get(), *user_.get());
 #else
     handler_.SetBrowserManagedForTesting(GetTestConfig().managed_browser);
 #endif
     base::Value::Dict data =
-        handler_.GetContextualManagedDataForTesting(profile_.get());
+        handler_.GetContextualManagedDataForTesting(profile_);
     ExtractContextualSourceUpdate(data);
 
     return true;
@@ -678,11 +691,8 @@ class ManagementUIHandlerTests :
     if (profile_) {
       return false;
     }
-    TestingProfile::Builder builder_no_domain;
-#if BUILDFLAG(IS_CHROMEOS)
-    builder_no_domain.SetDelegate(this);
-#endif
-    profile_ = builder_no_domain.Build();
+    profile_ =
+        profile_manager_->CreateTestingProfile(GetTestConfig().profile_name);
     return true;
   }
 
@@ -704,6 +714,14 @@ class ManagementUIHandlerTests :
   bool GetShowMonitoredNetworkPrivacyDisclosure() const {
     return extracted_.show_monitored_network_privacy_disclosure;
   }
+
+  bool GetShowWindowsNoticeForDeskSync() const {
+    return extracted_.show_windows_notice_for_desk_sync;
+  }
+
+  bool GetShowCookiesNoticeForDeskSync() const {
+    return extracted_.show_cookies_notice_for_desk_sync;
+  }
 #else
 
   std::u16string GetBrowserManagementNotice() const {
@@ -722,7 +740,7 @@ class ManagementUIHandlerTests :
 
   std::u16string GetPageSubtitle() const { return extracted_.subtitle; }
 
-  TestingProfile* GetProfile() const { return profile_.get(); }
+  TestingProfile* GetProfile() const { return profile_; }
 
   TestConfig& GetTestConfig() { return setup_config_; }
 
@@ -732,8 +750,9 @@ class ManagementUIHandlerTests :
   policy::PolicyMap empty_policy_map_;
   std::u16string device_domain_;
   ContextualManagementSourceUpdate extracted_;
-  TestingPrefServiceSimple local_state_;
+  ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
   TestingPrefServiceSimple user_prefs_;
+  std::unique_ptr<TestingProfileManager> profile_manager_;
 #if BUILDFLAG(IS_CHROMEOS)
   user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
       fake_user_manager_;
@@ -750,7 +769,7 @@ class ManagementUIHandlerTests :
 #else
   content::BrowserTaskEnvironment task_environment_;
 #endif
-  std::unique_ptr<TestingProfile> profile_;
+  raw_ptr<TestingProfile> profile_;
   content::TestWebUI web_ui_;
   std::unique_ptr<content::WebContents> web_contents_;
 
@@ -1142,7 +1161,6 @@ TEST_F(ManagementUIHandlerTests,
 TEST_F(ManagementUIHandlerTests, ManagementContextualSourceUpdateUnmanaged) {
   const auto device_type = ui::GetChromeOSDeviceTypeResourceId();
   ResetTestConfig();
-  GetTestConfig().profile_name = "";
   GetTestConfig().managed_account = false;
   GetTestConfig().managed_browser = false;
   GetTestConfig().device_domain = "";
@@ -1484,11 +1502,11 @@ TEST_F(ManagementUIHandlerTests, ReportLegacyTechReport) {
 TEST_F(ManagementUIHandlerTests,
        ShowPrivacyDisclosureForSecureDnsWithIdentifiers) {
   ResetTestConfig();
-  local_state_.SetManagedPref(prefs::kDnsOverHttpsMode,
-                              base::Value(SecureDnsConfig::kModeSecure));
-  local_state_.Set(prefs::kDnsOverHttpsSalt, base::Value("test-salt"));
-  local_state_.Set(prefs::kDnsOverHttpsTemplatesWithIdentifiers,
-                   base::Value("www.test-dns.com"));
+  local_state_.Get()->SetManagedPref(prefs::kDnsOverHttpsMode,
+                                     base::Value(SecureDnsConfig::kModeSecure));
+  local_state_.Get()->Set(prefs::kDnsOverHttpsSalt, base::Value("test-salt"));
+  local_state_.Get()->Set(prefs::kDnsOverHttpsTemplatesWithIdentifiers,
+                          base::Value("www.test-dns.com"));
 
   base::RunLoop().RunUntilIdle();
 
@@ -1522,7 +1540,7 @@ TEST_F(ManagementUIHandlerTests, ShowPrivacyDisclosureForActiveProxy) {
   // Set pref to use a proxy.
   PrefProxyConfigTrackerImpl::RegisterProfilePrefs(user_prefs_.registry());
   ash::NetworkHandler::Get()->InitializePrefServices(&user_prefs_,
-                                                     &local_state_);
+                                                     local_state_.Get());
   user_prefs_.SetUserPref(proxy_config::prefs::kProxy,
                           ProxyConfigDictionary::CreateAutoDetect());
   base::RunLoop().RunUntilIdle();
@@ -1538,7 +1556,7 @@ TEST_F(ManagementUIHandlerTests, ProxyServerDisclosureDeviceOffline) {
   // Simulate network disconnected state.
   PrefProxyConfigTrackerImpl::RegisterProfilePrefs(user_prefs_.registry());
   ash::NetworkHandler::Get()->InitializePrefServices(&user_prefs_,
-                                                     &local_state_);
+                                                     local_state_.Get());
   ash::NetworkStateHandler::NetworkStateList networks;
   ash::NetworkHandler::Get()->network_state_handler()->GetNetworkListByType(
       ash::NetworkTypePattern::Default(),
@@ -1567,7 +1585,7 @@ TEST_F(ManagementUIHandlerTests, HideProxyServerDisclosureForDirectProxy) {
   // Set pref not to use proxy.
   PrefProxyConfigTrackerImpl::RegisterProfilePrefs(user_prefs_.registry());
   ash::NetworkHandler::Get()->InitializePrefServices(&user_prefs_,
-                                                     &local_state_);
+                                                     local_state_.Get());
   user_prefs_.SetUserPref(proxy_config::prefs::kProxy,
                           ProxyConfigDictionary::CreateDirect());
   base::RunLoop().RunUntilIdle();
@@ -1578,6 +1596,38 @@ TEST_F(ManagementUIHandlerTests, HideProxyServerDisclosureForDirectProxy) {
   EXPECT_FALSE(GetShowMonitoredNetworkPrivacyDisclosure());
 
   ash::NetworkHandler::Get()->NetworkHandler::ShutdownPrefServices();
+}
+
+TEST_F(ManagementUIHandlerTests, ShowDeskSyncWindowsNotice) {
+  ResetTestConfig();
+  GetTestConfig().managed_device = true;
+  GetTestConfig().sync_windows = true;
+  ASSERT_TRUE(SetUpProfileAndHandler());
+  EXPECT_TRUE(GetShowWindowsNoticeForDeskSync());
+}
+
+TEST_F(ManagementUIHandlerTests, HideDeskSyncWindowsNotice) {
+  ResetTestConfig();
+  GetTestConfig().managed_device = true;
+  GetTestConfig().sync_windows = false;
+  ASSERT_TRUE(SetUpProfileAndHandler());
+  EXPECT_FALSE(GetShowWindowsNoticeForDeskSync());
+}
+
+TEST_F(ManagementUIHandlerTests, ShowDeskSyncCookiesNotice) {
+  ResetTestConfig();
+  GetTestConfig().managed_device = true;
+  GetTestConfig().sync_cookies = true;
+  ASSERT_TRUE(SetUpProfileAndHandler());
+  EXPECT_TRUE(GetShowCookiesNoticeForDeskSync());
+}
+
+TEST_F(ManagementUIHandlerTests, HideDeskSyncCookiesNotice) {
+  ResetTestConfig();
+  GetTestConfig().managed_device = true;
+  GetTestConfig().sync_cookies = false;
+  ASSERT_TRUE(SetUpProfileAndHandler());
+  EXPECT_FALSE(GetShowCookiesNoticeForDeskSync());
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -1595,7 +1645,8 @@ TEST_F(ManagementUIHandlerTests, CloudReportingPolicy) {
   policy::PolicyMap policies;
   EXPECT_CALL(policy_service_, GetPolicies(_))
       .WillRepeatedly(ReturnRef(policies));
-  local_state_.SetBoolean(enterprise_reporting::kCloudReportingEnabled, true);
+  local_state_.Get()->SetBoolean(enterprise_reporting::kCloudReportingEnabled,
+                                 true);
   ASSERT_TRUE(SetUpProfileAndHandler());
 
   profile_->GetPrefs()->SetInteger(
@@ -1648,7 +1699,8 @@ TEST_F(ManagementUIHandlerTests,
   policy::PolicyMap policies;
   EXPECT_CALL(policy_service_, GetPolicies(_))
       .WillRepeatedly(ReturnRef(policies));
-  local_state_.SetBoolean(enterprise_reporting::kCloudReportingEnabled, true);
+  local_state_.Get()->SetBoolean(enterprise_reporting::kCloudReportingEnabled,
+                                 true);
   profile_->GetPrefs()->SetInteger(
       enterprise_connectors::kEnterpriseRealTimeUrlCheckMode, 1);
   profile_->GetPrefs()->SetInteger(
@@ -1728,7 +1780,8 @@ TEST_F(ManagementUIHandlerTests, ExtensionReportingInfoPoliciesMerge) {
   EXPECT_CALL(policy_service_,
               GetPolicies(on_prem_reporting_extension_beta_policy_namespace))
       .WillOnce(ReturnRef(on_prem_reporting_extension_beta_policies));
-  local_state_.SetBoolean(enterprise_reporting::kCloudReportingEnabled, true);
+  local_state_.Get()->SetBoolean(enterprise_reporting::kCloudReportingEnabled,
+                                 true);
   profile_->GetPrefs()->SetInteger(
       enterprise_connectors::kEnterpriseRealTimeUrlCheckMode, 1);
   profile_->GetPrefs()->SetInteger(
@@ -1753,7 +1806,7 @@ TEST_F(ManagementUIHandlerTests, ExtensionReportingInfoPoliciesMerge) {
 
 TEST_F(ManagementUIHandlerTests, ManagedWebsitiesInfoNoPolicySet) {
   ASSERT_TRUE(SetUpNoDomainProfile());
-  auto info = handler_.GetManagedWebsitesInfo(profile_.get());
+  auto info = handler_.GetManagedWebsitesInfo(profile_);
   EXPECT_EQ(info.size(), 0u);
 }
 
@@ -1765,7 +1818,7 @@ TEST_F(ManagementUIHandlerTests, ManagedWebsitiesInfoWebsites) {
   managed_websites.Append(std::move(entry));
   profile_->GetPrefs()->Set(prefs::kManagedConfigurationPerOrigin,
                             base::Value(std::move(managed_websites)));
-  auto info = handler_.GetManagedWebsitesInfo(profile_.get());
+  auto info = handler_.GetManagedWebsitesInfo(profile_);
   EXPECT_EQ(info.size(), 1u);
   EXPECT_EQ(info.begin()->GetString(), "https://example.com");
 }
@@ -1785,7 +1838,7 @@ TEST_F(ManagementUIHandlerTests, ThreatReportingInfo) {
       .WillRepeatedly(ReturnRef(chrome_policies));
 
   // When no policies are set, nothing to report.
-  auto info = handler_.GetThreatProtectionInfo(profile_.get());
+  auto info = handler_.GetThreatProtectionInfo(profile_);
   EXPECT_TRUE(info.FindList("info")->empty());
   EXPECT_EQ(
       l10n_util::GetStringUTF16(IDS_MANAGEMENT_THREAT_PROTECTION_DESCRIPTION),
@@ -1809,7 +1862,7 @@ TEST_F(ManagementUIHandlerTests, ThreatReportingInfo) {
   profile_->GetPrefs()->SetInteger(
       enterprise_connectors::kEnterpriseRealTimeUrlCheckMode, 0);
 
-  info = handler_.GetThreatProtectionInfo(profile_.get());
+  info = handler_.GetThreatProtectionInfo(profile_);
   EXPECT_TRUE(info.FindList("info")->empty());
   EXPECT_EQ(
       l10n_util::GetStringUTF16(IDS_MANAGEMENT_THREAT_PROTECTION_DESCRIPTION),
@@ -1846,7 +1899,7 @@ TEST_F(ManagementUIHandlerTests, ThreatReportingInfo) {
       enterprise_connectors::kEnterpriseRealTimeUrlCheckScope,
       policy::POLICY_SCOPE_MACHINE);
 
-  info = handler_.GetThreatProtectionInfo(profile_.get());
+  info = handler_.GetThreatProtectionInfo(profile_);
   EXPECT_TRUE(info.FindList("info")->empty());
   EXPECT_EQ(
       l10n_util::GetStringUTF16(IDS_MANAGEMENT_THREAT_PROTECTION_DESCRIPTION),
@@ -1856,7 +1909,7 @@ TEST_F(ManagementUIHandlerTests, ThreatReportingInfo) {
   // token, report them.
   policy::SetDMTokenForTesting(policy::DMToken::CreateValidToken("fake-token"));
 
-  info = handler_.GetThreatProtectionInfo(profile_.get());
+  info = handler_.GetThreatProtectionInfo(profile_);
 #if BUILDFLAG(IS_CHROMEOS)
   const size_t expected_size = 8u;
 #else
@@ -1926,12 +1979,12 @@ TEST_F(ManagementUIHandlerTests, ThreatReportingInfo) {
 TEST_F(ManagementUIHandlerTests, GetFilesUploadToCloud) {
   ResetTestConfig();
   ASSERT_TRUE(SetUpProfileAndHandler());
-  EXPECT_TRUE(handler_.GetFilesUploadToCloudInfo(profile_.get()).empty());
+  EXPECT_TRUE(handler_.GetFilesUploadToCloudInfo(profile_).empty());
   profile_->GetTestingPrefService()->SetManagedPref(
       ash::prefs::kCaptureModePolicySavePath,
       std::make_unique<base::Value>(
           policy::local_user_files::kOneDrivePolicyVariableName));
 
-  EXPECT_FALSE(handler_.GetFilesUploadToCloudInfo(profile_.get()).empty());
+  EXPECT_FALSE(handler_.GetFilesUploadToCloudInfo(profile_).empty());
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)

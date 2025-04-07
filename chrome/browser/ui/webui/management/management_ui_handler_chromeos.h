@@ -63,6 +63,11 @@ class ManagementUIHandlerChromeOS : public BitmapFetcherDelegate,
   // warning will be added to the transparency panel to inform the user that the
   // admin may be able to see their network traffic.
   void AddMonitoredNetworkPrivacyDisclosure(base::Value::Dict* response);
+  // Adds flags indicating whether Desk Sync feature is active for windows
+  // and/or cookies. If at least one of them is true, a dedicated section will
+  // be added to inform the user that their data is being synced across their
+  // ChromeOS devices.
+  void AddDeskSyncNotice(Profile* profile, base::Value::Dict* response);
 
   // ManagementUIHandler
   void RegisterPrefChange(PrefChangeRegistrar& pref_registrar) override;

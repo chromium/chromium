@@ -96,6 +96,28 @@ export function getHtml(this: ManagementUiElement) {
            </div>
          </section>
       </div>
+      ${this.showDeskSyncSection_() ? html`
+        <section class="desk-sync">
+          <h2 class="cr-title-text">$i18n{deskSync}</h2>
+          <div class="subtitle">
+            $i18n{deskSyncDescription}
+          </div>
+          <ul>
+            <li ?hidden="${!this.showWindowsNoticeForDeskSync_}">
+              $i18n{windowSync}
+            </li>
+            <li ?hidden="${!this.showCookiesNoticeForDeskSync_}">
+              $i18n{cookieSync}
+            </li>
+          </ul>
+          <div class="subtitle"
+          .innerHTML="${this.i18nAdvanced('deskSyncOptOut')}">
+          </div>
+          <div class="subtitle"
+          .innerHTML="${this.i18nAdvanced('deskSyncLearnMore')}">
+          </div>
+        </section>
+      ` : ''}
       ${this.showDeviceReportingInfo_() ? html`
         <section>
           <h2 class="cr-title-text">$i18n{deviceReporting}</h2>
