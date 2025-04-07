@@ -244,10 +244,9 @@
             "force_full_mode": true
           }
         ],
-        "excludes": [
+        "includes": [
           {
-            "match": "android.view.inputmethod.cts.KeyboardVisibilityControlTest#testShowHideKeyboardOnWebView",
-            "_bug_id": "crbug.com/408990245"
+            "match": "android.view.inputmethod.cts.KeyboardVisibilityControlTest#testShowHideKeyboardOnWebView"
           }
         ]
       },
@@ -422,6 +421,9 @@
         ],
         "includes": [
           {
+            "match": "android.view.inputmethod.cts.KeyboardVisibilityControlTest#testShowHideKeyboardOnWebView"
+          },
+          {
             "match": "android.view.inputmethod.cts.InputMethodServiceTest#testBatchEdit_commitAndSetComposingRegion_webView"
           },
           {
@@ -429,12 +431,6 @@
           },
           {
             "match": "android.view.inputmethod.cts.InputMethodServiceTest#testBatchEdit_commitSpaceThenSetComposingRegion_webView"
-          }
-        ],
-        "excludes": [
-          {
-            "match": "android.view.inputmethod.cts.KeyboardVisibilityControlTest#testShowHideKeyboardOnWebView",
-            "_bug_id": "crbug.com/408990245"
           }
         ]
       },
