@@ -594,4 +594,10 @@ TEST(PolicyTargetTest, FilterEnvironment) {
   }
 }
 
+TEST(PolicyTargetDeathTest, SharePseudoHandle) {
+  TestRunner runner;
+  auto* policy = runner.GetPolicy();
+  EXPECT_DEATH(policy->AddHandleToShare(::GetCurrentThread()), "");
+}
+
 }  // namespace sandbox
