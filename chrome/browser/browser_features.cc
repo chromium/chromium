@@ -93,7 +93,7 @@ BASE_FEATURE(kDbusSecretPortal,
 // compatible with the synchronous backend.
 BASE_FEATURE(kUseFreedesktopSecretKeyProvider,
              "UseFreedesktopSecretKeyProvider",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_LINUX)
 
 // Destroy profiles when their last browser window is closed, instead of when
