@@ -2305,7 +2305,7 @@ void SyncServiceImpl::GetTypesWithUnsyncedData(
     base::OnceCallback<void(DataTypeSet)> callback) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // This should only be called in transport-only mode.
-  CHECK(!IsSyncFeatureEnabled());
+  CHECK(!IsSyncFeatureEnabled(), base::NotFatalUntil::M138);
   // TODO(crbug.com/40901755): Consider changing this to always guarantee an
   // asynchronous behavior, rather than invoking the callback synchronously in
   // rare cases.
