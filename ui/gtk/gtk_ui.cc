@@ -845,7 +845,7 @@ void GtkUi::UpdateColors() {
     colors_[ThemeProperties::COLOR_LOCATION_BAR_BORDER] = location_bar_border;
   }
 
-  inactive_selection_bg_color_ = GetSelectionBgColor(
+  inactive_selection_bg_color_ = GetBgColor(
       "textview.view:backdrop "
       "text:backdrop selection:backdrop");
   inactive_selection_fg_color_ = GetFgColor(

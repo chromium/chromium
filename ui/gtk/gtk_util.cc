@@ -426,6 +426,7 @@ GtkCssContext AppendCssNodeToStyleContext(GtkCssContext context,
       {"disabled", GTK_STATE_FLAG_INSENSITIVE},
       {"indeterminate", GTK_STATE_FLAG_INCONSISTENT},
       {"focus", GTK_STATE_FLAG_FOCUSED},
+      {"focus-within", GTK_STATE_FLAG_FOCUS_WITHIN},
       {"backdrop", GTK_STATE_FLAG_BACKDROP},
       {"link", GTK_STATE_FLAG_LINK},
       {"visited", GTK_STATE_FLAG_VISITED},
@@ -476,7 +477,11 @@ GtkCssContext AppendCssNodeToStyleContext(GtkCssContext context,
               break;
             }
           }
-          state = static_cast<GtkStateFlags>(state | state_flag);
+          constexpr GtkStateFlags kLargestGtk3State =
+              GTK_STATE_FLAG_DROP_ACTIVE;
+          if (state_flag <= kLargestGtk3State || GtkCheckVersion(4)) {
+            state = static_cast<GtkStateFlags>(state | state_flag);
+          }
           break;
         }
         case CSS_NONE:
@@ -573,10 +578,6 @@ SkColor GetBorderColor(const std::string& css_selector) {
   CairoSurface surface(size);
   gtk_render_frame(context, surface.cairo(), 0, 0, size.width(), size.height());
   return surface.GetAveragePixelValue(true);
-}
-
-SkColor GetSelectionBgColor(const std::string& css_selector) {
-  return GetBgColorFromStyleContext(GetStyleContextFromCss(css_selector));
 }
 
 bool ContextHasClass(GtkCssContext context, const std::string& style_class) {
