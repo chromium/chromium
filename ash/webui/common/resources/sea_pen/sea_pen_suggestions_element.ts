@@ -14,6 +14,7 @@ import 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
 import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 
 import type {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
@@ -52,7 +53,9 @@ export interface SeaPenSuggestionsElement {
   };
 }
 
-export class SeaPenSuggestionsElement extends PolymerElement {
+const SeaPenSuggestionsElementBase = I18nMixin(PolymerElement);
+
+export class SeaPenSuggestionsElement extends SeaPenSuggestionsElementBase {
   static get is() {
     return 'sea-pen-suggestions';
   }

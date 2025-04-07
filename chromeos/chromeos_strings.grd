@@ -3643,6 +3643,92 @@
           Suggestions shuffled
         </message>
 
+        <!-- Sea Pen Freeform Suggestions -->
+       <message name="IDS_SEA_PEN_FREEFORM_SUGGESTION_4K" desc="A suggestion of text that could be added to an image generation prompt">
+          4k
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SUGGESTION_REALISTIC_PHOTO" desc="A suggestion of text that could be added to an image generation prompt">
+          realistic photo
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SUGGESTION_SURREAL" desc="A suggestion of text that could be added to an image generation prompt">
+          surreal
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SUGGESTION_BEAUTIFUL" desc="A suggestion of text that could be added to an image generation prompt">
+          beautiful
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SUGGESTION_MINIMAL" desc="A suggestion of text that could be added to an image generation prompt">
+          minimal
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SUGGESTION_SUNSET" desc="A suggestion of text that could be added to an image generation prompt">
+          sunset
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SUGGESTION_PASTEL_COLORS" desc="A suggestion of text that could be added to an image generation prompt">
+          pastel colors
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SUGGESTION_GLOWING" desc="A suggestion of text that could be added to an image generation prompt">
+          glowing
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SUGGESTION_STAR_FILLED_SKY" desc="A suggestion of text that could be added to an image generation prompt">
+          star-filled sky
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SUGGESTION_DRAMATIC_SHADOWS" desc="A suggestion of text that could be added to an image generation prompt">
+          dramatic shadows
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SUGGESTION_COVERED_IN_SNOW" desc="A suggestion of text that could be added to an image generation prompt">
+          covered in snow
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SUGGESTION_BIOLUMINESCENT" desc="A suggestion of text that could be added to an image generation prompt">
+          bioluminescent
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SUGGESTION_LONG_EXPOSURE" desc="A suggestion of text that could be added to an image generation prompt">
+          long exposure
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SUGGESTION_FOGGY" desc="A suggestion of text that could be added to an image generation prompt">
+          foggy
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SUGGESTION_GALAXY" desc="A suggestion of text that could be added to an image generation prompt">
+          galaxy
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SUGGESTION_NEON_LIGHTS" desc="A suggestion of text that could be added to an image generation prompt">
+          neon lights
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SUGGESTION_REFLECTIONS" desc="A suggestion of text that could be added to an image generation prompt">
+          reflections
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SUGGESTION_LIGHTNING" desc="A suggestion of text that could be added to an image generation prompt">
+          lightning
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SUGGESTION_BOKEH_EFFECT" desc="A suggestion of text that could be added to an image generation prompt">
+          bokeh effect
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SUGGESTION_WITH_COLOR_GRADING" desc="A suggestion of text that could be added to an image generation prompt">
+          with color grading
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SUGGESTION_VOLUMETRIC_LIGHT" desc="A suggestion of text that could be added to an image generation prompt">
+          volumetric light
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SUGGESTION_NEGATIVE_SPACE" desc="A suggestion of text that could be added to an image generation prompt">
+          negative space
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SUGGESTION_DIGITAL_ART" desc="A suggestion of text that could be added to an image generation prompt">
+          digital art
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SUGGESTION_T_REX" desc="A suggestion of text that could be added to an image generation prompt">
+          t-rex
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SUGGESTION_UNICORN" desc="A suggestion of text that could be added to an image generation prompt">
+          unicorn
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SUGGESTION_CATS" desc="A suggestion of text that could be added to an image generation prompt">
+          cats
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SUGGESTION_VECTOR_ART_STYLE" desc="A suggestion of text that could be added to an image generation prompt">
+          vector art style
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SUGGESTION_3D_RENDER" desc="A suggestion of text that could be added to an image generation prompt">
+          3D render
+        </message>
+
         <!-- Sea Pen Templates (AUTOGENERATED - contact assistive-eng@google.com before editing) -->
         <!-- Wallpaper template glowscapes -->
         <message name="IDS_SEA_PEN_TEMPLATE_TITLE_GLOWSCAPES" desc="Title of the image generation template IDS_SEA_PEN_TEMPLATE_GLOWSCAPES.">
