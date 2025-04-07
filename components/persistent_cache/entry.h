@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
+#include "components/persistent_cache/entry_metadata.h"
 
 namespace persistent_cache {
 
@@ -35,6 +36,10 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) Entry {
 
   // Use to get the size of the entry's value in bytes.
   virtual size_t GetContentSize() const;
+
+  // Use to retrieve metadata tied to the entry. Partially or completely
+  // populated by default values if the metadata was not supplied on insert.
+  virtual EntryMetadata GetMetadata() const = 0;
 
  protected:
   // Ownership and liveness is managed by the backend and thus Entry should not

@@ -72,7 +72,7 @@ bool SqliteBackendImpl::Initialize() {
 
   if (!db_.Execute(
           "CREATE TABLE IF NOT EXISTS entries(key TEXT PRIMARY KEY UNIQUE NOT "
-          "NULL, content BLOB NOT NULL)")) {
+          "NULL, content BLOB NOT NULL, input_signature INTEGER)")) {
     TRACE_EVENT_INSTANT1("persistent_cache", "create_failed",
                          TRACE_EVENT_SCOPE_THREAD, "error_code",
                          db_.GetErrorCode());
@@ -89,7 +89,8 @@ std::unique_ptr<Entry> SqliteBackendImpl::Find(std::string_view key) {
   TRACE_EVENT0("persistent_cache", "Find");
 
   sql::Statement stm = sql::Statement(db_.GetCachedStatement(
-      SQL_FROM_HERE, "SELECT content FROM entries WHERE key = ?"));
+      SQL_FROM_HERE,
+      "SELECT content, input_signature FROM entries WHERE key = ?"));
   stm.BindString(0, key);
 
   DCHECK(stm.is_valid());
@@ -104,20 +105,26 @@ std::unique_ptr<Entry> SqliteBackendImpl::Find(std::string_view key) {
     return nullptr;
   }
 
-  return SqliteEntryImpl::MakeUnique(Passkey(), stm.ColumnString(0));
+  EntryMetadata metadata;
+  metadata.input_signature = stm.ColumnInt64(1);
+
+  return SqliteEntryImpl::MakeUnique(Passkey(), stm.ColumnString(0), metadata);
 }
 
 void SqliteBackendImpl::Insert(std::string_view key,
-                               base::span<const uint8_t> content) {
+                               base::span<const uint8_t> content,
+                               EntryMetadata metadata) {
   CHECK(initialized_);
   CHECK_GT(key.length(), 0ull);
   TRACE_EVENT0("persistent_cache", "insert");
 
   sql::Statement stm(db_.GetCachedStatement(
-      SQL_FROM_HERE, "REPLACE INTO entries (key, content) VALUES (?, ?)"));
+      SQL_FROM_HERE,
+      "REPLACE INTO entries (key, content, input_signature) VALUES (?, ?, ?)"));
 
   stm.BindString(0, key);
   stm.BindString(1, base::as_string_view(content));
+  stm.BindInt64(2, metadata.input_signature);
 
   DCHECK(stm.is_valid());
   if (!stm.Run()) {

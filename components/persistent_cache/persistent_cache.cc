@@ -48,12 +48,13 @@ std::unique_ptr<Entry> PersistentCache::Find(std::string_view key) {
 }
 
 void PersistentCache::Insert(std::string_view key,
-                             base::span<const uint8_t> content) {
+                             base::span<const uint8_t> content,
+                             EntryMetadata metadata) {
   if (!backend_) {
     return;
   }
 
-  backend_->Insert(key, content);
+  backend_->Insert(key, content, metadata);
 }
 
 Backend* PersistentCache::GetBackendForTesting() {

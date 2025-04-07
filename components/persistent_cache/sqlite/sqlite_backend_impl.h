@@ -34,7 +34,9 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) SqliteBackendImpl : public Backend {
   // `Backend`:
   [[nodiscard]] bool Initialize() override;
   [[nodiscard]] std::unique_ptr<Entry> Find(std::string_view key) override;
-  void Insert(std::string_view key, base::span<const uint8_t> content) override;
+  void Insert(std::string_view key,
+              base::span<const uint8_t> content,
+              EntryMetadata metadata) override;
 
  private:
   static SqliteVfsFileSet GetVfsFileSetFromParams(BackendParams backend_params);

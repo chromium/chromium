@@ -12,23 +12,28 @@
 
 namespace persistent_cache {
 
-SqliteEntryImpl::SqliteEntryImpl(std::string&& content)
-    : content_(std::move(content)) {}
+SqliteEntryImpl::SqliteEntryImpl(std::string&& content, EntryMetadata metadata)
+    : content_(std::move(content)), metadata_(metadata) {}
 SqliteEntryImpl::~SqliteEntryImpl() = default;
 
 // static
 std::unique_ptr<SqliteEntryImpl> SqliteEntryImpl::MakeUnique(
     base::PassKey<SqliteBackendImpl> passkey,
-    std::string&& content) {
+    std::string&& content,
+    EntryMetadata metadata) {
   // Avoid `make_unique` as it requires friending it which in turn lets any
   // class create `unique_ptr`s of this class.
   auto ptr = base::WrapUnique<SqliteEntryImpl>(
-      new SqliteEntryImpl(std::move(content)));
+      new SqliteEntryImpl(std::move(content), metadata));
   return ptr;
 }
 
 base::span<const uint8_t> SqliteEntryImpl::GetContentSpan() const {
   return base::as_byte_span(content_);
+}
+
+EntryMetadata SqliteEntryImpl::GetMetadata() const {
+  return metadata_;
 }
 
 }  // namespace persistent_cache

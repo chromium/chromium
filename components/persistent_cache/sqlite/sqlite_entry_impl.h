@@ -22,6 +22,7 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) SqliteEntryImpl : public Entry {
 
   // Entry:
   [[nodiscard]] base::span<const uint8_t> GetContentSpan() const override;
+  [[nodiscard]] EntryMetadata GetMetadata() const override;
 
   // Use to create `unique_ptr`s of this class from `SqliteBackendImpl`.
   // Protected with `PassKey` so that only `SqliteBackendImpl` can create
@@ -29,7 +30,8 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) SqliteEntryImpl : public Entry {
   // implementation to the backend.
   static std::unique_ptr<SqliteEntryImpl> MakeUnique(
       base::PassKey<SqliteBackendImpl> passkey,
-      std::string&& content);
+      std::string&& content,
+      EntryMetadata metadata);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(SqliteEntryTest, ConstructionTakesOwnershipOfValue);
@@ -43,9 +45,10 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) SqliteEntryImpl : public Entry {
   // unwanted copies as much as possible. There is precedent for copies coming
   // from disk caches leading to OOMs and this class tries to avoid the
   // situation.
-  explicit SqliteEntryImpl(std::string&& content);
+  explicit SqliteEntryImpl(std::string&& content, EntryMetadata metadata);
 
   std::string content_;
+  EntryMetadata metadata_;
 };
 
 }  // namespace persistent_cache

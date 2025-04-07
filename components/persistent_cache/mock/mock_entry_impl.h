@@ -18,6 +18,7 @@ class MockEntryImpl : public Entry {
 
   // `Entry` overrides
   MOCK_METHOD(base::span<const uint8_t>, GetContentSpan, (), (const override));
+  MOCK_METHOD(EntryMetadata, GetMetadata, (), (const override));
 
  protected:
   explicit MockEntryImpl();
