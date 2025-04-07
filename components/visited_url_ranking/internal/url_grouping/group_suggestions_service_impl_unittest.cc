@@ -100,7 +100,12 @@ class GroupSuggestionsServiceImplTest : public testing::Test {
     return candidates;
   }
 
-  GroupSuggestionsDelegate::SuggestionResponseCallback TriggerSuggestions(
+  struct SuggestionTriggerData {
+    GroupSuggestionsDelegate::SuggestionResponseCallback callback;
+    GroupSuggestion suggestion;
+  };
+
+  SuggestionTriggerData TriggerSuggestions(
       std::vector<URLVisitAggregate> candidates) {
     base::RunLoop wait_for_compute;
     suggestions_service_->group_suggestions_manager_for_testing()
@@ -111,16 +116,24 @@ class GroupSuggestionsServiceImplTest : public testing::Test {
         .WillByDefault(MoveArg<1>(&fetch_callback));
 
     suggestions_service_->GetTabEventTracker()->DidAddTab(1, 0);
-    GroupSuggestionsDelegate::SuggestionResponseCallback response_callback;
+
+    SuggestionTriggerData data;
     ON_CALL(*mock_delegate_, ShowSuggestion(_, _))
-        .WillByDefault(MoveArg<1>(&response_callback));
+        .WillByDefault(
+            Invoke([&data](const GroupSuggestions& group_suggestions,
+                           GroupSuggestionsDelegate::SuggestionResponseCallback
+                               response_callback) {
+              data.callback = std::move(response_callback);
+              data.suggestion =
+                  group_suggestions.suggestions.front().DeepCopy();
+            }));
     std::move(fetch_callback)
         .Run(ResultStatus::kSuccess, URLVisitsMetadata{},
              std::move(candidates));
     wait_for_compute.Run();
     suggestions_service_->group_suggestions_manager_for_testing()
         ->set_suggestion_computed_callback_for_testing({});
-    return response_callback;
+    return data;
   }
 
  protected:
@@ -157,9 +170,11 @@ TEST_F(GroupSuggestionsServiceImplTest, NoRepeatedSuggestions) {
                                          GroupSuggestionsService::Scope());
 
   EXPECT_CALL(*mock_delegate_, ShowSuggestion(_, _));
-  auto response_callback1 = TriggerSuggestions(GetSampleCandidates());
-  std::move(response_callback1)
-      .Run(GroupSuggestionsDelegate::UserResponseMetadata());
+  auto trigger_data = TriggerSuggestions(GetSampleCandidates());
+  GroupSuggestionsDelegate::UserResponseMetadata response;
+  response.user_response = GroupSuggestionsDelegate::UserResponse::kRejected;
+  response.suggestion_id = trigger_data.suggestion.suggestion_id;
+  std::move(trigger_data.callback).Run(response);
 
   // Triggering suggestions again should not show since its duplicate:
 

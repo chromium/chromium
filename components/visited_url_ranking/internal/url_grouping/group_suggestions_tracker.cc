@@ -21,7 +21,7 @@ constexpr base::TimeDelta kSuggestionAgeLimit = base::Hours(24);
 constexpr auto kReasonToMaxOverlappingTabs =
     base::MakeFixedFlatMap<GroupSuggestion::SuggestionReason, float>({
         {GroupSuggestion::SuggestionReason::kRecentlyOpened, 0.55},
-        {GroupSuggestion::SuggestionReason::kSwitchedBetween, 0.9},
+        {GroupSuggestion::SuggestionReason::kSwitchedBetween, 0.60},
         {GroupSuggestion::SuggestionReason::kSimilarSource, 0.55},
     });
 

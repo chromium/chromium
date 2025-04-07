@@ -192,7 +192,14 @@ void GroupSuggestionsManager::ShowSuggestion(
 void GroupSuggestionsManager::OnSuggestionResult(
     GroupSuggestion shown_suggestion,
     GroupSuggestionsDelegate::UserResponseMetadata user_response) {
+  if (user_response.user_response ==
+          GroupSuggestionsDelegate::UserResponse::kNotShown ||
+      user_response.user_response ==
+          GroupSuggestionsDelegate::UserResponse::kUnknown) {
+    return;
+  }
   // TODO(ssid): Track all suggestions instead of assuming UI shows the first.
+  DCHECK_EQ(user_response.suggestion_id, shown_suggestion.suggestion_id);
   suggestion_tracker_.AddSuggestion(shown_suggestion,
                                     user_response.user_response);
 }
