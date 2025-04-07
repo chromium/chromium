@@ -1,6 +1,4 @@
 This is a testharness.js-based test.
-[FAIL] dequantizeLinear int8 4D constant tensor with block_size = [3, 2]
-  assert_true: assert_array_approx_equals_ulp: test dequantizeLinear float32 actual 0 should be close enough to expected -35.00859069824219 by the acceptable 1 ULP distance, but they have 1108084940 ULP distance expected true got false
 [FAIL] dequantizeLinear uint4 1D tensor with even input size
   promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'dequantizeLinear' on 'MLGraphBuilder': Unsupported data type uint4 for argument input, must be one of [int32, uint32, int8, uint8]."
 [FAIL] dequantizeLinear uint4 1D tensor with odd input size

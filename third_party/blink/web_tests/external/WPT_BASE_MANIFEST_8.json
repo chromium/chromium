@@ -165417,7 +165417,7 @@
       ]
      ],
      "column-height-005.html": [
-      "e131d62ee5dbeb8f13e68427983f0bc85d2c99c0",
+      "73303e275a80aec37e6910e6a0b7f62baafdee60",
       [
        null,
        [
@@ -165475,6 +165475,45 @@
        [
         [
          "/css/css-multicol/column-height-009-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "column-height-010.html": [
+      "8c7e8d5b0f166e34c05e2b3e1c97f2750f12a3ef",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "column-height-011.html": [
+      "37495a15a097b8927fcda5f46c83060652b77c82",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "column-height-012.html": [
+      "b663ea981ce34a0b04348e9b4185bd56a3f4e314",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
          "=="
         ]
        ],
@@ -310496,6 +310535,19 @@
        {}
       ]
      ],
+     "svg-percent-stroke-width-viewbox-update.html": [
+      "cc88e9276f2bd61bc78849c3f0fa38dd0311ca8a",
+      [
+       null,
+       [
+        [
+         "/svg/painting/svg-percent-stroke-width-viewbox-update-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "svg-with-outline.html": [
       "56ed98083a62a4ec00d05c6e99d5b7b55bd15658",
       [
@@ -424648,6 +424700,10 @@
       "0d760d18dce03df5917086ccb0253a8ced421e36",
       []
      ],
+     "svg-percent-stroke-width-viewbox-update-ref.html": [
+      "6e7c2b23af64a07229297eb728b489cbf467c943",
+      []
+     ],
      "svg-with-outline-ref.html": [
       "6729a2595bf569a310d0b534f4d2d44b1b54af48",
       []
@@ -428505,6 +428561,10 @@
       ]
      },
      "Animation": {
+      "commitStyles.tentative-expected.txt": [
+       "b4b70f68b0a79162309dc4fde868691a6d18479a",
+       []
+      ],
       "style-change-events-expected.txt": [
        "d7ed0e9c69aabad5bce0994fcb12fe873102934f",
        []
@@ -428615,6 +428675,10 @@
      "animations": {
       "document-timeline-animation-ref.html": [
        "d1ee52a55302caa898b78a6af1bb392df1472616",
+       []
+      ],
+      "finishing-an-animation-expected.txt": [
+       "64bf532d363264f1043c6c4f070ba93c0beefb05",
        []
       ],
       "infinite-duration-animation-ref.html": [
@@ -539622,7 +539686,7 @@
      ]
     ],
     "XMLSerializer-serializeToString.html": [
-     "ad65c9fafb370de6d482bd0166bc030453750b4d",
+     "c3b704bf18825c27e74c5db8177fa178925c9b26",
      [
       null,
       {}
@@ -744990,7 +745054,14 @@
        ]
       ],
       "commitStyles.html": [
-       "9a7dbea8b8649bb4580e60fef1e1530a84f2b13f",
+       "26c8342e6f24b70d0acc81f4e62865b8cce6b261",
+       [
+        null,
+        {}
+       ]
+      ],
+      "commitStyles.tentative.html": [
+       "8b7d089ae34fcc7660c153e61a571b547b94e141",
        [
         null,
         {}
@@ -768354,7 +768425,7 @@
       ]
      ],
      "pooling.https.any.js": [
-      "cf62a0e95bcd97dea07790b7073928d0076dacec",
+      "f385aab1f154387bbe35b171927d29684c8d5120",
       [
        "webnn/conformance_tests/pooling.https.any.html?cpu",
        {
