@@ -273,6 +273,15 @@ std::vector<FormDataPredictions> FormStructure::GetFieldTypePredictions(
         annotated_field.server_type =
             FieldTypeToStringView(field->server_type());
       }
+      if (std::optional<FieldType> autofill_ai_type =
+              field->GetAutofillAiServerTypePredictions()) {
+        annotated_field.autofill_ai_type =
+            FieldTypeToStringView(*autofill_ai_type);
+      }
+      if (base::optional_ref<const std::u16string> format_string =
+              field->format_string()) {
+        annotated_field.format_string = base::UTF16ToUTF8(*format_string);
+      }
       annotated_field.html_type = FieldTypeToStringView(field->html_type());
       annotated_field.overall_type = std::string(field->Type().ToStringView());
       annotated_field.parseable_name =
