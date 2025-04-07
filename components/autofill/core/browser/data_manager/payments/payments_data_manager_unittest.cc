@@ -45,7 +45,6 @@
 #include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
-#include "components/autofill/core/browser/ui/autofill_image.h"
 #include "components/autofill/core/browser/ui/autofill_image_fetcher_base.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
@@ -265,14 +264,16 @@ class MockAutofillImageFetcher : public AutofillImageFetcherBase {
       void,
       FetchImagesForURLs,
       (base::span<const GURL> card_art_urls,
-       base::span<const AutofillImageFetcherBase::ImageSize> image_sizes,
-       base::OnceCallback<
-           void(const std::vector<std::unique_ptr<AutofillImage>>&)> callback),
+       base::span<const AutofillImageFetcherBase::ImageSize> image_sizes),
       (override));
   MOCK_METHOD(void,
               FetchPixAccountImages,
               (base::span<const GURL> card_art_urls),
               (override));
+  MOCK_METHOD(const gfx::Image*,
+              GetCachedImageForUrl,
+              (const GURL& image_url),
+              (const, override));
 #if BUILDFLAG(IS_ANDROID)
   MOCK_METHOD(base::android::ScopedJavaLocalRef<jobject>,
               GetOrCreateJavaImageFetcher,
@@ -2655,32 +2656,6 @@ TEST_F(PaymentsDataManagerTest,
 }
 
 #if !BUILDFLAG(IS_IOS)
-TEST_F(PaymentsDataManagerTest, AddAndGetCreditCardArtImage) {
-  gfx::Image expected_image = gfx::test::CreateImage(40, 24);
-  std::unique_ptr<AutofillImage> credit_card_art_image =
-      std::make_unique<AutofillImage>(GURL("https://www.example.com"),
-                                      expected_image);
-  std::vector<std::unique_ptr<AutofillImage>> images;
-  images.push_back(std::move(credit_card_art_image));
-  test_api(payments_data_manager()).OnCardArtImagesFetched(std::move(images));
-
-  const gfx::Image* actual_image =
-      payments_data_manager().GetCreditCardArtImageForUrl(
-          GURL("https://www.example.com"));
-  ASSERT_TRUE(actual_image);
-  EXPECT_TRUE(gfx::test::AreImagesEqual(expected_image, *actual_image));
-
-  // TODO(crbug.com/40210242): Look into integrating with
-  // PaymentsDataManagerMock and checking that
-  // PaymentsDataManager::FetchImagesForUrls() does not get triggered when
-  // PaymentsDataManager::GetCachedCardArtImageForUrl() is called.
-  const gfx::Image* cached_image =
-      payments_data_manager().GetCachedCardArtImageForUrl(
-          GURL("https://www.example.com"));
-  ASSERT_TRUE(cached_image);
-  EXPECT_TRUE(gfx::test::AreImagesEqual(expected_image, *cached_image));
-}
-
 TEST_F(PaymentsDataManagerTest,
        TestNoImageFetchingAttemptForCardsWithInvalidCardArtUrls) {
   base::HistogramTester histogram_tester;

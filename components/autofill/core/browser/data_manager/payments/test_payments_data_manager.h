@@ -61,6 +61,8 @@ class TestPaymentsDataManager : public PaymentsDataManager {
   bool IsPaymentCvcStorageEnabled() override;
   bool IsSyncFeatureEnabledForPaymentsServerMetrics() const override;
   CoreAccountInfo GetAccountInfoForPaymentsServer() const override;
+  const gfx::Image* GetCachedCardArtImageForUrl(
+      const GURL& card_art_url) const override;
 
   // Clears |local_credit_cards_| and |server_credit_cards_|.
   void ClearCreditCards();
@@ -140,6 +142,10 @@ class TestPaymentsDataManager : public PaymentsDataManager {
   std::optional<bool> payment_methods_mandatory_reauth_enabled_;
   std::optional<bool> payments_cvc_storage_enabled_;
   CoreAccountInfo account_info_;
+  // Instead of using a `TestAutofillImageFetcher`, images are cached here.
+  // TODO: crbug.com/404437211 - Implement `TestAutofillImageFetcher` and move
+  // this map there.
+  std::map<GURL, std::unique_ptr<gfx::Image>> credit_card_art_images_;
 };
 
 }  // namespace autofill

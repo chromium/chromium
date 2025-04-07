@@ -600,8 +600,6 @@ static_library("browser") {
     "ui/addresses/autofill_address_util.h",
     "ui/autofill_external_delegate.cc",
     "ui/autofill_external_delegate.h",
-    "ui/autofill_image.cc",
-    "ui/autofill_image.h",
     "ui/autofill_image_fetcher_base.h",
     "ui/autofill_resource_utils.cc",
     "ui/autofill_resource_utils.h",

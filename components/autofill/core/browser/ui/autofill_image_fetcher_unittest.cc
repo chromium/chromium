@@ -8,12 +8,10 @@
 #include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/payments/constants.h"
-#include "components/autofill/core/browser/ui/autofill_image.h"
 #include "components/image_fetcher/core/mock_image_fetcher.h"
 #include "components/image_fetcher/core/request_metadata.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -47,12 +45,10 @@ class TestAutofillImageFetcher : public AutofillImageFetcher {
   }
 
   void SimulateOnImageFetched(
-      base::OnceCallback<void(std::unique_ptr<AutofillImage>)> barrier_callback,
       const GURL& url,
       const std::optional<base::TimeTicks>& fetch_image_request_timestamp,
       const gfx::Image& image) {
-    OnCardArtImageFetched(std::move(barrier_callback), url,
-                          fetch_image_request_timestamp, image,
+    OnCardArtImageFetched(url, fetch_image_request_timestamp, image,
                           image_fetcher::RequestMetadata());
   }
 
@@ -89,16 +85,6 @@ class AutofillImageFetcherTest : public testing::Test {
   AutofillImageFetcherTest()
       : autofill_image_fetcher_(std::make_unique<TestAutofillImageFetcher>()) {}
 
-  void ValidateResult(const std::map<GURL, gfx::Image>& received_images,
-                      const std::map<GURL, gfx::Image>& expected_images) {
-    ASSERT_EQ(expected_images.size(), received_images.size());
-    for (const auto& [expected_url, expected_image] : expected_images) {
-      ASSERT_TRUE(base::Contains(received_images, expected_url));
-      const gfx::Image& received_image = received_images.at(expected_url);
-      EXPECT_TRUE(gfx::test::AreImagesEqual(expected_image, received_image));
-    }
-  }
-
   gfx::Image& GetTestImage(int resource_id) {
     return ui::ResourceBundle::GetSharedInstance().GetNativeImageNamed(
         resource_id);
@@ -130,45 +116,28 @@ TEST_F(AutofillImageFetcherTest, FetchImage_Success) {
   GURL fake_url1 = GURL("https://www.example.com/fake_image1");
   GURL fake_url2 = GURL(kCapitalOneCardArtUrl);
 
-  std::map<GURL, gfx::Image> expected_images = {{fake_url1, fake_image1},
-                                                {fake_url2, fake_image2}};
-
-  // Expect callback to be called with some received images.
-  std::map<GURL, gfx::Image> received_images;
-  const auto callback = base::BindLambdaForTesting(
-      [&](const std::vector<std::unique_ptr<AutofillImage>>& card_art_images) {
-        for (auto& entry : card_art_images) {
-          received_images[entry->image_url] = entry->image;
-        }
-      });
-  const auto barrier_callback =
-      base::BarrierCallback<std::unique_ptr<AutofillImage>>(
-          2U, std::move(callback));
-
   base::HistogramTester histogram_tester;
   // Expect to be called twice. The 'normal' URL should have a size appended to
   // it, whilst the capitalone image is 'special' and does not.
   EXPECT_CALL(
       *mock_image_fetcher(),
-      FetchImageAndData_(GURL(fake_url1.spec() + "=w32-h20-n"), _, _, _))
-      .Times(1);
-  EXPECT_CALL(*mock_image_fetcher(), FetchImageAndData_(fake_url2, _, _, _))
-      .Times(1);
+      FetchImageAndData_(GURL(fake_url1.spec() + "=w32-h20-n"), _, _, _));
+  EXPECT_CALL(*mock_image_fetcher(), FetchImageAndData_(fake_url2, _, _, _));
   std::vector<GURL> urls = {fake_url1, fake_url2};
   autofill_image_fetcher()->FetchImagesForURLs(
-      urls, base::span_from_ref(AutofillImageFetcherBase::ImageSize::kSmall),
-      base::DoNothing());
+      urls, base::span_from_ref(AutofillImageFetcherBase::ImageSize::kSmall));
 
   // Advance the time to make the latency values more realistic.
   task_environment().FastForwardBy(base::Milliseconds(200));
   // Simulate successful image fetching (for image with URL) -> expect the
   // callback to be called.
-  autofill_image_fetcher()->SimulateOnImageFetched(barrier_callback, fake_url1,
-                                                   now, fake_image1);
-  autofill_image_fetcher()->SimulateOnImageFetched(barrier_callback, fake_url2,
-                                                   now, fake_image2);
+  autofill_image_fetcher()->SimulateOnImageFetched(fake_url1, now, fake_image1);
+  autofill_image_fetcher()->SimulateOnImageFetched(fake_url2, now, fake_image2);
 
-  ValidateResult(std::move(received_images), expected_images);
+  EXPECT_TRUE(gfx::test::AreImagesEqual(
+      fake_image1, *autofill_image_fetcher()->GetCachedImageForUrl(fake_url1)));
+  EXPECT_TRUE(gfx::test::AreImagesEqual(
+      fake_image2, *autofill_image_fetcher()->GetCachedImageForUrl(fake_url2)));
   EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.ImageFetcher.Result"),
               BucketsAre(Bucket(false, 0), Bucket(true, 2)));
   histogram_tester.ExpectTotalCount("Autofill.ImageFetcher.RequestLatency", 2);
@@ -187,12 +156,10 @@ TEST_F(AutofillImageFetcherTest, FetchImage_ResolveCardArtURL) {
   // The underlying image fetcher should only get called for the modified URL.
   EXPECT_CALL(*mock_image_fetcher(), FetchImageAndData_(fake_url1, _, _, _))
       .Times(0);
-  EXPECT_CALL(*mock_image_fetcher(), FetchImageAndData_(override_url, _, _, _))
-      .Times(1);
+  EXPECT_CALL(*mock_image_fetcher(), FetchImageAndData_(override_url, _, _, _));
   std::vector<GURL> urls = {fake_url1};
   autofill_image_fetcher()->FetchImagesForURLs(
-      urls, base::span_from_ref(AutofillImageFetcherBase::ImageSize::kSmall),
-      base::DoNothing());
+      urls, base::span_from_ref(AutofillImageFetcherBase::ImageSize::kSmall));
 }
 
 TEST_F(AutofillImageFetcherTest, FetchImage_ResolveCardArtImage) {
@@ -204,61 +171,35 @@ TEST_F(AutofillImageFetcherTest, FetchImage_ResolveCardArtImage) {
   GURL fake_url1 = GURL("https://www.example.com/fake_image1");
   gfx::Image fake_image1 = gfx::test::CreateImage(1, 2);
 
-  std::map<GURL, gfx::Image> received_images;
-  const auto callback = base::BindLambdaForTesting(
-      [&](const std::vector<std::unique_ptr<AutofillImage>>& card_art_images) {
-        for (auto& entry : card_art_images) {
-          received_images[entry->image_url] = entry->image;
-        }
-      });
-  const auto barrier_callback =
-      base::BarrierCallback<std::unique_ptr<AutofillImage>>(
-          1U, std::move(callback));
-
   autofill_image_fetcher()->SimulateOnImageFetched(
-      barrier_callback, fake_url1, base::TimeTicks::Now(), fake_image1);
+      fake_url1, base::TimeTicks::Now(), fake_image1);
 
   // The received image should be `override_image`, because ResolveCardArtImage
   // should have changed it.
-  ASSERT_EQ(1U, received_images.size());
-  ASSERT_TRUE(received_images.contains(fake_url1));
-  EXPECT_TRUE(
-      gfx::test::AreImagesEqual(override_image, received_images[fake_url1]));
+  EXPECT_TRUE(gfx::test::AreImagesEqual(
+      override_image,
+      *autofill_image_fetcher()->GetCachedImageForUrl(fake_url1)));
 }
 
 TEST_F(AutofillImageFetcherTest, FetchImage_ServerFailure) {
   base::TimeTicks now = base::TimeTicks::Now();
 
   GURL fake_url1 = GURL("https://www.example.com/fake_image1");
-  std::map<GURL, gfx::Image> expected_images = {{fake_url1, gfx::Image()}};
-
-  // Expect callback to be called with some received images.
-  std::map<GURL, gfx::Image> received_images;
-  const auto callback = base::BindLambdaForTesting(
-      [&](const std::vector<std::unique_ptr<AutofillImage>>& card_art_images) {
-        for (auto& entry : card_art_images) {
-          received_images[entry->image_url] = entry->image;
-        }
-      });
-  const auto barrier_callback =
-      base::BarrierCallback<std::unique_ptr<AutofillImage>>(
-          1U, std::move(callback));
 
   base::HistogramTester histogram_tester;
   // Expect to be called once.
-  EXPECT_CALL(*mock_image_fetcher(), FetchImageAndData_(_, _, _, _)).Times(1);
+  EXPECT_CALL(*mock_image_fetcher(), FetchImageAndData_(_, _, _, _));
   std::vector<GURL> urls = {fake_url1};
   autofill_image_fetcher()->FetchImagesForURLs(
-      urls, base::span_from_ref(AutofillImageFetcherBase::ImageSize::kSmall),
-      base::DoNothing());
+      urls, base::span_from_ref(AutofillImageFetcherBase::ImageSize::kSmall));
 
   task_environment().FastForwardBy(base::Milliseconds(200));
-  // Simulate failed image fetching (for image with URL) -> expect the
-  // callback to be called.
-  autofill_image_fetcher()->SimulateOnImageFetched(barrier_callback, fake_url1,
-                                                   now, gfx::Image());
+  // Simulate successful image fetching (for image with URL).
+  autofill_image_fetcher()->SimulateOnImageFetched(fake_url1, now,
+                                                   gfx::Image());
 
-  ValidateResult(std::move(received_images), expected_images);
+  // Empty images are not cached, so the result should be a `nullptr`.
+  EXPECT_FALSE(autofill_image_fetcher()->GetCachedImageForUrl(fake_url1));
   EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.ImageFetcher.Result"),
               BucketsAre(Bucket(false, 1), Bucket(true, 0)));
   histogram_tester.ExpectTotalCount("Autofill.ImageFetcher.RequestLatency", 1);
@@ -271,16 +212,6 @@ TEST_F(AutofillImageFetcherTest,
   base::TimeTicks now = base::TimeTicks::Now();
 
   GURL fake_url1 = GURL("https://www.example.com/fake_image1");
-  std::map<GURL, gfx::Image> expected_images = {{fake_url1, gfx::Image()}};
-
-  // Expect callback to be called with some received images.
-  std::map<GURL, gfx::Image> received_images;
-  const auto callback = base::BindLambdaForTesting(
-      [&](const std::vector<std::unique_ptr<AutofillImage>>& card_art_images) {
-        for (auto& entry : card_art_images) {
-          received_images[entry->image_url] = entry->image;
-        }
-      });
 
   base::HistogramTester histogram_tester;
   // Expect to be called twice.
@@ -288,32 +219,25 @@ TEST_F(AutofillImageFetcherTest,
   std::vector<GURL> urls = {fake_url1};
 
   // Attempt 1 - Failure.
-  auto barrier_callback = base::BarrierCallback<std::unique_ptr<AutofillImage>>(
-      1U, std::move(callback));
   autofill_image_fetcher()->FetchImagesForURLs(
-      urls, base::span_from_ref(AutofillImageFetcherBase::ImageSize::kSmall),
-      base::DoNothing());
+      urls, base::span_from_ref(AutofillImageFetcherBase::ImageSize::kSmall));
   task_environment().FastForwardBy(base::Milliseconds(200));
-  // Simulate failed image fetching (for image with URL) -> expect the
-  // callback to be called.
-  autofill_image_fetcher()->SimulateOnImageFetched(barrier_callback, fake_url1,
-                                                   now, gfx::Image());
-
-  ValidateResult(std::move(received_images), expected_images);
+  // Simulate successful image fetching (for image with URL).
+  autofill_image_fetcher()->SimulateOnImageFetched(fake_url1, now,
+                                                   gfx::Image());
+  // Empty images are not cached, so the result should be a `nullptr`.
+  EXPECT_FALSE(autofill_image_fetcher()->GetCachedImageForUrl(fake_url1));
 
   // Attempt 2 - Failure.
-  barrier_callback = base::BarrierCallback<std::unique_ptr<AutofillImage>>(
-      1U, std::move(callback));
   autofill_image_fetcher()->FetchImagesForURLs(
-      urls, base::span_from_ref(AutofillImageFetcherBase::ImageSize::kSmall),
-      base::DoNothing());
+      urls, base::span_from_ref(AutofillImageFetcherBase::ImageSize::kSmall));
   task_environment().FastForwardBy(base::Milliseconds(100));
-  // Simulate failed image fetching (for image with URL) -> expect the
-  // callback to be called.
-  autofill_image_fetcher()->SimulateOnImageFetched(barrier_callback, fake_url1,
-                                                   now, gfx::Image());
+  // Simulate successful image fetching (for image with URL).
+  autofill_image_fetcher()->SimulateOnImageFetched(fake_url1, now,
+                                                   gfx::Image());
 
-  ValidateResult(std::move(received_images), expected_images);
+  // Empty images are not cached, so the result should be a `nullptr`.
+  EXPECT_FALSE(autofill_image_fetcher()->GetCachedImageForUrl(fake_url1));
   // Verify that for a given card art URL, failure is logged only once.
   EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.ImageFetcher.Result"),
               BucketsAre(Bucket(false, 1), Bucket(true, 0)));
@@ -331,47 +255,33 @@ TEST_F(AutofillImageFetcherTest,
   std::map<GURL, gfx::Image> expected_images_for_success = {
       {fake_url1, fake_image1}};
 
-  // Expect callback to be called with some received images.
-  std::map<GURL, gfx::Image> received_images;
-  const auto callback = base::BindLambdaForTesting(
-      [&](const std::vector<std::unique_ptr<AutofillImage>>& card_art_images) {
-        for (auto& entry : card_art_images) {
-          received_images[entry->image_url] = entry->image;
-        }
-      });
-
   base::HistogramTester histogram_tester;
   // Expect to be called twice.
   EXPECT_CALL(*mock_image_fetcher(), FetchImageAndData_(_, _, _, _)).Times(2);
   std::vector<GURL> urls = {fake_url1};
 
   // Attempt 1 - Failure.
-  auto barrier_callback = base::BarrierCallback<std::unique_ptr<AutofillImage>>(
-      1U, std::move(callback));
   autofill_image_fetcher()->FetchImagesForURLs(
-      urls, base::span_from_ref(AutofillImageFetcherBase::ImageSize::kSmall),
-      base::DoNothing());
+      urls, base::span_from_ref(AutofillImageFetcherBase::ImageSize::kSmall));
   task_environment().FastForwardBy(base::Milliseconds(200));
   // Simulate failed image fetching (for image with URL) -> expect the
   // callback to be called.
-  autofill_image_fetcher()->SimulateOnImageFetched(barrier_callback, fake_url1,
-                                                   now, gfx::Image());
+  autofill_image_fetcher()->SimulateOnImageFetched(fake_url1, now,
+                                                   gfx::Image());
 
-  ValidateResult(std::move(received_images), expected_images_for_failure);
+  // Empty images are not cached, so the result should be a `nullptr`.
+  EXPECT_FALSE(autofill_image_fetcher()->GetCachedImageForUrl(fake_url1));
 
   // Attempt 2 - Success.
-  barrier_callback = base::BarrierCallback<std::unique_ptr<AutofillImage>>(
-      1U, std::move(callback));
   autofill_image_fetcher()->FetchImagesForURLs(
-      urls, base::span_from_ref(AutofillImageFetcherBase::ImageSize::kSmall),
-      base::DoNothing());
+      urls, base::span_from_ref(AutofillImageFetcherBase::ImageSize::kSmall));
   task_environment().FastForwardBy(base::Milliseconds(100));
   // Simulate successful image fetching (for image with URL) -> expect the
   // callback to be called.
-  autofill_image_fetcher()->SimulateOnImageFetched(barrier_callback, fake_url1,
-                                                   now, fake_image1);
+  autofill_image_fetcher()->SimulateOnImageFetched(fake_url1, now, fake_image1);
 
-  ValidateResult(std::move(received_images), expected_images_for_success);
+  EXPECT_TRUE(gfx::test::AreImagesEqual(
+      fake_image1, *autofill_image_fetcher()->GetCachedImageForUrl(fake_url1)));
   // Verify that if fetching asset for a card art URL succeeds after failing,
   // both histograms are logged.
   EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.ImageFetcher.Result"),
@@ -384,52 +294,35 @@ TEST_F(AutofillImageFetcherTest, FetchImage_Success_SuccessOnRepeatAttempt) {
 
   GURL fake_url1 = GURL("https://www.example.com/fake_image1");
   gfx::Image fake_image1 = GetTestImage(IDR_DEFAULT_FAVICON);
-  std::map<GURL, gfx::Image> expected_images_for_success = {
-      {fake_url1, fake_image1}};
-
-  // Expect callback to be called with some received images.
-  std::map<GURL, gfx::Image> received_images;
-  const auto callback = base::BindLambdaForTesting(
-      [&](const std::vector<std::unique_ptr<AutofillImage>>& card_art_images) {
-        for (auto& entry : card_art_images) {
-          received_images[entry->image_url] = entry->image;
-        }
-      });
 
   base::HistogramTester histogram_tester;
-  // Expect to be called twice.
-  EXPECT_CALL(*mock_image_fetcher(), FetchImageAndData_(_, _, _, _)).Times(2);
+  // Expect to be called once because already cached images are not fetched
+  // again.
+  EXPECT_CALL(*mock_image_fetcher(), FetchImageAndData_(_, _, _, _));
   std::vector<GURL> urls = {fake_url1};
 
   // Attempt 1 - Success.
-  auto barrier_callback = base::BarrierCallback<std::unique_ptr<AutofillImage>>(
-      1U, std::move(callback));
   autofill_image_fetcher()->FetchImagesForURLs(
-      urls, base::span_from_ref(AutofillImageFetcherBase::ImageSize::kSmall),
-      base::DoNothing());
+      urls, base::span_from_ref(AutofillImageFetcherBase::ImageSize::kSmall));
   task_environment().FastForwardBy(base::Milliseconds(200));
   // Simulate successful image fetching (for image with URL) -> expect the
   // callback to be called.
-  autofill_image_fetcher()->SimulateOnImageFetched(barrier_callback, fake_url1,
-                                                   now, fake_image1);
+  autofill_image_fetcher()->SimulateOnImageFetched(fake_url1, now, fake_image1);
 
-  ValidateResult(std::move(received_images), expected_images_for_success);
+  EXPECT_TRUE(gfx::test::AreImagesEqual(
+      fake_image1, *autofill_image_fetcher()->GetCachedImageForUrl(fake_url1)));
 
-  // Attempt 2 - Success. Since image fetching is an async process, it is
-  // possible that a second attempt is made before the first attempt has
-  // finished.
-  barrier_callback = base::BarrierCallback<std::unique_ptr<AutofillImage>>(
-      1U, std::move(callback));
+  // Attempt 2 - The image has been cached already, it shouldn't be fetched
+  // again.
   autofill_image_fetcher()->FetchImagesForURLs(
-      urls, base::span_from_ref(AutofillImageFetcherBase::ImageSize::kSmall),
-      base::DoNothing());
+      urls, base::span_from_ref(AutofillImageFetcherBase::ImageSize::kSmall));
   task_environment().FastForwardBy(base::Milliseconds(100));
   // Simulate successful image fetching (for image with URL) -> expect the
   // callback to be called.
-  autofill_image_fetcher()->SimulateOnImageFetched(barrier_callback, fake_url1,
-                                                   now, fake_image1);
+  autofill_image_fetcher()->SimulateOnImageFetched(fake_url1, now, fake_image1);
 
-  ValidateResult(std::move(received_images), expected_images_for_success);
+  EXPECT_TRUE(gfx::test::AreImagesEqual(
+      fake_image1, *autofill_image_fetcher()->GetCachedImageForUrl(fake_url1)));
   // Verify that if multiple card art fetch attempts are made, and all of them
   // are successful, the success histogram is logged only once.
   EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.ImageFetcher.Result"),

@@ -52,7 +52,6 @@ namespace autofill {
 class AutofillOptimizationGuide;
 class BankAccount;
 class BnplIssuer;
-struct AutofillImage;
 class Ewallet;
 class PaymentsDatabaseHelper;
 
@@ -335,7 +334,8 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // optimization for situations where a separate fetch request after trying to
   // retrieve local card art images is not needed. If the card art image is not
   // present in the cache, this function will return a nullptr.
-  const gfx::Image* GetCachedCardArtImageForUrl(const GURL& card_art_url) const;
+  virtual const gfx::Image* GetCachedCardArtImageForUrl(
+      const GURL& card_art_url) const;
 
   // Checks if a specific card is eligible to see benefits based on its issuer
   // id.
@@ -545,14 +545,6 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // to the query handle.
   void CancelPendingServerQuery(WebDataServiceBase::Handle* handle);
 
-  // Asks `image_fetcher_` to fetch images. Each image represented by an url in
-  // the list `updated_urls` is downloaded in all the sizes specified by
-  // `image_sizes`. The total # of images downloaded is `updated_urls`.size() x
-  // `image_sizes`.size().
-  void FetchImagesForURLs(
-      base::span<const GURL> updated_urls,
-      base::span<const AutofillImageFetcherBase::ImageSize> image_sizes) const;
-
   // The first time this is called, logs a UMA metrics about the user's credit
   // card, offer and IBAN.
   void LogStoredPaymentsDataMetrics() const;
@@ -598,9 +590,6 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // virtual card related to a specific merchant website.
   std::vector<VirtualCardUsageData> autofill_virtual_card_usage_data_;
 
-  // The customized card art images for the URL.
-  std::map<GURL, std::unique_ptr<gfx::Image>> credit_card_art_images_;
-
   // Cached version of the credit card benefits obtained from the database.
   // Including credit-card-linked flat rate benefits, category benefits and
   // merchant benefits that are available for users' online purchases.
@@ -633,11 +622,6 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
 
   // Returns the value of the AutofillBnplEnabled pref.
   virtual bool IsAutofillBnplPrefEnabled() const;
-
-  // Triggered when all the card art image fetches have been completed,
-  // regardless of whether all of them succeeded.
-  void OnCardArtImagesFetched(
-      const std::vector<std::unique_ptr<AutofillImage>>& art_images);
 
   // Checks whether any new card art url is synced. If so, attempt to fetch the
   // image based on the url.

@@ -6,10 +6,10 @@
 
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/constants.h"
-#include "components/autofill/core/browser/ui/autofill_image.h"
 #include "components/image_fetcher/core/image_fetcher.h"
 #include "components/image_fetcher/core/request_metadata.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "ui/gfx/image/image.h"
 
 namespace autofill {
 
@@ -61,22 +61,13 @@ AutofillImageFetcher::~AutofillImageFetcher() = default;
 
 void AutofillImageFetcher::FetchImagesForURLs(
     base::span<const GURL> image_urls,
-    base::span<const AutofillImageFetcherBase::ImageSize> image_sizes_unused,
-    base::OnceCallback<void(const std::vector<std::unique_ptr<AutofillImage>>&)>
-        callback) {
+    base::span<const AutofillImageFetcherBase::ImageSize> image_sizes_unused) {
   if (!GetImageFetcher()) {
-    std::move(callback).Run({});
     return;
   }
 
-  // Construct a BarrierCallback and so that the inner `callback` is invoked
-  // only when all the images are fetched.
-  const auto barrier_callback =
-      base::BarrierCallback<std::unique_ptr<AutofillImage>>(
-          image_urls.size(), std::move(callback));
-
   for (const auto& image_url : image_urls) {
-    FetchImageForURL(barrier_callback, image_url);
+    FetchImageForURL(image_url);
   }
 }
 
@@ -85,6 +76,15 @@ void AutofillImageFetcher::FetchImagesForURLs(
 void AutofillImageFetcher::FetchPixAccountImages(
     base::span<const GURL> image_urls) {
   NOTREACHED();
+}
+
+const gfx::Image* AutofillImageFetcher::GetCachedImageForUrl(
+    const GURL& image_url) const {
+  auto it = cached_images_.find(image_url);
+  if (it == cached_images_.end() || it->second->IsEmpty()) {
+    return nullptr;
+  }
+  return it->second.get();
 }
 
 GURL AutofillImageFetcher::ResolveCardArtURL(const GURL& card_art_url) {
@@ -110,7 +110,6 @@ gfx::Image AutofillImageFetcher::ResolveCardArtImage(
 AutofillImageFetcher::AutofillImageFetcher() = default;
 
 void AutofillImageFetcher::OnCardArtImageFetched(
-    base::OnceCallback<void(std::unique_ptr<AutofillImage>)> barrier_callback,
     const GURL& card_art_url,
     const std::optional<base::TimeTicks>& fetch_image_request_timestamp,
     const gfx::Image& card_art_image,
@@ -119,9 +118,11 @@ void AutofillImageFetcher::OnCardArtImageFetched(
 
   // Allow subclasses to specialize the card art image if desired.
   gfx::Image resolved_image = ResolveCardArtImage(card_art_url, card_art_image);
-
-  std::move(barrier_callback)
-      .Run(std::make_unique<AutofillImage>(card_art_url, resolved_image));
+  // Unlike the `CachedImageFetcher`, the `AutofillImageFetcher` stores the
+  // post-processed image in the in-memory cache.
+  if (!resolved_image.IsEmpty()) {
+    cached_images_[card_art_url] = std::make_unique<gfx::Image>(resolved_image);
+  }
 
   // Log metrics on card fetch success/failure. We only log metrics on either
   // the first attempt to fetch a given URL (whether it succeeded or failed) or
@@ -137,21 +138,23 @@ void AutofillImageFetcher::OnCardArtImageFetched(
   }
 }
 
-void AutofillImageFetcher::FetchImageForURL(
-    base::OnceCallback<void(std::unique_ptr<AutofillImage>)> barrier_callback,
-    const GURL& card_art_url) {
-  CHECK(card_art_url.is_valid());
+void AutofillImageFetcher::FetchImageForURL(const GURL& image_url) {
+  CHECK(image_url.is_valid());
+
+  // Don't fetch the image if the in-memory cache already contains it.
+  if (GetCachedImageForUrl(image_url)) {
+    return;
+  }
 
   // Allow subclasses to specialize the URL if desired.
-  GURL resolved_url = ResolveCardArtURL(card_art_url);
+  GURL resolved_url = ResolveCardArtURL(image_url);
 
   image_fetcher::ImageFetcherParams params(kCardArtImageTrafficAnnotation,
                                            kUmaClientName);
   GetImageFetcher()->FetchImage(
       resolved_url,
       base::BindOnce(&AutofillImageFetcher::OnCardArtImageFetched, GetWeakPtr(),
-                     std::move(barrier_callback), card_art_url,
-                     base::TimeTicks::Now()),
+                     image_url, base::TimeTicks::Now()),
       std::move(params));
 }
 

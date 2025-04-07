@@ -40,13 +40,11 @@ class AutofillImageFetcher : public AutofillImageFetcherBase {
   // The image sizes passed in the arguments are unused as this param is only
   // used for Android. For Desktop, the implementation of this method has
   // hardcoded image sizes.
-  void FetchImagesForURLs(
-      base::span<const GURL> image_urls,
-      base::span<const AutofillImageFetcherBase::ImageSize> image_sizes_unused,
-      base::OnceCallback<
-          void(const std::vector<std::unique_ptr<AutofillImage>>&)> callback)
-      override;
+  void FetchImagesForURLs(base::span<const GURL> image_urls,
+                          base::span<const AutofillImageFetcherBase::ImageSize>
+                              image_sizes_unused) override;
   void FetchPixAccountImages(base::span<const GURL> image_urls) override;
+  const gfx::Image* GetCachedImageForUrl(const GURL& image_url) const override;
 
   // Subclasses may override this to provide custom handling of a given card art
   // URL.
@@ -77,21 +75,21 @@ class AutofillImageFetcher : public AutofillImageFetcherBase {
   // `card_art_image` will be an empty gfx::Image(). If the original URL was
   // invalid, `fetch_image_request_timestamp` will also be null.
   void OnCardArtImageFetched(
-      base::OnceCallback<void(std::unique_ptr<AutofillImage>)> barrier_callback,
       const GURL& card_art_url,
       const std::optional<base::TimeTicks>& fetch_image_request_timestamp,
       const gfx::Image& card_art_image,
       const image_fetcher::RequestMetadata& metadata);
 
  private:
-  void FetchImageForURL(
-      base::OnceCallback<void(std::unique_ptr<AutofillImage>)> barrier_callback,
-      const GURL& card_art_url);
+  void FetchImageForURL(const GURL& image_url);
 
   // Stores the result of fetching images for card art URLs. It's used to
   // mitigate the issue of inflated failure metrics caused by repeated fetch
   // attempts.
   std::map<std::string, bool> url_to_image_fetch_result_map_;
+
+  // An in-memory image cache which stores post-processed images.
+  std::map<GURL, std::unique_ptr<gfx::Image>> cached_images_;
 };
 
 }  // namespace autofill

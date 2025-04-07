@@ -254,6 +254,16 @@ CoreAccountInfo TestPaymentsDataManager::GetAccountInfoForPaymentsServer()
   return account_info_;
 }
 
+const gfx::Image* TestPaymentsDataManager::GetCachedCardArtImageForUrl(
+    const GURL& card_art_url) const {
+  auto it = credit_card_art_images_.find(card_art_url);
+  if (it == credit_card_art_images_.end()) {
+    return nullptr;
+  }
+  const gfx::Image* const image = it->second.get();
+  return !image->IsEmpty() ? image : nullptr;
+}
+
 void TestPaymentsDataManager::ClearCreditCards() {
   local_credit_cards_.clear();
   server_credit_cards_.clear();

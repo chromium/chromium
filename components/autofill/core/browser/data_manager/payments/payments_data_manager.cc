@@ -37,7 +37,6 @@
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/payments/payments_data_cleaner.h"
 #include "components/autofill/core/browser/studies/autofill_experiments.h"
-#include "components/autofill/core/browser/ui/autofill_image.h"
 #include "components/autofill/core/browser/ui/autofill_image_fetcher_base.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_observer.h"
@@ -890,9 +889,12 @@ const gfx::Image* PaymentsDataManager::GetCreditCardArtImageForUrl(
   }
 
   // The sizes are used on Android, but ignored on desktop.
-  FetchImagesForURLs(base::span_from_ref(card_art_url),
-                     {AutofillImageFetcherBase::ImageSize::kSmall,
-                      AutofillImageFetcherBase::ImageSize::kLarge});
+  if (image_fetcher_) {
+    image_fetcher_->FetchImagesForURLs(
+        base::span_from_ref(card_art_url),
+        {AutofillImageFetcherBase::ImageSize::kSmall,
+         AutofillImageFetcherBase::ImageSize::kLarge});
+  }
   return nullptr;
 }
 
@@ -904,13 +906,10 @@ const gfx::Image* PaymentsDataManager::GetCachedCardArtImageForUrl(
   if (!card_art_url.is_valid()) {
     return nullptr;
   }
-
-  auto it = credit_card_art_images_.find(card_art_url);
-  if (it == credit_card_art_images_.end()) {
+  if (!image_fetcher_) {
     return nullptr;
   }
-  const gfx::Image* const image = it->second.get();
-  return !image->IsEmpty() ? image : nullptr;
+  return image_fetcher_->GetCachedImageForUrl(card_art_url);
 }
 
 base::span<const BnplIssuer> PaymentsDataManager::GetUnlinkedBnplIssuers()
@@ -1519,7 +1518,6 @@ void PaymentsDataManager::ClearAllServerDataForTesting() {
   payments_customer_data_.reset();
   server_credit_card_cloud_token_data_.clear();
   autofill_offer_data_.clear();
-  credit_card_art_images_.clear();
   masked_bank_accounts_.clear();
   ewallet_accounts_.clear();
   linked_bnpl_issuers_.clear();
@@ -1884,19 +1882,6 @@ void PaymentsDataManager::LoadPaymentsCustomerData() {
                          weak_ptr_factory_.GetWeakPtr()));
 }
 
-void PaymentsDataManager::FetchImagesForURLs(
-    base::span<const GURL> updated_urls,
-    base::span<const AutofillImageFetcherBase::ImageSize> image_sizes) const {
-  if (!image_fetcher_) {
-    return;
-  }
-
-  image_fetcher_->FetchImagesForURLs(
-      updated_urls, image_sizes,
-      base::BindOnce(&PaymentsDataManager::OnCardArtImagesFetched,
-                     weak_ptr_factory_.GetMutableWeakPtr()));
-}
-
 void PaymentsDataManager::LogStoredPaymentsDataMetrics() const {
   AutofillMetrics::LogStoredCreditCardMetrics(
       local_credit_cards_, server_credit_cards_,
@@ -2062,34 +2047,21 @@ void PaymentsDataManager::OnBnplEnabledPrefChange() {
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 
-void PaymentsDataManager::OnCardArtImagesFetched(
-    const std::vector<std::unique_ptr<AutofillImage>>& art_images) {
-  for (auto& art_image : art_images) {
-    if (!art_image->image.IsEmpty()) {
-      credit_card_art_images_[art_image->image_url] =
-          std::make_unique<gfx::Image>(art_image->image);
-    }
-  }
-}
-
 void PaymentsDataManager::ProcessCardArtUrlChanges() {
+  if (!image_fetcher_) {
+    return;
+  }
   std::vector<GURL> updated_urls;
   for (auto& card : server_credit_cards_) {
     if (!card->card_art_url().is_valid()) {
       continue;
     }
-
-    // Try to find the old entry with the same url.
-    auto it = credit_card_art_images_.find(card->card_art_url());
-    // No existing entry found.
-    if (it == credit_card_art_images_.end()) {
-      updated_urls.emplace_back(card->card_art_url());
-    }
+    updated_urls.emplace_back(card->card_art_url());
   }
   if (!updated_urls.empty()) {
-    FetchImagesForURLs(updated_urls,
-                       {AutofillImageFetcherBase::ImageSize::kSmall,
-                        AutofillImageFetcherBase::ImageSize::kLarge});
+    image_fetcher_->FetchImagesForURLs(
+        updated_urls, {AutofillImageFetcherBase::ImageSize::kSmall,
+                       AutofillImageFetcherBase::ImageSize::kLarge});
   }
 }
 
@@ -2149,6 +2121,9 @@ void PaymentsDataManager::OnMaskedBankAccountsRefreshed() {
 
 void PaymentsDataManager::OnPaymentInstrumentsRefreshed(
     const std::vector<sync_pb::PaymentInstrument>& payment_instruments) {
+  if (!image_fetcher_) {
+    return;
+  }
   std::vector<GURL> updated_urls;
   for (const sync_pb::PaymentInstrument& payment_instrument :
        payment_instruments) {
@@ -2164,7 +2139,7 @@ void PaymentsDataManager::OnPaymentInstrumentsRefreshed(
     updated_urls.emplace_back(display_icon_url);
   }
   if (!updated_urls.empty()) {
-    FetchImagesForURLs(
+    image_fetcher_->FetchImagesForURLs(
         updated_urls,
         base::span_from_ref(AutofillImageFetcherBase::ImageSize::kLarge));
   }
