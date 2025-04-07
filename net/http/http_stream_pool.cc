@@ -74,13 +74,13 @@ constexpr base::FeatureParam<base::TimeDelta>
         HttpStreamPool::kConnectionAttemptDelayParamName.data(),
         HttpStreamPool::kDefaultConnectionAttemptDelay};
 
-constexpr base::FeatureParam<HttpStreamPool::StreamAttemptDelayBehavior>
-    kStreamAttemptDelayBehavior{
+constexpr base::FeatureParam<HttpStreamPool::TcpBasedAttemptDelayBehavior>
+    kTcpBasedAttemptDelayBehavior{
         &features::kHappyEyeballsV3,
-        HttpStreamPool::kStreamAttemptDelayBehaviorParamName.data(),
-        HttpStreamPool::StreamAttemptDelayBehavior::
+        HttpStreamPool::kTcpBasedAttemptDelayBehaviorParamName.data(),
+        HttpStreamPool::TcpBasedAttemptDelayBehavior::
             kStartTimerOnFirstQuicAttempt,
-        HttpStreamPool::kStreamAttemptDelayBehaviorOptions};
+        HttpStreamPool::kTcpBasedAttemptDelayBehaviorOptions};
 
 constexpr base::FeatureParam<bool> kVerboseNetLog{
     &features::kHappyEyeballsV3, HttpStreamPool::kVerboseNetLogParamName.data(),
@@ -128,9 +128,9 @@ base::TimeDelta HttpStreamPool::GetConnectionAttemptDelay() {
 }
 
 // static
-HttpStreamPool::StreamAttemptDelayBehavior
-HttpStreamPool::GetStreamAttemptDelayBehavior() {
-  return kStreamAttemptDelayBehavior.Get();
+HttpStreamPool::TcpBasedAttemptDelayBehavior
+HttpStreamPool::GetTcpBasedAttemptDelayBehavior() {
+  return kTcpBasedAttemptDelayBehavior.Get();
 }
 
 // static

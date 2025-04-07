@@ -288,7 +288,7 @@ bool HttpStreamPool::Group::CloseOneIdleStreamSocket() {
 }
 
 size_t HttpStreamPool::Group::ConnectingStreamSocketCount() const {
-  return attempt_manager_ ? attempt_manager_->InFlightAttemptCount() : 0;
+  return attempt_manager_ ? attempt_manager_->TcpBasedAttemptCount() : 0;
 }
 
 size_t HttpStreamPool::Group::ActiveStreamSocketCount() const {
@@ -325,7 +325,7 @@ void HttpStreamPool::Group::Refresh(std::string_view net_log_close_reason_utf8,
   // jobs/preconnects?
   ++generation_;
   if (attempt_manager_) {
-    attempt_manager_->CancelInFlightAttempts(cancel_reason);
+    attempt_manager_->CancelTcpBasedAttempts(cancel_reason);
   }
   CleanupIdleStreamSockets(CleanupMode::kForce, net_log_close_reason_utf8);
 }

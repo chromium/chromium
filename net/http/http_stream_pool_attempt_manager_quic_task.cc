@@ -119,9 +119,9 @@ void HttpStreamPool::AttemptManager::QuicTask::MaybeAttempt() {
       /*use_dns_aliases=*/true, std::move(dns_aliases),
       manager_->CalculateMultiplexedSessionCreationInitiator());
 
-  if (GetStreamAttemptDelayBehavior() ==
-      StreamAttemptDelayBehavior::kStartTimerOnFirstQuicAttempt) {
-    manager_->MaybeRunStreamAttemptDelayTimer();
+  if (GetTcpBasedAttemptDelayBehavior() ==
+      TcpBasedAttemptDelayBehavior::kStartTimerOnFirstQuicAttempt) {
+    manager_->MaybeRunTcpBasedAttemptDelayTimer();
   }
 
   int rv = session_attempt_->Start(base::BindOnce(

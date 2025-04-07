@@ -1634,7 +1634,7 @@ EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_EXISTING_QUIC_SESSION_MATCHED)
 //   {
 //     "stream_attempt_delay": <The stream attempt delay in milliseconds>
 //   }
-EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_STREAM_ATTEMPT_DELAY_PASSED)
+EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_TCP_BASED_ATTEMPT_DELAY_PASSED)
 
 // Records on an HttpStreamPool::AttemptManager's NetLog to indicate that an
 // HttpStreamPool::QuicTask is bound to the AttemptManager.
