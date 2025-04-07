@@ -20,6 +20,7 @@ namespace signin_metrics {
 // GENERATED_JAVA_CLASS_NAME_OVERRIDE: SignoutReason
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange
 enum class ProfileSignout {
   // The value used within unit tests.
   kTest = 0,
@@ -126,9 +127,13 @@ enum class ProfileSignout {
   // User was forced signed out as there was a supervised user added to the
   // device.
   kSignoutBeforeSupervisedSignin = 38,
+  // Triggered when the user opens the app from a widget with no selected
+  // account. iOS only.
+  kSignoutFromWidgets = 39,
   // Keep this as the last enum.
-  kMaxValue = kSignoutBeforeSupervisedSignin
+  kMaxValue = kSignoutFromWidgets
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/signin/enums.xml)
 
 // Enum values which enumerates all access points where sign in could be
 // initiated. Not all of them exist on all platforms.

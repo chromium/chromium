@@ -1026,6 +1026,11 @@ chromium-metrics-reviews@google.com.
     A sign-out was triggered to allow a switch to a supervised account that was
     added to the device. Android only.
   </int>
+  <int value="39" label="Sign out when opening the app from widget">
+    The user has a widget with no account on it, opens the app from the widget
+    and if there is a signed-in account in the app, sign-out is performed. iOS
+    only.
+  </int>
 </enum>
 
 <enum name="SigninSSOIdentityListRequestCacheState">
