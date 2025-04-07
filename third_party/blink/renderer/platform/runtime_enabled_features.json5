@@ -311,6 +311,10 @@
       base_feature: "none",
     },
     {
+      name: "AIPageContentPaidContentAnnotation",
+      status: "stable"
+    },
+    {
       name: "AIPromptAPI",
       public: true,
       status: "test",

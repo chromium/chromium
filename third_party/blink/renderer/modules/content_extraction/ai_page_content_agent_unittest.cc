@@ -2367,5 +2367,377 @@ TEST_F(AIPageContentAgentTest, Title) {
   EXPECT_EQ(content->frame_data->title, "test title");
 }
 
+bool ContainsRole(const Vector<mojom::blink::AIPageContentAnnotatedRole>& roles,
+                  mojom::blink::AIPageContentAnnotatedRole role) {
+  for (const auto& r : roles) {
+    if (r == role) {
+      return true;
+    }
+  }
+  return false;
+}
+
+TEST_F(AIPageContentAgentTest, PaidContent) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(), R"HTML(
+  <script type="application/ld+json">{
+    "@context": "http://schema.org",
+    "@type": "NewsArticle",
+    "mainEntityOfPage": "https://www.evergreengazette.com/dailyplanet.com/world/world-news/",
+    "headline": "City Council Debates Future of Automated Transit System",
+    "alternativeHeadline": "City Council Debates Future of Automated Transit System",
+    "dateModified": "2025-03-25T19:17:05.541Z",
+    "datePublished": "2025-03-25T09:02:58.131Z",
+    "description": "The City Council has been asked to discuss the future of automated transit systems, including the feasibility of a bus-on-rails system, in a special meeting on Thursday, March 28.",
+    "author": [
+        {
+            "@type": "Person",
+            "name": "Finlay Joy",
+            "url": "https://www.evergreengazette.com/people/finlay-joy/"
+        },
+        {
+            "@type": "Person",
+            "name": "Calum Gerhard",
+            "url": "https://www.evergreengazette.com/people/calum-gerhard/"
+        }
+    ],
+    "isPartOf": {
+        "@type": [
+            "CreativeWork",
+            "Product"
+        ],
+        "name": "The Evergreen Gazette",
+        "productID": "evergreengazette.com:basic",
+        "description": "The Evergreen Gazette is your trusted source for comprehensive local news, insightful analysis, and community-focused reporting.",
+        "sku": "https://subscribe.evergreengazette.com",
+        "image": "https://www.evergreengazette.com/evergreen-gazette-logo.png",
+        "brand": {
+            "@type": "brand",
+            "name": "The Evergreen Gazette"
+        },
+        "offers": {
+            "@type": "offer",
+            "url": "https://subscribe.evergreengazette.com/acquisition?promo=h97"
+        }
+    },
+    "publisher": {
+        "@id": "evergreengazette.com",
+        "@type": "NewsMediaOrganization",
+        "name": "The Evergreen Gazette"
+    },
+    "isAccessibleForFree": false,
+    "hasPart": {
+        "@type": "WebPageElement",
+        "cssSelector": ".paidContent",
+        "isAccessibleForFree": false
+    }
+  }</script>
+  <body>
+    Content
+    <div class="paidContent">Paid Content</div>
+  </body>
+  )HTML",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto content = GetAIPageContent();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  // The root node contains paid content.
+  EXPECT_TRUE(content->frame_data->contains_paid_content);
+
+  const auto& root = *content->root_node;
+
+  // The text node should not have the paid content role.
+  const auto& text_node = *root.children_nodes[0];
+  EXPECT_FALSE(
+      ContainsRole(text_node.content_attributes->annotated_roles,
+                   mojom::blink::AIPageContentAnnotatedRole::kPaidContent));
+
+  // The paid content node should have the paid content role.
+  const auto& paid_node = *root.children_nodes[1];
+  EXPECT_TRUE(
+      ContainsRole(paid_node.content_attributes->annotated_roles,
+                   mojom::blink::AIPageContentAnnotatedRole::kPaidContent));
+}
+
+TEST_F(AIPageContentAgentTest, PaidContentContextMismatch) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(), R"HTML(
+      <script type="application/ld+json">{
+        "@context": "http://acme.org",
+        "@type": "NewsArticle",
+        "isAccessibleForFree": false,
+        "hasPart": {
+            "@type": "WebPageElement",
+            "cssSelector": ".paidContent",
+            "isAccessibleForFree": false
+        }
+      }</script>
+      <body>
+        Content
+        <div class="paidContent">Paid Content</div>
+      </body>
+  )HTML",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto content = GetAIPageContent();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  // The root node does not contain paid content.
+  EXPECT_FALSE(content->frame_data->contains_paid_content);
+
+  const auto& root = *content->root_node;
+
+  // The text node should not have the paid content role.
+  const auto& text_node = *root.children_nodes[0];
+  EXPECT_FALSE(
+      ContainsRole(text_node.content_attributes->annotated_roles,
+                   mojom::blink::AIPageContentAnnotatedRole::kPaidContent));
+
+  // The paid content node should have the paid content role.
+  const auto& paid_node = *root.children_nodes[1];
+  EXPECT_FALSE(
+      ContainsRole(paid_node.content_attributes->annotated_roles,
+                   mojom::blink::AIPageContentAnnotatedRole::kPaidContent));
+}
+
+TEST_F(AIPageContentAgentTest, PaidContentRootOnly) {
+  // Note that isAccessibleForFree = "False" to match real world examples.
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(), R"HTML(
+      <script type="application/ld+json">{
+        "@context": "http://schema.org",
+        "@type": "NewsArticle",
+        "isAccessibleForFree": "False"
+      }</script>
+      <body>
+        Content
+        <div class="paidContent">Paid Content</div>
+      </body>
+  )HTML",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto content = GetAIPageContent();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  // The root node contains paid content.
+  EXPECT_TRUE(content->frame_data->contains_paid_content);
+
+  const auto& root = *content->root_node;
+
+  // The text node should not have the paid content role.
+  const auto& text_node = *root.children_nodes[0];
+  EXPECT_FALSE(
+      ContainsRole(text_node.content_attributes->annotated_roles,
+                   mojom::blink::AIPageContentAnnotatedRole::kPaidContent));
+
+  // The paid content node should have the paid content role.
+  const auto& paid_node = *root.children_nodes[1];
+  EXPECT_FALSE(
+      ContainsRole(paid_node.content_attributes->annotated_roles,
+                   mojom::blink::AIPageContentAnnotatedRole::kPaidContent));
+}
+
+TEST_F(AIPageContentAgentTest, PaidContentMicrodata) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(), R"HTML(
+      <script type="application/ld+json">{
+        "@context": "http://schema.org",
+        "@type": "NewsArticle",
+        "isAccessibleForFree": false
+      }</script>
+      <body>
+        Content
+        <div class="paidContent">
+        <meta itemprop="isAccessibleForFree" content="false">
+        Paid Content
+        </div>
+      </body>
+  )HTML",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto content = GetAIPageContent();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  // The root node contains paid content.
+  EXPECT_TRUE(content->frame_data->contains_paid_content);
+
+  const auto& root = *content->root_node;
+
+  // The text node should not have the paid content role.
+  const auto& text_node = *root.children_nodes[0];
+  EXPECT_FALSE(
+      ContainsRole(text_node.content_attributes->annotated_roles,
+                   mojom::blink::AIPageContentAnnotatedRole::kPaidContent));
+
+  // The paid content node should have the paid content role.
+  const auto& paid_node = *root.children_nodes[1];
+  EXPECT_TRUE(
+      ContainsRole(paid_node.content_attributes->annotated_roles,
+                   mojom::blink::AIPageContentAnnotatedRole::kPaidContent));
+}
+
+TEST_F(AIPageContentAgentTest, PaidContentSomeYesSomeNo) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(), R"HTML(
+      <script type="application/ld+json">{
+        "@context": "http://schema.org",
+        "@type": "NewsArticle",
+        "isAccessibleForFree": false,
+        "hasPart": {
+            "@type": "WebPageElement",
+            "cssSelector": ".paidContent",
+            "isAccessibleForFree": false
+        }
+      }</script>
+      <body>
+        Content
+        <div class="paidContent">Paid Content</div>
+        <div>Free Content</div>
+        <div class="paidContent">Paid Content</div>
+        <div>Free Content</div>
+      </body>
+  )HTML",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto content = GetAIPageContent();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  // The root node contains paid content.
+  EXPECT_TRUE(content->frame_data->contains_paid_content);
+
+  const auto& root = *content->root_node;
+
+  auto& nodes = root.children_nodes;
+
+  // Every other node should have the paid content role.
+  EXPECT_FALSE(
+      ContainsRole(nodes[0]->content_attributes->annotated_roles,
+                   mojom::blink::AIPageContentAnnotatedRole::kPaidContent));
+  EXPECT_TRUE(
+      ContainsRole(nodes[1]->content_attributes->annotated_roles,
+                   mojom::blink::AIPageContentAnnotatedRole::kPaidContent));
+  EXPECT_FALSE(
+      ContainsRole(nodes[2]->content_attributes->annotated_roles,
+                   mojom::blink::AIPageContentAnnotatedRole::kPaidContent));
+  EXPECT_TRUE(
+      ContainsRole(nodes[3]->content_attributes->annotated_roles,
+                   mojom::blink::AIPageContentAnnotatedRole::kPaidContent));
+  EXPECT_FALSE(
+      ContainsRole(nodes[4]->content_attributes->annotated_roles,
+                   mojom::blink::AIPageContentAnnotatedRole::kPaidContent));
+}
+
+TEST_F(AIPageContentAgentTest, PaidContentMultipleHasParts) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(), R"HTML(
+      <script type="application/ld+json">{
+        "@context": "https://schema.org",
+        "@type": "NewsArticle",
+        "mainEntityOfPage": {
+          "@type": "WebPage",
+          "@id": "https://example.org/article"
+          },
+        "isAccessibleForFree": false,
+        "hasPart": [
+          {
+            "@type": "WebPageElement",
+            "isAccessibleForFree": false,
+            "cssSelector": ".section1"
+          }, {
+            "@type": "WebPageElement",
+            "isAccessibleForFree": false,
+            "cssSelector": ".section2"
+          }
+        ]
+      }</script>
+      <body>
+        Content
+        <div class="section1">Paid Content</div>
+        <div class="section2">Paid Content</div>
+      </body>
+  )HTML",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto content = GetAIPageContent();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  // The root node contains paid content.
+  EXPECT_TRUE(content->frame_data->contains_paid_content);
+
+  const auto& root = *content->root_node;
+
+  auto& nodes = root.children_nodes;
+  EXPECT_FALSE(
+      ContainsRole(nodes[0]->content_attributes->annotated_roles,
+                   mojom::blink::AIPageContentAnnotatedRole::kPaidContent));
+  EXPECT_TRUE(
+      ContainsRole(nodes[1]->content_attributes->annotated_roles,
+                   mojom::blink::AIPageContentAnnotatedRole::kPaidContent));
+  EXPECT_TRUE(
+      ContainsRole(nodes[2]->content_attributes->annotated_roles,
+                   mojom::blink::AIPageContentAnnotatedRole::kPaidContent));
+}
+
+TEST_F(AIPageContentAgentTest, PaidContentSubframe) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(), R"HTML(
+      <body>
+      Parent doc is free!
+      <iframe srcdoc='
+        <script type="application/ld+json">{
+          "@context": "http://schema.org",
+          "@type": "NewsArticle",
+          "isAccessibleForFree": false,
+          "hasPart": {
+              "@type": "WebPageElement",
+              "cssSelector": ".paidContent",
+              "isAccessibleForFree": false
+          }
+        }</script>
+        <body>
+          Content
+          <div class="paidContent">Paid Content</div>
+        </body>
+      '></iframe>
+      </body>
+  )HTML",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto content = GetAIPageContent();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  // The root node does not contain paid content.
+  EXPECT_FALSE(content->frame_data->contains_paid_content);
+
+  const auto& root = *content->root_node;
+  auto& nodes = root.children_nodes;
+
+  EXPECT_FALSE(
+      ContainsRole(nodes[0]->content_attributes->annotated_roles,
+                   mojom::blink::AIPageContentAnnotatedRole::kPaidContent));
+
+  const auto& iframe = nodes[1];
+  EXPECT_EQ(iframe->content_attributes->attribute_type,
+            mojom::blink::AIPageContentAttributeType::kIframe);
+  EXPECT_TRUE(iframe->content_attributes->iframe_data->local_frame_data
+                  ->contains_paid_content);
+
+  auto& children = iframe->children_nodes[0]->children_nodes;
+  EXPECT_FALSE(
+      ContainsRole(children[0]->content_attributes->annotated_roles,
+                   mojom::blink::AIPageContentAnnotatedRole::kPaidContent));
+  EXPECT_TRUE(
+      ContainsRole(children[1]->content_attributes->annotated_roles,
+                   mojom::blink::AIPageContentAnnotatedRole::kPaidContent));
+}
+
 }  // namespace
 }  // namespace blink

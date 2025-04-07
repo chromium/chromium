@@ -18,6 +18,8 @@ blink_modules_sources("content_extraction") {
     "inner_text_agent.h",
     "inner_text_builder.cc",
     "inner_text_builder.h",
+    "paid_content.cc",
+    "paid_content.h",
   ]
 
   deps = [ "//services/metrics/public/cpp:ukm_builders" ]
