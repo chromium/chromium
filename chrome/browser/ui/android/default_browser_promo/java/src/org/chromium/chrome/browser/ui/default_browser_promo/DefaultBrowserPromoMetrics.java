@@ -6,9 +6,7 @@ package org.chromium.chrome.browser.ui.default_browser_promo;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.util.DefaultBrowserInfo;
 import org.chromium.chrome.browser.util.DefaultBrowserInfo.DefaultBrowserState;
-import org.chromium.chrome.browser.util.DefaultBrowserInfo.DefaultInfo;
 
 /** Helper class to record histograms related to the default browser promo. */
 @NullMarked
@@ -33,20 +31,14 @@ class DefaultBrowserPromoMetrics {
      * @param newState The {@link DefaultBrowserState} after user changes default.
      * @param promoCount The number of times the promo has shown.
      */
-    static void recordOutcome(@DefaultBrowserState int oldState, int promoCount) {
+    static void recordOutcome(
+            @DefaultBrowserState int oldState, @DefaultBrowserState int newState, int promoCount) {
         assert oldState != DefaultBrowserState.CHROME_DEFAULT;
         String name =
                 oldState == DefaultBrowserState.NO_DEFAULT
                         ? "Android.DefaultBrowserPromo.Outcome.NoDefault"
                         : "Android.DefaultBrowserPromo.Outcome.OtherDefault";
-
-        DefaultBrowserInfo.resetDefaultInfoTask();
-        DefaultInfo newInfo = DefaultBrowserInfo.getDefaultBrowserInfoSync();
-        if (newInfo == null) {
-            return;
-        }
-        RecordHistogram.recordEnumeratedHistogram(
-                name, newInfo.defaultBrowserState, DefaultBrowserState.NUM_ENTRIES);
+        RecordHistogram.recordEnumeratedHistogram(name, newState, DefaultBrowserState.NUM_ENTRIES);
 
         String postFix;
         switch (promoCount) {
@@ -66,7 +58,6 @@ class DefaultBrowserPromoMetrics {
                 postFix = ".FifthOrMorePromo";
         }
         name += postFix;
-        RecordHistogram.recordEnumeratedHistogram(
-                name, newInfo.defaultBrowserState, DefaultBrowserState.NUM_ENTRIES);
+        RecordHistogram.recordEnumeratedHistogram(name, newState, DefaultBrowserState.NUM_ENTRIES);
     }
 }

@@ -304,7 +304,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
-  'skia_revision': '8505be5b584e8796ff4b0cdf03a22d29d32e4e60',
+  'skia_revision': 'b059464a1bbc47d9014d59eff4f4dac8460b174c',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
@@ -312,7 +312,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ANGLE
   # and whatever else without interference from each other.
-  'angle_revision': '3818d37d5e94317f01810053b8f28c1f1e8b98e6',
+  'angle_revision': '84056594390f3529b9ad2121a032ffa7dec4c4ec',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling SwiftShader
   # and whatever else without interference from each other.
@@ -396,7 +396,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': 'd30ca184ffbbde9e13251ef036a20337b5f898d2',
+  'devtools_frontend_revision': 'f58f13c2bd5d2fea9c97a2cdc1e4a0e25893563b',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
@@ -1490,7 +1490,7 @@ deps = {
     'packages': [
       {
         'package': 'chromium/chrome/test/data/variations/cipd',
-        'version': 'bQee_a7wZ8EMP-g9RIaojMvOOPSawp2qrStOAOU6PaMC',
+        'version': 'LgXKHxzIXTM8zViEt_MjmEwZCS2eFHecYh5BSTnhGw8C',
       },
     ],
     'dep_type': 'cipd',
@@ -1501,7 +1501,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    'c50aa5e0a5932824beac432b274c42d9981edc3c',
+    '71f20363e669dbc580a55a0b0e328246f6ca2b42',
     'condition': 'checkout_android and checkout_src_internal',
   },
 

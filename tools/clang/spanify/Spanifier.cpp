@@ -981,7 +981,7 @@ static void EmitSingleVariableSpan(const std::string& key,
   EmitReplacement(
       key, GetReplacementDirective(
                getExprRange(operand_expr, source_manager, lang_opts).getEnd(),
-               ")", source_manager));
+               ", 1u)", source_manager));
 }
 
 static std::string getNodeFromSizeExpr(const clang::Expr* size_expr,
@@ -1487,6 +1487,14 @@ std::pair<std::string, std::string> RewriteStdArrayWithInitList(
       closing_brackets_replacement_directive);
 }
 
+static bool IsMutable(const clang::DeclaratorDecl* decl) {
+  if (const auto* field_decl =
+          clang::dyn_cast_or_null<clang::FieldDecl>(decl)) {
+    return field_decl->isMutable();
+  }
+  return false;
+}
+
 static bool IsConstexpr(const clang::DeclaratorDecl* decl) {
   if (const auto* var_decl = clang::dyn_cast_or_null<clang::VarDecl>(decl)) {
     return var_decl->isConstexpr();
@@ -1566,6 +1574,11 @@ std::string getNodeFromArrayDecl(const clang::TypeLoc* type_loc,
   const clang::QualType& original_element_type = array_type->getElementType();
 
   std::stringstream qualifier_string;
+  if (IsMutable(array_decl)) {
+    // While 'mutable' is a storage class specifier, include it with other
+    // declaration specifiers that precede the type in source code.
+    qualifier_string << "mutable ";
+  }
   if (IsConstexpr(array_decl)) {
     qualifier_string << "constexpr ";
   }
@@ -2212,7 +2225,7 @@ class Spanifier {
                      binary_plus_or_minus_operation(binaryOperation(
                          hasLHS(rhs_expr), hasOperatorName("+"),
                          unless(raw_ptr_plugin::isInMacroLocation()))),
-                     hasRHS(expr().bind("binary_op_rhs")),
+                     hasRHS(expr(hasType(isInteger())).bind("binary_op_rhs")),
                      unless(hasParent(binaryOperation(
                          anyOf(hasOperatorName("+"), hasOperatorName("-"))))))
                      .bind("binaryOperator"),
@@ -2369,6 +2382,7 @@ class Spanifier {
         expr(ignoringParenCasts(binaryOperation(
             binary_plus_or_minus_operation(
                 binaryOperation(hasLHS(rhs_expr), hasOperatorName("+"),
+                                hasRHS(expr(hasType(isInteger()))),
                                 unless(raw_ptr_plugin::isInMacroLocation()))
                     .bind("binary_operation")),
             hasRHS(expr().bind("binary_op_rhs")),
@@ -2380,12 +2394,12 @@ class Spanifier {
     // expr += offset_expr;
     // which is equivalent to:
     // lhs_expr = rhs_expr + offset_expr (Note: lhs_expr == rhs_expr)
-    auto binary_plus_eq_op =
-        traverse(clang::TK_IgnoreUnlessSpelledInSource,
-                 expr(ignoringParenCasts(binaryOperation(
-                          hasLHS(rhs_expr), hasOperatorName("+="),
-                          hasRHS(expr().bind("binary_op_RHS")))))
-                     .bind("binary_plus_eq_op"));
+    auto binary_plus_eq_op = traverse(
+        clang::TK_IgnoreUnlessSpelledInSource,
+        expr(ignoringParenCasts(binaryOperation(
+                 hasLHS(rhs_expr), hasOperatorName("+="),
+                 hasRHS(expr(hasType(isInteger())).bind("binary_op_RHS")))))
+            .bind("binary_plus_eq_op"));
     Match(binary_plus_eq_op, AdaptBinaryPlusEqOperation);
 
     // Handles assignment:

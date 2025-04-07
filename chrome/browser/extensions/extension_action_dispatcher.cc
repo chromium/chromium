@@ -5,7 +5,6 @@
 #include "chrome/browser/extensions/extension_action_dispatcher.h"
 
 #include "base/lazy_instance.h"
-#include "chrome/browser/extensions/extension_tab_util.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
 #include "content/public/browser/web_contents.h"
@@ -15,6 +14,10 @@
 #include "extensions/browser/extension_event_histogram_value.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/common/mojom/context_type.mojom.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/extension_tab_util.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 namespace extensions {
 
@@ -56,6 +59,7 @@ void ExtensionActionDispatcher::NotifyChange(ExtensionAction* extension_action,
   }
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 void ExtensionActionDispatcher::DispatchExtensionActionClicked(
     const ExtensionAction& extension_action,
     content::WebContents* web_contents,
@@ -96,6 +100,7 @@ void ExtensionActionDispatcher::DispatchExtensionActionClicked(
                              event_name, std::move(args));
   }
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 void ExtensionActionDispatcher::ClearAllValuesForTab(
     content::WebContents* web_contents) {

@@ -49,38 +49,6 @@ struct NativeLibraryLoadError;
 
 namespace win {
 
-inline bool IsPseudoHandle(HANDLE h) {
-  // Note that there appears to be no official documentation covering the
-  // existence of specific pseudo handle values. In practice it's clear that
-  // e.g. -1 is the current process, -2 is the current thread, etc. The largest
-  // negative value known to be an issue with DuplicateHandle in fuzzers is
-  // -12.
-  //
-  // Note that there is virtually no risk of a real handle value falling within
-  // this range and being misclassified as a pseudo handle.
-  //
-  // Cast through uintptr_t and then unsigned int to make the truncation to
-  // 32 bits explicit. Handles are size of-pointer but are always 32-bit values.
-  // https://msdn.microsoft.com/en-us/library/aa384203(VS.85).aspx says:
-  // 64-bit versions of Windows use 32-bit handles for interoperability.
-  constexpr int kMinimumKnownPseudoHandleValue = -12;
-  const auto value = static_cast<int32_t>(reinterpret_cast<uintptr_t>(h));
-  return value < 0 && value >= kMinimumKnownPseudoHandleValue;
-}
-
-inline uint32_t HandleToUint32(HANDLE h) {
-  // Cast through uintptr_t and then unsigned int to make the truncation to
-  // 32 bits explicit. Handles are size of-pointer but are always 32-bit values.
-  // https://msdn.microsoft.com/en-us/library/aa384203(VS.85).aspx says:
-  // 64-bit versions of Windows use 32-bit handles for interoperability.
-  return static_cast<uint32_t>(reinterpret_cast<uintptr_t>(h));
-}
-
-inline HANDLE Uint32ToHandle(uint32_t h) {
-  return reinterpret_cast<HANDLE>(
-      static_cast<uintptr_t>(static_cast<int32_t>(h)));
-}
-
 // Returns the string representing the current user sid. Does not modify
 // |user_sid| on failure.
 BASE_EXPORT bool GetUserSidString(std::wstring* user_sid);
@@ -340,15 +308,6 @@ BASE_EXPORT std::optional<std::wstring> ExpandEnvironmentVariables(
 // STATUS_INVALID_HANDLE if called with the pseudo handle returned by
 // `::GetCurrentProcess()` or `GetCurrentProcessHandle()`.
 BASE_EXPORT expected<std::wstring, NTSTATUS> GetObjectTypeName(HANDLE handle);
-
-// Returns a smart pointer wrapping `handle` if it references an object of type
-// `object_type_name`. Crashes the process if `handle` is valid but of an
-// unexpected type. This function will fail with STATUS_INVALID_HANDLE if called
-// with the pseudo handle returned by `::GetCurrentProcess()` or
-// `GetCurrentProcessHandle()`.
-BASE_EXPORT expected<ScopedHandle, NTSTATUS> TakeHandleOfType(
-    HANDLE handle,
-    std::wstring_view object_type_name);
 
 // Process Power Throttling APIs are only available on Windows 11. By default,
 // Windows will throttle processes based on various heuristics (power plan,
