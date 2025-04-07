@@ -551,13 +551,9 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   gpu_info_.passthrough_cmd_decoder =
       gpu_preferences_.use_passthrough_cmd_decoder;
 #else
-  // If gl is disabled passthrough/validating command decoder doesn't matter. If
-  // it's not ensure that passthrough command decoder is supported as it's our
-  // only option.
-  if (!gl_disabled) {
-    gpu_info_.passthrough_cmd_decoder = true;
-    gpu_preferences_.use_passthrough_cmd_decoder = true;
-  }
+  // Use passthrough command decoder if validating was not compiled.
+  gpu_info_.passthrough_cmd_decoder = true;
+  gpu_preferences_.use_passthrough_cmd_decoder = true;
 #endif  // BUILDFLAG(ENABLE_VALIDATING_COMMAND_DECODER)
 
 #if BUILDFLAG(IS_CHROMEOS)
