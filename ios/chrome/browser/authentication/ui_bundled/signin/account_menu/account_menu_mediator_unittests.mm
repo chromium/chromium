@@ -458,9 +458,6 @@ TEST_P(AccountMenuMediatorTest, TestAccountTapedSignoutFailed) {
 
   // Testing the part before the callback.
   // This variable will contain the callback that should be executed once
-  // sign-out ends.
-  __block signin_ui::SignoutCompletionCallback signoutCallback = nil;
-  // This variable will contain the callback that should be executed once
   // sign-in ends.
   __block signin_ui::SigninCompletionCallback signinCallback = nil;
   const CGRect target = CGRect();
@@ -483,7 +480,6 @@ TEST_P(AccountMenuMediatorTest, TestAccountTapedSignoutFailed) {
   OCMExpect([consumer_mock_ setUserInteractionsEnabled:YES]);
   // Simulate AuthenticationFlow failure.
   signinCallback(SigninCoordinatorResultCanceledByUser);
-  EXPECT_EQ(signoutCallback, nil);
 }
 
 // Tests the result of accountTappedWithGaiaID:targetRect:
@@ -650,7 +646,7 @@ TEST_P(AccountMenuMediatorTest, TestSignoutFromTargetRect) {
   }
   CGRect rect = CGRectMake(0, 0, 40, 24);
 
-  __block void (^completion)(BOOL) = nil;
+  __block signin_ui::SignoutCompletionCallback completion = nil;
   OCMExpect([delegate_mock_
       signOutFromTargetRect:rect
                  completion:[OCMArg checkWithBlock:^BOOL(id value) {
@@ -664,7 +660,7 @@ TEST_P(AccountMenuMediatorTest, TestSignoutFromTargetRect) {
                       withResult:SigninCoordinatorResultCanceledByUser
                   signedIdentity:nil
                  userTappedClose:NO]);
-  completion(YES);
+  completion(YES, nil);
 }
 
 // Tests tapping on the close button just after the sign-out button.
@@ -677,7 +673,7 @@ TEST_P(AccountMenuMediatorTest, TestSignoutAndClose) {
     }
   }
   CGRect rect = CGRectMake(0, 0, 40, 24);
-  __block void (^completion)(BOOL) = nil;
+  __block signin_ui::SignoutCompletionCallback completion = nil;
   OCMExpect([delegate_mock_
       signOutFromTargetRect:rect
                  completion:[OCMArg checkWithBlock:^BOOL(id value) {
@@ -688,7 +684,7 @@ TEST_P(AccountMenuMediatorTest, TestSignoutAndClose) {
   [mediator_ signOutFromTargetRect:rect];
   [mediator_ disconnect];
   OCMExpect([consumer_mock_ setUserInteractionsEnabled:YES]);
-  completion(NO);
+  completion(NO, nil);
 }
 
 // Tests tapping on the close button just after the sign-out button.

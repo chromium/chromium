@@ -247,10 +247,11 @@
   _blockUpdates = YES;
   self.userInteractionsBlocked = YES;
   __weak __typeof(self) weakSelf = self;
-  [self.delegate signOutFromTargetRect:targetRect
-                            completion:^(BOOL success) {
-                              [weakSelf signoutEndedWithSuccess:success];
-                            }];
+  [self.delegate
+      signOutFromTargetRect:targetRect
+                 completion:^(BOOL success, SceneState* scene_state) {
+                   [weakSelf signoutEndedWithSuccess:success];
+                 }];
 }
 
 - (void)accountTappedWithGaiaID:(NSString*)gaiaID

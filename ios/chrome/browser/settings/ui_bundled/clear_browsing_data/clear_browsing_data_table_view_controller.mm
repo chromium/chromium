@@ -679,7 +679,7 @@
                             view:itemView
         forceSnackbarOverToolbar:NO
                       withSource:signout_source_metric
-                      completion:^(BOOL success) {
+                      completion:^(BOOL success, SceneState* scene_state) {
                         [weakSelf handleAuthenticationOperationDidFinish];
                       }];
   _signoutCoordinator.showUnavailableFeatureDialogHeader = YES;

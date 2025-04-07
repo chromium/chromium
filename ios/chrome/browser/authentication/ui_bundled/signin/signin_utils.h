@@ -19,6 +19,7 @@ class Browser;
 class ChromeAccountManagerService;
 @class MDCSnackbarMessage;
 class ProfileIOS;
+@class SceneState;
 
 namespace signin_metrics {
 enum class ProfileSignout;
@@ -48,7 +49,7 @@ class ProfileSignoutRequest {
   using PrepareCallback = base::OnceCallback<void(bool will_change_profile)>;
 
   // Callback invoked when the profile switching operation has completed.
-  using CompletionCallback = base::OnceClosure;
+  using CompletionCallback = base::OnceCallback<void(SceneState*)>;
 
   explicit ProfileSignoutRequest(signin_metrics::ProfileSignout source);
 

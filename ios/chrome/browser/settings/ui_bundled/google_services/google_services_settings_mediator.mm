@@ -465,7 +465,7 @@ bool GetStatusForSigninPolicy() {
         __weak GoogleServicesSettingsMediator* weakSelf = self;
         [self.commandHandler
             showSignOutFromTargetRect:targetRect
-                           completion:^(BOOL success) {
+                           completion:^(BOOL success, SceneState* scene_state) {
                              weakSelf.allowChromeSigninPreference.value =
                                  success ? value : !value;
                              [weakSelf

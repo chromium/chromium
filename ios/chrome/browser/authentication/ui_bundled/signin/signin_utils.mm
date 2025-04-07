@@ -529,7 +529,7 @@ void MultiProfileSignOutForProfile(
         CreateChangeProfileSignoutContinuation(
             signout_source, /*force_snackbar_over_toolbar=*/false,
             /*should_record_metrics=*/false, /*snackbar_message =*/nil,
-            barrier);
+            base::IgnoreArgs<SceneState*>(barrier));
     SwitchToPersonalProfile(browser, std::move(continuation));
   }
 }

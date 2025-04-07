@@ -194,7 +194,7 @@ using signin_metrics::PromoAction;
   [self.signOutCoordinator addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
                                      action:^{
                                        [weakSelf dismissSignoutCoordinator];
-                                       completion(NO);
+                                       completion(NO, nil);
                                      }
                                       style:UIAlertActionStyleCancel];
   [self.signOutCoordinator start];
@@ -207,9 +207,9 @@ using signin_metrics::PromoAction;
   __weak GoogleServicesSettingsCoordinator* weakSelf = self;
   signin::ProfileSignoutRequest(
       signin_metrics::ProfileSignout::kUserDisabledAllowChromeSignIn)
-      .SetCompletionCallback(base::BindOnce(^{
+      .SetCompletionCallback(base::BindOnce(^(SceneState* scene_state) {
         [weakSelf.googleServicesSettingsViewController allowUserInteraction];
-        completion(YES);
+        completion(YES, scene_state);
       }))
       .Run(self.browser);
 }

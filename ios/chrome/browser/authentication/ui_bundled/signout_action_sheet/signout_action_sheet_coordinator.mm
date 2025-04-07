@@ -54,12 +54,12 @@ using signin_metrics::SignoutDataLossAlertReason;
 // Called when the sign-out operation completes, invoke the completion
 // with success unless the coordinator was stopped and the sign-out
 // operation did not change the profile.
-- (void)signoutComplete;
+- (void)signoutCompleteForScene:(SceneState*)sceneState;
 
 // Called when the coordinator is stopped. Will invoke the completion
 // with failure unless the sign-out operation requires changing the
 // profile (as this will destroy the UI and thus stop the coordinator).
-- (void)coordinatorStopped;
+- (void)coordinatorStoppedForScene:(SceneState*)sceneState;
 
 @end
 
@@ -76,20 +76,20 @@ using signin_metrics::SignoutDataLossAlertReason;
   return self;
 }
 
-- (void)signoutComplete {
-  [self invokeCompletion:YES];
+- (void)signoutCompleteForScene:(SceneState*)sceneState {
+  [self invokeCompletion:YES sceneState:sceneState];
 }
 
-- (void)coordinatorStopped {
+- (void)coordinatorStoppedForScene:(SceneState*)sceneState {
   if (!_willChangeProfile) {
-    [self invokeCompletion:NO];
+    [self invokeCompletion:NO sceneState:sceneState];
   }
 }
 
-- (void)invokeCompletion:(BOOL)success {
+- (void)invokeCompletion:(BOOL)success sceneState:(SceneState*)sceneState {
   if (signin_ui::SignoutCompletionCallback completion = _completion) {
     _completion = nil;
-    completion(success);
+    completion(success, sceneState);
   }
 }
 
@@ -169,7 +169,7 @@ using signin_metrics::SignoutDataLossAlertReason;
     [self allowUserInteraction];
   }
   [self dismissActionSheetCoordinator];
-  [_completionWrapper coordinatorStopped];
+  [_completionWrapper coordinatorStoppedForScene:nil];
   _completionWrapper = nil;
   _stopped = YES;
 }
@@ -287,7 +287,11 @@ using signin_metrics::SignoutDataLossAlertReason;
     [self handleSignOut];
     [self dismissActionSheetCoordinator];
   } else {
-    [_completionWrapper coordinatorStopped];
+    SceneState* sceneState = nil;
+    if (Browser* browser = self.browser) {
+      sceneState = browser->GetSceneState();
+    }
+    [_completionWrapper coordinatorStoppedForScene:sceneState];
     _completionWrapper = nil;
 
     [self dismissActionSheetCoordinator];
@@ -297,16 +301,19 @@ using signin_metrics::SignoutDataLossAlertReason;
 // Signs the user out of the primary account and clears the data from their
 // device if account is managed.
 - (void)handleSignOut {
-  if (!self.browser) {
+  Browser* browser = self.browser;
+  if (!browser) {
     return;
   }
 
   if (!self.authenticationService->HasPrimaryIdentity(
           signin::ConsentLevel::kSignin)) {
-    [_completionWrapper signoutComplete];
+    SceneState* sceneState = browser->GetSceneState();
+    [_completionWrapper signoutCompleteForScene:sceneState];
     _completionWrapper = nil;
     return;
   }
+
   [self preventUserInteraction];
   // Prepare the signout snackbar before account switching.
   // The snackbar message might be nil if the snackbar is not needed.
@@ -323,11 +330,11 @@ using signin_metrics::SignoutDataLossAlertReason;
       .SetPrepareCallback(base::BindOnce(^(bool will_change_profile) {
         completionWrapper.willChangeProfile = will_change_profile;
       }))
-      .SetCompletionCallback(base::BindOnce(^{
+      .SetCompletionCallback(base::BindOnce(^(SceneState* scene_state) {
         [weakSelf allowUserInteractionIfNotStopped];
-        [completionWrapper signoutComplete];
+        [completionWrapper signoutCompleteForScene:scene_state];
       }))
-      .Run(self.browser);
+      .Run(browser);
 }
 
 // Returns snackbar if needed.

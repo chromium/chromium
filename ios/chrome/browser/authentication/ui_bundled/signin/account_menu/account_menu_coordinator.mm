@@ -244,7 +244,7 @@
 }
 
 - (void)signOutFromTargetRect:(CGRect)targetRect
-                   completion:(void (^)(BOOL))completion {
+                   completion:(signin_ui::SignoutCompletionCallback)completion {
   if (!_authenticationService->HasPrimaryIdentity(
           signin::ConsentLevel::kSignin)) {
     // This could happen in very rare cases, if the account somehow got removed
@@ -262,10 +262,10 @@
                             view:_viewController.view
         forceSnackbarOverToolbar:YES
                       withSource:metricSignOut
-                      completion:^(BOOL success) {
+                      completion:^(BOOL success, SceneState* scene_state) {
                         [weakSelf stopSignoutActionSheetCoordinator];
                         if (completion) {
-                          completion(success);
+                          completion(success, scene_state);
                         }
                       }];
   [_signoutActionSheetCoordinator start];

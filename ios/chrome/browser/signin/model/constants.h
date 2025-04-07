@@ -9,6 +9,8 @@
 
 #import "base/containers/enum_set.h"
 
+@class SceneState;
+
 typedef NS_ENUM(NSUInteger, SigninCoordinatorResult);
 
 // The key in the user info dictionary containing the GoogleServiceAuthError
@@ -72,7 +74,8 @@ using SigninCompletionCallback = void (^)(SigninCoordinatorResult success);
 
 // Completion callback for a sign-out operation.
 // `success` is YES if the operation was successful.
-using SignoutCompletionCallback = void (^)(BOOL success);
+using SignoutCompletionCallback = void (^)(BOOL success,
+                                           SceneState* scene_state);
 
 }  // namespace signin_ui
 

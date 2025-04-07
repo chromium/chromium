@@ -417,7 +417,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
                             view:self.viewController.view
         forceSnackbarOverToolbar:NO
                       withSource:metricSignOut
-                      completion:^(BOOL success) {
+                      completion:^(BOOL success, SceneState* scene_state) {
                         [weakSelf handleSignOutCompleted:success];
                       }];
   self.signoutActionSheetCoordinator.delegate = self;
