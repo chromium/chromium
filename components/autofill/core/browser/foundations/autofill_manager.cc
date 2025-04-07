@@ -834,11 +834,11 @@ void AutofillManager::OnLoadedServerPredictions(
       std::move(response->response), queried_forms,
       response->queried_form_signatures, log_manager());
 
+  OnLoadedServerPredictionsImpl(queried_forms);
+
   for (const raw_ptr<FormStructure, VectorExperimental> form : queried_forms) {
     form->RationalizeAndAssignSections(log_manager(), /*legacy_order=*/true);
   }
-
-  OnLoadedServerPredictionsImpl(queried_forms);
 
   // Will log quality metrics for each FormStructure based on the presence of
   // autocomplete attributes, if available.
