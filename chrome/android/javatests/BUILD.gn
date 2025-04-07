@@ -908,6 +908,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.ntp") {
     "src/org/chromium/chrome/browser/ntp/IncognitoNewTabPageTest.java",
     "src/org/chromium/chrome/browser/ntp/MostVisitedTilesPTTest.java",
     "src/org/chromium/chrome/browser/ntp/NewTabPageColorWithFeedV2Test.java",
+    "src/org/chromium/chrome/browser/ntp/NewTabPageCreationTest.java",
     "src/org/chromium/chrome/browser/ntp/NewTabPageLoadTest.java",
     "src/org/chromium/chrome/browser/ntp/NewTabPageNavigationTest.java",
     "src/org/chromium/chrome/browser/ntp/NewTabPageTest.java",

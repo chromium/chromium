@@ -7,17 +7,11 @@ package org.chromium.chrome.browser.ntp;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.feed.FeedFeatures;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabCreationState;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
-import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.PageTransition;
@@ -154,19 +148,9 @@ public class NewTabPageUma {
         int NUM_ENTRIES = 5;
     }
 
-    private final TabModelSelector mTabModelSelector;
-    private TabCreationRecorder mTabCreationRecorder;
-
-    /**
-     * Constructor.
-     * @param tabModelSelector Tab model selector to observe tab creation event.
-     */
-    public NewTabPageUma(TabModelSelector tabModelSelector) {
-        mTabModelSelector = tabModelSelector;
-    }
-
     /**
      * Records an action taken by the user on the NTP.
+     *
      * @param action One of the ACTION_* values defined in this class.
      */
     public static void recordAction(int action) {
@@ -210,17 +194,8 @@ public class NewTabPageUma {
                 "Android.NTP.Impression", impressionType, NUM_NTP_IMPRESSION);
     }
 
-    /**
-     * Records how often new tabs with a NewTabPage are created. This helps to determine how often
-     * users navigate back to already opened NTPs.
-     */
-    public void monitorNtpCreation() {
-        mTabCreationRecorder = new TabCreationRecorder();
-        mTabModelSelector.addObserver(mTabCreationRecorder);
-    }
-
     /** Records Content Suggestions Display Status when NTPs opened. */
-    public void recordContentSuggestionsDisplayStatus(Profile profile) {
+    public static void recordContentSuggestionsDisplayStatus(Profile profile) {
         @ContentSuggestionsDisplayStatus int status = ContentSuggestionsDisplayStatus.VISIBLE;
         if (!UserPrefs.get(profile).getBoolean(Pref.ENABLE_SNIPPETS)) {
             // Disabled by policy.
@@ -239,22 +214,5 @@ public class NewTabPageUma {
                 "ContentSuggestions.Feed.DisplayStatusOnOpen",
                 status,
                 ContentSuggestionsDisplayStatus.NUM_ENTRIES);
-    }
-
-    /**
-     * Records the number of new NTPs opened in a new tab. Use through {@link
-     * NewTabPageUma#monitorNtpCreation(TabModelSelector)}.
-     */
-    private static class TabCreationRecorder implements TabModelSelectorObserver {
-        @Override
-        public void onNewTabCreated(Tab tab, @TabCreationState int creationState) {
-            if (!UrlUtilities.isNtpUrl(tab.getUrl())) return;
-            RecordUserAction.record("MobileNTPOpenedInNewTab");
-        }
-    }
-
-    /** Destroy and unhook objects at destruction. */
-    public void destroy() {
-        if (mTabCreationRecorder != null) mTabModelSelector.removeObserver(mTabCreationRecorder);
     }
 }

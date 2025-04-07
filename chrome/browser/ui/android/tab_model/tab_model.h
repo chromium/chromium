@@ -39,8 +39,11 @@ class TabModelObserver;
 // with Android's Tabs and Tab Model.
 class TabModel {
  public:
+  // LINT.IfChange(TabLaunchType)
   // Various ways tabs can be launched.
   // Values must be numbered from 0 and can't have gaps.
+  // This enum is used to back a histogram, entries should not be renumbered or
+  // reused.
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.tab
   enum class TabLaunchType {
     // Opened from a link. Sets up a relationship between the newly created tab
@@ -135,6 +138,7 @@ class TabModel {
     // Must be last.
     SIZE
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/new_tab_page/enums.xml:TabLaunchType)
 
   // Various ways tabs can be selected.
   // Values must be numbered from 0 and can't have gaps.

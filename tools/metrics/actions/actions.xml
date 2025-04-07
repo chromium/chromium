@@ -24798,6 +24798,9 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileNTPOpenedInNewTab">
+  <obsolete>
+    Deprecated 04/2025. Replaced with NewTabPage.OpenedInNewTab UMA.
+  </obsolete>
   <owner>friedrichh@chromium.org</owner>
   <description>
     The user manually created a New Tab Page (NTP) in a new tab that has not

@@ -457,7 +457,8 @@ public class NewTabPage
      * @param lifecycleDispatcher Activity lifecycle dispatcher.
      * @param tabModelSelector {@link TabModelSelector} object.
      * @param isTablet {@code true} if running on a Tablet device.
-     * @param uma {@link NewTabPageUma} object recording user metrics.
+     * @param newTabPageCreationTracker {@link NewTabPageCreationTracker} object recording user
+     *     metrics.
      * @param isInNightMode {@code true} if the night mode setting is on.
      * @param nativePageHost The host that is showing this new tab page.
      * @param tab The {@link Tab} that contains this new tab page.
@@ -482,7 +483,7 @@ public class NewTabPage
             ActivityLifecycleDispatcher lifecycleDispatcher,
             TabModelSelector tabModelSelector,
             boolean isTablet,
-            NewTabPageUma uma,
+            NewTabPageCreationTracker mNewTabPageCreationTracker,
             boolean isInNightMode,
             NativePageHost nativePageHost,
             Tab tab,
@@ -624,7 +625,7 @@ public class NewTabPage
         mToolbarHeight =
                 activity.getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow);
 
-        uma.recordContentSuggestionsDisplayStatus(profile);
+        NewTabPageUma.recordContentSuggestionsDisplayStatus(profile);
 
         // TODO(twellington): Move this somewhere it can be shared with NewTabPageView?
         Runnable closeContextMenuCallback = activity::closeContextMenu;

@@ -1406,6 +1406,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.OpenedInNewTab" enum="TabLaunchType"
+    expires_after="2025-12-31">
+  <owner>eirage@chromium.org</owner>
+  <owner>hanxi@chromium.org</owner>
+  <summary>
+    Records the TabLaunchType enum when a New Tab Page (NTP) is created in a new
+    tab. This histogram is logged when a new tab is created, including manually
+    created New Tab or the initial tab at Chrome startup. This histogram is
+    Android-only.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.OutlookCalendar.EventClickIndex" units="count"
     expires_after="2026-01-20">
   <owner>jennserrano@google.com</owner>
