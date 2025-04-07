@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_icon_formatter.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_icon_formatter.h"
 
 #import "base/notreached.h"
 #import "components/omnibox/browser/autocomplete_match.h"
