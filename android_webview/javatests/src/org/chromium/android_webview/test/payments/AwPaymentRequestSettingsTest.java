@@ -104,24 +104,6 @@ public class AwPaymentRequestSettingsTest extends AwParameterizedTest {
     }
 
     /**
-     * If the WEB_PAYMENTS feature is not explicitly modified and the WebView setting enables
-     * PaymentRequest, then then PaymentRequest interface is undefined in JavaScript, because the
-     * default state for WEB_PAYMENTS feature flag in WebView is "disabled".
-     */
-    @Test
-    public void testPaymentRequestUndefinedWithDefaultWebPaymentsFeature() throws Exception {
-        mAwContents.getSettings().setPaymentRequestEnabled(true);
-        loadPage();
-
-        JSUtils.clickNodeWithUserGesture(
-                mAwContents.getWebContents(), "checkPaymentRequestDefined");
-
-        Assert.assertEquals(
-                "PaymentRequest is not defined.",
-                mWebMessageListener.waitForOnPostMessage().getAsString());
-    }
-
-    /**
      * If the WEB_PAYMENTS feature flag is disabled, then the PaymentRequest API interface stays
      * undefined in JavaScript, even if the WebView setting for PaymentRequest API is enabled.
      */

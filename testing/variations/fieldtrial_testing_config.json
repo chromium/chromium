@@ -26718,6 +26718,23 @@
             ]
         }
     ],
+    "WebViewPaymentRequest": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AndroidPaymentIntentsOmitDeprecatedParameters",
+                        "UpdatePaymentDetailsIntentFilterInPaymentApp",
+                        "WebPayments"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebViewPrefetchNativeLibrary": [
         {
             "platforms": [
