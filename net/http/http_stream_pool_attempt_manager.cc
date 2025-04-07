@@ -183,6 +183,9 @@ class HttpStreamPool::AttemptManager::InFlightAttempt
   StreamAttempt* attempt() { return attempt_.get(); }
 
   base::TimeTicks start_time() const { return start_time_; }
+  base::TimeTicks ssl_config_wait_start_time() const {
+    return ssl_config_wait_start_time_;
+  }
 
   const IPEndPoint& ip_endpoint() const { return attempt_->ip_endpoint(); }
 
@@ -612,10 +615,11 @@ HttpStreamPool::AttemptManager::GetSSLConfig(InFlightAttempt* attempt) {
     return *ssl_config_;
   }
 
+  std::optional<AttemptAbortReason> abort_reason;
   const bool svcb_optional = IsSvcbOptional();
   for (auto& endpoint : service_endpoint_request_->GetEndpointResults()) {
     if (!IsEndpointUsableForTcpBasedAttempt(endpoint, svcb_optional)) {
-      unusable_endpoints_for_tcp_based_attempt_.emplace_back(endpoint);
+      abort_reason = AttemptAbortReason::kEndpointUnusable;
       continue;
     }
     const std::vector<IPEndPoint>& ip_endpoints =
@@ -625,10 +629,28 @@ HttpStreamPool::AttemptManager::GetSSLConfig(InFlightAttempt* attempt) {
       SSLConfig ssl_config = *ssl_config_;
       ssl_config.ech_config_list = endpoint.metadata.ech_config_list;
       return ssl_config;
+    } else {
+      if (!abort_reason.has_value()) {
+        abort_reason = AttemptAbortReason::kEndpointNotInResults;
+      }
     }
   }
 
-  aborted_endpoints_for_tcp_based_attempt_.emplace_back(attempt->ip_endpoint());
+  if (!abort_reason.has_value()) {
+    abort_reason = AttemptAbortReason::kEndpointResultsEmpty;
+  }
+  base::TimeTicks now = base::TimeTicks::Now();
+  aborted_tcp_based_attempts_.emplace_back(AbortedAttempt{
+      .reason = *abort_reason,
+      .svcb_optional = svcb_optional,
+      .service_endpoint_request_finished = service_endpoint_request_finished_,
+      .endpoint = attempt->ip_endpoint(),
+      .start_to_abort_time = now - attempt->start_time(),
+      .ssl_config_wait_to_abort_time =
+          attempt->ssl_config_wait_start_time().is_null()
+              ? base::TimeDelta()
+              : now - attempt->ssl_config_wait_start_time(),
+  });
   attempt->set_is_aborted(true);
   return base::unexpected(TlsStreamAttempt::GetSSLConfigError::kAbort);
 }
@@ -1194,6 +1216,7 @@ bool HttpStreamPool::AttemptManager::
     base::UmaHistogramTimes(
         "Net.HttpStreamPool.ExistingSpdySessionFoundTime",
         base::TimeTicks::Now() - dns_resolution_start_time_);
+    ip_matching_spdy_session_found_ = true;
 
     HandleSpdySessionReady(spdy_session,
                            StreamSocketCloseReason::kUsingExistingSpdySession);
@@ -1328,13 +1351,18 @@ void HttpStreamPool::AttemptManager::MaybeAttemptConnection(
       std::string destination = stream_key().destination().Serialize();
       SpdySessionInitiator spdy_session_initiator =
           spdy_session->spdy_session_initiator();
+      std::string spdy_session_host_port =
+          spdy_session->host_port_pair().ToString();
       std::vector<std::string> pooled_aliases;
       for (const auto& alias : spdy_session->pooled_aliases()) {
         pooled_aliases.emplace_back(alias.host_port_pair().ToString());
       }
+      bool ip_matching_spdy_session_found = ip_matching_spdy_session_found_;
       base::debug::Alias(&destination);
       base::debug::Alias(&spdy_session_initiator);
+      base::debug::Alias(&spdy_session_host_port);
       base::debug::Alias(&pooled_aliases);
+      base::debug::Alias(&ip_matching_spdy_session_found);
       NOTREACHED();
     }
     std::optional<IPEndPoint> ip_endpoint =
@@ -1354,18 +1382,14 @@ void HttpStreamPool::AttemptManager::MaybeAttemptConnection(
           ConnectionAttempts connection_attempts = connection_attempts_;
           std::vector<ServiceEndpoint> endpoints =
               service_endpoint_request_->GetEndpointResults();
-          std::vector<ServiceEndpoint> unusable_endpoints =
-              unusable_endpoints_for_tcp_based_attempt_;
-          std::vector<IPEndPoint> aborted_endpoints =
-              aborted_endpoints_for_tcp_based_attempt_;
+          std::vector<AbortedAttempt> aborted_attempts =
+              aborted_tcp_based_attempts_;
           base::debug::Alias(&is_svcb_optional);
-          base::debug::Alias(&connection_attempts_);
+          base::debug::Alias(&connection_attempts);
           base::debug::Alias(&endpoints);
           base::debug::Alias(endpoints.data());
-          base::debug::Alias(&unusable_endpoints);
-          base::debug::Alias(unusable_endpoints.data());
-          base::debug::Alias(&aborted_endpoints);
-          base::debug::Alias(aborted_endpoints.data());
+          base::debug::Alias(&aborted_attempts);
+          base::debug::Alias(aborted_attempts.data());
           DEBUG_ALIAS_FOR_GURL(url_buf, stream_key().destination().GetURL());
           NOTREACHED();
         }
