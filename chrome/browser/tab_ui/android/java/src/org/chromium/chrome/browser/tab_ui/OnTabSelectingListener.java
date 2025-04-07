@@ -4,9 +4,11 @@
 
 package org.chromium.chrome.browser.tab_ui;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.Tab;
 
 /** Interface for selecting a tab. */
+@NullMarked
 public interface OnTabSelectingListener {
     /**
      * Called when a tab is getting selected. This will select the tab and exit the layout.

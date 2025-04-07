@@ -16,6 +16,10 @@ import androidx.core.content.ContextCompat;
 import com.google.android.material.color.MaterialColors;
 import com.google.android.material.elevation.ElevationOverlayProvider;
 
+import org.chromium.build.annotations.NullMarked;
+
+/** Utility methods for providing colors and styles for the tab UI. */
+@NullMarked
 public class TabUiThemeUtils {
     private static final String TAG = "TabUiThemeUtils";
 

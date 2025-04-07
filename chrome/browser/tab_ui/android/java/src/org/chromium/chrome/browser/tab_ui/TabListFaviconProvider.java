@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tab_ui;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -15,12 +17,14 @@ import android.graphics.drawable.LayerDrawable;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -37,6 +41,7 @@ import java.util.List;
 import java.util.Objects;
 
 /** Provider for processed favicons in Tab list. */
+@NullMarked
 public class TabListFaviconProvider {
     /**
      * Interface for lazily fetching favicons. Instances of this class should implement the fetch
@@ -65,14 +70,12 @@ public class TabListFaviconProvider {
      * comparisons of favicon objects.
      */
     public abstract static class TabFavicon {
-        private final @NonNull Drawable mDefaultDrawable;
-        private final @NonNull Drawable mSelectedDrawable;
+        private final Drawable mDefaultDrawable;
+        private final Drawable mSelectedDrawable;
         private final boolean mIsRecolorAllowed;
 
         protected TabFavicon(
-                @NonNull Drawable defaultDrawable,
-                @NonNull Drawable selectedDrawable,
-                boolean allowRecolor) {
+                Drawable defaultDrawable, Drawable selectedDrawable, boolean allowRecolor) {
             mDefaultDrawable = defaultDrawable;
             mSelectedDrawable = selectedDrawable;
             mIsRecolorAllowed = allowRecolor;
@@ -105,19 +108,19 @@ public class TabListFaviconProvider {
     /** A favicon that is sourced from and equality checked on a single URL. */
     @VisibleForTesting
     public static class UrlTabFavicon extends TabFavicon {
-        private final @NonNull GURL mGurl;
+        private final GURL mGurl;
 
         private UrlTabFavicon(
-                @NonNull Drawable defaultDrawable,
-                @NonNull Drawable selectedDrawable,
+                Drawable defaultDrawable,
+                Drawable selectedDrawable,
                 boolean allowRecolor,
-                @NonNull GURL gurl) {
+                GURL gurl) {
             super(defaultDrawable, selectedDrawable, allowRecolor);
             mGurl = gurl;
         }
 
         @VisibleForTesting
-        public UrlTabFavicon(@NonNull Drawable drawable, @NonNull GURL gurl) {
+        public UrlTabFavicon(Drawable drawable, GURL gurl) {
             this(drawable, drawable, false, gurl);
         }
 
@@ -135,10 +138,10 @@ public class TabListFaviconProvider {
     /** Tracks the GURLS that were used for the composed favicon for the equality check.  */
     @VisibleForTesting
     public static class ComposedTabFavicon extends TabFavicon {
-        private final @NonNull GURL[] mGurls;
+        private final GURL[] mGurls;
 
         @VisibleForTesting
-        public ComposedTabFavicon(@NonNull Drawable drawable, @NonNull GURL[] gurls) {
+        public ComposedTabFavicon(Drawable drawable, GURL[] gurls) {
             super(drawable, drawable, false);
             mGurls = gurls;
         }
@@ -185,8 +188,8 @@ public class TabListFaviconProvider {
         private final @StaticTabFaviconType int mType;
 
         private ResourceTabFavicon(
-                @NonNull Drawable defaultDrawable,
-                @NonNull Drawable selectedDrawable,
+                Drawable defaultDrawable,
+                Drawable selectedDrawable,
                 boolean allowRecolor,
                 @StaticTabFaviconType int type) {
             super(defaultDrawable, selectedDrawable, allowRecolor);
@@ -194,7 +197,7 @@ public class TabListFaviconProvider {
         }
 
         @VisibleForTesting
-        public ResourceTabFavicon(@NonNull Drawable defaultDrawable, @StaticTabFaviconType int type) {
+        public ResourceTabFavicon(Drawable defaultDrawable, @StaticTabFaviconType int type) {
             this(defaultDrawable, defaultDrawable, false, type);
         }
 
@@ -219,8 +222,7 @@ public class TabListFaviconProvider {
     private static class LazyTabFaviconResolver {
         // Null after resolution succeeds.
         private @Nullable TabFaviconResolver mResolver;
-        // Null until resolution succeeds.
-        private @Nullable TabFavicon mTabFavicon;
+        private @MonotonicNonNull TabFavicon mTabFavicon;
 
         LazyTabFaviconResolver(TabFaviconResolver resolver) {
             assert resolver != null;
@@ -229,10 +231,9 @@ public class TabListFaviconProvider {
 
         TabFavicon get(Context context) {
             if (mTabFavicon == null) {
-                mTabFavicon = mResolver.resolve(context);
-                if (mTabFavicon != null) {
-                    mResolver = null;
-                }
+                assert mResolver != null;
+                mTabFavicon = assertNonNull(mResolver.resolve(context));
+                mResolver = null;
             }
             return mTabFavicon;
         }
@@ -262,7 +263,7 @@ public class TabListFaviconProvider {
     private final @Nullable TabWebContentsFaviconDelegate mTabWebContentsFaviconDelegate;
 
     private boolean mIsInitialized;
-    private Profile mProfile;
+    private @MonotonicNonNull Profile mProfile;
     private @Nullable FaviconHelper mFaviconHelper;
 
     /**
@@ -397,8 +398,7 @@ public class TabListFaviconProvider {
      * @param iconUrl The url the favicon came from.
      * @return a favicon fetcher that returns a processed version of the bitmap.
      */
-    public TabFaviconFetcher getFaviconFromBitmapFetcher(
-            @NonNull Bitmap icon, @NonNull GURL iconUrl) {
+    public TabFaviconFetcher getFaviconFromBitmapFetcher(Bitmap icon, GURL iconUrl) {
         Drawable processedBitmap = processBitmap(icon, mIsTabStrip);
         return new TabFaviconFetcher() {
             @Override
@@ -449,7 +449,7 @@ public class TabListFaviconProvider {
 
     /** Returns the bitmap as a favicon. Visible for testing to override return value. */
     @VisibleForTesting
-    public TabFavicon getFaviconFromBitmap(@NonNull Bitmap icon, @NonNull GURL iconUrl) {
+    public TabFavicon getFaviconFromBitmap(Bitmap icon, GURL iconUrl) {
         return new UrlTabFavicon(processBitmap(icon, mIsTabStrip), iconUrl);
     }
 
@@ -682,6 +682,7 @@ public class TabListFaviconProvider {
     }
 
     private Profile getProfile(boolean isIncognito) {
+        assert mProfile != null;
         if (!isIncognito) return mProfile;
 
         Profile otrProfile = mProfile.getPrimaryOtrProfile(/* createIfNeeded= */ false);
@@ -726,6 +727,7 @@ public class TabListFaviconProvider {
         return layerDrawable;
     }
 
+    @Initializer
     private static void maybeSetUpLazyTabFaviconResolvers(
             @ColorInt int defaultIconColor,
             @ColorInt int selectedIconColor,
@@ -764,8 +766,6 @@ public class TabListFaviconProvider {
                                 Bitmap chromeBitmap =
                                         BitmapFactory.decodeResource(
                                                 context.getResources(), R.drawable.chromelogo16);
-                                if (chromeBitmap == null) return null;
-
                                 return createChromeOwnedResourceTabFavicon(
                                         context,
                                         chromeBitmap,
@@ -824,8 +824,6 @@ public class TabListFaviconProvider {
                                 Bitmap chromeBitmap =
                                         BitmapFactory.decodeResource(
                                                 context.getResources(), R.drawable.chromelogo16);
-                                if (chromeBitmap == null) return null;
-
                                 return createChromeOwnedResourceTabFavicon(
                                         context,
                                         chromeBitmap,

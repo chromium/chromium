@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.tab_ui;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** A structure for holding the a recycler view position and offset. */
+@NullMarked
 public class RecyclerViewPosition {
     private int mPosition;
     private int mOffset;
