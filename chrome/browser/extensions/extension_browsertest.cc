@@ -55,7 +55,6 @@
 #include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
-#include "components/crx_file/crx_verifier.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/sync/model/string_ordinal.h"
 #include "components/version_info/version_info.h"
@@ -105,15 +104,16 @@ ExtensionBrowserTest::ExtensionBrowserTest(ContextType context_type)
 #endif
       override_prompt_for_external_extensions_(
           FeatureSwitch::prompt_for_external_extensions(),
-          false),
+          false)
 #if BUILDFLAG(IS_WIN)
+      ,
       user_desktop_override_(base::DIR_USER_DESKTOP),
       common_desktop_override_(base::DIR_COMMON_DESKTOP),
       user_quick_launch_override_(base::DIR_USER_QUICK_LAUNCH),
       start_menu_override_(base::DIR_START_MENU),
-      common_start_menu_override_(base::DIR_COMMON_START_MENU),
+      common_start_menu_override_(base::DIR_COMMON_START_MENU)
 #endif
-      verifier_format_override_(crx_file::VerifierFormat::CRX3) {
+{
   EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
 }
 
@@ -134,33 +134,6 @@ Profile* ExtensionBrowserTest::profile() {
   return profile_;
 }
 
-bool ExtensionBrowserTest::ShouldEnableContentVerification() {
-  return false;
-}
-
-bool ExtensionBrowserTest::ShouldEnableInstallVerification() {
-  return false;
-}
-
-bool ExtensionBrowserTest::ShouldAllowMV2Extensions() {
-  return true;
-}
-
-// static
-const Extension* ExtensionBrowserTest::GetExtensionByPath(
-    const ExtensionSet& extensions,
-    const base::FilePath& path) {
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  base::FilePath extension_path = base::MakeAbsoluteFilePath(path);
-  EXPECT_TRUE(!extension_path.empty());
-  for (const scoped_refptr<const Extension>& extension : extensions) {
-    if (extension->path() == extension_path) {
-      return extension.get();
-    }
-  }
-  return nullptr;
-}
-
 void ExtensionBrowserTest::SetUp() {
   test_extension_cache_ = std::make_unique<ExtensionCacheFake>();
   ExtensionPlatformBrowserTest::SetUp();
@@ -168,11 +141,6 @@ void ExtensionBrowserTest::SetUp() {
 
 void ExtensionBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
   ExtensionPlatformBrowserTest::SetUpCommandLine(command_line);
-
-  if (!ShouldEnableContentVerification()) {
-    ignore_content_verification_ =
-        std::make_unique<ScopedIgnoreContentVerifierForTest>();
-  }
 
   if (!ShouldEnableInstallVerification()) {
     ignore_install_verification_ =

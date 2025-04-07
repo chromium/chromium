@@ -16,6 +16,7 @@
 #include "extensions/browser/extension_protocols.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/browser/sandboxed_unpacker.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/features/feature_channel.h"
@@ -30,10 +31,12 @@ class WebContents;
 
 namespace extensions {
 class Extension;
-class ExtensionHost;
 class ExtensionBrowserTestPlatformDelegate;
+class ExtensionHost;
 class ExtensionRegistrar;
+class ExtensionSet;
 class ProcessManager;
+class ScopedIgnoreContentVerifierForTest;
 
 // A cross-platform base class for extensions-related browser tests.
 // `PlatformBrowserTest` inherits from different test suites based on the
@@ -56,6 +59,26 @@ class ExtensionPlatformBrowserTest : public PlatformBrowserTest,
   // The platform delegate is an implementation detail of the test harness
   // and should be able to access anything any general test would access.
   friend class ExtensionBrowserTestPlatformDelegate;
+
+  // Extensions used in tests are typically not from the web store and will have
+  // missing content verification hashes. The default implementation disables
+  // content verification; this should be overridden by derived tests which care
+  // about content verification.
+  virtual bool ShouldEnableContentVerification();
+
+  // Extensions used in tests are typically not from the web store and will fail
+  // install verification. The default implementation disables install
+  // verification; this should be overridden by derived tests which care
+  // about install verification.
+  virtual bool ShouldEnableInstallVerification();
+
+  // Whether MV2 extensions should be allowed. Defaults to true for testing
+  // (since many tests are parameterized to exercise both MV2 + MV3 logic).
+  virtual bool ShouldAllowMV2Extensions();
+
+  // Returns the extension in `extensions` with the given `path`, if one exists.
+  static const Extension* GetExtensionByPath(const ExtensionSet& extensions,
+                                             const base::FilePath& path);
 
   // content::BrowserTestBase:
   void SetUp() override;
@@ -252,6 +275,14 @@ class ExtensionPlatformBrowserTest : public PlatformBrowserTest,
   // its own scoped channel override. As this stands, it means we don't really
   // have non-trunk coverage for most extension browser tests.
   ScopedCurrentChannel current_channel_;
+
+  // Conditionally disable content verification.
+  std::unique_ptr<ScopedIgnoreContentVerifierForTest>
+      ignore_content_verification_;
+
+  // Used to disable CRX publisher signature checking.
+  SandboxedUnpacker::ScopedVerifierFormatOverrideForTest
+      verifier_format_override_;
 
   // Listens to extension loaded notifications.
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>

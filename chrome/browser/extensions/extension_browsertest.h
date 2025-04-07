@@ -26,8 +26,6 @@
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_protocols.h"
 #include "extensions/browser/extension_system.h"
-#include "extensions/browser/sandboxed_unpacker.h"
-#include "extensions/browser/scoped_ignore_content_verifier_for_test.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/feature_switch.h"
@@ -41,7 +39,6 @@ class ChromeExtensionTestNotificationObserver;
 class ExtensionBrowserTestPlatformDelegate;
 class ExtensionCacheFake;
 class ExtensionService;
-class ExtensionSet;
 class WindowController;
 
 // Base class for extension browser tests. Provides utilities for loading,
@@ -68,25 +65,6 @@ class ExtensionBrowserTest : public ExtensionPlatformBrowserTest {
 
   // Useful accessors.
   ExtensionService* extension_service();
-
-  // Extensions used in tests are typically not from the web store and will have
-  // missing content verification hashes. The default implementation disables
-  // content verification; this should be overridden by derived tests which care
-  // about content verification.
-  virtual bool ShouldEnableContentVerification();
-
-  // Extensions used in tests are typically not from the web store and will fail
-  // install verification. The default implementation disables install
-  // verification; this should be overridden by derived tests which care
-  // about install verification.
-  virtual bool ShouldEnableInstallVerification();
-
-  // Whether MV2 extensions should be allowed. Defaults to true for testing
-  // (since many tests are parameterized to exercise both MV2 + MV3 logic).
-  virtual bool ShouldAllowMV2Extensions();
-
-  static const Extension* GetExtensionByPath(const ExtensionSet& extensions,
-                                             const base::FilePath& path);
 
   // InProcessBrowserTest
   void SetUp() override;
@@ -283,17 +261,9 @@ class ExtensionBrowserTest : public ExtensionPlatformBrowserTest {
   // Cache cache implementation.
   std::unique_ptr<ExtensionCacheFake> test_extension_cache_;
 
-  // Conditionally disable content verification.
-  std::unique_ptr<ScopedIgnoreContentVerifierForTest>
-      ignore_content_verification_;
-
   // Conditionally disable install verification.
   std::unique_ptr<ScopedInstallVerifierBypassForTest>
       ignore_install_verification_;
-
-  // Used to disable CRX publisher signature checking.
-  SandboxedUnpacker::ScopedVerifierFormatOverrideForTest
-      verifier_format_override_;
 
   ExtensionUpdater::ScopedSkipScheduledCheckForTest skip_scheduled_check_;
 

@@ -13,6 +13,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "components/crx_file/crx_verifier.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
@@ -22,6 +23,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/scoped_ignore_content_verifier_for_test.h"
 #include "extensions/browser/service_worker/service_worker_test_utils.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
@@ -198,11 +200,39 @@ ExtensionPlatformBrowserTest::ExtensionPlatformBrowserTest(
     : context_type_(context_type),
       // TODO(crbug.com/40261741): Move this ScopedCurrentChannel down into
       // tests that specifically require it.
-      current_channel_(version_info::Channel::UNKNOWN) {
+      current_channel_(version_info::Channel::UNKNOWN),
+      verifier_format_override_(crx_file::VerifierFormat::CRX3) {
   EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
 }
 
 ExtensionPlatformBrowserTest::~ExtensionPlatformBrowserTest() = default;
+
+bool ExtensionPlatformBrowserTest::ShouldEnableContentVerification() {
+  return false;
+}
+
+bool ExtensionPlatformBrowserTest::ShouldEnableInstallVerification() {
+  return false;
+}
+
+bool ExtensionPlatformBrowserTest::ShouldAllowMV2Extensions() {
+  return true;
+}
+
+// static
+const Extension* ExtensionPlatformBrowserTest::GetExtensionByPath(
+    const ExtensionSet& extensions,
+    const base::FilePath& path) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::FilePath extension_path = base::MakeAbsoluteFilePath(path);
+  EXPECT_TRUE(!extension_path.empty());
+  for (const scoped_refptr<const Extension>& extension : extensions) {
+    if (extension->path() == extension_path) {
+      return extension.get();
+    }
+  }
+  return nullptr;
+}
 
 void ExtensionPlatformBrowserTest::SetUp() {
   EnsureBrowserContextKeyedServiceFactoriesBuilt();
@@ -218,6 +248,11 @@ void ExtensionPlatformBrowserTest::SetUpCommandLine(
   base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir_);
   test_data_dir_ = test_data_dir_.AppendASCII("extensions");
 #endif
+
+  if (!ShouldEnableContentVerification()) {
+    ignore_content_verification_ =
+        std::make_unique<ScopedIgnoreContentVerifierForTest>();
+  }
 }
 
 void ExtensionPlatformBrowserTest::SetUpOnMainThread() {
