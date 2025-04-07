@@ -2534,19 +2534,8 @@ void TabDragController::StartDraggingTabsSession(
         current_state_ == DragState::kWaitingToExitRunLoop);
   CHECK_EQ(dragging_tabs_session_, nullptr);
 
-  // The size of the dragged tab may have changed. Adjust the x offset so that
-  // ratio of mouse_offset_ to original width is maintained.
-  std::vector<TabSlotView*> tabs_to_source(drag_data_.attached_views());
-  TabSlotView* source_view = drag_data_.source_view_drag_data()->attached_view;
-  tabs_to_source.erase(
-      tabs_to_source.begin() + drag_data_.source_view_index_ + 1,
-      tabs_to_source.end());
-  const int new_x =
-      TabStrip::GetSizeNeededForViews(tabs_to_source) - source_view->width() +
-      base::ClampRound(offset_to_width_ratio_ * source_view->width());
-
   dragging_tabs_session_ = std::make_unique<DraggingTabsSession>(
-      drag_data_, attached_context_, new_x, initial_move,
+      drag_data_, attached_context_, offset_to_width_ratio_, initial_move,
       start_point_in_screen);
 }
 
