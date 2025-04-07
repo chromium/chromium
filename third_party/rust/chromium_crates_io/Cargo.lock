@@ -108,8 +108,8 @@ dependencies = [
  "cxx",
  "cxxbridge-cmd",
  "fend-core",
- "ff",
  "font-types",
+ "group",
  "hex",
  "icu_capi",
  "icu_casemap",
@@ -348,6 +348,16 @@ dependencies = [
  "cfg-if",
  "libc",
  "wasi",
+]
+
+[[package]]
+name = "group"
+version = "0.13.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "ff",
+ "rand_core 0.9.3",
+ "subtle",
 ]
 
 [[package]]

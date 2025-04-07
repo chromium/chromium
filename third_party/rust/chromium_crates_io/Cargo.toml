@@ -49,9 +49,8 @@ features = ["nightly"]  # For optimized aarch64 implementation.
 # for authenticated-pseudonyms.
 # TODO(crbug.com/404604413): Stop exposing this here when it becomes a
 # transitive dependency.
-[dependencies.ff]
+[dependencies.group]
 version = "0.13"
-default-features = false
 
 [dependencies.icu_capi]
 version = "2.0.0-beta2"
