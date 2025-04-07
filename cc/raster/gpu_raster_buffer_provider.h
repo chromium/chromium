@@ -42,7 +42,6 @@ class CC_EXPORT GpuRasterBufferProvider : public RasterBufferProvider {
       viz::RasterContextProvider* worker_context_provider,
       const RasterCapabilities& raster_caps,
       const gfx::Size& max_tile_size,
-      bool unpremultiply_and_dither_low_bit_depth_tiles,
       RasterQueryQueue* const pending_raster_queries,
       float raster_metric_probability = kRasterMetricProbability);
   GpuRasterBufferProvider(const GpuRasterBufferProvider&) = delete;
