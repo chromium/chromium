@@ -50,7 +50,9 @@ InterestGroupKAnonymityManager::InterestGroupKAnonymityManager(
       k_anonymity_service_callback_(k_anonymity_service_callback),
       weak_ptr_factory_(this) {}
 
-InterestGroupKAnonymityManager::~InterestGroupKAnonymityManager() = default;
+InterestGroupKAnonymityManager::~InterestGroupKAnonymityManager() {
+  DCHECK(queries_in_progress_.empty());
+}
 
 InterestGroupKAnonymityManager::InProgressQueryState::InProgressQueryState(
     base::Time update_time,
@@ -136,8 +138,18 @@ void InterestGroupKAnonymityManager::FetchUncachedKAnonymityData(
     return;
   }
 
+  // If all of the keys we need were fetched from the cache, update k-anonymous
+  // keys on the interest group and clean up the `InProgressQueryState`.
+  if (cache_response.ids_to_query_from_server.empty()) {
+    interest_group_manager_->UpdateKAnonymity(
+        interest_group_key, cache_response.positive_hashed_keys_from_cache,
+        update_time, it->second.replace_existing_values);
+    queries_in_progress_.erase(it);
+    return;
+  }
+
   it->second.positive_hashed_keys_from_received_responses =
-      cache_response.positive_hashed_keys_from_cache;
+      std::move(cache_response.positive_hashed_keys_from_cache);
 
   KAnonymityServiceDelegate* k_anonymity_service =
       k_anonymity_service_callback_.Run();
@@ -148,8 +160,8 @@ void InterestGroupKAnonymityManager::FetchUncachedKAnonymityData(
   }
 
   std::vector<std::string> ids_to_query_in_next_batch;
-  for (const std::string& key : cache_response.ids_to_query_from_server) {
-    ids_to_query_in_next_batch.push_back(key);
+  for (std::string& key : cache_response.ids_to_query_from_server) {
+    ids_to_query_in_next_batch.emplace_back(std::move(key));
 
     if (ids_to_query_in_next_batch.size() >= kQueryBatchSizeLimit) {
       it->second.remaining_responses++;
