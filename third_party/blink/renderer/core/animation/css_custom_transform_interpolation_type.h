@@ -30,8 +30,14 @@ class CSSCustomTransformInterpolationType
   const CSSValue* CreateCSSValue(const InterpolableValue&,
                                  const NonInterpolableValue*,
                                  const StyleResolverState&) const final;
+  InterpolationValue MaybeConvertCustomPropertyUnderlyingValue(
+      const CSSValue&) const final;
 
  private:
+  InterpolationValue MaybeConvertTransformList(
+      const CSSValue&,
+      const CSSToLengthConversionData&) const;
+
   // These methods only apply to CSSInterpolationTypes used by standard CSS
   // properties.
   // CSSCustomTransformInterpolationType is only accessible via registered

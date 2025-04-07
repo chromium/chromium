@@ -368,6 +368,22 @@ CSSColorInterpolationType::MaybeConvertStandardPropertyUnderlyingValue(
       style.UsedColorScheme(), /*color_provider=*/nullptr);
 }
 
+InterpolationValue
+CSSColorInterpolationType::MaybeConvertCustomPropertyUnderlyingValue(
+    const CSSValue& value) const {
+  InterpolableColor* interpolable_color =
+      MaybeCreateInterpolableColor(value, /*state=*/nullptr);
+  if (!interpolable_color) {
+    return nullptr;
+  }
+
+  auto* color_pair =
+      MakeGarbageCollected<InterpolableList>(kInterpolableColorPairIndexCount);
+  color_pair->Set(kUnvisited, interpolable_color->Clone());
+  color_pair->Set(kVisited, interpolable_color);
+  return InterpolationValue(color_pair);
+}
+
 void CSSColorInterpolationType::ApplyStandardPropertyValue(
     const InterpolableValue& interpolable_value,
     const NonInterpolableValue*,

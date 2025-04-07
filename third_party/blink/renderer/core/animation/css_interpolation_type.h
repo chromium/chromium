@@ -65,6 +65,11 @@ class CORE_EXPORT CSSInterpolationType : public InterpolationType {
     return value;
   }
 
+  virtual InterpolationValue MaybeConvertCustomPropertyUnderlyingValue(
+      const CSSValue&) const {
+    NOTREACHED();
+  }
+
  protected:
   explicit CSSInterpolationType(PropertyHandle,
                                 const PropertyRegistration* = nullptr);

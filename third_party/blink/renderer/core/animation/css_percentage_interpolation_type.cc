@@ -103,6 +103,17 @@ CSSPercentageInterpolationType::MaybeConvertStandardPropertyUnderlyingValue(
   return CreatePercentageValue(*underlying_percentage);
 }
 
+InterpolationValue
+CSSPercentageInterpolationType::MaybeConvertCustomPropertyUnderlyingValue(
+    const CSSValue& value) const {
+  if (const auto* percentage_value = DynamicTo<CSSNumericLiteralValue>(value)) {
+    if (percentage_value->IsPercentage()) {
+      return CreatePercentageValue(percentage_value->GetDoubleValue());
+    }
+  }
+  return nullptr;
+}
+
 void CSSPercentageInterpolationType::ApplyStandardPropertyValue(
     const InterpolableValue& interpolable_value,
     const NonInterpolableValue*,

@@ -19,14 +19,22 @@ InterpolationValue CSSTimeInterpolationType::MaybeConvertNeutral(
   return CreateTimeValue(0);
 }
 
+InterpolationValue CSSTimeInterpolationType::MaybeConvertTime(
+    const CSSValue& value,
+    const CSSToLengthConversionData& conversion_data) const {
+  const auto* primitive_value = DynamicTo<CSSPrimitiveValue>(value);
+  if (!primitive_value || !primitive_value->IsTime()) {
+    return nullptr;
+  }
+  return CreateTimeValue(primitive_value->ComputeSeconds(conversion_data));
+}
+
 InterpolationValue CSSTimeInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState*,
+    const StyleResolverState* state,
     ConversionCheckers&) const {
-  auto* primitive_value = DynamicTo<CSSPrimitiveValue>(value);
-  if (!primitive_value || !primitive_value->IsTime())
-    return nullptr;
-  return CreateTimeValue(primitive_value->ComputeSeconds());
+  CHECK(state);
+  return MaybeConvertTime(value, state->CssToLengthConversionData());
 }
 
 const CSSValue* CSSTimeInterpolationType::CreateCSSValue(
@@ -82,6 +90,13 @@ CSSTimeInterpolationType::MaybeConvertStandardPropertyUnderlyingValue(
   if (auto underlying_seconds = GetSeconds(style))
     return CreateTimeValue(*underlying_seconds);
   return nullptr;
+}
+
+InterpolationValue
+CSSTimeInterpolationType::MaybeConvertCustomPropertyUnderlyingValue(
+    const CSSValue& value) const {
+  return MaybeConvertTime(value,
+                          CSSToLengthConversionData(/*element=*/nullptr));
 }
 
 void CSSTimeInterpolationType::ApplyStandardPropertyValue(

@@ -15,15 +15,23 @@ InterpolationValue CSSResolutionInterpolationType::MaybeConvertNeutral(
   return InterpolationValue(MakeGarbageCollected<InterpolableNumber>(0));
 }
 
+InterpolationValue CSSResolutionInterpolationType::MaybeConvertResolution(
+    const CSSValue& value,
+    const CSSToLengthConversionData& conversion_data) const {
+  const auto* primitive_value = DynamicTo<CSSPrimitiveValue>(value);
+  if (!primitive_value || !primitive_value->IsResolution()) {
+    return nullptr;
+  }
+  return InterpolationValue(MakeGarbageCollected<InterpolableNumber>(
+      primitive_value->ComputeDotsPerPixel(conversion_data)));
+}
+
 InterpolationValue CSSResolutionInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState*,
+    const StyleResolverState* state,
     ConversionCheckers&) const {
-  auto* primitive_value = DynamicTo<CSSPrimitiveValue>(value);
-  if (!primitive_value || !primitive_value->IsResolution())
-    return nullptr;
-  return InterpolationValue(MakeGarbageCollected<InterpolableNumber>(
-      primitive_value->ComputeDotsPerPixel()));
+  CHECK(state);
+  return MaybeConvertResolution(value, state->CssToLengthConversionData());
 }
 
 const CSSValue* CSSResolutionInterpolationType::CreateCSSValue(
@@ -33,6 +41,13 @@ const CSSValue* CSSResolutionInterpolationType::CreateCSSValue(
   return CSSNumericLiteralValue::Create(
       To<InterpolableNumber>(value).Value(),
       CSSPrimitiveValue::UnitType::kDotsPerPixel);
+}
+
+InterpolationValue
+CSSResolutionInterpolationType::MaybeConvertCustomPropertyUnderlyingValue(
+    const CSSValue& value) const {
+  return MaybeConvertResolution(value,
+                                CSSToLengthConversionData(/*element=*/nullptr));
 }
 
 }  // namespace blink

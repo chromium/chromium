@@ -28,8 +28,14 @@ class CSSResolutionInterpolationType : public CSSInterpolationType {
   const CSSValue* CreateCSSValue(const InterpolableValue&,
                                  const NonInterpolableValue*,
                                  const StyleResolverState&) const final;
+  InterpolationValue MaybeConvertCustomPropertyUnderlyingValue(
+      const CSSValue&) const final;
 
  private:
+  InterpolationValue MaybeConvertResolution(
+      const CSSValue&,
+      const CSSToLengthConversionData&) const;
+
   // These methods only apply to CSSInterpolationTypes used by standard CSS
   // properties.
   // CSSResolutionInterpolationType is only accessible via registered custom CSS

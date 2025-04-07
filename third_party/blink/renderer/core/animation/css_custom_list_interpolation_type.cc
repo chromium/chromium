@@ -53,6 +53,20 @@ InterpolationValue CSSCustomListInterpolationType::MaybeConvertValue(
 }
 
 InterpolationValue
+CSSCustomListInterpolationType::MaybeConvertCustomPropertyUnderlyingValue(
+    const CSSValue& value) const {
+  const auto* list = DynamicTo<CSSValueList>(value);
+  if (!list) {
+    return nullptr;
+  }
+  return ListInterpolationFunctions::CreateList(
+      list->length(), [this, list](wtf_size_t index) {
+        return inner_interpolation_type_
+            ->MaybeConvertCustomPropertyUnderlyingValue(list->Item(index));
+      });
+}
+
+InterpolationValue
 CSSCustomListInterpolationType::PreInterpolationCompositeIfNeeded(
     InterpolationValue value,
     const InterpolationValue& underlying,

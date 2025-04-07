@@ -223,6 +223,12 @@ CSSLengthInterpolationType::MaybeConvertStandardPropertyUnderlyingValue(
       style.InterpolateSize()));
 }
 
+InterpolationValue
+CSSLengthInterpolationType::MaybeConvertCustomPropertyUnderlyingValue(
+    const CSSValue& value) const {
+  return InterpolationValue(InterpolableLength::MaybeConvertCSSValue(value));
+}
+
 const CSSValue* CSSLengthInterpolationType::CreateCSSValue(
     const InterpolableValue& interpolable_value,
     const NonInterpolableValue*,

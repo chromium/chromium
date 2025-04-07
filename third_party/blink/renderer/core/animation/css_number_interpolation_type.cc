@@ -105,6 +105,17 @@ CSSNumberInterpolationType::MaybeConvertStandardPropertyUnderlyingValue(
   return CreateNumberValue(*underlying_number);
 }
 
+InterpolationValue
+CSSNumberInterpolationType::MaybeConvertCustomPropertyUnderlyingValue(
+    const CSSValue& value) const {
+  if (const auto* number_value = DynamicTo<CSSNumericLiteralValue>(value)) {
+    if (number_value->IsNumber()) {
+      return CreateNumberValue(number_value->GetDoubleValue());
+    }
+  }
+  return nullptr;
+}
+
 void CSSNumberInterpolationType::ApplyStandardPropertyValue(
     const InterpolableValue& interpolable_value,
     const NonInterpolableValue*,

@@ -47,6 +47,8 @@ class CSSCustomListInterpolationType : public CSSInterpolationType {
   PairwiseInterpolationValue MaybeMergeSingles(
       InterpolationValue&& start,
       InterpolationValue&& end) const final;
+  InterpolationValue MaybeConvertCustomPropertyUnderlyingValue(
+      const CSSValue&) const final;
 
  private:
   // These methods only apply to CSSInterpolationTypes used by standard CSS

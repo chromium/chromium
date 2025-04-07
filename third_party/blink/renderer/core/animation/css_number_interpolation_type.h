@@ -24,6 +24,8 @@ class CORE_EXPORT CSSNumberInterpolationType : public CSSInterpolationType {
 
   InterpolationValue MaybeConvertStandardPropertyUnderlyingValue(
       const ComputedStyle&) const final;
+  InterpolationValue MaybeConvertCustomPropertyUnderlyingValue(
+      const CSSValue&) const final;
   void ApplyStandardPropertyValue(const InterpolableValue&,
                                   const NonInterpolableValue*,
                                   StyleResolverState&) const final;

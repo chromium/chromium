@@ -43,4 +43,17 @@ const CSSValue* CSSAngleInterpolationType::CreateCSSValue(
       CSSPrimitiveValue::UnitType::kDegrees);
 }
 
+InterpolationValue
+CSSAngleInterpolationType::MaybeConvertCustomPropertyUnderlyingValue(
+    const CSSValue& value) const {
+  if (const auto* numeric_value = DynamicTo<CSSNumericLiteralValue>(value)) {
+    if (numeric_value->IsAngle()) {
+      return InterpolationValue(MakeGarbageCollected<InterpolableNumber>(
+          numeric_value->ComputeDegrees(),
+          CSSPrimitiveValue::UnitType::kDegrees));
+    }
+  }
+  return nullptr;
+}
+
 }  // namespace blink

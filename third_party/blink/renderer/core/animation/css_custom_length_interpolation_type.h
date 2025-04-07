@@ -27,6 +27,8 @@ class CSSCustomLengthInterpolationType : public CSSInterpolationType {
   const CSSValue* CreateCSSValue(const InterpolableValue&,
                                  const NonInterpolableValue*,
                                  const StyleResolverState&) const final;
+  InterpolationValue MaybeConvertCustomPropertyUnderlyingValue(
+      const CSSValue&) const final;
 
  private:
   // These methods only apply to CSSInterpolationTypes used by standard CSS
