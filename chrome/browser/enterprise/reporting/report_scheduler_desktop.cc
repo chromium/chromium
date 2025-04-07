@@ -18,6 +18,7 @@
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
+#include "components/device_signals/core/common/signals_features.h"
 #include "components/enterprise/browser/reporting/report_scheduler.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/prefs/pref_service.h"
@@ -54,6 +55,11 @@ ReportSchedulerDesktop::ReportSchedulerDesktop(Profile* profile)
   if (profile) {
 #if BUILDFLAG(IS_CHROMEOS)
     NOTREACHED();
+#else
+    if (enterprise_signals::features::IsProfileSignalsReportingEnabled()) {
+      user_security_signals_service_ =
+          std::make_unique<UserSecuritySignalsService>(prefs_, this);
+    }
 #endif
   }
 }
@@ -70,6 +76,12 @@ ReportSchedulerDesktop::~ReportSchedulerDesktop() {
 
 PrefService* ReportSchedulerDesktop::GetPrefService() {
   return prefs_;
+}
+
+void ReportSchedulerDesktop::OnInitializationCompleted() {
+  if (user_security_signals_service_) {
+    user_security_signals_service_->Start();
+  }
 }
 
 void ReportSchedulerDesktop::StartWatchingUpdatesIfNeeded(
@@ -119,6 +131,28 @@ policy::DMToken ReportSchedulerDesktop::GetProfileDMToken() {
 
 std::string ReportSchedulerDesktop::GetProfileClientId() {
   return reporting::GetUserClientId(profile_).value_or(std::string());
+}
+
+bool ReportSchedulerDesktop::AreSecurityReportsEnabled() {
+  return user_security_signals_service_ &&
+         user_security_signals_service_->IsSecuritySignalsReportingEnabled();
+}
+
+bool ReportSchedulerDesktop::UseCookiesInUploads() {
+  return user_security_signals_service_ &&
+         user_security_signals_service_->ShouldUseCookies();
+}
+
+void ReportSchedulerDesktop::OnSecuritySignalsUploaded() {
+  if (user_security_signals_service_) {
+    user_security_signals_service_->OnReportUploaded();
+  }
+}
+
+void ReportSchedulerDesktop::OnReportEventTriggered(
+    SecurityReportTrigger trigger) {
+  // TODO(crbug.com/402486791): Forward the trigger via
+  // `trigger_report_callback_`.
 }
 
 void ReportSchedulerDesktop::OnUpdate(const BuildState* build_state) {

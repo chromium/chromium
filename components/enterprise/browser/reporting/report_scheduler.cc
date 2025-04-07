@@ -81,6 +81,8 @@ ReportScheduler::ReportScheduler(CreateParams params)
       base::BindRepeating(&ReportScheduler::GenerateAndUploadReport,
                           weak_ptr_factory_.GetWeakPtr()));
   RegisterPrefObserver();
+
+  delegate_->OnInitializationCompleted();
 }
 
 ReportScheduler::~ReportScheduler() = default;
@@ -275,6 +277,7 @@ void ReportScheduler::OnReportGenerated(ReportRequestQueue requests) {
         std::make_unique<ReportUploader>(cloud_policy_client_, kMaximumRetry);
   }
   RecordUploadTrigger(active_trigger_);
+  // TODO(crbug.com/399164647): Add cookie to upload request for signals reports
   report_uploader_->SetRequestAndUpload(
       TriggerToReportType(active_trigger_), std::move(requests),
       base::BindOnce(&ReportScheduler::OnReportUploaded,
@@ -323,6 +326,15 @@ void ReportScheduler::OnReportUploaded(ReportUploader::ReportStatus status) {
     if (pending_triggers_ & kTriggerManual)
       pending_triggers_ -= kTriggerManual;
   }
+
+  // TODO(crbug.com/402486791): Add Security signals report trigger to this
+  // check. Full report from timer and manual trigger contain security signals
+  // as well (if required and allowed), in form delegate to refresh the signals
+  // report timer as well.
+  if ((active_trigger_ == kTriggerManual || active_trigger_ == kTriggerTimer)) {
+    delegate_->OnSecuritySignalsUploaded();
+  }
+
   active_trigger_ = kTriggerNone;
   RunPendingTriggers();
 }

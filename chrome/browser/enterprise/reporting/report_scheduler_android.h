@@ -23,10 +23,14 @@ class ReportSchedulerAndroid : public ReportScheduler::Delegate {
 
   // ReportScheduler::Delegate implementation.
   PrefService* GetPrefService() override;
+  void OnInitializationCompleted() override;
   void StartWatchingUpdatesIfNeeded(base::Time last_upload,
                                     base::TimeDelta upload_interval) override;
   void StopWatchingUpdates() override;
   void OnBrowserVersionUploaded() override;
+  bool AreSecurityReportsEnabled() override;
+  bool UseCookiesInUploads() override;
+  void OnSecuritySignalsUploaded() override;
   policy::DMToken GetProfileDMToken() override;
   std::string GetProfileClientId() override;
 

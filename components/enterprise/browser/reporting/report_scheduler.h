@@ -60,6 +60,9 @@ class ReportScheduler {
 
     virtual PrefService* GetPrefService() = 0;
 
+    // Run once after initialization of the scheduler is complete.
+    virtual void OnInitializationCompleted() = 0;
+
     // Browser version
     virtual void StartWatchingUpdatesIfNeeded(
         base::Time last_upload,
@@ -69,6 +72,12 @@ class ReportScheduler {
 
     virtual policy::DMToken GetProfileDMToken() = 0;
     virtual std::string GetProfileClientId() = 0;
+
+    // Security signals
+    virtual bool AreSecurityReportsEnabled() = 0;
+    virtual bool UseCookiesInUploads() = 0;
+    // Invoked when security signals was uploaded by a report.
+    virtual void OnSecuritySignalsUploaded() = 0;
 
    protected:
     ReportTriggerCallback trigger_report_callback_;

@@ -23,8 +23,7 @@ class UserSecuritySignalsService : public SecuritySignalsService {
    public:
     // Invoked when `trigger` happens, and will only be invoked if the current
     // policy values dictate that this trigger is meaningful.
-    virtual void OnReportEventTriggered(SecurityReportTrigger trigger,
-                                        base::OnceClosure done_closure) = 0;
+    virtual void OnReportEventTriggered(SecurityReportTrigger trigger) = 0;
   };
 
   UserSecuritySignalsService(PrefService* profile_prefs, Delegate* delegate);
