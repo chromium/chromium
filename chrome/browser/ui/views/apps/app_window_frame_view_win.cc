@@ -30,8 +30,8 @@ AppWindowFrameViewWin::~AppWindowFrameViewWin() = default;
 
 gfx::Insets AppWindowFrameViewWin::GetFrameInsets() const {
   int caption_height =
-      display::win::ScreenWin::GetSystemMetricsInDIP(SM_CYSIZEFRAME) +
-      display::win::ScreenWin::GetSystemMetricsInDIP(SM_CYCAPTION);
+      display::win::GetScreenWin()->GetSystemMetricsInDIP(SM_CYSIZEFRAME) +
+      display::win::GetScreenWin()->GetSystemMetricsInDIP(SM_CYCAPTION);
 
   return gfx::Insets::TLBR(caption_height, 0, 0, 0);
 }
@@ -89,7 +89,7 @@ int AppWindowFrameViewWin::NonClientHitTest(const gfx::Point& point) {
   // Don't allow overlapping resize handles when the window is maximized or
   // fullscreen, as it can't be resized in those states.
   int resize_border =
-      display::win::ScreenWin::GetSystemMetricsInDIP(SM_CXSIZEFRAME);
+      display::win::GetScreenWin()->GetSystemMetricsInDIP(SM_CXSIZEFRAME);
   int frame_component = GetHTComponentForFrame(
       point, gfx::Insets(resize_border), kResizeAreaCornerSize - resize_border,
       kResizeAreaCornerSize - resize_border, can_ever_resize);

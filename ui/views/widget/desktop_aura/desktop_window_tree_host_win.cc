@@ -227,7 +227,7 @@ void DesktopWindowTreeHostWin::Init(const Widget::InitParams& params) {
 
   // We don't have an HWND yet, so scale relative to the nearest screen.
   gfx::Rect pixel_bounds =
-      display::win::ScreenWin::DIPToScreenRect(nullptr, params.bounds);
+      display::win::GetScreenWin()->DIPToScreenRect(nullptr, params.bounds);
   message_handler_->Init(parent_hwnd, pixel_bounds);
 
   // If the Redirection Surface is removed, there needs to be a replacement
@@ -352,7 +352,7 @@ void DesktopWindowTreeHostWin::Show(ui::mojom::WindowShowState show_state,
     // positions in variable-DPI situations. See https://crbug.com/1252564 for
     // details.
     pixel_restore_bounds =
-        display::win::ScreenWin::DIPToScreenRect(nullptr, restore_bounds);
+        display::win::GetScreenWin()->DIPToScreenRect(nullptr, restore_bounds);
   }
   message_handler_->Show(show_state, pixel_restore_bounds);
 
@@ -365,7 +365,7 @@ bool DesktopWindowTreeHostWin::IsVisible() const {
 
 void DesktopWindowTreeHostWin::SetSize(const gfx::Size& size) {
   gfx::Size size_in_pixels =
-      display::win::ScreenWin::DIPToScreenSize(GetHWND(), size);
+      display::win::GetScreenWin()->DIPToScreenSize(GetHWND(), size);
   gfx::Size expanded =
       GetExpandedWindowSize(message_handler_->is_translucent(), size_in_pixels);
   window_enlargement_ =
@@ -387,7 +387,7 @@ void DesktopWindowTreeHostWin::StackAtTop() {
 
 void DesktopWindowTreeHostWin::CenterWindow(const gfx::Size& size) {
   gfx::Size size_in_pixels =
-      display::win::ScreenWin::DIPToScreenSize(GetHWND(), size);
+      display::win::GetScreenWin()->DIPToScreenSize(GetHWND(), size);
   gfx::Size expanded_size;
   expanded_size =
       GetExpandedWindowSize(message_handler_->is_translucent(), size_in_pixels);
@@ -402,25 +402,25 @@ void DesktopWindowTreeHostWin::GetWindowPlacement(
     ui::mojom::WindowShowState* show_state) const {
   message_handler_->GetWindowPlacement(bounds, show_state);
   InsetBottomRight(bounds, window_enlargement_);
-  *bounds = display::win::ScreenWin::ScreenToDIPRect(GetHWND(), *bounds);
+  *bounds = display::win::GetScreenWin()->ScreenToDIPRect(GetHWND(), *bounds);
 }
 
 gfx::Rect DesktopWindowTreeHostWin::GetWindowBoundsInScreen() const {
   gfx::Rect pixel_bounds = message_handler_->GetWindowBoundsInScreen();
   InsetBottomRight(&pixel_bounds, window_enlargement_);
-  return display::win::ScreenWin::ScreenToDIPRect(GetHWND(), pixel_bounds);
+  return display::win::GetScreenWin()->ScreenToDIPRect(GetHWND(), pixel_bounds);
 }
 
 gfx::Rect DesktopWindowTreeHostWin::GetClientAreaBoundsInScreen() const {
   gfx::Rect pixel_bounds = message_handler_->GetClientAreaBoundsInScreen();
   InsetBottomRight(&pixel_bounds, window_enlargement_);
-  return display::win::ScreenWin::ScreenToDIPRect(GetHWND(), pixel_bounds);
+  return display::win::GetScreenWin()->ScreenToDIPRect(GetHWND(), pixel_bounds);
 }
 
 gfx::Rect DesktopWindowTreeHostWin::GetRestoredBounds() const {
   gfx::Rect pixel_bounds = message_handler_->GetRestoredBounds();
   InsetBottomRight(&pixel_bounds, window_enlargement_);
-  return display::win::ScreenWin::ScreenToDIPRect(GetHWND(), pixel_bounds);
+  return display::win::GetScreenWin()->ScreenToDIPRect(GetHWND(), pixel_bounds);
 }
 
 std::string DesktopWindowTreeHostWin::GetWorkspace() const {
@@ -434,7 +434,7 @@ gfx::Rect DesktopWindowTreeHostWin::GetWorkAreaBoundsInScreen() const {
       MonitorFromWindow(message_handler_->hwnd(), MONITOR_DEFAULTTONEAREST),
       &monitor_info);
   gfx::Rect pixel_bounds = gfx::Rect(monitor_info.rcWork);
-  return display::win::ScreenWin::ScreenToDIPRect(GetHWND(), pixel_bounds);
+  return display::win::GetScreenWin()->ScreenToDIPRect(GetHWND(), pixel_bounds);
 }
 
 void DesktopWindowTreeHostWin::SetShape(
@@ -447,7 +447,8 @@ void DesktopWindowTreeHostWin::SetShape(
   // TODO(wez): This would be a lot simpler if we were passed an SkPath.
   // See crbug.com/410593.
   SkRegion shape;
-  const float scale = display::win::ScreenWin::GetScaleFactorForHWND(GetHWND());
+  const float scale =
+      display::win::GetScreenWin()->GetScaleFactorForHWND(GetHWND());
   if (scale > 1.0) {
     std::vector<SkIRect> sk_rects;
     for (const gfx::Rect& rect : *native_shape) {
@@ -968,7 +969,7 @@ int DesktopWindowTreeHostWin::GetNonClientComponent(
     return HTTRANSPARENT;
   }
   gfx::Point dip_position =
-      display::win::ScreenWin::ClientToDIPPoint(GetHWND(), point);
+      display::win::GetScreenWin()->ClientToDIPPoint(GetHWND(), point);
   return native_widget_delegate_->GetNonClientComponent(dip_position);
 }
 
@@ -982,13 +983,13 @@ void DesktopWindowTreeHostWin::GetWindowMask(const gfx::Size& size_px,
 
   if (Widget* widget = GetWidget(); widget && widget->non_client_view()) {
     widget->non_client_view()->GetWindowMask(
-        display::win::ScreenWin::ScreenToDIPSize(GetHWND(),
-                                                 adjusted_size_in_px),
+        display::win::GetScreenWin()->ScreenToDIPSize(GetHWND(),
+                                                      adjusted_size_in_px),
         path);
     // Convert path in DIPs to pixels.
     if (!path->isEmpty()) {
       const float scale =
-          display::win::ScreenWin::GetScaleFactorForHWND(GetHWND());
+          display::win::GetScreenWin()->GetScaleFactorForHWND(GetHWND());
       SkScalar sk_scale = SkFloatToScalar(scale);
       SkMatrix matrix;
       matrix.setScale(sk_scale, sk_scale);
@@ -1045,7 +1046,7 @@ gfx::Size DesktopWindowTreeHostWin::GetRootViewSize() const {
 
 gfx::Size DesktopWindowTreeHostWin::DIPToScreenSize(
     const gfx::Size& dip_size) const {
-  return display::win::ScreenWin::DIPToScreenSize(GetHWND(), dip_size);
+  return display::win::GetScreenWin()->DIPToScreenSize(GetHWND(), dip_size);
 }
 
 void DesktopWindowTreeHostWin::ResetWindowControls() {
@@ -1173,7 +1174,7 @@ void DesktopWindowTreeHostWin::HandleMove() {
   // Adding/removing a monitor, or changing the primary monitor can cause a
   // WM_MOVE message before `OnDisplayChanged()`. Without this call, we would
   // DCHECK due to stale `DisplayInfo`s. See https:://crbug.com/1413940.
-  display::win::ScreenWin::UpdateDisplayInfosIfNeeded();
+  display::win::GetScreenWin()->UpdateDisplayInfosIfNeeded();
   CheckForMonitorChange();
   OnHostMovedInPixels();
 }

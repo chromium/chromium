@@ -33,7 +33,7 @@ constexpr int kZoomedWindowSizeScaleFactor = 2;
 // cannot rely on the platform window size since it gets clamped to the monitor
 // work area.
 gfx::Rect ScaleWindowBoundsMaybe(HWND hwnd, const gfx::Rect& bounds) {
-  const float scale = display::win::ScreenWin::GetScaleFactorForHWND(hwnd);
+  const float scale = display::win::GetScreenWin()->GetScaleFactorForHWND(hwnd);
   if (scale > 1.0) {
     gfx::RectF scaled_bounds(bounds);
     scaled_bounds.Scale(scale);

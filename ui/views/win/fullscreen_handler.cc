@@ -70,7 +70,7 @@ void FullscreenHandler::ProcessFullscreen(bool fullscreen,
     // Store the original window rect, DPI, and monitor info to detect changes
     // and more accurately restore window placements when exiting fullscreen.
     ::GetWindowRect(hwnd_, &saved_window_info_.rect);
-    saved_window_info_.dpi = display::win::ScreenWin::GetDPIForHWND(hwnd_);
+    saved_window_info_.dpi = display::win::GetScreenWin()->GetDPIForHWND(hwnd_);
     saved_window_info_.monitor =
         MonitorFromWindow(hwnd_, MONITOR_DEFAULTTONEAREST);
     saved_window_info_.monitor_info.cbSize =
@@ -93,7 +93,7 @@ void FullscreenHandler::ProcessFullscreen(bool fullscreen,
 
     // Set the window rect to the rcMonitor of the targeted or current display.
     const display::win::ScreenWinDisplay screen_win_display =
-        display::win::ScreenWin::GetScreenWinDisplayWithDisplayId(
+        display::win::GetScreenWin()->GetScreenWinDisplayWithDisplayId(
             target_display_id);
     gfx::Rect window_rect = screen_win_display.screen_rect();
     if (target_display_id == display::kInvalidDisplayId ||
@@ -128,13 +128,14 @@ void FullscreenHandler::ProcessFullscreen(bool fullscreen,
             gfx::Rect(monitor_info.rcWork)) {
       window_rect.AdjustToFit(gfx::Rect(monitor_info.rcWork));
     }
-    const int fullscreen_dpi = display::win::ScreenWin::GetDPIForHWND(hwnd_);
+    const int fullscreen_dpi =
+        display::win::GetScreenWin()->GetDPIForHWND(hwnd_);
 
     SetWindowPos(hwnd_, nullptr, window_rect.x(), window_rect.y(),
                  window_rect.width(), window_rect.height(),
                  SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
 
-    const int final_dpi = display::win::ScreenWin::GetDPIForHWND(hwnd_);
+    const int final_dpi = display::win::GetScreenWin()->GetDPIForHWND(hwnd_);
     if (final_dpi != saved_window_info_.dpi || final_dpi != fullscreen_dpi) {
       // Reissue SetWindowPos if the DPI changed from saved or fullscreen DPIs.
       // The first call may misinterpret bounds spanning displays, if the

@@ -139,6 +139,22 @@ std::optional<MONITORINFOEX> ScreenWinHeadless::MonitorInfoFromScreenPoint(
   return std::nullopt;
 }
 
+gfx::Rect ScreenWinHeadless::ScreenToDIPRectInWindow(
+    gfx::NativeWindow window,
+    const gfx::Rect& screen_rect) const {
+  // The base class implementation does the right thing, but we want this to be
+  // exposed publicly as the rest of display::Screen overrides.
+  return ScreenWin::ScreenToDIPRectInWindow(window, screen_rect);
+}
+
+gfx::Rect ScreenWinHeadless::DIPToScreenRectInWindow(
+    gfx::NativeWindow window,
+    const gfx::Rect& dip_rect) const {
+  // The base class implementation does the right thing, but we want this to be
+  // exposed publicly as the rest of display::Screen overrides.
+  return ScreenWin::DIPToScreenRectInWindow(window, dip_rect);
+}
+
 bool ScreenWinHeadless::IsHeadless() const {
   return true;
 }

@@ -178,7 +178,7 @@ HRESULT TSFTextStore::GetACPFromPoint(TsViewCookie view_cookie,
       index_flags |= IndexFromPointFlags::kNearestToContainedPoint;
     }
     const gfx::Point screen_point_in_dips =
-        gfx::ToFlooredPoint(display::win::ScreenWin::ScreenToDIPPoint(
+        gfx::ToFlooredPoint(display::win::GetScreenWin()->ScreenToDIPPoint(
             gfx::PointF(gfx::Point(*point))));
     const std::optional<size_t> index =
         text_input_client_->GetProximateCharacterIndexFromPoint(
@@ -248,8 +248,8 @@ HRESULT TSFTextStore::GetScreenExt(TsViewCookie view_cookie, RECT* rect) {
                                                             &tmp_rect);
   if (result_rect) {
     // This conversion is required for high dpi monitors.
-    *rect = display::win::ScreenWin::DIPToScreenRect(window_handle_,
-                                                     result_rect.value())
+    *rect = display::win::GetScreenWin()
+                ->DIPToScreenRect(window_handle_, result_rect.value())
                 .ToRECT();
   } else {
     // Default if the layout bounds are not present in text input client.
@@ -454,8 +454,8 @@ HRESULT TSFTextStore::GetTextExt(TsViewCookie view_cookie,
   TRACE_EVENT1("ime", "TSFTextStore::GetTextExt", "DIP rect",
                result_rect->ToString());
 
-  *rect = display::win::ScreenWin::DIPToScreenRect(window_handle_,
-                                                   result_rect.value())
+  *rect = display::win::GetScreenWin()
+              ->DIPToScreenRect(window_handle_, result_rect.value())
               .ToRECT();
   *clipped = FALSE;
   TRACE_EVENT1("ime", "TSFTextStore::GetTextExt", "screen rect",

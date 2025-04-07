@@ -118,7 +118,7 @@ gfx::Rect AXSystemCaretWin::GetBoundsRect(
       // We could optionally add clipping here if ever needed.
       return ToEnclosingRect(data_.relative_bounds.bounds);
     case AXCoordinateSystem::kScreenDIPs:
-      return display::win::ScreenWin::ScreenToDIPRect(
+      return display::win::GetScreenWin()->ScreenToDIPRect(
           event_target_, ToEnclosingRect(data_.relative_bounds.bounds));
     case AXCoordinateSystem::kRootFrame:
     case AXCoordinateSystem::kFrame:

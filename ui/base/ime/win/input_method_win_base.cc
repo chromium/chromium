@@ -481,7 +481,7 @@ LRESULT InputMethodWinBase::OnQueryCharPosition(IMECHARPOSITION* char_positon) {
       return 0;
     dip_rect = client->GetCaretBounds();
   }
-  const gfx::Rect rect = display::win::ScreenWin::DIPToScreenRect(
+  const gfx::Rect rect = display::win::GetScreenWin()->DIPToScreenRect(
       attached_window_handle_, dip_rect);
 
   char_positon->pt.x = rect.x();

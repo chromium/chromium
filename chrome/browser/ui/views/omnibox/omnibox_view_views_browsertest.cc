@@ -1030,9 +1030,10 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsUIATest, GetSelectionAndBounds) {
   int range_end_offset = offsets[selection_range.end()];
 
   int left_bound =
-      display::win::ScreenWin::DIPToScreenRect(
-          HWNDForView(omnibox_view_views),
-          gfx::Rect(range_start_offset + bounds_in_screen.x(), 0, 0, 0))
+      display::win::GetScreenWin()
+          ->DIPToScreenRect(
+              HWNDForView(omnibox_view_views),
+              gfx::Rect(range_start_offset + bounds_in_screen.x(), 0, 0, 0))
           .x();
 
   // Adust `textfield_rect` to account for the border.

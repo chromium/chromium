@@ -339,7 +339,7 @@ static void RepostEventImpl(const ui::LocatedEvent* event,
   }
 
   gfx::Point screen_loc_pixels =
-      display::win::ScreenWin::DIPToScreenPoint(screen_loc);
+      display::win::GetScreenWin()->DIPToScreenPoint(screen_loc);
   HWND target_window = ::WindowFromPoint(screen_loc_pixels.ToPOINT());
   // If we don't find a native window for the HWND at the current location,
   // then attempt to find a native window from its parent if one exists.

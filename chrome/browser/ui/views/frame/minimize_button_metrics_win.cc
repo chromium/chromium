@@ -135,7 +135,8 @@ int MinimizeButtonMetrics::GetMinimizeButtonOffsetForWindow() const {
   // convert the minimize button corner offset to DIP before returning it.
   MapWindowPoints(HWND_DESKTOP, hwnd_, &minimize_button_corner, 1);
   gfx::Point pixel_point = {minimize_button_corner.x, 0};
-  gfx::Point dip_point = ScreenWin::ClientToDIPPoint(hwnd_, pixel_point);
+  gfx::Point dip_point =
+      display::win::GetScreenWin()->ClientToDIPPoint(hwnd_, pixel_point);
   return dip_point.x();
 }
 

@@ -16,11 +16,11 @@ int GetFrameThickness(HMONITOR monitor) {
   // and SM_CXPADDEDBORDER (additional border space that isn't part of the
   // resize handle).
   const int resize_frame_thickness =
-      display::win::ScreenWin::GetSystemMetricsForMonitor(monitor,
-                                                          SM_CXSIZEFRAME);
+      display::win::GetScreenWin()->GetSystemMetricsForMonitor(monitor,
+                                                               SM_CXSIZEFRAME);
   const int padding_thickness =
-      display::win::ScreenWin::GetSystemMetricsForMonitor(monitor,
-                                                          SM_CXPADDEDBORDER);
+      display::win::GetScreenWin()->GetSystemMetricsForMonitor(
+          monitor, SM_CXPADDEDBORDER);
   return resize_frame_thickness + padding_thickness;
 }
 

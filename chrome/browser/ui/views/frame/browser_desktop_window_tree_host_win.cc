@@ -376,7 +376,7 @@ bool BrowserDesktopWindowTreeHostWin::GetDwmFrameInsetsInPixels(
     // The glass should extend to the bottom of the tabstrip.
     gfx::Rect tabstrip_region_bounds(browser_frame_->GetBoundsForTabStripRegion(
         browser_view_->tab_strip_region_view()->GetMinimumSize()));
-    tabstrip_region_bounds = display::win::ScreenWin::DIPToClientRect(
+    tabstrip_region_bounds = display::win::GetScreenWin()->DIPToClientRect(
         GetHWND(), tabstrip_region_bounds);
 
     *insets = gfx::Insets::TLBR(tabstrip_region_bounds.bottom(), 0, 0, 0);

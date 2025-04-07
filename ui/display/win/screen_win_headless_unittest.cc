@@ -56,20 +56,6 @@ class TestScreenWinHeadless : public ScreenWinHeadless {
     return reinterpret_cast<gfx::NativeWindow>(hwnd);
   }
 
-  // The following two methods are protected in ScreenWin and not overridden by
-  // ScreenWinHeadless because the base class does the right thing, so expose
-  // them here for testing.
-  gfx::Rect ScreenToDIPRectInWindow(
-      gfx::NativeWindow window,
-      const gfx::Rect& screen_rect) const override {
-    return ScreenWin::ScreenToDIPRectInWindow(window, screen_rect);
-  }
-
-  gfx::Rect DIPToScreenRectInWindow(gfx::NativeWindow window,
-                                    const gfx::Rect& dip_rect) const override {
-    return ScreenWin::DIPToScreenRectInWindow(window, dip_rect);
-  }
-
   // win::ScreenWinHeadless:
   std::vector<gfx::NativeWindow> GetNativeWindowsAtScreenPoint(
       const gfx::Point& point) const override {
@@ -278,7 +264,7 @@ TEST_F(ScreenWinHeadlessTest, ScreenToDIPPoint) {
   auto screen = CreateHeadlessScreen("{devicePixelRatio=1.0}");
   ASSERT_EQ(screen->GetNumDisplays(), 1);
 
-  EXPECT_EQ(ScreenWin::ScreenToDIPPoint(gfx::PointF(100, 200)),
+  EXPECT_EQ(GetScreenWin()->ScreenToDIPPoint(gfx::PointF(100, 200)),
             gfx::PointF(100, 200));
 }
 
@@ -286,7 +272,7 @@ TEST_F(ScreenWinHeadlessTest, ScreenToDIPPoint2x) {
   auto screen = CreateHeadlessScreen("{devicePixelRatio=2.0}");
   ASSERT_EQ(screen->GetNumDisplays(), 1);
 
-  EXPECT_EQ(ScreenWin::ScreenToDIPPoint(gfx::PointF(100, 200)),
+  EXPECT_EQ(GetScreenWin()->ScreenToDIPPoint(gfx::PointF(100, 200)),
             gfx::PointF(50, 100));
 }
 
@@ -294,7 +280,7 @@ TEST_F(ScreenWinHeadlessTest, DIPToScreenPoint) {
   auto screen = CreateHeadlessScreen("{devicePixelRatio=1.0}");
   ASSERT_EQ(screen->GetNumDisplays(), 1);
 
-  EXPECT_EQ(ScreenWin::DIPToScreenPoint(gfx::Point(100, 200)),
+  EXPECT_EQ(GetScreenWin()->DIPToScreenPoint(gfx::Point(100, 200)),
             gfx::Point(100, 200));
 }
 
@@ -302,7 +288,7 @@ TEST_F(ScreenWinHeadlessTest, DIPToScreenPoint2x) {
   auto screen = CreateHeadlessScreen("{devicePixelRatio=2.0}");
   ASSERT_EQ(screen->GetNumDisplays(), 1);
 
-  EXPECT_EQ(ScreenWin::DIPToScreenPoint(gfx::Point(100, 200)),
+  EXPECT_EQ(GetScreenWin()->DIPToScreenPoint(gfx::Point(100, 200)),
             gfx::Point(200, 400));
 }
 
@@ -313,7 +299,7 @@ TEST_F(ScreenWinHeadlessTest, ClientToDIPPoint) {
   HWND hwnd = screen->GetHWNDFromNativeWindow(
       screen->AddWindow(gfx::Rect(0, 0, 400, 300)));
 
-  EXPECT_EQ(ScreenWin::ClientToDIPPoint(hwnd, gfx::Point(100, 200)),
+  EXPECT_EQ(GetScreenWin()->ClientToDIPPoint(hwnd, gfx::Point(100, 200)),
             gfx::Point(100, 200));
 }
 
@@ -324,7 +310,7 @@ TEST_F(ScreenWinHeadlessTest, ClientToDIPPoint2x) {
   HWND hwnd = screen->GetHWNDFromNativeWindow(
       screen->AddWindow(gfx::Rect(0, 0, 400, 300)));
 
-  EXPECT_EQ(ScreenWin::ClientToDIPPoint(hwnd, gfx::Point(100, 200)),
+  EXPECT_EQ(GetScreenWin()->ClientToDIPPoint(hwnd, gfx::Point(100, 200)),
             gfx::Point(50, 100));
 }
 
@@ -335,7 +321,7 @@ TEST_F(ScreenWinHeadlessTest, DIPToClientPoint) {
   HWND hwnd = screen->GetHWNDFromNativeWindow(
       screen->AddWindow(gfx::Rect(0, 0, 400, 300)));
 
-  EXPECT_EQ(ScreenWin::DIPToClientPoint(hwnd, gfx::Point(100, 200)),
+  EXPECT_EQ(GetScreenWin()->DIPToClientPoint(hwnd, gfx::Point(100, 200)),
             gfx::Point(100, 200));
 }
 
@@ -346,7 +332,7 @@ TEST_F(ScreenWinHeadlessTest, DIPToClientPoint2x) {
   HWND hwnd = screen->GetHWNDFromNativeWindow(
       screen->AddWindow(gfx::Rect(0, 0, 400, 300)));
 
-  EXPECT_EQ(ScreenWin::DIPToClientPoint(hwnd, gfx::Point(50, 100)),
+  EXPECT_EQ(GetScreenWin()->DIPToClientPoint(hwnd, gfx::Point(50, 100)),
             gfx::Point(100, 200));
 }
 
@@ -357,10 +343,10 @@ TEST_F(ScreenWinHeadlessTest, ScreenToDIPRect) {
   HWND hwnd = screen->GetHWNDFromNativeWindow(
       screen->AddWindow(gfx::Rect(0, 0, 400, 300)));
 
-  EXPECT_EQ(ScreenWin::ScreenToDIPRect(hwnd, gfx::Rect(0, 0, 100, 200)),
+  EXPECT_EQ(GetScreenWin()->ScreenToDIPRect(hwnd, gfx::Rect(0, 0, 100, 200)),
             gfx::Rect(0, 0, 100, 200));
 
-  EXPECT_EQ(ScreenWin::ScreenToDIPRect(nullptr, gfx::Rect(0, 0, 100, 200)),
+  EXPECT_EQ(GetScreenWin()->ScreenToDIPRect(nullptr, gfx::Rect(0, 0, 100, 200)),
             gfx::Rect(0, 0, 100, 200));
 }
 
@@ -371,10 +357,10 @@ TEST_F(ScreenWinHeadlessTest, ScreenToDIPRect2x) {
   HWND hwnd = screen->GetHWNDFromNativeWindow(
       screen->AddWindow(gfx::Rect(0, 0, 400, 300)));
 
-  EXPECT_EQ(ScreenWin::ScreenToDIPRect(hwnd, gfx::Rect(0, 0, 100, 200)),
+  EXPECT_EQ(GetScreenWin()->ScreenToDIPRect(hwnd, gfx::Rect(0, 0, 100, 200)),
             gfx::Rect(0, 0, 50, 100));
 
-  EXPECT_EQ(ScreenWin::ScreenToDIPRect(nullptr, gfx::Rect(0, 0, 100, 200)),
+  EXPECT_EQ(GetScreenWin()->ScreenToDIPRect(nullptr, gfx::Rect(0, 0, 100, 200)),
             gfx::Rect(0, 0, 50, 100));
 }
 
@@ -385,10 +371,10 @@ TEST_F(ScreenWinHeadlessTest, DIPToScreenRect) {
   HWND hwnd = screen->GetHWNDFromNativeWindow(
       screen->AddWindow(gfx::Rect(0, 0, 400, 300)));
 
-  EXPECT_EQ(ScreenWin::DIPToScreenRect(hwnd, gfx::Rect(0, 0, 100, 200)),
+  EXPECT_EQ(GetScreenWin()->DIPToScreenRect(hwnd, gfx::Rect(0, 0, 100, 200)),
             gfx::Rect(0, 0, 100, 200));
 
-  EXPECT_EQ(ScreenWin::DIPToScreenRect(nullptr, gfx::Rect(0, 0, 100, 200)),
+  EXPECT_EQ(GetScreenWin()->DIPToScreenRect(nullptr, gfx::Rect(0, 0, 100, 200)),
             gfx::Rect(0, 0, 100, 200));
 }
 
@@ -399,10 +385,10 @@ TEST_F(ScreenWinHeadlessTest, DIPToScreenRect2x) {
   HWND hwnd = screen->GetHWNDFromNativeWindow(
       screen->AddWindow(gfx::Rect(0, 0, 400, 300)));
 
-  EXPECT_EQ(ScreenWin::DIPToScreenRect(hwnd, gfx::Rect(0, 0, 50, 100)),
+  EXPECT_EQ(GetScreenWin()->DIPToScreenRect(hwnd, gfx::Rect(0, 0, 50, 100)),
             gfx::Rect(0, 0, 100, 200));
 
-  EXPECT_EQ(ScreenWin::DIPToScreenRect(nullptr, gfx::Rect(0, 0, 50, 100)),
+  EXPECT_EQ(GetScreenWin()->DIPToScreenRect(nullptr, gfx::Rect(0, 0, 50, 100)),
             gfx::Rect(0, 0, 100, 200));
 }
 
@@ -413,7 +399,7 @@ TEST_F(ScreenWinHeadlessTest, ClientToDIPRect) {
   HWND hwnd = screen->GetHWNDFromNativeWindow(
       screen->AddWindow(gfx::Rect(0, 0, 400, 300)));
 
-  EXPECT_EQ(ScreenWin::ClientToDIPRect(hwnd, gfx::Rect(0, 0, 100, 200)),
+  EXPECT_EQ(GetScreenWin()->ClientToDIPRect(hwnd, gfx::Rect(0, 0, 100, 200)),
             gfx::Rect(0, 0, 100, 200));
 }
 
@@ -424,7 +410,7 @@ TEST_F(ScreenWinHeadlessTest, ClientToDIPRect2x) {
   HWND hwnd = screen->GetHWNDFromNativeWindow(
       screen->AddWindow(gfx::Rect(0, 0, 400, 300)));
 
-  EXPECT_EQ(ScreenWin::ClientToDIPRect(hwnd, gfx::Rect(0, 0, 100, 200)),
+  EXPECT_EQ(GetScreenWin()->ClientToDIPRect(hwnd, gfx::Rect(0, 0, 100, 200)),
             gfx::Rect(0, 0, 50, 100));
 }
 
@@ -435,7 +421,7 @@ TEST_F(ScreenWinHeadlessTest, DIPToClientRect) {
   HWND hwnd = screen->GetHWNDFromNativeWindow(
       screen->AddWindow(gfx::Rect(0, 0, 400, 300)));
 
-  EXPECT_EQ(ScreenWin::DIPToClientRect(hwnd, gfx::Rect(0, 0, 100, 200)),
+  EXPECT_EQ(GetScreenWin()->DIPToClientRect(hwnd, gfx::Rect(0, 0, 100, 200)),
             gfx::Rect(0, 0, 100, 200));
 }
 
@@ -446,7 +432,7 @@ TEST_F(ScreenWinHeadlessTest, DIPToClientRect2x) {
   HWND hwnd = screen->GetHWNDFromNativeWindow(
       screen->AddWindow(gfx::Rect(0, 0, 400, 300)));
 
-  EXPECT_EQ(ScreenWin::DIPToClientRect(hwnd, gfx::Rect(0, 0, 50, 100)),
+  EXPECT_EQ(GetScreenWin()->DIPToClientRect(hwnd, gfx::Rect(0, 0, 50, 100)),
             gfx::Rect(0, 0, 100, 200));
 }
 
@@ -457,7 +443,7 @@ TEST_F(ScreenWinHeadlessTest, ScreenToDIPSize) {
   HWND hwnd = screen->GetHWNDFromNativeWindow(
       screen->AddWindow(gfx::Rect(0, 0, 400, 300)));
 
-  EXPECT_EQ(ScreenWin::ScreenToDIPSize(hwnd, gfx::Size(100, 200)),
+  EXPECT_EQ(GetScreenWin()->ScreenToDIPSize(hwnd, gfx::Size(100, 200)),
             gfx::Size(100, 200));
 }
 
@@ -468,7 +454,7 @@ TEST_F(ScreenWinHeadlessTest, ScreenToDIPSize2x) {
   HWND hwnd = screen->GetHWNDFromNativeWindow(
       screen->AddWindow(gfx::Rect(0, 0, 400, 300)));
 
-  EXPECT_EQ(ScreenWin::ScreenToDIPSize(hwnd, gfx::Size(100, 200)),
+  EXPECT_EQ(GetScreenWin()->ScreenToDIPSize(hwnd, gfx::Size(100, 200)),
             gfx::Size(50, 100));
 }
 
@@ -479,7 +465,7 @@ TEST_F(ScreenWinHeadlessTest, DIPToScreenSize) {
   HWND hwnd = screen->GetHWNDFromNativeWindow(
       screen->AddWindow(gfx::Rect(0, 0, 400, 300)));
 
-  EXPECT_EQ(ScreenWin::DIPToScreenSize(hwnd, gfx::Size(100, 200)),
+  EXPECT_EQ(GetScreenWin()->DIPToScreenSize(hwnd, gfx::Size(100, 200)),
             gfx::Size(100, 200));
 }
 
@@ -490,7 +476,7 @@ TEST_F(ScreenWinHeadlessTest, DIPToScreenSize2x) {
   HWND hwnd = screen->GetHWNDFromNativeWindow(
       screen->AddWindow(gfx::Rect(0, 0, 400, 300)));
 
-  EXPECT_EQ(ScreenWin::DIPToScreenSize(hwnd, gfx::Size(50, 100)),
+  EXPECT_EQ(GetScreenWin()->DIPToScreenSize(hwnd, gfx::Size(50, 100)),
             gfx::Size(100, 200));
 }
 
@@ -498,7 +484,7 @@ TEST_F(ScreenWinHeadlessTest, GetPixelsPerInch) {
   auto screen = CreateHeadlessScreen("{devicePixelRatio=1.0}");
   ASSERT_EQ(screen->GetNumDisplays(), 1);
 
-  EXPECT_EQ(ScreenWin::GetPixelsPerInch(gfx::PointF(400, 300)),
+  EXPECT_EQ(GetScreenWin()->GetPixelsPerInch(gfx::PointF(400, 300)),
             gfx::Vector2dF(96, 96));
 }
 
@@ -506,7 +492,7 @@ TEST_F(ScreenWinHeadlessTest, GetPixelsPerInch2x) {
   auto screen = CreateHeadlessScreen("{devicePixelRatio=2.0}");
   ASSERT_EQ(screen->GetNumDisplays(), 1);
 
-  EXPECT_EQ(ScreenWin::GetPixelsPerInch(gfx::PointF(400, 300)),
+  EXPECT_EQ(GetScreenWin()->GetPixelsPerInch(gfx::PointF(400, 300)),
             gfx::Vector2dF(192, 192));
 }
 
@@ -515,15 +501,17 @@ TEST_F(ScreenWinHeadlessTest, GetScreenWinDisplayWithDisplayId) {
   ASSERT_EQ(screen->GetNumDisplays(), 2);
 
   const int64_t id1 = screen->GetAllDisplays()[0].id();
-  EXPECT_EQ(ScreenWin::GetScreenWinDisplayWithDisplayId(id1).display().id(),
-            id1);
+  EXPECT_EQ(
+      GetScreenWin()->GetScreenWinDisplayWithDisplayId(id1).display().id(),
+      id1);
 
   const int64_t id2 = screen->GetAllDisplays()[1].id();
-  EXPECT_EQ(ScreenWin::GetScreenWinDisplayWithDisplayId(id2).display().id(),
-            id2);
+  EXPECT_EQ(
+      GetScreenWin()->GetScreenWinDisplayWithDisplayId(id2).display().id(),
+      id2);
 
   // Unknown display id should result in primary display.
-  EXPECT_EQ(ScreenWin::GetScreenWinDisplayWithDisplayId(-1).display().id(),
+  EXPECT_EQ(GetScreenWin()->GetScreenWinDisplayWithDisplayId(-1).display().id(),
             id1);
 }
 
@@ -534,12 +522,12 @@ TEST_F(ScreenWinHeadlessTest, DisplayIdFromMonitorInfo) {
   const int64_t id1 = screen->GetAllDisplays()[0].id();
   auto monitor_info1 = screen->GetMONITORINFOFromDisplayIdForTest(id1);
   ASSERT_TRUE(monitor_info1.has_value());
-  EXPECT_EQ(ScreenWin::DisplayIdFromMonitorInfo(*monitor_info1), id1);
+  EXPECT_EQ(GetScreenWin()->DisplayIdFromMonitorInfo(*monitor_info1), id1);
 
   const int64_t id2 = screen->GetAllDisplays()[1].id();
   auto monitor_info2 = screen->GetMONITORINFOFromDisplayIdForTest(id2);
   ASSERT_TRUE(monitor_info2.has_value());
-  EXPECT_EQ(ScreenWin::DisplayIdFromMonitorInfo(*monitor_info2), id2);
+  EXPECT_EQ(GetScreenWin()->DisplayIdFromMonitorInfo(*monitor_info2), id2);
 }
 
 TEST_F(ScreenWinHeadlessTest, GetScaleFactorForHWND) {
@@ -548,7 +536,7 @@ TEST_F(ScreenWinHeadlessTest, GetScaleFactorForHWND) {
 
   HWND hwnd = screen->GetHWNDFromNativeWindow(
       screen->AddWindow(gfx::Rect(0, 0, 400, 300)));
-  EXPECT_EQ(ScreenWin::GetScaleFactorForHWND(hwnd), 1.0);
+  EXPECT_EQ(GetScreenWin()->GetScaleFactorForHWND(hwnd), 1.0);
 }
 
 TEST_F(ScreenWinHeadlessTest, GetScaleFactorForHWND2x) {
@@ -557,7 +545,7 @@ TEST_F(ScreenWinHeadlessTest, GetScaleFactorForHWND2x) {
 
   HWND hwnd = screen->GetHWNDFromNativeWindow(
       screen->AddWindow(gfx::Rect(0, 0, 400, 300)));
-  EXPECT_EQ(ScreenWin::GetScaleFactorForHWND(hwnd), 2.0);
+  EXPECT_EQ(GetScreenWin()->GetScaleFactorForHWND(hwnd), 2.0);
 }
 
 // display::Screen interface methods tests ----------------------------

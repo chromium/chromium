@@ -1105,7 +1105,7 @@ void GlicWindowController::CloseAndReopenDetached(
 void GlicWindowController::ShowTitleBarContextMenuAt(gfx::Point event_loc) {
 #if BUILDFLAG(IS_WIN)
   views::View::ConvertPointToScreen(GetGlicView(), &event_loc);
-  event_loc = display::win::ScreenWin::DIPToScreenPoint(event_loc);
+  event_loc = display::win::GetScreenWin()->DIPToScreenPoint(event_loc);
   views::ShowSystemMenuAtScreenPixelLocation(views::HWNDForView(GetGlicView()),
                                              event_loc);
 #endif  // BUILDFLAG(IS_WIN)

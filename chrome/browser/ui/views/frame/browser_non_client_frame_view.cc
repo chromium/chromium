@@ -306,7 +306,7 @@ void BrowserNonClientFrameView::OnGestureEvent(ui::GestureEvent* event) {
   if (event->type() == ui::EventType::kGestureLongTap &&
       NonClientHitTest(event_loc) == HTCAPTION) {
     views::View::ConvertPointToScreen(this, &event_loc);
-    event_loc = display::win::ScreenWin::DIPToScreenPoint(event_loc);
+    event_loc = display::win::GetScreenWin()->DIPToScreenPoint(event_loc);
     views::ShowSystemMenuAtScreenPixelLocation(views::HWNDForView(this),
                                                event_loc);
     event->SetHandled();

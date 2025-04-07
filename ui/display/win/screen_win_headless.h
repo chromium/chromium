@@ -47,6 +47,11 @@ class DISPLAY_EXPORT ScreenWinHeadless : public ScreenWin {
   Display GetDisplayNearestPoint(const gfx::Point& point) const override;
   Display GetDisplayMatching(const gfx::Rect& match_rect) const override;
   Display GetPrimaryDisplay() const override;
+  gfx::Rect ScreenToDIPRectInWindow(
+      gfx::NativeWindow window,
+      const gfx::Rect& screen_rect) const override;
+  gfx::Rect DIPToScreenRectInWindow(gfx::NativeWindow window,
+                                    const gfx::Rect& dip_rect) const override;
   bool IsHeadless() const override;
 
   // ScreenWin:
