@@ -68,6 +68,13 @@ class ContextualCueingService
     return weak_ptr_factory_.GetWeakPtr();
   }
 
+  // Informs `this` to prepare fetching for zero state suggestions for GLIC.
+  // Note that this *will not* actually do the fetch and it is intended for the
+  // caller to call `GetContextualGlicZeroStateSuggestions` to actually fetch
+  // the suggestions.
+  void PrepareToFetchContextualGlicZeroStateSuggestions(
+      content::WebContents* web_contents);
+
   // Returns zero state suggestions for GLIC.
   void GetContextualGlicZeroStateSuggestions(content::WebContents* web_contents,
                                              bool is_fre,

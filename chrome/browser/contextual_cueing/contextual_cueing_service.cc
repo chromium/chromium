@@ -174,10 +174,15 @@ void ContextualCueingService::OnNudgeActivity(
   // Temporary trigger for suggestions request, to be removed when UI is ready.
   if (activity == tabs::GlicNudgeActivity::kNudgeClicked &&
       base::FeatureList::IsEnabled(kGlicZeroStateSuggestions)) {
-    ZeroStateSuggestionsPageData::CreateForPage(
-        web_contents->GetPrimaryPage(), web_contents,
-        optimization_guide_keyed_service_, /*is_fre=*/false, base::DoNothing());
+    GetContextualGlicZeroStateSuggestions(web_contents, /*is_fre=*/false,
+                                          base::DoNothing());
   }
+}
+
+void ContextualCueingService::PrepareToFetchContextualGlicZeroStateSuggestions(
+    content::WebContents* web_contents) {
+  // This call preflights grabbing the page content.
+  ZeroStateSuggestionsPageData::CreateForPage(web_contents->GetPrimaryPage());
 }
 
 void ContextualCueingService::GetContextualGlicZeroStateSuggestions(
@@ -187,11 +192,12 @@ void ContextualCueingService::GetContextualGlicZeroStateSuggestions(
   // TODO(crbug.com/405988283): Add branch for hints suggestions.
 
   // Remote suggestions generation.
-  ZeroStateSuggestionsPageData::CreateForPage(
-      web_contents->GetPrimaryPage(), web_contents,
-      optimization_guide_keyed_service_, is_fre,
-      base::BindOnce(&ContextualCueingService::OnSuggestionsReceived,
-                     GetWeakPtr(), web_contents, std::move(callback)));
+  ZeroStateSuggestionsPageData* page_data =
+      ZeroStateSuggestionsPageData::GetOrCreateForPage(
+          web_contents->GetPrimaryPage());
+  page_data->FetchSuggestions(
+      is_fre, base::BindOnce(&ContextualCueingService::OnSuggestionsReceived,
+                             GetWeakPtr(), web_contents, std::move(callback)));
 }
 
 void ContextualCueingService::OnSuggestionsReceived(

@@ -2946,7 +2946,6 @@ if (!is_android) {
       "../browser/content_index/content_index_browsertest.cc",
       "../browser/content_language/content_language_browsertest.cc",
       "../browser/contextual_cueing/contextual_cueing_service_browsertest.cc",
-      "../browser/contextual_cueing/zero_state_suggestions_page_data_browsertest.cc",
       "../browser/crash_recovery_browsertest.cc",
       "../browser/custom_handlers/protocol_handler_registry_browsertest.cc",
       "../browser/data_saver/data_saver_browsertest.cc",
@@ -3566,6 +3565,7 @@ if (!is_android) {
 
     if (enable_glic) {
       sources += [
+        "../browser/contextual_cueing/zero_state_suggestions_page_data_browsertest.cc",
         "../browser/ui/views/tabs/glic_button_browsertest.cc",
         "../browser/ui/webui/settings/glic_handler_browsertest.cc",
       ]

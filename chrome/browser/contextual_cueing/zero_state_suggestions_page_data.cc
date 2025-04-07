@@ -4,10 +4,13 @@
 
 #include "chrome/browser/contextual_cueing/zero_state_suggestions_page_data.h"
 
+#include "base/metrics/histogram_macros_local.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/content_extraction/inner_text.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/optimization_guide_common.mojom.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
@@ -17,28 +20,18 @@
 
 namespace contextual_cueing {
 
-ZeroStateSuggestionsPageData::ZeroStateSuggestionsPageData(
-    content::Page& page,
-    content::WebContents* web_contents,
-    OptimizationGuideKeyedService* ogks,
-    bool is_fre,
-    GlicSuggestionsCallback suggestions_callback)
-    : content::PageUserData<ZeroStateSuggestionsPageData>(page),
-      begin_time_(base::TimeTicks::Now()),
-      optimization_guide_keyed_service_(ogks),
-      suggestions_callback_(std::move(suggestions_callback)) {
+ZeroStateSuggestionsPageData::ZeroStateSuggestionsPageData(content::Page& page)
+    : content::PageUserData<ZeroStateSuggestionsPageData>(page) {
   CHECK(base::FeatureList::IsEnabled(kGlicZeroStateSuggestions));
   CHECK(kExtractInnerTextForZeroStateSuggestions.Get() ||
         kExtractAnnotatedPageContentForZeroStateSuggestions.Get());
 
-  suggestions_request_.set_is_fre(is_fre);
-  optimization_guide::proto::PageContext* page_context =
-      suggestions_request_.mutable_page_context();
-  const GURL& page_url = web_contents->GetLastCommittedURL();
-  if (!page_url.is_empty() && page_url.is_valid()) {
-    page_context->set_url(page_url.spec());
-  }
-  page_context->set_title(base::UTF16ToUTF8(web_contents->GetTitle()));
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(&(page.GetMainDocument()));
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  optimization_guide_keyed_service_ =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
 
   if (kExtractAnnotatedPageContentForZeroStateSuggestions.Get()) {
     blink::mojom::AIPageContentOptionsPtr ai_page_content_options;
@@ -71,6 +64,18 @@ ZeroStateSuggestionsPageData::ZeroStateSuggestionsPageData(
 
 ZeroStateSuggestionsPageData::~ZeroStateSuggestionsPageData() = default;
 
+void ZeroStateSuggestionsPageData::FetchSuggestions(
+    bool is_fre,
+    GlicSuggestionsCallback callback) {
+  begin_time_ = base::TimeTicks::Now();
+
+  suggestions_request_ = optimization_guide::proto::
+      ZeroStateSuggestionsRequest::default_instance();
+  suggestions_request_->set_is_fre(is_fre);
+  suggestions_callback_ = std::move(callback);
+  RequestSuggestionsIfComplete();
+}
+
 void ZeroStateSuggestionsPageData::OnReceivedAnnotatedPageContent(
     std::optional<optimization_guide::AIPageContentResult> content) {
   annotated_page_content_ = std::move(content);
@@ -91,23 +96,41 @@ void ZeroStateSuggestionsPageData::RequestSuggestionsIfComplete() {
   if (!work_done) {
     return;
   }
+
+  LOCAL_HISTOGRAM_BOOLEAN(
+      "ContextualCueing.ZeroStateSuggestions.ContextExtractionDone", true);
+
+  if (!suggestions_request_) {
+    return;
+  }
+
   if (!has_page_context) {
     std::move(suggestions_callback_).Run(std::nullopt);
     return;
   }
 
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(&page().GetMainDocument());
+
+  optimization_guide::proto::PageContext* page_context =
+      suggestions_request_->mutable_page_context();
+  const GURL& page_url = web_contents->GetLastCommittedURL();
+  if (!page_url.is_empty() && page_url.is_valid()) {
+    page_context->set_url(page_url.spec());
+  }
+  page_context->set_title(base::UTF16ToUTF8(web_contents->GetTitle()));
+
   if (annotated_page_content_) {
-    *suggestions_request_.mutable_page_context()
-         ->mutable_annotated_page_content() = annotated_page_content_->proto;
+    *page_context->mutable_annotated_page_content() =
+        annotated_page_content_->proto;
   }
   if (inner_text_result_) {
-    suggestions_request_.mutable_page_context()->set_inner_text(
-        inner_text_result_->inner_text);
+    page_context->set_inner_text(inner_text_result_->inner_text);
   }
 
   optimization_guide_keyed_service_->ExecuteModel(
       optimization_guide::ModelBasedCapabilityKey::kZeroStateSuggestions,
-      suggestions_request_,
+      *suggestions_request_,
       /*execution_timeout=*/std::nullopt,
       base::BindOnce(&ZeroStateSuggestionsPageData::OnModelExecutionResponse,
                      weak_ptr_factory_.GetWeakPtr()));

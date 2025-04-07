@@ -4,9 +4,12 @@
 
 #include "chrome/browser/contextual_cueing/zero_state_suggestions_page_data.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
+#include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -53,10 +56,35 @@ class ZeroStateSuggestionsPageDataBrowserTest
         /*disabled_features=*/{});
   }
 
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* browser_context) override {
+    mock_optimization_guide_keyed_service_ =
+        static_cast<testing::NiceMock<MockOptimizationGuideKeyedService>*>(
+            OptimizationGuideKeyedServiceFactory::GetInstance()
+                ->SetTestingFactoryAndUse(
+                    browser_context,
+                    base::BindRepeating([](content::BrowserContext* context)
+                                            -> std::unique_ptr<KeyedService> {
+                      return std::make_unique<testing::NiceMock<
+                          MockOptimizationGuideKeyedService>>();
+                    })));
+  }
+
+  void PostRunTestOnMainThread() override {
+    mock_optimization_guide_keyed_service_ = nullptr;
+    InProcessBrowserTest::PostRunTestOnMainThread();
+  }
+
   ContentExtraction GetContentExtraction() const { return GetParam(); }
+
+  MockOptimizationGuideKeyedService& mock_optimization_guide_keyed_service() {
+    return *mock_optimization_guide_keyed_service_;
+  }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  raw_ptr<testing::NiceMock<MockOptimizationGuideKeyedService>>
+      mock_optimization_guide_keyed_service_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -68,9 +96,9 @@ INSTANTIATE_TEST_SUITE_P(
         ContentExtraction::kFetchInnerTextAndAnnotatedPageContent));
 
 IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest, BasicFlow) {
-  auto fake_optimization_guide_keyed_service =
-      testing::NiceMock<MockOptimizationGuideKeyedService>();
-  ON_CALL(fake_optimization_guide_keyed_service, ExecuteModel(_, _, _, _))
+  base::HistogramTester histogram_tester;
+
+  ON_CALL(mock_optimization_guide_keyed_service(), ExecuteModel(_, _, _, _))
       .WillByDefault(WithArgs<1, 3>(
           [&](const google::protobuf::MessageLite& request_metadata,
               optimization_guide::OptimizationGuideModelExecutionResultCallback
@@ -118,14 +146,37 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest, BasicFlow) {
 
   base::test::TestFuture<std::optional<std::vector<std::string>>> future;
 
-  ZeroStateSuggestionsPageData::CreateForPage(
-      web_contents->GetPrimaryPage(), web_contents,
-      &fake_optimization_guide_keyed_service, /*is_fre=*/false,
-      future.GetCallback());
+  auto* page_data = ZeroStateSuggestionsPageData::GetOrCreateForPage(
+      web_contents->GetPrimaryPage());
+  page_data->FetchSuggestions(/*is_fre=*/false, future.GetCallback());
   ASSERT_TRUE(future.Wait());
   EXPECT_EQ("suggestion 1", future.Get().value()[0]);
   EXPECT_EQ("suggestion 2", future.Get().value()[1]);
   EXPECT_EQ("suggestion 3", future.Get().value()[2]);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualCueing.ZeroStateSuggestions.ContextExtractionDone", true, 1);
+}
+
+IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest,
+                       CreateDataDoesNotFetchWithoutExplicitCall) {
+  base::HistogramTester histogram_tester;
+
+  EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel).Times(0);
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL("/optimization_guide/zss_page.html")));
+
+  ZeroStateSuggestionsPageData::CreateForPage(web_contents->GetPrimaryPage());
+
+  optimization_guide::RetryForHistogramUntilCountReached(
+      &histogram_tester,
+      "ContextualCueing.ZeroStateSuggestions.ContextExtractionDone", 1);
+
+  histogram_tester.ExpectUniqueSample(
+      "ContextualCueing.ZeroStateSuggestions.ContextExtractionDone", true, 1);
 }
 
 }  // namespace contextual_cueing

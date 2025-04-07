@@ -12,10 +12,6 @@
 
 class OptimizationGuideKeyedService;
 
-namespace content {
-class WebContents;
-}  // namespace content
-
 namespace content_extraction {
 struct InnerTextResult;
 }  // namespace content_extraction
@@ -42,15 +38,15 @@ class ZeroStateSuggestionsPageData
       delete;
   ~ZeroStateSuggestionsPageData() override;
 
+  // Explicitly fetch suggestions for this page.
+  void FetchSuggestions(bool is_fre, GlicSuggestionsCallback callback);
+
  private:
   friend class content::PageUserData<ZeroStateSuggestionsPageData>;
   friend class ZeroStateSuggestionsPageDataTest;
 
-  ZeroStateSuggestionsPageData(content::Page& page,
-                               content::WebContents* web_contents,
-                               OptimizationGuideKeyedService* ogks,
-                               bool is_fre,
-                               GlicSuggestionsCallback callback);
+  // Note that this constructor initiates extracting page content.
+  explicit ZeroStateSuggestionsPageData(content::Page& page);
 
   // Called when inner text is extracted.
   void OnReceivedInnerText(
@@ -74,7 +70,8 @@ class ZeroStateSuggestionsPageData
   bool annotated_page_content_done_ = false;
   std::optional<optimization_guide::AIPageContentResult>
       annotated_page_content_;
-  optimization_guide::proto::ZeroStateSuggestionsRequest suggestions_request_;
+  std::optional<optimization_guide::proto::ZeroStateSuggestionsRequest>
+      suggestions_request_;
 
   // Timestamp of when `this` is created, i.e. before any fetch or request
   // is sent.
