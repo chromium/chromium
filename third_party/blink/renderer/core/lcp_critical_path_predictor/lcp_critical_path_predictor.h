@@ -67,6 +67,8 @@ class CORE_EXPORT LCPCriticalPathPredictor final
 
   const Vector<KURL>& unused_preloads() { return unused_preloads_; }
 
+  void enable_testing();
+
   void Reset();
 
   bool IsLcpInfluencerScript(const KURL& url);
@@ -112,6 +114,8 @@ class CORE_EXPORT LCPCriticalPathPredictor final
   bool has_lcp_occurred_ = false;
   bool is_outermost_main_frame_document_loaded_ = false;
   bool has_sent_unused_preloads_ = false;
+
+  bool report_timing_predictor_for_testing_ = false;
 };
 
 }  // namespace blink

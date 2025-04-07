@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/check_is_test.h"
 #include "base/notreached.h"
 #include "base/trace_event/base_tracing.h"
 #include "chrome/browser/predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_util.h"
@@ -619,10 +620,16 @@ LcpCriticalPathPredictorPageLoadMetricsObserver::OnCommit(
     content::NavigationHandle* navigation_handle) {
   const blink::mojom::LCPCriticalPathPredictorNavigationTimeHintPtr& hint =
       navigation_handle->GetLCPPNavigationHint();
-  if (hint && (!hint->lcp_element_locators.empty() ||
-               !hint->lcp_influencer_scripts.empty() ||
-               !hint->preconnect_origins.empty())) {
-    is_lcpp_hinted_navigation_ = true;
+  if (hint) {
+    if (!hint->lcp_element_locators.empty() ||
+        !hint->lcp_influencer_scripts.empty() ||
+        !hint->preconnect_origins.empty()) {
+      is_lcpp_hinted_navigation_ = true;
+    }
+    if (hint->for_testing) {
+      CHECK_IS_TEST();
+      is_testing_ = true;
+    }
   }
 
   initiator_origin_ = navigation_handle->GetInitiatorOrigin();
@@ -668,6 +675,20 @@ LcpCriticalPathPredictorPageLoadMetricsObserver::
   return STOP_OBSERVING;
 }
 
+predictors::ResourcePrefetchPredictor*
+LcpCriticalPathPredictorPageLoadMetricsObserver::GetPredictor() {
+  // `loading_predictor` is nullptr in
+  // `LcpCriticalPathPredictorPageLoadMetricsObserverTest`, or if the profile
+  // `IsOffTheRecord`.
+  if (auto* loading_predictor =
+          predictors::LoadingPredictorFactory::GetForProfile(
+              Profile::FromBrowserContext(
+                  GetDelegate().GetWebContents()->GetBrowserContext()))) {
+    return loading_predictor->resource_prefetch_predictor();
+  }
+  return nullptr;
+}
+
 void LcpCriticalPathPredictorPageLoadMetricsObserver::FinalizeLCP() {
   if (!commit_url_) {
     return;
@@ -685,16 +706,7 @@ void LcpCriticalPathPredictorPageLoadMetricsObserver::FinalizeLCP() {
   }
 
   // * Finalize the staged LCPP signals to the database.
-  predictors::ResourcePrefetchPredictor* predictor = nullptr;
-  // `loading_predictor` is nullptr in
-  // `LcpCriticalPathPredictorPageLoadMetricsObserverTest`, or if the profile
-  // `IsOffTheRecord`.
-  if (auto* loading_predictor =
-          predictors::LoadingPredictorFactory::GetForProfile(
-              Profile::FromBrowserContext(
-                  GetDelegate().GetWebContents()->GetBrowserContext()))) {
-    predictor = loading_predictor->resource_prefetch_predictor();
-  }
+  predictors::ResourcePrefetchPredictor* predictor = GetPredictor();
   // Take the learned LCPP here so that we can report it after overwriting it
   // with the new data below.
   std::optional<predictors::LcppStat> lcpp_stat_prelearn =
@@ -749,17 +761,27 @@ void LcpCriticalPathPredictorPageLoadMetricsObserver::
 }
 
 void LcpCriticalPathPredictorPageLoadMetricsObserver::OnLcpUpdated(
-    const std::optional<std::string>& lcp_element_locator,
-    bool is_image_element,
-    std::optional<uint32_t> predicted_lcp_index) {
-  if (lcp_element_locator) {
+    blink::mojom::LcpElementPtr lcp_element) {
+  if (lcp_element->locator) {
     if (!lcpp_data_inputs_) {
       lcpp_data_inputs_.emplace();
     }
-    lcpp_data_inputs_->lcp_element_locator = *lcp_element_locator;
+    lcpp_data_inputs_->lcp_element_locator = *lcp_element->locator;
   }
-  is_lcp_element_image_ = is_image_element;
-  predicted_lcp_indexes_.push_back(predicted_lcp_index);
+  is_lcp_element_image_ = lcp_element->is_image;
+  predicted_lcp_indexes_.push_back(lcp_element->predicted_index);
+
+  if (is_testing_) {
+    CHECK_IS_TEST();
+    GetPredictor()->OnLcpUpdatedForTesting(lcp_element->locator);
+  }
+}
+
+void LcpCriticalPathPredictorPageLoadMetricsObserver::
+    OnLcpTimingPredictedForTesting(
+        const std::optional<std::string>& element_locator) {
+  CHECK_IS_TEST();
+  GetPredictor()->OnLcpTimingPredictedForTesting(element_locator);
 }
 
 void LcpCriticalPathPredictorPageLoadMetricsObserver::AppendFetchedFontUrl(

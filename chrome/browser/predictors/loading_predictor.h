@@ -145,6 +145,8 @@ class LoadingPredictor : public KeyedService,
   void MaybePrewarmResources(const std::optional<url::Origin>& initiator_origin,
                              const GURL& top_frame_main_resource_url);
 
+  bool IsLCPPTestingEnabled() const { return is_lcpp_testing_enabled_; }
+
  private:
   // Stores the information necessary to keep track of the active navigations.
   struct NavigationInfo {
@@ -199,6 +201,9 @@ class LoadingPredictor : public KeyedService,
     loading_data_collector_ = std::move(loading_data_collector);
   }
 
+  // For LCPP testing.
+  void EnableLCPPTesting() { is_lcpp_testing_enabled_ = true; }
+
   LoadingPredictorConfig config_;
   raw_ptr<Profile, DanglingUntriaged> profile_;
   std::unique_ptr<ResourcePrefetchPredictor> resource_prefetch_predictor_;
@@ -219,10 +224,13 @@ class LoadingPredictor : public KeyedService,
 
   PreconnectData new_tab_page_preconnect_data_;
 
+  bool is_lcpp_testing_enabled_ = false;
+
   friend class LoadingPredictorTest;
   friend class LoadingPredictorPreconnectTest;
   friend class LoadingPredictorTabHelperTest;
   friend class LoadingPredictorTabHelperTestCollectorTest;
+  friend class LCPPTimingPredictorTestBase;
   FRIEND_TEST_ALL_PREFIXES(LoadingPredictorTest,
                            TestMainFrameResponseCancelsHint);
   FRIEND_TEST_ALL_PREFIXES(LoadingPredictorTest,

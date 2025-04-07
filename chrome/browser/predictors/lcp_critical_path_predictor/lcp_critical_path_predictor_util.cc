@@ -810,7 +810,7 @@ ConvertLcppStatToLCPCriticalPathPredictorNavigationTimeHint(
     return blink::mojom::LCPCriticalPathPredictorNavigationTimeHint(
         std::move(lcp_element_locators), std::move(lcp_influencer_scripts),
         std::move(fetched_fonts), std::move(preconnect_origins),
-        std::move(unused_preloads));
+        std::move(unused_preloads), false);
   }
   return std::nullopt;
 }

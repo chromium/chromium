@@ -104,8 +104,8 @@ class LcpCriticalPathPredictorPageLoadMetricsObserverTest
       const std::string& mock_element_locator = "foo",
       bool is_image_element = true,
       std::optional<uint32_t> mock_predicted_index = std::nullopt) {
-    lcpp_observers_[url]->OnLcpUpdated(mock_element_locator, is_image_element,
-                                       mock_predicted_index);
+    lcpp_observers_[url]->OnLcpUpdated(blink::mojom::LcpElement::New(
+        mock_element_locator, is_image_element, mock_predicted_index));
   }
 
   void ExpectNoHistogram(const char* name,
@@ -195,7 +195,8 @@ class LcpCriticalPathPredictorPageLoadMetricsObserverTest
   static const uint32_t kNotFound = static_cast<uint32_t>(-1);
 
   void TestLCPPrediction(std::vector<uint32_t> predicted_lcp_indexes,
-                         internal::LCPPPredictResult expect) {
+                         internal::LCPPPredictResult expect,
+                         const base::Location& location = FROM_HERE) {
     const GURL main_frame_url("https://test.example");
     // Let predictor learn pseudo("lcp_previous") LCP locator
     predictors::ResourcePrefetchPredictor* predictor =
@@ -217,9 +218,8 @@ class LcpCriticalPathPredictorPageLoadMetricsObserverTest
           index == kNotFound ? std::nullopt : std::optional<uint32_t>(index));
     }
     tester()->NavigateToUntrackedUrl();
-    EXPECT_THAT(tester()->histogram_tester().GetAllSamples(
-                    internal::kHistogramLCPPPredictResult),
-                base::BucketsAre(base::Bucket(expect, 1)));
+    tester()->histogram_tester().ExpectUniqueSample(
+        internal::kHistogramLCPPPredictResult, expect, 1, location);
   }
 
   template <class T>
