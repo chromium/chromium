@@ -833,7 +833,7 @@ attmpted as part of this update session. All events have the following members:
      *   4: An uninstall session.
      *   14: A `download` operation.
      *   60: An `xz` operation.
-     *   61: A `zucchini` patch application operation.
+     *   61: A `zucc` patch application operation.
      *   62: A `puffin` patch application operation.
      *   63: A `crx3` package installation operation.
      *   41: An app command completion event.

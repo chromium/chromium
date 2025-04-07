@@ -262,7 +262,7 @@ std::queue<Operation> MakeOperations(
           cache_check,
           base::BindOnce(&XzOperation, config->GetUnzipperFactory()->Create(),
                          event_adder)));
-    } else if (operation.type == "zucchini") {
+    } else if (operation.type == "zucc") {
       ops.push(SkipIfCached(
           cache_check, base::BindOnce(&ZucchiniOperation, crx_cache,
                                       config->GetPatcherFactory()->Create(),
