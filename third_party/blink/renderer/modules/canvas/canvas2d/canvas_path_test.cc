@@ -172,10 +172,10 @@ TEST_F(CanvasPathTest, OnlyLineTo) {
   EXPECT_FALSE(canvas_path->IsEmpty());
   EXPECT_TRUE(canvas_path->IsLine());
   // CanvasPath::lineTo() when empty implicitly does a moveto.
-  Path path;
+  PathBuilder path;
   path.MoveTo(end);
-  path.AddLineTo(end);
-  EXPECT_EQ(canvas_path->GetPath(), path);
+  path.LineTo(end);
+  EXPECT_EQ(canvas_path->GetPath(), path.Finalize());
 }
 
 TEST_F(CanvasPathTest, LineToLineTo) {
@@ -252,14 +252,15 @@ TEST_F(CanvasPathTest, Arc) {
   canvas_path->arc(0, 1, 5, 2, 3, false, exception_state);
   EXPECT_TRUE(canvas_path->IsArc());
 
-  Path path;
-  path.AddArc(gfx::PointF(0, 1), 5, 2, 3);
-  EXPECT_EQ(canvas_path->GetPath(), path);
+  PathBuilder path;
+  path.AddEllipse(gfx::PointF(0, 1), 5, 5, 2, 3);
+  EXPECT_EQ(canvas_path->GetPath(), path.Finalize());
   EXPECT_TRUE(canvas_path->IsArc());
 
+  PathBuilder path2 = PathBuilder(canvas_path->GetPath());
   canvas_path->closePath();
-  path.CloseSubpath();
-  EXPECT_EQ(canvas_path->GetPath(), path);
+  path2.Close();
+  EXPECT_EQ(canvas_path->GetPath(), path2.Finalize());
   EXPECT_TRUE(canvas_path->IsArc());
 }
 
@@ -272,10 +273,10 @@ TEST_F(CanvasPathTest, ArcThenLine) {
   EXPECT_FALSE(canvas_path->IsArc());
   EXPECT_FALSE(canvas_path->IsLine());
 
-  Path path;
-  path.AddArc(gfx::PointF(0, 1), 5, 2, 3);
-  path.AddLineTo(gfx::PointF(8, 9));
-  EXPECT_EQ(canvas_path->GetPath(), path);
+  PathBuilder path;
+  path.AddEllipse(gfx::PointF(0, 1), 5, 5, 2, 3);
+  path.LineTo(gfx::PointF(8, 9));
+  EXPECT_EQ(canvas_path->GetPath(), path.Finalize());
 }
 
 }  // namespace blink

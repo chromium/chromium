@@ -38,13 +38,13 @@
 #include "third_party/blink/renderer/modules/canvas/canvas2d/identifiability_study_helper.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/geometry/path.h"
+#include "third_party/blink/renderer/platform/geometry/path_builder.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/forward.h"  // IWYU pragma: keep (blink::Visitor)
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
-#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect_f.h"
 
@@ -145,7 +145,7 @@ class MODULES_EXPORT CanvasPath : public GarbageCollectedMixin {
 
   const Path& GetPath() const {
     UpdatePathFromLineOrArcIfNecessary();
-    return path_;
+    return path_builder_.CurrentPath();
   }
 
   // Returns true if the CanvasPath represents a line. In some cases (such as
@@ -171,7 +171,8 @@ class MODULES_EXPORT CanvasPath : public GarbageCollectedMixin {
   }
 
   bool IsEmpty() const {
-    return line_builder_.IsEmpty() && arc_builder_.IsEmpty() && path_.IsEmpty();
+    return line_builder_.IsEmpty() && arc_builder_.IsEmpty() &&
+           path_builder_.IsEmpty();
   }
 
   // The returned rectangle is not necessarily exact, and may contain much more
@@ -187,9 +188,9 @@ class MODULES_EXPORT CanvasPath : public GarbageCollectedMixin {
   void Trace(Visitor*) const override;
 
  protected:
-  CanvasPath() { path_.SetIsVolatile(true); }
-  explicit CanvasPath(const Path& path) : path_(path) {
-    path_.SetIsVolatile(true);
+  CanvasPath() { path_builder_.SetIsVolatile(true); }
+  explicit CanvasPath(const Path& path) : path_builder_(path) {
+    path_builder_.SetIsVolatile(true);
   }
   ALWAYS_INLINE void SetIsTransformInvertible(bool val) {
     is_transform_invertible_ = val;
@@ -198,12 +199,12 @@ class MODULES_EXPORT CanvasPath : public GarbageCollectedMixin {
   void Clear() {
     line_builder_.Clear();
     arc_builder_.Clear();
-    path_.Clear();
+    path_builder_.Reset();
   }
 
-  Path& GetModifiablePath() {
+  PathBuilder& GetModifiablePath() {
     UpdatePathFromLineOrArcIfNecessaryForMutation();
-    return path_;
+    return path_builder_;
   }
 
   // Called when a canvas operation is made that would trigger a canvas
@@ -321,7 +322,7 @@ class MODULES_EXPORT CanvasPath : public GarbageCollectedMixin {
       return arc_;
     }
 
-    void UpdatePath(Path& path) const;
+    void UpdatePath(PathBuilder& path) const;
 
    private:
     enum class State {
@@ -336,10 +337,10 @@ class MODULES_EXPORT CanvasPath : public GarbageCollectedMixin {
 
   bool DoesPathNeedUpdatingFromLineOrArc() const {
     return (!line_builder_.IsEmpty() || !arc_builder_.IsEmpty()) &&
-           path_.IsEmpty();
+           path_builder_.IsEmpty();
   }
 
-  // Updates `path_` from one of the builders if necessary.
+  // Updates `path_builder_` from one of the builders if necessary.
   void UpdatePathFromLineOrArcIfNecessary() const;
 
   // Same as UpdatePathFromLineOrArcIfNecessary(), but also clears the builders.
@@ -349,9 +350,9 @@ class MODULES_EXPORT CanvasPath : public GarbageCollectedMixin {
 
   ArcBuilder arc_builder_;
 
-  // `path_` may be lazily updated from one of the builders. As such, it needs
-  // to be mutable.
-  mutable Path path_;
+  // `path_builder_` may be lazily updated from one of the builders. As such, it
+  // needs to be mutable.
+  mutable PathBuilder path_builder_;
 };
 
 ALWAYS_INLINE bool CanvasPath::IsTransformInvertible() const {

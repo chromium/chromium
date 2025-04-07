@@ -149,33 +149,15 @@ class PLATFORM_EXPORT Path {
   // device to not cache this path.
   void SetIsVolatile(bool);
 
-  // Gets the current point of the current path, which is conceptually the final
-  // point reached by the path so far. Note the Path can be empty
-  // (isEmpty() == true) and still have a current point.
-  std::optional<gfx::PointF> CurrentPoint() const;
-
   // TODO(crbug.com/378688986): convert clients to PathBuilder and remove all
   // editing (non-const) methods.
   void MoveTo(const gfx::PointF&);
   void AddLineTo(const gfx::PointF&);
-  void AddQuadCurveTo(const gfx::PointF& control_point,
-                      const gfx::PointF& end_point);
   void AddBezierCurveTo(const gfx::PointF& control_point1,
                         const gfx::PointF& control_point2,
                         const gfx::PointF& end_point);
-  void AddArcTo(const gfx::PointF&, const gfx::PointF&, float radius);
   void CloseSubpath();
 
-  void AddArc(const gfx::PointF&,
-              float radius,
-              float start_angle,
-              float end_angle);
-  void AddEllipse(const gfx::PointF&,
-                  float radius_x,
-                  float radius_y,
-                  float rotation,
-                  float start_angle,
-                  float end_angle);
   void AddPath(const Path&, const AffineTransform&);
 
   void Translate(const gfx::Vector2dF&);

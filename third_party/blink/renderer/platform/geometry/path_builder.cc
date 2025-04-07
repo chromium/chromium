@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/platform/geometry/infinite_int_rect.h"
 #include "third_party/blink/renderer/platform/geometry/path.h"
 #include "third_party/blink/renderer/platform/geometry/path_types.h"
+#include "third_party/blink/renderer/platform/geometry/skia_geometry_utils.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/skia/include/pathops/SkPathOps.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -129,6 +130,14 @@ const Path& PathBuilder::CurrentPath() const {
   return current_path_.value();
 }
 
+std::optional<gfx::PointF> PathBuilder::CurrentPoint() const {
+  SkPoint point;
+  if (builder_.getLastPt(&point)) {
+    return gfx::SkPointToPointF(point);
+  }
+  return std::nullopt;
+}
+
 PathBuilder& PathBuilder::Close() {
   builder_.close();
 
@@ -183,9 +192,10 @@ PathBuilder& PathBuilder::ArcTo(const gfx::PointF& p,
   return *this;
 }
 
-PathBuilder& PathBuilder::AddRect(const gfx::RectF& rect) {
-  // Start at upper-left, add clock-wise.
-  builder_.addRect(gfx::RectFToSkRect(rect), SkPathDirection::kCW, 0);
+PathBuilder& PathBuilder::ArcTo(const gfx::PointF& p1,
+                                const gfx::PointF& p2,
+                                float radius) {
+  builder_.arcTo(gfx::PointFToSkPoint(p1), gfx::PointFToSkPoint(p2), radius);
 
   current_path_.reset();
   return *this;
@@ -291,6 +301,75 @@ PathBuilder& PathBuilder::AddContouredRect(
   SkPath result;
   CHECK(op_builder.resolve(&result));
   builder_.addPath(result);
+  current_path_.reset();
+  return *this;
+}
+
+PathBuilder& PathBuilder::AddEllipse(const gfx::PointF& p,
+                                     float radius_x,
+                                     float radius_y,
+                                     float start_angle,
+                                     float end_angle) {
+  DCHECK(EllipseIsRenderable(start_angle, end_angle));
+  DCHECK_GE(start_angle, 0);
+  DCHECK_LT(start_angle, kTwoPiFloat);
+
+  const SkRect oval = SkRect::MakeLTRB(p.x() - radius_x, p.y() - radius_y,
+                                       p.x() + radius_x, p.y() + radius_y);
+
+  const float start_degrees = Rad2deg(start_angle);
+  const float sweep_degrees = Rad2deg(end_angle - start_angle);
+
+  // We can't use SkPath::addOval(), because addOval() makes a new sub-path.
+  // addOval() calls moveTo() and close() internally.
+
+  // Use 180, not 360, because SkPath::arcTo(oval, angle, 360, false) draws
+  // nothing.
+  // TODO(fmalita): we should fix that in Skia.
+  if (WebCoreFloatNearlyEqual(std::abs(sweep_degrees), 360)) {
+    // incReserve() results in a single allocation instead of multiple as is
+    // done by multiple calls to arcTo().
+    builder_.incReserve(10, 5, 4);
+    // // SkPath::arcTo can't handle the sweepAngle that is equal to or greater
+    // // than 2Pi.
+    const float sweep180 = std::copysign(180, sweep_degrees);
+    builder_.arcTo(oval, start_degrees, sweep180, false);
+    builder_.arcTo(oval, start_degrees + sweep180, sweep180, false);
+  } else {
+    builder_.arcTo(oval, start_degrees, sweep_degrees, false);
+  }
+  current_path_.reset();
+  return *this;
+}
+
+PathBuilder& PathBuilder::AddEllipse(const gfx::PointF& p,
+                                     float radius_x,
+                                     float radius_y,
+                                     float rotation,
+                                     float start_angle,
+                                     float end_angle) {
+  DCHECK(EllipseIsRenderable(start_angle, end_angle));
+  DCHECK_GE(start_angle, 0);
+  DCHECK_LT(start_angle, kTwoPiFloat);
+
+  if (!rotation) {
+    return AddEllipse(p, radius_x, radius_y, start_angle, end_angle);
+  }
+
+  // Add an arc after the relevant transform.
+  AffineTransform ellipse_transform =
+      AffineTransform::Translation(p.x(), p.y()).RotateRadians(rotation);
+  DCHECK(ellipse_transform.IsInvertible());
+  AffineTransform inverse_ellipse_transform = ellipse_transform.Inverse();
+  Transform(inverse_ellipse_transform);
+  AddEllipse(gfx::PointF(), radius_x, radius_y, start_angle, end_angle);
+  return Transform(ellipse_transform);
+}
+
+PathBuilder& PathBuilder::AddRect(const gfx::RectF& rect) {
+  // Start at upper-left, add clock-wise.
+  builder_.addRect(gfx::RectFToSkRect(rect), SkPathDirection::kCW, 0);
+
   current_path_.reset();
   return *this;
 }

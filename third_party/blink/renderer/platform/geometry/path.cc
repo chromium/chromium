@@ -326,14 +326,6 @@ void Path::SetIsVolatile(bool is_volatile) {
   path_.setIsVolatile(is_volatile);
 }
 
-std::optional<gfx::PointF> Path::CurrentPoint() const {
-  SkPoint point;
-  if (path_.getLastPt(&point)) {
-    return gfx::SkPointToPointF(point);
-  }
-  return std::nullopt;
-}
-
 void Path::MoveTo(const gfx::PointF& point) {
   path_.moveTo(gfx::PointFToSkPoint(point));
 }
@@ -342,21 +334,11 @@ void Path::AddLineTo(const gfx::PointF& point) {
   path_.lineTo(gfx::PointFToSkPoint(point));
 }
 
-void Path::AddQuadCurveTo(const gfx::PointF& cp, const gfx::PointF& ep) {
-  path_.quadTo(gfx::PointFToSkPoint(cp), gfx::PointFToSkPoint(ep));
-}
-
 void Path::AddBezierCurveTo(const gfx::PointF& p1,
                             const gfx::PointF& p2,
                             const gfx::PointF& ep) {
   path_.cubicTo(gfx::PointFToSkPoint(p1), gfx::PointFToSkPoint(p2),
                 gfx::PointFToSkPoint(ep));
-}
-
-void Path::AddArcTo(const gfx::PointF& p1,
-                    const gfx::PointF& p2,
-                    float radius) {
-  path_.arcTo(gfx::PointFToSkPoint(p1), gfx::PointFToSkPoint(p2), radius);
 }
 
 void Path::CloseSubpath() {
@@ -397,38 +379,6 @@ void Path::AddEllipse(const gfx::PointF& c,
   }
 
   path_.arcTo(oval, start_degrees, sweep_degrees, false);
-}
-
-void Path::AddArc(const gfx::PointF& p,
-                  float radius,
-                  float start_angle,
-                  float end_angle) {
-  AddEllipse(p, radius, radius, start_angle, end_angle);
-}
-
-void Path::AddEllipse(const gfx::PointF& p,
-                      float radius_x,
-                      float radius_y,
-                      float rotation,
-                      float start_angle,
-                      float end_angle) {
-  DCHECK(EllipseIsRenderable(start_angle, end_angle));
-  DCHECK_GE(start_angle, 0);
-  DCHECK_LT(start_angle, kTwoPiFloat);
-
-  if (!rotation) {
-    AddEllipse(p, radius_x, radius_y, start_angle, end_angle);
-    return;
-  }
-
-  // Add an arc after the relevant transform.
-  AffineTransform ellipse_transform =
-      AffineTransform::Translation(p.x(), p.y()).RotateRadians(rotation);
-  DCHECK(ellipse_transform.IsInvertible());
-  AffineTransform inverse_ellipse_transform = ellipse_transform.Inverse();
-  Transform(inverse_ellipse_transform);
-  AddEllipse(gfx::PointF(), radius_x, radius_y, start_angle, end_angle);
-  Transform(ellipse_transform);
 }
 
 Path Path::MakeRect(const gfx::RectF& rect) {
