@@ -368,46 +368,30 @@ ScriptPromise<V8SharedStorageResponse> SharedStorageWorklet::selectURL(
   LocalFrame* frame = To<LocalDOMWindow>(execution_context)->GetFrame();
   DCHECK(frame);
 
+  base::ElapsedTimer serialization_timer;
+
+  std::optional<BlinkCloneableMessage> serialized_data =
+      Serialize(options, *execution_context, exception_state);
+  if (!serialized_data) {
+    LogSharedStorageWorkletError(
+        SharedStorageWorkletErrorType::kSelectURLWebVisible);
+    return EmptyPromise();
+  }
+
+  base::UmaHistogramTimes(
+      "Storage.SharedStorage.SelectURL.DataSerialization.Time",
+      serialization_timer.Elapsed());
+
+  if (serialized_data->message) {
+    base::UmaHistogramMemoryKB(
+        "Storage.SharedStorage.SelectURL.DataSerialization.SizeKB",
+        serialized_data->message->DataLengthInBytes() / 1024);
+  }
+
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<V8SharedStorageResponse>>(
           script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
-
-  if (!worklet_host_) {
-    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
-        script_state->GetIsolate(), DOMExceptionCode::kOperationError,
-        "sharedStorage.worklet.addModule() has to be called before "
-        "selectURL()."));
-
-    LogSharedStorageWorkletError(
-        SharedStorageWorkletErrorType::kSelectURLWebVisible);
-
-    return promise;
-  }
-
-  // The `kSharedStorage` permissions policy should have been checked in
-  // addModule() already.
-  const network::PermissionsPolicy* policy =
-      execution_context->GetSecurityContext().GetPermissionsPolicy();
-  CHECK(policy);
-  CHECK(policy->IsFeatureEnabledForOrigin(
-      network::mojom::PermissionsPolicyFeature::kSharedStorage,
-      shared_storage_origin_));
-
-  if (!policy->IsFeatureEnabledForOrigin(
-          network::mojom::PermissionsPolicyFeature::kSharedStorageSelectUrl,
-          shared_storage_origin_)) {
-    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
-        script_state->GetIsolate(), DOMExceptionCode::kInvalidAccessError,
-        "The \"shared-storage-select-url\" Permissions Policy denied the "
-        "method for the worklet origin."));
-
-    LogSharedStorageWorkletError(
-        SharedStorageWorkletErrorType::kSelectURLWebVisible);
-
-    return promise;
-  }
-
   if (!IsValidSharedStorageURLsArrayLength(urls.size())) {
     resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
         script_state->GetIsolate(), DOMExceptionCode::kDataError,
@@ -526,24 +510,64 @@ ScriptPromise<V8SharedStorageResponse> SharedStorageWorklet::selectURL(
     index++;
   }
 
-  base::ElapsedTimer serialization_timer;
-
-  std::optional<BlinkCloneableMessage> serialized_data =
-      Serialize(options, *execution_context, exception_state);
-  if (!serialized_data) {
-    LogSharedStorageWorkletError(
-        SharedStorageWorkletErrorType::kSelectURLWebVisible);
-    return promise;
+  auto* window = DynamicTo<LocalDOMWindow>(execution_context);
+  if (window->document() && window->document()->IsPrerendering()) {
+    window->document()->AddPostPrerenderingActivationStep(WTF::BindOnce(
+        &SharedStorageWorklet::SelectUrlInternal, WrapWeakPersistent(this),
+        WrapPersistent(script_state), name, std::move(converted_urls),
+        std::move(serialized_data.value()), WrapPersistent(options), start_time,
+        WrapPersistent(resolver)));
+  } else {
+    SelectUrlInternal(script_state, name, std::move(converted_urls),
+                      std::move(serialized_data.value()), options, start_time,
+                      resolver);
   }
 
-  base::UmaHistogramTimes(
-      "Storage.SharedStorage.SelectURL.DataSerialization.Time",
-      serialization_timer.Elapsed());
+  return promise;
+}
 
-  if (serialized_data->message) {
-    base::UmaHistogramMemoryKB(
-        "Storage.SharedStorage.SelectURL.DataSerialization.SizeKB",
-        serialized_data->message->DataLengthInBytes() / 1024);
+void SharedStorageWorklet::SelectUrlInternal(
+    ScriptState* script_state,
+    const String& name,
+    Vector<mojom::blink::SharedStorageUrlWithMetadataPtr> converted_urls,
+    BlinkCloneableMessage serialized_data,
+    const SharedStorageRunOperationMethodOptions* options,
+    base::TimeTicks start_time,
+    ScriptPromiseResolver<V8SharedStorageResponse>* resolver) {
+  if (!worklet_host_) {
+    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+        script_state->GetIsolate(), DOMExceptionCode::kOperationError,
+        "sharedStorage.worklet.addModule() has to be called before "
+        "selectURL()."));
+
+    LogSharedStorageWorkletError(
+        SharedStorageWorkletErrorType::kSelectURLWebVisible);
+    return;
+  }
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
+  CHECK(execution_context->IsWindow());
+
+  // The `kSharedStorage` permissions policy should have been checked in
+  // addModule() already.
+  const network::PermissionsPolicy* policy =
+      execution_context->GetSecurityContext().GetPermissionsPolicy();
+  CHECK(policy);
+  CHECK(policy->IsFeatureEnabledForOrigin(
+      network::mojom::PermissionsPolicyFeature::kSharedStorage,
+      shared_storage_origin_));
+
+  if (!policy->IsFeatureEnabledForOrigin(
+          network::mojom::PermissionsPolicyFeature::kSharedStorageSelectUrl,
+          shared_storage_origin_)) {
+    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+        script_state->GetIsolate(), DOMExceptionCode::kInvalidAccessError,
+        "The \"shared-storage-select-url\" Permissions Policy denied the "
+        "method for the worklet origin."));
+
+    LogSharedStorageWorkletError(
+        SharedStorageWorkletErrorType::kSelectURLWebVisible);
+
+    return;
   }
 
   bool resolve_to_config = options->resolveToConfig();
@@ -562,7 +586,7 @@ ScriptPromise<V8SharedStorageResponse> SharedStorageWorklet::selectURL(
     LogSharedStorageWorkletError(
         SharedStorageWorkletErrorType::kSelectURLWebVisible);
 
-    return promise;
+    return;
   }
 
   bool keep_alive = options->keepAlive();
@@ -574,11 +598,10 @@ ScriptPromise<V8SharedStorageResponse> SharedStorageWorklet::selectURL(
                                      private_aggregation_config)) {
     LogSharedStorageWorkletError(
         SharedStorageWorkletErrorType::kSelectURLWebVisible);
-    return promise;
+    return;
   }
-
   worklet_host_->SelectURL(
-      name, std::move(converted_urls), std::move(*serialized_data), keep_alive,
+      name, std::move(converted_urls), std::move(serialized_data), keep_alive,
       std::move(private_aggregation_config), resolve_to_config,
       options->savedQuery(),
       WTF::BindOnce(
@@ -588,7 +611,6 @@ ScriptPromise<V8SharedStorageResponse> SharedStorageWorklet::selectURL(
              const String& error_message,
              const std::optional<FencedFrame::RedactedFencedFrameConfig>&
                  result_config) {
-            DCHECK(resolver);
             ScriptState* script_state = resolver->GetScriptState();
 
             if (!success) {
@@ -621,8 +643,6 @@ ScriptPromise<V8SharedStorageResponse> SharedStorageWorklet::selectURL(
           },
           WrapPersistent(resolver), WrapPersistent(this), start_time,
           resolve_to_config));
-
-  return promise;
 }
 
 ScriptPromise<IDLAny> SharedStorageWorklet::run(
@@ -669,7 +689,26 @@ ScriptPromise<IDLAny> SharedStorageWorklet::run(
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLAny>>(
       script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
+  auto* window = DynamicTo<LocalDOMWindow>(execution_context);
+  if (window->document() && window->document()->IsPrerendering()) {
+    window->document()->AddPostPrerenderingActivationStep(WTF::BindOnce(
+        &SharedStorageWorklet::RunInternal, WrapWeakPersistent(this),
+        WrapPersistent(script_state), name, std::move(serialized_data.value()),
+        WrapPersistent(options), start_time, WrapPersistent(resolver)));
+  } else {
+    RunInternal(script_state, name, std::move(serialized_data.value()), options,
+                start_time, resolver);
+  }
+  return promise;
+}
 
+void SharedStorageWorklet::RunInternal(
+    ScriptState* script_state,
+    const String& name,
+    BlinkCloneableMessage serialized_data,
+    const SharedStorageRunOperationMethodOptions* options,
+    base::TimeTicks start_time,
+    ScriptPromiseResolver<IDLAny>* resolver) {
   if (!worklet_host_) {
     resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
         script_state->GetIsolate(), DOMExceptionCode::kOperationError,
@@ -677,8 +716,10 @@ ScriptPromise<IDLAny> SharedStorageWorklet::run(
 
     LogSharedStorageWorkletError(SharedStorageWorkletErrorType::kRunWebVisible);
 
-    return promise;
+    return;
   }
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
+  CHECK(execution_context->IsWindow());
 
   // The `kSharedStorage` permissions policy should have been checked in
   // addModule() already.
@@ -696,7 +737,7 @@ ScriptPromise<IDLAny> SharedStorageWorklet::run(
 
     LogSharedStorageWorkletError(SharedStorageWorkletErrorType::kRunWebVisible);
 
-    return promise;
+    return;
   }
 
   bool keep_alive = options->keepAlive();
@@ -707,11 +748,11 @@ ScriptPromise<IDLAny> SharedStorageWorklet::run(
           *options, *script_state, *resolver,
           /*out_private_aggregation_config=*/private_aggregation_config)) {
     LogSharedStorageWorkletError(SharedStorageWorkletErrorType::kRunWebVisible);
-    return promise;
+    return;
   }
 
   worklet_host_->Run(
-      name, std::move(*serialized_data), keep_alive,
+      name, std::move(serialized_data), keep_alive,
       std::move(private_aggregation_config),
       WTF::BindOnce(
           [](ScriptPromiseResolver<IDLAny>* resolver,
@@ -744,8 +785,6 @@ ScriptPromise<IDLAny> SharedStorageWorklet::run(
             // browser process for `run()`.
           },
           WrapPersistent(resolver), WrapPersistent(this), start_time));
-
-  return promise;
 }
 
 }  // namespace blink
