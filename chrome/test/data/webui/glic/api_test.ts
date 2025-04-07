@@ -535,6 +535,16 @@ class ApiTests extends ApiTestFixtureBase {
     this.host.openOsPermissionSettingsMenu('notifications');
   }
 
+  async testGetOsMicrophonePermissionStatusAllowed() {
+    assertTrue(!!this.host.getOsMicrophonePermissionStatus);
+    assertTrue(await this.host.getOsMicrophonePermissionStatus());
+  }
+
+  async testGetOsMicrophonePermissionStatusNotAllowed() {
+    assertTrue(!!this.host.getOsMicrophonePermissionStatus);
+    assertFalse(await this.host.getOsMicrophonePermissionStatus());
+  }
+
   private async waitForPanelState(kind: PanelStateKind): Promise<void> {
     assertTrue(!!this.host.getPanelState);
     await observeSequence(this.host.getPanelState())

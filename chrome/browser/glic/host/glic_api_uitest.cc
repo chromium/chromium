@@ -810,5 +810,27 @@ IN_PROC_BROWSER_TEST_F(
   base::RunLoop().RunUntilIdle();
 }
 
+IN_PROC_BROWSER_TEST_F(GlicApiTestSystemSettingsTest,
+                       testGetOsMicrophonePermissionStatusAllowed) {
+  EXPECT_CALL(mock_platform_handle,
+              IsAllowed(ContentSettingsType::MEDIASTREAM_MIC))
+      .WillOnce(testing::Return(true));
+
+  // Trigger the GetOsMicrophonePermissionStatus API and check if it returns
+  // true as mocked by this test.
+  ExecuteJsTest();
+}
+
+IN_PROC_BROWSER_TEST_F(GlicApiTestSystemSettingsTest,
+                       testGetOsMicrophonePermissionStatusNotAllowed) {
+  EXPECT_CALL(mock_platform_handle,
+              IsAllowed(ContentSettingsType::MEDIASTREAM_MIC))
+      .WillOnce(testing::Return(false));
+
+  // Trigger the GetOsMicrophonePermissionStatus API and check if it returns
+  // false as mocked by this test.
+  ExecuteJsTest();
+}
+
 }  // namespace
 }  // namespace glic
