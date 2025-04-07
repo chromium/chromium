@@ -2225,7 +2225,7 @@ class Spanifier {
                      binary_plus_or_minus_operation(binaryOperation(
                          hasLHS(rhs_expr), hasOperatorName("+"),
                          unless(raw_ptr_plugin::isInMacroLocation()))),
-                     hasRHS(expr().bind("binary_op_rhs")),
+                     hasRHS(expr(hasType(isInteger())).bind("binary_op_rhs")),
                      unless(hasParent(binaryOperation(
                          anyOf(hasOperatorName("+"), hasOperatorName("-"))))))
                      .bind("binaryOperator"),
@@ -2382,6 +2382,7 @@ class Spanifier {
         expr(ignoringParenCasts(binaryOperation(
             binary_plus_or_minus_operation(
                 binaryOperation(hasLHS(rhs_expr), hasOperatorName("+"),
+                                hasRHS(expr(hasType(isInteger()))),
                                 unless(raw_ptr_plugin::isInMacroLocation()))
                     .bind("binary_operation")),
             hasRHS(expr().bind("binary_op_rhs")),
@@ -2393,12 +2394,12 @@ class Spanifier {
     // expr += offset_expr;
     // which is equivalent to:
     // lhs_expr = rhs_expr + offset_expr (Note: lhs_expr == rhs_expr)
-    auto binary_plus_eq_op =
-        traverse(clang::TK_IgnoreUnlessSpelledInSource,
-                 expr(ignoringParenCasts(binaryOperation(
-                          hasLHS(rhs_expr), hasOperatorName("+="),
-                          hasRHS(expr().bind("binary_op_RHS")))))
-                     .bind("binary_plus_eq_op"));
+    auto binary_plus_eq_op = traverse(
+        clang::TK_IgnoreUnlessSpelledInSource,
+        expr(ignoringParenCasts(binaryOperation(
+                 hasLHS(rhs_expr), hasOperatorName("+="),
+                 hasRHS(expr(hasType(isInteger())).bind("binary_op_RHS")))))
+            .bind("binary_plus_eq_op"));
     Match(binary_plus_eq_op, AdaptBinaryPlusEqOperation);
 
     // Handles assignment:
