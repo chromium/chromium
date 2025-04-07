@@ -200,7 +200,9 @@ void CookieControlsIconView::OnCookieControlsIconStatusChanged(
     protections_on_ = protections_on;
     blocking_status_ = blocking_status;
     should_highlight_ = should_highlight;
-    UpdateIcon();
+    if (!bubble_coordinator_->IsReloadingState()) {
+      UpdateIcon();
+    }
   }
 }
 
@@ -261,6 +263,9 @@ void CookieControlsIconView::OnFinishedPageReloadWithChangedSettings() {
   // setting.
   if (ShouldBeVisible()) {
     GetViewAccessibility().SetDescription(u"");
+    if (base::FeatureList::IsEnabled(privacy_sandbox::kActUserBypassUx)) {
+      UpdateIcon();
+    }
     // Animate the icon to provide a visual confirmation to the user that their
     // protection status on the site has changed.
     AnimateIn(GetLabelForStatus());

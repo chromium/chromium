@@ -29,6 +29,7 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
+#include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/strings/grit/privacy_sandbox_strings.h"
@@ -768,10 +769,56 @@ class CookieControlsInteractiveUiTrackingProtectionTest
   }
 
   std::vector<base::test::FeatureRef> DisabledFeatures() override { return {}; }
+
+  privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings() {
+    return TrackingProtectionSettingsFactory::GetForProfile(
+        browser()->profile());
+  }
+  auto CheckTrackingProtectionFrozenContentBlockedState() {
+    return Steps(
+        CheckViewProperty(CookieControlsContentView::kToggleButton,
+                          &views::ToggleButton::GetIsOn, false),
+        CheckViewProperty(
+            CookieControlsContentView::kTitle, &views::Label::GetText,
+            l10n_util::GetStringUTF16(
+                IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_TITLE)),
+        CheckViewProperty(
+            CookieControlsContentView::kDescription, &views::Label::GetText,
+            l10n_util::GetStringUTF16(
+                IDS_TRACKING_PROTECTION_BUBBLE_SITE_NOT_WORKING_DESCRIPTION)),
+        CheckViewProperty(
+            CookieControlsContentView::kThirdPartyCookiesLabel,
+
+            &views::Label::GetText,
+            l10n_util::GetStringUTF16(
+                IDS_TRACKING_PROTECTION_BUBBLE_3PC_BLOCKED_SUBTITLE)),
+        CheckIcon(RichControlsContainerView::kIcon,
+                  views::kEyeCrossedRefreshIcon));
+  }
+
+  auto CheckTrackingProtectionFrozenContentAllowedState() {
+    return Steps(
+        CheckViewProperty(CookieControlsContentView::kToggleButton,
+                          &views::ToggleButton::GetIsOn, true),
+        CheckViewProperty(
+            CookieControlsContentView::kTitle, &views::Label::GetText,
+            l10n_util::GetStringUTF16(
+                IDS_TRACKING_PROTECTION_BUBBLE_PERMANENT_ALLOWED_TITLE)),
+        CheckViewProperty(
+            CookieControlsContentView::kDescription, &views::Label::GetText,
+            l10n_util::GetStringUTF16(
+                IDS_TRACKING_PROTECTION_BUBBLE_PERMANENT_ALLOWED_DESCRIPTION)),
+        CheckViewProperty(
+            CookieControlsContentView::kThirdPartyCookiesLabel,
+            &views::Label::GetText,
+            l10n_util::GetStringUTF16(
+                IDS_TRACKING_PROTECTION_BUBBLE_3PC_ALLOWED_SUBTITLE)),
+        CheckIcon(RichControlsContainerView::kIcon, views::kEyeRefreshIcon));
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTrackingProtectionTest,
-                       CreateAndRemoveExceptionIncognitoAct) {
+                       CreateExceptionIncognitoAct) {
   BlockThirdPartyCookies(/*use_3pcd=*/true);
   EnableFpProtection();
   auto* const incognito_browser = CreateIncognitoBrowser(browser()->profile());
@@ -786,6 +833,28 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTrackingProtectionTest,
                                                 /*with_act=*/true),
             PressButton(CookieControlsContentView::kToggleButton),
             EnsureNotPresent(CookieControlsBubbleView::kReloadingView),
+            CheckTrackingProtectionFrozenContentBlockedState())));
+}
+
+IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTrackingProtectionTest,
+                       RemoveExceptionIncognitoAct) {
+  BlockThirdPartyCookies(/*use_3pcd=*/true);
+  EnableFpProtection();
+  cookie_settings()->SetCookieSettingForUserBypass(
+      third_party_cookie_page_url());
+  tracking_protection_settings()->AddTrackingProtectionException(
+      third_party_cookie_page_url());
+  auto* const incognito_browser = CreateIncognitoBrowser(browser()->profile());
+  RunTestSequence(InContext(
+      incognito_browser->window()->GetElementContext(),
+      Steps(InstrumentTab(kWebContentsElementId),
+            NavigateWebContents(kWebContentsElementId,
+                                third_party_cookie_page_url()),
+            PressButton(kCookieControlsIconElementId),
+            InAnyContext(WaitForShow(CookieControlsBubbleView::kContentView)),
             CheckTrackingProtectionAllowedState(/*incognito=*/true,
-                                                /*with_act=*/true))));
+                                                /*with_act=*/true),
+            PressButton(CookieControlsContentView::kToggleButton),
+            EnsureNotPresent(CookieControlsBubbleView::kReloadingView),
+            CheckTrackingProtectionFrozenContentAllowedState())));
 }

@@ -233,9 +233,13 @@ void CookieControlsBubbleViewController::OnStatusChanged(
     CookieBlocking3pcdStatus blocking_status,
     base::Time expiration,
     std::vector<content_settings::TrackingProtectionFeature> features) {
+  // Leave the UI unchanged during reloading; it will update after the page
+  // loads.
+  if (is_reloading_state_) {
+    return;
+  }
   protections_on_ = protections_on;
   blocking_status_ = blocking_status;
-
   if (!controls_visible || features.empty()) {
     bubble_view_->CloseWidget();
     return;
@@ -356,6 +360,9 @@ void CookieControlsBubbleViewController::OnToggleButtonPressed(
     base::RecordAction(base::UserMetricsAction(
         "CookieControls.Bubble.BlockThirdPartyCookies"));
   }
+  // We should only enter the reloading state in the Incognito ACT UI.
+  is_reloading_state_ = controller_->ShowActFeatures();
+
   controller_->SetUserChangedCookieBlockingForSite(true);
   // Set the toggle ON when protections are ON (cookies are blocked).
   controller_->OnCookieBlockingEnabledForSite(protections_on);

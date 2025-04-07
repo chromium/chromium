@@ -43,6 +43,12 @@ class CookieControlsBubbleViewController
 
   void SetSubjectUrlNameForTesting(const std::u16string& name);
 
+  void SetIsReloadingState(bool is_reloading_state) {
+    is_reloading_state_ = is_reloading_state;
+  }
+
+  bool IsReloadingState() { return is_reloading_state_; }
+
  private:
   friend class CookieControlsBubbleViewBrowserTest;
 
@@ -87,6 +93,10 @@ class CookieControlsBubbleViewController
 
   // Whether protections are enabled for the given site.
   bool protections_on_ = true;
+
+  // Whether the page is reloading in the background after UB is toggled.
+  bool is_reloading_state_ = false;
+
   // The most recent status provided by the CookieControlsController, used to
   // determine the user's 3PCD status.
   CookieBlocking3pcdStatus blocking_status_ =

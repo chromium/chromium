@@ -33,6 +33,8 @@ class CookieControlsBubbleCoordinator : public views::ViewObserver {
 
   virtual CookieControlsBubbleViewImpl* GetBubble() const;
 
+  bool IsReloadingState() const;
+
   CookieControlsBubbleViewController* GetViewControllerForTesting();
   void SetDisplayNameForTesting(const std::u16string& name);
 
