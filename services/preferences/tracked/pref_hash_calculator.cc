@@ -107,7 +107,7 @@ std::string ValueAsString(const base::Value::Dict* value) {
 
   base::Value::Dict dict = value->Clone();
   RemoveEmptyValueDictEntries(dict);
-  return base::WriteJson(base::Value(std::move(dict))).value_or(std::string());
+  return base::WriteJson(dict).value_or(std::string());
 }
 
 std::string ValueAsString(const base::Value* value) {

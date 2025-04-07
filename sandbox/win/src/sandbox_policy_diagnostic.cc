@@ -474,8 +474,7 @@ const std::string& PolicyDiagnostic::JsonString() const {
   dict.Set(kZeroAppShim, zero_appshim_);
   dict.Set(kHandlesToClose, GetHandlesToClose(handles_to_close_));
 
-  std::optional<std::string> json_string =
-      base::WriteJson(base::Value(std::move(dict)));
+  std::optional<std::string> json_string = base::WriteJson(dict);
   CHECK(json_string);
   json_string_ = std::move(json_string);
   return *json_string_;
