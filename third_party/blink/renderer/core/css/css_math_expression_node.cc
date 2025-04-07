@@ -419,8 +419,9 @@ struct CSSMathExpressionNodeWithOperator {
   void Trace(Visitor* visitor) const { visitor->Trace(node); }
 };
 using UnitsVector = HeapVector<CSSMathExpressionNodeWithOperator>;
+using GCedUnitsVector = GCedHeapVector<CSSMathExpressionNodeWithOperator>;
 using UnitsVectorHashMap =
-    HeapHashMap<CSSPrimitiveValue::UnitType, Member<UnitsVector>>;
+    HeapHashMap<CSSPrimitiveValue::UnitType, Member<GCedUnitsVector>>;
 
 bool IsNumericNodeWithDoubleValue(const CSSMathExpressionNode* node) {
   return node->IsNumericLiteral() && HasDoubleValue(node->ResolvedUnitType());
@@ -546,7 +547,7 @@ void CollectNumericChildrenFromNode(const CSSMathExpressionNode* root,
       it->value->emplace_back(op, root);
     } else {
       numeric_children.insert(
-          unit_type, MakeGarbageCollected<UnitsVector>(
+          unit_type, MakeGarbageCollected<GCedUnitsVector>(
                          1, CSSMathExpressionNodeWithOperator(op, root)));
     }
     return;
@@ -585,8 +586,9 @@ CSSMathExpressionNode* AddNodeToSumNode(CSSMathExpressionNode* sum_node,
                                                           sum_node->Category());
 }
 
-CSSMathExpressionNode* AddNodesVectorToSumNode(CSSMathExpressionNode* sum_node,
-                                               const UnitsVector& vector) {
+CSSMathExpressionNode* AddNodesVectorToSumNode(
+    CSSMathExpressionNode* sum_node,
+    const base::span<CSSMathExpressionNodeWithOperator>& vector) {
   for (const auto& [op, node] : vector) {
     sum_node = AddNodeToSumNode(sum_node, node, op);
   }

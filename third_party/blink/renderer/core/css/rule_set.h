@@ -611,7 +611,7 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   bool MatchMediaForAddRules(const MediaQueryEvaluator& evaluator,
                              const MediaQuerySet* media_queries);
   void AddChildRules(StyleRule* parent_rule,
-                     const HeapVector<Member<StyleRuleBase>>&,
+                     base::span<const Member<StyleRuleBase>>,
                      const MediaQueryEvaluator& medium,
                      AddRuleFlags,
                      const ContainerQuery*,

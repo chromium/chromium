@@ -4728,6 +4728,28 @@ bool StyleEngine::UpdateLastSuccessfulPositionFallbacksAndAnchorScrollShift() {
   return invalidated;
 }
 
+namespace {
+
+template <typename VectorType>
+void RevisitStyleRulesForInspector(const RuleFeatureSet& features,
+                                   const VectorType& rules) {
+  for (StyleRuleBase* rule : rules) {
+    if (StyleRule* style_rule = DynamicTo<StyleRule>(rule)) {
+      for (const CSSSelector* selector = style_rule->FirstSelector(); selector;
+           selector = CSSSelectorList::Next(*selector)) {
+        InvalidationSetToSelectorMap::SelectorScope selector_scope(
+            style_rule, style_rule->SelectorIndex(*selector));
+        features.RevisitSelectorForInspector(*selector);
+      }
+    } else if (StyleRuleGroup* style_rule_group =
+                   DynamicTo<StyleRuleGroup>(rule)) {
+      RevisitStyleRulesForInspector(features, style_rule_group->ChildRules());
+    }
+  }
+}
+
+}  // namespace
+
 void StyleEngine::RevisitStyleSheetForInspector(StyleSheetContents* contents) {
   // We need to revisit the sheet twice, once with the global rule set and
   // once with the sheet's associated rule set.
@@ -4741,24 +4763,6 @@ void StyleEngine::RevisitStyleSheetForInspector(StyleSheetContents* contents) {
   if (contents->HasRuleSet()) {
     RevisitStyleRulesForInspector(contents->GetRuleSet().Features(),
                                   contents->ChildRules());
-  }
-}
-
-void StyleEngine::RevisitStyleRulesForInspector(
-    const RuleFeatureSet& features,
-    const HeapVector<Member<StyleRuleBase>>& rules) {
-  for (StyleRuleBase* rule : rules) {
-    if (StyleRule* style_rule = DynamicTo<StyleRule>(rule)) {
-      for (const CSSSelector* selector = style_rule->FirstSelector(); selector;
-           selector = CSSSelectorList::Next(*selector)) {
-        InvalidationSetToSelectorMap::SelectorScope selector_scope(
-            style_rule, style_rule->SelectorIndex(*selector));
-        features.RevisitSelectorForInspector(*selector);
-      }
-    } else if (StyleRuleGroup* style_rule_group =
-                   DynamicTo<StyleRuleGroup>(rule)) {
-      RevisitStyleRulesForInspector(features, style_rule_group->ChildRules());
-    }
   }
 }
 

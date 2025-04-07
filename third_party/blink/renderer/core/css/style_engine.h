@@ -818,10 +818,6 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
 
   Document& GetDocument() const { return *document_; }
 
-  void RevisitStyleRulesForInspector(
-      const RuleFeatureSet& features,
-      const HeapVector<Member<StyleRuleBase>>& rules);
-
   bool MediaQueryAffectingValueChanged(const ActiveStyleSheetVector&,
                                        MediaValueChange);
   void MediaQueryAffectingValueChanged(TreeScope&, MediaValueChange);

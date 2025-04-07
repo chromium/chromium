@@ -38,13 +38,14 @@ class MatchResultTest : public PageTestBase {
   }
 
  private:
-  Persistent<HeapVector<Member<MutableCSSPropertyValueSet>, 8>> property_sets;
+  Persistent<GCedHeapVector<Member<MutableCSSPropertyValueSet>, 8>>
+      property_sets;
 };
 
 void MatchResultTest::SetUp() {
   PageTestBase::SetUp();
-  property_sets =
-      MakeGarbageCollected<HeapVector<Member<MutableCSSPropertyValueSet>, 8>>();
+  property_sets = MakeGarbageCollected<
+      GCedHeapVector<Member<MutableCSSPropertyValueSet>, 8>>();
   for (unsigned i = 0; i < 8; i++) {
     property_sets->push_back(
         MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLQuirksMode));

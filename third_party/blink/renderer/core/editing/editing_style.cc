@@ -69,6 +69,7 @@
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/heap/disallow_new_wrapper.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
@@ -1120,10 +1121,11 @@ bool EditingStyle::ConflictsWithInlineStyleOfElement(
 
 static const HeapVector<Member<HTMLElementEquivalent>>&
 HtmlElementEquivalents() {
-  DEFINE_STATIC_LOCAL(
-      Persistent<HeapVector<Member<HTMLElementEquivalent>>>,
-      html_element_equivalents,
-      (MakeGarbageCollected<HeapVector<Member<HTMLElementEquivalent>>>()));
+  using Holder = DisallowNewWrapper<HeapVector<Member<HTMLElementEquivalent>>>;
+  DEFINE_STATIC_LOCAL(Persistent<Holder>, html_element_equivalents_holder,
+                      (MakeGarbageCollected<Holder>()));
+  HeapVector<Member<HTMLElementEquivalent>>* html_element_equivalents =
+      &html_element_equivalents_holder->Value();
   if (!html_element_equivalents->size()) {
     html_element_equivalents->push_back(
         MakeGarbageCollected<HTMLElementEquivalent>(
@@ -1184,10 +1186,12 @@ bool EditingStyle::ConflictsWithImplicitStyleOfElement(
 
 static const HeapVector<Member<HTMLAttributeEquivalent>>&
 HtmlAttributeEquivalents() {
-  DEFINE_STATIC_LOCAL(
-      Persistent<HeapVector<Member<HTMLAttributeEquivalent>>>,
-      html_attribute_equivalents,
-      (MakeGarbageCollected<HeapVector<Member<HTMLAttributeEquivalent>>>()));
+  using Holder =
+      DisallowNewWrapper<HeapVector<Member<HTMLAttributeEquivalent>>>;
+  DEFINE_STATIC_LOCAL(Persistent<Holder>, html_attribute_equivalents_holder,
+                      (MakeGarbageCollected<Holder>()));
+  HeapVector<Member<HTMLAttributeEquivalent>>* html_attribute_equivalents =
+      &html_attribute_equivalents_holder->Value();
   if (!html_attribute_equivalents->size()) {
     // elementIsStyledSpanOrHTMLEquivalent depends on the fact each
     // HTMLAttriuteEquivalent matches exactly one attribute of exactly one
