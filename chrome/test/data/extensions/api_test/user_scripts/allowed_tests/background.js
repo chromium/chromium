@@ -9,6 +9,22 @@ const kUserScriptCode = `var div = document.createElement('div');
      div.id = 'user-script-code';
      document.body.appendChild(div);`
 
+async function verifyApiIsNotAvailable() {
+  let message;
+  try {
+    await chrome.userScripts.getScripts();
+    message = 'failure (chrome.userScripts API is available)';
+  } catch (e) {
+    const expectedError =
+        'TypeError: Cannot read properties of undefined (reading ' +
+        '\'getScripts\')';
+    message = e.toString() == expectedError ?
+        'success' :
+        'Unexpected error: ' + e.toString();
+  }
+  chrome.test.sendScriptResult(message);
+}
+
 async function registerUserScripts() {
   const userScripts = [
     {

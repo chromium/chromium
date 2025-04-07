@@ -4299,6 +4299,7 @@ if (!is_android) {
         "../browser/extensions/api/usb/chrome_usb_apitest.cc",
         "../browser/extensions/api/user_scripts/user_scripts_apitest.cc",
         "../browser/extensions/api/user_scripts/user_scripts_apitest.h",
+        "../browser/extensions/api/user_scripts/user_scripts_uitest.cc",
         "../browser/extensions/api/web_navigation/web_navigation_apitest.cc",
         "../browser/extensions/api/webrtc_audio_private/webrtc_audio_private_browsertest.cc",
         "../browser/extensions/api/webrtc_from_web_accessible_resource_browsertest.cc",
