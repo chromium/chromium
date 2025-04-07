@@ -194,7 +194,6 @@ const char kArbitraryPage[] = "/title1.html";
 #if !BUILDFLAG(IS_ANDROID)
 const char kDispatchKeyEventShowsAutoFill[] =
     "/devtools/dispatch_key_event_shows_auto_fill.html";
-const char kDOMWarningsTestPage[] = "/devtools/dom_warnings_page.html";
 const char kEmulateNetworkConditionsPage[] =
     "/devtools/emulate_network_conditions.html";
 const char kNavigateBackTestPage[] = "/devtools/navigate_back.html";
@@ -2303,16 +2302,6 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, DISABLED_TestNetworkPushTime) {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
-// Flaky on Windows: https://crbug.com/1087320
-// Flaky on Linux: http://crbug.com/331650494
-#define MAYBE_TestDOMWarnings DISABLED_TestDOMWarnings
-#else
-#define MAYBE_TestDOMWarnings TestDOMWarnings
-#endif
-IN_PROC_BROWSER_TEST_F(DevToolsTest, MAYBE_TestDOMWarnings) {
-  RunTest("testDOMWarnings", kDOMWarningsTestPage);
-}
 
 // Tests that console messages are not duplicated on navigation back.
 // Flaking on windows swarm try runs: crbug.com/409285.
