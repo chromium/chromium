@@ -1288,6 +1288,9 @@ const char kIPHGestureRecognitionPanAblation[] =
     "IPHGestureRecognitionPanAblation";
 const char kIPHGestureRecognitionSwipeAblation[] =
     "IPHGestureRecognitionSwipeAblation";
+const char kCancelTouchesInViewForIPH[] = "CancelTouchesInViewForIPH";
+const char kIPHGestureRecognitionImprovement[] =
+    "IPHGestureRecognitionImprovement";
 
 bool IsIPHGestureRecognitionInsideTapAblationEnabled() {
   return base::GetFieldTrialParamByFeatureAsBool(
@@ -1310,6 +1313,16 @@ bool IsIPHGestureRecognitionSwipeAblationEnabled() {
   return base::GetFieldTrialParamByFeatureAsBool(
       kIPHGestureRecognitionAblation, kIPHGestureRecognitionSwipeAblation,
       false);
+}
+
+bool ShouldCancelTouchesInViewForIPH() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kIPHGestureRecognitionAblation, kCancelTouchesInViewForIPH, false);
+}
+
+bool IsIPHGestureRecognitionImprovementEnabled() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kIPHGestureRecognitionAblation, kIPHGestureRecognitionImprovement, false);
 }
 
 BASE_FEATURE(kNonModalSignInPromo,

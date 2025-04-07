@@ -85,7 +85,10 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
 
 @end
 
-@implementation BubbleViewControllerPresenter
+@implementation BubbleViewControllerPresenter {
+  // Whether the IPH gesture recognizers for dismissal are added.
+  BOOL _gestureRecognizersActive;
+}
 
 @synthesize bubbleViewController = _bubbleViewController;
 @synthesize insideBubbleTapRecognizer = _insideBubbleTapRecognizer;
@@ -368,6 +371,15 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
   [self.insideBubbleTapRecognizer.view
       removeGestureRecognizer:self.insideBubbleTapRecognizer];
   [self.swipeRecognizer.view removeGestureRecognizer:self.swipeRecognizer];
+
+  if (IsIPHGestureRecognitionImprovementEnabled()) {
+    self.outsideBubbleTapRecognizer = nil;
+    self.outsideBubblePanRecognizer = nil;
+    self.insideBubbleTapRecognizer = nil;
+    self.swipeRecognizer = nil;
+  }
+
+  _gestureRecognizersActive = NO;
 }
 
 // Adds gesture recognizers to parent view.
@@ -377,7 +389,8 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
         initWithTarget:self
                 action:@selector(tapOutsideBubbleRecognized:)];
     self.outsideBubbleTapRecognizer.delegate = self;
-    self.outsideBubbleTapRecognizer.cancelsTouchesInView = NO;
+    self.outsideBubbleTapRecognizer.cancelsTouchesInView =
+        ShouldCancelTouchesInViewForIPH();
 
     [parentView addGestureRecognizer:self.outsideBubbleTapRecognizer];
   }
@@ -387,7 +400,8 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
         initWithTarget:self
                 action:@selector(tapOutsideBubbleRecognized:)];
     self.outsideBubblePanRecognizer.delegate = self;
-    self.outsideBubblePanRecognizer.cancelsTouchesInView = NO;
+    self.outsideBubblePanRecognizer.cancelsTouchesInView =
+        ShouldCancelTouchesInViewForIPH();
 
     [parentView addGestureRecognizer:self.outsideBubblePanRecognizer];
   }
@@ -397,7 +411,8 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
         initWithTarget:self
                 action:@selector(tapInsideBubbleRecognized:)];
     self.insideBubbleTapRecognizer.delegate = self;
-    self.insideBubbleTapRecognizer.cancelsTouchesInView = NO;
+    self.insideBubbleTapRecognizer.cancelsTouchesInView =
+        ShouldCancelTouchesInViewForIPH();
 
     [self.bubbleViewController.view
         addGestureRecognizer:self.insideBubbleTapRecognizer];
@@ -412,15 +427,31 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
 
     [parentView addGestureRecognizer:self.swipeRecognizer];
   }
+
+  _gestureRecognizersActive = YES;
 }
 
 // Invoked by tapping inside the bubble. Dismisses the bubble.
 - (void)tapInsideBubbleRecognized:(id)sender {
+  if (IsIPHGestureRecognitionImprovementEnabled()) {
+    // If the gesture recognizers are no longer active, we should stop handling
+    // taps. This is to prevent handling queued gestures which are now invalid.
+    if (!_gestureRecognizersActive) {
+      return;
+    }
+  }
   [self dismissAnimated:YES reason:IPHDismissalReasonType::kTappedIPH];
 }
 
 // Invoked by tapping outside the bubble. Dismisses the bubble.
 - (void)tapOutsideBubbleRecognized:(UIGestureRecognizer*)sender {
+  if (IsIPHGestureRecognitionImprovementEnabled()) {
+    // If the gesture recognizers are no longer active, we should stop handling
+    // taps. This is to prevent handling queued gestures which are now invalid.
+    if (!_gestureRecognizersActive) {
+      return;
+    }
+  }
   if (sender.numberOfTouches <= 0) {
     return;
   }

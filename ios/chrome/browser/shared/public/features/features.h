@@ -1070,6 +1070,13 @@ bool IsIPHGestureRecognitionPanAblationEnabled();
 // Returns true if swipes during an IPH presentation should be ignored.
 bool IsIPHGestureRecognitionSwipeAblationEnabled();
 
+// Returns true if IPH gesture recognizers should set the `cancelsTouchesInView`
+// property to YES.
+bool ShouldCancelTouchesInViewForIPH();
+
+// Returns true if the IPH gesture recognition improvements are enabled.
+bool IsIPHGestureRecognitionImprovementEnabled();
+
 // Feature flag for enabling the non-modal sign-in promo.
 BASE_DECLARE_FEATURE(kNonModalSignInPromo);
 
