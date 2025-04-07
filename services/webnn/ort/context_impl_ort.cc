@@ -222,12 +222,13 @@ SessionOptions::~SessionOptions() = default;
 ContextImplOrt::ContextImplOrt(
     mojo::PendingReceiver<mojom::WebNNContext> receiver,
     WebNNContextProviderImpl* context_provider,
+    const mojom::CreateContextOptions::Device device_type,
     mojom::CreateContextOptionsPtr options,
     ScopedOrtEnv env,
     scoped_refptr<SessionOptions> session_options)
     : WebNNContextImpl(std::move(receiver),
                        context_provider,
-                       GetContextProperties(),
+                       GetContextProperties(device_type),
                        std::move(options)),
       env_(std::move(env)),
       session_options_(std::move(session_options)) {}
@@ -235,7 +236,8 @@ ContextImplOrt::ContextImplOrt(
 ContextImplOrt::~ContextImplOrt() = default;
 
 // static
-ContextProperties ContextImplOrt::GetContextProperties() {
+ContextProperties ContextImplOrt::GetContextProperties(
+    const mojom::CreateContextOptions::Device device_type) {
   // TODO(https://github.com/shiyi9801/chromium/issues/103): Investigate how to
   // set the tensor byte length limit and supported tensor ranks
   static constexpr uint64_t kTensorByteLengthLimit =
@@ -252,6 +254,16 @@ ContextProperties ContextImplOrt::GetContextProperties() {
   static constexpr SupportedDataTypes kQuantizeLinearInputSupportedDataTypes{
       OperandDataType::kFloat16, OperandDataType::kFloat32,
       OperandDataType::kInt32};
+
+  bool use_ov_gpu =
+      base::FeatureList::IsEnabled(mojom::features::kWebNNOrtOpenVino) &&
+      device_type == mojom::CreateContextOptions::Device::kGpu;
+  // According to
+  // https://github.com/openvinotoolkit/openvino/blob/master/src/plugins/intel_gpu/src/graph/activation.cpp#L35,
+  // OV EP GPU does not support integer data type for sign operation.
+  static const SupportedDataTypes kSignInputSupportedDataTypes =
+      use_ov_gpu ? DataTypeConstraint::kFloat16To32
+                 : DataTypeConstraint::kAllDataTypesAtLeast8bits;
 
   return ContextProperties(
       InputOperandLayout::kNchw, Resample2DAxes::kChannelsFirst,
@@ -329,7 +341,7 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        /*log_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
        /*neg_input=*/{DataTypeConstraint::kFloat16To32Int8To64, kMaxRank},
        /*reciprocal_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
-       /*sign_input=*/{DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
+       /*sign_input=*/{kSignInputSupportedDataTypes, kMaxRank},
        /*sin_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
        /*sqrt_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
        /*tan_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},

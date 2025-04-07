@@ -39,6 +39,7 @@ class ContextImplOrt final : public WebNNContextImpl {
  public:
   ContextImplOrt(mojo::PendingReceiver<mojom::WebNNContext> receiver,
                  WebNNContextProviderImpl* context_provider,
+                 const mojom::CreateContextOptions::Device device_type,
                  mojom::CreateContextOptionsPtr options,
                  ScopedOrtEnv env,
                  scoped_refptr<SessionOptions> session_options);
@@ -51,7 +52,8 @@ class ContextImplOrt final : public WebNNContextImpl {
   // WebNNContextImpl:
   base::WeakPtr<WebNNContextImpl> AsWeakPtr() override;
 
-  static ContextProperties GetContextProperties();
+  static ContextProperties GetContextProperties(
+      const mojom::CreateContextOptions::Device device_type);
 
   scoped_refptr<SessionOptions> session_options() const {
     return session_options_;
