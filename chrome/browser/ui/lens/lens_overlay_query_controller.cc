@@ -446,6 +446,7 @@ lens::Payload CreatePageContentPayloadForChunks(
   payload.mutable_stored_chunk_options()->set_read_stored_chunks(true);
   payload.mutable_stored_chunk_options()->set_total_stored_chunks(
       total_stored_chunks);
+  payload.set_compression_type(lens::CompressionType::ZSTD);
   return payload;
 }
 

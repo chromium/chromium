@@ -3656,6 +3656,8 @@ TEST_F(LensOverlayQueryControllerTest, UploadChunkingPDF) {
                   .stored_chunk_options()
                   .read_stored_chunks());
   EXPECT_EQ(1, query_controller.num_upload_chunk_requests_sent());
+  ASSERT_EQ(page_content_request.payload().compression_type(),
+            lens::CompressionType::ZSTD);
 
   // Check interaction request is correct.
   auto sent_interaction_request = query_controller.sent_interaction_request();
@@ -3801,6 +3803,8 @@ TEST_F(LensOverlayQueryControllerTest, UploadChunkingHTML) {
                   .stored_chunk_options()
                   .read_stored_chunks());
   EXPECT_EQ(1, query_controller.num_upload_chunk_requests_sent());
+  ASSERT_EQ(page_content_request.payload().compression_type(),
+            lens::CompressionType::ZSTD);
 
   // Check interaction request is correct.
   auto sent_interaction_request = query_controller.sent_interaction_request();
