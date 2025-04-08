@@ -492,7 +492,7 @@ void ExtensionServiceTestBase::CreateExtensionService(
       base::CommandLine::ForCurrentProcess(), extensions_install_dir_,
       unpacked_install_dir_, autoupdate_enabled, extensions_enabled);
 
-  service_->component_loader()->set_ignore_allowlist_for_testing(true);
+  ComponentLoader::Get(profile())->set_ignore_allowlist_for_testing(true);
 
   // When we start up, we want to make sure there is no external provider,
   // since the ExtensionService on Windows will use the Registry as a default

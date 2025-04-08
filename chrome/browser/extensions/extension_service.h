@@ -347,10 +347,6 @@ class ExtensionService : public ExtensionServiceInterface,
 
   Profile* profile() { return profile_; }
 
-  // TODO(crbug.com/408495366): Delete this method. Use ComponentLoader::Get()
-  // instead.
-  ComponentLoader* component_loader() { return component_loader_; }
-
   SharedModuleService* shared_module_service() {
     return shared_module_service_.get();
   }

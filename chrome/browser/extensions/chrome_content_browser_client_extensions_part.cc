@@ -50,7 +50,6 @@
 #include "extensions/browser/bad_message.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_registry.h"
-#include "extensions/browser/extension_system.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_map.h"
 #include "extensions/browser/renderer_startup_helper.h"
@@ -80,7 +79,6 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/component_loader.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/media_galleries/fileapi/media_file_system_backend.h"
 #endif
 
@@ -745,10 +743,7 @@ bool ChromeContentBrowserClientExtensionsPart::IsBuiltinComponent(
 #endif
 
   // Check if the component is a loaded component extension.
-  return ExtensionSystem::Get(browser_context)
-      ->extension_service()
-      ->component_loader()
-      ->Exists(extension_id);
+  return ComponentLoader::Get(browser_context)->Exists(extension_id);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }
 

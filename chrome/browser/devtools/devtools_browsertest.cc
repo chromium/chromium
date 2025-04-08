@@ -689,11 +689,8 @@ class DevToolsExtensionTest : public DevToolsTest {
   }
 
   std::string BuildComponentExtension() {
-    extensions::ExtensionService* extension_service =
-        extensions::ExtensionSystem::Get(browser()->profile())
-            ->extension_service();
     extensions::ComponentLoader* component_loader =
-        extension_service->component_loader();
+        extensions::ComponentLoader::Get(browser()->profile());
     extensions::ExtensionRegistry* extension_registry =
         extensions::ExtensionRegistry::Get(browser()->profile());
 

@@ -254,6 +254,7 @@ void ChromeExtensionSystem::Shared::Init(bool extensions_enabled) {
   quota_service_ = std::make_unique<QuotaService>();
 
   bool skip_session_extensions = false;
+  auto* component_loader = ComponentLoader::Get(profile_);
 #if BUILDFLAG(IS_CHROMEOS)
   // Skip loading session extensions if we are not in a user session or if the
   // profile is the sign-in or lock screen app profile, which don't correspond
@@ -261,15 +262,13 @@ void ChromeExtensionSystem::Shared::Init(bool extensions_enabled) {
   skip_session_extensions = !ash::LoginState::Get()->IsUserLoggedIn() ||
                             !ash::ProfileHelper::IsUserProfile(profile_);
   if (IsRunningInForcedAppMode()) {
-    extension_service_->component_loader()
-        ->AddDefaultComponentExtensionsForKioskMode(skip_session_extensions);
-  } else {
-    extension_service_->component_loader()->AddDefaultComponentExtensions(
+    component_loader->AddDefaultComponentExtensionsForKioskMode(
         skip_session_extensions);
+  } else {
+    component_loader->AddDefaultComponentExtensions(skip_session_extensions);
   }
 #else
-  extension_service_->component_loader()->AddDefaultComponentExtensions(
-      skip_session_extensions);
+  component_loader->AddDefaultComponentExtensions(skip_session_extensions);
 #endif
 
   app_sorting_ = std::make_unique<ChromeAppSorting>(profile_);

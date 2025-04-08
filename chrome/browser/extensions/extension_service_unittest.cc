@@ -3010,7 +3010,7 @@ TEST_F(ExtensionServiceTest, UpdateAppsRetainOrdinals) {
 // Ensures that the CWS has properly initialized ordinals.
 TEST_F(ExtensionServiceTest, EnsureCWSOrdinalsInitialized) {
   InitializeEmptyExtensionService();
-  service()->component_loader()->Add(
+  ComponentLoader::Get(profile())->Add(
       IDR_WEBSTORE_MANIFEST, base::FilePath(FILE_PATH_LITERAL("web_store")));
   service()->Init();
 
@@ -4095,7 +4095,7 @@ TEST_F(ExtensionServiceTest, BlockAndUnblockEnabledComponentExtension) {
   std::string manifest;
   ASSERT_TRUE(
       base::ReadFileToString(path.Append(kManifestFilename), &manifest));
-  service()->component_loader()->Add(manifest, path);
+  ComponentLoader::Get(profile())->Add(manifest, path);
   service()->Init();
 
   // Component extension should never block.
@@ -4202,7 +4202,7 @@ TEST_F(ExtensionServiceTest, ComponentExtensionAllowlisted) {
   std::string manifest;
   ASSERT_TRUE(
       base::ReadFileToString(path.Append(kManifestFilename), &manifest));
-  service()->component_loader()->Add(manifest, path);
+  ComponentLoader::Get(profile())->Add(manifest, path);
   service()->Init();
 
   // Extension should be installed despite blocklist.
@@ -4238,7 +4238,7 @@ TEST_F(ExtensionServiceTest, ComponentExtensionAllowlistedPermission) {
   std::string manifest;
   ASSERT_TRUE(
       base::ReadFileToString(path.Append(kManifestFilename), &manifest));
-  service()->component_loader()->Add(manifest, path);
+  ComponentLoader::Get(profile())->Add(manifest, path);
   service()->Init();
 
   // Extension should have the "tabs" permission.
@@ -6949,7 +6949,7 @@ TEST_F(ExtensionServiceTest, ComponentExtensions) {
   ASSERT_TRUE(
       base::ReadFileToString(path.Append(kManifestFilename), &manifest));
 
-  service()->component_loader()->Add(manifest, path);
+  ComponentLoader::Get(profile())->Add(manifest, path);
   service()->Init();
 
   // Note that we do not pump messages -- the extension should be loaded

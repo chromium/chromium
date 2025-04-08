@@ -98,14 +98,12 @@ void ReadAnythingService::InstallGDocsHelperExtension() {
       extension_misc::kReadingModeGDocsHelperManifestFilename,
       /*should_localize=*/false);
 #else
-  extensions::ExtensionService* service =
-      extensions::ExtensionSystem::Get(profile_)->extension_service();
-  if (!service) {
-    // In tests, the service might not be created.
+  auto* component_loader = extensions::ComponentLoader::Get(profile_);
+  if (!component_loader) {
+    // In tests, the loader might not be created.
     CHECK_IS_TEST();
     return;
   }
-  extensions::ComponentLoader* component_loader = service->component_loader();
   if (!component_loader->Exists(
           extension_misc::kReadingModeGDocsHelperExtensionId)) {
     component_loader->Add(
@@ -120,15 +118,13 @@ void ReadAnythingService::RemoveGDocsHelperExtension() {
   EmbeddedA11yExtensionLoader::GetInstance()->RemoveExtensionWithId(
       extension_misc::kReadingModeGDocsHelperExtensionId);
 #else
-  extensions::ExtensionService* service =
-      extensions::ExtensionSystem::Get(profile_)->extension_service();
-  if (!service) {
-    // In tests, the service might not be created.
+  auto* component_loader = extensions::ComponentLoader::Get(profile_);
+  if (!component_loader) {
+    // In tests, the loader might not be created.
     CHECK_IS_TEST();
     return;
   }
-  service->component_loader()->Remove(
-      extension_misc::kReadingModeGDocsHelperExtensionId);
+  component_loader->Remove(extension_misc::kReadingModeGDocsHelperExtensionId);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
@@ -160,14 +156,12 @@ void ReadAnythingService::OnBrowserSetLastActive(Browser* browser) {
 
 void ReadAnythingService::InstallTtsDownloadExtension() {
 #if !BUILDFLAG(IS_CHROMEOS)
-  extensions::ExtensionService* service =
-      extensions::ExtensionSystem::Get(profile_)->extension_service();
-  if (!service) {
-    // In tests, the service might not be created.
+  auto* component_loader = extensions::ComponentLoader::Get(profile_);
+  if (!component_loader) {
+    // In tests, the loader might not be created.
     CHECK_IS_TEST();
     return;
   }
-  extensions::ComponentLoader* component_loader = service->component_loader();
   if (!component_loader->Exists(extension_misc::kTTSEngineExtensionId)) {
     component_loader->Add(IDR_TTS_ENGINE_MANIFEST,
                           base::FilePath(FILE_PATH_LITERAL("tts_engine")));
@@ -177,13 +171,12 @@ void ReadAnythingService::InstallTtsDownloadExtension() {
 
 void ReadAnythingService::RemoveTtsDownloadExtension() {
 #if !BUILDFLAG(IS_CHROMEOS)
-  extensions::ExtensionService* service =
-      extensions::ExtensionSystem::Get(profile_)->extension_service();
-  if (!service) {
+  auto* component_loader = extensions::ComponentLoader::Get(profile_);
+  if (!component_loader) {
     // In tests, the service might not be created.
     CHECK_IS_TEST();
     return;
   }
-  service->component_loader()->Remove(extension_misc::kTTSEngineExtensionId);
+  component_loader->Remove(extension_misc::kTTSEngineExtensionId);
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 }

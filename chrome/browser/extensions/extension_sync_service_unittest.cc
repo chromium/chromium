@@ -68,6 +68,7 @@
 
 using extensions::AccountExtensionTracker;
 using extensions::AppSorting;
+using extensions::ComponentLoader;
 using extensions::Extension;
 using extensions::ExtensionPrefs;
 using extensions::ExtensionRegistry;
@@ -262,7 +263,7 @@ TEST_F(ExtensionSyncServiceTest, DeferredSyncStartupPreInstalledComponent) {
   std::string manifest;
   ASSERT_TRUE(base::ReadFileToString(
       good0_path().Append(extensions::kManifestFilename), &manifest));
-  service()->component_loader()->Add(manifest, good0_path());
+  ComponentLoader::Get(profile())->Add(manifest, good0_path());
   ASSERT_FALSE(extension_system()->is_ready());
   service()->Init();
   ASSERT_TRUE(extension_system()->is_ready());

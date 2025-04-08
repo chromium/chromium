@@ -248,10 +248,9 @@ const Extension* ExtensionBrowserTest::LoadExtensionAsComponentWithManifest(
     return nullptr;
   }
 
-  extension_service()->component_loader()->set_ignore_allowlist_for_testing(
-      true);
-  extensions::ExtensionId extension_id =
-      extension_service()->component_loader()->Add(manifest, path);
+  auto* component_loader = ComponentLoader::Get(profile());
+  component_loader->set_ignore_allowlist_for_testing(true);
+  extensions::ExtensionId extension_id = component_loader->Add(manifest, path);
   const Extension* extension =
       extension_registry()->enabled_extensions().GetByID(extension_id);
   if (!extension) {

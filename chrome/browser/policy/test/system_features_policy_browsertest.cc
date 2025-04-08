@@ -14,7 +14,6 @@
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/extensions/component_loader.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
 #include "chrome/browser/profiles/profile.h"
@@ -31,7 +30,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
-#include "extensions/browser/extension_system.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -77,10 +76,8 @@ class SystemFeaturesPolicyTest : public PolicyTest {
   void EnableExtensions(bool skip_session_components) {
     auto* profile = browser()->profile();
     extensions::ComponentLoader::EnableBackgroundExtensionsForTesting();
-    extensions::ExtensionSystem::Get(profile)
-        ->extension_service()
-        ->component_loader()
-        ->AddDefaultComponentExtensions(skip_session_components);
+    extensions::ComponentLoader::Get(profile)->AddDefaultComponentExtensions(
+        skip_session_components);
     base::RunLoop().RunUntilIdle();
   }
 
