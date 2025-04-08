@@ -143,8 +143,6 @@ public class WebExposedTest extends AwParameterizedTest {
 
                     // Exposes window.openDatabase
                     settings.setDatabaseEnabled(true);
-                    // Exposes Payment APIs
-                    settings.setPaymentRequestEnabled(true);
 
                     class SynchronousConsole {
                         @JavascriptInterface

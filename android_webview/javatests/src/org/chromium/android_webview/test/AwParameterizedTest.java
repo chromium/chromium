@@ -52,7 +52,6 @@ public abstract class AwParameterizedTest {
                         settings.setDefaultFontSize(42);
                         settings.setTextZoom(200);
                         settings.setUserAgentString("foobar");
-                        settings.setPaymentRequestEnabled(true);
                     },
                     "allMutations..true")
         };
