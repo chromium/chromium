@@ -189,7 +189,7 @@
 <translation id="1122960773616686544">书签名称</translation>
 <translation id="1124772482545689468">用户</translation>
 <translation id="1125550662859510761">有效分辨率：<ph name="WIDTH" /> x <ph name="HEIGHT" />（原生）</translation>
-<translation id="1125921926864945797">壁纸和风格</translation>
+<translation id="1125921926864945797">壁纸与个性化</translation>
 <translation id="1128090040635299943">目前正在配置 Linux。整个配置流程将需要几分钟的时间。</translation>
 <translation id="1128591060186966949">修改搜索引擎</translation>
 <translation id="1129348283834595293">赛博朋克</translation>
@@ -5652,7 +5652,7 @@
 <translation id="4959262764292427323">系统会将密码保存在您的 Google 账号中，以便您在任何设备上使用密码</translation>
 <translation id="4960020053211143927">不适用于某些应用</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
-<translation id="4961318399572185831">投放屏幕</translation>
+<translation id="4961318399572185831">投屏</translation>
 <translation id="496185450405387901">您的管理员已安装此应用。</translation>
 <translation id="4963079328730030450">您的组织可控制由这些功能收集的数据的使用方式。</translation>
 <translation id="4963603093937263654">请确保在您的“<ph name="DEVICE_NAME" />”上开启通知功能</translation>
@@ -6758,7 +6758,7 @@
 <translation id="5781092003150880845">以<ph name="ACCOUNT_FULL_NAME" />的身份同步</translation>
 <translation id="5781120434102258025">将学校账号数据转移到个人账号</translation>
 <translation id="5782227691023083829">正在翻译...</translation>
-<translation id="5783346913439924978">头部跟踪</translation>
+<translation id="5783346913439924978">头部追踪</translation>
 <translation id="57838592816432529">静音</translation>
 <translation id="5784291589716625675">更改应用的语言</translation>
 <translation id="5785583009707899920">Chrome 文件实用程序</translation>
