@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.settings;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -12,6 +13,7 @@ import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
 
 import androidx.lifecycle.Lifecycle.State;
@@ -184,6 +186,23 @@ public class SettingsActivityUnitTest {
         Assert.assertFalse(
                 "TestStandaloneFragment will not handle back press",
                 mSettingsActivity.getOnBackPressedDispatcher().hasEnabledCallbacks());
+    }
+
+    @Test
+    public void testEscapeKey() throws TimeoutException {
+        startSettings(TestStandaloneFragment.class.getName());
+        assertTrue(
+                "SettingsActivity is using a wrong fragment.",
+                mSettingsActivity.getMainFragment() instanceof TestStandaloneFragment);
+        assertFalse(mSettingsActivity.isFinishing());
+
+        // Simulate escape key press.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    KeyEvent event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ESCAPE);
+                    assertTrue(mSettingsActivity.dispatchKeyEvent(event));
+                });
+        assertTrue(mSettingsActivity.isFinishing());
     }
 
     @Test

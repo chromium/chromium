@@ -13,6 +13,7 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Build.VERSION;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -436,6 +437,16 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         mIntentRequestTracker.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        // Finish the current settings when the ESC key is pressed.
+        if (keyCode == KeyEvent.KEYCODE_ESCAPE) {
+            finishCurrentSettings(getMainFragment());
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
     private void initBackPressHandler() {
