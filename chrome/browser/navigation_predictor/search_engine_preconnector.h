@@ -33,8 +33,9 @@ class WebContentVisibilityManager {
   // Might be called more than once with the same |is_in_foreground| and
   // |web_contents| in case user starts a new navigation with same
   // |web_contents|.
-  void OnWebContentsVisibilityChanged(content::WebContents* web_contents,
-                                      bool is_in_foreground);
+  virtual void OnWebContentsVisibilityChanged(
+      content::WebContents* web_contents,
+      bool is_in_foreground);
 
   // Notifies |this| that the web contents tracked by |client| has destroyed.
   void OnWebContentsDestroyed(content::WebContents* web_contents);
@@ -64,6 +65,7 @@ class SearchEnginePreconnector : public predictors::PreconnectManager::Delegate,
  public:
   static bool ShouldBeEnabledAsKeyedService();
   static bool ShouldBeEnabledForOffTheRecord();
+  static bool SearchEnginePreconnect2Enabled();
 
   explicit SearchEnginePreconnector(content::BrowserContext* browser_context);
   ~SearchEnginePreconnector() override;
@@ -88,19 +90,31 @@ class SearchEnginePreconnector : public predictors::PreconnectManager::Delegate,
   // Lazily creates the PreconnectManager instance.
   predictors::PreconnectManager& GetPreconnectManager();
 
+  // WebContentVisibilityManager methods
+  // TODO(crbug.com/406022435): Update to observe the
+  // `WebContentVisibilityManager` and not override them.
+  void OnWebContentsVisibilityChanged(content::WebContents* web_contents,
+                                      bool is_in_foreground) override;
+
  private:
   // Preconnects to the default search engine synchronously. Preconnects in
   // uncredentialed mode.
   void PreconnectDSE();
 
+  // Runs `PreconnectDSE` after the `delay`.
+  void StartPreconnectWithDelay(base::TimeDelta delay);
+
   // Queries template service for the current DSE URL.
   GURL GetDefaultSearchEngineOriginURL() const;
 
-  int GetPreconnectIntervalSec() const;
+  base::TimeDelta GetPreconnectInterval() const;
 
   base::WeakPtr<SearchEnginePreconnector> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
+
+  // Determines whether the preconnector is started or not.
+  bool preconnector_started_ = false;
 
   // Used to get keyed services.
   const raw_ptr<content::BrowserContext> browser_context_;

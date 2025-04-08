@@ -149,6 +149,15 @@ BASE_FEATURE(kSearchEnginePreconnectInterval,
              "SearchEnginePreconnectInterval",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSearchEnginePreconnect2,
+             "SearchEnginePreconnect2",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+extern const base::FeatureParam<int> kMaxPreconnectRetryInterval(
+    &kSearchEnginePreconnect2,
+    "MaxPreconnectRetryInterval",
+    30);
+
 BASE_FEATURE(kShortLaxAllowUnsafeThreshold,
              "ShortLaxAllowUnsafeThreshold",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -148,7 +148,7 @@ constexpr char SearchEnginePreconnectorBrowserTest::kGoogleSearch[];
 
 class SearchEnginePreconnectorNoDelaysBrowserTest
     : public SearchEnginePreconnectorBrowserTest,
-      public testing::WithParamInterface<std::tuple<bool>> {
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   SearchEnginePreconnectorNoDelaysBrowserTest() {
     std::vector<base::test::FeatureRefAndParams> enabled_features{
@@ -165,6 +165,12 @@ class SearchEnginePreconnectorNoDelaysBrowserTest
       disabled_features.emplace_back(features::kPreconnectFromKeyedService);
     }
 
+    if (SearchEnginePreconnect2Enabled()) {
+      enabled_features.push_back({net::features::kSearchEnginePreconnect2, {}});
+    } else {
+      disabled_features.emplace_back(net::features::kSearchEnginePreconnect2);
+    }
+
     feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                 disabled_features);
   }
@@ -172,13 +178,17 @@ class SearchEnginePreconnectorNoDelaysBrowserTest
   bool PreconnectFromKeyedServiceEnabled() const override {
     return std::get<0>(GetParam());
   }
+  bool SearchEnginePreconnect2Enabled() const {
+    return std::get<1>(GetParam());
+  }
 
   ~SearchEnginePreconnectorNoDelaysBrowserTest() override = default;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
                          SearchEnginePreconnectorNoDelaysBrowserTest,
-                         ::testing::Combine(::testing::Bool()));
+                         ::testing::Combine(::testing::Bool(),
+                                            ::testing::Bool()));
 
 // Test routinely flakes on the Mac10.11 Tests bot (https://crbug.com/1141028).
 IN_PROC_BROWSER_TEST_P(SearchEnginePreconnectorNoDelaysBrowserTest,
@@ -275,7 +285,7 @@ IN_PROC_BROWSER_TEST_P(SearchEnginePreconnectorNoDelaysBrowserTest,
 
 class SearchEnginePreconnectorForegroundBrowserTest
     : public SearchEnginePreconnectorBrowserTest,
-      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
+      public testing::WithParamInterface<std::tuple<bool, bool, bool, bool>> {
  public:
   SearchEnginePreconnectorForegroundBrowserTest() {
     {
@@ -297,6 +307,13 @@ class SearchEnginePreconnectorForegroundBrowserTest
       } else {
         disabled_features.emplace_back(features::kPreconnectFromKeyedService);
       }
+
+      if (SearchEnginePreconnect2Enabled()) {
+        enabled_features.push_back(
+            {net::features::kSearchEnginePreconnect2, {}});
+      } else {
+        disabled_features.emplace_back(net::features::kSearchEnginePreconnect2);
+      }
       feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                   disabled_features);
     }
@@ -310,6 +327,10 @@ class SearchEnginePreconnectorForegroundBrowserTest
     return std::get<2>(GetParam());
   }
 
+  bool SearchEnginePreconnect2Enabled() const {
+    return std::get<3>(GetParam());
+  }
+
   ~SearchEnginePreconnectorForegroundBrowserTest() override = default;
 
   base::SimpleTestTickClock tick_clock_;
@@ -318,6 +339,7 @@ class SearchEnginePreconnectorForegroundBrowserTest
 INSTANTIATE_TEST_SUITE_P(All,
                          SearchEnginePreconnectorForegroundBrowserTest,
                          ::testing::Combine(::testing::Bool(),
+                                            ::testing::Bool(),
                                             ::testing::Bool(),
                                             ::testing::Bool()));
 
@@ -373,9 +395,13 @@ IN_PROC_BROWSER_TEST_P(SearchEnginePreconnectorForegroundBrowserTest,
                                              GetTestURL(kSearchURLWithQuery)));
   }
 
-  // Put the fake search URL to be preconnected in foreground.
-  GetSearchEnginePreconnector()->StartPreconnecting(
-      /*with_startup_delay=*/false);
+  // Skip enabling the preconnect as it is already handled in the KeyedService
+  // for the `SearchEnginePreconnect2` feature.
+  if (!SearchEnginePreconnect2Enabled() || !load_page()) {
+    // Put the fake search URL to be preconnected in foreground.
+    GetSearchEnginePreconnector()->StartPreconnecting(
+        /*with_startup_delay=*/false);
+  }
 
   if (!skip_in_background() || load_page()) {
     WaitForPreresolveCountForURL(fake_search_url, 1);
@@ -481,7 +507,7 @@ IN_PROC_BROWSER_TEST_F(SearchEnginePreconnectorDesktopAutoStartBrowserTest,
 
 class SearchEnginePreconnectorEnabledOnlyBrowserTest
     : public SearchEnginePreconnectorBrowserTest,
-      public testing::WithParamInterface<std::tuple<bool>> {
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   SearchEnginePreconnectorEnabledOnlyBrowserTest() {
     {
@@ -498,6 +524,13 @@ class SearchEnginePreconnectorEnabledOnlyBrowserTest
         disabled_features.emplace_back(features::kPreconnectFromKeyedService);
       }
 
+      if (SearchEnginePreconnect2Enabled()) {
+        enabled_features.push_back(
+            {net::features::kSearchEnginePreconnect2, {}});
+      } else {
+        disabled_features.emplace_back(net::features::kSearchEnginePreconnect2);
+      }
+
       feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                   disabled_features);
     }
@@ -506,13 +539,17 @@ class SearchEnginePreconnectorEnabledOnlyBrowserTest
   bool PreconnectFromKeyedServiceEnabled() const override {
     return std::get<0>(GetParam());
   }
+  bool SearchEnginePreconnect2Enabled() const {
+    return std::get<1>(GetParam());
+  }
 
   ~SearchEnginePreconnectorEnabledOnlyBrowserTest() override = default;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
                          SearchEnginePreconnectorEnabledOnlyBrowserTest,
-                         ::testing::Combine(::testing::Bool()));
+                         ::testing::Combine(::testing::Bool(),
+                                            ::testing::Bool()));
 
 IN_PROC_BROWSER_TEST_P(SearchEnginePreconnectorEnabledOnlyBrowserTest,
                        AllowedSearch) {

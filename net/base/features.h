@@ -190,6 +190,13 @@ NET_EXPORT BASE_DECLARE_FEATURE(kUseMLKEM);
 // Changes the interval between two search engine preconnect attempts.
 NET_EXPORT BASE_DECLARE_FEATURE(kSearchEnginePreconnectInterval);
 
+// Enables a more efficient SearchEnginePreconnector
+NET_EXPORT BASE_DECLARE_FEATURE(kSearchEnginePreconnect2);
+
+// The maximum time to backoff when attempting preconnect retry for
+// SearchEnginePreconnector2.
+NET_EXPORT extern const base::FeatureParam<int> kMaxPreconnectRetryInterval;
+
 // When enabled, the time threshold for Lax-allow-unsafe cookies will be lowered
 // from 2 minutes to 10 seconds. This time threshold refers to the age cutoff
 // for which cookies that default into SameSite=Lax, which are newer than the
