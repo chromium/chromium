@@ -2745,12 +2745,23 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextTypeMV3,
   }
 }
 
+// TODO(crbug.com/409180663): test is failing on MSan, UBSan and ASan
+#if defined(MEMORY_SANITIZER) || defined(UNDEFINED_SANITIZER) || \
+    defined(ADDRESS_SANITIZER)
+#define MAYBE_WebRequestApiDoesNotCrashOnErrorAfterProfileDestroyed \
+  DISABLED_WebRequestApiDoesNotCrashOnErrorAfterProfileDestroyed
+#else
+#define MAYBE_WebRequestApiDoesNotCrashOnErrorAfterProfileDestroyed \
+  WebRequestApiDoesNotCrashOnErrorAfterProfileDestroyed
+#endif  // defined(MEMORY_SANITIZER) || defined(UNDEFINED_SANITIZER) ||
+        // defined(ADDRESS_SANITIZER)
 #if !BUILDFLAG(IS_ANDROID)
 // Regression test for http://crbug.com/878366.
 // TODO(crbug.com/371324825): Port to desktop Android. The test crashes during
 // Profile creation because Android requires a "startup data profile key".
-IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
-                       WebRequestApiDoesNotCrashOnErrorAfterProfileDestroyed) {
+IN_PROC_BROWSER_TEST_F(
+    ExtensionWebRequestApiTest,
+    MAYBE_WebRequestApiDoesNotCrashOnErrorAfterProfileDestroyed) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   // Create a profile that will be destroyed later.
