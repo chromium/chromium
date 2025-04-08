@@ -24,6 +24,7 @@
 @protocol CarouselItemConsumer;
 @class OmniboxAutocompleteController;
 @class OmniboxImageFetcher;
+@protocol OmniboxPopupConsumer;
 @class OmniboxPopupMediator;
 @class OmniboxPopupPresenter;
 @class SceneState;
@@ -68,7 +69,7 @@ class Tracker;
 @property(nonatomic, weak)
     OmniboxAutocompleteController* omniboxAutocompleteController;
 
-@property(nonatomic, weak) id<AutocompleteResultConsumer> consumer;
+@property(nonatomic, weak) id<OmniboxPopupConsumer> consumer;
 
 @property(nonatomic, weak) id<ApplicationCommands> applicationCommandsHandler;
 /// Browser scene state to notify about events happening in this popup.

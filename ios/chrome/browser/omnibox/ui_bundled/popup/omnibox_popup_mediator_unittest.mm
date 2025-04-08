@@ -36,6 +36,7 @@
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_result_consumer.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/favicon_retriever.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/image_retriever.h"
+#import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_popup_consumer.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_popup_mediator+Testing.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/popup_swift.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -105,8 +106,7 @@ class OmniboxPopupMediatorTest : public PlatformTest {
 
     feature_engagement::test::MockTracker tracker;
 
-    mockResultConsumer_ =
-        OCMProtocolMock(@protocol(AutocompleteResultConsumer));
+    mockResultConsumer_ = OCMProtocolMock(@protocol(OmniboxPopupConsumer));
 
     omnibox_image_fetcher_ = [[OmniboxImageFetcher alloc]
         initWithFaviconLoader:nil
@@ -148,9 +148,9 @@ TEST_F(OmniboxPopupMediatorTest, SelectManagePasswordSuggestionMetricLogged) {
       "PasswordManager.ManagePasswordsReferrer",
       password_manager::ManagePasswordsReferrer::kOmniboxPedalSuggestion, 0);
 
-  [mediator_ autocompleteResultConsumer:mockResultConsumer_
-                    didSelectSuggestion:mockSuggestionWithPedal
-                                  inRow:0];
+  [mediator_ omniboxPopupConsumer:mockResultConsumer_
+              didSelectSuggestion:mockSuggestionWithPedal
+                            inRow:0];
 
   // Bucket count should now be one.
   histogram_tester.ExpectBucketCount(
@@ -196,18 +196,18 @@ TEST_F(OmniboxPopupMediatorTest, ActionInSuggestMetricLogged) {
                                      kActionTypeReview, 0);
 
   // Select an action suggestion.
-  [mediator_ autocompleteResultConsumer:nil
-                    didSelectSuggestion:actionSuggestion
-                                  inRow:0];
+  [mediator_ omniboxPopupConsumer:nil
+              didSelectSuggestion:actionSuggestion
+                            inRow:0];
 
   // Expect Shown not logged when selecting an action.
   histogram_tester.ExpectBucketCount("Omnibox.ActionInSuggest.Shown",
                                      kActionTypeReview, 0);
 
   // Select another suggestion.
-  [mediator_ autocompleteResultConsumer:nil
-                    didSelectSuggestion:nonActionSuggestion
-                                  inRow:1];
+  [mediator_ omniboxPopupConsumer:nil
+              didSelectSuggestion:nonActionSuggestion
+                            inRow:1];
 
   // Expect Shown logged.
   histogram_tester.ExpectBucketCount("Omnibox.ActionInSuggest.Shown",
@@ -244,7 +244,7 @@ TEST_F(OmniboxPopupMediatorTest, PedalMetricLogged) {
   base::HistogramTester histogram_tester;
 
   // Select a suggestion.
-  [mediator_ autocompleteResultConsumer:nil didSelectSuggestion:match2 inRow:1];
+  [mediator_ omniboxPopupConsumer:nil didSelectSuggestion:match2 inRow:1];
 
   histogram_tester.ExpectUniqueSample("Omnibox.PedalShown", 1, 1);
 }

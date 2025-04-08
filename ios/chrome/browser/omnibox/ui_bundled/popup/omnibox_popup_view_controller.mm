@@ -345,7 +345,7 @@ const CGFloat kHeaderTopPadding = 16.0f;
   }
 }
 
-#pragma mark - AutocompleteResultConsumer
+#pragma mark - OmniboxPopupConsumer
 
 - (void)updateMatches:(NSArray<id<AutocompleteSuggestionGroup>>*)result
     preselectedMatchGroupIndex:(NSInteger)groupIndex {
@@ -624,9 +624,9 @@ const CGFloat kHeaderTopPadding = 16.0f;
       [self suggestionAtIndexPath:self.highlightedIndexPath];
   NSInteger absoluteRow =
       [self absoluteRowIndexForIndexPath:self.highlightedIndexPath];
-  [self.delegate autocompleteResultConsumer:self
-                        didSelectSuggestion:suggestion
-                                      inRow:absoluteRow];
+  [self.delegate omniboxPopupConsumer:self
+                  didSelectSuggestion:suggestion
+                                inRow:absoluteRow];
 }
 
 #pragma mark - OmniboxPopupRowDelegate
@@ -639,9 +639,9 @@ const CGFloat kHeaderTopPadding = 16.0f;
   if (suggestion != configuration.suggestion) {
     return;
   }
-  [self.delegate autocompleteResultConsumer:self
-           didTapTrailingButtonOnSuggestion:suggestion
-                                      inRow:indexPath.row];
+  [self.delegate omniboxPopupConsumer:self
+      didTapTrailingButtonOnSuggestion:suggestion
+                                 inRow:indexPath.row];
 }
 
 - (void)omniboxPopupRowWithConfiguration:
@@ -669,10 +669,10 @@ const CGFloat kHeaderTopPadding = 16.0f;
 
   CHECK(suggestion == configuration.suggestion);
 
-  [self.delegate autocompleteResultConsumer:self
-                  didSelectSuggestionAction:action
-                                 suggestion:suggestion
-                                      inRow:configuration.indexPath.row];
+  [self.delegate omniboxPopupConsumer:self
+            didSelectSuggestionAction:action
+                           suggestion:suggestion
+                                inRow:configuration.indexPath.row];
 }
 
 - (void)tableView:(UITableView*)tableView
@@ -705,10 +705,9 @@ const CGFloat kHeaderTopPadding = 16.0f;
     return;
   }
   NSInteger absoluteRow = [self absoluteRowIndexForIndexPath:indexPath];
-  [self.delegate
-      autocompleteResultConsumer:self
-             didSelectSuggestion:[self suggestionAtIndexPath:indexPath]
-                           inRow:absoluteRow];
+  [self.delegate omniboxPopupConsumer:self
+                  didSelectSuggestion:[self suggestionAtIndexPath:indexPath]
+                                inRow:absoluteRow];
 }
 
 - (CGFloat)tableView:(UITableView*)tableView
@@ -810,9 +809,9 @@ const CGFloat kHeaderTopPadding = 16.0f;
       [self suggestionAtIndexPath:indexPath];
   DCHECK(suggestion);
   if (editingStyle == UITableViewCellEditingStyleDelete) {
-    [self.delegate autocompleteResultConsumer:self
-               didSelectSuggestionForDeletion:suggestion
-                                        inRow:indexPath.row];
+    [self.delegate omniboxPopupConsumer:self
+         didSelectSuggestionForDeletion:suggestion
+                                  inRow:indexPath.row];
   }
 }
 
@@ -990,9 +989,9 @@ const CGFloat kHeaderTopPadding = 16.0f;
 
   NSInteger absoluteRow =
       [self absoluteRowIndexForIndexPath:carouselItem.indexPath];
-  [self.delegate autocompleteResultConsumer:self
-                        didSelectSuggestion:suggestion
-                                      inRow:absoluteRow];
+  [self.delegate omniboxPopupConsumer:self
+                  didSelectSuggestion:suggestion
+                                inRow:absoluteRow];
 }
 
 #pragma mark - Internal API methods

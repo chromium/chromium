@@ -39,6 +39,7 @@
 #import "ios/chrome/browser/omnibox/model/suggest_action.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/carousel/carousel_item.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/carousel/carousel_item_menu_provider.h"
+#import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_popup_consumer.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_popup_mediator+Testing.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_popup_presenter.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/popup_swift.h"
@@ -167,13 +168,13 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
 #pragma mark - AutocompleteResultConsumerDelegate
 
 - (void)autocompleteResultConsumerDidChangeTraitCollection:
-    (id<AutocompleteResultConsumer>)sender {
+    (id<OmniboxPopupConsumer>)sender {
   [self.presenter updatePopupAfterTraitCollectionChange];
 }
 
-- (void)autocompleteResultConsumer:(id<AutocompleteResultConsumer>)sender
-               didSelectSuggestion:(id<AutocompleteSuggestion>)suggestion
-                             inRow:(NSUInteger)row {
+- (void)omniboxPopupConsumer:(id<OmniboxPopupConsumer>)sender
+         didSelectSuggestion:(id<AutocompleteSuggestion>)suggestion
+                       inRow:(NSUInteger)row {
   [self logPedalShownForCurrentResult];
 
   // Log the suggest actions that were shown and not used.
@@ -225,10 +226,10 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
   }
 }
 
-- (void)autocompleteResultConsumer:(id<AutocompleteResultConsumer>)sender
-         didSelectSuggestionAction:(SuggestAction*)action
-                        suggestion:(id<AutocompleteSuggestion>)suggestion
-                             inRow:(NSUInteger)row {
+- (void)omniboxPopupConsumer:(id<OmniboxPopupConsumer>)sender
+    didSelectSuggestionAction:(SuggestAction*)action
+                   suggestion:(id<AutocompleteSuggestion>)suggestion
+                        inRow:(NSUInteger)row {
   OmniboxActionInSuggest::RecordShownAndUsedMetrics(action.type,
                                                     true /* used */);
 
@@ -266,7 +267,7 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
   }
 }
 
-- (void)autocompleteResultConsumer:(id<AutocompleteResultConsumer>)sender
+- (void)omniboxPopupConsumer:(id<OmniboxPopupConsumer>)sender
     didTapTrailingButtonOnSuggestion:(id<AutocompleteSuggestion>)suggestion
                                inRow:(NSUInteger)row {
   if ([suggestion isKindOfClass:[AutocompleteMatchFormatter class]]) {
@@ -295,7 +296,7 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
   }
 }
 
-- (void)autocompleteResultConsumer:(id<AutocompleteResultConsumer>)sender
+- (void)omniboxPopupConsumer:(id<OmniboxPopupConsumer>)sender
     didSelectSuggestionForDeletion:(id<AutocompleteSuggestion>)suggestion
                              inRow:(NSUInteger)row {
   if ([suggestion isKindOfClass:[AutocompleteMatchFormatter class]]) {
@@ -311,8 +312,7 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
   }
 }
 
-- (void)autocompleteResultConsumerDidScroll:
-    (id<AutocompleteResultConsumer>)sender {
+- (void)autocompleteResultConsumerDidScroll:(id<OmniboxPopupConsumer>)sender {
   [self.omniboxAutocompleteController onScroll];
 }
 

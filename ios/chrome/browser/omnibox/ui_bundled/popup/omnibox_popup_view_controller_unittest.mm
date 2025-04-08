@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_popup_view_controller.h"
 
 #import "ios/chrome/browser/omnibox/model/autocomplete_suggestion_group_impl.h"
+#import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_popup_consumer.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/popup_match_preview_delegate.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -227,9 +228,9 @@ TEST_F(OmniboxPopupViewControllerTest, ReturnHighlightedSuggestion) {
   // Pressing return key when a suggestion is highlighted call the
   // AutocompleteResultConsumerDelegate.
   [[delegate_ expect]
-      autocompleteResultConsumer:popup_view_controller_
-             didSelectSuggestion:first_suggestion_group_.suggestions[0]
-                           inRow:0];
+      omniboxPopupConsumer:popup_view_controller_
+       didSelectSuggestion:first_suggestion_group_.suggestions[0]
+                     inRow:0];
   EXPECT_TRUE([popup_view_controller_
       canPerformKeyboardAction:OmniboxKeyboardAction::kReturnKey]);
   [popup_view_controller_

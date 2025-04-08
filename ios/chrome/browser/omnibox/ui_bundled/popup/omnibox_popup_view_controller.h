@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_result_consumer.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/carousel/carousel_item.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/content_providing.h"
+#import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_popup_consumer.h"
 
 @protocol CarouselItemMenuProvider;
 @protocol FaviconRetriever;
@@ -29,7 +30,7 @@ class LargeIconService;
 /// arrows, so when the omnibox is the first responder, this view controller
 /// cannot receive these events. Hence the delegation.
 @interface OmniboxPopupViewController
-    : UIViewController <AutocompleteResultConsumer,
+    : UIViewController <OmniboxPopupConsumer,
                         CarouselItemConsumer,
                         ContentProviding,
                         OmniboxKeyboardDelegate,

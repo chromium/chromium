@@ -9,7 +9,7 @@
 
 @protocol AutocompleteSuggestion;
 @protocol AutocompleteSuggestionGroup;
-@protocol AutocompleteResultConsumer;
+@protocol OmniboxPopupConsumer;
 
 @class SuggestAction;
 
@@ -18,55 +18,33 @@
 
 /// Notify about a size change.
 - (void)autocompleteResultConsumerDidChangeTraitCollection:
-    (id<AutocompleteResultConsumer>)sender;
+    (id<OmniboxPopupConsumer>)sender;
 
 /// Tells the delegate on scroll.
-- (void)autocompleteResultConsumerDidScroll:
-    (id<AutocompleteResultConsumer>)sender;
+- (void)autocompleteResultConsumerDidScroll:(id<OmniboxPopupConsumer>)sender;
 
 /// Tells the delegate when `suggestion` in `row` was selected.
-- (void)autocompleteResultConsumer:(id<AutocompleteResultConsumer>)sender
-               didSelectSuggestion:(id<AutocompleteSuggestion>)suggestion
-                             inRow:(NSUInteger)row;
+- (void)omniboxPopupConsumer:(id<OmniboxPopupConsumer>)sender
+         didSelectSuggestion:(id<AutocompleteSuggestion>)suggestion
+                       inRow:(NSUInteger)row;
 
 /// Tells the delegate when a `suggestion`'s `action` was selected in a given
 /// row index, for example "Directions" button for a local entity suggestion.
-- (void)autocompleteResultConsumer:(id<AutocompleteResultConsumer>)sender
-         didSelectSuggestionAction:(SuggestAction*)action
-                        suggestion:(id<AutocompleteSuggestion>)suggestion
-                             inRow:(NSUInteger)row;
+- (void)omniboxPopupConsumer:(id<OmniboxPopupConsumer>)sender
+    didSelectSuggestionAction:(SuggestAction*)action
+                   suggestion:(id<AutocompleteSuggestion>)suggestion
+                        inRow:(NSUInteger)row;
 
 /// Tells the delegate when `suggestion` in `row` was chosen for appending to
 /// omnibox.
-- (void)autocompleteResultConsumer:(id<AutocompleteResultConsumer>)sender
+- (void)omniboxPopupConsumer:(id<OmniboxPopupConsumer>)sender
     didTapTrailingButtonOnSuggestion:(id<AutocompleteSuggestion>)suggestion
                                inRow:(NSUInteger)row;
 
 /// Tells the delegate when `suggestion` in `row` was removed.
-- (void)autocompleteResultConsumer:(id<AutocompleteResultConsumer>)sender
+- (void)omniboxPopupConsumer:(id<OmniboxPopupConsumer>)sender
     didSelectSuggestionForDeletion:(id<AutocompleteSuggestion>)suggestion
                              inRow:(NSUInteger)row;
-
-@end
-
-/// An abstract consumer of autocomplete results.
-@protocol AutocompleteResultConsumer <NSObject>
-/// Updates the current data and forces a redraw. If animation is YES, adds
-/// CALayer animations to fade the OmniboxPopupRows in.
-/// `preselectedMatchGroupIndex` is the section selected by default when no row
-/// is highlighted.
-- (void)updateMatches:(NSArray<id<AutocompleteSuggestionGroup>>*)result
-    preselectedMatchGroupIndex:(NSInteger)groupIndex;
-
-/// Sets the text alignment of the popup content.
-- (void)setTextAlignment:(NSTextAlignment)alignment;
-/// Sets the semantic content attribute of the popup content.
-- (void)setSemanticContentAttribute:
-    (UISemanticContentAttribute)semanticContentAttribute;
-
-/// Informs consumer that new result are available. Consumer can request new
-/// results from its data source `AutocompleteResultDataSource`.
-- (void)newResultsAvailable;
 
 @end
 
