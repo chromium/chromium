@@ -201,16 +201,6 @@ DeskMiniView::DeskMiniView(
       },
       base::Unretained(this)));
 
-  // Only show profile avatar button when there is more than one profile logged
-  // in.
-  auto* desk_profile_delegate = Shell::Get()->GetDeskProfilesDelegate();
-  if (chromeos::features::IsDeskProfilesEnabled() &&
-      ((desk_profile_delegate &&
-        desk_profile_delegate->GetProfilesSnapshot().size() > 1))) {
-    desk_profile_button_ =
-        AddChildView(std::make_unique<DeskProfilesButton>(desk, this));
-  }
-
   desk_action_view_ = AddChildView(std::make_unique<DeskActionView>(
       /*combine_desks_target_name=*/
       DesksController::Get()->GetCombineDesksTargetName(desk_),

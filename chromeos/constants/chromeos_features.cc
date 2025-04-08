@@ -80,9 +80,6 @@ BASE_FEATURE(kDisableSystemBlur,
              "DisableSystemBlur",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the desk profiles feature.
-BASE_FEATURE(kDeskProfiles, "DeskProfiles", base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Disable idle sockets closing on memory pressure for NetworkContexts that
 // belong to Profiles. It only applies to Profiles because the goal is to
 // improve perceived performance of web browsing within the ChromeOS user
@@ -396,10 +393,6 @@ bool IsDataControlsFileAccessDefaultDenyEnabled() {
 
 bool IsDataMigrationEnabled() {
   return base::FeatureList::IsEnabled(kDataMigration);
-}
-
-bool IsDeskProfilesEnabled() {
-  return base::FeatureList::IsEnabled(kDeskProfiles);
 }
 
 bool IsEssentialSearchEnabled() {

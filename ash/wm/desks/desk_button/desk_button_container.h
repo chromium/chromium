@@ -39,8 +39,6 @@ class ASH_EXPORT DeskButtonContainer : public DeskProfilesDelegate::Observer,
   DeskButtonContainer& operator=(const DeskButtonContainer&) = delete;
   ~DeskButtonContainer() override;
 
-  static bool ShouldShowDeskProfilesUi();
-
   static int GetMaxLength(bool zero_state);
 
   bool zero_state() const { return zero_state_; }

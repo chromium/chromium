@@ -304,32 +304,6 @@ void StartDragDeskPreview(const DeskMiniView* desk_mini_view,
   event_generator->MoveMouseBy(0, 50);
 }
 
-TestDeskProfilesDelegate& GetDeskProfilesTestDelegate() {
-  CHECK(chromeos::features::IsDeskProfilesEnabled());
-  return *static_cast<TestDeskProfilesDelegate*>(
-      Shell::Get()->GetDeskProfilesDelegate());
-}
-
-uint64_t GetDummyLacrosDeskProfileId(size_t index) {
-  static constexpr uint64_t kLacrosProfileIdBase = 1001;
-  return kLacrosProfileIdBase + index * 2;
-}
-
-// Adds `count` dummy lacros profiles to the test delegate.
-void AddDummyLacrosDeskProfiles(size_t count) {
-  for (size_t i = 0; i != count; ++i) {
-    LacrosProfileSummary summary;
-    summary.profile_id = GetDummyLacrosDeskProfileId(i);
-    summary.name =
-        base::UTF8ToUTF16(base::StringPrintf("Lacros user %lu", i + 1));
-    summary.email =
-        base::UTF8ToUTF16(base::StringPrintf("email%lu@gmail.com", i + 1));
-    summary.icon = gfx::test::CreateImageSkia(32, 32);
-
-    GetDeskProfilesTestDelegate().UpdateTestProfile(std::move(summary));
-  }
-}
-
 // Sends tab keys (or shift+tab) until the passed predicate becomes true, or a
 // fixed max is hit.
 template <class Predicate>
@@ -9164,10 +9138,9 @@ TEST_P(DesksCloseAllTest, UndoToastWorksWithChromevox) {
   EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
 }
 
-class DeskBarTest
-    : public AshTestBase,
-      public ::testing::WithParamInterface<
-          testing::tuple<bool, bool, bool, DeskBarViewBase::Type>> {
+class DeskBarTest : public AshTestBase,
+                    public ::testing::WithParamInterface<
+                        testing::tuple<bool, bool, DeskBarViewBase::Type>> {
  public:
   DeskBarTest()
       : test_close_all_window_close_timeout_(
@@ -9178,12 +9151,10 @@ class DeskBarTest
   ~DeskBarTest() override = default;
 
   void SetUp() override {
-    std::tie(use_touch_gestures_, use_16_desks_, use_desk_profiles_,
-             bar_type_) = GetParam();
+    std::tie(use_touch_gestures_, use_16_desks_, bar_type_) = GetParam();
 
     scoped_feature_list_.InitWithFeatureStates(
-        {{features::kFeatureManagement16Desks, use_16_desks_},
-         {chromeos::features::kDeskProfiles, use_desk_profiles_}});
+        {{features::kFeatureManagement16Desks, use_16_desks_}});
 
     AshTestBase::SetUp();
 
@@ -9192,12 +9163,6 @@ class DeskBarTest
     ash_test_helper()->saved_desk_test_helper()->WaitForDeskModels();
 
     SetShowDeskButtonInShelfPref(GetPrimaryUserPrefService(), true);
-
-    if (use_desk_profiles_) {
-      // Add two lacros profiles so that the desk profile avatar shows up in
-      // desk mini views.
-      AddDummyLacrosDeskProfiles(2);
-    }
   }
 
   void TearDown() override {
@@ -9405,7 +9370,6 @@ class DeskBarTest
 
   bool use_touch_gestures_;
   bool use_16_desks_;
-  bool use_desk_profiles_;
   DeskBarViewBase::Type bar_type_;
 
  private:
@@ -10211,11 +10175,6 @@ TEST_P(DeskBarTest, ForwardTabbing) {
     EXPECT_EQ(DesksTestApi::IsDeskShortcutViewVisible(mini_view),
               expected_visibility);
 
-    if (use_desk_profiles_) {
-      PressAndReleaseKey(ui::VKEY_TAB);
-      ASSERT_TRUE(mini_view->desk_profiles_button()->HasFocus());
-    }
-
     if (i == 0) {
       PressAndReleaseKey(ui::VKEY_TAB);
 
@@ -10314,11 +10273,6 @@ TEST_P(DeskBarTest, ReverseTabbing) {
         ASSERT_TRUE(
             mini_view->desk_action_view()->combine_desks_button()->HasFocus());
       }
-    }
-
-    if (use_desk_profiles_) {
-      PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
-      ASSERT_TRUE(mini_view->desk_profiles_button()->HasFocus());
     }
 
     // The shortcut view only appears on the first 8 desks in the desk button
@@ -10784,12 +10738,6 @@ TEST_P(DeskBarTest, CanUndoDeskClosureThroughKeyboardNavigation) {
         DeskRemovalMethod::kActiveDeskRemoved) {
       PressAndReleaseKey(ui::VKEY_TAB);
       PressAndReleaseKey(ui::VKEY_TAB);
-
-      // If desk profiles are enabled then we need to tab past the profile
-      // avatar button.
-      if (use_desk_profiles_) {
-        PressAndReleaseKey(ui::VKEY_TAB);
-      }
 
       PressAndReleaseKey(ui::VKEY_TAB);
       ASSERT_TRUE(mini_views[1]->desk_preview()->HasFocus());
@@ -11714,111 +11662,6 @@ TEST_P(DesksAcceleratorsTest, DeskSwitchScreenshotMetricsRecording) {
                                      true, 2);
 }
 
-class DeskProfilesTest : public AshTestBase {
- public:
-  DeskProfilesTest() = default;
-  ~DeskProfilesTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      chromeos::features::kDeskProfiles};
-};
-
-TEST_F(DeskProfilesTest, RemoveProfile) {
-  // This test creates three dummy lacros profiles and sets up three desks with
-  // each associated with a different user. The last user is then removed and we
-  // verify that the desk has reverted to the default lacros profile.
-  AddDummyLacrosDeskProfiles(3);
-
-  const uint64_t lacros_profile_id1 = GetDummyLacrosDeskProfileId(0);
-  const uint64_t lacros_profile_id2 = GetDummyLacrosDeskProfileId(1);
-  const uint64_t lacros_profile_id3 = GetDummyLacrosDeskProfileId(2);
-
-  GetDeskProfilesTestDelegate().SetPrimaryProfileByProfileId(
-      lacros_profile_id1);
-
-  NewDesk();
-  NewDesk();
-
-  // Assign different lacros profiles to all three desks.
-  auto* controller = DesksController::Get();
-  auto* desk1 = controller->GetDeskAtIndex(0);
-  auto* desk2 = controller->GetDeskAtIndex(1);
-  auto* desk3 = controller->GetDeskAtIndex(2);
-  desk1->SetLacrosProfileId(lacros_profile_id1);
-  desk2->SetLacrosProfileId(lacros_profile_id2);
-  desk3->SetLacrosProfileId(lacros_profile_id3);
-
-  EXPECT_EQ(desk1->lacros_profile_id(), lacros_profile_id1);
-  EXPECT_EQ(desk2->lacros_profile_id(), lacros_profile_id2);
-  EXPECT_EQ(desk3->lacros_profile_id(), lacros_profile_id3);
-
-  // Remove the last profile. We now expect the desk to be updated to the
-  // default profile (lacros_profile_id1).
-  GetDeskProfilesTestDelegate().RemoveTestProfile(lacros_profile_id3);
-
-  EXPECT_EQ(desk1->lacros_profile_id(), lacros_profile_id1);
-  EXPECT_EQ(desk2->lacros_profile_id(), lacros_profile_id2);
-  EXPECT_EQ(desk3->lacros_profile_id(), lacros_profile_id1);
-}
-
-TEST_F(DeskProfilesTest, SelectProfile) {
-  AddDummyLacrosDeskProfiles(2);
-
-  base::HistogramTester histogram_tester;
-  auto* desk_bar_controller = DesksController::Get()->desk_bar_controller();
-
-  NewDesk();
-  auto* desk1 = DesksController::Get()->GetDeskAtIndex(0);
-  auto* desk2 = DesksController::Get()->GetDeskAtIndex(1);
-
-  // By default, neither desk has a lacros profile ID assigned.
-  EXPECT_EQ(0u, desk1->lacros_profile_id());
-  EXPECT_EQ(0u, desk2->lacros_profile_id());
-
-  desk_bar_controller->OpenDeskBar(Shell::Get()->GetPrimaryRootWindow());
-  auto* desk_bar_view =
-      desk_bar_controller->GetDeskBarView(Shell::Get()->GetPrimaryRootWindow());
-  views::test::RunScheduledLayout(desk_bar_view);
-  ASSERT_EQ(2u, desk_bar_view->mini_views().size());
-
-  // Assign a profile to the second desk using the desk profile button.
-  {
-    DeskProfilesButton* desk_profile_button =
-        DesksTestApi::GetDeskProfileButton(desk_bar_view->mini_views()[1]);
-    ASSERT_TRUE(desk_profile_button);
-
-    LeftClickOn(desk_profile_button);
-    DeskActionContextMenu* menu = desk_profile_button->menu();
-    ASSERT_TRUE(menu);
-
-    // Get the menu item for the seecond profile and click it.
-    views::MenuItemView* menu_item = DesksTestApi::GetDeskActionContextMenuItem(
-        menu, DeskActionContextMenu::kDynamicProfileStart + 1);
-    ASSERT_TRUE(menu_item);
-    LeftClickOn(menu_item);
-
-    // Verify that the profile has indeed been set on desk 2.
-    EXPECT_EQ(desk2->lacros_profile_id(), GetDummyLacrosDeskProfileId(1));
-  }
-
-  // Assign a profile to the second desk using the desk action context menu.
-  {
-    DeskActionContextMenu* menu = DesksTestApi::GetContextMenuForDesk(
-        DeskBarViewBase::Type::kDeskButton, 1);
-    ASSERT_TRUE(menu);
-
-    // Get the menu item for the first profile and click it.
-    views::MenuItemView* menu_item = DesksTestApi::GetDeskActionContextMenuItem(
-        menu, DeskActionContextMenu::kDynamicProfileStart);
-    ASSERT_TRUE(menu_item);
-    LeftClickOn(menu_item);
-
-    // Verify that the profile has been updated on desk 2.
-    EXPECT_EQ(desk2->lacros_profile_id(), GetDummyLacrosDeskProfileId(0));
-  }
-}
-
 // TODO(afakhry): Add more tests:
 // - Always on top windows are not tracked by any desk.
 // - Reusing containers when desks are removed and created.
@@ -11906,15 +11749,13 @@ INSTANTIATE_TEST_SUITE_P(
     DeskBarTest,
     testing::Combine(testing::Bool(),  // use touch gestures
                      testing::Bool(),  // use 16 desks
-                     testing::Bool(),  // use desk profiles
                      testing::Values(DeskBarViewBase::Type::kDeskButton,
                                      DeskBarViewBase::Type::kOverview)),
     [](const testing::TestParamInfo<DeskBarTest::ParamType>& info) {
       DesksTestParams params;
-      bool use_desk_profiles;
       DeskBarViewBase::Type bar_type;
-      std::tie(params.use_touch_gestures, params.use_16_desks,
-               use_desk_profiles, bar_type) = info.param;
+      std::tie(params.use_touch_gestures, params.use_16_desks, bar_type) =
+          info.param;
       std::string result = GetTestSuffix(params);
       std::string bar_type_str;
       switch (bar_type) {
@@ -11926,11 +11767,7 @@ INSTANTIATE_TEST_SUITE_P(
           break;
       }
 
-      std::string desk_profiles_str =
-          use_desk_profiles ? "DeskProfiles" : "NoDeskProfiles";
-      return base::StringPrintf("%s_%s_%s", result.c_str(),
-                                bar_type_str.c_str(),
-                                desk_profiles_str.c_str());
+      return base::StringPrintf("%s_%s", result.c_str(), bar_type_str.c_str());
     });
 
 INSTANTIATE_TEST_SUITE_P(

@@ -10419,9 +10419,6 @@ const FeatureEntry kFeatureEntries[] = {
          "SendTabToSelfIOSPushNotifications")},
 
 #if BUILDFLAG(IS_CHROMEOS)
-    {"desk-profiles", flag_descriptions::kDeskProfilesName,
-     flag_descriptions::kDeskProfilesDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(chromeos::features::kDeskProfiles)},
     {"enable-display-performance-mode",
      flag_descriptions::kEnableDisplayPerformanceModeName,
      flag_descriptions::kEnableDisplayPerformanceModeDescription, kOsCrOS,

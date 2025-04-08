@@ -1917,17 +1917,6 @@ bool OverviewGrid::MaybeDropItemOnDeskMiniViewOrNewDeskButton(
 
   auto* target_desk = desks_controller->desks().back().get();
 
-  // When creating a new desk by by dragging and dropping a lacros browser
-  // window to new desk button, set the desk's default profile based on the
-  // profile lacros window is logged into.
-  const auto windows = dragged_item->GetWindows();
-  if (chromeos::features::IsDeskProfilesEnabled() && windows.size() == 1) {
-    if (auto lacros_profile_id = windows[0]->GetProperty(kLacrosProfileId);
-        lacros_profile_id != 0) {
-      target_desk->SetLacrosProfileId(lacros_profile_id);
-    }
-  }
-
   return desks_controller->MoveWindowFromActiveDeskTo(
       dragged_item->GetWindow(), target_desk, root_window_,
       DesksMoveWindowFromActiveDeskSource::kDragAndDrop);

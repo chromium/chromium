@@ -6248,10 +6248,6 @@ const char kDemoModeComponentUpdaterTestTagDescription[] =
     "Tags used for component updater to select Omaha cohort for Demo Mode.";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-const char kDeskProfilesName[] = "Desk profiles";
-const char kDeskProfilesDescription[] =
-    "Enable association of lacros profiles with desks.";
-
 const char kDisableCancelAllTouchesName[] = "Disable CancelAllTouches()";
 const char kDisableCancelAllTouchesDescription[] =
     "If enabled, a canceled touch will not force all other touches to be "

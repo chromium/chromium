@@ -34,25 +34,9 @@ DeskButtonContainer::DeskButtonContainer() = default;
 DeskButtonContainer::~DeskButtonContainer() = default;
 
 // static
-bool DeskButtonContainer::ShouldShowDeskProfilesUi() {
-  if (!chromeos::features::IsDeskProfilesEnabled()) {
-    return false;
-  }
-  auto* desk_profiles_delegate = Shell::Get()->GetDeskProfilesDelegate();
-  if (!desk_profiles_delegate ||
-      desk_profiles_delegate->GetProfilesSnapshot().size() < 2u) {
-    return false;
-  }
-  return true;
-}
-
-// static
 int DeskButtonContainer::GetMaxLength(bool zero_state) {
   if (zero_state) {
     return kDeskButtonContainerHeightVertical;
-  }
-  if (ShouldShowDeskProfilesUi()) {
-    return kDeskButtonContainerWidthHorizontalExpandedWithAvatar;
   }
   return kDeskButtonContainerWidthHorizontalExpandedNoAvatar;
 }

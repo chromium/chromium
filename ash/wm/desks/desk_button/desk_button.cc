@@ -85,15 +85,8 @@ gfx::Size DeskButton::CalculatePreferredSize(
       desk_name_label_
           ->GetPreferredSize(views::SizeBounds(desk_name_label_->width(), {}))
           .width();
-  if (desk_button_container_->ShouldShowDeskProfilesUi()) {
-    width += kDeskButtonAvatarSize.width() +
-             kDeskButtonChildSpacingHorizontalExpanded;
-    width = std::clamp(width, kDeskButtonWidthHorizontalZeroWithAvatar,
-                       kDeskButtonWidthHorizontalExpandedWithAvatar);
-  } else {
     width = std::clamp(width, kDeskButtonWidthHorizontalZeroNoAvatar,
                        kDeskButtonWidthHorizontalExpandedNoAvatar);
-  }
 
   return {width, height};
 }
@@ -199,16 +192,6 @@ void DeskButton::Init(DeskButtonContainer* desk_button_container) {
       this, gfx::Insets(kDeskButtonFocusRingHaloInset),
       kDeskButtonCornerRadius);
 
-  if (chromeos::features::IsDeskProfilesEnabled()) {
-    AddChildView(views::Builder<views::ImageView>()
-                     .CopyAddressTo(&desk_avatar_view_)
-                     .SetPaintToLayer()
-                     .Build());
-    desk_avatar_view_->layer()->SetFillsBoundsOpaquely(false);
-    desk_avatar_view_->layer()->SetRoundedCornerRadius(
-        gfx::RoundedCornersF(kDeskButtonAvatarSize.width()));
-  }
-
   AddChildView(
       views::Builder<views::Label>()
           .CopyAddressTo(&desk_name_label_)
@@ -271,27 +254,6 @@ bool DeskButton::IsShowingAvatar() const {
 void DeskButton::UpdateAvatar(const Desk* active_desk) {
   if (!desk_avatar_view_) {
     return;
-  }
-
-  if (!desk_button_container_->zero_state() &&
-      desk_button_container_->ShouldShowDeskProfilesUi()) {
-    if (auto* desk_profiles_delegate =
-            Shell::Get()->GetDeskProfilesDelegate()) {
-      if (auto* summary =
-              desk_profiles_delegate->GetProfilesSnapshotByProfileId(
-                  active_desk->lacros_profile_id())) {
-        profile_ = *summary;
-        desk_avatar_image_ = gfx::ImageSkiaOperations::CreateResizedImage(
-            summary->icon, skia::ImageOperations::RESIZE_BEST,
-            kDeskButtonAvatarSize);
-
-        desk_avatar_view_->SetImage(
-            ui::ImageModel::FromImageSkia(desk_avatar_image_));
-        desk_avatar_view_->SetImageSize(kDeskButtonAvatarSize);
-        desk_avatar_view_->SetVisible(true);
-        return;
-      }
-    }
   }
 
   desk_avatar_view_->SetVisible(false);
