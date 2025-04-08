@@ -121,12 +121,10 @@ class GPUCanvasContext : public ScriptWrappable,
   void FinalizeFrame(FlushReason) override;
 
   scoped_refptr<StaticBitmapImage> SnapshotInternal(
-      const wgpu::Texture& texture,
-      const gfx::Size& size) const;
+      const wgpu::Texture& texture) const;
 
   bool CopyTextureToResourceProvider(
       const wgpu::Texture& texture,
-      const gfx::Size& size,
       CanvasResourceProvider* resource_provider) const;
 
   void CopyToSwapTexture();
