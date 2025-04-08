@@ -487,8 +487,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Accelerators.OverviewBasedScreenshot.{ActionName}"
-    enum="OverviewBasedScreenshotKeyboardType" expires_after="2025-05-11">
-  <owner>dpad@google.com</owner>
+    enum="OverviewBasedScreenshotKeyboardType" expires_after="2026-05-11">
   <owner>jimmyxgong@chromium.org</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
