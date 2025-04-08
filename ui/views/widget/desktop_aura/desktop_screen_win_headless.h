@@ -5,7 +5,7 @@
 #ifndef UI_VIEWS_WIDGET_DESKTOP_AURA_DESKTOP_SCREEN_WIN_HEADLESS_H_
 #define UI_VIEWS_WIDGET_DESKTOP_AURA_DESKTOP_SCREEN_WIN_HEADLESS_H_
 
-#include <vector>
+#include <set>
 
 #include "ui/display/win/screen_win_headless.h"
 #include "ui/gfx/geometry/point.h"
@@ -34,8 +34,10 @@ class VIEWS_EXPORT DesktopScreenWinHeadless
       gfx::NativeWindow window) const override;
   gfx::Rect GetHeadlessWindowBounds(
       gfx::AcceleratedWidget window) const override;
-  std::vector<gfx::NativeWindow> GetNativeWindowsAtScreenPoint(
-      const gfx::Point& point) const override;
+  gfx::NativeWindow GetNativeWindowAtScreenPoint(
+      const gfx::Point& point,
+      const std::set<gfx::NativeWindow>& ignore) const override;
+  gfx::NativeWindow GetRootWindow(gfx::NativeWindow window) const override;
 };
 
 }  // namespace views

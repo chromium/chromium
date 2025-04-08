@@ -81,12 +81,14 @@ class DISPLAY_EXPORT ScreenWinHeadless : public ScreenWin {
 
  protected:
   // These are exposed for \\ui\views.
-  virtual std::vector<gfx::NativeWindow> GetNativeWindowsAtScreenPoint(
-      const gfx::Point& point) const;
+  virtual gfx::NativeWindow GetNativeWindowAtScreenPoint(
+      const gfx::Point& point,
+      const std::set<gfx::NativeWindow>& ignore) const;
   virtual gfx::Rect GetNativeWindowBoundsInScreen(
       gfx::NativeWindow window) const;
   virtual gfx::Rect GetHeadlessWindowBounds(
       gfx::AcceleratedWidget window) const;
+  virtual gfx::NativeWindow GetRootWindow(gfx::NativeWindow window) const;
 
  private:
   std::vector<internal::DisplayInfo> DisplayInfosFromScreenInfo(

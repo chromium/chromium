@@ -4,6 +4,7 @@
 
 import("//build/config/chrome_build.gni")
 import("//build/config/ozone.gni")
+import("//build/config/ui.gni")
 import("//testing/test.gni")
 
 source_set("headless") {
@@ -110,6 +111,7 @@ if (!is_android) {
       "//chrome/test:test_support",
       "//content/test:test_support",
       "//pdf",
+      "//testing/gmock",
       "//testing/gtest",
     ]
 
@@ -128,6 +130,13 @@ if (!is_android) {
         "//ui/display",
         "//ui/gfx",
         "//ui/views",
+      ]
+    }
+
+    if (use_aura && is_win) {
+      deps += [
+        "//ui/aura",
+        "//ui/aura:test_support",
       ]
     }
 

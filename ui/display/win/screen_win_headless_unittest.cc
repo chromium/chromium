@@ -7,11 +7,11 @@
 #include <windows.h>
 
 #include <algorithm>
+#include <set>
 #include <string>
 #include <string_view>
 #include <vector>
 
-#include "base/containers/adapters.h"
 #include "base/containers/flat_map.h"
 #include "components/headless/screen_info/headless_screen_info.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -57,17 +57,19 @@ class TestScreenWinHeadless : public ScreenWinHeadless {
   }
 
   // win::ScreenWinHeadless:
-  std::vector<gfx::NativeWindow> GetNativeWindowsAtScreenPoint(
-      const gfx::Point& point) const override {
-    std::vector<gfx::NativeWindow> windows;
-    // Assume that recently created windows are higher in z-order.
-    for (const auto& [hwnd, bounds] : base::Reversed(windows_)) {
-      if (bounds.Contains(point)) {
-        windows.push_back(GetNativeWindowFromHWND(hwnd));
+  gfx::NativeWindow GetNativeWindowAtScreenPoint(
+      const gfx::Point& point,
+      const std::set<gfx::NativeWindow>& ignore) const override {
+    gfx::NativeWindow result = nullptr;
+    // Assume that more recently created windows are higher in z-order.
+    for (const auto& [hwnd, bounds] : windows_) {
+      gfx::NativeWindow window = GetNativeWindowFromHWND(hwnd);
+      if (bounds.Contains(point) && ignore.find(window) == ignore.cend()) {
+        result = window;
       }
     }
 
-    return windows;
+    return result;
   }
 
   gfx::Rect GetNativeWindowBoundsInScreen(
@@ -78,6 +80,10 @@ class TestScreenWinHeadless : public ScreenWinHeadless {
   gfx::Rect GetHeadlessWindowBounds(
       gfx::AcceleratedWidget window) const override {
     return GetWindowBounds(window);
+  }
+
+  gfx::NativeWindow GetRootWindow(gfx::NativeWindow window) const override {
+    return window;
   }
 
  private:

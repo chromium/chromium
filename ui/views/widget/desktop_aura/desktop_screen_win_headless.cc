@@ -4,14 +4,15 @@
 
 #include "ui/views/widget/desktop_aura/desktop_screen_win_headless.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <vector>
 
 #include "base/check_deref.h"
 #include "base/command_line.h"
-#include "base/notimplemented.h"
 #include "components/headless/screen_info/headless_screen_info.h"
+#include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/ui_base_switches.h"
@@ -92,14 +93,44 @@ gfx::Rect DesktopScreenWinHeadless::GetHeadlessWindowBounds(
   return views::GetHeadlessWindowBounds(window);
 }
 
-std::vector<gfx::NativeWindow>
-DesktopScreenWinHeadless::GetNativeWindowsAtScreenPoint(
-    const gfx::Point& point) const {
-  std::vector<gfx::NativeWindow> windows;
-  // TODO(https://crbug.com/405276019): Finalize implementation and add the
-  // relevant tests.
-  NOTIMPLEMENTED_LOG_ONCE();
-  return windows;
+// Enumerates Aura windows tree starting at the specified window and calling
+// the callback on each window. Negative return from the callback prevents
+// window and its children from being enumerated.
+template <typename Callback>
+void EnumAuraWindows(aura::Window* window, const Callback& callback) {
+  if (callback(window)) {
+    for (aura::Window* child_window : window->children()) {
+      EnumAuraWindows(child_window, callback);
+    }
+  }
+}
+
+gfx::NativeWindow DesktopScreenWinHeadless::GetNativeWindowAtScreenPoint(
+    const gfx::Point& point,
+    const std::set<gfx::NativeWindow>& ignore) const {
+  gfx::NativeWindow result = nullptr;
+
+  auto callback = [point, &ignore, &result](aura::Window* window) -> bool {
+    if (!window->IsVisible() || !window->GetBoundsInScreen().Contains(point) ||
+        ignore.find(window) != ignore.cend()) {
+      return false;
+    }
+    result = window;
+    return true;
+  };
+
+  // Assume that most recently created hosts are at the top of z-order.
+  aura::Env* env = aura::Env::GetInstance();
+  for (aura::WindowTreeHost* host : env->window_tree_hosts()) {
+    EnumAuraWindows(host->window(), callback);
+  }
+
+  return result;
+}
+
+gfx::NativeWindow DesktopScreenWinHeadless::GetRootWindow(
+    gfx::NativeWindow window) const {
+  return window ? window->GetRootWindow() : nullptr;
 }
 
 }  // namespace views

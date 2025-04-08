@@ -76,23 +76,13 @@ bool ScreenWinHeadless::IsWindowUnderCursor(gfx::NativeWindow window) {
 
 gfx::NativeWindow ScreenWinHeadless::GetWindowAtScreenPoint(
     const gfx::Point& point) {
-  // TODO(https://crbug.com/405276019): verify...
-  const std::vector<gfx::NativeWindow> windows =
-      GetNativeWindowsAtScreenPoint(point);
-  return !windows.empty() ? windows[0] : nullptr;
+  return GetNativeWindowAtScreenPoint(point, std::set<gfx::NativeWindow>());
 }
 
 gfx::NativeWindow ScreenWinHeadless::GetLocalProcessWindowAtPoint(
     const gfx::Point& point,
     const std::set<gfx::NativeWindow>& ignore) {
-  // TODO(https://crbug.com/405276019): verify...
-  for (gfx::NativeWindow window : GetNativeWindowsAtScreenPoint(point)) {
-    if (ignore.find(window) == ignore.end()) {
-      return window;
-    }
-  }
-
-  return nullptr;
+  return GetRootWindow(GetNativeWindowAtScreenPoint(point, ignore));
 }
 
 int ScreenWinHeadless::GetNumDisplays() const {
@@ -229,8 +219,9 @@ void ScreenWinHeadless::OnColorProfilesChanged() {
   // headless mode.
 }
 
-std::vector<gfx::NativeWindow> ScreenWinHeadless::GetNativeWindowsAtScreenPoint(
-    const gfx::Point& point) const {
+gfx::NativeWindow ScreenWinHeadless::GetNativeWindowAtScreenPoint(
+    const gfx::Point& point,
+    const std::set<gfx::NativeWindow>& ignore) const {
   NOTREACHED();
 }
 
@@ -241,6 +232,11 @@ gfx::Rect ScreenWinHeadless::GetNativeWindowBoundsInScreen(
 
 gfx::Rect ScreenWinHeadless::GetHeadlessWindowBounds(
     gfx::AcceleratedWidget window) const {
+  NOTREACHED();
+}
+
+gfx::NativeWindow ScreenWinHeadless::GetRootWindow(
+    gfx::NativeWindow window) const {
   NOTREACHED();
 }
 
