@@ -8,6 +8,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/uuid.h"
+#include "components/sync/model/conflict_resolution.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/metadata_batch.h"
@@ -21,19 +22,31 @@
 namespace tab_groups {
 namespace {
 
-std::unique_ptr<syncer::EntityData> SpecificsToEntityData(
-    const sync_pb::SharedTabGroupAccountDataSpecifics& specifics) {
-  auto entity_data = std::make_unique<syncer::EntityData>();
-  *entity_data->specifics.mutable_shared_tab_group_account_data() = specifics;
-  entity_data->name = specifics.guid();
-  return entity_data;
+// Convert proto int64 microseconds since Windows-epoch to base::Time.
+base::Time DeserializeTime(int64_t proto_time) {
+  return base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(proto_time));
 }
 
+// Convert base::Time to proto int64 microseconds since Windows-epoch.
+int64_t SerializeTime(const base::Time& t) {
+  return t.ToDeltaSinceWindowsEpoch().InMicroseconds();
+}
+
+// Client tag consists of the tab guid concatenated with collaboration id.
+std::string CreateClientTagForSharedTab(const SavedTabGroup& group,
+                                        const SavedTabGroupTab& tab) {
+  return tab.saved_tab_guid().AsLowercaseString() + "|" +
+         group.collaboration_id().value().value();
+}
+
+// Returns the client tag for this specifics object. Note that
+// SharedTabGroupAccountDataSpecifics uses the client tag as a storage key.
 std::string GetClientTagFromSpecifics(
     const sync_pb::SharedTabGroupAccountDataSpecifics& specifics) {
   return specifics.guid() + "|" + specifics.collaboration_id();
 }
 
+// Trim specifics for use in TrimAllSupportedFieldsFromRemoteSpecifics.
 sync_pb::SharedTabGroupAccountDataSpecifics TrimSpecifics(
     const sync_pb::SharedTabGroupAccountDataSpecifics& account_specifics) {
   sync_pb::SharedTabGroupAccountDataSpecifics trimmed_account_specifics =
@@ -50,15 +63,74 @@ sync_pb::SharedTabGroupAccountDataSpecifics TrimSpecifics(
   return trimmed_account_specifics;
 }
 
+// Create new EntityData object to contain specifics for writing changes.
+std::unique_ptr<syncer::EntityData> CreateEntityDataFromSpecifics(
+    const sync_pb::SharedTabGroupAccountDataSpecifics& specifics) {
+  auto entity_data = std::make_unique<syncer::EntityData>();
+  *entity_data->specifics.mutable_shared_tab_group_account_data() = specifics;
+  entity_data->name = specifics.guid();
+  return entity_data;
+}
+
+// Create a new EntityData object to represent a SavedTabGroupTab. This
+// may return nullptr if the tab has not been seen yet. Tab group must
+// exist and be shared, and tab must have a "last seen" time set.
+std::unique_ptr<syncer::EntityData> CreateEntityDataFromSavedTabGroupTab(
+    const SavedTabGroupModel& model,
+    const SavedTabGroupTab& tab) {
+  CHECK(!tab.last_seen_time_windows_epoch_micros().is_null());
+
+  const SavedTabGroup* group = model.Get(tab.saved_group_guid());
+  CHECK(group);
+
+  const std::optional<CollaborationId>& collaboration_id =
+      group->collaboration_id();
+  CHECK(collaboration_id.has_value());
+
+  sync_pb::SharedTabGroupAccountDataSpecifics specifics;
+  specifics.set_guid(tab.saved_tab_guid().AsLowercaseString());
+  specifics.set_collaboration_id(collaboration_id->value());
+
+  sync_pb::SharedTabDetails* tab_group_details =
+      specifics.mutable_shared_tab_details();
+  tab_group_details->set_shared_tab_group_guid(
+      group->saved_guid().AsLowercaseString());
+  tab_group_details->set_last_seen_timestamp_windows_epoch(
+      SerializeTime(tab.last_seen_time_windows_epoch_micros()));
+
+  return CreateEntityDataFromSpecifics(specifics);
+}
+
+bool SharedTabExistsForSpecifics(
+    const SavedTabGroupModel& model,
+    const sync_pb::SharedTabGroupAccountDataSpecifics& specifics) {
+  // Can only be called with specifics containing TabDetails.
+  CHECK(specifics.has_shared_tab_details());
+
+  const base::Uuid group_id = base::Uuid::ParseCaseInsensitive(
+      specifics.shared_tab_details().shared_tab_group_guid());
+  const SavedTabGroup* group = model.Get(group_id);
+  if (!group) {
+    return false;
+  }
+
+  const base::Uuid tab_id = base::Uuid::ParseCaseInsensitive(specifics.guid());
+  return group->GetTab(tab_id) != nullptr;
+}
+
 }  // namespace
 
 SharedTabGroupAccountDataSyncBridge::SharedTabGroupAccountDataSyncBridge(
-    std::unique_ptr<SyncDataTypeConfiguration> configuration)
-    : syncer::DataTypeSyncBridge(std::move(configuration->change_processor)) {
+    std::unique_ptr<SyncDataTypeConfiguration> configuration,
+    SavedTabGroupModel& model)
+    : syncer::DataTypeSyncBridge(std::move(configuration->change_processor)),
+      model_(model) {
   std::move(configuration->data_type_store_factory)
       .Run(syncer::SHARED_TAB_GROUP_ACCOUNT_DATA,
            base::BindOnce(&SharedTabGroupAccountDataSyncBridge::OnStoreCreated,
                           weak_ptr_factory_.GetWeakPtr()));
+
+  saved_tab_group_model_observation_.Observe(&model);
 }
 
 SharedTabGroupAccountDataSyncBridge::~SharedTabGroupAccountDataSyncBridge() {
@@ -76,11 +148,10 @@ SharedTabGroupAccountDataSyncBridge::MergeFullSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_change_list) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(specifics_.empty());
 
-  // Since this data type is grouped with shared tab group data, there
-  // will never be any shared tab groups in the model, therefore no data
-  // to merge, when this data type is enabled.
+  // Since this data type is controlled along with shared tab group data,
+  // there will never be any shared tab groups in the model, therefore no
+  // data to merge, when this data type is enabled.
 
   return ApplyIncrementalSyncChanges(std::move(metadata_change_list),
                                      std::move(entity_change_list));
@@ -97,29 +168,36 @@ SharedTabGroupAccountDataSyncBridge::ApplyIncrementalSyncChanges(
 
   for (const std::unique_ptr<syncer::EntityChange>& change :
        entity_change_list) {
+    const sync_pb::EntitySpecifics& entity_specifics = change->data().specifics;
+
     switch (change->type()) {
       case syncer::EntityChange::ACTION_ADD:
       case syncer::EntityChange::ACTION_UPDATE: {
-        const sync_pb::EntitySpecifics& entity_specifics =
-            change->data().specifics;
-        // Guaranteed by ClientTagBasedDataTypeProcessor, based on
-        // IsEntityDataValid().
         CHECK(entity_specifics.has_shared_tab_group_account_data());
         const sync_pb::SharedTabGroupAccountDataSpecifics& specifics =
             entity_specifics.shared_tab_group_account_data();
 
-        batch->WriteData(change->storage_key(), specifics.SerializeAsString());
         specifics_[change->storage_key()] = specifics;
+        batch->WriteData(change->storage_key(), specifics.SerializeAsString());
+
+        // Only update the model after storing the change in the cache.
+        // The model listeners will fire and will only no-op if they can
+        // find the specifics in-memory.
+        if (specifics.has_shared_tab_details()) {
+          UpdateTabDetailsModel(specifics);
+        }
+
         break;
       }
       case syncer::EntityChange::ACTION_DELETE:
         specifics_.erase(change->storage_key());
         batch->DeleteData(change->storage_key());
+        // In case this was for shared_tab_details, delete from missing
+        // tabs cache.
+        storage_keys_for_missing_tabs_.erase(change->storage_key());
         break;
     }
   }
-
-  // TODO(crbug.com/397767033): Notify observers
 
   batch->TakeMetadataChangesFrom(std::move(metadata_change_list));
   store_->CommitWriteBatch(
@@ -139,7 +217,8 @@ SharedTabGroupAccountDataSyncBridge::GetDataForCommit(
   auto batch = std::make_unique<syncer::MutableDataBatch>();
   for (const std::string& storage_key : storage_keys) {
     if (specifics_.contains(storage_key)) {
-      batch->Put(storage_key, SpecificsToEntityData(specifics_[storage_key]));
+      batch->Put(storage_key,
+                 CreateEntityDataFromSpecifics(specifics_[storage_key]));
     }
   }
   return batch;
@@ -151,7 +230,7 @@ SharedTabGroupAccountDataSyncBridge::GetAllDataForDebugging() {
 
   auto batch = std::make_unique<syncer::MutableDataBatch>();
   for (const auto& [storage_key, specifics] : specifics_) {
-    batch->Put(storage_key, SpecificsToEntityData(specifics));
+    batch->Put(storage_key, CreateEntityDataFromSpecifics(specifics));
   }
   return batch;
 }
@@ -183,14 +262,10 @@ void SharedTabGroupAccountDataSyncBridge::ApplyDisableSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(crbug.com/397767033): Get guids before clearing to notify
-  // observer.
-
+  storage_keys_for_missing_tabs_.clear();
   specifics_.clear();
   store_->DeleteAllDataAndMetadata(base::DoNothing());
   weak_ptr_factory_.InvalidateWeakPtrs();
-
-  // TODO(crbug.com/397767033): Notify observers
 }
 
 bool SharedTabGroupAccountDataSyncBridge::IsEntityDataValid(
@@ -224,7 +299,7 @@ SharedTabGroupAccountDataSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
     const sync_pb::EntitySpecifics& entity_specifics) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  sync_pb::SharedTabGroupAccountDataSpecifics trimmed_specifics =
+  const sync_pb::SharedTabGroupAccountDataSpecifics trimmed_specifics =
       TrimSpecifics(entity_specifics.shared_tab_group_account_data());
 
   if (trimmed_specifics.ByteSizeLong() == 0u) {
@@ -237,8 +312,110 @@ SharedTabGroupAccountDataSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
   return trimmed_entity_specifics;
 }
 
+syncer::ConflictResolution SharedTabGroupAccountDataSyncBridge::ResolveConflict(
+    const std::string& storage_key,
+    const syncer::EntityData& remote_data) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // If we are not tracking this storage_key, accept the remote change.
+  if (!specifics_.contains(storage_key)) {
+    return syncer::ConflictResolution::kUseRemote;
+  }
+
+  const sync_pb::SharedTabGroupAccountDataSpecifics local_specifics =
+      specifics_.at(storage_key);
+  const sync_pb::SharedTabGroupAccountDataSpecifics remote_specifics =
+      remote_data.specifics.shared_tab_group_account_data();
+
+  // The account data specifics can contain different types of details.
+  // If these specifics both contain TabDetails, compare the timestamps
+  // to see which one should be retained.
+  if (local_specifics.has_shared_tab_details() &&
+      remote_specifics.has_shared_tab_details()) {
+    const int64_t local_timestamp = local_specifics.shared_tab_details()
+                                        .last_seen_timestamp_windows_epoch();
+    const int64_t remote_timestamp = remote_specifics.shared_tab_details()
+                                         .last_seen_timestamp_windows_epoch();
+
+    if (local_timestamp == remote_timestamp) {
+      // Timestamps match.
+      return syncer::ConflictResolution::kChangesMatch;
+    } else if (local_timestamp > remote_timestamp) {
+      // A local change has been Put to sync containing the more recent
+      // time. Discard the remote change as it is outdated.
+      return syncer::ConflictResolution::kUseLocal;
+    } else {
+      // A remote change contains a more recent timestamp than a change
+      // that was Put locally. Discard the outdated local change.
+      return syncer::ConflictResolution::kUseRemote;
+    }
+  }
+
+  return syncer::ConflictResolution::kUseRemote;
+}
+
+void SharedTabGroupAccountDataSyncBridge::SavedTabGroupModelLoaded() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  ApplyMissingTabData();
+}
+
+void SharedTabGroupAccountDataSyncBridge::SavedTabGroupTabLastSeenTimeUpdated(
+    const base::Uuid& saved_tab_id,
+    TriggerSource source) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  std::vector<std::unique_ptr<syncer::EntityData>> new_entities;
+
+  // Look through all tabs in this group and create entities for changes
+  // that are not synced.
+  const SavedTabGroup* group = model_->GetGroupContainingTab(saved_tab_id);
+  if (!group || !group->is_shared_tab_group()) {
+    return;
+  }
+
+  const SavedTabGroupTab* tab = group->GetTab(saved_tab_id);
+  CHECK(tab);
+
+  const base::Time model_last_seen = tab->last_seen_time_windows_epoch_micros();
+  if (model_last_seen.is_null()) {
+    // This tab has not been seen by the user. Avoid syncing tabs
+    // without a timestamp by skipping this.
+    return;
+  }
+
+  const std::string storage_key = CreateClientTagForSharedTab(*group, *tab);
+  if (!specifics_.contains(storage_key)) {
+    // This tab has been seen but does not exist in sync yet.
+    WriteEntityToSync(CreateEntityDataFromSavedTabGroupTab(*model_, *tab));
+    return;
+  }
+
+  const sync_pb::SharedTabGroupAccountDataSpecifics& specifics =
+      specifics_.at(storage_key);
+  const base::Time proto_last_seen = DeserializeTime(
+      specifics.shared_tab_details().last_seen_timestamp_windows_epoch());
+
+  if (proto_last_seen >= model_last_seen) {
+    // Ignore the value if sync and model are up-to-date. Technically, it
+    // should never be true that the model data is older than the value
+    // in sync since we update it elsewhere, but this is also ignored.
+    return;
+  }
+
+  // This tab was seen again. Update sync with the new timestamp.
+  WriteEntityToSync(CreateEntityDataFromSavedTabGroupTab(*model_, *tab));
+}
+
 bool SharedTabGroupAccountDataSyncBridge::IsInitialized() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return is_initialized_;
+}
+
+bool SharedTabGroupAccountDataSyncBridge::HasSpecificsForTab(
+    const SavedTabGroupTab& tab) const {
+  const SavedTabGroup* group = model_->Get(tab.saved_group_guid());
+  CHECK(group);
+  return specifics_.contains(CreateClientTagForSharedTab(*group, tab));
 }
 
 void SharedTabGroupAccountDataSyncBridge::OnStoreCreated(
@@ -262,31 +439,30 @@ void SharedTabGroupAccountDataSyncBridge::OnReadAllDataAndMetadata(
     std::unique_ptr<syncer::DataTypeStore::RecordList> entries,
     std::unique_ptr<syncer::MetadataBatch> metadata_batch) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   if (error) {
     change_processor()->ReportError(*error);
     return;
   }
 
   specifics_.reserve(entries->size());
-
   for (const syncer::DataTypeStore::Record& r : *entries) {
     sync_pb::SharedTabGroupAccountDataSpecifics specifics;
     if (!specifics.ParseFromString(r.value)) {
       // Ignore invalid entries.
       continue;
     }
-    if (specifics.guid() != r.id) {
+    const std::string storage_key = GetClientTagFromSpecifics(specifics);
+    if (storage_key != r.id) {
       // GUID is used as a storage key, so it should always match.
       continue;
     }
-    specifics_[GetClientTagFromSpecifics(specifics)] = std::move(specifics);
+    specifics_[storage_key] = specifics;
+    if (specifics.has_shared_tab_details()) {
+      UpdateTabDetailsModel(specifics);
+    }
   }
 
   is_initialized_ = true;
-
-  // TODO(crbug.com/397767033): Notify observers
-
   change_processor()->ModelReadyToSync(std::move(metadata_batch));
 }
 
@@ -297,6 +473,82 @@ void SharedTabGroupAccountDataSyncBridge::OnDataTypeStoreCommit(
   if (error) {
     change_processor()->ReportError(*error);
   }
+}
+
+void SharedTabGroupAccountDataSyncBridge::UpdateTabDetailsModel(
+    const sync_pb::SharedTabGroupAccountDataSpecifics& specifics) {
+  // Can only be called with specifics containing TabDetails.
+  CHECK(specifics.has_shared_tab_details());
+
+  const std::string storage_key = GetClientTagFromSpecifics(specifics);
+  const base::Uuid group_id = base::Uuid::ParseCaseInsensitive(
+      specifics.shared_tab_details().shared_tab_group_guid());
+  const SavedTabGroup* group = model_->Get(group_id);
+  if (!group) {
+    storage_keys_for_missing_tabs_.insert(storage_key);
+    return;
+  }
+
+  const base::Uuid tab_id = base::Uuid::ParseCaseInsensitive(specifics.guid());
+  const SavedTabGroupTab* tab = group->GetTab(tab_id);
+  if (!tab) {
+    storage_keys_for_missing_tabs_.insert(storage_key);
+    return;
+  }
+
+  model_->UpdateTabLastSeenTime(
+      group_id, tab_id,
+      DeserializeTime(
+          specifics.shared_tab_details().last_seen_timestamp_windows_epoch()),
+      TriggerSource::REMOTE);
+
+  storage_keys_for_missing_tabs_.erase(storage_key);
+}
+
+void SharedTabGroupAccountDataSyncBridge::ApplyMissingTabData() {
+  // Find previously missing tabs have now been added. Create a copy of
+  // the strings from `storage_keys_for_missing_tabs_` so this set can
+  // be mutated in `UpdateTabDetailsModel`.
+  std::vector<std::string> added_tabs;
+  added_tabs.reserve(storage_keys_for_missing_tabs_.size());
+
+  for (const std::string& storage_key : storage_keys_for_missing_tabs_) {
+    const sync_pb::SharedTabGroupAccountDataSpecifics& specifics =
+        specifics_.at(storage_key);
+    if (SharedTabExistsForSpecifics(*model_, specifics)) {
+      added_tabs.emplace_back(storage_key);
+    }
+  }
+
+  for (const std::string& storage_key : added_tabs) {
+    UpdateTabDetailsModel(specifics_.at(storage_key));
+  }
+}
+
+void SharedTabGroupAccountDataSyncBridge::WriteEntityToSync(
+    std::unique_ptr<syncer::EntityData> entity) {
+  std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch =
+      store_->CreateWriteBatch();
+
+  const sync_pb::SharedTabGroupAccountDataSpecifics& specifics =
+      entity->specifics.shared_tab_group_account_data();
+  const std::string storage_key = GetStorageKey(*entity);
+
+  specifics_[storage_key] = specifics;
+  if (specifics.has_shared_tab_details()) {
+    // For tab details, remove them from the missing tabs.
+    storage_keys_for_missing_tabs_.erase(storage_key);
+  }
+  batch->WriteData(storage_key, entity->specifics.SerializeAsString());
+
+  change_processor()->Put(storage_key, std::move(entity),
+                          batch->GetMetadataChangeList());
+
+  store_->CommitWriteBatch(
+      std::move(batch),
+      base::BindOnce(
+          &SharedTabGroupAccountDataSyncBridge::OnDataTypeStoreCommit,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 }  // namespace tab_groups

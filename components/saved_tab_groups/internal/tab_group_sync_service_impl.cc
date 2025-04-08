@@ -195,7 +195,7 @@ TabGroupSyncServiceImpl::TabGroupSyncServiceImpl(
   if (shared_tab_group_account_configuration) {
     shared_tab_group_account_data_bridge_ =
         std::make_unique<SharedTabGroupAccountDataSyncBridge>(
-            std::move(shared_tab_group_account_configuration));
+            std::move(shared_tab_group_account_configuration), *model_);
   }
   collaboration_finder_->SetClient(this);
   model_->AddObserver(this);

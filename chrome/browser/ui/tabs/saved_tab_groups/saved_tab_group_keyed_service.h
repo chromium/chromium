@@ -38,7 +38,6 @@ namespace tab_groups {
 
 class SavedTabGroupModel;
 class SavedTabGroupModelListener;
-class SharedTabGroupAccountDataSyncBridge;
 class TabGroupSyncBridgeMediator;
 class TabGroupSyncMetricsLogger;
 class TabGroupSyncServiceProxy;
@@ -225,10 +224,6 @@ class SavedTabGroupKeyedService : public KeyedService,
 
   // Stores SavedTabGroup data to the disk and to sync if enabled.
   std::unique_ptr<TabGroupSyncBridgeMediator> sync_bridge_mediator_;
-
-  // Sync bridge for shared tab group account data.
-  std::unique_ptr<SharedTabGroupAccountDataSyncBridge>
-      shared_tab_group_account_data_bridge_;
 
   // Helper class for logging metrics.
   std::unique_ptr<TabGroupSyncMetricsLogger> metrics_logger_;

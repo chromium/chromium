@@ -120,27 +120,6 @@ MaybeCreateSyncConfigurationForSharedTabGroupData(
       CreateSharedTabGroupDataChangeProcessor(), std::move(store_factory));
 }
 
-std::unique_ptr<syncer::DataTypeLocalChangeProcessor>
-CreateSharedTabGroupAccountDataChangeProcessor() {
-  return std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
-      syncer::SHARED_TAB_GROUP_ACCOUNT_DATA,
-      base::BindRepeating(&syncer::ReportUnrecoverableError,
-                          chrome::GetChannel()));
-}
-
-std::unique_ptr<SyncDataTypeConfiguration>
-MaybeCreateSyncConfigurationForSharedTabGroupAccountData(
-    syncer::OnceDataTypeStoreFactory store_factory) {
-  if (!data_sharing::features::IsDataSharingFunctionalityEnabled() ||
-      !base::FeatureList::IsEnabled(syncer::kSyncSharedTabGroupAccountData)) {
-    return nullptr;
-  }
-
-  return std::make_unique<SyncDataTypeConfiguration>(
-      CreateSharedTabGroupAccountDataChangeProcessor(),
-      std::move(store_factory));
-}
-
 }  // anonymous namespace
 
 SavedTabGroupKeyedService::SavedTabGroupKeyedService(
@@ -163,14 +142,6 @@ SavedTabGroupKeyedService::SavedTabGroupKeyedService(
               GetStoreFactory()))),
       metrics_logger_(std::make_unique<TabGroupSyncMetricsLoggerImpl>(
           device_info_tracker)) {
-  std::unique_ptr<SyncDataTypeConfiguration> shared_tab_account_configuration =
-      MaybeCreateSyncConfigurationForSharedTabGroupAccountData(
-          GetStoreFactory());
-  if (shared_tab_account_configuration) {
-    shared_tab_group_account_data_bridge_ =
-        std::make_unique<SharedTabGroupAccountDataSyncBridge>(
-            std::move(shared_tab_account_configuration));
-  }
   model_->AddObserver(this);
 
   metrics_timer_.Start(
@@ -201,9 +172,11 @@ SavedTabGroupKeyedService::GetSharedTabGroupControllerDelegate() {
 
 base::WeakPtr<syncer::DataTypeControllerDelegate>
 SavedTabGroupKeyedService::GetSharedTabGroupAccountControllerDelegate() {
-  CHECK(shared_tab_group_account_data_bridge_);
-  return shared_tab_group_account_data_bridge_->change_processor()
-      ->GetControllerDelegate();
+  // SharedTabGroupAccountDataSyncBridge needs access to the
+  // TabGroupSyncService in order to access the data model. This is
+  // incompatible with SavedTabGroupKeyedService (which will be removed
+  // shortly), so the controller delegate is not available.
+  return nullptr;
 }
 
 void SavedTabGroupKeyedService::ConnectRestoredGroupToSaveId(
