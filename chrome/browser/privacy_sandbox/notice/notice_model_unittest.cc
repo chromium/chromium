@@ -5,7 +5,7 @@
 #include "chrome/browser/privacy_sandbox/notice/notice_model.h"
 
 #include "base/test/mock_callback.h"
-#include "components/privacy_sandbox/privacy_sandbox_notice.mojom.h"
+#include "chrome/browser/privacy_sandbox/notice/notice.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest-death-test.h"
 #include "testing/gtest/include/gtest/gtest.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/privacy_sandbox/privacy_sandbox_notice_storage.h"
+#include "chrome/browser/privacy_sandbox/notice/notice_storage.h"
 
 #include <string>
 
@@ -14,11 +14,11 @@
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "base/version_info/version_info.h"
+#include "chrome/browser/privacy_sandbox/notice/notice_constants.h"
 #include "components/prefs/pref_registry.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
-#include "components/privacy_sandbox/privacy_sandbox_notice_constants.h"
 
 namespace privacy_sandbox {
 namespace {
@@ -109,7 +109,7 @@ void SetChromeVersion(PrefService* pref_service, std::string_view notice) {
 void CheckNoticeNameEligibility(std::string_view notice_name) {
   CHECK(privacy_sandbox::kPrivacySandboxNoticeNames.contains(notice_name))
       << "Notice name " << notice_name
-      << " does not exist in privacy_sandbox_notice_constants.h";
+      << " does not exist in notice_constants.h";
 }
 
 std::optional<V1MigrationData> ExtractV1NoticeData(

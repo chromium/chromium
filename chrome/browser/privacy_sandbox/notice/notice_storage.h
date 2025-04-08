@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_NOTICE_STORAGE_H_
-#define COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_NOTICE_STORAGE_H_
+#ifndef CHROME_BROWSER_PRIVACY_SANDBOX_NOTICE_NOTICE_STORAGE_H_
+#define CHROME_BROWSER_PRIVACY_SANDBOX_NOTICE_NOTICE_STORAGE_H_
 
 #include <optional>
 #include <string>
 
 #include "base/no_destructor.h"
 #include "base/time/time.h"
+#include "chrome/browser/privacy_sandbox/notice/notice.mojom.h"
 #include "components/prefs/pref_registry_simple.h"
-#include "components/privacy_sandbox/privacy_sandbox_notice.mojom.h"
 
 class PrefService;
 
@@ -201,4 +201,4 @@ class PrivacySandboxNoticeStorage {
 
 }  // namespace privacy_sandbox
 
-#endif  // COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_NOTICE_STORAGE_H_
+#endif  // CHROME_BROWSER_PRIVACY_SANDBOX_NOTICE_NOTICE_STORAGE_H_

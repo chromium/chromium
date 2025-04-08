@@ -1,0 +1,12 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+group("privacy_sandbox") {
+  public_deps = [ "notice:core" ]
+}
+
+group("unit_tests") {
+  testonly = true
+  deps = [ "notice:unit_tests" ]
+}

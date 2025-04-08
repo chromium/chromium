@@ -4,8 +4,6 @@
 
 #include "chrome/browser/privacy_sandbox/notice/notice_model.h"
 
-#include "components/privacy_sandbox/privacy_sandbox_notice_storage.h"
-
 namespace privacy_sandbox {
 
 using notice::mojom::PrivacySandboxNoticeEvent;

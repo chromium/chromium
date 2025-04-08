@@ -6,12 +6,12 @@
 #define CHROME_BROWSER_PRIVACY_SANDBOX_NOTICE_NOTICE_SERVICE_H_
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/privacy_sandbox/notice/notice.mojom.h"
 #include "chrome/browser/privacy_sandbox/notice/notice_model.h"
 #include "chrome/browser/privacy_sandbox/notice/notice_service_interface.h"
+#include "chrome/browser/privacy_sandbox/notice/notice_storage.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/privacy_sandbox/privacy_sandbox_notice.mojom.h"
-#include "components/privacy_sandbox/privacy_sandbox_notice_storage.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/privacy_sandbox/notice/desktop_view_manager.h"

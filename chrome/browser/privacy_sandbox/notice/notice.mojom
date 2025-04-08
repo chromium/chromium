@@ -24,7 +24,7 @@ enum PrivacySandboxNoticeEvent {
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:PrivacySandboxNoticeEvent)
 
 // TODO(crbug.com/392612108): These enum values will replace the
-// privacy_sandbox_notice_constants.h file in the future.
+// notice_constants.h file in the future.
 // An identifier for the different notices.
 enum PrivacySandboxNotice {
   kTopicsConsentNotice = 0,

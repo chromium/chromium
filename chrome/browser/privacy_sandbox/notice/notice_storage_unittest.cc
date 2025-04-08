@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/privacy_sandbox/privacy_sandbox_notice_storage.h"
+#include "chrome/browser/privacy_sandbox/notice/notice_storage.h"
 
 #include "base/json/values_util.h"
 #include "base/strings/strcat.h"
@@ -11,11 +11,11 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/version_info/version_info.h"
+#include "chrome/browser/privacy_sandbox/notice/notice.mojom.h"
+#include "chrome/browser/privacy_sandbox/notice/notice_constants.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
-#include "components/privacy_sandbox/privacy_sandbox_notice.mojom.h"
-#include "components/privacy_sandbox/privacy_sandbox_notice_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest-death-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -68,7 +68,7 @@ TEST_F(PrivacySandboxNoticeStorageTest, CheckPSNoticeHistograms) {
   ASSERT_TRUE(missing_notices.empty())
       << "Notices:\n"
       << base::JoinString(missing_notices, ", ")
-      << "\nconfigured in privacy_sandbox_notice_constants.h but no "
+      << "\nconfigured in notice_constants.h but no "
          "corresponding variants were added to PSNotice variants in "
          "//tools/metrics/histograms/metadata/privacy/histograms.xml";
 }

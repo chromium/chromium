@@ -22989,7 +22989,7 @@ Called by update_net_error_codes.py.-->
   <int value="9" label="TimedOut"/>
 </enum>
 
-<!-- LINT.ThenChange(/components/privacy_sandbox/privacy_sandbox_notice_storage.h:NoticeActionTaken) -->
+<!-- LINT.ThenChange(/chrome/browser/privacy_sandbox/notice/notice_storage.h:NoticeActionTaken) -->
 
 <!-- LINT.IfChange(PrivacySandboxNoticeActionBehavior) -->
 
@@ -22999,7 +22999,7 @@ Called by update_net_error_codes.py.-->
   <int value="2" label="DuplicateActionTaken"/>
 </enum>
 
-<!-- LINT.ThenChange(/components/privacy_sandbox/privacy_sandbox_notice_storage.h:NoticeActionBehavior) -->
+<!-- LINT.ThenChange(/chrome/browser/privacy_sandbox/notice/notice_storage.h:NoticeActionBehavior) -->
 
 <!-- LINT.IfChange(PrivacySandboxNoticeEvent) -->
 
@@ -23012,7 +23012,7 @@ Called by update_net_error_codes.py.-->
   <int value="5" label="Shown"/>
 </enum>
 
-<!-- LINT.ThenChange(/components/privacy_sandbox/privacy_sandbox_notice.mojom:PrivacySandboxNoticeEvent) -->
+<!-- LINT.ThenChange(/chrome/browser/privacy_sandbox/notice/notice.mojom:PrivacySandboxNoticeEvent) -->
 
 <!-- LINT.IfChange(PrivacySandboxNoticeStartupState) -->
 
@@ -23025,7 +23025,7 @@ Called by update_net_error_codes.py.-->
   <int value="5" label="PromptWaiting"/>
 </enum>
 
-<!-- LINT.ThenChange(/components/privacy_sandbox/privacy_sandbox_notice_storage.h:NoticeStartupState) -->
+<!-- LINT.ThenChange(/chrome/browser/privacy_sandbox/notice/notice_storage.h:NoticeStartupState) -->
 
 <!-- LINT.IfChange(PrivacySandboxPrimaryAccountUserGroups) -->
 

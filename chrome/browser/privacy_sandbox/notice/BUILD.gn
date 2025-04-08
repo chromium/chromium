@@ -1,0 +1,65 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+import("//testing/test.gni")
+
+mojom("notice_mojom") {
+  sources = [ "notice.mojom" ]
+  webui_module_path = "/"
+  generate_legacy_js_bindings = true
+  generate_java = true
+}
+
+source_set("core") {
+  sources = [ "notice_storage.cc" ]
+
+  public = [
+    "notice_constants.h",
+    "notice_storage.h",
+  ]
+
+  deps = [
+    ":notice_mojom",
+    "//base",
+    "//base/version_info:version_info",
+    "//components/pref_registry:pref_registry",
+    "//components/prefs",
+    "//components/privacy_sandbox:features",
+  ]
+
+  public_deps = [ ":notice_mojom" ]
+}
+
+test("fuzz_tests") {
+  sources = [ "notice_storage_fuzztest.cc" ]
+
+  fuzztests = [
+    "PrivacySandboxNoticeStorageFuzzTest.CheckConvertsV1SchemaSuccessfully",
+  ]
+
+  deps = [
+    ":core",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/fuzztest:fuzztest_gtest_main",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "notice_storage_unittest.cc" ]
+
+  data = [ "//tools/metrics/histograms/metadata/privacy/histograms.xml" ]
+
+  deps = [
+    ":core",
+    "//base/test:test_support",
+    "//base/version_info",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//components/privacy_sandbox:features",
+    "//testing/gtest",
+  ]
+}

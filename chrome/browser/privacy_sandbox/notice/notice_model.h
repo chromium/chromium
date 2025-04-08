@@ -8,8 +8,8 @@
 #include <absl/container/flat_hash_map.h>
 
 #include "base/memory/raw_ptr.h"
-#include "components/privacy_sandbox/privacy_sandbox_notice.mojom.h"
-#include "components/privacy_sandbox/privacy_sandbox_notice_storage.h"
+#include "chrome/browser/privacy_sandbox/notice/notice.mojom.h"
+#include "chrome/browser/privacy_sandbox/notice/notice_storage.h"
 
 namespace privacy_sandbox {
 class NoticeApi;

@@ -4,8 +4,8 @@
 
 // Temporary file that stores existing Privacy Sandbox Notice related constants
 // across different notice types and different surfaces.
-#ifndef COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_NOTICE_CONSTANTS_H_
-#define COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_NOTICE_CONSTANTS_H_
+#ifndef CHROME_BROWSER_PRIVACY_SANDBOX_NOTICE_NOTICE_CONSTANTS_H_
+#define CHROME_BROWSER_PRIVACY_SANDBOX_NOTICE_NOTICE_CONSTANTS_H_
 
 #include <string_view>
 
@@ -55,4 +55,4 @@ inline constexpr auto kPrivacySandboxNoticeNames =
 
 }  // namespace privacy_sandbox
 
-#endif  // COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_NOTICE_CONSTANTS_H_
+#endif  // CHROME_BROWSER_PRIVACY_SANDBOX_NOTICE_NOTICE_CONSTANTS_H_
