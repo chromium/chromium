@@ -249,6 +249,7 @@ void TipsNotificationClient::OnSceneActiveForegroundBrowserReady() {
 void TipsNotificationClient::OnSceneActiveForegroundBrowserReady(
     base::OnceClosure closure) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  UpdateProvisionalAllowed();
   if (user_type_ == TipsNotificationUserType::kUnknown &&
       !CanSendReactivation()) {
     ClassifyUser();
@@ -764,7 +765,7 @@ bool TipsNotificationClient::CanSendReactivation() {
   // or if the feature is not enabled, Reactivation notifications should not
   // be sent.
   if (permitted_ || !IsFirstRunRecent(base::Days(28)) ||
-      !IsIOSReactivationNotificationsEnabled()) {
+      !IsIOSReactivationNotificationsEnabled() || !provisional_allowed_) {
     return false;
   }
 
@@ -775,6 +776,13 @@ bool TipsNotificationClient::CanSendReactivation() {
   }
 
   return local_state_->GetInteger(kReactivationNotificationsCanceledCount) < 2;
+}
+
+void TipsNotificationClient::UpdateProvisionalAllowed() {
+  Browser* browser = GetSceneLevelForegroundActiveBrowser();
+  CHECK(browser);
+  provisional_allowed_ = [PushNotificationUtil
+      provisionalAllowedByPolicyForProfile:browser->GetProfile()];
 }
 
 bool TipsNotificationClient::DismissLimitReached() {

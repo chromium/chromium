@@ -409,6 +409,35 @@ TEST_F(TipsNotificationClientTest, WhatsNewProactiveRequest) {
       TipsNotificationType::kWhatsNew, 1);
 }
 
+// Tests that the client will not request a Proactive Whats New notification if
+// provisional notifications are disallowed by policy.
+TEST_F(TipsNotificationClientTest, ProvisionalDisallowedByPolicy) {
+  profile_->GetPrefs()->SetBoolean(
+      prefs::kProvisionalNotificationsAllowedByPolicy, false);
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kIOSReactivationNotifications);
+  SetSentNotifications({TipsNotificationType::kLens,
+                        TipsNotificationType::kEnhancedSafeBrowsing});
+  [PushNotificationUtil
+      updateAuthorizationStatusPref:UNAuthorizationStatusProvisional];
+  // Simulate that the user has not opted-in.
+  GetApplicationContext()->GetLocalState()->ClearPref(
+      prefs::kAppLevelPushNotificationPermissions);
+
+  WriteFirstRunSentinel();
+  StubGetPendingRequests(nil);
+  OCMReject([mock_notification_center_ addNotificationRequest:[OCMArg any]
+                                        withCompletionHandler:[OCMArg any]]);
+
+  base::RunLoop run_loop;
+  client_->OnSceneActiveForegroundBrowserReady(run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
+  histogram_tester_.ExpectUniqueSample("IOS.Notifications.Tips.Proactive.Sent",
+                                       TipsNotificationType::kWhatsNew, 0);
+}
+
 // Tests that the client handles a Whats New notification response.
 TEST_F(TipsNotificationClientTest, WhatsNewHandle) {
   StubPrepareToPresentModal();

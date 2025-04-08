@@ -12,6 +12,7 @@
 
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 
+class ProfileIOS;
 @class UIApplication;
 @class UNNotificationCategory;
 @class UNNotificationSettings;
@@ -108,6 +109,9 @@ enum class SettingsAuthorizationStatus {
 + (std::optional<PushNotificationClientId>)
     mapToPushNotificationClientIdFromUserInfo:
         (NSDictionary<NSString*, id>*)userInfo;
+
+// YES if provisional notifications are allowed by policy for the given profile.
++ (BOOL)provisionalAllowedByPolicyForProfile:(ProfileIOS*)profile;
 
 @end
 
