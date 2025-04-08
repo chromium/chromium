@@ -145,7 +145,9 @@ TEST_F(OnTaskPodViewTest, PinTabStripButtonClickTriggersShowOrHideTabStrip) {
       .Times(1)
       .InSequence(s);
   LeftClickOn(pin_tab_strip_button);
+  EXPECT_TRUE(pin_tab_strip_button->toggled());
   LeftClickOn(pin_tab_strip_button);
+  EXPECT_FALSE(pin_tab_strip_button->toggled());
 }
 
 TEST_F(OnTaskPodViewTest, PodPositionSliderButtonClickChangesPodLocation) {

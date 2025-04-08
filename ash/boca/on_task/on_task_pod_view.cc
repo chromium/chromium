@@ -21,7 +21,6 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/views/background.h"
-#include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
 
@@ -45,42 +44,6 @@ std::unique_ptr<IconButton> CreateIconButton(base::RepeatingClosure callback,
   button->SetHasInkDropActionOnClick(true);
   return button;
 }
-
-class PinTabStripButton : public views::LabelButton {
-  METADATA_HEADER(PinTabStripButton, views::LabelButton)
- public:
-  // This class subclasses views::LabelButton to allow access to the protected
-  // label() method.
-  PinTabStripButton(views::Button::PressedCallback callback,
-                    std::u16string_view text)
-      : views::LabelButton(std::move(callback), text) {
-    SetImageModel(views::Button::STATE_NORMAL,
-                  ui::ImageModel::FromVectorIcon(kOnTaskPodTabsIcon,
-                                                 cros_tokens::kCrosSysOnSurface,
-                                                 kLabelButtonIconSize));
-    // Accessing protected member label() to set the font list.
-    label()->SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
-        TypographyToken::kCrosButton2));
-    SetEnabledTextColors(cros_tokens::kCrosSysOnSurface);
-    SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
-        kLabelButtonTopPadding, kLabelButtonLeftPadding,
-        kLabelButtonButtomPadding, kLabelButtonRightPadding)));
-    SetHorizontalAlignment(gfx::ALIGN_CENTER);
-    SetImageLabelSpacing(kLabelButtonIconTextSpace);
-    int labelButtonWidth = kLabelButtonIconSize + kLabelButtonIconTextSpace +
-                           GetPreferredSize().width();
-    SetPreferredSize(gfx::Size(labelButtonWidth, kLabelButtonHeight));
-    SetBackground(views::CreateRoundedRectBackground(
-        cros_tokens::kCrosSysSystemOnBase, kLabelButtonRadius));
-  }
-
-  PinTabStripButton(const PinTabStripButton&) = delete;
-  PinTabStripButton& operator=(const PinTabStripButton&) = delete;
-  ~PinTabStripButton() override = default;
-};
-
-BEGIN_METADATA(PinTabStripButton)
-END_METADATA
 
 }  // namespace
 
@@ -127,7 +90,7 @@ void OnTaskPodView::AddShortcutButtons() {
   left_separator_->SetBorder(views::CreateEmptyBorder(
       gfx::Insets::VH(kSeparatorVerticalPadding, kSeparatorHorizontalPadding)));
   left_separator_->SetColorId(cros_tokens::kCrosSysSeparator);
-  left_separator_->SetPreferredLength(kLabelButtonHeight);
+  left_separator_->SetPreferredLength(kSeparatorHeight);
 
   back_button_ = AddChildView(CreateIconButton(
       base::BindRepeating(&OnTaskPodController::MaybeNavigateToPreviousPage,
@@ -149,45 +112,31 @@ void OnTaskPodView::AddShortcutButtons() {
   right_separator_->SetBorder(views::CreateEmptyBorder(
       gfx::Insets::VH(kSeparatorVerticalPadding, kSeparatorHorizontalPadding)));
   right_separator_->SetColorId(cros_tokens::kCrosSysSeparator);
-  right_separator_->SetPreferredLength(kLabelButtonHeight);
+  right_separator_->SetPreferredLength(kSeparatorHeight);
   right_separator_->SetVisible(pod_controller_->CanToggleTabStripVisibility());
 
-  pin_tab_strip_button_ = AddChildView(std::make_unique<PinTabStripButton>(
+  pin_tab_strip_button_ = AddChildView(CreateIconButton(
       base::BindRepeating(&OnTaskPodView::UpdatePinTabStripButton,
                           base::Unretained(this)),
-      l10n_util::GetStringUTF16(
-          IDS_ON_TASK_POD_PIN_TAP_STRIP_ACCESSIBLE_NAME)));
+      &kOnTaskPodTabsIcon, IDS_ON_TASK_POD_PIN_TAP_STRIP_ACCESSIBLE_NAME,
+      /*is_togglable=*/true));
   pin_tab_strip_button_->SetVisible(
       pod_controller_->CanToggleTabStripVisibility());
 }
 
 void OnTaskPodView::UpdatePinTabStripButton() {
   should_show_tab_strip_ = !should_show_tab_strip_;
+  pin_tab_strip_button_->SetToggled(should_show_tab_strip_);
   pod_controller_->ToggleTabStripVisibility(should_show_tab_strip_);
 
   if (should_show_tab_strip_) {
     // Button is "Hide tabs" when the tab strip is already shown.
-    pin_tab_strip_button_->SetText(l10n_util::GetStringUTF16(
+    pin_tab_strip_button_->SetTooltipText(l10n_util::GetStringUTF16(
         IDS_ON_TASK_POD_UNPIN_TAP_STRIP_ACCESSIBLE_NAME));
-    pin_tab_strip_button_->SetBackground(views::CreateRoundedRectBackground(
-        cros_tokens::kCrosSysSystemPrimaryContainer, kLabelButtonRadius));
-    pin_tab_strip_button_->SetEnabledTextColors(
-        cros_tokens::kCrosSysSystemOnPrimaryContainer);
-    pin_tab_strip_button_->SetImageModel(
-        views::Button::STATE_NORMAL,
-        ui::ImageModel::FromVectorIcon(
-            kOnTaskPodTabsIcon, cros_tokens::kCrosSysSystemOnPrimaryContainer));
   } else {
     // Otherwise, button is "Show tabs" when the tab strip is already hidden.
-    pin_tab_strip_button_->SetText(l10n_util::GetStringUTF16(
+    pin_tab_strip_button_->SetTooltipText(l10n_util::GetStringUTF16(
         IDS_ON_TASK_POD_PIN_TAP_STRIP_ACCESSIBLE_NAME));
-    pin_tab_strip_button_->SetBackground(views::CreateRoundedRectBackground(
-        cros_tokens::kCrosSysSystemOnBase, kLabelButtonRadius));
-    pin_tab_strip_button_->SetEnabledTextColors(cros_tokens::kCrosSysOnSurface);
-    pin_tab_strip_button_->SetImageModel(
-        views::Button::STATE_NORMAL,
-        ui::ImageModel::FromVectorIcon(kOnTaskPodTabsIcon,
-                                       cros_tokens::kCrosSysOnSurface));
   }
 }
 

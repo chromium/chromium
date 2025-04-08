@@ -7133,25 +7133,25 @@
         OnTask Pod
       </message>
       <message name="IDS_ON_TASK_POD_NAVIGATE_BACK_ACCESSIBLE_NAME" desc="Accessible name for the Navigate back button in the OnTask pod.">
-        Click to go back
+        Go back
       </message>
       <message name="IDS_ON_TASK_POD_NAVIGATE_FORWARD_ACCESSIBLE_NAME" desc="Accessible name for the Navigate forward button in the OnTask pod.">
-        Click to go forward
+        Go forward
       </message>
       <message name="IDS_ON_TASK_POD_RELOAD_ACCESSIBLE_NAME" desc="Accessible name for the Reload tab button in the OnTask pod.">
-        Reload tab
+        Reload this page
       </message>
       <message name="IDS_ON_TASK_POD_PIN_TAP_STRIP_ACCESSIBLE_NAME" desc="Accessible name for the show tab strip button in the OnTask pod.">
-        Show tabs
+        Click to show tabs
       </message>
       <message name="IDS_ON_TASK_POD_UNPIN_TAP_STRIP_ACCESSIBLE_NAME" desc="Accessible name for the hide tab strip button in the OnTask pod.">
-        Hide tabs
+        Click to autohide tabs
       </message>
       <message name="IDS_ON_TASK_MOVE_POD_TOP_LEFT_ACCESSIBLE_NAME" desc="Accessible name for the move pod to top left button in the OnTask pod.">
-        Move to top left
+        Move this menu to the left
       </message>
       <message name="IDS_ON_TASK_MOVE_POD_TOP_RIGHT_ACCESSIBLE_NAME" desc="Accessible name for the move pod to top right button in the OnTask pod.">
-        Move to top right
+        Move this menu to the right
       </message>
 
       <!-- Strings for Class Tools -->
