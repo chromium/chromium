@@ -1510,18 +1510,19 @@ bool HTMLCanvasElement::ShouldAccelerate() const {
   if (settings && !settings->GetAcceleratedCompositingEnabled())
     return false;
 
-  // Avoid creating |contextProvider| until we're sure we want to try use it,
-  // since it costs us GPU memory.
-  base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper =
-      SharedGpuContext::ContextProviderWrapper();
-  if (!context_provider_wrapper)
-    return false;
-
   if (context_ &&
       context_->CreationAttributes().will_read_frequently ==
           CanvasContextCreationAttributesCore::WillReadFrequently::kUndefined &&
       DisabledAccelerationCounterSupplement::From(GetDocument())
           .ShouldDisableAcceleration()) {
+    return false;
+  }
+
+  // Avoid creating |contextProvider| until we're sure we want to try use it,
+  // since it costs us GPU memory.
+  base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper =
+      SharedGpuContext::ContextProviderWrapper();
+  if (!context_provider_wrapper) {
     return false;
   }
 
