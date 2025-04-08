@@ -48,7 +48,6 @@ include_rules = [
   "+chrome/browser/contextmenu/java/src/org/chromium/chrome/browser/contextmenu/ContextMenuNativeDelegate.java",
   "+chrome/browser/contextmenu/java/src/org/chromium/chrome/browser/contextmenu/ContextMenuPopulator.java",
   "+chrome/browser/contextmenu/java/src/org/chromium/chrome/browser/contextmenu/ContextMenuPopulatorFactory.java",
-  "+chrome/browser/continuous_search/android/java/org/chromium/chrome/browser/continuous_search/ContinuousSearchTabHelper.java",
   "+chrome/browser/gesturenav/android/java/src/org/chromium/chrome/browser/gesturenav/NativePageBitmapCapturer.java",
   "+chrome/browser/incognito/android/java/src/org/chromium/chrome/browser/incognito/IncognitoUtils.java",
   "+chrome/browser/password_check/android/java/src/org/chromium/chrome/browser/password_check/PasswordCheckUkmRecorder.java",
