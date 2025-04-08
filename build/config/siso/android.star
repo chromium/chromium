@@ -49,6 +49,9 @@ def __step_config(ctx, step_config):
         gn_args = gn.args(ctx)
         if gn_args.get("android_static_analysis") == '"build_server"':
             remote_run_static_analysis = False
+        if gn_args.get("enable_kythe_annotations") == "true":
+            # Remote Kythe annotations isn't supported.
+            remote_run = False
 
     step_config["rules"].extend([
         # See also https://chromium.googlesource.com/chromium/src/build/+/HEAD/android/docs/java_toolchain.md
