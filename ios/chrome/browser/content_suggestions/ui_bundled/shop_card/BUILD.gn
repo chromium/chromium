@@ -35,6 +35,7 @@ source_set("shop_card") {
     "//ios/chrome/browser/content_suggestions/ui_bundled/impression_limits:impression_limits",
     "//ios/chrome/browser/content_suggestions/ui_bundled/magic_stack:public",
     "//ios/chrome/browser/favicon/model:model",
+    "//ios/chrome/browser/ntp/ui_bundled:ui_bundled",
     "//ios/chrome/browser/price_notifications/ui_bundled/cells:cells",
     "//ios/chrome/browser/shared/model/application_context:application_context",
     "//ios/chrome/browser/shared/model/prefs:pref_names",

@@ -430,6 +430,7 @@ using segmentation_platform::TipIdentifier;
                                     profile)
          impressionLimitService:ImpressionLimitServiceFactory::GetForProfile(
                                     profile)];
+    _shopCardMediator.NTPActionsDelegate = self.NTPActionsDelegate;
     [moduleMediators addObject:_shopCardMediator];
     _shopCardMediator.shopCardActionDelegate = self;
   }

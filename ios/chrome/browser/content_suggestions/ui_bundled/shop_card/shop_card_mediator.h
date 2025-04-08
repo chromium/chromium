@@ -21,6 +21,7 @@ class ShoppingService;
 class ImpressionLimitService;
 class PrefService;
 class FaviconLoader;
+@protocol NewTabPageActionsDelegate;
 @protocol ShopCardActionDelegate;
 @class ShopCardItem;
 @class ShopCardData;
@@ -64,6 +65,9 @@ class FaviconLoader;
 
 // Delegate to communicate events back to the ContentSuggestionsCoordinator.
 @property(nonatomic, weak) id<ShopCardActionDelegate> shopCardActionDelegate;
+
+// Delegate for reporting content suggestions actions to the NTP.
+@property(nonatomic, weak) id<NewTabPageActionsDelegate> NTPActionsDelegate;
 
 @end
 
