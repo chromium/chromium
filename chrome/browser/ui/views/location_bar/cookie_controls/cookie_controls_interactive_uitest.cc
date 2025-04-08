@@ -434,7 +434,14 @@ IN_PROC_BROWSER_TEST_F(CookieControlsWithIphUiTest,
       EnsureNotPresent(CookieControlsBubbleView::kCookieControlsBubble));
 }
 
-IN_PROC_BROWSER_TEST_F(CookieControlsWithIphUiTest, OpenUserBypassViaIph) {
+// TODO(crbug.com/409272227): Flaky on linux.*-rel.
+#if BUILDFLAG(IS_LINUX) && defined(NDEBUG)
+#define MAYBE_OpenUserBypassViaIph DISABLED_OpenUserBypassViaIph
+#else
+#define MAYBE_OpenUserBypassViaIph OpenUserBypassViaIph
+#endif
+IN_PROC_BROWSER_TEST_F(CookieControlsWithIphUiTest,
+                       MAYBE_OpenUserBypassViaIph) {
   BlockThirdPartyCookies();
   SetHighSiteEngagement();
   RunTestSequence(
@@ -452,8 +459,16 @@ IN_PROC_BROWSER_TEST_F(CookieControlsWithIphUiTest, OpenUserBypassViaIph) {
           user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
 }
 
+// TODO(crbug.com/409272227): Flaky on linux-rel.
+#if BUILDFLAG(IS_LINUX) && defined(NDEBUG)
+#define MAYBE_OpenUserBypassViaIconWhenIphVisible \
+  DISABLED_OpenUserBypassViaIconWhenIphVisible
+#else
+#define MAYBE_OpenUserBypassViaIconWhenIphVisible \
+  OpenUserBypassViaIconWhenIphVisible
+#endif
 IN_PROC_BROWSER_TEST_F(CookieControlsWithIphUiTest,
-                       OpenUserBypassViaIconWhenIphVisible) {
+                       MAYBE_OpenUserBypassViaIconWhenIphVisible) {
   BlockThirdPartyCookies();
   SetHighSiteEngagement();
   RunTestSequence(
