@@ -1735,6 +1735,15 @@
     "expires": "Jul 1, 2025"
   },
   {
+    "prefix": "fedcm-alternative-identifiers",
+    "owners": ["cbiesinger@chromium.org", "web-identity-eng@google.com"],
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": ["external/wpt/fedcm/alternative-identifiers/"],
+    "exclusive_tests": "ALL",
+    "args": ["--enable-features=FedCmAlternativeIdentifiers"],
+    "expires": "Jun 1, 2025"
+  },
+  {
     "prefix": "fedcm-multi-idp",
     "owners": ["npm@chromium.org", "web-identity-eng@google.com"],
     "platforms": ["Linux", "Mac", "Win"],
