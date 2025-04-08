@@ -110,7 +110,6 @@ bool UnacceleratedStaticBitmapImage::CopyToResourceProvider(
     CanvasResourceProvider* resource_provider,
     const gfx::Rect& copy_rect) {
   DCHECK(resource_provider);
-  DCHECK(IsOriginTopLeft());
 
   // Extract content to SkPixmap. Pixels are CPU backed resource and this
   // should be freed.

@@ -364,8 +364,7 @@ void AcceleratedStaticBitmapImage::InitializeTextureBacking(
       GrBackendTextures::MakeGL(GetSize().width(), GetSize().height(),
                                 skgpu::Mipmapped::kNo, texture_info);
 
-  GrSurfaceOrigin origin = IsOriginTopLeft() ? kTopLeft_GrSurfaceOrigin
-                                             : kBottomLeft_GrSurfaceOrigin;
+  GrSurfaceOrigin origin = shared_image_->surface_origin();
 
   auto* release_ctx = new ReleaseContext;
   release_ctx->mailbox_ref = mailbox_ref_;
