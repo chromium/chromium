@@ -7,8 +7,9 @@
 
 #import <Foundation/Foundation.h>
 
-#include "components/signin/public/base/signin_metrics.h"
-#include "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
+#import "components/signin/public/base/signin_metrics.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_context_style.h"
 
 @protocol SystemIdentity;
 
@@ -94,6 +95,10 @@ enum class AuthenticationOperation {
 
 // The operation to perform during the sign-in flow.
 @property(nonatomic, readonly) AuthenticationOperation operation;
+
+// Customize content on sign-in and history sync screens.
+// Default: `kDefault`.
+@property(nonatomic, assign) SigninContextStyle contextStyle;
 
 // Chrome identity is only used for the AuthenticationOperationSigninAndSync
 // operation (should be nil otherwise). If the identity is non-nil, the

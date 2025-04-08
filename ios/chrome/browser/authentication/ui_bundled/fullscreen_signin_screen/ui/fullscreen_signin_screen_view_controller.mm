@@ -6,6 +6,7 @@
 
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_context_style.h"
 #import "ios/chrome/browser/authentication/ui_bundled/views/identity_button_control.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/elements/enterprise_info_popover_view_controller.h"
@@ -43,7 +44,10 @@ constexpr CGFloat kEnterpriseIconPointSize = 13;
 
 @end
 
-@implementation FullscreenSigninScreenViewController
+@implementation FullscreenSigninScreenViewController {
+  // Used to customize content on screen.
+  SigninContextStyle _contextStyle;
+}
 
 @dynamic delegate;
 @synthesize hasPlatformPolicies = _hasPlatformPolicies;
@@ -51,9 +55,19 @@ constexpr CGFloat kEnterpriseIconPointSize = 13;
 @synthesize signinStatus = _signinStatus;
 @synthesize syncEnabled = _syncEnabled;
 
+- (instancetype)initWithContextStyle:(SigninContextStyle)contextStyle {
+  self = [super init];
+  if (self) {
+    _contextStyle = contextStyle;
+  }
+  return self;
+}
+
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
+  // TODO(crbug.com/391087764): Use `_contextStyle` to update content when
+  // joining a shared collaboration group while signed out or not synced.
   self.view.accessibilityIdentifier =
       first_run::kFirstRunSignInScreenAccessibilityIdentifier;
   self.bannerSize = BannerImageSizeType::kStandard;

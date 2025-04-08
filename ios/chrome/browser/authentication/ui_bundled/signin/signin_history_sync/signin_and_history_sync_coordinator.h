@@ -23,9 +23,11 @@ enum class PromoAction : int;
 // it is NO, it might still be skipped if the user previously approved it).
 // `fullscreenPromo`: whether the promo should be displayed in a fullscreen
 // modal.
+// The `contextStyle` is used to customize content on screens.
 - (instancetype)
     initWithBaseViewController:(UIViewController*)viewController
                        browser:(Browser*)browser
+                  contextStyle:(SigninContextStyle)contextStyle
                    accessPoint:(signin_metrics::AccessPoint)accessPoint
                    promoAction:(signin_metrics::PromoAction)promoAction
            optionalHistorySync:(BOOL)optionalHistorySync
@@ -33,6 +35,7 @@ enum class PromoAction : int;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
+                              contextStyle:(SigninContextStyle)contextStyle
                                accessPoint:
                                    (signin_metrics::AccessPoint)accessPoint
     NS_UNAVAILABLE;

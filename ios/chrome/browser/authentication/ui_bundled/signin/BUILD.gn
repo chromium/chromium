@@ -160,6 +160,7 @@ source_set("constants") {
   sources = [
     "signin_constants.h",
     "signin_constants.mm",
+    "signin_context_style.h",
   ]
   deps = [ "//base" ]
   frameworks = [ "Foundation.framework" ]

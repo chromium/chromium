@@ -24,6 +24,7 @@ enum class PromoAction;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
+                              contextStyle:(SigninContextStyle)contextStyle
                                accessPoint:
                                    (signin_metrics::AccessPoint)accessPoint
     NS_UNAVAILABLE;
@@ -33,6 +34,7 @@ enum class PromoAction;
     initWithBaseViewController:(UIViewController*)viewController
                        browser:(Browser*)browser
                       identity:(id<SystemIdentity>)identity
+                  contextStyle:(SigninContextStyle)contextStyle
                    accessPoint:(signin_metrics::AccessPoint)accessPoint
                    promoAction:(signin_metrics::PromoAction)promoAction
     NS_DESIGNATED_INITIALIZER;

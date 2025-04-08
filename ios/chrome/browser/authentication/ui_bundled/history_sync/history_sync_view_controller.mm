@@ -11,6 +11,7 @@
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/identity_manager/tribool.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_context_style.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -18,17 +19,15 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
-using signin_metrics::AccessPoint;
-
 @implementation HistorySyncViewController {
-  // Access point associated with the history opt-in screen.
-  AccessPoint _accessPoint;
+  // Used to customize content on screen.
+  SigninContextStyle _contextStyle;
 }
 
-- (instancetype)initWithAccessPoint:(AccessPoint)accessPoint {
+- (instancetype)initWithContextStyle:(SigninContextStyle)contextStyle {
   self = [super init];
   if (self) {
-    _accessPoint = accessPoint;
+    _contextStyle = contextStyle;
   }
   return self;
 }
@@ -49,16 +48,16 @@ using signin_metrics::AccessPoint;
         [UIImage imageNamed:@"history_sync_opt_in_background"];
   }
 
-  switch (_accessPoint) {
-    case AccessPoint::kCollaborationShareTabGroup:
-    case AccessPoint::kCollaborationJoinTabGroup: {
+  switch (_contextStyle) {
+    case SigninContextStyle::kCollaborationJoinTabGroup:
+    case SigninContextStyle::kCollaborationShareTabGroup: {
       self.titleText = l10n_util::GetNSString(
           IDS_IOS_HISTORY_SYNC_GROUP_COLLABORATION_TITLE);
       self.subtitleText = l10n_util::GetNSString(
           IDS_IOS_HISTORY_SYNC_GROUP_COLLABORATION_SUBTITLE);
       break;
     }
-    default: {
+    case SigninContextStyle::kDefault: {
       self.titleText = l10n_util::GetNSString(IDS_IOS_HISTORY_SYNC_TITLE);
       self.subtitleText = l10n_util::GetNSString(IDS_IOS_HISTORY_SYNC_SUBTITLE);
       break;

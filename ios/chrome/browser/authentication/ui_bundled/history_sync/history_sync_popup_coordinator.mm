@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/interruptible_chrome_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_context_style.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -44,6 +45,8 @@
   // Whether the History Sync screen is a optional step, that can be skipped
   // if declined too often.
   BOOL _isOptional;
+  // Used to customize content on screen.
+  SigninContextStyle _contextStyle;
   // Access point associated with the history opt-in screen.
   signin_metrics::AccessPoint _accessPoint;
 }
@@ -53,6 +56,7 @@
                              showUserEmail:(BOOL)showUserEmail
                          signOutIfDeclined:(BOOL)signOutIfDeclined
                                 isOptional:(BOOL)isOptional
+                              contextStyle:(SigninContextStyle)contextStyle
                                accessPoint:
                                    (signin_metrics::AccessPoint)accessPoint {
   self = [super initWithBaseViewController:viewController browser:browser];
@@ -60,6 +64,7 @@
     _showUserEmail = showUserEmail;
     _signOutIfDeclined = signOutIfDeclined;
     _isOptional = isOptional;
+    _contextStyle = contextStyle;
     _accessPoint = accessPoint;
   }
   return self;
@@ -88,6 +93,7 @@
                               firstRun:NO
                          showUserEmail:_showUserEmail
                             isOptional:_isOptional
+                          contextStyle:_contextStyle
                            accessPoint:_accessPoint];
   [_historySyncCoordinator start];
   [_navigationController setNavigationBarHidden:YES animated:NO];

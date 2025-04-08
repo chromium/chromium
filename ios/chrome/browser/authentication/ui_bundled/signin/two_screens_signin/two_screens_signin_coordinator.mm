@@ -55,11 +55,13 @@ using base::UserMetricsAction;
 - (instancetype)
     initWithBaseViewController:(UIViewController*)viewController
                        browser:(Browser*)browser
+                  contextStyle:(SigninContextStyle)contextStyle
                    accessPoint:(signin_metrics::AccessPoint)accessPoint
                    promoAction:(signin_metrics::PromoAction)promoAction {
   DCHECK(!browser->GetProfile()->IsOffTheRecord());
   self = [super initWithBaseViewController:viewController
                                    browser:browser
+                              contextStyle:contextStyle
                                accessPoint:accessPoint];
   if (self) {
     // This coordinator should not be used in the FRE.
@@ -161,6 +163,7 @@ using base::UserMetricsAction;
           initWithBaseNavigationController:_navigationController
                                    browser:self.browser
                                   delegate:self
+                              contextStyle:self.contextStyle
                                accessPoint:self.accessPoint
                                promoAction:_promoAction];
     case kHistorySync:
@@ -171,6 +174,7 @@ using base::UserMetricsAction;
                                   firstRun:NO
                              showUserEmail:NO
                                 isOptional:YES
+                              contextStyle:self.contextStyle
                                accessPoint:self.accessPoint];
     case kDefaultBrowserPromo:
     case kChoice:

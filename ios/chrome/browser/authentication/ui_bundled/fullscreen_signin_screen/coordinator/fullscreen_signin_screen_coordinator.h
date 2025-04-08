@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 @protocol FirstRunScreenDelegate;
+enum class SigninContextStyle;
 namespace signin_metrics {
 enum class AccessPoint : int;
 enum class PromoAction : int;
@@ -22,12 +23,14 @@ enum class PromoAction : int;
 // Initiates a FullscreenSigninScreenCoordinator with `navigationController`,
 // `browser` and `delegate`.
 // The `delegate` parameter is for handling the transfer between screens.
+// The `contextStyle` is used to customize content on screens.
 // The `accessPoint` and `promoAction` parameters are used for logging.
 - (instancetype)
     initWithBaseNavigationController:
         (UINavigationController*)navigationController
                              browser:(Browser*)browser
                             delegate:(id<FirstRunScreenDelegate>)delegate
+                        contextStyle:(SigninContextStyle)contextStyle
                          accessPoint:(signin_metrics::AccessPoint)accessPoint
                          promoAction:(signin_metrics::PromoAction)promoAction
     NS_DESIGNATED_INITIALIZER;

@@ -23,6 +23,7 @@ source_set("coordinator") {
     "//components/signin/public/identity_manager/objc",
     "//components/sync",
     "//ios/chrome/browser/authentication/ui_bundled/history_sync",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
     "//ios/chrome/browser/default_browser/model:default_browser_interest_signals",
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/feature_engagement/model",

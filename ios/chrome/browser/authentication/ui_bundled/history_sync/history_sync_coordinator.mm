@@ -49,6 +49,8 @@
   BOOL _recordOptInEndAtStop;
   // Delegate for the history sync coordinator.
   __weak id<HistorySyncCoordinatorDelegate> _delegate;
+  // Used to customize content on screen.
+  SigninContextStyle _contextStyle;
   // Access point associated with the history opt-in screen.
   signin_metrics::AccessPoint _accessPoint;
 }
@@ -89,6 +91,7 @@
                             firstRun:(BOOL)firstRun
                        showUserEmail:(BOOL)showUserEmail
                           isOptional:(BOOL)isOptional
+                        contextStyle:(SigninContextStyle)contextStyle
                          accessPoint:(signin_metrics::AccessPoint)accessPoint {
   self = [super initWithBaseViewController:navigationController
                                    browser:browser];
@@ -98,6 +101,7 @@
     _showUserEmail = showUserEmail;
     _isOptional = isOptional;
     _delegate = delegate;
+    _contextStyle = contextStyle;
     _accessPoint = accessPoint;
   }
   return self;
@@ -121,7 +125,7 @@
   }
 
   _viewController =
-      [[HistorySyncViewController alloc] initWithAccessPoint:_accessPoint];
+      [[HistorySyncViewController alloc] initWithContextStyle:_contextStyle];
   _viewController.delegate = self;
 
   ChromeAccountManagerService* chromeAccountManagerService =

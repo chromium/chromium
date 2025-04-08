@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/fullscreen_signin_screen/ui/fullscreen_signin_screen_consumer.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
 
+enum class SigninContextStyle;
 @protocol TOSCommands;
 
 // Delegate for the fullscreen sign-in view controller.
@@ -29,6 +30,13 @@
 @property(nonatomic, weak) id<TOSCommands> TOSHandler;
 @property(nonatomic, weak) id<FullscreenSigninScreenViewControllerDelegate>
     delegate;
+
+// Designated initializer.
+// The `contextStyle` is used to customize content on screen.
+- (instancetype)initWithContextStyle:(SigninContextStyle)contextStyle
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
 
 @end
 

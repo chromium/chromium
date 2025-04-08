@@ -32,6 +32,7 @@ source_set("tab_grid") {
     "//components/supervised_user/core/common",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/authentication/ui_bundled/history_sync",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
     "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/bookmarks/ui_bundled:utils",
     "//ios/chrome/browser/bookmarks/ui_bundled/home",

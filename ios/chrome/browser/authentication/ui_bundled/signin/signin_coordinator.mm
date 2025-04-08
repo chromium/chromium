@@ -34,10 +34,12 @@ using signin_metrics::PromoAction;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
+                              contextStyle:(SigninContextStyle)contextStyle
                                accessPoint:
                                    (signin_metrics::AccessPoint)accessPoint {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
+    _contextStyle = contextStyle;
     _accessPoint = accessPoint;
     _creationTimeTicks = base::TimeTicks::Now();
   }
@@ -55,6 +57,8 @@ using signin_metrics::PromoAction;
         (UIViewController*)viewController
                                            browser:(Browser*)browser
                                           identity:(id<SystemIdentity>)identity
+                                      contextStyle:
+                                          (SigninContextStyle)contextStyle
                                        accessPoint:(signin_metrics::AccessPoint)
                                                        accessPoint
                                        promoAction:(signin_metrics::PromoAction)
@@ -63,6 +67,7 @@ using signin_metrics::PromoAction;
       initWithBaseViewController:viewController
                          browser:browser
                         identity:identity
+                    contextStyle:contextStyle
                      accessPoint:accessPoint
                      promoAction:promoAction];
 }
@@ -71,6 +76,8 @@ using signin_metrics::PromoAction;
     fullscreenSigninCoordinatorWithBaseViewController:
         (UIViewController*)viewController
                                               browser:(Browser*)browser
+                                         contextStyle:
+                                             (SigninContextStyle)contextStyle
                                           accessPoint:
                                               (signin_metrics::AccessPoint)
                                                   accessPoint {
@@ -78,30 +85,36 @@ using signin_metrics::PromoAction;
       initWithBaseViewController:viewController
                          browser:browser
                   screenProvider:[[SigninScreenProvider alloc] init]
+                    contextStyle:contextStyle
                      accessPoint:accessPoint];
 }
 
 + (instancetype)
     upgradeSigninPromoCoordinatorWithBaseViewController:
         (UIViewController*)viewController
-                                                browser:(Browser*)browser {
+                                                browser:(Browser*)browser
+                                           contextStyle:(SigninContextStyle)
+                                                            contextStyle {
   AccessPoint accessPoint = AccessPoint::kSigninPromo;
   PromoAction promoAction = PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO;
   return [[TwoScreensSigninCoordinator alloc]
       initWithBaseViewController:viewController
                          browser:browser
+                    contextStyle:contextStyle
                      accessPoint:accessPoint
                      promoAction:promoAction];
 }
 
-+ (instancetype)addAccountCoordinatorWithBaseViewController:
-                    (UIViewController*)viewController
-                                                    browser:(Browser*)browser
-                                                accessPoint:
-                                                    (AccessPoint)accessPoint {
++ (instancetype)
+    addAccountCoordinatorWithBaseViewController:
+        (UIViewController*)viewController
+                                        browser:(Browser*)browser
+                                   contextStyle:(SigninContextStyle)contextStyle
+                                    accessPoint:(AccessPoint)accessPoint {
   return [[AddAccountSigninCoordinator alloc]
       initWithBaseViewController:viewController
                          browser:browser
+                    contextStyle:contextStyle
                      accessPoint:accessPoint
                      promoAction:PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO
                     signinIntent:AddAccountSigninIntent::kAddAccount];
@@ -111,6 +124,8 @@ using signin_metrics::PromoAction;
     primaryAccountReauthCoordinatorWithBaseViewController:
         (UIViewController*)viewController
                                                   browser:(Browser*)browser
+                                             contextStyle:(SigninContextStyle)
+                                                              contextStyle
                                               accessPoint:
                                                   (AccessPoint)accessPoint
                                               promoAction:
@@ -118,6 +133,7 @@ using signin_metrics::PromoAction;
   return [[AddAccountSigninCoordinator alloc]
       initWithBaseViewController:viewController
                          browser:browser
+                    contextStyle:contextStyle
                      accessPoint:accessPoint
                      promoAction:promoAction
                     signinIntent:AddAccountSigninIntent::kPrimaryAccountReauth];
@@ -127,6 +143,8 @@ using signin_metrics::PromoAction;
     signinAndSyncReauthCoordinatorWithBaseViewController:
         (UIViewController*)viewController
                                                  browser:(Browser*)browser
+                                            contextStyle:
+                                                (SigninContextStyle)contextStyle
                                              accessPoint:
                                                  (AccessPoint)accessPoint
                                              promoAction:
@@ -134,6 +152,7 @@ using signin_metrics::PromoAction;
   return [[AddAccountSigninCoordinator alloc]
       initWithBaseViewController:viewController
                          browser:browser
+                    contextStyle:contextStyle
                      accessPoint:accessPoint
                      promoAction:promoAction
                     signinIntent:AddAccountSigninIntent::kResignin];
@@ -173,12 +192,15 @@ using signin_metrics::PromoAction;
     consistencyPromoSigninCoordinatorWithBaseViewController:
         (UIViewController*)viewController
                                                     browser:(Browser*)browser
+                                               contextStyle:(SigninContextStyle)
+                                                                contextStyle
                                                 accessPoint:(signin_metrics::
                                                                  AccessPoint)
                                                                 accessPoint {
   return [ConsistencyPromoSigninCoordinator
       coordinatorWithBaseViewController:viewController
                                 browser:browser
+                           contextStyle:contextStyle
                             accessPoint:accessPoint];
 }
 
@@ -186,6 +208,8 @@ using signin_metrics::PromoAction;
     signinAndHistorySyncCoordinatorWithBaseViewController:
         (UIViewController*)viewController
                                                   browser:(Browser*)browser
+                                             contextStyle:(SigninContextStyle)
+                                                              contextStyle
                                               accessPoint:
                                                   (signin_metrics::AccessPoint)
                                                       accessPoint
@@ -198,20 +222,24 @@ using signin_metrics::PromoAction;
   return [[SignInAndHistorySyncCoordinator alloc]
       initWithBaseViewController:viewController
                          browser:browser
+                    contextStyle:contextStyle
                      accessPoint:accessPoint
                      promoAction:promoAction
              optionalHistorySync:optionalHistorySync
                  fullscreenPromo:fullscreenPromo];
 }
 
-+ (instancetype)accountMenuCoordinatorWithBaseViewController:
-                    (UIViewController*)viewController
-                                                     browser:(Browser*)browser
-                                                  anchorView:
-                                                      (UIView*)anchorView {
++ (instancetype)
+    accountMenuCoordinatorWithBaseViewController:
+        (UIViewController*)viewController
+                                         browser:(Browser*)browser
+                                    contextStyle:
+                                        (SigninContextStyle)contextStyle
+                                      anchorView:(UIView*)anchorView {
   return
       [[AccountMenuCoordinator alloc] initWithBaseViewController:viewController
                                                          browser:browser
+                                                    contextStyle:contextStyle
                                                       anchorView:anchorView];
 }
 
@@ -219,6 +247,8 @@ using signin_metrics::PromoAction;
     historySyncCoordinatorWithBaseViewController:
         (UIViewController*)viewController
                                          browser:(Browser*)browser
+                                    contextStyle:
+                                        (SigninContextStyle)contextStyle
                                      accessPoint:(signin_metrics::AccessPoint)
                                                      accessPoint
                                      promoAction:(signin_metrics::PromoAction)
@@ -226,6 +256,7 @@ using signin_metrics::PromoAction;
   return [[HistorySyncSigninCoordinator alloc]
       initWithBaseViewController:viewController
                          browser:browser
+                    contextStyle:contextStyle
                      accessPoint:accessPoint];
 }
 

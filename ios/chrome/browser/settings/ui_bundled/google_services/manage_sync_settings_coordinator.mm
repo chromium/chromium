@@ -494,6 +494,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   _accountMenuCoordinator = [SigninCoordinator
       accountMenuCoordinatorWithBaseViewController:self.viewController
                                            browser:self.browser
+                                      contextStyle:SigninContextStyle::kDefault
                                         anchorView:_viewController.view];
 
   __weak __typeof(self) weakself = self;

@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_popup_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_utils.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_context_style.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/menu/ui_bundled/action_factory.h"
@@ -248,6 +249,7 @@
                      showUserEmail:!dedicatedSignInDone
                  signOutIfDeclined:dedicatedSignInDone
                         isOptional:NO
+                      contextStyle:SigninContextStyle::kDefault
                        accessPoint:signin_metrics::AccessPoint::kRecentTabs];
     _historySyncPopupCoordinator.delegate = self;
     [_historySyncPopupCoordinator start];

@@ -15,6 +15,7 @@
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
+                              contextStyle:(SigninContextStyle)contextStyle
                                accessPoint:
                                    (signin_metrics::AccessPoint)accessPoint
     NS_UNAVAILABLE;
@@ -24,9 +25,11 @@
 // `accessPoint` is the view where the sign-in button was displayed.
 // `promoAction` is promo button used to trigger the sign-in.
 // `signinIntent` is the sign-in flow that will be triggered.
+// `contextStyle` is used to customize content on screens.
 - (instancetype)
     initWithBaseViewController:(UIViewController*)viewController
                        browser:(Browser*)browser
+                  contextStyle:(SigninContextStyle)contextStyle
                    accessPoint:(signin_metrics::AccessPoint)accessPoint
                    promoAction:(signin_metrics::PromoAction)promoAction
                   signinIntent:(AddAccountSigninIntent)signinIntent

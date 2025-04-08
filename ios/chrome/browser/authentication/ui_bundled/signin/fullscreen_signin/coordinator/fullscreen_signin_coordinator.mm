@@ -37,11 +37,13 @@
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
                             screenProvider:(ScreenProvider*)screenProvider
+                              contextStyle:(SigninContextStyle)contextStyle
                                accessPoint:
                                    (signin_metrics::AccessPoint)accessPoint {
   DCHECK(!browser->GetProfile()->IsOffTheRecord());
   self = [super initWithBaseViewController:viewController
                                    browser:browser
+                              contextStyle:contextStyle
                                accessPoint:accessPoint];
   if (self) {
     _screenProvider = screenProvider;
@@ -121,6 +123,7 @@
           initWithBaseNavigationController:self.navigationController
                                    browser:self.browser
                                   delegate:self
+                              contextStyle:self.contextStyle
                                accessPoint:self.accessPoint
                                promoAction:signin_metrics::PromoAction::
                                                PROMO_ACTION_NO_SIGNIN_PROMO];

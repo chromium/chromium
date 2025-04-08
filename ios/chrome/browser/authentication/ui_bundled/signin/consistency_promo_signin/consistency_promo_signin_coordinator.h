@@ -18,6 +18,7 @@ enum class AccessPoint : int;
 + (instancetype)
     coordinatorWithBaseViewController:(UIViewController*)viewController
                               browser:(Browser*)browser
+                         contextStyle:(SigninContextStyle)contextStyle
                           accessPoint:(signin_metrics::AccessPoint)accessPoint;
 
 @end

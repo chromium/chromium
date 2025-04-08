@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/fullscreen_signin_screen/coordinator/fullscreen_signin_screen_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_context_style.h"
 #import "ios/chrome/browser/docking_promo/coordinator/docking_promo_coordinator.h"
 #import "ios/chrome/browser/first_run/model/first_run_metrics.h"
 #import "ios/chrome/browser/first_run/ui_bundled/best_features/coordinator/best_features_screen_coordinator.h"
@@ -161,6 +162,7 @@ class FirstRunCoordinatorMetricsHelper final {
           initWithBaseNavigationController:self.navigationController
                                    browser:self.browser
                                   delegate:self
+                              contextStyle:SigninContextStyle::kDefault
                                accessPoint:signin_metrics::AccessPoint::
                                                kStartPage
                                promoAction:signin_metrics::PromoAction::
@@ -173,6 +175,7 @@ class FirstRunCoordinatorMetricsHelper final {
                                   firstRun:YES
                              showUserEmail:NO
                                 isOptional:YES
+                              contextStyle:SigninContextStyle::kDefault
                                accessPoint:signin_metrics::AccessPoint::
                                                kStartPage];
     case kDefaultBrowserPromo:

@@ -69,12 +69,14 @@ enum class SignInHistorySyncStep {
 - (instancetype)
     initWithBaseViewController:(UIViewController*)viewController
                        browser:(Browser*)browser
+                  contextStyle:(SigninContextStyle)contextStyle
                    accessPoint:(signin_metrics::AccessPoint)accessPoint
                    promoAction:(signin_metrics::PromoAction)promoAction
            optionalHistorySync:(BOOL)optionalHistorySync
                fullscreenPromo:(BOOL)fullscreenPromo {
   self = [super initWithBaseViewController:viewController
                                    browser:browser
+                              contextStyle:contextStyle
                                accessPoint:accessPoint];
   if (self) {
     _optionalHistorySync = optionalHistorySync;
@@ -189,6 +191,7 @@ enum class SignInHistorySyncStep {
           initWithBaseViewController:self.baseViewController
                              browser:self.browser
                       screenProvider:[[SigninScreenProvider alloc] init]
+                        contextStyle:self.contextStyle
                          accessPoint:self.accessPoint];
       __weak __typeof(self) weakSelf = self;
       coordinator.signinCompletion =
@@ -202,6 +205,7 @@ enum class SignInHistorySyncStep {
           [[ConsistencyPromoSigninCoordinator alloc]
               initWithBaseViewController:self.baseViewController
                                  browser:self.browser
+                            contextStyle:self.contextStyle
                              accessPoint:self.accessPoint];
       __weak __typeof(self) weakSelf = self;
       coordinator.signinCompletion =
@@ -215,6 +219,7 @@ enum class SignInHistorySyncStep {
           initWithBaseViewController:self.baseViewController
                              browser:self.browser
                             identity:nil
+                        contextStyle:self.contextStyle
                          accessPoint:self.accessPoint
                          promoAction:_promoAction];
       __weak __typeof(self) weakSelf = self;
@@ -240,6 +245,7 @@ enum class SignInHistorySyncStep {
                              showUserEmail:NO
                          signOutIfDeclined:NO
                                 isOptional:_optionalHistorySync
+                              contextStyle:self.contextStyle
                                accessPoint:self.accessPoint];
         coordinator.delegate = self;
         return coordinator;

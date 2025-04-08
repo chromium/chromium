@@ -195,15 +195,19 @@ void IOSCollaborationControllerDelegate::ShowAuthenticationUi(
       weak_ptr_factory_.GetWeakPtr(), std::move(result)));
 
   AccessPoint access_point;
+  SigninContextStyle context_style;
   switch (flow_type) {
     case FlowType::kJoin:
       access_point = AccessPoint::kCollaborationJoinTabGroup;
+      context_style = SigninContextStyle::kCollaborationJoinTabGroup;
       break;
     case FlowType::kShareOrManage:
       access_point = AccessPoint::kCollaborationShareTabGroup;
+      context_style = SigninContextStyle::kCollaborationShareTabGroup;
       break;
     case FlowType::kLeaveOrDelete:
       access_point = AccessPoint::kCollaborationLeaveOrDeleteTabGroup;
+      context_style = SigninContextStyle::kDefault;
       break;
   }
 
@@ -217,6 +221,7 @@ void IOSCollaborationControllerDelegate::ShowAuthenticationUi(
 
   command.optionalHistorySync = NO;
   command.fullScreenPromo = YES;
+  command.contextStyle = context_style;
 
   [application_handler showSignin:command
                baseViewController:base_view_controller_];

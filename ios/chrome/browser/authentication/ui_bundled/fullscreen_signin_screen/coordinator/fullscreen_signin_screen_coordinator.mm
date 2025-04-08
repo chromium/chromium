@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/identity_chooser/identity_chooser_coordinator_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/interruptible_chrome_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_context_style.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
 #import "ios/chrome/browser/first_run/model/first_run_metrics.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_constants.h"
@@ -67,6 +68,7 @@
 @end
 
 @implementation FullscreenSigninScreenCoordinator {
+  SigninContextStyle _contextStyle;
   signin_metrics::AccessPoint _accessPoint;
   signin_metrics::PromoAction _promoAction;
 }
@@ -78,6 +80,7 @@
         (UINavigationController*)navigationController
                              browser:(Browser*)browser
                             delegate:(id<FirstRunScreenDelegate>)delegate
+                        contextStyle:(SigninContextStyle)contextStyle
                          accessPoint:(signin_metrics::AccessPoint)accessPoint
                          promoAction:(signin_metrics::PromoAction)promoAction {
   self = [super initWithBaseViewController:navigationController
@@ -86,6 +89,7 @@
     _baseNavigationController = navigationController;
     _delegate = delegate;
     _UMAReportingUserChoice = kDefaultMetricsReportingCheckboxValue;
+    _contextStyle = contextStyle;
     _accessPoint = accessPoint;
     _promoAction = promoAction;
     _baseNavigationController.presentationController.delegate = self;
@@ -99,7 +103,8 @@
                    forProtocol:@protocol(TOSCommands)];
   id<TOSCommands> TOSHandler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), TOSCommands);
-  self.viewController = [[FullscreenSigninScreenViewController alloc] init];
+  self.viewController = [[FullscreenSigninScreenViewController alloc]
+      initWithContextStyle:_contextStyle];
   self.viewController.TOSHandler = TOSHandler;
   self.viewController.delegate = self;
 
@@ -194,6 +199,7 @@
   self.addAccountSigninCoordinator = [SigninCoordinator
       addAccountCoordinatorWithBaseViewController:self.viewController
                                           browser:self.browser
+                                     contextStyle:_contextStyle
                                       accessPoint:_accessPoint];
   __weak __typeof(self) weakSelf = self;
   self.addAccountSigninCoordinator.signinCompletion =

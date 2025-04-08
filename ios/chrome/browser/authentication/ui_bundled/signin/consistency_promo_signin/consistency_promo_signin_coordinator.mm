@@ -80,6 +80,7 @@
 + (instancetype)
     coordinatorWithBaseViewController:(UIViewController*)viewController
                               browser:(Browser*)browser
+                         contextStyle:(SigninContextStyle)contextStyle
                           accessPoint:(signin_metrics::AccessPoint)accessPoint {
   ProfileIOS* profile = browser->GetProfile();
   if (accessPoint == signin_metrics::AccessPoint::kWebSignin) {
@@ -99,6 +100,7 @@
   return [[ConsistencyPromoSigninCoordinator alloc]
       initWithBaseViewController:viewController
                          browser:browser
+                    contextStyle:contextStyle
                      accessPoint:accessPoint];
 }
 
@@ -296,6 +298,7 @@
   self.addAccountCoordinator = [SigninCoordinator
       addAccountCoordinatorWithBaseViewController:self.navigationController
                                           browser:self.browser
+                                     contextStyle:self.contextStyle
                                       accessPoint:self.accessPoint];
   __weak ConsistencyPromoSigninCoordinator* weakSelf = self;
   self.addAccountCoordinator.signinCompletion =

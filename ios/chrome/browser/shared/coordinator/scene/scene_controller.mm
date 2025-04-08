@@ -1566,7 +1566,9 @@ void OnListFamilyMembersResponse(
   self.signinCoordinator = [SigninCoordinator
       upgradeSigninPromoCoordinatorWithBaseViewController:self.mainInterface
                                                               .viewController
-                                                  browser:browser];
+                                                  browser:browser
+                                             contextStyle:SigninContextStyle::
+                                                              kDefault];
   [self startSigninCoordinatorWithCompletion:dismissalCompletion];
 }
 
@@ -1924,6 +1926,9 @@ using UserFeedbackDataCallback =
           primaryAccountReauthCoordinatorWithBaseViewController:
               baseViewController
                                                         browser:mainBrowser
+                                                   contextStyle:
+                                                       command.contextStyle
+
                                                     accessPoint:command
                                                                     .accessPoint
                                                     promoAction:
@@ -1934,6 +1939,8 @@ using UserFeedbackDataCallback =
           signinAndSyncReauthCoordinatorWithBaseViewController:
               baseViewController
                                                        browser:mainBrowser
+                                                  contextStyle:command
+                                                                   .contextStyle
                                                    accessPoint:command
                                                                    .accessPoint
                                                    promoAction:
@@ -1944,6 +1951,8 @@ using UserFeedbackDataCallback =
           consistencyPromoSigninCoordinatorWithBaseViewController:
               baseViewController
                                                           browser:mainBrowser
+                                                     contextStyle:
+                                                         command.contextStyle
                                                       accessPoint:
                                                           command.accessPoint];
       break;
@@ -1951,12 +1960,14 @@ using UserFeedbackDataCallback =
       self.signinCoordinator = [SigninCoordinator
           addAccountCoordinatorWithBaseViewController:baseViewController
                                               browser:mainBrowser
+                                         contextStyle:command.contextStyle
                                           accessPoint:command.accessPoint];
       break;
     case AuthenticationOperation::kForcedSigninAndSync:
       self.signinCoordinator = [SigninCoordinator
           fullscreenSigninCoordinatorWithBaseViewController:baseViewController
                                                     browser:mainBrowser
+                                               contextStyle:command.contextStyle
                                                 accessPoint:command
                                                                 .accessPoint];
       break;
@@ -1965,6 +1976,7 @@ using UserFeedbackDataCallback =
           instantSigninCoordinatorWithBaseViewController:baseViewController
                                                  browser:mainBrowser
                                                 identity:command.identity
+                                            contextStyle:command.contextStyle
                                              accessPoint:command.accessPoint
                                              promoAction:command.promoAction];
       break;
@@ -1973,6 +1985,8 @@ using UserFeedbackDataCallback =
           signinAndHistorySyncCoordinatorWithBaseViewController:
               baseViewController
                                                         browser:mainBrowser
+                                                   contextStyle:
+                                                       command.contextStyle
                                                     accessPoint:command
                                                                     .accessPoint
                                                     promoAction:command
@@ -1987,6 +2001,7 @@ using UserFeedbackDataCallback =
       self.signinCoordinator = [SigninCoordinator
           historySyncCoordinatorWithBaseViewController:baseViewController
                                                browser:mainBrowser
+                                          contextStyle:command.contextStyle
                                            accessPoint:command.accessPoint
                                            promoAction:command.promoAction];
       break;
@@ -2008,6 +2023,7 @@ using UserFeedbackDataCallback =
   SigninCoordinator* accountMenuCoordinator = [SigninCoordinator
       accountMenuCoordinatorWithBaseViewController:baseViewController
                                            browser:browser
+                                      contextStyle:SigninContextStyle::kDefault
                                         anchorView:anchorView];
   self.signinCoordinator = accountMenuCoordinator;
   // TODO(crbug.com/336719423): Record signin metrics based on the
@@ -2081,6 +2097,9 @@ using UserFeedbackDataCallback =
       consistencyPromoSigninCoordinatorWithBaseViewController:baseViewController
                                                       browser:self.mainInterface
                                                                   .browser
+                                                 contextStyle:
+                                                     SigninContextStyle::
+                                                         kDefault
                                                   accessPoint:
                                                       signin_metrics::
                                                           AccessPoint::

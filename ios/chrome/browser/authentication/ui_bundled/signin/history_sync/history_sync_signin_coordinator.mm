@@ -44,6 +44,7 @@
                    showUserEmail:NO
                signOutIfDeclined:NO
                       isOptional:NO
+                    contextStyle:self.contextStyle
                      accessPoint:self.accessPoint];
   _syncPopupCoordinator.delegate = self;
   [_syncPopupCoordinator start];

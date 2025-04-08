@@ -49,6 +49,7 @@ using l10n_util::GetNSStringF;
   DCHECK(!browser->GetProfile()->IsOffTheRecord());
   self = [super initWithBaseViewController:viewController
                                    browser:browser
+                              contextStyle:SigninContextStyle::kDefault
                                accessPoint:accessPoint];
   if (self) {
     _intent = intent;

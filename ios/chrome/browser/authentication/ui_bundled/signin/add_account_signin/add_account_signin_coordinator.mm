@@ -69,12 +69,14 @@ using signin_metrics::PromoAction;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
+                              contextStyle:(SigninContextStyle)contextStyle
                                accessPoint:(AccessPoint)accessPoint
                                promoAction:(PromoAction)promoAction
                               signinIntent:
                                   (AddAccountSigninIntent)signinIntent {
   self = [super initWithBaseViewController:viewController
                                    browser:browser
+                              contextStyle:contextStyle
                                accessPoint:accessPoint];
   if (self) {
     _signinIntent = signinIntent;
@@ -310,6 +312,7 @@ using signin_metrics::PromoAction;
       instantSigninCoordinatorWithBaseViewController:self.baseViewController
                                              browser:self.browser
                                             identity:identity
+                                        contextStyle:self.contextStyle
                                          accessPoint:self.accessPoint
                                          promoAction:self.promoAction];
 
@@ -345,6 +348,7 @@ using signin_metrics::PromoAction;
                      showUserEmail:NO
                  signOutIfDeclined:NO
                         isOptional:YES
+                      contextStyle:self.contextStyle
                        accessPoint:self.accessPoint];
     self.historySyncPopupCoordinator.delegate = self;
     [self.historySyncPopupCoordinator start];

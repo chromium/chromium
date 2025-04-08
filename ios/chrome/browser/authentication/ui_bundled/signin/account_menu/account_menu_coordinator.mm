@@ -102,10 +102,12 @@
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
+                              contextStyle:(SigninContextStyle)contextStyle
                                 anchorView:(UIView*)anchorView {
   self = [super
       initWithBaseViewController:viewController
                          browser:browser
+                    contextStyle:contextStyle
                      accessPoint:signin_metrics::AccessPoint::kAccountMenu];
   if (self) {
     _anchorView = anchorView;
@@ -386,6 +388,7 @@
       primaryAccountReauthCoordinatorWithBaseViewController:
           _navigationController
                                                     browser:self.browser
+                                               contextStyle:self.contextStyle
                                                 accessPoint:accessPoint
                                                 promoAction:promoAction];
   [self startSigninCoordinatorWithCompletion:nil];
@@ -448,6 +451,7 @@
   _signinCoordinator = [SigninCoordinator
       addAccountCoordinatorWithBaseViewController:baseViewController
                                           browser:self.browser
+                                     contextStyle:self.contextStyle
                                       accessPoint:self.accessPoint];
   [self startSigninCoordinatorWithCompletion:completion];
 }

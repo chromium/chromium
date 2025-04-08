@@ -28,6 +28,7 @@ class ConsistencyPromoSigninCoordinatorTest : public PlatformTest {
     coordinator_ = [[ConsistencyPromoSigninCoordinator alloc]
         initWithBaseViewController:base_view_controller_mock_
                            browser:browser_.get()
+                      contextStyle:SigninContextStyle::kDefault
                        accessPoint:access_point_];
     mediator_mock_ = OCMStrictClassMock([ConsistencyPromoSigninMediator class]);
     consistency_default_account_coordinator_mock_ =
