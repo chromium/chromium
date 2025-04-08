@@ -389,11 +389,11 @@ void NotificationChannelsProviderAndroid::UpdateChannelForWebsiteImpl(
   const std::string origin_string = origin.Serialize();
   switch (content_setting) {
     case CONTENT_SETTING_ALLOW:
-      CreateChannelIfRequired(origin_string,
+      CreateChannelIfRequired(primary_pattern, secondary_pattern, origin_string,
                               NotificationChannelStatus::ENABLED);
       break;
     case CONTENT_SETTING_BLOCK:
-      CreateChannelIfRequired(origin_string,
+      CreateChannelIfRequired(primary_pattern, secondary_pattern, origin_string,
                               NotificationChannelStatus::BLOCKED);
       break;
     case CONTENT_SETTING_DEFAULT: {
@@ -490,6 +490,8 @@ void NotificationChannelsProviderAndroid::SetClockForTesting(
 
 // InitCachedChannels() must be called prior to calling this method.
 void NotificationChannelsProviderAndroid::CreateChannelIfRequired(
+    const ContentSettingsPattern& primary_pattern,
+    const ContentSettingsPattern& secondary_pattern,
     const std::string& origin_string,
     NotificationChannelStatus new_channel_status) {
   auto channel_entry = cached_channels_->find(origin_string);
@@ -501,9 +503,9 @@ void NotificationChannelsProviderAndroid::CreateChannelIfRequired(
         new_channel_status == NotificationChannelStatus::ENABLED);
     cached_channels_->emplace(origin_string, std::move(channel));
 
-    NotifyObservers(
-        ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-        ContentSettingsType::NOTIFICATIONS, /*partition_key=*/nullptr);
+    NotifyObservers(primary_pattern, secondary_pattern,
+                    ContentSettingsType::NOTIFICATIONS,
+                    /*partition_key=*/nullptr);
   }
 }
 
@@ -518,11 +520,13 @@ void NotificationChannelsProviderAndroid::CreateChannelForRule(
       content_settings::ValueToContentSetting(rule.value);
   switch (content_setting) {
     case CONTENT_SETTING_ALLOW:
-      CreateChannelIfRequired(origin_string,
+      CreateChannelIfRequired(rule.primary_pattern, rule.secondary_pattern,
+                              origin_string,
                               NotificationChannelStatus::ENABLED);
       break;
     case CONTENT_SETTING_BLOCK:
-      CreateChannelIfRequired(origin_string,
+      CreateChannelIfRequired(rule.primary_pattern, rule.secondary_pattern,
+                              origin_string,
                               NotificationChannelStatus::BLOCKED);
       break;
     default:

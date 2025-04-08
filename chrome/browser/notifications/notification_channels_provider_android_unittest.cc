@@ -388,14 +388,19 @@ TEST_F(NotificationChannelsProviderAndroidTest,
   InitChannelsProvider();
   content_settings::MockObserver mock_observer;
   channels_provider_->AddObserver(&mock_observer);
+  ContentSettingsPattern primary_pattern =
+      ContentSettingsPattern::FromString("https://example.com");
 
   // Create channel as enabled initially - this should notify the mock observer.
-  EXPECT_CALL(mock_observer, OnContentSettingChanged(
-                                 _, _, ContentSettingsType::NOTIFICATIONS));
+  EXPECT_CALL(mock_observer,
+              OnContentSettingChanged(primary_pattern,
+                                      ContentSettingsPattern::Wildcard(),
+                                      ContentSettingsType::NOTIFICATIONS));
+
   channels_provider_->SetWebsiteSetting(
-      ContentSettingsPattern::FromString("https://example.com"),
-      ContentSettingsPattern::Wildcard(), ContentSettingsType::NOTIFICATIONS,
-      base::Value(CONTENT_SETTING_ALLOW), /*constraints=*/{},
+      primary_pattern, ContentSettingsPattern::Wildcard(),
+      ContentSettingsType::NOTIFICATIONS, base::Value(CONTENT_SETTING_ALLOW),
+      /*constraints=*/{},
       content_settings::PartitionKey::GetDefaultForTesting());
   content::RunAllTasksUntilIdle();
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
@@ -406,7 +411,9 @@ TEST_F(NotificationChannelsProviderAndroidTest,
 
   // Observer should be notified on invocation of GetRuleIterator.
   EXPECT_CALL(mock_observer,
-              OnContentSettingChanged(_, _, ContentSettingsType::NOTIFICATIONS))
+              OnContentSettingChanged(ContentSettingsPattern::Wildcard(),
+                                      ContentSettingsPattern::Wildcard(),
+                                      ContentSettingsType::NOTIFICATIONS))
       .Times(1);
   channels_provider_->GetRuleIterator(
       ContentSettingsType::NOTIFICATIONS, false /* off_the_record */,
@@ -414,13 +421,16 @@ TEST_F(NotificationChannelsProviderAndroidTest,
   content::RunAllTasksUntilIdle();
 
   // Observer should be notified when a new website setting is added.
+  primary_pattern = ContentSettingsPattern::FromString("https://abc.com");
   EXPECT_CALL(mock_observer,
-              OnContentSettingChanged(_, _, ContentSettingsType::NOTIFICATIONS))
+              OnContentSettingChanged(primary_pattern,
+                                      ContentSettingsPattern::Wildcard(),
+                                      ContentSettingsType::NOTIFICATIONS))
       .Times(1);
   channels_provider_->SetWebsiteSetting(
-      ContentSettingsPattern::FromString("https://abc.com"),
-      ContentSettingsPattern::Wildcard(), ContentSettingsType::NOTIFICATIONS,
-      base::Value(CONTENT_SETTING_ALLOW), /*constraints=*/{},
+      primary_pattern, ContentSettingsPattern::Wildcard(),
+      ContentSettingsType::NOTIFICATIONS, base::Value(CONTENT_SETTING_ALLOW),
+      /*constraints=*/{},
       content_settings::PartitionKey::GetDefaultForTesting());
   content::RunAllTasksUntilIdle();
 }
@@ -633,21 +643,37 @@ TEST_F(NotificationChannelsProviderAndroidTest,
 TEST_F(NotificationChannelsProviderAndroidTest,
        MigrateToChannels_CreatesChannelsForProvidedSettings) {
   InitChannelsProvider();
+  content_settings::MockObserver mock_observer;
+  channels_provider_->AddObserver(&mock_observer);
+  ContentSettingsPattern blocked_pattern =
+      ContentSettingsPattern::FromString("https://blocked.com");
+  ContentSettingsPattern allowed_pattern =
+      ContentSettingsPattern::FromString("https://allowed.com");
   auto old_provider = std::make_unique<content_settings::MockProvider>();
 
   // Give the old provider some notification settings to provide.
   old_provider->SetWebsiteSetting(
-      ContentSettingsPattern::FromString("https://blocked.com"),
-      ContentSettingsPattern::Wildcard(), ContentSettingsType::NOTIFICATIONS,
-      base::Value(CONTENT_SETTING_BLOCK), /*constraints=*/{},
+      blocked_pattern, ContentSettingsPattern::Wildcard(),
+      ContentSettingsType::NOTIFICATIONS, base::Value(CONTENT_SETTING_BLOCK),
+      /*constraints=*/{},
       content_settings::PartitionKey::GetDefaultForTesting());
   old_provider->SetWebsiteSetting(
-      ContentSettingsPattern::FromString("https://allowed.com"),
-      ContentSettingsPattern::Wildcard(), ContentSettingsType::NOTIFICATIONS,
-      base::Value(CONTENT_SETTING_ALLOW), /*constraints=*/{},
+      allowed_pattern, ContentSettingsPattern::Wildcard(),
+      ContentSettingsType::NOTIFICATIONS, base::Value(CONTENT_SETTING_ALLOW),
+      /*constraints=*/{},
       content_settings::PartitionKey::GetDefaultForTesting());
   content::RunAllTasksUntilIdle();
 
+  EXPECT_CALL(mock_observer,
+              OnContentSettingChanged(blocked_pattern,
+                                      ContentSettingsPattern::Wildcard(),
+                                      ContentSettingsType::NOTIFICATIONS))
+      .Times(1);
+  EXPECT_CALL(mock_observer,
+              OnContentSettingChanged(allowed_pattern,
+                                      ContentSettingsPattern::Wildcard(),
+                                      ContentSettingsType::NOTIFICATIONS))
+      .Times(1);
   MigrateToChannelsIfNecessary(old_provider.get());
   content::RunAllTasksUntilIdle();
   base::RunLoop run_loop;

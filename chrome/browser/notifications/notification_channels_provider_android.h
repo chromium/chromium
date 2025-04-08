@@ -183,7 +183,9 @@ class NotificationChannelsProviderAndroid
       const std::vector<NotificationChannel>& channels);
 
   // Create notification channel if required.
-  void CreateChannelIfRequired(const std::string& origin_string,
+  void CreateChannelIfRequired(const ContentSettingsPattern& primary_pattern,
+                               const ContentSettingsPattern& secondary_pattern,
+                               const std::string& origin_string,
                                NotificationChannelStatus new_channel_status);
 
   // Create notification channel for a given rule
