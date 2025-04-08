@@ -671,6 +671,8 @@ component("net") {
     "http/http_stream_pool_attempt_manager.h",
     "http/http_stream_pool_attempt_manager_quic_task.cc",
     "http/http_stream_pool_attempt_manager_quic_task.h",
+    "http/http_stream_pool_attempt_manager_tcp_based_attempt.cc",
+    "http/http_stream_pool_attempt_manager_tcp_based_attempt.h",
     "http/http_stream_pool_group.cc",
     "http/http_stream_pool_group.h",
     "http/http_stream_pool_handle.cc",

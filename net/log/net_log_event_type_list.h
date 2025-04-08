@@ -986,8 +986,8 @@ EVENT_TYPE(SOCKET_POOL_CLOSING_SOCKET)
 // StreamAttempt and subclasses
 // ------------------------------------------------------------------------
 
-// Emitted when a StreamAttempt is created by HttpStreamPool.
-EVENT_TYPE(STREAM_ATTEMPT_BOUND_TO_POOL)
+// Emitted when a TcpBasedAttempt is created by HttpStreamPool.
+EVENT_TYPE(TCP_BASED_ATTEMPT_BOUND_TO_POOL)
 
 // Marks the creation/destruction of a TcpStreamAttempt.
 // For the BEGIN phase, the following parameter is attached:
@@ -1573,19 +1573,19 @@ EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_ALIVE)
 //     "quic_task_result": <The result of a QuicTask, if it is already finished>
 //   }
 
-// Emitted when an HttpStreamPool::AttemptManager started a StreamAttempt.
+// Emitted when an HttpStreamPool::AttemptManager started a TcpBasedAttempt.
 // This event has the common event parameters (see above).
-EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_ATTEMPT_START)
+EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_TCP_BASED_ATTEMPT_START)
 
 // Emitted when an HttpStreamPool::AttemptManager received completion from a
-// StreamAttempt.
+// TcpBasedAttempt.
 // This event has the common event parameters (see above).
 // In addition to the common event parameters, this event has the following
 // parameter:
 //   {
 //     "result": <String representation of the result>,
 //   }
-EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_ATTEMPT_END)
+EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_TCP_BASED_ATTEMPT_END)
 
 // Emitted when an HttpStreamPool::AttemptManager is going to notify failure.
 // In addition to the common event parameters, this event has the following

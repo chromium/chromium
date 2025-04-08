@@ -31,6 +31,7 @@
 #include "net/http/http_server_properties.h"
 #include "net/http/http_stream_key.h"
 #include "net/http/http_stream_pool_attempt_manager_quic_task.h"
+#include "net/http/http_stream_pool_attempt_manager_tcp_based_attempt.h"
 #include "net/http/http_stream_pool_group.h"
 #include "net/http/http_stream_pool_handle.h"
 #include "net/http/http_stream_pool_job.h"
@@ -62,34 +63,6 @@ StreamSocketHandle::SocketReuseType GetReuseTypeFromIdleStreamSocket(
              : StreamSocketHandle::SocketReuseType::kUnusedIdle;
 }
 
-std::string_view GetResultHistogramSuffix(std::optional<int> result) {
-  if (result.has_value()) {
-    return *result == OK ? "Success" : "Failure";
-  }
-  return "Canceled";
-}
-
-std::string_view GetHistogramSuffixForTcpBasedAttemptCancel(
-    StreamSocketCloseReason reason) {
-  switch (reason) {
-    case StreamSocketCloseReason::kSpdySessionCreated:
-      return "NewSpdySession";
-    case StreamSocketCloseReason::kQuicSessionCreated:
-      return "NewQuicSession";
-    case StreamSocketCloseReason::kUsingExistingSpdySession:
-      return "ExistingSpdySession";
-    case StreamSocketCloseReason::kUsingExistingQuicSession:
-      return "ExistingQuicSession";
-    case StreamSocketCloseReason::kUnspecified:
-    case StreamSocketCloseReason::kCloseAllConnections:
-    case StreamSocketCloseReason::kIpAddressChanged:
-    case StreamSocketCloseReason::kSslConfigChanged:
-    case StreamSocketCloseReason::kCannotUseTcpBasedProtocols:
-    case StreamSocketCloseReason::kAbort:
-      return "Other";
-  }
-}
-
 base::Value::Dict GetServiceEndpointRequestAsValue(
     HostResolver::ServiceEndpointRequest* request) {
   base::Value::Dict dict;
@@ -103,180 +76,6 @@ base::Value::Dict GetServiceEndpointRequestAsValue(
 }
 
 }  // namespace
-
-// Represents a TCP based attempt.
-class HttpStreamPool::AttemptManager::TcpBasedAttempt
-    : public TlsStreamAttempt::SSLConfigProvider {
- public:
-  explicit TcpBasedAttempt(AttemptManager* manager) : manager_(manager) {}
-
-  TcpBasedAttempt(const TcpBasedAttempt&) = delete;
-  TcpBasedAttempt& operator=(const TcpBasedAttempt&) = delete;
-
-  ~TcpBasedAttempt() override {
-    base::TimeDelta elapsed = base::TimeTicks::Now() - start_time_;
-    // TODO(bashi): Rename following histograms to use TcpBased*.
-    base::UmaHistogramTimes(
-        base::StrCat({"Net.HttpStreamPool.StreamAttemptTime.",
-                      GetResultHistogramSuffix(result_)}),
-        elapsed);
-
-    if (cancel_reason_.has_value()) {
-      base::UmaHistogramEnumeration(
-          "Net.HttpStreamPool.StreamAttemptCancelReason", *cancel_reason_);
-
-      std::string_view suffix =
-          GetHistogramSuffixForTcpBasedAttemptCancel(*cancel_reason_);
-      CHECK(manager_->initial_attempt_state_.has_value());
-      base::UmaHistogramEnumeration(
-          base::StrCat(
-              {"Net.HttpStreamPool.StreamAttemptCanceledInitialAttemptState.",
-               suffix}),
-          *manager_->initial_attempt_state_);
-      base::UmaHistogramTimes(
-          base::StrCat(
-              {"Net.HttpStreamPool.StreamAttemptCanceledTime.", suffix}),
-          elapsed);
-    }
-  }
-
-  void Start(std::unique_ptr<StreamAttempt> attempt,
-             TlsStreamAttempt* tls_attempt_ptr) {
-    CHECK(!attempt_);
-    attempt_ = std::move(attempt);
-    start_time_ = base::TimeTicks::Now();
-    int rv = attempt_->Start(
-        base::BindOnce(&TcpBasedAttempt::OnInFlightAttemptComplete,
-                       weak_ptr_factory_.GetWeakPtr()));
-    if (rv == ERR_IO_PENDING) {
-      // SAFETY: Unretained `manager_` is fine since `manager_` owns this and
-      // `this` owns `slow_timer_`.
-      slow_timer_.Start(FROM_HERE, HttpStreamPool::GetConnectionAttemptDelay(),
-                        base::BindOnce(&AttemptManager::OnTcpBasedAttemptSlow,
-                                       base::Unretained(manager_), this));
-      if (tls_attempt_ptr && !tls_attempt_ptr->IsTcpHandshakeCompleted()) {
-        // SAFETY: Unretained `manager_` is fine since the passed callback runs
-        // is invoked synchronously (without PostTask) when the TCP handshake
-        // completes. See TlsStreamAttempt::DoTcpAttemptComplete.
-        tls_attempt_ptr->SetTcpHandshakeCompletionCallback(base::BindOnce(
-            &AttemptManager::OnTcpBasedAttemptTcpHandshakeComplete,
-            base::Unretained(manager_), this));
-      }
-    } else {
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(&TcpBasedAttempt::OnInFlightAttemptComplete,
-                                    weak_ptr_factory_.GetWeakPtr(), rv));
-    }
-  }
-
-  void SetResult(int rv) {
-    CHECK(!result_.has_value());
-    result_ = rv;
-  }
-
-  void SetCancelReason(StreamSocketCloseReason reason) {
-    cancel_reason_ = reason;
-    if (attempt_) {
-      attempt_->SetCancelReason(reason);
-    }
-  }
-
-  StreamAttempt* attempt() { return attempt_.get(); }
-
-  base::TimeTicks start_time() const { return start_time_; }
-  base::TimeTicks ssl_config_wait_start_time() const {
-    return ssl_config_wait_start_time_;
-  }
-
-  const IPEndPoint& ip_endpoint() const { return attempt_->ip_endpoint(); }
-
-  bool is_slow() const { return is_slow_; }
-  void set_is_slow(bool is_slow) { is_slow_ = is_slow; }
-
-  base::OneShotTimer& slow_timer() { return slow_timer_; }
-
-  // Set to true when the attempt is aborted. When true, the attempt will fail
-  // but not be considered as an actual failure.
-  bool is_aborted() const { return is_aborted_; }
-  void set_is_aborted(bool is_aborted) { is_aborted_ = is_aborted; }
-
-  // TlsStreamAttempt::SSLConfigProvider implementation:
-  int WaitForSSLConfigReady(CompletionOnceCallback callback) override {
-    int rv = manager_->WaitForSSLConfigReady();
-    if (rv == ERR_IO_PENDING) {
-      ssl_config_wait_start_time_ = base::TimeTicks::Now();
-      ssl_config_waiting_callback_ = std::move(callback);
-    }
-    return rv;
-  }
-
-  base::expected<SSLConfig, TlsStreamAttempt::GetSSLConfigError> GetSSLConfig()
-      override {
-    return manager_->GetSSLConfig(this);
-  }
-
-  bool IsWaitingSSLConfig() const {
-    return !ssl_config_waiting_callback_.is_null();
-  }
-
-  CompletionOnceCallback TakeSSLConfigWaitingCallback() {
-    CHECK(!ssl_config_wait_start_time_.is_null());
-    base::UmaHistogramTimes(
-        "Net.HttpStreamPool.StreamAttemptSSLConfigWaitTime",
-        base::TimeTicks::Now() - ssl_config_wait_start_time_);
-
-    return std::move(ssl_config_waiting_callback_);
-  }
-
-  base::Value::Dict GetInfoAsValue() const {
-    base::Value::Dict dict;
-    if (attempt_) {
-      dict.Set("attempt_state", attempt_->GetInfoAsValue());
-      dict.Set("ip_endpoint", attempt_->ip_endpoint().ToString());
-      if (attempt_->stream_socket()) {
-        attempt_->stream_socket()->NetLog().source().AddToEventParameters(dict);
-      }
-    }
-    dict.Set("is_slow", is_slow_);
-    dict.Set("is_aborted", is_aborted_);
-    dict.Set("started", !start_time_.is_null());
-    if (!start_time_.is_null()) {
-      base::TimeDelta elapsed = base::TimeTicks::Now() - start_time_;
-      dict.Set("elapsed_ms", static_cast<int>(elapsed.InMilliseconds()));
-    }
-    if (result_.has_value()) {
-      dict.Set("result", *result_);
-    }
-    if (cancel_reason_.has_value()) {
-      dict.Set("cancel_reason", static_cast<int>(*cancel_reason_));
-    }
-    manager_->net_log().source().AddToEventParameters(dict);
-    return dict;
-  }
-
- private:
-  void OnInFlightAttemptComplete(int rv) {
-    manager_->OnTcpBasedAttemptComplete(this, rv);
-  }
-
-  const raw_ptr<AttemptManager> manager_;
-  std::unique_ptr<StreamAttempt> attempt_;
-  base::TimeTicks start_time_;
-  std::optional<int> result_;
-  std::optional<StreamSocketCloseReason> cancel_reason_;
-  // Timer to start a next attempt. When fired, `this` is treated as a slow
-  // attempt but `this` is not timed out yet.
-  base::OneShotTimer slow_timer_;
-  // Set to true when `slow_timer_` is fired. See the comment of `slow_timer_`.
-  bool is_slow_ = false;
-  // Set to true when `this` and `attempt_` should abort. Currently used to
-  // handle ECH failure.
-  bool is_aborted_ = false;
-  base::TimeTicks ssl_config_wait_start_time_;
-  CompletionOnceCallback ssl_config_waiting_callback_;
-
-  base::WeakPtrFactory<TcpBasedAttempt> weak_ptr_factory_{this};
-};
 
 // static
 std::string_view HttpStreamPool::AttemptManager::CanAttemptResultToString(
@@ -1410,39 +1209,14 @@ void HttpStreamPool::AttemptManager::MaybeAttemptTcpBased(
 
     CHECK(!preconnect_jobs_.empty() || group_->IdleStreamSocketCount() == 0);
 
-    auto tcp_based_attempt = std::make_unique<TcpBasedAttempt>(this);
-    TcpBasedAttempt* raw_attempt = tcp_based_attempt.get();
-    auto [_, inserted] =
+    auto tcp_based_attempt =
+        std::make_unique<TcpBasedAttempt>(this, using_tls, *ip_endpoint);
+    auto [attempt_iterator, inserted] =
         tcp_based_attempts_.emplace(std::move(tcp_based_attempt));
     CHECK(inserted);
     pool()->IncrementTotalConnectingStreamCount();
 
-    std::unique_ptr<StreamAttempt> attempt;
-    // Set to non-null if the attempt is a TLS attempt.
-    TlsStreamAttempt* tls_attempt_ptr = nullptr;
-    if (using_tls) {
-      attempt = std::make_unique<TlsStreamAttempt>(
-          pool()->stream_attempt_params(), *ip_endpoint,
-          HostPortPair::FromSchemeHostPort(stream_key().destination()),
-          /*ssl_config_provider=*/raw_attempt);
-      tls_attempt_ptr = static_cast<TlsStreamAttempt*>(attempt.get());
-    } else {
-      attempt = std::make_unique<TcpStreamAttempt>(
-          pool()->stream_attempt_params(), *ip_endpoint);
-    }
-
-    net_log().AddEvent(
-        NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_ATTEMPT_START, [&] {
-          base::Value::Dict dict = GetStatesAsNetLogParams();
-          attempt->net_log().source().AddToEventParameters(dict);
-          return dict;
-        });
-
-    raw_attempt->Start(std::move(attempt), tls_attempt_ptr);
-    // Add NetLog dependency after Start() so that the first event of the
-    // attempt can have meaningful description in the NetLog viewer.
-    raw_attempt->attempt()->net_log().AddEventReferencingSource(
-        NetLogEventType::STREAM_ATTEMPT_BOUND_TO_POOL, net_log().source());
+    (*attempt_iterator)->Start();
 
     ++num_attempts;
     if (max_attempts.has_value() && num_attempts >= *max_attempts) {
@@ -1995,15 +1769,6 @@ void HttpStreamPool::AttemptManager::SetJobPriority(Job* job,
 void HttpStreamPool::AttemptManager::OnTcpBasedAttemptComplete(
     TcpBasedAttempt* raw_attempt,
     int rv) {
-  net_log().AddEvent(
-      NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_ATTEMPT_END, [&] {
-        base::Value::Dict dict = GetStatesAsNetLogParams();
-        dict.Set("result", ErrorToString(rv));
-        raw_attempt->attempt()->net_log().source().AddToEventParameters(dict);
-        return dict;
-      });
-  raw_attempt->SetResult(rv);
-  raw_attempt->slow_timer().Stop();
   if (raw_attempt->is_slow()) {
     CHECK_GT(slow_tcp_based_attempt_count_, 0u);
     --slow_tcp_based_attempt_count_;
