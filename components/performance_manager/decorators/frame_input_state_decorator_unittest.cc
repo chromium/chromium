@@ -62,6 +62,42 @@ void SimulateKeyPress(content::TestRenderWidgetHost* rwh) {
   rwh->WasHidden();
 }
 
+void SimulateTap(content::TestRenderWidgetHost* rwh) {
+  blink::WebGestureEvent gesture_tap(
+      blink::WebGestureEvent::Type::kGestureTap,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  gesture_tap.SetSourceDevice(blink::WebGestureDevice::kTouchscreen);
+  rwh->ForwardGestureEvent(gesture_tap);
+}
+
+void SimulateScrollBegin(content::TestRenderWidgetHost* rwh) {
+  blink::WebGestureEvent gesture_scroll_begin(
+      blink::WebGestureEvent::Type::kGestureScrollBegin,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  gesture_scroll_begin.SetSourceDevice(blink::WebGestureDevice::kTouchscreen);
+  rwh->ForwardGestureEvent(gesture_scroll_begin);
+}
+
+void SimulateScrollUpdate(content::TestRenderWidgetHost* rwh) {
+  blink::WebGestureEvent gesture_scroll_update(
+      blink::WebGestureEvent::Type::kGestureScrollUpdate,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  gesture_scroll_update.SetSourceDevice(blink::WebGestureDevice::kTouchscreen);
+  rwh->ForwardGestureEvent(gesture_scroll_update);
+}
+
+void SimulateScrollEnd(content::TestRenderWidgetHost* rwh) {
+  blink::WebGestureEvent gesture_scroll_end(
+      blink::WebGestureEvent::Type::kGestureScrollEnd,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  gesture_scroll_end.SetSourceDevice(blink::WebGestureDevice::kTouchscreen);
+  rwh->ForwardGestureEvent(gesture_scroll_end);
+}
+
 }  // namespace
 
 class FrameInputStateDecoratorTest : public PerformanceManagerTestHarness {
@@ -116,7 +152,7 @@ class FrameInputStateDecoratorTest : public PerformanceManagerTestHarness {
       scoped_observation_{&observer_};
 };
 
-TEST_F(FrameInputStateDecoratorTest, InputEvent) {
+TEST_F(FrameInputStateDecoratorTest, TypingEvent) {
   ASSERT_TRUE(main_render_widget_host());
   ASSERT_TRUE(main_frame_node());
 
@@ -150,6 +186,95 @@ TEST_F(FrameInputStateDecoratorTest, InputEvent) {
       .WillOnce(ExpectFrameInputScenario<InputScenario::kNoInput>);
   task_environment()->FastForwardBy(
       FrameInputStateDecorator::kInactivityTimeoutForTyping / 2);
+  ::testing::Mock::VerifyAndClearExpectations(&observer());
+}
+
+TEST_F(FrameInputStateDecoratorTest, TapEvent) {
+  ASSERT_TRUE(main_render_widget_host());
+  ASSERT_TRUE(main_frame_node());
+
+  // A tap immediately changes the input state to tap.
+  EXPECT_CALL(observer(), OnInputScenarioChanged(main_frame_node().get()))
+      .WillOnce(ExpectFrameInputScenario<InputScenario::kTap>);
+  SimulateTap(main_render_widget_host());
+  ::testing::Mock::VerifyAndClearExpectations(&observer());
+
+  // Another tap before the inactivity timeout maintains the tap state.
+  EXPECT_CALL(observer(), OnInputScenarioChanged(_)).Times(0);
+  task_environment()->FastForwardBy(
+      FrameInputStateDecorator::kInactivityTimeoutForTap / 2);
+  SimulateTap(main_render_widget_host());
+  task_environment()->FastForwardBy(
+      FrameInputStateDecorator::kInactivityTimeoutForTap / 2);
+  ::testing::Mock::VerifyAndClearExpectations(&observer());
+
+  EXPECT_CALL(observer(), OnInputScenarioChanged(main_frame_node().get()))
+      .WillOnce(ExpectFrameInputScenario<InputScenario::kNoInput>);
+  task_environment()->FastForwardBy(
+      FrameInputStateDecorator::kInactivityTimeoutForTap / 2);
+  ::testing::Mock::VerifyAndClearExpectations(&observer());
+}
+
+TEST_F(FrameInputStateDecoratorTest, ScrollEvent) {
+  ASSERT_TRUE(main_render_widget_host());
+  ASSERT_TRUE(main_frame_node());
+
+  // A scroll begin immediately changes the input state to scroll.
+  EXPECT_CALL(observer(), OnInputScenarioChanged(main_frame_node().get()))
+      .WillOnce(ExpectFrameInputScenario<InputScenario::kScroll>);
+  SimulateScrollBegin(main_render_widget_host());
+  ::testing::Mock::VerifyAndClearExpectations(&observer());
+
+  // Another scroll event before the inactivity timeout maintains the tap state.
+  EXPECT_CALL(observer(), OnInputScenarioChanged(_)).Times(0);
+  task_environment()->FastForwardBy(
+      FrameInputStateDecorator::kInactivityTimeoutForScroll / 2);
+  SimulateScrollUpdate(main_render_widget_host());
+  task_environment()->FastForwardBy(
+      FrameInputStateDecorator::kInactivityTimeoutForScroll / 2);
+  ::testing::Mock::VerifyAndClearExpectations(&observer());
+
+  // A scroll end event immediately changes the state to no input.
+  EXPECT_CALL(observer(), OnInputScenarioChanged(main_frame_node().get()))
+      .WillOnce(ExpectFrameInputScenario<InputScenario::kNoInput>);
+  SimulateScrollEnd(main_render_widget_host());
+  ::testing::Mock::VerifyAndClearExpectations(&observer());
+}
+
+TEST_F(FrameInputStateDecoratorTest, MixedInput) {
+  ASSERT_TRUE(main_render_widget_host());
+  ASSERT_TRUE(main_frame_node());
+
+  // Two keypresses start typing.
+  EXPECT_CALL(observer(), OnInputScenarioChanged(main_frame_node().get()))
+      .WillOnce(ExpectFrameInputScenario<InputScenario::kTyping>);
+  SimulateKeyPress(main_render_widget_host());
+  task_environment()->FastForwardBy(base::Milliseconds(100));
+  SimulateKeyPress(main_render_widget_host());
+  ::testing::Mock::VerifyAndClearExpectations(&observer());
+
+  // A tap immediately changes the input state to tap.
+  EXPECT_CALL(observer(), OnInputScenarioChanged(main_frame_node().get()))
+      .WillOnce(ExpectFrameInputScenario<InputScenario::kTap>);
+  SimulateTap(main_render_widget_host());
+  task_environment()->FastForwardBy(
+      FrameInputStateDecorator::kInactivityTimeoutForTap / 2);
+  ::testing::Mock::VerifyAndClearExpectations(&observer());
+
+  // A scroll begin immediately changes the input state to scroll.
+  EXPECT_CALL(observer(), OnInputScenarioChanged(main_frame_node().get()))
+      .WillOnce(ExpectFrameInputScenario<InputScenario::kScroll>);
+  SimulateScrollBegin(main_render_widget_host());
+  task_environment()->FastForwardBy(
+      FrameInputStateDecorator::kInactivityTimeoutForScroll / 2);
+  ::testing::Mock::VerifyAndClearExpectations(&observer());
+
+  // A scroll times out - the state should go to no input despite the missing
+  // explicit scroll end event.
+  EXPECT_CALL(observer(), OnInputScenarioChanged(main_frame_node().get()))
+      .WillOnce(ExpectFrameInputScenario<InputScenario::kNoInput>);
+  task_environment()->FastForwardBy(
+      FrameInputStateDecorator::kInactivityTimeoutForScroll / 2);
   ::testing::Mock::VerifyAndClearExpectations(&observer());
 }
 

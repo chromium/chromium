@@ -68,6 +68,10 @@ int GetInputScenarioPriority(InputScenario scenario) {
       return 0;
     case InputScenario::kTyping:
       return 1;
+    case InputScenario::kTap:
+      return 2;
+    case InputScenario::kScroll:
+      return 3;
   }
   NOTREACHED();
 }
@@ -97,6 +101,10 @@ std::string GetInputScenarioSuffix(std::optional<InputScenario> scenario) {
     return "UnknownInputScenario";
   }
   switch (*scenario) {
+    case InputScenario::kScroll:
+      return "Scroll";
+    case InputScenario::kTap:
+      return "Tap";
     case InputScenario::kTyping:
       return "Typing";
     case InputScenario::kNoInput:

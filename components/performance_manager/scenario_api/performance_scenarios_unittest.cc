@@ -37,6 +37,10 @@ std::ostream& operator<<(std::ostream& os, InputScenario input_scenario) {
       return os << "NoInput";
     case InputScenario::kTyping:
       return os << "TypingInput";
+    case InputScenario::kTap:
+      return os << "Tap";
+    case InputScenario::kScroll:
+      return os << "Scroll";
   }
 }
 
@@ -168,9 +172,13 @@ TEST_P(PerformanceScenariosAllLoadingScenariosTest, EmptyScenarioPattern) {
                              kEmptyScenarioPattern));
   EXPECT_TRUE(ScenariosMatch(GetParam(), InputScenario::kTyping,
                              kEmptyScenarioPattern));
+  EXPECT_TRUE(
+      ScenariosMatch(GetParam(), InputScenario::kTap, kEmptyScenarioPattern));
+  EXPECT_TRUE(ScenariosMatch(GetParam(), InputScenario::kScroll,
+                             kEmptyScenarioPattern));
 }
 
-TEST_P(PerformanceScenariosAllLoadingScenariosTest, InputScenarioPattern) {
+TEST_P(PerformanceScenariosAllLoadingScenariosTest, NoInputScenarioPattern) {
   // kNoInput matches the pattern, loading scenarios are ignored.
   static ScenarioPattern kInputScenarioPattern{
       .input = {InputScenario::kNoInput},
@@ -179,6 +187,26 @@ TEST_P(PerformanceScenariosAllLoadingScenariosTest, InputScenarioPattern) {
                              kInputScenarioPattern));
   EXPECT_FALSE(ScenariosMatch(GetParam(), InputScenario::kTyping,
                               kInputScenarioPattern));
+  EXPECT_FALSE(
+      ScenariosMatch(GetParam(), InputScenario::kTap, kInputScenarioPattern));
+  EXPECT_FALSE(ScenariosMatch(GetParam(), InputScenario::kScroll,
+                              kInputScenarioPattern));
+}
+
+TEST_P(PerformanceScenariosAllLoadingScenariosTest, InputScenarioPattern) {
+  // All except kNoInput matches the pattern, loading scenarios are ignored.
+  static ScenarioPattern kInputScenarioPattern{
+      .input = {InputScenario::kTyping, InputScenario::kTap,
+                InputScenario::kScroll},
+  };
+  EXPECT_FALSE(ScenariosMatch(GetParam(), InputScenario::kNoInput,
+                              kInputScenarioPattern));
+  EXPECT_TRUE(ScenariosMatch(GetParam(), InputScenario::kTyping,
+                             kInputScenarioPattern));
+  EXPECT_TRUE(
+      ScenariosMatch(GetParam(), InputScenario::kTap, kInputScenarioPattern));
+  EXPECT_TRUE(ScenariosMatch(GetParam(), InputScenario::kScroll,
+                             kInputScenarioPattern));
 }
 
 TEST_P(PerformanceScenariosAllInputScenariosTest, LoadingScenarioPattern) {

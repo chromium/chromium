@@ -1306,9 +1306,11 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(InputScenarioSuffix) -->
 
   <token key="InputScenario">
-    <variant name="_NoInput" summary="the user is not typing"/>
+    <variant name="_NoInput" summary="the user is not providing input"/>
+    <variant name="_Scroll" summary="the user scrolled"/>
+    <variant name="_Tap" summary="the user tapped but not scrolled"/>
     <variant name="_Typing"
-        summary="the user was typing for some part of the 30s interval"/>
+        summary="The user typed be neither tapped nor scrolled"/>
     <variant name="_UnknownInputScenario"
         summary="input state could not be detected"/>
   </token>

@@ -118,15 +118,19 @@ struct ScenarioTraits<InputScenario> {
         return 0;
       case InputScenario::kTyping:
         return 1;
+      case InputScenario::kTap:
+        return 2;
+      case InputScenario::kScroll:
+        return 3;
     }
     NOTREACHED();
   }
 
   void MaybeRecordTraceEvent(InputScenario old_scenario,
                              InputScenario new_scenario) const {
-    MaybeEmitNestingChangeEvent(state_ptr->input_tracing_track(),
-                                NestingLevel(old_scenario),
-                                NestingLevel(new_scenario), {"Typing"});
+    MaybeEmitNestingChangeEvent(
+        state_ptr->input_tracing_track(), NestingLevel(old_scenario),
+        NestingLevel(new_scenario), {"AnyInput", "TapOrScroll", "Scroll"});
   }
 
   raw_ptr<PerformanceScenarioData> state_ptr;

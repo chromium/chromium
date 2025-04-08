@@ -210,6 +210,15 @@ each histogram.
   </summary>
 </histogram>
 
+<histogram name="PerformanceManager.InputScenarioChanged"
+    enum="InputScenarioUpdateReason" expires_after="2026-04-07">
+  <owner>kraskevich@google.com</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    Logged on every input scenario change in performance manager.
+  </summary>
+</histogram>
+
 <histogram name="PerformanceManager.LoadingNotQuiescentPageCount.{Visibility}"
     units="pages" expires_after="2025-06-22">
   <owner>joenotcharles@google.com</owner>

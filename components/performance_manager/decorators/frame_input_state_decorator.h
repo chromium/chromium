@@ -28,7 +28,25 @@ class FrameInputStateDecorator
     : public FrameNodeObserver,
       public GraphOwnedAndRegistered<FrameInputStateDecorator> {
  public:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class InputScenarioUpdateReason {
+    kKeyEvent = 0,
+    kTapEvent = 1,
+    kScrollStartEvent = 2,
+    kScrollEndEvent = 3,
+    kTimeout = 4,
+    kNodeRemoved = 5,
+    kMaxValue = kNodeRemoved,
+  };
+
   static constexpr base::TimeDelta kInactivityTimeoutForTyping =
+      base::Seconds(3);
+  static constexpr base::TimeDelta kInactivityTimeoutForTap =
+      base::Milliseconds(500);
+  // Normally all scrolls have an explicit end event. This is to avoid being
+  // incorrectly stuck in a scrolling state if the end event goes missing.
+  static constexpr base::TimeDelta kInactivityTimeoutForScroll =
       base::Seconds(3);
 
   FrameInputStateDecorator();
@@ -44,7 +62,9 @@ class FrameInputStateDecorator
   void OnPassedToGraph(Graph* graph) override;
   void OnTakenFromGraph(Graph* graph) override;
 
-  void UpdateInputScenario(const FrameNode* frame_node, bool typing);
+  void UpdateInputScenario(const FrameNode* frame_node,
+                           InputScenario input_scenario,
+                           InputScenarioUpdateReason update_reason);
 
   void AddObserver(FrameInputStateObserver* observer);
   void RemoveObserver(FrameInputStateObserver* observer);

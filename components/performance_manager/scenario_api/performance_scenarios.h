@@ -47,12 +47,18 @@ using LoadingScenarios =
 enum class InputScenario {
   // No input was detected.
   kNoInput = 0,
-  // The user is typing in the focused page.
+  // The user is typing in a focused page. There were no recent taps or scrolls.
   kTyping,
+  // The user tapped a focused page. There may be recent typing, but not
+  // scrolls.
+  kTap,
+  // The user is scrolling in a focused page. There may also be recent typing or
+  // taps.
+  kScroll,
 };
 using InputScenarios = base::EnumSet<InputScenario,
                                      /*Min=*/InputScenario::kNoInput,
-                                     /*Max=*/InputScenario::kTyping>;
+                                     /*Max=*/InputScenario::kScroll>;
 
 // The scope that a scenario covers.
 enum class ScenarioScope {
