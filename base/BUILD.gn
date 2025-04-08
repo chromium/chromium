@@ -2172,7 +2172,6 @@ component("base") {
       "ios/ns_error_util.h",
       "ios/ns_error_util.mm",
       "ios/ns_range.h",
-      "power_monitor/power_monitor_device_source_ios.mm",
       "process/process_metrics_ios.cc",
       "process/process_metrics_posix.cc",
       "profiler/core_unwinders_ios.cc",
@@ -2210,13 +2209,18 @@ component("base") {
       ]
 
       if (target_platform == "tvos") {
-        # tvOS apps must be single-process. Build a Process version that does
-        # the bare minimum and does not use Mach ports.
-        sources += [ "process/process_tvos.cc" ]
+        sources += [
+          "power_monitor/power_monitor_device_source_stub.cc",
+
+          # tvOS apps must be single-process. Build a Process version that does
+          # the bare minimum and does not use Mach ports.
+          "process/process_tvos.cc",
+        ]
       } else {
         sources += [
           "apple/mach_port_rendezvous_ios.cc",
           "apple/mach_port_rendezvous_ios.h",
+          "power_monitor/power_monitor_device_source_ios.mm",
           "process/process_mac.cc",
         ]
       }
@@ -2234,6 +2238,7 @@ component("base") {
       }
     } else {
       sources += [
+        "power_monitor/power_monitor_device_source_ios.mm",
         "process/launch_ios.cc",
         "process/memory_stubs.cc",
         "process/process_stubs.cc",

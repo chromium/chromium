@@ -93,7 +93,7 @@ class BASE_EXPORT PowerMonitorDeviceSource : public PowerMonitorSource {
   };
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN)
+#if (BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_IOS_TVOS)) || BUILDFLAG(IS_WIN)
   void PlatformInit();
   void PlatformDestroy();
 #endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN)
