@@ -25,6 +25,7 @@ found in the LICENSE file.
     <color name="baseline_primary_40_alpha_65" tools:ignore="UnusedResources">#6A0B57D0</color>
     <color name="baseline_primary_30">#0842A0</color>
     <color name="baseline_primary_20">#062E6F</color>
+    <color name="baseline_primary_20_alpha_38">#61062E6F</color>
     <color name="baseline_primary_10">#041E49</color>
     <color name="baseline_neutral_100">@android:color/white</color>
     <color name="baseline_neutral_100_with_surface_tint_light_alpha_5" tools:ignore="UnusedResources">#F7F9FC</color>

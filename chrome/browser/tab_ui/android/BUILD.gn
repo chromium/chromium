@@ -69,7 +69,6 @@ android_resources("java_resources") {
     "java/res/values/attrs.xml",
     "java/res/values/colors.xml",
     "java/res/values/dimens.xml",
-    "java/res/values/styles.xml",
     "java/res/values/values.xml",
   ]
   deps = [
