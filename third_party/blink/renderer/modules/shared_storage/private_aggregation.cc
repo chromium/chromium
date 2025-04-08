@@ -134,6 +134,7 @@ void PrivateAggregation::contributeToHistogramOnEvent(
   CHECK(execution_context->IsSharedStorageWorkletGlobalScope());
 
   EnsureGeneralUseCountersAreRecorded();
+  EnsureErrorReportingUseCounterIsRecorded();
 
   if (!global_scope_->permissions_policy_state()->private_aggregation_allowed) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
@@ -385,6 +386,14 @@ void PrivateAggregation::EnsureFilteringIdUseCounterIsRecorded() {
     has_recorded_filtering_id_use_counter_ = true;
     global_scope_->GetSharedStorageWorkletServiceClient()->RecordUseCounters(
         {mojom::blink::WebFeature::kPrivateAggregationApiFilteringIds});
+  }
+}
+
+void PrivateAggregation::EnsureErrorReportingUseCounterIsRecorded() {
+  if (!has_recorded_error_reporting_use_counter_) {
+    has_recorded_error_reporting_use_counter_ = true;
+    global_scope_->GetSharedStorageWorkletServiceClient()->RecordUseCounters(
+        {mojom::blink::WebFeature::kPrivateAggregationApiErrorReporting});
   }
 }
 

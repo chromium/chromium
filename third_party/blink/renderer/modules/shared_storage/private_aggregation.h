@@ -105,10 +105,12 @@ class MODULES_EXPORT PrivateAggregation final : public ScriptWrappable {
   void EnsureGeneralUseCountersAreRecorded();
   void EnsureEnableDebugModeUseCounterIsRecorded();
   void EnsureFilteringIdUseCounterIsRecorded();
+  void EnsureErrorReportingUseCounterIsRecorded();
 
   bool has_recorded_general_use_counters_ = false;
   bool has_recorded_enable_debug_mode_use_counter_ = false;
   bool has_recorded_filtering_id_use_counter_ = false;
+  bool has_recorded_error_reporting_use_counter_ = false;
 
   Member<SharedStorageWorkletGlobalScope> global_scope_;
   HeapHashMap<int64_t,

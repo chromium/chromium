@@ -6110,6 +6110,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5483" label="NonPhrasingContentOptionChild"/>
   <int value="5484" label="InteractiveContentOptionChild"/>
   <int value="5485" label="InteractiveContentLegendChild"/>
+  <int value="5486" label="PrivateAggregationApiErrorReporting"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

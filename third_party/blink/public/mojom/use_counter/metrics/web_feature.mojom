@@ -4869,6 +4869,7 @@ enum WebFeature {
   kNonPhrasingContentOptionChild = 5483,
   kInteractiveContentOptionChild = 5484,
   kInteractiveContentLegendChild = 5485,
+  kPrivateAggregationApiErrorReporting = 5486,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra
