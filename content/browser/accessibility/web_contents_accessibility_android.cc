@@ -724,39 +724,6 @@ void WebContentsAccessibilityAndroid::HandleCheckStateChanged(
                                                             unique_id);
 }
 
-void WebContentsAccessibilityAndroid::HandleDescriptionChangedPaneTitle(
-    int32_t unique_id) {
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
-  if (obj.is_null()) {
-    return;
-  }
-  Java_WebContentsAccessibilityImpl_handleDescriptionChangedPaneTitle(
-      env, obj, unique_id);
-}
-
-void WebContentsAccessibilityAndroid::HandleDescriptionChangedSubtree(
-    int32_t unique_id) {
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
-  if (obj.is_null()) {
-    return;
-  }
-  Java_WebContentsAccessibilityImpl_handleDescriptionChangedSubtree(env, obj,
-                                                                    unique_id);
-}
-
-void WebContentsAccessibilityAndroid::HandleStateDescriptionChanged(
-    int32_t unique_id) {
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
-  if (obj.is_null()) {
-    return;
-  }
-  Java_WebContentsAccessibilityImpl_handleStateDescriptionChanged(env, obj,
-                                                                  unique_id);
-}
-
 void WebContentsAccessibilityAndroid::HandleClicked(int32_t unique_id) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
@@ -764,17 +731,6 @@ void WebContentsAccessibilityAndroid::HandleClicked(int32_t unique_id) {
     return;
   }
   Java_WebContentsAccessibilityImpl_handleClicked(env, obj, unique_id);
-}
-
-void WebContentsAccessibilityAndroid::HandleImageAnnotationChanged(
-    int32_t unique_id) {
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
-  if (obj.is_null()) {
-    return;
-  }
-  Java_WebContentsAccessibilityImpl_handleImageAnnotationChanged(env, obj,
-                                                                 unique_id);
 }
 
 void WebContentsAccessibilityAndroid::HandleMenuOpened(int32_t unique_id) {
@@ -785,6 +741,18 @@ void WebContentsAccessibilityAndroid::HandleMenuOpened(int32_t unique_id) {
   }
 
   Java_WebContentsAccessibilityImpl_handleMenuOpened(env, obj, unique_id);
+}
+
+void WebContentsAccessibilityAndroid::HandleWindowContentChange(
+    int32_t unique_id,
+    int32_t subType) {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
+  if (obj.is_null()) {
+    return;
+  }
+  Java_WebContentsAccessibilityImpl_handleWindowContentChange(
+      env, obj, unique_id, subType);
 }
 
 void WebContentsAccessibilityAndroid::HandleScrollPositionChanged(
@@ -818,17 +786,6 @@ void WebContentsAccessibilityAndroid::HandlePaneOpened(int32_t unique_id) {
   Java_WebContentsAccessibilityImpl_handlePaneOpened(env, obj, unique_id);
 }
 
-void WebContentsAccessibilityAndroid::HandleExpandedStateChanged(
-    int32_t unique_id) {
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
-  if (obj.is_null()) {
-    return;
-  }
-  Java_WebContentsAccessibilityImpl_handleExpandedStateChanged(env, obj,
-                                                               unique_id);
-}
-
 void WebContentsAccessibilityAndroid::AnnounceLiveRegionText(
     const std::u16string& text) {
   CHECK(!base::FeatureList::IsEnabled(
@@ -849,17 +806,6 @@ void WebContentsAccessibilityAndroid::AnnounceLiveRegionText(
 
   Java_WebContentsAccessibilityImpl_announceLiveRegionText(
       env, obj, base::android::ConvertUTF16ToJavaString(env, text));
-}
-
-void WebContentsAccessibilityAndroid::HandleTextContentChanged(
-    int32_t unique_id) {
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
-  if (obj.is_null()) {
-    return;
-  }
-  Java_WebContentsAccessibilityImpl_handleTextContentChanged(env, obj,
-                                                             unique_id);
 }
 
 void WebContentsAccessibilityAndroid::HandleTextSelectionChanged(

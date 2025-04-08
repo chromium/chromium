@@ -1924,26 +1924,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     }
 
     @CalledByNative
-    private void handleDescriptionChangedPaneTitle(int id) {
-        // If the node is dialog, fire CONTENT_CHANGE_TYPE_PANE_TITLE event when receive
-        // DESCRIPTION_CHANGE event from Chrome. e.g. paneTitle is only relevant for dialogs
-        if (isAccessibilityEnabled()) {
-            AccessibilityEvent event =
-                    AccessibilityEvent.obtain(AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
-            // Check for null AccessibilityEvent, as it might be null if accessibility services are
-            // disabled.
-            if (event == null) {
-                return;
-            }
-
-            event.setContentChangeTypes(AccessibilityEvent.CONTENT_CHANGE_TYPE_PANE_TITLE);
-            event.setSource(mView, id);
-            requestSendAccessibilityEvent(event);
-        }
-    }
-
-    @CalledByNative
-    private void handleDescriptionChangedSubtree(int id) {
+    private void handleWindowContentChange(int id, int subType) {
         if (isAccessibilityEnabled()) {
             AccessibilityEvent event =
                     AccessibilityEvent.obtain(AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
@@ -1952,22 +1933,10 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             if (event == null) {
                 return;
             }
-
-            event.setSource(mView, id);
-            requestSendAccessibilityEvent(event);
-        }
-    }
-
-    @CalledByNative
-    private void handleStateDescriptionChanged(int id) {
-        if (isAccessibilityEnabled()) {
-            AccessibilityEvent event =
-                    AccessibilityEvent.obtain(AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
-            if (event == null) {
-                return;
+            if (subType != AccessibilityEvent.CONTENT_CHANGE_TYPE_UNDEFINED)
+            {
+                event.setContentChangeTypes(subType);
             }
-
-            event.setContentChangeTypes(AccessibilityEvent.CONTENT_CHANGE_TYPE_STATE_DESCRIPTION);
             event.setSource(mView, id);
             requestSendAccessibilityEvent(event);
         }
@@ -1994,16 +1963,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     }
 
     @CalledByNative
-    private void handleTextContentChanged(int id) {
-        AccessibilityEvent event =
-                buildAccessibilityEvent(id, AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
-        if (event != null) {
-            event.setContentChangeTypes(AccessibilityEvent.CONTENT_CHANGE_TYPE_TEXT);
-            requestSendAccessibilityEvent(event);
-        }
-    }
-
-    @CalledByNative
     private void handleEditableTextChanged(int id) {
         sendAccessibilityEvent(id, AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED);
     }
@@ -2023,21 +1982,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     @CalledByNative
     private void handleContentChanged(int id) {
         sendAccessibilityEvent(id, AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
-    }
-
-    @CalledByNative
-    private void handleImageAnnotationChanged(int id) {
-        if (isAccessibilityEnabled()) {
-            AccessibilityEvent event =
-                    AccessibilityEvent.obtain(AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
-            if (event == null) {
-                return;
-            }
-
-            event.setContentChangeTypes(AccessibilityEvent.CONTENT_CHANGE_TYPE_TEXT);
-            event.setSource(mView, id);
-            requestSendAccessibilityEvent(event);
-        }
     }
 
     @CalledByNative
@@ -2102,19 +2046,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             }
 
             event.setContentChangeTypes(CONTENT_CHANGE_TYPE_PANE_APPEARED);
-            event.setSource(mView, virtualViewId);
-            requestSendAccessibilityEvent(event);
-        }
-    }
-
-    @CalledByNative
-    private void handleExpandedStateChanged(int virtualViewId) {
-        if (isAccessibilityEnabled()) {
-            AccessibilityEvent event =
-                    AccessibilityEvent.obtain(AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
-            if (event == null) return;
-
-            event.setContentChangeTypes(AccessibilityEvent.CONTENT_CHANGE_TYPE_EXPANDED);
             event.setSource(mView, virtualViewId);
             requestSendAccessibilityEvent(event);
         }
