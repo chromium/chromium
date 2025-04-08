@@ -828,7 +828,7 @@ Status DevToolsClientImpl::PostBidiCommandInternal(std::string channel,
   if (tunnel_session_id_.empty()) {
     return Status{
         kUnknownError,
-        "unable to send BiDi commands without BiDi server session id"};
+        "uanble to send BiDi commands without BiDi server session id"};
   }
   if (!channel.empty()) {
     command.Set("goog:channel", std::move(channel));

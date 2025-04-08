@@ -74,11 +74,6 @@ class Chrome {
                            bool w3c_compliant,
                            std::string* window_handle) = 0;
 
-  // Makes new hidden target.
-  virtual Status NewHiddenTarget(const std::string& target_id,
-                                 bool w3c_compliant,
-                                 std::string* window_handle) = 0;
-
   // Gets the rect of the specified WebView
   virtual Status GetWindowRect(const std::string& id, WindowRect* rect) = 0;
 
