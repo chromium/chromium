@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {FocusedTabData, GlicBrowserHost, GlicWebClient, Observable, OpenPanelInfo, OpenSettingsOptions, PanelOpeningData, PanelState, TabData, WebClientInitializeError} from '/glic/glic_api/glic_api.js';
+import type {FocusedTabData, GlicBrowserHost, GlicWebClient, Observable, OpenPanelInfo, OpenSettingsOptions, PanelOpeningData, PanelState, ScrollToParams, ScrollToSelector, TabData, WebClientInitializeError} from '/glic/glic_api/glic_api.js';
 import {SettingsPageField, WebClientInitializeErrorReason, WebClientMode} from '/glic/glic_api/glic_api.js';
 
 import {createGlicHostRegistryOnLoad} from '../api_boot.js';
@@ -73,9 +73,13 @@ interface PageElementTypes {
   desktopScreenshotErrorReason: HTMLSpanElement;
   createTabInBackground: HTMLInputElement;
   canAttachCheckbox: HTMLInputElement;
+  scrollToDocumentId: HTMLSpanElement;
   scrollToExactText: HTMLInputElement;
+  scrollToExactTextSearchStart: HTMLSelectElement;
+  scrollToFetchAPCBn: HTMLButtonElement;
   scrollToTextFragmentTextStart: HTMLInputElement;
   scrollToTextFragmentTextEnd: HTMLInputElement;
+  scrollToTextFragmentSearchStart: HTMLSelectElement;
   scrollToBn: HTMLButtonElement;
   fileDrop: HTMLDivElement;
   fileDropList: HTMLDivElement;
@@ -749,6 +753,94 @@ $.audioDuckingOff.addEventListener('click', () => {
   getBrowser()!.setAudioDucking!(false);
 });
 
+$.scrollToFetchAPCBn.addEventListener('click', async () => {
+  let annotatedPageContent: Uint8Array|undefined = undefined;
+  try {
+    const pageContent = await getBrowser()!.getContextFromFocusedTab!
+                        ({annotatedPageContent: true});
+    if (pageContent.annotatedPageData?.annotatedPageContent) {
+      annotatedPageContent =
+          await readStream(pageContent.annotatedPageData.annotatedPageContent);
+    }
+  } catch (err) {
+    logMessage(`fetching APC failed: ${err}`);
+    return;
+  }
+
+  if (!annotatedPageContent) {
+    logMessage('fetching APC failed');
+    return;
+  }
+
+  interface DocumentIdAndNodes {
+    documentId: string;
+    nodes: Array<{nodeId: number, attributeType: string, text?: string}>;
+  }
+  function getDocumentIdAndNodes(apc: any): DocumentIdAndNodes {
+    function traverseTree(result: DocumentIdAndNodes, node: any) {
+      if (!node) {
+        return;
+      }
+      const contentAttributes = node.contentAttributes;
+      const domNodeId = contentAttributes.commonAncestorDomNodeId;
+      if (!domNodeId) {
+        return;
+      }
+
+      result.nodes.push({
+        'nodeId': domNodeId as number,
+        'attributeType': contentAttributes.attributeType as string,
+        'text': contentAttributes.textData?.textContent as string,
+      });
+
+      if (node.childrenNodes) {
+        for (const child of node.childrenNodes) {
+          traverseTree(result, child);
+        }
+      }
+    }
+
+    const result: DocumentIdAndNodes = {
+      documentId: apc.mainFrameData.documentIdentifier.serializedToken,
+      nodes: [],
+    };
+    traverseTree(result, apc.rootNode);
+    return result;
+  }
+
+  const postResponse =
+      await fetch('/parse-apc', {method: 'POST', body: annotatedPageContent});
+  const result: DocumentIdAndNodes =
+      getDocumentIdAndNodes(await postResponse.json());
+
+  $.scrollToDocumentId.innerText = result.documentId;
+
+  for (const selectElement
+           of [$.scrollToExactTextSearchStart,
+               $.scrollToTextFragmentSearchStart]) {
+    selectElement.innerHTML = '';
+    selectElement.disabled = false;
+
+    function addOption(value: string, text: string) {
+      const option = document.createElement('option');
+      option.value = value;
+      option.text = text;
+      selectElement.appendChild(option);
+    }
+
+    addOption('N/A', '<No Value>');
+    addOption('-1', '<Invalid Value>');
+    for (const node of result.nodes) {
+      const value = node.nodeId;
+      let optionText = node.attributeType.replace('CONTENT_ATTRIBUTE_', '');
+      if (node.text) {
+        optionText += ` ${node.text}`;
+      }
+      addOption(value.toString(), optionText);
+    }
+  }
+});
+
 $.scrollToBn.addEventListener('click', async () => {
   if (!(getBrowser()!.scrollTo)) {
     logMessage(
@@ -756,26 +848,43 @@ $.scrollToBn.addEventListener('click', async () => {
     return;
   }
 
+  async function scrollTo(selector: ScrollToSelector): Promise<void> {
+    const documentId = $.scrollToDocumentId.innerText;
+    const params: ScrollToParams = {
+      selector,
+      documentId: documentId === 'null' ? undefined : documentId,
+      highlight: true,
+    };
+    logMessage(`scrollTo called with ${JSON.stringify(params)}`);
+    await getBrowser()!.scrollTo!(params);
+    logMessage('scrollTo succeeded!');
+  }
+
+  function getSearchRangeStartNodeId(selectElement: HTMLSelectElement): number|
+      undefined {
+    let searchRangeStartNodeId: number|undefined = undefined;
+    if (!selectElement.disabled) {
+      searchRangeStartNodeId = parseInt(selectElement.value) || undefined;
+    }
+    return searchRangeStartNodeId;
+  }
+
   try {
     const exactText = $.scrollToExactText.value;
     if (exactText) {
-      logMessage(`scrollTo called with "${exactText}"`);
-      await getBrowser()!.scrollTo!({
-        selector: {exactText: {text: exactText}},
-        highlight: true,
-      });
-      logMessage('scrollTo succeeded!');
+      const searchRangeStartNodeId =
+          getSearchRangeStartNodeId($.scrollToExactTextSearchStart);
+      await scrollTo({exactText: {text: exactText, searchRangeStartNodeId}});
       return;
     }
 
     const textStart = $.scrollToTextFragmentTextStart.value;
     const textEnd = $.scrollToTextFragmentTextEnd.value;
     if (textStart && textEnd) {
-      logMessage(`scrollTo called with text fragment: {textStart: "${
-          textStart}", textEnd: "${textEnd}"}`);
-      await getBrowser()!.scrollTo!
-          ({selector: {textFragment: {textStart, textEnd}}});
-      logMessage('scrollTo succeeded!');
+      const searchRangeStartNodeId =
+          getSearchRangeStartNodeId($.scrollToTextFragmentSearchStart);
+      await scrollTo(
+          {textFragment: {textStart, textEnd, searchRangeStartNodeId}});
       return;
     }
 

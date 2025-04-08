@@ -159,6 +159,15 @@ found in the LICENSE file.
       color: #c8a2c8;
     }
   }
+
+  .scrollToSelector {
+    margin-top: 16px;
+  }
+
+  select.scrollToNodeSelect {
+    width: 300px;
+    margin-left: 4px;
+  }
 </style>
 <div id="pageHeader">
   <h1>Test Web Client</h1>
@@ -396,17 +405,25 @@ found in the LICENSE file.
 <div class="section">
   <h1>Scroll-To and Highlight</h1>
   <div>
+    <button id="scrollToFetchAPCBn">Fetch AnnotatedPageContent</button>
+    <div style="margin-top:4px;">Document ID: <span id="scrollToDocumentId">null</span></div>
+  </div>
+  <div class="scrollToSelector">
     <h2>
       Exact Text Selector
     </h2>
     <input id="scrollToExactText" type="text" placeholder="Add exact text to scroll to and highlight">
+    <div><label>Search Range Start Node</label><select disabled id="scrollToExactTextSearchStart"
+        class="scrollToNodeSelect"></select></div>
   </div>
-  <div>
+  <div class="scrollToSelector">
     <h2>
       Text Fragment Selector
     </h2>
     <input id="scrollToTextFragmentTextStart" type="text" placeholder="textStart">
     <input id="scrollToTextFragmentTextEnd" type="text" placeholder="textEnd">
+    <div><label>Search Range Start Node</label><select disabled id="scrollToTextFragmentSearchStart"
+        class="scrollToNodeSelect"></select></div>
   </div>
   <button id="scrollToBn" style="margin-top: 12px;">Scroll!</button>
 </div>

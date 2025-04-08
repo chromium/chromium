@@ -15,6 +15,7 @@ group("generate_test_files") {
     ":test_client_api_deps",
     ":test_client_external_files",
   ]
+  deps = [ "//components/optimization_guide/proto:optimization_guide_proto" ]
 }
 
 ts_library("build_extra_ts") {
