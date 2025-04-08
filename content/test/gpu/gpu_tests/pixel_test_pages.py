@@ -1394,68 +1394,87 @@ class PixelTestPages():
 
     standard_crop = ca.NonWhiteContentCropAction(
         initial_crop=ca.FixedRectCropAction(0, 0, 300, 300))
+    mp4_crop = ca.NonWhiteContentCropAction(
+        initial_crop=ca.FixedRectCropAction(0, 0, 600, 600))
     large_crop = ca.NonWhiteContentCropAction(
         initial_crop=ca.FixedRectCropAction(0, 0, 1000, 600))
 
+    MP4_FULLSIZE_WIDTH = 960
+    MP4_FULLSIZE_HEIGHT = 540
+    MP4_HALF_WIDTH = MP4_FULLSIZE_WIDTH / 2
+    MP4_HALF_HEIGHT = MP4_FULLSIZE_HEIGHT / 2
+
     return [
-        PixelTestPage(f'pixel_video_mp4.html?width=240&height=135&{swap_param}',
-                      base_name + '_DirectComposition_Video_MP4',
-                      crop_action=standard_crop,
-                      browser_args=browser_args,
-                      other_args={
-                          'codec': h264,
-                      },
-                      matching_algorithm=permissive_dc_sobel_algorithm),
-        PixelTestPage(f'pixel_video_mp4.html?width=960&height=540&{swap_param}',
-                      base_name + '_DirectComposition_Video_MP4_Fullsize',
-                      browser_args=browser_args,
-                      other_args={
-                          'full_size': True,
-                          'codec': h264,
-                      },
-                      crop_action=large_crop,
-                      matching_algorithm=strict_dc_sobel_algorithm),
-        PixelTestPage(f'pixel_video_mp4.html?width=240&height=135&{swap_param}',
-                      base_name + '_DirectComposition_Video_MP4_NV12',
-                      crop_action=standard_crop,
-                      browser_args=browser_args_NV12,
-                      other_args={
-                          'pixel_format': overlay_support.PixelFormat.NV12,
-                          'codec': h264,
-                      },
-                      matching_algorithm=permissive_dc_sobel_algorithm),
-        PixelTestPage(f'pixel_video_mp4.html?width=240&height=135&{swap_param}',
-                      base_name + '_DirectComposition_Video_MP4_YUY2',
-                      crop_action=standard_crop,
-                      browser_args=browser_args_YUY2,
-                      other_args={
-                          'pixel_format': overlay_support.PixelFormat.YUY2,
-                          'codec': h264,
-                      },
-                      matching_algorithm=permissive_dc_sobel_algorithm),
-        PixelTestPage(f'pixel_video_mp4.html?width=960&height=540&{swap_param}',
-                      base_name + '_DirectComposition_Video_MP4_BGRA',
-                      crop_action=large_crop,
-                      browser_args=browser_args_BGRA,
-                      other_args={
-                          'pixel_format': overlay_support.PixelFormat.BGRA8,
-                          'codec': h264,
-                      },
-                      matching_algorithm=permissive_dc_sobel_algorithm),
-        PixelTestPage(f'pixel_video_mp4.html?width=240&height=135&{swap_param}',
-                      base_name + '_DirectComposition_Video_MP4_VP_SCALING',
-                      crop_action=standard_crop,
-                      browser_args=browser_args_vp_scaling,
-                      other_args={
-                          'zero_copy': False,
-                          'codec': h264,
-                      },
-                      matching_algorithm=permissive_dc_sobel_algorithm),
+        PixelTestPage(
+            f'pixel_video_mp4.html?width={MP4_HALF_WIDTH}&'
+            f'height={MP4_HALF_HEIGHT}&{swap_param}',
+            base_name + '_DirectComposition_Video_MP4',
+            crop_action=mp4_crop,
+            browser_args=browser_args,
+            other_args={
+                'codec': h264,
+            },
+            matching_algorithm=permissive_dc_sobel_algorithm),
+        PixelTestPage(
+            f'pixel_video_mp4.html?width={MP4_FULLSIZE_WIDTH}&'
+            f'height={MP4_FULLSIZE_HEIGHT}&{swap_param}',
+            base_name + '_DirectComposition_Video_MP4_Fullsize',
+            browser_args=browser_args,
+            other_args={
+                'full_size': True,
+                'codec': h264,
+            },
+            crop_action=large_crop,
+            matching_algorithm=strict_dc_sobel_algorithm),
+        PixelTestPage(
+            f'pixel_video_mp4.html?width={MP4_HALF_WIDTH}&'
+            f'height={MP4_HALF_HEIGHT}&{swap_param}',
+            base_name + '_DirectComposition_Video_MP4_NV12',
+            crop_action=mp4_crop,
+            browser_args=browser_args_NV12,
+            other_args={
+                'pixel_format': overlay_support.PixelFormat.NV12,
+                'codec': h264,
+            },
+            matching_algorithm=permissive_dc_sobel_algorithm),
+        PixelTestPage(
+            f'pixel_video_mp4.html?width={MP4_HALF_WIDTH}&'
+            f'height={MP4_HALF_HEIGHT}&{swap_param}',
+            base_name + '_DirectComposition_Video_MP4_YUY2',
+            crop_action=mp4_crop,
+            browser_args=browser_args_YUY2,
+            other_args={
+                'pixel_format': overlay_support.PixelFormat.YUY2,
+                'codec': h264,
+            },
+            matching_algorithm=permissive_dc_sobel_algorithm),
+        PixelTestPage(
+            f'pixel_video_mp4.html?width={MP4_FULLSIZE_WIDTH}&'
+            f'height={MP4_FULLSIZE_HEIGHT}&{swap_param}',
+            base_name + '_DirectComposition_Video_MP4_BGRA',
+            crop_action=large_crop,
+            browser_args=browser_args_BGRA,
+            other_args={
+                'pixel_format': overlay_support.PixelFormat.BGRA8,
+                'codec': h264,
+            },
+            matching_algorithm=permissive_dc_sobel_algorithm),
+        PixelTestPage(
+            f'pixel_video_mp4.html?width={MP4_HALF_WIDTH}&'
+            f'height={MP4_HALF_HEIGHT}&{swap_param}',
+            base_name + '_DirectComposition_Video_MP4_VP_SCALING',
+            crop_action=mp4_crop,
+            browser_args=browser_args_vp_scaling,
+            other_args={
+                'zero_copy': False,
+                'codec': h264,
+            },
+            matching_algorithm=permissive_dc_sobel_algorithm),
         PixelTestPage(
             (f'pixel_video_mp4_four_colors_aspect_4x3.html?'
-             f'width=240&height=135&{swap_param}'),
+             f'width={MP4_HALF_WIDTH}&height={MP4_HALF_HEIGHT}&{swap_param}'),
             base_name + '_DirectComposition_Video_MP4_FourColors_Aspect_4x3',
-            crop_action=standard_crop,
+            crop_action=mp4_crop,
             browser_args=browser_args,
             other_args={
                 'codec': h264,
@@ -1463,9 +1482,9 @@ class PixelTestPages():
             matching_algorithm=permissive_dc_sobel_algorithm),
         PixelTestPage(
             (f'pixel_video_mp4_four_colors_rot_90.html?'
-             f'width=270&height=240&{swap_param}'),
+             f'width={MP4_HALF_HEIGHT}&height={MP4_HALF_WIDTH}&{swap_param}'),
             base_name + '_DirectComposition_Video_MP4_FourColors_Rot_90',
-            crop_action=standard_crop,
+            crop_action=mp4_crop,
             browser_args=browser_args,
             other_args={
                 'video_rotation': overlay_support.VideoRotation.ROT90,
@@ -1474,9 +1493,9 @@ class PixelTestPages():
             matching_algorithm=strict_dc_sobel_algorithm),
         PixelTestPage(
             (f'pixel_video_mp4_four_colors_rot_180.html?'
-             f'width=240&height=135&{swap_param}'),
+             f'width={MP4_HALF_WIDTH}&height={MP4_HALF_HEIGHT}&{swap_param}'),
             base_name + '_DirectComposition_Video_MP4_FourColors_Rot_180',
-            crop_action=standard_crop,
+            crop_action=mp4_crop,
             browser_args=browser_args,
             other_args={
                 'video_rotation': overlay_support.VideoRotation.ROT180,
@@ -1485,9 +1504,9 @@ class PixelTestPages():
             matching_algorithm=strict_dc_sobel_algorithm),
         PixelTestPage(
             (f'pixel_video_mp4_four_colors_rot_270.html?'
-             f'width=270&height=240&{swap_param}'),
+             f'width={MP4_HALF_HEIGHT}&height={MP4_HALF_WIDTH}&{swap_param}'),
             base_name + '_DirectComposition_Video_MP4_FourColors_Rot_270',
-            crop_action=standard_crop,
+            crop_action=mp4_crop,
             browser_args=browser_args,
             other_args={
                 'video_rotation': overlay_support.VideoRotation.ROT270,
