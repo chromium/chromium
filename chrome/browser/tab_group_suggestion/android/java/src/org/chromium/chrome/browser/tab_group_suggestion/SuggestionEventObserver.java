@@ -76,6 +76,9 @@ public class SuggestionEventObserver {
 
     private @Nullable ObservableSupplier<Boolean> mHubVisibilitySupplier;
     private @Nullable ObservableSupplier<Pane> mFocusedPaneSupplier;
+    // The event observer will not populate any signal when in observation mode. Currently it's only
+    // blocking the very first navigation after startup.
+    private boolean mSeenFirstPageLoad = true;
 
     /** Creates the observer. */
     public SuggestionEventObserver(
@@ -86,7 +89,8 @@ public class SuggestionEventObserver {
                 new TabModelSelectorTabObserver(tabModelSelector) {
                     @Override
                     public void onPageLoadFinished(Tab tab, GURL url) {
-                        if (tab.isIncognitoBranded()) {
+                        if (tab.isIncognitoBranded() || mSeenFirstPageLoad) {
+                            mSeenFirstPageLoad = false;
                             return;
                         }
                         mGroupSuggestionsService.onPageLoadFinished(tab.getId());
