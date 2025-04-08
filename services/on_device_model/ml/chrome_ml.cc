@@ -89,6 +89,10 @@ void RecordCustomCountsHistogram(const char* name,
   base::UmaHistogramCustomCounts(name, sample, min, exclusive_max, buckets);
 }
 
+void RecordMediumTimesHistogram(const char* name, int64_t milliseconds) {
+  base::UmaHistogramMediumTimes(name, base::Milliseconds(milliseconds));
+}
+
 }  // namespace
 
 ChromeML::ChromeML(const ChromeMLAPI* api) : api_(api) {}
@@ -130,6 +134,7 @@ std::unique_ptr<ChromeML> ChromeML::Create(
     const ChromeMLMetricsFns metrics_fns{
         .RecordExactLinearHistogram = &RecordExactLinearHistogram,
         .RecordCustomCountsHistogram = &RecordCustomCountsHistogram,
+        .RecordMediumTimesHistogram = &RecordMediumTimesHistogram,
     };
     api.SetMetricsFns(&metrics_fns);
   }

@@ -257,6 +257,9 @@ struct ChromeMLMetricsFns {
                                       int min,
                                       int exclusive_max,
                                       size_t buckets);
+
+  // Logs a sample for timings up to 3 minutes.
+  void (*RecordMediumTimesHistogram)(const char* name, int64_t milliseconds);
 };
 
 // Precision used by the gpu delegate during inference.
