@@ -1210,7 +1210,7 @@ class _AvdInstance:
                                        'listen_for_serial'):
           self._emulator_serial = timeout_retry.Run(
               listen_for_serial,
-              timeout=300 if is_slow_start else 60,
+              timeout=300 if is_slow_start else 120,
               retries=retries,
               args=[sock])
           logging.info('%s started', self._emulator_serial)
