@@ -2251,10 +2251,22 @@ void ResourceFetcher::ReloadImagesIfNotDeferred() {
 void ResourceFetcher::PopulateResourceRequestPermissionsPolicy(
     network::ResourceRequest* request) {
   // TODO(crbug.com/382291442): Remove feature guarding once launched.
-  if (base::FeatureList::IsEnabled(
-          network::features::kPopulatePermissionsPolicyOnRequest) &&
-      Context().GetPermissionsPolicy()) {
+  if (!base::FeatureList::IsEnabled(
+          network::features::kPopulatePermissionsPolicyOnRequest)) {
+    return;
+  }
+
+  if (Context().GetPermissionsPolicy()) {
     request->permissions_policy = *Context().GetPermissionsPolicy();
+  } else {
+    // If the context has no permissions policy (e.g. because it's a worker that
+    // doesn't support permissions policies), set a conservative, all-blocking
+    // permissions policy on the request.
+    // TODO(https://crbug.com/406525486): Once workers support permissions
+    // policies, this might be removed.
+    request->permissions_policy =
+        *network::PermissionsPolicy::CreateFromParsedPolicy(
+            {}, {}, url::Origin::Create(request->url));
   }
 }
 
