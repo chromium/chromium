@@ -764,20 +764,20 @@ AggregatableReportRequest::CreateInternal(
     return std::nullopt;
   }
 
-    if (!FilteringIdsFitInMaxBytes(payload_contents.contributions,
-                                   payload_contents.filtering_id_max_bytes)) {
-      DVLOG(1) << "Filtering ID does not fit in filtering_id_max_bytes";
-      return std::nullopt;
-    }
+  if (!FilteringIdsFitInMaxBytes(payload_contents.contributions,
+                                 payload_contents.filtering_id_max_bytes)) {
+    DVLOG(1) << "Filtering ID does not fit in filtering_id_max_bytes";
+    return std::nullopt;
+  }
 
   // Ensure the ordering of urls is deterministic. This is required for
   // AggregatableReport construction later.
-    std::ranges::sort(processing_urls);
+  std::ranges::sort(processing_urls);
 
-    return AggregatableReportRequest(
-        std::move(processing_urls), std::move(payload_contents),
-        std::move(shared_info), delay_type, std::move(reporting_path),
-        debug_key, std::move(additional_fields), failed_send_attempts);
+  return AggregatableReportRequest(
+      std::move(processing_urls), std::move(payload_contents),
+      std::move(shared_info), delay_type, std::move(reporting_path), debug_key,
+      std::move(additional_fields), failed_send_attempts);
 }
 
 AggregatableReportRequest::AggregatableReportRequest(

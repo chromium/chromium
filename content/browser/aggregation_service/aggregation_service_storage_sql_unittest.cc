@@ -1470,8 +1470,9 @@ class AggregationServiceStorageSqlMigrationsTest
   static int VersionFromDatabase(sql::Database* db) {
     sql::Statement statement(
         db->GetUniqueStatement("SELECT value FROM meta WHERE key='version'"));
-    if (!statement.Step())
+    if (!statement.Step()) {
       return 0;
+    }
     return statement.ColumnInt(0);
   }
 
@@ -1484,8 +1485,9 @@ class AggregationServiceStorageSqlMigrationsTest
         base::StrCat({"aggregation_service/databases/version_",
                       base::NumberToString(version_id), ".sql"})));
 
-    if (!base::PathExists(source_path))
+    if (!base::PathExists(source_path)) {
       return std::string();
+    }
 
     std::string contents;
     base::ReadFileToString(source_path, &contents);

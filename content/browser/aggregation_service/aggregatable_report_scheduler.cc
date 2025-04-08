@@ -96,8 +96,9 @@ std::optional<base::TimeDelta>
 AggregatableReportScheduler::GetFailedReportDelay(int failed_send_attempts) {
   CHECK_GT(failed_send_attempts, 0);
 
-  if (failed_send_attempts > kMaxRetries)
+  if (failed_send_attempts > kMaxRetries) {
     return std::nullopt;
+  }
 
   return kInitialRetryDelay *
          std::pow(kRetryDelayFactor, failed_send_attempts - 1);

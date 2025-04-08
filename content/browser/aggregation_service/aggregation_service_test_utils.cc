@@ -128,8 +128,9 @@ testing::AssertionResult ReportRequestsEqual(
 
   testing::AssertionResult payload_contents_equal = PayloadContentsEqual(
       expected.payload_contents(), actual.payload_contents());
-  if (!payload_contents_equal)
+  if (!payload_contents_equal) {
     return payload_contents_equal;
+  }
 
   if (expected.reporting_path() != actual.reporting_path()) {
     return testing::AssertionFailure()
@@ -460,8 +461,9 @@ void MockAggregationService::NotifyReportHandled(
     std::optional<AggregatableReport> report,
     base::Time report_handled_time,
     AggregationServiceObserver::ReportStatus status) {
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnReportHandled(request, id, report, report_handled_time, status);
+  }
 }
 
 AggregatableReportRequestsAndIdsBuilder::
