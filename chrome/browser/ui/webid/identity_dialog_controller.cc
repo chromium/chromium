@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -32,8 +33,35 @@
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-shared.h"
 
 IdentityDialogController::IdentityDialogController(
-    content::WebContents* rp_web_contents)
-    : rp_web_contents_(rp_web_contents) {}
+    content::WebContents* rp_web_contents,
+    segmentation_platform::SegmentationPlatformService* service,
+    optimization_guide::OptimizationGuideDecider* decider)
+    : rp_web_contents_(rp_web_contents),
+      segmentation_platform_service_(service),
+      optimization_guide_decider_(decider) {
+  if (!base::FeatureList::IsEnabled(
+          segmentation_platform::features::kSegmentationPlatformFedCmUser)) {
+    return;
+  }
+
+  Profile* profile = Profile::FromBrowserContext(
+      rp_web_contents_->GetPrimaryMainFrame()->GetBrowserContext());
+  if (profile->IsOffTheRecord()) {
+    return;
+  }
+
+  if (!segmentation_platform_service_) {
+    segmentation_platform_service_ = segmentation_platform::
+        SegmentationPlatformServiceFactory::GetForProfile(profile);
+  }
+
+  if (!optimization_guide_decider_) {
+    optimization_guide_decider_ =
+        OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
+  }
+  optimization_guide_decider_->RegisterOptimizationTypes(
+      {optimization_guide::proto::OptimizationType::FEDCM_CLICKTHROUGH_RATE});
+}
 
 IdentityDialogController::~IdentityDialogController() = default;
 
@@ -282,11 +310,6 @@ void IdentityDialogController::SetAccountSelectionViewForTesting(
   account_view_ = std::move(account_view);
 }
 
-void IdentityDialogController::SetSegmentationPlatformServiceForTesting(
-    segmentation_platform::SegmentationPlatformService* service) {
-  segmentation_platform_service_ = service;
-}
-
 bool IdentityDialogController::TrySetAccountView() {
   if (account_view_) {
     return true;
@@ -310,21 +333,38 @@ bool IdentityDialogController::TrySetAccountView() {
 
 void IdentityDialogController::RequestUiVolumeRecommendation(
     segmentation_platform::ClassificationResultCallback callback) {
-  Profile* profile = Profile::FromBrowserContext(
-      rp_web_contents_->GetPrimaryMainFrame()->GetBrowserContext());
-  if (profile->IsOffTheRecord()) {
+  if (!segmentation_platform_service_) {
+    segmentation_platform::ClassificationResult result(
+        segmentation_platform::PredictionStatus::kFailed);
+    std::move(callback).Run(result);
     return;
   }
 
-  if (!segmentation_platform_service_) {
-    segmentation_platform_service_ = segmentation_platform::
-        SegmentationPlatformServiceFactory::GetForProfile(profile);
-  }
   segmentation_platform::PredictionOptions prediction_options;
   prediction_options.on_demand_execution = true;
+  scoped_refptr<segmentation_platform::InputContext> input_context =
+      base::MakeRefCounted<segmentation_platform::InputContext>();
+  webid::FedCmClickthroughRateMetadata metadata =
+      GetFedCmClickthroughRateMetadata();
+  input_context->metadata_args.emplace(
+      segmentation_platform::kPerPageLoadClickthroughRate,
+      segmentation_platform::processing::ProcessedValue(
+          metadata.per_page_load_clickthrough_rate()));
+  input_context->metadata_args.emplace(
+      segmentation_platform::kPerClientClickthroughRate,
+      segmentation_platform::processing::ProcessedValue(
+          metadata.per_client_clickthrough_rate()));
+  input_context->metadata_args.emplace(
+      segmentation_platform::kPerImpressionClickthroughRate,
+      segmentation_platform::processing::ProcessedValue(
+          metadata.per_impression_clickthrough_rate()));
+  input_context->metadata_args.emplace(
+      segmentation_platform::kLikelyToSignin,
+      segmentation_platform::processing::ProcessedValue(
+          metadata.likely_to_signin()));
   segmentation_platform_service_->GetClassificationResult(
-      segmentation_platform::kFedCmUserKey, prediction_options,
-      /*input_context=*/nullptr, std::move(callback));
+      segmentation_platform::kFedCmUserKey, prediction_options, input_context,
+      std::move(callback));
 }
 
 void IdentityDialogController::OnRequestUiVolumeRecommendationResultReceived(
@@ -375,4 +415,31 @@ void IdentityDialogController::CollectTrainingData(UserAction user_action) {
       *training_request_id_, source_id, training_labels, base::DoNothing());
   training_request_id_ = std::nullopt;
   segmentation_platform_service_ = nullptr;
+}
+
+webid::FedCmClickthroughRateMetadata
+IdentityDialogController::GetFedCmClickthroughRateMetadata() {
+  if (!optimization_guide_decider_) {
+    return webid::FedCmClickthroughRateMetadata();
+  }
+
+  optimization_guide::OptimizationMetadata opt_guide_metadata;
+  auto opt_guide_has_hint = optimization_guide_decider_->CanApplyOptimization(
+      rp_web_contents_->GetPrimaryMainFrame()->GetLastCommittedURL(),
+      optimization_guide::proto::OptimizationType::FEDCM_CLICKTHROUGH_RATE,
+      &opt_guide_metadata);
+  if (opt_guide_has_hint !=
+          optimization_guide::OptimizationGuideDecision::kTrue ||
+      !opt_guide_metadata.any_metadata().has_value()) {
+    return webid::FedCmClickthroughRateMetadata();
+  }
+
+  std::optional<webid::FedCmClickthroughRateMetadata> parsed_metadata =
+      optimization_guide::ParsedAnyMetadata<
+          webid::FedCmClickthroughRateMetadata>(
+          opt_guide_metadata.any_metadata().value());
+  if (!parsed_metadata.has_value()) {
+    return webid::FedCmClickthroughRateMetadata();
+  }
+  return parsed_metadata.value();
 }

@@ -255,6 +255,13 @@ constexpr char kModelExecutionSamplingRateKey[] =
 // startup.
 constexpr char kModelInitializationDelay[] = "model_initialization_delay";
 
+// Input Context keys for FedCM clickthrough rates.
+const char kPerPageLoadClickthroughRate[] = "per_page_load_clickthrough_rate";
+const char kPerClientClickthroughRate[] = "per_client_clickthrough_rate";
+const char kPerImpressionClickthroughRate[] =
+    "per_impression_clickthrough_rate";
+const char kLikelyToSignin[] = "likely_to_signin";
+
 }  // namespace segmentation_platform
 
 #endif  // COMPONENTS_SEGMENTATION_PLATFORM_PUBLIC_CONSTANTS_H_

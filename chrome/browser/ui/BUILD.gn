@@ -340,6 +340,7 @@ static_library("ui") {
     "//chrome/app/vector_icons",
     "//chrome/browser:browser_process",
     "//chrome/browser:buildflags",
+    "//chrome/browser:fedcm_clickthrough_rate_metadata_proto",
     "//chrome/browser:font_pref",
     "//chrome/browser:global_features",
     "//chrome/browser/autofill",

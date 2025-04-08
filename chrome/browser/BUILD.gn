@@ -8745,6 +8745,11 @@ proto_library("lcp_critical_path_predictor_proto") {
   ]
 }
 
+proto_library("fedcm_clickthrough_rate_metadata_proto") {
+  sources = [ "webid/proto/fedcm_clickthrough_rate_metadata.proto" ]
+  cc_generator_options = "lite=true:"
+}
+
 if (enable_bound_session_credentials) {
   proto_library("bound_session_credentials_proto") {
     sources = [
