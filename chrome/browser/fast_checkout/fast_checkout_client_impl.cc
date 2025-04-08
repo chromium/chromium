@@ -421,10 +421,10 @@ void FastCheckoutClientImpl::TryToFillForms() {
         auto* bam = static_cast<autofill::BrowserAutofillManager*>(
             autofill_manager_.get());
         bam->SetFastCheckoutRunId(autofill::FieldTypeGroup::kAddress, run_id_);
-        bam->FillOrPreviewProfileForm(
-            autofill::mojom::ActionPersistence::kFill, form->ToFormData(),
-            field->global_id(), *autofill_profile,
-            autofill::AutofillTriggerSource::kFastCheckout);
+        bam->FillOrPreviewForm(autofill::mojom::ActionPersistence::kFill,
+                               form->ToFormData(), field->global_id(),
+                               autofill_profile,
+                               autofill::AutofillTriggerSource::kFastCheckout);
       }
     }
 
@@ -462,9 +462,9 @@ void FastCheckoutClientImpl::FillCreditCardForm(
   auto* bam =
       static_cast<autofill::BrowserAutofillManager*>(autofill_manager_.get());
   bam->SetFastCheckoutRunId(autofill::FieldTypeGroup::kCreditCard, run_id_);
-  bam->FillOrPreviewCreditCardForm(
-      autofill::mojom::ActionPersistence::kFill, form.ToFormData(), field_id,
-      credit_card, autofill::AutofillTriggerSource::kFastCheckout);
+  bam->FillOrPreviewForm(autofill::mojom::ActionPersistence::kFill,
+                         form.ToFormData(), field_id, &credit_card,
+                         autofill::AutofillTriggerSource::kFastCheckout);
 }
 
 const autofill::AutofillProfile*

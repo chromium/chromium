@@ -122,17 +122,16 @@ class BrowserAutofillManager : public AutofillManager {
   virtual bool ShouldShowScanCreditCard(const FormData& form,
                                         const FormFieldData& field);
 
-  // Fills or previews `form` with the information in `credit_card`. `field_id`
-  // is the ID of the field that triggered the filling operation.
+  // Fills or previews `form` with the information in `filling_payload`.
+  // `field_id` is the ID of the field that triggered the filling operation.
   // `trigger_source` is the reason for triggering the filling operation.
   // `action_persistence` denotes whether the operation is a filling or preview
   // operation.
-  virtual void FillOrPreviewCreditCardForm(
-      mojom::ActionPersistence action_persistence,
-      const FormData& form,
-      const FieldGlobalId& field_id,
-      const CreditCard& credit_card,
-      AutofillTriggerSource trigger_source);
+  virtual void FillOrPreviewForm(mojom::ActionPersistence action_persistence,
+                                 const FormData& form,
+                                 const FieldGlobalId& field_id,
+                                 const FillingPayload& filling_payload,
+                                 AutofillTriggerSource trigger_source);
 
   // Routes calls from external components to FormFiller::FillOrPreviewField.
   // Virtual for testing.
@@ -176,23 +175,6 @@ class BrowserAutofillManager : public AutofillManager {
       const FieldGlobalId& field_id,
       AutofillExternalDelegate::UpdateSuggestionsCallback
           update_suggestions_callback);
-
-  // Fills or previews the profile form.
-  // Assumes the form and field are valid.
-  // TODO(crbug.com/40227071): Clean up the API.
-  virtual void FillOrPreviewProfileForm(
-      mojom::ActionPersistence action_persistence,
-      const FormData& form,
-      const FieldGlobalId& field_id,
-      const AutofillProfile& profile,
-      AutofillTriggerSource trigger_source);
-
-  // TODO(crbug.com/40227071): Clean up the API.
-  void FillOrPreviewFormWithAutofillAiData(
-      mojom::ActionPersistence action_persistence,
-      const FormData& form,
-      const FormFieldData& trigger_field,
-      const EntityInstance& entity);
 
   // Invoked when the user selected the `suggestion` in a suggestions list from
   // single field filling.
@@ -428,6 +410,18 @@ class BrowserAutofillManager : public AutofillManager {
       const AutofillField& autofill_trigger_field,
       AutofillSuggestionTriggerSource trigger_source,
       autofill_metrics::SuggestionRankingContext& ranking_context);
+
+  // Fills or previews `form` with the information in `credit_card`.
+  // `autofill_field` is the field that triggered the filling operation.
+  // `trigger_source` is the reason for triggering the filling operation.
+  // `action_persistence` denotes whether the operation is a filling or preview
+  // operation.
+  void FillOrPreviewCreditCardForm(mojom::ActionPersistence action_persistence,
+                                   const FormData& form,
+                                   const FormStructure& form_structure,
+                                   const AutofillField& autofill_field,
+                                   const CreditCard& credit_card,
+                                   AutofillTriggerSource trigger_source);
 
   // If `metrics_->initial_interaction_timestamp` is unset or is set to a later
   // time than `interaction_timestamp`, updates the cached timestamp.  The

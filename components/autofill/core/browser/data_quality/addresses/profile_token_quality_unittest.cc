@@ -63,10 +63,9 @@ class ProfileTokenQualityTest : public testing::Test {
   void FillForm(const FormData& form,
                 const AutofillProfile& profile,
                 size_t triggering_field_index = 0) {
-    bam_.FillOrPreviewProfileForm(
-        mojom::ActionPersistence::kFill, form,
-        form.fields()[triggering_field_index].global_id(), profile,
-        AutofillTriggerSource::kPopup);
+    bam_.FillOrPreviewForm(mojom::ActionPersistence::kFill, form,
+                           form.fields()[triggering_field_index].global_id(),
+                           &profile, AutofillTriggerSource::kPopup);
   }
 
   TestAddressDataManager& adm() { return adm_; }

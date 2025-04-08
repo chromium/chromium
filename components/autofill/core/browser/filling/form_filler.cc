@@ -593,14 +593,13 @@ void FormFiller::FillOrPreviewField(mojom::ActionPersistence action_persistence,
                                       field.global_id(), value);
 }
 
-void FormFiller::FillOrPreviewForm(
-    mojom::ActionPersistence action_persistence,
-    const FormData& form,
-    const FillingPayload& filling_payload,
-    FormStructure& form_structure,
-    AutofillField& autofill_trigger_field,
-    AutofillTriggerSource trigger_source,
-    bool is_refill) {
+void FormFiller::FillOrPreviewForm(mojom::ActionPersistence action_persistence,
+                                   const FormData& form,
+                                   const FillingPayload& filling_payload,
+                                   FormStructure& form_structure,
+                                   AutofillField& autofill_trigger_field,
+                                   AutofillTriggerSource trigger_source,
+                                   bool is_refill) {
   FillingProduct filling_product =
       GetFillingProductFromFillingPayload(filling_payload);
 

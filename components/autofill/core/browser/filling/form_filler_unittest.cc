@@ -435,10 +435,10 @@ TEST_F(FormFillerTest, UndoSavesFormFillingDataForAutofillAi) {
       .Times(2)
       .WillRepeatedly(Return(safe_fields));
 
-  AutofillProfile profile = test::GetFullProfile();
-  browser_autofill_manager_->FillOrPreviewFormWithAutofillAiData(
-      mojom::ActionPersistence::kFill, form, form.fields()[0],
-      test::GetPassportEntityInstance());
+  EntityInstance passport = test::GetPassportEntityInstance();
+  browser_autofill_manager_->FillOrPreviewForm(
+      mojom::ActionPersistence::kFill, form, form.fields()[0].global_id(),
+      &passport, AutofillTriggerSource::kAutofillAi);
   browser_autofill_manager_->UndoAutofill(mojom::ActionPersistence::kFill, form,
                                           form.fields().front());
 }

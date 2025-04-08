@@ -1213,15 +1213,13 @@ class BrowserAutofillManagerTest : public testing::Test {
         AutofillSuggestionTriggerSource::kTextFieldDidReceiveKeyDown);
     if (const AutofillProfile* profile =
             personal_data().address_data_manager().GetProfileByGUID(guid)) {
-      manager().FillOrPreviewProfileForm(mojom::ActionPersistence::kFill, form,
-                                         field.global_id(), *profile,
-                                         trigger_source);
+      manager().FillOrPreviewForm(mojom::ActionPersistence::kFill, form,
+                                  field.global_id(), profile, trigger_source);
     } else if (const CreditCard* card =
                    personal_data().payments_data_manager().GetCreditCardByGUID(
                        guid)) {
-      manager().FillOrPreviewCreditCardForm(mojom::ActionPersistence::kFill,
-                                            form, field.global_id(), *card,
-                                            trigger_source);
+      manager().FillOrPreviewForm(mojom::ActionPersistence::kFill, form,
+                                  field.global_id(), card, trigger_source);
     }
   }
 
@@ -1312,9 +1310,9 @@ class BrowserAutofillManagerTest : public testing::Test {
     card.SetNetworkForMaskedCard(kVisaCard);
 
     EXPECT_CALL(driver(), ApplyFormAction).Times(AtLeast(1));
-    manager().FillOrPreviewCreditCardForm(mojom::ActionPersistence::kFill,
-                                          *form, form->fields()[0].global_id(),
-                                          card, AutofillTriggerSource::kPopup);
+    manager().FillOrPreviewForm(mojom::ActionPersistence::kFill, *form,
+                                form->fields()[0].global_id(), &card,
+                                AutofillTriggerSource::kPopup);
   }
 
   void OnDidGetRealPan(
@@ -3221,9 +3219,9 @@ TEST_F(BrowserAutofillManagerTest,
   FormData form = CreateTestCreditCardFormData(/*is_https=*/true,
                                                /*use_month_type=*/false);
   FormsSeen({form});
-  manager().FillOrPreviewCreditCardForm(
-      mojom::ActionPersistence::kFill, form, form.fields().front().global_id(),
-      local_card, AutofillTriggerSource::kPopup);
+  manager().FillOrPreviewForm(mojom::ActionPersistence::kFill, form,
+                              form.fields().front().global_id(), &local_card,
+                              AutofillTriggerSource::kPopup);
   EXPECT_THAT(test_api(form_data_importer()).fetched_card_instrument_id(),
               testing::Optional(local_card.instrument_id()));
 }
@@ -3238,9 +3236,9 @@ TEST_F(BrowserAutofillManagerTest,
   FormData form = CreateTestCreditCardFormData(/*is_https=*/true,
                                                /*use_month_type=*/false);
   FormsSeen({form});
-  manager().FillOrPreviewCreditCardForm(
-      mojom::ActionPersistence::kFill, form, form.fields().front().global_id(),
-      server_card, AutofillTriggerSource::kPopup);
+  manager().FillOrPreviewForm(mojom::ActionPersistence::kFill, form,
+                              form.fields().front().global_id(), &server_card,
+                              AutofillTriggerSource::kPopup);
   EXPECT_THAT(test_api(form_data_importer()).fetched_card_instrument_id(),
               testing::Optional(server_card.instrument_id()));
 }
@@ -3264,16 +3262,16 @@ TEST_F(BrowserAutofillManagerTest,
   FormData form = CreateTestCreditCardFormData(/*is_https=*/true,
                                                /*use_month_type=*/false);
   FormsSeen({form});
-  manager().FillOrPreviewCreditCardForm(
-      mojom::ActionPersistence::kFill, form, form.fields().front().global_id(),
-      filled_card, AutofillTriggerSource::kPopup);
+  manager().FillOrPreviewForm(mojom::ActionPersistence::kFill, form,
+                              form.fields().front().global_id(), &filled_card,
+                              AutofillTriggerSource::kPopup);
   EXPECT_THAT(test_api(form_data_importer()).fetched_card_instrument_id(),
               testing::Optional(filled_card.instrument_id()));
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
-TEST_F(BrowserAutofillManagerTest, FillOrPreviewCreditCardForm_Bnpl) {
+TEST_F(BrowserAutofillManagerTest, FillOrPreviewForm_CreditCard_Bnpl) {
   base::test::ScopedFeatureList scoped_feature_list(
       features::kAutofillEnableBuyNowPayLaterSyncing);
 
@@ -3303,9 +3301,9 @@ TEST_F(BrowserAutofillManagerTest, FillOrPreviewCreditCardForm_Bnpl) {
   FormData form = CreateTestCreditCardFormData(/*is_https=*/true,
                                                /*use_month_type=*/false);
   FormsSeen({form});
-  manager().FillOrPreviewCreditCardForm(
+  manager().FillOrPreviewForm(
       mojom::ActionPersistence::kFill, form, form.fields().front().global_id(),
-      bnpl_virtual_card, AutofillTriggerSource::kPopup);
+      &bnpl_virtual_card, AutofillTriggerSource::kPopup);
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
@@ -3331,9 +3329,10 @@ TEST_F(BrowserAutofillManagerTest,
   FormData form = CreateTestCreditCardFormData(/*is_https=*/true,
                                                /*use_month_type=*/false);
   FormsSeen({form});
-  manager().FillOrPreviewCreditCardForm(
-      mojom::ActionPersistence::kFill, form, form.fields().front().global_id(),
-      test::GetMaskedServerCard(), AutofillTriggerSource::kPopup);
+  CreditCard card = test::GetMaskedServerCard();
+  manager().FillOrPreviewForm(mojom::ActionPersistence::kFill, form,
+                              form.fields().front().global_id(), &card,
+                              AutofillTriggerSource::kPopup);
   EXPECT_THAT(test_api(form_data_importer()).fetched_card_instrument_id(),
               testing::Optional(filled_card.instrument_id()));
 }
@@ -3363,9 +3362,9 @@ TEST_F(BrowserAutofillManagerTest,
   FormData form = CreateTestCreditCardFormData(/*is_https=*/true,
                                                /*use_month_type=*/false);
   FormsSeen({form});
-  manager().FillOrPreviewCreditCardForm(
-      mojom::ActionPersistence::kFill, form, form.fields().front().global_id(),
-      credit_card, AutofillTriggerSource::kPopup);
+  manager().FillOrPreviewForm(mojom::ActionPersistence::kFill, form,
+                              form.fields().front().global_id(), &credit_card,
+                              AutofillTriggerSource::kPopup);
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)

@@ -214,10 +214,10 @@ class AutofillMetricsBaseTest {
   void FillProfileByGUID(const FormData& form,
                          const std::string& profile_guid,
                          size_t field_index = 0) {
-    autofill_manager().FillOrPreviewProfileForm(
+    autofill_manager().FillOrPreviewForm(
         mojom::ActionPersistence::kFill, form,
         form.fields()[field_index].global_id(),
-        *personal_data().address_data_manager().GetProfileByGUID(profile_guid),
+        personal_data().address_data_manager().GetProfileByGUID(profile_guid),
         AutofillTriggerSource::kPopup);
   }
 
