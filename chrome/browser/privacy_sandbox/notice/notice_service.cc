@@ -7,8 +7,7 @@
 #include "chrome/browser/privacy_sandbox/notice/notice_features.h"
 #include "chrome/browser/privacy_sandbox/notice/notice_model.h"
 #include "chrome/browser/privacy_sandbox/notice/notice_storage.h"
-#include "components/prefs/pref_service.h"
-#include "components/privacy_sandbox/privacy_sandbox_prefs.h"
+#include "chrome/browser/profiles/profile.h"
 
 namespace privacy_sandbox {
 namespace {

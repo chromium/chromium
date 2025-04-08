@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_PRIVACY_SANDBOX_NOTICE_NOTICE_SERVICE_INTERFACE_H_
 #define CHROME_BROWSER_PRIVACY_SANDBOX_NOTICE_NOTICE_SERVICE_INTERFACE_H_
 
+#include <vector>
+
 #include "chrome/browser/privacy_sandbox/notice/notice.mojom-forward.h"
 
 enum class SurfaceType;

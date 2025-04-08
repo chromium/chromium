@@ -10,12 +10,14 @@
 #include "chrome/browser/privacy_sandbox/notice/notice_model.h"
 #include "chrome/browser/privacy_sandbox/notice/notice_service_interface.h"
 #include "chrome/browser/privacy_sandbox/notice/notice_storage.h"
-#include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/privacy_sandbox/notice/desktop_view_manager.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+class Profile;
+class PrefService;
 
 namespace privacy_sandbox {
 

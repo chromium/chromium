@@ -3,8 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/feature_list.h"
-#include "base/metrics/field_trial_params.h"
-#include "build/build_config.h"
 
 #ifndef CHROME_BROWSER_PRIVACY_SANDBOX_NOTICE_NOTICE_FEATURES_H_
 #define CHROME_BROWSER_PRIVACY_SANDBOX_NOTICE_NOTICE_FEATURES_H_

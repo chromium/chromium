@@ -2,11 +2,18 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+assert(!is_ios)
+
 group("privacy_sandbox") {
-  public_deps = [ "notice:core" ]
+  public_deps = [
+    "notice",
+    "notice:core",
+  ]
 }
 
 group("unit_tests") {
   testonly = true
   deps = [ "notice:unit_tests" ]
 }
+# TODO(crbug.com/408801109) move other privacy_sandbox sources
+# from chrome/test/BUILD.gn here.

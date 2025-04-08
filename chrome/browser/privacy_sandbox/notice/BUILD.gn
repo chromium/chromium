@@ -13,13 +13,17 @@ mojom("notice_mojom") {
 }
 
 source_set("core") {
-  sources = [ "notice_storage.cc" ]
-
+  sources = [
+    "notice_features.cc",
+    "notice_model.cc",
+    "notice_storage.cc",
+  ]
   public = [
     "notice_constants.h",
+    "notice_features.h",
+    "notice_model.h",
     "notice_storage.h",
   ]
-
   deps = [
     ":notice_mojom",
     "//base",
@@ -28,17 +32,41 @@ source_set("core") {
     "//components/prefs",
     "//components/privacy_sandbox:features",
   ]
-
   public_deps = [ ":notice_mojom" ]
+}
+
+source_set("notice") {
+  sources = [ "notice_service.cc" ]
+  public = [ "notice_service_interface.h" ]
+  deps = [
+    ":core",
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//components/keyed_service/core",
+  ]
+
+  if (!is_android) {
+    deps += [ ":desktop_view_manager" ]
+  }
+}
+
+# (Desktop Only)
+if (!is_android) {
+  source_set("desktop_view_manager") {
+    sources = [ "desktop_view_manager.cc" ]
+    public = [ "desktop_view_manager.h" ]
+    deps = [
+      ":core",
+      "//base",
+    ]
+  }
 }
 
 test("fuzz_tests") {
   sources = [ "notice_storage_fuzztest.cc" ]
-
   fuzztests = [
     "PrivacySandboxNoticeStorageFuzzTest.CheckConvertsV1SchemaSuccessfully",
   ]
-
   deps = [
     ":core",
     "//testing/gmock",
@@ -49,17 +77,23 @@ test("fuzz_tests") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "notice_storage_unittest.cc" ]
-
+  sources = [
+    "notice_model_unittest.cc",
+    "notice_service_unittest.cc",
+    "notice_storage_unittest.cc",
+  ]
   data = [ "//tools/metrics/histograms/metadata/privacy/histograms.xml" ]
-
   deps = [
     ":core",
+    ":notice",
     "//base/test:test_support",
     "//base/version_info",
+    "//chrome/test:test_support",
     "//components/prefs",
     "//components/prefs:test_support",
     "//components/privacy_sandbox:features",
+    "//content/test:test_support",
+    "//testing/gmock",
     "//testing/gtest",
   ]
 }
