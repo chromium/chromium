@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_2d_recorder_context.h"
 
 #include <algorithm>
@@ -26,6 +21,7 @@
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ref.h"
@@ -2689,7 +2685,8 @@ scoped_refptr<cc::RefCountedBuffer<SkPoint>> MakeSkPointBuffer(
 
   const size_t size = array->length() / 2;
   std::vector<SkPoint> skpoints(size);
-  std::memcpy(skpoints.data(), array->Data(), size * sizeof(SkPoint));
+  UNSAFE_TODO(
+      std::memcpy(skpoints.data(), array->Data(), size * sizeof(SkPoint)));
 
   return base::MakeRefCounted<cc::RefCountedBuffer<SkPoint>>(
       std::move(skpoints));

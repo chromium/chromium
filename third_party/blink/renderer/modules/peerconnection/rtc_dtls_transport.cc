@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "third_party/blink/renderer/modules/peerconnection/rtc_dtls_transport.h"
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -161,8 +157,9 @@ void RTCDtlsTransport::OnStateChange(webrtc::DtlsTransportInformation info) {
         // Don't replace the certificate if it's unchanged.
         // Should have been "if (*dab_cert != *remote_certificates_[i])"
         if (dab_cert->ByteLength() != remote_certificates_[i]->ByteLength() ||
-            memcmp(dab_cert->Data(), remote_certificates_[i]->Data(),
-                   dab_cert->ByteLength()) != 0) {
+            UNSAFE_TODO(memcmp(dab_cert->Data(),
+                               remote_certificates_[i]->Data(),
+                               dab_cert->ByteLength())) != 0) {
           remote_certificates_[i] = dab_cert;
         }
       }
