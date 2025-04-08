@@ -443,28 +443,6 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    "min_shrink_interval",
                    base::Minutes(10));
 
-// Controls the feature to delay low memory kills of high priority apps when the
-// memory pressure is below foreground.
-BASE_FEATURE(kPriorityAppLmkDelay,
-             "ArcPriorityAppLmkDelay",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Controls the time to wait for inactivity of a high priority app before
-// considering it to be killed. The default value is 5 minutes.
-BASE_FEATURE_PARAM(int,
-                   kPriorityAppLmkDelaySecond,
-                   &kPriorityAppLmkDelay,
-                   "priority_app_lmk_delay_sec",
-                   60 * 5);
-
-// Controls the list of apps to be considered as high priority that would have a
-// delay before considered to be killed.
-BASE_FEATURE_PARAM(std::string,
-                   kPriorityAppLmkDelayList,
-                   &kPriorityAppLmkDelay,
-                   "priority_app_lmk_delay_list",
-                   "");
-
 // Controls the feature to update the minimum Android process state to be
 // considered to be killed under perceptible memory pressure. This is to prevent
 // top Android apps from being killed that result in bad user experience.

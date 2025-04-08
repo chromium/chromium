@@ -85,9 +85,6 @@ BASE_DECLARE_FEATURE_PARAM(int, kVmmSwapOutTimeIntervalSecond);
 BASE_DECLARE_FEATURE_PARAM(int, kVmmSwapArcSilenceIntervalSecond);
 BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kVmmSwapTrimInterval);
 BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kVmmSwapMinShrinkInterval);
-BASE_DECLARE_FEATURE(kPriorityAppLmkDelay);
-BASE_DECLARE_FEATURE_PARAM(int, kPriorityAppLmkDelaySecond);
-BASE_DECLARE_FEATURE_PARAM(std::string, kPriorityAppLmkDelayList);
 BASE_DECLARE_FEATURE(kLmkPerceptibleMinStateUpdate);
 }  // namespace arc
 
