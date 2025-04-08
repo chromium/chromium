@@ -32,6 +32,10 @@ if (toolchain_has_rust) {
     sources = [ "lib.rs" ]
     crate_root = "lib.rs"
     cxx_bindings = [ "lib.rs" ]
+    rustflags = [
+      "--cfg",
+      "mangle_alloc_error_handler",
+    ]
 
     deps = [ ":allocator_impls" ]
 
@@ -40,7 +44,7 @@ if (toolchain_has_rust) {
     allow_unsafe = true
 
     if (use_cpp_allocator_impls) {
-      rustflags = [
+      rustflags += [
         "--cfg",
         "use_cpp_allocator_impls",
       ]

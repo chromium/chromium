@@ -57,13 +57,17 @@ static GLOBAL: std::alloc::System = std::alloc::System;
 #[linkage = "weak"]
 static __rust_no_alloc_shim_is_unstable: u8 = 0;
 
-#[no_mangle]
+// Mangle the symbol name as rustc expects.
+#[cfg_attr(mangle_alloc_error_handler, rustc_std_internal_symbol)]
+#[cfg_attr(not(mangle_alloc_error_handler), no_mangle)]
+#[allow(non_upper_case_globals)]
 #[linkage = "weak"]
 static __rust_alloc_error_handler_should_panic: u8 = 0;
 
 // Mangle the symbol name as rustc expects.
 #[cfg_attr(mangle_alloc_error_handler, rustc_std_internal_symbol)]
 #[cfg_attr(not(mangle_alloc_error_handler), no_mangle)]
+#[allow(non_upper_case_globals)]
 #[linkage = "weak"]
 fn __rust_alloc_error_handler(_size: usize, _align: usize) {
     unsafe { ffi::crash_immediately() }
