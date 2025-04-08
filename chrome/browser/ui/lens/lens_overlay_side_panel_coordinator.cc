@@ -557,11 +557,15 @@ LensOverlaySidePanelCoordinator::GetMoreInfoMenuModel() {
       ui::ImageModel::FromVectorIcon(vector_icons::kInfoOutlineIcon,
                                      ui::kColorMenuIcon,
                                      ui::SimpleMenuModel::kDefaultIconSize));
-  menu_model->AddItemWithIcon(
-      COMMAND_SEND_FEEDBACK, l10n_util::GetStringUTF16(IDS_LENS_SEND_FEEDBACK),
-      ui::ImageModel::FromVectorIcon(vector_icons::kFeedbackIcon,
-                                     ui::kColorMenuIcon,
-                                     ui::SimpleMenuModel::kDefaultIconSize));
+
+  if (!lens::features::IsLensSearchSidePanelNewFeedbackEnabled()) {
+    menu_model->AddItemWithIcon(
+        COMMAND_SEND_FEEDBACK,
+        l10n_util::GetStringUTF16(IDS_LENS_SEND_FEEDBACK),
+        ui::ImageModel::FromVectorIcon(vector_icons::kFeedbackIcon,
+                                       ui::kColorMenuIcon,
+                                       ui::SimpleMenuModel::kDefaultIconSize));
+  }
   return menu_model;
 }
 
