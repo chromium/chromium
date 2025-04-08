@@ -1604,6 +1604,46 @@ Keep consistent with active providers. Doesn't need to include every provider in
       variants="OmniboxAutocompleteUpdateSlice"/>
 </histogram>
 
+<histogram name="Omnibox.MostVisitedProvider.QueryMostVisitedURLs.Duration"
+    units="ms" expires_after="2026-03-25">
+  <owner>niharm@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    The amount of time for QueryMostVisitedURLs() to invoke its callback in the
+    Most Visited Sites Provider. Only recorded when the history service callback
+    is invoked when the provider is configured to query the HistoryService
+    directly to update its set of most visited sites rather than querying
+    TopSites to get its set of most visited sites. Currently only recorded on
+    Desktop.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.MostVisitedProvider.QueryMostVisitedURLs.NumReceived"
+    units="count" expires_after="2026-03-25">
+  <owner>niharm@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Records the number of results returned from HistoryService's
+    QueryMostVisitedURLs() in the Most Visited Sites provider. Only recorded
+    when the provider is configured to query the HistoryService directly to
+    update its set of most visited sites rather than querying TopSites to get
+    its set of most visited sites. Currently only recorded on Desktop.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.MostVisitedProvider.QueryMostVisitedURLs.NumRequested"
+    units="count" expires_after="2026-03-25">
+  <owner>niharm@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Records the number of results requested from HistoryService's
+    QueryMostVisitedURLs() in the Most Visited Sites provider. Only recorded
+    when the provider is configured to query the HistoryService directly to
+    update its set of most visited sites rather than querying TopSites to get
+    its set of most visited sites. Currently only recorded on Desktop.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.NumberOfVisibleCharacters" units="characters"
     expires_after="2025-09-07">
   <owner>peilinwang@google.com</owner>
