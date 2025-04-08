@@ -114,6 +114,12 @@ void VideoFrameResourceProvider::AppendQuads(
   if (media_transform.mirrored) {
     transform.RotateAboutYAxis(180.0);
     transform.Translate(-quad_rect.width(), 0);
+
+    if (media_transform.rotation == media::VIDEO_ROTATION_90 ||
+        media_transform.rotation == media::VIDEO_ROTATION_270) {
+      transform.RotateAboutZAxis(180.0);
+      transform.Translate(-quad_rect.width(), -quad_rect.height());
+    }
   }
 
   gfx::Rect visible_quad_rect = quad_rect;
