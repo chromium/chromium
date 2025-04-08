@@ -4,15 +4,26 @@
 
 #include "ios/chrome/browser/content_suggestions/ui_bundled/impression_limits/impression_limit_service.h"
 
+#include "base/location.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/test/bookmark_test_helpers.h"
+#include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/mock_shopping_service.h"
+#include "components/commerce/core/price_tracking_utils.h"
+#include "components/commerce/core/subscriptions/commerce_subscription.h"
+#include "components/commerce/core/subscriptions/mock_subscriptions_manager.h"
+#include "components/commerce/core/test_utils.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
+#include "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
+#include "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #include "ios/chrome/browser/content_suggestions/ui_bundled/impression_limits/impression_limit_service_factory.h"
 #include "ios/chrome/browser/history/model/history_service_factory.h"
 #include "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -41,6 +52,7 @@ constexpr char kGurl1WithQueryAndRef[] =
 const base::Time kNow = TimeFromString("31 Mar 2025 10:00");
 const base::Time kYesterday = TimeFromString("30 Mar 2025 10:30");
 const base::Time kLastMonth = TimeFromString("25 Feb 2025 9:00");
+const uint64_t kValidId = 67890L;
 
 history::URLRows CreateURLRows(const std::vector<GURL>& urls) {
   history::URLRows url_rows;
@@ -58,21 +70,42 @@ class ImpressionLimitServiceTest : public PlatformTest {
     scoped_feature_list_.InitWithFeatures(
         /* enabled_features*/ {commerce::kShopCardImpressionLimits},
         /* disabled_features*/ {});
+    auto client = std::make_unique<bookmarks::TestBookmarkClient>();
+    client->SetIsSyncFeatureEnabledIncludingBookmarks(true);
+    bookmark_model_ =
+        bookmarks::TestBookmarkClient::CreateModelWithClient(std::move(client));
+
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(ios::HistoryServiceFactory::GetInstance(),
                               ios::HistoryServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(
+        commerce::ShoppingServiceFactory::GetInstance(),
+        base::BindRepeating(
+            [](web::BrowserState*) -> std::unique_ptr<KeyedService> {
+              return commerce::MockShoppingService::Build();
+            }));
+    builder.AddTestingFactory(
         ImpressionLimitServiceFactory::GetInstance(),
         base::BindRepeating(
-            [](PrefService* pref_service, web::BrowserState* browser_state)
+            [](PrefService* pref_service,
+               bookmarks::BookmarkModel* bookmark_model,
+               web::BrowserState* browser_state)
                 -> std::unique_ptr<KeyedService> {
+              ProfileIOS* profile = ProfileIOS::FromBrowserState(browser_state);
               return std::make_unique<ImpressionLimitService>(
-                  pref_service, ios::HistoryServiceFactory::GetForProfile(
-                                    ProfileIOS::FromBrowserState(browser_state),
-                                    ServiceAccessType::EXPLICIT_ACCESS));
+                  pref_service,
+                  ios::HistoryServiceFactory::GetForProfile(
+                      profile, ServiceAccessType::EXPLICIT_ACCESS),
+                  bookmark_model,
+                  commerce::ShoppingServiceFactory::GetForProfile(profile));
             },
-            pref_service()));
+            pref_service(), bookmark_model_.get()));
+
     profile_ = std::move(builder).Build();
+
+    shopping_service_ = static_cast<commerce::MockShoppingService*>(
+        commerce::ShoppingServiceFactory::GetForProfile(profile_.get()));
+
     pref_service_.registry()->RegisterDictionaryPref(kImpressionsPref);
     impression_limit_service_ =
         ImpressionLimitServiceFactory::GetForProfile(profile_.get());
@@ -82,7 +115,13 @@ class ImpressionLimitServiceTest : public PlatformTest {
 
   ProfileIOS* profile() { return profile_.get(); }
 
-  ImpressionLimitService* service() { return impression_limit_service_; }
+  ImpressionLimitService* service() { return impression_limit_service_.get(); }
+
+  bookmarks::BookmarkModel* bookmark_model() { return bookmark_model_.get(); }
+
+  commerce::MockShoppingService* shopping_service() {
+    return shopping_service_;
+  }
 
   void LogImpressionForURLAtTime(const GURL& url,
                                  const std::string_view& pref_name,
@@ -100,13 +139,29 @@ class ImpressionLimitServiceTest : public PlatformTest {
     service()->OnHistoryDeletions(history_service, deletion_info);
   }
 
+  void BookmarkNodeRemoved(const bookmarks::BookmarkNode* parent,
+                           size_t old_index,
+                           const bookmarks::BookmarkNode* node,
+                           const std::set<GURL>& no_longer_bookmarked,
+                           const base::Location& location) {
+    service()->BookmarkNodeRemoved(parent, old_index, node,
+                                   no_longer_bookmarked, location);
+  }
+
+  void OnUnsubscribe(const commerce::CommerceSubscription& subscription,
+                     bool succeeded) {
+    service()->OnUnsubscribe(subscription, succeeded);
+  }
+
  protected:
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   base::test::ScopedFeatureList scoped_feature_list_;
   TestingPrefServiceSimple pref_service_;
+  std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
   std::unique_ptr<TestProfileIOS> profile_;
   raw_ptr<ImpressionLimitService> impression_limit_service_;
+  raw_ptr<commerce::MockShoppingService> shopping_service_;
 };
 
 // Check Impressions are logged correctly for same URL.
@@ -209,4 +264,68 @@ TEST_F(ImpressionLimitServiceTest, TestHistoryAllDelete) {
   EXPECT_FALSE(count.has_value());
   count = service()->GetImpressionCount(GURL(kGurl2), kImpressionsPref);
   EXPECT_FALSE(count.has_value());
+}
+
+// Test deleting a bookmark deletes the URL corresponding to the bookmark
+// in ImpressionLimitService. Both a URL and the same URL with query string
+// ref tag are tested.
+TEST_F(ImpressionLimitServiceTest, TestBookmarkDelete) {
+  LogImpressionForURLAtTime(GURL(kGurl1), kImpressionsPref, kNow);
+  LogImpressionForURLAtTime(GURL(kGurl1WithQueryAndRef), kImpressionsPref,
+                            kLastMonth);
+  LogImpressionForURLAtTime(GURL(kGurl2), kImpressionsPref, kYesterday);
+  std::optional<int> count =
+      service()->GetImpressionCount(GURL(kGurl1), kImpressionsPref);
+  EXPECT_TRUE(count.has_value());
+  EXPECT_EQ(2, count.value());
+  count = service()->GetImpressionCount(GURL(kGurl2), kImpressionsPref);
+  EXPECT_TRUE(count.has_value());
+  EXPECT_EQ(1, count.value());
+  BookmarkNodeRemoved(nil, -1, nil, {GURL(kGurl1)}, FROM_HERE);
+  count = service()->GetImpressionCount(GURL(kGurl1), kImpressionsPref);
+  EXPECT_FALSE(count.has_value());
+  count = service()->GetImpressionCount(GURL(kGurl1WithQueryAndRef),
+                                        kImpressionsPref);
+  EXPECT_FALSE(count.has_value());
+  count = service()->GetImpressionCount(GURL(kGurl2), kImpressionsPref);
+  EXPECT_TRUE(count.has_value());
+  EXPECT_EQ(1, count.value());
+}
+
+// Test unsubscribing from a product URL deletes the URL corresponding to
+// the product URL in ImpressionLimitService. Both a URL and the same URL
+// with query string ref tag are tested.
+TEST_F(ImpressionLimitServiceTest, TestUnubscribe) {
+  LogImpressionForURLAtTime(GURL(kGurl1), kImpressionsPref, kNow);
+  LogImpressionForURLAtTime(GURL(kGurl1WithQueryAndRef), kImpressionsPref,
+                            kLastMonth);
+  LogImpressionForURLAtTime(GURL(kGurl2), kImpressionsPref, kYesterday);
+
+  std::optional<int> count =
+      service()->GetImpressionCount(GURL(kGurl1), kImpressionsPref);
+  EXPECT_TRUE(count.has_value());
+  EXPECT_EQ(2, count.value());
+  count = service()->GetImpressionCount(GURL(kGurl2), kImpressionsPref);
+  EXPECT_TRUE(count.has_value());
+  EXPECT_EQ(1, count.value());
+
+  std::vector<commerce::CommerceSubscription> subs;
+  subs.push_back(commerce::BuildUserSubscriptionForClusterId(kValidId));
+  commerce::CommerceSubscription subscription = subs[0];
+  shopping_service()->SetGetAllSubscriptionsCallbackValue(std::move(subs));
+  shopping_service()->SetUnsubscribeCallbackValue(true);
+
+  // Ensure there's a bookmark for the above subscription.
+  commerce::AddProductBookmark(bookmark_model(), u"product", GURL(kGurl1),
+                               kValidId, true);
+
+  OnUnsubscribe(subscription, true);
+  count = service()->GetImpressionCount(GURL(kGurl1), kImpressionsPref);
+  EXPECT_FALSE(count.has_value());
+  count = service()->GetImpressionCount(GURL(kGurl1WithQueryAndRef),
+                                        kImpressionsPref);
+  EXPECT_FALSE(count.has_value());
+  count = service()->GetImpressionCount(GURL(kGurl2), kImpressionsPref);
+  EXPECT_TRUE(count.has_value());
+  EXPECT_EQ(1, count.value());
 }
