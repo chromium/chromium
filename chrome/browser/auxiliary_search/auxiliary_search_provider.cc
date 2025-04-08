@@ -162,6 +162,7 @@ void AuxiliarySearchProvider::Shutdown() {
     most_visited_sites_->RemoveMostVisitedURLsObserver(this);
     most_visited_sites_.reset();
   }
+  is_observing_ = false;
 }
 
 void AuxiliarySearchProvider::GetNonSensitiveTabs(
@@ -196,6 +197,13 @@ void AuxiliarySearchProvider::GetNonSensitiveHistoryData(
 void AuxiliarySearchProvider::SetObserverAndTrigger(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& j_ref_obj) {
+  // AuxiliarySearchProvider registers itself as an observer of the
+  // |most_visited_sites_|. Don't register again if it has registered before.
+  if (is_observing_) {
+    return;
+  }
+
+  is_observing_ = true;
   j_ref_ = base::android::ScopedJavaGlobalRef<jobject>(j_ref_obj);
 
   CHECK(most_visited_sites_);
