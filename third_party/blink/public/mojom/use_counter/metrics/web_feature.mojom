@@ -4864,6 +4864,11 @@ enum WebFeature {
   kGrammarErrorPseudoElement = 5478,
   kSpeculationRulesTags = 5479,
   kMLCreateContextGPUDevice = 5480,
+  kDisallowedSelectChild = 5481,
+  kDisallowedOptGroupChild = 5482,
+  kNonPhrasingContentOptionChild = 5483,
+  kInteractiveContentOptionChild = 5484,
+  kInteractiveContentLegendChild = 5485,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

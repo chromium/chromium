@@ -214,6 +214,7 @@ class SelectDescendantsObserver : public MutationObserver::Delegate {
           mojom::blink::ConsoleMessageSource::kRecommendation,
           mojom::blink::ConsoleMessageLevel::kError,
           GetMessageForReason(issue_reason));
+      RecordIssueByType(issue_reason);
     }
   }
 
@@ -302,6 +303,37 @@ class SelectDescendantsObserver : public MutationObserver::Delegate {
       return IsContenteditable(node) || html_element->IsInteractiveContent();
     }
     return false;
+  }
+
+  void RecordIssueByType(SelectElementAccessibilityIssueReason issue_reason) {
+    switch (issue_reason) {
+      case SelectElementAccessibilityIssueReason::kDisallowedSelectChild:
+        UseCounter::Count(select_->GetDocument(),
+                          WebFeature::kDisallowedSelectChild);
+        break;
+      case SelectElementAccessibilityIssueReason::kDisallowedOptGroupChild:
+        UseCounter::Count(select_->GetDocument(),
+                          WebFeature::kDisallowedOptGroupChild);
+        break;
+      case SelectElementAccessibilityIssueReason::
+          kNonPhrasingContentOptionChild:
+        UseCounter::Count(select_->GetDocument(),
+                          WebFeature::kNonPhrasingContentOptionChild);
+        break;
+      case SelectElementAccessibilityIssueReason::
+          kInteractiveContentOptionChild:
+        UseCounter::Count(select_->GetDocument(),
+                          WebFeature::kInteractiveContentOptionChild);
+        break;
+      case SelectElementAccessibilityIssueReason::
+          kInteractiveContentLegendChild:
+        UseCounter::Count(select_->GetDocument(),
+                          WebFeature::kInteractiveContentLegendChild);
+        break;
+      case SelectElementAccessibilityIssueReason::kValidChild:
+      default:
+        NOTREACHED();
+    }
   }
 
   SelectElementAccessibilityIssueReason CheckForIssue(const Node& descendant) {
