@@ -35,14 +35,21 @@ class CanonicalCookie;
 class CookieInclusionStatus;
 class CookieStore;
 class SiteForCookies;
+class RefUniqueCookieKey;
 }  // namespace net
 
 namespace network {
 
 struct CookieWithAccessResultComparer {
+  using is_transparent = std::true_type;
   bool operator()(
       const net::CookieWithAccessResult& cookie_with_access_result1,
       const net::CookieWithAccessResult& cookie_with_access_result2) const;
+  bool operator()(
+      const net::RefUniqueCookieKey& key1,
+      const net::CookieWithAccessResult& cookie_with_access_result2) const;
+  bool operator()(const net::CookieWithAccessResult& cookie_with_access_result1,
+                  const net::RefUniqueCookieKey& key2) const;
 };
 
 using CookieAccesses =

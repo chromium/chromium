@@ -102,14 +102,6 @@ CookieSameSiteForMetrics CookieSameSiteToCookieSameSiteForMetrics(
   return static_cast<CookieSameSiteForMetrics>((static_cast<int>(enum_in) + 1));
 }
 
-auto GetAllDataMembersAsTuple(const CanonicalCookie& c) {
-  return std::make_tuple(c.CreationDate(), c.LastAccessDate(), c.ExpiryDate(),
-                         c.SecureAttribute(), c.IsHttpOnly(), c.SameSite(),
-                         c.Priority(), c.PartitionKey(), c.Name(), c.Value(),
-                         c.Domain(), c.Path(), c.LastUpdateDate(),
-                         c.SourceScheme(), c.SourcePort(), c.SourceType());
-}
-
 }  // namespace
 
 CookieAccessParams::CookieAccessParams(CookieAccessSemantics access_semantics,
@@ -816,9 +808,26 @@ bool CanonicalCookie::IsEquivalentForSecureCookieMatching(
   return equivalent_for_secure_cookie_matching;
 }
 
+bool CanonicalCookie::IsProbablyEquivalentTo(
+    const CanonicalCookie& other) const {
+  // LastUpdateDate is the most likely field to have changed.
+  return LastUpdateDate() == other.LastUpdateDate() &&
+         LastAccessDate() == other.LastAccessDate() &&
+         ExpiryDate() == other.ExpiryDate() &&
+         CreationDate() == other.CreationDate() &&
+         SecureAttribute() == other.SecureAttribute() &&
+         IsHttpOnly() == other.IsHttpOnly() && SameSite() == other.SameSite() &&
+         Priority() == other.Priority() &&
+         PartitionKey() == other.PartitionKey() && Name() == other.Name() &&
+         Domain() == other.Domain() && Path() == other.Path() &&
+         SourceScheme() == other.SourceScheme() &&
+         SourcePort() == other.SourcePort() &&
+         SourceType() == other.SourceType();
+}
+
 bool CanonicalCookie::HasEquivalentDataMembers(
     const CanonicalCookie& other) const {
-  return GetAllDataMembersAsTuple(*this) == GetAllDataMembersAsTuple(other);
+  return IsProbablyEquivalentTo(other) && Value() == other.Value();
 }
 
 void CanonicalCookie::PostIncludeForRequestURL(

@@ -43,6 +43,7 @@
 #include "net/cookies/cookie_store.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/site_for_cookies.h"
+#include "net/cookies/unique_cookie_key.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/first_party_sets/first_party_sets_cache_filter.h"
 #include "net/storage_access_api/status.h"
@@ -210,6 +211,18 @@ bool CookieWithAccessResultComparer::operator()(
   return cookie_with_access_result1.cookie < cookie_with_access_result2.cookie;
 }
 
+// Optimized comparisons using a key directly, to avoid key recalculation.
+bool CookieWithAccessResultComparer::operator()(
+    const net::RefUniqueCookieKey& key1,
+    const net::CookieWithAccessResult& cookie_with_access_result2) const {
+  return key1 < cookie_with_access_result2.cookie.RefUniqueKey();
+}
+bool CookieWithAccessResultComparer::operator()(
+    const net::CookieWithAccessResult& cookie_with_access_result1,
+    const net::RefUniqueCookieKey& key2) const {
+  return cookie_with_access_result1.cookie.RefUniqueKey() < key2;
+}
+
 CookieAccesses* RestrictedCookieManager::GetCookieAccessesForURLAndSite(
     const GURL& url,
     const net::SiteForCookies& site_for_cookies) {
@@ -230,7 +243,7 @@ bool RestrictedCookieManager::SkipAccessNotificationForCookieItem(
   // Have we sent information about this cookie to the |cookie_observer_|
   // before?
   std::set<net::CookieWithAccessResult>::iterator existing_slot =
-      cookie_accesses->find(cookie_item);
+      cookie_accesses->find(cookie_item.cookie.RefUniqueKey());
 
   // If this is the first time seeing this cookie make a note and don't skip
   // the notification.
@@ -245,19 +258,19 @@ bool RestrictedCookieManager::SkipAccessNotificationForCookieItem(
     return false;
   }
 
-  // If the cookie and its access result are unchanged since we last updated
-  // the |cookie_observer_|, skip notifying the |cookie_observer_| again.
-  if (existing_slot->cookie.HasEquivalentDataMembers(cookie_item.cookie) &&
+  // If the cookie and its access result are likely unchanged since we last
+  // updated the `cookie_observer_`, skip notifying the `cookie_observer_`
+  // again.
+  if (existing_slot->cookie.IsProbablyEquivalentTo(cookie_item.cookie) &&
       existing_slot->access_result == cookie_item.access_result) {
     return true;
   }
 
-  // The cookie's access result has changed - update it in our record of what
-  // we've sent to the |cookie_observer_|. It's safe to update the existing
-  // entry in the set because the access_result field does not determine the
+  // The cookie's access result or data has changed - update them in the record
+  // of what we've sent to the |cookie_observer_|. It's safe to update the
+  // existing entry in the set because the changed fields do not determine the
   // CookieWithAccessResult's location in the set.
-  const_cast<net::CookieWithAccessResult&>(*existing_slot).access_result =
-      cookie_item.access_result;
+  const_cast<net::CookieWithAccessResult&>(*existing_slot) = cookie_item;
 
   // Don't skip notifying the |cookie_observer_| of the change.
   return false;
@@ -624,6 +637,15 @@ void RestrictedCookieManager::CookieListToGetAllForUrlCallback(
   UpdateSharedMemoryVersionInvalidationTimer(result);
   std::move(callback).Run(result);
 
+  // If the number of cookies exceed the cache size, we won't be able to dedup
+  // much, so just skip it, as it's an expensive operation.
+  bool can_dedup =
+      excluded_cookies.size() + result.size() <= max_cookie_cache_count_;
+  if (!can_dedup) {
+    // We cannot longer trust the cache to be up-to-date after this.
+    cookie_accesses->clear();
+  }
+
   // TODO(crbug.com/40632967): Stop reporting accesses of cookies with
   // warning reasons once samesite tightening up is rolled out.
   for (const auto& cookie_and_access_result : excluded_cookies) {
@@ -634,8 +656,8 @@ void RestrictedCookieManager::CookieListToGetAllForUrlCallback(
     }
 
     // Skip sending a notification about this cookie access?
-    if (SkipAccessNotificationForCookieItem(cookie_accesses,
-                                            cookie_and_access_result)) {
+    if (can_dedup && SkipAccessNotificationForCookieItem(
+                         cookie_accesses, cookie_and_access_result)) {
       continue;
     }
 
@@ -647,7 +669,8 @@ void RestrictedCookieManager::CookieListToGetAllForUrlCallback(
 
   for (auto& cookie : result) {
     // Skip sending a notification about this cookie access?
-    if (SkipAccessNotificationForCookieItem(cookie_accesses, cookie)) {
+    if (can_dedup &&
+        SkipAccessNotificationForCookieItem(cookie_accesses, cookie)) {
       continue;
     }
 
