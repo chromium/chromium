@@ -138,6 +138,7 @@ robolectric_library("junit") {
   resources_package = "org.chromium.chrome.browser.hub"
   sources = [
     "android/java/src/org/chromium/chrome/browser/hub/FadeHubLayoutAnimationFactoryImplUnitTest.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubColorMixerImplUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubCoordinatorUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubLayoutAnimationRunnerImplUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubManagerImplUnitTest.java",

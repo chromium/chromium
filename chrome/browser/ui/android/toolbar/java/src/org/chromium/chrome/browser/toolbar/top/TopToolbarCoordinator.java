@@ -82,17 +82,6 @@ public class TopToolbarCoordinator implements Toolbar {
         void onToolbarColorChanged(@ColorInt int color);
     }
 
-    /**
-     * Observes alpha of the overview during a fade animation. The partially transparent overview is
-     * drawn over top of the toolbar during this time.
-     */
-    public interface ToolbarAlphaInOverviewObserver {
-        /**
-         * @param fraction The overview's alpha value.
-         */
-        void onOverviewAlphaChanged(float fraction);
-    }
-
     private final ToolbarLayout mToolbarLayout;
     private final ObservableSupplierImpl<Tracker> mTrackerSupplier;
 
@@ -371,14 +360,6 @@ public class TopToolbarCoordinator implements Toolbar {
      */
     public void setToolbarColorObserver(@NonNull ToolbarColorObserver toolbarColorObserver) {
         mToolbarColorObserverManager.setToolbarColorObserver(toolbarColorObserver);
-    }
-
-    /**
-     * Overviews that are not owned by this class need to update this observer when they update
-     * their alpha during animations.
-     */
-    public ToolbarAlphaInOverviewObserver getToolbarAlphaInOverviewObserver() {
-        return mToolbarColorObserverManager;
     }
 
     /**
@@ -680,9 +661,6 @@ public class TopToolbarCoordinator implements Toolbar {
                     };
             mIncognitoStateProvider = provider;
             provider.addIncognitoStateObserverAndTrigger(mIncognitoStateObserver);
-            mToolbarColorObserverManager.setOverviewColorSupplier(supplierImpl);
-        } else {
-            mToolbarColorObserverManager.setOverviewColorSupplier(overviewColorSupplier);
         }
     }
 

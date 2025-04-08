@@ -10,6 +10,7 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.chrome.browser.hub.HubColorMixer.StateChange;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.util.XrUtils;
 
@@ -22,6 +23,7 @@ public class TranslateHubLayoutAnimationFactoryImpl {
      * long)}.
      */
     public static HubLayoutAnimatorProvider createTranslateUpAnimatorProvider(
+            HubColorMixer colorMixer,
             @NonNull HubContainerView hubContainerView,
             @NonNull ScrimController scrimController,
             long durationMs,
@@ -56,6 +58,13 @@ public class TranslateHubLayoutAnimationFactoryImpl {
                     }
 
                     @Override
+                    public void onEnd(boolean wasForcedToFinish) {
+                        scrimController.startHidingScrim();
+                        colorMixer.processStateChange(
+                                StateChange.TRANSLATE_UP_TABLET_ANIMATION_END);
+                    }
+
+                    @Override
                     public void afterEnd() {
                         // Carried over from the legacy implementation in TabSwitcherLayout.
                         hubContainerView.setY(yOffset);
@@ -72,6 +81,7 @@ public class TranslateHubLayoutAnimationFactoryImpl {
      * long)}.
      */
     public static HubLayoutAnimatorProvider createTranslateDownAnimatorProvider(
+            HubColorMixer colorMixer,
             @NonNull HubContainerView hubContainerView,
             @NonNull ScrimController scrimController,
             long durationMs,
@@ -90,6 +100,12 @@ public class TranslateHubLayoutAnimationFactoryImpl {
                     @Override
                     public void beforeStart() {
                         scrimController.startHidingScrim();
+                    }
+
+                    @Override
+                    public void onStart() {
+                        colorMixer.processStateChange(
+                                StateChange.TRANSLATE_DOWN_TABLET_ANIMATION_START);
                     }
 
                     @Override

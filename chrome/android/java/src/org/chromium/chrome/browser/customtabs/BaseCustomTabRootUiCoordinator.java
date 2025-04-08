@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.customtabs;
 import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabProfileType.INCOGNITO;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
@@ -251,7 +252,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 false,
                 backPressManager,
                 null,
-                /* overviewColorSupplier= */ null,
+                new ObservableSupplierImpl<>(Color.TRANSPARENT),
                 edgeToEdgeManager);
         mToolbarCoordinator = customTabToolbarCoordinator;
         mIntentDataProvider = intentDataProvider;

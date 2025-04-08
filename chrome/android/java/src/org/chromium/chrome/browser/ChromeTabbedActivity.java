@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ShortcutManager;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -129,6 +130,7 @@ import org.chromium.chrome.browser.history.HistoryManagerUtils;
 import org.chromium.chrome.browser.history.HistoryPane;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.hub.DefaultPaneOrderController;
+import org.chromium.chrome.browser.hub.HubColorMixer.OverviewModeAlphaObserver;
 import org.chromium.chrome.browser.hub.HubLayoutDependencyHolder;
 import org.chromium.chrome.browser.hub.HubManager;
 import org.chromium.chrome.browser.hub.HubProvider;
@@ -268,7 +270,6 @@ import org.chromium.chrome.browser.xr.XrLayoutStateObserver;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.edge_to_edge.SystemBarColorHelper;
 import org.chromium.components.browser_ui.edge_to_edge.TabbedSystemBarColorHelper;
-import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
 import org.chromium.components.browser_ui.util.ComposedBrowserControlsVisibilityDelegate;
 import org.chromium.components.browser_ui.util.FirstDrawDetector;
@@ -308,7 +309,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.DoubleConsumer;
 
 /**
  * This is the main activity for ChromeMobile when not running in document mode. All the tabs are
@@ -829,7 +829,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
                         mRootUiCoordinator.getScrimManager(),
                         rootViewSupplier::get,
                         incognitoSupplier,
-                        adaptOnToolbarAlphaChange());
+                        adaptOnOverviewColorAlphaChange());
 
         // Set up layout state osberver for transitions between HSM and FSM on an XR device.
         if (XrUtils.isXrDevice() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
@@ -968,35 +968,17 @@ public class ChromeTabbedActivity extends ChromeActivity {
     }
 
     private @NonNull ObservableSupplier<Integer> initHubOverviewColorSupplier() {
-        // Prior to Hub creation we don't know what color to use. Default to the background color
-        // since this shouldn't be visible.
         ObservableSupplierImpl<Integer> overviewColorSupplier =
-                new ObservableSupplierImpl<>(SemanticColorUtils.getDefaultBgColor(this));
+                new ObservableSupplierImpl<>(Color.TRANSPARENT);
         mHubManagerSupplier.onAvailable(
                 (hubManager) -> {
                     ObservableSupplier<Integer> hubOverviewColorSupplier =
                             hubManager.getHubOverviewColorSupplier();
                     Callback<Integer> hubOverviewColorObserver = overviewColorSupplier::set;
-
-                    ObservableSupplier<Boolean> hubVisibilitySupplier =
-                            hubManager.getHubVisibilitySupplier();
-
-                    Callback<Boolean> hubVisibilityObserver =
-                            isVisible -> {
-                                if (isVisible) {
-                                    hubOverviewColorSupplier.addObserver(hubOverviewColorObserver);
-                                } else {
-                                    hubOverviewColorSupplier.removeObserver(
-                                            hubOverviewColorObserver);
-                                }
-                            };
-                    hubVisibilitySupplier.addObserver(hubVisibilityObserver);
+                    hubOverviewColorSupplier.addObserver(hubOverviewColorObserver);
 
                     mCleanUpHubOverviewColorObserver =
-                            () -> {
-                                hubVisibilitySupplier.removeObserver(hubVisibilityObserver);
-                                hubOverviewColorSupplier.removeObserver(hubOverviewColorObserver);
-                            };
+                            () -> hubOverviewColorSupplier.removeObserver(hubOverviewColorObserver);
                 });
         return overviewColorSupplier;
     }
@@ -1029,7 +1011,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
                         mRootUiCoordinator.getIncognitoReauthControllerSupplier(),
                         mNewTabButtonClickListener,
                         isIncognito,
-                        adaptOnToolbarAlphaChange(),
+                        adaptOnOverviewColorAlphaChange(),
                         mBackPressManager,
                         mEdgeToEdgeControllerSupplier,
                         mRootUiCoordinator.getDesktopWindowStateManager(),
@@ -1054,7 +1036,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
                 .createTabGroupsPane(
                         this,
                         getTabModelSelector(),
-                        adaptOnToolbarAlphaChange(),
+                        adaptOnOverviewColorAlphaChange(),
                         getProfileProviderSupplier(),
                         mHubProvider.getHubManagerSupplier(),
                         () ->
@@ -1066,7 +1048,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
 
     private Pane createHistoryPane() {
         return new HistoryPane(
-                adaptOnToolbarAlphaChange(),
+                adaptOnOverviewColorAlphaChange(),
                 this,
                 getSnackbarManager(),
                 getProfileProviderSupplier(),
@@ -1076,7 +1058,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
 
     private Pane createBookmarkPane() {
         return new BookmarkPane(
-                adaptOnToolbarAlphaChange(),
+                adaptOnOverviewColorAlphaChange(),
                 this,
                 getSnackbarManager(),
                 getProfileProviderSupplier());
@@ -1084,7 +1066,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
 
     private Pane createCrossDevicePane() {
         return CrossDevicePaneFactory.create(
-                this, adaptOnToolbarAlphaChange(), mEdgeToEdgeControllerSupplier);
+                this, adaptOnOverviewColorAlphaChange(), mEdgeToEdgeControllerSupplier);
     }
 
     private void setupCompositorContent() {
@@ -4038,21 +4020,21 @@ public class ChromeTabbedActivity extends ChromeActivity {
     }
 
     /**
-     * Creates an adapter between the toolbar's observer that takes a float and the format that the
-     * hub expects which is a double.
+     * Creates an adapter between the hub's overview alpha observer that takes a float and the
+     * format that the hub expects which is a double.
      */
-    private DoubleConsumer adaptOnToolbarAlphaChange() {
+    private OverviewModeAlphaObserver adaptOnOverviewColorAlphaChange() {
         return alpha -> {
             // If the manager is still null, it doesn't matter whatever is happening. Can safely
             // ignore any signal.
-            @Nullable ToolbarManager toolbarManager = getToolbarManager();
-            if (toolbarManager == null) {
+            HubManager hubManager = mHubManagerSupplier.get();
+            if (hubManager == null) {
                 return;
             }
 
-            toolbarManager
-                    .getToolbarAlphaInOverviewObserver()
-                    .onOverviewAlphaChanged((float) alpha);
+            OverviewModeAlphaObserver overviewModeAlphaObserver =
+                    hubManager.getHubController().getHubColorMixer().getOverviewModeAlphaObserver();
+            overviewModeAlphaObserver.accept(alpha);
         };
     }
 

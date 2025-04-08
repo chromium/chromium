@@ -79,6 +79,7 @@ import org.chromium.chrome.browser.compositor.scene_layer.SolidColorSceneLayer;
 import org.chromium.chrome.browser.compositor.scene_layer.SolidColorSceneLayerJni;
 import org.chromium.chrome.browser.compositor.scene_layer.StaticTabSceneLayer;
 import org.chromium.chrome.browser.compositor.scene_layer.StaticTabSceneLayerJni;
+import org.chromium.chrome.browser.hub.HubColorMixer.OverviewModeAlphaObserver;
 import org.chromium.chrome.browser.hub.HubLayout.HubLayoutAnimationListenerImpl;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -95,7 +96,6 @@ import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.resources.ResourceManager;
 
 import java.util.Collections;
-import java.util.function.DoubleConsumer;
 
 /**
  * Unit tests for {@link HubLayout}.
@@ -131,6 +131,7 @@ public class HubLayoutUnitTest {
     @Mock private StaticTabSceneLayer.Natives mStaticTabSceneLayerJni;
     @Mock private SolidColorSceneLayer.Natives mSolidColorSceneLayerJni;
     @Mock private HubManager mHubManager;
+    @Mock private HubColorMixer mHubColorMixer;
     @Mock private HubController mHubController;
     @Mock private PaneManager mPaneManager;
     @Mock private HubLayoutScrimController mScrimController;
@@ -144,7 +145,7 @@ public class HubLayoutUnitTest {
     @Mock private TabContentManager mTabContentManager;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private Tab mTab;
-    @Mock private DoubleConsumer mOnAlphaChange;
+    @Mock private OverviewModeAlphaObserver mOnAlphaChange;
     @Mock private DesktopWindowStateManager mDesktopWindowStateManager;
     @Mock private HubContainerView mHubContainerViewMock;
     @Mock private HubContainerView mPaneHostViewMock;
@@ -242,6 +243,7 @@ public class HubLayoutUnitTest {
                         })
                 .when(mPaneManager)
                 .focusPane(anyInt());
+        when(mHubController.getHubColorMixer()).thenReturn(mHubColorMixer);
         when(mHubManager.getPaneManager()).thenReturn(mPaneManager);
         when(mHubManager.getHubController()).thenReturn(mHubController);
         mHubShowPaneHelper = new HubShowPaneHelper();

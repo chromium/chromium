@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.support.annotation.ColorInt;
 import android.view.ContextThemeWrapper;
 import android.view.Window;
 
@@ -29,6 +30,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
@@ -44,6 +46,7 @@ import org.chromium.chrome.browser.ui.system.StatusBarColorController.StatusBarC
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeSystemBarColorHelper;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.util.ColorUtils;
 
 /* Unit tests for StatusBarColorController behavior. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -62,6 +65,8 @@ public class StatusBarColorControllerUnitTest {
     @Mock private EdgeToEdgeSystemBarColorHelper mSystemBarColorHelper;
     @Mock private DesktopWindowStateManager mDesktopWindowStateManager;
 
+    private final ObservableSupplierImpl<Integer> mOverviewColorSupplier =
+            new ObservableSupplierImpl<>(Color.TRANSPARENT);
     private StatusBarColorController mStatusBarColorController;
     private Window mWindow;
     private Context mContext;
@@ -136,6 +141,34 @@ public class StatusBarColorControllerUnitTest {
     }
 
     @Test
+    public void testOverviewMode() {
+        initialize(/* isTablet */ false, /* isInDesktopWindow= */ false);
+        mOverviewColorSupplier.set(Color.RED);
+        assertEquals(
+                "Status bar color is incorrect.",
+                Color.RED,
+                mStatusBarColorController.calculateFinalStatusBarColor());
+    }
+
+    @Test
+    public void testOverviewModeOverlay() {
+        initialize(/* isTablet */ false, /* isInDesktopWindow= */ false);
+        mStatusBarColorController.updateStatusBarColor();
+        mStatusBarColorController.setScrimColor(Color.TRANSPARENT);
+
+        @ColorInt int expectedColor = ColorUtils.setAlphaComponentWithFloat(Color.RED, 0.5f);
+        mOverviewColorSupplier.set(expectedColor);
+        expectedColor =
+                ColorUtils.overlayColor(
+                        mStatusBarColorController.getStatusBarColorWithoutStatusIndicator(),
+                        expectedColor);
+        assertEquals(
+                "Status bar color is incorrect.",
+                expectedColor,
+                mStatusBarColorController.calculateFinalStatusBarColor());
+    }
+
+    @Test
     public void testOnTopResumedActivityChanged() {
         initialize(/* isTablet= */ true, /* isInDesktopWindow= */ true);
         int focusedStripColor =
@@ -178,7 +211,8 @@ public class StatusBarColorControllerUnitTest {
                         mActivityTabProvider,
                         mTopUiThemeColorProvider,
                         mSystemBarColorHelper,
-                        desktopWindowStateManagerSupplier);
+                        desktopWindowStateManagerSupplier,
+                        mOverviewColorSupplier);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
     }
 }

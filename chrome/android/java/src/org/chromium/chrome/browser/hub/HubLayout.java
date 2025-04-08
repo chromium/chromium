@@ -210,7 +210,7 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
         mPaneManager.getFocusedPaneSupplier().addObserver(mOnPaneFocused);
         mHubShowPaneHelper = mHubManager.getHubShowPaneHelper();
         mScrimController = dependencyHolder.getScrimController();
-        mOnToolbarAlphaChange = dependencyHolder.getOnToolbarAlphaChange();
+        mOnToolbarAlphaChange = dependencyHolder.getOnOverviewAlphaChange();
         mTabModelSelector = tabModelSelectorSupplier.get();
         mDesktopWindowStateManager = desktopWindowStateManager;
         if (mDesktopWindowStateManager != null) {
@@ -700,6 +700,7 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
 
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())) {
             return TranslateHubLayoutAnimationFactory.createTranslateUpAnimatorProvider(
+                    mHubController.getHubColorMixer(),
                     containerView,
                     mScrimController,
                     HUB_LAYOUT_TRANSLATE_DURATION_MS,
@@ -717,6 +718,7 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
 
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())) {
             return TranslateHubLayoutAnimationFactory.createTranslateDownAnimatorProvider(
+                    mHubController.getHubColorMixer(),
                     containerView,
                     mScrimController,
                     HUB_LAYOUT_TRANSLATE_DURATION_MS,

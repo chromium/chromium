@@ -11,6 +11,7 @@ import android.view.Window;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.core.content.ContextCompat;
 
 import org.chromium.base.Callback;
@@ -94,13 +95,14 @@ public class StatusBarColorController
     private final @ColorInt int mStandardScrolledOmniboxColor;
     private final @ColorInt int mIncognitoScrolledOmniboxColor;
     private final @ColorInt int mBackgroundColorForNtp;
+    private final ObservableSupplier<Integer> mOverviewColorSupplier;
+    private final Callback<Integer> mOverviewColorObserver = ignored -> updateStatusBarColor();
     private boolean mToolbarColorChanged;
     private @ColorInt int mToolbarColor;
 
     private @Nullable TabModelSelector mTabModelSelector;
     private CallbackController mCallbackController = new CallbackController();
     private @Nullable Tab mCurrentTab;
-    private boolean mIsInOverviewMode;
     private boolean mIsIncognitoBranded;
     private boolean mIsOmniboxFocused;
     private boolean mAreSuggestionsScrolled;
@@ -124,19 +126,10 @@ public class StatusBarColorController
     private final LayoutStateObserver mLayoutStateObserver =
             new LayoutStateObserver() {
                 @Override
-                public void onStartedShowing(@LayoutType int layoutType) {
-                    if (layoutType != LayoutType.TAB_SWITCHER) {
-                        return;
-                    }
-                    mIsInOverviewMode = true;
-                }
-
-                @Override
                 public void onFinishedHiding(@LayoutType int layoutType) {
                     if (layoutType != LayoutType.TAB_SWITCHER) {
                         return;
                     }
-                    mIsInOverviewMode = false;
                     updateStatusBarColor();
                 }
             };
@@ -154,6 +147,7 @@ public class StatusBarColorController
      * @param topUiThemeColorProvider The {@link ThemeColorProvider} for top UI.
      * @param edgeToEdgeSystemBarColorHelper Draws status bar color for Edge to Edge.
      * @param desktopWindowStateManagerSupplier Supplier to retrieve desktop window information.
+     * @param overviewColorSupplier Notifies when the overview color changes.
      */
     public StatusBarColorController(
             Window window,
@@ -165,11 +159,13 @@ public class StatusBarColorController
             ActivityTabProvider tabProvider,
             TopUiThemeColorProvider topUiThemeColorProvider,
             EdgeToEdgeSystemBarColorHelper edgeToEdgeSystemBarColorHelper,
-            OneshotSupplier<DesktopWindowStateManager> desktopWindowStateManagerSupplier) {
+            OneshotSupplier<DesktopWindowStateManager> desktopWindowStateManagerSupplier,
+            ObservableSupplier<Integer> overviewColorSupplier) {
         mWindow = window;
         mIsTablet = isTablet;
         mStatusBarColorProvider = statusBarColorProvider;
         mAllowToolbarColorOnTablets = false;
+        mOverviewColorSupplier = overviewColorSupplier;
 
         mStandardDefaultThemeColor = ChromeColors.getDefaultThemeColor(context, false);
         mIncognitoDefaultThemeColor = ChromeColors.getDefaultThemeColor(context, true);
@@ -276,6 +272,7 @@ public class StatusBarColorController
                             !mDesktopWindowStateManager.isInUnfocusedDesktopWindow();
                     updateStatusBarColor();
                 });
+        mOverviewColorSupplier.addObserver(mOverviewColorObserver);
     }
 
     // DestroyObserver implementation.
@@ -292,6 +289,7 @@ public class StatusBarColorController
             mCallbackController.destroy();
             mCallbackController = null;
         }
+        mOverviewColorSupplier.removeObserver(mOverviewColorObserver);
     }
 
     // TopResumedActivityChangedObserver implementation.
@@ -395,11 +393,7 @@ public class StatusBarColorController
 
     /** Calculate and update the status bar's color. */
     public void updateStatusBarColor() {
-        mStatusBarColorWithoutStatusIndicator = calculateBaseStatusBarColor();
-        @ColorInt
-        int statusBarColor = applyStatusBarIndicatorColor(mStatusBarColorWithoutStatusIndicator);
-        statusBarColor = applyTabStripOverlay(statusBarColor);
-        statusBarColor = applyCurrentScrimToColor(statusBarColor);
+        @ColorInt int statusBarColor = calculateFinalStatusBarColor();
         setStatusBarColor(mEdgeToEdgeSystemBarColorHelper, mWindow, statusBarColor);
     }
 
@@ -421,6 +415,18 @@ public class StatusBarColorController
      */
     public @ColorInt int getStatusBarColorWithoutStatusIndicator() {
         return mStatusBarColorWithoutStatusIndicator;
+    }
+
+    @VisibleForTesting
+    @ColorInt
+    int calculateFinalStatusBarColor() {
+        mStatusBarColorWithoutStatusIndicator = calculateBaseStatusBarColor();
+        @ColorInt
+        int statusBarColor = applyStatusBarIndicatorColor(mStatusBarColorWithoutStatusIndicator);
+        statusBarColor = applyTabStripOverlay(statusBarColor);
+        statusBarColor = ColorUtils.overlayColor(statusBarColor, mOverviewColorSupplier.get());
+        statusBarColor = applyCurrentScrimToColor(statusBarColor);
+        return statusBarColor;
     }
 
     private @ColorInt int calculateBaseStatusBarColor() {
@@ -450,13 +456,6 @@ public class StatusBarColorController
             // If the flag is enabled, we will use the toolbar color.
             if (mToolbarColorChanged) return mToolbarColor;
             return calculateDefaultStatusBarColor();
-        }
-
-        // Return status bar color in overview mode.
-        if (mIsInOverviewMode) {
-            // Toolbar will notify status bar color controller about the toolbar color during
-            // overview animation.
-            return mToolbarColor;
         }
 
         // Return New Tab Page background color in New Tab Page.
