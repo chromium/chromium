@@ -785,6 +785,11 @@ def ManualUpdate(args):
     # This covers most update steps: git mv, gnrt vendor, gnrt gen
     FinishUpdatingCrate(args, title, diff)
 
+    if args.upload:
+        print(f"  Running `git cl upload --commit-description=...` ...")
+        description = CreateCommitDescription(title, diff)
+        GitClUpload(f"--commit-description={description}", "-t",
+                    "Edit CL description to include vet policy")
 
 
 def main():
