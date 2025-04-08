@@ -692,6 +692,11 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
     } else if (popup_suggestion.iph_metadata.feature ==
                &feature_engagement::kIPHPlusAddressCreateSuggestionFeature) {
       suggestion.featureForIPH = SuggestionFeatureForIPH::kPlusAddressCreation;
+    } else if (popup_suggestion.iph_metadata.feature ==
+               &feature_engagement::
+                   kIPHAutofillHomeWorkProfileSuggestionFeature) {
+      suggestion.featureForIPH =
+          SuggestionFeatureForIPH::kHomeWorkAddressSuggestion;
     }
 
     // Put "clear form" entry at the front of the suggestions.
