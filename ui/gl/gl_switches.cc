@@ -366,8 +366,7 @@ bool IsDefaultANGLEVulkan() {
   // to CPU path in glCopyTextureCHROMIUM with multi-plane images.
   // http://anglebug.com/383056998.
   if (active_gpu.driverId == VK_DRIVER_ID_QUALCOMM_PROPRIETARY &&
-      (active_gpu.detailedDriverVersion.major != 512 ||
-       active_gpu.detailedDriverVersion.minor <= 530)) {
+      active_gpu.detailedDriverVersion.minor <= 530) {
     return false;
   }
 #endif  // BUILDFLAG(IS_ANDROID)
