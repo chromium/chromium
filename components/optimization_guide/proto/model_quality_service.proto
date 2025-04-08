@@ -30,6 +30,7 @@ import "components/optimization_guide/proto/features/scam_detection.proto";
 import "components/optimization_guide/proto/features/tab_organization.proto";
 import "components/optimization_guide/proto/features/wallpaper_search.proto";
 import "components/optimization_guide/proto/features/bling_prototyping.proto";
+import "components/optimization_guide/proto/features/writing_assistance_api.proto";
 import "components/optimization_guide/proto/features/zero_state_suggestions.proto";
 
 // A request to send AI data logs to the model quality server. Data logging for
@@ -78,6 +79,8 @@ message LogAiDataRequest {
     EnhancedCalendarLoggingData enhanced_calendar = 21;
 
     ZeroStateSuggestionsLoggingData zero_state_suggestions = 22;
+
+    WritingAssistanceApiLoggingData writing_assistance_api = 23;
 
     DefaultLoggingData default = 1000;
   }
