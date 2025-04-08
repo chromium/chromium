@@ -64,6 +64,10 @@ BASE_FEATURE(kCheckingNoExtensionIdInExtensionIpcs,
              "EMF_NO_EXTENSION_ID_FOR_EXTENSION_SOURCE",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kDeferResetURLLoaderFactories,
+             "DeferResetURLLoaderFactories",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kEnableWebHidInWebView,
              "EnableWebHidInWebView",
              base::FEATURE_ENABLED_BY_DEFAULT);
