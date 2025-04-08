@@ -267,18 +267,21 @@ enum class AccessPoint : int {
   // being signed in or synced.
   kCollaborationJoinTabGroup = 76,
   // Access point triggered when a user attempts to opt-in to history sync from
-  // the history sync opt-in expanded pill.
-  kHistorySyncOptinExpansionPill = 77,
+  // the history sync opt-in expanded pill (expanded on startup).
+  kHistorySyncOptinExpansionPillOnStartup = 77,
   // Access point triggered when the account used in widget is different from
   // the one used in the app. iOS only.
   kWidget = 78,
   // Access point triggered when a user attempts to leave or delete a tab group
   // without being signed in or synced.
   kCollaborationLeaveOrDeleteTabGroup = 79,
+  // Access point triggered when a user attempts to opt-in to history sync from
+  // the history sync opt-in expanded pill (expanded on inactivity).
+  kHistorySyncOptinExpansionPillOnInactivity = 80,
   // Add values above this line with a corresponding label to the
   // "SigninAccessPoint" enum in
   // tools/metrics/histograms/metadata/signin/enums.xml.
-  kMaxValue = kCollaborationLeaveOrDeleteTabGroup,  // This must be last.
+  kMaxValue = kHistorySyncOptinExpansionPillOnInactivity,  // This must be last.
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/signin/enums.xml)
 

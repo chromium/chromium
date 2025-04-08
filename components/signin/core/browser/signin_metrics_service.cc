@@ -183,9 +183,11 @@ void MaybeRecordWebSigninToChromeSigninTimes(
     case signin_metrics::AccessPoint::kGlicLaunchButton:
     case signin_metrics::AccessPoint::kHistoryPage:
     case signin_metrics::AccessPoint::kCollaborationJoinTabGroup:
-    case signin_metrics::AccessPoint::kHistorySyncOptinExpansionPill:
+    case signin_metrics::AccessPoint::kHistorySyncOptinExpansionPillOnStartup:
     case signin_metrics::AccessPoint::kWidget:
     case signin_metrics::AccessPoint::kCollaborationLeaveOrDeleteTabGroup:
+    case signin_metrics::AccessPoint::
+        kHistorySyncOptinExpansionPillOnInactivity:
       return;
   }
 

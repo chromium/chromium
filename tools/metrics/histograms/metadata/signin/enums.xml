@@ -690,9 +690,10 @@ chromium-metrics-reviews@google.com.
   <int value="74" label="Glic launch button"/>
   <int value="75" label="History page (Android only)"/>
   <int value="76" label="Join collaboration tab group authentication"/>
-  <int value="77" label="History Sync Opt-in Expanded Pill"/>
+  <int value="77" label="History Sync Opt-in Expanded Pill on startup"/>
   <int value="78" label="Widget (iOS only)"/>
   <int value="79" label="Leave or delete collaboration tab group"/>
+  <int value="80" label="History Sync Opt-in Expanded Pill on inactivity"/>
 </enum>
 
 <enum name="SigninAccountReconcilorState">

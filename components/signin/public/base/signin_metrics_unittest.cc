@@ -223,12 +223,14 @@ class SigninMetricsTest : public ::testing::Test {
         return "HistoryPage";
       case AccessPoint::kCollaborationJoinTabGroup:
         return "CollaborationJoinTabGroup";
-      case AccessPoint::kHistorySyncOptinExpansionPill:
-        return "HistorySyncOptinExpansionPill";
+      case AccessPoint::kHistorySyncOptinExpansionPillOnStartup:
+        return "HistorySyncOptinExpansionPillOnStartup";
       case AccessPoint::kWidget:
         return "Widget";
       case AccessPoint::kCollaborationLeaveOrDeleteTabGroup:
         return "CollaborationLeaveOrDeleteTabGroup";
+      case AccessPoint::kHistorySyncOptinExpansionPillOnInactivity:
+        return "HistorySyncOptinExpansionPillOnInactivity";
     }
   }
 };
