@@ -15,14 +15,10 @@
 
 namespace blink {
 
-class ConstraintSpace;
-struct GridItemPlacementData;
-
 enum class GridItemContributionType;
 enum class SizingConstraint;
-
-using GridItemDataPtrVector = HeapVector<Member<GridItemData>, 16>;
-using GridSetPtrVector = Vector<GridSet*, 16>;
+class ConstraintSpace;
+struct GridItemPlacementData;
 
 class CORE_EXPORT GridLayoutAlgorithm
     : public LayoutAlgorithm<GridNode, BoxFragmentBuilder, BlockBreakToken> {
@@ -124,11 +120,11 @@ class CORE_EXPORT GridLayoutAlgorithm
                             const std::optional<GridTrackSizingDirection>&
                                 opt_track_direction = std::nullopt) const;
 
-  // Calculates from the min and max track sizing functions the used track size.
+  // Helper that instances a `GridTrackSizingAlgorithm` with a wrapper for
+  // `ContributionSizeForGridItem` to compute the used track sizes.
   void ComputeUsedTrackSizes(const GridSizingSubtree& sizing_subtree,
                              GridTrackSizingDirection track_direction,
-                             SizingConstraint sizing_constraint,
-                             bool* opt_needs_additional_pass) const;
+                             SizingConstraint sizing_constraint) const;
 
   // Computes and caches the used track sizes of a grid sizing subtree.
   void CompleteTrackSizingAlgorithm(const GridSizingSubtree& sizing_subtree,
@@ -166,38 +162,6 @@ class CORE_EXPORT GridLayoutAlgorithm
       const GridSizingSubtree& sizing_subtree,
       GridTrackSizingDirection track_direction,
       SizingConstraint sizing_constraint) const;
-
-  // TODO(ethavar): Remove these methods once we migrate them over to
-  // `grid_track_sizing_algorithm.cc`.
-  // See https://chromium-review.googlesource.com/c/chromium/src/+/6277752.
-  // These methods implement the steps of the algorithm for intrinsic track size
-  // resolution defined in https://drafts.csswg.org/css-grid-2/#algo-content.
-  void ResolveIntrinsicTrackSizes(const GridSizingSubtree& sizing_subtree,
-                                  GridTrackSizingDirection track_direction,
-                                  SizingConstraint sizing_constraint) const;
-
-  void IncreaseTrackSizesToAccommodateGridItems(
-      base::span<Member<GridItemData>>::iterator group_begin,
-      base::span<Member<GridItemData>>::iterator group_end,
-      const GridSizingSubtree& sizing_subtree,
-      bool is_group_spanning_flex_track,
-      SizingConstraint sizing_constraint,
-      GridItemContributionType contribution_type,
-      GridSizingTrackCollection* track_collection) const;
-
-  void MaximizeTracks(SizingConstraint sizing_constraint,
-                      GridSizingTrackCollection* track_collection) const;
-
-  void StretchAutoTracks(SizingConstraint sizing_constraint,
-                         GridSizingTrackCollection* track_collection) const;
-
-  void ExpandFlexibleTracks(const GridSizingSubtree& sizing_subtree,
-                            GridTrackSizingDirection track_direction,
-                            SizingConstraint sizing_constraint) const;
-
-  LayoutUnit DetermineFreeSpace(
-      SizingConstraint sizing_constraint,
-      const GridSizingTrackCollection& track_collection) const;
 
   ConstraintSpace CreateConstraintSpace(
       LayoutResultCacheSlot cache_slot,
