@@ -732,10 +732,6 @@ void ServiceWorkerTaskQueue::DidRegisterServiceWorker(
   const bool success = IsWorkerRegistrationSuccess(status_code);
   base::UmaHistogramBoolean(
       "Extensions.ServiceWorkerBackground.WorkerRegistrationState2", success);
-  if (!success && g_test_observer) {
-    g_test_observer->OnWorkerRegistrationFailed(context_id.extension_id,
-                                                status_code);
-  }
 
   ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context_);
   const ExtensionId& extension_id = context_id.extension_id;
