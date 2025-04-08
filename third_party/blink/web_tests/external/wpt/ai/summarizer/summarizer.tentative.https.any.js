@@ -1,5 +1,8 @@
-// META: script=resources/utils.js
+// META: title=Summarizer
+// META: script=../resources/util.js
 // META: timeout=long
+
+'use strict';
 
 promise_test(async () => {
   assert_true(!!Summarizer);

@@ -1,4 +1,8 @@
-// META: script=resources/utils.js
+// META: title=Summarizer Abort
+// META: global=window,worker
+// META: script=../resources/util.js
+
+'use strict';
 
 promise_test(async t => {
   await testAbortPromise(t, signal => {

@@ -1,5 +1,8 @@
-// META: script=resources/utils.js
+// META: title=Summarizer Streaming
+// META: script=../resources/util.js
 // META: timeout=long
+
+'use strict';
 
 promise_test(async t => {
   const summarizer = await Summarizer.create();
