@@ -4,9 +4,9 @@
 
 from flake_suppressor_common import queries as queries_module
 
-SUBMITTED_BUILDS_SUBQUERY = """\
-  submitted_builds AS ({chromium_builds}
-  ),""".format(chromium_builds=queries_module.SUBMITTED_BUILDS_TEMPLATE)
+SUBMITTED_BUILDS_SUBQUERY = f"""\
+  submitted_builds AS ({queries_module.SUBMITTED_BUILDS_TEMPLATE}
+  ),"""
 
 # Gets all failures from the past |sample_period| days from CI bots that did not
 # already have an associated test suppression when the test ran.
@@ -41,9 +41,9 @@ WHERE
 # Gets all failures from the past |sample_period| days from trybots that did not
 # already have an associated test suppresssion when the test ran, only including
 # data from builds that were used for CL submission.
-TRY_FAILED_TEST_QUERY = """\
+TRY_FAILED_TEST_QUERY = f"""\
 WITH
-  {submitted_builds_subquery}
+  {SUBMITTED_BUILDS_SUBQUERY}
   failed_tests AS (
     SELECT
       exported.id,
@@ -70,7 +70,7 @@ SELECT *
 FROM failed_tests ft
 WHERE
   ARRAY_TO_STRING(ft.typ_expectations, '') = "Pass"
-""".format(submitted_builds_subquery=SUBMITTED_BUILDS_SUBQUERY)
+"""
 
 # Gets the count of all results in the past |sample_period| days for distinct
 # test/tag combinations from CI bots.
@@ -102,9 +102,9 @@ GROUP BY gr.name, ARRAY_TO_STRING(gr.typ_tags, '')
 # Gets the count of all results in the past |sample_period| days for distinct
 # test/tag combinations from trybots, only including data from builds that were
 # used for CL submission.
-TRY_RESULT_COUNT_QUERY = """\
+TRY_RESULT_COUNT_QUERY = f"""\
 WITH
-  {submitted_builds_subquery}
+  {SUBMITTED_BUILDS_SUBQUERY}
   grouped_results AS (
     SELECT
       exported.id as id,
@@ -128,7 +128,7 @@ SELECT
   ANY_VALUE(gr.typ_tags) as typ_tags
 FROM grouped_results gr
 GROUP BY gr.name, ARRAY_TO_STRING(gr.typ_tags, '')
-""".format(submitted_builds_subquery=SUBMITTED_BUILDS_SUBQUERY)
+"""
 
 
 class GpuBigQueryQuerier(queries_module.BigQueryQuerier):

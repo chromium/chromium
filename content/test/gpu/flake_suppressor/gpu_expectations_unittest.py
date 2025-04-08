@@ -71,7 +71,7 @@ mode type hash bar_tests.txt"""
       elif url.endswith('bar_tests.txt?format=TEXT'):
         text = 'bar_tests.txt content'
       else:
-        self.fail('Given unhandled URL %s' % url)
+        self.fail(f'Given unhandled URL {url}')
       request_result.text = base64.b64encode(text.encode('utf-8'))
       return request_result
 
