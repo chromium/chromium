@@ -306,12 +306,6 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
 
   bool UsingSwapChain() const { return using_swap_chain_; }
 
-  bool IsOriginTopLeft() const {
-    // If the context has the flip_y extension, it will behave as having the
-    // origin of coordinates on the top left.
-    return opengl_flip_y_extension_;
-  }
-
   // Keep track of low latency buffer status.
   bool low_latency_enabled() const { return low_latency_enabled_; }
   void set_low_latency_enabled(bool low_latency_enabled) {
