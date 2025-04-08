@@ -27,6 +27,7 @@
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/chrome/test/earl_grey/test_switches.h"
 #import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
+#import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -160,6 +161,24 @@ id<GREYMatcher> ContinueButtonWithIdentityMatcher(
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
 
   return config;
+}
+
+- (void)relaunchWithIdentities:(NSArray<FakeSystemIdentity*>*)identities
+               enabledFeatures:
+                   (const std::vector<base::test::FeatureRef>&)enabled
+              disabledFeatures:
+                  (const std::vector<base::test::FeatureRef>&)disabled {
+  // Before restarting, make sure any pending prefs changes are written to disk.
+  [ChromeEarlGrey commitPendingUserPrefsWrite];
+
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  config.features_enabled = enabled;
+  config.features_disabled = disabled;
+  config.additional_args.push_back(
+      base::StrCat({"-", test_switches::kAddFakeIdentitiesAtStartup, "=",
+                    [FakeSystemIdentity encodeIdentitiesToBase64:identities]}));
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 }
 
 // Tests that signing in from a signed out state with a managed account
@@ -1000,9 +1019,9 @@ id<GREYMatcher> ContinueButtonWithIdentityMatcher(
                                           PromoScreenPrimaryButtonMatcher()]
       performAction:grey_tap()];
   // Confirm profile switched.
-  GREYAssert([[ChromeEarlGrey currentProfileName]
-                 isEqualToString:[ChromeEarlGrey currentProfileName]],
-             @"Profile should be personal");
+  GREYAssert(![[ChromeEarlGrey currentProfileName]
+                 isEqualToString:personalProfileName],
+             @"Profile should NOT be personal");
 
   // Forget `managedIdentity` from device.
   [SigninEarlGrey forgetFakeIdentity:managedIdentity];
@@ -1010,7 +1029,67 @@ id<GREYMatcher> ContinueButtonWithIdentityMatcher(
   // Verify that the profile was actually switched back to personal.
   GREYAssert(
       [[ChromeEarlGrey currentProfileName] isEqualToString:personalProfileName],
-      @"Profile should have been switched");
+      @"Profile should have been switched back to personal");
+}
+
+- (void)testProfileDeletedOnManagedAccountGone {
+  // Separate profiles are only available in iOS 17+.
+  if (!@available(iOS 17, *)) {
+    return;
+  }
+
+  // Setup: There's 1 personal and 1 managed account. The personal account is
+  // signed in.
+  FakeSystemIdentity* const personalIdentity =
+      [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:personalIdentity];
+
+  FakeSystemIdentity* const managedIdentity =
+      [FakeSystemIdentity fakeManagedIdentity];
+  [SigninEarlGrey addFakeIdentity:managedIdentity];
+
+  [SigninEarlGreyUI signinWithFakeIdentity:personalIdentity];
+  NSString* personalProfileName = [ChromeEarlGrey currentProfileName];
+
+  // Switch to the managed account, which triggers a switch to a new managed
+  // profile.
+  OpenAccountMenu();
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kAccountMenuSecondaryAccountButtonId)]
+      performAction:grey_tap()];
+  // Wait for the enterprise onboarding screen.
+  ConditionBlock enterpriseOnboardingCondition = ^{
+    NSError* error;
+    [[EarlGrey selectElementWithMatcher:ManagedProfileCreationScreenMatcher()]
+        assertWithMatcher:grey_sufficientlyVisible()
+                    error:&error];
+
+    return error == nil;
+  };
+  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
+                 base::test::ios::kWaitForUIElementTimeout,
+                 enterpriseOnboardingCondition),
+             @"Enterprise onboarding didn't appear.");
+  // Confirm the enterprise onboarding screen.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          PromoScreenPrimaryButtonMatcher()]
+      performAction:grey_tap()];
+  // Confirm profile switched.
+  GREYAssert(![[ChromeEarlGrey currentProfileName]
+                 isEqualToString:personalProfileName],
+             @"Profile should NOT be personal");
+
+  // Relaunch the browser without the managed account. This simulates the
+  // situation where the managed account was removed in another Google app.
+  [self relaunchWithIdentities:@[ personalIdentity ]
+               enabledFeatures:{kIdentityDiscAccountMenu,
+                                kSeparateProfilesForManagedAccounts}
+              disabledFeatures:{}];
+
+  // Verify that the profile was switched back to personal.
+  GREYAssert(
+      [[ChromeEarlGrey currentProfileName] isEqualToString:personalProfileName],
+      @"Profile should have been switched back to personal");
 }
 
 @end
