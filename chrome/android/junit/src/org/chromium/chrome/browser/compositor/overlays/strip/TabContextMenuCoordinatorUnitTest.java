@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.contextmenu.ContextMenuCoordinator.ListItemType.DIVIDER;
 import static org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin.TAB_STRIP_CONTEXT_MENU;
+import static org.chromium.ui.listmenu.ListSectionDividerProperties.COLOR_ID;
 
 import android.app.Activity;
 
@@ -114,7 +115,6 @@ public class TabContextMenuCoordinatorUnitTest {
         when(mWindowAndroid.getActivity()).thenReturn(mWeakReferenceActivity);
         when(mWeakReferenceActivity.get()).thenReturn(activity);
         mTabModel = spy(new MockTabModel(mProfile, null));
-        when(mTabModel.isIncognito()).thenReturn(false);
         when(mTabModel.getTabById(TAB_ID)).thenReturn(mTab1);
         when(mTabModel.getTabById(TAB_OUTSIDE_OF_GROUP_ID)).thenReturn(mTabOutsideOfGroup);
         when(mTabModel.getTabById(NON_URL_TAB_ID)).thenReturn(mNonUrlTab);
@@ -128,8 +128,18 @@ public class TabContextMenuCoordinatorUnitTest {
         when(mNonUrlTab.getUrl()).thenReturn(CHROME_SCHEME_URL);
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         when(mTabGroupModelFilter.getTabUngrouper()).thenReturn(mTabUngrouper);
-        when(mProfile.isOffTheRecord()).thenReturn(true);
         mSavedTabGroup.collaborationId = COLLABORATION_ID;
+        setupWithIncognito(/* incognito= */ false); // Most tests will run not in incognito mode
+        initializeCoordinator();
+    }
+
+    private void setupWithIncognito(boolean incognito) {
+        when(mTabModel.isIncognito()).thenReturn(incognito);
+        when(mTabModel.isIncognitoBranded()).thenReturn(incognito);
+        when(mProfile.isOffTheRecord()).thenReturn(incognito);
+    }
+
+    private void initializeCoordinator() {
         mOnItemClickedCallback =
                 TabContextMenuCoordinator.getMenuItemClickedCallback(
                         () -> mTabModel,
@@ -173,6 +183,10 @@ public class TabContextMenuCoordinatorUnitTest {
 
         // List item 3
         assertEquals(DIVIDER, modelList.get(2).type);
+        assertEquals(
+                "Expected divider to have have COLOR_ID unset when not in incognito mode",
+                0,
+                modelList.get(2).model.get(COLOR_ID));
 
         // List item 4
         assertEquals(R.string.share, modelList.get(3).model.get(ListMenuItemProperties.TITLE_ID));
@@ -341,6 +355,71 @@ public class TabContextMenuCoordinatorUnitTest {
                 R.string.close_tab, modelList.get(3).model.get(ListMenuItemProperties.TITLE_ID));
         assertEquals(
                 R.id.close_tab, modelList.get(3).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+    }
+
+    @Test
+    public void testListMenuItems_incognito() {
+        setupWithIncognito(/* incognito= */ true);
+        initializeCoordinator();
+        var modelList = new ModelList();
+        mTabContextMenuCoordinator.buildMenuActionItems(modelList, TAB_ID);
+
+        assertEquals("Number of items in the list menu is incorrect", 5, modelList.size());
+
+        // List item 1
+        assertEquals(
+                R.string.add_tab_to_group,
+                modelList.get(0).model.get(ListMenuItemProperties.TITLE_ID));
+        assertEquals(
+                R.id.add_to_tab_group,
+                modelList.get(0).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+        assertEquals(
+                "Expected text appearance ID to be set to"
+                        + " R.style.TextAppearance_TextLarge_Primary_Baseline_Light in incognito",
+                R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
+                modelList.get(0).model.get(ListMenuItemProperties.TEXT_APPEARANCE_ID));
+
+        // List item 2
+        assertEquals(
+                R.string.remove_tab_from_group,
+                modelList.get(1).model.get(ListMenuItemProperties.TITLE_ID));
+        assertEquals(
+                R.id.remove_from_tab_group,
+                modelList.get(1).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+        assertEquals(
+                "Expected text appearance ID to be set to"
+                        + " R.style.TextAppearance_TextLarge_Primary_Baseline_Light in incognito",
+                R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
+                modelList.get(1).model.get(ListMenuItemProperties.TEXT_APPEARANCE_ID));
+
+        // List item 3
+        assertEquals(DIVIDER, modelList.get(2).type);
+        assertEquals(
+                "Expected divider to have COLOR_ID set to R.color.divider_line_bg_color_light in"
+                        + " incognito mode",
+                R.color.divider_line_bg_color_light,
+                modelList.get(2).model.get(COLOR_ID));
+
+        // List item 4
+        assertEquals(R.string.share, modelList.get(3).model.get(ListMenuItemProperties.TITLE_ID));
+        assertEquals(
+                R.id.share_tab, modelList.get(3).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+        assertEquals(
+                "Expected text appearance ID to be set to"
+                        + " R.style.TextAppearance_TextLarge_Primary_Baseline_Light in incognito",
+                R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
+                modelList.get(3).model.get(ListMenuItemProperties.TEXT_APPEARANCE_ID));
+
+        // List item 5
+        assertEquals(
+                R.string.close_tab, modelList.get(4).model.get(ListMenuItemProperties.TITLE_ID));
+        assertEquals(
+                R.id.close_tab, modelList.get(4).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+        assertEquals(
+                "Expected text appearance ID to be set to"
+                        + " R.style.TextAppearance_TextLarge_Primary_Baseline_Light in incognito",
+                R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
+                modelList.get(4).model.get(ListMenuItemProperties.TEXT_APPEARANCE_ID));
     }
 
     @Test

@@ -188,6 +188,54 @@ public class BrowserUiListMenuUtils {
      * Helper function to build a list menu item. Pass 0 for attributes that aren't applicable to
      * the menu item (e.g. if there is no icon or text).
      *
+     * @param title The text on the menu item.
+     * @param menuId Id of the menu item.
+     * @param isIncognito Whether the current menu item will be displayed in incognito mode.
+     * @param enabled Whether or not this menu item should be enabled.
+     * @return ListItem Representing an item with text and maybe an icon.
+     */
+    public static ListItem buildMenuListItemWithIncognitoBranding(
+            String title, @IdRes int menuId, boolean isIncognito, boolean enabled) {
+        PropertyModel.Builder builder =
+                getListItemPropertyBuilder()
+                        .with(ListMenuItemProperties.TITLE, title)
+                        .with(ListMenuItemProperties.MENU_ITEM_ID, menuId)
+                        .with(ListMenuItemProperties.ENABLED, enabled);
+
+        if (isIncognito) {
+            builder.with(
+                    ListMenuItemProperties.TEXT_APPEARANCE_ID,
+                    R.style.TextAppearance_TextLarge_Primary_Baseline_Light);
+        }
+        return new MVCListAdapter.ListItem(ListMenuItemType.MENU_ITEM, builder.build());
+    }
+
+    /**
+     * Helper function to build a list menu item. Pass 0 for attributes that aren't applicable to
+     * the menu item (e.g. if there is no icon or text).
+     *
+     * @param titleId The text on the menu item.
+     * @param menuId Id of the menu item.
+     * @param isIncognito Whether the current menu item will be displayed in incognito mode.
+     * @param enabled Whether or not this menu item should be enabled.
+     * @return ListItem Representing an item with text and maybe an icon.
+     */
+    public static ListItem buildMenuListItemWithIncognitoBranding(
+            @StringRes int titleId, @IdRes int menuId, boolean isIncognito, boolean enabled) {
+        return buildMenuListItemWithIncognitoBranding(
+                titleId,
+                menuId,
+                /* startIconId= */ 0,
+                /* iconTintColorStateList= */ 0,
+                R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
+                isIncognito,
+                enabled);
+    }
+
+    /**
+     * Helper function to build a list menu item. Pass 0 for attributes that aren't applicable to
+     * the menu item (e.g. if there is no icon or text).
+     *
      * @param titleId The text on the menu item.
      * @param menuId Id of the menu item.
      * @param startIconId The icon on the start of the menu item. Pass 0 for no icon.

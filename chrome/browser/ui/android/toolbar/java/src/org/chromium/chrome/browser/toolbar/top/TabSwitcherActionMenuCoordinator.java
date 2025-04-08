@@ -269,7 +269,7 @@ public class TabSwitcherActionMenuCoordinator {
                         R.drawable.ic_widgets);
             case MenuItemType.DIVIDER:
             default:
-                return buildMenuDivider();
+                return buildMenuDivider(mProfile.isIncognitoBranded());
         }
     }
 

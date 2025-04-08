@@ -566,6 +566,10 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                         .with(
                                 ListSectionDividerProperties.RIGHT_PADDING_DIMEN_ID,
                                 R.dimen.list_menu_item_horizontal_padding);
+        if (mTabModelSupplier.get().isIncognitoBranded()) {
+            builder.with(
+                    ListSectionDividerProperties.COLOR_ID, R.color.divider_line_bg_color_light);
+        }
         return new ListItem(ListMenuItemType.DIVIDER, builder.build());
     }
 
