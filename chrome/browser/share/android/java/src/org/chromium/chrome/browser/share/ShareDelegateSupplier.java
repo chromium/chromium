@@ -8,20 +8,23 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.UnownedUserDataKey;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.UnownedUserDataSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
- * A {@link UnownedUserDataSupplier} which manages the supplier and UnownedUserData for a
- * {@link ShareDelegate}.
+ * A {@link UnownedUserDataSupplier} which manages the supplier and UnownedUserData for a {@link
+ * ShareDelegate}.
  */
+@NullMarked
 public class ShareDelegateSupplier extends UnownedUserDataSupplier<ShareDelegate> {
     private static final UnownedUserDataKey<ShareDelegateSupplier> KEY =
             new UnownedUserDataKey<ShareDelegateSupplier>(ShareDelegateSupplier.class);
 
-    private static ShareDelegateSupplier sInstanceForTesting;
+    private static @Nullable ShareDelegateSupplier sInstanceForTesting;
 
     /** Return {@link ShareDelegate} supplier associated with the given {@link WindowAndroid}. */
-    public static ObservableSupplier<ShareDelegate> from(WindowAndroid windowAndroid) {
+    public static @Nullable ObservableSupplier<ShareDelegate> from(WindowAndroid windowAndroid) {
         if (sInstanceForTesting != null) return sInstanceForTesting;
         return KEY.retrieveDataFromHost(windowAndroid.getUnownedUserDataHost());
     }

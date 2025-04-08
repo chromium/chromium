@@ -6,10 +6,12 @@ package org.chromium.chrome.browser.share;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.share.ShareParams;
 
 /** Interface to expose sharing to external classes. */
+@NullMarked
 public interface ShareDelegate {
     // These values are persisted to logs. Entries should not be renumbered and numeric values
     // should never be reused. Ensure new values are also added to ShareOrigin in
