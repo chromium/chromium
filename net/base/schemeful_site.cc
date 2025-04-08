@@ -43,6 +43,13 @@ bool IsSameSiteInternal(const url::Origin& a,
     return true;
   }
 
+  // If host equality is false, then the only way the origins can be same site
+  // is if we have a standard scheme with a network host, which is the only case
+  // when SchemefulSite looks at the registerable domain.
+  if (!IsStandardSchemeWithNetworkHost(a.scheme())) {
+    return false;
+  }
+
   std::string_view b_site = GetDomainAndRegistryAsStringPiece(
       b, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
 
