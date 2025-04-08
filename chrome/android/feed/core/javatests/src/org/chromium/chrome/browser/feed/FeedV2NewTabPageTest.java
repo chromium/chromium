@@ -444,7 +444,7 @@ public class FeedV2NewTabPageTest {
                 .perform(RecyclerViewActions.scrollToPosition(ARTICLE_SECTION_HEADER_POSITION));
         waitForView((ViewGroup) mNtp.getView(), allOf(withId(R.id.header_title), isDisplayed()));
 
-        View sectionHeaderView = mNtp.getCoordinatorForTesting().getSectionHeaderViewForTesting();
+        View sectionHeaderView = mNtp.getCoordinatorForTesting().getHeaderViewForTesting();
         TextView headerStatusView = sectionHeaderView.findViewById(R.id.header_title);
 
         // Assert that the feed is expanded and that the header title text is correct.

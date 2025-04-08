@@ -188,6 +188,7 @@ android_resources("feed_java_resources") {
     "java/res/layout/follow_management_empty_state.xml",
     "java/res/layout/follow_management_item.xml",
     "java/res/layout/following_empty_state.xml",
+    "java/res/layout/new_tab_page_feed_header.xml",
     "java/res/layout/new_tab_page_feed_v2_expandable_header.xml",
     "java/res/layout/new_tab_page_multi_feed_header.xml",
     "java/res/layout/new_tab_page_section_tab.xml",

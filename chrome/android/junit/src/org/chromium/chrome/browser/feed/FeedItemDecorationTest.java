@@ -103,7 +103,7 @@ public final class FeedItemDecorationTest {
 
         when(mCoordinator.getContentManager()).thenReturn(mContentManager);
         when(mCoordinator.getHybridListRenderer()).thenReturn(mRenderer);
-        when(mCoordinator.getSectionHeaderPosition()).thenReturn(1);
+        when(mCoordinator.getHeaderPosition()).thenReturn(1);
 
         when(mContentManager.getItemCount()).thenReturn(mViewList.size());
 

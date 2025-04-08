@@ -41,7 +41,6 @@ import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.new_tab_url.DseNewTabUrlManager;
-import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.ntp.cards.SignInPromo;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.PrefServiceUtil;
@@ -318,7 +317,10 @@ public class FeedSurfaceMediator
     private FeedScrollState mRestoreScrollState;
     private int mPositionToRestore = RecyclerView.NO_POSITION;
 
-    private final HashMap<Integer, Stream> mTabToStreamMap = new HashMap<>();
+    // Track multiple streams when section header is supported.
+    private HashMap<Integer, Stream> mTabToStreamMap;
+    // Track single main stream when section header is not supported.
+    private Stream mStreamHolder;
     private Stream mCurrentStream;
     // Whether we're currently adding the streams. If this is true, streams should not be bound yet.
     // This avoids automatically binding the first stream when it's added.
@@ -352,6 +354,7 @@ public class FeedSurfaceMediator
         mHasContentListener = coordinator;
         mContext = context;
         mSnapScrollHelper = snapScrollHelper;
+        mSectionHeaderModel = headerModel;
         mProfile = profile;
         mSigninManager = IdentityServicesProvider.get().getSigninManager(mProfile);
         mTemplateUrlService = TemplateUrlServiceFactory.getForProfile(mProfile);
@@ -362,6 +365,10 @@ public class FeedSurfaceMediator
                 DseNewTabUrlManager.isNewTabSearchEngineUrlAndroidEnabled();
         mIsNewTabPageCustomizationEnabled = ChromeFeatureList.sNewTabPageCustomization.isEnabled();
         mUiConfig = uiConfig;
+
+        if (mSectionHeaderModel != null) {
+            mTabToStreamMap = new HashMap<>();
+        }
 
         /*
          * When feature flag isNewTabSearchEngineUrlAndroidEnabled is enabled, the Feeds may be
@@ -394,7 +401,6 @@ public class FeedSurfaceMediator
             mRestoreTabId = openingTabId;
         }
 
-        mSectionHeaderModel = headerModel;
         // This works around the bug that the out-of-screen toolbar is not brought back together
         // with the new tab page view when it slides down. This is because the RecyclerView
         // animation may not finish when content changed event is triggered and thus the new tab
@@ -448,6 +454,7 @@ public class FeedSurfaceMediator
     }
 
     private void switchToStream(int headerIndex) {
+        assert mSectionHeaderModel != null;
         PropertyListModel<PropertyModel, PropertyKey> headerList =
                 mSectionHeaderModel.get(SectionHeaderListProperties.SECTION_HEADERS_KEY);
         mSectionHeaderModel.set(SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY, headerIndex);
@@ -505,13 +512,18 @@ public class FeedSurfaceMediator
                         });
     }
 
-    /** Update the content based on enterprise policy. */
+    /**
+     * Update the feed content based on whether it is enabled or disabled per enterprise policy.
+     * When the feed is disabled, the feed content is completely gone.
+     */
     void updateContent() {
         // See https://crbug.com/1498004.
         if (ApplicationStatus.isEveryActivityDestroyed()) return;
 
         mFeedEnabled = FeedFeatures.isFeedEnabled(mProfile);
-        if (mFeedEnabled && !mTabToStreamMap.isEmpty()) {
+        if (mFeedEnabled
+                && (mStreamHolder != null
+                        || (mTabToStreamMap != null && !mTabToStreamMap.isEmpty()))) {
             return;
         }
 
@@ -537,8 +549,10 @@ public class FeedSurfaceMediator
     /** Gets the current state, for restoring later. */
     String getSavedInstanceString() {
         FeedScrollState state = new FeedScrollState();
-        int tabId = mSectionHeaderModel.get(SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY);
-        state.tabId = tabId;
+        if (mSectionHeaderModel != null) {
+            int tabId = mSectionHeaderModel.get(SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY);
+            state.tabId = tabId;
+        }
         LayoutManager layoutManager = null;
         if (mCoordinator.getRecyclerView() != null) {
             layoutManager = mCoordinator.getRecyclerView().getLayoutManager();
@@ -569,8 +583,8 @@ public class FeedSurfaceMediator
             mGetRestoringStateSupplier.set(RestoringState.NO_STATE_TO_RESTORE);
             return;
         }
-        mRestoreTabId = state.tabId;
         if (mSectionHeaderModel != null) {
+            mRestoreTabId = state.tabId;
             mSectionHeaderModel.set(SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY, state.tabId);
         }
         mPositionToRestore = state.position;
@@ -582,66 +596,61 @@ public class FeedSurfaceMediator
     }
 
     /**
-     * Sets the current tab to {@code tabId}.
-     *
-     * <p>Called when the the mediator is already initialized in Start Surface, but the feed is
-     * being shown again with a different {@link NewTabPageLaunchOrigin}.
-     */
-    void setTabId(@FeedSurfaceCoordinator.StreamTabId int tabId) {
-        if (tabId == FeedSurfaceCoordinator.StreamTabId.DEFAULT) {
-            tabId = FeedFeatures.getFeedTabIdToRestore(mProfile);
-        }
-        if (mTabToStreamMap.size() <= tabId) tabId = 0;
-        mSectionHeaderModel.set(SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY, tabId);
-    }
-
-    /**
-     * Initialize properties for UI components in the {@link NewTabPage}.
-     * TODO(huayinz): Introduce a Model for these properties.
+     * Initialize properties for UI components in the {@link NewTabPage}. TODO(huayinz): Introduce a
+     * Model for these properties.
      */
     private void initializePropertiesForStream() {
         assert !mSettingUpStreams;
         mSettingUpStreams = true;
-        mSectionHeaderModel.set(
-                SectionHeaderListProperties.ON_TAB_SELECTED_CALLBACK_KEY,
-                new FeedSurfaceHeaderSelectedCallback());
-
-        mPrefChangeRegistrar.addObserver(Pref.ARTICLES_LIST_VISIBLE, this::updateSectionHeader);
+        mPrefChangeRegistrar.addObserver(Pref.ARTICLES_LIST_VISIBLE, this::showOrHideFeed);
 
         boolean suggestionsVisible = isSuggestionsVisible();
-
-        addHeaderAndStream(
-                getInterestFeedHeaderText(suggestionsVisible),
-                mCoordinator.createFeedStream(StreamKind.FOR_YOU, new StreamsMediatorImpl()));
-        setHeaderIndicatorState(suggestionsVisible);
+        Stream mainStream =
+                mCoordinator.createFeedStream(StreamKind.FOR_YOU, new StreamsMediatorImpl());
 
         mCoordinator.initializeBubbleTriggering();
         mSigninManager.getIdentityManager().addObserver(this);
 
-        if (!mIsNewTabPageCustomizationEnabled) {
-            // Build menu after section enabled key is set.
-            mFeedMenuModel = buildMenuItems();
+        String headerText = getHeaderText(suggestionsVisible);
+        if (mSectionHeaderModel != null) {
+            addHeaderAndStream(headerText, mainStream);
+            setHeaderIndicatorState(suggestionsVisible);
 
             mSectionHeaderModel.set(
-                    SectionHeaderListProperties.MENU_MODEL_LIST_KEY, mFeedMenuModel);
-            mSectionHeaderModel.set(SectionHeaderListProperties.MENU_DELEGATE_KEY, this);
-        }
+                    SectionHeaderListProperties.ON_TAB_SELECTED_CALLBACK_KEY,
+                    new FeedSurfaceHeaderSelectedCallback());
 
-        setUpWebFeedTab();
+            if (!mIsNewTabPageCustomizationEnabled) {
+                // Build menu after section enabled key is set.
+                mFeedMenuModel = buildMenuItems();
 
-        // Set the current tab index to what restoreSavedInstanceState had.
-        if (mTabToStreamMap.size() <= mRestoreTabId) mRestoreTabId = 0;
-        mSectionHeaderModel.set(SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY, mRestoreTabId);
-        mSettingUpStreams = false;
+                mSectionHeaderModel.set(
+                        SectionHeaderListProperties.MENU_MODEL_LIST_KEY, mFeedMenuModel);
+                mSectionHeaderModel.set(SectionHeaderListProperties.MENU_DELEGATE_KEY, this);
+            }
 
-        if (mSectionHeaderModel.get(SectionHeaderListProperties.IS_SECTION_ENABLED_KEY)) {
-            bindStream(
-                    mTabToStreamMap.get(
-                            mSectionHeaderModel.get(
-                                    SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY)));
+            setUpWebFeedTab();
+
+            // Set the current tab index to what restoreSavedInstanceState had.
+            if (mTabToStreamMap.size() <= mRestoreTabId) mRestoreTabId = 0;
+            mSectionHeaderModel.set(
+                    SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY, mRestoreTabId);
+
+            if (mSectionHeaderModel.get(SectionHeaderListProperties.IS_SECTION_ENABLED_KEY)) {
+                bindStream(
+                        mTabToStreamMap.get(
+                                mSectionHeaderModel.get(
+                                        SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY)));
+            } else {
+                unbindStream();
+            }
         } else {
-            unbindStream();
+            mCoordinator.updateHeaderText(headerText);
+            mStreamHolder = mainStream;
+            bindStream(mStreamHolder);
         }
+
+        mSettingUpStreams = false;
 
         mStreamScrollListener =
                 new RecyclerView.OnScrollListener() {
@@ -822,7 +831,10 @@ public class FeedSurfaceMediator
         }
         // Don't bind before the coordinator is active, or when the feed should not show.
         if (!mCoordinator.isActive()
-                || !mSectionHeaderModel.get(SectionHeaderListProperties.IS_SECTION_ENABLED_KEY)) {
+                || (mSectionHeaderModel != null
+                        && !mSectionHeaderModel.get(
+                                SectionHeaderListProperties.IS_SECTION_ENABLED_KEY))
+                || !isSuggestionsVisible()) {
             return;
         }
         mCurrentStream = stream;
@@ -879,9 +891,11 @@ public class FeedSurfaceMediator
         unbindStream();
     }
 
-    /** @return The stream that represents the 1st tab. */
+    /**
+     * @return The stream that represents the 1st tab.
+     */
     boolean hasStreams() {
-        return !mTabToStreamMap.isEmpty();
+        return mStreamHolder != null || (mTabToStreamMap != null && !mTabToStreamMap.isEmpty());
     }
 
     long getLastFetchTimeMsForCurrentStream() {
@@ -898,9 +912,16 @@ public class FeedSurfaceMediator
         if (mCurrentStream != null) return;
         // Find the stream that should be bound and bind it. If no stream matches, then we haven't
         // fully set up yet. This will be taken care of by setup.
-        Stream stream =
-                mTabToStreamMap.get(
-                        mSectionHeaderModel.get(SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY));
+        Stream stream = null;
+        if (mTabToStreamMap != null) {
+            stream =
+                    mTabToStreamMap.get(
+                            mSectionHeaderModel.get(
+                                    SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY));
+
+        } else if (mStreamHolder != null) {
+            stream = mStreamHolder;
+        }
         if (stream != null) {
             bindStream(stream);
         }
@@ -970,15 +991,15 @@ public class FeedSurfaceMediator
     /** Clear any dependencies related to the {@link Stream}. */
     @VisibleForTesting
     void destroyPropertiesForStream() {
-        if (mTabToStreamMap.isEmpty()) return;
-
         if (mStreamScrollListener != null) {
             mCoordinator.getRecyclerView().removeOnScrollListener(mStreamScrollListener);
             mStreamScrollListener = null;
         }
 
-        MemoryPressureListener.removeCallback(mMemoryPressureCallback);
-        mMemoryPressureCallback = null;
+        if (mMemoryPressureCallback != null) {
+            MemoryPressureListener.removeCallback(mMemoryPressureCallback);
+            mMemoryPressureCallback = null;
+        }
 
         if (mLegacySignInPromo != null) {
             mLegacySignInPromo.destroy();
@@ -989,18 +1010,25 @@ public class FeedSurfaceMediator
             mSigninPromo = null;
         }
 
-        unbindStream();
-        for (Stream s : mTabToStreamMap.values()) {
-            s.removeOnContentChangedListener(mStreamContentChangedListener);
-            s.destroy();
+        if (mSectionHeaderModel != null) {
+            if (mTabToStreamMap.isEmpty()) return;
+
+            mSectionHeaderModel.get(SectionHeaderListProperties.SECTION_HEADERS_KEY).clear();
+            for (Stream s : mTabToStreamMap.values()) {
+                s.removeOnContentChangedListener(mStreamContentChangedListener);
+                s.destroy();
+            }
+            mTabToStreamMap.clear();
+        } else {
+            if (mCurrentStream == null) return;
+            mCurrentStream.removeOnContentChangedListener(mStreamContentChangedListener);
         }
-        mTabToStreamMap.clear();
         mStreamContentChangedListener = null;
+        unbindStream();
 
         mPrefChangeRegistrar.removeObserver(Pref.ARTICLES_LIST_VISIBLE);
         mSigninManager.getIdentityManager().removeObserver(this);
 
-        mSectionHeaderModel.get(SectionHeaderListProperties.SECTION_HEADERS_KEY).clear();
         mIsPropertiesInitializedForStream = false;
 
         if (mCoordinator.getSurfaceScope() != null) {
@@ -1009,6 +1037,7 @@ public class FeedSurfaceMediator
     }
 
     private void setHeaderIndicatorState(boolean suggestionsVisible) {
+        assert mSectionHeaderModel != null;
         boolean isSignedIn = FeedServiceBridge.isSignedIn();
         boolean isTabMode =
                 isSignedIn && FeedFeatures.isWebFeedUIEnabled(mProfile) && suggestionsVisible;
@@ -1056,36 +1085,25 @@ public class FeedSurfaceMediator
     }
 
     /**
-     * Update whether the section header should be expanded.
+     * Show or hide the feed. When the feed is hidden, the discover off message will be shown.
      *
-     * Called when a settings change or update to this/another NTP caused the feed to show/hide.
+     * <p>Called when a settings change or update to this/another NTP caused the feed to show/hide.
      */
-    void updateSectionHeader() {
-        // It is possible that updateSectionHeader() is called when the surface which contains the
+    void showOrHideFeed() {
+        // It is possible that showOrHideFeed() is called when the surface which contains the
         // Feeds isn't visible or headers of streams haven't been added, returns here.
         // See https://crbug.com/1485070 and https://crbug.com/1488210.
         // TODO(crbug.com/40934702): Figure out the root cause of setting
         // SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY to -1 and fix it.
         if (!mIsPropertiesInitializedForStream
-                || mSectionHeaderModel.get(SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY) < 0) {
+                || (mSectionHeaderModel != null
+                        && mSectionHeaderModel.get(
+                                        SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY)
+                                < 0)) {
             return;
         }
 
         boolean suggestionsVisible = isSuggestionsVisible();
-        mSectionHeaderModel
-                .get(SectionHeaderListProperties.SECTION_HEADERS_KEY)
-                .get(PRIMARY_FEED_HEADER_POSITION)
-                .set(
-                        SectionHeaderProperties.HEADER_TEXT_KEY,
-                        getInterestFeedHeaderText(suggestionsVisible));
-
-        setHeaderIndicatorState(suggestionsVisible);
-
-        if (!mIsNewTabPageCustomizationEnabled) {
-            // Update toggleswitch item, which is last item in list.
-            mSectionHeaderModel.set(
-                    SectionHeaderListProperties.MENU_MODEL_LIST_KEY, buildMenuItems());
-        }
 
         if (mLegacySignInPromo != null) {
             mLegacySignInPromo.setCanShowPersonalizedSuggestions(suggestionsVisible);
@@ -1096,32 +1114,48 @@ public class FeedSurfaceMediator
         if (suggestionsVisible) mCoordinator.getSurfaceLifecycleManager().show();
         mStreamContentChanged = true;
 
-        PropertyModel currentStreamHeaderModel =
-                mSectionHeaderModel
-                        .get(SectionHeaderListProperties.SECTION_HEADERS_KEY)
-                        .get(
-                                mSectionHeaderModel.get(
-                                        SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY));
-        Stream currentStream =
-                mTabToStreamMap.get(
-                        mSectionHeaderModel.get(SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY));
+        String headerText = getHeaderText(suggestionsVisible);
+        if (mSectionHeaderModel != null) {
+            mSectionHeaderModel
+                    .get(SectionHeaderListProperties.SECTION_HEADERS_KEY)
+                    .get(PRIMARY_FEED_HEADER_POSITION)
+                    .set(SectionHeaderProperties.HEADER_TEXT_KEY, headerText);
+
+            setHeaderIndicatorState(suggestionsVisible);
+
+            if (!mIsNewTabPageCustomizationEnabled) {
+                // Update toggleswitch item, which is last item in list.
+                mSectionHeaderModel.set(
+                        SectionHeaderListProperties.MENU_MODEL_LIST_KEY, buildMenuItems());
+            }
+
+            PropertyModel currentStreamHeaderModel =
+                    mSectionHeaderModel
+                            .get(SectionHeaderListProperties.SECTION_HEADERS_KEY)
+                            .get(
+                                    mSectionHeaderModel.get(
+                                            SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY));
+            Stream currentStream =
+                    mTabToStreamMap.get(
+                            mSectionHeaderModel.get(
+                                    SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY));
+            if (currentStream.supportsOptions()) {
+                currentStreamHeaderModel.set(
+                        SectionHeaderProperties.OPTIONS_INDICATOR_VISIBILITY_KEY,
+                        suggestionsVisible ? ViewVisibility.VISIBLE : ViewVisibility.INVISIBLE);
+                if (!suggestionsVisible) {
+                    currentStreamHeaderModel.set(
+                            SectionHeaderProperties.OPTIONS_INDICATOR_IS_OPEN_KEY, false);
+                }
+            }
+        } else {
+            mCoordinator.updateHeaderText(headerText);
+        }
 
         // If feed turned on, we bind the last stream that was visible. Else unbind it.
         if (suggestionsVisible) {
-            if (currentStream.supportsOptions()) {
-                currentStreamHeaderModel.set(
-                        SectionHeaderProperties.OPTIONS_INDICATOR_VISIBILITY_KEY,
-                        ViewVisibility.VISIBLE);
-            }
             rebindStream();
         } else {
-            if (currentStream.supportsOptions()) {
-                currentStreamHeaderModel.set(
-                        SectionHeaderProperties.OPTIONS_INDICATOR_VISIBILITY_KEY,
-                        ViewVisibility.INVISIBLE);
-                currentStreamHeaderModel.set(
-                        SectionHeaderProperties.OPTIONS_INDICATOR_IS_OPEN_KEY, false);
-            }
             unbindStream();
         }
     }
@@ -1131,11 +1165,12 @@ public class FeedSurfaceMediator
      * expand icon on the section header view.
      */
     private void onSectionHeaderToggled() {
+        assert mSectionHeaderModel != null;
         boolean isExpanded =
                 !mSectionHeaderModel.get(SectionHeaderListProperties.IS_SECTION_ENABLED_KEY);
 
         // Record in prefs and UMA.
-        // Model and stream visibility set in {@link #updateSectionHeader}
+        // Model and stream visibility set in {@link #showOrHideFeed}
         // which is called by the prefService observer.
         getPrefService().setBoolean(Pref.ARTICLES_LIST_VISIBLE, isExpanded);
         SuggestionsMetrics.recordArticlesListVisible(mProfile);
@@ -1153,15 +1188,23 @@ public class FeedSurfaceMediator
                         : FeedUserActionType.TAPPED_TURN_OFF);
     }
 
-    /** Returns the interest feed header text and the selected default search engine. */
-    private String getInterestFeedHeaderText(boolean isExpanded) {
-        Resources res = mContext.getResources();
-        final boolean isDefaultSearchEngineGoogle =
-                mTemplateUrlService.isDefaultSearchEngineGoogle();
+    /** Returns the feed header text. */
+    private String getHeaderText(boolean isExpanded) {
+        if (isExpanded) {
+            String treatment =
+                    ChromeFeatureList.getFieldTrialParamByFeature(
+                            ChromeFeatureList.FEED_HEADER_REMOVAL, "treatment");
+            // Returns null to indicate that no feed header is shown.
+            if (treatment.equals("none")) return null;
+        }
 
-        if (WebFeedBridge.isWebFeedEnabled() && FeedServiceBridge.isSignedIn() && isExpanded) {
+        Resources res = mContext.getResources();
+        if (mSectionHeaderModel != null
+                && WebFeedBridge.isWebFeedEnabled()
+                && FeedServiceBridge.isSignedIn()
+                && isExpanded) {
             return res.getString(R.string.ntp_discover_on);
-        } else if (isDefaultSearchEngineGoogle) {
+        } else if (mTemplateUrlService.isDefaultSearchEngineGoogle()) {
             return isExpanded
                     ? res.getString(R.string.ntp_discover_on)
                     : res.getString(R.string.ntp_discover_off);
@@ -1172,6 +1215,8 @@ public class FeedSurfaceMediator
     }
 
     private ModelList buildMenuItems() {
+        assert mSectionHeaderModel != null;
+
         ModelList itemList = new ModelList();
         int iconId = 0;
 
@@ -1341,11 +1386,12 @@ public class FeedSurfaceMediator
                             mTemplateUrlService.isDefaultSearchEngineGoogle());
             return;
         }
-        updateSectionHeader();
+        showOrHideFeed();
     }
 
     @Override
     public void onItemSelected(PropertyModel item) {
+        assert mSectionHeaderModel != null;
         int itemId = item.get(ListMenuItemProperties.MENU_ITEM_ID);
         int feedType =
                 mTabToStreamMap
@@ -1394,7 +1440,7 @@ public class FeedSurfaceMediator
 
     @Override
     public void onPrimaryAccountChanged(PrimaryAccountChangeEvent eventDetails) {
-        updateSectionHeader();
+        showOrHideFeed();
     }
 
     /**
@@ -1560,9 +1606,11 @@ public class FeedSurfaceMediator
     }
 
     private void onDisplayStyleChanged(UiConfig.DisplayStyle newDisplayStyle) {
-        mSectionHeaderModel.set(
-                SectionHeaderListProperties.IS_NARROW_WINDOW_ON_TABLET_KEY,
-                newDisplayStyle.horizontal < HorizontalDisplayStyle.WIDE);
+        if (mSectionHeaderModel != null) {
+            mSectionHeaderModel.set(
+                    SectionHeaderListProperties.IS_NARROW_WINDOW_ON_TABLET_KEY,
+                    newDisplayStyle.horizontal < HorizontalDisplayStyle.WIDE);
+        }
     }
 
     public @ClosedReason int getClosedReason() {

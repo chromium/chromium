@@ -237,7 +237,7 @@ public class FeedItemDecoration extends RecyclerView.ItemDecoration {
     private boolean belongsToFeedContainment(int position) {
         // Exclude the NTP header views that appear above the feed header and the last view
         // which is used to provide the bottom margin for the feed containment.
-        return position >= mCoordinator.getSectionHeaderPosition()
+        return position >= mCoordinator.getHeaderPosition()
                 && position < mCoordinator.getContentManager().getItemCount() - 1;
     }
 
@@ -246,7 +246,7 @@ public class FeedItemDecoration extends RecyclerView.ItemDecoration {
     }
 
     private Drawable getBackgroundDrawable(int position) {
-        if (position == mCoordinator.getSectionHeaderPosition()) {
+        if (position == mCoordinator.getHeaderPosition()) {
             return mTopRoundedBackground;
         } else if (isLastViewInFeedContainment(position)) {
             return mBottomRoundedBackground;

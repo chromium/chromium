@@ -408,7 +408,7 @@ public class FeedSurfaceMediatorTest {
     }
 
     @Test
-    public void testUpdateSectionHeader_signedInGseOn() {
+    public void testshowOrHideFeed_signedInGseOn() {
         when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS)).thenReturn(true);
         when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);
 
@@ -419,7 +419,7 @@ public class FeedSurfaceMediatorTest {
         when(mUrlService.isDefaultSearchEngineGoogle()).thenReturn(true);
         when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(true);
 
-        mFeedSurfaceMediator.updateSectionHeader();
+        mFeedSurfaceMediator.showOrHideFeed();
 
         assertEquals(true, model.get(SectionHeaderListProperties.IS_TAB_MODE_KEY));
         assertEquals(false, model.get(SectionHeaderListProperties.IS_LOGO_KEY));
@@ -429,7 +429,7 @@ public class FeedSurfaceMediatorTest {
     }
 
     @Test
-    public void testUpdateSectionHeader_signedInGseOff() {
+    public void testshowOrHideFeed_signedInGseOff() {
         PropertyModel model = SectionHeaderListProperties.create(TOOLBAR_HEIGHT);
         when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS)).thenReturn(true);
         when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);
@@ -440,7 +440,7 @@ public class FeedSurfaceMediatorTest {
         when(mUrlService.isDefaultSearchEngineGoogle()).thenReturn(true);
         when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(false);
 
-        mFeedSurfaceMediator.updateSectionHeader();
+        mFeedSurfaceMediator.showOrHideFeed();
 
         assertEquals(false, model.get(SectionHeaderListProperties.IS_TAB_MODE_KEY));
         assertEquals(false, model.get(SectionHeaderListProperties.IS_LOGO_KEY));
@@ -450,7 +450,7 @@ public class FeedSurfaceMediatorTest {
     }
 
     @Test
-    public void testUpdateSectionHeader_signedOutGseOn() {
+    public void testshowOrHideFeed_signedOutGseOn() {
         PropertyModel model = SectionHeaderListProperties.create(TOOLBAR_HEIGHT);
         when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS)).thenReturn(true);
         when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);
@@ -461,7 +461,7 @@ public class FeedSurfaceMediatorTest {
         when(mUrlService.isDefaultSearchEngineGoogle()).thenReturn(true);
         when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(true);
 
-        mFeedSurfaceMediator.updateSectionHeader();
+        mFeedSurfaceMediator.showOrHideFeed();
 
         assertEquals(false, model.get(SectionHeaderListProperties.IS_TAB_MODE_KEY));
         assertEquals(false, model.get(SectionHeaderListProperties.IS_LOGO_KEY));
@@ -471,7 +471,7 @@ public class FeedSurfaceMediatorTest {
     }
 
     @Test
-    public void testUpdateSectionHeader_signedOutGseOff() {
+    public void testshowOrHideFeed_signedOutGseOff() {
         PropertyModel model = SectionHeaderListProperties.create(TOOLBAR_HEIGHT);
         when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS)).thenReturn(true);
         when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);
@@ -482,7 +482,7 @@ public class FeedSurfaceMediatorTest {
         when(mUrlService.isDefaultSearchEngineGoogle()).thenReturn(true);
         when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(false);
 
-        mFeedSurfaceMediator.updateSectionHeader();
+        mFeedSurfaceMediator.showOrHideFeed();
 
         assertEquals(false, model.get(SectionHeaderListProperties.IS_TAB_MODE_KEY));
         assertEquals(false, model.get(SectionHeaderListProperties.IS_LOGO_KEY));
@@ -492,7 +492,7 @@ public class FeedSurfaceMediatorTest {
     }
 
     @Test
-    public void testUpdateSectionHeader_signedInNonGseOn() {
+    public void testshowOrHideFeed_signedInNonGseOn() {
         PropertyModel model = SectionHeaderListProperties.create(TOOLBAR_HEIGHT);
         mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOR_YOU, model);
         when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS)).thenReturn(true);
@@ -504,7 +504,7 @@ public class FeedSurfaceMediatorTest {
         when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(true);
         when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);
 
-        mFeedSurfaceMediator.updateSectionHeader();
+        mFeedSurfaceMediator.showOrHideFeed();
 
         assertEquals(true, model.get(SectionHeaderListProperties.IS_TAB_MODE_KEY));
         assertEquals(true, model.get(SectionHeaderListProperties.IS_LOGO_KEY));
@@ -514,7 +514,7 @@ public class FeedSurfaceMediatorTest {
     }
 
     @Test
-    public void testUpdateSectionHeader_signedInNonGseOff() {
+    public void testshowOrHideFeed_signedInNonGseOff() {
         PropertyModel model = SectionHeaderListProperties.create(TOOLBAR_HEIGHT);
         when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS)).thenReturn(true);
         when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);
@@ -526,7 +526,7 @@ public class FeedSurfaceMediatorTest {
         when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(false);
         when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);
 
-        mFeedSurfaceMediator.updateSectionHeader();
+        mFeedSurfaceMediator.showOrHideFeed();
 
         assertEquals(false, model.get(SectionHeaderListProperties.IS_TAB_MODE_KEY));
         assertEquals(false, model.get(SectionHeaderListProperties.IS_LOGO_KEY));
@@ -536,7 +536,7 @@ public class FeedSurfaceMediatorTest {
     }
 
     @Test
-    public void testUpdateSectionHeader_signedOutNonGseOn() {
+    public void testshowOrHideFeed_signedOutNonGseOn() {
         PropertyModel model = SectionHeaderListProperties.create(TOOLBAR_HEIGHT);
         when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS)).thenReturn(true);
         when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);
@@ -547,7 +547,7 @@ public class FeedSurfaceMediatorTest {
         when(mUrlService.isDefaultSearchEngineGoogle()).thenReturn(false);
         when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(true);
 
-        mFeedSurfaceMediator.updateSectionHeader();
+        mFeedSurfaceMediator.showOrHideFeed();
 
         assertEquals(false, model.get(SectionHeaderListProperties.IS_TAB_MODE_KEY));
         assertEquals(false, model.get(SectionHeaderListProperties.IS_LOGO_KEY));
@@ -557,7 +557,7 @@ public class FeedSurfaceMediatorTest {
     }
 
     @Test
-    public void testUpdateSectionHeader_signedOutNonGseOff() {
+    public void testshowOrHideFeed_signedOutNonGseOff() {
         PropertyModel model = SectionHeaderListProperties.create(TOOLBAR_HEIGHT);
         when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS)).thenReturn(true);
         when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);
@@ -568,7 +568,7 @@ public class FeedSurfaceMediatorTest {
         when(mUrlService.isDefaultSearchEngineGoogle()).thenReturn(false);
         when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(true);
 
-        mFeedSurfaceMediator.updateSectionHeader();
+        mFeedSurfaceMediator.showOrHideFeed();
 
         assertEquals(false, model.get(SectionHeaderListProperties.IS_TAB_MODE_KEY));
         assertEquals(false, model.get(SectionHeaderListProperties.IS_LOGO_KEY));

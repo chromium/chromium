@@ -232,7 +232,7 @@ public class NewTabPageTest {
         onView(withId(R.id.feed_stream_recycler_view))
                 .perform(RecyclerViewActions.scrollToPosition(ARTICLE_SECTION_HEADER_POSITION));
         waitForView((ViewGroup) mNtp.getView(), allOf(withId(R.id.header_title), isDisplayed()));
-        View view = mNtp.getCoordinatorForTesting().getSectionHeaderViewForTesting();
+        View view = mNtp.getCoordinatorForTesting().getHeaderViewForTesting();
         // Check header is expanded.
         mRenderTestRule.render(view, "expandable_header_expanded");
 
