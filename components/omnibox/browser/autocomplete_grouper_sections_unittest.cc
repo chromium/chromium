@@ -1822,7 +1822,35 @@ TEST(AutocompleteGrouperSectionsTest, DesktopWebZpsSectionWithUrls) {
         {98, 97, 96, 95, 100, 99});
   }
 }
-#endif
+
+TEST(AutocompleteGrouperSectionsTest, DesktopWebZpsWithActionsSection) {
+  auto test = [](ACMatches matches, std::vector<int> expected_relevances) {
+    PSections sections;
+    omnibox::GroupConfigMap group_configs;
+    sections.push_back(
+        std::make_unique<DesktopWebZpsSection>(group_configs, 8, 3, 3));
+    sections.push_back(
+        std::make_unique<DesktopWebZpsActionsSection>(group_configs));
+    auto out_matches = Section::GroupMatches(std::move(sections), matches);
+    VerifyMatches(out_matches, expected_relevances);
+  };
+  {
+    SCOPED_TRACE("ZPS action matches group after contextual search matches");
+    test(
+        {
+            CreateMatch(99, omnibox::GROUP_MOST_VISITED),
+            CreateMatch(98, omnibox::GROUP_VISITED_DOC_RELATED),
+            CreateMatch(97, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(96, omnibox::GROUP_ZERO_SUGGEST_IN_PRODUCT_HELP),
+            CreateMatch(95, omnibox::GROUP_CONTEXTUAL_SEARCH),
+            CreateMatch(94, omnibox::GROUP_ZERO_SUGGEST_IN_PRODUCT_HELP),
+            CreateMatch(93, omnibox::GROUP_CONTEXTUAL_SEARCH),
+        },
+        // URLs, then searches, then actions, stable sorted.
+        {99, 95, 93, 98, 97, 96, 94});
+  }
+}
+#endif  // !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS))
 
 // Test that (on Android) sections are grouped by Search vs URL.
 #if BUILDFLAG(IS_ANDROID)

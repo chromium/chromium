@@ -209,12 +209,19 @@ class DesktopSRPZpsSection : public ZpsSection {
 //  - up to `url_limit` most visited tiles suggestions.
 //  - up to `search_limit` page related suggestions.
 //  - up to `search_limit` personalized suggestions.
+//  - up to `search_limit` contextual search suggestions.
 class DesktopWebZpsSection : public ZpsSection {
  public:
   explicit DesktopWebZpsSection(omnibox::GroupConfigMap& group_configs,
                                 size_t max_suggestions,
                                 size_t search_limit,
                                 size_t url_limit);
+};
+
+// A section to follow contextual search matches with the advert actions.
+class DesktopWebZpsActionsSection : public ZpsSection {
+ public:
+  explicit DesktopWebZpsActionsSection(omnibox::GroupConfigMap& group_configs);
 };
 
 // Section expressing the Desktop ZPS limits and grouping for the Lens

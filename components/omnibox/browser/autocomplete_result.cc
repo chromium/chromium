@@ -405,14 +405,6 @@ void AutocompleteResult::SortAndCull(
       !is_zero_suggest;
   bool use_grouping = is_zero_suggest || use_grouping_for_non_zps;
 
-  if (is_zero_suggest && OmniboxFieldTrial::IsStarterPackPageEnabled()) {
-    // Keep the the '@page' featured search suggestion showing in zero suggest.
-    // TODO(crbug.com/400812940): Replace this with a more permanent solution if
-    //  we decide to surface such a dedicated suggestion as an entry-point.
-    is_zero_suggest = false;
-    use_grouping = false;
-  }
-
   MergeSuggestionGroupsMap(omnibox::BuildDefaultGroupsForInput(input));
   // Grouping requires all matches have a group ID. To keep providers 'dumb',
   // they only assign IDs when their ID isn't obvious from the match type. Most
@@ -541,6 +533,10 @@ void AutocompleteResult::SortAndCull(
         sections.push_back(std::make_unique<DesktopWebZpsSection>(
             suggestion_groups_map_, max_suggestions, max_search_suggestions,
             max_url_suggestions));
+        if (OmniboxFieldTrial::IsStarterPackPageEnabled()) {
+          sections.push_back(std::make_unique<DesktopWebZpsActionsSection>(
+              suggestion_groups_map_));
+        }
 #if BUILDFLAG(ENABLE_EXTENSIONS)
         if (base::FeatureList::IsEnabled(
                 extensions_features::kExperimentalOmniboxLabs)) {
@@ -1663,7 +1659,11 @@ std::ostream& operator<<(std::ostream& os, const AutocompleteResult& result) {
   for (size_t i = 0; i < result.matches_.size(); i++) {
     const AutocompleteMatch& match = result.matches_[i];
     os << "  - " << i << ": `" << match.contents << "`"
-       << (match.allowed_to_be_default_match ? '*' : ' ') << std::endl;
+       << (match.allowed_to_be_default_match ? '*' : ' ');
+    if (match.suggestion_group_id) {
+      os << " group=" << match.suggestion_group_id.value();
+    }
+    os << std::endl;
   }
   os << "}" << std::endl;
   return os;

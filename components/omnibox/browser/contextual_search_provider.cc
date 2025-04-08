@@ -269,6 +269,8 @@ void ContextualSearchProvider::AddPageSearchActionMatches() {
   match.contents_class = {{0, ACMatchClassification::NONE}};
   match.transition = ui::PAGE_TRANSITION_GENERATED;
   match.suggest_type = omnibox::SuggestType::TYPE_NATIVE_CHROME;
+  match.suggestion_group_id =
+      omnibox::GroupId::GROUP_ZERO_SUGGEST_IN_PRODUCT_HELP;
 
   match.takeover_action =
       base::MakeRefCounted<ContextualSearchAskAboutPageAction>();

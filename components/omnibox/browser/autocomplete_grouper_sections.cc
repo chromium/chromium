@@ -330,8 +330,17 @@ DesktopWebZpsSection::DesktopWebZpsSection(
     : ZpsSection(max_suggestions,
                  {
                      {url_limit, omnibox::GROUP_MOST_VISITED},
+                     {search_limit, omnibox::GROUP_CONTEXTUAL_SEARCH},
                      {search_limit, omnibox::GROUP_VISITED_DOC_RELATED},
                      {search_limit, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
+                 },
+                 group_configs) {}
+
+DesktopWebZpsActionsSection::DesktopWebZpsActionsSection(
+    omnibox::GroupConfigMap& group_configs)
+    : ZpsSection(2,
+                 {
+                     {2, omnibox::GROUP_ZERO_SUGGEST_IN_PRODUCT_HELP},
                  },
                  group_configs) {}
 
