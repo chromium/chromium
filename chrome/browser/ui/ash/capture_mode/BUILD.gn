@@ -14,8 +14,6 @@ static_library("capture_mode") {
     "lens_overlay_query_controller.h",
     "lens_overlay_request_id_generator.cc",
     "lens_overlay_request_id_generator.h",
-    "lens_overlay_url_builder.cc",
-    "lens_overlay_url_builder.h",
     "search_results_view.cc",
     "search_results_view.h",
   ]
