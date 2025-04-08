@@ -157,13 +157,15 @@ AXObject* PickerIndicatorElement::PopupRootAXObject() const {
 }
 
 void PickerIndicatorElement::SetAXProperties() {
+  if (!picker_indicator_owner_) {
+    return;
+  }
   setAttribute(html_names::kTabindexAttr, AtomicString("0"));
   setAttribute(html_names::kAriaHaspopupAttr, AtomicString("menu"));
   setAttribute(html_names::kRoleAttr, AtomicString("button"));
   setAttribute(
       html_names::kTitleAttr,
-      AtomicString(
-          this->picker_indicator_owner_->AriaLabelForPickerIndicator()));
+      AtomicString(picker_indicator_owner_->AriaLabelForPickerIndicator()));
 }
 
 bool PickerIndicatorElement::IsPickerIndicatorElement() const {
