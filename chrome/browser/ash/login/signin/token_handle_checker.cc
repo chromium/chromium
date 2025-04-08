@@ -85,13 +85,14 @@ void TokenHandleChecker::SendCallbackResponse(
     const Status& outcome,
     bool should_record_response_time) {
   CHECK(callback_) << "Unexpected response received";
-  std::move(callback_).Run(account_id_, token_, outcome);
   VLOG(1) << "Token handle check completed, status: "
           << StatusToString(outcome);
 
   if (should_record_response_time) {
     RecordTokenCheckResponseTime();
   }
+
+  std::move(callback_).Run(account_id_, token_, outcome);
 }
 
 void TokenHandleChecker::RecordTokenCheckResponseTime() {
