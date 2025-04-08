@@ -13,6 +13,8 @@ namespace base {
 
 namespace {
 
+using ::testing::Optional;
+
 void TestForReasonableDriveInfo(const std::optional<DriveInfo>& info) {
   ASSERT_TRUE(info.has_value());
 
@@ -25,7 +27,7 @@ void TestForReasonableDriveInfo(const std::optional<DriveInfo>& info) {
   EXPECT_TRUE(info->is_removable.has_value());
 
   // Expect more than 10MB for the media size.
-  EXPECT_GE(info->size_bytes.value(), 10'000'000);
+  EXPECT_THAT(info->size_bytes, Optional(testing::Ge(10'000'000)));
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
@@ -35,15 +37,15 @@ void TestForReasonableDriveInfo(const std::optional<DriveInfo>& info) {
 
 #if BUILDFLAG(IS_MAC)
   // Nothing should be CoreStorage any more on the Mac.
-  EXPECT_FALSE(info->is_core_storage.value());
+  EXPECT_THAT(info->is_core_storage, Optional(false));
 
   // Everything should be APFS nowadays.
-  EXPECT_TRUE(info->is_apfs.value());
+  EXPECT_THAT(info->is_apfs, Optional(true));
 
   // This test should not encounter a read-only drive.
-  EXPECT_TRUE(info->is_writable.value());
+  EXPECT_THAT(info->is_writable, Optional(true));
 
-  EXPECT_THAT(info->bsd_name.value(), testing::StartsWith("disk"));
+  EXPECT_THAT(info->bsd_name, Optional(testing::StartsWith("disk")));
 #endif
 }
 
