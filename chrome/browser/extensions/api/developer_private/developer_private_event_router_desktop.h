@@ -5,9 +5,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_DEVELOPER_PRIVATE_DEVELOPER_PRIVATE_EVENT_ROUTER_DESKTOP_H_
 #define CHROME_BROWSER_EXTENSIONS_API_DEVELOPER_PRIVATE_DEVELOPER_PRIVATE_EVENT_ROUTER_DESKTOP_H_
 
-#include <memory>
-#include <vector>
-
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/account_extension_tracker.h"
@@ -74,15 +71,6 @@ class DeveloperPrivateEventRouter : public DeveloperPrivateEventRouterShared,
   // Handles a profile preference change.
   void OnProfilePrefChanged();
 
-  // Broadcasts an event to all listeners.
-  void BroadcastItemStateChanged(api::developer_private::EventType event_type,
-                                 const ExtensionId& id) override;
-  void BroadcastItemStateChangedHelper(
-      api::developer_private::EventType event_type,
-      const ExtensionId& extension_id,
-      std::unique_ptr<ExtensionInfoGenerator> info_generator,
-      std::vector<api::developer_private::ExtensionInfo> infos);
-
   base::ScopedObservation<AppWindowRegistry, AppWindowRegistry::Observer>
       app_window_registry_observation_{this};
   base::ScopedObservation<ExtensionManagement, ExtensionManagement::Observer>
@@ -96,8 +84,6 @@ class DeveloperPrivateEventRouter : public DeveloperPrivateEventRouterShared,
   base::ScopedObservation<AccountExtensionTracker,
                           AccountExtensionTracker::Observer>
       account_extension_tracker_observation_{this};
-
-  base::WeakPtrFactory<DeveloperPrivateEventRouter> weak_factory_{this};
 };
 
 }  // namespace extensions

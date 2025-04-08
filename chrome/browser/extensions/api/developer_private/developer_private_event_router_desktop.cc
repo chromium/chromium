@@ -153,40 +153,4 @@ void DeveloperPrivateEventRouter::OnProfilePrefChanged() {
   }
 }
 
-void DeveloperPrivateEventRouter::BroadcastItemStateChanged(
-    developer::EventType event_type,
-    const ExtensionId& extension_id) {
-  std::unique_ptr<ExtensionInfoGenerator> info_generator(
-      new ExtensionInfoGenerator(profile_));
-  ExtensionInfoGenerator* info_generator_weak = info_generator.get();
-  info_generator_weak->CreateExtensionInfo(
-      extension_id,
-      base::BindOnce(
-          &DeveloperPrivateEventRouter::BroadcastItemStateChangedHelper,
-          weak_factory_.GetWeakPtr(), event_type, extension_id,
-          std::move(info_generator)));
-}
-
-void DeveloperPrivateEventRouter::BroadcastItemStateChangedHelper(
-    developer::EventType event_type,
-    const ExtensionId& extension_id,
-    std::unique_ptr<ExtensionInfoGenerator> info_generator,
-    ExtensionInfoGenerator::ExtensionInfoList infos) {
-  DCHECK_LE(infos.size(), 1u);
-
-  developer::EventData event_data;
-  event_data.event_type = event_type;
-  event_data.item_id = extension_id;
-  if (!infos.empty()) {
-    event_data.extension_info = std::move(infos[0]);
-  }
-
-  base::Value::List args;
-  args.Append(event_data.ToValue());
-  std::unique_ptr<Event> event(
-      new Event(events::DEVELOPER_PRIVATE_ON_ITEM_STATE_CHANGED,
-                developer::OnItemStateChanged::kEventName, std::move(args)));
-  event_router_->BroadcastEvent(std::move(event));
-}
-
 }  // namespace extensions
