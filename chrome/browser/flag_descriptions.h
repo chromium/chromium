@@ -2518,6 +2518,9 @@ extern const char kRewriterAPIForGeminiNanoDescription[];
 
 #if BUILDFLAG(IS_ANDROID)
 
+extern const char kAAudioPerStreamDeviceSelectionName[];
+extern const char kAAudioPerStreamDeviceSelectionDescription[];
+
 extern const char kAccessibilityDeprecateTypeAnnounceName[];
 extern const char kAccessibilityDeprecateTypeAnnounceDescription[];
 extern const char kAccessibilityIncludeLongClickActionName[];

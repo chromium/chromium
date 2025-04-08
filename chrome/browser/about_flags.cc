@@ -11913,6 +11913,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(input::features::kInputOnViz)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID)
+    {"aaudio-per-stream-device-selection",
+     flag_descriptions::kAAudioPerStreamDeviceSelectionName,
+     flag_descriptions::kAAudioPerStreamDeviceSelectionDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kAAudioPerStreamDeviceSelection)}
+#endif  // BUILDFLAG(IS_ANDROID)
+
     // Add new entries above this line.
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

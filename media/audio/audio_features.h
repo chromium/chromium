@@ -14,6 +14,7 @@ namespace features {
 #if BUILDFLAG(IS_ANDROID)
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kUseAAudioDriver);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kUseAAudioInput);
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kAAudioPerStreamDeviceSelection);
 #endif
 
 }  // namespace features

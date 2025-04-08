@@ -4296,6 +4296,12 @@ const char kRewriterAPIForGeminiNanoDescription[] =
 
 #if BUILDFLAG(IS_ANDROID)
 
+const char kAAudioPerStreamDeviceSelectionName[] =
+    "AAudio per-stream device selection";
+const char kAAudioPerStreamDeviceSelectionDescription[] =
+    "Enables per-stream device selection for AAudio streams. No effect on "
+    "versions of Android prior to Android Q.";
+
 const char kAccessibilityDeprecateTypeAnnounceName[] =
     "Accessibility Deprecate TYPE_ANNOUNCE";
 const char kAccessibilityDeprecateTypeAnnounceDescription[] =
