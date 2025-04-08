@@ -4,8 +4,11 @@
 
 #include "ios/chrome/browser/content_suggestions/ui_bundled/impression_limits/impression_limit_service.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -39,11 +42,22 @@ const base::Time kNow = TimeFromString("31 Mar 2025 10:00");
 const base::Time kYesterday = TimeFromString("30 Mar 2025 10:30");
 const base::Time kLastMonth = TimeFromString("25 Feb 2025 9:00");
 
+history::URLRows CreateURLRows(const std::vector<GURL>& urls) {
+  history::URLRows url_rows;
+  for (const auto& url : urls) {
+    url_rows.emplace_back(history::URLRow(url));
+  }
+  return url_rows;
+}
+
 }  // namespace
 
 class ImpressionLimitServiceTest : public PlatformTest {
  public:
   void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        /* enabled_features*/ {commerce::kShopCardImpressionLimits},
+        /* disabled_features*/ {});
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(ios::HistoryServiceFactory::GetInstance(),
                               ios::HistoryServiceFactory::GetDefaultFactory());
@@ -81,9 +95,15 @@ class ImpressionLimitServiceTest : public PlatformTest {
     service()->RemoveEntriesBeforeTime(pref_name, before_cutoff);
   }
 
+  void OnHistoryDeletions(history::HistoryService* history_service,
+                          const history::DeletionInfo& deletion_info) {
+    service()->OnHistoryDeletions(history_service, deletion_info);
+  }
+
  protected:
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   TestingPrefServiceSimple pref_service_;
   std::unique_ptr<TestProfileIOS> profile_;
   raw_ptr<ImpressionLimitService> impression_limit_service_;
@@ -146,4 +166,47 @@ TEST_F(ImpressionLimitServiceTest, TestUrlStripping) {
       service()->GetImpressionCount(GURL(kGurl1), kImpressionsPref);
   EXPECT_TRUE(count.has_value());
   EXPECT_EQ(4, count.value());
+}
+
+// Test deleting a specific URL from history deletes the corresponding
+// URL in ImpressionLimitService.
+TEST_F(ImpressionLimitServiceTest, TestHistoryDelete) {
+  LogImpressionForURLAtTime(GURL(kGurl1), kImpressionsPref, kNow);
+  LogImpressionForURLAtTime(GURL(kGurl2), kImpressionsPref, kNow);
+  std::optional<int> count =
+      service()->GetImpressionCount(GURL(kGurl1), kImpressionsPref);
+  EXPECT_TRUE(count.has_value());
+  EXPECT_EQ(1, count.value());
+  count = service()->GetImpressionCount(GURL(kGurl2), kImpressionsPref);
+  EXPECT_TRUE(count.has_value());
+  EXPECT_EQ(1, count.value());
+  OnHistoryDeletions(
+      nil, history::DeletionInfo::ForUrls(CreateURLRows({GURL(kGurl1)}),
+                                          /*favicon_urls=*/{}));
+  count = service()->GetImpressionCount(GURL(kGurl1), kImpressionsPref);
+  EXPECT_FALSE(count.has_value());
+  count = service()->GetImpressionCount(GURL(kGurl2), kImpressionsPref);
+  EXPECT_TRUE(count.has_value());
+  EXPECT_EQ(1, count.value());
+}
+
+// Test deleting all of history deletes all stored URLs in
+// ImpressionLimitService.
+TEST_F(ImpressionLimitServiceTest, TestHistoryAllDelete) {
+  LogImpressionForURLAtTime(GURL(kGurl1), kImpressionsPref, kYesterday);
+  LogImpressionForURLAtTime(GURL(kGurl1WithQueryAndRef), kImpressionsPref,
+                            kLastMonth);
+  LogImpressionForURLAtTime(GURL(kGurl2), kImpressionsPref, kNow);
+  std::optional<int> count =
+      service()->GetImpressionCount(GURL(kGurl1), kImpressionsPref);
+  EXPECT_TRUE(count.has_value());
+  EXPECT_EQ(2, count.value());
+  count = service()->GetImpressionCount(GURL(kGurl2), kImpressionsPref);
+  EXPECT_TRUE(count.has_value());
+  EXPECT_EQ(1, count.value());
+  OnHistoryDeletions(nil, history::DeletionInfo::ForAllHistory());
+  count = service()->GetImpressionCount(GURL(kGurl1), kImpressionsPref);
+  EXPECT_FALSE(count.has_value());
+  count = service()->GetImpressionCount(GURL(kGurl2), kImpressionsPref);
+  EXPECT_FALSE(count.has_value());
 }

@@ -7,6 +7,7 @@ source_set("impression_limits") {
   ]
   deps = [
     "//base:base",
+    "//components/commerce/core:feature_list",
     "//components/history/core/browser:browser",
     "//components/keyed_service/core:core",
     "//components/pref_registry:pref_registry",
@@ -23,6 +24,8 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "impression_limit_service_unittest.cc" ]
   deps = [
+    "//base/test:test_support",
+    "//components/commerce/core:feature_list",
     "//components/history/core/browser:browser",
     "//components/keyed_service/core:core",
     "//components/pref_registry:pref_registry",
