@@ -12,6 +12,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/observer_list_types.h"
+#include "base/scoped_observation_traits.h"
 #include "base/task/sequenced_task_runner.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
@@ -346,5 +347,38 @@ class CONTENT_EXPORT ServiceWorkerContext {
 };
 
 }  // namespace content
+
+namespace base {
+
+template <>
+struct ScopedObservationTraits<content::ServiceWorkerContext,
+                               content::ServiceWorkerContextObserver> {
+  static void AddObserver(content::ServiceWorkerContext* source,
+                          content::ServiceWorkerContextObserver* observer) {
+    source->AddObserver(observer);
+  }
+  static void RemoveObserver(content::ServiceWorkerContext* source,
+                             content::ServiceWorkerContextObserver* observer) {
+    source->RemoveObserver(observer);
+  }
+};
+
+template <>
+struct ScopedObservationTraits<
+    content::ServiceWorkerContext,
+    content::ServiceWorkerContextObserverSynchronous> {
+  static void AddObserver(
+      content::ServiceWorkerContext* source,
+      content::ServiceWorkerContextObserverSynchronous* observer) {
+    source->AddSyncObserver(observer);
+  }
+  static void RemoveObserver(
+      content::ServiceWorkerContext* source,
+      content::ServiceWorkerContextObserverSynchronous* observer) {
+    source->RemoveSyncObserver(observer);
+  }
+};
+
+}  // namespace base
 
 #endif  // CONTENT_PUBLIC_BROWSER_SERVICE_WORKER_CONTEXT_H_
