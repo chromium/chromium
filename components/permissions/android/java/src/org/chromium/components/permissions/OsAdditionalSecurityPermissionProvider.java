@@ -57,7 +57,7 @@ public abstract class OsAdditionalSecurityPermissionProvider {
      * @param primaryButtonAction The action to run when the message-UI primary-button is clicked.
      */
     public @Nullable PropertyModel buildAdvancedProtectionMessagePropertyModel(
-            Context context, @Nullable Runnable primaryButtonAction) {
+            Context context, Runnable primaryButtonAction) {
         return null;
     }
 }
