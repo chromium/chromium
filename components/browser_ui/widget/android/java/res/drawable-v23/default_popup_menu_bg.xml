@@ -17,9 +17,9 @@ found in the LICENSE file.
             <corners android:radius="@dimen/app_menu_corner_size" />
             <solid android:color="@color/menu_item_bg_color_baseline" />
             <padding
-                android:top="@dimen/app_menu_shadow_length"
+                android:top="@dimen/app_menu_padding"
                 android:left="@dimen/app_menu_shadow_length"
-                android:bottom="@dimen/app_menu_shadow_length"
+                android:bottom="@dimen/app_menu_padding"
                 android:right="@dimen/app_menu_shadow_length" />
         </shape>
     </item>

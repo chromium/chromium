@@ -255,6 +255,7 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
 
         ViewGroup contentView =
                 (ViewGroup) LayoutInflater.from(context).inflate(R.layout.app_menu_layout, null);
+        contentView.setBackgroundResource(R.drawable.app_menu_bottom_padding_bg);
 
         if (SysUtils.isLowEndDevice()) {
             var sharedDrawable = AppCompatResources.getDrawable(context, R.drawable.popup_bg_8dp);
