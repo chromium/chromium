@@ -1094,15 +1094,11 @@ TEST_F(PasswordAutofillAgentTest, AutocompleteForPrefilledUsernameValue) {
   // The username and password should have been autocompleted.
   CheckTextFieldsDOMState(kAliceUsername, true, kAlicePassword, true);
 
-  histogram_tester_.ExpectUniqueSample(
-      "PasswordManager.PrefilledUsernameFillOutcome",
-      PrefilledUsernameFillOutcome::kPrefilledPlaceholderUsernameOverridden, 1);
-
   CheckFirstFillingResult(FillingResult::kSuccess);
 }
 
 // Tests that if filling is invoked twice for the same autofill agent the
-// prefilled username and first filling metrics are only logged once.
+// first filling metrics are only logged once.
 TEST_F(PasswordAutofillAgentTest, MetricsOnlyLoggedOnce) {
   // Set the username element to a value from the prefilled values list.
   // Comparison should be insensitive to leading and trailing whitespaces.
@@ -1112,10 +1108,6 @@ TEST_F(PasswordAutofillAgentTest, MetricsOnlyLoggedOnce) {
   // This triggers the autocomplete.
   SimulateOnFillPasswordForm(fill_data_);
   SimulateOnFillPasswordForm(fill_data_);
-
-  histogram_tester_.ExpectUniqueSample(
-      "PasswordManager.PrefilledUsernameFillOutcome",
-      PrefilledUsernameFillOutcome::kPrefilledPlaceholderUsernameOverridden, 1);
 
   CheckFirstFillingResult(FillingResult::kSuccess);
 }
@@ -1233,11 +1225,6 @@ TEST_F(PasswordAutofillAgentTest, NoPartialMatchForPrefilledUsername) {
   CheckTextFieldsSuggestedState("", false, std::string(), false);
   CheckUsernameDOMStatePasswordSuggestedState("ali", false, std::string(),
                                               false);
-
-  histogram_tester_.ExpectUniqueSample(
-      "PasswordManager.PrefilledUsernameFillOutcome",
-      autofill::PrefilledUsernameFillOutcome::kPrefilledUsernameNotOverridden,
-      1);
 }
 
 // Tests that having a matching username precludes the autofill.

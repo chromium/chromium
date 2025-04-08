@@ -48,27 +48,6 @@ class WebInputElement;
 }
 
 namespace autofill {
-// Used in UMA histograms, please do NOT reorder.
-// Metric: "PasswordManager.PrefilledUsernameFillOutcome".
-enum class PrefilledUsernameFillOutcome {
-  // This value is reported if all of the following three conditions are met:
-  // 1) the page has a username input element whose value was prefilled by the
-  //    website itself.
-  // 2) the prefilled value was found in a list of known placeholder values
-  //    (e.g. "username or email").
-  // 3) the user had a credential stored and the field content was overridden
-  //    with the username of this credential due to 2).
-  kPrefilledPlaceholderUsernameOverridden = 0,
-  // This value is reported if all of the following conditions are met:
-  // 1) as above.
-  // 2) the prefilled value was NOT found in the list of known placeholder
-  //    values.
-  // 3) the user had a credential stored for this site but the field content
-  //    was NOT overridden due to 2).
-  kPrefilledUsernameNotOverridden = 1,
-  kMaxValue = kPrefilledUsernameNotOverridden,
-};
-
 // Used in UMA histogram, please do NOT reorder.
 // Metric: "PasswordManager.FirstRendererFillingResult".
 // This metric records whether the PasswordAutofillAgent succeeded in filling
@@ -546,11 +525,6 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
                                     RendererSavePasswordProgressLogger* logger,
                                     bool notify_browser_of_successful_filling);
 
-  // Logs whether a username value that was prefilled by the website was
-  // overridden when trying to fill with an existing credential. This logs
-  // only one value per `PasswordAutofillAgent` instance.
-  void LogPrefilledUsernameFillOutcome(PrefilledUsernameFillOutcome outcome);
-
   void HidePopup();
 
   // Returns pair(username_element, password_element) based on renderer ids from
@@ -677,8 +651,6 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
       deferring_password_manager_driver_;
 
   mojo::AssociatedReceiver<mojom::PasswordAutofillAgent> receiver_{this};
-
-  bool prefilled_username_metrics_logged_ = false;
 
   // Keeps autofilled values for the form elements until a user gesture
   // is observed. At that point, the map is cleared.

@@ -1381,7 +1381,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.CredentialsWithDuplicates3" units="units"
-    expires_after="2025-05-11">
+    expires_after="2025-11-15">
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -1552,7 +1552,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="PasswordManager.FieldNameCollisionInVotes" enum="Boolean"
     expires_after="2025-08-10">
   <owner>kazinova@google.com</owner>
-  <owner>khamutov@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
   <summary>
     Measures whether a password vote had a field name collision, i.e. multiple
     fields that should have an Autofill type uploaded have the same name.
@@ -2414,9 +2414,9 @@ useful for Chirp alerts (go/crca-alerts). -->
 <histogram
     name="PasswordManager.NewlySavedPasswordHasEmptyUsername.{PasswordType}"
     enum="Boolean" expires_after="2025-09-14">
-  <owner>khamutov@google.com</owner>
   <owner>kazinova@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <owner>chrome-password-manager-metrics-alerts@google.com</owner>
   <summary>
     Whether a newly saved password has an empty username. Recorded right before
     a new credential is commited to the store.
@@ -3681,21 +3681,6 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.PrefilledUsernameFillOutcome"
-    enum="PrefilledUsernameFillOutcome" expires_after="2025-05-11">
-  <owner>khamutov@google.com</owner>
-  <owner>kazinova@google.com</owner>
-  <summary>
-    Records successful fills of prefilled username values known as placeholders
-    and unsuccessful fills that were blocked because the prefilled value was not
-    identified as a placeholder. Recorded once per PasswordAutofillAgent
-    instance, when attempting to fill a password form that contains a username
-    value which was prepopulated by the website.
-
-    Warning: this histogram was expired from M86 to M115; data may be missing.
-  </summary>
-</histogram>
-
 <histogram
     name="PasswordManager.ProcessIncomingPasswordSharingInvitationResult"
     enum="PasswordManager.ProcessIncomingPasswordSharingInvitationResult"
@@ -3995,7 +3980,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 
 <histogram
     name="PasswordManager.SingleUsername.ForgotPasswordServerPredictionUsed"
-    enum="Boolean" expires_after="2025-05-11">
+    enum="Boolean" expires_after="2025-11-15">
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -4026,7 +4011,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="PasswordManager.SingleUsername.VoteDataAvailability"
-    enum="SingleUsernameVoteDataAvailability" expires_after="2025-05-11">
+    enum="SingleUsernameVoteDataAvailability" expires_after="2025-11-15">
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>

@@ -1623,23 +1623,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="The sheet was dismissed"/>
 </enum>
 
-<enum name="PrefilledUsernameFillOutcome">
-  <int value="0" label="Prefilled placeholder username overridden">
-    1) the page has a username input element whose value was prefilled by the
-    website itself. 2) the prefilled value was found in a list of known
-    placeholder values (e.g. &quot;username or email&quot;). 3) the user had a
-    credential stored and the field content was overridden with the username of
-    this credential due to 2).
-  </int>
-  <int value="1" label="Prefilled username not overridden">
-    1) the page has a username input element whose value was prefilled by the
-    website itself. 2) the prefilled value was NOT found in a list of known
-    placeholder values (e.g. &quot;username or email&quot;). 3) the user had a
-    credential stored and the field content was NOT overridden with the username
-    of this credential due to 2).
-  </int>
-</enum>
-
 <enum name="ProactivePasswordGenerationBottomSheetTransitionType">
   <int value="0" label="Silenced"/>
   <int value="1" label="Unsilenced"/>

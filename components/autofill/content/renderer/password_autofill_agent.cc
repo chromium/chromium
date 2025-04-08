@@ -2008,9 +2008,6 @@ bool PasswordAutofillAgent::FillCredentialsAutomatically(
   if (password.empty() && !is_single_username_fill) {
     if (username_element && !username_element.Value().IsEmpty() &&
         !prefilled_placeholder_username) {
-      LogPrefilledUsernameFillOutcome(
-          PrefilledUsernameFillOutcome::kPrefilledUsernameNotOverridden);
-
       LogMessage(logger, Logger::STRING_FAILED_TO_FILL_PREFILLED_USERNAME);
       LogFirstFillingResult(
           fill_data, FillingResult::kUsernamePrefilledWithIncompatibleValue);
@@ -2035,11 +2032,6 @@ bool PasswordAutofillAgent::FillCredentialsAutomatically(
          username_element.GetAutofillState() != WebAutofillState::kNotFilled ||
          prefilled_placeholder_username)) {
       FillFieldAutomatically(username, username_element);
-      if (prefilled_placeholder_username) {
-        LogPrefilledUsernameFillOutcome(
-            PrefilledUsernameFillOutcome::
-                kPrefilledPlaceholderUsernameOverridden);
-      }
     }
     if (logger)
       logger->LogElementName(Logger::STRING_USERNAME_FILLED, username_element);
@@ -2060,15 +2052,6 @@ bool PasswordAutofillAgent::FillCredentialsAutomatically(
 
   LogFirstFillingResult(fill_data, FillingResult::kSuccess);
   return true;
-}
-
-void PasswordAutofillAgent::LogPrefilledUsernameFillOutcome(
-    PrefilledUsernameFillOutcome outcome) {
-  if (prefilled_username_metrics_logged_)
-    return;
-  prefilled_username_metrics_logged_ = true;
-  UMA_HISTOGRAM_ENUMERATION("PasswordManager.PrefilledUsernameFillOutcome",
-                            outcome);
 }
 
 void PasswordAutofillAgent::FireHostSubmitEvent(
