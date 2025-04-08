@@ -193,10 +193,7 @@ class InterestGroupAuctionReporterTest
       : RenderViewHostTestHarness(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         winning_bid_info_(GetWinningBidInfo()) {
-    feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{blink::features::kPrivateAggregationApi,
-                               {{"fledge_extensions_enabled", "true"}}}},
-        /*disabled_features=*/{});
+    feature_list_.InitAndEnableFeature(blink::features::kPrivateAggregationApi);
 
     mojo::SetDefaultProcessErrorHandler(
         base::BindRepeating(&InterestGroupAuctionReporterTest::OnBadMessage,
@@ -2367,69 +2364,6 @@ TEST_F(InterestGroupAuctionReporterPrivateAggregationDisabledTest,
   // should not be passed along neither. reportWin() could only return PA
   // requests if the worklet is compromised when feature kPrivateAggregationApi
   // is disabled.
-  WaitForReportWinAndRunCallback(
-      /*report_url=*/std::nullopt, /*ad_beacon_map=*/{}, /*ad_macro_map=*/{},
-      MakeRequestPtrVector(
-          kReportWinNonReservedPrivateAggregationRequest.Clone()));
-  EXPECT_TRUE(interest_group_auction_reporter_->fenced_frame_reporter()
-                  ->GetPrivateAggregationEventMapForTesting()
-                  .empty());
-
-  WaitForCompletion();
-}
-
-// Disable FLEDGE-specific extensions of Private Aggregation API.
-class InterestGroupAuctionReporterPrivateAggregationFledgeExtensionDisabledTest
-    : public InterestGroupAuctionReporterTest {
- public:
-  InterestGroupAuctionReporterPrivateAggregationFledgeExtensionDisabledTest() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        blink::features::kPrivateAggregationApi,
-        {{"fledge_extensions_enabled", "false"}});
-  }
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(
-    InterestGroupAuctionReporterPrivateAggregationFledgeExtensionDisabledTest,
-    PrivateAggregationRequestsNonReserved) {
-  // This is possible currently because we're not checking the feature flags
-  // when collecting PA requests and sending to InterestGroupAuctionReporter,
-  // and a compromised worklet can send PA requests to browser process when
-  // feature param
-  // `blink::features::kPrivateAggregationApiProtectedAudienceExtensionsEnabled`
-  // is false.
-  private_aggregation_event_map_["event_type"].push_back(
-      kWinningBidderGenerateBidPrivateAggregationRequest.Clone());
-  private_aggregation_event_map_["event_type2"].push_back(
-      kBonusPrivateAggregationRequest.Clone());
-
-  SetUpAndStartSingleSellerAuction();
-
-  // Nothing should be sent when the auction is started.
-  EXPECT_TRUE(interest_group_auction_reporter_->fenced_frame_reporter()
-                  ->GetPrivateAggregationEventMapForTesting()
-                  .empty());
-
-  // The requests from the bidding and scoring phase of the auction should not
-  // be passed along.
-  interest_group_auction_reporter_
-      ->OnNavigateToWinningAdCallback(FrameTreeNodeId())
-      .Run();
-  EXPECT_TRUE(interest_group_auction_reporter_->fenced_frame_reporter()
-                  ->GetPrivateAggregationEventMapForTesting()
-                  .empty());
-
-  WaitForReportResultAndRunCallback(kSellerScriptUrl,
-                                    /*report_url=*/std::nullopt);
-
-  // The non-reserved aggregation requests from the bidder's reportWin() method
-  // should not be passed along neither. reportWin() could only return PA
-  // requests if the worklet is compromised when feature param
-  // `blink::features::kPrivateAggregationApiProtectedAudienceExtensionsEnabled`
-  // is false.
   WaitForReportWinAndRunCallback(
       /*report_url=*/std::nullopt, /*ad_beacon_map=*/{}, /*ad_macro_map=*/{},
       MakeRequestPtrVector(

@@ -1478,9 +1478,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     kPrivateAggregationApiEnabledInProtectedAudience);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     bool,
-    kPrivateAggregationApiProtectedAudienceExtensionsEnabled);
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    bool,
     kPrivateAggregationApiDebugModeEnabledAtAll);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kPrivateAggregationApiProtectedAudienceAdditionalExtensions);

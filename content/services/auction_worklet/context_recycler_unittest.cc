@@ -4593,14 +4593,9 @@ class ContextRecyclerPrivateAggregationExtensionsEnabledTest
     : public ContextRecyclerTest {
  public:
   ContextRecyclerPrivateAggregationExtensionsEnabledTest() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/
-        {{blink::features::kPrivateAggregationApi,
-          {{"fledge_extensions_enabled", "true"}}},
-         {blink::features::
-              kPrivateAggregationApiProtectedAudienceAdditionalExtensions,
-          {}}},
-        /*disabled_features=*/{});
+    scoped_feature_list_.InitAndEnableFeature(
+        blink::features::
+            kPrivateAggregationApiProtectedAudienceAdditionalExtensions);
   }
 
   // Creates a PrivateAggregationRequest with ForEvent contribution.
@@ -5767,10 +5762,10 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
   }
 }
 
-class ContextRecyclerPrivateAggregationExtensionsButNotAdditionsEnabledTest
+class ContextRecyclerPrivateAggregationAdditionalExtensionsDisabledTest
     : public ContextRecyclerPrivateAggregationExtensionsEnabledTest {
  public:
-  ContextRecyclerPrivateAggregationExtensionsButNotAdditionsEnabledTest() {
+  ContextRecyclerPrivateAggregationAdditionalExtensionsDisabledTest() {
     scoped_feature_list_.InitAndDisableFeature(
         blink::features::
             kPrivateAggregationApiProtectedAudienceAdditionalExtensions);
@@ -5780,7 +5775,7 @@ class ContextRecyclerPrivateAggregationExtensionsButNotAdditionsEnabledTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(ContextRecyclerPrivateAggregationExtensionsButNotAdditionsEnabledTest,
+TEST_F(ContextRecyclerPrivateAggregationAdditionalExtensionsDisabledTest,
        PrivateAggregationForEventBindings) {
   // Test with more recent additions not on.
   // For now, this includes `reserved.once`.
@@ -6036,72 +6031,6 @@ TEST_F(ContextRecyclerPrivateAggregationDisabledForFledgeOnlyTest,
     ASSERT_TRUE(context_recycler.private_aggregation_bindings()
                     ->TakePrivateAggregationRequests()
                     .empty());
-  }
-}
-
-class ContextRecyclerPrivateAggregationOnlyFledgeExtensionsDisabledTest
-    : public ContextRecyclerTest {
- public:
-  ContextRecyclerPrivateAggregationOnlyFledgeExtensionsDisabledTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        blink::features::kPrivateAggregationApi,
-        {{"fledge_extensions_enabled", "false"}});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// Make sure that `contributeToHistogramOnEvent()` isn't available, but the
-// other `privateAggregation` functions are.
-TEST_F(ContextRecyclerPrivateAggregationOnlyFledgeExtensionsDisabledTest,
-       PrivateAggregationForEventBindings) {
-  using PrivateAggregationRequests =
-      std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>;
-
-  const char kScript[] = R"(
-    function test(args) {
-      // Passing BigInts in directly is complicated so we construct them from
-      // strings.
-      if (typeof args.bucket === "string") {
-        args.bucket = BigInt(args.bucket);
-      }
-      privateAggregation.contributeToHistogram(args);
-      privateAggregation.contributeToHistogramOnEvent("example", args);
-    }
-  )";
-
-  v8::Local<v8::UnboundScript> script = Compile(kScript);
-  ASSERT_FALSE(script.IsEmpty());
-
-  ContextRecycler context_recycler(helper_.get());
-  {
-    ContextRecyclerScope scope(context_recycler);  // Initialize context
-    context_recycler.AddPrivateAggregationBindings(
-        /*private_aggregation_permissions_policy_allowed=*/true,
-        /*reserved_once_allowed=*/true);
-  }
-
-  {
-    ContextRecyclerScope scope(context_recycler);
-    std::vector<std::string> error_msgs;
-
-    gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
-    dict.Set("bucket", std::string("123"));
-    dict.Set("value", 45);
-
-    Run(scope, script, "test", error_msgs,
-        gin::ConvertToV8(helper_->isolate(), dict));
-    EXPECT_THAT(
-        error_msgs,
-        ElementsAre("https://example.test/script.js:9 Uncaught TypeError: "
-                    "privateAggregation.contributeToHistogramOnEvent is not a "
-                    "function."));
-
-    PrivateAggregationRequests pa_requests =
-        context_recycler.private_aggregation_bindings()
-            ->TakePrivateAggregationRequests();
-    ASSERT_EQ(pa_requests.size(), 1u);
   }
 }
 

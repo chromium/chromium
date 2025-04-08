@@ -1239,9 +1239,7 @@ void InterestGroupAuctionReporter::MaybeSendPrivateAggregationReports() {
   private_aggregation_requests_reserved_.clear();
 
   if (base::FeatureList::IsEnabled(blink::features::kPrivateAggregationApi) &&
-      blink::features::kPrivateAggregationApiEnabledInProtectedAudience.Get() &&
-      blink::features::kPrivateAggregationApiProtectedAudienceExtensionsEnabled
-          .Get()) {
+      blink::features::kPrivateAggregationApiEnabledInProtectedAudience.Get()) {
     fenced_frame_reporter_->OnForEventPrivateAggregationRequestsReceived(
         std::move(private_aggregation_requests_non_reserved_));
   }

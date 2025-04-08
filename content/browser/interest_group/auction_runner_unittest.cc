@@ -2106,7 +2106,6 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
 
   explicit AuctionRunnerTest(
       bool should_enable_private_aggregation = true,
-      bool should_enable_private_aggregation_fledge_extension = true,
       auction_worklet::mojom::KAnonymityBidMode kanon_mode =
           auction_worklet::mojom::KAnonymityBidMode::kNone)
       : RenderViewHostTestHarness(
@@ -2126,11 +2125,7 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
     std::vector<base::test::FeatureRef> disabled_features;
 
     if (should_enable_private_aggregation) {
-      enabled_features.push_back(
-          {blink::features::kPrivateAggregationApi,
-           {{"fledge_extensions_enabled",
-             base::ToString(
-                 should_enable_private_aggregation_fledge_extension)}}});
+      enabled_features.push_back({blink::features::kPrivateAggregationApi, {}});
       enabled_features.push_back(
           {blink::features::
                kPrivateAggregationApiProtectedAudienceAdditionalExtensions,
@@ -24309,7 +24304,6 @@ class AuctionRunnerKAnonTest : public AuctionRunnerTest,
   AuctionRunnerKAnonTest()
       : AuctionRunnerTest(
             /*should_enable_private_aggregation=*/true,
-            /*should_enable_private_aggregation_fledge_extension=*/true,
             kanon_mode()) {
     feature_list_.InitAndEnableFeature(blink::features::kFledgeMultiBid);
   }

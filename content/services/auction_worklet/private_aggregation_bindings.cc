@@ -424,8 +424,6 @@ void PrivateAggregationBindings::AttachToContext(
             send_histogram_report_function)
       .Check();
 
-  if (blink::features::kPrivateAggregationApiProtectedAudienceExtensionsEnabled
-          .Get()) {
     v8::Local<v8::Function> report_contribution_for_event_function =
         v8::Function::New(
             context, &PrivateAggregationBindings::ContributeToHistogramOnEvent,
@@ -437,7 +435,6 @@ void PrivateAggregationBindings::AttachToContext(
             v8_helper_->CreateStringFromLiteral("contributeToHistogramOnEvent"),
             report_contribution_for_event_function)
         .Check();
-  }
 
   v8::Local<v8::Function> enable_debug_mode_function =
       v8::Function::New(context, &PrivateAggregationBindings::EnableDebugMode,
