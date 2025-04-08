@@ -25,11 +25,22 @@ class BookmarkNode;
 // the `BookmarkModel`.
 class PermanentFolderOrderingTracker : public bookmarks::BookmarkModelObserver {
  public:
+  class Delegate {
+   public:
+    // Called every time the ordering of the nodes in
+    // `PermanentFolderOrderingTracker` changes.
+    virtual void TrackedOrderingChanged() = 0;
+
+    virtual ~Delegate() = default;
+  };
+
   // `tracked_type` must reflect the type of the permanent node, it must be
   // one of the following: BOOKMARK_BAR, OTHER_NODE, MOBILE. Other node types
   // are invalid.
+  // `delegate` must not be null and must outlive this class.
   PermanentFolderOrderingTracker(bookmarks::BookmarkModel* model,
-                                 bookmarks::BookmarkNode::Type tracked_type);
+                                 bookmarks::BookmarkNode::Type tracked_type,
+                                 Delegate* delegate);
 
   ~PermanentFolderOrderingTracker() override;
 
@@ -39,7 +50,7 @@ class PermanentFolderOrderingTracker : public bookmarks::BookmarkModelObserver {
       const PermanentFolderOrderingTracker&) = delete;
 
   // This function must be invoked, and ordering will only be tracked
-  // afterwards. `model` must be not null and outlive this class.
+  // afterwards.
   void Init(std::vector<int64_t> in_order_node_ids);
 
   // Returns underlying permanent nodes.
@@ -118,6 +129,7 @@ class PermanentFolderOrderingTracker : public bookmarks::BookmarkModelObserver {
       const bookmarks::BookmarkNode* node) override;
 
  private:
+  void NotifyTrackedOrderingChanged();
   void SetTrackedPermanentNodes();
   bool IsTrackedPermanentNode(const bookmarks::BookmarkNode* node) const;
   void ResetOrderingToDefault();
@@ -145,6 +157,10 @@ class PermanentFolderOrderingTracker : public bookmarks::BookmarkModelObserver {
 
   const raw_ptr<bookmarks::BookmarkModel> model_;
   const bookmarks::BookmarkNode::Type tracked_type_;
+  const raw_ptr<Delegate> delegate_;
+
+  bool initialized_ = false;
+
   raw_ptr<const bookmarks::BookmarkNode> local_or_syncable_node_ = nullptr;
   raw_ptr<const bookmarks::BookmarkNode> account_node_ = nullptr;
 

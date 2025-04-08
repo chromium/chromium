@@ -79,3 +79,9 @@ void WaitForBookmarkMergedSurfaceServiceToLoad(
   run_loop.Run();
   CHECK(service->loaded());
 }
+
+MockPermanentFolderOrderingTrackerDelegate::
+    MockPermanentFolderOrderingTrackerDelegate() = default;
+
+MockPermanentFolderOrderingTrackerDelegate::
+    ~MockPermanentFolderOrderingTrackerDelegate() = default;

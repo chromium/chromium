@@ -8,6 +8,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
+#include "chrome/browser/bookmarks/bookmark_test_helpers.h"
 #include "chrome/browser/bookmarks/permanent_folder_ordering_tracker.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
@@ -66,8 +67,10 @@ TEST_F(BookmarkParentFolderChildrenTest, FromNode) {
 }
 
 TEST_F(BookmarkParentFolderChildrenTest, FromPermanentFolderOrderingTracker) {
-  PermanentFolderOrderingTracker tracker(&bookmark_model(),
-                                         BookmarkNode::Type::BOOKMARK_BAR);
+  testing::NiceMock<MockPermanentFolderOrderingTrackerDelegate> delegate;
+  PermanentFolderOrderingTracker tracker(
+      &bookmark_model(), BookmarkNode::Type::BOOKMARK_BAR, &delegate);
+  EXPECT_CALL(delegate, TrackedOrderingChanged);
   tracker.Init(/*in_order_node_ids=*/{});
 
   BookmarkParentFolderChildren bookmark_bar_children(&tracker);
