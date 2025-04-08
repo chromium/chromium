@@ -102,7 +102,6 @@
 #include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/browser/uninstall_reason.h"
 #include "extensions/browser/unloaded_extension_reason.h"
-#include "extensions/browser/update_observer.h"
 #include "extensions/browser/updater/extension_cache.h"
 #include "extensions/browser/updater/extension_downloader.h"
 #include "extensions/browser/updater/manifest_fetch_data.h"
@@ -942,9 +941,7 @@ void ExtensionService::OnExtensionInstalled(
 
       if (delay_reason == ExtensionPrefs::DelayReason::kWaitForIdle) {
         // Notify observers that app update is available.
-        for (auto& observer : update_observers_) {
-          observer.OnAppUpdateAvailable(extension);
-        }
+        ExtensionUpdater::Get(profile_)->NotifyAppUpdateAvailable(*extension);
       }
       return;
     case InstallGate::ABORT:
@@ -1098,9 +1095,7 @@ void ExtensionService::OnCWSInfoChanged() {
 
 void ExtensionService::OnUpgradeRecommended() {
   // Notify observers that chrome update is available.
-  for (auto& observer : update_observers_) {
-    observer.OnChromeUpdateAvailable();
-  }
+  ExtensionUpdater::Get(profile_)->NotifyChromeUpdateAvailable();
 }
 
 void ExtensionService::OnProfileMarkedForPermanentDeletion(Profile* profile) {
@@ -1120,14 +1115,6 @@ void ExtensionService::ManageBlocklist(
 
   safe_browsing_verdict_handler_.ManageBlocklist(state_map);
   error_controller_->ShowErrorIfNeeded();
-}
-
-void ExtensionService::AddUpdateObserver(UpdateObserver* observer) {
-  update_observers_.AddObserver(observer);
-}
-
-void ExtensionService::RemoveUpdateObserver(UpdateObserver* observer) {
-  update_observers_.RemoveObserver(observer);
 }
 
 bool ExtensionService::UserCanDisableInstalledExtension(

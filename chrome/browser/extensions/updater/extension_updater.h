@@ -19,11 +19,13 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/update_observer.h"
 #include "extensions/browser/updater/extension_downloader.h"
 #include "extensions/browser/updater/extension_downloader_delegate.h"
 #include "extensions/browser/updater/extension_downloader_types.h"
@@ -36,12 +38,17 @@ class PrefService;
 class Profile;
 class ScopedProfileKeepAlive;
 
+namespace content {
+class BrowserContext;
+}
+
 namespace extensions {
 
 class CorruptedExtensionReinstaller;
 class CrxInstallError;
 class CrxInstaller;
 class DelayedInstallManager;
+class Extension;
 class ExtensionCache;
 class ExtensionPrefs;
 class ExtensionRegistrar;
@@ -123,7 +130,7 @@ class ExtensionUpdater : public KeyedService,
   };
 
   // Returns the ExtensionUpdater instance created by ExtensionUpdaterFactory.
-  static ExtensionUpdater* Get(Profile* profile);
+  static ExtensionUpdater* Get(content::BrowserContext* browser_context);
 
   // Visible for testing. Production code should use Get() above.
   explicit ExtensionUpdater(Profile* profile);
@@ -168,6 +175,16 @@ class ExtensionUpdater : public KeyedService,
   // Public for testing.
   scoped_refptr<CrxInstaller> CreateUpdateInstaller(const CRXFileInfo& file,
                                                     bool file_ownership_passed);
+
+  // Adds/removes update observers.
+  void AddObserver(UpdateObserver* observer);
+  void RemoveObserver(UpdateObserver* observer);
+
+  // Notifies update observers for chrome update available.
+  void NotifyChromeUpdateAvailable();
+
+  // Notifies update observers that an app update is available.
+  void NotifyAppUpdateAvailable(const Extension& extension);
 
   // Overrides the extension cache with |extension_cache| for testing.
   void SetExtensionCacheForTesting(ExtensionCache* extension_cache);
@@ -368,6 +385,9 @@ class ExtensionUpdater : public KeyedService,
 
   // Fetches the crx files for the extensions that have an available update.
   std::unique_ptr<ExtensionDownloader> downloader_;
+
+  base::ObserverList<UpdateObserver, /*check_empty=*/true>::Unchecked
+      update_observers_;
 
   // Update service is responsible for updating Webstore extensions.
   // Note that |UpdateService| is a KeyedService class, which can only be

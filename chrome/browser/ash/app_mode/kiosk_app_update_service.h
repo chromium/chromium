@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
+#include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_observer.h"
 #include "chrome/browser/ash/system/automatic_reboot_manager_observer.h"
@@ -20,6 +21,7 @@ class Profile;
 
 namespace extensions {
 class Extension;
+class ExtensionUpdater;
 }
 
 namespace ash {
@@ -57,7 +59,7 @@ class KioskAppUpdateService : public KeyedService,
   void Shutdown() override;
 
   // extensions::UpdateObserver overrides:
-  void OnAppUpdateAvailable(const extensions::Extension* extension) override;
+  void OnAppUpdateAvailable(const extensions::Extension& extension) override;
   void OnChromeUpdateAvailable() override {}
 
   // system::AutomaticRebootManagerObserver overrides:
@@ -75,6 +77,10 @@ class KioskAppUpdateService : public KeyedService,
 
   raw_ptr<system::AutomaticRebootManager>
       automatic_reboot_manager_;  // Not owned.
+
+  base::ScopedObservation<extensions::ExtensionUpdater,
+                          extensions::UpdateObserver>
+      update_observation_{this};
 };
 
 // Singleton that owns all KioskAppUpdateServices and associates them with

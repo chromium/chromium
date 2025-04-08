@@ -39,6 +39,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
 #include "components/update_client/update_query_params.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
@@ -165,8 +166,9 @@ ExtensionUpdater::InProgressCheck::InProgressCheck() = default;
 ExtensionUpdater::InProgressCheck::~InProgressCheck() = default;
 
 // static
-ExtensionUpdater* ExtensionUpdater::Get(Profile* profile) {
-  return ExtensionUpdaterFactory::GetForBrowserContext(profile);
+ExtensionUpdater* ExtensionUpdater::Get(
+    content::BrowserContext* browser_context) {
+  return ExtensionUpdaterFactory::GetForBrowserContext(browser_context);
 }
 
 ExtensionUpdater::ExtensionUpdater(Profile* profile)
@@ -294,6 +296,26 @@ void ExtensionUpdater::CheckSoon() {
 
 bool ExtensionUpdater::WillCheckSoon() const {
   return will_check_soon_;
+}
+
+void ExtensionUpdater::AddObserver(UpdateObserver* observer) {
+  update_observers_.AddObserver(observer);
+}
+
+void ExtensionUpdater::RemoveObserver(UpdateObserver* observer) {
+  update_observers_.RemoveObserver(observer);
+}
+
+void ExtensionUpdater::NotifyChromeUpdateAvailable() {
+  for (auto& observer : update_observers_) {
+    observer.OnChromeUpdateAvailable();
+  }
+}
+
+void ExtensionUpdater::NotifyAppUpdateAvailable(const Extension& extension) {
+  for (auto& observer : update_observers_) {
+    observer.OnAppUpdateAvailable(extension);
+  }
 }
 
 void ExtensionUpdater::SetExtensionCacheForTesting(

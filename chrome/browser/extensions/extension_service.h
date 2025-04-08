@@ -77,7 +77,6 @@ class ExternalInstallManager;
 class ExternalProviderManager;
 class PendingExtensionManager;
 class SharedModuleService;
-class UpdateObserver;
 enum class UnloadedExtensionReason;
 
 // This is an interface class to encapsulate the dependencies that
@@ -325,10 +324,6 @@ class ExtensionService : public ExtensionServiceInterface,
   // notification is desired the calling code is responsible for doing that.
   void TerminateExtension(const std::string& extension_id);
 
-  // Adds/Removes update observers.
-  void AddUpdateObserver(UpdateObserver* observer);
-  void RemoveUpdateObserver(UpdateObserver* observer);
-
   // Returns whether a user is able to disable a given extension or if that is
   // not possible (for instance, extension was enabled by policy).
   bool UserCanDisableInstalledExtension(
@@ -509,8 +504,6 @@ class ExtensionService : public ExtensionServiceInterface,
 
   // The SharedModuleService used to check for import dependencies.
   std::unique_ptr<SharedModuleService> shared_module_service_;
-
-  base::ObserverList<UpdateObserver, true>::Unchecked update_observers_;
 
   std::unique_ptr<ChromeExtensionRegistrarDelegate>
       extension_registrar_delegate_;

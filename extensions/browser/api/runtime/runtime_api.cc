@@ -294,9 +294,9 @@ void RuntimeAPI::Shutdown() {
       ->RemoveObserver(this);
 }
 
-void RuntimeAPI::OnAppUpdateAvailable(const Extension* extension) {
+void RuntimeAPI::OnAppUpdateAvailable(const Extension& extension) {
   RuntimeEventRouter::DispatchOnUpdateAvailableEvent(
-      browser_context_, extension->id(), extension->manifest()->value());
+      browser_context_, extension.id(), extension.manifest()->value());
 }
 
 void RuntimeAPI::OnChromeUpdateAvailable() {

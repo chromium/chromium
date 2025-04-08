@@ -148,17 +148,13 @@ void ChromeRuntimeAPIDelegate::set_tick_clock_for_tests(
 void ChromeRuntimeAPIDelegate::AddUpdateObserver(
     extensions::UpdateObserver* observer) {
   registered_for_updates_ = true;
-  ExtensionSystem::Get(browser_context_)
-      ->extension_service()
-      ->AddUpdateObserver(observer);
+  ExtensionUpdater::Get(browser_context_)->AddObserver(observer);
 }
 
 void ChromeRuntimeAPIDelegate::RemoveUpdateObserver(
     extensions::UpdateObserver* observer) {
   if (registered_for_updates_) {
-    ExtensionSystem::Get(browser_context_)
-        ->extension_service()
-        ->RemoveUpdateObserver(observer);
+    ExtensionUpdater::Get(browser_context_)->RemoveObserver(observer);
   }
 }
 

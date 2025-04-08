@@ -46,6 +46,8 @@ include_rules = [
   "+chrome/browser/extensions/install_gate.h",
   "+chrome/browser/extensions/install_tracker.h",
   "+chrome/browser/extensions/pending_extension_manager.h",
+  "+chrome/browser/extensions/updater/extension_updater.h",
+  "+chrome/browser/extensions/updater/extension_updater_factory.h",
   "+chrome/browser/extensions/webstore_data_fetcher_delegate.h",
   "+chrome/browser/extensions/webstore_data_fetcher.h",
   "+chrome/browser/extensions/webstore_install_helper.h",
