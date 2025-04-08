@@ -1666,6 +1666,13 @@ void MaybeRegisterChromeNewBadges(user_education::NewBadgeRegistry& registry) {
       user_education::Metadata(136, "sophey@chromium.org",
                                "Shown in the three dot menu.")));
 #endif  // BUILDFLAG(ENABLE_GLIC)
+
+  registry.RegisterFeature(user_education::NewBadgeSpecification(
+      features::kSideBySide,
+      user_education::Metadata(
+          141, "emshack@chromium.org",
+          "Shown in the tab context menu when the user enters or exits split "
+          "view.")));
 }
 
 std::unique_ptr<user_education::FeaturePromoControllerCommon>

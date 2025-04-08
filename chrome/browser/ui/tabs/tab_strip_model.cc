@@ -2018,8 +2018,8 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
     case CommandAddToSplit: {
       CHECK(base::FeatureList::IsEnabled(features::kSideBySide));
       if (context_index == active_index()) {
-        // TODO(crbug.com/405426549): Replace with empty split GURL.
-        delegate()->AddTabAt(GURL(), context_index + 1, false,
+        delegate()->AddTabAt(GURL(chrome::kChromeUISplitViewNewTabPageURL),
+                             context_index + 1, false,
                              GetTabGroupForTab(context_index));
         context_index += 1;
       }

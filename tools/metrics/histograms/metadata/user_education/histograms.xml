@@ -48,6 +48,8 @@ chromium-metrics-reviews@google.com.
       summary="For plus address creation; shown in the autofill popup."/>
   <variant name="PlusAddressFallbackFromContextMenu"
       summary="Plus address manual fallback entry point in the context menu."/>
+  <variant name="SideBySide"
+      summary="Promotion for Split View in the tab context menu"/>
   <variant name="TabOrganization"
       summary="Promotion for Organize Tabs in the app menu."/>
   <variant name="TabstripDeclutter"

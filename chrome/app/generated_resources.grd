@@ -11291,10 +11291,10 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
           other {Add tabs to new group}}
         </message>
         <message name="IDS_TAB_CXMENU_ADD_TAB_TO_NEW_SPLIT" desc="The label of the tab context menu submenu for creating a split view between the selected tab and the active tab.">
-          Show side-by-side
+          Add tab to split view
         </message>
         <message name="IDS_TAB_CXMENU_REMOVE_SPLIT" desc="The label of the tab context menu submenu for exiting split view." translateable="false">
-          Exit side-by-side
+          Exit split view
         </message>
         <message name="IDS_TAB_CXMENU_SUBMENU_NEW_GROUP" desc="The label of the tab context menu sub-menu item for adding one more tabs to a new group.">
           New group
@@ -11398,10 +11398,10 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
           other {Add Tabs to New Group}}
         </message>
         <message name="IDS_TAB_CXMENU_ADD_TAB_TO_NEW_SPLIT" desc="The label of the tab context menu submenu for creating a split view between the selected tab and the active tab.">
-          Show Side-By-Side
+          Add Tab to Split View
         </message>
         <message name="IDS_TAB_CXMENU_REMOVE_SPLIT" desc="The label of the tab context menu submenu for exiting split view." translateable="false">
-          Exit Side-By-Side
+          Exit Split View
         </message>
         <message name="IDS_TAB_CXMENU_SUBMENU_NEW_GROUP" desc="In Title Case: The label of the tab context menu sub-menu item for adding one more tabs to a new group.">
           New Group

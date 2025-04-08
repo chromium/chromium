@@ -248,6 +248,8 @@ inline constexpr char kChromeUISignoutConfirmationURL[] =
     "chrome://signout-confirmation";
 #endif
 inline constexpr char kChromeUISiteEngagementHost[] = "site-engagement";
+inline constexpr char kChromeUISplitViewNewTabPageURL[] =
+    "chrome://tab-search.top-chrome/split_new_tab_page.html";
 inline constexpr char kChromeUISuggestInternalsHost[] = "suggest-internals";
 inline constexpr char kChromeUISuggestInternalsURL[] =
     "chrome://suggest-internals/";

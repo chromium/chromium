@@ -143,6 +143,9 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
                           IDS_TAB_CXMENU_REMOVE_SPLIT);
       SetElementIdentifierAt(GetItemCount() - 1, kUnsplitTabsMenuItem);
     }
+    SetIsNewFeatureAt(GetItemCount() - 1,
+                      UserEducationService::MaybeShowNewBadge(
+                          tab_strip->profile(), features::kSideBySide));
   }
 
   for (const auto& selection : indices) {
