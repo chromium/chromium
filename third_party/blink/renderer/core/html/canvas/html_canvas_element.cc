@@ -1568,16 +1568,14 @@ void HTMLCanvasElement::UpdatePreferred2DRasterMode() {
   // use accelerated-GPU rendering.
   // If any of the two conditions fails, or if the creation of accelerated
   // resource provider fails, the canvas will fallback to CPU rendering.
-  UMA_HISTOGRAM_BOOLEAN(
-      "Blink.Canvas.2DLayerBridge.WillReadFrequently",
-      context_ &&
-          context_->CreationAttributes().will_read_frequently ==
-              CanvasContextCreationAttributesCore::WillReadFrequently::kTrue);
-
   bool will_read_frequently =
+      context_ &&
       context_->CreationAttributes().will_read_frequently ==
-      CanvasContextCreationAttributesCore::WillReadFrequently::kTrue;
-  RasterModeHint hint = ShouldAccelerate() && context_ && !will_read_frequently
+          CanvasContextCreationAttributesCore::WillReadFrequently::kTrue;
+  UMA_HISTOGRAM_BOOLEAN("Blink.Canvas.2DLayerBridge.WillReadFrequently",
+                        will_read_frequently);
+
+  RasterModeHint hint = ShouldAccelerate() && !will_read_frequently
                             ? RasterModeHint::kPreferGPU
                             : RasterModeHint::kPreferCPU;
   SetPreferred2DRasterMode(hint);
