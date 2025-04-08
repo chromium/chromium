@@ -35,15 +35,20 @@ export class PrivacySandboxDialogLearnMoreElement extends PolymerElement {
         notify: true,
         value: false,
       },
+
+      shouldShowV2_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean(
+            'isPrivacySandboxAdsApiUxEnhancementsEnabled'),
+      },
     };
   }
 
-  override title: string;
-  expanded: boolean;
+  declare title: string;
+  declare expanded: boolean;
 
   // If true, the Ads API UX Enhancement should be shown.
-  private shouldShowV2_: boolean =
-      loadTimeData.getBoolean('isPrivacySandboxAdsApiUxEnhancementsEnabled');
+  declare private shouldShowV2_: boolean;
 
   private onExpandedChanged_(expanded: boolean) {
     if (expanded) {

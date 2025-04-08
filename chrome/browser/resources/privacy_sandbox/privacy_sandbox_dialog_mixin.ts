@@ -25,6 +25,7 @@ export const PrivacySandboxDialogMixin = dedupingMixin(
             wasScrolledToBottom: {
               type: Boolean,
               observer: 'onWasScrolledToBottomChange_',
+              value: true,
             },
 
             /**
@@ -40,11 +41,11 @@ export const PrivacySandboxDialogMixin = dedupingMixin(
           };
         }
 
-        wasScrolledToBottom: boolean = true;
+        declare wasScrolledToBottom: boolean;
         private didStartWithScrollbar_: boolean = false;
         private wasScrolledToBottomResolver_: PromiseResolver<void>;
         private moreButtonInitialized_: PromiseResolver<void>;
-        private shouldShowV2_: boolean;
+        declare private shouldShowV2_: boolean;
 
         /**
          * Contains true if the dialog dismissal buttons should be the same

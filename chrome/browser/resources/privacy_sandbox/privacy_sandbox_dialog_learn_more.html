@@ -19,9 +19,7 @@ cr-collapse {
 
 <div class$="[[getDivClass_()]]">
   <cr-expand-button expanded="{{expanded}}">
-    <div class="cr-secondary-text">
-      {{title}}
-    </div>
+    <div class="cr-secondary-text">[[title]]</div>
   </cr-expand-button>
   <cr-collapse id="collapse" opened="[[expanded]]">
     <slot></slot>
