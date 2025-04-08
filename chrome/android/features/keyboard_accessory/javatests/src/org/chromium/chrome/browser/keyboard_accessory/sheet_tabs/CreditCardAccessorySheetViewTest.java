@@ -432,14 +432,15 @@ public class CreditCardAccessorySheetViewTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PromoCodeInfo info = new PromoCodeInfo();
-                    info.setPromoCode(
-                            new UserInfoField.Builder()
+
+                    info.initialize(
+                            /* promoCode= */ new UserInfoField.Builder()
                                     .setSuggestionType(AccessorySuggestionType.PROMO_CODE)
                                     .setDisplayText(kPromoCode)
                                     .setA11yDescription("Promo code for test store")
                                     .setCallback(item -> clicked.set(true))
-                                    .build());
-                    info.setDetailsText(kDetailsText);
+                                    .build(),
+                            /* detailsText= */ kDetailsText);
                     mModel.add(
                             new AccessorySheetDataPiece(
                                     info, AccessorySheetDataPiece.Type.PROMO_CODE_INFO));

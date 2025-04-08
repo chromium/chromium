@@ -12,6 +12,7 @@ import androidx.annotation.Px;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.keyboard_accessory.data.PropertyProvider;
@@ -30,6 +31,7 @@ import java.util.List;
 import java.util.function.BooleanSupplier;
 
 /** This component handles the new, non-popup filling UI. */
+@NullMarked
 public interface ManualFillingComponent extends BackPressHandler {
     /**
      * Observers are added with {@link #addObserver} and removed with {@link #removeObserver}. They

@@ -180,16 +180,14 @@ public class CreditCardAccessorySheetControllerTest {
         testData.getPromoCodeInfoList().add(new PromoCodeInfo());
         testData.getPromoCodeInfoList()
                 .get(0)
-                .setPromoCode(
-                        new UserInfoField.Builder()
+                .initialize(
+                        /* promoCode= */ new UserInfoField.Builder()
                                 .setSuggestionType(AccessorySuggestionType.PROMO_CODE)
                                 .setDisplayText("50$OFF")
                                 .setA11yDescription("Promo Code for Todd Tester")
                                 .setCallback(field -> {})
-                                .build());
-        testData.getPromoCodeInfoList()
-                .get(0)
-                .setDetailsText("Get $50 off when you use this code at checkout.");
+                                .build(),
+                        /* detailsText= */ "Get $50 off when you use this code at checkout.");
 
         mCoordinator.registerDataProvider(testProvider);
         testProvider.notifyObservers(testData);
@@ -234,16 +232,14 @@ public class CreditCardAccessorySheetControllerTest {
         testData.getPromoCodeInfoList().add(new PromoCodeInfo());
         testData.getPromoCodeInfoList()
                 .get(0)
-                .setPromoCode(
-                        new UserInfoField.Builder()
+                .initialize(
+                        /* promoCode= */ new UserInfoField.Builder()
                                 .setSuggestionType(AccessorySuggestionType.PROMO_CODE)
                                 .setDisplayText("50$OFF")
                                 .setA11yDescription("Promo Code for Todd Tester")
                                 .setCallback(field -> {})
-                                .build());
-        testData.getPromoCodeInfoList()
-                .get(0)
-                .setDetailsText("Get $50 off when you use this code at checkout.");
+                                .build(),
+                        /* detailsText= */ "Get $50 off when you use this code at checkout.");
 
         mCoordinator.registerDataProvider(testProvider);
         testProvider.notifyObservers(testData);

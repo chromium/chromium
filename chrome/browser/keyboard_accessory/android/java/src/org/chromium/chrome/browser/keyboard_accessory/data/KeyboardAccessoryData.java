@@ -8,9 +8,11 @@ import android.graphics.drawable.Drawable;
 import android.view.ViewGroup;
 
 import androidx.annotation.LayoutRes;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryAction;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
 import org.chromium.url.GURL;
@@ -19,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** Interfaces in this class are used to pass data into keyboard accessory component. */
+@NullMarked
 public class KeyboardAccessoryData {
     /**
      * Describes a tab which should be displayed as a small icon at the start of the keyboard
@@ -136,7 +139,7 @@ public class KeyboardAccessoryData {
      */
     public static final class Action {
         private final Callback<Action> mActionCallback;
-        private final Callback<Action> mLongPressCallback;
+        private final @Nullable Callback<Action> mLongPressCallback;
         private @AccessoryAction int mType;
 
         public Action(@AccessoryAction int type, Callback<Action> actionCallback) {
@@ -156,7 +159,7 @@ public class KeyboardAccessoryData {
             return mActionCallback;
         }
 
-        public Callback<Action> getLongPressCallback() {
+        public @Nullable Callback<Action> getLongPressCallback() {
             return mLongPressCallback;
         }
 
@@ -296,7 +299,7 @@ public class KeyboardAccessoryData {
      */
     public static final class UserInfo {
         private final String mOrigin;
-        private final GURL mIconUrl;
+        private final @Nullable GURL mIconUrl;
         private final List<UserInfoField> mFields = new ArrayList<>();
         private final boolean mIsExactMatch;
 
@@ -304,7 +307,7 @@ public class KeyboardAccessoryData {
             this(origin, isExactMatch, null);
         }
 
-        public UserInfo(String origin, boolean isExactMatch, GURL iconUrl) {
+        public UserInfo(String origin, boolean isExactMatch, @Nullable GURL iconUrl) {
             mOrigin = origin;
             mIsExactMatch = isExactMatch;
             mIconUrl = iconUrl;
@@ -346,7 +349,7 @@ public class KeyboardAccessoryData {
          * credit cards, the `mOrigin` is used as an identifier for the icon. However, if the
          * `mIconUrl` is set, it'll be used to download the icon and then display it.
          */
-        public GURL getIconUrl() {
+        public @Nullable GURL getIconUrl() {
             return mIconUrl;
         }
     }
@@ -380,14 +383,6 @@ public class KeyboardAccessoryData {
 
         public PromoCodeInfo() {}
 
-        public void setPromoCode(UserInfoField promoCode) {
-            mPromoCode = promoCode;
-        }
-
-        public void setDetailsText(String detailsText) {
-            mDetailsText = detailsText;
-        }
-
         public UserInfoField getPromoCode() {
             return mPromoCode;
         }
@@ -395,11 +390,17 @@ public class KeyboardAccessoryData {
         public String getDetailsText() {
             return mDetailsText;
         }
+
+        @Initializer
+        public void initialize(UserInfoField promoCode, String detailsText) {
+            mPromoCode = promoCode;
+            mDetailsText = detailsText;
+        }
     }
 
     /** Represents an IBAN to be shown on the manual fallback UI. */
     public static final class IbanInfo {
-        private UserInfoField mIbanInfo;
+        private @Nullable UserInfoField mIbanInfo;
 
         public IbanInfo() {}
 
@@ -407,7 +408,7 @@ public class KeyboardAccessoryData {
             mIbanInfo = ibanInfo;
         }
 
-        public UserInfoField getValue() {
+        public @Nullable UserInfoField getValue() {
             return mIbanInfo;
         }
     }
@@ -449,7 +450,7 @@ public class KeyboardAccessoryData {
     public static final class AccessorySheetData {
         private final String mWarning;
         private final @AccessoryTabType int mSheetType;
-        private OptionToggle mToggle;
+        private @Nullable OptionToggle mToggle;
         private final PlusAddressSection mPlusAddressSection;
         private final UserInfoSection mUserInfoSection;
         private final List<PasskeySection> mPasskeySectionList = new ArrayList<>();

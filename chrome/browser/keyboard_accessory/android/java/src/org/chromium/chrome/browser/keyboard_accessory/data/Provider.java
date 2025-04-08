@@ -4,11 +4,14 @@
 
 package org.chromium.chrome.browser.keyboard_accessory.data;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * A provider notifies all registered {@link Observer}s about a changed object.
  *
  * @param <T> The object this provider provides.
  */
+@NullMarked
 public interface Provider<T> {
     /**
      * Every observer added by this needs to be notified whenever the object changes.

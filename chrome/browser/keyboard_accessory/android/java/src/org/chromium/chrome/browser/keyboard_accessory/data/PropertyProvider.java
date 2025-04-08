@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.keyboard_accessory.data;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -13,6 +15,7 @@ import java.util.Set;
  *
  * @param <T> The object this provider provides.
  */
+@NullMarked
 public class PropertyProvider<T> implements Provider<T> {
     private final Set<Observer<T>> mObservers = new HashSet<>();
     protected int mType;
