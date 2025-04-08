@@ -515,7 +515,7 @@ class TabStripModelTest : public testing::Test {
         actual += "p";
       }
 
-      if (model.IsTabSplit(i)) {
+      if (model.GetSplitForTab(i).has_value()) {
         actual += "s";
       }
     }
@@ -1980,7 +1980,108 @@ TEST_F(TabStripModelTest, MoveInsideSplitRemovesSplit) {
 
   EXPECT_EQ(tabstrip.GetSplitData(split_tab_id)->ListTabs().size(), 2u);
   tabstrip.MoveWebContentsAt(3, 1, false);
-  EXPECT_FALSE(tabstrip.GetSplitData(split_tab_id));
+  EXPECT_FALSE(tabstrip.ContainsSplit(split_tab_id));
+
+  tabstrip.CloseAllTabs();
+  EXPECT_TRUE(tabstrip.empty());
+}
+
+TEST_F(TabStripModelTest, MoveFromSplitRemovesSplit) {
+  scoped_feature_list()->InitAndEnableFeature(features::kSideBySide);
+  TestTabStripModelDelegate delegate;
+  TabStripModel tabstrip(&delegate, profile());
+  EXPECT_TRUE(tabstrip.empty());
+
+  ASSERT_NO_FATAL_FAILURE(
+      PrepareTabstripForSelectionTest(&tabstrip, 5, 0, "2"));
+
+  tabstrip.ActivateTabAt(0,
+                         TabStripUserGestureDetails(
+                             TabStripUserGestureDetails::GestureType::kOther));
+
+  split_tabs::SplitTabId split_tab_id =
+      tabstrip.AddToNewSplit({1}, tabs::SplitTabLayout::kHorizontal);
+
+  EXPECT_EQ(tabstrip.GetSplitData(split_tab_id)->ListTabs().size(), 2u);
+  tabstrip.MoveWebContentsAt(1, 3, false);
+  EXPECT_FALSE(tabstrip.ContainsSplit(split_tab_id));
+
+  tabstrip.CloseAllTabs();
+  EXPECT_TRUE(tabstrip.empty());
+}
+
+TEST_F(TabStripModelTest, AddTabInsideSplitRemovesSplit) {
+  scoped_feature_list()->InitAndEnableFeature(features::kSideBySide);
+  TestTabStripModelDelegate delegate;
+  TabStripModel tabstrip(&delegate, profile());
+  EXPECT_TRUE(tabstrip.empty());
+
+  ASSERT_NO_FATAL_FAILURE(
+      PrepareTabstripForSelectionTest(&tabstrip, 5, 0, "2"));
+
+  tabstrip.ActivateTabAt(0,
+                         TabStripUserGestureDetails(
+                             TabStripUserGestureDetails::GestureType::kOther));
+
+  split_tabs::SplitTabId split_tab_id =
+      tabstrip.AddToNewSplit({1}, tabs::SplitTabLayout::kHorizontal);
+
+  EXPECT_EQ(tabstrip.GetSplitData(split_tab_id)->ListTabs().size(), 2u);
+
+  std::unique_ptr<WebContents> new_blank_contents = CreateWebContents();
+  tabstrip.InsertWebContentsAt(1, std::move(new_blank_contents),
+                               AddTabTypes::ADD_NONE);
+  EXPECT_FALSE(tabstrip.ContainsSplit(split_tab_id));
+
+  tabstrip.CloseAllTabs();
+  EXPECT_TRUE(tabstrip.empty());
+}
+
+TEST_F(TabStripModelTest, RemoveSplitTabRemovesEntireSplit) {
+  scoped_feature_list()->InitAndEnableFeature(features::kSideBySide);
+  TestTabStripModelDelegate delegate;
+  TabStripModel tabstrip(&delegate, profile());
+  EXPECT_TRUE(tabstrip.empty());
+
+  ASSERT_NO_FATAL_FAILURE(
+      PrepareTabstripForSelectionTest(&tabstrip, 5, 0, "2"));
+
+  tabstrip.ActivateTabAt(0,
+                         TabStripUserGestureDetails(
+                             TabStripUserGestureDetails::GestureType::kOther));
+
+  split_tabs::SplitTabId split_tab_id =
+      tabstrip.AddToNewSplit({1}, tabs::SplitTabLayout::kHorizontal);
+
+  EXPECT_EQ(tabstrip.GetSplitData(split_tab_id)->ListTabs().size(), 2u);
+
+  tabstrip.CloseWebContentsAt(1, TabCloseTypes::CLOSE_NONE);
+  EXPECT_FALSE(tabstrip.ContainsSplit(split_tab_id));
+
+  tabstrip.CloseAllTabs();
+  EXPECT_TRUE(tabstrip.empty());
+}
+
+TEST_F(TabStripModelTest, MoveGroupWithinSplitRemovesSplit) {
+  scoped_feature_list()->InitAndEnableFeature(features::kSideBySide);
+  TestTabStripModelDelegate delegate;
+  TabStripModel tabstrip(&delegate, profile());
+  EXPECT_TRUE(tabstrip.empty());
+
+  ASSERT_NO_FATAL_FAILURE(
+      PrepareTabstripForSelectionTest(&tabstrip, 5, 0, "2"));
+
+  tabstrip.ActivateTabAt(3,
+                         TabStripUserGestureDetails(
+                             TabStripUserGestureDetails::GestureType::kOther));
+
+  split_tabs::SplitTabId split_tab_id =
+      tabstrip.AddToNewSplit({4}, tabs::SplitTabLayout::kHorizontal);
+
+  EXPECT_EQ(tabstrip.GetSplitData(split_tab_id)->ListTabs().size(), 2u);
+  tab_groups::TabGroupId group_id = tabstrip.AddToNewGroup({0, 1});
+  tabstrip.MoveGroupTo(group_id, 2);
+  EXPECT_FALSE(tabstrip.ContainsSplit(split_tab_id));
 
   tabstrip.CloseAllTabs();
   EXPECT_TRUE(tabstrip.empty());

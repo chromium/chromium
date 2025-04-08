@@ -133,7 +133,7 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
     SetElementIdentifierAt(GetItemCount() - 1, kAddToNewGroupItemIdentifier);
   }
   if (base::FeatureList::IsEnabled(features::kSideBySide)) {
-    if (!tab_strip->IsTabSplit(index)) {
+    if (!tab_strip->GetSplitForTab(index).has_value()) {
       AddItemWithStringId(TabStripModel::CommandAddToSplit,
                           IDS_TAB_CXMENU_ADD_TAB_TO_NEW_SPLIT);
       SetEnabledAt(GetItemCount() - 1, num_tabs == 1);

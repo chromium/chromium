@@ -1597,9 +1597,10 @@ ExtensionFunction::ResponseAction TabsHighlightFunction::Run() {
   // Extend selection for any split tabs.
   base::flat_set<split_tabs::SplitTabId> splits_with_selections;
   for (const auto& index : selection.selected_indices()) {
-    if (tab_strip_model->IsTabSplit(index)) {
-      splits_with_selections.insert(
-          tab_strip_model->GetTabAtIndex(index)->GetSplit().value());
+    std::optional<split_tabs::SplitTabId> split_id =
+        tab_strip_model->GetSplitForTab(index);
+    if (split_id.has_value()) {
+      splits_with_selections.insert(split_id.value());
     }
   }
   for (split_tabs::SplitTabId split_id : splits_with_selections) {

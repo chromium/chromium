@@ -443,9 +443,6 @@ class TabStripModel : public TabGroupController {
 
   bool IsGroupCollapsed(const tab_groups::TabGroupId& group) const;
 
-  // Returns true if the tab at |index| is part of a split view.
-  bool IsTabSplit(int index) const;
-
   // Returns true if the tab at |index| is blocked by a tab modal dialog.
   bool IsTabBlocked(int index) const;
 
@@ -458,6 +455,10 @@ class TabStripModel : public TabGroupController {
 
   const split_tabs::SplitTabData* GetSplitData(
       split_tabs::SplitTabId split_id) const;
+
+  bool ContainsSplit(split_tabs::SplitTabId split_id) const;
+
+  std::optional<split_tabs::SplitTabId> GetSplitForTab(int index) const;
 
   // Returns the group that contains the tab at |index|, or nullopt if the tab
   // index is invalid or not grouped.
@@ -1092,7 +1093,18 @@ class TabStripModel : public TabGroupController {
   std::vector<std::pair<tabs::TabInterface*, int>> GetTabsAndIndicesInSplit(
       split_tabs::SplitTabId split_id);
 
-  bool InsertionIndexBreakSplitContiguity(int index);
+  bool InsertionBreaksSplitContiguity(int index);
+
+  // Helper to determine if moving a block of tabs from `start_index` with block
+  // size `length` to `final_index` breaks contiguity.
+  std::optional<split_tabs::SplitTabId>
+  MoveBreaksSplitContiguity(int start_index, int length, int final_index);
+
+  void MaybeRemoveSplitsForMove(
+      int initial_index,
+      int final_index,
+      const std::optional<tab_groups::TabGroupId> group,
+      bool pin);
 
   // The WebContents data currently hosted within this TabStripModel. This must
   // be kept in sync with |selection_model_|.
