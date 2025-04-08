@@ -9,9 +9,10 @@
 
 #include "chrome/browser/privacy_sandbox/notice/notice.mojom-forward.h"
 
-enum class SurfaceType;
 
 namespace privacy_sandbox {
+
+enum class SurfaceType;
 
 // This framework communicates to the view manager via this interface.
 class PrivacySandboxNoticeServiceInterface {

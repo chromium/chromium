@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/no_destructor.h"
-#include "chrome/browser/privacy_sandbox/notice/notice_service.h"
+#include "chrome/browser/privacy_sandbox/notice/notice_service_interface.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
@@ -16,7 +16,7 @@ class Profile;
 class PrivacySandboxNoticeServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static PrivacySandboxNoticeServiceFactory* GetInstance();
-  static privacy_sandbox::PrivacySandboxNoticeService* GetForProfile(
+  static privacy_sandbox::PrivacySandboxNoticeServiceInterface* GetForProfile(
       Profile* profile);
 
  private:
