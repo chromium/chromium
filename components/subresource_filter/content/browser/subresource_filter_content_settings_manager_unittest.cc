@@ -66,8 +66,9 @@ class SubresourceFilterContentSettingsManagerTest : public testing::Test {
     for (const auto& it :
          GetSettingsMap()->GetSettingsForOneType(ContentSettingsType::ADS)) {
       // Need GURL conversion to get rid of unnecessary default ports.
-      if (GURL(it.primary_pattern.ToString()) == url_with_empty_path)
+      if (GURL(it.primary_pattern.ToString()) == url_with_empty_path) {
         return it.GetContentSetting();
+      }
     }
     return CONTENT_SETTING_DEFAULT;
   }

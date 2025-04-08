@@ -116,7 +116,8 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
-  if (!converter.Convert())
+  if (!converter.Convert()) {
     return 1;
+  }
   return 0;
 }

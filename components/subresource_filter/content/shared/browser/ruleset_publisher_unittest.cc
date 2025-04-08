@@ -40,7 +40,7 @@
 
 namespace content {
 class RenderProcessHost;
-} // namespace content
+}  // namespace content
 
 namespace subresource_filter {
 
@@ -55,8 +55,9 @@ class NotifyingMockRenderProcessHost : public content::MockRenderProcessHost {
       content::BrowserContext* browser_context,
       content::RenderProcessHostCreationObserver* observer)
       : content::MockRenderProcessHost(browser_context) {
-    if (observer)
+    if (observer) {
       observer->OnRenderProcessHostCreated(this);
+    }
   }
 };
 
@@ -200,8 +201,7 @@ TEST_F(SubresourceFilterRulesetPublisherTest,
       service.RulesetFileForProcess(&second_renderer), kTestFileContents));
 }
 
-TEST_F(SubresourceFilterRulesetPublisherTest,
-       PublishesRulesetInOnePostTask) {
+TEST_F(SubresourceFilterRulesetPublisherTest, PublishesRulesetInOnePostTask) {
   // Regression test for crbug.com/817308. Test verifies that ruleset is
   // published on browser startup via exactly one PostTask.
 

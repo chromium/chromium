@@ -20,7 +20,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-
 #include "components/subresource_filter/tools/filter_tool.h"
 
 namespace {
@@ -138,8 +137,9 @@ int main(int argc, char* argv[]) {
         !command_line.HasSwitch(kSwitchType)) {
       std::vector<std::string> missing_args;
       for (auto* arg : {kSwitchOrigin, kSwitchUrl, kSwitchType}) {
-        if (!command_line.HasSwitch(arg))
+        if (!command_line.HasSwitch(arg)) {
           missing_args.push_back(arg);
+        }
       }
       LOG(ERROR) << "Missing arguments for match command: "
                  << base::JoinString(missing_args, ",");

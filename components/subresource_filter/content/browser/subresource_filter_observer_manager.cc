@@ -15,8 +15,9 @@ SubresourceFilterObserverManager::SubresourceFilterObserverManager(
           *web_contents) {}
 
 SubresourceFilterObserverManager::~SubresourceFilterObserverManager() {
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnSubresourceFilterGoingAway();
+  }
 }
 
 void SubresourceFilterObserverManager::AddObserver(
@@ -48,15 +49,17 @@ void SubresourceFilterObserverManager::NotifyPageActivationComputed(
 void SubresourceFilterObserverManager::NotifyChildFrameNavigationEvaluated(
     content::NavigationHandle* navigation_handle,
     LoadPolicy load_policy) {
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnChildFrameNavigationEvaluated(navigation_handle, load_policy);
+  }
 }
 
 void SubresourceFilterObserverManager::NotifyIsAdFrameChanged(
     content::RenderFrameHost* render_frame_host,
     bool is_ad_frame) {
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnIsAdFrameChanged(render_frame_host, is_ad_frame);
+  }
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(SubresourceFilterObserverManager);

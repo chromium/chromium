@@ -128,8 +128,9 @@ void SubresourceFilterTestHarness::TearDown() {
 // content::WebContentsObserver:
 void SubresourceFilterTestHarness::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (navigation_handle->IsSameDocument())
+  if (navigation_handle->IsSameDocument()) {
     return;
+  }
 
   std::vector<std::unique_ptr<content::NavigationThrottle>> throttles;
   ContentSubresourceFilterThrottleManager::FromNavigationHandle(

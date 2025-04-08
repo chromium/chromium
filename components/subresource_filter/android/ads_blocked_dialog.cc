@@ -30,8 +30,9 @@ std::unique_ptr<AdsBlockedDialogBase> AdsBlockedDialog::Create(
   CHECK(web_contents, base::NotFatalUntil::M129);
 
   ui::WindowAndroid* window_android = web_contents->GetTopLevelNativeWindow();
-  if (!window_android)
+  if (!window_android) {
     return nullptr;
+  }
   return base::WrapUnique(new AdsBlockedDialog(
       window_android->GetJavaObject(), std::move(allow_ads_clicked_callback),
       std::move(learn_more_clicked_callback),
@@ -54,8 +55,9 @@ AdsBlockedDialog::AdsBlockedDialog(
 AdsBlockedDialog::~AdsBlockedDialog() {
   // When the owning class is destroyed, ensure that any active dialog
   // associated with the class is dismissed.
-  if (java_ads_blocked_dialog_)
+  if (java_ads_blocked_dialog_) {
     Dismiss();
+  }
 }
 
 void AdsBlockedDialog::Show(bool should_post_dialog) {

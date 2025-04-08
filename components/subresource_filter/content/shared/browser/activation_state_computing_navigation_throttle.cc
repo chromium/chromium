@@ -78,15 +78,17 @@ void ActivationStateComputingNavigationThrottle::
 
 content::NavigationThrottle::ThrottleCheckResult
 ActivationStateComputingNavigationThrottle::WillStartRequest() {
-  if (parent_activation_state_)
+  if (parent_activation_state_) {
     CheckActivationState();
+  }
   return content::NavigationThrottle::PROCEED;
 }
 
 content::NavigationThrottle::ThrottleCheckResult
 ActivationStateComputingNavigationThrottle::WillRedirectRequest() {
-  if (parent_activation_state_)
+  if (parent_activation_state_) {
     CheckActivationState();
+  }
   return content::NavigationThrottle::PROCEED;
 }
 
@@ -107,8 +109,9 @@ ActivationStateComputingNavigationThrottle::WillProcessResponse() {
   // finish, or start a new check now if there was no previous speculative
   // check.
   if (async_filter_ && async_filter_->has_activation_state()) {
-    if (IsInSubresourceFilterRoot(navigation_handle()))
+    if (IsInSubresourceFilterRoot(navigation_handle())) {
       UpdateWithMoreAccurateState();
+    }
     return content::NavigationThrottle::PROCEED;
   }
   CHECK(!deferred_, base::NotFatalUntil::M129);
@@ -153,8 +156,9 @@ void ActivationStateComputingNavigationThrottle::CheckActivationState() {
 void ActivationStateComputingNavigationThrottle::OnActivationStateComputed(
     mojom::ActivationState state) {
   if (deferred_) {
-    if (IsInSubresourceFilterRoot(navigation_handle()))
+    if (IsInSubresourceFilterRoot(navigation_handle())) {
       UpdateWithMoreAccurateState();
+    }
     Resume();
   }
 }
@@ -176,8 +180,9 @@ ActivationStateComputingNavigationThrottle::filter() const {
   // delaying the navigation until the filter has computed an activation state.
   // See crbug.com/736249. In the mean time, have a check here to avoid
   // returning a filter in an invalid state.
-  if (async_filter_ && async_filter_->has_activation_state())
+  if (async_filter_ && async_filter_->has_activation_state()) {
     return async_filter_.get();
+  }
   return nullptr;
 }
 

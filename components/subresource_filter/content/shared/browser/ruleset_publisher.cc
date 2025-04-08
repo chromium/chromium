@@ -56,8 +56,7 @@ void RulesetPublisher::TryOpenAndSetRulesetFile(
                                                std::move(callback));
 }
 
-void RulesetPublisher::PublishNewRulesetVersion(
-    RulesetFilePtr ruleset_data) {
+void RulesetPublisher::PublishNewRulesetVersion(RulesetFilePtr ruleset_data) {
   CHECK(ruleset_data, base::NotFatalUntil::M129);
   CHECK(ruleset_data->IsValid(), base::NotFatalUntil::M129);
   ruleset_data_.reset();
@@ -76,8 +75,9 @@ void RulesetPublisher::PublishNewRulesetVersion(
     SendRulesetToRenderProcess(ruleset_data_.get(), it.GetCurrentValue());
   }
 
-  if (!ruleset_published_callback_.is_null())
+  if (!ruleset_published_callback_.is_null()) {
     std::move(ruleset_published_callback_).Run();
+  }
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>
@@ -98,8 +98,9 @@ void RulesetPublisher::IndexAndStoreAndPublishRulesetIfNeeded(
 
 void RulesetPublisher::OnRenderProcessHostCreated(
     content::RenderProcessHost* rph) {
-  if (!ruleset_data_ || !ruleset_data_->IsValid())
+  if (!ruleset_data_ || !ruleset_data_->IsValid()) {
     return;
+  }
   SendRulesetToRenderProcess(ruleset_data_.get(), rph);
 }
 

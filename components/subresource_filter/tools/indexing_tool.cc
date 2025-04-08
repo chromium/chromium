@@ -48,8 +48,9 @@ bool IndexAndWriteRuleset(const base::FilePath& unindexed_path,
 
   base::WriteFile(indexed_path, indexer.data());
 
-  if (out_checksum)
+  if (out_checksum) {
     *out_checksum = indexer.GetChecksum();
+  }
 
   return true;
 }

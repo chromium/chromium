@@ -57,8 +57,9 @@ int main(int argc, char* argv[]) {
 
   CHECK_NE(0, checksum);
 
-  if (!command_line.HasSwitch(kSwitchVersionOutput))
+  if (!command_line.HasSwitch(kSwitchVersionOutput)) {
     return 0;
+  }
 
   LOG_IF(FATAL, !command_line.HasSwitch(kSwitchContentVersion))
       << "content_version must be present if version_output is";

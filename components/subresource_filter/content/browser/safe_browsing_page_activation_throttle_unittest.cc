@@ -94,8 +94,9 @@ class TestSafeBrowsingActivationThrottleDelegate
     CHECK(handle->IsInMainFrame());
     if (allowlisted_hosts_.count(handle->GetURL().host())) {
       if (effective_level ==
-          subresource_filter::mojom::ActivationLevel::kEnabled)
+          subresource_filter::mojom::ActivationLevel::kEnabled) {
         *decision = subresource_filter::ActivationDecision::URL_ALLOWLISTED;
+      }
       return mojom::ActivationLevel::kDisabled;
     }
     return effective_level;
@@ -280,8 +281,9 @@ class SafeBrowsingPageActivationThrottleTest
             first_url, content::WebContents::FromRenderFrameHost(rfh));
     navigation_simulator_->Start();
     auto result = navigation_simulator_->GetLastThrottleCheckResult();
-    if (result.action() == content::NavigationThrottle::CANCEL)
+    if (result.action() == content::NavigationThrottle::CANCEL) {
       navigation_simulator_.reset();
+    }
     return result;
   }
 
@@ -289,8 +291,9 @@ class SafeBrowsingPageActivationThrottleTest
       const GURL& new_url) {
     navigation_simulator_->Redirect(new_url);
     auto result = navigation_simulator_->GetLastThrottleCheckResult();
-    if (result.action() == content::NavigationThrottle::CANCEL)
+    if (result.action() == content::NavigationThrottle::CANCEL) {
       navigation_simulator_.reset();
+    }
     return result;
   }
 
@@ -332,9 +335,7 @@ class SafeBrowsingPageActivationThrottleTest
     fake_safe_browsing_database_->RemoveAllBlocklistedUrls();
   }
 
-  void RunUntilIdle() {
-    base::RunLoop().RunUntilIdle();
-  }
+  void RunUntilIdle() { base::RunLoop().RunUntilIdle(); }
 
   content::NavigationSimulator* navigation_simulator() {
     return navigation_simulator_.get();
@@ -409,22 +410,18 @@ class SafeBrowsingPageActivationThrottleTestWithCancelling
   }
 
   SafeBrowsingPageActivationThrottleTestWithCancelling(
-      const SafeBrowsingPageActivationThrottleTestWithCancelling&) =
-      delete;
+      const SafeBrowsingPageActivationThrottleTestWithCancelling&) = delete;
   SafeBrowsingPageActivationThrottleTestWithCancelling& operator=(
-      const SafeBrowsingPageActivationThrottleTestWithCancelling&) =
-      delete;
+      const SafeBrowsingPageActivationThrottleTestWithCancelling&) = delete;
 
-  ~SafeBrowsingPageActivationThrottleTestWithCancelling()
-      override {}
+  ~SafeBrowsingPageActivationThrottleTestWithCancelling() override {}
 
   void DidStartNavigation(content::NavigationHandle* handle) override {
     auto throttle = std::make_unique<content::TestNavigationThrottle>(handle);
     throttle->SetResponse(throttle_method_, result_sync_,
                           content::NavigationThrottle::CANCEL);
     handle->RegisterThrottleForTesting(std::move(throttle));
-    SafeBrowsingPageActivationThrottleTest::DidStartNavigation(
-        handle);
+    SafeBrowsingPageActivationThrottleTest::DidStartNavigation(handle);
   }
 
   content::TestNavigationThrottle::ThrottleMethod throttle_method() {
@@ -480,8 +477,7 @@ TEST_F(SafeBrowsingPageActivationThrottleTest, NoConfigs) {
             *observer()->GetPageActivationForLastCommittedLoad());
 }
 
-TEST_F(SafeBrowsingPageActivationThrottleTest,
-       MultipleSimultaneousConfigs) {
+TEST_F(SafeBrowsingPageActivationThrottleTest, MultipleSimultaneousConfigs) {
   Configuration config1(mojom::ActivationLevel::kDryRun,
                         ActivationScope::NO_SITES);
   config1.activation_conditions.priority = 2;
@@ -539,8 +535,7 @@ TEST_F(SafeBrowsingPageActivationThrottleTest,
             *observer()->GetPageActivationForLastCommittedLoad());
 }
 
-TEST_F(SafeBrowsingPageActivationThrottleTest,
-       AllSiteEnabled_Activates) {
+TEST_F(SafeBrowsingPageActivationThrottleTest, AllSiteEnabled_Activates) {
   scoped_configuration()->ResetConfiguration(Configuration(
       mojom::ActivationLevel::kEnabled, ActivationScope::ALL_SITES));
   GURL url(kURL);
@@ -563,8 +558,7 @@ TEST_F(SafeBrowsingPageActivationThrottleTest,
             *observer()->GetPageActivationForLastCommittedLoad());
 }
 
-TEST_F(SafeBrowsingPageActivationThrottleTest,
-       NavigationFails_NoActivation) {
+TEST_F(SafeBrowsingPageActivationThrottleTest, NavigationFails_NoActivation) {
   EXPECT_EQ(std::optional<mojom::ActivationLevel>(),
             observer()->GetPageActivationForLastCommittedLoad());
   content::NavigationSimulator::NavigateAndFailFromDocument(
@@ -573,8 +567,7 @@ TEST_F(SafeBrowsingPageActivationThrottleTest,
             observer()->GetPageActivationForLastCommittedLoad());
 }
 
-TEST_F(SafeBrowsingPageActivationThrottleTest,
-       NotificationVisibility) {
+TEST_F(SafeBrowsingPageActivationThrottleTest, NotificationVisibility) {
   GURL url(kURL);
   ConfigureForMatch(url);
 #if BUILDFLAG(IS_ANDROID)
@@ -657,8 +650,7 @@ TEST_F(SafeBrowsingPageActivationThrottleTest, ActivationList) {
 
 // Regression test for an issue where synchronous failure from the SB database
 // caused a double cancel. This is CHECKed in the fake database.
-TEST_F(SafeBrowsingPageActivationThrottleTest,
-       SynchronousResponse) {
+TEST_F(SafeBrowsingPageActivationThrottleTest, SynchronousResponse) {
   const GURL url(kURL);
   fake_safe_browsing_database()->set_synchronous_failure();
   SimulateStartAndExpectProceed(url);
@@ -686,8 +678,7 @@ TEST_F(SafeBrowsingPageActivationThrottleTest, LogsUkm) {
   }
 }
 
-TEST_F(SafeBrowsingPageActivationThrottleTest,
-       LogsUkmNoActivation) {
+TEST_F(SafeBrowsingPageActivationThrottleTest, LogsUkmNoActivation) {
   ukm::InitializeSourceUrlRecorderForWebContents(
       RenderViewHostTestHarness::web_contents());
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
@@ -728,8 +719,7 @@ TEST_F(SafeBrowsingPageActivationThrottleTest, LogsUkmDryRun) {
   }
 }
 
-TEST_F(SafeBrowsingPageActivationThrottleTest,
-       ToggleForceActivation) {
+TEST_F(SafeBrowsingPageActivationThrottleTest, ToggleForceActivation) {
   auto* web_contents = RenderViewHostTestHarness::web_contents();
   DevtoolsInteractionTracker::CreateForWebContents(web_contents);
   auto* devtools_interaction_tracker =
@@ -791,16 +781,16 @@ TEST_F(SafeBrowsingPageActivationThrottleTest,
   EXPECT_FALSE(CreateAndNavigateDisallowedSubframe(main_rfh()));
 }
 
-TEST_P(SafeBrowsingPageActivationThrottleScopeTest,
-       ActivateForScopeType) {
+TEST_P(SafeBrowsingPageActivationThrottleScopeTest, ActivateForScopeType) {
   const ActivationScopeTestData& test_data = GetParam();
   scoped_configuration()->ResetConfiguration(Configuration(
       mojom::ActivationLevel::kEnabled, test_data.activation_scope,
       ActivationList::SUBRESOURCE_FILTER));
 
   const GURL test_url(kURLWithParams);
-  if (test_data.url_matches_activation_list)
+  if (test_data.url_matches_activation_list) {
     ConfigureForMatch(test_url);
+  }
   SimulateNavigateAndCommit({test_url}, main_rfh());
   EXPECT_EQ(test_data.expected_activation_level,
             *observer()->GetPageActivationForLastCommittedLoad());
@@ -829,8 +819,9 @@ TEST_P(SafeBrowsingPageActivationThrottleScopeTest,
                                   "https://example.test"};
   for (auto* url : unsupported_urls) {
     SCOPED_TRACE(url);
-    if (test_data.url_matches_activation_list)
+    if (test_data.url_matches_activation_list) {
       ConfigureForMatch(GURL(url));
+    }
     SimulateNavigateAndCommit({GURL(url)}, main_rfh());
     EXPECT_EQ(mojom::ActivationLevel::kDisabled,
               *observer()->GetPageActivationForLastCommittedLoad());
@@ -838,16 +829,16 @@ TEST_P(SafeBrowsingPageActivationThrottleScopeTest,
 
   for (auto* url : supported_urls) {
     SCOPED_TRACE(url);
-    if (test_data.url_matches_activation_list)
+    if (test_data.url_matches_activation_list) {
       ConfigureForMatch(GURL(url));
+    }
     SimulateNavigateAndCommit({GURL(url)}, main_rfh());
     EXPECT_EQ(test_data.expected_activation_level,
               *observer()->GetPageActivationForLastCommittedLoad());
   }
 }
 
-TEST_F(SafeBrowsingPageActivationThrottleTest,
-       ListNotMatched_NoActivation) {
+TEST_F(SafeBrowsingPageActivationThrottleTest, ListNotMatched_NoActivation) {
   const GURL url(kURL);
   SimulateStartAndExpectProceed(url);
   SimulateCommitAndExpectProceed();
@@ -860,8 +851,7 @@ TEST_F(SafeBrowsingPageActivationThrottleTest,
   tester().ExpectTotalCount(kSafeBrowsingCheckTime, 1);
 }
 
-TEST_P(SafeBrowsingPageActivationThrottleParamTest,
-       ListMatched_Activation) {
+TEST_P(SafeBrowsingPageActivationThrottleParamTest, ListMatched_Activation) {
   const ActivationListTestData& test_data = GetParam();
   const GURL url(kURL);
   ConfigureForMatchParam(url);
@@ -981,8 +971,7 @@ struct RedirectSamplesAndResults {
   std::optional<RedirectPosition> last_enforcement_position;
 };
 
-TEST_F(SafeBrowsingPageActivationThrottleTest,
-       RedirectPositionLogged) {
+TEST_F(SafeBrowsingPageActivationThrottleTest, RedirectPositionLogged) {
   // Set up the urls for enforcement.
   GURL normal_url("https://example.regular");
   GURL bad_url("https://example.bad");
@@ -1100,8 +1089,7 @@ TEST_P(SafeBrowsingPageActivationThrottleParamTest,
                                  base::Milliseconds(0), 1);
 }
 
-TEST_P(SafeBrowsingPageActivationThrottleTestWithCancelling,
-       Cancel) {
+TEST_P(SafeBrowsingPageActivationThrottleTestWithCancelling, Cancel) {
   const GURL url(kURL);
   SCOPED_TRACE(::testing::Message() << "ThrottleMethod: " << throttle_method()
                                     << " ResultSynchrony: " << result_sync());
@@ -1143,14 +1131,12 @@ INSTANTIATE_TEST_SUITE_P(
         ::testing::Values(content::TestNavigationThrottle::SYNCHRONOUS,
                           content::TestNavigationThrottle::ASYNCHRONOUS)));
 
-INSTANTIATE_TEST_SUITE_P(
-    ActivationLevelTest,
-    SafeBrowsingPageActivationThrottleParamTest,
-    ::testing::ValuesIn(kActivationListTestData));
+INSTANTIATE_TEST_SUITE_P(ActivationLevelTest,
+                         SafeBrowsingPageActivationThrottleParamTest,
+                         ::testing::ValuesIn(kActivationListTestData));
 
-INSTANTIATE_TEST_SUITE_P(
-    ActivationScopeTest,
-    SafeBrowsingPageActivationThrottleScopeTest,
-    ::testing::ValuesIn(kActivationScopeTestData));
+INSTANTIATE_TEST_SUITE_P(ActivationScopeTest,
+                         SafeBrowsingPageActivationThrottleScopeTest,
+                         ::testing::ValuesIn(kActivationScopeTestData));
 
 }  // namespace subresource_filter

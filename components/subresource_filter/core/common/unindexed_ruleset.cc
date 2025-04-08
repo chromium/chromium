@@ -26,11 +26,13 @@ UnindexedRulesetReader::~UnindexedRulesetReader() = default;
 
 bool UnindexedRulesetReader::ReadNextChunk(proto::FilteringRules* chunk) {
   uint32_t chunk_size = 0;
-  if (!coded_stream_.ReadVarint32(&chunk_size))
+  if (!coded_stream_.ReadVarint32(&chunk_size)) {
     return false;
+  }
   auto limit = coded_stream_.PushLimit(chunk_size);
-  if (!chunk->ParseFromCodedStream(&coded_stream_))
+  if (!chunk->ParseFromCodedStream(&coded_stream_)) {
     return false;
+  }
   coded_stream_.PopLimit(limit);
   return true;
 }
@@ -61,8 +63,9 @@ bool UnindexedRulesetWriter::AddUrlRule(const proto::UrlRule& rule) {
 bool UnindexedRulesetWriter::Finish() {
   CHECK(!had_error(), base::NotFatalUntil::M129);
   const bool success = !pending_chunk_.url_rules_size() || WritePendingChunk();
-  if (success)
+  if (success) {
     coded_stream_.Trim();
+  }
   return success;
 }
 

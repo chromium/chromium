@@ -249,8 +249,9 @@ RuleType RuleParser::Parse(std::string_view line) {
       break;
     }
     const char next_char = part[css_separator_pos + 1];
-    if (next_char == '#' || next_char == '@')  // CSS rule starter.
+    if (next_char == '#' || next_char == '@') {  // CSS rule starter.
       break;
+    }
   }
 
   if (css_separator_pos != std::string_view::npos) {
@@ -287,8 +288,9 @@ RuleType RuleParser::ParseUrlRule(std::string_view origin,
 
   if (options_start != std::string_view::npos) {
     const std::string_view options = part.substr(options_start + 1);
-    if (!ParseUrlRuleOptions(origin, options))
+    if (!ParseUrlRuleOptions(origin, options)) {
       return url_pattern_index::proto::RULE_TYPE_UNSPECIFIED;
+    }
     part.remove_suffix(part.size() - options_start);
   }
 
@@ -382,8 +384,9 @@ bool RuleParser::ParseUrlRuleOptions(std::string_view origin,
         // option is negated) or excluded (otherwise).
         if (tri_state == TriState::YES) {
           // TODO(pkalinnikov): How about not resetting ActivationType options?
-          if (!has_seen_element_or_activation_type)
+          if (!has_seen_element_or_activation_type) {
             url_rule_.type_mask = 0;
+          }
           url_rule_.type_mask |= type_mask_for(option_details->element_type);
         } else {
           CHECK(tri_state == TriState::NO, base::NotFatalUntil::M129);
@@ -393,8 +396,9 @@ bool RuleParser::ParseUrlRuleOptions(std::string_view origin,
         break;
       }
       case KeywordMap::OPTION_ACTIVATION_TYPE:
-        if (!has_seen_element_or_activation_type)
+        if (!has_seen_element_or_activation_type) {
           url_rule_.type_mask = 0;
+        }
         url_rule_.type_mask |= type_mask_for(option_details->activation_type);
         has_seen_element_or_activation_type = true;
         break;

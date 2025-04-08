@@ -226,7 +226,8 @@ TEST_F(RulesetConverterTest, ChromeVersions) {
       "a.com$popup",
 
       // Only genericblock/document activations are supported.
-      "@@a.com$generichide", "@@a.com$elemhide",
+      "@@a.com$generichide",
+      "@@a.com$elemhide",
 
       // Chrome 59+ supports websocket.
       "host.com$websocket",

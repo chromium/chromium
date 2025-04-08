@@ -17,13 +17,15 @@ static bool g_fail_memory_map_initialization_for_testing = false;
 // static
 scoped_refptr<MemoryMappedRuleset> MemoryMappedRuleset::CreateAndInitialize(
     base::File ruleset_file) {
-  if (g_fail_memory_map_initialization_for_testing)
+  if (g_fail_memory_map_initialization_for_testing) {
     return nullptr;
+  }
 
   auto ruleset = base::AdoptRef(new MemoryMappedRuleset());
   if (g_fail_memory_map_initialization_for_testing ||
-      !ruleset->ruleset_.Initialize(std::move(ruleset_file)))
+      !ruleset->ruleset_.Initialize(std::move(ruleset_file))) {
     return nullptr;
+  }
   CHECK(ruleset->ruleset_.IsValid(), base::NotFatalUntil::M129);
   return ruleset;
 }
