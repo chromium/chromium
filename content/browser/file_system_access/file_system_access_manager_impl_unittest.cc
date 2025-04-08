@@ -549,8 +549,7 @@ TEST_F(FileSystemAccessManagerImplTest, GetSandboxedFileSystem_BadBucket) {
       kTestStorageKey, kTestURL,
       web_contents_->GetPrimaryMainFrame()->GetGlobalId()};
   const auto bucket = storage::BucketLocator(
-      storage::BucketId(12), kTestStorageKey,
-      blink::mojom::StorageType::kUnknown, /*is_default=*/false);
+      storage::BucketId(12), kTestStorageKey, /*is_default=*/false);
 
   base::test::TestFuture<
       blink::mojom::FileSystemAccessErrorPtr,

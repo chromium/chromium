@@ -222,7 +222,7 @@ TEST_F(FileSystemAccessHandleBaseTest, GetParentURL_CustomBucketLocator) {
   const auto custom_bucket = storage::BucketLocator(
       storage::BucketId(1),
       blink::StorageKey::CreateFromStringForTesting("http://example/"),
-      blink::mojom::StorageType::kTemporary, /*is_default=*/false);
+      /*is_default=*/false);
   custom_bucket_url.SetBucket(custom_bucket);
   TestFileSystemAccessHandle custom_handle(
       manager_.get(),

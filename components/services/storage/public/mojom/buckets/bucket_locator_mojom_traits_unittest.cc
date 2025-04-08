@@ -19,15 +19,15 @@ TEST(BucketLocatorMojomTraitsTest, SerializeAndDeserialize) {
       BucketLocator(
           BucketId(1),
           blink::StorageKey::CreateFromStringForTesting("http://example/"),
-          blink::mojom::StorageType::kTemporary, /*is_default=*/false),
+          /*is_default=*/false),
       BucketLocator(
           BucketId(123),
           blink::StorageKey::CreateFromStringForTesting("http://google.com/"),
-          blink::mojom::StorageType::kTemporary, /*is_default=*/true),
+          /*is_default=*/true),
       BucketLocator(
           BucketId(1000),
           blink::StorageKey::CreateFromStringForTesting("http://test.com/"),
-          blink::mojom::StorageType::kSyncable, /*is_default=*/true)};
+          /*is_default=*/true)};
 
   for (auto& original : test_keys) {
     BucketLocator copied;

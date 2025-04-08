@@ -342,7 +342,6 @@ void IndexedDBContextImpl::BindIndexedDBImpl(
 void IndexedDBContextImpl::DeleteBucketData(const BucketLocator& bucket_locator,
                                             DeleteBucketDataCallback callback) {
   DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
-  DCHECK_EQ(bucket_locator.type, blink::mojom::StorageType::kTemporary);
   DCHECK(!callback.is_null());
   ForceClose(
       bucket_locator.id,
@@ -1172,7 +1171,6 @@ void IndexedDBContextImpl::EnsureBucketContext(
 
 void IndexedDBContextImpl::GetBucketUsage(const BucketLocator& bucket,
                                           GetBucketUsageCallback callback) {
-  DCHECK_EQ(bucket.type, blink::mojom::StorageType::kTemporary);
   if (in_memory()) {
     GetInMemorySize(bucket.id, std::move(callback));
   } else {

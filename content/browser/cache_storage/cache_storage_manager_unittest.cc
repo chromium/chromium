@@ -3142,8 +3142,7 @@ TEST_F(CacheStorageIndexMigrationTest, BucketMigration) {
 
                storage::BucketLocator bucket_locator = storage::BucketLocator(
                    storage::BucketId(upgraded_index.bucket_id()),
-                   result.value(), StorageType::kTemporary,
-                   upgraded_index.bucket_is_default());
+                   result.value(), upgraded_index.bucket_is_default());
                EXPECT_EQ(this->bucket_locator1_, bucket_locator);
              }));
 }
@@ -3170,7 +3169,7 @@ TEST_F(CacheStorageIndexMigrationTest, InvalidBucketId) {
 
             storage::BucketLocator bucket_locator = storage::BucketLocator(
                 storage::BucketId(upgraded_index.bucket_id()), result.value(),
-                StorageType::kTemporary, upgraded_index.bucket_is_default());
+                upgraded_index.bucket_is_default());
             EXPECT_EQ(this->bucket_locator1_, bucket_locator);
           }));
 }

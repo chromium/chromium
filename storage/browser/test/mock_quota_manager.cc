@@ -22,7 +22,6 @@
 #include "storage/browser/quota/quota_client_type.h"
 
 using ::blink::StorageKey;
-using ::blink::mojom::StorageType;
 
 namespace storage {
 
@@ -183,8 +182,7 @@ bool MockQuotaManager::AddBucket(const BucketInfo& bucket,
       std::ranges::none_of(buckets_, [bucket](const BucketData& bucket_data) {
         return bucket.id == bucket_data.bucket.id ||
                (bucket.name == bucket_data.bucket.name &&
-                bucket.storage_key == bucket_data.bucket.storage_key &&
-                bucket.type == bucket_data.bucket.type);
+                bucket.storage_key == bucket_data.bucket.storage_key);
       }));
   buckets_.emplace_back(
       BucketData(bucket, std::move(quota_client_types), modified));
@@ -193,9 +191,8 @@ bool MockQuotaManager::AddBucket(const BucketInfo& bucket,
 
 BucketInfo MockQuotaManager::CreateBucket(const BucketInitParams& params) {
   return BucketInfo(
-      bucket_id_generator_.GenerateNextId(), params.storage_key,
-      StorageType::kTemporary, params.name, params.expiration, params.quota,
-      params.persistent.value_or(false),
+      bucket_id_generator_.GenerateNextId(), params.storage_key, params.name,
+      params.expiration, params.quota, params.persistent.value_or(false),
       params.durability.value_or(blink::mojom::BucketDurability::kRelaxed));
 }
 
@@ -223,9 +220,9 @@ void MockQuotaManager::GetBucketsModifiedBetween(base::Time begin,
   auto buckets_to_return = std::make_unique<std::set<BucketLocator>>();
   for (const auto& info : buckets_) {
     if (info.modified >= begin && info.modified < end) {
-      buckets_to_return->insert(BucketLocator(
-          info.bucket.id, info.bucket.storage_key, info.bucket.type,
-          info.bucket.name == kDefaultBucketName));
+      buckets_to_return->insert(
+          BucketLocator(info.bucket.id, info.bucket.storage_key,
+                        info.bucket.name == kDefaultBucketName));
     }
   }
 

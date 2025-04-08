@@ -183,7 +183,6 @@ class FileSystemAccessLockManagerTest : public RenderViewHostTestHarness {
   const storage::BucketLocator kTestBucketLocator =
       storage::BucketLocator(storage::BucketId(1),
                              kTestStorageKey,
-                             blink::mojom::StorageType::kTemporary,
                              /*is_default=*/false);
 
   // Default initializing kFrameId simulates a frame that is always active.
@@ -279,7 +278,6 @@ TEST_F(FileSystemAccessLockManagerTest, SandboxedFilesSamePath) {
       kTestStorageKey, storage::kFileSystemTypeTemporary, path);
   const storage::BucketLocator kOtherBucketLocator(
       storage::BucketId(2), kOtherStorageKey,
-      blink::mojom::StorageType::kTemporary,
       /*is_default=*/false);
   url2.SetBucket(kOtherBucketLocator);
 
@@ -308,7 +306,6 @@ TEST_F(FileSystemAccessLockManagerTest, SandboxedFilesDifferentBucket) {
       kTestStorageKey, storage::kFileSystemTypeTemporary, path);
   const storage::BucketLocator kOtherBucketLocator(
       storage::BucketId(2), kTestStorageKey,
-      blink::mojom::StorageType::kTemporary,
       /*is_default=*/false);
   url2.SetBucket(kOtherBucketLocator);
 

@@ -10,7 +10,6 @@ namespace storage {
 
 BucketInfo::BucketInfo(BucketId bucket_id,
                        blink::StorageKey storage_key,
-                       blink::mojom::StorageType type,
                        std::string name,
                        base::Time expiration,
                        int64_t quota,
@@ -18,7 +17,6 @@ BucketInfo::BucketInfo(BucketId bucket_id,
                        blink::mojom::BucketDurability durability)
     : id(std::move(bucket_id)),
       storage_key(std::move(storage_key)),
-      type(type),
       name(std::move(name)),
       expiration(std::move(expiration)),
       quota(quota),

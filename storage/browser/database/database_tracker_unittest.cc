@@ -112,7 +112,6 @@ class TestQuotaManagerProxy : public QuotaManagerProxy {
 
   void NotifyBucketAccessed(const BucketLocator& bucket,
                             base::Time access_time) override {
-    EXPECT_EQ(blink::mojom::StorageType::kTemporary, bucket.type);
     accesses_[bucket.storage_key] += 1;
   }
 
@@ -124,7 +123,6 @@ class TestQuotaManagerProxy : public QuotaManagerProxy {
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       base::OnceClosure callback) override {
     EXPECT_EQ(QuotaClientType::kDatabase, client_id);
-    EXPECT_EQ(blink::mojom::StorageType::kTemporary, bucket.type);
     modifications_[bucket.storage_key].first += 1;
     modifications_[bucket.storage_key].second += delta.value_or(0);
     if (callback)

@@ -20,19 +20,17 @@ TEST(BucketInfoMojomTraitsTest, SerializeAndDeserialize) {
       BucketInfo(
           BucketId(1),
           blink::StorageKey::CreateFromStringForTesting("http://example/"),
-          blink::mojom::StorageType::kTemporary, kDefaultBucketName,
-          base::Time(), 0, true, blink::mojom::BucketDurability::kRelaxed),
+          kDefaultBucketName, base::Time(), 0, true,
+          blink::mojom::BucketDurability::kRelaxed),
       BucketInfo(
           BucketId(123),
           blink::StorageKey::CreateFromStringForTesting("http://google.com/"),
-          blink::mojom::StorageType::kTemporary, "inbox",
-          base::Time::Now() + base::Days(1), 100, true,
+          "inbox", base::Time::Now() + base::Days(1), 100, true,
           blink::mojom::BucketDurability::kStrict),
       BucketInfo(
           BucketId(1000),
           blink::StorageKey::CreateFromStringForTesting("http://test.com/"),
-          blink::mojom::StorageType::kTemporary, "drafts",
-          base::Time::Now() - base::Days(1), 1234, false,
+          "drafts", base::Time::Now() - base::Days(1), 1234, false,
           blink::mojom::BucketDurability::kStrict),
   };
 
