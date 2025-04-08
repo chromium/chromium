@@ -73,7 +73,7 @@ CanvasRenderingContextHost::CreateTransparentImage(
     return nullptr;
   SkImageInfo info = SkImageInfo::Make(
       gfx::SizeToSkISize(size), GetRenderingContextSkColorType(),
-      kPremul_SkAlphaType, GetRenderingContextSkColorSpace());
+      kPremul_SkAlphaType, GetRenderingContextColorSpace().ToSkColorSpace());
   sk_sp<SkSurface> surface =
       SkSurfaces::Raster(info, info.minRowBytes(), nullptr);
   if (!surface)
@@ -372,11 +372,6 @@ viz::SharedImageFormat CanvasRenderingContextHost::GetRenderingContextFormat()
     const {
   return RenderingContext() ? RenderingContext()->GetSharedImageFormat()
                             : GetN32FormatForCanvas();
-}
-
-sk_sp<SkColorSpace>
-CanvasRenderingContextHost::GetRenderingContextSkColorSpace() const {
-  return GetRenderingContextColorSpace().ToSkColorSpace();
 }
 
 gfx::ColorSpace CanvasRenderingContextHost::GetRenderingContextColorSpace()

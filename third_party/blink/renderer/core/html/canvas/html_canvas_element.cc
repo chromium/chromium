@@ -1215,7 +1215,7 @@ scoped_refptr<StaticBitmapImage> HTMLCanvasElement::Snapshot(
               SkImageInfo::Make(
                   SkISize::Make(adjusted_size.width(), adjusted_size.height()),
                   color_type, kUnpremul_SkAlphaType,
-                  GetRenderingContextSkColorSpace()));
+                  GetRenderingContextColorSpace().ToSkColorSpace()));
         }
       }
     }
