@@ -30,6 +30,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
+#include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
@@ -52,6 +53,7 @@
 #include "extensions/browser/install_prefs_helper.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_map.h"
+#include "extensions/browser/service_worker/service_worker_task_queue_factory.h"
 #include "extensions/browser/warning_service.h"
 #include "extensions/browser/warning_set.h"
 #include "extensions/common/api/web_request.h"
@@ -90,6 +92,10 @@ namespace extensions {
 namespace web_request = api::web_request;
 
 namespace {
+
+BASE_FEATURE(kDeferResetURLLoaderFactories,
+             "DeferResetURLLoaderFactories",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -334,12 +340,21 @@ WebRequestAPI::WebRequestAPI(content::BrowserContext* context)
     event_router->RegisterObserver(this, event_name);
   }
   extensions::ExtensionRegistry::Get(browser_context_)->AddObserver(this);
+
+  // We only have to observe ServiceWorkerTaskQueue and react to
+  // `OnAllRegistrationsStored` if we need to defer calls to
+  // `ResetURLLoaderFactories` to after registration storage.
+  if (base::FeatureList::IsEnabled(kDeferResetURLLoaderFactories)) {
+    service_worker_task_queue_observation_.Observe(
+        ServiceWorkerTaskQueue::Get(browser_context_));
+  }
 }
 
 WebRequestAPI::~WebRequestAPI() = default;
 
 void WebRequestAPI::Shutdown() {
   proxies_.reset();
+  service_worker_context_observation_.RemoveAllObservations();
   EventRouter::Get(browser_context_)->UnregisterObserver(this);
   extensions::ExtensionRegistry::Get(browser_context_)->RemoveObserver(this);
   // TODO(crbug.com/40264286): Remove this once WebRequestEventRouter
@@ -703,9 +718,52 @@ bool WebRequestAPI::HasExtraHeadersListenerForTesting() {
 void WebRequestAPI::UpdateMayHaveProxies() {
   bool may_have_proxies = MayHaveProxies();
   if (!may_have_proxies_ && may_have_proxies) {
-    browser_context_->GetDefaultStoragePartition()->ResetURLLoaderFactories();
+    if (base::FeatureList::IsEnabled(kDeferResetURLLoaderFactories) &&
+        has_pending_worker_registrations_) {
+      // If any service worker registration is still in flight (started, but not
+      // stored), it's not safe to call `ResetURLLoaderFactories`, since it
+      // can cause network service failures in other extensions' registrations.
+      // See https://crbug.com/394523691.
+      deferred_reset_url_loader_factories_ = true;
+      // TODO(crbug.com/408312299): avoid deferring all factory resets here.
+      // Strictly speaking, we only need to defer factories for the loading
+      // extension. Other extensions's factories and web content factories
+      // can be reset safely.
+    } else {
+      // Otherwise, we can safely call it now.
+      browser_context_->GetDefaultStoragePartition()->ResetURLLoaderFactories();
+    }
   }
   may_have_proxies_ = may_have_proxies;
+}
+
+void WebRequestAPI::OnWillRegisterServiceWorker(
+    content::ServiceWorkerContext* context) {
+  // The registration process for an extension's service worker is starting.
+  // We begin observing the service worker's context, so that we can listen
+  // for `OnWillCreateURLLoaderFactory`, after which it's not safe to call
+  // `ResetURLLoaderFactories()` anymore.
+  if (!service_worker_context_observation_.IsObservingSource(context)) {
+    service_worker_context_observation_.AddObservation(context);
+  }
+}
+
+void WebRequestAPI::OnWillCreateURLLoaderFactory(const GURL& scope) {
+  // The URLLoaderFactory that will be used to fetch the worker's script
+  // is about to be constructed. From here on until there is no more
+  // registrations in flight, it's not safe to call `ResetURLLoaderFactories()`.
+  has_pending_worker_registrations_ = true;
+}
+
+void WebRequestAPI::OnAllRegistrationsStored() {
+  // No more registrations are in flight. Stop observing the service workers...
+  has_pending_worker_registrations_ = false;
+  service_worker_context_observation_.RemoveAllObservations();
+  // ...and reset the URLLoaderFactories if we haven't done it already.
+  if (deferred_reset_url_loader_factories_) {
+    browser_context_->GetDefaultStoragePartition()->ResetURLLoaderFactories();
+    deferred_reset_url_loader_factories_ = false;
+  }
 }
 
 void WebRequestAPI::OnExtensionLoaded(content::BrowserContext* browser_context,
@@ -783,6 +841,12 @@ void WebRequestAPI::RemoveLazyListener(content::BrowserContext* browser_context,
   }
   WebRequestEventRouter::Get(browser_context)
       ->RemoveLazyListener(browser_context, extension_id, sub_event_name);
+}
+
+template <>
+void BrowserContextKeyedAPIFactory<
+    WebRequestAPI>::DeclareFactoryDependencies() {
+  DependsOn(ServiceWorkerTaskQueueFactory::GetInstance());
 }
 
 // Special QuotaLimitHeuristic for WebRequestHandlerBehaviorChangedFunction.

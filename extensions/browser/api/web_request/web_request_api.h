@@ -22,12 +22,16 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_multi_source_observation.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/global_request_id.h"
+#include "content/public/browser/service_worker_context.h"
+#include "content/public/browser/service_worker_context_observer.h"
 #include "extensions/browser/api/declarative_webrequest/request_stage.h"
 #include "extensions/browser/api/web_request/extension_web_request_event_router.h"
 #include "extensions/browser/api/web_request/web_request_permissions.h"
@@ -36,6 +40,7 @@
 #include "extensions/browser/extension_api_frame_id_map.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/browser/service_worker/service_worker_task_queue.h"
 #include "extensions/common/extension_id.h"
 #include "ipc/ipc_sender.h"
 #include "net/base/auth.h"
@@ -50,6 +55,7 @@ class GURL;
 namespace content {
 class BrowserContext;
 class RenderFrameHost;
+class ServiceWorkerContext;
 }  // namespace content
 
 namespace net {
@@ -71,7 +77,9 @@ class WebViewGuest;
 // per BrowserContext which is shared with incognito.
 class WebRequestAPI : public BrowserContextKeyedAPI,
                       public EventRouter::Observer,
-                      public ExtensionRegistryObserver {
+                      public ExtensionRegistryObserver,
+                      public ServiceWorkerTaskQueue::RegistrationObserver,
+                      public content::ServiceWorkerContextObserverSynchronous {
  public:
   // A callback used to asynchronously respond to an intercepted authentication
   // request. If |should_cancel| is true the request will be cancelled.
@@ -307,6 +315,16 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
                            const Extension* extension,
                            UnloadedExtensionReason reason) override;
 
+  // content::ServiceWorkerContextObserverSynchronous:
+  // Listens for the moment right before the URLLoaderFactory that will
+  // be used to fetch the worker's script is constructed.
+  void OnWillCreateURLLoaderFactory(const GURL& scope) override;
+
+  // ServiceWorkerTaskQueue::RegistrationObserver:
+  void OnWillRegisterServiceWorker(
+      content::ServiceWorkerContext* context) override;
+  void OnAllRegistrationsStored() override;
+
   // This a proxy API for the tasks that are posted. It is either called
   // when the task is run and forwards to the corresponding member function
   // in ExtensionWebRequestEventRouter, or not, if the owning BrowserContext
@@ -357,8 +375,31 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
   // |UpdateMayHaveProxies()|.
   bool may_have_proxies_;
 
+  // Stores whether there's any active worker registration for extensions,
+  // which means their URLLoaderFactory have already been constructed.
+  // Used to decide whether |ResetURLLoaderFactories()| can be called
+  // immediately, or if it needs to be deferred to when all registrations
+  // are stored.
+  bool has_pending_worker_registrations_ = false;
+
+  // Stores whether the execution of |ResetURLLoaderFactories()| has been
+  // deferred to when service workers registrations are stored.
+  bool deferred_reset_url_loader_factories_ = false;
+
+  base::ScopedMultiSourceObservation<
+      content::ServiceWorkerContext,
+      content::ServiceWorkerContextObserverSynchronous>
+      service_worker_context_observation_{this};
+
+  base::ScopedObservation<ServiceWorkerTaskQueue,
+                          ServiceWorkerTaskQueue::RegistrationObserver>
+      service_worker_task_queue_observation_{this};
+
   base::WeakPtrFactory<WebRequestAPI> weak_factory_{this};
 };
+
+template <>
+void BrowserContextKeyedAPIFactory<WebRequestAPI>::DeclareFactoryDependencies();
 
 class WebRequestInternalFunction : public ExtensionFunction {
  public:
