@@ -4869,6 +4869,16 @@ if (is_android) {
     ]
   }
 
+  # This is a separate target because it depends on guava.
+  android_library("task_executor_java") {
+    sources = [ "android/java/src/org/chromium/base/task/ChromiumExecutorServiceFactory.java" ]
+
+    deps = [
+      ":tasks_java",
+      "//third_party/android_deps:guava_android_java",
+    ]
+  }
+
   android_library("tasks_java") {
     srcjar_deps = [ ":task_trait_enum_srcjar" ]
     sources = [
@@ -5465,6 +5475,7 @@ if (is_android) {
       "android/junit/src/org/chromium/base/supplier/UnownedUserDataSupplierTest.java",
       "android/junit/src/org/chromium/base/supplier/UnwrapObservableSupplierTest.java",
       "android/junit/src/org/chromium/base/task/AsyncTaskThreadTest.java",
+      "android/junit/src/org/chromium/base/task/ChromiumExecutorServiceFactoryTest.java",
       "android/junit/src/org/chromium/base/task/SequencedTaskRunnerTaskMigrationTest.java",
       "android/junit/src/org/chromium/base/util/GarbageCollectionTestUtilsUnitTest.java",
       "test/android/junit/src/org/chromium/base/test/SetUpStatementTest.java",
@@ -5491,6 +5502,7 @@ if (is_android) {
       ":base_java_test_support_uncommon",
       ":base_junit_test_support",
       ":base_shared_preferences_java",
+      ":task_executor_java",
       "//base/test:public_transit_robolectric_tests_java",
       "//base/test:test_support_java",
       "//testing/android/instrumentation:test_runner_java",

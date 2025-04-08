@@ -321,6 +321,7 @@ if (current_toolchain == default_toolchain) {
       "$google_play_services_package:google_play_services_vision_java",
       "//base:content_uri_utils_java",
       "//base:service_loader_java",
+      "//base:task_executor_java",
       "//base/version_info/android:version_constants_java",
       "//cc:cc_java",
       "//cc/mojom:mojom_java",
