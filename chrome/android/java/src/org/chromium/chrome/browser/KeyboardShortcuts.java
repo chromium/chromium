@@ -10,6 +10,7 @@ import android.view.KeyboardShortcutGroup;
 import android.view.KeyboardShortcutInfo;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.StringRes;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
@@ -32,7 +33,9 @@ import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /** Implements app-level keyboard shortcuts for ChromeTabbedActivity and DocumentActivity. */
 public class KeyboardShortcuts {
@@ -40,6 +43,9 @@ public class KeyboardShortcuts {
     private static final int CTRL = 1 << 31;
     private static final int ALT = 1 << 30;
     private static final int SHIFT = 1 << 29;
+
+    private static final Map<Integer, KeyboardShortcutDefinitionInfo>
+            KEYBOARD_SHORTCUT_DEFINITION_MAP = new HashMap<>();
 
     private KeyboardShortcuts() {}
 
@@ -212,10 +218,87 @@ public class KeyboardShortcuts {
         int MAX_VALUE = 61;
     }
 
+    /**
+     * {@code KeyboardShortcutDefinitionInfo} defines the structure for representing information
+     * about a single keyboard shortcut. This class is intended to hold details such as the trigger
+     * key combination, the action performed by the shortcut, and potentially a docstring and
+     * category for organization.
+     *
+     * <p>Instances of this class are typically used to store and manage the definitions of
+     * available keyboard shortcuts for ChromeTabbedActivity and DocumentActivity.
+     */
+    private static class KeyboardShortcutDefinitionInfo {
+
+        private final @KeyboardShortcutsSemanticMeaning int mSemanticMeaning;
+        private final @StringRes int mGroupId;
+        private final int mKeyCode;
+        private final int mModifier;
+        private final @StringRes int mResId;
+
+        /**
+         * Constructs a new {@code KeyboardShortcutDefinitionInfo} object.
+         *
+         * @param semanticMeaning An integer representing the meaning or purpose of the shortcut.
+         * @param keyCode An integer representing the key code of the primary key that triggers the
+         *     shortcut (e.g. "KeyEvent.KEYCODE_K", "KeyEvent.KEYCODE_F5", etc.)
+         * @param modifier An integer representing the modifier keys (e.g., Ctrl, Shift, Alt) held
+         *     down in combination with the keycode.
+         * @param resId An integer representing the @StringRes docstring for the shortcut.
+         * @param groupId An integer representing the shortcut group and associated header for the
+         *     shortcut (e.g. "Developer shortcuts, Navigation shortcuts, etc.").
+         */
+        private KeyboardShortcutDefinitionInfo(
+                @KeyboardShortcutsSemanticMeaning int semanticMeaning,
+                int keyCode,
+                int modifier,
+                @StringRes int resId,
+                @StringRes int groupId) {
+            mSemanticMeaning = semanticMeaning;
+            mKeyCode = keyCode;
+            mModifier = modifier;
+            mResId = resId;
+            mGroupId = groupId;
+
+            int metaState = getMetaState(modifier);
+
+            KEYBOARD_SHORTCUT_DEFINITION_MAP.put((metaState | keyCode), this);
+        }
+
+        private int getMetaState(int modifier) {
+            int metaState = 0;
+            if ((modifier & KeyEvent.META_CTRL_ON) != 0) {
+                metaState |= CTRL;
+            }
+            if ((modifier & KeyEvent.META_ALT_ON) != 0) {
+                metaState |= ALT;
+            }
+            if ((modifier & KeyEvent.META_SHIFT_ON) != 0) {
+                metaState |= SHIFT;
+            }
+            return metaState;
+        }
+    }
+
+    // Adds all shortcuts to KEYBOARD_SHORTCUT_DEFINITION_MAP to be referenced by onKeyDown() and
+    // createShortcutGroup().
+    static {
+        new KeyboardShortcutDefinitionInfo(
+                KeyboardShortcutsSemanticMeaning.OPEN_NEW_WINDOW,
+                KeyEvent.KEYCODE_N,
+                KeyEvent.META_CTRL_ON,
+                R.string.keyboard_shortcut_open_new_window,
+                R.string.keyboard_shortcut_tab_group_header);
+    }
+
     // LINT.ThenChange(//tools/metrics/histograms/metadata/accessibility/enums.xml:KeyboardShortcutsSemanticMeaning, //tools/metrics/histograms/metadata/accessibility/histograms.xml:KeyboardShortcutsSemanticMeaning)
 
     private static @KeyboardShortcutsSemanticMeaning int getKeyboardSemanticMeaning(
             int keyCodeAndMeta) {
+
+        if (KEYBOARD_SHORTCUT_DEFINITION_MAP.containsKey(keyCodeAndMeta)) {
+            return KEYBOARD_SHORTCUT_DEFINITION_MAP.get(keyCodeAndMeta).mSemanticMeaning;
+        }
+
         switch (keyCodeAndMeta) {
                 // Tab/window creation.
             case CTRL | SHIFT | KeyEvent.KEYCODE_T:
@@ -470,7 +553,9 @@ public class KeyboardShortcuts {
             Context context) {
         int keyCode = event.getKeyCode();
         if (!uiInitialized) {
-            if (keyCode == KeyEvent.KEYCODE_SEARCH || keyCode == KeyEvent.KEYCODE_MENU) return true;
+            if (keyCode == KeyEvent.KEYCODE_SEARCH || keyCode == KeyEvent.KEYCODE_MENU) {
+                return true;
+            }
             return null;
         }
 
@@ -521,24 +606,40 @@ public class KeyboardShortcuts {
     }
 
     /**
-     * This method should be called when overriding from
-     * {@link android.app.Activity#onProvideKeyboardShortcuts(List, android.view.Menu, int)}
-     * in an activity. It will return a list of the possible shortcuts. If
-     * someone adds a shortcut they also need to add an explanation in the
-     * appropriate group in this method so the user can see it when this method
-     * is called.
+     * This method should be called when overriding from {@link
+     * android.app.Activity#onProvideKeyboardShortcuts(List, android.view.Menu, int)} in an
+     * activity. It will return a list of the possible shortcuts. If someone adds a shortcut they
+     * also need to add an explanation in the appropriate group in this method so the user can see
+     * it when this method is called.
      *
-     * Preventing inlining since this uses APIs only available on Android N, and this causes dex
+     * <p>Preventing inlining since this uses APIs only available on Android N, and this causes dex
      * validation failures on earlier versions if inlined.
      *
-     * @param context We need an activity so we can call the strings from our
-     *            resource.
+     * @param context We need an activity so we can call the strings from our resource.
      * @return a list of shortcuts organized into groups.
      */
     public static List<KeyboardShortcutGroup> createShortcutGroup(Context context) {
         final int ctrlShift = KeyEvent.META_CTRL_ON | KeyEvent.META_SHIFT_ON;
 
-        List<KeyboardShortcutGroup> shortcutGroups = new ArrayList<>();
+        HashMap<Integer, KeyboardShortcutGroup> shortcutGroupsById = new HashMap<>();
+
+        for (KeyboardShortcutDefinitionInfo shortcutInfo :
+                KEYBOARD_SHORTCUT_DEFINITION_MAP.values()) {
+            int groupId = shortcutInfo.mGroupId;
+            if (!shortcutGroupsById.containsKey(groupId)) {
+                shortcutGroupsById.put(
+                        groupId, new KeyboardShortcutGroup(context.getString(groupId)));
+            }
+            KeyboardShortcutGroup shortcutGroup = shortcutGroupsById.get(groupId);
+            addShortcut(
+                    context,
+                    shortcutGroup,
+                    shortcutInfo.mResId,
+                    shortcutInfo.mKeyCode,
+                    shortcutInfo.mModifier);
+        }
+
+        List<KeyboardShortcutGroup> shortcutGroups = new ArrayList<>(shortcutGroupsById.values());
 
         KeyboardShortcutGroup tabShortcutGroup =
                 new KeyboardShortcutGroup(
@@ -548,12 +649,6 @@ public class KeyboardShortcuts {
                 tabShortcutGroup,
                 R.string.keyboard_shortcut_open_new_tab,
                 KeyEvent.KEYCODE_T,
-                KeyEvent.META_CTRL_ON);
-        addShortcut(
-                context,
-                tabShortcutGroup,
-                R.string.keyboard_shortcut_open_new_window,
-                KeyEvent.KEYCODE_N,
                 KeyEvent.META_CTRL_ON);
         addShortcut(
                 context,
@@ -733,9 +828,13 @@ public class KeyboardShortcuts {
             MenuOrKeyboardActionController menuOrKeyboardActionController,
             ToolbarManager toolbarManager) {
         int keyCode = event.getKeyCode();
-        if (event.getRepeatCount() != 0 || KeyEvent.isModifierKey(keyCode)) return false;
+        if (event.getRepeatCount() != 0 || KeyEvent.isModifierKey(keyCode)) {
+            return false;
+        }
         if (KeyEvent.isGamepadButton(keyCode)) {
-            if (GamepadList.isGamepadAPIActive()) return false;
+            if (GamepadList.isGamepadAPIActive()) {
+                return false;
+            }
         } else if (!event.isCtrlPressed()
                 && !event.isAltPressed()
                 && keyCode != KeyEvent.KEYCODE_F3
@@ -904,10 +1003,14 @@ public class KeyboardShortcuts {
                     }
                     return true;
                 case KeyboardShortcutsSemanticMeaning.HISTORY_GO_BACK:
-                    if (currentTab != null && currentTab.canGoBack()) currentTab.goBack();
+                    if (currentTab != null && currentTab.canGoBack()) {
+                        currentTab.goBack();
+                    }
                     return true;
                 case KeyboardShortcutsSemanticMeaning.HISTORY_GO_FORWARD:
-                    if (currentTab != null && currentTab.canGoForward()) currentTab.goForward();
+                    if (currentTab != null && currentTab.canGoForward()) {
+                        currentTab.goForward();
+                    }
                     return true;
                 case KeyboardShortcutsSemanticMeaning.OPEN_HELP:
                     menuOrKeyboardActionController.onMenuOrKeyboardAction(R.id.help_id, false);
