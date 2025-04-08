@@ -30,6 +30,12 @@ class PrivacySafeBrowsingViewControllerTest
     profile_ = std::move(builder).Build();
   }
 
+  void TearDown() override {
+    [mediator_ disconnect];
+    mediator_ = nil;
+    LegacyChromeTableViewControllerTest::TearDown();
+  }
+
   // Makes a PrefService to be used by the test.
   std::unique_ptr<sync_preferences::PrefServiceSyncable> CreatePrefService() {
     auto prefs =

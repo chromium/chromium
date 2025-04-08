@@ -160,6 +160,9 @@ using password_manager::WarningType;
 
   [_optInAlertCoordinator stop];
   _optInAlertCoordinator = nil;
+
+  [self.mediator disconnect];
+  self.mediator = nil;
 }
 
 - (void)updateNotificationsButton:(BOOL)enabled {

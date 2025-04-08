@@ -94,6 +94,14 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return self;
 }
 
+- (void)disconnect {
+  [_safeBrowsingEnhancedProtectionPreference stop];
+  _safeBrowsingEnhancedProtectionPreference = nil;
+
+  [_safeBrowsingStandardProtectionPreference stop];
+  _safeBrowsingStandardProtectionPreference = nil;
+}
+
 - (void)selectSettingItem:(TableViewItem*)item {
   // If item is already selected or if we cancel turning off Safe Browsing,
   // don't do anything and keep the current selected choice.

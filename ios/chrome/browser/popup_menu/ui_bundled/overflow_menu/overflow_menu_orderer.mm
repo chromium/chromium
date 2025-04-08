@@ -194,6 +194,8 @@ base::Value::Dict DictFromBadgeData(const BadgeData badgeData) {
 }
 
 - (void)disconnect {
+  [_destinationUsageHistoryEnabled stop];
+  _destinationUsageHistoryEnabled = nil;
   [self.destinationUsageHistory stop];
   self.destinationUsageHistory = nil;
 }

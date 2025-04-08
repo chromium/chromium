@@ -48,6 +48,7 @@ namespace {}  // namespace
 }
 
 - (void)disconnect {
+  [_lockdownModePreference stop];
   _lockdownModePreference = nil;
 }
 

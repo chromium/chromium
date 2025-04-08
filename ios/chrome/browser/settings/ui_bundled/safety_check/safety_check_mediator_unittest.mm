@@ -165,6 +165,12 @@ class SafetyCheckMediatorTest : public PlatformTest {
                                     kSafetyCheck];
   }
 
+  void TearDown() override {
+    [mediator_ disconnect];
+    mediator_ = nil;
+    PlatformTest::TearDown();
+  }
+
   syncer::SyncService* syncService() {
     return SyncServiceFactory::GetForProfile(profile_.get());
   }
@@ -816,6 +822,7 @@ TEST_F(SafetyCheckMediatorTest, CheckNowClickableAll) {
 TEST_F(SafetyCheckMediatorTest, NotificationsOptInButtonPromptsTurnOff) {
   feature_list_.InitWithFeatures({kSafetyCheckNotifications}, {});
 
+  [mediator_ disconnect];
   mediator_ = [[SafetyCheckMediator alloc]
       initWithUserPrefService:pref_service_
              localPrefService:local_pref_service_
@@ -838,6 +845,7 @@ TEST_F(SafetyCheckMediatorTest, NotificationsOptInButtonPromptsTurnOff) {
 TEST_F(SafetyCheckMediatorTest, NotificationsOptInButtonPromptsTurnOn) {
   feature_list_.InitWithFeatures({kSafetyCheckNotifications}, {});
 
+  [mediator_ disconnect];
   mediator_ = [[SafetyCheckMediator alloc]
       initWithUserPrefService:pref_service_
              localPrefService:local_pref_service_
