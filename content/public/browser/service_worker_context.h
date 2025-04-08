@@ -93,6 +93,9 @@ using ServiceWorkerScriptExecutionCallback =
 // synchronously with changes in //content.
 class ServiceWorkerContextObserverSynchronous : public base::CheckedObserver {
  public:
+  // Called after the message to start the service worker has been sent.
+  virtual void OnStartWorkerMessageSent(int64_t version_id, const GURL& scope) {
+  }
   // Called when the service worker with id `version_id` will be stopped.
   virtual void OnStopping(int64_t version_id,
                           const ServiceWorkerRunningInfo& worker_info) {}

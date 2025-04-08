@@ -1229,6 +1229,16 @@ void ServiceWorkerContextCore::OnControlleeNavigationCommitted(
       version->version_id(), client_uuid, render_frame_host_id);
 }
 
+void ServiceWorkerContextCore::OnStartWorkerMessageSent(
+    ServiceWorkerVersion* version) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK_EQ(this, version->context().get());
+
+  for (auto& observer : sync_observer_list_->observers) {
+    observer.OnStartWorkerMessageSent(version->version_id(), version->scope());
+  }
+}
+
 void ServiceWorkerContextCore::OnRunningStateChanged(
     ServiceWorkerVersion* version) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

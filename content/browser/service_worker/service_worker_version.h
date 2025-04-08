@@ -180,6 +180,7 @@ class CONTENT_EXPORT ServiceWorkerVersion
 
   class Observer {
    public:
+    virtual void OnStartWorkerMessageSent(ServiceWorkerVersion* version) {}
     virtual void OnRunningStateChanged(ServiceWorkerVersion* version) {}
     virtual void OnVersionStateChanged(ServiceWorkerVersion* version) {}
     virtual void OnDevToolsRoutingIdChanged(ServiceWorkerVersion* version) {}
@@ -892,6 +893,7 @@ class CONTENT_EXPORT ServiceWorkerVersion
   void OnScriptLoaded() override;
   void OnProcessAllocated() override;
   void OnStarting() override;
+  void OnStartWorkerMessageSent() override;
   void OnStarted(blink::mojom::ServiceWorkerStartStatus status,
                  FetchHandlerType new_fetch_handler_type,
                  bool new_has_hid_event_handlers,
