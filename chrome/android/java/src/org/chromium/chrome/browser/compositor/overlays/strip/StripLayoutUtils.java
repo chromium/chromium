@@ -145,6 +145,24 @@ public class StripLayoutUtils {
     }
 
     /**
+     * Returns the group title text for the given {@link Tab}'s group. Falls back to the default
+     * title if needed.
+     *
+     * @param context The Android {@link Context}.
+     * @param modelFilter The {@link TabGroupModelFilter} that holds the given tab.
+     * @param tab A grouped tab.
+     */
+    public static String getGroupTitleText(
+            Context context, TabGroupModelFilter modelFilter, Tab tab) {
+        assert tab != null && tab.getTabGroupId() != null;
+        return getDefaultGroupTitleTextIfEmpty(
+                context,
+                modelFilter,
+                tab.getTabGroupId(),
+                modelFilter.getTabGroupTitle(tab.getRootId()));
+    }
+
+    /**
      * Returns the provided title text if it isn't empty. Otherwise, returns the default title.
      *
      * @param context The Android {@link Context}.

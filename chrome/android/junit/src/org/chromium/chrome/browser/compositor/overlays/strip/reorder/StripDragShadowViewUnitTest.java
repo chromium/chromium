@@ -26,6 +26,7 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -41,6 +42,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
+import org.chromium.base.Token;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
@@ -52,9 +54,11 @@ import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tasks.tab_management.ColorPickerUtils;
 import org.chromium.chrome.browser.tasks.tab_management.MultiThumbnailCardProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback;
+import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.TestActivity;
 
@@ -114,6 +118,7 @@ public class StripDragShadowViewUnitTest {
                 .thenReturn(mMockTabGroupModelFilter);
 
         when(mMockTab.getId()).thenReturn(TAB_ID);
+        when(mMockTab.getTabGroupId()).thenReturn(Token.createRandom());
 
         mStripDragShadowView =
                 (StripDragShadowView)
@@ -284,31 +289,75 @@ public class StripDragShadowViewUnitTest {
     }
 
     @Test
-    public void testSetIncognito() {
-        boolean incognito = true;
-        when(mMockTab.isIncognito()).thenReturn(incognito);
+    public void testUpdate_TabTinting_Standard() {
+        testUpdate_TabTinting(/* incognito= */ false);
+    }
 
+    @Test
+    public void testUpdate_TabTinting_Incognito() {
+        testUpdate_TabTinting(/* incognito= */ true);
+    }
+
+    private void testUpdate_TabTinting(boolean incognito) {
+        when(mMockTab.isIncognitoBranded()).thenReturn(incognito);
         mStripDragShadowView.prepareForTabDrag(mMockTab, 0);
 
+        // Verify card color
         @ColorRes
         int expectedBackgroundColor =
-                TabUiThemeUtil.getTabStripContainerColor(
-                        mActivity,
-                        incognito,
-                        /* foreground= */ true,
-                        /* isPlaceholder= */ false,
-                        /* isHovered= */ false);
+                TabUiThemeUtil.getTabStripSelectedTabColor(mActivity, incognito);
         assertEquals(
-                "Unexpected drag shadow color.",
+                "Unexpected card color.",
                 expectedBackgroundColor,
                 mCardView.getBackgroundTintList().getDefaultColor());
 
+        // Verify text color
         @ColorRes
-        int expectedTitleColor =
+        int expectedTextColor =
                 AppCompatResources.getColorStateList(
-                                mActivity, R.color.compositor_tab_title_bar_text_incognito)
+                                mActivity,
+                                incognito
+                                        ? R.color.compositor_tab_title_bar_text_incognito
+                                        : R.color.compositor_tab_title_bar_text)
                         .getDefaultColor();
+        assertEquals("Unexpected text color.", expectedTextColor, mTitleView.getCurrentTextColor());
+    }
+
+    @Test
+    public void testUpdate_GroupTinting_Standard() {
+        testUpdate_GroupTinting(/* incognito= */ false);
+    }
+
+    @Test
+    public void testUpdate_GroupTinting_Incognito() {
+        testUpdate_GroupTinting(/* incognito= */ true);
+    }
+
+    private void testUpdate_GroupTinting(boolean incognito) {
+        @TabGroupColorId int colorId = TabGroupColorId.GREY;
+        when(mMockTab.isIncognitoBranded()).thenReturn(incognito);
+        when(mMockTabGroupModelFilter.getTabGroupColorWithFallback(anyInt())).thenReturn(colorId);
+        mStripDragShadowView.prepareForGroupDrag(mMockTab, 0);
+
+        // Verify card color
+        @ColorInt
+        int expectedGroupColor =
+                ColorPickerUtils.getTabGroupColorPickerItemColor(mActivity, colorId, incognito);
         assertEquals(
-                "Unexpected title color", expectedTitleColor, mTitleView.getCurrentTextColor());
+                "Unexpected card color.",
+                expectedGroupColor,
+                mCardView.getBackgroundTintList().getDefaultColor());
+
+        // Verify thumbnail color
+        verify(mMockMultiThumbnailCardProvider)
+                .setMiniThumbnailPlaceholderColor(
+                        TabUiThemeUtil.getMiniThumbnailPlaceholderColorForGroup(
+                                mActivity, incognito, expectedGroupColor));
+
+        // Verify text color
+        @ColorInt
+        int expectedTextColor =
+                ColorPickerUtils.getTabGroupColorPickerItemTextColor(mActivity, colorId, incognito);
+        assertEquals("Unexpected text color.", expectedTextColor, mTitleView.getCurrentTextColor());
     }
 }

@@ -102,7 +102,7 @@ public class TabUiThemeUtil {
             boolean isPlaceholder,
             boolean isHovered) {
         if (foreground) {
-            return ChromeColors.getDefaultThemeColor(context, isIncognito);
+            return getTabStripSelectedTabColor(context, isIncognito);
         } else if (isHovered) {
             return getHoveredTabContainerColor(context, isIncognito);
         } else if (isPlaceholder) {
@@ -110,6 +110,38 @@ public class TabUiThemeUtil {
         } else {
             return getSurfaceColorElev0(context, isIncognito);
         }
+    }
+
+    /** Returns the tab strip selected tab color. */
+    public static @ColorInt int getTabStripSelectedTabColor(Context context, boolean isIncognito) {
+        return ChromeColors.getDefaultThemeColor(context, isIncognito);
+    }
+
+    /** Returns the tab strip title text color. */
+    public static @ColorInt int getTabTextColor(Context context, boolean isIncognito) {
+        return context.getColor(
+                isIncognito
+                        ? R.color.compositor_tab_title_bar_text_incognito
+                        : R.color.compositor_tab_title_bar_text);
+    }
+
+    /**
+     * Returns the mini thumbnail placeholder color for the given group color.
+     *
+     * @param context {@link Context} used to retrieve color.
+     * @param isIncognito Whether the color is used for incognito mode.
+     * @param groupColor The group color that will be composited with the mini thumbnail placeholder
+     *     overlay color.
+     */
+    public static @ColorInt int getMiniThumbnailPlaceholderColorForGroup(
+            Context context, boolean isIncognito, @ColorInt int groupColor) {
+        @ColorRes
+        int foregroundRes =
+                isIncognito
+                        ? R.color.mini_thumbnail_placeholder_overlay_color_baseline
+                        : R.color.mini_thumbnail_placeholder_overlay_color;
+        @ColorInt int foregroundColor = context.getColor(foregroundRes);
+        return androidx.core.graphics.ColorUtils.compositeColors(foregroundColor, groupColor);
     }
 
     /**

@@ -19,10 +19,6 @@ found in the LICENSE file.
     <!--  Distilled Page Prefs colors -->
     <color name="distilled_page_prefs_selected">#999999</color>
 
-    <!-- Compositor Tab Title Colors -->
-    <color name="compositor_tab_title_bar_text">@color/default_text_color_list</color>
-    <color name="compositor_tab_title_bar_text_incognito">@android:color/white</color>
-
     <!-- Account Signin Colors -->
     <!-- As in dimens.xml, signin uses values from the First Run Experience -->
     <macro name="signin_head_background">@macro/default_bg_color</macro>

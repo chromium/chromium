@@ -9,6 +9,8 @@ android_resources("ui_java_resources") {
   sources = [
     "android/java/res/color/bg_tabstrip_tab_folio_startup_tint.xml",
     "android/java/res/color/menu_edit_text_bg_tint_list_baseline.xml",
+    "android/java/res/color/mini_thumbnail_placeholder_overlay_color.xml",
+    "android/java/res/color/mini_thumbnail_placeholder_overlay_color_baseline.xml",
     "android/java/res/drawable-hdpi/bg_tabstrip_tab_detached.9.png",
     "android/java/res/drawable-hdpi/bg_tabstrip_tab_folio.9.png",
     "android/java/res/drawable-mdpi/bg_tabstrip_tab_detached.9.png",
@@ -19,6 +21,7 @@ android_resources("ui_java_resources") {
     "android/java/res/drawable-xxhdpi/bg_tabstrip_tab_folio.9.png",
     "android/java/res/drawable-xxxhdpi/bg_tabstrip_tab_detached.9.png",
     "android/java/res/drawable-xxxhdpi/bg_tabstrip_tab_folio.9.png",
+    "android/java/res/values/colors.xml",
     "android/java/res/values/dimens.xml",
   ]
 }
@@ -33,6 +36,7 @@ android_library("java") {
     "//chrome/browser/ui/android/theme:java",
     "//components/browser_ui/styles/android:java",
     "//components/browser_ui/styles/android:java_resources",
+    "//components/tab_groups:tab_groups_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_core_core_java",
