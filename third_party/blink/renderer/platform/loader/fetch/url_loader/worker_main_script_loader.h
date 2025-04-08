@@ -37,10 +37,9 @@ class ResourceLoadInfoNotifierWrapper;
 class WorkerMainScriptLoaderClient;
 struct ResourceLoaderOptions;
 
-// For dedicated workers (PlzDedicatedWorker), service workers
-// (PlzServiceWorker), and shared workers, the main script is pre-requested by
-// the browser process. This class is used for receiving the response in the
-// renderer process.
+// For dedicated workers, shared workers, and service workers, the main script
+// is pre-requested by the browser process. This class is used for receiving the
+// response in the renderer process.
 class PLATFORM_EXPORT WorkerMainScriptLoader final
     : public GarbageCollected<WorkerMainScriptLoader>,
       public network::mojom::URLLoaderClient {
@@ -124,7 +123,7 @@ class PLATFORM_EXPORT WorkerMainScriptLoader final
   GC_PLUGIN_IGNORE("https://crbug.com/1381979")
   mojo::Receiver<network::mojom::URLLoaderClient> receiver_{this};
 
-  // Used to notify the loading stats of main script when PlzDedicatedWorker.
+  // Used to notify the loading stats of main script.
   std::unique_ptr<ResourceLoadInfoNotifierWrapper>
       resource_load_info_notifier_wrapper_;
 };

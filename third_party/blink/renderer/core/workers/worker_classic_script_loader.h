@@ -74,15 +74,15 @@ class CORE_EXPORT WorkerClassicScriptLoader final
                          network::mojom::RequestDestination);
 
   // Note that callbacks could be invoked before
-  // LoadTopLevelScriptAsynchronously() returns.
+  // `LoadTopLevelScriptAsynchronously()` returns.
   //
-  // |fetch_client_settings_object_fetcher| is different from
-  // ExecutionContext::Fetcher() in off-the-main-thread fetch.
-  // TODO(crbug.com/1064920): Remove |reject_coep_unsafe_none| and
-  // |blob_url_loader_factory| when PlzDedicatedWorker ships.
+  // `fetch_client_settings_object_fetcher` is different from
+  // `ExecutionContext::Fetcher()` in off-the-main-thread fetch.
+  // TODO(crbug.com/1064920): Remove `reject_coep_unsafe_none` and
+  // `blob_url_loader_factory` now that PlzDedicatedWorker has shipped.
   //
-  // |worker_main_script_load_params| is valid for dedicated workers (when
-  // PlzDedicatedWorker is enabled) and shared workers.
+  // `worker_main_script_load_params` is valid for dedicated workers and shared
+  // workers.
   void LoadTopLevelScriptAsynchronously(
       ExecutionContext&,
       ResourceFetcher* fetch_client_settings_object_fetcher,
@@ -135,8 +135,7 @@ class CORE_EXPORT WorkerClassicScriptLoader final
   void DidFailRedirectCheck(uint64_t) override;
 
   // WorkerMainScriptLoaderClient
-  // These will be called for dedicated workers (when PlzDedicatedWorker is
-  // enabled) and shared workers.
+  // These will be called for dedicated workers and shared workers.
   void DidReceiveDataWorkerMainScript(base::span<const char> span) override;
   void OnFinishedLoadingWorkerMainScript() override;
   void OnFailedLoadingWorkerMainScript() override;

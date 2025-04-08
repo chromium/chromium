@@ -100,7 +100,6 @@ class MockDedicatedWorker
   void OnScriptLoadStartFailed() override {}
 
  private:
-  // Only used with the kPlzDedicatedWorker feature.
   mojo::Receiver<blink::mojom::DedicatedWorkerHostFactoryClient> receiver_{
       this};
 

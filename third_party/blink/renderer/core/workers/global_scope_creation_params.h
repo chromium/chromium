@@ -156,11 +156,9 @@ struct CORE_EXPORT GlobalScopeCreationParams final {
 
   // The SecurityOrigin to be used by the worker, if it's pre-calculated
   // already (e.g. passed down from the browser to the renderer). Only set
-  // for dedicated and shared workers. When PlzDedicatedWorker is enabled, the
-  // origin is calculated in the browser process and sent to the renderer. When
-  // PlzDedicatedWorker is disabled, the origin is calculated in the renderer
-  // and then passed to the browser process. This guarantees both the renderer
-  // and browser knows the exact origin used by the worker.
+  // for dedicated and shared workers. The origin is calculated in the browser
+  // process and sent to the renderer. This guarantees both the renderer and
+  // browser knows the exact origin used by the worker.
   scoped_refptr<SecurityOrigin> origin_to_use;
 
   // Indicates if the Document creating a Worker/Worklet is a secure context.

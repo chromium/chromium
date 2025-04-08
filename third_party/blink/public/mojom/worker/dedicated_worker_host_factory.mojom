@@ -27,7 +27,6 @@ import "url/mojom/origin.mojom";
 // and browser.
 const string kNavigation_DedicatedWorkerSpec = "navigation:dedicated_worker";
 
-// PlzDedicatedWorker:
 // An interface implemented by clients (e.g., the renderer where "new Worker()"
 // was invoked) to observe events on the DedicatedWorkerHostFactory.
 interface DedicatedWorkerHostFactoryClient {

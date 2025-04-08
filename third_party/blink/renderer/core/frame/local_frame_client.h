@@ -396,14 +396,14 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
     return v8::Local<v8::Object>();
   }
 
-  // Returns a new WebWorkerFetchContext for a dedicated worker (in the
-  // non-PlzDedicatedWorker case) or worklet.
+  // Returns a new WebWorkerFetchContext for worklets.
+  // TODO(crbug.com/40093136): Rename this to `CreateWorkletFetchContext()`.
   virtual scoped_refptr<WebWorkerFetchContext> CreateWorkerFetchContext() {
     return nullptr;
   }
 
-  // Returns a new WebWorkerFetchContext for PlzDedicatedWorker.
-  // (https://crbug.com/906991)
+  // Returns a new WebWorkerFetchContext for dedicated workers.
+  // TODO(crbug.com/40093136): Rename this to `CreateWorkerFetchContext()`.
   virtual scoped_refptr<WebWorkerFetchContext>
   CreateWorkerFetchContextForPlzDedicatedWorker(
       WebDedicatedWorkerHostFactoryClient*) {
