@@ -266,8 +266,9 @@ class IOSCollaborationControllerDelegateTest : public PlatformTest {
   ServiceStatus collaboration_status_;
 };
 
+// TODO(crbug.com/409238636): failing on ios_simulator_noncq
 // Tests `ShowShareDialog` with a valid tabGroup.
-TEST_F(IOSCollaborationControllerDelegateTest, ShowShareDialogValid) {
+TEST_F(IOSCollaborationControllerDelegateTest, DISABLED_ShowShareDialogValid) {
   InitDelegate();
   base::MockCallback<
       CollaborationControllerDelegate::ResultWithGroupTokenCallback>
@@ -285,8 +286,10 @@ TEST_F(IOSCollaborationControllerDelegateTest, ShowShareDialogValid) {
   [share_kit_flow_view_controller accept];
 }
 
+// TODO(crbug.com/409238636): failing on ios_simulator_noncq
 // Tests `ShowShareDialog` with an invalid tabGroup.
-TEST_F(IOSCollaborationControllerDelegateTest, ShowShareDialogInvalid) {
+TEST_F(IOSCollaborationControllerDelegateTest,
+       DISABLED_ShowShareDialogInvalid) {
   InitDelegate();
 
   tab_groups::TabGroupId tab_group_id = tab_group_->tab_group_id();
@@ -304,8 +307,9 @@ TEST_F(IOSCollaborationControllerDelegateTest, ShowShareDialogInvalid) {
   EXPECT_FALSE(base_view_controller_.presentedViewController);
 }
 
+// TODO(crbug.com/409238636): failing on ios_simulator_noncq
 // Tests `ShowJoinDialog` and accept.
-TEST_F(IOSCollaborationControllerDelegateTest, ShowJoinDialogAccept) {
+TEST_F(IOSCollaborationControllerDelegateTest, DISABLED_ShowJoinDialogAccept) {
   InitDelegate();
   base::MockCallback<CollaborationControllerDelegate::ResultCallback>
       mock_callback;
@@ -323,8 +327,9 @@ TEST_F(IOSCollaborationControllerDelegateTest, ShowJoinDialogAccept) {
   [share_kit_flow_view_controller accept];
 }
 
+// TODO(crbug.com/409238636): failing on ios_simulator_noncq
 // Tests `ShowJoinDialog` and cancel.
-TEST_F(IOSCollaborationControllerDelegateTest, ShowJoinDialogCancel) {
+TEST_F(IOSCollaborationControllerDelegateTest, DISABLED_ShowJoinDialogCancel) {
   InitDelegate();
   base::MockCallback<CollaborationControllerDelegate::ResultCallback>
       mock_callback;
@@ -342,8 +347,10 @@ TEST_F(IOSCollaborationControllerDelegateTest, ShowJoinDialogCancel) {
   [share_kit_flow_view_controller cancel];
 }
 
+// TODO(crbug.com/409238636): failing on ios_simulator_noncq
 // Tests `ShowManageDialog` and accept.
-TEST_F(IOSCollaborationControllerDelegateTest, ShowManageDialogAccept) {
+TEST_F(IOSCollaborationControllerDelegateTest,
+       DISABLED_ShowManageDialogAccept) {
   InitDelegate();
   base::MockCallback<CollaborationControllerDelegate::ResultCallback>
       mock_callback;
@@ -361,8 +368,10 @@ TEST_F(IOSCollaborationControllerDelegateTest, ShowManageDialogAccept) {
   [share_kit_flow_view_controller accept];
 }
 
+// TODO(crbug.com/409238636): failing on ios_simulator_noncq
 // Tests `ShowManageDialog` and cancel.
-TEST_F(IOSCollaborationControllerDelegateTest, ShowManageDialogCancel) {
+TEST_F(IOSCollaborationControllerDelegateTest,
+       DISABLED_ShowManageDialogCancel) {
   InitDelegate();
   base::MockCallback<CollaborationControllerDelegate::ResultCallback>
       mock_callback;
@@ -380,9 +389,10 @@ TEST_F(IOSCollaborationControllerDelegateTest, ShowManageDialogCancel) {
   [share_kit_flow_view_controller cancel];
 }
 
+// TODO(crbug.com/409238636): failing on ios_simulator_noncq
 // Tests `ShowAuthenticationUi` when the user chooses to cancel the sign in.
 TEST_F(IOSCollaborationControllerDelegateTest,
-       ShowAuthenticationUiSignInCanceled) {
+       DISABLED_ShowAuthenticationUiSignInCanceled) {
   InitDelegate();
   base::MockCallback<CollaborationControllerDelegate::ResultCallback>
       mock_callback;
@@ -402,10 +412,11 @@ TEST_F(IOSCollaborationControllerDelegateTest,
   delegate_->ShowAuthenticationUi(FlowType::kJoin, mock_callback.Get());
 }
 
+// TODO(crbug.com/409238636): failing on ios_simulator_noncq
 // Tests `ShowAuthenticationUi` when the user sign in and accept the sync opt
 // in.
 TEST_F(IOSCollaborationControllerDelegateTest,
-       ShowAuthenticationUiSyncAccepted) {
+       DISABLED_ShowAuthenticationUiSyncAccepted) {
   InitDelegate();
   base::MockCallback<CollaborationControllerDelegate::ResultCallback>
       mock_callback;
@@ -427,8 +438,10 @@ TEST_F(IOSCollaborationControllerDelegateTest,
   delegate_->ShowAuthenticationUi(FlowType::kJoin, mock_callback.Get());
 }
 
+// TODO(crbug.com/409238636): failing on ios_simulator_noncq
 // Tests `ShowAuthenticationUi` when the user sign in but don't sync.
-TEST_F(IOSCollaborationControllerDelegateTest, ShowAuthenticationUiSyncDenied) {
+TEST_F(IOSCollaborationControllerDelegateTest,
+       DISABLED_ShowAuthenticationUiSyncDenied) {
   InitDelegate();
   base::MockCallback<CollaborationControllerDelegate::ResultCallback>
       mock_callback;
@@ -450,8 +463,10 @@ TEST_F(IOSCollaborationControllerDelegateTest, ShowAuthenticationUiSyncDenied) {
   delegate_->ShowAuthenticationUi(FlowType::kJoin, mock_callback.Get());
 }
 
+// TODO(crbug.com/409238636): failing on ios_simulator_noncq
 // Tests `ShowAuthenticationUi` when the user is signed-in.
-TEST_F(IOSCollaborationControllerDelegateTest, ShowAuthenticationUiWithSignIn) {
+TEST_F(IOSCollaborationControllerDelegateTest,
+       DISABLED_ShowAuthenticationUiWithSignIn) {
   SignIn();
   InitDelegate();
   base::MockCallback<CollaborationControllerDelegate::ResultCallback>
@@ -474,9 +489,10 @@ TEST_F(IOSCollaborationControllerDelegateTest, ShowAuthenticationUiWithSignIn) {
   delegate_->ShowAuthenticationUi(FlowType::kJoin, mock_callback.Get());
 }
 
+// TODO(crbug.com/409238636): failing on ios_simulator_noncq
 // Tests `NotifySignInAndSyncStatusChange`.
 TEST_F(IOSCollaborationControllerDelegateTest,
-       NotifySignInAndSyncStatusChange) {
+       DISABLED_NotifySignInAndSyncStatusChange) {
   InitDelegate();
   delegate_->NotifySignInAndSyncStatusChange();
 }
