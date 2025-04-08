@@ -59,10 +59,6 @@ class PLATFORM_EXPORT CanvasResourceHost : public cc::TextureLayerClient {
   virtual size_t GetMemoryUsage() const = 0;
   virtual void PageVisibilityChanged() {}
   virtual CanvasResourceProvider* GetOrCreateCanvasResourceProvider() = 0;
-  CanvasResourceProvider*
-  GetOrCreateResourceProviderWithCurrentRasterModeHint() {
-    return GetOrCreateCanvasResourceProvider();
-  }
 
   // Initialize the indicated cc::Layer with the HTMLCanvasElement's CSS
   // properties. This is a no-op if `this` is not an HTMLCanvasElement.

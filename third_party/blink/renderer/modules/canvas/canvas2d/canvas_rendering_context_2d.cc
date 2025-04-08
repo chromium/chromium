@@ -256,7 +256,7 @@ bool CanvasRenderingContext2D::WritePixels(const SkImageInfo& orig_info,
   CHECK(host);
 
   CanvasResourceProvider* provider =
-      canvas()->GetOrCreateResourceProviderWithCurrentRasterModeHint();
+      canvas()->GetOrCreateCanvasResourceProvider();
   if (provider == nullptr) {
     return false;
   }
@@ -382,7 +382,7 @@ cc::PaintCanvas* CanvasRenderingContext2D::GetOrCreatePaintCanvas() {
     }
   } else {
     // If we have no provider, try creating one.
-    provider = canvas()->GetOrCreateResourceProviderWithCurrentRasterModeHint();
+    provider = canvas()->GetOrCreateCanvasResourceProvider();
     if (provider == nullptr) [[unlikely]] {
       return nullptr;
     }
@@ -626,7 +626,7 @@ int CanvasRenderingContext2D::Height() const {
 }
 
 bool CanvasRenderingContext2D::CanCreateCanvas2dResourceProvider() const {
-  return canvas()->GetOrCreateResourceProviderWithCurrentRasterModeHint();
+  return canvas()->GetOrCreateCanvasResourceProvider();
 }
 
 scoped_refptr<StaticBitmapImage> blink::CanvasRenderingContext2D::GetImage(
@@ -655,7 +655,7 @@ scoped_refptr<StaticBitmapImage> blink::CanvasRenderingContext2D::GetImage(
   }
   // GetOrCreateResourceProvider needs to be called before FlushRecording, to
   // make sure "hint" is properly taken into account.
-  if (!Host()->GetOrCreateResourceProviderWithCurrentRasterModeHint()) {
+  if (!Host()->GetOrCreateCanvasResourceProvider()) {
     return nullptr;
   }
   Host()->FlushRecording(reason);
@@ -758,7 +758,7 @@ void CanvasRenderingContext2D::FinalizeFrame(FlushReason reason) {
   if (!CheckProviderInCanvas2DRenderingContextIsPaintable()) {
     // Make sure surface is ready for painting: fix the rendering mode now
     // because it will be too late during the paint invalidation phase.
-    if (!canvas()->GetOrCreateResourceProviderWithCurrentRasterModeHint()) {
+    if (!canvas()->GetOrCreateCanvasResourceProvider()) {
       return;
     }
   }
@@ -881,9 +881,7 @@ void CanvasRenderingContext2D::OnPageVisibilityChangeWhenPaintable() {
   }
 
   if (page_is_visible && element->IsHibernating()) {
-    element
-        ->GetOrCreateResourceProviderWithCurrentRasterModeHint();  // Rude
-                                                                   // awakening
+    element->GetOrCreateCanvasResourceProvider();  // Rude awakening
   }
 }
 
@@ -1051,7 +1049,7 @@ CanvasRenderingContext2D::GetOrCreateCanvas2DResourceProvider() {
   if (!element) [[unlikely]] {
     return nullptr;
   }
-  return element->GetOrCreateResourceProviderWithCurrentRasterModeHint();
+  return element->GetOrCreateCanvasResourceProvider();
 }
 
 }  // namespace blink
