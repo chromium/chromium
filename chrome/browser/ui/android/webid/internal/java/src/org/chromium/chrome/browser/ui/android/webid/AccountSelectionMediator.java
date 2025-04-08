@@ -1303,7 +1303,6 @@ class AccountSelectionMediator {
         // This method only has an Account to match the type of the event listener. However, it
         // should be non-null because an account must have been selected in order to reach an error
         // dialog.
-        assert buttonData.mIdpMetadata == null;
         assert buttonData.mAccount != null;
         if (!shouldInputBeProcessed()) return;
         onDismissed(IdentityRequestDialogDismissReason.GOT_IT_BUTTON);

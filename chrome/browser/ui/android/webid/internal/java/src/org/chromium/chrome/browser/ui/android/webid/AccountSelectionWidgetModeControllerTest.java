@@ -147,7 +147,7 @@ public class AccountSelectionWidgetModeControllerTest extends AccountSelectionJU
             mModel.get(ItemProperties.CONTINUE_BUTTON)
                     .get(ContinueButtonProperties.PROPERTIES)
                     .mOnClickListener
-                    .onResult(new ButtonData(mAnaAccount, /* idpMetadata= */ null));
+                    .onResult(new ButtonData(mAnaAccount, /* idpMetadata= */ mIdpMetadata));
             verify(mMockDelegate, times(++count))
                     .onDismissed(IdentityRequestDialogDismissReason.GOT_IT_BUTTON);
             assertTrue(mMediator.wasDismissed());
