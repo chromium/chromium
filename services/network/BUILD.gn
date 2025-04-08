@@ -89,6 +89,7 @@ component("network_service") {
     "network_service_proxy_delegate.h",
     "oblivious_http_request_handler.cc",
     "oblivious_http_request_handler.h",
+    "observer_wrapper.h",
     "orb/orb_api.cc",
     "orb/orb_impl.cc",
     "orb/orb_impl.h",

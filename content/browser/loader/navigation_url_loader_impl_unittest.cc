@@ -127,11 +127,18 @@ class TestNavigationLoaderInterceptor : public NavigationLoaderInterceptor {
         /*trust_token_helper=*/nullptr,
         /*shared_dictionary_manager=*/nullptr,
         /*shared_dictionary_checker=*/nullptr,
-        /*cookie_observer=*/mojo::NullRemote(),
-        /*trust_token_observer=*/mojo::NullRemote(),
-        /*url_loader_network_observer=*/mojo::NullRemote(),
-        /*devtools_observer=*/mojo::NullRemote(),
-        /*device_bound_session_observer=*/mojo::NullRemote(),
+        /*cookie_observer=*/
+        network::ObserverWrapper<network::mojom::CookieAccessObserver>(),
+        /*trust_token_observer=*/
+        network::ObserverWrapper<network::mojom::TrustTokenAccessObserver>(),
+        /*url_loader_network_observer=*/
+        network::ObserverWrapper<
+            network::mojom::URLLoaderNetworkServiceObserver>(),
+        /*devtools_observer=*/
+        network::ObserverWrapper<network::mojom::DevToolsObserver>(),
+        /*device_bound_session_observer=*/
+        network::ObserverWrapper<
+            network::mojom::DeviceBoundSessionAccessObserver>(),
         /*accept_ch_frame_observer=*/mojo::NullRemote(),
         /*shared_storage_writable=*/false);
   }

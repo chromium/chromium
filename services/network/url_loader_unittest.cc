@@ -100,6 +100,7 @@
 #include "net/url_request/url_request_test_job.h"
 #include "net/url_request/url_request_test_util.h"
 #include "services/network/file_opener_for_upload.h"
+#include "services/network/observer_wrapper.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/ip_address_space_util.h"
@@ -678,11 +679,13 @@ struct URLLoaderOptions {
         keepalive_request_size, std::move(keepalive_statistics_recorder),
         std::move(trust_token_helper_factory),
         std::move(shared_dictionary_manager),
-        std::move(shared_dictionary_checker), std::move(cookie_observer),
-        std::move(trust_token_observer), std::move(url_loader_network_observer),
-        std::move(devtools_observer), std::move(device_bound_session_observer),
-        std::move(accept_ch_frame_observer),
-        shared_storage_writable_eligible);
+        std::move(shared_dictionary_checker),
+        ObserverWrapper(std::move(cookie_observer)),
+        ObserverWrapper(std::move(trust_token_observer)),
+        ObserverWrapper(std::move(url_loader_network_observer)),
+        ObserverWrapper(std::move(devtools_observer)),
+        ObserverWrapper(std::move(device_bound_session_observer)),
+        std::move(accept_ch_frame_observer), shared_storage_writable_eligible);
   }
 
   int32_t options = mojom::kURLLoadOptionNone;

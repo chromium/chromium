@@ -40,6 +40,7 @@
 #include "services/network/ad_auction/event_record_request_helper.h"
 #include "services/network/keepalive_statistics_recorder.h"
 #include "services/network/network_service.h"
+#include "services/network/observer_wrapper.h"
 #include "services/network/partial_decoder.h"
 #include "services/network/private_network_access_checker.h"
 #include "services/network/public/cpp/cors/cors_error_status.h"
@@ -170,13 +171,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
           trust_token_helper_factory,
       SharedDictionaryManager* shared_dictionary_manager,
       std::unique_ptr<SharedDictionaryAccessChecker> shared_dictionary_checker,
-      mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer,
-      mojo::PendingRemote<mojom::TrustTokenAccessObserver> trust_token_observer,
-      mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>
+      ObserverWrapper<mojom::CookieAccessObserver> cookie_observer,
+      ObserverWrapper<mojom::TrustTokenAccessObserver> trust_token_observer,
+      ObserverWrapper<mojom::URLLoaderNetworkServiceObserver>
           url_loader_network_observer,
-      mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer,
-      mojo::PendingRemote<mojom::DeviceBoundSessionAccessObserver>
-          device_bound_session_access_observer,
+      ObserverWrapper<mojom::DevToolsObserver> devtools_observer,
+      ObserverWrapper<mojom::DeviceBoundSessionAccessObserver>
+          device_bound_session_observer,
       mojo::PendingRemote<mojom::AcceptCHFrameObserver>
           accept_ch_frame_observer,
       bool shared_storage_writable_eligible);
@@ -227,7 +228,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
 
   mojom::URLLoaderNetworkServiceObserver* GetURLLoaderNetworkServiceObserver()
       const {
-    return url_loader_network_observer_;
+    return url_loader_network_observer_.get();
   }
 
   // mojom::AuthChallengeResponder:
@@ -749,29 +750,19 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // Outlives `this`.
   const raw_ref<const cors::OriginAccessList> origin_access_list_;
 
-  // Observers bound to this specific URLLoader. There may be observers bound to
-  // an URLLoaderFactory as well so these `mojo::Remote`s should not be used
-  // directly, but the pointer fields should be used instead (e.g.
-  // `cookie_observer_` should be used since, it can be set to *either*
-  // `cookie_observer_.get()` *or* is can be pointing to some other
-  // CookieAccessObserver implementation from the URLLoaderContext aka
-  // URLLoaderFactory).
-  const mojo::Remote<mojom::CookieAccessObserver> cookie_observer_remote_;
-  const raw_ptr<mojom::CookieAccessObserver> cookie_observer_ = nullptr;
-  const mojo::Remote<mojom::TrustTokenAccessObserver>
-      trust_token_observer_remote_;
-  const raw_ptr<mojom::TrustTokenAccessObserver> trust_token_observer_ =
-      nullptr;
-  const mojo::Remote<mojom::URLLoaderNetworkServiceObserver>
-      url_loader_network_observer_remote_;
-  const raw_ptr<mojom::URLLoaderNetworkServiceObserver>
-      url_loader_network_observer_ = nullptr;
-  const mojo::Remote<mojom::DevToolsObserver> devtools_observer_remote_;
-  const raw_ptr<mojom::DevToolsObserver> devtools_observer_ = nullptr;
-  mojo::Remote<mojom::DeviceBoundSessionAccessObserver>
-      device_bound_session_observer_remote_;
-  raw_ptr<mojom::DeviceBoundSessionAccessObserver>
-      device_bound_session_observer_ = nullptr;
+  // Observer instances relevant to this URLLoader.
+  // Each ObserverWrapper encapsulates either a Mojo Remote for an observer
+  // specific to this request (usually passed via TrustedParams) or a fallback
+  // pointer (usually pointing to a shared observer implementation held by the
+  // URLLoaderFactory/URLLoaderContext).
+  ObserverWrapper<mojom::CookieAccessObserver> cookie_observer_;
+  ObserverWrapper<mojom::TrustTokenAccessObserver> trust_token_observer_;
+  ObserverWrapper<mojom::URLLoaderNetworkServiceObserver>
+      url_loader_network_observer_;
+  ObserverWrapper<mojom::DevToolsObserver> devtools_observer_;
+  ObserverWrapper<mojom::DeviceBoundSessionAccessObserver>
+      device_bound_session_observer_;
+
   const scoped_refptr<RefCountedDeviceBoundSessionAccessObserverRemote>
       device_bound_session_observer_shared_remote_;
 

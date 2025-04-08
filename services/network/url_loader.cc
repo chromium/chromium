@@ -211,19 +211,15 @@ std::vector<mojom::WebClientHintsType> ComputeAcceptCHFrameHints(
   return hints;
 }
 
-template <typename T>
-T* PtrOrFallback(const mojo::Remote<T>& remote, T* fallback) {
-  return remote.is_bound() ? remote.get() : fallback;
-}
-
 scoped_refptr<RefCountedDeviceBoundSessionAccessObserverRemote>
 MaybeInitializeDeviceBoundSessionAccessObserverSharedRemote(
-    mojo::Remote<mojom::DeviceBoundSessionAccessObserver>& remote,
+    ObserverWrapper<mojom::DeviceBoundSessionAccessObserver>& observer,
     URLLoaderContext& context) {
   if (!base::FeatureList::IsEnabled(
           features::kDeviceBoundSessionAccessObserverSharedRemote)) {
     return nullptr;
   }
+  auto remote = observer.TakeRemote();
   if (remote) {
     return base::MakeRefCounted<
         RefCountedDeviceBoundSessionAccessObserverRemote>(std::move(remote));
@@ -378,12 +374,12 @@ URLLoader::URLLoader(
     std::unique_ptr<TrustTokenRequestHelperFactory> trust_token_helper_factory,
     SharedDictionaryManager* shared_dictionary_manager,
     std::unique_ptr<SharedDictionaryAccessChecker> shared_dictionary_checker,
-    mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer,
-    mojo::PendingRemote<mojom::TrustTokenAccessObserver> trust_token_observer,
-    mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>
+    ObserverWrapper<mojom::CookieAccessObserver> cookie_observer,
+    ObserverWrapper<mojom::TrustTokenAccessObserver> trust_token_observer,
+    ObserverWrapper<mojom::URLLoaderNetworkServiceObserver>
         url_loader_network_observer,
-    mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer,
-    mojo::PendingRemote<mojom::DeviceBoundSessionAccessObserver>
+    ObserverWrapper<mojom::DevToolsObserver> devtools_observer,
+    ObserverWrapper<mojom::DeviceBoundSessionAccessObserver>
         device_bound_session_observer,
     mojo::PendingRemote<mojom::AcceptCHFrameObserver> accept_ch_frame_observer,
     bool shared_storage_writable_eligible)
@@ -431,37 +427,22 @@ URLLoader::URLLoader(
       storage_access_api_status_(request.storage_access_api_status),
       shared_dictionary_checker_(std::move(shared_dictionary_checker)),
       origin_access_list_(context.GetOriginAccessList()),
-      cookie_observer_remote_(std::move(cookie_observer)),
-      cookie_observer_(PtrOrFallback(cookie_observer_remote_,
-                                     context.GetCookieAccessObserver())),
-      trust_token_observer_remote_(std::move(trust_token_observer)),
-      trust_token_observer_(
-          PtrOrFallback(trust_token_observer_remote_,
-                        context.GetTrustTokenAccessObserver())),
-      url_loader_network_observer_remote_(
-          std::move(url_loader_network_observer)),
-      url_loader_network_observer_(
-          PtrOrFallback(url_loader_network_observer_remote_,
-                        context.GetURLLoaderNetworkServiceObserver())),
-      devtools_observer_remote_(std::move(devtools_observer)),
-      devtools_observer_(PtrOrFallback(devtools_observer_remote_,
-                                       context.GetDevToolsObserver())),
-      device_bound_session_observer_remote_(
-          std::move(device_bound_session_observer)),
-      device_bound_session_observer_(
-          PtrOrFallback(device_bound_session_observer_remote_,
-                        context.GetDeviceBoundSessionAccessObserver())),
+      cookie_observer_(std::move(cookie_observer)),
+      trust_token_observer_(std::move(trust_token_observer)),
+      url_loader_network_observer_(std::move(url_loader_network_observer)),
+      devtools_observer_(std::move(devtools_observer)),
+      device_bound_session_observer_(std::move(device_bound_session_observer)),
       device_bound_session_observer_shared_remote_(
           MaybeInitializeDeviceBoundSessionAccessObserverSharedRemote(
-              device_bound_session_observer_remote_,
+              device_bound_session_observer_,
               context)),
       shared_storage_request_helper_(
           std::make_unique<SharedStorageRequestHelper>(
               shared_storage_writable_eligible,
-              url_loader_network_observer_)),
+              url_loader_network_observer_.get())),
       ad_auction_event_record_request_helper_(
           request.attribution_reporting_eligibility,
-          url_loader_network_observer_),
+          url_loader_network_observer_.get()),
       has_fetch_streaming_upload_body_(HasFetchStreamingUploadBody(&request)),
       accept_ch_frame_observer_(std::move(accept_ch_frame_observer)),
       allow_cookies_from_browser_(
@@ -599,8 +580,6 @@ void URLLoader::SetUpUrlRequestCallbacks(
   // of this URLRequest. So pass a refcounted shared Remote that will outlive
   // `this`.
   if (device_bound_session_observer_shared_remote_) {
-    // Clear `device_bound_session_observer_` to avoid dangling ptr.
-    device_bound_session_observer_ = nullptr;
     url_request_->SetDeviceBoundSessionAccessCallback(base::BindRepeating(
         [](scoped_refptr<RefCountedDeviceBoundSessionAccessObserverRemote>
                shared_remote,
@@ -1678,7 +1657,7 @@ void URLLoader::ContinueOnResponseStartedImmediately() {
   if (std::optional<mojom::BlockedByResponseReason> blocked_reason =
           MaybeBlockResponseForSRIMessageSignature(
               url_request_->url(), *response_, expected_public_keys_,
-              devtools_observer_, devtools_request_id().value_or(""))) {
+              devtools_observer_.get(), devtools_request_id().value_or(""))) {
     CompleteBlockedResponse(net::ERR_BLOCKED_BY_RESPONSE, false,
                             blocked_reason);
     // Close the socket associated with the request, to prevent leaking
