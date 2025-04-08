@@ -24,11 +24,6 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "third_party/blink/renderer/core/xml/parser/xml_document_parser.h"
 
 #include <libxml/parser.h>
@@ -41,6 +36,7 @@
 #include <type_traits>
 
 #include "base/auto_reset.h"
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
@@ -777,7 +773,7 @@ scoped_refptr<XMLParserContext> XMLParserContext::CreateMemoryParser(
     return nullptr;
 
   // Copy the sax handler
-  memcpy(parser->sax, handlers, sizeof(xmlSAXHandler));
+  UNSAFE_TODO(memcpy(parser->sax, handlers, sizeof(xmlSAXHandler)));
 
   // Set parser options.
   // XML_PARSE_NODICT: default dictionary option.
@@ -1231,7 +1227,8 @@ void XMLDocumentParser::GetError(XMLErrors::ErrorType type,
     return;
 
   char formatted_message[1024];
-  vsnprintf(formatted_message, sizeof(formatted_message) - 1, message, args);
+  UNSAFE_TODO(vsnprintf(formatted_message, sizeof(formatted_message) - 1,
+                        message, args));
 
   if (parser_paused_) {
     pending_callbacks_.push_back(std::make_unique<PendingErrorCallback>(
@@ -1641,7 +1638,7 @@ static void IgnorableWhitespaceHandler(void*, const xmlChar*, int) {
 
 void XMLDocumentParser::InitializeParserContext(const std::string& chunk) {
   xmlSAXHandler sax;
-  memset(&sax, 0, sizeof(sax));
+  UNSAFE_TODO(memset(&sax, 0, sizeof(sax)));
 
   // According to http://xmlsoft.org/html/libxml-tree.html#xmlSAXHandler and
   // http://xmlsoft.org/html/libxml-parser.html#fatalErrorSAXFunc the SAX
@@ -1859,8 +1856,10 @@ static void AttributesStartElementNsHandler(void* closure,
                                             int nb_attributes,
                                             int /*nbDefaulted*/,
                                             const xmlChar** libxml_attributes) {
-  if (strcmp(reinterpret_cast<const char*>(xml_local_name), "attrs") != 0)
+  if (UNSAFE_TODO(strcmp(reinterpret_cast<const char*>(xml_local_name),
+                         "attrs")) != 0) {
     return;
+  }
 
   xmlParserCtxtPtr ctxt = static_cast<xmlParserCtxtPtr>(closure);
   AttributeParseState* state =
@@ -1890,7 +1889,7 @@ HashMap<String, String> ParseAttributes(const String& string, bool& attrs_ok) {
   state.got_attributes = false;
 
   xmlSAXHandler sax;
-  memset(&sax, 0, sizeof(sax));
+  UNSAFE_TODO(memset(&sax, 0, sizeof(sax)));
   sax.startElementNs = AttributesStartElementNsHandler;
   sax.initialized = XML_SAX2_MAGIC;
   scoped_refptr<XMLParserContext> parser =

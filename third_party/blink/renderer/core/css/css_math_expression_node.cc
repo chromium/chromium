@@ -28,11 +28,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "third_party/blink/renderer/core/css/css_math_expression_node.h"
 
 #include <algorithm>
@@ -40,6 +35,7 @@
 #include <numeric>
 #include <tuple>
 
+#include "base/compiler_specific.h"
 #include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/core/css/css_color_channel_keywords.h"
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
@@ -635,8 +631,8 @@ CSSMathExpressionNode* MaybeSortSumNode(
   // ret.
   auto comp = [&](const CSSPrimitiveValue::UnitType& key_a,
                   const CSSPrimitiveValue::UnitType& key_b) {
-    return strcmp(CSSPrimitiveValue::UnitTypeToString(key_a),
-                  CSSPrimitiveValue::UnitTypeToString(key_b)) < 0;
+    return UNSAFE_TODO(strcmp(CSSPrimitiveValue::UnitTypeToString(key_a),
+                              CSSPrimitiveValue::UnitTypeToString(key_b))) < 0;
   };
   Vector<CSSPrimitiveValue::UnitType> keys;
   keys.reserve(numeric_children.size());

@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "third_party/blink/renderer/bindings/core/v8/serialization/v8_script_value_deserializer.h"
 
 #include <array>
 #include <limits>
 #include <optional>
 
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/numerics/checked_math.h"
 #include "base/time/time.h"
@@ -507,7 +503,8 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
       SkPixmap image_data_pixmap = image_data->GetSkPixmap();
       if (image_data_pixmap.computeByteSize() != byte_length)
         return nullptr;
-      memcpy(image_data_pixmap.writable_addr(), pixels, byte_length);
+      UNSAFE_TODO(
+          memcpy(image_data_pixmap.writable_addr(), pixels, byte_length));
       return image_data;
     }
     case kDOMPointTag: {
