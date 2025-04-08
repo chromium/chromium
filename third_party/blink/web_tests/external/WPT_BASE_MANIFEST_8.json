@@ -174859,6 +174859,45 @@
        {}
       ]
      ],
+     "scroll-marker-contain-009.tentative.html": [
+      "8037adf8441168ec87f118c1da3a6a7bede7ef77",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/scroll-marker-contain-009-ref.tentative.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "scroll-marker-contain-010.tentative.html": [
+      "fbdad62f84665ea55b8c7d647b631b0f215f1e19",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/scroll-marker-contain-009-ref.tentative.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "scroll-marker-contain-011.tentative.html": [
+      "8cfc78130e0f93ddf3a768b0b582f292d9c4291c",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/scroll-marker-contain-009-ref.tentative.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "scroll-marker-counters.html": [
       "25e4fdfd24f849128c711cdc5a8610abba5e1d8f",
       [
@@ -355146,6 +355185,10 @@
       "d74777d3bbf0b230048a17320afa6040a6b8eb62",
       []
      ],
+     "scroll-marker-contain-009-ref.tentative.html": [
+      "07b797ff789a382d91ee3207ba0172009bef0c77",
+      []
+     ],
      "scroll-marker-counters-ref.html": [
       "7113a5c5d23a97cf83f173a72ef96b57ecf09263",
       []
@@ -382009,7 +382052,7 @@
       []
      ],
      "trust-token-redemption-supported-by-feature-policy.tentative-expected.txt": [
-      "352385b00454210b80dcfb1878693f591196aad0",
+      "3afa9fcfc2e7a663d654060cdb63bebfd1eea074",
       []
      ],
      "vertical-scroll-main-frame-manual.tentative.html.headers": [
@@ -393239,7 +393282,7 @@
         []
        ],
        "text.yaml": [
-        "900431860e27fa1c41276cc43bc961ea3da45270",
+        "0a8e54135775874c4f390101dce100bfab6716f1",
         []
        ],
        "the-canvas-state.yaml": [
@@ -519608,6 +519651,13 @@
        {}
       ]
      ],
+     "3d-point-mapping-overlapping.html": [
+      "ffcfc1ae042697fc083ceb108182ba09086b4593",
+      [
+       null,
+       {}
+      ]
+     ],
      "3d-rendering-context-behavior.html": [
       "94e476c3426b53c96b6b1a7ebb70d7f0586e8313",
       [
@@ -625873,7 +625923,7 @@
         ]
        ],
        "2d.text.measure.selection-rects-baselines.tentative.worker.js": [
-        "bdd015eef827a23bafccb9b95d9c595d2654d5ef",
+        "d270e1dcfd81b6ca55a919a3e2fea21ebc53d981",
         [
          "html/canvas/offscreen/text/2d.text.measure.selection-rects-baselines.tentative.worker.html",
          {}
