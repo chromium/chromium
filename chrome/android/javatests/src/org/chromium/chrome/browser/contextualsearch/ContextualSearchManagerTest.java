@@ -255,7 +255,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
                     }
                 };
         ThreadUtils.runOnUiThreadBlocking(
-                () -> sActivityTestRule.getActivity().getTabModelSelector().addObserver(observer));
+                () -> mActivityTestRule.getActivity().getTabModelSelector().addObserver(observer));
         // Track User Actions
         mActionTester = new UserActionTester();
 
@@ -289,7 +289,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
         // -------- CLEAN UP ---------
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    sActivityTestRule.getActivity().getTabModelSelector().removeObserver(observer);
+                    mActivityTestRule.getActivity().getTabModelSelector().removeObserver(observer);
                 });
     }
 
@@ -489,9 +489,9 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     public void testTapContentAndExpandPanelInFullscreen() throws Exception {
         // Toggle tab to fulllscreen.
         FullscreenTestUtils.togglePersistentFullscreenAndAssert(
-                sActivityTestRule.getActivity().getActivityTab(),
+                mActivityTestRule.getActivity().getActivityTab(),
                 true,
-                sActivityTestRule.getActivity());
+                mActivityTestRule.getActivity());
 
         // Simulate a resolving search and assert that the panel peeks.
         simulateResolveSearch("search");
@@ -517,9 +517,9 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
         simulateResolveSearch("search");
 
         // Toggle tab to fullscreen.
-        Tab tab = sActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mActivityTestRule.getActivity().getActivityTab();
         FullscreenTestUtils.togglePersistentFullscreenAndAssert(
-                tab, true, sActivityTestRule.getActivity());
+                tab, true, mActivityTestRule.getActivity());
 
         // Assert that the panel is closed.
         waitForPanelToClose();
@@ -529,7 +529,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
 
         // Toggle tab to non-fullscreen.
         FullscreenTestUtils.togglePersistentFullscreenAndAssert(
-                tab, false, sActivityTestRule.getActivity());
+                tab, false, mActivityTestRule.getActivity());
 
         // Assert that the panel is closed.
         waitForPanelToClose();
@@ -665,7 +665,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
                                 CardTag.CT_LOCATION,
                                 /* relatedSearchesInBar= */ null));
 
-        sActivityTestRule.getActivity().onUserInteraction();
+        mActivityTestRule.getActivity().onUserInteraction();
         // Expand the panel to trigger the quick action intent to be fired.
         expandPanelAndAssert();
 
@@ -701,7 +701,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
                                 CardTag.CT_URL,
                                 /* relatedSearchesInBar= */ null));
 
-        sActivityTestRule.getActivity().onUserInteraction();
+        mActivityTestRule.getActivity().onUserInteraction();
         // Expand the bar which should trigger the quick action.
         expandPanel();
 
@@ -710,7 +710,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
                 () -> {
                     Criteria.checkThat(
                             ChromeTabUtils.getUrlStringOnUiThread(
-                                    sActivityTestRule.getActivity().getActivityTab()),
+                                    mActivityTestRule.getActivity().getActivityTab()),
                             Matchers.is(testUrl));
                 });
     }
@@ -910,14 +910,14 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     public void testTriggeringContextualSearchHidesFindInPageOverlay() throws Exception {
         MenuUtils.invokeCustomMenuActionSync(
                 InstrumentationRegistry.getInstrumentation(),
-                sActivityTestRule.getActivity(),
+                mActivityTestRule.getActivity(),
                 R.id.find_in_page_id);
 
         CriteriaHelper.pollUiThread(
                 () -> {
                     FindToolbar findToolbar =
                             (FindToolbar)
-                                    sActivityTestRule.getActivity().findViewById(R.id.find_toolbar);
+                                    mActivityTestRule.getActivity().findViewById(R.id.find_toolbar);
                     Criteria.checkThat(findToolbar, Matchers.notNullValue());
                     Criteria.checkThat(findToolbar.isShown(), Matchers.is(true));
                     Criteria.checkThat(findToolbar.isAnimating(), Matchers.is(false));
@@ -926,7 +926,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
         // Don't type anything to Find because that may cause scrolling which makes clicking in the
         // page flaky.
 
-        View findToolbar = sActivityTestRule.getActivity().findViewById(R.id.find_toolbar);
+        View findToolbar = mActivityTestRule.getActivity().findViewById(R.id.find_toolbar);
         Assert.assertTrue(findToolbar.isShown());
 
         simulateResolveSearch("search");
@@ -949,7 +949,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     @MaxAndroidSdkLevel(value = Build.VERSION_CODES.R, reason = "crbug.com/1301017")
     public void testTabReparenting() throws Exception {
         // Move our "tap_test" tab to another activity.
-        final ChromeActivity ca = sActivityTestRule.getActivity();
+        final ChromeActivity ca = mActivityTestRule.getActivity();
 
         // Create a new tab so |ca| isn't destroyed.
         ChromeTabUtils.newTabFromMenu(InstrumentationRegistry.getInstrumentation(), ca);

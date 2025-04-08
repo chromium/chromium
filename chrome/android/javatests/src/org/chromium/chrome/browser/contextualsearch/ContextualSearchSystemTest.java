@@ -69,7 +69,7 @@ public class ContextualSearchSystemTest extends ContextualSearchInstrumentationB
 
     private void closeAppMenu() {
         ThreadUtils.runOnUiThreadBlocking(
-                () -> sActivityTestRule.getAppMenuCoordinator().getAppMenuHandler().hideAppMenu());
+                () -> mActivityTestRule.getAppMenuCoordinator().getAppMenuHandler().hideAppMenu());
     }
 
     /** Asserts whether the App Menu is visible. */
@@ -77,7 +77,7 @@ public class ContextualSearchSystemTest extends ContextualSearchInstrumentationB
         CriteriaHelper.pollInstrumentationThread(
                 () -> {
                     Criteria.checkThat(
-                            sActivityTestRule
+                            mActivityTestRule
                                     .getAppMenuCoordinator()
                                     .getAppMenuHandler()
                                     .isAppMenuShowing(),
@@ -103,7 +103,7 @@ public class ContextualSearchSystemTest extends ContextualSearchInstrumentationB
                 TaskTraits.UI_DEFAULT,
                 () -> {
                     ChromeTabUtils.simulateRendererKilledForTesting(
-                            sActivityTestRule.getActivity().getActivityTab());
+                            mActivityTestRule.getActivity().getActivityTab());
                 });
 
         // Give the panelState time to change
@@ -124,13 +124,13 @@ public class ContextualSearchSystemTest extends ContextualSearchInstrumentationB
     // Previously disabled: https://crbug.com/1192285, https://crbug.com/1192561
     public void testContextualSearchNotDismissedOnBackgroundTabCrash() throws Exception {
         ChromeTabUtils.newTabFromMenu(
-                InstrumentationRegistry.getInstrumentation(), sActivityTestRule.getActivity());
+                InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
         final Tab tab2 =
-                TabModelUtils.getCurrentTab(sActivityTestRule.getActivity().getCurrentTabModel());
+                TabModelUtils.getCurrentTab(mActivityTestRule.getActivity().getCurrentTabModel());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    TabModelUtils.setIndex(sActivityTestRule.getActivity().getCurrentTabModel(), 0);
+                    TabModelUtils.setIndex(mActivityTestRule.getActivity().getCurrentTabModel(), 0);
                 });
 
         triggerResolve(SEARCH_NODE);
