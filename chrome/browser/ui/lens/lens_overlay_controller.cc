@@ -3286,7 +3286,7 @@ void LensOverlayController::ClosePreselectionBubble() {
 
 void LensOverlayController::ShowPreselectionBubble() {
   // Don't show the preselection bubble if the overlay is not being shown.
-  if (!should_show_overlay_) {
+  if (!should_show_overlay_ || state() == State::kOverlayAndResults) {
     return;
   }
 
