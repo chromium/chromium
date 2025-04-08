@@ -81,10 +81,15 @@ def _query_for_build_config_targets(output_dir):
   # NINJA_SUMMARIZE_BUILD environment variable.
   cmd = [_resolve_ninja(), '-C', output_dir, '-t', 'targets']
   logging.info('Running: %r', cmd)
-  ninja_output = subprocess.run(cmd,
-                                check=True,
-                                capture_output=True,
-                                encoding='ascii').stdout
+  try:
+    ninja_output = subprocess.run(cmd,
+                                  check=True,
+                                  capture_output=True,
+                                  encoding='ascii').stdout
+  except subprocess.CalledProcessError as e:
+    sys.stderr.write('Command output:\n' + e.stdout + e.stderr)
+    raise
+
   ret = []
   SUFFIX = '__build_config_crbug_908819'
   SUFFIX_LEN = len(SUFFIX)
