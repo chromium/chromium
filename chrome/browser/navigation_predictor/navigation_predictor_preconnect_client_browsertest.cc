@@ -319,13 +319,8 @@ INSTANTIATE_TEST_SUITE_P(
     NavigationPredictorPreconnectClientBrowserTestWithSearch,
     testing::Bool());
 
-#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
-#define MAYBE_PreconnectSearchWithFeature DISABLED_PreconnectSearchWithFeature
-#else
-#define MAYBE_PreconnectSearchWithFeature PreconnectSearchWithFeature
-#endif
 IN_PROC_BROWSER_TEST_P(NavigationPredictorPreconnectClientBrowserTestWithSearch,
-                       MAYBE_PreconnectSearchWithFeature) {
+                       DISABLED_PreconnectSearchWithFeature) {
   static const char16_t kShortName[] = u"test";
   static const char kSearchURL[] =
       "/anchors_different_area.html?q={searchTerms}";
