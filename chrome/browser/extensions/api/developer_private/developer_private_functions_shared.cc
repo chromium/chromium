@@ -5,7 +5,9 @@
 #include "chrome/browser/extensions/api/developer_private/developer_private_functions_shared.h"
 
 #include "base/barrier_closure.h"
+#include "base/files/file_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/extensions/api/developer_private/developer_private_api.h"
 #include "chrome/browser/extensions/api/developer_private/developer_private_event_router.h"
@@ -26,6 +28,7 @@
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/file_highlighter.h"
 #include "extensions/browser/path_util.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/ui_util.h"
@@ -57,6 +60,14 @@ const char kCannotUpdateChildAccountProfileSettingsError[] =
     "Cannot change settings for a child account profile.";
 
 ui::FileInfo* g_drop_file_for_testing = nullptr;
+
+std::string ReadFileToString(const base::FilePath& path) {
+  std::string data;
+  // This call can fail, but it doesn't matter for our purposes. If it fails,
+  // we simply return an empty string for the manifest, and ignore it.
+  std::ignore = base::ReadFileToString(path, &data);
+  return data;
+}
 
 std::optional<URLPattern> ParseRuntimePermissionsPattern(
     const std::string& pattern_str) {
@@ -1141,6 +1152,80 @@ DeveloperPrivateDismissSafetyHubExtensionsMenuNotificationFunction::Run() {
       ->DismissActiveNotificationOfModule(
           safety_hub::SafetyHubModuleType::EXTENSIONS);
   return RespondNow(NoArguments());
+}
+
+DeveloperPrivateRequestFileSourceFunction::
+    DeveloperPrivateRequestFileSourceFunction() = default;
+
+DeveloperPrivateRequestFileSourceFunction::
+    ~DeveloperPrivateRequestFileSourceFunction() = default;
+
+ExtensionFunction::ResponseAction
+DeveloperPrivateRequestFileSourceFunction::Run() {
+  params_ = developer::RequestFileSource::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params_);
+
+  const developer::RequestFileSourceProperties& properties =
+      params_->properties;
+  const Extension* extension = GetExtensionById(properties.extension_id);
+  if (!extension) {
+    return RespondNow(Error(kNoSuchExtensionError));
+  }
+
+  // Under no circumstances should we ever need to reference a file outside of
+  // the extension's directory. If it tries to, abort.
+  base::FilePath path_suffix =
+      base::FilePath::FromUTF8Unsafe(properties.path_suffix);
+  if (path_suffix.empty() || path_suffix.ReferencesParent()) {
+    return RespondNow(Error(kInvalidPathError));
+  }
+
+  if (properties.path_suffix == kManifestFile && !properties.manifest_key) {
+    return RespondNow(Error(kManifestKeyIsRequiredError));
+  }
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+      base::BindOnce(&ReadFileToString, extension->path().Append(path_suffix)),
+      base::BindOnce(&DeveloperPrivateRequestFileSourceFunction::Finish, this));
+
+  return RespondLater();
+}
+
+void DeveloperPrivateRequestFileSourceFunction::Finish(
+    const std::string& file_contents) {
+  const developer::RequestFileSourceProperties& properties =
+      params_->properties;
+  const Extension* extension = GetExtensionById(properties.extension_id);
+  if (!extension) {
+    Respond(Error(kNoSuchExtensionError));
+    return;
+  }
+
+  developer::RequestFileSourceResponse response;
+  base::FilePath path_suffix =
+      base::FilePath::FromUTF8Unsafe(properties.path_suffix);
+  base::FilePath path = extension->path().Append(path_suffix);
+  response.title = base::StringPrintf("%s: %s", extension->name().c_str(),
+                                      path.BaseName().AsUTF8Unsafe().c_str());
+  response.message = properties.message;
+
+  std::unique_ptr<FileHighlighter> highlighter;
+  if (properties.path_suffix == kManifestFile) {
+    highlighter = std::make_unique<ManifestHighlighter>(
+        file_contents, *properties.manifest_key,
+        properties.manifest_specific ? *properties.manifest_specific
+                                     : std::string());
+  } else {
+    highlighter = std::make_unique<SourceHighlighter>(
+        file_contents, properties.line_number ? *properties.line_number : 0);
+  }
+
+  response.before_highlight = highlighter->GetBeforeFeature();
+  response.highlight = highlighter->GetFeature();
+  response.after_highlight = highlighter->GetAfterFeature();
+
+  Respond(WithArguments(response.ToValue()));
 }
 
 DeveloperPrivateOpenDevToolsFunction::DeveloperPrivateOpenDevToolsFunction() =

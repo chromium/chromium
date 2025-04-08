@@ -272,23 +272,6 @@ class DeveloperPrivateLoadDirectoryFunction : public ExtensionFunction {
   std::string error_;
 };
 
-class DeveloperPrivateRequestFileSourceFunction
-    : public DeveloperPrivateAPIFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("developerPrivate.requestFileSource",
-                             DEVELOPERPRIVATE_REQUESTFILESOURCE)
-  DeveloperPrivateRequestFileSourceFunction();
-
- protected:
-  ~DeveloperPrivateRequestFileSourceFunction() override;
-  ResponseAction Run() override;
-
- private:
-  void Finish(const std::string& file_contents);
-
-  std::optional<api::developer_private::RequestFileSource::Params> params_;
-};
-
 class DeveloperPrivateRepairExtensionFunction
     : public DeveloperPrivateAPIFunction {
  public:
