@@ -144,8 +144,19 @@ void WebDatabaseBackend::LoadDatabaseIfNecessary() {
   init_status_ = db_->Init(db_path_, &(*encryptor_));
 
   if (init_status_ != sql::INIT_OK) {
-    db_.reset();
-    return;
+    // The database failed to be opened. This can be caused by a third-party
+    // that locks or has an exclusive sql query running. In that scenario,
+    // the initial error code is stored in `init_status_` and
+    // `catastrophic_error_occurred_` to ensure the user is getting the window
+    // notification about the profile being corrupt.
+    //
+    // Since Chrome keeps running after the error windows, we do mitigate the
+    // assumption of the WebDatabase not being null by opening an in-memory
+    // and empty database.
+    db_->GetSQLConnection()->Close();
+    sql::InitStatus memory_init_status =
+        db_->Init(base::FilePath(WebDatabase::kInMemoryPath), &(*encryptor_));
+    CHECK_EQ(memory_init_status, sql::INIT_OK);
   }
 
   // A catastrophic error might have happened and recovered.

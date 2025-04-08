@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_deref.h"
 #include "base/i18n/case_conversion.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
@@ -70,7 +71,7 @@ AutocompleteTable::~AutocompleteTable() = default;
 
 // static
 AutocompleteTable* AutocompleteTable::FromWebDatabase(WebDatabase* db) {
-  return static_cast<AutocompleteTable*>(db->GetTable(GetKey()));
+  return static_cast<AutocompleteTable*>(CHECK_DEREF(db).GetTable(GetKey()));
 }
 
 WebDatabaseTable::TypeKey AutocompleteTable::GetTypeKey() const {
