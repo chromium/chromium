@@ -278,8 +278,14 @@ IN_PROC_BROWSER_TEST_F(CardUnmaskPromptViewBrowserTest,
 
 // Makes sure the tab can be closed while the dialog is showing.
 // https://crbug.com/484376
+// TODO(crbug.com/409069597): Re-enable this test on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_CloseTabWhileDialogShowing DISABLED_CloseTabWhileDialogShowing
+#else
+#define MAYBE_CloseTabWhileDialogShowing CloseTabWhileDialogShowing
+#endif
 IN_PROC_BROWSER_TEST_F(CardUnmaskPromptViewBrowserTest,
-                       CloseTabWhileDialogShowing) {
+                       MAYBE_CloseTabWhileDialogShowing) {
   ShowUi(kExpiryExpired);
   // Simulate BrowserAutofillManager (the delegate in production code) being
   // destroyed before CardUnmaskPromptViewBridge::OnConstrainedWindowClosed() is
