@@ -24,7 +24,6 @@
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
 #include "media/base/media_util.h"
-#include "media/gpu/chromeos/default_video_frame_converter.h"
 #include "media/gpu/chromeos/dmabuf_video_frame_pool.h"
 #include "media/gpu/chromeos/frame_registry.h"
 #include "media/gpu/chromeos/image_processor.h"
@@ -302,6 +301,7 @@ std::unique_ptr<VideoDecoder> VideoDecoderPipeline::CreateForARC(
 // static
 std::unique_ptr<VideoDecoder> VideoDecoderPipeline::CreateForTesting(
     scoped_refptr<base::SequencedTaskRunner> client_task_runner,
+    std::unique_ptr<FrameResourceConverter> frame_converter,
     std::unique_ptr<MediaLog> media_log,
     bool ignore_resolution_changes_to_smaller_for_testing) {
   CreateDecoderFunctionCB create_decoder_function_cb;
@@ -324,11 +324,10 @@ std::unique_ptr<VideoDecoder> VideoDecoderPipeline::CreateForTesting(
   auto* pipeline = new VideoDecoderPipeline(
       std::move(decoder_reservation), gpu::GpuDriverBugWorkarounds(),
       std::move(client_task_runner), std::make_unique<PlatformVideoFramePool>(),
-      DefaultFrameConverter::Create(),
+      std::move(frame_converter),
       VideoDecoderPipeline::DefaultPreferredRenderableFourccs(),
       std::move(media_log), std::move(create_decoder_function_cb),
-      /*uses_oop_video_decoder=*/false,
-      /*in_video_decoder_process=*/true);
+      /*uses_oop_video_decoder=*/false, /*in_video_decoder_process=*/true);
 
   if (ignore_resolution_changes_to_smaller_for_testing)
     pipeline->ignore_resolution_changes_to_smaller_for_testing_ = true;
