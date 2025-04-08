@@ -2883,6 +2883,7 @@ static_library("browser") {
       "android/webapps/twa_launch_queue_delegate.h",
       "android/webapps/twa_launch_queue_tab_helper.cc",
       "android/webapps/twa_launch_queue_tab_helper.h",
+      "android/webapps/web_app_launch_handler.cc",
       "android/webapps/webapp_registry.cc",
       "android/webapps/webapp_registry.h",
       "auxiliary_search/auxiliary_search_provider.cc",

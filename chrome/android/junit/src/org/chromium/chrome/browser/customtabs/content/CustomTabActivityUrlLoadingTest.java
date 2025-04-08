@@ -21,6 +21,8 @@ import static org.chromium.chrome.browser.customtabs.content.CustomTabActivityCo
 import android.content.Intent;
 import android.net.Uri;
 
+import androidx.browser.trusted.LaunchHandlerClientMode;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -89,12 +91,15 @@ public class CustomTabActivityUrlLoadingTest {
     @Mock WebContentsFactory.Natives mWebContentsFactoryJni;
     @Mock PreloadingDataBridge.Natives mPreloadingDataBridgeMock;
 
+    @Mock WebAppLaunchHandler.Natives mWebAppLaunchHandlerJniMock;
+
     @Before
     public void setUp() {
         UrlUtilitiesJni.setInstanceForTesting(mUrlUtilitiesJniMock);
         CustomTabAuthUrlHeuristicsJni.setInstanceForTesting(mCustomTabAuthUrlHeuristicsJniMock);
         WebContentsFactoryJni.setInstanceForTesting(mWebContentsFactoryJni);
         PreloadingDataBridgeJni.setInstanceForTesting(mPreloadingDataBridgeMock);
+        WebAppLaunchHandlerJni.setInstanceForTesting(mWebAppLaunchHandlerJniMock);
 
         when(env.profileProvider.getOriginalProfile()).thenReturn(mProfile);
         when(env.profileProvider.getOffTheRecordProfile(eq(true))).thenReturn(mIncognitoProfile);
@@ -202,13 +207,106 @@ public class CustomTabActivityUrlLoadingTest {
         verify(env.tabFromFactory).loadUrl(argThat(params -> OTHER_URL.equals(params.getUrl())));
     }
 
-    private CustomTabIntentDataProvider createDataProviderForNewIntent(String url) {
+    private void checkLaunchHandler(
+            CustomTabIntentDataProvider intentDataProvider,
+            int expectedLoadUrlNumber,
+            boolean expectedStartNewNavigation) {
+        mIntentHandler.onNewIntent(intentDataProvider);
+        verify(env.tabFromFactory, times(expectedLoadUrlNumber))
+                .loadUrl(argThat(params -> OTHER_URL.equals(params.getUrl())));
+        verify(mWebAppLaunchHandlerJniMock, times(1))
+                .notifyLaunchQueue(any(), eq(true), eq(INITIAL_URL), eq(null));
+        verify(mWebAppLaunchHandlerJniMock, times(1))
+                .notifyLaunchQueue(any(), eq(expectedStartNewNavigation), eq(OTHER_URL), eq(null));
+    }
+
+    @Test
+    public void navigateExistingClientMode() {
+        mTabController.setUpInitialTab(null);
+        mTabController.finishNativeInitialization();
+        clearInvocations(env.tabFromFactory);
+        CustomTabIntentDataProvider intentDataProvider =
+                createDataProviderForNewIntent(
+                        OTHER_URL, LaunchHandlerClientMode.NAVIGATE_EXISTING);
+
+        checkLaunchHandler(intentDataProvider, 1, true);
+    }
+
+    @Test
+    public void focusExistingClientMode() {
+        mTabController.setUpInitialTab(null);
+        mTabController.finishNativeInitialization();
+        clearInvocations(env.tabFromFactory);
+        CustomTabIntentDataProvider intentDataProvider =
+                createDataProviderForNewIntent(OTHER_URL, LaunchHandlerClientMode.FOCUS_EXISTING);
+
+        checkLaunchHandler(intentDataProvider, 0, false);
+    }
+
+    @Test
+    public void autoClientMode() {
+        mTabController.setUpInitialTab(null);
+        mTabController.finishNativeInitialization();
+        clearInvocations(env.tabFromFactory);
+        CustomTabIntentDataProvider intentDataProvider =
+                createDataProviderForNewIntent(OTHER_URL, LaunchHandlerClientMode.AUTO);
+
+        // The user agent(browser) decides what works best for the platform. Currently it's
+        // navigate-existing.
+        checkLaunchHandler(intentDataProvider, 1, true);
+    }
+
+    @Test
+    public void wrongClientMode() {
+        mTabController.setUpInitialTab(null);
+        mTabController.finishNativeInitialization();
+        clearInvocations(env.tabFromFactory);
+        CustomTabIntentDataProvider intentDataProvider =
+                createDataProviderForNewIntent(OTHER_URL, 98);
+
+        // Fallback to auto mode as described in the specification.
+        checkLaunchHandler(intentDataProvider, 1, true);
+    }
+
+    @Test
+    public void navigateNewClientMode() {
+        mTabController.setUpInitialTab(null);
+        mTabController.finishNativeInitialization();
+        clearInvocations(env.tabFromFactory);
+        CustomTabIntentDataProvider intentDataProvider =
+                createDataProviderForNewIntent(OTHER_URL, LaunchHandlerClientMode.NAVIGATE_NEW);
+
+        // Treated by IntentHandler as a wrong mode because this mode should be handled earlier by
+        // LaunchIntentDispatcher because it require launching of a new task.
+        checkLaunchHandler(intentDataProvider, 1, true);
+    }
+
+    @Test
+    public void noClientMode() {
+        mTabController.setUpInitialTab(null);
+        mTabController.finishNativeInitialization();
+        clearInvocations(env.tabFromFactory);
+        CustomTabIntentDataProvider intentDataProvider = createDataProviderForNewIntent(OTHER_URL);
+
+        // According to the specification if not specified, the default client_mode value is auto.
+        checkLaunchHandler(intentDataProvider, 1, true);
+    }
+
+    private CustomTabIntentDataProvider createDataProviderForNewIntent(
+            String url, @LaunchHandlerClientMode.ClientMode int clientMode) {
         CustomTabIntentDataProvider dataProvider = mock(CustomTabIntentDataProvider.class);
         when(dataProvider.getUrlToLoad()).thenReturn(url);
         when(dataProvider.getSession()).thenReturn(env.session);
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse(url));
+
+        when(dataProvider.getLaunchHandlerClientMode()).thenReturn(clientMode);
+
         when(dataProvider.getIntent()).thenReturn(intent);
         return dataProvider;
+    }
+
+    private CustomTabIntentDataProvider createDataProviderForNewIntent(String url) {
+        return createDataProviderForNewIntent(url, LaunchHandlerClientMode.AUTO);
     }
 }

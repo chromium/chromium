@@ -41,29 +41,26 @@ public class WebAppLaunchHandlerTest {
     }
 
     @Test
-    public void getLaunchParams() {
+    public void getStartNewNavigation() {
         String url = JUnitTestGURLs.INITIAL_URL.getSpec();
         String packageName = null;
-        WebAppLaunchParams launchParams =
-                WebAppLaunchHandler.getLaunchParams(
+        WebAppLaunchHandler launchHandler =
+                new WebAppLaunchHandler(
                         LaunchHandlerClientMode.NAVIGATE_EXISTING, url, packageName);
-        Assert.assertTrue(launchParams.startNewNavigation);
+        Assert.assertTrue(launchHandler.getStartNewNavigation());
 
-        launchParams =
-                WebAppLaunchHandler.getLaunchParams(
-                        LaunchHandlerClientMode.FOCUS_EXISTING, url, packageName);
-        Assert.assertFalse(launchParams.startNewNavigation);
+        launchHandler =
+                new WebAppLaunchHandler(LaunchHandlerClientMode.FOCUS_EXISTING, url, packageName);
+        Assert.assertFalse(launchHandler.getStartNewNavigation());
 
-        launchParams =
-                WebAppLaunchHandler.getLaunchParams(
-                        LaunchHandlerClientMode.NAVIGATE_NEW, url, packageName);
-        Assert.assertTrue(launchParams.startNewNavigation);
+        launchHandler =
+                new WebAppLaunchHandler(LaunchHandlerClientMode.NAVIGATE_NEW, url, packageName);
+        Assert.assertTrue(launchHandler.getStartNewNavigation());
 
-        launchParams =
-                WebAppLaunchHandler.getLaunchParams(LaunchHandlerClientMode.AUTO, url, packageName);
-        Assert.assertTrue(launchParams.startNewNavigation);
+        launchHandler = new WebAppLaunchHandler(LaunchHandlerClientMode.AUTO, url, packageName);
+        Assert.assertTrue(launchHandler.getStartNewNavigation());
 
-        launchParams = WebAppLaunchHandler.getLaunchParams(65, url, packageName);
-        Assert.assertTrue(launchParams.startNewNavigation);
+        launchHandler = new WebAppLaunchHandler(65, url, packageName);
+        Assert.assertTrue(launchHandler.getStartNewNavigation());
     }
 }
