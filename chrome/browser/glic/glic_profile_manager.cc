@@ -114,6 +114,14 @@ void GlicProfileManager::SetActiveGlic(GlicKeyedService* glic) {
                     last_active_glic_profile);
 }
 
+void GlicProfileManager::SetPosition(const gfx::Point& position) {
+  previous_position_ = position;
+}
+
+std::optional<gfx::Point> GlicProfileManager::GetPreviousPosition() {
+  return previous_position_;
+}
+
 void GlicProfileManager::OnServiceShutdown(GlicKeyedService* glic) {
   if (last_active_glic_ && last_active_glic_.get() == glic) {
     SetActiveGlic(nullptr);

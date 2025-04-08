@@ -745,7 +745,11 @@ gfx::Rect GlicWindowController::GetInitialBounds(Browser* browser) {
   if (browser && !AlwaysDetached()) {
     return GetInitialAttachedBounds(*browser);
   }
-  if (browser) {
+
+  std::optional<gfx::Point> previous_position =
+      glic::GlicProfileManager::GetInstance()->GetPreviousPosition();
+
+  if (browser && !previous_position.has_value()) {
     return GetInitialDetachedBoundsFromBrowser(*browser);
   }
 
@@ -753,9 +757,13 @@ gfx::Rect GlicWindowController::GetInitialBounds(Browser* browser) {
   display::Display display = GetDisplayForOpeningDetached();
   gfx::Size widget_size = GetLastRequestedSizeClamped(display.size().height());
 
+  // Use the previous position if there is one.
+  if (previous_position.has_value()) {
+    return {previous_position.value(), widget_size};
+  }
+
   // Get the default position offset equal distances from the top right corner
   // of the work area (which excludes system UI such as the taskbar).
-  // TODO(crbug.com/384061064): Use the last position if needed.
   gfx::Point top_right = display.work_area().top_right();
   int initial_x =
       top_right.x() - widget_size.width() - kDefaultDetachedTopRightDistance;
@@ -1211,6 +1219,10 @@ void GlicWindowController::HandleWindowDragWithOffset(
     // Dragging stops animations. This makes sure we honor the last resize
     // request.
     glic_window_animator_->MaybeAnimateToTargetSize();
+
+    gfx::Rect bounds = GetGlicWidget()->GetWindowBoundsInScreen();
+    glic::GlicProfileManager::GetInstance()->SetPosition(bounds.origin());
+
     if (!AlwaysDetached()) {
       // set glic z-order back to normal after drag is done.
       GetGlicWidget()->SetZOrderLevel(ui::ZOrderLevel::kNormal);

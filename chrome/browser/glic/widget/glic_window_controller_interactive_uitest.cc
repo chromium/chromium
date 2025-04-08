@@ -494,6 +494,21 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
       WaitForState(test::internal::kGlicAppState, mojom::WebUiState::kReady));
 }
 
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, TestInitialBounds) {
+  gfx::Rect initial_bounds = window_controller().GetInitialBounds(nullptr);
+  gfx::Point top_right =
+      display::Screen::GetScreen()->GetPrimaryDisplay().work_area().top_right();
+  int expected_x = top_right.x() - GlicWidget::GetInitialSize().width() -
+                   glic::kDefaultDetachedTopRightDistance;
+  int expected_y = top_right.y() + glic::kDefaultDetachedTopRightDistance;
+  ASSERT_EQ(initial_bounds.origin(), gfx::Point(expected_x, expected_y));
+
+  // A position set on GlicProfileManager is used as the initial bounds.
+  glic::GlicProfileManager::GetInstance()->SetPosition({10, 20});
+  initial_bounds = window_controller().GetInitialBounds(nullptr);
+  ASSERT_EQ(initial_bounds.origin(), gfx::Point(10, 20));
+}
+
 class GlicWindowControllerWithMemoryPressureUiTest
     : public GlicWindowControllerUiTest {
  public:

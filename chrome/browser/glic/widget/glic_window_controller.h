@@ -276,6 +276,8 @@ class GlicWindowController : public views::WidgetObserver,
   bool IsDragging() { return in_move_loop_; }
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(GlicWindowControllerUiTest, TestInitialBounds);
+
   // ui::AcceleratorTarget
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
   bool CanHandleAccelerators() const override;
