@@ -1128,6 +1128,14 @@ int ServiceWorkerContextCore::GetVersionFailureCount(int64_t version_id) {
   return it->second.count;
 }
 
+void ServiceWorkerContextCore::NotifyWillCreateURLLoaderFactory(
+    const GURL& scope) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  for (auto& observer : sync_observer_list_->observers) {
+    observer.OnWillCreateURLLoaderFactory(scope);
+  }
+}
+
 void ServiceWorkerContextCore::NotifyRegistrationStored(
     int64_t registration_id,
     const GURL& scope,

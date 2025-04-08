@@ -82,6 +82,11 @@ class ServiceWorkerContextCoreObserver {
       int64_t version_id,
       const std::string& uuid,
       GlobalRenderFrameHostId render_frame_host_id) {}
+
+  // Called before the URLLoaderFactory used to fetch the worker script is
+  // constructed.
+  virtual void OnWillCreateURLLoaderFactory(const GURL& scope) {}
+
   // Called when the ServiceWorkerContainer.register() promise is resolved.
   //
   // This is called before the service worker registration is persisted to

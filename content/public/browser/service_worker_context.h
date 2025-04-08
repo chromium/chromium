@@ -98,6 +98,9 @@ class ServiceWorkerContextObserverSynchronous : public base::CheckedObserver {
   // Called when the service worker with id `version_id` has stopped running.
   virtual void OnStopped(int64_t version_id,
                          const ServiceWorkerRunningInfo& worker_info) {}
+  // Called before the URLLoaderFactory used to fetch the worker script is
+  // constructed.
+  virtual void OnWillCreateURLLoaderFactory(const GURL& scope) {}
 
   // TODO(crbug.com/334940006): Add the rest of the extensions methods
   // (OnRegistrationStored(), OnReportConsoleMessage(), OnDestruct()) and adapt
