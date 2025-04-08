@@ -108,7 +108,6 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiUtils;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.data_sharing.DataSharingService;
@@ -631,23 +630,21 @@ public class StripLayoutHelper
                         SemanticColorUtils.getDefaultIconColorAccent1(context),
                         NEW_TAB_BUTTON_DEFAULT_PRESSED_OPACITY);
 
-        // Surface-2 baseline for incognito bg color.
+        // gm3_baseline_surface_container_dark for incognito bg color.
         int BackgroundIncognitoDefaultTint =
-                context.getColor(R.color.default_bg_color_dark_elev_2_baseline);
+                context.getColor(R.color.tab_strip_bg_incognito_default_tint);
 
-        // Surface-5 baseline for incognito pressed bg color
+        // gm3_baseline_surface_container_highest_dark for incognito pressed bg color
         int BackgroundIncognitoPressedTint =
-                context.getColor(R.color.default_bg_color_dark_elev_5_baseline);
+                context.getColor(R.color.tab_strip_bg_incognito_pressed_tint);
 
         // Tab strip redesign new tab button night mode bg color.
         if (ColorUtils.inNightMode(context)) {
-            // Surface-1 for night mode bg color.
-            BackgroundDefaultTint =
-                    ChromeColors.getSurfaceColor(context, R.dimen.default_elevation_1);
+            // colorSurfaceContainerLow for night mode bg color.
+            BackgroundDefaultTint = SemanticColorUtils.getColorSurfaceContainerLow(context);
 
-            // Surface 5 for pressed night mode bg color.
-            BackgroundPressedTint =
-                    ChromeColors.getSurfaceColor(context, R.dimen.default_elevation_5);
+            // colorSurfaceContainerHighest for pressed night mode bg color.
+            BackgroundPressedTint = SemanticColorUtils.getColorSurfaceContainerHighest(context);
         }
         mNewTabButton.setBackgroundTint(
                 BackgroundDefaultTint,

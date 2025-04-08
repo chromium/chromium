@@ -401,4 +401,7 @@ found in the LICENSE file.
     <dimen name="tab_strip_group_context_menu_max_width">392dp</dimen>
     <dimen name="tab_strip_context_menu_min_width">200dp</dimen>
     <dimen name="tab_strip_context_menu_max_width">300dp</dimen>
+
+    <!-- Background tab animation host view -->
+    <dimen name="bg_tab_animation_elevation">12dp</dimen>
 </resources>

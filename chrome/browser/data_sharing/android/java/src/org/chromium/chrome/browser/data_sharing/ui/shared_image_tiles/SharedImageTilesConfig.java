@@ -12,9 +12,9 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.DimenRes;
 import androidx.annotation.Px;
 import androidx.annotation.StyleRes;
+import androidx.core.content.ContextCompat;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
 /**
@@ -114,7 +114,8 @@ public class SharedImageTilesConfig {
                     .setBorderSizeDp(R.dimen.shared_image_tiles_icon_border)
                     .setTextPaddingDp(R.dimen.small_shared_image_tiles_text_padding)
                     .setTextColor(
-                            ChromeColors.getSurfaceColor(context, R.dimen.default_bg_elevation))
+                            ContextCompat.getColor(
+                                    context, R.color.small_shared_image_tiles_text_color))
                     .setBorderColor(tabGroupColor)
                     .setBackgroundColor(tabGroupColor)
                     .setTextStyle(R.style.TextAppearance_SharedImageTilesSmall);

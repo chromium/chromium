@@ -60,7 +60,6 @@ import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.url.JUnitTestGURLs;
@@ -439,7 +438,8 @@ public class StripTabHoverCardViewUnitTest {
                                 ColorStateList.valueOf(
                                         ContextCompat.getColor(
                                                 mContext,
-                                                R.color.default_bg_color_dark_elev_5_baseline))));
+                                                R.color
+                                                        .gm3_baseline_surface_container_highest_dark))));
         assertEquals(
                 "Title text color is incorrect.",
                 mContext.getColor(R.color.default_text_color_light),
@@ -456,8 +456,8 @@ public class StripTabHoverCardViewUnitTest {
                 .setBackgroundTintList(
                         eq(
                                 ColorStateList.valueOf(
-                                        ChromeColors.getSurfaceColor(
-                                                mContext, R.dimen.tab_hover_card_bg_color_elev))));
+                                        ContextCompat.getColor(
+                                                mContext, R.color.tab_hover_card_bg_color))));
         assertEquals(
                 "Title text color is incorrect.",
                 SemanticColorUtils.getDefaultTextColor(mContext),

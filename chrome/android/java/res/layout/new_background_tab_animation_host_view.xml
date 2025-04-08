@@ -23,7 +23,7 @@ found in the LICENSE file.
         android:layout_height="32dp"
         android:layout_gravity="center"
         android:background="@drawable/new_tab_animation_rounded_rect"
-        android:elevation="@dimen/default_elevation_5"
+        android:elevation="@dimen/bg_tab_animation_elevation"
         android:src="@drawable/ic_link"
         android:padding="4dp"
         android:visibility="invisible"/>

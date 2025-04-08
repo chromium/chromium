@@ -8,8 +8,6 @@ import android.content.Context;
 
 import androidx.annotation.ColorInt;
 
-import com.google.android.material.elevation.ElevationOverlayProvider;
-
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
 /** Utility class that provides theme related attributes for price change UI. */
@@ -19,8 +17,6 @@ public class PriceChangeModuleViewUtils {
     }
 
     static @ColorInt int getIconColor(Context context) {
-        float tabElevation = context.getResources().getDimension(R.dimen.tab_bg_elevation);
-        return new ElevationOverlayProvider(context)
-                .compositeOverlayWithThemeSurfaceColorIfNeeded(tabElevation);
+        return SemanticColorUtils.getColorSurfaceContainerHighest(context);
     }
 }

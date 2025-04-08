@@ -318,10 +318,8 @@ public class TabUiThemeProvider {
             Context context, boolean isIncognito) {
         int backgroundTint =
                 isIncognito
-                        ? ContextCompat.getColor(
-                                context, R.color.default_bg_color_dark_elev_5_baseline)
-                        : ChromeColors.getSurfaceColor(
-                                context, R.dimen.tab_hover_card_bg_color_elev);
+                        ? ContextCompat.getColor(context, R.color.incognito_tab_hover_card_bg_color)
+                        : ContextCompat.getColor(context, R.color.tab_hover_card_bg_color);
         return ColorStateList.valueOf(backgroundTint);
     }
 

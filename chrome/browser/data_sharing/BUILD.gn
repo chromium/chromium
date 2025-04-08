@@ -55,6 +55,7 @@ if (is_android) {
       "android/java/res/layout/recent_activity_log_item.xml",
       "android/java/res/layout/shared_image_tiles.xml",
       "android/java/res/layout/shared_image_tiles_icon.xml",
+      "android/java/res/values/colors.xml",
       "android/java/res/values/dimens.xml",
       "android/java/res/values/styles.xml",
     ]
@@ -248,6 +249,7 @@ if (is_android) {
       "//components/collaboration/public:core_java",
       "//components/data_sharing/public:public_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_core_core_java",
       "//ui/android:ui_no_recycler_view_java",
     ]
   }
@@ -373,9 +375,7 @@ if (is_android) {
   android_library("javatests") {
     testonly = true
 
-    sources = [
-      "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingServiceFactoryTest.java",
-    ]
+    sources = [ "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingServiceFactoryTest.java" ]
     deps = [
       ":factory_java",
       "//base:base_java",

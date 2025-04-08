@@ -34,6 +34,7 @@ found in the LICENSE file.
     <color name="incognito_tab_grid_dialog_ungroup_bar_text_hovered_color">@color/modern_white</color>
 
     <color name="incognito_tab_list_editor_toolbar_bg_color">@color/gm3_baseline_surface_container_low_dark</color>
+    <color name="incognito_tab_hover_card_bg_color">@color/gm3_baseline_surface_container_highest_dark</color>
 
     <!-- Tab Group color picker related colors. These should not be used elsewhere. -->
     <color name="tab_group_color_picker_blue">@color/tab_group_color_picker_blue_dark</color>
