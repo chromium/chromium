@@ -106,7 +106,6 @@ chrome/test/data/safe_browsing/download_protection 1 1
 chrome/test/data/third_party/kraken/tests/kraken-1.1 20 4
 chrome/test/data/third_party/spaceport 1 1
 chrome/test/data/updater 2 1
-chrome/test/data/variations/http_server 1 1
 chrome/test/data/webui 1 1
 chrome/test/data/webui/chromeos 1 1
 chrome/updater/win 1 1
@@ -209,7 +208,7 @@ extensions/common/manifest_handlers 1 1
 extensions/shell/common 1 1
 google_apis/gaia 1 1
 gpu/config 1 1
-infra 4 2
+infra 5 3
 infra/config/generated/luci 1 1
 infra/config/generators 2 1
 infra/config/gn_args 1 1
