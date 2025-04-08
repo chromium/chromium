@@ -45,7 +45,7 @@ namespace actor {
 
 namespace {
 
-constexpr int64_t kNonExistantContentNodeId = 12345;
+constexpr int64_t kNonExistentContentNodeId = 12345;
 
 class ActorToolsTest : public InProcessBrowserTest {
  public:
@@ -63,7 +63,7 @@ class ActorToolsTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
-    embedded_test_server()->ServeFilesFromSourceDirectory(kTestDataPath);
+    embedded_test_server()->ServeFilesFromSourceDirectory(kActorTestDataPath);
     ASSERT_TRUE(embedded_test_server()->Start());
 
     actor_coordinator_ = std::make_unique<actor::ActorCoordinator>();
@@ -103,7 +103,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, BasicSmokeTest) {
 
   // Use a random node id that doesn't exist.
   BrowserAction action =
-      MakeClick(/*content_node_id=*/kNonExistantContentNodeId);
+      MakeClick(/*content_node_id=*/kNonExistentContentNodeId);
 
   TabInterface& tab = *active_tab();
 
@@ -118,7 +118,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool) {
   const GURL url = embedded_test_server()->GetURL("/simple.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
-  BrowserAction action = MakeType(/*content_node_id=*/kNonExistantContentNodeId,
+  BrowserAction action = MakeType(/*content_node_id=*/kNonExistentContentNodeId,
                                   /*text=*/"test", /*follow_by_enter=*/true);
 
   TabInterface& tab = *active_tab();
@@ -138,7 +138,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, MouseMoveTool) {
 
   // Use a random node id that doesn't exist.
   BrowserAction action =
-      MakeMouseMove(/*content_node_id=*/kNonExistantContentNodeId);
+      MakeMouseMove(/*content_node_id=*/kNonExistentContentNodeId);
 
   TabInterface& tab = *active_tab();
 
@@ -148,6 +148,56 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, MouseMoveTool) {
   // TODO(crbug.com/402218570): Add function to extract real DOMNodeId from the
   // test page so we can expect a true click returning here.
   EXPECT_FALSE(result_fail.Get());
+}
+
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_ScrollOnPage) {
+  const GURL url = embedded_test_server()->GetURL("/scrollable_page.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  float scroll_offset_y = 50;
+  TabInterface& tab = *active_tab();
+
+  {
+    // If no node id is passed, it will scroll the page's viewport.
+    BrowserAction action = MakeScroll(
+        /*content_node_id=*/std::nullopt, /*scroll_offset_x=*/0,
+        scroll_offset_y);
+    TestFuture<bool> result_success;
+    actor_coordinator().Act(tab, action, result_success.GetCallback());
+    EXPECT_TRUE(result_success.Get());
+    EXPECT_EQ(scroll_offset_y,
+              EvalJs(web_contents(), "window.scrollY").ExtractDouble());
+  }
+
+  {
+    BrowserAction action = MakeScroll(
+        /*content_node_id=*/std::nullopt, /*scroll_offset_x=*/0,
+        scroll_offset_y);
+    TestFuture<bool> result_success;
+    actor_coordinator().Act(tab, action, result_success.GetCallback());
+    EXPECT_TRUE(result_success.Get());
+    EXPECT_EQ(2 * scroll_offset_y,
+              EvalJs(web_contents(), "window.scrollY").ExtractDouble());
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_FailOnInvalidNodeID) {
+  const GURL url = embedded_test_server()->GetURL("/scrollable_page.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  // Use a random node id that doesn't exist.
+  float scroll_offset_y = 50;
+  BrowserAction action = MakeScroll(
+      /*content_node_id=*/kNonExistentContentNodeId, /*scroll_offset_x=*/0,
+      scroll_offset_y);
+
+  TabInterface& tab = *active_tab();
+
+  TestFuture<bool> result_fail;
+  actor_coordinator().Act(tab, action, result_fail.GetCallback());
+  EXPECT_FALSE(result_fail.Get());
+
+  EXPECT_EQ(0, EvalJs(web_contents(), "window.scrollY").ExtractDouble());
 }
 
 // Basic test of the NavigateTool.

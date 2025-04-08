@@ -768,7 +768,8 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
   // where there is no concept of scroll origin.
   // See renderer/core/scroll/scroll_area.h for details.
   virtual gfx::PointF GetScrollOffset() const = 0;
-  virtual void SetScrollOffset(const gfx::PointF&) = 0;
+  // Returns true if the scroll offset was set successfully.
+  virtual bool SetScrollOffset(const gfx::PointF&) = 0;
 
   // The size of the document in this frame.
   virtual gfx::Size DocumentSize() const = 0;

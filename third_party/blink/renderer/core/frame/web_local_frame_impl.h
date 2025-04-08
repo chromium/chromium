@@ -311,7 +311,7 @@ class CORE_EXPORT WebLocalFrameImpl final
       const WebAssociatedURLLoaderOptions&) override;
   void DeprecatedStopLoading() override;
   gfx::PointF GetScrollOffset() const override;
-  void SetScrollOffset(const gfx::PointF&) override;
+  bool SetScrollOffset(const gfx::PointF&) override;
   gfx::Size DocumentSize() const override;
   bool HasVisibleContent() const override;
   gfx::Rect VisibleContentRect() const override;

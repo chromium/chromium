@@ -9,7 +9,7 @@
 
 namespace actor {
 
-inline constexpr char kTestDataPath[] = "chrome/test/data/actor";
+inline constexpr char kActorTestDataPath[] = "chrome/test/data/actor";
 
 optimization_guide::proto::BrowserAction MakeClick(int content_node_id);
 optimization_guide::proto::BrowserAction MakeHistoryBack();
@@ -18,6 +18,10 @@ optimization_guide::proto::BrowserAction MakeMouseMove(int content_node_id);
 optimization_guide::proto::BrowserAction MakeType(int content_node_id,
                                                   std::string_view text,
                                                   bool follow_by_enter);
+optimization_guide::proto::BrowserAction MakeScroll(
+    std::optional<int> content_node_id,
+    float scroll_offset_x,
+    float scroll_offset_y);
 
 }  // namespace actor
 

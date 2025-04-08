@@ -51,11 +51,41 @@ struct TypeAction {
   bool follow_by_enter;
 };
 
+// Scroll action performs a scroll on the page's viewport or on a specified
+// target element.
+// It currently returns true even for a partial scroll to the given distance
+// and direction.
+// It will provide more precise information about how much it scrolls.
+struct ScrollAction {
+  // Corresponds to ScrollAction.ScrollDirection.
+  // This must be kept in sync with ScrollAction.ScrollDirection enum in
+  // components/optimization_guide/proto/features/actions_data.proto.
+  enum ScrollDirection {
+    // Scroll left.
+    kLeft = 1,
+    // Scroll right.
+    kRight = 2,
+    // Scroll up.
+    kUp = 3,
+    // Scroll down.
+    kDown = 4,
+  };
+
+  // This target is the element to scroll. A null target implies scrolling the
+  // page's viewport. If the scroll action returns failure, it means the target
+  // isn't scrollable.
+  ToolTarget? target;
+  ScrollDirection direction;
+  // Scroll distance in physical pixels, and it should always be positive.
+  float distance;
+};
+
 // Union of tool-specific actions.
 union ToolAction {
   ClickAction click;
   MouseMoveAction mouse_move;
   TypeAction type;
+  ScrollAction scroll;
 };
 
 // All information required to invoke a tool in the renderer.

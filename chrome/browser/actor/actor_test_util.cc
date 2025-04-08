@@ -11,6 +11,7 @@
 using optimization_guide::proto::BrowserAction;
 using optimization_guide::proto::ClickAction;
 using optimization_guide::proto::MoveMouseAction;
+using optimization_guide::proto::ScrollAction;
 using optimization_guide::proto::TypeAction;
 
 namespace actor {
@@ -51,6 +52,31 @@ BrowserAction MakeType(int content_node_id,
   type_action->mutable_target()->set_content_node_id(content_node_id);
   type_action->set_text(text);
   type_action->set_follow_by_enter(follow_by_enter);
+  return action;
+}
+
+BrowserAction MakeScroll(std::optional<int> content_node_id,
+                         float scroll_offset_x,
+                         float scroll_offset_y) {
+  BrowserAction action;
+  ScrollAction* scroll = action.add_action_information()->mutable_scroll();
+  if (content_node_id.has_value()) {
+    scroll->mutable_target()->set_content_node_id(content_node_id.value());
+  }
+  if (scroll_offset_x > 0) {
+    scroll->set_direction(ScrollAction::RIGHT);
+    scroll->set_distance(scroll_offset_x);
+  } else if (scroll_offset_x < 0) {
+    scroll->set_direction(ScrollAction::LEFT);
+    scroll->set_distance(-scroll_offset_x);
+  }
+  if (scroll_offset_y > 0) {
+    scroll->set_direction(ScrollAction::DOWN);
+    scroll->set_distance(scroll_offset_y);
+  } else if (scroll_offset_y < 0) {
+    scroll->set_direction(ScrollAction::UP);
+    scroll->set_distance(-scroll_offset_y);
+  }
   return action;
 }
 

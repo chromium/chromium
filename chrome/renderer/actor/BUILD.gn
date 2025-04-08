@@ -12,6 +12,8 @@ source_set("actor") {
     "click_tool.h",
     "mouse_move_tool.cc",
     "mouse_move_tool.h",
+    "scroll_tool.cc",
+    "scroll_tool.h",
     "tool_base.h",
     "tool_executor.cc",
     "tool_executor.h",

@@ -12,6 +12,7 @@
 #include "chrome/common/actor.mojom.h"
 #include "chrome/renderer/actor/click_tool.h"
 #include "chrome/renderer/actor/mouse_move_tool.h"
+#include "chrome/renderer/actor/scroll_tool.h"
 #include "chrome/renderer/actor/tool_utils.h"
 #include "chrome/renderer/actor/type_tool.h"
 #include "content/public/renderer/render_frame.h"
@@ -51,6 +52,12 @@ void ToolExecutor::InvokeTool(mojom::ToolInvocationPtr request,
       CHECK(request->action->get_type());
       tool_ = std::make_unique<TypeTool>(std::move(request->action->get_type()),
                                          frame_);
+      break;
+    }
+    case actor::mojom::ToolAction::Tag::kScroll: {
+      CHECK(request->action->get_scroll());
+      tool_ = std::make_unique<ScrollTool>(
+          std::move(request->action->get_scroll()), frame_);
       break;
     }
   }

@@ -875,12 +875,13 @@ gfx::PointF WebLocalFrameImpl::GetScrollOffset() const {
   return gfx::PointF();
 }
 
-void WebLocalFrameImpl::SetScrollOffset(const gfx::PointF& offset) {
+bool WebLocalFrameImpl::SetScrollOffset(const gfx::PointF& offset) {
   if (ScrollableArea* scrollable_area = LayoutViewport()) {
-    scrollable_area->SetScrollOffset(
+    return scrollable_area->SetScrollOffset(
         scrollable_area->ScrollPositionToOffset(offset),
         mojom::blink::ScrollType::kProgrammatic);
   }
+  return false;
 }
 
 gfx::Size WebLocalFrameImpl::DocumentSize() const {

@@ -40,7 +40,8 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
   ~GlicActorControllerUiTest() override = default;
 
   void SetUpOnMainThread() override {
-    embedded_test_server()->ServeFilesFromSourceDirectory(actor::kTestDataPath);
+    embedded_test_server()->ServeFilesFromSourceDirectory(
+        actor::kActorTestDataPath);
     test::InteractiveGlicTest::SetUpOnMainThread();
   }
 

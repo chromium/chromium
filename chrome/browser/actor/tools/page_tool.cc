@@ -14,6 +14,7 @@ using content::RenderFrameHost;
 using optimization_guide::proto::ActionInformation;
 using optimization_guide::proto::ClickAction_ClickCount;
 using optimization_guide::proto::ClickAction_ClickType;
+using optimization_guide::proto::ScrollAction_ScrollDirection;
 using optimization_guide::proto::TypeAction_TypeMode;
 
 namespace {
@@ -85,6 +86,32 @@ bool SetTypeToolArgs(actor::mojom::TypeActionPtr& type_action,
   return true;
 }
 
+bool SetScrollToolArgs(actor::mojom::ScrollActionPtr& scroll,
+                       ActionInformation action_info) {
+  if (action_info.scroll().has_target()) {
+    scroll->target = actor::mojom::ToolTarget::New(
+        action_info.scroll().target().content_node_id());
+  }
+  switch (action_info.scroll().direction()) {
+    case ScrollAction_ScrollDirection::ScrollAction_ScrollDirection_LEFT:
+      scroll->direction = actor::mojom::ScrollAction::ScrollDirection::kLeft;
+      break;
+    case ScrollAction_ScrollDirection::ScrollAction_ScrollDirection_RIGHT:
+      scroll->direction = actor::mojom::ScrollAction::ScrollDirection::kRight;
+      break;
+    case ScrollAction_ScrollDirection::ScrollAction_ScrollDirection_UP:
+      scroll->direction = actor::mojom::ScrollAction::ScrollDirection::kUp;
+      break;
+    case ScrollAction_ScrollDirection::ScrollAction_ScrollDirection_DOWN:
+      scroll->direction = actor::mojom::ScrollAction::ScrollDirection::kDown;
+      break;
+    default:
+      return false;
+  }
+  scroll->distance = action_info.scroll().distance();
+  return true;
+}
+
 }  // namespace
 
 namespace actor {
@@ -125,13 +152,21 @@ void PageTool::Invoke(InvokeCallback callback) {
       request->action = mojom::ToolAction::NewType(std::move(type));
       break;
     }
+    case ActionInformation::ActionInfoCase::kScroll: {
+      auto scroll = mojom::ScrollAction::New();
+      if (!SetScrollToolArgs(scroll, action_info)) {
+        std::move(callback).Run(false);
+        return;
+      }
+      request->action = mojom::ToolAction::NewScroll(std::move(scroll));
+      break;
+    }
     case ActionInformation::ActionInfoCase::kMoveMouse: {
       auto mouse_move = mojom::MouseMoveAction::New();
       SetMouseMoveToolArgs(mouse_move, action_info);
       request->action = mojom::ToolAction::NewMouseMove(std::move(mouse_move));
       break;
     }
-    case ActionInformation::ActionInfoCase::kScroll:
     case ActionInformation::ActionInfoCase::kDragAndRelease:
     case ActionInformation::ActionInfoCase::kSelect: {
       // Not implemented yet.
