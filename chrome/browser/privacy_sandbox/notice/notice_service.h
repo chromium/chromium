@@ -21,6 +21,8 @@ class PrefService;
 
 namespace privacy_sandbox {
 
+class NoticeCatalog;
+
 // This class will:
 // 1. Communicate with the Notice Storage Service
 // 2. Communicate with the API Services to determine eligibility

@@ -14,11 +14,13 @@ mojom("notice_mojom") {
 
 source_set("core") {
   sources = [
+    "notice_catalog.cc",
     "notice_features.cc",
     "notice_model.cc",
     "notice_storage.cc",
   ]
   public = [
+    "notice_catalog.h",
     "notice_constants.h",
     "notice_features.h",
     "notice_model.h",
@@ -78,6 +80,7 @@ test("fuzz_tests") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "notice_catalog_unittest.cc",
     "notice_model_unittest.cc",
     "notice_service_unittest.cc",
     "notice_storage_unittest.cc",

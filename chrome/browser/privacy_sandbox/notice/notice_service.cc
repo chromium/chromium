@@ -4,6 +4,7 @@
 
 #include "chrome/browser/privacy_sandbox/notice/notice_service.h"
 
+#include "chrome/browser/privacy_sandbox/notice/notice_catalog.h"
 #include "chrome/browser/privacy_sandbox/notice/notice_features.h"
 #include "chrome/browser/privacy_sandbox/notice/notice_model.h"
 #include "chrome/browser/privacy_sandbox/notice/notice_storage.h"

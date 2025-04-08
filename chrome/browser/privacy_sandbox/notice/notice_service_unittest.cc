@@ -5,6 +5,7 @@
 #include "chrome/browser/privacy_sandbox/notice/notice_service.h"
 
 #include "chrome/browser/privacy_sandbox/notice/notice.mojom.h"
+#include "chrome/browser/privacy_sandbox/notice/notice_catalog.h"
 #include "chrome/browser/privacy_sandbox/notice/notice_features.h"
 #include "chrome/browser/privacy_sandbox/notice/notice_model.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
