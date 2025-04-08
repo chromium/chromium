@@ -238,16 +238,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Variations.Headers.HasLowEntropySourceValue"
-    enum="BooleanPresent" expires_after="2025-05-04">
-  <owner>mpearson@chromium.org</owner>
-  <owner>src/base/metrics/OWNERS</owner>
-  <summary>
-    Whether the variations headers include the low-entropy source value.
-    Recorded at the time the headers are constructed or are updated.
-  </summary>
-</histogram>
-
 <histogram name="Variations.Headers.RequestContextCategory"
     enum="VariationsHeadersRequestContextCategory" expires_after="2025-11-01">
   <owner>asvitkine@chromium.org</owner>
