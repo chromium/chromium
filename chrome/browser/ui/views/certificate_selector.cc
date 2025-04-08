@@ -50,13 +50,14 @@
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #endif
 
 #if BUILDFLAG(ENABLE_GLIC)
 namespace {
 
-// Checks that `contents` is for glic, and that glic is attached.
+// Checks that `contents` is for glic.
 bool IsForGlic(content::WebContents* contents) {
   content::WebContents* outer = contents->GetOutermostWebContents();
   glic::GlicKeyedService* glic_service =
@@ -64,8 +65,7 @@ bool IsForGlic(content::WebContents* contents) {
           outer->GetBrowserContext());
   if (glic_service) {
     auto& window_controller = glic_service->window_controller();
-    return window_controller.attached_browser() &&
-           window_controller.GetWebContents() == outer;
+    return window_controller.GetWebContents() == outer;
   }
   return false;
 }
@@ -235,19 +235,18 @@ void CertificateSelector::Show() {
   // certificate picker on the glic window. This is not fully correct, but
   // satisfies the main dev use case with minimal overhead.
   if (UseGlicDevFlow(web_contents_)) {
-    glic::GlicKeyedService* glic_service =
-        glic::GlicKeyedServiceFactory::GetGlicKeyedService(
-            web_contents_->GetBrowserContext());
-    // Technically there can be a TOCTTOU bug, but this is a dev-only flow we
-    // want to error out quickly.
-    CHECK(glic_service);
-    auto& window_controller = glic_service->window_controller();
-    Browser* browser = window_controller.attached_browser();
-    CHECK(browser);
-    SetModalType(ui::mojom::ModalType::kWindow);
-    constrained_window::CreateBrowserModalDialogViews(
-        this, browser->GetBrowserView().GetNativeWindow())
-        ->Show();
+    Profile* profile =
+        Profile::FromBrowserContext(web_contents_->GetBrowserContext());
+    Browser* browser = chrome::FindLastActiveWithProfile(profile);
+    if (browser) {
+      SetModalType(ui::mojom::ModalType::kWindow);
+      constrained_window::CreateBrowserModalDialogViews(
+          this, browser->GetBrowserView().GetNativeWindow())
+          ->Show();
+    } else {
+      LOG(ERROR) << "Dev error. Make sure there's a browser window of the "
+                    "matching profile open.";
+    }
     return;
   }
 #endif
