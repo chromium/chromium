@@ -55,7 +55,8 @@ class TailoredSecurityConsentedModalAndroidTest : public testing::Test {
 TEST_F(TailoredSecurityConsentedModalAndroidTest,
        DisabledDialogHandleMessageAcceptedLogsUserAction) {
   TailoredSecurityConsentedModalAndroid consented_modal(
-      web_contents_.get(), /*enabled=*/false, base::DoNothing());
+      web_contents_.get(), /*enabled=*/false, base::DoNothing(),
+      /*is_requested_by_synced_esb=*/false);
   DoMessageAccepted(&consented_modal);
   EXPECT_EQ(
       user_action_tester_.GetActionCount(
@@ -69,7 +70,8 @@ TEST_F(
   scoped_feature_list_.InitAndEnableFeature(
       safe_browsing::kEsbAsASyncedSetting);
   TailoredSecurityConsentedModalAndroid consented_modal(
-      web_contents_.get(), /*enabled=*/false, base::DoNothing());
+      web_contents_.get(), /*enabled=*/false, base::DoNothing(),
+      /*is_requested_by_synced_esb=*/false);
   DoMessageAccepted(&consented_modal);
   EXPECT_EQ(user_action_tester_.GetActionCount(
                 "SafeBrowsing.SyncedEsbDialog.TurnOnButtonClicked"),
@@ -81,7 +83,8 @@ TEST_F(TailoredSecurityConsentedModalAndroidTest,
   scoped_feature_list_.InitAndEnableFeature(
       safe_browsing::kEsbAsASyncedSetting);
   TailoredSecurityConsentedModalAndroid consented_modal(
-      web_contents_.get(), /*enabled=*/true, base::DoNothing());
+      web_contents_.get(), /*enabled=*/true, base::DoNothing(),
+      /*is_requested_by_synced_esb=*/false);
   DoMessageAccepted(&consented_modal);
   EXPECT_EQ(user_action_tester_.GetActionCount(
                 "SafeBrowsing.SyncedEsbDialog.OkButtonClicked"),
@@ -91,7 +94,8 @@ TEST_F(TailoredSecurityConsentedModalAndroidTest,
 TEST_F(TailoredSecurityConsentedModalAndroidTest,
        DisabledDialogHandleMessageDismissedLogsUserAction) {
   TailoredSecurityConsentedModalAndroid consented_modal(
-      web_contents_.get(), /*enabled=*/false, base::DoNothing());
+      web_contents_.get(), /*enabled=*/false, base::DoNothing(),
+      /*is_requested_by_synced_esb=*/false);
   DoMessageDismissed(&consented_modal, messages::DismissReason::TIMER);
   EXPECT_EQ(user_action_tester_.GetActionCount(
                 "SafeBrowsing.AccountIntegration.DisabledDialog.Dismissed"),
@@ -106,7 +110,8 @@ TEST_F(TailoredSecurityConsentedModalAndroidTest,
       ui::WindowAndroid::CreateForTesting();
   window.get()->get()->AddChild(web_contents_.get()->GetNativeView());
   TailoredSecurityConsentedModalAndroid consented_modal(
-      web_contents_.get(), /*enabled=*/false, base::DoNothing());
+      web_contents_.get(), /*enabled=*/false, base::DoNothing(),
+      /*is_requested_by_synced_esb=*/false);
   DoSettingsClicked(&consented_modal);
   EXPECT_EQ(user_action_tester_.GetActionCount(
                 "SafeBrowsing.AccountIntegration.DisabledDialog."
@@ -120,7 +125,8 @@ TEST_F(TailoredSecurityConsentedModalAndroidTest,
       content::WebContentsTester::CreateTestWebContents(GetProfile(), nullptr);
 
   TailoredSecurityConsentedModalAndroid consented_modal(
-      web_contents.get(), /*enabled=*/false, base::DoNothing());
+      web_contents.get(), /*enabled=*/false, base::DoNothing(),
+      /*is_requested_by_synced_esb=*/false);
   EXPECT_EQ(user_action_tester_.GetActionCount(
                 "SafeBrowsing.AccountIntegration.DisabledDialog.Shown"),
             1);
@@ -129,7 +135,8 @@ TEST_F(TailoredSecurityConsentedModalAndroidTest,
 TEST_F(TailoredSecurityConsentedModalAndroidTest,
        EnabledDialogHandleMessageAcceptedLogsUserAction) {
   TailoredSecurityConsentedModalAndroid consented_modal(
-      web_contents_.get(), /*enabled=*/true, base::DoNothing());
+      web_contents_.get(), /*enabled=*/true, base::DoNothing(),
+      /*is_requested_by_synced_esb=*/false);
   DoMessageAccepted(&consented_modal);
   EXPECT_EQ(
       user_action_tester_.GetActionCount(
@@ -142,7 +149,8 @@ TEST_F(TailoredSecurityConsentedModalAndroidTest,
   scoped_feature_list_.InitAndEnableFeature(
       safe_browsing::kEsbAsASyncedSetting);
   TailoredSecurityConsentedModalAndroid consented_modal(
-      web_contents_.get(), /*enabled=*/true, base::DoNothing());
+      web_contents_.get(), /*enabled=*/true, base::DoNothing(),
+      /*is_requested_by_synced_esb=*/false);
   DoMessageAccepted(&consented_modal);
   EXPECT_EQ(user_action_tester_.GetActionCount(
                 "SafeBrowsing.SyncedEsbDialog.OkButtonClicked"),
@@ -152,7 +160,8 @@ TEST_F(TailoredSecurityConsentedModalAndroidTest,
 TEST_F(TailoredSecurityConsentedModalAndroidTest,
        EnabledDialogHandleMessageDismissedLogsUserAction) {
   TailoredSecurityConsentedModalAndroid consented_modal(
-      web_contents_.get(), /*enabled=*/true, base::DoNothing());
+      web_contents_.get(), /*enabled=*/true, base::DoNothing(),
+      /*is_requested_by_synced_esb=*/false);
   DoMessageDismissed(&consented_modal, messages::DismissReason::TIMER);
   EXPECT_EQ(user_action_tester_.GetActionCount(
                 "SafeBrowsing.AccountIntegration.EnabledDialog.Dismissed"),
@@ -167,7 +176,8 @@ TEST_F(TailoredSecurityConsentedModalAndroidTest,
       ui::WindowAndroid::CreateForTesting();
   window.get()->get()->AddChild(web_contents_.get()->GetNativeView());
   TailoredSecurityConsentedModalAndroid consented_modal(
-      web_contents_.get(), /*enabled=*/true, base::DoNothing());
+      web_contents_.get(), /*enabled=*/true, base::DoNothing(),
+      /*is_requested_by_synced_esb=*/false);
   DoSettingsClicked(&consented_modal);
   EXPECT_EQ(
       user_action_tester_.GetActionCount("SafeBrowsing.AccountIntegration."
@@ -178,7 +188,8 @@ TEST_F(TailoredSecurityConsentedModalAndroidTest,
 TEST_F(TailoredSecurityConsentedModalAndroidTest,
        EnabledDialogLogsUserActionWhenShown) {
   TailoredSecurityConsentedModalAndroid consented_modal(
-      web_contents_.get(), /*enabled=*/true, base::DoNothing());
+      web_contents_.get(), /*enabled=*/true, base::DoNothing(),
+      /*is_requested_by_synced_esb=*/false);
   EXPECT_EQ(user_action_tester_.GetActionCount(
                 "SafeBrowsing.AccountIntegration.EnabledDialog.Shown"),
             1);
