@@ -15,15 +15,6 @@ class SidePanelBookmarksTest : public WebUIMochaFocusTest {
   }
 };
 
-class SidePanelBookmarksListTest : public SidePanelBookmarksTest {
- protected:
-  void RunTestSuite(const std::string& suiteName) {
-    SidePanelBookmarksTest::RunTest(
-        "side_panel/bookmarks/power_bookmarks_list_test.js",
-        base::StringPrintf("runMochaSuite('%s');", suiteName.c_str()));
-  }
-};
-
 // TODO(crbug.com/40882667): Flaky on Mac and Linux dbg. Re-enable this test.
 #if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_LINUX) && !defined(NDEBUG))
 #define MAYBE_ShoppingList DISABLED_ShoppingList
@@ -45,18 +36,6 @@ IN_PROC_BROWSER_TEST_F(SidePanelPowerBookmarksTest, EditDialog) {
           "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(SidePanelBookmarksListTest, General) {
-  RunTestSuite("General");
-}
-
-IN_PROC_BROWSER_TEST_F(SidePanelBookmarksListTest, TransportMode) {
-  RunTestSuite("TransportMode");
-}
-
-IN_PROC_BROWSER_TEST_F(SidePanelBookmarksListTest, TreeView) {
-  RunTestSuite("TreeView");
-}
-
 IN_PROC_BROWSER_TEST_F(SidePanelPowerBookmarksTest, Service) {
   RunTest("side_panel/bookmarks/power_bookmarks_service_test.js",
           "mocha.run()");
@@ -75,4 +54,27 @@ IN_PROC_BROWSER_TEST_F(SidePanelPowerBookmarksTest, DragManager) {
 
 IN_PROC_BROWSER_TEST_F(SidePanelPowerBookmarksTest, Labels) {
   RunTest("side_panel/bookmarks/power_bookmarks_labels_test.js", "mocha.run()");
+}
+
+using SidePanelBookmarksListTest = SidePanelBookmarksTest;
+IN_PROC_BROWSER_TEST_F(SidePanelBookmarksListTest, General1) {
+  SidePanelBookmarksTest::RunTest(
+      "side_panel/bookmarks/power_bookmarks_list_test.js",
+      "runMochaSuite('General Part1');");
+}
+
+IN_PROC_BROWSER_TEST_F(SidePanelBookmarksListTest, General2) {
+  SidePanelBookmarksTest::RunTest(
+      "side_panel/bookmarks/power_bookmarks_list_test.js",
+      "runMochaSuite('General Part2');");
+}
+
+IN_PROC_BROWSER_TEST_F(SidePanelBookmarksListTest, TransportMode) {
+  RunTest("side_panel/bookmarks/power_bookmarks_list_transport_mode_test.js",
+          "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(SidePanelBookmarksListTest, TreeView) {
+  RunTest("side_panel/bookmarks/power_bookmarks_list_tree_view_test.js",
+          "mocha.run()");
 }
