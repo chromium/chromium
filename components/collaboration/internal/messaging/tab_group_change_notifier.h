@@ -75,8 +75,8 @@ class TabGroupChangeNotifier
     virtual void OnTabSelectionChanged(const tab_groups::LocalTabID& tab_id,
                                        bool is_selected) = 0;
 
-    // called when a the tab is "seen" by a local device or other device.
-    // On desktop platforms this is called when the tab enters the active state.
+    // A tab is "seen" by a local device or other device. On desktop
+    // platforms this is called when the tab enters the active state.
     virtual void OnTabLastSeenTimeChanged(const base::Uuid& tab_id,
                                           tab_groups::TriggerSource source) = 0;
   };

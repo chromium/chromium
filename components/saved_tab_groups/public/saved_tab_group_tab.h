@@ -233,7 +233,6 @@ class SavedTabGroupTabBuilder {
   SavedTabGroupTabBuilder& SetPosition(size_t position);
   SavedTabGroupTabBuilder& SetRedirectURLChain(
       const std::vector<GURL>& redirect_url_chain);
-  SavedTabGroupTabBuilder& SetLastSeenTimestamp(base::Time last_seen_time);
 
   SavedTabGroupTab Build(const SavedTabGroupTab& tab) const;
 
@@ -243,7 +242,6 @@ class SavedTabGroupTabBuilder {
  private:
   size_t position_ = 0;
   std::vector<GURL> redirect_url_chain_;
-  base::Time last_seen_time_;
 
   // Flags to indicate which properties have been set.
   bool has_position_ = false;

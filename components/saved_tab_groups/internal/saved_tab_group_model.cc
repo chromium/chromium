@@ -517,6 +517,32 @@ void SavedTabGroupModel::UpdateLastUserInteractionTimeLocally(
   }
 }
 
+void SavedTabGroupModel::UpdateTabLastSeenTime(const base::Uuid& group_id,
+                                               const base::Uuid& tab_id,
+                                               base::Time time,
+                                               TriggerSource source) {
+  SavedTabGroup* group = GetMutableGroup(group_id);
+  CHECK(group);
+
+  SavedTabGroupTab* tab = group->GetTab(tab_id);
+  CHECK(tab);
+
+  // If the new time is not more recent than the one in the model,
+  // ignore it. This data is managed by the account data sync bridge,
+  // which always prefers the more recent time.
+  const base::Time& current_model_time =
+      tab->last_seen_time_windows_epoch_micros();
+  if (!current_model_time.is_null() && current_model_time >= time) {
+    return;
+  }
+
+  tab->SetLastSeenTimeWindowsEpochMicros(time);
+
+  for (SavedTabGroupModelObserver& observer : observers_) {
+    observer.SavedTabGroupTabLastSeenTimeUpdated(tab_id, source);
+  }
+}
+
 void SavedTabGroupModel::UpdateLastUpdaterCacheGuidForGroup(
     const std::optional<std::string>& cache_guid,
     const LocalTabGroupID& group_id,

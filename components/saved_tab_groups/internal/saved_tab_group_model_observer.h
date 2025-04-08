@@ -36,6 +36,10 @@ class SavedTabGroupModelObserver {
   virtual void SavedTabGroupLastUserInteractionTimeUpdated(
       const base::Uuid& saved_group_id) {}
 
+  virtual void SavedTabGroupTabLastSeenTimeUpdated(
+      const base::Uuid& saved_tab_id,
+      TriggerSource source) {}
+
   // Called when the title, tabs, or color change. `group_guid` denotes the
   // group that is currently being updated. `tab_guid` denotes if a tab in this
   // group was changed (added, removed, updated). Otherwise, only the group is

@@ -1479,6 +1479,14 @@ void TabGroupSyncServiceImpl::SavedTabGroupLocalIdChanged(
   }
 }
 
+void TabGroupSyncServiceImpl::SavedTabGroupTabLastSeenTimeUpdated(
+    const base::Uuid& tab_id,
+    TriggerSource source) {
+  for (auto& observer : observers_) {
+    observer.OnTabLastSeenTimeChanged(tab_id, source);
+  }
+}
+
 void TabGroupSyncServiceImpl::SavedTabGroupModelLoaded() {
   // Store a snapshot of shared tab groups before notifying anyone else that
   // the service is initialized.

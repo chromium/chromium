@@ -199,6 +199,12 @@ class SavedTabGroupModel {
   void UpdateLastUserInteractionTimeLocally(
       const LocalTabGroupID& local_group_id);
 
+  // Update the last time a tab was seen.
+  void UpdateTabLastSeenTime(const base::Uuid& group_id,
+                             const base::Uuid& tab_id,
+                             base::Time time,
+                             TriggerSource source);
+
   // Update the last updater cache guid for a give group and optionally a tab.
   void UpdateLastUpdaterCacheGuidForGroup(
       const std::optional<std::string>& cache_guid,

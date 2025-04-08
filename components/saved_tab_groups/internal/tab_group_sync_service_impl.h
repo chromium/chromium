@@ -230,6 +230,8 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
       const SavedTabGroup& removed_group) override;
   void SavedTabGroupRemovedLocally(const SavedTabGroup& removed_group) override;
   void SavedTabGroupLocalIdChanged(const base::Uuid& saved_group_id) override;
+  void SavedTabGroupTabLastSeenTimeUpdated(const base::Uuid& tab_id,
+                                           TriggerSource source) override;
   void SavedTabGroupModelLoaded() override;
   void OnSyncBridgeUpdateTypeChanged(
       SyncBridgeUpdateType sync_bridge_update_type) override;

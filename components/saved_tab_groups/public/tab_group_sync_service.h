@@ -127,6 +127,12 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
     // two updates.
     virtual void OnTabSelected(const std::set<LocalTabID>& selected_tabs) {}
 
+    // Invoked when the last_seen_time for a shared tab has been updated.
+    // This happens either when the user activates a tab locally or the
+    // model is updated from the account data sync bridge.
+    virtual void OnTabLastSeenTimeChanged(const base::Uuid& tab_id,
+                                          TriggerSource source) {}
+
     // The existing SavedTabGroup has been replaced by a new one. This happens
     // when the originating SavedTabGroup was transitioned to a shared one. The
     // old group is not accessible from the service anymore. This method is

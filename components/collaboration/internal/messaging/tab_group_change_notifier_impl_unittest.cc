@@ -969,6 +969,25 @@ TEST_F(TabGroupChangeNotifierImplTest, TestTabSelection) {
   }
 }
 
+TEST_F(TabGroupChangeNotifierImplTest, TestTabLastSeenUpdated) {
+  InitializeNotifier(
+      /*startup_tab_groups=*/std::vector<tab_groups::SavedTabGroup>(),
+      /*init_tab_groups=*/std::vector<tab_groups::SavedTabGroup>());
+
+  tab_groups::SavedTabGroup tab_group = CreateTestSharedTabGroupWithNoTabs();
+  tab_groups::SavedTabGroupTab tab =
+      CreateSavedTabGroupTab("url", u"title", tab_group.saved_guid());
+  tab_group.AddTabFromSync(tab);
+
+  // Test that the TabGroupChangeNotifier::Observer method is called
+  // from the TabGroupSyncService::Observer, forwarding all parameters.
+  EXPECT_CALL(*notifier_observer_,
+              OnTabLastSeenTimeChanged(tab.saved_tab_guid(),
+                                       Eq(tab_groups::TriggerSource::REMOTE)));
+  tgss_observer_->OnTabLastSeenTimeChanged(tab.saved_tab_guid(),
+                                           tab_groups::TriggerSource::REMOTE);
+}
+
 TEST_F(TabGroupChangeNotifierImplTest, OpenAndCloseTabGroup) {
   InitializeNotifier(
       /*startup_tab_groups=*/std::vector<tab_groups::SavedTabGroup>(),

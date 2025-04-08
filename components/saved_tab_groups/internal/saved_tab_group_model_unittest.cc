@@ -105,6 +105,11 @@ class SavedTabGroupModelObserverTest : public ::testing::Test,
     tabs_reodered_called_ = true;
   }
 
+  void SavedTabGroupTabLastSeenTimeUpdated(const base::Uuid& saved_tab_id,
+                                           TriggerSource source) override {
+    last_seen_tab_id_ = saved_tab_id;
+  }
+
   void ClearSignals() {
     retrieved_group_.clear();
     retrieved_index_ = -1;
@@ -113,6 +118,7 @@ class SavedTabGroupModelObserverTest : public ::testing::Test,
     reordered_called_ = false;
     tabs_reodered_called_ = false;
     retrieved_guid_ = base::Uuid::GenerateRandomV4();
+    last_seen_tab_id_ = base::Uuid::GenerateRandomV4();
   }
 
   std::unique_ptr<SavedTabGroupModel> saved_tab_group_model_;
@@ -124,6 +130,7 @@ class SavedTabGroupModelObserverTest : public ::testing::Test,
   bool tabs_reodered_called_ = false;
 
   base::Uuid retrieved_guid_ = base::Uuid::GenerateRandomV4();
+  base::Uuid last_seen_tab_id_ = base::Uuid::GenerateRandomV4();
   std::string base_path_ = "file:///c:/tmp/";
 
   base::test::ScopedFeatureList feature_list_;
@@ -971,6 +978,34 @@ TEST_F(SavedTabGroupModelTest, GroupsWithNoPositionInsertedAtEnd) {
   }
 }
 
+TEST_F(SavedTabGroupModelTest, SetsLastSeenTime) {
+  SavedTabGroup saved_group = test::CreateTestSavedTabGroup();
+  saved_tab_group_model_->AddedLocally(saved_group);
+  const base::Uuid group_id = saved_group.saved_guid();
+
+  EXPECT_TRUE(saved_tab_group_model_->Get(group_id)
+                  ->saved_tabs()
+                  .front()
+                  .last_seen_time_windows_epoch_micros()
+                  .is_null());
+
+  base::Time last_seen_time = base::Time::Now();
+  saved_tab_group_model_->UpdateTabLastSeenTime(
+      saved_group.saved_guid(),
+      saved_group.saved_tabs().front().saved_tab_guid(), last_seen_time,
+      TriggerSource::LOCAL);
+
+  EXPECT_FALSE(saved_tab_group_model_->Get(group_id)
+                   ->saved_tabs()
+                   .front()
+                   .last_seen_time_windows_epoch_micros()
+                   .is_null());
+  EXPECT_EQ(last_seen_time, saved_tab_group_model_->Get(group_id)
+                                ->saved_tabs()
+                                .front()
+                                .last_seen_time_windows_epoch_micros());
+}
+
 // Tests that SavedTabGroupModelObserver::Added passes the correct element from
 // the model.
 TEST_F(SavedTabGroupModelObserverTest, AddElement) {
@@ -1316,6 +1351,40 @@ TEST_F(SavedTabGroupModelObserverTest,
                    ->is_transitioning_to_shared());
   EXPECT_THAT(retrieved_group_,
               UnorderedElementsAre(HasGroupId(shared_group.saved_guid())));
+}
+
+TEST_F(SavedTabGroupModelObserverTest,
+       TriggersObserverWhenSettingTabLastSeenTime) {
+  SavedTabGroup saved_group = test::CreateTestSavedTabGroup();
+  saved_tab_group_model_->AddedLocally(saved_group);
+  const base::Uuid group_id = saved_group.saved_guid();
+
+  EXPECT_TRUE(saved_tab_group_model_->Get(group_id)
+                  ->saved_tabs()
+                  .front()
+                  .last_seen_time_windows_epoch_micros()
+                  .is_null());
+
+  base::Time last_seen_time = base::Time::Now();
+  saved_tab_group_model_->UpdateTabLastSeenTime(
+      saved_group.saved_guid(),
+      saved_group.saved_tabs().front().saved_tab_guid(), last_seen_time,
+      TriggerSource::LOCAL);
+
+  // Observer method was called.
+  EXPECT_EQ(last_seen_tab_id_, saved_tab_group_model_->Get(group_id)
+                                   ->saved_tabs()
+                                   .front()
+                                   .saved_tab_guid());
+  EXPECT_FALSE(saved_tab_group_model_->Get(group_id)
+                   ->saved_tabs()
+                   .front()
+                   .last_seen_time_windows_epoch_micros()
+                   .is_null());
+  EXPECT_EQ(last_seen_time, saved_tab_group_model_->Get(group_id)
+                                ->saved_tabs()
+                                .front()
+                                .last_seen_time_windows_epoch_micros());
 }
 
 }  // namespace

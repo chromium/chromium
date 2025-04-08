@@ -315,6 +315,18 @@ void TabGroupChangeNotifierImpl::OnTabSelected(
   }
 }
 
+void TabGroupChangeNotifierImpl::OnTabLastSeenTimeChanged(
+    const base::Uuid& tab_id,
+    tab_groups::TriggerSource source) {
+  if (!is_initialized_) {
+    return;
+  }
+
+  for (auto& observer : observers_) {
+    observer.OnTabLastSeenTimeChanged(tab_id, source);
+  }
+}
+
 void TabGroupChangeNotifierImpl::OnTabGroupLocalIdChanged(
     const base::Uuid& sync_id,
     const std::optional<tab_groups::LocalTabGroupID>& local_id) {
