@@ -22853,7 +22853,8 @@
                         "show_send_feedback": "true"
                     },
                     "enable_features": [
-                        "DataSharing"
+                        "DataSharing",
+                        "DataSharingJoinOnly"
                     ]
                 },
                 {
