@@ -23,7 +23,7 @@ class LoginShelfWidgetDelegate : public views::AccessiblePaneView,
                                  public views::WidgetDelegate {
  public:
   explicit LoginShelfWidgetDelegate(Shelf* shelf) : shelf_(shelf) {
-    SetOwnedByWidget(true);
+    SetOwnedByWidget(OwnedByWidgetPassKey());
     set_allow_deactivate_on_esc(true);
     SetLayoutManager(std::make_unique<views::FillLayout>());
   }

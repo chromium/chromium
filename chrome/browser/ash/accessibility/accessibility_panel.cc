@@ -50,7 +50,7 @@ class AccessibilityPanel::AccessibilityPanelWebContentsObserver
 AccessibilityPanel::AccessibilityPanel(content::BrowserContext* browser_context,
                                        const std::string& content_url,
                                        const std::string& widget_name) {
-  SetOwnedByWidget(true);
+  SetOwnedByWidget(OwnedByWidgetPassKey());
 
   views::WebView* web_view = new views::WebView(browser_context);
   web_contents_ = web_view->GetWebContents();

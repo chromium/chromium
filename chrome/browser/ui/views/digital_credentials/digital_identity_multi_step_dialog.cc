@@ -86,7 +86,7 @@ DigitalIdentityMultiStepDialogDelegate::DigitalIdentityMultiStepDialogDelegate()
                                   views::BubbleBorder::Arrow::NONE,
                                   views::BubbleBorder::DIALOG_SHADOW,
                                   /*autosize=*/true) {
-  SetOwnedByWidget(true);
+  SetOwnedByWidget(OwnedByWidgetPassKey());
   SetModalType(ui::mojom::ModalType::kChild);
   SetShowCloseButton(true);
 

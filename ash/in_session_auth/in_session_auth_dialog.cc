@@ -48,7 +48,8 @@ InSessionAuthDialog::InSessionAuthDialog(
       auth_methods, origin_name, auth_metadata, avatar);
   params.delegate->SetInitiallyFocusedView(contents_view.get());
   params.delegate->SetModalType(ui::mojom::ModalType::kNone);
-  params.delegate->SetOwnedByWidget(true);
+  params.delegate->SetOwnedByWidget(
+      views::WidgetDelegate::OwnedByWidgetPassKey());
 
   widget_ = std::make_unique<views::Widget>();
   widget_->Init(std::move(params));

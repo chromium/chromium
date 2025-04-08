@@ -920,7 +920,8 @@ void DownloadToolbarUIController::CreateBubbleDialogDelegate() {
       button, views::BubbleBorder::TOP_RIGHT,
       views::BubbleBorder::DIALOG_SHADOW,
       /*autosize=*/true);
-  bubble_delegate->SetOwnedByWidget(true);
+  bubble_delegate->SetOwnedByWidget(
+      views::WidgetDelegate::OwnedByWidgetPassKey());
   bubble_delegate->SetTitle(
       l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_HEADER_LABEL));
   bubble_delegate->SetShowTitle(false);

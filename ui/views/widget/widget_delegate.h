@@ -131,6 +131,10 @@ class VIEWS_EXPORT WidgetDelegate {
     std::u16string title;
   };
 
+  class OwnedByWidgetPassKey {
+   public:
+    OwnedByWidgetPassKey() = default;
+  };
   class RegisterWillCloseCallbackPassKey {
    public:
     RegisterWillCloseCallbackPassKey() = default;
@@ -276,10 +280,6 @@ class VIEWS_EXPORT WidgetDelegate {
   // through RegisterDeleteDelegateCallback() and then either deletes `this` or
   // not depending on SetOwnedByWidget(). If `this` is owned by Widget then the
   // delegate is destructed at the end.
-  //
-  // WARNING: Use SetOwnedByWidget(true) and use delete-delegate callbacks to do
-  // pre-destruction cleanup instead of using self-deleting callbacks. The
-  // latter may become a DCHECK in the future.
   void DeleteDelegate();
 
   // When the ownership of the Widget is CLIENT_OWNS_WIDGET and the client also
@@ -391,7 +391,6 @@ class VIEWS_EXPORT WidgetDelegate {
   void SetAppIcon(ui::ImageModel icon);
   void SetInitiallyFocusedView(View* initially_focused_view);
   void SetModalType(ui::mojom::ModalType modal_type);
-  void SetOwnedByWidget(bool delete_self);
   void SetShowCloseButton(bool show_close_button);
   void SetShowIcon(bool show_icon);
   void SetShowTitle(bool show_title);
@@ -400,6 +399,12 @@ class VIEWS_EXPORT WidgetDelegate {
 #if defined(USE_AURA)
   void SetCenterTitle(bool center_title);
 #endif
+
+  // DEPRECATED: Instead of having the Widget own the Delegate, the client
+  // should directly own both (note: this implies the Widget is using the
+  // CLIENT_OWNS_WIDGET ownership model and the Delegate is not also a View),
+  // and should delete the delegate after deleting the Widget.
+  void SetOwnedByWidget(OwnedByWidgetPassKey);
 
   template <typename T>
   T* SetContentsView(std::unique_ptr<T> contents) {

@@ -76,7 +76,7 @@ AppRestartDialog::MakeCrostiniAppRestartDelegate(
   delegate->SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk));
   delegate->SetContentsView(std::move(contents));
   delegate->SetModalType(ui::mojom::ModalType::kSystem);
-  delegate->SetOwnedByWidget(true);
+  delegate->SetOwnedByWidget(views::WidgetDelegate::OwnedByWidgetPassKey());
   delegate->SetShowCloseButton(false);
   delegate->set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));

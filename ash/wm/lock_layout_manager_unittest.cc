@@ -31,7 +31,7 @@ namespace ash {
 class LoginTestWidgetDelegate : public views::WidgetDelegate {
  public:
   explicit LoginTestWidgetDelegate(views::Widget* widget) : widget_(widget) {
-    SetOwnedByWidget(true);
+    SetOwnedByWidget(OwnedByWidgetPassKey());
     SetFocusTraversesOut(true);
   }
 

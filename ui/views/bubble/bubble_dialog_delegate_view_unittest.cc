@@ -1408,7 +1408,7 @@ TEST_F(BubbleUmaLoggerTest, LogMetricFromDelegate) {
   auto anchored_view = std::make_unique<View>();
   BubbleDialogDelegate delegate(anchored_view.get(),
                                 BubbleBorder::Arrow::TOP_LEFT);
-  delegate.SetOwnedByWidget(true);
+  delegate.SetOwnedByWidget(WidgetDelegate::OwnedByWidgetPassKey());
   delegate.SetContentsView(std::make_unique<Label>());
 
   TestBubbleUmaLogger logger;

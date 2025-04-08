@@ -359,7 +359,7 @@ void ShellPlatformDelegate::CreatePlatformWindow(
   auto delegate = std::make_unique<views::WidgetDelegate>();
   delegate->SetContentsView(std::make_unique<ShellView>(shell));
   delegate->SetHasWindowSizeControls(true);
-  delegate->SetOwnedByWidget(true);
+  delegate->SetOwnedByWidget(views::WidgetDelegate::OwnedByWidgetPassKey());
 
 #if BUILDFLAG(IS_CHROMEOS)
   shell_data.window_widget = views::Widget::CreateWindowWithContext(

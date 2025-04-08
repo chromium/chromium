@@ -183,7 +183,7 @@ class StuckWidgetDelegate : public views::WidgetDelegate {
     SetCanMaximize(true);
     SetCanMinimize(true);
     SetCanResize(true);
-    SetOwnedByWidget(true);
+    SetOwnedByWidget(OwnedByWidgetPassKey());
   }
   StuckWidgetDelegate(const StuckWidgetDelegate& other) = delete;
   StuckWidgetDelegate& operator=(const StuckWidgetDelegate& other) = delete;

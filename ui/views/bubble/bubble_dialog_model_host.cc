@@ -851,7 +851,7 @@ BubbleDialogModelHost::BubbleDialogModelHost(
               base::BindRepeating(&BubbleDialogModelHost::OnContentsViewChanged,
                                   base::Unretained(this)))),
       theme_observer_(this, contents_view_) {
-  SetOwnedByWidget(true);
+  SetOwnedByWidget(OwnedByWidgetPassKey());
   model_->set_host(DialogModelHost::GetPassKey(), this);
 
   // Dialog callbacks can safely refer to |model_|, they can't be called after

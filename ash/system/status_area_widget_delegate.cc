@@ -113,7 +113,7 @@ int PaddingBetweenTrayItems(const bool is_in_primary_tray_set) {
 StatusAreaWidgetDelegate::StatusAreaWidgetDelegate(Shelf* shelf)
     : shelf_(shelf), focus_cycler_for_testing_(nullptr) {
   DCHECK(shelf_);
-  SetOwnedByWidget(true);
+  SetOwnedByWidget(OwnedByWidgetPassKey());
 
   // Allow the launcher to surrender the focus to another window upon
   // navigation completion by the user.

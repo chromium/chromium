@@ -692,7 +692,7 @@ void CaptureModeSessionFocusCycler::AdvanceFocus(bool reverse) {
           base::BindOnce(&CaptureModeSessionFocusCycler::OnAXWidgetClosing,
                          weak_ptr_factory_.GetWeakPtr()));
       delegate->SetCanMaximize(true);
-      delegate->SetOwnedByWidget(true);
+      delegate->SetOwnedByWidget(views::WidgetDelegate::OwnedByWidgetPassKey());
       params.delegate = delegate.release();
       params.layer_type = ui::LAYER_NOT_DRAWN;
       params.parent = Shell::GetContainer(session_->current_root(),

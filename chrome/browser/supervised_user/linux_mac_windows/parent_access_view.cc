@@ -152,7 +152,8 @@ base::WeakPtr<ParentAccessView> ParentAccessView::ShowParentAccessDialog(
   dialog_delegate->SetModalType(/*modal_type=*/ui::mojom::ModalType::kWindow);
   dialog_delegate->SetShowCloseButton(
       /*show_close_button=*/true);
-  dialog_delegate->SetOwnedByWidget(/*delete_self=*/true);
+  dialog_delegate->SetOwnedByWidget(
+      views::WidgetDelegate::OwnedByWidgetPassKey());
   dialog_delegate->SetAccessibleTitle(
       l10n_util::GetStringUTF16(IDS_PARENT_WEBSITE_APPROVAL_DIALOG_A11Y_NAME));
 

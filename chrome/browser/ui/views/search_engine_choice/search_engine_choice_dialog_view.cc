@@ -60,7 +60,7 @@ void ShowSearchEngineChoiceDialog(
   delegate->SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   delegate->SetModalType(ui::mojom::ModalType::kWindow);
   delegate->SetShowCloseButton(false);
-  delegate->SetOwnedByWidget(true);
+  delegate->SetOwnedByWidget(views::WidgetDelegate::OwnedByWidgetPassKey());
 
   auto dialogView = std::make_unique<SearchEngineChoiceDialogView>(
       &browser, boundary_dimensions_for_test, zoom_factor_for_test);

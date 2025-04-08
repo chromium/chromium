@@ -234,7 +234,8 @@ bool LocalAuthenticationWithPinControllerImpl::ShowWidget(
   //  The overlay consumes all the inputs from the user, so that they can only
   //  interact with the local authentication request view while it is visible.
   params.delegate->SetModalType(ui::mojom::ModalType::kSystem);
-  params.delegate->SetOwnedByWidget(true);
+  params.delegate->SetOwnedByWidget(
+      views::WidgetDelegate::OwnedByWidgetPassKey());
 
   widget_ = std::make_unique<views::Widget>();
   widget_->Init(std::move(params));

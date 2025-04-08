@@ -173,7 +173,8 @@ void InSessionAuthDialogControllerImpl::OnUserAuthAttemptConfirmed(
 
   params.delegate->SetInitiallyFocusedView(contents_view.get());
   params.delegate->SetModalType(ui::mojom::ModalType::kSystem);
-  params.delegate->SetOwnedByWidget(true);
+  params.delegate->SetOwnedByWidget(
+      views::WidgetDelegate::OwnedByWidgetPassKey());
 
   dialog_ = std::make_unique<views::Widget>();
   dialog_->Init(std::move(params));

@@ -66,7 +66,7 @@ void DeferredUpdateDialog::CreateDialog(Action callback_action,
 
   auto bubble = views::BubbleDialogModelHost::CreateModal(
       std::move(dialog_model), ui::mojom::ModalType::kSystem);
-  bubble->SetOwnedByWidget(true);
+  bubble->SetOwnedByWidget(views::WidgetDelegate::OwnedByWidgetPassKey());
   views::DialogDelegate::CreateDialogWidget(std::move(bubble),
                                             /*context=*/nullptr,
                                             /*parent=*/nullptr)

@@ -702,7 +702,7 @@ class HoverDetectionBubbleView : public views::FlexLayoutView,
  public:
   explicit HoverDetectionBubbleView(views::View* anchor_view)
       : BubbleDialogDelegate(anchor_view, views::BubbleBorder::TOP_RIGHT) {
-    SetOwnedByWidget(true);
+    SetOwnedByWidget(OwnedByWidgetPassKey());
 
     auto* view = AddChildView(std::make_unique<HoverDetectionView>());
     view->SetProperty(views::kElementIdentifierKey, kHoverView1Id);

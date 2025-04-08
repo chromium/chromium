@@ -166,7 +166,7 @@ class ShellTest : public AshTestBase {
     auto delegate = std::make_unique<views::WidgetDelegateView>();
     delegate->SetCanResize(true);
     delegate->SetModalType(ui::mojom::ModalType::kSystem);
-    delegate->SetOwnedByWidget(true);
+    delegate->SetOwnedByWidget(views::WidgetDelegate::OwnedByWidgetPassKey());
     delegate->SetTitle(u"Modal Window");
     return delegate;
   }

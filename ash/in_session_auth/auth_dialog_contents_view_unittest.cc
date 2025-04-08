@@ -107,7 +107,8 @@ std::unique_ptr<views::Widget> AuthDialogContentsViewTest::CreateDialogWidget(
   params.parent = root_window;
   params.name = "AuthDialogWidget";
   params.delegate->SetInitiallyFocusedView(dialog.get());
-  params.delegate->SetOwnedByWidget(true);
+  params.delegate->SetOwnedByWidget(
+      views::WidgetDelegate::OwnedByWidgetPassKey());
   params.bounds = gfx::Rect(dialog->GetPreferredSize());
 
   std::unique_ptr<views::Widget> widget = std::make_unique<views::Widget>();

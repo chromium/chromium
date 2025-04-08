@@ -298,7 +298,7 @@ ShelfNavigationWidgetDelegate::ShelfNavigationWidgetDelegate(
     Shelf* shelf,
     ShelfView* shelf_view)
     : shelf_(shelf) {
-  SetOwnedByWidget(true);
+  SetOwnedByWidget(OwnedByWidgetPassKey());
 
   set_allow_deactivate_on_esc(true);
 

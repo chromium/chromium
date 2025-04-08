@@ -19,7 +19,8 @@ std::unique_ptr<views::Widget> CreateLockScreenWidget(
       views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.delegate = new views::WidgetDelegate();
-  params.delegate->SetOwnedByWidget(true);
+  params.delegate->SetOwnedByWidget(
+      views::WidgetDelegate::OwnedByWidgetPassKey());
   params.delegate->SetContentsView(std::move(contents_view));
   params.delegate->SetInitiallyFocusedView(params.delegate->GetContentsView());
 

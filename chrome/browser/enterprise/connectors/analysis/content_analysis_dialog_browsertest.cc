@@ -238,7 +238,7 @@ class ContentAnalysisDialogBehaviorBrowserTest
     auto view = std::make_unique<views::WebDialogView>(
         browser()->profile(), delegate,
         std::make_unique<ChromeWebContentsHandler>());
-    view->SetOwnedByWidget(true);
+    view->SetOwnedByWidget(views::WidgetDelegate::OwnedByWidgetPassKey());
     gfx::NativeView parent_view =
         browser()->tab_strip_model()->GetActiveWebContents()->GetNativeView();
     view_ = view.get();

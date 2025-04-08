@@ -138,7 +138,7 @@ void HUDDisplayView::Toggle() {
   delegate->SetClientViewFactory(base::BindOnce(&MakeClientView));
   delegate->RegisterWidgetInitializedCallback(
       base::BindOnce(&InitializeFrameView, base::Unretained(delegate.get())));
-  delegate->SetOwnedByWidget(true);
+  delegate->SetOwnedByWidget(views::WidgetDelegate::OwnedByWidgetPassKey());
 
   views::Widget::InitParams params(
       views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,

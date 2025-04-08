@@ -340,7 +340,7 @@ class OverlayWindowWidgetDelegate : public views::WidgetDelegate {
     // window switcher.
     SetShowTitle(false);
     SetTitle(IDS_PICTURE_IN_PICTURE_TITLE_TEXT);
-    SetOwnedByWidget(true);
+    SetOwnedByWidget(OwnedByWidgetPassKey());
   }
 
   OverlayWindowWidgetDelegate(const OverlayWindowWidgetDelegate&) = delete;

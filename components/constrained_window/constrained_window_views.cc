@@ -348,7 +348,7 @@ views::Widget* ShowBrowserModal(std::unique_ptr<ui::DialogModel> dialog_model,
   auto dialog = views::BubbleDialogModelHost::CreateModal(
       std::move(dialog_model), ui::mojom::ModalType::kWindow,
       will_use_custom_frame);
-  dialog->SetOwnedByWidget(true);
+  dialog->SetOwnedByWidget(views::WidgetDelegate::OwnedByWidgetPassKey());
   auto* widget = constrained_window::CreateBrowserModalDialogViews(
       std::move(dialog), parent);
   CHECK_EQ(widget->widget_delegate()->AsDialogDelegate()->use_custom_frame(),

@@ -119,7 +119,7 @@ void ForceInstalledPreinstalledDeprecatedAppDialogView::CreateAndShowDialog(
   auto delegate = std::make_unique<views::DialogDelegate>();
   delegate->SetModalType(ui::mojom::ModalType::kChild);
   delegate->SetShowCloseButton(false);
-  delegate->SetOwnedByWidget(true);
+  delegate->SetOwnedByWidget(views::WidgetDelegate::OwnedByWidgetPassKey());
   delegate->SetTitle(l10n_util::GetStringUTF16(
       IDS_FORCE_INSTALLED_PREINSTALLED_DEPRECATED_APPS_TITLE));
   delegate->SetButtonLabel(

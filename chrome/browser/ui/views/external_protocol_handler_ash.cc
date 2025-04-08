@@ -41,7 +41,7 @@ class ExternalProtocolNoHandlersTelSchemeDialog : public views::DialogDelegate {
       aura::Window* parent_window)
       : creation_time_(base::TimeTicks::Now()) {
     DCHECK(parent_window);
-    SetOwnedByWidget(true);
+    SetOwnedByWidget(OwnedByWidgetPassKey());
     views::DialogDelegate::SetButtons(
         static_cast<int>(ui::mojom::DialogButton::kOk));
     views::DialogDelegate::SetButtonLabel(

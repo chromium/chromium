@@ -67,7 +67,7 @@ void ArcTaskWindowBuilder::Prepare(views::Widget* widget) {
   built_ = true;
 
   auto delegate = std::make_unique<views::WidgetDelegate>();
-  delegate->SetOwnedByWidget(true);
+  delegate->SetOwnedByWidget(views::WidgetDelegate::OwnedByWidgetPassKey());
   delegate->SetTitle(base::ASCIIToUTF16(title_));
   init_params_.delegate = delegate.release();
 

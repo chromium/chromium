@@ -184,7 +184,7 @@ views::Widget* CreateSubAppsInstallDialogWidget(
 
   auto dialog = views::BubbleDialogModelHost::CreateModal(
       std::move(dialog_model), ui::mojom::ModalType::kWindow);
-  dialog->SetOwnedByWidget(true);
+  dialog->SetOwnedByWidget(views::WidgetDelegate::OwnedByWidgetPassKey());
 
   views::Widget* widget = constrained_window::CreateBrowserModalDialogViews(
       std::move(dialog), window);

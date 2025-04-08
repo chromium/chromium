@@ -166,7 +166,7 @@ void SystemUIComponentsStyleViewerView::CreateAndShowWidget() {
   // Owned by widget.
   SystemUIComponentsStyleViewerView* viewer_view =
       new SystemUIComponentsStyleViewerView();
-  viewer_view->SetOwnedByWidget(true);
+  viewer_view->SetOwnedByWidget(views::WidgetDelegate::OwnedByWidgetPassKey());
 
   viewer_view->AddComponent(
       u"PillButton", base::BindRepeating(&CreatePillButtonInstancesGirdView));

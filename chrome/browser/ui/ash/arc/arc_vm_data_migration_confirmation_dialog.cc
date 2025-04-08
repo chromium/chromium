@@ -101,7 +101,7 @@ ArcVmDataMigrationConfirmationDialog::ArcVmDataMigrationConfirmationDialog(
 
   // Not system modal so that the user can interact with apps before restart.
   SetModalType(ui::mojom::ModalType::kNone);
-  SetOwnedByWidget(true);
+  SetOwnedByWidget(OwnedByWidgetPassKey());
   SetShowCloseButton(false);
 
   const auto* layout_provider = views::LayoutProvider::Get();

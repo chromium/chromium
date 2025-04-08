@@ -82,7 +82,7 @@ class BorealisLaunchErrorDialog : public DialogDelegate {
 
     InitializeView();
     SetModalType(ui::mojom::ModalType::kNone);
-    SetOwnedByWidget(true);
+    SetOwnedByWidget(OwnedByWidgetPassKey());
     SetShowCloseButton(false);
     set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
         views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));

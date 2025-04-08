@@ -86,7 +86,7 @@ class BorealisDisallowedDialog : public DialogDelegate {
     }
     InitializeView(*behaviour, title_id);
     SetModalType(ui::mojom::ModalType::kSystem);
-    SetOwnedByWidget(true);
+    SetOwnedByWidget(OwnedByWidgetPassKey());
     SetShowCloseButton(false);
     set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
         views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));

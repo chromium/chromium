@@ -194,7 +194,7 @@ class AmbientWidgetDelegate : public views::WidgetDelegate {
   AmbientWidgetDelegate() {
     SetCanFullscreen(true);
     SetCanMaximize(true);
-    SetOwnedByWidget(true);
+    SetOwnedByWidget(OwnedByWidgetPassKey());
   }
 };
 

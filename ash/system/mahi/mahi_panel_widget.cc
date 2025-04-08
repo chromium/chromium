@@ -179,7 +179,7 @@ views::UniqueWidgetPtr MahiPanelWidget::CreateAndShowPanelWidget(
     auto delegate = std::make_unique<views::WidgetDelegate>();
 
     // Set to true so that the delegate deletes itself.
-    delegate->SetOwnedByWidget(true);
+    delegate->SetOwnedByWidget(views::WidgetDelegate::OwnedByWidgetPassKey());
     delegate->SetCanResize(true);
     delegate->SetContentsView(std::move(contents_view));
     delegate->SetNonClientFrameViewFactory(

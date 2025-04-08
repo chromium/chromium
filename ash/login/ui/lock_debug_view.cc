@@ -423,7 +423,7 @@ class LockDebugViewDataDispatcherTransformer
     auto delegate = std::make_unique<views::DialogDelegate>();
     delegate->SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
     delegate->SetModalType(ui::mojom::ModalType::kSystem);
-    delegate->SetOwnedByWidget(true);
+    delegate->SetOwnedByWidget(views::WidgetDelegate::OwnedByWidgetPassKey());
     delegate->SetCloseCallback(base::BindOnce(
         &LockDebugViewDataDispatcherTransformer::OnAuthPanelDebugWidgetClose,
         base::Unretained(this)));
@@ -1093,7 +1093,7 @@ void LockDebugView::AuthInputRowView() {
   auto delegate = std::make_unique<views::DialogDelegate>();
   delegate->SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   delegate->SetModalType(ui::mojom::ModalType::kSystem);
-  delegate->SetOwnedByWidget(true);
+  delegate->SetOwnedByWidget(views::WidgetDelegate::OwnedByWidgetPassKey());
   delegate->SetCloseCallback(base::BindOnce(
       &LockDebugView::OnAuthInputRowDebugWidgetClose, base::Unretained(this)));
 

@@ -99,7 +99,7 @@ void ShowPrivacySandboxDialog(Browser* browser,
   delegate->SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   delegate->SetModalType(ui::mojom::ModalType::kWindow);
   delegate->SetShowCloseButton(false);
-  delegate->SetOwnedByWidget(true);
+  delegate->SetOwnedByWidget(views::WidgetDelegate::OwnedByWidgetPassKey());
 
   delegate->SetContentsView(
       std::make_unique<PrivacySandboxDialogView>(browser, prompt_type));

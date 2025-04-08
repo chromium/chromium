@@ -374,7 +374,7 @@ ShelfWidgetDelegateView::ShelfWidgetDelegateView(ShelfWidget* shelf_widget,
   opaque_background_.Initialize();
 
   DCHECK(shelf_widget_);
-  SetOwnedByWidget(true);
+  SetOwnedByWidget(OwnedByWidgetPassKey());
 
   set_allow_deactivate_on_esc(true);
 

@@ -137,7 +137,7 @@ void ShowWebFileHandlersFileLaunchDialog(
   std::unique_ptr<views::BubbleDialogModelHost> dialog =
       views::BubbleDialogModelHost::CreateModal(std::move(dialog_model),
                                                 ui::mojom::ModalType::kWindow);
-  dialog->SetOwnedByWidget(true);
+  dialog->SetOwnedByWidget(views::WidgetDelegate::OwnedByWidgetPassKey());
   views::Widget* modal_dialog = views::DialogDelegate::CreateDialogWidget(
       std::move(dialog), /*context=*/nullptr, /*parent=*/nullptr);
   modal_dialog->Show();

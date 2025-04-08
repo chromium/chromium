@@ -118,7 +118,7 @@ MessageBoxCore::MessageBoxCore(const std::u16string& title_label,
 
   // This should be set as the `message_box_view_` is assumed to be owned by the
   // widget created.
-  SetOwnedByWidget(true);
+  SetOwnedByWidget(OwnedByWidgetPassKey());
 }
 
 MessageBoxCore::~MessageBoxCore() = default;

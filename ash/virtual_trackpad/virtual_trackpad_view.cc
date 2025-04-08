@@ -275,7 +275,7 @@ void VirtualTrackpadView::Toggle() {
   auto delegate = std::make_unique<views::WidgetDelegate>();
   delegate->RegisterWindowClosingCallback(
       base::BindOnce([]() { g_fake_trackpad_widget = nullptr; }));
-  delegate->SetOwnedByWidget(true);
+  delegate->SetOwnedByWidget(views::WidgetDelegate::OwnedByWidgetPassKey());
   delegate->SetCanResize(true);
   delegate->SetTitle(u"Virtual Trackpad Simulator");
 
