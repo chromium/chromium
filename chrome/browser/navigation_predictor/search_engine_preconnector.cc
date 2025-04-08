@@ -45,9 +45,6 @@ BASE_FEATURE(kPreconnectFromKeyedService,
 BASE_FEATURE(kPreconnectToSearch,
              "PreconnectToSearch",
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kPreconnectToSearchWithPrivacyModeEnabled,
-             "PreconnectToSearchWithPrivacyModeEnabled",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace features
 
 WebContentVisibilityManager::WebContentVisibilityManager()
@@ -177,15 +174,6 @@ void SearchEnginePreconnector::PreconnectDSE() {
         preconnect_url, /*allow_credentials=*/true, network_anonymziation_key,
         predictors::kSearchEnginePreconnectTrafficAnnotation,
         /*storage_partition_config=*/nullptr);
-
-    if (base::FeatureList::IsEnabled(
-            features::kPreconnectToSearchWithPrivacyModeEnabled)) {
-      GetPreconnectManager().StartPreconnectUrl(
-          preconnect_url,
-          /*allow_credentials=*/false, network_anonymziation_key,
-          predictors::kSearchEnginePreconnectTrafficAnnotation,
-          /*storage_partition_config=*/nullptr);
-    }
   }
 
   // The delay beyond the idle socket timeout that net uses when

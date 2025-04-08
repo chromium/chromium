@@ -20,8 +20,6 @@ class WebContents;
 namespace features {
 BASE_DECLARE_FEATURE(kPreconnectFromKeyedService);
 BASE_DECLARE_FEATURE(kPreconnectToSearch);
-BASE_DECLARE_FEATURE(kPreconnectToSearchNonGoogle);
-BASE_DECLARE_FEATURE(kPreconnectToSearchWithPrivacyModeEnabled);
 }  // namespace features
 
 // Class to keep track of the current visibility. It is used to determine if the
@@ -92,7 +90,7 @@ class SearchEnginePreconnector : public predictors::PreconnectManager::Delegate,
 
  private:
   // Preconnects to the default search engine synchronously. Preconnects in
-  // credentialed and uncredentialed mode.
+  // uncredentialed mode.
   void PreconnectDSE();
 
   // Queries template service for the current DSE URL.
