@@ -1433,15 +1433,6 @@
                     ]
                 },
                 {
-                    "name": "Enabled_3m",
-                    "params": {
-                        "navigation_window": "3m"
-                    },
-                    "enable_features": [
-                        "AttributionReportDeliveryOnNewNavigation"
-                    ]
-                },
-                {
                     "name": "Enabled_5m",
                     "params": {
                         "navigation_window": "5m"
