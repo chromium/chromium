@@ -46,6 +46,19 @@ const base::FeatureParam<bool>
         &kPrerender2FallbackPrefetchSpecRules,
         "kPrerender2FallbackPrefetchUseBlockUntilHeadTimetout", true};
 
+constexpr base::FeatureParam<Prerender2FallbackPrefetchSchedulerPolicy>::Option
+    kPrerender2FallbackPrefetchSchedulerPolicyOptios[] = {
+        {Prerender2FallbackPrefetchSchedulerPolicy::kNotUse, "NotUse"},
+        {Prerender2FallbackPrefetchSchedulerPolicy::kPrioritize, "Prioritize"},
+        {Prerender2FallbackPrefetchSchedulerPolicy::kBurst, "Burst"},
+};
+const base::FeatureParam<Prerender2FallbackPrefetchSchedulerPolicy>
+    kPrerender2FallbackPrefetchSchedulerPolicy{
+        &kPrerender2FallbackPrefetchSpecRules,
+        "kPrerender2FallbackPrefetchSchedulerPolicy",
+        Prerender2FallbackPrefetchSchedulerPolicy::kNotUse,
+        &kPrerender2FallbackPrefetchSchedulerPolicyOptios};
+
 BASE_FEATURE(kPrerender2NoVarySearch,
              "Prerender2NoVarySearch",
              base::FEATURE_ENABLED_BY_DEFAULT);

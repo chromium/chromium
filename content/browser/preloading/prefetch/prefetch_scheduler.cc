@@ -12,6 +12,7 @@
 #include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
+#include "content/browser/preloading/prerender/prerender_features.h"
 
 namespace content {
 
@@ -28,10 +29,20 @@ size_t GetActiveSetSizeLimitForBase() {
 }
 
 size_t GetActiveSetSizeLimitForBurst() {
-  // TODO(crbug.com/406403063): Update the limit for burst.
-
   if (base::FeatureList::IsEnabled(features::kPrefetchSchedulerTesting)) {
     return features::kPrefetchSchedulerTestingActiveSetSizeLimitForBurst.Get();
+  }
+
+  // Before prefetch/prerender integration (i.e.
+  // `Prerender2FallbackPrefetchSpecRules` is disabled), prerender ran without
+  // prefetch So, it was not blocked by prefetch queue. Allow
+  // prefetch-ahead-of-prerender to run independently of the ordinal prefetch
+  // queue so that prerendering is not blocked by queued prefetch requests.
+  //
+  // Note that prerenders are run sequentially. So, +1 is enough.
+  if (features::kPrerender2FallbackPrefetchSchedulerPolicy.Get() ==
+      features::Prerender2FallbackPrefetchSchedulerPolicy::kBurst) {
+    return GetActiveSetSizeLimitForBase() + 1;
   }
 
   // No additional room for burst.
@@ -40,6 +51,18 @@ size_t GetActiveSetSizeLimitForBurst() {
 
 PrefetchPriority CalculatePriorityImpl(
     const PrefetchContainer& prefetch_container) {
+  // Burst/prioritize if ahead of prerender.
+  if (prefetch_container.IsLikelyAheadOfPrerender()) {
+    switch (features::kPrerender2FallbackPrefetchSchedulerPolicy.Get()) {
+      case features::Prerender2FallbackPrefetchSchedulerPolicy::kNotUse:
+        break;
+      case features::Prerender2FallbackPrefetchSchedulerPolicy::kPrioritize:
+        return PrefetchPriority::kHighAheadOfPrerender;
+      case features::Prerender2FallbackPrefetchSchedulerPolicy::kBurst:
+        return PrefetchPriority::kBurstAheadOfPrerender;
+    }
+  }
+
   return PrefetchPriority::kBase;
 }
 
