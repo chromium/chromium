@@ -13,7 +13,6 @@ import android.view.SurfaceView;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,9 +32,9 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
-import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.ui.test.util.RenderTestRule;
 
 /** Tests for the {@link TabContentManager}. */
@@ -43,13 +42,9 @@ import org.chromium.ui.test.util.RenderTestRule;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
 public class TabContentManagerTest {
-    @ClassRule
-    public static ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-
     @Rule
-    public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
-            new BlankCTATabInitialStateRule(sActivityTestRule, false);
+    public AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     @Rule
     public RenderTestRule mRenderTestRule =
@@ -71,13 +66,13 @@ public class TabContentManagerTest {
     @DisabledTest(message = "crbug.com/331664814")
     public void testLiveLayerDraws() throws Exception {
         final String testHttpsUrl1 =
-                sActivityTestRule.getTestServer().getURL("/chrome/test/data/android/test.html");
-        sActivityTestRule.loadUrlInNewTab(testHttpsUrl1);
+                mActivityTestRule.getTestServer().getURL("/chrome/test/data/android/test.html");
+        mActivityTestRule.loadUrlInNewTab(testHttpsUrl1);
         mRenderTestRule.compareForResult(captureBitmap(), "contentViewTab1");
 
         final String testHttpsUrl2 =
-                sActivityTestRule.getTestServer().getURL("/chrome/test/data/android/google.html");
-        sActivityTestRule.loadUrlInNewTab(testHttpsUrl2);
+                mActivityTestRule.getTestServer().getURL("/chrome/test/data/android/google.html");
+        mActivityTestRule.loadUrlInNewTab(testHttpsUrl2);
         mRenderTestRule.compareForResult(captureBitmap(), "contentViewTab2");
     }
 
@@ -85,11 +80,11 @@ public class TabContentManagerTest {
     @MediumTest
     public void testJpegRefetch() throws Exception {
         final String testHttpsUrl1 =
-                sActivityTestRule.getTestServer().getURL("/chrome/test/data/android/google.html");
-        sActivityTestRule.loadUrlInNewTab(testHttpsUrl1);
+                mActivityTestRule.getTestServer().getURL("/chrome/test/data/android/google.html");
+        mActivityTestRule.loadUrlInNewTab(testHttpsUrl1);
 
         // Sometimes loadUrlInNewTab returns before the tab is actually loaded. Confirm again.
-        final Tab currentTab = sActivityTestRule.getActivity().getActivityTab();
+        final Tab currentTab = mActivityTestRule.getActivity().getActivityTab();
         CriteriaHelper.pollUiThread(() -> !currentTab.isLoading());
 
         final CallbackHelper helper = new CallbackHelper();
@@ -103,14 +98,14 @@ public class TabContentManagerTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     final TabContentManager tabContentManager =
-                            sActivityTestRule.getActivity().getTabContentManagerSupplier().get();
+                            mActivityTestRule.getActivity().getTabContentManagerSupplier().get();
                     final int height = 100;
                     final int width =
                             Math.round(
                                     height
                                             * TabUtils.getTabThumbnailAspectRatio(
-                                                    sActivityTestRule.getActivity(),
-                                                    sActivityTestRule
+                                                    mActivityTestRule.getActivity(),
+                                                    mActivityTestRule
                                                             .getActivity()
                                                             .getBrowserControlsManager()));
                     tabContentManager.cacheTabThumbnail(currentTab);
@@ -131,7 +126,7 @@ public class TabContentManagerTest {
         Bitmap[] bitmapHolder = new Bitmap[1];
         CompositorView compositorView =
                 ((CompositorViewHolder)
-                                sActivityTestRule
+                                mActivityTestRule
                                         .getActivity()
                                         .findViewById(R.id.compositor_view_holder))
                         .getCompositorView();
