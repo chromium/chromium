@@ -266,9 +266,12 @@ class IOSCollaborationControllerDelegateTest : public PlatformTest {
   ServiceStatus collaboration_status_;
 };
 
-// TODO(crbug.com/409238636): failing on ios_simulator_noncq
 // Tests `ShowShareDialog` with a valid tabGroup.
-TEST_F(IOSCollaborationControllerDelegateTest, DISABLED_ShowShareDialogValid) {
+TEST_F(IOSCollaborationControllerDelegateTest, ShowShareDialogValid) {
+  if (!IsTabGroupInGridEnabled()) {
+    // Disabled on iPadOS 16.
+    return;
+  }
   InitDelegate();
   base::MockCallback<
       CollaborationControllerDelegate::ResultWithGroupTokenCallback>
@@ -286,10 +289,12 @@ TEST_F(IOSCollaborationControllerDelegateTest, DISABLED_ShowShareDialogValid) {
   [share_kit_flow_view_controller accept];
 }
 
-// TODO(crbug.com/409238636): failing on ios_simulator_noncq
 // Tests `ShowShareDialog` with an invalid tabGroup.
-TEST_F(IOSCollaborationControllerDelegateTest,
-       DISABLED_ShowShareDialogInvalid) {
+TEST_F(IOSCollaborationControllerDelegateTest, ShowShareDialogInvalid) {
+  if (!IsTabGroupInGridEnabled()) {
+    // Disabled on iPadOS 16.
+    return;
+  }
   InitDelegate();
 
   tab_groups::TabGroupId tab_group_id = tab_group_->tab_group_id();
@@ -307,9 +312,12 @@ TEST_F(IOSCollaborationControllerDelegateTest,
   EXPECT_FALSE(base_view_controller_.presentedViewController);
 }
 
-// TODO(crbug.com/409238636): failing on ios_simulator_noncq
 // Tests `ShowJoinDialog` and accept.
-TEST_F(IOSCollaborationControllerDelegateTest, DISABLED_ShowJoinDialogAccept) {
+TEST_F(IOSCollaborationControllerDelegateTest, ShowJoinDialogAccept) {
+  if (!IsTabGroupInGridEnabled()) {
+    // Disabled on iPadOS 16.
+    return;
+  }
   InitDelegate();
   base::MockCallback<CollaborationControllerDelegate::ResultCallback>
       mock_callback;
@@ -327,9 +335,12 @@ TEST_F(IOSCollaborationControllerDelegateTest, DISABLED_ShowJoinDialogAccept) {
   [share_kit_flow_view_controller accept];
 }
 
-// TODO(crbug.com/409238636): failing on ios_simulator_noncq
 // Tests `ShowJoinDialog` and cancel.
-TEST_F(IOSCollaborationControllerDelegateTest, DISABLED_ShowJoinDialogCancel) {
+TEST_F(IOSCollaborationControllerDelegateTest, ShowJoinDialogCancel) {
+  if (!IsTabGroupInGridEnabled()) {
+    // Disabled on iPadOS 16.
+    return;
+  }
   InitDelegate();
   base::MockCallback<CollaborationControllerDelegate::ResultCallback>
       mock_callback;
@@ -347,10 +358,12 @@ TEST_F(IOSCollaborationControllerDelegateTest, DISABLED_ShowJoinDialogCancel) {
   [share_kit_flow_view_controller cancel];
 }
 
-// TODO(crbug.com/409238636): failing on ios_simulator_noncq
 // Tests `ShowManageDialog` and accept.
-TEST_F(IOSCollaborationControllerDelegateTest,
-       DISABLED_ShowManageDialogAccept) {
+TEST_F(IOSCollaborationControllerDelegateTest, ShowManageDialogAccept) {
+  if (!IsTabGroupInGridEnabled()) {
+    // Disabled on iPadOS 16.
+    return;
+  }
   InitDelegate();
   base::MockCallback<CollaborationControllerDelegate::ResultCallback>
       mock_callback;
@@ -368,10 +381,12 @@ TEST_F(IOSCollaborationControllerDelegateTest,
   [share_kit_flow_view_controller accept];
 }
 
-// TODO(crbug.com/409238636): failing on ios_simulator_noncq
 // Tests `ShowManageDialog` and cancel.
-TEST_F(IOSCollaborationControllerDelegateTest,
-       DISABLED_ShowManageDialogCancel) {
+TEST_F(IOSCollaborationControllerDelegateTest, ShowManageDialogCancel) {
+  if (!IsTabGroupInGridEnabled()) {
+    // Disabled on iPadOS 16.
+    return;
+  }
   InitDelegate();
   base::MockCallback<CollaborationControllerDelegate::ResultCallback>
       mock_callback;
@@ -389,10 +404,13 @@ TEST_F(IOSCollaborationControllerDelegateTest,
   [share_kit_flow_view_controller cancel];
 }
 
-// TODO(crbug.com/409238636): failing on ios_simulator_noncq
 // Tests `ShowAuthenticationUi` when the user chooses to cancel the sign in.
 TEST_F(IOSCollaborationControllerDelegateTest,
-       DISABLED_ShowAuthenticationUiSignInCanceled) {
+       ShowAuthenticationUiSignInCanceled) {
+  if (!IsTabGroupInGridEnabled()) {
+    // Disabled on iPadOS 16.
+    return;
+  }
   InitDelegate();
   base::MockCallback<CollaborationControllerDelegate::ResultCallback>
       mock_callback;
@@ -412,11 +430,14 @@ TEST_F(IOSCollaborationControllerDelegateTest,
   delegate_->ShowAuthenticationUi(FlowType::kJoin, mock_callback.Get());
 }
 
-// TODO(crbug.com/409238636): failing on ios_simulator_noncq
 // Tests `ShowAuthenticationUi` when the user sign in and accept the sync opt
 // in.
 TEST_F(IOSCollaborationControllerDelegateTest,
-       DISABLED_ShowAuthenticationUiSyncAccepted) {
+       ShowAuthenticationUiSyncAccepted) {
+  if (!IsTabGroupInGridEnabled()) {
+    // Disabled on iPadOS 16.
+    return;
+  }
   InitDelegate();
   base::MockCallback<CollaborationControllerDelegate::ResultCallback>
       mock_callback;
@@ -438,10 +459,12 @@ TEST_F(IOSCollaborationControllerDelegateTest,
   delegate_->ShowAuthenticationUi(FlowType::kJoin, mock_callback.Get());
 }
 
-// TODO(crbug.com/409238636): failing on ios_simulator_noncq
 // Tests `ShowAuthenticationUi` when the user sign in but don't sync.
-TEST_F(IOSCollaborationControllerDelegateTest,
-       DISABLED_ShowAuthenticationUiSyncDenied) {
+TEST_F(IOSCollaborationControllerDelegateTest, ShowAuthenticationUiSyncDenied) {
+  if (!IsTabGroupInGridEnabled()) {
+    // Disabled on iPadOS 16.
+    return;
+  }
   InitDelegate();
   base::MockCallback<CollaborationControllerDelegate::ResultCallback>
       mock_callback;
@@ -463,10 +486,12 @@ TEST_F(IOSCollaborationControllerDelegateTest,
   delegate_->ShowAuthenticationUi(FlowType::kJoin, mock_callback.Get());
 }
 
-// TODO(crbug.com/409238636): failing on ios_simulator_noncq
 // Tests `ShowAuthenticationUi` when the user is signed-in.
-TEST_F(IOSCollaborationControllerDelegateTest,
-       DISABLED_ShowAuthenticationUiWithSignIn) {
+TEST_F(IOSCollaborationControllerDelegateTest, ShowAuthenticationUiWithSignIn) {
+  if (!IsTabGroupInGridEnabled()) {
+    // Disabled on iPadOS 16.
+    return;
+  }
   SignIn();
   InitDelegate();
   base::MockCallback<CollaborationControllerDelegate::ResultCallback>
@@ -489,10 +514,13 @@ TEST_F(IOSCollaborationControllerDelegateTest,
   delegate_->ShowAuthenticationUi(FlowType::kJoin, mock_callback.Get());
 }
 
-// TODO(crbug.com/409238636): failing on ios_simulator_noncq
 // Tests `NotifySignInAndSyncStatusChange`.
 TEST_F(IOSCollaborationControllerDelegateTest,
-       DISABLED_NotifySignInAndSyncStatusChange) {
+       NotifySignInAndSyncStatusChange) {
+  if (!IsTabGroupInGridEnabled()) {
+    // Disabled on iPadOS 16.
+    return;
+  }
   InitDelegate();
   delegate_->NotifySignInAndSyncStatusChange();
 }
