@@ -135,7 +135,7 @@ enum class ServiceError {
 enum class ProtocolError : int {
   NONE = 0,
   RESPONSE_NOT_TRUSTED = -10000,
-  MISSING_PUBLIC_KEY = -10001,
+  // Obsolete: MISSING_PUBLIC_KEY = -10001,
   MISSING_URLS = -10002,
   PARSE_FAILED = -10003,
   UPDATE_RESPONSE_NOT_FOUND = -10004,

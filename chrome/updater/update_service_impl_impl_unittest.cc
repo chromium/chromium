@@ -305,12 +305,6 @@ INSTANTIATE_TEST_SUITE_P(
              IDS_GENERIC_UPDATE_CHECK_ERROR_BASE,
              L"update_client::ProtocolError::RESPONSE_NOT_TRUSTED"))},
         {UpdateService::ErrorCategory::kUpdateCheck,
-         static_cast<int>(update_client::ProtocolError::MISSING_PUBLIC_KEY),
-         {},
-         base::WideToUTF8(GetLocalizedStringF(
-             IDS_GENERIC_UPDATE_CHECK_ERROR_BASE,
-             L"update_client::ProtocolError::MISSING_PUBLIC_KEY"))},
-        {UpdateService::ErrorCategory::kUpdateCheck,
          static_cast<int>(update_client::ProtocolError::MISSING_URLS),
          {},
          base::WideToUTF8(GetLocalizedStringF(

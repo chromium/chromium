@@ -139,15 +139,15 @@ const char kTimeServiceURL[] = "http://clients2.google.com/time/1/current";
 
 // This is an ECDSA prime256v1 named-curve key.
 const int kKeyVersion = 9;
-const uint8_t kKeyPubBytes[] = {
-    0x30, 0x59, 0x30, 0x13, 0x06, 0x07, 0x2A, 0x86, 0x48, 0xCE, 0x3D, 0x02,
-    0x01, 0x06, 0x08, 0x2A, 0x86, 0x48, 0xCE, 0x3D, 0x03, 0x01, 0x07, 0x03,
-    0x42, 0x00, 0x04, 0x51, 0x8B, 0x06, 0x03, 0x4D, 0xEA, 0x13, 0xC3, 0x32,
-    0x9B, 0x15, 0x73, 0xD6, 0xBC, 0x47, 0x33, 0x3F, 0xB6, 0x95, 0x0E, 0x5D,
-    0x52, 0x73, 0x70, 0x5D, 0xE4, 0x92, 0xBD, 0xFD, 0xC5, 0xB9, 0xC6, 0x51,
-    0x81, 0x2D, 0x8B, 0x46, 0xC4, 0x4C, 0xB0, 0xA5, 0xC6, 0xDB, 0x5B, 0xE4,
-    0xDB, 0x80, 0x57, 0x6B, 0x4D, 0x08, 0x9C, 0x3D, 0x8B, 0xC2, 0xD9, 0x27,
-    0x9A, 0xDE, 0x3D, 0xE2, 0xCC, 0x0A, 0x20};
+constexpr auto kPubKey = std::to_array<uint8_t>(
+    {0x30, 0x59, 0x30, 0x13, 0x06, 0x07, 0x2A, 0x86, 0x48, 0xCE, 0x3D, 0x02,
+     0x01, 0x06, 0x08, 0x2A, 0x86, 0x48, 0xCE, 0x3D, 0x03, 0x01, 0x07, 0x03,
+     0x42, 0x00, 0x04, 0x51, 0x8B, 0x06, 0x03, 0x4D, 0xEA, 0x13, 0xC3, 0x32,
+     0x9B, 0x15, 0x73, 0xD6, 0xBC, 0x47, 0x33, 0x3F, 0xB6, 0x95, 0x0E, 0x5D,
+     0x52, 0x73, 0x70, 0x5D, 0xE4, 0x92, 0xBD, 0xFD, 0xC5, 0xB9, 0xC6, 0x51,
+     0x81, 0x2D, 0x8B, 0x46, 0xC4, 0x4C, 0xB0, 0xA5, 0xC6, 0xDB, 0x5B, 0xE4,
+     0xDB, 0x80, 0x57, 0x6B, 0x4D, 0x08, 0x9C, 0x3D, 0x8B, 0xC2, 0xD9, 0x27,
+     0x9A, 0xDE, 0x3D, 0xE2, 0xCC, 0x0A, 0x20});
 
 std::string GetServerProof(
     scoped_refptr<net::HttpResponseHeaders> response_headers) {
@@ -171,11 +171,13 @@ NetworkTimeTracker::NetworkTimeTracker(
     std::unique_ptr<const base::TickClock> tick_clock,
     PrefService* pref_service,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    std::optional<FetchBehavior> fetch_behavior)
+    std::optional<FetchBehavior> fetch_behavior,
+    base::span<const uint8_t> pubkey)
     : server_url_(kTimeServiceURL),
       max_response_size_(1024),
       backoff_(kBackoffInterval.Get()),
       url_loader_factory_(std::move(url_loader_factory)),
+      query_signer_(kKeyVersion, pubkey.empty() ? kPubKey : pubkey),
       clock_(std::move(clock)),
       tick_clock_(std::move(tick_clock)),
       pref_service_(pref_service),
@@ -213,11 +215,6 @@ NetworkTimeTracker::NetworkTimeTracker(
                        network_time_uncertainty);
     }
   }
-
-  std::string_view public_key = {reinterpret_cast<const char*>(kKeyPubBytes),
-                                 sizeof(kKeyPubBytes)};
-  query_signer_ =
-      client_update_protocol::Ecdsa::Create(kKeyVersion, public_key);
 
   QueueCheckTime(base::Seconds(0));
 }
@@ -301,10 +298,6 @@ void NetworkTimeTracker::SetMaxResponseSizeForTesting(size_t limit) {
   max_response_size_ = limit;
 }
 
-void NetworkTimeTracker::SetPublicKeyForTesting(std::string_view key) {
-  query_signer_ = client_update_protocol::Ecdsa::Create(kKeyVersion, key);
-}
-
 bool NetworkTimeTracker::QueryTimeServiceForTesting() {
   CheckTime();
   return time_fetcher_ != nullptr;
@@ -336,12 +329,12 @@ bool NetworkTimeTracker::GetTrackerState(
 }
 
 void NetworkTimeTracker::WaitForFetchForTesting(uint32_t nonce) {
-  query_signer_->OverrideNonceForTesting(kKeyVersion, nonce);  // IN-TEST
+  query_signer_.OverrideNonceForTesting(kKeyVersion, nonce);  // IN-TEST
   WaitForFetch();
 }
 
 void NetworkTimeTracker::OverrideNonceForTesting(uint32_t nonce) {
-  query_signer_->OverrideNonceForTesting(kKeyVersion, nonce);
+  query_signer_.OverrideNonceForTesting(kKeyVersion, nonce);  // IN-TEST
 }
 
 base::TimeDelta NetworkTimeTracker::GetTimerDelayForTesting() const {
@@ -431,7 +424,7 @@ void NetworkTimeTracker::CheckTime() {
   }
 
   std::string query_string;
-  query_signer_->SignRequest("", &query_string);
+  query_signer_.SignRequest("", &query_string);
   GURL::Replacements replacements;
   replacements.SetQueryStr(query_string);
   GURL url = server_url_.ReplaceComponents(replacements);
@@ -493,8 +486,7 @@ bool NetworkTimeTracker::UpdateTimeFromResponse(
 
   std::string_view response(*response_body);
 
-  DCHECK(query_signer_);
-  if (!query_signer_->ValidateResponse(
+  if (!query_signer_.ValidateResponse(
           response, GetServerProof(time_fetcher_->ResponseInfo()->headers))) {
     DVLOG(1) << "invalid signature";
     return false;

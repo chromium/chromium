@@ -315,7 +315,6 @@ std::wstring GetTextForUpdateCheckError(int error,
   switch (error) {
     UPDATE_CHECK_SWITCH_ENTRY(
         update_client::ProtocolError::RESPONSE_NOT_TRUSTED);
-    UPDATE_CHECK_SWITCH_ENTRY(update_client::ProtocolError::MISSING_PUBLIC_KEY);
     UPDATE_CHECK_SWITCH_ENTRY(update_client::ProtocolError::MISSING_URLS);
     UPDATE_CHECK_SWITCH_ENTRY(update_client::ProtocolError::PARSE_FAILED);
     UPDATE_CHECK_SWITCH_ENTRY(

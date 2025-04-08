@@ -15,12 +15,9 @@
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
+#include "components/client_update_protocol/ecdsa.h"
 #include "components/update_client/network.h"
 #include "url/gurl.h"
-
-namespace client_update_protocol {
-class Ecdsa;
-}
 
 namespace update_client {
 
@@ -110,10 +107,9 @@ class RequestSender : public base::RefCountedThreadSafe<RequestSender> {
   bool use_signing_ = false;  // True if CUP signing is used.
   RequestSenderCallback request_sender_callback_;
 
-  std::string public_key_;
   std::vector<GURL>::const_iterator cur_url_;
   std::unique_ptr<NetworkFetcher> network_fetcher_;
-  std::unique_ptr<client_update_protocol::Ecdsa> signer_;
+  client_update_protocol::Ecdsa signer_;
 
   int response_code_ = -1;
 };
