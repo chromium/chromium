@@ -231,7 +231,7 @@ typedef NS_ENUM(NSUInteger, LensOverlayFilterState) {
     // Navigation in between modes are not supported. Reset the navigation
     // stack.
     if (switchToTranslate || switchToSelection) {
-      [self resetNavigation];
+      [self clearNavigations];
     }
 
     if (switchToTranslate) {
@@ -397,9 +397,10 @@ typedef NS_ENUM(NSUInteger, LensOverlayFilterState) {
 
 #pragma mark - Private
 
-- (void)resetNavigation {
-  _navigationManager = std::make_unique<LensOverlayNavigationManager>(self);
-  [self.toolbarConsumer setCanGoBack:NO];
+- (void)clearNavigations {
+  if (_navigationManager) {
+    _navigationManager->ClearNavigations();
+  }
 }
 
 /// Updates the UI for lens `result`.

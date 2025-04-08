@@ -115,6 +115,12 @@ void LensOverlayNavigationManager::GoBack() {
   }
 }
 
+void LensOverlayNavigationManager::ClearNavigations() {
+  lens_navigation_items_.clear();
+  lens_reloaded_items_.clear();
+  OnNavigationListUpdate();
+}
+
 #pragma mark - web::WebStateObserver
 
 void LensOverlayNavigationManager::DidStartNavigation(
