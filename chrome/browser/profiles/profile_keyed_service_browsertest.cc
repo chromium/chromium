@@ -781,6 +781,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
     "sessions::TabRestoreService",
     "SettingsOverridesAPI",
     "SettingsPrivateEventRouter",
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+    "SharedModuleService",
+#endif
     "ShoppingService",
     "SidePanelService",
     "SiteDataCacheFacadeFactory",

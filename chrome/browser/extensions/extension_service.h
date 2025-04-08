@@ -342,8 +342,10 @@ class ExtensionService : public ExtensionServiceInterface,
 
   Profile* profile() { return profile_; }
 
+  // TODO(crbug.com/409120449): Delete this method. Callers should use
+  // SharedModuleService::Get() instead.
   SharedModuleService* shared_module_service() {
-    return shared_module_service_.get();
+    return shared_module_service_;
   }
 
   ForceInstalledTracker* force_installed_tracker() {
@@ -503,7 +505,7 @@ class ExtensionService : public ExtensionServiceInterface,
       extension_action_storage_manager_;
 
   // The SharedModuleService used to check for import dependencies.
-  std::unique_ptr<SharedModuleService> shared_module_service_;
+  raw_ptr<SharedModuleService> shared_module_service_ = nullptr;
 
   std::unique_ptr<ChromeExtensionRegistrarDelegate>
       extension_registrar_delegate_;

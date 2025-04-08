@@ -16,6 +16,7 @@
 #include "chrome/browser/extensions/install_tracker_factory.h"
 #include "chrome/browser/extensions/pending_extension_manager_factory.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
+#include "chrome/browser/extensions/shared_module_service_factory.h"
 #include "chrome/browser/extensions/updater/extension_updater_factory.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -65,6 +66,7 @@ void EnsureChromeBrowserContextKeyedServiceFactoriesBuilt() {
   extensions::InstallTrackerFactory::GetInstance();
   extensions::PendingExtensionManagerFactory::GetInstance();
   extensions::PermissionsUpdater::EnsureAssociatedFactoryBuilt();
+  extensions::SharedModuleServiceFactory::GetInstance();
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   ExtensionSyncServiceFactory::GetInstance();

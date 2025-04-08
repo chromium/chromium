@@ -210,7 +210,7 @@ ExtensionService::ExtensionService(
       component_loader_(ComponentLoader::Get(profile_)),
       error_controller_(error_controller),
       external_install_manager_(ExternalInstallManager::Get(profile)),
-      shared_module_service_(new SharedModuleService(profile_)),
+      shared_module_service_(SharedModuleService::Get(profile)),
       extension_registrar_delegate_(
           std::make_unique<ChromeExtensionRegistrarDelegate>(profile_)),
       extension_registrar_(ExtensionRegistrar::Get(profile)),
@@ -310,6 +310,7 @@ void ExtensionService::Shutdown() {
   external_install_manager_ = nullptr;
   updater_ = nullptr;
   component_loader_ = nullptr;
+  shared_module_service_ = nullptr;
 }
 
 void ExtensionService::Init() {
