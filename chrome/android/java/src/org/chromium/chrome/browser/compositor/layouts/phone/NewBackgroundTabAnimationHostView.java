@@ -37,7 +37,9 @@ import java.lang.annotation.Target;
 public class NewBackgroundTabAnimationHostView extends FrameLayout {
     private static final long CURVED_MOTION_DURATION_MS = 400L;
     private static final long LINK_SCALE_DURATION_MS = 120L;
-    private final int[] mTargetLocation = new int[2];
+    private static final long CROSS_FADE_DURATION_MS = 150L;
+    private static final long SCALE_DURATION_MS = 50L;
+    private static final long DELAY_DURATION_MS = 100L;
 
     @IntDef({
         AnimationType.UNINITIALIZED,
@@ -83,23 +85,46 @@ public class NewBackgroundTabAnimationHostView extends FrameLayout {
      * @param statusBarHeight The status bar height (px), if needed for y-offset.
      */
     /* package */ AnimatorSet getAnimatorSet(float originX, float originY, int statusBarHeight) {
-        // TODO(crbug.com/40282469): Implement animation for NTP partial and full scroll version.
-        // Also, make animation compatible with bottom toolbar.
+        // TODO(crbug.com/40282469): Make animation compatible with bottom toolbar.
         assert mAnimationType != AnimationType.UNINITIALIZED;
+        int[] target = new int[2];
+        mFakeTabSwitcherButton.getButtonLocation(target, mYOffset + statusBarHeight);
+        target[0] -= mLinkIcon.getWidth() / 2;
+        target[1] -=
+                mAnimationType == AnimationType.NTP_FULL_SCROLL ? mLinkIcon.getHeight() / 2 : 0;
+
+        AnimatorSet transitionAnimator = getTransitionAnimator();
+        ObjectAnimator curvedAnimator =
+                getCurvedMotionAnimator(originX, originY, target[0], target[1]);
+
         AnimatorSet backgroundAnimation = new AnimatorSet();
+        AnimatorSet fakeTabSwitcherAnimator;
 
         if (mAnimationType == AnimationType.DEFAULT) {
-            mFakeTabSwitcherButton.getButtonLocation(mTargetLocation, mYOffset + statusBarHeight);
-            int endX = mTargetLocation[0] - mLinkIcon.getWidth() / 2;
-            int endY = mTargetLocation[1];
-
-            ObjectAnimator curvedAnimator = getCurvedMotionAnimator(originX, originY, endX, endY);
-            AnimatorSet transitionAnimator = getTransitionAnimator();
-            AnimatorSet fadeOutAnimator = mFakeTabSwitcherButton.getRotateFadeOutAnimator();
+            fakeTabSwitcherAnimator = mFakeTabSwitcherButton.getRotateFadeOutAnimator();
             backgroundAnimation.playSequentially(
-                    curvedAnimator, transitionAnimator, fadeOutAnimator);
-        }
+                    curvedAnimator, transitionAnimator, fakeTabSwitcherAnimator);
+        } else {
+            transitionAnimator.setStartDelay(CURVED_MOTION_DURATION_MS - CROSS_FADE_DURATION_MS);
+            fakeTabSwitcherAnimator =
+                    mFakeTabSwitcherButton.getTranslateAnimator(
+                            NewBackgroundTabFakeTabSwitcherButton.TranslateDirection.UP, true);
+            fakeTabSwitcherAnimator.setStartDelay(DELAY_DURATION_MS);
 
+            ObjectAnimator scaleXAnimator =
+                    ObjectAnimator.ofFloat(mFakeTabSwitcherButton, View.SCALE_X, 1.15f, 1f);
+            ObjectAnimator scaleYAnimator =
+                    ObjectAnimator.ofFloat(mFakeTabSwitcherButton, View.SCALE_Y, 1.15f, 1f);
+            AnimatorSet scaleAnimator = new AnimatorSet();
+            scaleAnimator.playTogether(scaleXAnimator, scaleYAnimator);
+            scaleAnimator.setDuration(SCALE_DURATION_MS);
+
+            backgroundAnimation
+                    .play(curvedAnimator)
+                    .with(transitionAnimator)
+                    .before(scaleAnimator)
+                    .before(fakeTabSwitcherAnimator);
+        }
         return backgroundAnimation;
     }
 
@@ -109,44 +134,53 @@ public class NewBackgroundTabAnimationHostView extends FrameLayout {
      * @param tabSwitcherButton The real Tab Switcher Button.
      * @param tabCount The tab count to display.
      * @param backgroundColor The current color of the toolbar.
-     * @param isIncognito true if the current tab is an incognito tab.
+     * @param isNtp True if the current tab is the regular Ntp.
+     * @param isIncognito True if the current tab is an incognito tab.
      * @param yOffset y-offset to account for the status indicator (ex: no internet connection).
+     * @param ntpToolbarTransitionPercentage To know if the search box is in the toolbar position.
      */
     /* package */ void updateFakeTabSwitcherButton(
             ToggleTabStackButton tabSwitcherButton,
             int tabCount,
             @ColorInt int backgroundColor,
+            boolean isNtp,
             boolean isIncognito,
-            int yOffset) {
+            int yOffset,
+            float ntpToolbarTransitionPercentage) {
         mYOffset = yOffset;
         mFakeTabSwitcherButton.setTabCount(tabCount, isIncognito);
 
         Rect tabSwitcherRect = new Rect();
-        boolean isVisible = tabSwitcherButton.getGlobalVisibleRect(tabSwitcherRect);
+        boolean tabIconIsVisible = tabSwitcherButton.getGlobalVisibleRect(tabSwitcherRect);
         int fakeButtonSideMargin = mFakeTabSwitcherButton.getInnerSidePadding();
-        int x = tabSwitcherRect.left - fakeButtonSideMargin;
+        FrameLayout.LayoutParams params =
+                (FrameLayout.LayoutParams) mFakeTabSwitcherButton.getLayoutParams();
+        params.leftMargin = tabSwitcherRect.left - fakeButtonSideMargin;
+        params.topMargin = yOffset;
 
-        if (isVisible) {
+        if (tabIconIsVisible || !isNtp) {
             mAnimationType = AnimationType.DEFAULT;
-            FrameLayout.LayoutParams params =
-                    (FrameLayout.LayoutParams) mFakeTabSwitcherButton.getLayoutParams();
-            params.leftMargin = x;
-            params.topMargin = yOffset;
-            mFakeTabSwitcherButton.setLayoutParams(params);
-
             @BrandedColorScheme
             int brandedColorScheme =
                     ThemeUtils.getBrandedColorScheme(getContext(), backgroundColor, isIncognito);
             mFakeTabSwitcherButton.setBrandedColorScheme(brandedColorScheme);
-
             mFakeTabSwitcherButton.setButtonColor(backgroundColor);
             mFakeTabSwitcherButton.setNotificationIconStatus(
                     tabSwitcherButton.shouldShowNotificationIcon());
-            mFakeTabSwitcherButton.setVisibility(View.VISIBLE);
         } else {
-            // TODO(crbug.com/40282469): Implement this for NTP partial and scroll version.
-            mAnimationType = AnimationType.NTP_FULL_SCROLL;
+            if (ntpToolbarTransitionPercentage == 1f) {
+                mAnimationType = AnimationType.NTP_FULL_SCROLL;
+                params.topMargin +=
+                        Math.round(
+                                getContext()
+                                        .getResources()
+                                        .getDimension(R.dimen.toolbar_height_no_shadow));
+            } else {
+                mAnimationType = AnimationType.NTP_PARTIAL_SCROLL;
+            }
+            mFakeTabSwitcherButton.setAlpha(0f);
         }
+        mFakeTabSwitcherButton.setLayoutParams(params);
     }
 
     /**
@@ -176,23 +210,38 @@ public class NewBackgroundTabAnimationHostView extends FrameLayout {
     }
 
     /**
-     * Returns the {@link AnimatorSet} for the transition between the Link icon and the "very sunny"
-     * asset. {@link #mLinkIcon} will do a scale down animation and {@link #mFakeTabSwitcherButton}
-     * will start the rotate fade in animation.
+     * Returns the {@link AnimatorSet} for the transition between the Link icon and the Tab icon.
      */
     private AnimatorSet getTransitionAnimator() {
-        mLinkIcon.setPivotX(mLinkIcon.getMeasuredWidth() / 2f);
-        mLinkIcon.setPivotY(0f);
-
-        AnimatorSet rotateFadeInAnimator =
-                mFakeTabSwitcherButton.getRotateFadeInAnimator(/* incrementCount= */ true);
-        ObjectAnimator scaleXAnimator = ObjectAnimator.ofFloat(mLinkIcon, View.SCALE_X, 1f, 0f);
-        scaleXAnimator.setDuration(LINK_SCALE_DURATION_MS);
-        ObjectAnimator scaleYAnimator = ObjectAnimator.ofFloat(mLinkIcon, View.SCALE_Y, 1f, 0f);
-        scaleYAnimator.setDuration(LINK_SCALE_DURATION_MS);
-
         AnimatorSet animatorSet = new AnimatorSet();
-        animatorSet.playTogether(rotateFadeInAnimator, scaleXAnimator, scaleYAnimator);
+
+        if (mAnimationType == AnimationType.DEFAULT) {
+            mLinkIcon.setPivotX(mLinkIcon.getMeasuredWidth() / 2f);
+            mLinkIcon.setPivotY(0f);
+
+            AnimatorSet rotateFadeInAnimator =
+                    mFakeTabSwitcherButton.getRotateFadeInAnimator(/* incrementCount= */ true);
+            ObjectAnimator scaleXAnimator = ObjectAnimator.ofFloat(mLinkIcon, View.SCALE_X, 1f, 0f);
+            scaleXAnimator.setDuration(LINK_SCALE_DURATION_MS);
+            ObjectAnimator scaleYAnimator = ObjectAnimator.ofFloat(mLinkIcon, View.SCALE_Y, 1f, 0f);
+            scaleYAnimator.setDuration(LINK_SCALE_DURATION_MS);
+
+            animatorSet.playTogether(rotateFadeInAnimator, scaleXAnimator, scaleYAnimator);
+        } else {
+            ObjectAnimator alphaLinkAnimator =
+                    ObjectAnimator.ofFloat(mLinkIcon, View.ALPHA, 1f, 0f);
+            ObjectAnimator alphaTabSwitcherAnimator =
+                    ObjectAnimator.ofFloat(mFakeTabSwitcherButton, View.ALPHA, 0f, 1f);
+
+            ObjectAnimator scaleXAnimator =
+                    ObjectAnimator.ofFloat(mFakeTabSwitcherButton, View.SCALE_X, 0.5f, 1.15f);
+            ObjectAnimator scaleYAnimator =
+                    ObjectAnimator.ofFloat(mFakeTabSwitcherButton, View.SCALE_Y, 0.5f, 1.15f);
+
+            animatorSet.playTogether(
+                    scaleXAnimator, scaleYAnimator, alphaLinkAnimator, alphaTabSwitcherAnimator);
+            animatorSet.setDuration(CROSS_FADE_DURATION_MS);
+        }
         return animatorSet;
     }
 
@@ -205,7 +254,8 @@ public class NewBackgroundTabAnimationHostView extends FrameLayout {
         mLinkIcon.setImageTintList(ColorStateList.valueOf(color));
     }
 
-    public @AnimationType int getAnimationTypeForTesting() {
+    /* package */ @AnimationType
+    int getAnimationTypeForTesting() {
         return mAnimationType;
     }
 }

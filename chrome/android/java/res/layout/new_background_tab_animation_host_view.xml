@@ -11,13 +11,8 @@ found in the LICENSE file.
     android:clipToPadding="false"
     android:layoutDirection="ltr">
 
-    <!-- Layout is visible when NewBackgroundTabAnimationHostView#mAnimationType is
-    AnimationType.DEFAULT, otherwise, the animators will change the visibility to Visible as the
-    animation is running.-->
     <include
-        layout="@layout/new_background_tab_animation_tab_switcher_icon"
-        android:visibility="invisible"/>
-
+        layout="@layout/new_background_tab_animation_tab_switcher_icon"/>
 
     <!--View is invisible to avoid displaying the icon prematurely. The reason is that one of the
     animators updates the View.X and View.Y values, overwriting its screen location.-->

@@ -592,6 +592,7 @@ public class NewTabAnimationLayout extends Layout {
                     public void onAnimationEnd(Animator animation) {
                         mTabCreatedForegroundAnimation = null;
                         if (mFadeAnimator != null) mFadeAnimator.start();
+                        // TODO(crbug.com/40933120): Make tab interactable during animation.
                         startHiding();
                         mTabModelSelector.selectModel(newIsIncognito);
                         mNextTabId = id;
@@ -653,8 +654,10 @@ public class NewTabAnimationLayout extends Layout {
                 tabSwitcherButton,
                 prevTabCount,
                 toolbarColor,
+                isRegularNtp,
                 isIncognito,
-                mBrowserControlsManager.getTopControlsMinHeight());
+                mBrowserControlsManager.getTopControlsMinHeight(),
+                mToolbarManager.getNtpTransitionPercentage());
 
         // TODO(crbug.com/40282469): Get correct x and y for the NTP.
         final int originX;

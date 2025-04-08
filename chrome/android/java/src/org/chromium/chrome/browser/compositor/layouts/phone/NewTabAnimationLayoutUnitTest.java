@@ -324,8 +324,8 @@ public class NewTabAnimationLayoutUnitTest {
                 CURRENT_TAB_ID,
                 /* newIsIncognito= */ false,
                 /* background= */ true,
-                /* originX= */ 0f,
-                /* originY= */ 0f);
+                /* originX= */ -1f,
+                /* originY= */ -1f);
 
         layoutTabs = mNewTabAnimationLayout.getLayoutTabsToRender();
         assertEquals(1, layoutTabs.length);

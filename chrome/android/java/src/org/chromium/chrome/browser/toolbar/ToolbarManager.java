@@ -348,6 +348,8 @@ public class ToolbarManager
 
     private @Nullable StripLayoutHelperManager mStripLayoutHelperManager;
 
+    private float mNtpSearchBoxScrollPercentage;
+
     private static class TabObscuringCallback implements Callback<Boolean> {
         private final TabObscuringHandler mTabObscuringHandler;
 
@@ -1654,6 +1656,11 @@ public class ToolbarManager
         }
     }
 
+    /** Returns the NTP toolbar transition percentage for the search box to cover the toolbar. */
+    public float getNtpTransitionPercentage() {
+        return mNtpSearchBoxScrollPercentage;
+    }
+
     // Base abstract implementation of NewTabPageDelegate for phone/table toolbar layout.
     private abstract class ToolbarNtpDelegate implements NewTabPageDelegate {
         protected NewTabPage mVisibleNtp;
@@ -1697,11 +1704,17 @@ public class ToolbarManager
         @Override
         public void setSearchBoxScrollListener(Callback<Float> scrollCallback) {
             NewTabPage newVisibleNtp = getNewTabPageForCurrentTab();
-            if (mVisibleNtp != null) mVisibleNtp.setSearchBoxScrollListener(null);
+            if (mVisibleNtp != null) {
+                mVisibleNtp.setSearchBoxScrollListener(null);
+                mNtpSearchBoxScrollPercentage = 0f;
+            }
             mVisibleNtp = newVisibleNtp;
             if (mVisibleNtp != null && shouldUpdateListener()) {
                 mVisibleNtp.setSearchBoxScrollListener(
-                        (fraction) -> scrollCallback.onResult(fraction));
+                        (fraction) -> {
+                            mNtpSearchBoxScrollPercentage = fraction;
+                            scrollCallback.onResult(fraction);
+                        });
             }
         }
 
