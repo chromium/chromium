@@ -107,11 +107,14 @@
   </message>
 
   <!-- Save/Update prompt -->
-  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_DIALOG_NO_THANKS_BUTTON" desc="Text displayed on the decline/cancel button of the save dialog.">
+  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_DIALOG_NO_THANKS_BUTTON" desc="Text displayed on the decline/cancel button of the save/update dialog.">
     No thanks
   </message>
   <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_DIALOG_SAVE_BUTTON" desc="Text displayed on the accept/save button of the save dialog.">
     Save
+  </message>
+  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_UPDATE_DIALOG_UPDATE_BUTTON" desc="Text displayed on the accept/save button of the update dialog.">
+    Update
   </message>
   <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_DIALOG_FOOTER_DETAILS" desc="Text displayed on the footer of the save dialog giving users details about how Autofill with AI data is saved.">
     Saved info and the page from <ph name="WEBSITE">$1<ex>airline.com</ex></ph> are sent to Google and may be seen by human reviewers to improve this feature.
