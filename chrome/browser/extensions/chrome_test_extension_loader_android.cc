@@ -14,41 +14,26 @@
 
 namespace extensions {
 
-scoped_refptr<const Extension> ChromeTestExtensionLoader::LoadExtension(
-    const base::FilePath& path) {
-  // Clean up the kMetadataFolder if necessary.
-  file_util::MaybeCleanupMetadataFolder(path);
-
-  scoped_refptr<const Extension> extension = LoadExtensionFromDirectory(path);
-  if (!extension) {
-    return nullptr;
-  }
-
-  extension_id_ = extension->id();
-
-  extension = extension_registry_->enabled_extensions().GetByID(extension_id_);
-  if (!extension) {
-    return nullptr;
-  }
-  if (!VerifyPermissions(extension.get())) {
-    ADD_FAILURE() << "The extension did not get the requested permissions.";
-    return nullptr;
-  }
-  if (!CheckInstallWarnings(*extension)) {
-    return nullptr;
-  }
-
-  if (!WaitForExtensionReady(*extension)) {
-    ADD_FAILURE() << "Failed to wait for extension ready";
-    return nullptr;
-  }
-  return extension;
+base::FilePath ChromeTestExtensionLoader::PackExtension(
+    const base::FilePath& unpacked_path) {
+  NOTIMPLEMENTED()
+      << "Packing extensions is not yet supported on desktop android.";
+  return base::FilePath();
 }
 
-scoped_refptr<const Extension>
-ChromeTestExtensionLoader::LoadExtensionFromDirectory(
+scoped_refptr<const Extension> ChromeTestExtensionLoader::LoadCrx(
+    const base::FilePath& file_path) {
+  NOTIMPLEMENTED()
+      << "Loading packed extensions is not yet supported on desktop android.";
+  return nullptr;
+}
+
+scoped_refptr<const Extension> ChromeTestExtensionLoader::LoadUnpacked(
     const base::FilePath& file_path) {
   base::ScopedAllowBlockingForTesting allow_blocking;
+
+  // Clean up the kMetadataFolder if necessary.
+  file_util::MaybeCleanupMetadataFolder(file_path);
 
   std::string load_error;
   scoped_refptr<Extension> extension = file_util::LoadExtension(

@@ -102,7 +102,6 @@ class ChromeTestExtensionLoader {
   void set_pem_path(const base::FilePath& pem_path) { pem_path_ = pem_path; }
 
  private:
-#if !BUILDFLAG(IS_ANDROID)
   // Packs the extension at |unpacked_path| and returns the path to the created
   // crx. Note that the created crx is tied to the lifetime of |this|.
   base::FilePath PackExtension(const base::FilePath& unpacked_path);
@@ -113,14 +112,6 @@ class ChromeTestExtensionLoader {
   // Loads the unpacked extension pointed to by |unpacked_path|.
   scoped_refptr<const Extension> LoadUnpacked(
       const base::FilePath& unpacked_path);
-#else
-  // Attempts to parse and load an extension from the given `file_path` and add
-  // it to the extensions system (which will also activate the extension).
-  // Returns the extension on success; on failure, returns null and adds a test
-  // failure.
-  scoped_refptr<const Extension> LoadExtensionFromDirectory(
-      const base::FilePath& file_path);
-#endif
 
   // Adjusts any state necessary for packed extensions before proceeding.
   void AdjustPackedExtension(const Extension& extension);

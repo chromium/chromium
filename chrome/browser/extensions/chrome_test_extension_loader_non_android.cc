@@ -92,65 +92,6 @@ void ChromeTestExtensionLoader::LoadUnpackedExtensionAsync(
                                        std::move(callback));
 }
 
-scoped_refptr<const Extension> ChromeTestExtensionLoader::LoadExtension(
-    const base::FilePath& path) {
-  scoped_refptr<const Extension> extension;
-  bool is_unpacked = false;
-  if (path.MatchesExtension(FILE_PATH_LITERAL(".crx"))) {
-    extension = LoadCrx(path);
-  } else if (pack_extension_) {
-    base::FilePath crx_path = PackExtension(path);
-    if (crx_path.empty()) {
-      return nullptr;
-    }
-    extension = LoadCrx(crx_path);
-  } else {
-    is_unpacked = true;
-    extension = LoadUnpacked(path);
-  }
-
-  if (should_fail_ && extension) {
-    ADD_FAILURE() << "Expected extension load failure, but succeeded";
-  } else if (!should_fail_ && !extension) {
-    ADD_FAILURE() << "Failed to load extension";
-  }
-
-  if (!extension) {
-    return nullptr;
-  }
-
-  extension_id_ = extension->id();
-
-  // Permissions and the install param are handled by the unpacked installer
-  // before the extension is installed.
-  // TODO(crbug.com/40160904): Fix CrxInstaller to enable this for
-  // packed extensions.
-  if (!is_unpacked) {
-    AdjustPackedExtension(*extension);
-    // Make `extension` null since it may have been reloaded invalidating
-    // pointers to it.
-    extension = nullptr;
-  }
-
-  extension = extension_registry_->enabled_extensions().GetByID(extension_id_);
-  if (!extension) {
-    return nullptr;
-  }
-  if (!VerifyPermissions(extension.get())) {
-    ADD_FAILURE() << "The extension did not get the requested permissions.";
-    return nullptr;
-  }
-  if (!CheckInstallWarnings(*extension)) {
-    return nullptr;
-  }
-
-  if (!WaitForExtensionReady(*extension)) {
-    ADD_FAILURE() << "Failed to wait for extension ready";
-    return nullptr;
-  }
-  return extension;
-}
-
 base::FilePath ChromeTestExtensionLoader::PackExtension(
     const base::FilePath& unpacked_path) {
   base::ScopedAllowBlockingForTesting allow_blocking;
