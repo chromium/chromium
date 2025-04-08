@@ -533,7 +533,13 @@ SkColor GetBgColorFromStyleContext(GtkCssContext context) {
 }
 
 SkColor GetFgColor(const std::string& css_selector) {
-  return GtkStyleContextGetColor(GetStyleContextFromCss(css_selector));
+  auto context = GetStyleContextFromCss(css_selector);
+  auto fg = GtkStyleContextGetColor(context);
+  if (SkColorGetA(fg) == SK_AlphaOPAQUE) {
+    return fg;
+  }
+  return color_utils::GetResultingPaintColor(
+      fg, GetBgColorFromStyleContext(context));
 }
 
 ScopedCssProvider GetCssProvider(const std::string& css) {
@@ -577,7 +583,12 @@ SkColor GetBorderColor(const std::string& css_selector) {
   gfx::Size size(24, 24);
   CairoSurface surface(size);
   gtk_render_frame(context, surface.cairo(), 0, 0, size.width(), size.height());
-  return surface.GetAveragePixelValue(true);
+  auto border = surface.GetAveragePixelValue(true);
+  if (SkColorGetA(border) == SK_AlphaOPAQUE) {
+    return border;
+  }
+  return color_utils::GetResultingPaintColor(
+      border, GetBgColorFromStyleContext(context));
 }
 
 bool ContextHasClass(GtkCssContext context, const std::string& style_class) {

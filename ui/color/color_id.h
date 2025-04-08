@@ -626,7 +626,7 @@
   E_CPONLY(kColorCrosSysInputFieldOnBase)
 #elif BUILDFLAG(IS_LINUX)
 #define PLATFORM_SPECIFIC_COLOR_IDS \
-  E_CPONLY(kColorNativeButtonBorder)\
+  E_CPONLY(kColorNativeBoxFrameBorder)\
   E_CPONLY(kColorNativeHeaderButtonBorderActive) \
   E_CPONLY(kColorNativeHeaderButtonBorderInactive) \
   E_CPONLY(kColorNativeHeaderSeparatorBorderActive) \

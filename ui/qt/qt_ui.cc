@@ -537,7 +537,7 @@ void QtUi::AddNativeColorMixer(ui::ColorProvider* provider,
       {ui::kColorTextSelectionForeground, ColorType::kHighlightFg},
 
       // Platform-specific UI elements
-      {ui::kColorNativeButtonBorder, ColorType::kMidground},
+      {ui::kColorNativeBoxFrameBorder, ColorType::kMidground},
       {ui::kColorNativeHeaderButtonBorderActive, ColorType::kMidground},
       {ui::kColorNativeHeaderButtonBorderInactive, ColorType::kMidground,
        ColorState::kInactive},

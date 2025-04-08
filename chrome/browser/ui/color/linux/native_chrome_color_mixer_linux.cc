@@ -86,7 +86,7 @@ void AddNativeChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorNewTabButtonBackgroundFrameActive] = {SK_ColorTRANSPARENT};
   mixer[kColorNewTabButtonBackgroundFrameInactive] = {SK_ColorTRANSPARENT};
   mixer[kColorNewTabPageBackground] = {ui::kColorTextfieldBackground};
-  mixer[kColorNewTabPageHeader] = {ui::kColorNativeButtonBorder};
+  mixer[kColorNewTabPageHeader] = {ui::kColorNativeBoxFrameBorder};
   mixer[kColorNewTabPageLink] = {ui::kColorTextfieldSelectionBackground};
   mixer[kColorNewTabPageText] = {ui::kColorTextfieldForeground};
   mixer[kColorOmniboxText] = {ui::kColorTextfieldForeground};
@@ -103,7 +103,7 @@ void AddNativeChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorToolbarButtonIcon] = {kColorToolbarText};
   mixer[kColorToolbarButtonIconHovered] = {kColorToolbarButtonIcon};
   mixer[kColorToolbarContentAreaSeparator] = {kColorToolbarSeparator};
-  mixer[kColorToolbarSeparator] = {ui::kColorNativeButtonBorder};
+  mixer[kColorToolbarSeparator] = {ui::kColorNativeBoxFrameBorder};
   mixer[kColorToolbarText] = {ui::kColorNativeLabelForeground};
   mixer[kColorToolbarTextDisabled] =
       ui::SetAlpha(kColorToolbarText, gfx::kDisabledControlAlpha);
