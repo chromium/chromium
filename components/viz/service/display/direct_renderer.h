@@ -364,11 +364,6 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   // Whether partial swap can be used.
   bool use_partial_swap_ = false;
 
-  // Whether render pass drawn rect functionality can be used. This means we
-  // will be tracking the drawn area of a render pass to determine what needs to
-  // be redrawn every frame.
-  bool use_render_pass_drawn_rect_ = false;
-
   // A map from RenderPass id to the single quad present in and replacing the
   // RenderPass. The DrawQuads are owned by their RenderPasses, which outlive
   // the drawn frame, so it is safe to store these pointers until the end of

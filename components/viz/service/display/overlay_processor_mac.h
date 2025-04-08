@@ -38,7 +38,6 @@ class VIZ_SERVICE_EXPORT OverlayProcessorMac
   bool DisableSplittingQuads() const override;
 
   bool IsOverlaySupported() const override;
-  gfx::Rect GetPreviousFrameOverlaysBoundingRect() const override;
   gfx::Rect GetAndResetOverlayDamage() override;
 
   // Returns true if the platform supports hw overlays and surface occluding
@@ -74,7 +73,6 @@ class VIZ_SERVICE_EXPORT OverlayProcessorMac
   // The damage that should be added the next frame for drawing to the output
   // surface.
   gfx::Rect ca_overlay_damage_rect_;
-  gfx::Rect previous_frame_full_bounding_rect_;
 
  protected:
   // Protected for testing.

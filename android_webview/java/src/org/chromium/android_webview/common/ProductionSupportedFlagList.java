@@ -921,9 +921,6 @@ public final class ProductionSupportedFlagList {
                     + " is enabled, the response headers passed to the app remain unchanged. Also,"
                     + " the set-cookie header has no effect on the cookie jar."),
         Flag.baseFeature(
-                VizFeatures.RENDER_PASS_DRAWN_RECT,
-                "Enable optimization for tracking damage in a drawn rect for each render pass."),
-        Flag.baseFeature(
                 AwFeatures.WEBVIEW_HYPERLINK_CONTEXT_MENU,
                 "Enables hyperlink context menu in WebView"),
         Flag.baseFeature("MojoUseBinder"),

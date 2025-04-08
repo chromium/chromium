@@ -148,16 +148,6 @@ bool OverlayProcessorWin::IsOverlaySupported() const {
   return true;
 }
 
-gfx::Rect OverlayProcessorWin::GetPreviousFrameOverlaysBoundingRect() const {
-  if (features::IsDelegatedCompositingEnabled()) {
-    return previous_frame_overlay_rect_;
-  }
-
-  // TODO(dcastagna): Implement me.
-  NOTIMPLEMENTED();
-  return gfx::Rect();
-}
-
 gfx::Rect OverlayProcessorWin::GetAndResetOverlayDamage() {
   return std::exchange(overlay_damage_rect_, gfx::Rect());
 }

@@ -9257,11 +9257,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kDelegatedCompositing)},
 #endif
 
-    {"enable-render-pass-drawn-rect",
-     flag_descriptions::kEnableRenderPassDrawnRectName,
-     flag_descriptions::kEnableRenderPassDrawnRectDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kRenderPassDrawnRect)},
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_CHROMEOS)
     {"media-session-enter-picture-in-picture",

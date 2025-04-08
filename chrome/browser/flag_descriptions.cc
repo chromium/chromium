@@ -1265,12 +1265,6 @@ const char kEnableDelegatedCompositingDescription[] =
     "When enabled and applicable, the act of compositing is delegated to the "
     "system compositor.";
 
-const char kEnableRenderPassDrawnRectName[] =
-    "Enable drawn rect for render passes";
-const char kEnableRenderPassDrawnRectDescription[] =
-    "When enabled and applicable, render passes will track drawn area in a "
-    "rect to allow for finer grain damage.";
-
 #if BUILDFLAG(IS_ANDROID)
 const char kEnablePixPaymentsName[] = "Enable Pix payments";
 const char kEnablePixPaymentsDescription[] =

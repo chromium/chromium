@@ -101,9 +101,7 @@ DirectRenderer::DirectRenderer(const RendererSettings* settings,
       resource_provider_(resource_provider),
       overlay_processor_(overlay_processor),
       allow_undamaged_nonroot_render_pass_to_skip_(base::FeatureList::IsEnabled(
-          features::kAllowUndamagedNonrootRenderPassToSkip)),
-      use_render_pass_drawn_rect_(
-          base::FeatureList::IsEnabled(features::kRenderPassDrawnRect)) {
+          features::kAllowUndamagedNonrootRenderPassToSkip)) {
   DCHECK(output_surface_);
 }
 
@@ -472,16 +470,7 @@ gfx::Rect DirectRenderer::GetCurrentFramebufferDamage() const {
 }
 
 gfx::Rect DirectRenderer::GetTargetDamageBoundingRect() const {
-  if (use_render_pass_drawn_rect_) {
     return gfx::Rect();
-  }
-
-  gfx::Rect bounding_rect = GetCurrentFramebufferDamage();
-  if (overlay_processor_) {
-    bounding_rect.Union(
-        overlay_processor_->GetPreviousFrameOverlaysBoundingRect());
-  }
-  return bounding_rect;
 }
 
 gfx::Rect DirectRenderer::DeviceViewportRectInDrawSpace() const {
@@ -687,12 +676,6 @@ void DirectRenderer::AddInkDamageToRenderPass(
       gfx::Transform root_target_to_render_pass_draw_transform;
       if (render_pass->transform_to_root_target.GetInverse(
               &root_target_to_render_pass_draw_transform)) {
-        // Since we're potentially expanding damage, we need
-        // |use_render_pass_drawn_rect_| to ensure that dependant render
-        // passes always have valid pixels.
-        DCHECK((render_pass == current_frame()->root_render_pass) ||
-               use_render_pass_drawn_rect_);
-
         const gfx::Rect delegated_ink_damage_rect =
             ink_renderer->GetDamageRect();
         // Damage rect is initially in root space. Transform to render pass
@@ -827,7 +810,7 @@ void DirectRenderer::DrawRenderPass(const AggregatedRenderPass* render_pass) {
                 render_pass_is_clipped);
   FinishDrawingRenderPass();
 
-  if (use_render_pass_drawn_rect_ && !is_root_render_pass) {
+  if (!is_root_render_pass) {
     const gfx::Rect drawn_rect = GetRenderPassBackingDrawnRect(render_pass->id);
     constexpr char kDrawnRectAssignmentType[] =
         "Compositing.DirectRenderer.DrawnRectAssignmentType";
@@ -1069,53 +1052,24 @@ gfx::Rect DirectRenderer::ComputeScissorRectForRenderPass(
   DCHECK(render_pass->copy_requests.empty() ||
          (render_pass->damage_rect == render_pass->output_rect));
 
-  if (use_render_pass_drawn_rect_) {
-    if (GetRenderPassBackingDrawnRect(render_pass->id) ==
-        render_pass->output_rect) {
-      UMA_HISTOGRAM_BOOLEAN(
-          "Compositing.DirectRenderer.RenderPassDrawnRectMatch", true);
-      return render_pass->damage_rect;
-    } else {
-      // This is the first time we are drawing to this backing but it might not
-      // be the first time we are drawing this render pass. If the render pass
-      // backing has been deallocated we must conservatively redraw the entire
-      // 'output_rect' as we have lost the accumulated damaged for this pass.
-      // TODO(crbug.com/332562242): We should move to better tracking of
-      // the drawn area by only fully drawing the visible portion of this render
-      // pass and not the entire output rect. This information is available in
-      // surface aggregator as root parent clip for render passes.
-      UMA_HISTOGRAM_BOOLEAN(
-          "Compositing.DirectRenderer.RenderPassDrawnRectMatch", false);
-      return render_pass->output_rect;
-    }
-  }
-  // If the root damage rect has been expanded due to overlays, all the other
-  // damage rect calculations are incorrect. If the root damage rect was shrunk
-  // to an empty rect (i.e. during overlay processing for delegated compositing)
-  // then |Contains()| no longer works as expected so it must be checked
-  // separately.
-  if (!root_damage_rect.IsEmpty() &&
-      !root_render_pass->damage_rect.Contains(root_damage_rect)) {
+  if (GetRenderPassBackingDrawnRect(render_pass->id) ==
+      render_pass->output_rect) {
+    UMA_HISTOGRAM_BOOLEAN("Compositing.DirectRenderer.RenderPassDrawnRectMatch",
+                          true);
+    return render_pass->damage_rect;
+  } else {
+    // This is the first time we are drawing to this backing but it might not
+    // be the first time we are drawing this render pass. If the render pass
+    // backing has been deallocated we must conservatively redraw the entire
+    // 'output_rect' as we have lost the accumulated damaged for this pass.
+    // TODO(crbug.com/332562242): We should move to better tracking of
+    // the drawn area by only fully drawing the visible portion of this render
+    // pass and not the entire output rect. This information is available in
+    // surface aggregator as root parent clip for render passes.
+    UMA_HISTOGRAM_BOOLEAN("Compositing.DirectRenderer.RenderPassDrawnRectMatch",
+                          false);
     return render_pass->output_rect;
   }
-
-  // For the non-root render pass.
-  // This is a repeated computation of target damage to render pass damage that
-  // already occurs in surface aggregator.
-  gfx::Rect damage_rect = render_pass->damage_rect;
-  if (!frame_buffer_damage.IsEmpty()) {
-    gfx::Transform inverse_transform;
-    if (render_pass->transform_to_root_target.GetInverse(&inverse_transform)) {
-      // |frame_buffer_damage| is in the root target space. Transform the damage
-      // from the root to the non-root space before it's added.
-      gfx::Rect frame_buffer_damage_in_render_pass_space =
-          cc::MathUtil::MapEnclosingClippedRect(inverse_transform,
-                                                frame_buffer_damage);
-      damage_rect.Union(frame_buffer_damage_in_render_pass_space);
-    }
-  }
-
-  return damage_rect;
 }
 
 gfx::Size DirectRenderer::CalculateTextureSizeForRenderPass(

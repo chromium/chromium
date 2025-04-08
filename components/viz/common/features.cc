@@ -153,12 +153,6 @@ BASE_FEATURE(kRemoveRedirectionBitmap,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-// Feature finched to stable 50% and launched.
-// See crbug.com/350764043
-BASE_FEATURE(kRenderPassDrawnRect,
-             "RenderPassDrawnRect",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_ANDROID)
 // When wide color gamut content from the web is encountered, promote our
 // display to wide color gamut if supported.

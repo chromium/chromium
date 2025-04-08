@@ -6554,7 +6554,6 @@ class DelegatedInkTest : public VizPixelTestWithParam,
     // delegated ink trail damage rect is wrong, because the whole frame is
     // always redrawn otherwise.
     renderer_settings_.partial_swap_enabled = true;
-    feature_list_.InitAndEnableFeature(features::kRenderPassDrawnRect);
     VizPixelTestWithParam::SetUp();
     EXPECT_TRUE(VizPixelTestWithParam::renderer_->use_partial_swap());
 

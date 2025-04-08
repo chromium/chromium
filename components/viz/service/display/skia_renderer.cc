@@ -974,17 +974,6 @@ SkiaRenderer::SkiaRenderer(const RendererSettings* settings,
       skia_output_surface_(skia_output_surface),
       lock_set_for_external_use_(resource_provider, skia_output_surface_),
       is_using_raw_draw_(features::IsUsingRawDraw()) {
-#if BUILDFLAG(IS_WIN)
-  // |OverlayProcessorWin| can cause a render pass to reallocate during partial
-  // delegation, so we need to ensure the contents of all render passes are
-  // valid if we need to redraw one (that can potentially embed others). This
-  // behavior is not required for full delegation since |OverlayProcessorWin|
-  // does not modify non-root render pass damage in that case.
-  use_render_pass_drawn_rect_ |=
-      features::IsDelegatedCompositingEnabled() &&
-      features::kDelegatedCompositingModeParam.Get() ==
-          features::DelegatedCompositingMode::kLimitToUi;
-#endif
   DCHECK(skia_output_surface_);
 
   // There can be different synchronization types requested for different
