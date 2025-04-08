@@ -921,7 +921,6 @@ void TaskManagerTableModel::OnTaskToBeRemoved(TaskId id) {
 }
 
 void TaskManagerTableModel::OnTasksRefreshed(const TaskIdList& task_ids) {
-  LOG(ERROR) << "kRefreshTimeMS: " << kRefreshTimeMS;
   OnRefresh(task_ids);
 }
 
