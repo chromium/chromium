@@ -2088,24 +2088,7 @@ void HTMLCanvasElement::ReplaceExistingResourceProviderFor2DContext() {
     return;
   }
 
-  if (image) {
-    auto paint_image = image->PaintImageForCurrentFrame();
-    if ((GetRasterMode() == RasterMode::kCPU) &&
-        paint_image.IsTextureBacked()) {
-      // If the new provider is unaccelerated we must read back |paint_image|
-      // here. DrawFullImage will record the image and potentially raster on a
-      // worker thread, but texture backed PaintImages can't be used on a
-      // different thread.
-      auto sk_image = paint_image.GetSwSkImage();
-      auto content_id = paint_image.GetContentIdForFrame(0);
-      auto builder =
-          cc::PaintImageBuilder::WithProperties(std::move(paint_image))
-              .set_image(sk_image, content_id);
-      paint_image = builder.TakePaintImage();
-    }
-    new_provider->RestoreBackBuffer(paint_image);
-  }
-
+  new_provider->RestoreBackBuffer(image->PaintImageForCurrentFrame());
   new_provider->SetRecorder(std::move(recorder));
 
   UpdateMemoryUsage();
