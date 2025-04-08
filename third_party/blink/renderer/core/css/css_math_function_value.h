@@ -76,7 +76,6 @@ class CORE_EXPORT CSSMathFunctionValue : public CSSPrimitiveValue {
   // between px and em). Otherwise, it hits a DCHECK.
   double DoubleValue() const;
 
-  double ComputeSeconds() const;
   double ComputeSeconds(const CSSLengthResolver&) const;
   double ComputeDegrees() const;
   double ComputeDegrees(const CSSLengthResolver&) const;

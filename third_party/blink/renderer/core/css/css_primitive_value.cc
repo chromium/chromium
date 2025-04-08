@@ -279,13 +279,6 @@ CSSPrimitiveValue* CSSPrimitiveValue::CreateFromLength(const Length& length,
 
 // TODO(crbug.com/1133390): When we support <frequency>, we must clamp like
 // <time>.
-double CSSPrimitiveValue::ComputeSeconds() const {
-  double result = IsCalculated()
-                      ? To<CSSMathFunctionValue>(this)->ComputeSeconds()
-                      : To<CSSNumericLiteralValue>(this)->ComputeSeconds();
-  return CSSValueClampingUtils::ClampTime(result);
-}
-
 double CSSPrimitiveValue::ComputeDegrees() const {
   double result = IsCalculated()
                       ? To<CSSMathFunctionValue>(this)->ComputeDegrees()

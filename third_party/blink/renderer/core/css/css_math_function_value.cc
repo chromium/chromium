@@ -70,11 +70,6 @@ double CSSMathFunctionValue::DoubleValue() const {
   return ClampToPermittedRange(expression_->DoubleValue());
 }
 
-double CSSMathFunctionValue::ComputeSeconds() const {
-  DCHECK_EQ(kCalcTime, expression_->Category());
-  return ClampToPermittedRange(*expression_->ComputeValueInCanonicalUnit());
-}
-
 double CSSMathFunctionValue::ComputeDegrees() const {
   DCHECK_EQ(kCalcAngle, expression_->Category());
   return ClampToPermittedRange(*expression_->ComputeValueInCanonicalUnit());

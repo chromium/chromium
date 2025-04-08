@@ -378,7 +378,6 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
   static CSSPrimitiveValue* CreateFromLength(const Length& value, float zoom);
 
   double ComputeDegrees() const;
-  double ComputeSeconds() const;
   double ComputeDotsPerPixel() const;
 
   double ComputeDegrees(const CSSLengthResolver&) const;

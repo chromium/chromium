@@ -103,7 +103,8 @@ TEST_F(CSSPrimitiveValueTest, IsTimeCalc) {
 TEST_F(CSSPrimitiveValueTest, ClampTimeToNonNegative) {
   UnitValue a = {4926, UnitType::kMilliseconds};
   UnitValue b = {5, UnitType::kSeconds};
-  EXPECT_EQ(0.0, CreateNonNegativeSubtraction(a, b)->ComputeSeconds());
+  EXPECT_EQ(0.0, CreateNonNegativeSubtraction(a, b)->ComputeSeconds(
+                     CSSToLengthConversionData(/*element=*/nullptr)));
 }
 
 TEST_F(CSSPrimitiveValueTest, ClampAngleToNonNegative) {

@@ -3540,7 +3540,8 @@ ColorSchemeFlags StyleBuilderConverter::ExtractColorSchemes(
 
 double StyleBuilderConverter::ConvertTimeValue(const StyleResolverState& state,
                                                const CSSValue& value) {
-  return To<CSSPrimitiveValue>(value).ComputeSeconds();
+  return To<CSSPrimitiveValue>(value).ComputeSeconds(
+      state.CssToLengthConversionData());
 }
 
 std::optional<StyleOverflowClipMargin>
