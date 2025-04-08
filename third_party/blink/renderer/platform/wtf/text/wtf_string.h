@@ -186,6 +186,15 @@ class WTF_EXPORT String {
       Utf8ConversionMode mode = Utf8ConversionMode::kLenient) const {
     return StringView(*this).Utf8(mode);
   }
+  // Returns a std::u16string_view pointing this string.
+  // This should be called only if !Is8Bit().
+  //
+  // This function should be removed after enabling C++23 because
+  // std::u16string_view(Span16()) will work with C++23.
+  std::u16string_view View16() const LIFETIME_BOUND {
+    auto chars = Span16();
+    return std::u16string_view(chars.begin(), chars.end());
+  }
 
   UChar operator[](wtf_size_t index) const {
     if (!impl_ || index >= impl_->length())

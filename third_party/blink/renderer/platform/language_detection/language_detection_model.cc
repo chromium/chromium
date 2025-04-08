@@ -61,8 +61,8 @@ void LanguageDetectionModel::DetectLanguageImpl(
     DetectLanguageCallback on_complete) {
   WTF::String text_16 = text;
   text_16.Ensure16Bit();
-  auto score_by_language = language_detection_model_.PredictWithScan(
-      std::u16string_view(text_16.Characters16(), text_16.length()));
+  auto score_by_language =
+      language_detection_model_.PredictWithScan(text_16.View16());
 
   WTF::Vector<LanguagePrediction> predictions;
   predictions.reserve(static_cast<wtf_size_t>(score_by_language.size()));
