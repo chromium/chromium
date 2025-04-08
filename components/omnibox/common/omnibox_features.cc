@@ -355,7 +355,9 @@ BASE_FEATURE(kUseFusedLocationProvider, "UseFusedLocationProvider", ENABLED);
 BASE_FEATURE(kOmniboxShortcutsAndroid, "OmniboxShortcutsAndroid", ENABLED);
 
 // When enabled, it increases ipad's zps matches limit on web,srp and ntp.
-BASE_FEATURE(kIpadZeroSuggestMatches, "IpadZeroSuggestMatches", DISABLED);
+BASE_FEATURE(kIpadZeroSuggestMatches,
+             "IpadZeroSuggestMatches",
+             enable_if(IS_IOS));
 
 // The features below allow tuning number of suggestions offered to users in
 // specific contexts. These features are default enabled and are used to control

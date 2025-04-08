@@ -3230,34 +3230,22 @@ TEST_F(AutocompleteResultTest, IOS_InspireMe) {
                                TestSchemeClassifier());
   zero_input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
 
-  {
-    SCOPED_TRACE("Trend suggestions are only available on iPhones");
-    base::test::ScopedFeatureList feature_list;
-    AutocompleteResult result;
-    result.MergeSuggestionGroupsMap(suggestion_groups_map);
-    result.AppendMatches(matches);
-    result.SortAndCull(zero_input, &template_url_service(),
-                       triggered_feature_service());
+  base::test::ScopedFeatureList feature_list;
+  AutocompleteResult result;
+  result.MergeSuggestionGroupsMap(suggestion_groups_map);
+  result.AppendMatches(matches);
+  result.SortAndCull(zero_input, &template_url_service(),
+                     triggered_feature_service());
 
-    if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-      // Ipads should keep the default config.
-      const std::array<TestData, 3> expected_data{{
-          {0, 1, 500, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
-          {1, 1, 490, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
-          {2, 1, 480, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
-      }};
-      AssertResultMatches(result, expected_data);
-    } else {
-      const std::array<TestData, 5> expected_data{{
-          {0, 1, 500, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
-          {1, 1, 490, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
-          {2, 1, 480, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
-          {3, 1, 470, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group2},
-          {4, 1, 460, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group2},
-      }};
-      AssertResultMatches(result, expected_data);
-    }
-  }
+  const std::array<TestData, 5> expected_data{{
+      {0, 1, 500, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
+      {1, 1, 490, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
+      {2, 1, 480, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
+      {3, 1, 470, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group2},
+      {4, 1, 460, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group2},
+  }};
+
+  AssertResultMatches(result, expected_data);
 }
 #endif
 

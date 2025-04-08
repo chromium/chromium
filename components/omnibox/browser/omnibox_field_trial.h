@@ -689,12 +689,12 @@ std::vector<std::pair<double, int>> GetPiecewiseMappingBreakPoints(
 constexpr base::FeatureParam<int> kIpadAdditionalTrendingQueries(
     &omnibox::kIpadZeroSuggestMatches,
     "IpadAdditionalTrendingQueries",
-    0);
+    5);
 
 constexpr base::FeatureParam<int> kIpadZPSLimit(
     &omnibox::kIpadZeroSuggestMatches,
     "IpadZPSSuggestionsLimit",
-    10);
+    20);
 
 // <- Ipad suggestions limit
 // ---------------------------------------------------------
