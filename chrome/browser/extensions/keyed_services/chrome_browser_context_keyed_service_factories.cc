@@ -24,6 +24,9 @@
 #include "chrome/browser/extensions/chrome_app_icon_service_factory.h"
 #include "chrome/browser/extensions/chrome_extension_cookies_factory.h"
 #include "chrome/browser/extensions/chrome_extension_system_factory.h"
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/chromeos/extensions/component_extension_content_settings/component_extension_content_settings_allowlist_factory.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/extensions/corrupted_extension_reinstaller_factory.h"
 #include "chrome/browser/extensions/cws_info_service_factory.h"
 #include "chrome/browser/extensions/extension_action_dispatcher.h"
@@ -41,11 +44,11 @@
 #include "chrome/browser/extensions/plugin_manager.h"
 #include "chrome/browser/extensions/warning_badge_service_factory.h"
 #include "ppapi/buildflags/buildflags.h"
-#endif
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/extensions/forced_extensions/assessment_assistant_tracker.h"
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace chrome_extensions {
 
@@ -69,6 +72,9 @@ void EnsureChromeBrowserContextKeyedServiceFactoriesBuilt() {
   extensions::ActivityLog::GetFactoryInstance();
   extensions::ChromeAppIconServiceFactory::GetInstance();
   extensions::ChromeExtensionCookiesFactory::GetInstance();
+#if BUILDFLAG(IS_CHROMEOS)
+  extensions::ComponentExtensionContentSettingsAllowlistFactory::GetInstance();
+#endif  // BUILDFLAG(IS_CHROMEOS)
   extensions::CorruptedExtensionReinstallerFactory::GetInstance();
   extensions::CWSInfoServiceFactory::GetInstance();
   extensions::ExtensionActionDispatcher::GetFactoryInstance();
@@ -83,12 +89,12 @@ void EnsureChromeBrowserContextKeyedServiceFactoriesBuilt() {
   extensions::MenuManagerFactory::GetInstance();
 #if BUILDFLAG(ENABLE_PLUGINS)
   extensions::PluginManager::GetFactoryInstance();
-#endif
+#endif  // BUILDFLAG(ENABLE_PLUGINS)
   extensions::WarningBadgeServiceFactory::GetInstance();
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 #if BUILDFLAG(IS_CHROMEOS)
   extensions::AssessmentAssistantTrackerFactory::GetInstance();
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 }  // namespace chrome_extensions

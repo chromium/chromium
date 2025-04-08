@@ -1117,6 +1117,8 @@ source_set("extensions") {
             [ "//chrome/browser/chromeos/extensions/printing_metrics" ]
       }
 
+      public_deps += [ "//chrome/browser/chromeos/extensions/component_extension_content_settings" ]
+
       deps += [
         "//chrome/browser/chromeos/app_mode",
         "//chrome/browser/chromeos/drivefs",
@@ -1145,6 +1147,7 @@ source_set("extensions") {
         "//chrome/browser/chromeos/app_mode",
         "//chrome/browser/chromeos/drivefs",
         "//chrome/browser/chromeos/extensions/contact_center_insights",
+        "//chrome/browser/chromeos/extensions/component_extension_content_settings",
         "//chrome/browser/chromeos/extensions/desk_api",
         "//chrome/browser/chromeos/extensions/external_loader",
         "//chrome/browser/chromeos/extensions/file_system_provider",
