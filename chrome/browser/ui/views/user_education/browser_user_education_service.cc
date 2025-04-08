@@ -1660,6 +1660,11 @@ void MaybeRegisterChromeNewBadges(user_education::NewBadgeRegistry& registry) {
       user_education::Metadata(136, "agale@chromium.org",
                                "Shown in the glic settings page when the user "
                                "wants to change the keyboard shortcut.")));
+
+  registry.RegisterFeature(user_education::NewBadgeSpecification(
+      features::kGlicAppMenuNewBadge,
+      user_education::Metadata(136, "sophey@chromium.org",
+                               "Shown in the three dot menu.")));
 #endif  // BUILDFLAG(ENABLE_GLIC)
 }
 

@@ -1943,6 +1943,9 @@ void AppMenuModel::Build() {
                                      IDS_GLIC_THREE_DOT_MENU_ITEM,
                                      glic::GlicVectorIconManager::GetVectorIcon(
                                          IDR_GLIC_BUTTON_VECTOR_ICON));
+    SetIsNewFeatureAt(GetIndexOfCommandId(IDC_OPEN_GLIC).value(),
+                      browser()->window()->MaybeShowNewBadgeFor(
+                          features::kGlicAppMenuNewBadge));
   }
 #endif
 
