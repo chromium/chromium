@@ -41,7 +41,7 @@ SegmentedDefaultBrowserExperimentTypeEnabled() {
 }
 
 BASE_FEATURE(kIOSKeyboardAccessoryUpgradeForIPad,
-             "kIOSKeyboardAccessoryUpgradeForIPad",
+             "IOSKeyboardAccessoryUpgradeForIPad",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kIOSKeyboardAccessoryUpgradeShortManualFillMenu,
