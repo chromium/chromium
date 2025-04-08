@@ -12,11 +12,8 @@
 
 #include <utility>
 
-#include "base/debug/crash_logging.h"
-#include "base/json/values_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/values.h"
 #include "components/viz/service/input/render_input_router_delegate_impl.h"
 #include "components/viz/service/input/render_input_router_iterator_impl.h"
 #include "components/viz/service/input/render_input_router_support_child_frame.h"
@@ -72,8 +69,7 @@ FrameSinkMetadata::FrameSinkMetadata(
     std::unique_ptr<RenderInputRouterDelegateImpl> delegate)
     : grouping_id(grouping_id),
       rir_support(std::move(support)),
-      rir_delegate(std::move(delegate)),
-      creation_time(base::TimeTicks::Now()) {}
+      rir_delegate(std::move(delegate)) {}
 
 FrameSinkMetadata::~FrameSinkMetadata() = default;
 
@@ -276,32 +272,6 @@ void InputManager::OnDestroyedCompositorFrameSink(
   }
 }
 
-void InputManager::OnRegisteredFrameSinkHierarchy(
-    const FrameSinkId& parent_frame_sink_id,
-    const FrameSinkId& child_frame_sink_id) {
-  auto it = frame_sink_metadata_map_.find(child_frame_sink_id);
-  if (it == frame_sink_metadata_map_.end()) {
-    return;
-  }
-
-  it->second.operations.emplace_back(
-      FrameSinkMetadata::Operation::Type::kRegisterFrameSinkHierarchy,
-      parent_frame_sink_id, base::TimeTicks::Now() - it->second.creation_time);
-}
-
-void InputManager::OnUnregisteredFrameSinkHierarchy(
-    const FrameSinkId& parent_frame_sink_id,
-    const FrameSinkId& child_frame_sink_id) {
-  auto it = frame_sink_metadata_map_.find(child_frame_sink_id);
-  if (it == frame_sink_metadata_map_.end()) {
-    return;
-  }
-
-  it->second.operations.emplace_back(
-      FrameSinkMetadata::Operation::Type::kUnregisterFrameSinkHierarchy,
-      parent_frame_sink_id, base::TimeTicks::Now() - it->second.creation_time);
-}
-
 void InputManager::OnFrameSinkDeviceScaleFactorChanged(
     const FrameSinkId& frame_sink_id,
     float device_scale_factor) {
@@ -451,42 +421,6 @@ void InputManager::DidOverscroll(const FrameSinkId& frame_sink_id,
       ->StateOnOverscrollTransfer(frame_sink_id, std::move(params));
 }
 
-std::string InputManager::EmitFrameSinkOperations(
-    const FrameSinkId& frame_sink_id) {
-  auto it = frame_sink_metadata_map_.find(frame_sink_id);
-  CHECK(it != frame_sink_metadata_map_.end());
-  const FrameSinkMetadata& metadata = it->second;
-
-  base::Value::Dict frame_sink_operations = base::Value::Dict();
-  frame_sink_operations.Set("id", frame_sink_id.ToString());
-
-  FrameSinkId root_compositor_frame_sink_id =
-      GetRootCompositorFrameSinkId(frame_sink_id);
-  frame_sink_operations.Set("root_id",
-                            root_compositor_frame_sink_id.ToString());
-
-  {
-    base::Value::List operations_list = base::Value::List();
-    for (const auto& operation : metadata.operations) {
-      base::Value::Dict dict = base::Value::Dict();
-      dict.Set("operation_type", static_cast<int>(operation.type));
-      if (operation.parent_frame_sink_id.has_value()) {
-        dict.Set("parent", operation.parent_frame_sink_id->ToString());
-      }
-      dict.Set("timestamp",
-               base::TimeDeltaToValue(operation.time_since_metadata_creation));
-      operations_list.Append(std::move(dict));
-    }
-    frame_sink_operations.Set("operations", std::move(operations_list));
-  }
-
-  std::string debug_string = frame_sink_operations.DebugString();
-  if (debug_string.size() >= 1024) {
-    return "";
-  }
-  return debug_string;
-}
-
 void InputManager::StateOnTouchTransfer(
     input::mojom::TouchTransferStatePtr state) {
 #if BUILDFLAG(IS_ANDROID)
@@ -509,13 +443,7 @@ void InputManager::StateOnTouchTransfer(
       UMA_HISTOGRAM_ENUMERATION(
           kStateProcessingResultHistogram,
           InputOnVizStateProcessingResult::kFrameSinkIdCorrespondsToChildView);
-      {
-        // TODO(404741207): Remove crash keys after investigation.
-        SCOPED_CRASH_KEY_STRING1024(
-            "crbug404741207", "frame_sink_operations",
-            EmitFrameSinkOperations(state->root_widget_frame_sink_id));
-        base::debug::DumpWithoutCrashing();
-      }
+      base::debug::DumpWithoutCrashing();
     }
   } else {
     UMA_HISTOGRAM_ENUMERATION(
@@ -638,9 +566,6 @@ void InputManager::MaybeRecreateRootRenderInputRouterSupports(
         iter->second.rir_support->IsRenderInputRouterSupportChildFrame()) {
       iter->second.rir_support.reset();
       auto* rir = rir_map_.find(frame_sink_id)->second.get();
-      iter->second.operations.emplace_back(
-          FrameSinkMetadata::Operation::Type::kRecreateSupport, std::nullopt,
-          base::TimeTicks::Now() - iter->second.creation_time);
       iter->second.rir_support =
           MakeRenderInputRouterSupport(rir, frame_sink_id);
     }
