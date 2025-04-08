@@ -612,10 +612,8 @@ void BrowsingDataRemoverImpl::RemoveImpl(
       if (web_contents->GetBrowserContext() == browser_context_) {
         web_contents->GetController().GetBackForwardCache().Flush(
             storage_key_filter);
-        // TODO(crbug.com/401116317): Apply storage_key_filter to the prerender
-        // cache.
-        web_contents->GetPrerenderHostRegistry()->CancelAllHosts(
-            PrerenderFinalStatus::kBrowsingDataRemoved);
+        web_contents->GetPrerenderHostRegistry()->CancelHostsByOriginFilter(
+            storage_key_filter, PrerenderFinalStatus::kBrowsingDataRemoved);
         if (base::FeatureList::IsEnabled(
                 features::kPrefetchBrowsingDataRemoval)) {
           PrefetchService* prefetch_service =
