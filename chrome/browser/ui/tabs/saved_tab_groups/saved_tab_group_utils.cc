@@ -177,9 +177,9 @@ void SavedTabGroupUtils::DeleteSavedGroup(const Browser* browser,
             browser->profile());
     auto delegate = std::make_unique<CollaborationControllerDelegateDesktop>(
         const_cast<Browser*>(browser), data_sharing::FlowType::kDelete);
-    collaboration_service->StartShareOrManageFlow(
+    collaboration_service->StartLeaveOrDeleteFlow(
         std::move(delegate), group->saved_guid(),
-        collaboration::CollaborationServiceShareOrManageEntryPoint::kUnknown);
+        collaboration::CollaborationServiceLeaveOrDeleteEntryPoint::kUnknown);
     return;
   }
 
@@ -263,9 +263,9 @@ void SavedTabGroupUtils::LeaveSharedGroup(const Browser* browser,
           browser->profile());
   auto delegate = std::make_unique<CollaborationControllerDelegateDesktop>(
       const_cast<Browser*>(browser), data_sharing::FlowType::kLeave);
-  collaboration_service->StartShareOrManageFlow(
+  collaboration_service->StartLeaveOrDeleteFlow(
       std::move(delegate), saved_group->saved_guid(),
-      collaboration::CollaborationServiceShareOrManageEntryPoint::kUnknown);
+      collaboration::CollaborationServiceLeaveOrDeleteEntryPoint::kUnknown);
 }
 
 // static
@@ -340,9 +340,9 @@ void SavedTabGroupUtils::MaybeShowSavedTabGroupDeletionDialog(
             browser->profile());
     auto delegate = std::make_unique<CollaborationControllerDelegateDesktop>(
         const_cast<Browser*>(browser), data_sharing::FlowType::kClose);
-    collaboration_service->StartShareOrManageFlow(
+    collaboration_service->StartLeaveOrDeleteFlow(
         std::move(delegate), saved_group.saved_guid(),
-        collaboration::CollaborationServiceShareOrManageEntryPoint::kUnknown);
+        collaboration::CollaborationServiceLeaveOrDeleteEntryPoint::kUnknown);
     return;
   }
 

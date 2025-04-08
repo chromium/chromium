@@ -240,13 +240,13 @@ void CollaborationControllerDelegateDesktop::ShowManageDialog(
 void CollaborationControllerDelegateDesktop::ShowLeaveDialog(
     const tab_groups::EitherGroupID& either_id,
     ResultCallback result) {
-  std::move(result).Run(CollaborationControllerDelegate::Outcome::kFailure);
+  ShowManageDialog(either_id, std::move(result));
 }
 
 void CollaborationControllerDelegateDesktop::ShowDeleteDialog(
     const tab_groups::EitherGroupID& either_id,
     ResultCallback result) {
-  std::move(result).Run(CollaborationControllerDelegate::Outcome::kFailure);
+  ShowManageDialog(either_id, std::move(result));
 }
 
 void CollaborationControllerDelegateDesktop::PromoteTabGroup(
@@ -335,7 +335,7 @@ void CollaborationControllerDelegateDesktop::OnManageDialogClosing(
     std::move(result).Run(
         CollaborationControllerDelegate::Outcome::kGroupLeftOrDeleted);
   } else {
-    std::move(result).Run(CollaborationControllerDelegate::Outcome::kSuccess);
+    std::move(result).Run(CollaborationControllerDelegate::Outcome::kCancel);
   }
 }
 

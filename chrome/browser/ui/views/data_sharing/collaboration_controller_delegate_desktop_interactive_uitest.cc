@@ -215,7 +215,7 @@ IN_PROC_BROWSER_TEST_F(CollaborationControllerDelegateDesktopInteractiveUITest,
       collaboration::CollaborationControllerDelegate::ResultCallback>
       callback;
   RunTestSequence(Do([&]() {
-                    delegate.ShowManageDialog(group->saved_guid(),
+                    delegate.ShowDeleteDialog(group->saved_guid(),
                                               callback.Get());
                   }),
                   WaitForShow(kDataSharingBubbleElementId));
