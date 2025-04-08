@@ -236,8 +236,25 @@ void GlicStatusIcon::UpdateHotkey(const ui::Accelerator& hotkey) {
 void GlicStatusIcon::UpdateVisibilityOfExitInContextMenu() {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
   if (context_menu_) {
+    const bool is_visible = BrowserList::GetInstance()->empty();
+    const std::optional<size_t> index =
+        context_menu_->GetIndexOfCommandId(IDC_GLIC_STATUS_ICON_MENU_EXIT);
+    CHECK(index.has_value() && index.value() > 0);
+
+    if (is_visible) {
+      if (context_menu_->GetTypeAt(index.value() - 1) !=
+          ui::MenuModel::TYPE_SEPARATOR) {
+        context_menu_->InsertSeparatorAt(index.value(), ui::NORMAL_SEPARATOR);
+      }
+    } else {
+      if (context_menu_->GetTypeAt(index.value() - 1) ==
+          ui::MenuModel::TYPE_SEPARATOR) {
+        context_menu_->RemoveItemAt(index.value() - 1);
+      }
+    }
+
     context_menu_->SetCommandIdVisible(IDC_GLIC_STATUS_ICON_MENU_EXIT,
-                                       BrowserList::GetInstance()->empty());
+                                       is_visible);
   }
 #endif
 }
@@ -267,12 +284,8 @@ std::unique_ptr<StatusIconMenuModel> GlicStatusIcon::CreateStatusIconMenu() {
   menu->AddItem(IDC_GLIC_STATUS_ICON_MENU_SETTINGS,
                 l10n_util::GetStringUTF16(IDS_GLIC_STATUS_ICON_MENU_SETTINGS));
 
-  menu->AddSeparator(ui::NORMAL_SEPARATOR);
-
-  menu->AddItem(
-      IDC_GLIC_STATUS_ICON_MENU_REMOVE_ICON,
-      l10n_util::GetStringUTF16(IDS_GLIC_STATUS_ICON_MENU_REMOVE_ICON));
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+  menu->AddSeparator(ui::NORMAL_SEPARATOR);
   menu->AddItem(IDC_GLIC_STATUS_ICON_MENU_EXIT,
                 l10n_util::GetStringUTF16(IDS_GLIC_STATUS_ICON_MENU_EXIT));
 #endif
