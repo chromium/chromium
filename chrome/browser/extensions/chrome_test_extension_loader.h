@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest.h"
@@ -26,13 +27,18 @@ class BrowserContext;
 
 namespace extensions {
 class ExtensionRegistry;
-class ExtensionService;
 class ExtensionSystem;
+
+#if !BUILDFLAG(IS_ANDROID)
+class ExtensionService;
+#endif
 
 // A test class to help with loading packed or unpacked extensions. Designed to
 // be used by both browser tests and unit tests. Note that this should be used
 // for a single extension, and is designed to be used on the stack (rather than
 // as a test suite member).
+// TODO(crbug.com/409252373): Continue sharing more code between android and
+// non-android versions of this class.
 class ChromeTestExtensionLoader {
  public:
   explicit ChromeTestExtensionLoader(content::BrowserContext* browser_context);
@@ -47,12 +53,14 @@ class ChromeTestExtensionLoader {
   // unpacked extensions.
   scoped_refptr<const Extension> LoadExtension(const base::FilePath& file_path);
 
+#if !BUILDFLAG(IS_ANDROID)
   // A limited asynchronous version of LoadExtension. It only supports unpacked
   // extensions and the callback is run as soon as the OnExtensionLoaded fires.
   // It also does not support any of the custom settings below.
   void LoadUnpackedExtensionAsync(
       const base::FilePath& file_path,
       base::OnceCallback<void(const Extension*)> callback);
+#endif
 
   // Myriad different settings. See the member variable declarations for
   // explanations and defaults.
@@ -97,6 +105,7 @@ class ChromeTestExtensionLoader {
   void set_pem_path(const base::FilePath& pem_path) { pem_path_ = pem_path; }
 
  private:
+#if !BUILDFLAG(IS_ANDROID)
   // Packs the extension at |unpacked_path| and returns the path to the created
   // crx. Note that the created crx is tied to the lifetime of |this|.
   base::FilePath PackExtension(const base::FilePath& unpacked_path);
@@ -111,6 +120,14 @@ class ChromeTestExtensionLoader {
   // Checks that the permissions of the loaded extension are correct
   // and updates them if necessary.
   void CheckPermissions(const Extension* extension);
+#else
+  // Attempts to parse and load an extension from the given `file_path` and add
+  // it to the extensions system (which will also activate the extension).
+  // Returns the extension on success; on failure, returns null and adds a test
+  // failure.
+  scoped_refptr<const Extension> LoadExtensionFromDirectory(
+      const base::FilePath& file_path);
+#endif
 
   // Verifies that the permissions of the loaded extension are correct.
   // Returns false if they are not.
@@ -125,7 +142,9 @@ class ChromeTestExtensionLoader {
   // The associated context and services.
   raw_ptr<content::BrowserContext> browser_context_ = nullptr;
   raw_ptr<ExtensionSystem> extension_system_ = nullptr;
+#if !BUILDFLAG(IS_ANDROID)
   raw_ptr<ExtensionService> extension_service_ = nullptr;
+#endif
   raw_ptr<ExtensionRegistry> extension_registry_ = nullptr;
 
   // A temporary directory for packing extensions.

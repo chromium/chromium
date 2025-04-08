@@ -343,11 +343,6 @@ static_library("test_support") {
   }
 
   if (enable_desktop_android_extensions) {
-    sources += [
-      "../browser/extensions/platform_test_extension_loader.cc",
-      "../browser/extensions/platform_test_extension_loader.h",
-    ]
-
     public_deps += [
       "//extensions/browser:test_support",
       "//extensions/common:test_support",

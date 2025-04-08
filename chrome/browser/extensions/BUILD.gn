@@ -1529,6 +1529,8 @@ static_library("test_support") {
   testonly = true
 
   sources = [
+    "chrome_test_extension_loader.cc",
+    "chrome_test_extension_loader.h",
     "extension_management_test_util.cc",
     "extension_management_test_util.h",
     "mock_extension_special_storage_policy.cc",
@@ -1541,8 +1543,15 @@ static_library("test_support") {
     "//chrome/browser/extensions",
     "//components/crx_file",
     "//components/policy/core/common:test_support",
+    "//extensions:test_support",
     "//testing/gmock",
   ]
+
+  if (is_android) {
+    sources += [ "chrome_test_extension_loader_android.cc" ]
+  } else {
+    sources += [ "chrome_test_extension_loader_non_android.cc" ]
+  }
 
   if (enable_extensions) {
     sources += [
@@ -1552,8 +1561,6 @@ static_library("test_support") {
       "api/passwords_private/test_passwords_private_delegate.h",
       "chrome_extension_test_notification_observer.cc",
       "chrome_extension_test_notification_observer.h",
-      "chrome_test_extension_loader.cc",
-      "chrome_test_extension_loader.h",
       "extension_action_test_util.cc",
       "extension_action_test_util.h",
       "external_testing_loader.cc",
