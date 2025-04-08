@@ -316,33 +316,20 @@ export class ProductSpecificationsElement extends CrLitElement {
         this.callbackRouter_.onProductSpecificationsSetRemoved.addListener(
             (uuid: Uuid) => this.onSetRemoved_(uuid)),
         this.callbackRouter_.onProductSpecificationsSetUpdated.addListener(
-            (set: ProductSpecificationsSet) => this.onSetUpdated_(set)));
+            (set: ProductSpecificationsSet) => this.onSetUpdated_(set)),
+        this.callbackRouter_.onSyncStateChanged.addListener(
+            () => this.updateFeatureState_()));
 
-    // TODO: b/358131415 - use listeners to update. Temporary workaround uses
-    // window focus to update the feature state, to check signin.
-    window.addEventListener('focus', async () => {
+    window.addEventListener('focus', () => {
       this.isWindowFocused_ = true;
 
-      const previousState = this.productSpecificationsFeatureState_;
-      const {state} =
-          await this.shoppingApi_.getProductSpecificationsFeatureState();
-      if (!state || areStatesEqual(previousState, state)) {
-        if (this.pendingSetUpdate_) {
-          this.pendingSetUpdate_();
-          this.pendingSetUpdate_ = null;
-        }
-        return;
+      if (this.pendingSetUpdate_) {
+        this.pendingSetUpdate_();
       }
 
       // If there is a set update, the new set will be fetched when the table
       // is reloaded.
       this.pendingSetUpdate_ = null;
-
-      // States have changed, so we need to reload the table.
-      // Update the featureState after loadTable_(), so that the loading
-      // state will animate first.
-      await this.loadTable_(state);
-      this.productSpecificationsFeatureState_ = state;
     });
 
     window.addEventListener('blur', () => {
@@ -372,15 +359,7 @@ export class ProductSpecificationsElement extends CrLitElement {
       return;
     }
 
-    // TODO(b/358131415): update after we use listener/ observers and no longer
-    // need the featureState
-    const {state} =
-        await this.shoppingApi_.getProductSpecificationsFeatureState();
-    if (!state) {
-      return;
-    }
-    await this.loadTable_(state);
-    this.productSpecificationsFeatureState_ = state;
+    await this.updateFeatureState_();
   }
 
   override disconnectedCallback() {
@@ -429,6 +408,20 @@ export class ProductSpecificationsElement extends CrLitElement {
 
     // TODO(b/346601645): Detect if a set already exists
     await this.createNewSet_(urls);
+  }
+
+  private async updateFeatureState_() {
+    const {state} =
+        await this.shoppingApi_.getProductSpecificationsFeatureState();
+    if (!state) {
+      return;
+    }
+
+    if (!this.productSpecificationsFeatureState_ ||
+        !areStatesEqual(state, this.productSpecificationsFeatureState_)) {
+      await this.loadTable_(state);
+      this.productSpecificationsFeatureState_ = state;
+    }
   }
 
   private computeAppState_() {
