@@ -408,6 +408,10 @@ void BoxFragmentBuilder::MoveChildrenInBlockDirection(LayoutUnit delta) {
   for (auto& child : children_)
     child.offset.block_offset += delta;
 
+  for (auto& child : children_with_size_dependent_propagation_) {
+    child.offset.block_offset += delta;
+  }
+
   for (auto& candidate : oof_positioned_candidates_)
     candidate.static_position.offset.block_offset += delta;
   for (auto& descendant : oof_positioned_fragmentainer_descendants_) {
