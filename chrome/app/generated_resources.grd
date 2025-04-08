@@ -14417,9 +14417,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_SYNC_NEEDS_VERIFICATION_BUBBLE_VIEW_TITLE" desc="Title in the sync error bubble view/notification for the case where sync needs to verify the user.">
         Sync needs to verify it's you
       </message>
-      <message name="IDS_SIGNIN_PAUSED_USER_MENU_VERIFY_MESSAGE" desc="This is the text of a card that means the user needs to sign back in to Chrome in order to continue saving and using data (like passwords or payment methods) in their Google Account. This is an error message that appears when the user's sign-in credential has expired; to fix the issue, the user needs to sign back in. The tone should be straightforward and motivating.">
-        To keep using the passwords and more in your Google Account, verify it's you
-      </message>
       <if expr="use_titlecase">
         <message name="IDS_SYNC_ERROR_USER_MENU_SIGNIN_BUTTON" desc="Button in the header of desktop user menu that prompts the user to sign in again to fix the out-of-date signin info error.">
           Sign In Again

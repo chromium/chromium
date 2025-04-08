@@ -100,23 +100,12 @@ class ProfileMenuView : public ProfileMenuViewBase {
       const ProfileAttributesEntry& entry);
   void BuildIdentityWithCallToAction();
 
-  // TODO(crbug.com/370473765): Delete these functions after
-  // `switches::IsImprovedSigninUIOnDesktopEnabled()` is launched.
-  void BuildIdentity();
-  void BuildAutofillButtons();
-  void BuildSyncInfo();
-
   // Gets the profiles to be displayed in the "Other profiles" section. Does not
   // include the current profile.
-  // When `switches::IsImprovedSigninUIOnDesktopEnabled()` returns true, the
-  // guest profile is never shown in this section. It is shown in the profile
-  // management section instead.
   void GetProfilesForOtherProfilesSection(
-      std::vector<ProfileAttributesEntry*>& available_profiles,
-      bool& show_guest_in_other_profiles_section) const;
+      std::vector<ProfileAttributesEntry*>& available_profiles) const;
   void BuildOtherProfilesSection(
-      const std::vector<ProfileAttributesEntry*>& available_profiles,
-      bool show_guest_in_other_profiles_section);
+      const std::vector<ProfileAttributesEntry*>& available_profiles);
 
   void BuildProfileManagementFeatureButtons();
 

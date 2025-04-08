@@ -177,7 +177,6 @@ aggregate_vector_icons("chrome_vector_icons") {
     "settings_menu.icon",
     "sharing_hub_screenshot.icon",
     "side_panel.icon",
-    "sign_out.icon",
     "smartphone.icon",
     "smartphone_refresh.icon",
     "speaker.icon",
