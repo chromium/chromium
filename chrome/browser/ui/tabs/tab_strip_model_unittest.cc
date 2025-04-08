@@ -1005,6 +1005,40 @@ TEST_F(TabStripModelTest, TestDetachGroupNewSelection) {
   EXPECT_EQ(tabstrip.active_index(), 3);
 }
 
+TEST_F(TabStripModelTest, InsertDetachedGroupSelectionObserver) {
+  TestTabStripModelDelegate delegate;
+  TabStripModel tabstrip(&delegate, profile());
+  MockTabStripModelObserver observer;
+  ASSERT_TRUE(tabstrip.empty());
+
+  tabstrip.AppendWebContents(CreateWebContentsWithID(1), false);
+  tabstrip.AppendWebContents(CreateWebContentsWithID(2), true);
+  tabstrip.AppendWebContents(CreateWebContentsWithID(3), false);
+  tabstrip.AppendWebContents(CreateWebContentsWithID(4), false);
+  tabstrip.AppendWebContents(CreateWebContentsWithID(5), false);
+  tabstrip.AppendWebContents(CreateWebContentsWithID(6), false);
+  tabstrip.AddObserver(&observer);
+
+  tab_groups::TabGroupId group_id =
+      tabstrip.AddToNewGroup(std::vector<int>{1, 2});
+  tabstrip.ActivateTabAt(1);
+  std::unique_ptr<DetachedTabGroup> detached_group =
+      tabstrip.DetachTabGroupForInsertion(group_id);
+
+  tabs::TabInterface* active_tab = tabstrip.GetActiveTab();
+  observer.ClearStates();
+
+  tabstrip.InsertDetachedTabGroupAt(std::move(detached_group),
+                                    tabstrip.count());
+  ObservedSelectionChange change = observer.GetLatestSelectionChange();
+
+  EXPECT_EQ(active_tab->GetHandle(), change.old_tab);
+  EXPECT_EQ(tabstrip.GetActiveTab()->GetHandle(), change.new_tab);
+  EXPECT_EQ(tabstrip.active_index(), 4);
+
+  tabstrip.CloseAllTabs();
+}
+
 TEST_F(TabStripModelTest, TestBasicOpenerAPI) {
   TestTabStripModelDelegate delegate;
   TabStripModel tabstrip(&delegate, profile());
