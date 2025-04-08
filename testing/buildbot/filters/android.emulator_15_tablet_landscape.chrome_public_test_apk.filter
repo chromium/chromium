@@ -53,3 +53,6 @@
 -org.chromium.chrome.browser.download.DownloadTest.testUrlEscaping
 -org.chromium.chrome.browser.download.DownloadTest.testHttpPostDownload
 -org.chromium.chrome.browser.download.DownloadTest.testHttpGetDownload
+
+# crbug.com/409145689
+-org.chromium.chrome.browser.settings.MainSettingsFragmentTest.testPlusAddressesEnabled
