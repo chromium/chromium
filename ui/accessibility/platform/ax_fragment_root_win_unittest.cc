@@ -8,6 +8,7 @@
 
 #include "base/auto_reset.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/win/scoped_safearray.h"
 #include "base/win/scoped_variant.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -44,6 +45,8 @@ class AXFragmentRootTest : public AXPlatformNodeWinTest {
   ~AXFragmentRootTest() override = default;
   AXFragmentRootTest(const AXFragmentRootTest&) = delete;
   AXFragmentRootTest& operator=(const AXFragmentRootTest&) = delete;
+
+  base::test::ScopedFeatureList scoped_feature_list{features::kUiaProvider};
 };
 
 TEST_F(AXFragmentRootTest, UIAFindItemByPropertyUniqueId) {

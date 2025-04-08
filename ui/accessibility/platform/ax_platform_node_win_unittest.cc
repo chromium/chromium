@@ -23,6 +23,7 @@
 #include "base/strings/string_util_win.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "base/win/atl.h"
@@ -286,7 +287,8 @@ IFACEMETHODIMP MockIRawElementProviderSimple::get_HostRawElementProvider(
 AXPlatformNodeWinTest::AXPlatformNodeWinTest()
     : ax_embedded_object_behavior_(
           AXEmbeddedObjectBehavior::kExposeCharacterForHypertext) {
-  scoped_feature_list_.InitAndEnableFeature(features::kIChromeAccessible);
+  scoped_feature_list_.InitWithFeatures(
+      {features::kIChromeAccessible, features::kUiaProvider}, {});
 }
 
 AXPlatformNodeWinTest::~AXPlatformNodeWinTest() {}
@@ -8190,6 +8192,30 @@ TEST_F(AXPlatformNodeWinTest, DormantLiveGhostDestroyed) {
   // Zero instances and no ghost nodes.
   ASSERT_EQ(AXPlatformNodeWin::GetCountsForTesting(),
             std::tuple(0U, 0U, 0U, 0U));
+}
+
+TEST_F(AXPlatformNodeWinTest,
+       UiaElementNotAvailableWhenActiveUiaProviderDisabled) {
+  TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kUnknown stringAttribute=kRoleDescription,rootRoleDescription
+  )HTML"));
+
+  Init(update);
+
+  ComPtr<IRawElementProviderSimple2> root_node =
+      QueryInterfaceFromNode<IRawElementProviderSimple2>(GetRoot());
+
+  // Initially, the UIA provider is enabled. We're using ShowContextMenu here as
+  // a test action that should always return S_OK if the provider is enabled.
+  ASSERT_HRESULT_SUCCEEDED(root_node->ShowContextMenu());
+
+  // Disable the active UIA provider, while keeping the node alive.
+  AXPlatform::GetInstance().DisableActiveUiaProvider();
+
+  // On the same node, ShowContextMenu should now return
+  // UIA_E_ELEMENTNOTAVAILABLE.
+  HRESULT hr = root_node->ShowContextMenu();
+  EXPECT_EQ(static_cast<HRESULT>(UIA_E_ELEMENTNOTAVAILABLE), hr);
 }
 
 }  // namespace ui

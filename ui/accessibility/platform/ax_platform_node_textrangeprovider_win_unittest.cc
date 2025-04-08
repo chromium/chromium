@@ -12,10 +12,12 @@
 #include <memory>
 #include <utility>
 
+#include "base/test/scoped_feature_list.h"
 #include "base/win/atl.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_safearray.h"
 #include "base/win/scoped_variant.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_selection.h"
 #include "ui/accessibility/platform/ax_fragment_root_win.h"
 #include "ui/accessibility/platform/ax_platform_node_win_unittest.h"
@@ -915,6 +917,8 @@ class AXPlatformNodeTextRangeProviderTest : public AXPlatformNodeWinTest {
     EXPECT_EQ(a->anchor_id(), b->anchor_id());
     EXPECT_EQ(a->text_offset(), b->text_offset());
   }
+
+  base::test::ScopedFeatureList scoped_feature_list_{features::kUiaProvider};
 };
 
 class MockAXPlatformNodeTextRangeProviderWin

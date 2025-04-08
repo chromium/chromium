@@ -8,8 +8,10 @@
 
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_safearray.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/platform/ax_fragment_root_win.h"
 #include "ui/accessibility/platform/ax_platform_node_textrangeprovider_win.h"
@@ -60,6 +62,8 @@ class AXPlatformNodeTextProviderTest : public AXPlatformNodeWinTest {
       const AXPlatformNodeTextRangeProviderWin* text_range) {
     return text_range->end();
   }
+
+  base::test::ScopedFeatureList scoped_feature_list_{features::kUiaProvider};
 };
 
 TEST_F(AXPlatformNodeTextProviderTest, CreateDegenerateRangeFromStart) {

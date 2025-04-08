@@ -24,6 +24,7 @@
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/iaccessible2/ia2_api_all.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
+#include "ui/accessibility/platform/ax_platform.h"
 #include "ui/accessibility/platform/ax_platform_node_base.h"
 #include "ui/accessibility/platform/ax_platform_text_boundary.h"
 #include "ui/accessibility/platform/ichromeaccessible.h"
@@ -337,15 +338,28 @@ enum {
 // signals to the OS that the object is no longer valid and no further methods
 // should be called on it.
 //
-#define UIA_VALIDATE_CALL()               \
-  if (!AXPlatformNodeBase::GetDelegate()) \
-    return UIA_E_ELEMENTNOTAVAILABLE;
-#define UIA_VALIDATE_CALL_1_ARG(arg)      \
-  if (!AXPlatformNodeBase::GetDelegate()) \
-    return UIA_E_ELEMENTNOTAVAILABLE;     \
-  if (!arg)                               \
-    return E_INVALIDARG;                  \
-  *arg = {};
+#define UIA_VALIDATE_CALL()                                  \
+  do {                                                       \
+    if (!AXPlatform::GetInstance().IsUiaProviderEnabled()) { \
+      return UIA_E_ELEMENTNOTAVAILABLE;                      \
+    }                                                        \
+    if (!AXPlatformNodeBase::GetDelegate()) {                \
+      return UIA_E_ELEMENTNOTAVAILABLE;                      \
+    }                                                        \
+  } while(false)
+#define UIA_VALIDATE_CALL_1_ARG(arg)                         \
+  do {                                                       \
+    if (!AXPlatform::GetInstance().IsUiaProviderEnabled()) { \
+      return UIA_E_ELEMENTNOTAVAILABLE;                      \
+    }                                                        \
+    if (!AXPlatformNodeBase::GetDelegate()) {                \
+      return UIA_E_ELEMENTNOTAVAILABLE;                      \
+    }                                                        \
+    if (!arg) {                                              \
+      return E_INVALIDARG;                                   \
+    }                                                        \
+    *arg = {};                                               \
+  } while(false)
 
 // A helper for tracing calls for functions implementing accessibility COM
 // interfaces.
