@@ -427,6 +427,12 @@ BASE_FEATURE(kFedCmAlternativeIdentifiers,
 // it here by default to support use in origin trials and web platform tests.
 BASE_FEATURE(kFedCmAuthz, "FedCmAuthz", base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables RPs to enhance autofill with federated accounts fetched by the FedCM
+// API.
+BASE_FEATURE(kFedCmAutofill,
+             "FedCmAutofill",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables usage of the FedCM ButtonMode feature.
 // Note that actual exposure of the API to web content is controlled by
 // the flag in RuntimeEnabledFeatures on the blink side. See also the use

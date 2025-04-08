@@ -2239,7 +2239,7 @@ void AuthenticationCredentialsContainer::GetForIdentity(
 
   CredentialMediationRequirement mediation_requirement;
   if (options.mediation() == "conditional") {
-    if (RuntimeEnabledFeatures::FedCmDelegationEnabled()) {
+    if (RuntimeEnabledFeatures::FedCmAutofillEnabled()) {
       mediation_requirement = CredentialMediationRequirement::kConditional;
     } else {
       resolver->Reject(MakeGarbageCollected<DOMException>(

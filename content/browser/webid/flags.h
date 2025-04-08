@@ -69,6 +69,9 @@ bool IsFedCmCooldownOnIgnoreEnabled();
 // Whether to support the newer syntax for the "Use Other Account"
 // and account labels features.
 bool IsFedCmUseOtherAccountAndLabelsNewSyntaxEnabled();
+
+// Whether autofill enhancement with FedCM is enabled.
+bool IsFedCmAutofillEnabled();
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_WEBID_FLAGS_H_

@@ -1958,6 +1958,10 @@ const char kFedCmAuthzName[] = "FedCmAuthz";
 const char kFedCmAuthzDescription[] =
     "Enables RPs to request authorization for custom IdP scopes.";
 
+const char kFedCmAutofillName[] = "FedCmAutofill";
+const char kFedCmAutofillDescription[] =
+    "Allows RPs to enhance autofill with FedCM.";
+
 const char kFedCmButtonModeName[] = "FedCmButtonMode";
 const char kFedCmButtonModeDescription[] =
     "Enables RPs specify whether they want to trigger the FedCM widget flow or "

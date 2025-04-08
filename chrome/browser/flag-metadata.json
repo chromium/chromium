@@ -4669,6 +4669,11 @@
     "expiry_milestone": 137
   },
   {
+    "name": "fedcm-autofill",
+    "owners": [ "yigu@chromium.org", "web-identity-eng@google.com"],
+    "expiry_milestone": 140
+  },
+  {
     "name": "fedcm-button-mode",
     "owners": [ "yigu@chromium.org", "web-identity-eng@google.com"],
     "expiry_milestone": 137

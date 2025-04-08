@@ -8731,6 +8731,7 @@ from previous Chrome versions.
   <int value="-2127319228" label="enable-media-internals:disabled"/>
   <int value="-2126697213" label="EnablePalmSuppression:disabled"/>
   <int value="-2126275491" label="WebViewAppsPackageNamesAllowlist:disabled"/>
+  <int value="-2125435842" label="FedCmAutofill:disabled"/>
   <int value="-2124839789"
       label="OmniboxUIExperimentHideSteadyStateUrlSchemeAndSubdomains:enabled"/>
   <int value="-2124685253" label="USBGuard:enabled"/>
@@ -17590,6 +17591,7 @@ from previous Chrome versions.
   <int value="1289647989" label="PasswordChangeAccountStoreUsers:enabled"/>
   <int value="1289670142" label="ArcAccountRestrictions:disabled"/>
   <int value="1290343279" label="SafetyCheckNotificationPermissions:disabled"/>
+  <int value="1290434276" label="FedCmAutofill:enabled"/>
   <int value="1290904214" label="DiagnosticsAppNavigation:enabled"/>
   <int value="1291257442" label="TabsInCBD:disabled"/>
   <int value="1291453047" label="UseMultiPlaneFormatForSoftwareVideo:enabled"/>

@@ -461,7 +461,7 @@ bool CanBypassPermissionStatusCheck(
   // conditional flow isn't intrusive which was the main reason we added such
   // controls, we can bypass the check for it as well.
   return rp_mode == RpMode::kActive ||
-         (IsFedCmDelegationEnabled() &&
+         (IsFedCmAutofillEnabled() &&
           mediation_requirement == MediationRequirement::kConditional);
 }
 
@@ -672,7 +672,7 @@ void FederatedAuthRequestImpl::RequestToken(
   }
 
   if (requirement == MediationRequirement::kConditional &&
-      !IsFedCmDelegationEnabled()) {
+      !IsFedCmAutofillEnabled()) {
     // The conditional mediation parameter can only be used when delegation
     // is enabled while it is under development.
     //
@@ -682,8 +682,8 @@ void FederatedAuthRequestImpl::RequestToken(
     // TODO(crbug.com/380367784): handle all of the many cases in which a
     // conditional mediation may interact with other features.
     ReportBadMessageAndDeleteThis(
-        "Conditional mediation is not supported when delegation is "
-        "disabled.");
+        "Conditional mediation is not supported when both autofill and "
+        "delegation are disabled.");
     return;
   }
 
@@ -1667,8 +1667,8 @@ void FederatedAuthRequestImpl::OnFetchDataForIdpFailed(
 
 const std::optional<std::vector<IdentityRequestAccountPtr>>
 FederatedAuthRequestImpl::GetAutofillSuggestions() const {
-  // Requires delegation to be enabled.
-  if (!IsFedCmDelegationEnabled()) {
+  // Requires conditional FedCM to be enabled.
+  if (!IsFedCmAutofillEnabled()) {
     return std::nullopt;
   }
 

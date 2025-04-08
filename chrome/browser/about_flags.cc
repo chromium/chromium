@@ -8813,6 +8813,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFedCmAuthzDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kFedCmAuthz)},
 
+    {"fedcm-autofill", flag_descriptions::kFedCmAutofillName,
+     flag_descriptions::kFedCmAutofillDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kFedCmAutofill)},
+
     {"fedcm-button-mode", flag_descriptions::kFedCmButtonModeName,
      flag_descriptions::kFedCmButtonModeDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kFedCmButtonMode)},
