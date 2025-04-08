@@ -87,8 +87,7 @@ unsigned LengthOfGraphemeCluster(const String& string, unsigned offset) {
 
   // The only Latin-1 Extended Grapheme Cluster is CRLF.
   if (string.Is8Bit()) {
-    auto* characters = string.Characters8();
-    return 1 + (characters[offset] == '\r' && characters[offset + 1] == '\n');
+    return 1 + (string[offset] == '\r' && string[offset + 1] == '\n');
   }
 
   NonSharedCharacterBreakIterator it(string);
