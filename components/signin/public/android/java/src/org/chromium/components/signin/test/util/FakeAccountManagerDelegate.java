@@ -21,6 +21,8 @@ import org.chromium.components.signin.AuthException;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.base.GaiaId;
+import org.chromium.google_apis.gaia.GoogleServiceAuthError;
+import org.chromium.google_apis.gaia.GoogleServiceAuthErrorState;
 
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -98,8 +100,10 @@ public class FakeAccountManagerDelegate implements AccountManagerDelegate {
         AccountHolder accountHolder = tryGetAccountHolder(account.name);
         if (accountHolder == null) {
             throw new AuthException(
-                    AuthException.NONTRANSIENT,
-                    "Cannot get auth token for unknown account '" + account + "'");
+                    "Error while getting token for scope '" + scope + "'",
+                    new IllegalStateException(
+                            "Cannot get auth token for unknown account '" + account + "'"),
+                    new GoogleServiceAuthError(GoogleServiceAuthErrorState.USER_NOT_SIGNED_UP));
         }
         return accountHolder.getAccessTokenOrGenerateNew(scope);
     }

@@ -447,7 +447,7 @@ void JNI_ProfileOAuth2TokenServiceDelegate_OnOAuth2TokenFetched(
     JNIEnv* env,
     const JavaParamRef<jstring>& authToken,
     const jlong expiration_time_secs,
-    jboolean isTransientError,
+    GoogleServiceAuthError& authError,
     jlong nativeCallback) {
   std::string token;
   if (authToken) {
@@ -455,18 +455,9 @@ void JNI_ProfileOAuth2TokenServiceDelegate_OnOAuth2TokenFetched(
   }
   std::unique_ptr<FetchOAuth2TokenCallback> heap_callback(
       reinterpret_cast<FetchOAuth2TokenCallback*>(nativeCallback));
-  GoogleServiceAuthError err = GoogleServiceAuthError::AuthErrorNone();
-  if (!authToken) {
-    err =
-        isTransientError
-            ? GoogleServiceAuthError(GoogleServiceAuthError::CONNECTION_FAILED)
-            : GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
-                  GoogleServiceAuthError::InvalidGaiaCredentialsReason::
-                      CREDENTIALS_REJECTED_BY_SERVER);
-  }
 
   std::move(*heap_callback)
-      .Run(err, token,
+      .Run(authError, token,
            base::Time::FromSecondsSinceUnixEpoch(expiration_time_secs));
 }
 }  // namespace signin
