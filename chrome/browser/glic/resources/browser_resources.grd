@@ -189,6 +189,9 @@ found in the LICENSE file.
           Feature in your Toolbar
         </message>
       </if>
+      <message name="IDS_SETTINGS_GLIC_OS_WIDGET_TOGGLE_SUBLABEL" translateable="false" desc="Sublabel of the Glic setting for the toggle enabling feature in the menu.">
+        Feature enabled even if browser is minimized
+      </message>
       <message name="IDS_SETTINGS_GLIC_KEYBOARD_SHORTCUT" translateable="false" desc="Name of the Glic setting for the keyboard shortcut.">
         Keyboard shortcut
       </message>
