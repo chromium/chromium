@@ -1344,7 +1344,8 @@ IN_PROC_BROWSER_TEST_F(SettingsSecurityPageTest,
 
 // TODO(crbug/338155508): Enable this flaky test. This is flaky on Linux debug
 // build.
-#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
+// TODO(crbug.com/409069315): Re-enable this test on Mac.
+#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG) || BUILDFLAG(IS_MAC)
 #define MAYBE_SafeBrowsing DISABLED_SafeBrowsing
 #else
 #define MAYBE_SafeBrowsing SafeBrowsing
