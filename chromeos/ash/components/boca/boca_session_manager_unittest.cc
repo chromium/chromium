@@ -204,7 +204,7 @@ class BocaSessionManagerTestBase : public testing::Test {
 
   const base::TimeDelta kDefaultInSessionPollingInterval = base::Seconds(60);
   const base::TimeDelta kDefaultIndefinitePollingInterval = base::Seconds(60);
-  const base::TimeDelta kDefaultStudentHeartbeatInterval = base::Seconds(60);
+  const base::TimeDelta kDefaultStudentHeartbeatInterval = base::Seconds(30);
 
  protected:
   void ToggleOnline() {
@@ -1456,7 +1456,7 @@ TEST_F(BocaSessionManagerTest, StudentHeartbeatNotCalledWithProducer) {
   boca_session_manager()->UpdateCurrentSession(
       std::make_unique<::boca::Session>(session), false);
 
-  task_environment()->FastForwardBy(kDefaultStudentHeartbeatInterval);
+  task_environment()->FastForwardBy(kDefaultInSessionPollingInterval);
 }
 
 TEST_F(BocaSessionManagerTest, InitializerSetSuccess) {
@@ -1758,6 +1758,32 @@ TEST_F(BocaSessionManagerStudentHeartbeatTest,
 
   task_environment()->FastForwardBy(kDefaultStudentHeartbeatInterval * 1 +
                                     base::Seconds(1));
+}
+
+TEST_F(BocaSessionManagerStudentHeartbeatTest,
+       StudentHeartbeatCalledWithRetryBackoff) {
+  ::boca::Session session_1;
+  session_1.set_session_id(kInitialSessionId);
+  session_1.set_session_state(::boca::Session::ACTIVE);
+  session_1.mutable_duration()->set_seconds(kInitialSessionDurationInSecs);
+  session_1.mutable_start_time()->set_seconds(
+      base::Time::Now().InMillisecondsSinceUnixEpoch() / 1000);
+
+  EXPECT_CALL(*session_client_impl(), StudentHeartbeat(_))
+      .Times(3)
+      .WillRepeatedly(testing::InvokeWithoutArgs([&]() {
+        boca_session_manager()->OnStudentHeartbeat(
+            base::unexpected<google_apis::ApiErrorCode>(
+                google_apis::ApiErrorCode::HTTP_INTERNAL_SERVER_ERROR));
+      }));
+
+  boca_session_manager()->UpdateCurrentSession(
+      std::make_unique<::boca::Session>(session_1), /*dispatch_event=*/true);
+
+  task_environment()->FastForwardBy(
+      kDefaultStudentHeartbeatInterval +
+      base::Seconds(30) +        // Initial backoff delay.
+      base::Seconds(30 * 1.2));  // Second backoff delay.
 }
 
 class BocaSessionManagerStudentHeartbeatCustomPollingTest

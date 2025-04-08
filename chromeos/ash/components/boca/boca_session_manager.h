@@ -26,6 +26,7 @@
 #include "google_apis/common/api_error_codes.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/backoff_entry.h"
 
 namespace boca {
 class UserIdentity;
@@ -51,7 +52,7 @@ class BocaSessionManager
   inline static constexpr char kHomePageTitle[] = "School Tools Home page";
   inline static constexpr int kDefaultPollingIntervalInSeconds = 60;
   inline static constexpr int kLocalSessionTrackerBufferInSeconds = 60;
-  inline static constexpr int kDefaultStudentHeartbeatIntervalInSeconds = 60;
+  inline static constexpr int kDefaultStudentHeartbeatIntervalInSeconds = 30;
   inline static constexpr int kSkipPollingBufferInSeconds = 2;
   inline static constexpr char kPollingResultHistName[] =
       "Ash.Boca.PollingResult";
@@ -170,6 +171,8 @@ class BocaSessionManager
   void ParseSessionResponse(bool from_polling,
                             base::expected<std::unique_ptr<::boca::Session>,
                                            google_apis::ApiErrorCode> result);
+  void OnStudentHeartbeat(
+      base::expected<bool, google_apis::ApiErrorCode> result);
 
   virtual void UpdateCurrentSession(std::unique_ptr<::boca::Session> session,
                                     bool dispatch_event);
@@ -236,7 +239,8 @@ class BocaSessionManager
                            std::unique_ptr<::boca::Session> current_session,
                            bool dispatch_event);
   void UpdateLocalSessionDurationTracker();
-  void StartSendingStudentHeartbeatRequests();
+  void StartSendingStudentHeartbeatRequests(
+      base::TimeDelta student_heartbeat_interval);
   void StopSendingStudentHeartbeatRequests();
   void SendStudentHeartbeatRequest();
   void HandleCaptionNotification();
@@ -285,6 +289,7 @@ class BocaSessionManager
   raw_ptr<signin::IdentityManager> identity_manager_;
   bool is_local_caption_enabled_ = false;
   SessionCaptionInitializer session_caption_initializer_;
+  net::BackoffEntry student_heartbeat_retry_backoff_;
   base::OnceCallback<void(bool)> on_app_status_toggled_cb_for_test_;
   base::WeakPtrFactory<BocaSessionManager> weak_factory_{this};
 };

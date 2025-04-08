@@ -34,6 +34,17 @@
 
 namespace ash::boca {
 
+namespace {
+const net::BackoffEntry::Policy kStudentHeartbeatBackoffPolicy = {
+    .num_errors_to_ignore = 0,
+    .initial_delay_ms = base::Seconds(30).InMilliseconds(),
+    .multiply_factor = 1.2,
+    .jitter_factor = 0.2,
+    .maximum_backoff_ms = base::Seconds(90).InMilliseconds(),
+    .entry_lifetime_ms = -1,
+    .always_use_initial_delay = false};
+}  // namespace
+
 BocaSessionManager::BocaSessionManager(SessionClientImpl* session_client_impl,
                                        const PrefService* pref_service,
                                        AccountId account_id,
@@ -41,7 +52,8 @@ BocaSessionManager::BocaSessionManager(SessionClientImpl* session_client_impl,
     : is_producer_(is_producer),
       account_id_(std::move(account_id)),
       pref_service_(pref_service),
-      session_client_impl_(std::move(session_client_impl)) {
+      session_client_impl_(std::move(session_client_impl)),
+      student_heartbeat_retry_backoff_{&kStudentHeartbeatBackoffPolicy} {
   in_session_polling_interval_ =
       features::IsBocaCustomPollingEnabled()
           ? ash::features::kBocaInSessionPeriodicJobIntervalInSeconds.Get()
@@ -457,7 +469,7 @@ void BocaSessionManager::NotifySessionUpdate() {
   }
 
   if (IsSessionActive(current_session_.get())) {
-    StartSendingStudentHeartbeatRequests();
+    StartSendingStudentHeartbeatRequests(student_heartbeat_interval_);
   } else {
     StopSendingStudentHeartbeatRequests();
   }
@@ -640,22 +652,19 @@ void BocaSessionManager::HandleCaptionNotification() {
           .captions_enabled());
 }
 
-void BocaSessionManager::StartSendingStudentHeartbeatRequests() {
+void BocaSessionManager::StartSendingStudentHeartbeatRequests(
+    base::TimeDelta student_heartbeat_interval) {
   if (!features::IsBocaStudentHeartbeatEnabled() || is_producer_ ||
-      student_heartbeat_interval_ == base::Seconds(0)) {
+      student_heartbeat_interval == base::Seconds(0)) {
     return;
   }
-  if (!student_heartbeat_timer_.IsRunning()) {
-    student_heartbeat_timer_.Start(
-        FROM_HERE, student_heartbeat_interval_, this,
-        &BocaSessionManager::SendStudentHeartbeatRequest);
-  }
+  student_heartbeat_timer_.Start(
+      FROM_HERE, student_heartbeat_interval, this,
+      &BocaSessionManager::SendStudentHeartbeatRequest);
 }
 
 void BocaSessionManager::StopSendingStudentHeartbeatRequests() {
-  if (student_heartbeat_timer_.IsRunning()) {
-    student_heartbeat_timer_.Stop();
-  }
+  student_heartbeat_timer_.Stop();
 }
 
 void BocaSessionManager::SendStudentHeartbeatRequest() {
@@ -668,14 +677,28 @@ void BocaSessionManager::SendStudentHeartbeatRequest() {
       session_client_impl_->sender(),
       BocaAppClient::Get()->GetSchoolToolsServerBaseUrl(), session_id, gaia_id,
       device_id, student_group_id,
-      base::BindOnce(
-          [](base::expected<bool, google_apis::ApiErrorCode> result) {
-            if (!result.has_value()) {
-              // TODO: crbug.com/366316261 - Add metrics for update failure.
-              DVLOG(1) << "[Boca]Failed to call student heartbeat.";
-            }
-          }));
+      base::BindOnce(&BocaSessionManager::OnStudentHeartbeat,
+                     weak_factory_.GetWeakPtr()));
   session_client_impl_->StudentHeartbeat(std::move(request));
+}
+
+void BocaSessionManager::OnStudentHeartbeat(
+    base::expected<bool, google_apis::ApiErrorCode> result) {
+  if (!result.has_value()) {
+    // TODO: crbug.com/366316261 - Add metrics for update failure.
+    LOG(WARNING) << "[Boca]Failed to call student heartbeat with error code: ."
+                 << result.error();
+    if ((result.error() >= 500 && result.error() < 600) ||
+        result.error() == 429) {
+      student_heartbeat_retry_backoff_.InformOfRequest(/*succeeded=*/false);
+      // Reset the timer to use the new backoff interval.
+      StartSendingStudentHeartbeatRequests(
+          student_heartbeat_retry_backoff_.GetTimeUntilRelease());
+    }
+    return;
+  }
+  student_heartbeat_retry_backoff_.Reset();
+  StartSendingStudentHeartbeatRequests(student_heartbeat_interval_);
 }
 
 void BocaSessionManager::UpdateNetworkRestriction(
