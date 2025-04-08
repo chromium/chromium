@@ -1315,6 +1315,19 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PageLoad.Clients.GoogleSearch.NavigationTiming.CreateStreamDelay"
+    units="ms" expires_after="2025-10-01">
+  <owner>hayato@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    The time taken for HTTP stream creation to finish, for Google Search page
+    loads. Recorded every time HttpStream::CreateStream() is called, for Google
+    Search page loads. Emitted when the navigation is completed or the app is
+    backgrounded on Android.
+  </summary>
+</histogram>
+
+<histogram
     name="PageLoad.Clients.GoogleSearch.NavigationTiming.InitializeStreamDelay"
     units="ms" expires_after="2025-09-01">
   <owner>hayato@chromium.org</owner>

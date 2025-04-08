@@ -12,6 +12,14 @@ namespace mojo {
 const base::TimeDelta&
 StructTraits<network::mojom::LoadTimingInternalInfoDataView,
              net::LoadTimingInternalInfo>::
+    create_stream_delay(const net::LoadTimingInternalInfo& info) {
+  return info.create_stream_delay;
+}
+
+// static
+const base::TimeDelta&
+StructTraits<network::mojom::LoadTimingInternalInfoDataView,
+             net::LoadTimingInternalInfo>::
     initialize_stream_delay(const net::LoadTimingInternalInfo& info) {
   return info.initialize_stream_delay;
 }

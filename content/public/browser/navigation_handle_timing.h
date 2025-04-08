@@ -142,6 +142,9 @@ struct CONTENT_EXPORT NavigationHandleTiming {
   base::TimeDelta final_request_connect_delay;
   base::TimeDelta final_request_ssl_delay;
 
+  // CreateStream related delay information.
+  base::TimeDelta create_stream_delay;
+
   // InitializeStream related delay information.
   base::TimeDelta initialize_stream_delay;
 };

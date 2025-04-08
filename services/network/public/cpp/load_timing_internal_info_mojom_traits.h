@@ -16,6 +16,8 @@ template <>
 struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
     StructTraits<network::mojom::LoadTimingInternalInfoDataView,
                  net::LoadTimingInternalInfo> {
+  static const base::TimeDelta& create_stream_delay(
+      const net::LoadTimingInternalInfo& info);
   static const base::TimeDelta& initialize_stream_delay(
       const net::LoadTimingInternalInfo& info);
   static bool Read(network::mojom::LoadTimingInternalInfoDataView data,
