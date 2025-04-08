@@ -75139,6 +75139,19 @@
        ],
        {}
       ]
+     ],
+     "vertical-aligned-table-cell.html": [
+      "9b16621b7132fdf92856f65eaf7a8450c1fc7b63",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
      ]
     },
     "css-animations": {
@@ -422773,7 +422786,7 @@
        []
       ],
       "speculation-tags-utils.js": [
-       "9b10fab98982981963e180993a4f2fc76b48027e",
+       "07dba0ab611341347ab7572e2f484e07cabe965d",
        []
       ],
       "sw.js": [
@@ -652147,7 +652160,7 @@
         ]
        ],
        "interesttarget-css-properties.tentative.html": [
-        "8e918b0434c11e626fbb24a9007fe91b9d9de588",
+        "0aa45a41b3b21df441ba323172801297ed60b08c",
         [
          null,
          {}
@@ -705678,6 +705691,13 @@
       ]
      }
     },
+    "scroll-restore-shadow.html": [
+     "254940ebfb5a9e4d8098ae00152d30cae6e8b9aa",
+     [
+      null,
+      {}
+     ]
+    ],
     "scroll-to-the-fragment-in-shadow-tree.html": [
      "b4ecc16a67daeb1160523e10cca057d0c9582d5c",
      [
@@ -708891,22 +708911,34 @@
       ]
      ],
      "speculation-tags-invalid.https.html": [
-      "e35bab0d6dab3b364a1b0bbaa81cf9a3d9d853ba",
+      "3ebf55fba2b19d2bc8de6ba86ed7b3b75f6b033a",
       [
-       "speculation-rules/prefetch/speculation-tags-invalid.https.html?tag-level=rule",
+       "speculation-rules/prefetch/speculation-tags-invalid.https.html?tag-level=rule&type=prefetch",
        {
         "timeout": "long"
        }
       ],
       [
-       "speculation-rules/prefetch/speculation-tags-invalid.https.html?tag-level=ruleset",
+       "speculation-rules/prefetch/speculation-tags-invalid.https.html?tag-level=rule&type=prerender",
+       {
+        "timeout": "long"
+       }
+      ],
+      [
+       "speculation-rules/prefetch/speculation-tags-invalid.https.html?tag-level=ruleset&type=prefetch",
+       {
+        "timeout": "long"
+       }
+      ],
+      [
+       "speculation-rules/prefetch/speculation-tags-invalid.https.html?tag-level=ruleset&type=prerender",
        {
         "timeout": "long"
        }
       ]
      ],
      "speculation-tags-no-tags.https.html": [
-      "d96bca8b34100691e725452232e3c55a8fd5e00d",
+      "d2416138fe73679069561ade975e42986f2eb7ad",
       [
        null,
        {
@@ -708915,15 +708947,27 @@
       ]
      ],
      "speculation-tags-valid.https.html": [
-      "e5eb70506535c2587d0ab8c2d347ed5e5dc70d5e",
+      "4b580e7d0b4196013769e571a2ec52d830548c3e",
       [
-       "speculation-rules/prefetch/speculation-tags-valid.https.html?tag-level=rule",
+       "speculation-rules/prefetch/speculation-tags-valid.https.html?tag-level=rule&type=prefetch",
        {
         "timeout": "long"
        }
       ],
       [
-       "speculation-rules/prefetch/speculation-tags-valid.https.html?tag-level=ruleset",
+       "speculation-rules/prefetch/speculation-tags-valid.https.html?tag-level=rule&type=prerender",
+       {
+        "timeout": "long"
+       }
+      ],
+      [
+       "speculation-rules/prefetch/speculation-tags-valid.https.html?tag-level=ruleset&type=prefetch",
+       {
+        "timeout": "long"
+       }
+      ],
+      [
+       "speculation-rules/prefetch/speculation-tags-valid.https.html?tag-level=ruleset&type=prerender",
        {
         "timeout": "long"
        }
