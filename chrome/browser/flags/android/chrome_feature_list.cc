@@ -188,6 +188,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidElegantTextHeight,
     &kAndroidKeyboardA11y,
     &kAndroidNoVisibleHintForDifferentTLD,
+    &kAndroidOmniboxFocusedNewTabPage,
     &kAndroidOpenPdfInlineBackport,
     &kAndroidPdfAssistContent,
     &kAndroidTabDeclutter,
@@ -524,6 +525,10 @@ BASE_FEATURE(kAndroidKeyboardA11y,
 BASE_FEATURE(kAndroidNoVisibleHintForDifferentTLD,
              "AndroidNoVisibleHintForDifferentTLD",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAndroidOmniboxFocusedNewTabPage,
+             "AndroidOmniboxFocusedNewTabPage",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidOpenPdfInlineBackport,
              "AndroidOpenPdfInlineBackport",

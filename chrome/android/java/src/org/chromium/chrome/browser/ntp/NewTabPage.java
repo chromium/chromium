@@ -409,6 +409,10 @@ public class NewTabPage
             if (mIsDestroyed) return;
             mIsLoaded = true;
             NewTabPageUma.recordNtpImpression(NewTabPageUma.NTP_IMPRESSION_REGULAR);
+
+            var state = NewTabPageCreationState.from(mTab);
+            if (state != null) state.onNtpLoaded(this);
+
             // If not visible when loading completes, wait until onShown is received.
             if (!mTab.isHidden()) recordNtpShown();
         }
@@ -457,8 +461,7 @@ public class NewTabPage
      * @param lifecycleDispatcher Activity lifecycle dispatcher.
      * @param tabModelSelector {@link TabModelSelector} object.
      * @param isTablet {@code true} if running on a Tablet device.
-     * @param newTabPageCreationTracker {@link NewTabPageCreationTracker} object recording user
-     *     metrics.
+     * @param tabCreationTracker {@link NewTabPageCreationTracker} object recording user metrics.
      * @param isInNightMode {@code true} if the night mode setting is on.
      * @param nativePageHost The host that is showing this new tab page.
      * @param tab The {@link Tab} that contains this new tab page.
@@ -483,7 +486,7 @@ public class NewTabPage
             ActivityLifecycleDispatcher lifecycleDispatcher,
             TabModelSelector tabModelSelector,
             boolean isTablet,
-            NewTabPageCreationTracker mNewTabPageCreationTracker,
+            NewTabPageCreationTracker tabCreationTracker,
             boolean isInNightMode,
             NativePageHost nativePageHost,
             Tab tab,

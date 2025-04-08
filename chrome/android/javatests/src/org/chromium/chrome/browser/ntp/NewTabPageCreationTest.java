@@ -4,11 +4,16 @@
 
 package org.chromium.chrome.browser.ntp;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 
 import androidx.test.filters.MediumTest;
 
+import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -17,19 +22,26 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.util.NewTabPageTestUtils;
+import org.chromium.chrome.test.util.OmniboxTestUtils;
+import org.chromium.chrome.test.util.browser.TabLoadObserver;
+import org.chromium.components.embedder_support.util.UrlConstants;
 
 /** Tests for creating a tab with NewTabPage. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
 public class NewTabPageCreationTest {
+    private static final String TEST_URL = "/chrome/test/data/android/test.html";
+
     @ClassRule
     public static ChromeTabbedActivityTestRule sActivityTestRule =
             new ChromeTabbedActivityTestRule();
@@ -38,9 +50,21 @@ public class NewTabPageCreationTest {
     public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
             new BlankCTATabInitialStateRule(sActivityTestRule, false);
 
+    private NewTabPageCreationState mTestState;
+    private OmniboxTestUtils mOmnibox;
+
+    @Before
+    public void setUp() {
+        mTestState = spy(new NewTabPageCreationState());
+        NewTabPageCreationState.setInstanceForTesting(mTestState);
+
+        mOmnibox = new OmniboxTestUtils(sActivityTestRule.getActivity());
+    }
+
     @Test
     @MediumTest
-    public void testCreateNTP() {
+    @EnableFeatures(ChromeFeatureList.ANDROID_OMNIBOX_FOCUSED_NEW_TAB_PAGE)
+    public void testCreateNTPInNewTab() {
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord("NewTabPage.OpenedInNewTab", 2 /* FROM_CHROME_UI */)
@@ -53,10 +77,32 @@ public class NewTabPageCreationTest {
 
         histogramWatcher.pollInstrumentationThreadUntilSatisfied();
 
-        Tab currentTab = sActivityTestRule.getActivity().getActivityTab();
-        assertNotNull(currentTab);
-        NativePage nativePage = currentTab.getNativePage();
-        assertNotNull(nativePage);
-        assertTrue(nativePage instanceof NewTabPage);
+        Tab tab = sActivityTestRule.getActivity().getActivityTab();
+        NewTabPageTestUtils.waitForNtpLoaded(tab);
+
+        verify(mTestState).onNewTabCreated();
+        verify(mTestState).onNtpLoaded(any(NewTabPageManager.class));
+
+        mOmnibox.checkFocus(true);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.ANDROID_OMNIBOX_FOCUSED_NEW_TAB_PAGE)
+    public void testCreateNTPInExistingTab() throws Exception {
+        String testUrl = sActivityTestRule.getTestServer().getURL(TEST_URL);
+        sActivityTestRule.loadUrlInNewTab(testUrl);
+
+        Tab tab = sActivityTestRule.getActivity().getActivityTab();
+        assertNull(tab.getNativePage());
+        assertEquals(tab.getUrl().getSpec(), testUrl);
+
+        new TabLoadObserver(tab).fullyLoadUrl(UrlConstants.NTP_URL);
+        NewTabPageTestUtils.waitForNtpLoaded(tab);
+
+        verify(mTestState, never()).onNewTabCreated();
+        verify(mTestState).onNtpLoaded(any(NewTabPageManager.class));
+
+        mOmnibox.checkFocus(false);
     }
 }
