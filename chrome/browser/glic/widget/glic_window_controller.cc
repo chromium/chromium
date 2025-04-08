@@ -421,6 +421,10 @@ void GlicWindowController::OnWidgetUserResizeEnded() {
   if (web_client_) {
     web_client_->ManualResizeChanged(false);
   }
+
+  if (GetGlicView()) {
+    GetGlicView()->UpdatePrimaryDraggableAreaOnResize();
+  }
 }
 
 void GlicWindowController::ShowAfterSignIn() {

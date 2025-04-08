@@ -62,6 +62,14 @@ bool GlicView::IsPointWithinDraggableArea(const gfx::Point& point) {
   return false;
 }
 
+void GlicView::UpdatePrimaryDraggableAreaOnResize() {
+  if (draggable_areas_.empty()) {
+    return;
+  }
+
+  draggable_areas_[0].set_width(width());
+}
+
 void GlicView::SetWebContents(content::WebContents* web_contents) {
   web_view_->SetWebContents(web_contents);
   UpdateBackgroundColor();
