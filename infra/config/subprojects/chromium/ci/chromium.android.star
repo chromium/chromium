@@ -641,8 +641,9 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "cast_android",
-            "cast_release",
             "cast_java_release",
+            "cast_release",
+            "disable_jni_multiplexing",
             "android_builder",
             "android_with_static_analysis",
             "clang",
@@ -755,8 +756,9 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "cast_android",
-            "cast_release",
             "cast_java_release",
+            "cast_release",
+            "disable_jni_multiplexing",
             "android_builder",
             "android_with_static_analysis",
             "clang",
