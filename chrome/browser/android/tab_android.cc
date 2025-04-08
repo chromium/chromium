@@ -121,8 +121,9 @@ TabAndroid::GetAllNativeTabs(
   std::vector<raw_ptr<TabAndroid, VectorExperimental>> tab_native_ptrs;
   ScopedJavaLocalRef<jlongArray> j_tabs_ptr =
       Java_TabImpl_getAllNativePtrs(env, obj_array);
-  if (j_tabs_ptr.is_null())
+  if (j_tabs_ptr.is_null()) {
     return tab_native_ptrs;
+  }
 
   std::vector<jlong> tab_ptr;
   base::android::JavaLongArrayToLongVector(env, j_tabs_ptr, &tab_ptr);
@@ -280,8 +281,9 @@ void TabAndroid::DeleteFrozenNavigationEntries(
 void TabAndroid::SetWindowSessionID(SessionID window_id) {
   session_window_id_ = window_id;
 
-  if (!web_contents())
+  if (!web_contents()) {
     return;
+  }
 
   sessions::SessionTabHelper* session_tab_helper =
       sessions::SessionTabHelper::FromWebContents(web_contents());
@@ -375,8 +377,9 @@ void TabAndroid::InitWebContents(
   // Shows a warning notification for dangerous flags in about:flags.
   ShowBadFlagsPrompt(web_contents());
 
-  for (Observer& observer : observers_)
+  for (Observer& observer : observers_) {
     observer.OnInitWebContents(this);
+  }
 }
 
 void TabAndroid::InitializeAutofillIfNecessary(JNIEnv* env) {
@@ -440,8 +443,9 @@ void TabAndroid::DestroyWebContents(JNIEnv* env) {
   // and http://crbug.com/338709 for details.
   content::RenderProcessHost* process =
       web_contents()->GetPrimaryMainFrame()->GetProcess();
-  if (process)
+  if (process) {
     process->FastShutdownIfPossible(1, false);
+  }
 
   tab_features_.reset();
   web_contents_.reset();
@@ -494,8 +498,9 @@ void TabAndroid::SetActiveNavigationEntryTitleForUrl(JNIEnv* env,
 
   content::NavigationEntry* entry =
       web_contents()->GetController().GetVisibleEntry();
-  if (entry && url == entry->GetVirtualURL().spec())
+  if (entry && url == entry->GetVirtualURL().spec()) {
     entry->SetTitle(std::move(title));
+  }
 }
 
 void TabAndroid::LoadOriginalImage(JNIEnv* env) {
@@ -552,8 +557,9 @@ base::android::ScopedJavaLocalRef<jobject> JNI_TabImpl_FromWebContents(
       content::WebContents::FromJavaWebContents(jweb_contents);
   TabAndroid* tab =
       web_contents ? TabAndroid::FromWebContents(web_contents) : nullptr;
-  if (tab)
+  if (tab) {
     jtab = tab->GetJavaObject();
+  }
   return jtab;
 }
 
