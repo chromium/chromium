@@ -259,7 +259,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Lens.Overlay.ContextualSearchBox.ByPageContentType.{PageContentType}.FocusedInSession"
-    enum="Boolean" expires_after="2025-08-03">
+    enum="Boolean" expires_after="2025-10-05">
   <owner>niharm@google.com</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>

@@ -34,7 +34,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="MessagePumpEpoll.WatchedFileDescriptors"
-    units="FileDescriptors" expires_after="2025-08-01">
+    units="FileDescriptors" expires_after="2025-10-05">
   <owner>mthiesse@chromium.org</owner>
   <owner>lizeb@chromium.org</owner>
   <summary>

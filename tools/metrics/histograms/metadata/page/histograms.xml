@@ -1088,7 +1088,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.Clients.GoogleSearch.ConnectionReuseStatus{Profile}"
-    enum="ConnectionReuseStatus" expires_after="2025-08-01">
+    enum="ConnectionReuseStatus" expires_after="2025-10-05">
   <owner>suzukikeita@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -1216,7 +1216,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.GoogleSearch.DomainLookupTiming.NavigationToDomainLookupEnd2.{NavigationCountType}{BrowserInitializationStatus}{TabInitializationStatus}"
-    units="ms" expires_after="2025-08-01">
+    units="ms" expires_after="2025-10-05">
   <owner>suzukikeita@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -1237,7 +1237,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.GoogleSearch.DomainLookupTiming.NavigationToDomainLookupStart2.{NavigationCountType}{BrowserInitializationStatus}{TabInitializationStatus}"
-    units="ms" expires_after="2025-08-01">
+    units="ms" expires_after="2025-10-05">
   <owner>suzukikeita@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -1257,7 +1257,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.Clients.GoogleSearch.IsFirstNavigationForGWS"
-    enum="Boolean" expires_after="2025-08-01">
+    enum="Boolean" expires_after="2025-10-05">
   <owner>suzukikeita@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -1296,7 +1296,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.GoogleSearch.NavigationSourceType{ConnectionReuseStatus}"
-    enum="NavigationSourceTypeEnum" expires_after="2025-08-01">
+    enum="NavigationSourceTypeEnum" expires_after="2025-10-05">
   <owner>suzukikeita@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -1452,7 +1452,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.GoogleSearch.NavigationTiming.NavigationToConnectStart2.{NavigationCountType}{BrowserInitializationStatus}{TabInitializationStatus}"
-    units="ms" expires_after="2025-08-01">
+    units="ms" expires_after="2025-10-05">
   <owner>suzukikeita@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -1548,7 +1548,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.LCPP.ImageLoadingPriority.ConfidenceOfActual{PositiveOrNegative}.2"
-    units="%" expires_after="2025-08-01">
+    units="%" expires_after="2025-10-05">
   <owner>chikamune@chromium.org</owner>
   <owner>
     src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
@@ -1568,7 +1568,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.LCPP.ImageLoadingPriority.ConfidenceOfActual{PositiveOrNegative}.PerTotalFrequency.2"
-    units="Count" expires_after="2025-08-01">
+    units="Count" expires_after="2025-10-05">
   <owner>chikamune@chromium.org</owner>
   <owner>
     src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
@@ -1609,7 +1609,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.LCPP.ImageLoadingPriority.TotalFrequencyOfActual{PositiveOrNegative}.PerConfidence.3"
-    units="Count" expires_after="2025-08-01">
+    units="Count" expires_after="2025-10-05">
   <owner>chikamune@chromium.org</owner>
   <owner>
     src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
@@ -1763,7 +1763,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.LCPP.Subresource.ConfidenceOfActual{PositiveOrNegative}.PerTotalFrequency{Site}.3"
-    units="Count" expires_after="2025-08-01">
+    units="Count" expires_after="2025-10-05">
   <owner>chikamune@chromium.org</owner>
   <owner>
     src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
@@ -1789,7 +1789,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.LCPP.Subresource.ConfidenceOfActual{PositiveOrNegative}{Site}.2"
-    units="%" expires_after="2025-08-01">
+    units="%" expires_after="2025-10-05">
   <owner>chikamune@chromium.org</owner>
   <owner>
     src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
@@ -1882,7 +1882,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.LCPP.Subresource.FrequencyOfActual{PositiveOrNegative}{Site}.2"
-    units="Count" expires_after="2025-08-01">
+    units="Count" expires_after="2025-10-05">
   <owner>chikamune@chromium.org</owner>
   <owner>
     src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
@@ -1907,7 +1907,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.LCPP.Subresource.TotalFrequencyOfActual{PositiveOrNegative}.PerConfidence{Site}.3"
-    units="Count" expires_after="2025-08-01">
+    units="Count" expires_after="2025-10-05">
   <owner>chikamune@chromium.org</owner>
   <owner>
     src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
@@ -1933,7 +1933,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.LCPP.Subresource.TotalFrequencyOfActual{PositiveOrNegative}.WithConfidence{Range}{Site}.2"
-    units="Count" expires_after="2025-08-01">
+    units="Count" expires_after="2025-10-05">
   <owner>chikamune@chromium.org</owner>
   <owner>
     src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
@@ -3846,7 +3846,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Internal.Prerender2.MainResourceParseStartToActivation{PreloadingTriggerType}"
-    units="ms" expires_after="2025-08-03">
+    units="ms" expires_after="2025-10-05">
   <owner>lingqi@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
   <summary>

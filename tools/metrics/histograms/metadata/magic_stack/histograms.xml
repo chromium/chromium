@@ -255,7 +255,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="MagicStack.Clank.NewTabPage.{HostSurfaceState}.Module.{ModuleType}.ImpressionCountBeforeInteraction"
-    units="count" expires_after="2025-08-03">
+    units="count" expires_after="2025-10-05">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <summary>

@@ -474,7 +474,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 </histogram>
 
 <histogram name="Privacy.DIPS.DatabaseEntryCount" units="entries"
-    expires_after="2025-07-06">
+    expires_after="2025-10-05">
   <owner>wanderview@chromium.org</owner>
   <owner>src/content/browser/btm/OWNERS</owner>
   <summary>
@@ -1676,7 +1676,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 </histogram>
 
 <histogram name="PrivacySandbox.PrivacyPolicy.LoadingTime" units="ms"
-    expires_after="2025-08-01">
+    expires_after="2025-10-05">
   <owner>chrstne@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>

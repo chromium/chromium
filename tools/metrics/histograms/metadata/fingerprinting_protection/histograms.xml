@@ -247,7 +247,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FingerprintingProtection.PageLoad.ActivationLevel"
-    enum="FingerprintingProtectionActivationLevel" expires_after="2025-06-29">
+    enum="FingerprintingProtectionActivationLevel" expires_after="2025-10-05">
   <owner>thesalsa@google.com</owner>
   <owner>trishalfonso@google.com</owner>
   <owner>rizvis@google.com</owner>
@@ -262,7 +262,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="FingerprintingProtection.PageLoad.NumSubresourceLoads.Disallowed"
-    units="resource loads" expires_after="2025-08-05">
+    units="resource loads" expires_after="2025-10-05">
   <owner>rizvis@google.com</owner>
   <owner>thesalsa@google.com</owner>
   <owner>tanub@google.com</owner>
@@ -292,7 +292,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="FingerprintingProtection.PageLoad.NumSubresourceLoads.Evaluated"
-    units="resource loads" expires_after="2025-08-05">
+    units="resource loads" expires_after="2025-10-05">
   <owner>rizvis@google.com</owner>
   <owner>thesalsa@google.com</owner>
   <owner>tanub@google.com</owner>
@@ -323,7 +323,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="FingerprintingProtection.PageLoad.NumSubresourceLoads.MatchedRules"
-    units="resource loads" expires_after="2025-08-05">
+    units="resource loads" expires_after="2025-10-05">
   <owner>rizvis@google.com</owner>
   <owner>thesalsa@google.com</owner>
   <owner>tanub@google.com</owner>
@@ -352,7 +352,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FingerprintingProtection.PageLoad.NumSubresourceLoads.Total"
-    units="resource loads" expires_after="2025-08-05">
+    units="resource loads" expires_after="2025-10-05">
   <owner>rizvis@google.com</owner>
   <owner>thesalsa@google.com</owner>
   <owner>tanub@google.com</owner>
@@ -443,7 +443,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="FingerprintingProtection.PageLoad.SubresourceEvaluation.TotalCPUDuration"
-    units="microseconds" expires_after="2025-08-05">
+    units="microseconds" expires_after="2025-10-05">
   <owner>rizvis@google.com</owner>
   <owner>thesalsa@google.com</owner>
   <owner>tanub@google.com</owner>
@@ -460,7 +460,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="FingerprintingProtection.PageLoad.SubresourceEvaluation.TotalWallDuration"
-    units="microseconds" expires_after="2025-08-05">
+    units="microseconds" expires_after="2025-10-05">
   <owner>rizvis@google.com</owner>
   <owner>thesalsa@google.com</owner>
   <owner>tanub@google.com</owner>

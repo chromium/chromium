@@ -63,7 +63,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.DatabaseMigration{VersionUpgrades}"
-    enum="BooleanSuccess" expires_after="2025-05-24">
+    enum="BooleanSuccess" expires_after="2025-10-05">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
