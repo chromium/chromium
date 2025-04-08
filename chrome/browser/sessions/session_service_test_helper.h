@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <set>
 #include <string>
 #include <utility>
 #include <vector>
@@ -67,7 +68,8 @@ class SessionServiceTestHelper {
   void ReadWindows(
       std::vector<std::unique_ptr<sessions::SessionWindow>>* windows,
       SessionID* active_window_id,
-      std::string* platform_session_id);
+      std::string* platform_session_id,
+      std::set<SessionID>* discarded_window_ids);
 
   void AssertTabEquals(SessionID window_id,
                        SessionID tab_id,

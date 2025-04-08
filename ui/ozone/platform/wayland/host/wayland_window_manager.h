@@ -41,6 +41,10 @@ class WaylandWindowManager {
   // Notifies observers that the window's wayland role has been assigned.
   void NotifyWindowRoleAssigned(WaylandWindow* window);
 
+  // Notifies observers that `window` has been removed the session it
+  // did belong to.
+  void NotifyWindowRemovedFromSession(WaylandWindow* window);
+
   // Stores the window that should grab the located events.
   void GrabLocatedEvents(WaylandWindow* event_grabber);
 

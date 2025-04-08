@@ -112,6 +112,14 @@ std::optional<std::string> XdgSessionManager::RestoreSession(
   return result;
 }
 
+void XdgSessionManager::RemoveWindow(const std::string& session_id,
+                                     const int32_t window_id) {
+  if (auto* session = GetSession(session_id)) {
+    session->RemoveToplevel(window_id);
+  }
+  DLOG(WARNING) << "No session found for id=" << session_id;
+}
+
 XdgSession* XdgSessionManager::GetSession(const std::string& session_id) const {
   auto it = std::ranges::find(sessions_, session_id, &XdgSession::id);
   return it != sessions_.end() ? it->get() : nullptr;

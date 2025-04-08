@@ -151,6 +151,22 @@ class WaylandToplevelWindow : public WaylandWindow,
   void OnSessionDestroying() override;
 
  private:
+  // XdgToplevelSession instances are owned by toplevel windows, given their
+  // close lifecycle, though ownership might be transferred to the associated
+  // XdgSession, during removals, for example. To make this relationship more
+  // explicit and keep the public API clean and concise, friendship is used
+  // here. See XdgSession::RemoveToplevel for further context.
+  friend class XdgSession;
+  std::unique_ptr<XdgToplevelSession> TakeToplevelSession() {
+    return std::move(toplevel_session_);
+  }
+  std::string session_id() const {
+    return session_data_ ? session_data_->session_id : "";
+  }
+  int32_t session_toplevel_id() const {
+    return session_data_ ? session_data_->window_id : 0;
+  }
+
   // WaylandWindow protected overrides:
   // Calls UpdateWindowShape, set_input_region and set_opaque_region for this
   // toplevel window.

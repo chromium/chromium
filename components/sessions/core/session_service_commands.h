@@ -126,14 +126,18 @@ SESSIONS_EXPORT bool ReplacePendingCommand(
 SESSIONS_EXPORT bool IsClosingCommand(SessionCommand* command);
 
 // Converts a list of commands into SessionWindows. On return any valid
-// windows are added to |valid_windows|. |active_window_id| will be set with the
+// windows are added to `valid_windows`. `active_window_id` will be set with the
 // id of the last active window, but it's only valid when this id corresponds
-// to the id of one of the windows in |valid_windows|.
+// to the id of one of the windows in `valid_windows`. Discarded
+// windows, eg: the ones with no tab or previously closed are inserted
+// into `discarded_window_ids`. If present, `platform_session_id` is set with
+// the window system level session id, on platforms that support it.
 SESSIONS_EXPORT void RestoreSessionFromCommands(
     const std::vector<std::unique_ptr<SessionCommand>>& commands,
     std::vector<std::unique_ptr<SessionWindow>>* valid_windows,
     SessionID* active_window_id,
-    std::string* platform_session_id);
+    std::string* platform_session_id,
+    std::set<SessionID>* discarded_window_ids);
 
 }  // namespace sessions
 

@@ -937,8 +937,22 @@ void WaylandToplevelWindow::UpdateSessionStateIfNeeded() {
       CHECK(session_data.restore_id.has_value());
       toplevel_session_->Remove();
     }
-    toplevel_session_ = session_->TrackToplevel(this, session_data.window_id,
-                                                XdgSession::Action::kAdd);
+    if (session_data.window_id) {
+      toplevel_session_ = session_->TrackToplevel(this, session_data.window_id,
+                                                  XdgSession::Action::kAdd);
+    } else {
+      // Window was just removed from `session_` and no new session window id
+      // was provided. Notifying about it can result in `this` being destroyed
+      // when the Wayland compositor supports only experimental version of the
+      // session management protocol. See comments in XdgSession for details.
+      // TODO(crbug.com/409099413): Remove when support for the experimental
+      // session management protocol support gets dropped.
+      auto alive = weak_ptr_factory_.GetWeakPtr();
+      connection()->window_manager()->NotifyWindowRemovedFromSession(this);
+      if (!alive) {
+        return;
+      }
+    }
     connection()->Flush();
   }
 }

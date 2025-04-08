@@ -296,11 +296,13 @@ class SessionServiceBase : public sessions::CommandStorageManagerDelegate,
   friend class SessionServiceBaseTestHelper;
   friend class SessionServiceTestHelper;
 
-  // If supported by the platform, initializes windowing system level session.
-  // If this succeeds, `platform_session_id_` should contain the session id to
-  // be used by browser windows to associate them to a given platform session.
+  // If supported by the platform, initializes windowing system level session
+  // and requests `discarded_window_ids` to be removed from the session. If it
+  // succeeds, `platform_session_id_` should contain the session id to be used
+  // by browser windows to associate them to a given platform session.
   void InitializePlatformSessionIfNeeded(
-      const std::string& restored_platform_session_id);
+      const std::string& restored_platform_session_id,
+      const std::set<SessionID>& discarded_window_ids);
 
   // This is always non-null.
   raw_ptr<Profile> profile_;
