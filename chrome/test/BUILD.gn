@@ -6296,6 +6296,8 @@ test("unit_tests") {
     "../common/ini_parser_unittest.cc",
     "../common/pref_names_util_unittest.cc",
     "../common/webui_util_unittest.cc",
+    "../renderer/accessibility/read_anything/read_anything_test_utils.cc",
+    "../renderer/accessibility/read_anything/read_anything_test_utils.h",
     "../renderer/chrome_content_renderer_client_unittest.cc",
     "../renderer/chrome_render_frame_observer_unittest.cc",
     "../renderer/instant_restricted_id_cache_unittest.cc",

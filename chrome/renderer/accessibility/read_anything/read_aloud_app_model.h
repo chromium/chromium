@@ -203,7 +203,8 @@ class ReadAloudAppModel {
       int start_index,
       int end_index,
       a11y::ReadAloudCurrentGranularity& current_granularity,
-      bool is_docs);
+      bool is_docs,
+      bool is_pdf);
 
   // Returns if we should end text traversal from the current position, due
   // to reaching the end of content or reaching a point, such as a paragraph,
