@@ -1282,9 +1282,7 @@ class MODULES_EXPORT WebGLRenderingContextBase : public ScriptWrappable,
   virtual void GetCurrentUnpackState(TexImageParams& params);
 
   // Upload `image` to the specified texture.
-  void TexImageSkImage(TexImageParams params,
-                       sk_sp<SkImage> image,
-                       bool image_has_flip_y);
+  void TexImageSkImage(TexImageParams params, sk_sp<SkImage> image);
 
   // Call the underlying Tex[Sub]Image{2D|3D} function. Always replace
   // `params.internalformat` with the result from ConvertTexInternalFormat.
@@ -1296,7 +1294,6 @@ class MODULES_EXPORT WebGLRenderingContextBase : public ScriptWrappable,
   // using TexImageSkImage.
   void TexImageStaticBitmapImage(TexImageParams params,
                                  StaticBitmapImage* image,
-                                 bool image_has_flip_y,
                                  bool allow_copy_via_gpu);
   template <typename T>
   gfx::Rect GetTextureSourceSize(T* texture_source) {

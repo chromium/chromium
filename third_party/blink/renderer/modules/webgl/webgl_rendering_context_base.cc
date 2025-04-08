@@ -5301,8 +5301,7 @@ void WebGLRenderingContextBase::GetCurrentUnpackState(TexImageParams& params) {
 }
 
 void WebGLRenderingContextBase::TexImageSkImage(TexImageParams params,
-                                                sk_sp<SkImage> image,
-                                                bool image_has_flip_y) {
+                                                sk_sp<SkImage> image) {
   const char* func_name = GetTexImageFunctionName(params.function_id);
 
   bool selecting_sub_rectangle = false;
@@ -5322,9 +5321,9 @@ void WebGLRenderingContextBase::TexImageSkImage(TexImageParams params,
   if (params.type == GL_UNSIGNED_INT_10F_11F_11F_REV)
     params.type = GL_FLOAT;
 
-  // We will need to flip vertically if the unpack state for flip Y does not
-  // match the source state for flip Y.
-  const bool do_flip_y = image_has_flip_y != params.unpack_flip_y;
+  // We will need to flip vertically if the unpack state requires bottom left
+  // origin, because SkImage here always have top-left origin.
+  const bool do_flip_y = params.unpack_flip_y;
 
   // Let `converted_info` be `image`'s info, with adjustments for sub-rect
   // selection, alpha type, color type, and color space. Let `converted_x` and
@@ -5484,7 +5483,6 @@ void WebGLRenderingContextBase::TexImageBase(const TexImageParams& params,
 void WebGLRenderingContextBase::TexImageStaticBitmapImage(
     TexImageParams params,
     StaticBitmapImage* image,
-    bool image_has_flip_y,
     bool allow_copy_via_gpu) {
   // All calling functions check isContextLost, so a duplicate check is not
   // needed here.
@@ -5531,7 +5529,7 @@ void WebGLRenderingContextBase::TexImageStaticBitmapImage(
   DCHECK_EQ(sk_image->width(), image->width());
   DCHECK_EQ(sk_image->height(), image->height());
 
-  TexImageSkImage(params, std::move(sk_image), image_has_flip_y);
+  TexImageSkImage(params, std::move(sk_image));
 }
 
 bool WebGLRenderingContextBase::ValidateTexFunc(
@@ -5797,7 +5795,7 @@ void WebGLRenderingContextBase::TexImageHelperImageData(TexImageParams params,
 
   auto pixmap = pixels->GetSkPixmap();
   auto image = SkImages::RasterFromPixmap(pixmap, nullptr, nullptr);
-  TexImageSkImage(params, std::move(image), /*image_has_flip_y=*/false);
+  TexImageSkImage(params, std::move(image));
 }
 
 void WebGLRenderingContextBase::texImage2D(GLenum target,
@@ -5855,7 +5853,7 @@ void WebGLRenderingContextBase::TexImageHelperHTMLImageElement(
     SynthesizeGLError(GL_INVALID_VALUE, func_name, "bad image data");
     return;
   }
-  TexImageSkImage(params, std::move(sk_image), /*image_has_flip_y=*/false);
+  TexImageSkImage(params, std::move(sk_image));
 }
 
 void WebGLRenderingContextBase::texImage2D(ScriptState* script_state,
@@ -6095,11 +6093,8 @@ void WebGLRenderingContextBase::TexImageHelperCanvasRenderingContextHost(
       DynamicTo<StaticBitmapImage>(image.get());
   DCHECK(static_bitmap_image);
 
-  const bool source_has_flip_y =
-      GetDrawingBuffer()->IsOriginTopLeft() && context_host->IsWebGL();
   const bool allow_copy_via_gpu = true;
-  TexImageStaticBitmapImage(params, static_bitmap_image, source_has_flip_y,
-                            allow_copy_via_gpu);
+  TexImageStaticBitmapImage(params, static_bitmap_image, allow_copy_via_gpu);
 }
 
 void WebGLRenderingContextBase::texImage2D(
@@ -6193,7 +6188,7 @@ void WebGLRenderingContextBase::TexImageHelperVideoFrame(
     DCHECK(!sk_img->isTextureBacked());
     auto image = UnacceleratedStaticBitmapImage::Create(std::move(sk_img));
     // Note: kHtmlDomVideo means alpha won't be unmultiplied.
-    TexImageStaticBitmapImage(params, image.get(), /*image_has_flip_y=*/false,
+    TexImageStaticBitmapImage(params, image.get(),
                               /*allow_copy_via_gpu=*/false);
     return;
   }
@@ -6389,8 +6384,7 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
   if (!image)
     return;
 
-  TexImageStaticBitmapImage(params, image.get(), /*image_has_flip_y=*/false,
-                            can_upload_via_gpu);
+  TexImageStaticBitmapImage(params, image.get(), can_upload_via_gpu);
 }
 
 void WebGLRenderingContextBase::texImage2D(ScriptState* script_state,
@@ -6464,10 +6458,9 @@ void WebGLRenderingContextBase::TexImageHelperImageBitmap(
   params.unpack_premultiply_alpha =
       static_bitmap_image->GetAlphaType() == kPremul_SkAlphaType;
   params.unpack_flip_y = false;
-  const bool image_has_flip_y = false;
   // TODO(kbr): make this work for sub-rectangles of ImageBitmaps.
   const bool can_copy_via_gpu = !selecting_sub_rectangle;
-  TexImageStaticBitmapImage(params, static_bitmap_image.get(), image_has_flip_y,
+  TexImageStaticBitmapImage(params, static_bitmap_image.get(),
                             can_copy_via_gpu);
 }
 
