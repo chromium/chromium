@@ -35,9 +35,8 @@ class FakeCanvasResourceHost : public CanvasResourceHost {
     is_hibernating_ = is_hibernating;
   }
   size_t GetMemoryUsage() const override { return 0; }
-  CanvasResourceProvider* GetOrCreateCanvasResourceProvider(
-      RasterModeHint hint) override {
-    return GetOrCreateCanvasResourceProviderImpl(hint);
+  CanvasResourceProvider* GetOrCreateCanvasResourceProvider() override {
+    return GetOrCreateCanvasResourceProviderImpl(RasterModeHint::kPreferGPU);
   }
   CanvasResourceProvider* GetOrCreateCanvasResourceProviderImpl(
       RasterModeHint hint) override {

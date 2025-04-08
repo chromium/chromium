@@ -716,13 +716,13 @@ void HTMLCanvasElement::PreFinalizeFrame() {
   // all flows via which CanvasResourceProviders are or are nont created coming
   // into this flow.
   if (LowLatencyEnabled() && !dirty_rect_.IsEmpty()) {
-    GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
+    GetOrCreateCanvasResourceProvider();
   }
 }
 
 void HTMLCanvasElement::PostFinalizeFrame(FlushReason reason) {
   if (LowLatencyEnabled() && frame_dispatcher_ && !dirty_rect_.IsEmpty() &&
-      GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU)) {
+      GetOrCreateCanvasResourceProvider()) {
     const base::TimeTicks start_time = base::TimeTicks::Now();
     if (scoped_refptr<CanvasResource> canvas_resource =
             ResourceProvider()->ProduceCanvasResource(reason)) {
@@ -2112,8 +2112,7 @@ void HTMLCanvasElement::ReplaceExistingResourceProviderFor2DContext() {
   UpdateMemoryUsage();
 }
 
-CanvasResourceProvider* HTMLCanvasElement::GetOrCreateCanvasResourceProvider(
-    RasterModeHint hint) {
+CanvasResourceProvider* HTMLCanvasElement::GetOrCreateCanvasResourceProvider() {
   if (IsRenderingContext2D()) {
     if (!CanvasRenderingContext::
             CheckProviderInCanvas2DRenderingContextIsPaintable()) {
@@ -2183,7 +2182,7 @@ CanvasResourceProvider* HTMLCanvasElement::GetOrCreateCanvasResourceProvider(
     return resource_provider;
   }
 
-  return CanvasRenderingContextHost::GetOrCreateCanvasResourceProvider(hint);
+  return CanvasRenderingContextHost::GetOrCreateCanvasResourceProvider();
 }
 
 CanvasResourceProvider*

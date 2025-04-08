@@ -200,7 +200,7 @@ bool GPUCanvasContext::PaintRenderingResultsToCanvas(
   }
 
   CanvasResourceProvider* resource_provider =
-      Host()->GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
+      Host()->GetOrCreateCanvasResourceProvider();
   if (!resource_provider) {
     return false;
   }

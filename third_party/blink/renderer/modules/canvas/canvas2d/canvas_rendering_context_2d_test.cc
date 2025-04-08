@@ -524,8 +524,7 @@ bool SetUpFullAccelerationAndCcLayer(HTMLCanvasElement& canvas_element) {
   // Install a CanvasResourceProvider that is accelerated and supports direct
   // compositing (the latter is necessary for GetOrCreateCcLayerIfNeeded() to
   // succeed).
-  CHECK(canvas_element.GetOrCreateCanvasResourceProvider(
-      RasterModeHint::kPreferGPU));
+  CHECK(canvas_element.GetOrCreateCanvasResourceProvider());
 
   // Put the host in GPU compositing mode.
   canvas_element.SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
@@ -559,14 +558,11 @@ TEST_P(CanvasRenderingContext2DTest, NoRecreationOfResourceProviderAfterDraw) {
   CreateContext(kNonOpaque);
   EXPECT_TRUE(CanvasElement().IsResourceValid());
   uint32_t gen_id =
-      CanvasElement()
-          .GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU)
-          ->ContentUniqueID();
+      CanvasElement().GetOrCreateCanvasResourceProvider()->ContentUniqueID();
   Context2D()->fillRect(3, 3, 1, 1);
-  EXPECT_EQ(gen_id,
-            CanvasElement()
-                .GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU)
-                ->ContentUniqueID());
+  EXPECT_EQ(
+      gen_id,
+      CanvasElement().GetOrCreateCanvasResourceProvider()->ContentUniqueID());
 }
 
 TEST_P(CanvasRenderingContext2DTest, NonDisplayedCanvasIsNotRateLimited) {
@@ -1469,9 +1465,7 @@ TEST_P(CanvasRenderingContext2DTest,
   EXPECT_TRUE(Context2D()->getContextAttributes()->desynchronized());
   EXPECT_TRUE(CanvasElement().LowLatencyEnabled());
   EXPECT_FALSE(
-      CanvasElement()
-          .GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferCPU)
-          ->IsSingleBuffered());
+      CanvasElement().GetOrCreateCanvasResourceProvider()->IsSingleBuffered());
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kCPU);
 }
 
@@ -1728,7 +1722,7 @@ class CanvasRenderingContext2DTestAccelerated
           kNonOpaque, kNormalLatency,
           CanvasContextCreationAttributesCore::WillReadFrequently::kUndefined,
           canvas);
-      canvas->GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
+      canvas->GetOrCreateCanvasResourceProvider();
       // Expect that at least the first 10 are accelerated. The exact number
       // depends on the feature params.
       if (i < 10) {
@@ -1747,8 +1741,7 @@ INSTANTIATE_PAINT_TEST_SUITE_P(CanvasRenderingContext2DTestAccelerated);
 TEST_P(CanvasRenderingContext2DTestAccelerated, GetImage) {
   CreateContext(kNonOpaque);
 
-  ASSERT_TRUE(CanvasElement().GetOrCreateCanvasResourceProvider(
-      RasterModeHint::kPreferGPU));
+  ASSERT_TRUE(CanvasElement().GetOrCreateCanvasResourceProvider());
   ASSERT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
   ASSERT_TRUE(CanvasElement().IsResourceValid());
 
@@ -1769,8 +1762,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
        NoRegenerationOfTransferableResourceWhenAlreadyInCcLayer) {
   CreateContext(kNonOpaque);
 
-  ASSERT_TRUE(CanvasElement().GetOrCreateCanvasResourceProvider(
-      RasterModeHint::kPreferGPU));
+  ASSERT_TRUE(CanvasElement().GetOrCreateCanvasResourceProvider());
 
   // Invoking PrepareTransferableResource() has a precondition that a CC layer
   // is present.
@@ -1799,21 +1791,18 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
        GetResourceProviderAfterContextLoss) {
   CreateContext(kNonOpaque);
 
-  EXPECT_TRUE(CanvasElement().GetOrCreateCanvasResourceProvider(
-      RasterModeHint::kPreferGPU));
+  EXPECT_TRUE(CanvasElement().GetOrCreateCanvasResourceProvider());
   EXPECT_TRUE(CanvasElement().IsResourceValid());
 
   test_context_provider_->TestContextGL()->set_context_lost(true);
-  EXPECT_EQ(nullptr, CanvasElement().GetOrCreateCanvasResourceProvider(
-                         RasterModeHint::kPreferGPU));
+  EXPECT_EQ(nullptr, CanvasElement().GetOrCreateCanvasResourceProvider());
 }
 
 TEST_P(CanvasRenderingContext2DTestAccelerated,
        PrepareTransferableResourceAfterContextLoss) {
   CreateContext(kNonOpaque);
 
-  ASSERT_TRUE(CanvasElement().GetOrCreateCanvasResourceProvider(
-      RasterModeHint::kPreferGPU));
+  ASSERT_TRUE(CanvasElement().GetOrCreateCanvasResourceProvider());
 
   // Invoking PrepareTransferableResource() has a precondition that a CC layer
   // is present.
@@ -1839,8 +1828,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
 
   test_context_provider_->TestContextGL()->set_context_lost(true);
 
-  ASSERT_TRUE(CanvasElement().GetOrCreateCanvasResourceProvider(
-      RasterModeHint::kPreferGPU));
+  ASSERT_TRUE(CanvasElement().GetOrCreateCanvasResourceProvider());
 
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kCPU);
   EXPECT_TRUE(CanvasElement().IsResourceValid());
@@ -1979,7 +1967,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
 
   CreateContext(kNonOpaque);
-  CanvasElement().GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
+  CanvasElement().GetOrCreateCanvasResourceProvider();
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
 
   auto& handler = CHECK_DEREF(CanvasElement().GetHibernationHandler());
@@ -2038,7 +2026,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
 
   CreateContext(kNonOpaque);
-  CanvasElement().GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
+  CanvasElement().GetOrCreateCanvasResourceProvider();
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
 
   auto& handler = CHECK_DEREF(CanvasElement().GetHibernationHandler());
@@ -2116,7 +2104,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, TeardownEndsHibernation) {
   scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
 
   CreateContext(kNonOpaque);
-  CanvasElement().GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
+  CanvasElement().GetOrCreateCanvasResourceProvider();
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
 
   auto& handler = CHECK_DEREF(CanvasElement().GetHibernationHandler());
@@ -2174,7 +2162,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
       {features::kIsPaintableChecksResourceProviderInsteadOfBridge});
 
   CreateContext(kNonOpaque);
-  CanvasElement().GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
+  CanvasElement().GetOrCreateCanvasResourceProvider();
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
 
   auto& handler = CHECK_DEREF(CanvasElement().GetHibernationHandler());
@@ -2233,7 +2221,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
       {});
 
   CreateContext(kNonOpaque);
-  CanvasElement().GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
+  CanvasElement().GetOrCreateCanvasResourceProvider();
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
 
   auto& handler = CHECK_DEREF(CanvasElement().GetHibernationHandler());
@@ -2286,7 +2274,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
 
   CreateContext(kNonOpaque);
-  CanvasElement().GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
+  CanvasElement().GetOrCreateCanvasResourceProvider();
   ASSERT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
 
   // Install a minimal delay for testing to ensure that the test remains fast
@@ -2340,7 +2328,7 @@ TEST_P(
   scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
 
   CreateContext(kNonOpaque);
-  CanvasElement().GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
+  CanvasElement().GetOrCreateCanvasResourceProvider();
   ASSERT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
 
   // Install a minimal delay for testing to ensure that the test remains fast
@@ -2383,7 +2371,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
 
   CreateContext(kNonOpaque);
-  CanvasElement().GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
+  CanvasElement().GetOrCreateCanvasResourceProvider();
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
 
   auto& handler = CHECK_DEREF(CanvasElement().GetHibernationHandler());
@@ -2660,7 +2648,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
 
   CreateContext(kNonOpaque);
-  CanvasElement().GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
+  CanvasElement().GetOrCreateCanvasResourceProvider();
 
   auto& handler = CHECK_DEREF(CanvasElement().GetHibernationHandler());
   base::RunLoop run_loop;
@@ -2717,8 +2705,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
 
   CreateContext(kNonOpaque);
-  ASSERT_TRUE(CanvasElement().GetOrCreateCanvasResourceProvider(
-      RasterModeHint::kPreferGPU));
+  ASSERT_TRUE(CanvasElement().GetOrCreateCanvasResourceProvider());
   ASSERT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
 
   auto& handler = CHECK_DEREF(CanvasElement().GetHibernationHandler());
@@ -2924,9 +2911,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, LowLatencyIsNotSingleBuffered) {
   EXPECT_FALSE(Context2D()->getContextAttributes()->willReadFrequently());
   EXPECT_TRUE(CanvasElement().LowLatencyEnabled());
   EXPECT_FALSE(
-      CanvasElement()
-          .GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU)
-          ->IsSingleBuffered());
+      CanvasElement().GetOrCreateCanvasResourceProvider()->IsSingleBuffered());
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
 }
 
@@ -2935,7 +2920,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, DrawImage_Video_Flush) {
 
   CreateContext(kNonOpaque);
   // No need to set-up the layer bridge when testing low latency mode.
-  CanvasElement().GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
+  CanvasElement().GetOrCreateCanvasResourceProvider();
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
 
   gfx::Size visible_size(10, 10);
@@ -2966,7 +2951,7 @@ TEST_P(CanvasRenderingContext2DTest, FlushRestoresClipStack) {
   CreateContext(kNonOpaque);
 
   // Ensure that the ResourceProvider and canvas are created.
-  CanvasElement().GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferCPU);
+  CanvasElement().GetOrCreateCanvasResourceProvider();
 
   // Set a transform.
   Context2D()->translate(5, 0);
@@ -2986,7 +2971,7 @@ TEST_P(CanvasRenderingContext2DTest, PutImageDataRestoresClipStack) {
   CreateContext(kNonOpaque);
 
   // Ensure that the ResourceProvider and canvas are created.
-  CanvasElement().GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferCPU);
+  CanvasElement().GetOrCreateCanvasResourceProvider();
 
   // Set a transform.
   Context2D()->translate(5, 0);
@@ -3028,7 +3013,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   ScopedCanvas2dLayersForTest layer_feature{/*enabled=*/true};
   CreateContext(kNonOpaque);
 
-  CanvasElement().GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
+  CanvasElement().GetOrCreateCanvasResourceProvider();
 
   NonThrowableExceptionState exception_state;
   Context2D()->fillRect(10, 10, 20, 20);
@@ -3070,7 +3055,7 @@ class CanvasRenderingContext2DTestAcceleratedMultipleDisables
           kNonOpaque, kNormalLatency,
           CanvasContextCreationAttributesCore::WillReadFrequently::kUndefined,
           canvas);
-      canvas->GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
+      canvas->GetOrCreateCanvasResourceProvider();
       EXPECT_TRUE(canvas->IsAccelerated());
       canvas->DisableAcceleration();
     }
@@ -3089,7 +3074,7 @@ TEST_P(CanvasRenderingContext2DTestAcceleratedMultipleDisables,
   CreateContext(
       kNonOpaque, kNormalLatency,
       CanvasContextCreationAttributesCore::WillReadFrequently::kUndefined);
-  CanvasElement().GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
+  CanvasElement().GetOrCreateCanvasResourceProvider();
   // Because a bunch of canvases had acceleration explicitly disabled, canvases
   // created with `kUndefined` should start with acceleration disabled.
   EXPECT_FALSE(CanvasElement().IsAccelerated());
@@ -3101,7 +3086,7 @@ TEST_P(CanvasRenderingContext2DTestAcceleratedMultipleDisables,
   CreateContext(
       kNonOpaque, kNormalLatency,
       CanvasContextCreationAttributesCore::WillReadFrequently::kFalse);
-  CanvasElement().GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
+  CanvasElement().GetOrCreateCanvasResourceProvider();
   // Canvases created with `kFalse` should always start with acceleration
   // enabled regardless of how many canvases had acceleration disabled.
   EXPECT_TRUE(CanvasElement().IsAccelerated());
@@ -3112,7 +3097,7 @@ TEST_P(CanvasRenderingContext2DTestAcceleratedMultipleDisables,
   CreateAlotOfCanvasesWithAccelerationExplicitlyDisabled();
   CreateContext(kNonOpaque, kNormalLatency,
                 CanvasContextCreationAttributesCore::WillReadFrequently::kTrue);
-  CanvasElement().GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
+  CanvasElement().GetOrCreateCanvasResourceProvider();
   // Canvases created with `kTrue` should always start with acceleration
   // disabled regardless of how many canvases had acceleration explicitly
   // disabled.
@@ -3159,19 +3144,16 @@ TEST_P(CanvasRenderingContext2DTestImageChromium, LowLatencyIsSingleBuffered) {
   EXPECT_FALSE(Context2D()->getContextAttributes()->willReadFrequently());
   EXPECT_TRUE(CanvasElement().LowLatencyEnabled());
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
-  EXPECT_TRUE(CanvasElement()
-                  .GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU)
-                  ->IsSingleBuffered());
-  auto frame1_resource =
-      CanvasElement()
-          .GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU)
-          ->ProduceCanvasResource(FlushReason::kTesting);
+  EXPECT_TRUE(
+      CanvasElement().GetOrCreateCanvasResourceProvider()->IsSingleBuffered());
+  auto frame1_resource = CanvasElement()
+                             .GetOrCreateCanvasResourceProvider()
+                             ->ProduceCanvasResource(FlushReason::kTesting);
   EXPECT_TRUE(frame1_resource);
   DrawSomething();
-  auto frame2_resource =
-      CanvasElement()
-          .GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU)
-          ->ProduceCanvasResource(FlushReason::kTesting);
+  auto frame2_resource = CanvasElement()
+                             .GetOrCreateCanvasResourceProvider()
+                             ->ProduceCanvasResource(FlushReason::kTesting);
   EXPECT_TRUE(frame2_resource);
   EXPECT_EQ(frame1_resource.get(), frame2_resource.get());
 }
@@ -3209,19 +3191,16 @@ TEST_P(CanvasRenderingContext2DTestSwapChain, LowLatencyIsSingleBuffered) {
   EXPECT_FALSE(Context2D()->getContextAttributes()->willReadFrequently());
   EXPECT_TRUE(CanvasElement().LowLatencyEnabled());
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
-  EXPECT_TRUE(CanvasElement()
-                  .GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU)
-                  ->IsSingleBuffered());
-  auto frame1_resource =
-      CanvasElement()
-          .GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU)
-          ->ProduceCanvasResource(FlushReason::kTesting);
+  EXPECT_TRUE(
+      CanvasElement().GetOrCreateCanvasResourceProvider()->IsSingleBuffered());
+  auto frame1_resource = CanvasElement()
+                             .GetOrCreateCanvasResourceProvider()
+                             ->ProduceCanvasResource(FlushReason::kTesting);
   EXPECT_TRUE(frame1_resource);
   DrawSomething();
-  auto frame2_resource =
-      CanvasElement()
-          .GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU)
-          ->ProduceCanvasResource(FlushReason::kTesting);
+  auto frame2_resource = CanvasElement()
+                             .GetOrCreateCanvasResourceProvider()
+                             ->ProduceCanvasResource(FlushReason::kTesting);
   EXPECT_TRUE(frame2_resource);
   EXPECT_EQ(frame1_resource.get(), frame2_resource.get());
 }

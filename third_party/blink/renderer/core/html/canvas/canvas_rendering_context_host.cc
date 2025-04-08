@@ -119,9 +119,8 @@ bool CanvasRenderingContextHost::IsImageBitmapRenderingContext() const {
 }
 
 CanvasResourceProvider*
-CanvasRenderingContextHost::GetOrCreateCanvasResourceProvider(
-    RasterModeHint hint) {
-  return GetOrCreateCanvasResourceProviderImpl(hint);
+CanvasRenderingContextHost::GetOrCreateCanvasResourceProvider() {
+  return GetOrCreateCanvasResourceProviderImpl(RasterModeHint::kPreferGPU);
 }
 
 CanvasResourceProvider*

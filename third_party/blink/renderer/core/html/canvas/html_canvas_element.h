@@ -224,8 +224,7 @@ class CORE_EXPORT HTMLCanvasElement final
   size_t GetMemoryUsage() const override;
   bool ShouldAccelerate2dContext() const override;
   bool LowLatencyEnabled() const override;
-  CanvasResourceProvider* GetOrCreateCanvasResourceProvider(
-      RasterModeHint hint) override;
+  CanvasResourceProvider* GetOrCreateCanvasResourceProvider() override;
   bool IsPrinting() const override;
   bool IsHibernating() const override;
   void SetTransferToGPUTextureWasInvoked() override;

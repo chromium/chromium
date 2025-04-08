@@ -843,7 +843,7 @@ void WebGLRenderingContextBase::commit() {
   int height = GetDrawingBuffer()->Size().height();
 
   if (PaintRenderingResultsToCanvas(kBackBuffer)) {
-    if (Host()->GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU)) {
+    if (Host()->GetOrCreateCanvasResourceProvider()) {
       Host()->Commit(
           Host()->ResourceProvider()->ProduceCanvasResource(FlushReason::kNone),
           SkIRect::MakeWH(width, height));
@@ -1694,7 +1694,7 @@ bool WebGLRenderingContextBase::PushFrameNoCopy() {
 bool WebGLRenderingContextBase::PushFrameWithCopy() {
   bool submitted_frame = false;
   if (PaintRenderingResultsToCanvas(kBackBuffer)) {
-    if (Host()->GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU)) {
+    if (Host()->GetOrCreateCanvasResourceProvider()) {
       const int width = GetDrawingBuffer()->Size().width();
       const int height = GetDrawingBuffer()->Size().height();
       submitted_frame =
@@ -1901,7 +1901,7 @@ bool WebGLRenderingContextBase::PaintRenderingResultsToCanvas(
   must_paint_to_canvas_ = false;
 
   CanvasResourceProvider* resource_provider =
-      Host()->GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
+      Host()->GetOrCreateCanvasResourceProvider();
   if (!resource_provider)
     return false;
 
