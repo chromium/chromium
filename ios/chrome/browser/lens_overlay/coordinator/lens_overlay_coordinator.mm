@@ -75,6 +75,8 @@
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/web/model/web_state_delegate_browser_agent.h"
 #import "ios/public/provider/chrome/browser/lens/lens_configuration.h"
+#import "ios/public/provider/chrome/browser/lens/lens_image_metadata.h"
+#import "ios/public/provider/chrome/browser/lens/lens_image_source.h"
 #import "ios/public/provider/chrome/browser/lens/lens_overlay_api.h"
 #import "ios/public/provider/chrome/browser/lens/lens_overlay_result.h"
 #import "ios/web/public/web_state.h"
@@ -353,6 +355,17 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
 
   BOOL success = [self createUIWithImageSource:imageSource];
   if (success) {
+    // For metadata associated with translate requests, start the selection
+    // UI early to improve the perceived translation speed, as no other results
+    // are expected to arrive.
+    // TODO(crbug.com/400523059): Remove check once roll is complete.
+    if ([imageSource.imageMetadata
+            respondsToSelector:@selector(translateFilterActive)]) {
+      if (imageSource.imageMetadata.translateFilterActive) {
+        [_selectionViewController start];
+      }
+    }
+
     [self showLensUI:animated completion:completion];
   } else {
     [self destroyLensUI:NO
