@@ -161,18 +161,11 @@ class PrivacySandboxNoticeStorage {
   void RecordHistogramsOnStartup(PrefService* pref_service,
                                  std::string_view notice) const;
 
-  // Sets the pref and histogram controlling the action taken on the notice.
-  void SetNoticeActionTaken(
-      PrefService* pref_service,
-      std::string_view notice,
-      notice::mojom::PrivacySandboxNoticeEvent notice_action_taken,
-      base::Time notice_action_taken_time);
-
-  // Updates the pref and histogram controlling whether the notice has been
-  // shown.
-  void SetNoticeShown(PrefService* pref_service,
-                      std::string_view notice,
-                      base::Time notice_shown_time);
+  // Records a Notice Event.
+  void RecordEvent(PrefService* pref_service,
+                   std::string_view notice,
+                   notice::mojom::PrivacySandboxNoticeEvent event,
+                   base::Time event_time);
 
   // Migration functions.
 
@@ -197,6 +190,20 @@ class PrivacySandboxNoticeStorage {
   PrivacySandboxNoticeStorage(const PrivacySandboxNoticeStorage&) = delete;
   PrivacySandboxNoticeStorage& operator=(const PrivacySandboxNoticeStorage&) =
       delete;
+
+ private:
+  // Sets the pref and histogram controlling the action taken on the notice.
+  void SetNoticeActionTaken(
+      PrefService* pref_service,
+      std::string_view notice,
+      notice::mojom::PrivacySandboxNoticeEvent notice_action_taken,
+      base::Time notice_action_taken_time);
+
+  // Updates the pref and histogram controlling whether the notice has been
+  // shown.
+  void SetNoticeShown(PrefService* pref_service,
+                      std::string_view notice,
+                      base::Time notice_shown_time);
 };
 
 }  // namespace privacy_sandbox

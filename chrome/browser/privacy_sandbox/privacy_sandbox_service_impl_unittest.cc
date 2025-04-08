@@ -110,6 +110,7 @@ using FakeNoticePromptSuppressionReason =
 using enum privacy_sandbox_test_util::StateKey;
 using enum privacy_sandbox_test_util::InputKey;
 using enum privacy_sandbox_test_util::OutputKey;
+using enum PrivacySandboxService::PromptAction;
 
 using privacy_sandbox_test_util::InputKey;
 using privacy_sandbox_test_util::OutputKey;
@@ -760,62 +761,62 @@ TEST_F(PrivacySandboxServiceTest, PromptActionsUMAActions) {
   feature_list()->InitAndEnableFeatureWithParameters(
       privacy_sandbox::kPrivacySandboxSettings4,
       {{privacy_sandbox::kPrivacySandboxSettings4NoticeRequiredName, "true"}});
-  privacy_sandbox_service()->PromptActionOccurred(PromptAction::kNoticeShown,
+  privacy_sandbox_service()->PromptActionOccurred(kNoticeShown,
                                                   SurfaceType::kDesktop);
   EXPECT_EQ(
       user_action_tester.GetActionCount("Settings.PrivacySandbox.Notice.Shown"),
       1);
 
-  privacy_sandbox_service()->PromptActionOccurred(
-      PromptAction::kNoticeOpenSettings, SurfaceType::kDesktop);
+  privacy_sandbox_service()->PromptActionOccurred(kNoticeOpenSettings,
+                                                  SurfaceType::kDesktop);
   EXPECT_EQ(user_action_tester.GetActionCount(
                 "Settings.PrivacySandbox.Notice.OpenedSettings"),
             1);
 
-  privacy_sandbox_service()->PromptActionOccurred(
-      PromptAction::kNoticeAcknowledge, SurfaceType::kDesktop);
+  privacy_sandbox_service()->PromptActionOccurred(kNoticeAcknowledge,
+                                                  SurfaceType::kDesktop);
   EXPECT_EQ(user_action_tester.GetActionCount(
                 "Settings.PrivacySandbox.Notice.Acknowledged"),
             1);
 
-  privacy_sandbox_service()->PromptActionOccurred(PromptAction::kNoticeDismiss,
+  privacy_sandbox_service()->PromptActionOccurred(kNoticeDismiss,
                                                   SurfaceType::kDesktop);
   EXPECT_EQ(user_action_tester.GetActionCount(
                 "Settings.PrivacySandbox.Notice.Dismissed"),
             1);
 
-  privacy_sandbox_service()->PromptActionOccurred(
-      PromptAction::kNoticeClosedNoInteraction, SurfaceType::kDesktop);
+  privacy_sandbox_service()->PromptActionOccurred(kNoticeClosedNoInteraction,
+                                                  SurfaceType::kDesktop);
   EXPECT_EQ(user_action_tester.GetActionCount(
                 "Settings.PrivacySandbox.Notice.ClosedNoInteraction"),
             1);
 
-  privacy_sandbox_service()->PromptActionOccurred(
-      PromptAction::kNoticeLearnMore, SurfaceType::kDesktop);
+  privacy_sandbox_service()->PromptActionOccurred(kNoticeLearnMore,
+                                                  SurfaceType::kDesktop);
   EXPECT_EQ(user_action_tester.GetActionCount(
                 "Settings.PrivacySandbox.Notice.LearnMore"),
             1);
 
-  privacy_sandbox_service()->PromptActionOccurred(
-      PromptAction::kNoticeMoreInfoOpened, SurfaceType::kDesktop);
+  privacy_sandbox_service()->PromptActionOccurred(kNoticeMoreInfoOpened,
+                                                  SurfaceType::kDesktop);
   EXPECT_EQ(user_action_tester.GetActionCount(
                 "Settings.PrivacySandbox.Notice.LearnMoreExpanded"),
             1);
 
-  privacy_sandbox_service()->PromptActionOccurred(
-      PromptAction::kNoticeMoreInfoClosed, SurfaceType::kDesktop);
+  privacy_sandbox_service()->PromptActionOccurred(kNoticeMoreInfoClosed,
+                                                  SurfaceType::kDesktop);
   EXPECT_EQ(user_action_tester.GetActionCount(
                 "Settings.PrivacySandbox.Notice.LearnMoreClosed"),
             1);
 
-  privacy_sandbox_service()->PromptActionOccurred(
-      PromptAction::kConsentMoreButtonClicked, SurfaceType::kDesktop);
+  privacy_sandbox_service()->PromptActionOccurred(kConsentMoreButtonClicked,
+                                                  SurfaceType::kDesktop);
   EXPECT_EQ(user_action_tester.GetActionCount(
                 "Settings.PrivacySandbox.Consent.MoreButtonClicked"),
             1);
 
-  privacy_sandbox_service()->PromptActionOccurred(
-      PromptAction::kNoticeMoreButtonClicked, SurfaceType::kDesktop);
+  privacy_sandbox_service()->PromptActionOccurred(kNoticeMoreButtonClicked,
+                                                  SurfaceType::kDesktop);
   EXPECT_EQ(user_action_tester.GetActionCount(
                 "Settings.PrivacySandbox.Notice.MoreButtonClicked"),
             1);
@@ -823,30 +824,28 @@ TEST_F(PrivacySandboxServiceTest, PromptActionsUMAActions) {
   // Site Suggested Ads & Ads Measurement more info dropdown prompt actions part
   // of Ads API UX Enhancements.
   privacy_sandbox_service()->PromptActionOccurred(
-      PromptAction::kNoticeSiteSuggestedAdsMoreInfoOpened,
-      SurfaceType::kDesktop);
+      kNoticeSiteSuggestedAdsMoreInfoOpened, SurfaceType::kDesktop);
   EXPECT_EQ(
       user_action_tester.GetActionCount(
           "Settings.PrivacySandbox.Notice.SiteSuggestedAdsLearnMoreExpanded"),
       1);
 
   privacy_sandbox_service()->PromptActionOccurred(
-      PromptAction::kNoticeSiteSuggestedAdsMoreInfoClosed,
-      SurfaceType::kDesktop);
+      kNoticeSiteSuggestedAdsMoreInfoClosed, SurfaceType::kDesktop);
   EXPECT_EQ(
       user_action_tester.GetActionCount(
           "Settings.PrivacySandbox.Notice.SiteSuggestedAdsLearnMoreClosed"),
       1);
 
   privacy_sandbox_service()->PromptActionOccurred(
-      PromptAction::kNoticeAdsMeasurementMoreInfoOpened, SurfaceType::kDesktop);
+      kNoticeAdsMeasurementMoreInfoOpened, SurfaceType::kDesktop);
   EXPECT_EQ(
       user_action_tester.GetActionCount(
           "Settings.PrivacySandbox.Notice.AdsMeasurementLearnMoreExpanded"),
       1);
 
   privacy_sandbox_service()->PromptActionOccurred(
-      PromptAction::kNoticeAdsMeasurementMoreInfoClosed, SurfaceType::kDesktop);
+      kNoticeAdsMeasurementMoreInfoClosed, SurfaceType::kDesktop);
   EXPECT_EQ(user_action_tester.GetActionCount(
                 "Settings.PrivacySandbox.Notice.AdsMeasurementLearnMoreClosed"),
             1);
@@ -856,44 +855,44 @@ TEST_F(PrivacySandboxServiceTest, PromptActionsUMAActions) {
       privacy_sandbox::kPrivacySandboxSettings4,
       {{privacy_sandbox::kPrivacySandboxSettings4ConsentRequiredName, "true"}});
 
-  privacy_sandbox_service()->PromptActionOccurred(PromptAction::kConsentShown,
+  privacy_sandbox_service()->PromptActionOccurred(kConsentShown,
                                                   SurfaceType::kDesktop);
   EXPECT_EQ(user_action_tester.GetActionCount(
                 "Settings.PrivacySandbox.Consent.Shown"),
             1);
 
-  privacy_sandbox_service()->PromptActionOccurred(
-      PromptAction::kConsentAccepted, SurfaceType::kDesktop);
+  privacy_sandbox_service()->PromptActionOccurred(kConsentAccepted,
+                                                  SurfaceType::kDesktop);
   EXPECT_EQ(user_action_tester.GetActionCount(
                 "Settings.PrivacySandbox.Consent.Accepted"),
             1);
 
-  privacy_sandbox_service()->PromptActionOccurred(
-      PromptAction::kConsentDeclined, SurfaceType::kDesktop);
+  privacy_sandbox_service()->PromptActionOccurred(kConsentDeclined,
+                                                  SurfaceType::kDesktop);
   EXPECT_EQ(user_action_tester.GetActionCount(
                 "Settings.PrivacySandbox.Consent.Declined"),
             1);
 
-  privacy_sandbox_service()->PromptActionOccurred(
-      PromptAction::kConsentMoreInfoOpened, SurfaceType::kDesktop);
+  privacy_sandbox_service()->PromptActionOccurred(kConsentMoreInfoOpened,
+                                                  SurfaceType::kDesktop);
   EXPECT_EQ(user_action_tester.GetActionCount(
                 "Settings.PrivacySandbox.Consent.LearnMoreExpanded"),
             1);
 
-  privacy_sandbox_service()->PromptActionOccurred(
-      PromptAction::kPrivacyPolicyLinkClicked, SurfaceType::kDesktop);
+  privacy_sandbox_service()->PromptActionOccurred(kPrivacyPolicyLinkClicked,
+                                                  SurfaceType::kDesktop);
   EXPECT_EQ(user_action_tester.GetActionCount(
                 "Settings.PrivacySandbox.Consent.PrivacyPolicyLinkClicked"),
             1);
 
-  privacy_sandbox_service()->PromptActionOccurred(
-      PromptAction::kConsentMoreInfoClosed, SurfaceType::kDesktop);
+  privacy_sandbox_service()->PromptActionOccurred(kConsentMoreInfoClosed,
+                                                  SurfaceType::kDesktop);
   EXPECT_EQ(user_action_tester.GetActionCount(
                 "Settings.PrivacySandbox.Consent.LearnMoreClosed"),
             1);
 
-  privacy_sandbox_service()->PromptActionOccurred(
-      PromptAction::kConsentClosedNoDecision, SurfaceType::kDesktop);
+  privacy_sandbox_service()->PromptActionOccurred(kConsentClosedNoDecision,
+                                                  SurfaceType::kDesktop);
   EXPECT_EQ(user_action_tester.GetActionCount(
                 "Settings.PrivacySandbox.Consent.ClosedNoInteraction"),
             1);
@@ -905,33 +904,32 @@ TEST_F(PrivacySandboxServiceTest, PromptActionsUMAActions) {
        {privacy_sandbox::kPrivacySandboxSettings4RestrictedNoticeName,
         "true"}});
 
-  privacy_sandbox_service()->PromptActionOccurred(
-      PromptAction::kRestrictedNoticeOpenSettings, SurfaceType::kDesktop);
+  privacy_sandbox_service()->PromptActionOccurred(kRestrictedNoticeOpenSettings,
+                                                  SurfaceType::kDesktop);
   EXPECT_EQ(user_action_tester.GetActionCount(
                 "Settings.PrivacySandbox.RestrictedNotice.OpenedSettings"),
             1);
 
-  privacy_sandbox_service()->PromptActionOccurred(
-      PromptAction::kRestrictedNoticeAcknowledge, SurfaceType::kDesktop);
+  privacy_sandbox_service()->PromptActionOccurred(kRestrictedNoticeAcknowledge,
+                                                  SurfaceType::kDesktop);
   EXPECT_EQ(user_action_tester.GetActionCount(
                 "Settings.PrivacySandbox.RestrictedNotice.Acknowledged"),
             1);
 
-  privacy_sandbox_service()->PromptActionOccurred(
-      PromptAction::kRestrictedNoticeShown, SurfaceType::kDesktop);
+  privacy_sandbox_service()->PromptActionOccurred(kRestrictedNoticeShown,
+                                                  SurfaceType::kDesktop);
   EXPECT_EQ(user_action_tester.GetActionCount(
                 "Settings.PrivacySandbox.RestrictedNotice.Shown"),
             1);
 
   privacy_sandbox_service()->PromptActionOccurred(
-      PromptAction::kRestrictedNoticeClosedNoInteraction,
-      SurfaceType::kDesktop);
+      kRestrictedNoticeClosedNoInteraction, SurfaceType::kDesktop);
   EXPECT_EQ(user_action_tester.GetActionCount(
                 "Settings.PrivacySandbox.RestrictedNotice.ClosedNoInteraction"),
             1);
 
   privacy_sandbox_service()->PromptActionOccurred(
-      PromptAction::kRestrictedNoticeMoreButtonClicked, SurfaceType::kDesktop);
+      kRestrictedNoticeMoreButtonClicked, SurfaceType::kDesktop);
   EXPECT_EQ(user_action_tester.GetActionCount(
                 "Settings.PrivacySandbox.RestrictedNotice.MoreButtonClicked"),
             1);
@@ -2694,10 +2692,10 @@ using NoticeSettingsTest = PrivacySandboxNoticeActionToStorageTests;
 
 TEST_P(TopicsConsentTest, DidConsentOptInUpdateNoticeStorage) {
   // Show then OptIn
-  privacy_sandbox_service()->PromptActionOccurred(PromptAction::kConsentShown,
+  privacy_sandbox_service()->PromptActionOccurred(kConsentShown,
                                                   GetParam().surface_type);
-  privacy_sandbox_service()->PromptActionOccurred(
-      PromptAction::kConsentAccepted, GetParam().surface_type);
+  privacy_sandbox_service()->PromptActionOccurred(kConsentAccepted,
+                                                  GetParam().surface_type);
 
   // Pref
   auto actual =
@@ -2715,10 +2713,10 @@ TEST_P(TopicsConsentTest, DidConsentOptInUpdateNoticeStorage) {
 
 TEST_P(TopicsConsentTest, DidConsentOptOutUpdateNoticeStorage) {
   // Show then OptOut
-  privacy_sandbox_service()->PromptActionOccurred(PromptAction::kConsentShown,
+  privacy_sandbox_service()->PromptActionOccurred(kConsentShown,
                                                   GetParam().surface_type);
-  privacy_sandbox_service()->PromptActionOccurred(
-      PromptAction::kConsentDeclined, GetParam().surface_type);
+  privacy_sandbox_service()->PromptActionOccurred(kConsentDeclined,
+                                                  GetParam().surface_type);
 
   // Pref
   auto actual =
@@ -2814,57 +2812,57 @@ INSTANTIATE_TEST_SUITE_P(
         // Topics Consent Shown
         {{.surface_type = SurfaceType::kDesktop,
           .feature_flag = ConsentFeature(),
-          .shown_type = PromptAction::kConsentShown,
+          .shown_type = kConsentShown,
           .notice_name = privacy_sandbox::kTopicsConsentModal},
          {.surface_type = SurfaceType::kBrApp,
           .feature_flag = ConsentFeature(),
-          .shown_type = PromptAction::kConsentShown,
+          .shown_type = kConsentShown,
           .notice_name = privacy_sandbox::kTopicsConsentModalClankBrApp},
          {.surface_type = SurfaceType::kAGACCT,
           .feature_flag = ConsentFeature(),
-          .shown_type = PromptAction::kConsentShown,
+          .shown_type = kConsentShown,
           .notice_name = privacy_sandbox::kTopicsConsentModalClankCCT},
          // EEA regional API notice Shown
          {.surface_type = SurfaceType::kDesktop,
           .feature_flag = ConsentFeature(),
-          .shown_type = PromptAction::kNoticeShown,
+          .shown_type = kNoticeShown,
           .notice_name =
               privacy_sandbox::kProtectedAudienceMeasurementNoticeModal},
          {.surface_type = SurfaceType::kBrApp,
           .feature_flag = ConsentFeature(),
-          .shown_type = PromptAction::kNoticeShown,
+          .shown_type = kNoticeShown,
           .notice_name = privacy_sandbox::
               kProtectedAudienceMeasurementNoticeModalClankBrApp},
          {.surface_type = SurfaceType::kAGACCT,
           .feature_flag = ConsentFeature(),
-          .shown_type = PromptAction::kNoticeShown,
+          .shown_type = kNoticeShown,
           .notice_name = privacy_sandbox::
               kProtectedAudienceMeasurementNoticeModalClankCCT},
          // ROW regional API notice Shown
          {.surface_type = SurfaceType::kDesktop,
           .feature_flag = NoticeFeature(),
-          .shown_type = PromptAction::kNoticeShown,
+          .shown_type = kNoticeShown,
           .notice_name = privacy_sandbox::kThreeAdsAPIsNoticeModal},
          {.surface_type = SurfaceType::kBrApp,
           .feature_flag = NoticeFeature(),
-          .shown_type = PromptAction::kNoticeShown,
+          .shown_type = kNoticeShown,
           .notice_name = privacy_sandbox::kThreeAdsAPIsNoticeModalClankBrApp},
          {.surface_type = SurfaceType::kAGACCT,
           .feature_flag = NoticeFeature(),
-          .shown_type = PromptAction::kNoticeShown,
+          .shown_type = kNoticeShown,
           .notice_name = privacy_sandbox::kThreeAdsAPIsNoticeModalClankCCT},
          // Restricted API notice Shown
          {.surface_type = SurfaceType::kDesktop,
           .feature_flag = RestrictedNoticeFeature(),
-          .shown_type = PromptAction::kRestrictedNoticeShown,
+          .shown_type = kRestrictedNoticeShown,
           .notice_name = privacy_sandbox::kMeasurementNoticeModal},
          {.surface_type = SurfaceType::kBrApp,
           .feature_flag = RestrictedNoticeFeature(),
-          .shown_type = PromptAction::kRestrictedNoticeShown,
+          .shown_type = kRestrictedNoticeShown,
           .notice_name = privacy_sandbox::kMeasurementNoticeModalClankBrApp},
          {.surface_type = SurfaceType::kAGACCT,
           .feature_flag = RestrictedNoticeFeature(),
-          .shown_type = PromptAction::kRestrictedNoticeShown,
+          .shown_type = kRestrictedNoticeShown,
           .notice_name = privacy_sandbox::kMeasurementNoticeModalClankCCT}}));
 
 INSTANTIATE_TEST_SUITE_P(
@@ -2889,51 +2887,51 @@ INSTANTIATE_TEST_SUITE_P(
     testing::ValuesIn<NoticeTestingParameters>(
         {{.surface_type = SurfaceType::kDesktop,
           .feature_flag = ConsentFeature(),
-          .shown_type = PromptAction::kNoticeShown,
-          .prompt_action = PromptAction::kNoticeAcknowledge,
+          .shown_type = kNoticeShown,
+          .prompt_action = kNoticeAcknowledge,
           .notice_name =
               privacy_sandbox::kProtectedAudienceMeasurementNoticeModal},
          {.surface_type = SurfaceType::kBrApp,
           .feature_flag = ConsentFeature(),
-          .shown_type = PromptAction::kNoticeShown,
-          .prompt_action = PromptAction::kNoticeAcknowledge,
+          .shown_type = kNoticeShown,
+          .prompt_action = kNoticeAcknowledge,
           .notice_name = privacy_sandbox::
               kProtectedAudienceMeasurementNoticeModalClankBrApp},
          {.surface_type = SurfaceType::kAGACCT,
           .feature_flag = ConsentFeature(),
-          .shown_type = PromptAction::kNoticeShown,
-          .prompt_action = PromptAction::kNoticeAcknowledge,
+          .shown_type = kNoticeShown,
+          .prompt_action = kNoticeAcknowledge,
           .notice_name = privacy_sandbox::
               kProtectedAudienceMeasurementNoticeModalClankCCT},
          {.surface_type = SurfaceType::kDesktop,
           .feature_flag = NoticeFeature(),
-          .shown_type = PromptAction::kNoticeShown,
-          .prompt_action = PromptAction::kNoticeAcknowledge,
+          .shown_type = kNoticeShown,
+          .prompt_action = kNoticeAcknowledge,
           .notice_name = privacy_sandbox::kThreeAdsAPIsNoticeModal},
          {.surface_type = SurfaceType::kBrApp,
           .feature_flag = NoticeFeature(),
-          .shown_type = PromptAction::kNoticeShown,
-          .prompt_action = PromptAction::kNoticeAcknowledge,
+          .shown_type = kNoticeShown,
+          .prompt_action = kNoticeAcknowledge,
           .notice_name = privacy_sandbox::kThreeAdsAPIsNoticeModalClankBrApp},
          {.surface_type = SurfaceType::kAGACCT,
           .feature_flag = NoticeFeature(),
-          .shown_type = PromptAction::kNoticeShown,
-          .prompt_action = PromptAction::kNoticeAcknowledge,
+          .shown_type = kNoticeShown,
+          .prompt_action = kNoticeAcknowledge,
           .notice_name = privacy_sandbox::kThreeAdsAPIsNoticeModalClankCCT},
          {.surface_type = SurfaceType::kDesktop,
           .feature_flag = RestrictedNoticeFeature(),
-          .shown_type = PromptAction::kRestrictedNoticeShown,
-          .prompt_action = PromptAction::kRestrictedNoticeAcknowledge,
+          .shown_type = kRestrictedNoticeShown,
+          .prompt_action = kRestrictedNoticeAcknowledge,
           .notice_name = privacy_sandbox::kMeasurementNoticeModal},
          {.surface_type = SurfaceType::kBrApp,
           .feature_flag = RestrictedNoticeFeature(),
-          .shown_type = PromptAction::kRestrictedNoticeShown,
-          .prompt_action = PromptAction::kRestrictedNoticeAcknowledge,
+          .shown_type = kRestrictedNoticeShown,
+          .prompt_action = kRestrictedNoticeAcknowledge,
           .notice_name = privacy_sandbox::kMeasurementNoticeModalClankBrApp},
          {.surface_type = SurfaceType::kAGACCT,
           .feature_flag = RestrictedNoticeFeature(),
-          .shown_type = PromptAction::kRestrictedNoticeShown,
-          .prompt_action = PromptAction::kRestrictedNoticeAcknowledge,
+          .shown_type = kRestrictedNoticeShown,
+          .prompt_action = kRestrictedNoticeAcknowledge,
           .notice_name = privacy_sandbox::kMeasurementNoticeModalClankCCT}}));
 
 INSTANTIATE_TEST_SUITE_P(
@@ -2943,51 +2941,51 @@ INSTANTIATE_TEST_SUITE_P(
         // Settings click on ROW, EEA, Restricted Notices
         {{.surface_type = SurfaceType::kDesktop,
           .feature_flag = ConsentFeature(),
-          .shown_type = PromptAction::kNoticeShown,
-          .prompt_action = PromptAction::kNoticeOpenSettings,
+          .shown_type = kNoticeShown,
+          .prompt_action = kNoticeOpenSettings,
           .notice_name =
               privacy_sandbox::kProtectedAudienceMeasurementNoticeModal},
          {.surface_type = SurfaceType::kBrApp,
           .feature_flag = ConsentFeature(),
-          .shown_type = PromptAction::kNoticeShown,
-          .prompt_action = PromptAction::kNoticeOpenSettings,
+          .shown_type = kNoticeShown,
+          .prompt_action = kNoticeOpenSettings,
           .notice_name = privacy_sandbox::
               kProtectedAudienceMeasurementNoticeModalClankBrApp},
          {.surface_type = SurfaceType::kAGACCT,
           .feature_flag = ConsentFeature(),
-          .shown_type = PromptAction::kNoticeShown,
-          .prompt_action = PromptAction::kNoticeOpenSettings,
+          .shown_type = kNoticeShown,
+          .prompt_action = kNoticeOpenSettings,
           .notice_name = privacy_sandbox::
               kProtectedAudienceMeasurementNoticeModalClankCCT},
          {.surface_type = SurfaceType::kDesktop,
           .feature_flag = NoticeFeature(),
-          .shown_type = PromptAction::kNoticeShown,
-          .prompt_action = PromptAction::kNoticeOpenSettings,
+          .shown_type = kNoticeShown,
+          .prompt_action = kNoticeOpenSettings,
           .notice_name = privacy_sandbox::kThreeAdsAPIsNoticeModal},
          {.surface_type = SurfaceType::kBrApp,
           .feature_flag = NoticeFeature(),
-          .shown_type = PromptAction::kNoticeShown,
-          .prompt_action = PromptAction::kNoticeOpenSettings,
+          .shown_type = kNoticeShown,
+          .prompt_action = kNoticeOpenSettings,
           .notice_name = privacy_sandbox::kThreeAdsAPIsNoticeModalClankBrApp},
          {.surface_type = SurfaceType::kAGACCT,
           .feature_flag = NoticeFeature(),
-          .shown_type = PromptAction::kNoticeShown,
-          .prompt_action = PromptAction::kNoticeOpenSettings,
+          .shown_type = kNoticeShown,
+          .prompt_action = kNoticeOpenSettings,
           .notice_name = privacy_sandbox::kThreeAdsAPIsNoticeModalClankCCT},
          {.surface_type = SurfaceType::kDesktop,
           .feature_flag = RestrictedNoticeFeature(),
-          .shown_type = PromptAction::kRestrictedNoticeShown,
-          .prompt_action = PromptAction::kRestrictedNoticeOpenSettings,
+          .shown_type = kRestrictedNoticeShown,
+          .prompt_action = kRestrictedNoticeOpenSettings,
           .notice_name = privacy_sandbox::kMeasurementNoticeModal},
          {.surface_type = SurfaceType::kBrApp,
           .feature_flag = RestrictedNoticeFeature(),
-          .shown_type = PromptAction::kRestrictedNoticeShown,
-          .prompt_action = PromptAction::kRestrictedNoticeOpenSettings,
+          .shown_type = kRestrictedNoticeShown,
+          .prompt_action = kRestrictedNoticeOpenSettings,
           .notice_name = privacy_sandbox::kMeasurementNoticeModalClankBrApp},
          {.surface_type = SurfaceType::kAGACCT,
           .feature_flag = RestrictedNoticeFeature(),
-          .shown_type = PromptAction::kRestrictedNoticeShown,
-          .prompt_action = PromptAction::kRestrictedNoticeOpenSettings,
+          .shown_type = kRestrictedNoticeShown,
+          .prompt_action = kRestrictedNoticeOpenSettings,
           .notice_name = privacy_sandbox::kMeasurementNoticeModalClankCCT}}));
 
 class PrivacySandboxServiceM1RestrictedNoticeTest
@@ -3005,20 +3003,18 @@ class PrivacySandboxServiceM1RestrictedNoticeTest
 TEST_F(PrivacySandboxServiceM1RestrictedNoticeTest,
        RestrictedPromptActionsUpdatePrefs) {
   // Prompt acknowledge action should update the prefs accordingly.
-  RunTestCase(
-      TestState{{kM1AdMeasurementEnabledUserPrefValue, false},
-                {kM1RestrictedNoticePreviouslyAcknowledged, false}},
-      TestInput{{kPromptAction,
-                 static_cast<int>(PromptAction::kRestrictedNoticeAcknowledge)}},
-      TestOutput{{kM1AdMeasurementEnabled, true},
-                 {kM1RestrictedNoticeAcknowledged, true}});
+  RunTestCase(TestState{{kM1AdMeasurementEnabledUserPrefValue, false},
+                        {kM1RestrictedNoticePreviouslyAcknowledged, false}},
+              TestInput{{kPromptAction,
+                         static_cast<int>(kRestrictedNoticeAcknowledge)}},
+              TestOutput{{kM1AdMeasurementEnabled, true},
+                         {kM1RestrictedNoticeAcknowledged, true}});
 
   // Open settings action should update the prefs accordingly.
   RunTestCase(TestState{{kM1AdMeasurementEnabledUserPrefValue, false},
                         {kM1RestrictedNoticePreviouslyAcknowledged, false}},
               TestInput{{kPromptAction,
-                         static_cast<int>(
-                             PromptAction::kRestrictedNoticeOpenSettings)}},
+                         static_cast<int>(kRestrictedNoticeOpenSettings)}},
               TestOutput{{kM1AdMeasurementEnabled, true},
                          {kM1RestrictedNoticeAcknowledged, true}});
 }
@@ -3463,8 +3459,7 @@ TEST_F(PrivacySandboxServiceM1ConsentPromptTest, PromptAction_ConsentAccepted) {
   RunTestCase(
       TestState{{kActiveTopicsConsent, false},
                 {kAdvanceClockBy, base::Hours(1)}},
-      TestInput{
-          {kPromptAction, static_cast<int>(PromptAction::kConsentAccepted)}},
+      TestInput{{kPromptAction, static_cast<int>(kConsentAccepted)}},
       TestOutput{
           {kM1ConsentDecisionMade, true},
           {kM1TopicsEnabled, true},
@@ -3482,8 +3477,7 @@ TEST_F(PrivacySandboxServiceM1ConsentPromptTest, PromptAction_ConsentDeclined) {
   RunTestCase(
       TestState{{kActiveTopicsConsent, true},
                 {kAdvanceClockBy, base::Hours(1)}},
-      TestInput{
-          {kPromptAction, static_cast<int>(PromptAction::kConsentDeclined)}},
+      TestInput{{kPromptAction, static_cast<int>(kConsentDeclined)}},
       TestOutput{
           {kM1ConsentDecisionMade, true},
           {kM1TopicsEnabled, false},
@@ -3501,16 +3495,14 @@ TEST_F(PrivacySandboxServiceM1ConsentPromptTest,
   // acknowledged, it correctly adjusts the Privacy Sandbox prefs.
   RunTestCase(TestState{{kM1ConsentDecisionPreviouslyMade, true},
                         {kM1EEANoticePreviouslyAcknowledged, false}},
-              TestInput{{kPromptAction,
-                         static_cast<int>(PromptAction::kNoticeAcknowledge)}},
+              TestInput{{kPromptAction, static_cast<int>(kNoticeAcknowledge)}},
               TestOutput{{kM1EEANoticeAcknowledged, true},
                          {kM1FledgeEnabled, true},
                          {kM1AdMeasurementEnabled, true}});
   RunTestCase(
       TestState{{kM1ConsentDecisionPreviouslyMade, true},
                 {kM1EEANoticePreviouslyAcknowledged, false}},
-      TestInput{
-          {kPromptAction, static_cast<int>(PromptAction::kNoticeOpenSettings)}},
+      TestInput{{kPromptAction, static_cast<int>(kNoticeOpenSettings)}},
       TestOutput{{kM1EEANoticeAcknowledged, true},
                  {kM1FledgeEnabled, true},
                  {kM1AdMeasurementEnabled, true},
@@ -3527,8 +3519,7 @@ TEST_F(PrivacySandboxServiceM1ConsentPromptTest,
   RunTestCase(TestState{{kM1ConsentDecisionPreviouslyMade, true},
                         {kM1EEANoticePreviouslyAcknowledged, false},
                         {kM1RowNoticePreviouslyAcknowledged, true}},
-              TestInput{{kPromptAction,
-                         static_cast<int>(PromptAction::kNoticeAcknowledge)}},
+              TestInput{{kPromptAction, static_cast<int>(kNoticeAcknowledge)}},
               TestOutput{{kM1EEANoticeAcknowledged, true},
                          {kM1FledgeEnabled, false},
                          {kM1AdMeasurementEnabled, false}});
@@ -3643,8 +3634,7 @@ TEST_F(PrivacySandboxServiceM1NoticePromptTest,
   // Confirm that when the service is informed that the row notice was
   // acknowledged, it correctly adjusts the Privacy Sandbox prefs.
   RunTestCase(TestState{},
-              TestInput{{kPromptAction,
-                         static_cast<int>(PromptAction::kNoticeAcknowledge)}},
+              TestInput{{kPromptAction, static_cast<int>(kNoticeAcknowledge)}},
               TestOutput{{kM1RowNoticeAcknowledged, true},
                          {kM1TopicsEnabled, true},
                          {kM1FledgeEnabled, true},
@@ -3656,8 +3646,7 @@ TEST_F(PrivacySandboxServiceM1NoticePromptTest, PromptAction_OpenSettings) {
   // Confirm that when the service is informed that the row notice was
   // acknowledged, it correctly adjusts the Privacy Sandbox prefs.
   RunTestCase(TestState{},
-              TestInput{{kPromptAction,
-                         static_cast<int>(PromptAction::kNoticeOpenSettings)}},
+              TestInput{{kPromptAction, static_cast<int>(kNoticeOpenSettings)}},
               TestOutput{{kM1RowNoticeAcknowledged, true},
                          {kM1TopicsEnabled, true},
                          {kM1FledgeEnabled, true},

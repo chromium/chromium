@@ -450,6 +450,18 @@ PrivacySandboxNoticeStorage::ReadNoticeData(PrefService* pref_service,
   return notice_data;
 }
 
+void PrivacySandboxNoticeStorage::RecordEvent(
+    PrefService* pref_service,
+    std::string_view notice,
+    notice::mojom::PrivacySandboxNoticeEvent event,
+    base::Time event_time) {
+  if (event == PrivacySandboxNoticeEvent::kShown) {
+    SetNoticeShown(pref_service, notice, event_time);
+    return;
+  }
+  SetNoticeActionTaken(pref_service, notice, event, event_time);
+}
+
 void PrivacySandboxNoticeStorage::SetNoticeActionTaken(
     PrefService* pref_service,
     std::string_view notice,

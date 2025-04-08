@@ -23,6 +23,7 @@
 namespace privacy_sandbox {
 namespace {
 using notice::mojom::PrivacySandboxNoticeEvent;
+using enum notice::mojom::PrivacySandboxNoticeEvent;
 
 // TODO(crbug.com/333406690): Make a test notice name list injectable so tests
 // don't have to use actual notice names.
@@ -81,8 +82,7 @@ TEST_F(PrivacySandboxNoticeStorageTest, CheckPSNoticeActionHistograms) {
     ASSERT_TRUE(actions.has_value());
   }
 
-  for (int i = static_cast<int>(PrivacySandboxNoticeEvent::kAck);
-       i <= static_cast<int>(PrivacySandboxNoticeEvent::kMaxValue); ++i) {
+  for (int i = static_cast<int>(kAck); i <= static_cast<int>(kMaxValue); ++i) {
     std::string notice_name =
         PrivacySandboxNoticeStorage::GetNoticeActionStringFromEvent(
             static_cast<PrivacySandboxNoticeEvent>(i));
@@ -114,12 +114,13 @@ TEST_F(PrivacySandboxNoticeStorageTest, StartupStateDoesNotExist) {
 
 TEST_F(PrivacySandboxNoticeStorageTest, NoNoticeNameExpectCrash) {
   EXPECT_DEATH_IF_SUPPORTED(
-      notice_storage()->SetNoticeShown(prefs(), "Notice1", base::Time()), "");
+      notice_storage()->RecordEvent(prefs(), "Notice1", kShown, base::Time()),
+      "");
 }
 
 TEST_F(PrivacySandboxNoticeStorageTest, StartupStateEmitsPromptWaiting) {
-  notice_storage()->SetNoticeShown(
-      prefs(), kTopicsConsentModal,
+  notice_storage()->RecordEvent(
+      prefs(), kTopicsConsentModal, kShown,
       base::Time::FromMillisecondsSinceUnixEpoch(200));
 
   notice_storage()->RecordHistogramsOnStartup(prefs(), kTopicsConsentModal);
@@ -158,12 +159,8 @@ TEST_P(PrivacySandboxNoticeStorageStartupTest, StartupStateEmitsSuccessfully) {
   for (auto event_info : std::get<0>(GetParam())) {
     base::Time timestamp =
         base::Time::FromMillisecondsSinceUnixEpoch(event_info.second);
-    if (event_info.first == PrivacySandboxNoticeEvent::kShown) {
-      notice_storage()->SetNoticeShown(prefs(), kTopicsConsentModal, timestamp);
-    } else {
-      notice_storage()->SetNoticeActionTaken(prefs(), kTopicsConsentModal,
-                                             event_info.first, timestamp);
-    }
+    notice_storage()->RecordEvent(prefs(), kTopicsConsentModal,
+                                  event_info.first, timestamp);
   }
 
   notice_storage()->RecordHistogramsOnStartup(prefs(), kTopicsConsentModal);
@@ -180,51 +177,43 @@ INSTANTIATE_TEST_SUITE_P(
             std::tuple<std::vector<std::pair<PrivacySandboxNoticeEvent, int>>,
                        NoticeStartupState>>{
             // Entry 0.
-            {{std::make_pair(PrivacySandboxNoticeEvent::kShown, 100),
-              std::make_pair(PrivacySandboxNoticeEvent::kClosed, 150)},
+            {{std::make_pair(kShown, 100), std::make_pair(kClosed, 150)},
              NoticeStartupState::kFlowCompleted},
             // Entry 1.
-            {{std::make_pair(PrivacySandboxNoticeEvent::kShown, 100),
-              std::make_pair(PrivacySandboxNoticeEvent::kSettings, 110),
-              std::make_pair(PrivacySandboxNoticeEvent::kShown, 120),
-              std::make_pair(PrivacySandboxNoticeEvent::kOptIn, 130)},
+            {{std::make_pair(kShown, 100), std::make_pair(kSettings, 110),
+              std::make_pair(kShown, 120), std::make_pair(kOptIn, 130)},
              NoticeStartupState::kFlowCompletedWithOptIn},
             // Entry 2.
-            {{std::make_pair(PrivacySandboxNoticeEvent::kShown, 100),
-              std::make_pair(PrivacySandboxNoticeEvent::kOptOut, 150)},
+            {{std::make_pair(kShown, 100), std::make_pair(kOptOut, 150)},
              NoticeStartupState::kFlowCompletedWithOptOut},
             // Entry 3.
-            {{std::make_pair(PrivacySandboxNoticeEvent::kShown, 100),
-              std::make_pair(PrivacySandboxNoticeEvent::kAck, 150)},
+            {{std::make_pair(kShown, 100), std::make_pair(kAck, 150)},
              NoticeStartupState::kFlowCompleted},
             // Entry 4.
-            {{std::make_pair(PrivacySandboxNoticeEvent::kShown, 100),
-              std::make_pair(PrivacySandboxNoticeEvent::kClosed, 150),
-              std::make_pair(PrivacySandboxNoticeEvent::kShown, 200)},
+            {{std::make_pair(kShown, 100), std::make_pair(kClosed, 150),
+              std::make_pair(kShown, 200)},
              NoticeStartupState::kPromptWaiting}}));
 
 TEST_F(PrivacySandboxNoticeStorageTest, SetsValuesAndReadsData) {
-  notice_storage()->SetNoticeShown(
-      prefs(), kTopicsConsentModal,
+  notice_storage()->RecordEvent(
+      prefs(), kTopicsConsentModal, kShown,
       base::Time::FromMillisecondsSinceUnixEpoch(100));
-  notice_storage()->SetNoticeActionTaken(
-      prefs(), kTopicsConsentModal, PrivacySandboxNoticeEvent::kAck,
+  notice_storage()->RecordEvent(
+      prefs(), kTopicsConsentModal, kAck,
       base::Time::FromMillisecondsSinceUnixEpoch(200));
   const auto actual =
       notice_storage()->ReadNoticeData(prefs(), kTopicsConsentModal);
 
   EXPECT_EQ(actual->GetNoticeEvents().size(), 2u);
   auto expected =
-      std::make_pair(PrivacySandboxNoticeEvent::kShown,
-                     base::Time::FromMillisecondsSinceUnixEpoch(100));
+      std::make_pair(kShown, base::Time::FromMillisecondsSinceUnixEpoch(100));
   EXPECT_EQ(actual->GetNoticeEvents()[0], expected);
-  expected = std::make_pair(PrivacySandboxNoticeEvent::kAck,
-                            base::Time::FromMillisecondsSinceUnixEpoch(200));
+  expected =
+      std::make_pair(kAck, base::Time::FromMillisecondsSinceUnixEpoch(200));
   EXPECT_EQ(actual->GetNoticeEvents()[1], expected);
 
   histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.Notice.NoticeEvent.TopicsConsentDesktopModal",
-      PrivacySandboxNoticeEvent::kAck, 1);
+      "PrivacySandbox.Notice.NoticeEvent.TopicsConsentDesktopModal", kAck, 1);
   histogram_tester_.ExpectBucketCount(
       "PrivacySandbox.Notice.NoticeAction.TopicsConsentDesktopModal",
       NoticeActionTaken::kAck, 1);
@@ -239,39 +228,37 @@ TEST_F(PrivacySandboxNoticeStorageTest, SetsValuesAndReadsData) {
   histogram_tester_.ExpectBucketCount(
       "PrivacySandbox.Notice.NoticeShown.TopicsConsentDesktopModal", true, 1);
   histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.Notice.NoticeEvent.TopicsConsentDesktopModal",
-      PrivacySandboxNoticeEvent::kShown, 1);
+      "PrivacySandbox.Notice.NoticeEvent.TopicsConsentDesktopModal", kShown, 1);
 }
 
 TEST_F(PrivacySandboxNoticeStorageTest,
        ReActionDoesNotRegisterAndEmitsHistogram) {
   std::string notice = kTopicsConsentModal;
-  notice_storage()->SetNoticeShown(
-      prefs(), notice, base::Time::FromMillisecondsSinceUnixEpoch(100));
-  notice_storage()->SetNoticeActionTaken(
-      prefs(), notice, PrivacySandboxNoticeEvent::kSettings,
+  notice_storage()->RecordEvent(
+      prefs(), notice, kShown, base::Time::FromMillisecondsSinceUnixEpoch(100));
+  notice_storage()->RecordEvent(
+      prefs(), notice, kSettings,
       base::Time::FromMillisecondsSinceUnixEpoch(200));
 
   auto actual = notice_storage()->ReadNoticeData(prefs(), notice);
-  auto expected =
-      std::make_pair(PrivacySandboxNoticeEvent::kSettings,
-                     base::Time::FromMillisecondsSinceUnixEpoch(200));
+  auto expected = std::make_pair(
+      kSettings, base::Time::FromMillisecondsSinceUnixEpoch(200));
   EXPECT_EQ(actual->GetNoticeEvents().size(), 2u);
   EXPECT_EQ(actual->GetNoticeEvents()[1], expected);
   histogram_tester_.ExpectBucketCount(
       "PrivacySandbox.Notice.NoticeAction.TopicsConsentDesktopModal",
       NoticeActionTaken::kSettings, 1);
   histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.Notice.NoticeEvent.TopicsConsentDesktopModal",
-      PrivacySandboxNoticeEvent::kSettings, 1);
+      "PrivacySandbox.Notice.NoticeEvent.TopicsConsentDesktopModal", kSettings,
+      1);
 
   // Tries to override action, should not override and emits histograms.
-  notice_storage()->SetNoticeActionTaken(
-      prefs(), notice, PrivacySandboxNoticeEvent::kAck, base::Time::Now());
+  notice_storage()->RecordEvent(prefs(), notice, kAck, base::Time::Now());
+  actual = notice_storage()->ReadNoticeData(
+      prefs(), notice);  // Re-read data after potential change
   EXPECT_EQ(actual->GetNoticeEvents().size(), 2u);
   histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.Notice.NoticeEvent.TopicsConsentDesktopModal",
-      PrivacySandboxNoticeEvent::kAck, 0);
+      "PrivacySandbox.Notice.NoticeEvent.TopicsConsentDesktopModal", kAck, 0);
   histogram_tester_.ExpectBucketCount(
       "PrivacySandbox.Notice.NoticeAction.TopicsConsentDesktopModal",
       NoticeActionTaken::kAck, 0);
@@ -284,10 +271,10 @@ TEST_F(PrivacySandboxNoticeStorageTest,
 TEST_F(PrivacySandboxNoticeStorageTest,
        MultipleNoticeShownValuesRegisterSuccessfully) {
   std::string notice = kTopicsConsentModal;
-  notice_storage()->SetNoticeShown(
-      prefs(), notice, base::Time::FromMillisecondsSinceUnixEpoch(100));
-  notice_storage()->SetNoticeActionTaken(
-      prefs(), notice, PrivacySandboxNoticeEvent::kSettings,
+  notice_storage()->RecordEvent(
+      prefs(), notice, kShown, base::Time::FromMillisecondsSinceUnixEpoch(100));
+  notice_storage()->RecordEvent(
+      prefs(), notice, kSettings,
       base::Time::FromMillisecondsSinceUnixEpoch(200));
 
   auto actual = notice_storage()->ReadNoticeData(prefs(), kTopicsConsentModal);
@@ -300,8 +287,8 @@ TEST_F(PrivacySandboxNoticeStorageTest,
       "PrivacySandbox.Notice.NoticeShownForFirstTime.TopicsConsentDesktopModal",
       true, 1);
   histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.Notice.NoticeEvent.TopicsConsentDesktopModal",
-      PrivacySandboxNoticeEvent::kSettings, 1);
+      "PrivacySandbox.Notice.NoticeEvent.TopicsConsentDesktopModal", kSettings,
+      1);
   histogram_tester_.ExpectBucketCount(
       "PrivacySandbox.Notice.NoticeAction.TopicsConsentDesktopModal",
       NoticeActionTaken::kSettings, 1);
@@ -316,12 +303,11 @@ TEST_F(PrivacySandboxNoticeStorageTest,
   histogram_tester_.ExpectBucketCount(
       "PrivacySandbox.Notice.NoticeShown.TopicsConsentDesktopModal", true, 1);
   histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.Notice.NoticeEvent.TopicsConsentDesktopModal",
-      PrivacySandboxNoticeEvent::kShown, 1);
+      "PrivacySandbox.Notice.NoticeEvent.TopicsConsentDesktopModal", kShown, 1);
 
   // Set notice shown value again.
-  notice_storage()->SetNoticeShown(
-      prefs(), notice, base::Time::FromMillisecondsSinceUnixEpoch(250));
+  notice_storage()->RecordEvent(
+      prefs(), notice, kShown, base::Time::FromMillisecondsSinceUnixEpoch(250));
   actual = notice_storage()->ReadNoticeData(prefs(), kTopicsConsentModal);
   EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(250),
             actual->GetNoticeLastShownFromEvents());
@@ -335,20 +321,19 @@ TEST_F(PrivacySandboxNoticeStorageTest,
 TEST_F(PrivacySandboxNoticeStorageTest, SetMultipleNotices) {
   // Notice data 1.
   std::string notice = kTopicsConsentModal;
-  notice_storage()->SetNoticeShown(
-      prefs(), notice, base::Time::FromMillisecondsSinceUnixEpoch(100));
-  notice_storage()->SetNoticeActionTaken(
-      prefs(), notice, PrivacySandboxNoticeEvent::kSettings,
+  notice_storage()->RecordEvent(
+      prefs(), notice, kShown, base::Time::FromMillisecondsSinceUnixEpoch(100));
+  notice_storage()->RecordEvent(
+      prefs(), notice, kSettings,
       base::Time::FromMillisecondsSinceUnixEpoch(200));
   const auto actual_notice1 = notice_storage()->ReadNoticeData(prefs(), notice);
 
   // Notice data 2.
   std::string notice2 = kTopicsConsentModalClankCCT;
-  notice_storage()->SetNoticeShown(
-      prefs(), notice2, base::Time::FromMillisecondsSinceUnixEpoch(50));
-  notice_storage()->SetNoticeActionTaken(
-      prefs(), notice2, PrivacySandboxNoticeEvent::kAck,
-      base::Time::FromMillisecondsSinceUnixEpoch(70));
+  notice_storage()->RecordEvent(prefs(), notice2, kShown,
+                                base::Time::FromMillisecondsSinceUnixEpoch(50));
+  notice_storage()->RecordEvent(prefs(), notice2, kAck,
+                                base::Time::FromMillisecondsSinceUnixEpoch(70));
   const auto actual_notice2 =
       notice_storage()->ReadNoticeData(prefs(), notice2);
 
@@ -356,8 +341,8 @@ TEST_F(PrivacySandboxNoticeStorageTest, SetMultipleNotices) {
       "PrivacySandbox.Notice.NoticeAction.TopicsConsentDesktopModal",
       NoticeActionTaken::kSettings, 1);
   histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.Notice.NoticeEvent.TopicsConsentDesktopModal",
-      PrivacySandboxNoticeEvent::kSettings, 1);
+      "PrivacySandbox.Notice.NoticeEvent.TopicsConsentDesktopModal", kSettings,
+      1);
   histogram_tester_.ExpectTimeBucketCount(
       "PrivacySandbox.Notice.FirstShownToInteractedDuration."
       "TopicsConsentDesktopModal_Settings",
@@ -367,16 +352,14 @@ TEST_F(PrivacySandboxNoticeStorageTest, SetMultipleNotices) {
       "TopicsConsentDesktopModal_Settings",
       base::Milliseconds(100), 1);
   histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.Notice.NoticeEvent.TopicsConsentDesktopModal",
-      PrivacySandboxNoticeEvent::kShown, 1);
+      "PrivacySandbox.Notice.NoticeEvent.TopicsConsentDesktopModal", kShown, 1);
   histogram_tester_.ExpectBucketCount(
       "PrivacySandbox.Notice.NoticeShown.TopicsConsentDesktopModal", true, 1);
   histogram_tester_.ExpectBucketCount(
       "PrivacySandbox.Notice.NoticeAction.TopicsConsentModalClankCCT",
       NoticeActionTaken::kAck, 1);
   histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.Notice.NoticeEvent.TopicsConsentModalClankCCT",
-      PrivacySandboxNoticeEvent::kAck, 1);
+      "PrivacySandbox.Notice.NoticeEvent.TopicsConsentModalClankCCT", kAck, 1);
   histogram_tester_.ExpectTimeBucketCount(
       "PrivacySandbox.Notice.FirstShownToInteractedDuration."
       "TopicsConsentModalClankCCT_"
@@ -389,8 +372,8 @@ TEST_F(PrivacySandboxNoticeStorageTest, SetMultipleNotices) {
   histogram_tester_.ExpectBucketCount(
       "PrivacySandbox.Notice.NoticeShown.TopicsConsentModalClankCCT", true, 1);
   histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.Notice.NoticeEvent.TopicsConsentModalClankCCT",
-      PrivacySandboxNoticeEvent::kShown, 1);
+      "PrivacySandbox.Notice.NoticeEvent.TopicsConsentModalClankCCT", kShown,
+      1);
 }
 
 using NoticeEvents =
@@ -448,14 +431,12 @@ TEST_F(PrivacySandboxNoticeStorageV2Test,
   NoticeEvents events =
       notice_storage()->ReadNoticeData(prefs(), notice)->GetNoticeEvents();
   auto expected =
-      std::make_pair(PrivacySandboxNoticeEvent::kShown,
-                     base::Time::FromMillisecondsSinceUnixEpoch(100));
+      std::make_pair(kShown, base::Time::FromMillisecondsSinceUnixEpoch(100));
   EXPECT_EQ(events.size(), 2u);
   EXPECT_EQ(events[0], expected);
 
   auto expected1 =
-      std::make_pair(PrivacySandboxNoticeEvent::kAck,
-                     base::Time::FromMillisecondsSinceUnixEpoch(200));
+      std::make_pair(kAck, base::Time::FromMillisecondsSinceUnixEpoch(200));
   EXPECT_EQ(events[1], expected1);
 }
 
@@ -474,8 +455,7 @@ TEST_F(PrivacySandboxNoticeStorageV2Test,
   NoticeEvents events =
       notice_storage()->ReadNoticeData(prefs(), notice)->GetNoticeEvents();
   auto expected =
-      std::make_pair(PrivacySandboxNoticeEvent::kShown,
-                     base::Time::FromMillisecondsSinceUnixEpoch(500));
+      std::make_pair(kShown, base::Time::FromMillisecondsSinceUnixEpoch(500));
   EXPECT_EQ(events.size(), 1u);
   EXPECT_EQ(events[0], expected);
 }
@@ -556,14 +536,13 @@ INSTANTIATE_TEST_SUITE_P(
         std::vector<std::tuple<NoticeActionTaken,
                                std::optional<PrivacySandboxNoticeEvent>>>{
             {NoticeActionTaken::kNotSet, std::nullopt},
-            {NoticeActionTaken::kAck, PrivacySandboxNoticeEvent::kAck},
-            {NoticeActionTaken::kClosed, PrivacySandboxNoticeEvent::kClosed},
+            {NoticeActionTaken::kAck, kAck},
+            {NoticeActionTaken::kClosed, kClosed},
             {NoticeActionTaken::kLearnMore_Deprecated, std::nullopt},
-            {NoticeActionTaken::kOptIn, PrivacySandboxNoticeEvent::kOptIn},
-            {NoticeActionTaken::kOptOut, PrivacySandboxNoticeEvent::kOptOut},
+            {NoticeActionTaken::kOptIn, kOptIn},
+            {NoticeActionTaken::kOptOut, kOptOut},
             {NoticeActionTaken::kOther, std::nullopt},
-            {NoticeActionTaken::kSettings,
-             PrivacySandboxNoticeEvent::kSettings},
+            {NoticeActionTaken::kSettings, kSettings},
             {NoticeActionTaken::kUnknownActionPreMigration, std::nullopt},
             {NoticeActionTaken::kTimedOut, std::nullopt}}));
 
@@ -579,12 +558,9 @@ TEST_F(PrivacySandboxNoticeDataTest, NoPrivacySandboxNoticeDataReturnsNothing) {
 TEST_F(PrivacySandboxNoticeDataTest,
        NoticeShownEvent_AccessorReturnsFirstShownSuccessfully) {
   std::vector<std::pair<PrivacySandboxNoticeEvent, base::Time>> notice_events =
-      {std::make_pair(PrivacySandboxNoticeEvent::kShown,
-                      base::Time::FromMillisecondsSinceUnixEpoch(100)),
-       std::make_pair(PrivacySandboxNoticeEvent::kAck,
-                      base::Time::FromMillisecondsSinceUnixEpoch(150)),
-       std::make_pair(PrivacySandboxNoticeEvent::kShown,
-                      base::Time::FromMillisecondsSinceUnixEpoch(200))};
+      {std::make_pair(kShown, base::Time::FromMillisecondsSinceUnixEpoch(100)),
+       std::make_pair(kAck, base::Time::FromMillisecondsSinceUnixEpoch(150)),
+       std::make_pair(kShown, base::Time::FromMillisecondsSinceUnixEpoch(200))};
   PrivacySandboxNoticeData data;
   data.SetNoticeEvents(notice_events);
   EXPECT_EQ(data.GetNoticeFirstShownFromEvents(),
@@ -594,12 +570,9 @@ TEST_F(PrivacySandboxNoticeDataTest,
 TEST_F(PrivacySandboxNoticeDataTest,
        NoticeShownEvent_AccessorReturnsLastShownSuccessfully) {
   std::vector<std::pair<PrivacySandboxNoticeEvent, base::Time>> notice_events =
-      {std::make_pair(PrivacySandboxNoticeEvent::kShown,
-                      base::Time::FromMillisecondsSinceUnixEpoch(100)),
-       std::make_pair(PrivacySandboxNoticeEvent::kAck,
-                      base::Time::FromMillisecondsSinceUnixEpoch(150)),
-       std::make_pair(PrivacySandboxNoticeEvent::kShown,
-                      base::Time::FromMillisecondsSinceUnixEpoch(200))};
+      {std::make_pair(kShown, base::Time::FromMillisecondsSinceUnixEpoch(100)),
+       std::make_pair(kAck, base::Time::FromMillisecondsSinceUnixEpoch(150)),
+       std::make_pair(kShown, base::Time::FromMillisecondsSinceUnixEpoch(200))};
   PrivacySandboxNoticeData data;
   data.SetNoticeEvents(notice_events);
   EXPECT_EQ(data.GetNoticeLastShownFromEvents(),
@@ -609,10 +582,8 @@ TEST_F(PrivacySandboxNoticeDataTest,
 TEST_F(PrivacySandboxNoticeDataTest,
        NoNoticeActionTakenEvent_AccessorReturnsNoValue) {
   std::vector<std::pair<PrivacySandboxNoticeEvent, base::Time>> notice_events =
-      {std::make_pair(PrivacySandboxNoticeEvent::kShown,
-                      base::Time::FromMillisecondsSinceUnixEpoch(100)),
-       std::make_pair(PrivacySandboxNoticeEvent::kShown,
-                      base::Time::FromMillisecondsSinceUnixEpoch(200))};
+      {std::make_pair(kShown, base::Time::FromMillisecondsSinceUnixEpoch(100)),
+       std::make_pair(kShown, base::Time::FromMillisecondsSinceUnixEpoch(200))};
   PrivacySandboxNoticeData data;
   data.SetNoticeEvents(notice_events);
   EXPECT_EQ(data.GetNoticeActionTakenForFirstShownFromEvents(), std::nullopt);
@@ -621,19 +592,14 @@ TEST_F(PrivacySandboxNoticeDataTest,
 TEST_F(PrivacySandboxNoticeDataTest,
        NoticeActionTakenEvent_AccessorReturnsActionSuccessfully) {
   std::vector<std::pair<PrivacySandboxNoticeEvent, base::Time>> notice_events =
-      {std::make_pair(PrivacySandboxNoticeEvent::kShown,
-                      base::Time::FromMillisecondsSinceUnixEpoch(100)),
-       std::make_pair(PrivacySandboxNoticeEvent::kAck,
-                      base::Time::FromMillisecondsSinceUnixEpoch(120)),
-       std::make_pair(PrivacySandboxNoticeEvent::kShown,
-                      base::Time::FromMillisecondsSinceUnixEpoch(200)),
-       std::make_pair(PrivacySandboxNoticeEvent::kOptIn,
-                      base::Time::FromMillisecondsSinceUnixEpoch(250))};
+      {std::make_pair(kShown, base::Time::FromMillisecondsSinceUnixEpoch(100)),
+       std::make_pair(kAck, base::Time::FromMillisecondsSinceUnixEpoch(120)),
+       std::make_pair(kShown, base::Time::FromMillisecondsSinceUnixEpoch(200)),
+       std::make_pair(kOptIn, base::Time::FromMillisecondsSinceUnixEpoch(250))};
   PrivacySandboxNoticeData data;
   data.SetNoticeEvents(notice_events);
   auto expected =
-      std::make_pair(PrivacySandboxNoticeEvent::kAck,
-                     base::Time::FromMillisecondsSinceUnixEpoch(120));
+      std::make_pair(kAck, base::Time::FromMillisecondsSinceUnixEpoch(120));
   EXPECT_EQ(data.GetNoticeActionTakenForFirstShownFromEvents(), expected);
 }
 
@@ -641,21 +607,16 @@ TEST_F(
     PrivacySandboxNoticeDataTest,
     NoticeActionTakenEvent_AccessorReturnsActionSuccessfullyMultipleActions) {
   std::vector<std::pair<PrivacySandboxNoticeEvent, base::Time>> notice_events =
-      {std::make_pair(PrivacySandboxNoticeEvent::kShown,
-                      base::Time::FromMillisecondsSinceUnixEpoch(100)),
-       std::make_pair(PrivacySandboxNoticeEvent::kAck,
-                      base::Time::FromMillisecondsSinceUnixEpoch(120)),
-       std::make_pair(PrivacySandboxNoticeEvent::kSettings,
+      {std::make_pair(kShown, base::Time::FromMillisecondsSinceUnixEpoch(100)),
+       std::make_pair(kAck, base::Time::FromMillisecondsSinceUnixEpoch(120)),
+       std::make_pair(kSettings,
                       base::Time::FromMillisecondsSinceUnixEpoch(150)),
-       std::make_pair(PrivacySandboxNoticeEvent::kShown,
-                      base::Time::FromMillisecondsSinceUnixEpoch(200)),
-       std::make_pair(PrivacySandboxNoticeEvent::kOptIn,
-                      base::Time::FromMillisecondsSinceUnixEpoch(250))};
+       std::make_pair(kShown, base::Time::FromMillisecondsSinceUnixEpoch(200)),
+       std::make_pair(kOptIn, base::Time::FromMillisecondsSinceUnixEpoch(250))};
   PrivacySandboxNoticeData data;
   data.SetNoticeEvents(notice_events);
-  auto expected =
-      std::make_pair(PrivacySandboxNoticeEvent::kSettings,
-                     base::Time::FromMillisecondsSinceUnixEpoch(150));
+  auto expected = std::make_pair(
+      kSettings, base::Time::FromMillisecondsSinceUnixEpoch(150));
   EXPECT_EQ(data.GetNoticeActionTakenForFirstShownFromEvents(), expected);
 }
 
@@ -663,25 +624,18 @@ TEST_F(
     PrivacySandboxNoticeDataTest,
     NoticeActionTakenEvent_AccessorReturnsActionSuccessfullyWithMultipleShownValues) {
   std::vector<std::pair<PrivacySandboxNoticeEvent, base::Time>> notice_events =
-      {std::make_pair(PrivacySandboxNoticeEvent::kShown,
-                      base::Time::FromMillisecondsSinceUnixEpoch(100)),
-       std::make_pair(PrivacySandboxNoticeEvent::kShown,
-                      base::Time::FromMillisecondsSinceUnixEpoch(110)),
-       std::make_pair(PrivacySandboxNoticeEvent::kAck,
-                      base::Time::FromMillisecondsSinceUnixEpoch(120)),
-       std::make_pair(PrivacySandboxNoticeEvent::kSettings,
+      {std::make_pair(kShown, base::Time::FromMillisecondsSinceUnixEpoch(100)),
+       std::make_pair(kShown, base::Time::FromMillisecondsSinceUnixEpoch(110)),
+       std::make_pair(kAck, base::Time::FromMillisecondsSinceUnixEpoch(120)),
+       std::make_pair(kSettings,
                       base::Time::FromMillisecondsSinceUnixEpoch(150)),
-       std::make_pair(PrivacySandboxNoticeEvent::kShown,
-                      base::Time::FromMillisecondsSinceUnixEpoch(200)),
-       std::make_pair(PrivacySandboxNoticeEvent::kShown,
-                      base::Time::FromMillisecondsSinceUnixEpoch(220)),
-       std::make_pair(PrivacySandboxNoticeEvent::kOptIn,
-                      base::Time::FromMillisecondsSinceUnixEpoch(250))};
+       std::make_pair(kShown, base::Time::FromMillisecondsSinceUnixEpoch(200)),
+       std::make_pair(kShown, base::Time::FromMillisecondsSinceUnixEpoch(220)),
+       std::make_pair(kOptIn, base::Time::FromMillisecondsSinceUnixEpoch(250))};
   PrivacySandboxNoticeData data;
   data.SetNoticeEvents(notice_events);
-  auto expected =
-      std::make_pair(PrivacySandboxNoticeEvent::kSettings,
-                     base::Time::FromMillisecondsSinceUnixEpoch(150));
+  auto expected = std::make_pair(
+      kSettings, base::Time::FromMillisecondsSinceUnixEpoch(150));
   EXPECT_EQ(data.GetNoticeActionTakenForFirstShownFromEvents(), expected);
 }
 

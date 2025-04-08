@@ -119,17 +119,9 @@ void PrivacySandboxNoticeService::EventOccurred(
       << static_cast<int>(notice_id.second);
 
   Notice* notice = it->second.get();
-  std::string_view name = notice->GetFeature()->name;
 
-  // TODO(crbug.com/392612108): Consolidate to single function call after
-  // consolidate these two methods on notice storage side.
-  if (event == PrivacySandboxNoticeEvent::kShown) {
-    GetNoticeStorage()->SetNoticeShown(GetPrefService(), name,
-                                       base::Time::Now());
-  } else {
-    GetNoticeStorage()->SetNoticeActionTaken(GetPrefService(), name, event,
-                                             base::Time::Now());
-  }
+  GetNoticeStorage()->RecordEvent(GetPrefService(), notice->GetFeature()->name,
+                                  event, base::Time::Now());
 
   notice->UpdateTargetApiResults(event);
 }
