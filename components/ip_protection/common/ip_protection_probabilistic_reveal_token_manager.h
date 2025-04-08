@@ -79,9 +79,8 @@ class IpProtectionProbabilisticRevealTokenManager {
   void StoreTokenOutcomeIfEnabled(
       TryGetProbabilisticRevealTokensOutcome outcome);
 
-  // Serializes and base64 encodes the given token.
-  std::optional<std::string> SerializeAndEncodePrt(
-      ProbabilisticRevealToken token);
+  // Serializes the given token.
+  std::optional<std::string> SerializePrt(ProbabilisticRevealToken token);
 
   // True the first time GetToken() is called, false otherwise.
   bool is_initial_get_token_call_ = true;

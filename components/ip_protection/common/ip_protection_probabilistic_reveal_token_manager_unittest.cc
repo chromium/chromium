@@ -66,14 +66,10 @@ constexpr size_t kPRTPointSize = 33;
 constexpr size_t kEpochIdSize = 8;
 
 // Deserialize a given prt serialized using
-// `IpProtectionProbabilisticRevealTokenManager::SerializeAndEncode()`.
-bool Deserialize(const std::string& serialized_encoded_prt,
+// `IpProtectionProbabilisticRevealTokenManager::SerializePrt()`.
+bool Deserialize(const std::string& serialized_prt,
                  ProbabilisticRevealToken& token_out,
                  std::string& epoch_id_out) {
-  std::string serialized_prt;
-  if (!base::Base64Decode(serialized_encoded_prt, &serialized_prt)) {
-    return false;
-  }
   CBS cbs;
   CBS_init(&cbs, reinterpret_cast<const uint8_t*>(serialized_prt.data()),
            serialized_prt.size());
