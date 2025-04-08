@@ -5521,9 +5521,10 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.ScanCreditCard.Duration{CreditCardScanSuccess}"
-    units="ms" expires_after="2025-04-13">
-  <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
+    units="ms" expires_after="2025-10-05">
+  <owner>darwinyang@google.com</owner>
+  <owner>npnavarro@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
   <summary>
     How long a credit card took to scan. {CreditCardScanSuccess}
   </summary>
