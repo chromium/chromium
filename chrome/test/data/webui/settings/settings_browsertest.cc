@@ -40,12 +40,15 @@ class SettingsBrowserTest : public WebUIMochaBrowserTest {
  protected:
   SettingsBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        {privacy_sandbox::kPrivacySandboxRelatedWebsiteSetsUi,
-#if !BUILDFLAG(IS_CHROMEOS)
-         toast_features::kToastRefinements
+        {
+#if BUILDFLAG(ENABLE_GLIC)
+            features::kGlic, features::kTabstripComboButton,
 #endif
-        },
-        {});
+#if !BUILDFLAG(IS_CHROMEOS)
+            toast_features::kToastRefinements,
+#endif
+            privacy_sandbox::kPrivacySandboxRelatedWebsiteSetsUi},
+        /*disabled_features=*/{});
     set_test_loader_host(chrome::kChromeUISettingsHost);
   }
 
@@ -350,18 +353,7 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, PrefUtils) {
 }
 
 #if BUILDFLAG(ENABLE_GLIC)
-class SettingsGlicPageTest : public SettingsBrowserTest {
- public:
-  SettingsGlicPageTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kGlic, features::kTabstripComboButton}, {});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(SettingsGlicPageTest, GlicSettingsPage) {
+IN_PROC_BROWSER_TEST_F(SettingsTest, GlicSettingsPage) {
   RunTest("settings/glic_page_test.js", "mocha.run()");
 }
 #endif

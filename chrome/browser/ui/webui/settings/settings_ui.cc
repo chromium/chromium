@@ -14,6 +14,7 @@
 
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
+#include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/autofill_ai/autofill_ai_util.h"
@@ -194,6 +195,7 @@
 
 #if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/glic_enabling.h"
+#include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/ui/webui/settings/glic_handler.h"
 #endif
 
@@ -571,11 +573,25 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
           network::features::kLocalNetworkAccessChecks) &&
           !network::features::kLocalNetworkAccessChecksWarn.Get());
 
-  bool glic_enabled = false;
+  bool show_glic = false;
+
 #if BUILDFLAG(ENABLE_GLIC)
-  AddSettingsPageUIHandler(std::make_unique<GlicHandler>());
-  glic_enabled = glic::GlicEnabling::ShouldShowSettingsPage(profile);
-  html_source->AddBoolean("showGlicSettings", glic_enabled);
+  show_glic = glic::GlicEnabling::ShouldShowSettingsPage(profile);
+  html_source->AddBoolean("showGlicSettings", show_glic);
+
+  if (glic::GlicEnabling::IsProfileEligible(profile)) {
+    AddSettingsPageUIHandler(std::make_unique<GlicHandler>());
+
+    auto* glic_service = glic::GlicKeyedService::Get(profile);
+    CHECK(glic_service);
+
+    // `this` unretained because the subscription is owned by this and will
+    // unregister the callback on destruction.
+    glic_settings_state_subscription_ =
+        glic_service->enabling().RegisterOnShowSettingsPageChanged(
+            base::BindRepeating(&SettingsUI::UpdateShowGlicState,
+                                base::Unretained(this)));
+  }
 #endif
 
   // AI
@@ -624,7 +640,7 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       show_ai_page |= visible;
     }
 
-    show_ai_page |= glic_enabled;
+    show_ai_page |= show_glic;
 
     // "showAdvancedFeaturesMainControl", despite the name, controls whether the
     // AI subpage is shown. We want to show the page if any of the AI features
@@ -653,7 +669,7 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       is_any_ai_feature_enabled |= visible;
     }
 
-    is_any_ai_feature_enabled |= glic_enabled;
+    is_any_ai_feature_enabled |= show_glic;
 
     html_source->AddBoolean("showAdvancedFeaturesMainControl",
                             is_any_ai_feature_enabled);
@@ -822,6 +838,26 @@ void SettingsUI::BindInterface(
   customize_color_scheme_mode_handler_factory_receiver_.Bind(
       std::move(pending_receiver));
 }
+
+#if BUILDFLAG(ENABLE_GLIC)
+void SettingsUI::UpdateShowGlicState() {
+  // The visibility of the Glic page can change based on the user accepting the
+  // FRE. Propagate this state to the WebUI value used to display the settings
+  // page.
+  Profile* profile = Profile::FromWebUI(web_ui());
+  bool glic_enabled = glic::GlicEnabling::ShouldShowSettingsPage(profile);
+
+  base::Value::Dict update;
+  update.Set("showGlicSettings", glic_enabled);
+  if (glic_enabled) {
+    update.Set("showAdvancedFeaturesMainControl", true);
+  }
+
+  content::WebUIDataSource::Update(
+      web_ui()->GetWebContents()->GetBrowserContext(),
+      chrome::kChromeUISettingsHost, std::move(update));
+}
+#endif
 
 WEB_UI_CONTROLLER_TYPE_IMPL(SettingsUI)
 

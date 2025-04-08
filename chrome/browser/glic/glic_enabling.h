@@ -118,6 +118,12 @@ class GlicEnabling : public signin::IdentityManager::Observer {
   base::CallbackListSubscription RegisterOnConsentChanged(
       ConsentChangedCallback callback);
 
+  // This is called anytime ShouldShowSettingsPage() might return a different
+  // value.
+  using ShowSettingsPageChangedCallback = base::RepeatingClosure;
+  base::CallbackListSubscription RegisterOnShowSettingsPageChanged(
+      ShowSettingsPageChangedCallback callback);
+
  private:
   void OnGlicSettingsPolicyChanged();
 
@@ -148,6 +154,10 @@ class GlicEnabling : public signin::IdentityManager::Observer {
   EnableChangedCallbackList enable_changed_callback_list_;
   using OnConsentChangeCallbackList = base::RepeatingCallbackList<void()>;
   OnConsentChangeCallbackList consent_changed_callback_list_;
+  using OnShowSettingsPageChangeCallbackList =
+      base::RepeatingCallbackList<void()>;
+  OnShowSettingsPageChangeCallbackList
+      show_settings_page_changed_callback_list_;
   PrefChangeRegistrar pref_registrar_;
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>

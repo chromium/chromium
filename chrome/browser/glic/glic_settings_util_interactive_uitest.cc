@@ -7,6 +7,7 @@
 #include "chrome/browser/glic/glic_settings_util.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/common/chrome_features.h"
@@ -26,6 +27,8 @@ DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kOsToggleIsVisible);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kKeyboardShortcutIsVisible);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kBubbleIsVisible);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kBubbleIsHidden);
+DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kBasicPageIsVisible);
+DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kGlicSectionIsVisible);
 
 auto ElementIsVisibleStateChange(
     ui::CustomElementEventType event,
@@ -80,6 +83,25 @@ class GlicSettingsUtilUiTest
         CheckResult(
             [this] { return browser()->tab_strip_model()->GetTabCount(); }, 3,
             "CheckTabCount"));
+  }
+
+  auto SetFRECompletion(glic::prefs::FreStatus status) {
+    return Steps(Do(
+        [this, status] { glic_test_environment().SetFRECompletion(status); }));
+  }
+
+  auto NavigateToSettingsPage(std::string_view path) {
+    return Steps(
+        Do([this, path] { chrome::ShowSettingsSubPage(browser(), path); }),
+        WaitForWebContentsNavigation(kFirstTab, chrome::GetSettingsUrl(path)));
+  }
+
+  auto ReloadTab(ui::ElementIdentifier id) {
+    return Steps(Do([this]() {
+                   chrome::Reload(browser(),
+                                  WindowOpenDisposition::CURRENT_TAB);
+                 }),
+                 WaitForWebContentsNavigation(id));
   }
 
   const DeepQuery kOsToggleHelpBubbleQuery{"settings-ui",
@@ -171,4 +193,31 @@ IN_PROC_BROWSER_TEST_F(GlicSettingsUtilUiTest, OpenSettingsFromGlicUi) {
       ClickMockGlicElement(kOpenSettingsButton),
       WaitForWebContentsReady(
           kSettingsTab, chrome::GetSettingsUrl(chrome::kGlicSettingsSubpage)));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicSettingsUtilUiTest,
+                       RefreshSettingsAfterAcceptingFRE) {
+  // This specifies the sequence of Polymer elements required to locate the
+  // "more actions" button in the Downloads page.
+  const DeepQuery kPathToBasicPage{"settings-ui", "settings-main",
+                                   "settings-basic-page"};
+  const DeepQuery kPathToGlicSection{"settings-ui", "settings-main",
+                                     "settings-basic-page",
+                                     "settings-section[section=glicSection]"};
+  RunTestSequence(
+      InstrumentTab(kFirstTab),
+      SetFRECompletion(glic::prefs::FreStatus::kNotStarted),
+      NavigateToSettingsPage(chrome::kExperimentalAISettingsSubPage),
+      WaitForStateChange(kFirstTab, ElementIsVisibleStateChange(
+                                        kBasicPageIsVisible, kPathToBasicPage)),
+      WaitForStateChange(kFirstTab,
+                         ElementIsHiddenStateChange(kGlicSectionIsVisible,
+                                                    kPathToGlicSection)),
+      SetFRECompletion(glic::prefs::FreStatus::kCompleted),
+      ReloadTab(kFirstTab),
+      WaitForStateChange(kFirstTab, ElementIsVisibleStateChange(
+                                        kBasicPageIsVisible, kPathToBasicPage)),
+      WaitForStateChange(kFirstTab,
+                         ElementIsVisibleStateChange(kGlicSectionIsVisible,
+                                                     kPathToGlicSection)));
 }
