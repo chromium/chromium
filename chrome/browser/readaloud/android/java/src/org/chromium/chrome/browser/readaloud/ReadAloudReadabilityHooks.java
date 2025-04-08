@@ -4,8 +4,8 @@
 
 package org.chromium.chrome.browser.readaloud;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackMode;
 
@@ -16,6 +16,7 @@ import java.util.Map;
  * Interface providing access to ReadAloud page readability checking. Page can only be played if
  * it's readable, which is true if (among others) there's enough text to be played as audio.
  */
+@NullMarked
 public interface ReadAloudReadabilityHooks {
     /** Result of a readability check for a specific mode. */
     public static class ReadabilityResult {

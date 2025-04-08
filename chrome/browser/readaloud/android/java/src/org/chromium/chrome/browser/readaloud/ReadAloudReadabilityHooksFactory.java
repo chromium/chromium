@@ -6,8 +6,10 @@ package org.chromium.chrome.browser.readaloud;
 
 import android.content.Context;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 
+@NullMarked
 public interface ReadAloudReadabilityHooksFactory {
     ReadAloudReadabilityHooks create(Context context, Profile profile);
 }
