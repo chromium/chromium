@@ -711,7 +711,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1485141095922496924">Versie <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="1485197926103629489">Microsoft 365 vereist dat bestanden worden opgeslagen in OneDrive. Lokale bestanden worden verplaatst en bestanden van andere locaties worden gekopieerd. Je vindt je bestanden in de Microsoft OneDrive-map in de app Bestanden.</translation>
 <translation id="1486012259353794050">Als je vragen stelt, geeft de Google Assistent aangepaste antwoorden op basis van je scherm</translation>
-<translation id="1486096554574027028">Zoek in wachtwoorden</translation>
+<translation id="1486096554574027028">Zoeken in wachtwoorden</translation>
 <translation id="1486458761710757218">De helderheid van de achtergrondverlichting van het toetsenbord automatisch aanpassen</translation>
 <translation id="1486486872607808064">Scan deze QR-code met de camera op het apparaat waarop je een toegangssleutel voor <ph name="APP_NAME" /> wilt maken</translation>
 <translation id="1486616492435615702">Maak een conceptversie of verfijn bestaand werk.</translation>
@@ -3933,7 +3933,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3748424433435232460">Er is al een wachtwoord voor dit account opgeslagen op dit apparaat</translation>
 <translation id="3748706263662799310">Een fout melden</translation>
 <translation id="3749724428455457489">Meer informatie over door sites voorgestelde advertenties</translation>
-<translation id="3752115502500640407">Een kopie van je wachtwoord delen voor <ph name="WEBSITE" /></translation>
+<translation id="3752115502500640407">Een kopie van je wachtwoord voor <ph name="WEBSITE" /> delen</translation>
 <translation id="3752253558646317685">Laat je kind de vinger steeds optillen om de vingerafdruk te bewaren</translation>
 <translation id="3753033997400164841">Eén keer opslaan, Overal gebruiken</translation>
 <translation id="3753142252662437130">Kleurfilters</translation>

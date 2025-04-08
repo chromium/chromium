@@ -47,7 +47,7 @@
 <translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ಟ್ಯಾಬ್ ಅನ್ನು ಸೇರಿಸಲಾಗಿದೆ, <ph name="ANY_CHANGED" /> ಬದಲಾಯಿಸಲಾಗಿದೆ, <ph name="ANY_CLOSED" /> ಮುಚ್ಚಲಾಗಿದೆ}one{<ph name="MANY_ADDED" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಸೇರಿಸಲಾಗಿದೆ, <ph name="ANY_CHANGED" /> ಬದಲಾಯಿಸಲಾಗಿದೆ, <ph name="ANY_CLOSED" /> ಮುಚ್ಚಲಾಗಿದೆ}other{<ph name="MANY_ADDED" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಸೇರಿಸಲಾಗಿದೆ, <ph name="ANY_CHANGED" /> ಬದಲಾಯಿಸಲಾಗಿದೆ, <ph name="ANY_CLOSED" /> ಮುಚ್ಚಲಾಗಿದೆ}}</translation>
 <translation id="2755485474385016903">ಮಾಡಿದ ಬದಲಾವಣೆಗಳನ್ನು ಗುಂಪಿನಲ್ಲಿರುವ ಪ್ರತಿಯೊಬ್ಬರೂ ನೋಡುತ್ತಾರೆ</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" /> ಗಂಟೆಯ ಹಿಂದೆ ರಚಿಸಲಾಗಿದೆ}one{<ph name="NUM_HOURS_MANY" /> ಗಂಟೆಗಳ ಹಿಂದೆ ರಚಿಸಲಾಗಿದೆ}other{<ph name="NUM_HOURS_MANY" /> ಗಂಟೆಗಳ ಹಿಂದೆ ರಚಿಸಲಾಗಿದೆ}}</translation>
-<translation id="2801787514987684416">ಸ್ಟೋರ್ ಮಾಹಿತಿಯನ್ನು ನೋಡುವುದೇ?</translation>
+<translation id="2801787514987684416">ಸ್ಟೋರ್ ಮಾಹಿತಿಯನ್ನು ನೋಡಬೇಕೆ?</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> ಟ್ಯಾಬ್ ಅನ್ನು ಮುಚ್ಚಲಾಗಿದೆ}one{<ph name="MANY_CLOSED" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಲಾಗಿದೆ}other{<ph name="MANY_CLOSED" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಲಾಗಿದೆ}}</translation>
 <translation id="2894757982205307093">ಗುಂಪಿನಲ್ಲಿ ಹೊಸ ಟ್ಯಾಬ್</translation>
 <translation id="2928243913527329289">Google | ಈ ಸ್ಟೋರ್ ಕುರಿತು</translation>
