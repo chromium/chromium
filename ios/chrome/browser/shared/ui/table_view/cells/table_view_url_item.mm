@@ -302,10 +302,6 @@ const int kMaxNumberOfLinesForCellTitleLabel = 2;
   [self.faviconContainerView setFaviconBackgroundColor:backgroundColor];
 }
 
-- (void)setFaviconContainerBorderColor:(UIColor*)borderColor {
-  [self.faviconContainerView setFaviconBorderColor:borderColor];
-}
-
 // Hide or show the metadata and URL labels depending on the presence of text.
 // Align the horizontal stack properly depending on if the metadata label will
 // be present or not.
@@ -343,7 +339,6 @@ const int kMaxNumberOfLinesForCellTitleLabel = 2;
   [super prepareForReuse];
   [self.faviconView configureWithAttributes:nil];
   [self setFaviconContainerBackgroundColor:nil];
-  [self setFaviconContainerBorderColor:nil];
   self.faviconBadgeView.image = nil;
   self.metadataLabel.hidden = YES;
   self.metadataImage.image = nil;
