@@ -3344,9 +3344,8 @@ const char kSettingsAppNotificationSettingsName[] =
     "Split notification permission settings";
 const char kSettingsAppNotificationSettingsDescription[] =
     "Remove per-app notification permissions settings from the quick settings "
-    "menu. Notification permission settings will be split between the "
-    "lacros-chrome browser's notification permission page "
-    "and the ChromeOS settings app.";
+    "menu. Notification permission settings will be moved to the ChromeOS "
+    "settings app.";
 
 const char kSyncPointGraphValidationName[] = "Sync point graph validation";
 const char kSyncPointGraphValidationDescription[] =
