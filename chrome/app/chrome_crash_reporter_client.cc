@@ -41,7 +41,22 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
+#include "build/util/LASTCHANGE_commit_position.h"
 #endif
+
+namespace {
+
+constexpr const char* UpdaterVersion() {
+#if BUILDFLAG(IS_CHROMEOS) && CHROMIUM_COMMIT_POSITION_IS_MAIN
+  // Adds the revision number as a suffix to the version number if the chrome
+  // is built from the main branch.
+  return PRODUCT_VERSION "-r" CHROMIUM_COMMIT_POSITION_NUMBER;
+#else
+  return PRODUCT_VERSION;
+#endif
+}
+
+}  // namespace
 
 void ChromeCrashReporterClient::Create() {
   static base::NoDestructor<ChromeCrashReporterClient> crash_client;
@@ -134,7 +149,7 @@ void ChromeCrashReporterClient::GetProductInfo(ProductInfo* product_info) {
   NOTREACHED();
 #endif
 
-  product_info->version = PRODUCT_VERSION;
+  product_info->version = UpdaterVersion();
   product_info->channel =
       chrome::GetChannelName(chrome::WithExtendedStable(true));
 }
