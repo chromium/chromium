@@ -554,9 +554,8 @@ DeserializeTileResource(mojom::TileResource& wire) {
     return base::unexpected("Invalid tile resource");
   }
 
-  // Tile resources are always premultiplied.
-  return cc::TileDisplayLayerImpl::TileResource(
-      wire.resource, /*is_premultiplied=*/true, wire.is_checkered);
+  return cc::TileDisplayLayerImpl::TileResource(wire.resource,
+                                                wire.is_checkered);
 }
 
 base::expected<cc::TileDisplayLayerImpl::TileContents, std::string>

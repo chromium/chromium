@@ -46,14 +46,12 @@ class CC_EXPORT TileDisplayLayerImpl : public LayerImpl {
 
   struct CC_EXPORT TileResource {
     TileResource(const viz::TransferableResource& resource,
-                 bool is_premultiplied,
                  bool is_checkered);
     TileResource(const TileResource&);
     TileResource& operator=(const TileResource&);
     ~TileResource();
 
     viz::TransferableResource resource;
-    bool is_premultiplied;
     bool is_checkered;
   };
 

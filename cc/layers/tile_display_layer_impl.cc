@@ -36,10 +36,8 @@ class TilingOrder {
 
 TileDisplayLayerImpl::TileResource::TileResource(
     const viz::TransferableResource& resource,
-    bool is_premultiplied,
     bool is_checkered)
     : resource(resource),
-      is_premultiplied(is_premultiplied),
       is_checkered(is_checkered) {}
 
 TileDisplayLayerImpl::TileResource::TileResource(const TileResource&) = default;
@@ -275,7 +273,7 @@ void TileDisplayLayerImpl::AppendQuads(const AppendQuadsContext& context,
                      offset_visible_geometry_rect, needs_blending,
                      resource->resource.id, texture_rect,
                      iter.CurrentTiling()->tile_size(),
-                     resource->is_premultiplied, /*nearest_neighbor=*/false,
+                     /*is_premultiplied=*/true, /*nearest_neighbor=*/false,
                      /*enable_edge_aa=*/false);
         used_resources.push_back(resource->resource);
         has_draw_quad = true;
