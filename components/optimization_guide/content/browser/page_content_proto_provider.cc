@@ -233,7 +233,9 @@ void OnGotAIPageContentForFrame(
 
 }  // namespace
 
-AIPageContentResult::AIPageContentResult() = default;
+AIPageContentResult::AIPageContentResult() {
+  metadata = optimization_guide::mojom::PageMetadata::New();
+}
 AIPageContentResult::~AIPageContentResult() = default;
 AIPageContentResult::AIPageContentResult(AIPageContentResult&& other) = default;
 AIPageContentResult& AIPageContentResult::operator=(

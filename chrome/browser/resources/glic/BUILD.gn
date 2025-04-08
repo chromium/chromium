@@ -44,10 +44,12 @@ build_webui("build") {
   mojo_files_deps = [
     "//chrome/browser/glic:mojo_bindings_ts__generator",
     "//components/content_settings/core/common:content_settings_types_ts__generator",
+    "//components/optimization_guide/content/mojom:mojo_interfaces_ts__generator",
   ]
   mojo_files = [
     "$root_gen_dir/chrome/browser/glic/host/glic.mojom-webui.ts",
     "$root_gen_dir/components/content_settings/core/common/content_settings_types.mojom-webui.ts",
+    "$root_gen_dir/components/optimization_guide/content/mojom/ai_page_content_metadata.mojom-webui.ts",
   ]
 
   ts_definitions = [

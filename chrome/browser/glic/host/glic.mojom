@@ -5,6 +5,7 @@
 module glic.mojom;
 
 import "components/content_settings/core/common/content_settings_types.mojom";
+import "components/optimization_guide/content/mojom/ai_page_content_metadata.mojom";
 import "mojo/public/mojom/base/proto_wrapper.mojom";
 import "mojo/public/mojom/base/version.mojom";
 import "skia/public/mojom/bitmap.mojom";
@@ -679,24 +680,6 @@ struct NoFocusedTabData {
   string no_focus_reason;
 };
 
-// A meta tag.
-struct MetaTag {
-  string name;
-  string content;
-};
-
-// Metadata about a frame.
-struct FrameMetadata {
-  url.mojom.Url url;
-  array<MetaTag> meta_tags;
-};
-
-// Metadata about the page content.  Includes metadata about each frame.
-struct PageMetadata {
-  // The main frame is the first entry in the array.
-  array<FrameMetadata> frame_metadata;
-};
-
 // Information about the annotated page content.
 struct AnnotatedPageData {
   // Proto for AnnotatedPageContent.
@@ -705,7 +688,7 @@ struct AnnotatedPageData {
   mojo_base.mojom.ProtoWrapper? annotated_page_content;
 
   // Metadata about the page content.
-  PageMetadata? metadata;
+  optimization_guide.mojom.PageMetadata? metadata;
 };
 
 // Annotates an image, providing security relevant information about the origins

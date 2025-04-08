@@ -180,6 +180,7 @@ mojom("mojo_bindings") {
 
   public_deps = [
     "//components/content_settings/core/common:content_settings_types",
+    "//components/optimization_guide/content/mojom:mojo_interfaces",
     "//mojo/public/mojom/base",
     "//mojo/public/mojom/base:protobuf_support",
     "//skia/public/mojom",
