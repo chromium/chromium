@@ -85,6 +85,7 @@ if (!is_android) {
     testonly = true
     sources = [
       "download_keys_response_handler_unittest.cc",
+      "physical_device_recovery_factor_unittest.cc",
       "proto_string_bytes_conversion_unittest.cc",
       "proto_time_conversion_unittest.cc",
       "recovery_key_store_connection_unittest.cc",
