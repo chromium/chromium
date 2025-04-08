@@ -10,13 +10,12 @@ import android.graphics.Rect;
 import android.util.Size;
 import android.widget.ImageView;
 
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
+import androidx.annotation.NonNull;
+
 import org.chromium.build.annotations.UsedByReflection;
 
 /** Animator for scaling a {@link ShrinkExpandImageView} from one rect to another. */
 // TODO(crbug.com/40286625): Move to hub/internal/ once TabSwitcherLayout no longer depends on this.
-@NullMarked
 public class ShrinkExpandAnimator {
     /**
      * Tag for the {@link ObjectAnimator#ofObject()} {@code propertyName} param. Using this triggers
@@ -30,7 +29,7 @@ public class ShrinkExpandAnimator {
     private final Rect mFinalRect;
     private final Matrix mImageMatrix;
     private final int mSearchBoxHeight;
-    private @Nullable Size mThumbnailSize;
+    private Size mThumbnailSize;
 
     /**
      * Create an animator that scales and translates a view from one rect to another.
@@ -41,7 +40,10 @@ public class ShrinkExpandAnimator {
      * @param finalRect the final rect that view will encompass in global coordinates.
      */
     public ShrinkExpandAnimator(
-            ShrinkExpandImageView view, Rect initialRect, Rect finalRect, int searchBoxHeight) {
+            @NonNull ShrinkExpandImageView view,
+            @NonNull Rect initialRect,
+            @NonNull Rect finalRect,
+            int searchBoxHeight) {
         mView = view;
         assert mView.getScaleX() == 1.0f;
         assert mView.getScaleY() == 1.0f;
@@ -72,7 +74,7 @@ public class ShrinkExpandAnimator {
      * @param rect The rect to scale the view to for the current frame.
      */
     @UsedByReflection("Used in ObjectAnimator")
-    public void setRect(Rect rect) {
+    public void setRect(@NonNull Rect rect) {
         final int currentRectWidth = rect.width();
         final int currentRectHeight = rect.height();
         final int initialRectWidth = mInitialRect.width();

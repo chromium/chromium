@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.hub;
 
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 
@@ -14,7 +13,6 @@ import org.chromium.chrome.browser.tab.Tab;
  * set via {@link HubController#setHubLayoutController} once during {@link HubLayout}
  * initialization.
  */
-@NullMarked
 public interface HubLayoutController {
     /**
      * Sets a tab as active and hides the Hub. A tab must be selected if the browser is

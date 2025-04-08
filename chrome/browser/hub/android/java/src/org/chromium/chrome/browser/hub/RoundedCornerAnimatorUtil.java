@@ -6,11 +6,9 @@ package org.chromium.chrome.browser.hub;
 
 import android.animation.ValueAnimator;
 
-import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.widget.RoundedCornerImageView;
 
 /** Utilities related to {@link RoundedCornerImageView} animations. */
-@NullMarked
 public class RoundedCornerAnimatorUtil {
     /**
      * Returns a {@link ValueAnimator} for {@link RoundedCornerImageView#setRoundedCorners}

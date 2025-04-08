@@ -4,11 +4,9 @@
 
 package org.chromium.chrome.browser.hub;
 
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
+import androidx.annotation.Nullable;
 
 /** Combination of display information and the event handling for pressing the button. */
-@NullMarked
 public interface FullButtonData extends DisplayButtonData {
     /**
      * Returns the {@link Runnable} that should be invoked when the button is pressed. If this

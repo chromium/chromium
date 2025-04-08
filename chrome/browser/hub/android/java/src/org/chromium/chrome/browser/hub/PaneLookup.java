@@ -4,11 +4,9 @@
 
 package org.chromium.chrome.browser.hub;
 
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
+import androidx.annotation.Nullable;
 
 /** Interface for providing access to Panes. */
-@NullMarked
 public interface PaneLookup {
     @Nullable
     Pane getPaneForId(@PaneId int paneId);

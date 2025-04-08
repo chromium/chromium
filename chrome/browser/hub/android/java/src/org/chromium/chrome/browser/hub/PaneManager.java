@@ -4,16 +4,18 @@
 
 package org.chromium.chrome.browser.hub;
 
+import androidx.annotation.NonNull;
+
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.build.annotations.NullMarked;
 
 /** Interface for managing {@link Pane}s. */
-@NullMarked
 public interface PaneManager extends PaneLookup {
     /** Returns the authoritative source of the order of panes. */
+    @NonNull
     PaneOrderController getPaneOrderController();
 
     /** Returns an observable version of the current pane. */
+    @NonNull
     ObservableSupplier<Pane> getFocusedPaneSupplier();
 
     /**

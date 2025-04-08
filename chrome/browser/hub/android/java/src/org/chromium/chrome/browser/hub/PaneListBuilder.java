@@ -4,19 +4,18 @@
 
 package org.chromium.chrome.browser.hub;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.google.common.collect.ImmutableMap;
 
 import org.chromium.base.Log;
 import org.chromium.base.supplier.LazyOneshotSupplier;
-import org.chromium.build.annotations.EnsuresNonNullIf;
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Locale;
 
 /** Builder for creating an immutable list of all {@link Pane}s to be shown in the Hub. */
-@NullMarked
 public class PaneListBuilder {
     private static final String TAG = "PaneListBuilder";
 
@@ -34,7 +33,7 @@ public class PaneListBuilder {
      *
      * @param paneOrderController That will specify the order to show Panes in the Hub.
      */
-    public PaneListBuilder(PaneOrderController paneOrderController) {
+    public PaneListBuilder(@NonNull PaneOrderController paneOrderController) {
         mPaneOrderController = paneOrderController;
     }
 
@@ -52,7 +51,7 @@ public class PaneListBuilder {
      *     at registration time to facilitate lazy initialization.
      */
     public PaneListBuilder registerPane(
-            @PaneId int paneId, LazyOneshotSupplier<Pane> paneSupplier) {
+            @PaneId int paneId, @NonNull LazyOneshotSupplier<Pane> paneSupplier) {
         if (isBuilt()) {
             throw new IllegalStateException(
                     "PaneListBuilder#build() was already invoked. Cannot add a pane for " + paneId);
@@ -70,9 +69,6 @@ public class PaneListBuilder {
      * true, future calls to {@link #registerPane(int, Supplier)} will throw an {@link
      * IllegalStateException}.
      */
-    @EnsuresNonNullIf(
-            value = {"mRegisteredPanes"},
-            result = false)
     public boolean isBuilt() {
         return mRegisteredPanes == null;
     }

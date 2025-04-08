@@ -6,11 +6,8 @@ package org.chromium.chrome.browser.hub;
 
 import com.google.common.collect.ImmutableSet;
 
-import org.chromium.build.annotations.NullMarked;
-
 /** Interface for specifying the order of {@link Pane}s in the Hub. * */
-@NullMarked
 public interface PaneOrderController {
-    /** Returns an ordered set of {@link PaneId} representing the order of Panes in the Hub. **/
+    /** Returns an ordered set of {@link PaneId} representing the order of Panes in the Hub. * */
     public ImmutableSet<Integer> getPaneOrder();
 }

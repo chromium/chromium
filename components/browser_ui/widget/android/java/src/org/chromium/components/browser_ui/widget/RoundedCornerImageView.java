@@ -137,7 +137,7 @@ public class RoundedCornerImageView extends AppCompatImageView {
     }
 
     @Override
-    public void setImageBitmap(@Nullable Bitmap bm) {
+    public void setImageBitmap(Bitmap bm) {
         super.setImageBitmap(bm);
         refreshState();
     }

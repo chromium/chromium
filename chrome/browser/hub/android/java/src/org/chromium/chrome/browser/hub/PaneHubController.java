@@ -6,15 +6,14 @@ package org.chromium.chrome.browser.hub;
 
 import android.view.View;
 
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
+import androidx.annotation.Nullable;
+
 import org.chromium.chrome.browser.tab.Tab;
 
 /**
  * Interface for controlling the Hub from a {@link Pane}. This is only available to the focused
  * pane.
  */
-@NullMarked
 public interface PaneHubController {
     /**
      * Sets a tab as active and hides the Hub. A tab must be selected if the browser is

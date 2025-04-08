@@ -4,10 +4,7 @@
 
 package org.chromium.chrome.browser.hub;
 
-import org.chromium.build.annotations.NullMarked;
-
 /** Interface for controlling scrim visibility. */
-@NullMarked
 public interface ScrimController {
     /** Show a scrim with an animation. */
     void startShowingScrim();

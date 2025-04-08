@@ -4,13 +4,9 @@
 
 package org.chromium.chrome.browser.hub;
 
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
-
 /** A helper class to select a pane before opening the {@link HubLayout}. */
-@NullMarked
 public class HubShowPaneHelper {
-    private @Nullable @PaneId Integer mNextPaneId;
+    private @PaneId Integer mNextPaneId;
 
     public HubShowPaneHelper() {}
 
@@ -56,7 +52,7 @@ public class HubShowPaneHelper {
         return nextPaneId;
     }
 
-    @Nullable Integer getNextPaneIdForTesting() {
+    Integer getNextPaneIdForTesting() {
         return mNextPaneId;
     }
 }

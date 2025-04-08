@@ -12,7 +12,6 @@ import static org.chromium.chrome.browser.hub.HubColorMixer.StateChange.TRANSLAT
 import androidx.annotation.IntDef;
 
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.lang.annotation.Retention;
@@ -32,7 +31,6 @@ import java.util.function.DoubleConsumer;
  * should be passed via the {@link #COLOR_MIXER} property on these models whenever these {@link
  * HubViewColorBlend}s need to be registered.
  */
-@NullMarked
 public interface HubColorMixer {
 
     /**

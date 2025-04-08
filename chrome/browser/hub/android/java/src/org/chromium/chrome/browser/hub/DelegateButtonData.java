@@ -7,16 +7,15 @@ package org.chromium.chrome.browser.hub;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * Holds a {@link Runnable} for handling on press, and delegates everything else to a {@link
  * DisplayButtonData}.
  */
-@NullMarked
 public class DelegateButtonData implements FullButtonData {
-    private final DisplayButtonData mDelegateButtonData;
+    private final @NonNull DisplayButtonData mDelegateButtonData;
     private final @Nullable Runnable mOnPress;
 
     /**
@@ -26,7 +25,8 @@ public class DelegateButtonData implements FullButtonData {
      * @param onPress The runnable to invoke when the button is pressed. A null value will disable
      *     the button.
      */
-    public DelegateButtonData(DisplayButtonData delegateButtonData, @Nullable Runnable onPress) {
+    public DelegateButtonData(
+            @NonNull DisplayButtonData delegateButtonData, @Nullable Runnable onPress) {
         mDelegateButtonData = delegateButtonData;
         mOnPress = onPress;
     }
