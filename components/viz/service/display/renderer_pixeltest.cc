@@ -3319,6 +3319,67 @@ TEST_P(RendererPixelTest, FastPassColorFilterAlphaTranslation) {
       cc::FuzzyPixelOffByOneComparator()));
 }
 
+// Test that an RPDQ that has a filter that samples outside the output rect of
+// the render pass can draw the filter contents even if the embedding RPDQ has
+// an empty size.
+TEST_P(RendererPixelTest, NonEmptyFilterClipRectOnEmptyRenderPassQuad) {
+  const gfx::Rect viewport_rect(this->device_viewport_size_);
+
+  // Add a non-zero offset to the RPDQ to avoid depending on a zero offset in
+  // the implementation.
+  const gfx::Vector2d rpdq_offset(20, 10);
+  const gfx::Rect empty_rpdq_rect;
+
+  AggregatedRenderPassList pass_list;
+
+  // Zero-sized render pass with a reference filter that fills an area green.
+  AggregatedRenderPassId child_pass_id{2};
+  {
+    cc::FilterOperations filters;
+    const SkRect filter_clip_rect = gfx::RectToSkRect(
+        gfx::Rect(gfx::Point() - rpdq_offset, this->device_viewport_size_));
+    filters.Append(cc::FilterOperation::CreateReferenceFilter(
+        sk_make_sp<cc::ColorFilterPaintFilter>(
+            cc::ColorFilter::MakeBlend(SkColors::kGreen, SkBlendMode::kSrc),
+            nullptr, &filter_clip_rect)));
+
+    auto child_pass =
+        CreateTestRenderPass(child_pass_id, empty_rpdq_rect,
+                             /*transform_to_root_target=*/
+                             gfx::Transform::MakeTranslation(rpdq_offset));
+    child_pass->filters = filters;
+
+    pass_list.push_back(std::move(child_pass));
+  }
+
+  // Root pass that embeds the child pass as a zero-sized RPDQ.
+  {
+    AggregatedRenderPassId root_pass_id{1};
+    auto root_pass = CreateTestRootRenderPass(root_pass_id, viewport_rect);
+
+    CreateTestRenderPassDrawQuad(
+        CreateTestSharedQuadState(
+            /*quad_to_target_transform=*/gfx::Transform::MakeTranslation(
+                rpdq_offset),
+            gfx::Rect(gfx::Point() - rpdq_offset, this->device_viewport_size_),
+            root_pass.get(), gfx::MaskFilterInfo()),
+        empty_rpdq_rect, child_pass_id, root_pass.get());
+
+    // Add a red background to make it clear when the test is failing.
+    auto* color_quad = root_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
+    color_quad->SetNew(
+        CreateTestSharedQuadState(gfx::Transform(), viewport_rect,
+                                  root_pass.get(), gfx::MaskFilterInfo()),
+        viewport_rect, viewport_rect, SkColors::kRed, false);
+
+    pass_list.push_back(std::move(root_pass));
+  }
+
+  EXPECT_TRUE(this->RunPixelTest(&pass_list,
+                                 base::FilePath(FILE_PATH_LITERAL("green.png")),
+                                 cc::AlphaDiscardingExactPixelComparator()));
+}
+
 TEST_P(RendererPixelTest, EnlargedRenderPassTexture) {
   gfx::Rect viewport_rect(this->device_viewport_size_);
 
