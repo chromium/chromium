@@ -1,2 +1,2 @@
 requests==2.32.3
-websockets==14.2
+websockets==15.0.1
