@@ -161,6 +161,9 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   bool DoesCardHaveOffer(const CreditCard& credit_card);
   // Returns whether the shown suggestions included a virtual credit card.
   bool DoSuggestionsIncludeVirtualCard();
+  // Checks whether the current website is relevant for BNPL for any known BNPL
+  // provider, according to the optimization guide.
+  bool IsEligibleForBnpl(GURL url);
 
   size_t server_record_type_count_ = 0;
   size_t local_record_type_count_ = 0;
@@ -208,6 +211,9 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   // If true, one of the cards in the suggestions fetched card info retrieval
   // enrolled.
   bool suggestion_contains_card_info_retrieval_enrolled_card_ = false;
+  // If true, the suggestions shown on BNPL eligible merchant is logged and
+  // should not be logged again.
+  bool has_logged_suggestions_shown_on_bnpl_eligible_merchant_ = false;
 
   CardMetadataLoggingContext metadata_logging_context_;
 

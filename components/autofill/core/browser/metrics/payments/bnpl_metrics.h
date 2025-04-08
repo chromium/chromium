@@ -14,6 +14,9 @@ namespace autofill::autofill_metrics {
 using BnplFlowResult = payments::PaymentsWindowManager::BnplFlowResult;
 
 // The reason why a BNPL suggestion was not shown on the page.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class BnplSuggestionNotShownReason {
   // The checkout amount could not be extracted from the page. This value is
   // necessary to determine BNPL eligibility for the purchase.
@@ -42,6 +45,17 @@ enum class BnplTosDialogResult {
 // Returns the histogram suffix corresponding to the given issuer_id.
 std::string GetHistogramSuffixFromIssuerId(std::string_view issuer_id);
 
+// LINT.IfChange(BnplFormEvent)
+
+enum class BnplFormEvent {
+  // Payments autofill suggestions were shown on a BNPL-eligible merchant.
+  kSuggestionsShownOnce = 0,
+
+  kMaxValue = kSuggestionsShownOnce,
+};
+
+// LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:BnplFormEvent)
+
 // Logs if the buy-now-pay-later preference is changed by the user through the
 // pay-over-time toggle in the payment methods settings page. Records true when
 // the user switches on buy-now-pay-later. Records false when the user switches
@@ -67,6 +81,10 @@ void LogBnplPopupWindowShown(std::string_view issuer_id);
 // Logs the result of the BNPL popup window.
 void LogBnplPopupWindowResult(std::string_view issuer_id,
                               BnplFlowResult result);
+
+// Logs BNPL form events. Please refer to `BnplFormEvent` for the possible
+// enumerations that can be logged.
+void LogBnplFormEvent(BnplFormEvent event);
 
 }  // namespace autofill::autofill_metrics
 

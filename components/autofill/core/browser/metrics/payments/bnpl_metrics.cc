@@ -66,4 +66,8 @@ void LogBnplPopupWindowResult(std::string_view issuer_id,
   base::UmaHistogramEnumeration(histogram_name, result);
 }
 
+void LogBnplFormEvent(BnplFormEvent event) {
+  base::UmaHistogramEnumeration("Autofill.FormEvents.CreditCard.Bnpl", event);
+}
+
 }  // namespace autofill::autofill_metrics

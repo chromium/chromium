@@ -2983,6 +2983,14 @@ Called by update_autofill_enums.py.-->
 
 <!-- LINT.ThenChange(/components/autofill/core/browser/webdata/autofill_webdata_backend_impl.cc:Result) -->
 
+<!-- LINT.IfChange(BnplFormEvent) -->
+
+<enum name="BnplFormEvent">
+  <int value="0" label="Suggestions shown (once)"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/autofill/core/browser/metrics/payments/bnpl_metrics.h:BnplFormEvent) -->
+
 <!-- LINT.IfChange(BnplPopupWindowResult) -->
 
 <enum name="BnplPopupWindowResult">

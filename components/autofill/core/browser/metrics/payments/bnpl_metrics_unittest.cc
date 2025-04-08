@@ -186,6 +186,78 @@ INSTANTIATE_TEST_SUITE_P(,
                                          kBnplZipIssuerId,
                                          kBnplAfterpayIssuerId));
 
+class BnplFormEventsMetricsTest : public AutofillMetricsBaseTest,
+                                  public testing::Test {
+ public:
+  BnplFormEventsMetricsTest() = default;
+  FormData form() { return form_; }
+
+  void SetUp() override {
+    SetUpHelper();
+
+    form_ =
+        GetAndAddSeenForm({.description_for_logging = "Bnpl",
+                           .fields = {{.role = CREDIT_CARD_NAME_FULL},
+                                      {.role = CREDIT_CARD_NUMBER},
+                                      {.role = CREDIT_CARD_EXP_MONTH},
+                                      {.role = CREDIT_CARD_EXP_2_DIGIT_YEAR}},
+                           .action = ""});
+
+    personal_data().test_payments_data_manager().AddBnplIssuer(
+        test::GetTestLinkedBnplIssuer());
+  }
+
+  void TearDown() override { TearDownHelper(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kAutofillEnableBuyNowPayLaterSyncing};
+  FormData form_;
+};
+
+TEST_F(BnplFormEventsMetricsTest, SuggestionsShownOnBnplEligibleMerchant) {
+  base::HistogramTester histogram_tester;
+
+  autofill_manager().OnAskForValuesToFillTest(
+      form(), form().fields().back().global_id());
+
+  ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
+              autofill_manager().client().GetAutofillOptimizationGuide()),
+          IsUrlEligibleForCheckoutAmountSearchForIssuerId)
+      .WillByDefault(testing::Return(true));
+
+  DidShowAutofillSuggestions(form(), /*field_index=*/form().fields().size() - 1,
+                             SuggestionType::kCreditCardEntry);
+
+  histogram_tester.ExpectBucketCount("Autofill.FormEvents.CreditCard.Bnpl",
+                                     BnplFormEvent::kSuggestionsShownOnce, 1);
+
+  // To ensure the metrics logs only once per page.
+  DidShowAutofillSuggestions(form(), /*field_index=*/form().fields().size() - 1,
+                             SuggestionType::kCreditCardEntry);
+
+  histogram_tester.ExpectBucketCount("Autofill.FormEvents.CreditCard.Bnpl",
+                                     BnplFormEvent::kSuggestionsShownOnce, 1);
+}
+
+TEST_F(BnplFormEventsMetricsTest, BnplSuggestionsNotShownDueToUrl) {
+  base::HistogramTester histogram_tester;
+
+  autofill_manager().OnAskForValuesToFillTest(
+      form(), form().fields().back().global_id());
+
+  ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
+              autofill_manager().client().GetAutofillOptimizationGuide()),
+          IsUrlEligibleForCheckoutAmountSearchForIssuerId)
+      .WillByDefault(testing::Return(false));
+
+  DidShowAutofillSuggestions(form(), /*field_index=*/form().fields().size() - 1,
+                             SuggestionType::kCreditCardEntry);
+
+  histogram_tester.ExpectBucketCount("Autofill.FormEvents.CreditCard.Bnpl",
+                                     BnplFormEvent::kSuggestionsShownOnce, 0);
+}
+
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 

@@ -2983,6 +2983,19 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.FormEvents.CreditCard.Bnpl" enum="BnplFormEvent"
+    expires_after="2025-07-01">
+  <owner>yiwenqian@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    This histogram records events related to Buy Now Pay Later (BNPL)
+    suggestions on credit card forms of BNPL-eligible merchant sites. It tracks
+    when the BNPL suggestion is shown, selected, filled, and submitted. Each
+    event log is emitted when the action occurs (suggestion shown, selected,
+    etc.)
+  </summary>
+</histogram>
+
 <histogram name="Autofill.FormEvents.CreditCard.CardInfoRetrievalEnrolled"
     enum="CardInfoRetrievalEnrolledLoggingEvent" expires_after="2025-08-31">
   <owner>jialihuang@google.com</owner>

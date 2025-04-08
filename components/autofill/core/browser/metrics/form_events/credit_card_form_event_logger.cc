@@ -17,10 +17,12 @@
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/form_import/form_data_importer.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
+#include "components/autofill/core/browser/integrators/optimization_guide/autofill_optimization_guide.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
 #include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
+#include "components/autofill/core/browser/metrics/payments/bnpl_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/card_info_retrieval_enrolled_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/card_unmask_flow_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/virtual_card_standalone_cvc_suggestion_metrics.h"
@@ -138,6 +140,37 @@ void CreditCardFormEventLogger::OnDidShowSuggestions(
     }
     has_logged_suggestion_for_card_info_retrieval_enrolled_shown_ = true;
   }
+
+  if (!has_logged_suggestions_shown_on_bnpl_eligible_merchant_ &&
+      IsEligibleForBnpl(
+          owner_->client().GetLastCommittedPrimaryMainFrameURL())) {
+    LogBnplFormEvent(BnplFormEvent::kSuggestionsShownOnce);
+    has_logged_suggestions_shown_on_bnpl_eligible_merchant_ = true;
+  }
+}
+
+bool CreditCardFormEventLogger::IsEligibleForBnpl(GURL url) {
+  AutofillClient& autofill_client = owner_->client();
+  AutofillOptimizationGuide* autofill_optimization_guide =
+      autofill_client.GetAutofillOptimizationGuide();
+  if (!autofill_optimization_guide) {
+    return false;
+  }
+
+  payments::PaymentsAutofillClient* payments_autofill_client =
+      autofill_client.GetPaymentsAutofillClient();
+  if (!payments_autofill_client) {
+    return false;
+  }
+
+  const auto& bnpl_issuers =
+      payments_autofill_client->GetPaymentsDataManager().GetBnplIssuers();
+  return std::any_of(bnpl_issuers.begin(), bnpl_issuers.end(),
+                     [&](const auto& issuer) {
+                       return autofill_optimization_guide
+                           ->IsUrlEligibleForCheckoutAmountSearchForIssuerId(
+                               issuer.issuer_id(), url);
+                     });
 }
 
 void CreditCardFormEventLogger::OnDidSelectCardSuggestion(
