@@ -1493,8 +1493,7 @@ bool TileDrawQuadFromDict(const base::Value::Dict& dict,
   draw_quad->SetAll(
       common.shared_quad_state, common.rect, common.visible_rect,
       common.needs_blending, resource_id, content_common->tex_coord_rect,
-      content_common->texture_size, content_common->is_premultiplied,
-      content_common->nearest_neighbor,
+      content_common->texture_size, content_common->nearest_neighbor,
       content_common->force_anti_aliasing_off);
   return true;
 }

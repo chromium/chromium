@@ -267,10 +267,10 @@ class VizSerializationPerfTest : public testing::Test {
           /*fast_rounded_corner=*/false);
       for (uint32_t j = 0; j < 6; ++j) {
         auto* tile_in = pass_in->CreateAndAppendDrawQuad<TileDrawQuad>();
-        tile_in->SetAll(
-            shared_state2_in, arbitrary_rect2, arbitrary_rect1_inside_rect2,
-            arbitrary_bool1, arbitrary_resourceid3, arbitrary_rectf1,
-            arbitrary_size1, arbitrary_bool2, arbitrary_bool3, arbitrary_bool4);
+        tile_in->SetAll(shared_state2_in, arbitrary_rect2,
+                        arbitrary_rect1_inside_rect2, arbitrary_bool1,
+                        arbitrary_resourceid3, arbitrary_rectf1,
+                        arbitrary_size1, arbitrary_bool2, arbitrary_bool3);
       }
     }
 

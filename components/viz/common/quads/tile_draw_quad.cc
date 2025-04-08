@@ -21,13 +21,12 @@ void TileDrawQuad::SetNew(const SharedQuadState* shared_quad_state,
                           ResourceId resource,
                           const gfx::RectF& tex_coord_rect,
                           const gfx::Size& texture_size,
-                          bool is_premultiplied,
                           bool nearest_neighbor,
                           bool force_anti_aliasing_off) {
   CHECK_NE(resource, kInvalidResourceId);
   ContentDrawQuadBase::SetNew(
       shared_quad_state, DrawQuad::Material::kTiledContent, rect, visible_rect,
-      needs_blending, tex_coord_rect, texture_size, is_premultiplied,
+      needs_blending, tex_coord_rect, texture_size, /*premultiplied=*/true,
       nearest_neighbor, force_anti_aliasing_off);
   resource_id = resource;
 }
@@ -39,13 +38,12 @@ void TileDrawQuad::SetAll(const SharedQuadState* shared_quad_state,
                           ResourceId resource,
                           const gfx::RectF& tex_coord_rect,
                           const gfx::Size& texture_size,
-                          bool is_premultiplied,
                           bool nearest_neighbor,
                           bool force_anti_aliasing_off) {
   CHECK_NE(resource, kInvalidResourceId);
   ContentDrawQuadBase::SetAll(
       shared_quad_state, DrawQuad::Material::kTiledContent, rect, visible_rect,
-      needs_blending, tex_coord_rect, texture_size, is_premultiplied,
+      needs_blending, tex_coord_rect, texture_size, /*premultiplied=*/true,
       nearest_neighbor, force_anti_aliasing_off);
   resource_id = resource;
 }

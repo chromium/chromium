@@ -273,7 +273,7 @@ void TileDisplayLayerImpl::AppendQuads(const AppendQuadsContext& context,
                      offset_visible_geometry_rect, needs_blending,
                      resource->resource.id, texture_rect,
                      iter.CurrentTiling()->tile_size(),
-                     /*is_premultiplied=*/true, /*nearest_neighbor=*/false,
+                     /*nearest_neighbor=*/false,
                      /*enable_edge_aa=*/false);
         used_resources.push_back(resource->resource);
         has_draw_quad = true;

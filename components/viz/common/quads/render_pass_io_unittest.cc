@@ -275,7 +275,7 @@ TEST(RenderPassIOTest, QuadList) {
       quad->SetAll(render_pass0->shared_quad_state_list.ElementAt(sqs_index),
                    gfx::Rect(0, 0, 256, 512), gfx::Rect(2, 2, 250, 500), true,
                    ResourceId(512u), gfx::RectF(0.0f, 0.0f, 0.9f, 0.8f),
-                   gfx::Size(256, 512), true, true, true);
+                   gfx::Size(256, 512), true, true);
       ++quad_count;
     }
     {
