@@ -54,15 +54,9 @@ class NET_EXPORT HashValue {
   // Serializes the HashValue to a string.
   std::string ToString() const;
 
-  // Returns the HashValue as a span.
+  // These return the bytes of the contained hash value.
   base::span<uint8_t> span();
   base::span<const uint8_t> span() const;
-
-  // Iterate memory as bytes up to the end of its logical size.
-  iterator begin() { return span().begin(); }
-  const_iterator begin() const { return span().begin(); }
-  iterator end() { return span().end(); }
-  const_iterator end() const { return span().end(); }
 
   HashValueTag tag() const { return tag_; }
 
@@ -82,17 +76,6 @@ class NET_EXPORT HashValue {
 };
 
 typedef std::vector<HashValue> HashValueVector;
-
-
-// IsSHA256HashInSortedArray returns true iff |hash| is in |array|, a sorted
-// array of SHA256 hashes.
-bool IsSHA256HashInSortedArray(const HashValue& hash,
-                               base::span<const SHA256HashValue> array);
-
-// IsAnySHA256HashInSortedArray returns true iff any value in |hashes| is in
-// |array|, a sorted array of SHA256 hashes.
-bool IsAnySHA256HashInSortedArray(base::span<const HashValue> hashes,
-                                  base::span<const SHA256HashValue> array);
 
 }  // namespace net
 

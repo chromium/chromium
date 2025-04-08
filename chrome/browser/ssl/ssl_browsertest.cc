@@ -364,12 +364,12 @@ std::string EncodeQuery(const std::string& query) {
 }
 
 // Returns the Sha256 hash of the SPKI of |cert|.
-net::HashValue GetSPKIHash(const CRYPTO_BUFFER* cert) {
+std::array<uint8_t, crypto::hash::kSha256Size> GetSPKIHash(
+    const CRYPTO_BUFFER* cert) {
   std::string_view spki_bytes;
   EXPECT_TRUE(net::asn1::ExtractSPKIFromDERCert(
       net::x509_util::CryptoBufferAsStringPiece(cert), &spki_bytes));
-  net::HashValue sha256(crypto::hash::Sha256(base::as_byte_span(spki_bytes)));
-  return sha256;
+  return crypto::hash::Sha256(base::as_byte_span(spki_bytes));
 }
 
 // Compares two SSLStatuses to check if they match up before and after an

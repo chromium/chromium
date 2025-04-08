@@ -276,7 +276,7 @@ TEST_F(ProofVerifierChromiumTest, FailsIfSignatureFails) {
 
 HashValueVector MakeHashValueVector(uint8_t tag) {
   HashValue hash(HASH_VALUE_SHA256);
-  std::ranges::fill(hash, tag);
+  std::ranges::fill(hash.span(), tag);
   HashValueVector hashes;
   hashes.push_back(hash);
   return hashes;

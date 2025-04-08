@@ -4390,7 +4390,7 @@ TEST_F(SSLClientSocketTest, ClientCertSignatureAlgorithm) {
 HashValueVector MakeHashValueVector(uint8_t value) {
   HashValueVector out;
   HashValue hash(HASH_VALUE_SHA256);
-  std::ranges::fill(hash.begin(), hash.end(), value);
+  std::ranges::fill(hash.span(), value);
   out.push_back(hash);
   return out;
 }

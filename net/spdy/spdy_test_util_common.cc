@@ -1006,7 +1006,7 @@ quiche::HttpHeaderBlock SpdyTestUtil::ConstructHeaderBlock(
 namespace test {
 HashValue GetTestHashValue(uint8_t label) {
   HashValue hash_value(HASH_VALUE_SHA256);
-  std::ranges::fill(hash_value, label);
+  std::ranges::fill(hash_value.span(), label);
   return hash_value;
 }
 
