@@ -6104,6 +6104,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5477" label="SpellingErrorPseudoElement"/>
   <int value="5478" label="GrammarErrorPseudoElement"/>
   <int value="5479" label="SpeculationRulesTags"/>
+  <int value="5480" label="MLCreateContextGPUDevice"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

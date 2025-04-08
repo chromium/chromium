@@ -4863,6 +4863,7 @@ enum WebFeature {
   kSpellingErrorPseudoElement = 5477,
   kGrammarErrorPseudoElement = 5478,
   kSpeculationRulesTags = 5479,
+  kMLCreateContextGPUDevice = 5480,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra
