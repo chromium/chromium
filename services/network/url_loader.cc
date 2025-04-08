@@ -81,6 +81,7 @@
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_getter.h"
 #include "services/network/ad_heuristic_cookie_overrides.h"
+#include "services/network/file_opener_for_upload.h"
 #include "services/network/orb/orb_impl.h"
 #include "services/network/public/cpp/client_hints.h"
 #include "services/network/public/cpp/constants.h"
@@ -618,109 +619,6 @@ void URLLoader::SetUpUrlRequestCallbacks(
   }
 }
 
-// This class is used to manage the queue of pending file upload operations
-// initiated by the URLLoader::OpenFilesForUpload().
-class URLLoader::FileOpenerForUpload {
- public:
-  typedef base::OnceCallback<void(int, std::vector<base::File>)>
-      SetUpUploadCallback;
-
-  FileOpenerForUpload(std::vector<base::FilePath> paths,
-                      URLLoader* url_loader,
-                      int32_t process_id,
-                      mojom::NetworkContextClient* const network_context_client,
-                      SetUpUploadCallback set_up_upload_callback)
-      : paths_(std::move(paths)),
-        url_loader_(url_loader),
-        process_id_(process_id),
-        network_context_client_(network_context_client),
-        set_up_upload_callback_(std::move(set_up_upload_callback)) {
-    StartOpeningNextBatch();
-  }
-
-  FileOpenerForUpload(const FileOpenerForUpload&) = delete;
-  FileOpenerForUpload& operator=(const FileOpenerForUpload&) = delete;
-
-  ~FileOpenerForUpload() {
-    if (!opened_files_.empty())
-      PostCloseFiles(std::move(opened_files_));
-  }
-
- private:
-  static void OnFilesForUploadOpened(
-      base::WeakPtr<FileOpenerForUpload> file_opener,
-      size_t num_files_requested,
-      int error_code,
-      std::vector<base::File> opened_files) {
-    if (!file_opener) {
-      PostCloseFiles(std::move(opened_files));
-      return;
-    }
-
-    if (error_code == net::OK && num_files_requested != opened_files.size())
-      error_code = net::ERR_FAILED;
-
-    if (error_code != net::OK) {
-      PostCloseFiles(std::move(opened_files));
-      file_opener->FilesForUploadOpenedDone(error_code);
-      return;
-    }
-
-    for (base::File& file : opened_files)
-      file_opener->opened_files_.push_back(std::move(file));
-
-    if (file_opener->opened_files_.size() < file_opener->paths_.size()) {
-      file_opener->StartOpeningNextBatch();
-      return;
-    }
-
-    file_opener->FilesForUploadOpenedDone(net::OK);
-  }
-
-  // |opened_files| need to be closed on a blocking task runner, so move the
-  // |opened_files| vector onto a sequence that can block so it gets destroyed
-  // there.
-  static void PostCloseFiles(std::vector<base::File> opened_files) {
-    base::ThreadPool::PostTask(
-        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
-        base::DoNothingWithBoundArgs(std::move(opened_files)));
-  }
-
-  void StartOpeningNextBatch() {
-    size_t num_files_to_request = std::min(paths_.size() - opened_files_.size(),
-                                           kMaxFileUploadRequestsPerBatch);
-    std::vector<base::FilePath> batch_paths(
-        paths_.begin() + opened_files_.size(),
-        paths_.begin() + opened_files_.size() + num_files_to_request);
-
-    network_context_client_->OnFileUploadRequested(
-        process_id_, /*async=*/true, batch_paths,
-        url_loader_->url_request_->url(),
-        base::BindOnce(&FileOpenerForUpload::OnFilesForUploadOpened,
-                       weak_ptr_factory_.GetWeakPtr(), num_files_to_request));
-  }
-
-  void FilesForUploadOpenedDone(int error_code) {
-    url_loader_->url_request_->LogUnblocked();
-
-    if (error_code == net::OK)
-      std::move(set_up_upload_callback_).Run(net::OK, std::move(opened_files_));
-    else
-      std::move(set_up_upload_callback_).Run(error_code, {});
-  }
-
-  // The paths of files for upload
-  const std::vector<base::FilePath> paths_;
-  const raw_ptr<URLLoader> url_loader_;
-  const int32_t process_id_;
-  const raw_ptr<mojom::NetworkContextClient> network_context_client_;
-  SetUpUploadCallback set_up_upload_callback_;
-  // The files opened so far.
-  std::vector<base::File> opened_files_;
-
-  base::WeakPtrFactory<FileOpenerForUpload> weak_ptr_factory_{this};
-};
-
 void URLLoader::OpenFilesForUpload(const ResourceRequest& request) {
   std::vector<base::FilePath> paths;
   for (const auto& element : *request.request_body.get()->elements()) {
@@ -729,7 +627,7 @@ void URLLoader::OpenFilesForUpload(const ResourceRequest& request) {
     }
   }
   if (paths.empty()) {
-    SetUpUpload(request, net::OK, std::vector<base::File>());
+    SetUpUpload(request, std::vector<base::File>());
     return;
   }
   if (!network_context_client_) {
@@ -745,28 +643,35 @@ void URLLoader::OpenFilesForUpload(const ResourceRequest& request) {
   }
   url_request_->LogBlockedBy("Opening Files");
   file_opener_for_upload_ = std::make_unique<FileOpenerForUpload>(
-      std::move(paths), this, factory_params_->process_id,
+      std::move(paths), url_request_->url(), factory_params_->process_id,
       network_context_client_,
       base::BindOnce(&URLLoader::SetUpUpload, base::Unretained(this), request));
+  file_opener_for_upload_->Start();
 }
 
-void URLLoader::SetUpUpload(const ResourceRequest& request,
-                            int error_code,
-                            std::vector<base::File> opened_files) {
-  if (error_code != net::OK) {
-    DCHECK(opened_files.empty());
+void URLLoader::SetUpUpload(
+    const ResourceRequest& request,
+    base::expected<std::vector<base::File>, net::Error> file_open_result) {
+  if (file_opener_for_upload_) {
+    file_opener_for_upload_.reset();
+    // This corresponds to the LogBlockedBy call made just before creating
+    // FileOpenerForUpload.
+    url_request_->LogUnblocked();
+  }
+  if (!file_open_result.has_value()) {
     // Defer calling NotifyCompleted to make sure the URLLoader finishes
     // initializing before getting deleted.
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&URLLoader::NotifyCompleted,
-                                  weak_ptr_factory_.GetWeakPtr(), error_code));
+                                  weak_ptr_factory_.GetWeakPtr(),
+                                  file_open_result.error()));
     return;
   }
   scoped_refptr<base::SequencedTaskRunner> task_runner =
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
   url_request_->set_upload(url_loader_util::CreateUploadDataStream(
-      request.request_body.get(), opened_files, task_runner.get()));
+      request.request_body.get(), file_open_result.value(), task_runner.get()));
 
   if (request.enable_upload_progress) {
     upload_progress_tracker_ = std::make_unique<UploadProgressTracker>(

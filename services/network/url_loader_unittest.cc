@@ -99,6 +99,7 @@
 #include "net/url_request/url_request_job.h"
 #include "net/url_request/url_request_test_job.h"
 #include "net/url_request/url_request_test_util.h"
+#include "services/network/file_opener_for_upload.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/ip_address_space_util.h"
@@ -3155,7 +3156,7 @@ TEST_P(ParameterizedURLLoaderTest, UploadTwoBatchesOfFiles) {
   base::FilePath file_path = GetTestFilePath("simple_page.html");
 
   std::string expected_body;
-  size_t num_files = 2 * kMaxFileUploadRequestsPerBatch;
+  size_t num_files = 2 * FileOpenerForUpload::kMaxFileUploadRequestsPerBatch;
   for (size_t i = 0; i < num_files; ++i) {
     std::string tmp_expected_body;
     ASSERT_TRUE(base::ReadFileToString(file_path, &tmp_expected_body))
@@ -3182,7 +3183,7 @@ TEST_P(ParameterizedURLLoaderTest,
   base::FilePath file_path = GetTestFilePath("simple_page.html");
 
   scoped_refptr<ResourceRequestBody> request_body(new ResourceRequestBody());
-  size_t num_files = 2 * kMaxFileUploadRequestsPerBatch;
+  size_t num_files = 2 * FileOpenerForUpload::kMaxFileUploadRequestsPerBatch;
   for (size_t i = 0; i < num_files; ++i) {
     request_body->AppendFileRange(
         file_path, 0, std::numeric_limits<uint64_t>::max(), base::Time());
@@ -3199,7 +3200,7 @@ TEST_P(ParameterizedURLLoaderTest,
   base::FilePath file_path = GetTestFilePath("simple_page.html");
 
   scoped_refptr<ResourceRequestBody> request_body(new ResourceRequestBody());
-  size_t num_files = 2 * kMaxFileUploadRequestsPerBatch;
+  size_t num_files = 2 * FileOpenerForUpload::kMaxFileUploadRequestsPerBatch;
   for (size_t i = 0; i < num_files; ++i) {
     request_body->AppendFileRange(
         file_path, 0, std::numeric_limits<uint64_t>::max(), base::Time());

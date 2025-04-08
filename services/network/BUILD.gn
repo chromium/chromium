@@ -46,6 +46,8 @@ component("network_service") {
     "disk_cache/mojo_backend_file_operations_factory.h",
     "dns_config_change_manager.cc",
     "dns_config_change_manager.h",
+    "file_opener_for_upload.cc",
+    "file_opener_for_upload.h",
     "host_resolver.cc",
     "host_resolver.h",
     "host_resolver_mdns_listener.cc",

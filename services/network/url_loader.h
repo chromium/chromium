@@ -99,8 +99,7 @@ enum class FetchKeepAliveRequestNetworkMetricType {
 
 }  // namespace internal
 
-constexpr size_t kMaxFileUploadRequestsPerBatch = 64;
-
+class FileOpenerForUpload;
 class KeepaliveStatisticsRecorder;
 class NetToMojoPendingBuffer;
 class ScopedThrottlingToken;
@@ -327,9 +326,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
     const raw_ptr<URLLoader> pointer_;
   };
 
-  class FileOpenerForUpload;
-  friend class FileOpenerForUpload;
-
   // An enum class representing the result of keepalive requests. This is used
   // for UMA so do NOT re-assign values.
   enum class KeepaliveRequestResult {
@@ -347,8 +343,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
 
   void OpenFilesForUpload(const ResourceRequest& request);
   void SetUpUpload(const ResourceRequest& request,
-                   int error_code,
-                   const std::vector<base::File> opened_files);
+                   base::expected<std::vector<base::File>, net::Error>);
 
   // A continuation of `OnConnected` to process the result of the asynchronous
   // Local Network Access permission check.
@@ -708,6 +703,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
 
   mojo::Remote<mojom::TrustedHeaderClient> header_client_;
 
+  // Handles asynchronously opening files for upload. Holds a reference to the
+  // request's URL (from `url_request_`), so `url_request_` must outlive this.
   std::unique_ptr<FileOpenerForUpload> file_opener_for_upload_;
 
   // If the request is configured for Trust Tokens
