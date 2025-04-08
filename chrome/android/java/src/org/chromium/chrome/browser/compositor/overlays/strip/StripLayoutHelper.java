@@ -29,7 +29,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.os.SystemClock;
-import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.view.View;
 import android.widget.AdapterView;
@@ -92,7 +91,6 @@ import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabGroupColorUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
-import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager;
@@ -3187,19 +3185,6 @@ public class StripLayoutHelper
         updateGroupTitleBitmapIfNeeded(groupTitle);
     }
 
-    /**
-     * @param tabGroupId The tab group ID of the relevant tab group.
-     * @param titleText The tab group's title text, if any. Null otherwise.
-     * @return The provided title text if it isn't empty. Otherwise, returns the default title.
-     */
-    private String getDefaultGroupTitleTextIfEmpty(Token tabGroupId, @Nullable String titleText) {
-        if (TextUtils.isEmpty(titleText)) {
-            int numTabs = mTabGroupModelFilter.getTabCountForGroup(tabGroupId);
-            titleText = TabGroupTitleUtils.getDefaultTitle(mContext, numTabs);
-        }
-        return titleText;
-    }
-
     @VisibleForTesting
     void updateGroupTextAndSharedState(int rootId) {
         updateGroupTextAndSharedState(findGroupTitle(rootId));
@@ -3226,7 +3211,9 @@ public class StripLayoutHelper
         if (groupTitle.willClose()) return;
 
         // 1. Update indicator text and width.
-        titleText = getDefaultGroupTitleTextIfEmpty(groupTitle.getTabGroupId(), titleText);
+        titleText =
+                StripLayoutUtils.getDefaultGroupTitleTextIfEmpty(
+                        mContext, mTabGroupModelFilter, groupTitle.getTabGroupId(), titleText);
         int widthPx = mLayerTitleCache.getGroupTitleWidth(mIncognito, titleText);
         float widthDp = widthPx / mContext.getResources().getDisplayMetrics().density;
         float oldWidth = groupTitle.getWidth();

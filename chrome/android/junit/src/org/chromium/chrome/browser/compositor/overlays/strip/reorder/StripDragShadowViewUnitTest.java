@@ -8,7 +8,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -47,6 +49,9 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.MultiThumbnailCardProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback;
@@ -68,10 +73,13 @@ public class StripDragShadowViewUnitTest {
     @Mock private MultiThumbnailCardProvider mMockMultiThumbnailCardProvider;
     @Mock private Supplier<TabContentManager> mMockTabContentManagerSupplier;
     @Mock private Supplier<LayerTitleCache> mMockLayerTitleCacheSupplier;
+    @Mock private TabModelSelector mMockTabModelSelector;
     @Mock private StripDragShadowView.ShadowUpdateHost mMockShadowUpdateHost;
 
     @Mock private TabContentManager mMockTabContentManager;
     @Mock private LayerTitleCache mMockLayerTitleCache;
+    @Mock private TabGroupModelFilterProvider mMockTabGroupModelFilterProvider;
+    @Mock private TabGroupModelFilter mMockTabGroupModelFilter;
     @Mock private Tab mMockTab;
     @Mock private Bitmap mMockThumbnailBitmap;
     @Mock private Bitmap mMockOriginalFaviconBitmap;
@@ -100,6 +108,10 @@ public class StripDragShadowViewUnitTest {
 
         when(mMockTabContentManagerSupplier.get()).thenReturn(mMockTabContentManager);
         when(mMockLayerTitleCacheSupplier.get()).thenReturn(mMockLayerTitleCache);
+        when(mMockTabModelSelector.getTabGroupModelFilterProvider())
+                .thenReturn(mMockTabGroupModelFilterProvider);
+        when(mMockTabGroupModelFilterProvider.getTabGroupModelFilter(anyBoolean()))
+                .thenReturn(mMockTabGroupModelFilter);
 
         when(mMockTab.getId()).thenReturn(TAB_ID);
 
@@ -113,6 +125,7 @@ public class StripDragShadowViewUnitTest {
                 mMockMultiThumbnailCardProvider,
                 mMockTabContentManagerSupplier,
                 mMockLayerTitleCacheSupplier,
+                mMockTabModelSelector,
                 mMockShadowUpdateHost);
 
         mCardView = mStripDragShadowView.findViewById(R.id.card_view);
@@ -247,6 +260,27 @@ public class StripDragShadowViewUnitTest {
                 "Should be using favicon from history.",
                 mMockHistoryFaviconBitmap,
                 ((BitmapDrawable) mFaviconView.getDrawable()).getBitmap());
+    }
+
+    @Test
+    public void testUpdate_TabTitle() {
+        String expectedTitle = "tab";
+        when(mMockLayerTitleCache.getUpdatedTitle(any(), anyString())).thenReturn(expectedTitle);
+
+        mStripDragShadowView.prepareForTabDrag(mMockTab, 0);
+
+        assertEquals("Unexpected tab title.", expectedTitle, mTitleView.getText());
+    }
+
+    @Test
+    public void testUpdate_GroupTitle() {
+        String expectedTitle = "group";
+        when(mMockLayerTitleCache.getUpdatedGroupTitle(any(), anyString(), anyBoolean()))
+                .thenReturn(expectedTitle);
+
+        mStripDragShadowView.prepareForGroupDrag(mMockTab, 0);
+
+        assertEquals("Unexpected group title.", expectedTitle, mTitleView.getText());
     }
 
     @Test

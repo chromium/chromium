@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
+import android.content.Context;
+import android.text.TextUtils;
 import android.view.HapticFeedbackConstants;
 import android.view.View;
 
@@ -15,6 +17,7 @@ import org.chromium.base.Token;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
@@ -139,6 +142,26 @@ public class StripLayoutUtils {
             }
         }
         return null;
+    }
+
+    /**
+     * Returns the provided title text if it isn't empty. Otherwise, returns the default title.
+     *
+     * @param context The Android {@link Context}.
+     * @param modelFilter The {@link TabGroupModelFilter} that holds the given group.
+     * @param tabGroupId The tab group ID of the relevant tab group.
+     * @param titleText The tab group's title text, if any. {@code null} otherwise.
+     */
+    public static String getDefaultGroupTitleTextIfEmpty(
+            Context context,
+            TabGroupModelFilter modelFilter,
+            Token tabGroupId,
+            @Nullable String titleText) {
+        // TODO(crbug.com/407545128): Unify with similar checks elsewhere.
+        if (!TextUtils.isEmpty(titleText)) return titleText;
+
+        int numTabs = modelFilter.getTabCountForGroup(tabGroupId);
+        return TabGroupTitleUtils.getDefaultTitle(context, numTabs);
     }
 
     /**

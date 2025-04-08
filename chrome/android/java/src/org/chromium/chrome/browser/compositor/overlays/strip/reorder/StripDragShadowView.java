@@ -28,6 +28,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
+import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -36,6 +37,8 @@ import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabContentManagerThumbnailProvider;
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.MultiThumbnailCardProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.ui.interpolators.Interpolators;
@@ -80,6 +83,7 @@ public class StripDragShadowView extends FrameLayout {
     private BrowserControlsStateProvider mBrowserControlStateProvider;
     private Supplier<TabContentManager> mTabContentManagerSupplier;
     private Supplier<LayerTitleCache> mLayerTitleCacheSupplier;
+    private TabModelSelector mTabModelSelector;
     private ShadowUpdateHost mShadowUpdateHost;
 
     // Thumbnail Providers
@@ -130,6 +134,7 @@ public class StripDragShadowView extends FrameLayout {
      * @param multiThumbnailCardProvider Provider for group thumbnails.
      * @param tabContentManagerSupplier Supplier for the {@link TabContentManager}.
      * @param layerTitleCacheSupplier Supplier for the {@link LayerTitleCache}.
+     * @param tabModelSelector The {@link TabModelSelector} to use.
      * @param shadowUpdateHost The host to push updates to.
      */
     public void initialize(
@@ -137,10 +142,12 @@ public class StripDragShadowView extends FrameLayout {
             MultiThumbnailCardProvider multiThumbnailCardProvider,
             Supplier<TabContentManager> tabContentManagerSupplier,
             Supplier<LayerTitleCache> layerTitleCacheSupplier,
+            TabModelSelector tabModelSelector,
             ShadowUpdateHost shadowUpdateHost) {
         mBrowserControlStateProvider = browserControlsStateProvider;
         mTabContentManagerSupplier = tabContentManagerSupplier;
         mLayerTitleCacheSupplier = layerTitleCacheSupplier;
+        mTabModelSelector = tabModelSelector;
         mShadowUpdateHost = shadowUpdateHost;
 
         mMultiThumbnailCardProvider = multiThumbnailCardProvider;
@@ -266,6 +273,7 @@ public class StripDragShadowView extends FrameLayout {
     }
 
     private void updateTabTitleAndFavicon() {
+        assert mTab != null;
         LayerTitleCache layerTitleCache = mLayerTitleCacheSupplier.get();
 
         mTitleView.setText(
@@ -287,7 +295,29 @@ public class StripDragShadowView extends FrameLayout {
     }
 
     private void updateGroupTitleAndColor() {
-        // TODO(crbug.com/383124686): Implement.
+        assert mTab != null;
+        boolean tabIsIncognito = mTab.isIncognitoBranded();
+        TabGroupModelFilter modelFilter =
+                mTabModelSelector
+                        .getTabGroupModelFilterProvider()
+                        .getTabGroupModelFilter(tabIsIncognito);
+        LayerTitleCache layerTitleCache = mLayerTitleCacheSupplier.get();
+
+        // Set the group title text.
+        String titleText =
+                StripLayoutUtils.getDefaultGroupTitleTextIfEmpty(
+                        getContext(),
+                        modelFilter,
+                        mTab.getTabGroupId(),
+                        modelFilter.getTabGroupTitle(mTab.getRootId()));
+        mTitleView.setText(
+                layerTitleCache.getUpdatedGroupTitle(
+                        mTab.getTabGroupId(), titleText, tabIsIncognito));
+
+        // Clear the tab favicon if it's been set.
+        mFaviconView.setImageBitmap(null);
+
+        // TODO(crbug.com/383124686): Implement color changes.
     }
 
     private void setIncognito(boolean incognito) {

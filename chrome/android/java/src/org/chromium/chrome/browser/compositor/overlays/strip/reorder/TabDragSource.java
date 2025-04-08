@@ -328,6 +328,7 @@ public class TabDragSource implements View.OnDragListener {
                 mMultiThumbnailCardProvider,
                 mTabContentManagerSupplier,
                 mLayerTitleCacheSupplier,
+                mTabModelSelector,
                 () -> {
                     TabDragShadowBuilder builder =
                             (TabDragShadowBuilder) DragDropGlobalState.getDragShadowBuilder();
