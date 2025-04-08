@@ -64,6 +64,7 @@ PinnedActionToolbarButton::PinnedActionToolbarButton(
               kPinnedActionToolbarButtonElementId);
   ConfigureInkDropForToolbar(this);
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
+  // Pinned action toolbar buttons have right margin and no left margin.
   SetProperty(views::kMarginsKey,
               gfx::Insets::TLBR(
                   0, 0, 0, GetLayoutConstant(TOOLBAR_ICON_DEFAULT_MARGIN)));
@@ -136,19 +137,6 @@ void PinnedActionToolbarButton::SetPinned(bool pinned) {
     return;
   }
   pinned_ = pinned;
-  // The divider between the pinned and unpinned section should not have extra
-  // margin added on either end. Therefore, all pinned buttons should have
-  // their margin applied on the left, and all unpinned buttons should have
-  // their margin applied on the right.
-  if (pinned_) {
-    SetProperty(views::kMarginsKey,
-                gfx::Insets::TLBR(
-                    0, GetLayoutConstant(TOOLBAR_ICON_DEFAULT_MARGIN), 0, 0));
-  } else {
-    SetProperty(views::kMarginsKey,
-                gfx::Insets::TLBR(
-                    0, 0, 0, GetLayoutConstant(TOOLBAR_ICON_DEFAULT_MARGIN)));
-  }
   NotifyViewControllerCallback();
 }
 

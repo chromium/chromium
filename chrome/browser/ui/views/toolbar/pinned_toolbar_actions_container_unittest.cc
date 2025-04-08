@@ -198,7 +198,7 @@ TEST_F(PinnedToolbarActionsContainerTest, ContainerMargins) {
           container()->GetAnimatingLayoutManager()->target_layout_manager())
           ->interior_margin()
           .left(),
-      -GetLayoutConstant(TOOLBAR_ICON_DEFAULT_MARGIN));
+      0);
   ASSERT_EQ(
       static_cast<PinnedToolbarActionsContainerLayout*>(
           container()->GetAnimatingLayoutManager()->target_layout_manager())

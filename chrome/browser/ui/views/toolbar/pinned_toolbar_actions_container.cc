@@ -111,8 +111,8 @@ PinnedToolbarActionsContainer::PinnedToolbarActionsContainer(
   // (which has a different margin than the default). This ensures the container
   // is the same size regardless of where and if the divider is in the
   // container.
-  layout->SetInteriorMargin(
-      gfx::Insets::VH(0, -GetLayoutConstant(TOOLBAR_ICON_DEFAULT_MARGIN)));
+  layout->SetInteriorMargin(gfx::Insets::TLBR(
+      0, 0, 0, -GetLayoutConstant(TOOLBAR_ICON_DEFAULT_MARGIN)));
 
   // Animations.
   GetAnimatingLayoutManager()->SetDefaultFadeMode(
@@ -133,9 +133,14 @@ PinnedToolbarActionsContainer::PinnedToolbarActionsContainer(
   toolbar_divider->SetPreferredSize(
       gfx::Size(GetLayoutConstant(TOOLBAR_DIVIDER_WIDTH),
                 GetLayoutConstant(TOOLBAR_DIVIDER_HEIGHT)));
+  // The divider only exists if there are pinned buttons, which have padding on
+  // the right. Remove that amount of padding to compensate.
   toolbar_divider->SetProperty(
       views::kMarginsKey,
-      gfx::Insets::VH(0, GetLayoutConstant(TOOLBAR_DIVIDER_SPACING)));
+      gfx::Insets::TLBR(0,
+                        GetLayoutConstant(TOOLBAR_DIVIDER_SPACING) -
+                            GetLayoutConstant(TOOLBAR_ICON_DEFAULT_MARGIN),
+                        0, GetLayoutConstant(TOOLBAR_DIVIDER_SPACING)));
   toolbar_divider_ = AddChildView(std::move(toolbar_divider));
 
   // Initialize the pinned action buttons.
