@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -18,6 +19,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/scoped_accessibility_mode_override.h"
 #include "content/shell/browser/shell.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -31,16 +33,21 @@ const int GRANULARITY_LINE =
     ANDROID_ACCESSIBILITY_NODE_INFO_MOVEMENT_GRANULARITY_LINE;
 
 class AndroidGranularityMovementBrowserTest : public ContentBrowserTest {
- public:
-  AndroidGranularityMovementBrowserTest() {}
-  ~AndroidGranularityMovementBrowserTest() override {}
+ protected:
+  AndroidGranularityMovementBrowserTest() = default;
+  ~AndroidGranularityMovementBrowserTest() override = default;
+
+  void SetUpOnMainThread() override {
+    accessibility_mode_.emplace(ui::kAXModeComplete);
+  }
+
+  void TearDownOnMainThread() override { accessibility_mode_.reset(); }
 
   ui::BrowserAccessibility* LoadUrlAndGetAccessibilityRoot(const GURL& url) {
     EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
 
     // Load the page.
     AccessibilityNotificationWaiter waiter(shell()->web_contents(),
-                                           ui::kAXModeComplete,
                                            ax::mojom::Event::kLoadComplete);
     EXPECT_TRUE(NavigateToURL(shell(), url));
     EXPECT_TRUE(waiter.WaitForNotification());
@@ -70,7 +77,6 @@ class AndroidGranularityMovementBrowserTest : public ContentBrowserTest {
   std::u16string TraverseNodeAtGranularity(ui::BrowserAccessibility* node,
                                            int granularity) {
     AccessibilityNotificationWaiter waiter(shell()->web_contents(),
-                                           ui::kAXModeComplete,
                                            ax::mojom::Event::kTreeChanged);
     node->manager()->LoadInlineTextBoxes(*node);
     EXPECT_TRUE(waiter.WaitForNotification());
@@ -141,6 +147,9 @@ class AndroidGranularityMovementBrowserTest : public ContentBrowserTest {
 
     return concatenated;
   }
+
+ private:
+  std::optional<ScopedAccessibilityModeOverride> accessibility_mode_;
 };
 
 IN_PROC_BROWSER_TEST_F(AndroidGranularityMovementBrowserTest,

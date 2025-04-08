@@ -2243,8 +2243,7 @@ bool AccessibilityTreeContainsNodeWithName(ui::BrowserAccessibility* node,
 }
 
 void WaitForAccessibilityTreeToChange(WebContents* web_contents) {
-  AccessibilityNotificationWaiter accessibility_waiter(
-      web_contents, ui::AXMode(), ax::mojom::Event::kNone);
+  AccessibilityNotificationWaiter accessibility_waiter(web_contents);
   ASSERT_TRUE(accessibility_waiter.WaitForNotification());
 }
 

@@ -272,17 +272,9 @@ ui::AssistiveTech BrowserAccessibilityStateImpl::ActiveAssistiveTech() const {
   return ui::AXPlatform::GetInstance().active_assistive_tech();
 }
 
-void BrowserAccessibilityStateImpl::EnableProcessAccessibility() {
-  SetProcessMode(ui::kAXModeComplete);
-}
-
 bool BrowserAccessibilityStateImpl::IsAccessibilityAllowed() {
   return !base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kDisableRendererAccessibility);
-}
-
-void BrowserAccessibilityStateImpl::DisableProcessAccessibility() {
-  SetProcessMode(ui::AXMode());
 }
 
 void BrowserAccessibilityStateImpl::SetPerformanceFilteringAllowed(
@@ -400,7 +392,8 @@ void BrowserAccessibilityStateImpl::OnUserInputEvent() {
                                   now - accessibility_enabled_time_);
 
       accessibility_disabled_time_ = now;
-      DisableProcessAccessibility();
+      // TODO(aleventhal): prefer making a11y dormant for new page loads.
+      SetProcessMode(ui::AXMode());
     }
   }
 }

@@ -4,6 +4,8 @@
 
 #include <stddef.h>
 
+#include <optional>
+
 #include "build/build_config.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -74,13 +76,12 @@ IN_PROC_BROWSER_TEST_F(
   frame->set_no_create_browser_accessibility_manager_for_testing(true);
   ASSERT_EQ(nullptr, frame->GetOrCreateBrowserAccessibilityManager());
 
+  // Enable accessibility and wait for the first event.
+  std::optional<ScopedAccessibilityModeOverride> basic_mode;
   {
-    // Enable accessibility (passing ui::kAXModeComplete to
-    // AccessibilityNotificationWaiter does this automatically) and wait for
-    // the first event.
     AccessibilityNotificationWaiter waiter(shell()->web_contents(),
-                                           ui::kAXModeComplete,
                                            ax::mojom::Event::kLoadComplete);
+    basic_mode.emplace(ui::kAXModeBasic);
     ASSERT_TRUE(waiter.WaitForNotification());
   }
 

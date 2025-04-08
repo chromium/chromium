@@ -59,8 +59,6 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   static std::unique_ptr<BrowserAccessibilityStateImpl> Create();
 
   // BrowserAccessibilityState implementation.
-  void EnableProcessAccessibility() override;
-  void DisableProcessAccessibility() override;
   bool IsAccessibilityAllowed() override;
   ui::AXMode GetAccessibilityMode() override;
   ui::AXMode GetAccessibilityModeForBrowserContext(

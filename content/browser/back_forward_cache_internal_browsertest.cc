@@ -3788,8 +3788,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithFlagForAXEvents,
   // kLoadStart event has definitely already passed and any kLoadStart we see
   // from this frame in the future is newly generated.
   AccessibilityNotificationWaiter waiter_complete(
-      shell()->web_contents(), ui::kAXModeComplete,
-      ax::mojom::Event::kLoadComplete);
+      shell()->web_contents(), ax::mojom::Event::kLoadComplete);
   ASSERT_TRUE(waiter_complete.WaitForNotification());
 
   // 2) Navigate to B.
@@ -3833,7 +3832,6 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithFlagForAXEvents,
                       {reason}, FROM_HERE);
   } else {
     AccessibilityNotificationWaiter waiter_start(shell()->web_contents(),
-                                                 ui::kAXModeComplete,
                                                  ax::mojom::Event::kLoadStart);
     // Ensure that |rfh_a| is successfully restored from bfcache and that we see
     // LOAD_START event.
@@ -3885,8 +3883,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithFlagForAXLocationChange,
   // kLoadStart event has definitely already passed and any kLoadStart we see
   // from this frame in the future is newly generated.
   AccessibilityNotificationWaiter waiter_complete(
-      shell()->web_contents(), ui::kAXModeComplete,
-      ax::mojom::Event::kLoadComplete);
+      shell()->web_contents(), ax::mojom::Event::kLoadComplete);
   ASSERT_TRUE(waiter_complete.WaitForNotification());
 
   // 2) Navigate to B.
@@ -3936,7 +3933,6 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithFlagForAXLocationChange,
     EXPECT_EQ(0, location_change_counter_for_testing);
   } else {
     AccessibilityNotificationWaiter waiter_start(shell()->web_contents(),
-                                                 ui::kAXModeComplete,
                                                  ax::mojom::Event::kLoadStart);
     // Ensure that |rfh_a| is successfully restored from bfcache and that we see
     // LOAD_START event.

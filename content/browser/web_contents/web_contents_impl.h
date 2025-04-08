@@ -312,10 +312,6 @@ class CONTENT_EXPORT WebContentsImpl
     return delegated_ink_point_renderer_.is_bound();
   }
 
-  // Adds the given accessibility mode to the current accessibility mode
-  // bitmap.
-  void AddAccessibilityModeForTesting(ui::AXMode mode);
-
   // Sets the zoom level for frames associated with this WebContents.
   void UpdateZoom();
 

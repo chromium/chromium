@@ -202,8 +202,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeWinBrowserTest,
       ui::AXCoordinateSystem::kScreenDIPs, ui::AXClippingBehavior::kUnclipped);
 
   AccessibilityNotificationWaiter location_changed_waiter(
-      shell()->web_contents(), ui::kAXModeComplete,
-      ax::mojom::Event::kLocationChanged);
+      shell()->web_contents(), ax::mojom::Event::kLocationChanged);
   ComPtr<IAccessible2> root_iaccessible2 =
       ToIAccessible2(IAccessibleFromNode(browser_accessibility));
   ASSERT_EQ(S_OK, root_iaccessible2->scrollToPoint(
@@ -625,7 +624,6 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeWinUIABrowserTest, UIAScrollIntoView) {
   ASSERT_NE(nullptr, platform_node);
 
   AccessibilityNotificationWaiter waiter(shell()->web_contents(),
-                                         ui::kAXModeComplete,
                                          ax::mojom::Event::kLocationChanged);
   EXPECT_HRESULT_SUCCEEDED(platform_node->ScrollIntoView());
   ASSERT_TRUE(waiter.WaitForNotification());
@@ -736,7 +734,6 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeWinBrowserTest,
 
   // Load the page.
   AccessibilityNotificationWaiter waiter(shell()->web_contents(),
-                                         ui::kAXModeComplete,
                                          ax::mojom::Event::kLoadComplete);
   const char url_str[] =
       "data:text/html,"

@@ -43,7 +43,7 @@ class DumpAccessibilityTreeTest : public DumpAccessibilityTestBase {
 
   void SetUpCommandLine(base::CommandLine* command_line) override;
 
-  std::vector<std::string> Dump(ui::AXMode mode) override;
+  std::vector<std::string> Dump() override;
 
 // Convenience macro to define test types without special treatment.
 #define TEST_TYPE(type)                                             \

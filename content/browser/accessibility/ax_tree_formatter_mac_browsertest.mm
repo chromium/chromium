@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
+
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/ax_inspect_factory.h"
 #include "content/public/test/accessibility_notification_waiter.h"
@@ -9,6 +11,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/scoped_accessibility_mode_override.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "net/base/data_url.h"
@@ -35,6 +38,12 @@ class AXTreeFormatterMacBrowserTest : public ContentBrowserTest {
  public:
   AXTreeFormatterMacBrowserTest() = default;
   ~AXTreeFormatterMacBrowserTest() override = default;
+
+  void SetUpOnMainThread() override {
+    accessibility_mode_.emplace(ui::kAXModeComplete);
+  }
+
+  void TearDownOnMainThread() override { accessibility_mode_.reset(); }
 
   // The tests should run against the external accessibility tree, similar to
   // other content browser accessibility tests, such as accessibility dump tree
@@ -75,6 +84,9 @@ class AXTreeFormatterMacBrowserTest : public ContentBrowserTest {
         static_cast<WebContentsImpl*>(shell()->web_contents());
     return web_contents->GetRootBrowserAccessibilityManager();
   }
+
+ private:
+  std::optional<ScopedAccessibilityModeOverride> accessibility_mode_;
 };
 
 void AXTreeFormatterMacBrowserTest::TestFormat(
@@ -86,7 +98,6 @@ void AXTreeFormatterMacBrowserTest::TestFormat(
   ASSERT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
 
   AccessibilityNotificationWaiter waiter(shell()->web_contents(),
-                                         ui::kAXModeComplete,
                                          ax::mojom::Event::kLoadComplete);
 
   std::string url_with_prefix = std::string("data:text/html,") + url;
@@ -131,7 +142,6 @@ void AXTreeFormatterMacBrowserTest::TestScript(
     const std::vector<const char*>& scripts,
     const char* expected) const {
   AccessibilityNotificationWaiter waiter(shell()->web_contents(),
-                                         ui::kAXModeComplete,
                                          ax::mojom::Event::kLoadComplete);
 
   std::string url_with_prefix = std::string("data:text/html,") + url;

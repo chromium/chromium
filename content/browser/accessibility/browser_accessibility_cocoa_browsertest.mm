@@ -4,6 +4,8 @@
 
 #include "ui/accessibility/platform/browser_accessibility_cocoa.h"
 
+#include <optional>
+
 #include "base/apple/foundation_util.h"
 #include "base/check.h"
 #include "base/strings/string_number_conversions.h"
@@ -15,6 +17,7 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/context_menu_interceptor.h"
+#include "content/public/test/scoped_accessibility_mode_override.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "net/base/data_url.h"
@@ -224,6 +227,12 @@ class BrowserAccessibilityCocoaBrowserTest : public ContentBrowserTest {
   ~BrowserAccessibilityCocoaBrowserTest() override {}
 
  protected:
+  void SetUpOnMainThread() override {
+    accessibility_mode_.emplace(ui::kAXModeComplete);
+  }
+
+  void TearDownOnMainThread() override { accessibility_mode_.reset(); }
+
   ui::BrowserAccessibility* FindNode(ax::mojom::Role role) {
     ui::BrowserAccessibility* root =
         GetManager()->GetBrowserAccessibilityRoot();
@@ -294,6 +303,8 @@ class BrowserAccessibilityCocoaBrowserTest : public ContentBrowserTest {
     }
     return nullptr;
   }
+
+  std::optional<ScopedAccessibilityModeOverride> accessibility_mode_;
 };
 
 IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
@@ -301,7 +312,6 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
 
   AccessibilityNotificationWaiter waiter(shell()->web_contents(),
-                                         ui::kAXModeComplete,
                                          ax::mojom::Event::kLoadComplete);
 
   // Load a large table.
@@ -344,7 +354,6 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
 
   AccessibilityNotificationWaiter waiter(shell()->web_contents(),
-                                         ui::kAXModeComplete,
                                          ax::mojom::Event::kLoadComplete);
   GURL url(R"HTML(data:text/html,
              <input />)HTML");
@@ -364,7 +373,6 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
       base::apple::ObjCCastStrict<BrowserAccessibilityCocoa>(
           text_field->GetNativeViewAccessible().Get());
   AccessibilityNotificationWaiter value_waiter(shell()->web_contents(),
-                                               ui::kAXModeComplete,
                                                ax::mojom::Event::kValueChanged);
   ASSERT_TRUE(value_waiter.WaitForNotification());
   ui::AXTextEdit text_edit = [cocoa_text_field computeTextEdit];
@@ -382,7 +390,6 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
 
   AccessibilityNotificationWaiter waiter(shell()->web_contents(),
-                                         ui::kAXModeComplete,
                                          ax::mojom::Event::kLoadComplete);
   GURL url(R"HTML(data:text/html,
                   <div id="editable" contenteditable="true" dir="auto">
@@ -407,8 +414,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
                      ui::DomCode::US_B, ui::VKEY_B, false, false, false, false);
 
     AccessibilityNotificationWaiter value_waiter(
-        shell()->web_contents(), ui::kAXModeComplete,
-        ax::mojom::Event::kValueChanged);
+        shell()->web_contents(), ax::mojom::Event::kValueChanged);
     ASSERT_TRUE(value_waiter.WaitForNotification());
 
     ui::AXTextEdit text_edit = GetTextEditForNodeId(content_editable->GetId());
@@ -438,8 +444,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
                      ui::DomCode::US_B, ui::VKEY_B, false, false, false, false);
 
     AccessibilityNotificationWaiter value_waiter(
-        shell()->web_contents(), ui::kAXModeComplete,
-        ax::mojom::Event::kValueChanged);
+        shell()->web_contents(), ax::mojom::Event::kValueChanged);
     ASSERT_TRUE(value_waiter.WaitForNotification());
 
     ui::AXTextEdit text_edit = GetTextEditForNodeId(content_editable->GetId());
@@ -461,7 +466,6 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
 
   AccessibilityNotificationWaiter waiter(shell()->web_contents(),
-                                         ui::kAXModeComplete,
                                          ax::mojom::Event::kLoadComplete);
   GURL url(R"HTML(data:text/html,
              <table>
@@ -514,7 +518,6 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
 
   AccessibilityNotificationWaiter waiter(shell()->web_contents(),
-                                         ui::kAXModeComplete,
                                          ax::mojom::Event::kLoadComplete);
 
   GURL url(R"HTML(data:text/html, <p>Hello, world!</p>)HTML");
@@ -886,7 +889,6 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
                        TestAXHeadersShouldOnlyIncludeColHeaders) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
   AccessibilityNotificationWaiter waiter(shell()->web_contents(),
-                                         ui::kAXModeComplete,
                                          ax::mojom::Event::kLoadComplete);
 
   GURL url(
@@ -935,7 +937,6 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
 IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
                        TestTreeContextMenuEvent) {
   AccessibilityNotificationWaiter waiter(shell()->web_contents(),
-                                         ui::kAXModeComplete,
                                          ax::mojom::Event::kLoadComplete);
 
   GURL url(R"HTML(data:text/html,
@@ -984,7 +985,6 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
 IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
                        TestEventRetargetingFocus) {
   AccessibilityNotificationWaiter waiter(shell()->web_contents(),
-                                         ui::kAXModeComplete,
                                          ax::mojom::Event::kLoadComplete);
 
   GURL url(R"HTML(data:text/html,
@@ -1038,7 +1038,6 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
 IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
                        TestEventRetargetingActiveDescendant) {
   AccessibilityNotificationWaiter waiter(shell()->web_contents(),
-                                         ui::kAXModeComplete,
                                          ax::mojom::Event::kLoadComplete);
 
   GURL url(R"HTML(data:text/html,
@@ -1095,7 +1094,6 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
 IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
                        TestNSAccessibilityTextChangeElement) {
   AccessibilityNotificationWaiter waiter(shell()->web_contents(),
-                                         ui::kAXModeComplete,
                                          ax::mojom::Event::kLoadComplete);
 
   GURL url(R"HTML(data:text/html,
@@ -1123,8 +1121,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
   auto run_script_and_wait_for_selection_change =
       [web_contents](const char* script) {
         AccessibilityNotificationWaiter waiter(
-            web_contents, ui::kAXModeComplete,
-            ui::AXEventGenerator::Event::TEXT_SELECTION_CHANGED);
+            web_contents, ui::AXEventGenerator::Event::TEXT_SELECTION_CHANGED);
         ASSERT_TRUE(ExecJs(web_contents, script));
         ASSERT_TRUE(waiter.WaitForNotification());
       };
@@ -1143,8 +1140,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
             [info objectForKey:ui::NSAccessibilityTextChangeElement]);
 
   AccessibilityNotificationWaiter waiter2(
-      web_contents, ui::kAXModeComplete,
-      ui::AXEventGenerator::Event::TEXT_SELECTION_CHANGED);
+      web_contents, ui::AXEventGenerator::Event::TEXT_SELECTION_CHANGED);
   run_script_and_wait_for_selection_change(R"script(
       let editable = document.getElementById('editable');
       const selection = window.getSelection();
