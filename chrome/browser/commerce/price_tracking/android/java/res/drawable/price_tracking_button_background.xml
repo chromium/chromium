@@ -9,9 +9,8 @@ found in the LICENSE file.
     android:color="@color/filled_button_ripple_color">
   <item>
     <shape android:shape="rectangle">
-      <solid android:color="?attr/globalFilledButtonBgColor"
-      />
-      <corners android:radius="24dp" />
+      <solid android:color="?attr/globalFilledButtonBgColor"/>
+      <corners android:radius="@dimen/price_tracking_button_background_radius"/>
     </shape>
   </item>
 </ripple>

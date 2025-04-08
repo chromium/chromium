@@ -14,6 +14,7 @@ android_resources("java_resources") {
   sources = [
     "java/res/drawable/price_tracking_button_background.xml",
     "java/res/layout/price_tracking_layout_v2.xml",
+    "java/res/values/dimens.xml",
   ]
 
   deps = [
