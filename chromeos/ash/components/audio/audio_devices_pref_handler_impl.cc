@@ -732,7 +732,7 @@ void AudioDevicesPrefHandlerImpl::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kAudioDevicesLastSeen);
 
   registry->RegisterBooleanPref(prefs::kInputForceRespectUiGainsEnabled, false);
-  registry->RegisterBooleanPref(prefs::kSpatialAudioEnabled, false);
+  registry->RegisterBooleanPref(prefs::kSpatialAudioEnabled, true);
 }
 
 }  // namespace ash
