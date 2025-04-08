@@ -46,6 +46,7 @@
 #include "ppapi/buildflags/buildflags.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "services/network/public/cpp/single_request_url_loader_factory.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
