@@ -157,24 +157,14 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
       preselectedMatchGroupIndex:self.preselectedGroupIndex];
 }
 
-#pragma mark - AutocompleteResultDataSource
+#pragma mark - OmniboxPopupMutator
 
-- (void)requestResultsWithVisibleSuggestionCount:
-    (NSUInteger)visibleSuggestionCount {
-  [self.omniboxAutocompleteController
-      requestSuggestionsWithVisibleSuggestionCount:visibleSuggestionCount];
-}
-
-#pragma mark - AutocompleteResultConsumerDelegate
-
-- (void)autocompleteResultConsumerDidChangeTraitCollection:
-    (id<OmniboxPopupConsumer>)sender {
+- (void)onTraitCollectionChange {
   [self.presenter updatePopupAfterTraitCollectionChange];
 }
 
-- (void)omniboxPopupConsumer:(id<OmniboxPopupConsumer>)sender
-         didSelectSuggestion:(id<AutocompleteSuggestion>)suggestion
-                       inRow:(NSUInteger)row {
+- (void)selectSuggestion:(id<AutocompleteSuggestion>)suggestion
+                   inRow:(NSUInteger)row {
   [self logPedalShownForCurrentResult];
 
   // Log the suggest actions that were shown and not used.
@@ -226,10 +216,9 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
   }
 }
 
-- (void)omniboxPopupConsumer:(id<OmniboxPopupConsumer>)sender
-    didSelectSuggestionAction:(SuggestAction*)action
-                   suggestion:(id<AutocompleteSuggestion>)suggestion
-                        inRow:(NSUInteger)row {
+- (void)selectSuggestionAction:(SuggestAction*)action
+                    suggestion:(id<AutocompleteSuggestion>)suggestion
+                         inRow:(NSUInteger)row {
   OmniboxActionInSuggest::RecordShownAndUsedMetrics(action.type,
                                                     true /* used */);
 
@@ -267,9 +256,8 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
   }
 }
 
-- (void)omniboxPopupConsumer:(id<OmniboxPopupConsumer>)sender
-    didTapTrailingButtonOnSuggestion:(id<AutocompleteSuggestion>)suggestion
-                               inRow:(NSUInteger)row {
+- (void)tapTrailingButtonOnSuggestion:(id<AutocompleteSuggestion>)suggestion
+                                inRow:(NSUInteger)row {
   if ([suggestion isKindOfClass:[AutocompleteMatchFormatter class]]) {
     AutocompleteMatchFormatter* autocompleteMatchFormatter =
         (AutocompleteMatchFormatter*)suggestion;
@@ -296,9 +284,8 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
   }
 }
 
-- (void)omniboxPopupConsumer:(id<OmniboxPopupConsumer>)sender
-    didSelectSuggestionForDeletion:(id<AutocompleteSuggestion>)suggestion
-                             inRow:(NSUInteger)row {
+- (void)selectSuggestionForDeletion:(id<AutocompleteSuggestion>)suggestion
+                              inRow:(NSUInteger)row {
   if ([suggestion isKindOfClass:[AutocompleteMatchFormatter class]]) {
     AutocompleteMatchFormatter* autocompleteMatchFormatter =
         (AutocompleteMatchFormatter*)suggestion;
@@ -312,11 +299,17 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
   }
 }
 
-- (void)autocompleteResultConsumerDidScroll:(id<OmniboxPopupConsumer>)sender {
+- (void)onScroll {
   [self.omniboxAutocompleteController onScroll];
 }
 
-#pragma mark AutocompleteResultConsumerDelegate Private
+- (void)requestResultsWithVisibleSuggestionCount:
+    (NSUInteger)visibleSuggestionCount {
+  [self.omniboxAutocompleteController
+      requestSuggestionsWithVisibleSuggestionCount:visibleSuggestionCount];
+}
+
+#pragma mark OmniboxPopupMutator Private
 
 /// Logs selected tile index and type.
 - (void)logSelectedAutocompleteTile:(const AutocompleteMatch&)match {

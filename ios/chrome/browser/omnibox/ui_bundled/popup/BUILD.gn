@@ -180,10 +180,10 @@ source_set("popup_icon") {
 
 source_set("popup_ui_protocols") {
   sources = [
-    "autocomplete_result_consumer.h",
     "content_providing.h",
     "omnibox_icon.h",
     "omnibox_popup_consumer.h",
+    "omnibox_popup_mutator.h",
     "popup_match_preview_delegate.h",
   ]
 }

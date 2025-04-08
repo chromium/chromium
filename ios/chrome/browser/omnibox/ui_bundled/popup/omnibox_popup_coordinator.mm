@@ -131,8 +131,7 @@
   self.mediator.omniboxAutocompleteController = _omniboxAutocompleteController;
   self.popupViewController.imageRetriever = self.mediator;
   self.popupViewController.faviconRetriever = self.mediator;
-  self.popupViewController.delegate = self.mediator;
-  self.popupViewController.dataSource = self.mediator;
+  self.popupViewController.mutator = self.mediator;
   self.popupViewController.incognito = isIncognito;
   favicon::LargeIconService* largeIconService =
       IOSChromeLargeIconServiceFactory::GetForProfile(self.profile);

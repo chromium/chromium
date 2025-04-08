@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_POPUP_OMNIBOX_POPUP_CONSUMER_H_
 #define IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_POPUP_OMNIBOX_POPUP_CONSUMER_H_
 
+@protocol AutocompleteSuggestionGroup;
+
 // The omnibox popup consumer.
 @protocol OmniboxPopupConsumer <NSObject>
 

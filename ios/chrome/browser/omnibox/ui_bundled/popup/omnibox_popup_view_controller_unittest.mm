@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/omnibox/model/autocomplete_suggestion_group_impl.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_popup_consumer.h"
+#import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_popup_mutator.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/popup_match_preview_delegate.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -56,12 +57,11 @@ class OmniboxPopupViewControllerTest : public PlatformTest {
 
   void SetUp() override {
     PlatformTest::SetUp();
-    delegate_ = [OCMockObject
-        mockForProtocol:@protocol(AutocompleteResultConsumerDelegate)];
+    mutator_ = [OCMockObject mockForProtocol:@protocol(OmniboxPopupMutator)];
     preview_delegate_ =
         [OCMockObject mockForProtocol:@protocol(PopupMatchPreviewDelegate)];
     popup_view_controller_ = [[OmniboxPopupViewController alloc] init];
-    popup_view_controller_.delegate = delegate_;
+    popup_view_controller_.mutator = mutator_;
     popup_view_controller_.matchPreviewDelegate = preview_delegate_;
     // Force view initialisation since this view controller is never added into
     // the hierarchy in this unit test.
@@ -78,7 +78,7 @@ class OmniboxPopupViewControllerTest : public PlatformTest {
     suggestion_groups_ = @[ first_suggestion_group_, second_suggestion_group_ ];
   }
 
-  OCMockObject<AutocompleteResultConsumerDelegate>* delegate_;
+  OCMockObject<OmniboxPopupMutator>* mutator_;
   OCMockObject<PopupMatchPreviewDelegate>* preview_delegate_;
   OmniboxPopupViewController* popup_view_controller_;
 
@@ -226,16 +226,14 @@ TEST_F(OmniboxPopupViewControllerTest, ReturnHighlightedSuggestion) {
   [preview_delegate_ verify];
 
   // Pressing return key when a suggestion is highlighted call the
-  // AutocompleteResultConsumerDelegate.
-  [[delegate_ expect]
-      omniboxPopupConsumer:popup_view_controller_
-       didSelectSuggestion:first_suggestion_group_.suggestions[0]
-                     inRow:0];
+  // mutator.
+  [[mutator_ expect] selectSuggestion:first_suggestion_group_.suggestions[0]
+                                inRow:0];
   EXPECT_TRUE([popup_view_controller_
       canPerformKeyboardAction:OmniboxKeyboardAction::kReturnKey]);
   [popup_view_controller_
       performKeyboardAction:OmniboxKeyboardAction::kReturnKey];
-  [delegate_ verify];
+  [mutator_ verify];
 }
 
 }  // namespace

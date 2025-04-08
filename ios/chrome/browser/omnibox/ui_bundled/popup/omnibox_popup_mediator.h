@@ -12,10 +12,10 @@
 #import "components/history/core/browser/top_sites.h"
 #import "components/omnibox/browser/autocomplete_result.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller_delegate.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_result_consumer.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/carousel/carousel_item_menu_provider.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/favicon_retriever.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/image_retriever.h"
+#import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_popup_mutator.h"
 #import "ui/base/window_open_disposition.h"
 
 @protocol ApplicationCommands;
@@ -58,8 +58,7 @@ class Tracker;
 @end
 
 @interface OmniboxPopupMediator
-    : NSObject <AutocompleteResultConsumerDelegate,
-                AutocompleteResultDataSource,
+    : NSObject <OmniboxPopupMutator,
                 OmniboxAutocompleteControllerDelegate,
                 CarouselItemMenuProvider,
                 ImageRetriever,
