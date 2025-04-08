@@ -953,9 +953,14 @@ void ReadAnythingAppModel::ProcessGeneratedEvents(
         }
         break;
       // After the user finishes typing something we wait for a timer and redraw
-      // to capture the input.
+      // to capture the input. For some reason, scrolling pdfs sends editable
+      // text changed events, which is not what we want, so only redraw if it's
+      // not a pdf.
+      // TODO(crbug.com//40927698): Determine why these events are generated
+      // for PDF scrolling, and if there's a need to differentiate actual pdf
+      // edits.
       case ui::AXEventGenerator::Event::EDITABLE_TEXT_CHANGED:
-        if (features::IsReadAnythingReadAloudEnabled()) {
+        if (features::IsReadAnythingReadAloudEnabled() && !is_pdf_) {
           reset_draw_timer_ = true;
           break;
         }

@@ -1982,6 +1982,40 @@ TEST_F(ReadAnythingAppModelTest,
 
   EXPECT_TRUE(model().reset_draw_timer());
 }
+TEST_F(ReadAnythingAppModelTest,
+       ContentEditableValueChanged_OnPDF_DoesNotResetDrawTimer) {
+  EnableReadAloud();
+  model().set_is_pdf(true);
+  // Create a tree with a text field.
+  ui::AXNodeData root;
+  root.id = 1;
+  ui::AXNodeData text_field;
+  text_field.id = 2;
+  text_field.role = ax::mojom::Role::kTextField;
+  text_field.AddState(ax::mojom::State::kEditable);
+  root.child_ids = {text_field.id};
+  ui::AXNodeData static_text;
+  static_text.id = 3;
+  static_text.role = ax::mojom::Role::kStaticText;
+  static_text.AddState(ax::mojom::State::kEditable);
+  text_field.child_ids = {static_text.id};
+  // Send the initial tree update.
+  ui::AXTreeUpdate initial_update;
+  test::SetUpdateTreeID(&initial_update, tree_id_);
+  initial_update.root_id = root.id;
+  initial_update.nodes = {std::move(root), text_field, static_text};
+  AccessibilityEventReceived({std::move(initial_update)});
+
+  // This update changes the structure of the tree. When the controller receives
+  // it in AccessibilityEventReceived, it will re-distill the tree.
+  ui::AXTreeUpdate update;
+  test::SetUpdateTreeID(&update, tree_id_);
+  static_text.SetName("Something has changed within me");
+  update.nodes = {std::move(static_text)};
+  AccessibilityEventReceived({std::move(update)});
+
+  EXPECT_FALSE(model().reset_draw_timer());
+}
 
 TEST_F(ReadAnythingAppModelTest, GetAXNode_InvalidNodeId_ReturnsNullptr) {
   ui::AXNode* node = model().GetAXNode(12);
