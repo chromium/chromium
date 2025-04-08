@@ -59,6 +59,9 @@ class SessionWrapper final : public mojom::Session {
   void GetSizeInTokens(mojom::InputPtr input,
                        GetSizeInTokensCallback callback) override;
   void Score(const std::string& text, ScoreCallback callback) override;
+  void GetProbabilitiesBlocking(
+      const std::string& text,
+      GetProbabilitiesBlockingCallback callback) override;
   void Clone(mojo::PendingReceiver<mojom::Session> session) override;
 
   mojo::Receiver<mojom::Session>& receiver() { return receiver_; }
@@ -296,6 +299,13 @@ void SessionWrapper::Score(const std::string& text, ScoreCallback callback) {
       base::BindOnce(&SessionWrapper::ScoreInternal,
                      weak_ptr_factory_.GetWeakPtr(), text, std::move(callback)),
       weak_ptr_factory_.GetWeakPtr());
+}
+
+void SessionWrapper::GetProbabilitiesBlocking(
+    const std::string& text,
+    GetProbabilitiesBlockingCallback callback) {
+  std::move(callback).Run(std::vector<float>());
+  return;
 }
 
 void SessionWrapper::Clone(mojo::PendingReceiver<mojom::Session> session) {

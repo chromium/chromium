@@ -89,6 +89,10 @@ class FakeOnDeviceSession final : public mojom::Session {
 
   void Score(const std::string& text, ScoreCallback callback) override;
 
+  void GetProbabilitiesBlocking(
+      const std::string& text,
+      GetProbabilitiesBlockingCallback callback) override;
+
   void Clone(
       mojo::PendingReceiver<on_device_model::mojom::Session> session) override;
 

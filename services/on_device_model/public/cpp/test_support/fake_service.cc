@@ -133,6 +133,12 @@ void FakeOnDeviceSession::Score(const std::string& text,
   std::move(callback).Run(0.5);
 }
 
+void FakeOnDeviceSession::GetProbabilitiesBlocking(
+    const std::string& text,
+    GetProbabilitiesBlockingCallback callback) {
+  std::move(callback).Run({0.5});
+}
+
 void FakeOnDeviceSession::Clone(
     mojo::PendingReceiver<on_device_model::mojom::Session> session) {
   auto new_session =

@@ -240,6 +240,13 @@ interface Session {
   // Clones the current session. The cloned session will have the same context
   // as the current session.
   Clone@4(pending_receiver<Session> session);
+
+  // Gets the probability for a series of tokens on top of the current
+  // context. Capabilities.probabilities_output must be specified to use this.
+  // Note that this is implemented as a blocking method on the service side
+  // and should only be used in debugging/testing.
+  [MinVersion=3]
+  GetProbabilitiesBlocking@8(string text) => (array<float> probabilities);
 };
 
 // A loaded model which can be queried. This interface must be controlled by the
