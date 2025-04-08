@@ -475,10 +475,8 @@ void ChromeOmniboxClient::OnResultChanged(
     ++result_index;
     if (!match.icon_url.is_empty()) {
       request_ids_.push_back(bitmap_fetcher_service->RequestImage(
-          match.icon_url, base::BindOnce(on_bitmap_fetched, result_index)));
-    } else if (!match.ImageUrl().is_empty()) {
-      request_ids_.push_back(bitmap_fetcher_service->RequestImage(
-          match.ImageUrl(), base::BindOnce(on_bitmap_fetched, result_index)));
+          match.icon_url,
+          base::BindOnce(on_bitmap_fetched, result_index, match.icon_url)));
     } else if (match.associated_keyword) {
       // - Fetch the favicon here for non-featured matches that have the search
       // aggregator keyword hint attached to them (e.g., verbatim match when
@@ -494,9 +492,14 @@ void ChromeOmniboxClient::OnResultChanged(
       if (turl && turl->policy_origin() ==
                       TemplateURLData::PolicyOrigin::kSearchAggregator) {
         request_ids_.push_back(bitmap_fetcher_service->RequestImage(
-            turl->favicon_url(),
-            base::BindOnce(on_bitmap_fetched, result_index)));
+            turl->favicon_url(), base::BindOnce(on_bitmap_fetched, result_index,
+                                                turl->favicon_url())));
       }
+    }
+    if (!match.ImageUrl().is_empty()) {
+      request_ids_.push_back(bitmap_fetcher_service->RequestImage(
+          match.ImageUrl(),
+          base::BindOnce(on_bitmap_fetched, result_index, GURL())));
     }
   }
 }

@@ -365,6 +365,7 @@ void OmniboxEditModel::set_popup_view(OmniboxPopupView* popup_view) {
 
   // Clear/reset popup-related state.
   rich_suggestion_bitmaps_.clear();
+  icon_bitmaps_.clear();
   old_focused_url_ = GURL();
   popup_selection_ = OmniboxPopupSelection(OmniboxPopupSelection::kNoMatch,
                                            OmniboxPopupSelection::NORMAL);
@@ -1806,7 +1807,7 @@ bool OmniboxEditModel::IsStarredMatch(const AutocompleteMatch& match) const {
 gfx::Image OmniboxEditModel::GetMatchIcon(const AutocompleteMatch& match,
                                           SkColor vector_icon_color) const {
   if (!match.icon_url.is_empty()) {
-    const SkBitmap* bitmap = GetPopupRichSuggestionBitmap(match.icon_url);
+    const SkBitmap* bitmap = GetIconBitmap(match.icon_url);
     if (bitmap) {
       return controller_->client()->GetSizedIcon(bitmap);
     }
@@ -2319,9 +2320,7 @@ const SkBitmap* OmniboxEditModel::GetPopupRichSuggestionBitmap(
       std::ranges::find_if(autocomplete_controller()->result(),
                            [&image_url](const AutocompleteMatch& result_match) {
                              return (!result_match.ImageUrl().is_empty() &&
-                                     result_match.ImageUrl() == image_url) ||
-                                    (!result_match.icon_url.is_empty() &&
-                                     result_match.icon_url == image_url);
+                                     result_match.ImageUrl() == image_url);
                            });
   return iter == autocomplete_controller()->result().end()
              ? nullptr
@@ -2329,10 +2328,26 @@ const SkBitmap* OmniboxEditModel::GetPopupRichSuggestionBitmap(
                    autocomplete_controller()->result().begin(), iter));
 }
 
+const SkBitmap* OmniboxEditModel::GetIconBitmap(const GURL& icon_url) const {
+  DCHECK(popup_view_);
+  auto iter = icon_bitmaps_.find(icon_url);
+  if (iter == icon_bitmaps_.end()) {
+    return nullptr;
+  }
+  return &iter->second;
+}
+
 void OmniboxEditModel::SetPopupRichSuggestionBitmap(int result_index,
                                                     const SkBitmap& bitmap) {
   DCHECK(popup_view_);
   rich_suggestion_bitmaps_[result_index] = bitmap;
+  popup_view_->UpdatePopupAppearance();
+}
+
+void OmniboxEditModel::SetIconBitmap(const GURL& icon_url,
+                                     const SkBitmap& bitmap) {
+  DCHECK(popup_view_ && !icon_url.is_empty());
+  icon_bitmaps_[icon_url] = bitmap;
   popup_view_->UpdatePopupAppearance();
 }
 

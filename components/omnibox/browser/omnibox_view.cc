@@ -200,8 +200,7 @@ ui::ImageModel OmniboxView::GetIcon(int dip_size,
   gfx::Image favicon;
   AutocompleteMatch match = model()->CurrentMatch(nullptr);
   if (!match.icon_url.is_empty()) {
-    const SkBitmap* bitmap =
-        model()->GetPopupRichSuggestionBitmap(match.icon_url);
+    const SkBitmap* bitmap = model()->GetIconBitmap(match.icon_url);
     if (bitmap) {
       return ui::ImageModel::FromImage(
           controller_->client()->GetSizedIcon(bitmap));

@@ -203,8 +203,13 @@ void OmniboxController::SetSuggestionGroupHidden(
 }
 
 void OmniboxController::SetRichSuggestionBitmap(int result_index,
+                                                const GURL& icon_url,
                                                 const SkBitmap& bitmap) {
-  edit_model_->SetPopupRichSuggestionBitmap(result_index, bitmap);
+  if (!icon_url.is_empty()) {
+    edit_model_->SetIconBitmap(icon_url, bitmap);
+  } else {
+    edit_model_->SetPopupRichSuggestionBitmap(result_index, bitmap);
+  }
 }
 
 void OmniboxController::OnSuggestionGroupVisibilityPrefChanged() {

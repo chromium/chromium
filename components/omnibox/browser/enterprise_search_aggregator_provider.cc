@@ -688,6 +688,9 @@ void EnterpriseSearchAggregatorProvider::ParseResultList(
     std::string image_url;
     std::string icon_url;
     if (suggestion_type == SuggestionType::PEOPLE) {
+      // For people suggestions, `icon_url` must always be set to the favicon
+      // for the TemplateURL, which is used as the Omnibox icon. `image_url` is
+      // used for the match icon, falling back to the favicon if not present.
       image_url = ptr_to_string(result.FindStringByDottedPath(
           "document.derivedStructData.displayPhoto.url"));
       // Ensure that image URLs from lh3.googleusercontent.com include an image
@@ -699,8 +702,12 @@ void EnterpriseSearchAggregatorProvider::ParseResultList(
           image_url += base::Contains(image_url, "=") ? "-s64" : "=s64";
         }
       }
+      icon_url = template_url_->favicon_url().spec();
     } else if (suggestion_type == SuggestionType::CONTENT) {
       icon_url = ptr_to_string(result.FindStringByDottedPath("iconUri"));
+    } else if (suggestion_type == SuggestionType::QUERY &&
+               !adjusted_input_.InKeywordMode()) {
+      icon_url = template_url_->favicon_url().spec();
     }
 
     auto description = GetMatchDescription(result, suggestion_type);

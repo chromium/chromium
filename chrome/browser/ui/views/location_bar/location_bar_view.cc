@@ -799,7 +799,7 @@ void LocationBarView::Layout(PassKey) {
                  template_url->policy_origin() ==
                      TemplateURLData::PolicyOrigin::kSearchAggregator) {
         const SkBitmap* bitmap =
-            omnibox_view_->model()->GetPopupRichSuggestionBitmap(keyword);
+            omnibox_view_->model()->GetIconBitmap(template_url->favicon_url());
         if (bitmap) {
           image = gfx::Image(gfx::ImageSkia::CreateFrom1xBitmap(*bitmap));
         }

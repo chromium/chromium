@@ -434,6 +434,7 @@ class EnterpriseSearchAggregatorProviderTest : public testing::Test {
     data.SetKeyword(u"keyword");
     data.SetURL("https://www.google.com/?q={searchTerms}");
     data.suggestions_url = "https://www.google.com/complete/?q={searchTerms}";
+    data.favicon_url = GURL("https://www.google.com/favicon.ico");
     data.is_active = TemplateURLData::ActiveStatus::kTrue;
     data.featured_by_policy = true;
     data.policy_origin = TemplateURLData::PolicyOrigin::kSearchAggregator;
@@ -693,6 +694,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Parse) {
   EXPECT_EQ(matches[0].destination_url,
             GURL("https://www.google.com/?q=john%40example.com"));
   EXPECT_EQ(matches[0].image_url, GURL("https://example.com/image.png"));
+  EXPECT_EQ(matches[0].icon_url, GURL("https://www.google.com/favicon.ico"));
   EXPECT_TRUE(PageTransitionCoreTypeIs(matches[0].transition,
                                        ui::PAGE_TRANSITION_KEYWORD));
   EXPECT_EQ(matches[0].fill_into_edit,
@@ -703,6 +705,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Parse) {
   EXPECT_EQ(matches[1].contents, u"10/15/07 - John Doe - Google Docs");
   EXPECT_EQ(matches[1].description, u"John's doodle");
   EXPECT_EQ(matches[1].destination_url, GURL("https://www.example.com"));
+  EXPECT_EQ(matches[1].image_url, GURL());
   EXPECT_EQ(matches[1].icon_url, GURL("https://example.com/icon.png"));
   EXPECT_TRUE(PageTransitionCoreTypeIs(matches[1].transition,
                                        ui::PAGE_TRANSITION_KEYWORD));
@@ -714,6 +717,8 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Parse) {
   EXPECT_EQ(matches[2].description, u"");
   EXPECT_EQ(matches[2].destination_url,
             GURL("https://www.google.com/?q=John%27s+Document+1"));
+  EXPECT_EQ(matches[2].image_url, GURL());
+  EXPECT_EQ(matches[2].icon_url, GURL());
   EXPECT_TRUE(PageTransitionCoreTypeIs(matches[2].transition,
                                        ui::PAGE_TRANSITION_KEYWORD));
   EXPECT_EQ(matches[2].fill_into_edit, u"keyword John's Document 1");
