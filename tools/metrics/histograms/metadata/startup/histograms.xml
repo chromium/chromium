@@ -413,7 +413,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.Android.DurationSinceLastBackgroundTime" units="ms"
-    expires_after="2025-08-10">
+    expires_after="2025-11-17">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <summary>
@@ -479,7 +479,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.Android.IsLastBackgroundTimeLogged" enum="Boolean"
-    expires_after="2025-05-17">
+    expires_after="2025-11-17">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <summary>
@@ -490,7 +490,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.Android.IsLastVisibleTimeLogged" enum="Boolean"
-    expires_after="2025-06-08">
+    expires_after="2025-11-17">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <summary>
