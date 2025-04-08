@@ -526,6 +526,7 @@
 <translation id="3167868116600277716">‏פיד Discover</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3174662312949010067">יש לך גם אפשרות להשתמש בסיסמאות שמורות במכשירים אחרים.</translation>
+<translation id="3177338796769255211">לאחר הכניסה לחשבון, הסימניות ונתונים נוספים יופיעו בכל המכשירים שלך</translation>
 <translation id="3181954750937456830">גלישה בטוחה (מגנה עליך ועל המכשיר מפני אתרים מסוכנים)</translation>
 <translation id="3190736958609431397">ביטול המעקב</translation>
 <translation id="3208260410153224535">הכניסה הושבתה על ידי הארגון שלך. סימניות, סיסמאות ונתונים נוספים חדשים יישמרו רק במכשיר הזה.</translation>
@@ -1126,6 +1127,7 @@
 <translation id="573974402615125334">כדי לשתף, להצטרף ולשתף פעולה בקבוצות של כרטיסיות, צריך לסנכרן את ההיסטוריה ואת הכרטיסיות</translation>
 <translation id="5740123193752401435">חיפוש כרטיסיות…</translation>
 <translation id="5744274077973758795">ההתראות של <ph name="FEATURE_NAME" /> פועלות</translation>
+<translation id="5745598824054949526">לא נמצא טקסט</translation>
 <translation id="574762237186762643">אירועים</translation>
 <translation id="5749158352074143502">המשך הגלישה בכרטיסייה הזו</translation>
 <translation id="5753021559215751319">שמירת הסיסמה</translation>
@@ -1289,6 +1291,7 @@
 <translation id="6410883413783534063">ניתן לפתוח כרטיסיות כדי להיכנס אל דפים שונים בו-זמנית</translation>
 <translation id="6416807286621280684">חבילות שהוספת למעקב ועדכונים לגבי משלוחים.</translation>
 <translation id="6418346271604475326">‏PDF בהכנה</translation>
+<translation id="6421038304268477484">טקסט מתורגם</translation>
 <translation id="6429213933892582367">פתיחת האפשרויות של סיסמאות</translation>
 <translation id="6434591244308415567">אירעה שגיאה. יש לנסות שוב מאוחר יותר.</translation>
 <translation id="6435307030888827407">לא להיכנס לחשבון</translation>
@@ -1967,6 +1970,7 @@
 <translation id="9097506547406246598">לא ניתן לבטל את המעקב. משהו השתבש.</translation>
 <translation id="9098541895599151034">למחוק <ph name="NUMBER_OF_ACCOUNTS" /> סיסמאות?</translation>
 <translation id="9099233023029360602">צריך לשאול אותי בכל פעם באיזה חשבון להשתמש</translation>
+<translation id="9099821309562615674">חשוב לוודא שהטקסט שמתרגמים מופיע בבירור ובאופן מלא בתמונה.</translation>
 <translation id="9100610230175265781">יש להזין ביטוי סיסמה</translation>
 <translation id="91023216973987714">אמצעי תשלום</translation>
 <translation id="9106655997975673326">מהמכשיר '<ph name="SOURCE_DEVICE" />'</translation>

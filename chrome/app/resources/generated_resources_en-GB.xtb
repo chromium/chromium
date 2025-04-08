@@ -44,7 +44,6 @@
 <translation id="1026822031284433028">Load Image</translation>
 <translation id="1026959648338730078">Windows Hello or external security key</translation>
 <translation id="1028700151766901954">Reason: LBS stays in <ph name="DEFAULT_OPEN_BROWSER" /> by default.</translation>
-<translation id="1028823395684328817">To keep using the passwords and more in your Google Account, verify that it's you</translation>
 <translation id="102916930470544692">Passkey</translation>
 <translation id="1029317248976101138">Zoom</translation>
 <translation id="1029526375103058355">Tap to click</translation>
@@ -818,7 +817,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1558671750917454373">Resume casting to <ph name="DEVICE_NAME" /></translation>
 <translation id="1561331397460162942">This allows location access for apps, websites with the location permission and system services</translation>
 <translation id="1562119309884184621">Adding this contact will remember the next time that they share</translation>
-<translation id="1563137369682381456">Expiry date</translation>
 <translation id="1566049601598938765">Website</translation>
 <translation id="15662109988763471">The selected printer is not available or not installed correctly. Check your printer or try selecting another printer.</translation>
 <translation id="1566329594234563241">While inactive and plugged in</translation>
@@ -1260,6 +1258,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="185111092974636561"><ph name="BEGIN_PARAGRAPH1" />Before enrolling, you need to clear the TPM so that <ph name="DEVICE_OS" /> can take ownership of the device.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />You can also turn off the TPM device entirely. Your data will still be stored safely with software encryption, but certain security features such as hardware-backed certificates will be disabled.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />You can change your TPM settings by rebooting and entering the system BIOS/UEFI settings. Steps vary based on the device model. For more info, open the <ph name="DEVICE_OS" /> documentation on a separate device before you reboot: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="1851551847729706116">Sharing <ph name="TAB_NAME" /> to this tab</translation>
 <translation id="1852799913675865625">There was an error while trying to read the file: <ph name="ERROR_TEXT" />.</translation>
 <translation id="1854180393107901205">Stop casting</translation>
 <translation id="1856715684130786728">Add location...</translation>
@@ -3480,7 +3479,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3420501302812554910">Internal security key requires reset</translation>
 <translation id="3421387094817716717">Elliptic Curve Public Key</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Note:<ph name="END_BOLD" /> A similar voice or recording might be able to access your personal results or your Assistant.</translation>
-<translation id="3421835120203732951">Add new profile</translation>
 <translation id="3422989558057853751">Last item selected, unselecting it will exit selection mode</translation>
 <translation id="3423111258700187173">Results found in <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">Learn more about this AI feature</translation>
@@ -9342,7 +9340,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7622768823216805500">Sites usually install payment handlers for shopping features like easier checkout</translation>
 <translation id="7622966771025050155">Switch to captured tab</translation>
 <translation id="7624337243375417909">caps lock off</translation>
-<translation id="7625025537587898155">Add new profile</translation>
 <translation id="7625568159987162309">View permissions and data stored across sites</translation>
 <translation id="7625823789272218216">New Tab to the Left</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), Grade <ph name="GRADE" /></translation>
@@ -11295,6 +11292,7 @@ This can include information about installed software, files, your browser, the 
 <translation id="8963117664422609631">Go to site settings</translation>
 <translation id="8964927371396953727">Verify that it's you to use and save passwords in your account, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8965037249707889821">Enter old password</translation>
+<translation id="8967403839792635452">Developing extensions? Stay up to date on <ph name="BEGIN_LINK" />what's new<ph name="END_LINK" /> with Chrome extension developer documentation.</translation>
 <translation id="8967427617812342790">Add to reading list</translation>
 <translation id="8967548289042494261">Remove <ph name="VM_NAME" /></translation>
 <translation id="8968527460726243404">ChromeOS System Image Writer</translation>
@@ -11759,7 +11757,6 @@ This can include information about installed software, files, your browser, the 
 <translation id="98235653036850093">Hi, <ph name="PROFILE_NAME" /></translation>
 <translation id="983192555821071799">Close all tabs</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> – Camera and microphone recording</translation>
-<translation id="984275831282074731">Payment methods</translation>
 <translation id="984705303330760860">Add spell check languages</translation>
 <translation id="987068745968718743">Parallels desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">General</translation>

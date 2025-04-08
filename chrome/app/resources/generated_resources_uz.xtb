@@ -44,7 +44,6 @@
 <translation id="1026822031284433028">Rasmni yuklash</translation>
 <translation id="1026959648338730078">Windows Hello yoki tashqi elektron kalit</translation>
 <translation id="1028700151766901954">Sababi: LBS standart holatda <ph name="DEFAULT_OPEN_BROWSER" />da qoladi.</translation>
-<translation id="1028823395684328817">Parol kabi maʼlumotlardan foydalanishda davom etish uchun shaxsingizni tasdiqlang</translation>
 <translation id="102916930470544692">Kalit</translation>
 <translation id="1029317248976101138">Masshtab</translation>
 <translation id="1029526375103058355">Teginish yoki bosish</translation>
@@ -815,7 +814,6 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="1558671750917454373"><ph name="DEVICE_NAME" />ga translatsiyani davom ettirish</translation>
 <translation id="1561331397460162942">Bu ilovalar, joylashuv ruxsatiga ega veb-saytlar va tizim xizmatlari uchun joylashuvni aniqlash imkonini beradi</translation>
 <translation id="1562119309884184621">Bu kontakt kiritilsa, keyingi safargi ulashuvga eslab qolinadi</translation>
-<translation id="1563137369682381456">Muddati</translation>
 <translation id="1566049601598938765">Veb-sayt</translation>
 <translation id="15662109988763471">Bu printer mavjud emas yoki notoʻgʻri oʻrnatilgan. Uni tekshiring yoki boshqasini tanlang.</translation>
 <translation id="1566329594234563241">Nofaol va quvvat manbaiga ulanganda</translation>
@@ -1249,6 +1247,7 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="185111092974636561"><ph name="BEGIN_PARAGRAPH1" /><ph name="DEVICE_OS" /> qurilmaga egalik qilishi uchun roʻyxatdan oʻtishdan oldin TPM tozalanishi kerak.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Bundan tashqari, TPM qurilmasini butunlay oʻchirib qoʻyishingiz mumkin. Maʼlumotlaringiz dasturiy shifrlash yordamida xavfsiz saqlanadi, lekin ayrim xavfsizlik funksiyalari, masalan, qurilma bilan ishlaydigan sertifikatlar oʻchiriladi. <ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Qayta ishga tushirish va BIOS/UEFI tizim sozlamalariga kirish orqali TPM sozlamalarini oʻzgartirish mumkin. Bosqichlar qurilma modeliga qarab oʻzgaradi. Batafsil axborot olish uchun qayta ishga tushirishdan oldin boshqa qurilmada <ph name="DEVICE_OS" /> dhujjatlarini oching: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="1851551847729706116"><ph name="TAB_NAME" /> shu varaqda namoyish etilmoqda</translation>
 <translation id="1852799913675865625">Faylni o‘qishda xatolik yuz berdi: <ph name="ERROR_TEXT" />.</translation>
 <translation id="1854180393107901205">Translatsiyani to‘xtatish</translation>
 <translation id="1856715684130786728">Jild qo‘shish...</translation>
@@ -1639,7 +1638,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2121825465123208577">O‘lchamini o‘zgartirish</translation>
 <translation id="2123766928840368256">Boshqa faylni tanlang</translation>
 <translation id="2124930039827422115">{1,plural, =1{Bitta foydalanuvchi <ph name="AVERAGE_RATING" /> baho bergan.}other{# ta foydalanuvchi <ph name="AVERAGE_RATING" /> baho bergan.}}</translation>
-<translation id="2125715366913703594">Tanishuv va kengaytmalar</translation>
 <translation id="2126167708562367080">Sinxronizatsiya administrator tomonidan o‘chirib qo‘yilgan.</translation>
 <translation id="2127372758936585790">Kam quvvatli zaryadlovchi vosita</translation>
 <translation id="212862741129535676">Protsessorning turli chastotalardagi faoliyati davomiyligi foizda</translation>
@@ -3468,7 +3466,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3420501302812554910">Ichki elektron kalit sozlamalari qayta tiklanishi zarur</translation>
 <translation id="3421387094817716717">Elliptik egri chiziqli ochiq kalit</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Eslatma:<ph name="END_BOLD" /> Oʻxshash yoki yozib olingan ovoz yordamida shaxsiy natijalarga kirish va Assistentdan foydalanish mumkin.</translation>
-<translation id="3421835120203732951">Yangi profil kiritish</translation>
 <translation id="3422989558057853751">Oxirgi tanlangan elementni olib tashlasangiz, tanlash rejimidan chiqiladi</translation>
 <translation id="3423111258700187173"><ph name="FOLDER_TITLE" /> jildi natijalari</translation>
 <translation id="3423226218833787854">Mazkur AI funksiyasi haqida batafsil</translation>
@@ -9328,7 +9325,6 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7622768823216805500">Saytlar odatda xaridlar vaqtida hisob-kitobni osonlashtirish uchun toʻlov vositalarini oʻrnatadi</translation>
 <translation id="7622966771025050155">Yozib olingan varaq</translation>
 <translation id="7624337243375417909">caps lock o‘chiq</translation>
-<translation id="7625025537587898155">Yangi profil kiritish</translation>
 <translation id="7625568159987162309">Saytlardagi rusatnoma va saytlarning saqlangan ma’lumotlarini ko‘rish</translation>
 <translation id="7625823789272218216">Chapga yangi varaq ochish</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), <ph name="GRADE" />-daraja</translation>
@@ -11279,6 +11275,7 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer, qurilmadagi operatsion ti
 <translation id="8963117664422609631">Sayt sozlamalarini ochish</translation>
 <translation id="8964927371396953727"><ph name="ACCOUNT_EMAIL" /> hisobingizda parollardan foydalanish va saqlash uchun shaxsingizni tasdiqlang</translation>
 <translation id="8965037249707889821">Eski parolni kiriting</translation>
+<translation id="8967403839792635452">Kengaytma ishlab chiqasizmi? <ph name="BEGIN_LINK" />Yangi xususiyatlar<ph name="END_LINK" /> sahifasida Chrome kengaytmalarga oid dasturchilar uchun hujjatlar yangilanishlarini tekshirib turing.</translation>
 <translation id="8967427617812342790">Mutolaa ro‘yxatiga qo‘shish</translation>
 <translation id="8967548289042494261">Olib tashlash: <ph name="VM_NAME" /></translation>
 <translation id="8968527460726243404">ChromeOS tizim tasvirini yozish vositasi</translation>
@@ -11743,7 +11740,6 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer, qurilmadagi operatsion ti
 <translation id="98235653036850093">Salom, <ph name="PROFILE_NAME" /></translation>
 <translation id="983192555821071799">Barcha varaqlarni yopish</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> – Kamera va mikrofon yozib olmoqda</translation>
-<translation id="984275831282074731">To‘lov usullari</translation>
 <translation id="984705303330760860">Imlosi tekshiriladigan tillarni kiritish</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Umumiy</translation>

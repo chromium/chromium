@@ -351,6 +351,7 @@
 <translation id="2438248248625638801">रिकॉर्डिंग के टाइटल बनाए जा रहे हैं</translation>
 <translation id="2446553403094072641">फ़्लोटिंग पॉइंट ऐक्युरसी</translation>
 <translation id="2448312741937722512">प्रकार</translation>
+<translation id="2448857983905133469">क्लास टूल</translation>
 <translation id="2468124392950503650"><ph name="BEGIN_LINK_PROMPTING_GUIDE" />प्रॉम्प्ट से जुड़ी गाइड<ph name="END_LINK_PROMPTING_GUIDE" /> बनाने या देखने के लिए, प्रॉम्प्ट चुनें</translation>
 <translation id="2472215337771558851">ड्राफ़्ट लिखने या मौजूदा काम को बेहतर बनाने के लिए, Google के एआई की 'लिखने में मेरी मदद करो' सुविधा इस्तेमाल करें</translation>
 <translation id="2475982808118771221">कोई गड़बड़ी आई</translation>
@@ -449,6 +450,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">एंडपॉइंट</translation>
 <translation id="3060579846059757016">आउटलाइन</translation>
+<translation id="3060798442805232711">क्लास टूल आपके माइक्रोफ़ोन का इस्तेमाल कर रहा है</translation>
 <translation id="3061850252076394168">'चुनें और सुनें' सुविधा चालू करें</translation>
 <translation id="3066772729299747758">मंगलवार को</translation>
 <translation id="3069085583900247081">टेस्ट असफल रहा</translation>
@@ -910,6 +912,7 @@
 <translation id="5170568018924773124">फ़ोल्डर में दिखाएं</translation>
 <translation id="517075088756846356">अपडेट की प्रोसेस जारी रखने के लिए, <ph name="DEVICE_NAME" /> का पावर केबल हटाएं और इसे फिर से लगाएं</translation>
 <translation id="5180108905184566358">बेओबैब ट्री</translation>
+<translation id="5180431943345994173">टीचर ने क्लास टूल से कॉन्टेंट हटा दिया है</translation>
 <translation id="5180712487038406644">एक्सप्रेसिव</translation>
 <translation id="5190187232518914472">अपनी पसंदीदा यादें ताज़ा करें. एल्बम जोड़ने या उनमें बदलाव करने के लिए, <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> पर जाएं.</translation>
 <translation id="5212593641110061691">टैबलॉइड</translation>
@@ -1003,6 +1006,7 @@
 <translation id="5628106863521633649">उपलब्ध भाषाएं</translation>
 <translation id="5630438231335788050">बाओहाउस</translation>
 <translation id="5631759159893697722">संक्षेप</translation>
+<translation id="5655084389678168978">टीचर ने क्लास टूल में नया कॉन्टेंट जोड़ा है</translation>
 <translation id="5655283760733841251">कीबोर्ड की रोशनी बढ़ाने वाला बटन</translation>
 <translation id="5655296450510165335">डिवाइस का नाम दर्ज करना</translation>
 <translation id="5655776422854483175">कोई प्रिंट जॉब नहीं है</translation>
@@ -1527,6 +1531,7 @@
 <translation id="7971535376154084247">सामान्य कंट्रोल</translation>
 <translation id="7977800524392185497">किसी <ph name="NETWORK_NAME" /> नेटवर्क से जुड़ने के लिए, सेटिंग पर जाएं</translation>
 <translation id="7978412674231730200">निजी कुंजी</translation>
+<translation id="7979468455552394856">छात्र-छात्राएं फ़िलहाल क्लास टूल सेशन से कनेक्ट हैं</translation>
 <translation id="7982789257301363584">नेटवर्क</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" अपने-आप चालू हो गया था}one{# ऐप्लिकेशन अपने-आप चालू हो गया था}other{# ऐप्लिकेशन अपने-आप चालू हो गए थे}}</translation>
 <translation id="7994702968232966508">EAP विधि</translation>

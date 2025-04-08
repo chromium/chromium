@@ -351,6 +351,7 @@
 <translation id="2438248248625638801">Ukusungula izihloko zokurekhoda</translation>
 <translation id="2446553403094072641">Ukunemba kwephoyinti elintantayo</translation>
 <translation id="2448312741937722512">Uhlobo</translation>
+<translation id="2448857983905133469">Izinsiza Zekilasi</translation>
 <translation id="2468124392950503650">Khetha umyalelo ukuze usungule noma ubone <ph name="BEGIN_LINK_PROMPTING_GUIDE" />umhlahlandlela womyalelo<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Sebenzisa okuthi Ngisize ngibhale ukuze usungule okusalungiswa noma wenze ngcono umsebenzi okhona, osekelwe yi-Google AI</translation>
 <translation id="2475982808118771221">Kuvele iphutha</translation>
@@ -449,6 +450,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">Iphoyinti yokugcina</translation>
 <translation id="3060579846059757016">Izinhlaka</translation>
+<translation id="3060798442805232711">Izinsiza Zekilasi zisebenzisa imakrofoni yakho</translation>
 <translation id="3061850252076394168">nika amandla okuthi khetha ukuze ukhulume</translation>
 <translation id="3066772729299747758">ngoLwesibili</translation>
 <translation id="3069085583900247081">Ukuhlola akuphumelelanga</translation>
@@ -910,6 +912,7 @@
 <translation id="5170568018924773124">Bonisa kufolda</translation>
 <translation id="517075088756846356">Khipha futhi uxhume kabusha ikhebuli yamandla yokuthi <ph name="DEVICE_NAME" /> ukuze uqhubeke nenqubo yokubuyekeza</translation>
 <translation id="5180108905184566358">izihlahla ze-baobab</translation>
+<translation id="5180431943345994173">Uthisha wakho ususe ikhontenti kokuthi Izinsiza Zekilasi</translation>
 <translation id="5180712487038406644">Okushoyo</translation>
 <translation id="5190187232518914472">Khulula izinkumbulo zakho eziyintandokazi. Ukuze ungeze noma uhlele ama-albhamu, iya <ph name="LINK_BEGIN" />Ezithombeni ze-Google<ph name="LINK_END" />.</translation>
 <translation id="5212593641110061691">Iphephandaba</translation>
@@ -1003,6 +1006,7 @@
 <translation id="5628106863521633649">Izilimi ezitholakalayo</translation>
 <translation id="5630438231335788050">i-bauhaus</translation>
 <translation id="5631759159893697722">i-abstract</translation>
+<translation id="5655084389678168978">Uthisha wakho ufake ikhontenti entsha Ezinsizeni Zekilasi</translation>
 <translation id="5655283760733841251">Ukugqama kwekhibhodi kuphezulu</translation>
 <translation id="5655296450510165335">Ukubhalisa kwedivayisi</translation>
 <translation id="5655776422854483175">Ayikho imisebenzi yokuphrinta</translation>
@@ -1528,6 +1532,7 @@ Dawuniloda imodeli yokubhala (okungafika ku-100MB) ukuze uthole lokhu okubhaliwe
 <translation id="7971535376154084247">Izilawuli ezijwayelekile</translation>
 <translation id="7977800524392185497">Ukuze ujoyine inethiwekhi ye-<ph name="NETWORK_NAME" />, iya Kumasethingi</translation>
 <translation id="7978412674231730200">Ukhiye oyimfihlo</translation>
+<translation id="7979468455552394856">Izinsiza Zekilasi zixhunywe kubafundi</translation>
 <translation id="7982789257301363584">Inethiwekhi</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"I-<ph name="APP_NAME_1" />" iqaliswe ngokuzenzakalelayo}one{Ama-app angu-# aqaliswe ngokuzenzakalelayo}other{Ama-app angu-# aqaliswe ngokuzenzakalelayo}}</translation>
 <translation id="7994702968232966508">Indlela ye-EAP</translation>

@@ -44,7 +44,6 @@
 <translation id="1026822031284433028">Зураг ачаалах</translation>
 <translation id="1026959648338730078">Windows Hello эсвэл гадны аюулгүй байдлын түлхүүр</translation>
 <translation id="1028700151766901954">Шалтгаан: LBS <ph name="DEFAULT_OPEN_BROWSER" />-д өгөгдсөн хэвээр үлдэнэ.</translation>
-<translation id="1028823395684328817">Google Бүртгэлдээ нууц үг, бусад зүйлийг ашигласаар байхын тулд өөрийгөө мөн болохыг баталгаажуулна уу</translation>
 <translation id="102916930470544692">Нэвтрэх түлхүүр</translation>
 <translation id="1029317248976101138">Татаж харах</translation>
 <translation id="1029526375103058355">Товших</translation>
@@ -815,7 +814,6 @@
 <translation id="1558671750917454373"><ph name="DEVICE_NAME" />-д дамжуулахыг үргэлжлүүлэх</translation>
 <translation id="1561331397460162942">Энэ нь байршлын зөвшөөрөлтэй апп, вебсайт болон системийн үйлчилгээнүүдэд байршилд хандахыг зөвшөөрнө</translation>
 <translation id="1562119309884184621">Энэ харилцагчийг нэмснээр түүнийг дараагийн удаа хуваалцахад нь санах болно</translation>
-<translation id="1563137369682381456">Дуусах огноо</translation>
 <translation id="1566049601598938765">Веб хуудас</translation>
 <translation id="15662109988763471">Сонгосон хэвлэгч боломжгүй эсвэл буруу суулгагдсан байна. Хэвлэгчээ шалгах эсвэл өөр хэвлэгч сонгож үзнэ үү.</translation>
 <translation id="1566329594234563241">Идэвхгүй бөгөөд залгасан үед</translation>
@@ -1647,7 +1645,6 @@
 <translation id="2121825465123208577">Хэмжээг өөрчлөх</translation>
 <translation id="2123766928840368256">Өөр файл сонгох</translation>
 <translation id="2124930039827422115">{1,plural, =1{Нэг хэрэглэгч <ph name="AVERAGE_RATING" /> гэж үнэлсэн.}other{# хэрэглэгч <ph name="AVERAGE_RATING" /> гэж үнэлсэн.}}</translation>
-<translation id="2125715366913703594">&amp;Өргөтгөлийг судлах</translation>
 <translation id="2126167708562367080">Таны админ синкийг идэвхгүй болгосон байна.</translation>
 <translation id="2127372758936585790">Бага эрчим хүчээр цэнэглэгч</translation>
 <translation id="212862741129535676">Давтамжийн нөхцөл байдлын эзлэх хувь</translation>
@@ -3478,7 +3475,6 @@
 <translation id="3420501302812554910">Дотоод аюулгүй байдлын түлхүүрийг шинэчлэх шаардлагатай</translation>
 <translation id="3421387094817716717">Зууван муруй нийтийн түлхүүр</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Санамж:<ph name="END_BOLD" /> Төстэй дуу хоолой эсвэл бичлэгээр таны хувийн илэрц эсвэл Туслахад хандах боломжтой байж магадгүй.</translation>
-<translation id="3421835120203732951">Шинэ профайл нэмэх</translation>
 <translation id="3422989558057853751">Сүүлийн зүйлийг сонгосон. Зүйлийн сонголтыг болиулах нь сонголтын горимоос гаргана</translation>
 <translation id="3423111258700187173"><ph name="FOLDER_TITLE" />-с олдсон илэрцүүд</translation>
 <translation id="3423226218833787854">Энэ ХОУ-ы онцлогийн талаар нэмэлт мэдээлэл авах</translation>
@@ -9338,7 +9334,6 @@
 <translation id="7622768823216805500">Сайтууд ихэвчлэн илүү хялбар тооцоо хийх зэрэг худалдан авалтын онцлогуудад зориулж төлбөр хариуцагчийг суулгадаг</translation>
 <translation id="7622966771025050155">Авсан таб руу сэлгэх</translation>
 <translation id="7624337243375417909">томоор бичих горим унтраалттай</translation>
-<translation id="7625025537587898155">Шинэ профайл нэмэх</translation>
 <translation id="7625568159987162309">Сайтын зөвшөөрөл болон хадгалсан өгөгдлийг харах</translation>
 <translation id="7625823789272218216">Шинэ табыг зүүн тийш нь</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), Зэрэглэл <ph name="GRADE" /></translation>
@@ -11751,7 +11746,6 @@
 <translation id="98235653036850093">Сайн уу, <ph name="PROFILE_NAME" /></translation>
 <translation id="983192555821071799">Бүх табыг хаах</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - Камер болон микрофоны бичлэг</translation>
-<translation id="984275831282074731">Төлбөрийн хэрэгсэл</translation>
 <translation id="984705303330760860">Зөв бичгийн алдаа шалгах хэлнүүдийг нэмэх</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Ерөнхий</translation>

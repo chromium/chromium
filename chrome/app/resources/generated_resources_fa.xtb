@@ -44,7 +44,6 @@
 <translation id="1026822031284433028">بارگیری تصویر</translation>
 <translation id="1026959648338730078">‏Windows Hello یا کلید امنیتی خارجی</translation>
 <translation id="1028700151766901954">‏دلیل: LBS به‌طور پیش‌فرض در <ph name="DEFAULT_OPEN_BROWSER" /> باقی می‌ماند.</translation>
-<translation id="1028823395684328817">‏برای ادامه استفاده از گذرواژه‌ها و موارد دیگر در «حساب Google» خود، هویتتان را به‌تأیید برسانید</translation>
 <translation id="102916930470544692">گذرکلید</translation>
 <translation id="1029317248976101138">بزرگ‌نمایی</translation>
 <translation id="1029526375103058355">کلیک با تک‌ضرب</translation>
@@ -816,7 +815,6 @@
 <translation id="1558671750917454373">ازسر گرفتن پخش محتوا در <ph name="DEVICE_NAME" /></translation>
 <translation id="1561331397460162942">این اقدام دسترسی مکان را برای برنامه‌ها، وب‌سایت‌های دارای اجازه مکان، و خدمات سیستم مجاز می‌کند</translation>
 <translation id="1562119309884184621">افزودن این مخاطب باعث می‌شود برای هم‌رسانی بعدی‌اش در حافظه ذخیره شود</translation>
-<translation id="1563137369682381456">تاریخ انقضا</translation>
 <translation id="1566049601598938765">وب‌سایت</translation>
 <translation id="15662109988763471">چاپگر انتخابی موجود نیست یا به‌درستی نصب نشده است. چاپگر خود را بررسی کنید یا چاپگر دیگری را انتخاب کنید.</translation>
 <translation id="1566329594234563241">وقتی غیرفعال و به برق متصل است</translation>
@@ -3478,7 +3476,6 @@
 <translation id="3420501302812554910">کلید امنیتی توکار باید بازنشانی شود</translation>
 <translation id="3421387094817716717">کلید عمومی منحنی بیضوی</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />توجه:<ph name="END_BOLD" /> ممکن است صدای مشابه یا صدای ضبط‌شده هم بتواند به نتایج شخصی یا «دستیار» شما دسترسی یابد.</translation>
-<translation id="3421835120203732951">افزودن نمایه جدید</translation>
 <translation id="3422989558057853751">مورد آخر انتخاب شده است، لغو انتخاب آن باعث خروج از حالت انتخاب می‌شود</translation>
 <translation id="3423111258700187173">نتایج پیداشده در <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">درباره این ویژگی مبتنی بر هوش مصنوعی بیشتر بدانید</translation>
@@ -9342,7 +9339,6 @@
 <translation id="7622768823216805500">سایت‌ها معمولاً کنترل‌کننده‌های پرداخت را برای ارائه ویژگی‌های خرید، مانند تسویه‌حساب آسان‌تر، نصب می‌کنند</translation>
 <translation id="7622966771025050155">رفتن به برگه ضبط‌شده</translation>
 <translation id="7624337243375417909">‏caps lock غیرفعال</translation>
-<translation id="7625025537587898155">افزودن نمایه جدید</translation>
 <translation id="7625568159987162309">مشاهده اجازه‌ها و داده‌های ذخیره‌شده در همه سایت‌ها</translation>
 <translation id="7625823789272218216">برگه جدید در سمت چپ</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />)، درجه <ph name="GRADE" /></translation>
@@ -11760,7 +11756,6 @@
 <translation id="98235653036850093">سلام، <ph name="PROFILE_NAME" /></translation>
 <translation id="983192555821071799">بستن همه برگه‌ها</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - دوربین و میکروفون درحال ضبط هستند</translation>
-<translation id="984275831282074731">روش‌های پرداخت</translation>
 <translation id="984705303330760860">افزودن زبان‌های غلط‌گیر املایی</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">موارد کلی</translation>

@@ -351,6 +351,7 @@
 <translation id="2438248248625638801">Жазба атаулары жасалып жатыр.</translation>
 <translation id="2446553403094072641">Жылжымалы үтір дәлдігі</translation>
 <translation id="2448312741937722512">Түрі</translation>
+<translation id="2448857983905133469">Сабақ құралдары</translation>
 <translation id="2468124392950503650">Нұсқауды таңдап, <ph name="BEGIN_LINK_PROMPTING_GUIDE" />нұсқау жазу туралы анықтамалық<ph name="END_LINK_PROMPTING_GUIDE" /> жасаңыз немесе қараңыз.</translation>
 <translation id="2472215337771558851">Нобай жасау немесе бар жұмысты жақсарту үшін Google AI ұсынған "Жазуға көмек керек" функциясын пайдаланыңыз.</translation>
 <translation id="2475982808118771221">Қате орын алды</translation>
@@ -449,6 +450,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Соңғы нүкте</translation>
 <translation id="3060579846059757016">Негізгі қағидалар</translation>
+<translation id="3060798442805232711">Сабақ құралдары микрофонды пайдаланып жатыр.</translation>
 <translation id="3061850252076394168">Select to Speak функциясын қосу</translation>
 <translation id="3066772729299747758">сейсенбі күні</translation>
 <translation id="3069085583900247081">Тексерілмеді.</translation>
@@ -910,6 +912,7 @@
 <translation id="5170568018924773124">Қалтада көрсету</translation>
 <translation id="517075088756846356">Жаңарту процесін жалғастыру үшін <ph name="DEVICE_NAME" /> қуат кабелін ажыратып, қайта жалғаңыз.</translation>
 <translation id="5180108905184566358">баобаб ағаштары</translation>
+<translation id="5180431943345994173">Мұғаліміңіз сабақ құралдарындағы контентті өшірді.</translation>
 <translation id="5180712487038406644">Мәнерлі</translation>
 <translation id="5190187232518914472">Өміріңіздегі ерекше сәттерді қайта өткеріңіз. Альбомдарды қосу немесе өзгерту үшін <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> қызметіне өтіңіз.</translation>
 <translation id="5212593641110061691">Шағын формат</translation>
@@ -1003,6 +1006,7 @@
 <translation id="5628106863521633649">Қолжетімді тілдер</translation>
 <translation id="5630438231335788050">баухауз</translation>
 <translation id="5631759159893697722">аннотация</translation>
+<translation id="5655084389678168978">Мұғаліміңіз сабақ құралдарына жаңа контент қосты.</translation>
 <translation id="5655283760733841251">Пернетақта жарықтығын арттыру</translation>
 <translation id="5655296450510165335">Құрылғыны тіркеу</translation>
 <translation id="5655776422854483175">Баспа жұмыстары жоқ.</translation>
@@ -1528,6 +1532,7 @@
 <translation id="7971535376154084247">Жалпы басқару элементтері</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> желісіне қосылу үшін "Параметрлер" бетіне өтіңіз.</translation>
 <translation id="7978412674231730200">Жеке кілт</translation>
+<translation id="7979468455552394856">Оқушылар сабақ құралдарына қосылды.</translation>
 <translation id="7982789257301363584">Желі</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" автоматты түрде іске қосылды}other{# қолданба автоматты түрде іске қосылды}}</translation>
 <translation id="7994702968232966508">EAP әдісі</translation>

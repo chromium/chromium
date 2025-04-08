@@ -14,6 +14,7 @@
 Ukikifuta, papo hapo kila mtu hataweza kufikia kikundi cha vichupo cha "<ph name="TITLE_OF_GROUP" />" na kitafutwa kwenye vifaa vyote.</translation>
 <translation id="1329584516321524826">Imesasishwa sasa hivi</translation>
 <translation id="1340839264183302272">Ondoka kwenye kikundi</translation>
+<translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{Panua kikundi cha vichupo cha pamoja cha <ph name="TITLE_OF_GROUP" /> kilicho na kichupo <ph name="TABS_COUNT_ONE" />, cha rangi ya <ph name="COLOR_NAME" /> na lebo ya <ph name="CARD_LABEL" />.}other{Panua kikundi cha vichupo cha pamoja cha <ph name="TITLE_OF_GROUP" /> kilicho na vichupo <ph name="TABS_COUNT_MANY" />, vya rangi ya <ph name="COLOR_NAME" /> na lebo ya <ph name="CARD_LABEL" />.}}</translation>
 <translation id="1419023007528516122">Hatua hii itafuta kabisa kikundi kwenye kifaa chako</translation>
 <translation id="1486715732399361704">Unaweza kupata vikundi vyako vyote vya vichupo hapa</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Kiliundwa dakika <ph name="NUM_MINS_ONE" /> iliyopita}other{Kiliundwa dakika <ph name="NUM_MINS_MANY" /> zilizopita}}</translation>
@@ -108,6 +109,7 @@ Ukikifuta, papo hapo kila mtu hataweza kufikia kikundi cha vichupo cha "<ph name
 <translation id="4895402777090717310">{TABS_COUNT,plural, =1{Funga kichupo}other{Funga vichupo}}</translation>
 <translation id="4908147833782857886">Vikundi vya <ph name="USER_EMAIL" /> vimehifadhiwa (itafunga vichupo na kufuta vikundi)</translation>
 <translation id="492284538114688557">Punguo la bei limetambuliwa</translation>
+<translation id="4937582754153367435">{NUMBER_OF_TABS,plural, =1{Panua kikundi cha vichupo cha pamoja kilicho na kichupo <ph name="TABS_COUNT_ONE" />, cha rangi ya <ph name="COLOR_NAME" /> na lebo ya <ph name="CARD_LABEL" />.}other{Panua kikundi cha vichupo cha pamoja kilicho na vichupo <ph name="TABS_COUNT_MANY" />, vya rangi ya <ph name="COLOR_NAME" /> na lebo ya <ph name="CARD_LABEL" />.}}</translation>
 <translation id="5007392906805964215">Maoni</translation>
 <translation id="5073204694187207510">Ficha gridi ya skrini nzima</translation>
 <translation id="5076161749301278626">Je, unaona maoni kuhusu duka?</translation>

@@ -351,6 +351,7 @@
 <translation id="2438248248625638801">Yozuv nomlari yaratilmoqda</translation>
 <translation id="2446553403094072641">Erkin harakatlanish nuqtasi aniqligi</translation>
 <translation id="2448312741937722512">Turi</translation>
+<translation id="2448857983905133469">Class Tools</translation>
 <translation id="2468124392950503650">Soʻrov tanlang yoki <ph name="BEGIN_LINK_PROMPTING_GUIDE" />soʻrov tuzish qoʻllanmasi<ph name="END_LINK_PROMPTING_GUIDE" /> bilan tanishing</translation>
 <translation id="2472215337771558851">Matn yordamchisi qoralama yaratish yoki mavjud matnni yaxshilashga yordam beradi, Google AI asosida ishlaydi</translation>
 <translation id="2475982808118771221">Xatolik yuz berdi</translation>
@@ -449,6 +450,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">Oxirgi nuqta</translation>
 <translation id="3060579846059757016">Konturlar</translation>
+<translation id="3060798442805232711">Class Tools mikrofondan foydalanmoqda</translation>
 <translation id="3061850252076394168">teginib tinglashni yoqish</translation>
 <translation id="3066772729299747758">Seshanba kuni</translation>
 <translation id="3069085583900247081">Tekshiruv bajarilmadi</translation>
@@ -910,6 +912,7 @@
 <translation id="5170568018924773124">&amp;Jildda ko‘rsatish</translation>
 <translation id="517075088756846356">Yangilashda davom etish <ph name="DEVICE_NAME" /> quvvat kabelini uzib, qayta ulang</translation>
 <translation id="5180108905184566358">baobablar</translation>
+<translation id="5180431943345994173">Oʻqituvchi Class tools ilovasida kontentni olib tashladi</translation>
 <translation id="5180712487038406644">Ifodali</translation>
 <translation id="5190187232518914472">Sevimli xotiralaringizga qayting. Albom kiritish yoki tahrirlash uchun <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> xizmatini oching.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
@@ -1003,6 +1006,7 @@
 <translation id="5628106863521633649">Mavjud tillar</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">annotatsiya</translation>
+<translation id="5655084389678168978">Oʻqituvchi Class tools ilovasida kontent kiritdi</translation>
 <translation id="5655283760733841251">Klaviatura yorqinligini oshirish</translation>
 <translation id="5655296450510165335">Qurilmani roʻyxatdan oʻtkazish</translation>
 <translation id="5655776422854483175">Hech qanday vazifa topilmadi</translation>
@@ -1528,6 +1532,7 @@ Mazkur transkripsiyalar uchun transkripsiya modelini (&lt;100MB) yuklab oling.</
 <translation id="7971535376154084247">Umumiy boshqaruv tugmalari</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> nomli tarmoqqa ulanish uchun Sozlamalarni oching</translation>
 <translation id="7978412674231730200">Xususiy kalit</translation>
+<translation id="7979468455552394856">Class Tools talabalar qurilmalariga ulandi.</translation>
 <translation id="7982789257301363584">Tarmoq</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{“<ph name="APP_NAME_1" />” avtomatik ishga tushirildi}other{# ta ilova avtomatik ishga tushirildi}}</translation>
 <translation id="7994702968232966508">EAP usuli</translation>

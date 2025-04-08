@@ -44,7 +44,6 @@
 <translation id="1026822031284433028">Şəkli Yükləyin</translation>
 <translation id="1026959648338730078">Windows Hello və ya xarici təhlükəsizlik açarı</translation>
 <translation id="1028700151766901954">Səbəb: LBS defolt olaraq <ph name="DEFAULT_OPEN_BROWSER" /> brauzerində saxlanılır.</translation>
-<translation id="1028823395684328817">Google Hesabında parol və s. datadan istifadəyə davam etmək üçün kimliyinizi doğrulayın</translation>
 <translation id="102916930470544692">Giriş açarı</translation>
 <translation id="1029317248976101138">Zoom</translation>
 <translation id="1029526375103058355">Toxunaraq klikləyin</translation>
@@ -815,7 +814,6 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1558671750917454373"><ph name="DEVICE_NAME" /> cihazında yayımı bərpa edin</translation>
 <translation id="1561331397460162942">Bu, tətbiqlərlərə, məkan icazəsi olan veb-saytlara və sistem xidmətlərinə məkana giriş imkanı verir</translation>
 <translation id="1562119309884184621">Bu kontaktı əlavə etdikdə, onun növbəti dəfə paylaşımı yadda saxlanacaq</translation>
-<translation id="1563137369682381456">Bitmə tarixi</translation>
 <translation id="1566049601598938765">Veb səhifə</translation>
 <translation id="15662109988763471">Seçilmiş printer əlçatan deyil və ya düzgün quraşdırılmayıb. Printerinizi yoxlayın və ya başqa printer seçin.</translation>
 <translation id="1566329594234563241">Deaktiv və qoşulu olduqda</translation>
@@ -1247,6 +1245,7 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="185111092974636561"><ph name="BEGIN_PARAGRAPH1" />Qeydiyyatdan keçmədən əvvəl, <ph name="DEVICE_OS" /> cihazın sahibi ola bilməsi üçün TPM'i silməlisiniz.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />TPM cihazını tamamilə deaktiv edə bilərsiniz. Datanız hələ də proqram şifrələməsi ilə etibarlı şəkildə saxlanacaq, ancaq avadanlıq dəstəkli sertifikatlar kimi müəyyən güvənlik funksiyaları deaktiv ediləcək.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Sistemi yenidən başladaraq və BIOS/UEFI ayarlarına daxil olaraq TPM ayarlarınızı dəyişə bilərsiniz. Adımlar cihaz modelinə görə dəyişir. Digər məlumatlar üçün yenidən başlatmazdan əvvəl ayrı bir cihazda <ph name="DEVICE_OS" /> sənədlərini açın: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="1851551847729706116"><ph name="TAB_NAME" /> bu tabla paylaşılır</translation>
 <translation id="1852799913675865625">Faylı oxuyan zaman xəta baş verdi: <ph name="ERROR_TEXT" />.</translation>
 <translation id="1854180393107901205">Yayımı dayandırın</translation>
 <translation id="1856715684130786728">Məkan əlavə edin...</translation>
@@ -3466,7 +3465,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3420501302812554910">Daxili təhlükəsizlik açarı sıfırlanma tələb edir</translation>
 <translation id="3421387094817716717">Oval Əyrisi İctimai Açarı</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Qeyd:<ph name="END_BOLD" /> Oxşar səs və ya səsyazma şəxsi nəticələrinizə, yaxud Assistentinizə giriş edə bilər.</translation>
-<translation id="3421835120203732951">Yeni profil əlavə edin</translation>
 <translation id="3422989558057853751">Sonuncu element seçilib, seçimi ləğv etsəniz, seçim rejimindən çıxacaq</translation>
 <translation id="3423111258700187173"><ph name="FOLDER_TITLE" /> qovluğunda tapılan nəticələr</translation>
 <translation id="3423226218833787854">Bu Sİ funksiyası haqqında ətraflı məlumat</translation>
@@ -9323,7 +9321,6 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7622768823216805500">Saytlar adətən asan ödəmə kimi alış-veriş xüsusiyyətləri üçün ödəniş emalçıları quraşdırır</translation>
 <translation id="7622966771025050155">Çəkilmişlər tabına keçin</translation>
 <translation id="7624337243375417909">böyük hərflər deaktivdir</translation>
-<translation id="7625025537587898155">Yeni profil əlavə edin</translation>
 <translation id="7625568159987162309">Saytlarda icazələrə və saxlanılan dataya baxın</translation>
 <translation id="7625823789272218216">Sola Yeni Tab</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), Sinif <ph name="GRADE" /></translation>
@@ -11273,6 +11270,7 @@ Buraya quraşdırılmış proqram təminatı, fayllar, brauzeriniz, cihazın əm
 <translation id="8963117664422609631">Sayt ayarlarına keçin</translation>
 <translation id="8964927371396953727">Hesabınızdakı (<ph name="ACCOUNT_EMAIL" />) parolları istifadə etmək və yadda saxlamaq üçün kimliyinizi doğrulayın</translation>
 <translation id="8965037249707889821">Köhnə parol daxil edin</translation>
+<translation id="8967403839792635452">Artırma yaradırsınız? Chrome uzatması üzrə developer sənədləri ilə bağlı <ph name="BEGIN_LINK" />yeniliklərdən<ph name="END_LINK" /> xəbərdar olun.</translation>
 <translation id="8967427617812342790">Oxu siyahısına əlavə edin</translation>
 <translation id="8967548289042494261">Silin: <ph name="VM_NAME" /></translation>
 <translation id="8968527460726243404">ChromeOS Sistem Şəkil Yazıçı</translation>
@@ -11737,7 +11735,6 @@ Buraya quraşdırılmış proqram təminatı, fayllar, brauzeriniz, cihazın əm
 <translation id="98235653036850093">Salam, <ph name="PROFILE_NAME" /></translation>
 <translation id="983192555821071799">Bütün panelləri bağlayın</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - Kamera və mikrofon qeydə alır</translation>
-<translation id="984275831282074731">Ödəniş üsulları</translation>
 <translation id="984705303330760860">Orfoqrafik yoxlanış dilləri əlavə edin</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Ümumi</translation>

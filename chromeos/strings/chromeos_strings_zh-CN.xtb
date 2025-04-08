@@ -351,6 +351,7 @@
 <translation id="2438248248625638801">正在创建录制标题</translation>
 <translation id="2446553403094072641">浮点准确性</translation>
 <translation id="2448312741937722512">类型</translation>
+<translation id="2448857983905133469">课堂工具</translation>
 <translation id="2468124392950503650">选择提示来生成图片，或查看<ph name="BEGIN_LINK_PROMPTING_GUIDE" />提示指南<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">使用 Google AI 赋能的“帮我写”功能撰写草稿或润色现有内容</translation>
 <translation id="2475982808118771221">出现错误</translation>
@@ -449,6 +450,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">端点</translation>
 <translation id="3060579846059757016">概要</translation>
+<translation id="3060798442805232711">课堂工具正在使用您的麦克风</translation>
 <translation id="3061850252076394168">启用“随选朗读”</translation>
 <translation id="3066772729299747758">在周二</translation>
 <translation id="3069085583900247081">测试失败</translation>
@@ -910,6 +912,7 @@
 <translation id="5170568018924773124">在文件夹中显示</translation>
 <translation id="517075088756846356">请拔下并重新插入<ph name="DEVICE_NAME" />电源线，以继续更新流程</translation>
 <translation id="5180108905184566358">猴面包树</translation>
+<translation id="5180431943345994173">老师从课堂工具中移除了内容</translation>
 <translation id="5180712487038406644">富有表现力</translation>
 <translation id="5190187232518914472">重现您的美好回忆。如需添加或编辑相册，请转至 <ph name="LINK_BEGIN" />Google 相册<ph name="LINK_END" />。</translation>
 <translation id="5212593641110061691">Tabloid</translation>
@@ -1003,6 +1006,7 @@
 <translation id="5628106863521633649">支持的语言</translation>
 <translation id="5630438231335788050">包豪斯</translation>
 <translation id="5631759159893697722">摘要</translation>
+<translation id="5655084389678168978">老师在课堂工具中添加了新内容</translation>
 <translation id="5655283760733841251">调高键盘亮度</translation>
 <translation id="5655296450510165335">设备注册</translation>
 <translation id="5655776422854483175">无打印作业</translation>
@@ -1528,6 +1532,7 @@
 <translation id="7971535376154084247">常规控件</translation>
 <translation id="7977800524392185497">若要加入“<ph name="NETWORK_NAME" />”网络，请转到“设置”</translation>
 <translation id="7978412674231730200">私有密钥</translation>
+<translation id="7979468455552394856">课堂工具已连接到学生的设备</translation>
 <translation id="7982789257301363584">网络</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{“<ph name="APP_NAME_1" />”已自动启动}other{# 个应用已自动启动}}</translation>
 <translation id="7994702968232966508">EAP 方法</translation>

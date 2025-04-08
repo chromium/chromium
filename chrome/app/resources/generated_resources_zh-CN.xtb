@@ -44,7 +44,6 @@
 <translation id="1026822031284433028">加载图片</translation>
 <translation id="1026959648338730078">Windows Hello 或外部安全密钥</translation>
 <translation id="1028700151766901954">原因：LBS 默认留在 <ph name="DEFAULT_OPEN_BROWSER" /> 中。</translation>
-<translation id="1028823395684328817">如需继续使用您的 Google 账号中的密码和其他信息，请验证您的身份</translation>
 <translation id="102916930470544692">通行密钥</translation>
 <translation id="1029317248976101138">缩放</translation>
 <translation id="1029526375103058355">点按即点击</translation>
@@ -190,7 +189,7 @@
 <translation id="1122960773616686544">书签名称</translation>
 <translation id="1124772482545689468">用户</translation>
 <translation id="1125550662859510761">有效分辨率：<ph name="WIDTH" /> x <ph name="HEIGHT" />（原生）</translation>
-<translation id="1125921926864945797">壁纸和风格</translation>
+<translation id="1125921926864945797">壁纸与个性化</translation>
 <translation id="1128090040635299943">目前正在配置 Linux。整个配置流程将需要几分钟的时间。</translation>
 <translation id="1128591060186966949">修改搜索引擎</translation>
 <translation id="1129348283834595293">赛博朋克</translation>
@@ -812,7 +811,6 @@
 <translation id="1558671750917454373">继续投放到“<ph name="DEVICE_NAME" />”</translation>
 <translation id="1561331397460162942">这将允许具有位置信息权限的应用和网站以及系统服务使用位置信息</translation>
 <translation id="1562119309884184621">如果您添加了此联系人，当他/她下次分享内容时，系统会识别出此联系人</translation>
-<translation id="1563137369682381456">失效日期</translation>
 <translation id="1566049601598938765">网站</translation>
 <translation id="15662109988763471">所选打印机无法使用或未正确安装。请检查打印机，或尝试选择其他打印机。</translation>
 <translation id="1566329594234563241">处于闲置状态且接通电源时</translation>
@@ -1244,6 +1242,7 @@
 <translation id="1850145825777333687">设备凭据</translation>
 <translation id="1850508293116537636">顺时针旋转(&amp;C)</translation>
 <translation id="185111092974636561"><ph name="BEGIN_PARAGRAPH1" />注册之前，您需要清除 TPM，以使 <ph name="DEVICE_OS" /> 拥有对设备的所有权。<ph name="END_PARAGRAPH1" /><ph name="BEGIN_PARAGRAPH2" />您还可彻底关闭 TPM 设备。您的数据仍会通过软件加密技术得到妥善存储，但某些安全功能（例如由硬件支持的证书）将被停用。<ph name="END_PARAGRAPH2" /><ph name="BEGIN_PARAGRAPH3" />若要更改您的 TPM 设置，请重新启动并进入系统 BIOS/UEFI 设置。具体步骤因设备型号而异。如需了解详情，请于重新启动之前在另外一部设备上打开 <ph name="DEVICE_OS" /> 文档：g.co/flex/TPMHelp。<ph name="END_PARAGRAPH3" /></translation>
+<translation id="1851551847729706116">正在将“<ph name="TAB_NAME" />”共享到此标签页</translation>
 <translation id="1852799913675865625">尝试读取文件时发生错误：<ph name="ERROR_TEXT" />。</translation>
 <translation id="1854180393107901205">停止投放</translation>
 <translation id="1856715684130786728">添加位置…</translation>
@@ -1633,7 +1632,6 @@
 <translation id="2121825465123208577">调整大小</translation>
 <translation id="2123766928840368256">另选一个文件</translation>
 <translation id="2124930039827422115">{1,plural, =1{已有一位用户给出了 <ph name="AVERAGE_RATING" /> 的评分。}other{已有 # 位用户给出评分，平均评分为 <ph name="AVERAGE_RATING" />。}}</translation>
-<translation id="2125715366913703594">探索扩展程序(&amp;E)</translation>
 <translation id="2126167708562367080">您的管理员已停用同步。</translation>
 <translation id="2127372758936585790">低功率充电器</translation>
 <translation id="212862741129535676">频率状态占用率</translation>
@@ -3458,7 +3456,6 @@
 <translation id="3420501302812554910">需要重置内部安全密钥</translation>
 <translation id="3421387094817716717">椭圆曲线公共密钥</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />注意<ph name="END_BOLD" />：如果有人在语音上与您相似或拥有您的语音录音，此人可能也能获取您的个人信息相关结果或使用您的 Google 助理。</translation>
-<translation id="3421835120203732951">添加新的个人资料</translation>
 <translation id="3422989558057853751">已选择最后一项内容，取消选择后会退出选择模式</translation>
 <translation id="3423111258700187173">在“<ph name="FOLDER_TITLE" />”中找到的结果</translation>
 <translation id="3423226218833787854">详细了解这项 AI 功能</translation>
@@ -5669,7 +5666,7 @@
 <translation id="4959262764292427323">系统会将密码保存在您的 Google 账号中，以便您在任何设备上使用密码</translation>
 <translation id="4960020053211143927">不适用于某些应用</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
-<translation id="4961318399572185831">投放屏幕</translation>
+<translation id="4961318399572185831">投屏</translation>
 <translation id="496185450405387901">您的管理员已安装此应用。</translation>
 <translation id="4963079328730030450">您的组织可控制由这些功能收集的数据的使用方式。</translation>
 <translation id="4963603093937263654">请确保在您的“<ph name="DEVICE_NAME" />”上开启通知功能</translation>
@@ -6770,7 +6767,7 @@
 <translation id="5781092003150880845">以<ph name="ACCOUNT_FULL_NAME" />的身份同步</translation>
 <translation id="5781120434102258025">将学校账号数据转移到个人账号</translation>
 <translation id="5782227691023083829">正在翻译...</translation>
-<translation id="5783346913439924978">头部跟踪</translation>
+<translation id="5783346913439924978">头部追踪</translation>
 <translation id="57838592816432529">静音</translation>
 <translation id="5784291589716625675">更改应用的语言</translation>
 <translation id="5785583009707899920">Chrome 文件实用程序</translation>
@@ -9314,7 +9311,6 @@
 <translation id="7622768823216805500">网站通常会安装付款处理程序以实现购物功能（例如更轻松的结算）</translation>
 <translation id="7622966771025050155">切换到被录屏的标签页</translation>
 <translation id="7624337243375417909">已关闭大写锁定模式</translation>
-<translation id="7625025537587898155">添加新的个人资料</translation>
 <translation id="7625568159987162309">查看各网站的权限及储存的数据</translation>
 <translation id="7625823789272218216">在左侧新增标签页</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />)，等级：<ph name="GRADE" /></translation>
@@ -11267,6 +11263,7 @@
 <translation id="8963117664422609631">转到网站设置</translation>
 <translation id="8964927371396953727">请验证您的身份，以便将密码保存在您的账号 <ph name="ACCOUNT_EMAIL" /> 中并使用这些密码</translation>
 <translation id="8965037249707889821">输入旧密码</translation>
+<translation id="8967403839792635452">正在开发扩展程序？请参阅 Chrome 扩展程序开发者文档，及时了解<ph name="BEGIN_LINK" />最新动态<ph name="END_LINK" />。</translation>
 <translation id="8967427617812342790">添加到阅读清单</translation>
 <translation id="8967548289042494261">卸载 <ph name="VM_NAME" /></translation>
 <translation id="8968527460726243404">Chrome 操作系统映像写入工具</translation>
@@ -11731,7 +11728,6 @@
 <translation id="98235653036850093"><ph name="PROFILE_NAME" />，您好</translation>
 <translation id="983192555821071799">关闭所有标签页</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - 摄像头正在录像且麦克风正在录音</translation>
-<translation id="984275831282074731">支付方式</translation>
 <translation id="984705303330760860">添加拼写检查语言</translation>
 <translation id="987068745968718743">Parallels Desktop：<ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">常规</translation>

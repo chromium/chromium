@@ -7905,6 +7905,7 @@ Nota: La caché se borra al reiniciar y al cerrar sesión.</translation>
 <translation id="6583473893541367102">Si se define esta política, se especificará la lista de URLs cuyos patrones se compararán con el origen de seguridad de la URL solicitante. Si se encuentra una coincidencia, se concederá acceso a dispositivos de captura de vídeo sin solicitarlo.
 
       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Sin embargo, ten en cuenta que esta política no admite el patrón "*", que coincide con cualquier URL.</translation>
+<translation id="6583517553738784213">Inhabilitar control con gestos faciales</translation>
 <translation id="6584122839583172231">Los ajustes de F12 usan la combinación de teclas que incluye las teclas modificadoras Ctrl y Mayús</translation>
 <translation id="6584541828182430328">Inhabilitar que se muestre la alerta en pantalla completa</translation>
 <translation id="6588634282328239769">Mostrar la URL completa</translation>
@@ -8211,6 +8212,7 @@ En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias
       Si se inhabilita, se elimina el icono de funciones experimentales de la barra de herramientas.
 
       chrome://flags y cualquier otro medio de activar o desactivar las funciones del navegador se seguirán comportando como se espera independientemente de si esta política está habilitada o inhabilitada.</translation>
+<translation id="6794273802619210652">Habilitar la función de accesibilidad de control con gestos faciales</translation>
 <translation id="6795485990775913659">Permitir imprimir solo sin PIN</translation>
 <translation id="6796215185873669533">Asigna el valor predeterminado de la configuración del navegador a la versión de la cadena user-agent.</translation>
 <translation id="6800181452282128474">No realizar consultas a Quirks Servers</translation>
@@ -9286,6 +9288,7 @@ Si no se define esta política, no se permitirán excepciones de <ph name="FLOAT
 <translation id="7635106595080609261">Si se habilita esta política o no se le asigna ningún valor, Chrome podrá mostrar cuadros de diálogo de selección de archivos, y los usuarios podrán abrirlos.
 
       Si se inhabilita esta política, cuando un usuario ejecute una acción que abra un cuadro de diálogo de selección de archivos (por ejemplo, importar marcadores, subir archivos, guardar enlaces, etc.), aparecerá un mensaje en su lugar. Se asume que el usuario habrá hecho clic en Cancelar en el cuadro de diálogo de selección de archivos.</translation>
+<translation id="7637522465980672147">Habilitar control con gestos faciales</translation>
 <translation id="7638300388094655454">Google Cast</translation>
 <translation id="7638764766629234761">Permitir que se usen notificaciones del sistema</translation>
 <translation id="7642740497103044368">Si se habilita esta política, se permitirá que las políticas asociadas con una cuenta gestionada se fusionen con políticas a nivel de ordenador.
@@ -10218,6 +10221,15 @@ Para obtener más información sobre las tecnologías antiguas, consulta la pág
 <translation id="8319678975002906774">Establece valores de la configuración administrada aplicados a sitios web para orígenes determinados</translation>
 <translation id="8320149248919453401">Modo de carga de la batería</translation>
 <translation id="8320576119308783142">Mostrar el teclado en pantalla cuando corresponda.</translation>
+<translation id="8321089199245028304">Habilita la función de accesibilidad de control con gestos faciales. Cuando el control con gestos faciales está activo, puedes utilizar la cabeza para controlar el cursor del ratón y usar gestos faciales para realizar acciones del sistema. De esta forma, puedes controlar tu dispositivo sin usar las manos.
+
+Si se habilita esta política, el control con gestos faciales siempre estará habilitado.
+
+Si se inhabilita esta política, el control con gestos faciales siempre estará inhabilitado.
+
+Si se asigna un valor a esta política, los usuarios no podrán cambiarlo ni anularlo.
+
+Si no se le asigna ningún valor, el control con gestos faciales se inhabilitará al inicio, pero el usuario podrá habilitarlo en cualquier momento.</translation>
 <translation id="8327651196906278510">Permitir la captura de pestañas de estos orígenes</translation>
 <translation id="8329434144708110">Activar flujos de autenticación para sincronizar contraseñas con proveedores de SSO</translation>
 <translation id="8329984337216493753">Esta política solo se encuentra activa en el modo de venta.

@@ -99,7 +99,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1175364870820465910">Drukāt...</translation>
 <translation id="1175393348063009671">Fotopapīrs (matēts)</translation>
 <translation id="1175875016430184367">Trīskāršs skavojums labajā pusē</translation>
-<translation id="1176123604678140687">Derīguma termiņa mēnesis</translation>
 <translation id="1177548198167638471">Vairs nejautāt</translation>
 <translation id="1177863135347784049">Pielāgota</translation>
 <translation id="1178581264944972037">Pauzēt</translation>
@@ -333,7 +332,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
       &lt;p&gt;Lūdzu, koriģējiet datumu un laiku lietotnes &lt;strong&gt;Iestatījumi&lt;/strong&gt; sadaļā &lt;strong&gt;Vispārīgi&lt;/strong&gt;.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Jūsu administrators restartēs jūsu ierīci plkst. <ph name="TIME" /> šādā datumā: <ph name="DATE" />.</translation>
 <translation id="1562805467275776390">Autosacīkstes</translation>
-<translation id="1563137369682381456">Termiņa beigu datums</translation>
 <translation id="1563755205047885671">Asa sižeta un platformu spēles</translation>
 <translation id="1564634006476980707">Meklēšanas vietrādim URL ieteicamā HTTPS shēma: <ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">Tīklošanas informācija, piemēram, adreses, saskarnes konfigurācija, savienojuma kvalitāte</translation>
@@ -937,7 +935,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2606760465469169465">Automātiska verifikācija</translation>
 <translation id="2608019759319359258">Ja tēma ir bloķēta, tā netiek izmantota reklāmu personalizēšanai.</translation>
 <translation id="2610561535971892504">Noklikšķināt, lai kopētu</translation>
-<translation id="2612676031748830579">Kartes numurs</translation>
 <translation id="2612993535136743634">Tiks dzēsti visi drošības kodi, kas ir saglabāti jūsu ierīcē un Google kontā</translation>
 <translation id="2616412942031748191">Meklētājprogrammu optimizācija un mārketings</translation>
 <translation id="2618206371527040026">Akadēmiskas konferences un publikācijas</translation>
@@ -1923,6 +1920,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4282346679996504092">Paziņojumi par šo produktu ir izslēgti, un grāmatzīme ir noņemta.</translation>
 <translation id="4285498937028063278">Atspraust</translation>
 <translation id="4287495839370498922">Uzlabota reklāmu konfidencialitāte pārlūkā Chrome</translation>
+<translation id="4288101205645068104">Dzēst transportlīdzekli</translation>
 <translation id="4290920330097335010">Nekad neatļaut</translation>
 <translation id="4296207570293932800">Tagad ir pieejama jauna reklāmu konfidencialitātes funkcija</translation>
 <translation id="4297502707443874121">Lappuses numur <ph name="THUMBNAIL_PAGE" /> sīktēls</translation>
@@ -3335,7 +3333,6 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">Izmantojiet pakalpojumu YouTube ar vecāku izvēlēm</translation>
 <translation id="6779348349813025131">Google paroļu pārvaldniekam ir nepieciešama piekļuve MacOS sistēmai Keychain</translation>
-<translation id="6782656837469339439">Derīguma termiņa gads</translation>
 <translation id="6785990323398321538">Jebkurā brīdī Chrome iestatījumos varat mainīt meklētājprogrammu.</translation>
 <translation id="6786145470008421571">Aploksne (6 x 9 collas)</translation>
 <translation id="67862343314499040">Violeta</translation>
@@ -4205,6 +4202,7 @@ Papildu informācija:
 <translation id="8280630997017109758">11. paplāte</translation>
 <translation id="8281730697546299650">Tagad ir pieejamas citas reklāmu konfidencialitātes funkcijas</translation>
 <translation id="8281886186245836920">Izlaist</translation>
+<translation id="8282292167096638950">Dzēst autovadītāja apliecību</translation>
 <translation id="8282409409360764263">Pagalma kopšana</translation>
 <translation id="8282947398454257691">uzzināt jūsu unikālo ierīces identifikatoru</translation>
 <translation id="8284769179630993263">Chrome iestatījumos pārvaldiet funkciju Droša pārlūkošana un citas opcijas.</translation>
@@ -4232,6 +4230,7 @@ Papildu informācija:
 <translation id="8321476692217554900">paziņojumi</translation>
 <translation id="8322402665880479974">Gultas un gultu galvgaļi</translation>
 <translation id="8323505966575306467">Pievienojiet papildu aizsardzību parolēm</translation>
+<translation id="832547548543012337">Dzēst pasi</translation>
 <translation id="832567874344484841">Brokastu ēdieni</translation>
 <translation id="8329068931308448247">Aploksne 14</translation>
 <translation id="8332188693563227489">Piekļuve vietnei <ph name="HOST_NAME" /> tika noraidīta</translation>

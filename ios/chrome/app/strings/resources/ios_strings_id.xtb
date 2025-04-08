@@ -526,6 +526,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="3167868116600277716">Feed Discover</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3174662312949010067">Anda juga dapat menggunakan sandi tersimpan di perangkat Anda yang lain.</translation>
+<translation id="3177338796769255211">Login untuk mendapatkan bookmark dan lainnya di semua perangkat Anda</translation>
 <translation id="3181954750937456830">Safe Browsing (melindungi Anda dan perangkat dari situs berbahaya)</translation>
 <translation id="3190736958609431397">Batalkan pemantauan</translation>
 <translation id="3208260410153224535">Organisasi Anda menonaktifkan login. Bookmark, sandi, dan data baru lainnya hanya akan disimpan ke perangkat ini.</translation>
@@ -1126,6 +1127,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="573974402615125334">Untuk berbagi, bergabung, dan berkolaborasi dalam grup tab, sinkronkan histori dan tab Anda</translation>
 <translation id="5740123193752401435">Telusuri tab…</translation>
 <translation id="5744274077973758795">Notifikasi <ph name="FEATURE_NAME" /> diaktifkan</translation>
+<translation id="5745598824054949526">Teks tidak ditemukan</translation>
 <translation id="574762237186762643">Acara</translation>
 <translation id="5749158352074143502">Lanjutkan dengan tab ini</translation>
 <translation id="5753021559215751319">Simpan sandi</translation>
@@ -1289,6 +1291,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="6410883413783534063">Buka tab untuk mengunjungi halaman yang berbeda secara bersamaan</translation>
 <translation id="6416807286621280684">Info terbaru terkait pengiriman dan paket yang dilacak.</translation>
 <translation id="6418346271604475326">Menyiapkan PDF</translation>
+<translation id="6421038304268477484">Teks terjemahan</translation>
 <translation id="6429213933892582367">Buka Opsi Sandi</translation>
 <translation id="6434591244308415567">Terjadi error. Harap coba lagi nanti.</translation>
 <translation id="6435307030888827407">Tetap logout</translation>
@@ -1967,6 +1970,7 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="9097506547406246598">Tidak dapat berhenti mengikuti. Terjadi error.</translation>
 <translation id="9098541895599151034">Hapus <ph name="NUMBER_OF_ACCOUNTS" /> Sandi?</translation>
 <translation id="9099233023029360602">Selalu tanyakan akun yang akan digunakan</translation>
+<translation id="9099821309562615674">Pastikan teks yang ingin Anda terjemahkan terlihat jelas dan berada dalam bingkai.</translation>
 <translation id="9100610230175265781">Frasa sandi diwajibkan</translation>
 <translation id="91023216973987714">Metode pembayaran</translation>
 <translation id="9106655997975673326">Dari "<ph name="SOURCE_DEVICE" />"</translation>

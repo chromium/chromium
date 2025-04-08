@@ -99,7 +99,6 @@
 <translation id="1175364870820465910">&amp;छाप्नुहोस्...</translation>
 <translation id="1175393348063009671">फोटो (म्याट)</translation>
 <translation id="1175875016430184367">दायाँपट्टि तीन स्टिच</translation>
-<translation id="1176123604678140687">म्याद सकिने महिना</translation>
 <translation id="1177548198167638471">फेरि नसोध्नुहोस्</translation>
 <translation id="1177863135347784049">अनुकूल</translation>
 <translation id="1178581264944972037">पज गर्नुहोस्</translation>
@@ -333,7 +332,6 @@
       &lt;p&gt;कृपया मिति र समय मिलाउन &lt;strong&gt;सेटिङ&lt;/strong&gt; एपको &lt;strong&gt;सामान्य&lt;/strong&gt; खण्डमा गई मिलाउनुहोस्।&lt;/p&gt;</translation>
 <translation id="1559839503761818503">तपाईंका एड्मिनले तपाईंको डिभाइस <ph name="DATE" />, <ph name="TIME" /> बजे रिस्टार्ट गर्ने छन्</translation>
 <translation id="1562805467275776390">अटो रेसिङ</translation>
-<translation id="1563137369682381456">म्याद सकिने मिति</translation>
 <translation id="1563755205047885671">एक्सन तथा प्लेटफर्म गेमहरू</translation>
 <translation id="1564634006476980707">सर्च URL का लागि सिफारिस गरिएको HTTPS योजना: <ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">ठेगाना, इन्टरफेसको कन्फिगुरेसन र कनेक्सनको गुणस्तरलगायतका नेटवर्किङसम्बन्धी जानकारी</translation>
@@ -937,7 +935,6 @@
 <translation id="2606760465469169465">स्वतः पुष्टि गर्ने अनुमति</translation>
 <translation id="2608019759319359258">कुनै विषय ब्लक गरियो भने विज्ञापन पर्सनलाइज गर्न उक्त विषय प्रयोग गरिने छैन</translation>
 <translation id="2610561535971892504">क्लिक टु कपी</translation>
-<translation id="2612676031748830579">कार्ड नम्बर</translation>
 <translation id="2612993535136743634">तपाईंको डिभाइस र Google खातामा सेभ गरिएका सबै सेक्युरिटी कोडहरू मेटाइने छन्</translation>
 <translation id="2616412942031748191">सर्च इन्जिन अप्टिमाइजेसन तथा मार्केटिङ</translation>
 <translation id="2618206371527040026">शैक्षिक सम्मेलन तथा प्रकाशनहरू</translation>
@@ -1923,6 +1920,7 @@
 <translation id="4282346679996504092">यो उत्पादनका हकमा अलर्ट पठाउने सुविधा अफ गरिएको छ र बुकमार्क हटाइएको छ</translation>
 <translation id="4285498937028063278">अनपिन गर्नुहोस्</translation>
 <translation id="4287495839370498922">Chrome मा विज्ञापनसम्बन्धी गोपनीयता बढाउने परिष्कृत सुविधा</translation>
+<translation id="4288101205645068104">सवारी साधनको जानकारी मेटाउनुहोस्</translation>
 <translation id="4290920330097335010">कहिल्यै पनि अनुमति नदिनुहोस्</translation>
 <translation id="4296207570293932800">विज्ञापनको गोपनीयता कायम राख्ने नयाँ सुविधाहरू अब उपलब्ध छन्</translation>
 <translation id="4297502707443874121">पृष्ठ <ph name="THUMBNAIL_PAGE" /> को थम्बनेल</translation>
@@ -3335,7 +3333,6 @@
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">आफ्ना अभिभावकले तय गरेका सेटिङअनुसार YouTube चलाउनुहोस्</translation>
 <translation id="6779348349813025131">Google पासवर्ड म्यानेजरलाई MacOS Keychain प्रयोग गर्ने अनुमति दिनु पर्ने हुन्छ</translation>
-<translation id="6782656837469339439">म्याद सकिने वर्ष</translation>
 <translation id="6785990323398321538">तपाईं जुनसुकै बेला Chrome का सेटिङमा गई आफ्नो सर्च इन्जिन परिवर्तन गर्न सक्नुहुन्छ।</translation>
 <translation id="6786145470008421571">Envelope 6 x 9 in</translation>
 <translation id="67862343314499040">हल्का निलो</translation>
@@ -4204,6 +4201,7 @@
 <translation id="8280630997017109758">ट्रे ११</translation>
 <translation id="8281730697546299650">विज्ञापनको गोपनीयतासम्बन्धी अन्य सुविधाहरू उपलब्ध भएका छन्</translation>
 <translation id="8281886186245836920">स्किप गर्नुहोस्</translation>
+<translation id="8282292167096638950">सवारी चालक अनुमति पत्रको जानकारी मेटाउनुहोस्</translation>
 <translation id="8282409409360764263">आँगन मर्मत गर्ने सेवा</translation>
 <translation id="8282947398454257691">तपाईँको अद्वितीय यन्त्र पहिचानकर्ता जान्नुहोस्</translation>
 <translation id="8284769179630993263">Chrome का सेटिङमा गई Safe Browsing सम्बन्धी सेटिङ तथा सुरक्षासम्बन्धी अन्य सेटिङ मिलाउनुहोस्</translation>
@@ -4231,6 +4229,7 @@
 <translation id="8321476692217554900">नोटिफिकेसनहरू</translation>
 <translation id="8322402665880479974">ओच्छ्यान र हेडबोर्ड</translation>
 <translation id="8323505966575306467">आफ्ना पासवर्डहरू अझ सुरक्षित राख्नुहोस्</translation>
+<translation id="832547548543012337">पासपोर्टको जानकारी मेटाउनुहोस्</translation>
 <translation id="832567874344484841">ब्रेकफास्ट</translation>
 <translation id="8329068931308448247">Envelope #14</translation>
 <translation id="8332188693563227489"><ph name="HOST_NAME" /> मा पहुँच गर्न अस्वीकृत भयो</translation>

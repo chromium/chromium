@@ -99,7 +99,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1175364870820465910">&amp;Afdrukken...</translation>
 <translation id="1175393348063009671">Foto (mat)</translation>
 <translation id="1175875016430184367">Drie nietjes rechts</translation>
-<translation id="1176123604678140687">Vervalmaand</translation>
 <translation id="1177548198167638471">Niet meer vragen</translation>
 <translation id="1177863135347784049">Aangepast</translation>
 <translation id="1178581264944972037">Onderbreken</translation>
@@ -294,7 +293,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1483493594462132177">Verzenden</translation>
 <translation id="1484449009683144042">Dit is een experimenteel AI-schrijfhulpmiddel dat niet altijd goed werkt.
     <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
-<translation id="1486096554574027028">Zoek in wachtwoorden</translation>
+<translation id="1486096554574027028">Zoeken in wachtwoorden</translation>
 <translation id="1492194039220927094">Pushen van beleid:</translation>
 <translation id="1495677929897281669">Terug naar tabblad</translation>
 <translation id="1500286806237135498">Camera's (<ph name="CAMERAS_COUNT" />)</translation>
@@ -333,7 +332,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
           &lt;p&gt;Pas in het gedeelte &lt;strong&gt;Algemeen&lt;/strong&gt; van de app &lt;strong&gt;Instellingen&lt;/strong&gt; de datum en tijd aan.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Je beheerder start je apparaat opnieuw op om <ph name="TIME" /> op <ph name="DATE" /></translation>
 <translation id="1562805467275776390">Autoraces</translation>
-<translation id="1563137369682381456">Vervaldatum</translation>
 <translation id="1563755205047885671">Actie- en platformgames</translation>
 <translation id="1564634006476980707">HTTPS-schema aanbevolen voor zoek-URL: <ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">Netwerkinformatie zoals adressen, interfaceconfiguratie en verbindingskwaliteit</translation>
@@ -937,7 +935,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2606760465469169465">Automatisch verifiëren</translation>
 <translation id="2608019759319359258">Als een onderwerp wordt geblokkeerd, wordt het niet gebruikt om advertenties te personaliseren</translation>
 <translation id="2610561535971892504">Klik om te kopiëren</translation>
-<translation id="2612676031748830579">Kaartnummer</translation>
 <translation id="2612993535136743634">Alle beveiligingscodes die zijn opgeslagen op je apparaat en in je Google-account, worden verwijderd</translation>
 <translation id="2616412942031748191">Zoekmachineoptimalisatie en -marketing</translation>
 <translation id="2618206371527040026">Academische conferenties en publicaties</translation>
@@ -1919,6 +1916,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4282346679996504092">Meldingen voor dit product zijn uitgezet en de bookmark is verwijderd</translation>
 <translation id="4285498937028063278">Losmaken</translation>
 <translation id="4287495839370498922">Verbeterde advertentieprivacy in Chrome</translation>
+<translation id="4288101205645068104">Voertuig verwijderen</translation>
 <translation id="4290920330097335010">Nooit toestaan</translation>
 <translation id="4296207570293932800">Nieuwe functie voor advertentieprivacy nu beschikbaar</translation>
 <translation id="4297502707443874121">Miniatuur voor pagina <ph name="THUMBNAIL_PAGE" /></translation>
@@ -3330,7 +3328,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">YouTube gebruiken met de keuzes van je ouder</translation>
 <translation id="6779348349813025131">Google Wachtwoordmanager heeft toegang tot macOS-sleutelhanger nodig</translation>
-<translation id="6782656837469339439">Vervaljaar</translation>
 <translation id="6785990323398321538">Je kunt je zoekmachine op elk moment wijzigen via de instellingen van Chrome.</translation>
 <translation id="6786145470008421571">Envelop 6 x 9 inch</translation>
 <translation id="67862343314499040">Violet</translation>
@@ -4200,6 +4197,7 @@ Aanvullende informatie:
 <translation id="8280630997017109758">Lade 11</translation>
 <translation id="8281730697546299650">Er zijn nu andere functies voor advertentieprivacy beschikbaar</translation>
 <translation id="8281886186245836920">Overslaan</translation>
+<translation id="8282292167096638950">Rijbewijs verwijderen</translation>
 <translation id="8282409409360764263">Tuinonderhoud</translation>
 <translation id="8282947398454257691">Je unieke apparaat-ID weten</translation>
 <translation id="8284769179630993263">Safe Browsing en meer beheren in de Chrome-instellingen</translation>
@@ -4227,6 +4225,7 @@ Aanvullende informatie:
 <translation id="8321476692217554900">meldingen</translation>
 <translation id="8322402665880479974">Bedden en hoofdeinden</translation>
 <translation id="8323505966575306467">Je wachtwoorden beter beveiligen</translation>
+<translation id="832547548543012337">Paspoort verwijderen</translation>
 <translation id="832567874344484841">Ontbijtartikelen</translation>
 <translation id="8329068931308448247">Envelop #14</translation>
 <translation id="8332188693563227489">Toegang tot <ph name="HOST_NAME" /> is geweigerd</translation>

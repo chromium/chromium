@@ -14,6 +14,7 @@
 যদি আপুনি এইটো মচে, সকলোৱে লগে লগে "<ph name="TITLE_OF_GROUP" />" শীৰ্ষক টেবৰ গোটটোৰ এক্সেছ হেৰুৱাব আৰু এইটো আটাইবোৰ ডিভাইচৰ পৰা মচা হ’ব।</translation>
 <translation id="1329584516321524826">এই মাত্ৰ আপডে’ট কৰা হ’ল</translation>
 <translation id="1340839264183302272">গোটৰ পৰা বাহিৰ হওক</translation>
+<translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{<ph name="TITLE_OF_GROUP" /> নামৰ শ্বেয়াৰ কৰা টেবৰ গোটটো <ph name="TABS_COUNT_ONE" /> টা টেব, <ph name="COLOR_NAME" /> ৰং, <ph name="CARD_LABEL" /> লেবেললৈ বিস্তাৰ কৰক।}one{<ph name="TITLE_OF_GROUP" /> নামৰ শ্বেয়াৰ কৰা টেবৰ গোটটো <ph name="TABS_COUNT_MANY" /> টা টেব, <ph name="COLOR_NAME" /> ৰং, <ph name="CARD_LABEL" /> লেবেললৈ বিস্তাৰ কৰক।}other{<ph name="TITLE_OF_GROUP" /> নামৰ শ্বেয়াৰ কৰা টেবৰ গোটটো <ph name="TABS_COUNT_MANY" /> টা টেব, <ph name="COLOR_NAME" /> ৰং, <ph name="CARD_LABEL" /> লেবেললৈ বিস্তাৰ কৰক।}}</translation>
 <translation id="1419023007528516122">এইটোৱে গোটটোক আপোনাৰ ডিভাইচৰ পৰা স্থায়ীভাৱে মচিব</translation>
 <translation id="1486715732399361704">আপুনি ইয়াত আপোনাৰ আটাইবোৰ টেবৰ গোট বিচাৰি পাব পাৰে</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> মিনিট পূৰ্বে সৃষ্টি কৰা হৈছে}one{<ph name="NUM_MINS_MANY" /> মিনিট পূৰ্বে সৃষ্টি কৰা হৈছে}other{<ph name="NUM_MINS_MANY" /> মিনিট পূৰ্বে সৃষ্টি কৰা হৈছে}}</translation>
@@ -108,6 +109,7 @@
 <translation id="4895402777090717310">{TABS_COUNT,plural, =1{টেব বন্ধ কৰক}one{টেব বন্ধ কৰক}other{টেব বন্ধ কৰক}}</translation>
 <translation id="4908147833782857886"><ph name="USER_EMAIL" /> টা গোট ছেভ কৰা হৈছে (টেবসমূহ বন্ধ কৰিব আৰু গোটসমূহ মচিব)</translation>
 <translation id="492284538114688557">মূল্য কমা বুলি ধৰা পৰিছে</translation>
+<translation id="4937582754153367435">{NUMBER_OF_TABS,plural, =1{শ্বেয়াৰ কৰা টেবৰ গোটটো <ph name="TABS_COUNT_ONE" /> টা টেব, <ph name="COLOR_NAME" /> ৰং, <ph name="CARD_LABEL" /> লেবেললৈ বিস্তাৰ কৰক।}one{শ্বেয়াৰ কৰা টেবৰ গোটটো <ph name="TABS_COUNT_MANY" /> টা টেব, <ph name="COLOR_NAME" /> ৰং, <ph name="CARD_LABEL" /> লেবেললৈ বিস্তাৰ কৰক।}other{শ্বেয়াৰ কৰা টেবৰ গোটটো <ph name="TABS_COUNT_MANY" /> টা টেব, <ph name="COLOR_NAME" /> ৰং, <ph name="CARD_LABEL" /> লেবেললৈ বিস্তাৰ কৰক।}}</translation>
 <translation id="5007392906805964215">পৰ্যালোচনা কৰক</translation>
 <translation id="5073204694187207510">সম্পূৰ্ণ স্ক্রীণৰ গ্ৰিড লুকুৱাওক</translation>
 <translation id="5076161749301278626">ষ্ট'ৰৰ পর্যালোচনা চাবনে?</translation>

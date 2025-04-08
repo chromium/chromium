@@ -351,6 +351,7 @@
 <translation id="2438248248625638801">Grabaketen izenak sortzen</translation>
 <translation id="2446553403094072641">Puntu gainerakorraren zehaztasuna</translation>
 <translation id="2448312741937722512">Mota</translation>
+<translation id="2448857983905133469">Klaseko tresnak</translation>
 <translation id="2468124392950503650">Sortzeko, hautatu eskaera-mezu bat. Bestela, ikusi <ph name="BEGIN_LINK_PROMPTING_GUIDE" />eskaera-mezuen gida<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Erabili Idazteko laguntza zirriborro bat sortzeko edo jadanik daukazun testu bat hobetzeko, Google-ren AA bidez</translation>
 <translation id="2475982808118771221">Errore bat gertatu da</translation>
@@ -449,6 +450,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Amaiera-puntua</translation>
 <translation id="3060579846059757016">Eskemak</translation>
+<translation id="3060798442805232711">Klaseko tresnak zure mikrofonoa erabiltzen ari da</translation>
 <translation id="3061850252076394168">gaitu hautatuz ozen irakurtzeko eginbidea</translation>
 <translation id="3066772729299747758">asteartean</translation>
 <translation id="3069085583900247081">Probak huts egin du</translation>
@@ -910,6 +912,7 @@
 <translation id="5170568018924773124">Erakutsi karpetan</translation>
 <translation id="517075088756846356">Eguneratzen jarraitzeko, deskonektatu eta konektatu berriro <ph name="DEVICE_NAME" /> gailuaren korronte-kablea</translation>
 <translation id="5180108905184566358">baobabak</translation>
+<translation id="5180431943345994173">Irakasleak edukia kendu du Klaseko tresnak zerbitzutik</translation>
 <translation id="5180712487038406644">Adierazkorra</translation>
 <translation id="5190187232518914472">Ekarri gogora gogoko oroitzapenak. Albumak gehitu edo editatzeko, joan <ph name="LINK_BEGIN" />Google Argazkiak<ph name="LINK_END" /> zerbitzura.</translation>
 <translation id="5212593641110061691">Tabloidea</translation>
@@ -1003,6 +1006,7 @@
 <translation id="5628106863521633649">Erabilgarri dauden hizkuntzak</translation>
 <translation id="5630438231335788050">bauhaus-a</translation>
 <translation id="5631759159893697722">laburpena</translation>
+<translation id="5655084389678168978">Irakasleak eduki berria gehitu du Klaseko tresnak zerbitzuan</translation>
 <translation id="5655283760733841251">Teklatuaren distira igotzeko tekla</translation>
 <translation id="5655296450510165335">Gailuaren erregistroa</translation>
 <translation id="5655776422854483175">Ez dago inprimatze-lanik</translation>
@@ -1528,6 +1532,7 @@ Transkripzio horiek lortzeko, deskargatu transkripzio-eredua (gehienez ere 100 
 <translation id="7971535376154084247">Kontrolatzeko aukera orokorrak</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> sare batean sartzeko, joan Ezarpenak atalera</translation>
 <translation id="7978412674231730200">Gako pribatua</translation>
+<translation id="7979468455552394856">Klaseko tresnak ikasleekin konektatuta dago</translation>
 <translation id="7982789257301363584">Sarea</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" automatikoki abiarazi da}other{# aplikazio automatikoki abiarazi dira}}</translation>
 <translation id="7994702968232966508">EAP metodoa</translation>

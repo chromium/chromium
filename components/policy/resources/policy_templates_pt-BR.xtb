@@ -8187,6 +8187,7 @@ Observação: reiniciar o dispositivo ou sair da conta faz com que o cache seja 
 <translation id="6583473893541367102">Se a política for definida, você vai especificar a lista de URLs com padrões que correspondam à origem de segurança do URL solicitante. Quando houver correspondência de padrão, o acesso a dispositivos de captura de vídeo será permitido sem um comando.
 
       Para informações detalhadas sobre os padrões de <ph name="URL_LABEL" /> válidos, acesse https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. No entanto, o padrão "*", que corresponde a qualquer URL, não é compatível com esta política.</translation>
+<translation id="6583517553738784213">Desativar o controle facial</translation>
 <translation id="6584122839583172231">As configurações F12 usam o atalho que contém as teclas modificadoras Ctrl e Shift</translation>
 <translation id="6584541828182430328">Desativar a exibição de alertas de tela cheia</translation>
 <translation id="6588634282328239769">Mostrar o URL completo</translation>
@@ -8504,6 +8505,7 @@ No <ph name="MS_WIN_NAME" />, essa política só está disponível em instância
       Se a política for definida como "Desativada", o ícone de recursos experimentais do navegador será removido da barra de ferramentas.
 
       chrome://flags e todas as outras formas de desativar e ativar os recursos do navegador ainda funcionarão como esperado, independentemente de a política ser definida como "Ativada" ou "Desativada".</translation>
+<translation id="6794273802619210652">Ativar o recurso de acessibilidade para controle facial</translation>
 <translation id="6795485990775913659">Permitir impressão apenas sem PIN</translation>
 <translation id="6796215185873669533">Definir a versão da string do user agent como a configuração padrão do navegador.</translation>
 <translation id="6800181452282128474">Não consultar servidores Quirks</translation>
@@ -9618,6 +9620,7 @@ Se a política não for definida, nenhuma exceção a <ph name="FLOATING_SSO_DOM
 <translation id="7635106595080609261">Se a política for definida como "Ativada" ou não for definida, o Chrome poderá exibir caixas de diálogo para seleção de arquivos e os usuários poderão abri-las.
 
       Se a política for definida como "Desativada", sempre que alguma ação do usuário gerar uma caixa de diálogo para seleção de arquivos, como a importação de favoritos, o upload de arquivos ou o salvamento de links, uma mensagem aparecerá no lugar da caixa de diálogo. O navegador responde como se o usuário tivesse clicado em "Cancelar" na caixa de diálogo de seleção de arquivos.</translation>
+<translation id="7637522465980672147">Ativar o controle facial</translation>
 <translation id="7638300388094655454">Google Cast</translation>
 <translation id="7638764766629234761">Permitir o uso de notificações do sistema</translation>
 <translation id="7642740497103044368">Se a política for ativada, as políticas associadas a uma conta gerenciada poderão ser mescladas com outras no nível da máquina.
@@ -10581,6 +10584,17 @@ Mais informações sobre tecnologias legadas podem ser encontradas em https://ch
 <translation id="8319678975002906774">Define valores de configuração gerenciada para sites de origens específicas</translation>
 <translation id="8320149248919453401">Modo de carregamento da bateria</translation>
 <translation id="8320576119308783142">Mostrar o teclado na tela quando apropriado.</translation>
+<translation id="8321089199245028304">Ative o recurso de acessibilidade para controle facial. Quando o controle facial está ativo, você
+pode usar a cabeça para controlar o cursor do mouse e gestos faciais para realizar
+ações no sistema. Assim, você controla o dispositivo sem usar as mãos.
+
+Quando esta política é ativada, o controle facial fica sempre ligado.
+
+Quando esta política é desativada, o controle facial fica sempre desligado.
+
+Se você definir esta política, os usuários não poderão mudá-la ou substituí-la.
+
+Quando esta política não é definida, o controle facial fica desativado, mas pode ser ativado pelo usuário a qualquer momento.</translation>
 <translation id="8327651196906278510">Permitir captura de guia por estas origens</translation>
 <translation id="8329434144708110">Acionar fluxos de autenticação para sincronizar senhas com provedores SSO</translation>
 <translation id="8329984337216493753">Esta política é ativa somente no modo de varejo. Quando o DeviceIdleLogoutTimeout for especificado, esta política definirá a duração da caixa de aviso com contagem regressiva que será mostrada ao usuário antes da desconexão. O valor da política deve ser especificado em milésimos de segundos.</translation>

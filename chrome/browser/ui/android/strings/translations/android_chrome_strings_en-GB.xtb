@@ -77,6 +77,7 @@
 <translation id="1298077576058087471">Save up to 60% data, read today's news</translation>
 <translation id="1303339473099049190">Can’t find that password. Check your spelling and try again.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> – Sent from <ph name="DEVICE_NAME" /></translation>
+<translation id="1318262688555255786">Share link to web page <ph name="PAGE_TITLE" />. Source: <ph name="PAGE_URL" /></translation>
 <translation id="1320912611264252795">Bookmark save flow folders opened at full height</translation>
 <translation id="1327257854815634930">Navigation history is opened</translation>
 <translation id="1331212799747679585">Chrome can’t update. More options</translation>
@@ -455,6 +456,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="3072980200212375806"><ph name="APP_NAME" /> will open in Chrome. By continuing, you agree to the <ph name="BEGIN_LINK1" />Google Terms of Service<ph name="END_LINK1" />, and the <ph name="BEGIN_LINK2" />Google Chrome and Chrome OS additional Terms of Service<ph name="END_LINK2" />. The <ph name="BEGIN_LINK3" />Privacy Policy<ph name="END_LINK3" /> also applies.</translation>
 <translation id="3080525922482950719">You can save pages to read later or offline</translation>
 <translation id="3087734570205094154">Bottom</translation>
+<translation id="3088687687599869821">PAGE NAVIGATION</translation>
 <translation id="3091010850649238832">Show clipboard contents</translation>
 <translation id="3098745985164956033">Some images are sent to Google to improve descriptions for you</translation>
 <translation id="3114507951000454849">Read today's news <ph name="NEWS_ICON" /></translation>
@@ -515,6 +517,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="3435465986463792564">Got many windows? You can manage them from here</translation>
 <translation id="3435575784518354875">To keep access to your passwords, export them now, update Google Play services and then import them back to Google Password Manager. <ph name="BEGIN_LINK" />See full instructions<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">Security</translation>
+<translation id="3435914367318771664">Add tab to new group</translation>
 <translation id="3439276997620616816">You’ll find your recent tabs here</translation>
 <translation id="3443221991560634068">Reload the current page</translation>
 <translation id="3444179773590444986">Share feedback on Dark theme for sites?</translation>
@@ -781,6 +784,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="4684427112815847243">Sync everything</translation>
 <translation id="4685741273709472646">Select from the drop-down list</translation>
 <translation id="4687718960473379118">Site-suggested ads</translation>
+<translation id="468924408576231679">Copy link to web page <ph name="PAGE_TITLE" />. Source: <ph name="PAGE_URL" /></translation>
 <translation id="469286762610133730">Get better content</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 and <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> more}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 and <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> more}}</translation>
 <translation id="4698061626562952596">Review your inactive tabs here</translation>
@@ -1123,6 +1127,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="6205314730813004066">Ads privacy</translation>
 <translation id="6210748933810148297">Not <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Previewing this page</translation>
+<translation id="6212567362666004597">Add tab to group</translation>
 <translation id="6221633008163990886">Unlock to export your passwords</translation>
 <translation id="6225572914528673855">Address bar</translation>
 <translation id="6232535412751077445">Enabling ‘Do Not Track’ means that a request will be included with your browsing traffic. Any effect depends on whether a website responds to the request and how the request is interpreted.
@@ -1150,6 +1155,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6324916366299863871">Edit shortcut</translation>
 <translation id="6324977638108296054">Can’t create link to highlight</translation>
 <translation id="6333140779060797560">Share via <ph name="APPLICATION" /></translation>
+<translation id="6335454563754888572">Edit URL pointing to page on: <ph name="PAGE_URL" /></translation>
 <translation id="6337234675334993532">Encryption</translation>
 <translation id="6340526405444716530">Personalisation</translation>
 <translation id="6341580099087024258">Ask where to save files</translation>
@@ -1193,6 +1199,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6486420406192123355">This PDF file is from a site using an insecure connection</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{File downloaded}other{# downloads complete}}</translation>
 <translation id="6508722015517270189">Restart Chrome</translation>
+<translation id="6513924416597632811">Copy link to search results page for: <ph name="SEARCH_QUERY" />. Source: <ph name="PAGE_URL" /></translation>
 <translation id="6518133107902771759">Verify</translation>
 <translation id="6527303717912515753">Share</translation>
 <translation id="652948702951888897">Chrome history</translation>
@@ -1604,6 +1611,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="8221401890884589479">You can block sites that you don't want. Chrome also auto-deletes sites that are older than 30 days from the list. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="8221985041778490865">Deleting browsing data</translation>
 <translation id="8223642481677794647">Feed card menu</translation>
+<translation id="82296173028782770">Edit search query: <ph name="SEARCH_QUERY" /></translation>
 <translation id="8236063039629122676">Now, a right swipe takes you backwards to see previous pages that you've visited and a left swipe moves you forwards</translation>
 <translation id="8236097722223016103">Add to bookmarks</translation>
 <translation id="8243077599929149377">Add your username</translation>
@@ -1752,6 +1760,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="8890668505403261809">Search your Incognito tabs</translation>
 <translation id="8898822736010347272">Sends URLs of some pages that you visit, limited system information and some page content to Google, to help discover new threats and protect everyone on the web.</translation>
 <translation id="8909135823018751308">Share…</translation>
+<translation id="8918299437379122615">Share link to search results page for: <ph name="SEARCH_QUERY" />. Source: <ph name="PAGE_URL" /></translation>
 <translation id="8922289737868596582">Download pages from the More Options button to use them offline</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> is ready</translation>

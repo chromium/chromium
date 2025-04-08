@@ -99,7 +99,6 @@
 <translation id="1175364870820465910">&amp;प्रिंट करें...</translation>
 <translation id="1175393348063009671">फ़ोटो (मैट)</translation>
 <translation id="1175875016430184367">दाईं ओर ट्रिपल स्टेपल</translation>
-<translation id="1176123604678140687">समयसीमा खत्म होने का महीना</translation>
 <translation id="1177548198167638471">दोबारा न पूछें</translation>
 <translation id="1177863135347784049">कस्टम</translation>
 <translation id="1178581264944972037">रोकें</translation>
@@ -333,7 +332,6 @@
       &lt;p&gt;कृपया तारीख और समय को &lt;strong&gt;सेटिंग&lt;/strong&gt; ऐप्लिकेशन के &lt;strong&gt;सामान्‍य&lt;/strong&gt; सेक्शन से एडजस्‍ट करें.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">एडमिन, <ph name="DATE" /> को <ph name="TIME" /> बजे आपके डिवाइस को रीस्टार्ट करेगा</translation>
 <translation id="1562805467275776390">ऑटो रेसिंग</translation>
-<translation id="1563137369682381456">सदस्यता खत्म होने की तारीख</translation>
 <translation id="1563755205047885671">ऐक्शन और प्लैटफ़ॉर्म गेम</translation>
 <translation id="1564634006476980707">इस खोज यूआरएल के लिए एचटीटीपीएस स्कीम इस्तेमाल करने का सुझाव दिया जाता है: <ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">नेटवर्क से जुड़ी जानकारी जैसे कि पते, इंटरफ़ेस का कॉन्फ़िगरेशन, और कनेक्शन की क्वालिटी</translation>
@@ -529,6 +527,7 @@
 <translation id="1890171020361705182">डायनो गेम. पिक्सलेट किया हुआ डायनासोर, जो कटीले पौधों और उड़ने वाले जीवों से बचते हुए, ज़मीन पर भागता है. जब आप ऑडियो क्यू सुनते हैं, तो बाधाएं आने पर कूदने के लिए, टैप करें.</translation>
 <translation id="1898423065542865115">फ़िल्टर किया जा रहा है</translation>
 <translation id="1901443836186977402">{1,plural, =1{यह सर्वर पुष्टि नहीं कर सका कि यह <ph name="DOMAIN" /> है; इसका सुरक्षा सर्टिफ़िकेट कल खत्म हो गया था. इसकी वजह गलत कॉन्फ़िगरेशन या किसी हमलावर का आपके कनेक्शन में छेड़छाड़ करना हो सकती है. अभी आपके कंप्यूटर की घड़ी <ph name="CURRENT_DATE" /> पर सेट है. क्या यह सही तारीख है? अगर नहीं, तो आपको सिस्टम की घड़ी सही करके, इस पेज को रीफ़्रेश करना चाहिए.}one{यह सर्वर पुष्टि नहीं कर सका कि यह <ph name="DOMAIN" /> है; इसका सुरक्षा सर्टिफ़िकेट # दिन पहले खत्म हो गया था. इसकी वजह गलत कॉन्फ़िगरेशन या किसी हमलावर का आपके कनेक्शन में छेड़छाड़ करना हो सकती है. अभी आपके कंप्यूटर की घड़ी <ph name="CURRENT_DATE" /> पर सेट है. क्या यह सही तारीख है? अगर नहीं, तो आपको सिस्टम की घड़ी सही करके, इस पेज को रीफ़्रेश करना चाहिए.}other{यह सर्वर पुष्टि नहीं कर सका कि यह <ph name="DOMAIN" /> है; इसका सुरक्षा सर्टिफ़िकेट # दिन पहले खत्म हो गया था. इसकी वजह गलत कॉन्फ़िगरेशन या किसी हमलावर का आपके कनेक्शन में छेड़छाड़ करना हो सकती है. अभी आपके कंप्यूटर की घड़ी <ph name="CURRENT_DATE" /> पर सेट है. क्या यह सही तारीख है? अगर नहीं, तो आपको सिस्टम की घड़ी सही करके, इस पेज को रीफ़्रेश करना चाहिए.}}</translation>
+<translation id="190166348986967700">आपका एडमिन, <ph name="DATE_TIME" /> को <ph name="CLOUD_PROVIDER" /> पर आपकी फ़ाइलें अपलोड करना शुरू करेगा. फ़ाइल अपलोड होने तक, अपने डिवाइस को इंटरनेट से कनेक्ट रखें. इस दौरान, डिवाइस में सेव की गई फ़ाइलों को सिर्फ़ पढ़ा जा सकेगा.</translation>
 <translation id="1902576642799138955">मान्यता अवधि</translation>
 <translation id="1908217026282415406">कैमरे का इस्तेमाल और उसे मूव करना</translation>
 <translation id="1908690643053136980">आपके एडमिन ने इस साइट के लिए, <ph name="PERMISSION" /> के इस्तेमाल की अनुमति नहीं दी है</translation>
@@ -937,7 +936,6 @@
 <translation id="2606760465469169465">अपने-आप पुष्टि होने की अनुमति</translation>
 <translation id="2608019759319359258">किसी विषय को ब्लॉक करने पर, उसका इस्तेमाल आपकी दिलचस्पी के मुताबिक विज्ञापन दिखाने के लिए नहीं किया जाएगा</translation>
 <translation id="2610561535971892504">क्लिक टू कॉपी</translation>
-<translation id="2612676031748830579">कार्ड नंबर</translation>
 <translation id="2612993535136743634">आपके डिवाइस और Google खाते में सेव किए गए सभी सुरक्षा कोड मिटा दिए जाएंगे</translation>
 <translation id="2616412942031748191">सर्च इंजन ऑप्टिमाइज़ेशन और मार्केटिंग</translation>
 <translation id="2618206371527040026">अकैडमिक कॉन्फ़्रेंस और पब्लिकेशन</translation>
@@ -2154,6 +2152,7 @@
 <translation id="473775607612524610">अपडेट करें</translation>
 <translation id="4738601419177586157"><ph name="TEXT" /> खोज सुझाव</translation>
 <translation id="4742407542027196863">पासवर्ड मैनेज करें…</translation>
+<translation id="474270528725216349">सिंक किए गए डिवाइसों पर, कम से कम एक साइट का डेटा</translation>
 <translation id="4743275772928623722">आपका सिस्टम अपडेट कर दिया गया था, लेकिन आपके कुछ ऐप्लिकेशन और फ़ाइलें वापस नहीं लाई जा सकीं. आपके ऐप्लिकेशन फिर से अपने-आप डाउनलोड हो जाएंगे.</translation>
 <translation id="4744514002166662487">प्रज़ेंटेशन बनाएं</translation>
 <translation id="4744603770635761495">निष्पादित किए जाने वाले पाथ</translation>
@@ -2284,6 +2283,7 @@
 <translation id="495170559598752135">क्रियाएं</translation>
 <translation id="4953689047182316270">सुलभता इवेंट का जवाब दें</translation>
 <translation id="4957080528849277028">'Chrome इतिहास देखें' बटन, Chrome की सेटिंग में ब्राउज़िंग इतिहास देखने और उसे मैनेज करने के लिए इसे चालू करें</translation>
+<translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{1 और साइट}one{# और साइट}other{# और साइटें}}</translation>
 <translation id="4958444002117714549">पूरी सूची दिखाएं</translation>
 <translation id="4960068118612257147">आप जब चाहें, Chrome में विज्ञापन की निजता सेटिंग में बदलाव किया जा सकता है</translation>
 <translation id="4960203958361543136">अपना सर्च इंजन चुनें</translation>
@@ -2618,8 +2618,10 @@
 <translation id="553377674408670169">शिक्षा के क्षेत्र की नौकरियां</translation>
 <translation id="5534785731327961487">बेहतरीन डील</translation>
 <translation id="5536214594743852365">"<ph name="SECTION" />" सेक्शन दिखाएं</translation>
+<translation id="5536471014287260753">{DOMAIN_COUNT,plural, =1{1 और साइट (सिंक किए गए डिवाइसों पर और भी साइटों का डेटा है)}one{# और साइट (सिंक किए गए डिवाइसों पर और भी साइटों का डेटा है)}other{# और साइटें (सिंक किए गए डिवाइसों पर और भी साइटों का डेटा है)}}</translation>
 <translation id="553782666181800029">चोउ 2 साइज़ का लिफ़ाफ़ा</translation>
 <translation id="5538270463355278784">फ़ुल स्क्रीन मोड अपने-आप चालू होने की सेटिंग</translation>
+<translation id="5538859347764346097"><ph name="KEYWORD_SHORTCUT" />, <ph name="KEYWORD_SUFFIX" /> पर खोजें</translation>
 <translation id="5539243836947087108">राफ़्ट</translation>
 <translation id="5540224163453853">अनुरोध किया गया लेख नहीं ढूंढा जा सका.</translation>
 <translation id="5540969246441091044">घुड़सवारी</translation>
@@ -2778,6 +2780,7 @@
 <translation id="5838278095973806738">आपको इस साइट पर कोई भी संवेदनशील जानकारी (उदाहरण के लिए, पासवर्ड या क्रेडिट कार्ड) नहीं डालनी चाहिए, क्योंकि उसे हमलावर चुरा सकते हैं.</translation>
 <translation id="5838732667866024867">ग्राफ़ पर कीमत में हुए बदलावों को देखने के लिए, लेफ़्ट/राइट ऐरो का इस्तेमाल किया जा सकता है</translation>
 <translation id="5840318881868981258">अपने Google खाते, <ph name="ACCOUNT" /> में</translation>
+<translation id="5841007907672481419"><ph name="TYPE_1" /> से</translation>
 <translation id="5841338463993781099">क्या खाते में सेव करना है?</translation>
 <translation id="5843987376989109187">फ़िलहाल, यह सुविधा इस भाषा में उपलब्ध नहीं है.
     <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
@@ -2791,6 +2794,7 @@
 <translation id="5863515189965725638">IBAN में बदलाव करें</translation>
 <translation id="5863847714970149516">आगे आने वाला पेज आपसे शुल्क लेने की कोशिश कर सकता है</translation>
 <translation id="5866257070973731571">फ़ोन नंबर जोड़ें</translation>
+<translation id="5866327164731551901"><ph name="TYPE_1" /> <ph name="TYPE_2" /> से</translation>
 <translation id="5866898949289125849">डेवलपर के टूल वाला पेज देखा जा रहा है</translation>
 <translation id="5869405914158311789">इस साइट तक नहीं पहुंचा जा सकता</translation>
 <translation id="5869522115854928033">सेव किए गए पासवर्ड</translation>
@@ -3331,7 +3335,6 @@
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">अपने माता-पिता की चुनी गई सेटिंग के हिसाब से, YouTube का इस्तेमाल करें</translation>
 <translation id="6779348349813025131">Google Password Manager को MacOS Keychain का ऐक्सेस चाहिए</translation>
-<translation id="6782656837469339439">समयसीमा खत्म होने का साल</translation>
 <translation id="6785990323398321538">Chrome की सेटिंग में जाकर, सर्च इंजन को किसी भी समय बदला जा सकता है.</translation>
 <translation id="6786145470008421571">6 x 9 इंच का लिफ़ाफ़ा</translation>
 <translation id="67862343314499040">बैंगनी</translation>
@@ -3500,6 +3503,7 @@
 <translation id="7075452647191940183">अनुरोध में बहुत ज़्यादा डेटा भेजा गया है</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
+<translation id="7079783554682867524"><ph name="TYPE_1" /> से (सिंक किए गए डिवाइसों पर और भी साइटों का डेटा है)</translation>
 <translation id="7081311540357715807">खाने की चीज़ों और किराने के सामान के खुदरा दुकानदार</translation>
 <translation id="7083258188081898530">ट्रे 9</translation>
 <translation id="7086090958708083563">उपयोगकर्ता ने अपलोड का अनुरोध किया</translation>
@@ -4156,6 +4160,7 @@
 <translation id="8216640997712497593">14 x 18 इंच</translation>
 <translation id="8218327578424803826">सौंपा गया स्‍थान:</translation>
 <translation id="8220602974062798186">क्या आपको <ph name="TOPIC" /> और इससे मिलते-जुलते विषयों को ब्लॉक करना है?</translation>
+<translation id="8226408512771130794"><ph name="KEYWORD_SHORTCUT" />, <ph name="KEYWORD_SUFFIX" /> से कहें</translation>
 <translation id="8228419419708659934">दो पेजों वाला व्यू</translation>
 <translation id="8228477714872026922"><ph name="ORIGIN" />, आपके नेटवर्क पर मौजूद किसी डिवाइस को ऐक्सेस करना चाहता है:</translation>
 <translation id="822925450938886901">लागू होने वाली नीतियों और ज़्यादा जानकारी के लिए, अपने ब्राउज़र में chrome://management खोलें.</translation>

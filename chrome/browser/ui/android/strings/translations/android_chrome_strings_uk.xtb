@@ -77,6 +77,7 @@
 <translation id="1298077576058087471">Заощаджуйте до 60% даних і читайте сьогоднішні новини</translation>
 <translation id="1303339473099049190">Не вдалося знайти такий пароль. Перевірте правильність написання та повторіть спробу.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> – Надіслано з пристрою "<ph name="DEVICE_NAME" />"</translation>
+<translation id="1318262688555255786">Поділитися посиланням на вебсторінку "<ph name="PAGE_TITLE" />". Джерело: <ph name="PAGE_URL" />.</translation>
 <translation id="1320912611264252795">Вікно зберігання закладки, відкрите на всю висоту</translation>
 <translation id="1327257854815634930">Історію навігації відкрито</translation>
 <translation id="1331212799747679585">Неможливо оновити Chrome. Більше опцій</translation>
@@ -455,6 +456,7 @@
 <translation id="3072980200212375806">Додаток <ph name="APP_NAME" /> відкриється в Chrome. Продовжуючи, ви приймаєте <ph name="BEGIN_LINK1" />Загальні положення та умови Google<ph name="END_LINK1" /> і <ph name="BEGIN_LINK2" />Додаткові умови використання Google Chrome та ОС Chrome<ph name="END_LINK2" />. Також застосовується <ph name="BEGIN_LINK3" />Політика конфіденційності<ph name="END_LINK3" />.</translation>
 <translation id="3080525922482950719">Зберігайте сторінки, щоб читати їх пізніше або в режимі офлайн</translation>
 <translation id="3087734570205094154">Низ</translation>
+<translation id="3088687687599869821">НАВІГАЦІЯ СТОРІНКОЮ</translation>
 <translation id="3091010850649238832">Показати вміст буфера обміну</translation>
 <translation id="3098745985164956033">Деякі зображення надсилаються на сервери Google, що дає змогу покращувати їх описи</translation>
 <translation id="3114507951000454849">Читайте сьогоднішні новини <ph name="NEWS_ICON" /></translation>
@@ -475,6 +477,7 @@
 <translation id="3208584281581115441">Перевірити</translation>
 <translation id="3211426585530211793">Елемент "<ph name="ITEM_TITLE" />" видалено</translation>
 <translation id="3220943972464248773">Щоб синхронізувати паролі, підтвердьте свою особу</translation>
+<translation id="323213525320714789">РОЗРОБНИК</translation>
 <translation id="3232293466644486101">Видалити дані вебперегляду…</translation>
 <translation id="3232754137068452469">Веб-додаток</translation>
 <translation id="3236059992281584593">Залишилась 1 хв</translation>
@@ -515,6 +518,7 @@
 <translation id="3435465986463792564">Забагато вікон? Можете керувати ними тут</translation>
 <translation id="3435575784518354875">Щоб зберегти доступ до своїх паролів, експортуйте їх зараз, оновіть сервіси Google Play і знову імпортуйте паролі в Google Менеджер паролів. <ph name="BEGIN_LINK" />Переглянути докладні вказівки.<ph name="END_LINK" /></translation>
 <translation id="3435738964857648380">Безпека</translation>
+<translation id="3435914367318771664">Додати вкладку в нову групу</translation>
 <translation id="3439276997620616816">Тут відображатимуться останні вкладки</translation>
 <translation id="3443221991560634068">Оновити поточну сторінку</translation>
 <translation id="3444179773590444986">Надіслати відгук про темну тему для сайтів?</translation>
@@ -781,6 +785,7 @@
 <translation id="4684427112815847243">Синхронізувати все</translation>
 <translation id="4685741273709472646">Виберіть варіант зі спадного списку</translation>
 <translation id="4687718960473379118">Реклама, пропонована сайтами</translation>
+<translation id="468924408576231679">Копіювати посилання на вебсторінку "<ph name="PAGE_TITLE" />". Джерело: <ph name="PAGE_URL" />.</translation>
 <translation id="469286762610133730">Отримуйте кращий контент</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}few{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}many{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4698061626562952596">Тут можна переглянути неактивні вкладки</translation>
@@ -1123,6 +1128,7 @@
 <translation id="6205314730813004066">Конфіденційність у рекламі</translation>
 <translation id="6210748933810148297">Не <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Попередній перегляд цієї сторінки</translation>
+<translation id="6212567362666004597">Додати вкладку в групу</translation>
 <translation id="6221633008163990886">Розблокуйте, щоб експортувати паролі</translation>
 <translation id="6225572914528673855">Адресний рядок</translation>
 <translation id="6232535412751077445">Якщо ввімкнути параметр "Не відстежувати", запит додаватиметься в трафік веб-перегляду. Результат залежатиме від того, чи реагує веб-сайт на цей запит і як тлумачиться запит.
@@ -1150,6 +1156,7 @@
 <translation id="6324916366299863871">Змінити ярлик</translation>
 <translation id="6324977638108296054">Не вдається створити посилання на виділений текст</translation>
 <translation id="6333140779060797560">Надіслати через <ph name="APPLICATION" /></translation>
+<translation id="6335454563754888572">Редагувати URL-адресу, що спрямовує на сторінку "<ph name="PAGE_URL" />"</translation>
 <translation id="6337234675334993532">Шифрування</translation>
 <translation id="6340526405444716530">Персоналізація</translation>
 <translation id="6341580099087024258">Запитувати, де зберігати файли</translation>
@@ -1193,6 +1200,7 @@
 <translation id="6486420406192123355">Цей файл PDF розміщено на сайті, який використовує незахищене з’єднання</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{Файл завантажено}one{# файл завантажено}few{# файли завантажено}many{# файлів завантажено}other{# файлу завантажено}}</translation>
 <translation id="6508722015517270189">Перезапустіть Chrome</translation>
+<translation id="6513924416597632811">Копіювати посилання на сторінку результатів пошуку за запитом "<ph name="SEARCH_QUERY" />". Джерело: <ph name="PAGE_URL" />.</translation>
 <translation id="6518133107902771759">Підтвердити</translation>
 <translation id="6527303717912515753">Надіслати</translation>
 <translation id="652948702951888897">Історія Chrome</translation>
@@ -1604,6 +1612,7 @@
 <translation id="8221401890884589479">Ви можете блокувати непотрібні вам сайти. Chrome також автоматично видаляє їх зі списку через 30 днів. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="8221985041778490865">Видалення даних вебперегляду</translation>
 <translation id="8223642481677794647">Меню картки зі стрічки</translation>
+<translation id="82296173028782770">Редагувати пошуковий запит "<ph name="SEARCH_QUERY" />"</translation>
 <translation id="8236063039629122676">Тепер, гортаючи вправо, ви можете переглянути раніше відвідані сторінки, а гортаючи вліво – перейти вперед</translation>
 <translation id="8236097722223016103">Додати до закладок</translation>
 <translation id="8243077599929149377">Додайте ім’я користувача</translation>
@@ -1752,6 +1761,7 @@
 <translation id="8890668505403261809">Пошук на анонімних вкладках</translation>
 <translation id="8898822736010347272">Надсилає в Google URL-адреси відвіданих сторінок, обмежену системну інформацію та вміст деяких сторінок, щоб виявляти нові загрози та захищати всіх користувачів в Інтернеті.</translation>
 <translation id="8909135823018751308">Надіслати…</translation>
+<translation id="8918299437379122615">Поділитися посиланням на сторінку результатів пошуку за запитом "<ph name="SEARCH_QUERY" />". Джерело: <ph name="PAGE_URL" />.</translation>
 <translation id="8922289737868596582">Щоб переглядати сторінки офлайн, завантажуйте їх, натиснувши кнопку "Більше опцій"</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> – завантажено</translation>

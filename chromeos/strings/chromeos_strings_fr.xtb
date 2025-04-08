@@ -351,6 +351,7 @@
 <translation id="2438248248625638801">Création des titres d'enregistrement en cours</translation>
 <translation id="2446553403094072641">Précision en virgule flottante</translation>
 <translation id="2448312741937722512">Type</translation>
+<translation id="2448857983905133469">Outils de cours</translation>
 <translation id="2468124392950503650">Sélectionnez une requête pour la créer ou consultez le <ph name="BEGIN_LINK_PROMPTING_GUIDE" />Guide de rédaction de requêtes<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Utilisez M'aider à écrire pour créer un brouillon ou améliorer un travail existant grâce à l'IA de Google</translation>
 <translation id="2475982808118771221">Une erreur s'est produite.</translation>
@@ -449,6 +450,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Point de terminaison</translation>
 <translation id="3060579846059757016">Grandes lignes</translation>
+<translation id="3060798442805232711">Outils de cours utilise votre micro</translation>
 <translation id="3061850252076394168">activer Sélectionner pour écouter</translation>
 <translation id="3066772729299747758">mardi</translation>
 <translation id="3069085583900247081">Échec du test</translation>
@@ -910,6 +912,7 @@
 <translation id="5170568018924773124">Afficher dans le dossier</translation>
 <translation id="517075088756846356">Débranchez et rebranchez le câble d'alimentation <ph name="DEVICE_NAME" /> pour poursuivre le processus de mise à jour</translation>
 <translation id="5180108905184566358">baobabs</translation>
+<translation id="5180431943345994173">Votre enseignant a supprimé du contenu dans Outils de cours</translation>
 <translation id="5180712487038406644">Expressif</translation>
 <translation id="5190187232518914472">Revivez vos souvenirs préférés. Pour ajouter ou modifier un album, accédez à <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
 <translation id="5212593641110061691">Tabloïd</translation>
@@ -1003,6 +1006,7 @@
 <translation id="5628106863521633649">Langues disponibles</translation>
 <translation id="5630438231335788050">Bauhaus</translation>
 <translation id="5631759159893697722">résumé</translation>
+<translation id="5655084389678168978">Votre enseignant a ajouté du contenu dans Outils de cours</translation>
 <translation id="5655283760733841251">Augmenter la luminosité du clavier</translation>
 <translation id="5655296450510165335">Enregistrement de l'appareil</translation>
 <translation id="5655776422854483175">Aucune tâche d'impression</translation>
@@ -1528,6 +1532,7 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="7971535376154084247">Commandes générales</translation>
 <translation id="7977800524392185497">Pour rejoindre un réseau <ph name="NETWORK_NAME" />, accédez à Paramètres</translation>
 <translation id="7978412674231730200">Clé privée</translation>
+<translation id="7979468455552394856">Outils de cours est connecté aux élèves</translation>
 <translation id="7982789257301363584">Réseau</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> a démarré automatiquement}one{# appli a démarré automatiquement}other{# applis ont démarré automatiquement}}</translation>
 <translation id="7994702968232966508">Méthode EAP</translation>

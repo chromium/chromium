@@ -261,6 +261,7 @@
 <translation id="2010008505735295285">ໂຫຼດໃໝ່</translation>
 <translation id="2015722694326466240">ເພື່ອເບິ່ງລະຫັດຜ່ານ, ກ່ອນອື່ນທາງຕ້ອງຕັ້ງລະຫັດຜ່ານໃນອຸປະກອນຂອງທ່ານ.</translation>
 <translation id="201759455285471444">ຂະຫຍາຍກຸ່ມແຖບ.</translation>
+<translation id="202070562065520783">ອະທິບາຍສິ່ງນີ້ໃຫ້ຂ້ອຍຟັງ</translation>
 <translation id="2021670401941426298">ກະລຸນາອ່ານຄຳແນະນຳຂອງໂປຣແກຣມຊອກຫາຂອງທ່ານສຳລັບວິທີການລຶບປະຫວັດການຊອກຫາ, ຖ້າມີ.</translation>
 <translation id="2044394949148788042">ເປີດຕາຕະລາງຂອງແຖບ</translation>
 <translation id="20485545164632846">ລາຍການໃໝ່</translation>
@@ -1126,6 +1127,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="573974402615125334">ເພື່ອແບ່ງປັນ, ເຂົ້າຮ່ວມ ແລະ ຮ່ວມມືໃນກຸ່ມແຖບ, ໃຫ້ຊິ້ງປະຫວັດ ແລະ ແຖບຂອງທ່ານ</translation>
 <translation id="5740123193752401435">ຊອກຫາແຖບ…</translation>
 <translation id="5744274077973758795">ເປີດການແຈ້ງເຕືອນຂອງ <ph name="FEATURE_NAME" /> ແລ້ວ</translation>
+<translation id="5745598824054949526">ບໍ່ພົບຂໍ້ຄວາມ</translation>
 <translation id="574762237186762643">ນັດໝາຍ</translation>
 <translation id="5749158352074143502">ສືບຕໍ່ໃຊ້ແຖບນີ້</translation>
 <translation id="5753021559215751319">ບັນທຶກລະຫັດຜ່ານ</translation>
@@ -1289,6 +1291,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="6410883413783534063">ເປີດແຖບເພື່ອເຂົ້າເບິ່ງໜ້າຕ່າງໆໄດ້ພ້ອມກັນ</translation>
 <translation id="6416807286621280684">ແພັກ​ເກດທີ່ຕິດຕາມ ແລະ ອັບເດດການຈັດສົ່ງຂອງທ່ານ.</translation>
 <translation id="6418346271604475326">ກຳລັງກະກຽມ PDF</translation>
+<translation id="6421038304268477484">ຂໍ້ຄວາມທີ່ແປແລ້ວ</translation>
 <translation id="6429213933892582367">ເປີດຕົວເລືອກລະຫັດຜ່ານ</translation>
 <translation id="6434591244308415567">ເກີດຄວາມຜິດພາດຂຶ້ນ. ກະລຸນາລອງໃໝ່ໃນພາຍຫຼັງ.</translation>
 <translation id="6435307030888827407">ອອກຈາກລະບົບໄວ້</translation>
@@ -1967,6 +1970,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="9097506547406246598">ບໍ່ສາມາດເຊົາຕິດຕາມໄດ້. ມີບາງຢ່າງຜິດພາດເກີດຂຶ້ນ.</translation>
 <translation id="9098541895599151034">ລຶບ <ph name="NUMBER_OF_ACCOUNTS" /> ລະຫັດຜ່ານບໍ?</translation>
 <translation id="9099233023029360602">ຖາມວ່າຈະໃຊ້ບັນຊີໃດທຸກເທື່ອ</translation>
+<translation id="9099821309562615674">ໃຫ້ແນ່ໃຈວ່າຂໍ້ຄວາມທີ່ທ່ານກໍາລັງແປພາສາແມ່ນຈະແຈ້ງ ແລະ ຢູ່ໃນກອບ.</translation>
 <translation id="9100610230175265781">ຕ້ອງມີລະຫັດຜ່ານ</translation>
 <translation id="91023216973987714">ວິທີການຈ່າຍເງິນ</translation>
 <translation id="9106655997975673326">ຈາກ "<ph name="SOURCE_DEVICE" />"</translation>

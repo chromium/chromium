@@ -44,7 +44,6 @@
 <translation id="1026822031284433028">Φόρτωση εικόνας</translation>
 <translation id="1026959648338730078">Windows Hello ή εξωτερικό κλειδί ασφαλείας</translation>
 <translation id="1028700151766901954">Λόγος: Το LBS παραμένει στο <ph name="DEFAULT_OPEN_BROWSER" /> από προεπιλογή.</translation>
-<translation id="1028823395684328817">Για να συνεχίσετε να χρησιμοποιείτε τους κωδικούς πρόσβασης και πολλά άλλα στον Λογαριασμό σας Google, επαληθεύστε την ταυτότητά σας</translation>
 <translation id="102916930470544692">Κλειδί πρόσβασης</translation>
 <translation id="1029317248976101138">Μεγέθυνση</translation>
 <translation id="1029526375103058355">Άγγιγμα για κλικ</translation>
@@ -818,7 +817,6 @@
 <translation id="1558671750917454373">Συνέχιση μετάδοσης στη συσκευή <ph name="DEVICE_NAME" /></translation>
 <translation id="1561331397460162942">Αυτό επιτρέπει την πρόσβαση στην τοποθεσία σας σε εφαρμογές, ιστοτόπους με άδεια τοποθεσίας και υπηρεσίες συστήματος.</translation>
 <translation id="1562119309884184621">Αυτή η επαφή θα απομνημονευτεί μετά την προσθήκη της για την επόμενη φορά που θα κάνετε κοινή χρήση μαζί της</translation>
-<translation id="1563137369682381456">Ημερομηνία λήξης</translation>
 <translation id="1566049601598938765">Ιστότοπος</translation>
 <translation id="15662109988763471">Ο επιλεγμένος εκτυπωτής δεν είναι διαθέσιμος ή δεν έχει εγκατασταθεί σωστά. Ελέγξτε τον εκτυπωτή σας ή δοκιμάστε να επιλέξετε άλλον εκτυπωτή.</translation>
 <translation id="1566329594234563241">Όταν είναι ανενεργή και συνδεδεμένη στο ρεύμα</translation>
@@ -1651,7 +1649,6 @@
 <translation id="2121825465123208577">Προσαρμογή μεγέθους</translation>
 <translation id="2123766928840368256">Επιλέξτε διαφορετικό αρχείο</translation>
 <translation id="2124930039827422115">{1,plural, =1{Αξιολογήθηκε ως <ph name="AVERAGE_RATING" /> από έναν χρήστη.}other{Αξιολογήθηκε ως <ph name="AVERAGE_RATING" /> από # χρήστες.}}</translation>
-<translation id="2125715366913703594">Εξερεύνηση &amp;επεκτάσεις</translation>
 <translation id="2126167708562367080">Ο συγχρονισμός έχει απενεργοποιηθεί από τον διαχειριστή σας.</translation>
 <translation id="2127372758936585790">Χαμηλή ισχύς φορτιστή</translation>
 <translation id="212862741129535676">Ποσοστό κατοχής κατάστασης συχνότητας</translation>
@@ -3482,7 +3479,6 @@
 <translation id="3420501302812554910">Το εσωτερικό κλειδί ασφαλείας απαιτεί επαναφορά</translation>
 <translation id="3421387094817716717">Δημόσιο κλειδί ελλειπτικής καμπύλης</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Σημείωση:<ph name="END_BOLD" /> Μια παρόμοια φωνή ή εγγραφή μπορεί να αποκτήσει επίσης πρόσβαση στα προσωπικά αποτελέσματα ή στον Βοηθό σας.</translation>
-<translation id="3421835120203732951">Προσθήκη νέου προφίλ</translation>
 <translation id="3422989558057853751">Επιλέχθηκε το τελευταίο στοιχείο, η αποεπιλογή του θα οδηγήσει σε έξοδο από τη λειτουργία επιλογής</translation>
 <translation id="3423111258700187173">Βρέθηκαν αποτελέσματα στον φάκελο <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">Μάθετε περισσότερα σχετικά με αυτή τη λειτουργία AI</translation>
@@ -9345,7 +9341,6 @@
 <translation id="7622768823216805500">Οι ιστότοποι εγκαθιστούν συνήθως δείκτες χειρισμού πληρωμών για λειτουργίες αγορών, όπως η ευκολότερη ολοκλήρωση αγοράς.</translation>
 <translation id="7622966771025050155">Μετάβαση στην καρτέλα ολοκλήρωσης λήψης</translation>
 <translation id="7624337243375417909">η λειτουργία Caps Lock ενεργοποιήθηκε</translation>
-<translation id="7625025537587898155">Προσθήκη νέου προφίλ</translation>
 <translation id="7625568159987162309">Δείτε άδειες και δεδομένα που έχουν αποθηκευτεί σε ιστοτόπους</translation>
 <translation id="7625823789272218216">Νέα καρτέλα αριστερά</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), βαθμός <ph name="GRADE" /></translation>
@@ -11761,7 +11756,6 @@
 <translation id="98235653036850093">Γεια σας <ph name="PROFILE_NAME" />,</translation>
 <translation id="983192555821071799">Κλείσιμο όλων των καρτελών</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> – Εγγραφή από την κάμερα και το μικρόφωνο</translation>
-<translation id="984275831282074731">Τρόποι πληρωμής</translation>
 <translation id="984705303330760860">Προσθέστε τις γλώσσες ορθογραφικού ελέγχου</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Γενικά</translation>

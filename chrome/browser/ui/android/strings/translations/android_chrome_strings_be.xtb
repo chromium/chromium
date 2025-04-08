@@ -77,6 +77,7 @@
 <translation id="1298077576058087471">Чытайце сённяшнія навіны. Эканомце да 60% трафіка</translation>
 <translation id="1303339473099049190">Не ўдалося знайсці гэты пароль. Праверце правільнасць напісання і паўтарыце спробу.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> – адпраўлена з прылады <ph name="DEVICE_NAME" /></translation>
+<translation id="1318262688555255786">Абагуліць спасылку на вэб-старонку "<ph name="PAGE_TITLE" />". Крыніца: <ph name="PAGE_URL" />.</translation>
 <translation id="1320912611264252795">Укладка захоўвання закладкі разгорнута на ўвесь экран</translation>
 <translation id="1327257854815634930">Гісторыя навігацыі адкрыта</translation>
 <translation id="1331212799747679585">Немагчыма абнавіць Chrome. Дадатковыя параметры</translation>
@@ -455,6 +456,7 @@
 <translation id="3072980200212375806">Праграма "<ph name="APP_NAME" />" адкрыецца ў Chrome. Працягваючы, вы згаджаецеся з <ph name="BEGIN_LINK1" />Умовамі выкарыстання Google<ph name="END_LINK1" /> і <ph name="BEGIN_LINK2" />Дадатковымі ўмовамі выкарыстання Google Chrome і Chrome OS<ph name="END_LINK2" />. Прымяняецца таксама <ph name="BEGIN_LINK3" />Палітыка прыватнасці<ph name="END_LINK3" />.</translation>
 <translation id="3080525922482950719">Захоўвайце старонкі, каб прачытаць іх пазней або без падключэння да інтэрнэту</translation>
 <translation id="3087734570205094154">Знізу</translation>
+<translation id="3088687687599869821">НАВІГАЦЫЯ ПА СТАРОНКАХ</translation>
 <translation id="3091010850649238832">Паказаць змесціва буфера абмену</translation>
 <translation id="3098745985164956033">Некаторыя відарысы адпраўляюцца ў Google, каб палепшыць іх апісанне</translation>
 <translation id="3114507951000454849">Чытайце сённяшнія навіны <ph name="NEWS_ICON" /></translation>
@@ -515,6 +517,7 @@
 <translation id="3435465986463792564">Адкрылі шмат акон? Кіраваць імі можна тут</translation>
 <translation id="3435575784518354875">Каб захаваць доступ да пароляў, экспартуйце іх, абнавіце сэрвісы Google Play і потым імпартуйце паролі назад у Менеджар пароляў Google. <ph name="BEGIN_LINK" />Глядзець поўныя інструкцыі<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">Бяспека</translation>
+<translation id="3435914367318771664">Дадаць укладку ў новую групу</translation>
 <translation id="3439276997620616816">Вашы нядаўнія ўкладкі знаходзяцца тут</translation>
 <translation id="3443221991560634068">Перазагрузіць бягучую старонку</translation>
 <translation id="3444179773590444986">Пакінуць водгук на цёмную тэму для сайтаў?</translation>
@@ -780,6 +783,7 @@
 <translation id="4684427112815847243">Сінхранізаваць усё</translation>
 <translation id="4685741273709472646">Выбраць з выпаднога спіса</translation>
 <translation id="4687718960473379118">Рэклама, якая прапануецца сайтамі</translation>
+<translation id="468924408576231679">Скапіраваць спасылку на вэб-старонку "<ph name="PAGE_TITLE" />". Крыніца: <ph name="PAGE_URL" />.</translation>
 <translation id="469286762610133730">Атрымлівайце больш цікавае змесціва</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}few{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}many{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4698061626562952596">Праглядайце неактыўныя ўкладкі тут</translation>
@@ -1122,6 +1126,7 @@
 <translation id="6205314730813004066">Прыватнасць у рэкламе</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> – гэта не вы?</translation>
 <translation id="6211386937064921208">Паказваецца перадпрагляд гэтай старонкі</translation>
+<translation id="6212567362666004597">Дадаць укладку ў групу</translation>
 <translation id="6221633008163990886">Каб экспартаваць паролі, трэба зняць блакіроўку</translation>
 <translation id="6225572914528673855">Адрасны радок</translation>
 <translation id="6232535412751077445">Калі функцыя "Не адсочваць" уключана, пры праглядзе старонак у інтэрнэце браўзер будзе адпраўляць адпаведны запыт. Сайты могуць апрацоўваць і інтэрпрэтаваць гэты запыт па-рознаму.
@@ -1149,6 +1154,7 @@
 <translation id="6324916366299863871">Рэдагаваць ярлык</translation>
 <translation id="6324977638108296054">Не ўдалося стварыць спасылку на вылучаны тэкст</translation>
 <translation id="6333140779060797560">Абагуліць праз <ph name="APPLICATION" /></translation>
+<translation id="6335454563754888572">Рэдагаваць URL-адрас, які вядзе на старонку на вэб-сайце <ph name="PAGE_URL" /></translation>
 <translation id="6337234675334993532">Шыфраванне</translation>
 <translation id="6340526405444716530">Персаналізацыя</translation>
 <translation id="6341580099087024258">Запытваць месца для захоўвання файлаў</translation>
@@ -1192,6 +1198,7 @@
 <translation id="6486420406192123355">Гэты файл PDF атрыманы з сайта, які выкарыстоўвае неабароненае падключэнне</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{Файл спампаваны}one{Завершана # спампоўка}few{Завершана # спампоўкі}many{Завершана # спамповак}other{Завершана # спампоўкі}}</translation>
 <translation id="6508722015517270189">Перазапусціце Chrome</translation>
+<translation id="6513924416597632811">Скапіраваць спасылку на старонку з вынікамі пошуку па запыце: <ph name="SEARCH_QUERY" />. Крыніца: <ph name="PAGE_URL" />.</translation>
 <translation id="6518133107902771759">Спраўдзіць</translation>
 <translation id="6527303717912515753">Абагуліць</translation>
 <translation id="652948702951888897">Гісторыя праглядаў Chrome</translation>
@@ -1603,6 +1610,7 @@
 <translation id="8221401890884589479">Вы можаце блакіраваць непажаданыя сайты. Chrome таксама аўтаматычна выдаляе сайты са спіса, унесеныя ў яго больш чым за 30 дзён таму. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="8221985041778490865">Ідзе выдаленне даных пра работу ў браўзеры</translation>
 <translation id="8223642481677794647">Меню карткі стужкі</translation>
+<translation id="82296173028782770">Рэдагаваць пошукавы запыт: <ph name="SEARCH_QUERY" /></translation>
 <translation id="8236063039629122676">Цяпер, правёўшы пальцам управа, вы вернецеся да старонак, якія наведалі раней, а правёўшы пальцам улева – пяройдзеце ўперад</translation>
 <translation id="8236097722223016103">Дадаць у закладкі</translation>
 <translation id="8243077599929149377">Дадайце сваё імя карыстальніка</translation>
@@ -1751,6 +1759,7 @@
 <translation id="8890668505403261809">Шукайце па ўкладках у рэжыме інкогніта</translation>
 <translation id="8898822736010347272">Адпраўляе URL-адрасы некаторых наведаных вамі старонак, пэўную сістэмную інфармацыю і фрагменты змесціва старонак у сэрвісы Google, каб дапамагаць выяўляць новыя кіберпагрозы і абараняць усіх у інтэрнэце.</translation>
 <translation id="8909135823018751308">Абагуліць…</translation>
+<translation id="8918299437379122615">Абагуліць спасылку на старонку з вынікамі пошуку па запыце: <ph name="SEARCH_QUERY" />. Крыніца: <ph name="PAGE_URL" />.</translation>
 <translation id="8922289737868596582">Спампуйце старонкі з меню кнопкі Дадатковыя параметры, каб праглядаць іх па-за сеткай</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" />: спампавана</translation>

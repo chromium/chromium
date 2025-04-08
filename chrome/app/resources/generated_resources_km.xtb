@@ -44,7 +44,6 @@
 <translation id="1026822031284433028">ដំណើរការរូបភាព</translation>
 <translation id="1026959648338730078">Windows Hello ឬ​សោសុវត្ថិភាព​​ខាងក្រៅ</translation>
 <translation id="1028700151766901954">មូលហេតុ៖ LBS បន្ត​ស្ថិតនៅ​ក្នុង <ph name="DEFAULT_OPEN_BROWSER" /> តាមលំនាំដើម។</translation>
-<translation id="1028823395684328817">ដើម្បីបន្តប្រើពាក្យសម្ងាត់ និងអ្វីៗជាច្រើនទៀតនៅក្នុងគណនី Google របស់អ្នក សូមផ្ទៀងផ្ទាត់ថាជាអ្នក</translation>
 <translation id="102916930470544692">កូដសម្ងាត់</translation>
 <translation id="1029317248976101138">ពង្រីក</translation>
 <translation id="1029526375103058355">ប៉ះដើម្បីចុច</translation>
@@ -818,7 +817,6 @@
 <translation id="1558671750917454373">បន្ត​ការបញ្ជូនទៅ <ph name="DEVICE_NAME" /></translation>
 <translation id="1561331397460162942">ការធ្វើបែបនេះផ្តល់សិទ្ធិចូលប្រើទីតាំងសម្រាប់កម្មវិធី គេហទំព័រដែលមានការអនុញ្ញាតឱ្យប្រើទីតាំង និងសេវាកម្មប្រព័ន្ធ</translation>
 <translation id="1562119309884184621">ការបញ្ចូលទំនាក់ទំនងនេះនឹងចងចាំ នៅពេលគាត់ចែករំលែកលើកក្រោយ</translation>
-<translation id="1563137369682381456">កាលបរិច្ឆេទ​ផុតកំណត់</translation>
 <translation id="1566049601598938765">គេហទំព័រ</translation>
 <translation id="15662109988763471">មិនមាន​ម៉ាស៊ីនបោះពុម្ព​ដែលបានជ្រើសរើស ឬ​មិនត្រូវបានដំឡើង​ត្រឹមត្រូវទេ។ សូមពិនិត្យមើល​ម៉ាស៊ីនបោះពុម្ព​របស់អ្នក ឬ​សាកល្បង​ជ្រើសរើស​ម៉ាស៊ីនបោះពុម្ព​ផ្សេងទៀត។</translation>
 <translation id="1566329594234563241">នៅពេល​អសកម្ម និង​ដោតភ្លើង</translation>
@@ -1651,7 +1649,6 @@
 <translation id="2121825465123208577">ប្ដូរទំហំ</translation>
 <translation id="2123766928840368256">ជ្រើសរើស​ឯកសារ​ផ្សេង</translation>
 <translation id="2124930039827422115">{1,plural, =1{បាន​វាយ​តម្លៃ <ph name="AVERAGE_RATING" /> ដោយ​អ្នកប្រើប្រាស់​ម្នាក់។}other{បាន​វាយ​តម្លៃ <ph name="AVERAGE_RATING" /> ដោយ​អ្នកប្រើប្រាស់ # នាក់។}}</translation>
-<translation id="2125715366913703594">រុករក&amp;កម្មវិធី​បន្ថែម</translation>
 <translation id="2126167708562367080">សមកាលកម្មបានបិទដោយអ្នកគ្រប់គ្រង។</translation>
 <translation id="2127372758936585790">ឆ្នាំងសាកផ្តល់ថាមពលទាប</translation>
 <translation id="212862741129535676">អត្រាប្រើប្រាស់ស្ថានភាពប្រេកង់</translation>
@@ -3480,7 +3477,6 @@
 <translation id="3420501302812554910">តម្រូវឱ្យ​កំណត់​សោសុវត្ថិភាព​ផ្នែកខាងក្នុងឡើងវិញ</translation>
 <translation id="3421387094817716717">សោសាធារណ: Elliptic Curve</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />ចំណាំ៖<ph name="END_BOLD" /> សំឡេងថត ឬ​សំឡេង​ដែលស្រដៀង​ប្រហែលជា​អាចចូលប្រើ​លទ្ធផល​ផ្ទាល់ខ្លួន ឬជំនួយការ​របស់អ្នក​បាន។</translation>
-<translation id="3421835120203732951">បញ្ចូល​កម្រងព័ត៌មានថ្មី</translation>
 <translation id="3422989558057853751">បាន​ជ្រើសរើស​ធាតុ​ចុងក្រោយ, ការដក​ការជ្រើសរើសវា​នឹងចាកចេញពី​មុខងារ​ជ្រើសរើស</translation>
 <translation id="3423111258700187173">បានរកឃើញ​លទ្ធផល​នៅក្នុង <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">ស្វែងយល់​បន្ថែម​អំពី​ធាតុ AI នេះ</translation>
@@ -9340,7 +9336,6 @@
 <translation id="7622768823216805500">ជាធម្មតា គេហទំព័រដំឡើងឧបករណ៍ដោះស្រាយការបង់ប្រាក់សម្រាប់មុខងារទិញទំនិញដូចជា ការបង់ប្រាក់ងាយស្រួលជាងមុនជាដើម</translation>
 <translation id="7622966771025050155">ប្ដូរទៅ​ផ្ទាំងដែល​បានថត</translation>
 <translation id="7624337243375417909">បិទពុម្ពអក្សរធំ</translation>
-<translation id="7625025537587898155">បញ្ចូល​កម្រងព័ត៌មានថ្មី</translation>
 <translation id="7625568159987162309">មើល​ការ​អនុញ្ញាត និង​ទិន្នន័យ​ដែល​​ផ្ទុក​នៅលើ​ទំព័រ​នានា</translation>
 <translation id="7625823789272218216">ផ្ទាំងថ្មីនៅខាងឆ្វេង</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), កម្រិត <ph name="GRADE" /></translation>
@@ -11758,7 +11753,6 @@
 <translation id="98235653036850093">សួស្ដី <ph name="PROFILE_NAME" /></translation>
 <translation id="983192555821071799">បិទផ្ទាំងទាំងអស់</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - កំពុងថតដោយប្រើកាមេរ៉ា និងមីក្រូហ្វូន</translation>
-<translation id="984275831282074731">វិធី​បង់ប្រាក់</translation>
 <translation id="984705303330760860">បញ្ចូលភាសាដែលអាច​ពិនិត្យអក្ខរាវិរុទ្ធ</translation>
 <translation id="987068745968718743">Parallels Desktop៖ <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">ទូទៅ</translation>

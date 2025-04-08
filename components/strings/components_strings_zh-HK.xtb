@@ -99,7 +99,6 @@
 <translation id="1175364870820465910">列印(&amp;P)…</translation>
 <translation id="1175393348063009671">相紙 (啞面)</translation>
 <translation id="1175875016430184367">三釘 (右側)</translation>
-<translation id="1176123604678140687">到期月份</translation>
 <translation id="1177548198167638471">不要再詢問</translation>
 <translation id="1177863135347784049">自訂</translation>
 <translation id="1178581264944972037">暫停</translation>
@@ -333,7 +332,6 @@
       &lt;p&gt;請在「設定」&lt;strong&gt;&lt;/strong&gt;應用程式中，前往 [一般] &lt;strong&gt;&lt;/strong&gt;並調整日期和時間。&lt;/p&gt;</translation>
 <translation id="1559839503761818503">管理員將在 <ph name="DATE" /><ph name="TIME" /> 重新啟動您的裝置。</translation>
 <translation id="1562805467275776390">賽車</translation>
-<translation id="1563137369682381456">到期日</translation>
 <translation id="1563755205047885671">動作和平台遊戲</translation>
 <translation id="1564634006476980707">搜尋網址建議採用 HTTPS 配置：<ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">網絡資料，例如網絡位址、介面設定，以及連線品質</translation>
@@ -937,7 +935,6 @@
 <translation id="2606760465469169465">自動驗證</translation>
 <translation id="2608019759319359258">已封鎖的主題不會用於個人化廣告</translation>
 <translation id="2610561535971892504">點擊複製</translation>
-<translation id="2612676031748830579">信用卡號碼</translation>
 <translation id="2612993535136743634">系統將刪除已儲存在裝置上和 Google 帳戶中的所有安全碼</translation>
 <translation id="2616412942031748191">搜尋引擎優化和推廣</translation>
 <translation id="2618206371527040026">學術會議和出版物</translation>
@@ -3337,7 +3334,6 @@
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">根據家長所選的設定使用 YouTube</translation>
 <translation id="6779348349813025131">「Google 密碼管理工具」需要存取「MacOS 鑰匙圈」</translation>
-<translation id="6782656837469339439">到期年份</translation>
 <translation id="6785990323398321538">你可在 Chrome 設定中隨時變更搜尋引擎設定。</translation>
 <translation id="6786145470008421571">6 x 9 吋信封</translation>
 <translation id="67862343314499040">紫羅蘭色</translation>

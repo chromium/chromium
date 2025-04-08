@@ -44,7 +44,6 @@
 <translation id="1026822031284433028">Kujutise laadimine</translation>
 <translation id="1026959648338730078">Windows Hello või väline turvavõti</translation>
 <translation id="1028700151766901954">Põhjus: LBS jääb vaikimisi brauserisse <ph name="DEFAULT_OPEN_BROWSER" />.</translation>
-<translation id="1028823395684328817">Oma Google'i konto paroolide ja muu teabe kasutamise jätkamiseks kinnitage oma isik</translation>
 <translation id="102916930470544692">Pääsuvõti</translation>
 <translation id="1029317248976101138">Suumi</translation>
 <translation id="1029526375103058355">Klõpsamiseks puudutamine</translation>
@@ -818,7 +817,6 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="1558671750917454373">Jätka ülekandmist seadmesse <ph name="DEVICE_NAME" /></translation>
 <translation id="1561331397460162942">See annab rakendustele, asukohale juurdepääsu loaga veebisaitidele ja süsteemiteenustele juurdepääsu asukohale</translation>
 <translation id="1562119309884184621">Selle kontakti lisamisel mäletatakse teda, kui ta järgmisel korral jagab</translation>
-<translation id="1563137369682381456">Aegumiskuupäev</translation>
 <translation id="1566049601598938765">Veebisait</translation>
 <translation id="15662109988763471">Valitud printer pole saadaval või pole õigesti installitud. Kontrollige printerit või valige teine printer.</translation>
 <translation id="1566329594234563241">Kui seade on inaktiivne ja ühendatud</translation>
@@ -1252,6 +1250,7 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="185111092974636561"><ph name="BEGIN_PARAGRAPH1" />Enne registreerumist peate kustutama TPM-i, et <ph name="DEVICE_OS" /> saaks endale seadme omandilise kuuluvuse.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Võite TPM-i seadme ka täielikult välja lülitada. Teie andmed salvestatakse turvaliselt tarkvara krüpteerimisega, kuid teatud turvafunktsioonid (nt riistvara toega sertifikaadid) keelatakse.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Saate oma TPM-i seadeid muuta, taaskäivitades seadme ja sisenedes süsteemi BIOS-i/UEFI seadetesse. Juhised erinevad olenevalt seadme mudelist. Lisateabe saamiseks avage enne taaskäivitamist OS-i <ph name="DEVICE_OS" /> dokumendid teises seadmes: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="1851551847729706116">Vahelehte <ph name="TAB_NAME" /> jagatakse selle vahelehega</translation>
 <translation id="1852799913675865625">Ilmnes viga, kui proovisite lugeda faili: <ph name="ERROR_TEXT" /></translation>
 <translation id="1854180393107901205">Peata ülekandmine</translation>
 <translation id="1856715684130786728">Lisa asukoht ...</translation>
@@ -3219,7 +3218,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3232368113895801406">Teie turvaeelistused ei luba isoleeritud rakenduste installimisi. <ph name="CHANGE_PREFERENCE" /></translation>
 <translation id="323251815203765852">Loominguline</translation>
 <translation id="3232558119926886907">Joonda paremale</translation>
-<translation id="323262942975422760">Rohkem valikuid sildi <ph name="ENTITY_INSTANCE_LABEL" />, <ph name="ENTITY_INSTANCE_SUBLABEL" /> muutmiseks või kustutamiseks</translation>
+<translation id="323262942975422760">Rohkem valikuid siltide <ph name="ENTITY_INSTANCE_LABEL" />, <ph name="ENTITY_INSTANCE_SUBLABEL" /> muutmiseks või kustutamiseks</translation>
 <translation id="3232754137068452469">Veebirakendus</translation>
 <translation id="3233271424239923319">Linuxi rakenduste ja failide varundamine</translation>
 <translation id="3234251228180563751">Kasutajanimi on pikem kui 1000 tähemärki</translation>
@@ -3471,7 +3470,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3420501302812554910">Sisemine turvavõti tuleb lähtestada</translation>
 <translation id="3421387094817716717">Elliptilise kõveraga avalik võti</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Märkus.<ph name="END_BOLD" /> Sarnase hääle või salvestisega võib pääseda ligi teie personaalsetele tulemustele või assistendile.</translation>
-<translation id="3421835120203732951">Lisa uus profiil</translation>
 <translation id="3422989558057853751">Viimane üksus valitud; valiku tühistamine väljub valikurežiimist</translation>
 <translation id="3423111258700187173">Kaustast <ph name="FOLDER_TITLE" /> leitud tulemused</translation>
 <translation id="3423226218833787854">Lisateave selle AI-funktsiooni kohta</translation>
@@ -9333,7 +9331,6 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7622768823216805500">Saidid installivad maksetöötlejaid tavaliselt ostufunktsioonide jaoks, näiteks hõlpsamaks maksmiseks</translation>
 <translation id="7622966771025050155">Lülitu jäädvustatud vahelehele</translation>
 <translation id="7624337243375417909">suurtähelukk on välja lülitatud</translation>
-<translation id="7625025537587898155">Lisa uus profiil</translation>
 <translation id="7625568159987162309">Kuva load ja mitmel saidil talletatud andmed</translation>
 <translation id="7625823789272218216">Uus vaheleht vasakul</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), klass <ph name="GRADE" /></translation>
@@ -11286,6 +11283,7 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri, seadme o
 <translation id="8963117664422609631">Saidi seadete avamine</translation>
 <translation id="8964927371396953727">Kinnitage oma isik, et oma kontol <ph name="ACCOUNT_EMAIL" /> paroole kasutada ja salvestada</translation>
 <translation id="8965037249707889821">Sisestage vana parool</translation>
+<translation id="8967403839792635452">Kas arendate laiendusi? Sellega, <ph name="BEGIN_LINK" />mis on uut<ph name="END_LINK" />, aitab kursis püsida Chrome'i laienduste arendajate dokumentatsioon.</translation>
 <translation id="8967427617812342790">Lisa lugemisloendisse</translation>
 <translation id="8967548289042494261"><ph name="VM_NAME" /> eemaldamine</translation>
 <translation id="8968527460726243404">ChromeOS-i süsteemi pildikirjutaja</translation>
@@ -11750,7 +11748,6 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri, seadme o
 <translation id="98235653036850093">Tere, <ph name="PROFILE_NAME" />!</translation>
 <translation id="983192555821071799">Sule kõik vahelehed</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> – kaamera ja mikrofon salvestavad</translation>
-<translation id="984275831282074731">Makseviisid</translation>
 <translation id="984705303330760860">Õigekirjakontrolli keelte lisamine</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Üldine</translation>

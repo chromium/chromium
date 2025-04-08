@@ -44,7 +44,6 @@
 <translation id="1026822031284433028">Charger l'image</translation>
 <translation id="1026959648338730078">Windows Hello ou clé de sécurité externe</translation>
 <translation id="1028700151766901954">Motif : LBS reste dans <ph name="DEFAULT_OPEN_BROWSER" /> par défaut.</translation>
-<translation id="1028823395684328817">Pour continuer à utiliser les mots de passe et bien plus encore dans votre compte Google, confirmez votre identité</translation>
 <translation id="102916930470544692">Clé d'accès</translation>
 <translation id="1029317248976101138">Zoom</translation>
 <translation id="1029526375103058355">Toucher pour cliquer</translation>
@@ -818,7 +817,6 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1558671750917454373">Reprendre la diffusion sur <ph name="DEVICE_NAME" /></translation>
 <translation id="1561331397460162942">Cela permet l'accès à la position pour les applis, les sites Web dotés de l'autorisation de localisation et les services système</translation>
 <translation id="1562119309884184621">L'ajout de ce contact rendra son appareil visible la prochaine fois qu'il partagera du contenu</translation>
-<translation id="1563137369682381456">Date d'expiration</translation>
 <translation id="1566049601598938765">Site Web</translation>
 <translation id="15662109988763471">L'imprimante sélectionnée n'est pas accessible ou n'est pas installée correctement. Vérifiez votre imprimante ou essayez d'en sélectionner une autre.</translation>
 <translation id="1566329594234563241">Lorsqu'il est inactif et branché</translation>
@@ -1252,6 +1250,7 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="185111092974636561"><ph name="BEGIN_PARAGRAPH1" />Avant de vous inscrire, vous devez effacer le TPM de manière à ce que <ph name="DEVICE_OS" /> puisse prendre en charge l'appareil.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Vous pouvez également désactiver entièrement l'appareil TPM. Vos données continueront d'être stockées en toute sécurité grâce au chiffrement logiciel, mais certaines fonctionnalités de sécurité comme les certificats soutenus par du matériel seront désactivées.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Vous pouvez modifier vos paramètres TPM en redémarrant l'appareil et en accédant aux paramètres BIOS/UEFI du système. Les étapes varient en fonction du modèle de l'appareil. Pour en savoir plus, ouvrez la documentation de <ph name="DEVICE_OS" /> sur un autre appareil avant de redémarrer celui-ci : g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="1851551847729706116">Partage de <ph name="TAB_NAME" /> avec cet onglet en cours…</translation>
 <translation id="1852799913675865625">Une erreur s'est produite lors de la lecture du fichier : <ph name="ERROR_TEXT" />.</translation>
 <translation id="1854180393107901205">Arrêter l'envoi de contenu</translation>
 <translation id="1856715684130786728">Ajouter un dossier...</translation>
@@ -1641,7 +1640,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2121825465123208577">Redimensionner</translation>
 <translation id="2123766928840368256">Choisir un autre fichier</translation>
 <translation id="2124930039827422115">{1,plural, =1{Notée <ph name="AVERAGE_RATING" /> par un utilisateur.}one{Notée <ph name="AVERAGE_RATING" /> par # utilisateur.}other{Notée <ph name="AVERAGE_RATING" /> par # utilisateurs.}}</translation>
-<translation id="2125715366913703594">Explorer les extensions</translation>
 <translation id="2126167708562367080">La synchronisation est désactivée par votre administrateur.</translation>
 <translation id="2127372758936585790">Chargeur de faible puissance</translation>
 <translation id="212862741129535676">Pourcentage d'utilisation des valeurs de fréquence</translation>
@@ -3471,7 +3469,6 @@ l'<ph name="BEGIN_LINK" />
 <translation id="3420501302812554910">La clé de sécurité interne doit être réinitialisée</translation>
 <translation id="3421387094817716717">Clé publique à courbe elliptique</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Remarque :<ph name="END_BOLD" /> Une personne ayant une voix semblable à la vôtre ou disposant d'un enregistrement de celle-ci pourrait aussi accéder à vos résultats personnalisés ou à votre Assistant.</translation>
-<translation id="3421835120203732951">Ajouter un nouveau profil</translation>
 <translation id="3422989558057853751">Dernier élément sélectionné; en le désélectionnant, vous quittez le mode de sélection</translation>
 <translation id="3423111258700187173">Résultats trouvés dans <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">En savoir plus sur cette fonctionnalité d'IA</translation>
@@ -9332,7 +9329,6 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7622768823216805500">Les sites font généralement appel à des modules de traitement des paiements pour proposer certaines fonctionnalités d'achat, comme un paiement simplifié</translation>
 <translation id="7622966771025050155">Passer à l'onglet capturé</translation>
 <translation id="7624337243375417909">verrouillage des majuscules désactivé</translation>
-<translation id="7625025537587898155">Ajouter un nouveau profil</translation>
 <translation id="7625568159987162309">Afficher les autorisations et les données stockées sur tous les sites</translation>
 <translation id="7625823789272218216">Nouvel onglet à gauche</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), niveau <ph name="GRADE" /></translation>
@@ -11284,6 +11280,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="8963117664422609631">Accéder aux paramètres du site</translation>
 <translation id="8964927371396953727">Confirmez votre identité pour utiliser et enregistrer les mots de passe dans votre compte, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8965037249707889821">Entrez l'ancien mot de passe</translation>
+<translation id="8967403839792635452">Vous développez des extensions? Restez à jour sur les <ph name="BEGIN_LINK" />nouveautés<ph name="END_LINK" /> avec la documentation à l'intention des développeurs de l'extension Chrome.</translation>
 <translation id="8967427617812342790">Ajouter à liste lecture</translation>
 <translation id="8967548289042494261">Retirer <ph name="VM_NAME" /></translation>
 <translation id="8968527460726243404">Générateur d'image du système Chrome OS</translation>
@@ -11748,7 +11745,6 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="98235653036850093">Bonjour <ph name="PROFILE_NAME" /></translation>
 <translation id="983192555821071799">Fermer tous les onglets</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> – Enregistrement par appareil photo et microphone</translation>
-<translation id="984275831282074731">Modes de paiement</translation>
 <translation id="984705303330760860">Ajouter des langues pour le correcteur orthographique</translation>
 <translation id="987068745968718743">Parallels Desktop : <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Généralités</translation>

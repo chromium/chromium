@@ -99,7 +99,6 @@
 <translation id="1175364870820465910">&amp;Печать...</translation>
 <translation id="1175393348063009671">Фотобумага (матовая)</translation>
 <translation id="1175875016430184367">Три скобы справа</translation>
-<translation id="1176123604678140687">Месяц окончания действия</translation>
 <translation id="1177548198167638471">Больше не спрашивать</translation>
 <translation id="1177863135347784049">Персонализированные</translation>
 <translation id="1178581264944972037">Пауза</translation>
@@ -333,7 +332,6 @@
       &lt;p&gt;Установите точную дату и время. Для этого откройте раздел &lt;strong&gt;Общие&lt;/strong&gt; в приложении &lt;strong&gt;Настройки&lt;/strong&gt;.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Администратор перезапустит устройство <ph name="DATE" /> в <ph name="TIME" />.</translation>
 <translation id="1562805467275776390">Автоспорт</translation>
-<translation id="1563137369682381456">Дата окончания действия</translation>
 <translation id="1563755205047885671">Экшен-игры и платформеры</translation>
 <translation id="1564634006476980707">В URL поисковой системы рекомендуется использовать протокол HTTPS: <ph name="SEARCH_URL" />.</translation>
 <translation id="156703335097561114">Сетевые данные, такие как адреса, настройки интерфейса и качество подключения.</translation>
@@ -937,7 +935,6 @@
 <translation id="2606760465469169465">Автоматическая проверка</translation>
 <translation id="2608019759319359258">Заблокированные темы для персонализации рекламы не используются</translation>
 <translation id="2610561535971892504">Нажмите, чтобы скопировать</translation>
-<translation id="2612676031748830579">Номер карты</translation>
 <translation id="2612993535136743634">Все защитные коды, сохраненные на вашем устройстве и в аккаунте Google, будут удалены.</translation>
 <translation id="2616412942031748191">Поисковая оптимизация и маркетинг</translation>
 <translation id="2618206371527040026">Научные конференции и публикации</translation>
@@ -3337,7 +3334,6 @@
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">Пользуйся YouTube с родительскими настройками</translation>
 <translation id="6779348349813025131">Google Менеджеру паролей необходим доступ к Связке ключей macOS</translation>
-<translation id="6782656837469339439">Год окончания действия</translation>
 <translation id="6785990323398321538">Вы в любой момент можете изменить поисковую систему по умолчанию в настройках Chrome.</translation>
 <translation id="6786145470008421571">Конверт 152 x 229 мм</translation>
 <translation id="67862343314499040">Фиолетовый</translation>

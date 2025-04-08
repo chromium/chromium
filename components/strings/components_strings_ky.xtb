@@ -99,7 +99,6 @@
 <translation id="1175364870820465910">&amp;Басып чыгаруу…</translation>
 <translation id="1175393348063009671">Фотокагаз (жылтырабаган кагаз)</translation>
 <translation id="1175875016430184367">Оң жагын үч жолу илмек менен бекитүү</translation>
-<translation id="1176123604678140687">Мөөнөтү аяктаган ай</translation>
 <translation id="1177548198167638471">Экинчи суралбасын</translation>
 <translation id="1177863135347784049">Өзгөчөлөштүрүлгөн</translation>
 <translation id="1178581264944972037">Бир азга токтотуу</translation>
@@ -333,7 +332,6 @@
       &lt;p&gt;Күн менен убакытты &lt;strong&gt;Параметрлер&lt;/strong&gt; колдонмосунун &lt;strong&gt;Жалпы&lt;/strong&gt; бөлүмүнөн тууралаңыз.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Администраторуңуз түзмөктү <ph name="DATE" /> күнү саат <ph name="TIME" /> өчүрүп күйгүзөт</translation>
 <translation id="1562805467275776390">Авто жарыш</translation>
-<translation id="1563137369682381456">Мөөнөтү аяктай турган күн</translation>
 <translation id="1563755205047885671">Мушташ жана платформа оюндары</translation>
 <translation id="1564634006476980707">URL'ди издөө үчүн сунушталган HTTPS схемасы: <ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">Даректер, интерфейс конфигурациясы жана байланыштын сапаты сыяктуу тармак маалыматы</translation>
@@ -937,7 +935,6 @@
 <translation id="2606760465469169465">Автоматтык түрдө ырастоо</translation>
 <translation id="2608019759319359258">Тема бөгөттөлсө, ал жарнамаларды жекелештирүү үчүн колдонулбайт</translation>
 <translation id="2610561535971892504">Көчүрүү үчүн чыкылдатыңыз</translation>
-<translation id="2612676031748830579">Картанын номери</translation>
 <translation id="2612993535136743634">Ушул түзмөктө жана Google аккаунтуңузда сакталган коопсуздук коддору өчүрүлөт</translation>
 <translation id="2616412942031748191">Издөө каражаттарын оптималдаштыруу жана маркетинг</translation>
 <translation id="2618206371527040026">Академиялык конференциялар жана жарыяланган материалдар</translation>
@@ -3337,7 +3334,6 @@
 <translation id="6775759552199460396">JIS B2 (515mm x 728mm)</translation>
 <translation id="6777088782163649345">YouTube'ду ата-энең тандаган функциялар менен колдон</translation>
 <translation id="6779348349813025131">Сырсөздөрдү башкаргыч MacOS Keychain'ге мүмкүнчүлүк алышы керек</translation>
-<translation id="6782656837469339439">Мөөнөтү аяктаган жыл</translation>
 <translation id="6785990323398321538">Демейки издөө куралын Chrome’дун параметрлеринен каалаган убакта өзгөртө аласыз.</translation>
 <translation id="6786145470008421571">Конверт 6 x 9 дюйм</translation>
 <translation id="67862343314499040">Кызгылт көк</translation>

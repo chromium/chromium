@@ -44,7 +44,6 @@
 <translation id="1026822031284433028">画像を読み込む</translation>
 <translation id="1026959648338730078">Windows Hello または外部セキュリティ キー</translation>
 <translation id="1028700151766901954">理由: LBS は引き続きデフォルトのブラウザとして <ph name="DEFAULT_OPEN_BROWSER" /> を使用します。</translation>
-<translation id="1028823395684328817">Google アカウントのパスワードなどの情報を引き続き使用するには、本人確認を行ってください</translation>
 <translation id="102916930470544692">パスキー</translation>
 <translation id="1029317248976101138">ズーム</translation>
 <translation id="1029526375103058355">タップによるクリック</translation>
@@ -817,7 +816,6 @@
 <translation id="1558671750917454373"><ph name="DEVICE_NAME" /> へのキャストを再開する</translation>
 <translation id="1561331397460162942">位置情報へのアクセス権を持つアプリとウェブサイト、システム サービスに対して、位置情報へのアクセスを許可します</translation>
 <translation id="1562119309884184621">この連絡先を追加すると、次回ファイルが共有されたときに表示されます</translation>
-<translation id="1563137369682381456">有効期限</translation>
 <translation id="1566049601598938765">ウェブサイト</translation>
 <translation id="15662109988763471">選択したプリンタは利用できないか、正しくインストールされていません。プリンタを確認するか、別のプリンタを選択してみてください。</translation>
 <translation id="1566329594234563241">非アクティブで電源接続時</translation>
@@ -1638,7 +1636,6 @@
 <translation id="2121825465123208577">サイズを変更</translation>
 <translation id="2123766928840368256">別のファイルを選択</translation>
 <translation id="2124930039827422115">{1,plural, =1{1 人のユーザーにより <ph name="AVERAGE_RATING" /> と評価されています。}other{# 人のユーザーにより平均で <ph name="AVERAGE_RATING" /> と評価されています。}}</translation>
-<translation id="2125715366913703594">拡張機能を探す(&amp;E)</translation>
 <translation id="2126167708562367080">同期は管理者により無効にされています。</translation>
 <translation id="2127372758936585790">低電力の充電器</translation>
 <translation id="212862741129535676">周波数状態の占有率（%）</translation>
@@ -3461,7 +3458,6 @@
 <translation id="3420501302812554910">内部セキュリティ キーのリセットが必要です</translation>
 <translation id="3421387094817716717">楕円曲線公開鍵</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />注:<ph name="END_BOLD" /> よく似た音声や録音した音声でも、アカウントに基づく情報やアシスタントにアクセスできてしまうことがあります。</translation>
-<translation id="3421835120203732951">新しいプロファイルを追加</translation>
 <translation id="3422989558057853751">最後の項目が選択されています。選択を解除すると選択モードが終了します</translation>
 <translation id="3423111258700187173"><ph name="FOLDER_TITLE" /> で一致する結果が見つかりました</translation>
 <translation id="3423226218833787854">この AI 機能の詳細について</translation>
@@ -9313,7 +9309,6 @@
 <translation id="7622768823216805500">多くのサイトは、お支払い手続きを簡易化するなど、ショッピングをより快適にするために支払いハンドラをインストールします。</translation>
 <translation id="7622966771025050155">キャプチャしたタブに切り替え</translation>
 <translation id="7624337243375417909">CapsLock オフ</translation>
-<translation id="7625025537587898155">新しいプロファイルを追加</translation>
 <translation id="7625568159987162309">すべてのサイトに保存されている権限とデータを表示</translation>
 <translation id="7625823789272218216">左側の新しいタブ</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" />（<ph name="VARIANT" />）、グレード <ph name="GRADE" /></translation>
@@ -11730,7 +11725,6 @@
 <translation id="98235653036850093">こんにちは、<ph name="PROFILE_NAME" /> さん</translation>
 <translation id="983192555821071799">すべてのタブを閉じる</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - カメラ録画とマイク録音</translation>
-<translation id="984275831282074731">お支払い方法</translation>
 <translation id="984705303330760860">スペルチェックの言語を追加</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">全般</translation>

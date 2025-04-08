@@ -351,6 +351,7 @@
 <translation id="2438248248625638801">Luodaan tallenteiden nimiä</translation>
 <translation id="2446553403094072641">Liukulukuesityksen tarkkuus</translation>
 <translation id="2448312741937722512">Tyyppi</translation>
+<translation id="2448857983905133469">Ryhmätyökalut</translation>
 <translation id="2468124392950503650">Valitse kehote luodaksesi tai tutustu <ph name="BEGIN_LINK_PROMPTING_GUIDE" />kehoteoppaaseen<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Käytä Auta minua kirjoittamaan ‐ominaisuutta luonnoksen kirjoittamiseen tai aiemmin luodun tehtävän viimeistelyyn Googlen tekoälyn avulla</translation>
 <translation id="2475982808118771221">Tapahtui virhe</translation>
@@ -449,6 +450,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Päätepiste</translation>
 <translation id="3060579846059757016">Osioiden yhteenvedot</translation>
+<translation id="3060798442805232711">Ryhmätyökalut käyttävät mikrofoniasi</translation>
 <translation id="3061850252076394168">ota teksti puhuttuna käyttöön</translation>
 <translation id="3066772729299747758">tiistaina</translation>
 <translation id="3069085583900247081">Testi epäonnistui</translation>
@@ -910,6 +912,7 @@
 <translation id="5170568018924773124">Näytä kansiossa</translation>
 <translation id="517075088756846356">Irrota virtajohto (<ph name="DEVICE_NAME" />) ja kytke se takaisin jatkaaksesi päivitysprosessia</translation>
 <translation id="5180108905184566358">apinanleipäpuut</translation>
+<translation id="5180431943345994173">Opettaja on poistanut sisältöä ryhmätyökaluista</translation>
 <translation id="5180712487038406644">Ilmeikäs</translation>
 <translation id="5190187232518914472">Palaa rakkaisiin muistoihisi. Jos haluat lisätä tai muokata albumeja, siirry <ph name="LINK_BEGIN" />Google Kuviin<ph name="LINK_END" />.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
@@ -1003,6 +1006,7 @@
 <translation id="5628106863521633649">Kielivaihtoehdot</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">tiivistelmä</translation>
+<translation id="5655084389678168978">Opettaja on lisännyt uutta sisältöä ryhmätyökaluihin</translation>
 <translation id="5655283760733841251">Lisää näppäimistön kirkkautta</translation>
 <translation id="5655296450510165335">Laitteen rekisteröinti</translation>
 <translation id="5655776422854483175">Ei tulostustöitä</translation>
@@ -1528,6 +1532,7 @@ Lataa transkriptiomalli (enintään 100 Mt), niin saat nämä transkriptiot.</t
 <translation id="7971535376154084247">Yleiset asetukset</translation>
 <translation id="7977800524392185497">Liity <ph name="NETWORK_NAME" />-verkkoon avaamalla Asetukset</translation>
 <translation id="7978412674231730200">Yksityinen avain</translation>
+<translation id="7979468455552394856">Ryhmätyökalut on yhdistetty oppilaisiin</translation>
 <translation id="7982789257301363584">Verkko</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" käynnistettiin automaattisesti}other{# sovellusta käynnistettiin automaattisesti}}</translation>
 <translation id="7994702968232966508">EAP-tapa</translation>

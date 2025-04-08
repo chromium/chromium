@@ -99,7 +99,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1175364870820465910">&amp;Drukuj...</translation>
 <translation id="1175393348063009671">Zdjęcie (matowe)</translation>
 <translation id="1175875016430184367">Trzy zszywki po prawej</translation>
-<translation id="1176123604678140687">Miesiąc utraty ważności</translation>
 <translation id="1177548198167638471">Nie pytaj ponownie</translation>
 <translation id="1177863135347784049">Niestandardowe</translation>
 <translation id="1178581264944972037">Wstrzymaj</translation>
@@ -333,7 +332,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
       &lt;p&gt;Popraw datę i godzinę w sekcji &lt;strong&gt;Ogólne&lt;/strong&gt; w aplikacji &lt;strong&gt;Ustawienia&lt;/strong&gt;.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Administrator uruchomi urządzenie ponownie o <ph name="TIME" /> w dniu <ph name="DATE" /></translation>
 <translation id="1562805467275776390">Wyścigi samochodowe</translation>
-<translation id="1563137369682381456">Data ważności</translation>
 <translation id="1563755205047885671">Gry akcji i gry platformowe</translation>
 <translation id="1564634006476980707">Zalecany schemat HTTPS dla adresu URL wyszukiwania: <ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">Dane sieciowe dotyczące adresów, konfiguracji interfejsu i jakości połączenia</translation>
@@ -937,7 +935,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2606760465469169465">Automatyczna weryfikacja</translation>
 <translation id="2608019759319359258">Gdy temat zostanie zablokowany, nie będzie używany do personalizacji reklam</translation>
 <translation id="2610561535971892504">Kliknij, aby skopiować</translation>
-<translation id="2612676031748830579">Numer karty</translation>
 <translation id="2612993535136743634">Wszystkie kody zabezpieczające zapisane na Twoim urządzeniu i na koncie Google zostaną usunięte</translation>
 <translation id="2616412942031748191">Optymalizacja witryn pod kątem wyszukiwarek i marketing</translation>
 <translation id="2618206371527040026">Konferencje i publikacje akademickie</translation>
@@ -3338,7 +3335,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">Korzystaj z YouTube zgodnie z opcjami ustawionymi przez rodzica</translation>
 <translation id="6779348349813025131">Menedżer haseł Google potrzebuje dostępu do pęku kluczy macOS</translation>
-<translation id="6782656837469339439">Rok utraty ważności</translation>
 <translation id="6785990323398321538">W każdej chwili możesz zmienić wyszukiwarkę w ustawieniach Chrome.</translation>
 <translation id="6786145470008421571">Koperta 6 x 9 cali</translation>
 <translation id="67862343314499040">Fioletowy</translation>

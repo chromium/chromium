@@ -99,7 +99,6 @@
 <translation id="1175364870820465910">&amp;พิมพ์...</translation>
 <translation id="1175393348063009671">รูปภาพ (ด้าน)</translation>
 <translation id="1175875016430184367">เย็บด้วยลวดเย็บกระดาษด้านขวา 3 ครั้ง</translation>
-<translation id="1176123604678140687">เดือนที่หมดอายุ</translation>
 <translation id="1177548198167638471">ไม่ต้องถามอีก</translation>
 <translation id="1177863135347784049">ที่กำหนดเอง</translation>
 <translation id="1178581264944972037">หยุดชั่วคราว</translation>
@@ -333,7 +332,6 @@
       &lt;p&gt;โปรดปรับวันที่และเวลาจากหัวข้อ&lt;strong&gt;ทั่วไป&lt;/strong&gt;ในแอป&lt;strong&gt;การตั้งค่า&lt;/strong&gt;&lt;/p&gt;</translation>
 <translation id="1559839503761818503">ผู้ดูแลระบบจะรีสตาร์ทอุปกรณ์ในวันที่ <ph name="DATE" /> เวลา <ph name="TIME" /></translation>
 <translation id="1562805467275776390">การแข่งรถ</translation>
-<translation id="1563137369682381456">วันที่หมดอายุ</translation>
 <translation id="1563755205047885671">เกมแอ็กชันและแพลตฟอร์ม</translation>
 <translation id="1564634006476980707">รูปแบบ HTTPS ที่แนะนำสำหรับ URL การค้นหา: <ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">ข้อมูลการเชื่อมต่อเครือข่าย เช่น ที่อยู่ การกำหนดค่าอินเทอร์เฟซ และคุณภาพการเชื่อมต่อ</translation>
@@ -937,7 +935,6 @@
 <translation id="2606760465469169465">การยืนยันอัตโนมัติ</translation>
 <translation id="2608019759319359258">เมื่อบล็อกหัวข้อแล้ว ระบบจะไม่นำหัวข้อนั้นไปใช้ในการปรับเปลี่ยนโฆษณาตามโปรไฟล์ของผู้ใช้</translation>
 <translation id="2610561535971892504">คลิกเพื่อคัดลอก</translation>
-<translation id="2612676031748830579">หมายเลขบัตร</translation>
 <translation id="2612993535136743634">จะมีการลบรหัสความปลอดภัยทั้งหมดที่บันทึกไว้ในอุปกรณ์และในบัญชี Google</translation>
 <translation id="2616412942031748191">การปรับแต่งเว็บไซต์ให้ติดอันดับบนเครื่องมือค้นหาและการตลาด</translation>
 <translation id="2618206371527040026">การประชุมเชิงวิชาการและการเผยแพร่</translation>
@@ -3337,7 +3334,6 @@
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">ใช้ YouTube กับตัวเลือกของผู้ปกครอง</translation>
 <translation id="6779348349813025131">เครื่องมือจัดการรหัสผ่านบน Google ต้องการสิทธิ์เข้าถึง Keychain ของ MacOS</translation>
-<translation id="6782656837469339439">ปีที่หมดอายุ</translation>
 <translation id="6785990323398321538">คุณเปลี่ยนเครื่องมือค้นหาได้ตลอดเวลาในการตั้งค่าของ Chrome</translation>
 <translation id="6786145470008421571">Envelope 6 x 9 นิ้ว</translation>
 <translation id="67862343314499040">ม่วงอมน้ำเงิน</translation>

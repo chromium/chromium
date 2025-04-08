@@ -44,7 +44,6 @@
 <translation id="1026822031284433028">इमेज लोड करा</translation>
 <translation id="1026959648338730078">Windows Hello किंवा बाह्य सिक्युरिटी की</translation>
 <translation id="1028700151766901954">कारण: LBS बाय डीफॉल्ट <ph name="DEFAULT_OPEN_BROWSER" /> मध्येच राहते.</translation>
-<translation id="1028823395684328817">तुमच्या Google खाते मध्ये पासवर्ड आणि बरेच काही वापरणे सुरू ठेवण्यासाठी, ते तुम्हीच असल्याची पडताळणी करा</translation>
 <translation id="102916930470544692">पासकी</translation>
 <translation id="1029317248976101138">झूम करा</translation>
 <translation id="1029526375103058355">क्लिक करण्यासाठी टॅप करा</translation>
@@ -818,7 +817,6 @@
 <translation id="1558671750917454373"><ph name="DEVICE_NAME" /> वर कास्ट करणे पुन्हा सुरू करा</translation>
 <translation id="1561331397460162942">हे स्थानाची परवानगी असलेली ॲप्स, वेबसाइट आणि सिस्टीम सेवा यांसाठी स्थान ॲक्सेसची अनुमती देते</translation>
 <translation id="1562119309884184621">हा संपर्क जोडल्याने पुढील वेळी त्यांनी काही शेअर केल्यास, लक्षात ठेवले जाईल</translation>
-<translation id="1563137369682381456">एक्स्पायरीची तारीख</translation>
 <translation id="1566049601598938765">वेबसाइट</translation>
 <translation id="15662109988763471">निवडलेला प्रिंटर उपलब्ध नाही किंवा योग्यरीत्या इंस्टॉल केलेला नाही. तुमचा प्रिंटर तपासा किंवा दुसरा प्रिंटर निवडून पहा.</translation>
 <translation id="1566329594234563241">इनॅक्टिव्ह आणि प्लग इन केले असताना</translation>
@@ -1259,6 +1257,7 @@
 <translation id="185111092974636561"><ph name="BEGIN_PARAGRAPH1" />नोंदणी करण्यापूर्वी, तुम्ही TPM साफ करणे आवश्यक आहे जेणेकरून, <ph name="DEVICE_OS" /> हे डिव्हाइसची मालकी घेऊ शकेल.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />तुम्ही TPM डिव्हाइस पूर्णपणेदेखील बंद करू शकता. तुमचा डेटा तरीही सॉफ्टवेअर एंक्रिप्शनसह सुरक्षितरीत्या स्टोअर केला जाईल, पण हार्डवेअर-बॅक्ड सर्टिफिकेट यांसारखी विशिष्ट सुरक्षितता वैशिष्‍ट्ये बंद केली जातील.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />तुम्ही रीबूट करून आणि सिस्टीमची BIOS/UEFI सेटिंग्ज एंटर करून तुमची TPM सेटिंग्ज बदलू शकता. डिव्हाइसच्या मॉडेलनुसार पायऱ्या बदलतात. अधिक माहितीसाठी, तुम्ही रीबूट करण्यापूर्वी, स्वतंत्र डिव्हाइसवर <ph name="DEVICE_OS" /> दस्तऐवज उघडा: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="1851551847729706116">या टॅबवर <ph name="TAB_NAME" /> शेअर करत आहे</translation>
 <translation id="1852799913675865625">फाइल वाचण्याचा प्रयत्न करताना एक एरर आली: <ph name="ERROR_TEXT" />.</translation>
 <translation id="1854180393107901205">कास्ट करणे थांबवा</translation>
 <translation id="1856715684130786728">स्थान जोडा...</translation>
@@ -1649,7 +1648,6 @@
 <translation id="2121825465123208577">आकार बदला</translation>
 <translation id="2123766928840368256">वेगळी फाइल निवडा</translation>
 <translation id="2124930039827422115">{1,plural, =1{एका वापरकर्त्याने <ph name="AVERAGE_RATING" /> रेट केले.}other{# वापरकर्त्यांनी <ph name="AVERAGE_RATING" /> रेट केले.}}</translation>
-<translation id="2125715366913703594">&amp;Extensions एक्सप्लोर करा</translation>
 <translation id="2126167708562367080">तुमच्या ॲडमिनिस्ट्रेटरने सिंक अक्षम केले आहे.</translation>
 <translation id="2127372758936585790">निम्न-उर्जेचे चार्जर</translation>
 <translation id="212862741129535676">फ्रिक्वेन्सी स्थिती कब्जा टक्केवारी</translation>
@@ -3480,7 +3478,6 @@
 <translation id="3420501302812554910">अंतर्गत सिक्युरिटी की रीसेट करणे आवश्यक आहे</translation>
 <translation id="3421387094817716717">एल्लिपटिक कर्व्ह सार्वजनिक की</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />टीप:<ph name="END_BOLD" /> सारखाच आवाज किंवा रेकॉर्डिंग कदाचित तुमचे वैयक्तिक परिणाम अथवा Assistant अ‍ॅक्सेस करू शकेल.</translation>
-<translation id="3421835120203732951">नवीन प्रोफाइल जोडा</translation>
 <translation id="3422989558057853751">शेवटचा आयटम निवडला आहे, त्याची निवड रद्द केल्याने निवड मोडमधून बाहेर पडाल</translation>
 <translation id="3423111258700187173"><ph name="FOLDER_TITLE" /> मध्ये परिणाम आढळले</translation>
 <translation id="3423226218833787854">या AI वैशिष्ट्याबद्दल अधिक जाणून घ्या</translation>
@@ -9343,7 +9340,6 @@ I feel - विटांची इमारत</translation>
 <translation id="7622768823216805500">आणखी सोपे चेकआउट यासारख्या खरेदी वैशिष्ट्यांसाठी साइट सामान्यपणे पेमेंट हँडलर इंस्टॉल करतात</translation>
 <translation id="7622966771025050155">कॅप्चर केलेल्या टॅबवर स्विच करा</translation>
 <translation id="7624337243375417909">कॅप्सलॉक बंद आहे</translation>
-<translation id="7625025537587898155">नवीन प्रोफाइल जोडा</translation>
 <translation id="7625568159987162309">परवानग्या आणि साइटवर स्टोअर केलेला डेटा पहा</translation>
 <translation id="7625823789272218216">डावीकडील नवीन टॅब</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> ( <ph name="VARIANT" /> ), ग्रेड <ph name="GRADE" /></translation>
@@ -11295,6 +11291,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8963117664422609631">साइट सेटिंग्जवर जा</translation>
 <translation id="8964927371396953727">तुमच्या <ph name="ACCOUNT_EMAIL" /> खात्यामध्ये, पासवर्ड वापरण्यासाठी आणि सेव्ह करण्यासाठी, हे तुम्हीच असल्याची पडताळणी करा</translation>
 <translation id="8965037249707889821">जुना पासवर्ड एंटर करा</translation>
+<translation id="8967403839792635452">एक्स्टेंशन डेव्हलप करत आहात का? Chrome एक्स्टेंशन डेव्हलपर दस्तऐवजासह <ph name="BEGIN_LINK" />नवीन काय आहे<ph name="END_LINK" /> याविषयी अप टू डेट रहा.</translation>
 <translation id="8967427617812342790">वाचन सूचीमध्ये जोडा</translation>
 <translation id="8967548289042494261"><ph name="VM_NAME" /> काढून टाका</translation>
 <translation id="8968527460726243404">ChromeOS प्रणाली इमेज लेखक</translation>
@@ -11759,7 +11756,6 @@ I feel - विटांची इमारत</translation>
 <translation id="98235653036850093">हॅलो, <ph name="PROFILE_NAME" /></translation>
 <translation id="983192555821071799">सर्व टॅब बंद करा</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - कॅमेरा आणि मायक्रोफोन रेकॉर्डिंग</translation>
-<translation id="984275831282074731">पेमेंट पद्धती</translation>
 <translation id="984705303330760860">स्पेल चेकसाठी भाषा जोडा</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">सामान्य</translation>

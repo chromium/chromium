@@ -44,7 +44,6 @@
 <translation id="1026822031284433028">Kargatu irudia</translation>
 <translation id="1026959648338730078">Windows Hello edo kanpoko segurtasun-giltza</translation>
 <translation id="1028700151766901954">Arrazoia: modu lehenetsian, LBS <ph name="DEFAULT_OPEN_BROWSER" /> arakatzailean geratzen da.</translation>
-<translation id="1028823395684328817">Google-ko kontuko pasahitzak eta bestelako datuak erabiltzen jarraitzeko, egiaztatu zeu zarela</translation>
 <translation id="102916930470544692">Sarbide-gakoa</translation>
 <translation id="1029317248976101138">Zooma</translation>
 <translation id="1029526375103058355">Egin klik sakatuta</translation>
@@ -817,7 +816,6 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="1558671750917454373">Berrekin <ph name="DEVICE_NAME" /> gailura igortzeari</translation>
 <translation id="1561331397460162942">Kokapena erabiltzeko baimena duten aplikazio eta webguneek erabili ahal izango dute kokapena, baita sistemaren zerbitzuek ere</translation>
 <translation id="1562119309884184621">Kontaktua gehituz gero, gogoratu egingo da partekatzen duten hurrengoan</translation>
-<translation id="1563137369682381456">Iraungitze-data</translation>
 <translation id="1566049601598938765">Webgunea</translation>
 <translation id="15662109988763471">Hautatutako inprimagailua ez dago erabilgarri edo ez da instalatu behar bezala. Egiaztatu inprimagailua edo hautatu beste bat.</translation>
 <translation id="1566329594234563241">Inaktibo eta entxufatuta dagoen bitartean</translation>
@@ -1251,6 +1249,7 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="185111092974636561"><ph name="BEGIN_PARAGRAPH1" />Erregistratu aurretik, TPMa garbitu behar duzu, <ph name="DEVICE_OS" /> sistemak zure gailuaren jabetza eskura dezan.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />TPMa daukan gailua ere itzal dezakezu. Hala ere, datuak segurtasun osoz gordeko dira software-enkriptatzearen bidez, baina segurtasun-eginbide batzuk (adibidez, hardwarean gordetako ziurtagiriak) desgaitu egingo dira.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />TPMaren ezarpenak aldatzeko, berrabiarazi gailua eta idatzi sistemak darabilen BIOS edo UEFIaren ezarpenak. Urratsak gailuaren modeloaren araberakoak dira. Informazio gehiago lortzeko, berrabiarazi aurretik, ireki <ph name="DEVICE_OS" /> sistemari buruzko dokumentazio hau beste gailu batean: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="1851551847729706116"><ph name="TAB_NAME" /> fitxa honetan partekatzen</translation>
 <translation id="1852799913675865625">Errore bat gertatu da fitxategia irakurtzen saiatzean: <ph name="ERROR_TEXT" />.</translation>
 <translation id="1854180393107901205">Utzi igortzeari</translation>
 <translation id="1856715684130786728">Gehitu kokapena…</translation>
@@ -3465,7 +3464,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3420501302812554910">Barneko segurtasun-giltza berrezarri egin behar da</translation>
 <translation id="3421387094817716717">Kurba eliptikoko gako publikoa</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Oharra<ph name="END_BOLD" />: baliteke zurearen antzekoa den ahots bat edo zure ahotsaren grabaketa bat erabilita zure emaitza pertsonalak edo Laguntzailea atzitu ahal izatea.</translation>
-<translation id="3421835120203732951">Gehitu profil bat</translation>
 <translation id="3422989558057853751">Azken elementua hautatuta dago; desautatuz gero, hautapen modutik irtengo zara</translation>
 <translation id="3423111258700187173"><ph name="FOLDER_TITLE" /> karpetan aurkitutako emaitzak</translation>
 <translation id="3423226218833787854">Lortu AA bidezko eginbide honi buruzko informazio gehiago</translation>
@@ -9320,7 +9318,6 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7622768823216805500">Webguneek ordainketa-kudeatzaileak instalatu ohi dituzte ordainketa erraza eta antzeko erosketa-eginbideak eskaintzeko</translation>
 <translation id="7622966771025050155">Aldatu grabatutako fitxara</translation>
 <translation id="7624337243375417909">maiuskulen blokeoa desaktibatuta dago</translation>
-<translation id="7625025537587898155">Gehitu profil bat</translation>
 <translation id="7625568159987162309">Ikusi webguneetan gordetako baimenak eta datuak</translation>
 <translation id="7625823789272218216">Fitxa berria ezkerrean</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), <ph name="GRADE" />. maila</translation>
@@ -11272,6 +11269,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="8963117664422609631">Joan webgunearen ezarpenetara</translation>
 <translation id="8964927371396953727">Pasahitzak zure kontuan (<ph name="ACCOUNT_EMAIL" />) erabiltzeko eta gordetzeko, egiaztatu zeu zarela</translation>
 <translation id="8965037249707889821">Idatzi aurreko pasahitza</translation>
+<translation id="8967403839792635452">Luzapenak garatzen ari zara? Egon <ph name="BEGIN_LINK" />informazio berriaren<ph name="END_LINK" /> jakinaren gainean Chrome-rako luzapenen garatzaileentzako dokumentazioarekin.</translation>
 <translation id="8967427617812342790">Gehitu zerrendan</translation>
 <translation id="8967548289042494261">Kendu <ph name="VM_NAME" /></translation>
 <translation id="8968527460726243404">ChromeOS sistemako irudi-idazlea</translation>
@@ -11736,7 +11734,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="98235653036850093">Kaixo, <ph name="PROFILE_NAME" /></translation>
 <translation id="983192555821071799">Itxi fitxa guztiak</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" />: kamera eta mikrofonoa grabatzen</translation>
-<translation id="984275831282074731">Ordainketa-metodoak</translation>
 <translation id="984705303330760860">Gehitu hizkuntzak ortografia-zuzentzailean</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Orokorra</translation>

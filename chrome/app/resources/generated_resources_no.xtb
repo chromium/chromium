@@ -44,7 +44,6 @@
 <translation id="1026822031284433028">Last inn bildet</translation>
 <translation id="1026959648338730078">Windows Hello eller en ekstern sikkerhetsnøkkel</translation>
 <translation id="1028700151766901954">Årsak: Støtte for eldre nettlesere blir værende i <ph name="DEFAULT_OPEN_BROWSER" /> som standard.</translation>
-<translation id="1028823395684328817">For å fortsette å bruke passordene med mer i Google-kontoen din, bekreft at det er deg</translation>
 <translation id="102916930470544692">Passnøkkel</translation>
 <translation id="1029317248976101138">Zoom</translation>
 <translation id="1029526375103058355">Trykk for å klikke</translation>
@@ -815,7 +814,6 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1558671750917454373">Fortsett å caste til <ph name="DEVICE_NAME" /></translation>
 <translation id="1561331397460162942">Dette gir apper, nettsteder med posisjonstillatelse og systemtjenester tilgang til posisjon</translation>
 <translation id="1562119309884184621">Hvis du legger til denne kontakten, blir den husket neste gang vedkommende deler</translation>
-<translation id="1563137369682381456">Utløpsdato</translation>
 <translation id="1566049601598938765">Nettsted</translation>
 <translation id="15662109988763471">Den valgte skriveren er ikke tilgjengelig eller har ikke blitt installert på riktig måte. Kontroller skriveren din, eller prøv å velge en annen skriver.</translation>
 <translation id="1566329594234563241">Når enheten er inaktiv og koblet til strøm</translation>
@@ -1255,6 +1253,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="185111092974636561"><ph name="BEGIN_PARAGRAPH1" />Før du registrerer deg, må du tømme TPM-enheten, slik at <ph name="DEVICE_OS" /> kan få eierskap over enheten.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Du kan også slå TPM-enheten helt av. Dataene dine blir fremdeles lagret trygt med programvarekryptering, men visse sikkerhetsfunksjoner, som maskinvarebaserte sertifikater, blir deaktivert.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Du kan endre TPM-innstillingene ved å starte systemet på nytt og gå inn i BIOS-/UEFI-innstillingene. Fremgangsmåten for dette avhenger av hvilken enhetsmodell du har. For mer informasjon, åpne <ph name="DEVICE_OS" />-dokumentasjonen på en annen enhet før du starter systemet på nytt: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="1851551847729706116">Deler <ph name="TAB_NAME" /> med denne fanen</translation>
 <translation id="1852799913675865625">Det oppsto en feil under forsøket på å lese filen: <ph name="ERROR_TEXT" />.</translation>
 <translation id="1854180393107901205">Stopp castingen</translation>
 <translation id="1856715684130786728">Legg til plassering</translation>
@@ -3474,7 +3473,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3420501302812554910">Den interne sikkerhetsnøkkelen må tilbakestilles</translation>
 <translation id="3421387094817716717">Offentlig nøkkel basert på elliptiske kurver</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Merk:<ph name="END_BOLD" /> Det kan hende at lignende stemmer eller opptak av stemmen din kan brukes for å få tilgang til personlige resultater eller assistenten.</translation>
-<translation id="3421835120203732951">Legg til en ny profil</translation>
 <translation id="3422989558057853751">Det siste elementet er valgt. Hvis du velger det bort, avsluttes valgmodus</translation>
 <translation id="3423111258700187173">Fant resultater i <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">Finn ut mer om denne AI-funksjonen</translation>
@@ -9331,7 +9329,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7622768823216805500">Nettsteder installerer vanligvis betalingsbehandlere for å kunne tilby shoppingfunksjoner, som enklere betaling</translation>
 <translation id="7622966771025050155">Bytt til fanen som tas opp</translation>
 <translation id="7624337243375417909">capslock er av</translation>
-<translation id="7625025537587898155">Legg til en ny profil</translation>
 <translation id="7625568159987162309">Se tillatelser og data lagret på alle nettsteder</translation>
 <translation id="7625823789272218216">Ny fane til venstre</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), grad <ph name="GRADE" /></translation>
@@ -11284,6 +11281,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enh
 <translation id="8963117664422609631">Gå til nettstedsinnstillingene</translation>
 <translation id="8964927371396953727">Bekreft at det er deg, for å bruke og lagre passord i kontoen din, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8965037249707889821">Skriv inn det gamle passordet</translation>
+<translation id="8967403839792635452">Utvikler du utvidelser? Hold deg oppdatert på <ph name="BEGIN_LINK" />Dette er nytt<ph name="END_LINK" /> med utviklerdokumentasjonen for Chrome-utvidelser.</translation>
 <translation id="8967427617812342790">Legg til på leselisten</translation>
 <translation id="8967548289042494261">Fjern <ph name="VM_NAME" /></translation>
 <translation id="8968527460726243404">ChromeOS System Image Writer</translation>
@@ -11748,7 +11746,6 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enh
 <translation id="98235653036850093">Hei, <ph name="PROFILE_NAME" /></translation>
 <translation id="983192555821071799">Lukk alle faner</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> – kamera- og mikrofonopptak</translation>
-<translation id="984275831282074731">Betalingsmåter</translation>
 <translation id="984705303330760860">Legg til språk for stavekontroll</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Generelt</translation>

@@ -44,7 +44,6 @@
 <translation id="1026822031284433028">ໂຫຼດ​ຮູບ</translation>
 <translation id="1026959648338730078">ໜ້າຈໍ Hello ຫຼື ກະແຈຄວາມປອດໄພພາຍນອກ</translation>
 <translation id="1028700151766901954">ເຫດຜົນ: LBS ຢູ່ໃນ <ph name="DEFAULT_OPEN_BROWSER" /> ຕາມຄ່າເລີ່ມຕົ້ນ.</translation>
-<translation id="1028823395684328817">ໃຫ້ຢັ້ງຢືນວ່າແມ່ນທ່ານເພື່ອສືບຕໍ່ການໃຊ້ລະຫັດຜ່ານ ແລະ ອື່ນໆໃນບັນຊີ Google ຂອງທ່ານ</translation>
 <translation id="102916930470544692">ກະແຈຜ່ານ</translation>
 <translation id="1029317248976101138">ຊູມ</translation>
 <translation id="1029526375103058355">ແຕະເພື່ອຄລິກ</translation>
@@ -816,7 +815,6 @@
 <translation id="1558671750917454373">ສົ່ງສັນຍານໄປຫາ <ph name="DEVICE_NAME" /> ຕໍ່</translation>
 <translation id="1561331397460162942">ການດຳເນີນການນີ້ຈະອະນຸຍາດສິດເຂົ້າເຖິງສະຖານທີ່ໃຫ້ແກ່ແອັບ, ເວັບໄຊທີ່ໄດ້ຮັບການອະນຸຍາດໃຫ້ເຂົ້າເຖິງສະຖານທີ່ ແລະ ບໍລິການລະບົບ</translation>
 <translation id="1562119309884184621">ການເພີ່ມລາຍຊື່ຜູ້ຕິດຕໍ່ນີ້ຈະຈື່ຄັ້ງຕໍ່ໄປທີ່ພວກເຂົາແບ່ງປັນ</translation>
-<translation id="1563137369682381456">ວັນທີໝົດອາຍຸ</translation>
 <translation id="1566049601598938765">ເວັບໄຊ</translation>
 <translation id="15662109988763471">ເຄື່ອງພິມທີ່ເລືອກໄວ້ບໍ່ສາມາດໃຊ້ໄດ້ ຫຼື ບໍ່ໄດ້ຕິດຕັ້ງຢ່າງຖືກຕ້ອງ. ກວດເບິ່ງເຄື່ອງພິມຂອງທ່ານ ຫຼື ລອງເລືອກເຄື່ອງພິມອື່ນ.</translation>
 <translation id="1566329594234563241">ໃນຂະນະທີ່ບໍ່ມີການນຳໃຊ້ ແລະ ສຽບປລັກຢູ່</translation>
@@ -3480,7 +3478,6 @@
 <translation id="3420501302812554910">ກະແຈຄວາມປອດໄພພາຍໃນຈຳເປັນຕ້ອງຣີເຊັດ</translation>
 <translation id="3421387094817716717">Elliptic Curve Public Key</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />ໝາຍເຫດ<ph name="END_BOLD" />: ສຽງທີ່ຄ້າຍຄືກັນ ຫຼື ບັນທຶກສຽງອາດຈະສາມາດເຂົ້າເຖິງຜົນການຊອກຫາສ່ວນຕົວຂອງທ່ານ ຫຼື ຜູ້ຊ່ວຍຂອງທ່ານໄດ້.</translation>
-<translation id="3421835120203732951">ເພີ່ມໂປຣໄຟລ໌ໃໝ່</translation>
 <translation id="3422989558057853751">ລາຍການທີ່ເລືອກຫຼ້າສຸດ, ການບໍ່ເລືອກມັນຈະອອກຈາກໂໝດການເລືອກ</translation>
 <translation id="3423111258700187173">ພົບຜົນການຊອກຫາໃນ <ph name="FOLDER_TITLE" /> ແລ້ວ</translation>
 <translation id="3423226218833787854">ສຶກສາເພີ່ມເຕີມກ່ຽວກັບຄຸນສົມບັດ AI ນີ້</translation>
@@ -9339,7 +9336,6 @@
 <translation id="7622768823216805500">ໂດຍປົກກະຕິແລ້ວ ເວັບໄຊຈະຕິດຕັ້ງຕົວຈັດການການຈ່າຍເງິນສຳລັບຄຸນສົມບັດການຊື້ເຄື່ອງ ເຊັ່ນ: ການຈ່າຍຄ່າສິນຄ້າທີ່ງ່າຍກວ່າ</translation>
 <translation id="7622966771025050155">ສະຫຼັບໄປຫາແຖບທີ່ບັນທຶກໄວ້</translation>
 <translation id="7624337243375417909">Caps Lock ປິດຢູ່</translation>
-<translation id="7625025537587898155">ເພີ່ມໂປຣໄຟລ໌ໃໝ່</translation>
 <translation id="7625568159987162309">ເບິ່ງການອະນຸຍາດ ແລະ ຂໍ້ມູນທີ່ເກັບໄວ້ໃນທົ່ວເວັບໄຊ</translation>
 <translation id="7625823789272218216">ແຖບໃໝ່ຢູ່ທາງຊ້າຍ</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), ເກ​ຣດ <ph name="GRADE" /></translation>
@@ -11755,7 +11751,6 @@
 <translation id="98235653036850093">ສະບາຍດີ, <ph name="PROFILE_NAME" /></translation>
 <translation id="983192555821071799">ປິດ​ທຸກແຖບ</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - ການບັນທຶກກ້ອງຖ່າຍຮູບ ແລະ ໄມໂຄຣໂຟນ</translation>
-<translation id="984275831282074731">ວິທີການຈ່າຍເງິນ</translation>
 <translation id="984705303330760860">ເພີ່ມພາສາການກວດຄຳຜິດ</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">ທົ່ວໄປ</translation>

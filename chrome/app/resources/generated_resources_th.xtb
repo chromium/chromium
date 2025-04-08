@@ -44,7 +44,6 @@
 <translation id="1026822031284433028">โหลดภาพ</translation>
 <translation id="1026959648338730078">Windows Hello หรือคีย์ความปลอดภัยภายนอก</translation>
 <translation id="1028700151766901954">เหตุผล: LBS จะยังอยู่ใน <ph name="DEFAULT_OPEN_BROWSER" /> โดยค่าเริ่มต้น</translation>
-<translation id="1028823395684328817">โปรดยืนยันว่าเป็นคุณเพื่อใช้รหัสผ่านและข้อมูลอื่นๆ ในบัญชี Google ต่อไป</translation>
 <translation id="102916930470544692">พาสคีย์</translation>
 <translation id="1029317248976101138">ซูม</translation>
 <translation id="1029526375103058355">แตะเพื่อคลิก</translation>
@@ -817,7 +816,6 @@
 <translation id="1558671750917454373">แคสต์ไปยัง <ph name="DEVICE_NAME" /> ต่อ</translation>
 <translation id="1561331397460162942">การดำเนินการนี้จะอนุญาตให้เข้าถึงตำแหน่งสำหรับแอป เว็บไซต์ที่มีสิทธิ์เข้าถึงตำแหน่ง และบริการของระบบ</translation>
 <translation id="1562119309884184621">การเพิ่มรายชื่อติดต่อนี้จะทำให้ระบบจำได้เมื่อรายชื่อนี้แชร์ครั้งถัดไป</translation>
-<translation id="1563137369682381456">วันที่หมดอายุ</translation>
 <translation id="1566049601598938765">เว็บไซต์</translation>
 <translation id="15662109988763471">เครื่องพิมพ์ที่เลือกไว้ใช้ไม่ได้หรือติดตั้งไว้ไม่ถูกต้อง โปรดตรวจสอบเครื่องพิมพ์ของคุณหรือลองเลือกเครื่องพิมพ์อื่น</translation>
 <translation id="1566329594234563241">ขณะที่ไม่มีการใช้งานและเสียบปลั๊กอยู่</translation>
@@ -1641,7 +1639,6 @@
 <translation id="2121825465123208577">ปรับขนาด</translation>
 <translation id="2123766928840368256">เลือกไฟล์อื่น</translation>
 <translation id="2124930039827422115">{1,plural, =1{ได้คะแนน <ph name="AVERAGE_RATING" /> จากผู้ใช้ 1 ราย}other{ได้คะแนน <ph name="AVERAGE_RATING" /> จากผู้ใช้ # ราย}}</translation>
-<translation id="2125715366913703594">สำรวจและส่วนขยาย</translation>
 <translation id="2126167708562367080">ผู้ดูแลระบบปิดใช้การซิงค์</translation>
 <translation id="2127372758936585790">ที่ชาร์จพลังงานต่ำ</translation>
 <translation id="212862741129535676">เปอร์เซ็นต์การเกิดขึ้นของสถานะความถี่</translation>
@@ -3467,7 +3464,6 @@
 <translation id="3420501302812554910">ต้องรีเซ็ตคีย์ความปลอดภัยภายใน</translation>
 <translation id="3421387094817716717">กุญแจสาธารณะแบบ Elliptic Curve</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />หมายเหตุ:<ph name="END_BOLD" /> เสียงหรือเสียงที่บันทึกไว้ซึ่งคล้ายกับเสียงของคุณอาจเข้าถึงผลการค้นหาเฉพาะบุคคลหรือ Assistant ของคุณได้</translation>
-<translation id="3421835120203732951">เพิ่มโปรไฟล์ใหม่</translation>
 <translation id="3422989558057853751">เลือกรายการสุดท้ายแล้ว ยกเลิกการเลือกรายการนี้เพื่อออกจากโหมดการเลือก</translation>
 <translation id="3423111258700187173">ผลลัพธ์ที่พบใน <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">ดูข้อมูลเพิ่มเติมเกี่ยวกับฟีเจอร์ AI นี้</translation>
@@ -9323,7 +9319,6 @@
 <translation id="7622768823216805500">โดยปกติแล้วเว็บไซต์จะติดตั้งเครื่องจัดการการชำระเงินเพื่อดำเนินการตามฟีเจอร์สำหรับช็อปปิ้ง เช่น การชำระเงินสะดวกขึ้น</translation>
 <translation id="7622966771025050155">เปลี่ยนเป็นแท็บที่ถูกจับภาพ</translation>
 <translation id="7624337243375417909">ปิด Caps Lock</translation>
-<translation id="7625025537587898155">เพิ่มโปรไฟล์ใหม่</translation>
 <translation id="7625568159987162309">ดูสิทธิ์และข้อมูลที่จัดเก็บในเว็บไซต์</translation>
 <translation id="7625823789272218216">แท็บใหม่อยู่ด้านซ้าย</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />) ระดับ <ph name="GRADE" /></translation>
@@ -11741,7 +11736,6 @@
 <translation id="98235653036850093">สวัสดี คุณ <ph name="PROFILE_NAME" /></translation>
 <translation id="983192555821071799">ปิดแท็บทั้งหมด</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - กำลังบันทึกกล้องและไมโครโฟน</translation>
-<translation id="984275831282074731">วิธีการชำระเงิน</translation>
 <translation id="984705303330760860">เพิ่มภาษาที่ใช้การตรวจตัวสะกดได้</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">ทั่วไป</translation>

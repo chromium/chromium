@@ -99,7 +99,6 @@
 <translation id="1175364870820465910">&amp;ბეჭდვა…</translation>
 <translation id="1175393348063009671">ფოტო (მქრქალი)</translation>
 <translation id="1175875016430184367">სამმაგად დასტეპლერება მარჯვნივ</translation>
-<translation id="1176123604678140687">მოქმედების ვადის გასვლის თვე</translation>
 <translation id="1177548198167638471">აღარ მკითხოთ</translation>
 <translation id="1177863135347784049">მორგებული</translation>
 <translation id="1178581264944972037">პაუზა</translation>
@@ -333,7 +332,6 @@
       &lt;p&gt;გთხოვთ, გაასწოროთ თარიღი და დრო &lt;strong&gt;პარამეტრების&lt;/strong&gt; აპის სექციიდან &lt;strong&gt;ზოგადი&lt;/strong&gt;.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">თქვენი ადმინისტრატორი გადატვირთავს თქვენს მოწყობილობას <ph name="DATE" />-ის <ph name="TIME" />-ზე</translation>
 <translation id="1562805467275776390">ავტორბოლა</translation>
-<translation id="1563137369682381456">მოქმედების ვადის გასვლის თარიღი</translation>
 <translation id="1563755205047885671">მძაფრსიუჟეტიანი და პლატფორმის თამაშები</translation>
 <translation id="1564634006476980707">საძიებო URL-ისთვის რეკომენდებული HTTPS სქემა: <ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">ქსელთან დაკავშირებული ინფორმაცია, როგორიცაა, მაგალითად, მისამართები, ინტერფეისის კონფიგურაცია და კავშირის ხარისხი</translation>
@@ -937,7 +935,6 @@
 <translation id="2606760465469169465">ავტომატური დადასტურება</translation>
 <translation id="2608019759319359258">როცა თემა დაბლოკილია, ის არ იქნება გამოყენებული რეკლამის პერსონალიზებისთვის</translation>
 <translation id="2610561535971892504">დააწკაპუნეთ დასაკოპირებლად</translation>
-<translation id="2612676031748830579">ბარათის ნომერი</translation>
 <translation id="2612993535136743634">თქვენს მოწყობილობასა და Google ანგარიშში შენახული უსაფრთხოების ყველა კოდი წაიშლება</translation>
 <translation id="2616412942031748191">საძიებო სისტემების ოპტიმიზაცია და მარკეტინგი</translation>
 <translation id="2618206371527040026">აკადემიური კონფერენციები და პუბლიკაციები</translation>
@@ -3338,7 +3335,6 @@
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">გამოიყენეთ YouTube თქვენი მშობლის არჩევანით</translation>
 <translation id="6779348349813025131">Google პაროლების მმართველი საჭიროებს წვდომას MacOS Keychain-ზე</translation>
-<translation id="6782656837469339439">მოქმედების ვადის გასვლის წელი</translation>
 <translation id="6785990323398321538">საძიებო სისტემის შეცვლას ნებისმიერ დროს შეძლებთ Chrome-ის პარამეტრებიდან.</translation>
 <translation id="6786145470008421571">კონვერტი 6 x 9 დუიმი</translation>
 <translation id="67862343314499040">იისფერი</translation>

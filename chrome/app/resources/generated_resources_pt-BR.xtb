@@ -44,7 +44,6 @@
 <translation id="1026822031284433028">Carregar Imagem</translation>
 <translation id="1026959648338730078">Windows Hello ou chave de segurança externa</translation>
 <translation id="1028700151766901954">Motivo: o LBS fica no <ph name="DEFAULT_OPEN_BROWSER" /> por padrão.</translation>
-<translation id="1028823395684328817">Para continuar usando as senhas e outros itens na sua Conta do Google, confirme sua identidade</translation>
 <translation id="102916930470544692">Chave de acesso</translation>
 <translation id="1029317248976101138">Zoom</translation>
 <translation id="1029526375103058355">Tocar para clicar</translation>
@@ -819,7 +818,6 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1558671750917454373">Retomar a transmissão para <ph name="DEVICE_NAME" /></translation>
 <translation id="1561331397460162942">Permite que apps, sites com essa permissão e serviços do sistema acessem a localização</translation>
 <translation id="1562119309884184621">Essa ação fará com que o contato seja lembrado no próximo compartilhamento</translation>
-<translation id="1563137369682381456">Data de validade</translation>
 <translation id="1566049601598938765">Website</translation>
 <translation id="15662109988763471">A impressora selecionada não está disponível ou não foi instalada corretamente. Verifique a impressora ou selecione outra.</translation>
 <translation id="1566329594234563241">Enquanto o dispositivo estiver inativo e conectado à energia</translation>
@@ -1261,6 +1259,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="185111092974636561"><ph name="BEGIN_PARAGRAPH1" />Antes de fazer o registro, limpe o TPM para que o <ph name="DEVICE_OS" /> possa assumir a propriedade do dispositivo.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Você também pode desativar completamente o TPM. Seus dados ainda serão armazenados com segurança e criptografia de software, mas alguns recursos de proteção, como certificados de hardware, serão desativados.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Para mudar as configurações do TPM, reinicie o sistema e acesse as configurações de BIOS/UEFI. As etapas variam de acordo com o modelo do dispositivo. Para mais informações, abra a documentação do <ph name="DEVICE_OS" /> em um dispositivo diferente antes de reiniciar: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="1851551847729706116">Compartilhando <ph name="TAB_NAME" /> com esta guia</translation>
 <translation id="1852799913675865625">Ocorreu um erro ao tentar ler o arquivo: <ph name="ERROR_TEXT" /></translation>
 <translation id="1854180393107901205">Parar transmissão</translation>
 <translation id="1856715684130786728">Adicionar local...</translation>
@@ -3481,7 +3480,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3420501302812554910">A chave de segurança interna precisa ser redefinida</translation>
 <translation id="3421387094817716717">Chave pública de curva elíptica</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Observação<ph name="END_BOLD" />: uma voz parecida ou uma gravação pode conseguir acessar seus resultados personalizados ou o Google Assistente.</translation>
-<translation id="3421835120203732951">Adicionar novo perfil</translation>
 <translation id="3422989558057853751">Último item selecionado. Se você o desmarcar, sairá do modo de seleção</translation>
 <translation id="3423111258700187173">Resultados encontrados em <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">Saiba mais sobre esse recurso de IA</translation>
@@ -9346,7 +9344,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7622768823216805500">Os sites geralmente instalam gerenciadores de pagamento para recursos de compras, como finalizações de compra facilitadas</translation>
 <translation id="7622966771025050155">Mudar para a guia capturada</translation>
 <translation id="7624337243375417909">tecla caps lock desativada</translation>
-<translation id="7625025537587898155">Adicionar novo perfil</translation>
 <translation id="7625568159987162309">Ver permissões e dados armazenados em sites</translation>
 <translation id="7625823789272218216">Nova guia à esquerda</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), grau <ph name="GRADE" /></translation>
@@ -11300,6 +11297,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="8963117664422609631">Acessar configurações do site</translation>
 <translation id="8964927371396953727">Confirme sua identidade para usar e salvar senhas na sua conta <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8965037249707889821">Digite a senha antiga</translation>
+<translation id="8967403839792635452">Você desenvolve extensões? Fique por dentro das <ph name="BEGIN_LINK" />novidades<ph name="END_LINK" /> com a documentação para desenvolvedores sobre extensões do Chrome.</translation>
 <translation id="8967427617812342790">Adicionar à lista de leitura</translation>
 <translation id="8967548289042494261">Remover <ph name="VM_NAME" /></translation>
 <translation id="8968527460726243404">Gravador de imagem do sistema ChromeOS</translation>
@@ -11764,7 +11762,6 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="98235653036850093">Olá, <ph name="PROFILE_NAME" /></translation>
 <translation id="983192555821071799">Fechar todas as guias</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" />: gravação de câmera e microfone</translation>
-<translation id="984275831282074731">Formas de pagamento</translation>
 <translation id="984705303330760860">Adicionar idiomas para verificação ortográfica</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Geral</translation>

@@ -44,7 +44,6 @@
 <translation id="1026822031284433028">ပုံကူးတင်ရန်</translation>
 <translation id="1026959648338730078">Windows Hello (သို့) ပြင်ပလုံခြုံရေးကီး</translation>
 <translation id="1028700151766901954">အကြောင်းရင်း- ပုံမှန်အားဖြင့် LBS သည် <ph name="DEFAULT_OPEN_BROWSER" /> တွင် ရှိသည်။</translation>
-<translation id="1028823395684328817">သင့် Google Account တွင် စကားဝှက်နှင့် အခြားအရာများ ဆက်သုံးနိုင်ရန် သင်ဖြစ်ကြောင်း အတည်ပြုပါ</translation>
 <translation id="102916930470544692">လျှို့ဝှက်ကီး</translation>
 <translation id="1029317248976101138">ဇူးမ်</translation>
 <translation id="1029526375103058355">နှိပ်ရန် တို့ပါ</translation>
@@ -817,7 +816,6 @@
 <translation id="1558671750917454373"><ph name="DEVICE_NAME" /> သို့ ကာစ်ဆက်လုပ်ရန်</translation>
 <translation id="1561331397460162942">၎င်းက တည်နေရာ ခွင့်ပြုချက်ပါသည့် အက်ပ်နှင့် ဝဘ်ဆိုက်များ၊ စနစ်ဝန်ဆောင်မှုများအတွက် တည်နေရာ သုံးခွင့်ပြုသည်</translation>
 <translation id="1562119309884184621">ဤအဆက်အသွယ်ကို ထည့်ပါက နောက်တစ်ကြိမ် သူမျှဝေသည့်အခါ မှတ်မိပါမည်</translation>
-<translation id="1563137369682381456">သက်တမ်းကုန်ဆုံးရက်</translation>
 <translation id="1566049601598938765">ဝဘ်ဆိုက်</translation>
 <translation id="15662109988763471">ရွေးထားသည့် ပရင်တာကို အသုံးပြု၍မရပါ (သို့) မှန်ကန်စွာ ထည့်သွင်းမထားပါ။ သင်၏ ပရင်တာကို စစ်ဆေးပါ (သို့) နောက်တစ်ခုကို ရွေးကြည့်ပါ။</translation>
 <translation id="1566329594234563241">သုံးမနေဘဲ ပလတ်ထိုးထားစဉ်</translation>
@@ -1259,6 +1257,7 @@
 <translation id="185111092974636561"><ph name="BEGIN_PARAGRAPH1" /><ph name="DEVICE_OS" /> က စက်၏ပိုင်ဆိုင်မှုကို ရယူနိုင်ရန်အတွက် စာရင်းမသွင်းမီ TPM ကို ရှင်းထားရမည်။<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />TPM စက်ကိုလည်း အပြီးပိတ်ထားနိုင်သည်။ ဆော့ဖ်ဝဲအသွင်ဝှက်ခြင်းဖြင့် သင်၏ဒေတာကို လုံခြုံစွာသိမ်းထားနိုင်သေးသည်။ သို့သော်လည်း ကွန်ပျူတာဆိုင်ရာ စက်ပစ္စည်းအခြေပြု အသိအမှတ်ပြုလက်မှတ်များကဲ့သို့ လုံခြုံရေးဝန်ဆောင်မှုအချို့ကို ပိတ်လိုက်ပါမည်။<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />ပြန်လည်စတင်ခြင်းနှင့် စနစ် BIOS/UEFI ဆက်တင်များ ထည့်ခြင်းဖြင့် သင်၏ TPM ဆက်တင်များကို ပြောင်းနိုင်သည်။ စက်မော်ဒယ်ပေါ် အခြေခံပြီး အဆင့်များကွဲပြားသည်။ နောက်ထပ်အချက်အလက်များအတွက် ပြန်လည်မစတင်မီ သီးခြားစက်တစ်လုံးပေါ်တွင် <ph name="DEVICE_OS" /> မှတ်တမ်းကို ဖွင့်ပါ- g.co/flex/TPMHelp။<ph name="END_PARAGRAPH3" /></translation>
+<translation id="1851551847729706116"><ph name="TAB_NAME" /> ကို ဤတဘ်သို့ မျှဝေနေသည်</translation>
 <translation id="1852799913675865625">ဖိုင်ကို ဖတ်ရန်ကြိုးစားချိန်တွင် အမှားယွင်း ရှိနေပါသည်၊ <ph name="ERROR_TEXT" />။</translation>
 <translation id="1854180393107901205">ကက်စ်လုပ်နေခြင်း ရပ်မည်</translation>
 <translation id="1856715684130786728">တည်နေရာ ထည့်ပေးရန်...</translation>
@@ -1648,7 +1647,6 @@
 <translation id="2121825465123208577">အရွယ်အစားပြောင်းရန်</translation>
 <translation id="2123766928840368256">အခြားဖိုင်တစ်ခု ရွေးချယ်ရန်</translation>
 <translation id="2124930039827422115">{1,plural, =1{အသုံးပြုသူတစ်ဦးက <ph name="AVERAGE_RATING" /> အဆင့်သတ်မှတ်ထားသည်။}other{အသုံးပြုသူ # ဦး က <ph name="AVERAGE_RATING" /> အဆင့်သတ်မှတ်ထားသည်။}}</translation>
-<translation id="2125715366913703594">&amp;နောက်ဆက်တွဲများ စူးစမ်းလေ့လာခြင်း</translation>
 <translation id="2126167708562367080">စင့်ခ်ပြုလုပ်ခြင်းကို သင့်စီမံခန့်ခွဲသူက ပိတ်ဆို့ထားပါသည်။</translation>
 <translation id="2127372758936585790">ပါဝါနိမ့် အားသွင်းစက်</translation>
 <translation id="212862741129535676">ကြိမ်နှုန်းအခြေအနေ နေထိုင်မှု ရာခိုင်နှုန်း</translation>
@@ -3480,7 +3478,6 @@
 <translation id="3420501302812554910">အတွင်းပိုင်း လုံခြုံရေးကီးကို ပြင်ဆင်သတ်မှတ်ရန် လိုအပ်သည်</translation>
 <translation id="3421387094817716717">Elliptic Curve အများသုံးကီး</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />မှတ်ချက်-<ph name="END_BOLD" /> ဆင်တူသောအသံ (သို့) အသံသွင်းချက်ဖြင့် သင်၏ကိုယ်ပိုင်ရေးကိုယ်တာ ရလဒ်များ (သို့) သင့် Assistant သို့ ဝင်ခွင့်ရသွားနိုင်ပါသည်။</translation>
-<translation id="3421835120203732951">ပရိုဖိုင်အသစ် ထည့်ရန်</translation>
 <translation id="3422989558057853751">နောက်ဆုံးတစ်ခု ရွေးထားသည်။ ၎င်းကို ပြန်ဖြုတ်ခြင်းဖြင့် ရွေးချယ်မှုမုဒ်မှ ထွက်သွားမည်</translation>
 <translation id="3423111258700187173"><ph name="FOLDER_TITLE" /> တွင် ရလဒ်များတွေ့သည်</translation>
 <translation id="3423226218833787854">ဤ AI တူးလ်အကြောင်း ပိုမိုလေ့လာရန်</translation>
@@ -9338,7 +9335,6 @@
 <translation id="7622768823216805500">လွယ်ကူစွာငွေရှင်းရန်ကဲ့သို့ ဈေးဝယ်ဝန်ဆောင်မှုများအတွက် ဝဘ်ဆိုက်များက ငွေပေးချေမှုစီမံသူများ ထည့်သွင်းလေ့ရှိသည်</translation>
 <translation id="7622966771025050155">ရိုက်ကူးထားသောတဘ်သို့ ပြောင်းရန်</translation>
 <translation id="7624337243375417909">စာလုံးကြီး ခလုတ် ပိတ်ထားသည်</translation>
-<translation id="7625025537587898155">ပရိုဖိုင်အသစ် ထည့်ရန်</translation>
 <translation id="7625568159987162309">ဝဘ်ဆိုက်များအတွက် ခွင့်ပြုချက်များနှင့် သိမ်းဆည်းထားသည့် ဒေတာများကို ကြည့်ရန်</translation>
 <translation id="7625823789272218216">ဘယ်ဘက်တွင် တဘ်အသစ်</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> ( <ph name="VARIANT" /> )၊ အဆင့် <ph name="GRADE" /></translation>
@@ -11290,6 +11286,7 @@
 <translation id="8963117664422609631">ဝဘ်ဆိုက်ဆက်တင်များသို့ သွားရန်</translation>
 <translation id="8964927371396953727">သင်၏အကောင့် <ph name="ACCOUNT_EMAIL" /> တွင် စကားဝှက်များ သုံးရန်နှင့် သိမ်းရန်အတွက် သင်ဖြစ်ကြောင်း အတည်ပြုပါ</translation>
 <translation id="8965037249707889821">လျှို့ဝှက်စကားလုံး ရိုက်ထည့်ရန်</translation>
+<translation id="8967403839792635452">ပရိုဂရမ်အဆက်များ ရေးမလား။ ‘Chrome ပရိုဂရမ်အဆက်’ ဆော့ဖ်ဝဲရေးသူမှတ်တမ်းတွင် <ph name="BEGIN_LINK" />အသစ်ပါဝင်မှုများ<ph name="END_LINK" /> ကို အမြဲအပ်ဒိတ်ရယူပါ။</translation>
 <translation id="8967427617812342790">ဖတ်ရန်စာရင်းသို့ ထည့်ပါ</translation>
 <translation id="8967548289042494261"><ph name="VM_NAME" /> ကို ဖယ်ရှားရန်</translation>
 <translation id="8968527460726243404">ChromeOS System Image Writer</translation>
@@ -11754,7 +11751,6 @@
 <translation id="98235653036850093">မင်္ဂလာပါ <ph name="PROFILE_NAME" /></translation>
 <translation id="983192555821071799">တဘ်အားလုံး ပိတ်ရန်</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - ကင်မရာနှင့် မိုက်ခရိုဖုန်းက မှတ်တမ်းတင်နေသည်</translation>
-<translation id="984275831282074731">ငွေပေးချေ နည်းလမ်းများ</translation>
 <translation id="984705303330760860">စာလုံးပေါင်းစစ်ဆေးမည့် ဘာသာစကားများ ထည့်ပါ</translation>
 <translation id="987068745968718743">Parallels Desktop - <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">အထွေထွေ</translation>

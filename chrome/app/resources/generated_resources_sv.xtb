@@ -44,7 +44,6 @@
 <translation id="1026822031284433028">Läs in bild</translation>
 <translation id="1026959648338730078">Windows Hello eller extern säkerhetsnyckel</translation>
 <translation id="1028700151766901954">Orsak: Stöd för äldre webbläsare använder <ph name="DEFAULT_OPEN_BROWSER" /> som standard.</translation>
-<translation id="1028823395684328817">Verifiera din identitet för att fortsätta använda lösenord och annat i Google-kontot</translation>
 <translation id="102916930470544692">Nyckel</translation>
 <translation id="1029317248976101138">Zooma in</translation>
 <translation id="1029526375103058355">Tryck för att klicka</translation>
@@ -818,7 +817,6 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1558671750917454373">Återuppta castingen till <ph name="DEVICE_NAME" /></translation>
 <translation id="1561331397460162942">Detta tillåter platsåtkomst för appar, webbplatser med platsbehörighet och systemtjänster</translation>
 <translation id="1562119309884184621">Om du lägger till den här kontakten är den sparad nästa gång personen delar något</translation>
-<translation id="1563137369682381456">Utgångsdatum</translation>
 <translation id="1566049601598938765">Webbplats</translation>
 <translation id="15662109988763471">Den valda skrivaren är inte tillgänglig eller har inte installerats korrekt. Kontrollera skrivaren eller välj en annan.</translation>
 <translation id="1566329594234563241">När enheten är inaktiv och ansluten till en strömkälla</translation>
@@ -1260,6 +1258,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="185111092974636561"><ph name="BEGIN_PARAGRAPH1" />Innan du registrerar dig måste du rensa TPM så att <ph name="DEVICE_OS" /> kan ta ägarskap över enheten.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Du kan även stänga av TPM-enheten helt. Din data lagras fortfarande säkert med mjukvarukryptering, men vissa säkerhetsfunktioner, till exempel hårdvarustödda certifikat, inaktiveras.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Du kan ändra TPM-inställningarna genom att starta om och öppna systeminställningarna för BIOS/UEFI. Stegen varierar beroende på enhetsmodell. Om du vill läsa mer kan du öppna dokumentationen för <ph name="DEVICE_OS" /> på en separat enhet innan du startar om: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="1851551847729706116"><ph name="TAB_NAME" /> delas på den här fliken</translation>
 <translation id="1852799913675865625">Ett fel uppstod när följande fil skulle läsas: <ph name="ERROR_TEXT" />.</translation>
 <translation id="1854180393107901205">Sluta casta</translation>
 <translation id="1856715684130786728">Lägg till plats ...</translation>
@@ -1650,7 +1649,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2121825465123208577">Ändra storlek</translation>
 <translation id="2123766928840368256">Välj en annan fil</translation>
 <translation id="2124930039827422115">{1,plural, =1{Fått betyget <ph name="AVERAGE_RATING" /> av en användare.}other{Fått betyget <ph name="AVERAGE_RATING" /> av # användare.}}</translation>
-<translation id="2125715366913703594">Utforska &amp;tillägg</translation>
 <translation id="2126167708562367080">Synkronisering har inaktiverats av administratören.</translation>
 <translation id="2127372758936585790">Laddning med låg effekt</translation>
 <translation id="212862741129535676">Kapacitetsprocentsats för frekvens</translation>
@@ -3481,7 +3479,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3420501302812554910">Den interna säkerhetsnyckeln behöver återställas</translation>
 <translation id="3421387094817716717">Offentlig nyckel vid kryptering med elliptisk kurva</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Obs!<ph name="END_BOLD" /> Någon med en liknande röst eller en inspelning av din röst kan få åtkomst till dina personliga resultat eller Google Assistent.</translation>
-<translation id="3421835120203732951">Lägg till en ny profil</translation>
 <translation id="3422989558057853751">Detta är det sista markerade objektet. Om du avmarkerar det avslutas markeringsläget</translation>
 <translation id="3423111258700187173">Resultat hittades på <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">Läs mer om den här AI-funktionen</translation>
@@ -9343,7 +9340,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7622768823216805500">Att installera betalningshanterare brukar kunna behövas till exempel för att förenkla hanteringen i kassan på webbplatsen</translation>
 <translation id="7622966771025050155">Byt till inspelad flik</translation>
 <translation id="7624337243375417909">caps lock av</translation>
-<translation id="7625025537587898155">Lägg till en ny profil</translation>
 <translation id="7625568159987162309">Visa behörigheter och data som har lagrats på webbplatser</translation>
 <translation id="7625823789272218216">Ny flik till vänster</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), grad <ph name="GRADE" /></translation>
@@ -11296,6 +11292,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren, enhe
 <translation id="8963117664422609631">Öppna webbplatsinställningarna</translation>
 <translation id="8964927371396953727">Verifiera din identitet för att använda och spara lösenord i ditt konto <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8965037249707889821">Ange det gamla lösenordet</translation>
+<translation id="8967403839792635452">Utvecklar du tillägg? Håll dig uppdaterad om <ph name="BEGIN_LINK" />Nyheter<ph name="END_LINK" /> med dokumentationen för Chrome-tillägg för utvecklare.</translation>
 <translation id="8967427617812342790">Lägg till i läslistan</translation>
 <translation id="8967548289042494261">Ta bort <ph name="VM_NAME" /></translation>
 <translation id="8968527460726243404">Systemavbildningsskrivare för ChromeOS</translation>
@@ -11760,7 +11757,6 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren, enhe
 <translation id="98235653036850093">Hej <ph name="PROFILE_NAME" />!</translation>
 <translation id="983192555821071799">Stäng alla flikar</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> – Kameran och mikrofonen spelar in</translation>
-<translation id="984275831282074731">Betalningsmetoder</translation>
 <translation id="984705303330760860">Lägg till språk för stavningskontroll</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Allmänt</translation>

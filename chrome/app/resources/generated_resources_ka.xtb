@@ -44,7 +44,6 @@
 <translation id="1026822031284433028">სურათის ჩატვირთვა</translation>
 <translation id="1026959648338730078">Windows Hello ან უსაფრთხოების გარე გასაღები</translation>
 <translation id="1028700151766901954">მიზეზი: LBS ნაგულისხმევად რჩება <ph name="DEFAULT_OPEN_BROWSER" />-ში.</translation>
-<translation id="1028823395684328817">პაროლებისა და სხვა მონაცემების Google ანგარიშით გამოყენების გასაგრძელებლად საჭიროა თქვენი ვინაობის დადასტურება</translation>
 <translation id="102916930470544692">წვდომის გასაღები</translation>
 <translation id="1029317248976101138">მასშტაბი</translation>
 <translation id="1029526375103058355">შეხებით დაწკაპუნება</translation>
@@ -817,7 +816,6 @@
 <translation id="1558671750917454373"><ph name="DEVICE_NAME" />-ზე ტრანსლირების გაგრძელება</translation>
 <translation id="1561331397460162942">ამ მოქმედებით დაუშვებთ მდებარეობაზე აპების, მდებარეობის ნებართვის მქონე ვებსაიტებისა და სისტემის სერვისების წვდომას</translation>
 <translation id="1562119309884184621">დამატებული კონტაქტი დამახსოვრებული იქნება, როცა შემდეგში რაიმეს გაგიზიარებთ</translation>
-<translation id="1563137369682381456">მოქმედების ვადის გასვლის თარიღი</translation>
 <translation id="1566049601598938765">ვებსაიტი</translation>
 <translation id="15662109988763471">არჩეული პრინტერი მიუწვდომელი ან არასწორად დაინსტალირებულია. შეამოწმეთ პრინტერი ან ცადეთ სხვა პრინტერის არჩევა.</translation>
 <translation id="1566329594234563241">როცა უმოქმედოა და მიერთებულია ელკვების წყაროსთან</translation>
@@ -1641,7 +1639,6 @@
 <translation id="2121825465123208577">ზომის შეცვლა</translation>
 <translation id="2123766928840368256">სხვა ფაილის არჩევა</translation>
 <translation id="2124930039827422115">{1,plural, =1{შეფასებულია <ph name="AVERAGE_RATING" />-ით ერთი მომხმარებლის მიერ.}other{შეფასებულია <ph name="AVERAGE_RATING" />-ით # მომხმარებლის მიერ.}}</translation>
-<translation id="2125715366913703594">დაათვალიერეთ &amp;გაფართოებები</translation>
 <translation id="2126167708562367080">სინქრონიზაცია გათიშულია თქვენი ადმინისტრატორის მიერ.</translation>
 <translation id="2127372758936585790">დამტენის დაბალი მუხტი</translation>
 <translation id="212862741129535676">სიხშირის მდგომარეობის დაკავებულობის პროცენტულობა</translation>
@@ -3469,7 +3466,6 @@
 <translation id="3420501302812554910">უსაფრთხოების შიდა გასაღები საჭიროებს გადაყენებას</translation>
 <translation id="3421387094817716717">ეკლიპტიკური მრუდის საჯარო გასაღები</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />შენიშვნა:<ph name="END_BOLD" /> თქვენს პერსონალურ შედეგებზე ან ასისტენტზე წვდომა, შესაძლოა, მოახერხოს ნებისმიერმა, ვისაც თქვენი მსგავსი ხმა ან მისი ჩანაწერი ექნება.</translation>
-<translation id="3421835120203732951">ახალი პროფილის დამატება</translation>
 <translation id="3422989558057853751">არჩეულია ბოლო ერთეული, მისი არჩევის გაუქმება განაპირობებს არჩევის რეჟიმიდან გასვლას</translation>
 <translation id="3423111258700187173">„<ph name="FOLDER_TITLE" />“-ში ნაპოვნი შედეგები</translation>
 <translation id="3423226218833787854">შეიტყვეთ მეტი ხელოვნური ინტელექტის ამ ფუნქციის შესახებ</translation>
@@ -9329,7 +9325,6 @@
 <translation id="7622768823216805500">როგორც წესი, გადახდის დამმუშავებლები საიტების მიერ ინსტალირდება საყიდლებთან დაკავშირებული მიზნით, მაგალითად, უფრო მარტივი ანგარიშსწორებისთვის</translation>
 <translation id="7622966771025050155">აღბეჭდილ ჩანართზე გადართვა</translation>
 <translation id="7624337243375417909">Caps Lock გამორთულია</translation>
-<translation id="7625025537587898155">ახალი პროფილის დამატება</translation>
 <translation id="7625568159987162309">ნებართვებისა და საიტების მასშტაბით შენახული მონაცემების ნახვა</translation>
 <translation id="7625823789272218216">ახალი ჩანართი მარცხნივ</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), კატეგორია <ph name="GRADE" /></translation>
@@ -11746,7 +11741,6 @@
 <translation id="98235653036850093">გამარჯობა, <ph name="PROFILE_NAME" /></translation>
 <translation id="983192555821071799">ყველა ჩანართის დახურვა</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> — კამერა და მიკროფონი იწერს</translation>
-<translation id="984275831282074731">გადახდის მეთოდები</translation>
 <translation id="984705303330760860">დაამატეთ ენები მართლწერის შემოწმებისთვის</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">ზოგადი</translation>

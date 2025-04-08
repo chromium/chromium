@@ -351,6 +351,7 @@
 <translation id="2438248248625638801">ৰেকৰ্ডিঙৰ শিৰোনাম সৃষ্টি কৰি থকা হৈছে</translation>
 <translation id="2446553403094072641">ওপঙি থকা বিন্দুৰ সঠিকতা</translation>
 <translation id="2448312741937722512">প্রকাৰ</translation>
+<translation id="2448857983905133469">Class Tools</translation>
 <translation id="2468124392950503650"><ph name="BEGIN_LINK_PROMPTING_GUIDE" />প্ৰম্পট্‌ গাইড<ph name="END_LINK_PROMPTING_GUIDE" /> সৃষ্টি কৰিবলৈ বা চাবলৈ প্ৰম্পট্‌ বাছনি কৰক</translation>
 <translation id="2472215337771558851">এটা খচৰা সৃষ্টি কৰিবলৈ বা ইতিমধ্যে থকা কাম মসৃণ কৰিবলৈ হেল্প মী ৰাইট ব্যৱহাৰ কৰক, যিটো Google AIৰ দ্বাৰ সঞ্চালিত</translation>
 <translation id="2475982808118771221">কোনো আসোঁৱাহ হৈছে</translation>
@@ -449,6 +450,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />এমএ</translation>
 <translation id="3056720590588772262">এণ্ডপইণ্ট</translation>
 <translation id="3060579846059757016">ৰূপৰেখা</translation>
+<translation id="3060798442805232711">Class Toolsএ আপোনাৰ মাইক্ৰ’ফ’ন ব্যৱহাৰ কৰি আছে</translation>
 <translation id="3061850252076394168">কথা ক’বলৈ বাছনি কৰক সুবিধাটো সক্ষম কৰক</translation>
 <translation id="3066772729299747758">মঙলবাৰে</translation>
 <translation id="3069085583900247081">পৰীক্ষা বিফল হৈছে</translation>
@@ -910,6 +912,7 @@
 <translation id="5170568018924773124">ফ’ল্ডাৰত দেখুৱাওক</translation>
 <translation id="517075088756846356">আপডে’ট প্ৰক্ৰিয়াটো অব্যাহত ৰাখিবলৈ <ph name="DEVICE_NAME" />ৰ পাৱাৰ কে’বলডাল আনপ্লাগ কৰি পুনৰ প্লাগ কৰক</translation>
 <translation id="5180108905184566358">বাওবাব গছ</translation>
+<translation id="5180431943345994173">আপোনাৰ শিক্ষকে Class Toolsৰ পৰা সমল আঁতৰাইছে</translation>
 <translation id="5180712487038406644">অভিব্যক্তিপূৰ্ণ</translation>
 <translation id="5190187232518914472">আপোনাৰ প্ৰিয় স্মৃতি ৰোমন্থন কৰক। এলবাম যোগ দিবলৈ অথবা সম্পাদনা কৰিবলৈ <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />লৈ যাওক।</translation>
 <translation id="5212593641110061691">টেব্‌লইড</translation>
@@ -1003,6 +1006,7 @@
 <translation id="5628106863521633649">উপলব্ধ ভাষা</translation>
 <translation id="5630438231335788050">বাউহাউছ</translation>
 <translation id="5631759159893697722">সাৰাংশ</translation>
+<translation id="5655084389678168978">আপোনাৰ শিক্ষকে Class Toolsত নতুন সমল যোগ দিছে</translation>
 <translation id="5655283760733841251">কীব’ৰ্ডৰ উজ্জ্বলতা আপ</translation>
 <translation id="5655296450510165335">ডিভাইচৰ পঞ্জীয়ন</translation>
 <translation id="5655776422854483175">কোনো প্ৰিণ্টিং কাৰ্য নাই</translation>
@@ -1528,6 +1532,7 @@
 <translation id="7971535376154084247">সাধাৰণ নিয়ন্ত্ৰণ</translation>
 <translation id="7977800524392185497">এটা <ph name="NETWORK_NAME" /> নেটৱৰ্কত যোগদান কৰিবলৈ, ছেটিঙলৈ যাওক</translation>
 <translation id="7978412674231730200">ব্যক্তিগত কী</translation>
+<translation id="7979468455552394856">Class Tools শিক্ষাৰ্থীৰ সৈতে সংযুক্ত কৰা হৈছে</translation>
 <translation id="7982789257301363584">নেটৱৰ্ক</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" স্বয়ংক্ৰিয়ভাৱে আৰম্ভ কৰা হৈছে}one{# টা এপ্‌ স্বয়ংক্ৰিয়ভাৱে আৰম্ভ কৰা হৈছে}other{# টা এপ্‌ স্বয়ংক্ৰিয়ভাৱে আৰম্ভ কৰা হৈছে}}</translation>
 <translation id="7994702968232966508">ই.এ.পি. পদ্ধতি</translation>

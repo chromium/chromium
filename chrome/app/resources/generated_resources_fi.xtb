@@ -44,7 +44,6 @@
 <translation id="1026822031284433028">Lataa kuva</translation>
 <translation id="1026959648338730078">Windows Hello tai ulkoinen suojausavain</translation>
 <translation id="1028700151766901954">Syy: Vanhojen selaimien tukena säilyy oletuksena <ph name="DEFAULT_OPEN_BROWSER" />.</translation>
-<translation id="1028823395684328817">Vahvista henkilöllisyytesi, jotta voit jatkaa esimerkiksi salasanojen käyttöä Google-tililläsi</translation>
 <translation id="102916930470544692">Avainkoodi</translation>
 <translation id="1029317248976101138">Lähennä</translation>
 <translation id="1029526375103058355">Napauttamalla klikkaus ‑toiminto</translation>
@@ -818,7 +817,6 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="1558671750917454373">Jatka striimausta: <ph name="DEVICE_NAME" /></translation>
 <translation id="1561331397460162942">Sallii sijainnin käytön sovelluksille, verkkosivustoille, joilla on sijaintilupa, ja järjestelmäpalveluille</translation>
 <translation id="1562119309884184621">Tämän kontaktin lisääminen muistetaan ensi kerralla, kun hän jakaa</translation>
-<translation id="1563137369682381456">Vanhenemispäivä</translation>
 <translation id="1566049601598938765">Sivusto</translation>
 <translation id="15662109988763471">Valittu tulostin ei ole käytettävissä tai sitä ei ole asennettu oikein. Tarkista tulostin tai valitse toinen tulostin.</translation>
 <translation id="1566329594234563241">Kun laite on ei-aktiivinen ja liitetty virtaan</translation>
@@ -1259,6 +1257,7 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="185111092974636561"><ph name="BEGIN_PARAGRAPH1" />Ennen rekisteröitymistä sinun on tyhjennettävä TPM, jotta <ph name="DEVICE_OS" /> voi aloittaa laitteen omistajana.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Voit myös laittaa TPM-laitteen kokonaan pois päältä. Datasi tallennetaan turvallisesti ohjelmistosalauksella, mutta jotkin suojausominaisuudet, esim. laitteelle varmuuskopioidut varmenteet, poistetaan käytöstä.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Voit muuttaa TPM-asetuksiasi käynnistämällä laitteen uudelleen ja lisäämällä järjestelmän BIOS/UEFI-asetukset. Ohjeet riippuvat laitteen mallista. Jos haluat lisätietoja, avaa dokumentaatio (<ph name="DEVICE_OS" />) eri laitteella ennen uudelleenkäynnistystä: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="1851551847729706116"><ph name="TAB_NAME" /> jaetaan tälle välilehdelle</translation>
 <translation id="1852799913675865625">Tiedostoa luettaessa tapahtui virhe: <ph name="ERROR_TEXT" /></translation>
 <translation id="1854180393107901205">Lopeta suoratoisto</translation>
 <translation id="1856715684130786728">Lisää sijainti…</translation>
@@ -3479,7 +3478,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3420501302812554910">Sisäinen suojausavain on nollattava</translation>
 <translation id="3421387094817716717">Julkinen avain: elliptinen käyrä</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Huom.<ph name="END_BOLD" /> Samanlaisella äänellä tai äänitteellä saattaa päästä henkilökohtaisiin tuloksiisi tai Assistantiisi.</translation>
-<translation id="3421835120203732951">Lisää uusi profiili</translation>
 <translation id="3422989558057853751">Viimeinen kohde on valittu, sen valinnan poistaminen sulkee valintatilan</translation>
 <translation id="3423111258700187173">Tuloksia löytyi täältä: <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">Lue lisää tästä tekoälyominaisuudesta</translation>
@@ -9338,7 +9336,6 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7622768823216805500">Sivustot asentavat yleensä maksunkäsittelijöitä tarjotakseen osto-ominaisuuksia, esim. helpomman maksamisen</translation>
 <translation id="7622966771025050155">Vaihda tallennetulle välilehdelle</translation>
 <translation id="7624337243375417909">caps lock pois päältä</translation>
-<translation id="7625025537587898155">Lisää uusi profiili</translation>
 <translation id="7625568159987162309">Näytä kaikki sivustoille tallennetut käyttöoikeudet ja data</translation>
 <translation id="7625823789272218216">Uusi välilehti vasemmalle</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), tyyppi <ph name="GRADE" /></translation>
@@ -11290,6 +11287,7 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="8963117664422609631">Avaa sivustoasetukset</translation>
 <translation id="8964927371396953727">Vahvista henkilöllisyytesi, jotta voit käyttää ja tallentaa salasanoja tililläsi: <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8965037249707889821">Syötä vanha salasana</translation>
+<translation id="8967403839792635452">Kehitätkö laajennuksia? Pysy ajan tasalla <ph name="BEGIN_LINK" />Uusimmat<ph name="END_LINK" />-osiosta Chrome-laajennusten kehittäjädokumentaation kautta.</translation>
 <translation id="8967427617812342790">Lisää lukulistalle</translation>
 <translation id="8967548289042494261">Poista <ph name="VM_NAME" /></translation>
 <translation id="8968527460726243404">Chrome-käyttöjärjestelmän näköistiedoston kirjoittaja</translation>
@@ -11754,7 +11752,6 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="98235653036850093">Hei <ph name="PROFILE_NAME" /></translation>
 <translation id="983192555821071799">Sulje kaikki välilehdet</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> – kameran ja mikrofonin tallennus</translation>
-<translation id="984275831282074731">Maksutavat</translation>
 <translation id="984705303330760860">Lisää oikeinkirjoituksen tarkistuksen kieliä</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Yleistä</translation>

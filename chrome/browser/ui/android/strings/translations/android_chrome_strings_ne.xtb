@@ -77,6 +77,7 @@
 <translation id="1298077576058087471">६०% सम्म डेटा बचत गर्नुहोस्, आजको समाचार पढ्नुहोस्</translation>
 <translation id="1303339473099049190">उक्त पासवर्ड फेला पार्न सकिएन। आफ्नो हिज्जेको जाँच गरी फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - <ph name="DEVICE_NAME" /> बाट पठाइएको</translation>
+<translation id="1318262688555255786">वेबपेज <ph name="PAGE_TITLE" /> को लिंक सेयर गर्नुहोस्। स्रोत: <ph name="PAGE_URL" /></translation>
 <translation id="1320912611264252795">बुकमार्क सेभ गर्ने फ्लोका फोल्डरहरू स्क्रिनको पूरा भाग ओगट्ने गरी खोलिएको छ</translation>
 <translation id="1327257854815634930">नेभिगेसनको इतिहास खोलियो</translation>
 <translation id="1331212799747679585">Chrome अद्यावधिक गर्न सकिँदैन। थप विकल्पहरू</translation>
@@ -476,6 +477,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="3208584281581115441">अहिले नै जाँच्नुहोस्</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> मेटाइयो</translation>
 <translation id="3220943972464248773">आफ्ना पासवर्ड सिंक गर्न यो काम गर्न खोज्ने व्यक्ति तपाईं नै हो भन्ने कुरा पुष्टि गर्नुहोस्</translation>
+<translation id="323213525320714789">विकासकर्ता</translation>
 <translation id="3232293466644486101">ब्राउजिङ डेटा मेटाउनुहोस्…</translation>
 <translation id="3232754137068452469">वेब एप</translation>
 <translation id="3236059992281584593">१ मिनेट बाँकी छ</translation>
@@ -516,6 +518,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="3435465986463792564">थुप्रै विन्डो छन्? तपाईं यहाँबाट ती विन्डोहरू व्यवस्थापन गर्न सक्नुहुन्छ</translation>
 <translation id="3435575784518354875">आफ्ना पासवर्डहरूको एक्सेस प्राप्त गरिराख्न तिनलाई अहिले नै एक्स्पोर्ट गर्नुहोस्, Google Play services अपडेट गर्नुहोस् अनि आफ्नो रोजाइको पासवर्ड म्यानेजरमा फेरि इम्पोर्ट गर्नुहोस्। <ph name="BEGIN_LINK" />सम्पूर्ण निर्देशनहरू हेर्नुहोस्<ph name="END_LINK" />।</translation>
 <translation id="3435738964857648380">सुरक्षा</translation>
+<translation id="3435914367318771664">यो ट्याब समूहमा हाल्नुहोस्</translation>
 <translation id="3439276997620616816">तपाईंले हालसालै बन्द गरेका ट्याबहरू यहाँ देखिने छन्</translation>
 <translation id="3443221991560634068">हालको पृष्ठलाई पुनःलोड गर्नुहोस्</translation>
 <translation id="3444179773590444986">साइटहरूमा लागू हुने अँध्यारो थिमका बारेमा प्रतिक्रिया दिने हो?</translation>
@@ -781,6 +784,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="4684427112815847243">सबै सिंक गर्नुहोस्</translation>
 <translation id="4685741273709472646">ड्रपडाउन सूचीबाट चयन गर्नुहोस्</translation>
 <translation id="4687718960473379118">साइटले सिफारिस गरेका विज्ञापनहरू</translation>
+<translation id="468924408576231679">बेवपेज <ph name="PAGE_TITLE" /> को लिंक सेयर गर्नुहोस्। स्रोत: <ph name="PAGE_URL" /></translation>
 <translation id="469286762610133730">अझ उत्कृष्ट सामग्री प्राप्त गर्नुहोस्</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 र <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> थप}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 र <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> थप}}</translation>
 <translation id="4698061626562952596">यहाँ गई आफ्ना निष्क्रिय ट्याबहरूको समीक्षा गर्नुहोस्</translation>
@@ -1123,6 +1127,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="6205314730813004066">विज्ञापनको गोपनीयता</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> होइन?</translation>
 <translation id="6211386937064921208">यो पृष्ठको प्रिभ्यु हेरिँदै छ</translation>
+<translation id="6212567362666004597">यो ट्याब समूहमा हाल्नुहोस्</translation>
 <translation id="6221633008163990886">आफ्ना पासवर्डहरू निर्यात गर्न अनलक गर्नुहोस्</translation>
 <translation id="6225572914528673855">एड्रेस बार</translation>
 <translation id="6232535412751077445">'ट्रयाक नगर्नुहोस्' सक्रिय गर्नुको अर्थ तपाईँको ब्राउजिङ ट्राफिकसँगै अनुरोध समावेश गरिने छ भन्ने हो। कुनै पनि प्रभाव वेबसाइटले अनुरोधको जवाफ दिने नदिने, र अनुरोधलाई कसरी व्याख्या गरिन्छ भन्नेमा निर्भर गर्दछ।
@@ -1150,6 +1155,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="6324916366299863871">सर्टकट सम्पादन गर्नुहोस्</translation>
 <translation id="6324977638108296054">हाइलाइट गरिएको पाठको लिंक सिर्जना गर्न सकिएन</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> मार्फत साझा गर्नुहोस्</translation>
+<translation id="6335454563754888572">निम्न पेजमा लैजाने URL सम्पादन गर्नुहोस्: <ph name="PAGE_URL" /></translation>
 <translation id="6337234675334993532">इन्क्रिप्सन</translation>
 <translation id="6340526405444716530">वैयक्तीकरण</translation>
 <translation id="6341580099087024258">फाइलहरू कहाँ सुरक्षित गर्ने भनी सोध्नुहोस्</translation>
@@ -1193,6 +1199,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="6486420406192123355">यो PDF फाइल असुरक्षित कनेक्सन प्रयोग गर्ने वेबसाइटबाट प्राप्त गरिएको हो</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{एउटा फाइल डाउनलोड गरियो}other{# वटा फाइल डाउनलोड गरिए}}</translation>
 <translation id="6508722015517270189">Chrome पुनः सुरु गर्नुहोस्</translation>
+<translation id="6513924416597632811">निम्न किवर्डको खोज परिणाम देखिने पेजको लिंक कपी गर्नुहोस्: <ph name="SEARCH_QUERY" />। स्रोत: <ph name="PAGE_URL" /></translation>
 <translation id="6518133107902771759">रुजू गर्नुहोस्</translation>
 <translation id="6527303717912515753">साझा गर्नुहोस्</translation>
 <translation id="652948702951888897">Chrome को इतिहास</translation>
@@ -1604,6 +1611,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="8221401890884589479">तपाईं आफूलाई नचाहिने साइटहरू ब्लक गर्न सक्नुहुन्छ। साथै Chrome ले पनि उक्त सूचीमा भएका ३० दिनभन्दा पुराना साइटहरू स्वतः मेटाउँछ। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="8221985041778490865">ब्राउजिङ डेटा मेटाइँदै छ</translation>
 <translation id="8223642481677794647">फिड कार्ड मेनु</translation>
+<translation id="82296173028782770">किवर्ड सम्पादन गर्नुहोस्: <ph name="SEARCH_QUERY" /></translation>
 <translation id="8236063039629122676">तपाईं अब दायाँतिर स्वाइप गरेर आफूले यसअघि खोलेका पेजहरू हेर्न र बायाँतिर स्वाइप गरेर अर्को पेज हेर्न सक्नुहुन्छ</translation>
 <translation id="8236097722223016103">बुकमार्कहरूमा हाल्नुहोस्</translation>
 <translation id="8243077599929149377">आफ्नो युजरनेम हाल्नुहोस्</translation>
@@ -1752,6 +1760,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="8890668505403261809">आफ्ना इन्कोग्निटो ट्याबहरू खोज्नुहोस्</translation>
 <translation id="8898822736010347272">नयाँ खतराहरू पत्ता लगाउन र वेब प्रयोग गर्ने सम्पूर्ण प्रयोगकर्ताहरूलाई सुरक्षित राख्न Google लाई तपाईंले हेर्ने केही पृष्ठका URL, प्रणालीसम्बन्धी निश्चित जानकारी र पृष्ठका केही सामग्रीहरू पठाउँछ।</translation>
 <translation id="8909135823018751308">साझा गर्नुहोस्...</translation>
+<translation id="8918299437379122615">निम्न किवर्डको खोज परिणाम देखिने पेजको लिंक सेयर गर्नुहोस्: <ph name="SEARCH_QUERY" />। स्रोत: <ph name="PAGE_URL" /></translation>
 <translation id="8922289737868596582">पृष्ठहरूलाई अफलाइन हेर्न थप विकल्पहरू नामक बटनबाट तिनीहरूलाई डाउनलोड गर्नुहोस्</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> डाउनलोड गरिएको छ</translation>

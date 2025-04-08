@@ -351,6 +351,7 @@
 <translation id="2438248248625638801">S'estan creant els títols de la gravació</translation>
 <translation id="2446553403094072641">Precisió de la coma flotant</translation>
 <translation id="2448312741937722512">Tipus</translation>
+<translation id="2448857983905133469">Eines de classe</translation>
 <translation id="2468124392950503650">Selecciona una indicació per crear o veure la <ph name="BEGIN_LINK_PROMPTING_GUIDE" />guia d'indicacions<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Utilitza Ajuda'm a escriure per crear un esborrany o polir el treball existent amb la tecnologia de la IA de Google</translation>
 <translation id="2475982808118771221">S'ha produït un error</translation>
@@ -381,6 +382,7 @@
 <translation id="2584559707064218956">Per configurar-la, ves a Configuració</translation>
 <translation id="2586146417912237930">blau i anyil</translation>
 <translation id="2589921777872778654">Menús Edita i Suprimeix</translation>
+<translation id="2590424100019931043">Se t'ha suprimit d'aquesta classe</translation>
 <translation id="2597774443162333062">Els fitxers s'enviaran a Google per depurar-los</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{S'ha completat l'escaneig. S'ha escanejat una pàgina}other{S'ha completat l'escaneig. S'han escanejat {NUMBER_OF_PAGES} pàgines.}}</translation>
 <translation id="261322795497077164">Identificació dels interlocutors</translation>
@@ -449,6 +451,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Punt final</translation>
 <translation id="3060579846059757016">Esquemes</translation>
+<translation id="3060798442805232711">Eines de classe està utilitzant el teu micròfon</translation>
 <translation id="3061850252076394168">activa la funció Escolta la selecció</translation>
 <translation id="3066772729299747758">dimarts</translation>
 <translation id="3069085583900247081">La prova no s'ha superat</translation>
@@ -910,6 +913,7 @@
 <translation id="5170568018924773124">Mostra a la carpeta</translation>
 <translation id="517075088756846356">Desendolla i torna a endollar el cable d'alimentació del <ph name="DEVICE_NAME" /> per continuar amb el procés d'actualització</translation>
 <translation id="5180108905184566358">baobabs</translation>
+<translation id="5180431943345994173">El teu professor ha suprimit contingut d'Eines de classe</translation>
 <translation id="5180712487038406644">Expressiu</translation>
 <translation id="5190187232518914472">Reviu els teus records preferits. Per afegir o editar àlbums, ves a <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>
 <translation id="5212593641110061691">Tabloide</translation>
@@ -1003,6 +1007,7 @@
 <translation id="5628106863521633649">Idiomes disponibles</translation>
 <translation id="5630438231335788050">Bauhaus</translation>
 <translation id="5631759159893697722">resum</translation>
+<translation id="5655084389678168978">El teu professor ha afegit contingut nou a Eines de classe</translation>
 <translation id="5655283760733841251">Augmenta la brillantor del teclat</translation>
 <translation id="5655296450510165335">Inscripció de dispositius</translation>
 <translation id="5655776422854483175">No hi ha tasques d'impressió</translation>
@@ -1528,6 +1533,7 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="7971535376154084247">Controls generals</translation>
 <translation id="7977800524392185497">Per unir-te a una xarxa <ph name="NETWORK_NAME" />, ves a Configuració</translation>
 <translation id="7978412674231730200">Clau privada</translation>
+<translation id="7979468455552394856">Eines de classe està connectat als alumnes</translation>
 <translation id="7982789257301363584">Xarxa</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{L'aplicació <ph name="APP_NAME_1" /> s'ha iniciat automàticament}other{# aplicacions s'han iniciat automàticament}}</translation>
 <translation id="7994702968232966508">Mètode EAP</translation>

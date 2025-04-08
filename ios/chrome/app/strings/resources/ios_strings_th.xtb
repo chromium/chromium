@@ -1127,6 +1127,7 @@
 <translation id="573974402615125334">หากต้องการแชร์ เข้าร่วม และทำงานร่วมกันในกลุ่มแท็บ ให้ซิงค์ประวัติการเข้าชมและแท็บ</translation>
 <translation id="5740123193752401435">ค้นหาแท็บ…</translation>
 <translation id="5744274077973758795">เปิดการแจ้งเตือนของ <ph name="FEATURE_NAME" /> แล้ว</translation>
+<translation id="5745598824054949526">ไม่พบข้อความ</translation>
 <translation id="574762237186762643">กิจกรรม</translation>
 <translation id="5749158352074143502">ดำเนินการต่อโดยใช้แท็บนี้</translation>
 <translation id="5753021559215751319">บันทึกรหัสผ่าน</translation>
@@ -1290,6 +1291,7 @@
 <translation id="6410883413783534063">เปิดหลายแท็บเพื่อไปยังหน้าต่างๆ พร้อมกัน</translation>
 <translation id="6416807286621280684">พัสดุที่คุณติดตามและการอัปเดตการนําส่ง</translation>
 <translation id="6418346271604475326">กำลังเตรียม PDF</translation>
+<translation id="6421038304268477484">ข้อความที่แปล</translation>
 <translation id="6429213933892582367">เปิดตัวเลือกรหัสผ่าน</translation>
 <translation id="6434591244308415567">เกิดข้อผิดพลาด โปรดลองอีกครั้งในภายหลัง</translation>
 <translation id="6435307030888827407">อยู่ในโหมดออกจากระบบ</translation>
@@ -1968,6 +1970,7 @@
 <translation id="9097506547406246598">เลิกติดตามไม่ได้ เกิดข้อผิดพลาด</translation>
 <translation id="9098541895599151034">ลบรหัสผ่าน <ph name="NUMBER_OF_ACCOUNTS" /> บัญชีใช่ไหม</translation>
 <translation id="9099233023029360602">ถามว่าจะใช้บัญชีใดทุกครั้ง</translation>
+<translation id="9099821309562615674">โปรดตรวจสอบว่าข้อความที่คุณกำลังแปลนั้นมองเห็นได้ชัดเจนและอยู่ในเฟรม</translation>
 <translation id="9100610230175265781">ต้องระบุรหัสผ่าน</translation>
 <translation id="91023216973987714">วิธีการชำระเงิน</translation>
 <translation id="9106655997975673326">จาก "<ph name="SOURCE_DEVICE" />"</translation>

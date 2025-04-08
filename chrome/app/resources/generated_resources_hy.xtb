@@ -44,7 +44,6 @@
 <translation id="1026822031284433028">Բեռնել պատկերը</translation>
 <translation id="1026959648338730078">Windows Hello կամ անվտանգության արտաքին բանալի</translation>
 <translation id="1028700151766901954">Պատճառը՝ LBS-ն ըստ կանխադրման մնում է <ph name="DEFAULT_OPEN_BROWSER" /> դիտարկիչում։</translation>
-<translation id="1028823395684328817">Հաստատեք ձեր ինքնությունը, որպեսզի շարունակեք օգտագործել գաղտնաբառերը և մյուս տվյալները ձեր Google հաշվում</translation>
 <translation id="102916930470544692">Մուտքի բանալի</translation>
 <translation id="1029317248976101138">Zoom</translation>
 <translation id="1029526375103058355">Tap to click</translation>
@@ -819,7 +818,6 @@
 <translation id="1558671750917454373">Վերսկսել հեռարձակումը <ph name="DEVICE_NAME" /> սարքին</translation>
 <translation id="1561331397460162942">Տեղորոշումը հասանելի կլինի հավելվածներին, տեղորոշման թույլտվություն ունեցող կայքերին, ինչպես նաև համակարգային ծառայություններին</translation>
 <translation id="1562119309884184621">Եթե այս օգտատիրոջն ավելացնեք ձեր կոնտակտներում, նա կկարողանա տեսնել ձեր սարքը, երբ մոտակայքում լինի</translation>
-<translation id="1563137369682381456">Սպառման ամսաթիվը</translation>
 <translation id="1566049601598938765">Կայք</translation>
 <translation id="15662109988763471">Նշված տպիչը հասանելի չէ կամ ճիշտ չէ տեղադրված: Ստուգեք ձեր տպիչը կամ փորձեք ընտրել մեկ այլ տպիչ:</translation>
 <translation id="1566329594234563241">Անգործուն և հոսանքին միացված ժամանակ</translation>
@@ -1253,6 +1251,7 @@
 <translation id="185111092974636561"><ph name="BEGIN_PARAGRAPH1" />Գրանցվելուց առաջ անհրաժեշտ է մաքրել TPM-ը, որպեսզի <ph name="DEVICE_OS" />-ը կարողանա կառավարել սարքը։<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Դուք կարող եք նաև TPM սարքն ամբողջությամբ անջատել։ Ձեր տվյալները ապահով կերպով կպահվեն ծրագրի գաղտնագրման միջոցով, սակայն անվտանգության որոշ գործառույթներ, օրինակ՝ սարքակազմի հավաստագրերը, կանջատվեն։<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Դուք կարող եք փոխել ձեր TPM-ի կարգավորումները՝ վերաբեռնելով համակարգը և մտնելով BIOS/UEFI-ի կարգավորումներ։ Կախված սարքի մոդելից՝ քայլերը կարող են տարբեր լինել։ Նախքան վերաբեռնելը կարող եք ծանոթանալ <ph name="DEVICE_OS" />-ի փաստաթղթերին՝ բացելով դրանք առանձին սարքում՝ g.co/flex/TPMHelp։<ph name="END_PARAGRAPH3" /></translation>
+<translation id="1851551847729706116">«<ph name="TAB_NAME" />» ներդիրի ցուցադրում այս ներդիրում</translation>
 <translation id="1852799913675865625">Ֆայլը կարդալիս սխալ առաջացավ՝ <ph name="ERROR_TEXT" />.</translation>
 <translation id="1854180393107901205">Կանգնեցնել հեռարձակումը</translation>
 <translation id="1856715684130786728">Ավելացնել գրացուցակ…</translation>
@@ -3465,7 +3464,6 @@
 <translation id="3420501302812554910">Անհրաժեշտ է զրոյացնել անվտանգության ներքին բանալու կարգավորումները</translation>
 <translation id="3421387094817716717">Օվալաձև կորի հանրային բանալին</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Նկատի ունեցեք<ph name="END_BOLD" />, որ ձեր ձայնին նման ձայն կամ դրա ձայնագրությունն ունեցող օգտատերերը հնարավոր է՝ նույնպես կարողանան օգտվել ձեր Օգնականից և բացել անհատականացված արդյունքները։</translation>
-<translation id="3421835120203732951">Ավելացնել նոր պրոֆիլ</translation>
 <translation id="3422989558057853751">Ընտրված է վերջին տարրը։ Ընտրությունը չեղարկելու դեպքում ընտրության ռեժիմը կփակվի</translation>
 <translation id="3423111258700187173">Արդյունքներ են գտնվել «<ph name="FOLDER_TITLE" />» պանակում</translation>
 <translation id="3423226218833787854">Իմանալ ավելին այս AI գործառույթի մասին</translation>
@@ -9324,7 +9322,6 @@
 <translation id="7622768823216805500">Կայքերը սովորաբար վճարումների մշակիչներ են տեղադրում գնումների գործառույթների, օրինակ՝ արագ վճարման համար</translation>
 <translation id="7622966771025050155">Անցնել «լուսանկարված» ներդիր</translation>
 <translation id="7624337243375417909">Caps Lock-ն անջատված է</translation>
-<translation id="7625025537587898155">Ավելացնել նոր պրոֆիլ</translation>
 <translation id="7625568159987162309">Դիտել թույլտվությունները և կայքերում պահված տվյալները</translation>
 <translation id="7625823789272218216">Նոր ներդիր ձախ կողմում</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), մակարդակ <ph name="GRADE" /></translation>
@@ -11276,6 +11273,7 @@
 <translation id="8963117664422609631">Անցնել կայքի կարգավորումներ</translation>
 <translation id="8964927371396953727">Հաստատեք ձեր ինքնությունը, որպեսզի կարողանաք օգտագործել ձեր <ph name="ACCOUNT_EMAIL" /> հաշվում պահված գաղտնաբառերը</translation>
 <translation id="8965037249707889821">Մուտքագրեք հին գաղտնաբառը</translation>
+<translation id="8967403839792635452">Ընդլայնումնե՞ր եք ստեղծում։ Հետևեք նորություններին Chrome-ի ընդլայնումների ծրագրավորողների համար փաստաթղթերում՝ <ph name="BEGIN_LINK" />Նորություններ<ph name="END_LINK" /> էջում։</translation>
 <translation id="8967427617812342790">Ավելացնել ընթերցանության ցանկում</translation>
 <translation id="8967548289042494261"><ph name="VM_NAME" />-ի հեռացում</translation>
 <translation id="8968527460726243404">ChromeOS Համակարգային պատկերի գրիչ</translation>
@@ -11740,7 +11738,6 @@
 <translation id="98235653036850093">Ողջույն, <ph name="PROFILE_NAME" /></translation>
 <translation id="983192555821071799">Փակել բոլոր ներդիրները</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> – Տեսախցիկով և խոսափողով տեսագրում</translation>
-<translation id="984275831282074731">Վճարման եղանակներ</translation>
 <translation id="984705303330760860">Ավելացրեք լեզուներ ուղղագրության ստուգման համար</translation>
 <translation id="987068745968718743">Parallels Desktop՝ <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Ընդհանուր</translation>

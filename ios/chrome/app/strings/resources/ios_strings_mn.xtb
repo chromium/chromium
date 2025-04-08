@@ -1127,6 +1127,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="573974402615125334">Табын бүлэг хуваалцах, нэгдэх, хамтран ажиллахын тулд түүх, табаа синк хийнэ үү</translation>
 <translation id="5740123193752401435">Табуудаас хайх…</translation>
 <translation id="5744274077973758795"><ph name="FEATURE_NAME" />-н мэдэгдлийг асаасан</translation>
+<translation id="5745598824054949526">Ямар ч текст олдсонгүй</translation>
 <translation id="574762237186762643">Үйл явдлууд</translation>
 <translation id="5749158352074143502">Энэ табтай үргэлжлүүлэх</translation>
 <translation id="5753021559215751319">Нууц үгийг хадгалах</translation>
@@ -1290,6 +1291,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6410883413783534063">Өөр хуудаснуудад нэгэн зэрэг зочлохын тулд табуудыг нээнэ үү</translation>
 <translation id="6416807286621280684">Таны мөшгөсөн илгээмж болон хүргэлтийн талаарх шинэ мэдээлэл.</translation>
 <translation id="6418346271604475326">PDF форматыг бэлдэж байна</translation>
+<translation id="6421038304268477484">Орчуулсан текст</translation>
 <translation id="6429213933892582367">Нууц үгний сонголтыг нээнэ үү</translation>
 <translation id="6434591244308415567">Алдаа гарлаа. Дараа дахин оролдоно уу.</translation>
 <translation id="6435307030888827407">Гарсан хэвээр байх</translation>
@@ -1968,6 +1970,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="9097506547406246598">Дагахаа болих боломжгүй. Алдаа гарлаа.</translation>
 <translation id="9098541895599151034"><ph name="NUMBER_OF_ACCOUNTS" /> нууц үгийг устгах уу?</translation>
 <translation id="9099233023029360602">Аль бүртгэлийг ашиглахыг үргэлж асуух</translation>
+<translation id="9099821309562615674">Таны орчуулж буй текст тод бөгөөд хүрээнд байгаа эсэхийг нягтална уу.</translation>
 <translation id="9100610230175265781">Нэвтрэх үг шаардлагатай</translation>
 <translation id="91023216973987714">Төлбөрийн хэрэгсэл</translation>
 <translation id="9106655997975673326">"<ph name="SOURCE_DEVICE" />"-с</translation>

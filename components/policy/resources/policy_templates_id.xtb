@@ -558,6 +558,12 @@ Jika kebijakan ini tidak disetel, link akan dibuka secara default di aplikasi An
 <translation id="1417888712677507140">Blokir dialog JavaScript yang dipicu dari subframe asal yang berbeda.</translation>
 <translation id="1418387035898607074">Lewati pemeriksaan Safe Browsing untuk file yang didownload dari sumber tepercaya</translation>
 <translation id="1419020637569060510">Menambahkan batasan pada penggunaan akun terkelola sebagai akun sekunder di ChromeOS</translation>
+<translation id="1423359855587524289">Jika kebijakan ini disetel ke Aktif atau tidak disetel, aplikasi mungkin menggunakan
+otorisasi notifikasi "Provisional" iOS untuk menampilkan notifikasi di iOS
+Notification Center.
+
+Jika kebijakan ini disetel ke Nonaktif, aplikasi tidak akan menggunakan notifikasi
+sementara.</translation>
 <translation id="142346659686073702">Izinkan pengguna tak terafiliasi menggunakan Crostini</translation>
 <translation id="1423900783955065155">Kebijakan ini mengontrol apakah halaman dengan header <ph name="CACHE_CONTROL_NO_STORE_NAME" /> dapat disimpan dalam back-forward cache. Situs yang menyetel header ini mungkin tidak mengharapkan halaman tersebut dipulihkan dari back-forward cache karena beberapa informasi sensitif masih dapat ditampilkan setelah pemulihan, meskipun tidak dapat diakses lagi.
 
@@ -1299,6 +1305,7 @@ Jika kebijakan ini disetel ke Salah (False), informasi yang dapat digunakan untu
 
 Kebijakan ini hanya berlaku saat perangkat didaftarkan dengan <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> untuk <ph name="PRODUCT_NAME" />.
 Kebijakan ini selalu berlaku untuk <ph name="PRODUCT_OS_NAME" />.</translation>
+<translation id="187961648719201562">Menghapus file lokal yang ada (didukung sejak versi 137)</translation>
 <translation id="1883274744253492031">Aktifkan upgrade otomatis konten campuran</translation>
 <translation id="1885782360784839335">Mengaktifkan ditampilkannya konten promosi tab penuh</translation>
 <translation id="1888871729456797026">Token pendaftaran kebijakan cloud di desktop</translation>
@@ -7019,6 +7026,9 @@ pengguna tidak dapat mengubah atau menggantinya.</translation>
 <translation id="5883754873839596178">Menyetel kebijakan akan menentukan jumlah maksimal koneksi simultan ke server proxy. Beberapa server proxy tidak dapat menangani koneksi serentak tiap klien dalam jumlah besar, yang dapat diselesaikan dengan menyetel kebijakan ini ke nilai yang lebih rendah. Nilai harus lebih rendah dari 100 dan lebih tinggi dari 6. Beberapa aplikasi web diketahui menggunakan banyak koneksi dengan GET yang macet, jadi dengan menyetel nilai lebih rendah dari 32 dapat menyebabkan jaringan browser menjadi macet jika terlalu banyak aplikasi web dengan jaringan macet terbuka. Turunkan di bawah nilai default dengan menanggung sendiri risikonya.
 
       Tidak menyetel kebijakan berarti nilai default 32 akan digunakan.</translation>
+<translation id="5886280631293123880">Kebijakan ini memberikan pilihan pengaktifan kembali sementara ke rangkaian peristiwa platform yang tidak digunakan lagi dan dihapus, yang disebut Peristiwa Mutasi.
+Jika kebijakan ini disetel ke Aktif, peristiwa mutasi akan terus diaktifkan, meskipun telah dinonaktifkan secara default untuk pengguna web normal. Jika kebijakan ini disetel ke Nonaktif atau tidak disetel, peristiwa ini mungkin tidak akan diaktifkan.
+Kebijakan ini adalah solusi sementara, dan tidak akan berfungsi lagi di M137.</translation>
 <translation id="5887414688706570295">Mengonfigurasi awalan TalkGadget yang akan digunakan oleh hosting akses jarak jauh dan mencegah pengguna mengubahnya.
 
           Jika ditentukan, awalan ini ditambahkan di depan nama TalkGadget dasar untuk membuat nama domain TalkGadget lengkap. Nama domain TalkGadget dasar adalah '.talkgadget.google.com'.
@@ -8654,6 +8664,21 @@ Tidak menyetel kebijakan ini untuk suatu situs akan membuat kebijakan dari <ph n
 
 Tindakan ini akan menggantikan kebijakan <ph name="WINDOW_PLACEMENT_ALLOWED_FOR_URLS_POLICY_NAME" /> yang sudah tidak digunakan lagi.</translation>
 <translation id="6894178810167845842">URL halaman Tab Baru</translation>
+<translation id="6895437634974956885">Kesehatan baterai dapat dipengaruhi oleh faktor seperti pengisian daya penuh yang sering dan durasi pengisian daya yang lama. Kebijakan ini menyediakan tiga opsi untuk mengoptimalkan perilaku pengisian daya dan memitigasi faktor tersebut, yang pada akhirnya akan memperpanjang masa pakai baterai.
+
+Jika kebijakan ini tidak disetel, pengguna dapat menggunakan tombol Pengisian Daya Adaptif untuk mengaktifkan/menonaktifkan fitur Pengisian Daya Adaptif.
+
+Jika kebijakan ini disetel ke 1 - Standar atau tidak disetel, baterai akan diisi secara normal hingga 100%. Skenario ini akan menonaktifkan pengisian daya adaptif dan terbatas.
+
+Jika kebijakan ini disetel ke 2 - Adaptif, perangkat akan mempelajari kebiasaan pengisian daya Anda dan menunda pengisian daya sampai 100% hingga diperlukan. Skenario ini membantu memperpanjang kesehatan baterai.
+
+Jika kebijakan ini disetel ke 3 - Terbatas, baterai hanya akan diisi daya hingga sekitar 80% untuk memaksimalkan masa pakainya.
+
+Jika kebijakan <ph name="DEVICE_POWER_BATTERY_CHARGING_OPTIMIZATION_POLICY_NAME" /> disetel, kebijakan tersebut akan lebih diprioritaskan daripada kebijakan <ph name="DEVICE_POWER_ADAPTIVE_CHARGING_ENABLED_POLICY_NAME" />.
+
+Jika kebijakan <ph name="DEVICE_POWER_BATTERY_CHARGING_OPTIMIZATION_POLICY_NAME" /> tidak disetel, kebijakan <ph name="DEVICE_POWER_ADAPTIVE_CHARGING_ENABLED_POLICY_NAME" /> akan mengontrol apakah fitur pengisian daya adaptif diaktifkan atau dinonaktifkan.
+
+<ph name="DEVICE_POWER_ADAPTIVE_CHARGING_ENABLED_POLICY_NAME" /> tidak akan digunakan lagi.</translation>
 <translation id="6897730193187922386">Sembunyikan pesan penghentian <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="6899705656741990703">Mendeteksi setelan proxy secara otomatis</translation>
 <translation id="6901462246839613666">Mengaktifkan tampilan konten promosi</translation>
@@ -9349,6 +9374,7 @@ Jika kebijakan ini disetel ke Salah (False), perilaku lama akan diaktifkan.</tra
 <translation id="7366637365754181686">Aktifkan pelaporan cloud terkait sinyal keamanan pengguna</translation>
 <translation id="7366948865469126526">Nonaktifkan Konversi Unit Jawaban Instan</translation>
 <translation id="7367734504783638685">Sinkronisasi sandi antara penyedia SSO pihak ketiga dan perangkat Chrome</translation>
+<translation id="7372818045062294211">Izinkan aplikasi menggunakan otorisasi notifikasi sementara</translation>
 <translation id="7372831798009983116">Mengaktifkan fitur aksesibilitas klik otomatis</translation>
 <translation id="7373200034079131670">Reboot saat pengguna logout jika Android atau VM telah dimulai.</translation>
 <translation id="7374784840090523241">Tetapkan penyimpanan default pembuatan kunci sandi ke penyimpanan lain seperti profil <ph name="PRODUCT_NAME" />.</translation>
@@ -10744,6 +10770,7 @@ Jika kebijakan ini disetel ke <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR
 <translation id="8421202694245456861">Mengonfigurasi fitur teks <ph name="CLASS_TOOLS_NAME" /></translation>
 <translation id="8422658829373743789">Mengontrol perilaku baru untuk pengiriman peristiwa pada kontrol formulir yang dinonaktifkan</translation>
 <translation id="8423237137411858515">Simpan file lokal dalam mode hanya baca</translation>
+<translation id="8424056332208748750">Jangan izinkan aplikasi menggunakan otorisasi notifikasi sementara</translation>
 <translation id="8424255554404582727">Setel pemutaran layar default, diterapkan kembali setiap kali melakukan boot ulang</translation>
 <translation id="8426231401662877819">Putar layar searah jarum jam sebesar 90 derajat</translation>
 <translation id="8426326725481825773">Kebijakan ini menentukan perilaku untuk konfigurasi ulang tombol Home/End
@@ -10886,6 +10913,7 @@ Rollback ke <ph name="PRODUCT_OS_NAME" /> versi 106 atau yang lebih lama tidak d
 <translation id="8520064498689833152">Paksa penggunaan SafeSearch di Google Penelusuran dan paksa Mode Terbatas YouTube menjadi minimal Menengah</translation>
 <translation id="8520950040439618600">Mengizinkan metode autentikasi PIN dan penyambungan untuk host akses jarak jauh</translation>
 <translation id="8524334245528364388">URL ke file JSON dengan daftar server cetak.</translation>
+<translation id="8525282442896658040">Mengizinkan aplikasi menggunakan otorisasi notifikasi sementara di iOS</translation>
 <translation id="8525526490824335042">Container Linux</translation>
 <translation id="8526745614158856826">Menyetel kebijakan memungkinkan Anda menetapkan daftar situs yang otomatis diizinkan untuk mengakses semua perangkat yang tersedia.
 

@@ -44,7 +44,6 @@
 <translation id="1026822031284433028">Ngarko imazhin</translation>
 <translation id="1026959648338730078">Windows Hello ose tasti i sigurisë së jashtme</translation>
 <translation id="1028700151766901954">Arsyeja: LBS qëndron në <ph name="DEFAULT_OPEN_BROWSER" /> si parazgjedhje.</translation>
-<translation id="1028823395684328817">Për të vazhduar të përdorësh fjalëkalimet dhe më shumë në "Llogarinë tënde të Google", verifiko që je ti</translation>
 <translation id="102916930470544692">Çelësi i kalimit</translation>
 <translation id="1029317248976101138">Zmadho</translation>
 <translation id="1029526375103058355">Trokit për të klikuar</translation>
@@ -814,7 +813,6 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1558671750917454373">Vazhdo transmetimin te <ph name="DEVICE_NAME" /></translation>
 <translation id="1561331397460162942">Kjo lejon qasjen te vendndodhja për aplikacionet, uebsajtet me lejen për vendndodhjen, si dhe shërbimet e sistemit</translation>
 <translation id="1562119309884184621">Shtimi i këtij kontakti do ta kujtojë atë herën tjetër që do të ndajë</translation>
-<translation id="1563137369682381456">Data e skadimit</translation>
 <translation id="1566049601598938765">Uebsajti</translation>
 <translation id="15662109988763471">Printeri i zgjedhur nuk ofrohet ose nuk është instaluar si duhet. Kontrollo printerin ose provo të zgjedhësh një printer tjetër.</translation>
 <translation id="1566329594234563241">Kur është joaktive dhe në prizë</translation>
@@ -3464,7 +3462,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3420501302812554910">Çelësi i brendshëm i sigurisë kërkon rivendosje</translation>
 <translation id="3421387094817716717">Çelësi publik i kurbës eliptike</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Shënim.<ph name="END_BOLD" /> Edhe një zë i ngjashëm ose një regjistrim mund të jetë në gjendje të ketë qasje në rezultatet e tua personale ose në "Asistentin" tënd.</translation>
-<translation id="3421835120203732951">Shto profil të ri</translation>
 <translation id="3422989558057853751">Artikulli i fundit është zgjedhur, anulimi i zgjedhjes së tij do të bëjë të dalësh nga modaliteti i zgjedhjes</translation>
 <translation id="3423111258700187173">Rezultatet e gjetura te "<ph name="FOLDER_TITLE" />"</translation>
 <translation id="3423226218833787854">Mëso më shumë rreth kësaj veçorie të inteligjencës artificiale</translation>
@@ -9323,7 +9320,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7622768823216805500">Sajtet instalojnë zakonisht përpunues të pagesave për veçoritë e blerjeve, si p.sh. përfundimin e blerjeve me më shumë lehtësi</translation>
 <translation id="7622966771025050155">Kalo në skedën e shkrepur</translation>
 <translation id="7624337243375417909">kyçja e germave kapitale joaktive</translation>
-<translation id="7625025537587898155">Shto profil të ri</translation>
 <translation id="7625568159987162309">Shiko autorizimet dhe të dhënat e ruajtura nëpër sajte</translation>
 <translation id="7625823789272218216">Skedë e re në të majtë</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), Klasa <ph name="GRADE" /></translation>
@@ -11739,7 +11735,6 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="98235653036850093">Përshëndetje, <ph name="PROFILE_NAME" /></translation>
 <translation id="983192555821071799">Mbyll të gjitha skedat</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - Kamera dhe mikrofoni po regjistrojnë</translation>
-<translation id="984275831282074731">Mënyrat e pagesës</translation>
 <translation id="984705303330760860">Shto gjuhë për kontroll drejtshkrimor</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Të përgjithshme</translation>

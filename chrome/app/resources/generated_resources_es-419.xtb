@@ -44,7 +44,6 @@
 <translation id="1026822031284433028">Cargar imagen</translation>
 <translation id="1026959648338730078">Windows Hello o llave de seguridad externa</translation>
 <translation id="1028700151766901954">Motivo: LBS permanece en <ph name="DEFAULT_OPEN_BROWSER" /> de forma predeterminada.</translation>
-<translation id="1028823395684328817">Para seguir usando las contraseñas y otros elementos en tu Cuenta de Google, verifica tu identidad</translation>
 <translation id="102916930470544692">Llave de acceso</translation>
 <translation id="1029317248976101138">Zoom</translation>
 <translation id="1029526375103058355">Toca para hacer clic</translation>
@@ -814,7 +813,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1558671750917454373">Reanudar la transmisión a <ph name="DEVICE_NAME" /></translation>
 <translation id="1561331397460162942">Esta opción permite el acceso a la ubicación para las apps, los sitios web con el permiso correspondiente y los servicios del sistema</translation>
 <translation id="1562119309884184621">Si agregas este contacto, se recordará la próxima vez que se desee compartir contenido.</translation>
-<translation id="1563137369682381456">Fecha de vencimiento</translation>
 <translation id="1566049601598938765">Sitio web</translation>
 <translation id="15662109988763471">La impresora seleccionada no está disponible o no se instaló correctamente. Revisa tu impresora o selecciona otra.</translation>
 <translation id="1566329594234563241">Mientras esté inactivo y enchufado</translation>
@@ -1248,6 +1246,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="185111092974636561"><ph name="BEGIN_PARAGRAPH1" />Antes de la inscripción, debes borrar el TPM para que <ph name="DEVICE_OS" /> pueda apropiarse del dispositivo.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />También puedes desactivar el dispositivo TPM por completo. Tus datos seguirán almacenándose de forma segura con la encriptación por medio software, pero se inhabilitarán ciertas funciones de seguridad, como los certificados con copia de seguridad en hardware.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Para cambiar la configuración del TPM, debes reiniciar el sistema e ingresar la configuración de BIOS/UEFI. Los pasos varían según el modelo del dispositivo. Para obtener más información, abre la documentación de <ph name="DEVICE_OS" /> en otro dispositivo antes de reiniciar el sistema: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="1851551847729706116">Compartiendo <ph name="TAB_NAME" /> en esta pestaña</translation>
 <translation id="1852799913675865625">Se produjo un error al intentar leer el archivo: <ph name="ERROR_TEXT" />.</translation>
 <translation id="1854180393107901205">Detener transmisión</translation>
 <translation id="1856715684130786728">Agregar ubicación...</translation>
@@ -3464,7 +3463,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3420501302812554910">Debe restablecerse la llave de seguridad interna</translation>
 <translation id="3421387094817716717">Clave pública de curva elíptica</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Nota:<ph name="END_BOLD" /> Es posible que alguien con una grabación o una voz similares también pueda acceder a tus resultados personales o a tu Asistente.</translation>
-<translation id="3421835120203732951">Agregar nuevo perfil</translation>
 <translation id="3422989558057853751">Se seleccionó el último elemento. Si anulas la selección, saldrás del modo de selección</translation>
 <translation id="3423111258700187173">Resultados encontrados en <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">Más información sobre esta función basada en IA</translation>
@@ -9326,7 +9324,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7622768823216805500">Por lo general los sitios instalan controladores de pago para habilitar funciones de compra, por ejemplo, a fin de facilitar la confirmación de las compras.</translation>
 <translation id="7622966771025050155">Cambiar a la pestaña capturada</translation>
 <translation id="7624337243375417909">bloqueo de mayúscula desactivado</translation>
-<translation id="7625025537587898155">Agregar nuevo perfil</translation>
 <translation id="7625568159987162309">Ver permisos y datos almacenados de los sitios</translation>
 <translation id="7625823789272218216">Nueva pestaña a la izquierda</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), Grado <ph name="GRADE" /></translation>
@@ -11279,6 +11276,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="8963117664422609631">Ir a la configuración del sitio</translation>
 <translation id="8964927371396953727">Verifica tu identidad para usar y guardar contraseñas en tu cuenta, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8965037249707889821">Ingresa la contraseña anterior.</translation>
+<translation id="8967403839792635452">¿Estás desarrollando extensiones? Mantente al tanto de las <ph name="BEGIN_LINK" />novedades<ph name="END_LINK" /> con la documentación para desarrolladores de extensiones de Chrome.</translation>
 <translation id="8967427617812342790">Agregar a la Lista de lectura</translation>
 <translation id="8967548289042494261">Quitar <ph name="VM_NAME" /></translation>
 <translation id="8968527460726243404">Herramienta de escritura de imagen del SO de Chrome</translation>
@@ -11743,7 +11741,6 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="98235653036850093">Hola, <ph name="PROFILE_NAME" /></translation>
 <translation id="983192555821071799">Cerrar todas las pestañas</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - La cámara y el micrófono están grabando</translation>
-<translation id="984275831282074731">Formas de pago</translation>
 <translation id="984705303330760860">Agregar idiomas al corrector ortográfico</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">General</translation>

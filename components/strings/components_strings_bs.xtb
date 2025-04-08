@@ -99,7 +99,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="1175364870820465910">Štam&amp;panje...</translation>
 <translation id="1175393348063009671">Foto papir (mat)</translation>
 <translation id="1175875016430184367">Trostruko spajanje na desnoj strani</translation>
-<translation id="1176123604678140687">Mjesec isteka</translation>
 <translation id="1177548198167638471">Ne pitaj ponovo</translation>
 <translation id="1177863135347784049">Prilagođeno</translation>
 <translation id="1178581264944972037">Pauziraj</translation>
@@ -333,7 +332,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
       &lt;p&gt;Podesite datum i vrijeme iz odjeljka &lt;strong&gt;Opće&lt;/strong&gt; u aplikaciji &lt;strong&gt;Postavke&lt;/strong&gt;.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Vaš administrator će ponovo pokrenuti uređaj u <ph name="TIME" />, <ph name="DATE" /></translation>
 <translation id="1562805467275776390">Auto trke</translation>
-<translation id="1563137369682381456">Datum isteka</translation>
 <translation id="1563755205047885671">Akcione i platformske igre</translation>
 <translation id="1564634006476980707">HTTPS šema se preporučuje za URL pretraživanja: <ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">Informacije o umrežavanju, naprimjer adrese, konfiguracija interfejsa i kvalitet veze</translation>
@@ -937,7 +935,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2606760465469169465">Automatska potvrda</translation>
 <translation id="2608019759319359258">Kada je tema blokirana, neće se koristiti za personaliziranje oglasa</translation>
 <translation id="2610561535971892504">Kopiranje klikom</translation>
-<translation id="2612676031748830579">Broj kartice</translation>
 <translation id="2612993535136743634">Svi sigurnosni kodovi sačuvani na vašem uređaju i Google računu će se izbrisati</translation>
 <translation id="2616412942031748191">Optimizacija za pretraživače i marketing</translation>
 <translation id="2618206371527040026">Akademske konferencije i publikacije</translation>
@@ -1925,7 +1922,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4282346679996504092">Obavještenja za ovaj proizvod su isključena, a oznaka uklonjena</translation>
 <translation id="4285498937028063278">Otkači</translation>
 <translation id="4287495839370498922">Poboljšana privatnost pri izloženosti oglasima u Chromeu</translation>
-<translation id="4288101205645068104">Izbriši vozilo</translation>
+<translation id="4288101205645068104">Izbrišite vozilo</translation>
 <translation id="4290920330097335010">Nikada ne dozvoli</translation>
 <translation id="4296207570293932800">Sada je dostupna nova funkcija privatnosti pri izloženosti oglasima</translation>
 <translation id="4297502707443874121">Sličica za stranicu <ph name="THUMBNAIL_PAGE" /></translation>
@@ -3338,7 +3335,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">Koristi YouTube uz odabire roditelja</translation>
 <translation id="6779348349813025131">Google upravitelj lozinki treba pristup MacOS Keychainu</translation>
-<translation id="6782656837469339439">Godina isteka</translation>
 <translation id="6785990323398321538">Možete promijeniti pretraživač bilo kada u postavkama Chromea.</translation>
 <translation id="6786145470008421571">Koverta 6 x 9 in</translation>
 <translation id="67862343314499040">Ljubičasta</translation>
@@ -4208,7 +4204,7 @@ Dodatni detalji:
 <translation id="8280630997017109758">Ladica 11</translation>
 <translation id="8281730697546299650">Sada su dostupne druge funkcije privatnosti pri izloženost oglasima</translation>
 <translation id="8281886186245836920">Preskoči</translation>
-<translation id="8282292167096638950">Izbriši vozačku dozvolu</translation>
+<translation id="8282292167096638950">Izbrišite vozačku dozvolu</translation>
 <translation id="8282409409360764263">Održavanje dvorišta</translation>
 <translation id="8282947398454257691">Znati jedinstveni identifikator uređaja</translation>
 <translation id="8284769179630993263">Upravljajte Sigurnim pregledanjem i drugim funkcijama u postavkama Chromea</translation>
@@ -4236,7 +4232,7 @@ Dodatni detalji:
 <translation id="8321476692217554900">obavještenja</translation>
 <translation id="8322402665880479974">Kreveti i uzglavlja</translation>
 <translation id="8323505966575306467">Dodajte veću zaštitu za lozinke</translation>
-<translation id="832547548543012337">Izbriši putovnicu</translation>
+<translation id="832547548543012337">Izbrišite pasoš</translation>
 <translation id="832567874344484841">Hrana za doručak</translation>
 <translation id="8329068931308448247">Koverta #14</translation>
 <translation id="8332188693563227489">Pristup host računaru <ph name="HOST_NAME" /> je zabranjen</translation>

@@ -99,7 +99,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="1175364870820465910">&amp;Ispis...</translation>
 <translation id="1175393348063009671">Fotografija (mat)</translation>
 <translation id="1175875016430184367">Trostruko spajanje s desne strane</translation>
-<translation id="1176123604678140687">Mjesec isteka</translation>
 <translation id="1177548198167638471">Više me ne pitaj</translation>
 <translation id="1177863135347784049">Prilagođeno</translation>
 <translation id="1178581264944972037">Pauziraj</translation>
@@ -333,7 +332,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
       &lt;p&gt;Prilagodite datum i vrijeme putem odjeljka &lt;strong&gt;Općenito&lt;/strong&gt; u aplikaciji &lt;strong&gt;Postavke&lt;/strong&gt;.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Administrator će ponovo pokrenuti vaš uređaj u <ph name="TIME" /> <ph name="DATE" /></translation>
 <translation id="1562805467275776390">Automobilske utrke</translation>
-<translation id="1563137369682381456">Datum isteka</translation>
 <translation id="1563755205047885671">Akcijske i platformske igre</translation>
 <translation id="1564634006476980707">HTTPS shema preporučuje se za URL pretraživanja: <ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">Podaci o mreži kao što su adrese, konfiguracija sučelja i kvaliteta veze</translation>
@@ -937,7 +935,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2606760465469169465">Automatska potvrda</translation>
 <translation id="2608019759319359258">Kada je tema blokirana, neće se upotrebljavati za personalizaciju oglasa</translation>
 <translation id="2610561535971892504">Klik za kopiranje</translation>
-<translation id="2612676031748830579">Broj kartice</translation>
 <translation id="2612993535136743634">Izbrisat će se svi sigurnosni kodovi spremljeni na vašem uređaju i na Google računu</translation>
 <translation id="2616412942031748191">Optimizacija za tražilice i marketing</translation>
 <translation id="2618206371527040026">Akademske konferencije i publikacije</translation>
@@ -3337,7 +3334,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">Upotreba YouTubea s postavkama koje je odabrao tvoj roditelj</translation>
 <translation id="6779348349813025131">Google upravitelj zaporki treba pristup MacOS Keychainu</translation>
-<translation id="6782656837469339439">Godina isteka</translation>
 <translation id="6785990323398321538">Tražilicu možete promijeniti u Chromeovim postavkama kad god želite.</translation>
 <translation id="6786145470008421571">Omotnica 6 x 9 in</translation>
 <translation id="67862343314499040">Ljubičasta</translation>

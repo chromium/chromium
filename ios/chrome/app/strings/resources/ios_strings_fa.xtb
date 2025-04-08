@@ -261,6 +261,7 @@
 <translation id="2010008505735295285">بار کردن مجدد</translation>
 <translation id="2015722694326466240">برای دیدن گذرنویسه‌ها، اول باید گذرنویسه‌ای برای دستگاه تنظیم کنید.</translation>
 <translation id="201759455285471444">ازهم باز کردن گروه برگه.</translation>
+<translation id="202070562065520783">این را برایم توضیح بده</translation>
 <translation id="2021670401941426298">برای اینکه سابقه جستجویتان را درصورت امکان حذف کنید، به دستورالعمل‌های موتور جستجو مراجعه کنید.</translation>
 <translation id="2044394949148788042">باز کردن شبکه برگه</translation>
 <translation id="20485545164632846">مورد جدید</translation>
@@ -1126,6 +1127,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="573974402615125334">برای هم‌رسانی، پیوستن، و مشارکت در گروه‌های برگه، سابقه و برگه‌هایتان را همگام‌سازی کنید</translation>
 <translation id="5740123193752401435">جستجو کردن برگه‌ها…</translation>
 <translation id="5744274077973758795">اعلان‌های <ph name="FEATURE_NAME" /> روشن شد</translation>
+<translation id="5745598824054949526">نوشتاری یافت نشد</translation>
 <translation id="574762237186762643">رویدادها</translation>
 <translation id="5749158352074143502">ادامه کار با این برگه</translation>
 <translation id="5753021559215751319">ذخیره کردن گذرواژه</translation>
@@ -1289,6 +1291,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6410883413783534063">برای بازدید هم‌زمان از صفحه‌های مختلف، چند برگه باز کنید</translation>
 <translation id="6416807286621280684">بسته‌های ردیابی‌شده و به‌روزرسانی‌های ارسال.</translation>
 <translation id="6418346271604475326">‏آماده‌سازی PDF</translation>
+<translation id="6421038304268477484">نوشتار ترجمه‌شده</translation>
 <translation id="6429213933892582367">گزینه‌های «گذرواژه » را باز کنید</translation>
 <translation id="6434591244308415567">خطایی روی داد. بعداً دوباره امتحان کنید.</translation>
 <translation id="6435307030888827407">ماندن خارج از سیستم</translation>
@@ -1967,6 +1970,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="9097506547406246598">لغو دنبال کردن ممکن نیست. مشکلی پیش آمد.</translation>
 <translation id="9098541895599151034"><ph name="NUMBER_OF_ACCOUNTS" /> گذرواژه حذف شود؟</translation>
 <translation id="9099233023029360602">هر بار پرسیده شود از کدام حساب استفاده شود</translation>
+<translation id="9099821309562615674">مطمئن شوید نوشتاری که می‌خواهید ترجمه کنید واضح و در قاب باشد.</translation>
 <translation id="9100610230175265781">گذرعبارت لازم است</translation>
 <translation id="91023216973987714">روش‌های پرداخت</translation>
 <translation id="9106655997975673326">از «<ph name="SOURCE_DEVICE" />»</translation>

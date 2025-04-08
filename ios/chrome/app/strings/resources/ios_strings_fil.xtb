@@ -261,6 +261,7 @@
 <translation id="2010008505735295285">I-reload</translation>
 <translation id="2015722694326466240">Upang makita ang mga password, dapat ka munang magtakda ng passcode sa iyong device.</translation>
 <translation id="201759455285471444">I-expand ang grupo ng tab.</translation>
+<translation id="202070562065520783">Ipaliwanag ito sa akin</translation>
 <translation id="2021670401941426298">Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history ng paghahanap mo, kung naaangkop.</translation>
 <translation id="2044394949148788042">Buksan ang grid ng tab</translation>
 <translation id="20485545164632846">bagong item</translation>
@@ -1126,6 +1127,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="573974402615125334">Para magawang mag-share ng, sumali sa, at makipag-collaborate sa mga grupo ng tab, i-sync ang iyong history at mga tab</translation>
 <translation id="5740123193752401435">Maghanap sa mga tab…</translation>
 <translation id="5744274077973758795">Na-on ang mga notification sa <ph name="FEATURE_NAME" /></translation>
+<translation id="5745598824054949526">Walang nakitang text</translation>
 <translation id="574762237186762643">Mga Event</translation>
 <translation id="5749158352074143502">Magpatuloy sa tab na ito</translation>
 <translation id="5753021559215751319">I-save ang password</translation>
@@ -1289,6 +1291,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="6410883413783534063">Magbukas ng mga tab para mabisita ang iba't ibang page nang sabay-sabay</translation>
 <translation id="6416807286621280684">Ang iyong mga update sa mga sinusubaybayang package at delivery.</translation>
 <translation id="6418346271604475326">Ihinahanda ang PDF</translation>
+<translation id="6421038304268477484">Na-translate na text</translation>
 <translation id="6429213933892582367">Buksan ang Mga Opsyon sa Password</translation>
 <translation id="6434591244308415567">Nagkaroon ng error. Subukang muli sa ibang pagkakataon.</translation>
 <translation id="6435307030888827407">Manatiling naka-sign out</translation>
@@ -1968,6 +1971,7 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="9097506547406246598">Hindi ma-unfollow. Nagkaproblema.</translation>
 <translation id="9098541895599151034">Mag-delete ng <ph name="NUMBER_OF_ACCOUNTS" /> (na) Password?</translation>
 <translation id="9099233023029360602">Tanungin palagi kung aling account ang gagamitin</translation>
+<translation id="9099821309562615674">Tiyaking malinaw at nasa frame ang text na tina-translate mo.</translation>
 <translation id="9100610230175265781">Kinakailangan ang passphrase</translation>
 <translation id="91023216973987714">Mga paraan ng pagbabayad</translation>
 <translation id="9106655997975673326">Mula sa "<ph name="SOURCE_DEVICE" />"</translation>

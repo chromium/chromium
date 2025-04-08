@@ -351,6 +351,7 @@
 <translation id="2438248248625638801">Oppretter opptakstitler</translation>
 <translation id="2446553403094072641">Nøyaktighet av flytende desimalpunkt</translation>
 <translation id="2448312741937722512">Type</translation>
+<translation id="2448857983905133469">Kursverktøy</translation>
 <translation id="2468124392950503650">Velg en forespørsel for å starte genereringen, eller se <ph name="BEGIN_LINK_PROMPTING_GUIDE" />veiledningen for forespørsler<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Bruk Hjelp meg å skrive til å lage utkast eller finjustere eksisterende tekst – basert på AI fra Google</translation>
 <translation id="2475982808118771221">Det oppsto en feil</translation>
@@ -449,6 +450,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Sluttpunkt</translation>
 <translation id="3060579846059757016">Omriss</translation>
+<translation id="3060798442805232711">Kursverktøy bruker mikrofonen din</translation>
 <translation id="3061850252076394168">slå på tekstopplesing</translation>
 <translation id="3066772729299747758">på tirsdag</translation>
 <translation id="3069085583900247081">Testen mislyktes</translation>
@@ -910,6 +912,7 @@
 <translation id="5170568018924773124">Vis i mappen</translation>
 <translation id="517075088756846356">Koble <ph name="DEVICE_NAME" />-strømkabelen fra og koble den til igjen for å fortsette oppdateringsprosessen</translation>
 <translation id="5180108905184566358">baobabtrær</translation>
+<translation id="5180431943345994173">Læreren din har fjernet innhold i kursverktøy</translation>
 <translation id="5180712487038406644">Uttrykksfull</translation>
 <translation id="5190187232518914472">Gjenopplev favorittøyeblikkene dine. For å legge til eller redigere album, gå til <ph name="LINK_BEGIN" />Google Foto<ph name="LINK_END" />.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
@@ -1003,6 +1006,7 @@
 <translation id="5628106863521633649">Tilgjengelige språk</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">abstrakt</translation>
+<translation id="5655084389678168978">Læreren din har lagt til nytt innhold i kursverktøy</translation>
 <translation id="5655283760733841251">Tastaturlysstyrke opp</translation>
 <translation id="5655296450510165335">Registrering av enhet</translation>
 <translation id="5655776422854483175">Ingen utskriftsjobber</translation>
@@ -1528,6 +1532,7 @@ Last ned transkripsjonsmodellen (opptil 100 MB) for å få disse transkripsjonen
 <translation id="7971535376154084247">Generelle kontroller</translation>
 <translation id="7977800524392185497">For å koble til et <ph name="NETWORK_NAME" />-nettverk, gå til Innstillinger</translation>
 <translation id="7978412674231730200">Privatnøkkel</translation>
+<translation id="7979468455552394856">Kursverktøy er koblet til elever</translation>
 <translation id="7982789257301363584">Nettverk</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{«<ph name="APP_NAME_1" />» ble startet automatisk}other{# apper ble startet automatisk}}</translation>
 <translation id="7994702968232966508">EAP-metode</translation>

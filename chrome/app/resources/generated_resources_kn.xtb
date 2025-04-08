@@ -44,7 +44,6 @@
 <translation id="1026822031284433028">ಚಿತ್ರ ಲೋಡ್ ಮಾಡು</translation>
 <translation id="1026959648338730078">Windows Hello ಅಥವಾ ಬಾಹ್ಯ ಭದ್ರತಾ ಕೀ</translation>
 <translation id="1028700151766901954">ಕಾರಣ: LBS ಡಿಫಾಲ್ಟ್ ಆಗಿ <ph name="DEFAULT_OPEN_BROWSER" /> ನಲ್ಲಿ ಉಳಿಯುತ್ತದೆ.</translation>
-<translation id="1028823395684328817">ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಹಾಗೂ ಮುಂತಾದವುಗಳನ್ನು ಬಳಸುವುದನ್ನು ಮುಂದುವರಿಸಲು, ಇದು ನೀವೇ ಎಂಬುದನ್ನು ದೃಢೀಕರಿಸಿ</translation>
 <translation id="102916930470544692">ಪಾಸ್‌ಕೀ</translation>
 <translation id="1029317248976101138">ಝೂಮ್</translation>
 <translation id="1029526375103058355">ಕ್ಲಿಕ್ ಮಾಡಲು ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
@@ -820,7 +819,6 @@
 <translation id="1558671750917454373"><ph name="DEVICE_NAME" /> ಗೆ ಬಿತ್ತರಿಸುವುದನ್ನು ಪುನರಾರಂಭಿಸಿ</translation>
 <translation id="1561331397460162942">ಇದು ಸ್ಥಳದ ಅನುಮತಿಯಿರುವ ಆ್ಯಪ್‌ಗಳು, ವೆಬ್‌ಸೈಟ್‌ಗಳು ಮತ್ತು ಸಿಸ್ಟಮ್ ಸೇವೆಗಳಿಗೆ ಸ್ಥಳದ ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ಅನುಮತಿಸುತ್ತದೆ</translation>
 <translation id="1562119309884184621">ಈ ಸಂಪರ್ಕವನ್ನು ಸೇರಿಸುವುದರಿಂದ ಮುಂದಿನ ಬಾರಿ ಹಂಚಿಕೊಳ್ಳುವಾಗ ಅವರನ್ನು ನೆನಪಿಟ್ಟುಕೊಳ್ಳಲಾಗುತ್ತದೆ</translation>
-<translation id="1563137369682381456">ಅವಧಿ ಮುಗಿಯುವ ದಿನಾಂಕ</translation>
 <translation id="1566049601598938765">ವೆಬ್‌ಸೈಟ್</translation>
 <translation id="15662109988763471">ಆಯ್ಕೆಮಾಡಿದ ಪ್ರಿಂಟರ್ ಲಭ್ಯವಿಲ್ಲ ಅಥವಾ ಸರಿಯಾಗಿ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾಗಿಲ್ಲ. ನಿಮ್ಮ ಪ್ರಿಂಟರ್ ಅನ್ನು ಪರಿಶೀಲಿಸಿ ಅಥವಾ ಬೇರೊಂದು ಪ್ರಿಂಟರ್ ಅನ್ನು ಆಯ್ಕೆಮಾಡಲು ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="1566329594234563241">ನಿಷ್ಕ್ರಿಯವಾಗಿರುವಾಗ ಮತ್ತು ಪ್ಲಗ್-ಇನ್ ಆಗಿರುವಾಗ</translation>
@@ -1254,6 +1252,7 @@
 <translation id="185111092974636561"><ph name="BEGIN_PARAGRAPH1" />ನೋಂದಾಯಿಸುವ ಮೊದಲು ನೀವು TPM ತೆರವುಗೊಳಿಸಬೇಕು, ಇದರಿಂದ <ph name="DEVICE_OS" /> ಗೆ ಸಾಧನದ ಮಾಲೀಕತ್ವ ವಹಿಸಿಕೊಳ್ಳಲು ಸಾಧ್ಯವಾಗುತ್ತದೆ.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />ಅಲ್ಲದೇ, ನೀವು TPM ಸಾಧನವನ್ನು ಸಂಪೂರ್ಣವಾಗಿ ಆಫ್ ಮಾಡಬಹುದು. ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಈಗಲೂ ಸಾಫ್ಟ್‌ವೇರ್ ಎನ್‌ಕ್ರಿಪ್ಶನ್‌ನ ಮೂಲಕ ಸುರಕ್ಷಿತವಾಗಿ ಸಂಗ್ರಹಿಸಲಾಗುತ್ತದೆ, ಆದರೆ ಹಾರ್ಡ್‌ವೇರ್ ಬೆಂಬಲಿತ ಪ್ರಮಾಣಪತ್ರಗಳಂತಹ ಕೆಲವು ಭದ್ರತಾ ವೈಶಿಷ್ಟ್ಯಗಳನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗುತ್ತದೆ.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />ರೀಬೂಟ್ ಮಾಡಿ, ಸಿಸ್ಟಂ BIOS/UEFI ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನಮೂದಿಸುವ ಮೂಲಕ ನಿಮ್ಮ TPM ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನೀವು ಬದಲಾಯಿಸಬಹುದು. ಸಾಧನದ ಮಾದರಿಯನ್ನು ಆಧರಿಸಿ ಹಂತಗಳು ಬದಲಾಗುತ್ತವೆ. ಹೆಚ್ಚಿನ ಮಾಹಿತಿಗಾಗಿ, ನೀವು ರೀಬೂಟ್ ಮಾಡುವ ಮೊದಲು <ph name="DEVICE_OS" /> ಡಾಕ್ಯುಮೆಂಟೇಶನ್ ಅನ್ನು ಪ್ರತ್ಯೇಕ ಸಾಧನದಲ್ಲಿ ತೆರೆಯಿರಿ: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="1851551847729706116">ಈ ಟ್ಯಾಬ್‌ಗೆ <ph name="TAB_NAME" /> ಅನ್ನು ಹಂಚಿಕೊಳ್ಳಲಾಗುತ್ತಿದೆ</translation>
 <translation id="1852799913675865625">ಫೈಲ್ ಅನ್ನು ಓದಲು ಪ್ರಯತ್ನಿಸುವಾಗ ದೋಷ ಕಂಡುಬಂದಿದೆ: <ph name="ERROR_TEXT" />.</translation>
 <translation id="1854180393107901205">ಬಿತ್ತರಿಸುವುದನ್ನು ನಿಲ್ಲಿಸಿ</translation>
 <translation id="1856715684130786728">ಸ್ಥಳ ಸೇರಿಸಿ...</translation>
@@ -3471,7 +3470,6 @@
 <translation id="3420501302812554910">ಆಂತರಿಕ ಭದ್ರತೆ ಕೀಯನ್ನು ಮರುಹೊಂದಿಸುವ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="3421387094817716717">ಎಲಿಪ್ಟಿಕ್ ಕರ್ವ್ ಸಾರ್ವಜನಿಕ ಕೀಲಿ</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />ಗಮನಿಸಿ<ph name="END_BOLD" />: ಇದೇ ರೀತಿಯ ಧ್ವನಿ ಅಥವಾ ರೆಕಾರ್ಡಿಂಗ್ ನಿಮ್ಮ ವೈಯಕ್ತಿಕ ಫಲಿತಾಂಶಗಳನ್ನು ಅಥವಾ ನಿಮ್ಮ Assistant ಅನ್ನು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಬಹುದು.</translation>
-<translation id="3421835120203732951">ಹೊಸ ಪ್ರೊಫೈಲ್ ಅನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="3422989558057853751">ಕೊನೆಯ ಐಟಂ ಅನ್ನು ಆಯ್ಕೆ ಮಾಡಲಾಗಿದೆ, ಅದರ ಆಯ್ಕೆಯನ್ನು ರದ್ದುಗೊಳಿಸುವುದರಿಂದ ಆಯ್ಕೆ ಮೋಡ್‌ನಿಂದ ನಿರ್ಗಮಿಸುತ್ತದೆ</translation>
 <translation id="3423111258700187173"><ph name="FOLDER_TITLE" /> ನಲ್ಲಿ ಕಂಡುಬಂದ ಫಲಿತಾಂಶಗಳು</translation>
 <translation id="3423226218833787854">ಈ AI ಫೀಚರ್ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
@@ -9336,7 +9334,6 @@
 <translation id="7622768823216805500">ಸೈಟ್‌ಗಳು ಸಾಮಾನ್ಯವಾಗಿ, ಸುಲಭ ಚೆಕ್‌ಔಟ್‌ನಂತಹ ಶಾಪಿಂಗ್ ಫೀಚರ್‌ಗಳಿಗಾಗಿ ಪಾವತಿ ಹ್ಯಾಂಡ್‌ಲರ್‌ಗಳನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡುತ್ತವೆ</translation>
 <translation id="7622966771025050155">ಕ್ಯಾಪ್ಚರ್ ಮಾಡಿದ ಟ್ಯಾಬ್‌ಗೆ ಬದಲಿಸಿ</translation>
 <translation id="7624337243375417909">caps lock ಆಫ್</translation>
-<translation id="7625025537587898155">ಹೊಸ ಪ್ರೊಫೈಲ್ ಅನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="7625568159987162309">ಸೈಟ್‌ಗಳಾದ್ಯಂತ ಸಂಗ್ರಹಿಸಲಾದ ಅನುಮತಿಗಳನ್ನು ಮತ್ತು ಡೇಟಾವನ್ನು ವೀಕ್ಷಿಸಿ</translation>
 <translation id="7625823789272218216">ಎಡಭಾಗದಲ್ಲಿ ಹೊಸ ಟ್ಯಾಬ್ ತೆರೆಯಿರಿ</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), ಗ್ರೇಡ್‌ <ph name="GRADE" /></translation>
@@ -11286,6 +11283,7 @@
 <translation id="8963117664422609631">ಸೈಟ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಹೋಗಿ</translation>
 <translation id="8964927371396953727">ನಿಮ್ಮ ಖಾತೆ <ph name="ACCOUNT_EMAIL" /> ನಲ್ಲಿ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಸೇವ್ ಮಾಡಲು ಮತ್ತು ಬಳಸಲು ಇದು ನೀವೇ ಎಂಬುದನ್ನು ದೃಢೀಕರಿಸಿ</translation>
 <translation id="8965037249707889821">ಹಳೆಯ ಪಾಸ್‌ವರ್ಡ್ ನಮೂದಿಸಿ</translation>
+<translation id="8967403839792635452">ಎಕ್ಸ್‌ಟೆನ್ಶನ್‌ಗಳನ್ನು ಅಭಿವೃದ್ಧಿಪಡಿಸುತ್ತಿದ್ದೀರಾ? Chrome ಎಕ್ಸ್‌ಟೆನ್ಶನ್ ಡೆವಲಪರ್ ಡಾಕ್ಯುಮೆಂಟೇಶನ್ ಬಳಸಿಕೊಂಡು <ph name="BEGIN_LINK" />ಹೊಸತೇನಿದೆ<ph name="END_LINK" /> ಎಂಬುದರ ಕುರಿತು ಅಪ್‌ ಟು ಡೇಟ್‌‌ ಆಗಿರಿ.</translation>
 <translation id="8967427617812342790">ಓದುವ ಪಟ್ಟಿಗೆ ಸೇರಿಸಿ</translation>
 <translation id="8967548289042494261"><ph name="VM_NAME" /> ಅನ್ನು ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="8968527460726243404">ChromeOS ಸಿಸ್ಟಂ ಚಿತ್ರ ಬರೆಯುವಿಕೆ</translation>
@@ -11751,7 +11749,6 @@
 <translation id="98235653036850093">ಹಾಯ್, <ph name="PROFILE_NAME" /></translation>
 <translation id="983192555821071799">ಎಲ್ಲ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿ</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - ಕ್ಯಾಮರಾ ಮತ್ತು ಮೈಕ್ರೋಫೋನ್ ರೆಕಾರ್ಡಿಂಗ್</translation>
-<translation id="984275831282074731">ಪಾವತಿ ವಿಧಾನಗಳು</translation>
 <translation id="984705303330760860">ಕಾಗುಣಿತ ಪರೀಕ್ಷೆಯ ಭಾಷೆಗಳನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">ಸಾಮಾನ್ಯ</translation>

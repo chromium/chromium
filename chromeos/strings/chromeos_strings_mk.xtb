@@ -351,6 +351,7 @@
 <translation id="2438248248625638801">Се создаваат наслови на снимките</translation>
 <translation id="2446553403094072641">Прецизност на подвижна запирка</translation>
 <translation id="2448312741937722512">Тип</translation>
+<translation id="2448857983905133469">Алатки за клас</translation>
 <translation id="2468124392950503650">Изберете барање за да создавате или погледнете го <ph name="BEGIN_LINK_PROMPTING_GUIDE" />водичот за барања<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Користете „Помогни ми да напишам“ за да создадете нацрт или да рафинирате постојна ставка, овозможено од Google AI</translation>
 <translation id="2475982808118771221">Настана грешка</translation>
@@ -449,6 +450,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Крајна точка</translation>
 <translation id="3060579846059757016">Кратки прегледи</translation>
+<translation id="3060798442805232711">„Алатки за клас“ го користи микрофонот</translation>
 <translation id="3061850252076394168">овозможете „Изберете за говор“</translation>
 <translation id="3066772729299747758">во вторник</translation>
 <translation id="3069085583900247081">Тестот не успеа</translation>
@@ -910,6 +912,7 @@
 <translation id="5170568018924773124">Прикажи во папка</translation>
 <translation id="517075088756846356">Исклучете, па вклучете го повторно кабелот за напојување на <ph name="DEVICE_NAME" /> за да продолжите со процесот на ажурирање</translation>
 <translation id="5180108905184566358">дрвја баобаб</translation>
+<translation id="5180431943345994173">Вашиот наставник отстрани содржини од „Алатки за клас“</translation>
 <translation id="5180712487038406644">Експресивен</translation>
 <translation id="5190187232518914472">Повторно доживејте ги омилените спомени. За додавање или изменување албуми, одете во <ph name="LINK_BEGIN" />Фотографии на Google<ph name="LINK_END" />.</translation>
 <translation id="5212593641110061691">Таблоид</translation>
@@ -1003,6 +1006,7 @@
 <translation id="5628106863521633649">Достапни јазици</translation>
 <translation id="5630438231335788050">баухаус</translation>
 <translation id="5631759159893697722">апстракт</translation>
+<translation id="5655084389678168978">Вашиот наставник додаде нови содржини во „Алатки за клас“</translation>
 <translation id="5655283760733841251">Осветленоста на тастатурата се зголеми</translation>
 <translation id="5655296450510165335">Регистрација на уред</translation>
 <translation id="5655776422854483175">Нема работи за печатење</translation>
@@ -1528,6 +1532,7 @@
 <translation id="7971535376154084247">Општи контроли</translation>
 <translation id="7977800524392185497">За да се придружите на мрежата <ph name="NETWORK_NAME" />, одете во „Поставки“</translation>
 <translation id="7978412674231730200">Приватен клуч</translation>
+<translation id="7979468455552394856">„Алатки за клас“ е поврзана со учениците</translation>
 <translation id="7982789257301363584">Мрежа</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{„<ph name="APP_NAME_1" />“ се стартуваше автоматски}one{# апликација се стартуваа автоматски}other{# апликации се стартуваа автоматски}}</translation>
 <translation id="7994702968232966508">EAP-метод</translation>

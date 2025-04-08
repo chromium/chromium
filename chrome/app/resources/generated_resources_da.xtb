@@ -44,7 +44,6 @@
 <translation id="1026822031284433028">Indlæs billede</translation>
 <translation id="1026959648338730078">Windows Hello eller ekstern sikkerhedsnøgle</translation>
 <translation id="1028700151766901954">Årsag: LBS forbliver i <ph name="DEFAULT_OPEN_BROWSER" /> som standard.</translation>
-<translation id="1028823395684328817">Verificer din identitet for at fortsætte med at bruge adgangskoderne m.m. på din Google-konto</translation>
 <translation id="102916930470544692">Adgangsnøgle</translation>
 <translation id="1029317248976101138">Zoom</translation>
 <translation id="1029526375103058355">Tryk for at klikke</translation>
@@ -819,7 +818,6 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1558671750917454373">Genoptag casting til <ph name="DEVICE_NAME" /></translation>
 <translation id="1561331397460162942">Dette giver apps, websites med lokationstilladelsen og systemtjenester adgang til lokationen</translation>
 <translation id="1562119309884184621">Denne kontakt huskes, til næste gang vedkommende deler</translation>
-<translation id="1563137369682381456">Udløbsdato</translation>
 <translation id="1566049601598938765">Website</translation>
 <translation id="15662109988763471">Den valgte printer er ikke tilgængelig eller ikke installeret korrekt. Tjek din printer, eller vælg en anden printer.</translation>
 <translation id="1566329594234563241">Når enheden er inaktiv og tilsluttet</translation>
@@ -1262,6 +1260,7 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="185111092974636561"><ph name="BEGIN_PARAGRAPH1" />Før du tilmelder dig, skal du rydde TPM-enheden, så <ph name="DEVICE_OS" /> kan tage ejerskab over den.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Du kan også deaktivere TPM-enheden helt. Dine data gemmes fortsat sikkert med softwarekryptering, men visse sikkerhedsfunktioner som f.eks. hardwarebaserede certifikater deaktiveres.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Du kan ændre dine TPM-indstillinger ved at genstarte og gå til systemindstillingerne for BIOS/UEFI. Trinene varierer afhængigt af, hvilken enhedsmodel du bruger. Du kan få flere oplysninger ved at åbne dokumentationen til <ph name="DEVICE_OS" /> på en separat enhed, inden du genstarter: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="1851551847729706116"><ph name="TAB_NAME" /> deles med denne fane</translation>
 <translation id="1852799913675865625">Der opstod en fejl under forsøg på at læse filen: <ph name="ERROR_TEXT" />.</translation>
 <translation id="1854180393107901205">Stop cast</translation>
 <translation id="1856715684130786728">Tilføj placering...</translation>
@@ -1652,7 +1651,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2121825465123208577">Tilpas størrelse</translation>
 <translation id="2123766928840368256">Vælg en anden fil</translation>
 <translation id="2124930039827422115">{1,plural, =1{Én bruger gav bedømmelsen <ph name="AVERAGE_RATING" />.}one{# bruger gav bedømmelsen <ph name="AVERAGE_RATING" />.}other{# brugere gav bedømmelsen <ph name="AVERAGE_RATING" />.}}</translation>
-<translation id="2125715366913703594">Se udvidelser</translation>
 <translation id="2126167708562367080">Din administrator har deaktiveret synkronisering.</translation>
 <translation id="2127372758936585790">Oplader ved lav kraft</translation>
 <translation id="212862741129535676">Anvendt andel for frekvenstilstand</translation>
@@ -3483,7 +3481,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3420501302812554910">Den interne sikkerhedsnøgle skal nulstilles</translation>
 <translation id="3421387094817716717">Offentlig nøgle med elliptisk kurve</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Bemærk!<ph name="END_BOLD" /> En lignende stemme eller en optagelse af din stemme kan muligvis bruges til at få adgang til dine personlige resultater eller Google Assistent.</translation>
-<translation id="3421835120203732951">Tilføj ny profil</translation>
 <translation id="3422989558057853751">Det sidste element er valgt. Hvis du fjerner markeringen, afsluttes tilstanden for markering</translation>
 <translation id="3423111258700187173">Der blev fundet resultater i <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">Få flere oplysninger om denne AI-funktion</translation>
@@ -9347,7 +9344,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7622768823216805500">Websites installerer normalt betalingshandlere til shoppingformål såsom nemmere betaling</translation>
 <translation id="7622966771025050155">Skift til den registrerede fane</translation>
 <translation id="7624337243375417909">capslock er slået fra</translation>
-<translation id="7625025537587898155">Tilføj ny profil</translation>
 <translation id="7625568159987162309">Se tilladelser og data, der er gemt på alle websites</translation>
 <translation id="7625823789272218216">Ny fane til venstre</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), niveau <ph name="GRADE" /></translation>
@@ -11301,6 +11297,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser, enhed
 <translation id="8963117664422609631">Gå til indstillingerne for websitet</translation>
 <translation id="8964927371396953727">Verificer din identitet for at bruge og gemme adgangskoder på din konto, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8965037249707889821">Angiv den gamle adgangskode</translation>
+<translation id="8967403839792635452">Udvikler du udvidelser? Hold dig informeret om <ph name="BEGIN_LINK" />det seneste nye<ph name="END_LINK" /> med udviklerdokumentationen til Chrome-udvidelser.</translation>
 <translation id="8967427617812342790">Føj til læseliste</translation>
 <translation id="8967548289042494261">Fjern <ph name="VM_NAME" /></translation>
 <translation id="8968527460726243404">Værktøj til skrivning af systembillede i ChromeOS</translation>
@@ -11765,7 +11762,6 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser, enhed
 <translation id="98235653036850093">Hej <ph name="PROFILE_NAME" /></translation>
 <translation id="983192555821071799">Luk alle faner</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> – kamera- og mikrofonoptagelse</translation>
-<translation id="984275831282074731">Betalingsmetoder</translation>
 <translation id="984705303330760860">Tilføj sprog for stavekontrollen</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Generelt</translation>

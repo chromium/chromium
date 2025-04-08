@@ -351,6 +351,7 @@
 <translation id="2438248248625638801">Qeydəalma başlıqları yaradılır</translation>
 <translation id="2446553403094072641">Dəyişən nöqtə dəqiqliyi</translation>
 <translation id="2448312741937722512">Növ</translation>
+<translation id="2448857983905133469">Sinif Alətləri</translation>
 <translation id="2468124392950503650"><ph name="BEGIN_LINK_PROMPTING_GUIDE" />Sorğu bələdçisini<ph name="END_LINK_PROMPTING_GUIDE" /> yaratmaq və ya görmək üçün sorğunu seçin</translation>
 <translation id="2472215337771558851">Qaralama yaratmaq və ya mövcud işi təkmilləşdirmək üçün Google AI tərəfindən dəstəklənən Yazı yardımını istifadə edin</translation>
 <translation id="2475982808118771221">Xəta baş verdi</translation>
@@ -449,6 +450,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">Son nöqtə</translation>
 <translation id="3060579846059757016">Haşiyələr</translation>
+<translation id="3060798442805232711">Sinif alətləri mikrofonunuzdan istifadə edir</translation>
 <translation id="3061850252076394168">"basıb dinləyin" seçimini aktivləşdirin</translation>
 <translation id="3066772729299747758">Çərşənbə axşamı</translation>
 <translation id="3069085583900247081">Test uğursuz oldu</translation>
@@ -910,6 +912,7 @@
 <translation id="5170568018924773124">Qovluqda göstərin</translation>
 <translation id="517075088756846356">Güncəllənmə prosesinə davam etmək üçün <ph name="DEVICE_NAME" /> enerji kabelini ayırın və yenidən taxın</translation>
 <translation id="5180108905184566358">baobab ağacları</translation>
+<translation id="5180431943345994173">Müəllim Sinif Alətlərindəki kontenti sildi</translation>
 <translation id="5180712487038406644">Ekspressiv</translation>
 <translation id="5190187232518914472">Sevimli xatirələrinizi canlandırın. Albomlarə əlavə və ya redaktə etmək üçün <ph name="LINK_BEGIN" />Google Fotoya<ph name="LINK_END" /> keçin.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
@@ -1003,6 +1006,7 @@
 <translation id="5628106863521633649">Əlçatan dillər</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">abstrakt</translation>
+<translation id="5655084389678168978">Müəllim Sinif Alətlərinə yeni kontent əlavə etdi</translation>
 <translation id="5655283760733841251">Klaviatura parlaqlığını artırın</translation>
 <translation id="5655296450510165335">Cihaz qeydiyyatı</translation>
 <translation id="5655776422854483175">Çap işi yoxdur</translation>
@@ -1528,6 +1532,7 @@ Bu transkripsiyaları əldə etmək üçün transkripsiya modelini (maksimum 100
 <translation id="7971535376154084247">Ümumi nizamlayıcılar</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> şəbəkəsinə qoşulmaq üçün Ayarlara keçin</translation>
 <translation id="7978412674231730200">Şəxsi açar</translation>
+<translation id="7979468455552394856">Sinif alətləri tələbələrlə əlaqələndirildi</translation>
 <translation id="7982789257301363584">Şəbəkə</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" avtomatik başladıldı}other{# tətbiq avtomatik başladıldı}}</translation>
 <translation id="7994702968232966508">EAP üsulu</translation>

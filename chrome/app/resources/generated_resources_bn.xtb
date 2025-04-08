@@ -44,7 +44,6 @@
 <translation id="1026822031284433028">ছবি লোড করুন</translation>
 <translation id="1026959648338730078">Windows Hello বা অতিরিক্ত নিরাপত্তা 'কী'</translation>
 <translation id="1028700151766901954">কারণ: LBS <ph name="DEFAULT_OPEN_BROWSER" />-এ ডিফল্ট হিসেবে থাকে।</translation>
-<translation id="1028823395684328817">আপনার Google অ্যাকাউন্টে পাসওয়ার্ড ও আরও অনেক কিছু ব্যবহার করা চালিয়ে যেতে, নিজের পরিচয় যাচাই করুন</translation>
 <translation id="102916930470544692">পাসকী</translation>
 <translation id="1029317248976101138">জুম</translation>
 <translation id="1029526375103058355">ক্লিক করতে ট্যাপ করুন</translation>
@@ -819,7 +818,6 @@
 <translation id="1558671750917454373"><ph name="DEVICE_NAME" />-এ কাস্ট করা আবার চালু করুন</translation>
 <translation id="1561331397460162942">এটি সিস্টেম পরিষেবা সহ সেই সব অ্যাপ ও ওয়েবসাইটকে লোকেশন অ্যাক্সেস করার অনুমতি দেয়, যাদের কাছে লোকেশন অ্যাক্সেস করার অনুমতি আছে</translation>
 <translation id="1562119309884184621">এই ব্যক্তিকে পরিচিতিতে যোগ করলে, পরের বার শেয়ার করা সময় একে মনে রাখা হবে</translation>
-<translation id="1563137369682381456">মেয়াদ শেষ হওয়ার তারিখ</translation>
 <translation id="1566049601598938765">ওয়েবসাইট</translation>
 <translation id="15662109988763471">বেছে নেওয়া প্রিন্টারটি উপলভ্য নয় অথবা সেটি ঠিকভাবে ইনস্টল করা নেই। আপনার প্রিন্টার পরীক্ষা করুন অথবা অন্য একটি প্রিন্টার বেছে নিন।</translation>
 <translation id="1566329594234563241">চালু না করা ও প্লাগ-ইন করা থাকলে</translation>
@@ -1261,6 +1259,7 @@
 <translation id="185111092974636561"><ph name="BEGIN_PARAGRAPH1" />এনরোল করার আগে আপনাকে TPM মুছতে হবে যাতে <ph name="DEVICE_OS" /> ডিভাইসের মালিকানা পেতে পারে।<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />এছাড়াও আপনি সরাসরি TPM ডিভাইস সম্পূর্ণভাবে বন্ধ করতে পারেন। আপনার ডেটা সুরক্ষিতভাবে সফ্টওয়্যার এনক্রিপশন সহ সেভ করা হবে তবে হার্ডওয়্যার-ব্যাকড সার্টিফিকেটের মতো নির্দিষ্ট নিরাপত্তা ফিচার বন্ধ হয়ে যাবে।<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />সিস্টেম BIOS/UEFI সেটিংস এন্টার করে এবং রিবুট করার মাধ্যমে আপনার TPM সেটিং পরিবর্তন করতে পারবেন। ডিভাইস মডেলের উপর ভিত্তি করে ধাপ আলাদা হতে পারে। আরও তথ্যের জন্য রিবুট করার আগে আলাদা ডিভাইসে <ph name="DEVICE_OS" /> ডকুমেন্টেশন খুলুন: g.co/flex/TPMHelp<ph name="END_PARAGRAPH3" /></translation>
+<translation id="1851551847729706116">ট্যাবের সাথে <ph name="TAB_NAME" /> শেয়ার করা হচ্ছে</translation>
 <translation id="1852799913675865625"><ph name="ERROR_TEXT" /> ফাইলটি পড়ার চেষ্টা করার সময় একটি ত্রুটি ঘটেছিল৷</translation>
 <translation id="1854180393107901205">কাস্ট করা বন্ধ করুন</translation>
 <translation id="1856715684130786728">লোকেশন যোগ করুন...</translation>
@@ -1651,7 +1650,6 @@
 <translation id="2121825465123208577">ছোট বড় করুন</translation>
 <translation id="2123766928840368256">অন্য কোনও ফাইল বেছে নিন</translation>
 <translation id="2124930039827422115">{1,plural, =1{একজন ব্যবহারকারী <ph name="AVERAGE_RATING" /> রেট করেছে।}one{# জন ব্যবহারকারী <ph name="AVERAGE_RATING" /> রেট করেছে।}other{# জন ব্যবহারকারী <ph name="AVERAGE_RATING" /> রেট করেছে।}}</translation>
-<translation id="2125715366913703594">&amp;Extensions এক্সপ্লোর করুন</translation>
 <translation id="2126167708562367080">আপনার প্রশাসকের দ্বারা সিঙ্ক অক্ষম করা হয়েছে।</translation>
 <translation id="2127372758936585790">নিম্ন শক্তির চার্জার</translation>
 <translation id="212862741129535676">ফ্রিকোয়েন্সি স্টেট ওকুপেন্সির শতকরা হার</translation>
@@ -3482,7 +3480,6 @@
 <translation id="3420501302812554910">ইন্টার্নাল নিরাপত্তা কী রিসেটের প্রয়োজন</translation>
 <translation id="3421387094817716717">এলিপ্টিক কার্ভ সর্বজনীন কী</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />মনে রাখবেন:<ph name="END_BOLD" /> একই ধরনের ভয়েস বা রেকর্ডিং হয়ত আপনার ব্যক্তিগত ফলাফল বা Assistant অ্যাক্সেস করতে পারবে।</translation>
-<translation id="3421835120203732951">নতুন প্রোফাইল যোগ করুন</translation>
 <translation id="3422989558057853751">এটি বেছে নেওয়া শেষ আইটেম, এটি থেকে টিকচিহ্ন সরিয়ে দেওয়া হলে বেছে নেওয়া মোড বন্ধ হয়ে যাবে</translation>
 <translation id="3423111258700187173"><ph name="FOLDER_TITLE" />-এ ফলাফল খুঁজে পাওয়া গেছে</translation>
 <translation id="3423226218833787854">এই AI ফিচার সম্পর্কে আরও জানুন</translation>
@@ -4055,7 +4052,7 @@
 <translation id="3798449238516105146">ভার্সন</translation>
 <translation id="3798632811625902122">পেয়ার করার জন্য ব্লুটুথ ডিভাইস <ph name="DEVICE" /> অনুমতি চাইছে।</translation>
 <translation id="3798670284305777884">স্পিকার (অভ্যন্তরীণ)</translation>
-<translation id="3799128412641261490">অ্যাক্সেস সেটিংস পাল্টান</translation>
+<translation id="3799128412641261490">সুইচ অ্যাক্সেস সেটিংস</translation>
 <translation id="3800764353337460026">প্রতীক  ধরন</translation>
 <translation id="3800828618615365228">Google Chrome ও ChromeOS-এর অতিরিক্ত শর্তাবলী</translation>
 <translation id="3800898876950197674">এই এক্সটেনশনের অনুমতি দিতে, আপনার পাসওয়ার্ড লিখুন।</translation>
@@ -9347,7 +9344,6 @@
 <translation id="7622768823216805500">খুব সহজে চেক-আউট করার মতো শপিং ফিচারের জন্য সাইট সাধারণত পেমেন্ট হ্যান্ডলার ইনস্টল করে</translation>
 <translation id="7622966771025050155">ক্যাপচার করা ট্যাবে পাল্টান</translation>
 <translation id="7624337243375417909">caps lock বন্ধ আছে</translation>
-<translation id="7625025537587898155">নতুন প্রোফাইল যোগ করুন</translation>
 <translation id="7625568159987162309">সমস্ত সাইট জুড়ে অনুমতি এবং স্টোর করা ডেটা দেখুন</translation>
 <translation id="7625823789272218216">বাঁদিকে নতুন ট্যাব</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), গ্রেড <ph name="GRADE" /></translation>
@@ -11300,6 +11296,7 @@
 <translation id="8963117664422609631">সাইট সেটিংসে যান</translation>
 <translation id="8964927371396953727">আপনার অ্যাকাউন্ট, <ph name="ACCOUNT_EMAIL" />-এ পাসওয়ার্ড ব্যবহার ও সেভ করতে আপনার পরিচয় যাচাই করুন</translation>
 <translation id="8965037249707889821">পুরানো পাসওয়ার্ড লিখুন</translation>
+<translation id="8967403839792635452">এক্সটেনশন ডেভেলপ করবেন? Chrome এক্সটেনশন ডেভেলপার ডকুমেন্টেশনের মাধ্যমে <ph name="BEGIN_LINK" />নতুন কী আছে<ph name="END_LINK" /> সেই সম্পর্কে আপ-টু-ডেট থাকুন।</translation>
 <translation id="8967427617812342790">পড়ার তালিকায় যোগ করুন</translation>
 <translation id="8967548289042494261"><ph name="VM_NAME" /> সরিয়ে দিন</translation>
 <translation id="8968527460726243404">ChromeOS সিস্টেম ছবি রচয়িতা</translation>
@@ -11764,7 +11761,6 @@
 <translation id="98235653036850093">হ্যালো, <ph name="PROFILE_NAME" /></translation>
 <translation id="983192555821071799">সমস্ত ট্যাবগুলি বন্ধ করুন</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - ক্যামেরা এবং মাইক্রোফোন রেকর্ড করছে</translation>
-<translation id="984275831282074731">পেমেন্ট পদ্ধতি</translation>
 <translation id="984705303330760860">বানান পরীক্ষার ভাষা যোগ করুন</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">সাধারণ</translation>

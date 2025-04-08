@@ -539,6 +539,9 @@ Als je het beleid niet instelt, worden links standaard geopend in Android-apps v
 <translation id="1417888712677507140">JavaScript-dialoogvensters blokkeren als deze worden geactiveerd vanaf een subframe met een andere oorsprong.</translation>
 <translation id="1418387035898607074">Safe Browsing-checks overslaan voor bestanden die worden gedownload van vertrouwde bronnen</translation>
 <translation id="1419020637569060510">Beperkingen toevoegen voor het gebruik van een beheerd account als secundair account in Chrome OS</translation>
+<translation id="1423359855587524289">Als je het beleid toepast of niet instelt, kan de app de autorisatie voor voorlopige meldingen van iOS gebruiken om meldingen te tonen in het Meldingencentrum van iOS.
+
+Als je het beleid niet toepast, gebruikt de app geen voorlopige meldingen.</translation>
 <translation id="142346659686073702">Toestaan dat niet-gelieerde gebruikers Crostini gebruiken</translation>
 <translation id="1423900783955065155">Dit beleid bepaalt of een pagina met de koptekst <ph name="CACHE_CONTROL_NO_STORE_NAME" /> kan worden opgeslagen in Back-Forward Cache. De website die deze koptekst instelt, verwacht misschien niet dat de pagina wordt hersteld vanuit Back-Forward Cache, omdat bepaalde gevoelige informatie na het herstel misschien nog steeds wordt getoond, ook als deze niet meer toegankelijk is.
 
@@ -1230,6 +1233,7 @@ Als je dit beleid instelt op False, worden er geen gegevens verzameld die kunnen
 
 Dit beleid is alleen van kracht als de machine is ingeschreven met <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> voor <ph name="PRODUCT_NAME" />.
 Dit beleid is altijd van kracht voor <ph name="PRODUCT_OS_NAME" />.</translation>
+<translation id="187961648719201562">Bestaande lokale bestanden verwijderen (ondersteund vanaf versie 137)</translation>
 <translation id="1883274744253492031">Automatisch upgraden van gemengde content aanzetten</translation>
 <translation id="1885782360784839335">Promotiecontent op volledig tabblad tonen</translation>
 <translation id="1888871729456797026">De inschrijvingstoken van het cloudbeleid op een desktop</translation>
@@ -6721,6 +6725,9 @@ Als beide beleidsregels niet zijn ingesteld, worden alle webserviceverificaties 
 <translation id="5883754873839596178">Als je het beleid instelt, kun je het maximale aantal gelijktijdige verbindingen met de proxyserver opgeven. Bepaalde proxyservers kunnen niet een groot aantal gelijktijdige verbindingen per client verwerken. Dit kan worden opgelost door dit beleid op een lagere waarde in te stellen. De waarde moet lager dan 100 en hoger dan 6 zijn. Het is bekend dat sommige web-apps veel verbindingen gebruiken voor openstaande GET-verzoeken. Als je een waarde lager dan 32 instelt, lopen netwerkprocessen van de browser daarom mogelijk vast als er te veel web-apps met openstaande verbindingen zijn geopend. Het tot onder de standaardwaarde verlagen van deze waarde is daarom op eigen risico.
 
       Als je het beleid niet instelt, wordt de standaardwaarde 32 gebruikt.</translation>
+<translation id="5886280631293123880">Dit beleid biedt een tijdelijke aanmelding voor een beëindigde en verwijderde set platformgebeurtenissen met de naam Mutatiegebeurtenissen.
+Als je dit beleid toepast, worden mutatiegebeurtenissen nog steeds geactiveerd, zelfs als ze standaard zijn uitgezet voor normale internetgebruikers. Als je dit beleid niet toepast of niet instelt, worden deze gebeurtenissen misschien niet geactiveerd.
+Dit beleid is een tijdelijke oplossing en werkt niet meer in M137.</translation>
 <translation id="5887414688706570295">Hiermee configureer je het voorvoegsel voor het TalkGadget dat wordt gebruikt door hosts voor externe toegang en voorkom je dat gebruikers dit wijzigen.
 
           Als dit voorvoegsel is opgegeven, wordt het toegevoegd aan het begin van de basisnaam voor het TalkGadget om een volledige domeinnaam voor het TalkGadget te maken. De basisdomeinnaam voor het TalkGadget is '.talkgadget.google.com'.
@@ -7816,6 +7823,7 @@ Opmerking: Het cachegeheugen wordt gewist als je opnieuw opstart en uitlogt.</tr
 <translation id="6583473893541367102">Als je het beleid instelt, specificeer je de lijst met URL's waarvan de patronen worden vergeleken met de beveiligingsoorsprong van de aanvragende URL. Bij een overeenkomst wordt zonder prompt toegang gegeven tot apparaten voor video-opnamen.
 
 Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige <ph name="URL_LABEL" />-patronen. Houd er wel rekening mee dat het patroon *, dat overeenkomt met elke URL, niet wordt ondersteund door dit beleid.</translation>
+<translation id="6583517553738784213">Gezichtsbediening uitzetten</translation>
 <translation id="6584122839583172231">De instellingen voor F12 gebruiken de sneltoets met de functietoetsen Ctrl en Shift</translation>
 <translation id="6584541828182430328">Waarschuwing voor volledig scherm niet tonen</translation>
 <translation id="6588634282328239769">De volledige URL tonen</translation>
@@ -8121,6 +8129,7 @@ In <ph name="MS_WIN_NAME" /> is dit beleid alleen beschikbaar voor instanties di
 Als je het beleid niet toepast, wordt het icoon voor experimentele browserfuncties verwijderd van de werkbalk.
 
       chrome://flags en andere manieren om browserfuncties aan- en uit te zetten werken nog steeds hetzelfde, ongeacht of je het beleid wel of niet hebt toegepast.</translation>
+<translation id="6794273802619210652">De toegankelijkheidsfunctie voor gezichtsbediening aanzetten</translation>
 <translation id="6795485990775913659">Alleen afdrukken toestaan zonder pincode</translation>
 <translation id="6796215185873669533">Standaard browserinstellingen gebruiken voor tekenreeksversie van User-agent.</translation>
 <translation id="6800181452282128474">Geen query's sturen naar Quirks Servers</translation>
@@ -8240,6 +8249,21 @@ Als dit beleid niet is ingesteld voor een site, is het beleid van <ph name="DEFA
 
 Dit vervangt het beëindigde beleid <ph name="WINDOW_PLACEMENT_ALLOWED_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="6894178810167845842">URL van pagina 'Nieuw tabblad'</translation>
+<translation id="6895437634974956885">De batterijconditie kan worden beïnvloed door factoren zoals vaak volledig opladen en langere oplaadtijden. Dit beleid biedt 3 opties om het oplaadgedrag te optimaliseren en deze factoren te beperken, waardoor de levensduur van de batterij wordt verlengd.
+
+Als je het beleid niet instelt, kunnen gebruikers de schakelknop voor Aangepast opladen gebruiken om Aangepast opladen aan of uit te zetten.
+
+Als je het beleid instelt op 1 - Standard (Standaard) of niet instelt, wordt de batterij gewoon opgeladen tot 100%. Hiermee zet je aangepast en beperkt opladen uit.
+
+Als je het beleid instelt op 2 - Adaptive (Aangepast), leert het apparaat je oplaadgewoonten kennen en wordt opladen tot 100% uitgesteld totdat dat nodig is. Zo gaat de batterij langer mee.
+
+Als je het beleid instelt op 3 - Limited (Beperkt), wordt de batterij maar tot ongeveer 80% opgeladen om de levensduur te maximaliseren.
+
+Als je het beleid <ph name="DEVICE_POWER_BATTERY_CHARGING_OPTIMIZATION_POLICY_NAME" /> hebt ingesteld, krijgt het voorrang op het beleid <ph name="DEVICE_POWER_ADAPTIVE_CHARGING_ENABLED_POLICY_NAME" />.
+
+Als je het beleid <ph name="DEVICE_POWER_BATTERY_CHARGING_OPTIMIZATION_POLICY_NAME" /> niet hebt ingesteld, bepaalt het beleid <ph name="DEVICE_POWER_ADAPTIVE_CHARGING_ENABLED_POLICY_NAME" /> of de functie voor aangepast opladen aan- of uitstaat.
+
+<ph name="DEVICE_POWER_ADAPTIVE_CHARGING_ENABLED_POLICY_NAME" /> wordt beëindigd.</translation>
 <translation id="6897730193187922386">Berichten over beëindiging van <ph name="CLOUD_PRINT_NAME" /> onderdrukken</translation>
 <translation id="6899705656741990703">Proxyinstellingen automatisch detecteren</translation>
 <translation id="6901462246839613666">Weergave van promotiecontent aanzetten</translation>
@@ -8896,6 +8920,7 @@ Als je dit beleid instelt op Onwaar, wordt het oude gedrag toegepast.</translati
 <translation id="7366637365754181686">Cloudrapportage voor gebruikersbeveiligingssignalen aanzetten</translation>
 <translation id="7366948865469126526">Eenheidsconversie van Snelle antwoorden uitzetten</translation>
 <translation id="7367734504783638685">Wachtwoordsynchronisatie tussen externe SSO-providers en Chrome-apparaten</translation>
+<translation id="7372818045062294211">Toestaan dat de app autorisatie voor voorlopige meldingen gebruikt</translation>
 <translation id="7372831798009983116">Toegankelijkheidsfunctie voor automatisch klikken aanzetten</translation>
 <translation id="7373200034079131670">Opnieuw opstarten bij uitloggen gebruiker als Android of een VM is gestart.</translation>
 <translation id="7374784840090523241">Toegangssleutels worden standaard op andere opslaglocaties gemaakt, zoals het <ph name="PRODUCT_NAME" />-profiel.</translation>
@@ -9188,6 +9213,7 @@ Als je geen beleid opgeeft, zijn er geen uitzonderingen toegestaan op <ph name="
 <translation id="7635106595080609261">Als je dit beleid toepast of niet instelt, kan Chrome dialoogvensters voor het selecteren van bestanden bekijken en kunnen gebruikers deze openen.
 
       Als je het beleid niet toepast, wordt er in plaats daarvan altijd een bericht getoond als gebruikers acties uitvoeren die een dialoogvenster voor het selecteren van bestanden aanroepen, zoals bookmarks importeren, bestanden uploaden en links opslaan. Er wordt vanuit gegaan dat de gebruiker op Annuleren heeft geklikt in het dialoogvenster voor het selecteren van bestanden.</translation>
+<translation id="7637522465980672147">Gezichtsbediening aanzetten</translation>
 <translation id="7638300388094655454">Google Cast</translation>
 <translation id="7638764766629234761">Systeemmeldingen toestaan</translation>
 <translation id="7642740497103044368">Als je dit beleid toepast, kunnen beleidsregels die zijn gekoppeld aan een beheerd account worden samengevoegd in beleidsregels op apparaatniveau.
@@ -10109,6 +10135,15 @@ Meer informatie over verouderde technologieën vind je op https://chromestatus.c
 <translation id="8319678975002906774">Stelt waarden voor beheerde configuraties voor websites in voor specifieke herkomsten</translation>
 <translation id="8320149248919453401">Batterijoplaadmodus</translation>
 <translation id="8320576119308783142">Het schermtoetsenbord tonen indien van toepassing.</translation>
+<translation id="8321089199245028304">Zet de toegankelijkheidsfunctie voor gezichtsbediening aan. Als gezichtsbediening actief is, kun je je hoofd gebruiken om de muiscursor te bedienen en gezichtsgebaren gebruiken om systeemacties uit te voeren. Zo kun je je apparaat handsfree bedienen.
+
+Als je dit beleid toepast, staat gezichtsbediening altijd aan.
+
+Als je dit beleid niet toepast, staat gezichtsbediening altijd uit.
+
+Als je dit beleid instelt, kunnen gebruikers dit niet wijzigen of overschrijven.
+
+Als je dit beleid niet instelt, staat gezichtsbediening in eerste instantie uit, maar kan het op elk moment worden aangezet door de gebruiker.</translation>
 <translation id="8327651196906278510">Tabbladopname door deze oorsprongen toestaan</translation>
 <translation id="8329434144708110">Verificatieprocessen activeren om wachtwoorden te synchroniseren met SSO-providers</translation>
 <translation id="8329984337216493753">Dit beleid wordt alleen toegepast in de winkelmodus.
@@ -10233,6 +10268,7 @@ Als je dit beleid instelt op <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_
 <translation id="8421202694245456861"><ph name="CLASS_TOOLS_NAME" />-functie voor ondertiteling instellen</translation>
 <translation id="8422658829373743789">Het nieuwe gedrag beheren voor de verzending van gebeurtenissen voor uitgezette bedieningselementen op formulieren</translation>
 <translation id="8423237137411858515">Lokale bestanden in de modus Alleen lezen houden</translation>
+<translation id="8424056332208748750">Niet toestaan dat de app autorisatie voor voorlopige meldingen gebruikt</translation>
 <translation id="8424255554404582727">Standaard displayrotatie instellen, wordt telkens toegepast na opnieuw opstarten</translation>
 <translation id="8426231401662877819">Scherm 90 graden met de klok mee draaien</translation>
 <translation id="8426326725481825773">Dit beleid bepaalt het gedrag voor het opnieuw toewijzen van de Home/End-toetsen op de subpagina voor het opnieuw toewijzen van toetsen. Op de subpagina voor het opnieuw toewijzen van toetsen kunnen gebruikers de toetsen van het toetsenbord aanpassen. Als je dit beleid aanzet, kunnen gebruikers deze specifieke toewijzingen niet aanpassen. Als je het beleid niet instelt, zijn op zoekopdrachten gebaseerde sneltoetsen de standaardinstelling en kunnen gebruikers de sneltoetsen configureren.</translation>
@@ -10370,6 +10406,7 @@ Rollback naar <ph name="PRODUCT_OS_NAME" /> versie 106 of lager wordt niet onder
 <translation id="8520064498689833152">Het gebruik van SafeSearch afdwingen op Google Zoeken en afdwingen dat de beperkte modus van YouTube minimaal is ingesteld op Gematigd</translation>
 <translation id="8520950040439618600">Methoden voor pincode- en koppelingsverificatie toestaan voor hosts voor externe toegang</translation>
 <translation id="8524334245528364388">URL naar een json-bestand met een lijst van afdrukservers.</translation>
+<translation id="8525282442896658040">Staat toe dat de app autorisatie voor voorlopige meldingen gebruikt op iOS</translation>
 <translation id="8525526490824335042">Linux-container</translation>
 <translation id="8526745614158856826">Als je dit beleid instelt, kun je een lijst met sites maken die automatisch toestemming krijgen voor toegang tot alle beschikbare apparaten.
 

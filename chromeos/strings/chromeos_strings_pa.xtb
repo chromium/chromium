@@ -351,6 +351,7 @@
 <translation id="2438248248625638801">ਰਿਕਾਰਡਿੰਗ ਦੇ ਸਿਰਲੇਖ ਬਣਾਏ ਜਾ ਰਹੇ ਹਨ</translation>
 <translation id="2446553403094072641">ਫ਼ਲੋਟਿੰਗ ਪੁਆਇੰਟ ਸਟੀਕਤਾ</translation>
 <translation id="2448312741937722512">ਟਾਈਪ ਕਰੋ</translation>
+<translation id="2448857983905133469">ਕਲਾਸ ਟੂਲ</translation>
 <translation id="2468124392950503650"><ph name="BEGIN_LINK_PROMPTING_GUIDE" />ਉਤਪ੍ਰੇਰਕ ਗਾਈਡ<ph name="END_LINK_PROMPTING_GUIDE" /> ਬਣਾਉਣ ਜਾਂ ਦੇਖਣ ਲਈ ਉਤਪ੍ਰੇਰਕ ਚੁਣੋ</translation>
 <translation id="2472215337771558851">ਡਰਾਫਟ ਬਣਾਉਣ ਜਾਂ ਮੌਜੂਦਾ ਕੰਮ ਨੂੰ ਸੋਧਣ ਲਈ 'ਲਿਖਣ ਵਿੱਚ ਮੇਰੀ ਮਦਦ ਕਰੋ' ਵਰਤੋ, Google AI ਵੱਲੋਂ ਸੰਚਾਲਿਤ</translation>
 <translation id="2475982808118771221">ਇੱਕ ਗੜਬੜ ਹੋਈ</translation>
@@ -381,6 +382,7 @@
 <translation id="2584559707064218956">ਸੈੱਟਅੱਪ ਕਰਨ ਲਈ, ਸੈਟਿੰਗਾਂ 'ਤੇ ਜਾਓ</translation>
 <translation id="2586146417912237930">ਨੀਲਾ ਅਤੇ ਇੰਡੀਗੋ</translation>
 <translation id="2589921777872778654">ਮੀਨੂ ਦਾ ਸੰਪਾਦਨ ਕਰੋ ਅਤੇ ਮਿਟਾਓ</translation>
+<translation id="2590424100019931043">ਤੁਹਾਨੂੰ ਇਸ ਕਲਾਸ ਤੋਂ ਹਟਾ ਦਿੱਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="2597774443162333062">ਫ਼ਾਈਲਾਂ ਡੀਬੱਗਿੰਗ ਲਈ Google ਨੂੰ ਭੇਜੀਆਂ ਜਾਣਗੀਆਂ</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{ਸਕੈਨਿੰਗ ਪੂਰੀ ਹੋਈ। 1 ਪੰਨਾ ਸਕੈਨ ਕੀਤਾ ਗਿਆ}one{ਸਕੈਨਿੰਗ ਪੂਰੀ ਹੋਈ। {NUMBER_OF_PAGES} ਪੰਨੇ ਸਕੈਨ ਕੀਤੇ ਗਏ}other{ਸਕੈਨਿੰਗ ਪੂਰੀ ਹੋਈ। {NUMBER_OF_PAGES} ਪੰਨੇ ਸਕੈਨ ਕੀਤੇ ਗਏ}}</translation>
 <translation id="261322795497077164">ਸਪੀਕਰ ਦੀ ਪਛਾਣ</translation>
@@ -449,6 +451,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">ਅਖੀਰਲਾ ਬਿੰਦੂ</translation>
 <translation id="3060579846059757016">ਖਾਕੇ</translation>
+<translation id="3060798442805232711">ਕਲਾਸ ਟੂਲ ਤੁਹਾਡੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਦੀ ਵਰਤੋਂ ਕਰ ਰਿਹਾ ਹੈ</translation>
 <translation id="3061850252076394168">'ਚੁਣੋ ਅਤੇ ਸੁਣੋ' ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="3066772729299747758">ਮੰਗਲਵਾਰ ਨੂੰ</translation>
 <translation id="3069085583900247081">ਟੈਸਟ ਅਸਫਲ ਰਿਹਾ</translation>
@@ -910,6 +913,7 @@
 <translation id="5170568018924773124">ਫੋਲਡਰ ਵਿੱਚ ਦਿਖਾਓ</translation>
 <translation id="517075088756846356">ਅੱਪਡੇਟ ਦੀ ਪ੍ਰਕਿਰਿਆ ਜਾਰੀ ਰੱਖਣ ਲਈ <ph name="DEVICE_NAME" /> ਦੀ ਪਾਵਰ ਕੇਬਲ ਨੂੰ ਅਣਪਲੱਗ ਕਰੋ ਅਤੇ ਦੁਬਾਰਾ ਲਗਾਓ</translation>
 <translation id="5180108905184566358">ਬਾਓਬਾਬ ਰੁੱਖ</translation>
+<translation id="5180431943345994173">ਤੁਹਾਡੇ ਅਧਿਆਪਕ ਨੇ ਕਲਾਸ ਟੂਲ ਵਿੱਚ ਸਮੱਗਰੀ ਨੂੰ ਹਟਾ ਦਿੱਤਾ ਹੈ</translation>
 <translation id="5180712487038406644">ਭਾਵਪੂਰਨ</translation>
 <translation id="5190187232518914472">ਆਪਣੀਆਂ ਮਨਪਸੰਦ ਯਾਦਾਂ ਨੂੰ ਤਾਜ਼ਾ ਕਰੋ। ਐਲਬਮਾਂ ਸ਼ਾਮਲ ਜਾਂ ਉਹਨਾਂ ਦਾ ਸੰਪਾਦਨ ਕਰਨ ਲਈ, <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> 'ਤੇ ਜਾਓ।</translation>
 <translation id="5212593641110061691">ਪੱਤਰਕਾ</translation>
@@ -1003,6 +1007,7 @@
 <translation id="5628106863521633649">ਉਪਲਬਧ ਭਾਸ਼ਾਵਾਂ</translation>
 <translation id="5630438231335788050">ਬੌਹੌਸ</translation>
 <translation id="5631759159893697722">ਸਾਰਾਂਸ਼</translation>
+<translation id="5655084389678168978">ਤੁਹਾਡੇ ਅਧਿਆਪਕ ਨੇ ਕਲਾਸ ਟੂਲ ਵਿੱਚ ਨਵੀਂ ਸਮੱਗਰੀ ਨੂੰ ਸ਼ਾਮਲ ਕੀਤਾ ਹੈ</translation>
 <translation id="5655283760733841251">ਕੀ-ਬੋਰਡ ਦੀ ਚਮਕ ਵਧਾਉਣ ਵਾਲੀ ਕੁੰਜੀ</translation>
 <translation id="5655296450510165335">ਡੀਵਾਈਸ ਐਨਰੋਲਮੈਂਟ</translation>
 <translation id="5655776422854483175">ਕੋਈ ਪ੍ਰਿੰਟ ਜੌਬ ਨਹੀਂ ਹੈ</translation>
@@ -1528,6 +1533,7 @@
 <translation id="7971535376154084247">ਆਮ ਕੰਟਰੋਲ</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> ਨੈੱਟਵਰਕ ਨਾਲ ਕਨੈਕਟ ਕਰਨ ਲਈ, ਸੈਟਿੰਗਾਂ 'ਤੇ ਜਾਓ</translation>
 <translation id="7978412674231730200">ਨਿੱਜੀ ਕੁੰਜੀ</translation>
+<translation id="7979468455552394856">ਵਿਦਿਆਰਥੀ ਕਲਾਸ ਟੂਲ ਨਾਲ ਕਨੈਕਟ ਹਨ</translation>
 <translation id="7982789257301363584">ਨੈੱਟਵਰਕ</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" ਨੂੰ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਸ਼ੁਰੂ ਕੀਤਾ ਗਿਆ ਸੀ}one{# ਐਪ ਨੂੰ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਸ਼ੁਰੂ ਕੀਤਾ ਗਿਆ ਸੀ}other{# ਐਪਾਂ ਨੂੰ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਸ਼ੁਰੂ ਕੀਤਾ ਗਿਆ ਸੀ}}</translation>
 <translation id="7994702968232966508">EAP ਵਿਧੀ</translation>

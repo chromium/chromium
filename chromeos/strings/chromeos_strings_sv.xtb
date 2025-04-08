@@ -351,6 +351,7 @@
 <translation id="2438248248625638801">Skapar inspelningstitlar</translation>
 <translation id="2446553403094072641">Flyttalsprecision</translation>
 <translation id="2448312741937722512">Typ</translation>
+<translation id="2448857983905133469">Lektionsverktyg</translation>
 <translation id="2468124392950503650">Välj en prompt för att skapa eller läs <ph name="BEGIN_LINK_PROMPTING_GUIDE" />promptguiden<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Använd Hjälp mig skriva för att skapa ett utkast eller finjustera befintligt arbete (med hjälp av Google AI)</translation>
 <translation id="2475982808118771221">Det uppstod ett fel</translation>
@@ -381,6 +382,7 @@
 <translation id="2584559707064218956">Öppna inställningarna för att konfigurera det</translation>
 <translation id="2586146417912237930">blått och indigo</translation>
 <translation id="2589921777872778654">Menyn Redigera och radera</translation>
+<translation id="2590424100019931043">Du har tagits bort från den här klassen</translation>
 <translation id="2597774443162333062">Filerna skickas till Google för felsökning</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Skanningen har slutförts. 1 sida har skannats}other{Skanningen har slutförts. {NUMBER_OF_PAGES} sidor har skannats}}</translation>
 <translation id="261322795497077164">Högtalaridentifiering</translation>
@@ -449,6 +451,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Slutpunkt</translation>
 <translation id="3060579846059757016">Översikter</translation>
+<translation id="3060798442805232711">Lektionsverktyg använder mikrofonen</translation>
 <translation id="3061850252076394168">aktivera Textuppläsning</translation>
 <translation id="3066772729299747758">på tisdag</translation>
 <translation id="3069085583900247081">Testet misslyckades</translation>
@@ -910,6 +913,7 @@
 <translation id="5170568018924773124">Visa i mapp</translation>
 <translation id="517075088756846356">Dra ur strömkabeln från <ph name="DEVICE_NAME" /> och sätt i den igen för att fortsätta uppdateringsprocessen</translation>
 <translation id="5180108905184566358">baobabträd</translation>
+<translation id="5180431943345994173">Din lärare har tagit bort innehåll i lektionsverktyg</translation>
 <translation id="5180712487038406644">Uttrycksfull</translation>
 <translation id="5190187232518914472">Återupplev dina favoritminnen. Öppna <ph name="LINK_BEGIN" />Google Foto<ph name="LINK_END" /> om du vill lägga till eller redigera album.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
@@ -1003,6 +1007,7 @@
 <translation id="5628106863521633649">Tillgängliga språk</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">abstract</translation>
+<translation id="5655084389678168978">Din lärare har lagt till nytt innehåll i lektionsverktyg</translation>
 <translation id="5655283760733841251">Tangenten som ökar ljusstyrkan på tangentbordet</translation>
 <translation id="5655296450510165335">Enhetsregistrering</translation>
 <translation id="5655776422854483175">Inga utskriftsjobb</translation>
@@ -1528,6 +1533,7 @@ Ladda ned transkriptionsmodellen (upp till 100 MB) för att få transkriptioner
 <translation id="7971535376154084247">Allmänna inställningar</translation>
 <translation id="7977800524392185497">Öppna inställningarna om du vill ansluta till ett <ph name="NETWORK_NAME" />-nätverk</translation>
 <translation id="7978412674231730200">Privat nyckel</translation>
+<translation id="7979468455552394856">Lektionsverktyg är anslutet till elever</translation>
 <translation id="7982789257301363584">Nätverk</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> startades automatiskt}other{# appar startades automatiskt}}</translation>
 <translation id="7994702968232966508">EAP-metod</translation>

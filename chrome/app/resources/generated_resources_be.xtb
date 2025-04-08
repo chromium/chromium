@@ -44,7 +44,6 @@
 <translation id="1026822031284433028">Загрузіць відарыс</translation>
 <translation id="1026959648338730078">Windows Hello або знешні ключ бяспекі</translation>
 <translation id="1028700151766901954">Прычына: стандартна функцыя "Падтрымка браўзераў ранейшых версій" выкарыстоўвае браўзер <ph name="DEFAULT_OPEN_BROWSER" />.</translation>
-<translation id="1028823395684328817">Пацвердзіце сваю асобу, каб і далей мець доступ да пароляў і іншых функцый у сваім Уліковым запісе Google</translation>
 <translation id="102916930470544692">Ключ доступу</translation>
 <translation id="1029317248976101138">Маштаб</translation>
 <translation id="1029526375103058355">Націсканне дотыкам</translation>
@@ -820,7 +819,6 @@
 <translation id="1558671750917454373">Узнавіць трансляцыю на прыладу "<ph name="DEVICE_NAME" />"</translation>
 <translation id="1561331397460162942">Доступ да даных геалакацыі атрымаюць праграмы і вэб-сайты, якія маюць дазвол на доступ да геаданых, а таксама сістэмныя службы</translation>
 <translation id="1562119309884184621">Дададзены кантакт будзе распазнаны пры наступным абагульванні</translation>
-<translation id="1563137369682381456">Тэрмін заканчэння дзеяння</translation>
 <translation id="1566049601598938765">Вэб-сайт</translation>
 <translation id="15662109988763471">Выбраны прынтар недаступны або ўсталяваны няправільна. Праверце прынтар або выберыце іншы.</translation>
 <translation id="1566329594234563241">Калі прылада не выкарыстоўваецца і падключана да крыніцы сілкавання</translation>
@@ -1254,6 +1252,7 @@
 <translation id="185111092974636561"><ph name="BEGIN_PARAGRAPH1" />Перад рэгістрацыяй неабходна ачысціць TPM, каб аперацыйная сістэма <ph name="DEVICE_OS" /> змагла атрымаць права ўласнасці на прыладу.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Таксама можна зусім выключыць TPM на прыладзе. Вашы даныя і далей будуць захоўвацца ў бяспецы дзякуючы выкарыстанню шыфравання праграмнага забеспячэння, але пэўныя функцыі бяспекі (напрыклад, забяспечаныя апаратнымі сродкамі сертыфікаты) будуць адключаны.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Змяніць налады TPM можна, выканаўшы перазагрузку і ўвайшоўшы ў налады BIOS/UEFI. Этапы могуць адрознівацца ў залежнасці ад мадэлі прылады. Каб атрымаць дадатковую інфармацыю, перад перазагрузкай адкрыйце дакументацыю <ph name="DEVICE_OS" /> на асобнай прыладзе: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="1851551847729706116">Укладка <ph name="TAB_NAME" /> абагулена на гэтай укладцы</translation>
 <translation id="1852799913675865625">Пры спробе прачытаць файл адбылася памылка: <ph name="ERROR_TEXT" />.</translation>
 <translation id="1854180393107901205">Спыніць трансляцыю</translation>
 <translation id="1856715684130786728">Дадаць размяшчэнне...</translation>
@@ -3468,7 +3467,6 @@
 <translation id="3420501302812554910">Неабходна скінуць унутраны ключ бяспекі</translation>
 <translation id="3421387094817716717">Эліптычны адкрыты ключ</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Заўвага.<ph name="END_BOLD" /> Чалавек з падобным да вашага голасам або запісам вашага голасу зможа атрымаць доступ да вашых персанальных вынікаў ці да Памочніка.</translation>
-<translation id="3421835120203732951">Дадаць новы профіль</translation>
 <translation id="3422989558057853751">Апошні выбраны элемент, пры скасаванні выбару якога адбудзецца выхад з рэжыму выбару</translation>
 <translation id="3423111258700187173">Вынікі знойдзены ў папцы "<ph name="FOLDER_TITLE" />"</translation>
 <translation id="3423226218833787854">Даведацца больш пра гэту функцыю на аснове штучнага інтэлекту</translation>
@@ -9332,7 +9330,6 @@
 <translation id="7622768823216805500">Сайты звычайна ўсталёўваюць апрацоўшчыкі плацяжоў для рэалізацыі функцый купляў, напрыклад для спрашчэння афармлення заказу</translation>
 <translation id="7622966771025050155">Пераключыцца на ўкладку, здымка якой ажыццяўлялася</translation>
 <translation id="7624337243375417909">Caps Lock выключаны</translation>
-<translation id="7625025537587898155">Дадаць новы профіль</translation>
 <translation id="7625568159987162309">Праглядзець дазволы і захаваныя з сайтаў даныя</translation>
 <translation id="7625823789272218216">Новая ўкладка злева</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), узровень <ph name="GRADE" /></translation>
@@ -11287,6 +11284,7 @@
 <translation id="8963117664422609631">Перайсці ў налады сайтаў</translation>
 <translation id="8964927371396953727">Каб выкарыстоўваць і захоўваць паролі ва ўліковым запісе <ph name="ACCOUNT_EMAIL" />, пацвердзіце сваю асобу</translation>
 <translation id="8965037249707889821">Увядзіце стары пароль</translation>
+<translation id="8967403839792635452">Распрацоўваеце пашырэнні? Будзьце ў курсе актуальнага стану спраў у раздзеле <ph name="BEGIN_LINK" />Што новага<ph name="END_LINK" /> з дапамогай дакументацыі для распрацоўшчыкаў пашырэнняў Chrome.</translation>
 <translation id="8967427617812342790">Дадаць у спіс чытання</translation>
 <translation id="8967548289042494261">Выдаліць <ph name="VM_NAME" /></translation>
 <translation id="8968527460726243404">Запіс стану сістэмы Chrome OS</translation>
@@ -11748,7 +11746,6 @@
 <translation id="98235653036850093">Вітаем, <ph name="PROFILE_NAME" /></translation>
 <translation id="983192555821071799">Закрыць усе ўкладкі</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> – ідзе запіс на камеру і мікрафон</translation>
-<translation id="984275831282074731">Спосабы аплаты</translation>
 <translation id="984705303330760860">Дадаванне моў праверкі правапісу</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Агульныя</translation>

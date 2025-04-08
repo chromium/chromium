@@ -44,7 +44,6 @@
 <translation id="1026822031284433028">Cargar imaxe</translation>
 <translation id="1026959648338730078">Windows Hello ou unha chave de seguranza externa</translation>
 <translation id="1028700151766901954">Razón: LBS queda en <ph name="DEFAULT_OPEN_BROWSER" /> de forma predeterminada.</translation>
-<translation id="1028823395684328817">Para seguir usando os contrasinais e moito máis na túa Conta de Google, verifica a túa identidade</translation>
 <translation id="102916930470544692">Clave de acceso</translation>
 <translation id="1029317248976101138">Zoom</translation>
 <translation id="1029526375103058355">Tocar para facer clic</translation>
@@ -816,7 +815,6 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1558671750917454373">Retomar a emisión no seguinte dispositivo: <ph name="DEVICE_NAME" /></translation>
 <translation id="1561331397460162942">Desta forma, as aplicacións, os sitios web co permiso correspondente e os servizos do sistema poderán acceder á localización</translation>
 <translation id="1562119309884184621">Se engades este contacto, lembrarase a próxima vez que comparta contido</translation>
-<translation id="1563137369682381456">Data de caducidade</translation>
 <translation id="1566049601598938765">Sitio web</translation>
 <translation id="15662109988763471">A impresora seleccionada non está dispoñible ou non está instalada correctamente. Compróbaa ou selecciona outra.</translation>
 <translation id="1566329594234563241">Cando o dispositivo estea inactivo e conectado</translation>
@@ -1250,6 +1248,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="185111092974636561"><ph name="BEGIN_PARAGRAPH1" />Antes de inscribirte, debes borrar o TPM para que <ph name="DEVICE_OS" /> poida facerse cargo do dispositivo.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Tamén podes desactivar completamente o dispositivo do TPM. Os teus datos seguiranse almacenando de forma segura coa encriptación de software, pero desactivaranse certas funcións de seguranza, como os certificados almacenados en hardware.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Podes cambiar a configuración do TPM reiniciando o dispositivo e accedendo á configuración de BIOS/UEFI do sistema. Os pasos varían segundo o modelo do dispositivo. Para obter máis información, abre a documentación de <ph name="DEVICE_OS" /> nun dispositivo independente antes de proceder co reinicio: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="1851551847729706116">Compartindo <ph name="TAB_NAME" /> con esta pestana</translation>
 <translation id="1852799913675865625">Produciuse un erro mentres se tentaba ler o ficheiro: <ph name="ERROR_TEXT" />.</translation>
 <translation id="1854180393107901205">Deter emisión</translation>
 <translation id="1856715684130786728">Engadir localización...</translation>
@@ -3466,7 +3465,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3420501302812554910">É necesario restablecer a chave de seguranza interna</translation>
 <translation id="3421387094817716717">Clave pública de Elliptic Curve</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Nota:<ph name="END_BOLD" /> Cunha gravación ou voz similar á túa poderíase acceder aos teus resultados persoais ou ao teu Asistente.</translation>
-<translation id="3421835120203732951">Engadir perfil novo</translation>
 <translation id="3422989558057853751">Último elemento seleccionado. Se anulas a selección, sairás do modo de selección</translation>
 <translation id="3423111258700187173">Atopáronse resultados en <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">Máis información sobre esta función de IA</translation>
@@ -9327,7 +9325,6 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7622768823216805500">Os sitios adoitan instalar controladores de pago para ofrecerche determinadas funcións relacionadas coas compras (por exemplo, procesar as compras de forma máis fácil)</translation>
 <translation id="7622966771025050155">Cambiar á pestana mostrada</translation>
 <translation id="7624337243375417909">desactivouse o bloqueo de maiúsculas</translation>
-<translation id="7625025537587898155">Engadir perfil novo</translation>
 <translation id="7625568159987162309">Ver permisos e datos almacenados dos sitios</translation>
 <translation id="7625823789272218216">Pestana nova á esquerda</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), grao <ph name="GRADE" /></translation>
@@ -11279,6 +11276,7 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o navega
 <translation id="8963117664422609631">Ir á configuración do sitio</translation>
 <translation id="8964927371396953727">Verifica a túa identidade para usar e gardar os contrasinais na túa conta (<ph name="ACCOUNT_EMAIL" />)</translation>
 <translation id="8965037249707889821">Introduce o contrasinal anterior</translation>
+<translation id="8967403839792635452">Queres programar extensións? Mantete ao tanto das <ph name="BEGIN_LINK" />Novidades<ph name="END_LINK" /> coa documentación para a programación da extensión de Chrome.</translation>
 <translation id="8967427617812342790">Engadir á lista de lectura</translation>
 <translation id="8967548289042494261">Quitar <ph name="VM_NAME" /></translation>
 <translation id="8968527460726243404">Escritor de imaxes do sistema ChromeOS</translation>
@@ -11743,7 +11741,6 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="98235653036850093">Ola, <ph name="PROFILE_NAME" /></translation>
 <translation id="983192555821071799">Pechar todas as pestanas</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" />, cámara e micrófono gravando</translation>
-<translation id="984275831282074731">Métodos de pago</translation>
 <translation id="984705303330760860">Engadir idiomas ao corrector ortográfico</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Xeral</translation>

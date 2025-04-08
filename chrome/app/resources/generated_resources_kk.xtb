@@ -44,7 +44,6 @@
 <translation id="1026822031284433028">Кескінді жүктеу</translation>
 <translation id="1026959648338730078">Windows Hello немесе сыртқы қауіпсіздік кілті</translation>
 <translation id="1028700151766901954">Себеп: LBS <ph name="DEFAULT_OPEN_BROWSER" /> браузерінде әдепкісінше қалады.</translation>
-<translation id="1028823395684328817">Google аккаунтыңызда құпия сөздер мен басқа ақпаратты әрі қарай пайдалану үшін жеке басыңызды растаңыз.</translation>
 <translation id="102916930470544692">Кіру кілті</translation>
 <translation id="1029317248976101138">Масштабтау</translation>
 <translation id="1029526375103058355">Басу үшін түрту</translation>
@@ -814,7 +813,6 @@
 <translation id="1558671750917454373"><ph name="DEVICE_NAME" /> құрылғысына трансляциялауды жалғастыру</translation>
 <translation id="1561331397460162942">Локация пайдалану рұқсаты бар қолданбалар, веб-сайттар және жүйелік қызметтер локацияны пайдалана алады.</translation>
 <translation id="1562119309884184621">Бұл контактіні қосып қойсаңыз, ол маңайда болғанда қолжетімді болады.</translation>
-<translation id="1563137369682381456">Жарамдылық мерзімі</translation>
 <translation id="1566049601598938765">Вебсайт</translation>
 <translation id="15662109988763471">Таңдалған принтер қолжетімді емес немесе дұрыс орнатылмаған. Принтеріңізді тексеріңіз немесе басқа принтерді таңдап көріңіз.</translation>
 <translation id="1566329594234563241">Әрекетсіз және жалғанған күйде болғанда</translation>
@@ -1248,6 +1246,7 @@
 <translation id="185111092974636561"><ph name="BEGIN_PARAGRAPH1" />Тіркелуден бұрын TPM-ді тазартуыңыз керек, сонда <ph name="DEVICE_OS" /> құрылғысы меншік құқығын ала алады.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />TPM құрылғысын толығымен өшіріп тастауға да болады. Деректеріңіз бағдарламалық құрал шифрлауымен қауіпсіз түрде сақтала береді, бірақ жабдық қолдауының сертификаттары сияқты кейбір қауіпсіздік функциялары өшіріледі.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Өшіріп қосып, жүйенің BIOS/UEFI параметрлеріне кіру арқылы TPM параметрлерін өзгерте аласыз. Орындалатын қадамдар құрылғы моделіне байланысты әртүрлі болады. Толық ақпарат алу үшін өшіріп қоспас бұрын басқа құрылғыда <ph name="DEVICE_OS" /> құжаттамасын ашып алыңыз: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="1851551847729706116">"<ph name="TAB_NAME" />" қойындысы осы қойындыда көрсетіліп жатыр</translation>
 <translation id="1852799913675865625">Файлды оқу кезінде қате орын алды: <ph name="ERROR_TEXT" />.</translation>
 <translation id="1854180393107901205">Трансляцияны тоқтату</translation>
 <translation id="1856715684130786728">Орын қосу…</translation>
@@ -3462,7 +3461,6 @@
 <translation id="3420501302812554910">Ішкі қауіпсіздік кілтін қалпына келтіру керек.</translation>
 <translation id="3421387094817716717">Эллипстік қисық сызықтардың ашық кілті</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Ескертпе:<ph name="END_BOLD" /> кез келген адам сіздікіне ұқсайтын дауыс немесе жазба арқылы жеке нәтижелеріңізді немесе Assistant қызметін пайдалануы мүмкін.</translation>
-<translation id="3421835120203732951">Жаңа профиль қосу</translation>
 <translation id="3422989558057853751">Соңғы элемент таңдалды. Таңдаудан алынса, таңдау режимінен шығады.</translation>
 <translation id="3423111258700187173"><ph name="FOLDER_TITLE" /> қалтасынан нәтижелер табылды</translation>
 <translation id="3423226218833787854">Бұл AI функциясы туралы толық ақпарат</translation>
@@ -9317,7 +9315,6 @@
 <translation id="7622768823216805500">Тапсырысты оңай рәсімдеу сияқты сауда-саттық функциялары үшін әдетте сайттарда төлем өңдегіштері орнатылады.</translation>
 <translation id="7622966771025050155">Суретке түсірілген қойындыға ауысу</translation>
 <translation id="7624337243375417909">Caps Lock өшірулі</translation>
-<translation id="7625025537587898155">Жаңа профиль қосу</translation>
 <translation id="7625568159987162309">Сайттарда сақталған рұқсаттар мен деректерді көру</translation>
 <translation id="7625823789272218216">Сол жақтан жаңа қойынды ашу</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), <ph name="GRADE" /> дәрежесі</translation>
@@ -11269,6 +11266,7 @@
 <translation id="8963117664422609631">Сайт параметрлеріне өту</translation>
 <translation id="8964927371396953727">Құпия сөздерді <ph name="ACCOUNT_EMAIL" /> аккаунтында пайдалану және сақтау үшін жеке басыңызды растаңыз.</translation>
 <translation id="8965037249707889821">Ескі құпия сөзді енгізіңіз</translation>
+<translation id="8967403839792635452">Кеңейтімдерді әзірлеумен айналысасыз ба? Chrome кеңейтімдерін әзірлеушілерге арналған құжаттамадағы <ph name="BEGIN_LINK" />жаңалықтардан<ph name="END_LINK" /> хабардар болыңыз.</translation>
 <translation id="8967427617812342790">Оқу тізіміне қосу</translation>
 <translation id="8967548289042494261"><ph name="VM_NAME" /> машинасын өшіру</translation>
 <translation id="8968527460726243404">ChromeOS жүйесінің кескін жазу құралы</translation>
@@ -11733,7 +11731,6 @@
 <translation id="98235653036850093">Сәлеметсіз бе, <ph name="PROFILE_NAME" />!</translation>
 <translation id="983192555821071799">Барлық қойындыларды жабу</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> – камерамен және микрофонмен жазып жатыр</translation>
-<translation id="984275831282074731">Төлеу әдістері</translation>
 <translation id="984705303330760860">Емлені тексеру функциясы бар тілдерді қосу</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Жалпы</translation>

@@ -77,6 +77,7 @@
 <translation id="1298077576058087471">Ietaupiet līdz pat 60% datu un lasiet šodienas ziņas</translation>
 <translation id="1303339473099049190">Nevar atrast meklēto paroli. Pārbaudiet pareizrakstību un mēģiniet vēlreiz.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> — nosūtīts no ierīces <ph name="DEVICE_NAME" /></translation>
+<translation id="1318262688555255786">Kopīgot saiti uz tīmekļa lapu <ph name="PAGE_TITLE" />. Avots: <ph name="PAGE_URL" />.</translation>
 <translation id="1320912611264252795">Grāmatzīmes saglabāšanas plūsma ir atvērta pilna ekrāna augstumā</translation>
 <translation id="1327257854815634930">Navigācijas vēsture ir atvērta</translation>
 <translation id="1331212799747679585">Nevar atjaunināt Chrome — citas opcijas</translation>
@@ -516,6 +517,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="3435465986463792564">Vai esat atvēris daudz logu? Šeit varat tos pārvaldīt.</translation>
 <translation id="3435575784518354875">Lai saglabātu piekļuvi savām parolēm, eksportējiet tās tūlīt, atjauniniet Google Play pakalpojumus un pēc tam atkal importējiet paroles Google paroļu pārvaldniekā. <ph name="BEGIN_LINK" />Skatiet visus norādījumus<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">Drošība</translation>
+<translation id="3435914367318771664">Pievienot cilni jaunai grupai</translation>
 <translation id="3439276997620616816">Šeit varēsiet skatīt savas nesen atvērtās cilnes</translation>
 <translation id="3443221991560634068">Atkārtoti ielādēt pašreizējo lapu</translation>
 <translation id="3444179773590444986">Vai kopīgot atsauksmi par tumšā motīva lietošanu vietnēs?</translation>
@@ -782,6 +784,7 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="4684427112815847243">Sinhronizēt visu</translation>
 <translation id="4685741273709472646">Atlasīt no nolaižamā saraksta</translation>
 <translation id="4687718960473379118">Vietnē ieteiktās reklāmas</translation>
+<translation id="468924408576231679">Kopēt saiti uz tīmekļa lapu <ph name="PAGE_TITLE" />. Avots: <ph name="PAGE_URL" />.</translation>
 <translation id="469286762610133730">Iegūstiet labāku saturu</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />… un vēl <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}zero{<ph name="SHIPPING_OPTION_PREVIEW" />… un vēl <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" />… un vēl <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />… un vēl <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4698061626562952596">Šeit varat skatīt neaktīvās cilnes.</translation>
@@ -1124,6 +1127,7 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="6205314730813004066">Reklāmu konfidencialitāte</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> nav mana e-pasta adrese</translation>
 <translation id="6211386937064921208">Notiek šīs lapas priekšskatīšana</translation>
+<translation id="6212567362666004597">Pievienot cilni grupai</translation>
 <translation id="6221633008163990886">Atbloķējiet, lai eksportētu paroles.</translation>
 <translation id="6225572914528673855">Adreses josla</translation>
 <translation id="6232535412751077445">Iespējojot funkciju “Nesekot”, jūsu pārlūkošanas datplūsmā tiks iekļauts pieprasījums. Rezultāts būs atkarīgs no tā, vai vietne nodrošinās atbildi uz pieprasījumu un kā pieprasījums tiks interpretēts.
@@ -1151,6 +1155,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="6324916366299863871">Saīsnes rediģēšana</translation>
 <translation id="6324977638108296054">Nevar izveidot saiti uz atzīmēto tekstu.</translation>
 <translation id="6333140779060797560">Kopīgot, izmantojot <ph name="APPLICATION" /></translation>
+<translation id="6335454563754888572">Rediģēt URL, kas norāda uz lapu vietnē <ph name="PAGE_URL" />.</translation>
 <translation id="6337234675334993532">Šifrēšana</translation>
 <translation id="6340526405444716530">Personalizēšana</translation>
 <translation id="6341580099087024258">Vaicāt, kur saglabāt failus</translation>
@@ -1194,6 +1199,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="6486420406192123355">Šis PDF fails ir no vietnes, kurā tiek izmantots nedrošs savienojums.</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{Fails ir lejupielādēts.}zero{# lejupielādes ir pabeigtas.}one{# lejupielāde ir pabeigta.}other{# lejupielādes ir pabeigtas.}}</translation>
 <translation id="6508722015517270189">Restartējiet pārlūku Chrome</translation>
+<translation id="6513924416597632811">Kopēt saiti uz meklēšanas rezultātu lapu vaicājumam “<ph name="SEARCH_QUERY" />”. Avots: <ph name="PAGE_URL" />.</translation>
 <translation id="6518133107902771759">Verificēt</translation>
 <translation id="6527303717912515753">Kopīgot</translation>
 <translation id="652948702951888897">Chrome vēsture</translation>
@@ -1605,6 +1611,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="8221401890884589479">Varat bloķēt vietnes, ko nevēlaties saglabāt. Turklāt pārlūkā Chrome no saraksta tiek automātiski dzēstas vietnes, kas tajā ir glabātas ilgāk nekā 30 dienas. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
 <translation id="8221985041778490865">Notiek pārlūkošanas datu dzēšana</translation>
 <translation id="8223642481677794647">Plūsmas kartītes izvēlne</translation>
+<translation id="82296173028782770">Rediģēt meklēšanas vaicājumu: <ph name="SEARCH_QUERY" /></translation>
 <translation id="8236063039629122676">Tagad, velkot pa labi, varat pāriet atpakaļ, lai skatītu iepriekšējās apmeklētās lapas, savukārt, velkot pa kreisi, varat pāriet uz priekšu.</translation>
 <translation id="8236097722223016103">Pievienot grāmatzīmēm</translation>
 <translation id="8243077599929149377">Lietotājvārda pievienošana</translation>
@@ -1753,6 +1760,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="8890668505403261809">Meklējiet inkognito cilnēs</translation>
 <translation id="8898822736010347272">Tiek nosūtīti dažu apmeklēto lapu vietrāži URL, ierobežota sistēmas informācija un noteiktu lapu saturs Google serveriem, lai palīdzētu atklāt jaunus apdraudējumus un aizsargāt visus tīmekļa lietotājus.</translation>
 <translation id="8909135823018751308">Kopīgot...</translation>
+<translation id="8918299437379122615">Kopīgot saiti uz meklēšanas rezultātu lapu vaicājumam “<ph name="SEARCH_QUERY" />”. Avots: <ph name="PAGE_URL" />.</translation>
 <translation id="8922289737868596582">Izmantojiet pogu Vairāk opciju, lai lejupielādētu lapas un piekļūtu tām bezsaistē</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Uzzināt vairāk<ph name="END_LINK" /></translation>
 <translation id="892496902842311796">Valodas pakotne “<ph name="LANG" />” ir gatava.</translation>

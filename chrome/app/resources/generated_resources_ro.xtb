@@ -44,7 +44,6 @@
 <translation id="1026822031284433028">Încarcă imaginea</translation>
 <translation id="1026959648338730078">Windows Hello sau cheie de securitate externă</translation>
 <translation id="1028700151766901954">Motivul: CBV rămâne în <ph name="DEFAULT_OPEN_BROWSER" /> în mod prestabilit.</translation>
-<translation id="1028823395684328817">Confirmă-ți identitatea pentru a folosi în continuare parolele și alte date din Contul Google</translation>
 <translation id="102916930470544692">Cheie de acces</translation>
 <translation id="1029317248976101138">Zoom</translation>
 <translation id="1029526375103058355">Atinge pentru clic</translation>
@@ -818,7 +817,6 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1558671750917454373">Reia proiectarea pe <ph name="DEVICE_NAME" /></translation>
 <translation id="1561331397460162942">Astfel, se permite accesul la locație pentru aplicații, site-uri care au permisiunea pentru locație și servicii de sistem</translation>
 <translation id="1562119309884184621">Dacă adaugi persoana de contact, aceasta va fi recunoscută data viitoare când trimite fișiere</translation>
-<translation id="1563137369682381456">Data expirării</translation>
 <translation id="1566049601598938765">Site</translation>
 <translation id="15662109988763471">Imprimanta selectată nu este disponibilă sau nu este instalată corect. Verifică imprimanta sau încearcă să selectezi altă imprimantă.</translation>
 <translation id="1566329594234563241">Când dispozitivul este inactiv și conectat la priză</translation>
@@ -1642,7 +1640,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2121825465123208577">Redimensionează</translation>
 <translation id="2123766928840368256">Alege alt fișier</translation>
 <translation id="2124930039827422115">{1,plural, =1{Evaluat cu <ph name="AVERAGE_RATING" /> de 1 utilizator.}few{Evaluat cu <ph name="AVERAGE_RATING" /> de # utilizatori.}other{Evaluat cu <ph name="AVERAGE_RATING" /> de # de utilizatori.}}</translation>
-<translation id="2125715366913703594">Explorează &amp;Extensii</translation>
 <translation id="2126167708562367080">Sincronizarea este dezactivată de administrator.</translation>
 <translation id="2127372758936585790">Încărcător de putere joasă</translation>
 <translation id="212862741129535676">Procentaj de ocupare în starea activă</translation>
@@ -3469,7 +3466,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3420501302812554910">Cheia de securitate internă trebuie resetată</translation>
 <translation id="3421387094817716717">Cheia publică a curburii eliptice</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Notă:<ph name="END_BOLD" /> o voce asemănătoare sau o înregistrare a vocii tale ar putea accesa rezultatele tale personalizate sau Asistentul.</translation>
-<translation id="3421835120203732951">Adaugă un profil nou</translation>
 <translation id="3422989558057853751">Ultimul element selectat. Dacă îl deselectezi, vei ieși din modul de selectare.</translation>
 <translation id="3423111258700187173">S-au găsit rezultate în <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">Află mai multe despre această funcție AI</translation>
@@ -9331,7 +9327,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7622768823216805500">Site-urile instalează de obicei handlere pentru plăți pentru opțiuni oferite la cumpărare, de exemplu, finalizarea mai simplă a achiziției</translation>
 <translation id="7622966771025050155">Comută la fila capturată</translation>
 <translation id="7624337243375417909">tasta Caps Lock este dezactivată</translation>
-<translation id="7625025537587898155">Adaugă un profil nou</translation>
 <translation id="7625568159987162309">Vezi permisiunile și datele stocate pe toate site-urile</translation>
 <translation id="7625823789272218216">Filă nouă în stânga</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), nivelul <ph name="GRADE" /></translation>
@@ -11750,7 +11745,6 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser, 
 <translation id="98235653036850093">Bună, <ph name="PROFILE_NAME" />!</translation>
 <translation id="983192555821071799">Închide toate filele</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> – înregistrare cu camera foto și microfonul</translation>
-<translation id="984275831282074731">Metode de plată</translation>
 <translation id="984705303330760860">Adaugă limbi pentru verificarea ortografiei</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">General</translation>

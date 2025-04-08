@@ -44,7 +44,6 @@
 <translation id="1026822031284433028">تحميل صورة</translation>
 <translation id="1026959648338730078">‏‫Windows Hello أو مفتاح أمان خارجي</translation>
 <translation id="1028700151766901954">‏السبب: تم العثور على ميزة "الوصول إلى المتصفِّحات القديمة" (LBS) في <ph name="DEFAULT_OPEN_BROWSER" /> بشكل تلقائي.</translation>
-<translation id="1028823395684328817">‏لمواصلة استخدام كلمات المرور وغيرها في حسابك على Google، يجب إثبات هويتك</translation>
 <translation id="102916930470544692">مفتاح المرور</translation>
 <translation id="1029317248976101138">تكبير/تصغير</translation>
 <translation id="1029526375103058355">الضغط للنقر</translation>
@@ -820,7 +819,6 @@
 <translation id="1558671750917454373">استئناف البث على "<ph name="DEVICE_NAME" />"</translation>
 <translation id="1561331397460162942">يترتب على ذلك منح إذن الوصول إلى الموقع الجغرافي لكلّ من التطبيقات والمواقع الإلكترونية المسموح لها بذلك وخدمات النظام</translation>
 <translation id="1562119309884184621">عند إضافة جهة الاتصال هذه، سيتم تذكُّرها في المرات القادمة عند مشاركة الملفات.</translation>
-<translation id="1563137369682381456">تاريخ انتهاء الصلاحية</translation>
 <translation id="1566049601598938765">موقع إلكتروني</translation>
 <translation id="15662109988763471">لا تتوفر الطابعة المختارة أو لم يتم تثبيتها بشكلٍ صحيح. يُرجى التحقق من الطابعة أو تجربة اختيار طابعة أخرى.</translation>
 <translation id="1566329594234563241">عندما يكون الجهاز غير نشط وموصولاً بمصدر طاقة</translation>
@@ -1646,7 +1644,6 @@
 <translation id="2121825465123208577">تغيير الحجم</translation>
 <translation id="2123766928840368256">اختيار ملف آخر</translation>
 <translation id="2124930039827422115">{1,plural, =1{تم التقييم بـ <ph name="AVERAGE_RATING" /> بواسطة مستخدم واحد.}zero{تم التقييم بـ <ph name="AVERAGE_RATING" /> بواسطة # مستخدم.}two{تم التقييم بـ <ph name="AVERAGE_RATING" /> بواسطة مستخدميْنِ (#).}few{تم التقييم بـ <ph name="AVERAGE_RATING" /> بواسطة # مستخدمين.}many{تم التقييم بـ <ph name="AVERAGE_RATING" /> بواسطة # مستخدمًا.}other{تم التقييم بـ <ph name="AVERAGE_RATING" /> بواسطة # مستخدم.}}</translation>
-<translation id="2125715366913703594">استكشاف "الإضافات"</translation>
 <translation id="2126167708562367080">تم إيقاف المزامنة من قِبل المشرف.</translation>
 <translation id="2127372758936585790">شاحن منخفض الطاقة</translation>
 <translation id="212862741129535676">نسبة إشغال حالة التردد</translation>
@@ -3474,7 +3471,6 @@
 <translation id="3420501302812554910">يتطلب مفتاح الأمان الداخلي إعادة ضبط</translation>
 <translation id="3421387094817716717">المفتاح العام لمنحنى ناقص المقطع</translation>
 <translation id="3421672904902642628">‏<ph name="BEGIN_BOLD" />ملاحظة<ph name="END_BOLD" />: يمكن الوصول إلى نتائجك الشخصية أو إلى خدمة "مساعد Google" الخاصة بك باستخدام صوت مماثل لصوتك أو باستخدام تسجيل لصوتك.</translation>
-<translation id="3421835120203732951">إضافة ملف شخصي جديد</translation>
 <translation id="3422989558057853751">تم اختيار آخر عنصر، وسيؤدي إلغاء اختياره إلى الخروج من وضع الاختيار</translation>
 <translation id="3423111258700187173">تم العثور على نتائج في "<ph name="FOLDER_TITLE" />"</translation>
 <translation id="3423226218833787854">مزيد من المعلومات حول هذه الميزة التي تستخدم الذكاء الاصطناعي</translation>
@@ -9342,7 +9338,6 @@
 <translation id="7622768823216805500">تعمل المواقع الإلكترونية عادةً على تثبيت معالجات الدفع لتتيح ميزات التسوّق، مثل الدفع بسهولة.</translation>
 <translation id="7622966771025050155">التبديل إلى علامة التبويب التي يتم تسجيلها</translation>
 <translation id="7624337243375417909">‏مفتاح caps lock متوقف</translation>
-<translation id="7625025537587898155">إضافة ملف شخصي جديد</translation>
 <translation id="7625568159987162309">عرض الأذونات والبيانات المُخزَّنة على المواقع</translation>
 <translation id="7625823789272218216">إضافة علامة تبويب جديدة على اليسار</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />)، الدرجة <ph name="GRADE" /></translation>
@@ -11765,7 +11760,6 @@
 <translation id="98235653036850093">مرحبًا <ph name="PROFILE_NAME" /></translation>
 <translation id="983192555821071799">إغلاق جميع علامات التبويب</translation>
 <translation id="983531994960412650">‫<ph name="WINDOW_TITLE" /> - يتم التسجيل من الكاميرا والميكروفون.</translation>
-<translation id="984275831282074731">طرق الدفع</translation>
 <translation id="984705303330760860">إضافة لغات إلى ميزة التدقيق الإملائي</translation>
 <translation id="987068745968718743">‏نظام Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">عام</translation>

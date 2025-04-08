@@ -99,7 +99,6 @@
 <translation id="1175364870820465910">打印(&amp;P)...</translation>
 <translation id="1175393348063009671">相纸（哑光）</translation>
 <translation id="1175875016430184367">三钉（右侧）</translation>
-<translation id="1176123604678140687">到期月份</translation>
 <translation id="1177548198167638471">不再询问</translation>
 <translation id="1177863135347784049">自定义</translation>
 <translation id="1178581264944972037">暂停</translation>
@@ -333,7 +332,6 @@
       &lt;p&gt;请在&lt;strong&gt;设置&lt;/strong&gt;应用的&lt;strong&gt;通用&lt;/strong&gt;部分调整日期和时间。&lt;/p&gt;</translation>
 <translation id="1559839503761818503">您的管理员将于 <ph name="DATE" /><ph name="TIME" /> 重启您的设备</translation>
 <translation id="1562805467275776390">赛车</translation>
-<translation id="1563137369682381456">失效日期</translation>
 <translation id="1563755205047885671">动作游戏与平台游戏</translation>
 <translation id="1564634006476980707">对于搜索网址，建议采用 HTTPS 架构：<ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">网络信息，例如地址、接口配置和连接质量</translation>
@@ -528,6 +526,7 @@
 <translation id="1890171020361705182">恐龙游戏。在这款游戏中，您要协助一头正在荒野中奔跑的像素化恐龙躲避仙人掌和翼手龙。您只需在听到提示音时点按一下空格键，即可让恐龙跃过障碍物。</translation>
 <translation id="1898423065542865115">过滤</translation>
 <translation id="1901443836186977402">{1,plural, =1{此服务器无法证明其所在网域是 <ph name="DOMAIN" />；其安全证书已在昨天过期。出现此问题的原因可能是配置有误，或是有攻击者拦截您的连接。计算机的时钟目前已设为 <ph name="CURRENT_DATE" />，请问是否正确？如果不正确，请更正系统的时钟，然后刷新此页面。}other{此服务器无法证明其所在网域是 <ph name="DOMAIN" />；其安全证书已在 # 天前过期。出现此问题的原因可能是配置有误，或是有攻击者拦截您的连接。计算机的时钟目前已设为 <ph name="CURRENT_DATE" />，请问是否正确？如果不正确，请更正系统的时钟，然后刷新此页面。}}</translation>
+<translation id="190166348986967700">管理员将于 <ph name="DATE_TIME" />开始将文件上传到<ph name="CLOUD_PROVIDER" />。在文件上传完成之前，请让设备保持连接状态。在上传期间，您将只能读取本地文件。</translation>
 <translation id="1902576642799138955">有效期</translation>
 <translation id="1908217026282415406">使用和移动摄像头</translation>
 <translation id="1908690643053136980">您的管理员不允许此网站使用<ph name="PERMISSION" /></translation>
@@ -936,7 +935,6 @@
 <translation id="2606760465469169465">自动验证</translation>
 <translation id="2608019759319359258">主题被屏蔽后，将不会用于展示个性化广告</translation>
 <translation id="2610561535971892504">点击复制</translation>
-<translation id="2612676031748830579">卡号</translation>
 <translation id="2612993535136743634">您的设备和 Google 账号中保存的所有安全码都将被删除</translation>
 <translation id="2616412942031748191">搜索引擎优化与营销</translation>
 <translation id="2618206371527040026">学术会议与出版物</translation>
@@ -2150,6 +2148,7 @@
 <translation id="473775607612524610">更新</translation>
 <translation id="4738601419177586157"><ph name="TEXT" />搜索建议</translation>
 <translation id="4742407542027196863">管理密码…</translation>
+<translation id="474270528725216349">来自已同步设备上的至少 1 个网站</translation>
 <translation id="4743275772928623722">您的系统已更新，但某些应用和文件无法恢复。系统会自动重新下载您的应用。</translation>
 <translation id="4744514002166662487">创建演示文稿</translation>
 <translation id="4744603770635761495">可执行文件路径</translation>
@@ -2280,6 +2279,7 @@
 <translation id="495170559598752135">操作</translation>
 <translation id="4953689047182316270">对无障碍事件做出响应</translation>
 <translation id="4957080528849277028">“查看您的 Chrome 历史记录”按钮，激活它即可在 Chrome 设置中查看和管理您的浏览记录</translation>
+<translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{以及另外 1 个网站}other{以及另外 # 个网站}}</translation>
 <translation id="4958444002117714549">展开列表</translation>
 <translation id="4960068118612257147">您可在 Chrome 的广告隐私权设置中进行更改</translation>
 <translation id="4960203958361543136">选择搜索引擎</translation>
@@ -2614,8 +2614,10 @@
 <translation id="553377674408670169">教育职位</translation>
 <translation id="5534785731327961487">现在超值特惠</translation>
 <translation id="5536214594743852365">显示“<ph name="SECTION" />”部分</translation>
+<translation id="5536471014287260753">{DOMAIN_COUNT,plural, =1{以及另外 1 个网站（在已同步的设备上还有更多网站）}other{以及另外 # 个网站（在已同步的设备上还有更多网站）}}</translation>
 <translation id="553782666181800029">Chou 2 信封</translation>
 <translation id="5538270463355278784">自动全屏</translation>
+<translation id="5538859347764346097"><ph name="KEYWORD_SHORTCUT" />，在<ph name="KEYWORD_SUFFIX" />中搜索</translation>
 <translation id="5539243836947087108">筏式</translation>
 <translation id="5540224163453853">找不到请求的文章。</translation>
 <translation id="5540969246441091044">马术</translation>
@@ -2774,6 +2776,7 @@
 <translation id="5838278095973806738">请勿在此网站上输入任何敏感信息（例如密码或信用卡信息），因为攻击者可能会盗取这些信息。</translation>
 <translation id="5838732667866024867">您可以使用向左/向右箭头在图表中查看价格变动</translation>
 <translation id="5840318881868981258">在您的 Google 账号 <ph name="ACCOUNT" /> 中更新</translation>
+<translation id="5841007907672481419">来自 <ph name="TYPE_1" /></translation>
 <translation id="5841338463993781099">要保存到账号吗？</translation>
 <translation id="5843987376989109187">尚不支持此语言。
     <ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
@@ -2787,6 +2790,7 @@
 <translation id="5863515189965725638">修改 IBAN</translation>
 <translation id="5863847714970149516">即将进入的页面可能会向您收取费用</translation>
 <translation id="5866257070973731571">添加电话号码</translation>
+<translation id="5866327164731551901">来自 <ph name="TYPE_1" /> <ph name="TYPE_2" /></translation>
 <translation id="5866898949289125849">您当前查看的是一个开发者工具页面</translation>
 <translation id="5869405914158311789">无法访问此网站</translation>
 <translation id="5869522115854928033">已保存的密码</translation>
@@ -3326,7 +3330,6 @@
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">按照家长选择的设置使用 YouTube</translation>
 <translation id="6779348349813025131">Google 密码管理工具需要获权访问 MacOS 钥匙串</translation>
-<translation id="6782656837469339439">到期年份</translation>
 <translation id="6785990323398321538">您可以随时在 Chrome 的设置中更改搜索引擎。</translation>
 <translation id="6786145470008421571">6 x 9 英寸信封</translation>
 <translation id="67862343314499040">紫罗兰色</translation>
@@ -3495,6 +3498,7 @@
 <translation id="7075452647191940183">请求过大</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
+<translation id="7079783554682867524">来自 <ph name="TYPE_1" />（在已同步的设备上还有更多网站）</translation>
 <translation id="7081311540357715807">食品与杂货零售商</translation>
 <translation id="7083258188081898530">纸匣 9</translation>
 <translation id="7086090958708083563">用户已请求上传</translation>
@@ -4151,6 +4155,7 @@
 <translation id="8216640997712497593">14 x 18 英寸</translation>
 <translation id="8218327578424803826">分配的位置：</translation>
 <translation id="8220602974062798186">要屏蔽“<ph name="TOPIC" />”及所有相关主题吗？</translation>
+<translation id="8226408512771130794"><ph name="KEYWORD_SHORTCUT" />，询问<ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="8228419419708659934">双页视图</translation>
 <translation id="8228477714872026922"><ph name="ORIGIN" /> 想访问您网络中的设备：</translation>
 <translation id="822925450938886901">如需了解其他信息和可能适用的政策，请在浏览器中打开 chrome://management。</translation>

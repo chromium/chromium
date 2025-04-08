@@ -44,7 +44,6 @@
 <translation id="1026822031284433028">ചിത്രം ലോഡ് ചെയ്യുക</translation>
 <translation id="1026959648338730078">Windows Hello അല്ലെങ്കിൽ ബാഹ്യ സുരക്ഷാ കീ</translation>
 <translation id="1028700151766901954">കാരണം: <ph name="DEFAULT_OPEN_BROWSER" /> എന്നതിൽ ഡിഫോൾട്ടായി LBS നിലനിൽക്കുന്നു.</translation>
-<translation id="1028823395684328817">നിങ്ങളുടെ Google Account-ൽ തുടർന്നും പാസ്‌വേഡുകളും മറ്റും ഉപയോഗിക്കാൻ, ഇത് നിങ്ങൾ തന്നെയാണെന്ന് പരിശോധിച്ചുറപ്പിക്കുക</translation>
 <translation id="102916930470544692">പാസ്‌കീ</translation>
 <translation id="1029317248976101138">സൂം ചെയ്യുക</translation>
 <translation id="1029526375103058355">ക്ലിക്ക് ചെയ്യാൻ ടാപ്പ് ചെയ്യുക</translation>
@@ -814,7 +813,6 @@
 <translation id="1558671750917454373"><ph name="DEVICE_NAME" /> എന്നതിലേക്ക് കാസ്‌റ്റ് ചെയ്യുന്നത് പുനരാരംഭിക്കുക</translation>
 <translation id="1561331397460162942">ഇതുവഴി, ലൊക്കേഷൻ അനുമതിയുള്ള ആപ്പുകൾ, വെബ്സൈറ്റുകൾ എന്നിവയ്ക്കും സിസ്റ്റം സേവനങ്ങൾക്കും ലൊക്കേഷൻ ആക്‌സസ് ചെയ്യാനാകും</translation>
 <translation id="1562119309884184621">ഈ കോൺടാക്‌റ്റ് ചേർക്കുന്നത്, അടുത്ത തവണ അവർ പങ്കിടുമ്പോൾ ഓർമ്മിക്കും</translation>
-<translation id="1563137369682381456">കാലഹരണപ്പെടുന്ന തീയതി</translation>
 <translation id="1566049601598938765">വെബ്‌സൈറ്റ്</translation>
 <translation id="15662109988763471">തിരഞ്ഞെടുത്ത പ്രിൻ്റർ ലഭ്യമല്ല, അല്ലെങ്കിൽ ശരിയായി ഇൻസ്‌റ്റാൾ ചെയ്‌തിട്ടില്ല. നിങ്ങളുടെ പ്രിൻ്റർ പരിശോധിക്കുകയോ മറ്റൊരു പ്രിൻ്റർ തിരഞ്ഞെടുത്ത് ശ്രമിക്കുകയോ ചെയ്യുക.</translation>
 <translation id="1566329594234563241">നിഷ്‌ക്രിയവും പ്ലഗ്-ഇൻ ചെയ്‌ത നിലയിലും ആയിരിക്കുമ്പോൾ</translation>
@@ -1638,7 +1636,6 @@
 <translation id="2121825465123208577">വലുപ്പംമാറ്റുക</translation>
 <translation id="2123766928840368256">മറ്റൊരു ഫയൽ തിരഞ്ഞെടുക്കൂ</translation>
 <translation id="2124930039827422115">{1,plural, =1{ഒരു ഉപയോക്താവ് <ph name="AVERAGE_RATING" /> ആയി റേറ്റ് ചെയ്തു.}other{# ഉപയോക്താക്കൾ <ph name="AVERAGE_RATING" /> ആയി റേറ്റ് ചെയ്തു}}</translation>
-<translation id="2125715366913703594">വിപുലീകരണങ്ങൾ അടുത്തറിയുക</translation>
 <translation id="2126167708562367080">നിങ്ങളുടെ അഡ്‌മിനിസ്‌ട്രേറ്റർ സമന്വയം പ്രവർത്തനരഹിതമാക്കി.</translation>
 <translation id="2127372758936585790">കുറഞ്ഞ തോതിൽ വൈദ്യുതി പ്രവഹിക്കുന്ന ചാർജർ</translation>
 <translation id="212862741129535676">ആവൃത്തി നില ഒക്യുപ്പെൻസി ശതമാനം</translation>
@@ -3466,7 +3463,6 @@
 <translation id="3420501302812554910">ഇൻ്റേണൽ സുരക്ഷാ കീ റീസെറ്റ് ചെയ്യേണ്ടതുണ്ട്</translation>
 <translation id="3421387094817716717">എലി‌പ്‌റ്റിക് കർവ്‌ പബ്ലിക്‌ കീ</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />ശ്രദ്ധിക്കുക:<ph name="END_BOLD" /> സമാനമായ ശബ്‌ദത്തിനോ റെക്കോർഡിംഗിനോ നിങ്ങളുടെ വ്യക്തിപരമായ ഫലങ്ങൾ അല്ലെങ്കിൽ Assistant ആക്‌സസ് ചെയ്യാനായേക്കാം.</translation>
-<translation id="3421835120203732951">പുതിയ പ്രൊഫൈൽ ചേർക്കുക</translation>
 <translation id="3422989558057853751">അവസാനത്തെ ഇനം തിരഞ്ഞെടുത്തു, അത് തിരഞ്ഞെടുത്തത് മാറ്റുന്നത് തിരഞ്ഞെടുക്കൽ മോഡിൽ നിന്ന് പുറത്തുകടക്കും</translation>
 <translation id="3423111258700187173"><ph name="FOLDER_TITLE" /> ഫോൾഡറിൽ കണ്ടെത്തിയ ഫലങ്ങൾ</translation>
 <translation id="3423226218833787854">ഈ AI ഫീച്ചറിനെ കുറിച്ച് കൂടുതലറിയുക</translation>
@@ -9326,7 +9322,6 @@
 <translation id="7622768823216805500">എളുപ്പത്തിലുള്ള ചെക്കൗട്ട് പോലുള്ള ഷോപ്പിംഗ് ഫീച്ചറുകൾക്ക്, സൈറ്റുകൾ സാധാരണയായി പേയ്‌മെന്റ് ഹാൻഡ്‌ലറുകൾ ഇൻസ്‌റ്റാൾ ചെയ്യാറുണ്ട്</translation>
 <translation id="7622966771025050155">ക്യാപ്‌ചർ ചെയ്‌ത ടാബിലേക്ക് മാറുക</translation>
 <translation id="7624337243375417909">ക്യാപ്‌സ് ലോക്ക് ഓഫാണ്</translation>
-<translation id="7625025537587898155">പുതിയ പ്രൊഫൈൽ ചേർക്കുക</translation>
 <translation id="7625568159987162309">സൈറ്റുകളിൽ ഉടനീളം സംഭരിച്ചിട്ടുള്ള അനുമതികളും ഡാറ്റയും കാണുക</translation>
 <translation id="7625823789272218216">പുതിയ ടാബ് ഇടതുവശത്തേക്ക്</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), ഗ്രേഡ് <ph name="GRADE" /></translation>
@@ -11743,7 +11738,6 @@
 <translation id="98235653036850093">ഹായ്, <ph name="PROFILE_NAME" /></translation>
 <translation id="983192555821071799">ടാബെല്ലാം അടയ്‌ക്കൂ</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - ക്യാമറാ, മൈക്രോഫോൺ റെക്കോർഡിംഗ്</translation>
-<translation id="984275831282074731">പേയ്‌മെന്റ് രീതികൾ</translation>
 <translation id="984705303330760860">സ്പെൽ ചെക്ക് ഭാഷകൾ ചേർക്കുക</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">പൊതുവായ</translation>

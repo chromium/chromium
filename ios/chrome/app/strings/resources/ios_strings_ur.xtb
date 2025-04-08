@@ -261,6 +261,7 @@
 <translation id="2010008505735295285">دوبارہ لوڈ کریں</translation>
 <translation id="2015722694326466240">پاسورڈز دیکھنے کے لیے، آپ کو اپنے آلے پر پہلے پاس کوڈ سیٹ کرنا چاہئے۔</translation>
 <translation id="201759455285471444">ٹیب گروپ کو پھیلائیں۔</translation>
+<translation id="202070562065520783">یہ مجھے سمجھائیں</translation>
 <translation id="2021670401941426298">اگر قابل اطلاق ہو تو اپنی تلاش کی سرگزشت کو حذف کرنے کے لیے اپنے سرچ انجن کی ہدایات دیکھیں۔</translation>
 <translation id="2044394949148788042">ٹیب گرڈ کھولیں</translation>
 <translation id="20485545164632846">نیا آئٹم</translation>
@@ -1126,6 +1127,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="573974402615125334">ٹیب گروپس میں اشتراک، شمولیت اور تعاون کرنے کے لیے، اپنی سرگزشت اور ٹیبز کو ہم مطابقت پذیر کریں</translation>
 <translation id="5740123193752401435">ٹیبز تلاش کریں…</translation>
 <translation id="5744274077973758795"><ph name="FEATURE_NAME" /> کی اطلاعات آن کر دی گئیں</translation>
+<translation id="5745598824054949526">کوئی ٹیکسٹ نہیں ملا</translation>
 <translation id="574762237186762643">ایونٹس</translation>
 <translation id="5749158352074143502">اس ٹیب کے ساتھ جاری رکھیں</translation>
 <translation id="5753021559215751319">پاس ورڈ محفوظ کریں</translation>
@@ -1289,6 +1291,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6410883413783534063">ایک ہی وقت میں مختلف صفحات دیکھنے کیلئے ٹیبز کھولیں</translation>
 <translation id="6416807286621280684">آپ کے ٹریک کردہ پیکیجز اور ڈیلیوری اپ ڈیٹس۔</translation>
 <translation id="6418346271604475326">‏PDF تیار ہو رہی ہے</translation>
+<translation id="6421038304268477484">ترجمہ کردہ ٹیکسٹ</translation>
 <translation id="6429213933892582367">پاس ورڈ کے اختیارات کھولیں</translation>
 <translation id="6434591244308415567">ایک خرابی پیش آ گئی۔ بعد میں دوبارہ کوشش کریں۔</translation>
 <translation id="6435307030888827407">سائن آؤٹ رہیں</translation>
@@ -1967,6 +1970,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="9097506547406246598">پیروی ختم نہیں کر سکتے۔ کچھ غلط ہوگیا۔</translation>
 <translation id="9098541895599151034"><ph name="NUMBER_OF_ACCOUNTS" /> پاسورڈز حذف کریں؟</translation>
 <translation id="9099233023029360602">ہر بار پوچھیں کہ کون سا اکاؤنٹ استعمال کرنا ہے</translation>
+<translation id="9099821309562615674">یقینی بنائیں کہ آپ جس ٹیکسٹ کا ترجمہ کر رہے ہیں وہ صاف ہے اور فریم میں ہے۔</translation>
 <translation id="9100610230175265781">پاس فریز درکار ہے</translation>
 <translation id="91023216973987714">ادائیگی کے طریقے</translation>
 <translation id="9106655997975673326">منجانب "<ph name="SOURCE_DEVICE" />"</translation>

@@ -1125,6 +1125,7 @@
 <translation id="573974402615125334">لمشاركة مجموعات علامات التبويب والانضمام إليها والتعاون فيها، يجب مزامنة السجلّ وعلامات التبويب</translation>
 <translation id="5740123193752401435">البحث في علامات التبويب…</translation>
 <translation id="5744274077973758795">إشعارات "<ph name="FEATURE_NAME" />" مفعَّلة</translation>
+<translation id="5745598824054949526">لم يتم العثور على نص</translation>
 <translation id="574762237186762643">الأحداث</translation>
 <translation id="5749158352074143502">المتابعة باستخدام علامة التبويب هذه</translation>
 <translation id="5753021559215751319">حفظ كلمة المرور</translation>
@@ -1288,6 +1289,7 @@
 <translation id="6410883413783534063">يمكنك فتح علامات تبويب لزيارة صفحات مختلفة في آنٍ واحد.</translation>
 <translation id="6416807286621280684">تعرَّف على آخر المعلومات بشأن الطرود التي يتم تتبُّعها وموعد التسليم.</translation>
 <translation id="6418346271604475326">‏جارٍ إعداد PDF</translation>
+<translation id="6421038304268477484">النص المترجَم</translation>
 <translation id="6429213933892582367">‏افتح "خيارات كلمات المرور" (Password Options).</translation>
 <translation id="6434591244308415567">حدث خطأ. يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="6435307030888827407">البقاء في وضع تسجيل الخروج</translation>
@@ -1967,6 +1969,7 @@
 <translation id="9097506547406246598">يتعذّر إلغاء المتابعة. حدث خطأ.</translation>
 <translation id="9098541895599151034">هل تريد حذف كلمات مرور <ph name="NUMBER_OF_ACCOUNTS" /> حساب؟</translation>
 <translation id="9099233023029360602">السؤال عن الحساب المُراد استخدامه في كل مرة</translation>
+<translation id="9099821309562615674">يُرجى التأكُّد من وضوح النص ووجوده داخل الإطار.</translation>
 <translation id="9100610230175265781">عبارة المرور مطلوبة</translation>
 <translation id="91023216973987714">طُرق الدفع</translation>
 <translation id="9106655997975673326">من "<ph name="SOURCE_DEVICE" />"</translation>

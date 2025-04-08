@@ -99,7 +99,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1175364870820465910">&amp;Printo...</translation>
 <translation id="1175393348063009671">Fotografi (mat)</translation>
 <translation id="1175875016430184367">Tri kapje me tel djathtas</translation>
-<translation id="1176123604678140687">Muaji i skadimit</translation>
 <translation id="1177548198167638471">Mos pyet përsëri</translation>
 <translation id="1177863135347784049">E personalizuar</translation>
 <translation id="1178581264944972037">Pauzë</translation>
@@ -333,7 +332,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
           &lt;p&gt;Rregullo datën dhe orën nga seksioni &lt;strong&gt;Të përgjithshme&lt;/strong&gt; i aplikacionit &lt;strong&gt;Cilësimet&lt;/strong&gt;.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Administratori yt do ta rinisë pajisjen në orën <ph name="TIME" /> më <ph name="DATE" /></translation>
 <translation id="1562805467275776390">Gara me makina</translation>
-<translation id="1563137369682381456">Data e skadimit</translation>
 <translation id="1563755205047885671">Lojëra aksioni dhe në platformë</translation>
 <translation id="1564634006476980707">Skema HTTPS rekomandohet për URL-në e kërkimit: <ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">Informacioni i rrjetit, si p.sh. adresat, konfigurimi i ndërfaqes dhe cilësia e lidhjes</translation>
@@ -937,7 +935,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2606760465469169465">Verifiko automatikisht</translation>
 <translation id="2608019759319359258">Kur një temë është e bllokuar, ajo nuk do të përdoret për personalizimin e reklamave</translation>
 <translation id="2610561535971892504">Kliko për të kopjuar</translation>
-<translation id="2612676031748830579">Numri i kartës</translation>
 <translation id="2612993535136743634">Të gjitha kodet e sigurisë të ruajtura në pajisjen tënde dhe në "Llogarinë e Google" do të fshihen</translation>
 <translation id="2616412942031748191">Marketingu dhe optimizimi i motorëve të kërkimit</translation>
 <translation id="2618206371527040026">Konferenca dhe botime akademike</translation>
@@ -1925,6 +1922,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4282346679996504092">Sinjalizimet për këtë produkt janë çaktivizuar dhe faqeshënuesi është hequr</translation>
 <translation id="4285498937028063278">Zhgozhdo</translation>
 <translation id="4287495839370498922">Privatësia e përmirësuar e reklamave në Chrome</translation>
+<translation id="4288101205645068104">Fshi automjetin</translation>
 <translation id="4290920330097335010">Mos lejo asnjëherë</translation>
 <translation id="4296207570293932800">Një veçori e re e privatësisë së reklamave ofrohet tani</translation>
 <translation id="4297502707443874121">Miniatura për faqen <ph name="THUMBNAIL_PAGE" /></translation>
@@ -3336,7 +3334,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">Përdor YouTube me zgjedhjet e prindit tënd</translation>
 <translation id="6779348349813025131">"Menaxheri i fjalëkalimeve i Google" ka nevojë për qasje te MacOS Keychain</translation>
-<translation id="6782656837469339439">Viti i skadimit</translation>
 <translation id="6785990323398321538">Mund ta ndryshosh motorin e kërkimit në çdo kohë te cilësimet e Chrome.</translation>
 <translation id="6786145470008421571">Zarf 6 x 9 inç</translation>
 <translation id="67862343314499040">Vjollcë</translation>
@@ -4205,6 +4202,7 @@ Detaje shtesë:
 <translation id="8280630997017109758">Tabakaja 11</translation>
 <translation id="8281730697546299650">Tani ofrohen veçori të tjera të privatësisë së reklamave</translation>
 <translation id="8281886186245836920">Kapërce</translation>
+<translation id="8282292167096638950">Fshi lejen e drejtimit</translation>
 <translation id="8282409409360764263">Mirëmbajtje kopshti</translation>
 <translation id="8282947398454257691">Njihu me identifikuesin unik të pajisjes tënde</translation>
 <translation id="8284769179630993263">Menaxho shfletimin e sigurt dhe më shumë te cilësimet e Chrome</translation>
@@ -4232,6 +4230,7 @@ Detaje shtesë:
 <translation id="8321476692217554900">njoftimet</translation>
 <translation id="8322402665880479974">Krevate dhe koka krevatesh</translation>
 <translation id="8323505966575306467">Shto më shumë mbrojtje për fjalëkalimet e tua</translation>
+<translation id="832547548543012337">Fshi pasaportën</translation>
 <translation id="832567874344484841">Ushqime për mëngjes</translation>
 <translation id="8329068931308448247">Zarf nr. 14</translation>
 <translation id="8332188693563227489">Qasja te <ph name="HOST_NAME" /> u refuzua</translation>

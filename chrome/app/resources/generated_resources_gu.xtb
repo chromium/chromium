@@ -44,7 +44,6 @@
 <translation id="1026822031284433028">છબી લોડ કરો</translation>
 <translation id="1026959648338730078">Windows Hello અથવા બાહ્ય સિક્યુરિટી કી</translation>
 <translation id="1028700151766901954">કારણ: LBS <ph name="DEFAULT_OPEN_BROWSER" />માં ડિફૉલ્ટ તરીકે રહે છે.</translation>
-<translation id="1028823395684328817">તમારા Google એકાઉન્ટમાં પાસવર્ડ અને બીજો ઘણો ડેટા સાચવવાની સુવિધાનો ઉપયોગ ચાલુ રાખવા માટે, તે તમે જ છો તેની ચકાસણી કરો</translation>
 <translation id="102916930470544692">પાસકી</translation>
 <translation id="1029317248976101138">ઝૂમ કરો</translation>
 <translation id="1029526375103058355">ક્લિક કરવા હલકું દબાવો</translation>
@@ -815,7 +814,6 @@
 <translation id="1558671750917454373"><ph name="DEVICE_NAME" /> પર કાસ્ટ કરવાનું ફરી શરૂ કરો</translation>
 <translation id="1561331397460162942">આમ કરવાથી સિસ્ટમ સર્વિસને તથા લોકેશનની પરવાનગી ધરાવતી ઍપ અને વેબસાઇટને લોકેશનના ઍક્સેસની મંજૂરી મળે છે</translation>
 <translation id="1562119309884184621">આ સંપર્કને ઉમેરવાથી, આગલી વખતે તેઓ શેર કરતી વખતે સિસ્ટમ આ યાદ રાખી શકશે</translation>
-<translation id="1563137369682381456">સમય સમાપ્તિની તારીખ</translation>
 <translation id="1566049601598938765">વેબસાઇટ</translation>
 <translation id="15662109988763471">પસંદ કરેલું પ્રિન્ટર ઉપલબ્ધ નથી અથવા યોગ્ય રીતે ઇન્સ્ટૉલ કરેલું નથી. તમારું પ્રિન્ટર ચેક કરો અથવા બીજું પ્રિન્ટર પસંદ કરી જુઓ.</translation>
 <translation id="1566329594234563241">જ્યારે નિષ્ક્રિય અને પ્લગ ઇન કરેલું હોય</translation>
@@ -1248,6 +1246,7 @@
 <translation id="185111092974636561"><ph name="BEGIN_PARAGRAPH1" />નોંધણી કરતા પહેલાં તમારે TPM સાફ કરવું જરૂરી છે, જેથી <ph name="DEVICE_OS" /> ડિવાઇસ પર માલિકીનો અધિકાર પ્રાપ્ત કરી શકે.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />તમે TPM ડિવાઇસ સંપૂર્ણપણે બંધ પણ કરી શકો છો. આમ છતાં તમારો ડેટા સૉફ્ટવેર એન્ક્રિપ્શન વડે સલામત રીતે સ્ટોર કરવામાં આવશે, પરંતુ સુરક્ષિત સ્ટોરેજ ધરાવતા હાર્ડવેર સંબંધિત પ્રમાણપત્રો જેવી અમુક ચોક્કસ સુરક્ષા સુવિધાઓ બંધ કરવામાં આવશે.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />તમે તમારા TPM સેટિંગ રીબૂટ કરીને અને સિસ્ટમ BIOS/UEFI સેટિંગ દાખલ કરીને તેમાં ફેરફાર કરી શકો છો. ડિવાઇસના મૉડલ અનુસાર આ પગલાં અલગ-અલગ હોઈ શકે છે. વધુ માહિતી માટે, તમે રીબૂટ કરો એ પહેલાં અલગ ડિવાઇસ પર <ph name="DEVICE_OS" /> દસ્તાવેજ ખોલો: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="1851551847729706116"><ph name="TAB_NAME" />ને આ ટૅબ પર શેર કરી રહ્યાં છીએ</translation>
 <translation id="1852799913675865625">ફાઇલ વાંચવાનો પ્રયાસ કરતી વખતે ભૂલ આવી હતી: <ph name="ERROR_TEXT" />.</translation>
 <translation id="1854180393107901205">કાસ્ટ કરવાનું રોકો</translation>
 <translation id="1856715684130786728">સ્થાન ઉમેરો...</translation>
@@ -1637,7 +1636,6 @@
 <translation id="2121825465123208577">આકાર બદલો</translation>
 <translation id="2123766928840368256">કોઈ અલગ ફાઇલ પસંદ કરો</translation>
 <translation id="2124930039827422115">{1,plural, =1{એક વપરાશકર્તાએ <ph name="AVERAGE_RATING" /> રેટ કરેલું.}one{# વપરાશકર્તાએ <ph name="AVERAGE_RATING" /> રેટ કરેલું.}other{# વપરાશકર્તાએ <ph name="AVERAGE_RATING" /> રેટ કરેલું.}}</translation>
-<translation id="2125715366913703594">&amp;Extensions વિશે શોધખોળ કરો</translation>
 <translation id="2126167708562367080">સમન્વયન, તમારા વ્યવસ્થાપક દ્વારા અક્ષમ કરવામાં આવ્યું છે.</translation>
 <translation id="2127372758936585790">નિમ્ન-પાવર ચાર્જર</translation>
 <translation id="212862741129535676">ફ્રીક્વેંસી સ્થિતિ અક્યુપન્સિ ટકા</translation>
@@ -3466,7 +3464,6 @@
 <translation id="3420501302812554910">રીસેટ કરવા માટે આંતરિક સિક્યુરિટી કી જરૂરી છે</translation>
 <translation id="3421387094817716717">એલિપ્ટિક કર્વ સાર્વજનિક કી</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />નોંધ<ph name="END_BOLD" />: સમાન વૉઇસ અથવા રેકોર્ડિંગ કદાચ તમારા વ્યક્તિગત પરિણામો અથવા તમારા Assistantને ઍક્સેસ કરી શકે છે.</translation>
-<translation id="3421835120203732951">નવી પ્રોફાઇલ ઉમેરો</translation>
 <translation id="3422989558057853751">છેલ્લી આઇટમ પસંદ કરી છે, તેને નાપસંદ કરવાથી તે પસંદગી મોડમાંથી બહાર નીકળી જશે</translation>
 <translation id="3423111258700187173"><ph name="FOLDER_TITLE" />માં પરિણામો મળ્યા</translation>
 <translation id="3423226218833787854">આ AI સુવિધા વિશે વધુ જાણો</translation>
@@ -9332,7 +9329,6 @@ USB ડિવાઇસ</translation>
 <translation id="7622768823216805500">સાઇટ સામાન્ય રીતે, વધુ સરળ ચેકઆઉટ જેવી શૉપિંગની સુવિધાઓ માટેના ચુકવણી હૅન્ડલર ઇન્સ્ટૉલ કરે છે</translation>
 <translation id="7622966771025050155">કૅપ્ચર કરેલી ટૅબ પર સ્વિચ કરો</translation>
 <translation id="7624337243375417909">caps lock બંધ છે</translation>
-<translation id="7625025537587898155">નવી પ્રોફાઇલ ઉમેરો</translation>
 <translation id="7625568159987162309">પરવાનગીઓ અને બધી સાઇટ પર સ્ટોર કરેલો ડેટા જુઓ</translation>
 <translation id="7625823789272218216">ડાબી બાજુએ નવી ટૅબ</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), ગ્રેડ <ph name="GRADE" /></translation>
@@ -11280,6 +11276,7 @@ USB ડિવાઇસ</translation>
 <translation id="8963117664422609631">સાઇટ સેટિંગ પર જાઓ</translation>
 <translation id="8964927371396953727">તમારા <ph name="ACCOUNT_EMAIL" /> એકાઉન્ટમાં પાસવર્ડનો ઉપયોગ કરવા અને તેમને સાચવવા માટે, આ તમે જ છો તેની ચકાસણી કરો</translation>
 <translation id="8965037249707889821">જૂનો પાસવર્ડ દાખલ કરો</translation>
+<translation id="8967403839792635452">શું એક્સ્ટેન્શન ડેવલપ કરી રહ્યાં છો? Chrome એક્સ્ટેન્શનના ડેવલપરના દસ્તાવેજીકરણ વડે <ph name="BEGIN_LINK" />શું નવું છે<ph name="END_LINK" /> તેના વિશે અપ ટૂ ડેટ રહો.</translation>
 <translation id="8967427617812342790">વાંચન સૂચિમાં ઉમેરો</translation>
 <translation id="8967548289042494261"><ph name="VM_NAME" />ને કાઢી નાખો</translation>
 <translation id="8968527460726243404">ChromeOS સિસ્ટમ છબી લેખક</translation>
@@ -11744,7 +11741,6 @@ USB ડિવાઇસ</translation>
 <translation id="98235653036850093">નમસ્તે, <ph name="PROFILE_NAME" /></translation>
 <translation id="983192555821071799">બધા ટેબ્સ બંધ કરો</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - કૅમેરા અને માઇક્રોફોન રેકોર્ડિંગ</translation>
-<translation id="984275831282074731">ચુકવણી પદ્ધતિઓ</translation>
 <translation id="984705303330760860">ભાષાઓ માટે જોડણીની તપાસ સુવિધા ઉમેરો</translation>
 <translation id="987068745968718743">Parallels ડેસ્કટૉપ: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">સામાન્ય</translation>

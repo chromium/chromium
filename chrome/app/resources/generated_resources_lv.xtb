@@ -44,7 +44,6 @@
 <translation id="1026822031284433028">Ielādēt attēlu</translation>
 <translation id="1026959648338730078">Windows Hello vai ārēja drošības atslēga</translation>
 <translation id="1028700151766901954">Iemesls: funkcija “Mantoto pārlūku atbalsts” pēc noklusējuma tiek izmantota pārlūkā <ph name="DEFAULT_OPEN_BROWSER" />.</translation>
-<translation id="1028823395684328817">Lai turpinātu izmantot paroles un citus datus savā Google kontā, apstipriniet savu identitāti.</translation>
 <translation id="102916930470544692">Piekļuves atslēga</translation>
 <translation id="1029317248976101138">Tālummaiņa</translation>
 <translation id="1029526375103058355">Pieskaršanās, lai noklikšķinātu</translation>
@@ -819,7 +818,6 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris lietotnēm. Vara
 <translation id="1558671750917454373">Atsākt apraidi ierīcē <ph name="DEVICE_NAME" /></translation>
 <translation id="1561331397460162942">Tādējādi atrašanās vietas datiem drīkstēs piekļūt lietotnes, vietnes ar atrašanās vietas atļauju un sistēmas pakalpojumi.</translation>
 <translation id="1562119309884184621">Ja pievienosiet šo kontaktpersonu, tā tiks iegaumēta un varēs skatīt jūsu ierīci nākamreiz, kad vēlēsies ar jums kopīgot saturu</translation>
-<translation id="1563137369682381456">Termiņa beigu datums</translation>
 <translation id="1566049601598938765">Vietne</translation>
 <translation id="15662109988763471">Atlasītais printeris nav pieejams vai nav instalēts pareizi. Pārbaudiet printeri vai mēģiniet atlasīt citu printeri.</translation>
 <translation id="1566329594234563241">Kamēr ierīce ir neaktīva un pievienota strāvas avotam</translation>
@@ -3468,7 +3466,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3420501302812554910">Jāatiestata iekšējā drošības atslēga</translation>
 <translation id="3421387094817716717">Eliptiskas līknes publiskā atslēga</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Piezīme.<ph name="END_BOLD" /> Ir iespējams, ka persona ar līdzīgu balsi vai ar jūsu balss ierakstu var piekļūt jūsu personīgajiem rezultātiem vai Asistentam.</translation>
-<translation id="3421835120203732951">Pievienot jaunu profilu</translation>
 <translation id="3422989558057853751">Atlasīts pēdējais vienums. Noņemot tā atlasi, tiks izslēgts atlases režīms.</translation>
 <translation id="3423111258700187173">Rezultāti atrasti mapē <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">Uzzināt vairāk par šo MI funkciju</translation>
@@ -9330,7 +9327,6 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7622768823216805500">Parasti vietnes instalē maksājumu apdarinātājus, lai nodrošinātu iepirkšanās funkcijas, piemēram, ērtāku norēķināšanos.</translation>
 <translation id="7622966771025050155">Pāriet uz ierakstīto cilni</translation>
 <translation id="7624337243375417909">burtslēga taustiņš izslēgts</translation>
-<translation id="7625025537587898155">Pievienot jaunu profilu</translation>
 <translation id="7625568159987162309">Skatīt vietnēs glabātās atļaujas un datus</translation>
 <translation id="7625823789272218216">Jauna cilne pa kreisi</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), <ph name="GRADE" />. līmenis</translation>
@@ -11749,7 +11745,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="98235653036850093">Labdien, <ph name="PROFILE_NAME" />!</translation>
 <translation id="983192555821071799">Aizvērt visas cilnes</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> — iespējota ierakstīšana, izmantojot kameru un mikrofonu</translation>
-<translation id="984275831282074731">Maksājumu veidi</translation>
 <translation id="984705303330760860">Pareizrakstības pārbaudes valodu pievienošana</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Vispārīgi</translation>

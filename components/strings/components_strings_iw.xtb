@@ -99,7 +99,6 @@
 <translation id="1175364870820465910">הדפסה…</translation>
 <translation id="1175393348063009671">Photo (Matte)</translation>
 <translation id="1175875016430184367">3 סיכות הידוק בצד ימין</translation>
-<translation id="1176123604678140687">חודש התפוגה</translation>
 <translation id="1177548198167638471">לא צריך לשאול שוב</translation>
 <translation id="1177863135347784049">מותאם אישית</translation>
 <translation id="1178581264944972037">השהיה</translation>
@@ -333,7 +332,6 @@
       &lt;p&gt;יש לשנות את התאריך והשעה בקטע &lt;strong&gt;כללי&lt;/strong&gt; באפליקציה &lt;strong&gt;הגדרות&lt;/strong&gt;‏.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">המכשיר יופעל מחדש על ידי האדמין בשעה <ph name="TIME" /> בתאריך <ph name="DATE" /></translation>
 <translation id="1562805467275776390">מרוצי מכוניות</translation>
-<translation id="1563137369682381456">תאריך התפוגה</translation>
 <translation id="1563755205047885671">משחקי פעולה ומשחקי פלטפורמה</translation>
 <translation id="1564634006476980707">‏הסכמה המומלצת ל-HTTPS בכתובת ה-URL של החיפוש: <ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">מידע שקשור לרשת, כמו כתובות, הגדרת הממשק ואיכות החיבור.</translation>
@@ -528,6 +526,7 @@
 <translation id="1890171020361705182">‏משחק Dino. דינוזאור בתצוגת פיקסלים חומק מקטטוסים ומפטרודקטילים בעודו רץ על רקע נוף שומם. כששומעים את האות באודיו, צריך ללחוץ כדי לדלג מעל מכשולים.</translation>
 <translation id="1898423065542865115">סינון</translation>
 <translation id="1901443836186977402">{1,plural, =1{השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" />. התוקף של אישור האבטחה שלו פג במהלך היממה האחרונה. ייתכן שהסיבה לכך היא הגדרה שגויה או שתוקף מיירט את החיבור שלך. על פי השעון במחשב שלך, עכשיו <ph name="CURRENT_DATE" />. האם זה נכון? אם לא, עליך לכוון את שעון המערכת ולאחר מכן לרענן את הדף הזה.}one{השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" />. תוקף אישור האבטחה שלו פג לפני # ימים. ייתכן שהסיבה לכך היא תצורה שגויה או שתוקף מיירט את החיבור שלך. על פי השעון במחשב שלך, עכשיו <ph name="CURRENT_DATE" />. האם זה נכון? אם לא, עליך לכוון את שעון המערכת ולאחר מכן לרענן את הדף הזה.}two{השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" />. תוקף אישור האבטחה שלו פג לפני יומיים. ייתכן שהסיבה לכך היא תצורה שגויה או שתוקף מיירט את החיבור שלך. על פי השעון במחשב שלך, עכשיו <ph name="CURRENT_DATE" />. האם זה נכון? אם לא, עליך לכוון את שעון המערכת ולאחר מכן לרענן את הדף הזה.}other{השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" />. תוקף אישור האבטחה שלו פג לפני # ימים. ייתכן שהסיבה לכך היא תצורה שגויה או שתוקף מיירט את החיבור שלך. על פי השעון במחשב שלך, עכשיו <ph name="CURRENT_DATE" />. האם זה נכון? אם לא, עליך לכוון את שעון המערכת ולאחר מכן לרענן את הדף הזה.}}</translation>
+<translation id="190166348986967700">האדמין יתחיל להעלות את הקבצים שלך אל <ph name="CLOUD_PROVIDER" /> ב-<ph name="DATE_TIME" />. צריך להשאיר את המכשיר מחובר עד שההעלאה של הקובץ תסתיים. במהלך ההעלאה, תהיה לך אפשרות לקרוא רק קבצים מקומיים.</translation>
 <translation id="1902576642799138955">תקופת תוקף</translation>
 <translation id="1908217026282415406">הרשאה להשתמש במצלמה ולהזיז אותה</translation>
 <translation id="1908690643053136980">אין אישור מהאדמין שלך לשימוש ב<ph name="PERMISSION" /> באתר הזה</translation>
@@ -936,7 +935,6 @@
 <translation id="2606760465469169465">אימות אוטומטי</translation>
 <translation id="2608019759319359258">כשחוסמים נושא מסוים, הוא מפסיק לשמש להתאמה אישית של מודעות</translation>
 <translation id="2610561535971892504">לחיצה להעתקה</translation>
-<translation id="2612676031748830579">מספר הכרטיס</translation>
 <translation id="2612993535136743634">‏כל קודי האבטחה שנשמרו במכשיר ובחשבון ה-Google יימחקו</translation>
 <translation id="2616412942031748191">שיווק ואופטימיזציה למנועי חיפוש</translation>
 <translation id="2618206371527040026">כנסים ופרסומים אקדמיים</translation>
@@ -2154,6 +2152,7 @@
 <translation id="473775607612524610">עדכון</translation>
 <translation id="4738601419177586157"><ph name="TEXT" /> – הצעת חיפוש</translation>
 <translation id="4742407542027196863">ניהול סיסמאות…</translation>
+<translation id="474270528725216349">מאתר אחד לפחות במכשירים מסונכרנים</translation>
 <translation id="4743275772928623722">המערכת עודכנה אבל חלק מהאפליקציות והקבצים שלך לא שוחזרו. האפליקציות יורדו מחדש באופן אוטומטי.</translation>
 <translation id="4744514002166662487">יצירת מצגת</translation>
 <translation id="4744603770635761495">נתיב להפעלה</translation>
@@ -2288,6 +2287,7 @@ Del</translation>
 <translation id="495170559598752135">פעולות</translation>
 <translation id="4953689047182316270">להגיב לאירועי נגישות</translation>
 <translation id="4957080528849277028">‏הכפתור להצגת ההיסטוריה ב-Chrome, מפעילים אותו כדי להציג ולנהל את היסטוריית הגלישה בהגדרות Chrome</translation>
+<translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{ועוד אתר אחד}one{ועוד # אתרים}two{ועוד # אתרים}other{ועוד # אתרים}}</translation>
 <translation id="4958444002117714549">הרחבת רשימה</translation>
 <translation id="4960068118612257147">‏אפשר לבצע שינויים בהגדרות הפרטיות בפרסום ב-Chrome</translation>
 <translation id="4960203958361543136">בחירה של מנוע החיפוש</translation>
@@ -2623,8 +2623,10 @@ Del</translation>
 <translation id="553377674408670169">משרות בתחום החינוך</translation>
 <translation id="5534785731327961487">מבצע טוב עכשיו</translation>
 <translation id="5536214594743852365">הצגת הקטע "<ph name="SECTION" />"</translation>
+<translation id="5536471014287260753">{DOMAIN_COUNT,plural, =1{ועוד אתר אחד (ואתרים נוספים במכשירים מסונכרנים)}one{ועוד # אתרים (ואתרים נוספים במכשירים מסונכרנים)}two{ועוד # אתרים (ואתרים נוספים במכשירים מסונכרנים)}other{ועוד # אתרים (ואתרים נוספים במכשירים מסונכרנים)}}</translation>
 <translation id="553782666181800029">‏מעטפה – Chou 2</translation>
 <translation id="5538270463355278784">הצגה אוטומטית במסך מלא</translation>
+<translation id="5538859347764346097">‫<ph name="KEYWORD_SHORTCUT" />, חיפוש <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="5539243836947087108">Raft</translation>
 <translation id="5540224163453853">לא ניתן היה למצוא את הפריט המבוקש.</translation>
 <translation id="5540969246441091044">רכיבת סוסים</translation>
@@ -2783,6 +2785,7 @@ Del</translation>
 <translation id="5838278095973806738">אין להזין מידע רגיש באתר הזה (כמו סיסמאות או מספרי כרטיסי אשראי), מאחר שתוקפים עלולים לקבל אליו גישה.</translation>
 <translation id="5838732667866024867">אפשר לבדוק את שינויי המחירים בתרשים באמצעות החץ ימינה או החץ שמאלה.</translation>
 <translation id="5840318881868981258">‏בחשבון Google שלך, <ph name="ACCOUNT" /></translation>
+<translation id="5841007907672481419">מ-<ph name="TYPE_1" /></translation>
 <translation id="5841338463993781099">לשמור בחשבון?</translation>
 <translation id="5843987376989109187">עדיין אין תמיכה בשפה הזו.
     <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
@@ -2796,6 +2799,7 @@ Del</translation>
 <translation id="5863515189965725638">‏עריכת ה-IBAN</translation>
 <translation id="5863847714970149516">בדף הבא עשויה להיות דרישה לתשלום</translation>
 <translation id="5866257070973731571">הוספת מספר טלפון</translation>
+<translation id="5866327164731551901">מ-<ph name="TYPE_1" /> <ph name="TYPE_2" /></translation>
 <translation id="5866898949289125849">הדף המוצג הוא של הכלים למפתחים</translation>
 <translation id="5869405914158311789">לא ניתן לגשת לאתר הזה</translation>
 <translation id="5869522115854928033">סיסמאות שמורות</translation>
@@ -3336,7 +3340,6 @@ Del</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">‏שימוש ב-YouTube עם הבחירות של ההורים</translation>
 <translation id="6779348349813025131">‏למנהל הסיסמאות של Google נדרשת גישה אל 'צרור מפתחות של macOS'</translation>
-<translation id="6782656837469339439">שנת התפוגה</translation>
 <translation id="6785990323398321538">‏תמיד אפשר לשנות את מנוע החיפוש בהגדרות של Chrome.</translation>
 <translation id="6786145470008421571">‏מעטפה – 6x9 אינץ'</translation>
 <translation id="67862343314499040">סגול סיגלית</translation>
@@ -3505,6 +3508,7 @@ Del</translation>
 <translation id="7075452647191940183">הבקשה גדולה מדי</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
+<translation id="7079783554682867524">מ-<ph name="TYPE_1" /> (ואתרים נוספים במכשירים מסונכרנים)</translation>
 <translation id="7081311540357715807">קמעונאי מזון ומצרכים</translation>
 <translation id="7083258188081898530">מגש 9</translation>
 <translation id="7086090958708083563">ההעלאה התבקשה על ידי המשתמש</translation>
@@ -4161,6 +4165,7 @@ Del</translation>
 <translation id="8216640997712497593">‏14x18 אינץ'</translation>
 <translation id="8218327578424803826">מיקום מוקצה:</translation>
 <translation id="8220602974062798186">לחסום את <ph name="TOPIC" /> ואת כל הנושאים הקשורים?</translation>
+<translation id="8226408512771130794">‫<ph name="KEYWORD_SHORTCUT" />, אפשר לשאול את <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="8228419419708659934">תצוגת 2 עמודים</translation>
 <translation id="8228477714872026922">האתר <ph name="ORIGIN" /> מבקש גישה למכשיר ברשת שלך:</translation>
 <translation id="822925450938886901">‏כדי לקבל מידע נוסף וכללי מדיניות שעשויים לחול, צריך לפתוח את chrome://management בדפדפן.</translation>

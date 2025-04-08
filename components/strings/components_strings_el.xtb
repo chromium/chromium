@@ -99,7 +99,6 @@
 <translation id="1175364870820465910">&amp;Εκτύπωση...</translation>
 <translation id="1175393348063009671">Φωτογραφία (Ματ)</translation>
 <translation id="1175875016430184367">Τριπλή συρραφή στα δεξιά</translation>
-<translation id="1176123604678140687">Μήνας λήξης</translation>
 <translation id="1177548198167638471">Να μην ερωτηθώ ξανά</translation>
 <translation id="1177863135347784049">Προσαρμοσμένη</translation>
 <translation id="1178581264944972037">Παύση</translation>
@@ -333,7 +332,6 @@
       &lt;p&gt;Προσαρμόστε την ημερομηνία και την ώρα από την ενότητα &lt;strong&gt;Γενικές&lt;/strong&gt; της εφαρμογής &lt;strong&gt;Ρυθμίσεις&lt;/strong&gt;.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Ο διαχειριστής σας θα επανεκκινήσει τη συσκευή σας στις <ph name="TIME" /> στις <ph name="DATE" /></translation>
 <translation id="1562805467275776390">Αγώνες αυτοκινήτων</translation>
-<translation id="1563137369682381456">Ημερομηνία λήξης</translation>
 <translation id="1563755205047885671">Παιχνίδια δράσης και πλατφόρμας</translation>
 <translation id="1564634006476980707">Συνιστάται σχήμα HTTPS για το URL αναζήτησης: <ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">Πληροφορίες δικτύωσης, όπως διευθύνσεις, διαμόρφωση διεπαφής και ποιότητα σύνδεσης</translation>
@@ -937,7 +935,6 @@
 <translation id="2606760465469169465">Αυτόματη επαλήθευση</translation>
 <translation id="2608019759319359258">Όταν ένα θέμα αποκλείεται, δεν θα χρησιμοποιείται για την εξατομίκευση διαφημίσεων</translation>
 <translation id="2610561535971892504">Κλικ για αντιγραφή</translation>
-<translation id="2612676031748830579">Αριθμός κάρτας</translation>
 <translation id="2612993535136743634">Όλοι οι κωδικοί ασφαλείας που είναι αποθηκευμένοι στη συσκευή σας και στον Λογαριασμό Google θα διαγραφούν</translation>
 <translation id="2616412942031748191">Βελτιστοποίηση και μάρκετινγκ μηχανών αναζήτησης</translation>
 <translation id="2618206371527040026">Ακαδημαϊκές διασκέψεις και δημοσιεύσεις</translation>
@@ -3341,7 +3338,6 @@
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">Χρήση του YouTube με τις επιλογές του γονέα σου</translation>
 <translation id="6779348349813025131">Η Διαχείριση κωδικών πρόσβασης Google χρειάζεται πρόσβαση στην Κλειδοθήκη macOS</translation>
-<translation id="6782656837469339439">Έτος λήξης</translation>
 <translation id="6785990323398321538">Μπορείτε να αλλάξετε τη μηχανή αναζήτησης ανά πάσα στιγμή στις ρυθμίσεις του Chrome.</translation>
 <translation id="6786145470008421571">Φάκελος 6 x 9 ίντσες</translation>
 <translation id="67862343314499040">Βιολετί</translation>

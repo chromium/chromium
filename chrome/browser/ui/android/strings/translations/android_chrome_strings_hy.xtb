@@ -77,6 +77,7 @@
 <translation id="1298077576058087471">Տնտեսեք թրաֆիկի մինչև 60%-ը, կարդացեք այսօրվա նորությունները</translation>
 <translation id="1303339473099049190">Չհաջողվեց գտնել այդ գաղտնաբառը։ Ստուգեք ուղղագրությունը և նորից փորձեք։</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> – Ուղարկվել է <ph name="DEVICE_NAME" />-ից</translation>
+<translation id="1318262688555255786">Կիսվել «<ph name="PAGE_TITLE" />» վեբէջի հղումով։ Աղբյուրը՝ <ph name="PAGE_URL" /></translation>
 <translation id="1320912611264252795">Էջանիշի պահման էջը բացված է ամբողջությամբ</translation>
 <translation id="1327257854815634930">Նավիգացիայի պատմության թերթն ամբողջությամբ բացված է</translation>
 <translation id="1331212799747679585">Չհաջողվեց թարմացնել Chrome-ը։ Այլ կարգավորումներ</translation>
@@ -455,6 +456,7 @@
 <translation id="3072980200212375806"><ph name="APP_NAME" /> հավելվածը կբացվի Chrome-ում։ Շարունակելով՝ դուք ընդունում եք <ph name="BEGIN_LINK1" />Google-ի օգտագործման պայմանները<ph name="END_LINK1" /> և <ph name="BEGIN_LINK2" />Google Chrome-ի և ChromeOS-ի օգտագործման լրացուցիչ պայմանները<ph name="END_LINK2" />։ Կիրառվում է նաև <ph name="BEGIN_LINK3" />Գաղտնիության քաղաքականությունը<ph name="END_LINK3" />։</translation>
 <translation id="3080525922482950719">Դուք կարող եք պահել էջերը՝ ավելի ուշ կամ անցանց ռեժիմում կարդալու համար</translation>
 <translation id="3087734570205094154">Ներքև</translation>
+<translation id="3088687687599869821">ՆԱՎԻԳԱՑԻԱ ԷՋԵՐՈՎ</translation>
 <translation id="3091010850649238832">Ցույց տալ սեղմատախտակի բովանդակությունը</translation>
 <translation id="3098745985164956033">Պատկերներն ուղարկվում են Google-ին՝ նկարագրությունները բարելավելու նպատակով</translation>
 <translation id="3114507951000454849">Կարդացեք այսօրվա նորությունները <ph name="NEWS_ICON" /></translation>
@@ -515,6 +517,7 @@
 <translation id="3435465986463792564">Շատ պատուհաննե՞ր եք բացել։ Դրանք կարող եք կառավարել այստեղ</translation>
 <translation id="3435575784518354875">Ձեր գաղտնաբառերի հասանելիությունը պահպանելու համար արտահանեք դրանք հիմա, թարմացրեք Google Play ծառայությունները և այնուհետև նորից ներմուծեք դրանք Google գաղտնաբառերի կառավարիչում։ <ph name="BEGIN_LINK" />Դիտել բոլոր ցուցումները<ph name="END_LINK" />։</translation>
 <translation id="3435738964857648380">Անվտանգություն</translation>
+<translation id="3435914367318771664">Ավելացնել ներդիր նոր խմբում</translation>
 <translation id="3439276997620616816">Այստեղ կցուցադրվեն ձեր վերջին ներդիրները</translation>
 <translation id="3443221991560634068">Վերաբեռնել ընթացիկ էջը</translation>
 <translation id="3444179773590444986">Կարծիք հայտնե՞լ կայքերի մուգ թեմայի մասին</translation>
@@ -781,6 +784,7 @@
 <translation id="4684427112815847243">Համաժամացնել բոլորը</translation>
 <translation id="4685741273709472646">Ընտրել իջնող ցանկից</translation>
 <translation id="4687718960473379118">Կայքերի առաջարկած գովազդներ</translation>
+<translation id="468924408576231679">Պատճենել «<ph name="PAGE_TITLE" />» վեբէջի հղումը։ Աղբյուրը՝ <ph name="PAGE_URL" /></translation>
 <translation id="469286762610133730">Ստացեք ավելի հետաքրքիր բովանդակություն</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 և ուղարկման ևս <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> տարբերակ}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 և ուղարկման ևս <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> տարբերակ}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 և ուղարկման ևս <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> տարբերակ}}</translation>
 <translation id="4698061626562952596">Դիտեք ձեր անգործուն ներդիրներն այստեղ</translation>
@@ -1123,6 +1127,7 @@
 <translation id="6205314730813004066">Գովազդի գաղտնիություն</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> հաշիվը ձե՞րը չէ</translation>
 <translation id="6211386937064921208">Էջի նախադիտում</translation>
+<translation id="6212567362666004597">Ավելացնել ներդիր խմբում</translation>
 <translation id="6221633008163990886">Գաղտնաբառերն արտահանելու համար ապակողպեք էկրանը</translation>
 <translation id="6225572914528673855">Հասցեագոտի</translation>
 <translation id="6232535412751077445">Եթե միացնեք «Չհետևել» գործառույթը, ձեր դիտարկման հոսքում կներառվի նաև հարցում: Արդյունքները կախված են նրանից, թե կպատասխանի արդյոք վեբկայքը հարցմանը և թե ինչպես այն կմեկնաբանվի:
@@ -1150,6 +1155,7 @@
 <translation id="6324916366299863871">Փոփոխել դյուրանցումը</translation>
 <translation id="6324977638108296054">Չհաջողվեց ստեղծել ընդգծված տեքստի հղում։</translation>
 <translation id="6333140779060797560">Կիսվել <ph name="APPLICATION" />-ի միջոցով</translation>
+<translation id="6335454563754888572">Փոփոխել էջի URL-ը՝ <ph name="PAGE_URL" /></translation>
 <translation id="6337234675334993532">Գաղտնագրում</translation>
 <translation id="6340526405444716530">Անհատականացում</translation>
 <translation id="6341580099087024258">Հարցնել, թե որտեղ պահել ֆայլերը</translation>
@@ -1193,6 +1199,7 @@
 <translation id="6486420406192123355">Այս PDF ֆայլն անապահով կապ օգտագործող կայքից է</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{Ֆայլը ներբեռնվեց}one{Ներբեռնվեց # ֆայլ}other{Ներբեռնվեց # ֆայլ}}</translation>
 <translation id="6508722015517270189">Վերագործարկեք Chrome-ը</translation>
+<translation id="6513924416597632811">Պատճենել որոնման «<ph name="SEARCH_QUERY" />» հարցման արդյունքների էջի հղումը։ Աղբյուրը՝ <ph name="PAGE_URL" /></translation>
 <translation id="6518133107902771759">Ստուգել</translation>
 <translation id="6527303717912515753">Կիսվել</translation>
 <translation id="652948702951888897">Chrome-ի պատմություն</translation>
@@ -1604,6 +1611,7 @@
 <translation id="8221401890884589479">Դուք կարող եք արգելափակել անցանկալի կայքերը։ Chrome-ը նաև ցանկից ավտոմատ ջնջում է այն կայքերը, որոնք ավելացվել են առնվազն 30 օր առաջ։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="8221985041778490865">Այցելությունների պատմության ջնջում</translation>
 <translation id="8223642481677794647">Լրահոսի քարտի ընտրացանկ</translation>
+<translation id="82296173028782770">Փոփոխել որոնման «<ph name="SEARCH_QUERY" />» հարցումը</translation>
 <translation id="8236063039629122676">Այժմ թերթելով աջ՝ դուք հետ կգնաք՝ ձեր այցելած նախորդ էջերը տեսնելու համար, և թերթելով ձախ՝ կանցնեք առաջ</translation>
 <translation id="8236097722223016103">Ավելացնել էջանիշներում</translation>
 <translation id="8243077599929149377">Ավելացրեք ձեր օգտանունը</translation>
@@ -1752,6 +1760,7 @@
 <translation id="8890668505403261809">Որոնեք ձեր ինկոգնիտո ներդիրներում</translation>
 <translation id="8898822736010347272">Ուղարկում է Google-ին ձեր այցելած որոշ էջերի URL-ներն ու դրանց բովանդակությունը և համակարգի մասին որոշակի տեղեկություններ, որոնք օգնում են հայտնաբերել համացանցում օգտատերերին սպառնացող նոր վտանգներ։</translation>
 <translation id="8909135823018751308">Կիսվել…</translation>
+<translation id="8918299437379122615">Կիսվել որոնման «<ph name="SEARCH_QUERY" />» հարցման արդյունքների էջի հղումով։ Աղբյուրը՝ <ph name="PAGE_URL" /></translation>
 <translation id="8922289737868596582">«Այլ տարբերակներ» կոճակի օգնությամբ ներբեռնեք էջերը՝ անցանց ռեժիմում օգտագործելու համար</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> լեզվի փաթեթը պատրաստ է</translation>

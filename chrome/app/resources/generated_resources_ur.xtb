@@ -44,7 +44,6 @@
 <translation id="1026822031284433028">تصویر لوڈ کریں</translation>
 <translation id="1026959648338730078">‏Windows Hello یا بیرونی سیکیورٹی کلید</translation>
 <translation id="1028700151766901954">‏وجہ: LBS بطور ڈیفالٹ <ph name="DEFAULT_OPEN_BROWSER" /> میں رہتا ہے۔</translation>
-<translation id="1028823395684328817">‏اپنے Google اکاؤنٹ میں پاس ورڈز اور مزید کا استعمال جاری رکھنے کے لیے، توثیق کریں کہ یہ آپ ہی ہیں</translation>
 <translation id="102916930470544692">پاس کی</translation>
 <translation id="1029317248976101138">زوم کریں</translation>
 <translation id="1029526375103058355">کلک کرنے کیلئے تھپتھپائیں</translation>
@@ -817,7 +816,6 @@
 <translation id="1558671750917454373"><ph name="DEVICE_NAME" /> پر کاسٹ کرنا دوبارہ شروع کریں</translation>
 <translation id="1561331397460162942">یہ ایپس، مقام کی اجازت والی ویب سائٹس اور سسٹم سروسز کے لیے مقام تک رسائی کی اجازت دیتا ہے</translation>
 <translation id="1562119309884184621">اس رابطہ کو شامل کرنے سے اگلی بار ان کے اشتراک کرنے پر یاد رکھے گا</translation>
-<translation id="1563137369682381456">میعاد ختم ہونے کی تاریخ</translation>
 <translation id="1566049601598938765">ویب سائٹ</translation>
 <translation id="15662109988763471">منتخب کردہ پرنٹر دستیاب نہیں ہے یا صحیح طریقے سے انسٹال نہیں ہوا ہے۔ اپنا پرنٹر چیک کریں یا دوسرا پرنٹر منتخب کر کے آزمائيں۔</translation>
 <translation id="1566329594234563241">غیر فعال اور پلگ ان رہتے ہوئے</translation>
@@ -3468,7 +3466,6 @@
 <translation id="3420501302812554910">داخلی سیکیورٹی کلید کو دوبارہ ترتیب دینے کی ضرورت ہے</translation>
 <translation id="3421387094817716717">‏Elliptic Curve عوامی کلید</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />نوٹ:<ph name="END_BOLD" /> ایک ملتی جلتی آواز یا ریکارڈنگ سے آپ کے ذاتی نتائج یا آپ کی اسسٹنٹ تک رسائی حاصل کی جا سکتی ہے۔</translation>
-<translation id="3421835120203732951">نئی پروفائل شامل کریں</translation>
 <translation id="3422989558057853751">آخری آئٹم منتخب کیا گیا، اسے غیر منتخب کرنے سے انتخاب موڈ سے باہر نکل جائیں گے</translation>
 <translation id="3423111258700187173"><ph name="FOLDER_TITLE" /> میں نتائج ملے</translation>
 <translation id="3423226218833787854">‏اس AI خصوصیت کے بارے میں مزید جانیں</translation>
@@ -9326,7 +9323,6 @@
 <translation id="7622768823216805500">سائٹس عام طور پر آسان تر چیک آؤٹ جیسی شاپنگ کی خصوصیات کے لیے ادائيگی ہینڈلرز انسٹال کرتی ہیں</translation>
 <translation id="7622966771025050155">کیپچر کردہ ٹیب پر سوئچ کریں</translation>
 <translation id="7624337243375417909">‏caps lock آف ہے</translation>
-<translation id="7625025537587898155">نئی پروفائل شامل کریں</translation>
 <translation id="7625568159987162309">تمام سائٹس پر اسٹور کردہ اجازتوں اور ڈیٹا کو دیکھیں</translation>
 <translation id="7625823789272218216">بائیں طرف نیا ٹیب</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />)، گریڈ <ph name="GRADE" /></translation>
@@ -11743,7 +11739,6 @@
 <translation id="98235653036850093">آداب، <ph name="PROFILE_NAME" /></translation>
 <translation id="983192555821071799">سبھی ٹیبز بند کریں</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - کیمرا اور مائیکروفون سے ریکارڈنگ کی جا رہی ہے</translation>
-<translation id="984275831282074731">ادائیگی کے طریقے</translation>
 <translation id="984705303330760860">املے کی جانچ کے لیے زبانیں شامل کریں</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">عمومی</translation>

@@ -1127,6 +1127,7 @@
 <translation id="573974402615125334">Вы сможете делиться группами вкладок, присоединяться к ним и работать вместе с другими пользователями.</translation>
 <translation id="5740123193752401435">Поиск по вкладкам</translation>
 <translation id="5744274077973758795">Уведомления "<ph name="FEATURE_NAME" />" включены.</translation>
+<translation id="5745598824054949526">Текст не найден</translation>
 <translation id="574762237186762643">Мероприятия</translation>
 <translation id="5749158352074143502">Снова открыть эту вкладку</translation>
 <translation id="5753021559215751319">Сохранить пароль</translation>
@@ -1290,6 +1291,7 @@
 <translation id="6410883413783534063">Используйте вкладки для одновременного посещения нескольких страниц.</translation>
 <translation id="6416807286621280684">Информация об отслеживаемых посылках и доставке</translation>
 <translation id="6418346271604475326">Подготовка PDF</translation>
+<translation id="6421038304268477484">Переведенный текст</translation>
 <translation id="6429213933892582367">Откройте раздел "Настройки паролей".</translation>
 <translation id="6434591244308415567">Произошла ошибка. Повторите попытку позже.</translation>
 <translation id="6435307030888827407">Не входить</translation>
@@ -1968,6 +1970,7 @@
 <translation id="9097506547406246598">Не удалось отменить подписку. Произошла ошибка.</translation>
 <translation id="9098541895599151034">Удалить выбранные пароли (<ph name="NUMBER_OF_ACCOUNTS" />)?</translation>
 <translation id="9099233023029360602">Всегда спрашивать, какой аккаунт использовать</translation>
+<translation id="9099821309562615674">Убедитесь, что текст для перевода различим и находится в кадре.</translation>
 <translation id="9100610230175265781">Необходима кодовая фраза</translation>
 <translation id="91023216973987714">Способы оплаты</translation>
 <translation id="9106655997975673326">С устройства "<ph name="SOURCE_DEVICE" />"</translation>

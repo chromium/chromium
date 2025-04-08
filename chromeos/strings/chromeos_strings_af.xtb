@@ -351,6 +351,7 @@
 <translation id="2438248248625638801">Opnametitels word tans geskep</translation>
 <translation id="2446553403094072641">Akkuraatheid van wisselpunt</translation>
 <translation id="2448312741937722512">Soort</translation>
+<translation id="2448857983905133469">Klasnutsgoed</translation>
 <translation id="2468124392950503650">Kies porboodskap om te skep of sien die <ph name="BEGIN_LINK_PROMPTING_GUIDE" />porboodskapgids<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Gebruik Help my skryf om ’n konsep te skep of om bestaande werk af te rond, aangedryf deur Google AI</translation>
 <translation id="2475982808118771221">'n Fout het voorgekom</translation>
@@ -449,6 +450,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Eindpunt</translation>
 <translation id="3060579846059757016">Buitelyne</translation>
+<translation id="3060798442805232711">Klasnutsgoed gebruik jou mikrofoon</translation>
 <translation id="3061850252076394168">aktiveer hardoplees</translation>
 <translation id="3066772729299747758">op Dinsdag</translation>
 <translation id="3069085583900247081">Toets het misluk</translation>
@@ -910,6 +912,7 @@
 <translation id="5170568018924773124">Wys in vouer</translation>
 <translation id="517075088756846356">Prop die <ph name="DEVICE_NAME" />-kragkabel uit en weer in om met die opdateringproses voort te gaan</translation>
 <translation id="5180108905184566358">kremetartbome</translation>
+<translation id="5180431943345994173">Jou onderwyser het inhoud uit Klasnutsgoed verwyder</translation>
 <translation id="5180712487038406644">Uitdrukkingsvol</translation>
 <translation id="5190187232518914472">Herleef jou gunstelingherinneringe. Gaan na <ph name="LINK_BEGIN" />Google Foto's<ph name="LINK_END" /> toe om albums by te voeg of te wysig.</translation>
 <translation id="5212593641110061691">Ponieformaat</translation>
@@ -1003,6 +1006,7 @@
 <translation id="5628106863521633649">Beskikbare tale</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">opsomming</translation>
+<translation id="5655084389678168978">Jou onderwyser het nuwe inhoud by Klasnutsgoed gevoeg</translation>
 <translation id="5655283760733841251">Verhoog sleutelbordhelderheid</translation>
 <translation id="5655296450510165335">Toestelinskrywing</translation>
 <translation id="5655776422854483175">Geen druktake nie</translation>
@@ -1528,6 +1532,7 @@ Laai die transkripsiemodel (tot 100 MB) af om hierdie transkripsies te kry.</tr
 <translation id="7971535376154084247">Algemene kontroles</translation>
 <translation id="7977800524392185497">Gaan na Instellings om by 'n <ph name="NETWORK_NAME" />-netwerk aan te sluit</translation>
 <translation id="7978412674231730200">Private sleutel</translation>
+<translation id="7979468455552394856">Klasnutsgoed is gekoppel aan studente</translation>
 <translation id="7982789257301363584">Netwerk</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{“<ph name="APP_NAME_1" />” is outomaties begin}other{# apps is outomaties begin}}</translation>
 <translation id="7994702968232966508">EAP-metode</translation>

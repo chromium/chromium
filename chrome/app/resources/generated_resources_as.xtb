@@ -44,7 +44,6 @@
 <translation id="1026822031284433028">প্ৰতিচ্ছবি ল’ড কৰক</translation>
 <translation id="1026959648338730078">Windows Hello অথবা বাহ্যিক সুৰক্ষা সম্পৰ্কীয় চাবি</translation>
 <translation id="1028700151766901954">কাৰণ: ডিফ’ল্ট হিচাপে <ph name="DEFAULT_OPEN_BROWSER" />ত LBS থাকে।</translation>
-<translation id="1028823395684328817">আপোনাৰ Google একাউণ্টত পাছৱৰ্ড আৰু আন বস্তু ব্যৱহাৰ কৰি থাকিবলৈ, এয়া আপুনিয়েই বুলি সত্যাপন কৰক</translation>
 <translation id="102916930470544692">পাছকী</translation>
 <translation id="1029317248976101138">জুম কৰক</translation>
 <translation id="1029526375103058355">ক্লিক কৰিবলৈ টিপাৰ সুবিধা</translation>
@@ -816,7 +815,6 @@
 <translation id="1558671750917454373"><ph name="DEVICE_NAME" />লৈ কাষ্ট কৰাটো পুনৰ আৰম্ভ কৰক</translation>
 <translation id="1561331397460162942">এইটোৱে অৱস্থানৰ অনুমতি থকা এপ্‌, ৱেবছাইট আৰু ছিষ্টেম সেৱাৰ বাবে অৱস্থান এক্সেছ কৰাৰ অনুমতি দিয়ে</translation>
 <translation id="1562119309884184621">এই সম্পৰ্কটো যোগ দিলে পৰৱৰ্তী সময়ত সেইটোৱে শ্বেয়াৰ কৰিলে মনত ৰাখিব</translation>
-<translation id="1563137369682381456">ম্যাদ উকলাৰ তাৰিখ</translation>
 <translation id="1566049601598938765">ৱেবছাইট</translation>
 <translation id="15662109988763471">বাছনি কৰা প্ৰিণ্টাৰটো উপলব্ধ নহয় বা সঠিককৈ ইনষ্টল কৰা হোৱা নাই। আপোনাৰ প্ৰিণ্টাৰটো পৰীক্ষা কৰক বা অন্য এটা প্ৰিণ্টাৰ বাছনি কৰি চাওক।</translation>
 <translation id="1566329594234563241">নিষ্ক্ৰিয় হৈ আৰু প্লাগ ইন কৰি থোৱাৰ সময়ত</translation>
@@ -1258,6 +1256,7 @@
 <translation id="185111092974636561"><ph name="BEGIN_PARAGRAPH1" />পঞ্জীয়ন কৰাৰ আগতে আপুনি TPM আঁতৰাব লাগিব যাতে <ph name="DEVICE_OS" />এ ডিভাইচটোৰ মালিকীস্বত্ব ল’ব পাৰে।<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />আপুনি TPM ডিভাইচটো সম্পূৰ্ণৰূপে অফ কৰিবও পাৰে। আপোনাৰ ডেটা তথাপি ছফ্টৱেৰ এনক্ৰিপশ্বনৰ সৈতে সুৰক্ষিতভাৱে ষ্ট’ৰ কৰা হ’ব, কিন্তু হাৰ্ডৱেৰ-সমৰ্থিত প্ৰমাণপত্ৰৰ দৰে নিৰ্দিষ্ট কিছুমান সুৰক্ষা সম্পৰ্কীয় সুবিধা অক্ষম কৰা হ’ব।<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />আপুনি ৰিবুট কৰি ছিষ্টেমৰ BIOS/UEFI ছেটিঙলৈ গৈ আপোনাৰ TPM ছেটিং সলনি কৰিব পাৰে। ডিভাইচৰ মডেল অনুসৰি পদক্ষেপসমূহ ভিন্ন হয়। অধিক তথ্যৰ বাবে আপুনি ৰিবুট কৰাৰ আগতে অন্য এটা ডিভাইচত <ph name="DEVICE_OS" />ৰ বিষয়ে থকা নথি খোলক: g.co/flex/TPMHelp।<ph name="END_PARAGRAPH3" /></translation>
+<translation id="1851551847729706116">এই টেবটোত <ph name="TAB_NAME" /> শ্বেয়াৰ কৰি থকা হৈছে</translation>
 <translation id="1852799913675865625">ফাইলটো পঢ়িবলৈ চেষ্টা কৰাৰ সময়ত কিবা আসোঁৱাহ পোৱা গ'ল: <ph name="ERROR_TEXT" />।</translation>
 <translation id="1854180393107901205">কাষ্ট কৰা বন্ধ কৰক</translation>
 <translation id="1856715684130786728">অৱস্থান যোগ কৰক...</translation>
@@ -1648,7 +1647,6 @@
 <translation id="2121825465123208577">আকাৰ সলনি কৰক</translation>
 <translation id="2123766928840368256">বেলেগ এটা ফাইল বাছনি কৰক</translation>
 <translation id="2124930039827422115">{1,plural, =1{এগৰাকী ব্যৱহাৰকাৰীয়ে <ph name="AVERAGE_RATING" /> হিচাপে মূল্যাংকন কৰিছে।}one{# জন ব্যৱহাৰকাৰীয়ে <ph name="AVERAGE_RATING" />হিচাপে মূল্যাংকন কৰিছে।}other{# জন ব্যৱহাৰকাৰীয়ে <ph name="AVERAGE_RATING" />হিচাপে মূল্যাংকন কৰিছে।}}</translation>
-<translation id="2125715366913703594">অন্বেষণ কৰক আৰু এক্সটেনশ্বন</translation>
 <translation id="2126167708562367080">আপোনাৰ প্ৰশাসকে ছিংক অক্ষম কৰিছে।</translation>
 <translation id="2127372758936585790">কম শক্তিৰ চ্চাৰ্জাৰ</translation>
 <translation id="212862741129535676">সঘনতাৰ স্থিতি দখলৰ শতকৰা হাৰ</translation>
@@ -3479,7 +3477,6 @@
 <translation id="3420501302812554910">আভ্যন্তৰীণ সুৰক্ষাৰ চাবিটো ৰিছেট কৰা আৱশ্যক</translation>
 <translation id="3421387094817716717">উপবৃত্তাকাৰ লেখৰ ৰাজহুৱা চাবি</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />টোকা<ph name="END_BOLD" />: একেধৰণৰ কোনো কণ্ঠধ্বনি অথবা ৰেকৰ্ডিঙে আপোনাৰ ব্যক্তিগত ফলাফল অথবা আপোনাৰ Assistant এক্সেছ কৰিবলৈ সক্ষম হ’ব পাৰে।</translation>
-<translation id="3421835120203732951">নতুন প্ৰ’ফাইল যোগ দিয়ক</translation>
 <translation id="3422989558057853751">শেষৰ বস্তুটো বাছনি কৰা হৈছে, এইটো বাছনিৰ পৰা আঁতৰালে বাছনি কৰাৰ ম'ডটোৰ পৰা বাহিৰ হ'ব</translation>
 <translation id="3423111258700187173"><ph name="FOLDER_TITLE" />ত ফলাফল বিচাৰি পোৱা গৈছে</translation>
 <translation id="3423226218833787854">এই AI সুবিধাটোৰ বিষয়ে অধিক জানক</translation>
@@ -9341,7 +9338,6 @@
 <translation id="7622768823216805500">অধিক সহজে চেকআউট কৰাৰ দৰে শ্ব'পিঙৰ সুবিধাসমূহৰ বাবে ছাইটসমূহে সচৰাচৰ পৰিশোধ নিয়ন্ত্ৰক ইনষ্টল কৰে</translation>
 <translation id="7622966771025050155">কেপচাৰ কৰা টেবটোলৈ সলনি কৰক</translation>
 <translation id="7624337243375417909">কেপছ লক অফ আছে</translation>
-<translation id="7625025537587898155">নতুন প্ৰ’ফাইল যোগ দিয়ক</translation>
 <translation id="7625568159987162309">ছাইটসমূহত সঞ্চিত হৈ থকা অনুমতি আৰূ ডেটা চাওক</translation>
 <translation id="7625823789272218216">বাওঁফালৰ নতুন টেব</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), গ্ৰে’ড <ph name="GRADE" /></translation>
@@ -11294,6 +11290,7 @@
 <translation id="8963117664422609631">ছাইটৰ ছেটিঙলৈ যাওক</translation>
 <translation id="8964927371396953727">আপোনাৰ একাউণ্টত পাছৱর্ড ব্যৱহাৰ আৰু ছেভ কৰিবলৈ নিজৰ পৰিচয় সত্যাপন কৰক, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8965037249707889821">পুৰণি পাছৱৰ্ড দিয়ক</translation>
+<translation id="8967403839792635452">এক্সটেনশ্বনসমূহ বিকাশ কৰি থকা হৈছে নেকি? Chromeৰ এক্সটেনশ্বন বিকাশকৰ্তাৰ নথিৰ জৰিয়তে <ph name="BEGIN_LINK" />নতুন কি উপলব্ধ হৈছে<ph name="END_LINK" /> সেই বিষয়ে আপ টু ডে’ট হৈ থাকক।</translation>
 <translation id="8967427617812342790">পঢ়াৰ সূচীত যোগ দিয়ক</translation>
 <translation id="8967548289042494261"><ph name="VM_NAME" /> আঁতৰাওক</translation>
 <translation id="8968527460726243404">ChromeOS ছিষ্টেম ইমেজ ৰাইটাৰ</translation>
@@ -11758,7 +11755,6 @@
 <translation id="98235653036850093">নমস্কাৰ, <ph name="PROFILE_NAME" /></translation>
 <translation id="983192555821071799">সকলো টেব বন্ধ কৰক</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - কেমেৰা আৰু মাইক্ৰ’ফ’নৰ ৰেকৰ্ডিং</translation>
-<translation id="984275831282074731">পৰিশোধ পদ্ধতি</translation>
 <translation id="984705303330760860">বানান পৰীক্ষণৰ ভাষা যোগ দিয়ক</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">সাধাৰণ</translation>

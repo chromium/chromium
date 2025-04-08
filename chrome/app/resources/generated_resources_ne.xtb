@@ -44,7 +44,6 @@
 <translation id="1026822031284433028">फोटो लोड गर्नुहोस्</translation>
 <translation id="1026959648338730078">Windows Hello वा बाह्य सुरक्षा साँचो</translation>
 <translation id="1028700151766901954">कारण: LBS स्वतः <ph name="DEFAULT_OPEN_BROWSER" /> मा रहन्छ।</translation>
-<translation id="1028823395684328817">आफ्नो Google खातामा सेभ गरिएका पासवर्डलगायतका डेटा प्रयोग गरिराख्न आफ्नो पहिचान पुष्टि गर्नुहोस्</translation>
 <translation id="102916930470544692">पासकी</translation>
 <translation id="1029317248976101138">जुम आउट गर्नुहोस्</translation>
 <translation id="1029526375103058355">ट्याप टु क्लिक</translation>
@@ -816,7 +815,6 @@
 <translation id="1558671750917454373"><ph name="DEVICE_NAME" /> मा कास्ट गर्ने कार्य सुचारु गर्नुहोस्</translation>
 <translation id="1561331397460162942">तपाईंले लोकेसन प्रयोग गर्ने अनुमति दिनुभयो भने यो अनुमति दिइएका एप, वेबसाइट र सिस्टमका सेवाहरूले लोकेसन प्रयोग गर्न पाउँछन्</translation>
 <translation id="1562119309884184621">तपाईंले यी व्यक्तिलाई आफ्नो कन्ट्याक्टमा थप्नुभयो भने अर्को पटक उहाँले सेयर गर्दा याद राखिने छ</translation>
-<translation id="1563137369682381456">म्याद सकिने मिति</translation>
 <translation id="1566049601598938765">वेबसाइट</translation>
 <translation id="15662109988763471">चयन गरिएको प्रिन्टर उपलब्ध छैन वा त्यसलाई राम्ररी स्थापना गरिएको छैन। आफ्नो प्रिन्टर जाँच्नुहोस् वा अर्को प्रिन्टर चयन गरी हेर्नुहोस्।</translation>
 <translation id="1566329594234563241">डिभाइस निष्क्रिय हुँदा र प्लगइन गरिएको बेला</translation>
@@ -3464,7 +3462,6 @@
 <translation id="3420501302812554910">आन्तरिक सुरक्षा साँचो रिसेट गर्नु आवश्यक छ</translation>
 <translation id="3421387094817716717">अण्डाकार कर्भको सार्वजनिक कुञ्जी</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />ख्याल गर्नुहोस्:<ph name="END_BOLD" /> तपाईंको आवाजसँग मिल्दोजुल्दो आवाज वा रेकर्डिङ प्रयोग गरेर पनि तपाईंको व्यक्तिगत परिणाम हेर्न वा तपाईंको सहायकको प्रयोग गर्न सकिने सम्भावना हुन्छ।</translation>
-<translation id="3421835120203732951">नयाँ प्रोफाइल हाल्नुहोस्</translation>
 <translation id="3422989558057853751">चयन गरिएको अन्तिम सामग्री, तपाईंले यो सामग्रीको चयन रद्द गर्नुभयो भने तपाईं छनौट मोडबाट बाहिरिनु हुने छ</translation>
 <translation id="3423111258700187173"><ph name="FOLDER_TITLE" /> मा परिणामहरू भेटिए</translation>
 <translation id="3423226218833787854">यो AI सुविधाका बारेमा थप जान्नुहोस्</translation>
@@ -9323,7 +9320,6 @@
 <translation id="7622768823216805500">साइटहरूले अझ सहज रूपमा चेकआउट गर्नेलगायतका किनमेलसम्बन्धी सुविधाहरू प्रदान गर्न सामान्यतया भुक्तानी ह्यान्ड्लर इन्स्टल गर्छन्</translation>
 <translation id="7622966771025050155">क्याप्चर गरिएको ट्याबमा जानुहोस्</translation>
 <translation id="7624337243375417909">क्याप्स लक अफ छ</translation>
-<translation id="7625025537587898155">नयाँ प्रोफाइल हाल्नुहोस्</translation>
 <translation id="7625568159987162309">विभिन्न साइटहरूमा भण्डारण गरिएका अनुमति र डेटा हेर्नुहोस्</translation>
 <translation id="7625823789272218216">नयाँ ट्याब बायाँतिर देखिन्छ</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), ग्रेड <ph name="GRADE" /></translation>
@@ -11740,7 +11736,6 @@
 <translation id="98235653036850093">नमस्ते, <ph name="PROFILE_NAME" /></translation>
 <translation id="983192555821071799">सबै ट्याबहरू बन्द गर्नुहोस्</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - क्यामेरा र माइक्रोफोनले रेकर्ड गरिरहेका छन्</translation>
-<translation id="984275831282074731">भुक्तानी विधिहरू</translation>
 <translation id="984705303330760860">हिज्जे जाँच गरिनु पर्ने भाषाहरू थप्नुहोस्</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">सामान्य</translation>

@@ -99,7 +99,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1175364870820465910">&amp;Skriv ut...</translation>
 <translation id="1175393348063009671">Foto (matt)</translation>
 <translation id="1175875016430184367">Tre stifter høyre</translation>
-<translation id="1176123604678140687">Utløpsmåned</translation>
 <translation id="1177548198167638471">Ikke spør igjen</translation>
 <translation id="1177863135347784049">Tilpasset</translation>
 <translation id="1178581264944972037">Stans midlertidig</translation>
@@ -333,7 +332,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
       &lt;p&gt;Juster datoen og klokkeslettet under &lt;strong&gt;Generelt&lt;/strong&gt; i &lt;strong&gt;Innstillinger&lt;/strong&gt;-appen.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Administratoren din starter enheten din på nytt kl. <ph name="TIME" /> <ph name="DATE" /></translation>
 <translation id="1562805467275776390">Billøp</translation>
-<translation id="1563137369682381456">Utløpsdato</translation>
 <translation id="1563755205047885671">Action- og plattformspill</translation>
 <translation id="1564634006476980707">HTTPS-protokollen anbefales for søkenettadressen: <ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">Nettverksinformasjon som adresser, grensesnittkonfigurasjon og tilkoblingskvalitet</translation>
@@ -528,6 +526,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1890171020361705182">Dino-spillet. En pikselert dinosaur smetter unna kaktus og pterodaktyler mens den løper gjennom et øde landskap. Når du hører et lydsignal, trykker du for å hoppe over hindringer.</translation>
 <translation id="1898423065542865115">Filtrering</translation>
 <translation id="1901443836186977402">{1,plural, =1{Denne tjeneren kunne ikke bevise at den er <ph name="DOMAIN" />. Tjenerens sikkerhetssertifikat har utløpt i løpet av det siste døgnet. Dette kan skyldes en feilkonfigurering eller at en angriper avskjærer tilkoblingen din. Klokken på datamaskinen din er stilt til <ph name="CURRENT_DATE" />. Ser det riktig ut? Hvis ikke bør du stille klokken på systemet og laste inn denne siden på nytt.}other{Denne tjeneren kunne ikke bevise at den er <ph name="DOMAIN" />. Tjenerens sikkerhetssertifikat har utløpt for # dager siden. Dette kan skyldes en feilkonfigurering eller at en angriper avskjærer tilkoblingen din. Klokken på datamaskinen din er stilt til <ph name="CURRENT_DATE" />. Ser det riktig ut? Hvis ikke bør du stille klokken på systemet og laste inn denne siden på nytt.}}</translation>
+<translation id="190166348986967700">Administratoren din begynner å laste opp filene dine til <ph name="CLOUD_PROVIDER" /> <ph name="DATE_TIME" />. Hold enheten tilkoblet frem til filene er lastet opp. Under opplastingen kan du bare lese lokale filer.</translation>
 <translation id="1902576642799138955">Gyldighetsperiode</translation>
 <translation id="1908217026282415406">Kamerabruk og -bevegelse</translation>
 <translation id="1908690643053136980">Administratoren din tillater ikke at dette nettstedet bruker <ph name="PERMISSION" /></translation>
@@ -936,7 +935,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2606760465469169465">Automatisk bekreftelse</translation>
 <translation id="2608019759319359258">Når et emne er blokkert, blir det ikke brukt til personlig tilpasning av annonser</translation>
 <translation id="2610561535971892504">Klikk for å kopiere</translation>
-<translation id="2612676031748830579">Kortnummer</translation>
 <translation id="2612993535136743634">Alle sikkerhetskoder som er lagret på enheten og i Google-kontoen din, blir slettet</translation>
 <translation id="2616412942031748191">Søkemotoroptimalisering og markedsføring</translation>
 <translation id="2618206371527040026">Akademiske konferanser og publikasjoner</translation>
@@ -1924,6 +1922,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4282346679996504092">Varsler for dette produktet er slått av, og bokmerket er fjernet</translation>
 <translation id="4285498937028063278">Løsne</translation>
 <translation id="4287495839370498922">Bedre annonsepersonvern i Chrome</translation>
+<translation id="4288101205645068104">Slett kjøretøyet</translation>
 <translation id="4290920330097335010">Aldri tillat</translation>
 <translation id="4296207570293932800">En ny funksjon for annonsepersonvern er nå tilgjengelig</translation>
 <translation id="4297502707443874121">Miniatyrbilde for side <ph name="THUMBNAIL_PAGE" /></translation>
@@ -2153,6 +2152,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="473775607612524610">Oppdater</translation>
 <translation id="4738601419177586157">Søkeforslag for <ph name="TEXT" /></translation>
 <translation id="4742407542027196863">Administrer passord…</translation>
+<translation id="474270528725216349">Fra minst 1 nettsted på synkroniserte enheter</translation>
 <translation id="4743275772928623722">Systemet ditt ble oppdatert, men noen av appene og filene kunne ikke gjenopprettes. Appene dine lastes ned på nytt automatisk.</translation>
 <translation id="4744514002166662487">Opprett presentasjon</translation>
 <translation id="4744603770635761495">Kjørbar sti</translation>
@@ -2283,6 +2283,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="495170559598752135">Handlinger</translation>
 <translation id="4953689047182316270">Svar på tilgjengelighetshendelser</translation>
 <translation id="4957080528849277028">Knappen «Se Chrome-loggen din» – aktiver for å se og administrere nettleserloggen din i Chrome-innstillingene</translation>
+<translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{+ 1 nettsted}other{+ # nettsteder}}</translation>
 <translation id="4958444002117714549">Utvid liste</translation>
 <translation id="4960068118612257147">Du kan gjøre endringer i innstillingene for annonsepersonvern i Chrome</translation>
 <translation id="4960203958361543136">Velg søkemotor</translation>
@@ -2617,8 +2618,10 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="553377674408670169">Undervisningsjobber</translation>
 <translation id="5534785731327961487">Godt tilbud nå</translation>
 <translation id="5536214594743852365">Vis «<ph name="SECTION" />»-delen</translation>
+<translation id="5536471014287260753">{DOMAIN_COUNT,plural, =1{+ 1 nettsted (flere på synkroniserte enheter)}other{+ # nettsteder (flere på synkroniserte enheter)}}</translation>
 <translation id="553782666181800029">Chou 2-konvolutt</translation>
 <translation id="5538270463355278784">automatisk fullskjerm</translation>
+<translation id="5538859347764346097"><ph name="KEYWORD_SHORTCUT" />, søk på <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="5539243836947087108">Flåte</translation>
 <translation id="5540224163453853">Den forespurte artikkelen ble ikke funnet.</translation>
 <translation id="5540969246441091044">Hestesport</translation>
@@ -2777,6 +2780,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5838278095973806738">Du bør ikke oppgi sensitiv informasjon på dette nettstedet (for eksempel passord eller kredittkort) fordi den kan bli stjålet av angripere.</translation>
 <translation id="5838732667866024867">Du kan bruke venstre eller høyre pil for å se prisendringene i diagrammet</translation>
 <translation id="5840318881868981258">I Google-kontoen din, <ph name="ACCOUNT" /></translation>
+<translation id="5841007907672481419">Fra <ph name="TYPE_1" /></translation>
 <translation id="5841338463993781099">Vil du lagre adressen i kontoen?</translation>
 <translation id="5843987376989109187">Dette språket støttes ikke ennå.
     <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
@@ -2790,6 +2794,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5863515189965725638">Endre IBAN-nummeret</translation>
 <translation id="5863847714970149516">Den neste siden kan prøve å belaste deg for penger</translation>
 <translation id="5866257070973731571">Legg til telefonnummer</translation>
+<translation id="5866327164731551901">Fra <ph name="TYPE_1" /> <ph name="TYPE_2" /></translation>
 <translation id="5866898949289125849">Du ser på en side for utviklerverktøy</translation>
 <translation id="5869405914158311789">Dette nettstedet er ikke tilgjengelig</translation>
 <translation id="5869522115854928033">Lagrede passord</translation>
@@ -3330,7 +3335,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">Bruk YouTube med innstillingene som forelderen din har valgt</translation>
 <translation id="6779348349813025131">Google Passordlagring trenger tilgang til macOS-nøkkelring</translation>
-<translation id="6782656837469339439">Utløpsår</translation>
 <translation id="6785990323398321538">Du kan når som helst bytte søkemotor i Chrome-innstillingene.</translation>
 <translation id="6786145470008421571">Konvolutt 6 x 9 tommer</translation>
 <translation id="67862343314499040">Fiolett</translation>
@@ -3499,6 +3503,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7075452647191940183">Forespørselen er for stor</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
+<translation id="7079783554682867524">Fra <ph name="TYPE_1" /> (flere på synkroniserte enheter)</translation>
 <translation id="7081311540357715807">Mat- og dagligvareforretninger</translation>
 <translation id="7083258188081898530">Skuff 9</translation>
 <translation id="7086090958708083563">Opplasting forespurt av bruker</translation>
@@ -4154,6 +4159,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="8216640997712497593">14 x 18 tommer</translation>
 <translation id="8218327578424803826">Tilordnet posisjon:</translation>
 <translation id="8220602974062798186">Vil du blokkere <ph name="TOPIC" /> og eventuelle relaterte emner?</translation>
+<translation id="8226408512771130794"><ph name="KEYWORD_SHORTCUT" />, spør <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="8228419419708659934">Visning med to sider</translation>
 <translation id="8228477714872026922"><ph name="ORIGIN" /> vil ha tilgang til en enhet på nettverket ditt:</translation>
 <translation id="822925450938886901">For å finne ut mer og se regler som kan gjelde, åpne chrome://management i nettleseren.</translation>
@@ -4197,6 +4203,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="8280630997017109758">Skuff 11</translation>
 <translation id="8281730697546299650">Andre funksjoner for annonsepersonvern er nå tilgjengelige</translation>
 <translation id="8281886186245836920">Hopp over</translation>
+<translation id="8282292167096638950">Slett førerkortet</translation>
 <translation id="8282409409360764263">Hagevedlikehold</translation>
 <translation id="8282947398454257691">få kjennskap til den unike enhetsidentifikatoren</translation>
 <translation id="8284769179630993263">Administrer Safe Browsing med mer i Chrome-innstillingene</translation>
@@ -4224,6 +4231,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="8321476692217554900">varsler</translation>
 <translation id="8322402665880479974">Senger og hodegavler</translation>
 <translation id="8323505966575306467">Legg til mer beskyttelse for passordene dine</translation>
+<translation id="832547548543012337">Slett passet</translation>
 <translation id="832567874344484841">Frokostmat</translation>
 <translation id="8329068931308448247">Konvolutt nr. 14</translation>
 <translation id="8332188693563227489">Forsøket på å koble til <ph name="HOST_NAME" /> ble avvist</translation>

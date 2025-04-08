@@ -351,6 +351,7 @@
 <translation id="2438248248625638801">יצירת שמות להקלטות</translation>
 <translation id="2446553403094072641">‏רמת הדיוק של נקודה צפה (floating-point)</translation>
 <translation id="2448312741937722512">סוג</translation>
+<translation id="2448857983905133469">כלי עזר להוראה</translation>
 <translation id="2468124392950503650">אפשר לבחור הנחיה ליצירה או לעיין <ph name="BEGIN_LINK_PROMPTING_GUIDE" />במדריך ליצירת הנחיות<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">‏אפשר להשתמש בכלי 'עזרה בכתיבה' כדי ליצור טיוטה או לשפר עבודה קיימת. הכלי מבוסס על AI מבית Google</translation>
 <translation id="2475982808118771221">אירעה שגיאה</translation>
@@ -449,6 +450,7 @@
 <translation id="3054177598518735801">mA<ph name="CURRENT_VALUE" /></translation>
 <translation id="3056720590588772262">‏נקודת קצה (endpoint)</translation>
 <translation id="3060579846059757016">נקודות עיקריות</translation>
+<translation id="3060798442805232711">כלי העזר להוראה משתמשים במיקרופון</translation>
 <translation id="3061850252076394168">הפעלת התכונה 'הקראה'</translation>
 <translation id="3066772729299747758">ביום שלישי</translation>
 <translation id="3069085583900247081">הבדיקה נכשלה</translation>
@@ -910,6 +912,7 @@
 <translation id="5170568018924773124">הצגה בתיקייה</translation>
 <translation id="517075088756846356">כדי להמשיך בתהליך העדכון, צריך לנתק את כבל החשמל של <ph name="DEVICE_NAME" /> ולחבר אותו מחדש</translation>
 <translation id="5180108905184566358">עצי באובב</translation>
+<translation id="5180431943345994173">תוכן בכלי העזר להוראה הוסר על ידי המורה</translation>
 <translation id="5180712487038406644">אקספרסיבי</translation>
 <translation id="5190187232518914472">‏זיכרונות אהובים מתעוררים לחיים. כדי להוסיף או לערוך אלבומים, יש לעבור ל-<ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
@@ -1003,6 +1006,7 @@
 <translation id="5628106863521633649">השפות הזמינות</translation>
 <translation id="5630438231335788050">באוהאוס</translation>
 <translation id="5631759159893697722">תקציר</translation>
+<translation id="5655084389678168978">נוסף תוכן חדש מהמורה בכלי העזר להוראה</translation>
 <translation id="5655283760733841251">הגברת הבהירות של המקלדת</translation>
 <translation id="5655296450510165335">שיוך מכשיר לארגון</translation>
 <translation id="5655776422854483175">אין משימות הדפסה</translation>
@@ -1528,6 +1532,7 @@
 <translation id="7971535376154084247">אמצעי בקרה כלליים</translation>
 <translation id="7977800524392185497">כדי להצטרף לרשת <ph name="NETWORK_NAME" />, צריך לעבור להגדרות</translation>
 <translation id="7978412674231730200">מפתח פרטי</translation>
+<translation id="7979468455552394856">התלמידים מחוברים לכלי העזר להוראה</translation>
 <translation id="7982789257301363584">רשת</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{האפליקציה <ph name="APP_NAME_1" /> הופעלה באופן אוטומטי}one{‫# אפליקציות הופעלו באופן אוטומטי}two{‫# אפליקציות הופעלו באופן אוטומטי}other{‫# אפליקציות הופעלו באופן אוטומטי}}</translation>
 <translation id="7994702968232966508">‏שיטת EAP</translation>

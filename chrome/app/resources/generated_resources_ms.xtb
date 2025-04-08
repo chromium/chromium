@@ -44,7 +44,6 @@
 <translation id="1026822031284433028">Muatkan Imej</translation>
 <translation id="1026959648338730078">Windows Hello atau kunci keselamatan luaran</translation>
 <translation id="1028700151766901954">Sebab: LBS kekal dalam <ph name="DEFAULT_OPEN_BROWSER" /> secara lalai.</translation>
-<translation id="1028823395684328817">Untuk terus menggunakan kata laluan dan pelbagai lagi dalam Google Account anda, sahkan identiti anda</translation>
 <translation id="102916930470544692">Kunci laluan</translation>
 <translation id="1029317248976101138">Zum</translation>
 <translation id="1029526375103058355">Ketik untuk klik</translation>
@@ -818,7 +817,6 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="1558671750917454373">Sambung semula penghantaran pada <ph name="DEVICE_NAME" /></translation>
 <translation id="1561331397460162942">Tindakan ini membenarkan akses lokasi untuk apl, laman web dengan kebenaran lokasi dan perkhidmatan sistem</translation>
 <translation id="1562119309884184621">Tindakan menambah kenalan ini akan membuatkan peranti mengingat kali seterusnya mereka membuat perkongsian</translation>
-<translation id="1563137369682381456">Tarikh tamat tempoh</translation>
 <translation id="1566049601598938765">Tapak web</translation>
 <translation id="15662109988763471">Pencetak yang dipilih tidak tersedia atau tidak dipasang dengan betul. Periksa pencetak anda atau cuba pilih pencetak lain.</translation>
 <translation id="1566329594234563241">Ketika tidak aktif dan dipalamkan</translation>
@@ -1651,7 +1649,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2121825465123208577">Ubah saiz</translation>
 <translation id="2123766928840368256">Pilih fail yang lain</translation>
 <translation id="2124930039827422115">{1,plural, =1{Dinilai <ph name="AVERAGE_RATING" /> oleh seorang pengguna.}other{Dinilai <ph name="AVERAGE_RATING" /> oleh # pengguna.}}</translation>
-<translation id="2125715366913703594">Teroka &amp;Sambungan</translation>
 <translation id="2126167708562367080">Penyegerakan dilumpuhkan oleh pentadbir anda.</translation>
 <translation id="2127372758936585790">Pengecas berkuasa rendah</translation>
 <translation id="212862741129535676">Peratusan Penggunaan Keadaan Kekerapan</translation>
@@ -3482,7 +3479,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3420501302812554910">Kunci keselamatan dalaman memerlukan penetapan semula</translation>
 <translation id="3421387094817716717">Kunci Awam Lengkung Eliptik</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Nota:<ph name="END_BOLD" /> Suara yang serupa atau rakaman suara mungkin dapat mengakses hasil persendirian atau Assistant anda.</translation>
-<translation id="3421835120203732951">Tambahkan Profil Baharu</translation>
 <translation id="3422989558057853751">Item terakhir dipilih, tindakan menyahpilih item tersebut akan menyebabkan anda keluar daripada mod pemilihan</translation>
 <translation id="3423111258700187173">Hasil carian ditemukan dalam <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">Ketahui lebih lanjut tentang ciri AI ini</translation>
@@ -9344,7 +9340,6 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7622768823216805500">Tapak biasanya memasang pengendali pembayaran untuk ciri beli-belah seperti daftar keluar yang lebih mudah</translation>
 <translation id="7622966771025050155">Beralih kepada tab yang ditangkap</translation>
 <translation id="7624337243375417909">kunci huruf besar dimatikan</translation>
-<translation id="7625025537587898155">Tambahkan profil baharu</translation>
 <translation id="7625568159987162309">Lihat kebenaran dan data yang disimpan pada semua tapak</translation>
 <translation id="7625823789272218216">Tab Baharu ke Kiri</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), Gred <ph name="GRADE" /></translation>
@@ -11763,7 +11758,6 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="98235653036850093">Hai <ph name="PROFILE_NAME" /></translation>
 <translation id="983192555821071799">Tutup semua tab</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - Rakaman kamera dan mikrofon</translation>
-<translation id="984275831282074731">Kaedah pembayaran</translation>
 <translation id="984705303330760860">Tambah bahasa semak ejaan</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Umum</translation>

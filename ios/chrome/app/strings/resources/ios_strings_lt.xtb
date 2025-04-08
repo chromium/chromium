@@ -526,6 +526,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="3167868116600277716">„Discover“ sklaidos kanalas</translation>
 <translation id="3169472444629675720">Atradimas</translation>
 <translation id="3174662312949010067">Be to, išsaugotus slaptažodžius galite naudoti kituose įrenginiuose.</translation>
+<translation id="3177338796769255211">Prisijunkite, kad visuose įrenginiuose gautumėte žymes ir kt.</translation>
 <translation id="3181954750937456830">Saugus naršymas (apsaugo jus ir jūsų įrenginį nuo pavojingų svetainių)</translation>
 <translation id="3190736958609431397">Nebestebėti</translation>
 <translation id="3208260410153224535">Organizacija išjungė prisijungimą. Nauji slaptažodžiai, žymės ir kt. bus išsaugoti tik šiame įrenginyje.</translation>
@@ -1126,6 +1127,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="573974402615125334">Jei norite bendrinti, prisijungti ir bendradarbiauti skirtukų grupėse, sinchronizuokite istoriją ir skirtukus</translation>
 <translation id="5740123193752401435">Ieškokite skirtukų…</translation>
 <translation id="5744274077973758795">„<ph name="FEATURE_NAME" />“ pranešimai įjungti</translation>
+<translation id="5745598824054949526">Teksto nerasta</translation>
 <translation id="574762237186762643">Įvykiai</translation>
 <translation id="5749158352074143502">Tęsti naudojant šį skirtuką</translation>
 <translation id="5753021559215751319">Išsaugoti slaptažodį</translation>
@@ -1289,6 +1291,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="6410883413783534063">Atidarykite skirtukus ir vienu metu lankykitės skirtinguose puslapiuose</translation>
 <translation id="6416807286621280684">Stebimi siuntiniai ir pristatymo atnaujinimai.</translation>
 <translation id="6418346271604475326">Ruošiamas PDF</translation>
+<translation id="6421038304268477484">Išverstas tekstas</translation>
 <translation id="6429213933892582367">Atidarykite slaptažodžio parinktis</translation>
 <translation id="6434591244308415567">Įvyko klaida. Vėliau bandykite dar kartą.</translation>
 <translation id="6435307030888827407">Likti atsijungus</translation>
@@ -1967,6 +1970,7 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="9097506547406246598">Negalima nebestebėti. Kažkas nepavyko.</translation>
 <translation id="9098541895599151034">Ištrinti slaptažodžius (iš viso: <ph name="NUMBER_OF_ACCOUNTS" />)?</translation>
 <translation id="9099233023029360602">Kaskart klausti, kurią paskyrą naudoti</translation>
+<translation id="9099821309562615674">Įsitikinkite, kad norimas išversti tekstas aiškiai matomas ir yra kadre.</translation>
 <translation id="9100610230175265781">Būtina slaptafrazė</translation>
 <translation id="91023216973987714">Mokėjimo metodai</translation>
 <translation id="9106655997975673326">Iš „<ph name="SOURCE_DEVICE" />“</translation>

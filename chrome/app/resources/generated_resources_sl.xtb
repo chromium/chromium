@@ -44,7 +44,6 @@
 <translation id="1026822031284433028">Naloži sliko</translation>
 <translation id="1026959648338730078">Windows Hello ali zunanji varnostni ključ</translation>
 <translation id="1028700151766901954">Razlog: LBS privzeto ostane v brskalniku <ph name="DEFAULT_OPEN_BROWSER" />.</translation>
-<translation id="1028823395684328817">Če želite še naprej uporabljati gesla in druge podatke v računu Google, potrdite, da ste to vi</translation>
 <translation id="102916930470544692">Ključ za dostop</translation>
 <translation id="1029317248976101138">Povečaj</translation>
 <translation id="1029526375103058355">Dotik za klik</translation>
@@ -821,7 +820,6 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="1558671750917454373">Nadaljuj predvajanje v napravi <ph name="DEVICE_NAME" /></translation>
 <translation id="1561331397460162942">To omogoča dostop do lokacije za aplikacije, spletna mesta z dovoljenjem za lokacijo in sistemske storitve</translation>
 <translation id="1562119309884184621">Če dodate ta stik, se bo nastavitev shranila za naslednjič, ko bo ta oseba delila</translation>
-<translation id="1563137369682381456">Datum poteka</translation>
 <translation id="1566049601598938765">Spletno mesto</translation>
 <translation id="15662109988763471">Izbrani tiskalnik ni na voljo ali ni pravilno nameščen. Preverite tiskalnik ali izberite drugega.</translation>
 <translation id="1566329594234563241">Ko je naprava neaktivna in priklopljena</translation>
@@ -1263,6 +1261,7 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="185111092974636561"><ph name="BEGIN_PARAGRAPH1" />Pred včlanitvijo morate počistiti modul TPM, tako da bo lahko sistem <ph name="DEVICE_OS" /> prevzel lastništvo naprave.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Napravo TPM lahko tudi v celoti izklopite. Vaši podatki bodo še vedno varno shranjeni s šifriranjem programske opreme, vendar bodo onemogočene nekatere varnostne funkcije, kot so potrdila, podprta s strojno opremo.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Nastavitve TPM lahko spremenite tako, da napravo znova zaženete in odprete nastavitve za sistemski BIOS/UEFI. Postopek se razlikuje glede na model naprave. Če želite več informacij, odprite dokumentacijo za <ph name="DEVICE_OS" /> v ločeni napravi, preden znova zaženete: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="1851551847729706116">Deljenje zavihka <ph name="TAB_NAME" /> s tem zavihkom</translation>
 <translation id="1852799913675865625">Pri poskusu branja datoteke je prišlo do napake: <ph name="ERROR_TEXT" />.</translation>
 <translation id="1854180393107901205">Ustavi predvajanje</translation>
 <translation id="1856715684130786728">Dodaj lokacijo ...</translation>
@@ -1653,7 +1652,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2121825465123208577">Spreminjanje velikosti</translation>
 <translation id="2123766928840368256">Izberi drugo datoteko</translation>
 <translation id="2124930039827422115">{1,plural, =1{Ocena: <ph name="AVERAGE_RATING" /> – en uporabnik}one{Ocena: <ph name="AVERAGE_RATING" /> – # uporabnik}two{Ocena: <ph name="AVERAGE_RATING" /> – # uporabnika}few{Ocena: <ph name="AVERAGE_RATING" /> – # uporabniki}other{Ocena: <ph name="AVERAGE_RATING" /> – # uporabnikov}}</translation>
-<translation id="2125715366913703594">Raziščite &amp;razširitve</translation>
 <translation id="2126167708562367080">Sinhronizacijo je onemogočil skrbnik.</translation>
 <translation id="2127372758936585790">Nizkoenergijski polnilnik</translation>
 <translation id="212862741129535676">Odstotek zasedenosti frekvenčnega stanja</translation>
@@ -3484,7 +3482,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3420501302812554910">Notranji varnostni ključ je treba ponastaviti</translation>
 <translation id="3421387094817716717">Javni ključ z eliptično krivuljo</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Opomba:<ph name="END_BOLD" /> S podobnim glasom ali posnetkom je morda mogoče dostopati do vaših osebnih rezultatov ali Pomočnika.</translation>
-<translation id="3421835120203732951">Dodaj nov profil</translation>
 <translation id="3422989558057853751">Izbran je zadnji element. Če prekličete njegovo izbiro, zaprete način za izbiro.</translation>
 <translation id="3423111258700187173">Rezultati, najdeni v mapi <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">Preberite več o tej funkciji umetne inteligence</translation>
@@ -9354,7 +9351,6 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7622768823216805500">Spletna mesta običajno namestijo rutine za obravnavo plačil za funkcije nakupovanja, kot je lažje dokončanje nakupa.</translation>
 <translation id="7622966771025050155">Preklop na zajeti zavihek</translation>
 <translation id="7624337243375417909">zaklepanje velikih črk je izklopljeno</translation>
-<translation id="7625025537587898155">Dodaj nov profil</translation>
 <translation id="7625568159987162309">Ogled dovoljenj in podatkov, shranjenih na spletnih mestih</translation>
 <translation id="7625823789272218216">Novi zavihek na levi</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), <ph name="GRADE" />. raven</translation>
@@ -11310,6 +11306,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="8963117664422609631">Na nastavitve spletnega mesta</translation>
 <translation id="8964927371396953727">Potrdite, da ste to vi, če želite uporabljati in shranjevati gesla v računu, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8965037249707889821">Vnesite staro geslo</translation>
+<translation id="8967403839792635452">Razvijate razširitve? Spremljajte <ph name="BEGIN_LINK" />novosti<ph name="END_LINK" /> v dokumentaciji za razvijalce razširitev za Chrome.</translation>
 <translation id="8967427617812342790">Add to reading list</translation>
 <translation id="8967548289042494261">Odstranite navidezni računalnik <ph name="VM_NAME" /></translation>
 <translation id="8968527460726243404">Zapisovalnik sistemskih slik za Chrome OS</translation>
@@ -11774,7 +11771,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="98235653036850093">Živijo, <ph name="PROFILE_NAME" /></translation>
 <translation id="983192555821071799">Zapri vse zavihke</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> – snemanje s kamero in mikrofonom</translation>
-<translation id="984275831282074731">Plačilna sredstva</translation>
 <translation id="984705303330760860">Dodajanje jezikov preverjanja črkovanja</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Splošno</translation>

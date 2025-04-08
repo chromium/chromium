@@ -44,7 +44,6 @@
 <translation id="1026822031284433028">Afbeelding laden</translation>
 <translation id="1026959648338730078">Windows Hello of externe beveiligingssleutel</translation>
 <translation id="1028700151766901954">Reden: LBS blijft standaard in <ph name="DEFAULT_OPEN_BROWSER" />.</translation>
-<translation id="1028823395684328817">Laat verifiëren dat jij het bent om de wachtwoorden en andere items in je Google-account te blijven gebruiken</translation>
 <translation id="102916930470544692">Toegangssleutel</translation>
 <translation id="1029317248976101138">Zoom</translation>
 <translation id="1029526375103058355">Tikken om te klikken</translation>
@@ -713,7 +712,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1485015260175968628">De app/extensie kan nu het volgende doen:</translation>
 <translation id="1485197926103629489">Microsoft 365 vereist dat bestanden worden opgeslagen in OneDrive. Lokale bestanden worden verplaatst en bestanden van andere locaties worden gekopieerd. Je vindt je bestanden in de Microsoft OneDrive-map in de app Bestanden.</translation>
 <translation id="1486012259353794050">Als je vragen stelt, geeft de Google Assistent aangepaste antwoorden op basis van je scherm</translation>
-<translation id="1486096554574027028">Zoek in wachtwoorden</translation>
+<translation id="1486096554574027028">Zoeken in wachtwoorden</translation>
 <translation id="1486458761710757218">De helderheid van de achtergrondverlichting van het toetsenbord automatisch aanpassen</translation>
 <translation id="1486486872607808064">Scan deze QR-code met de camera op het apparaat waarop je een toegangssleutel voor <ph name="APP_NAME" /> wilt maken</translation>
 <translation id="1486616492435615702">Maak een conceptversie of verfijn bestaand werk.</translation>
@@ -817,7 +816,6 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1558671750917454373">Casten naar <ph name="DEVICE_NAME" /> hervatten</translation>
 <translation id="1561331397460162942">Zo geef je locatietoegang aan apps, websites met locatierechten en systeemservices.</translation>
 <translation id="1562119309884184621">Als je dit contact toevoegt, wordt hij of zij onthouden voor de volgende keer dat het contact content deelt</translation>
-<translation id="1563137369682381456">Vervaldatum</translation>
 <translation id="1566049601598938765">Website</translation>
 <translation id="15662109988763471">De geselecteerde printer is niet beschikbaar of niet correct geïnstalleerd. Controleer de printer of probeer een andere printer te selecteren.</translation>
 <translation id="1566329594234563241">Terwijl inactief en op netvoeding</translation>
@@ -3466,7 +3464,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3420501302812554910">Interne beveiligingssleutel moet worden gereset</translation>
 <translation id="3421387094817716717">Openbare sleutel voor elliptische kromme</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Opmerking:<ph name="END_BOLD" /> Iemand met een vergelijkbare stem of een opname van je stem kan misschien toegang krijgen tot je persoonlijke resultaten of de Assistent.</translation>
-<translation id="3421835120203732951">Nieuw profiel toevoegen</translation>
 <translation id="3422989558057853751">Laatste item geselecteerd. Als je het deselecteert, verlaat je de selectiemodus.</translation>
 <translation id="3423111258700187173">Resultaten gevonden in <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">Meer informatie over deze AI-functie</translation>
@@ -3956,7 +3953,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3748424433435232460">Er is al een wachtwoord voor dit account opgeslagen op dit apparaat</translation>
 <translation id="3748706263662799310">Een fout melden</translation>
 <translation id="3749724428455457489">Meer informatie over door sites voorgestelde advertenties</translation>
-<translation id="3752115502500640407">Een kopie van je wachtwoord delen voor <ph name="WEBSITE" /></translation>
+<translation id="3752115502500640407">Een kopie van je wachtwoord voor <ph name="WEBSITE" /> delen</translation>
 <translation id="3752253558646317685">Laat je kind de vinger steeds optillen om de vingerafdruk te bewaren</translation>
 <translation id="3753033997400164841">Eén keer opslaan, Overal gebruiken</translation>
 <translation id="3753142252662437130">Kleurfilters</translation>
@@ -9321,7 +9318,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7622768823216805500">Sites installeren betalingshandlers meestal voor winkelfuncties zoals gemakkelijk betalen</translation>
 <translation id="7622966771025050155">Overschakelen naar vastgelegd tabblad</translation>
 <translation id="7624337243375417909">Caps Lock uit</translation>
-<translation id="7625025537587898155">Nieuw profiel toevoegen</translation>
 <translation id="7625568159987162309">Rechten en op sites opgeslagen gegevens bekijken</translation>
 <translation id="7625823789272218216">Nieuw tabblad aan linkerkant</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), niveau <ph name="GRADE" /></translation>
@@ -11739,7 +11735,6 @@ Zichtbaar als <ph name="DEVICE_TYPE" />…</translation>
 <translation id="98235653036850093">Hallo <ph name="PROFILE_NAME" /></translation>
 <translation id="983192555821071799">Alle tabbladen sluiten</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" />: camera- en microfoonopname</translation>
-<translation id="984275831282074731">Betaalmethoden</translation>
 <translation id="984705303330760860">Talen voor spellingcontrole toevoegen</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Algemeen</translation>

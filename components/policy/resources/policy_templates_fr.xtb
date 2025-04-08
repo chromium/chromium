@@ -7864,6 +7864,7 @@ Remarque : Le cache est vidé à la suite d'un redémarrage et d'une déconnexi
 <translation id="6583473893541367102">Permet d'établir la liste des URL dont les formats sont mis en correspondance avec la source de sécurité de l'URL à l'origine de la demande. En cas de correspondance, l'accès aux appareils de capture vidéo est autorisé sans invite.
 
       Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, consultez la page https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Notez toutefois que le format "*", qui correspond à n'importe quelle URL, n'est pas pris en charge par cette règle.</translation>
+<translation id="6583517553738784213">Désactiver la commande par le visage</translation>
 <translation id="6584122839583172231">Les paramètres F12 utilisent le raccourci qui contient les touches de modification Ctrl et Maj</translation>
 <translation id="6584541828182430328">Désactiver l'affichage de l'alerte plein écran</translation>
 <translation id="6588634282328239769">Afficher l'URL complète</translation>
@@ -8170,6 +8171,7 @@ Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instan
       Si cette règle est désactivée, l'icône des fonctionnalités expérimentales du navigateur ne s'affiche pas dans la barre d'outils.
 
       L'activation ou la désactivation de cette règle ne change rien au fonctionnement de la page chrome://flags ni à celui de tout autre moyen d'activer ou désactiver des fonctionnalités du navigateur.</translation>
+<translation id="6794273802619210652">Activer la fonctionnalité d'accessibilité de commande par le visage</translation>
 <translation id="6795485990775913659">Autoriser l'impression sans code uniquement</translation>
 <translation id="6796215185873669533">Appliquez les paramètres par défaut du navigateur pour la version de la chaîne user-agent.</translation>
 <translation id="6800181452282128474">Ne pas envoyer de requêtes aux serveurs Quirks</translation>
@@ -9238,6 +9240,7 @@ On attend de cette règle qu'elle soit utilisée dans le cadre de la modificatio
 <translation id="7635106595080609261">Si cette règle est activée ou qu'elle n'est pas configurée, Chrome est autorisé à afficher des boîtes de dialogue de sélection de fichiers, et l'utilisateur peut ouvrir ces boîtes de dialogue normalement.
 
       Si cette règle est désactivée, chaque fois que l'utilisateur effectue une action qui devrait entraîner l'ouverture d'une boîte de dialogue de sélection de fichiers (par exemple, pour enregistrer des liens, ou importer des favoris ou des fichiers), un message s'affiche à la place. L'utilisateur est supposé avoir cliqué sur "Annuler" dans la boîte de dialogue de sélection de fichiers.</translation>
+<translation id="7637522465980672147">Activer la commande par le visage</translation>
 <translation id="7638300388094655454">Google Cast</translation>
 <translation id="7638764766629234761">Autoriser l'utilisation des notifications système</translation>
 <translation id="7642740497103044368">Si cette règle est activée, les règles associées à un compte géré sont autorisées à fusionner avec des règles au niveau de l'ordinateur.
@@ -10163,6 +10166,15 @@ Pour en savoir plus sur les anciennes technologies, consultez https://chromestat
 <translation id="8319678975002906774">Définit des valeurs de configuration gérée pour des sites Web aux origines spécifiques.</translation>
 <translation id="8320149248919453401">Mode de recharge de la batterie</translation>
 <translation id="8320576119308783142">Le clavier à l'écran s'affiche dans les circonstances appropriées.</translation>
+<translation id="8321089199245028304">Activer la fonctionnalité d'accessibilité de commande par le visage. Lorsque la commande par le visage est active, vous pouvez utiliser votre tête pour contrôler le curseur de la souris et utiliser des expressions faciales pour effectuer des actions système. Vous pouvez ainsi contrôler votre appareil en mode mains libres.
+
+Si cette règle est activée, la commande par le visage est toujours activée.
+
+Si cette règle est désactivée, la commande par le visage est toujours désactivée.
+
+Si vous configurez cette règle, les utilisateurs ne peuvent pas la modifier ni l'ignorer.
+
+Si cette règle n'est pas configurée, la commande par le visage est désactivée initialement, mais l'utilisateur peut l'activer à tout moment.</translation>
 <translation id="8327651196906278510">Autoriser la capture d'onglet selon ces origines</translation>
 <translation id="8329434144708110">Déclencher les flux d'authentification pour synchroniser les mots de passe avec les fournisseurs SSO</translation>
 <translation id="8329984337216493753">Cette règle n'est active qu'en mode Point de vente.

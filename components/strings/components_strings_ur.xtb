@@ -99,7 +99,6 @@
 <translation id="1175364870820465910">&amp;پرنٹ کریں…</translation>
 <translation id="1175393348063009671">تصویر (مَیٹ)</translation>
 <translation id="1175875016430184367">دائیں طرف تین سٹیپل</translation>
-<translation id="1176123604678140687">میعاد ختم ہونے کا ماہ</translation>
 <translation id="1177548198167638471">دوبارہ نہ پوچھیں</translation>
 <translation id="1177863135347784049">حسب ضرورت</translation>
 <translation id="1178581264944972037">موقوف کریں</translation>
@@ -333,7 +332,6 @@
       &lt;p&gt;براہ کرم تاریخ اور وقت کو &lt;strong&gt;ترتیبات&lt;‎/strong&gt; ایپ کے &lt;strong&gt;عمومی&lt;‎/strong&gt; سیکشن سے ایڈجسٹ کریں۔&lt;‎/p&gt;</translation>
 <translation id="1559839503761818503"><ph name="DATE" /> کو <ph name="TIME" /> پر آپ کا منتظم آپ کے آلے کو ری سٹارٹ کرے گا</translation>
 <translation id="1562805467275776390">آٹو ریسنگ</translation>
-<translation id="1563137369682381456">میعاد ختم ہونے کی تاریخ</translation>
 <translation id="1563755205047885671">ایکشن اور پلیٹ فارم گیمز</translation>
 <translation id="1564634006476980707">‏تلاش URL کے لیے HTTPS اسکیم تجویز کی گئی: <ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">نیٹ ورکنگ معلومات جیسے پتے، انٹرفیس کنفیگریشن اور کنکشن کا معیار</translation>
@@ -937,7 +935,6 @@
 <translation id="2606760465469169465">خودکار تصدیق کریں</translation>
 <translation id="2608019759319359258">جب کسی موضوع کو مسدود کر دیا جاتا ہے تو اس کا استعمال اشتہارات کو ذاتی نوعیت کا بنانے کے لیے نہیں کیا جائے گا</translation>
 <translation id="2610561535971892504">کلک کر کے کاپی کریں</translation>
-<translation id="2612676031748830579">کارڈ نمبر</translation>
 <translation id="2612993535136743634">‏آپ کے آلے اور Google اکاؤنٹ میں محفوظ کردہ تمام سیکیورٹی کوڈز کو حذف کر دیا جائے گا</translation>
 <translation id="2616412942031748191">سرچ انجن بہترین بنانا اور مارکیٹنگ</translation>
 <translation id="2618206371527040026">اکیڈمک کانفرنسیں اور مطبوعات</translation>
@@ -1926,6 +1923,7 @@
 <translation id="4282346679996504092">اس پروڈکٹ کے لیے الرٹس کو آف کر دیا گیا ہے اور بُک مارک ہٹا دیا گیا ہے</translation>
 <translation id="4285498937028063278">پن ہٹائیں</translation>
 <translation id="4287495839370498922">‏Chrome میں اشتہارات کی بہتر کردہ رازداری</translation>
+<translation id="4288101205645068104">گاڑی کو حذف کریں</translation>
 <translation id="4290920330097335010">کبھی اجازت نہ دیں</translation>
 <translation id="4296207570293932800">اشتہار کی رازداری کی نئی خصوصیت اب دستیاب ہے</translation>
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" /> صفحہ کا تھمب نیل</translation>
@@ -3339,7 +3337,6 @@
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">‏اپنے والدین کے انتخاب کے ساتھ YouTube کا استعمال کریں</translation>
 <translation id="6779348349813025131">‏Google پاس ورڈ مینیجر کو MacOS Keychain تک رسائی درکار ہے</translation>
-<translation id="6782656837469339439">میعاد ختم ہونے کا سال</translation>
 <translation id="6785990323398321538">‏آپ Chrome کی ترتیبات میں کسی بھی وقت اپنا سرچ انجن تبدیل کر سکتے ہیں۔</translation>
 <translation id="6786145470008421571">‏‎6 x 9 انچ لفافہ</translation>
 <translation id="67862343314499040">وائلیٹ</translation>
@@ -4208,6 +4205,7 @@
 <translation id="8280630997017109758">ٹرے 11</translation>
 <translation id="8281730697546299650">اشتہار کی رازداری کی دیگر خصوصیات اب دستیاب ہیں</translation>
 <translation id="8281886186245836920">نظر انداز کریں</translation>
+<translation id="8282292167096638950">ڈرائیونگ لائسنس حذف کریں</translation>
 <translation id="8282409409360764263">یارڈ کی دیکھ بھال</translation>
 <translation id="8282947398454257691">اپنا منفرد آلہ کا شناخت کار جانیں</translation>
 <translation id="8284769179630993263">‏Chrome ترتیبات میں محفوظ براؤزنگ اور بہت کچھ کا نظم کریں</translation>
@@ -4235,6 +4233,7 @@
 <translation id="8321476692217554900">اطلاعات</translation>
 <translation id="8322402665880479974">بستر اور ہیڈ بورڈز</translation>
 <translation id="8323505966575306467">اپنے پاس ورڈز میں مزید تحفظ شامل کریں</translation>
+<translation id="832547548543012337">پاسپورٹ حذف کریں</translation>
 <translation id="832567874344484841">ناشتہ والی غذائیں</translation>
 <translation id="8329068931308448247">#14 لفافہ</translation>
 <translation id="8332188693563227489"><ph name="HOST_NAME" /> تک رسائی مسترد کر دی گئی</translation>

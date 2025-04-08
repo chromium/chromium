@@ -99,7 +99,6 @@
 <translation id="1175364870820465910">&amp;അച്ചടിക്കൂ...</translation>
 <translation id="1175393348063009671">ഫോട്ടോ (തിളക്കമില്ലാത്തത്)</translation>
 <translation id="1175875016430184367">വലതുവശത്ത് മൂന്ന് തവണ സ്‌റ്റേപ്പിൾ ചെയ്യുക</translation>
-<translation id="1176123604678140687">കാലഹരണപ്പെടുന്ന മാസം</translation>
 <translation id="1177548198167638471">വീണ്ടും ആവശ്യപ്പെടരുത്</translation>
 <translation id="1177863135347784049">ഇഷ്ടാനുസൃതം</translation>
 <translation id="1178581264944972037">താൽക്കാലികമായി നിർത്തുക</translation>
@@ -333,7 +332,6 @@
           &lt;p&gt;&lt;strong&gt;ക്രമീകരണ&lt;/strong&gt; ആപ്പിന്റെ &lt;strong&gt;പൊതുവായവ&lt;/strong&gt; വിഭാഗത്തിൽ നിന്ന് തീയതിയും സമയവും ക്രമീകരിക്കുക.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">നിങ്ങളുടെ അഡ്‌മിൻ നിങ്ങളുടെ ഉപകരണം <ph name="DATE" />, <ph name="TIME" />-ന് റീസ്റ്റാർട്ട് ചെയ്യും</translation>
 <translation id="1562805467275776390">ഓട്ടോ റേസിംഗ്</translation>
-<translation id="1563137369682381456">കാലഹരണപ്പെടുന്ന തീയതി</translation>
 <translation id="1563755205047885671">ആക്ഷൻ, പ്ലാറ്റ്‌ഫോം ഗെയിമുകൾ</translation>
 <translation id="1564634006476980707">തിരയൽ URL-നായി HTTPS സ്കീം നിർദ്ദേശിക്കുന്നു: <ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">വിലാസങ്ങൾ, ഇന്റർഫേസ് കോൺഫിഗറേഷൻ, കണക്ഷൻ നിലവാരം എന്നിവ പോലുള്ള നെറ്റ്‌വർക്കിംഗ് വിവരങ്ങൾ</translation>
@@ -937,7 +935,6 @@
 <translation id="2606760465469169465">സ്വയമേവ പരിശോധിച്ചുറപ്പിക്കൽ</translation>
 <translation id="2608019759319359258">ഒരു വിഷയം ബ്ലോക്ക് ചെയ്തിരിക്കുകയാണെങ്കിൽ, പരസ്യങ്ങൾ വ്യക്തിപരമാക്കാൻ അവ ഉപയോഗിക്കില്ല</translation>
 <translation id="2610561535971892504">പകർത്താൻ ക്ലിക്ക് ചെയ്യുക</translation>
-<translation id="2612676031748830579">കാർഡ് നമ്പർ</translation>
 <translation id="2612993535136743634">നിങ്ങളുടെ ഉപകരണത്തിലും Google Account-ലും സംരക്ഷിച്ചിരിക്കുന്ന എല്ലാ സുരക്ഷാ കോഡുകളും ഇല്ലാതാക്കും</translation>
 <translation id="2616412942031748191">തിരയൽ എഞ്ചിൻ ഒപ്റ്റിമൈസേഷനും മാർക്കറ്റിംഗും</translation>
 <translation id="2618206371527040026">അക്കാദമിക് കോൺഫറൻസുകളും പ്രസിദ്ധീകരണങ്ങളും</translation>
@@ -3337,7 +3334,6 @@
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">നിങ്ങളുടെ രക്ഷിതാവിന്റെ ചോയ്‌സുകൾ അനുസരിച്ച് YouTube ഉപയോഗിക്കുക</translation>
 <translation id="6779348349813025131">Google Password Manager-ന് MacOS Keychain-ലേക്ക് ആക്‌സസ് ആവശ്യമാണ്</translation>
-<translation id="6782656837469339439">കാലഹരണപ്പെടുന്ന വർഷം</translation>
 <translation id="6785990323398321538">Chrome-ന്റെ ക്രമീകരണത്തിൽ നിങ്ങൾക്ക് ഏതുസമയത്തും തിരയൽ യന്ത്രം മാറ്റാം.</translation>
 <translation id="6786145470008421571">Envelope 6 x 9 ഇഞ്ച്</translation>
 <translation id="67862343314499040">വയലറ്റ്</translation>

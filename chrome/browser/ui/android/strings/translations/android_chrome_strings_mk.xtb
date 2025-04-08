@@ -77,6 +77,7 @@
 <translation id="1298077576058087471">Прочитајте ги денешните вести и заштедете до 60 % мобилен интернет</translation>
 <translation id="1303339473099049190">Лозинката не може да се најде. Проверете дали ја внесувате правилно и обидете се повторно.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - Испратено од <ph name="DEVICE_NAME" /></translation>
+<translation id="1318262688555255786">Споделете го линкот до веб-страницата <ph name="PAGE_TITLE" />. Извор: <ph name="PAGE_URL" /></translation>
 <translation id="1320912611264252795">Текот за зачувување обележувач е отворен на цел екран</translation>
 <translation id="1327257854815634930">Отворена е историјата на навигација</translation>
 <translation id="1331212799747679585">Chrome не може да се ажурира. Повеќе опции</translation>
@@ -455,6 +456,7 @@
 <translation id="3072980200212375806"><ph name="APP_NAME" /> ќе се отвори во Chrome. Ако продолжите, се согласувате со <ph name="BEGIN_LINK1" />Условите за користење на Google<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Дополнителните услови за користење на Google Chrome и Chrome OS<ph name="END_LINK2" />. Важи и <ph name="BEGIN_LINK3" />Политиката за приватност<ph name="END_LINK3" />.</translation>
 <translation id="3080525922482950719">Може да зачувувате страници за да ги читате подоцна или офлајн</translation>
 <translation id="3087734570205094154">Дно</translation>
+<translation id="3088687687599869821">НАВИГАЦИЈА НИЗ СТРАНИЦИТЕ</translation>
 <translation id="3091010850649238832">Прикажи содржини од привремената меморија</translation>
 <translation id="3098745985164956033">Некои слики се испраќаат во Google за да им се подобрат описите</translation>
 <translation id="3114507951000454849">Прочитајте ги денешните вести <ph name="NEWS_ICON" /></translation>
@@ -515,6 +517,7 @@
 <translation id="3435465986463792564">Имате многу прозорци? Може да управувате со нив оттука</translation>
 <translation id="3435575784518354875">За да го задржите пристапот до лозинките, извезете ги сега, ажурирајте ја „Услуги на Google Play“, па увезете ги повторно во Google Password Manager. <ph name="BEGIN_LINK" />Погледнете ги целосните инструкции<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">Безбедност</translation>
+<translation id="3435914367318771664">Додајте картичка во нова група</translation>
 <translation id="3439276997620616816">Вашите неодамнешни картички ќе ги најдете тука</translation>
 <translation id="3443221991560634068">Вчитајте ја тековната страница</translation>
 <translation id="3444179773590444986">Сакате да споделите повратни информации за темната тема за сајтови?</translation>
@@ -781,6 +784,7 @@
 <translation id="4684427112815847243">Синхронизирај сѐ</translation>
 <translation id="4685741273709472646">Изберете од паѓачкиот список</translation>
 <translation id="4687718960473379118">Реклами предложени од сајтови</translation>
+<translation id="468924408576231679">Копирајте го линкот до веб-страницата <ph name="PAGE_TITLE" />. Извор: <ph name="PAGE_URL" /></translation>
 <translation id="469286762610133730">Добивајте подобри содржини</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />… и уште <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" />… и уште <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />… и уште <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4698061626562952596">Прегледајте ги неактивните картички овде</translation>
@@ -1123,6 +1127,7 @@
 <translation id="6205314730813004066">Приватност за реклами</translation>
 <translation id="6210748933810148297">Не сте <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Преглед на страницава</translation>
+<translation id="6212567362666004597">Додајте картичка во групата</translation>
 <translation id="6221633008163990886">Отклучете за да ги извезете лозинките</translation>
 <translation id="6225572914528673855">Лента за адреси</translation>
 <translation id="6232535412751077445">Овозможувањето на функцијата „Не ме следи“ значи дека вашиот сообраќај на прелистување ќе вклучува и барање. Ефектите ќе зависат од тоа дали веб-сајтот ќе реагира на барањето и како тоа ќе се толкува.
@@ -1150,6 +1155,7 @@
 <translation id="6324916366299863871">Изменете ја кратенката</translation>
 <translation id="6324977638108296054">Не може да се создаде линк до нагласената ставка</translation>
 <translation id="6333140779060797560">Сподели преку <ph name="APPLICATION" /></translation>
+<translation id="6335454563754888572">Изменете ја URL-адресата што покажува кон страницата на: <ph name="PAGE_URL" /></translation>
 <translation id="6337234675334993532">Шифрирање</translation>
 <translation id="6340526405444716530">Персонализација</translation>
 <translation id="6341580099087024258">Прашај каде да зачувуваш датотеки</translation>
@@ -1193,6 +1199,7 @@
 <translation id="6486420406192123355">Оваа PDF-датотека е од сајт што користи небезбедна врска</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{Преземена е датотека}one{# преземање се завршени}other{# преземања се завршени}}</translation>
 <translation id="6508722015517270189">Рестартирајте го Chrome</translation>
+<translation id="6513924416597632811">Копирајте го линкот до страницата со резултати од пребарување за: <ph name="SEARCH_QUERY" />. Извор: <ph name="PAGE_URL" /></translation>
 <translation id="6518133107902771759">Потврди</translation>
 <translation id="6527303717912515753">Сподели</translation>
 <translation id="652948702951888897">Историја на Chrome</translation>
@@ -1604,6 +1611,7 @@
 <translation id="8221401890884589479">Може да ги блокирате сајтовите што не ви се допаѓаат. Chrome автоматски ги брише од списокот и сајтовите што се постари од 30 дена. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="8221985041778490865">Се бришат податоците од прелистување</translation>
 <translation id="8223642481677794647">Мени на картичката за активност</translation>
+<translation id="82296173028782770">Изменете го поимот за пребарување: <ph name="SEARCH_QUERY" /></translation>
 <translation id="8236063039629122676">Отсега, повлекувањето надесно ве враќа наназад за да ги видите претходните страници што сте ги отвориле, а повлекувањето налево ве води напред</translation>
 <translation id="8236097722223016103">Додавање во „Обележувачи“</translation>
 <translation id="8243077599929149377">Додајте го вашето корисничко име</translation>
@@ -1752,6 +1760,7 @@
 <translation id="8890668505403261809">Пребарајте ги картичките „Инкогнито“</translation>
 <translation id="8898822736010347272">Испраќа URL-адреси до Google од некои страници што ги посетувате, како и ограничени податоци за системот и некои содржини од страниците за да помогне да се откријат нови закани и да се заштитат сите на интернет.</translation>
 <translation id="8909135823018751308">Сподели…</translation>
+<translation id="8918299437379122615">Споделете го линкот до страницата со резултати од пребарување за: <ph name="SEARCH_QUERY" />. Извор: <ph name="PAGE_URL" /></translation>
 <translation id="8922289737868596582">Преземете ги страниците преку копчето „Повеќе опции“ за да ги користите офлајн</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> е подготвен</translation>

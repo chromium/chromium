@@ -99,7 +99,6 @@
 <translation id="1175364870820465910">&amp;Хэвлэх ...</translation>
 <translation id="1175393348063009671">Гэрэл зураг (мaтте)</translation>
 <translation id="1175875016430184367">Баруун талд гурван удаа үдэх</translation>
-<translation id="1176123604678140687">Дуусах сар</translation>
 <translation id="1177548198167638471">Дахиж бүү асуу</translation>
 <translation id="1177863135347784049">Хэвийн</translation>
 <translation id="1178581264944972037">Түр зогсоох</translation>
@@ -333,7 +332,6 @@
       &lt;p&gt;Та &lt;strong&gt;Settings&lt;/strong&gt; апп-ын &lt;strong&gt;General&lt;/strong&gt; хэсэгт огноо, цагийг өөрчлөнө үү.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Танай администратор төхөөрөмжийг тань <ph name="DATE" />-н <ph name="TIME" />-д дахин эхлүүлнэ</translation>
 <translation id="1562805467275776390">Автомашины уралдаан</translation>
-<translation id="1563137369682381456">Дуусах огноо</translation>
 <translation id="1563755205047885671">Тулаант, платформын тоглоомууд</translation>
 <translation id="1564634006476980707">Хайлтын URL-д санал болгосон HTTPS схем: <ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">Хаяг, харагдах байдлын тохиргоо, холболтын чанар зэрэг сүлжээний мэдээлэл</translation>
@@ -937,7 +935,6 @@
 <translation id="2606760465469169465">Автоматаар баталгаажуулах</translation>
 <translation id="2608019759319359258">Сэдвийг блоклосон үед үүнийг зарыг хувийн болгоход ашиглахгүй</translation>
 <translation id="2610561535971892504">Хуулахын тулд товшино уу</translation>
-<translation id="2612676031748830579">Картын дугаар</translation>
 <translation id="2612993535136743634">Таны төхөөрөмж болон Google Бүртгэлд хадгалсан аюулгүй байдлын бүх кодыг устгана</translation>
 <translation id="2616412942031748191">Хайлтын системийн оновчлол болон маркетинг</translation>
 <translation id="2618206371527040026">Эрдмийн хурал, хэвлэлүүд</translation>
@@ -3338,7 +3335,6 @@
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">YouTube-г эцэг эхийнхээ сонголтын дагуу ашиглана уу</translation>
 <translation id="6779348349813025131">Google Password Manager-т MacOS Keychain-д хандах эрх шаардлагатай</translation>
-<translation id="6782656837469339439">Дуусах жил</translation>
 <translation id="6785990323398321538">Та Chrome-н тохиргоонд хайлтын системээ хүссэн үедээ өөрчлөх боломжтой.</translation>
 <translation id="6786145470008421571">Дугтуй 6 x 9 инч</translation>
 <translation id="67862343314499040">Нил хөх ягаан</translation>

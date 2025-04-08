@@ -44,7 +44,6 @@
 <translation id="1026822031284433028">इमेज लोड करें</translation>
 <translation id="1026959648338730078">Windows Hello या बाहरी सुरक्षा कुंजी</translation>
 <translation id="1028700151766901954">वजह: एलबीएस <ph name="DEFAULT_OPEN_BROWSER" /> में डिफ़ॉल्ट रूप से मौजूद रहेगा.</translation>
-<translation id="1028823395684328817">Google खाते में पासवर्ड वगैरह का इस्तेमाल जारी रखने के लिए, अपनी पहचान की पुष्टि करें</translation>
 <translation id="102916930470544692">पासकी</translation>
 <translation id="1029317248976101138">ज़ूम</translation>
 <translation id="1029526375103058355">टैप टू क्लिक</translation>
@@ -819,7 +818,6 @@
 <translation id="1558671750917454373"><ph name="DEVICE_NAME" /> पर, कास्ट करना फिर से शुरू करें</translation>
 <translation id="1561331397460162942">इसे चालू करने पर, सिस्टम सर्विस के साथ-साथ उन ऐप्लिकेशन और वेबसाइटों को जगह की जानकारी का ऐक्सेस मिलेगा जिनके पास जगह की जानकारी इस्तेमाल करने की अनुमति है</translation>
 <translation id="1562119309884184621">इस संपर्क को जोड़ने पर, अगली बार शेयर करते समय याद रखा जाएगा</translation>
-<translation id="1563137369682381456">सदस्यता खत्म होने की तारीख</translation>
 <translation id="1566049601598938765">वेबसाइट</translation>
 <translation id="15662109988763471">चुना गया प्रिंटर उपलब्ध नहीं है या ठीक से इंस्टॉल नहीं किया गया है. अपना प्रिंटर जाँचें या कोई दूसरा प्रिंटर चुनकर देखें.</translation>
 <translation id="1566329594234563241">डिवाइस इनऐक्टिव होने के साथ ही प्लग-इन है</translation>
@@ -1261,6 +1259,7 @@
 <translation id="185111092974636561"><ph name="BEGIN_PARAGRAPH1" />नाम दर्ज करने से पहले आपको टीपीएम हटाना होगा, ताकि <ph name="DEVICE_OS" /> को डिवाइस का मालिकाना हक मिल सके.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />टीपीएम डिवाइस को पूरी तरह बंद भी किया जा सकता है. सॉफ़्टवेयर एन्क्रिप्शन इस्तेमाल करके, आपके डेटा को सुरक्षित तरीके से सेव कर लिया जाएगा. हालांकि, सुरक्षा से जुड़ी कुछ सुविधाओं को बंद कर दिया जाएगा. इनमें, हार्डवेयर-बैक्ड सर्टिफ़िकेट जैसी सुविधा शामिल है.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />टीपीएम सेटिंग बदलने के लिए आपको डिवाइस को फिर से चालू करके, सिस्टम BIOS/UEFI सेटिंग ऐक्सेस करनी होंगी. डिवाइस के मॉडल के हिसाब से टीपीएम सेटिंग बदलने का तरीका अलग-अलग हो सकता है. ज़्यादा जानकारी के लिए, डिवाइस को फिर से चालू करने से पहले <ph name="DEVICE_OS" /> के दस्तावेज़ को किसी दूसरे डिवाइस पर खोलें: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="1851551847729706116">इस टैब के साथ <ph name="TAB_NAME" /> शेयर किया जा रहा है</translation>
 <translation id="1852799913675865625">फ़ाइल पढ़ने का प्रयास करते समय कोई गड़बड़ी आई: <ph name="ERROR_TEXT" /></translation>
 <translation id="1854180393107901205">कास्ट करना रोकें</translation>
 <translation id="1856715684130786728">स्थान जोड़ें...</translation>
@@ -1651,7 +1650,6 @@
 <translation id="2121825465123208577">आकार बदलें</translation>
 <translation id="2123766928840368256">कोई दूसरी फ़ाइल चुनें</translation>
 <translation id="2124930039827422115">{1,plural, =1{एक उपयोगकर्ता ने <ph name="AVERAGE_RATING" /> रेटिंग दी है.}one{# उपयोगकर्ताओं ने <ph name="AVERAGE_RATING" /> रेटिंग दी है.}other{# उपयोगकर्ताओं ने <ph name="AVERAGE_RATING" /> रेटिंग दी है.}}</translation>
-<translation id="2125715366913703594">एक्सटेंशन एक्सप्लोर करें</translation>
 <translation id="2126167708562367080">सिंक को आपके व्यवस्थापक ने अक्षम किया है.</translation>
 <translation id="2127372758936585790">कम-शक्ति वाला चार्जर</translation>
 <translation id="212862741129535676">आवृत्ति स्थिति उपयोग प्रतिशत</translation>
@@ -3482,7 +3480,6 @@
 <translation id="3420501302812554910">अंदरूनी सुरक्षा कुंजी को रीसेट करने की ज़रूरत है</translation>
 <translation id="3421387094817716717">अंडाकार वक्र वाली सार्वजनिक कुंजी</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />ध्यान दें:<ph name="END_BOLD" /> आपकी आवाज़ से मिलती-जुलती आवाज़ या रिकॉर्डिंग से, आपके निजी खोज नतीजों या आपकी Assistant को ऐक्सेस किया जा सकता है.</translation>
-<translation id="3421835120203732951">नई प्रोफ़ाइल जोड़ें</translation>
 <translation id="3422989558057853751">यह चुना गया आखिरी आइटम है. इससे चुने हुए का निशान हटाने पर, चुनने वाला मोड बंद हो जाएगा</translation>
 <translation id="3423111258700187173"><ph name="FOLDER_TITLE" /> में नतीजे मिले</translation>
 <translation id="3423226218833787854">एआई की इस सुविधा के बारे में ज़्यादा जानें</translation>
@@ -9342,7 +9339,6 @@
 <translation id="7622768823216805500">आम तौर पर, साइटें आसान चेकआउट जैसी खरीदारी से जुड़ी सुविधाओं के लिए, पेमेंट हैंडलर (पैसे चुकाने से जुड़े सॉफ़्टवेयर) इंस्टॉल करती हैं</translation>
 <translation id="7622966771025050155">कैप्चर किए गए टैब पर जाएं</translation>
 <translation id="7624337243375417909">caps lock बंद है</translation>
-<translation id="7625025537587898155">नई प्रोफ़ाइल जोड़ें</translation>
 <translation id="7625568159987162309">सभी साइटों की अनुमतियां और साइटों पर स्टोर डेटा देखें</translation>
 <translation id="7625823789272218216">बाईं ओर का नया टैब</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), ग्रेड <ph name="GRADE" /></translation>
@@ -11295,6 +11291,7 @@
 <translation id="8963117664422609631">साइट की सेटिंग पर जाएं</translation>
 <translation id="8964927371396953727">अपनी पहचान की पुष्टि करें, ताकि आप अपने खाते <ph name="ACCOUNT_EMAIL" /> में पासवर्ड सेव कर पाएं और सेव किए गए पासवर्ड इस्तेमाल कर पाएं</translation>
 <translation id="8965037249707889821">पुराना पासवर्ड डालें</translation>
+<translation id="8967403839792635452">क्या आपको एक्सटेंशन बनाने हैं? Chrome एक्सटेंशन के डेवलपर दस्तावेज़ से जुड़े <ph name="BEGIN_LINK" />नया क्या है<ph name="END_LINK" /> सेक्शन की मदद से अप-टू-डेट रहें.</translation>
 <translation id="8967427617812342790">रीडिंग लिस्ट में जोड़ें</translation>
 <translation id="8967548289042494261"><ph name="VM_NAME" /> को हटाएं</translation>
 <translation id="8968527460726243404">ChromeOS सिस्‍टम इमेज राइटर</translation>
@@ -11759,7 +11756,6 @@
 <translation id="98235653036850093">नमस्ते, <ph name="PROFILE_NAME" /></translation>
 <translation id="983192555821071799">सभी टैब बंद करें</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - कैमरे और माइक्रोफ़ोन से रिकॉर्डिंग की जा रही है</translation>
-<translation id="984275831282074731">पेमेंट के तरीके</translation>
 <translation id="984705303330760860">स्पेलिंग जांच की भाषाएं जोड़ें</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">सामान्य</translation>

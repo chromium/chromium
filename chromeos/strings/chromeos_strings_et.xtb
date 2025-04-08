@@ -351,6 +351,7 @@
 <translation id="2438248248625638801">Salvestiste pealkirjade loomine</translation>
 <translation id="2446553403094072641">Ujukoma täpsus</translation>
 <translation id="2448312741937722512">Tüüp</translation>
+<translation id="2448857983905133469">Kursuse tööriistad</translation>
 <translation id="2468124392950503650">Valige päring, et luua või vaadata <ph name="BEGIN_LINK_PROMPTING_GUIDE" />päringujuhendit<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Kasutage funktsiooni Aita mul kirjutada, et luua mustand või viimistleda olemasolevat tööd (toimib Google'i AI platvormil)</translation>
 <translation id="2475982808118771221">Tekkis viga</translation>
@@ -449,6 +450,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Lõpp-punkt</translation>
 <translation id="3060579846059757016">Põhipunktid</translation>
+<translation id="3060798442805232711">Rakendus Kursuse tööriistad kasutab teie mikrofoni</translation>
 <translation id="3061850252076394168">luba funktsioon Vali ja kuula</translation>
 <translation id="3066772729299747758">teisipäeval</translation>
 <translation id="3069085583900247081">Test ebaõnnestus</translation>
@@ -910,6 +912,7 @@
 <translation id="5170568018924773124">Kuva kaustas</translation>
 <translation id="517075088756846356">Eemaldage seadme <ph name="DEVICE_NAME" /> toitekaabel ja ühendage see uuesti, et värskendamist jätkata</translation>
 <translation id="5180108905184566358">ahvileivapuud</translation>
+<translation id="5180431943345994173">Õpetaja eemaldas rakenduses Kursuse tööriistad sisu</translation>
 <translation id="5180712487038406644">Ilmekas</translation>
 <translation id="5190187232518914472">Taaselustage oma lemmikmälestused. Albumite lisamiseks või muutmiseks avage rakendus <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
@@ -1003,6 +1006,7 @@
 <translation id="5628106863521633649">Saadaolevad keeled</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">abstraktne</translation>
+<translation id="5655084389678168978">Õpetaja lisas rakenduses Kursuse tööriistad uut sisu</translation>
 <translation id="5655283760733841251">Klaviatuuri ereduse suurendamine</translation>
 <translation id="5655296450510165335">Seadme registreerimine</translation>
 <translation id="5655776422854483175">Prinditöid pole</translation>
@@ -1528,6 +1532,7 @@ Laadige nende transkriptsioonide hankimiseks alla transkriptsiooni mudel (kuni 1
 <translation id="7971535376154084247">Üldised juhtelemendid</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" />-võrguga ühendamiseks avage leht Seaded</translation>
 <translation id="7978412674231730200">Privaatvõti</translation>
+<translation id="7979468455552394856">Rakendus Kursuse tööriistad on õpilastega ühendatud</translation>
 <translation id="7982789257301363584">Võrk</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{„<ph name="APP_NAME_1" />“ käivitati automaatselt}other{# rakendust käivitati automaatselt}}</translation>
 <translation id="7994702968232966508">EAP meetod</translation>

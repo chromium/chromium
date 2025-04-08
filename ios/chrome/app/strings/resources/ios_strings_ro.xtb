@@ -1127,6 +1127,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="573974402615125334">Pentru a permite accesul, a te alătura și a colabora la grupuri de file, sincronizează istoricul și filele</translation>
 <translation id="5740123193752401435">Caută în file…</translation>
 <translation id="5744274077973758795">Notificările pentru <ph name="FEATURE_NAME" /> sunt activate</translation>
+<translation id="5745598824054949526">Nu s-a găsit text</translation>
 <translation id="574762237186762643">Evenimente</translation>
 <translation id="5749158352074143502">Continuă cu această filă</translation>
 <translation id="5753021559215751319">Salvează parola</translation>
@@ -1290,6 +1291,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="6410883413783534063">Deschide file pentru a accesa pagini diferite în același timp</translation>
 <translation id="6416807286621280684">Pachetele urmărite și actualizările privind livrările.</translation>
 <translation id="6418346271604475326">Se pregătește fișierul PDF</translation>
+<translation id="6421038304268477484">Text tradus</translation>
 <translation id="6429213933892582367">Deschide Opțiuni pentru parolă</translation>
 <translation id="6434591244308415567">A apărut o eroare, încearcă mai târziu.</translation>
 <translation id="6435307030888827407">Rămâi deconectat(ă)</translation>
@@ -1968,6 +1970,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="9097506547406246598">Nu se poate anula urmărirea. A apărut o eroare.</translation>
 <translation id="9098541895599151034">Ștergi <ph name="NUMBER_OF_ACCOUNTS" /> parole?</translation>
 <translation id="9099233023029360602">Întreabă de fiecare dată ce cont să folosești</translation>
+<translation id="9099821309562615674">Asigură-te că textul pe care îl traduci este clar și încadrat.</translation>
 <translation id="9100610230175265781">Este necesară o expresie de acces</translation>
 <translation id="91023216973987714">Metode de plată</translation>
 <translation id="9106655997975673326">De pe <ph name="SOURCE_DEVICE" /></translation>

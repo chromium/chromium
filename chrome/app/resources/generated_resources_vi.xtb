@@ -44,7 +44,6 @@
 <translation id="1026822031284433028">Tải hình ảnh</translation>
 <translation id="1026959648338730078">Windows Hello hoặc khoá bảo mật bên ngoài</translation>
 <translation id="1028700151766901954">Lý do: Chế độ hỗ trợ trình duyệt cũ (LBS) ở trong <ph name="DEFAULT_OPEN_BROWSER" /> theo mặc định.</translation>
-<translation id="1028823395684328817">Để tiếp tục sử dụng mật khẩu và nhiều nội dung khác trong Tài khoản Google, hãy xác minh danh tính của bạn</translation>
 <translation id="102916930470544692">Khoá truy cập</translation>
 <translation id="1029317248976101138">Thu phóng</translation>
 <translation id="1029526375103058355">Gõ để nhấp</translation>
@@ -818,7 +817,6 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1558671750917454373">Tiếp tục truyền tới <ph name="DEVICE_NAME" /></translation>
 <translation id="1561331397460162942">Nếu bạn bật thì các ứng dụng, trang web có quyền truy cập thông tin vị trí và các dịch vụ hệ thống sẽ có thể truy cập thông tin vị trí</translation>
 <translation id="1562119309884184621">Khi bạn thêm người liên hệ này, hệ thống sẽ ghi nhớ người đó để dễ dàng chia sẻ lần sau</translation>
-<translation id="1563137369682381456">Ngày hết hạn</translation>
 <translation id="1566049601598938765">Trang web</translation>
 <translation id="15662109988763471">Máy in đã chọn không hoạt động hoặc được cài đặt không chính xác. Hãy kiểm tra máy in của bạn hoặc thử chọn một máy in khác.</translation>
 <translation id="1566329594234563241">Khi không hoạt động và đang cắm điện</translation>
@@ -1651,7 +1649,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2121825465123208577">Đổi kích thước</translation>
 <translation id="2123766928840368256">Chọn một tệp khác</translation>
 <translation id="2124930039827422115">{1,plural, =1{Một người dùng đã xếp hạng <ph name="AVERAGE_RATING" />.}other{# người dùng đã xếp hạng <ph name="AVERAGE_RATING" />.}}</translation>
-<translation id="2125715366913703594">Khám phá &amp;tiện ích</translation>
 <translation id="2126167708562367080">Quản trị viên của bạn đã tắt tính năng đồng bộ hóa.</translation>
 <translation id="2127372758936585790">Bộ sạc công suất thấp</translation>
 <translation id="212862741129535676">Phần trăm sử dụng ở trạng thái tần số</translation>
@@ -3482,7 +3479,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3420501302812554910">Cần phải đặt lại khóa bảo mật nội bộ</translation>
 <translation id="3421387094817716717">Khóa công khai đường cong elip</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Lưu ý:<ph name="END_BOLD" /> Một giọng nói hoặc bản ghi âm giọng nói giống với giọng nói của bạn có thể truy cập vào các kết quả cá nhân hoặc sử dụng Trợ lý của bạn.</translation>
-<translation id="3421835120203732951">Thêm hồ sơ mới</translation>
 <translation id="3422989558057853751">Đã chọn mục cuối cùng, nếu bỏ chọn mục này thì bạn sẽ thoát khỏi chế độ chọn</translation>
 <translation id="3423111258700187173">Đã tìm thấy kết quả trong <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">Tìm hiểu thêm về tính năng AI này</translation>
@@ -9346,7 +9342,6 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7622768823216805500">Các trang web thường cài đặt trình xử lý thanh toán cho các tính năng mua sắm như quy trình thanh toán dễ dàng hơn</translation>
 <translation id="7622966771025050155">Chuyển sang thẻ được ghi hình</translation>
 <translation id="7624337243375417909">caps lock tắt</translation>
-<translation id="7625025537587898155">Thêm hồ sơ mới</translation>
 <translation id="7625568159987162309">Xem quyền và dữ liệu được lưu trữ trên các trang web</translation>
 <translation id="7625823789272218216">Thẻ mới ở bên Trái</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), Lớp <ph name="GRADE" /></translation>
@@ -11764,7 +11759,6 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="98235653036850093">Xin chào <ph name="PROFILE_NAME" />!</translation>
 <translation id="983192555821071799">Đóng tất cả các thẻ</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> – Camera và micrô đang ghi</translation>
-<translation id="984275831282074731">Phương thức thanh toán</translation>
 <translation id="984705303330760860">Thêm các ngôn ngữ được kiểm tra lỗi chính tả</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Chung</translation>

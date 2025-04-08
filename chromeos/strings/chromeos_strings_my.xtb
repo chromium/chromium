@@ -351,6 +351,7 @@
 <translation id="2438248248625638801">အသံဖမ်းချက်များကို ခေါင်းစဉ်တပ်နေသည်</translation>
 <translation id="2446553403094072641">အလွတ်ရွှေ့နိုင်သောအမှတ်၏ မှန်ကန်မှု</translation>
 <translation id="2448312741937722512">ပုံစံ</translation>
+<translation id="2448857983905133469">စာသင်ခန်းသုံးတူးလ်</translation>
 <translation id="2468124392950503650"><ph name="BEGIN_LINK_PROMPTING_GUIDE" />တိုက်တွန်းချက် လမ်းညွှန်<ph name="END_LINK_PROMPTING_GUIDE" /> ကို ပြုလုပ်ရန် (သို့) ကြည့်ရန် တိုက်တွန်းချက် ရွေးပါ</translation>
 <translation id="2472215337771558851">Google AI က ပံ့ပိုးထားသော ‘ကူရေးပေးပါ’ သုံး၍ မူကြမ်းပြုလုပ်နိုင်သည် (သို့) ရှိပြီးသားအလုပ်ကို ပိုမိုတိကျအောင် ပြုလုပ်နိုင်သည်</translation>
 <translation id="2475982808118771221">အမှားတစ်ခု ဖြစ်ခဲ့သည်။</translation>
@@ -449,6 +450,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">အဆုံးမှတ်</translation>
 <translation id="3060579846059757016">အကြမ်းဖော်ပြချက်</translation>
+<translation id="3060798442805232711">‘စာသင်ခန်းသုံးတူးလ်’ က သင့်မိုက်ခရိုဖုန်းကို သုံးနေသည်</translation>
 <translation id="3061850252076394168">စကားပြော ရွေးရန်ကို ဖွင့်ပါ</translation>
 <translation id="3066772729299747758">အင်္ဂါနေ့တွင်</translation>
 <translation id="3069085583900247081">စစ်ဆေးမှု မအောင်မြင်ပါ</translation>
@@ -910,6 +912,7 @@
 <translation id="5170568018924773124">ဖိုလ်ဒါ ထဲမှာ ပြရန်</translation>
 <translation id="517075088756846356">အပ်ဒိတ်လုပ်ငန်းစဉ် ရှေ့ဆက်ရန် <ph name="DEVICE_NAME" /> ပါဝါကြိုးကို ပလတ်ဖြုတ်ပြီး ပြန်တပ်ပါ</translation>
 <translation id="5180108905184566358">ဘောင်းဘတ်သစ်ပင်</translation>
+<translation id="5180431943345994173">‘စာသင်ခန်းသုံးတူးလ်’ တွင် သင့်ဆရာက အကြောင်းအရာကို ဖယ်ရှားလိုက်သည်</translation>
 <translation id="5180712487038406644">ခံစားမှုအပြည့်</translation>
 <translation id="5190187232518914472">သင့်အကြိုက်ဆုံး အမှတ်တရအချိန်များကို ပြန်လည်ခံစားကြည့်ပါ။ အယ်လ်ဘမ်များ ထည့်ရန် သို့မဟုတ် တည်းဖြတ်ရန် <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> သို့သွားပါ။</translation>
 <translation id="5212593641110061691">Tabloid</translation>
@@ -1003,6 +1006,7 @@
 <translation id="5628106863521633649">ရနိုင်သော ဘာသာစကားများ</translation>
 <translation id="5630438231335788050">ဘောင်းဟောက်စ်</translation>
 <translation id="5631759159893697722">ကောက်နုတ်ချက်</translation>
+<translation id="5655084389678168978">‘စာသင်ခန်းသုံးတူးလ်’ တွင် သင့်ဆရာက အကြောင်းအရာအသစ် ထည့်လိုက်သည်</translation>
 <translation id="5655283760733841251">ကီးဘုတ်တောက်ပမှု တိုးရန်</translation>
 <translation id="5655296450510165335">စက်ပစ္စည်း စာရင်းသွင်းခြင်း</translation>
 <translation id="5655776422854483175">ပရင့်ထုတ်ရန် ဖိုင်များ မရှိပါ</translation>
@@ -1528,6 +1532,7 @@
 <translation id="7971535376154084247">အထွေထွေ သတ်မှတ်ချက်များ</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> ကွန်ရက်သို့ ချိတ်ဆက်ရန် ဆက်တင်များသို့ သွားပါ</translation>
 <translation id="7978412674231730200">ကိုယ်ပိုင် သော့</translation>
+<translation id="7979468455552394856">‘စာသင်ခန်းသုံးတူးလ်’ ကို ကျောင်းသားများနှင့် ချိတ်ဆက်ထားသည်</translation>
 <translation id="7982789257301363584">ကွန်ရက်</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" ကို အလိုအလျောက် စတင်ထားသည်}other{အက်ပ် # ခုကို အလိုအလျောက် စတင်ထားသည်}}</translation>
 <translation id="7994702968232966508">EAP နည်းလမ်း</translation>

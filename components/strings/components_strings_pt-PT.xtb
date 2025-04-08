@@ -99,7 +99,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1175364870820465910">Im&amp;primir...</translation>
 <translation id="1175393348063009671">Foto (mate)</translation>
 <translation id="1175875016430184367">Agrafo triplo à direita</translation>
-<translation id="1176123604678140687">Mês de validade</translation>
 <translation id="1177548198167638471">Não perguntar novamente</translation>
 <translation id="1177863135347784049">Personalizado</translation>
 <translation id="1178581264944972037">Pausa</translation>
@@ -333,7 +332,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
       &lt;p&gt;Ajuste a data e a hora na secção &lt;strong&gt;Geral&lt;/strong&gt; da aplicação &lt;strong&gt;Definições&lt;/strong&gt;.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">O seu administrador vai reiniciar o dispositivo à(s) <ph name="TIME" /> de <ph name="DATE" /></translation>
 <translation id="1562805467275776390">Corrida de carros</translation>
-<translation id="1563137369682381456">Data de validade</translation>
 <translation id="1563755205047885671">Jogos de ação e plataformas</translation>
 <translation id="1564634006476980707">Esquema HTTPS recomendado para o URL de pesquisa <ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">Informações de rede, tais como endereços, a configuração da interface e a qualidade da ligação</translation>
@@ -937,7 +935,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2606760465469169465">Validação automática</translation>
 <translation id="2608019759319359258">Quando um tópico é bloqueado, não é usado para personalizar anúncios</translation>
 <translation id="2610561535971892504">Clique para copiar</translation>
-<translation id="2612676031748830579">Número do cartão</translation>
 <translation id="2612993535136743634">Todos os códigos de segurança guardados no seu dispositivo e Conta Google são eliminados</translation>
 <translation id="2616412942031748191">Otimização do motor de pesquisa e marketing</translation>
 <translation id="2618206371527040026">Conferências e publicações académicas</translation>
@@ -3338,7 +3335,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">Usa o YouTube com as opções dos teus pais</translation>
 <translation id="6779348349813025131">O Gestor de Palavras-passe da Google precisa de acesso ao Porta-chaves macOS</translation>
-<translation id="6782656837469339439">Ano de validade</translation>
 <translation id="6785990323398321538">Pode alterar o seu motor de pesquisa em qualquer altura nas definições do Chrome.</translation>
 <translation id="6786145470008421571">Envelope 6 x 9 pol.</translation>
 <translation id="67862343314499040">Violeta</translation>

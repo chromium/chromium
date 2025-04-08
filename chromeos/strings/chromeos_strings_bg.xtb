@@ -351,6 +351,7 @@
 <translation id="2438248248625638801">Заглавията на записите се създават</translation>
 <translation id="2446553403094072641">Точност на плаващата точка</translation>
 <translation id="2448312741937722512">Тип</translation>
+<translation id="2448857983905133469">Инструменти за класната стая</translation>
 <translation id="2468124392950503650">Изберете подкана с цел създаване или вижте <ph name="BEGIN_LINK_PROMPTING_GUIDE" />ръководството за подканите<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Използвайте функцията „Помощ при писане“, базирана на AI на Google, за да създадете чернова или да прецизирате съществуващ текст</translation>
 <translation id="2475982808118771221">Възникна грешка</translation>
@@ -449,6 +450,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Крайна точка</translation>
 <translation id="3060579846059757016">Отправни точки</translation>
+<translation id="3060798442805232711">Инструментите за класната стая използват микрофона ви</translation>
 <translation id="3061850252076394168">активиране на функцията прочитане на глас</translation>
 <translation id="3066772729299747758">във вторник</translation>
 <translation id="3069085583900247081">Тестването не бе успешно</translation>
@@ -910,6 +912,7 @@
 <translation id="5170568018924773124">Показване в папката</translation>
 <translation id="517075088756846356">Изключете и включете отново захранващия кабел на устройството (<ph name="DEVICE_NAME" />), за да продължите процеса на актуализиране</translation>
 <translation id="5180108905184566358">дървета баобаб</translation>
+<translation id="5180431943345994173">Преподавателят ви е премахнал съдържание от инструментите за класната стая</translation>
 <translation id="5180712487038406644">Изразителен</translation>
 <translation id="5190187232518914472">Преживейте отново любимите си спомени. За да добавите или редактирате албуми, отворете <ph name="LINK_BEGIN" />Google Снимки<ph name="LINK_END" />.</translation>
 <translation id="5212593641110061691">Таблоид</translation>
@@ -1003,6 +1006,7 @@
 <translation id="5628106863521633649">Налични езици</translation>
 <translation id="5630438231335788050">Баухаус</translation>
 <translation id="5631759159893697722">резюме</translation>
+<translation id="5655084389678168978">Преподавателят ви е добавил ново съдържание в инструментите за класната стая</translation>
 <translation id="5655283760733841251">Увеличаване на яркостта на клавиатурата</translation>
 <translation id="5655296450510165335">Регистриране на устройството</translation>
 <translation id="5655776422854483175">Няма задания за отпечатване</translation>
@@ -1528,6 +1532,7 @@
 <translation id="7971535376154084247">Общи контроли</translation>
 <translation id="7977800524392185497">За да се присъедините към <ph name="NETWORK_NAME" /> мрежа, отворете „Настройки“</translation>
 <translation id="7978412674231730200">Личен ключ</translation>
+<translation id="7979468455552394856">Инструментите за класната стая са свързани с учащите</translation>
 <translation id="7982789257301363584">Мрежа</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{Приложението <ph name="APP_NAME_1" /> бе стартирано автоматично}other{# приложения бяха стартирани автоматично}}</translation>
 <translation id="7994702968232966508">Метод с EAP</translation>

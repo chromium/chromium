@@ -539,6 +539,12 @@ PromptInTab으로 설정하면, 사용자의 인증이 만료되는 즉시 Googl
 <translation id="1417888712677507140">다른 출처 서브프레임에서 실행된 자바스크립트 대화상자 차단</translation>
 <translation id="1418387035898607074">신뢰할 수 있는 출처의 파일 다운로드에 대한 세이프 브라우징 확인 건너뛰기</translation>
 <translation id="1419020637569060510">ChromeOS에서 관리 계정의 보조 계정 사용 제한 추가</translation>
+<translation id="1423359855587524289">정책을 사용 설정하거나 설정하지 않으면 앱이 iOS의
+'임시' 알림 승인을 사용하여 iOS 알림 센터에 알림을
+표시할 수 있습니다.
+
+정책을 사용 중지하면 앱이 임시 알림을
+사용하지 않습니다.</translation>
 <translation id="142346659686073702">제휴되지 않은 사용자가 Crostini를 사용할 수 있게 허용</translation>
 <translation id="1423900783955065155">이 정책은 <ph name="CACHE_CONTROL_NO_STORE_NAME" /> 헤더가 있는 페이지를 뒤로-앞으로 캐시에 저장할 수 있는지를 제어합니다. 이 헤더를 설정하는 웹사이트의 페이지는 뒤로-앞으로 캐시에서 복원되지 않을 수도 있습니다. 페이지에 더 이상 액세스할 수 없더라도 복원 이후에 일부 민감한 정보가 표시될 수 있기 때문입니다.
 
@@ -1243,6 +1249,7 @@ false로 설정되면 사용자 식별을 위해 사용할 수 있는 정보가 
 
 <ph name="PRODUCT_NAME" />의 경우 이 정책은 기기가 <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />에 등록되어 있을 때만 적용됩니다.
 <ph name="PRODUCT_OS_NAME" />의 경우 이 정책이 항상 적용됩니다.</translation>
+<translation id="187961648719201562">기존 로컬 파일 삭제(버전 137부터 지원됨)</translation>
 <translation id="1883274744253492031">혼합 콘텐츠 자동 업그레이드 사용 설정</translation>
 <translation id="1885782360784839335">전체 탭 프로모션 콘텐츠 표시 기능을 사용합니다.</translation>
 <translation id="1888871729456797026">데스크톱의 클라우드 정책 등록 토큰</translation>
@@ -6846,6 +6853,9 @@ URL 패턴은 <ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_BLOCKED_FOR_URLS_P
 <translation id="5883754873839596178">정책을 설정하면 프록시 서버에 동시 연결할 수 있는 최대 대수가 지정됩니다. 일부 프록시 서버는 클라이언트당 많은 수의 동시 연결을 처리할 수 없으며 정책을 더 낮은 값으로 설정하여 해결할 수 있습니다. 값은 6보다 크고 100보다 작아야 합니다. 일부 웹 앱은 중지 상태인 GET에 너무 많은 연결을 사용하는 것으로 알려져 있으므로 32 밑으로 낮추면 연결이 중지 상태인 웹 앱이 여러 개 열려 있을 때 브라우저 네트워크가 끊길 수 있습니다. 기본값 밑으로 낮추는 데 따르는 위험은 사용자가 감수해야 합니다.
 
       정책을 설정하지 않으면 기본값 32가 사용됩니다.</translation>
+<translation id="5886280631293123880">이 정책은 지원 중단 및 삭제된 변형 이벤트라는 플랫폼 이벤트를 일시적으로 다시 선택할 수 있습니다.
+정책을 사용 설정하면 일반 웹 사용자에 대해 기본적으로 사용 중지된 경우에도 변형 이벤트가 계속 실행됩니다. 정책을 사용 중지하거나 설정하지 않으면 이러한 이벤트가 실행되지 않을 수 있습니다.
+이 정책은 일시적인 해결 방법이며 M137에서는 더 이상 작동하지 않습니다.</translation>
 <translation id="5887414688706570295">원격 액세스 호스트가 사용할 TalkGadget 프리픽스를 구성하여 사용자가 변경하지 못하게 합니다.
 
           이 설정을 지정하면 TalkGadget에 대한 전체 도메인 이름을 만들 수 있는 기본 TalkGadget 이름에 이 프리픽스가 추가됩니다. 기본 TalkGadget 이름은 '.talkgadget.google.com'입니다.
@@ -8389,6 +8399,21 @@ Microsoft Outlook 카드에는 추가 관리자 구성이 필요합니다. Chrom
 
 이는 지원 중단된 <ph name="WINDOW_PLACEMENT_ALLOWED_FOR_URLS_POLICY_NAME" /> 정책을 대체합니다.</translation>
 <translation id="6894178810167845842">새 탭 페이지 URL</translation>
+<translation id="6895437634974956885">배터리 성능 상태는 잦은 완충이나 장시간 충전 등의 요인으로 영향을 받을 수 있습니다. 이 정책은 충전 방식을 최적화하고 이러한 요인을 완화하여 궁극적으로 배터리 수명을 연장하는 세 가지 옵션을 제공합니다.
+
+정책을 설정하지 않으면 사용자가 자동 조절 충전 전환 버튼을 사용하여 자동 조절 충전을 사용 설정하거나 중지할 수 있습니다.
+
+정책을 '1 - 표준'으로 설정하거나 설정하지 않으면 배터리가 정상적으로 100%까지 충전됩니다. 이렇게 하면 자동 조절 충전 및 제한 충전이 사용 중지됩니다.
+
+정책을 '2 - 자동 조절'로 설정하면 기기가 사용자의 충전 습관을 학습하고 필요할 때까지 100% 충전을 지연합니다. 이렇게 하면 배터리 성능 상태를 연장할 수 있습니다.
+
+정책을 '3 - 제한됨'으로 설정하면 배터리 수명을 최대로 연장하기 위해 배터리가 약 80%까지만 충전됩니다.
+
+<ph name="DEVICE_POWER_BATTERY_CHARGING_OPTIMIZATION_POLICY_NAME" /> 정책이 설정되면 <ph name="DEVICE_POWER_ADAPTIVE_CHARGING_ENABLED_POLICY_NAME" /> 정책보다 우선 적용됩니다.
+
+<ph name="DEVICE_POWER_BATTERY_CHARGING_OPTIMIZATION_POLICY_NAME" /> 정책을 설정하지 않으면 <ph name="DEVICE_POWER_ADAPTIVE_CHARGING_ENABLED_POLICY_NAME" /> 정책에 따라 자동 조절 충전 기능이 사용 설정되거나 사용 중지됩니다.
+
+<ph name="DEVICE_POWER_ADAPTIVE_CHARGING_ENABLED_POLICY_NAME" /> 정책은 지원 중단됩니다.</translation>
 <translation id="6897730193187922386"><ph name="CLOUD_PRINT_NAME" /> 지원 중단 메시지 숨기기</translation>
 <translation id="6899705656741990703">프록시 설정 자동 감지</translation>
 <translation id="6901462246839613666">프로모션 콘텐츠 표시 사용 설정</translation>
@@ -9072,6 +9097,7 @@ true로 설정하면 <ph name="PRODUCT_NAME" />에서는
 <translation id="7366637365754181686">사용자 보안 신호 클라우드 보고 사용 설정</translation>
 <translation id="7366948865469126526">빠른 답변 단위 변환 사용 안함</translation>
 <translation id="7367734504783638685">타사 SSO 제공업체 및 Chrome 기기 간 비밀번호 동기화</translation>
+<translation id="7372818045062294211">앱이 임시 알림 승인을 사용하도록 허용</translation>
 <translation id="7372831798009983116">자동 클릭 접근성 기능 사용</translation>
 <translation id="7373200034079131670">Android 또는 VM이 시작되었을 때 사용자가 로그아웃하면 재부팅합니다.</translation>
 <translation id="7374784840090523241">기본적으로 <ph name="PRODUCT_NAME" /> 프로필과 같은 다른 저장소에서 패스키를 만듭니다.</translation>
@@ -10428,6 +10454,7 @@ URL 패턴이 <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" />와 충돌하는 
 <translation id="8421202694245456861"><ph name="CLASS_TOOLS_NAME" /> 자막 기능 구성</translation>
 <translation id="8422658829373743789">disabled 양식 컨트롤에서 이벤트 전달을 위한 새 동작을 제어합니다.</translation>
 <translation id="8423237137411858515">로컬 파일을 읽기 전용 모드로 유지</translation>
+<translation id="8424056332208748750">앱이 임시 알림 승인을 사용하도록 허용하지 않음</translation>
 <translation id="8424255554404582727">기본 디스플레이 회전 설정, 재부팅할 때마다 다시 적용됨</translation>
 <translation id="8426231401662877819">화면을 시계 방향으로 90도 회전</translation>
 <translation id="8426326725481825773">이 정책에 따라 '키 재매핑' 하위 페이지 내에서 Home/End 키를
@@ -10578,6 +10605,7 @@ URL 패턴이 <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" />와 충돌하는 
 <translation id="8520064498689833152">Google 검색 및 YouTube 제한 모드에서 세이프서치를 '보통' 이상으로 강제 적용</translation>
 <translation id="8520950040439618600">원격 액세스 호스트에서 PIN 및 페어링 인증 방법을 허용합니다.</translation>
 <translation id="8524334245528364388">인쇄 서버 목록이 포함된 JSON 파일의 URL입니다.</translation>
+<translation id="8525282442896658040">앱이 iOS의 임시 알림 승인을 사용하도록 허용</translation>
 <translation id="8525526490824335042">Linux 컨테이너</translation>
 <translation id="8526745614158856826">정책을 설정하면 사용 가능한 모든 기기에 관한 액세스 권한을 자동으로 부여받는 사이트의 목록을 작성할 수 있습니다.
 

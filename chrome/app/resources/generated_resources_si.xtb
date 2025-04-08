@@ -44,7 +44,6 @@
 <translation id="1026822031284433028">රූපය පූරණය කරන්න</translation>
 <translation id="1026959648338730078">Windows Hello හෝ බාහිර ආරක්ෂිත යතුර</translation>
 <translation id="1028700151766901954">හේතුව: LBS පෙරනිමියෙන් <ph name="DEFAULT_OPEN_BROWSER" /> හි පවතී.</translation>
-<translation id="1028823395684328817">ඔබේ Google ගිණුම තුළ මුරපද සහ තව ඒවා දිගටම භාවිත කිරීමට, ඒ ඔබ බව සත්‍යාපන කරන්න</translation>
 <translation id="102916930470544692">මුරයතුර</translation>
 <translation id="1029317248976101138">විශාලනය</translation>
 <translation id="1029526375103058355">ක්ලික් කිරීමට තට්ටු කිරීම</translation>
@@ -815,7 +814,6 @@
 <translation id="1558671750917454373"><ph name="DEVICE_NAME" /> වෙත විකාශනය නැවත පටන් ගන්න</translation>
 <translation id="1561331397460162942">මෙය යෙදුම්, ස්ථාන අවසරය ඇති වෙබ් අඩවි, සහ පද්ධති සේවා සඳහා ස්ථාන ප්‍රවේශයට ඉඩ සලසයි</translation>
 <translation id="1562119309884184621">මෙම සම්බන්ධතාව එක් කිරීම ඔවුන් ඊළඟ වතාවේ බෙදා ගන්නා විට මතක තබා ගනු ඇත</translation>
-<translation id="1563137369682381456">කල් ඉකුත් වන දිනය</translation>
 <translation id="1566049601598938765">වෙබ් අඩවිය</translation>
 <translation id="15662109988763471">තෝරන ලද මුද්‍රණ යන්ත්‍රය ලද නොහැක, නැති නම් නිවැරදිව ස්ථාපන කර නැත. ඔබේ මුද්‍රණ යන්ත්‍රය පරීක්‍ෂා කරන්න නැති නම් වෙනත් මුද්‍රණ යන්ත්‍රයක් තෝරා උත්සාහ කර බලන්න.</translation>
 <translation id="1566329594234563241">අක්‍රියව සහ පේනුගතව තිබෙන අතරේ</translation>
@@ -1249,6 +1247,7 @@
 <translation id="185111092974636561"><ph name="BEGIN_PARAGRAPH1" />ලියාපදිංචි කිරීමට පෙර ඔබ TPM හිස් කිරීම අවශ්‍යයි, එවිට <ph name="DEVICE_OS" /> හට ඔබගේ උපාංගයෙහි හිමිකාරත්වය ලබා ගත හැකිය.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />ඔබට TPM උපාංගය මුළුමනින්ම ක්‍රියාවිරහිත කිරීමටද හැකිය. මෘදුකාංග සංකේතනය සමඟ ඔබගේ දත්ත තවම සුරක්ෂිතව ගබඩා කරනු ඇති නමුත් දෘඪාංග බලගැන්වීම සහිත සහතික වැනි නිශ්චිත ආරක්ෂක විශේෂාංග අබල කරනු ඇත.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />ඔබට ඔබගේ TPM සැකසීම් පද්ධති BIOS/UEFI සැකසීම් නැවත පණ ගැන්වීමෙන් සහ ඇතුළු කිරීමෙන් වෙනස් කළ හැකිය. උපාංග මාදිලිය මත පදනම්ව පියවර වෙනස් වේ. වැඩිදුර තතු සඳහා, <ph name="DEVICE_OS" /> ලේඛනය ඔබ නැවත පණ ගැන්වීමට පෙර වෙනම උපාංගයක විවෘත කරන්න: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="1851551847729706116">මෙම පටිත්තට <ph name="TAB_NAME" /> බෙදා ගනිමින්</translation>
 <translation id="1852799913675865625">මෙම ගොනුව කියවීමේ දෝශයක් ඇතිවිය: <ph name="ERROR_TEXT" />.</translation>
 <translation id="1854180393107901205">Cast කිරීම නවත්වන්න</translation>
 <translation id="1856715684130786728">ස්ථානය එක් කරන්න...</translation>
@@ -3467,7 +3466,6 @@
 <translation id="3420501302812554910">අභ්‍යන්තර ආරක්‍ෂක යතුර යළි සැකසීම අවශ්‍ය කරයි</translation>
 <translation id="3421387094817716717">ඉලිප්සාකාර වක්‍ර පොදු යතුර</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />සටහන:<ph name="END_BOLD" /> සමාන කටහඬකට හෝ පටිගත කිරීමකට ඔබගේ පුද්ගලික ප්‍රතිඵල හෝ ඔබගේ සහායක වෙත ප්‍රවේශ විය හැකි වීමට ඉඩ ඇත.</translation>
-<translation id="3421835120203732951">නව පැතිකඩ එක් කරන්න</translation>
 <translation id="3422989558057853751">අවසන් වරට තෝරාගත් අයිතමය, එය තේරීම ඉවත් කිරීමෙන් තේරීම් ප්‍රකාරයෙන් ඉවත් වේ</translation>
 <translation id="3423111258700187173"><ph name="FOLDER_TITLE" /> තුළ ප්‍රතිඵල හමුවිය</translation>
 <translation id="3423226218833787854">මෙම AI විශේෂාංගය ගැන තව දැන ගන්න</translation>
@@ -9329,7 +9327,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7622768823216805500">අඩවි සාමාන්‍යයෙන් වඩා පහසු ගෙවීම වැනි සාප්පු සවාරි විශේෂාංග සඳහා ගෙවීම් හසුරුවන ස්ථාපනය කරයි</translation>
 <translation id="7622966771025050155">ග්‍රහණය කළ ටැබයට මාරු වන්න</translation>
 <translation id="7624337243375417909">කැප්ස් ලොක් ක්‍රියාවිරහිතයි</translation>
-<translation id="7625025537587898155">නව පැතිකඩ එක් කරන්න</translation>
 <translation id="7625568159987162309">අවසර සහ අඩවි හරහා ගබඩා කර ඇති දත්ත බලන්න</translation>
 <translation id="7625823789272218216">වමට නව ටැබය</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), <ph name="GRADE" /> ශ්‍රේණිය</translation>
@@ -11281,6 +11278,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8963117664422609631">අඩවි සැකසීම් වෙත යන්න</translation>
 <translation id="8964927371396953727">ඔබේ ගිණුමේ, <ph name="ACCOUNT_EMAIL" /> මුරපද භාවිතා කර සුරැකීමට එය ඔබම බව සත්‍යාපනය කරන්න</translation>
 <translation id="8965037249707889821">පැරණි රහස් වචනය ඇතුළු කරන්න</translation>
+<translation id="8967403839792635452">දිගු සංවර්ධනය කරනවා ද? Chrome දිගු සංවර්ධක ලේඛන සමග <ph name="BEGIN_LINK" />අලුත් දේ<ph name="END_LINK" /> පිළිබඳව යාවත්කාලීනව සිටින්න.</translation>
 <translation id="8967427617812342790">කියවීම් ලැයිස්තුවට එක් කරන්න</translation>
 <translation id="8967548289042494261"><ph name="VM_NAME" /> ඉවත් කරන්න</translation>
 <translation id="8968527460726243404">ChromeOS පද්ධති රූප ලියන්නා</translation>
@@ -11745,7 +11743,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="98235653036850093">ආයුබෝවන්, <ph name="PROFILE_NAME" /></translation>
 <translation id="983192555821071799">සියලු පටිති වසන්න</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - කැමරා සහ මයික්‍රෆෝන පටිගත කිරීම</translation>
-<translation id="984275831282074731">ගෙවීමේ ක්‍රම</translation>
 <translation id="984705303330760860">භාෂා අක්ෂර වින්‍යාස පරීක්ෂාව එක් කරන්න</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">සාමාන්‍ය</translation>

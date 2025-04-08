@@ -44,7 +44,6 @@
 <translation id="1026822031284433028">Carregar imagem</translation>
 <translation id="1026959648338730078">Windows Hello ou chave de segurança externa</translation>
 <translation id="1028700151766901954">Motivo: a LBS permanece no <ph name="DEFAULT_OPEN_BROWSER" /> por predefinição.</translation>
-<translation id="1028823395684328817">Para continuar a usar as palavras-passe e muito mais na sua Conta Google, valide a sua identidade</translation>
 <translation id="102916930470544692">Chave de acesso</translation>
 <translation id="1029317248976101138">Zoom</translation>
 <translation id="1029526375103058355">Tocar para clicar</translation>
@@ -817,7 +816,6 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1558671750917454373">Retomar transmissão para <ph name="DEVICE_NAME" /></translation>
 <translation id="1561331397460162942">Isto permite o acesso à localização para apps, Websites com a autorização de acesso à localização e serviços do sistema</translation>
 <translation id="1562119309884184621">Ao adicionar este contacto, vai memorizá-lo para a próxima vez que partilhar.</translation>
-<translation id="1563137369682381456">Data de validade</translation>
 <translation id="1566049601598938765">Website</translation>
 <translation id="15662109988763471">A impressora selecionada não está disponível ou não está instalada corretamente. Verifique a impressora ou experimente selecionar outra impressora.</translation>
 <translation id="1566329594234563241">Quando está inativo e ligado à corrente</translation>
@@ -1641,7 +1639,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2121825465123208577">Redimensionar</translation>
 <translation id="2123766928840368256">Selecionar um ficheiro diferente</translation>
 <translation id="2124930039827422115">{1,plural, =1{Classificação de <ph name="AVERAGE_RATING" /> por um utilizador.}other{Classificação de <ph name="AVERAGE_RATING" /> por # utilizadores.}}</translation>
-<translation id="2125715366913703594">Explorar &amp;extensões</translation>
 <translation id="2126167708562367080">A sincronização foi desativada pelo gestor.</translation>
 <translation id="2127372758936585790">Carregador de baixo consumo</translation>
 <translation id="212862741129535676">Percentagem de ocupação no estado de frequência</translation>
@@ -3470,7 +3467,6 @@ Quer pará-lo?</translation>
 <translation id="3420501302812554910">É necessário repor a chave de segurança interna</translation>
 <translation id="3421387094817716717">Chave pública curva elíptica</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Nota:<ph name="END_BOLD" /> uma voz semelhante ou uma gravação pode conseguir aceder aos seus resultados pessoais ou ao Assistente.</translation>
-<translation id="3421835120203732951">Adicionar novo perfil</translation>
 <translation id="3422989558057853751">Último item selecionado; se for desmarcado, sai do modo de seleção</translation>
 <translation id="3423111258700187173">Resultados encontrados na pasta <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">Saber mais sobre esta funcionalidade de IA</translation>
@@ -9333,7 +9329,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7622768823216805500">Normalmente, os sites instalam controladores de pagamentos para funcionalidades de compras como o pagamento mais fácil.</translation>
 <translation id="7622966771025050155">Mudar para o separador capturado</translation>
 <translation id="7624337243375417909">caps lock desligado</translation>
-<translation id="7625025537587898155">Adicionar novo perfil</translation>
 <translation id="7625568159987162309">Ver autorizações e dados armazenados em sites</translation>
 <translation id="7625823789272218216">Novo separador à esquerda</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), grau <ph name="GRADE" /></translation>
@@ -11751,7 +11746,6 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="98235653036850093">Olá, <ph name="PROFILE_NAME" /></translation>
 <translation id="983192555821071799">Fechar todos os separadores</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" />: gravação da câmara e do microfone</translation>
-<translation id="984275831282074731">Métodos de pagamento</translation>
 <translation id="984705303330760860">Adicione idiomas com verificação ortográfica</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Geral</translation>

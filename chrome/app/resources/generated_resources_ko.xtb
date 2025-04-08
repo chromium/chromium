@@ -44,7 +44,6 @@
 <translation id="1026822031284433028">이미지 로드</translation>
 <translation id="1026959648338730078">Windows Hello 또는 외부 보안 키</translation>
 <translation id="1028700151766901954">이유: LBS는 기본적으로 <ph name="DEFAULT_OPEN_BROWSER" />에 유지됩니다.</translation>
-<translation id="1028823395684328817">Google 계정에서 비밀번호 등을 계속 사용하려면 본인 인증을 완료하세요.</translation>
 <translation id="102916930470544692">패스키</translation>
 <translation id="1029317248976101138">확대</translation>
 <translation id="1029526375103058355">탭하여 클릭</translation>
@@ -818,7 +817,6 @@
 <translation id="1558671750917454373"><ph name="DEVICE_NAME" /> 기기로 전송 재개</translation>
 <translation id="1561331397460162942">이렇게 하면 앱, 위치 정보 액세스 권한이 있는 웹사이트, 시스템 서비스에 대한 위치 액세스가 허용됩니다.</translation>
 <translation id="1562119309884184621">이 연락처를 추가하면 다음번 공유 시 연락처에 내 기기가 표시됩니다.</translation>
-<translation id="1563137369682381456">만료일</translation>
 <translation id="1566049601598938765">웹사이트</translation>
 <translation id="15662109988763471">선택한 프린터가 사용 불가능하거나 올바르게 설치되어 있지 않습니다. 프린터를 확인하거나 다른 프린터를 선택해 보세요.</translation>
 <translation id="1566329594234563241">비활성 상태이며 전원에 연결되어 있는 동안</translation>
@@ -1652,7 +1650,6 @@
 <translation id="2121825465123208577">크기 조정</translation>
 <translation id="2123766928840368256">다른 파일 선택</translation>
 <translation id="2124930039827422115">{1,plural, =1{1명의 사용자가 별표 <ph name="AVERAGE_RATING" />개로 평가했습니다.}other{#명의 사용자가 별표 <ph name="AVERAGE_RATING" />개로 평가했습니다.}}</translation>
-<translation id="2125715366913703594">확장 프로그램 살펴보기(&amp;E)</translation>
 <translation id="2126167708562367080">관리자가 동기화를 사용 중지했습니다.</translation>
 <translation id="2127372758936585790">저출력 충전기</translation>
 <translation id="212862741129535676">주파수 상태 점유율</translation>
@@ -3484,7 +3481,6 @@
 <translation id="3420501302812554910">내부 보안 키 재설정 필요</translation>
 <translation id="3421387094817716717">타원 곡선 공개 키</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />참고:<ph name="END_BOLD" /> 다른 사람이 비슷한 목소리 또는 녹음된 음성을 사용하여 내 개인 검색결과 또는 어시스턴트에 액세스할 수도 있습니다.</translation>
-<translation id="3421835120203732951">새 프로필 추가</translation>
 <translation id="3422989558057853751">마지막 항목이 선택되었습니다. 선택을 해제하면 선택 모드가 종료됩니다.</translation>
 <translation id="3423111258700187173"><ph name="FOLDER_TITLE" />에서의 검색 결과</translation>
 <translation id="3423226218833787854">이 AI 기능 자세히 알아보기</translation>
@@ -9344,7 +9340,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7622768823216805500">사이트에서는 일반적으로 간편 결제와 같은 쇼핑 기능을 사용하기 위해 결제 핸들러를 설치합니다.</translation>
 <translation id="7622966771025050155">캡처된 탭으로 전환</translation>
 <translation id="7624337243375417909">Caps Lock 사용 안함</translation>
-<translation id="7625025537587898155">새 프로필 추가</translation>
 <translation id="7625568159987162309">사이트 전체에 저장된 권한 및 데이터 보기</translation>
 <translation id="7625823789272218216">새 좌측 탭</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" />(<ph name="VARIANT" />), <ph name="GRADE" />등급</translation>
@@ -11763,7 +11758,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="98235653036850093"><ph name="PROFILE_NAME" />님, 안녕하세요.</translation>
 <translation id="983192555821071799">탭 모두 닫기</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - 카메라 녹화 및 마이크 녹음 중</translation>
-<translation id="984275831282074731">결제 수단</translation>
 <translation id="984705303330760860">맞춤법 검사 언어 추가</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">일반</translation>

@@ -99,7 +99,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1175364870820465910">Skriv &amp;ut...</translation>
 <translation id="1175393348063009671">Foto (matt)</translation>
 <translation id="1175875016430184367">Tre häftklamrar till höger</translation>
-<translation id="1176123604678140687">Utgångsmånad</translation>
 <translation id="1177548198167638471">Fråga inte igen</translation>
 <translation id="1177863135347784049">Anpassat</translation>
 <translation id="1178581264944972037">Paus</translation>
@@ -333,7 +332,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
       &lt;p&gt;Ändra datumet och tiden under &lt;strong&gt;Allmänt&lt;/strong&gt; i appen &lt;strong&gt;Inställningar&lt;/strong&gt;.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Administratören startar om enheten kl. <ph name="TIME" /> den <ph name="DATE" /></translation>
 <translation id="1562805467275776390">Bilracing</translation>
-<translation id="1563137369682381456">Utgångsdatum</translation>
 <translation id="1563755205047885671">Action- och plattformsspel</translation>
 <translation id="1564634006476980707">HTTPS-schema rekommenderas för sökwebbadress: <ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">Nätverksinformation som adresser, gränssnittskonfiguration och anslutningskvalitet</translation>
@@ -528,6 +526,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1890171020361705182">Dino-spelet. En pixelerad dinosaurie springer genom ett ödsligt landskap och hoppar över kaktusar och flygödlor. Tryck för att hoppa över hinder när du hör en ljudsignal.</translation>
 <translation id="1898423065542865115">Filtrering</translation>
 <translation id="1901443836186977402">{1,plural, =1{Serverns identitet som <ph name="DOMAIN" /> gick inte att styrka eftersom dess säkerhetscertifikat upphörde att gälla under det senaste dygnet. Det kan bero på att servern är felkonfigurerad eller att anslutningen har blivit kapad. Klockan på datorn är för närvarande inställd på <ph name="CURRENT_DATE" />. Går den rätt? I annat fall bör du ställa om datorklockan och sedan uppdatera sidan.}other{Serverns identitet som <ph name="DOMAIN" /> gick inte att styrka eftersom dess säkerhetscertifikat upphörde att gälla för # dagar sedan. Det kan bero på att servern är felkonfigurerad eller att anslutningen har blivit kapad. Klockan på datorn är för närvarande inställd på <ph name="CURRENT_DATE" />. Går den rätt? I annat fall bör du ställa om datorklockan och sedan uppdatera sidan.}}</translation>
+<translation id="190166348986967700">Administratören börjar ladda upp dina filer till <ph name="CLOUD_PROVIDER" /> den <ph name="DATE_TIME" />. Håll enheten ansluten tills filöverföringen är klar. Under uppladdningen kan du bara läsa lokala filer.</translation>
 <translation id="1902576642799138955">Giltighetsperiod</translation>
 <translation id="1908217026282415406">Använda och röra kameran</translation>
 <translation id="1908690643053136980">Administratören tillåter inte <ph name="PERMISSION" /> för den här webbplatsen</translation>
@@ -936,7 +935,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2606760465469169465">Verifiera automatiskt</translation>
 <translation id="2608019759319359258">När ett ämne har blockerats används det inte för att anpassa annonser</translation>
 <translation id="2610561535971892504">Klicka för att kopiera</translation>
-<translation id="2612676031748830579">Kortnummer</translation>
 <translation id="2612993535136743634">Alla säkerhetskoder som sparas på enheten och i Google-kontot raderas</translation>
 <translation id="2616412942031748191">Sökmotoroptimering och marknadsföring</translation>
 <translation id="2618206371527040026">Akademiska konferenser och publikationer</translation>
@@ -2154,6 +2152,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="473775607612524610">Uppdatera</translation>
 <translation id="4738601419177586157">Sökförslag för <ph name="TEXT" /></translation>
 <translation id="4742407542027196863">Hantera lösenord …</translation>
+<translation id="474270528725216349">Från minst en webbplats på synkroniserade enheter</translation>
 <translation id="4743275772928623722">Systemet har uppdaterats men vissa av dina appar och filer kunde inte återställas. Apparna laddas ned igen automatiskt.</translation>
 <translation id="4744514002166662487">Skapa presentation</translation>
 <translation id="4744603770635761495">Sökväg till körbar fil</translation>
@@ -2284,6 +2283,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="495170559598752135">Åtgärder</translation>
 <translation id="4953689047182316270">Svara på tillgänglighetshändelser</translation>
 <translation id="4957080528849277028">Knappen Visa Chrome-historik: aktivera om du vill se och hantera webbhistoriken i Chrome-inställningarna</translation>
+<translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{+ 1 webbplats}other{+ # webbplatser}}</translation>
 <translation id="4958444002117714549">Expandera lista</translation>
 <translation id="4960068118612257147">Du kan göra ändringar i Chromes inställningar för annonsintegritet</translation>
 <translation id="4960203958361543136">Välj sökmotor</translation>
@@ -2618,8 +2618,10 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="553377674408670169">Jobb inom utbildning</translation>
 <translation id="5534785731327961487">Bra erbjudande nu</translation>
 <translation id="5536214594743852365">Visa avsnittet <ph name="SECTION" /></translation>
+<translation id="5536471014287260753">{DOMAIN_COUNT,plural, =1{+ 1 webbplats (fler på synkroniserade enheter)}other{+ # webbplatser (fler på synkroniserade enheter)}}</translation>
 <translation id="553782666181800029">Chou 2-kuvert</translation>
 <translation id="5538270463355278784">automatisk helskärm</translation>
+<translation id="5538859347764346097"><ph name="KEYWORD_SHORTCUT" />, Sök med <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="5539243836947087108">Raft</translation>
 <translation id="5540224163453853">Det gick inte att hitta den önskade artikeln.</translation>
 <translation id="5540969246441091044">Ridsport</translation>
@@ -2778,6 +2780,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5838278095973806738">Du bör inte ange några känsliga uppgifter på den här webbplatsen (till exempel lösenord eller kreditkortsuppgifter) eftersom hackare kan stjäla dem.</translation>
 <translation id="5838732667866024867">Du kan se prisändringarna i diagrammet med hjälp av vänster-/högerpil</translation>
 <translation id="5840318881868981258">I Google-kontot <ph name="ACCOUNT" /></translation>
+<translation id="5841007907672481419">Från <ph name="TYPE_1" /></translation>
 <translation id="5841338463993781099">Vill du spara i kontot?</translation>
 <translation id="5843987376989109187">Det här språket stöds inte än.
     <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
@@ -2791,6 +2794,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5863515189965725638">Redigera IBAN</translation>
 <translation id="5863847714970149516">Sidan du är på väg till kan försöka debitera dig</translation>
 <translation id="5866257070973731571">Ange telefonnummer</translation>
+<translation id="5866327164731551901">Från <ph name="TYPE_1" /> <ph name="TYPE_2" /></translation>
 <translation id="5866898949289125849">Du visar en sida för utvecklarverktyg</translation>
 <translation id="5869405914158311789">Webbplatsen kan inte nås</translation>
 <translation id="5869522115854928033">Sparade lösenord</translation>
@@ -3331,7 +3335,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">Använd YouTube med din förälders val</translation>
 <translation id="6779348349813025131">Google Lösenordshantering behöver åtkomst till MacOS-nyckelringen</translation>
-<translation id="6782656837469339439">Utgångsår</translation>
 <translation id="6785990323398321538">Du kan när som helst ändra sökmotor i inställningarna för Chrome.</translation>
 <translation id="6786145470008421571">Kuvert, 6 x 9 tum</translation>
 <translation id="67862343314499040">Violett</translation>
@@ -3500,6 +3503,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="7075452647191940183">Begäran är för stor</translation>
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079699498125013497">\u0020\u2022\u0020</translation>
+<translation id="7079783554682867524">Från <ph name="TYPE_1" /> (fler på synkroniserade enheter)</translation>
 <translation id="7081311540357715807">Livsmedelshandlare och livsmedelskedjor</translation>
 <translation id="7083258188081898530">Fack 9</translation>
 <translation id="7086090958708083563">Uppladdningsbegäran från användare</translation>
@@ -4156,6 +4160,7 @@ Mer information.
 <translation id="8216640997712497593">14 x 18 tum</translation>
 <translation id="8218327578424803826">Tilldelad plats:</translation>
 <translation id="8220602974062798186">Vill du blockera <ph name="TOPIC" /> och relaterade ämnen?</translation>
+<translation id="8226408512771130794"><ph name="KEYWORD_SHORTCUT" />, Fråga <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="8228419419708659934">Dubbelsidig vy</translation>
 <translation id="8228477714872026922"><ph name="ORIGIN" /> vill ha åtkomst till en enhet i nätverket:</translation>
 <translation id="822925450938886901">Om du vill ha mer information och se vilka policyer som kan gälla kan du öppna chrome://management i webbläsaren.</translation>

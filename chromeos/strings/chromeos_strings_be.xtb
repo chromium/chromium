@@ -351,6 +351,7 @@
 <translation id="2438248248625638801">Ствараюцца назвы запісу</translation>
 <translation id="2446553403094072641">Дакладнасць выкарыстання нефіксаванай коскі</translation>
 <translation id="2448312741937722512">Тып</translation>
+<translation id="2448857983905133469">Інструменты для ўрокаў</translation>
 <translation id="2468124392950503650">Выберыце запыт для стварэння ці паглядзіце <ph name="BEGIN_LINK_PROMPTING_GUIDE" />дапаможнік па запытах<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Выкарыстоўвайце дапамогу з напісаннем на аснове штучнага інтэлекту ад Google, каб ствараць чарнавікі або дапрацоўваць існуючыя тэксты</translation>
 <translation id="2475982808118771221">Адбылася памылка</translation>
@@ -449,6 +450,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> мА</translation>
 <translation id="3056720590588772262">Канцавы пункт</translation>
 <translation id="3060579846059757016">Асноўныя палажэнні</translation>
+<translation id="3060798442805232711">Праграма "Інструменты для ўрокаў" выкарыстоўвае ваш мікрафон</translation>
 <translation id="3061850252076394168">уключыць функцыю "Чытаць уголас"</translation>
 <translation id="3066772729299747758">у аўторак</translation>
 <translation id="3069085583900247081">Праверка не пройдзена</translation>
@@ -910,6 +912,7 @@
 <translation id="5170568018924773124">Паказаць у папцы</translation>
 <translation id="517075088756846356">Каб працягнуць абнаўленне, адключыце і падключыце зноў кабель сілкавання прылады "<ph name="DEVICE_NAME" />"</translation>
 <translation id="5180108905184566358">баабабы</translation>
+<translation id="5180431943345994173">Выкладчык выдаліў змесціва з праграмы "Інструменты для ўрокаў"</translation>
 <translation id="5180712487038406644">Выразныя колеры</translation>
 <translation id="5190187232518914472">Ажывіце прыемныя ўспаміны. Каб дадаць або змяніць альбомы, перайдзіце ў <ph name="LINK_BEGIN" />Google Фота<ph name="LINK_END" />.</translation>
 <translation id="5212593641110061691">Таблоід</translation>
@@ -1003,6 +1006,7 @@
 <translation id="5628106863521633649">Даступныя мовы</translation>
 <translation id="5630438231335788050">баўгауз</translation>
 <translation id="5631759159893697722">абстракцыя</translation>
+<translation id="5655084389678168978">Выкладчык дадаў новае змесціва ў праграму "Інструментаў для ўрокаў"</translation>
 <translation id="5655283760733841251">Павялічыць яркасць клавіятуры</translation>
 <translation id="5655296450510165335">Рэгістрацыя прылады</translation>
 <translation id="5655776422854483175">Няма заданняў друку</translation>
@@ -1526,6 +1530,7 @@
 <translation id="7971535376154084247">Агульныя налады</translation>
 <translation id="7977800524392185497">Каб падключыцца да сеткі <ph name="NETWORK_NAME" />, перайдзіце ў Налады</translation>
 <translation id="7978412674231730200">Закрыты ключ</translation>
+<translation id="7979468455552394856">Навучэнцы падключаны да праграмы "Інструменты для ўрокаў"</translation>
 <translation id="7982789257301363584">Сетка</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{Праграма "<ph name="APP_NAME_1" />" запушчана аўтаматычна}one{# праграма запушчана аўтаматычна}few{# праграмы запушчаны аўтаматычна}many{# праграм запушчаны аўтаматычна}other{# праграмы запушчаны аўтаматычна}}</translation>
 <translation id="7994702968232966508">Метад EAP</translation>

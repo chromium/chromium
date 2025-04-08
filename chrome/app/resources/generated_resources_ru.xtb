@@ -44,7 +44,6 @@
 <translation id="1026822031284433028">Загрузить изображение</translation>
 <translation id="1026959648338730078">Windows Hello или внешний электронный ключ</translation>
 <translation id="1028700151766901954">Причина: по умолчанию функция поддержки альтернативного браузера открывает URL в браузере <ph name="DEFAULT_OPEN_BROWSER" />.</translation>
-<translation id="1028823395684328817">Чтобы и дальше использовать пароли и другие данные из вашего аккаунта Google, подтвердите личность</translation>
 <translation id="102916930470544692">Ключ доступа</translation>
 <translation id="1029317248976101138">Масштаб</translation>
 <translation id="1029526375103058355">Нажатие от прикосновения</translation>
@@ -819,7 +818,6 @@
 <translation id="1558671750917454373">Возобновить трансляцию на устройство "<ph name="DEVICE_NAME" />"</translation>
 <translation id="1561331397460162942">Информацию о местоположении смогут использовать приложения и сайты с разрешением на доступ к ней, а также системные службы.</translation>
 <translation id="1562119309884184621">Если добавить этот контакт, он станет доступен для обмена файлами и ссылками, когда будет поблизости</translation>
-<translation id="1563137369682381456">Дата окончания действия</translation>
 <translation id="1566049601598938765">Сайт</translation>
 <translation id="15662109988763471">Принтер недоступен или установлен неправильно. Проверьте его или выберите другой.</translation>
 <translation id="1566329594234563241">Когда устройство неактивно и подключено к питанию</translation>
@@ -1643,7 +1641,6 @@
 <translation id="2121825465123208577">Изменить размер</translation>
 <translation id="2123766928840368256">Выбрать другой файл</translation>
 <translation id="2124930039827422115">{1,plural, =1{1 пользователь поставил оценку <ph name="AVERAGE_RATING" />.}one{# пользователь поставил оценку <ph name="AVERAGE_RATING" />.}few{# пользователя поставили оценку <ph name="AVERAGE_RATING" />.}many{# пользователей поставили оценку <ph name="AVERAGE_RATING" />.}other{# пользователя поставили оценку <ph name="AVERAGE_RATING" />.}}</translation>
-<translation id="2125715366913703594">Посмотреть &amp;расширения</translation>
 <translation id="2126167708562367080">Ваш администратор отключил синхронизацию.</translation>
 <translation id="2127372758936585790">Маломощное зарядное устройство</translation>
 <translation id="212862741129535676">Продолжительность работы процессора на разных ступенях частоты в процентах</translation>
@@ -3471,7 +3468,6 @@
 <translation id="3420501302812554910">Необходимо сбросить настройки внутреннего электронного ключа</translation>
 <translation id="3421387094817716717">Открытый ключ на эллиптических кривых</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Примечание.<ph name="END_BOLD" /> Другой человек с похожим голосом или записью вашего может получить доступ к Ассистенту и вашим персональным результатам.</translation>
-<translation id="3421835120203732951">Добавить профиль</translation>
 <translation id="3422989558057853751">Выбран последний объект. Если вы отмените выбор, то выйдете из режима выбора.</translation>
 <translation id="3423111258700187173">Результаты в папке "<ph name="FOLDER_TITLE" />"</translation>
 <translation id="3423226218833787854">Подробнее об этой функции искусственного интеллекта</translation>
@@ -9337,7 +9333,6 @@
 <translation id="7622768823216805500">Обычно сайты устанавливают обработчики платежей, чтобы использовать такие функции, как упрощенная оплата покупок.</translation>
 <translation id="7622966771025050155">Перейти на записанную вкладку</translation>
 <translation id="7624337243375417909">клавиша Caps Lock не нажата</translation>
-<translation id="7625025537587898155">Добавить профиль</translation>
 <translation id="7625568159987162309">Посмотреть текущие разрешения и сохраненные данные сайтов</translation>
 <translation id="7625823789272218216">Новая вкладка слева</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), уровень <ph name="GRADE" /></translation>
@@ -11758,7 +11753,6 @@
 <translation id="98235653036850093">Привет, <ph name="PROFILE_NAME" />!</translation>
 <translation id="983192555821071799">Закрыть все вкладки</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" />, включена запись с камеры и микрофона</translation>
-<translation id="984275831282074731">Способы оплаты</translation>
 <translation id="984705303330760860">Добавить языки проверки правописания</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Общие</translation>

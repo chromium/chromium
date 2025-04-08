@@ -351,6 +351,7 @@
 <translation id="2438248248625638801">রেকর্ডিংয়ের শিরোনাম তৈরি করা হচ্ছে</translation>
 <translation id="2446553403094072641">ফ্লোটিং পয়েন্ট অ্যাকুরেসি</translation>
 <translation id="2448312741937722512">প্রকার</translation>
+<translation id="2448857983905133469">ক্লাস টুল</translation>
 <translation id="2468124392950503650"><ph name="BEGIN_LINK_PROMPTING_GUIDE" />প্রম্পট গাইড<ph name="END_LINK_PROMPTING_GUIDE" /> তৈরি করতে বা দেখতে প্রম্পট বেছে নিন।</translation>
 <translation id="2472215337771558851">Google AI দ্বারা পরিচালিত, 'আমাকে লিখতে সাহায্য করুন' ফিচার কোনও ড্রাফ্ট তৈরি করতে বা আগে থাকা কাজ রিফাইন করতে ব্যবহার করুন</translation>
 <translation id="2475982808118771221">একটি ত্রুটি ঘটেছে</translation>
@@ -449,6 +450,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">এন্ডপয়েন্ট</translation>
 <translation id="3060579846059757016">আউটলাইন</translation>
+<translation id="3060798442805232711">ক্লাস টুল আপনার মাইক্রোফোন ব্যবহার করছে</translation>
 <translation id="3061850252076394168">বাছুন ও শুনুন ফিচার চালু করুন</translation>
 <translation id="3066772729299747758">মঙ্গলবারে</translation>
 <translation id="3069085583900247081">টেস্ট ব্যর্থ হয়েছে</translation>
@@ -910,6 +912,7 @@
 <translation id="5170568018924773124">ফোল্ডারে দেখান</translation>
 <translation id="517075088756846356">প্রসেস আপডেট করা চালিয়ে যেতে <ph name="DEVICE_NAME" />-এর পাওয়ার কেবেল আনপ্লাগ করে প্লাগপয়েন্টে আবার লাগিয়ে দিন</translation>
 <translation id="5180108905184566358">বাওবাব গাছ</translation>
+<translation id="5180431943345994173">আপনার শিক্ষক ক্লাস টুল থেকে কন্টেন্ট সরিয়েছেন</translation>
 <translation id="5180712487038406644">এক্সপ্রেসিভ</translation>
 <translation id="5190187232518914472">আপনার প্রিয় স্মৃতিগুলি রোমন্থন করুন। অ্যালবাম যোগ ও এডিট করতে, <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />-এ যান।</translation>
 <translation id="5212593641110061691">Tabloid</translation>
@@ -1003,6 +1006,7 @@
 <translation id="5628106863521633649">উপলভ্য ভাষা</translation>
 <translation id="5630438231335788050">বাউহাউস</translation>
 <translation id="5631759159893697722">বিমূর্ত</translation>
+<translation id="5655084389678168978">আপনার শিক্ষক ক্লাস টুল নতুন কন্টেন্ট যোগ করেছেন</translation>
 <translation id="5655283760733841251">কীবোর্ডের উজ্জ্বলতা বাড়ান</translation>
 <translation id="5655296450510165335">ডিভাইস এনরোলমেন্ট</translation>
 <translation id="5655776422854483175">কোনও প্রিন্টের কাজ নেই</translation>
@@ -1528,6 +1532,7 @@
 <translation id="7971535376154084247">সাধারণ কন্ট্রোল</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> নেটওয়ার্কে যোগ দিতে, সেটিংস বিকল্পে যান</translation>
 <translation id="7978412674231730200">ব্যক্তিগত কী</translation>
+<translation id="7979468455552394856">ক্লাস টুল শিক্ষার্থীদের সাথে কানেক্ট করা আছে</translation>
 <translation id="7982789257301363584">নেটওয়ার্ক</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" অটোমেটিক চালু হয়েছে}one{#টি অ্যাপ অটোমেটিক চালু হয়েছে}other{#টি অ্যাপ অটোমেটিক চালু হয়েছে}}</translation>
 <translation id="7994702968232966508">EAP পদ্ধতি</translation>

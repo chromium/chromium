@@ -44,7 +44,6 @@
 <translation id="1026822031284433028">Muat Gambar</translation>
 <translation id="1026959648338730078">Windows Hello atau kunci keamanan eksternal</translation>
 <translation id="1028700151766901954">Alasan: LBS tetap dalam <ph name="DEFAULT_OPEN_BROWSER" /> secara default.</translation>
-<translation id="1028823395684328817">Untuk terus menggunakan sandi dan lainnya di Akun Google Anda, verifikasi diri Anda</translation>
 <translation id="102916930470544692">Kunci sandi</translation>
 <translation id="1029317248976101138">Zoom</translation>
 <translation id="1029526375103058355">Ketuk untuk mengklik</translation>
@@ -818,7 +817,6 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1558671750917454373">Lanjutkan transmisi ke <ph name="DEVICE_NAME" /></translation>
 <translation id="1561331397460162942">Tindakan ini mengizinkan akses lokasi untuk aplikasi dan situs yang memiliki izin akses lokasi, serta layanan sistem</translation>
 <translation id="1562119309884184621">Begitu kontak ini ditambahkan, sistem akan mengingatnya saat berbagi pada waktu berikutnya</translation>
-<translation id="1563137369682381456">Tanggal habis masa berlaku</translation>
 <translation id="1566049601598938765">Situs web</translation>
 <translation id="15662109988763471">Printer yang dipilih tidak tersedia atau tidak diinstal dengan benar. Periksa printer Anda atau coba pilih printer lainnya.</translation>
 <translation id="1566329594234563241">Saat tidak aktif dan dicolokkan</translation>
@@ -1260,6 +1258,7 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="185111092974636561"><ph name="BEGIN_PARAGRAPH1" />Sebelum mendaftar, Anda perlu menghapus TPM agar <ph name="DEVICE_OS" /> dapat mengambil alih kepemilikan perangkat.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Anda juga dapat sepenuhnya menonaktifkan TPM di perangkat. Data Anda akan tetap disimpan secara aman dengan enkripsi software, tetapi fitur keamanan tertentu seperti sertifikat yang didukung hardware akan dinonaktifkan.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Anda dapat mengubah setelan TPM dengan memulai ulang dan masuk ke setelan BIOS/UEFI sistem. Langkah-langkah dapat berbeda bergantung pada model perangkat. Untuk info selengkapnya, buka dokumentasi <ph name="DEVICE_OS" /> di perangkat lain sebelum Anda memulai ulang: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="1851551847729706116">Membagikan <ph name="TAB_NAME" /> ke tab ini</translation>
 <translation id="1852799913675865625">Terdapat kesalahan saat mencoba membaca file: <ph name="ERROR_TEXT" />.</translation>
 <translation id="1854180393107901205">Hentikan transmisi</translation>
 <translation id="1856715684130786728">+ lokasi...</translation>
@@ -1650,7 +1649,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2121825465123208577">Ubah ukuran</translation>
 <translation id="2123766928840368256">Pilih file yang berbeda</translation>
 <translation id="2124930039827422115">{1,plural, =1{Diberi rating <ph name="AVERAGE_RATING" /> oleh satu pengguna.}other{Diberi rating <ph name="AVERAGE_RATING" /> oleh # pengguna.}}</translation>
-<translation id="2125715366913703594">Pelajari &amp;Ekstensi</translation>
 <translation id="2126167708562367080">Sinkronisasi dinonaktifkan oleh administrator Anda.</translation>
 <translation id="2127372758936585790">Pengisi daya rendah</translation>
 <translation id="212862741129535676">Persentase Pemakaian Status Frekuensi</translation>
@@ -3481,7 +3479,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3420501302812554910">Kunci keamanan internal perlu direset</translation>
 <translation id="3421387094817716717">Kunci Publik Kurva Eliptis</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Catatan:<ph name="END_BOLD" /> Suara atau rekaman yang mirip mungkin juga dapat mengakses hasil personal atau Asisten Anda.</translation>
-<translation id="3421835120203732951">Tambahkan Profil Baru</translation>
 <translation id="3422989558057853751">Item terakhir dipilih, membatalkan pilihan akan membuat Anda keluar dari mode pemilihan</translation>
 <translation id="3423111258700187173">Hasil ditemukan di <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">Pelajari lebih lanjut fitur AI ini</translation>
@@ -9342,7 +9339,6 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7622768823216805500">Situs biasanya menginstal pengelola pembayaran untuk fitur belanja seperti pembayaran yang lebih mudah</translation>
 <translation id="7622966771025050155">Beralih ke tab yang telah direkam</translation>
 <translation id="7624337243375417909">caps lock nonaktif</translation>
-<translation id="7625025537587898155">Tambahkan profil baru</translation>
 <translation id="7625568159987162309">Lihat izin dan data yang disimpan di seluruh situs</translation>
 <translation id="7625823789272218216">Tab Baru di Sisi Kiri</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), Kelas <ph name="GRADE" /></translation>
@@ -11295,6 +11291,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="8963117664422609631">Buka setelan situs</translation>
 <translation id="8964927371396953727">Verifikasi diri Anda untuk menggunakan dan menyimpan sandi di akun Anda, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8965037249707889821">Masukkan sandi lama</translation>
+<translation id="8967403839792635452">Mengembangkan ekstensi? Dapatkan informasi terbaru tentang apa saja <ph name="BEGIN_LINK" />Yang Baru<ph name="END_LINK" /> dengan dokumentasi developer Ekstensi Chrome.</translation>
 <translation id="8967427617812342790">Tambahkan ke daftar bacaan</translation>
 <translation id="8967548289042494261">Hapus <ph name="VM_NAME" /></translation>
 <translation id="8968527460726243404">Penulis Gambar Sistem ChromeOS</translation>
@@ -11759,7 +11756,6 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="98235653036850093">Halo <ph name="PROFILE_NAME" />,</translation>
 <translation id="983192555821071799">Tutup semua tab</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - Perekaman kamera dan mikrofon</translation>
-<translation id="984275831282074731">Metode pembayaran</translation>
 <translation id="984705303330760860">Tambahkan bahasa periksa ejaan</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Umum</translation>

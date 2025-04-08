@@ -351,6 +351,7 @@
 <translation id="2438248248625638801">ரெக்கார்டிங் தலைப்புகளை உருவாக்குகிறது</translation>
 <translation id="2446553403094072641">ஃப்லோட்டிங் பாயிண்ட் துல்லியத்தன்மை</translation>
 <translation id="2448312741937722512">வகை</translation>
+<translation id="2448857983905133469">வகுப்புக் கருவிகள்</translation>
 <translation id="2468124392950503650">உருவாக்க ஒரு ப்ராம்ப்ட்டைத் தேர்ந்தெடுங்கள் அல்லது <ph name="BEGIN_LINK_PROMPTING_GUIDE" />ப்ராம்ப்ட் வழிகாட்டியைப்<ph name="END_LINK_PROMPTING_GUIDE" /> பாருங்கள்</translation>
 <translation id="2472215337771558851">Google AI வழங்கும் ‘எழுத எனக்கு உதவு’ கருவி மூலம் வரைவை உருவாக்கலாம், ஏற்கெனவே உள்ளவற்றை மேம்படுத்தலாம்</translation>
 <translation id="2475982808118771221">ஒரு பிழை ஏற்பட்டது</translation>
@@ -449,6 +450,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">எண்ட்பாயிண்ட்</translation>
 <translation id="3060579846059757016">அவுட்லைன்கள்</translation>
+<translation id="3060798442805232711">வகுப்புக் கருவிகள் உங்கள் மைக்ரோஃபோனைப் பயன்படுத்துகின்றன</translation>
 <translation id="3061850252076394168">பேசும் திரையை இயக்கும்</translation>
 <translation id="3066772729299747758">செவ்வாய்க்கிழமை அன்று</translation>
 <translation id="3069085583900247081">சோதனை தோல்வியடைந்தது</translation>
@@ -910,6 +912,7 @@
 <translation id="5170568018924773124">ஃபோல்டரில் காண்பி</translation>
 <translation id="517075088756846356">புதுப்பிப்பைத் தொடர <ph name="DEVICE_NAME" /> இன் பவர் கேபிளை அகற்றிவிட்டு மீண்டும் செருகவும்</translation>
 <translation id="5180108905184566358">போபாப் மரங்கள்</translation>
+<translation id="5180431943345994173">வகுப்புக் கருவிகளில் இருந்து உள்ளடக்கத்தை உங்கள் ஆசிரியர் அகற்றியுள்ளார்</translation>
 <translation id="5180712487038406644">உணர்வுபூர்வமான வண்ணம்</translation>
 <translation id="5190187232518914472">உங்களின் மனதிற்கினிய நினைவுகளை அசைபோடுங்கள். ஆல்பங்களைச் சேர்க்கவோ திருத்தவோ <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />ஸிற்குச் செல்லுங்கள்.</translation>
 <translation id="5212593641110061691">டேப்லாய்டு</translation>
@@ -1003,6 +1006,7 @@
 <translation id="5628106863521633649">கிடைக்கும் மொழிகள்</translation>
 <translation id="5630438231335788050">பௌஹாஸ்</translation>
 <translation id="5631759159893697722">சுருக்கம்</translation>
+<translation id="5655084389678168978">உங்கள் ஆசிரியர் வகுப்புக் கருவிகளில் புதிய உள்ளடக்கத்தைச் சேர்த்துள்ளார்</translation>
 <translation id="5655283760733841251">கீபோர்டு ஒளிர்வை அதிகரிக்கும்</translation>
 <translation id="5655296450510165335">சாதனத்தைப் பதிவுசெய்தல்</translation>
 <translation id="5655776422854483175">அச்சுப் பணிகள் ஏதுமில்லை</translation>
@@ -1528,6 +1532,7 @@
 <translation id="7971535376154084247">பொதுவான கட்டுப்பாடுகள்</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> நெட்வொர்க்கில் இணைக்க, அமைப்புகளுக்குச் செல்லவும்</translation>
 <translation id="7978412674231730200">தனிப்பட்ட விசை</translation>
+<translation id="7979468455552394856">மாணவர்களுடன் வகுப்புக் கருவிகள் இணைக்கப்பட்டுள்ளன</translation>
 <translation id="7982789257301363584">நெட்வொர்க்</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" ஆப்ஸ் தானாகத் தொடங்கப்பட்டது}other{# ஆப்ஸ் தானாகத் தொடங்கப்பட்டன}}</translation>
 <translation id="7994702968232966508">EAP முறை</translation>

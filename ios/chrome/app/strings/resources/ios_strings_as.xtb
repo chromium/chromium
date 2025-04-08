@@ -526,6 +526,7 @@
 <translation id="3167868116600277716">ডিস্ক’ভাৰৰ ফীড</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3174662312949010067">আপুনি নিজৰ অন্য ডিভাইচসমূহতো ছেভ কৰি ৰখা পাছৱৰ্ড ব্যৱহাৰ কৰিব পাৰে।</translation>
+<translation id="3177338796769255211">আপোনাৰ আটাইবোৰ ডিভাইচত নিজৰ বুকমাৰ্ক আৰু আন বহুতো লাভ কৰিবলৈ ছাইন ইন কৰক</translation>
 <translation id="3181954750937456830">সুৰক্ষিত ব্ৰাউজিং (আপোনাৰ ডিভাইচটোক বিপজ্জনক ছাইটৰ পৰা সুৰক্ষা প্ৰদান কৰে)</translation>
 <translation id="3190736958609431397">ট্ৰেক কৰা বন্ধ কৰক</translation>
 <translation id="3208260410153224535">আপোনাৰ প্ৰতিষ্ঠানে ছাইন ইন কৰাটো অফ কৰিছে। নতুন বুকমাৰ্ক, পাছৱৰ্ড আৰু অধিক কেৱল এই ডিভাইচত ছেভ কৰা হ'ব।</translation>
@@ -1126,6 +1127,7 @@
 <translation id="573974402615125334">টেবৰ গোটসমূহত শ্বেয়াৰ কৰিবলৈ, যোগদান কৰিবলৈ আৰু সহযোগিতা কৰিবলৈ, আপোনাৰ ইতিহাস আৰু টেবসমূহ ছিংক কৰক</translation>
 <translation id="5740123193752401435">সন্ধান টেব…</translation>
 <translation id="5744274077973758795"><ph name="FEATURE_NAME" />ৰ জাননী অন কৰা হৈছে</translation>
+<translation id="5745598824054949526">কোনো পাঠ বিচাৰি পোৱা নগ’ল</translation>
 <translation id="574762237186762643">অনুষ্ঠান</translation>
 <translation id="5749158352074143502">এই টেবটোৰ জৰিয়তে অব্যাহত ৰাখক</translation>
 <translation id="5753021559215751319">পাছৱৰ্ড ছেভ কৰক</translation>
@@ -1289,6 +1291,7 @@
 <translation id="6410883413783534063">একে সময়তে বেলেগ বেলেগ পৃষ্ঠালৈ যাবলৈ টেবসমূহ খোলক</translation>
 <translation id="6416807286621280684">আপোনাৰ ট্ৰেক কৰা পেকেজসমূহ আৰু ডেলিভাৰী সম্পৰ্কীয় আপডে’ট।</translation>
 <translation id="6418346271604475326">PDF সাজু কৰি থকা হৈছে</translation>
+<translation id="6421038304268477484">অনুবাদ কৰা পাঠ</translation>
 <translation id="6429213933892582367">পাছৱৰ্ডৰ বিকল্পসমূহ খোলক</translation>
 <translation id="6434591244308415567">আসোঁৱাহ হৈছে। পাছত আকৌ চেষ্টা কৰক।</translation>
 <translation id="6435307030888827407">ছাইন আউট হৈ থাকক</translation>
@@ -1973,6 +1976,7 @@
 <translation id="9097506547406246598">আনফ’ল’ কৰিব নোৱাৰি। কিবা ভুল হ’ল।</translation>
 <translation id="9098541895599151034"><ph name="NUMBER_OF_ACCOUNTS" /> টা পাছৱৰ্ড মচিবনে?</translation>
 <translation id="9099233023029360602">প্ৰতিবাৰতে কোনটো একাউণ্ট ব্যৱহাৰ কৰিব লাগে সোধক</translation>
+<translation id="9099821309562615674">আপুনি অনুবাদ কৰি থকা পাঠখিনি স্পষ্ট হোৱাটো আৰু ফ্ৰে’মত থকাটো নিশ্চিত কৰক।</translation>
 <translation id="9100610230175265781">পাছফ্ৰেজ আৱশ্যক</translation>
 <translation id="91023216973987714">পৰিশোধ পদ্ধতি</translation>
 <translation id="9106655997975673326">"<ph name="SOURCE_DEVICE" />"ৰ পৰা</translation>

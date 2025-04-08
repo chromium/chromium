@@ -1127,6 +1127,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="573974402615125334">I rannu, ymuno a chydweithio mewn grwpiau tabiau, cysonwch eich hanes a'ch tabiau</translation>
 <translation id="5740123193752401435">Chwilio tabiau…</translation>
 <translation id="5744274077973758795">Hysbysiadau <ph name="FEATURE_NAME" /> wedi'u troi ymlaen</translation>
+<translation id="5745598824054949526">Ni chanfuwyd testun</translation>
 <translation id="574762237186762643">Digwyddiadau</translation>
 <translation id="5749158352074143502">Parhau gyda'r tab hwn</translation>
 <translation id="5753021559215751319">Cadw cyfrinair</translation>
@@ -1290,6 +1291,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="6410883413783534063">Agor tabiau i fynd i wahanol dudalennau ar yr un pryd</translation>
 <translation id="6416807286621280684">Eich pecynnau wedi'u holrhain a diweddariadau dosbarthu.</translation>
 <translation id="6418346271604475326">Wrthi'n paratoi PDF</translation>
+<translation id="6421038304268477484">Testun wedi'i gyfieithu</translation>
 <translation id="6429213933892582367">Agorwch Opsiynau Cyfrinair</translation>
 <translation id="6434591244308415567">Bu gwall. Rhowch gynnig arall arni'n nes ymlaen.</translation>
 <translation id="6435307030888827407">Aros wedi'ch allgofnodi</translation>
@@ -1968,6 +1970,7 @@ Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol 
 <translation id="9097506547406246598">Methu â dad-ddilyn. Aeth rhywbeth o'i le.</translation>
 <translation id="9098541895599151034">Dileu <ph name="NUMBER_OF_ACCOUNTS" /> o Gyfrineiriau?</translation>
 <translation id="9099233023029360602">Gofyn pa gyfrif i'w ddefnyddio pob amser</translation>
+<translation id="9099821309562615674">Gwnewch yn siŵr bod y testun rydych chi'n ei gyfieithu yn glir ac yn y ffrâm.</translation>
 <translation id="9100610230175265781">Angen cyfrinymadrodd</translation>
 <translation id="91023216973987714">Dulliau talu</translation>
 <translation id="9106655997975673326">O "<ph name="SOURCE_DEVICE" />"</translation>

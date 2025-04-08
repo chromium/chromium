@@ -351,6 +351,7 @@
 <translation id="2438248248625638801">Vytváření názvů nahrávek</translation>
 <translation id="2446553403094072641">Přesnost pohyblivé řádové čárky</translation>
 <translation id="2448312741937722512">Typ</translation>
+<translation id="2448857983905133469">Nástroje pro výuku</translation>
 <translation id="2468124392950503650">Vyberte pokyn nebo si projděte <ph name="BEGIN_LINK_PROMPTING_GUIDE" />průvodce pokyny<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Pomocí funkce Pomozte mi s psaním založené na Google AI můžete vytvořit koncept nebo vylepšit stávající text</translation>
 <translation id="2475982808118771221">Došlo k chybě</translation>
@@ -449,6 +450,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Koncový bod</translation>
 <translation id="3060579846059757016">Osnova</translation>
+<translation id="3060798442805232711">Nástroje pro výuku používají váš mikrofon</translation>
 <translation id="3061850252076394168">zapnout poslech vybraného textu</translation>
 <translation id="3066772729299747758">v úterý</translation>
 <translation id="3069085583900247081">Test se nezdařil</translation>
@@ -910,6 +912,7 @@
 <translation id="5170568018924773124">Zobrazit ve složce</translation>
 <translation id="517075088756846356">Pokud chcete v procesu aktualizace pokračovat, odpojte od zařízení <ph name="DEVICE_NAME" /> napájecí kabel a znovu ho připojte</translation>
 <translation id="5180108905184566358">baobaby</translation>
+<translation id="5180431943345994173">Váš učitel odebral obsah z Nástrojů pro výuku</translation>
 <translation id="5180712487038406644">Výrazná</translation>
 <translation id="5190187232518914472">Oživte své oblíbené vzpomínky. Alba můžete přidat a upravit ve <ph name="LINK_BEGIN" />Fotkách Google<ph name="LINK_END" />.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
@@ -1003,6 +1006,7 @@
 <translation id="5628106863521633649">Dostupné jazyky</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">abstrakt</translation>
+<translation id="5655084389678168978">Váš učitel přidal do Nástrojů pro výuku nový obsah</translation>
 <translation id="5655283760733841251">Zvýšit jas</translation>
 <translation id="5655296450510165335">Registrace zařízení</translation>
 <translation id="5655776422854483175">Žádné tiskové úlohy</translation>
@@ -1528,6 +1532,7 @@ Pokud přepisy chcete získat, stáhněte si pro ně model (až 100 MB).</trans
 <translation id="7971535376154084247">Obecné ovládací prvky</translation>
 <translation id="7977800524392185497">Pokud se chcete připojit k síti <ph name="NETWORK_NAME" />, přejděte do sekce Nastavení</translation>
 <translation id="7978412674231730200">Soukromý klíč</translation>
+<translation id="7979468455552394856">Nástroje pro výuku jsou propojené se studenty</translation>
 <translation id="7982789257301363584">Síť</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{Byla automaticky spuštěna aplikace <ph name="APP_NAME_1" />}few{Byly automaticky spuštěny # aplikace}many{Bylo automaticky spuštěno # aplikace}other{Bylo automaticky spuštěno # aplikací}}</translation>
 <translation id="7994702968232966508">Metoda EAP</translation>

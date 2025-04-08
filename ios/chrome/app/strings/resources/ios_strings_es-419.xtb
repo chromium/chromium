@@ -261,6 +261,7 @@
 <translation id="2010008505735295285">Volver a cargar</translation>
 <translation id="2015722694326466240">Para ver las contraseñas, primero debes establecer una en tu dispositivo.</translation>
 <translation id="201759455285471444">Expandir grupo de pestañas.</translation>
+<translation id="202070562065520783">Explícame esto</translation>
 <translation id="2021670401941426298">Consulta las instrucciones de tu motor de búsqueda para borrar el historial de búsqueda (si corresponde).</translation>
 <translation id="2044394949148788042">Abre la cuadrícula de pestañas</translation>
 <translation id="20485545164632846">nuevo elemento</translation>
@@ -525,6 +526,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="3167868116600277716">Feed de Descubre</translation>
 <translation id="3169472444629675720">Descubre</translation>
 <translation id="3174662312949010067">También puedes usar las contraseñas guardadas en tus otros dispositivos.</translation>
+<translation id="3177338796769255211">Accede para obtener tus favoritos y más en todos tus dispositivos</translation>
 <translation id="3181954750937456830">Navegación segura (te protege a ti y tu dispositivo de sitios peligrosos)</translation>
 <translation id="3190736958609431397">Dejar de realizar el seguimiento</translation>
 <translation id="3208260410153224535">Tu organización desactivó el acceso. Los favoritos, las contraseñas y otros elementos nuevos se guardarán solo en este dispositivo.</translation>
@@ -1125,6 +1127,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="573974402615125334">Para compartir grupos de pestañas, unirte a ellos y colaborar, sincroniza tu historial y tus pestañas</translation>
 <translation id="5740123193752401435">Buscar pestañas…</translation>
 <translation id="5744274077973758795">Se activaron las notificaciones de <ph name="FEATURE_NAME" /></translation>
+<translation id="5745598824054949526">No se encontró texto</translation>
 <translation id="574762237186762643">Eventos</translation>
 <translation id="5749158352074143502">Continuar con esta pestaña</translation>
 <translation id="5753021559215751319">Guardar contraseña</translation>
@@ -1288,6 +1291,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="6410883413783534063">Abre pestañas para visitar diferentes páginas al mismo tiempo</translation>
 <translation id="6416807286621280684">Tus paquetes con seguimiento y actualizaciones de entregas.</translation>
 <translation id="6418346271604475326">Preparando PDF</translation>
+<translation id="6421038304268477484">Texto traducido</translation>
 <translation id="6429213933892582367">Abre Opciones de contraseña</translation>
 <translation id="6434591244308415567">Se produjo un error. Vuelve a intentarlo más tarde.</translation>
 <translation id="6435307030888827407">Continuar sin acceder</translation>
@@ -1966,6 +1970,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="9097506547406246598">No se puede dejar de seguir. Se produjo un error.</translation>
 <translation id="9098541895599151034">¿Quieres borrar <ph name="NUMBER_OF_ACCOUNTS" /> contraseñas?</translation>
 <translation id="9099233023029360602">Preguntar siempre qué cuenta usar</translation>
+<translation id="9099821309562615674">Asegúrate de que el texto que traducirás sea legible y esté bien encuadrado.</translation>
 <translation id="9100610230175265781">Se necesita una frase de contraseña.</translation>
 <translation id="91023216973987714">Formas de pago</translation>
 <translation id="9106655997975673326">De "<ph name="SOURCE_DEVICE" />"</translation>

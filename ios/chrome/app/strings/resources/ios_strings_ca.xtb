@@ -261,6 +261,7 @@
 <translation id="2010008505735295285">Torna a carregar</translation>
 <translation id="2015722694326466240">Per veure les contrasenyes, primer has d'establir una contrasenya al dispositiu.</translation>
 <translation id="201759455285471444">Desplega el grup de pestanyes.</translation>
+<translation id="202070562065520783">Explica-m'ho</translation>
 <translation id="2021670401941426298">Consulta les instruccions del teu motor de cerca per suprimir l'historial de cerques, si escau.</translation>
 <translation id="2044394949148788042">Obre la quadrícula de pestanyes</translation>
 <translation id="20485545164632846">element nou</translation>
@@ -525,6 +526,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="3167868116600277716">Feed de Discover</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3174662312949010067">També pots utilitzar les contrasenyes desades en els teus altres dispositius.</translation>
+<translation id="3177338796769255211">Inicia la sessió per obtenir les teves adreces d'interès i més en tots els teus dispositius</translation>
 <translation id="3181954750937456830">Navegació segura (us protegeix a tu i al teu dispositiu de llocs web perillosos)</translation>
 <translation id="3190736958609431397">Deixa de fer el seguiment</translation>
 <translation id="3208260410153224535">La teva organització ha desactivat l'inici de sessió. Les adreces d'interès noves, les contrasenyes i altres dades només es desaran en aquest dispositiu.</translation>
@@ -1125,6 +1127,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="573974402615125334">Per compartir grups de pestanyes, unir-t'hi i col·laborar-hi, sincronitza l'historial i les pestanyes</translation>
 <translation id="5740123193752401435">Cerca pestanyes…</translation>
 <translation id="5744274077973758795">Les notificacions per a <ph name="FEATURE_NAME" /> estan activades</translation>
+<translation id="5745598824054949526">No s'ha trobat text</translation>
 <translation id="574762237186762643">Esdeveniments</translation>
 <translation id="5749158352074143502">Continua amb aquesta pestanya</translation>
 <translation id="5753021559215751319">Desa la contrasenya</translation>
@@ -1288,6 +1291,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6410883413783534063">Obre pestanyes per visitar diverses pàgines al mateix temps</translation>
 <translation id="6416807286621280684">Novetats sobre les entregues i sobre els paquets que segueixes.</translation>
 <translation id="6418346271604475326">Preparant el PDF</translation>
+<translation id="6421038304268477484">Text traduït</translation>
 <translation id="6429213933892582367">Obre Opcions de contrasenya</translation>
 <translation id="6434591244308415567">S'ha produït un error. Torna-ho a provar més tard.</translation>
 <translation id="6435307030888827407">Continua sense iniciar la sessió</translation>
@@ -1966,6 +1970,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="9097506547406246598">No es pot deixar de seguir. S'ha produït un error.</translation>
 <translation id="9098541895599151034">Vols suprimir <ph name="NUMBER_OF_ACCOUNTS" /> contrasenyes?</translation>
 <translation id="9099233023029360602">Pregunta cada vegada quin compte s'utilitza</translation>
+<translation id="9099821309562615674">Assegura't que el text que vols traduir es vegi bé i estigui enquadrat.</translation>
 <translation id="9100610230175265781">S'ha d'introduir una frase de contrasenya </translation>
 <translation id="91023216973987714">Formes de pagament</translation>
 <translation id="9106655997975673326">De <ph name="SOURCE_DEVICE" /></translation>

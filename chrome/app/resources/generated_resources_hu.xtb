@@ -44,7 +44,6 @@
 <translation id="1026822031284433028">Kép betöltése</translation>
 <translation id="1026959648338730078">Windows Hello vagy külső biztonsági kulcs</translation>
 <translation id="1028700151766901954">Ok: A Régi böngészők támogatása alapértelmezés szerint továbbra is használható marad itt: <ph name="DEFAULT_OPEN_BROWSER" />.</translation>
-<translation id="1028823395684328817">Ha továbbra is szeretné használni a Google-fiókjában lévő jelszavakat és egyebeket, igazolja személyazonosságát</translation>
 <translation id="102916930470544692">Azonosítókulcs</translation>
 <translation id="1029317248976101138">Nagyítás</translation>
 <translation id="1029526375103058355">Érintéssel kattintás</translation>
@@ -818,7 +817,6 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="1558671750917454373">A következőre való átküldés folytatása: <ph name="DEVICE_NAME" /></translation>
 <translation id="1561331397460162942">Ez lehetővé teszi a helyhezhozzáférést az alkalmazások, a helymeghatározási jogosultsággal rendelkező webhelyek és a rendszerszolgáltatások számára.</translation>
 <translation id="1562119309884184621">E névjegyre a hozzáadása után az eszköze emlékszik majd a legközelebbi megosztáskor</translation>
-<translation id="1563137369682381456">Lejárat dátuma</translation>
 <translation id="1566049601598938765">Webhely</translation>
 <translation id="15662109988763471">A kiválasztott nyomtató nem áll rendelkezésre, vagy nincs megfelelően telepítve. Ellenőrizze a nyomtatót, vagy válasszon egy másikat.</translation>
 <translation id="1566329594234563241">Amikor inaktív, és áramforráshoz van csatlakoztatva</translation>
@@ -3480,7 +3478,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3420501302812554910">A belső biztonsági hardverkulcsot vissza kell állítani</translation>
 <translation id="3421387094817716717">Nyilvános kulcs elliptikus görbéje</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Megjegyzés<ph name="END_BOLD" />: Előfordulhat, hogy hasonló hanggal vagy hangfelvétellel is hozzá lehet férni az Ön személyes találataihoz vagy a Segédjéhez.</translation>
-<translation id="3421835120203732951">Új profil hozzáadása</translation>
 <translation id="3422989558057853751">Utolsó kijelölt elem, a kijelölés megszüntetésével kilép a kijelölési módból</translation>
 <translation id="3423111258700187173">Találatok itt: <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">További információ erről az AI-funkcióról</translation>
@@ -9341,7 +9338,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7622768823216805500">A webhelyek általában fizetéskezelőket telepítenek bizonyos vásárlási funkciók (például az egyszerűbb fizetés) biztosítása érdekében</translation>
 <translation id="7622966771025050155">Váltás rögzített lapra</translation>
 <translation id="7624337243375417909">caps lock kikapcsolva</translation>
-<translation id="7625025537587898155">Új profil hozzáadása</translation>
 <translation id="7625568159987162309">A webhelyek engedélyeinek és az általuk tárolt adatoknak a megtekintése</translation>
 <translation id="7625823789272218216">Új lap balra</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), Grade <ph name="GRADE" /></translation>
@@ -11759,7 +11755,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="98235653036850093">Kedves <ph name="PROFILE_NAME" />!</translation>
 <translation id="983192555821071799">Az összes lap bezárása</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> – A kamera és a mikrofon felvételt készít</translation>
-<translation id="984275831282074731">Fizetési módok</translation>
 <translation id="984705303330760860">Helyesírás-ellenőrzésnél használt nyelvek felvétele</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Általános</translation>

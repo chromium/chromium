@@ -99,7 +99,6 @@
 <translation id="1175364870820465910">인쇄(&amp;P)</translation>
 <translation id="1175393348063009671">사진(무광)</translation>
 <translation id="1175875016430184367">오른쪽 트리플 스테이플</translation>
-<translation id="1176123604678140687">만료 월</translation>
 <translation id="1177548198167638471">다시 묻지 않음</translation>
 <translation id="1177863135347784049">맞춤설정</translation>
 <translation id="1178581264944972037">일시중지</translation>
@@ -333,7 +332,6 @@
       &lt;p&gt;&lt;strong&gt;설정&lt;/strong&gt; 앱의 &lt;strong&gt;일반&lt;/strong&gt; 섹션에서 날짜와 시간을 맞추세요.&lt;/p&gt;</translation>
 <translation id="1559839503761818503"><ph name="DATE" /> <ph name="TIME" />에 관리자가 기기를 다시 시작합니다.</translation>
 <translation id="1562805467275776390">자동차 경주</translation>
-<translation id="1563137369682381456">만료일</translation>
 <translation id="1563755205047885671">액션 및 플랫폼 게임</translation>
 <translation id="1564634006476980707">검색 URL에 권장되는 HTTPS 스키마: <ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">주소, 인터페이스 구성, 연결 품질 등의 네트워킹 정보</translation>
@@ -937,7 +935,6 @@
 <translation id="2606760465469169465">자동 인증</translation>
 <translation id="2608019759319359258">차단된 주제는 광고를 맞춤설정하는 데 사용되지 않습니다.</translation>
 <translation id="2610561535971892504">클릭하여 복사</translation>
-<translation id="2612676031748830579">카드 번호</translation>
 <translation id="2612993535136743634">기기 및 Google 계정에 저장된 모든 보안 코드가 삭제됩니다.</translation>
 <translation id="2616412942031748191">검색엔진 최적화 및 마케팅</translation>
 <translation id="2618206371527040026">학술 회의 및 간행물</translation>
@@ -3338,7 +3335,6 @@
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">부모님의 선택사항이 적용된 YouTube 사용하기</translation>
 <translation id="6779348349813025131">Google 비밀번호 관리자에 MacOS 키체인 액세스 권한 필요</translation>
-<translation id="6782656837469339439">만료 연도</translation>
 <translation id="6785990323398321538">언제든지 Chrome 설정에서 검색엔진을 변경할 수 있습니다.</translation>
 <translation id="6786145470008421571">봉투 6 x 9 in</translation>
 <translation id="67862343314499040">보라색</translation>

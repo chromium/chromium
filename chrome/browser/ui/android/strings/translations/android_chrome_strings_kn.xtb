@@ -77,6 +77,7 @@
 <translation id="1298077576058087471">ಶೇಕಡಾ 60 ರಷ್ಟು ಡೇಟಾವನ್ನು ಉಳಿಸಿ, ಇಂದಿನ ಸುದ್ದಿಗಳನ್ನು ಓದಿ</translation>
 <translation id="1303339473099049190">ಆ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಕಂಡುಹಿಡಿಯಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ. ಬರೆದಿರುವುದು ಸರಿ ಇದೆಯೇ ಎಂದು ಪರಿಶೀಲಿಸಿ ಹಾಗೂ ಮತ್ತೊಮ್ಮೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - <ph name="DEVICE_NAME" /> ಸಾಧನದಿಂದ ಕಳುಹಿಸಲಾಗಿದೆ</translation>
+<translation id="1318262688555255786">ವೆಬ್‌ಪುಟ <ph name="PAGE_TITLE" /> ಗೆ ಲಿಂಕ್ ಅನ್ನು ಹಂಚಿಕೊಳ್ಳಿ. ಮೂಲ: <ph name="PAGE_URL" /></translation>
 <translation id="1320912611264252795">ಬುಕ್‌ಮಾರ್ಕ್ ಸೇವ್ ಮಾಡಿ ಫ್ಲೋ ಫೋಲ್ಡರ್‌ಗಳನ್ನು ಪೂರ್ಣ ಎತ್ತರದಲ್ಲಿ ತೆರೆಯಲಾಗಿದೆ</translation>
 <translation id="1327257854815634930">ನ್ಯಾವಿಗೇಶನ್ ಇತಿಹಾಸ ತೆರೆದಿದೆ</translation>
 <translation id="1331212799747679585">Chrome ಅಪ್‌ಡೇಟ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ. ಇನ್ನಷ್ಟು ಆಯ್ಕೆಗಳು</translation>
@@ -455,6 +456,7 @@
 <translation id="3072980200212375806"><ph name="APP_NAME" />, Chrome ನಲ್ಲಿ ತೆರೆಯುತ್ತದೆ. ಮುಂದುವರಿಯುವ ಮೂಲಕ, ನೀವು <ph name="BEGIN_LINK1" />Google ಸೇವಾ ನಿಯಮಗಳು<ph name="END_LINK1" />, ಹಾಗೂ <ph name="BEGIN_LINK2" />Google Chrome ಮತ್ತು ChromeOS ಹೆಚ್ಚುವರಿ ಸೇವಾ ನಿಯಮಗಳಿಗೆ<ph name="END_LINK2" /> ಸಮ್ಮತಿಸುತ್ತೀರಿ. <ph name="BEGIN_LINK3" />ಗೌಪ್ಯತೆ ನೀತಿ<ph name="END_LINK3" /> ಸಹ ಅನ್ವಯಿಸುತ್ತದೆ.</translation>
 <translation id="3080525922482950719">ನೀವು ಪುಟಗಳನ್ನು ನಂತರ ಅಥವಾ ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿ ಓದಲು ಉಳಿಸಬಹುದು</translation>
 <translation id="3087734570205094154">ಕೆಳಗೆ</translation>
+<translation id="3088687687599869821">ಪುಟ ನ್ಯಾವಿಗೇಶನ್</translation>
 <translation id="3091010850649238832">ಕ್ಲಿಪ್‌ಬೋರ್ಡ್ ವಿಷಯಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="3098745985164956033">ನಿಮಗಾಗಿ ವಿವರಣೆಗಳನ್ನು ಸುಧಾರಿಸಲು, ಕೆಲವು ಚಿತ್ರಗಳನ್ನು Google ಗೆ ಕಳುಹಿಸಲಾಗಿದೆ</translation>
 <translation id="3114507951000454849">ಇಂದಿನ ಸುದ್ದಿಗಳನ್ನು ಓದಿ <ph name="NEWS_ICON" /></translation>
@@ -516,6 +518,7 @@
 <translation id="3435465986463792564">ಹಲವು ವಿಂಡೋಗಳನ್ನು ತೆರೆದಿರುವಿರಾ? ನೀವು ಅವುಗಳನ್ನು ಇಲ್ಲಿಂದಲೇ ನಿರ್ವಹಿಸಬಹುದು</translation>
 <translation id="3435575784518354875">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳಿಗೆ ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ಉಳಿಸಿಕೊಳ್ಳಲು, ಅವುಗಳನ್ನು ಈಗಲೇ ಎಕ್ಸ್‌ಪೋರ್ಟ್ ಮಾಡಿ, Google Play ಸೇವೆಗಳನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ, ನಂತರ ಅವುಗಳನ್ನು Google Password Manager ಗೆ ಪುನಃ ಇಂಪೋರ್ಟ್ ಮಾಡಿಕೊಳ್ಳಿ. <ph name="BEGIN_LINK" />ಸಂಪೂರ್ಣ ಸೂಚನೆಗಳನ್ನು ನೋಡಿ<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">ಭದ್ರತೆ</translation>
+<translation id="3435914367318771664">ಹೊಸ ಗುಂಪಿಗೆ ಟ್ಯಾಬ್ ಸೇರಿಸಿ</translation>
 <translation id="3439276997620616816">ನಿಮ್ಮ ಇತ್ತೀಚಿನ ಟ್ಯಾಬ್‌ಗಳನ್ನು ನೀವು ಇಲ್ಲಿ ಕಾಣಬಹುದು</translation>
 <translation id="3443221991560634068">ಪ್ರಸ್ತುತ ಪುಟ ಮರುಲೋಡ್ ಮಾಡಿ</translation>
 <translation id="3444179773590444986">ಸೈಟ್‌ಗಳಿಗಾಗಿ ಡಾರ್ಕ್ ಥೀಮ್‌ ಕುರಿತು ಪ್ರತಿಕ್ರಿಯೆಯನ್ನು ಹಂಚಿಕೊಳ್ಳಲು ಬಯಸುವಿರಾ?</translation>
@@ -781,6 +784,7 @@
 <translation id="4684427112815847243">ಪ್ರತಿಯೊಂದನ್ನು ಸಿಂಕ್ ಮಾಡಿ</translation>
 <translation id="4685741273709472646">ಡ್ರಾಪ್‌ಡೌನ್ ಪಟ್ಟಿಯಿಂದ ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="4687718960473379118">ಸೈಟ್ ಶಿಫಾರಸು ಮಾಡಿದ ಜಾಹೀರಾತುಗಳು</translation>
+<translation id="468924408576231679">ವೆಬ್‌ಪುಟ <ph name="PAGE_TITLE" /> ಗೆ ಲಿಂಕ್ ಅನ್ನು ಕಾಪಿ ಮಾಡಿ. ಮೂಲ: <ph name="PAGE_URL" /></translation>
 <translation id="469286762610133730">ಉತ್ತಮ ಕಂಟೆಂಟ್‌ ಅನ್ನು ಪಡೆಯಿರಿ</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 ಮತ್ತು ಇನ್ನೂ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 ಮತ್ತು ಇನ್ನೂ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 ಮತ್ತು ಇನ್ನೂ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4698061626562952596">ನಿಮ್ಮ ನಿಷ್ಕ್ರಿಯ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಇಲ್ಲಿ ಪರಿಶೀಲಿಸಿ</translation>
@@ -1123,6 +1127,7 @@
 <translation id="6205314730813004066">ಜಾಹೀರಾತು ಗೌಪ್ಯತೆ</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> ಅಲ್ಲವೇ?</translation>
 <translation id="6211386937064921208">ಈ ಪುಟವನ್ನು ಪೂರ್ವವೀಕ್ಷಣೆ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
+<translation id="6212567362666004597">ಗುಂಪಿಗೆ ಟ್ಯಾಬ್‌ ಸೇರಿಸಿ</translation>
 <translation id="6221633008163990886">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ರಫ್ತುಮಾಡಲು ಅನ್‌ಲಾಕ್ ಮಾಡಿ</translation>
 <translation id="6225572914528673855">ವಿಳಾಸ ಪಟ್ಟಿ</translation>
 <translation id="6232535412751077445">‘ಟ್ರ್ಯಾಕ್ ಮಾಡಬೇಡಿ’ ಸಕ್ರಿಯಗೊಳಿಸುವುದು ಎಂದರೆ, ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಟ್ರಾಫಿಕ್ ಜೊತೆ ವಿನಂತಿಯನ್ನು ಸೇರಿಸಿಕೊಳ್ಳಲಾಗುತ್ತದೆ ಎಂದಾಗಿದೆ. ವಿನಂತಿಗೆ ವೆಬ್‌ಸೈಟ್‌ ಸ್ಪಂದಿಸುತ್ತದೆಯೇ ಹಾಗೂ ವಿನಂತಿಯನ್ನು ಹೇಗೆ ಅರ್ಥೈಸಿಕೊಳ್ಳುತ್ತದೆ ಎಂಬುದರ ಮೇಲೆ ಯಾವುದೇ ಪರಿಣಾಮ ಅವಲಂಬಿಸಿರುತ್ತದೆ.
@@ -1150,6 +1155,7 @@
 <translation id="6324916366299863871">ಶಾರ್ಟ್‌ಕಟ್ ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="6324977638108296054">ಹೈಲೈಟ್ ಮಾಡುವುದಕ್ಕಾಗಿ ಲಿಂಕ್ ಅನ್ನು ರಚಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> ಮೂಲಕ ಹಂಚು</translation>
+<translation id="6335454563754888572">ಪುಟವನ್ನು ಸೂಚಿಸುವ URL ಅನ್ನು ಎಡಿಟ್ ಮಾಡಿ: <ph name="PAGE_URL" /></translation>
 <translation id="6337234675334993532">ಎನ್‌ಕ್ರಿಪ್ಶನ್</translation>
 <translation id="6340526405444716530">ವೈಯಕ್ತೀಕರಣ</translation>
 <translation id="6341580099087024258">ಫೈಲ್‌ಗಳನ್ನು ಎಲ್ಲಿ ಉಳಿಸಬೇಕೆಂದು ಕೇಳಿ</translation>
@@ -1193,6 +1199,7 @@
 <translation id="6486420406192123355">ಈ PDF ಫೈಲ್ ಅಸುರಕ್ಷಿತ ಕನೆಕ್ಷನ್‌ ಅನ್ನು ಬಳಸಿಕೊಂಡು ಸೈಟ್‌ನಿಂದ ಬಂದಿದೆ</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{ಫೈಲ್ ಡೌನ್‌ಲೋಡ್‌ ಮಾಡಲಾಗಿದೆ}one{# ಡೌನ್‌ಲೋಡ್‌ಗಳು ಪೂರ್ಣಗೊಂಡಿವೆ}other{# ಡೌನ್‌ಲೋಡ್‌ಗಳು ಪೂರ್ಣಗೊಂಡಿವೆ}}</translation>
 <translation id="6508722015517270189">Chrome ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
+<translation id="6513924416597632811">ಇದಕ್ಕಾಗಿ ಹುಡುಕಾಟ ಫಲಿತಾಂಶಗಳ ಪುಟಕ್ಕೆ ಲಿಂಕ್ ಅನ್ನು ಕಾಪಿ ಮಾಡಿ: <ph name="SEARCH_QUERY" />. ಮೂಲ: <ph name="PAGE_URL" /></translation>
 <translation id="6518133107902771759">ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="6527303717912515753">ಹಂಚಿಕೊಳ್ಳು</translation>
 <translation id="652948702951888897">Chrome ಇತಿಹಾಸ</translation>
@@ -1604,6 +1611,7 @@
 <translation id="8221401890884589479">ನಿಮಗೆ ಬೇಡವಾದ ಸೈಟ್‌ಗಳನ್ನು ನೀವು ನಿರ್ಬಂಧಿಸಬಹುದು. 30 ದಿನಗಳಿಗಿಂತ ಹಳೆಯದಾದ ಸೈಟ್‌ಗಳನ್ನು ಪಟ್ಟಿಯಿಂದ Chrome ಸ್ವಯಂ ಅಳಿಸುತ್ತದೆ. <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="8221985041778490865">ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ಅಳಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="8223642481677794647">ಫೀಡ್ ಕಾರ್ಡ್ ಮೆನು</translation>
+<translation id="82296173028782770">ಹುಡುಕಾಟ ಪ್ರಶ್ನೆಯನ್ನು ಎಡಿಟ್ ಮಾಡಿ: <ph name="SEARCH_QUERY" /></translation>
 <translation id="8236063039629122676">ಈಗ, ನೀವು ಭೇಟಿ ನೀಡಿದ ಹಿಂದಿನ ಪುಟಗಳನ್ನು ನೋಡಲು ಬಲ ಸ್ವೈಪ್ ನಿಮ್ಮನ್ನು ಹಿಂದಕ್ಕೆ ಕೊಂಡೊಯ್ಯುತ್ತದೆ ಮತ್ತು ಎಡ ಸ್ವೈಪ್ ನಿಮ್ಮನ್ನು ಮುಂದಕ್ಕೆ ಕೊಂಡೊಯ್ಯುತ್ತದೆ</translation>
 <translation id="8236097722223016103">ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳಿಗೆ ಸೇರಿಸಿ</translation>
 <translation id="8243077599929149377">ನಿಮ್ಮ ಬಳಕೆದಾರರ ಹೆಸರನ್ನು ಸೇರಿಸಿ</translation>
@@ -1752,6 +1760,7 @@
 <translation id="8890668505403261809">ನಿಮ್ಮ ಅಜ್ಞಾತ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಹುಡುಕಿ</translation>
 <translation id="8898822736010347272">ಹೊಸ ಅಪಾಯಗಳನ್ನು ಕಂಡುಹಿಡಿಯಲು ಮತ್ತು ವೆಬ್‌ನಲ್ಲಿರುವ ಪ್ರತಿಯೊಬ್ಬರನ್ನು ರಕ್ಷಿಸುವುದಕ್ಕೆ ಸಹಾಯ ಮಾಡಲು, ನೀವು ಭೇಟಿ ನೀಡುವ ಕೆಲವು ಪುಟಗಳ URL ಗಳು, ಸೀಮಿತ ಸಿಸ್ಟಂ ಮಾಹಿತಿ ಮತ್ತು ಪುಟಗಳಲ್ಲಿನ ಕೆಲವು ಕಂಟೆಂಟ್ ಅನ್ನು Google ಗೆ ಕಳುಹಿಸುತ್ತದೆ.</translation>
 <translation id="8909135823018751308">ಹಂಚಿಕೊಳ್ಳು...</translation>
+<translation id="8918299437379122615">ಇದಕ್ಕಾಗಿ ಹುಡುಕಾಟ ಫಲಿತಾಂಶಗಳ ಪುಟಕ್ಕೆ ಲಿಂಕ್ ಅನ್ನು ಹಂಚಿಕೊಳ್ಳಿ: <ph name="SEARCH_QUERY" />. ಮೂಲ: <ph name="PAGE_URL" /></translation>
 <translation id="8922289737868596582">ಪುಟಗಳನ್ನು ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿ ಬಳಸಲು ಇನ್ನಷ್ಟು ಆಯ್ಕೆಗಳ ಬಟನ್ ಮೂಲಕ ಡೌನ್‌ಲೋಡ್‌ ಮಾಡಿ</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> ಸಿದ್ಧವಾಗಿದೆ</translation>

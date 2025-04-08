@@ -44,7 +44,6 @@
 <translation id="1026822031284433028">Llwytho llun</translation>
 <translation id="1026959648338730078">Windows Hello neu fysell ddiogelwch allanol</translation>
 <translation id="1028700151766901954">Rheswm: Mae LBS yn aros yn <ph name="DEFAULT_OPEN_BROWSER" /> yn ddiofyn.</translation>
-<translation id="1028823395684328817">Er mwyn parhau i ddefnyddio'r cyfrineiriau a rhagor yn eich Cyfrif Google, cadarnhewch mai chi sydd yno</translation>
 <translation id="102916930470544692">Cod pas</translation>
 <translation id="1029317248976101138">Chwyddo</translation>
 <translation id="1029526375103058355">Tapiwch i glicio</translation>
@@ -821,7 +820,6 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i apiau yn berthnasol i'
 <translation id="1558671750917454373">Parhau â chastio i <ph name="DEVICE_NAME" /></translation>
 <translation id="1561331397460162942">Mae hyn yn caniatáu mynediad lleoliad ar gyfer apiau, gwefannau gyda chaniatâd lleoliad, a gwasanaethau system</translation>
 <translation id="1562119309884184621">Bydd ychwanegu'r cyswllt hwn yn cofio'r tro nesaf y byddant yn rhannu</translation>
-<translation id="1563137369682381456">Dyddiad darfod</translation>
 <translation id="1566049601598938765">Gwefan</translation>
 <translation id="15662109988763471">Nid yw'r argraffydd a ddewiswyd ar gael neu nid yw wedi'i osod yn gywir. Gwiriwch eich argraffydd neu rhowch gynnig ar ddewis argraffydd arall.</translation>
 <translation id="1566329594234563241">Tra'n anweithredol ac wedi'i blygio i mewn</translation>
@@ -1654,7 +1652,6 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="2121825465123208577">Newid maint</translation>
 <translation id="2123766928840368256">Dewiswch ffeil wahanol</translation>
 <translation id="2124930039827422115">{1,plural, =1{Wedi'i raddio <ph name="AVERAGE_RATING" /> gan un defnyddiwr.}zero{Wedi'i raddio <ph name="AVERAGE_RATING" /> gan # defnyddiwr.}two{Wedi'i raddio <ph name="AVERAGE_RATING" /> gan # ddefnyddiwr.}few{Wedi'i raddio <ph name="AVERAGE_RATING" /> gan # defnyddiwr.}many{Wedi'i raddio <ph name="AVERAGE_RATING" /> gan # defnyddiwr.}other{Wedi'i raddio <ph name="AVERAGE_RATING" /> gan # defnyddiwr.}}</translation>
-<translation id="2125715366913703594">Archwilio &amp;Estyniadau</translation>
 <translation id="2126167708562367080">Mae Cysoni wedi'i analluogi gan eich gweinyddwr.</translation>
 <translation id="2127372758936585790">Gwefrydd pŵer isel</translation>
 <translation id="212862741129535676">Canran Meddiannaeth y Cyflwr Amledd</translation>
@@ -3485,7 +3482,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3420501302812554910">Mae angen ailosod yr allwedd ddiogelwch mewnol</translation>
 <translation id="3421387094817716717">Allwedd Gyhoeddus Cromlin Elliptig</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Sylwer:<ph name="END_BOLD" /> Mae'n bosib y bydd llais neu recordiad tebyg yn gallu cael mynediad at eich canlyniadau personol neu Assistant.</translation>
-<translation id="3421835120203732951">Ychwanegu Proffil Newydd</translation>
 <translation id="3422989558057853751">Eitem olaf wedi'i ddewis, bydd ei ddad-ddewis yn gadael y modd dewis</translation>
 <translation id="3423111258700187173">Canlyniadau a ddarganfuwyd yn <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">Dysgu rhagor am y nodwedd AI hon</translation>
@@ -9355,7 +9351,6 @@ es pori a dod o hyd i wefannau y gwnaethoch ymweld â nhw. Gallwch hefyd ofyn cw
 <translation id="7622768823216805500">Mae gwefannau fel arfer yn gosod trinyddion taliadau ar gyfer nodweddion siopa megis talu'n haws</translation>
 <translation id="7622966771025050155">Newid i'r tab a dynnwyd</translation>
 <translation id="7624337243375417909">Mae Caps Lock wedi'i ddifodd</translation>
-<translation id="7625025537587898155">Ychwanegu proffil newydd</translation>
 <translation id="7625568159987162309">Gweld caniatadau a data sy'n cael eu storio ar draws gwefannau</translation>
 <translation id="7625823789272218216">Tab Newydd i'r Chwith</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), Gradd <ph name="GRADE" /></translation>
@@ -11776,7 +11771,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.}}<
 <translation id="98235653036850093">Helo, <ph name="PROFILE_NAME" /></translation>
 <translation id="983192555821071799">Cau pob tab</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - Camera a meicroffon wrthi'n recordio</translation>
-<translation id="984275831282074731">Dulliau talu</translation>
 <translation id="984705303330760860">Ychwanegu ieithoedd gwirio sillafu</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Cyffredinol</translation>

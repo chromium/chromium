@@ -44,7 +44,6 @@
 <translation id="1026822031284433028">載入圖片</translation>
 <translation id="1026959648338730078">Windows Hello 或外部安全金鑰</translation>
 <translation id="1028700151766901954">原因：LBS 預設保存在 <ph name="DEFAULT_OPEN_BROWSER" /> 中。</translation>
-<translation id="1028823395684328817">如要繼續使用 Google 帳戶中的密碼和其他資訊，請驗證身分</translation>
 <translation id="102916930470544692">密碼金鑰</translation>
 <translation id="1029317248976101138">縮放</translation>
 <translation id="1029526375103058355">點按</translation>
@@ -817,7 +816,6 @@
 <translation id="1558671750917454373">繼續投放到「<ph name="DEVICE_NAME" />」</translation>
 <translation id="1561331397460162942">系統服務和具有位置存取權的應用程式、網站將可存取位置資訊</translation>
 <translation id="1562119309884184621">新增這位聯絡人後，下次該聯絡人分享內容時，系統將可辨識出該聯絡人</translation>
-<translation id="1563137369682381456">到期日</translation>
 <translation id="1566049601598938765">網站</translation>
 <translation id="15662109988763471">選取的印表機無法使用或未正確安裝。請檢查你的印表機，或改選其他印表機。</translation>
 <translation id="1566329594234563241">處於閒置狀態並接上電源時</translation>
@@ -1641,7 +1639,6 @@
 <translation id="2121825465123208577">調整大小</translation>
 <translation id="2123766928840368256">選擇其他檔案</translation>
 <translation id="2124930039827422115">{1,plural, =1{平均評分：<ph name="AVERAGE_RATING" /> (評分人數：1)。}other{平均評分：<ph name="AVERAGE_RATING" /> (評分人數：#)。}}</translation>
-<translation id="2125715366913703594">探索擴充功能(&amp;E)</translation>
 <translation id="2126167708562367080">你的管理員停用了同步功能。</translation>
 <translation id="2127372758936585790">低功率充電器</translation>
 <translation id="212862741129535676">頻率狀態占用率</translation>
@@ -3466,7 +3463,6 @@
 <translation id="3420501302812554910">必須重設內部安全金鑰</translation>
 <translation id="3421387094817716717">橢圓曲線公開金鑰</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />注意：<ph name="END_BOLD" />如果有人聲音與你相似或擁有你的聲音錄音檔，或許也能存取你的個人化搜尋結果或 Google 助理。</translation>
-<translation id="3421835120203732951">新增設定檔</translation>
 <translation id="3422989558057853751">這是最後一個選取的項目，取消選取後就會結束選取模式</translation>
 <translation id="3423111258700187173">在「<ph name="FOLDER_TITLE" />」中找到的結果</translation>
 <translation id="3423226218833787854">進一步瞭解這項 AI 功能</translation>
@@ -9320,7 +9316,6 @@
 <translation id="7622768823216805500">網站通常會安裝付款處理常式，以便提供相關的購物功能 (例如更方便的結帳方式)</translation>
 <translation id="7622966771025050155">切換至已擷取的分頁</translation>
 <translation id="7624337243375417909">大寫鎖定模式已關閉</translation>
-<translation id="7625025537587898155">新增設定檔</translation>
 <translation id="7625568159987162309">查看各網站的權限及儲存的資料</translation>
 <translation id="7625823789272218216">新分頁位於左側</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />)，第 <ph name="GRADE" /> 級</translation>
@@ -11738,7 +11733,6 @@
 <translation id="98235653036850093"><ph name="PROFILE_NAME" />，你好</translation>
 <translation id="983192555821071799">關閉所有分頁</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - 攝影機和麥克風正在錄影和錄音</translation>
-<translation id="984275831282074731">付款方式</translation>
 <translation id="984705303330760860">新增拼字檢查支援的語言</translation>
 <translation id="987068745968718743">Parallels Desktop：<ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">一般</translation>

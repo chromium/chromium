@@ -351,6 +351,7 @@
 <translation id="2438248248625638801">Kuriami įrašų pavadinimai</translation>
 <translation id="2446553403094072641">Slankiojo kablelio tikslumas</translation>
 <translation id="2448312741937722512">Tipas</translation>
+<translation id="2448857983905133469">Mokymosi įrankiai</translation>
 <translation id="2468124392950503650">Pasirinkite užklausą, kad būtų sukurtas vaizdas, arba peržiūrėkite <ph name="BEGIN_LINK_PROMPTING_GUIDE" />užklausų vadovą<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Naudodami „Google“ DI pagrįstą funkciją „Padėkite man rašyti“ sukurkite juodraštį ar patobulinkite esamą darbą</translation>
 <translation id="2475982808118771221">Įvyko klaida</translation>
@@ -381,6 +382,7 @@
 <translation id="2584559707064218956">Norėdami nustatyti eikite į Nustatymus</translation>
 <translation id="2586146417912237930">mėlynos ir indigo spalvų</translation>
 <translation id="2589921777872778654">Redagavimo ir ištrynimo meniu</translation>
+<translation id="2590424100019931043">Buvote pašalinti iš šio kurso</translation>
 <translation id="2597774443162333062">Failai bus išsiųsti į sistemą „Google“, kad būtų suderinti</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Nuskaitymas baigtas. Nuskaitytas vienas puslapis}one{Nuskaitymas baigtas. Nuskaitytas {NUMBER_OF_PAGES} puslapis}few{Nuskaitymas baigtas. Nuskaityti {NUMBER_OF_PAGES} puslapiai}many{Nuskaitymas baigtas. Nuskaityta {NUMBER_OF_PAGES} puslapio}other{Nuskaitymas baigtas. Nuskaityta {NUMBER_OF_PAGES} puslapių}}</translation>
 <translation id="261322795497077164">Garsiakalbio identifikavimas</translation>
@@ -449,6 +451,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Galutinis taškas</translation>
 <translation id="3060579846059757016">Kontūrai</translation>
+<translation id="3060798442805232711">Mokymosi įrankiams naudojamas mikrofonas</translation>
 <translation id="3061850252076394168">įgalinti funkciją „Teksto ištarimas“</translation>
 <translation id="3066772729299747758">antradienį</translation>
 <translation id="3069085583900247081">Bandymas nepavyko</translation>
@@ -910,6 +913,7 @@
 <translation id="5170568018924773124">Rodyti aplanke</translation>
 <translation id="517075088756846356">Jei norite tęsti atnaujinimo procesą, atjunkite ir vėl prijunkite „<ph name="DEVICE_NAME" />“ maitinimo laidą</translation>
 <translation id="5180108905184566358">baobabai</translation>
+<translation id="5180431943345994173">Mokytojas pašalino turinį iš mokymosi įrankių</translation>
 <translation id="5180712487038406644">Išraiškinga</translation>
 <translation id="5190187232518914472">Atgaivinkite mėgstamiausius prisiminimus. Norėdami pridėti ar redaguoti albumus, eikite į <ph name="LINK_BEGIN" />„Google“ nuotraukas<ph name="LINK_END" />.</translation>
 <translation id="5212593641110061691">Bulvarinė spauda</translation>
@@ -1003,6 +1007,7 @@
 <translation id="5628106863521633649">Pasiekiamos kalbos</translation>
 <translation id="5630438231335788050">bauhauzas</translation>
 <translation id="5631759159893697722">santrauka</translation>
+<translation id="5655084389678168978">Mokytojas pridėjo naujo turinio programoje mokymosi įrankiuose</translation>
 <translation id="5655283760733841251">Padidinti klaviatūros šviesumą</translation>
 <translation id="5655296450510165335">Įrenginio registracija</translation>
 <translation id="5655776422854483175">Nėra jokių spausdinimo užduočių</translation>
@@ -1528,6 +1533,7 @@ Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus
 <translation id="7971535376154084247">Bendrieji valdikliai</translation>
 <translation id="7977800524392185497">Norėdami prisijungti prie „<ph name="NETWORK_NAME" />“ tinklo, eikite į Nustatymus</translation>
 <translation id="7978412674231730200">Asmeninis raktas</translation>
+<translation id="7979468455552394856">Mokymosi įrankiai susieti su mokiniais</translation>
 <translation id="7982789257301363584">Tinklas</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{Programa „<ph name="APP_NAME_1" />“ buvo paleista automatiškai}one{# programa buvo paleista automatiškai}few{# programos buvo paleistos automatiškai}many{# programos buvo paleista automatiškai}other{# programų buvo paleista automatiškai}}</translation>
 <translation id="7994702968232966508">EAP metodas</translation>

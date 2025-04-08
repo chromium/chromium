@@ -44,7 +44,6 @@
 <translation id="1026822031284433028">Cargar imagen</translation>
 <translation id="1026959648338730078">Windows Hello o llave de seguridad externa</translation>
 <translation id="1028700151766901954">Motivo: LBS se mantiene en <ph name="DEFAULT_OPEN_BROWSER" /> de forma predeterminada.</translation>
-<translation id="1028823395684328817">Para seguir usando las contraseñas y más en tu cuenta de Google, debes verificar que eres tú</translation>
 <translation id="102916930470544692">Llave de acceso</translation>
 <translation id="1029317248976101138">Acercar</translation>
 <translation id="1029526375103058355">Tocar para hacer clic</translation>
@@ -817,7 +816,6 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1558671750917454373">Reanudar envío a <ph name="DEVICE_NAME" /></translation>
 <translation id="1561331397460162942">Esto permite que las aplicaciones, los sitios web con el permiso de ubicación y los servicios del sistema puedan acceder a la ubicación</translation>
 <translation id="1562119309884184621">Si añades este contacto, se recordará la próxima vez que comparta archivos</translation>
-<translation id="1563137369682381456">Fecha de caducidad</translation>
 <translation id="1566049601598938765">Sitio web</translation>
 <translation id="15662109988763471">La impresora seleccionada no se encuentra disponible o no se ha instalado correctamente. Comprueba tu impresora o prueba a seleccionar otra.</translation>
 <translation id="1566329594234563241">Mientras está inactivo y enchufado</translation>
@@ -1251,6 +1249,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="185111092974636561"><ph name="BEGIN_PARAGRAPH1" />Antes de registrarte, tienes que borrar el TPM para que <ph name="DEVICE_OS" /> pueda controlar el dispositivo.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />También puedes desactivar el TPM por completo. Tus datos seguirán almacenándose de forma segura con cifrado de software, pero algunas funciones de seguridad, como los certificados respaldados por hardware, se inhabilitarán.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Para cambiar la configuración del TPM, puedes reiniciar el dispositivo y acceder a los ajustes de BIOS/UEFI del sistema. Los pasos varían según el modelo del dispositivo. Para consultar más información, abre la documentación de <ph name="DEVICE_OS" /> en otro dispositivo antes de reiniciar: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="1851551847729706116">Compartiendo <ph name="TAB_NAME" /> en esta pestaña</translation>
 <translation id="1852799913675865625">Se ha producido un error al intentar leer el archivo: <ph name="ERROR_TEXT" />.</translation>
 <translation id="1854180393107901205">Detener el envío</translation>
 <translation id="1856715684130786728">Añadir ubicación...</translation>
@@ -3468,7 +3467,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3420501302812554910">Es necesario restablecer la llave de seguridad interna</translation>
 <translation id="3421387094817716717">Clave pública de curva elíptica</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Nota:<ph name="END_BOLD" /> Es posible que alguien con una voz similar a la tuya, o con una grabación de tu voz, pueda acceder a tus resultados personales o al Asistente.</translation>
-<translation id="3421835120203732951">Añadir perfil nuevo</translation>
 <translation id="3422989558057853751">Último elemento seleccionado; si se desmarca, se saldrá del modo de selección</translation>
 <translation id="3423111258700187173">Resultados encontrados en <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">Más información sobre esta función de IA</translation>
@@ -5034,7 +5032,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4507401683427517298">Haz clic en Añadir acceso directo</translation>
 <translation id="450867954911715010">Ajustes de accesibilidad</translation>
 <translation id="4508765956121923607">Ver código f&amp;uente</translation>
-<translation id="4509277363725254222">Si compartes una copia de tu <ph name="BEGIN_BOLD_USERNAME" />nombre de usuario<ph name="END_BOLD_USERNAME" /> y de tu <ph name="BEGIN_BOLD_PASSWORD" />contraseña<ph name="END_BOLD_PASSWORD" />, el miembro de tu familia podrá introducirlos usando el Gestor de contraseñas de Google.</translation>
+<translation id="4509277363725254222">Si compartes una copia de tu <ph name="BEGIN_BOLD_USERNAME" />nombre de usuario<ph name="END_BOLD_USERNAME" /> y de tu <ph name="BEGIN_BOLD_PASSWORD" />contraseña<ph name="END_BOLD_PASSWORD" />, eel miembro de tu familia podrá rellenarlos con el Gestor de contraseñas de Google.</translation>
 <translation id="4509421746503122514">Reinicia para actualizar</translation>
 <translation id="4509741852167209430">Para medir el rendimiento de los anuncios, algunos tipos de datos se comparten entre los sitios, como si has hecho una compra después de visitar un sitio</translation>
 <translation id="4510195992002502722">No se han podido enviar los comentarios. Intentándolo otra vez...</translation>
@@ -8000,7 +7998,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6666559645296300656">Cancelando actualización de Linux</translation>
 <translation id="6667086124612170548">El archivo es demasiado grande para este dispositivo</translation>
 <translation id="6667092961374478614">Descubribilidad de <ph name="FEATURE_NAME" /></translation>
-<translation id="6667187897999649121">Por ahora, solo puedes compartir contraseñas con miembros de la familia. <ph name="BEGIN_LINK" />Crea un grupo familiar<ph name="END_LINK" /> de hasta 6 miembros y sácales más partido a tus productos y suscripciones de Google.</translation>
+<translation id="6667187897999649121">Por ahora, solo puedes compartir contraseñas con miembros de la familia. <ph name="BEGIN_LINK" />Crea un grupo familiar<ph name="END_LINK" /> de hasta 6 miembros y saca más partido a tus productos y suscripciones de Google.</translation>
 <translation id="666731172850799929">Abrir en <ph name="APP_NAME" /></translation>
 <translation id="6669195257625975787">Los datos se tratan igual que en el sitio web que estás viendo</translation>
 <translation id="6670142487971298264"><ph name="APP_NAME" /> ya está disponible</translation>
@@ -9327,7 +9325,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7622768823216805500">Los sitios suelen instalar controladores de pago para utilizarlos en funciones relacionadas con compras, como facilitar los pagos.</translation>
 <translation id="7622966771025050155">Cambiar a pestaña capturada</translation>
 <translation id="7624337243375417909">bloqueo de mayúsculas desactivado</translation>
-<translation id="7625025537587898155">Añadir perfil nuevo</translation>
 <translation id="7625568159987162309">Ver permisos y datos almacenados en todos los sitios</translation>
 <translation id="7625823789272218216">Nueva pestaña a la izquierda</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), grado <ph name="GRADE" /></translation>
@@ -11280,6 +11277,7 @@ Puede tratarse de información sobre el software instalado, los archivos, el nav
 <translation id="8963117664422609631">Ir a configuración del sitio</translation>
 <translation id="8964927371396953727">Verifica que eres tú para usar y guardar contraseñas en tu cuenta (<ph name="ACCOUNT_EMAIL" />)</translation>
 <translation id="8965037249707889821">Introducir contraseña anterior</translation>
+<translation id="8967403839792635452">¿Desarrollas extensiones? Mantente al día de las <ph name="BEGIN_LINK" />novedades<ph name="END_LINK" /> con la documentación para desarrolladores de extensiones de Chrome.</translation>
 <translation id="8967427617812342790">Añadir a lista de lectura</translation>
 <translation id="8967548289042494261">Quitar <ph name="VM_NAME" /></translation>
 <translation id="8968527460726243404">Escritor de imágenes del sistema de Chrome OS</translation>
@@ -11744,7 +11742,6 @@ Puede tratarse de información sobre el software instalado, los archivos, el nav
 <translation id="98235653036850093">Hola, <ph name="PROFILE_NAME" /></translation>
 <translation id="983192555821071799">Cerrar todas las pestañas</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" />: grabación de la cámara y el micrófono</translation>
-<translation id="984275831282074731">Métodos de pago</translation>
 <translation id="984705303330760860">Añadir idiomas al corrector ortográfico</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">General</translation>

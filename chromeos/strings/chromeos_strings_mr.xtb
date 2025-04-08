@@ -351,6 +351,7 @@
 <translation id="2438248248625638801">रेकॉर्डिंगची शीर्षके तयार करत आहे</translation>
 <translation id="2446553403094072641">फ्लोटिंग पॉइंटची अचूकता</translation>
 <translation id="2448312741937722512">प्रकार</translation>
+<translation id="2448857983905133469">क्लास टूल</translation>
 <translation id="2468124392950503650">तयार करण्यासाठी प्रॉम्प्ट निवडा किंवा <ph name="BEGIN_LINK_PROMPTING_GUIDE" />प्रॉम्प्ट मार्गदर्शक<ph name="END_LINK_PROMPTING_GUIDE" /> पहा</translation>
 <translation id="2472215337771558851">मसुदा तयार करण्यासाठी किंवा सध्याच्या कामामध्ये सुधारणा करण्यासाठी Google AI द्वारे सक्षम केलेले मला लिहिण्यात मदत करा वापरा</translation>
 <translation id="2475982808118771221">एक एरर आली आहे</translation>
@@ -381,6 +382,7 @@
 <translation id="2584559707064218956">सेट करण्यासाठी, सेटिंग्ज वर जा</translation>
 <translation id="2586146417912237930">निळा आणि निळसर जांभळा</translation>
 <translation id="2589921777872778654">मेनू संपादित करा आणि हटवा</translation>
+<translation id="2590424100019931043">तुम्हाला या क्लासमधून काढून टाकले गेले आहे</translation>
 <translation id="2597774443162333062">फाइल डीबग करण्यासाठी Google कडे पाठवल्या जातील</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{स्कॅन करणे पूर्ण झाले. एक पेज स्कॅन केले}other{स्कॅन करणे पूर्ण झाले. {NUMBER_OF_PAGES} पेज स्कॅन केली}}</translation>
 <translation id="261322795497077164">स्पीकरची ओळख</translation>
@@ -449,6 +451,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">एंडपॉइंट</translation>
 <translation id="3060579846059757016">रूपरेषा</translation>
+<translation id="3060798442805232711">क्लास टूल हे तुमचा मायक्रोफोन वापरत आहे</translation>
 <translation id="3061850252076394168">बोलण्यासाठी निवडा सुरू करा</translation>
 <translation id="3066772729299747758">मंगळवारी</translation>
 <translation id="3069085583900247081">चाचणी करता आली नाही</translation>
@@ -910,6 +913,7 @@
 <translation id="5170568018924773124">फोल्डरमध्ये दर्शवा</translation>
 <translation id="517075088756846356">अपडेट करण्याची प्रक्रिया पुढे सुरू ठेवण्यासाठी, <ph name="DEVICE_NAME" /> ची पॉवर केबल अनप्लग करून पुन्हा प्लग करा</translation>
 <translation id="5180108905184566358">बाओबॅबची झाडे</translation>
+<translation id="5180431943345994173">तुमच्या शिक्षकांनी क्लास टूल मधील आशय काढून टाकला आहे</translation>
 <translation id="5180712487038406644">भावदर्शी</translation>
 <translation id="5190187232518914472">तुमच्या आवडत्या आठवणी पुन्हा अनुभवा. अल्बम जोडण्यासाठी किंवा संपादित करण्यासाठी, <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> वर जा.</translation>
 <translation id="5212593641110061691">टॅब्लॉइड</translation>
@@ -1003,6 +1007,7 @@
 <translation id="5628106863521633649">उपलब्ध भाषा</translation>
 <translation id="5630438231335788050">बावहाउस</translation>
 <translation id="5631759159893697722">अमूर्त</translation>
+<translation id="5655084389678168978">तुमच्या शिक्षकांनी क्लास टूल मध्ये नवीन आशय जोडला आहे</translation>
 <translation id="5655283760733841251">कीबोर्डचा ब्राइटनेस वाढवा</translation>
 <translation id="5655296450510165335">डिव्हाइसची नोंदणी</translation>
 <translation id="5655776422854483175">कोणतेही प्रिंट जॉब नाहीत</translation>
@@ -1528,6 +1533,7 @@
 <translation id="7971535376154084247">साधारण नियंत्रणे</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> नेटवर्कमध्ये सामील होण्यासाठी, सेटिंग्ज वर जा</translation>
 <translation id="7978412674231730200">प्रायव्हेट की</translation>
+<translation id="7979468455552394856">क्लास टूल हे विद्यार्थ्यांशी कनेक्ट केलेले आहे</translation>
 <translation id="7982789257301363584">नेटवर्क</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" आपोआप सुरू केले गेले होते}other{# ॲप्स आपोआप सुरू केली गेली होती}}</translation>
 <translation id="7994702968232966508">EAP पद्धत</translation>

@@ -99,7 +99,6 @@
 <translation id="1175364870820465910">印刷(&amp;P)...</translation>
 <translation id="1175393348063009671">写真（非光沢）</translation>
 <translation id="1175875016430184367">3 か所のステープル（右）</translation>
-<translation id="1176123604678140687">有効期限月</translation>
 <translation id="1177548198167638471">今後表示しない</translation>
 <translation id="1177863135347784049">カスタム</translation>
 <translation id="1178581264944972037">一時停止</translation>
@@ -333,7 +332,6 @@
       &lt;p&gt;&lt;strong&gt;設定&lt;/strong&gt;アプリの [&lt;strong&gt;全般&lt;/strong&gt;] セクションで日時を調整してください。&lt;/p&gt;</translation>
 <translation id="1559839503761818503">お使いのデバイスは <ph name="DATE" /> 日 <ph name="TIME" /> 時に管理者によって再起動されます</translation>
 <translation id="1562805467275776390">自動車レース</translation>
-<translation id="1563137369682381456">有効期限</translation>
 <translation id="1563755205047885671">アクション ゲーム、プラットフォーム ゲーム</translation>
 <translation id="1564634006476980707">検索 URL には HTTPS スキームを推奨します: <ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">ネットワーク情報（アドレス、インターフェース設定、接続品質など）</translation>
@@ -937,7 +935,6 @@
 <translation id="2606760465469169465">自動確認</translation>
 <translation id="2608019759319359258">トピックをブロックすると、そのトピックは広告のパーソナライズに使用されなくなります</translation>
 <translation id="2610561535971892504">クリックしてコピー</translation>
-<translation id="2612676031748830579">カード番号</translation>
 <translation id="2612993535136743634">デバイスと Google アカウントに保存されているセキュリティ コードがすべて削除されます</translation>
 <translation id="2616412942031748191">SEO、SEM</translation>
 <translation id="2618206371527040026">学術会議、学術出版</translation>
@@ -3338,7 +3335,6 @@
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">保護者の設定に従って YouTube をお使いください</translation>
 <translation id="6779348349813025131">Google パスワード マネージャーに MacOS キーチェーンへのアクセスを許可する必要があります</translation>
-<translation id="6782656837469339439">有効期限年</translation>
 <translation id="6785990323398321538">検索エンジンは Chrome の設定でいつでも変更できます。</translation>
 <translation id="6786145470008421571">6x9 インチ封筒</translation>
 <translation id="67862343314499040">バイオレット</translation>

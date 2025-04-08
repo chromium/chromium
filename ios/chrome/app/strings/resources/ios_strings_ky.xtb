@@ -1127,6 +1127,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="573974402615125334">Өтмөктөр тобунда бөлүшүп, кошулуп жана кызматташуу үчүн таржымалды жана өтмөктөрдү шайкештириңиз</translation>
 <translation id="5740123193752401435">Өтмөктөрдү издөө…</translation>
 <translation id="5744274077973758795"><ph name="FEATURE_NAME" /> боюнча билдирмелер күйгүзүлдү</translation>
+<translation id="5745598824054949526">Текст табылган жок</translation>
 <translation id="574762237186762643">Иш-чаралар</translation>
 <translation id="5749158352074143502">Ушул өтмөктө улантуу</translation>
 <translation id="5753021559215751319">Сырсөздү сактоо</translation>
@@ -1290,6 +1291,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="6410883413783534063">Бир учурда бир нече барактарга баш багуу үчүн өтмөктөрдү ачыңыз</translation>
 <translation id="6416807286621280684">Көз салган таңгактарыңыз менен жеткирүү боюнча жаңыртуулар.</translation>
 <translation id="6418346271604475326">PDF даярдалууда</translation>
+<translation id="6421038304268477484">Которулган текст</translation>
 <translation id="6429213933892582367">Сырсөздүн параметрлерин ачыңыз</translation>
 <translation id="6434591244308415567">Ката кетти. Бир аздан кийин кайталап көрүңүз.</translation>
 <translation id="6435307030888827407">Аккаунтума кирбейм</translation>
@@ -1968,6 +1970,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="9097506547406246598">Жазылуу токтотулган жок. Бир жерден ката кетти.</translation>
 <translation id="9098541895599151034"><ph name="NUMBER_OF_ACCOUNTS" /> сырсөз жок кылынсынбы?</translation>
 <translation id="9099233023029360602">Колдонула турган аккаунт ар дайым суралсын</translation>
+<translation id="9099821309562615674">Которуп жаткан текст даана көрүнүп жана алкактын ичинде турганын текшериңиз.</translation>
 <translation id="9100610230175265781">Купуя сөз айкашы талап кылынат</translation>
 <translation id="91023216973987714">Төлөм ыкмалары</translation>
 <translation id="9106655997975673326">Кайдан: "<ph name="SOURCE_DEVICE" />"</translation>

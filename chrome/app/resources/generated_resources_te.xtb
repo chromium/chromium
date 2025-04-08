@@ -44,7 +44,6 @@
 <translation id="1026822031284433028">చిత్రాన్ని లోడ్ చేయండి</translation>
 <translation id="1026959648338730078">Windows Hello లేదా బాహ్య సెక్యూరిటీ కీ</translation>
 <translation id="1028700151766901954">కారణం: LBS ఆటోమేటిక్‌గా <ph name="DEFAULT_OPEN_BROWSER" />‌లో ఉంటుంది.</translation>
-<translation id="1028823395684328817">మీ Google ఖాతాలో పాస్‌వర్డ్‌లను, ఇంకా మరిన్నింటిని ఉపయోగించడం కొనసాగించడానికి, ఇది మీరేనని వెరిఫై చేయండి</translation>
 <translation id="102916930470544692">పాస్-కీ</translation>
 <translation id="1029317248976101138">జూమ్ చేయి:</translation>
 <translation id="1029526375103058355">క్లిక్ కోసం ట్యాప్ చేయండి</translation>
@@ -818,7 +817,6 @@
 <translation id="1558671750917454373"><ph name="DEVICE_NAME" />లో ప్రసారం చేయడాన్ని కొనసాగించండి</translation>
 <translation id="1561331397460162942">ఇది యాప్‌లు, లొకేషన్ అనుమతి ఉన్న వెబ్‌సైట్‌లు, సిస్టమ్ సర్వీస్‌ల కోసం లొకేషన్ యాక్సెస్‌ను అనుమతిస్తుంది</translation>
 <translation id="1562119309884184621">ఈ కాంటాక్ట్‌ను జోడిస్తే వారు మరోసారి షేర్ చేసేటప్పుడు గుర్తుంచుకుంటుంది</translation>
-<translation id="1563137369682381456">గడువు ముగింపు తేదీ</translation>
 <translation id="1566049601598938765">వెబ్‌సైట్</translation>
 <translation id="15662109988763471">ఎంచుకున్న ప్రింటర్ అందుబాటులో లేదు లేదా సరిగ్గా ఇన్‌స్టాల్ చేయలేదు. మీ ప్రింటర్‌ను ఒకసారి సరిచూసుకోండి లేదా మరొక ప్రింటర్‌ను ఎంచుకోవడానికి ప్రయత్నించండి.</translation>
 <translation id="1566329594234563241">ఇన్‌యాక్టివ్‌గా ఉన్నప్పుడు, ప్లగ్-ఇన్ చేసినప్పుడు</translation>
@@ -1649,7 +1647,6 @@
 <translation id="2121825465123208577">సైజ్‌ మార్చు</translation>
 <translation id="2123766928840368256">వేరొక ఫైల్‌ను ఎంచుకోండి</translation>
 <translation id="2124930039827422115">{1,plural, =1{ఒక వినియోగదారు ద్వారా <ph name="AVERAGE_RATING" /> రేటింగ్ పొందింది.}other{# వినియోగదారుల ద్వారా <ph name="AVERAGE_RATING" /> రేటింగ్ పొందింది.}}</translation>
-<translation id="2125715366913703594">&amp;Extensionsను అన్వేషించండి</translation>
 <translation id="2126167708562367080">సింక్‌ను మీ నిర్వాహకులు నిలిపివేశారు.</translation>
 <translation id="2127372758936585790">తక్కువ-పవర్ గల ఛార్జర్</translation>
 <translation id="212862741129535676">తరచుదనం స్థితి అధీన శాతం</translation>
@@ -3480,7 +3477,6 @@
 <translation id="3420501302812554910">అంతర్గత సెక్యూరిటీ కీని రీసెట్ చేయడం అవసరం</translation>
 <translation id="3421387094817716717">దీర్ఘవృత్తాకార వక్రరేఖ పబ్లిక్ కీ</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />గమనిక:<ph name="END_BOLD" /> ఒకే రీతిలో ఉండే వాయిస్ లేదా రికార్డింగ్ సైతం మీ వ్యక్తిగత ఫలితాలను లేదా మీ Assistantను యాక్సెస్ చేయగలిగే అవకాశం ఉంది.</translation>
-<translation id="3421835120203732951">కొత్త ప్రొఫైల్‌ను జోడించండి</translation>
 <translation id="3422989558057853751">చివరిగా ఎంపిక చేయబడిన ఐటెమ్, దాని ఎంపికను రద్దు వలన ఎంపిక మోడ్ నుండి ఎగ్జిట్ అవుతుంది</translation>
 <translation id="3423111258700187173"><ph name="FOLDER_TITLE" />‌లో ఫలితాలు కనుగొనబడ్డాయి</translation>
 <translation id="3423226218833787854">ఈ AI ఫీచర్ గురించి మరింత తెలుసుకోండి</translation>
@@ -9341,7 +9337,6 @@
 <translation id="7622768823216805500">మరింత సులభమైన చెక్అవుట్ వంటి షాపింగ్ ఫీచర్‌ల కోసం సాధారణంగా పేమెంట్ హ్యాండ్లర్‌లను సైట్‌లు ఇన్‌స్టాల్ చేస్తాయి</translation>
 <translation id="7622966771025050155">క్యాప్చర్ చేసిన ట్యాబ్‌కు మారండి</translation>
 <translation id="7624337243375417909">caps lock ఆఫ్‌లో ఉంది</translation>
-<translation id="7625025537587898155">కొత్త ప్రొఫైల్‌ను జోడించండి</translation>
 <translation id="7625568159987162309">వేర్వేరు సైట్‌లకు ఇచ్చిన అనుమతులను, అవి స్టోర్ చేసిన డేటాను చూడండి</translation>
 <translation id="7625823789272218216">ఎడమ వైపున కొత్త ట్యాబ్</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), గ్రేడ్ <ph name="GRADE" /></translation>
@@ -11755,7 +11750,6 @@
 <translation id="98235653036850093">హాయ్, <ph name="PROFILE_NAME" /></translation>
 <translation id="983192555821071799">అన్ని ట్యాబ్‌లను మూసివేయండి</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - కెమెరా, మైక్రోఫోన్ రికార్డింగ్</translation>
-<translation id="984275831282074731">పేమెంట్ ఆప్షన్‌లు</translation>
 <translation id="984705303330760860">స్పెల్ చెక్ భాషలను జోడించండి</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">సాధారణం</translation>

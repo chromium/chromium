@@ -122,7 +122,7 @@
 <translation id="1480152980057770392">Leeslijst tonen</translation>
 <translation id="1484758781961275277">Gebruik het beste van de desktopbrowser die je kent en leuk vindt nu op je iPad.</translation>
 <translation id="1485907716209290998">Verzendstatus bijhouden</translation>
-<translation id="1486096554574027028">Zoek in wachtwoorden</translation>
+<translation id="1486096554574027028">Zoeken in wachtwoorden</translation>
 <translation id="1491277525950327607">Dubbeltik om de instelling aan of uit te zetten</translation>
 <translation id="1491965206608166851">Inloggen met je opgeslagen wachtwoorden en toegangssleutels vanuit elke app</translation>
 <translation id="1492417797159476138">Je hebt deze gebruikersnaam al opgeslagen voor deze site</translation>
@@ -261,6 +261,7 @@
 <translation id="2010008505735295285">Opnieuw laden</translation>
 <translation id="2015722694326466240">Als je wachtwoorden wilt zien, moet je eerst een toegangscode instellen op je apparaat.</translation>
 <translation id="201759455285471444">Tabbladgroep uitvouwen.</translation>
+<translation id="202070562065520783">Leg dit aan me uit</translation>
 <translation id="2021670401941426298">Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschiedenis (indien van toepassing).</translation>
 <translation id="2044394949148788042">Open het tabbladraster</translation>
 <translation id="20485545164632846">nieuw item</translation>
@@ -1126,6 +1127,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="573974402615125334">Als je tabbladgroepen wilt delen, eraan wilt deelnemen en eraan wilt samenwerken, synchroniseer je je geschiedenis en tabbladen</translation>
 <translation id="5740123193752401435">Tabbladen doorzoeken…</translation>
 <translation id="5744274077973758795">Meldingen van <ph name="FEATURE_NAME" /> staan aan</translation>
+<translation id="5745598824054949526">Geen tekst gevonden</translation>
 <translation id="574762237186762643">Afspraken</translation>
 <translation id="5749158352074143502">Doorgaan met dit tabblad</translation>
 <translation id="5753021559215751319">Wachtwoord opslaan</translation>
@@ -1289,6 +1291,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="6410883413783534063">Open tabbladen om verschillende pagina's tegelijk te bezoeken</translation>
 <translation id="6416807286621280684">Je gevolgde pakketten en bezorgupdates.</translation>
 <translation id="6418346271604475326">Pdf voorbereiden</translation>
+<translation id="6421038304268477484">Vertaalde tekst</translation>
 <translation id="6429213933892582367">Wachtwoordopties openen</translation>
 <translation id="6434591244308415567">Er is een fout opgetreden. Probeer het later opnieuw.</translation>
 <translation id="6435307030888827407">Uitgelogd blijven</translation>
@@ -1967,6 +1970,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="9097506547406246598">Ontvolgen is mislukt. Er is iets misgegaan.</translation>
 <translation id="9098541895599151034"><ph name="NUMBER_OF_ACCOUNTS" /> wachtwoorden verwijderen?</translation>
 <translation id="9099233023029360602">Elke keer vragen welk account moet worden gebruikt</translation>
+<translation id="9099821309562615674">Zorg dat de tekst die je vertaalt scherp en in beeld is.</translation>
 <translation id="9100610230175265781">Wachtwoordzin vereist</translation>
 <translation id="91023216973987714">Betaalmethoden</translation>
 <translation id="9106655997975673326">Van <ph name="SOURCE_DEVICE" /></translation>

@@ -99,7 +99,6 @@
 <translation id="1175364870820465910">ພິມ...</translation>
 <translation id="1175393348063009671">ຮູບພາບ (ດ້ານ)</translation>
 <translation id="1175875016430184367">ໜີບກະຫຼັບເຟີຢູ່ເບື້ອງຂວາສາມເທື່ອ</translation>
-<translation id="1176123604678140687">ເດືອນທີ່ໝົດອາຍຸ</translation>
 <translation id="1177548198167638471">ບໍ່ຕ້ອງຖາມອີກ</translation>
 <translation id="1177863135347784049">ກໍານົດເອງ</translation>
 <translation id="1178581264944972037">ຢຸດຊົ່ວຄາວ</translation>
@@ -333,7 +332,6 @@
       &lt;p&gt;ກະ​ລຸ​ນາ​ປັບ​ວັນ​ທີ ແລະ​ເວ​ລາ​ຈາກພາກ &lt;strong&gt;ທົ່ວ​ໄປl&lt;/strong&gt; ຂອງ​ແອັບ &lt;strong&gt;ການ​ຕັ້ງ​ຄ່າ&lt;/strong&gt;.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານຈະຣີສະຕາດອຸປະກອນຂອງທ່ານເວລາ <ph name="TIME" /> ໃນ <ph name="DATE" /></translation>
 <translation id="1562805467275776390">ການແຂ່ງລົດ</translation>
-<translation id="1563137369682381456">ວັນທີໝົດອາຍຸ</translation>
 <translation id="1563755205047885671">ເກມຕໍ່ສູ້ ແລະ ແພລດຟອມ</translation>
 <translation id="1564634006476980707">ຮູບແບບ HTTPS ທີ່ແນະນຳສຳລັບ URL ການຊອກຫາ: <ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">ຂໍ້ມູນດ້ານເຄືອຂ່າຍ ເຊັ່ນ: ທີ່ຢູ່, ການຕັ້ງຄ່າສ່ວນຕິດຕໍ່ ແລະ ຄຸນນະພາບການເຊື່ອມຕໍ່</translation>
@@ -937,7 +935,6 @@
 <translation id="2606760465469169465">ຢັ້ງຢືນອັດຕະໂນມັດ</translation>
 <translation id="2608019759319359258">ເມື່ອບລັອກຫົວຂໍ້ແລ້ວ, ລະບົບຈະບໍ່ໃຊ້ຫົວຂໍ້ນັ້ນໃນການປັບແຕ່ງໂຄສະນາໃຫ້ເປັນແບບສ່ວນຕົວ</translation>
 <translation id="2610561535971892504">ຄລິກເພື່ອສຳເນົາ</translation>
-<translation id="2612676031748830579">ເລກບັດ</translation>
 <translation id="2612993535136743634">ລະຫັດຄວາມປອດໄພທັງໝົດທີ່ບັນທຶກໄວ້ຢູ່ອຸປະກອນຂອງທ່ານ ແລະ ໃນບັນຊີ Google ຈະຖືກລຶບອອກ</translation>
 <translation id="2616412942031748191">ການປັບແຕ່ງເພື່ອໂປຣແກຣມຊອກຫາ ແລະ ການຕະຫຼາດ</translation>
 <translation id="2618206371527040026">ການປະຊຸມທາງວິຊາການ ແລະ ການເຜີຍແຜ່</translation>
@@ -1925,6 +1922,7 @@
 <translation id="4282346679996504092">ການແຈ້ງເຕືອນສຳລັບສິນຄ້ານີ້ໄດ້ຖືກປິດໄວ້ແລ້ວ ແລະ ລຶບບຸກມາກອອກແລ້ວ</translation>
 <translation id="4285498937028063278">ຖອນໝຸດ</translation>
 <translation id="4287495839370498922">ຄວາມເປັນສ່ວນຕົວກ່ຽວກັບໂຄສະນາໃນ Chrome ທີ່ປັບປຸງໃຫ້ດີຂຶ້ນ</translation>
+<translation id="4288101205645068104">ລຶບພາຫະນະ</translation>
 <translation id="4290920330097335010">ບໍ່ອະນຸຍາດ</translation>
 <translation id="4296207570293932800">ຄຸນສົມບັດຄວາມເປັນສ່ວນຕົວກ່ຽວກັບຕົວໂຄສະນາໃໝ່ພ້ອມໃຫ້ບໍລິການແລ້ວ</translation>
 <translation id="4297502707443874121">ຮູບຕົວຢ່າງສຳລັບໜ້າ <ph name="THUMBNAIL_PAGE" /></translation>
@@ -3337,7 +3335,6 @@
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">ໃຊ້ YouTube ກັບຕົວເລືອກຂອງຜູ້ປົກຄອງຂອງທ່ານ</translation>
 <translation id="6779348349813025131">ຕົວຈັດການລະຫັດຜ່ານ Google ຕ້ອງການສິດເຂົ້າເຖິງ Keychain ຂອງ MacOS</translation>
-<translation id="6782656837469339439">ປີທີ່ໝົດອາຍຸ</translation>
 <translation id="6785990323398321538">ທ່ານສາມາດປ່ຽນໂປຣແກຣມຊອກຫາຂອງທ່ານໄດ້ທຸກເວລາໃນການຕັ້ງຄ່າຂອງ Chrome.</translation>
 <translation id="6786145470008421571">Envelope 6 x 9 ນິ້ວ</translation>
 <translation id="67862343314499040">ສີມ່ວງ</translation>
@@ -4206,6 +4203,7 @@
 <translation id="8280630997017109758">ຖາດ 11</translation>
 <translation id="8281730697546299650">ຕອນນີ້ສາມາດໃຊ້ຄຸນສົມບັດຄວາມເປັນສ່ວນຕົວກ່ຽວກັບຕົວໂຄສະນາອື່ນໆໄດ້ແລ້ວ</translation>
 <translation id="8281886186245836920">ຂ້າມ</translation>
+<translation id="8282292167096638950">ລຶບໃບອະນຸຍາດຂັບຂີ່</translation>
 <translation id="8282409409360764263">ການບໍາລຸງຮັກສາເດີ່ນ</translation>
 <translation id="8282947398454257691">ຮູ້​ຈັກ​ຕົວ​ລະ​ບຸ​ອຸ​ປະ​ກອນ​ສະ​ເພາະ​ຂອງ​ທ່ານ</translation>
 <translation id="8284769179630993263">ຈັດການ Safe Browsing ຂອງທ່ານ ແລະ ອື່ນໆໃນການຕັ້ງຄ່າ Chrome</translation>
@@ -4233,6 +4231,7 @@
 <translation id="8321476692217554900">ການແຈ້ງເຕືອນ</translation>
 <translation id="8322402665880479974">ຕຽງ ແລະ ຫົວຕຽງ</translation>
 <translation id="8323505966575306467">ເພີ່ມການປົກປ້ອງໃຫ້ລະຫັດຜ່ານຂອງທ່ານ</translation>
+<translation id="832547548543012337">ລຶບໜັງສືຜ່ານແດນ</translation>
 <translation id="832567874344484841">ອາຫານເຊົ້າ</translation>
 <translation id="8329068931308448247">Envelope #14</translation>
 <translation id="8332188693563227489">ການເຂົ້າເຖິງ <ph name="HOST_NAME" /> ຖືກປະຕິເສດແລ້ວ</translation>

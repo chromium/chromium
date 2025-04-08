@@ -99,7 +99,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1175364870820465910">&amp;Nyomtatás...</translation>
 <translation id="1175393348063009671">Fotó (matt)</translation>
 <translation id="1175875016430184367">Három kapocs a jobb oldalon</translation>
-<translation id="1176123604678140687">Lejárat hónapja</translation>
 <translation id="1177548198167638471">Ne jelenjen meg többé</translation>
 <translation id="1177863135347784049">Egyéni</translation>
 <translation id="1178581264944972037">Szünet</translation>
@@ -333,7 +332,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
       &lt;p&gt;Módosítsa a dátumot és az időt a &lt;strong&gt;Beállítások&lt;/strong&gt; alkalmazás &lt;strong&gt;Általános&lt;/strong&gt; részében.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Adminisztrátora a következő időpontban újra fogja indítani az eszközét: <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1562805467275776390">Autóversenyzés</translation>
-<translation id="1563137369682381456">Lejárat dátuma</translation>
 <translation id="1563755205047885671">Akció- és platformjátékok</translation>
 <translation id="1564634006476980707">HTTPS-séma javasolt a keresési URL-hez: <ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">Hálózati információk, többek között címek, a kezelőfelület beállításai és a kapcsolat minősége</translation>
@@ -937,7 +935,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2606760465469169465">Automatikus igazolás</translation>
 <translation id="2608019759319359258">Amikor egy adott téma le van tiltva, akkor a rendszer nem használja fel a hirdetések személyre szabására</translation>
 <translation id="2610561535971892504">Kattintson a másoláshoz</translation>
-<translation id="2612676031748830579">Kártyaszám</translation>
 <translation id="2612993535136743634">Az eszközére és a Google-fiókjába mentett biztonsági kódok is törlődnek</translation>
 <translation id="2616412942031748191">Keresőoptimalizálás és marketing</translation>
 <translation id="2618206371527040026">Tudományos konferenciák és publikációk</translation>
@@ -1922,6 +1919,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4282346679996504092">Megtörtént a termékhez tartozó értesítések kikapcsolása és a könyvjelző eltávolítása</translation>
 <translation id="4285498937028063278">Rögzítés megszüntetése</translation>
 <translation id="4287495839370498922">Hirdetésekhez kapcsolódó fokozott adatvédelem a Chrome-ban</translation>
+<translation id="4288101205645068104">Jármű törlése</translation>
 <translation id="4290920330097335010">Soha nem engedélyezem</translation>
 <translation id="4296207570293932800">Mostantól egy új, hirdetésekhez kapcsolódó adatvédelmi funkció áll rendelkezésre</translation>
 <translation id="4297502707443874121">A(z) <ph name="THUMBNAIL_PAGE" /> oldal indexképe</translation>
@@ -3334,7 +3332,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">A YouTube használata a szülő által megadott beállításokkal</translation>
 <translation id="6779348349813025131">A Google Jelszókezelő hozzáférést igényel a macOS Keychain szolgáltatásához</translation>
-<translation id="6782656837469339439">Lejárat éve</translation>
 <translation id="6785990323398321538">Keresőmotorját bármikor módosíthatja a Chrome beállításai között</translation>
 <translation id="6786145470008421571">6 × 9 hüvelykes boríték</translation>
 <translation id="67862343314499040">Ibolyaszín</translation>
@@ -4205,6 +4202,7 @@ További részletek:
 <translation id="8280630997017109758">11. tálca</translation>
 <translation id="8281730697546299650">Mostantól további, hirdetésekhez kapcsolódó adatvédelmi funkciók állnak rendelkezésre</translation>
 <translation id="8281886186245836920">Kihagyás</translation>
+<translation id="8282292167096638950">Vezetői engedély törlése</translation>
 <translation id="8282409409360764263">Udvarkarbantartás</translation>
 <translation id="8282947398454257691">Az egyedi eszközazonosító megtekintése</translation>
 <translation id="8284769179630993263">A Biztonságos böngészés és más funkciók kezelése a Chrome-beállítások között</translation>
@@ -4232,6 +4230,7 @@ További részletek:
 <translation id="8321476692217554900">értesítések</translation>
 <translation id="8322402665880479974">Ágyak és ágytámlák</translation>
 <translation id="8323505966575306467">Fokozhatja jelszavai védelmét</translation>
+<translation id="832547548543012337">Útlevél törlése</translation>
 <translation id="832567874344484841">Reggeli ételek</translation>
 <translation id="8329068931308448247">14. boríték</translation>
 <translation id="8332188693563227489">A hozzáférés megtagadva a következőhöz: <ph name="HOST_NAME" /></translation>

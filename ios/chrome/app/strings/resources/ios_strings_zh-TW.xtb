@@ -1127,6 +1127,7 @@
 <translation id="573974402615125334">如要分享、加入分頁群組並在其中協作，請同步處理歷史記錄和分頁</translation>
 <translation id="5740123193752401435">搜尋分頁…</translation>
 <translation id="5744274077973758795">已開啟 <ph name="FEATURE_NAME" />通知功能</translation>
+<translation id="5745598824054949526">找不到文字</translation>
 <translation id="574762237186762643">活動</translation>
 <translation id="5749158352074143502">繼續使用這個分頁</translation>
 <translation id="5753021559215751319">儲存密碼</translation>
@@ -1290,6 +1291,7 @@
 <translation id="6410883413783534063">開啟分頁即可同時造訪不同的網頁</translation>
 <translation id="6416807286621280684">追蹤的包裹和運送進度。</translation>
 <translation id="6418346271604475326">正在準備 PDF</translation>
+<translation id="6421038304268477484">譯文</translation>
 <translation id="6429213933892582367">開啟「密碼選項」</translation>
 <translation id="6434591244308415567">發生錯誤，請稍後再試。</translation>
 <translation id="6435307030888827407">保持登出狀態</translation>
@@ -1968,6 +1970,7 @@
 <translation id="9097506547406246598">無法取消追蹤，發生錯誤。</translation>
 <translation id="9098541895599151034">要刪除 <ph name="NUMBER_OF_ACCOUNTS" /> 個密碼嗎？</translation>
 <translation id="9099233023029360602">每次都詢問要使用哪個帳戶</translation>
+<translation id="9099821309562615674">請確認要翻譯的文字清晰可見，而且在畫面之內。</translation>
 <translation id="9100610230175265781">請提供通關密語</translation>
 <translation id="91023216973987714">付款方式</translation>
 <translation id="9106655997975673326">來源：<ph name="SOURCE_DEVICE" /></translation>

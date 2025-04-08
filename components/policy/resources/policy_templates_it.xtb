@@ -7984,6 +7984,7 @@ Nota: se il dispositivo viene riavviato o se l'utente esce, la cache viene svuot
 <translation id="6583473893541367102">Se la policy viene configurata, verrà specificato l'elenco di URL i cui pattern vengono confrontati con l'origine di sicurezza dell'URL richiedente. Una corrispondenza assicura l'accesso ai dispositivi per l'acquisizione video senza richieste
 
       Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Tieni presente, tuttavia, che il pattern "*", che corrisponde a qualsiasi URL, non è supportato da questa policy.</translation>
+<translation id="6583517553738784213">Disattiva i controlli con il volto</translation>
 <translation id="6584122839583172231">Le impostazioni di F12 usano la scorciatoia che contiene i tasti di modifica Ctrl e Maiusc</translation>
 <translation id="6584541828182430328">Disattiva avviso schermo intero</translation>
 <translation id="6588634282328239769">Visualizza l'URL completo</translation>
@@ -8302,6 +8303,7 @@ Su <ph name="MS_WIN_NAME" />, questa policy è disponibile soltanto per le istan
       Se viene impostata su Disattivata, l'icona delle funzionalità sperimentali del browser viene rimossa dalla barra degli strumenti.
 
       chrome://flags e qualsiasi altro metodo per attivare e disattivare le funzionalità del browser continueranno a comportarsi come previsto a prescindere dall'attivazione o meno di questa policy.</translation>
+<translation id="6794273802619210652">Attiva la funzione di accessibilità controlli con il volto</translation>
 <translation id="6795485990775913659">Consenti la stampa solo senza PIN</translation>
 <translation id="6796215185873669533">Usa per impostazione predefinita le impostazioni del browser per la versione della stringa user agent.</translation>
 <translation id="6800181452282128474">Non inviare query a Quirks Server</translation>
@@ -9385,6 +9387,7 @@ Se la policy viene lasciata vuota, non sono consentite eccezioni a <ph name="FLO
 <translation id="7635106595080609261">La mancata configurazione o l'impostazione della policy su Attivata consente a Chrome di mostrare finestre di dialogo di selezione dei file che gli utenti possono aprire.
 
       Se la policy viene impostata su Disattivata, quando gli utenti eseguono delle azioni che comportano l'apertura di una finestra di dialogo di selezione dei file, come importare preferiti, caricare file e salvare link, viene visualizzato un messaggio. Il browser presuppone che l'utente abbia fatto clic su Annulla nella finestra di dialogo di selezione dei file.</translation>
+<translation id="7637522465980672147">Attiva i controlli con il volto</translation>
 <translation id="7638300388094655454">Google Cast</translation>
 <translation id="7638764766629234761">Consenti l'uso delle notifiche di sistema</translation>
 <translation id="7642740497103044368">Se la policy viene impostata su Attivata, è possibile unire le policy associate a un account gestito alle policy a livello di macchina.
@@ -10325,6 +10328,17 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
 <translation id="8319678975002906774">Imposta valori Managed Configuration per siti web corrispondenti a origini specifiche</translation>
 <translation id="8320149248919453401">Modalità di carica della batteria</translation>
 <translation id="8320576119308783142">Mostra la tastiera sullo schermo quando opportuno.</translation>
+<translation id="8321089199245028304">Attiva la funzione di accessibilità controlli con il volto. Quando i controlli con il volto sono attivi,
+puoi usare la testa per controllare il cursore del mouse e usare le espressioni facciali per eseguire
+azioni di sistema. In questo modo puoi controllare il dispositivo senza usare le mani.
+
+Se la policy viene attivata, i controlli con il volto saranno sempre attivi.
+
+Se la policy viene disattivata, i controlli con il volto saranno sempre disattivati.
+
+Se imposti questa policy, gli utenti non potranno modificarla o ignorarla.
+
+Se la policy non viene configurata, inizialmente i controlli con il volto sono disattivati, ma l'utente può attivarli in qualsiasi momento.</translation>
 <translation id="8327651196906278510">Consenti acquisizione schede in base a queste origini</translation>
 <translation id="8329434144708110">Vengono attivati i flussi di autenticazione per la sincronizzazione delle password con fornitori di servizi SSO</translation>
 <translation id="8329984337216493753">Questa norma è attiva soltanto in modalità retail.

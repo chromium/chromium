@@ -44,7 +44,6 @@
 <translation id="1026822031284433028">ਚਿੱਤਰ ਲੋਡ ਕਰੋ</translation>
 <translation id="1026959648338730078">Windows Hello ਜਾਂ ਬਾਹਰੀ ਸੁਰੱਖਿਆ ਕੁੰਜੀ</translation>
 <translation id="1028700151766901954">ਕਾਰਨ: LBS ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਤੌਰ 'ਤੇ <ph name="DEFAULT_OPEN_BROWSER" /> ਵਿੱਚ ਰਹਿੰਦਾ ਹੈ।</translation>
-<translation id="1028823395684328817">ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਪਾਸਵਰਡਾਂ ਅਤੇ ਹੋਰ ਚੀਜ਼ਾਂ ਦੀ ਵਰਤੋਂ ਕਰਨਾ ਜਾਰੀ ਰੱਖਣ ਲਈ, ਆਪਣੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
 <translation id="102916930470544692">ਪਾਸਕੀ</translation>
 <translation id="1029317248976101138">ਜ਼ੂਮ</translation>
 <translation id="1029526375103058355">ਕਲਿੱਕ ਕਰਨ ਲਈ ਟੈਪ ਕਰੋ</translation>
@@ -819,7 +818,6 @@
 <translation id="1558671750917454373"><ph name="DEVICE_NAME" /> 'ਤੇ ਕਾਸਟ ਕਰਨਾ ਮੁੜ-ਚਾਲੂ ਕਰੋ</translation>
 <translation id="1561331397460162942">ਇਹ ਐਪਾਂ, ਟਿਕਾਣੇ ਦੀ ਇਜਾਜ਼ਤ ਵਾਲੀਆਂ ਵੈੱਬਸਾਈਟਾਂ ਅਤੇ ਸਿਸਟਮ ਸੇਵਾਵਾਂ ਲਈ ਟਿਕਾਣਾ ਪਹੁੰਚ ਦੀ ਆਗਿਆ ਦਿੰਦਾ ਹੈ</translation>
 <translation id="1562119309884184621">ਇਸ ਸੰਪਰਕ ਨੂੰ ਸ਼ਾਮਲ ਕਰਨ 'ਤੇ ਅਗਲੀ ਵਾਰ ਸਾਂਝਾ ਕਰਨ 'ਤੇ ਇਸਨੂੰ ਯਾਦ ਰੱਖਿਆ ਜਾਵੇਗਾ</translation>
-<translation id="1563137369682381456">ਮਿਆਦ ਸਮਾਪਤੀ ਦੀ ਤਾਰੀਖ</translation>
 <translation id="1566049601598938765">ਵੈੱਬਸਾਈਟ</translation>
 <translation id="15662109988763471">ਚੁਣਿਆ ਗਿਆ ਪ੍ਰਿੰਟਰ ਉਪਲਬਧ ਨਹੀਂ ਹੈ ਜਾਂ ਸਹੀ ਢੰਗ ਨਾਲ ਸਥਾਪਤ ਨਹੀਂ ਕੀਤਾ ਗਿਆ ਹੈ। ਆਪਣੇ ਪ੍ਰਿੰਟਰ ਦੀ ਜਾਂਚ ਕਰੋ ਜਾਂ ਕੋਈ ਹੋਰ ਪ੍ਰਿੰਟਰ ਚੁਣਕੇ ਦੇਖੋ।</translation>
 <translation id="1566329594234563241">ਅਕਿਰਿਆਸ਼ੀਲ ਅਤੇ ਪਲੱਗ-ਇਨ ਹੋਣ ਵੇਲੇ</translation>
@@ -1261,6 +1259,7 @@
 <translation id="185111092974636561"><ph name="BEGIN_PARAGRAPH1" />ਦਰਜ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਤੁਹਾਨੂੰ TPM ਨੂੰ ਕਲੀਅਰ ਕਰਨ ਦੀ ਲੋੜ ਹੈ, ਤਾਂ ਜੋ <ph name="DEVICE_OS" /> ਡੀਵਾਈਸ ਦੀ ਮਲਕੀਅਤ ਲੈ ਸਕੇ।<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />ਤੁਸੀਂ TPM ਡੀਵਾਈਸ ਨੂੰ ਪੂਰੀ ਤਰ੍ਹਾਂ ਬੰਦ ਵੀ ਕਰ ਸਕਦੇ ਹੋ। ਤੁਹਾਡਾ ਡਾਟਾ ਹਾਲੇ ਵੀ ਸਾਫ਼ਟਵੇਅਰ ਇਨਕ੍ਰਿਪਸ਼ਨ ਦੇ ਨਾਲ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਸਟੋਰ ਕੀਤਾ ਜਾਵੇਗਾ, ਪਰ ਕੁਝ ਸੁਰੱਖਿਆ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ, ਜਿਵੇਂ ਕਿ ਹਾਰਡਵੇਅਰ-ਸਮਰਥਿਤ ਪ੍ਰਮਾਣ-ਪੱਤਰਾਂ, ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ ਜਾਵੇਗਾ।<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />ਤੁਸੀਂ ਰੀਬੂਟ ਕਰ ਕੇ ਅਤੇ ਸਿਸਟਮ BIOS/UEFI ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਦਾਖਲ ਹੋ ਕੇ ਆਪਣੀਆਂ TPM ਸੈਟਿੰਗਾਂ ਨੂੰ ਬਦਲ ਸਕਦੇ ਹੋ। ਡੀਵਾਈਸ ਮਾਡਲ ਦੇ ਆਧਾਰ 'ਤੇ ਪੜਾਅ ਵੱਖ-ਵੱਖ ਹੋ ਸਕਦੇ ਹਨ। ਹੋਰ ਜਾਣਕਾਰੀ ਲਈ, ਤੁਹਾਡੇ ਵੱਲੋਂ ਰੀਬੂਟ ਕੀਤੇ ਜਾਣ ਤੋਂ ਪਹਿਲਾਂ <ph name="DEVICE_OS" /> ਸੰਬੰਧੀ ਦਸਤਾਵੇਜ਼ਾਂ ਨੂੰ ਕਿਸੇ ਵੱਖਰੇ ਡੀਵਾਈਸ 'ਤੇ ਖੋਲ੍ਹੋ: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="1851551847729706116">ਇਸ ਟੈਬ ਨਾਲ <ph name="TAB_NAME" /> ਸਾਂਝਾ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="1852799913675865625">ਫਾਈਲ ਪੜ੍ਹਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰਨ ਵੇਲੇ ਇੱਕ ਗੜਬੜ ਹੋਈ ਸੀ: <ph name="ERROR_TEXT" />.</translation>
 <translation id="1854180393107901205">ਕਾਸਟ ਕਰਨਾ ਰੋਕੋ</translation>
 <translation id="1856715684130786728">ਨਿਰਧਾਰਿਤ ਸਥਾਨ ਜੋੜੋ...</translation>
@@ -3482,7 +3481,6 @@
 <translation id="3420501302812554910">ਅੰਦਰੂਨੀ ਸੁਰੱਖਿਆ ਕੁੰਜੀ ਨੂੰ ਰੀਸੈੱਟ ਕਰਨ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="3421387094817716717">ਅੰਡਾਕਾਰ ਘੁਮਾਓ ਜਨਤਕ ਕੁੰਜੀ</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />ਨੋਟ ਕਰੋ<ph name="END_BOLD" />: ਕੋਈ ਮਿਲਦੀ-ਜੁਲਦੀ ਅਵਾਜ਼ ਜਾਂ ਰਿਕਾਰਡਿੰਗ ਤੁਹਾਡੇ ਨਿੱਜੀ ਨਤੀਜਿਆਂ ਜਾਂ ਤੁਹਾਡੀ Assistant ਤੱਕ ਪਹੁੰਚ ਕਰ ਸਕਦੀ ਹੈ।</translation>
-<translation id="3421835120203732951">ਨਵਾਂ ਪ੍ਰੋਫਾਈਲ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="3422989558057853751">ਆਖਰੀ ਆਈਟਮ ਚੁਣੀ ਗਈ, ਇਸਨੂੰ ਅਣਚੁਣਿਆ ਕਰਨ 'ਤੇ, ਚੋਣ ਮੋਡ ਬੰਦ ਹੋ ਜਾਵੇਗਾ</translation>
 <translation id="3423111258700187173"><ph name="FOLDER_TITLE" /> ਵਿੱਚ ਨਤੀਜੇ ਮਿਲੇ</translation>
 <translation id="3423226218833787854">ਇਸ AI ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਬਾਰੇ ਹੋਰ ਜਾਣੋ</translation>
@@ -9345,7 +9343,6 @@
 <translation id="7622768823216805500">ਸਾਈਟਾਂ ਆਮ ਤੌਰ 'ਤੇ ਆਸਾਨ ਚੈੱਕਆਊਟ ਜਿਹੀਆਂ ਖਰੀਦਦਾਰੀ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਲਈ ਭੁਗਤਾਨ ਹੈਂਡਲਰ ਸਥਾਪਤ ਕਰਦੀਆਂ ਹਨ</translation>
 <translation id="7622966771025050155">ਕੈਪਚਰ ਕੀਤੀ ਟੈਬ 'ਤੇ ਜਾਓ</translation>
 <translation id="7624337243375417909">ਕੈਪਸ ਲੌਕ ਬੰਦ</translation>
-<translation id="7625025537587898155">ਨਵਾਂ ਪ੍ਰੋਫਾਈਲ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="7625568159987162309">ਇਜਾਜ਼ਤਾਂ ਅਤੇ ਸਾਰੀਆਂ ਸਾਈਟਾਂ ਵਿੱਚ ਸਟੋਰ ਕੀਤਾ ਡਾਟਾ ਦੇਖੋ</translation>
 <translation id="7625823789272218216">ਖੱਬੇ ਪਾਸੇ ਵਾਲੀ ਨਵੀਂ ਟੈਬ</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), ਗ੍ਰੇਡ <ph name="GRADE" /></translation>
@@ -11297,6 +11294,7 @@
 <translation id="8963117664422609631">ਸਾਈਟ ਦੀਆਂ ਸੈਟਿੰਗਾਂ 'ਤ ਜਾਓ</translation>
 <translation id="8964927371396953727">ਆਪਣੇ ਖਾਤੇ, <ph name="ACCOUNT_EMAIL" /> ਵਿੱਚ ਪਾਸਵਰਡ ਵਰਤਣ ਅਤੇ ਰੱਖਿਅਤ ਕਰਨ ਲਈ, ਆਪਣੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
 <translation id="8965037249707889821">ਪੁਰਾਣਾ ਪਾਸਵਰਡ ਦਰਜ ਕਰੋ</translation>
+<translation id="8967403839792635452">ਕੀ ਐਕਸਟੈਂਸ਼ਨਾਂ ਬਣਾਉਣੀਆਂ ਹਨ? Chrome ਐਕਸਟੈਂਸ਼ਨ ਵਿਕਾਸਕਾਰ ਦਸਤਾਵੇਜ਼ੀਕਰਨ ਦੀ ਮਦਦ ਨਾਲ <ph name="BEGIN_LINK" />ਨਵਾਂ ਕੀ ਹੈ<ph name="END_LINK" /> ਬਾਰੇ ਜਾਣੋ।</translation>
 <translation id="8967427617812342790">ਵਾਚਣ ਸੂਚੀ ਵਿੱਚ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="8967548289042494261"><ph name="VM_NAME" /> ਨੂੰ ਹਟਾਓ</translation>
 <translation id="8968527460726243404">ChromeOS ਸਿਸਟਮ ਚਿੱਤਰ ਰਾਈਟਰ</translation>
@@ -11761,7 +11759,6 @@
 <translation id="98235653036850093">ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ, <ph name="PROFILE_NAME" /></translation>
 <translation id="983192555821071799">ਸਾਰੀਆਂ ਟੈਬਸ ਬੰਦ ਕਰੋ</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - ਕੈਮਰਾ ਅਤੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਰਿਕਾਰਡਿੰਗ</translation>
-<translation id="984275831282074731">ਭੁਗਤਾਨ ਵਿਧੀਆਂ</translation>
 <translation id="984705303330760860">ਸ਼ਬਦ-ਜੋੜ ਜਾਂਚ ਵਾਲੀਆਂ ਭਾਸ਼ਾਵਾਂ ਨੂੰ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">ਸਧਾਰਨ</translation>

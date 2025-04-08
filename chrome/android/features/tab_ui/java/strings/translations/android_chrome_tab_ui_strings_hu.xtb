@@ -14,6 +14,7 @@
 Törlés esetén mindenki azonnal elveszíti a hozzáférését a(z) „<ph name="TITLE_OF_GROUP" />” lapcsoporthoz, és a lapcsoport az összes eszközről törlődik.</translation>
 <translation id="1329584516321524826">Most frissítve</translation>
 <translation id="1340839264183302272">Kilépés a csoportból</translation>
+<translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{<ph name="TITLE_OF_GROUP" /> című, <ph name="TABS_COUNT_ONE" /> lapot tartalmazó, <ph name="COLOR_NAME" /> színű, <ph name="CARD_LABEL" /> címkével ellátott megosztott lapcsoport kibontása.}other{<ph name="TITLE_OF_GROUP" /> című, <ph name="TABS_COUNT_MANY" /> lapot tartalmazó, <ph name="COLOR_NAME" /> színű, <ph name="CARD_LABEL" /> címkével ellátott megosztott lapcsoport kibontása.}}</translation>
 <translation id="1419023007528516122">Ezzel véglegesen törli a csoportot az eszközről.</translation>
 <translation id="1486715732399361704">Itt találja az összes lapcsoportot</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> perce létrehozva}other{<ph name="NUM_MINS_MANY" /> perce létrehozva}}</translation>
@@ -108,6 +109,7 @@ Törlés esetén mindenki azonnal elveszíti a hozzáférését a(z) „<ph name
 <translation id="4895402777090717310">{TABS_COUNT,plural, =1{Lap bezárása}other{Lapok bezárása}}</translation>
 <translation id="4908147833782857886"><ph name="USER_EMAIL" /> csoport mentve (bezárja a lapokat, valamint törli a csoportokat)</translation>
 <translation id="492284538114688557">Árcsökkenés észlelve</translation>
+<translation id="4937582754153367435">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> lapot tartalmazó, <ph name="COLOR_NAME" /> színű, <ph name="CARD_LABEL" /> címkével ellátott megosztott lapcsoport kibontása.}other{<ph name="TABS_COUNT_MANY" /> lapot tartalmazó, <ph name="COLOR_NAME" /> színű, <ph name="CARD_LABEL" /> címkével ellátott megosztott lapcsoport kibontása.}}</translation>
 <translation id="5007392906805964215">Áttekintés</translation>
 <translation id="5073204694187207510">Teljes képernyős rács elrejtése</translation>
 <translation id="5076161749301278626">Lát véleményeket az üzletről?</translation>

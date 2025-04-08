@@ -44,7 +44,6 @@
 <translation id="1026822031284433028">Учитај слику</translation>
 <translation id="1026959648338730078">Windows Hello или спољни безбедносни кључ</translation>
 <translation id="1028700151766901954">Разлог: LBS подразумевано остаје у прегледачу <ph name="DEFAULT_OPEN_BROWSER" />.</translation>
-<translation id="1028823395684328817">Да бисте наставили да користите лозинке и друго на Google налогу, потврдите свој идентитет</translation>
 <translation id="102916930470544692">Приступни кључ</translation>
 <translation id="1029317248976101138">Зумирај</translation>
 <translation id="1029526375103058355">Додирните да бисте кликнули</translation>
@@ -816,7 +815,6 @@
 <translation id="1558671750917454373">Наставите пребацивање на <ph name="DEVICE_NAME" /></translation>
 <translation id="1561331397460162942">То омогућава приступ локацији за апликације, веб-сајтове са дозволом за локацију и системске услуге</translation>
 <translation id="1562119309884184621">Ако додате контакт, биће запамћен за следеће дељење</translation>
-<translation id="1563137369682381456">Датум истека</translation>
 <translation id="1566049601598938765">Веб-сајт</translation>
 <translation id="15662109988763471">Изабрани штампач није доступан или није правилно инсталиран. Проверите штампач или изаберите неки други.</translation>
 <translation id="1566329594234563241">Док је неактиван и прикључен</translation>
@@ -1639,7 +1637,6 @@
 <translation id="2121825465123208577">Промени величину</translation>
 <translation id="2123766928840368256">Одаберите другу датотеку</translation>
 <translation id="2124930039827422115">{1,plural, =1{Један корисник је оценио са <ph name="AVERAGE_RATING" />.}one{# корисник је оценио са <ph name="AVERAGE_RATING" />.}few{# корисника су оценила са <ph name="AVERAGE_RATING" />.}other{# корисника је оценило са <ph name="AVERAGE_RATING" />.}}</translation>
-<translation id="2125715366913703594">Истражите додатке</translation>
 <translation id="2126167708562367080">Администратор је онемогућио синхронизацију.</translation>
 <translation id="2127372758936585790">Пуњач мале снаге</translation>
 <translation id="212862741129535676">Проценат заузетости стања фреквенције</translation>
@@ -3467,7 +3464,6 @@
 <translation id="3420501302812554910">Интерни безбедносни кључ захтева ресетовање</translation>
 <translation id="3421387094817716717">Јавни кључ елиптичне криве</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Напомена<ph name="END_BOLD" />: Сличан глас или снимак ће можда моћи да приступа вашим личним резултатима или Помоћнику.</translation>
-<translation id="3421835120203732951">Додај нови профил</translation>
 <translation id="3422989558057853751">Изабрали сте последњу ставку. Поништавањем избора ћете изаћи из режима избора</translation>
 <translation id="3423111258700187173">Резултати су пронађени у фолдеру <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">Сазнајте више о овој функцији вештачке интелигенције</translation>
@@ -9332,7 +9328,6 @@
 <translation id="7622768823216805500">Сајтови обично инсталирају обрађиваче плаћања за потребе функција куповине попут лакшег плаћања</translation>
 <translation id="7622966771025050155">Пређи на снимљену картицу</translation>
 <translation id="7624337243375417909">caps lock је искључен</translation>
-<translation id="7625025537587898155">Додај нови профил</translation>
 <translation id="7625568159987162309">Прегледајте дозволе и податке који се чувају на свим сајтовима</translation>
 <translation id="7625823789272218216">Нова картица на левој страни</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), <ph name="GRADE" />. ниво</translation>
@@ -11752,7 +11747,6 @@
 <translation id="98235653036850093">Здраво, <ph name="PROFILE_NAME" /></translation>
 <translation id="983192555821071799">Затвори све картице</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> – Камера и микрофон снимају</translation>
-<translation id="984275831282074731">Начини плаћања</translation>
 <translation id="984705303330760860">Додајте језике за проверу правописа</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Опште</translation>

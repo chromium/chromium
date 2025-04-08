@@ -351,6 +351,7 @@
 <translation id="2438248248625638801">Kayıt başlıkları oluşturuluyor</translation>
 <translation id="2446553403094072641">Kayan nokta doğruluğu</translation>
 <translation id="2448312741937722512">Tür</translation>
+<translation id="2448857983905133469">Sınıf araçları</translation>
 <translation id="2468124392950503650">Oluşturulacak istemi seçin veya <ph name="BEGIN_LINK_PROMPTING_GUIDE" />istem kılavuzuna<ph name="END_LINK_PROMPTING_GUIDE" /> göz atın</translation>
 <translation id="2472215337771558851">Google Yapay Zeka destekli Yazmama yardım et özelliğiyle yeni bir taslak oluşturun veya mevcut taslağınızı iyileştirin</translation>
 <translation id="2475982808118771221">Bir hata oluştu</translation>
@@ -449,6 +450,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Uç nokta</translation>
 <translation id="3060579846059757016">Ana hatlar</translation>
+<translation id="3060798442805232711">Sınıf araçları, mikrofonunuzu kullanıyor</translation>
 <translation id="3061850252076394168">Seç ve Dinle'yi etkinleştir</translation>
 <translation id="3066772729299747758">Salı günü</translation>
 <translation id="3069085583900247081">Test başarısız oldu</translation>
@@ -910,6 +912,7 @@
 <translation id="5170568018924773124">Klasörde göster</translation>
 <translation id="517075088756846356">Güncelleme işlemine devam etmek için <ph name="DEVICE_NAME" /> güç kablosunu çıkarıp tekrar takın</translation>
 <translation id="5180108905184566358">baobap ağaçları</translation>
+<translation id="5180431943345994173">Öğretmeniniz Sınıf araçları'ndan içerik kaldırdı</translation>
 <translation id="5180712487038406644">Vurgulu</translation>
 <translation id="5190187232518914472">En sevdiğiniz anılarınızı yeniden yaşayın. <ph name="LINK_BEGIN" />Google Fotoğraflar<ph name="LINK_END" />'a giderek istediğiniz albümleri ekleyin veya düzenleyin.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
@@ -1003,6 +1006,7 @@
 <translation id="5628106863521633649">Kullanıma sunulduğu diller</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">özet</translation>
+<translation id="5655084389678168978">Öğretmeniniz Sınıf araçları'na yeni içerikler ekledi</translation>
 <translation id="5655283760733841251">Klavye parlaklığını artır</translation>
 <translation id="5655296450510165335">Cihaz kaydı</translation>
 <translation id="5655776422854483175">Yazdırma işi yok</translation>
@@ -1528,6 +1532,7 @@ Bu transkriptleri almak için metne dönüştürme modelini (100 MB'a kadar) ind
 <translation id="7971535376154084247">Genel kontroller</translation>
 <translation id="7977800524392185497">Bir <ph name="NETWORK_NAME" /> ağına katılmak için Ayarlar'a gidin</translation>
 <translation id="7978412674231730200">Özel anahtar</translation>
+<translation id="7979468455552394856">Sınıf araçları, öğrencilere bağlı</translation>
 <translation id="7982789257301363584">Ağ</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" otomatik olarak başlatıldı}other{# uygulama otomatik olarak başlatıldı}}</translation>
 <translation id="7994702968232966508">EAP yöntemi</translation>

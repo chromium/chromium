@@ -77,6 +77,7 @@
 <translation id="1298077576058087471">60% வரை டேட்டாவைச் சேமிக்கலாம், இன்றைய செய்திகளைப் படிக்கலாம்</translation>
 <translation id="1303339473099049190">கடவுச்சொல்லைக் கண்டறிய முடியவில்லை. எழுத்துப்பிழையைச் சரிபார்த்து மீண்டும் முயலவும்.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - <ph name="DEVICE_NAME" /> சாதனத்திலிருந்து அனுப்பப்பட்டது</translation>
+<translation id="1318262688555255786"><ph name="PAGE_TITLE" /> என்ற இணையப் பக்கத்திற்கான இணைப்பைப் பகிரும். தகவல் ஆதாரம்: <ph name="PAGE_URL" /></translation>
 <translation id="1320912611264252795">புக்மார்க் சேமிப்புச் செயல்முறை முழுத் திரையில் காட்டப்பட்டுள்ளது</translation>
 <translation id="1327257854815634930">வழிசெலுத்தல் வரலாறு திறக்கப்பட்டுள்ளது</translation>
 <translation id="1331212799747679585">Chromeமைப் புதுப்பிக்க முடியாது. கூடுதல் விருப்பங்கள்</translation>
@@ -455,6 +456,7 @@
 <translation id="3072980200212375806"><ph name="APP_NAME" /> Chromeமில் திறக்கப்படும். தொடர்வதன் மூலம் <ph name="BEGIN_LINK1" />Google சேவை விதிமுறைகள்<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Google Chrome &amp; ChromeOS தொடர்பான கூடுதல் சேவை விதிமுறைகள்<ph name="END_LINK2" /> ஆகியவற்றை ஏற்கிறீர்கள். <ph name="BEGIN_LINK3" />தனியுரிமைக் கொள்கையையும்<ph name="END_LINK3" /> ஏற்கிறீர்கள்.</translation>
 <translation id="3080525922482950719">பின்னரோ ஆஃப்லைனிலோ படிப்பதற்கு பக்கங்களைச் சேமிக்கலாம்</translation>
 <translation id="3087734570205094154">கீழே</translation>
+<translation id="3088687687599869821">பக்கங்களுக்கிடையே செல்லுதல்</translation>
 <translation id="3091010850649238832">கிளிப்போர்டில் உள்ளவற்றைக் காட்டும்</translation>
 <translation id="3098745985164956033">உங்களுக்கான விளக்கங்களை மேம்படுத்த, படங்கள் Googleளுக்கு அனுப்பப்படும்</translation>
 <translation id="3114507951000454849">இன்றைய செய்திகளைப் படியுங்கள் <ph name="NEWS_ICON" /></translation>
@@ -515,6 +517,7 @@
 <translation id="3435465986463792564">பல சாளரங்கள் உள்ளனவா? இங்கிருந்தே அவற்றை நிர்வகிக்கலாம்</translation>
 <translation id="3435575784518354875">உங்கள் கடவுச்சொற்களைத் தொடர்ந்து அணுக, இப்போதே அவற்றைப் பதிவிறக்கி Google Play சேவைகளைப் புதுப்பித்துவிட்டு, மீண்டும் அவற்றை Google Password Managerரில் பதிவேற்றவும். <ph name="BEGIN_LINK" />எல்லா வழிமுறைகளையும் காட்டு<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">பாதுகாப்பு</translation>
+<translation id="3435914367318771664">புதிய குழுவில் பக்கத்தைச் சேர்</translation>
 <translation id="3439276997620616816">உங்களின் சமீபத்திய பக்கங்கள் இங்கே காட்டப்படும்</translation>
 <translation id="3443221991560634068">தற்போதைய பக்கத்தை மீண்டும் ஏற்றும்</translation>
 <translation id="3444179773590444986">தளங்களுக்கான டார்க் தீம் குறித்த கருத்தைப் பகிர விரும்புகிறீர்களா?</translation>
@@ -781,6 +784,7 @@
 <translation id="4684427112815847243">அனைத்தையும் ஒத்திசை</translation>
 <translation id="4685741273709472646">கீழ்த்தோன்றல் பட்டியலில் இருந்து தேர்ந்தெடுக்கலாம்</translation>
 <translation id="4687718960473379118">தளம் பரிந்துரைக்கும் விளம்பரங்கள்</translation>
+<translation id="468924408576231679"><ph name="PAGE_TITLE" /> என்ற இணையப் பக்கத்திற்கான இணைப்பை நகலெடுக்கும். தகவல் ஆதாரம்: <ph name="PAGE_URL" /></translation>
 <translation id="469286762610133730">சிறப்பான உள்ளடக்கத்தைப் பெறுங்கள்</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 மற்றும் <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> விருப்பம்}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 மற்றும் <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> விருப்பங்கள்}}</translation>
 <translation id="4698061626562952596">செயலில் இல்லாத பக்கங்களை இங்கே பார்க்கலாம்</translation>
@@ -1123,6 +1127,7 @@
 <translation id="6205314730813004066">விளம்பரத் தனியுரிமை</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> இல்லையா?</translation>
 <translation id="6211386937064921208">இந்தப் பக்கத்தின் மாதிரிக்காட்சி</translation>
+<translation id="6212567362666004597">குழுவில் பக்கத்தைச் சேர்</translation>
 <translation id="6221633008163990886">உங்கள் கடவுச்சொற்களை ஏற்ற, அன்லாக் செய்யவும்</translation>
 <translation id="6225572914528673855">முகவரிப் பட்டி</translation>
 <translation id="6232535412751077445">‘கண்காணிக்க வேண்டாம்’ என்பதை இயக்குவதால் உங்கள் உலாவல் டிராஃபிக்குடன் கோரிக்கை ஒன்று இணைக்கப்படும். கோரிக்கைக்கு இணையதளம் எவ்வாறு பதிலளிக்கிறது என்பதையும் கோரிக்கையானது எவ்வாறு புரிந்து கொள்ளப்படுகிறது என்பதையும் பொருத்து எந்தவொரு விளைவும் இருக்கும்.
@@ -1150,6 +1155,7 @@
 <translation id="6324916366299863871">ஷார்ட்கட்டைத் திருத்து</translation>
 <translation id="6324977638108296054">ஹைலைட் செய்யப்பட்ட உரைக்கான இணைப்பை உருவாக்க முடியவில்லை</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> வழியாகப் பகிர்</translation>
+<translation id="6335454563754888572"><ph name="PAGE_URL" /> என்ற தளத்தில் உள்ள பக்கத்தைக் காட்டும் URLலை மாற்றலாம்</translation>
 <translation id="6337234675334993532">என்க்ரிப்ஷன்</translation>
 <translation id="6340526405444716530">பிரத்தியேகமாக்குதல்</translation>
 <translation id="6341580099087024258">கோப்புகளை எங்கே சேமிக்க வேண்டும் என்று கேள்</translation>
@@ -1193,6 +1199,7 @@
 <translation id="6486420406192123355">பாதுகாப்பற்ற இணைப்பைப் பயன்படுத்தும் தளத்திலிருந்து இந்த PDF ஃபைல் பெறப்பட்டது</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{ஃபைல் பதிவிறக்கப்பட்டது}other{# பதிவிறக்கங்கள் முடிந்தன}}</translation>
 <translation id="6508722015517270189">Chromeஐ மீண்டும் தொடங்கவும்</translation>
+<translation id="6513924416597632811"><ph name="SEARCH_QUERY" /> என்ற தேடல் வினவலுக்கான தேடல் முடிவுகளின் பக்கத்திற்கான இணைப்பை நகலெடுக்கும். தகவல் ஆதாரம்: <ph name="PAGE_URL" /></translation>
 <translation id="6518133107902771759">சரிபார்</translation>
 <translation id="6527303717912515753">பகிர்</translation>
 <translation id="652948702951888897">Chrome வரலாறு</translation>
@@ -1604,6 +1611,7 @@
 <translation id="8221401890884589479">உங்களுக்கு விருப்பமில்லாத தளங்களை நீங்கள் தடுக்கலாம். பட்டியலில் இருந்து 30 நாட்களுக்கு முந்தைய தளங்களை Chrome உலாவியும் தானாகவே நீக்கும். <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
 <translation id="8221985041778490865">உலாவிய தரவை நீக்குகிறது</translation>
 <translation id="8223642481677794647">ஃபீட் கார்டு மெனு</translation>
+<translation id="82296173028782770"><ph name="SEARCH_QUERY" /> என்ற தேடல் வினவலை மாற்றலாம்</translation>
 <translation id="8236063039629122676">இப்போது வலதுபக்கம் ஸ்வைப் செய்தால் பின்னோக்கிச் சென்று முந்தைய பக்கங்களைப் பார்க்கலாம், இடதுபக்கம் ஸ்வைப் செய்து முன்னோக்கிச் செல்லலாம்.</translation>
 <translation id="8236097722223016103">புக்மார்க்குகளில் சேர்</translation>
 <translation id="8243077599929149377">பயனர்பெயரைச் சேர்த்தல்</translation>
@@ -1752,6 +1760,7 @@
 <translation id="8890668505403261809">மறைநிலைப் பக்கங்களைத் தேடுங்கள்</translation>
 <translation id="8898822736010347272">இணையத்தில் புதிய அச்சுறுத்தல்களைக் கண்டறிவதற்காகவும் அனைத்துப் பயனர்களையும் பாதுகாப்பதற்காகவும், நீங்கள் பார்வையிடும் சில பக்கங்களின் URLகள், வரையறுக்கப்பட்ட சிஸ்டம் தகவல்கள், சில பக்கங்களின் உள்ளடக்கம் ஆகியவற்றை Googleளுக்கு அனுப்பும்.</translation>
 <translation id="8909135823018751308">பகிர்...</translation>
+<translation id="8918299437379122615"><ph name="SEARCH_QUERY" /> என்ற தேடல் வினவலுக்கான தேடல் முடிவுகளின் பக்கத்திற்கான இணைப்பைப் பகிரும். தகவல் ஆதாரம்: <ph name="PAGE_URL" /></translation>
 <translation id="8922289737868596582">பக்கங்களை ஆஃப்லைனில் பயன்படுத்த, 'மேலும் விருப்பங்கள்' பட்டனுக்குச் சென்று அவற்றைப் பதிவிறக்கவும்</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> மொழி தயாராக உள்ளது</translation>

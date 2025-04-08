@@ -351,6 +351,7 @@
 <translation id="2438248248625638801">Creating recording titles</translation>
 <translation id="2446553403094072641">Floating point accuracy</translation>
 <translation id="2448312741937722512">Type</translation>
+<translation id="2448857983905133469">Class tools</translation>
 <translation id="2468124392950503650">Select prompt to create or see the <ph name="BEGIN_LINK_PROMPTING_GUIDE" />prompt guide<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Use Help me write to create a draft or refine existing work, powered by Google AI</translation>
 <translation id="2475982808118771221">An error occurred</translation>
@@ -449,6 +450,7 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">Endpoint</translation>
 <translation id="3060579846059757016">Outlines</translation>
+<translation id="3060798442805232711">Class tools is using your microphone</translation>
 <translation id="3061850252076394168">enable Select to Speak</translation>
 <translation id="3066772729299747758">on Tuesday</translation>
 <translation id="3069085583900247081">Test failed</translation>
@@ -910,6 +912,7 @@
 <translation id="5170568018924773124">Show in folder</translation>
 <translation id="517075088756846356">Unplug and replug the <ph name="DEVICE_NAME" /> power cable to continue the update process</translation>
 <translation id="5180108905184566358">baobab trees</translation>
+<translation id="5180431943345994173">Your teacher has removed content in Class tools</translation>
 <translation id="5180712487038406644">Expressive</translation>
 <translation id="5190187232518914472">Relive your favourite memories. To add or edit albums, go to <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
@@ -1003,6 +1006,7 @@
 <translation id="5628106863521633649">Available languages</translation>
 <translation id="5630438231335788050">Bauhaus</translation>
 <translation id="5631759159893697722">abstract</translation>
+<translation id="5655084389678168978">Your teacher has added new content in Class tools</translation>
 <translation id="5655283760733841251">Keyboard brightness up</translation>
 <translation id="5655296450510165335">Device enrolment</translation>
 <translation id="5655776422854483175">No print jobs</translation>
@@ -1528,6 +1532,7 @@ Download the transcription model (up to 100 MB) to get these transcriptions.</tr
 <translation id="7971535376154084247">General controls</translation>
 <translation id="7977800524392185497">To join a <ph name="NETWORK_NAME" /> network, go to Settings</translation>
 <translation id="7978412674231730200">Private key</translation>
+<translation id="7979468455552394856">Class tools is connected to students</translation>
 <translation id="7982789257301363584">Network</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{‘<ph name="APP_NAME_1" />’ was started automatically}other{# apps were started automatically}}</translation>
 <translation id="7994702968232966508">EAP method</translation>

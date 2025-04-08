@@ -99,7 +99,6 @@
 <translation id="1175364870820465910">&amp;Printează...</translation>
 <translation id="1175393348063009671">Foto (mat)</translation>
 <translation id="1175875016430184367">Capsare triplă în dreapta</translation>
-<translation id="1176123604678140687">Luna expirării</translation>
 <translation id="1177548198167638471">Nu mai întreba</translation>
 <translation id="1177863135347784049">Personalizează</translation>
 <translation id="1178581264944972037">Întrerupe</translation>
@@ -333,7 +332,6 @@
           &lt;p&gt;Corectează data și ora din secțiunea &lt;strong&gt;General&lt;/strong&gt; a aplicației &lt;strong&gt;Setări&lt;/strong&gt;.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Administratorul îți va reporni dispozitivul la ora <ph name="TIME" />, pe <ph name="DATE" /></translation>
 <translation id="1562805467275776390">Curse de mașini</translation>
-<translation id="1563137369682381456">Data expirării</translation>
 <translation id="1563755205047885671">Jocuri de acțiune și platformă</translation>
 <translation id="1564634006476980707">Schema HTTPS recomandată pentru adresa URL de căutare: <ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">Informații despre rețea cum ar fi adresele, configurația interfeței și calitatea conexiunii</translation>
@@ -937,7 +935,6 @@
 <translation id="2606760465469169465">Verificare automată</translation>
 <translation id="2608019759319359258">Când un subiect este blocat, acesta nu va fi folosit pentru personalizarea anunțurilor</translation>
 <translation id="2610561535971892504">Dă clic pentru a copia</translation>
-<translation id="2612676031748830579">Număr card</translation>
 <translation id="2612993535136743634">Toate codurile de securitate salvate pe dispozitiv și în Contul Google vor fi șterse</translation>
 <translation id="2616412942031748191">Optimizare și marketing în motoare de căutare</translation>
 <translation id="2618206371527040026">Conferințe și publicații academice</translation>
@@ -3338,7 +3335,6 @@
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">Folosește YouTube cu opțiunile părintelui</translation>
 <translation id="6779348349813025131">Managerul de parole Google are nevoie de acces la MacOS Keychain</translation>
-<translation id="6782656837469339439">Anul expirării</translation>
 <translation id="6785990323398321538">Poți să schimbi oricând motorul de căutare din setările Chrome.</translation>
 <translation id="6786145470008421571">Plic de 6 x 9 inchi</translation>
 <translation id="67862343314499040">Violet</translation>

@@ -44,7 +44,6 @@
 <translation id="1026822031284433028">Вчитај слика</translation>
 <translation id="1026959648338730078">Windows Hello или надворешен безбедносен клуч</translation>
 <translation id="1028700151766901954">Причина: LBS останува во <ph name="DEFAULT_OPEN_BROWSER" /> стандардно.</translation>
-<translation id="1028823395684328817">Потврдете го вашиот идентитет за да продолжите да ги користите лозинките и друго во вашата сметка на Google</translation>
 <translation id="102916930470544692">Криптографски клуч</translation>
 <translation id="1029317248976101138">Зумирај</translation>
 <translation id="1029526375103058355">Допрете за да се кликне</translation>
@@ -819,7 +818,6 @@
 <translation id="1558671750917454373">Продолжи со емитување на <ph name="DEVICE_NAME" /></translation>
 <translation id="1561331397460162942">Ова овозможува пристап до локацијата за апликациите, веб-сајтовите со дозволата за локација и системските услуги</translation>
 <translation id="1562119309884184621">Ако го додадете контактов, ќе биде запомнет следниот пат кога ќе споделува</translation>
-<translation id="1563137369682381456">Датум на истекување</translation>
 <translation id="1566049601598938765">Веб-сајт</translation>
 <translation id="15662109988763471">Избраниот печатач не е достапен или не е правилно инсталиран. Проверете го или обидете се да изберете друг печатач.</translation>
 <translation id="1566329594234563241">Додека е неактивен и приклучен во струја</translation>
@@ -1261,6 +1259,7 @@
 <translation id="185111092974636561"><ph name="BEGIN_PARAGRAPH1" />Пред да се регистрирате, треба да го избришете TPM за да може <ph name="DEVICE_OS" /> да ја преземе сопственоста на уредот.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Може и комплетно да го исклучите TPM-уредот. Вашите податоци ќе бидат безбедно складирани со софтверско шифрирање, но одредени безбедносни функции, како што се сертификатите поддржани од хардверот, ќе се оневозможат.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Може да ги промените вашите поставки за TPM со рестартирање и влегување во системските поставки BIOS/UEFI. Чекорите може да се разликуваат во зависност од моделот на уредот. За повеќе информации, отворете ја документацијата за <ph name="DEVICE_OS" /> на посебен уред пред рестартирањето: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="1851551847729706116">Се споделува <ph name="TAB_NAME" /> со картичкава</translation>
 <translation id="1852799913675865625">Имаше грешка при обидот да се прочита датотеката: <ph name="ERROR_TEXT" />.</translation>
 <translation id="1854180393107901205">Запри со емитување</translation>
 <translation id="1856715684130786728">Додај локација...</translation>
@@ -3481,7 +3480,6 @@
 <translation id="3420501302812554910">Потребно е ресетирање на внатрешен безбедносен клуч</translation>
 <translation id="3421387094817716717">Јавен клуч на елиптична крива</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Напомена:<ph name="END_BOLD" /> некој со сличен глас или снимка ќе може да пристапи до вашите лични резултати или до вашиот „Помошник“.</translation>
-<translation id="3421835120203732951">Додајте нов профил</translation>
 <translation id="3422989558057853751">Последна избрана ставка, ако го поништите изборот, ќе излезете од режимот на избор</translation>
 <translation id="3423111258700187173">Најдени се резултати во <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">Дознајте повеќе за оваа AI-функција</translation>
@@ -9344,7 +9342,6 @@
 <translation id="7622768823216805500">Сајтовите обично инсталираат ракувачи со плаќања за функциите за купување како што е полесната наплата</translation>
 <translation id="7622966771025050155">Префрли на снимената картичка</translation>
 <translation id="7624337243375417909">Caps Lock е исклучено</translation>
-<translation id="7625025537587898155">Додајте нов профил</translation>
 <translation id="7625568159987162309">Прегледајте ги дозволите и податоците складирани на сајтовите</translation>
 <translation id="7625823789272218216">Нова картичка налево</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), Степен <ph name="GRADE" /></translation>
@@ -11300,6 +11297,7 @@
 <translation id="8963117664422609631">Оди на поставките за сајтот</translation>
 <translation id="8964927371396953727">Потврдете го вашиот идентитет за да користите и зачувувате лозинки во вашата сметка <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8965037249707889821">Внеси стара лозинка</translation>
+<translation id="8967403839792635452">Програмирате екстензии? Бидете во тек на <ph name="BEGIN_LINK" />Што има ново<ph name="END_LINK" /> со документацијата за програмери за екстензии за Chrome.</translation>
 <translation id="8967427617812342790">Додај во списокот за читање</translation>
 <translation id="8967548289042494261">Отстранување на <ph name="VM_NAME" /></translation>
 <translation id="8968527460726243404">ChromeOS System Image Writer</translation>
@@ -11764,7 +11762,6 @@
 <translation id="98235653036850093">Здраво <ph name="PROFILE_NAME" /></translation>
 <translation id="983192555821071799">Затвори ги сите картички</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - се снима со камерата и микрофонот</translation>
-<translation id="984275831282074731">Начини на плаќање</translation>
 <translation id="984705303330760860">Додајте јазици за проверка на правопис</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Општо</translation>

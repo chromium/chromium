@@ -77,7 +77,7 @@
 <translation id="1298077576058087471">Uštedite do 60% podataka – pročitajte današnje vijesti</translation>
 <translation id="1303339473099049190">Nije moguće pronaći tu lozinku. Provjerite jeste li ispravno napisali i pokušajte ponovo.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> – Poslano koristeći <ph name="DEVICE_NAME" /></translation>
-<translation id="1318262688555255786">Podijelite vezu na web-stranicu <ph name="PAGE_TITLE" />. Izvor: <ph name="PAGE_URL" /></translation>
+<translation id="1318262688555255786">Dijeljenje linka web stranice <ph name="PAGE_TITLE" />. Izvor: <ph name="PAGE_URL" /></translation>
 <translation id="1320912611264252795">Folderi toka za pohranu oznaka su otvoreni na cijelom ekranu</translation>
 <translation id="1327257854815634930">Historija navigacije je otvorena</translation>
 <translation id="1331212799747679585">Nije moguće ažurirati Chrome. Više opcija</translation>
@@ -518,7 +518,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="3435465986463792564">Imate mnogo prozora? Možete upravljati njima odavde</translation>
 <translation id="3435575784518354875">Da zadržite pristup lozinkama, izvezite ih sada, ažurirajte Google Play usluge, a zatim ponovo uvezite lozinke na Google upravitelj lozinki. <ph name="BEGIN_LINK" />Pogledajte sva uputstva<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">Sigurnost</translation>
-<translation id="3435914367318771664">Dodaj karticu novoj grupi</translation>
+<translation id="3435914367318771664">Dodaj karticu u novu grupu</translation>
 <translation id="3439276997620616816">Ovdje ćete pronaći nedavne kartice</translation>
 <translation id="3443221991560634068">Ponovo učitajte trenutnu stranicu</translation>
 <translation id="3444179773590444986">Dijeliti povratne informacije o tamnoj temi za web lokacije?</translation>
@@ -785,7 +785,7 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="4684427112815847243">Sinhroniziranje svega</translation>
 <translation id="4685741273709472646">Odabir s padajuće liste</translation>
 <translation id="4687718960473379118">Oglasi koje predlažu web lokacije</translation>
-<translation id="468924408576231679">Kopirajte vezu na web-stranicu <ph name="PAGE_TITLE" />. Izvor: <ph name="PAGE_URL" /></translation>
+<translation id="468924408576231679">Kopiranje linka web stranice <ph name="PAGE_TITLE" />. Izvor: <ph name="PAGE_URL" /></translation>
 <translation id="469286762610133730">Dobijajte bolji sadržaj</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}few{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4698061626562952596">Ovdje pregledajte neaktivne kartice</translation>
@@ -1128,7 +1128,7 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="6205314730813004066">Privatnost pri izloženosti oglasima</translation>
 <translation id="6210748933810148297">Vi niste <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Pregledanje ove stranice</translation>
-<translation id="6212567362666004597">Dodaj karticu grupi</translation>
+<translation id="6212567362666004597">Dodaj karticu u grupu</translation>
 <translation id="6221633008163990886">Otključajte da izvezete lozinke</translation>
 <translation id="6225572914528673855">Traka za adresu</translation>
 <translation id="6232535412751077445">Ako omogućite "Bez praćenja", taj će se zahtjev slati uz vaš saobraćaj pregledanja. Efikasnost zavisi od toga reagira li web lokacija na zahtjev i na koji način se taj zahtjev tumači.
@@ -1156,7 +1156,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="6324916366299863871">Uredite prečicu</translation>
 <translation id="6324977638108296054">Nije moguće kreirati link za istaknuti tekst</translation>
 <translation id="6333140779060797560">Dijeli pomoću aplikacije <ph name="APPLICATION" /></translation>
-<translation id="6335454563754888572">Uredite URL koji pokazuje na stranicu na: <ph name="PAGE_URL" /></translation>
+<translation id="6335454563754888572">Uređivanje URL-a koji vodi na stranicu: <ph name="PAGE_URL" /></translation>
 <translation id="6337234675334993532">Šifriranje</translation>
 <translation id="6340526405444716530">Personalizacija</translation>
 <translation id="6341580099087024258">Pitaj gdje pohranjivati fajlove</translation>
@@ -1200,7 +1200,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="6486420406192123355">Ovaj PDF fajl je s web lokacije koja koristi nesigurnu vezu</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{Fajl je preuzet}one{Završeno je # preuzimanje}few{Završena su # preuzimanja}other{Završeno je # preuzimanja}}</translation>
 <translation id="6508722015517270189">Ponovo pokrenite Chrome</translation>
-<translation id="6513924416597632811">Kopirajte vezu na stranicu rezultata pretraživanja za: <ph name="SEARCH_QUERY" />. Izvor: <ph name="PAGE_URL" /></translation>
+<translation id="6513924416597632811">Kopiranje linka stranice rezultata pretraživanja: <ph name="SEARCH_QUERY" />. Izvor: <ph name="PAGE_URL" /></translation>
 <translation id="6518133107902771759">Potvrdi</translation>
 <translation id="6527303717912515753">Dijeli</translation>
 <translation id="652948702951888897">Historija Chromea</translation>
@@ -1761,7 +1761,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromea 
 <translation id="8890668505403261809">Pretražite anonimne kartice</translation>
 <translation id="8898822736010347272">Šalje Googleu URL-ove nekih stranica koje posjetite, ograničene informacije sistema i sadržaj nekih stranica radi lakšeg otkrivanja novih prijetnji te zaštite svakoga na webu.</translation>
 <translation id="8909135823018751308">Dijeljenje…</translation>
-<translation id="8918299437379122615">Podijelite vezu na stranicu rezultata pretraživanja za: <ph name="SEARCH_QUERY" />. Izvor: <ph name="PAGE_URL" /></translation>
+<translation id="8918299437379122615">Dijeljenje linka stranice rezultata pretraživanja: <ph name="SEARCH_QUERY" />. Izvor: <ph name="PAGE_URL" /></translation>
 <translation id="8922289737868596582">Preuzmite stranice pomoću dugmeta Više opcija da ih koristite van mreže</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> je spreman</translation>
