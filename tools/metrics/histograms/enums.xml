@@ -23211,13 +23211,6 @@ Called by update_net_error_codes.py.-->
   <int value="14" label="NACL_BROKER_PROCESS"/>
 </enum>
 
-<enum name="ProfileEligibilityMismatch">
-  <int value="0" label="kEligibleProfileInExperiment"/>
-  <int value="1" label="kIneligibleProfileNotInExperiment"/>
-  <int value="2" label="kIneligibleProfileInExperiment"/>
-  <int value="3" label="kEligibleProfileNotInExperiment"/>
-</enum>
-
 <enum name="ProfileSignInStatus">
   <int value="0" label="All profiles signed-in without auth error"/>
   <int value="1" label="No profiles signed-in"/>

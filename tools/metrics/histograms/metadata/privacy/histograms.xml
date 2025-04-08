@@ -175,24 +175,6 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
   </summary>
 </histogram>
 
-<histogram name="Privacy.3pcd.ProfileEligibilityMismatch"
-    enum="ProfileEligibilityMismatch" expires_after="2025-05-11">
-  <owner>trishalfonso@google.com</owner>
-  <owner>src/chrome/browser/tpcd/OWNERS</owner>
-  <summary>
-    Records the relationship between profile and client eligibility for 3PCD
-    Experiments.
-
-    All profiles on the same client share a single eligibility value for
-    experiment purposes, but it is possible that an individual profile on the
-    client has a different eligibility than the client value used. This
-    histogram records how often a profile's eligibility matches and mismatches
-    with the client eligibility used for the experiment.
-
-    Recorded each time a profile is first loaded in a browser session.
-  </summary>
-</histogram>
-
 <histogram name="Privacy.3PCD.SecCookieDeprecationHeaderStatus"
     enum="SecCookieDeprecationHeaderStatus" expires_after="2025-09-14">
   <owner>linnan@chromium.org</owner>

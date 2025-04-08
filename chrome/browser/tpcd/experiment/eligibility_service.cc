@@ -22,31 +22,6 @@
 
 namespace tpcd::experiment {
 
-inline void UmaHistogramProfileEligibilityMismatch(
-    bool is_profile_eligible,
-    bool is_client_in_experiment) {
-  if (is_client_in_experiment && is_profile_eligible) {
-    base::UmaHistogramEnumeration(
-        ProfileEligibilityMismatchHistogramName,
-        ProfileEligibilityMismatch::kEligibleProfileInExperiment);
-  }
-  if (!is_client_in_experiment && !is_profile_eligible) {
-    base::UmaHistogramEnumeration(
-        ProfileEligibilityMismatchHistogramName,
-        ProfileEligibilityMismatch::kIneligibleProfileNotInExperiment);
-  }
-  if (is_client_in_experiment && !is_profile_eligible) {
-    base::UmaHistogramEnumeration(
-        ProfileEligibilityMismatchHistogramName,
-        ProfileEligibilityMismatch::kIneligibleProfileInExperiment);
-  }
-  if (!is_client_in_experiment && is_profile_eligible) {
-    base::UmaHistogramEnumeration(
-        ProfileEligibilityMismatchHistogramName,
-        ProfileEligibilityMismatch::kEligibleProfileNotInExperiment);
-  }
-}
-
 EligibilityService::EligibilityService(
     Profile* profile,
     privacy_sandbox::TrackingProtectionOnboarding*
@@ -101,11 +76,6 @@ void EligibilityService::BroadcastProfileEligibility() {
 }
 
 void EligibilityService::MarkProfileEligibility(bool is_client_eligible) {
-  // Record when profile eligiblity and client eligiblity matches and
-  // mismatches.
-  UmaHistogramProfileEligibilityMismatch(profile_eligibility_->is_eligible(),
-                                         is_client_eligible);
-
   UpdateCookieDeprecationLabel();
 
   // Update the eligibility for the onboarding UX flow.

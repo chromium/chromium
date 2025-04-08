@@ -24,17 +24,6 @@ namespace tpcd::experiment {
 
 class ExperimentManager;
 
-enum class ProfileEligibilityMismatch {
-  kEligibleProfileInExperiment = 0,
-  kIneligibleProfileNotInExperiment = 1,
-  kIneligibleProfileInExperiment = 2,
-  kEligibleProfileNotInExperiment = 3,
-  kMaxValue = kEligibleProfileNotInExperiment,
-};
-
-const char ProfileEligibilityMismatchHistogramName[] =
-    "Privacy.3pcd.ProfileEligibilityMismatch";
-
 class EligibilityService : public KeyedService {
  public:
   EligibilityService(
