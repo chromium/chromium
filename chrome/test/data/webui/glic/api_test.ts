@@ -7,7 +7,7 @@
 //   --gn_target chrome/test/data/webui/glic:build_ts
 
 import {PanelStateKind, ScrollToErrorReason, WebClientMode} from '/glic/glic_api/glic_api.js';
-import type {GlicBrowserHost, GlicWebClient, Observable, OpenPanelInfo, PanelOpeningData, ScrollToError, Subscriber} from '/glic/glic_api/glic_api.js';
+import type {GlicBrowserHost, GlicHostRegistry, GlicWebClient, Observable, OpenPanelInfo, PanelOpeningData, ScrollToError, Subscriber} from '/glic/glic_api/glic_api.js';
 
 import {createGlicHostRegistryOnLoad} from './api_boot.js';
 
@@ -35,6 +35,18 @@ class SequencedSubscriber<T> {
   unsubscribe() {
     this.subscriber.unsubscribe();
   }
+  waitForValue(targetValue: T) {
+    return this.waitFor(v => v === targetValue);
+  }
+  async waitFor(condition: (v: T) => boolean) {
+    while (true) {
+      const val = await this.next();
+      if (condition(val)) {
+        return;
+      }
+      console.info(`waitFor saw and ignored ${JSON.stringify(val)}`);
+    }
+  }
   private change(val: T) {
     this.getSignal(this.writeIndex++).resolve(val);
   }
@@ -54,9 +66,11 @@ function observeSequence<T>(observable: Observable<T>): SequencedSubscriber<T> {
 class WebClient implements GlicWebClient {
   host?: GlicBrowserHost;
   firstOpened = Promise.withResolvers<void>();
+  initializedPromise = Promise.withResolvers<void>();
 
   async initialize(glicBrowserHost: GlicBrowserHost): Promise<void> {
     this.host = glicBrowserHost;
+    this.initializedPromise.resolve();
   }
 
   async notifyPanelWillOpen(_panelOpeningData: PanelOpeningData):
@@ -64,8 +78,12 @@ class WebClient implements GlicWebClient {
     this.firstOpened.resolve();
   }
 
-  async waitForFirstOpen() {
+  waitForFirstOpen(): Promise<void> {
     return this.firstOpened.promise;
+  }
+
+  waitForInitialize(): Promise<void> {
+    return this.initializedPromise.promise;
   }
 }
 
@@ -73,13 +91,19 @@ interface TestStepper {
   nextStep(data: any): Promise<void>;
 }
 
+const glicHostRegistry = Promise.withResolvers<GlicHostRegistry>();
+
 class ApiTestFixtureBase {
   private clientValue?: WebClient;
+  // Test parameters passed to `ExecuteJsTest()`. This is undefined until
+  // ExecuteJsTest() is called.
+  testParams: any;
   constructor(protected testStepper: TestStepper) {}
 
-  // Sets up the web client.
+  // Sets up the web client. This is called when the web contents loads,
+  // before `ExecuteJsTest()`.
   async setUpClient() {
-    const registry = await createGlicHostRegistryOnLoad();
+    const registry = await glicHostRegistry.promise;
     const webClient = this.createWebClient();
     registry.registerWebClient(webClient);
     this.clientValue = webClient;
@@ -493,14 +517,89 @@ class ApiTests extends ApiTestFixtureBase {
 
   private async waitForPanelState(kind: PanelStateKind): Promise<void> {
     assertTrue(!!this.host.getPanelState);
-    const sequence = observeSequence(this.host.getPanelState());
-    while (true) {
-      const state = await sequence.next();
-      if (state.kind === kind) {
-        return;
-      }
-      console.info(`Got panel state ${state.kind} != ${kind}`);
+    await observeSequence(this.host.getPanelState())
+        .waitFor(s => s.kind === kind);
+  }
+}
+
+// Tests which do not wait for the panel to open before starting.
+class ApiTestWithoutOpen extends ApiTestFixtureBase {
+  override async setUpTest() {
+    await this.client.waitForInitialize();
+  }
+
+  async testLoadWhileWindowClosed() {
+    await observeSequence(this.host.panelActive()).waitForValue(false);
+  }
+}
+
+type InitFailureType = 'error'|'timeout'|'none'|'reloadAfterInitialize';
+
+// A web client that can fail initialize.
+class WebClientThatFailsInitialize extends WebClient {
+  constructor(private failWith: InitFailureType = 'error') {
+    super();
+  }
+
+  override initialize(glicBrowserHost: GlicBrowserHost): Promise<void> {
+    if (this.failWith === 'error') {
+      return Promise.reject(
+          new Error('WebClientThatFailsInitialize.initialize'));
     }
+    if (this.failWith === 'timeout') {
+      return sleep(15000);
+    }
+    if (this.failWith === 'reloadAfterInitialize') {
+      sleep(500).then(() => location.reload());
+    }
+    return super.initialize(glicBrowserHost);
+  }
+}
+
+class ApiTestFailsToInitialize extends ApiTestFixtureBase {
+  getTestParams(): {failWith?: InitFailureType} {
+    return this.testParams ?? {};
+  }
+
+  override createWebClient(): WebClient {
+    return new WebClientThatFailsInitialize(
+        this.getTestParams().failWith ?? 'error');
+  }
+
+  // Defer setup until the test function is called, so that we can access
+  // testParams when `createWebClient()` is called.
+  override async setUpClient() {}
+
+  async testInitializeFailsWindowClosed() {
+    // Failing initialize will tear down this web contents. Deferring that here
+    // so that our test can exit cleanly.
+    sleep(100).then(() => super.setUpClient());
+  }
+
+  async testInitializeFailsWindowOpen() {
+    // Failing initialize will tear down this web contents. Deferring that here
+    // so that our test can exit cleanly.
+    sleep(100).then(() => super.setUpClient());
+  }
+
+  async testReload() {
+    // First run.
+    if (this.getTestParams().failWith === 'reloadAfterInitialize') {
+      sleep(100).then(() => super.setUpClient());
+      return;
+    }
+
+    // Second run. Client should initialize and be opened.
+    await super.setUpClient();
+    await this.client.waitForFirstOpen();
+  }
+
+  async testInitializeFailsAfterReload() {
+    sleep(100).then(() => super.setUpClient());
+  }
+
+  async testInitializeTimesOut() {
+    await super.setUpClient();
   }
 }
 
@@ -549,6 +648,8 @@ const TEST_FIXTURES = [
   ApiTests,
   NotifyPanelWillOpenTest,
   InitiallyNotResizableTest,
+  ApiTestWithoutOpen,
+  ApiTestFailsToInitialize,
 ];
 
 function findTestFixture(testName: string): any {
@@ -577,7 +678,9 @@ class TestRunner implements TestStepper {
   fixture: ApiTestFixtureBase|undefined;
   testDone: Promise<void>|undefined;
   testFound = false;
-  constructor(private testName: string) {}
+  constructor(private testName: string) {
+    console.info(`TestRunner(${testName})`);
+  }
 
   async setUp() {
     let fixtureCtor = findTestFixture(this.testName);
@@ -595,16 +698,23 @@ class TestRunner implements TestStepper {
   }
 
   // Sets up the test and starts running it.
-  async run(): Promise<TestResult> {
+  async run(payload: any): Promise<TestResult> {
     assertTrue(this.testFound, `Test not found`);
-    await this.fixture?.setUpTest();
+    console.info(`Running test ${this.testName} with payload ${
+        JSON.stringify(payload)}`);
+    this.fixture!.testParams = payload;
+    await this.fixture!.setUpTest();
     this.testDone = (this.fixture as any)[this.testName]() as Promise<void>;
     return this.continueTest();
   }
 
   // If `run()` or `stepComplete()` returns 'next-step', this function is called
   // to continue running the test.
-  stepComplete(): Promise<TestResult> {
+  stepComplete(payload: any): Promise<TestResult> {
+    console.info(`Continue test${this.testName}`);
+    if (payload !== null) {
+      this.fixture!.testParams = payload;
+    }
     this.nextStepPromise = Promise.withResolvers();
     const continueResolve = this.continuePromise.resolve;
     this.continuePromise = Promise.withResolvers();
@@ -631,13 +741,12 @@ class TestRunner implements TestStepper {
 
   // TestStepper implementation.
   nextStep(payload: any): Promise<void> {
+    console.info(`Waiting for next step in test ${this.testName}`);
     payload = payload ?? {};  // undefined is not serializable to base::Value.
     this.nextStepPromise.resolve({id: 'next-step', payload});
     return this.continuePromise.promise;
   }
 }
-
-let testRunner: TestRunner|undefined;
 
 // Adds js source lines to the stack trace.
 async function improveStackTrace(stack: string) {
@@ -662,21 +771,25 @@ async function improveStackTrace(stack: string) {
   }
   return outLines.join('\n');
 }
+
 async function main() {
+  console.info('api_test waiting for GlicHostRegistry');
+  glicHostRegistry.resolve(await createGlicHostRegistryOnLoad());
+
   // If no test is selected, load a client that does nothing.
   // This is present because test.html is used as a dummy test client in
   // some tests.
-  testRunner = new TestRunner(getTestName() ?? 'testDoNothing');
+  const testRunner = new TestRunner(getTestName() ?? 'testDoNothing');
   await testRunner.setUp();
+
+  (window as any).runApiTest = (payload: any): Promise<TestResult> => {
+    return testRunner.run(payload);
+  };
+
+  (window as any).continueApiTest = (payload: any): Promise<TestResult> => {
+    return testRunner.stepComplete(payload);
+  };
 }
-
-(window as any).runApiTest = (): Promise<TestResult> => {
-  return testRunner!.run();
-};
-
-(window as any).continueApiTest = (): Promise<TestResult> => {
-  return testRunner!.stepComplete();
-};
 
 
 type ComparableValue = boolean|string|number|undefined|null;
@@ -700,7 +813,7 @@ function assertEquals(
   }
 }
 
-function sleep(timeoutMs: number) {
+function sleep(timeoutMs: number): Promise<void> {
   return new Promise((resolve) => {
     window.setTimeout(resolve, timeoutMs);
   });

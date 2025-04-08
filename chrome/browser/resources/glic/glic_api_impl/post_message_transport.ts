@@ -65,7 +65,10 @@ export class ResponseExtras {
 
 class MessageLogger {
   loggingEnabled = false;
-  constructor(protected logPrefix: string) {}
+  loggingPrefix: string;
+  constructor(senderId: string, protected prefix: string) {
+    this.loggingPrefix = `${prefix}(${senderId.substring(0, 6)})`;
+  }
 
   setLoggingEnabled(v: boolean): void {
     this.loggingEnabled = v;
@@ -81,7 +84,7 @@ class MessageLogger {
       return;
     }
     console.info(
-        `${this.logPrefix} [${requestType}] ${message}: ${
+        `${this.loggingPrefix} [${requestType}] ${message}: ${
             toDebugJson(payload)}`,
         payload);
   }
@@ -99,7 +102,7 @@ export class PostMessageRequestSender extends MessageLogger {
   constructor(
       private messageSender: PostMessageSender, private remoteOrigin: string,
       private senderId: string, logPrefix: string) {
-    super(logPrefix);
+    super(senderId, logPrefix);
     const handler = this.onMessage.bind(this);
     window.addEventListener('message', handler);
     this.onDestroy = () => {
@@ -110,7 +113,6 @@ export class PostMessageRequestSender extends MessageLogger {
   destroy() {
     this.onDestroy();
   }
-
 
   // Handles responses from the host.
   private onMessage(event: MessageEvent) {
@@ -210,10 +212,10 @@ export interface PostMessageRequestHandler {
 export class PostMessageRequestReceiver extends MessageLogger {
   private onDestroy: () => void;
   constructor(
-      private embeddedOrigin: string,
+      private embeddedOrigin: string, senderId: string,
       private postMessageSender: PostMessageSender,
       private handler: PostMessageRequestHandler, logPrefix: string) {
-    super(logPrefix);
+    super(senderId, logPrefix);
     const handlerFunction = this.onMessage.bind(this);
     window.addEventListener('message', handlerFunction);
     this.onDestroy = () => {

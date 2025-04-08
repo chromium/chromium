@@ -540,18 +540,6 @@ interface WebClient {
   // the web client alive until this function returns.
   NotifyPanelWasClosed() => ();
 
-  // The user has requested activation of the web client.
-  // `attached_to_window_id` identifies the browser window to which the
-  // panel is attached to. It is undefined if it is detached.
-  // DEPRECATED: will be removed soon.
-  NotifyPanelOpened(int32? attached_to_window_id);
-
-  // The user has closed the web client window. The window may be activated
-  // again later. Returns when the web client has stored any needed
-  // information and stopped accepting the user's input.
-  // DEPRECATED: will be removed soon.
-  NotifyPanelClosed() => ();
-
   // Informs the client that the state of the glic panel has changed.
   NotifyPanelStateChange(PanelState panel_state);
 
