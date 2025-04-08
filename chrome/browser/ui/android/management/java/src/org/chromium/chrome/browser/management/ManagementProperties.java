@@ -7,10 +7,12 @@ package org.chromium.chrome.browser.management;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Associated properties for ManagementPage's view. */
+@NullMarked
 class ManagementProperties {
     public static final PropertyModel.WritableObjectPropertyKey<String> TITLE =
             new PropertyModel.WritableObjectPropertyKey<>();

@@ -8,6 +8,7 @@ import android.content.Context;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtils;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -24,6 +25,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /** A mediator for the {@link ManagementCoordinator} responsible for handling business logic. */
+@NullMarked
 public class ManagementMediator {
     private static final String CHROME_MANAGED_LEARN_MORE_URL =
             "https://support.google.com/chrome/?p=is_chrome_managed";
