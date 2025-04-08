@@ -8,8 +8,10 @@ import android.webkit.WebChromeClient;
 
 import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.blink.mojom.FileChooserParams;
+import org.chromium.build.annotations.NullMarked;
 
 /** This is a helper class to map native file choice mode flags to their correct values. */
+@NullMarked
 public final class FileModeConversionHelper {
     public static int convertFileChooserMode(@FileChooserParams.Mode.EnumType int fileChooserMode) {
         switch (fileChooserMode) {

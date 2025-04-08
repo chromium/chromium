@@ -5,6 +5,7 @@
 package org.chromium.android_webview.metrics;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.build.annotations.NullMarked;
 
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
@@ -12,6 +13,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
 /** Contains Metrics related utility functions. */
+@NullMarked
 public final class AwMetricsUtils {
     private AwMetricsUtils() {}
 

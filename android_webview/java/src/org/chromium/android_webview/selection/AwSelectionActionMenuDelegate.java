@@ -7,6 +7,7 @@ package org.chromium.android_webview.selection;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.autofill.AutofillSelectionActionMenuDelegate;
 import org.chromium.content_public.browser.SelectionPopupController;
 
@@ -17,6 +18,7 @@ import java.lang.annotation.RetentionPolicy;
  * The WebView delegate customizing text selection menu items in {@link SelectionPopupController}.
  * It records webview-specific histograms.
  */
+@NullMarked
 public class AwSelectionActionMenuDelegate extends AutofillSelectionActionMenuDelegate {
     static final String TEXT_SELECTION_MENU_ORDERING_HISTOGRAM_NAME =
             "Android.WebView.TextSelectionMenuOrdering";

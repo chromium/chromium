@@ -9,9 +9,11 @@ import static org.chromium.android_webview.contextmenu.AwContextMenuItemProperti
 import android.view.View;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
+@NullMarked
 class AwContextMenuItemViewBinder {
     public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
         if (propertyKey == TEXT) {

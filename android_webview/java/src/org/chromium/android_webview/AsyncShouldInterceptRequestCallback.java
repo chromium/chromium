@@ -4,6 +4,8 @@
 
 package org.chromium.android_webview;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * AsyncShouldInterceptRequestCallback interface, which is used to provide a callback to provide to
  * the embedding app. The app can use this callback to provide request interception information to
@@ -11,6 +13,7 @@ package org.chromium.android_webview;
  * multiple times is not permitted and the implementation should always eventually call the
  * callback.
  */
+@NullMarked
 public interface AsyncShouldInterceptRequestCallback {
     /**
      * Sends WebResponseCallback to embedding app to provide its custom web response to a

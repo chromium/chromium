@@ -4,6 +4,7 @@
 
 package org.chromium.android_webview.metrics;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.metrics.HistogramEventProtos.HistogramEventProto;
 
 import java.util.HashSet;
@@ -17,6 +18,7 @@ import java.util.Set;
  * go/clank-webview-uma#histograms-allowlist-guidance for reasons to add your histogram to it and
  * how to do it safely.
  */
+@NullMarked
 public class HistogramsAllowlist {
     private final Set<Long> mHistogramNameHashes;
 

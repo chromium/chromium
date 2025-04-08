@@ -6,7 +6,10 @@ package org.chromium.android_webview;
 
 import org.jni_zero.CalledByNative;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Util methods which may be needed by native class of the same name. */
+@NullMarked
 public class AwBrowserMainParts {
     // This is set by WebViewChromiumFactoryProvider for the WebView separate resource context
     // experiment. The value is read by aw_browser_main_parts.cc.

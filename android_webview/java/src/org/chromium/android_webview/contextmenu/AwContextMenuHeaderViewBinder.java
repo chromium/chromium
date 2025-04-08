@@ -10,9 +10,11 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
+@NullMarked
 class AwContextMenuHeaderViewBinder {
     public static void bind(PropertyModel model, TextView textView, PropertyKey propertyKey) {
         if (propertyKey == TITLE) {

@@ -8,6 +8,8 @@ import android.webkit.WebViewClient;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -31,6 +33,7 @@ import java.lang.annotation.RetentionPolicy;
     WebviewErrorCode.ERROR_TOO_MANY_REQUESTS,
     WebviewErrorCode.ERROR_UNSAFE_RESOURCE
 })
+@NullMarked
 public @interface WebviewErrorCode {
     // Success
     int ERROR_OK = 0;

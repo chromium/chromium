@@ -7,6 +7,7 @@ package org.chromium.android_webview;
 import android.content.SharedPreferences;
 
 import org.chromium.android_webview.common.Lifetime;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.net.GURLUtils;
 
@@ -16,9 +17,10 @@ import java.util.Set;
 /**
  * This class is used to manage permissions for the WebView's Geolocation JavaScript API.
  *
- * Callbacks are posted on the UI thread.
+ * <p>Callbacks are posted on the UI thread.
  */
 @Lifetime.Profile
+@NullMarked
 public final class AwGeolocationPermissions {
     private static final String PREF_PREFIX = "AwGeolocationPermissions%";
     private final SharedPreferences mSharedPreferences;

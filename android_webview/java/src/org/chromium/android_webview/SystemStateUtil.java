@@ -16,13 +16,17 @@ import org.jni_zero.JNINamespace;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
 
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Set;
 
-/** Utility class to fetch information about system, or system-level information about the bundle. */
+/**
+ * Utility class to fetch information about system, or system-level information about the bundle.
+ */
 @JNINamespace("android_webview")
+@NullMarked
 public class SystemStateUtil {
     /** Returns whether Android has multiple user profiles. */
     @CalledByNative

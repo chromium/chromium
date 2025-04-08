@@ -4,9 +4,11 @@
 
 package org.chromium.android_webview.contextmenu;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
+@NullMarked
 class AwContextMenuHeaderProperties {
     public static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();
 

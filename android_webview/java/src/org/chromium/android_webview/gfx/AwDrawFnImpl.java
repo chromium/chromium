@@ -10,10 +10,12 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.android_webview.common.Lifetime;
+import org.chromium.build.annotations.NullMarked;
 
 /** Implementation of draw_fn.h. */
 @JNINamespace("android_webview")
 @Lifetime.WebView
+@NullMarked
 public class AwDrawFnImpl implements AwFunctor {
     private long mNativeAwDrawFnImpl;
     private final DrawFnAccess mAccess;

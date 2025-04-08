@@ -6,10 +6,13 @@ package org.chromium.android_webview.gfx;
 
 import android.graphics.Canvas;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Interface for functor implementation. This allows client to avoid differentiating between GL and
  * Vulkan implementations.
  */
+@NullMarked
 public interface AwFunctor {
     /** Insert draw functor into recording canvas */
     boolean requestDraw(Canvas canvas);

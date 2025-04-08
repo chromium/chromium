@@ -15,16 +15,17 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.common.Lifetime;
+import org.chromium.build.annotations.NullMarked;
 
 /**
- * Manages state associated with the Android render thread and the draw functor
- * that the WebView uses to render its contents. AwGLFunctor is responsible for
- * managing the lifetime of native RenderThreadManager and HardwareRenderer,
- * ensuring that they continue to exist while the functor remains attached to
- * the render node hierarchy.
+ * Manages state associated with the Android render thread and the draw functor that the WebView
+ * uses to render its contents. AwGLFunctor is responsible for managing the lifetime of native
+ * RenderThreadManager and HardwareRenderer, ensuring that they continue to exist while the functor
+ * remains attached to the render node hierarchy.
  */
 @JNINamespace("android_webview")
 @Lifetime.WebView
+@NullMarked
 public class AwGLFunctor implements AwFunctor {
     private final long mNativeAwGLFunctor;
     private final AwContents.NativeDrawGLFunctor mNativeDrawGLFunctor;
@@ -38,7 +39,7 @@ public class AwGLFunctor implements AwFunctor {
         mNativeAwGLFunctor = AwGLFunctorJni.get().create(this);
         mNativeDrawGLFunctor = nativeDrawFunctorFactory.createGLFunctor(mNativeAwGLFunctor);
         mContainerView = containerView;
-        mFunctorReleasedCallback = () -> removeReference();
+        mFunctorReleasedCallback = this::removeReference;
         addReference();
     }
 
@@ -65,7 +66,7 @@ public class AwGLFunctor implements AwFunctor {
     public boolean requestDraw(Canvas canvas) {
         assert mRefCount > 0;
         boolean success = mNativeDrawGLFunctor.requestDrawGL(canvas, mFunctorReleasedCallback);
-        if (success && mFunctorReleasedCallback != null) {
+        if (success) {
             addReference();
         }
         return success;

@@ -6,13 +6,12 @@ package org.chromium.android_webview;
 
 import android.net.Uri;
 
-import androidx.annotation.NonNull;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 
 import org.chromium.android_webview.common.Lifetime;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.MessagePayload;
 import org.chromium.content_public.browser.MessagePort;
 
@@ -22,10 +21,11 @@ import org.chromium.content_public.browser.MessagePort;
  */
 @Lifetime.Temporary
 @JNINamespace("android_webview")
+@NullMarked
 public class WebMessageListenerHolder {
     private final WebMessageListener mListener;
 
-    public WebMessageListenerHolder(@NonNull WebMessageListener listener) {
+    public WebMessageListenerHolder(WebMessageListener listener) {
         mListener = listener;
     }
 

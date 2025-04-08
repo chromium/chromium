@@ -12,9 +12,11 @@ import org.chromium.android_webview.safe_browsing.AwSafeBrowsingSafeModeAction;
 import org.chromium.android_webview.supervised_user.AwSupervisedUserSafeModeAction;
 import org.chromium.android_webview.variations.FastVariationsSeedSafeModeAction;
 import org.chromium.android_webview.variations.VariationsSeedSafeModeAction;
+import org.chromium.build.annotations.NullMarked;
 
 /** Exposes the SafeModeActions supported by the browser process. */
 @Lifetime.Singleton
+@NullMarked
 public final class BrowserSafeModeActionList {
     // Do not instantiate this class.
     private BrowserSafeModeActionList() {}

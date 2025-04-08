@@ -10,12 +10,14 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayAndroid.DisplayAndroidObserver;
 
 /** Provides DisplayRefreshRate tracking for MainBeginFrameSourceWebView */
 @JNINamespace("android_webview")
 @Lifetime.Singleton
+@NullMarked
 public class RootBeginFrameSourceWebView implements DisplayAndroidObserver {
     private long mNativeRootBeginFrameSourceWebView;
     private final DisplayAndroid mDisplayAndroid;
