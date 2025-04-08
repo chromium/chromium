@@ -3136,8 +3136,6 @@ void LocalFrame::RequestExecuteScript(
 }
 
 void LocalFrame::SetEvictCachedSessionStorageOnFreezeOrUnload() {
-  DCHECK(RuntimeEnabledFeatures::Prerender2Enabled(
-      GetDocument()->GetExecutionContext()));
   evict_cached_session_storage_on_freeze_or_unload_ = true;
 }
 
