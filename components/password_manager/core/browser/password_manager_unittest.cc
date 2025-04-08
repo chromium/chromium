@@ -6756,6 +6756,35 @@ TEST_P(PasswordManagerTest, NotifyOnSuccessfulLoginIsNotInvokedAfterFailure) {
   task_environment_.FastForwardBy(kDelayBeforeSuccessfulLogin * 2);
 }
 
+TEST_P(PasswordManagerTest, LoginFormClearingIsConsideredFailedLoginAttempt) {
+  base::test::ScopedFeatureList feature_list(
+      features::kFailedLoginDetectionBasedOnFormClearEvent);
+
+  PasswordForm form(MakeSimpleForm());
+  FormData form_data = form.form_data;
+  std::vector<FormData> observed = {form_data};
+
+  // Emulate page load.
+  manager()->OnPasswordFormsParsed(&driver_, observed);
+  manager()->OnPasswordFormsRendered(&driver_, observed);
+  task_environment_.RunUntilIdle();
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled(form.url))
+      .WillRepeatedly(Return(true));
+
+  OnPasswordFormSubmitted(form_data);
+
+  // Verify no successful submission is detected.
+  EXPECT_CALL(client_, NotifyOnSuccessfulLogin).Times(0);
+
+  test_api(form_data).field(0).set_value(u"");
+  test_api(form_data).field(1).set_value(u"");
+  manager()->OnPasswordFormCleared(&driver_, form.form_data);
+  task_environment_.RunUntilIdle();
+
+  // Verify submitted manager is reset.
+  EXPECT_FALSE(manager()->GetSubmittedManagerForTest());
+}
+
 INSTANTIATE_TEST_SUITE_P(, PasswordManagerTest, ::testing::Bool());
 
 enum class PredictionSource {

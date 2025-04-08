@@ -797,39 +797,46 @@ void PasswordManager::OnDynamicFormSubmission(
 void PasswordManager::OnPasswordFormCleared(
     PasswordManagerDriver* driver,
     const autofill::FormData& form_data) {
-  if (auto logger = GetLoggerIfAvailable(client_)) {
+  auto logger = GetLoggerIfAvailable(client_);
+  if (logger) {
     logger->LogMessage(Logger::STRING_ON_PASSWORD_FORM_CLEARED);
   }
   PasswordFormManager* manager =
       GetMatchedManagerForForm(driver, form_data.renderer_id());
-  if (!manager || !IsAutomaticSavePromptAvailable(manager) ||
-      !manager->HasLikelyChangeOrResetFormSubmitted()) {
+  if (!manager || !IsAutomaticSavePromptAvailable(manager)) {
     return;
   }
-  // If a password form was cleared, login is successful.
-  if (!form_data.renderer_id().is_null()) {
-    manager->UpdateSubmissionIndicatorEvent(
-        SubmissionIndicatorEvent::CHANGE_PASSWORD_FORM_CLEARED);
 
+  auto relevant_field_cleared = [&form_data](FieldRendererId field) {
+    // Return immediately if the whole form was cleared.
+    if (!form_data.renderer_id().is_null()) {
+      return true;
+    }
+    auto it = std::ranges::find(form_data.fields(), field,
+                                &autofill::FormFieldData::renderer_id);
+    return it != form_data.fields().end() && it->value().empty();
+  };
+
+  if (manager->HasLikelyChangeOrResetFormSubmitted()) {
+    if (relevant_field_cleared(
+            manager->GetSubmittedForm()->new_password_element_renderer_id)) {
+      manager->UpdateSubmissionIndicatorEvent(
+          SubmissionIndicatorEvent::CHANGE_PASSWORD_FORM_CLEARED);
 #if BUILDFLAG(IS_ANDROID)
-    SignalFormSubmissionIfEligibleForSaving(manager, client_);
+      SignalFormSubmissionIfEligibleForSaving(manager, client_);
 #endif
-    ScheduleOnLoginsSuccessful();
+      ScheduleOnLoginsSuccessful();
+    }
     return;
   }
-  // If password fields outside the <form> tag were cleared, it should be
-  // verified that fields are relevant.
-  FieldRendererId new_password_field_id =
-      manager->GetSubmittedForm()->new_password_element_renderer_id;
-  auto it = std::ranges::find(form_data.fields(), new_password_field_id,
-                              &autofill::FormFieldData::renderer_id);
-  if (it != form_data.fields().end() && it->value().empty()) {
-    manager->UpdateSubmissionIndicatorEvent(
-        SubmissionIndicatorEvent::CHANGE_PASSWORD_FORM_CLEARED);
-#if BUILDFLAG(IS_ANDROID)
-    SignalFormSubmissionIfEligibleForSaving(manager, client_);
-#endif
-    ScheduleOnLoginsSuccessful();
+
+  // If it's neither change or reset form it must be a sign-in or a sign-up
+  // form. Check if login should be considered failed in this case.
+  if (relevant_field_cleared(
+          manager->GetSubmittedForm()->password_element_renderer_id) &&
+      base::FeatureList::IsEnabled(
+          features::kFailedLoginDetectionBasedOnFormClearEvent)) {
+    OnLoginFailed(logger.get());
   }
 }
 

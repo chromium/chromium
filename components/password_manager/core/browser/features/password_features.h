@@ -48,6 +48,10 @@ BASE_DECLARE_FEATURE(kClearUndecryptablePasswordsOnSync);
 // same iframe with 400-403 status code.
 BASE_DECLARE_FEATURE(kFailedLoginDetectionBasedOnResourceLoadingErrors);
 
+// Marks form submission as failed whenever a password field is cleared for the
+// sign-in forms.
+BASE_DECLARE_FEATURE(kFailedLoginDetectionBasedOnFormClearEvent);
+
 #if BUILDFLAG(IS_ANDROID)
 // Enables reading credentials from SharedPreferences.
 BASE_DECLARE_FEATURE(kFetchGaiaHashOnSignIn);
