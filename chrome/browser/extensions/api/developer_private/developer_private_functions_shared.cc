@@ -21,6 +21,7 @@
 #include "chrome/browser/extensions/updater/extension_updater.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
+#include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/browser/ui/safety_hub/menu_notification_service_factory.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/common/drop_data.h"
@@ -37,6 +38,7 @@
 #include "extensions/common/permissions/permissions_data.h"
 #include "net/base/filename_util.h"
 #include "ui/base/clipboard/file_info.h"
+#include "ui/base/l10n/l10n_util.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/extensions/chrome_zipfile_installer.h"
@@ -1152,6 +1154,94 @@ DeveloperPrivateDismissSafetyHubExtensionsMenuNotificationFunction::Run() {
       ->DismissActiveNotificationOfModule(
           safety_hub::SafetyHubModuleType::EXTENSIONS);
   return RespondNow(NoArguments());
+}
+
+DeveloperPrivateChoosePathFunction::DeveloperPrivateChoosePathFunction() =
+    default;
+
+DeveloperPrivateChoosePathFunction::~DeveloperPrivateChoosePathFunction() {
+  // There may be pending file dialogs, we need to tell them that we've gone
+  // away so they don't try and call back to us.
+  if (select_file_dialog_.get()) {
+    select_file_dialog_->ListenerDestroyed();
+  }
+}
+
+ExtensionFunction::ResponseAction DeveloperPrivateChoosePathFunction::Run() {
+  std::optional<developer::ChoosePath::Params> params =
+      developer::ChoosePath::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  content::WebContents* web_contents = GetSenderWebContents();
+  if (!web_contents) {
+    return RespondNow(Error(kCouldNotShowSelectFileDialogError));
+  }
+
+  // Start or cancel the file selection without showing the select file dialog
+  // for tests that require it.
+  if (accept_dialog_for_testing_.has_value()) {
+    AddRef();  // Balanced in FileSelected() / FileSelectionCanceled().
+    if (accept_dialog_for_testing_.value()) {
+      CHECK(selected_file_for_testing_.has_value());
+      FileSelected(selected_file_for_testing_.value(), /*index=*/0);
+    } else {
+      FileSelectionCanceled();
+    }
+    CHECK(did_respond());
+    return AlreadyResponded();
+  }
+
+  ui::SelectFileDialog::Type file_type = ui::SelectFileDialog::SELECT_FOLDER;
+  ui::SelectFileDialog::FileTypeInfo file_type_info;
+  std::u16string select_title;
+
+  if (params->select_type == developer::SelectType::kFile) {
+    file_type = ui::SelectFileDialog::SELECT_OPEN_FILE;
+  }
+
+  int file_type_index = 0;
+  if (params->file_type == developer::FileType::kLoad) {
+    select_title = l10n_util::GetStringUTF16(IDS_EXTENSION_LOAD_FROM_DIRECTORY);
+  } else if (params->file_type == developer::FileType::kPem) {
+    select_title =
+        l10n_util::GetStringUTF16(IDS_EXTENSION_PACK_DIALOG_SELECT_KEY);
+    file_type_info.extensions.emplace_back(1, FILE_PATH_LITERAL("pem"));
+    file_type_info.extension_description_overrides.push_back(
+        l10n_util::GetStringUTF16(
+            IDS_EXTENSION_PACK_DIALOG_KEY_FILE_TYPE_DESCRIPTION));
+    file_type_info.include_all_files = true;
+    file_type_index = 1;
+  } else {
+    NOTREACHED();
+  }
+
+  const base::FilePath last_directory =
+      DeveloperPrivateAPI::Get(browser_context())->last_unpacked_directory();
+  gfx::NativeWindow owning_window =
+      platform_util::GetTopLevel(web_contents->GetNativeView());
+
+  select_file_dialog_ = ui::SelectFileDialog::Create(
+      this, std::make_unique<ChromeSelectFilePolicy>(web_contents));
+  select_file_dialog_->SelectFile(file_type, select_title, last_directory,
+                                  &file_type_info, file_type_index,
+                                  base::FilePath::StringType(), owning_window);
+
+  AddRef();  // Balanced in FileSelected() / FileSelectionCanceled().
+  return RespondLater();
+}
+
+void DeveloperPrivateChoosePathFunction::FileSelected(
+    const ui::SelectedFileInfo& file,
+    int index) {
+  Respond(WithArguments(file.path().LossyDisplayName()));
+  Release();
+}
+
+void DeveloperPrivateChoosePathFunction::FileSelectionCanceled() {
+  // This isn't really an error, but we should keep it like this for
+  // backward compatability.
+  Respond(Error(kFileSelectionCanceled));
+  Release();
 }
 
 DeveloperPrivateRequestFileSourceFunction::

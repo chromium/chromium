@@ -20,9 +20,6 @@ DECLARE_UNIMPLEMENTED_EXTENSION_FUNCTION(DeveloperPrivateInstallDroppedFileFunct
 DECLARE_UNIMPLEMENTED_EXTENSION_FUNCTION(DeveloperPrivateNotifyDragInstallInProgressFunction,
                    "developerPrivate.notifyDragInstallInProgress",
                    DEVELOPERPRIVATE_NOTIFYDRAGINSTALLINPROGRESS);
-DECLARE_UNIMPLEMENTED_EXTENSION_FUNCTION(DeveloperPrivateChoosePathFunction,
-                   "developerPrivate.choosePath",
-                   DEVELOPERPRIVATE_CHOOSEPATH);
 DECLARE_UNIMPLEMENTED_EXTENSION_FUNCTION(DeveloperPrivatePackDirectoryFunction,
                    "developerPrivate.packDirectory",
                    DEVELOPERPRIVATE_PACKDIRECTORY);

@@ -153,41 +153,6 @@ class DeveloperPrivateLoadUnpackedFunction
   std::optional<ui::SelectedFileInfo> selected_file_for_testing_;
 };
 
-class DeveloperPrivateChoosePathFunction
-    : public DeveloperPrivateAPIFunction,
-      public ui::SelectFileDialog::Listener {
- public:
-  DECLARE_EXTENSION_FUNCTION("developerPrivate.choosePath",
-                             DEVELOPERPRIVATE_CHOOSEPATH)
-  DeveloperPrivateChoosePathFunction();
-
-  // ui::SelectFileDialog::Listener:
-  void FileSelected(const ui::SelectedFileInfo& file, int index) override;
-  void FileSelectionCanceled() override;
-
-  // For testing:
-  void set_accept_dialog_for_testing(bool accept) {
-    accept_dialog_for_testing_ = accept;
-  }
-  void set_selected_file_for_testing(const ui::SelectedFileInfo& file) {
-    selected_file_for_testing_ = file;
-  }
-
- protected:
-  ~DeveloperPrivateChoosePathFunction() override;
-  ResponseAction Run() override;
-
- private:
-  // The dialog with the select file picker.
-  scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
-
-  // For testing:
-  // Whether to accept or reject the select file dialog without showing it.
-  std::optional<bool> accept_dialog_for_testing_;
-  // File to load when accepting the select file dialog without showing it.
-  std::optional<ui::SelectedFileInfo> selected_file_for_testing_;
-};
-
 class DeveloperPrivatePackDirectoryFunction
     : public DeveloperPrivateAPIFunction,
       public PackExtensionJob::Client {

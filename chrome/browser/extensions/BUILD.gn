@@ -407,6 +407,7 @@ source_set("extensions") {
     "//net:extras",
     "//storage/browser",
     "//third_party/zlib/google:zip",
+    "//ui/shell_dialogs",
   ]
   public_deps = [ "//components/safe_browsing/core/browser/db:util" ]
   defines = []
@@ -1035,7 +1036,6 @@ source_set("extensions") {
       "//ui/message_center/public/cpp",
       "//ui/native_theme",
       "//ui/resources",
-      "//ui/shell_dialogs",
       "//ui/strings",
       "//url",
     ]

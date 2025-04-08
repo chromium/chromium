@@ -16,8 +16,6 @@ DEFINE_UNIMPLEMENTED_EXTENSION_FUNCTION(
 DEFINE_UNIMPLEMENTED_EXTENSION_FUNCTION(
     DeveloperPrivateNotifyDragInstallInProgressFunction,
     "developerPrivate.notifyDragInstallInProgress")
-DEFINE_UNIMPLEMENTED_EXTENSION_FUNCTION(DeveloperPrivateChoosePathFunction,
-                                        "developerPrivate.choosePath")
 DEFINE_UNIMPLEMENTED_EXTENSION_FUNCTION(DeveloperPrivatePackDirectoryFunction,
                                         "developerPrivate.packDirectory")
 DEFINE_UNIMPLEMENTED_EXTENSION_FUNCTION(DeveloperPrivateLoadDirectoryFunction,
