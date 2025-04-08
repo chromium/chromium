@@ -4,6 +4,8 @@
 
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 
+#include "base/notreached.h"
+
 history_clusters::HistoryClustersService*
 AutocompleteProviderClient::GetHistoryClustersService() {
   return nullptr;

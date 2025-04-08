@@ -22,6 +22,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
+#include "components/omnibox/browser/lens_suggest_inputs_utils.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -2592,7 +2593,7 @@ void LensOverlayController::InitializeOverlayUI(
   if (pending_region_) {
     page_->SetPostRegionSelection(pending_region_->Clone());
   }
-  if (init_data.suggest_inputs_.has_encoded_request_id()) {
+  if (IsHandshakeComplete()) {
     // Notify the overlay that it is safe to query autocomplete.
     page_->NotifyHandshakeComplete();
   }
@@ -2783,6 +2784,17 @@ void LensOverlayController::OnImmersiveFullscreenExited() {
   }
 }
 
+void LensOverlayController::OnHandshakeComplete() {
+  CHECK(IsHandshakeComplete());
+  // Notify the overlay that the handshake is complete if its initialized.
+  if (page_) {
+    page_->NotifyHandshakeComplete();
+  }
+
+  // Send the suggest inputs to any pending callbacks.
+  pending_suggest_inputs_callbacks_.Notify(GetLensSuggestInputs());
+}
+
 const GURL& LensOverlayController::GetPageURL() const {
   if (lens::CanSharePageURLWithLensOverlay(pref_service_)) {
     return tab_->GetContents()->GetVisibleURL();
@@ -2813,9 +2825,11 @@ std::string& LensOverlayController::GetThumbnail() {
 
 const lens::proto::LensOverlaySuggestInputs&
 LensOverlayController::GetLensSuggestInputs() const {
-  return initialization_data_
-             ? initialization_data_->suggest_inputs_
-             : lens::proto::LensOverlaySuggestInputs().default_instance();
+  if (!initialization_data_ && !pre_initialization_suggest_inputs_) {
+    return lens::proto::LensOverlaySuggestInputs().default_instance();
+  }
+  return initialization_data_ ? initialization_data_->suggest_inputs_
+                              : pre_initialization_suggest_inputs_.value();
 }
 
 void LensOverlayController::OnTextModified() {
@@ -2933,6 +2947,23 @@ void LensOverlayController::OnZeroSuggestShown() {
   } else {
     csb_session_end_metrics_.zps_shown_on_follow_up_query_ = true;
   }
+}
+
+base::CallbackListSubscription
+LensOverlayController::GetLensSuggestInputsWhenReady(
+    LensOverlaySuggestInputsCallback callback) {
+  // Exit early if the overlay is either off or going to soon be off.
+  if (state() == State::kOff || IsOverlayClosing()) {
+    std::move(callback).Run(std::nullopt);
+    return {};
+  }
+
+  // If the handshake is complete, return the Lens suggest inputs immediately.
+  if (IsHandshakeComplete()) {
+    std::move(callback).Run(initialization_data_->suggest_inputs_);
+    return {};
+  }
+  return pending_suggest_inputs_callbacks_.Add(std::move(callback));
 }
 
 std::optional<std::string> LensOverlayController::GetPageTitle() {
@@ -3570,19 +3601,22 @@ void LensOverlayController::HandleSuggestInputsResponse(
     return;
   }
 
-  // Check if the handshake with the server has been completed. This is
-  // signified bysuggest inputs having an encoded request ID. If the previous
-  // `suggest_inputs` already had an encoded request ID, then the handshake was
-  // already completed and we do not need to notify again. If `page_` doesn't
-  // exist, then it will be notified when it is created.
-  if (page_ &&
-      !initialization_data_->suggest_inputs_.has_encoded_request_id() &&
-      suggest_inputs.has_encoded_request_id()) {
-    // Notify the overlay that it is now safe to query autocomplete.
-    page_->NotifyHandshakeComplete();
+  // If the handshake was already complete, without the new suggest inputs,
+  // exit early so that we do not notify OnHandshakeComplete() multiple times.
+  if (IsHandshakeComplete()) {
+    initialization_data_->suggest_inputs_ = suggest_inputs;
+    return;
   }
 
+  // Check if the handshake with the server has been completed with the new
+  // inputs. If so, this is the first time we are receiving the suggest inputs,
+  // so we need to notify OnHandshakeComplete() to allow the searchbox to query
+  // autocomplete.
   initialization_data_->suggest_inputs_ = suggest_inputs;
+  if (IsHandshakeComplete()) {
+    // Notify the overlay that it is now safe to query autocomplete.
+    OnHandshakeComplete();
+  }
 }
 
 void LensOverlayController::HandlePageContentUploadProgress(uint64_t position,
@@ -3897,6 +3931,16 @@ void LensOverlayController::MaybeShowDelayedTutorialIPH(const GURL& url) {
 void LensOverlayController::UpdateNavigationMetrics() {
   last_navigation_time_ = base::TimeTicks::Now();
   contextual_searchbox_focused_after_navigation_ = false;
+}
+
+bool LensOverlayController::IsHandshakeComplete() {
+  if (!initialization_data_ && !pre_initialization_suggest_inputs_) {
+    return false;
+  }
+  const auto& suggest_inputs = initialization_data_
+                                   ? initialization_data_->suggest_inputs_
+                                   : pre_initialization_suggest_inputs_;
+  return AreLensSuggestInputsReady(suggest_inputs);
 }
 
 bool LensOverlayController::IsUrlEligibleForTutorialIPH(const GURL& url) {

@@ -141,6 +141,12 @@ BASE_FEATURE(kContextualZeroSuggestLensFulfillment,
              "ContextualZeroSuggestLensFulfillment",
              DISABLED);
 
+// Enables the contextual search provider to wait for the Lens suggest inputs
+// to be ready before making the suggest request.
+BASE_FEATURE(kContextualSearchProviderAsyncSuggestInputs,
+             "ContextualSearchProviderAsyncSuggestInputs",
+             ENABLED);
+
 // Features to provide head and tail non personalized search suggestion from
 // compact on device models. More specifically, feature name with suffix
 // Incognito / NonIncognito  will only controls behaviors under incognito /

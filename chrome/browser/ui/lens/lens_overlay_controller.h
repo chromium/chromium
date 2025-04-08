@@ -48,6 +48,7 @@
 #include "components/lens/lens_overlay_side_panel_result.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
+#include "components/omnibox/browser/lens_suggest_inputs_utils.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/sessions/core/session_id.h"
 #include "components/tabs/public/tab_interface.h"
@@ -454,6 +455,12 @@ class LensOverlayController : public LensSearchboxClient,
   // Whether it's possible to capture a screenshot. virtual for testing.
   virtual bool IsScreenshotPossible(content::RenderWidgetHostView* view);
 
+  // Waits for the handshake with the Lens backend to complete and then invokes
+  // the callback with the LensOverlaySuggestInputs. Callback will be invoked
+  // immediately if the handshake is already complete.
+  base::CallbackListSubscription GetLensSuggestInputsWhenReady(
+      LensOverlaySuggestInputsCallback callback);
+
   // Called before the lens results panel begins hiding. This is called before
   // any side panel closing animations begin.
   void OnSidePanelWillHide(SidePanelEntryHideReason reason);
@@ -490,6 +497,9 @@ class LensOverlayController : public LensSearchboxClient,
 
   // Updates the metrics related to navigations for the current page.
   void UpdateNavigationMetrics();
+
+  // Returns whether the handshake with the Lens backend is complete.
+  bool IsHandshakeComplete();
 
   // Testing function to issue a Lens region selection request.
   void IssueLensRegionRequestForTesting(lens::mojom::CenterRotatedBoxPtr region,
@@ -956,6 +966,9 @@ class LensOverlayController : public LensSearchboxClient,
   void OnImmersiveFullscreenEntered() override;
   void OnImmersiveFullscreenExited() override;
 
+  // Called when the Lens backend handshake is complete.
+  void OnHandshakeComplete();
+
   // Overridden from LensSearchboxClient:
   const GURL& GetPageURL() const override;
   SessionID GetTabId() const override;
@@ -973,6 +986,11 @@ class LensOverlayController : public LensSearchboxClient,
   void OnPageBound() override;
   void ShowGhostLoaderErrorState() override;
   void OnZeroSuggestShown() override;
+
+  // Adds a callback to be called when the Lens backend handshake is finished.
+  // If the handshake is already finished, the callback will be called
+  // immediately.
+  void OnLensBackendHandshakeFinished(base::OnceClosure callback);
 
   // Gets the page title.
   std::optional<std::string> GetPageTitle();
@@ -1297,6 +1315,12 @@ class LensOverlayController : public LensSearchboxClient,
 
   // Holds subscriptions for TabInterface callbacks.
   std::vector<base::CallbackListSubscription> tab_subscriptions_;
+
+  // The callbacks pending the handshake to complete so the Lens suggest inputs
+  // can be retrieved.
+  base::OnceCallbackList<void(
+      std::optional<lens::proto::LensOverlaySuggestInputs>)>
+      pending_suggest_inputs_callbacks_;
 
   // Owned by Profile, and thus guaranteed to outlive this instance.
   raw_ptr<variations::VariationsClient> variations_client_;

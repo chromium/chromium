@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <cmath>
 #include <optional>
 #include <string>
 #include <utility>
@@ -28,6 +29,7 @@
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_provider_debouncer.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
+#include "components/omnibox/browser/lens_suggest_inputs_utils.h"
 #include "components/omnibox/browser/match_compare.h"
 #include "components/omnibox/browser/page_classification_functions.h"
 #include "components/omnibox/browser/remote_suggestions_service.h"
@@ -87,7 +89,9 @@ void ContextualSearchProvider::Start(
     const AutocompleteInput& autocomplete_input,
     bool minimal_changes) {
   TRACE_EVENT0("omnibox", "ContextualSearchProvider::Start");
-  Stop(true, false);
+  // Clear the cached results to remove the page search action matches. Also,
+  // matches the behavior of the `ZeroSuggestProvider`.
+  Stop(/*clear_cached_results=*/true, /*due_to_user_inactivity=*/false);
 
   if (client()->IsOffTheRecord()) {
     done_ = true;
@@ -112,21 +116,27 @@ void ContextualSearchProvider::Start(
 
   AddDefaultVerbatimMatch(input);
 
-  if (input.lens_overlay_suggest_inputs().has_value()) {
-    done_ = false;
-    StartSuggestRequest(std::move(input));
-  } else {
+  if(!input.text().empty()) {
+    // Only make the suggest request for zero suggest in keyword mode.
     done_ = true;
+    return;
   }
+  done_ = false;
+  StartSuggestRequest(std::move(input));
 }
 
 void ContextualSearchProvider::Stop(bool clear_cached_results,
                                     bool due_to_user_inactivity) {
-  AutocompleteProvider::Stop(clear_cached_results, due_to_user_inactivity);
-  input_keyword_.clear();
-  if (loader_) {
+  if (!due_to_user_inactivity) {
+    // Stop the pending request if the sotp is not due to user inactivity. If
+    // it is due to user inactivity, the request will continue so the
+    // suggestions can be shown when they are ready.
+    AutocompleteProvider::Stop(clear_cached_results, due_to_user_inactivity);
+    lens_suggest_inputs_subscription_ = {};
     loader_.reset();
   }
+
+  input_keyword_.clear();
 }
 
 void ContextualSearchProvider::AddProviderInfo(
@@ -153,6 +163,34 @@ bool ContextualSearchProvider::ShouldAppendExtraParams(
 }
 
 void ContextualSearchProvider::StartSuggestRequest(AutocompleteInput input) {
+  if (AreLensSuggestInputsReady(input.lens_overlay_suggest_inputs()) ||
+      !base::FeatureList::IsEnabled(
+          omnibox::kContextualSearchProviderAsyncSuggestInputs)) {
+    // If the suggest inputs are ready, make the suggest request immediately.
+    // Also, skip the async wait if the feature is disabled.
+    MakeSuggestRequest(std::move(input));
+    return;
+  }
+
+  // Wait for the suggest inputs to be generated and then make the suggest
+  // request. Safe to use base::Unretained(this) because the subscription is
+  // reset and cancelled if this provider is destroyed.
+  lens_suggest_inputs_subscription_ = client()->GetLensSuggestInputsWhenReady(
+      base::BindOnce(&ContextualSearchProvider::OnLensSuggestInputsReady,
+                     base::Unretained(this), std::move(input)));
+}
+
+void ContextualSearchProvider::OnLensSuggestInputsReady(
+    AutocompleteInput input,
+    std::optional<lens::proto::LensOverlaySuggestInputs> lens_suggest_inputs) {
+  CHECK(!AreLensSuggestInputsReady(input.lens_overlay_suggest_inputs()));
+  if (lens_suggest_inputs) {
+    input.set_lens_overlay_suggest_inputs(*lens_suggest_inputs);
+  }
+  MakeSuggestRequest(std::move(input));
+}
+
+void ContextualSearchProvider::MakeSuggestRequest(AutocompleteInput input) {
   TemplateURLRef::SearchTermsArgs search_terms_args;
 
   // TODO(crbug.com/404608703): Consider new types or taking from `input`.
@@ -166,6 +204,9 @@ void ContextualSearchProvider::StartSuggestRequest(AutocompleteInput input) {
   search_terms_args.lens_overlay_suggest_inputs =
       input.lens_overlay_suggest_inputs();
 
+  // Make the request and store the loader to keep it alive. Destroying the
+  // loader will cancel the request. Safe to use base::Unretained(this) because
+  // the loader is reset and destroyed if this provider is destroyed.
   loader_ =
       client()
           ->GetRemoteSuggestionsService(/*create_if_necessary=*/true)
@@ -175,7 +216,7 @@ void ContextualSearchProvider::StartSuggestRequest(AutocompleteInput input) {
               search_terms_args,
               client()->GetTemplateURLService()->search_terms_data(),
               base::BindOnce(&ContextualSearchProvider::SuggestRequestCompleted,
-                             weak_ptr_factory_.GetWeakPtr(), std::move(input)));
+                             base::Unretained(this), std::move(input)));
 }
 
 void ContextualSearchProvider::SuggestRequestCompleted(

@@ -865,10 +865,14 @@ void AutocompleteController::OnProviderUpdate(
   // Allow some providers to trigger updates after `stop_timer_` has fired.
   // TODO(crbug.com/364303536) This is a temporary fix for allowing history
   //   embedding answers to `UpdateResults()` after `stop_timer_` has fired.
+  // TODO(crbug.com/408512535): This is a temporary fix for allowing the
+  //   contextual search provider to `UpdateResults()` after `stop_timer_` has
+  //   fired.
   bool allow_post_done_updates =
       provider &&
       (provider->type() == AutocompleteProvider::TYPE_HISTORY_EMBEDDINGS ||
        provider->type() == AutocompleteProvider::TYPE_UNSCOPED_EXTENSION ||
+       provider->type() == AutocompleteProvider::TYPE_CONTEXTUAL_SEARCH ||
        provider->type() ==
            AutocompleteProvider::TYPE_ENTERPRISE_SEARCH_AGGREGATOR);
 

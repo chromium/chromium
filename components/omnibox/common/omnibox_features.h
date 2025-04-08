@@ -54,6 +54,8 @@ BASE_DECLARE_FEATURE(kZeroSuggestPrefetchingOnWeb);
 // current page, by using more than the URL, i.e. the page content.
 BASE_DECLARE_FEATURE(kContextualZeroSuggestLensFulfillment);
 
+BASE_DECLARE_FEATURE(kContextualSearchProviderAsyncSuggestInputs);
+
 // On Device Suggest.
 BASE_DECLARE_FEATURE(kOnDeviceHeadProviderIncognito);
 BASE_DECLARE_FEATURE(kOnDeviceHeadProviderNonIncognito);

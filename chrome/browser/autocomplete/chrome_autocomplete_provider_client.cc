@@ -54,6 +54,7 @@
 #include "components/omnibox/browser/actions/omnibox_pedal_provider.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_match.h"
+#include "components/omnibox/browser/lens_suggest_inputs_utils.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_triggered_feature_service.h"
 #include "components/omnibox/browser/shortcuts_backend.h"
@@ -504,6 +505,24 @@ bool ChromeAutocompleteProviderClient::IsHistoryEmbeddingsSettingVisible()
   return history_embeddings::IsHistoryEmbeddingsSettingVisible(profile_);
 }
 
+base::CallbackListSubscription
+ChromeAutocompleteProviderClient::GetLensSuggestInputsWhenReady(
+    LensOverlaySuggestInputsCallback callback) const {
+// TODO(crbug.com/408513470): This is a temporary prototype solution. Long term,
+//  `BrowserList::GetInstance()->GetLastActive()` shouldn't be used.
+#if !BUILDFLAG(IS_ANDROID)
+  if (Browser* browser = BrowserList::GetInstance()->GetLastActive()) {
+    CHECK(browser->GetActiveTabInterface());
+    return browser->GetActiveTabInterface()
+        ->GetTabFeatures()
+        ->lens_overlay_controller()
+        ->GetLensSuggestInputsWhenReady(std::move(callback));
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+  std::move(callback).Run(std::nullopt);
+  return {};
+}
+
 base::WeakPtr<AutocompleteProviderClient>
 ChromeAutocompleteProviderClient::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
@@ -577,8 +596,9 @@ bool ChromeAutocompleteProviderClient::OpenJourneys(const std::string& query) {
 }
 
 void ChromeAutocompleteProviderClient::OpenLensOverlay(bool show) {
+// TODO(crbug.com/408513470): This is a temporary prototype solution. Long term,
+//  `BrowserList::GetInstance()->GetLastActive()` shouldn't be used.
 #if !BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/401583049): Prepare lens overlay controller directly.
   if (Browser* browser = BrowserList::GetInstance()->GetLastActive()) {
     CHECK(browser->GetActiveTabInterface());
     // TODO(crbug.com/402497756): For prototyping, reusing the existing
@@ -604,6 +624,8 @@ void ChromeAutocompleteProviderClient::IssueContextualSearchRequest(
       const GURL& destination_url,
       AutocompleteMatchType::Type match_type,
       bool is_zero_prefix_suggestion) {
+// TODO(crbug.com/408513470): This is a temporary prototype solution. Long term,
+//  `BrowserList::GetInstance()->GetLastActive()` shouldn't be used.
 #if !BUILDFLAG(IS_ANDROID)
   if (Browser* browser = BrowserList::GetInstance()->GetLastActive()) {
     CHECK(browser->GetActiveTabInterface());
