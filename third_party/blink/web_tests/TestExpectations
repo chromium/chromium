@@ -8929,9 +8929,6 @@ crbug.com/41493642 external/wpt/html/semantics/embedded-content/the-canvas-eleme
 crbug.com/393175977 [ Debug Mac14 ] http/tests/devtools/network/preview-searchable.js [ Failure Pass Timeout ]
 crbug.com/393175977 [ Debug Mac14 ] http/tests/devtools/sources/debugger-breakpoints/event-listener-breakpoints-xhr.js [ Failure Pass Timeout ]
 
-# Temporarily disable for landing crrev.com/c/6372540
-crbug.com/375387301 http/tests/devtools/webaudio/audio-context-selector-test.js [ Failure Pass ]
-
 # Gardener 2025-01-21
 crbug.com/391126821 [ Win11-arm64 ] fast/ruby/base-shorter-than-text.html [ Failure Pass ]
 crbug.com/390565845 [ Win ] virtual/media-foundation-for-clear-dcomp/external/wpt/media-source/waiting-for-audio.html [ Crash Failure Pass Timeout ]
