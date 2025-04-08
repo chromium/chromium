@@ -331,7 +331,13 @@ class ContextualCueingServiceTestZeroStateSuggestions
       page_content_extraction_service_;
 };
 
-TEST_F(ContextualCueingServiceTestZeroStateSuggestions, Preconnect) {
+// TODO(https://crbug.com/409363900): Test is failing on Linux MSan.
+#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
+#define MAYBE_Preconnect DISABLED_Preconnect
+#else
+#define MAYBE_Preconnect Preconnect
+#endif
+TEST_F(ContextualCueingServiceTestZeroStateSuggestions, MAYBE_Preconnect) {
   service_->PrepareToFetchContextualGlicZeroStateSuggestions(web_contents());
   EXPECT_TRUE(loading_predictor_->preconnect_invoked);
 }
