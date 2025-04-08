@@ -3235,7 +3235,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.OnTransferSizeUpdated.Experimental.OverridenBy"
-    enum="OnTransferSizeUpdatedFrom" expires_after="2025-09-14">
+    enum="OnTransferSizeUpdatedFrom" expires_after="2025-04-08">
+  <expired_intentionally>
+    Kept as a diagnostic metric.
+  </expired_intentionally>
   <owner>amanvr@chromium.org</owner>
   <owner>woa-performance@google.com</owner>
   <summary>
@@ -3244,6 +3247,8 @@ chromium-metrics-reviews@google.com.
     calls being made to this method and will help see the reductions in IPC when
     we implement a prototype (b/257057692) where we remove unnecessary
     URLLoaderClient::OnTransferSizeUpdated IPCs.
+
+    Disabled starting M137.
   </summary>
 </histogram>
 
