@@ -304,8 +304,6 @@ void TileDisplayLayerImpl::AppendQuads(const AppendQuadsContext& context,
   shared_quad_state->quad_to_target_transform.Translate(-quad_offset);
   shared_quad_state->quad_layer_rect.Offset(quad_offset);
   shared_quad_state->visible_quad_layer_rect.Offset(quad_offset);
-
-  client_->DidAppendQuadsWithResources(used_resources);
 }
 
 void TileDisplayLayerImpl::GetContentsResourceId(
@@ -335,7 +333,6 @@ void TileDisplayLayerImpl::GetContentsResourceId(
 
   std::vector<viz::TransferableResource> used_resources;
   used_resources.push_back(iter->resource()->resource);
-  client_->DidAppendQuadsWithResources(used_resources);
 }
 
 gfx::Rect TileDisplayLayerImpl::GetDamageRect() const {

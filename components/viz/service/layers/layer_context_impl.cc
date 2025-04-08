@@ -1140,12 +1140,6 @@ void LayerContextImpl::DidNotProduceFrame(const BeginFrameAck& ack,
   compositor_sink_->DidNotProduceFrame(ack);
 }
 
-void LayerContextImpl::DidAppendQuadsWithResources(
-    const std::vector<TransferableResource>& resources) {
-  next_frame_resources_.insert(next_frame_resources_.end(), resources.begin(),
-                               resources.end());
-}
-
 void LayerContextImpl::ImportResource(TransferableResource resource) {
   auto release_callback = base::BindOnce(
       [](LayerContextImpl* impl, ResourceId id,

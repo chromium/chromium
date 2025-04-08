@@ -34,8 +34,6 @@ class CC_EXPORT TileDisplayLayerImpl : public LayerImpl {
   class CC_EXPORT Client {
    public:
     virtual ~Client() = default;
-    virtual void DidAppendQuadsWithResources(
-        const std::vector<viz::TransferableResource>& resource) = 0;
 
     // To notify client to Import or Discard a TransferableResource.
     virtual void ImportResource(viz::TransferableResource resource) = 0;
