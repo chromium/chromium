@@ -20,13 +20,11 @@
 #include "content/browser/renderer_host/media/video_capture_provider.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/video_capture_device_launcher.h"
-#include "media/capture/mojom/video_capture.mojom.h"
-#include "media/capture/mojom/video_capture_types.mojom.h"
+#include "media/capture/mojom/video_capture_types.mojom-forward.h"
 #include "media/capture/video/video_frame_receiver.h"
 #include "media/capture/video_capture_types.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/video_effects/public/mojom/video_effects_processor.mojom-forward.h"
-#include "third_party/blink/public/common/media/video_capture.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 
 namespace content {
@@ -224,6 +222,9 @@ class CONTENT_EXPORT VideoCaptureController
         buffer_read_permission_;
   };
 
+  // `kError` is an absorbing state which stops the flow of data to clients.
+  enum class State { kStarting, kStarted, kError };
+
   ~VideoCaptureController() override;
 
   // Find a client of |id| and |handler| in |clients|.
@@ -278,9 +279,7 @@ class CONTENT_EXPORT VideoCaptureController
   // All clients served by this controller.
   ControllerClients controller_clients_;
 
-  // Takes on only the states 'STARTING', 'STARTED' and 'ERROR'. 'ERROR' is an
-  // absorbing state which stops the flow of data to clients.
-  blink::VideoCaptureState state_;
+  State state_ = State::kStarting;
 
   int next_buffer_context_id_ = 0;
 
