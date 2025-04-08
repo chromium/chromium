@@ -657,12 +657,6 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   // Clears the map after each call, should be called after each serialization.
   void ClearTextOperationInNodeIdMap();
 
-  // TODO(accessibility) Convert methods consuming this into members so that we
-  // can remove this accessor method.
-  HashMap<DOMNodeId, bool>& whitespace_ignored_map() {
-    return whitespace_ignored_map_;
-  }
-
   // Adds an event to the list of pending_events_ and mark the object as dirty
   // via AXObjectCache::AddDirtyObjectToSerializationQueue. If
   // immediate_serialization is set, it schedules a serialization to be done at
@@ -1290,8 +1284,6 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   HeapVector<Member<AXDirtyObject>> pending_objects_to_serialize_;
 
   Vector<ui::AXEvent> pending_events_to_serialize_;
-
-  HashMap<DOMNodeId, bool> whitespace_ignored_map_;
 
   // Any tree, tab or listbox that disallows implicit "selection from focus".
   HashSet<AXID> containers_disallowing_implicit_selection_;

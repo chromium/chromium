@@ -379,10 +379,10 @@ bool IsLayoutTextRelevantForAccessibility(const LayoutText& layout_text) {
   if (!layout_text.Parent())
     return false;
 
+#if DCHECK_IS_ON()
   Node* node = layout_text.GetNode();
   DCHECK(node);  // Anonymous text is processed earlier, doesn't reach here.
 
-#if DCHECK_IS_ON()
   DCHECK(node->GetDocument().Lifecycle().GetState() >=
          DocumentLifecycle::kAfterPerformLayout)
       << "Unclean document at lifecycle "
@@ -402,21 +402,16 @@ bool IsLayoutTextRelevantForAccessibility(const LayoutText& layout_text) {
   // recompute block subtrees when inline nodes change. It also helps ensure
   // that whitespace nodes do not change whether they store a layout object
   // at inopportune times.
-  // TODO(accessibility) Convert this method and callers of it to member
-  // methods so we can access whitespace_ignored_map_ directly.
-  AXObjectCacheImpl* cache = static_cast<AXObjectCacheImpl*>(
-      node->GetDocument().ExistingAXObjectCache());
-  auto& whitespace_ignored_map = cache->whitespace_ignored_map();
-  DOMNodeId whitespace_node_id = node->GetDomNodeId();
-  auto it = whitespace_ignored_map.find(whitespace_node_id);
-  if (it != whitespace_ignored_map.end()) {
-    return it->value;
+  if (std::optional<bool> ignore_whitespace =
+          layout_text.IgnoreWhitespaceForAccessibility();
+      ignore_whitespace.has_value()) {
+    return *ignore_whitespace;
   }
 
   // Compute ignored value for whitespace and record decision.
   bool ignore_whitespace = CanIgnoreSpace(layout_text);
   // Memoize the result.
-  whitespace_ignored_map.insert(whitespace_node_id, ignore_whitespace);
+  layout_text.SetIgnoreWhitespaceForAccessibility(ignore_whitespace);
   return ignore_whitespace;
 }
 
@@ -1849,7 +1844,6 @@ void AXObjectCacheImpl::Remove(Node* node, bool notify_parent) {
       << "AXObject cannot be backed by both a layout object and node.";
 
   AXID axid = node->GetDomNodeId();
-  whitespace_ignored_map_.erase(axid);
 
   if (node == active_aria_modal_dialog_ &&
       lifecycle_.StateAllowsAXObjectsToBeDirtied()) {
@@ -5870,8 +5864,7 @@ void AXObjectCacheImpl::GetUpdatesAndEventsForSerialization(
         << "Did not serialize original node, so it was probably not included "
            "in its parent's children, and should never have been marked dirty "
            "in the first place: "
-        << obj->ToString()
-        << "\nParent: " << obj->ParentObjectIncludedInTree()
+        << obj->ToString() << "\nParent: " << obj->ParentObjectIncludedInTree()
         << "\nIndex in parent: "
         << obj->ParentObjectIncludedInTree()
                ->CachedChildrenIncludingIgnored()
