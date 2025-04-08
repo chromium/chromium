@@ -585,9 +585,9 @@ void WindowRestoreController::RestoreStateTypeAndClearLaunchedKey(
   // these windows activatable once they are launched. Use a post task since it
   // is quite common for some widgets to explicitly call Show() after
   // initialized.
-  // TODO(sammiequon): Instead of disabling activation when creating the widget
-  // and enabling it here, use `ShowInactive()` instead of `Show()` when the
-  // widget is created.
+  // TODO: Instead of disabling activation when creating the widget and enabling
+  // it here, use `ShowInactive()` instead of `Show()` when the widget is
+  // created.
   restore_property_clear_callbacks_.emplace(
       window, base::BindOnce(&WindowRestoreController::ClearLaunchedKey,
                              weak_ptr_factory_.GetWeakPtr(), window));

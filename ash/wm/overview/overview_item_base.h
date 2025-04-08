@@ -413,8 +413,8 @@ class ASH_EXPORT OverviewItemBase : public EventHandlerDelegate {
   void HideItemWidgetWindow();
   void ShowItemWidgetWindow();
 
-  // TODO(sammiequon): Current events go from `OverviewItemView` to
-  // `EventHandlerDelegate` to `OverviewSession` to
+  // TODO: Current events go from `OverviewItemView` to `EventHandlerDelegate`
+  // to `OverviewSession` to
   // `OverviewWindowDragController`. We may be able to shorten this pipeline.
   void HandlePressEvent(const gfx::PointF& location_in_screen,
                         bool from_touch_gesture,

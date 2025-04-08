@@ -571,7 +571,7 @@ bool SplitViewController::CanSnapWindow(aura::Window* window,
   const bool is_to_be_restored_window =
       window == WindowRestoreController::Get()->to_be_snapped_window();
 
-  // TODO(sammiequon): Investigate if we need to check for window activation.
+  // TODO: Investigate if we need to check for window activation.
   if (!is_to_be_restored_window && !wm::CanActivateWindow(window))
     return false;
 
@@ -614,8 +614,8 @@ std::optional<float> SplitViewController::ComputeAutoSnapRatio(
            {chromeos::kDefaultSnapRatio, chromeos::kDefaultSnapRatio},
            {chromeos::kTwoThirdSnapRatio, chromeos::kOneThirdSnapRatio}});
   auto it = kOppositeRatiosMap.find(*default_window_snap_ratio);
-  // TODO(sammiequon): Investigate if this check is needed. It may be needed for
-  // rounding errors (i.e. 2/3 may be 0.67).
+  // TODO: Investigate if this check is needed. It may be needed for rounding
+  // errors (i.e. 2/3 may be 0.67).
   if (it == kOppositeRatiosMap.end()) {
     return CanSnapWindow(window, chromeos::kDefaultSnapRatio)
                ? std::make_optional(chromeos::kDefaultSnapRatio)

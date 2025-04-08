@@ -1346,8 +1346,6 @@ bool DesksController::OnSingleInstanceAppLaunchingFromSavedDesk(
   auto& app_restore_data = *launch_list.begin()->second;
 
   // No need to shift a window that is visible on all desks.
-  // TODO(sammiequon): Remove this property if the window on the new desk should
-  // not be visible on all desks.
   if (!desks_util::IsWindowVisibleOnAllWorkspaces(
           existing_app_instance_window)) {
     // The uuid of the target desk is found in `app_restore_data`. If it isn't
@@ -1461,9 +1459,6 @@ bool DesksController::OnSingleInstanceAppLaunchingFromSavedDesk(
   }
 
   WindowRestoreController::Get()->StackWindow(existing_app_instance_window);
-
-  // TODO(sammiequon): Read something for chromevox, either here or when the
-  // whole template launches.
   return false;
 }
 

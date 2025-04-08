@@ -165,7 +165,7 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, PostLoginLaunch) {
   test::Click(coral_chip);
   waiter.Wait();
 
-  // TODO(sammiequon): These tabs and apps are currently hardcoded in ash for
+  // TODO(zxdan): These tabs and apps are currently hardcoded in ash for
   // `switches::kForceBirchFakeCoral`. Update to use a test coral provider
   // instead.
   BrowserList* browsers = BrowserList::GetInstance();

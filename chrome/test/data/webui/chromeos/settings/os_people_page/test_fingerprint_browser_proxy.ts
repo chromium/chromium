@@ -18,7 +18,6 @@ export class TestFingerprintBrowserProxy extends TestBrowserProxy implements
       'getEnrollmentLabel',
       'removeEnrollment',
       'changeEnrollmentLabel',
-      'fakeScanComplete',
     ]);
     this.fingerprintsList_ = [];
   }
@@ -75,9 +74,5 @@ export class TestFingerprintBrowserProxy extends TestBrowserProxy implements
     this.fingerprintsList_[index] = newLabel;
     this.methodCalled('changeEnrollmentLabel', index, newLabel);
     return Promise.resolve(true);
-  }
-
-  fakeScanComplete(): void {
-    chrome.send('fakeScanComplete');
   }
 }

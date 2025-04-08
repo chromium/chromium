@@ -308,7 +308,6 @@ void SendKey(ui::KeyboardCode key_code) {
   ash::SendKey(key_code, &generator);
 }
 
-// TODO(sammiequon): Use ash::test::ClickOnView().
 void ClickView(const views::View* view) {
   DCHECK(view);
   DCHECK(view->GetVisible());

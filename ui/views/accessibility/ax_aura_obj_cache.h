@@ -102,7 +102,7 @@ class VIEWS_EXPORT AXAuraObjCache : public aura::client::FocusChangeObserver {
   // with accessibility clients that consume accessibility APIs, but cannot take
   // real focus themselves. |a11y_override_window_| will be set to null when
   // destroyed, or can be set back to null using this function.
-  // TODO(sammiequon): Merge this with set_focused_widget_for_testing().
+  // TODO: Merge this with set_focused_widget_for_testing().
   void SetA11yOverrideWindow(aura::Window* a11y_override_window);
 
   void SetDelegate(Delegate* delegate) { delegate_ = delegate; }

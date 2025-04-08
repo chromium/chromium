@@ -209,8 +209,8 @@ ScopedOverviewTransformWindow::ScopedOverviewTransformWindow(
   // scrolls, they get scrolled underneath the split view window. The window
   // will be returned to its proper z-order on exiting overview if it is
   // activated.
-  // TODO(sammiequon): This does not handle the case if either the snapped
-  // window or this window is an always on top window.
+  // TODO: This does not handle the case if either the snapped window or this
+  // window is an always on top window.
   if (auto* split_view_controller =
           SplitViewController::Get(Shell::GetPrimaryRootWindow());
       ShouldUseTabletModeGridLayout() &&
@@ -407,8 +407,7 @@ void ScopedOverviewTransformWindow::SetClipping(const gfx::Rect& clip_rect) {
   }
 
   ui::Layer* layer = window_->layer();
-  // TODO(sammiequon): Investigate why we cannot use
-  // `ui::Layer::GetTargetClipRect()` here.
+  // TODO: Investigate why we cannot use `ui::Layer::GetTargetClipRect()` here.
   if (layer->GetAnimator()->GetTargetClipRect() == clip_rect) {
     return;
   }

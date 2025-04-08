@@ -172,7 +172,6 @@ bool IsPinDifficultEnough(const std::string& pin) {
 
   // Check for same digits, increasing and decreasing PIN simultaneously.
   bool is_same = true;
-  // TODO(sammiequon): Should longer PINs (5+) be still subjected to this?
   bool is_increasing = true;
   bool is_decreasing = true;
   for (size_t i = 1; i < pin.length(); ++i) {

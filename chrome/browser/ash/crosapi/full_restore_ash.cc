@@ -20,7 +20,6 @@ void FullRestoreAsh::GetSessionInformation(
   if (remotes_.empty()) {
     pending_callback_ = std::move(callback);
   } else {
-    // TODO(sammiequon): Support multiple remotes.
     remotes_.begin()->get()->GetSessionInformation(std::move(callback));
   }
 }
