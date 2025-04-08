@@ -7597,6 +7597,10 @@ a subclass of it), or use "@Rule BaseRobolectricTestRule".
 def _CheckAndroidNullAwayAnnotatedClasses(input_api, output_api):
     """Checks that Java classes/interfaces/annotations are null-annotated."""
 
+    # Temporary, crbug.com/389129271
+    if input_api.change.RepositoryRoot().endswith('clank'):
+        return []
+
     nullmarked_annotation = input_api.re.compile(r'^\s*@(NullMarked|NullUnmarked)')
 
     missing_annotation_errors = []
