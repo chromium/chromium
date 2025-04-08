@@ -36,6 +36,12 @@ struct MouseMoveAction {
   ToolTarget target;
 };
 
+// Information specific to the type (keyboard input) action.  Note: TypeAction
+// may be implemented in multiple steps (e.g.  individual key events). In some
+// situations, part of the action may complete while another part fails.
+// TypeAction currently returns failure if any part of the action fails.
+// TODO(crbug.com/409333494): Consider how to handle partial success cases like
+// this.
 struct TypeAction {
   // How the text should be inserted into the target.
   enum Mode {
