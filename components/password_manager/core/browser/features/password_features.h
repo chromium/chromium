@@ -109,6 +109,10 @@ BASE_DECLARE_FEATURE(kPasswordManagerLogToTerminal);
 // Enables triggering password suggestions through the context menu.
 BASE_DECLARE_FEATURE(kPasswordManualFallbackAvailable);
 
+// Enables postponing detecting a successful submission and showing the
+// save/update UI by a fixed time.
+BASE_DECLARE_FEATURE(kPostponeOnLoginSuccessful);
+
 // Detects password reuse based on hashed password values.
 BASE_DECLARE_FEATURE(kReuseDetectionBasedOnPasswordHashes);
 

@@ -6637,6 +6637,125 @@ TEST_P(PasswordManagerTest, OnResourceLoadingFailedFeatureDisabled) {
   EXPECT_TRUE(manager()->GetSubmittedManagerForTest());
 }
 
+TEST_P(PasswordManagerTest, NotifyOnSuccessfulLoginIsDelayed) {
+  base::test::ScopedFeatureList feature_list(
+      features::kPostponeOnLoginSuccessful);
+
+  PasswordForm form(MakeSimpleForm());
+  std::vector<FormData> observed = {form.form_data};
+  manager()->OnPasswordFormsParsed(&driver_, observed);
+  manager()->OnPasswordFormsRendered(&driver_, observed);
+  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(manager()->form_managers().front());
+
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled(form.url))
+      .WillRepeatedly(Return(true));
+  OnPasswordFormSubmitted(form.form_data);
+
+  EXPECT_CALL(client_, NotifyOnSuccessfulLogin(form.username_value)).Times(0);
+
+  observed.clear();
+  manager()->OnPasswordFormsParsed(&driver_, observed);
+  manager()->OnPasswordFormsRendered(&driver_, observed);
+  task_environment_.RunUntilIdle();
+
+  // After the kDelayBeforeSuccessfulLogin NotifyOnSuccessfulLogin is invoked.
+  EXPECT_CALL(client_, NotifyOnSuccessfulLogin(form.username_value));
+  task_environment_.FastForwardBy(kDelayBeforeSuccessfulLogin);
+}
+
+TEST_P(PasswordManagerTest,
+       DelayedNotifyOnSuccessfulLoginWorksEvenAfterNavigation) {
+  base::test::ScopedFeatureList feature_list(
+      features::kPostponeOnLoginSuccessful);
+
+  PasswordForm form(MakeSimpleForm());
+  std::vector<FormData> observed = {form.form_data};
+  manager()->OnPasswordFormsParsed(&driver_, observed);
+  manager()->OnPasswordFormsRendered(&driver_, observed);
+  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(manager()->form_managers().front());
+
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled(form.url))
+      .WillRepeatedly(Return(true));
+  OnPasswordFormSubmitted(form.form_data);
+
+  EXPECT_CALL(client_, NotifyOnSuccessfulLogin(form.username_value)).Times(0);
+
+  observed.clear();
+  manager()->OnPasswordFormsParsed(&driver_, observed);
+  manager()->OnPasswordFormsRendered(&driver_, observed);
+  task_environment_.RunUntilIdle();
+
+  // Now navigate to a second page.
+  manager()->DidNavigateMainFrame(false);
+
+  // After the kDelayBeforeSuccessfulLogin NotifyOnSuccessfulLogin is invoked.
+  EXPECT_CALL(client_, NotifyOnSuccessfulLogin(form.username_value));
+  task_environment_.FastForwardBy(kDelayBeforeSuccessfulLogin);
+}
+
+TEST_P(PasswordManagerTest, NotifyOnSuccessfulLoginInvokedOnce) {
+  base::test::ScopedFeatureList feature_list(
+      features::kPostponeOnLoginSuccessful);
+
+  PasswordForm form(MakeSimpleForm());
+  std::vector<FormData> observed = {form.form_data};
+  manager()->OnPasswordFormsParsed(&driver_, observed);
+  manager()->OnPasswordFormsRendered(&driver_, observed);
+  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(manager()->form_managers().front());
+
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled(form.url))
+      .WillRepeatedly(Return(true));
+  OnPasswordFormSubmitted(form.form_data);
+
+  EXPECT_CALL(client_, NotifyOnSuccessfulLogin).Times(0);
+
+  observed.clear();
+  for (int i = 0; i < 10; i++) {
+    manager()->OnPasswordFormsParsed(&driver_, observed);
+    manager()->OnPasswordFormsRendered(&driver_, observed);
+    task_environment_.RunUntilIdle();
+  }
+
+  EXPECT_CALL(client_, NotifyOnSuccessfulLogin(form.username_value)).Times(1);
+  task_environment_.FastForwardBy(kDelayBeforeSuccessfulLogin * 2);
+}
+
+TEST_P(PasswordManagerTest, NotifyOnSuccessfulLoginIsNotInvokedAfterFailure) {
+  base::test::ScopedFeatureList feature_list(
+      features::kPostponeOnLoginSuccessful);
+
+  PasswordForm form(MakeSimpleForm());
+  std::vector<FormData> observed = {form.form_data};
+  manager()->OnPasswordFormsParsed(&driver_, observed);
+  manager()->OnPasswordFormsRendered(&driver_, observed);
+  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(manager()->form_managers().front());
+
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled(form.url))
+      .WillRepeatedly(Return(true));
+  OnPasswordFormSubmitted(form.form_data);
+
+  EXPECT_CALL(client_, NotifyOnSuccessfulLogin).Times(0);
+
+  // Emulate a navigation to a different page without a form, only for a form to
+  // appear shortly after. This will result into considering login failed.
+  manager()->OnPasswordFormsParsed(&driver_, std::vector<FormData>());
+  manager()->OnPasswordFormsRendered(&driver_, std::vector<FormData>());
+  task_environment_.RunUntilIdle();
+
+  manager()->OnPasswordFormsParsed(&driver_, observed);
+  manager()->OnPasswordFormsRendered(&driver_, observed);
+  task_environment_.RunUntilIdle();
+
+  // After the kDelayBeforeSuccessfulLogin NotifyOnSuccessfulLogin does not get
+  // invoked.
+  EXPECT_CALL(client_, NotifyOnSuccessfulLogin).Times(0);
+  task_environment_.FastForwardBy(kDelayBeforeSuccessfulLogin * 2);
+}
+
 INSTANTIATE_TEST_SUITE_P(, PasswordManagerTest, ::testing::Bool());
 
 enum class PredictionSource {

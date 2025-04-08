@@ -473,6 +473,9 @@ std::string SavePasswordProgressLogger::GetStringFromID(
     case STRING_RESOURCE_FAILED_LOADING_LOGIN_FAILED:
       return "POST error with 400-403 status is detected, considering "
              "current submission failed";
+    case STRING_NO_SUBMITTED_MANAGER_AVAILABLE:
+      return "OnLoginSuccessful was invoked but no there is no submitted "
+             "manager";
     case SavePasswordProgressLogger::STRING_INVALID:
       return "INVALID";
       // Intentionally no default: clause here -- all IDs need to get covered.

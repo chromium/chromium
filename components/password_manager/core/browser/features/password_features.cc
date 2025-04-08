@@ -112,6 +112,10 @@ BASE_FEATURE(kPasswordManualFallbackAvailable,
              "PasswordManualFallbackAvailable",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPostponeOnLoginSuccessful,
+             "PostponeOnLoginSuccessful",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kReuseDetectionBasedOnPasswordHashes,
              "ReuseDetectionBasedOnPasswordHashes",
              base::FEATURE_ENABLED_BY_DEFAULT);
