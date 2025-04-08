@@ -33,6 +33,7 @@
 #include "extensions/browser/updater/safe_manifest_parser.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest.h"
+#include "extensions/common/switches.h"
 #include "net/base/net_errors.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -195,7 +196,7 @@ class ForceInstalledMetricsTest : public ForceInstalledTestBase {
   void CreateExtensionService(bool extensions_enabled) {
     base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
     if (!extensions_enabled) {
-      command_line.AppendSwitch(::switches::kDisableExtensions);
+      command_line.AppendSwitch(switches::kDisableExtensions);
     }
     extensions::TestExtensionSystem* test_ext_system =
         static_cast<extensions::TestExtensionSystem*>(

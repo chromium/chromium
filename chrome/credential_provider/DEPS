@@ -5,6 +5,7 @@ include_rules = [
   "+chrome/updater/protos",
   "+components/crash",
   "+components/policy/proto",
+  "+extensions/common/switches.h",
   "+google_apis",
   "+net",
   "+third_party/boringssl/src/include",
@@ -14,5 +15,5 @@ include_rules = [
 specific_include_rules = {
   ".+_unittests*\.cc": [
     "+chrome/browser/ui/startup/credential_provider_signin_dialog_win_test_data.h",
-  ]
+  ],
 }

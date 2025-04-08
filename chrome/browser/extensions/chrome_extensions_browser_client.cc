@@ -107,6 +107,7 @@
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "extensions/common/permissions/permission_set.h"
+#include "extensions/common/switches.h"
 #include "ipc/ipc_message.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -141,8 +142,8 @@ const char kJsonUrlPath[] = "/service/update2/json";
 bool g_did_chrome_update_for_testing = false;
 
 bool ExtensionsDisabled(const base::CommandLine& command_line) {
-  return command_line.HasSwitch(::switches::kDisableExtensions) ||
-         command_line.HasSwitch(::switches::kDisableExtensionsExcept);
+  return command_line.HasSwitch(extensions::switches::kDisableExtensions) ||
+         command_line.HasSwitch(extensions::switches::kDisableExtensionsExcept);
 }
 
 class UpdaterKeepAlive : public ScopedExtensionUpdaterKeepAlive {

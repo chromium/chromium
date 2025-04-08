@@ -122,6 +122,7 @@
 #include "extensions/browser/extension_prefs_factory.h"
 #include "extensions/browser/extension_prefs_observer.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/common/switches.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -420,7 +421,7 @@ void TestingProfile::Init(bool is_supervised_profile, CreateMode create_mode) {
     // inject a new ExtensionPrefStore(extension_pref_value_map, false).
     bool extensions_disabled =
         base::CommandLine::ForCurrentProcess()->HasSwitch(
-            switches::kDisableExtensions);
+            extensions::switches::kDisableExtensions);
     std::unique_ptr<extensions::ExtensionPrefs> extension_prefs =
         extensions::ExtensionPrefs::Create(
             this, GetPrefs(), extensions_path_,

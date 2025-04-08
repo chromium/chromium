@@ -218,6 +218,7 @@ void DesktopAndroidExtensionSystem::InitForRegularProfile(
   registrar_ = ExtensionRegistrar::Get(browser_context_);
   registrar_->Init(
       registrar_delegate_.get(), extensions_enabled,
+      base::CommandLine::ForCurrentProcess(),
       browser_context_->GetPath().AppendASCII(kInstallDirectoryName),
       browser_context_->GetPath().AppendASCII(kUnpackedInstallDirectoryName));
   registrar_delegate_->Init(registrar_.get());

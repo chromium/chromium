@@ -6,6 +6,7 @@
 
 #include "apps/launcher.h"
 #include "base/auto_reset.h"
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -68,7 +69,7 @@ ShellExtensionLoader::ShellExtensionLoader(
       extension_registrar_(ExtensionRegistrar::Get(browser_context)),
       keep_alive_requester_(browser_context) {
   extension_registrar_->Init(
-      this, /*extensions_enabled=*/true,
+      this, /*extensions_enabled=*/true, base::CommandLine::ForCurrentProcess(),
       browser_context_->GetPath().AppendASCII(kInstallDirectoryName),
       browser_context_->GetPath().AppendASCII(kUnpackedInstallDirectoryName));
 }

@@ -47,6 +47,7 @@
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/common/feature_switch.h"
 #include "extensions/common/features/feature_channel.h"
+#include "extensions/common/switches.h"
 #endif
 
 namespace extensions {
@@ -294,7 +295,7 @@ class ExtensionsDisabledWithSettingsOverrideAPI : public ExtensionBrowserTest {
     const char* test_name =
         testing::UnitTest::GetInstance()->current_test_info()->name();
     if (!base::StartsWith(test_name, "PRE_", base::CompareCase::SENSITIVE)) {
-      command_line->AppendSwitch(::switches::kDisableExtensions);
+      command_line->AppendSwitch(switches::kDisableExtensions);
     }
   }
 

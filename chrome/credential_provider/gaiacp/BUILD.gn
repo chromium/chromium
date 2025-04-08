@@ -211,6 +211,7 @@ source_set("gaiacp_lib") {
     "//components/crash/core/app:run_as_crashpad_handler",
     "//content/public/browser",
     "//crypto",
+    "//extensions/common",
     "//google_apis",
     "//net",
     "//third_party/boringssl",

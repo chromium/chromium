@@ -131,6 +131,10 @@ source_set("impl") {
     "//services/preferences/tracked",
   ]
 
+  if (enable_extensions_core) {
+    deps += [ "//extensions/common" ]
+  }
+
   if (enable_background_mode) {
     deps += [ "//chrome/browser/background/extensions:extensions" ]
   }

@@ -226,14 +226,9 @@ ExtensionService::ExtensionService(
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
   TRACE_EVENT0("browser,startup", "ExtensionService::ExtensionService::ctor");
   extension_registrar_delegate_->Init(extension_registrar_);
-  // Figure out if extension installation should be enabled.
-  if (ExtensionsBrowserClient::Get()->AreExtensionsDisabled(*command_line,
-                                                            profile)) {
-    extensions_enabled = false;
-  }
   extension_registrar_->Init(extension_registrar_delegate_.get(),
-                             extensions_enabled, install_directory,
-                             unpacked_install_directory);
+                             extensions_enabled, command_line_,
+                             install_directory, unpacked_install_directory);
 
   host_registry_observation_.Observe(ExtensionHostRegistry::Get(profile));
 
@@ -257,7 +252,7 @@ ExtensionService::ExtensionService(
                             profile));
   }
 
-  if (extensions_enabled) {
+  if (extension_registrar_->extensions_enabled()) {
     external_provider_manager_->CreateExternalProviders();
   }
 
@@ -349,7 +344,7 @@ void ExtensionService::Init() {
   CheckManagementPolicy();
   OnInstalledExtensionsLoaded();
 
-  LoadExtensionsFromCommandLineFlag(::switches::kDisableExtensionsExcept);
+  LoadExtensionsFromCommandLineFlag(switches::kDisableExtensionsExcept);
   if (load_command_line_extensions) {
     bool command_line_blocked = true;
     if (base::FeatureList::IsEnabled(
@@ -415,7 +410,7 @@ void ExtensionService::LoadExtensionsFromCommandLineFlag(
       UnpackedInstaller::Create(this)->LoadFromCommandLine(
           base::FilePath(t.token_piece()), &extension_id,
           false /*only-allow-apps*/);
-      if (switch_name == ::switches::kDisableExtensionsExcept) {
+      if (switch_name == switches::kDisableExtensionsExcept) {
         extension_registrar_->AddDisableFlagExemptedExtension(extension_id);
       }
     }

@@ -424,7 +424,7 @@ void DisableExtensionsExceptBrowserTest::SetUpCommandLine(
   base::FilePath fp2(test_data_dir_.AppendASCII("app/"));
 
   command_line->AppendSwitchASCII(
-      switches::kDisableExtensionsExcept,
+      extensions::switches::kDisableExtensionsExcept,
       fp1.AsUTF8Unsafe() + "," + fp2.AsUTF8Unsafe());
 
   command_line->AppendSwitch(switches::kNoErrorDialogs);

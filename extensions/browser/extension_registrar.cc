@@ -25,6 +25,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/lazy_context_id.h"
 #include "extensions/browser/lazy_context_task_queue.h"
 #include "extensions/browser/management_policy.h"
@@ -76,9 +77,16 @@ ExtensionRegistrar* ExtensionRegistrar::Get(content::BrowserContext* context) {
 void ExtensionRegistrar::Init(
     Delegate* delegate,
     bool extensions_enabled,
+    const base::CommandLine* command_line,
     const base::FilePath& install_directory,
     const base::FilePath& unpacked_install_directory) {
   delegate_ = delegate;
+  // Figure out if extension installation should be enabled.
+  if (ExtensionsBrowserClient::Get()->AreExtensionsDisabled(*command_line,
+                                                            browser_context_)) {
+    extensions_enabled = false;
+  }
+
   extensions_enabled_ = extensions_enabled;
   install_directory_ = install_directory;
   unpacked_install_directory_ = unpacked_install_directory;

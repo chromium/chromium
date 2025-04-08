@@ -7,9 +7,11 @@
 #include <memory>
 #include <optional>
 
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/test/scoped_command_line.h"
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
@@ -19,8 +21,10 @@
 #include "extensions/browser/management_policy.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/browser/test_extensions_browser_client.h"
+#include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -118,7 +122,8 @@ class ExtensionRegistrarTest : public ExtensionsTest {
     extensions_browser_client()->set_extension_system_factory(&factory_);
     extension_ = ExtensionBuilder("extension").Build();
     registrar_ = std::make_unique<ExtensionRegistrar>(browser_context());
-    registrar_->Init(delegate(), /*extensions_enabled=*/true, base::FilePath(),
+    registrar_->Init(delegate(), /*extensions_enabled=*/true,
+                     base::CommandLine::ForCurrentProcess(), base::FilePath(),
                      base::FilePath());
 
     // Mock defaults.
@@ -555,6 +560,38 @@ TEST_F(ExtensionRegistrarTest, AddAndRemoveComponentExtension) {
   EXPECT_CALL(*delegate(), PostDeactivateExtension(extension()));
   registrar()->RemoveComponentExtension(extension()->id());
   ExpectInSet(ExtensionRegistry::NONE);
+}
+
+TEST_F(ExtensionRegistrarTest, Enabledness) {
+  base::FilePath install_dir =
+      browser_context()->GetPath().AppendASCII(kInstallDirectoryName);
+  base::FilePath unpacked_install_dir =
+      browser_context()->GetPath().AppendASCII(kUnpackedInstallDirectoryName);
+
+  // The profile lifetimes must not overlap: services may use global variables.
+  {
+    // By default, we are enabled.
+    base::test::ScopedCommandLine command_line;
+
+    ExtensionRegistrar* registrar = ExtensionRegistrar::Get(browser_context());
+    registrar->Init(delegate(), true, command_line.GetProcessCommandLine(),
+                    install_dir, unpacked_install_dir);
+    EXPECT_TRUE(registrar->extensions_enabled());
+  }
+
+  {
+    base::test::ScopedCommandLine command_line;
+    command_line.GetProcessCommandLine()->AppendSwitch(
+        switches::kDisableExtensions);
+
+    ExtensionRegistrar* registrar = ExtensionRegistrar::Get(browser_context());
+    registrar->Init(delegate(), true, command_line.GetProcessCommandLine(),
+                    install_dir, unpacked_install_dir);
+    EXPECT_FALSE(registrar->extensions_enabled());
+  }
+
+  // TODO(crbug.com/406544103): Test disabling an extension in a profile here.
+  // TODO(crbug.com/406544103): Test enabling an extension in a profile here.
 }
 
 }  // namespace extensions

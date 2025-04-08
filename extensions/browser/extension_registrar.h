@@ -26,6 +26,10 @@
 #include "extensions/common/extension_id.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 
+namespace base {
+class CommandLine;
+}  // namespace base
+
 namespace content {
 class BrowserContext;
 class DevToolsAgentHost;
@@ -140,6 +144,7 @@ class ExtensionRegistrar : public KeyedService, public ProcessManagerObserver {
   // times, for example to reset the delegate in tests.
   void Init(Delegate* delegate,
             bool extensions_enabled,
+            const base::CommandLine* command_line,
             const base::FilePath& install_directory,
             const base::FilePath& unpacked_install_directory);
 

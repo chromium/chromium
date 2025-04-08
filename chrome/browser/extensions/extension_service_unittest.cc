@@ -5243,7 +5243,7 @@ TEST_F(ExtensionServiceTest, DisableTerminatedExtension) {
 // the ExtensionService...
 TEST_F(ExtensionServiceTest, PRE_DisableAllExtensions) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      ::switches::kDisableExtensions);
+      extensions::switches::kDisableExtensions);
   InitializeGoodInstalledExtensionService();
   service()->Init();
   EXPECT_TRUE(registry()->GenerateInstalledExtensionsSet().empty());
@@ -5252,7 +5252,7 @@ TEST_F(ExtensionServiceTest, PRE_DisableAllExtensions) {
 // ... But, if we remove the switch, they are.
 TEST_F(ExtensionServiceTest, DisableAllExtensions) {
   EXPECT_FALSE(base::CommandLine::ForCurrentProcess()->HasSwitch(
-      ::switches::kDisableExtensions));
+      switches::kDisableExtensions));
   InitializeGoodInstalledExtensionService();
   service()->Init();
   EXPECT_FALSE(registry()->GenerateInstalledExtensionsSet().empty());
@@ -6840,7 +6840,7 @@ TEST_F(ExtensionServiceTestSimple, Enabledness) {
 
     base::FilePath install_dir =
         profile->GetPath().AppendASCII(kInstallDirectoryName);
-    command_line->AppendSwitch(::switches::kDisableExtensions);
+    command_line->AppendSwitch(switches::kDisableExtensions);
     ExtensionService* service =
         static_cast<TestExtensionSystem*>(ExtensionSystem::Get(profile.get()))
             ->CreateExtensionService(command_line.get(), install_dir, false);

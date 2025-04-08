@@ -27,6 +27,12 @@ extern const char kDisableAppContentVerification[];
 // into file URLs (ie, always allow it). This is used during automated testing.
 extern const char kDisableExtensionsFileAccessCheck[];
 
+// Disables extensions.
+inline constexpr char kDisableExtensions[] = "disable-extensions";
+
+// Disable extensions except those specified in a comma-separated list.
+inline constexpr char kDisableExtensionsExcept[] = "disable-extensions-except";
+
 // Disable the net::URLRequestThrottlerManager functionality for
 // requests originating from extensions.
 extern const char kDisableExtensionsHttpThrottling[];

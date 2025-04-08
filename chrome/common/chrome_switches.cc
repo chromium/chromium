@@ -198,12 +198,6 @@ const char kDisableDefaultApps[] = "disable-default-apps";
 // Disables Domain Reliability Monitoring.
 const char kDisableDomainReliability[] = "disable-domain-reliability";
 
-// Disable extensions.
-const char kDisableExtensions[] = "disable-extensions";
-
-// Disable extensions except those specified in a comma-separated list.
-const char kDisableExtensionsExcept[] = "disable-extensions-except";
-
 // Disables lazy loading of images and frames.
 const char kDisableLazyLoading[] = "disable-lazy-loading";
 

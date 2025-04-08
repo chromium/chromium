@@ -141,6 +141,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
+#include "extensions/common/switches.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
@@ -1669,7 +1670,7 @@ class BrowserTestWithExtensionsDisabled : public BrowserTest {
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     BrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(switches::kDisableExtensions);
+    command_line->AppendSwitch(extensions::switches::kDisableExtensions);
   }
 };
 

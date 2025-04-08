@@ -486,7 +486,9 @@ class ExtensionUpdaterTest : public testing::Test {
     // The registrar needs a delegate in order to call certain methods on it.
     ExtensionRegistrar::Get(prefs_->profile())
         ->Init(&stub_extension_registrar_delegate_,
-               /*extensions_enabled=*/true, base::FilePath(), base::FilePath());
+               /*extensions_enabled=*/true,
+               base::CommandLine::ForCurrentProcess(), base::FilePath(),
+               base::FilePath());
   }
 
   void TearDown() override {
@@ -497,7 +499,8 @@ class ExtensionUpdaterTest : public testing::Test {
     // Reset the ExtensionRegistrar delegate.
     ExtensionRegistrar::Get(prefs_->profile())
         ->Init(/*delegate=*/nullptr, /*extensions_enabled=*/true,
-               base::FilePath(), base::FilePath());
+               base::CommandLine::ForCurrentProcess(), base::FilePath(),
+               base::FilePath());
     prefs_.reset();
   }
 

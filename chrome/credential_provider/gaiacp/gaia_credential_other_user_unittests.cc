@@ -23,6 +23,7 @@
 #include "chrome/credential_provider/test/gls_runner_test_base.h"
 #include "chrome/credential_provider/test/test_credential.h"
 #include "content/public/common/content_switches.h"
+#include "extensions/common/switches.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -193,7 +194,7 @@ TEST_P(GcpOtherUserCredentialGlsTest, GetUserGlsCommandLine) {
       command_line.GetSwitchValueASCII(kGcpwEndpointPathSwitch);
 
   EXPECT_TRUE(command_line.HasSwitch(kGcpwSigninSwitch));
-  EXPECT_TRUE(command_line.HasSwitch(switches::kDisableExtensions));
+  EXPECT_TRUE(command_line.HasSwitch(extensions::switches::kDisableExtensions));
 
   if (is_ep_url_set) {
     ASSERT_EQ("http://login.com/",
