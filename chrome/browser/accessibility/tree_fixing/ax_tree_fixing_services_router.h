@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/accessibility/tree_fixing/internal/ax_tree_fixing_optimization_guide_service.h"
 #include "chrome/browser/accessibility/tree_fixing/internal/ax_tree_fixing_screen_ai_service.h"
 #include "chrome/browser/accessibility/tree_fixing/internal/ax_tree_fixing_screenshotter.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -49,10 +50,10 @@ struct AXTreeUpdate;
 
 namespace tree_fixing {
 
+using HeadingsIdentificationCallback = base::OnceCallback<void()>;
 using MainNodeIdentificationCallback =
     base::OnceCallback<void(const ui::AXTreeID&, ui::AXNodeID)>;
-
-using ScreenshotCallback = base::OnceCallback<void(SkBitmap)>;
+using ScreenshotCallback = base::OnceCallback<void(const SkBitmap& bitmap)>;
 
 // This class handles the communication between the browser process and any
 // downstream services used to fix the AXTree, such as: the optimization guide,
@@ -112,6 +113,11 @@ class AXTreeFixingServicesRouter
   bool IdentifyMainNode(const ui::AXTreeUpdate& ax_tree,
                         MainNodeIdentificationCallback callback);
 
+  // Identifies the headings of a page.
+  void IdentifyHeadings(const ui::AXTreeUpdate& ax_tree,
+                        const raw_ptr<content::WebContents> web_contents,
+                        HeadingsIdentificationCallback callback);
+
 #if !BUILDFLAG(IS_CHROMEOS)
   // ui::AXModeObserver:
   void OnAXModeAdded(ui::AXMode mode) override;
@@ -130,8 +136,11 @@ class AXTreeFixingServicesRouter
   // AXTreeFixingScreenshotter::ScreenshotDelegate overrides:
   void OnScreenshotCaptured(const SkBitmap& bitmap, int request_id) override;
 
-  void RequestScreenshot(const raw_ptr<content::WebContents> web_contents,
-                         ScreenshotCallback callback);
+  void MakeScreenshotRequest(const raw_ptr<content::WebContents> web_contents,
+                             ScreenshotCallback callback);
+  void OnScreenshotReceivedForHeadings(int opt_guide_request_id,
+                                       const ui::AXTreeUpdate& ax_tree_update,
+                                       const SkBitmap& bitmap);
 
   // ScreenAI related objects: service instance, and a list of callbacks/ids.
   std::unique_ptr<AXTreeFixingScreenAIService> screen_ai_service_;
@@ -147,6 +156,12 @@ class AXTreeFixingServicesRouter
   std::unique_ptr<AXTreeFixingScreenshotter> screenshotter_;
   std::list<std::pair<int, ScreenshotCallback>> pending_screenshot_callbacks_;
   int next_screenshot_request_id_ = 0;
+
+  // Optimization Guide related objects.
+  std::unique_ptr<AXTreeFixingOptimizationGuideService> opt_guide_service_;
+  std::list<std::pair<int, HeadingsIdentificationCallback>>
+      pending_opt_guide_callbacks_;
+  int next_opt_guide_request_id_ = 0;
 
   void ToggleEnabledState();
 

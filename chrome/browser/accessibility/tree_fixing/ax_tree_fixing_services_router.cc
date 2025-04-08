@@ -49,8 +49,9 @@ void AXTreeFixingServicesRouter::AXTreeFixingWebContentsObserver::
                      weak_ptr_factory_.GetWeakPtr()));
 
   // If the request was not processed, it likely means that the accessibility
-  // engine is still spinning-up (e.g. no root BrowserAccessibilityManager yet).
-  // We will retry after a pause, since this is likely a transient state.
+  // engine is still spinning-up (e.g. no root BrowserAccessibilityManager
+  // yet). We will retry after a pause, since this is likely a transient
+  // state.
   if (!request_processed && retry_attempts_ <= 3) {
     retry_attempts_++;
     content::GetUIThreadTaskRunner({})->PostDelayedTask(
@@ -177,7 +178,45 @@ void AXTreeFixingServicesRouter::OnServiceStateChanged(bool service_ready) {
   }
 }
 
-void AXTreeFixingServicesRouter::RequestScreenshot(
+void AXTreeFixingServicesRouter::IdentifyHeadings(
+    const ui::AXTreeUpdate& ax_tree_update,
+    const raw_ptr<content::WebContents> web_contents,
+    HeadingsIdentificationCallback callback) {
+  CHECK(features::IsAXTreeFixingEnabled());
+
+  if (!screenshotter_) {
+    screenshotter_ = std::make_unique<AXTreeFixingScreenshotter>(*this);
+  }
+
+  if (!opt_guide_service_) {
+    opt_guide_service_ =
+        std::make_unique<AXTreeFixingOptimizationGuideService>(profile_);
+  }
+
+  // Store the callback for later use, and make a request to Optimization Guide.
+  pending_opt_guide_callbacks_.emplace_back(next_opt_guide_request_id_,
+                                            std::move(callback));
+
+  MakeScreenshotRequest(
+      web_contents,
+      base::BindOnce(
+          &AXTreeFixingServicesRouter::OnScreenshotReceivedForHeadings,
+          weak_ptr_factory_.GetWeakPtr(), next_opt_guide_request_id_,
+          ax_tree_update));
+
+  next_opt_guide_request_id_++;
+}
+
+void AXTreeFixingServicesRouter::OnScreenshotReceivedForHeadings(
+    int opt_guide_request_id,
+    const ui::AXTreeUpdate& ax_tree_update,
+    const SkBitmap& bitmap) {
+  // Pass the bitmap and the original heading request ID to the service.
+  opt_guide_service_->IdentifyHeadings(ax_tree_update, bitmap,
+                                       opt_guide_request_id);
+}
+
+void AXTreeFixingServicesRouter::MakeScreenshotRequest(
     const raw_ptr<content::WebContents> web_contents,
     ScreenshotCallback callback) {
   // Store the callback for later use, and request a screenshot.
