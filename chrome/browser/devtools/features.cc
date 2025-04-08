@@ -138,7 +138,7 @@ BASE_FEATURE(kDevToolsAnimationStylesInStylesTab,
 // See http://go/chrome-devtools:automatic-workspace-folders-design for details.
 BASE_FEATURE(kDevToolsAutomaticFileSystems,
              "DevToolsAutomaticFileSystems",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Whether DevTools will attempt to load project settings from a well-known
 // URI. See https://goo.gle/devtools-json-design for additional details.
