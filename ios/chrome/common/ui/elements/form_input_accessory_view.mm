@@ -19,9 +19,6 @@ namespace {
 // Default Height for the accessory.
 constexpr CGFloat kDefaultAccessoryHeight = 44;
 
-// Large Height for the accessory.
-constexpr CGFloat kLargeAccessoryHeight = 59;
-
 // Button target area for the large keyboard accessory.
 constexpr CGFloat kLargeButtonTargetArea = 44;
 
@@ -55,6 +52,8 @@ constexpr CGFloat ManualFillSeparatorHeight = 0.5;
 
 NSString* const kFormInputAccessoryViewAccessibilityID =
     @"kFormInputAccessoryViewAccessibilityID";
+
+CGFloat const kFormInputAccessoryViewLargeHeight = 59;
 
 NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
     @"kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID";
@@ -608,7 +607,7 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
 // Returns the height of the accessory. Returns a larger height when using the
 // large accessory view.
 - (CGFloat)accessoryHeight {
-  return _largeAccessoryViewEnabled ? kLargeAccessoryHeight
+  return _largeAccessoryViewEnabled ? kFormInputAccessoryViewLargeHeight
                                     : kDefaultAccessoryHeight;
 }
 

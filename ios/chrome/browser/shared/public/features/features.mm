@@ -789,7 +789,7 @@ bool IsKeyboardAccessoryUpgradeEnabled() {
 }
 
 bool IsKeyboardAccessoryUpgradeWithShortManualFillMenuEnabled() {
-  return IsKeyboardAccessoryUpgradeEnabled() &&
+  return (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) &&
          base::FeatureList::IsEnabled(
              kIOSKeyboardAccessoryUpgradeShortManualFillMenu);
 }
