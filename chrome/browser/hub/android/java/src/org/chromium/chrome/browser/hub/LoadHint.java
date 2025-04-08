@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.hub;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -17,6 +19,7 @@ import java.lang.annotation.RetentionPolicy;
  */
 @IntDef({LoadHint.COLD, LoadHint.WARM, LoadHint.HOT, LoadHint.COUNT})
 @Retention(RetentionPolicy.SOURCE)
+@NullMarked
 public @interface LoadHint {
     /**
      * The pane and Hub are not visible to users. The pane should use as few resources as possible.
