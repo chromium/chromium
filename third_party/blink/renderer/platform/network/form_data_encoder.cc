@@ -23,16 +23,12 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "third_party/blink/renderer/platform/network/form_data_encoder.h"
 
 #include <array>
 #include <limits>
 
+#include "base/compiler_specific.h"
 #include "base/rand_util.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
 
@@ -261,7 +257,8 @@ void FormDataEncoder::EncodeStringAsFormData(Vector<char>& buffer,
     const unsigned char c = string[i];
 
     if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') ||
-        (c >= '0' && c <= '9') || (c != '\0' && strchr(kSafeCharacters, c))) {
+        (c >= '0' && c <= '9') ||
+        (c != '\0' && UNSAFE_TODO(strchr(kSafeCharacters, c)))) {
       buffer.push_back(c);
     } else if (c == ' ') {
       buffer.push_back('+');

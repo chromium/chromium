@@ -24,17 +24,13 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_IMAGE_DECODERS_IMAGE_FRAME_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_IMAGE_DECODERS_IMAGE_FRAME_H_
 
 #include <optional>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
@@ -130,7 +126,7 @@ class PLATFORM_EXPORT ImageFrame final {
     const int row_bytes = (end_x - start_x) * sizeof(PixelData);
     const PixelData* const start_addr = GetAddr(start_x, start_y);
     for (int dest_y = start_y + 1; dest_y < end_y; ++dest_y) {
-      memcpy(GetAddr(start_x, dest_y), start_addr, row_bytes);
+      UNSAFE_TODO(memcpy(GetAddr(start_x, dest_y), start_addr, row_bytes));
     }
   }
 

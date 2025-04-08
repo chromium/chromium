@@ -20,11 +20,6 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_LENGTH_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_LENGTH_H_
 
@@ -33,6 +28,7 @@
 #include <optional>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/memory/stack_allocated.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/platform/geometry/evaluation_input.h"
@@ -163,7 +159,7 @@ class PLATFORM_EXPORT Length {
   explicit Length(scoped_refptr<const CalculationValue>);
 
   Length(const Length& length) {
-    memcpy(this, &length, sizeof(Length));
+    UNSAFE_TODO(memcpy(this, &length, sizeof(Length)));
     if (IsCalculated())
       IncrementCalculatedRef();
   }
@@ -173,7 +169,7 @@ class PLATFORM_EXPORT Length {
       length.IncrementCalculatedRef();
     if (IsCalculated())
       DecrementCalculatedRef();
-    memcpy(this, &length, sizeof(Length));
+    UNSAFE_TODO(memcpy(this, &length, sizeof(Length)));
     return *this;
   }
 

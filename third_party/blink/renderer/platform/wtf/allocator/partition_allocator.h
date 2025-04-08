@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_ALLOCATOR_PARTITION_ALLOCATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_ALLOCATOR_PARTITION_ALLOCATOR_H_
 
@@ -17,6 +12,7 @@
 #include <string.h>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "partition_alloc/partition_alloc_constants.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -67,7 +63,7 @@ class WTF_EXPORT PartitionAllocator {
   template <typename T, typename HashTable>
   static T* AllocateZeroedHashTableBacking(size_t size) {
     void* result = AllocateBacking(size, WTF_HEAP_PROFILER_TYPE_NAME(T));
-    memset(result, 0, size);
+    UNSAFE_TODO(memset(result, 0, size));
     return reinterpret_cast<T*>(result);
   }
 

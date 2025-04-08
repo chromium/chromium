@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "cc/paint/display_item_list.h"
 #include "cc/paint/paint_op_buffer_iterator.h"
@@ -107,8 +103,8 @@ bool DrawingDisplayItem::EqualsForUnderInvalidationImpl(
 #if !defined(MEMORY_SANITIZER)
   if (record.buffer().next_op_offset() ==
           other_record.buffer().next_op_offset() &&
-      memcmp(&record.GetFirstOp(), &other_record.GetFirstOp(),
-             record.buffer().next_op_offset()) == 0) {
+      UNSAFE_TODO(memcmp(&record.GetFirstOp(), &other_record.GetFirstOp(),
+                         record.buffer().next_op_offset())) == 0) {
     return true;
   }
 #endif
