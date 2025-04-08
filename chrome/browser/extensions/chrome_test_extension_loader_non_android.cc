@@ -5,7 +5,6 @@
 #include <memory>
 
 #include "base/files/file_util.h"
-#include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/crx_installer.h"
@@ -13,11 +12,8 @@
 #include "chrome/browser/extensions/load_error_waiter.h"
 #include "chrome/browser/extensions/unpacked_installer.h"
 #include "chrome/browser/profiles/profile.h"
-#include "extensions/browser/extension_creator.h"
 #include "extensions/browser/extension_registry.h"
-#include "extensions/browser/install_prefs_helper.h"
 #include "extensions/browser/test_extension_registry_observer.h"
-#include "extensions/common/manifest_handlers/shared_module_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
@@ -90,100 +86,6 @@ void ChromeTestExtensionLoader::LoadUnpackedExtensionAsync(
       ->Load(file_path);
   ExtensionLoadedObserver::ObserveOnce(std::move(observer),
                                        std::move(callback));
-}
-
-base::FilePath ChromeTestExtensionLoader::PackExtension(
-    const base::FilePath& unpacked_path) {
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  if (!base::PathExists(unpacked_path)) {
-    ADD_FAILURE() << "Unpacked path does not exist: " << unpacked_path.value();
-    return base::FilePath();
-  }
-
-  if (!temp_dir_.CreateUniqueTempDir()) {
-    ADD_FAILURE() << "Could not create unique temp dir.";
-    return base::FilePath();
-  }
-  base::FilePath crx_path = temp_dir_.GetPath().AppendASCII("temp.crx");
-  if (base::PathExists(crx_path)) {
-    ADD_FAILURE()
-        << "Crx path exists: " << crx_path.value()
-        << ", are you trying to reuse the same ChromeTestExtensionLoader?";
-    return base::FilePath();
-  }
-  base::FilePath fallback_pem_path =
-      temp_dir_.GetPath().AppendASCII("temp.pem");
-  if (base::PathExists(fallback_pem_path)) {
-    ADD_FAILURE()
-        << "PEM path exists: " << fallback_pem_path.value()
-        << ", are you trying to reuse the same ChromeTestExtensionLoader?";
-    return base::FilePath();
-  }
-
-  base::FilePath empty_path;
-  base::FilePath* pem_path_to_use = &empty_path;
-  if (!pem_path_.empty()) {
-    pem_path_to_use = &pem_path_;
-    if (!base::PathExists(pem_path_)) {
-      ADD_FAILURE() << "Provided PEM path does not exist: "
-                    << pem_path_.value();
-      return base::FilePath();
-    }
-  }
-
-  ExtensionCreator creator;
-  if (!creator.Run(unpacked_path, crx_path, *pem_path_to_use, fallback_pem_path,
-                   ExtensionCreator::kOverwriteCRX)) {
-    ADD_FAILURE() << "ExtensionCreator::Run() failed: "
-                  << creator.error_message();
-    return base::FilePath();
-  }
-
-  CHECK(base::PathExists(crx_path));
-
-  return crx_path;
-}
-
-scoped_refptr<const Extension> ChromeTestExtensionLoader::LoadCrx(
-    const base::FilePath& file_path) {
-  if (!file_path.MatchesExtension(FILE_PATH_LITERAL(".crx"))) {
-    ADD_FAILURE() << "Must pass a crx path to LoadCrx()";
-    return nullptr;
-  }
-
-  scoped_refptr<const Extension> extension;
-  {
-    // TODO(devlin): Allow consumers to specify the install ui type.
-    std::unique_ptr<ExtensionInstallPrompt> install_ui;
-    scoped_refptr<CrxInstaller> installer =
-        CrxInstaller::Create(browser_context_, std::move(install_ui));
-    installer->set_expected_id(expected_id_);
-    installer->set_creation_flags(creation_flags_);
-    installer->set_install_source(location_);
-    installer->set_install_immediately(install_immediately_);
-    installer->set_allow_silent_install(grant_permissions_);
-    if (!installer->is_gallery_install()) {
-      installer->set_off_store_install_allow_reason(
-          CrxInstaller::OffStoreInstallAllowedInTest);
-    }
-
-    base::test::TestFuture<std::optional<CrxInstallError>>
-        installer_done_future;
-    installer->AddInstallerCallback(
-        installer_done_future
-            .GetCallback<const std::optional<CrxInstallError>&>());
-
-    installer->InstallCrx(file_path);
-
-    std::optional<CrxInstallError> error = installer_done_future.Get();
-    if (error) {
-      return nullptr;
-    }
-
-    extension = installer->extension();
-  }
-
-  return extension;
 }
 
 scoped_refptr<const Extension> ChromeTestExtensionLoader::LoadUnpacked(

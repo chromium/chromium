@@ -14,20 +14,6 @@
 
 namespace extensions {
 
-base::FilePath ChromeTestExtensionLoader::PackExtension(
-    const base::FilePath& unpacked_path) {
-  NOTIMPLEMENTED()
-      << "Packing extensions is not yet supported on desktop android.";
-  return base::FilePath();
-}
-
-scoped_refptr<const Extension> ChromeTestExtensionLoader::LoadCrx(
-    const base::FilePath& file_path) {
-  NOTIMPLEMENTED()
-      << "Loading packed extensions is not yet supported on desktop android.";
-  return nullptr;
-}
-
 scoped_refptr<const Extension> ChromeTestExtensionLoader::LoadUnpacked(
     const base::FilePath& file_path) {
   base::ScopedAllowBlockingForTesting allow_blocking;
