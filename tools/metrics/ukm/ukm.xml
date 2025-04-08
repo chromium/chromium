@@ -18192,6 +18192,13 @@ be describing additional metrics about the same event.
     <summary>
       Records how the user interacted with a saving prompt.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="Saving.Prompt.Shown" enum="Boolean">
     <summary>
@@ -18282,6 +18289,13 @@ be describing additional metrics about the same event.
     <summary>
       Records how the user interacted with an updating prompt.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="Updating.Prompt.Shown" enum="Boolean">
     <summary>
