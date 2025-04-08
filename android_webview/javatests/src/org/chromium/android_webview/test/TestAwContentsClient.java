@@ -31,6 +31,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import javax.annotation.concurrent.GuardedBy;
 
@@ -651,7 +652,7 @@ public class TestAwContentsClient extends NullContentsClient {
     /** Callback helper for shouldInterceptRequest. */
     public static class ShouldInterceptRequestHelper extends CallbackHelper {
         private final List<String> mShouldInterceptRequestUrls = new ArrayList<>();
-        private final Map<String, WebResourceResponseInfo> mReturnValuesByUrls =
+        private final Map<String, Supplier<WebResourceResponseInfo>> mReturnValueSuppliersByUrls =
                 Collections.synchronizedMap(new HashMap<>());
         private final Map<String, AwWebResourceRequest> mRequestsByUrls =
                 Collections.synchronizedMap(new HashMap<>());
@@ -679,7 +680,11 @@ public class TestAwContentsClient extends NullContentsClient {
         }
 
         void setReturnValueForUrl(String url, WebResourceResponseInfo value) {
-            mReturnValuesByUrls.put(url, value);
+            mReturnValueSuppliersByUrls.put(url, () -> value);
+        }
+
+        void setReturnValueSupplierForUrl(String url, Supplier<WebResourceResponseInfo> supplier) {
+            mReturnValueSuppliersByUrls.put(url, supplier);
         }
 
         public List<String> getUrls() {
@@ -692,8 +697,8 @@ public class TestAwContentsClient extends NullContentsClient {
         }
 
         public WebResourceResponseInfo getReturnValue(String url) {
-            WebResourceResponseInfo value = mReturnValuesByUrls.get(url);
-            if (value != null) return value;
+            Supplier<WebResourceResponseInfo> value = mReturnValueSuppliersByUrls.get(url);
+            if (value != null) return value.get();
             return mShouldInterceptRequestReturnValue;
         }
 

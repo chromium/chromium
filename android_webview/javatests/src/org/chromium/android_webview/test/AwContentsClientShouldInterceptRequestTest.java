@@ -1771,17 +1771,18 @@ public class AwContentsClientShouldInterceptRequestTest extends AwParameterizedT
         Map<String, String> headersForInjectedResponse = new HashMap<String, String>();
         headersForInjectedResponse.put("access-control-allow-origin", "http://some.origin.test");
         headersForInjectedResponse.put("access-control-allow-methods", "PUT");
-        WebResourceResponseInfo response =
-                new WebResourceResponseInfo(
-                        "text/plain",
-                        "utf-8",
-                        /* data= */ null,
-                        200,
-                        "OK",
-                        headersForInjectedResponse);
-        mShouldInterceptRequestHelper.setReturnValueForUrl(destinationUrl, response);
+        mShouldInterceptRequestHelper.setReturnValueSupplierForUrl(
+                destinationUrl,
+                () ->
+                        new WebResourceResponseInfo(
+                                "text/plain",
+                                "utf-8",
+                                /* data= */ null,
+                                200,
+                                "OK",
+                                headersForInjectedResponse));
 
-        // PUT is not a safelisted method and triggers a preflight.
+        // PUT is not a safe-listed method and triggers a preflight.
         final Future<String> future = loadDataAndFetch(destinationUrl, "PUT");
         Assert.assertEquals(
                 "fetch should succeed",

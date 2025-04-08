@@ -42,11 +42,7 @@ bool AwWebResourceInterceptResponse::HasResponse(JNIEnv* env) const {
 
 std::unique_ptr<embedder_support::WebResourceResponse>
 AwWebResourceInterceptResponse::GetResponse(JNIEnv* env) const {
-  ScopedJavaLocalRef<jobject> j_response =
-      Java_AwWebResourceInterceptResponse_getResponse(env, java_object_);
-  if (!j_response)
-    return nullptr;
-  return std::make_unique<embedder_support::WebResourceResponse>(j_response);
+  return Java_AwWebResourceInterceptResponse_getResponse(env, java_object_);
 }
 
 }  // namespace android_webview

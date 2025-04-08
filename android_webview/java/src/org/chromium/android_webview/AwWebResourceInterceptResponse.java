@@ -6,6 +6,7 @@ package org.chromium.android_webview;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -25,6 +26,7 @@ public class AwWebResourceInterceptResponse {
     }
 
     @CalledByNative
+    @JniType("std::unique_ptr<embedder_support::WebResourceResponse>")
     public @Nullable WebResourceResponseInfo getResponse() {
         return mResponse;
     }

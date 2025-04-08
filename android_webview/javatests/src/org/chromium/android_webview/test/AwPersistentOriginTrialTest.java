@@ -91,18 +91,24 @@ public class AwPersistentOriginTrialTest extends AwParameterizedTest {
     @SmallTest
     public void testCriticalHeaderCausesRetry() throws Throwable {
         final String requestUrl = "https://example.com/";
-        var headers =
+        Map<String, String> headers =
                 Map.of(
                         ORIGIN_TRIAL_HEADER,
                         PERSISTENT_TRIAL_TOKEN,
                         CRITICAL_ORIGIN_TRIAL_HEADER,
                         PERSISTENT_TRIAL_NAME);
-        var body =
-                new ByteArrayInputStream(
-                        "<!DOCTYPE html><html><body>Hello, World".getBytes(StandardCharsets.UTF_8));
-        var responseInfo =
-                new WebResourceResponseInfo("text/html", "utf-8", body, 200, "OK", headers);
-        mInterceptRequestHelper.setReturnValueForUrl(requestUrl, responseInfo);
+
+        // The page will be loaded twice, so we need a new input stream for each response.
+        mInterceptRequestHelper.setReturnValueSupplierForUrl(
+                requestUrl,
+                () -> {
+                    ByteArrayInputStream body =
+                            new ByteArrayInputStream(
+                                    "<!DOCTYPE html><html><body>Hello, World"
+                                            .getBytes(StandardCharsets.UTF_8));
+                    return new WebResourceResponseInfo(
+                            "text/html", "utf-8", body, 200, "OK", headers);
+                });
 
         TestCallbackHelperContainer.OnPageFinishedHelper onPageFinishedHelper =
                 mContentsClient.getOnPageFinishedHelper();

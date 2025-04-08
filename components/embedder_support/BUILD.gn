@@ -104,6 +104,7 @@ source_set("unit_tests") {
       "android/util/android_stream_reader_url_loader_unittest.cc",
       "android/util/input_stream_reader_unittest.cc",
       "android/util/input_stream_unittest.cc",
+      "android/util/web_resource_response_unittest.cc",
     ]
 
     deps += [
