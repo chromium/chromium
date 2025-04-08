@@ -10,14 +10,27 @@
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/win/windows_handle_util.h"
 #include "ipc/handle_attachment_win.h"
 #include "ipc/ipc_message.h"
 
 namespace IPC {
 
-HandleWin::HandleWin() : handle_(INVALID_HANDLE_VALUE) {}
+HandleWin::HandleWin() : handle_(nullptr) {}
 
-HandleWin::HandleWin(const HANDLE& handle) : handle_(handle) {}
+HandleWin::HandleWin(const HANDLE& handle) {
+  set_handle(handle);
+}
+
+void HandleWin::set_handle(HANDLE handle) {
+  // Refuse to represent pseudo handle values. If process or thread handles are
+  // needed, callers must duplicate them before adopting them.
+  if (!handle || base::win::IsPseudoHandle(handle)) {
+    handle_ = nullptr;
+    return;
+  }
+  handle_ = handle;
+}
 
 // static
 void ParamTraits<HandleWin>::Write(base::Pickle* m, const param_type& p) {
@@ -40,6 +53,8 @@ bool ParamTraits<HandleWin>::Read(const base::Pickle* m,
     return false;
   IPC::internal::HandleAttachmentWin* handle_attachment =
       static_cast<IPC::internal::HandleAttachmentWin*>(attachment);
+  // ScopedHandle cannot represent pseudo handle values, so this must be a valid
+  // handle value (the underlying handle may still not exist).
   r->set_handle(handle_attachment->Take());
   return true;
 }
