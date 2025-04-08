@@ -243,11 +243,12 @@ class AuthenticationFlowTest : public PlatformTest,
                              /*shouldHandOverToFlowInProfile=*/YES);
 
     NSString* hosted_domain = GetHostedDomainFromEmail(identity.userEmail);
+    auto fetchManagedStatusCallback = ^(NSInvocation*) {
+      [authentication_flow_ didFetchManagedStatus:hosted_domain];
+    };
     OCMExpect([performer_mock_ fetchManagedStatus:personal_profile_.get()
                                       forIdentity:identity])
-        .andDo(^(NSInvocation*) {
-          [authentication_flow_ didFetchManagedStatus:hosted_domain];
-        });
+        .andDo(fetchManagedStatusCallback);
 
     ProfileIOS* final_profile = personal_profile_;
     Browser* final_browser = personal_browser_.get();
@@ -263,16 +264,21 @@ class AuthenticationFlowTest : public PlatformTest,
 
     if (hosted_domain.length) {
       if (AreSeparateProfilesForManagedAccountsEnabled()) {
+        auto fetchProfileSeparationPoliciesCallback = ^(NSInvocation*) {
+          [authentication_flow_
+              didFetchProfileSeparationPolicies:policy::ALWAYS_SEPARATE];
+        };
         OCMStub([performer_mock_
                     fetchProfileSeparationPolicies:personal_profile_.get()
                                        forIdentity:identity])
-            .andDo(^(NSInvocation*) {
-              [authentication_flow_
-                  didFetchProfileSeparationPolicies:policy::ALWAYS_SEPARATE];
-            });
+            .andDo(fetchProfileSeparationPoliciesCallback);
       }
 
       BOOL migrationDisabled = AreSeparateProfilesForManagedAccountsEnabled();
+      auto showManagedConfirmationForHostedDomainCallback = ^(NSInvocation*) {
+        managed_confirmation_dialog_shown_count_++;
+        [authentication_flow_ didAcceptManagedConfirmation:YES];
+      };
       OCMStub([performer_mock_
                   showManagedConfirmationForHostedDomain:hosted_domain
                                                 identity:identity
@@ -281,40 +287,38 @@ class AuthenticationFlowTest : public PlatformTest,
                                skipBrowsingDataMigration:migrationDisabled
                               mergeBrowsingDataByDefault:NO
                    browsingDataMigrationDisabledByPolicy:migrationDisabled])
-          .andDo(^(NSInvocation*) {
-            managed_confirmation_dialog_shown_count_++;
-            [authentication_flow_ didAcceptManagedConfirmation:YES];
-          });
+          .andDo(showManagedConfirmationForHostedDomainCallback);
 
       if (AreSeparateProfilesForManagedAccountsEnabled()) {
+        auto switchToProfileWithIdentityCallback = ^(NSInvocation*) {
+          [authentication_flow_
+              didSwitchToProfileWithNewProfileBrowser:final_browser];
+        };
         OCMExpect(
             [performer_mock_
                 switchToProfileWithIdentity:identity
                                  sceneState:personal_browser_->GetSceneState()])
-            .andDo(^(NSInvocation*) {
-              [authentication_flow_
-                  didSwitchToProfileWithNewProfileBrowser:final_browser];
-            });
+            .andDo(switchToProfileWithIdentityCallback);
       }
 
+      auto registerUserPolicyCallback = ^(NSInvocation*) {
+        [authentication_flow_in_profile_
+            didRegisterForUserPolicyWithDMToken:kFakeDMToken
+                                       clientID:kFakeClientID
+                             userAffiliationIDs:@[ kFakeUserAffiliationID ]];
+      };
       OCMExpect([performer_mock_ registerUserPolicy:final_profile
                                         forIdentity:identity])
-          .andDo(^(NSInvocation*) {
-            [authentication_flow_in_profile_
-                didRegisterForUserPolicyWithDMToken:kFakeDMToken
-                                           clientID:kFakeClientID
-                                 userAffiliationIDs:@[
-                                   kFakeUserAffiliationID
-                                 ]];
-          });
+          .andDo(registerUserPolicyCallback);
+      auto fetchUserPolicyCallback = ^(NSInvocation*) {
+        [authentication_flow_in_profile_ didFetchUserPolicyWithSuccess:YES];
+      };
       OCMExpect([performer_mock_ fetchUserPolicy:final_profile
                                      withDmToken:kFakeDMToken
                                         clientID:kFakeClientID
                               userAffiliationIDs:@[ kFakeUserAffiliationID ]
                                         identity:identity])
-          .andDo(^(NSInvocation*) {
-            [authentication_flow_in_profile_ didFetchUserPolicyWithSuccess:YES];
-          });
+          .andDo(fetchUserPolicyCallback);
     }
 
     const bool should_switch_profile =
