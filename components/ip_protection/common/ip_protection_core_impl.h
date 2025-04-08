@@ -121,6 +121,10 @@ class IpProtectionCoreImpl
   // browser restart.
   bool ipp_over_quic_;
 
+  // Number of requests made with QUIC proxies. This is used to generate metrics
+  // regarding fallback to H2/H1.
+  int quic_requests_ = 0;
+
   MdlType mdl_type_;
 
   // List of TRACKING_PROTECTION content setting exceptions.

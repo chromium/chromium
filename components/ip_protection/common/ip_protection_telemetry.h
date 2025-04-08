@@ -203,6 +203,10 @@ class IpProtectionTelemetry {
 
   virtual void IsProbabilisticRevealTokenAvailable(bool is_initial_request,
                                                    bool is_token_available) = 0;
+
+  // QUIC proxies failed and the fallback HTTPS proxies succeeded. The argument
+  // is the number of requests made with QUIC proxies before this failure.
+  virtual void QuicProxiesFailed(int after_requests) = 0;
 };
 
 // Get the singleton instance of this type. This will be implemented by each

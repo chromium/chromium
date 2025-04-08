@@ -49,6 +49,8 @@ constexpr char kEmptyTokenCacheHistogram[] =
     "NetworkService.IpProtection.EmptyTokenCache2";
 constexpr char kMdlMatchesTimeHistogram[] =
     "NetworkService.MaskedDomainList.MatchesTime";
+constexpr char kQuicProxiesFailedHistogram[] =
+    "NetworkService.IpProtection.QuicProxiesFailed";
 
 constexpr char kMountainViewGeoId[] = "US,US-CA,MOUNTAIN VIEW";
 constexpr char kSunnyvaleGeoId[] = "US,US-CA,SUNNYVALE";
@@ -543,10 +545,18 @@ TEST_F(IpProtectionCoreImplTest, GetProxyListFromManagerWithQuic) {
               net::ProxyServer::SCHEME_HTTPS, "b-proxy2", std::nullopt),
       })};
   ASSERT_TRUE(ip_protection_core->IsProxyListAvailable());
+
+  // Call GetProxyChainList three times to test counting requests before
+  // failure.
+  EXPECT_EQ(ip_protection_core->GetProxyChainList(),
+            proxy_chain_list_with_quic);
+  EXPECT_EQ(ip_protection_core->GetProxyChainList(),
+            proxy_chain_list_with_quic);
   EXPECT_EQ(ip_protection_core->GetProxyChainList(),
             proxy_chain_list_with_quic);
 
   ip_protection_core->QuicProxiesFailed();
+  histogram_tester_.ExpectBucketCount(kQuicProxiesFailedHistogram, 3, 1);
 
   EXPECT_EQ(ip_protection_core->GetProxyChainList(),
             proxy_chain_list_without_quic);
