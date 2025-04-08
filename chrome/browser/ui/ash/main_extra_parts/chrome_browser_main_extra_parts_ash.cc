@@ -376,6 +376,7 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
 
   read_write_cards_manager_ =
       std::make_unique<chromeos::ReadWriteCardsManagerImpl>(
+          g_browser_process->GetFeatures()->application_locale_storage(),
           g_browser_process->shared_url_loader_factory());
 
   if (base::FeatureList::IsEnabled(ash::features::kReadaheadForLogin)) {

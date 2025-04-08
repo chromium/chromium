@@ -19,7 +19,9 @@
 #include "chromeos/ash/components/editor_menu/public/cpp/editor_context.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/editor_mode.h"
 
+class ApplicationLocaleStorage;
 class QuickAnswersControllerImpl;
+class ReadWriteCardController;
 
 namespace content {
 class BrowserContext;
@@ -36,8 +38,6 @@ namespace editor_menu {
 class EditorMenuControllerImpl;
 }  // namespace editor_menu
 
-class ReadWriteCardController;
-
 using OptInFeatures = crosapi::mojom::MagicBoostController::OptInFeatures;
 
 // `ReadWriteCardsManagerImpl` provides supported UI controller to given context
@@ -45,9 +45,11 @@ using OptInFeatures = crosapi::mojom::MagicBoostController::OptInFeatures;
 // EditorMenuController, or nullptr.
 class ReadWriteCardsManagerImpl : public ReadWriteCardsManager {
  public:
+  // `application_locale_storage` must not be null and must outlive `this`.
   // `shared_url_loader_factory` should be the instance associated with browser
   // process.
-  explicit ReadWriteCardsManagerImpl(
+  ReadWriteCardsManagerImpl(
+      ApplicationLocaleStorage* application_locale_storage,
       scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory);
   ReadWriteCardsManagerImpl(const ReadWriteCardsManagerImpl&) = delete;
   ReadWriteCardsManagerImpl& operator=(const ReadWriteCardsManagerImpl&) =

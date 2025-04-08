@@ -184,17 +184,21 @@ std::unique_ptr<QuickAnswersState> CreateQuickAnswersState() {
 }  // namespace
 
 QuickAnswersControllerImpl::QuickAnswersControllerImpl(
+    ApplicationLocaleStorage* application_locale_storage,
     chromeos::ReadWriteCardsUiController& read_write_cards_ui_controller)
-    : QuickAnswersControllerImpl(read_write_cards_ui_controller,
+    : QuickAnswersControllerImpl(application_locale_storage,
+                                 read_write_cards_ui_controller,
                                  CreateQuickAnswersState()) {}
 
 QuickAnswersControllerImpl::QuickAnswersControllerImpl(
+    ApplicationLocaleStorage* application_locale_storage,
     chromeos::ReadWriteCardsUiController& read_write_cards_ui_controller,
     std::unique_ptr<QuickAnswersState> quick_answers_state)
     : quick_answers_state_(std::move(quick_answers_state)),
       read_write_cards_ui_controller_(read_write_cards_ui_controller),
       quick_answers_ui_controller_(
-          std::make_unique<QuickAnswersUiController>(this)) {}
+          std::make_unique<QuickAnswersUiController>(application_locale_storage,
+                                                     this)) {}
 
 QuickAnswersControllerImpl::~QuickAnswersControllerImpl() {
   // `PerformOnConsentAccepted` depends on `QuickAnswersState`. It has to be

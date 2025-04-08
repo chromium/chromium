@@ -36,7 +36,6 @@ source_set("quick_answers") {
 
   deps = [
     "//ash",
-    "//chrome/browser:browser_process",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/ash/editor_menu:utils",
     "//chrome/browser/ui/ash/quick_answers/ui:loading_view",
@@ -56,6 +55,7 @@ source_set("quick_answers") {
     "//chromeos/strings:strings_grit",
     "//chromeos/ui/vector_icons",
     "//components/account_id",
+    "//components/application_locale_storage",
     "//components/language/core/browser",
     "//components/omnibox/browser:vector_icons",
     "//components/prefs",

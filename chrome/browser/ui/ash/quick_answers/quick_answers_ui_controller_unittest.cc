@@ -14,10 +14,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/ui/ash/quick_answers/quick_answers_controller_impl.h"
 #include "chrome/browser/ui/ash/quick_answers/test/chrome_quick_answers_test_base.h"
 #include "chrome/browser/ui/ash/quick_answers/ui/quick_answers_view.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/components/quick_answers/test/fake_quick_answers_state.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -103,6 +105,9 @@ class QuickAnswersUiControllerTest : public ChromeQuickAnswersTestBase {
         std::make_unique<FakeQuickAnswersState>();
     fake_quick_answers_state_ = fake_quick_answers_state.get();
     return std::make_unique<QuickAnswersControllerImpl>(
+        TestingBrowserProcess::GetGlobal()
+            ->GetFeatures()
+            ->application_locale_storage(),
         read_write_cards_ui_controller, std::move(fake_quick_answers_state));
   }
 

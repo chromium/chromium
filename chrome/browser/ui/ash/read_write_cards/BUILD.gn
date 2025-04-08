@@ -60,6 +60,7 @@ source_set("unit_tests") {
     ":read_write_cards_manager",
     "//ash:test_support",
     "//base/test:test_support",
+    "//chrome/browser:global_features",
 
     # TODO(crbug.com/374896328): Remove crosapi use.
     "//chrome/browser/ash/crosapi",

@@ -14,7 +14,6 @@
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/editor_menu/utils/focus_search.h"
 #include "chrome/browser/ui/ash/editor_menu/utils/pre_target_handler.h"
@@ -209,15 +208,16 @@ void SetResultTo(ResultView* result_view, DefinitionResult* definition_result) {
 
 void SetResultTo(ResultView* result_view,
                  TranslationResult* translation_result,
-                 Design design) {
+                 Design design,
+                 const std::string& application_locale) {
   result_view->SetFirstLineText(
       base::UTF8ToUTF16(translation_result->text_to_translate));
 
   if (design != Design::kCurrent) {
     std::u16string display_name_locale =
         l10n_util::GetDisplayNameForLocaleWithoutCountry(
-            translation_result->source_locale,
-            g_browser_process->GetApplicationLocale(), /*is_for_ui=*/true);
+            translation_result->source_locale, application_locale,
+            /*is_for_ui=*/true);
     if (!display_name_locale.empty()) {
       result_view->SetFirstLineSubText(display_name_locale);
     }
@@ -668,7 +668,8 @@ std::optional<Intent> QuickAnswersView::GetIntent() const {
   return intent_;
 }
 
-void QuickAnswersView::SetResult(const StructuredResult& structured_result) {
+void QuickAnswersView::SetResult(const StructuredResult& structured_result,
+                                 const std::string& application_locale) {
   // Check if the view (or any of its children) had focus before resetting the
   // view, so it can be restored for the updated view.
   bool pane_already_had_focus = HasFocusInside();
@@ -683,7 +684,7 @@ void QuickAnswersView::SetResult(const StructuredResult& structured_result) {
     case ResultType::kTranslationResult:
       SetIntent(Intent::kTranslation);
       SetResultTo(result_view_, structured_result.translation_result.get(),
-                  design_);
+                  design_, application_locale);
       break;
     case ResultType::kUnitConversionResult:
       SetIntent(Intent::kUnitConversion);

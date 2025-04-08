@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_ASH_QUICK_ANSWERS_UI_QUICK_ANSWERS_VIEW_H_
 
 #include <optional>
+#include <string>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
@@ -92,7 +93,8 @@ class QuickAnswersView : public chromeos::ReadWriteCardsView {
   void SetIntent(Intent intent);
   std::optional<Intent> GetIntent() const;
 
-  void SetResult(const StructuredResult& structured_result);
+  void SetResult(const StructuredResult& structured_result,
+                 const std::string& application_locale);
 
   void ShowRetryView();
 
