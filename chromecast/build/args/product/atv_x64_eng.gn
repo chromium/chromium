@@ -1,0 +1,5 @@
+import("//chromecast/build/args/config/android.gni")
+import("//chromecast/build/args/config/archs/x64.gni")
+import("//chromecast/build/args/config/flavor/eng.gni")
+
+is_java_debug = true
