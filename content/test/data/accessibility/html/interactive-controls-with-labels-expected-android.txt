@@ -1,6 +1,6 @@
 android.webkit.WebView focusable focused
 ++android.view.View interesting name='Test label'
-++android.widget.TextView interesting supplemental_description='aria label'
+++android.widget.TextView interesting name='Generic container' supplemental_description='aria label'
 ++android.widget.TextView interesting name='Test label'
 ++android.widget.EditText clickable editable_text has_non_empty_value interesting name='Textbox' supplemental_description='aria label' text_change_added_count=7
 ++android.widget.EditText clickable editable_text has_non_empty_value interesting name='Textbox with aria-labelledby' hint='Test label' text_change_added_count=28
