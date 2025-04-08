@@ -141,10 +141,7 @@ void GetMlPredictionsIfNeeded(
 }
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
-}  // namespace
-
-// static
-void AutofillManager::LogTypePredictionsAvailable(
+void LogTypePredictionsAvailable(
     LogManager* log_manager,
     const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms) {
   LogBuffer buffer(IsLoggingActive(log_manager));
@@ -155,6 +152,8 @@ void AutofillManager::LogTypePredictionsAvailable(
   LOG_AF(log_manager) << LoggingScope::kParsing << LogMessage::kParsedForms
                       << std::move(buffer);
 }
+
+}  // namespace
 
 AutofillManager::AutofillManager(AutofillDriver* driver)
     : driver_(CHECK_DEREF(driver)) {
