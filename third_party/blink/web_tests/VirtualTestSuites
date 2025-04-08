@@ -1476,21 +1476,14 @@
       "http/tests/fenced_frame",
       "http/tests/inspector-protocol/fenced-frame",
       "external/wpt/html/anonymous-iframe",
-      "external/wpt/fenced-frame",
-      "external/wpt/fetch/private-network-access/fenced-frame-subresource-fetch.tentative.https.window.js",
-      "external/wpt/fetch/private-network-access/fenced-frame.tentative.https.window.js",
-      "external/wpt/fetch/private-network-access/fenced-frame-no-preflight-required.tentative.https.window.js"
+      "external/wpt/fenced-frame"
     ],
     "exclusive_tests": [
       "http/tests/fenced_frame",
       "external/wpt/fenced-frame",
-      "http/tests/inspector-protocol/fenced-frame",
-      "external/wpt/fetch/private-network-access/fenced-frame-subresource-fetch.tentative.https.window.js",
-      "external/wpt/fetch/private-network-access/fenced-frame.tentative.https.window.js",
-      "external/wpt/fetch/private-network-access/fenced-frame-no-preflight-required.tentative.https.window.js"
+      "http/tests/inspector-protocol/fenced-frame"
     ],
     "args": ["--enable-features=PrivacySandboxAdsAPIsOverride,Fledge,AdInterestGroupAPI,FencedFramesEnforceFocus,FencedFramesLocalUnpartitionedDataAccess,ExemptUrlFromNetworkRevocationForTesting,FencedFramesCrossOriginEventReportingAllTraffic,FencedFramesReportEventHeaderChanges,FencedFramesSrcPermissionsPolicy,FencedFramesCrossOriginAutomaticBeaconData",
-             "--disable-features=LocalNetworkAccessChecks",
              "--enable-blink-features=FencedFramesDefaultMode"],
     "expires": "Jan 9, 2026"
   },

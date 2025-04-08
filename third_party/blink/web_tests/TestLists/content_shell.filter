@@ -925,7 +925,6 @@ virtual/document-isolation-policy/external/wpt/html/document-isolation-policy/sh
 virtual/fedcm-multi-idp/external/wpt/fedcm/fedcm-multi-idp/fedcm-multi-idp-mediation-optional.https.html
 virtual/fedcm-multi-idp/external/wpt/fedcm/fedcm-multi-idp/fedcm-multi-idp-mediation-silent.https.html
 virtual/fedcm-register/external/wpt/fedcm/fedcm-register/fedcm-no-registered-idps.https.html
-virtual/fenced-frame-mparch/external/wpt/fetch/private-network-access/fenced-frame.tentative.https.window.html
 virtual/fenced-frame-mparch/external/wpt/fenced-frame/history-length-fenced-navigations-replace-do-not-contribute-to-joint.https.html
 virtual/fenced-frame-mparch/external/wpt/fenced-frame/history-length-outer-page-navigation-not-reflected-in-fenced.https.html
 virtual/fenced-frame-mparch/external/wpt/fenced-frame/key-scrolling.https.html
