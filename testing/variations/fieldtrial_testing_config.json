@@ -6392,16 +6392,21 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_InnerHtml",
+                    "name": "Enabled_NoAutoFocus_20250408",
                     "params": {
                         "auto-focus-searchbox": "false",
+                        "page-content-request-id-fix": "true",
+                        "pdf-text-character-limit": "5000",
                         "send-page-url-for-contextualization": "true",
                         "show-contextual-searchbox-ghost-loader-loading-state": "true",
-                        "use-inner-html-as-context": "true",
-                        "use-inner-text-as-context": "false",
+                        "update-viewport-each-query": "true",
+                        "use-apc-as-context": "true",
+                        "use-inner-html-as-context": "false",
+                        "use-inner-text-as-context": "true",
                         "use-pdf-interaction-type": "true",
                         "use-pdf-vit-param": "true",
                         "use-pdfs-as-context": "true",
+                        "use-updated-content-fields": "true",
                         "use-webpage-interaction-type": "true",
                         "use-webpage-vit-param": "true"
                     },
