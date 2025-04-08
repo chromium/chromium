@@ -93,6 +93,9 @@ group("perf_without_chrome") {
 
     # For Pylib used by VR tests
     "//build/android/pylib/",
+
+    # For Crossbench WPR network
+    "//third_party/webpagereplay/",
   ]
 
   # Runs a script which generates the ad tagging ruleset.
