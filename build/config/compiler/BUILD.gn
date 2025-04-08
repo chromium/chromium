@@ -2003,11 +2003,6 @@ config("default_warnings") {
         # annotation completeness, this warning exception can be removed.
         "-Wno-nullability-completeness",
       ]
-
-      if (llvm_force_head_revision) {
-        # TODO(crbug.com/407622661): Enable broadly, suppress selectively.
-        cflags_cc += [ "-Wno-unnecessary-virtual-specifier" ]
-      }
     }
 
     if (is_wasm) {
