@@ -9,26 +9,4 @@
 
 @implementation RecentActivityLogItem
 
-#pragma mark NSObject
-
-// Returns true if 2 objects are RecentActivityLogItem and have the same ID.
-- (BOOL)isEqual:(id)object {
-  if (self == object) {
-    return YES;
-  }
-  if (![object isKindOfClass:[RecentActivityLogItem class]]) {
-    return NO;
-  }
-  return [self isEqualToRecentActivityLogItem:object];
-}
-
-#pragma mark Private
-
-// Returns true if 2 RecentActivityLogItems have the same ID.
-- (BOOL)isEqualToRecentActivityLogItem:(RecentActivityLogItem*)item {
-  // TODO(crbug.com/401468090): Check if 2 RecentActivityLogItems are equal
-  // based on the ID in the ActivityLogItem struct.
-  return NO;
-}
-
 @end

@@ -65,6 +65,7 @@
   _mediator.recentActivityHandler = self;
 
   _viewController.mutator = _mediator;
+  _viewController.faviconDataSource = _mediator;
 
   UINavigationController* navigationController = [[UINavigationController alloc]
       initWithRootViewController:_viewController];

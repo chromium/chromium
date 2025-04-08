@@ -7,17 +7,22 @@
 
 #import <UIKit/UIKit.h>
 
+@class FaviconView;
+
 // Represents a log in the recent activity in a shared tab group.
 @interface RecentActivityLogCell : UITableViewCell
 
-// The cell user's avatar view on the left end.
+// The cell user's avatar view on the leading edge.
 @property(nonatomic, readonly, strong) UIView* avatarView;
-// The cell favicon imageView on the right end.
-@property(nonatomic, readonly, strong) UIImageView* faviconImageView;
+// The cell favicon imageView on the trailing edge.
+@property(nonatomic, readonly, strong) FaviconView* faviconView;
 // The cell title.
 @property(nonatomic, readonly, strong) UILabel* titleLabel;
 // The cell detail text.
 @property(nonatomic, readonly, strong) UILabel* descriptionLabel;
+
+// Unique identifier for the cell. Can be `nil`.
+@property(nonatomic, readonly) NSString* uniqueIdentifier;
 
 @end
 

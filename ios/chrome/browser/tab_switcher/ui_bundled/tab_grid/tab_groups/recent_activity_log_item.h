@@ -7,36 +7,39 @@
 
 #import <UIKit/UIKit.h>
 
+class GURL;
 namespace collaboration::messaging {
 struct MessageAttribution;
 enum class RecentActivityAction;
 }  // namespace collaboration::messaging
 
+@class FaviconAttributes;
 @protocol ShareKitAvatarPrimitive;
 
 // Represents a log item in a diffable data source. It contains the data of
 // ActivityLogItem obtained from MessagingBackendService.
 @interface RecentActivityLogItem : NSObject
 
-// TODO(crbug.com/370897655): Store an ID of the ActivityLogItem struct.
-
 // When true, all other values should be ignored. This represents an absence of
 // item.
 @property(nonatomic, assign) BOOL emptyItem;
 
-// The image of a favicon of a page.
-@property(nonatomic, strong) UIImage* favicon;
+// Attributes for the favicon.
+@property(nonatomic, strong) FaviconAttributes* attributes;
 
-// The object to provide an avatar image.
+// GURL of the favicon.
+@property(nonatomic, assign) GURL faviconURL;
+
+// Object that provides an avatar image.
 @property(nonatomic, strong) id<ShareKitAvatarPrimitive> avatarPrimitive;
 
-// The string of a title.
+// Title of the item.
 @property(nonatomic, strong) NSString* title;
 
-// The string of a description.
+// Description of the item.
 @property(nonatomic, strong) NSString* actionDescription;
 
-// The string of the timestamp when an action is taken.
+// Timestamp when an action is taken.
 @property(nonatomic, strong) NSString* timestamp;
 
 // The type of action to be taken when this activity row is clicked.

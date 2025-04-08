@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #import "base/memory/weak_ptr.h"
+#import "ios/chrome/browser/shared/ui/table_view/table_view_favicon_data_source.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/recent_activity_mutator.h"
 #import "ios/web/public/web_state.h"
 
@@ -26,7 +27,8 @@ class TabGroupSyncService;
 }  // namespace tab_groups
 
 // A mediator to control the recent activity logs in a shared tab group.
-@interface RecentActivityMediator : NSObject <RecentActivityMutator>
+@interface RecentActivityMediator
+    : NSObject <RecentActivityMutator, TableViewFaviconDataSource>
 
 // Consumer of the recent activity.
 @property(nonatomic, weak) id<RecentActivityConsumer> consumer;

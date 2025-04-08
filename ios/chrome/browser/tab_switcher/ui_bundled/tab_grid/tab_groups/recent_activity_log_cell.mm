@@ -4,9 +4,14 @@
 
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/recent_activity_log_cell.h"
 
+#import "ios/chrome/common/ui/favicon/favicon_container_view.h"
+#import "ios/chrome/common/ui/favicon/favicon_view.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 
-@implementation RecentActivityLogCell
+@implementation RecentActivityLogCell {
+  // Container view that displays the `faviconView`.
+  FaviconContainerView* _faviconContainerView;
+}
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style
               reuseIdentifier:(NSString*)reuseIdentifier {
@@ -14,14 +19,10 @@
   if (self) {
     self.isAccessibilityElement = YES;
     _avatarView = [[UIView alloc] init];
+    _uniqueIdentifier = [[NSUUID UUID] UUIDString];
 
-    // The favicon image is smaller than its UIImageView's bounds, so center
-    // it.
-    _faviconImageView = [[UIImageView alloc] init];
-    _faviconImageView.contentMode = UIViewContentModeCenter;
-    [_faviconImageView
-        setContentHuggingPriority:UILayoutPriorityRequired
-                          forAxis:UILayoutConstraintAxisHorizontal];
+    _faviconContainerView = [[FaviconContainerView alloc] init];
+    _faviconContainerView.translatesAutoresizingMaskIntoConstraints = NO;
 
     // Set font size using dynamic type.
     _titleLabel = [[UILabel alloc] init];
@@ -49,7 +50,7 @@
 
     UIStackView* horizontalStack =
         [[UIStackView alloc] initWithArrangedSubviews:@[
-          _avatarView, verticalStack, _faviconImageView
+          _avatarView, verticalStack, _faviconContainerView
         ]];
     horizontalStack.translatesAutoresizingMaskIntoConstraints = NO;
     horizontalStack.axis = UILayoutConstraintAxisHorizontal;
@@ -85,13 +86,20 @@
   return self;
 }
 
+#pragma mark - Getters
+
+- (FaviconView*)faviconView {
+  return _faviconContainerView.faviconView;
+}
+
 #pragma mark - UITableViewCell
 
 - (void)prepareForReuse {
   [super prepareForReuse];
+  _uniqueIdentifier = nil;
   _titleLabel.text = nil;
   _descriptionLabel.text = nil;
-  _faviconImageView.image = nil;
+  _faviconContainerView = nil;
   for (UIView* subview in _avatarView.subviews) {
     [subview removeFromSuperview];
   }
