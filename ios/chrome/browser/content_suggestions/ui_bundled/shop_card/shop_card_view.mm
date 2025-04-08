@@ -22,6 +22,7 @@
 #import "url/gurl.h"
 
 namespace {
+NSString* const kShopCardViewIdentifier = @"kShopCardViewIdentifier";
 const CGFloat kHorizontalStackSpacing = 16.0f;
 const CGFloat kVerticalStackSpacing = 6.0f;
 const CGFloat kCenterSymbolSize = 20.0;
@@ -109,6 +110,7 @@ const CGFloat kGradientOverlayBottomAlpha = 0.14;
     // Styling
     [self addProductImageAndOverlay];
     [self addFaviconImageAndContainer:_item.shopCardData.faviconImage];
+    _faviconImageContainer.backgroundColor = UIColor.whiteColor;
     _faviconImageContainer.layer.mask =
         [self faviconMaskWithRadius:kFaviconImageContainerTrailingCornerRadius
                    imageHeightWidth:kFaviconImageWidthHeight];
@@ -152,6 +154,7 @@ const CGFloat kGradientOverlayBottomAlpha = 0.14;
     // Styling
     [self addProductImageEmptyGray];
     [self addFaviconImageAndContainer:_item.shopCardData.faviconImage];
+    _faviconImageContainer.backgroundColor = UIColor.whiteColor;
     [self addShadowForFaviconContainer];
 
     // Hierarchy
@@ -204,6 +207,26 @@ const CGFloat kGradientOverlayBottomAlpha = 0.14;
   _contentStack.alignment = UIStackViewAlignmentTop;
   [self addSubview:_contentStack];
   AddSameConstraints(_contentStack, self);
+
+  // Accessibility
+  self.isAccessibilityElement = YES;
+  self.accessibilityIdentifier = kShopCardViewIdentifier;
+  self.accessibilityTraits = UIAccessibilityTraitButton;
+  self.accessibilityLabel = _item.shopCardData.accessibilityString;
+  _priceNotificationsChip.isAccessibilityElement = YES;
+  _titleLabel.accessibilityTraits |= UIAccessibilityTraitHeader;
+  // For larger font size, hide price chip.
+  if (@available(iOS 17, *)) {
+    NSArray<UITrait>* traits = TraitCollectionSetForTraits(
+        @[ UITraitPreferredContentSizeCategory.class ]);
+    [self registerForTraitChanges:traits
+                       withAction:@selector(hideDomainOnTraitChange)];
+  }
+}
+
+- (void)hideDomainOnTraitChange {
+  _urlLabel.hidden = self.traitCollection.preferredContentSizeCategory >
+                     UIContentSizeCategoryExtraExtraLarge;
 }
 
 // Returns the tab hostname from the given `URL`.

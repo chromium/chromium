@@ -8,6 +8,7 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/bookmark_node.h"
 #import "components/commerce/core/commerce_constants.h"
@@ -21,6 +22,7 @@
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
+#import "components/url_formatter/elide_url.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_action_delegate.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_data.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_favicon_consumer.h"
@@ -32,6 +34,8 @@
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/chrome/common/ui/favicon/favicon_constants.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 @interface ShopCardMediator () <PrefObserverDelegate,
                                 ShopCardFaviconConsumerSource>
@@ -206,6 +210,20 @@
   _shopCardItem.shopCardData.productURL = bookmark->url();
   _shopCardItem.shopCardData.productTitle =
       [NSString stringWithUTF8String:specifics.title().c_str()];
+
+  _shopCardItem.shopCardData.accessibilityString = l10n_util::GetNSStringF(
+      IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_PRICE_TRACKING_ACCESSIBILITY_LABEL,
+      base::SysNSStringToUTF16(
+          _shopCardItem.shopCardData.priceDrop->previous_price),
+      base::SysNSStringToUTF16(
+          _shopCardItem.shopCardData.priceDrop->current_price),
+      base::SysNSStringToUTF16(_shopCardItem.shopCardData.productTitle),
+      GetHostnameFromGURL(bookmark->url()));
+}
+
+std::u16string GetHostnameFromGURL(const GURL& url) {
+  return url_formatter::
+      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(url);
 }
 
 - (NSString*)GetFormattedPrice:(payments::CurrencyFormatter*)formatter
