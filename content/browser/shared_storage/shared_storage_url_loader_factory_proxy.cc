@@ -22,6 +22,7 @@
 #include "net/cookies/site_for_cookies.h"
 #include "net/http/http_request_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "url/gurl.h"
@@ -37,14 +38,16 @@ SharedStorageURLLoaderFactoryProxy::SharedStorageURLLoaderFactoryProxy(
     const url::Origin& data_origin,
     const GURL& script_url,
     network::mojom::CredentialsMode credentials_mode,
-    const net::SiteForCookies& site_for_cookies)
+    const net::SiteForCookies& site_for_cookies,
+    const network::PermissionsPolicy& permissions_policy)
     : frame_url_loader_factory_(std::move(frame_url_loader_factory)),
       receiver_(this, std::move(pending_receiver)),
       frame_origin_(frame_origin),
       data_origin_(data_origin),
       script_url_(script_url),
       credentials_mode_(credentials_mode),
-      site_for_cookies_(site_for_cookies) {}
+      site_for_cookies_(site_for_cookies),
+      permissions_policy_(permissions_policy) {}
 
 SharedStorageURLLoaderFactoryProxy::~SharedStorageURLLoaderFactoryProxy() =
     default;
@@ -78,6 +81,12 @@ void SharedStorageURLLoaderFactoryProxy::CreateLoaderAndStart(
   new_request.mode = network::mojom::RequestMode::kCors;
   new_request.destination =
       network::mojom::RequestDestination::kSharedStorageWorklet;
+
+  // TODO(crbug.com/382291442): Remove feature guarding once launched.
+  if (base::FeatureList::IsEnabled(
+          network::features::kPopulatePermissionsPolicyOnRequest)) {
+    new_request.permissions_policy = permissions_policy_;
+  }
 
   // TODO(crbug.com/40803630): create a new factory when the current one gets
   // disconnected.

@@ -408,6 +408,11 @@ SharedStorageWorkletHost::SharedStorageWorkletHost(
   // The data origin can't be opaque.
   DCHECK(!shared_storage_origin_.opaque());
 
+  // The render frame host must have a permissions policy.
+  CHECK(
+      static_cast<RenderFrameHostImpl&>(document_service_->render_frame_host())
+          .GetPermissionsPolicy());
+
   url_loader_factory_proxy_ =
       std::make_unique<SharedStorageURLLoaderFactoryProxy>(
           std::move(frame_url_loader_factory),
@@ -415,7 +420,10 @@ SharedStorageWorkletHost::SharedStorageWorkletHost(
           shared_storage_origin_, script_source_url, credentials_mode,
           static_cast<RenderFrameHostImpl&>(
               document_service_->render_frame_host())
-              .ComputeSiteForCookies());
+              .ComputeSiteForCookies(),
+          *static_cast<RenderFrameHostImpl&>(
+               document_service_->render_frame_host())
+               .GetPermissionsPolicy());
 
   if (creation_method ==
       blink::mojom::SharedStorageWorkletCreationMethod::kAddModule) {
