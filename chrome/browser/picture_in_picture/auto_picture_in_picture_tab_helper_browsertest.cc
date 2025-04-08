@@ -2057,7 +2057,8 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
 }
 
 // TODO(crbug.com/372777367): Test failing on Windows
-#if BUILDFLAG(IS_WIN)
+// TODO(crbug.com/409069588): Re-enable this test on Mac.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_DoesNotCloseAutomaticallyOpenedPip \
   DISABLED_DoesNotCloseAutomaticallyOpenedPip
 #else
