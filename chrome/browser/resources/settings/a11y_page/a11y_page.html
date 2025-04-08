@@ -56,6 +56,14 @@
             label="$i18n{accessibleImageLabelsTitle}"
             sub-label="$i18n{accessibleImageLabelsSubtitle}">
         </settings-toggle-button>
+        <template is="dom-if" if="[[showAxTreeFixingSection_]]">
+          <settings-toggle-button id="axTreeFixing"
+              class="hr"
+              pref="{{prefs.settings.a11y.enable_ax_tree_fixing}}"
+              label="$i18n{axTreeFixingTitle}"
+              sub-label="$i18n{axTreeFixingSubtitle}">
+          </settings-toggle-button>
+        </template>
 <if expr="is_win or is_linux or is_macosx">
         <template is="dom-if" if="[[showAxAnnotationsSection_]]">
           <settings-ax-annotations-section

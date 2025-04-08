@@ -113,6 +113,12 @@
   <message name="IDS_SETTINGS_MAIN_NODE_ANNOTATIONS_SUBTITLE" desc="Subtitle for screen reader main node annotation feature.">
     Identify the main landmark in web pages for assistive technology
   </message>
+  <message name="IDS_SETTINGS_AX_TREE_FIXING_TITLE" desc="Description for screen reader tree fixing feature." translateable = "false">
+    AXTree Fixing
+  </message>
+  <message name="IDS_SETTINGS_AX_TREE_FIXING_SUBTITLE" desc="Subtitle for screen reader tree fixing feature." translateable = "false">
+    Fix the AXTree
+  </message>
   <message name="IDS_SETTINGS_CAPTIONS_ENABLE_LIVE_CAPTION_TITLE" desc="Name of the setting to enable Live Caption feature.">
     Live Caption
   </message>

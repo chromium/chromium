@@ -294,6 +294,8 @@ void AddA11yStrings(content::WebUIDataSource* html_source) {
       {"overscrollHistoryNavigationSubtitle",
        IDS_SETTINGS_OVERSCROLL_HISTORY_NAVIGATION_SUBTITLE},
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+      {"axTreeFixingTitle", IDS_SETTINGS_AX_TREE_FIXING_TITLE},
+      {"axTreeFixingSubtitle", IDS_SETTINGS_AX_TREE_FIXING_SUBTITLE},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 

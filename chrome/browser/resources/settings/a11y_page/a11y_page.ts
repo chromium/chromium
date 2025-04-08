@@ -21,7 +21,6 @@ import '../settings_page/settings_subpage.js';
 // <if expr="is_win or is_linux or is_macosx">
 import './ax_annotations_section.js';
 // </if>
-
 // <if expr="is_win or is_macosx">
 import './live_caption_section.js';
 
@@ -119,6 +118,16 @@ export class SettingsA11yPageElement extends SettingsA11yPageElementBase {
         value: false,
       },
 
+      /**
+       * Whether to show the AxTreeFixing subpage.
+       */
+      showAxTreeFixingSection_: {
+        type: Boolean,
+        value: () => {
+          return loadTimeData.getBoolean('axTreeFixingEnabled');
+        },
+      },
+
       // <if expr="is_win or is_linux or is_macosx">
       /**
        * Whether to show the AxAnnotations subpage.
@@ -210,6 +219,7 @@ export class SettingsA11yPageElement extends SettingsA11yPageElementBase {
   private captionSettingsOpensExternally_: boolean;
   private hasScreenReader_: boolean;
   private showOverscrollHistoryNavigationToggle_: boolean;
+  private showAxTreeFixingSection_: boolean;
   // <if expr="is_win or is_linux or is_macosx">
   private showAxAnnotationsSection_: boolean;
   // </if>

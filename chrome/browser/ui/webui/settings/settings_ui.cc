@@ -125,6 +125,7 @@
 #include "printing/buildflags/buildflags.h"
 #include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/webui/webui_util.h"
 
@@ -246,6 +247,8 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
           CreateForProfile(profile));
   AddSettingsPageUIHandler(std::make_unique<LanguagesHandler>(profile));
 #endif  // BUILDFLAG(IS_CHROMEOS)
+  html_source->AddBoolean("axTreeFixingEnabled", base::FeatureList::IsEnabled(
+                                                     features::kAXTreeFixing));
 
   AddSettingsPageUIHandler(std::make_unique<AccessibilityMainHandler>());
   AddSettingsPageUIHandler(std::make_unique<BrowserLifetimeHandler>());
