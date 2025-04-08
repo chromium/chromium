@@ -655,12 +655,6 @@
       ]
     },
     {
-      // Enables bypassing CSP checks when we consume a preload.
-      // https://crbug.com/348442535
-      name: "BypassCSPForPreloads",
-      status: "experimental",
-    },
-    {
       // Bypasses the enforcement of the Page Embedded Permission Control
       // security checks. This flag is disabled by default and should only be
       // enabled in automated tests in order to allow them to avoid needing to

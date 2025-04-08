@@ -671,10 +671,9 @@ bool ResourceLoader::WillFollowRedirect(
         ResourceRequest::RedirectStatus::kFollowedRedirect);
 
     std::optional<ResourceRequestBlockedReason> blocked_reason =
-        Context().CanRequest(
-            resource_type, *new_request, new_url, options,
-            reporting_disposition, new_request->GetRedirectInfo(),
-            FetchParameters::HasPreloadedResponseCandidate(false));
+        Context().CanRequest(resource_type, *new_request, new_url, options,
+                             reporting_disposition,
+                             new_request->GetRedirectInfo());
 
     if (Context().CalculateIfAdSubresource(
             *new_request, std::nullopt /* alias_url */, resource_type,
@@ -972,10 +971,9 @@ void ResourceLoader::DidReceiveResponseInternal(
         ResourceRequest::RedirectStatus::kFollowedRedirect);
 
     std::optional<ResourceRequestBlockedReason> blocked_reason =
-        Context().CanRequest(
-            resource_type, ResourceRequest(initial_request), response_url,
-            options, ReportingDisposition::kReport, redirect_info,
-            FetchParameters::HasPreloadedResponseCandidate(false));
+        Context().CanRequest(resource_type, ResourceRequest(initial_request),
+                             response_url, options,
+                             ReportingDisposition::kReport, redirect_info);
     if (blocked_reason) {
       HandleError(ResourceError::CancelledDueToAccessCheckError(
           response_url, blocked_reason.value()));

@@ -247,9 +247,7 @@ void WorkerFetchContext::ModifyRequestForMixedContentUpgrade(
 
 void WorkerFetchContext::PopulateResourceRequestBeforeCacheAccess(
     const ResourceLoaderOptions& options,
-    ResourceRequest& request,
-    FetchParameters::HasPreloadedResponseCandidate
-        has_preloaded_response_candidate) {
+    ResourceRequest& request) {
   ModifyRequestForMixedContentUpgrade(request);
   request.SetTopFrameOrigin(GetTopFrameOrigin());
 }

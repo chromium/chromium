@@ -1390,6 +1390,7 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
   }
 
   auto preloads_list_iterator = preloads_.end();
+  bool is_preloaded_response_candidate_present = false;
   bool is_stale_revalidation = params.IsStaleRevalidation();
 
   if (RuntimeEnabledFeatures::PreloadLinkRelDataUrlsEnabled()) {
@@ -1397,8 +1398,8 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
     if (!is_stale_revalidation && !archive_) {
       preloads_list_iterator =
           preloads_.find(PreloadKey(params.Url(), resource_type));
-      params.SetIsPreloadedResponseCandidatePresent(preloads_list_iterator !=
-                                                    preloads_.end());
+      is_preloaded_response_candidate_present =
+          preloads_list_iterator != preloads_.end();
     }
   }
 
@@ -1414,7 +1415,7 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
 
   if (!is_stale_revalidation &&
       (archive_ || (is_data_url && defer_policy != DeferPolicy::kDefer))) {
-    if (!(is_data_url && params.IsPreloadedResponseCandidatePresent())) {
+    if (!(is_data_url && is_preloaded_response_candidate_present)) {
       prepare_helper.UpgradeForLoaderIfNecessary(pauser);
       resource = CreateResourceForStaticData(params, factory);
       if (resource) {
@@ -1436,7 +1437,7 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
 
   if (!is_stale_revalidation && !resource) {
     if (!prepare_helper.WasUpgradeForLoaderCalled() &&
-        (params.IsPreloadedResponseCandidatePresent() ||
+        (is_preloaded_response_candidate_present ||
          (!RuntimeEnabledFeatures::PreloadLinkRelDataUrlsEnabled() &&
           preloads_.find(PreloadKey(params.Url(), resource_type)) !=
               preloads_.end()))) {
@@ -2993,8 +2994,7 @@ void ResourceFetcher::EmulateLoadStartedForInspector(
   Context().CanRequest(resource->GetType(), last_resource_request,
                        last_resource_request.Url(), params.Options(),
                        ReportingDisposition::kReport,
-                       last_resource_request.GetRedirectInfo(),
-                       params.IsPreloadedResponseCandidatePresent());
+                       last_resource_request.GetRedirectInfo());
   if (resource->GetStatus() == ResourceStatus::kNotStarted ||
       resource->GetStatus() == ResourceStatus::kPending) {
     // If the loading has not started, then we return here because loading

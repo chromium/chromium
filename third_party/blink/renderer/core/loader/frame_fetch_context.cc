@@ -836,9 +836,7 @@ void FrameFetchContext::WillSendRequest(ResourceRequest& resource_request) {
 
 void FrameFetchContext::PopulateResourceRequestBeforeCacheAccess(
     const ResourceLoaderOptions& options,
-    ResourceRequest& request,
-    FetchParameters::HasPreloadedResponseCandidate
-        has_preloaded_response_candidate) {
+    ResourceRequest& request) {
   if (!GetResourceFetcherProperties().IsDetached()) {
     probe::SetDevToolsIds(Probe(), request, options.initiator_info);
   }
@@ -1313,9 +1311,8 @@ std::optional<ResourceRequestBlockedReason> FrameFetchContext::CanRequest(
     const KURL& url,
     const ResourceLoaderOptions& options,
     ReportingDisposition reporting_disposition,
-    base::optional_ref<const ResourceRequest::RedirectInfo> redirect_info,
-    FetchParameters::HasPreloadedResponseCandidate
-        has_preloaded_response_candidate) const {
+    base::optional_ref<const ResourceRequest::RedirectInfo> redirect_info)
+    const {
   const bool detached = GetResourceFetcherProperties().IsDetached();
   if (!detached && document_->IsFreezingInProgress() &&
       !resource_request.GetKeepalive()) {
@@ -1329,8 +1326,7 @@ std::optional<ResourceRequestBlockedReason> FrameFetchContext::CanRequest(
   }
   std::optional<ResourceRequestBlockedReason> blocked_reason =
       BaseFetchContext::CanRequest(type, resource_request, url, options,
-                                   reporting_disposition, redirect_info,
-                                   has_preloaded_response_candidate);
+                                   reporting_disposition, redirect_info);
   if (blocked_reason) {
     return blocked_reason;
   }

@@ -85,9 +85,7 @@ class WorkerFetchContext final : public BaseFetchContext {
   void ModifyRequestForMixedContentUpgrade(ResourceRequest&) override;
   void PopulateResourceRequestBeforeCacheAccess(
       const ResourceLoaderOptions& options,
-      ResourceRequest& request,
-      FetchParameters::HasPreloadedResponseCandidate
-          has_preloaded_response_candidate) override;
+      ResourceRequest& request) override;
   void WillSendRequest(ResourceRequest& request) override;
   void UpgradeResourceRequestForLoader(
       ResourceType,

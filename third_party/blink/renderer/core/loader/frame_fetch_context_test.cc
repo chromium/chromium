@@ -232,32 +232,28 @@ class FrameFetchContextTestBase : public testing::Test {
   Persistent<DummyFrameOwner> owner;
 };
 
-class FrameFetchContextTest
-    : public FrameFetchContextTestBase,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+class FrameFetchContextTest : public FrameFetchContextTestBase,
+                              public testing::WithParamInterface<bool> {
  protected:
   FrameFetchContextTest()
-      : preload_link_rel_data_urls_(PreloadLinkRelDataUrlsEnabled()),
-        bypass_csp_for_preloads_(std::get<1>(GetParam())) {}
+      : preload_link_rel_data_urls_(PreloadLinkRelDataUrlsEnabled()) {}
 
-  bool PreloadLinkRelDataUrlsEnabled() { return std::get<0>(GetParam()); }
+  bool PreloadLinkRelDataUrlsEnabled() { return GetParam(); }
 
  private:
   ScopedPreloadLinkRelDataUrlsForTest preload_link_rel_data_urls_;
-  ScopedBypassCSPForPreloadsForTest bypass_csp_for_preloads_;
 };
 
 INSTANTIATE_TEST_SUITE_P(FrameFetchContextTest,
                          FrameFetchContextTest,
-                         testing::Combine(testing::Bool(), testing::Bool()));
+                         testing::Bool());
 
 class FrameFetchContextSubresourceFilterTest
     : public FrameFetchContextTestBase,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+      public testing::WithParamInterface<bool> {
  protected:
   FrameFetchContextSubresourceFilterTest()
-      : preload_link_rel_data_urls_(std::get<0>(GetParam())),
-        bypass_csp_for_preloads_(std::get<1>(GetParam())) {}
+      : preload_link_rel_data_urls_(GetParam()) {}
 
   void SetUp() override {
     FrameFetchContextTestBase::SetUp();
@@ -302,7 +298,6 @@ class FrameFetchContextSubresourceFilterTest
 
  private:
   ScopedPreloadLinkRelDataUrlsForTest preload_link_rel_data_urls_;
-  ScopedBypassCSPForPreloadsForTest bypass_csp_for_preloads_;
 
   std::optional<ResourceRequestBlockedReason> CanRequestInternal(
       ReportingDisposition reporting_disposition,
@@ -316,10 +311,9 @@ class FrameFetchContextSubresourceFilterTest
                                             .GetSecurityOrigin());
     ResourceLoaderOptions options(nullptr /* world */);
     // DJKim
-    return GetFetchContext()->CanRequest(
-        ResourceType::kImage, resource_request, input_url, options,
-        reporting_disposition, std::nullopt,
-        FetchParameters::HasPreloadedResponseCandidate(false));
+    return GetFetchContext()->CanRequest(ResourceType::kImage, resource_request,
+                                         input_url, options,
+                                         reporting_disposition, std::nullopt);
   }
 
   int filtered_load_callback_counter_;
@@ -327,16 +321,15 @@ class FrameFetchContextSubresourceFilterTest
 
 INSTANTIATE_TEST_SUITE_P(FrameFetchContextSubresourceFilterTest,
                          FrameFetchContextSubresourceFilterTest,
-                         testing::Combine(testing::Bool(), testing::Bool()));
+                         testing::Bool());
 
 // This test class sets up a mock frame loader client.
 class FrameFetchContextMockedLocalFrameClientTest
     : public FrameFetchContextTestBase,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+      public testing::WithParamInterface<bool> {
  protected:
   FrameFetchContextMockedLocalFrameClientTest()
-      : preload_link_rel_data_urls_(std::get<0>(GetParam())),
-        bypass_csp_for_preloads_(std::get<1>(GetParam())) {}
+      : preload_link_rel_data_urls_(GetParam()) {}
 
   void SetUp() override {
     url = KURL("https://example.test/foo");
@@ -362,21 +355,19 @@ class FrameFetchContextMockedLocalFrameClientTest
 
  private:
   ScopedPreloadLinkRelDataUrlsForTest preload_link_rel_data_urls_;
-  ScopedBypassCSPForPreloadsForTest bypass_csp_for_preloads_;
 };
 
 INSTANTIATE_TEST_SUITE_P(FrameFetchContextMockedLocalFrameClientTest,
                          FrameFetchContextMockedLocalFrameClientTest,
-                         testing::Combine(testing::Bool(), testing::Bool()));
+                         testing::Bool());
 
 class FrameFetchContextModifyRequestTest
     : public FrameFetchContextTestBase,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+      public testing::WithParamInterface<bool> {
  public:
   FrameFetchContextModifyRequestTest()
       : example_origin(SecurityOrigin::Create(KURL("https://example.test/"))),
-        preload_link_rel_data_urls_(std::get<0>(GetParam())),
-        bypass_csp_for_preloads_(std::get<1>(GetParam())) {}
+        preload_link_rel_data_urls_(GetParam()) {}
 
  protected:
   void ModifyRequestForMixedContentUpgrade(
@@ -477,12 +468,11 @@ class FrameFetchContextModifyRequestTest
 
  private:
   ScopedPreloadLinkRelDataUrlsForTest preload_link_rel_data_urls_;
-  ScopedBypassCSPForPreloadsForTest bypass_csp_for_preloads_;
 };
 
 INSTANTIATE_TEST_SUITE_P(FrameFetchContextModifyRequestTest,
                          FrameFetchContextModifyRequestTest,
-                         testing::Combine(testing::Bool(), testing::Bool()));
+                         testing::Bool());
 
 TEST_P(FrameFetchContextModifyRequestTest, UpgradeInsecureResourceRequests) {
   struct TestCase {
@@ -655,11 +645,10 @@ TEST_P(FrameFetchContextModifyRequestTest, SendUpgradeInsecureRequestHeader) {
 
 class FrameFetchContextHintsTest
     : public FrameFetchContextTestBase,
-      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   FrameFetchContextHintsTest()
-      : preload_link_rel_data_urls_(std::get<1>(GetParam())),
-        bypass_csp_for_preloads_(std::get<2>(GetParam())) {
+      : preload_link_rel_data_urls_(std::get<1>(GetParam())) {
     std::vector<base::test::FeatureRef> enabled_features = {};
     std::vector<base::test::FeatureRef> disabled_features = {};
     if (std::get<0>(GetParam())) {
@@ -726,13 +715,11 @@ class FrameFetchContextHintsTest
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   ScopedPreloadLinkRelDataUrlsForTest preload_link_rel_data_urls_;
-  ScopedBypassCSPForPreloadsForTest bypass_csp_for_preloads_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
                          FrameFetchContextHintsTest,
                          testing::Combine(testing::ValuesIn({false, true}),
-                                          testing::Bool(),
                                           testing::Bool()));
 // Verify that the client hints should be attached for subresources fetched
 // over secure transport. Tests when the persistent client hint feature is
@@ -1682,39 +1669,28 @@ TEST_P(FrameFetchContextTest, TopFrameOriginDetached) {
 }
 
 TEST_P(FrameFetchContextTest, SetTopFrameOriginBeforeCacheAccess) {
-  const bool has_preloaded_response_candidate[] = {true, false};
-  for (const auto test_case : has_preloaded_response_candidate) {
-    if (!PreloadLinkRelDataUrlsEnabled() && test_case) {
-      // `has_preloaded_response_candidate` is not set to "true" if the
-      // PreloadLinkRelDataUrls feature is disabled, so skip this case.
-      continue;
-    }
+  const KURL document_url("https://www2.example.com/foo/bar");
+  RecreateFetchContext(document_url);
+  const SecurityOrigin* origin = document->domWindow()->GetSecurityOrigin();
 
-    const KURL document_url("https://www2.example.com/foo/bar");
-    RecreateFetchContext(document_url);
-    const SecurityOrigin* origin = document->domWindow()->GetSecurityOrigin();
+  const KURL url("https://www.example.com/hoge/fuga");
+  ResourceRequest request(url);
+  request.SetRequestorOrigin(origin);
 
-    const KURL url("https://www.example.com/hoge/fuga");
-    ResourceRequest request(url);
-    request.SetRequestorOrigin(origin);
+  TestResourceRequestContext request_context;
+  FetchParameters fetch_parameters =
+      FetchParameters::CreateForTest(std::move(request));
 
-    TestResourceRequestContext request_context;
-    FetchParameters fetch_parameters =
-        FetchParameters::CreateForTest(std::move(request));
-
-    fetch_parameters.SetIsPreloadedResponseCandidatePresent(test_case);
-
-    std::optional<ResourceRequestBlockedReason> block_reason =
-        PrepareResourceRequestForCacheAccess(
-            ResourceType::kImage,
-            GetFetchContext()
-                ->GetResourceFetcherProperties()
-                .GetFetchClientSettingsObject(),
-            /*bundle_url_for_uuid_resources=*/KURL(), request_context,
-            *GetFetchContext(), fetch_parameters);
-    EXPECT_EQ(std::nullopt, block_reason);
-    EXPECT_EQ(origin, fetch_parameters.GetResourceRequest().TopFrameOrigin());
-  }
+  std::optional<ResourceRequestBlockedReason> block_reason =
+      PrepareResourceRequestForCacheAccess(
+          ResourceType::kImage,
+          GetFetchContext()
+              ->GetResourceFetcherProperties()
+              .GetFetchClientSettingsObject(),
+          /*bundle_url_for_uuid_resources=*/KURL(), request_context,
+          *GetFetchContext(), fetch_parameters);
+  EXPECT_EQ(std::nullopt, block_reason);
+  EXPECT_EQ(origin, fetch_parameters.GetResourceRequest().TopFrameOrigin());
 }
 
 // Tests that CanRequestCanRequestBasedOnSubresourceFilterOnly will block ads
@@ -1780,11 +1756,10 @@ TEST_P(FrameFetchContextSubresourceFilterTest,
 
 class FrameFetchContextDisableReduceAcceptLanguageTest
     : public FrameFetchContextTestBase,
-      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   FrameFetchContextDisableReduceAcceptLanguageTest()
-      : preload_link_rel_data_urls_(std::get<1>(GetParam())),
-        bypass_csp_for_preloads_(std::get<2>(GetParam())) {
+      : preload_link_rel_data_urls_(std::get<1>(GetParam())) {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{},
         /*disabled_features=*/{network::features::kReduceAcceptLanguage});
@@ -1808,13 +1783,11 @@ class FrameFetchContextDisableReduceAcceptLanguageTest
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   ScopedPreloadLinkRelDataUrlsForTest preload_link_rel_data_urls_;
-  ScopedBypassCSPForPreloadsForTest bypass_csp_for_preloads_;
 };
 
 INSTANTIATE_TEST_SUITE_P(FrameFetchContextDisableReduceAcceptLanguageTest,
                          FrameFetchContextDisableReduceAcceptLanguageTest,
                          testing::Combine(testing::Bool(),
-                                          testing::Bool(),
                                           testing::Bool()));
 
 TEST_P(FrameFetchContextDisableReduceAcceptLanguageTest,

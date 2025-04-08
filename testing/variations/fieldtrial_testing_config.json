@@ -18245,9 +18245,6 @@
                     "enable_features": [
                         "DocumentPolicyExpectNoLinkedResources",
                         "PreloadLinkRelDataUrls"
-                    ],
-                    "disable_features": [
-                        "BypassCSPForPreloads"
                     ]
                 }
             ]
