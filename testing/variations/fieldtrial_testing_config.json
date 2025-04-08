@@ -14190,6 +14190,21 @@
             ]
         }
     ],
+    "Lobster": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "Lobster"
+                    ]
+                }
+            ]
+        }
+    ],
     "LobsterDogfood": [
         {
             "platforms": [
