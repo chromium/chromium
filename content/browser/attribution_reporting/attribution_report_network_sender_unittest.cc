@@ -491,7 +491,6 @@ TEST_F(AttributionReportNetworkSenderTest, ManyReports_AllSentSuccessfully) {
   EXPECT_EQ(0, test_url_loader_factory_.NumPending());
 }
 
-
 TEST_F(AttributionReportNetworkSenderTest, ReportRedirects) {
   auto report = DefaultEventLevelReport();
   EXPECT_CALL(callback_,

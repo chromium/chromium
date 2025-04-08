@@ -790,7 +790,6 @@ std::ostream& operator<<(std::ostream& out,
       << ",source_event_id=" << data.source_event_id
       << ",source_type=" << data.source_type << ",source_debug_key=";
 
-
   return out << ",randomized_response_rate=" << data.randomized_response_rate
              << ",attributed_truthfully=" << data.attributed_truthfully << "}";
 }

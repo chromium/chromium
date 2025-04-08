@@ -2673,17 +2673,13 @@ TEST_F(AttributionManagerImplTest, HandleTrigger_DebugKey) {
     }
     ScopedContentBrowserClientSetting setting(&browser_client);
 
-    attribution_manager_->HandleSource(SourceBuilder()
-                                           .SetExpiry(kImpressionExpiry)
-                                           .Build(),
-                                       kFrameId);
+    attribution_manager_->HandleSource(
+        SourceBuilder().SetExpiry(kImpressionExpiry).Build(), kFrameId);
 
     EXPECT_THAT(StoredSources(), SizeIs(1));
     EXPECT_CALL(observer, OnTriggerHandled(test_case.expected_cleared_key, _));
     attribution_manager_->HandleTrigger(
-        TriggerBuilder()
-            .SetDebugKey(test_case.input_debug_key)
-            .Build(),
+        TriggerBuilder().SetDebugKey(test_case.input_debug_key).Build(),
         kFrameId);
     EXPECT_THAT(
         StoredReports(),
@@ -3127,10 +3123,7 @@ TEST_F(AttributionManagerImplTest, TriggerVerboseDebugReport_ReportSent) {
   // Trigger registered outside a fenced frame tree failed with debug reporting
   // but debug is not allowed, therefore no debug report is sent.
   attribution_manager_->HandleTrigger(
-      TriggerBuilder()
-          .SetDebugReporting(true)
-          .Build(),
-      kFrameId);
+      TriggerBuilder().SetDebugReporting(true).Build(), kFrameId);
   task_environment_.RunUntilIdle();
 
   checkpoint.Call(1);
@@ -3139,10 +3132,8 @@ TEST_F(AttributionManagerImplTest, TriggerVerboseDebugReport_ReportSent) {
 
   // Trigger registered outside a fenced frame tree failed with debug
   // reporting and debug cookie is set.
-  attribution_manager_->HandleTrigger(TriggerBuilder()
-                                          .SetDebugReporting(true)
-                                          .Build(),
-                                      kFrameId);
+  attribution_manager_->HandleTrigger(
+      TriggerBuilder().SetDebugReporting(true).Build(), kFrameId);
   task_environment_.RunUntilIdle();
 
   // kTriggerNoMatchingSource = 6
@@ -3263,20 +3254,15 @@ TEST_F(AttributionManagerImplCookieBasedDebugReportTest,
   // Source registered outside a fenced frame failed with debug reporting but
   // debug is not allowed, therefore no debug report is sent.
   attribution_manager_->HandleSource(
-      SourceBuilder()
-          .SetDebugReporting(true)
-          .Build(),
-      kFrameId);
+      SourceBuilder().SetDebugReporting(true).Build(), kFrameId);
   task_environment_.RunUntilIdle();
 
   checkpoint.Call(1);
 
   // Source registered outside a fenced frame with debug reporting and debug is
   // allowed.
-  attribution_manager_->HandleSource(SourceBuilder()
-                                         .SetDebugReporting(true)
-                                         .Build(),
-                                     kFrameId);
+  attribution_manager_->HandleSource(
+      SourceBuilder().SetDebugReporting(true).Build(), kFrameId);
   task_environment_.RunUntilIdle();
 }
 
@@ -3307,10 +3293,8 @@ TEST_F(AttributionManagerImplCookieBasedDebugReportTest,
   attribution_manager_->HandleSource(SourceBuilder().Build(), kFrameId);
   EXPECT_THAT(StoredSources(), SizeIs(1));
 
-  attribution_manager_->HandleSource(SourceBuilder()
-                                         .SetDebugReporting(true)
-                                         .Build(),
-                                     kFrameId);
+  attribution_manager_->HandleSource(
+      SourceBuilder().SetDebugReporting(true).Build(), kFrameId);
   EXPECT_THAT(StoredSources(), SizeIs(1));
 
   task_environment_.RunUntilIdle();

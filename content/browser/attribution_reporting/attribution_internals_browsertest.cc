@@ -440,8 +440,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
       obs.observe(regTable, {childList: true, subtree: true, characterData: true});
     }
   )";
-  ASSERT_TRUE(ExecJsInWebUI(
-      JsReplace(kScript, kMaxUint64String, kCompleteTitle)));
+  ASSERT_TRUE(
+      ExecJsInWebUI(JsReplace(kScript, kMaxUint64String, kCompleteTitle)));
 
   TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle);
   manager()->NotifySourcesChanged();

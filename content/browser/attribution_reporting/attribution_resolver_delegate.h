@@ -57,7 +57,8 @@ class CONTENT_EXPORT AttributionResolverDelegate {
       delete;
 
   AttributionResolverDelegate(AttributionResolverDelegate&&) = delete;
-  AttributionResolverDelegate& operator=(AttributionResolverDelegate&&) = delete;
+  AttributionResolverDelegate& operator=(AttributionResolverDelegate&&) =
+      delete;
 
   // Returns the time an event-level report should be sent for a given trigger
   // time and its corresponding source.

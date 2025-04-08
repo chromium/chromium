@@ -460,7 +460,6 @@ class AttributionInteropParser {
                           std::move(randomized_response),
                           std::move(null_aggregatable_reports_days),
                           debug_permission));
-
                 });
           });
     }
