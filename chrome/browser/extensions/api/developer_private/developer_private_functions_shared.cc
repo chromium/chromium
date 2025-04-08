@@ -20,11 +20,13 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/browser/ui/safety_hub/menu_notification_service_factory.h"
+#include "chrome/grit/generated_resources.h"
 #include "content/public/common/drop_data.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/path_util.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/ui_util.h"
 #include "extensions/browser/user_script_manager.h"
@@ -355,6 +357,36 @@ void DeveloperPrivateGetExtensionInfoFunction::OnInfosGenerated(
   DCHECK_LE(1u, list.size());
   Respond(list.empty() ? Error(kNoSuchExtensionError)
                        : WithArguments(list[0].ToValue()));
+}
+
+DeveloperPrivateGetExtensionSizeFunction::
+    DeveloperPrivateGetExtensionSizeFunction() = default;
+
+DeveloperPrivateGetExtensionSizeFunction::
+    ~DeveloperPrivateGetExtensionSizeFunction() = default;
+
+ExtensionFunction::ResponseAction
+DeveloperPrivateGetExtensionSizeFunction::Run() {
+  std::optional<developer::GetExtensionSize::Params> params =
+      developer::GetExtensionSize::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  const Extension* extension = GetExtensionById(params->id);
+  if (!extension) {
+    return RespondNow(Error(kNoSuchExtensionError));
+  }
+
+  extensions::path_util::CalculateAndFormatExtensionDirectorySize(
+      extension->path(), IDS_APPLICATION_INFO_SIZE_SMALL_LABEL,
+      base::BindOnce(
+          &DeveloperPrivateGetExtensionSizeFunction::OnSizeCalculated, this));
+
+  return RespondLater();
+}
+
+void DeveloperPrivateGetExtensionSizeFunction::OnSizeCalculated(
+    const std::u16string& size) {
+  Respond(WithArguments(size));
 }
 
 DeveloperPrivateGetProfileConfigurationFunction::

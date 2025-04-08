@@ -140,6 +140,26 @@ class DeveloperPrivateGetExtensionInfoFunction
   std::unique_ptr<ExtensionInfoGenerator> info_generator_;
 };
 
+class DeveloperPrivateGetExtensionSizeFunction
+    : public DeveloperPrivateAPIFunction {
+ public:
+  DeveloperPrivateGetExtensionSizeFunction();
+
+  DeveloperPrivateGetExtensionSizeFunction(
+      const DeveloperPrivateGetExtensionSizeFunction&) = delete;
+  DeveloperPrivateGetExtensionSizeFunction& operator=(
+      const DeveloperPrivateGetExtensionSizeFunction&) = delete;
+
+  DECLARE_EXTENSION_FUNCTION("developerPrivate.getExtensionSize",
+                             DEVELOPERPRIVATE_GETEXTENSIONSIZE)
+
+ private:
+  ~DeveloperPrivateGetExtensionSizeFunction() override;
+  ResponseAction Run() override;
+
+  void OnSizeCalculated(const std::u16string& size);
+};
+
 class DeveloperPrivateGetProfileConfigurationFunction
     : public DeveloperPrivateAPIFunction {
  public:

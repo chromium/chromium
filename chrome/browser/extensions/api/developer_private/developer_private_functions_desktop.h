@@ -38,26 +38,6 @@ namespace extensions {
 
 namespace api {
 
-class DeveloperPrivateGetExtensionSizeFunction
-    : public DeveloperPrivateAPIFunction {
- public:
-  DeveloperPrivateGetExtensionSizeFunction();
-
-  DeveloperPrivateGetExtensionSizeFunction(
-      const DeveloperPrivateGetExtensionSizeFunction&) = delete;
-  DeveloperPrivateGetExtensionSizeFunction& operator=(
-      const DeveloperPrivateGetExtensionSizeFunction&) = delete;
-
-  DECLARE_EXTENSION_FUNCTION("developerPrivate.getExtensionSize",
-                             DEVELOPERPRIVATE_GETEXTENSIONSIZE)
-
- private:
-  ~DeveloperPrivateGetExtensionSizeFunction() override;
-  ResponseAction Run() override;
-
-  void OnSizeCalculated(const std::u16string& size);
-};
-
 class DeveloperPrivateReloadFunction : public DeveloperPrivateAPIFunction,
                                        public ExtensionRegistryObserver,
                                        public LoadErrorReporter::Observer {

@@ -6,9 +6,6 @@
 
 #include "extensions/browser/extension_function.h"
 
-DEFINE_UNIMPLEMENTED_EXTENSION_FUNCTION(
-    DeveloperPrivateGetExtensionSizeFunction,
-    "developerPrivate.getExtensionSize")
 DEFINE_UNIMPLEMENTED_EXTENSION_FUNCTION(DeveloperPrivateReloadFunction,
                                         "developerPrivate.reload")
 DEFINE_UNIMPLEMENTED_EXTENSION_FUNCTION(DeveloperPrivateLoadUnpackedFunction,

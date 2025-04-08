@@ -196,36 +196,6 @@ namespace Reload = api::developer_private::Reload;
 
 namespace api {
 
-DeveloperPrivateGetExtensionSizeFunction::
-    DeveloperPrivateGetExtensionSizeFunction() = default;
-
-DeveloperPrivateGetExtensionSizeFunction::
-    ~DeveloperPrivateGetExtensionSizeFunction() = default;
-
-ExtensionFunction::ResponseAction
-DeveloperPrivateGetExtensionSizeFunction::Run() {
-  std::optional<developer::GetExtensionSize::Params> params =
-      developer::GetExtensionSize::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-
-  const Extension* extension = GetExtensionById(params->id);
-  if (!extension) {
-    return RespondNow(Error(kNoSuchExtensionError));
-  }
-
-  extensions::path_util::CalculateAndFormatExtensionDirectorySize(
-      extension->path(), IDS_APPLICATION_INFO_SIZE_SMALL_LABEL,
-      base::BindOnce(
-          &DeveloperPrivateGetExtensionSizeFunction::OnSizeCalculated, this));
-
-  return RespondLater();
-}
-
-void DeveloperPrivateGetExtensionSizeFunction::OnSizeCalculated(
-    const std::u16string& size) {
-  Respond(WithArguments(size));
-}
-
 DeveloperPrivateReloadFunction::DeveloperPrivateReloadFunction() = default;
 DeveloperPrivateReloadFunction::~DeveloperPrivateReloadFunction() = default;
 
