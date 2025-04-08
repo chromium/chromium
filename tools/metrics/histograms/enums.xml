@@ -8942,6 +8942,7 @@ from previous Chrome versions.
   <int value="-2048395454" label="ChromeDuetLabeled:disabled"/>
   <int value="-2047832738" label="enable-system-timezone-automatic-detection"/>
   <int value="-2047822258" label="enable-avfoundation"/>
+  <int value="-2047435906" label="MiniOriginBar:enabled"/>
   <int value="-2047363526"
       label="DiacriticsOnPhysicalKeyboardLongpress:enabled"/>
   <int value="-2047190657" label="SyncUserConsentSeparateType:enabled"/>
@@ -18021,6 +18022,7 @@ from previous Chrome versions.
   <int value="1450567138" label="CCTRevampedBranding:disabled"/>
   <int value="1450865360" label="webrtc-hw-encoding:enabled"/>
   <int value="1451065780" label="MediaFoundationClearRendering:enabled"/>
+  <int value="1451075792" label="MiniOriginBar:disabled"/>
   <int value="1451146739"
       label="CellularBypassESimInstallationConnectivityCheck:disabled"/>
   <int value="1451160278"

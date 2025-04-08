@@ -7262,6 +7262,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          chrome::android::kMayLaunchUrlUsesSeparateStoragePartition)},
 
+    {"mini-origin-bar", flag_descriptions::kMiniOriginBarName,
+     flag_descriptions::kMiniOriginBarDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kMiniOriginBar)},
+
     {"enable-segmentation-platform-android-home-module-ranker-v2",
      flag_descriptions::kSegmentationPlatformAndroidHomeModuleRankerV2Name,
      flag_descriptions::

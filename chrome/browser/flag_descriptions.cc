@@ -4747,6 +4747,11 @@ const char kMayLaunchUrlUsesSeparateStoragePartitionDescription[] =
     "url given to it. This is an experimental feature and may reduce "
     "performance.";
 
+const char kMiniOriginBarName[] = "Mini Origin Bar";
+const char kMiniOriginBarDescription[] =
+    "Show a mini origin bar above the keyboard when focusing a form field. "
+    "Applicable to bottom toolbar on Android only.";
+
 const char kSegmentationPlatformAndroidHomeModuleRankerV2Name[] =
     "Segmentation platform Android home module ranker V2";
 const char kSegmentationPlatformAndroidHomeModuleRankerV2Description[] =
