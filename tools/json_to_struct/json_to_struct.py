@@ -74,7 +74,10 @@ try:
 finally:
   sys.path.pop(0)
 
-from aggregation import GetAggregationDetails, AggregationKind
+from aggregation import AggregationKind
+from aggregation import GenerateCCAggregation
+from aggregation import GenerateHHAggregation
+from aggregation import GetAggregationDetails
 import class_generator
 import element_generator
 import java_element_generator
@@ -155,17 +158,9 @@ def _GenerateH(basepath, fileroot, head, namespace, schema, description):
       for element_name, element in description['elements'].items():
         f.write(u'extern const %s %s;\n' % (schema['type_name'], element_name))
 
-    if aggregation.kind == AggregationKind.ARRAY:
-      f.write(u'\n')
-      f.write(f'extern const base::span<const {schema["type_name"]}* const> '
-              f'{aggregation.name};\n')
-
-    if aggregation.kind == AggregationKind.MAP:
-      f.write('\n')
-      f.write(f'extern const base::fixed_flat_map<{aggregation.map_key_type}, '
-              f'const {schema["type_name"]}*, '
-              f'{len(aggregation.GetSortedMapElements())}> '
-              f'{aggregation.name};\n')
+    aggregated = GenerateHHAggregation(schema['type_name'], aggregation)
+    if aggregated:
+      f.write(aggregated)
 
     if namespace:
       f.write(u'\n')
@@ -213,27 +208,9 @@ def _GenerateCC(basepath, fileroot, head, namespace, schema, description):
     if not aggregation.export_items:
       f.write('\n}  // anonymous namespace \n\n')
 
-    if aggregation.kind == AggregationKind.ARRAY:
-      f.write('\n')
-      f.write(f'const {schema["type_name"]}* '
-              f'const array_{aggregation.name}[] = {{\n')
-
-      for element_name, _ in description['elements'].items():
-        f.write('  &%s,\n' % element_name)
-      f.write('};\n')
-      f.write(f'const base::span<const {schema["type_name"]}* const> '
-              f'{aggregation.name}{{array_{aggregation.name}}};\n')
-
-    if aggregation.kind == AggregationKind.MAP:
-      f.write('\n')
-      f.write(f'const auto {aggregation.name} =\n'
-              f'    base::MakeFixedFlatMap<{aggregation.map_key_type}, '
-              f'const {schema["type_name"]}*>({{\n')
-
-      for (alias_name, element_name) in aggregation.GetSortedMapElements():
-        f.write(f'  {{{aggregation.map_key_type}("{alias_name}"), '
-                f'&{element_name}}},\n')
-      f.write('});\n')
+    aggregated = GenerateCCAggregation(schema['type_name'], aggregation)
+    if aggregated:
+      f.write(aggregated)
 
     if namespace:
       f.write(u'\n')
