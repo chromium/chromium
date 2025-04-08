@@ -95,6 +95,8 @@ class BookmarkBubbleViewTestBase : public BrowserWithTestWindowTest {
     BookmarkBubbleView::bookmark_bubble()->GetWidget()->Close();
     destroyed_waiter.Wait();
 
+    bookmark_model_ = nullptr;
+
     anchor_widget_.reset();
 
     bookmark_node_ = nullptr;
@@ -161,8 +163,7 @@ class BookmarkBubbleViewTestBase : public BrowserWithTestWindowTest {
  private:
   raw_ptr<const bookmarks::BookmarkNode> bookmark_node_;
   views::UniqueWidgetPtr anchor_widget_;
-  raw_ptr<BookmarkModel, DanglingUntriaged> bookmark_model_;
-  raw_ptr<MockCommerceUiTabHelper, DanglingUntriaged> mock_tab_helper_;
+  raw_ptr<BookmarkModel> bookmark_model_;
 };
 
 class BookmarkBubbleViewTest : public BookmarkBubbleViewTestBase {
@@ -308,15 +309,15 @@ TEST_P(PriceTrackingViewFeatureFlagTest, PriceTrackingViewCreation) {
   const bool is_feature_enabled = GetParam();
   mock_shopping_service->SetIsShoppingListEligible(is_feature_enabled);
 
-  auto* mock_tab_helper_ =
+  auto* mock_tab_helper =
       static_cast<MockCommerceUiTabHelper*>(browser()
                                                 ->GetActiveTabInterface()
                                                 ->GetTabFeatures()
                                                 ->commerce_ui_tab_helper());
-  const gfx::Image image = mock_tab_helper_->GetValidProductImage();
-  ON_CALL(*mock_tab_helper_, GetProductImage)
+  const gfx::Image image = mock_tab_helper->GetValidProductImage();
+  ON_CALL(*mock_tab_helper, GetProductImage)
       .WillByDefault(
-          testing::ReturnRef(mock_tab_helper_->GetValidProductImage()));
+          testing::ReturnRef(mock_tab_helper->GetValidProductImage()));
 
   CreateBubbleView();
 
