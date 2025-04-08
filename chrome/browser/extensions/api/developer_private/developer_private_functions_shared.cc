@@ -16,6 +16,7 @@
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
+#include "chrome/browser/extensions/updater/extension_updater.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/browser/ui/safety_hub/menu_notification_service_factory.h"
@@ -268,6 +269,27 @@ const Extension* DeveloperPrivateAPIFunction::GetEnabledExtensionById(
   return ExtensionRegistry::Get(browser_context())
       ->enabled_extensions()
       .GetByID(id);
+}
+
+DeveloperPrivateAutoUpdateFunction::~DeveloperPrivateAutoUpdateFunction() =
+    default;
+
+ExtensionFunction::ResponseAction DeveloperPrivateAutoUpdateFunction::Run() {
+  Profile* profile = Profile::FromBrowserContext(browser_context());
+  ExtensionUpdater* updater = ExtensionUpdater::Get(profile);
+  if (updater->enabled()) {
+    ExtensionUpdater::CheckParams params;
+    params.fetch_priority = DownloadFetchPriority::kForeground;
+    params.install_immediately = true;
+    params.callback =
+        base::BindOnce(&DeveloperPrivateAutoUpdateFunction::OnComplete, this);
+    updater->CheckNow(std::move(params));
+  }
+  return RespondLater();
+}
+
+void DeveloperPrivateAutoUpdateFunction::OnComplete() {
+  Respond(NoArguments());
 }
 
 DeveloperPrivateGetExtensionsInfoFunction::

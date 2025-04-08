@@ -6,8 +6,6 @@
 
 #include "extensions/browser/extension_function.h"
 
-DEFINE_UNIMPLEMENTED_EXTENSION_FUNCTION(DeveloperPrivateAutoUpdateFunction,
-                                        "developerPrivate.autoUpdate")
 DEFINE_UNIMPLEMENTED_EXTENSION_FUNCTION(
     DeveloperPrivateGetExtensionSizeFunction,
     "developerPrivate.getExtensionSize")

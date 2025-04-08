@@ -81,6 +81,19 @@ class DeveloperPrivateAPIFunction : public ExtensionFunction {
   const Extension* GetEnabledExtensionById(const ExtensionId& id);
 };
 
+class DeveloperPrivateAutoUpdateFunction : public DeveloperPrivateAPIFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("developerPrivate.autoUpdate",
+                             DEVELOPERPRIVATE_AUTOUPDATE)
+
+ protected:
+  ~DeveloperPrivateAutoUpdateFunction() override;
+  ResponseAction Run() override;
+
+ private:
+  void OnComplete();
+};
+
 class DeveloperPrivateGetExtensionsInfoFunction
     : public DeveloperPrivateAPIFunction {
  public:

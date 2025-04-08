@@ -38,19 +38,6 @@ namespace extensions {
 
 namespace api {
 
-class DeveloperPrivateAutoUpdateFunction : public DeveloperPrivateAPIFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("developerPrivate.autoUpdate",
-                             DEVELOPERPRIVATE_AUTOUPDATE)
-
- protected:
-  ~DeveloperPrivateAutoUpdateFunction() override;
-  ResponseAction Run() override;
-
- private:
-  void OnComplete();
-};
-
 class DeveloperPrivateGetExtensionSizeFunction
     : public DeveloperPrivateAPIFunction {
  public:

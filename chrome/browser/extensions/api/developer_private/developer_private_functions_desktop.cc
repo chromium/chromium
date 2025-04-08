@@ -196,27 +196,6 @@ namespace Reload = api::developer_private::Reload;
 
 namespace api {
 
-DeveloperPrivateAutoUpdateFunction::~DeveloperPrivateAutoUpdateFunction() =
-    default;
-
-ExtensionFunction::ResponseAction DeveloperPrivateAutoUpdateFunction::Run() {
-  Profile* profile = Profile::FromBrowserContext(browser_context());
-  ExtensionUpdater* updater = ExtensionUpdater::Get(profile);
-  if (updater->enabled()) {
-    ExtensionUpdater::CheckParams params;
-    params.fetch_priority = DownloadFetchPriority::kForeground;
-    params.install_immediately = true;
-    params.callback =
-        base::BindOnce(&DeveloperPrivateAutoUpdateFunction::OnComplete, this);
-    updater->CheckNow(std::move(params));
-  }
-  return RespondLater();
-}
-
-void DeveloperPrivateAutoUpdateFunction::OnComplete() {
-  Respond(NoArguments());
-}
-
 DeveloperPrivateGetExtensionSizeFunction::
     DeveloperPrivateGetExtensionSizeFunction() = default;
 

@@ -8,9 +8,6 @@
 #include "chrome/common/extensions/api/developer_private.h"
 #include "extensions/browser/extension_function.h"
 
-DECLARE_UNIMPLEMENTED_EXTENSION_FUNCTION(DeveloperPrivateAutoUpdateFunction,
-                   "developerPrivate.autoUpdate",
-                   DEVELOPERPRIVATE_AUTOUPDATE);
 DECLARE_UNIMPLEMENTED_EXTENSION_FUNCTION(DeveloperPrivateGetExtensionSizeFunction,
                    "developerPrivate.getExtensionSize",
                    DEVELOPERPRIVATE_GETEXTENSIONSIZE);
