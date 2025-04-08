@@ -440,6 +440,14 @@ IN_PROC_BROWSER_TEST_F(GlicApiTest, testCreateTab) {
   RunTestSequence(CheckTabCount(2));
 }
 
+IN_PROC_BROWSER_TEST_F(GlicApiTest, testCreateTabFailsWithUnsupportedScheme) {
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
+                                 GlicInstrumentMode::kHostAndContents),
+                  CheckTabCount(1));
+  ExecuteJsTest();
+  RunTestSequence(CheckTabCount(1));
+}
+
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testOpenGlicSettingsPage) {
   ExecuteJsTest();
 

@@ -171,6 +171,19 @@ class ApiTests extends ApiTestFixtureBase {
     assertEquals(data.url, url);
   }
 
+  async testCreateTabFailsWithUnsupportedScheme() {
+    assertTrue(!!this.host.createTab);
+
+    this.assertCreateTabWithUnsupportedSchemeFails('chrome://settings');
+    this.assertCreateTabWithUnsupportedSchemeFails('ftps://www.google.com');
+    this.assertCreateTabWithUnsupportedSchemeFails(
+        'chrome-extension://www.google.com');
+    this.assertCreateTabWithUnsupportedSchemeFails('mailto:user@google.com');
+    this.assertCreateTabWithUnsupportedSchemeFails(
+        'data:text/html;charset=utf-8,<html>Hello World</html>');
+    this.assertCreateTabWithUnsupportedSchemeFails('file:///tmp/test.html');
+  }
+
   async testOpenGlicSettingsPage() {
     assertTrue(!!this.host.openGlicSettingsPage);
     this.host.openGlicSettingsPage();
@@ -549,6 +562,15 @@ class ApiTests extends ApiTestFixtureBase {
     assertTrue(!!this.host.getPanelState);
     await observeSequence(this.host.getPanelState())
         .waitFor(s => s.kind === kind);
+  }
+
+  private async assertCreateTabWithUnsupportedSchemeFails(url: string) {
+    assertTrue(!!this.host.createTab);
+    try {
+      await this.host.createTab(url, {openInBackground: false});
+    } catch (e) {
+      assertEquals('createTab: failed', (e as Error).message);
+    }
   }
 }
 
