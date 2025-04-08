@@ -24,6 +24,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
@@ -51,6 +52,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFacto
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
+import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
@@ -175,15 +177,11 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         // recreated and super.onCreate() has already recreated the fragment.
         if (savedInstanceState == null) {
             Fragment fragment = instantiateMainFragment(getIntent());
-            fragmentManager
-                    .beginTransaction()
-                    .replace(R.id.content, fragment, MAIN_FRAGMENT_TAG)
-                    .setCustomAnimations(
-                            R.anim.shared_x_axis_open_enter,
-                            R.anim.shared_x_axis_open_exit,
-                            R.anim.shared_x_axis_close_enter,
-                            R.anim.shared_x_axis_close_exit)
-                    .commit();
+
+            var transaction = fragmentManager.beginTransaction();
+            transaction.replace(R.id.content, fragment, MAIN_FRAGMENT_TAG);
+            setFragmentAnimation(transaction, fragment);
+            transaction.commit();
         }
 
         setStatusBarColor();
@@ -302,17 +300,44 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         if (mPendingNewIntent != null) {
             Fragment fragment = instantiateMainFragment(mPendingNewIntent);
             mPendingNewIntent = null;
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .setReorderingAllowed(true)
-                    .setCustomAnimations(
-                            R.anim.shared_x_axis_open_enter,
-                            R.anim.shared_x_axis_open_exit,
-                            R.anim.shared_x_axis_close_enter,
-                            R.anim.shared_x_axis_close_exit)
+
+            var transaction = getSupportFragmentManager().beginTransaction();
+            transaction.setReorderingAllowed(true);
+            setFragmentAnimation(transaction, fragment);
+            transaction
                     .replace(R.id.content, fragment, MAIN_FRAGMENT_TAG)
                     .addToBackStack(null)
                     .commit();
+        }
+    }
+
+    private static @SettingsFragment.AnimationType int getAnimationType(
+            @NonNull Fragment fragment) {
+        if (fragment instanceof SettingsFragment settingsFragment) {
+            // The fragment is (being) migrated. Respect the animation type that the fragment says.
+            return settingsFragment.getAnimationType();
+        }
+
+        // The fragment is not yet migrated with auditing. Fallback to the legacy animation type.
+        Log.w(
+                "SettingsActivity",
+                "Non-migrated Settings fragment is found: " + fragment.getClass().getName());
+        return SettingsFragment.AnimationType.TWEEN;
+    }
+
+    private static void setFragmentAnimation(
+            @NonNull FragmentTransaction transaction, @NonNull Fragment fragment) {
+        switch (getAnimationType(fragment)) {
+            case SettingsFragment.AnimationType.TWEEN -> transaction.setCustomAnimations(
+                    R.anim.shared_x_axis_open_enter,
+                    R.anim.shared_x_axis_open_exit,
+                    R.anim.shared_x_axis_close_enter,
+                    R.anim.shared_x_axis_close_exit);
+            case SettingsFragment.AnimationType.PROPERTY -> transaction.setCustomAnimations(
+                    R.animator.shared_x_axis_open_enter,
+                    R.animator.shared_x_axis_open_exit,
+                    R.animator.shared_x_axis_close_enter,
+                    R.animator.shared_x_axis_close_exit);
         }
     }
 

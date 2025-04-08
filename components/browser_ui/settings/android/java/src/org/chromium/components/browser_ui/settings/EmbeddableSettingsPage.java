@@ -20,7 +20,7 @@ import org.chromium.build.annotations.NullMarked;
  * <p>Standalone fragments are shown as a whole and has better control of the activity.
  */
 @NullMarked
-public interface EmbeddableSettingsPage {
+public interface EmbeddableSettingsPage extends SettingsFragment {
     /**
      * Returns the title of the current setting page.
      *
