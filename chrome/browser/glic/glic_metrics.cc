@@ -26,7 +26,7 @@ namespace glic {
 namespace {
 
 constexpr char kHistogramGlicPanelPresentationTime[] =
-    "Glic.PanelPresentationTime";
+    "Glic.PanelPresentationTime2";
 
 constexpr static base::TimeDelta kLogSizeMetricsDelay = base::Minutes(3);
 
