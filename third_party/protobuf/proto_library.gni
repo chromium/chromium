@@ -641,7 +641,8 @@ template("proto_library") {
       }
     }
 
-    deps = [ ":$action_name" ]
+    public_deps += [ ":$action_name" ]
+    deps = []
 
     # This will link any libraries in the deps (the use of invoker.deps in the
     # action won't link it).
