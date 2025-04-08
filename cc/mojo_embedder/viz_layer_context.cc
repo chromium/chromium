@@ -401,8 +401,6 @@ viz::mojom::TileResourcePtr SerializeTileResource(
   auto wire = viz::mojom::TileResource::New();
   wire->resource = resources[0];
 
-  // Tile resources are always premultiplied.
-  wire->is_premultiplied = true;
   wire->is_checkered = draw_info.is_checker_imaged();
   return wire;
 }
