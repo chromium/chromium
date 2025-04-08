@@ -27,7 +27,6 @@
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
-#include "chrome/browser/web_applications/test/fake_externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -55,6 +54,26 @@
 
 namespace web_app {
 
+namespace {
+
+int GetInstallCountsFromResult(
+    const std::map<GURL, ExternallyManagedAppManager::InstallResult>&
+        install_results,
+    bool include_duplicates = false) {
+  int count = 0;
+  for (const auto& result : install_results) {
+    if (result.second.code == webapps::InstallResultCode::kSuccessNewInstall ||
+        (include_duplicates &&
+         result.second.code ==
+             webapps::InstallResultCode::kSuccessAlreadyInstalled)) {
+      count++;
+    }
+  }
+  return count;
+}
+
+}  // namespace
+
 class ExternallyManagedAppManagerTest : public WebAppTest {
  public:
   ExternallyManagedAppManagerTest() = default;
@@ -64,33 +83,11 @@ class ExternallyManagedAppManagerTest : public WebAppTest {
     WebAppTest::SetUp();
     provider_ = web_app::FakeWebAppProvider::Get(profile());
     web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
-
-    externally_managed_app_manager().SetHandleInstallRequestCallback(
-        base::BindLambdaForTesting(
-            [this](const ExternalInstallOptions& install_options)
-                -> ExternallyManagedAppManager::InstallResult {
-              const GURL& install_url = install_options.install_url;
-              if (!app_registrar().GetAppById(GenerateAppId(
-                      /*manifest_id=*/std::nullopt, install_url))) {
-                std::unique_ptr<WebApp> web_app =
-                    test::CreateWebApp(install_url, WebAppManagement::kDefault);
-                web_app->AddInstallURLToManagementExternalConfigMap(
-                    WebAppManagement::kDefault, install_url);
-                {
-                  ScopedRegistryUpdate update =
-                      provider().sync_bridge_unsafe().BeginUpdate();
-                  update->CreateApp(std::move(web_app));
-                }
-                ++deduped_install_count_;
-              }
-              return ExternallyManagedAppManager::InstallResult(
-                  webapps::InstallResultCode::kSuccessNewInstall);
-            }));
   }
 
   void ForceSystemShutdown() { provider_->Shutdown(); }
 
-  void Sync(const std::vector<GURL>& urls) {
+  void Sync(const std::vector<GURL>& urls, bool include_duplicates = false) {
     ResetCounts();
 
     std::vector<ExternalInstallOptions> install_options_list;
@@ -102,7 +99,7 @@ class ExternallyManagedAppManagerTest : public WebAppTest {
     }
 
     base::RunLoop run_loop;
-    externally_managed_app_manager().SynchronizeInstalledApps(
+    provider().externally_managed_app_manager().SynchronizeInstalledApps(
         std::move(install_options_list),
         ExternalInstallSource::kInternalDefault,
         base::BindLambdaForTesting(
@@ -110,18 +107,20 @@ class ExternallyManagedAppManagerTest : public WebAppTest {
                     install_results,
                 std::map<GURL, webapps::UninstallResultCode>
                     uninstall_results) {
-              deduped_uninstall_count_ = uninstall_results.size();
+              install_count_ = GetInstallCountsFromResult(install_results,
+                                                          include_duplicates);
+              uninstall_count_ = uninstall_results.size();
               run_loop.Quit();
             }));
     // Wait for SynchronizeInstalledApps to finish.
     run_loop.Run();
   }
 
-  void Expect(int deduped_install_count,
-              int deduped_uninstall_count,
+  void Expect(int install_count,
+              int uninstall_count,
               const std::vector<GURL>& installed_app_urls) {
-    EXPECT_EQ(deduped_install_count, deduped_install_count_);
-    EXPECT_EQ(deduped_uninstall_count, deduped_uninstall_count_);
+    EXPECT_EQ(install_count, install_count_);
+    EXPECT_EQ(uninstall_count, uninstall_count_);
     base::flat_map<webapps::AppId, base::flat_set<GURL>> apps =
         app_registrar().GetExternallyInstalledApps(
             ExternalInstallSource::kInternalDefault);
@@ -135,22 +134,17 @@ class ExternallyManagedAppManagerTest : public WebAppTest {
   }
 
   void ResetCounts() {
-    deduped_install_count_ = 0;
-    deduped_uninstall_count_ = 0;
+    install_count_ = 0;
+    uninstall_count_ = 0;
   }
 
   WebAppProvider& provider() { return *provider_; }
 
   WebAppRegistrar& app_registrar() { return provider().registrar_unsafe(); }
 
-  FakeExternallyManagedAppManager& externally_managed_app_manager() {
-    return static_cast<FakeExternallyManagedAppManager&>(
-        provider().externally_managed_app_manager());
-  }
-
  private:
-  int deduped_install_count_ = 0;
-  int deduped_uninstall_count_ = 0;
+  int install_count_ = 0;
+  int uninstall_count_ = 0;
 
   raw_ptr<FakeWebAppProvider, DanglingUntriaged> provider_ = nullptr;
 };
@@ -167,7 +161,7 @@ TEST_F(ExternallyManagedAppManagerTest, DestroyDuringInstallInSynchronize) {
                                     mojom::UserDisplayMode::kStandalone,
                                     ExternalInstallSource::kInternalDefault);
 
-  externally_managed_app_manager().SynchronizeInstalledApps(
+  provider().externally_managed_app_manager().SynchronizeInstalledApps(
       std::move(install_options_list), ExternalInstallSource::kInternalDefault,
       // ExternallyManagedAppManager gives no guarantees about whether its
       // pending callbacks will be run or not when it gets destroyed.
@@ -187,7 +181,7 @@ TEST_F(ExternallyManagedAppManagerTest, DestroyDuringUninstallInSynchronize) {
                                       mojom::UserDisplayMode::kStandalone,
                                       ExternalInstallSource::kInternalDefault);
     base::RunLoop run_loop;
-    externally_managed_app_manager().SynchronizeInstalledApps(
+    provider().externally_managed_app_manager().SynchronizeInstalledApps(
         std::move(install_options_list),
         ExternalInstallSource::kInternalDefault,
         base::BindLambdaForTesting(
@@ -198,7 +192,7 @@ TEST_F(ExternallyManagedAppManagerTest, DestroyDuringUninstallInSynchronize) {
     run_loop.Run();
   }
 
-  externally_managed_app_manager().SynchronizeInstalledApps(
+  provider().externally_managed_app_manager().SynchronizeInstalledApps(
       std::vector<ExternalInstallOptions>(),
       ExternalInstallSource::kInternalDefault,
       // ExternallyManagedAppManager gives no guarantees about whether its
@@ -214,6 +208,14 @@ TEST_F(ExternallyManagedAppManagerTest, SynchronizeInstalledApps) {
   GURL c("https://c.example.com/");
   GURL d("https://d.example.com/");
   GURL e("https://e.example.com/");
+
+  FakeWebContentsManager& web_contents_manager =
+      static_cast<FakeWebContentsManager&>(provider().web_contents_manager());
+  web_contents_manager.CreateBasicInstallPageState(a, a, a);
+  web_contents_manager.CreateBasicInstallPageState(b, b, b);
+  web_contents_manager.CreateBasicInstallPageState(c, c, c);
+  web_contents_manager.CreateBasicInstallPageState(d, d, d);
+  web_contents_manager.CreateBasicInstallPageState(e, e, e);
 
   Sync(std::vector<GURL>{a, b, d});
   Expect(3, 0, std::vector<GURL>{a, b, d});
@@ -237,20 +239,19 @@ TEST_F(ExternallyManagedAppManagerTest, SynchronizeInstalledApps) {
   Expect(0, 5, std::vector<GURL>{});
 
   // The remaining code tests duplicate inputs.
-
-  Sync(std::vector<GURL>{b, a, b, c});
+  Sync(std::vector<GURL>{b, a, b, c}, /*include_duplicates=*/true);
   Expect(3, 0, std::vector<GURL>{a, b, c});
 
-  Sync(std::vector<GURL>{e, a, e, e, e, a});
-  Expect(1, 2, std::vector<GURL>{a, e});
+  Sync(std::vector<GURL>{e, a, e, e, e, a}, /*include_duplicates=*/true);
+  Expect(2, 2, std::vector<GURL>{a, e});
 
-  Sync(std::vector<GURL>{b, c, d});
+  Sync(std::vector<GURL>{b, c, d}, /*include_duplicates=*/true);
   Expect(3, 2, std::vector<GURL>{b, c, d});
 
-  Sync(std::vector<GURL>{a, a, a, a, a, a});
+  Sync(std::vector<GURL>{a, a, a, a, a, a}, /*include_duplicates=*/true);
   Expect(1, 3, std::vector<GURL>{a});
 
-  Sync(std::vector<GURL>{});
+  Sync(std::vector<GURL>{}, /*include_duplicates=*/true);
   Expect(0, 1, std::vector<GURL>{});
 }
 
@@ -330,36 +331,6 @@ class ExternallyAppManagerTest : public WebAppTest {
   FakeWebContentsManager& web_contents_manager() {
     return static_cast<FakeWebContentsManager&>(
         provider().web_contents_manager());
-  }
-
-  webapps::AppId PopulateBasicInstallPageWithManifest(GURL install_url,
-                                                      GURL manifest_url,
-                                                      GURL start_url) {
-    auto& install_page_state =
-        web_contents_manager().GetOrCreatePageState(install_url);
-    install_page_state.url_load_result =
-        webapps::WebAppUrlLoaderResult::kUrlLoaded;
-    install_page_state.redirection_url = std::nullopt;
-
-    install_page_state.opt_metadata =
-        FakeWebContentsManager::CreateMetadataWithTitle(u"Basic app title");
-    install_page_state.title = u"Basic app title";
-
-    install_page_state.manifest_url = manifest_url;
-    install_page_state.valid_manifest_for_web_app = true;
-
-    install_page_state.manifest_before_default_processing =
-        blink::mojom::Manifest::New();
-    install_page_state.manifest_before_default_processing->start_url =
-        start_url;
-    install_page_state.manifest_before_default_processing->id =
-        GenerateManifestIdFromStartUrlOnly(start_url);
-    install_page_state.manifest_before_default_processing->display =
-        blink::mojom::DisplayMode::kStandalone;
-    install_page_state.manifest_before_default_processing->short_name =
-        u"Basic app name";
-
-    return GenerateAppId(/*manifest_id=*/std::nullopt, start_url);
   }
 };
 
