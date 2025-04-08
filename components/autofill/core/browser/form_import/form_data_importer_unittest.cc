@@ -4124,15 +4124,21 @@ class FormDataImporterTest_ExtractCreditCardFromForm
 
   void PushField(FieldType field_type,
                  std::u16string value,
-                 Mode mode = Mode::kDefaultValue) {
+                 Mode mode = Mode::kDefaultValue,
+                 size_t offset = 0) {
     AutofillField& f = test_api(form_).PushField();
     f.set_server_predictions({test::CreateFieldPrediction(field_type)});
     f.set_value(std::move(value));
     f.set_is_autofilled(mode == Mode::kAutofilled);
     f.set_is_user_edited(mode == Mode::kUserEdited);
+    f.set_credit_card_number_offset(offset);
   }
 
   FormStructure form_{/*form=*/{}};
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kAutofillFixSplitCreditCardImport};
 };
 
 // Tests that inconsistent values from different priority classes do not prevent
@@ -4224,6 +4230,118 @@ TEST_F(FormDataImporterTest_ExtractCreditCardFromForm, PartialFirstLastNames) {
   EXPECT_EQ(
       r.card.GetInfo(FieldType::CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, kLocale),
       u"12/2020");
+  EXPECT_FALSE(r.has_duplicate_credit_card_field_type);
+}
+
+// Tests that split credit card number extraction works in the same priority
+// class (user-edited fields).
+TEST_F(FormDataImporterTest_ExtractCreditCardFromForm,
+       ExtractSplitCreditCardNumber) {
+  PushField(FieldType::CREDIT_CARD_NAME_FULL, u"Joe Biden", Mode::kAutofilled);
+  PushField(FieldType::CREDIT_CARD_NUMBER, u"4444", Mode::kUserEdited, 0);
+  PushField(FieldType::CREDIT_CARD_NUMBER, u"3333", Mode::kUserEdited, 4);
+  PushField(FieldType::CREDIT_CARD_NUMBER, u"2222", Mode::kUserEdited, 8);
+  PushField(FieldType::CREDIT_CARD_NUMBER, u"1111", Mode::kUserEdited, 12);
+  PushField(FieldType::CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, u"01/2021",
+            Mode::kUserEdited);
+  auto r = form_data_importer().ExtractCreditCardFromForm(form_);
+  EXPECT_EQ(r.card.GetInfo(FieldType::CREDIT_CARD_NAME_FULL, kLocale),
+            u"Joe Biden");
+  EXPECT_EQ(r.card.GetInfo(FieldType::CREDIT_CARD_NUMBER, kLocale),
+            u"4444333322221111");
+  EXPECT_EQ(
+      r.card.GetInfo(FieldType::CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, kLocale),
+      u"01/2021");
+  EXPECT_FALSE(r.has_duplicate_credit_card_field_type);
+}
+
+// Tests that card extraction works when there are both split credit card
+// fields and full credit card fields and the card numbers match.
+TEST_F(FormDataImporterTest_ExtractCreditCardFromForm,
+       SplitCardAndFullCardFieldsMatch) {
+  PushField(FieldType::CREDIT_CARD_NAME_FULL, u"Joe Biden", Mode::kAutofilled);
+  PushField(FieldType::CREDIT_CARD_NUMBER, u"4444", Mode::kUserEdited, 0);
+  PushField(FieldType::CREDIT_CARD_NUMBER, u"3333", Mode::kUserEdited, 4);
+  PushField(FieldType::CREDIT_CARD_NUMBER, u"2222", Mode::kUserEdited, 8);
+  PushField(FieldType::CREDIT_CARD_NUMBER, u"1111", Mode::kUserEdited, 12);
+  PushField(FieldType::CREDIT_CARD_NUMBER, u"4444333322221111",
+            Mode::kUserEdited, 0);
+  PushField(FieldType::CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, u"01/2021",
+            Mode::kUserEdited);
+  auto r = form_data_importer().ExtractCreditCardFromForm(form_);
+  EXPECT_EQ(r.card.GetInfo(FieldType::CREDIT_CARD_NUMBER, kLocale),
+            u"4444333322221111");
+  EXPECT_FALSE(r.has_duplicate_credit_card_field_type);
+}
+
+// Tests that split credit card number extraction is blocked when there are both
+// split credit card fields and full credit card fields and the numbers do not
+// match.
+TEST_F(FormDataImporterTest_ExtractCreditCardFromForm,
+       SplitCardAndFullCardFieldsDoNotMatch) {
+  PushField(FieldType::CREDIT_CARD_NAME_FULL, u"Joe Biden", Mode::kAutofilled);
+  PushField(FieldType::CREDIT_CARD_NUMBER, u"4444", Mode::kUserEdited, 0);
+  PushField(FieldType::CREDIT_CARD_NUMBER, u"3333", Mode::kUserEdited, 4);
+  PushField(FieldType::CREDIT_CARD_NUMBER, u"2222", Mode::kUserEdited, 8);
+  PushField(FieldType::CREDIT_CARD_NUMBER, u"1111", Mode::kUserEdited, 12);
+  PushField(FieldType::CREDIT_CARD_NUMBER, u"4444333322220000",
+            Mode::kUserEdited, 0);
+  PushField(FieldType::CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, u"01/2021",
+            Mode::kUserEdited);
+  auto r = form_data_importer().ExtractCreditCardFromForm(form_);
+  EXPECT_TRUE(r.has_duplicate_credit_card_field_type);
+}
+
+// Tests that split credit card number extraction extracts the last value if any
+// of the field is invalid or missing.
+TEST_F(FormDataImporterTest_ExtractCreditCardFromForm,
+       ExtractsLastFieldIfHasInvalidOrMIssingFields) {
+  PushField(FieldType::CREDIT_CARD_NAME_FULL, u"Joe Biden", Mode::kAutofilled);
+  PushField(FieldType::CREDIT_CARD_NUMBER, u"", Mode::kUserEdited, 0);
+  PushField(FieldType::CREDIT_CARD_NUMBER, u"3333", Mode::kUserEdited, 4);
+  PushField(FieldType::CREDIT_CARD_NUMBER, u"1", Mode::kUserEdited, 12);
+  PushField(FieldType::CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, u"01/2021",
+            Mode::kUserEdited);
+  auto r = form_data_importer().ExtractCreditCardFromForm(form_);
+  EXPECT_EQ(r.card.GetInfo(FieldType::CREDIT_CARD_NUMBER, kLocale), u"1");
+  EXPECT_FALSE(r.has_duplicate_credit_card_field_type);
+}
+
+// Tests that user edited fields take priority and autofilled fields are ignored
+// when in conflict.
+TEST_F(FormDataImporterTest_ExtractCreditCardFromForm,
+       IgnoreDuplicatedFieldsFromDifferentPriorityClasses) {
+  PushField(FieldType::CREDIT_CARD_NAME_FULL, u"Joe Biden", Mode::kAutofilled);
+  PushField(FieldType::CREDIT_CARD_NUMBER, u"4444", Mode::kUserEdited, 0);
+  PushField(FieldType::CREDIT_CARD_NUMBER, u"3333", Mode::kUserEdited, 4);
+  PushField(FieldType::CREDIT_CARD_NUMBER, u"1234", Mode::kAutofilled, 4);
+  PushField(FieldType::CREDIT_CARD_NUMBER, u"2222", Mode::kUserEdited, 8);
+  PushField(FieldType::CREDIT_CARD_NUMBER, u"1111", Mode::kUserEdited, 12);
+  PushField(FieldType::CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, u"01/2021",
+            Mode::kUserEdited);
+  auto r = form_data_importer().ExtractCreditCardFromForm(form_);
+  EXPECT_EQ(r.card.GetInfo(FieldType::CREDIT_CARD_NUMBER, kLocale),
+            u"4444333322221111");
+  EXPECT_FALSE(r.has_duplicate_credit_card_field_type);
+}
+
+// Tests split credit card number fields in a lower priority class are ignored.
+TEST_F(FormDataImporterTest_ExtractCreditCardFromForm,
+       IgnoreFieldsFromLowerPriorityClass) {
+  PushField(FieldType::CREDIT_CARD_NAME_FULL, u"Joe Biden", Mode::kAutofilled);
+  PushField(FieldType::CREDIT_CARD_NUMBER, u"4444", Mode::kUserEdited, 0);
+  PushField(FieldType::CREDIT_CARD_NUMBER, u"3333", Mode::kUserEdited, 4);
+  PushField(FieldType::CREDIT_CARD_NUMBER, u"2222", Mode::kAutofilled, 8);
+  PushField(FieldType::CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, u"01/2021",
+            Mode::kUserEdited);
+  auto r = form_data_importer().ExtractCreditCardFromForm(form_);
+  EXPECT_EQ(r.card.GetInfo(FieldType::CREDIT_CARD_NAME_FULL, kLocale),
+            u"Joe Biden");
+  EXPECT_EQ(r.card.GetInfo(FieldType::CREDIT_CARD_NUMBER, kLocale),
+            u"44443333");
+  EXPECT_EQ(
+      r.card.GetInfo(FieldType::CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, kLocale),
+      u"01/2021");
   EXPECT_FALSE(r.has_duplicate_credit_card_field_type);
 }
 

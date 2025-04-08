@@ -1091,6 +1091,18 @@ FormDataImporter::ExtractCreditCardFromForm(const FormStructure& form) {
                 field.Type().GetStorableType());
       result.card.SetInfoForMonthInputType(value);
     } else {
+      // If the credit card number offset is within the range of the old value,
+      // replace the portion of the old value with the value from the current
+      // field. For example:
+      // old value: '1234', offset: 4, new value:'5678', result: '12345678'
+      // old value: '12345678', offset: 4, new value:'0000', result: '12340000'
+      if (field.credit_card_number_offset() > 0 &&
+          field.credit_card_number_offset() <= old_value.size() &&
+          base::FeatureList::IsEnabled(
+              features::kAutofillFixSplitCreditCardImport)) {
+        value = old_value.replace(field.credit_card_number_offset(),
+                                  value.size(), value);
+      }
       bool saved = result.card.SetInfo(field.Type(), value, app_locale);
       if (!saved && field.IsSelectElement()) {
         // Saving with the option text (here `value`) may fail for the
@@ -1104,9 +1116,17 @@ FormDataImporter::ExtractCreditCardFromForm(const FormStructure& form) {
         }
       }
     }
+
     std::u16string new_value = result.card.GetInfo(field.Type(), app_locale);
+    // Skip duplicate field check if the field is a split credit card
+    // number field.
+    bool skip_duplication_check =
+        field.Type().GetStorableType() == FieldType::CREDIT_CARD_NUMBER &&
+        field.credit_card_number_offset() > 0 &&
+        base::FeatureList::IsEnabled(
+            features::kAutofillFixSplitCreditCardImport);
     result.has_duplicate_credit_card_field_type |=
-        !old_value.empty() && old_value != new_value;
+        !skip_duplication_check && !old_value.empty() && old_value != new_value;
   };
 
   // Populates `result` from `fields` that satisfy `pred`, and erases those

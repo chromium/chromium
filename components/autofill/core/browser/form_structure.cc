@@ -657,12 +657,8 @@ void FormStructure::RetrieveFromCache(const FormStructure& cached_form,
         field->set_ml_supported_types(cached_ml_types.value());
       }
       field->SetHtmlType(cached_field->html_type(), cached_field->html_mode());
-      if (reason == RetrieveFromCacheReason::kFormCacheUpdateWithoutParsing) {
-        // TODO: crbug.com/392179445 - Also do this for `kFormImport`, i.e.,
-        // remove the `if` condition.
-        field->set_credit_card_number_offset(
-            cached_field->credit_card_number_offset());
-      }
+      field->set_credit_card_number_offset(
+          cached_field->credit_card_number_offset());
       field->set_section(cached_field->section());
       field->set_only_fill_when_focused(cached_field->only_fill_when_focused());
 
