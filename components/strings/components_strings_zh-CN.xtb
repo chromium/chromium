@@ -3125,7 +3125,7 @@
 <translation id="6415778972515849510">Chromium 可以帮助您保护您的 Google 账号和更改密码。</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="641811520997304166">薪资管理服务</translation>
-<translation id="6418199314628742460">请确保将所有关键业务数据或个人数据存储在外部。</translation>
+<translation id="6418199314628742460">请确保将所有关键业务数据或个人数据均存储在外部。</translation>
 <translation id="6424600253695044005">云端存储</translation>
 <translation id="6425092077175753609">Material</translation>
 <translation id="6427730057873428458">关门折</translation>
@@ -3299,7 +3299,7 @@
 <translation id="6716039223770814796">比较“<ph name="COMPARE_SET_NAME" />” · <ph name="ITEMS" /> 项内容</translation>
 <translation id="6716672519412350405"><ph name="URL" /> 想为您的周边环境创建 3D 地图并跟踪摄像头位置</translation>
 <translation id="6717692133381953670">从“<ph name="DEVICE_NAME" />”发送的标签页</translation>
-<translation id="6718524733720986924">请保存信息，以便自动填充功能下次为您填充更多字段</translation>
+<translation id="6718524733720986924">保存信息后，自动填充功能下次将为您填写更多字段</translation>
 <translation id="6718612893943028815">使用摄像头？</translation>
 <translation id="6721164594124191969">标签（平滑）</translation>
 <translation id="6726832600570791992">(32-bit emulated)</translation>

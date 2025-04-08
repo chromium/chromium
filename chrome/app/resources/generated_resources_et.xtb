@@ -3221,7 +3221,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3232368113895801406">Teie turvaeelistused ei luba isoleeritud rakenduste installimisi. <ph name="CHANGE_PREFERENCE" /></translation>
 <translation id="323251815203765852">Loominguline</translation>
 <translation id="3232558119926886907">Joonda paremale</translation>
-<translation id="323262942975422760">Rohkem valikuid sildi <ph name="ENTITY_INSTANCE_LABEL" />, <ph name="ENTITY_INSTANCE_SUBLABEL" /> muutmiseks või kustutamiseks</translation>
+<translation id="323262942975422760">Rohkem valikuid siltide <ph name="ENTITY_INSTANCE_LABEL" />, <ph name="ENTITY_INSTANCE_SUBLABEL" /> muutmiseks või kustutamiseks</translation>
 <translation id="3232754137068452469">Veebirakendus</translation>
 <translation id="3233271424239923319">Linuxi rakenduste ja failide varundamine</translation>
 <translation id="3234251228180563751">Kasutajanimi on pikem kui 1000 tähemärki</translation>

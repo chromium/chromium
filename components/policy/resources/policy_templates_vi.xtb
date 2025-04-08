@@ -6121,7 +6121,6 @@ Từ <ph name="PRODUCT_NAME" /> phiên bản 92, chính sách này cũng đượ
 <translation id="5373552304217872025">Nếu bạn đặt chính sách này thành true (đúng) hoặc không định cấu hình thì <ph name="PRODUCT_NAME" /> và <ph name="LACROS_NAME" /> sẽ cho phép thêm người mới trong trình quản lý người dùng.
 
       Nếu bạn đặt chính sách này thành false (sai) thì <ph name="PRODUCT_NAME" /> và <ph name="LACROS_NAME" /> sẽ không cho phép thêm người mới trong trình quản lý người dùng.</translation>
-<translation id="5376378981585287162">Xoá các tệp hiện có trên thiết bị (được hỗ trợ kể từ phiên bản 136)</translation>
 <translation id="5377606826822211923">Kiểm soát việc người dùng sử dụng ứng dụng Android từ những nguồn không tin cậy</translation>
 <translation id="5377826248281933035">Chính sách này cung cấp một danh sách trang web mà người dùng có thể nhanh chóng tìm kiếm bằng cách sử dụng lối tắt trong thanh địa chỉ. Người dùng có thể bắt đầu tìm kiếm bằng cách nhập lối tắt hoặc @lốitắt (ví dụ: @côngviệc) vào thanh địa chỉ, sau đó nhấn phím cách hoặc phím Tab.
 

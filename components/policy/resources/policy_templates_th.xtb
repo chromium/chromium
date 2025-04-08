@@ -1234,6 +1234,7 @@ https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns
 
 นโยบายนี้จะมีผลเมื่อลงทะเบียนเครื่องกับ <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> สำหรับ <ph name="PRODUCT_NAME" /> เท่านั้น
 และจะมีผลเสมอสำหรับ <ph name="PRODUCT_OS_NAME" /></translation>
+<translation id="187961648719201562">ลบไฟล์ในเครื่องที่มีอยู่ (รองรับตั้งแต่เวอร์ชัน 137)</translation>
 <translation id="1883274744253492031">เปิดใช้การอัปเกรดเนื้อหาผสมอัตโนมัติ</translation>
 <translation id="1885782360784839335">เปิดใช้การแสดงเนื้อหาโปรโมตแบบเต็มแท็บ</translation>
 <translation id="1888871729456797026">โทเค็นการลงทะเบียนของนโยบายระบบคลาวด์ในเดสก์ท็อป</translation>
@@ -5986,7 +5987,6 @@ https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns
 <translation id="5373552304217872025">หากตั้งค่านโยบายนี้เป็น "จริง" หรือไม่ได้กำหนดค่า <ph name="PRODUCT_NAME" /> และ <ph name="LACROS_NAME" /> จะอนุญาตให้เพิ่มบุคคลใหม่จากการจัดการผู้ใช้
 
       หากตั้งค่านโยบายนี้เป็น "เท็จ" <ph name="PRODUCT_NAME" /> และ <ph name="LACROS_NAME" /> จะไม่อนุญาตให้เพิ่มบุคคลใหม่จากการจัดการผู้ใช้</translation>
-<translation id="5376378981585287162">ลบไฟล์ในเครื่องที่มีอยู่ (รองรับตั้งแต่เวอร์ชัน 136)</translation>
 <translation id="5377606826822211923">ควบคุมการใช้แอป Android จากแหล่งที่มาที่ไม่น่าเชื่อถือสำหรับผู้ใช้แต่ละราย</translation>
 <translation id="5377826248281933035">นโยบายนี้แสดงรายการเว็บไซต์ที่ผู้ใช้ค้นหาได้อย่างรวดเร็วโดยใช้ทางลัดในแถบที่อยู่ ผู้ใช้เริ่มการค้นหาได้โดยการพิมพ์ทางลัดหรือ @ทางลัด (เช่น @งาน) ตามด้วยการกด Space หรือ Tab ในแถบที่อยู่
 
