@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <title>Prefetch request's Sec-Speculation-Tags request headers</title>
-<meta name="variant" content="?tag-level=ruleset">
-<meta name="variant" content="?tag-level=rule">
+<meta name="variant" content="?tag-level=ruleset&type=prefetch">
+<meta name="variant" content="?tag-level=ruleset&type=prerender">
+<meta name="variant" content="?tag-level=rule&type=prefetch">
+<meta name="variant" content="?tag-level=rule&type=prerender">
 <meta name="timeout" content="long">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/dispatcher/dispatcher.js"></script>
 <script src="/common/utils.js"></script>
+<script src="/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"></script>
 <script src="../resources/utils.js"></script>
 <script src="resources/utils.sub.js"></script>
 <script src="resources/speculation-tags-utils.js"></script>
