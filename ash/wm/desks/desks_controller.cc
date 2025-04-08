@@ -800,9 +800,10 @@ void DesksController::ActivateDesk(const Desk* desk, DesksSwitchSource source) {
 
   UMA_HISTOGRAM_ENUMERATION(kDeskSwitchHistogramName, source);
 
-  const int target_desk_index = GetDeskIndex(desk);
-  if (source != DesksSwitchSource::kDeskRemoved &&
-      source != DesksSwitchSource::kDeskButtonDeskRemoved) {
+  const bool is_removal = source == DesksSwitchSource::kDeskRemoved ||
+                          source == DesksSwitchSource::kDeskButtonDeskRemoved;
+
+  if (!is_removal) {
     // Desk removal has its own a11y alert.
     Shell::Get()
         ->accessibility_controller()
@@ -810,8 +811,7 @@ void DesksController::ActivateDesk(const Desk* desk, DesksSwitchSource source) {
             IDS_ASH_VIRTUAL_DESKS_ALERT_DESK_ACTIVATED, desk->name()));
   }
 
-  if (source == DesksSwitchSource::kDeskRemoved ||
-      source == DesksSwitchSource::kDeskButtonDeskRemoved ||
+  if (is_removal ||
       (source == DesksSwitchSource::kRemovalUndone && in_overview) ||
       is_user_switch) {
     // Desk switches due to desks removal, undoing the removal of an active desk
@@ -829,6 +829,11 @@ void DesksController::ActivateDesk(const Desk* desk, DesksSwitchSource source) {
     return;
   }
 
+  // Desk activation will be done during the animation.
+
+  const int starting_desk_index = GetDeskIndex(active_desk());
+  const int target_desk_index = GetDeskIndex(desk);
+
   // When switching desks we want to update window activation when leaving
   // overview or if nothing was active prior to switching desks. This will
   // ensure that after switching desks, we will try to focus a candidate window.
@@ -844,7 +849,6 @@ void DesksController::ActivateDesk(const Desk* desk, DesksSwitchSource source) {
       IsParentSwitchableContainer(active_window) ||
       IsApplistActiveInTabletMode(active_window);
 
-  const int starting_desk_index = GetDeskIndex(active_desk());
   animation_ = std::make_unique<DeskActivationAnimation>(
       this, starting_desk_index, target_desk_index, source,
       update_window_activation);
