@@ -7,6 +7,7 @@ group("unit_tests") {
   deps = [
     ":bottom_sheet_unit_tests",
     ":save_card_bottom_sheet_mediator_unittest",
+    ":save_card_bottom_sheet_view_controller_unittest",
     ":virtual_card_enrollment_bottom_sheet_coordinator_unittest",
     ":virtual_card_enrollment_bottom_sheet_mediator_unittest",
   ]
@@ -191,12 +192,19 @@ source_set("save_card_bottom_sheet_coordinator") {
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
   ]
   frameworks = [ "UIKit.framework" ]
 }
 
 source_set("save_card_bottom_sheet_consumer") {
   sources = [ "save_card_bottom_sheet_consumer.h" ]
+  deps = []
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("save_card_bottom_sheet_mutator") {
+  sources = [ "save_card_bottom_sheet_mutator.h" ]
   deps = []
   frameworks = [ "UIKit.framework" ]
 }
@@ -208,11 +216,24 @@ source_set("save_card_bottom_sheet_view_controller") {
   ]
   deps = [
     ":save_card_bottom_sheet_consumer",
+    ":save_card_bottom_sheet_mutator",
     "//build:branding_buildflags",
     "//ios/chrome/browser/shared/ui/bottom_sheet:table_view_bottom_sheet_view_controller",
     "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/common/ui/confirmation_alert",
   ]
   frameworks = [ "UIKit.framework" ]
+}
+
+source_set("save_card_bottom_sheet_view_controller_unittest") {
+  testonly = true
+  sources = [ "save_card_bottom_sheet_view_controller_unittest.mm" ]
+  deps = [
+    ":save_card_bottom_sheet_view_controller",
+    "//ios/chrome/common/ui/confirmation_alert",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
 }
 
 source_set("save_card_bottom_sheet_mediator") {
@@ -222,8 +243,10 @@ source_set("save_card_bottom_sheet_mediator") {
   ]
   deps = [
     ":save_card_bottom_sheet_consumer",
+    ":save_card_bottom_sheet_mutator",
     "//base",
     "//ios/chrome/browser/autofill/model/bottom_sheet:save_card_bottom_sheet_model",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/util",
   ]
   frameworks = [ "UIKit.framework" ]
@@ -238,8 +261,12 @@ source_set("save_card_bottom_sheet_mediator_unittest") {
     "//base",
     "//components/autofill/core/browser",
     "//components/resources:components_scaled_resources_grit",
+    "//components/strings:components_strings_grit",
     "//ios/chrome/browser/autofill/model/bottom_sheet:save_card_bottom_sheet_model",
+    "//ios/chrome/browser/shared/public/commands",
+    "//testing/gmock",
     "//testing/gtest",
+    "//third_party/ocmock",
   ]
 }
 

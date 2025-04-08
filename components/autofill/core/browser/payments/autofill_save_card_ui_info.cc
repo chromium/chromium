@@ -50,6 +50,11 @@ static std::u16string GetConfirmButtonText(
   // CVC storage is not available on iOS as of now.
   CHECK_NE(options.card_save_type, CardSaveType::kCardSaveWithCvc);
   CHECK_NE(options.card_save_type, CardSaveType::kCvcSaveOnly);
+  // TODO(crbug.com/407742057): Update confirm button's string id
+  // `IDS_AUTOFILL_SAVE_CARD_INFOBAR_ACCEPT` to not be UI specific.
+  if (base::FeatureList::IsEnabled(features::kAutofillSaveCardBottomSheet)) {
+    return l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_CARD_INFOBAR_ACCEPT);
+  }
   return l10n_util::GetStringUTF16(prompt_continue
                                        ? IDS_AUTOFILL_SAVE_CARD_PROMPT_CONTINUE
                                        : IDS_AUTOFILL_SAVE_CARD_INFOBAR_ACCEPT);

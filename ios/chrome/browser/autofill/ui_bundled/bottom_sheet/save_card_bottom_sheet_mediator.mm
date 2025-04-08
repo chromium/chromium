@@ -8,6 +8,7 @@
 #import <utility>
 
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 
 // TODO(crbug.com/402511942): Implement SaveCardBottomSheetMediator.
@@ -17,13 +18,16 @@
   // TODO:(crbug.com/402511942): Start observing the model for card upload
   // updates.
   std::unique_ptr<autofill::SaveCardBottomSheetModel> _saveCardBottomSheetModel;
+  __weak id<AutofillCommands> _autofillCommandsHandler;
 }
 
 - (instancetype)initWithUIModel:
-    (std::unique_ptr<autofill::SaveCardBottomSheetModel>)model {
+                    (std::unique_ptr<autofill::SaveCardBottomSheetModel>)model
+        autofillCommandsHandler:(id<AutofillCommands>)autofillCommandsHandler {
   self = [super init];
   if (self) {
     _saveCardBottomSheetModel = std::move(model);
+    _autofillCommandsHandler = autofillCommandsHandler;
   }
   return self;
 }
@@ -45,6 +49,24 @@
       setTitle:base::SysUTF16ToNSString(_saveCardBottomSheetModel->title())];
   [self.consumer setSubtitle:base::SysUTF16ToNSString(
                                  _saveCardBottomSheetModel->subtitle())];
+  [self.consumer
+      setAcceptActionText:base::SysUTF16ToNSString(
+                              _saveCardBottomSheetModel->accept_button_text())];
+  [self.consumer
+      setCancelActionText:base::SysUTF16ToNSString(
+                              _saveCardBottomSheetModel->cancel_button_text())];
+}
+
+#pragma mark - SaveCardBottomSheetMutator
+
+- (void)didAccept {
+  // TODO(crbug.com/407776335): Show loading state when accept button is pushed.
+  _saveCardBottomSheetModel->OnAccepted();
+}
+
+- (void)didCancel {
+  _saveCardBottomSheetModel->OnCanceled();
+  [_autofillCommandsHandler dismissSaveCardBottomSheet];
 }
 
 @end

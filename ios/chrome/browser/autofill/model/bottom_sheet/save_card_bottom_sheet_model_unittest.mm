@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/autofill/model/bottom_sheet/save_card_bottom_sheet_model.h"
 
 #import "base/strings/utf_string_conversions.h"
+#import "components/autofill/core/browser/payments/autofill_save_card_ui_info.h"
 #import "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -22,11 +23,7 @@ class MockAutofillSaveCardDelegate : public AutofillSaveCardDelegate {
 
   ~MockAutofillSaveCardDelegate() override = default;
 
-  MOCK_METHOD(void,
-              OnUiUpdatedAndAccepted,
-              (payments::PaymentsAutofillClient::UserProvidedCardDetails
-                   user_provided_details),
-              (override));
+  MOCK_METHOD(void, OnUiAccepted, (base::OnceClosure), (override));
   MOCK_METHOD(void, OnUiCanceled, (), (override));
 };
 
@@ -46,16 +43,13 @@ class SaveCardBottomSheetModelTest : public PlatformTest {
 };
 
 TEST_F(SaveCardBottomSheetModelTest, OnAccepted) {
-  EXPECT_CALL(*save_card_delegate_, OnUiUpdatedAndAccepted);
-  save_card_bottom_sheet_model_->OnAccepted(
-      /*cardholder_name=*/u"Chrome User",
-      /*expiration_date_month=*/base::ASCIIToUTF16(test::NextMonth()),
-      /*expiration_date_year=*/base::ASCIIToUTF16(test::NextYear()));
+  EXPECT_CALL(*save_card_delegate_, OnUiAccepted);
+  save_card_bottom_sheet_model_->OnAccepted();
 }
 
-TEST_F(SaveCardBottomSheetModelTest, OnDismissed) {
+TEST_F(SaveCardBottomSheetModelTest, OnCanceled) {
   EXPECT_CALL(*save_card_delegate_, OnUiCanceled);
-  save_card_bottom_sheet_model_->OnDismissed();
+  save_card_bottom_sheet_model_->OnCanceled();
 }
 
 }  // namespace autofill

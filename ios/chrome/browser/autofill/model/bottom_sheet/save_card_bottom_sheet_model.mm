@@ -16,17 +16,11 @@ SaveCardBottomSheetModel::SaveCardBottomSheetModel(
 
 SaveCardBottomSheetModel::~SaveCardBottomSheetModel() = default;
 
-void SaveCardBottomSheetModel::OnAccepted(std::u16string cardholder_name,
-                                          std::u16string expiration_date_month,
-                                          std::u16string expiration_date_year) {
-  save_card_delegate()->OnUiUpdatedAndAccepted(
-      payments::PaymentsAutofillClient::UserProvidedCardDetails{
-          .cardholder_name = std::move(cardholder_name),
-          .expiration_date_month = std::move(expiration_date_month),
-          .expiration_date_year = std::move(expiration_date_year)});
+void SaveCardBottomSheetModel::OnAccepted() {
+  save_card_delegate()->OnUiAccepted();
 }
 
-void SaveCardBottomSheetModel::OnDismissed() {
+void SaveCardBottomSheetModel::OnCanceled() {
   save_card_delegate()->OnUiCanceled();
 }
 

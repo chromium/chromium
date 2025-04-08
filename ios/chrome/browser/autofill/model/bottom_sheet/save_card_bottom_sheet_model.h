@@ -26,15 +26,13 @@ class SaveCardBottomSheetModel {
 
   SaveCardBottomSheetModel(SaveCardBottomSheetModel&) = delete;
   SaveCardBottomSheetModel& operator=(SaveCardBottomSheetModel&) = delete;
-  ~SaveCardBottomSheetModel();
+  virtual ~SaveCardBottomSheetModel();
 
   // Calls `AutofillSaveCardDelegate` to handle the accept event.
-  void OnAccepted(std::u16string cardholder_name,
-                  std::u16string expiration_date_month,
-                  std::u16string expiration_date_year);
+  virtual void OnAccepted();
 
   // Calls `AutofillSaveCardDelegate` to handle the dismiss event.
-  void OnDismissed();
+  virtual void OnCanceled();
 
   // Logo to be displayed above the title in the bottomsheet.
   inline int logo_icon_id() const { return ui_info_.logo_icon_id; }
@@ -50,6 +48,16 @@ class SaveCardBottomSheetModel {
   // Explanatory text displayed below the title in the bottomsheet.
   inline const std::u16string& subtitle() const {
     return ui_info_.description_text;
+  }
+
+  // Text for the button to accept saving the card in the bottomsheet.
+  inline const std::u16string& accept_button_text() const {
+    return ui_info_.confirm_text;
+  }
+
+  // Text for the button to dismiss the bottomsheet.
+  inline const std::u16string& cancel_button_text() const {
+    return ui_info_.cancel_text;
   }
 
   base::WeakPtr<SaveCardBottomSheetModel> GetWeakPtr() {

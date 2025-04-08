@@ -26,6 +26,12 @@
 // Sets the explanatory text below the main title of the bottomsheet.
 - (void)setSubtitle:(NSString*)subtitle;
 
+// Sets text for the button to accept saving the card in the bottomsheet.
+- (void)setAcceptActionText:(NSString*)acceptActionText;
+
+// Sets text for the button to dismiss the bottomsheet.
+- (void)setCancelActionText:(NSString*)cancelActionText;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_BOTTOM_SHEET_SAVE_CARD_BOTTOM_SHEET_CONSUMER_H_
