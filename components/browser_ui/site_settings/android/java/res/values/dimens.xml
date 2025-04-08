@@ -11,5 +11,5 @@ found in the LICENSE file.
     <dimen name="dialog_message_padding_start">24dp</dimen>
     <dimen name="dialog_message_padding_end">18dp</dimen>
     <dimen name="radio_button_with_description_height">48dp</dimen>
-    <dimen name="radio_button_compact_icon_margin_end">8dp</dimen>
+    <dimen name="radio_button_compact_icon_margin_end">14dp</dimen>
 </resources>
