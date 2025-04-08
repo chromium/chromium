@@ -120,6 +120,9 @@ class DeveloperPrivateEventRouterShared : public ExtensionRegistryObserver,
       const PermissionSet& permissions,
       PermissionsManager::UpdateReason reason) override;
 
+  // Handles a profile preference change.
+  void OnProfilePrefChanged();
+
   void BroadcastItemStateChangedHelper(
       api::developer_private::EventType event_type,
       const ExtensionId& extension_id,

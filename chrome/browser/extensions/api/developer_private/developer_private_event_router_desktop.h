@@ -68,9 +68,6 @@ class DeveloperPrivateEventRouter : public DeveloperPrivateEventRouterShared,
   void OnExtensionUploadabilityChanged(const ExtensionId& id) override;
   void OnExtensionsUploadabilityChanged() override;
 
-  // Handles a profile preference change.
-  void OnProfilePrefChanged();
-
   base::ScopedObservation<AppWindowRegistry, AppWindowRegistry::Observer>
       app_window_registry_observation_{this};
   base::ScopedObservation<ExtensionManagement, ExtensionManagement::Observer>

@@ -32,26 +32,6 @@ DeveloperPrivateEventRouter::DeveloperPrivateEventRouter(Profile* profile)
     account_extension_tracker_observation_.Observe(
         AccountExtensionTracker::Get(profile));
   }
-
-  pref_change_registrar_.Init(profile->GetPrefs());
-  // The unretained is safe, since the PrefChangeRegistrar unregisters the
-  // callback on destruction.
-  pref_change_registrar_.Add(
-      prefs::kExtensionsUIDeveloperMode,
-      base::BindRepeating(&DeveloperPrivateEventRouter::OnProfilePrefChanged,
-                          base::Unretained(this)));
-  pref_change_registrar_.Add(
-      kMV2DeprecationWarningAcknowledgedGloballyPref.name,
-      base::BindRepeating(&DeveloperPrivateEventRouter::OnProfilePrefChanged,
-                          base::Unretained(this)));
-  pref_change_registrar_.Add(
-      kMV2DeprecationDisabledAcknowledgedGloballyPref.name,
-      base::BindRepeating(&DeveloperPrivateEventRouter::OnProfilePrefChanged,
-                          base::Unretained(this)));
-  pref_change_registrar_.Add(
-      kMV2DeprecationUnsupportedAcknowledgedGloballyPref.name,
-      base::BindRepeating(&DeveloperPrivateEventRouter::OnProfilePrefChanged,
-                          base::Unretained(this)));
 }
 
 DeveloperPrivateEventRouter::~DeveloperPrivateEventRouter() = default;
@@ -123,33 +103,6 @@ void DeveloperPrivateEventRouter::OnExtensionsUploadabilityChanged() {
       BroadcastItemStateChanged(developer::EventType::kPrefsChanged,
                                 extension->id());
     }
-  }
-}
-
-void DeveloperPrivateEventRouter::OnProfilePrefChanged() {
-  base::Value::List args;
-  args.Append(CreateProfileInfo(profile_).ToValue());
-  auto event = std::make_unique<Event>(
-      events::DEVELOPER_PRIVATE_ON_PROFILE_STATE_CHANGED,
-      developer::OnProfileStateChanged::kEventName, std::move(args));
-  event_router_->BroadcastEvent(std::move(event));
-
-  // The following properties are updated when dev mode is toggled.
-  //   - error_collection.is_enabled
-  //   - error_collection.is_active
-  //   - runtime_errors
-  //   - manifest_errors
-  //   - install_warnings
-  // An alternative approach would be to factor out the dev mode state from the
-  // above properties and allow the UI control what happens when dev mode
-  // changes. If the UI rendering performance is an issue, instead of replacing
-  // the entire extension info, a diff of the old and new extension info can be
-  // made by the UI and only perform a partial update of the extension info.
-  const ExtensionSet& extensions =
-      ExtensionRegistry::Get(profile_)->enabled_extensions();
-  for (const auto& extension : extensions) {
-    BroadcastItemStateChanged(developer::EventType::kPrefsChanged,
-                              extension->id());
   }
 }
 
