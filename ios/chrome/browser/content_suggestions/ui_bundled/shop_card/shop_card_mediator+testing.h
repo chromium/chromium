@@ -30,6 +30,10 @@ class ImageDataFetcher;
 
 - (void)setShopCardItemForTesting:(ShopCardItem*)item;
 
+- (void)logImpressionForItemForTesting:(ShopCardItem*)item;
+
+- (BOOL)hasReachedImpressionLimitForTesting:(const GURL&)url;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_SHOP_CARD_SHOP_CARD_MEDIATOR_TESTING_H_

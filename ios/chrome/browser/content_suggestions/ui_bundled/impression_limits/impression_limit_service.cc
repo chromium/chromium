@@ -18,6 +18,7 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_prefs.h"
 #include "ios/chrome/browser/ntp_tiles/model/tab_resumption/tab_resumption_prefs.h"
 #include "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #include "url/gurl.h"
@@ -216,6 +217,7 @@ void ImpressionLimitService::RemoveEntriesForURls(
 
 const std::set<std::string_view> ImpressionLimitService::GetAllowListedPrefs() {
   static std::set<std::string_view> prefs = {
-      tab_resumption_prefs::kTabResumptionWithPriceDropUrlImpressions};
+      tab_resumption_prefs::kTabResumptionWithPriceDropUrlImpressions,
+      shop_card_prefs::kShopCardPriceDropUrlImpressions};
   return prefs;
 }

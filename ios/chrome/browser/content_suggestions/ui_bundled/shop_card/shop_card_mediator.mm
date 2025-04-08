@@ -23,11 +23,14 @@
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
 #import "components/url_formatter/elide_url.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/impression_limits/impression_limit_service.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_action_delegate.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_data.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_favicon_consumer.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_favicon_consumer_source.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_item.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_prefs.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -37,7 +40,16 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
-@interface ShopCardMediator () <PrefObserverDelegate,
+namespace {
+
+bool IsShopCardImpressionLimitsEnabled() {
+  return base::FeatureList::IsEnabled(commerce::kShopCardImpressionLimits);
+}
+
+}  // namespace
+
+@interface ShopCardMediator () <MagicStackModuleDelegate,
+                                PrefObserverDelegate,
                                 ShopCardFaviconConsumerSource>
 @end
 
@@ -55,6 +67,7 @@
   raw_ptr<FaviconLoader> _faviconLoader;
   bool _faviconCallbackCalledOnce;
   id<ShopCardFaviconConsumer> _faviconConsumer;
+  raw_ptr<ImpressionLimitService> _impressionLimitService;
 }
 
 - (instancetype)
@@ -63,7 +76,8 @@
               bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
                imageFetcher:
                    (std::unique_ptr<image_fetcher::ImageDataFetcher>)fetcher
-              faviconLoader:(FaviconLoader*)faviconLoader {
+              faviconLoader:(FaviconLoader*)faviconLoader
+     impressionLimitService:(ImpressionLimitService*)impressionLimitService {
   self = [super init];
   if (self) {
     _shoppingService = shoppingService;
@@ -79,6 +93,7 @@
         prefs::kHomeCustomizationMagicStackShopCardReviewsEnabled,
         &_prefChangeRegistrar);
     _faviconLoader = faviconLoader;
+    _impressionLimitService = impressionLimitService;
   }
   return self;
 }
@@ -88,6 +103,7 @@
   _bookmarkModel = nil;
   _imageFetcher = nil;
   _faviconLoader = nil;
+  _impressionLimitService = nil;
 }
 
 - (void)reset {
@@ -117,8 +133,6 @@
           prefs::kHomeCustomizationMagicStackShopCardReviewsEnabled)) {
     return;
   }
-  // Populate the item if it is not already initialized.
-  _shopCardItem = [[ShopCardItem alloc] init];
 
   if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm1) {
     _shoppingDataForShopCardFound = false;
@@ -145,6 +159,9 @@
   // Iterate through all subscriptions, find the first recent one with a drop
   // populate item.
   for (const bookmarks::BookmarkNode* bookmark : subscriptions) {
+    if ([self hasReachedImpressionLimit:bookmark->url()]) {
+      continue;
+    }
     std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
         power_bookmarks::GetNodePowerBookmarkMeta(_bookmarkModel, bookmark);
     if (!meta || !meta->has_shopping_specifics()) {
@@ -182,6 +199,7 @@
 - (void)populateShopCardItem:(const power_bookmarks::ShoppingSpecifics)specifics
                     bookmark:(const bookmarks::BookmarkNode*)bookmark {
   _shopCardItem = [[ShopCardItem alloc] init];
+  _shopCardItem.delegate = self;
   _shopCardItem.shopCardData = [[ShopCardData alloc] init];
   _shopCardItem.commandHandler = self;
   _shopCardItem.shopCardFaviconConsumerSource = self;
@@ -239,6 +257,7 @@ std::u16string GetHostnameFromGURL(const GURL& url) {
                          productUrl:(const GURL&)productUrl {
   if (!_shopCardItem) {
     _shopCardItem = [[ShopCardItem alloc] init];
+    _shopCardItem.delegate = self;
   }
   _shopCardItem.shopCardFaviconConsumerSource = self;
 
@@ -293,6 +312,16 @@ std::u16string GetHostnameFromGURL(const GURL& url) {
   [self.delegate removeShopCard];
 }
 
+#pragma mark - MagicStackModuleDelegate
+
+- (void)magicStackModule:(MagicStackModule*)magicStackModule
+     wasDisplayedAtIndex:(NSUInteger)index {
+  if (index == 0) {
+    DCHECK(magicStackModule);
+    [self logImpressionForItem:static_cast<ShopCardItem*>(magicStackModule)];
+  }
+}
+
 #pragma mark - ShopCardMediatorDelegate
 
 - (void)removeShopCard {
@@ -325,6 +354,24 @@ std::u16string GetHostnameFromGURL(const GURL& url) {
   }
 }
 
+- (void)logImpressionForItem:(ShopCardItem*)item {
+  if (!_impressionLimitService || !IsShopCardImpressionLimitsEnabled()) {
+    return;
+  }
+  _impressionLimitService->LogImpressionForURL(
+      item.shopCardData.productURL,
+      shop_card_prefs::kShopCardPriceDropUrlImpressions);
+}
+
+- (BOOL)hasReachedImpressionLimit:(const GURL&)url {
+  if (!_impressionLimitService || !IsShopCardImpressionLimitsEnabled()) {
+    return NO;
+  }
+  std::optional<int> count = _impressionLimitService->GetImpressionCount(
+      url, shop_card_prefs::kShopCardPriceDropUrlImpressions);
+  return count.has_value() && count.value() >= kShopCardMaxImpressions;
+}
+
 #pragma mark - Testing category methods
 - (commerce::ShoppingService*)shoppingServiceForTesting {
   return self->_shoppingService;
@@ -332,6 +379,14 @@ std::u16string GetHostnameFromGURL(const GURL& url) {
 
 - (void)setShopCardItemForTesting:(ShopCardItem*)item {
   self->_shopCardItem = item;
+}
+
+- (void)logImpressionForItemForTesting:(ShopCardItem*)item {
+  [self logImpressionForItem:item];
+}
+
+- (BOOL)hasReachedImpressionLimitForTesting:(const GURL&)url {
+  return [self hasReachedImpressionLimit:url];
 }
 
 - (ShopCardItem*)shopCardItemForTesting {

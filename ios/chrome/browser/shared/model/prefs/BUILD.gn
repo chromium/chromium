@@ -104,6 +104,7 @@ source_set("browser_prefs") {
     "//ios/chrome/browser/content_suggestions/ui_bundled:coordinator",
     "//ios/chrome/browser/content_suggestions/ui_bundled/price_tracking_promo:price_tracking_promo",
     "//ios/chrome/browser/content_suggestions/ui_bundled/safety_check:prefs",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/shop_card:prefs",
     "//ios/chrome/browser/content_suggestions/ui_bundled/shop_card:shop_card",
     "//ios/chrome/browser/content_suggestions/ui_bundled/tips",
     "//ios/chrome/browser/download/model/auto_deletion",

@@ -18,6 +18,7 @@ namespace commerce {
 class ShoppingService;
 }
 
+class ImpressionLimitService;
 class PrefService;
 class FaviconLoader;
 @protocol ShopCardActionDelegate;
@@ -45,6 +46,7 @@ class FaviconLoader;
                imageFetcher:
                    (std::unique_ptr<image_fetcher::ImageDataFetcher>)fetcher
               faviconLoader:(FaviconLoader*)faviconLoader
+     impressionLimitService:(ImpressionLimitService*)impressionLimitService
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
