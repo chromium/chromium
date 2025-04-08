@@ -8720,9 +8720,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_MODULES_TAB_RESUMPTION_DISMISS_BUTTON" desc="A label for the dismiss button in the dropdown.">
         No longer interested
       </message>
-      <message name="IDS_NTP_TAB_RESUMPTION_TITLE" desc="Name of the tab resumption module in sentence case shown in various UIs.">
-        Tabs from other devices
-      </message>
       <message name="IDS_NTP_MODULES_TAB_RESUMPTION_INFO" desc="Text shown in the body of the info dialog of the tab resumption module.">
         You’re seeing tabs from other devices to help you easily get back to your most recent activity.
         <ph name="BREAK">&lt;br&gt;</ph>

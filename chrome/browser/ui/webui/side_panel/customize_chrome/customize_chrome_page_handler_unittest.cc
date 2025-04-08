@@ -272,7 +272,7 @@ class CustomizeChromePageHandlerTest : public testing::Test {
         .WillOnce(SaveArg<0>(&ntp_custom_background_service_observer_));
     const std::vector<ntp::ModuleIdDetail> module_id_details = {
         {ntp_modules::kMostRelevantTabResumptionModuleId,
-         IDS_NTP_TAB_RESUMPTION_TITLE},
+         IDS_NTP_MODULES_MOST_RELEVANT_TAB_RESUMPTION_TITLE},
         {ntp_modules::kMicrosoftAuthenticationModuleId,
          IDS_NTP_MODULES_MICROSOFT_AUTHENTICATION_NAME,
          IDS_NTP_MICROSOFT_AUTHENTICATION_SIDE_PANEL_DESCRIPTION}};
@@ -907,7 +907,8 @@ TEST_F(CustomizeChromePageHandlerWithModulesTest, SetModulesSettings) {
   const auto& tab_resumption_settings = modules_settings[0];
   EXPECT_EQ(ntp_modules::kMostRelevantTabResumptionModuleId,
             tab_resumption_settings->id);
-  EXPECT_EQ(l10n_util::GetStringUTF8(IDS_NTP_TAB_RESUMPTION_TITLE),
+  EXPECT_EQ(l10n_util::GetStringUTF8(
+                IDS_NTP_MODULES_MOST_RELEVANT_TAB_RESUMPTION_TITLE),
             tab_resumption_settings->name);
   EXPECT_EQ(std::nullopt, tab_resumption_settings->description);
   EXPECT_TRUE(tab_resumption_settings->enabled);
