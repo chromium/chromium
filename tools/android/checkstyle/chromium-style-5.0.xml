@@ -253,6 +253,13 @@
       <property name="ignoreComments" value="true"/>
       <property name="message" value="setDecorFitsSystemWindows will change the window flag at activity level, and requires coordination. Use org.chromium.browser_ui.edge_to_edge.EdgeToEdgeStateProvider if possible. (crbug.com/41492646)"/>
     </module>
+    <module name="RegexpSinglelineJava">
+      <property name="id" value="ElevationOverlayProvider"/>
+      <property name="severity" value="warning"/>
+      <property name="format" value="ElevationOverlayProvider"/>
+      <property name="ignoreComments" value="true"/>
+      <property name="message" value="Elevation based surface color is being deprecated. Use tonal color roles instead. See crbug.com/348667900."/>
+    </module>
   </module>
   <module name="RegexpMultiline">
     <property name="id" value="VisibleForTestingForTesting"/>

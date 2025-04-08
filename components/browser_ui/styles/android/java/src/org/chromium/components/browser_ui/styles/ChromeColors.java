@@ -133,10 +133,13 @@ public class ChromeColors {
 
     /**
      * Calculates the surface color using theme colors.
+     *
      * @param context The {@link Context} used to retrieve attrs, colors, and dimens.
      * @param elevationDimen The dimen to look up the elevation level with.
      * @return the {@link ColorInt} for the background of a surface view.
+     * @deprecated Elevation based surface color is deprecated. See crbug.com/348667900.
      */
+    @Deprecated
     public static @ColorInt int getSurfaceColor(Context context, @DimenRes int elevationDimen) {
         float elevation = context.getResources().getDimension(elevationDimen);
         return getSurfaceColor(context, elevation);
@@ -144,10 +147,13 @@ public class ChromeColors {
 
     /**
      * Calculates the surface color using theme colors.
+     *
      * @param context The {@link Context} used to retrieve attrs and colors.
      * @param elevation The elevation in px.
      * @return the {@link ColorInt} for the background of a surface view.
+     * @deprecated Elevation based surface color is deprecated. See crbug.com/348667900.
      */
+    @Deprecated
     public static @ColorInt int getSurfaceColor(Context context, @Px float elevation) {
         ElevationOverlayProvider elevationOverlayProvider = new ElevationOverlayProvider(context);
         return elevationOverlayProvider.compositeOverlayWithThemeSurfaceColorIfNeeded(elevation);
