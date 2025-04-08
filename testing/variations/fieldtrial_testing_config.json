@@ -18189,6 +18189,26 @@
             ]
         }
     ],
+    "PrefetchScheduler": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PrefetchScheduler"
+                    ]
+                }
+            ]
+        }
+    ],
     "PrefetchServiceWorker": [
         {
             "platforms": [
@@ -18364,7 +18384,6 @@
         {
             "platforms": [
                 "android",
-                "android_webview",
                 "chromeos",
                 "linux",
                 "mac",
@@ -18372,10 +18391,12 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledWithBodySizeLimit2048KiB_20241204",
+                    "name": "Enabled_NoTimeout_Burst",
                     "params": {
-                        "kPrerender2FallbackBodySizeLimit": "2097152",
-                        "kPrerender2FallbackPrefetchReusablePolicy": "UseIfIsLikelyAheadOfPrerender"
+                        "kPrerender2FallbackBodySizeLimit": "4194304",
+                        "kPrerender2FallbackPrefetchReusablePolicy": "UseIfIsLikelyAheadOfPrerender",
+                        "kPrerender2FallbackPrefetchSchedulerPolicy": "Burst",
+                        "kPrerender2FallbackPrefetchUseBlockUntilHeadTimetout": "false"
                     },
                     "enable_features": [
                         "Prerender2FallbackPrefetchSpecRules"

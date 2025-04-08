@@ -1654,7 +1654,7 @@
       "http/tests/inspector-protocol/prerender/prefetch-events-for-ahead-of-prerender.js"
     ],
     "args": [
-      "--enable-features=PrefetchReusable,Prerender2FallbackPrefetchSpecRules"
+      "--enable-features=PrefetchReusable,Prerender2FallbackPrefetchSpecRules:kPrerender2FallbackPrefetchSchedulerPolicy/Burst"
     ],
     "owners": ["kenoss@chromium.org"],
     "expires": "May 12, 2025"
