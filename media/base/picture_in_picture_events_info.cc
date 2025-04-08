@@ -34,17 +34,18 @@ std::string PictureInPictureEventsInfo::AutoPipReasonToString(
 // static
 std::string PictureInPictureEventsInfo::AutoPipInfoToString(
     AutoPipInfo auto_pip_info) {
+  constexpr std::array<std::string, 2> bool_to_string{"false", "true"};
   return base::StringPrintf(
       "{Reason: %s, has audio focus: %s, is_playing: %s, was recently audible: "
       "%s, has safe url: %s, meets media engagement conditions: %s, blocked "
       "due to content setting: %s}",
       AutoPipReasonToString(auto_pip_info.auto_pip_reason),
-      auto_pip_info.has_audio_focus ? "true" : "false",
-      auto_pip_info.is_playing ? "true" : "false",
-      auto_pip_info.was_recently_audible ? "true" : "false",
-      auto_pip_info.has_safe_url ? "true" : "false",
-      auto_pip_info.meets_media_engagement_conditions ? "true" : "false",
-      auto_pip_info.blocked_due_to_content_setting ? "true" : "false");
+      bool_to_string[auto_pip_info.has_audio_focus],
+      bool_to_string[auto_pip_info.is_playing],
+      bool_to_string[auto_pip_info.was_recently_audible],
+      bool_to_string[auto_pip_info.has_safe_url],
+      bool_to_string[auto_pip_info.meets_media_engagement_conditions],
+      bool_to_string[auto_pip_info.blocked_due_to_content_setting]);
 }
 
 }  // namespace media
