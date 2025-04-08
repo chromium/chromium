@@ -120,6 +120,15 @@ void SessionAccessor::Score(const std::string& text, ChromeMLScoreFn score_fn) {
                      text, std::move(score_fn)));
 }
 
+void SessionAccessor::GetProbabilitiesBlocking(
+    const std::string& input,
+    ChromeMLGetProbabilitiesBlockingFn get_prob_fn) {
+  task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&SessionAccessor::GetProbabilitiesBlockingInternal,
+                     base::Unretained(this), input, std::move(get_prob_fn)));
+}
+
 void SessionAccessor::SizeInTokens(on_device_model::mojom::InputPtr input,
                                    ChromeMLSizeInTokensFn size_in_tokens_fn) {
   task_runner_->PostTask(
@@ -230,6 +239,15 @@ void SessionAccessor::ScoreInternal(const std::string& text,
                                     ChromeMLScoreFn score_fn) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   chrome_ml_->api().SessionScore(session_, text, score_fn);
+}
+
+DISABLE_CFI_DLSYM
+void SessionAccessor::GetProbabilitiesBlockingInternal(
+    const std::string& input,
+    ChromeMLGetProbabilitiesBlockingFn get_prob_fn) {
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  chrome_ml_->api().SessionGetProbabilitiesBlocking(session_, input,
+                                                    get_prob_fn);
 }
 
 DISABLE_CFI_DLSYM

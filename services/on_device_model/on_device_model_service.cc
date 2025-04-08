@@ -94,6 +94,14 @@ class SessionWrapper final : public mojom::Session {
     session_->Score(text, std::move(callback).Then(std::move(on_complete)));
   }
 
+  void GetProbabilitiesBlockingInternal(
+      const std::string& text,
+      GetProbabilitiesBlockingCallback callback,
+      base::OnceClosure on_complete) {
+    session_->GetProbabilitiesBlocking(
+        text, std::move(callback).Then(std::move(on_complete)));
+  }
+
   void CloneInternal(mojo::PendingReceiver<mojom::Session> session);
 
   base::WeakPtr<ModelWrapper> model_;
@@ -304,8 +312,15 @@ void SessionWrapper::Score(const std::string& text, ScoreCallback callback) {
 void SessionWrapper::GetProbabilitiesBlocking(
     const std::string& text,
     GetProbabilitiesBlockingCallback callback) {
-  std::move(callback).Run(std::vector<float>());
-  return;
+  if (!model_) {
+    std::move(callback).Run(std::vector<float>());
+    return;
+  }
+
+  model_->AddAndRunPendingTask(
+      base::BindOnce(&SessionWrapper::GetProbabilitiesBlockingInternal,
+                     weak_ptr_factory_.GetWeakPtr(), text, std::move(callback)),
+      weak_ptr_factory_.GetWeakPtr());
 }
 
 void SessionWrapper::Clone(mojo::PendingReceiver<mojom::Session> session) {

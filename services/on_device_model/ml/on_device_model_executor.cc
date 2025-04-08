@@ -323,6 +323,14 @@ void SessionImpl::Score(const std::string& text,
   session_->Score(text, ConvertCallbackToFn(std::move(callback)));
 }
 
+DISABLE_CFI_DLSYM
+void SessionImpl::GetProbabilitiesBlocking(
+    const std::string& input,
+    base::OnceCallback<void(const std::vector<float>&)> callback) {
+  session_->GetProbabilitiesBlocking(input,
+                                     ConvertCallbackToFn(std::move(callback)));
+}
+
 std::unique_ptr<SessionImpl> SessionImpl::Clone() {
   return std::make_unique<SessionImpl>(
       chrome_ml_.get(), model_, session_->Clone(), max_tokens_, adaptation_id_);
