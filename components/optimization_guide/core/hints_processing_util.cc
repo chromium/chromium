@@ -181,6 +181,8 @@ std::string GetStringNameForOptimizationType(
       return "GlicZeroStateSuggestions";
     case proto::OptimizationType::GLIC_ACTION_PAGE_BLOCK:
       return "GlicActionPageBlock";
+    case proto::OptimizationType::FEDCM_CLICKTHROUGH_RATE:
+      return "FedCmClickthroughRate";
   }
 
   // The returned string is used to record histograms for the optimization type.

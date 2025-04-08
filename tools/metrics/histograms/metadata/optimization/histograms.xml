@@ -288,6 +288,9 @@ chromium-metrics-reviews@google.com.
   <variant name="FastHostHints"
       summary="Provides information about hosts that historically provide a
                fast and responsive user experience"/>
+  <variant name="FedCmClickthroughRate"
+      summary="Provides information about FedCM API clickthrough rate
+               aggregated across all users on the page."/>
   <variant name="FormsAnnotations"
       summary="Provides information about whether a URL is eligible for
                generating user annotations derived from forms."/>

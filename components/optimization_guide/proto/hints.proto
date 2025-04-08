@@ -322,6 +322,9 @@ enum OptimizationType {
   GLIC_ZERO_STATE_SUGGESTIONS = 91;
   // Provides information about whether GLIC may act on a page.
   GLIC_ACTION_PAGE_BLOCK = 92;
+  // Provides information about FedCM API clickthrough rate aggregated across
+  // all users on the page.
+  FEDCM_CLICKTHROUGH_RATE = 93;
 }
 
 // Presents semantics for how page load URLs should be matched.
