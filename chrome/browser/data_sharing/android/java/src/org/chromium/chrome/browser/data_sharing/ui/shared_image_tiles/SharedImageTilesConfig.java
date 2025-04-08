@@ -5,9 +5,12 @@
 package org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles;
 
 import android.content.Context;
+import android.content.res.Resources;
+import android.util.Pair;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.DimenRes;
+import androidx.annotation.Px;
 import androidx.annotation.StyleRes;
 
 import org.chromium.build.annotations.NullMarked;
@@ -41,6 +44,13 @@ public class SharedImageTilesConfig {
         this.borderColor = builder.mBorderColor;
         this.backgroundColor = builder.mBackgroundColor;
         this.textStyle = builder.mTextStyle;
+    }
+
+    /** Returns the border size and total icon size in {@link Px} units. */
+    public Pair<Integer, Integer> getBorderAndTotalIconSizes(Resources res) {
+        @Px int borderSize = res.getDimensionPixelSize(this.borderSizeDp);
+        @Px int iconTotalSize = res.getDimensionPixelSize(this.iconSizeDp) + 2 * borderSize;
+        return Pair.create(borderSize, iconTotalSize);
     }
 
     @Override

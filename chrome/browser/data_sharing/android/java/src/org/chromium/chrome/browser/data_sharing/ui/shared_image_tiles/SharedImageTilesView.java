@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,8 +46,9 @@ public class SharedImageTilesView extends LinearLayout {
 
     void applyConfig(SharedImageTilesConfig config) {
         Resources res = mContext.getResources();
-        @Px int borderSize = res.getDimensionPixelSize(config.borderSizeDp);
-        @Px int iconTotalSize = res.getDimensionPixelSize(config.iconSizeDp) + 2 * borderSize;
+        Pair<Integer, Integer> borderAndTotalIconSize = config.getBorderAndTotalIconSizes(res);
+        @Px int borderSize = borderAndTotalIconSize.first;
+        @Px int iconTotalSize = borderAndTotalIconSize.second;
         @Px int textPadding = res.getDimensionPixelSize(config.textPaddingDp);
 
         // Style the icon tiles.

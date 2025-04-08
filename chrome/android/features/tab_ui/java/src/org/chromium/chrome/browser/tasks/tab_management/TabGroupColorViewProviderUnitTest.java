@@ -38,6 +38,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.MathUtils;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesConfig;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.ServiceStatus;
 import org.chromium.components.data_sharing.DataSharingService;
@@ -282,15 +283,15 @@ public class TabGroupColorViewProviderUnitTest {
         assertEquals(1, colorView.getChildCount());
 
         Resources res = mContext.getResources();
-        @Px
-        int expectedMargin =
-                res.getDimensionPixelSize(R.dimen.tab_group_color_icon_stroke);
-        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) colorView.getChildAt(0).getLayoutParams();
-        assertEquals(expectedMargin, params.getMarginStart());
-        assertEquals(expectedMargin, params.topMargin);
+        final @Px int stroke = res.getDimensionPixelSize(R.dimen.tab_group_color_icon_stroke);
+        FrameLayout.LayoutParams params =
+                (FrameLayout.LayoutParams) colorView.getChildAt(0).getLayoutParams();
+        assertEquals(stroke, params.getMarginStart());
+        assertEquals(stroke, params.topMargin);
 
-        @Px
-        int size = res.getDimensionPixelSize(R.dimen.tab_group_color_icon_with_avatar_item_size);
+        SharedImageTilesConfig config =
+                SharedImageTilesConfig.Builder.createThumbnail(mContext, currentColorId).build();
+        final @Px int size = config.getBorderAndTotalIconSizes(res).second + 2 * stroke;
         assertEquals(size, colorView.getMinimumWidth());
         assertEquals(size, colorView.getMinimumHeight());
 
@@ -300,8 +301,8 @@ public class TabGroupColorViewProviderUnitTest {
         assertEquals(
                 ColorPickerUtils.getTabGroupColorPickerItemColor(mContext, currentColorId, false),
                 drawable.getColor().getDefaultColor());
-        float radius = res.getDimension(R.dimen.tab_group_color_icon_with_avatar_item_radius);
-        assertAllCornerRadiiAre(radius, drawable);
+        int radius = (size + 1) / 2;
+        assertAllCornerRadiiAre((float) radius, drawable);
     }
 
     void assertAllCornerRadiiAre(float radius, GradientDrawable drawable) {

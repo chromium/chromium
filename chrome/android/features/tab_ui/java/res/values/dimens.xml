@@ -94,8 +94,6 @@ found in the LICENSE file.
     <dimen name="tab_group_color_icon_stroke">2dp</dimen>
     <dimen name="tab_group_color_icon_item_size">18dp</dimen>
     <dimen name="tab_group_color_icon_item_radius">9dp</dimen>
-    <dimen name="tab_group_color_icon_with_avatar_item_size">24dp</dimen>
-    <dimen name="tab_group_color_icon_with_avatar_item_radius">12dp</dimen>
     <dimen name="tab_group_color_picker_popup_padding">10dp</dimen>
     <dimen name="tab_group_visual_data_dialog_margin_padding">3dp</dimen>
 
