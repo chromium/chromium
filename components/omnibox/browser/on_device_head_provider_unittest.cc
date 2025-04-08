@@ -290,8 +290,8 @@ TEST_F(OnDeviceHeadProviderTest, LaunchEnglishTailModel) {
   {
     SCOPED_TRACE("disable tail model for English locales");
     base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndEnableFeature(
-        omnibox::kDisableOnDeviceTailEnglishModel);
+    scoped_feature_list.InitAndDisableFeature(
+        omnibox::kOnDeviceTailEnableEnglishModel);
     provider_->Start(input, false);
     task_environment_.RunUntilIdle();
 

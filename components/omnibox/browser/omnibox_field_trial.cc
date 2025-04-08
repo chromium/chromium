@@ -583,8 +583,8 @@ bool OmniboxFieldTrial::IsOnDeviceTailSuggestEnabled(
   // Do not launch for iOS since the feature is not supported in iOS yet.
 #if !BUILDFLAG(IS_IOS)
   if (IsEnglishLocale(locale)) {
-    return !base::FeatureList::IsEnabled(
-        omnibox::kDisableOnDeviceTailEnglishModel);
+    return base::FeatureList::IsEnabled(
+        omnibox::kOnDeviceTailEnableEnglishModel);
   }
 #endif  // !BUILDFLAG(IS_IOS)
 

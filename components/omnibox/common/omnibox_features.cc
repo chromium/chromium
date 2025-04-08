@@ -155,9 +155,9 @@ BASE_FEATURE(kOnDeviceHeadProviderKorean,
              "OmniboxOnDeviceHeadProviderKorean",
              DISABLED);
 BASE_FEATURE(kOnDeviceTailModel, "OmniboxOnDeviceTailModel", DISABLED);
-BASE_FEATURE(kDisableOnDeviceTailEnglishModel,
-             "OmniboxDisableOnDeviceTailEnglishModel",
-             DISABLED);
+BASE_FEATURE(kOnDeviceTailEnableEnglishModel,
+             "OmniboxOnDeviceTailEnableEnglishModel",
+             ENABLED);
 
 // If enabled, the relevant AutocompleteProviders will store "title" data in
 // AutocompleteMatch::contents and "URL" data in AutocompleteMatch::description
