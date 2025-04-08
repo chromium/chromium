@@ -14,6 +14,9 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
+#include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
+#include "chrome/browser/glic/fre/glic_fre_controller.h"
 #include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
@@ -49,10 +52,12 @@
 
 namespace glic {
 
-GlicKeyedService::GlicKeyedService(Profile* profile,
-                                   signin::IdentityManager* identity_manager,
-                                   ProfileManager* profile_manager,
-                                   GlicProfileManager* glic_profile_manager)
+GlicKeyedService::GlicKeyedService(
+    Profile* profile,
+    signin::IdentityManager* identity_manager,
+    ProfileManager* profile_manager,
+    GlicProfileManager* glic_profile_manager,
+    contextual_cueing::ContextualCueingService* contextual_cueing_service)
     : profile_(profile),
       enabling_(std::make_unique<GlicEnabling>(
           profile,
@@ -68,7 +73,8 @@ GlicKeyedService::GlicKeyedService(Profile* profile,
       auth_controller_(std::make_unique<AuthController>(profile,
                                                         identity_manager,
                                                         /*use_for_fre=*/false)),
-      glic_profile_manager_(glic_profile_manager) {
+      glic_profile_manager_(glic_profile_manager),
+      contextual_cueing_service_(contextual_cueing_service) {
   CHECK(GlicEnabling::IsProfileEligible(Profile::FromBrowserContext(profile)));
   metrics_->SetControllers(window_controller_.get(), &focused_tab_manager_);
 
@@ -132,6 +138,29 @@ void GlicKeyedService::CloseUI() {
 
 void GlicKeyedService::FocusUI() {
   window_controller_->FocusIfOpen();
+}
+
+void GlicKeyedService::PrepareForOpen() {
+  window_controller_->fre_controller()->MaybePreconnect();
+
+  auto* active_web_contents = GetFocusedTabData().focus();
+  if (contextual_cueing_service_ && active_web_contents) {
+    contextual_cueing_service_
+        ->PrepareToFetchContextualGlicZeroStateSuggestions(active_web_contents);
+  }
+}
+
+void GlicKeyedService::FetchZeroStateSuggestions() {
+  auto* active_web_contents = GetFocusedTabData().focus();
+  if (contextual_cueing_service_ && active_web_contents) {
+    // TODO(crbug.com/405185362): Update callback to pipe to window controller.
+    // TODO(crbug.com/405185362); Reflect true FRE state as this would always
+    // be false otherwise with current design as this won't fetch until user
+    // has accepted the FRE.
+    contextual_cueing_service_->GetContextualGlicZeroStateSuggestions(
+        active_web_contents,
+        /*is_fre=*/false, base::DoNothing());
+  }
 }
 
 void GlicKeyedService::GuestAdded(content::WebContents* guest_contents) {

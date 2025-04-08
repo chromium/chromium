@@ -32,6 +32,7 @@ class GlicButton : public TabStripNudgeButton,
                       PressedCallback pressed_callback,
                       PressedCallback close_pressed_callback,
                       base::RepeatingClosure hovered_callback,
+                      base::RepeatingClosure mouse_down_callback,
                       const gfx::VectorIcon& icon,
                       const std::u16string& tooltip);
   GlicButton(const GlicButton&) = delete;
@@ -65,6 +66,11 @@ class GlicButton : public TabStripNudgeButton,
 
   // ui::SimpleMenuModel::Delegate:
   void ExecuteCommand(int command_id, int event_flags) override;
+
+  // views::View:
+  // Note that this is an optimization for fetching zero-state suggestions so
+  // that we can load the suggestions in the UI as quickly as possible.
+  bool OnMousePressed(const ui::MouseEvent& event) override;
 
   bool IsContextMenuShowingForTest();
 
@@ -101,6 +107,10 @@ class GlicButton : public TabStripNudgeButton,
   // Callback which is invoked when the button is hovered (i.e., the user is
   // more likely to interact with it soon).
   base::RepeatingClosure hovered_callback_;
+
+  // Callback which is invoked when there is a mouse down event on the button
+  // (i.e., the user is very likely to interact with it soon).
+  base::RepeatingClosure mouse_down_callback_;
 };
 
 }  // namespace glic

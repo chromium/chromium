@@ -40,7 +40,6 @@
 
 #if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/browser_ui/glic_vector_icon_manager.h"
-#include "chrome/browser/glic/fre/glic_fre_controller.h"
 #include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
@@ -352,6 +351,8 @@ std::unique_ptr<glic::GlicButton> TabStripActionContainer::CreateGlicButton(
                               base::Unretained(this)),
           base::BindRepeating(&TabStripActionContainer::OnGlicButtonHovered,
                               base::Unretained(this)),
+          base::BindRepeating(&TabStripActionContainer::OnGlicButtonMouseDown,
+                              base::Unretained(this)),
           glic::GlicVectorIconManager::GetVectorIcon(
               IDR_GLIC_BUTTON_VECTOR_ICON),
           l10n_util::GetStringUTF16(IDS_GLIC_TAB_STRIP_BUTTON_TOOLTIP));
@@ -446,7 +447,19 @@ void TabStripActionContainer::OnGlicButtonHovered() {
   Profile* profile = tab_strip_controller_->GetProfile();
   glic::GlicKeyedService* glic_service =
       glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile);
-  glic_service->window_controller().fre_controller()->MaybePreconnect();
+  glic_service->PrepareForOpen();
+}
+
+void TabStripActionContainer::OnGlicButtonMouseDown() {
+  Profile* profile = tab_strip_controller_->GetProfile();
+  if (!glic::GlicEnabling::IsEnabledAndConsentForProfile(profile)) {
+    // Do not do this optimization if user has not consented to GLIC.
+    return;
+  }
+
+  glic::GlicKeyedService* glic_service =
+      glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile);
+  glic_service->FetchZeroStateSuggestions();
 }
 #endif  // BUILDFLAG(ENABLE_GLIC)
 

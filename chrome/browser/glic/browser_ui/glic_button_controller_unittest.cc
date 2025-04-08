@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
 #include "chrome/browser/glic/browser_ui/glic_button_controller_delegate.h"
 #include "chrome/browser/glic/browser_ui/glic_vector_icon_manager.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
@@ -33,14 +34,17 @@ namespace {
 
 class MockGlicKeyedService : public glic::GlicKeyedService {
  public:
-  MockGlicKeyedService(content::BrowserContext* browser_context,
-                       signin::IdentityManager* identity_manager,
-                       ProfileManager* profile_manager,
-                       GlicProfileManager* glic_profile_manager)
+  MockGlicKeyedService(
+      content::BrowserContext* browser_context,
+      signin::IdentityManager* identity_manager,
+      ProfileManager* profile_manager,
+      GlicProfileManager* glic_profile_manager,
+      contextual_cueing::ContextualCueingService* contextual_cueing_service)
       : GlicKeyedService(Profile::FromBrowserContext(browser_context),
                          identity_manager,
                          profile_manager,
-                         glic_profile_manager) {}
+                         glic_profile_manager,
+                         contextual_cueing_service) {}
   MOCK_METHOD(void, TryPreload, (), (override));
 };
 
@@ -75,7 +79,8 @@ class GlicButtonControllerTest : public testing::Test {
 
     mock_glic_service_ = std::make_unique<MockGlicKeyedService>(
         profile_, identity_test_environment.identity_manager(),
-        testing_profile_manager_->profile_manager(), &glic_profile_manager_);
+        testing_profile_manager_->profile_manager(), &glic_profile_manager_,
+        /*contextual_cueing_service=*/nullptr);
 
     glic_button_controller_ = std::make_unique<GlicButtonController>(
         profile_, &mock_glic_controller_delegate_, mock_glic_service_.get());

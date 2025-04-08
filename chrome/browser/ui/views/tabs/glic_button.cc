@@ -37,6 +37,7 @@ GlicButton::GlicButton(TabStripController* tab_strip_controller,
                        PressedCallback pressed_callback,
                        PressedCallback close_pressed_callback,
                        base::RepeatingClosure hovered_callback,
+                       base::RepeatingClosure mouse_down_callback,
                        const gfx::VectorIcon& icon,
                        const std::u16string& tooltip)
     : TabStripNudgeButton(tab_strip_controller,
@@ -48,7 +49,8 @@ GlicButton::GlicButton(TabStripController* tab_strip_controller,
                           icon),
       menu_model_(CreateMenuModel()),
       tab_strip_controller_(tab_strip_controller),
-      hovered_callback_(std::move(hovered_callback)) {
+      hovered_callback_(std::move(hovered_callback)),
+      mouse_down_callback_(std::move(mouse_down_callback)) {
   SetProperty(views::kElementIdentifierKey, kGlicButtonElementId);
 
   set_context_menu_controller(this);
@@ -162,6 +164,14 @@ void GlicButton::ShowContextMenuForViewImpl(
 void GlicButton::ExecuteCommand(int command_id, int event_flags) {
   CHECK(command_id == IDC_GLIC_TOGGLE_PIN);
   profile_prefs()->SetBoolean(glic::prefs::kGlicPinnedToTabstrip, false);
+}
+
+bool GlicButton::OnMousePressed(const ui::MouseEvent& event) {
+  if (event.IsOnlyLeftMouseButton() && mouse_down_callback_) {
+    mouse_down_callback_.Run();
+    return true;
+  }
+  return false;
 }
 
 bool GlicButton::IsContextMenuShowingForTest() {

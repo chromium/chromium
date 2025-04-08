@@ -21,6 +21,10 @@ class BrowserWindowInterface;
 class Profile;
 class ProfileManager;
 
+namespace contextual_cueing {
+class ContextualCueingService;
+}  // namespace contextual_cueing
+
 namespace signin {
 class IdentityManager;
 }  // namespace signin
@@ -43,10 +47,12 @@ class GlicWindowController;
 // preference for changes and cause the UI to respond to it.
 class GlicKeyedService : public KeyedService {
  public:
-  explicit GlicKeyedService(Profile* profile,
-                            signin::IdentityManager* identity_manager,
-                            ProfileManager* profile_manager,
-                            GlicProfileManager* glic_profile_manager);
+  explicit GlicKeyedService(
+      Profile* profile,
+      signin::IdentityManager* identity_manager,
+      ProfileManager* profile_manager,
+      GlicProfileManager* glic_profile_manager,
+      contextual_cueing::ContextualCueingService* contextual_cueing_service);
   GlicKeyedService(const GlicKeyedService&) = delete;
   GlicKeyedService& operator=(const GlicKeyedService&) = delete;
   ~GlicKeyedService() override;
@@ -71,6 +77,13 @@ class GlicKeyedService : public KeyedService {
   void CloseUI();
 
   void FocusUI();
+
+  // The user has performed an action suggesting that they made open the UI
+  // soon.
+  void PrepareForOpen();
+
+  // Fetch zero state suggestions for the active web contents.
+  void FetchZeroStateSuggestions();
 
   GlicEnabling& enabling() { return *enabling_.get(); }
 
@@ -211,6 +224,8 @@ class GlicKeyedService : public KeyedService {
   // The set of live `GlicPageHandler`s.
   base::flat_set<raw_ptr<GlicPageHandler>> page_handlers_;
   std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
+  raw_ptr<contextual_cueing::ContextualCueingService>
+      contextual_cueing_service_;
 
   base::WeakPtrFactory<GlicKeyedService> weak_ptr_factory_{this};
 };

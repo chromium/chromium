@@ -187,6 +187,10 @@ void ContextualCueingService::OnNudgeActivity(
 
 void ContextualCueingService::PrepareToFetchContextualGlicZeroStateSuggestions(
     content::WebContents* web_contents) {
+  if (!base::FeatureList::IsEnabled(kGlicZeroStateSuggestions)) {
+    return;
+  }
+
   // This call preflights grabbing the page content.
   ZeroStateSuggestionsPageData::CreateForPage(web_contents->GetPrimaryPage());
 
@@ -203,6 +207,10 @@ void ContextualCueingService::GetContextualGlicZeroStateSuggestions(
     content::WebContents* web_contents,
     bool is_fre,
     GlicSuggestionsCallback callback) {
+  if (!base::FeatureList::IsEnabled(kGlicZeroStateSuggestions)) {
+    return;
+  }
+
   // TODO(crbug.com/405988283): Add branch for hints suggestions.
 
   // Remote suggestions generation.
