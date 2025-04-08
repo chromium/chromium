@@ -17,6 +17,7 @@ import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
@@ -99,6 +100,8 @@ public class HomeModulesMetricsUtils {
     static final String HISTOGRAM_EDUCATIONAL_TIP_MODULE_IMPRESSION_COUNT_BEFORE_INTERACTION =
             ".ImpressionCountBeforeInteraction";
 
+    private static final String TAG = "HomeModules";
+
     /**
      * Returns a string name of a module. Remember to update the variant ModuleType in
      * tools/metrics/histograms/metadata/magic_stack/histograms.xml when adding a new module type
@@ -146,7 +149,7 @@ public class HomeModulesMetricsUtils {
             case "QuickDeletePromo":
                 return QUICK_DELETE_PROMO;
             default:
-                assert false : "Module type not supported!";
+                Log.i(TAG, "Module type %s not supported!", label);
                 return ModuleType.NUM_ENTRIES;
         }
     }

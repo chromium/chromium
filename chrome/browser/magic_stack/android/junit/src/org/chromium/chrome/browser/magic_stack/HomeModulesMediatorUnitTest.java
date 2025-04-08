@@ -675,6 +675,27 @@ public class HomeModulesMediatorUnitTest {
 
     @Test
     @SmallTest
+    public void testFilterEnabledModuleList_withInvalidType() {
+        ClassificationResult classificationResult =
+                new ClassificationResult(
+                        org.chromium.components.segmentation_platform.prediction_status
+                                .PredictionStatus.SUCCEEDED,
+                        new String[] {"TabResumption"},
+                        /* requestId= */ 0);
+        Set<Integer> filteredEnabledModuleSet = new HashSet<>();
+        filteredEnabledModuleSet.add(ModuleType.SINGLE_TAB);
+        filteredEnabledModuleSet.add(ModuleType.PRICE_CHANGE);
+        filteredEnabledModuleSet.add(ModuleType.SAFETY_HUB);
+
+        assertTrue(
+                mMediator
+                        .filterEnabledModuleList(
+                                classificationResult.orderedLabels, filteredEnabledModuleSet)
+                        .isEmpty());
+    }
+
+    @Test
+    @SmallTest
     public void testInput() {
         @ModuleType int moduleType = ModuleType.SINGLE_TAB;
         String expectedFreshnessString = "single_tab_freshness";
