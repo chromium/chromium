@@ -711,6 +711,11 @@ NET_EXPORT BASE_DECLARE_FEATURE(kReportingApiCorsOriginHeader);
 // helps prevent excessively large reports json stringification.
 NET_EXPORT BASE_DECLARE_FEATURE(kExcludeLargeBodyReports);
 
+// Enables the Related Website Partition API, allowing members of a Related
+// Website Set to access partitioned non-cookie storage. See
+// https://github.com/explainers-by-googlers/related-website-partition-api.
+NET_EXPORT BASE_DECLARE_FEATURE(kRelatedWebsitePartitionAPI);
+
 #if BUILDFLAG(IS_ANDROID)
 // If enabled, Android OS's certificate verification (CertVerifyProcAndroid) is
 // done using the certificate transparency aware API.

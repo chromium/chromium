@@ -3636,6 +3636,15 @@
       status: {"Android": "", "default": "stable"},
     },
     {
+      name: "RelatedWebsitePartitionAPI",
+      base_feature: "none",
+
+      // No status because this blink runtime feature doesn't work by itself.
+      // It's controlled by the corresponding Chromium feature,
+      // net::features::kRelatedWebsitePartitionAPI, which needs to be
+      // enabled to make the whole feature work.
+    },
+    {
       name: "RelOpenerBcgDependencyHint",
       status: "experimental",
     },

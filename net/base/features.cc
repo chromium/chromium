@@ -484,6 +484,10 @@ BASE_FEATURE_PARAM(size_t,
                    "max_report_body_size_kb",
                    1024);
 
+BASE_FEATURE(kRelatedWebsitePartitionAPI,
+             "RelatedWebsitePartitionAPI",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Network-change migration requires NetworkHandle support, which are currently
 // only supported on Android (see
 // NetworkChangeNotifier::AreNetworkHandlesSupported).
