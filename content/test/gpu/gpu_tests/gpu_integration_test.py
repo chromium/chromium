@@ -673,10 +673,28 @@ class GpuIntegrationTest(
     """Verifies that the browser's enabled features match expectations."""
     assert cls.browser
     gpu_info = cls.browser.GetSystemInfo().gpu
+    cls._VerifyNoInProcessGpu(gpu_info)
     cls._VerifyGLBackend(gpu_info)
     cls._VerifyANGLEBackend(gpu_info)
     cls._VerifyCommandDecoder(gpu_info)
     cls._VerifySkiaGraphite(gpu_info)
+
+  @classmethod
+  def _VerifyNoInProcessGpu(cls, gpu_info: telemetry_gpu_info.GPUInfo) -> None:
+    """Verifies that Chrome is not running with an in-process GPU.
+
+    This should never happen under normal circumstances, and use of it is
+    indicative of an unrecoverable issue.
+    """
+    # The initialization_time check is to distinguish between when this happens
+    # expectedly or not - Android Webview has in_process_gpu set to True, but
+    # still reports an initialization time.
+    if (gpu_info.aux_attributes.get('in_process_gpu')
+        and gpu_info.aux_attributes.get('initialization_time', 1) == 0):
+      raise RuntimeError(
+          'Browser reported in_process_gpu with no initialization time, which '
+          'should never happen during testing. Something probably crashed '
+          'during browser startup.')
 
   @classmethod
   def _VerifyGLBackend(cls, gpu_info: telemetry_gpu_info.GPUInfo) -> None:
