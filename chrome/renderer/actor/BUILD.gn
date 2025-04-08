@@ -17,6 +17,8 @@ source_set("actor") {
     "tool_executor.h",
     "tool_utils.cc",
     "tool_utils.h",
+    "type_tool.cc",
+    "type_tool.h",
   ]
 
   public_deps = [

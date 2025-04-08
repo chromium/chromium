@@ -15,6 +15,9 @@ optimization_guide::proto::BrowserAction MakeClick(int content_node_id);
 optimization_guide::proto::BrowserAction MakeHistoryBack();
 optimization_guide::proto::BrowserAction MakeHistoryForward();
 optimization_guide::proto::BrowserAction MakeMouseMove(int content_node_id);
+optimization_guide::proto::BrowserAction MakeType(int content_node_id,
+                                                  std::string_view text,
+                                                  bool follow_by_enter);
 
 }  // namespace actor
 

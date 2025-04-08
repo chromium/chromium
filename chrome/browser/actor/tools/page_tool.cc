@@ -14,6 +14,7 @@ using content::RenderFrameHost;
 using optimization_guide::proto::ActionInformation;
 using optimization_guide::proto::ClickAction_ClickCount;
 using optimization_guide::proto::ClickAction_ClickType;
+using optimization_guide::proto::TypeAction_TypeMode;
 
 namespace {
 // Set mojom for click action based on proto. Returns false if the proto does
@@ -52,6 +53,38 @@ void SetMouseMoveToolArgs(actor::mojom::MouseMoveActionPtr& move,
   move->target = actor::mojom::ToolTarget::New(
       action_info.move_mouse().target().content_node_id());
 }
+
+// Set mojom for type action based on proto.
+// Returns false if the proto does not contain correct/sufficient information,
+// true otherwise.
+bool SetTypeToolArgs(actor::mojom::TypeActionPtr& type_action,
+                     const ActionInformation& action_info) {
+  type_action->target = actor::mojom::ToolTarget::New(
+      action_info.type().target().content_node_id());
+  type_action->text = action_info.type().text();
+  type_action->follow_by_enter = action_info.type().follow_by_enter();
+
+  // Map proto enum to mojom enum
+  switch (action_info.type().mode()) {
+    case TypeAction_TypeMode::TypeAction_TypeMode_DELETE_EXISTING:
+      type_action->mode = actor::mojom::TypeAction::Mode::kDeleteExisting;
+      break;
+    case TypeAction_TypeMode::TypeAction_TypeMode_PREPEND:
+      type_action->mode = actor::mojom::TypeAction::Mode::kPrepend;
+      break;
+    case TypeAction_TypeMode::TypeAction_TypeMode_APPEND:
+      type_action->mode = actor::mojom::TypeAction::Mode::kAppend;
+      break;
+    case TypeAction_TypeMode::TypeAction_TypeMode_UNKNOWN_TYPE_MODE:
+    default:
+      DLOG(ERROR) << "TypeAction proto type mode not supported"
+                  << action_info.type().mode();
+      return false;
+  }
+
+  return true;
+}
+
 }  // namespace
 
 namespace actor {
@@ -83,14 +116,22 @@ void PageTool::Invoke(InvokeCallback callback) {
       request->action = mojom::ToolAction::NewClick(std::move(click));
       break;
     }
-    case ActionInformation::ActionInfoCase::kType:
-    case ActionInformation::ActionInfoCase::kScroll:
+    case ActionInformation::ActionInfoCase::kType: {
+      auto type = mojom::TypeAction::New();
+      if (!SetTypeToolArgs(type, action_info)) {
+        std::move(callback).Run(false);
+        return;
+      }
+      request->action = mojom::ToolAction::NewType(std::move(type));
+      break;
+    }
     case ActionInformation::ActionInfoCase::kMoveMouse: {
       auto mouse_move = mojom::MouseMoveAction::New();
       SetMouseMoveToolArgs(mouse_move, action_info);
       request->action = mojom::ToolAction::NewMouseMove(std::move(mouse_move));
       break;
     }
+    case ActionInformation::ActionInfoCase::kScroll:
     case ActionInformation::ActionInfoCase::kDragAndRelease:
     case ActionInformation::ActionInfoCase::kSelect: {
       // Not implemented yet.

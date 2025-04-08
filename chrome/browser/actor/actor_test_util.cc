@@ -4,11 +4,14 @@
 
 #include "chrome/browser/actor/actor_test_util.h"
 
+#include <string_view>
+
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 
 using optimization_guide::proto::BrowserAction;
 using optimization_guide::proto::ClickAction;
 using optimization_guide::proto::MoveMouseAction;
+using optimization_guide::proto::TypeAction;
 
 namespace actor {
 
@@ -37,6 +40,17 @@ BrowserAction MakeMouseMove(int content_node_id) {
   BrowserAction action;
   MoveMouseAction* move = action.add_action_information()->mutable_move_mouse();
   move->mutable_target()->set_content_node_id(content_node_id);
+  return action;
+}
+
+BrowserAction MakeType(int content_node_id,
+                       std::string_view text,
+                       bool follow_by_enter) {
+  BrowserAction action;
+  TypeAction* type_action = action.add_action_information()->mutable_type();
+  type_action->mutable_target()->set_content_node_id(content_node_id);
+  type_action->set_text(text);
+  type_action->set_follow_by_enter(follow_by_enter);
   return action;
 }
 

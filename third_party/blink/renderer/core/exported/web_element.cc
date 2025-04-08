@@ -130,6 +130,10 @@ WebString WebElement::InnerHTML() const {
   return ConstUnwrap<Element>()->innerHTML();
 }
 
+void WebElement::Focus() {
+  return Unwrap<Element>()->Focus();
+}
+
 bool WebElement::WritingSuggestions() const {
   const auto* html_element =
       blink::DynamicTo<HTMLElement>(ConstUnwrap<Element>());

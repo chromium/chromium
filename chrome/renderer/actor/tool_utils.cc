@@ -26,8 +26,6 @@ std::optional<gfx::Rect> BoundingBoxForWebNode(const blink::WebNode& node) {
 }
 }  // namespace
 
-// Returns the center point of Node for interaction. If Node is invisible, i.e.
-// has an empty rect return std::nullopt.
 std::optional<gfx::PointF> InteractionPointFromWebNode(
     const blink::WebNode& node) {
   auto rect = BoundingBoxForWebNode(node);
@@ -38,8 +36,6 @@ std::optional<gfx::PointF> InteractionPointFromWebNode(
       {rect->x() + rect->width() / 2.0f, rect->y() + rect->height() / 2.0f}};
 }
 
-// Returns WebNode identified by node_id within the frame.
-// If such node does not exist, return an empty WebNode.
 blink::WebNode GetNodeFromId(const content::RenderFrame& frame,
                              int32_t node_id) {
   const blink::WebLocalFrame* web_frame = frame.GetWebFrame();
@@ -54,6 +50,14 @@ blink::WebNode GetNodeFromId(const content::RenderFrame& frame,
     return blink::WebNode();
   }
   return node;
+}
+
+bool IsNodeFocused(const content::RenderFrame& frame,
+                   const blink::WebNode& node) {
+  blink::WebDocument document = frame.GetWebFrame()->GetDocument();
+  blink::WebElement currently_focused = document.FocusedElement();
+  blink::WebElement element = node.To<blink::WebElement>();
+  return element == currently_focused;
 }
 
 }  // namespace actor

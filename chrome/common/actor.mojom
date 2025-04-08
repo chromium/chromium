@@ -36,10 +36,26 @@ struct MouseMoveAction {
   ToolTarget target;
 };
 
+struct TypeAction {
+  // How the text should be inserted into the target.
+  enum Mode {
+    kDeleteExisting = 0,
+    kPrepend = 1,
+    kAppend = 2,
+  };
+
+  Mode mode;
+  ToolTarget target;
+  // text should be ASCII only for now.
+  string text;
+  bool follow_by_enter;
+};
+
 // Union of tool-specific actions.
 union ToolAction {
   ClickAction click;
   MouseMoveAction mouse_move;
+  TypeAction type;
 };
 
 // All information required to invoke a tool in the renderer.

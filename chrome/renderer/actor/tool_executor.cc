@@ -9,11 +9,13 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
-#include "base/notreached.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/renderer/actor/click_tool.h"
 #include "chrome/renderer/actor/mouse_move_tool.h"
+#include "chrome/renderer/actor/tool_utils.h"
+#include "chrome/renderer/actor/type_tool.h"
 #include "content/public/renderer/render_frame.h"
+#include "third_party/blink/public/web/web_node.h"
 
 using content::RenderFrame;
 
@@ -43,6 +45,12 @@ void ToolExecutor::InvokeTool(mojom::ToolInvocationPtr request,
       CHECK(request->action->get_mouse_move());
       tool_ = std::make_unique<MouseMoveTool>(
           std::move(request->action->get_mouse_move()), frame_);
+      break;
+    }
+    case actor::mojom::ToolAction::Tag::kType: {
+      CHECK(request->action->get_type());
+      tool_ = std::make_unique<TypeTool>(std::move(request->action->get_type()),
+                                         frame_);
       break;
     }
   }
