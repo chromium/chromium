@@ -968,8 +968,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.ContentLifetime.InvalidAge" units="ms"
-    expires_after="2025-05-21">
-  <owner>birnie@google.com</owner>
+    expires_after="2026-05-21">
+  <owner>jianli@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
     Android: The invalid age lifetime of content fetched from the server.
@@ -979,8 +979,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.ContentLifetime.InvalidAgeIsPresent"
-    enum="Boolean" expires_after="2025-05-21">
-  <owner>birnie@google.com</owner>
+    enum="Boolean" expires_after="2026-05-21">
+  <owner>jianli@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
     Android: If the content lifetime of a feed response has a non zero invalid
@@ -991,8 +991,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.ContentLifetime.StaleAge" units="ms"
-    expires_after="2025-05-21">
-  <owner>birnie@google.com</owner>
+    expires_after="2026-05-21">
+  <owner>jianli@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
     Android: The stale age lifetime of content fetched from the server. Reported
@@ -1002,8 +1002,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.ContentLifetime.StaleAgeIsPresent"
-    enum="Boolean" expires_after="2025-05-21">
-  <owner>birnie@google.com</owner>
+    enum="Boolean" expires_after="2026-05-21">
+  <owner>jianli@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
     Android: If the content lifetime of a feed response has a non zero stale age
