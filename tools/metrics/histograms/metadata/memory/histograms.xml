@@ -2473,10 +2473,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Memory.PressureWindowDuration" units="ms"
+<histogram name="Memory.PressureWindowDuration.{Type}" units="ms"
     expires_after="2025-08-24">
-<!-- Name completed by histogram_suffixes name="Memory.Pressure.TransitionType" -->
-
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -2484,6 +2482,12 @@ chromium-metrics-reviews@google.com.
     transitioning from a memory pressure state to the other and when exiting
     memory pressure.
   </summary>
+  <token key="Type">
+    <variant name="CriticalToModerate"/>
+    <variant name="CriticalToNone"/>
+    <variant name="ModerateToCritical"/>
+    <variant name="ModerateToNone"/>
+  </token>
 </histogram>
 
 <histogram name="Memory.ProcessCount2" units="processes"

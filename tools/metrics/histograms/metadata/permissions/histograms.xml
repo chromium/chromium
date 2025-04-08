@@ -1687,7 +1687,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true"
+<histogram
     name="Permissions.Usage.ElapsedTimeSinceGrant.{PermissionType}.{Source}"
     units="seconds" expires_after="2025-10-31">
   <owner>fjacky@chromium.org</owner>

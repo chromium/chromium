@@ -5051,7 +5051,7 @@ chromium-metrics-reviews@google.com.
   <token key="TabLaunchType" variants="TabLaunchType"/>
 </histogram>
 
-<histogram base="true"
+<histogram
     name="Android.TabContentManager.CaptureThumbnail.{PageType}.Duration"
     units="ms" expires_after="2025-12-20">
   <owner>acondor@chromium.org</owner>
